@@ -1,0 +1,26 @@
+{
+  "name": "component-file-react-generator",
+  "version": "0.0.1",
+  "description": "Generate React components from .component files",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "babylon": "^7.0.0-beta.16",
+    "commander": "^2.11.0",
+    "fs-extra": "^4.0.2",
+    "glob": "^7.1.2",
+    "jscodeshift": "^0.3.32",
+    "lodash": "^4.17.4",
+    "path-extra": "^4.2.1",
+    "prettier": "^1.5.2"
+  },
+  "devDependencies": {
+    "eslint": "^3.19.0",
+    "eslint-config-airbnb-base": "^11.2.0",
+    "eslint-plugin-import": "^2.7.0"
+  }
+}

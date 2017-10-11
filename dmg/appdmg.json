@@ -1,0 +1,19 @@
+{
+  "title": "Component Studio",
+  "icon": "ComponentStudioIcon.icns",
+  "background": "background.png",
+  "contents": [
+    {
+      "x": 158,
+      "y": 185,
+      "type": "file",
+      "path": "ComponentStudio.app"
+    },
+    {
+      "x": 447,
+      "y": 185,
+      "type": "link",
+      "path": "/Applications"
+    }
+  ]
+}
