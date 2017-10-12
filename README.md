@@ -18,11 +18,12 @@ A design system is defined in JSON as a collection of:
 - Text Styles
 - Components (can be nested)
 
-Component Studio is a graphical tool for working with these JSON files.
+Component Studio provides a graphical interface for working with these JSON files. 
 
 Component Studio is useful for:
 - Generating UI code from designs
 - Quickly mocking up new screens from existing components
+- Viewing designs with real data from JSON files or APIs
 - Experimenting with designs across multiple screen sizes
 - Automating design tasks - e.g. localizing screenshots for different languages and exporting hundreds of images
 - Working with animations (Lottie) and rendering videos from them (can plug into distributed renderer API)
@@ -58,7 +59,7 @@ Component Studio enables us to build this design system specification graphicall
 
 Component Studio stores `.component` files. Separately, we've written command-line tools for converting `.component` files to UI code for each platform. The reference implementations are available in the `generators` directory. We encourage companies to fork the generators to suit their own development stack.
 
-Component Studio isn't intended to replace your existing design tools, but rather augment them. Current design tools are extremely powerful when it comes to creating and iterating on new ideas. However, after new ideas have been created, 
+Component Studio isn't intended to replace your existing design tools, but rather augment them. Current design tools are extremely powerful when it comes to creating and iterating on new ideas. However, after new ideas have been designed, they need to be stress tested on different screen sizes and with real data. They then need to be translated into UI code. This is where Component Studio shines.
 
 ## Installation
 
@@ -70,7 +71,7 @@ First, make sure you have Cocoapods installed. Then checkout the repo and run:
 
 `pod install`
 
-Build in Xcode 9 on Sierra+.
+Build in Xcode 9 on Sierra+. If there are warnings (e.g. about converting to Swift 4) you can ignore them.
 
 It will build on El Capitan, but it likely won't be usable. The changes needed to make are small, if anybody wants to add support.
 
@@ -108,7 +109,9 @@ Usage instructions:
 
 While Electron is fantastic for cross-platform desktop apps, building cross-platform adds a lot of engineering overhead. Airbnb designers and engineers all work on Macs, so we can move much faster by focusing only on the Mac platform.
 
-Additionally, native code has a much higher threshold before performance becomes a serious issue. In my experience building Deco IDE using Electron, performance was an issue I had to address frequently -- it was always solvable with time, but definitely required effort. So far, Component Studio performance has been mostly fine without any optimizations. The app gets slow with hundreds of canvases, but that's not the core use case at the moment, and I'm sure it can be solved with effort.
+As an example of how building native helps us move quickly: native code has a much higher threshold before performance becomes a serious issue. In my experience building Deco IDE using Electron, performance was an issue I had to address frequently -- it was always solvable, but definitely required time and effort. So far, Component Studio performance has been mostly fine without any optimizations. The app gets slow with hundreds of canvases, but that's not the core use case at the moment, and I'm sure it can be solved with effort.
+
+As an added bonus, it's also much easier to interop with Sketch. For example, Sketch stores some text styles as encoded `NSAttributedString` objects. Component Studio is able to read and write these directly. It would be difficult to do so in a non-Mac environment.
 
 ### How does the layout algorithm work?
 
