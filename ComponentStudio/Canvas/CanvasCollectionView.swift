@@ -220,26 +220,39 @@ class CanvasCollectionView: NSView, NSCollectionViewDataSource, NSCollectionView
     
     var collectionView: NSCollectionView? = nil
     var scrollView: NSScrollView? = nil
-    
-    class BidirectionalCollectionView: NSCollectionView {
-        override func setFrameSize(_ newSize: NSSize) {
-//            var newSize = newSize
-//
-//            if (newSize.width != self.collectionViewLayout?.collectionViewContentSize.width) {
-//                newSize.width = (self.collectionViewLayout?.collectionViewContentSize.width)!
-//            }
+
+    // This allows the NSCollectionView to scroll horizontally in addition to vertically.
+    // It's horribly unperformant, and the scrollbar calculations are pretty quirky, but
+    // it's better than nothing. Hopefully we can figure out a better fix. If not, revisit
+    // the scrollbar calculations.
+    class CollectionScrollView: NSScrollView {
+        override func tile() {
+            super.tile()
             
-            super.setFrameSize(newSize)
-        }
-    }
-    
-    // https://stackoverflow.com/questions/38016263/nscollectionview-custom-layout-enable-scrolling
-    class HackedCollectionView: NSCollectionView {
-        override func setFrameSize(_ newSize: NSSize) {
-            let size = collectionViewLayout?.collectionViewContentSize ?? newSize
-            super.setFrameSize(size)
-            if let scrollView = enclosingScrollView {
-                scrollView.hasHorizontalScroller = size.width > scrollView.frame.width
+            if  let collectionView = documentView as? NSCollectionView,
+                let size = collectionView.collectionViewLayout?.collectionViewContentSize
+            {
+                // The collection view should still fill the available space if it's smaller
+                let maxSize = NSSize(width: max(size.width, frame.width), height: max(size.height, frame.height))
+                
+                collectionView.setFrameSize(maxSize)
+                
+                if  let horizontalScroller = self.horizontalScroller,
+                    NSScroller.preferredScrollerStyle() == NSScrollerStyle.legacy
+                {
+                    horizontalScroller.isHidden = size.width < frame.width
+                    
+                    var verticalScrollerSize: CGFloat = 0
+                    if let verticalScroller = self.verticalScroller {
+                        verticalScrollerSize = verticalScroller.isHidden ? 0 : verticalScroller.frame.width
+                    }
+                    
+                    horizontalScroller.setFrameSize(NSSize(width: frame.width - verticalScrollerSize, height: frame.height))
+                    horizontalScroller.setFrameOrigin(NSPoint(x: 0, y: 0))
+                    
+                    horizontalScroller.knobProportion = frame.width / size.width
+                    horizontalScroller.floatValue = Float(documentVisibleRect.origin.x / (size.width - frame.width))
+                }
             }
         }
     }
@@ -254,23 +267,24 @@ class CanvasCollectionView: NSView, NSCollectionViewDataSource, NSCollectionView
         visualEffectView.blendingMode = .behindWindow
         visualEffectView.state = .active
         
-        let collectionView = HackedCollectionView(frame: NSRect.zero)
-//        let collectionView = NSCollectionView(frame: NSRect.zero)
-//        collectionView.translatesAutoresizingMaskIntoConstraints = false
-//        collectionView.collectionViewLayout = LeftFlowLayout()
+        let collectionView = NSCollectionView(frame: NSRect.zero)
         collectionView.collectionViewLayout = MatrixLayout(delegate: self)
         collectionView.delegate = self
         collectionView.dataSource = self
         collectionView.backgroundColors = [NSColor.clear]
         self.collectionView = collectionView
 
-        let scrollView = NSScrollView()
+        let scrollView = CollectionScrollView()
         scrollView.translatesAutoresizingMaskIntoConstraints = false
         scrollView.verticalScrollElasticity = .allowed
         scrollView.horizontalScrollElasticity = .allowed
         scrollView.allowsMagnification = true
         scrollView.backgroundColor = NSColor.red
+        scrollView.hasHorizontalScroller = true
+        scrollView.hasVerticalScroller = true
+        scrollView.autohidesScrollers = true
         scrollView.documentView = collectionView
+        
         self.scrollView = scrollView
         
         addSubviewStretched(subview: visualEffectView)
@@ -282,8 +296,6 @@ class CanvasCollectionView: NSView, NSCollectionViewDataSource, NSCollectionView
     required init?(coder decoder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
-    
-    //
     
     var dragOffset: NSPoint? = nil
     var panningEnabled: Bool = false
