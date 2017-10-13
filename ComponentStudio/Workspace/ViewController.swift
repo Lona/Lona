@@ -297,7 +297,7 @@ class ViewController: NSViewController, NSOutlineViewDataSource, NSOutlineViewDe
             let data = handle.readDataToEndOfFile()
             let out = NSString(data: data, encoding: String.Encoding.utf8.rawValue)
             
-            Swift.print("result", out)
+            Swift.print("result", out ?? "stdout empty")
         }
     }
     

@@ -51,7 +51,7 @@ class ComponentConfiguration {
         let parametersData = argumentsWithCanvasDefaults.objectValue
             .reduce(CSData.Object([:])) { (result, argument) -> CSData in
                 var result = result
-                var value = argument.value
+                let value = argument.value
                 
                 // Use canvas parameter, if it exists
 //                if value == CSData.Null {
