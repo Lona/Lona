@@ -839,20 +839,9 @@
                         <rect key="frame" x="0.0" y="0.0" width="908" height="1065"/>
                         <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                         <subviews>
-                            <customView id="xoF-tO-Yjv">
+                            <customView fixedFrame="YES" id="xoF-tO-Yjv">
                                 <rect key="frame" x="0.0" y="0.0" width="231" height="1065"/>
                                 <autoresizingMask key="autoresizingMask"/>
-                                <subviews>
-                                    <visualEffectView appearanceType="vibrantLight" blendingMode="behindWindow" material="appearanceBased" state="followsWindowActiveState" translatesAutoresizingMaskIntoConstraints="NO" id="l9E-Qv-82b">
-                                        <rect key="frame" x="0.0" y="0.0" width="231" height="1065"/>
-                                    </visualEffectView>
-                                </subviews>
-                                <constraints>
-                                    <constraint firstAttribute="bottom" secondItem="l9E-Qv-82b" secondAttribute="bottom" id="2dG-Ng-dd1"/>
-                                    <constraint firstAttribute="trailing" secondItem="l9E-Qv-82b" secondAttribute="trailing" id="3Y9-dg-L6v"/>
-                                    <constraint firstItem="l9E-Qv-82b" firstAttribute="top" secondItem="xoF-tO-Yjv" secondAttribute="top" id="HFg-aA-c6H"/>
-                                    <constraint firstItem="l9E-Qv-82b" firstAttribute="leading" secondItem="xoF-tO-Yjv" secondAttribute="leading" id="xwn-Sg-hqT"/>
-                                </constraints>
                             </customView>
                             <customView id="8m0-fm-Vcx">
                                 <rect key="frame" x="232" y="0.0" width="676" height="1065"/>

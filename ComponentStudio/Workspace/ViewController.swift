@@ -495,7 +495,7 @@ class ViewController: NSViewController, NSOutlineViewDataSource, NSOutlineViewDe
 
         let outlineView = createOutlineView()
         scrollView.addSubview(outlineView)
-        scrollView.backgroundColor = NSColor.clear
+        scrollView.backgroundColor = NSColor.parse(css: "rgb(240,240,240)")!
         scrollView.documentView = outlineView
         
         left.addSubviewStretched(subview: scrollView)
