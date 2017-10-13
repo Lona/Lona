@@ -718,14 +718,17 @@ class CanvasView: NSView {
         let root = drawRoot(canvas: canvas, rootLayer: rootLayer, config: config, options: options)
         
         super.init(frame: root.frame)
-        
-        layer = CALayer()
-        layer!.backgroundColor = CSColors.parse(css: canvas.backgroundColor, withDefault: NSColor.white).color.cgColor
-        layer!.shadowOpacity = 0.3
-        layer!.shadowColor = CGColor.black
-        layer!.shadowOffset = NSMakeSize(0, -1)
-        layer!.shadowRadius = 2
-        wantsLayer = true
+
+        // TODO: Shadows don't show up on High Sierra if the canvas has a solid fill color.
+        // With a transparent fill, they show up behind each subview's layer. Maybe we don't
+        // want shadows anyway though.
+//        layer = CALayer()
+//        layer!.backgroundColor = CSColors.parse(css: canvas.backgroundColor, withDefault: NSColor.white).color.cgColor
+//        layer!.shadowOpacity = 0.3
+//        layer!.shadowColor = CGColor.black
+//        layer!.shadowOffset = NSMakeSize(0, -1)
+//        layer!.shadowRadius = 2
+//        wantsLayer = true
         
         addSubview(root)
     }
