@@ -493,7 +493,6 @@
 				TargetAttributes = {
 					6B0AEFB31EBF74D700F35BBF = {
 						CreatedOnToolsVersion = 8.1;
-						DevelopmentTeam = CV2RHZWPY9;
 						ProvisioningStyle = Automatic;
 					};
 				};
@@ -799,10 +798,10 @@
 			baseConfigurationReference = C9BC70B83C813B255385A6DC /* Pods-ComponentStudio.debug.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
-				CODE_SIGN_IDENTITY = "Mac Developer";
+				CODE_SIGN_IDENTITY = "";
 				CODE_SIGN_STYLE = Automatic;
 				COMBINE_HIDPI_IMAGES = YES;
-				DEVELOPMENT_TEAM = CV2RHZWPY9;
+				DEVELOPMENT_TEAM = "";
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
 					"$(PROJECT_DIR)/Pods/Sparkle",
@@ -824,7 +823,7 @@
 				CODE_SIGN_IDENTITY = "Mac Developer";
 				CODE_SIGN_STYLE = Automatic;
 				COMBINE_HIDPI_IMAGES = YES;
-				DEVELOPMENT_TEAM = CV2RHZWPY9;
+				DEVELOPMENT_TEAM = "";
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
 					"$(PROJECT_DIR)/Pods/Sparkle",
