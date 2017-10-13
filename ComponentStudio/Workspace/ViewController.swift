@@ -383,7 +383,7 @@ class ViewController: NSViewController, NSOutlineViewDataSource, NSOutlineViewDe
         canvasCollectionView?.update(options: options)
     }
     
-    func renderLayerList() {
+    func renderLayerList(fullRender: Bool = false) {
         let selection = outlineView!.selectedRow
         
         // Editing during a reload can cause a crash
@@ -394,9 +394,13 @@ class ViewController: NSViewController, NSOutlineViewDataSource, NSOutlineViewDe
         // TODO Is this what we want here? Won't this get rid of all expand/collapse
         outlineView!.expandItem(dataRoot, expandChildren: true)
         
-        makeChangeWithoutRendering {
-            // Currently rendering resets the selection, so we set it again manually
+        if fullRender {
             outlineView!.select(row: selection)
+        } else {
+            makeChangeWithoutRendering {
+                // Currently rendering resets the selection, so we set it again manually
+                outlineView!.select(row: selection)
+            }
         }
     }
     
@@ -699,7 +703,7 @@ class ViewController: NSViewController, NSOutlineViewDataSource, NSOutlineViewDe
                     self.outlineView?.reloadItem(layer)
                     self.render()
                 case .full:
-                    self.renderLayerList()
+                    self.renderLayerList(fullRender: true)
                     self.render()
                 }
             }

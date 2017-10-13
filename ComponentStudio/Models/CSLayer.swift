@@ -178,6 +178,35 @@ class CSLayer: JSONDeserializable, JSONSerializable, DataNode, NSCopying {
         }
     }
     
+    var itemSpacingRule: DimensionSizingRule {
+        get {
+            if itemSpacing != nil {
+                return DimensionSizingRule.Fixed
+            }
+            
+            if justifyContent == "space-between" {
+                return DimensionSizingRule.Expand
+            }
+
+            return DimensionSizingRule.Shrink
+        }
+        set {
+            switch newValue {
+            case .Fixed:
+                itemSpacing = 0
+                if justifyContent == "space-between" {
+                    justifyContent = "flex-start"
+                }
+            case .Shrink:
+                removeParameter("itemSpacing")
+                justifyContent = "flex-start"
+            case .Expand:
+                removeParameter("itemSpacing")
+                justifyContent = "space-between"
+            }
+        }
+    }
+    
     var resizeMode: ResizeMode? {
         get { return ResizeMode(rawValue: parameters["resizeMode"]?.string ?? "") }
         set { parameters["resizeMode"] = JSON(newValue?.rawValue as Any) }
@@ -220,6 +249,10 @@ class CSLayer: JSONDeserializable, JSONSerializable, DataNode, NSCopying {
         get { return parameters["flex"]?.double }
         set { parameters["flex"] = JSON(newValue as Any) }
     }
+    var itemSpacing: Double? {
+        get { return parameters["itemSpacing"]?.double }
+        set { parameters["itemSpacing"] = JSON(newValue as Any) }
+    }
     var width: Double? {
         get { return parameters["width"]?.double }
         set { parameters["width"] = JSON(newValue as Any) }
@@ -228,10 +261,10 @@ class CSLayer: JSONDeserializable, JSONSerializable, DataNode, NSCopying {
         get { return parameters["height"]?.double }
         set { parameters["height"] = JSON(newValue as Any) }
     }
-    var padding: Double? {
-        get { return parameters["padding"]?.double }
-        set { parameters["padding"] = JSON(newValue as Any) }
-    }
+//    var padding: Double? {
+//        get { return parameters["padding"]?.double }
+//        set { parameters["padding"] = JSON(newValue as Any) }
+//    }
     var paddingLeft: Double? {
         get { return parameters["paddingLeft"]?.double }
         set { parameters["paddingLeft"] = JSON(newValue as Any) }
@@ -248,10 +281,10 @@ class CSLayer: JSONDeserializable, JSONSerializable, DataNode, NSCopying {
         get { return parameters["paddingBottom"]?.double }
         set { parameters["paddingBottom"] = JSON(newValue as Any) }
     }
-    var margin: Double? {
-        get { return parameters["margin"]?.double }
-        set { parameters["margin"] = JSON(newValue as Any) }
-    }
+//    var margin: Double? {
+//        get { return parameters["margin"]?.double }
+//        set { parameters["margin"] = JSON(newValue as Any) }
+//    }
     var marginLeft: Double? {
         get { return parameters["marginLeft"]?.double }
         set { parameters["marginLeft"] = JSON(newValue as Any) }
@@ -338,6 +371,10 @@ class CSLayer: JSONDeserializable, JSONSerializable, DataNode, NSCopying {
     var horizontalAlignment: String {
         get {
             if flexDirection == "row" {
+                if itemSpacingRule == .Expand {
+                    return "flex-start"
+                }
+                
                 return justifyContent ?? "flex-start"
             } else {
                 return alignItems ?? "flex-start"
@@ -357,6 +394,10 @@ class CSLayer: JSONDeserializable, JSONSerializable, DataNode, NSCopying {
             if flexDirection == "row" {
                 return alignItems ?? "flex-start"
             } else {
+                if itemSpacingRule == .Expand {
+                    return "flex-start"
+                }
+                
                 return justifyContent ?? "flex-start"
             }
         }

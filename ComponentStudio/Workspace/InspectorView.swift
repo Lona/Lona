@@ -21,6 +21,7 @@ class InspectorView: NSStackView {
         case verticalAlignment
         case heightSizingRule
         case widthSizingRule
+        case itemSpacingRule
         
         // Box Model
         case position
@@ -30,6 +31,7 @@ class InspectorView: NSStackView {
         case left
         case width
         case height
+        case itemSpacing
         case marginTop
         case marginRight
         case marginBottom
@@ -111,6 +113,12 @@ class InspectorView: NSStackView {
     )
     var widthView = NumberField(frame: NSRect.zero)
     var heightView = NumberField(frame: NSRect.zero)
+    var itemSpacingRuleView = PopupField(
+        frame: NSRect.zero,
+        values: ["Shrink", "Fixed", "Expand"],
+        valueToTitle: ["Fixed": "Fixed (experimental)", "Expand": "Distribute",  "Shrink": "None"]
+    )
+    var itemSpacingView = NumberField(frame: NSRect.zero)
     var aspectRatioView = NumberField(frame: NSRect.zero)
     
     var positionView = PopupField(
@@ -256,13 +264,21 @@ class InspectorView: NSStackView {
         alignmentContainer.distribution = .fillEqually
         alignmentContainer.spacing = 20
         
+        let spacingContainer = NSStackView(views: [
+            NSTextField(labelWithStringCompat: "Child Spacing"),
+            itemSpacingRuleView,
+            itemSpacingView,
+            ], orientation: .vertical, stretched: true)
+        
         let layoutSection = renderSection(title: "Layout", views: [
             NSTextField(labelWithStringCompat: "Direction"),
             directionView,
             NSTextField(labelWithStringCompat: "Children Alignment"),
             alignmentContainer,
+            spacingContainer,
         ])
         layoutSection.addContentSpacing(of: 14, after: directionView)
+        layoutSection.addContentSpacing(of: 14, after: alignmentContainer)
         
         return layoutSection
     }
@@ -664,6 +680,8 @@ class InspectorView: NSStackView {
             (verticalAlignmentView, .verticalAlignment),
             (heightSizingRuleView, .heightSizingRule),
             (widthSizingRuleView, .widthSizingRule),
+            (itemSpacingRuleView, .itemSpacingRule),
+            (itemSpacingView, .itemSpacing),
             
             // Box Model
             (positionView, .position),
@@ -744,6 +762,13 @@ class InspectorView: NSStackView {
                 self.widthView.isHidden = value != "Fixed"
                 if value != "Fixed" {
                     self.widthView.value = 0
+                }
+            }
+        case .itemSpacingRule:
+            if let value = self.value[property]?.string {
+                self.itemSpacingView.isHidden = value != "Fixed"
+                if value != "Fixed" {
+                    self.itemSpacingView.value = 0
                 }
             }
         case .backgroundColor:

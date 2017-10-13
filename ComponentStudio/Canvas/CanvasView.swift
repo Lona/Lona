@@ -561,6 +561,10 @@ func layoutLayer(layer: CSLayer, parentLayoutDirection: YGFlexDirection) -> YGNo
         break
     }
     
+    if layer.itemSpacingRule == .Expand {
+        node.justifyContent = .spaceBetween
+    }
+    
     node.paddingTop = CGFloat(numberValue(for: layer, attributeChain: ["paddingTop", "paddingVertical", "padding"], optionalValues: [layer.paddingTop]))
     node.paddingBottom = CGFloat(numberValue(for: layer, attributeChain: ["paddingBottom", "paddingVertical", "padding"], optionalValues: [layer.paddingBottom]))
     node.paddingLeft = CGFloat(numberValue(for: layer, attributeChain: ["paddingLeft", "paddingHorizontal", "padding"], optionalValues: [layer.paddingLeft]))
@@ -586,7 +590,16 @@ func layoutLayer(layer: CSLayer, parentLayoutDirection: YGFlexDirection) -> YGNo
         YGNodeSetMeasureFunc(node, measureFunc(node:width:widthMode:height:heightMode:))
     } else {
         for (index, sub) in layer.computedChildren(for: layer.config!).enumerated() {
-            let child = layoutLayer(layer: sub, parentLayoutDirection: flexDirection)
+            var child = layoutLayer(layer: sub, parentLayoutDirection: flexDirection)
+            
+            if layer.itemSpacingRule == .Fixed {
+                let itemSpacing = CGFloat(numberValue(for: layer, attributeChain: ["itemSpacing"], optionalValues: [layer.itemSpacing]))
+                if node.flexDirection == .row && index != 0 {
+                    child.marginLeft += itemSpacing
+                } else if node.flexDirection == .column && index != 0 {
+                    child.marginTop += itemSpacing
+                }
+            }
             
             node.insert(child: child, at: index)
         }
