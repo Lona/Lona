@@ -113,6 +113,12 @@ As an example of how building native helps us move quickly: native code has a mu
 
 As an added bonus, it's also much easier to interop with Sketch. For example, Sketch stores some text styles as encoded `NSAttributedString` objects. Component Studio is able to read and write these directly. It would be difficult to do so in a non-Mac environment.
 
+### Can we use *just* Component Studio, rather than starting in another design tool like Sketch?
+
+Yes, but I don't really recommend it. Sketch pioneered an incredibly effective workflow for rapidly iterating on ideas. The infinite canvas, instant artboard duplication, and intuitive hotkeys are key to translating an idea into digital form. Designing in Sketch should be *easy* and *playful*. 
+
+Designing in Component Studio, by contrast, is intended to be *powerful* and *precise*. A much greater degree of rigor is required to *build* the same thing you *mocked up* in Sketch. You won't have the same ability to rapidly play with different ideas, look at all 10 of them, and continue moving forward from your favorite. Instead, you get to see your design on 5 screen sizes at once in all possible configurations using real data.
+
 ### How does the layout algorithm work?
 
 Component Studio uses flexbox with [Yoga](https://github.com/facebook/yoga) under the hood. The tool applies one major simplification: it automatically handles switching certain properties (`align-items`, `justify-content`, and `flex`) based on `flex-direction`, so you don't have to.
