@@ -28,15 +28,6 @@ class ViewController: NSViewController, NSOutlineViewDataSource, NSOutlineViewDe
         return selectedLayer ?? dataRoot
     }
     
-    func stopEditing() {
-        if outlineView!.selectedRow != -1 {
-            let view = outlineView?.view(atColumn: 0, row: outlineView!.selectedRow, makeIfNecessary: true) as! NSTableCellView
-            
-            view.textField?.isEditable = false
-            view.textField?.isEnabled = false
-        }
-    }
-    
     func addLayer(layer newLayer: CSLayer) {
         let targetLayer = selectedLayerOrRoot
         
@@ -387,7 +378,7 @@ class ViewController: NSViewController, NSOutlineViewDataSource, NSOutlineViewDe
         let selection = outlineView!.selectedRow
         
         // Editing during a reload can cause a crash
-        stopEditing()
+        outlineView!.stopEditing()
         
         outlineView!.reloadData()
         
@@ -665,7 +656,14 @@ class ViewController: NSViewController, NSOutlineViewDataSource, NSOutlineViewDe
                 ])
                 
                 valueField.onChangeData = { data in
-                    layer.parameters[parameter.name] = data.toJSON()
+                    // Handle the empty strings specially - convert to null.
+                    // TODO: How can we always allow a null state?
+                    if let value = data.string, value == "" {
+                        layer.parameters[parameter.name] = CSData.Null.toJSON()
+                    } else {
+                        layer.parameters[parameter.name] = data.toJSON()
+                    }
+                    
                     self.renderLayerList()
                     self.render()
                 }

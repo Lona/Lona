@@ -42,6 +42,12 @@ enum CSData: Equatable {
         }
     }
     
+    var isNull: Bool {
+        get {
+            return self == CSData.Null
+        }
+    }
+    
     var bool: Bool? {
         get {
             guard case CSData.Bool(let value) = self else { return nil }

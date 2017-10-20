@@ -84,4 +84,15 @@ extension NSOutlineView {
         let index = row(forItem: item)
         select(row: index, ensureVisible: ensureVisible)
     }
+    
+    func stopEditing() {
+        if selectedRow != -1 {
+            // TODO: Traverse hierachy and disable all text fields to make sure we don't crash.
+            // E.g. click on another row in the Logic list table after editing a field in LogicNode
+            let selectedView = view(atColumn: 0, row: selectedRow, makeIfNecessary: true) as! NSTableCellView
+            
+            selectedView.textField?.isEditable = false
+            selectedView.textField?.isEnabled = false
+        }
+    }
 }

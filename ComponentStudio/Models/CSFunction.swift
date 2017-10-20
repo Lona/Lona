@@ -186,6 +186,7 @@ struct CSFunction {
         "Append": CSAppendFunction,
         "Assign": CSAssignFunction,
         "If": CSIfFunction,
+        "IfExists": CSIfExistsFunction,
     ]
     
     static var noneFunction: CSFunction {
@@ -249,6 +250,8 @@ let CSIfFunction = CSFunction(
             switch cmp.data.stringValue {
             case "equal to":
                 return (scope, lhs.data == rhs.data ? .stepInto : .stepOver)
+            case "not equal to":
+              return (scope, lhs.data != rhs.data ? .stepInto : .stepOver)
             case "greater than":
                 return (scope, lhs.data.numberValue > rhs.data.numberValue ? .stepInto : .stepOver)
             case "greater than or equal to":
@@ -265,6 +268,24 @@ let CSIfFunction = CSFunction(
         }
         
         return (scope, .stepOver)
+    }
+)
+
+// TODO: Come up with a better generic way to deal with overloading of names
+let CSIfExistsFunction = CSFunction(
+    name: "If Exists",
+    parameters: [
+        CSFunction.Parameter(label: nil, name: "value", type: .variable(type: CSGenericTypeA, access: .read)),
+        ],
+    hasBody: true,
+    invoke: { arguments, scope in
+        let value: CSValue = arguments["value"]!.resolve(in: scope)
+        
+        if value.data.isNull {
+            return (scope, .stepOver)
+        }
+        
+        return (scope, .stepInto)
     }
 )
 

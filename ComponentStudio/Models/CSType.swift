@@ -192,6 +192,7 @@ let CSParameterType = CSType.enumeration([
 
 let CSComparatorType = CSType.enumeration([
     CSValue(type: .string, data: .String("equal to")),
+    CSValue(type: .string, data: .String("not equal to")),
     CSValue(type: .string, data: .String("greater than")),
     CSValue(type: .string, data: .String("greater than or equal to")),
     CSValue(type: .string, data: .String("less than")),

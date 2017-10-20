@@ -326,6 +326,7 @@ class ListEditor<Element>: NSView where Element: DataNode {
     var listView: ListView<Element>
     
     func reloadData() {
+        listView.stopEditing()
         listView.reloadData()
     }
     
