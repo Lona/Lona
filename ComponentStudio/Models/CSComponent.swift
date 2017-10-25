@@ -17,6 +17,12 @@ class CSComponent: DataNode, NSCopying {
     var cases: [CSCase]
     var logic = [LogicNode]()
     var config: CSData
+    var metadata: CSData
+    
+    enum Metadata: String {
+        case description
+        case tags
+    }
     
     var label: String {
         return name ?? "Component"
@@ -36,7 +42,7 @@ class CSComponent: DataNode, NSCopying {
         }
     }
     
-    required init(name: String?, canvas: [Canvas], rootLayer: CSLayer, parameters: [CSParameter], cases: [CSCase], logic: [LogicNode], config: CSData) {
+    required init(name: String?, canvas: [Canvas], rootLayer: CSLayer, parameters: [CSParameter], cases: [CSCase], logic: [LogicNode], config: CSData, metadata: CSData) {
         self.name = name
         self.canvas = canvas
         self.rootLayer = rootLayer
@@ -44,6 +50,7 @@ class CSComponent: DataNode, NSCopying {
         self.cases = cases
         self.logic = logic
         self.config = config
+        self.metadata = metadata
     }
     
     func computedCanvases() -> [Canvas] {
@@ -120,7 +127,7 @@ class CSComponent: DataNode, NSCopying {
     }
     
     func copy(with zone: NSZone? = nil) -> Any {
-        return CSComponent(name: name, canvas: canvas, rootLayer: rootLayer, parameters: parameters, cases: cases, logic: logic, config: config)
+        return CSComponent(name: name, canvas: canvas, rootLayer: rootLayer, parameters: parameters, cases: cases, logic: logic, config: config, metadata: metadata)
     }
 
     func child(at index: Int) -> Any {
@@ -172,6 +179,7 @@ class CSComponent: DataNode, NSCopying {
             "logic": logic.toData().toAny(),
             "canvases": canvas.toData().toAny(),
             "config": config.toAny(),
+            "metadata": metadata.toAny(),
             "cases": cases.toData().toAny(),
         ]
         
@@ -189,6 +197,9 @@ class CSComponent: DataNode, NSCopying {
         canvas = json["canvases"].arrayValue.map({ Canvas(CSData.from(json: $0)) })
         config = json["config"].dictionary != nil
             ? CSData.from(json: json["config"])
+            : CSData.Object([:])
+        metadata = json["metadata"].dictionary != nil
+            ? CSData.from(json: json["metadata"])
             : CSData.Object([:])
         cases = json["cases"].arrayValue.map({ CSCase(CSData.from(json: $0)) })
     }

@@ -338,7 +338,8 @@ class ViewController: NSViewController, NSOutlineViewDataSource, NSOutlineViewDe
         parameters: [],
         cases: [CSCase.defaultCase],
         logic: [],
-        config: CSData.Object([:])
+        config: CSData.Object([:]),
+        metadata: CSData.Object([:])
     )
     
     var dataRoot: CSLayer { return component.rootLayer }
@@ -406,6 +407,7 @@ class ViewController: NSViewController, NSOutlineViewDataSource, NSOutlineViewDe
         self.canvasListView?.canvasList = component.canvas
         self.canvasListView?.canvasLayout = component.canvasLayoutAxis
         self.canvasListView?.editorView.component = component
+        self.metadataEditorView?.update(data: component.metadata)
         
         renderLayerList()
         render()
@@ -420,6 +422,7 @@ class ViewController: NSViewController, NSOutlineViewDataSource, NSOutlineViewDe
     var logicListView: LogicListView?
     var parameterListEditorView: ParameterListEditorView?
     var caseList: CaseList?
+    var metadataEditorView: MetadataEditorView?
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -429,12 +432,20 @@ class ViewController: NSViewController, NSOutlineViewDataSource, NSOutlineViewDe
         
         // Splitter setup
         
-        let tabs = SegmentedControlField(frame: NSRect(x: 0, y: 0, width: 400, height: 24), values: ["Canvases", "Parameters", "Logic", "Cases"])
+        let tabs = SegmentedControlField(frame: NSRect(x: 0, y: 0, width: 500, height: 24), values: ["Details", "Canvases", "Parameters", "Logic", "Cases"])
         tabs.segmentWidth = 97
         tabs.useYogaLayout = true
         tabs.segmentStyle = .roundRect
         
         verticalSplitter.addSubviewToDivider(tabs)
+        
+        // Metadata editor setup
+        
+        let metadataEditorView = MetadataEditorView(data: component.metadata, onChangeData: { value in
+            Swift.print("updated metadata", value)
+            self.component.metadata = value
+            self.render()
+        })
         
         // Canvas list setup
         
@@ -483,6 +494,7 @@ class ViewController: NSViewController, NSOutlineViewDataSource, NSOutlineViewDe
         self.parameterListEditorView = parameterListEditorView
         self.caseList = caseList
         self.canvasListView = canvasListView
+        self.metadataEditorView = metadataEditorView
         
         // Outline view setup
         
@@ -497,43 +509,28 @@ class ViewController: NSViewController, NSOutlineViewDataSource, NSOutlineViewDe
         
         // Tab switching
         
+        let tabMap: [String: NSView?] = [
+            "Details": metadataEditorView,
+            "Canvases": canvasListView,
+            "Parameters": parameterListEditorView,
+            "Cases": caseList.editor,
+            "Logic": logicListView.editor,
+        ]
+        
         tabs.onChange = { value in
-            Swift.print("Value", value)
+            for (tab, view) in tabMap {
+                guard let view = view else { continue }
+                
+                if tab == value {
+                    self.bottom.addSubviewStretched(subview: view)
+                } else {
+                    view.removeFromSuperview()
+                }
+            }
+            
             switch value {
-            case "Canvases":
-                if parameterListEditorView.superview != nil { parameterListEditorView.removeFromSuperview() }
-                if caseList.editor?.superview != nil { caseList.editor?.removeFromSuperview() }
-                if logicListView.editor?.superview != nil { logicListView.editor?.removeFromSuperview() }
-                
-                if canvasListView.superview == nil {
-                    self.bottom.addSubviewStretched(subview: canvasListView)
-                }
-            case "Parameters":
-                if canvasListView.superview != nil { canvasListView.removeFromSuperview() }
-                if caseList.editor?.superview != nil { caseList.editor!.removeFromSuperview() }
-                if logicListView.editor?.superview != nil { logicListView.editor?.removeFromSuperview() }
-                
-                if parameterListEditorView.superview == nil {
-                    self.bottom.addSubviewStretched(subview: parameterListEditorView)
-                }
-            case "Cases":
-                if canvasListView.superview != nil { canvasListView.removeFromSuperview() }
-                if parameterListEditorView.superview != nil { parameterListEditorView.removeFromSuperview() }
-                if logicListView.editor?.superview != nil { logicListView.editor?.removeFromSuperview() }
-                
-                if caseList.editor?.superview == nil {
-                    self.bottom.addSubviewStretched(subview: caseList.editor!)
-                }
             case "Logic":
-                if parameterListEditorView.superview != nil { parameterListEditorView.removeFromSuperview() }
-                if canvasListView.superview != nil { canvasListView.removeFromSuperview() }
-                if caseList.editor?.superview != nil { caseList.editor!.removeFromSuperview() }
-                
                 logicListView.editor?.reloadData()
-                
-                if logicListView.editor?.superview == nil {
-                    self.bottom.addSubviewStretched(subview: logicListView.editor!)
-                }
             default:
                 break
             }

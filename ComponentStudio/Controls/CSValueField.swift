@@ -214,6 +214,13 @@ class CSValueField {
             field.useYogaLayout = true
             field.value = value
             field.onChangeData = defaultChangeHandler
+        case .array(_):
+            let field = ArrayEditorButton(frame: NSRect(x: 0, y: -2, width: 120, height: 26))
+            view = field
+            
+            field.useYogaLayout = true
+            field.value = value
+            field.onChangeData = defaultChangeHandler
         case .null():
             let field = TextField(frame: NSRect(x: 0, y: 0, width: 80, height: 16))
             view = field

@@ -55,6 +55,8 @@
 		307718FA1F3B6CEB003A597B /* JSONExtensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 307718F91F3B6CEB003A597B /* JSONExtensions.swift */; };
 		307718FE1F3CBDEA003A597B /* CSFunction.swift in Sources */ = {isa = PBXBuildFile; fileRef = 307718FD1F3CBDEA003A597B /* CSFunction.swift */; };
 		307719001F3CD3F1003A597B /* MultilevelPopupField.swift in Sources */ = {isa = PBXBuildFile; fileRef = 307718FF1F3CD3F1003A597B /* MultilevelPopupField.swift */; };
+		307B7B4F1F9A71C5001A62D9 /* MetadataEditorView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 307B7B4E1F9A71C5001A62D9 /* MetadataEditorView.swift */; };
+		307B7B511F9A8EE5001A62D9 /* ArrayEditorButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = 307B7B501F9A8EE5001A62D9 /* ArrayEditorButton.swift */; };
 		3084164D1EDB2A5B00A1CA6D /* Button.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3084164C1EDB2A5B00A1CA6D /* Button.swift */; };
 		30902A281F7B208A00B938BE /* CanvasCollectionView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 30902A271F7B208A00B938BE /* CanvasCollectionView.swift */; };
 		3090D78D1F01B050009277E7 /* CSParameter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3090D78C1F01B050009277E7 /* CSParameter.swift */; };
@@ -152,6 +154,8 @@
 		307718F91F3B6CEB003A597B /* JSONExtensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = JSONExtensions.swift; sourceTree = "<group>"; };
 		307718FD1F3CBDEA003A597B /* CSFunction.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CSFunction.swift; sourceTree = "<group>"; };
 		307718FF1F3CD3F1003A597B /* MultilevelPopupField.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MultilevelPopupField.swift; sourceTree = "<group>"; };
+		307B7B4E1F9A71C5001A62D9 /* MetadataEditorView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MetadataEditorView.swift; sourceTree = "<group>"; };
+		307B7B501F9A8EE5001A62D9 /* ArrayEditorButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ArrayEditorButton.swift; sourceTree = "<group>"; };
 		3084164C1EDB2A5B00A1CA6D /* Button.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Button.swift; sourceTree = "<group>"; };
 		30902A271F7B208A00B938BE /* CanvasCollectionView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CanvasCollectionView.swift; sourceTree = "<group>"; };
 		3090D78C1F01B050009277E7 /* CSParameter.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CSParameter.swift; sourceTree = "<group>"; };
@@ -260,9 +264,10 @@
 				30F7C9511ED4AE23009D27DF /* InspectorView.swift */,
 				307718E91F355D31003A597B /* LayerInspectorView.swift */,
 				6B6017CF1EBF9EFA001E02C1 /* LayerList.swift */,
+				306D2FED1F84735900907B4E /* LayerThumbnail.swift */,
+				307B7B4E1F9A71C5001A62D9 /* MetadataEditorView.swift */,
 				300A0AFB1EDA0CBC00704DB7 /* SectionSplitter.swift */,
 				6B0AEFB91EBF74D800F35BBF /* ViewController.swift */,
-				306D2FED1F84735900907B4E /* LayerThumbnail.swift */,
 			);
 			path = Workspace;
 			sourceTree = "<group>";
@@ -298,6 +303,7 @@
 		306DA4F21F34E265002772DC /* Controls */ = {
 			isa = PBXGroup;
 			children = (
+				307B7B501F9A8EE5001A62D9 /* ArrayEditorButton.swift */,
 				3084164C1EDB2A5B00A1CA6D /* Button.swift */,
 				30EFC9591EF43C900087711D /* CheckboxField.swift */,
 				30B5B1A61EC3BF4F002068CE /* ColorPickerButton.swift */,
@@ -630,11 +636,13 @@
 				3003027E1EDCE3790085E140 /* ComponentConfiguration.swift in Sources */,
 				30EFC95A1EF43C900087711D /* CheckboxField.swift in Sources */,
 				3084164D1EDB2A5B00A1CA6D /* Button.swift in Sources */,
+				307B7B4F1F9A71C5001A62D9 /* MetadataEditorView.swift in Sources */,
 				3069E0A01F3254E10005E9A8 /* CSTypography.swift in Sources */,
 				301493A71EC0F415005BC573 /* CanvasView.swift in Sources */,
 				309777701F2A8EC1004C8975 /* WorkspacePreferencesViewController.swift in Sources */,
 				3069E09A1F3243780005E9A8 /* parseCSSColor.swift in Sources */,
 				6B0AEFBA1EBF74D800F35BBF /* ViewController.swift in Sources */,
+				307B7B511F9A8EE5001A62D9 /* ArrayEditorButton.swift in Sources */,
 				307718E81F35241A003A597B /* CSControl.swift in Sources */,
 				303BDE6D1F76E61300B4CE5A /* VideoUtils.swift in Sources */,
 				305A19521F4638F800EA033C /* NSStackViewExtensions.swift in Sources */,

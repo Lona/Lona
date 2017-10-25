@@ -1,6 +1,6 @@
 const jscodeshift = require('jscodeshift');
 
-function run(file, source, transforms) {
+function run(file, source, transforms, options = {}) {
   const withParser = jscodeshift.withParser('babylon');
 
   return transforms.reduce((input, transform) => {
@@ -14,7 +14,7 @@ function run(file, source, transforms) {
         jscodeshift: withParser,
         stats: {},
       },
-      {},
+      options,
     );
 
     if (!output || output === input) {

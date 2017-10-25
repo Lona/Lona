@@ -19,6 +19,8 @@ import Foundation
 import Cocoa
 
 protocol CSControl {
+    typealias Handler = (CSData) -> Void
+    
     var data: CSData { get set }
-    var onChangeData: (CSData) -> Void { get set }
+    var onChangeData: Handler { get set }
 }

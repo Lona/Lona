@@ -8,6 +8,10 @@ module.exports = function convertFonts(data = {}, colors) {
 
   // E.g. ['fontFamily', 'Arial'] => fontFamily: 'Arial'
   function convertProperty([key, value]) {
+    if (key === 'uppercase') {
+      return null;
+    }
+
     if (key === 'color' && value in colors) {
       return j.property(
         'init',
@@ -27,7 +31,7 @@ module.exports = function convertFonts(data = {}, colors) {
     return j.property(
       'init',
       j.literal(id),
-      j.objectExpression(Object.entries(rest).map(convertProperty)),
+      j.objectExpression(Object.entries(rest).map(convertProperty).filter(x => !!x)),
     );
   }
 

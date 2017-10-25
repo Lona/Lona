@@ -136,12 +136,13 @@ const STYLE_PROPS = [
   'color',
   'backgroundColor',
   'font', // HACK: put font in styles temporarily
+  'overflow',
   key => key.startsWith('padding'),
   key => key.startsWith('margin'),
   key => key.startsWith('border'),
 ];
 
-function collectJSXProps(layer, scope) {
+function collectJSXProps(layer, scope, options) {
   const { name, type, parameters } = layer;
 
   if (type === 'Text' && !parameters.font) {
@@ -172,9 +173,13 @@ function collectJSXProps(layer, scope) {
   //   : [];
 
   Object.entries(parameters)
-    // .concat(fontProperties)
     .map(([key, value]) => {
+      if (key === 'backgroundColor' && (value in options.colors)) {
+        value = options.colors[value];
+      }
+
       const stringValue = JSON.stringify(value);
+
       return [key, getScopeVariable(scope, name, key, stringValue)];
     })
     .concat(scopeOnly)
@@ -212,6 +217,10 @@ function collectJSXProps(layer, scope) {
       }
     });
 
+  if (type !== 'Component' && type !== 'Children') {
+    style.overflow = JSON.stringify('hidden');
+  }
+
   if (Object.keys(style).length > 0) {
     props.style = style;
   }
@@ -231,8 +240,12 @@ function writePropValue(obj) {
   return obj;
 }
 
-function writeJSXElement(layer, scope) {
+function writeJSXElement(layer, scope, options) {
   const { name, type, parameters = [], children, url } = layer;
+
+  if (type === 'Children') {
+    return '{this.props.children}';
+  }
 
   const text = `{${getScopeVariable(
     scope,
@@ -243,9 +256,9 @@ function writeJSXElement(layer, scope) {
   const childrenCode =
     type === 'Text'
       ? text
-      : children.map(child => writeJSXElement(child, scope)).join('\n');
+      : children.map(child => writeJSXElement(child, scope, options)).join('\n');
 
-  const props = collectJSXProps(layer, scope);
+  const props = collectJSXProps(layer, scope, options);
   const style = props.style;
   if (style) delete props.style;
   // const font = style && style.font;
@@ -435,7 +448,7 @@ function writeRenderFunction(rootLayer, logic, parameters, options) {
   body += writeLogic(logic, scope, options);
   body += '\n\n';
 
-  body += `return (\n${indent(writeJSXElement(rootLayer, scope), 1)}\n);`;
+  body += `return (\n${indent(writeJSXElement(rootLayer, scope, options), 1)}\n);`;
 
   return ['render() {', indent(body, 1), '};'].join('\n');
 }
@@ -445,10 +458,10 @@ function writeComponent(component, options) {
 
   let body = '';
 
-  if (parameters.length > 0) {
-    body += writePropTypes(parameters);
-    body += '\n\n';
-  }
+  // if (parameters.length > 0) {
+  //   body += writePropTypes(parameters);
+  //   body += '\n\n';
+  // }
 
   if (parameters.filter(p => p.optional).length > 0) {
     body += writeDefaultProps(parameters);
@@ -510,7 +523,7 @@ module.exports = function convertComponent(inputFile, options = {}) {
     // // require('./transforms/inline-assets'),
   ];
 
-  code = transform(inputFile, code, transforms);
+  code = transform(inputFile, code, transforms, { primitives: options.primitives });
   code = prettier.format(code);
 
   return code;

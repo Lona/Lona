@@ -13,6 +13,7 @@ program
   .version('0.1.0')
   .arguments('<workspace> <output-dir>')
   .option('--primitives', 'Import React components from "react-primitives"')
+  .option('--copy-components', 'Copy .component files to destination directory as .json files')
   .option(
     '--filter [optional]',
     'Filter the component files to convert by regex',
@@ -94,6 +95,13 @@ async function main() {
             fonts: path.join(workspace, 'fonts.js'),
           },
         });
+
+        if (program.copyComponents) {
+          const componentRelativePath = `${path.removeExt(fromRelativePath)}.component.json`;
+          const componentOutputPath = path.join(toDirectory, componentRelativePath);
+          const component = await fse.readFile(file);
+          fse.writeFile(componentOutputPath, component);
+        }
 
         await fse.mkdirp(path.dirname(outputPath));
         fse.writeFile(outputPath, code);

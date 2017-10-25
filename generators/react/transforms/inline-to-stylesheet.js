@@ -72,7 +72,7 @@ function isLiteralProperty(j, node) {
   }
 }
 
-module.exports = function transformer(file, api) {
+module.exports = function transformer(file, api, options) {
   const j = api.jscodeshift;
 
   const definitions = [];
@@ -91,7 +91,7 @@ module.exports = function transformer(file, api) {
 
   const root = j(file.source);
 
-  addImport(j, root, 'react-native', 'StyleSheet');
+  addImport(j, root, options.primitives ? 'react-primitives' : 'react-native', 'StyleSheet');
 
   // For each JSX element
   root.find(j.JSXElement).forEach((path) => {
