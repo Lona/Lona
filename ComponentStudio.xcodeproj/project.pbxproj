@@ -13,6 +13,7 @@
 		3003027A1EDCDBA00085E140 /* LogicNode.swift in Sources */ = {isa = PBXBuildFile; fileRef = 300302791EDCDBA00085E140 /* LogicNode.swift */; };
 		3003027C1EDCE0880085E140 /* CSComponent.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3003027B1EDCE0880085E140 /* CSComponent.swift */; };
 		3003027E1EDCE3790085E140 /* ComponentConfiguration.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3003027D1EDCE3790085E140 /* ComponentConfiguration.swift */; };
+		3005A5381FA00FE000ABC5C2 /* CustomPopupField.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3005A5371FA00FE000ABC5C2 /* CustomPopupField.swift */; };
 		300A0AFC1EDA0CBC00704DB7 /* SectionSplitter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 300A0AFB1EDA0CBC00704DB7 /* SectionSplitter.swift */; };
 		301433761F5B499900525DB1 /* DictionaryEditorButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = 301433751F5B499900525DB1 /* DictionaryEditorButton.swift */; };
 		301433781F5B525100525DB1 /* ListEditor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 301433771F5B525100525DB1 /* ListEditor.swift */; };
@@ -112,6 +113,7 @@
 		300302791EDCDBA00085E140 /* LogicNode.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = LogicNode.swift; sourceTree = "<group>"; };
 		3003027B1EDCE0880085E140 /* CSComponent.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CSComponent.swift; sourceTree = "<group>"; };
 		3003027D1EDCE3790085E140 /* ComponentConfiguration.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ComponentConfiguration.swift; sourceTree = "<group>"; };
+		3005A5371FA00FE000ABC5C2 /* CustomPopupField.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CustomPopupField.swift; sourceTree = "<group>"; };
 		300A0AFB1EDA0CBC00704DB7 /* SectionSplitter.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SectionSplitter.swift; sourceTree = "<group>"; };
 		301433751F5B499900525DB1 /* DictionaryEditorButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DictionaryEditorButton.swift; sourceTree = "<group>"; };
 		301433771F5B525100525DB1 /* ListEditor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ListEditor.swift; sourceTree = "<group>"; };
@@ -311,6 +313,7 @@
 				307718E71F35241A003A597B /* CSControl.swift */,
 				307718F31F366AEA003A597B /* CSValueField.swift */,
 				301433751F5B499900525DB1 /* DictionaryEditorButton.swift */,
+				3005A5371FA00FE000ABC5C2 /* CustomPopupField.swift */,
 				30EFC9571EF369DC0087711D /* ImageField.swift */,
 				3043A0CB1F46653B00EF31EF /* Label.swift */,
 				307718FF1F3CD3F1003A597B /* MultilevelPopupField.swift */,
@@ -614,6 +617,7 @@
 				30B5B1A11EC36A70002068CE /* PopupField.swift in Sources */,
 				306DA4F11F33EA74002772DC /* CSTextView.swift in Sources */,
 				300302741EDC7FA90085E140 /* CSStatementView.swift in Sources */,
+				3005A5381FA00FE000ABC5C2 /* CustomPopupField.swift in Sources */,
 				30EFC9581EF369DC0087711D /* ImageField.swift in Sources */,
 				30CE47811ED73FC800BBF716 /* TextField.swift in Sources */,
 				30B5B19F1EC29D84002068CE /* NumberField.swift in Sources */,

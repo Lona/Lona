@@ -58,7 +58,8 @@ class LogicListView {
                 
                 cell.onChangeValue = { name, value, keyPath in
                     if name == "functionName" {
-                        item.invocation.name = value.data.stringValue
+                        let function: CSFunction = CSFunction.getFunction(declaredAs: value.data.stringValue)
+                        item.invocation.name = function.declaration
                     } else {
                         if keyPath.count == 0 ||
                             keyPath == CSFunction.Argument.customKeyPath ||

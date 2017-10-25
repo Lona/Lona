@@ -27,6 +27,7 @@ class CSStatementView: NSTableCellView {
     
     enum Component {
         case text(String)
+        case function(String, String)
         case value(String, CSValue, [String])
         case identifier(String, CSScope, CSType, CSAccess, [String])
     }
@@ -87,6 +88,48 @@ class CSStatementView: NSTableCellView {
             field.useYogaLayout = true
             
             addSubview(field)
+        case .function(let name, let value):
+            let values = CSFunction.registeredFunctionDeclarations
+            
+            let control = CustomPopupField<String>(
+                values: values,
+                initialValue: value,
+                displayValue: { CSFunction.getFunction(declaredAs: $0).name },
+                view: { declaration in
+                    let function = CSFunction.getFunction(declaredAs: declaration)
+                    
+                    let titleText = NSTextField(labelWithStringCompat: function.name)
+                    let titleFont = NSFont.boldSystemFont(ofSize: 13)
+                    titleText.font = titleFont
+                    
+                    let subtitleText = NSTextField(labelWithStringCompat: function.description)
+                    let subtitleFont = NSFont.systemFont(ofSize: 10)
+                    subtitleText.font = subtitleFont
+                    
+                    let view = NSStackView(views: [
+                        titleText,
+                        subtitleText,
+                        ], orientation: .vertical)
+                    view.spacing = 0
+                    view.alignment = .leading
+                    
+                    let inset: CGFloat = 8
+                    let width = max(subtitleText.intrinsicContentSize.width, titleText.intrinsicContentSize.width) + inset * 2
+                    view.frame = NSRect(x: 0, y: 0, width: width, height: 34)
+                    view.edgeInsets = EdgeInsets(top: 0, left: inset, bottom: 0, right: inset)
+                    
+                    return view
+            },
+                onChange: { declaration in
+                    self.handleChange(component: component, componentName: name, value: CSValue(type: CSType.string, data: CSData.String(declaration)), keyPath: [])
+            },
+                frame:  NSRect(x: 0, y: 0, width: 70, height: 26)
+            )
+            
+            control.useYogaLayout = true
+            control.isBordered = false
+            
+            addSubview(control)
         case .value(let name, let value, let keyPath):
             let control = CSValueField(value: value)
             
@@ -148,14 +191,11 @@ class CSStatementView: NSTableCellView {
         var components: [CSStatementView.Component] = []
         
         let rect = NSRect(x: 0, y: 0, width: 2000, height: 30)
-        
-        let type = CSType.enumeration(CSFunction.registeredFunctionNames.map({ CSValue(type: .string, data: .String($0)) }))
-        let value = CSValue(type: type, data: .String(invocation.name))
-        let nameComponent = CSStatementView.Component.value("functionName", value, [])
+        let nameComponent = CSStatementView.Component.function("functionName", invocation.name)
         
         components.append(nameComponent)
         
-        let function = CSFunction.getFunction(named: invocation.name)
+        let function = CSFunction.getFunction(declaredAs: invocation.name)
         outer: for parameter in function.parameters {
             if let label = parameter.label {
                 components.append(.text(label))

@@ -10,7 +10,7 @@ import Foundation
 
 struct CSFunction {
     struct Invocation: CSDataSerializable, CSDataDeserializable {
-        var name: String = "none"
+        var name: String = CSFunction.noneFunction.declaration
         var arguments: NamedArguments = [:]
         
         init() {}
@@ -25,12 +25,12 @@ struct CSFunction {
         }
         
         func run(in scope: CSScope) -> ReturnValue {
-            let function = CSFunction.getFunction(named: name)
+            let function = CSFunction.getFunction(declaredAs: name)
             return function.invoke(arguments, scope)
         }
         
         var canBeInvoked: Bool {
-            let function = CSFunction.getFunction(named: name)
+            let function = CSFunction.getFunction(declaredAs: name)
         
             for parameter in function.parameters {
                 if arguments[parameter.name] == nil {
@@ -50,7 +50,7 @@ struct CSFunction {
         
         // Returns nil if no concrete type was found
         func concreteTypeForArgument(named argumentName: String, in scope: CSScope) -> CSType? {
-            let function = CSFunction.getFunction(named: self.name)
+            let function = CSFunction.getFunction(declaredAs: self.name)
             
 //            Swift.print("concrete type for", argumentName)
             
@@ -171,27 +171,28 @@ struct CSFunction {
     typealias ReturnValue = (scope: CSScope, controlFlow: ControlFlow)
     
     var name: String
+    var description: String = ""
     var parameters: [Parameter]
     var hasBody: Bool
     
     // Named parameters are populated (pulled from scope) by the execution context
     var invoke: (NamedArguments, CSScope) -> ReturnValue = { _, scope in (scope, .stepOver) }
-    
-    static var registeredFunctionNames: [String] {
+
+    static var registeredFunctionDeclarations: [String] {
         return Array(registeredFunctions.keys)
     }
     
     static var registeredFunctions: [String: CSFunction] = [
-        "none": CSFunction.noneFunction,
-        "Append": CSAppendFunction,
-        "Assign": CSAssignFunction,
-        "If": CSIfFunction,
-        "IfExists": CSIfExistsFunction,
+        CSFunction.noneFunction.declaration: CSFunction.noneFunction,
+        CSAssignFunction.declaration: CSAssignFunction,
+        CSIfFunction.declaration: CSIfFunction,
+        CSIfExistsFunction.declaration: CSIfExistsFunction,
     ]
     
     static var noneFunction: CSFunction {
         return CSFunction(
             name: "none",
+            description: "Do nothing",
             parameters: [],
             hasBody: false,
             invoke: { _, scope in (scope, .stepOver) }
@@ -199,25 +200,38 @@ struct CSFunction {
     }
     
     static func register(function: CSFunction) {
-        registeredFunctions[function.name] = function
+        registeredFunctions[function.declaration] = function
     }
-    
-    static func getFunction(named name: String) -> CSFunction {
-        return registeredFunctions[name] ?? notFound(name: name)
+
+    static func getFunction(declaredAs declaration: String) -> CSFunction {
+        return registeredFunctions[declaration] ?? notFound(name: declaration)
     }
     
     static func notFound(name: String) -> CSFunction {
         return CSFunction(
             name: "Function \(name) not found",
+            description: "",
             parameters: [],
             hasBody: true,
             invoke: { _, scope in (scope, .stepOver) }
         )
     }
+    
+    var declaration: String {
+        let parameterList = parameters.map({ parameter in
+            if let label = parameter.label {
+                return "\(label) \(parameter.name)"
+            } else {
+                return parameter.name
+            }
+        }).joined(separator: ", ")
+        return "\(name)(\(parameterList))".lowercased()
+    }
 }
 
 let CSAssignFunction = CSFunction(
     name: "Assign",
+    description: "Assign one value to another",
     parameters: [
         CSFunction.Parameter(label: nil, name: "lhs", type: .variable(type: CSGenericTypeA, access: .read)),
         CSFunction.Parameter(label: "to", name: "rhs", type: .variable(type: CSGenericTypeA, access: .write)),
@@ -234,6 +248,7 @@ let CSAssignFunction = CSFunction(
 
 let CSIfFunction = CSFunction(
     name: "If",
+    description: "Compare two values",
     parameters: [
         CSFunction.Parameter(label: nil, name: "lhs", type: .variable(type: CSGenericTypeA, access: .read)),
         CSFunction.Parameter(label: "is", name: "cmp", type: .keyword(type: CSComparatorType)),
@@ -271,9 +286,9 @@ let CSIfFunction = CSFunction(
     }
 )
 
-// TODO: Come up with a better generic way to deal with overloading of names
 let CSIfExistsFunction = CSFunction(
-    name: "If Exists",
+    name: "If",
+    description: "Check if a value exists",
     parameters: [
         CSFunction.Parameter(label: nil, name: "value", type: .variable(type: CSGenericTypeA, access: .read)),
         ],
@@ -289,31 +304,32 @@ let CSIfExistsFunction = CSFunction(
     }
 )
 
-let CSAppendFunctionInvocation: (CSFunction.NamedArguments, CSScope) -> CSFunction.ReturnValue = { arguments, scope in
-    let componentValue = arguments["component"]!.resolve(in: scope)
-    let baseValue = arguments["base"]!.resolve(in: scope)
-    guard case CSFunction.Argument.identifier(_, let baseKeyPath) = arguments["base"]! else { return (scope, .stepOver) }
-    
-    let result = CSValue(type: CSURLType, data: CSData.String(baseValue.data.stringValue + componentValue.data.stringValue))
-    scope.set(keyPath: baseKeyPath, to: result)
-    
-    return (scope, .stepOver)
-}
+//let CSAppendFunctionInvocation: (CSFunction.NamedArguments, CSScope) -> CSFunction.ReturnValue = { arguments, scope in
+//    let componentValue = arguments["component"]!.resolve(in: scope)
+//    let baseValue = arguments["base"]!.resolve(in: scope)
+//    guard case CSFunction.Argument.identifier(_, let baseKeyPath) = arguments["base"]! else { return (scope, .stepOver) }
+//
+//    let result = CSValue(type: CSURLType, data: CSData.String(baseValue.data.stringValue + componentValue.data.stringValue))
+//    scope.set(keyPath: baseKeyPath, to: result)
+//
+//    return (scope, .stepOver)
+//}
 
-let CSAppendFunction = CSFunction(
-    name: "Append",
-    parameters: [
-        CSFunction.Parameter(
-            label: "the component",
-            name: "component",
-            type: CSFunction.ParameterType.variable(type: CSType.string, access: .read)
-        ),
-        CSFunction.Parameter(
-            label: "to",
-            name: "base",
-            type: CSFunction.ParameterType.variable(type: CSURLType, access: .write)
-        ),
-    ],
-    hasBody: false,
-    invoke: CSAppendFunctionInvocation
-)
+//let CSAppendFunction = CSFunction(
+//    name: "Append",
+//    parameters: [
+//        CSFunction.Parameter(
+//            label: "the component",
+//            name: "component",
+//            type: CSFunction.ParameterType.variable(type: CSType.string, access: .read)
+//        ),
+//        CSFunction.Parameter(
+//            label: "to",
+//            name: "base",
+//            type: CSFunction.ParameterType.variable(type: CSURLType, access: .write)
+//        ),
+//    ],
+//    hasBody: false,
+//    invoke: CSAppendFunctionInvocation
+//)
+
