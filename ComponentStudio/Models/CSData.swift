@@ -8,13 +8,26 @@
 
 import SwiftyJSON
 
-enum CSData: Equatable {
+enum CSData: Equatable, CustomDebugStringConvertible {
     case Null
     case Bool(Bool)
     case Number(Double)
     case String(String)
     case Array([CSData])
     case Object([String: CSData])
+    
+    var debugDescription: String {
+        switch self {
+        case .Null: return "null"
+        case .Bool(let value): return "\(value)"
+        case .Number(let value): return "\(value)"
+        case .String(let value): return "\"\(value)\""
+        case .Array(let value):
+            return "[" + value.map({ $0.debugDescription }).joined(separator: ", ") + "]"
+        case .Object(let value):
+            return "{" + value.map({ "\($0.key): \($0.value)" }).joined(separator: ", ") + "}"
+        }
+    }
     
     static func ==(lhs: CSData, rhs: CSData) -> Bool {
         switch (lhs, rhs) {
@@ -171,7 +184,10 @@ enum CSData: Equatable {
     }
     
     @discardableResult mutating func set(keyPath: [String], to value: CSData) -> CSData {
-        if keyPath.count == 0 { return value }
+        if keyPath.count == 0 {
+            self = value
+            return self
+        }
         
         let key = keyPath[0]
         var object = self[key] ?? CSData.Object([:])

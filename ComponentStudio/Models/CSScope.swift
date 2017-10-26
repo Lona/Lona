@@ -124,27 +124,50 @@ class CSScope: CSRootScope {
         variables.removeValue(forKey: name)
     }
     
-    func allValues(withAccess accessFilter: CSAccess) -> [(String, CSVariable)] {
-//        if accessFilter == .write { return variables.values }
-//
-//        return variables.values.filter({ (value, access) -> Bool in
-//            return access == accessFilter
-//        })
-        return variables.keys.map({ ($0, variables[$0]!) })
+    func scopes() -> [CSScope] {
+        var scopes: [CSScope] = [self]
+        
+        var parent = self.parent
+        
+        while let parentScope = parent as? CSScope {
+            scopes.append(parentScope)
+            parent = parentScope.parent
+        }
+        
+        return scopes.reversed()
     }
     
-    func dictionary(access: CSAccess) -> CSData {
-        return variables.enumerated().reduce(CSData.Object([:])) { (result, item) -> CSData in
-            if access == .write && item.element.value.access == .read { return result }
-            
-            var result = result
-            result[item.element.key] = item.element.value.value.data
-            return result
+    func flattened() -> [String: CSVariable] {
+        var base: [String: CSVariable] = [:]
+        
+        for scope in scopes() {
+            base.merge(scope.variables, uniquingKeysWith: { _, new in new })
         }
+        
+        return base
     }
+    
+//    func allValues(withAccess accessFilter: CSAccess) -> [(String, CSVariable)] {
+////        if accessFilter == .write { return variables.values }
+////
+////        return variables.values.filter({ (value, access) -> Bool in
+////            return access == accessFilter
+////        })
+//        return variables.keys.map({ ($0, variables[$0]!) })
+//    }
+    
+//    func dictionary(access: CSAccess) -> CSData {
+//        return variables.enumerated().reduce(CSData.Object([:])) { (result, item) -> CSData in
+//            if access == .write && item.element.value.access == .read { return result }
+//
+//            var result = result
+//            result[item.element.key] = item.element.value.value.data
+//            return result
+//        }
+//    }
     
     func data(typed typeFilter: CSType, accessed accessFilter: CSAccess) -> CSData {
-        return variables.enumerated().reduce(CSData.Object([:])) { (result, item) -> CSData in
+        return flattened().enumerated().reduce(CSData.Object([:])) { (result, item) -> CSData in
             if accessFilter == .write && item.element.value.access == .read { return result }
             
 //            Swift.print("Scope data", item.element.key, item.element.value.value.type)
@@ -152,6 +175,18 @@ class CSScope: CSRootScope {
             var result = result
             result[item.element.key] = item.element.value.value.filteredData(typed: typeFilter, accessed: accessFilter)
             return result
+        }
+    }
+    
+    func print() {
+        let scopes = self.scopes()
+        
+        for (index, scope) in scopes.enumerated() {
+            Swift.print("Scope", index, ":")
+            for (key, element) in scope.variables {
+                Swift.print("  ", key, element.value.data.debugDescription)
+            }
+            Swift.print("")
         }
     }
 }

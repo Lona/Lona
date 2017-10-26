@@ -35,6 +35,32 @@ class LogicListView {
         set { editor?.onChange = newValue }
     }
     
+    func scope(for targetNode: LogicNode, component: CSComponent) -> CSScope {
+        func performLogicBody(nodes: [LogicNode], in scope: CSScope) -> CSScope? {
+            for node in nodes {
+                if targetNode === node { return scope }
+                
+                let invocation = node.invocation
+                
+                if invocation.canBeInvoked {
+                    let function = CSFunction.getFunction(declaredAs: invocation.name)
+                    
+                    function.updateScope(invocation.arguments, scope)
+                    
+                    if function.hasBody {
+                        if let result = performLogicBody(nodes: node.nodes, in: CSScope(parent: scope)) { return result }
+                    }
+                }
+            }
+            
+            return nil
+        }
+
+        let rootScope = component.rootScope()
+        
+        return performLogicBody(nodes: component.logic, in: rootScope) ?? rootScope
+    }
+    
     init(frame frameRect: NSRect) {
         editor = ListEditor<LogicNode>(frame: frameRect, options: [
             ListEditor.Option.backgroundColor(NSColor.white),
@@ -53,7 +79,7 @@ class LogicListView {
                     return CSStatementView(frame: NSRect.zero, components: [])
                 }
                 
-                let scope = component.rootScope()
+                let scope = self.scope(for: item, component: component)
                 let cell = CSStatementView.view(for: item.invocation, in: scope)
                 
                 cell.onChangeValue = { name, value, keyPath in
@@ -83,127 +109,6 @@ class LogicListView {
                 
                 return cell
             }),
-            ListEditor.Option.onDropElement({ (sourceItem, targetItem, index) -> Bool in
-                guard let outlineView = self.editor?.listView else { return false }
-                
-                let sourceParent = outlineView.parent(forItem: sourceItem) as? LogicNode
-                let oldIndexWithinParent = outlineView.childIndex(forItem: sourceItem)
-    
-                if let sourceParent = sourceParent {
-                    sourceParent.nodes = sourceParent.nodes.filter({ $0 !== sourceItem })
-                } else {
-                    self.list = self.list.filter({ $0 !== sourceItem })
-                }
-    
-                // Index is -1 when item is dropped directly on another item, rather than above or below
-                if index == -1 {
-                    if let targetItem = targetItem {
-                        targetItem.nodes.append(sourceItem)
-                    } else {
-                        self.list.append(sourceItem)
-                    }
-                } else {
-                    if let targetItem = targetItem {
-                        if sourceParent === targetItem &&
-                            oldIndexWithinParent >= 0 &&
-                            oldIndexWithinParent < index
-                        {
-                            targetItem.nodes.insert(sourceItem, at: index - 1)
-                        } else {
-                            targetItem.nodes.insert(sourceItem, at: index)
-                        }
-                    } else {
-                        if oldIndexWithinParent >= 0 && oldIndexWithinParent < index {
-                            self.list.insert(sourceItem, at: index - 1)
-                        } else {
-                            self.list.insert(sourceItem, at: index)
-                        }
-                    }
-                }
-    
-                return true
-            })
         ])
     }
 }
-
-
-//    func outlineView(_ outlineView: NSOutlineView, viewFor tableColumn: NSTableColumn?, item: Any) -> NSView? {
-//
-//
-//    }
-//
-//    var selectedItem: Any? {
-//        return item(atRow: selectedRow)
-//    }
-//
-//    @discardableResult func remove(item: Any) -> Int {
-//        let parentItem = parent(forItem: item) as! LogicNode?
-//
-//        if let parentItem = parentItem {
-//            let index = parentItem.nodes.index(where: { $0 === item as! LogicNode })!
-//            parentItem.nodes.remove(at: index)
-//            return index
-//        } else {
-//            let index = list.index(where: { $0 === item as! LogicNode })!
-//            list.remove(at: index)
-//            return index
-//        }
-//    }
-//
-//    // <DragAndDrop>
-
-//    func outlineView(_ outlineView: NSOutlineView, acceptDrop info: NSDraggingInfo, item: Any?, childIndex index: Int) -> Bool {
-//
-//        let sourceIndexString = info.draggingPasteboard().string(forType: "component.logic")
-//
-//        if let sourceIndexString = sourceIndexString,
-//            let sourceIndex = Int(sourceIndexString),
-//            let sourceItem = outlineView.item(atRow: sourceIndex) as? LogicNode
-//        {
-//            let targetItem = item as? LogicNode
-//            let sourceParent = outlineView.parent(forItem: sourceItem) as? LogicNode
-//            let oldIndexWithinParent = outlineView.childIndex(forItem: sourceItem)
-//
-//            if let sourceParent = sourceParent {
-//                sourceParent.nodes = sourceParent.nodes.filter({ $0 !== sourceItem })
-//            } else {
-//                list = list.filter({ $0 !== sourceItem })
-//            }
-//
-//            // Index is -1 when item is dropped directly on another item, rather than above or below
-//            if index == -1 {
-//                if let targetItem = targetItem {
-//                    targetItem.nodes.append(sourceItem)
-//                } else {
-//                    list.append(sourceItem)
-//                }
-//            } else {
-//                if let targetItem = targetItem {
-//                    if sourceParent === targetItem &&
-//                        oldIndexWithinParent >= 0 &&
-//                        oldIndexWithinParent < index
-//                    {
-//                        targetItem.nodes.insert(sourceItem, at: index - 1)
-//                    } else {
-//                        targetItem.nodes.insert(sourceItem, at: index)
-//                    }
-//                } else {
-//                    if oldIndexWithinParent >= 0 && oldIndexWithinParent < index {
-//                        list.insert(sourceItem, at: index - 1)
-//                    } else {
-//                        list.insert(sourceItem, at: index)
-//                    }
-//                }
-//            }
-//
-//            return true
-//        }
-//
-//        return false
-//    }
-//
-//    // </DragAndDrop>
-//
-//}
-

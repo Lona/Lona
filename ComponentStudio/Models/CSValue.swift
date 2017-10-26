@@ -62,7 +62,13 @@ struct CSValue: Equatable, CSDataSerializable, CSDataDeserializable {
     }
     
     func filteredData(typed typeFilter: CSType, accessed accessFilter: CSAccess) -> CSData {
-        guard case CSType.dictionary(let schema) = self.type else { return CSData.Object([:]) }
+        guard case CSType.dictionary(let schema) = self.type else {
+            if typeFilter.isGeneric || self.type == typeFilter {
+                return self.data
+            } else {
+                return CSData.Null
+            }
+        }
         
         return self.data.objectValue.reduce(CSData.Object([:])) { (result, item) -> CSData in
             var result = result

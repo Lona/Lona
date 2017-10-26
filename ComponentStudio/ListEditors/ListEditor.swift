@@ -238,6 +238,8 @@ class ListView<Element: DataNode>: NSOutlineView, NSOutlineViewDataSource, NSOut
                     }
                 }
                 reloadData()
+                self.onChange(list)
+                options.onMoveElement(sourceItem)
                 return true
             case .intoContainer(let targetIndex):
                 let (oldParent, oldIndex) = relativePosition(for: sourceItem)
@@ -256,6 +258,8 @@ class ListView<Element: DataNode>: NSOutlineView, NSOutlineViewDataSource, NSOut
                     list.append(sourceItem)
                 }
                 reloadData()
+                self.onChange(list)
+                options.onMoveElement(sourceItem)
                 return true
             default: break
             }
@@ -288,6 +292,7 @@ class ListEditor<Element>: NSView where Element: DataNode {
     enum Option {
         case onAddElement(() -> Void)
         case onRemoveElement((Element) -> Void)
+        case onMoveElement((Element) -> Void)
         case onContextMenu((Element) -> [NSMenuItem])
         case onDropElement((Element, Element?, Int) -> Bool)
         case viewFor((Element) -> NSView)
@@ -298,6 +303,7 @@ class ListEditor<Element>: NSView where Element: DataNode {
     struct Options {
         var onAddElement: () -> Void = {_ in}
         var onRemoveElement: (Element) -> Void = {_ in}
+        var onMoveElement: (Element) -> Void = {_ in}
         var onContextMenu: ((Element) -> [NSMenuItem])? = nil
         var onDropElement: ((Element, Element?, Int) -> Bool)? = nil
         var viewFor: (Element) -> NSView = {_ in CSStatementView(frame: NSRect.zero, components: [])}
@@ -309,6 +315,7 @@ class ListEditor<Element>: NSView where Element: DataNode {
                 switch option {
                 case .onAddElement(let f): onAddElement = f
                 case .onRemoveElement(let f): onRemoveElement = f
+                case .onMoveElement(let f): onMoveElement = f
                 case .onContextMenu(let f): onContextMenu = f
                 case .onDropElement(let f): onDropElement = f
                 case .viewFor(let f): viewFor = f

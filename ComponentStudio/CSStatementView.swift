@@ -203,14 +203,15 @@ class CSStatementView: NSTableCellView {
             
             func needsInput(_ keyPath: [String]) {
                 switch parameter.type {
+                case .declaration():
+                    let value = CSValue(type: CSType.string, data: "".toData())
+                    components.append(.value(parameter.name, value, []))
                 case .variable(type: let variableType, access: let access):
                     let type = invocation.concreteTypeForArgument(named: parameter.name, in: scope) ?? variableType
                     components.append(.identifier(parameter.name, scope, type, access, keyPath))
                 case .keyword(type: let type):
                     let value = CSValue(type: type, data: .Null)
                     components.append(.value(parameter.name, value, CSFunction.Argument.customValueKeyPath))
-                default:
-                    break
                 }
             }
             
@@ -226,6 +227,8 @@ class CSStatementView: NSTableCellView {
                     }
                 case .value(let value):
                     switch parameter.type {
+                    case .declaration():
+                        components.append(.value(parameter.name, value, []))
                     // TODO Use this instead of custom key path stuff?
                     case .variable(type: _, access: _):
                         let typeValue = CSValue(type: CSParameterType, data: .String(value.type.toString()))
@@ -241,8 +244,6 @@ class CSStatementView: NSTableCellView {
                         }
                     case .keyword(type: _):
                         components.append(.value(parameter.name, value, CSFunction.Argument.customValueKeyPath))
-                    default:
-                        break
                     }
                 }
             } else {

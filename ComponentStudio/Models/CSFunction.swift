@@ -75,8 +75,8 @@ struct CSFunction {
     
     enum ParameterType {
         case variable(type: CSType, access: CSAccess)
-        case keyword(type: CSType)
-        case declaration
+        case keyword(type: CSType) // Such as a comparator
+        case declaration()
     }
     
     struct Parameter {
@@ -168,7 +168,7 @@ struct CSFunction {
     
     typealias NamedArguments = [String: Argument]
     
-    typealias ReturnValue = (scope: CSScope, controlFlow: ControlFlow)
+    typealias ReturnValue = ControlFlow
     
     var name: String
     var description: String = ""
@@ -176,7 +176,8 @@ struct CSFunction {
     var hasBody: Bool
     
     // Named parameters are populated (pulled from scope) by the execution context
-    var invoke: (NamedArguments, CSScope) -> ReturnValue = { _, scope in (scope, .stepOver) }
+    var invoke: (NamedArguments, CSScope) -> ReturnValue = { _, scope in .stepOver }
+    var updateScope: (NamedArguments, CSScope) -> Void = { _ in }
 
     static var registeredFunctionDeclarations: [String] {
         return Array(registeredFunctions.keys)
@@ -187,6 +188,8 @@ struct CSFunction {
         CSAssignFunction.declaration: CSAssignFunction,
         CSIfFunction.declaration: CSIfFunction,
         CSIfExistsFunction.declaration: CSIfExistsFunction,
+        CSDefineFunction.declaration: CSDefineFunction,
+        CSAddFunction.declaration: CSAddFunction,
     ]
     
     static var noneFunction: CSFunction {
@@ -195,7 +198,8 @@ struct CSFunction {
             description: "Do nothing",
             parameters: [],
             hasBody: false,
-            invoke: { _, scope in (scope, .stepOver) }
+            invoke: { _, scope in .stepOver },
+            updateScope: { _ in }
         )
     }
     
@@ -213,7 +217,8 @@ struct CSFunction {
             description: "",
             parameters: [],
             hasBody: true,
-            invoke: { _, scope in (scope, .stepOver) }
+            invoke: { _, scope in .stepOver },
+            updateScope: { _ in }
         )
     }
     
@@ -239,11 +244,12 @@ let CSAssignFunction = CSFunction(
     hasBody: false,
     invoke: { (arguments, scope) -> CSFunction.ReturnValue in
         let lhs = arguments["lhs"]!.resolve(in: scope)
-        guard case CSFunction.Argument.identifier(_, let rhsKeyPath) = arguments["rhs"]! else { return (scope, .stepOver) }
+        guard case CSFunction.Argument.identifier(_, let rhsKeyPath) = arguments["rhs"]! else { return .stepOver }
         scope.set(keyPath: rhsKeyPath, to: lhs)
         
-        return (scope, .stepOver)
-    }
+        return .stepOver
+    },
+    updateScope: { _ in }
 )
 
 let CSIfFunction = CSFunction(
@@ -264,17 +270,17 @@ let CSIfFunction = CSFunction(
         case CSComparatorType:
             switch cmp.data.stringValue {
             case "equal to":
-                return (scope, lhs.data == rhs.data ? .stepInto : .stepOver)
+                return lhs.data == rhs.data ? .stepInto : .stepOver
             case "not equal to":
-              return (scope, lhs.data != rhs.data ? .stepInto : .stepOver)
+              return lhs.data != rhs.data ? .stepInto : .stepOver
             case "greater than":
-                return (scope, lhs.data.numberValue > rhs.data.numberValue ? .stepInto : .stepOver)
+                return lhs.data.numberValue > rhs.data.numberValue ? .stepInto : .stepOver
             case "greater than or equal to":
-                return (scope, lhs.data.numberValue >= rhs.data.numberValue ? .stepInto : .stepOver)
+                return lhs.data.numberValue >= rhs.data.numberValue ? .stepInto : .stepOver
             case "less than":
-                return (scope, lhs.data.numberValue < rhs.data.numberValue ? .stepInto : .stepOver)
+                return lhs.data.numberValue < rhs.data.numberValue ? .stepInto : .stepOver
             case "less than or equal to":
-                return (scope, lhs.data.numberValue <= rhs.data.numberValue ? .stepInto : .stepOver)
+                return lhs.data.numberValue <= rhs.data.numberValue ? .stepInto : .stepOver
             default:
                 break
             }
@@ -282,8 +288,9 @@ let CSIfFunction = CSFunction(
             break
         }
         
-        return (scope, .stepOver)
-    }
+        return .stepOver
+    },
+    updateScope: { _ in }
 )
 
 let CSIfExistsFunction = CSFunction(
@@ -297,11 +304,66 @@ let CSIfExistsFunction = CSFunction(
         let value: CSValue = arguments["value"]!.resolve(in: scope)
         
         if value.data.isNull {
-            return (scope, .stepOver)
+            return .stepOver
         }
         
-        return (scope, .stepInto)
+        return .stepInto
+    },
+    updateScope: { _ in }
+)
+
+let CSDefineFunction = CSFunction(
+    name: "Let",
+    description: "Declare a variable",
+    parameters: [
+        CSFunction.Parameter(label: nil, name: "variable", type: .declaration()),
+        CSFunction.Parameter(label: "equal", name: "value", type: .variable(type: CSGenericTypeA, access: .read)),
+        ],
+    hasBody: false,
+    invoke: { arguments, scope in
+        let variable: CSValue = arguments["variable"]!.resolve(in: scope)
+        let value: CSValue = arguments["value"]!.resolve(in: scope)
+        
+//        Swift.print("Let", variable, "equal", value)
+        
+        let s: CSScope = scope
+        if let name = variable.data.string {
+            s.declare(variable: name, as: (value: value, access: CSAccess.write))
+        }
+        
+//        Swift.print("Scope", variable.data.stringValue, s.get(value: variable.data.stringValue))
+        
+        return .stepOver
+    },
+    updateScope: { arguments, scope in
+        let variable: CSValue = arguments["variable"]!.resolve(in: scope)
+        let value: CSValue = arguments["value"]!.resolve(in: scope)
+        
+        if let name = variable.data.string {
+            scope.declare(variable: name, as: (value: value, access: CSAccess.write))
+        }
     }
+)
+
+let CSAddFunction = CSFunction(
+    name: "Add",
+    description: "Add two values",
+    parameters: [
+        CSFunction.Parameter(label: nil, name: "lhs", type: .variable(type: CSGenericTypeA, access: .read)),
+        CSFunction.Parameter(label: "to", name: "rhs", type: .variable(type: CSGenericTypeA, access: .read)),
+        CSFunction.Parameter(label: "and assign to", name: "value", type: .variable(type: CSType.number, access: .write)),
+        ],
+    hasBody: false,
+    invoke: { arguments, scope in
+        let lhs: CSValue = arguments["lhs"]!.resolve(in: scope)
+        let rhs: CSValue = arguments["rhs"]!.resolve(in: scope)
+        
+        guard case CSFunction.Argument.identifier(_, let rhsKeyPath) = arguments["value"]! else { return .stepOver }
+        scope.set(keyPath: rhsKeyPath, to: CSValue(type: CSType.number, data: CSData.Number(lhs.data.numberValue + rhs.data.numberValue)))
+
+        return .stepOver
+    },
+    updateScope: { _ in }
 )
 
 //let CSAppendFunctionInvocation: (CSFunction.NamedArguments, CSScope) -> CSFunction.ReturnValue = { arguments, scope in

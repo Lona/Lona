@@ -22,31 +22,29 @@ class ComponentConfiguration {
     
     init() {}
     
+    func performLogicBody(nodes: [LogicNode], in scope: CSScope) {
+        for node in nodes {
+            let invocation = node.invocation
+            
+            if invocation.canBeInvoked {
+                let controlFlow = invocation.run(in: scope)
+                
+                switch controlFlow {
+                case .stepInto:
+                    performLogicBody(nodes: node.nodes, in: CSScope(parent: scope))
+                case .stepOver:
+                    break
+                }
+            }
+        }
+    }
+    
     init(component: CSComponent, arguments: ExampleDictionary, canvas: Canvas) {
         self.canvas = canvas
         
         // Make sure that we iterate through the canvas' params by including them here
 //        var argumentsWithCanvasDefaults = canvas.parameters.merge(CSData.Object(arguments))
-        var argumentsWithCanvasDefaults = CSData.Object(arguments)
-        
-        func performLogic(node: LogicNode, in scope: CSScope) {
-            var scope = scope
-            let invocation = node.invocation
-            
-            if invocation.canBeInvoked {
-                let results = invocation.run(in: scope)
-                scope = results.scope
-                
-                switch results.controlFlow {
-                case .stepInto:
-                    node.nodes.forEach({ performLogic(node: $0, in: scope) })
-                case .stepOver:
-                    return
-                }
-            }
-        }
-        
-        self.scope = component.rootScope(canvas: canvas)
+        let argumentsWithCanvasDefaults = CSData.Object(arguments)
         
         let parametersData = argumentsWithCanvasDefaults.objectValue
             .reduce(CSData.Object([:])) { (result, argument) -> CSData in
@@ -62,44 +60,24 @@ class ComponentConfiguration {
                 return result
         }
 
+        let scope = component.rootScope(canvas: canvas)
+        
         if parametersData.objectValue.count > 0 {
             let parametersValue = CSValue(type: .dictionary([:]), data: parametersData)
             scope.set(variable: "parameters", to: CSVariable(value: parametersValue, access: .read))
         }
         
-        for node in component.logic {
-            performLogic(node: node, in: self.scope)
-        }
+        performLogicBody(nodes: component.logic, in: scope)
+        
+//        scope.print()
+        
+        self.scope = scope
     }
-    
-//    private func createKey(attribute: String, target: String) -> String {
-//        return "\(target):\(attribute)"
-//    }
-//
-//    func has(attribute: String, for target: String) -> Bool {
-//        return params[createKey(attribute: attribute, target: target)] != nil
-//    }
     
     func get(attribute: String, for target: String) -> CSData {
         return scope.get(value: "layers").data.get(keyPath: [target, attribute])
     }
-//
-//    func get(attribute: String, for target: String, withDefault defaultValue: String) -> String {
-//        if has(attribute: attribute, for: target) {
-//            return get(attribute: attribute, for: target)!
-//        } else {
-//            return defaultValue
-//        }
-//    }
-//
-//    func set(attribute: String, for target: String, to value: String?) {
-//        params[createKey(attribute: attribute, target: target)] = value
-//    }
-//
-//    func remove(attribute: String, for target: String) {
-//        params.removeValue(forKey: createKey(attribute: attribute, target: target))
-//    }
-//
+
     func getAllAttributes(for target: String) -> [String: CSData] {
         return scope.get(value: "layers").data.get(keyPath: [target]).objectValue
     }
