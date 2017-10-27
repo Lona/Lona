@@ -351,15 +351,23 @@ let CSAddFunction = CSFunction(
     parameters: [
         CSFunction.Parameter(label: nil, name: "lhs", type: .variable(type: CSGenericTypeA, access: .read)),
         CSFunction.Parameter(label: "to", name: "rhs", type: .variable(type: CSGenericTypeA, access: .read)),
-        CSFunction.Parameter(label: "and assign to", name: "value", type: .variable(type: CSType.number, access: .write)),
+        CSFunction.Parameter(label: "and assign to", name: "value", type: .variable(type: CSGenericTypeA, access: .write)),
         ],
     hasBody: false,
     invoke: { arguments, scope in
         let lhs: CSValue = arguments["lhs"]!.resolve(in: scope)
         let rhs: CSValue = arguments["rhs"]!.resolve(in: scope)
         
-        guard case CSFunction.Argument.identifier(_, let rhsKeyPath) = arguments["value"]! else { return .stepOver }
-        scope.set(keyPath: rhsKeyPath, to: CSValue(type: CSType.number, data: CSData.Number(lhs.data.numberValue + rhs.data.numberValue)))
+        guard case CSFunction.Argument.identifier(_, let valueKeyPath) = arguments["value"]! else { return .stepOver }
+        
+        switch lhs.type {
+        case CSType.number:
+            scope.set(keyPath: valueKeyPath, to: CSValue(type: CSType.number, data: CSData.Number(lhs.data.numberValue + rhs.data.numberValue)))
+        case CSType.string:
+            scope.set(keyPath: valueKeyPath, to: CSValue(type: CSType.string, data: CSData.String(lhs.data.stringValue + rhs.data.stringValue)))
+        default:
+            break
+        }
 
         return .stepOver
     },

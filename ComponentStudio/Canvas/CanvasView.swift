@@ -82,7 +82,9 @@ func paragraph(for layer: CSLayer) -> NSAttributedString {
     
     string.append(attributedString(for: layer))
     
-    layer.children
+    guard let config = layer.config else { return string }
+    
+    layer.computedChildren(for: config)
 //        .filter({ $0.text != nil })
         .forEach({ string.append(paragraph(for: $0)) })
 //        .forEach({ string.append(attributedString(for: $0)) })

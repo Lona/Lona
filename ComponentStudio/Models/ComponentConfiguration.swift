@@ -63,7 +63,7 @@ class ComponentConfiguration {
         let scope = component.rootScope(canvas: canvas)
         
         if parametersData.objectValue.count > 0 {
-            let parametersValue = CSValue(type: .dictionary([:]), data: parametersData)
+            let parametersValue = CSValue(type: component.parametersType(), data: parametersData)
             scope.set(variable: "parameters", to: CSVariable(value: parametersValue, access: .read))
         }
         
