@@ -185,8 +185,7 @@ class ColorList: NSScrollView, NSTableViewDelegate, NSTableViewDataSource {
         table.addTableColumn(column)
         
         table.intercellSpacing = NSSize.zero
-        table.headerView = nil
-        
+        table.headerView = nil 
         self.tableView = table
         
         super.init(frame: frameRect)
@@ -204,76 +203,6 @@ class ColorList: NSScrollView, NSTableViewDelegate, NSTableViewDataSource {
         documentView = table
 
         table.sizeToFit()
-    }
-    
-    required init?(coder: NSCoder) {
-        fatalError("init(coder:) has not been implemented")
-    }
-}
-
-class ColorPickerSearchField: NSSearchField, NSSearchFieldDelegate {
-    
-    enum KeyCode {
-        case up, down, enter
-    }
-    
-    var onChange: (String) -> Void
-    
-    var onKeyPress: (KeyCode) -> Void
-    
-    override func controlTextDidChange(_ obj: Notification) {
-        onChange(stringValue)
-    }
-    
-    func control(_ control: NSControl, textView: NSTextView, doCommandBy commandSelector: Selector) -> Bool {
-        if commandSelector == #selector(moveUp(_:)) {
-            onKeyPress(KeyCode.up)
-        } else if commandSelector == #selector(moveDown(_:)) {
-            onKeyPress(KeyCode.down)
-        } else if commandSelector == #selector(insertNewline(_:)) {
-            onKeyPress(KeyCode.enter)
-        }
-        
-        return false
-    }
-    
-    init(onChange: @escaping (String) -> Void, onKeyPress: @escaping (KeyCode) -> Void) {
-        self.onChange = onChange
-        self.onKeyPress = onKeyPress
-        
-        super.init(frame: NSRect.zero)
-        delegate = self
-        translatesAutoresizingMaskIntoConstraints = false
-        
-        isBordered = true
-        drawsBackground = true
-        
-        wantsLayer = true
-        layer = CALayer()
-        
-        backgroundColor = NSColor.white
-        layer?.backgroundColor = NSColor.white.cgColor // double-bumped!
-        layer?.borderColor = NSColor.parse(css: "rgba(0,0,0,0.2)")!.cgColor
-        layer?.borderWidth = 1
-        layer?.cornerRadius = 10
-        textColor = NSColor.black
-        focusRingType = .none
-        
-        // attributed string for placeholder text color
-        let placeholderAttributes: [String: AnyObject] = [
-            NSForegroundColorAttributeName: NSColor.parse(css: "rgba(0,0,0,0.5)")!
-        ]
-        
-        let placeholderAttributedString = NSMutableAttributedString(string: "Search colors...", attributes: placeholderAttributes)
-        
-        //        // match baseline of placeholder to input text
-        //        let paragraphStyle = NSMutableParagraphStyle()
-        //        paragraphStyle.minimumLineHeight = 17.0
-        //        paragraphStyle.maximumLineHeight  = 17.0
-        //
-        //        placeholderAttributedString.addAttribute(NSParagraphStyleAttributeName, value: paragraphStyle, range: NSRange(location: 0,length: placeholderAttributedString.length))
-        
-        self.placeholderAttributedString =  placeholderAttributedString
     }
     
     required init?(coder: NSCoder) {
@@ -302,35 +231,39 @@ class ColorPickerView: NSView {
             onSelectColor: { color in self.onClickColor(color) }
         )
         
-        let searchField = ColorPickerSearchField(onChange: { filter in            
-            if filter.characters.count == 0 {
-                self.colors = CSColors.colors
-            } else {
-                self.colors = CSColors.colors.filter({ csColor in
-                    return csColor.name.lowercased().contains(filter.lowercased())
-                })
-            }
-            
-            self.selectedIndex = 0
-            
-            colorList.update(colors: self.colors, selectedIndex: self.selectedIndex)
-        }, onKeyPress: { keyCode in
-            func update(index: Int) {
-                self.selectedIndex = max(0, min(index, self.colors.count - 1))
-                colorList.update(colors: nil, selectedIndex: self.selectedIndex)
-            }
-            
-            switch keyCode {
-            case .down:
-                update(index: self.selectedIndex + 1)
-            case .up:
-                update(index: self.selectedIndex - 1)
-            case .enter:
-                if self.colors.count > self.selectedIndex {
-                    self.onClickColor(self.colors[self.selectedIndex])
+        let searchField = CSSearchField(options: [
+            CSSearchField.Option.placeholderText("Search colors..."),
+            CSSearchField.Option.onChange({ filter in
+                if filter.characters.count == 0 {
+                    self.colors = CSColors.colors
+                } else {
+                    self.colors = CSColors.colors.filter({ csColor in
+                        return csColor.name.lowercased().contains(filter.lowercased())
+                    })
                 }
-            }
-        })
+                
+                self.selectedIndex = 0
+                
+                colorList.update(colors: self.colors, selectedIndex: self.selectedIndex)
+            }),
+            CSSearchField.Option.onKeyPress({ keyCode in
+                func update(index: Int) {
+                    self.selectedIndex = max(0, min(index, self.colors.count - 1))
+                    colorList.update(colors: nil, selectedIndex: self.selectedIndex)
+                }
+                
+                switch keyCode {
+                case .down:
+                    update(index: self.selectedIndex + 1)
+                case .up:
+                    update(index: self.selectedIndex - 1)
+                case .enter:
+                    if self.colors.count > self.selectedIndex {
+                        self.onClickColor(self.colors[self.selectedIndex])
+                    }
+                }
+            })
+        ])
         
         let stackView = NSStackView(views: [searchField, colorList], orientation: .vertical, stretched: true)
         stackView.translatesAutoresizingMaskIntoConstraints = false

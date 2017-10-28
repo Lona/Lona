@@ -69,6 +69,7 @@
 		309777701F2A8EC1004C8975 /* WorkspacePreferencesViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3097776F1F2A8EC1004C8975 /* WorkspacePreferencesViewController.swift */; };
 		309777721F2BA78E004C8975 /* CSData.swift in Sources */ = {isa = PBXBuildFile; fileRef = 309777711F2BA78E004C8975 /* CSData.swift */; };
 		309777741F2BB75B004C8975 /* CSUserPreferences.swift in Sources */ = {isa = PBXBuildFile; fileRef = 309777731F2BB75B004C8975 /* CSUserPreferences.swift */; };
+		30990AAE1FA3FC4200BC0CCE /* CSSearchField.swift in Sources */ = {isa = PBXBuildFile; fileRef = 30990AAD1FA3FC4200BC0CCE /* CSSearchField.swift */; };
 		30A3F13E1F300294004C7631 /* NSColorExtensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 30A3F13D1F300294004C7631 /* NSColorExtensions.swift */; };
 		30ACB4E51F663D0A00EEFED6 /* Sketch.swift in Sources */ = {isa = PBXBuildFile; fileRef = 30ACB4E41F663D0A00EEFED6 /* Sketch.swift */; };
 		30B5B19F1EC29D84002068CE /* NumberField.swift in Sources */ = {isa = PBXBuildFile; fileRef = 30B5B19E1EC29D84002068CE /* NumberField.swift */; };
@@ -169,6 +170,7 @@
 		3097776F1F2A8EC1004C8975 /* WorkspacePreferencesViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WorkspacePreferencesViewController.swift; sourceTree = "<group>"; };
 		309777711F2BA78E004C8975 /* CSData.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CSData.swift; sourceTree = "<group>"; };
 		309777731F2BB75B004C8975 /* CSUserPreferences.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CSUserPreferences.swift; sourceTree = "<group>"; };
+		30990AAD1FA3FC4200BC0CCE /* CSSearchField.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CSSearchField.swift; sourceTree = "<group>"; };
 		30A3F13D1F300294004C7631 /* NSColorExtensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NSColorExtensions.swift; sourceTree = "<group>"; };
 		30ACB4E41F663D0A00EEFED6 /* Sketch.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Sketch.swift; sourceTree = "<group>"; };
 		30B5B19E1EC29D84002068CE /* NumberField.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NumberField.swift; sourceTree = "<group>"; };
@@ -311,9 +313,10 @@
 				30B5B1A61EC3BF4F002068CE /* ColorPickerButton.swift */,
 				30B5B1A21EC3AE44002068CE /* ColorPickerView.swift */,
 				307718E71F35241A003A597B /* CSControl.swift */,
+				30990AAD1FA3FC4200BC0CCE /* CSSearchField.swift */,
 				307718F31F366AEA003A597B /* CSValueField.swift */,
-				301433751F5B499900525DB1 /* DictionaryEditorButton.swift */,
 				3005A5371FA00FE000ABC5C2 /* CustomPopupField.swift */,
+				301433751F5B499900525DB1 /* DictionaryEditorButton.swift */,
 				30EFC9571EF369DC0087711D /* ImageField.swift */,
 				3043A0CB1F46653B00EF31EF /* Label.swift */,
 				307718FF1F3CD3F1003A597B /* MultilevelPopupField.swift */,
@@ -340,6 +343,13 @@
 				306672C11F7D4C6400941554 /* CSGradients.swift */,
 			);
 			path = Preferences;
+			sourceTree = "<group>";
+		};
+		30990AAA1FA2891C00BC0CCE /* Landing */ = {
+			isa = PBXGroup;
+			children = (
+			);
+			path = Landing;
 			sourceTree = "<group>";
 		};
 		30C8BC291EDB640500B99F1B /* Extensions */ = {
@@ -435,25 +445,26 @@
 		6B0AEFB61EBF74D800F35BBF /* ComponentStudio */ = {
 			isa = PBXGroup;
 			children = (
+				6B0AEFB71EBF74D800F35BBF /* AppDelegate.swift */,
 				30CE64481F008F43008D01AD /* Assets */,
+				6B0AEFBD1EBF74D800F35BBF /* Assets.xcassets */,
 				306DA4ED1F33E19F002772DC /* Canvas */,
 				3030311C1F34E6980078086F /* CanvasList */,
 				306DA4F21F34E265002772DC /* Controls */,
+				300302731EDC7FA90085E140 /* CSStatementView.swift */,
+				6B0AEFBB1EBF74D800F35BBF /* Document.swift */,
 				30C8BC291EDB640500B99F1B /* Extensions */,
+				6B0AEFC21EBF74D800F35BBF /* Info.plist */,
+				30990AAA1FA2891C00BC0CCE /* Landing */,
 				301433791F5C7AD100525DB1 /* ListEditors */,
 				3030311D1F34E6A70078086F /* LogicList */,
+				6B0AEFBF1EBF74D800F35BBF /* Main.storyboard */,
 				30C8BC301EDB757E00B99F1B /* Models */,
 				3030311E1F34E6B40078086F /* ParameterList */,
 				3097776E1F296A1F004C8975 /* Preferences */,
 				30DDEE881F47925C001D41AB /* Scripting */,
 				3069E0981F32432C0005E9A8 /* Utils */,
 				3030311F1F34E7200078086F /* Workspace */,
-				6B0AEFB71EBF74D800F35BBF /* AppDelegate.swift */,
-				6B0AEFBD1EBF74D800F35BBF /* Assets.xcassets */,
-				300302731EDC7FA90085E140 /* CSStatementView.swift */,
-				6B0AEFBB1EBF74D800F35BBF /* Document.swift */,
-				6B0AEFC21EBF74D800F35BBF /* Info.plist */,
-				6B0AEFBF1EBF74D800F35BBF /* Main.storyboard */,
 			);
 			path = ComponentStudio;
 			sourceTree = "<group>";
@@ -645,6 +656,7 @@
 				301493A71EC0F415005BC573 /* CanvasView.swift in Sources */,
 				309777701F2A8EC1004C8975 /* WorkspacePreferencesViewController.swift in Sources */,
 				3069E09A1F3243780005E9A8 /* parseCSSColor.swift in Sources */,
+				30990AAE1FA3FC4200BC0CCE /* CSSearchField.swift in Sources */,
 				6B0AEFBA1EBF74D800F35BBF /* ViewController.swift in Sources */,
 				307B7B511F9A8EE5001A62D9 /* ArrayEditorButton.swift in Sources */,
 				307718E81F35241A003A597B /* CSControl.swift in Sources */,
