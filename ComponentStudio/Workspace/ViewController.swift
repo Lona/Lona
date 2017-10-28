@@ -93,6 +93,7 @@ class ViewController: NSViewController, NSOutlineViewDataSource, NSOutlineViewDe
     }
     
     @IBAction func refresh(_ sender: AnyObject) {
+        CSUserTypes.reload()
         CSColors.reload()
         CSTypography.reload()
         CSGradients.reload()

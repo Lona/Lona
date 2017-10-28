@@ -29,8 +29,13 @@ indirect enum CSType: Equatable, CSDataSerializable, CSDataDeserializable {
         self = .undefined
         
         if let string = data.string {
-            if let builtin = CSBuiltInTypeMap[string] {
+            if let builtin = CSType.builtInTypes[string] {
                 self = builtin
+                return
+            }
+            
+            if let type = CSType.userType(named: string) {
+                self = type
                 return
             }
             
@@ -42,8 +47,12 @@ indirect enum CSType: Equatable, CSDataSerializable, CSDataDeserializable {
             default: self = .undefined
             }
         } else if let object = data.object {
-            if let named = object["named"], let type = object["type"] {
-                self = .named(named.stringValue, CSType(type))
+            if let type = object["type"] {
+                if let named = object["named"] {
+                    self = .named(named.stringValue, CSType(type))
+                } else if type.stringValue == "Enumeration", let values = object["values"]?.array {
+                    self = .enumeration(values.map({ CSValue($0) }))
+                }
             }
         }
     }
@@ -88,6 +97,8 @@ indirect enum CSType: Equatable, CSDataSerializable, CSDataDeserializable {
         case .any: return .String("Any")
         case .optional(_): return .String("Optional")
         case .named(let name, let type):
+            if let found = CSType.userType(named: name) { return .String(name) }
+            
             return .Object([
                 "named": .String(name),
                 "type": type.toData(),
@@ -100,20 +111,34 @@ indirect enum CSType: Equatable, CSDataSerializable, CSDataDeserializable {
         case .string: return .String("String")
         case .array(_): return .String("Array")
         case .dictionary(_): return .String("Dictionary")
-        case .enumeration(_):
-            guard let match = CSBuiltInTypeMap.enumerated().first(where: { (arg) -> Bool in
+        case .enumeration(let values):
+            if let match = CSType.builtInTypes.enumerated().first(where: { (arg) -> Bool in
                 let (_, item) = arg
                 return item.value == self
-            }) else {
-                return .String("Enumeration")
+            }) {
+                return .String(match.element.key)
             }
             
-            return .String(match.element.key)
+            return CSData.Object([
+                "type": "Enumeration".toData(),
+                "values": CSData.Array(values.map({ $0.toData() })),
+            ])
         }
     }
     
+    static func userType(named typeName: String) -> CSType? {
+        for userType in CSUserTypes.types {
+            if case CSType.named(let name, _) = userType, name == typeName {
+                return userType
+            }
+        }
+        
+        return nil
+    }
+    
     static func from(string: String) -> CSType {
-        if let builtin = CSBuiltInTypeMap[string] { return builtin }
+        if let builtin = builtInTypes[string] { return builtin }
+        if let type = userType(named: string) { return type }
         
         switch string {
         case "Boolean": return .bool
@@ -173,6 +198,26 @@ indirect enum CSType: Equatable, CSDataSerializable, CSDataDeserializable {
         return merge(additional)
     }
     
+    static func parameterType() -> CSType {
+        // TODO caching
+        let values: [CSValue] = [
+            CSValue(type: .string, data: .String("Boolean")),
+            CSValue(type: .string, data: .String("Number")),
+            CSValue(type: .string, data: .String("String")),
+            CSValue(type: .string, data: .String("Color")),
+            CSValue(type: .string, data: .String("TextStyle")),
+            CSValue(type: .string, data: .String("URL")),
+            ] + CSUserTypes.types.map({ CSValue(type: .string, data: $0.toString().toData()) })
+
+        return CSType.enumeration(values)
+    }
+    
+    static var builtInTypes: [String: CSType] = [
+        "Color": CSColorType,
+        "TextStyle": CSTextStyleType,
+        "Comparator": CSComparatorType,
+        "URL": CSURLType,
+        ]
 }
 
 let CSAnyType = CSType.any
@@ -181,14 +226,14 @@ let CSColorType = CSType.named("Color", .string)
 let CSTextStyleType = CSType.named("TextStyle", .string)
 let CSURLType = CSType.named("URL", .string)
 
-let CSParameterType = CSType.enumeration([
-    CSValue(type: .string, data: .String("Boolean")),
-    CSValue(type: .string, data: .String("Number")),
-    CSValue(type: .string, data: .String("String")),
-    CSValue(type: .string, data: .String("Color")),
-    CSValue(type: .string, data: .String("TextStyle")),
-    CSValue(type: .string, data: .String("URL")),
-])
+//let CSParameterType = CSType.enumeration([
+//    CSValue(type: .string, data: .String("Boolean")),
+//    CSValue(type: .string, data: .String("Number")),
+//    CSValue(type: .string, data: .String("String")),
+//    CSValue(type: .string, data: .String("Color")),
+//    CSValue(type: .string, data: .String("TextStyle")),
+//    CSValue(type: .string, data: .String("URL")),
+//])
 
 let CSComparatorType = CSType.enumeration([
     CSValue(type: .string, data: .String("equal to")),
@@ -198,13 +243,6 @@ let CSComparatorType = CSType.enumeration([
     CSValue(type: .string, data: .String("less than")),
     CSValue(type: .string, data: .String("less than or equal to")),
 ])
-
-let CSBuiltInTypeMap: [String: CSType] = [
-    "Color": CSColorType,
-    "TextStyle": CSTextStyleType,
-    "Comparator": CSComparatorType,
-    "URL": CSURLType,
-]
 
 let CSLayerType = CSType.dictionary([
 //    "name": (type: .string, access: .read),

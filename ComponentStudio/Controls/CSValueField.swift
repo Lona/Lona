@@ -40,6 +40,10 @@ class CSValueField {
     }
     
     init(value: CSValue, options: [Options: Bool] = [:]) {
+        setup(value: value, options: options)
+    }
+        
+    func setup(value: CSValue, options: [Options: Bool]) {
         let isBordered = options[Options.isBordered] ?? false
         let drawsBackground = options[Options.drawsBackground] ?? false
         let submitOnChange = options[Options.submitOnChange] ?? false
@@ -184,6 +188,14 @@ class CSValueField {
                 
                 view = field
             }
+            
+        // Generic fallthrough for user types
+        case .named(_, let type):
+            let control = CSValueField(value: CSValue(type: type, data: value.data), options: options)
+            
+            control.onChangeData = defaultChangeHandler
+            
+            view = control.view
         case .enumeration(let options):
             let optionValues = options.map({ $0.data.stringValue })
             let type = PopupField(frame: NSRect(x: 0, y: 0, width: 70, height: 26), values: optionValues, initialValue: value.data.string)

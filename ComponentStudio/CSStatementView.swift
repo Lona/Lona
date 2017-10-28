@@ -231,7 +231,7 @@ class CSStatementView: NSTableCellView {
                         components.append(.value(parameter.name, value, []))
                     // TODO Use this instead of custom key path stuff?
                     case .variable(type: _, access: _):
-                        let typeValue = CSValue(type: CSParameterType, data: .String(value.type.toString()))
+                        let typeValue = CSValue(type: CSType.parameterType(), data: .String(value.type.toString()))
                         needsInput(CSFunction.Argument.customKeyPath)
                         
                         // If we know the concrete type for a custom variable, cast to that automatically

@@ -104,7 +104,7 @@ class ParameterListView: NSOutlineView, NSOutlineViewDataSource, NSOutlineViewDe
                 .text("Parameter"),
                 .value("name", CSValue(type: .string, data: CSData.String(parameter.name)), []),
                 .text("of type"),
-                .value("type", CSValue(type: CSParameterType, data: .String(parameter.type.toString())), []),
+                .value("type", CSValue(type: CSType.parameterType(), data: .String(parameter.type.toString())), []),
                 .text("with"),
                 .value("hasDefaultValue", CSValue(type: defaultValueType, data: parameter.hasDefaultValue ? .String("default") : .String("no default")), []),
             ]

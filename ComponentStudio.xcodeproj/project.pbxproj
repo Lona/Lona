@@ -70,6 +70,7 @@
 		309777721F2BA78E004C8975 /* CSData.swift in Sources */ = {isa = PBXBuildFile; fileRef = 309777711F2BA78E004C8975 /* CSData.swift */; };
 		309777741F2BB75B004C8975 /* CSUserPreferences.swift in Sources */ = {isa = PBXBuildFile; fileRef = 309777731F2BB75B004C8975 /* CSUserPreferences.swift */; };
 		30990AAE1FA3FC4200BC0CCE /* CSSearchField.swift in Sources */ = {isa = PBXBuildFile; fileRef = 30990AAD1FA3FC4200BC0CCE /* CSSearchField.swift */; };
+		30990AB01FA4043600BC0CCE /* CSUserTypes.swift in Sources */ = {isa = PBXBuildFile; fileRef = 30990AAF1FA4043600BC0CCE /* CSUserTypes.swift */; };
 		30A3F13E1F300294004C7631 /* NSColorExtensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 30A3F13D1F300294004C7631 /* NSColorExtensions.swift */; };
 		30ACB4E51F663D0A00EEFED6 /* Sketch.swift in Sources */ = {isa = PBXBuildFile; fileRef = 30ACB4E41F663D0A00EEFED6 /* Sketch.swift */; };
 		30B5B19F1EC29D84002068CE /* NumberField.swift in Sources */ = {isa = PBXBuildFile; fileRef = 30B5B19E1EC29D84002068CE /* NumberField.swift */; };
@@ -171,6 +172,7 @@
 		309777711F2BA78E004C8975 /* CSData.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CSData.swift; sourceTree = "<group>"; };
 		309777731F2BB75B004C8975 /* CSUserPreferences.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CSUserPreferences.swift; sourceTree = "<group>"; };
 		30990AAD1FA3FC4200BC0CCE /* CSSearchField.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CSSearchField.swift; sourceTree = "<group>"; };
+		30990AAF1FA4043600BC0CCE /* CSUserTypes.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CSUserTypes.swift; sourceTree = "<group>"; };
 		30A3F13D1F300294004C7631 /* NSColorExtensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NSColorExtensions.swift; sourceTree = "<group>"; };
 		30ACB4E41F663D0A00EEFED6 /* Sketch.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Sketch.swift; sourceTree = "<group>"; };
 		30B5B19E1EC29D84002068CE /* NumberField.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NumberField.swift; sourceTree = "<group>"; };
@@ -341,6 +343,7 @@
 				30D799811F2BE90E00EF12D7 /* SettingRow.swift */,
 				3097776F1F2A8EC1004C8975 /* WorkspacePreferencesViewController.swift */,
 				306672C11F7D4C6400941554 /* CSGradients.swift */,
+				30990AAF1FA4043600BC0CCE /* CSUserTypes.swift */,
 			);
 			path = Preferences;
 			sourceTree = "<group>";
@@ -618,6 +621,7 @@
 				300A0AFC1EDA0CBC00704DB7 /* SectionSplitter.swift in Sources */,
 				30C8BC2F1EDB749600B99F1B /* ParameterListView.swift in Sources */,
 				305589431EC4E4D600420BBD /* RenderSurface.swift in Sources */,
+				30990AB01FA4043600BC0CCE /* CSUserTypes.swift in Sources */,
 				3043A0CC1F46653B00EF31EF /* Label.swift in Sources */,
 				3090D7D31F032305009277E7 /* CSComponentLayer.swift in Sources */,
 				30F7C9521ED4AE23009D27DF /* InspectorView.swift in Sources */,
