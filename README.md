@@ -69,7 +69,7 @@ The easiest way to use Component Studio is by downloading the prebuilt Mac App b
 
 First, make sure you have Cocoapods installed. Then checkout the repo and run:
 
-`pod install`
+`bundle exec pod install`
 
 Build in Xcode 9 on Sierra+. If there are warnings (e.g. about converting to Swift 4) you can ignore them.
 
