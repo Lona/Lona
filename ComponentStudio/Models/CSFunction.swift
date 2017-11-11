@@ -163,7 +163,7 @@ struct CSFunction {
     }
     
     enum ControlFlow {
-        case stepOver, stepInto
+        case stepOver, stepInto, repeatBlock
     }
     
     typealias NamedArguments = [String: Argument]
@@ -190,6 +190,9 @@ struct CSFunction {
         CSIfExistsFunction.declaration: CSIfExistsFunction,
         CSDefineFunction.declaration: CSDefineFunction,
         CSAddFunction.declaration: CSAddFunction,
+        CSForEachFunction.declaration: CSForEachFunction,
+        CSAccessArrayFunction.declaration: CSAccessArrayFunction,
+        CSAppendFunction.declaration: CSAppendFunction,
     ]
     
     static var noneFunction: CSFunction {
@@ -372,6 +375,100 @@ let CSAddFunction = CSFunction(
         return .stepOver
     },
     updateScope: { _ in }
+)
+
+let CSAppendFunction = CSFunction(
+    name: "Append",
+    description: "Add an element to an array",
+    parameters: [
+        CSFunction.Parameter(label: nil, name: "element", type: .variable(type: CSGenericTypeA, access: .read)),
+        CSFunction.Parameter(label: "to", name: "array", type: .variable(type: CSGenericArrayOfTypeA, access: .read)),
+        CSFunction.Parameter(label: "and assign to", name: "value", type: .variable(type: CSGenericArrayOfTypeA, access: .write)),
+        ],
+    hasBody: false,
+    invoke: { arguments, scope in
+        let element: CSValue = arguments["element"]!.resolve(in: scope)
+        let array: CSValue = arguments["array"]!.resolve(in: scope)
+        
+        guard case CSFunction.Argument.identifier(_, let valueKeyPath) = arguments["value"]! else { return .stepOver }
+        
+        let copy = CSValue(type: array.type, data: CSData.Array(array.data.arrayValue + [element.data]))
+        
+        scope.set(keyPath: valueKeyPath, to: copy)
+        
+        return .stepOver
+    },
+    updateScope: { _ in }
+)
+
+let CSAccessArrayFunction = CSFunction(
+    name: "Get",
+    description: "Get an item in an array",
+    parameters: [
+        CSFunction.Parameter(label: "index", name: "index", type: .variable(type: CSType.number, access: .read)),
+        CSFunction.Parameter(label: "of", name: "array", type: .variable(type: CSGenericTypeA, access: .read)),
+        CSFunction.Parameter(label: "and assign to", name: "var", type: .variable(type: CSType.any, access: .write)),
+        ],
+    hasBody: false,
+    invoke: { arguments, scope in
+        let index: CSValue = arguments["index"]!.resolve(in: scope)
+        let array: CSValue = arguments["array"]!.resolve(in: scope)
+        
+        guard case CSFunction.Argument.identifier(_, let varKeyPath) = arguments["var"]! else { return .stepOver }
+        guard case CSType.array(let innerType) = array.type else { return .stepOver }
+        
+        let key = Int(index.data.numberValue)
+        let item = CSValue(type: innerType, data: array.data.arrayValue[key])
+        
+        scope.set(keyPath: varKeyPath, to: item)
+        
+        return .stepOver
+    },
+    updateScope: { _ in }
+)
+
+let CSForEachFunction = CSFunction(
+    name: "For",
+    description: "Iterate through an array",
+    parameters: [
+        CSFunction.Parameter(label: "each item in", name: "array", type: .variable(type: CSGenericTypeA, access: .read)),
+    ],
+    hasBody: true,
+    invoke: { arguments, scope in
+        var scope: CSScope = scope
+        let array: CSValue = arguments["array"]!.resolve(in: scope)
+        guard case CSType.array(let innerType) = array.type.unwrappedNamedType() else { return .stepOver }
+        
+//        Swift.print("For each", arguments["array"])
+        
+        if scope.has(variable: "index") {
+            let value = scope.get(value: "index").data.numberValue
+            Swift.print("Current index", value)
+            scope.set(value: "index", to: CSValue(type: CSType.number, data: (value + 1).toData()))
+        } else {
+            Swift.print("Initialized index")
+            scope.declare(variable: "index", as: (value: CSValue(type: CSType.number, data: 0.toData()), access: CSAccess.write))
+            scope.declare(variable: "element", as: (value: CSValue(type: innerType, data: CSData.Null), access: CSAccess.write))
+        }
+        
+        let index = Int(scope.get(value: "index").data.numberValue)
+        let count = array.data.arrayValue.count
+        
+        if index < count {
+            scope.set(value: "element", to: CSValue(type: innerType, data: array.data.arrayValue[index]))
+            return .repeatBlock
+        } else {
+            return .stepOver
+        }
+    },
+    updateScope: { arguments, scope in
+        scope.declare(variable: "index", as: (value: CSValue(type: CSType.number, data: 0.toData()), access: CSAccess.write))
+        
+        let array: CSValue = arguments["array"]!.resolve(in: scope)
+        guard case CSType.array(let innerType) = array.type.unwrappedNamedType() else { return }
+        
+        scope.declare(variable: "element", as: (value: CSValue(type: innerType, data: CSData.Null), access: CSAccess.write))
+    }
 )
 
 //let CSAppendFunctionInvocation: (CSFunction.NamedArguments, CSScope) -> CSFunction.ReturnValue = { arguments, scope in

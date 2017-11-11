@@ -118,6 +118,24 @@ class CSValueField {
             field.value = value.data.boolValue
             field.onChangeData = defaultChangeHandler
             field.imagePosition = .imageOnly
+        case .named("Component", _):
+            let field = Button(title: "Set component", onPress: {
+//                let layer = CSLayer(name: "Test", type: "View", parameters: ["width": 100], children: [])
+                let layer = CSData.Object([
+                    "type": "View".toData(),
+                    "parameters": CSData.Object([
+                        "width": 100.toData(),
+                        "height": 100.toData(),
+                        "backgroundColor": "babu".toData()
+                    ])
+                ])
+                defaultChangeHandler(layer)
+            })
+            view = field
+            
+            field.frame.size = field.intrinsicContentSize
+            field.useYogaLayout = true
+            
         case .named("Color", .string):
             let field = ColorPickerButton(frame: NSRect(x: 0, y: -2, width: 120, height: 26))
             view = field
