@@ -238,12 +238,16 @@ class CSValueField {
             
             type.onChangeData = defaultChangeHandler
         case .dictionary(_):
-            let field = DictionaryEditorButton(frame: NSRect(x: 0, y: -2, width: 120, height: 26))
+            let frame = NSRect(x: 0, y: -2, width: 120, height: 26)
+            
+            let field = DictionaryEditorButton(
+                value: value,
+                onChangeData: defaultChangeHandler,
+                frame: frame
+            )
             view = field
             
             field.useYogaLayout = true
-            field.value = value
-            field.onChangeData = defaultChangeHandler
         case .array(_):
             let field = ArrayEditorButton(frame: NSRect(x: 0, y: -2, width: 120, height: 26))
             view = field

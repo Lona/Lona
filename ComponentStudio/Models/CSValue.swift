@@ -106,3 +106,7 @@ struct CSValue: Equatable, CSDataSerializable, CSDataDeserializable {
 
 let CSUndefinedValue = CSValue(type: .undefined, data: CSData.Null)
 let CSEmptyDictionaryValue = CSValue(type: .dictionary(CSType.Schema()), data: CSData.Object([:]))
+
+typealias CSValueChangeHandler = (CSValue) -> Void
+let CSValueDefaultChangeHandler: CSValueChangeHandler = {_ in}
+
