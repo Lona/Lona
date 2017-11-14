@@ -2,26 +2,29 @@
   <img src="ComponentStudio/Assets.xcassets/AppIcon.appiconset/icon_256x256@2x.png" width="256" height="256" />
 </p>
 
-<h1 align="center">Component Studio (Developer Preview)</h1>
+<h1 align="center">Lona (Developer Preview)</h1>
 
 <br />
 
 > This is a *highly experimental* project. We've made it public to begin getting feedback and working with collaborators from other companies who are interested in design at scale. While this tool handles the Airbnb design system fairly well, there are many gaps. We hope to work with other companies to identify and fill these gaps.
-> We don't provide any support of any kind. You shouldn't use it for production. The API and file format will change rapidly as we continue development.
+> We don't provide any support of any kind. You shouldn't use it for production. The API and file format will change without warning as we continue development.
 
 ## Overview
 
-Component Studio is a tool for building design systems and using them to generate cross-platform UI code, Sketch files, images, and other artifacts.
+Lona is a collection of tools for building design systems and using them to generate cross-platform UI code, Sketch files, images, and other artifacts.
 
 A design system is defined in JSON as a collection of:
+- Components (can be nested)
 - Colors, Gradients, and Shadows
 - Text Styles
-- Components (can be nested)
+- Data Types
 
-Component Studio provides a graphical interface for working with these JSON files. 
+### Lona Studio
 
-Component Studio is useful for:
-- Generating UI code from designs
+Lona Studio provides a graphical interface for working with these JSON files.
+
+Lona Studio is useful for:
+- Building component systems
 - Quickly mocking up new screens from existing components
 - Viewing designs with real data from JSON files or APIs
 - Experimenting with designs across multiple screen sizes
@@ -29,11 +32,23 @@ Component Studio is useful for:
 - Working with animations (Lottie) and rendering videos from them (can plug into distributed renderer API)
 - and more!
 
+### Lona Compiler
+
+Lona Compiler converts .component files to UI code for various targets.
+
+Support is planned for:
+- Web (React)
+- iOS (Swift)
+- Android (Kotlin)
+- React Native
+
+Currently, the only target is React Native, and it's extremely rough.
+
 ## Background
 
 ### The Problem
 
-Airbnb created a design system called [DLS](https://airbnb.design/building-a-visual-language/), used across web, iOS, Android, and React Native. This system helps ensure cross-platform consistency across the Airbnb product line.
+Airbnb created a design system called [DLS](https://airbnb.design/building-a-visual-language/), used across web, iOS, Android, and React Native. This system helps designers and engineers build new features quickly, while ensuring cross-platform consistency throughout the Airbnb product line.
 
 This design system was defined in Sketch. Design files required manual translation to code for each of the 4 platforms. This translation process was time consuming and error prone. The fundamental problem: most design file formats can't encode all of the necessary details needed to make a perfect translation.
 
@@ -55,15 +70,15 @@ What if we had a single design system specification that encodes *all* of the de
 
 If an engineer can manually translate this file format into UI code with 100% accuracy, then fundamentally we should also be able to use this file format to generate the UI code.
 
-Component Studio enables us to build this design system specification graphically.
+Lona enables us to build this design system specification graphically and compile it into code for multiple targets.
 
-Component Studio stores `.component` files. Separately, we've written command-line tools for converting `.component` files to UI code for each platform. The reference implementations are available in the `generators` directory. We encourage companies to fork the generators to suit their own development stack.
+Lona operates on `.component` files. Lona Studio and the command-line compilers both work with these files. We encourage companies to fork the compilers to suit their own development stack.
 
-Component Studio isn't intended to replace your existing design tools, but rather augment them. Current design tools are extremely powerful when it comes to creating and iterating on new ideas. However, after new ideas have been designed, they need to be stress tested on different screen sizes and with real data. They then need to be translated into UI code. This is where Component Studio shines.
+Lona Studio isn't intended to replace your existing design tools, but rather augment them. Current design tools are extremely powerful when it comes to creating and iterating on new ideas. However, after new ideas have been designed, they need to be stress tested on different screen sizes and with real data. They then need to be translated into UI code. This is where Lona shines.
 
 ## Installation
 
-The easiest way to use Component Studio is by downloading the prebuilt Mac App binary... but we're not distributing this until Component Studio becomes more stable.
+The easiest way to use Lona Studio is by downloading the prebuilt Mac App binary... but we're not distributing this until Lona Studio becomes more stable.
 
 ## Building from Source
 
@@ -81,7 +96,7 @@ It will build on El Capitan, but it likely won't be usable. The changes needed t
 
 > Very very experimental. Likely won't generate usable code in its current state
 
-Run the script in `generators/react` on a component studio workspace, e.g:
+Run the script in `generators/react` on a Lona workspace, e.g:
 
 `node index.js [my_workspace_path] output`
 
@@ -103,33 +118,37 @@ Usage instructions:
 
 ## FAQ
 
-(Answered in first person by [@devinaabbott](https://twitter.com/devinaabbott))
+(Answered by [@dvnabbott](https://twitter.com/dvnabbott))
 
 ### Why a native Mac app rather than Electron?
 
 While Electron is fantastic for cross-platform desktop apps, building cross-platform adds a lot of engineering overhead. Airbnb designers and engineers all work on Macs, so we can move much faster by focusing only on the Mac platform.
 
-As an example of how building native helps us move quickly: native code has a much higher threshold before performance becomes a serious issue. In my experience building Deco IDE using Electron, performance was an issue I had to address frequently -- it was always solvable, but definitely required time and effort. So far, Component Studio performance has been mostly fine without any optimizations. The app gets slow with hundreds of canvases, but that's not the core use case at the moment, and I'm sure it can be solved with effort.
+As an example of how building native helps us move quickly: native code has a much higher threshold before performance becomes a serious issue. In my experience building Deco IDE using Electron, performance was an issue I had to address frequently -- it was always solvable, but definitely required time and effort. So far, Lona Studio performance has been mostly fine without any optimizations. The app gets slow with hundreds of canvases, but that's not the core use case at the moment, and I'm sure it can be solved with effort.
 
-As an added bonus, it's also much easier to interop with Sketch. For example, Sketch stores some text styles as encoded `NSAttributedString` objects. Component Studio is able to read and write these directly. It would be difficult to do so in a non-Mac environment.
+As an added bonus, it's also much easier to interop with Sketch. For example, Sketch stores some text styles as encoded `NSAttributedString` objects. Lona Studio is able to read and write these directly. It would be difficult to do so in a non-Mac environment.
 
-### Can we use *just* Component Studio, rather than starting in another design tool like Sketch?
+### Can we use *just* Lona Studio, rather than starting in another design tool like Sketch?
 
-Yes, but I don't really recommend it. Sketch pioneered an incredibly effective workflow for rapidly iterating on ideas. The infinite canvas, instant artboard duplication, and intuitive hotkeys are key to translating an idea into digital form. Designing in Sketch should be *easy* and *playful*. 
+Yes, but I don't really recommend it. Sketch pioneered an incredibly effective workflow for rapidly iterating on ideas. The infinite canvas, instant artboard duplication, and intuitive hotkeys are key to translating an idea into digital form. Designing in Sketch should be *easy* and *playful*.
 
-Designing in Component Studio, by contrast, is intended to be *powerful* and *precise*. A much greater degree of rigor is required to *build* the same thing you *mocked up* in Sketch. You won't have the same ability to rapidly play with different ideas, look at all 10 of them, and continue moving forward from your favorite. Instead, you get to see your design on 5 screen sizes at once in all possible configurations using real data.
+Designing in Lona Studio, by contrast, is intended to be *powerful* and *precise*. A much greater degree of rigor is required to *build* the same thing you *mocked up* in Sketch. You won't have the same ability to rapidly play with different ideas, look at all 10 of them, and continue moving forward from your favorite. Instead, you get to see your design on 5 screen sizes at once in all possible configurations using real data.
 
 ### How does the layout algorithm work?
 
-Component Studio uses flexbox with [Yoga](https://github.com/facebook/yoga) under the hood. The tool applies one major simplification: it automatically handles switching certain properties (`align-items`, `justify-content`, and `flex`) based on `flex-direction`, so you don't have to.
+Lona uses flexbox with [Yoga](https://github.com/facebook/yoga) under the hood. Lona Studio applies one major simplification: it automatically handles switching certain properties (`align-items`, `justify-content`, and `flex`) based on `flex-direction`, so you don't have to.
 
 ### Why is this Swift code so weird/bad?
 
 This is my first time writing a native mac app, and I have practically no Swift experience. The blame entirely falls on me for this. Contributions are welcome!
 
+### Why is this JavaScript code so weird/bad?
+
+Time constraints 😅
+
 ### Will it do X?
 
-Most likely. If there's a design system that needs it, Component Studio should support it. Want to help add it?
+Most likely. If there's a design system that needs it, Lona should support it. Want to help add it?
 
 ## The Team
 
