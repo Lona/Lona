@@ -545,7 +545,15 @@ class CSLayer: JSONDeserializable, JSONSerializable, DataNode, NSCopying {
     }
     
     func visibleChildren(for config: ComponentConfiguration) -> [CSLayer] {
-        return children.filter({ layer in
+        let dynamicChildren: [CSLayer] = config.get(attribute: "children", for: name).arrayValue.map({ childData in
+            let layer = CSLayer.deserialize(childData.toJSON())
+            layer?.config = config
+            return layer
+        }).flatMap({ $0 })
+        
+//        Swift.print("dynamic children", dynamicChildren)
+        
+        return (children + dynamicChildren).filter({ layer in
             var layerVisible = layer.visible
             
 //            let textOverride = config.get(attribute: "text", for: layer.name).string
@@ -650,6 +658,9 @@ class CSLayer: JSONDeserializable, JSONSerializable, DataNode, NSCopying {
             
             // Color
             "backgroundColor": CSData.String(backgroundColor ?? "transparent"),
+            
+            // Children
+            "children": CSData.Array([]),
         ])
         
         // Text
@@ -675,5 +686,21 @@ class CSLayer: JSONDeserializable, JSONSerializable, DataNode, NSCopying {
         }
         
         return CSValue(type: valueType, data: data)
+    }
+    
+    func layerValue() -> CSValue {
+        let parametersValue = self.value()
+        
+        let type = CSType.dictionary([
+            "type": (type: .string, access: .write),
+            "parameters": (type: parametersValue.type, access: .write)
+        ])
+        
+        let data = CSData.Object([
+            "type": self.type.toData(),
+            "parameters": parametersValue.data
+        ])
+        
+        return CSValue(type: type, data: data)
     }
 }

@@ -27,7 +27,8 @@ class Button: NSButton {
         setup()
     }
     
-    init(title: String) {
+    init(title: String, onPress: @escaping () -> Void = {_ in}) {
+        self.onPress = onPress
         super.init(frame: NSRect.zero)
         setup()
         setButtonType(.momentaryPushIn)

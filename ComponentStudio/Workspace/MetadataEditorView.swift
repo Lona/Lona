@@ -49,10 +49,7 @@ class MetadataEditorView: NSStackView, CSControl {
         let tagsKey = CSComponent.Metadata.tags.rawValue
         let tagsValue = CSValue(type: CSType.array(CSType.string), data: data[tagsKey] ?? CSData.Array([]))
         let tagsField = CSValueField(value: tagsValue)
-        let tagsChangeHandler = createChangeHandler(tagsKey)
-        tagsField.onChangeData = { value in
-            tagsChangeHandler(value.get(key: "data"))
-        }
+        tagsField.onChangeData = createChangeHandler(tagsKey)
         
         let tagsRow = NSStackView(views: [
             NSTextField(labelWithStringCompat: "Tags"),

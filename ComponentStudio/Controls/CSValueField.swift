@@ -118,6 +118,14 @@ class CSValueField {
             field.value = value.data.boolValue
             field.onChangeData = defaultChangeHandler
             field.imagePosition = .imageOnly
+        case .named("Component", _):
+            let field = ComponentEditorButton(value: value, onChangeData: defaultChangeHandler)
+            
+            view = field
+            
+            field.frame = NSRect(x: 0, y: -2, width: 120, height: 26)
+            field.useYogaLayout = true
+            
         case .named("Color", .string):
             let field = ColorPickerButton(frame: NSRect(x: 0, y: -2, width: 120, height: 26))
             view = field
@@ -220,12 +228,12 @@ class CSValueField {
             
             type.onChangeData = defaultChangeHandler
         case .dictionary(_):
-            let field = DictionaryEditorButton(frame: NSRect(x: 0, y: -2, width: 120, height: 26))
+            let field = DictionaryEditorButton(value: value, onChangeData: defaultChangeHandler)
+            
             view = field
             
+            field.frame = NSRect(x: 0, y: -2, width: 120, height: 26)
             field.useYogaLayout = true
-            field.value = value
-            field.onChangeData = defaultChangeHandler
         case .array(_):
             let field = ArrayEditorButton(frame: NSRect(x: 0, y: -2, width: 120, height: 26))
             view = field

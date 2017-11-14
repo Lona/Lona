@@ -47,11 +47,22 @@ indirect enum CSType: Equatable, CSDataSerializable, CSDataDeserializable {
             default: self = .undefined
             }
         } else if let object = data.object {
-            if let type = object["type"] {
-                if let named = object["named"] {
-                    self = .named(named.stringValue, CSType(type))
-                } else if type.stringValue == "Enumeration", let values = object["values"]?.array {
-                    self = .enumeration(values.map({ CSValue($0) }))
+            if let name = object["name"]?.string {
+                switch name {
+                case "Named":
+                    if let alias = object["alias"]?.string, let of = object["of"] {
+                        self = .named(alias, CSType(of))
+                    }
+                case "Array":
+                    if let innerType = object["of"] {
+                        self = .array(CSType(innerType))
+                    }
+                case "Enumeration":
+                    if let values = object["values"]?.array {
+                        self = .enumeration(values.map({ CSValue($0) }))
+                    }
+                default:
+                    break
                 }
             }
         }
@@ -74,7 +85,7 @@ indirect enum CSType: Equatable, CSDataSerializable, CSDataDeserializable {
     func unwrappedNamedType() -> CSType {
         switch self {
         case .named(_, let type):
-            return type
+            return type.unwrappedNamedType()
         default:
             return self
         }
@@ -97,11 +108,12 @@ indirect enum CSType: Equatable, CSDataSerializable, CSDataDeserializable {
         case .any: return .String("Any")
         case .optional(_): return .String("Optional")
         case .named(let name, let type):
-            if let found = CSType.userType(named: name) { return .String(name) }
+            if CSType.userType(named: name) != nil { return .String(name) }
             
             return .Object([
-                "named": .String(name),
-                "type": type.toData(),
+                "name": "Named".toData(),
+                "alias": .String(name),
+                "of": type.toData(),
             ])
         case .generic(_, _): return .String("Generic")
         case .undefined: return .String("Undefined")
@@ -109,7 +121,11 @@ indirect enum CSType: Equatable, CSDataSerializable, CSDataDeserializable {
         case .bool: return .String("Boolean")
         case .number: return .String("Number")
         case .string: return .String("String")
-        case .array(_): return .String("Array")
+        case .array(let innerType):
+            return .Object([
+                "name": "Array".toData(),
+                "of": innerType.toData(),
+            ])
         case .dictionary(_): return .String("Dictionary")
         case .enumeration(let values):
             if let match = CSType.builtInTypes.enumerated().first(where: { (arg) -> Bool in
@@ -120,8 +136,8 @@ indirect enum CSType: Equatable, CSDataSerializable, CSDataDeserializable {
             }
             
             return CSData.Object([
-                "type": "Enumeration".toData(),
-                "values": CSData.Array(values.map({ $0.toData() })),
+                "name": "Enumeration".toData(),
+                "of": CSData.Array(values.map({ $0.toData() })),
             ])
         }
     }
@@ -207,6 +223,7 @@ indirect enum CSType: Equatable, CSDataSerializable, CSDataDeserializable {
             CSValue(type: .string, data: .String("Color")),
             CSValue(type: .string, data: .String("TextStyle")),
             CSValue(type: .string, data: .String("URL")),
+            CSValue(type: .string, data: .String("Component")),
             ] + CSUserTypes.types.map({ CSValue(type: .string, data: $0.toString().toData()) })
 
         return CSType.enumeration(values)
@@ -217,14 +234,17 @@ indirect enum CSType: Equatable, CSDataSerializable, CSDataDeserializable {
         "TextStyle": CSTextStyleType,
         "Comparator": CSComparatorType,
         "URL": CSURLType,
+        "Component": CSComponentType,
         ]
 }
 
 let CSAnyType = CSType.any
 let CSGenericTypeA = CSType.generic("a'", CSType.any)
+let CSGenericArrayOfTypeA = CSType.array(CSGenericTypeA)
 let CSColorType = CSType.named("Color", .string)
 let CSTextStyleType = CSType.named("TextStyle", .string)
 let CSURLType = CSType.named("URL", .string)
+let CSComponentType = CSType.named("Component", .any)
 
 //let CSParameterType = CSType.enumeration([
 //    CSValue(type: .string, data: .String("Boolean")),
@@ -269,6 +289,9 @@ let CSLayerType = CSType.dictionary([
     
     // Image
     "image": (type: CSURLType, access: .write),
+    
+    // Children
+    "children": (type: .array(.any), access: .write),
 ])
 
 

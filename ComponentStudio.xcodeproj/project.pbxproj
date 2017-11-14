@@ -30,6 +30,8 @@
 		304478BC1F32923700FD06E0 /* NSPointExtensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 304478BB1F32923700FD06E0 /* NSPointExtensions.swift */; };
 		30516B491F43C46200940B3B /* SequenceExtensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 30516B481F43C46200940B3B /* SequenceExtensions.swift */; };
 		305589431EC4E4D600420BBD /* RenderSurface.swift in Sources */ = {isa = PBXBuildFile; fileRef = 305589421EC4E4D600420BBD /* RenderSurface.swift */; };
+		3056275C1FBA07C800026796 /* DictionaryEditor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3056275B1FBA07C800026796 /* DictionaryEditor.swift */; };
+		3056275E1FBA0C0700026796 /* CSConstraint.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3056275D1FBA0C0700026796 /* CSConstraint.swift */; };
 		305A19521F4638F800EA033C /* NSStackViewExtensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 305A19511F4638F800EA033C /* NSStackViewExtensions.swift */; };
 		305A19561F463A2800EA033C /* DisclosureContentRow.swift in Sources */ = {isa = PBXBuildFile; fileRef = 305A19551F463A2800EA033C /* DisclosureContentRow.swift */; };
 		305A19581F463BD300EA033C /* NSTextFieldExtensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 305A19571F463BD300EA033C /* NSTextFieldExtensions.swift */; };
@@ -91,6 +93,9 @@
 		30D9B40E1F79BADC00C8A3D4 /* NSMenuExtensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 30D9B40D1F79BADC00C8A3D4 /* NSMenuExtensions.swift */; };
 		30DDEE8A1F479280001D41AB /* node in Resources */ = {isa = PBXBuildFile; fileRef = 30DDEE891F479280001D41AB /* node */; };
 		30DDEE8C1F4795A3001D41AB /* index.js in Resources */ = {isa = PBXBuildFile; fileRef = 30DDEE8B1F4795A3001D41AB /* index.js */; };
+		30DE88091FBA18A600D62A50 /* NSPopoverExtensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 30DE88081FBA18A600D62A50 /* NSPopoverExtensions.swift */; };
+		30DE880B1FBA194F00D62A50 /* NSViewControllerExtensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 30DE880A1FBA194F00D62A50 /* NSViewControllerExtensions.swift */; };
+		30DE880D1FBA22FB00D62A50 /* ComponentEditorButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = 30DE880C1FBA22FB00D62A50 /* ComponentEditorButton.swift */; };
 		30EFC9561EF1AA0B0087711D /* StringExtensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 30EFC9551EF1AA0B0087711D /* StringExtensions.swift */; };
 		30EFC9581EF369DC0087711D /* ImageField.swift in Sources */ = {isa = PBXBuildFile; fileRef = 30EFC9571EF369DC0087711D /* ImageField.swift */; };
 		30EFC95A1EF43C900087711D /* CheckboxField.swift in Sources */ = {isa = PBXBuildFile; fileRef = 30EFC9591EF43C900087711D /* CheckboxField.swift */; };
@@ -132,6 +137,8 @@
 		304478BB1F32923700FD06E0 /* NSPointExtensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NSPointExtensions.swift; sourceTree = "<group>"; };
 		30516B481F43C46200940B3B /* SequenceExtensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SequenceExtensions.swift; sourceTree = "<group>"; };
 		305589421EC4E4D600420BBD /* RenderSurface.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RenderSurface.swift; sourceTree = "<group>"; };
+		3056275B1FBA07C800026796 /* DictionaryEditor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DictionaryEditor.swift; sourceTree = "<group>"; };
+		3056275D1FBA0C0700026796 /* CSConstraint.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CSConstraint.swift; sourceTree = "<group>"; };
 		305A19511F4638F800EA033C /* NSStackViewExtensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NSStackViewExtensions.swift; sourceTree = "<group>"; };
 		305A19551F463A2800EA033C /* DisclosureContentRow.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DisclosureContentRow.swift; sourceTree = "<group>"; };
 		305A19571F463BD300EA033C /* NSTextFieldExtensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NSTextFieldExtensions.swift; sourceTree = "<group>"; };
@@ -194,6 +201,9 @@
 		30DDEE891F479280001D41AB /* node */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.executable"; path = node; sourceTree = "<group>"; };
 		30DDEE8B1F4795A3001D41AB /* index.js */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.javascript; path = index.js; sourceTree = "<group>"; };
 		30DDEE8E1F4799F6001D41AB /* nodeversion */ = {isa = PBXFileReference; lastKnownFileType = text; path = nodeversion; sourceTree = "<group>"; };
+		30DE88081FBA18A600D62A50 /* NSPopoverExtensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NSPopoverExtensions.swift; sourceTree = "<group>"; };
+		30DE880A1FBA194F00D62A50 /* NSViewControllerExtensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NSViewControllerExtensions.swift; sourceTree = "<group>"; };
+		30DE880C1FBA22FB00D62A50 /* ComponentEditorButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ComponentEditorButton.swift; sourceTree = "<group>"; };
 		30EFC9551EF1AA0B0087711D /* StringExtensions.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = StringExtensions.swift; sourceTree = "<group>"; };
 		30EFC9571EF369DC0087711D /* ImageField.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ImageField.swift; sourceTree = "<group>"; };
 		30EFC9591EF43C900087711D /* CheckboxField.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CheckboxField.swift; sourceTree = "<group>"; };
@@ -232,6 +242,7 @@
 			children = (
 				30335A0B1F5B2F8B006E507B /* CaseList.swift */,
 				301433771F5B525100525DB1 /* ListEditor.swift */,
+				3056275B1FBA07C800026796 /* DictionaryEditor.swift */,
 			);
 			path = ListEditors;
 			sourceTree = "<group>";
@@ -283,6 +294,7 @@
 			children = (
 				30F4FD521F76ADC70048691C /* AnimationUtils.swift */,
 				30CE47C61ED76EF700BBF716 /* AttributedFont.swift */,
+				3056275D1FBA0C0700026796 /* CSConstraint.swift */,
 				305BDA201F648F6400AD2AA3 /* CSPDFDocument.swift */,
 				3094DFE71F6ACF1E00E5C7F0 /* LayerContentsCache.swift */,
 				3040EFC71F2FAC9C007C5368 /* Operators.swift */,
@@ -314,6 +326,7 @@
 				30EFC9591EF43C900087711D /* CheckboxField.swift */,
 				30B5B1A61EC3BF4F002068CE /* ColorPickerButton.swift */,
 				30B5B1A21EC3AE44002068CE /* ColorPickerView.swift */,
+				30DE880C1FBA22FB00D62A50 /* ComponentEditorButton.swift */,
 				307718E71F35241A003A597B /* CSControl.swift */,
 				30990AAD1FA3FC4200BC0CCE /* CSSearchField.swift */,
 				307718F31F366AEA003A597B /* CSValueField.swift */,
@@ -366,8 +379,10 @@
 				30D9B40D1F79BADC00C8A3D4 /* NSMenuExtensions.swift */,
 				3094DFE91F6AECB300E5C7F0 /* NSOutlineViewExtensions.swift */,
 				304478BB1F32923700FD06E0 /* NSPointExtensions.swift */,
+				30DE88081FBA18A600D62A50 /* NSPopoverExtensions.swift */,
 				305A19511F4638F800EA033C /* NSStackViewExtensions.swift */,
 				305A19571F463BD300EA033C /* NSTextFieldExtensions.swift */,
+				30DE880A1FBA194F00D62A50 /* NSViewControllerExtensions.swift */,
 				30C8BC2A1EDB641E00B99F1B /* NSViewExtensions.swift */,
 				30516B481F43C46200940B3B /* SequenceExtensions.swift */,
 				30EFC9551EF1AA0B0087711D /* StringExtensions.swift */,
@@ -613,6 +628,7 @@
 				3030311B1F34E4E80078086F /* CSJSON.swift in Sources */,
 				3003027C1EDCE0880085E140 /* CSComponent.swift in Sources */,
 				304004331ED8AB5A00AFCF2D /* CanvasListEditor.swift in Sources */,
+				3056275E1FBA0C0700026796 /* CSConstraint.swift in Sources */,
 				300302781EDCDA440085E140 /* LogicListEditorView.swift in Sources */,
 				309777721F2BA78E004C8975 /* CSData.swift in Sources */,
 				30335A071F5A2878006E507B /* URLExtensions.swift in Sources */,
@@ -626,6 +642,7 @@
 				3090D7D31F032305009277E7 /* CSComponentLayer.swift in Sources */,
 				30F7C9521ED4AE23009D27DF /* InspectorView.swift in Sources */,
 				30335A0C1F5B2F8B006E507B /* CaseList.swift in Sources */,
+				3056275C1FBA07C800026796 /* DictionaryEditor.swift in Sources */,
 				30F7C9561ED4E02F009D27DF /* YogaLayout.swift in Sources */,
 				3090D7931F01B2EF009277E7 /* CSLayer.swift in Sources */,
 				30335A101F5B3023006E507B /* CSCase.swift in Sources */,
@@ -638,6 +655,7 @@
 				30B5B19F1EC29D84002068CE /* NumberField.swift in Sources */,
 				30B5B1A71EC3BF4F002068CE /* ColorPickerButton.swift in Sources */,
 				306D2FF01F847DCB00907B4E /* NSImageExtensions.swift in Sources */,
+				30DE88091FBA18A600D62A50 /* NSPopoverExtensions.swift in Sources */,
 				30EFC9561EF1AA0B0087711D /* StringExtensions.swift in Sources */,
 				309777741F2BB75B004C8975 /* CSUserPreferences.swift in Sources */,
 				3094DFE31F68D19C00E5C7F0 /* CALayerExtensions.swift in Sources */,
@@ -658,6 +676,7 @@
 				307B7B4F1F9A71C5001A62D9 /* MetadataEditorView.swift in Sources */,
 				3069E0A01F3254E10005E9A8 /* CSTypography.swift in Sources */,
 				301493A71EC0F415005BC573 /* CanvasView.swift in Sources */,
+				30DE880B1FBA194F00D62A50 /* NSViewControllerExtensions.swift in Sources */,
 				309777701F2A8EC1004C8975 /* WorkspacePreferencesViewController.swift in Sources */,
 				3069E09A1F3243780005E9A8 /* parseCSSColor.swift in Sources */,
 				30990AAE1FA3FC4200BC0CCE /* CSSearchField.swift in Sources */,
@@ -666,6 +685,7 @@
 				307718E81F35241A003A597B /* CSControl.swift in Sources */,
 				303BDE6D1F76E61300B4CE5A /* VideoUtils.swift in Sources */,
 				305A19521F4638F800EA033C /* NSStackViewExtensions.swift in Sources */,
+				30DE880D1FBA22FB00D62A50 /* ComponentEditorButton.swift in Sources */,
 				30F4FD531F76ADC70048691C /* AnimationUtils.swift in Sources */,
 				306DA4F61F34E42F002772DC /* DimensionSizingRule.swift in Sources */,
 				30516B491F43C46200940B3B /* SequenceExtensions.swift in Sources */,

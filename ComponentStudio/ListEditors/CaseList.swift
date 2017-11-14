@@ -89,7 +89,7 @@ class CaseList {
                         case "name":
                             item.caseType = CSCase.CaseType.entry(CSCaseEntry(name: value.data.stringValue, value: entry.value, visible: entry.visible))
                         case "data":
-                            item.caseType = CSCase.CaseType.entry(CSCaseEntry(name: entry.name, value: CSValue(value.data).data, visible: entry.visible))
+                            item.caseType = CSCase.CaseType.entry(CSCaseEntry(name: entry.name, value: value.data, visible: entry.visible))
                         case "visible":
                             item.caseType = CSCase.CaseType.entry(CSCaseEntry(name: entry.name, value: entry.value, visible: value.data.boolValue))
                         default:

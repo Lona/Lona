@@ -76,7 +76,7 @@ class ArrayEditorButton: NSButton, CSControl, NSPopoverDelegate {
     
     func popoverWillClose(_ notification: Notification) {
         self.onChange(self.value)
-        self.onChangeData(self.value.toData())
+        self.onChangeData(self.value.data)
     }
     
     func showPopover() {

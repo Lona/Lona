@@ -23,7 +23,9 @@ class ComponentConfiguration {
     init() {}
     
     func performLogicBody(nodes: [LogicNode], in scope: CSScope) {
-        for node in nodes {
+        var index = 0
+        while index < nodes.count {
+            let node = nodes[index]
             let invocation = node.invocation
             
             if invocation.canBeInvoked {
@@ -32,9 +34,14 @@ class ComponentConfiguration {
                 switch controlFlow {
                 case .stepInto:
                     performLogicBody(nodes: node.nodes, in: CSScope(parent: scope))
+                    index += 1
                 case .stepOver:
-                    break
+                    index += 1
+                case .repeatBlock:
+                    performLogicBody(nodes: node.nodes, in: CSScope(parent: scope))
                 }
+            } else {
+                index += 1
             }
         }
     }

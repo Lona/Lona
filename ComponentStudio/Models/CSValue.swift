@@ -31,6 +31,11 @@ struct CSValue: Equatable, CSDataSerializable, CSDataDeserializable {
         case .number: return CSValue(type: type, data: .Number(0))
         case .string: return CSValue(type: type, data: .String(""))
         case .named("Color", .string): return CSValue(type: type, data: .String("black"))
+        case .named(_):
+            var value = cast(to: type.unwrappedNamedType())
+            value.type = type
+            return value
+        case .array(_): return CSValue(type: type, data: .Array([]))
         default: return CSValue(type: type, data: .Null)
         }
     }
@@ -40,6 +45,17 @@ struct CSValue: Equatable, CSDataSerializable, CSDataDeserializable {
             "type": type.toData(),
             "data": data,
         ])
+    }
+    
+    func get(key: String) -> CSValue {
+        guard case CSType.dictionary(let schema) = self.type else { return CSUndefinedValue }
+        guard let record = schema.first(where: { key == $0.key }) else { return CSUndefinedValue }
+        
+        return CSValue(type: record.value.type, data: data.get(key: key))
+    }
+    
+    func get(keyPath: [String]) -> CSValue {
+        return keyPath.reduce(self, { (result, key) in result.get(key: key) })
     }
     
     func unwrappedNamedType() -> CSValue {
@@ -78,17 +94,18 @@ struct CSValue: Equatable, CSDataSerializable, CSDataDeserializable {
             if let schemaItem = schema[item.key] /*, schemaItem.access == accessFilter */ {
                 if item.value.object != nil {
                     let value = CSValue(type: schemaItem.type, data: item.value)
-//                    Swift.print("Matching sub object", item.key)
                     let sub = value.filteredData(typed: typeFilter, accessed: accessFilter)
-//                    if sub.objectValue.count > 0 {
+
+                    // TODO: Don't show sub if it's an object with no matching items
                     result[item.key] = sub
-//                    }
-                        
-                    return result
-                }
-                
-                if typeFilter.isGeneric || typeFilter == schemaItem.type {
-//                    Swift.print("Filter matched", item.key, item.value)
+                } else if
+                    case CSType.array(let innerTypeFilter) = typeFilter.unwrappedNamedType(),
+                    case CSType.array(let innerSchemaType) = schemaItem.type.unwrappedNamedType(),
+                    // TODO: In the append case, the type should no longer be generic here.
+                    innerTypeFilter.isGeneric || innerTypeFilter == CSType.any || innerTypeFilter == innerSchemaType
+                {
+                    result[item.key] = item.value
+                } else if typeFilter.isGeneric || typeFilter == CSType.any || typeFilter == schemaItem.type {
                     result[item.key] = item.value
                 }
             }
@@ -100,3 +117,7 @@ struct CSValue: Equatable, CSDataSerializable, CSDataDeserializable {
 
 let CSUndefinedValue = CSValue(type: .undefined, data: CSData.Null)
 let CSEmptyDictionaryValue = CSValue(type: .dictionary(CSType.Schema()), data: CSData.Object([:]))
+
+typealias CSValueChangeHandler = (CSValue) -> Void
+let CSValueDefaultChangeHandler: CSValueChangeHandler = {_ in}
+

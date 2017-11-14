@@ -369,4 +369,6 @@ extension Dictionary where Key: ExpressibleByStringLiteral, Value: CSDataSeriali
     }
 }
 
+typealias CSDataChangeHandler = (CSData) -> Void
+let CSDataDefaultChangeHandler: CSDataChangeHandler = {_ in}
 
