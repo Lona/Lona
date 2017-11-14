@@ -47,6 +47,17 @@ struct CSValue: Equatable, CSDataSerializable, CSDataDeserializable {
         ])
     }
     
+    func get(key: String) -> CSValue {
+        guard case CSType.dictionary(let schema) = self.type else { return CSUndefinedValue }
+        guard let record = schema.first(where: { key == $0.key }) else { return CSUndefinedValue }
+        
+        return CSValue(type: record.value.type, data: data.get(key: key))
+    }
+    
+    func get(keyPath: [String]) -> CSValue {
+        return keyPath.reduce(self, { (result, key) in result.get(key: key) })
+    }
+    
     func unwrappedNamedType() -> CSValue {
         return CSValue(type: type.unwrappedNamedType(), data: data)
     }

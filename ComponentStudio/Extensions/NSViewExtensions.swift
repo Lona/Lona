@@ -46,6 +46,10 @@ public extension NSView {
         }
     }
     
+    func apply(layout constraints: [CSConstraint]) {
+        CSConstraint.apply(constraints, to: self)
+    }
+    
     func constrain(aspectRatio: CGFloat) {
         addConstraint(
             NSLayoutConstraint(

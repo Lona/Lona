@@ -95,6 +95,7 @@
 		30DDEE8C1F4795A3001D41AB /* index.js in Resources */ = {isa = PBXBuildFile; fileRef = 30DDEE8B1F4795A3001D41AB /* index.js */; };
 		30DE88091FBA18A600D62A50 /* NSPopoverExtensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 30DE88081FBA18A600D62A50 /* NSPopoverExtensions.swift */; };
 		30DE880B1FBA194F00D62A50 /* NSViewControllerExtensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 30DE880A1FBA194F00D62A50 /* NSViewControllerExtensions.swift */; };
+		30DE880D1FBA22FB00D62A50 /* ComponentEditorButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = 30DE880C1FBA22FB00D62A50 /* ComponentEditorButton.swift */; };
 		30EFC9561EF1AA0B0087711D /* StringExtensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 30EFC9551EF1AA0B0087711D /* StringExtensions.swift */; };
 		30EFC9581EF369DC0087711D /* ImageField.swift in Sources */ = {isa = PBXBuildFile; fileRef = 30EFC9571EF369DC0087711D /* ImageField.swift */; };
 		30EFC95A1EF43C900087711D /* CheckboxField.swift in Sources */ = {isa = PBXBuildFile; fileRef = 30EFC9591EF43C900087711D /* CheckboxField.swift */; };
@@ -202,6 +203,7 @@
 		30DDEE8E1F4799F6001D41AB /* nodeversion */ = {isa = PBXFileReference; lastKnownFileType = text; path = nodeversion; sourceTree = "<group>"; };
 		30DE88081FBA18A600D62A50 /* NSPopoverExtensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NSPopoverExtensions.swift; sourceTree = "<group>"; };
 		30DE880A1FBA194F00D62A50 /* NSViewControllerExtensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NSViewControllerExtensions.swift; sourceTree = "<group>"; };
+		30DE880C1FBA22FB00D62A50 /* ComponentEditorButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ComponentEditorButton.swift; sourceTree = "<group>"; };
 		30EFC9551EF1AA0B0087711D /* StringExtensions.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = StringExtensions.swift; sourceTree = "<group>"; };
 		30EFC9571EF369DC0087711D /* ImageField.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ImageField.swift; sourceTree = "<group>"; };
 		30EFC9591EF43C900087711D /* CheckboxField.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CheckboxField.swift; sourceTree = "<group>"; };
@@ -324,6 +326,7 @@
 				30EFC9591EF43C900087711D /* CheckboxField.swift */,
 				30B5B1A61EC3BF4F002068CE /* ColorPickerButton.swift */,
 				30B5B1A21EC3AE44002068CE /* ColorPickerView.swift */,
+				30DE880C1FBA22FB00D62A50 /* ComponentEditorButton.swift */,
 				307718E71F35241A003A597B /* CSControl.swift */,
 				30990AAD1FA3FC4200BC0CCE /* CSSearchField.swift */,
 				307718F31F366AEA003A597B /* CSValueField.swift */,
@@ -682,6 +685,7 @@
 				307718E81F35241A003A597B /* CSControl.swift in Sources */,
 				303BDE6D1F76E61300B4CE5A /* VideoUtils.swift in Sources */,
 				305A19521F4638F800EA033C /* NSStackViewExtensions.swift in Sources */,
+				30DE880D1FBA22FB00D62A50 /* ComponentEditorButton.swift in Sources */,
 				30F4FD531F76ADC70048691C /* AnimationUtils.swift in Sources */,
 				306DA4F61F34E42F002772DC /* DimensionSizingRule.swift in Sources */,
 				30516B491F43C46200940B3B /* SequenceExtensions.swift in Sources */,

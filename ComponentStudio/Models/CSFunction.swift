@@ -147,6 +147,15 @@ struct CSFunction {
             }
         }
         
+        func update(in scope: CSScope, with value: CSValue) {
+            switch self {
+            case .identifier(_, let keyPath):
+                scope.set(keyPath: keyPath, to: value)
+            default:
+                break
+            }
+        }
+        
         var keyPath: [String]? {
             switch self {
             case .value(_): return nil
@@ -382,19 +391,17 @@ let CSAppendFunction = CSFunction(
     description: "Add an element to an array",
     parameters: [
         CSFunction.Parameter(label: nil, name: "element", type: .variable(type: CSGenericTypeA, access: .read)),
-        CSFunction.Parameter(label: "to", name: "array", type: .variable(type: CSGenericArrayOfTypeA, access: .read)),
-        CSFunction.Parameter(label: "and assign to", name: "value", type: .variable(type: CSGenericArrayOfTypeA, access: .write)),
+        CSFunction.Parameter(label: "to", name: "array", type: .variable(type: CSGenericArrayOfTypeA, access: .write)),
         ],
     hasBody: false,
     invoke: { arguments, scope in
-        let element: CSValue = arguments["element"]!.resolve(in: scope)
-        let array: CSValue = arguments["array"]!.resolve(in: scope)
+        let arrayArgument: CSFunction.Argument = arguments["array"]!
         
-        guard case CSFunction.Argument.identifier(_, let valueKeyPath) = arguments["value"]! else { return .stepOver }
+        let element: CSValue = arguments["element"]!.resolve(in: scope)
+        let array: CSValue = arrayArgument.resolve(in: scope)
         
         let copy = CSValue(type: array.type, data: CSData.Array(array.data.arrayValue + [element.data]))
-        
-        scope.set(keyPath: valueKeyPath, to: copy)
+        arrayArgument.update(in: scope, with: copy)
         
         return .stepOver
     },

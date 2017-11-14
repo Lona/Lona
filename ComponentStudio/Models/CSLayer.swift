@@ -687,4 +687,20 @@ class CSLayer: JSONDeserializable, JSONSerializable, DataNode, NSCopying {
         
         return CSValue(type: valueType, data: data)
     }
+    
+    func layerValue() -> CSValue {
+        let parametersValue = self.value()
+        
+        let type = CSType.dictionary([
+            "type": (type: .string, access: .write),
+            "parameters": (type: parametersValue.type, access: .write)
+        ])
+        
+        let data = CSData.Object([
+            "type": self.type.toData(),
+            "parameters": parametersValue.data
+        ])
+        
+        return CSValue(type: type, data: data)
+    }
 }

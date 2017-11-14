@@ -37,9 +37,17 @@ class DictionaryEditor: NSView, CSControl {
     
     var editor: ListEditor<DictionaryItem>? = nil
     
+    func setParameters(value: CSValue) {
+        self.value = value
+        editor?.list = DictionaryEditor.listValue(from: value)
+        editor?.reloadData()
+    }
+    
     func setState(value: CSValue) {
         self.value = value
-        
+    }
+    
+    func handleChange() {
         self.onChange(value)
         self.onChangeData(value.data)
     }
@@ -75,6 +83,7 @@ class DictionaryEditor: NSView, CSControl {
                 editor.select(item: defaultItem, ensureVisible: true)
                 
                 self.setState(value: self.dictionaryValue(from: editor.list))
+                self.handleChange()
             }),
             .onRemoveElement({ item in
                 guard let editor = self.editor else { return }
@@ -86,6 +95,7 @@ class DictionaryEditor: NSView, CSControl {
                 editor.reloadData()
                 
                 self.setState(value: self.dictionaryValue(from: editor.list))
+                self.handleChange()
             }),
             .viewFor({ item in
                 let frame = NSRect(x: 0, y: 0, width: 2000, height: 26)
@@ -121,6 +131,7 @@ class DictionaryEditor: NSView, CSControl {
                     editor.reloadData()
                     
                     self.setState(value: self.dictionaryValue(from: editor.list))
+                    self.handleChange()
                 }
                 
                 return cell

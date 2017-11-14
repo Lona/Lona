@@ -9,7 +9,7 @@
 import Foundation
 import AppKit
 
-enum CSConstraint {
+public enum CSConstraint {
     case width(CGFloat)
     case widthEqualTo(NSView)
     case height(CGFloat)
