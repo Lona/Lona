@@ -58,7 +58,7 @@ indirect enum CSType: Equatable, CSDataSerializable, CSDataDeserializable {
                         self = .array(CSType(innerType))
                     }
                 case "Enumeration":
-                    if let values = object["values"]?.array {
+                    if let values = object["of"]?.array {
                         self = .enumeration(values.map({ CSValue($0) }))
                     }
                 default:

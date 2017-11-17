@@ -196,7 +196,7 @@ class CanvasListEditor: NSOutlineView, NSOutlineViewDataSource, NSOutlineViewDel
             
             let field = CSValueField(value: CSValue(type: component.parametersType(), data: canvas.parameters))
             field.onChangeData = { value in
-                canvas.parameters = CSValue(value).data
+                canvas.parameters = value
                 self.onChange(self.canvasList)
             }
             return field.view
