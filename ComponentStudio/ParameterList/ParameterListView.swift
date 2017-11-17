@@ -145,7 +145,12 @@ class ParameterListView: NSOutlineView, NSOutlineViewDataSource, NSOutlineViewDe
                     break
                 }
                 
-                self.reloadData()
+                // Async to fix a crash. Without this, clicking the table view when a text field is active
+                // will crash.
+                DispatchQueue.main.async {
+                    self.reloadData()
+                }
+                
                 self.onChange(self.list)
             }
             
