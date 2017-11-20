@@ -1,5 +1,5 @@
 <p align="center">
-  <img src="ComponentStudio/Assets.xcassets/AppIcon.appiconset/icon_256x256@2x.png" width="256" height="256" />
+  <img src="LonaStudio/Assets.xcassets/AppIcon.appiconset/icon_256x256@2x.png" width="256" height="256" />
 </p>
 
 <h1 align="center">Lona (Developer Preview)</h1>
@@ -145,10 +145,6 @@ This is my first time writing a native mac app, and I have practically no Swift 
 ### Why is this JavaScript code so weird/bad?
 
 Time constraints 😅
-
-### Will it do X?
-
-Most likely. If there's a design system that needs it, Lona should support it. Want to help add it?
 
 ## The Team
 
