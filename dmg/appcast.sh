@@ -1,9 +1,9 @@
-if ! [ -e ComponentStudio.app ]; then
-	echo "Put the archived app, ComponentStudio.app, in this directory to update the appcast."
+if ! [ -e LonaStudio.app ]; then
+	echo "Put the archived app, LonaStudio.app, in this directory to update the appcast."
 	exit 1
 fi
 
-if ! [ -e ComponentStudio.zip ]; then
+if ! [ -e LonaStudio.zip ]; then
 	echo "You must first build a zip in order to appcast."
 	exit 1
 fi
@@ -18,12 +18,12 @@ if [[ -z "${COMPONENT_STUDIO_APPCAST_DIRECTORY}" ]]; then
   	exit 1
 fi
 
-VERSION=$(mdls -name kMDItemVersion ComponentStudio.app | awk -F'"' '{print $2}')
-TARGET="$COMPONENT_STUDIO_APPCAST_DIRECTORY"ComponentStudio_"$VERSION".zip
+VERSION=$(mdls -name kMDItemVersion LonaStudio.app | awk -F'"' '{print $2}')
+TARGET="$COMPONENT_STUDIO_APPCAST_DIRECTORY"LonaStudio_"$VERSION".zip
 
 echo "Copying .zip to $TARGET"
 
-cp ComponentStudio.zip "$TARGET"
+cp LonaStudio.zip "$TARGET"
 
 echo "Generating appcast"
 

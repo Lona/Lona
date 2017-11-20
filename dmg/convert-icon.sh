@@ -1,7 +1,7 @@
-mkdir ComponentStudioIcon.iconset
+mkdir LonaStudioIcon.iconset
 
-cp ../ComponentStudio/Assets.xcassets/AppIcon.appiconset/*.png ComponentStudioIcon.iconset
+cp ../LonaStudio/Assets.xcassets/AppIcon.appiconset/*.png LonaStudioIcon.iconset
 
-iconutil -c icns ComponentStudioIcon.iconset -o ComponentStudioIcon.icns
+iconutil -c icns LonaStudioIcon.iconset -o LonaStudioIcon.icns
 
-rm -R ComponentStudioIcon.iconset
+rm -R LonaStudioIcon.iconset

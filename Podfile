@@ -5,7 +5,7 @@ target 'LonaStudio' do
   # Comment this line if you're not using Swift and don't want to use dynamic frameworks
   use_frameworks!
 
-  # Pods for ComponentStudio
+  # Pods for LonaStudio
   pod 'Yoga', '~> 1.6'
   pod 'SwiftyJSON'
   pod 'MASPreferences', '~> 1.1'
