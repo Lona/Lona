@@ -2,9 +2,12 @@
 <Workspace
    version = "1.0">
    <FileRef
-      location = "group:ComponentStudio.xcodeproj">
+      location = "group:/Users/devin_abbott/Projects/ComponentStudio/ComponentStudio/LonaStudio.xcodeproj">
    </FileRef>
    <FileRef
       location = "group:Pods/Pods.xcodeproj">
+   </FileRef>
+   <FileRef
+      location = "group:LonaStudio.xcodeproj">
    </FileRef>
 </Workspace>

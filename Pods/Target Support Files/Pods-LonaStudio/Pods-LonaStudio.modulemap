@@ -1,0 +1,6 @@
+framework module Pods_LonaStudio {
+  umbrella header "Pods-LonaStudio-umbrella.h"
+
+  export *
+  module * { export * }
+}

@@ -11,6 +11,6 @@
 #endif
 
 
-FOUNDATION_EXPORT double Pods_ComponentStudioVersionNumber;
-FOUNDATION_EXPORT const unsigned char Pods_ComponentStudioVersionString[];
+FOUNDATION_EXPORT double Pods_LonaStudioVersionNumber;
+FOUNDATION_EXPORT const unsigned char Pods_LonaStudioVersionString[];
 

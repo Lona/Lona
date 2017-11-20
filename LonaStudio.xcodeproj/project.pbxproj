@@ -110,7 +110,7 @@
 		6B0AEFBE1EBF74D800F35BBF /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 6B0AEFBD1EBF74D800F35BBF /* Assets.xcassets */; };
 		6B0AEFC11EBF74D800F35BBF /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 6B0AEFBF1EBF74D800F35BBF /* Main.storyboard */; };
 		6B6017D01EBF9EFA001E02C1 /* LayerList.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6B6017CF1EBF9EFA001E02C1 /* LayerList.swift */; };
-		7597578F571F845C6F560D0C /* Pods_ComponentStudio.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 78F9E7BA57D9765A7641E11E /* Pods_ComponentStudio.framework */; };
+		F37171F61E115B40A4FB0979 /* Pods_LonaStudio.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 8986E60CAD89C801A91157E8 /* Pods_LonaStudio.framework */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -212,7 +212,7 @@
 		30F7C94F1ED4ACD8009D27DF /* SegmentedControlField.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SegmentedControlField.swift; sourceTree = "<group>"; };
 		30F7C9511ED4AE23009D27DF /* InspectorView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = InspectorView.swift; sourceTree = "<group>"; };
 		30F7C9551ED4E02F009D27DF /* YogaLayout.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = YogaLayout.swift; sourceTree = "<group>"; };
-		6B0AEFB41EBF74D800F35BBF /* ComponentStudio.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = ComponentStudio.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		6B0AEFB41EBF74D800F35BBF /* LonaStudio.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = LonaStudio.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		6B0AEFB71EBF74D800F35BBF /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		6B0AEFB91EBF74D800F35BBF /* ViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewController.swift; sourceTree = "<group>"; };
 		6B0AEFBB1EBF74D800F35BBF /* Document.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Document.swift; sourceTree = "<group>"; };
@@ -221,7 +221,10 @@
 		6B0AEFC21EBF74D800F35BBF /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		6B6017CF1EBF9EFA001E02C1 /* LayerList.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = LayerList.swift; sourceTree = "<group>"; };
 		78F9E7BA57D9765A7641E11E /* Pods_ComponentStudio.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_ComponentStudio.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		8851EC557E77D133BC1ACFD3 /* Pods-LonaStudio.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-LonaStudio.release.xcconfig"; path = "Pods/Target Support Files/Pods-LonaStudio/Pods-LonaStudio.release.xcconfig"; sourceTree = "<group>"; };
+		8986E60CAD89C801A91157E8 /* Pods_LonaStudio.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_LonaStudio.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		C9BC70B83C813B255385A6DC /* Pods-ComponentStudio.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-ComponentStudio.debug.xcconfig"; path = "Pods/Target Support Files/Pods-ComponentStudio/Pods-ComponentStudio.debug.xcconfig"; sourceTree = "<group>"; };
+		DE51EEDF8E841C591C2777F0 /* Pods-LonaStudio.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-LonaStudio.debug.xcconfig"; path = "Pods/Target Support Files/Pods-LonaStudio/Pods-LonaStudio.debug.xcconfig"; sourceTree = "<group>"; };
 		F671541D955F8217187CAF7F /* Pods-ComponentStudio.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-ComponentStudio.release.xcconfig"; path = "Pods/Target Support Files/Pods-ComponentStudio/Pods-ComponentStudio.release.xcconfig"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -230,7 +233,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				7597578F571F845C6F560D0C /* Pods_ComponentStudio.framework in Frameworks */,
+				F37171F61E115B40A4FB0979 /* Pods_LonaStudio.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -438,6 +441,7 @@
 			isa = PBXGroup;
 			children = (
 				78F9E7BA57D9765A7641E11E /* Pods_ComponentStudio.framework */,
+				8986E60CAD89C801A91157E8 /* Pods_LonaStudio.framework */,
 			);
 			name = Frameworks;
 			sourceTree = "<group>";
@@ -445,7 +449,7 @@
 		6B0AEFAB1EBF74D700F35BBF = {
 			isa = PBXGroup;
 			children = (
-				6B0AEFB61EBF74D800F35BBF /* ComponentStudio */,
+				6B0AEFB61EBF74D800F35BBF /* LonaStudio */,
 				4E7D3BFDDA1EE9AC7A3E818C /* Frameworks */,
 				E716B17C5498B98F3AF13018 /* Pods */,
 				6B0AEFB51EBF74D800F35BBF /* Products */,
@@ -455,12 +459,12 @@
 		6B0AEFB51EBF74D800F35BBF /* Products */ = {
 			isa = PBXGroup;
 			children = (
-				6B0AEFB41EBF74D800F35BBF /* ComponentStudio.app */,
+				6B0AEFB41EBF74D800F35BBF /* LonaStudio.app */,
 			);
 			name = Products;
 			sourceTree = "<group>";
 		};
-		6B0AEFB61EBF74D800F35BBF /* ComponentStudio */ = {
+		6B0AEFB61EBF74D800F35BBF /* LonaStudio */ = {
 			isa = PBXGroup;
 			children = (
 				6B0AEFB71EBF74D800F35BBF /* AppDelegate.swift */,
@@ -484,7 +488,7 @@
 				3069E0981F32432C0005E9A8 /* Utils */,
 				3030311F1F34E7200078086F /* Workspace */,
 			);
-			path = ComponentStudio;
+			path = LonaStudio;
 			sourceTree = "<group>";
 		};
 		E716B17C5498B98F3AF13018 /* Pods */ = {
@@ -492,6 +496,8 @@
 			children = (
 				C9BC70B83C813B255385A6DC /* Pods-ComponentStudio.debug.xcconfig */,
 				F671541D955F8217187CAF7F /* Pods-ComponentStudio.release.xcconfig */,
+				DE51EEDF8E841C591C2777F0 /* Pods-LonaStudio.debug.xcconfig */,
+				8851EC557E77D133BC1ACFD3 /* Pods-LonaStudio.release.xcconfig */,
 			);
 			name = Pods;
 			sourceTree = "<group>";
@@ -499,9 +505,9 @@
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
-		6B0AEFB31EBF74D700F35BBF /* ComponentStudio */ = {
+		6B0AEFB31EBF74D700F35BBF /* LonaStudio */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = 6B0AEFC51EBF74D800F35BBF /* Build configuration list for PBXNativeTarget "ComponentStudio" */;
+			buildConfigurationList = 6B0AEFC51EBF74D800F35BBF /* Build configuration list for PBXNativeTarget "LonaStudio" */;
 			buildPhases = (
 				BEF73B24DB4D16F87CC5DED8 /* [CP] Check Pods Manifest.lock */,
 				6B0AEFB01EBF74D700F35BBF /* Sources */,
@@ -514,9 +520,9 @@
 			);
 			dependencies = (
 			);
-			name = ComponentStudio;
+			name = LonaStudio;
 			productName = ComponentStudio;
-			productReference = 6B0AEFB41EBF74D800F35BBF /* ComponentStudio.app */;
+			productReference = 6B0AEFB41EBF74D800F35BBF /* LonaStudio.app */;
 			productType = "com.apple.product-type.application";
 		};
 /* End PBXNativeTarget section */
@@ -535,7 +541,7 @@
 					};
 				};
 			};
-			buildConfigurationList = 6B0AEFAF1EBF74D700F35BBF /* Build configuration list for PBXProject "ComponentStudio" */;
+			buildConfigurationList = 6B0AEFAF1EBF74D700F35BBF /* Build configuration list for PBXProject "LonaStudio" */;
 			compatibilityVersion = "Xcode 3.2";
 			developmentRegion = English;
 			hasScannedForEncodings = 0;
@@ -548,7 +554,7 @@
 			projectDirPath = "";
 			projectRoot = "";
 			targets = (
-				6B0AEFB31EBF74D700F35BBF /* ComponentStudio */,
+				6B0AEFB31EBF74D700F35BBF /* LonaStudio */,
 			);
 		};
 /* End PBXProject section */
@@ -582,7 +588,7 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "\"${SRCROOT}/Pods/Target Support Files/Pods-ComponentStudio/Pods-ComponentStudio-resources.sh\"\n";
+			shellScript = "\"${SRCROOT}/Pods/Target Support Files/Pods-LonaStudio/Pods-LonaStudio-resources.sh\"\n";
 			showEnvVarsInLog = 0;
 		};
 		BEF73B24DB4D16F87CC5DED8 /* [CP] Check Pods Manifest.lock */ = {
@@ -612,7 +618,7 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "\"${SRCROOT}/Pods/Target Support Files/Pods-ComponentStudio/Pods-ComponentStudio-frameworks.sh\"\n";
+			shellScript = "\"${SRCROOT}/Pods/Target Support Files/Pods-LonaStudio/Pods-LonaStudio-frameworks.sh\"\n";
 			showEnvVarsInLog = 0;
 		};
 /* End PBXShellScriptBuildPhase section */
@@ -843,7 +849,7 @@
 		};
 		6B0AEFC61EBF74D800F35BBF /* Debug */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = C9BC70B83C813B255385A6DC /* Pods-ComponentStudio.debug.xcconfig */;
+			baseConfigurationReference = DE51EEDF8E841C591C2777F0 /* Pods-LonaStudio.debug.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_IDENTITY = "";
@@ -854,7 +860,7 @@
 					"$(inherited)",
 					"$(PROJECT_DIR)/Pods/Sparkle",
 				);
-				INFOPLIST_FILE = ComponentStudio/Info.plist;
+				INFOPLIST_FILE = LonaStudio/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/../Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = com.devinabbott.ComponentStudio;
 				PRODUCT_NAME = "$(TARGET_NAME)";
@@ -865,7 +871,7 @@
 		};
 		6B0AEFC71EBF74D800F35BBF /* Release */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = F671541D955F8217187CAF7F /* Pods-ComponentStudio.release.xcconfig */;
+			baseConfigurationReference = 8851EC557E77D133BC1ACFD3 /* Pods-LonaStudio.release.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_IDENTITY = "Mac Developer";
@@ -876,7 +882,7 @@
 					"$(inherited)",
 					"$(PROJECT_DIR)/Pods/Sparkle",
 				);
-				INFOPLIST_FILE = ComponentStudio/Info.plist;
+				INFOPLIST_FILE = LonaStudio/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/../Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = com.devinabbott.ComponentStudio;
 				PRODUCT_NAME = "$(TARGET_NAME)";
@@ -888,7 +894,7 @@
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
-		6B0AEFAF1EBF74D700F35BBF /* Build configuration list for PBXProject "ComponentStudio" */ = {
+		6B0AEFAF1EBF74D700F35BBF /* Build configuration list for PBXProject "LonaStudio" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				6B0AEFC31EBF74D800F35BBF /* Debug */,
@@ -897,7 +903,7 @@
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		6B0AEFC51EBF74D800F35BBF /* Build configuration list for PBXNativeTarget "ComponentStudio" */ = {
+		6B0AEFC51EBF74D800F35BBF /* Build configuration list for PBXNativeTarget "LonaStudio" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				6B0AEFC61EBF74D800F35BBF /* Debug */,
