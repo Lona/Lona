@@ -8,7 +8,7 @@
 
 > This is a *highly experimental* prototype. We've made it public to begin a conversation with other people who are interested in design at scale. While this tool handles the Airbnb design system fairly well (at a rudimentary level), there are many gaps. We hope to collaborate with others to identify and fill these gaps.
 >
-> We don't provide any support of any kind. You shouldn't use this for production unless you _really know what you're doing_. The API and file format will change without warning as we continue development. As this is largely still a research project, there are no automated tests and the code is not yet at the same degree of technical rigor as other open source Airbnb projects.
+> We don't provide any support of any kind. You shouldn't use this for production unless you _really know what you're doing_. The API and file format will change without warning as we continue development. As this is largely still a research project, there are no automated tests and the code is not yet at the same degree of technical rigor as other Airbnb projects.
 
 ## Overview
 
@@ -18,6 +18,8 @@ A design system is defined in JSON as a collection of:
 - Components (can be nested)
 - Colors, Text Styles, Gradients, and Shadows
 - Data Types
+
+The specification for these files can be found in the [docs](./docs/file-formats/README.md).
 
 ### Lona Studio
 
