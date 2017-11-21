@@ -95,16 +95,16 @@ These are the _use cases_ or _test cases_ for a component. These do not currentl
 ```json
 // ...
 
-"cases": {
-  [
+"cases": [
+  {
     "name" : "Default case",
     "value" : {
       "title" : "Header sample text"
     },
     "type" : "entry",
     "visible" : true
-  ]
-}
+  }
+]
 
 // ...
 ```
