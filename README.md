@@ -90,7 +90,27 @@ First, make sure you have Cocoapods installed. Then checkout the repo and run:
 
 Build in Xcode 9 on Sierra+. If there are warnings (e.g. about converting to Swift 4) you can ignore them.
 
-It will build on El Capitan, but it likely won't be usable. The changes needed to make are small, if anybody wants to add support.
+> It will build on El Capitan, but it likely won't be usable. The changes needed to make are small, if anybody wants to add support.
+
+## Workspace
+
+To work in Lona Studio, you'll need a properly configured *workspace*. A workspace is a directory containing, optionally, the following files:
+
+- `colors.json`
+- `textStyles.json`
+- `gradients.json`
+- `shadows.json`
+- `types.json`
+
+You can read more about these in the [file formats docs](./docs/file-formats/README.md). Without these, Lona Studio will not display any colors or text styles in the pickers.
+
+To set your workspace directory, first open Lona Studio preferences:
+
+![Open Preferences](./docs/images/open-preferences.png)
+
+Then choose a directory path:
+
+![Set Workspace Path](./docs/images/set-workspace-path.png)
 
 ## Generating Code
 
