@@ -6,8 +6,9 @@
 
 <br />
 
-> This is a *highly experimental* project. We've made it public to begin getting feedback and working with collaborators from other companies who are interested in design at scale. While this tool handles the Airbnb design system fairly well, there are many gaps. We hope to work with other companies to identify and fill these gaps.
-> We don't provide any support of any kind. You shouldn't use it for production. The API and file format will change without warning as we continue development.
+> This is a *highly experimental* prototype. We've made it public to begin a conversation with other people who are interested in design at scale. While this tool handles the Airbnb design system fairly well (at a rudimentary level), there are many gaps. We hope to collaborate with others to identify and fill these gaps.
+>
+> We don't provide any support of any kind. You shouldn't use this for production unless you _really know what you're doing_. The API and file format will change without warning as we continue development. As this is largely still a research project, there are no automated tests and the code is not yet at the same degree of technical rigor as other open source Airbnb projects.
 
 ## Overview
 
@@ -15,8 +16,7 @@ Lona is a collection of tools for building design systems and using them to gene
 
 A design system is defined in JSON as a collection of:
 - Components (can be nested)
-- Colors, Gradients, and Shadows
-- Text Styles
+- Colors, Text Styles, Gradients, and Shadows
 - Data Types
 
 ### Lona Studio
@@ -42,7 +42,7 @@ Support is planned for:
 - Android (Kotlin)
 - React Native
 
-Currently, the only target is React Native, and it's extremely rough.
+Currently, the only target is React Native, and it's extremely rough (i.e. not really usable).
 
 ## Background
 
