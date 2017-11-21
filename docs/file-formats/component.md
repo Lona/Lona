@@ -10,7 +10,7 @@ JSON is problematic because it's not easily mergeable or human-editable. It coul
 
 ## Outline
 
-The file is an object containing 6 top-level fields:
+The file is an object containing top-level fields:
 
 - [**`metadata`**](#metadata)
 - [**`canvases`**](#canvases)
