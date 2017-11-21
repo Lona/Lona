@@ -109,15 +109,58 @@ These are the _use cases_ or _test cases_ for a component. These do not currentl
 // ...
 ```
 
-###
+## Parameters
 
-- [**`parameters`**](#parameters)
-- [**`rootLayer`**](#rootLayer)
-- [**`logic`**](#logic)
+|Attribute|Type|Required|Description|
+|---|---|---|---|
+|`name`|`string`|Yes|The code-friendly name of the parameter. This will be translated directly to a variable name, so it should not contain spaces or special characters.|
+|`type`|`Data Type`|Yes|The data type of the parameter|
+|`defaultValue`|`JSON`|No|The default value of the parameter. If specified, this will be used within code.|
+
+```json
+// ...
+
+"parameters": [
+  {
+    "type" : "String",
+    "name" : "title"
+  },
+  {
+    "type" : "Boolean",
+    "name" : "large",
+    "defaultValue" : true
+  }
+]
+
+// ...
+```
+
+## Root Layer
+
+Layers define the UI tree. Each layer is an _instance_ of a component. The layer specifies which component it represents, and the parameters it will pass to that component. Layers may represent _built-in_ components or _custom_ components.
+
+Layers contain the following attributes:
+
+|Attribute|Type|Required|Description|
+|---|---|---|---|
+|`id`|`string`|Yes|The unique id of the layer, used as a key within logic.|
+|`name`|`string`|Yes|The human-readable name of the layer. Naming the layer within Lona Studio updates the `id` field automatically by default.|
+|`type`|`string`|Yes|For built-in components, the possible types are: `"View"`, `"Text"`, `"Image"`, `"Animation"`. Custom components have the type `Component`. There's also the special case, `"Children"`, which represents a placeholder for components which can be used within this component.|
+|`parameters`|`JSON`|Yes|The input parameters for the specified component. For custom `Component` typed components, these are defined by the `parameters` attribute at the root level of the `.component` file for that component. For built-in types, these are defined below in this specification.|
+|`url`|`URL`|No|For `Component` typed components, this is the URL of the `.component` file that defines the component.|
+|`children`|`Component[]`|No|The built-in `View` and `Image` components render children components within themselves. Custom components can render children by including the placeholder `Children` type within their `children` array.|
+
+### Built-in Component Parameters
+
+Coming soon!
+
+## Logic
+
+Coming soon!
 
 ### Private
 
-This object contains information used internally by the UI of Lona Studio. Lona Studio will only write into keys prefixed by `"com.lonastudioapp"`. Lona Studio will leave other keys unaltered if they exist. In other words, external tools may write into this object and Lona Studio will not use, modify, or delete any values.
+This object contains information used internally by the UI of Lona Studio. Lona Studio will only write into keys prefixed by `"com.lonastudioapp"`. Lona Studio will leave other keys unaltered if they exist. In other words, external tools may write into this object and Lona Studio will not use or modify any keys. External tools should not use or modify any keys prefixed with `"com.lonastudioapp"`.
 
 ## Examples
 
