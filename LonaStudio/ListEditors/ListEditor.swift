@@ -334,7 +334,12 @@ class ListEditor<Element>: NSView where Element: DataNode {
     
     func reloadData() {
         listView.stopEditing()
-        listView.reloadData()
+        
+        // Async to fix a crash. Without this, clicking the table view when a text field is active
+        // will crash.
+        DispatchQueue.main.async {
+            self.listView.reloadData()
+        }
     }
     
     func select(item: Element, ensureVisible: Bool) {
