@@ -7,7 +7,6 @@
 //
 
 import Cocoa
-import SwiftyJSON
 import MASPreferences
 
 class ViewController: NSViewController, NSOutlineViewDataSource, NSOutlineViewDelegate, NSTextFieldDelegate {
@@ -139,9 +138,9 @@ class ViewController: NSViewController, NSOutlineViewDataSource, NSOutlineViewDe
     
     @IBAction func addChildren(_ sender: AnyObject) {
         let newLayer = CSLayer(name: "Children", type: "Children", parameters: [
-            "width": 100,
-            "height": 100,
-            "backgroundColor": "#D8D8D8"
+            "width": 100.toData(),
+            "height": 100.toData(),
+            "backgroundColor": "#D8D8D8".toData()
         ])
         
         addLayer(layer: newLayer)
@@ -151,9 +150,9 @@ class ViewController: NSViewController, NSOutlineViewDataSource, NSOutlineViewDe
         let name = component.getNewLayerName(startingWith: "Image")
         
         let newLayer = CSLayer(name: name, type: "Image", parameters: [
-            "width": 100,
-            "height": 100,
-            "backgroundColor": "#D8D8D8"
+            "width": 100.toData(),
+            "height": 100.toData(),
+            "backgroundColor": "#D8D8D8".toData()
         ])
         
         addLayer(layer: newLayer)
@@ -163,9 +162,9 @@ class ViewController: NSViewController, NSOutlineViewDataSource, NSOutlineViewDe
         let name = component.getNewLayerName(startingWith: "Animation")
         
         let newLayer = CSLayer(name: name, type: "Animation", parameters: [
-            "width": 100,
-            "height": 100,
-            "backgroundColor": "#D8D8D8"
+            "width": 100.toData(),
+            "height": 100.toData(),
+            "backgroundColor": "#D8D8D8".toData()
         ])
         
         addLayer(layer: newLayer)
@@ -175,9 +174,9 @@ class ViewController: NSViewController, NSOutlineViewDataSource, NSOutlineViewDe
         let name = component.getNewLayerName(startingWith: "View")
         
         let newLayer = CSLayer(name: name, type: "View", parameters: [
-            "width": 100,
-            "height": 100,
-            "backgroundColor": "#D8D8D8"
+            "width": 100.toData(),
+            "height": 100.toData(),
+            "backgroundColor": "#D8D8D8".toData()
         ])
         
         addLayer(layer: newLayer)
@@ -187,9 +186,9 @@ class ViewController: NSViewController, NSOutlineViewDataSource, NSOutlineViewDe
         let name = component.getNewLayerName(startingWith: "Text")
 
         let newLayer = CSLayer(name: name, type: "Text", parameters: [
-            "text": "Text goes here",
-            "widthSizingRule": "Shrink",
-            "heightSizingRule": "Shrink",
+            "text": "Text goes here".toData(),
+            "widthSizingRule": "Shrink".toData(),
+            "heightSizingRule": "Shrink".toData(),
         ])
         
         addLayer(layer: newLayer)
@@ -333,8 +332,8 @@ class ViewController: NSViewController, NSOutlineViewDataSource, NSOutlineViewDe
             Canvas(visible: true, name: "iPhone 7+", width: 414, height: 100, heightMode: "At Least", exportScale: 1, backgroundColor: "white"),
         ],
         rootLayer: CSLayer(name: "View", type: "View", parameters: [
-            "alignSelf": "stretch",
-            "flex": 0,
+            "alignSelf": "stretch".toData(),
+            "flex": 0.toData(),
         ]),
         parameters: [],
         cases: [CSCase.defaultCase],
@@ -637,7 +636,7 @@ class ViewController: NSViewController, NSOutlineViewDataSource, NSOutlineViewDe
         
         if layer.type == "Component", let layer = layer as? CSComponentLayer {
             let views: [(view: NSView, keyView: NSView)] = layer.component.parameters.map({ parameter in
-                let json = layer.parameters[parameter.name] ?? JSON.null
+                let json = layer.parameters[parameter.name] ?? CSData.Null
                 let value = CSValue(type: parameter.type, data: CSData.from(json: json))
                 var usesYogaLayout = true
                 if case .named("URL", .string) = value.type {
@@ -657,9 +656,9 @@ class ViewController: NSViewController, NSOutlineViewDataSource, NSOutlineViewDe
                     // Handle the empty strings specially - convert to null.
                     // TODO: How can we always allow a null state?
                     if let value = data.string, value == "" {
-                        layer.parameters[parameter.name] = CSData.Null.toJSON()
+                        layer.parameters[parameter.name] = CSData.Null
                     } else {
-                        layer.parameters[parameter.name] = data.toJSON()
+                        layer.parameters[parameter.name] = data
                     }
                     
                     self.renderLayerList()

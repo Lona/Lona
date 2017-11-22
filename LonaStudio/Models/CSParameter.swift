@@ -7,9 +7,8 @@
 //
 
 import Foundation
-import SwiftyJSON
 
-final class CSParameter: JSONDeserializable, JSONSerializable, DataNode {
+final class CSParameter: CSDataDeserializable, CSDataSerializable, DataNode {
     var name: String = "parameter"
     var type: CSType = CSType.string
     var defaultValue: CSValue = CSUndefinedValue
@@ -24,12 +23,12 @@ final class CSParameter: JSONDeserializable, JSONSerializable, DataNode {
     
     init() {}
     
-    init(_ json: JSON) {
-        name = json["name"].stringValue
-        type = CSType.from(string: json["type"].stringValue)
+    init(_ json: CSData) {
+        name = json.get(key: "name").stringValue
+        type = CSType.from(string: json.get(key: "type").stringValue)
         
-        if json["defaultValue"].dictionary != nil {
-            defaultValue = CSValue(CSData.from(json: json["defaultValue"]))
+        if let object = json["defaultValue"] {
+            defaultValue = CSValue(object)
         }
     }
     
@@ -38,14 +37,14 @@ final class CSParameter: JSONDeserializable, JSONSerializable, DataNode {
         self.type = type
     }
     
-    func toJSON() -> Any? {
-        var data: [String: Any?] = [
-            "name": name,
-            "type": type.toString(),
-        ]
+    func toData() -> CSData {
+        var data = CSData.Object([
+            "name": name.toData(),
+            "type": type.toData(),
+        ])
         
         if defaultValue != CSUndefinedValue {
-            data["defaultValue"] = defaultValue.toData().toAny()
+            data["defaultValue"] = defaultValue.toData()
         }
         
         return data

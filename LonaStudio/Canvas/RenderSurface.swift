@@ -8,7 +8,6 @@
 
 import Foundation
 import Cocoa
-import SwiftyJSON
 import Lottie
 
 typealias ExampleDictionary = [String: CSData]

@@ -8,7 +8,6 @@
 
 import Foundation
 import Cocoa
-import SwiftyJSON
 
 class LayerList: NSOutlineView {
     
@@ -39,7 +38,7 @@ class LayerList: NSOutlineView {
         // TODO: Look at parameter.defaultValue if it exists
         file.parameters.forEach({ parameter in
             switch parameter.type {
-            case .bool: newLayer.parameters[parameter.name] = JSON(booleanLiteral: false)
+            case .bool: newLayer.parameters[parameter.name] = false.toData()
             default: break
             }
         })

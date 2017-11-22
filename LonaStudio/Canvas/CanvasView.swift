@@ -9,7 +9,6 @@
 import Foundation
 import Cocoa
 import yoga
-import SwiftyJSON
 import Lottie
 
 func measureText(string: NSAttributedString, width: CGFloat, maxNumberOfLines: Int = -1) -> NSSize {
@@ -322,7 +321,7 @@ typealias SketchFileReferenceMap = [String: SketchFileReference]
 func renderBoxJSON(layer: CSLayer, node: YGNodeRef, references: inout SketchFileReferenceMap) -> CSData {
     let layout = node.layout
     
-    var output = CSData.from(json: JSON(layer.toJSON()!))
+    var output = layer.toData()
     
     let layoutJSON = CSData.Object([
         "left": layout.left.toData(),
@@ -356,7 +355,7 @@ func renderBoxJSON(layer: CSLayer, node: YGNodeRef, references: inout SketchFile
         styleJSON["borderBottomColor"] = color
         styleJSON["borderLeftColor"] = color
         for (_, key) in BORDERS {
-            if let width = layer.config?.get(attribute: key, for: layer.name).number ?? layer.parameters[key]?.double, width > 0 {
+            if let width = layer.config?.get(attribute: key, for: layer.name).number ?? layer.parameters[key]?.number, width > 0 {
                 styleJSON[key] = width.toData()
             }
         }

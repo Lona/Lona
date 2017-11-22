@@ -7,7 +7,6 @@
 //
 
 import Foundation
-import SwiftyJSON
 
 final class CSCaseEntry: CSDataSerializable, CSDataDeserializable {
     var name: String

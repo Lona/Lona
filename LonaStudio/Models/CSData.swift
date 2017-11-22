@@ -6,7 +6,14 @@
 //  Copyright © 2017 Devin Abbott. All rights reserved.
 //
 
-import SwiftyJSON
+import Foundation
+
+// https://stackoverflow.com/questions/30215680/is-there-a-correct-way-to-determine-that-an-nsnumber-is-derived-from-a-bool-usin/30223989#30223989
+fileprivate func isBool(number: NSNumber) -> Bool {
+    let boolID = CFBooleanGetTypeID() // the type ID of CFBoolean
+    let numID = CFGetTypeID(number) // the type ID of num
+    return numID == boolID
+}
 
 enum CSData: Equatable, CustomDebugStringConvertible {
     case Null
@@ -222,7 +229,7 @@ enum CSData: Equatable, CustomDebugStringConvertible {
         case .Null:
             return NSNull()
         case .Bool(let value):
-            return value
+            return NSNumber(booleanLiteral: value)
         case .Number(let value):
             return value
         case .String(let value):
@@ -234,59 +241,53 @@ enum CSData: Equatable, CustomDebugStringConvertible {
         }
     }
     
-    func toJSONString() -> String? {
-        return toJSON().rawString()
-    }
-    
-    func toJSON() -> JSON {
-        return JSON(toAny() as Any)
-    }
-    
     func toData() -> Data? {
-        return toJSONString()?.data(using: .utf8)
+        let options: JSONSerialization.WritingOptions
+        
+        if #available(OSX 10.13, *) {
+            options = [
+                JSONSerialization.WritingOptions.prettyPrinted,
+                JSONSerialization.WritingOptions.sortedKeys
+            ]
+        } else {
+            options = [
+                JSONSerialization.WritingOptions.prettyPrinted,
+            ]
+        }
+        
+        return try? JSONSerialization.data(withJSONObject: toAny(), options: options)
     }
     
     static func from(data: Data) -> CSData? {
-        guard let jsonString = Swift.String(data: data, encoding: .utf8) else { return nil }
-        
-        return from(jsonString: jsonString)
+        guard let json = try? JSONSerialization.jsonObject(with: data) else { return nil }
+        return from(json: json)
     }
     
-    static func from(jsonString: String) -> CSData {
-        let json = JSON(parseJSON: jsonString)
-        
-        return CSData.from(json: json)
-    }
-    
-    static func from(json: JSON) -> CSData {
-        if json.null != nil {
+    static func from(json: Any) -> CSData {
+        if let _ = json as? NSNull {
             return CSData.Null
-        } else if let value = json.bool {
-            return CSData.Bool(value)
-        } else if let value = json.number {
-            return CSData.Number(Double(value))
-        } else if let value = json.string {
-            return CSData.String(value)
-        } else if let value = json.array {
+        } else if let value = json as? NSNumber {
+            return isBool(number: value) ? CSData.Bool(value.boolValue) : CSData.Number(Double(value))
+        } else if let value = json as? NSString {
+            return CSData.String(value as String)
+        } else if let value = json as? NSArray {
             return CSData.Array(
                 value.map({ CSData.from(json: $0) })
             )
-        } else if let value = json.dictionary {
-            return CSData.Object(
-                value.map({ CSData.from(json: $0) })
-            )
+        } else if let value = json as? NSDictionary {
+            let object: [String: CSData] = value.map({ $0 }).key { (key: ($0.key as! NSString) as String, value: CSData.from(json: $0.value)) }
+            
+            return CSData.Object(object)
         }
         
         return CSData.Null
     }
     
     static func from(fileAtPath path: String) -> CSData? {
-        let contents = FileManager.default.contents(atPath: path)
+//        let contents = FileManager.default.contents(atPath: path)
         
-        if let contents = contents {
-            guard let string = Swift.String(data: contents, encoding: .utf8) else { return nil }
-            let json = JSON(parseJSON: string)
-            return CSData.from(json: json)
+        if let contents = try? Data(contentsOf: URL(fileURLWithPath: path)) {
+            return CSData.from(data: contents)
         } else {
             Swift.print("Failed to read .json file at \(path)")
             return nil

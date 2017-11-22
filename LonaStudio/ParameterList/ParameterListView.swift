@@ -8,7 +8,6 @@
 
 import Foundation
 import Cocoa
-import SwiftyJSON
 
 class ParameterListView: NSOutlineView, NSOutlineViewDataSource, NSOutlineViewDelegate, NSTextFieldDelegate {
     

@@ -7,7 +7,6 @@
 //
 
 import Foundation
-import SwiftyJSON
 
 func preferencesDirectory() -> URL {
     let home: URL

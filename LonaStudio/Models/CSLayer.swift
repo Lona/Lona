@@ -7,7 +7,6 @@
 //
 
 import Foundation
-import SwiftyJSON
 import Lottie
 
 // TODO Move elsewhere
@@ -40,7 +39,13 @@ enum PositionType: String {
     case relative, absolute
 }
 
-class CSLayer: JSONDeserializable, JSONSerializable, DataNode, NSCopying {
+extension CSData {
+    var int: Int {
+        get { return Int(numberValue) }
+    }
+}
+
+class CSLayer: CSDataDeserializable, CSDataSerializable, DataNode, NSCopying {
     
     // Hack: attach this for use in layout
     var config: ComponentConfiguration? = nil
@@ -49,24 +54,19 @@ class CSLayer: JSONDeserializable, JSONSerializable, DataNode, NSCopying {
     var type: String = "View"
     var children: [CSLayer] = []
     var parent: CSLayer? = nil
-    var parameters: [String: JSON] = [:]
-    
-//    func parameterData() -> CSData {
-//        let map = parameters.mapValues({ CSData.from(json: $0) })
-//        return CSData.Object(map)
-//    }
-    
+    var parameters: [String: CSData] = [:]
+
     func removeParameter(_ key: String) {
-        self.parameters.removeValue(forKey: key)
+        parameters.removeValue(forKey: key)
     }
-    
+
     var numberOfLines: Int? {
         get { return parameters["numberOfLines"]?.int }
-        set { parameters["numberOfLines"] = JSON(newValue as Any) }
+        set { parameters["numberOfLines"] = newValue != nil ? Double(newValue!).toData() : nil }
     }
     var visible: Bool {
         get { return parameters["visible"]?.boolValue ?? true }
-        set { parameters["visible"] = JSON(newValue as Any) }
+        set { parameters["visible"] = newValue.toData() }
     }
     var widthSizingRule: DimensionSizingRule {
         get {
@@ -209,132 +209,124 @@ class CSLayer: JSONDeserializable, JSONSerializable, DataNode, NSCopying {
     
     var resizeMode: ResizeMode? {
         get { return ResizeMode(rawValue: parameters["resizeMode"]?.string ?? "") }
-        set { parameters["resizeMode"] = JSON(newValue?.rawValue as Any) }
+        set { parameters["resizeMode"] = newValue?.rawValue.toData() }
     }
     
     var image: String? {
         get { return parameters["image"]?.string }
-        set { parameters["image"] = JSON(newValue as Any) }
+        set { parameters["image"] = newValue?.toData() }
     }
     
     var animation: String? {
         get { return parameters["animation"]?.string }
-        set { parameters["animation"] = JSON(newValue as Any) }
+        set { parameters["animation"] = newValue?.toData() }
     }
     var animationSpeed: Double? {
-        get { return parameters["animationSpeed"]?.double }
-        set { parameters["animationSpeed"] = JSON(newValue as Any) }
+        get { return parameters["animationSpeed"]?.number }
+        set { parameters["animationSpeed"] = newValue?.toData() }
     }
     var position: PositionType? {
         get { return PositionType(rawValue: parameters["position"]?.string ?? "") }
-        set { parameters["position"] = JSON(newValue?.rawValue as Any) }
+        set { parameters["position"] = newValue?.rawValue.toData() }
     }
     var top: Double? {
-        get { return parameters["top"]?.double }
-        set { parameters["top"] = JSON(newValue as Any) }
+        get { return parameters["top"]?.number }
+        set { parameters["top"] = newValue?.toData() }
     }
     var right: Double? {
-        get { return parameters["right"]?.double }
-        set { parameters["right"] = JSON(newValue as Any) }
+        get { return parameters["right"]?.number }
+        set { parameters["right"] = newValue?.toData() }
     }
     var bottom: Double? {
-        get { return parameters["bottom"]?.double }
-        set { parameters["bottom"] = JSON(newValue as Any) }
+        get { return parameters["bottom"]?.number }
+        set { parameters["bottom"] = newValue?.toData() }
     }
     var left: Double? {
-        get { return parameters["left"]?.double }
-        set { parameters["left"] = JSON(newValue as Any) }
+        get { return parameters["left"]?.number }
+        set { parameters["left"] = newValue?.toData() }
     }
     var flex: Double? {
-        get { return parameters["flex"]?.double }
-        set { parameters["flex"] = JSON(newValue as Any) }
+        get { return parameters["flex"]?.number }
+        set { parameters["flex"] = newValue?.toData() }
     }
     var itemSpacing: Double? {
-        get { return parameters["itemSpacing"]?.double }
-        set { parameters["itemSpacing"] = JSON(newValue as Any) }
+        get { return parameters["itemSpacing"]?.number }
+        set { parameters["itemSpacing"] = newValue?.toData() }
     }
     var width: Double? {
-        get { return parameters["width"]?.double }
-        set { parameters["width"] = JSON(newValue as Any) }
+        get { return parameters["width"]?.number }
+        set { parameters["width"] = newValue?.toData() }
     }
     var height: Double? {
-        get { return parameters["height"]?.double }
-        set { parameters["height"] = JSON(newValue as Any) }
+        get { return parameters["height"]?.number }
+        set { parameters["height"] = newValue?.toData() }
     }
-//    var padding: Double? {
-//        get { return parameters["padding"]?.double }
-//        set { parameters["padding"] = JSON(newValue as Any) }
-//    }
     var paddingLeft: Double? {
-        get { return parameters["paddingLeft"]?.double }
-        set { parameters["paddingLeft"] = JSON(newValue as Any) }
+        get { return parameters["paddingLeft"]?.number }
+        set { parameters["paddingLeft"] = newValue?.toData() }
     }
     var paddingTop: Double? {
-        get { return parameters["paddingTop"]?.double }
-        set { parameters["paddingTop"] = JSON(newValue as Any) }
+        get { return parameters["paddingTop"]?.number }
+        set { parameters["paddingTop"] = newValue?.toData() }
     }
     var paddingRight: Double? {
-        get { return parameters["paddingRight"]?.double }
-        set { parameters["paddingRight"] = JSON(newValue as Any) }
+        get { return parameters["paddingRight"]?.number }
+        set { parameters["paddingRight"] = newValue?.toData() }
     }
     var paddingBottom: Double? {
-        get { return parameters["paddingBottom"]?.double }
-        set { parameters["paddingBottom"] = JSON(newValue as Any) }
+        get { return parameters["paddingBottom"]?.number }
+        set { parameters["paddingBottom"] = newValue?.toData() }
     }
-//    var margin: Double? {
-//        get { return parameters["margin"]?.double }
-//        set { parameters["margin"] = JSON(newValue as Any) }
-//    }
     var marginLeft: Double? {
-        get { return parameters["marginLeft"]?.double }
-        set { parameters["marginLeft"] = JSON(newValue as Any) }
+        get { return parameters["marginLeft"]?.number }
+        set { parameters["marginLeft"] = newValue?.toData() }
     }
     var marginTop: Double? {
-        get { return parameters["marginTop"]?.double }
-        set { parameters["marginTop"] = JSON(newValue as Any) }
+        get { return parameters["marginTop"]?.number }
+        set { parameters["marginTop"] = newValue?.toData() }
     }
     var marginRight: Double? {
-        get { return parameters["marginRight"]?.double }
-        set { parameters["marginRight"] = JSON(newValue as Any) }
+        get { return parameters["marginRight"]?.number }
+        set { parameters["marginRight"] = newValue?.toData() }
     }
     var marginBottom: Double? {
-        get { return parameters["marginBottom"]?.double }
-        set { parameters["marginBottom"] = JSON(newValue as Any) }
+        get { return parameters["marginBottom"]?.number }
+        set { parameters["marginBottom"] = newValue?.toData() }
     }
     var aspectRatio: Double? {
-        get { return parameters["aspectRatio"]?.double }
-        set { parameters["aspectRatio"] = JSON(newValue as Any) }
+        get { return parameters["aspectRatio"]?.number }
+        set { parameters["aspectRatio"] = newValue?.toData() }
     }
     
     // Border
     var borderRadius: Double? {
-        get { return parameters["borderRadius"]?.double }
-        set { parameters["borderRadius"] = JSON(newValue as Any) }
+        get { return parameters["borderRadius"]?.number }
+        set { parameters["borderRadius"] = newValue?.toData() }
     }
     var borderColor: String? {
         get { return parameters["borderColor"]?.string }
-        set { parameters["borderColor"] = JSON(newValue as Any) }
+        set { parameters["borderColor"] = newValue?.toData() }
     }
     var borderWidth: Double? {
-        get { return parameters["borderWidth"]?.double }
-        set { parameters["borderWidth"] = JSON(newValue as Any) }
+        get { return parameters["borderWidth"]?.number }
+        set { parameters["borderWidth"] = newValue?.toData() }
     }
     
     var backgroundColor: String? {
         get { return parameters["backgroundColor"]?.string }
-        set { parameters["backgroundColor"] = JSON(newValue as Any) }
+        set { parameters["backgroundColor"] = newValue?.toData() }
     }
     var backgroundGradient: String? {
         get { return parameters["backgroundGradient"]?.string }
-        set { parameters["backgroundGradient"] = JSON(newValue as Any) }
+        set { parameters["backgroundGradient"] = newValue?.toData() }
     }
     var text: String? {
         get { return parameters["text"]?.string }
-        set { parameters["text"] = JSON(newValue as Any) }
+        set { parameters["text"] = newValue?.toData() }
     }
     var font: String? {
         get { return parameters["font"]?.string }
-        set { parameters["font"] = JSON(newValue as Any) }
+        set { parameters["font"] = newValue?.toData() }
     }
     var flexDirection: String? {
         get { return parameters["flexDirection"]?.string }
@@ -345,7 +337,7 @@ class CSLayer: JSONDeserializable, JSONSerializable, DataNode, NSCopying {
             let heightSizingRules = children.map({ $0.heightSizingRule })
             
             // Actually set the value - this will change what children sizingRule getters return
-            parameters["flexDirection"] = JSON(newValue as Any)
+            parameters["flexDirection"] = newValue?.toData()
             
             for (i, value) in widthSizingRules.enumerated() {
                 children[i].widthSizingRule = value
@@ -357,15 +349,15 @@ class CSLayer: JSONDeserializable, JSONSerializable, DataNode, NSCopying {
     }
     var alignItems: String? {
         get { return parameters["alignItems"]?.string }
-        set { parameters["alignItems"] = JSON(newValue as Any) }
+        set { parameters["alignItems"] = newValue?.toData() }
     }
     var justifyContent: String? {
         get { return parameters["justifyContent"]?.string }
-        set { parameters["justifyContent"] = JSON(newValue as Any) }
+        set { parameters["justifyContent"] = newValue?.toData() }
     }
     var alignSelf: String? {
         get { return parameters["alignSelf"]?.string }
-        set { parameters["alignSelf"] = JSON(newValue as Any) }
+        set { parameters["alignSelf"] = newValue?.toData() }
     }
     
     var horizontalAlignment: String {
@@ -410,8 +402,8 @@ class CSLayer: JSONDeserializable, JSONSerializable, DataNode, NSCopying {
         }
     }
     
-    static func deserialize(_ json: JSON) -> CSLayer? {
-        let type = json["type"].stringValue
+    static func deserialize(_ json: CSData) -> CSLayer? {
+        let type = json.get(key: "type").stringValue
         
         if type == "Component" {
             let layer = CSComponentLayer(json)
@@ -428,15 +420,15 @@ class CSLayer: JSONDeserializable, JSONSerializable, DataNode, NSCopying {
     
     init() {}
     
-    required init(_ json: JSON) {
-        name = json["name"].stringValue
-        type = json["type"].stringValue
-        parameters = decodeParameters(json["parameters"].dictionaryValue)
-        children = json["children"].arrayValue.map({ CSLayer.deserialize($0) }).flatMap({ $0 })
+    required init(_ json: CSData) {
+        name = json.get(key: "name").stringValue
+        type = json.get(key: "type").stringValue
+        parameters = json.get(key: "parameters").objectValue
+        children = json.get(key: "children").arrayValue.map({ CSLayer.deserialize($0) }).flatMap({ $0 })
         children.forEach({ $0.parent = self })
     }
     
-    init(name: String, type: String, parameters: [String: JSON] = [:], children: [CSLayer] = []) {
+    init(name: String, type: String, parameters: [String: CSData] = [:], children: [CSLayer] = []) {
         self.name = name
         self.type = type
         self.parameters = parameters
@@ -454,35 +446,29 @@ class CSLayer: JSONDeserializable, JSONSerializable, DataNode, NSCopying {
         }
     }
     
-    func decodeParameters(_ json: [String: JSON]) -> [String: JSON] {
-        return json
-    }
-    
-    func encodeParameters() -> [String: Any] {
-        var parameters = self.parameters.map({ $0 })
+    func encodeParameters() -> [String: CSData] {
+        var parameters = self.parameters
         
         for (key, value) in parameters {
-            if value.null != nil {
+            if value == CSData.Null {
                 parameters.removeValue(forKey: key)
             }
         }
         
-        return parameters.map({ $0.rawValue });
+        return parameters
     }
     
-    func toJSON() -> Any? {
-        let data: [String: Any?] = [
-            "name": name,
-            "type": type,
-            "parameters": encodeParameters(),
-            "children": children.map({ $0.toJSON() }),
-        ]
-        
-        return data
+    func toData() -> CSData {
+        return CSData.Object([
+            "name": name.toData(),
+            "type": type.toData(),
+            "parameters": CSData.Object(encodeParameters()),
+            "children": children.toData(),
+        ])
     }
     
     func copy(with zone: NSZone? = nil) -> Any {
-        let serialized = JSON(toJSON()!)
+        let serialized = toData()
         let copy = CSLayer.deserialize(serialized)!
         
         copy.parent = self.parent
@@ -546,7 +532,7 @@ class CSLayer: JSONDeserializable, JSONSerializable, DataNode, NSCopying {
     
     func visibleChildren(for config: ComponentConfiguration) -> [CSLayer] {
         let dynamicChildren: [CSLayer] = config.get(attribute: "children", for: name).arrayValue.map({ childData in
-            let layer = CSLayer.deserialize(childData.toJSON())
+            let layer = CSLayer.deserialize(childData)
             layer?.config = config
             return layer
         }).flatMap({ $0 })
