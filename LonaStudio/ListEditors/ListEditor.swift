@@ -19,7 +19,6 @@ import AppKit
 
 import Foundation
 import Cocoa
-import SwiftyJSON
 
 class ListView<Element: DataNode>: NSOutlineView, NSOutlineViewDataSource, NSOutlineViewDelegate, NSTextFieldDelegate {
     

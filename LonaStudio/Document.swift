@@ -7,7 +7,6 @@
 //
 
 import Cocoa
-import SwiftyJSON
 
 class Document: NSDocument {
 
@@ -90,8 +89,8 @@ class Document: NSDocument {
             component = data
         }
         
-        if let component = component {
-            return component.toJSONString().data(using: .utf8)!
+        if let component = component, let json = component.toData(), let data = json.toData() {
+            return data
         }
         
         throw NSError(domain: NSOSStatusErrorDomain, code: unimpErr, userInfo: nil)
@@ -112,13 +111,21 @@ class Document: NSDocument {
     }
 
     override func read(from data: Data, ofType typeName: String) throws {
-//        Swift.print("READ")
-        guard let str = String(data: data, encoding: .utf8) else { return }
-//        Swift.print("PARSE", str)
-        let json = JSON(parseJSON: str)
-//        Swift.print("CSFILE", json)
-        file = CSComponent(json)
-//        Swift.print("FILE", file)
+        guard let json = try? JSONSerialization.jsonObject(with: data) else { return }
+        
+//        let obj = NSDictionary(dictionary: [
+//            "paddingTop": 12,
+//            "paddingBottom": 0,
+//            "paddingLeft": 1,
+//            "visible": NSNumber.init(value: false),
+//            "ok": NSNumber.init(value: true),
+//        ])
+        
+//        let test = CSData.from(json: obj)
+        
+//        Swift.print(test)
+        
+        file = CSComponent(CSData.from(json: json))
         
         // Insert code here to read your document from the given data of the specified type. If outError != nil, ensure that you create and set an appropriate error when returning false.
         // You can also choose to override readFromFileWrapper:ofType:error: or readFromURL:ofType:error: instead.

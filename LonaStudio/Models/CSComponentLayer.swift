@@ -7,7 +7,6 @@
 //
 
 import Foundation
-import SwiftyJSON
 
 class CSComponentLayer: CSLayer {
     var url: String?
@@ -32,8 +31,7 @@ class CSComponentLayer: CSLayer {
         
         let parametersMap: [String: CSData] = component.parameters.key {
             (parameter) -> (key: String, value: CSData) in
-            let value = CSData.from(json: parameters[parameter.name] ?? JSON.null)
-            return (key: parameter.name, value: value)
+            return (key: parameter.name, value: parameters[parameter.name] ?? CSData.Null)
         }
         
         return CSValue(type: CSType.dictionary(parametersSchema), data: CSData.Object(parametersMap))
@@ -52,10 +50,10 @@ class CSComponentLayer: CSLayer {
         return component
     }
     
-    required init(_ json: JSON) {
+    required init(_ json: CSData) {
         super.init(json)
         
-        let url = json["url"].stringValue
+        let url = json.get(key: "url").stringValue
         
         if url.hasPrefix("./") {
             self.url = URL(fileURLWithPath: url, relativeTo: CSWorkspacePreferences.workspaceURL).absoluteString
@@ -66,15 +64,15 @@ class CSComponentLayer: CSLayer {
         reload()
     }
     
-    init(name: String, url: String, parameters: [String: JSON] = [:], children: [CSLayer] = []) {
+    init(name: String, url: String, parameters: [String: CSData] = [:], children: [CSLayer] = []) {
         self.url = url
         super.init(name: name, type: "Component", parameters: parameters, children: children)
         
         reload()
     }
     
-    override func toJSON() -> Any? {
-        var data = super.toJSON() as! [String : Any?]
+    override func toData() -> CSData {
+        var data = super.toData()
         
         guard let absolutePathWithProtocol = url else { return data }
         guard let absolutePath = URL(string: absolutePathWithProtocol)?.path else { return data }
@@ -86,7 +84,7 @@ class CSComponentLayer: CSLayer {
 //        Swift.print("base path", basePath)
 //        Swift.print("relative path", relativePath)
         
-        data["url"] = relativePath
+        data["url"] = relativePath?.toData()
         
         return data
     }

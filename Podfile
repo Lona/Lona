@@ -7,7 +7,6 @@ target 'LonaStudio' do
 
   # Pods for LonaStudio
   pod 'Yoga', '~> 1.6'
-  pod 'SwiftyJSON'
   pod 'MASPreferences', '~> 1.1'
   pod 'Sparkle'
   pod 'LetsMove'

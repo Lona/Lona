@@ -7,7 +7,6 @@
 //
 
 import Foundation
-import SwiftyJSON
 
 let CSCanvasType = CSType.dictionary([
     "height": (type: CSType.number, access: .read),

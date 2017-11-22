@@ -7,19 +7,10 @@
 //
 
 import Foundation
-import SwiftyJSON
 
 class LogicNode: DataNodeParent, DataNodeCopying {
     var nodes: [LogicNode] = []
     var invocation: CSFunction.Invocation = CSFunction.Invocation()
-        
-    static func deserialize(_ json: JSON) -> LogicNode? {
-//        if let nodeType = LogicNode.typeMap[json["type"].stringValue] {
-//            return nodeType.init(json)
-//        }
-        
-        return nil
-    }
     
     required init(_ data: CSData) {
         self.nodes = data.get(key: "nodes").arrayValue.map({ LogicNode($0) })

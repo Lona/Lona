@@ -7,7 +7,6 @@
 //
 
 import Foundation
-import SwiftyJSON
 
 class CSComponent: DataNode, NSCopying {
     var name: String? = nil
@@ -172,42 +171,32 @@ class CSComponent: DataNode, NSCopying {
         return "\(prefix) \(next)"
     }
     
-    func toJSON() -> Any? {
-        let data: [String: Any?] = [
-            "parameters": parameters.toJSON(),
-            "rootLayer": rootLayer.toJSON(),
-            "logic": logic.toData().toAny(),
-            "canvases": canvas.toData().toAny(),
-            "config": config.toAny(),
-            "metadata": metadata.toAny(),
-            "cases": cases.toData().toAny(),
-        ]
-        
-        return data
+    func toData() -> CSData? {
+        return CSData.Object([
+            "parameters": CSData.Array(parameters.map({ $0.toData() })),
+            "rootLayer": rootLayer.toData(),
+            "logic": logic.toData(),
+            "canvases": canvas.toData(),
+            "config": config,
+            "metadata": metadata,
+            "cases": cases.toData(),
+        ])
     }
     
-    func toJSONString() -> String {
-        return JSON(toJSON() as Any).rawString(.utf8, options: .prettyPrinted) ?? ""
-    }
-    
-    init(_ json: JSON) {
-        parameters = json["parameters"].arrayValue.map({ CSParameter($0) })
-        rootLayer = CSLayer.deserialize(json["rootLayer"])!
-        logic = json["logic"].arrayValue.map({ LogicNode(CSData.from(json: $0)) })
-        canvas = json["canvases"].arrayValue.map({ Canvas(CSData.from(json: $0)) })
-        config = json["config"].dictionary != nil
-            ? CSData.from(json: json["config"])
-            : CSData.Object([:])
-        metadata = json["metadata"].dictionary != nil
-            ? CSData.from(json: json["metadata"])
-            : CSData.Object([:])
-        cases = json["cases"].arrayValue.map({ CSCase(CSData.from(json: $0)) })
+    init(_ json: CSData) {
+        parameters = json.get(key: "parameters").arrayValue.map({ CSParameter($0) })
+        rootLayer = CSLayer.deserialize(json.get(key: "rootLayer"))!
+        logic = json.get(key: "logic").arrayValue.map({ LogicNode($0) })
+        canvas = json.get(key: "canvases").arrayValue.map({ Canvas($0) })
+        config = json.get(key: "config")
+        metadata = json.get(key: "metadata")
+        cases = json.get(key: "cases").arrayValue.map({ CSCase($0) })
     }
     
     convenience init?(url: URL) {
         guard let data = try? Data(contentsOf: url, options: NSData.ReadingOptions()) else { return nil }
-        guard let str = String(data: data, encoding: .utf8) else { return nil }
-        let json = JSON(parseJSON: str)
-        self.init(json)
+        guard let json = try? JSONSerialization.jsonObject(with: data) else { return nil }
+        
+        self.init(CSData.from(json: json))
     }
 }

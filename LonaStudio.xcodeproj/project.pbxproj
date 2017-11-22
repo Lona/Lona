@@ -19,7 +19,6 @@
 		301433781F5B525100525DB1 /* ListEditor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 301433771F5B525100525DB1 /* ListEditor.swift */; };
 		301493A71EC0F415005BC573 /* CanvasView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 301493A61EC0F415005BC573 /* CanvasView.swift */; };
 		301D7EDC1F47A29D0098AB0D /* Modules in Resources */ = {isa = PBXBuildFile; fileRef = 301D7EDB1F47A29D0098AB0D /* Modules */; };
-		3030311B1F34E4E80078086F /* CSJSON.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3030311A1F34E4E80078086F /* CSJSON.swift */; };
 		30335A071F5A2878006E507B /* URLExtensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 30335A061F5A2878006E507B /* URLExtensions.swift */; };
 		30335A0C1F5B2F8B006E507B /* CaseList.swift in Sources */ = {isa = PBXBuildFile; fileRef = 30335A0B1F5B2F8B006E507B /* CaseList.swift */; };
 		30335A101F5B3023006E507B /* CSCase.swift in Sources */ = {isa = PBXBuildFile; fileRef = 30335A0F1F5B3023006E507B /* CSCase.swift */; };
@@ -55,7 +54,6 @@
 		307718F21F365BCD003A597B /* CSValue.swift in Sources */ = {isa = PBXBuildFile; fileRef = 307718F11F365BCD003A597B /* CSValue.swift */; };
 		307718F41F366AEA003A597B /* CSValueField.swift in Sources */ = {isa = PBXBuildFile; fileRef = 307718F31F366AEA003A597B /* CSValueField.swift */; };
 		307718F81F37AAFE003A597B /* CSScope.swift in Sources */ = {isa = PBXBuildFile; fileRef = 307718F71F37AAFE003A597B /* CSScope.swift */; };
-		307718FA1F3B6CEB003A597B /* JSONExtensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 307718F91F3B6CEB003A597B /* JSONExtensions.swift */; };
 		307718FE1F3CBDEA003A597B /* CSFunction.swift in Sources */ = {isa = PBXBuildFile; fileRef = 307718FD1F3CBDEA003A597B /* CSFunction.swift */; };
 		307719001F3CD3F1003A597B /* MultilevelPopupField.swift in Sources */ = {isa = PBXBuildFile; fileRef = 307718FF1F3CD3F1003A597B /* MultilevelPopupField.swift */; };
 		307B7B4F1F9A71C5001A62D9 /* MetadataEditorView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 307B7B4E1F9A71C5001A62D9 /* MetadataEditorView.swift */; };
@@ -126,7 +124,6 @@
 		301433771F5B525100525DB1 /* ListEditor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ListEditor.swift; sourceTree = "<group>"; };
 		301493A61EC0F415005BC573 /* CanvasView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CanvasView.swift; sourceTree = "<group>"; };
 		301D7EDB1F47A29D0098AB0D /* Modules */ = {isa = PBXFileReference; lastKnownFileType = folder; path = Modules; sourceTree = "<group>"; };
-		3030311A1F34E4E80078086F /* CSJSON.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CSJSON.swift; sourceTree = "<group>"; };
 		30335A061F5A2878006E507B /* URLExtensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = URLExtensions.swift; sourceTree = "<group>"; };
 		30335A0B1F5B2F8B006E507B /* CaseList.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CaseList.swift; sourceTree = "<group>"; };
 		30335A0F1F5B3023006E507B /* CSCase.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CSCase.swift; sourceTree = "<group>"; };
@@ -162,7 +159,6 @@
 		307718F11F365BCD003A597B /* CSValue.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CSValue.swift; sourceTree = "<group>"; };
 		307718F31F366AEA003A597B /* CSValueField.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CSValueField.swift; sourceTree = "<group>"; };
 		307718F71F37AAFE003A597B /* CSScope.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CSScope.swift; sourceTree = "<group>"; };
-		307718F91F3B6CEB003A597B /* JSONExtensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = JSONExtensions.swift; sourceTree = "<group>"; };
 		307718FD1F3CBDEA003A597B /* CSFunction.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CSFunction.swift; sourceTree = "<group>"; };
 		307718FF1F3CD3F1003A597B /* MultilevelPopupField.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MultilevelPopupField.swift; sourceTree = "<group>"; };
 		307B7B4E1F9A71C5001A62D9 /* MetadataEditorView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MetadataEditorView.swift; sourceTree = "<group>"; };
@@ -376,7 +372,6 @@
 			children = (
 				3094DFE21F68D19C00E5C7F0 /* CALayerExtensions.swift */,
 				30F4FD541F76B9DB0048691C /* DictionaryExtensions.swift */,
-				307718F91F3B6CEB003A597B /* JSONExtensions.swift */,
 				30A3F13D1F300294004C7631 /* NSColorExtensions.swift */,
 				306D2FEF1F847DCB00907B4E /* NSImageExtensions.swift */,
 				30D9B40D1F79BADC00C8A3D4 /* NSMenuExtensions.swift */,
@@ -405,7 +400,6 @@
 				3090D7D21F032305009277E7 /* CSComponentLayer.swift */,
 				309777711F2BA78E004C8975 /* CSData.swift */,
 				307718FD1F3CBDEA003A597B /* CSFunction.swift */,
-				3030311A1F34E4E80078086F /* CSJSON.swift */,
 				3090D7921F01B2EF009277E7 /* CSLayer.swift */,
 				3090D78C1F01B050009277E7 /* CSParameter.swift */,
 				307718F71F37AAFE003A597B /* CSScope.swift */,
@@ -631,7 +625,6 @@
 				30902A281F7B208A00B938BE /* CanvasCollectionView.swift in Sources */,
 				30D799821F2BE90E00EF12D7 /* SettingRow.swift in Sources */,
 				30C8BC321EDB758C00B99F1B /* Canvas.swift in Sources */,
-				3030311B1F34E4E80078086F /* CSJSON.swift in Sources */,
 				3003027C1EDCE0880085E140 /* CSComponent.swift in Sources */,
 				304004331ED8AB5A00AFCF2D /* CanvasListEditor.swift in Sources */,
 				3056275E1FBA0C0700026796 /* CSConstraint.swift in Sources */,
@@ -668,7 +661,6 @@
 				301433781F5B525100525DB1 /* ListEditor.swift in Sources */,
 				305A19581F463BD300EA033C /* NSTextFieldExtensions.swift in Sources */,
 				3069E09C1F324C550005E9A8 /* CSWorkspacePreferences.swift in Sources */,
-				307718FA1F3B6CEB003A597B /* JSONExtensions.swift in Sources */,
 				300302761EDCDA030085E140 /* LogicListView.swift in Sources */,
 				304478BC1F32923700FD06E0 /* NSPointExtensions.swift in Sources */,
 				3040EFC81F2FAC9C007C5368 /* Operators.swift in Sources */,
