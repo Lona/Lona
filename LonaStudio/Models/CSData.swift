@@ -284,8 +284,6 @@ enum CSData: Equatable, CustomDebugStringConvertible {
     }
     
     static func from(fileAtPath path: String) -> CSData? {
-//        let contents = FileManager.default.contents(atPath: path)
-        
         if let contents = try? Data(contentsOf: URL(fileURLWithPath: path)) {
             return CSData.from(data: contents)
         } else {
