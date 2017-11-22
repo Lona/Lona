@@ -112,19 +112,7 @@ class Document: NSDocument {
 
     override func read(from data: Data, ofType typeName: String) throws {
         guard let json = try? JSONSerialization.jsonObject(with: data) else { return }
-        
-//        let obj = NSDictionary(dictionary: [
-//            "paddingTop": 12,
-//            "paddingBottom": 0,
-//            "paddingLeft": 1,
-//            "visible": NSNumber.init(value: false),
-//            "ok": NSNumber.init(value: true),
-//        ])
-        
-//        let test = CSData.from(json: obj)
-        
-//        Swift.print(test)
-        
+
         file = CSComponent(CSData.from(json: json))
         
         // Insert code here to read your document from the given data of the specified type. If outError != nil, ensure that you create and set an appropriate error when returning false.
