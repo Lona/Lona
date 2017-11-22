@@ -170,6 +170,6 @@ Time constraints 😅
 
 ## The Team
 
-- Created by [@devinaabbott](https://twitter.com/devinaabbott)
+- Created by [@dvnabbott](https://twitter.com/devinaabbott)
 - Coding & design help by [@ryngonzalez](https://twitter.com/ryngonzalez)
 - Gorgeous logo by [@pablocar0](https://twitter.com/pablocar0)
