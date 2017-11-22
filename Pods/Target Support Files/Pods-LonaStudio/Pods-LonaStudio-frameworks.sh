@@ -92,7 +92,6 @@ if [[ "$CONFIGURATION" == "Debug" ]]; then
   install_framework "$BUILT_PRODUCTS_DIR/LetsMove/LetsMove.framework"
   install_framework "$BUILT_PRODUCTS_DIR/MASPreferences/MASPreferences.framework"
   install_framework "${PODS_ROOT}/Sparkle/Sparkle.framework"
-  install_framework "$BUILT_PRODUCTS_DIR/SwiftyJSON/SwiftyJSON.framework"
   install_framework "$BUILT_PRODUCTS_DIR/Yoga/yoga.framework"
   install_framework "$BUILT_PRODUCTS_DIR/lottie-ios/Lottie.framework"
 fi
@@ -100,7 +99,6 @@ if [[ "$CONFIGURATION" == "Release" ]]; then
   install_framework "$BUILT_PRODUCTS_DIR/LetsMove/LetsMove.framework"
   install_framework "$BUILT_PRODUCTS_DIR/MASPreferences/MASPreferences.framework"
   install_framework "${PODS_ROOT}/Sparkle/Sparkle.framework"
-  install_framework "$BUILT_PRODUCTS_DIR/SwiftyJSON/SwiftyJSON.framework"
   install_framework "$BUILT_PRODUCTS_DIR/Yoga/yoga.framework"
   install_framework "$BUILT_PRODUCTS_DIR/lottie-ios/Lottie.framework"
 fi

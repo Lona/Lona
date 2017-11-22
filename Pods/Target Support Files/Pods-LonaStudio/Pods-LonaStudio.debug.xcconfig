@@ -1,12 +1,10 @@
-ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES
 CODE_SIGN_IDENTITY =
-FRAMEWORK_SEARCH_PATHS = $(inherited) "${PODS_ROOT}/Sparkle" "$PODS_CONFIGURATION_BUILD_DIR/LetsMove" "$PODS_CONFIGURATION_BUILD_DIR/MASPreferences" "$PODS_CONFIGURATION_BUILD_DIR/SwiftyJSON" "$PODS_CONFIGURATION_BUILD_DIR/Yoga" "$PODS_CONFIGURATION_BUILD_DIR/lottie-ios"
+FRAMEWORK_SEARCH_PATHS = $(inherited) "${PODS_ROOT}/Sparkle" "$PODS_CONFIGURATION_BUILD_DIR/LetsMove" "$PODS_CONFIGURATION_BUILD_DIR/MASPreferences" "$PODS_CONFIGURATION_BUILD_DIR/Yoga" "$PODS_CONFIGURATION_BUILD_DIR/lottie-ios"
 GCC_PREPROCESSOR_DEFINITIONS = $(inherited) COCOAPODS=1
 HEADER_SEARCH_PATHS = $(inherited) "${PODS_ROOT}/Headers/Public" "${PODS_ROOT}/Headers/Public/Sparkle"
 LD_RUNPATH_SEARCH_PATHS = @loader_path/../Frameworks $(inherited) '@executable_path/../Frameworks' '@loader_path/Frameworks'
-OTHER_CFLAGS = $(inherited) -iquote "$PODS_CONFIGURATION_BUILD_DIR/LetsMove/LetsMove.framework/Headers" -iquote "$PODS_CONFIGURATION_BUILD_DIR/MASPreferences/MASPreferences.framework/Headers" -iquote "$PODS_CONFIGURATION_BUILD_DIR/SwiftyJSON/SwiftyJSON.framework/Headers" -iquote "$PODS_CONFIGURATION_BUILD_DIR/Yoga/yoga.framework/Headers" -iquote "$PODS_CONFIGURATION_BUILD_DIR/lottie-ios/Lottie.framework/Headers" -isystem "${PODS_ROOT}/Headers/Public" -isystem "${PODS_ROOT}/Headers/Public/Sparkle"
-OTHER_LDFLAGS = $(inherited) -framework "LetsMove" -framework "Lottie" -framework "MASPreferences" -framework "Sparkle" -framework "SwiftyJSON" -framework "yoga"
-OTHER_SWIFT_FLAGS = $(inherited) "-D" "COCOAPODS"
+OTHER_CFLAGS = $(inherited) -iquote "$PODS_CONFIGURATION_BUILD_DIR/LetsMove/LetsMove.framework/Headers" -iquote "$PODS_CONFIGURATION_BUILD_DIR/MASPreferences/MASPreferences.framework/Headers" -iquote "$PODS_CONFIGURATION_BUILD_DIR/Yoga/yoga.framework/Headers" -iquote "$PODS_CONFIGURATION_BUILD_DIR/lottie-ios/Lottie.framework/Headers" -isystem "${PODS_ROOT}/Headers/Public" -isystem "${PODS_ROOT}/Headers/Public/Sparkle"
+OTHER_LDFLAGS = $(inherited) -framework "LetsMove" -framework "Lottie" -framework "MASPreferences" -framework "Sparkle" -framework "yoga"
 PODS_BUILD_DIR = $BUILD_DIR
 PODS_CONFIGURATION_BUILD_DIR = $PODS_BUILD_DIR/$(CONFIGURATION)$(EFFECTIVE_PLATFORM_NAME)
 PODS_PODFILE_DIR_PATH = ${SRCROOT}/.

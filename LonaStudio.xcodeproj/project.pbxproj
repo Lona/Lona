@@ -108,7 +108,7 @@
 		6B0AEFBE1EBF74D800F35BBF /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 6B0AEFBD1EBF74D800F35BBF /* Assets.xcassets */; };
 		6B0AEFC11EBF74D800F35BBF /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 6B0AEFBF1EBF74D800F35BBF /* Main.storyboard */; };
 		6B6017D01EBF9EFA001E02C1 /* LayerList.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6B6017CF1EBF9EFA001E02C1 /* LayerList.swift */; };
-		F37171F61E115B40A4FB0979 /* Pods_LonaStudio.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 8986E60CAD89C801A91157E8 /* Pods_LonaStudio.framework */; };
+		852F99822FC11DB73CF8054F /* Pods_LonaStudio.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = BEBB1F9781BB0743EBCD0459 /* Pods_LonaStudio.framework */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -216,12 +216,9 @@
 		6B0AEFC01EBF74D800F35BBF /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/Main.storyboard; sourceTree = "<group>"; };
 		6B0AEFC21EBF74D800F35BBF /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		6B6017CF1EBF9EFA001E02C1 /* LayerList.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = LayerList.swift; sourceTree = "<group>"; };
-		78F9E7BA57D9765A7641E11E /* Pods_ComponentStudio.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_ComponentStudio.framework; sourceTree = BUILT_PRODUCTS_DIR; };
-		8851EC557E77D133BC1ACFD3 /* Pods-LonaStudio.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-LonaStudio.release.xcconfig"; path = "Pods/Target Support Files/Pods-LonaStudio/Pods-LonaStudio.release.xcconfig"; sourceTree = "<group>"; };
-		8986E60CAD89C801A91157E8 /* Pods_LonaStudio.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_LonaStudio.framework; sourceTree = BUILT_PRODUCTS_DIR; };
-		C9BC70B83C813B255385A6DC /* Pods-ComponentStudio.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-ComponentStudio.debug.xcconfig"; path = "Pods/Target Support Files/Pods-ComponentStudio/Pods-ComponentStudio.debug.xcconfig"; sourceTree = "<group>"; };
-		DE51EEDF8E841C591C2777F0 /* Pods-LonaStudio.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-LonaStudio.debug.xcconfig"; path = "Pods/Target Support Files/Pods-LonaStudio/Pods-LonaStudio.debug.xcconfig"; sourceTree = "<group>"; };
-		F671541D955F8217187CAF7F /* Pods-ComponentStudio.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-ComponentStudio.release.xcconfig"; path = "Pods/Target Support Files/Pods-ComponentStudio/Pods-ComponentStudio.release.xcconfig"; sourceTree = "<group>"; };
+		94DF295B29B39CF8D9CD4857 /* Pods-LonaStudio.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-LonaStudio.release.xcconfig"; path = "Pods/Target Support Files/Pods-LonaStudio/Pods-LonaStudio.release.xcconfig"; sourceTree = "<group>"; };
+		BEBB1F9781BB0743EBCD0459 /* Pods_LonaStudio.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_LonaStudio.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		F8FBB9AD90B69BBD8BDE30B0 /* Pods-LonaStudio.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-LonaStudio.debug.xcconfig"; path = "Pods/Target Support Files/Pods-LonaStudio/Pods-LonaStudio.debug.xcconfig"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -229,7 +226,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				F37171F61E115B40A4FB0979 /* Pods_LonaStudio.framework in Frameworks */,
+				852F99822FC11DB73CF8054F /* Pods_LonaStudio.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -431,22 +428,13 @@
 			path = Scripting;
 			sourceTree = "<group>";
 		};
-		4E7D3BFDDA1EE9AC7A3E818C /* Frameworks */ = {
-			isa = PBXGroup;
-			children = (
-				78F9E7BA57D9765A7641E11E /* Pods_ComponentStudio.framework */,
-				8986E60CAD89C801A91157E8 /* Pods_LonaStudio.framework */,
-			);
-			name = Frameworks;
-			sourceTree = "<group>";
-		};
 		6B0AEFAB1EBF74D700F35BBF = {
 			isa = PBXGroup;
 			children = (
 				6B0AEFB61EBF74D800F35BBF /* LonaStudio */,
-				4E7D3BFDDA1EE9AC7A3E818C /* Frameworks */,
-				E716B17C5498B98F3AF13018 /* Pods */,
 				6B0AEFB51EBF74D800F35BBF /* Products */,
+				D1807AB963C424BB4AF6C87B /* Pods */,
+				9C054121CD134CBF874672F1 /* Frameworks */,
 			);
 			sourceTree = "<group>";
 		};
@@ -485,13 +473,19 @@
 			path = LonaStudio;
 			sourceTree = "<group>";
 		};
-		E716B17C5498B98F3AF13018 /* Pods */ = {
+		9C054121CD134CBF874672F1 /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
-				C9BC70B83C813B255385A6DC /* Pods-ComponentStudio.debug.xcconfig */,
-				F671541D955F8217187CAF7F /* Pods-ComponentStudio.release.xcconfig */,
-				DE51EEDF8E841C591C2777F0 /* Pods-LonaStudio.debug.xcconfig */,
-				8851EC557E77D133BC1ACFD3 /* Pods-LonaStudio.release.xcconfig */,
+				BEBB1F9781BB0743EBCD0459 /* Pods_LonaStudio.framework */,
+			);
+			name = Frameworks;
+			sourceTree = "<group>";
+		};
+		D1807AB963C424BB4AF6C87B /* Pods */ = {
+			isa = PBXGroup;
+			children = (
+				F8FBB9AD90B69BBD8BDE30B0 /* Pods-LonaStudio.debug.xcconfig */,
+				94DF295B29B39CF8D9CD4857 /* Pods-LonaStudio.release.xcconfig */,
 			);
 			name = Pods;
 			sourceTree = "<group>";
@@ -503,12 +497,12 @@
 			isa = PBXNativeTarget;
 			buildConfigurationList = 6B0AEFC51EBF74D800F35BBF /* Build configuration list for PBXNativeTarget "LonaStudio" */;
 			buildPhases = (
-				BEF73B24DB4D16F87CC5DED8 /* [CP] Check Pods Manifest.lock */,
+				750106ABBB21D71696CF6A14 /* [CP] Check Pods Manifest.lock */,
 				6B0AEFB01EBF74D700F35BBF /* Sources */,
 				6B0AEFB11EBF74D700F35BBF /* Frameworks */,
 				6B0AEFB21EBF74D700F35BBF /* Resources */,
-				DCE6E31B83AF9769C0CB60EF /* [CP] Embed Pods Frameworks */,
-				93CFD3E7C8035DEE1104507C /* [CP] Copy Pods Resources */,
+				F944C75FA8057692958B7ED8 /* [CP] Embed Pods Frameworks */,
+				0933199BFDE4D26C2D8CE1EC /* [CP] Copy Pods Resources */,
 			);
 			buildRules = (
 			);
@@ -570,7 +564,7 @@
 /* End PBXResourcesBuildPhase section */
 
 /* Begin PBXShellScriptBuildPhase section */
-		93CFD3E7C8035DEE1104507C /* [CP] Copy Pods Resources */ = {
+		0933199BFDE4D26C2D8CE1EC /* [CP] Copy Pods Resources */ = {
 			isa = PBXShellScriptBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
@@ -585,7 +579,7 @@
 			shellScript = "\"${SRCROOT}/Pods/Target Support Files/Pods-LonaStudio/Pods-LonaStudio-resources.sh\"\n";
 			showEnvVarsInLog = 0;
 		};
-		BEF73B24DB4D16F87CC5DED8 /* [CP] Check Pods Manifest.lock */ = {
+		750106ABBB21D71696CF6A14 /* [CP] Check Pods Manifest.lock */ = {
 			isa = PBXShellScriptBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
@@ -600,7 +594,7 @@
 			shellScript = "diff \"${PODS_PODFILE_DIR_PATH}/Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n";
 			showEnvVarsInLog = 0;
 		};
-		DCE6E31B83AF9769C0CB60EF /* [CP] Embed Pods Frameworks */ = {
+		F944C75FA8057692958B7ED8 /* [CP] Embed Pods Frameworks */ = {
 			isa = PBXShellScriptBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
@@ -841,7 +835,7 @@
 		};
 		6B0AEFC61EBF74D800F35BBF /* Debug */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = DE51EEDF8E841C591C2777F0 /* Pods-LonaStudio.debug.xcconfig */;
+			baseConfigurationReference = F8FBB9AD90B69BBD8BDE30B0 /* Pods-LonaStudio.debug.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_IDENTITY = "";
@@ -863,7 +857,7 @@
 		};
 		6B0AEFC71EBF74D800F35BBF /* Release */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = 8851EC557E77D133BC1ACFD3 /* Pods-LonaStudio.release.xcconfig */;
+			baseConfigurationReference = 94DF295B29B39CF8D9CD4857 /* Pods-LonaStudio.release.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_IDENTITY = "Mac Developer";
