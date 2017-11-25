@@ -25,7 +25,7 @@ final class CSParameter: CSDataDeserializable, CSDataSerializable, DataNode {
     
     init(_ json: CSData) {
         name = json.get(key: "name").stringValue
-        type = CSType.from(string: json.get(key: "type").stringValue)
+        type = CSType(json.get(key: "type"))
         
         if let object = json["defaultValue"] {
             defaultValue = CSValue(object)
