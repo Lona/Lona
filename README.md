@@ -84,7 +84,7 @@ The easiest way to use Lona Studio is by downloading the prebuilt Mac App binary
 
 ## Building from Source
 
-First, make sure you have Cocoapods installed. Then checkout the repo and run:
+First, make sure you have [`bundler`](http://bundler.io/) and [Cocoapods](https://cocoapods.org/) installed. Then checkout the repo and run:
 
 `bundle && bundle exec pod install`
 
