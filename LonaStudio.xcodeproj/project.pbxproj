@@ -357,13 +357,6 @@
 			path = Preferences;
 			sourceTree = "<group>";
 		};
-		30990AAA1FA2891C00BC0CCE /* Landing */ = {
-			isa = PBXGroup;
-			children = (
-			);
-			path = Landing;
-			sourceTree = "<group>";
-		};
 		30C8BC291EDB640500B99F1B /* Extensions */ = {
 			isa = PBXGroup;
 			children = (
@@ -459,7 +452,6 @@
 				6B0AEFBB1EBF74D800F35BBF /* Document.swift */,
 				30C8BC291EDB640500B99F1B /* Extensions */,
 				6B0AEFC21EBF74D800F35BBF /* Info.plist */,
-				30990AAA1FA2891C00BC0CCE /* Landing */,
 				301433791F5C7AD100525DB1 /* ListEditors */,
 				3030311D1F34E6A70078086F /* LogicList */,
 				6B0AEFBF1EBF74D800F35BBF /* Main.storyboard */,
