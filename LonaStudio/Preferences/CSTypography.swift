@@ -37,6 +37,7 @@ class CSTypography: CSPreferencesFile {
             let lineHeight = CGFloat(font["lineHeight"]?.number ?? Double(fontSize))
             let kerning = font["letterSpacing"]?.number ?? 0
             let color = CSColors.parse(css: font["color"]?.string ?? "black", withDefault: NSColor.black).color
+            let textAlign = font["textAlign"]?.string ?? "left"
             
             let font = AttributedFont(
                 fontFamily: fontFamily,
@@ -44,7 +45,8 @@ class CSTypography: CSPreferencesFile {
                 lineHeight: lineHeight,
                 kerning: kerning,
                 weight: convertFontWeight(fontWeight: fontWeight),
-                color: color
+                color: color,
+                textAlignment: convertTextAlignment(textAlign: textAlign)
             )
             
             return (name, id, font)
@@ -55,6 +57,15 @@ class CSTypography: CSPreferencesFile {
         if (fontWeight < 400) { return AttributedFontWeight.standard }
         if (fontWeight < 600) { return AttributedFontWeight.medium }
         return AttributedFontWeight.bold
+    }
+    
+    static private func convertTextAlignment(textAlign: String) -> NSTextAlignment {
+        if (textAlign == "left") { return NSTextAlignment.left }
+        if (textAlign == "right") { return NSTextAlignment.right }
+        if (textAlign == "center") { return NSTextAlignment.center }
+        if (textAlign == "justify") { return NSTextAlignment.justified }
+        
+        return NSTextAlignment.left
     }
     
     private static func getOptionalFontBy(id: String) -> CSTextStyle? {
@@ -96,7 +107,8 @@ class CSTypography: CSPreferencesFile {
             fontSize: 17,
             lineHeight: 22,
             kerning: 0.2,
-            weight: .standard
+            weight: .standard,
+            textAlignment: .left
         )
     )
 }
