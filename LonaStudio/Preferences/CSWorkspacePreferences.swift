@@ -9,12 +9,12 @@
 import Foundation
 
 func defaultWorkspaceURL() -> URL {
-    return preferencesDirectory().appendingPathComponent("ComponentStudioWorkspace", isDirectory: true)
+    return preferencesDirectory().appendingPathComponent("LonaWorkspace", isDirectory: true)
 }
 
 class CSWorkspacePreferences: CSPreferencesFile {
     static var url: URL {
-        return workspaceURL.appendingPathComponent("csworkspace.json")
+        return workspaceURL.appendingPathComponent("workspace.json")
     }
     
     static var data: CSData = load()

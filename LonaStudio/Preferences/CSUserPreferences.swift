@@ -22,7 +22,7 @@ func preferencesDirectory() -> URL {
 
 class CSUserPreferences: CSPreferencesFile {
     static var url: URL {
-        return preferencesDirectory().appendingPathComponent(".componentstudio")
+        return preferencesDirectory().appendingPathComponent(".lonastudio")
     }
     
     static var data: CSData = load()
