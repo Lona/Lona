@@ -636,8 +636,8 @@ class ViewController: NSViewController, NSOutlineViewDataSource, NSOutlineViewDe
         
         if layer.type == "Component", let layer = layer as? CSComponentLayer {
             let views: [(view: NSView, keyView: NSView)] = layer.component.parameters.map({ parameter in
-                let json = layer.parameters[parameter.name] ?? CSData.Null
-                let value = CSValue(type: parameter.type, data: CSData.from(json: json))
+                let data = layer.parameters[parameter.name] ?? CSData.Null
+                let value = CSValue(type: parameter.type, data: data)
                 var usesYogaLayout = true
                 if case .named("URL", .string) = value.type {
                     usesYogaLayout = false
