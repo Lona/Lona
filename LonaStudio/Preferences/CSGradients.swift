@@ -25,7 +25,7 @@ struct CSGradient {
 
 class CSGradients: CSPreferencesFile {
     static var url: URL {
-        return CSWorkspacePreferences.workspaceURL.appendingPathComponent("csgradients.json")
+        return CSWorkspacePreferences.workspaceURL.appendingPathComponent("gradients.json")
     }
     
     static private var parsedGradients: [CSGradient] = parse(data)

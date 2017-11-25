@@ -11,7 +11,7 @@ import AppKit
 
 class CSColors: CSPreferencesFile {
     static var url: URL {
-        return CSWorkspacePreferences.workspaceURL.appendingPathComponent("cscolors.json")
+        return CSWorkspacePreferences.workspaceURL.appendingPathComponent("colors.json")
     }
     
     static private var parsedColors: [CSColor] = parse(data)

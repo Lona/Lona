@@ -13,7 +13,7 @@ public typealias CSTextStyle = (name: String, id: String, font: AttributedFont)
 
 class CSTypography: CSPreferencesFile {
     static var url: URL {
-        return CSWorkspacePreferences.workspaceURL.appendingPathComponent("cstypography.json")
+        return CSWorkspacePreferences.workspaceURL.appendingPathComponent("textStyles.json")
     }
     
     static private var parsedStyles: [CSTextStyle] = parse(data)

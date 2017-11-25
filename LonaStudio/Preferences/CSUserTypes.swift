@@ -11,7 +11,7 @@ import AppKit
 
 class CSUserTypes: CSPreferencesFile {
     static var url: URL {
-        return CSWorkspacePreferences.workspaceURL.appendingPathComponent("cstypes.json")
+        return CSWorkspacePreferences.workspaceURL.appendingPathComponent("types.json")
     }
     
     static var loaded = false
