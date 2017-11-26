@@ -38,7 +38,7 @@ if (!outputDirectory) {
 
 async function buildColors() {
   const colors = await fse.readJson(
-    path.join(workspaceDirectory, 'cscolors.json'),
+    path.join(workspaceDirectory, 'colors.json'),
   );
 
   return convertColors(colors);
@@ -46,7 +46,7 @@ async function buildColors() {
 
 async function buildFonts(colors) {
   const typography = await fse.readJson(
-    path.join(workspaceDirectory, 'cstypography.json'),
+    path.join(workspaceDirectory, 'textStyles.json'),
   );
 
   return convertFonts(typography, colors);
