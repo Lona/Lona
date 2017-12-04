@@ -125,6 +125,11 @@ extension YGNodeRef {
         set { return YGNodeStyleSetAlignItems(self, newValue) }
     }
     
+    var alginSelf: YGAlign {
+        get { return YGNodeStyleGetAlignSelf(self) }
+        set { return YGNodeStyleSetAlignSelf(self, newValue)}
+    }
+    
     var flex: CGFloat {
         get { return CGFloat(YGNodeStyleGetFlex(self)) }
         set { return YGNodeStyleSetFlex(self, Float(newValue)) }
@@ -218,6 +223,11 @@ extension YGNodeRef {
     var minHeight: CGFloat {
         get { return CGFloat(YGNodeStyleGetMinHeight(self).value) }
         set { return YGNodeStyleSetMinHeight(self, Float(newValue)) }
+    }
+    
+    var minWidthPercent: CGFloat {
+        get { return CGFloat(YGNodeStyleGetMinWidth(self).value) }
+        set { return YGNodeStyleSetMinWidthPercent(self, Float(newValue)) }
     }
     
     var maxHeight: CGFloat {
