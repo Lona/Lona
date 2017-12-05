@@ -1,0 +1,20 @@
+{
+  "name": "lona-compiler-core",
+  "version": "0.1.0",
+  "scripts": {
+    "build": "bsb -make-world",
+    "start": "bsb -make-world -w",
+    "clean": "bsb -clean-world"
+  },
+  "keywords": ["BuckleScript"],
+  "author": "",
+  "license": "MIT",
+  "devDependencies": {
+    "bs-platform": "^2.1.0"
+  },
+  "dependencies": {
+    "bs-batteries": "0.0.14",
+    "bs-json": "^0.2.4",
+    "bs-node": "github:buckletypes/bs-node"
+  }
+}

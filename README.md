@@ -118,7 +118,7 @@ Then choose a directory path:
 
 > Very very experimental. Likely won't generate usable code in its current state
 
-Run the script in `generators/react` on a Lona workspace, e.g:
+Run the script in `compiler/react` on a Lona workspace, e.g:
 
 `node index.js [my_workspace_path] output`
 
