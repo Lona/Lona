@@ -109,7 +109,6 @@
 		6B0AEFC11EBF74D800F35BBF /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 6B0AEFBF1EBF74D800F35BBF /* Main.storyboard */; };
 		6B6017D01EBF9EFA001E02C1 /* LayerList.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6B6017CF1EBF9EFA001E02C1 /* LayerList.swift */; };
 		852F99822FC11DB73CF8054F /* Pods_LonaStudio.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = BEBB1F9781BB0743EBCD0459 /* Pods_LonaStudio.framework */; };
-		BA0D85E21FD5AB1100D817C3 /* NSAnimationContextExtensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = BA0D85E11FD5AB1100D817C3 /* NSAnimationContextExtensions.swift */; };
 		BA0D85E41FD5AC2000D817C3 /* NSViewHoverExtensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = BA0D85E31FD5AC2000D817C3 /* NSViewHoverExtensions.swift */; };
 /* End PBXBuildFile section */
 
@@ -219,7 +218,6 @@
 		6B0AEFC21EBF74D800F35BBF /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		6B6017CF1EBF9EFA001E02C1 /* LayerList.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = LayerList.swift; sourceTree = "<group>"; };
 		94DF295B29B39CF8D9CD4857 /* Pods-LonaStudio.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-LonaStudio.release.xcconfig"; path = "Pods/Target Support Files/Pods-LonaStudio/Pods-LonaStudio.release.xcconfig"; sourceTree = "<group>"; };
-		BA0D85E11FD5AB1100D817C3 /* NSAnimationContextExtensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NSAnimationContextExtensions.swift; sourceTree = "<group>"; };
 		BA0D85E31FD5AC2000D817C3 /* NSViewHoverExtensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NSViewHoverExtensions.swift; sourceTree = "<group>"; };
 		BEBB1F9781BB0743EBCD0459 /* Pods_LonaStudio.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_LonaStudio.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		F8FBB9AD90B69BBD8BDE30B0 /* Pods-LonaStudio.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-LonaStudio.debug.xcconfig"; path = "Pods/Target Support Files/Pods-LonaStudio/Pods-LonaStudio.debug.xcconfig"; sourceTree = "<group>"; };
@@ -379,7 +377,6 @@
 				30516B481F43C46200940B3B /* SequenceExtensions.swift */,
 				30EFC9551EF1AA0B0087711D /* StringExtensions.swift */,
 				30335A061F5A2878006E507B /* URLExtensions.swift */,
-				BA0D85E11FD5AB1100D817C3 /* NSAnimationContextExtensions.swift */,
 				BA0D85E31FD5AC2000D817C3 /* NSViewHoverExtensions.swift */,
 			);
 			path = Extensions;
@@ -646,7 +643,6 @@
 				30CE47811ED73FC800BBF716 /* TextField.swift in Sources */,
 				30B5B19F1EC29D84002068CE /* NumberField.swift in Sources */,
 				30B5B1A71EC3BF4F002068CE /* ColorPickerButton.swift in Sources */,
-				BA0D85E21FD5AB1100D817C3 /* NSAnimationContextExtensions.swift in Sources */,
 				306D2FF01F847DCB00907B4E /* NSImageExtensions.swift in Sources */,
 				30DE88091FBA18A600D62A50 /* NSPopoverExtensions.swift in Sources */,
 				30EFC9561EF1AA0B0087711D /* StringExtensions.swift in Sources */,

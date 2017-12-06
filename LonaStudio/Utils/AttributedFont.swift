@@ -39,14 +39,22 @@ public class AttributedFont {
         self.lineBreakMode = lineBreakMode
     }
     
-    public var nsFont: NSFont {
-        if let targetFont = NSFontManager.shared().font(withFamily: fontFamily, traits: NSFontTraitMask(rawValue: 0), weight: weight.rawValue, size: fontSize) {
-            return targetFont
+    public func nsFont(_ fontSize: CGFloat) -> NSFont {
+        guard let targetFont = NSFontManager.shared()
+            .font(withFamily: fontFamily,
+                  traits: NSFontTraitMask(rawValue: 0),
+                  weight: weight.rawValue,
+                  size: fontSize) else {
+                    Swift.print("Could not find font", fontFamily, "with size", fontSize, "and weight", weight.rawValue)
+                    return NSFont.systemFont(ofSize: fontSize, weight: NSFontWeightRegular)
         }
-        
-        Swift.print("Could not find font", fontFamily, "with size", fontSize, "and weight", weight.rawValue)
-        
-        return NSFont.systemFont(ofSize: fontSize, weight: NSFontWeightRegular)
+        return targetFont
+    }
+    
+    public func apply(to string: String, fontSize: CGFloat) -> NSAttributedString {
+        return NSAttributedString(
+            string: string,
+            attributes: attributeDictionary(fontSize))
     }
     
     public func apply(to string: String) -> NSAttributedString {
@@ -79,13 +87,12 @@ public class AttributedFont {
         return paragraphStyle
     }
     
-    private func attributeDictionary() -> [String: Any] {
+    private func attributeDictionary(_ size: CGFloat? = nil) -> [String: Any] {
         return [
-            NSFontAttributeName: nsFont,
+            NSFontAttributeName: nsFont(size ?? fontSize),
             NSForegroundColorAttributeName: color,
             NSKernAttributeName: kerning,
             NSParagraphStyleAttributeName: paragraphStyle
         ]
     }
-    
 }
