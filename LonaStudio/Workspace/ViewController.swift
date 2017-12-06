@@ -96,6 +96,7 @@ class ViewController: NSViewController, NSOutlineViewDataSource, NSOutlineViewDe
         CSColors.reload()
         CSTypography.reload()
         CSGradients.reload()
+        CSShadows.reload()
         
         component.layers
             .filter({ $0 is CSComponentLayer })
