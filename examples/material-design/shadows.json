@@ -1,0 +1,12 @@
+{
+  "shadows": [
+    {
+      "id": "elevation1",
+      "name": "Elevation 1",
+      "color": "black",
+      "x": 0,
+      "y": 2,
+      "blur": 4
+    }
+  ]
+}
