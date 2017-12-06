@@ -11,7 +11,7 @@ import Cocoa
 
 class TextStyleItemView: NSView, Hoverable {
     
-    private let minHeight: CGFloat = 44.0
+    private let minHeight: CGFloat = 32.0
     private let maxHeight: CGFloat = 200.0
     private var attributeText: NSAttributedString!
     private lazy var contractAttributeText: NSAttributedString = { [unowned self] in
@@ -64,17 +64,19 @@ class TextStyleItemView: NSView, Hoverable {
         addSubview(textLayer)
     }
     
-    private func fitHeight(with attributeString: NSAttributedString, fixedWidth: CGFloat) -> CGFloat {
+    private func fitSize(with attributeString: NSAttributedString, fixedWidth: CGFloat) -> NSSize {
         let fixedSize = NSSize(width: fixedWidth, height: maxHeight)
         return attributeString.boundingRect(with: fixedSize,
-                                                options: .usesFontLeading).height
+                                                options: .usesFontLeading).size
     }
     
     private func calculateFitSize() {
-        var height = fitHeight(with: attributeText, fixedWidth: bounds.width)
+        let size = fitSize(with: attributeText, fixedWidth: bounds.width)
+        Swift.print(size)
+        var height = size.height
         height = min(height, maxHeight)
         height = max(height, minHeight)
-        frame.size.height = height
+        frame.size = NSSize(width: size.width, height: height)
     }
     
     // MARK: - Override
@@ -85,8 +87,6 @@ class TextStyleItemView: NSView, Hoverable {
     }
     
     override func mouseEntered(with theEvent: NSEvent) {
-        
-        
         startHover { [weak self] in
             guard let strongSelf = `self` else { return }
             strongSelf.textLayer.attributedStringValue = strongSelf.contractAttributeText
@@ -109,7 +109,7 @@ class TextStylePickerView: NSView {
 
     // MARK: - Init
     init() {
-        super.init(frame: NSRect(x: 0, y: 0, width: 800, height: 600))
+        super.init(frame: NSRect(x: 0, y: 0, width: 400, height: 600))
         
         setupLayout()
         setupYoga()
@@ -118,6 +118,11 @@ class TextStylePickerView: NSView {
     
     required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
+    }
+    
+    func embeddedViewController() -> NSViewController {
+        let controller = NSViewController(view: self)
+        return controller
     }
     
     // MARK: - Private
@@ -130,22 +135,24 @@ class TextStylePickerView: NSView {
     
     private func setupLayout() {
         var totalHeight: CGFloat = 0.0
+        var maxWidth: CGFloat = 0.0
+        
         let items = CSTypography.styles.map { (style) -> TextStyleItemView in
             let item = TextStyleItemView(textStyle: style)
             item.onClick = { [weak self] in
                 guard let strongSelf = self else { return }
-                Swift.print("Font", style.name)
                 strongSelf.onClickFont?(style)
             }
             totalHeight += item.frame.height
+            maxWidth = max(item.frame.width, maxWidth)
             return item
         }
-        items.forEach { item in
-            self.addSubview(item)
-        }
         
-        // Overide height
-        frame.size.height = totalHeight
+        // Add subview
+        items.forEach { addSubview($0) }
+        
+        // Override size depend on content
+        frame.size = NSSize(width: maxWidth + 16.0, height: totalHeight)
     }
     
     // MARK: - Override

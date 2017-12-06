@@ -56,9 +56,6 @@ extension Hoverable where Self: NSView {
     }
     
     private func animateHover(_ block: () -> Void) {
-        NSAnimationContext.defaultAnimate({ (context) in
-            context.duration = 0.05
-            block()
-        })
+        block()
     }
 }
