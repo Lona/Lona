@@ -22,7 +22,7 @@ The optional `"defaultStyleId"` determines the style of newly-created text withi
 
 ### Sample File
 
-`cscolors.json`
+`textStyles.json`
 
 ```json
 {
