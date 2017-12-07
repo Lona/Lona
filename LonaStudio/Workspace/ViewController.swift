@@ -327,9 +327,9 @@ class ViewController: NSViewController, NSOutlineViewDataSource, NSOutlineViewDe
     var component: CSComponent = CSComponent(
         name: "Component",
         canvas: [
-            Canvas(visible: true, name: "iPhone SE", width: 320, height: 100, heightMode: "At Least", exportScale: 1, backgroundColor: "white"),
-            Canvas(visible: true, name: "iPhone 7", width: 375, height: 100, heightMode: "At Least", exportScale: 1, backgroundColor: "white"),
-            Canvas(visible: true, name: "iPhone 7+", width: 414, height: 100, heightMode: "At Least", exportScale: 1, backgroundColor: "white"),
+            Canvas(visible: true, name: "iPhone SE", width: 320, height: 568, heightMode: "At Least", exportScale: 1, backgroundColor: "white"),
+            Canvas(visible: true, name: "iPhone 7", width: 375, height: 667, heightMode: "At Least", exportScale: 1, backgroundColor: "white"),
+            Canvas(visible: true, name: "iPhone 7+", width: 414, height: 736, heightMode: "At Least", exportScale: 1, backgroundColor: "white"),
         ],
         rootLayer: CSLayer(name: "View", type: "View", parameters: [
             "alignSelf": "stretch".toData(),
