@@ -9,119 +9,6 @@
 import Foundation
 import Cocoa
 
-class TextStyleItemView: NSView, Hoverable {
-    
-    private let minHeight: CGFloat = 32.0
-    private let maxHeight: CGFloat = 200.0
-    private var attributeText: NSAttributedString!
-    private lazy var contractAttributeText: NSAttributedString = {
-        var highlight = NSMutableAttributedString(attributedString: self.attributeText)
-        highlight.addAttributes([NSForegroundColorAttributeName: NSColor.white],
-                                range: NSRange(location: 0, length: self.attributeText.length))
-        return highlight
-    }()
-    private var textLayer: NSTextField!
-    private var tickImageView: NSImageView!
-    
-    var onClick: (() -> Void)?
-    var isSelected: Bool = false {
-        didSet {
-            if isSelected {
-                addSubview(tickImageView, positioned: NSWindowOrderingMode.below, relativeTo: nil)
-            } else {
-                tickImageView.removeFromSuperview()
-            }
-        }
-    }
-
-    // MARK: - Init
-    init(frame frameRect: NSRect, textStyle: CSTextStyle) {
-        super.init(frame: frameRect)
-        
-        setupTicketImageView()
-        setupLayout(textStyle: textStyle)
-        calculateFitSize()
-        setupYoga()
-        startTrackingHover()
-    }
-    
-    convenience init(textStyle: CSTextStyle) {
-        self.init(frame: NSRect.zero, textStyle: textStyle)
-    }
-    
-    required init?(coder: NSCoder) {
-        fatalError("init(coder:) has not been implemented")
-    }
-    
-    deinit {
-        removeTrackingHover()
-    }
-    
-    // MARK: - Private
-    private func setupYoga() {
-        useYogaLayout = true
-        ygNode?.alginSelf = .stretch
-        ygNode?.minWidthPercent = 100
-        ygNode?.justifyContent = .flexStart
-        ygNode?.flexDirection = .row
-        ygNode?.alignItems = .center
-        ygNode?.paddingLeft = 8
-    }
-    
-    private func setupTicketImageView() {
-        tickImageView = NSImageView(frame: NSRect(x: 0, y: 0, width: 16, height: 16))
-        tickImageView.image = NSImage(named: "icon-layer-list-tick")!
-        tickImageView.useYogaLayout = true
-        tickImageView.isHidden = false
-        tickImageView.ygNode?.marginRight = 8
-    }
-    
-    private func setupLayout(textStyle: CSTextStyle) {
-        attributeText = textStyle.font.apply(to: textStyle.name)
-        textLayer = NSTextField(labelWithAttributedString: attributeText)
-        textLayer.useYogaLayout = true
-        addSubview(textLayer)
-    }
-    
-    private func fitSize(with attributeString: NSAttributedString, fixedWidth: CGFloat) -> NSSize {
-        let fixedSize = NSSize(width: fixedWidth, height: maxHeight)
-        return attributeString.boundingRect(with: fixedSize,
-                                                options: .usesFontLeading).size
-    }
-    
-    private func calculateFitSize() {
-        let size = fitSize(with: attributeText, fixedWidth: bounds.width)
-        Swift.print(size)
-        var height = size.height
-        height = min(height, maxHeight)
-        height = max(height, minHeight)
-        frame.size = NSSize(width: size.width + 48, height: height)
-    }
-    
-    // MARK: - Override
-    override var isFlipped: Bool { return true }
-    
-    override func mouseDown(with event: NSEvent) {
-        onClick?()
-    }
-    
-    override func mouseEntered(with theEvent: NSEvent) {
-        startHover { [weak self] in
-            guard let strongSelf = `self` else { return }
-            strongSelf.textLayer.attributedStringValue = strongSelf.contractAttributeText
-            strongSelf.backgroundFill = NSColor.parse(css: "#0169D9")!.cgColor
-        }
-    }
-    
-    override func mouseExited(with theEvent: NSEvent) {
-        stopHover { [weak self] in
-            guard let strongSelf = `self` else { return }
-            strongSelf.textLayer.attributedStringValue = strongSelf.attributeText
-            strongSelf.backgroundFill = NSColor.clear.cgColor
-        }
-    }
-}
-
 class TextStylePickerView: NSView {
     
     // MARK: - Variable
@@ -136,8 +23,6 @@ class TextStylePickerView: NSView {
         
         super.init(frame: NSRect.zero )
         translatesAutoresizingMaskIntoConstraints = false
-        widthAnchor.constraint(equalToConstant: 600).isActive = true
-        
         textStyles = CSTypography.styles
         
         let textList = TextStyleList(textStyles: textStyles, selection: selectedID) {[unowned self] textStyle in
@@ -178,17 +63,19 @@ class TextStylePickerView: NSView {
             })
             ])
         
-        let stackView = NSStackView(views: [searchField, textList], orientation: .vertical, stretched: true)
+        let searchViewStackView = NSStackView(views: [searchField], orientation: .horizontal, stretched: true)
+        searchViewStackView.edgeInsets = EdgeInsets(top: 0, left: 8, bottom: 0, right: 8)
+        let stackView = NSStackView(views: [searchViewStackView, textList], orientation: .vertical, stretched: true)
         stackView.translatesAutoresizingMaskIntoConstraints = false
         stackView.spacing = 8
-        stackView.edgeInsets = EdgeInsets(top: 8, left: 8, bottom: 8, right: 8)
+        stackView.edgeInsets = EdgeInsets(top: 8, left: 0, bottom: 8, right: 0)
         
         addSubview(stackView)
         
         stackView.topAnchor.constraint(equalTo: topAnchor, constant: 8).isActive = true
         stackView.heightAnchor.constraint(equalTo: heightAnchor, multiplier: 1).isActive = true
-        stackView.leftAnchor.constraint(equalTo: leftAnchor, constant: 8).isActive = true
-        stackView.rightAnchor.constraint(equalTo: rightAnchor, constant: -8).isActive = true
+        stackView.leftAnchor.constraint(equalTo: leftAnchor, constant: 0).isActive = true
+        stackView.rightAnchor.constraint(equalTo: rightAnchor, constant: 0).isActive = true
     }
     
     required init?(coder: NSCoder) {
@@ -207,10 +94,17 @@ class TextStylePickerView: NSView {
 class TextStyleList: NSScrollView, NSTableViewDelegate, NSTableViewDataSource {
     
     // MARK: - Variable
-    private let minHeight: CGFloat = 32.0
-    private let maxHeight: CGFloat = 200.0
+    private struct Constant {
+        static let minWidth: CGFloat = 100
+        static let maxWidth: CGFloat = 1000
+        static let minHeightRow: CGFloat = 32.0
+        static let maxHeightRow: CGFloat = 200.0
+        static let minHeight: CGFloat = 100
+        static let maxHeight: CGFloat = 1000
+    }
+
     let tableView = NSTableView(frame: NSRect.zero)
-    private var heightRows: [String: CGFloat] = [:]
+    private var sizeRows: [String: NSSize] = [:]
     var onSelectColor: (CSTextStyle) -> Void
     var textStyles: [CSTextStyle]
     var selectedID: String
@@ -225,6 +119,7 @@ class TextStyleList: NSScrollView, NSTableViewDelegate, NSTableViewDataSource {
         
         setupCommon()
         cacheSize(textStyles)
+        fitSize()
         setupTableView()
         scrollToSelection()
     }
@@ -235,7 +130,6 @@ class TextStyleList: NSScrollView, NSTableViewDelegate, NSTableViewDataSource {
     
     private func setupCommon() {
         translatesAutoresizingMaskIntoConstraints = false
-        heightAnchor.constraint(equalToConstant: 400).isActive = true
         drawsBackground = false
         hasVerticalScroller = true
     }
@@ -261,8 +155,8 @@ class TextStyleList: NSScrollView, NSTableViewDelegate, NSTableViewDataSource {
     }
     
     // MARK: - Public func
-    func update(textStyles: [CSTextStyle]?, selectedID: String) {
-        self.textStyles = textStyles ?? []
+    func update(textStyles: [CSTextStyle], selectedID: String) {
+        self.textStyles = textStyles
         self.selectedID = selectedID
         
         // Reload and scroll
@@ -286,18 +180,17 @@ class TextStyleList: NSScrollView, NSTableViewDelegate, NSTableViewDataSource {
     
     func tableView(_ tableView: NSTableView, heightOfRow row: Int) -> CGFloat {
         let textStyle = textStyles[row]
-        if let height = heightRows[textStyle.id] {
-            return height
+        if let size = sizeRows[textStyle.id] {
+            return size.height
         }
-        return 200
+        return Constant.minHeightRow
     }
     
     func tableViewSelectionDidChange(_ notification: Notification) {
         tableView.enumerateAvailableRowViews { (rowView, row) in
-            let colorRow = rowView.view(atColumn: 0) as? TextStyleRow
-            colorRow?.update(selected: rowView.isSelected)
+            let colorRow = rowView.view(atColumn: 0) as! TextStyleRow
+            colorRow.update(selected: rowView.isSelected)
         }
-        
         onSelectColor(textStyles[tableView.selectedRow])
     }
     
@@ -308,26 +201,45 @@ class TextStyleList: NSScrollView, NSTableViewDelegate, NSTableViewDataSource {
     }
     
     // MARK: - Calculate size for rows
-    private func fitSize(with attributeString: NSAttributedString, fixedWidth: CGFloat) -> NSSize {
-        let fixedSize = NSSize(width: fixedWidth, height: maxHeight)
+    private func fitSize(with attributeString: NSAttributedString) -> NSSize {
+        let fixedSize = NSSize(width: Constant.maxWidth, height: Constant.maxHeightRow)
         return attributeString.boundingRect(with: fixedSize,
                                             options: .usesFontLeading).size
     }
     
-    private func calculateFitSize(_ attributeText: NSAttributedString) -> CGFloat {
-        let size = fitSize(with: attributeText, fixedWidth: bounds.width)
+    private func fitTextSize(_ attributeText: NSAttributedString) -> NSSize {
+        let size = fitSize(with: attributeText)
         var height = size.height
-        height = min(height, maxHeight)
-        height = max(height, minHeight)
-        return height
+        height = min(height, Constant.maxHeightRow)
+        height = max(height, Constant.minHeightRow)
+        return NSSize(width: size.width, height: height)
     }
     
     fileprivate func cacheSize(_ textStyles: [CSTextStyle]) {
         for textStyle in textStyles {
             let text = textStyle.font.apply(to: textStyle.name)
-            let height = self.calculateFitSize(text)
-            self.heightRows[textStyle.id] = height
+            let size = fitTextSize(text)
+            sizeRows[textStyle.id] = size
         }
+    }
+    
+    fileprivate func fitSize() {
+        var height: CGFloat = 0.0
+        var width = Constant.minWidth
+        sizeRows.forEach { (_, size) in
+            height += size.height
+            if size.width > width {
+                width = size.width
+            }
+        }
+        
+        // Make sure the size is in appropriate range
+        height = max(min(height, Constant.maxHeight), Constant.minHeight)
+        width = max(min(width, Constant.maxWidth), Constant.minWidth)
+        
+        // Override Width/Height of entire NSPopover
+        heightAnchor.constraint(equalToConstant: height).isActive = true
+        widthAnchor.constraint(equalToConstant: width + 44).isActive = true
     }
     
     // MARK: - Scroll
@@ -370,7 +282,7 @@ class TextStyleRow: NSStackView, Hoverable {
         orientation = .horizontal
         distribution = .fill
         alignment = .centerY
-        edgeInsets = EdgeInsets(top: 0, left: 4, bottom: 0, right: 4)
+        edgeInsets = EdgeInsets(top: 0, left: 8, bottom: 0, right: 8)
         tickView.setContentHuggingPriority(251, for: .horizontal)
         
         addArrangedSubview(titleView)
