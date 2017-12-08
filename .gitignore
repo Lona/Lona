@@ -66,6 +66,13 @@ fastlane/Preview.html
 fastlane/screenshots
 fastlane/test_output
 
+## OS X files
+.DS_Store
+.DS_Store?
+.Trashes
+.Spotlight-V100
+*.swp
+
 # ------ CUSTOM -----
 
 dmg/*.zip
