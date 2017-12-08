@@ -11,7 +11,7 @@ public enum AttributedFontWeight: Int {
 public class AttributedFont {
     
     public let fontFamily: String
-    public let fontSize: CGFloat
+    public var fontSize: CGFloat
     public let lineHeight: CGFloat
     public let kerning: Double
     public let weight: AttributedFontWeight
@@ -39,22 +39,14 @@ public class AttributedFont {
         self.lineBreakMode = lineBreakMode
     }
     
-    public func nsFont(_ fontSize: CGFloat) -> NSFont {
-        guard let targetFont = NSFontManager.shared()
-            .font(withFamily: fontFamily,
-                  traits: NSFontTraitMask(rawValue: 0),
-                  weight: weight.rawValue,
-                  size: fontSize) else {
-                    Swift.print("Could not find font", fontFamily, "with size", fontSize, "and weight", weight.rawValue)
-                    return NSFont.systemFont(ofSize: fontSize, weight: NSFontWeightRegular)
+    public var nsFont: NSFont {
+        if let targetFont = NSFontManager.shared().font(withFamily: fontFamily, traits: NSFontTraitMask(rawValue: 0), weight: weight.rawValue, size: fontSize) {
+            return targetFont
         }
-        return targetFont
-    }
-    
-    public func apply(to string: String, fontSize: CGFloat) -> NSAttributedString {
-        return NSAttributedString(
-            string: string,
-            attributes: attributeDictionary(fontSize))
+        
+        Swift.print("Could not find font", fontFamily, "with size", fontSize, "and weight", weight.rawValue)
+        
+        return NSFont.systemFont(ofSize: fontSize, weight: NSFontWeightRegular)
     }
     
     public func apply(to string: String) -> NSAttributedString {
@@ -87,12 +79,25 @@ public class AttributedFont {
         return paragraphStyle
     }
     
-    private func attributeDictionary(_ size: CGFloat? = nil) -> [String: Any] {
+    private func attributeDictionary() -> [String: Any] {
         return [
-            NSFontAttributeName: nsFont(size ?? fontSize),
+            NSFontAttributeName: nsFont,
             NSForegroundColorAttributeName: color,
             NSKernAttributeName: kerning,
             NSParagraphStyleAttributeName: paragraphStyle
         ]
+    }
+}
+
+extension AttributedFont: NSCopying {
+    public func copy(with zone: NSZone? = nil) -> Any {
+        let copy = AttributedFont(fontFamily: fontFamily,
+                                  fontSize: fontSize,
+                                  lineHeight: lineHeight,
+                                  kerning: kerning,
+                                  weight: weight,
+                                  textAlignment: textAlignment,
+                                  lineBreakMode: lineBreakMode)
+        return copy
     }
 }
