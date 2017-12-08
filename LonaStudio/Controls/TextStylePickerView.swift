@@ -126,19 +126,24 @@ class TextStylePickerView: NSView {
     
     // MARK: - Variable
     var onClickFont: ((CSTextStyle) -> Void) = { _ in }
-    private var selectedIndex = 0
+    private var selectedID: String
+    private var currentHover = -1
     private var textStyles: [CSTextStyle] = []
     
     // MARK: - Init
-    init() {
-        super.init(frame: NSRect.zero)
+    init(selectedID: String) {
+        self.selectedID = selectedID
+        
+        super.init(frame: NSRect.zero )
         translatesAutoresizingMaskIntoConstraints = false
-        widthAnchor.constraint(equalToConstant: 400).isActive = true
+        widthAnchor.constraint(equalToConstant: 600).isActive = true
         
         textStyles = CSTypography.styles
         
-        let textList = TextStyleList(textStyles: textStyles, onSelectColor: onClickFont)
-        
+        let textList = TextStyleList(textStyles: textStyles, selection: selectedID) {[unowned self] textStyle in
+            self.onClickFont(textStyle)
+        }
+    
         let searchField = CSSearchField(options: [
             CSSearchField.Option.placeholderText("Search colors..."),
             CSSearchField.Option.onChange({ [unowned self] filter in
@@ -149,23 +154,26 @@ class TextStylePickerView: NSView {
                         $0.name.lowercased().contains(filter.lowercased())
                     }
                 }
-                self.selectedIndex = 0
-                textList.update(textStyles: self.textStyles, selectedIndex: self.selectedIndex)
+                textList.update(textStyles: self.textStyles, selectedID: self.selectedID)
             }),
             CSSearchField.Option.onKeyPress({ [unowned self] keyCode in
-                func update(index: Int) {
-                    self.selectedIndex = max(0, min(index, self.textStyles.count - 1))
-                    textList.update(textStyles: nil, selectedIndex: self.selectedIndex)
+
+                func updateHover(index: Int) {
+                    self.currentHover = max(0, min(index, self.textStyles.count - 1))
+                    textList.updateHover(self.currentHover)
                 }
+                
                 switch keyCode {
                 case .down:
-                    update(index: self.selectedIndex + 1)
+                    let index = self.currentHover + 1
+                    updateHover(index: index)
                 case .up:
-                    update(index: self.selectedIndex - 1)
+                    let index = self.currentHover - 1
+                    updateHover(index: index)
                 case .enter:
-                    if self.textStyles.count > self.selectedIndex {
-                        self.onClickFont(self.textStyles[self.selectedIndex])
-                    }
+                    guard self.currentHover < self.textStyles.count else { return }
+                    self.onClickFont(self.textStyles[self.currentHover])
+                    break
                 }
             })
             ])
@@ -199,20 +207,26 @@ class TextStylePickerView: NSView {
 class TextStyleList: NSScrollView, NSTableViewDelegate, NSTableViewDataSource {
     
     // MARK: - Variable
-    private let tableView = NSTableView(frame: NSRect.zero)
+    private let minHeight: CGFloat = 32.0
+    private let maxHeight: CGFloat = 200.0
+    let tableView = NSTableView(frame: NSRect.zero)
+    private var heightRows: [String: CGFloat] = [:]
     var onSelectColor: (CSTextStyle) -> Void
     var textStyles: [CSTextStyle]
-    var selectedIndex: Int = 0
+    var selectedID: String
     
     // MARK: - Init
-    init(textStyles: [CSTextStyle], onSelectColor: @escaping (CSTextStyle) -> Void) {
+    init(textStyles: [CSTextStyle], selection: String, onSelectColor: @escaping (CSTextStyle) -> Void) {
         self.textStyles = textStyles
         self.onSelectColor = onSelectColor
+        self.selectedID = selection
         
         super.init(frame: NSRect.zero)
         
         setupCommon()
+        cacheSize(textStyles)
         setupTableView()
+        scrollToSelection()
     }
     
     required init?(coder: NSCoder) {
@@ -247,17 +261,13 @@ class TextStyleList: NSScrollView, NSTableViewDelegate, NSTableViewDataSource {
     }
     
     // MARK: - Public func
-    func update(textStyles: [CSTextStyle]?, selectedIndex index: Int?) {
-        if let textStyles = textStyles {
-            self.textStyles = textStyles
-        }
+    func update(textStyles: [CSTextStyle]?, selectedID: String) {
+        self.textStyles = textStyles ?? []
+        self.selectedID = selectedID
         
-        if let index = index {
-            self.selectedIndex = index
-        }
-        
+        // Reload and scroll
         tableView.reloadData()
-        tableView.scrollRowToVisible(self.selectedIndex)
+        scrollToSelection()
     }
     
     func numberOfRows(in tableView: NSTableView) -> Int {
@@ -269,21 +279,17 @@ class TextStyleList: NSScrollView, NSTableViewDelegate, NSTableViewDataSource {
     }
     
     func tableView(_ tableView: NSTableView, viewFor tableColumn: NSTableColumn?, row: Int) -> NSView? {
-        let swatch = TextStyleRow(textStyle: textStyles[row], selected: row == selectedIndex)
+        let textStyle = textStyles[row]
+        let swatch = TextStyleRow(textStyle: textStyles[row], selected: textStyle.id == selectedID)
         return swatch
     }
     
     func tableView(_ tableView: NSTableView, heightOfRow row: Int) -> CGFloat {
-        return 37
-    }
-    
-    func tableView(_ tableView: NSTableView, shouldSelectRow row: Int) -> Bool {
-        tableView.enumerateAvailableRowViews { (rowView, index) in
-            let colorRow = rowView.view(atColumn: 0) as? TextStyleRow
-            colorRow?.update(selected: index == row)
+        let textStyle = textStyles[row]
+        if let height = heightRows[textStyle.id] {
+            return height
         }
-        
-        return true
+        return 200
     }
     
     func tableViewSelectionDidChange(_ notification: Notification) {
@@ -294,31 +300,84 @@ class TextStyleList: NSScrollView, NSTableViewDelegate, NSTableViewDataSource {
         
         onSelectColor(textStyles[tableView.selectedRow])
     }
+    
+    func updateHover(_ index: Int) {
+        guard let view = tableView.view(atColumn: 0, row: index, makeIfNecessary: false) as? TextStyleRow else { return }
+        removeHover()
+        view.updateHover(true)
+    }
+    
+    // MARK: - Calculate size for rows
+    private func fitSize(with attributeString: NSAttributedString, fixedWidth: CGFloat) -> NSSize {
+        let fixedSize = NSSize(width: fixedWidth, height: maxHeight)
+        return attributeString.boundingRect(with: fixedSize,
+                                            options: .usesFontLeading).size
+    }
+    
+    private func calculateFitSize(_ attributeText: NSAttributedString) -> CGFloat {
+        let size = fitSize(with: attributeText, fixedWidth: bounds.width)
+        var height = size.height
+        height = min(height, maxHeight)
+        height = max(height, minHeight)
+        return height
+    }
+    
+    fileprivate func cacheSize(_ textStyles: [CSTextStyle]) {
+        for textStyle in textStyles {
+            let text = textStyle.font.apply(to: textStyle.name)
+            let height = self.calculateFitSize(text)
+            self.heightRows[textStyle.id] = height
+        }
+    }
+    
+    // MARK: - Scroll
+    private func scrollToSelection() {
+        guard let index = textStyles.index(where: { $0.id == selectedID }) else {
+            return
+        }
+        tableView.scrollRowToVisible(index)
+    }
+    
+    private func removeHover() {
+        tableView.enumerateAvailableRowViews { (row, index) in
+            let textRow = row.view(atColumn: 0) as! TextStyleRow
+            textRow.updateHover(false)
+        }
+    }
 }
 
-class TextStyleRow: NSStackView {
+class TextStyleRow: NSStackView, Hoverable {
     
     // MARK: - Variable
     private let tickView = NSImageView(image: NSImage(named: "icon-layer-list-tick")!)
     private let titleView: NSTextField
+    private let attributeText: NSAttributedString
+    private lazy var contractAttributeText: NSAttributedString = {
+        var highlight = NSMutableAttributedString(attributedString: self.attributeText)
+        highlight.addAttributes([NSForegroundColorAttributeName: NSColor.white],
+                                range: NSRange(location: 0, length: self.attributeText.length))
+        return highlight
+    }()
     var onClick: () -> Void = {_ in}
     
     // MARK: - Init
     init(textStyle: CSTextStyle, selected: Bool) {
-        let attributeText = textStyle.font.apply(to: textStyle.name)
+        attributeText = textStyle.font.apply(to: textStyle.name)
         titleView = NSTextField(labelWithAttributedString: attributeText)
-        
         super.init(frame: NSRect.zero)
         
         spacing = 8
         orientation = .horizontal
-        alignment = .left
-        translatesAutoresizingMaskIntoConstraints = false
+        distribution = .fill
+        alignment = .centerY
         edgeInsets = EdgeInsets(top: 0, left: 4, bottom: 0, right: 4)
+        tickView.setContentHuggingPriority(251, for: .horizontal)
         
-        addArrangedSubview(tickView)
         addArrangedSubview(titleView)
         update(selected: selected)
+        
+        // Hover
+        startTrackingHover()
     }
     
     required init?(coder: NSCoder) {
@@ -335,11 +394,38 @@ class TextStyleRow: NSStackView {
     
     func update(selected: Bool) {
         if selected {
-            addArrangedSubview(tickView)
+            guard !arrangedSubviews.contains(tickView) else { return }
+            insertArrangedSubview(tickView, at: 0)
+            tickView.isHidden = false
         } else {
+            guard arrangedSubviews.contains(tickView) else { return }
             removeArrangedSubview(tickView)
+            tickView.isHidden = true
         }
     }
     
+    func updateHover(_ hover: Bool) {
+        if hover {
+            startHover { [weak self] in
+                guard let strongSelf = `self` else { return }
+                strongSelf.titleView.attributedStringValue = strongSelf.contractAttributeText
+                strongSelf.backgroundFill = NSColor.parse(css: "#0169D9")!.cgColor
+            }
+        } else {
+            stopHover { [weak self] in
+                guard let strongSelf = `self` else { return }
+                strongSelf.titleView.attributedStringValue = strongSelf.attributeText
+                strongSelf.backgroundFill = NSColor.clear.cgColor
+            }
+        }
+    }
     
+    // MARK: - Hover
+    override func mouseEntered(with theEvent: NSEvent) {
+        updateHover(true)
+    }
+    
+    override func mouseExited(with theEvent: NSEvent) {
+        updateHover(false)
+    }
 }

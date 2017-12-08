@@ -46,7 +46,7 @@ class TextStylePickerButton: NSButton, CSControl {
     }
     
     func showPopover() {
-        let picker = TextStylePickerView()
+        let picker = TextStylePickerView(selectedID: data.string!)
         let popover = NSPopover()
         popover.behavior = .transient
         popover.animates = false
