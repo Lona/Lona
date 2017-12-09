@@ -79,7 +79,7 @@ public class AttributedFont {
         return paragraphStyle
     }
     
-    private func attributeDictionary() -> [String: Any] {
+    func attributeDictionary() -> [String: Any] {
         return [
             NSFontAttributeName: nsFont,
             NSForegroundColorAttributeName: color,

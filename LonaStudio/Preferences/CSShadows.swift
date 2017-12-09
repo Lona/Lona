@@ -20,6 +20,10 @@ struct CSShadow {
     var nsShadow: NSShadow {
         return NSShadow(color: color, offset: CGSize(width: x, height: y), blur: blur)
     }
+    
+    func attributeDictionary() -> [String: Any] {
+        return [NSShadowAttributeName: nsShadow]
+    }
 }
 
 class CSShadows: CSPreferencesFile {

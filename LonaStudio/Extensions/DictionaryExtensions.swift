@@ -20,5 +20,9 @@ extension Dictionary {
         
         return result
     }
+    
+    mutating func merge(with dictionary: Dictionary) {
+        dictionary.forEach { updateValue($1, forKey: $0) }
+    }
 }
 
