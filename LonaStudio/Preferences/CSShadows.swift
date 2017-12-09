@@ -10,7 +10,7 @@ import Foundation
 import AppKit
 
 struct CSShadow {
-    let id: String?
+    let id: String
     let name: String
     let color: NSColor
     let x: CGFloat
@@ -38,7 +38,7 @@ class CSShadows: CSPreferencesFile {
         guard let colorData = data["shadows"] else { return [] }
         
         return colorData.arrayValue.map({ shadow in
-            let id = shadow["id"]?.string
+            let id = shadow["id"]!.string!
             let name = shadow["name"]?.string ?? "No name"
             let colorString = shadow["color"]?.string ?? "black"
             let color = CSColors.parse(css: colorString, withDefault: NSColor.black)
