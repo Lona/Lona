@@ -112,6 +112,8 @@
 		6B6017D01EBF9EFA001E02C1 /* LayerList.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6B6017CF1EBF9EFA001E02C1 /* LayerList.swift */; };
 		852F99822FC11DB73CF8054F /* Pods_LonaStudio.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = BEBB1F9781BB0743EBCD0459 /* Pods_LonaStudio.framework */; };
 		BA0D85E41FD5AC2000D817C3 /* NSViewHoverExtensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = BA0D85E31FD5AC2000D817C3 /* NSViewHoverExtensions.swift */; };
+		BA3001761FDB97260003E7D2 /* ShadowStylePickerButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = BA3001751FDB97260003E7D2 /* ShadowStylePickerButton.swift */; };
+		BA3001781FDB97430003E7D2 /* ShadowStylePickerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = BA3001771FDB97430003E7D2 /* ShadowStylePickerView.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -223,6 +225,8 @@
 		6B6017CF1EBF9EFA001E02C1 /* LayerList.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = LayerList.swift; sourceTree = "<group>"; };
 		94DF295B29B39CF8D9CD4857 /* Pods-LonaStudio.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-LonaStudio.release.xcconfig"; path = "Pods/Target Support Files/Pods-LonaStudio/Pods-LonaStudio.release.xcconfig"; sourceTree = "<group>"; };
 		BA0D85E31FD5AC2000D817C3 /* NSViewHoverExtensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NSViewHoverExtensions.swift; sourceTree = "<group>"; };
+		BA3001751FDB97260003E7D2 /* ShadowStylePickerButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ShadowStylePickerButton.swift; sourceTree = "<group>"; };
+		BA3001771FDB97430003E7D2 /* ShadowStylePickerView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ShadowStylePickerView.swift; sourceTree = "<group>"; };
 		BEBB1F9781BB0743EBCD0459 /* Pods_LonaStudio.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_LonaStudio.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		F8FBB9AD90B69BBD8BDE30B0 /* Pods-LonaStudio.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-LonaStudio.debug.xcconfig"; path = "Pods/Target Support Files/Pods-LonaStudio/Pods-LonaStudio.debug.xcconfig"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
@@ -343,6 +347,8 @@
 				30CE47801ED73FC800BBF716 /* TextField.swift */,
 				30CE47CC1ED776FA00BBF716 /* TextStylePickerButton.swift */,
 				30CE47CE1ED77C0200BBF716 /* TextStylePickerView.swift */,
+				BA3001751FDB97260003E7D2 /* ShadowStylePickerButton.swift */,
+				BA3001771FDB97430003E7D2 /* ShadowStylePickerView.swift */,
 			);
 			path = Controls;
 			sourceTree = "<group>";
@@ -655,6 +661,7 @@
 				309777741F2BB75B004C8975 /* CSUserPreferences.swift in Sources */,
 				3094DFE31F68D19C00E5C7F0 /* CALayerExtensions.swift in Sources */,
 				301433781F5B525100525DB1 /* ListEditor.swift in Sources */,
+				BA3001761FDB97260003E7D2 /* ShadowStylePickerButton.swift in Sources */,
 				305A19581F463BD300EA033C /* NSTextFieldExtensions.swift in Sources */,
 				3069E09C1F324C550005E9A8 /* CSWorkspacePreferences.swift in Sources */,
 				300302761EDCDA030085E140 /* LogicListView.swift in Sources */,
@@ -666,6 +673,7 @@
 				3069E09E1F3254D30005E9A8 /* CSColors.swift in Sources */,
 				3003027E1EDCE3790085E140 /* ComponentConfiguration.swift in Sources */,
 				30EFC95A1EF43C900087711D /* CheckboxField.swift in Sources */,
+				BA3001781FDB97430003E7D2 /* ShadowStylePickerView.swift in Sources */,
 				3084164D1EDB2A5B00A1CA6D /* Button.swift in Sources */,
 				307B7B4F1F9A71C5001A62D9 /* MetadataEditorView.swift in Sources */,
 				3069E0A01F3254E10005E9A8 /* CSTypography.swift in Sources */,
