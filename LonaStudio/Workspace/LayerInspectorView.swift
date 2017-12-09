@@ -60,7 +60,7 @@ class LayerInspectorView: InspectorView {
             
             // Shadow
             InspectorView.Property.shadow: CSData.String(layer.shadow ?? "default"),
-            InspectorView.Property.shadowEnabled: CSData.Bool(layer.shadow != nil),
+            InspectorView.Property.shadowEnabled: CSData.Bool(layer.shadowEnabled ?? false),
             
             // Text
             InspectorView.Property.text: CSData.String(layer.text ?? ""),
@@ -132,8 +132,11 @@ class LayerInspectorView: InspectorView {
             case .backgroundGradient: layer.backgroundGradient = value.string
             
             // Shadow
-            case .shadowEnabled: layer.shadow = value.boolValue ? "transparent" : nil
-            case .shadow: layer.shadow = value.stringValue
+            case .shadowEnabled: layer.shadowEnabled = value.boolValue
+            case .shadow:
+                layer.shadow = value.stringValue
+                layer.shadowEnabled = true
+                break
                 
             // Text
             case .text: layer.text = value.stringValue

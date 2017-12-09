@@ -317,7 +317,10 @@ class CSLayer: CSDataDeserializable, CSDataSerializable, DataNode, NSCopying {
         get { return parameters["shadow"]?.string }
         set { parameters["shadow"] = newValue?.toData() }
     }
-    
+    var shadowEnabled: Bool? {
+        get { return parameters["shadowEnabled"]?.boolValue }
+        set { parameters["shadowEnabled"] = newValue?.toData() }
+    }
     var backgroundColor: String? {
         get { return parameters["backgroundColor"]?.string }
         set { parameters["backgroundColor"] = newValue?.toData() }
