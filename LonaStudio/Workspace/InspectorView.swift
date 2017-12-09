@@ -141,7 +141,7 @@ class InspectorView: NSStackView {
     var borderColorEnabledView = CheckboxField(frame: NSRect.zero)
     var borderRadiusView = NumberField(frame: NSRect.zero)
     var shadowEnabledView = CheckboxField(frame: NSRect.zero)
-    var shadowButton = ColorPickerButton(frame: NSRect.zero)
+    var shadowButton = ShadowStylePickerButton(frame: NSRect.zero)
     
     var textStyleView = TextStylePickerButton(frame: NSRect.zero)
     var numberOfLinesView = NumberField(frame: NSRect.zero)

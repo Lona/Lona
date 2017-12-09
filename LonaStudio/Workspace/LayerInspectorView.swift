@@ -59,7 +59,7 @@ class LayerInspectorView: InspectorView {
             InspectorView.Property.backgroundGradient: CSData.String(layer.backgroundGradient ?? ""),
             
             // Shadow
-            InspectorView.Property.shadow: CSData.String(layer.shadow ?? "transparent"),
+            InspectorView.Property.shadow: CSData.String(layer.shadow ?? "default"),
             InspectorView.Property.shadowEnabled: CSData.Bool(layer.shadow != nil),
             
             // Text
