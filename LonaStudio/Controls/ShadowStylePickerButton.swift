@@ -17,7 +17,7 @@ class ShadowStylePickerButton: NSButton, CSControl {
     }
     var onChangeData: (CSData) -> Void = { _ in }
     var onChange: (String) -> Void = {_ in}
-    var value: String = CSShadows.shadows.first!.id {
+    private var value: String = CSShadows.shadows.first!.id {
         didSet {
             guard let shadow = CSShadows.shadow(withId: value) else { return }
             setImage(with: shadow)
@@ -44,6 +44,7 @@ class ShadowStylePickerButton: NSButton, CSControl {
         imagePosition = .imageLeft
         alignment = .left
         bezelStyle = .rounded
+        title = "Custom shadow"
     }
     
     // MARK: - Public

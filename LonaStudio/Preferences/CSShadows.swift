@@ -24,7 +24,7 @@ struct CSShadow {
 
 class CSShadows: CSPreferencesFile {
     static var url: URL {
-        return CSWorkspacePreferences.workspaceURL.appendingPathComponent("csshadows.json")
+        return CSWorkspacePreferences.workspaceURL.appendingPathComponent("shadows.json")
     }
     
     static private var parsedShadows: [CSShadow] = parse(data)

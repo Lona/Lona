@@ -96,7 +96,7 @@ class ShadowStyleList: NSScrollView, NSTableViewDelegate, NSTableViewDataSource 
     // MARK: - Variable
     private struct Constant {
         static let heightRow: CGFloat = 44.0
-        static let minHeight: CGFloat = 100
+        static let minHeight: CGFloat = 44.0
         static let maxHeight: CGFloat = 1000
     }
     
@@ -178,10 +178,6 @@ class ShadowStyleList: NSScrollView, NSTableViewDelegate, NSTableViewDataSource 
     }
     
     func tableViewSelectionDidChange(_ notification: Notification) {
-        tableView.enumerateAvailableRowViews { (rowView, row) in
-            let colorRow = rowView.view(atColumn: 0) as! ShadowStyleRow
-            colorRow.update(selected: rowView.isSelected)
-        }
         onSelectColor(shadowStyles[tableView.selectedRow])
     }
     
@@ -199,7 +195,7 @@ class ShadowStyleList: NSScrollView, NSTableViewDelegate, NSTableViewDataSource 
         height = max(min(height, Constant.maxHeight), Constant.minHeight)
         
         // Override Width/Height of entire NSPopover
-        heightAnchor.constraint(equalToConstant: height).isActive = true
+        heightAnchor.constraint(equalToConstant: height + 8).isActive = true
     }
     
     // MARK: - Scroll
@@ -221,10 +217,17 @@ class ShadowStyleList: NSScrollView, NSTableViewDelegate, NSTableViewDataSource 
 class ShadowStyleRow: NSStackView, Hoverable {
     
     // MARK: - Variable
-    private let tickView = NSImageView(image: NSImage(named: "icon-layer-list-tick")!)
     private let titleView: NSTextField
     private let subtitleView: NSTextField
-    
+    private lazy var colorView: NSView = {
+        let view = NSView(frame: NSRect.zero)
+        view.translatesAutoresizingMaskIntoConstraints = false
+        view.heightAnchor.constraint(equalToConstant: 32).isActive = true
+        view.widthAnchor.constraint(equalToConstant: 32).isActive = true
+        view.wantsLayer = true
+        view.layer?.cornerRadius = 2
+        return view
+    }()
     var onClick: () -> Void = {_ in}
     
     // MARK: - Init
@@ -234,19 +237,21 @@ class ShadowStyleRow: NSStackView, Hoverable {
         
         super.init(frame: NSRect.zero)
         
+        initCommon()
+        colorView.backgroundFill = shadow.color.cgColor
+        let container = NSStackView(views: [titleView, subtitleView], orientation: .vertical)
+        container.alignment = .leading
+        addArrangedSubview(colorView)
+        addArrangedSubview(container)
+        startTrackingHover()
+    }
+    
+    private func initCommon() {
         spacing = 8
         orientation = .horizontal
         distribution = .fill
         alignment = .centerY
         edgeInsets = EdgeInsets(top: 0, left: 8, bottom: 0, right: 8)
-        tickView.setContentHuggingPriority(251, for: .horizontal)
-        
-        let container = NSStackView(views: [titleView, subtitleView], orientation: .vertical)
-        addArrangedSubview(container)
-        update(selected: selected)
-        
-        // Hover
-        startTrackingHover()
     }
     
     required init?(coder: NSCoder) {
@@ -259,18 +264,6 @@ class ShadowStyleRow: NSStackView, Hoverable {
     
     override func mouseDown(with event: NSEvent) {
         onClick()
-    }
-    
-    func update(selected: Bool) {
-        if selected {
-            guard !arrangedSubviews.contains(tickView) else { return }
-            insertArrangedSubview(tickView, at: 0)
-            tickView.isHidden = false
-        } else {
-            guard arrangedSubviews.contains(tickView) else { return }
-            removeArrangedSubview(tickView)
-            tickView.isHidden = true
-        }
     }
     
     func updateHover(_ hover: Bool) {
