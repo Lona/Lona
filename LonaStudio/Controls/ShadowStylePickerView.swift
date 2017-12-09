@@ -14,7 +14,7 @@ class ShadowStylePickerView: NSView {
     var onClickFont: ((CSShadow) -> Void) = { _ in }
     private var selectedID: String
     private var currentHover = -1
-    private var textStyles: [CSShadow] = []
+    private var shadowStyles: [CSShadow] = []
     
     // MARK: - Init
     init(selectedID: String) {
@@ -22,29 +22,30 @@ class ShadowStylePickerView: NSView {
         
         super.init(frame: NSRect.zero )
         translatesAutoresizingMaskIntoConstraints = false
-        textStyles = CSShadows.shadows
+        widthAnchor.constraint(equalToConstant: 300).isActive = true
+        shadowStyles = CSShadows.shadows
         
-        let textList = ShadowStyleList(textStyles: textStyles, selection: selectedID) {[unowned self] textStyle in
-            self.onClickFont(textStyle)
+        let shadowList = ShadowStyleList(shadowStyles: shadowStyles, selection: selectedID) {[unowned self] shadowStyle in
+            self.onClickFont(shadowStyle)
         }
         
         let searchField = CSSearchField(options: [
             CSSearchField.Option.placeholderText("Search colors..."),
             CSSearchField.Option.onChange({ [unowned self] filter in
                 if filter.count == 0 {
-                    self.textStyles = CSShadows.shadows
+                    self.shadowStyles = CSShadows.shadows
                 } else {
-                    self.textStyles = CSShadows.shadows.filter {
+                    self.shadowStyles = CSShadows.shadows.filter {
                         $0.name.lowercased().contains(filter.lowercased())
                     }
                 }
-                textList.update(textStyles: self.textStyles, selectedID: self.selectedID)
+                shadowList.update(shadowStyles: self.shadowStyles, selectedID: self.selectedID)
             }),
             CSSearchField.Option.onKeyPress({ [unowned self] keyCode in
                 
                 func updateHover(index: Int) {
-                    self.currentHover = max(0, min(index, self.textStyles.count - 1))
-                    textList.updateHover(self.currentHover)
+                    self.currentHover = max(0, min(index, self.shadowStyles.count - 1))
+                    shadowList.updateHover(self.currentHover)
                 }
                 
                 switch keyCode {
@@ -55,8 +56,8 @@ class ShadowStylePickerView: NSView {
                     let index = self.currentHover - 1
                     updateHover(index: index)
                 case .enter:
-                    guard self.currentHover < self.textStyles.count else { return }
-                    self.onClickFont(self.textStyles[self.currentHover])
+                    guard self.currentHover < self.shadowStyles.count else { return }
+                    self.onClickFont(self.shadowStyles[self.currentHover])
                     break
                 }
             })
@@ -64,7 +65,7 @@ class ShadowStylePickerView: NSView {
         
         let searchViewStackView = NSStackView(views: [searchField], orientation: .horizontal, stretched: true)
         searchViewStackView.edgeInsets = EdgeInsets(top: 0, left: 8, bottom: 0, right: 8)
-        let stackView = NSStackView(views: [searchViewStackView, textList], orientation: .vertical, stretched: true)
+        let stackView = NSStackView(views: [searchViewStackView, shadowList], orientation: .vertical, stretched: true)
         stackView.translatesAutoresizingMaskIntoConstraints = false
         stackView.spacing = 8
         stackView.edgeInsets = EdgeInsets(top: 8, left: 0, bottom: 8, right: 0)
@@ -94,30 +95,25 @@ class ShadowStyleList: NSScrollView, NSTableViewDelegate, NSTableViewDataSource 
     
     // MARK: - Variable
     private struct Constant {
-        static let minWidth: CGFloat = 100
-        static let maxWidth: CGFloat = 1000
-        static let minHeightRow: CGFloat = 32.0
-        static let maxHeightRow: CGFloat = 200.0
+        static let heightRow: CGFloat = 44.0
         static let minHeight: CGFloat = 100
         static let maxHeight: CGFloat = 1000
     }
     
     let tableView = NSTableView(frame: NSRect.zero)
-    private var sizeRows: [String: NSSize] = [:]
     var onSelectColor: (CSShadow) -> Void
-    var textStyles: [CSShadow]
+    var shadowStyles: [CSShadow]
     var selectedID: String
     
     // MARK: - Init
-    init(textStyles: [CSShadow], selection: String, onSelectColor: @escaping (CSShadow) -> Void) {
-        self.textStyles = textStyles
+    init(shadowStyles: [CSShadow], selection: String, onSelectColor: @escaping (CSShadow) -> Void) {
+        self.shadowStyles = shadowStyles
         self.onSelectColor = onSelectColor
         self.selectedID = selection
         
         super.init(frame: NSRect.zero)
         
         setupCommon()
-        cacheSize(textStyles)
         fitSize()
         setupTableView()
         scrollToSelection()
@@ -137,8 +133,8 @@ class ShadowStyleList: NSScrollView, NSTableViewDelegate, NSTableViewDataSource 
         tableView.backgroundColor = NSColor.clear
         tableView.columnAutoresizingStyle = .uniformColumnAutoresizingStyle
         
-        let column = NSTableColumn(identifier: "textStyle")
-        column.title = "Text Style"
+        let column = NSTableColumn(identifier: "shadowStyle")
+        column.title = "Shadow Style"
         column.resizingMask = .autoresizingMask
         column.maxWidth = 1000
         
@@ -154,8 +150,8 @@ class ShadowStyleList: NSScrollView, NSTableViewDelegate, NSTableViewDataSource 
     }
     
     // MARK: - Public func
-    func update(textStyles: [CSShadow], selectedID: String) {
-        self.textStyles = textStyles
+    func update(shadowStyles: [CSShadow], selectedID: String) {
+        self.shadowStyles = shadowStyles
         self.selectedID = selectedID
         
         // Reload and scroll
@@ -164,7 +160,7 @@ class ShadowStyleList: NSScrollView, NSTableViewDelegate, NSTableViewDataSource 
     }
     
     func numberOfRows(in tableView: NSTableView) -> Int {
-        return textStyles.count
+        return shadowStyles.count
     }
     
     func tableView(_ tableView: NSTableView, rowViewForRow row: Int) -> NSTableRowView? {
@@ -172,17 +168,13 @@ class ShadowStyleList: NSScrollView, NSTableViewDelegate, NSTableViewDataSource 
     }
     
     func tableView(_ tableView: NSTableView, viewFor tableColumn: NSTableColumn?, row: Int) -> NSView? {
-        let textStyle = textStyles[row]
-        let swatch = ShadowStyleRow(textStyle: textStyles[row], selected: textStyle.id == selectedID)
+        let shadowStyle = shadowStyles[row]
+        let swatch = ShadowStyleRow(shadow: shadowStyles[row], selected: shadowStyle.id == selectedID)
         return swatch
     }
     
     func tableView(_ tableView: NSTableView, heightOfRow row: Int) -> CGFloat {
-        let textStyle = textStyles[row]
-        if let size = sizeRows[textStyle.id] {
-            return size.height
-        }
-        return Constant.minHeightRow
+        return Constant.heightRow
     }
     
     func tableViewSelectionDidChange(_ notification: Notification) {
@@ -190,7 +182,7 @@ class ShadowStyleList: NSScrollView, NSTableViewDelegate, NSTableViewDataSource 
             let colorRow = rowView.view(atColumn: 0) as! ShadowStyleRow
             colorRow.update(selected: rowView.isSelected)
         }
-        onSelectColor(textStyles[tableView.selectedRow])
+        onSelectColor(shadowStyles[tableView.selectedRow])
     }
     
     func updateHover(_ index: Int) {
@@ -200,50 +192,19 @@ class ShadowStyleList: NSScrollView, NSTableViewDelegate, NSTableViewDataSource 
     }
     
     // MARK: - Calculate size for rows
-    private func fitSize(with attributeString: NSAttributedString) -> NSSize {
-        let fixedSize = NSSize(width: Constant.maxWidth, height: Constant.maxHeightRow)
-        return attributeString.boundingRect(with: fixedSize,
-                                            options: .usesFontLeading).size
-    }
-    
-    private func fitTextSize(_ attributeText: NSAttributedString) -> NSSize {
-        let size = fitSize(with: attributeText)
-        var height = size.height
-        height = min(height, Constant.maxHeightRow)
-        height = max(height, Constant.minHeightRow)
-        return NSSize(width: size.width, height: height)
-    }
-    
-    fileprivate func cacheSize(_ textStyles: [CSShadow]) {
-        for textStyle in textStyles {
-            let text = textStyle.font.apply(to: textStyle.name)
-            let size = fitTextSize(text)
-            sizeRows[textStyle.id] = size
-        }
-    }
-    
     fileprivate func fitSize() {
-        var height: CGFloat = 0.0
-        var width = Constant.minWidth
-        sizeRows.forEach { (_, size) in
-            height += size.height
-            if size.width > width {
-                width = size.width
-            }
-        }
+        var height = CGFloat(shadowStyles.count) * Constant.heightRow
         
         // Make sure the size is in appropriate range
         height = max(min(height, Constant.maxHeight), Constant.minHeight)
-        width = max(min(width, Constant.maxWidth), Constant.minWidth)
         
         // Override Width/Height of entire NSPopover
         heightAnchor.constraint(equalToConstant: height).isActive = true
-        widthAnchor.constraint(equalToConstant: width + 44).isActive = true
     }
     
     // MARK: - Scroll
     private func scrollToSelection() {
-        guard let index = textStyles.index(where: { $0.id == selectedID }) else {
+        guard let index = shadowStyles.index(where: { $0.id == selectedID }) else {
             return
         }
         tableView.scrollRowToVisible(index)
@@ -262,19 +223,15 @@ class ShadowStyleRow: NSStackView, Hoverable {
     // MARK: - Variable
     private let tickView = NSImageView(image: NSImage(named: "icon-layer-list-tick")!)
     private let titleView: NSTextField
-    private let attributeText: NSAttributedString
-    private lazy var contractAttributeText: NSAttributedString = {
-        var highlight = NSMutableAttributedString(attributedString: self.attributeText)
-        highlight.addAttributes([NSForegroundColorAttributeName: NSColor.white],
-                                range: NSRange(location: 0, length: self.attributeText.length))
-        return highlight
-    }()
+    private let subtitleView: NSTextField
+    
     var onClick: () -> Void = {_ in}
     
     // MARK: - Init
-    init(textStyle: CSShadow, selected: Bool) {
-        attributeText = textStyle.font.apply(to: textStyle.name)
-        titleView = NSTextField(labelWithAttributedString: attributeText)
+    init(shadow: CSShadow, selected: Bool) {
+        titleView = NSTextField(labelWithString: shadow.name)
+        subtitleView = NSTextField(labelWithString: "x: \(shadow.x) y: \(shadow.y) blur: \(shadow.blur)")
+        
         super.init(frame: NSRect.zero)
         
         spacing = 8
@@ -284,7 +241,8 @@ class ShadowStyleRow: NSStackView, Hoverable {
         edgeInsets = EdgeInsets(top: 0, left: 8, bottom: 0, right: 8)
         tickView.setContentHuggingPriority(251, for: .horizontal)
         
-        addArrangedSubview(titleView)
+        let container = NSStackView(views: [titleView, subtitleView], orientation: .vertical)
+        addArrangedSubview(container)
         update(selected: selected)
         
         // Hover
@@ -319,13 +277,15 @@ class ShadowStyleRow: NSStackView, Hoverable {
         if hover {
             startHover { [weak self] in
                 guard let strongSelf = `self` else { return }
-                strongSelf.titleView.attributedStringValue = strongSelf.contractAttributeText
+                strongSelf.titleView.textColor = NSColor.white
+                strongSelf.subtitleView.textColor = NSColor.white
                 strongSelf.backgroundFill = NSColor.parse(css: "#0169D9")!.cgColor
             }
         } else {
             stopHover { [weak self] in
                 guard let strongSelf = `self` else { return }
-                strongSelf.titleView.attributedStringValue = strongSelf.attributeText
+                strongSelf.titleView.textColor = NSColor.black
+                strongSelf.subtitleView.textColor = NSColor.black
                 strongSelf.backgroundFill = NSColor.clear.cgColor
             }
         }

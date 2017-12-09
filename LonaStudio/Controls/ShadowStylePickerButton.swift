@@ -17,7 +17,7 @@ class ShadowStylePickerButton: NSButton, CSControl {
     }
     var onChangeData: (CSData) -> Void = { _ in }
     var onChange: (String) -> Void = {_ in}
-    var value: String = CSShadows.shadows.first!.id! {
+    var value: String = CSShadows.shadows.first!.id {
         didSet {
             guard let shadow = CSShadows.shadow(withId: value) else { return }
             setImage(with: shadow)
