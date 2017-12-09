@@ -53,6 +53,10 @@ class InspectorView: NSStackView {
         case backgroundColorEnabled
         case backgroundGradient
         
+        // Shadow
+        case shadowEnabled
+        case shadow
+        
         // Text
         case text
         case textStyle
@@ -136,6 +140,9 @@ class InspectorView: NSStackView {
     var borderColorButton = ColorPickerButton(frame: NSRect.zero)
     var borderColorEnabledView = CheckboxField(frame: NSRect.zero)
     var borderRadiusView = NumberField(frame: NSRect.zero)
+    var shadowEnabledView = CheckboxField(frame: NSRect.zero)
+    var shadowButton = ColorPickerButton(frame: NSRect.zero)
+    
     var textStyleView = TextStylePickerButton(frame: NSRect.zero)
     var numberOfLinesView = NumberField(frame: NSRect.zero)
     
@@ -501,6 +508,22 @@ class InspectorView: NSStackView {
         return backgroundSection
     }
     
+    func renderShadowSection() -> DisclosureContentRow {
+        shadowEnabledView.imagePosition = .imageOnly
+        
+        let shadowContainer = NSStackView(
+            views: [
+                shadowEnabledView,
+                shadowButton,
+                ],
+            orientation: .horizontal,
+            stretched: true
+        )
+        
+        let backgroundSection = renderSection(title: "Shadow", views: [shadowContainer])
+        return backgroundSection
+    }
+    
     func renderTextSection() -> DisclosureContentRow {
         textView.usesSingleLineMode = false
         
@@ -627,6 +650,7 @@ class InspectorView: NSStackView {
             renderSpacingSection(),
             renderBorderSection(),
             renderBackgroundSection(),
+            renderShadowSection(),
             imageSection!,
             animationSection!
         ]
@@ -711,6 +735,10 @@ class InspectorView: NSStackView {
             (backgroundColorButton, .backgroundColor),
             (backgroundColorEnabledView, .backgroundColorEnabled),
             (backgroundGradientView, .backgroundGradient),
+            
+            // Shadow
+            (shadowButton, .shadow),
+            (shadowEnabledView, .shadowEnabled),
             
             // Text
             (textView, .text),

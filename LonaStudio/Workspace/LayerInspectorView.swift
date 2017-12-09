@@ -58,6 +58,10 @@ class LayerInspectorView: InspectorView {
             InspectorView.Property.backgroundColorEnabled: CSData.Bool(layer.backgroundColor != nil),
             InspectorView.Property.backgroundGradient: CSData.String(layer.backgroundGradient ?? ""),
             
+            // Shadow
+            InspectorView.Property.shadow: CSData.String(layer.shadow ?? "transparent"),
+            InspectorView.Property.shadowEnabled: CSData.Bool(layer.shadow != nil),
+            
             // Text
             InspectorView.Property.text: CSData.String(layer.text ?? ""),
             InspectorView.Property.textStyle: CSData.String(layer.font ?? CSTypography.defaultName),
@@ -126,6 +130,10 @@ class LayerInspectorView: InspectorView {
             case .backgroundColor: layer.backgroundColor = value.stringValue
             case .backgroundColorEnabled: layer.backgroundColor = value.boolValue ? "transparent" : nil
             case .backgroundGradient: layer.backgroundGradient = value.string
+            
+            // Shadow
+            case .shadowEnabled: layer.shadow = value.boolValue ? "transparent" : nil
+            case .shadow: layer.shadow = value.stringValue
                 
             // Text
             case .text: layer.text = value.stringValue
