@@ -51,6 +51,11 @@ func getLayerFont(layer: CSLayer) -> AttributedFont {
     return CSTypography.getFontBy(id: getLayerFontName(layer: layer)).font
 }
 
+func getLayoutShadow(layout: CSLayer) -> CSShadow? {
+    guard let shadow = layout.shadow else { return nil }
+    return CSShadows.shadow(withId: shadow)!
+}
+
 func numberValue(for layer: CSLayer, attributeChain: [String], optionalValues: [Double?] = [], defaultValue: Double = 0) -> Double {
     if let config = layer.config {
         for attribute in attributeChain {
@@ -73,7 +78,16 @@ func numberValue(for layer: CSLayer, attributeChain: [String], optionalValues: [
 
 func attributedString(for layer: CSLayer) -> NSAttributedString {
     let text = getLayerText(layer: layer)
-    return getLayerFont(layer: layer).apply(to: text)
+    
+    // Font
+    var attributeDict = getLayerFont(layer: layer).attributeDictionary()
+    
+    // Shadow
+    if let shadow = getLayoutShadow(layout: layer) {
+        let shadowAttributeText = shadow.attributeDictionary()
+        attributeDict.merge(with: shadowAttributeText)
+    }
+    return NSAttributedString(string: text, attributes: attributeDict)
 }
     
 func paragraph(for layer: CSLayer) -> NSAttributedString {
