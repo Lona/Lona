@@ -811,6 +811,8 @@ class InspectorView: NSStackView {
             if self.value[property]?.bool == false {
                 self.borderColorButton.value = "transparent"
             }
+        case .shadow:
+            self.shadowEnabledView.value = true
         case .image:
             if let value = self.value[property]?.string {
                 self.imageView.value = value
