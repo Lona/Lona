@@ -88,6 +88,7 @@ class InspectorView: NSStackView {
     var textSection: DisclosureContentRow!
     var imageSection: DisclosureContentRow!
     var animationSection: DisclosureContentRow!
+    var shadowSection: DisclosureContentRow!
     
     var directionView = PopupField(
         frame: NSRect.zero,
@@ -521,6 +522,7 @@ class InspectorView: NSStackView {
         )
         
         let backgroundSection = renderSection(title: "Shadow", views: [shadowContainer])
+        backgroundSection.isHidden = true
         return backgroundSection
     }
     
@@ -641,6 +643,7 @@ class InspectorView: NSStackView {
         textSection = renderTextSection()
         imageSection = renderImageSection()
         animationSection = renderAnimationSection()
+        shadowSection = renderShadowSection()
         
         let sections = [
             layoutSection!,
@@ -650,7 +653,7 @@ class InspectorView: NSStackView {
             renderSpacingSection(),
             renderBorderSection(),
             renderBackgroundSection(),
-            renderShadowSection(),
+            shadowSection!,
             imageSection!,
             animationSection!
         ]
@@ -689,6 +692,7 @@ class InspectorView: NSStackView {
         case "Text":
             textSection.isHidden = false
             layoutSection.isHidden = true
+            shadowSection.isHidden = false
         case "Image":
             imageSection.isHidden = false
         case "Animation":
