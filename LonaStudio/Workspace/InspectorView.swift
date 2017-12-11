@@ -813,6 +813,10 @@ class InspectorView: NSStackView {
             }
         case .shadow:
             self.shadowEnabledView.value = true
+        case .shadowEnabled:
+            if self.value[property]?.bool == false {
+                self.shadowButton.value = CSShadows.defaultName
+            }
         case .image:
             if let value = self.value[property]?.string {
                 self.imageView.value = value

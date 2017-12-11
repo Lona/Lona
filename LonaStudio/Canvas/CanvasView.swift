@@ -53,7 +53,7 @@ func getLayerFont(layer: CSLayer) -> AttributedFont {
 
 func getLayoutShadow(layout: CSLayer) -> CSShadow? {
     guard let shadow = layout.shadow else { return nil }
-    return CSShadows.shadow(withId: shadow)
+    return CSShadows.shadow(with: shadow)
 }
 
 func numberValue(for layer: CSLayer, attributeChain: [String], optionalValues: [Double?] = [], defaultValue: Double = 0) -> Double {
@@ -83,7 +83,7 @@ func attributedString(for layer: CSLayer) -> NSAttributedString {
     var attributeDict = getLayerFont(layer: layer).attributeDictionary()
     
     // Shadow
-    if layer.shadowEnabled == true,
+    if layer.shadow != nil,
         let shadow = getLayoutShadow(layout: layer) {
         let shadowAttributeText = shadow.attributeDictionary()
         attributeDict.merge(with: shadowAttributeText)

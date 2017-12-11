@@ -32,6 +32,7 @@ class CSShadows: CSPreferencesFile {
     }
     
     static private var parsedShadows: [CSShadow] = parse(data)
+    static private var defaultShadowName: String?
     static var shadows: [CSShadow] { return parsedShadows }
     
     static var data: CSData = load() {
@@ -40,6 +41,7 @@ class CSShadows: CSPreferencesFile {
     
     private static func parse(_ data: CSData) -> [CSShadow] {
         guard let colorData = data["shadows"] else { return [] }
+        defaultShadowName = data["defaultShadowName"]?.string
         
         return colorData.arrayValue.map({ shadow in
             let id = shadow["id"]!.string!
@@ -54,8 +56,26 @@ class CSShadows: CSPreferencesFile {
         })
     }
     
-    static func shadow(withId id: String) -> CSShadow? {
-        return shadows.first(where: { $0.id == id })
+    static func shadow(with id: String) -> CSShadow {
+        return shadows.first(where: { $0.id == id }) ?? defaultShadow
+    }
+    
+    public static var defaultName: String {
+        return defaultShadowName ?? unstyledDefaultName
+    }
+    
+    public static var defaultShadow: CSShadow {
+        if let defaultShadowName = defaultShadowName {
+            let shadow = self.shadow(with: defaultShadowName)
+            return shadow
+        }
+        return unstyledDefaultShadow
+    }
+    
+    public static let unstyledDefaultName = "none"
+    
+    public static var unstyledDefaultShadow: CSShadow {
+        return CSShadow(id: "none", name: "Default", color: NSColor.clear, x: 0, y: 0, blur: 0)
     }
 }
 
