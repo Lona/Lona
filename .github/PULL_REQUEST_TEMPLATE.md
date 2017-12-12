@@ -32,4 +32,4 @@ I'm looking for feedback on:
 * <this code style>
 
 <!-- Tag relevant people for example -->
-cc: @dabott, @ryngonzalez
+cc: @dabbott, @ryngonzalez
