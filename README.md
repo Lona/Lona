@@ -171,5 +171,7 @@ Time constraints 😅
 ## The Team
 
 - Created by [@dvnabbott](https://twitter.com/dvnabbott)
-- Coding & design help by [@ryngonzalez](https://twitter.com/ryngonzalez)
+- Design & development help by [@ryngonzalez](https://twitter.com/ryngonzalez)
 - Gorgeous logo by [@pablocar0](https://twitter.com/pablocar0)
+- Lona Studio development by [Nghia Tran](https://github.com/NghiaTranUIT)
+- Swift code generation help by [Laura Skelton](https://twitter.com/skelovenko)
