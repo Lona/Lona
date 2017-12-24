@@ -25,7 +25,7 @@ class CSColors: CSPreferencesFile {
         guard let colorData = data["colors"] else { return [] }
         
         return colorData.arrayValue.map({ color in
-            let id = color["id"]?.string
+            let id = color["id"]!.string!
             let name = color["name"]?.string ?? "No name"
             let value = color["value"]?.string ?? "#000000"
             let nsColor = NSColor.parse(css: value) ?? NSColor.black
@@ -35,9 +35,9 @@ class CSColors: CSPreferencesFile {
     }
     
     static func parse(css string: String, withDefault defaultColor: NSColor = NSColor.clear) -> CSColor {
-        let match = CSColors.colors.first(where: { $0.id?.uppercased() == string.uppercased() })
+        let match = CSColors.colors.first(where: { $0.id.uppercased() == string.uppercased() })
         
-        return match ?? CSColor(id: nil, name: "Custom color", color: NSColor.parse(css: string) ?? defaultColor, value: string)
+        return match ?? CSColor(id: "custom", name: "Custom color", color: NSColor.parse(css: string) ?? defaultColor, value: string)
     }
 }
 

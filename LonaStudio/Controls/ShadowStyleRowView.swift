@@ -38,6 +38,11 @@ final class ShadowStyleRowView: NSStackView, Hoverable, PickerRowViewType {
         addArrangedSubview(colorView)
         addArrangedSubview(container)
         startTrackingHover()
+        onHover(selected)
+    }
+    
+    deinit {
+        removeTrackingHover()
     }
     
     private func initCommon() {

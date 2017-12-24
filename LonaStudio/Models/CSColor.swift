@@ -10,13 +10,15 @@ import Foundation
 import AppKit
 
 struct CSColor {
-    let id: String?
+    let id: String
     let name: String
     let color: NSColor
     let value: String
     
     var resolvedValue: String {
-        return id ?? value
+        return id
     }
 }
+
+extension CSColor: Identify, Searchable {}
 
