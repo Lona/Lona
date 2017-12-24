@@ -13,4 +13,9 @@ protocol Identify {
     var ID: String { get }
 }
 
-typealias PickerItemType = Identify
+protocol Searchable {
+    
+    var name: String { get }
+}
+
+typealias PickerItemType = Identify & Searchable
