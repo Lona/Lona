@@ -8,7 +8,7 @@
 
 import Cocoa
 
-final class PickerView<Element>: NSView {
+final class PickerView<Element: Hashable>: NSView {
     
     enum Option {
         case placeholderText(String)
@@ -16,7 +16,7 @@ final class PickerView<Element>: NSView {
         case data([Element])
         case viewForItem((NSTableView, Element) -> NSView)
         case didSelectItem((Element) -> Void)
-        case heightOfRow((Int) -> CGFloat)
+        case sizeForRow((Element) -> NSSize)
     }
     
     struct Options {
@@ -25,7 +25,7 @@ final class PickerView<Element>: NSView {
         var data: [Element]!
         var viewForItem: ((NSTableView, Element) -> NSView)!
         var didSelectItem: ((Element) -> Void)!
-        var heightOfRow: ((Int) -> CGFloat)?
+        var sizeForRow: ((Element) -> NSSize) = { _ in return NSSize(width: 44.0, height: 300)}
         
         init(_ options: [Option]) {
             for option in options {
@@ -38,8 +38,8 @@ final class PickerView<Element>: NSView {
                     didSelectItem = f
                 case .viewForItem(let f):
                     viewForItem = f
-                case .heightOfRow(let f):
-                    heightOfRow = f
+                case .sizeForRow(let f):
+                    sizeForRow = f
                 case .selected(let value):
                     selected = value
                 }

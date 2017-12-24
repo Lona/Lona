@@ -116,6 +116,7 @@
 		BA3001781FDB97430003E7D2 /* ShadowStylePickerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = BA3001771FDB97430003E7D2 /* ShadowStylePickerView.swift */; };
 		BA4854981FEF6CC800AB7923 /* PickerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = BA4854971FEF6CC800AB7923 /* PickerView.swift */; };
 		BA48549A1FEF6EC800AB7923 /* PickerListView.swift in Sources */ = {isa = PBXBuildFile; fileRef = BA4854991FEF6EC800AB7923 /* PickerListView.swift */; };
+		BA48549C1FEF7A6500AB7923 /* PickerProtocol.swift in Sources */ = {isa = PBXBuildFile; fileRef = BA48549B1FEF7A6500AB7923 /* PickerProtocol.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -231,6 +232,7 @@
 		BA3001771FDB97430003E7D2 /* ShadowStylePickerView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ShadowStylePickerView.swift; sourceTree = "<group>"; };
 		BA4854971FEF6CC800AB7923 /* PickerView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PickerView.swift; sourceTree = "<group>"; };
 		BA4854991FEF6EC800AB7923 /* PickerListView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PickerListView.swift; sourceTree = "<group>"; };
+		BA48549B1FEF7A6500AB7923 /* PickerProtocol.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PickerProtocol.swift; sourceTree = "<group>"; };
 		BEBB1F9781BB0743EBCD0459 /* Pods_LonaStudio.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_LonaStudio.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		F8FBB9AD90B69BBD8BDE30B0 /* Pods-LonaStudio.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-LonaStudio.debug.xcconfig"; path = "Pods/Target Support Files/Pods-LonaStudio/Pods-LonaStudio.debug.xcconfig"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
@@ -496,6 +498,7 @@
 		BA4854961FEF6CA700AB7923 /* Picker */ = {
 			isa = PBXGroup;
 			children = (
+				BA48549B1FEF7A6500AB7923 /* PickerProtocol.swift */,
 				BA4854971FEF6CC800AB7923 /* PickerView.swift */,
 				BA4854991FEF6EC800AB7923 /* PickerListView.swift */,
 			);
@@ -661,6 +664,7 @@
 				30F7C9561ED4E02F009D27DF /* YogaLayout.swift in Sources */,
 				3090D7931F01B2EF009277E7 /* CSLayer.swift in Sources */,
 				30335A101F5B3023006E507B /* CSCase.swift in Sources */,
+				BA48549C1FEF7A6500AB7923 /* PickerProtocol.swift in Sources */,
 				30B5B1A11EC36A70002068CE /* PopupField.swift in Sources */,
 				306DA4F11F33EA74002772DC /* CSTextView.swift in Sources */,
 				300302741EDC7FA90085E140 /* CSStatementView.swift in Sources */,
