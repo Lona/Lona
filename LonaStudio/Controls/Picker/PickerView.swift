@@ -8,7 +8,7 @@
 
 import Cocoa
 
-final class PickerView<Element: PickerItemType>: NSView {
+class PickerView<Element: PickerItemType>: NSView {
     
     enum Option {
         case placeholderText(String)

@@ -1,7 +1,7 @@
 import Foundation
 import Cocoa
 
-class TextStylePickerButton: NSButton, CSControl {
+final class TextStylePickerButton: NSButton, CSControl {
     
     var data: CSData {
         get { return CSData.String(value) }
@@ -47,7 +47,12 @@ class TextStylePickerButton: NSButton, CSControl {
     }
     
     func showPopover() {
-        let picker = initPickerView()
+        let picker = TextStylePickerView(selected: data.stringValue) {[weak self] (item) in
+            guard let strongSelf = self else { return }
+            strongSelf.value = item.id
+            strongSelf.onChange(strongSelf.value)
+            strongSelf.onChangeData(strongSelf.data)
+        }
         picker.popover.show(relativeTo: NSRect.zero, of: self, preferredEdge: .maxY)
     }
     
@@ -58,52 +63,5 @@ class TextStylePickerButton: NSButton, CSControl {
     private func smallSizeAttributeText(with csFont: AttributedFont) -> NSAttributedString {
         csFont.fontSize = 14
         return csFont.apply(to: value)
-    }
-}
-
-extension TextStylePickerButton {
-    
-    private struct Constant {
-        static let maxWidth: CGFloat = 1000
-        static let minHeightRow: CGFloat = 32.0
-        static let maxHeightRow: CGFloat = 200.0
-    }
-    
-    fileprivate func initPickerView() -> PickerView<CSTextStyle> {
-        let options: [PickerView<CSTextStyle>.Option] = [
-            .data(CSTypography.styles),
-            .didSelectItem({[weak self] (picker, item) in
-                guard let strongSelf = self else { return }
-                picker?.popover.close()
-                strongSelf.value = item.id
-                strongSelf.onChange(strongSelf.value)
-                strongSelf.onChangeData(strongSelf.data)
-            }),
-            .placeholderText("Search text style ..."),
-            .selected(data.string!),
-            .sizeForRow({[unowned self] (textStyle) -> NSSize in
-                let text = textStyle.font.apply(to: textStyle.name)
-                return self.fitTextSize(text)
-            }),
-            .viewForItem({ (tableView, item, selected) -> PickerRowViewType in
-                return TextStyleRowView(textStyle: item, selected: selected)
-            })
-            
-        ]
-        return PickerView<CSTextStyle>.init(options: options)
-    }
-    
-    private func fitSize(with attributeString: NSAttributedString) -> NSSize {
-        let fixedSize = NSSize(width: Constant.maxWidth, height: Constant.maxHeightRow)
-        return attributeString.boundingRect(with: fixedSize,
-                                            options: .usesFontLeading).size
-    }
-    
-    private func fitTextSize(_ attributeText: NSAttributedString) -> NSSize {
-        let size = fitSize(with: attributeText)
-        var height = size.height
-        height = min(height, Constant.maxHeightRow)
-        height = max(height, Constant.minHeightRow)
-        return NSSize(width: size.width, height: height)
     }
 }
