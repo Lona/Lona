@@ -22,7 +22,7 @@ class ColorPickerView: PickerView<CSColor> {
                 picker?.popover.close()
                 onChange(item)
             }),
-            .placeholderText("Search shadow style ..."),
+            .placeholderText("Search Color ..."),
             .selected(selected),
             .sizeForRow({(textStyle) -> NSSize in
                 return NSSize(width: Constant.widthRow, height: Constant.heightRow)
