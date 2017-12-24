@@ -71,32 +71,29 @@ class TextStylePickerButton: NSButton, CSControl {
 extension TextStylePickerButton {
     
     private struct Constant {
-        static let minWidth: CGFloat = 100
         static let maxWidth: CGFloat = 1000
         static let minHeightRow: CGFloat = 32.0
         static let maxHeightRow: CGFloat = 200.0
-        static let minHeight: CGFloat = 100
-        static let maxHeight: CGFloat = 1000
     }
     
     fileprivate func initPickerView() -> PickerView<CSTextStyle> {
         let options: [PickerView<CSTextStyle>.Option] = [
-            PickerView<CSTextStyle>.Option.data(CSTypography.styles),
-            PickerView<CSTextStyle>.Option.didSelectItem({[weak self] (picker, item) in
+            .data(CSTypography.styles),
+            .didSelectItem({[weak self] (picker, item) in
                 guard let strongSelf = self else { return }
                 picker?.popover.close()
                 strongSelf.value = item.id
                 strongSelf.onChange(strongSelf.value)
                 strongSelf.onChangeData(strongSelf.data)
             }),
-            PickerView<CSTextStyle>.Option.placeholderText("Search text style ..."),
-            PickerView<CSTextStyle>.Option.selected(data.string!),
-            PickerView<CSTextStyle>.Option.sizeForRow({[unowned self] (textStyle) -> NSSize in
+            .placeholderText("Search text style ..."),
+            .selected(data.string!),
+            .sizeForRow({[unowned self] (textStyle) -> NSSize in
                 let text = textStyle.font.apply(to: textStyle.name)
                 return self.fitTextSize(text)
             }),
-            PickerView<CSTextStyle>.Option.viewForItem({ (tableView, item, selected) -> PickerRowViewType in
-                return TextStyleRow(textStyle: item, selected: selected)
+            .viewForItem({ (tableView, item, selected) -> PickerRowViewType in
+                return TextStyleRowView(textStyle: item, selected: selected)
             })
             
         ]

@@ -8,7 +8,7 @@
 
 import Cocoa
 
-class TextStyleRow: NSStackView, Hoverable {
+final class TextStyleRowView: NSStackView, Hoverable {
     
     // MARK: - Variable
     fileprivate let tickView = NSImageView(image: NSImage(named: "icon-layer-list-tick")!)
@@ -77,7 +77,7 @@ class TextStyleRow: NSStackView, Hoverable {
 }
 
 // MARK: - PickerRowViewType
-extension TextStyleRow: PickerRowViewType {
+extension TextStyleRowView: PickerRowViewType {
     
     func onHover(_ hover: Bool) {
         if hover {

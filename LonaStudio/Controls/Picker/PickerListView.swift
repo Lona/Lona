@@ -13,9 +13,8 @@ private struct Constant {
     static let minWidth: CGFloat = 100
     static let maxWidth: CGFloat = 1000
     static let minHeightRow: CGFloat = 32.0
-    static let maxHeightRow: CGFloat = 200.0
     static let minHeight: CGFloat = 100
-    static let maxHeight: CGFloat = 1000
+    static let maxHeight: CGFloat = 800
 }
 
 final class PickerListView<Element: PickerItemType>: NSScrollView, NSTableViewDelegate, NSTableViewDataSource {
@@ -99,8 +98,8 @@ extension PickerListView {
         tableView.backgroundColor = NSColor.clear
         tableView.columnAutoresizingStyle = .uniformColumnAutoresizingStyle
         
-        let column = NSTableColumn(identifier: "shadowStyle")
-        column.title = "Shadow Style"
+        let column = NSTableColumn(identifier: "style")
+        column.title = "Style"
         column.resizingMask = .autoresizingMask
         column.maxWidth = 1000
         
