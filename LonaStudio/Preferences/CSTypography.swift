@@ -15,6 +15,8 @@ struct CSTextStyle {
     let font: AttributedFont
 }
 
+extension CSTextStyle: Identify, Searchable {}
+
 class CSTypography: CSPreferencesFile {
     static var url: URL {
         return CSWorkspacePreferences.workspaceURL.appendingPathComponent("textStyles.json")

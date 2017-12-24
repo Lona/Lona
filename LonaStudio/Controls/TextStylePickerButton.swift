@@ -1,13 +1,6 @@
 import Foundation
 import Cocoa
 
-extension CSTextStyle: Identify {
-    var ID: String { return self.id }
-}
-
-extension CSTextStyle: Searchable {    
-}
-
 class TextStylePickerButton: NSButton, CSControl {
     
     var data: CSData {

@@ -10,7 +10,7 @@ import Cocoa
 
 protocol Identify {
     
-    var ID: String { get }
+    var id: String { get }
 }
 
 protocol Searchable {
