@@ -115,6 +115,7 @@ extension PickerView {
                 } else {
                     self.filterData = self.options.data.filter { $0.name.lowercased().contains(filter.lowercased()) }
                 }
+                self.currentHover = -1
                 list.update(data: self.filterData, selected: self.options.selected)
             }),
             .onKeyPress({ [unowned self] keyCode in

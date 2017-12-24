@@ -119,6 +119,7 @@
 		BA48549C1FEF7A6500AB7923 /* PickerProtocol.swift in Sources */ = {isa = PBXBuildFile; fileRef = BA48549B1FEF7A6500AB7923 /* PickerProtocol.swift */; };
 		BACCB4271FEFA05B00B58E32 /* TextStylePickerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = BACCB4261FEFA05B00B58E32 /* TextStylePickerView.swift */; };
 		BACCB42B1FEFA26E00B58E32 /* ShadowStyleRowView.swift in Sources */ = {isa = PBXBuildFile; fileRef = BACCB42A1FEFA26E00B58E32 /* ShadowStyleRowView.swift */; };
+		BACCB42D1FEFA50500B58E32 /* ColorSwatchRowView.swift in Sources */ = {isa = PBXBuildFile; fileRef = BACCB42C1FEFA50500B58E32 /* ColorSwatchRowView.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -237,6 +238,7 @@
 		BA48549B1FEF7A6500AB7923 /* PickerProtocol.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PickerProtocol.swift; sourceTree = "<group>"; };
 		BACCB4261FEFA05B00B58E32 /* TextStylePickerView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TextStylePickerView.swift; sourceTree = "<group>"; };
 		BACCB42A1FEFA26E00B58E32 /* ShadowStyleRowView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ShadowStyleRowView.swift; sourceTree = "<group>"; };
+		BACCB42C1FEFA50500B58E32 /* ColorSwatchRowView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ColorSwatchRowView.swift; sourceTree = "<group>"; };
 		BEBB1F9781BB0743EBCD0459 /* Pods_LonaStudio.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_LonaStudio.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		F8FBB9AD90B69BBD8BDE30B0 /* Pods-LonaStudio.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-LonaStudio.debug.xcconfig"; path = "Pods/Target Support Files/Pods-LonaStudio/Pods-LonaStudio.debug.xcconfig"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
@@ -343,6 +345,7 @@
 				30EFC9591EF43C900087711D /* CheckboxField.swift */,
 				30B5B1A61EC3BF4F002068CE /* ColorPickerButton.swift */,
 				30B5B1A21EC3AE44002068CE /* ColorPickerView.swift */,
+				BACCB42C1FEFA50500B58E32 /* ColorSwatchRowView.swift */,
 				30DE880C1FBA22FB00D62A50 /* ComponentEditorButton.swift */,
 				307718E71F35241A003A597B /* CSControl.swift */,
 				30990AAD1FA3FC4200BC0CCE /* CSSearchField.swift */,
@@ -705,6 +708,7 @@
 				3069E0A01F3254E10005E9A8 /* CSTypography.swift in Sources */,
 				301493A71EC0F415005BC573 /* CanvasView.swift in Sources */,
 				30DE880B1FBA194F00D62A50 /* NSViewControllerExtensions.swift in Sources */,
+				BACCB42D1FEFA50500B58E32 /* ColorSwatchRowView.swift in Sources */,
 				309777701F2A8EC1004C8975 /* WorkspacePreferencesViewController.swift in Sources */,
 				3069E09A1F3243780005E9A8 /* parseCSSColor.swift in Sources */,
 				30990AAE1FA3FC4200BC0CCE /* CSSearchField.swift in Sources */,

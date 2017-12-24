@@ -67,27 +67,14 @@ class ColorPickerButton: NSButton, CSControl {
     }
     
     func showPopover() {
-        let colorPickerView = ColorPickerView()
-        
-        let vc = NSViewController()
-        vc.view = colorPickerView
-        
-        let popover = NSPopover()
-        popover.contentSize = colorPickerView.frame.size
-        popover.behavior = .transient
-        popover.animates = false
-        popover.contentViewController = vc
-        
-        popover.show(relativeTo: NSRect.zero, of: self, preferredEdge: .maxY)
-        
-        colorPickerView.onClickColor = { csColor in
-            popover.close()
-            
-            self.title = csColor.name
-            self.value = csColor.resolvedValue
-            self.onChange(self.value)
-            self.onChangeData(self.data)
+        let picker = ColorPickerView(selected: data.stringValue) {[weak self] (color) in
+            guard let strongSelf = self else { return }
+            strongSelf.title = color.name
+            strongSelf.value = color.resolvedValue
+            strongSelf.onChange(strongSelf.value)
+            strongSelf.onChangeData(strongSelf.data)
         }
+        picker.popover.show(relativeTo: NSRect.zero, of: self, preferredEdge: .maxY)
     }
     
     func handleClick() {
