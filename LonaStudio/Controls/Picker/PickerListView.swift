@@ -18,12 +18,12 @@ private struct Constant {
     static let maxHeight: CGFloat = 1000
 }
 
-final class PickerListView<Element: Hashable>: NSScrollView, NSTableViewDelegate, NSTableViewDataSource {
+final class PickerListView<Element: PickerItemType>: NSScrollView, NSTableViewDelegate, NSTableViewDataSource {
     
     // MARK: - Variable
     fileprivate let tableView = NSTableView(frame: NSRect.zero)
     fileprivate var options: PickerView<Element>.Options
-    fileprivate var sizeRows: [Int: NSSize] = [:]
+    fileprivate var sizeRows: [String: NSSize] = [:]
     
     // MARK: - Init
     init(options: PickerView<Element>.Options) {
@@ -70,7 +70,7 @@ final class PickerListView<Element: Hashable>: NSScrollView, NSTableViewDelegate
     
     func tableView(_ tableView: NSTableView, heightOfRow row: Int) -> CGFloat {
         let item = options.data[row]
-        if let size = sizeRows[item.hashValue] {
+        if let size = sizeRows[item.ID] {
             return size.height
         }
         return Constant.minHeightRow
@@ -126,7 +126,7 @@ extension PickerListView {
     fileprivate func cacheSize(_ data: [Element]) {
         for item in data {
             let size = options.sizeForRow(item)
-            sizeRows[item.hashValue] = size
+            sizeRows[item.ID] = size
         }
     }
     
