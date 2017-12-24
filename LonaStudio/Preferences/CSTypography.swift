@@ -9,7 +9,11 @@
 import Foundation
 import AppKit
 
-public typealias CSTextStyle = (name: String, id: String, font: AttributedFont)
+struct CSTextStyle {
+    let name: String
+    let id: String
+    let font: AttributedFont
+}
 
 class CSTypography: CSPreferencesFile {
     static var url: URL {
@@ -46,8 +50,7 @@ class CSTypography: CSPreferencesFile {
                 weight: convertFontWeight(fontWeight: fontWeight),
                 color: color
             )
-            
-            return (name, id, font)
+            return CSTextStyle(name: name, id: id, font: font)
         })
     }
     
@@ -88,10 +91,10 @@ class CSTypography: CSPreferencesFile {
         return unstyledDefaultFont
     }
     
-    public static let unstyledDefaultFont: CSTextStyle = (
-        "Default",
-        unstyledDefaultName,
-        AttributedFont(
+    public static let unstyledDefaultFont = CSTextStyle(
+        name: "Default",
+        id: unstyledDefaultName,
+        font: AttributedFont(
             fontFamily: NSFont.systemFont(ofSize: 17).familyName ?? "Helvetica",
             fontSize: 17,
             lineHeight: 22,

@@ -6,7 +6,7 @@
 //  Copyright © 2017 Devin Abbott. All rights reserved.
 //
 
-import Foundation
+import Cocoa
 
 protocol Identify {
     
@@ -18,4 +18,9 @@ protocol Searchable {
     var name: String { get }
 }
 
+protocol PickerRowViewHoverable {
+    func onHover(_ hover: Bool)
+}
+
 typealias PickerItemType = Identify & Searchable
+typealias PickerRowViewType = PickerRowViewHoverable
