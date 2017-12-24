@@ -49,20 +49,13 @@ class ShadowStylePickerButton: NSButton, CSControl {
     
     // MARK: - Public
     func showPopover() {
-        let picker = ShadowStylePickerView(selectedID: data.string!)
-        let popover = NSPopover()
-        popover.behavior = .transient
-        popover.animates = false
-        popover.contentViewController = picker.embeddedViewController()
-        popover.contentSize = picker.bounds.size
-        popover.show(relativeTo: NSRect.zero, of: self, preferredEdge: .maxY)
-        picker.onClickFont = { [weak self ] textStyle in
+        let picker = ShadowStylePickerView(selected: data.stringValue) {[weak self] (item) in
             guard let strongSelf = self else { return }
-            popover.close()
-            strongSelf.value = textStyle.id
+            strongSelf.value = item.id
             strongSelf.onChange(strongSelf.value)
             strongSelf.onChangeData(strongSelf.data)
         }
+        picker.popover.show(relativeTo: NSRect.zero, of: self, preferredEdge: .maxY)
     }
     
     func handleClick() {

@@ -26,6 +26,8 @@ struct CSShadow {
     }
 }
 
+extension CSShadow: Identify, Searchable {}
+
 class CSShadows: CSPreferencesFile {
     static var url: URL {
         return CSWorkspacePreferences.workspaceURL.appendingPathComponent("shadows.json")
