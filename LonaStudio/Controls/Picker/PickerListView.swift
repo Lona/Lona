@@ -67,13 +67,13 @@ final class PickerListView<Element: PickerItemType>: NSScrollView, NSTableViewDe
     
     func tableView(_ tableView: NSTableView, viewFor tableColumn: NSTableColumn?, row: Int) -> NSView? {
         let item = data[row]
-        let selected = item.ID == options.selected
+        let selected = item.id == options.selected
         return options.viewForItem(tableView, item, selected) as? NSView
     }
     
     func tableView(_ tableView: NSTableView, heightOfRow row: Int) -> CGFloat {
         let item = data[row]
-        if let size = sizeRows[item.ID] {
+        if let size = sizeRows[item.id] {
             return size.height
         }
         return Constant.minHeightRow
@@ -129,7 +129,7 @@ extension PickerListView {
     fileprivate func cacheSize(_ data: [Element]) {
         for item in data {
             let size = options.sizeForRow(item)
-            sizeRows[item.ID] = size
+            sizeRows[item.id] = size
         }
     }
     
