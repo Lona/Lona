@@ -14,17 +14,17 @@ final class PickerView<Element: PickerItemType>: NSView {
         case placeholderText(String)
         case selected(String)
         case data([Element])
-        case viewForItem((NSTableView, Element) -> NSView)
-        case didSelectItem((Element) -> Void)
+        case viewForItem((NSTableView, Element, Bool) -> PickerRowViewType)
+        case didSelectItem((PickerView<Element>?, Element) -> Void)
         case sizeForRow((Element) -> NSSize)
     }
     
     struct Options {
-        var placeholderText: String!
+        var placeholderText: String = "Search ..."
         var selected: String!
         var data: [Element]!
-        var viewForItem: ((NSTableView, Element) -> NSView)!
-        var didSelectItem: ((Element) -> Void)!
+        var viewForItem: ((NSTableView, Element, Bool) -> PickerRowViewType)!
+        var didSelectItem: ((PickerView<Element>?, Element) -> Void)!
         var sizeForRow: ((Element) -> NSSize) = { _ in return NSSize(width: 44.0, height: 300)}
         
         init(_ options: [Option]) {
@@ -49,7 +49,16 @@ final class PickerView<Element: PickerItemType>: NSView {
     
     // MARK: - Variable
     fileprivate let options: Options
+    fileprivate var filterData: [Element] = []
     fileprivate var currentHover = -1
+    lazy var popover: NSPopover = {
+        let popover = NSPopover()
+        popover.behavior = .transient
+        popover.animates = false
+        popover.contentViewController = self.embeddedViewController()
+        popover.contentSize = self.bounds.size
+        return popover
+    }()
     
     // MARK: - Init
     init(options: [Option]) {
@@ -64,15 +73,8 @@ final class PickerView<Element: PickerItemType>: NSView {
         fatalError("init(coder:) has not been implemented")
     }
     
-
     // MARK: - Override
     override var isFlipped: Bool { return true }
-    
-    // MARK: - Public
-    func embeddedViewController() -> NSViewController {
-        let controller = NSViewController(view: self)
-        return controller
-    }
 }
 
 // MARK: - Private
@@ -86,6 +88,7 @@ extension PickerView {
         
         // Components
         let list = PickerListView(options: options)
+        list.picker = self
         let searchStackView = setupSearchView(list)
         
         // Stack View
@@ -107,19 +110,18 @@ extension PickerView {
             CSSearchField.Option.placeholderText(options.placeholderText),
             CSSearchField.Option.onChange({ [unowned self] filter in
                 
-                var data: [Element] = []
                 if filter.count == 0 {
-                    data = self.options.data
+                    self.filterData = self.options.data
                 } else {
-                    data = self.options.data.filter { $0.name.lowercased().contains(filter.lowercased()) }
+                    self.filterData = self.options.data.filter { $0.name.lowercased().contains(filter.lowercased()) }
                 }
                 
-                list.update(data: data, selected: self.options.selected)
+                list.update(data: self.filterData, selected: self.options.selected)
             }),
             CSSearchField.Option.onKeyPress({ [unowned self] keyCode in
                 
                 func updateHover(index: Int) {
-                    self.currentHover = max(0, min(index, self.options.data.count - 1))
+                    self.currentHover = max(0, min(index, self.filterData.count - 1))
                     list.updateHover(self.currentHover)
                 }
                 
@@ -131,9 +133,9 @@ extension PickerView {
                     let index = self.currentHover - 1
                     updateHover(index: index)
                 case .enter:
-                    guard self.currentHover < self.options.data.count else { return }
-                    let item = self.options.data[self.currentHover]
-                    self.options.didSelectItem(item)
+                    guard self.currentHover < self.filterData.count else { return }
+                    let item = self.filterData[self.currentHover]
+                    self.options.didSelectItem(self, item)
                     break
                 }
             })
@@ -142,5 +144,10 @@ extension PickerView {
         let stackView = NSStackView(views: [searchField], orientation: .horizontal, stretched: true)
         stackView.edgeInsets = EdgeInsets(top: 0, left: 8, bottom: 0, right: 8)
         return stackView
+    }
+    
+    fileprivate func embeddedViewController() -> NSViewController {
+        let controller = NSViewController(view: self)
+        return controller
     }
 }

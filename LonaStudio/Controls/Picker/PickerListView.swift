@@ -23,16 +23,19 @@ final class PickerListView<Element: PickerItemType>: NSScrollView, NSTableViewDe
     // MARK: - Variable
     fileprivate let tableView = NSTableView(frame: NSRect.zero)
     fileprivate var options: PickerView<Element>.Options
+    fileprivate var data: [Element] = []
     fileprivate var sizeRows: [String: NSSize] = [:]
+    weak var picker: PickerView<Element>?
     
     // MARK: - Init
     init(options: PickerView<Element>.Options) {
         self.options = options
+        self.data = options.data
         
         super.init(frame: NSRect.zero)
         
         setupCommon()
-        cacheSize(options.data)
+        cacheSize(data)
         fitSize()
         setupTableView()
     }
@@ -43,20 +46,20 @@ final class PickerListView<Element: PickerItemType>: NSScrollView, NSTableViewDe
     
     // MARK: - Public
     func update(data: [Element], selected: String) {
-        options.data = data
+        self.data = data
         options.selected = selected
         
         tableView.reloadData()
     }
     
     func updateHover(_ index: Int) {
-        guard let view = tableView.view(atColumn: 0, row: index, makeIfNecessary: false) as? ShadowStyleRow else { return }
+        guard let view = tableView.view(atColumn: 0, row: index, makeIfNecessary: false) as? PickerRowViewType else { return }
         removeHover()
-        view.updateHover(true)
+        view.onHover(true)
     }
     
     func numberOfRows(in tableView: NSTableView) -> Int {
-        return options.data.count
+        return data.count
     }
     
     func tableView(_ tableView: NSTableView, rowViewForRow row: Int) -> NSTableRowView? {
@@ -64,12 +67,13 @@ final class PickerListView<Element: PickerItemType>: NSScrollView, NSTableViewDe
     }
     
     func tableView(_ tableView: NSTableView, viewFor tableColumn: NSTableColumn?, row: Int) -> NSView? {
-        let item = options.data[row]
-        return options.viewForItem(tableView, item)
+        let item = data[row]
+        let selected = item.ID == options.selected
+        return options.viewForItem(tableView, item, selected) as? NSView
     }
     
     func tableView(_ tableView: NSTableView, heightOfRow row: Int) -> CGFloat {
-        let item = options.data[row]
+        let item = data[row]
         if let size = sizeRows[item.ID] {
             return size.height
         }
@@ -77,8 +81,8 @@ final class PickerListView<Element: PickerItemType>: NSScrollView, NSTableViewDe
     }
     
     func tableViewSelectionDidChange(_ notification: Notification) {
-        let item = options.data[tableView.selectedRow]
-        options.didSelectItem(item)
+        let item = data[tableView.selectedRow]
+        options.didSelectItem(picker, item)
     }
 }
 
@@ -113,8 +117,8 @@ extension PickerListView {
     
     fileprivate func removeHover() {
         tableView.enumerateAvailableRowViews { (row, index) in
-            let textRow = row.view(atColumn: 0) as! ShadowStyleRow
-            textRow.updateHover(false)
+            let textRow = row.view(atColumn: 0) as! PickerRowViewType
+            textRow.onHover(false)
         }
     }
 }
