@@ -99,7 +99,7 @@ class LayerList: NSOutlineView {
         documentController.openDocument(withContentsOf: url, display: true) {
             (document, documentWasAlreadyOpen, error) in
             if error != nil {
-                Swift.print("An error occured")
+                Swift.print("An error occurred")
             } else {
                 if documentWasAlreadyOpen {
                     Swift.print("documentWasAlreadyOpen: true")
