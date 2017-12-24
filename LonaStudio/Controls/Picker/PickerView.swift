@@ -49,7 +49,7 @@ final class PickerView<Element: PickerItemType>: NSView {
     
     // MARK: - Variable
     fileprivate let options: Options
-    fileprivate var filterData: [Element] = []
+    fileprivate var filterData: [Element]!
     fileprivate var currentHover = -1
     lazy var popover: NSPopover = {
         let popover = NSPopover()
@@ -63,6 +63,7 @@ final class PickerView<Element: PickerItemType>: NSView {
     // MARK: - Init
     init(options: [Option]) {
         self.options = PickerView<Element>.Options(options)
+        filterData = self.options.data
         super.init(frame: NSRect.zero)
         
         initCommon()
@@ -107,19 +108,16 @@ extension PickerView {
     
     private func setupSearchView(_ list: PickerListView<Element>) -> NSStackView {
         let searchField = CSSearchField(options: [
-            CSSearchField.Option.placeholderText(options.placeholderText),
-            CSSearchField.Option.onChange({ [unowned self] filter in
-                
+            .placeholderText(options.placeholderText),
+            .onChange({ [unowned self] filter in
                 if filter.count == 0 {
                     self.filterData = self.options.data
                 } else {
                     self.filterData = self.options.data.filter { $0.name.lowercased().contains(filter.lowercased()) }
                 }
-                
                 list.update(data: self.filterData, selected: self.options.selected)
             }),
-            CSSearchField.Option.onKeyPress({ [unowned self] keyCode in
-                
+            .onKeyPress({ [unowned self] keyCode in
                 func updateHover(index: Int) {
                     self.currentHover = max(0, min(index, self.filterData.count - 1))
                     list.updateHover(self.currentHover)
