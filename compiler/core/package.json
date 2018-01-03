@@ -6,7 +6,9 @@
     "start": "bsb -make-world -w",
     "clean": "bsb -clean-world"
   },
-  "keywords": ["BuckleScript"],
+  "keywords": [
+    "BuckleScript"
+  ],
   "author": "",
   "license": "MIT",
   "devDependencies": {
@@ -15,6 +17,7 @@
   "dependencies": {
     "bs-batteries": "0.0.14",
     "bs-json": "^0.2.4",
-    "bs-node": "github:buckletypes/bs-node"
+    "bs-node": "github:buckletypes/bs-node",
+    "prettier": "prettier/prettier#b63c669ed9821a0e0d6918243ef4f4a091b222a9"
   }
 }

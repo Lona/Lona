@@ -20,7 +20,7 @@ module IdentifierSet = {
         let compare = (a: t, b: t) : int => {
           let (_, a) = a;
           let (_, b) = b;
-          compare(Render.join("", a), Render.join("", b))
+          compare(Render.String.join("", a), Render.String.join("", b))
         };
       }
     );

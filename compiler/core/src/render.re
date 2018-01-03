@@ -10,97 +10,120 @@ let rec flatMap = (list) =>
   | [] => []
   };
 
-let join = (sep, items) => items |> Array.of_list |> Js.Array.joinWith(sep);
+module String = {
+  let join = (sep, items) => items |> Array.of_list |> Js.Array.joinWith(sep);
+};
 
 module JavaScript = {
-  let renderBinaryOperator = (x) =>
-    switch x {
-    | Ast.JavaScript.Eq => "==="
-    | Neq => "!=="
-    | Gt => ">"
-    | Gte => ">="
-    | Lt => "<"
-    | Lte => "<="
-    | Plus => "+"
-    | Noop => ""
-    };
+  open Prettier.Doc.Builders;
+  let prefixAll = (sep, items) => concat([sep, join(sep, items)]);
+  let renderBinaryOperator = (x) => {
+    let op =
+      switch x {
+      | Ast.JavaScript.Eq => "==="
+      | Neq => "!=="
+      | Gt => ">"
+      | Gte => ">="
+      | Lt => "<"
+      | Lte => "<="
+      | Plus => "+"
+      | Noop => ""
+      };
+    s(op)
+  };
   /* Render AST */
-  let rec render = (ast) =>
+  let rec render = (ast) : Prettier.Doc.t('a) =>
     switch ast {
     | Ast.JavaScript.Identifier(path) =>
-      switch path {
-      | [first, ...rest] => [List.fold_left((a, b) => a ++ "." ++ b, first, rest)]
-      | [] => []
-      }
-    | Literal(Types.Value(_, json)) => [Js.Json.stringify(json)]
-    | VariableDeclaration(value) =>
-      let value = render(value) |> join("");
-      [{j|let $value;|j}]
+      path |> List.map(s) |> join(concat([softline, s(".")])) |> group
+    | Literal(Types.Value(_, json)) => s(Js.Json.stringify(json))
+    | VariableDeclaration(value) => group(concat([s("let "), render(value), s(";")]))
     | AssignmentExpression(name, value) =>
-      let name = render(name) |> join("");
-      let value = render(value) |> join("");
-      [{j|$name = $value|j}]
+      fill([group(concat([render(name), line, s("=")])), s(" "), render(value)])
     | BooleanExpression(lhs, cmp, rhs) =>
-      let lhs = render(lhs) |> join("");
-      let rhs = render(rhs) |> join("");
-      let cmp = renderBinaryOperator(cmp);
-      [{j|$lhs $cmp $rhs|j}]
+      concat([render(lhs), renderBinaryOperator(cmp), render(rhs)])
     | ConditionalStatement(condition, body) =>
-      let condition = render(condition) |> join("");
-      let body = body |> renderBody;
-      List.flatten([[{j|if ($condition) {|j}], body, ["}"]])
+      concat([
+        group(
+          concat([
+            s("if"),
+            line,
+            s("("),
+            softline,
+            render(condition),
+            softline,
+            s(")"),
+            line,
+            s("{")
+          ])
+        ),
+        indent(join(hardline, body |> List.map(render))),
+        hardline,
+        s("}")
+      ])
     | Class(name, extends, body) =>
       let decl =
         switch extends {
-        | Some(a) => {j|class $name extends $a {|j}
-        | None => {j|class $name {|j}
+        | Some(a) => [s("class"), s(name), s("extends"), s(a)]
+        | None => [s("class"), s(name)]
         };
-      List.flatten([[decl], body |> renderBody, ["};"]])
+      concat([
+        group(concat([join(line, decl), s(" {")])),
+        indent(prefixAll(hardline, body |> List.map(render))),
+        hardline,
+        s("};")
+      ])
     | Method(name, parameters, body) =>
-      let parameterList = parameters |> join(", ");
-      List.flatten([[{j|$name($parameterList) {|j}], body |> renderBody, ["};"]])
+      let parameterList = parameters |> List.map(s) |> join(line);
+      concat([
+        group(concat([s(name), s("("), parameterList, s(")"), line, s("{")])),
+        indent(join(hardline, body |> List.map(render))),
+        line,
+        s("}")
+      ])
     | CallExpression(value, parameters) =>
-      let value = render(value) |> join("");
-      let parameterList = parameters |> List.map(render) |> List.flatten |> join(", ");
-      [{j|$value($parameterList)|j}]
+      let parameterList = parameters |> List.map(render) |> join(s(", "));
+      fill([render(value), s("("), parameterList, s(")")])
     | Return(value) =>
-      let value = render(value) |> join("");
-      [{j|return $value;|j}]
+      group(
+        concat([
+          group(concat([s("return"), line, s("(")])),
+          indent(concat([line, render(value)])),
+          line,
+          s(");")
+        ])
+      )
     | JSXAttribute(name, value) =>
-      let value = render(value) |> join("");
-      [{j|$name={$value}|j}]
+      let value = render(value);
+      concat([s(name), s("={"), value, s("}")])
     | JSXElement(tag, attributes, body) =>
+      let openingContent = attributes |> List.map(render) |> join(line);
       let opening =
-        switch attributes {
-        | [] => tag
-        | _ =>
-          let attributes = attributes |> List.map(render) |> List.flatten |> join(" ");
-          join(" ", [tag, attributes])
-        };
-      List.flatten([[{j|<$opening>|j}], body |> renderBody, [{j|</$tag>|j}]])
+        group(concat([s("<"), s(tag), indent(concat([line, openingContent])), softline, s(">")]));
+      let closing = group(concat([s("</"), s(tag), s(">")]));
+      let children = indent(concat([line, join(line, body |> List.map(render))]));
+      concat([opening, children, line, closing])
     | ArrayLiteral(body) =>
-      switch body {
-      | [] => ["[]"]
-      | _ =>
-        let body = body |> List.map(render) |> List.flatten |> join(", ");
-        [{j|[ $body ]|j}]
-      }
+      let maybeLine = List.length(body) > 0 ? line : s("");
+      let body = body |> List.map(render) |> join(concat([s(","), line]));
+      group(concat([s("["), indent(concat([maybeLine, body])), maybeLine, s("]")]))
     | ObjectLiteral(body) =>
-      switch body {
-      | [] => ["{}"]
-      | _ =>
-        let body = body |> List.map(render) |> List.flatten |> join(", ");
-        [{j|{ $body }|j}]
+      let maybeLine = List.length(body) > 0 ? line : s("");
+      let body = body |> List.map(render) |> join(concat([s(","), line]));
+      group(concat([s("{"), indent(concat([maybeLine, body])), maybeLine, s("}")]))
+    | ObjectProperty(name, value) => group(concat([render(name), s(": "), render(value)]))
+    | Program(body) => body |> List.map(render) |> join(concat([hardline, hardline]))
+    | Block(body) => body |> List.map(render) |> prefixAll(hardline)
+    | Unknown => s("")
+    };
+  let toString = (ast) =>
+    ast
+    |> render
+    |> (
+      (doc) => {
+        let printerOptions = {"printWidth": 80, "tabWidth": 2, "useTabs": false};
+        Prettier.Doc.Printer.printDocToString(doc, printerOptions)##formatted
       }
-    | ObjectProperty(name, value) =>
-      let name = render(name) |> join("");
-      let value = render(value) |> join("");
-      [{j|$name: $value|j}]
-    | Program(body) => body |> List.map(render) |> List.flatten
-    | Block(body) => body |> List.map(render) |> List.flatten
-    | Unknown => []
-    }
-  and renderBody = (body) => body |> List.map(render) |> List.flatten |> List.map(indentLine(2));
-  let toString = (ast) => ast |> render |> join("\n");
+    );
   let log = (ast) => ast |> toString |> Js.log;
 };

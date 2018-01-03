@@ -20,7 +20,7 @@ var parsed = JSON.parse(content);
 
 var result = Component$LonaCompilerCore.JavaScript[/* generate */0]("DocumentMarquee", parsed);
 
-console.log(Render$LonaCompilerCore.join("\n", Render$LonaCompilerCore.JavaScript[/* render */1](result)));
+console.log(Render$LonaCompilerCore.JavaScript[/* toString */3](result));
 
 exports.filename = filename;
 exports.content  = content;

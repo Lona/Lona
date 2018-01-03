@@ -11,7 +11,7 @@ var Tree$LonaCompilerCore   = require("./tree.bs.js");
 var Render$LonaCompilerCore = require("./render.bs.js");
 
 function compare(a, b) {
-  return Caml_string.caml_string_compare(Render$LonaCompilerCore.join("", a[1]), Render$LonaCompilerCore.join("", b[1]));
+  return Caml_string.caml_string_compare(Render$LonaCompilerCore.$$String[/* join */0]("", a[1]), Render$LonaCompilerCore.$$String[/* join */0]("", b[1]));
 }
 
 var include = $$Set.Make(/* module */[/* compare */compare]);
