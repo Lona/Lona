@@ -328,8 +328,6 @@ function parameterAssignments(layer, node) {
                         var propertyName = match$2[0];
                         var logicValue = item;
                         var acc$1 = acc;
-                        console.log(find$1(layerName, layer));
-                        console.log(layerName);
                         var match$3 = find$1(layerName, layer);
                         if (match$3) {
                           var found = match$3[0];

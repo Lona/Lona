@@ -15,4 +15,4 @@ let parsed = content |> Js.Json.parseExn;
 
 let result = Component.JavaScript.generate("DocumentMarquee", parsed);
 
-result |> Render.JavaScript.render |> Render.join("\n") |> Js.log;
+Render.JavaScript.toString(result) |> Js.log;

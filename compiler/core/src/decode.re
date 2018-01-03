@@ -6,8 +6,8 @@ module Types = {
   let lonaType = (json) => {
     let referenceType = (json) => json |> string |> ((x) => Reference(x));
     let namedType = (json) => {
-      let named = field("named", string, json);
-      let type_ = field("type", string, json);
+      let named = field("alias", string, json);
+      let type_ = field("of", string, json);
       Named(named, Reference(type_))
     };
     json |> either(referenceType, namedType)

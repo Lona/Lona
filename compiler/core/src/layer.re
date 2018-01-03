@@ -86,9 +86,7 @@ let find = (name, layer) => {
 
 let parameterAssignments = (layer, node) => {
   let identifiers = Logic.undeclaredIdentifiers(node);
-  let updateAssignments = (layerName, propertyName, logicValue, acc) => {
-    find(layerName, layer) |> Js.log;
-    Js.log(layerName);
+  let updateAssignments = (layerName, propertyName, logicValue, acc) =>
     switch (find(layerName, layer)) {
     | Some(found) =>
       switch (LayerMap.find_opt(found, acc)) {
@@ -96,8 +94,7 @@ let parameterAssignments = (layer, node) => {
       | None => LayerMap.add(found, StringMap.add(propertyName, logicValue, StringMap.empty), acc)
       }
     | None => acc
-    }
-  };
+    };
   identifiers
   |> Logic.IdentifierSet.elements
   |> List.map(((type_, path)) => Logic.Identifier(type_, path))

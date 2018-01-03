@@ -14,8 +14,8 @@ function lonaType(json) {
     return /* Reference */Block.__(0, [Json_decode.string(json)]);
   };
   var namedType = function (json) {
-    var named = Json_decode.field("named", Json_decode.string, json);
-    var type_ = Json_decode.field("type", Json_decode.string, json);
+    var named = Json_decode.field("alias", Json_decode.string, json);
+    var type_ = Json_decode.field("of", Json_decode.string, json);
     return /* Named */Block.__(1, [
               named,
               /* Reference */Block.__(0, [type_])
