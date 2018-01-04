@@ -1,3 +1,34 @@
+module Swift = {
+  type literal =
+    | Nil
+    | Boolean(bool)
+    | Integer(int)
+    | FloatingPoint(float)
+    | String(string);
+  type typeAnnotation =
+    | TypeName(string)
+    | TypeIdentifier({. "name": typeAnnotation, "member": typeAnnotation})
+    | ArrayType({. "element": typeAnnotation})
+    | DictionaryType({. "key": typeAnnotation, "value": typeAnnotation})
+    | OptionalType({. "value": typeAnnotation})
+    | TypeInheritanceList({. "list": list(typeAnnotation)})
+  and pattern =
+    | WildcardPattern
+    | IdentifierPattern(string)
+    | ValueBindingPattern({. "kind": string, "pattern": pattern})
+    | TuplePattern({. "elements": list(pattern)})
+    | OptionalPattern({. "value": pattern})
+    | ExpressionPattern({. "value": node})
+  /* | IsPattern */
+  /* | AsPattern */
+  and node =
+    /* | Operator(string) */
+    | ClassDeclaration({. "name": string, "body": list(node)})
+    /* | VariableDeclaration({. "pattern": pattern, "init": option(node)}) */
+    | ConstantDeclaration({. "pattern": pattern, "init": option(node)})
+    | LiteralExpression(literal);
+};
+
 module JavaScript = {
   type binaryOperator =
     | Eq
