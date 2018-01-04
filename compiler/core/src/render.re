@@ -14,9 +14,87 @@ module String = {
   let join = (sep, items) => items |> Array.of_list |> Js.Array.joinWith(sep);
 };
 
+let prefixAll = (sep, items) => Prettier.Doc.Builders.(concat([sep, join(sep, items)]));
+
+module Swift = {
+  open Prettier.Doc.Builders;
+  open Ast.Swift;
+  let renderLiteral = (node: literal) =>
+    switch node {
+    | Nil => s("nil")
+    | Boolean(value) => s(value ? "true" : "false")
+    | Integer(value) => s(string_of_int(value))
+    | FloatingPoint(value) => s(string_of_float(value))
+    | String(value) => concat([s("\""), s(value), s("\"")])
+    };
+  let rec render = (ast) : Prettier.Doc.t('a) =>
+    switch ast {
+    | Ast.Swift.LiteralExpression(v) => renderLiteral(v)
+    | Ast.Swift.ClassDeclaration(o) =>
+      let opening = group(concat([s("class"), line, s(o##name), line, s("{")]));
+      let closing = concat([hardline, s("}")]);
+      concat([opening, o##body |> List.map(render) |> prefixAll(hardline) |> indent, closing])
+    | ConstantDeclaration(o) =>
+      let maybeInit =
+        o##init == None ? s("") : concat([line, s("="), line, renderOptional(o##init)]);
+      group(concat([s("let"), line, renderPattern(o##pattern), maybeInit]))
+    | _ => s("")
+    }
+  and renderTypeAnnotation = (node: typeAnnotation) =>
+    switch node {
+    | TypeName(value) => s(value)
+    | TypeIdentifier(o) =>
+      group(
+        concat([
+          renderTypeAnnotation(o##name),
+          line,
+          s("."),
+          line,
+          renderTypeAnnotation(o##member)
+        ])
+      )
+    | ArrayType(o) => group(concat([s("["), renderTypeAnnotation(o##element), s("]")]))
+    | DictionaryType(o) =>
+      group(
+        concat([
+          s("["),
+          renderTypeAnnotation(o##key),
+          s(": "),
+          renderTypeAnnotation(o##value),
+          s("]")
+        ])
+      )
+    | OptionalType(o) => group(concat([renderTypeAnnotation(o##value), s("?")]))
+    | TypeInheritanceList(o) => group(o##list |> List.map(renderTypeAnnotation) |> join(s(", ")))
+    }
+  and renderPattern = (node) =>
+    switch node {
+    | WildcardPattern => s("_")
+    | IdentifierPattern(value) => s(value)
+    | ValueBindingPattern(o) => group(concat([s(o##kind), line, renderPattern(o##pattern)]))
+    | TuplePattern(o) =>
+      group(concat([s("("), o##elements |> List.map(renderPattern) |> join(s(", ")), s(")")]))
+    | OptionalPattern(o) => concat([renderPattern(o##value), s("?")])
+    | ExpressionPattern(o) => render(o##value)
+    }
+  and renderOptional = (ast) =>
+    switch ast {
+    | None => s("")
+    | Some(a) => render(a)
+    };
+  let toString = (ast) =>
+    ast
+    |> render
+    |> (
+      (doc) => {
+        let printerOptions = {"printWidth": 100, "tabWidth": 2, "useTabs": false};
+        Prettier.Doc.Printer.printDocToString(doc, printerOptions)##formatted
+      }
+    );
+};
+
 module JavaScript = {
   open Prettier.Doc.Builders;
-  let prefixAll = (sep, items) => concat([sep, join(sep, items)]);
   let renderBinaryOperator = (x) => {
     let op =
       switch x {
@@ -125,5 +203,4 @@ module JavaScript = {
         Prettier.Doc.Printer.printDocToString(doc, printerOptions)##formatted
       }
     );
-  let log = (ast) => ast |> toString |> Js.log;
 };
