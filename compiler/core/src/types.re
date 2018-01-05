@@ -1,3 +1,7 @@
+type compilerTarget =
+  | JavaScript
+  | Swift;
+
 type lonaType =
   | Reference(string)
   | Named(string, lonaType);

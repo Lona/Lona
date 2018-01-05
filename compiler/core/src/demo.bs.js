@@ -4,26 +4,68 @@
 var Fs                         = require("fs");
 var Process                    = require("process");
 var Caml_array                 = require("bs-platform/lib/js/caml_array.js");
+var Color$LonaCompilerCore     = require("./color.bs.js");
 var Render$LonaCompilerCore    = require("./render.bs.js");
 var Component$LonaCompilerCore = require("./component.bs.js");
 
+function exit(message) {
+  console.log(message);
+  return (process.exit());
+}
+
 if (Process.argv.length < 3) {
-  console.log("No filename given");
+  console.log("No target given");
   ((process.exit()));
 }
 
-var filename = Caml_array.caml_array_get(Process.argv, 2);
+var match = Caml_array.caml_array_get(Process.argv, 2);
 
-var content = Fs.readFileSync(filename, "utf8");
+var target;
 
-var parsed = JSON.parse(content);
+switch (match) {
+  case "js" : 
+      target = /* JavaScript */0;
+      break;
+  case "swift" : 
+      target = /* Swift */1;
+      break;
+  default:
+    console.log("Unrecognized target");
+    target = (process.exit());
+}
 
-var result = Component$LonaCompilerCore.JavaScript[/* generate */0]("DocumentMarquee", parsed);
+if (Process.argv.length < 4) {
+  console.log("No command given");
+  ((process.exit()));
+}
 
-console.log(Render$LonaCompilerCore.JavaScript[/* toString */3](result));
+var command = Caml_array.caml_array_get(Process.argv, 3);
 
-exports.filename = filename;
-exports.content  = content;
-exports.parsed   = parsed;
-exports.result   = result;
+switch (command) {
+  case "colors" : 
+      if (Process.argv.length < 5) {
+        console.log("No filename given");
+        ((process.exit()));
+      }
+      var filename = Caml_array.caml_array_get(Process.argv, 4);
+      console.log(Color$LonaCompilerCore.render(target, Color$LonaCompilerCore.parseFile(filename)));
+      break;
+  case "component" : 
+      if (Process.argv.length < 5) {
+        console.log("No filename given");
+        ((process.exit()));
+      }
+      var filename$1 = Caml_array.caml_array_get(Process.argv, 4);
+      var content = Fs.readFileSync(filename$1, "utf8");
+      var parsed = JSON.parse(content);
+      var result = Component$LonaCompilerCore.JavaScript[/* generate */0]("DocumentMarquee", parsed);
+      console.log(Render$LonaCompilerCore.JavaScript[/* toString */2](result));
+      break;
+  default:
+    console.log("Invalid command", command);
+}
+
+exports.exit    = exit;
+exports.target  = target;
+exports.command = command;
 /*  Not a pure module */

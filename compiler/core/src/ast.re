@@ -1,4 +1,32 @@
 module Swift = {
+  type accessLevelModifier =
+    | PrivateModifier
+    | FileprivateModifier
+    | InternalModifier
+    | PublicModifier
+    | OpenModifier;
+  type mutationModifier =
+    | MutatingModifier
+    | NonmutatingModifier;
+  type declarationModifier =
+    | ClassModifier
+    | ConvenienceModifier
+    | DynamicModifier
+    | FinalModifier
+    | InfixModifier
+    | LazyModifier
+    | OptionalModifier
+    | OverrideModifier
+    | PostfixModifier
+    | PrefixModifier
+    | RequiredModifier
+    | StaticModifier
+    | UnownedModifier
+    | UnownedSafeModifier
+    | UnownedUnsafeModifier
+    | WeakModifier
+    | AccessLevelModifier(accessLevelModifier)
+    | MutationModifier(mutationModifier);
   type literal =
     | Nil
     | Boolean(bool)
@@ -23,10 +51,17 @@ module Swift = {
   /* | AsPattern */
   and node =
     /* | Operator(string) */
+    | LiteralExpression(literal)
     | ClassDeclaration({. "name": string, "body": list(node)})
     /* | VariableDeclaration({. "pattern": pattern, "init": option(node)}) */
-    | ConstantDeclaration({. "pattern": pattern, "init": option(node)})
-    | LiteralExpression(literal);
+    | SwiftIdentifier(string)
+    | ConstantDeclaration(
+        {. "modifiers": list(declarationModifier), "pattern": pattern, "init": option(node)}
+      )
+    | ImportDeclaration(string)
+    | FunctionCallArgument({. "name": option(node), "value": node})
+    | FunctionCallExpression({. "name": node, "arguments": list(node)})
+    | TopLevelDeclaration({. "statements": list(node)});
 };
 
 module JavaScript = {

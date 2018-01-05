@@ -164,6 +164,10 @@ cosmiconfig@3.1.0:
     parse-json "^3.0.0"
     require-from-string "^2.0.1"
 
+csscolorparser@^1.0.3:
+  version "1.0.3"
+  resolved "https://registry.yarnpkg.com/csscolorparser/-/csscolorparser-1.0.3.tgz#b34f391eea4da8f3e98231e2ccd8df9c041f171b"
+
 dashify@0.2.2:
   version "0.2.2"
   resolved "https://registry.yarnpkg.com/dashify/-/dashify-0.2.2.tgz#6a07415a01c91faf4a32e38d9dfba71f61cb20fe"
