@@ -19,17 +19,11 @@ let prefixAll = (sep, items) => Prettier.Doc.Builders.(concat([sep, join(sep, it
 module Swift = {
   open Prettier.Doc.Builders;
   open Ast.Swift;
-  let renderLiteral = (node: literal) =>
-    switch node {
-    | Nil => s("nil")
-    | Boolean(value) => s(value ? "true" : "false")
-    | Integer(value) => s(string_of_int(value))
-    | FloatingPoint(value) =>
-      let string = string_of_float(value);
-      let cleaned = (string |> Js.String.endsWith(".")) ? string |> Js.String.slice(~from=0, ~to_=-1) : string;
-      s(cleaned)
-    | String(value) => concat([s("\""), s(value), s("\"")])
-    };
+  let renderFloat = (value) => {
+    let string = string_of_float(value);
+    let cleaned = (string |> Js.String.endsWith(".")) ? string |> Js.String.slice(~from=0, ~to_=-1) : string;
+    s(cleaned)
+  };
   let renderAccessLevelModifier = (node) =>
     switch node {
     | PrivateModifier => s("private")
@@ -94,8 +88,28 @@ module Swift = {
           s(")")
         ])
       )
+    | LineComment(o) =>
+      /* concat([render(o##line), lineSuffix(s(" // " ++ o##comment)), lineSuffixBoundary]) */
+      concat([render(o##line), lineSuffix(s(" // " ++ o##comment))])
     | TopLevelDeclaration(o) =>
       join(concat([hardline, hardline]), o##statements |> List.map(render))
+    }
+  and renderLiteral = (node: literal) =>
+    switch node {
+    | Nil => s("nil")
+    | Boolean(value) => s(value ? "true" : "false")
+    | Integer(value) => s(string_of_int(value))
+    | FloatingPoint(value) => renderFloat(value)
+    | String(value) => concat([s("\""), s(value), s("\"")])
+    | Color(value) =>
+      let rgba = Css.parseColorDefault("black", value);
+      let values = [
+        concat([s("red: "), renderFloat(rgba.r /. 255.0)]),
+        concat([s("green: "), renderFloat(rgba.g /. 255.0)]),
+        concat([s("blue: "), renderFloat(rgba.b /. 255.0)]),
+        concat([s("alpha: "), renderFloat(rgba.a)]),
+      ];
+      concat([s("#colorLiteral("), join(s(", "), values), s(")")])
     }
   and renderTypeAnnotation = (node: typeAnnotation) =>
     switch node {

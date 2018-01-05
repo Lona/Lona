@@ -32,8 +32,9 @@ module Swift = {
     | Boolean(bool)
     | Integer(int)
     | FloatingPoint(float)
-    | String(string);
-  type typeAnnotation =
+    | String(string)
+    | Color(string)
+  and typeAnnotation =
     | TypeName(string)
     | TypeIdentifier({. "name": typeAnnotation, "member": typeAnnotation})
     | ArrayType({. "element": typeAnnotation})
@@ -61,6 +62,7 @@ module Swift = {
     | ImportDeclaration(string)
     | FunctionCallArgument({. "name": option(node), "value": node})
     | FunctionCallExpression({. "name": node, "arguments": list(node)})
+    | LineComment({. "comment": string, "line": node})
     | TopLevelDeclaration({. "statements": list(node)});
 };
 
