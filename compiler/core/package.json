@@ -18,6 +18,7 @@
     "bs-batteries": "0.0.14",
     "bs-json": "^0.2.4",
     "bs-node": "github:buckletypes/bs-node",
+    "csscolorparser": "^1.0.3",
     "prettier": "prettier/prettier#b63c669ed9821a0e0d6918243ef4f4a091b222a9"
   }
 }

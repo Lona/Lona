@@ -24,21 +24,78 @@ module Swift = {
     | Nil => s("nil")
     | Boolean(value) => s(value ? "true" : "false")
     | Integer(value) => s(string_of_int(value))
-    | FloatingPoint(value) => s(string_of_float(value))
+    | FloatingPoint(value) =>
+      let string = string_of_float(value);
+      let cleaned = (string |> Js.String.endsWith(".")) ? string |> Js.String.slice(~from=0, ~to_=-1) : string;
+      s(cleaned)
     | String(value) => concat([s("\""), s(value), s("\"")])
+    };
+  let renderAccessLevelModifier = (node) =>
+    switch node {
+    | PrivateModifier => s("private")
+    | FileprivateModifier => s("fileprivate")
+    | InternalModifier => s("internal")
+    | PublicModifier => s("public")
+    | OpenModifier => s("open")
+    };
+  let renderMutationModifier = (node) =>
+    switch node {
+    | MutatingModifier => s("mutating")
+    | NonmutatingModifier => s("nonmutating")
+    };
+  let renderDeclarationModifier = (node) =>
+    switch node {
+    | ClassModifier => s("class")
+    | ConvenienceModifier => s("convenience")
+    | DynamicModifier => s("dynamic")
+    | FinalModifier => s("final")
+    | InfixModifier => s("infix")
+    | LazyModifier => s("lazy")
+    | OptionalModifier => s("optional")
+    | OverrideModifier => s("override")
+    | PostfixModifier => s("postfix")
+    | PrefixModifier => s("prefix")
+    | RequiredModifier => s("required")
+    | StaticModifier => s("static")
+    | UnownedModifier => s("unowned")
+    | UnownedSafeModifier => s("unownedsafe")
+    | UnownedUnsafeModifier => s("unownedunsafe")
+    | WeakModifier => s("weak")
+    | AccessLevelModifier(v) => renderAccessLevelModifier(v)
+    | MutationModifier(v) => renderMutationModifier(v)
     };
   let rec render = (ast) : Prettier.Doc.t('a) =>
     switch ast {
     | Ast.Swift.LiteralExpression(v) => renderLiteral(v)
-    | Ast.Swift.ClassDeclaration(o) =>
+    | SwiftIdentifier(v) => s(v)
+    | ClassDeclaration(o) =>
       let opening = group(concat([s("class"), line, s(o##name), line, s("{")]));
       let closing = concat([hardline, s("}")]);
       concat([opening, o##body |> List.map(render) |> prefixAll(hardline) |> indent, closing])
     | ConstantDeclaration(o) =>
+      let modifiers = o##modifiers |> List.map(renderDeclarationModifier) |> join(s(" "));
       let maybeInit =
-        o##init == None ? s("") : concat([line, s("="), line, renderOptional(o##init)]);
-      group(concat([s("let"), line, renderPattern(o##pattern), maybeInit]))
-    | _ => s("")
+        o##init == None ? s("") : concat([s(" = "), renderOptional(o##init)]);
+      let parts = [modifiers, s(" "), s("let"), s(" "), renderPattern(o##pattern), maybeInit];
+      group(concat(parts))
+      /* fill(parts) */
+    | ImportDeclaration(v) => group(concat([s("import"), line, s(v)]))
+    | FunctionCallArgument(o) =>
+      switch o##name {
+      | None => group(concat([render(o##value)]))
+      | Some(name) => group(concat([render(name), s(":"), line, render(o##value)]))
+      }
+    | FunctionCallExpression(o) =>
+      group(
+        concat([
+          render(o##name),
+          s("("),
+          concat([softline, o##arguments |> List.map(render) |> join(concat([s(","), line]))]) |> indent,
+          s(")")
+        ])
+      )
+    | TopLevelDeclaration(o) =>
+      join(concat([hardline, hardline]), o##statements |> List.map(render))
     }
   and renderTypeAnnotation = (node: typeAnnotation) =>
     switch node {
@@ -87,7 +144,7 @@ module Swift = {
     |> render
     |> (
       (doc) => {
-        let printerOptions = {"printWidth": 100, "tabWidth": 2, "useTabs": false};
+        let printerOptions = {"printWidth": 120, "tabWidth": 2, "useTabs": false};
         Prettier.Doc.Printer.printDocToString(doc, printerOptions)##formatted
       }
     );
