@@ -6,6 +6,7 @@ var $$Array                   = require("bs-platform/lib/js/array.js");
 var Curry                     = require("bs-platform/lib/js/curry.js");
 var Prettier                  = require("prettier");
 var Pervasives                = require("bs-platform/lib/js/pervasives.js");
+var Css$LonaCompilerCore      = require("./css.bs.js");
 var Prettier$LonaCompilerCore = require("./prettier.bs.js");
 
 function indentLine(amount, line) {
@@ -44,33 +45,10 @@ function prefixAll(sep, items) {
             ]);
 }
 
-function renderLiteral(node) {
-  if (typeof node === "number") {
-    return Curry._1(Prettier$LonaCompilerCore.Doc[/* Builders */0][/* s */0], "nil");
-  } else {
-    switch (node.tag | 0) {
-      case 0 : 
-          return Curry._1(Prettier$LonaCompilerCore.Doc[/* Builders */0][/* s */0], node[0] !== 0 ? "true" : "false");
-      case 1 : 
-          return Curry._1(Prettier$LonaCompilerCore.Doc[/* Builders */0][/* s */0], Pervasives.string_of_int(node[0]));
-      case 2 : 
-          var string = Pervasives.string_of_float(node[0]);
-          var match = +string.endsWith(".");
-          return Curry._1(Prettier$LonaCompilerCore.Doc[/* Builders */0][/* s */0], match !== 0 ? string.slice(0, -1) : string);
-      case 3 : 
-          return Curry._1(Prettier$LonaCompilerCore.Doc[/* Builders */0][/* concat */1], /* :: */[
-                      Curry._1(Prettier$LonaCompilerCore.Doc[/* Builders */0][/* s */0], "\""),
-                      /* :: */[
-                        Curry._1(Prettier$LonaCompilerCore.Doc[/* Builders */0][/* s */0], node[0]),
-                        /* :: */[
-                          Curry._1(Prettier$LonaCompilerCore.Doc[/* Builders */0][/* s */0], "\""),
-                          /* [] */0
-                        ]
-                      ]
-                    ]);
-      
-    }
-  }
+function renderFloat(value) {
+  var string = Pervasives.string_of_float(value);
+  var match = +string.endsWith(".");
+  return Curry._1(Prettier$LonaCompilerCore.Doc[/* Builders */0][/* s */0], match !== 0 ? string.slice(0, -1) : string);
 }
 
 function renderAccessLevelModifier(node) {
@@ -276,6 +254,15 @@ function render(ast) {
                         ]
                       ]));
     case 7 : 
+        var o$4 = ast[0];
+        return Curry._1(Prettier$LonaCompilerCore.Doc[/* Builders */0][/* concat */1], /* :: */[
+                    render(o$4.line),
+                    /* :: */[
+                      Prettier.doc.builders.lineSuffix(Curry._1(Prettier$LonaCompilerCore.Doc[/* Builders */0][/* s */0], " // " + o$4.comment)),
+                      /* [] */0
+                    ]
+                  ]);
+    case 8 : 
         return Curry._2(Prettier$LonaCompilerCore.Doc[/* Builders */0][/* join */3], Curry._1(Prettier$LonaCompilerCore.Doc[/* Builders */0][/* concat */1], /* :: */[
                         Prettier.doc.builders.hardline,
                         /* :: */[
@@ -284,6 +271,84 @@ function render(ast) {
                         ]
                       ]), List.map(render, ast[0].statements));
     
+  }
+}
+
+function renderLiteral(node) {
+  if (typeof node === "number") {
+    return Curry._1(Prettier$LonaCompilerCore.Doc[/* Builders */0][/* s */0], "nil");
+  } else {
+    switch (node.tag | 0) {
+      case 0 : 
+          return Curry._1(Prettier$LonaCompilerCore.Doc[/* Builders */0][/* s */0], node[0] !== 0 ? "true" : "false");
+      case 1 : 
+          return Curry._1(Prettier$LonaCompilerCore.Doc[/* Builders */0][/* s */0], Pervasives.string_of_int(node[0]));
+      case 2 : 
+          return renderFloat(node[0]);
+      case 3 : 
+          return Curry._1(Prettier$LonaCompilerCore.Doc[/* Builders */0][/* concat */1], /* :: */[
+                      Curry._1(Prettier$LonaCompilerCore.Doc[/* Builders */0][/* s */0], "\""),
+                      /* :: */[
+                        Curry._1(Prettier$LonaCompilerCore.Doc[/* Builders */0][/* s */0], node[0]),
+                        /* :: */[
+                          Curry._1(Prettier$LonaCompilerCore.Doc[/* Builders */0][/* s */0], "\""),
+                          /* [] */0
+                        ]
+                      ]
+                    ]);
+      case 4 : 
+          var rgba = Css$LonaCompilerCore.parseColorDefault("black", node[0]);
+          var values_000 = Curry._1(Prettier$LonaCompilerCore.Doc[/* Builders */0][/* concat */1], /* :: */[
+                Curry._1(Prettier$LonaCompilerCore.Doc[/* Builders */0][/* s */0], "red: "),
+                /* :: */[
+                  renderFloat(rgba[/* r */0] / 255.0),
+                  /* [] */0
+                ]
+              ]);
+          var values_001 = /* :: */[
+            Curry._1(Prettier$LonaCompilerCore.Doc[/* Builders */0][/* concat */1], /* :: */[
+                  Curry._1(Prettier$LonaCompilerCore.Doc[/* Builders */0][/* s */0], "green: "),
+                  /* :: */[
+                    renderFloat(rgba[/* g */1] / 255.0),
+                    /* [] */0
+                  ]
+                ]),
+            /* :: */[
+              Curry._1(Prettier$LonaCompilerCore.Doc[/* Builders */0][/* concat */1], /* :: */[
+                    Curry._1(Prettier$LonaCompilerCore.Doc[/* Builders */0][/* s */0], "blue: "),
+                    /* :: */[
+                      renderFloat(rgba[/* b */2] / 255.0),
+                      /* [] */0
+                    ]
+                  ]),
+              /* :: */[
+                Curry._1(Prettier$LonaCompilerCore.Doc[/* Builders */0][/* concat */1], /* :: */[
+                      Curry._1(Prettier$LonaCompilerCore.Doc[/* Builders */0][/* s */0], "alpha: "),
+                      /* :: */[
+                        renderFloat(rgba[/* a */3]),
+                        /* [] */0
+                      ]
+                    ]),
+                /* [] */0
+              ]
+            ]
+          ];
+          var values = /* :: */[
+            values_000,
+            values_001
+          ];
+          return Curry._1(Prettier$LonaCompilerCore.Doc[/* Builders */0][/* concat */1], /* :: */[
+                      Curry._1(Prettier$LonaCompilerCore.Doc[/* Builders */0][/* s */0], "#colorLiteral("),
+                      /* :: */[
+                        Curry._2(Prettier$LonaCompilerCore.Doc[/* Builders */0][/* join */3], Curry._1(Prettier$LonaCompilerCore.Doc[/* Builders */0][/* s */0], ", "), values),
+                        /* :: */[
+                          Curry._1(Prettier$LonaCompilerCore.Doc[/* Builders */0][/* s */0], ")"),
+                          /* [] */0
+                        ]
+                      ]
+                    ]);
+      
+    }
   }
 }
 
@@ -416,11 +481,12 @@ function toString(ast) {
 }
 
 var Swift = /* module */[
-  /* renderLiteral */renderLiteral,
+  /* renderFloat */renderFloat,
   /* renderAccessLevelModifier */renderAccessLevelModifier,
   /* renderMutationModifier */renderMutationModifier,
   /* renderDeclarationModifier */renderDeclarationModifier,
   /* render */render,
+  /* renderLiteral */renderLiteral,
   /* renderTypeAnnotation */renderTypeAnnotation,
   /* renderPattern */renderPattern,
   /* renderOptional */renderOptional,

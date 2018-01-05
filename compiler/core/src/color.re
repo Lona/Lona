@@ -20,50 +20,16 @@ let render = (target, colors) =>
   switch target {
   | Types.Swift =>
     open Ast.Swift;
-    let colorLiteralDoc = (value) => {
-      let rgba = Css.parseColorDefault("black", value);
-      FunctionCallExpression({
-        "name": SwiftIdentifier("#colorLiteral"),
-        "arguments": [
-          FunctionCallArgument({
-            "name": Some(SwiftIdentifier("red")),
-            "value": LiteralExpression(FloatingPoint(rgba.r /. 255.0))
-          }),
-          FunctionCallArgument({
-            "name": Some(SwiftIdentifier("green")),
-            "value": LiteralExpression(FloatingPoint(rgba.g /. 255.0))
-          }),
-          FunctionCallArgument({
-            "name": Some(SwiftIdentifier("blue")),
-            "value": LiteralExpression(FloatingPoint(rgba.b /. 255.0))
-          }),
-          FunctionCallArgument({
-            "name": Some(SwiftIdentifier("alpha")),
-            "value": LiteralExpression(FloatingPoint(rgba.a))
-          })
-        ]
-      })
-    };
+    let colorLiteralDoc = (value) => LiteralExpression(Color(value));
     let colorConstantDoc = (color) =>
-      ConstantDeclaration({
-        "modifiers": [AccessLevelModifier(PublicModifier), StaticModifier],
-        "pattern": IdentifierPattern(color.id),
-        "init":
-          Some(
-            FunctionCallExpression({
-              "name": SwiftIdentifier("color"),
-              "arguments": [
-                FunctionCallArgument({
-                  "name": Some(SwiftIdentifier("hex")),
-                  "value": LiteralExpression(String(color.value))
-                }),
-                FunctionCallArgument({
-                  "name": Some(SwiftIdentifier("preview")),
-                  "value": colorLiteralDoc(color.value)
-                })
-              ]
-            })
-          )
+      LineComment({
+        "comment": color.value,
+        "line":
+          ConstantDeclaration({
+            "modifiers": [AccessLevelModifier(PublicModifier), StaticModifier],
+            "pattern": IdentifierPattern(color.id),
+            "init": Some(colorLiteralDoc(color.value))
+          })
       });
     let doc =
       TopLevelDeclaration({

@@ -21,6 +21,9 @@ module Doc = {
     external group : t('a) => Js.t({..}) =
       "";
     [@bs.val] [@bs.module "prettier"] [@bs.scope ("doc", "builders")]
+    external lineSuffix : t('a) => Js.t({..}) =
+      "";
+    [@bs.val] [@bs.module "prettier"] [@bs.scope ("doc", "builders")]
     external ifBreak : (t('a), t('b)) => Js.t({..}) =
       "";
     [@bs.val] [@bs.module "prettier"] [@bs.scope ("doc", "builders")] external line : Js.t({..}) =
@@ -30,6 +33,9 @@ module Doc = {
       "";
     [@bs.val] [@bs.module "prettier"] [@bs.scope ("doc", "builders")]
     external softline : Js.t({..}) =
+      "";
+    [@bs.val] [@bs.module "prettier"] [@bs.scope ("doc", "builders")]
+    external lineSuffixBoundary : Js.t({..}) =
       "";
   };
   module Printer = {
