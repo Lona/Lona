@@ -17,21 +17,21 @@ class ColorPickerView: PickerView<CSColor> {
     
     convenience init(selected: String, onChange: @escaping (CSColor) -> Void) {
         let options: [PickerView<CSColor>.Option] = [
-            .data(CSColors.colors),
-            .didSelectItem({(picker, item) in
-                picker?.popover.close()
-                onChange(item)
-            }),
             .placeholderText("Search Color ..."),
-            .selected(selected),
             .sizeForRow({(textStyle) -> NSSize in
                 return NSSize(width: Constant.widthRow, height: Constant.heightRow)
-            }),
-            .viewForItem({ (tableView, item, selected) -> PickerRowViewType in
-                return ColorSwatchRowView(color: item, selected: selected)
             })
         ]
-        self.init(options: options)
+        self.init(data: CSColors.colors,
+                  selected: selected,
+                  viewForItem: { (_, item, selected) -> PickerRowViewType in
+                    return ColorSwatchRowView(color: item, selected: selected)
+        },
+                  didSelectItem: { (picker, item) in
+                    picker?.popover.close()
+                    onChange(item)
+        },
+                  options: options)
     }
 }
 

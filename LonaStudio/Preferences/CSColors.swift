@@ -25,7 +25,7 @@ class CSColors: CSPreferencesFile {
         guard let colorData = data["colors"] else { return [] }
         
         return colorData.arrayValue.map({ color in
-            let id = color["id"]!.string!
+            let id = color["id"]?.string ?? ""
             let name = color["name"]?.string ?? "No name"
             let value = color["value"]?.string ?? "#000000"
             let nsColor = NSColor.parse(css: value) ?? NSColor.black
