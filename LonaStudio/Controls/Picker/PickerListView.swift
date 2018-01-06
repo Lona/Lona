@@ -21,15 +21,15 @@ final class PickerListView<Element: PickerItemType>: NSScrollView, NSTableViewDe
     
     // MARK: - Variable
     fileprivate let tableView = NSTableView(frame: NSRect.zero)
-    fileprivate var options: PickerView<Element>.Options
+    fileprivate var parameter: PickerView<Element>.Parameter
     fileprivate var data: [Element] = []
     fileprivate var sizeRows: [String: NSSize] = [:]
     weak var picker: PickerView<Element>?
     
     // MARK: - Init
-    init(options: PickerView<Element>.Options) {
-        self.options = options
-        self.data = options.data
+    init(parameter: PickerView<Element>.Parameter) {
+        self.parameter = parameter
+        self.data = parameter.data
         
         super.init(frame: NSRect.zero)
         
@@ -46,7 +46,7 @@ final class PickerListView<Element: PickerItemType>: NSScrollView, NSTableViewDe
     // MARK: - Public
     func update(data: [Element], selected: String) {
         self.data = data
-        options.selected = selected
+        parameter.selected = selected
         
         tableView.reloadData()
     }
@@ -67,8 +67,8 @@ final class PickerListView<Element: PickerItemType>: NSScrollView, NSTableViewDe
     
     func tableView(_ tableView: NSTableView, viewFor tableColumn: NSTableColumn?, row: Int) -> NSView? {
         let item = data[row]
-        let selected = item.id == options.selected
-        return options.viewForItem(tableView, item, selected) as? NSView
+        let selected = item.id == parameter.selected
+        return parameter.viewForItem(tableView, item, selected) as? NSView
     }
     
     func tableView(_ tableView: NSTableView, heightOfRow row: Int) -> CGFloat {
@@ -81,7 +81,7 @@ final class PickerListView<Element: PickerItemType>: NSScrollView, NSTableViewDe
     
     func tableViewSelectionDidChange(_ notification: Notification) {
         let item = data[tableView.selectedRow]
-        options.didSelectItem(picker, item)
+        parameter.didSelectItem(picker, item)
     }
 }
 
@@ -128,7 +128,7 @@ extension PickerListView {
     // MARK: - Calculate size for rows
     fileprivate func cacheSize(_ data: [Element]) {
         for item in data {
-            let size = options.sizeForRow(item)
+            let size = parameter.options.sizeForRow(item)
             sizeRows[item.id] = size
         }
     }

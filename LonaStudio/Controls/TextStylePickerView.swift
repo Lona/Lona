@@ -18,23 +18,22 @@ final class TextStylePickerView: PickerView<CSTextStyle> {
     
     convenience init(selected: String, onChange: @escaping (CSTextStyle) -> Void) {
         let options: [PickerView<CSTextStyle>.Option] = [
-            .data(CSTypography.styles),
-            .didSelectItem({(picker, item) in
-                picker?.popover.close()
-                onChange(item)
-            }),
             .placeholderText("Search text style ..."),
-            .selected(selected),
             .sizeForRow({(textStyle) -> NSSize in
                 let text = textStyle.font.apply(to: textStyle.name)
                 return TextStylePickerView.fitTextSize(text)
-            }),
-            .viewForItem({ (tableView, item, selected) -> PickerRowViewType in
-                return TextStyleRowView(textStyle: item, selected: selected)
             })
-            
         ]
-        self.init(options: options)
+        self.init(data: CSTypography.styles,
+                  selected: selected,
+                  viewForItem: { (_, item, selected) -> PickerRowViewType in
+                    return TextStyleRowView(textStyle: item, selected: selected)
+        },
+                  didSelectItem: { (picker, item) in
+                    picker?.popover.close()
+                    onChange(item)
+        },
+                  options: options)
     }
     
     private class func fitSize(with attributeString: NSAttributedString) -> NSSize {

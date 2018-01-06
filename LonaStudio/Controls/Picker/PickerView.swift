@@ -12,19 +12,11 @@ class PickerView<Element: PickerItemType>: NSView {
     
     enum Option {
         case placeholderText(String)
-        case selected(String)
-        case data([Element])
-        case viewForItem((NSTableView, Element, Bool) -> PickerRowViewType)
-        case didSelectItem((PickerView<Element>?, Element) -> Void)
         case sizeForRow((Element) -> NSSize)
     }
     
     struct Options {
         var placeholderText: String = "Search ..."
-        var selected: String!
-        var data: [Element]!
-        var viewForItem: ((NSTableView, Element, Bool) -> PickerRowViewType)!
-        var didSelectItem: ((PickerView<Element>?, Element) -> Void)!
         var sizeForRow: ((Element) -> NSSize) = { _ in return NSSize(width: 44.0, height: 300)}
         
         init(_ options: [Option]) {
@@ -32,24 +24,36 @@ class PickerView<Element: PickerItemType>: NSView {
                 switch option {
                 case .placeholderText(let value):
                     placeholderText = value
-                case .data(let value):
-                    data = value
-                case .didSelectItem(let f):
-                    didSelectItem = f
-                case .viewForItem(let f):
-                    viewForItem = f
                 case .sizeForRow(let f):
                     sizeForRow = f
-                case .selected(let value):
-                    selected = value
                 }
             }
         }
     }
     
+    struct Parameter {
+        var selected: String
+        let data: [Element]
+        let viewForItem: ((NSTableView, Element, Bool) -> PickerRowViewType)
+        let didSelectItem: ((PickerView<Element>?, Element) -> Void)
+        let options: Options
+        
+        init(data: [Element],
+             selected: String,
+             viewForItem: @escaping ((NSTableView, Element, Bool) -> PickerRowViewType),
+             didSelectItem: @escaping ((PickerView<Element>?, Element) -> Void),
+             options: Options) {
+            self.data = data
+            self.selected = selected
+            self.viewForItem = viewForItem
+            self.didSelectItem = didSelectItem
+            self.options = options
+        }
+    }
+    
     // MARK: - Variable
-    fileprivate let options: Options
-    fileprivate var filterData: [Element]!
+    fileprivate let parameter: Parameter
+    fileprivate var filterData: [Element]
     fileprivate var currentHover = -1
     lazy var popover: NSPopover = {
         let popover = NSPopover()
@@ -61,9 +65,20 @@ class PickerView<Element: PickerItemType>: NSView {
     }()
     
     // MARK: - Init
-    init(options: [Option]) {
-        self.options = PickerView<Element>.Options(options)
-        filterData = self.options.data
+    init(data: [Element],
+         selected: String,
+         viewForItem: @escaping ((NSTableView, Element, Bool) -> PickerRowViewType),
+         didSelectItem: @escaping ((PickerView<Element>?, Element) -> Void),
+         options: [Option] = []) {
+        
+        let option = PickerView<Element>.Options(options)
+        parameter = Parameter(data: data,
+                              selected: selected,
+                              viewForItem: viewForItem,
+                              didSelectItem: didSelectItem,
+                              options: option)
+        filterData = parameter.data
+        
         super.init(frame: NSRect.zero)
         
         initCommon()
@@ -88,7 +103,7 @@ extension PickerView {
     fileprivate func setupLayout() {
         
         // Components
-        let list = PickerListView(options: options)
+        let list = PickerListView(parameter: parameter)
         list.picker = self
         let searchStackView = setupSearchView(list)
         
@@ -108,15 +123,15 @@ extension PickerView {
     
     private func setupSearchView(_ list: PickerListView<Element>) -> NSStackView {
         let searchField = CSSearchField(options: [
-            .placeholderText(options.placeholderText),
+            .placeholderText(parameter.options.placeholderText),
             .onChange({ [unowned self] filter in
                 if filter.count == 0 {
-                    self.filterData = self.options.data
+                    self.filterData = self.parameter.data
                 } else {
-                    self.filterData = self.options.data.filter { $0.name.lowercased().contains(filter.lowercased()) }
+                    self.filterData = self.parameter.data.filter { $0.name.lowercased().contains(filter.lowercased()) }
                 }
                 self.currentHover = -1
-                list.update(data: self.filterData, selected: self.options.selected)
+                list.update(data: self.filterData, selected: self.parameter.selected)
             }),
             .onKeyPress({ [unowned self] keyCode in
                 func updateHover(index: Int) {
@@ -134,7 +149,7 @@ extension PickerView {
                 case .enter:
                     guard self.currentHover < self.filterData.count else { return }
                     let item = self.filterData[self.currentHover]
-                    self.options.didSelectItem(self, item)
+                    self.parameter.didSelectItem(self, item)
                     break
                 }
             })
@@ -146,7 +161,6 @@ extension PickerView {
     }
     
     fileprivate func embeddedViewController() -> NSViewController {
-        let controller = NSViewController(view: self)
-        return controller
+        return NSViewController(view: self)
     }
 }
