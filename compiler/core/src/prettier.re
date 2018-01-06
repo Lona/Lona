@@ -2,6 +2,7 @@ module Doc = {
   type t('a) = {.. "type": string} as 'a;
   module Builders = {
     let s = (s: string) : t('a) => {"type": "concat", "parts": [|s|]};
+    let empty: t('a) = s("");
     [@bs.val] [@bs.module "prettier"] [@bs.scope ("doc", "builders")]
     external _concat : array(t('a)) => Js.t({..}) =
       "concat";
@@ -37,6 +38,7 @@ module Doc = {
     [@bs.val] [@bs.module "prettier"] [@bs.scope ("doc", "builders")]
     external lineSuffixBoundary : Js.t({..}) =
       "";
+    let (<+>): (t('a), t('b)) => t('c) = (x, y) => concat([x, y]);
   };
   module Printer = {
     [@bs.val] [@bs.module "prettier"] [@bs.scope ("doc", "printer")]

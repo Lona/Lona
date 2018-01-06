@@ -58,8 +58,12 @@ switch (command) {
       var filename$1 = Caml_array.caml_array_get(Process.argv, 4);
       var content = Fs.readFileSync(filename$1, "utf8");
       var parsed = JSON.parse(content);
-      var result = Component$LonaCompilerCore.JavaScript[/* generate */0]("DocumentMarquee", parsed);
-      console.log(Render$LonaCompilerCore.JavaScript[/* toString */2](result));
+      if (target !== 0) {
+        var result = Component$LonaCompilerCore.Swift[/* generate */0]("DocumentMarquee", parsed);
+        console.log(Render$LonaCompilerCore.Swift[/* toString */9](result));
+      } else {
+        console.log(Render$LonaCompilerCore.JavaScript[/* toString */2](Component$LonaCompilerCore.JavaScript[/* generate */0]("DocumentMarquee", parsed)));
+      }
       break;
   default:
     console.log("Invalid command", command);

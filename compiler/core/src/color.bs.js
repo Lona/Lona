@@ -25,7 +25,7 @@ function parseFile(filename) {
 function render(target, colors) {
   if (target !== 0) {
     var colorConstantDoc = function (color) {
-      return /* LineComment */Block.__(7, [{
+      return /* LineComment */Block.__(8, [{
                   comment: color[/* value */2],
                   line: /* ConstantDeclaration */Block.__(3, [{
                         modifiers: /* :: */[
@@ -35,17 +35,23 @@ function render(target, colors) {
                             /* [] */0
                           ]
                         ],
-                        pattern: /* IdentifierPattern */Block.__(0, [color[/* id */0]]),
+                        pattern: /* IdentifierPattern */Block.__(0, [{
+                              identifier: color[/* id */0],
+                              annotation: /* None */0
+                            }]),
                         init: /* Some */[/* LiteralExpression */Block.__(0, [/* Color */Block.__(4, [color[/* value */2]])])]
                       }])
                 }]);
     };
-    return Render$LonaCompilerCore.Swift[/* toString */9](/* TopLevelDeclaration */Block.__(8, [{
+    return Render$LonaCompilerCore.Swift[/* toString */9](/* TopLevelDeclaration */Block.__(10, [{
                     statements: /* :: */[
-                      /* ImportDeclaration */Block.__(4, ["UIKit"]),
+                      /* ImportDeclaration */Block.__(5, ["UIKit"]),
                       /* :: */[
                         /* ClassDeclaration */Block.__(1, [{
                               name: "Colors",
+                              inherits: /* [] */0,
+                              modifier: /* None */0,
+                              isFinal: /* false */0,
                               body: List.map(colorConstantDoc, colors)
                             }]),
                         /* [] */0

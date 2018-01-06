@@ -18,8 +18,11 @@ type cmp =
   | Lte
   | Unknown;
 
-type parameter =
-  | Parameter(string, lonaType, option(Js.Json.t));
+type parameter = {
+  name: string,
+  ltype: lonaType,
+  defaultValue: option(Js.Json.t)
+};
 
 type layerType =
   | View

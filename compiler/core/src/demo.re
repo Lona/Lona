@@ -30,8 +30,15 @@ switch command {
   let filename = Process.argv[4];
   let content = Fs.readFileSync(filename, `utf8);
   let parsed = content |> Js.Json.parseExn;
-  let result = Component.JavaScript.generate("DocumentMarquee", parsed);
-  Render.JavaScript.toString(result) |> Js.log
+  switch target {
+  | Types.JavaScript =>
+    Component.JavaScript.generate("DocumentMarquee", parsed)
+    |> Render.JavaScript.toString
+    |> Js.log
+  | Swift =>
+    let result = Component.Swift.generate("DocumentMarquee", parsed);
+    result |> Render.Swift.toString |> Js.log
+  }
 | "colors" =>
   if (Array.length(Process.argv) < 5) {
     exit("No filename given")

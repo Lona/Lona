@@ -15,10 +15,10 @@ function lonaType(json) {
   };
   var namedType = function (json) {
     var named = Json_decode.field("alias", Json_decode.string, json);
-    var type_ = Json_decode.field("of", Json_decode.string, json);
+    var ltype = Json_decode.field("of", Json_decode.string, json);
     return /* Named */Block.__(1, [
               named,
-              /* Reference */Block.__(0, [type_])
+              /* Reference */Block.__(0, [ltype])
             ]);
   };
   return Json_decode.either(referenceType, namedType)(json);
@@ -27,17 +27,14 @@ function lonaType(json) {
 var Types = /* module */[/* lonaType */lonaType];
 
 function parameter(json) {
-  var name = Json_decode.field("name", Json_decode.string, json);
-  var type_ = Json_decode.field("type", lonaType, json);
-  var defaultValue = Json_decode.optional((function (param) {
-          return Json_decode.field("defaultValue", (function (x) {
-                        return x;
-                      }), param);
-        }), json);
-  return /* Parameter */[
-          name,
-          type_,
-          defaultValue
+  return /* record */[
+          /* name */Json_decode.field("name", Json_decode.string, json),
+          /* ltype */Json_decode.field("type", lonaType, json),
+          /* defaultValue */Json_decode.optional((function (param) {
+                  return Json_decode.field("defaultValue", (function (x) {
+                                return x;
+                              }), param);
+                }), json)
         ];
 }
 
@@ -73,13 +70,13 @@ function layer(json) {
                 }), StringMap$LonaCompilerCore.fromJsDict(Js_option.getExn(Js_json.decodeObject(json))));
   };
   var parameters = Json_decode.field("parameters", parameterDictionary, json);
-  var type_ = Json_decode.field("type", layerType, json);
+  var ltype = Json_decode.field("type", layerType, json);
   var name = Json_decode.field("name", Json_decode.string, json);
   var children = Json_decode.field("children", (function (param) {
           return Json_decode.list(layer, param);
         }), json);
   return /* Layer */[
-          type_,
+          ltype,
           name,
           parameters,
           children
@@ -113,22 +110,22 @@ function logicNode(json) {
   };
   var value = function (json) {
     var identifier = function (json) {
-      var type_ = Json_decode.field("type", lonaType, json);
+      var ltype = Json_decode.field("type", lonaType, json);
       var path = Json_decode.field("path", (function (param) {
               return Json_decode.list(Json_decode.string, param);
             }), json);
       return /* Identifier */Block.__(0, [
-                type_,
+                ltype,
                 path
               ]);
     };
     var literal = function (json) {
-      var type_ = Json_decode.field("type", lonaType, json);
+      var ltype = Json_decode.field("type", lonaType, json);
       var data = Json_decode.field("data", (function (x) {
               return x;
             }), json);
       return /* Literal */Block.__(1, [/* Value */[
-                  type_,
+                  ltype,
                   data
                 ]]);
     };

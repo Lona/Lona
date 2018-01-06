@@ -43,26 +43,47 @@ module Swift = {
     | TypeInheritanceList({. "list": list(typeAnnotation)})
   and pattern =
     | WildcardPattern
-    | IdentifierPattern(string)
+    | IdentifierPattern({. "identifier": string, "annotation": option(typeAnnotation)})
     | ValueBindingPattern({. "kind": string, "pattern": pattern})
     | TuplePattern({. "elements": list(pattern)})
     | OptionalPattern({. "value": pattern})
     | ExpressionPattern({. "value": node})
   /* | IsPattern */
   /* | AsPattern */
+  and initializerBlock =
+    | WillSetDidSetBlock({. "willSet": option(list(node)), "didSet": option(list(node))})
   and node =
     /* | Operator(string) */
     | LiteralExpression(literal)
-    | ClassDeclaration({. "name": string, "body": list(node)})
+    | ClassDeclaration(
+        {
+          .
+          "name": string,
+          "inherits": list(typeAnnotation),
+          "modifier": option(accessLevelModifier),
+          "isFinal": bool,
+          "body": list(node)
+        }
+      )
     /* | VariableDeclaration({. "pattern": pattern, "init": option(node)}) */
     | SwiftIdentifier(string)
     | ConstantDeclaration(
         {. "modifiers": list(declarationModifier), "pattern": pattern, "init": option(node)}
       )
+    | VariableDeclaration(
+        {
+          .
+          "modifiers": list(declarationModifier),
+          "pattern": pattern,
+          "init": option(node),
+          "block": option(initializerBlock)
+        }
+      )
     | ImportDeclaration(string)
     | FunctionCallArgument({. "name": option(node), "value": node})
     | FunctionCallExpression({. "name": node, "arguments": list(node)})
     | LineComment({. "comment": string, "line": node})
+    | CodeBlock({. "statements": list(node)})
     | TopLevelDeclaration({. "statements": list(node)});
 };
 
