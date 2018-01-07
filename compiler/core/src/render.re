@@ -141,7 +141,7 @@ module Swift = {
           s(")")
         ])
       )
-    | LineBreak => empty /* This only works if lines are added between statements... */
+    | Empty => empty /* This only works if lines are added between statements... */
     | LineComment(v) => hardline <+> s("// " ++ v)
     | LineEndComment(o) =>
       /* concat([render(o##line), lineSuffix(s(" // " ++ o##comment)), lineSuffixBoundary]) */

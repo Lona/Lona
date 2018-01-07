@@ -166,7 +166,7 @@ function generate$1(name, json) {
                       List.map(initParameterAssignmentDoc, parameters),
                       /* :: */[
                         /* :: */[
-                          /* LineBreak */0,
+                          /* Empty */0,
                           /* :: */[
                             /* MemberExpression */Block.__(1, [/* :: */[
                                   /* SwiftIdentifier */Block.__(4, ["super"]),
@@ -185,7 +185,7 @@ function generate$1(name, json) {
                                   ]
                                 ]]),
                             /* :: */[
-                              /* LineBreak */0,
+                              /* Empty */0,
                               /* :: */[
                                 /* FunctionCallExpression */Block.__(11, [{
                                       name: /* SwiftIdentifier */Block.__(4, ["setUpViews"]),
@@ -202,7 +202,7 @@ function generate$1(name, json) {
                                           arguments: /* [] */0
                                         }]),
                                     /* :: */[
-                                      /* LineBreak */0,
+                                      /* Empty */0,
                                       /* :: */[
                                         /* FunctionCallExpression */Block.__(11, [{
                                               name: /* SwiftIdentifier */Block.__(4, ["update"]),
@@ -252,7 +252,7 @@ function generate$1(name, json) {
                                       List.map(viewVariableDoc, nonRootLayers),
                                       /* :: */[
                                         /* :: */[
-                                          /* LineBreak */0,
+                                          /* Empty */0,
                                           /* [] */0
                                         ],
                                         /* :: */[

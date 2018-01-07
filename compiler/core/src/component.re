@@ -114,7 +114,7 @@ module Swift = {
           List.concat([
             parameters |> List.map(initParameterAssignmentDoc),
             [
-              LineBreak,
+              Empty,
               MemberExpression([
                 SwiftIdentifier("super"),
                 FunctionCallExpression({
@@ -127,14 +127,14 @@ module Swift = {
                   ]
                 })
               ]),
-              LineBreak,
+              Empty,
               FunctionCallExpression({"name": SwiftIdentifier("setUpViews"), "arguments": []}),
               FunctionCallExpression({
                 "name": SwiftIdentifier("setUpConstraints"),
                 "arguments": []
               }),
               FunctionCallExpression({"name": SwiftIdentifier("setUpDefaults"), "arguments": []}),
-              LineBreak,
+              Empty,
               FunctionCallExpression({"name": SwiftIdentifier("update"), "arguments": []})
             ]
           ])
@@ -154,7 +154,7 @@ module Swift = {
               parameters |> List.map(parameterVariableDoc),
               [LineComment("Views")],
               nonRootLayers |> List.map(viewVariableDoc),
-              [LineBreak],
+              [Empty],
               [initializerDoc()]
             ])
         })

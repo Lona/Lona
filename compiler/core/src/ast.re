@@ -102,7 +102,7 @@ module Swift = {
       )
     | FunctionCallArgument({. "name": option(node), "value": node})
     | FunctionCallExpression({. "name": node, "arguments": list(node)})
-    | LineBreak
+    | Empty
     | LineComment(string)
     | LineEndComment({. "comment": string, "line": node})
     | CodeBlock({. "statements": list(node)})
