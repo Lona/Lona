@@ -23,6 +23,9 @@ module JavaScript = {
 
 module Swift = {
   let generate = (name, json) => {
+    let rootLayer = json |> Decode.Component.rootLayer;
+    /* Remove the root element */
+    let nonRootLayers = rootLayer |> Layer.flatten |> List.tl;
     let parameters = json |> Decode.Component.parameters;
     open Ast.Swift;
     let typeAnnotationDoc =
@@ -53,6 +56,89 @@ module Swift = {
             })
           )
       });
+    let viewTypeDoc =
+      fun
+      | Types.View => TypeName("UIView")
+      | Text => TypeName("UILabel")
+      | Image => TypeName("UIImageView")
+      | _ => TypeName("TypeUnknown");
+    let viewTypeInitDoc =
+      fun
+      | Types.View => SwiftIdentifier("UIView")
+      | Text => SwiftIdentifier("UILabel")
+      | Image => SwiftIdentifier("UIImageView")
+      | _ => SwiftIdentifier("TypeUnknown");
+    let viewVariableDoc =
+      fun
+      | Types.Layer(layerType, name, params, children) =>
+        VariableDeclaration({
+          "modifiers": [],
+          "pattern":
+            IdentifierPattern({
+              "identifier": Js.String.replace(" ", "", String.lowercase(name)) ++ "View",
+              "annotation": Some(layerType |> viewTypeDoc)
+            }),
+          "init":
+            Some(
+              FunctionCallExpression({
+                "name": layerType |> viewTypeInitDoc,
+                "arguments": [
+                  FunctionCallArgument({
+                    "name": Some(SwiftIdentifier("frame")),
+                    "value": SwiftIdentifier(".zero")
+                  })
+                ]
+              })
+            ),
+          "block": None
+        });
+    let initParameterDoc = (parameter: Decode.parameter) =>
+      Parameter({
+        "externalName": None,
+        "localName": parameter.name,
+        "annotation": parameter.ltype |> typeAnnotationDoc,
+        "defaultValue": None
+      });
+    let initParameterAssignmentDoc = (parameter: Decode.parameter) =>
+      BinaryExpression({
+        "left": MemberExpression([SwiftIdentifier("self"), SwiftIdentifier(parameter.name)]),
+        "operator": "=",
+        "right": SwiftIdentifier(parameter.name)
+      });
+    let initializerDoc = () =>
+      InitializerDeclaration({
+        "modifiers": [AccessLevelModifier(PublicModifier)],
+        "parameters": parameters |> List.map(initParameterDoc),
+        "failable": None,
+        "body":
+          List.concat([
+            parameters |> List.map(initParameterAssignmentDoc),
+            [
+              LineBreak,
+              MemberExpression([
+                SwiftIdentifier("super"),
+                FunctionCallExpression({
+                  "name": SwiftIdentifier("init"),
+                  "arguments": [
+                    FunctionCallArgument({
+                      "name": Some(SwiftIdentifier("frame")),
+                      "value": SwiftIdentifier(".zero")
+                    })
+                  ]
+                })
+              ]),
+              LineBreak,
+              FunctionCallExpression({"name": SwiftIdentifier("setUpViews"), "arguments": []}),
+              FunctionCallExpression({
+                "name": SwiftIdentifier("setUpConstraints"),
+                "arguments": []
+              }),
+              FunctionCallExpression({"name": SwiftIdentifier("setUpDefaults"), "arguments": []}),
+              LineBreak,
+              FunctionCallExpression({"name": SwiftIdentifier("update"), "arguments": []})
+            ]
+          ])
+      });
     TopLevelDeclaration({
       "statements": [
         ImportDeclaration("UIKit"),
@@ -62,7 +148,15 @@ module Swift = {
           "inherits": [TypeName("UIView")],
           "modifier": None,
           "isFinal": false,
-          "body": parameters |> List.map(parameterVariableDoc)
+          "body":
+            List.concat([
+              [LineComment("Parameters")],
+              parameters |> List.map(parameterVariableDoc),
+              [LineComment("Views")],
+              nonRootLayers |> List.map(viewVariableDoc),
+              [LineBreak],
+              [initializerDoc()]
+            ])
         })
       ]
     })

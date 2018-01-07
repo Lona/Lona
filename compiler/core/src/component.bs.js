@@ -3,6 +3,7 @@
 
 var List                    = require("bs-platform/lib/js/list.js");
 var Block                   = require("bs-platform/lib/js/block.js");
+var $$String                = require("bs-platform/lib/js/string.js");
 var Ast$LonaCompilerCore    = require("./ast.bs.js");
 var Layer$LonaCompilerCore  = require("./layer.bs.js");
 var Logic$LonaCompilerCore  = require("./logic.bs.js");
@@ -44,6 +45,8 @@ function generate(name, json) {
 var JavaScript = /* module */[/* generate */generate];
 
 function generate$1(name, json) {
+  var rootLayer = Decode$LonaCompilerCore.Component[/* rootLayer */1](json);
+  var nonRootLayers = List.tl(Layer$LonaCompilerCore.flatten(rootLayer));
   var parameters = Decode$LonaCompilerCore.Component[/* parameters */0](json);
   var typeAnnotationDoc = function (param) {
     if (param.tag) {
@@ -58,7 +61,7 @@ function generate$1(name, json) {
     }
   };
   var parameterVariableDoc = function (parameter) {
-    return /* VariableDeclaration */Block.__(4, [{
+    return /* VariableDeclaration */Block.__(6, [{
                 modifiers: /* [] */0,
                 pattern: /* IdentifierPattern */Block.__(0, [{
                       identifier: parameter[/* name */0],
@@ -68,8 +71,8 @@ function generate$1(name, json) {
                 block: /* Some */[/* WillSetDidSetBlock */[{
                       willSet: /* None */0,
                       didSet: /* Some */[/* :: */[
-                          /* FunctionCallExpression */Block.__(7, [{
-                                name: /* SwiftIdentifier */Block.__(2, ["update"]),
+                          /* FunctionCallExpression */Block.__(11, [{
+                                name: /* SwiftIdentifier */Block.__(4, ["update"]),
                                 arguments: /* [] */0
                               }]),
                           /* [] */0
@@ -77,13 +80,155 @@ function generate$1(name, json) {
                     }]]
               }]);
   };
-  return /* TopLevelDeclaration */Block.__(10, [{
+  var viewTypeDoc = function (param) {
+    switch (param) {
+      case 0 : 
+          return /* TypeName */Block.__(0, ["UIView"]);
+      case 1 : 
+          return /* TypeName */Block.__(0, ["UILabel"]);
+      case 2 : 
+          return /* TypeName */Block.__(0, ["UIImageView"]);
+      case 3 : 
+      case 4 : 
+      case 5 : 
+      case 6 : 
+          return /* TypeName */Block.__(0, ["TypeUnknown"]);
+      
+    }
+  };
+  var viewTypeInitDoc = function (param) {
+    switch (param) {
+      case 0 : 
+          return /* SwiftIdentifier */Block.__(4, ["UIView"]);
+      case 1 : 
+          return /* SwiftIdentifier */Block.__(4, ["UILabel"]);
+      case 2 : 
+          return /* SwiftIdentifier */Block.__(4, ["UIImageView"]);
+      case 3 : 
+      case 4 : 
+      case 5 : 
+      case 6 : 
+          return /* SwiftIdentifier */Block.__(4, ["TypeUnknown"]);
+      
+    }
+  };
+  var viewVariableDoc = function (param) {
+    var layerType = param[0];
+    return /* VariableDeclaration */Block.__(6, [{
+                modifiers: /* [] */0,
+                pattern: /* IdentifierPattern */Block.__(0, [{
+                      identifier: $$String.lowercase(param[1]).replace(" ", "") + "View",
+                      annotation: /* Some */[viewTypeDoc(layerType)]
+                    }]),
+                init: /* Some */[/* FunctionCallExpression */Block.__(11, [{
+                        name: viewTypeInitDoc(layerType),
+                        arguments: /* :: */[
+                          /* FunctionCallArgument */Block.__(10, [{
+                                name: /* Some */[/* SwiftIdentifier */Block.__(4, ["frame"])],
+                                value: /* SwiftIdentifier */Block.__(4, [".zero"])
+                              }]),
+                          /* [] */0
+                        ]
+                      }])],
+                block: /* None */0
+              }]);
+  };
+  var initParameterDoc = function (parameter) {
+    return /* Parameter */Block.__(9, [{
+                externalName: /* None */0,
+                localName: parameter[/* name */0],
+                annotation: typeAnnotationDoc(parameter[/* ltype */1]),
+                defaultValue: /* None */0
+              }]);
+  };
+  var initParameterAssignmentDoc = function (parameter) {
+    return /* BinaryExpression */Block.__(2, [{
+                left: /* MemberExpression */Block.__(1, [/* :: */[
+                      /* SwiftIdentifier */Block.__(4, ["self"]),
+                      /* :: */[
+                        /* SwiftIdentifier */Block.__(4, [parameter[/* name */0]]),
+                        /* [] */0
+                      ]
+                    ]]),
+                operator: "=",
+                right: /* SwiftIdentifier */Block.__(4, [parameter[/* name */0]])
+              }]);
+  };
+  var initializerDoc = function () {
+    return /* InitializerDeclaration */Block.__(7, [{
+                modifiers: /* :: */[
+                  /* AccessLevelModifier */Block.__(0, [/* PublicModifier */3]),
+                  /* [] */0
+                ],
+                parameters: List.map(initParameterDoc, parameters),
+                failable: /* None */0,
+                body: List.concat(/* :: */[
+                      List.map(initParameterAssignmentDoc, parameters),
+                      /* :: */[
+                        /* :: */[
+                          /* LineBreak */0,
+                          /* :: */[
+                            /* MemberExpression */Block.__(1, [/* :: */[
+                                  /* SwiftIdentifier */Block.__(4, ["super"]),
+                                  /* :: */[
+                                    /* FunctionCallExpression */Block.__(11, [{
+                                          name: /* SwiftIdentifier */Block.__(4, ["init"]),
+                                          arguments: /* :: */[
+                                            /* FunctionCallArgument */Block.__(10, [{
+                                                  name: /* Some */[/* SwiftIdentifier */Block.__(4, ["frame"])],
+                                                  value: /* SwiftIdentifier */Block.__(4, [".zero"])
+                                                }]),
+                                            /* [] */0
+                                          ]
+                                        }]),
+                                    /* [] */0
+                                  ]
+                                ]]),
+                            /* :: */[
+                              /* LineBreak */0,
+                              /* :: */[
+                                /* FunctionCallExpression */Block.__(11, [{
+                                      name: /* SwiftIdentifier */Block.__(4, ["setUpViews"]),
+                                      arguments: /* [] */0
+                                    }]),
+                                /* :: */[
+                                  /* FunctionCallExpression */Block.__(11, [{
+                                        name: /* SwiftIdentifier */Block.__(4, ["setUpConstraints"]),
+                                        arguments: /* [] */0
+                                      }]),
+                                  /* :: */[
+                                    /* FunctionCallExpression */Block.__(11, [{
+                                          name: /* SwiftIdentifier */Block.__(4, ["setUpDefaults"]),
+                                          arguments: /* [] */0
+                                        }]),
+                                    /* :: */[
+                                      /* LineBreak */0,
+                                      /* :: */[
+                                        /* FunctionCallExpression */Block.__(11, [{
+                                              name: /* SwiftIdentifier */Block.__(4, ["update"]),
+                                              arguments: /* [] */0
+                                            }]),
+                                        /* [] */0
+                                      ]
+                                    ]
+                                  ]
+                                ]
+                              ]
+                            ]
+                          ]
+                        ],
+                        /* [] */0
+                      ]
+                    ])
+              }]);
+  };
+  return /* TopLevelDeclaration */Block.__(15, [{
               statements: /* :: */[
-                /* ImportDeclaration */Block.__(5, ["UIKit"]),
+                /* ImportDeclaration */Block.__(8, ["UIKit"]),
                 /* :: */[
-                  /* ImportDeclaration */Block.__(5, ["Foundation"]),
+                  /* ImportDeclaration */Block.__(8, ["Foundation"]),
                   /* :: */[
-                    /* ClassDeclaration */Block.__(1, [{
+                    /* ClassDeclaration */Block.__(3, [{
                           name: name,
                           inherits: /* :: */[
                             /* TypeName */Block.__(0, ["UIView"]),
@@ -91,7 +236,37 @@ function generate$1(name, json) {
                           ],
                           modifier: /* None */0,
                           isFinal: /* false */0,
-                          body: List.map(parameterVariableDoc, parameters)
+                          body: List.concat(/* :: */[
+                                /* :: */[
+                                  /* LineComment */Block.__(12, ["Parameters"]),
+                                  /* [] */0
+                                ],
+                                /* :: */[
+                                  List.map(parameterVariableDoc, parameters),
+                                  /* :: */[
+                                    /* :: */[
+                                      /* LineComment */Block.__(12, ["Views"]),
+                                      /* [] */0
+                                    ],
+                                    /* :: */[
+                                      List.map(viewVariableDoc, nonRootLayers),
+                                      /* :: */[
+                                        /* :: */[
+                                          /* LineBreak */0,
+                                          /* [] */0
+                                        ],
+                                        /* :: */[
+                                          /* :: */[
+                                            initializerDoc(/* () */0),
+                                            /* [] */0
+                                          ],
+                                          /* [] */0
+                                        ]
+                                      ]
+                                    ]
+                                  ]
+                                ]
+                              ])
                         }]),
                     /* [] */0
                   ]

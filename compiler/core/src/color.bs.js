@@ -25,9 +25,9 @@ function parseFile(filename) {
 function render(target, colors) {
   if (target !== 0) {
     var colorConstantDoc = function (color) {
-      return /* LineComment */Block.__(8, [{
+      return /* LineEndComment */Block.__(13, [{
                   comment: color[/* value */2],
-                  line: /* ConstantDeclaration */Block.__(3, [{
+                  line: /* ConstantDeclaration */Block.__(5, [{
                         modifiers: /* :: */[
                           /* AccessLevelModifier */Block.__(0, [/* PublicModifier */3]),
                           /* :: */[
@@ -43,11 +43,11 @@ function render(target, colors) {
                       }])
                 }]);
     };
-    return Render$LonaCompilerCore.Swift[/* toString */9](/* TopLevelDeclaration */Block.__(10, [{
+    return Render$LonaCompilerCore.Swift[/* toString */9](/* TopLevelDeclaration */Block.__(15, [{
                     statements: /* :: */[
-                      /* ImportDeclaration */Block.__(5, ["UIKit"]),
+                      /* ImportDeclaration */Block.__(8, ["UIKit"]),
                       /* :: */[
-                        /* ClassDeclaration */Block.__(1, [{
+                        /* ClassDeclaration */Block.__(3, [{
                               name: "Colors",
                               inherits: /* [] */0,
                               modifier: /* None */0,

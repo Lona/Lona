@@ -55,6 +55,8 @@ module Swift = {
   and node =
     /* | Operator(string) */
     | LiteralExpression(literal)
+    | MemberExpression(list(node))
+    | BinaryExpression({. "left": node, "operator": string, "right": node})
     | ClassDeclaration(
         {
           .
@@ -79,10 +81,30 @@ module Swift = {
           "block": option(initializerBlock)
         }
       )
+    | InitializerDeclaration(
+        {
+          .
+          "modifiers": list(declarationModifier),
+          "parameters": list(node),
+          "failable": option(string),
+          "body": list(node)
+        }
+      )
     | ImportDeclaration(string)
+    | Parameter(
+        {
+          .
+          "externalName": option(string),
+          "localName": string,
+          "annotation": typeAnnotation,
+          "defaultValue": option(node)
+        }
+      )
     | FunctionCallArgument({. "name": option(node), "value": node})
     | FunctionCallExpression({. "name": node, "arguments": list(node)})
-    | LineComment({. "comment": string, "line": node})
+    | LineBreak
+    | LineComment(string)
+    | LineEndComment({. "comment": string, "line": node})
     | CodeBlock({. "statements": list(node)})
     | TopLevelDeclaration({. "statements": list(node)});
 };

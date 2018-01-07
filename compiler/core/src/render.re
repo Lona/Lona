@@ -14,7 +14,9 @@ module String = {
   let join = (sep, items) => items |> Array.of_list |> Js.Array.joinWith(sep);
 };
 
-let prefixAll = (sep, items) => Prettier.Doc.Builders.(concat([sep, join(sep, items)]));
+let prefixAll = (sep, items) => Prettier.Doc.Builders.(
+  items |> List.map((x) => sep <+> x) |> concat
+);
 
 let renderOptional = (render, item) =>
   switch item {
@@ -66,8 +68,12 @@ module Swift = {
     };
   let rec render = (ast) : Prettier.Doc.t('a) =>
     switch ast {
-    | Ast.Swift.LiteralExpression(v) => renderLiteral(v)
-    | SwiftIdentifier(v) => s(v)
+    | Ast.Swift.SwiftIdentifier(v) => s(v)
+    | LiteralExpression(v) => renderLiteral(v)
+    | MemberExpression(v) =>
+      v |> List.map(render) |> join(concat([softline, s(".")])) |> group
+    | BinaryExpression(o) =>
+      group(render(o##left) <+> s(" ") <+> s(o##operator) <+> line <+> render(o##right))
     | ClassDeclaration(o) =>
       let maybeFinal = o##isFinal ? s("final") <+> line : empty;
       let maybeModifier = o##modifier != None ? concat([o##modifier |> renderOptional(renderAccessLevelModifier), line]) : empty;
@@ -89,7 +95,36 @@ module Swift = {
       let maybeInit =
         o##init == None ? empty : concat([s(" = "), o##init |> renderOptional(render)]);
       let maybeBlock = o##block |> renderOptional((block) => line <+> renderInitializerBlock(block));
-      let parts = [modifiers, s(" "), s("var"), s(" "), renderPattern(o##pattern), maybeInit, maybeBlock];
+      let parts = [
+        modifiers,
+        List.length(o##modifiers) > 0 ? s(" ") : empty,
+        s("var"),
+        s(" "),
+        renderPattern(o##pattern),
+        maybeInit,
+        maybeBlock
+      ];
+      group(concat(parts))
+    | Parameter(o) =>
+        (o##externalName |> renderOptional((name) => s(name) <+> s(" "))) <+>
+        s(o##localName) <+>
+        s(": ") <+>
+        renderTypeAnnotation(o##annotation) <+>
+        (o##defaultValue |> renderOptional((node) => s(" = ") <+> render(node)))
+    | InitializerDeclaration(o) =>
+      let parts = [
+        o##modifiers |> List.map(renderDeclarationModifier) |> join(s(" ")),
+        List.length(o##modifiers) > 0 ? s(" ") : empty,
+        s("init"),
+        o##failable |> renderOptional(s),
+        s("("),
+        indent(
+          softline <+> join(s(",") <+> line, o##parameters |> List.map(render))
+        ),
+        s(")"),
+        line,
+        render(Ast.Swift.CodeBlock({ "statements": o##body }))
+      ];
       group(concat(parts))
     | ImportDeclaration(v) => group(concat([s("import"), line, s(v)]))
     | FunctionCallArgument(o) =>
@@ -106,11 +141,16 @@ module Swift = {
           s(")")
         ])
       )
-    | LineComment(o) =>
+    | LineBreak => empty /* This only works if lines are added between statements... */
+    | LineComment(v) => hardline <+> s("// " ++ v)
+    | LineEndComment(o) =>
       /* concat([render(o##line), lineSuffix(s(" // " ++ o##comment)), lineSuffixBoundary]) */
       concat([render(o##line), lineSuffix(s(" // " ++ o##comment))])
     | CodeBlock(o) =>
-      s("{") <+> line <+> join(concat([hardline]), o##statements |> List.map(render)) <+> line <+> s("}")
+      switch o##statements {
+      | [] => s("{}")
+      | statements => s("{") <+> indent(line <+> join(concat([hardline]), statements |> List.map(render))) <+> line <+> s("}")
+      };
     | TopLevelDeclaration(o) =>
       join(concat([hardline, hardline]), o##statements |> List.map(render))
     }
@@ -183,8 +223,8 @@ module Swift = {
       );
       switch (o##willSet, o##didSet) {
       | (None, None) => empty
-      | (None, Some(_)) => group(join(line, [s("{"), indent(didSet), s("}")]))
-      | (Some(_), None) => group(join(line, [s("{"), indent(willSet), s("}")]))
+      | (None, Some(_)) => group(join(line, [s("{"), didSet, s("}")]))
+      | (Some(_), None) => group(join(line, [s("{"), willSet, s("}")]))
       | (Some(_), Some(_)) => s("{") <+> indent(hardline <+> willSet <+> hardline <+> didSet) <+> hardline <+> s("}")
       }
     };
@@ -194,7 +234,7 @@ module Swift = {
     |> render
     |> (
       (doc) => {
-        let printerOptions = {"printWidth": 120, "tabWidth": 2, "useTabs": false};
+        let printerOptions = {"printWidth": 100, "tabWidth": 2, "useTabs": false};
         Prettier.Doc.Printer.printDocToString(doc, printerOptions)##formatted
       }
     );

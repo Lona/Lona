@@ -21,7 +21,7 @@ let render = (target, colors) =>
   | Types.Swift =>
     open Ast.Swift;
     let colorConstantDoc = (color) =>
-      LineComment({
+      LineEndComment({
         "comment": color.value,
         "line":
           ConstantDeclaration({
