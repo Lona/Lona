@@ -17,6 +17,7 @@ let parameterTypeMap =
   [
     ("text", Types.Reference("String")),
     ("visible", Types.Reference("Boolean")),
+    ("numberOfLines", Types.Reference("Number")),
     /* Styles */
     ("alignItems", Types.Reference("String")),
     ("alignSelf", Types.Reference("String")),
@@ -31,7 +32,9 @@ let parameterTypeMap =
     ("paddingTop", Types.Reference("Number")),
     ("paddingRight", Types.Reference("Number")),
     ("paddingBottom", Types.Reference("Number")),
-    ("paddingLeft", Types.Reference("Number"))
+    ("paddingLeft", Types.Reference("Number")),
+    ("width", Types.Reference("Number")),
+    ("height", Types.Reference("Number"))
   ]
   |> StringMap.fromList;
 
@@ -50,7 +53,9 @@ let stylesSet =
     "paddingTop",
     "paddingRight",
     "paddingBottom",
-    "paddingLeft"
+    "paddingLeft",
+    "width",
+    "height"
   ]);
 
 let parameterType = (name) =>
@@ -85,6 +90,35 @@ let rec flatmapParent = (f, layer: Types.layer) => {
 };
 
 let flatmap = (f, layer: Types.layer) => flatmapParent((_, layer) => f(layer), layer);
+
+let flexDirection = (layer: Types.layer) =>
+  switch (StringMap.find("flexDirection", layer.parameters)) {
+  | value => value.data |> Json.Decode.string
+  | exception Not_found => "column"
+  };
+
+type edgeInsets = {
+  top: float,
+  right: float,
+  bottom: float,
+  left: float
+};
+
+let getInsets = (prefix, layer: Types.layer) => {
+  let directions = ["Top", "Right", "Bottom", "Left"];
+  let extract = (key) => StringMap.find_opt(prefix ++ key, layer.parameters);
+  let unwrap =
+    fun
+    | Some((value: Types.lonaValue)) => value.data |> Json.Decode.float
+    | None => 0.0;
+  let values = directions |> List.map(extract) |> List.map(unwrap);
+  let [top, right, bottom, left] = values;
+  {top, right, bottom, left}
+};
+
+let getPadding = getInsets("padding");
+
+let getMargin = getInsets("margin");
 
 let parameterAssignments = (layer, node) => {
   let identifiers = Logic.undeclaredIdentifiers(node);

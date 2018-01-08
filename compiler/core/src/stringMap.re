@@ -22,3 +22,9 @@ let assign = (base, extender) =>
     base,
     extender
   );
+
+let find_opt = (key, map) =>
+  switch (find(key, map)) {
+  | item => Some(item)
+  | exception Not_found => None
+  };

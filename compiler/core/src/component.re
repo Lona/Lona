@@ -166,7 +166,7 @@ module Swift = {
       })
     };
     let setUpConstraintsDoc = (root: Types.layer) => {
-      let rec addConstraints = (layer: Types.layer) =>
+      let translatesAutoresizingMask = (layer: Types.layer) =>
         BinaryExpression({
           "left":
             memberOrSelfExpression(
@@ -176,17 +176,131 @@ module Swift = {
           "operator": "=",
           "right": LiteralExpression(Boolean(false))
         });
+      /* titleView.topAnchor.constraint(equalTo: self.topAnchor, constant: 24).isActive = true */
+      let setUpContraint = (layer: Types.layer, anchor1, parent: Types.layer, anchor2, constant) =>
+        BinaryExpression({
+          "left":
+            MemberExpression([
+              SwiftIdentifier(layer.name |> formatLayerName),
+              SwiftIdentifier(anchor1),
+              FunctionCallExpression({
+                "name": SwiftIdentifier("constraint"),
+                "arguments": [
+                  FunctionCallArgument({
+                    "name": Some(SwiftIdentifier("equalTo")),
+                    "value":
+                      memberOrSelfExpression(parentNameOrSelf(parent), [SwiftIdentifier(anchor2)])
+                  }),
+                  FunctionCallArgument({
+                    "name": Some(SwiftIdentifier("constant")),
+                    "value": LiteralExpression(FloatingPoint(constant))
+                  })
+                ]
+              }),
+              SwiftIdentifier("isActive")
+            ]),
+          "operator": "=",
+          "right": LiteralExpression(Boolean(true))
+        });
+      let constrainAxes = (parent: Types.layer) => {
+        let direction = Layer.flexDirection(parent);
+        let primaryBeforeAnchor = direction == "column" ? "topAnchor" : "leadingAnchor";
+        let primaryAfterAnchor = direction == "column" ? "bottomAnchor" : "trailingAnchor";
+        let secondaryBeforeAnchor = direction == "column" ? "leadingAnchor" : "topAnchor";
+        let secondaryAfterAnchor = direction == "column" ? "trailingAnchor" : "bottomAnchor";
+        let parentPadding = Layer.getPadding(parent);
+        let addConstraints = (index, layer: Types.layer) => {
+          let layerMargin = Layer.getMargin(layer);
+          let primaryAxisConstraints =
+            switch index {
+            | 0 =>
+              let primaryBeforeConstant =
+                direction == "column" ?
+                  parentPadding.top +. layerMargin.top : parentPadding.left +. layerMargin.left;
+              [
+                setUpContraint(
+                  layer,
+                  primaryBeforeAnchor,
+                  parent,
+                  primaryBeforeAnchor,
+                  primaryBeforeConstant
+                )
+              ]
+            | x when x == List.length(parent.children) - 1 =>
+              let primaryAfterConstant =
+                direction == "column" ?
+                  parentPadding.bottom +. layerMargin.bottom :
+                  parentPadding.right +. layerMargin.right;
+              [
+                setUpContraint(
+                  layer,
+                  primaryAfterAnchor,
+                  parent,
+                  primaryAfterAnchor,
+                  -. primaryAfterConstant
+                )
+              ]
+            | _ =>
+              let previousLayer = List.nth(parent.children, index);
+              let previousMargin = Layer.getMargin(previousLayer);
+              let betweenConstant =
+                direction == "column" ?
+                  previousMargin.bottom +. layerMargin.top :
+                  previousMargin.right +. layerMargin.left;
+              [
+                setUpContraint(
+                  layer,
+                  primaryBeforeAnchor,
+                  previousLayer,
+                  primaryAfterAnchor,
+                  betweenConstant
+                )
+              ]
+            };
+          let secondaryBeforeConstant =
+            direction == "column" ?
+              parentPadding.left +. layerMargin.left : parentPadding.top +. layerMargin.top;
+          let secondaryAfterConstant =
+            direction == "column" ?
+              parentPadding.right +. layerMargin.right : parentPadding.bottom +. layerMargin.bottom;
+          let secondaryAxisConstraints = [
+            setUpContraint(
+              layer,
+              secondaryBeforeAnchor,
+              parent,
+              secondaryBeforeAnchor,
+              secondaryBeforeConstant
+            ),
+            setUpContraint(
+              layer,
+              secondaryAfterAnchor,
+              parent,
+              secondaryAfterAnchor,
+              -. secondaryAfterConstant
+            )
+          ];
+          primaryAxisConstraints @ secondaryAxisConstraints @ [Empty]
+        };
+        parent.children |> List.mapi(addConstraints) |> List.concat
+      };
       FunctionDeclaration({
         "name": "setUpConstraints",
         "modifiers": [],
         "parameters": [],
-        "body": root |> Layer.flatmap(addConstraints)
+        "body":
+          List.concat([
+            root |> Layer.flatmap(translatesAutoresizingMask),
+            [Empty],
+            root |> Layer.flatmap(constrainAxes) |> List.concat,
+            []
+          ])
       })
     };
     TopLevelDeclaration({
       "statements": [
         ImportDeclaration("UIKit"),
         ImportDeclaration("Foundation"),
+        Empty,
         ClassDeclaration({
           "name": name,
           "inherits": [TypeName("UIView")],
@@ -203,7 +317,23 @@ module Swift = {
               [Empty],
               [setUpViewsDoc(rootLayer)],
               [Empty],
-              [setUpConstraintsDoc(rootLayer)]
+              [setUpConstraintsDoc(rootLayer)],
+              [Empty],
+              [
+                FunctionDeclaration({
+                  "name": "setUpDefaults",
+                  "modifiers": [],
+                  "parameters": [],
+                  "body": []
+                }),
+                Empty,
+                FunctionDeclaration({
+                  "name": "update",
+                  "modifiers": [],
+                  "parameters": [],
+                  "body": []
+                })
+              ]
             ])
         })
       ]

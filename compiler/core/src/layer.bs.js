@@ -7,6 +7,7 @@ var Block                      = require("bs-platform/lib/js/block.js");
 var Curry                      = require("bs-platform/lib/js/curry.js");
 var Pervasives                 = require("bs-platform/lib/js/pervasives.js");
 var Caml_string                = require("bs-platform/lib/js/caml_string.js");
+var Json_decode                = require("bs-json/src/Json_decode.js");
 var Logic$LonaCompilerCore     = require("./logic.bs.js");
 var Caml_builtin_exceptions    = require("bs-platform/lib/js/caml_builtin_exceptions.js");
 var StringMap$LonaCompilerCore = require("./stringMap.bs.js");
@@ -126,75 +127,93 @@ var parameterTypeMap = StringMap$LonaCompilerCore.fromList(/* :: */[
         ],
         /* :: */[
           /* tuple */[
-            "alignItems",
-            /* Reference */Block.__(0, ["String"])
+            "numberOfLines",
+            /* Reference */Block.__(0, ["Number"])
           ],
           /* :: */[
             /* tuple */[
-              "alignSelf",
+              "alignItems",
               /* Reference */Block.__(0, ["String"])
             ],
             /* :: */[
               /* tuple */[
-                "flex",
-                /* Reference */Block.__(0, ["Number"])
+                "alignSelf",
+                /* Reference */Block.__(0, ["String"])
               ],
               /* :: */[
                 /* tuple */[
-                  "flexDirection",
-                  /* Reference */Block.__(0, ["String"])
+                  "flex",
+                  /* Reference */Block.__(0, ["Number"])
                 ],
                 /* :: */[
                   /* tuple */[
-                    "font",
+                    "flexDirection",
                     /* Reference */Block.__(0, ["String"])
                   ],
                   /* :: */[
                     /* tuple */[
-                      "justifyContent",
+                      "font",
                       /* Reference */Block.__(0, ["String"])
                     ],
                     /* :: */[
                       /* tuple */[
-                        "marginTop",
-                        /* Reference */Block.__(0, ["Number"])
+                        "justifyContent",
+                        /* Reference */Block.__(0, ["String"])
                       ],
                       /* :: */[
                         /* tuple */[
-                          "marginRight",
+                          "marginTop",
                           /* Reference */Block.__(0, ["Number"])
                         ],
                         /* :: */[
                           /* tuple */[
-                            "marginBottom",
+                            "marginRight",
                             /* Reference */Block.__(0, ["Number"])
                           ],
                           /* :: */[
                             /* tuple */[
-                              "marginLeft",
+                              "marginBottom",
                               /* Reference */Block.__(0, ["Number"])
                             ],
                             /* :: */[
                               /* tuple */[
-                                "paddingTop",
+                                "marginLeft",
                                 /* Reference */Block.__(0, ["Number"])
                               ],
                               /* :: */[
                                 /* tuple */[
-                                  "paddingRight",
+                                  "paddingTop",
                                   /* Reference */Block.__(0, ["Number"])
                                 ],
                                 /* :: */[
                                   /* tuple */[
-                                    "paddingBottom",
+                                    "paddingRight",
                                     /* Reference */Block.__(0, ["Number"])
                                   ],
                                   /* :: */[
                                     /* tuple */[
-                                      "paddingLeft",
+                                      "paddingBottom",
                                       /* Reference */Block.__(0, ["Number"])
                                     ],
-                                    /* [] */0
+                                    /* :: */[
+                                      /* tuple */[
+                                        "paddingLeft",
+                                        /* Reference */Block.__(0, ["Number"])
+                                      ],
+                                      /* :: */[
+                                        /* tuple */[
+                                          "width",
+                                          /* Reference */Block.__(0, ["Number"])
+                                        ],
+                                        /* :: */[
+                                          /* tuple */[
+                                            "height",
+                                            /* Reference */Block.__(0, ["Number"])
+                                          ],
+                                          /* [] */0
+                                        ]
+                                      ]
+                                    ]
                                   ]
                                 ]
                               ]
@@ -240,7 +259,13 @@ var stylesSet = Curry._1(StringSet$LonaCompilerCore.of_list, /* :: */[
                               "paddingBottom",
                               /* :: */[
                                 "paddingLeft",
-                                /* [] */0
+                                /* :: */[
+                                  "width",
+                                  /* :: */[
+                                    "height",
+                                    /* [] */0
+                                  ]
+                                ]
                               ]
                             ]
                           ]
@@ -326,6 +351,101 @@ function flatmap(f, layer) {
   return flatmapParent((function (_, layer) {
                 return Curry._1(f, layer);
               }), layer);
+}
+
+function flexDirection(layer) {
+  var exit = 0;
+  var value;
+  try {
+    value = Curry._2(StringMap$LonaCompilerCore.find, "flexDirection", layer[/* parameters */2]);
+    exit = 1;
+  }
+  catch (exn){
+    if (exn === Caml_builtin_exceptions.not_found) {
+      return "column";
+    } else {
+      throw exn;
+    }
+  }
+  if (exit === 1) {
+    return Json_decode.string(value[/* data */1]);
+  }
+  
+}
+
+function getInsets(prefix, layer) {
+  var extract = function (key) {
+    return StringMap$LonaCompilerCore.find_opt(prefix + key, layer[/* parameters */2]);
+  };
+  var unwrap = function (param) {
+    if (param) {
+      return Json_decode.$$float(param[0][/* data */1]);
+    } else {
+      return 0.0;
+    }
+  };
+  var values = List.map(unwrap, List.map(extract, /* :: */[
+            "Top",
+            /* :: */[
+              "Right",
+              /* :: */[
+                "Bottom",
+                /* :: */[
+                  "Left",
+                  /* [] */0
+                ]
+              ]
+            ]
+          ]));
+  var exit = 0;
+  if (values) {
+    var match = values[1];
+    if (match) {
+      var match$1 = match[1];
+      if (match$1) {
+        var match$2 = match$1[1];
+        if (match$2) {
+          if (match$2[1]) {
+            exit = 1;
+          } else {
+            return /* float array */[
+                    values[0],
+                    match[0],
+                    match$1[0],
+                    match$2[0]
+                  ];
+          }
+        } else {
+          exit = 1;
+        }
+      } else {
+        exit = 1;
+      }
+    } else {
+      exit = 1;
+    }
+  } else {
+    exit = 1;
+  }
+  if (exit === 1) {
+    throw [
+          Caml_builtin_exceptions.match_failure,
+          [
+            "/Users/devin_abbott/Projects/ComponentStudio/ComponentStudio/compiler/core/src/layer.re",
+            115,
+            6
+          ]
+        ];
+  }
+  
+}
+
+function getPadding(param) {
+  return getInsets("padding", param);
+}
+
+function getMargin(param) {
+  return getInsets("margin", param);
 }
 
 function parameterAssignments(layer, node) {
@@ -526,6 +646,10 @@ exports.flatten                     = flatten;
 exports.find                        = find$1;
 exports.flatmapParent               = flatmapParent;
 exports.flatmap                     = flatmap;
+exports.flexDirection               = flexDirection;
+exports.getInsets                   = getInsets;
+exports.getPadding                  = getPadding;
+exports.getMargin                   = getMargin;
 exports.parameterAssignments        = parameterAssignments;
 exports.parameterIsStyle            = parameterIsStyle;
 exports.splitParamsMap              = splitParamsMap;

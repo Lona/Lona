@@ -271,7 +271,7 @@ function generate$1(name, json) {
               }]);
   };
   var setUpConstraintsDoc = function (root) {
-    var addConstraints = function (layer) {
+    var translatesAutoresizingMask = function (layer) {
       return /* BinaryExpression */Block.__(2, [{
                   left: memberOrSelfExpression(parentNameOrSelf(layer), /* :: */[
                         /* SwiftIdentifier */Block.__(4, ["translatesAutoresizingMaskIntoConstraints"]),
@@ -281,11 +281,123 @@ function generate$1(name, json) {
                   right: /* LiteralExpression */Block.__(0, [/* Boolean */Block.__(0, [/* false */0])])
                 }]);
     };
+    var setUpContraint = function (layer, anchor1, parent, anchor2, constant) {
+      return /* BinaryExpression */Block.__(2, [{
+                  left: /* MemberExpression */Block.__(1, [/* :: */[
+                        /* SwiftIdentifier */Block.__(4, [formatLayerName(layer[/* name */1])]),
+                        /* :: */[
+                          /* SwiftIdentifier */Block.__(4, [anchor1]),
+                          /* :: */[
+                            /* FunctionCallExpression */Block.__(12, [{
+                                  name: /* SwiftIdentifier */Block.__(4, ["constraint"]),
+                                  arguments: /* :: */[
+                                    /* FunctionCallArgument */Block.__(11, [{
+                                          name: /* Some */[/* SwiftIdentifier */Block.__(4, ["equalTo"])],
+                                          value: memberOrSelfExpression(parentNameOrSelf(parent), /* :: */[
+                                                /* SwiftIdentifier */Block.__(4, [anchor2]),
+                                                /* [] */0
+                                              ])
+                                        }]),
+                                    /* :: */[
+                                      /* FunctionCallArgument */Block.__(11, [{
+                                            name: /* Some */[/* SwiftIdentifier */Block.__(4, ["constant"])],
+                                            value: /* LiteralExpression */Block.__(0, [/* FloatingPoint */Block.__(2, [constant])])
+                                          }]),
+                                      /* [] */0
+                                    ]
+                                  ]
+                                }]),
+                            /* :: */[
+                              /* SwiftIdentifier */Block.__(4, ["isActive"]),
+                              /* [] */0
+                            ]
+                          ]
+                        ]
+                      ]]),
+                  operator: "=",
+                  right: /* LiteralExpression */Block.__(0, [/* Boolean */Block.__(0, [/* true */1])])
+                }]);
+    };
+    var constrainAxes = function (parent) {
+      var direction = Layer$LonaCompilerCore.flexDirection(parent);
+      var match = +(direction === "column");
+      var primaryBeforeAnchor = match !== 0 ? "topAnchor" : "leadingAnchor";
+      var match$1 = +(direction === "column");
+      var primaryAfterAnchor = match$1 !== 0 ? "bottomAnchor" : "trailingAnchor";
+      var match$2 = +(direction === "column");
+      var secondaryBeforeAnchor = match$2 !== 0 ? "leadingAnchor" : "topAnchor";
+      var match$3 = +(direction === "column");
+      var secondaryAfterAnchor = match$3 !== 0 ? "trailingAnchor" : "bottomAnchor";
+      var parentPadding = Layer$LonaCompilerCore.getPadding(parent);
+      var addConstraints = function (index, layer) {
+        var layerMargin = Layer$LonaCompilerCore.getMargin(layer);
+        var primaryAxisConstraints;
+        if (index !== 0) {
+          if (index === (List.length(parent[/* children */3]) - 1 | 0)) {
+            var match = +(direction === "column");
+            var primaryAfterConstant = match !== 0 ? parentPadding[/* bottom */2] + layerMargin[/* bottom */2] : parentPadding[/* right */1] + layerMargin[/* right */1];
+            primaryAxisConstraints = /* :: */[
+              setUpContraint(layer, primaryAfterAnchor, parent, primaryAfterAnchor, -primaryAfterConstant),
+              /* [] */0
+            ];
+          } else {
+            var previousLayer = List.nth(parent[/* children */3], index);
+            var previousMargin = Layer$LonaCompilerCore.getMargin(previousLayer);
+            var match$1 = +(direction === "column");
+            var betweenConstant = match$1 !== 0 ? previousMargin[/* bottom */2] + layerMargin[/* top */0] : previousMargin[/* right */1] + layerMargin[/* left */3];
+            primaryAxisConstraints = /* :: */[
+              setUpContraint(layer, primaryBeforeAnchor, previousLayer, primaryAfterAnchor, betweenConstant),
+              /* [] */0
+            ];
+          }
+        } else {
+          var match$2 = +(direction === "column");
+          var primaryBeforeConstant = match$2 !== 0 ? parentPadding[/* top */0] + layerMargin[/* top */0] : parentPadding[/* left */3] + layerMargin[/* left */3];
+          primaryAxisConstraints = /* :: */[
+            setUpContraint(layer, primaryBeforeAnchor, parent, primaryBeforeAnchor, primaryBeforeConstant),
+            /* [] */0
+          ];
+        }
+        var match$3 = +(direction === "column");
+        var secondaryBeforeConstant = match$3 !== 0 ? parentPadding[/* left */3] + layerMargin[/* left */3] : parentPadding[/* top */0] + layerMargin[/* top */0];
+        var match$4 = +(direction === "column");
+        var secondaryAfterConstant = match$4 !== 0 ? parentPadding[/* right */1] + layerMargin[/* right */1] : parentPadding[/* bottom */2] + layerMargin[/* bottom */2];
+        var secondaryAxisConstraints_000 = setUpContraint(layer, secondaryBeforeAnchor, parent, secondaryBeforeAnchor, secondaryBeforeConstant);
+        var secondaryAxisConstraints_001 = /* :: */[
+          setUpContraint(layer, secondaryAfterAnchor, parent, secondaryAfterAnchor, -secondaryAfterConstant),
+          /* [] */0
+        ];
+        var secondaryAxisConstraints = /* :: */[
+          secondaryAxisConstraints_000,
+          secondaryAxisConstraints_001
+        ];
+        return Pervasives.$at(primaryAxisConstraints, Pervasives.$at(secondaryAxisConstraints, /* :: */[
+                        /* Empty */0,
+                        /* [] */0
+                      ]));
+      };
+      return List.concat(List.mapi(addConstraints, parent[/* children */3]));
+    };
     return /* FunctionDeclaration */Block.__(8, [{
                 name: "setUpConstraints",
                 modifiers: /* [] */0,
                 parameters: /* [] */0,
-                body: Layer$LonaCompilerCore.flatmap(addConstraints, root)
+                body: List.concat(/* :: */[
+                      Layer$LonaCompilerCore.flatmap(translatesAutoresizingMask, root),
+                      /* :: */[
+                        /* :: */[
+                          /* Empty */0,
+                          /* [] */0
+                        ],
+                        /* :: */[
+                          List.concat(Layer$LonaCompilerCore.flatmap(constrainAxes, root)),
+                          /* :: */[
+                            /* [] */0,
+                            /* [] */0
+                          ]
+                        ]
+                      ]
+                    ])
               }]);
   };
   return /* TopLevelDeclaration */Block.__(16, [{
@@ -294,59 +406,90 @@ function generate$1(name, json) {
                 /* :: */[
                   /* ImportDeclaration */Block.__(9, ["Foundation"]),
                   /* :: */[
-                    /* ClassDeclaration */Block.__(3, [{
-                          name: name,
-                          inherits: /* :: */[
-                            /* TypeName */Block.__(0, ["UIView"]),
-                            /* [] */0
-                          ],
-                          modifier: /* None */0,
-                          isFinal: /* false */0,
-                          body: List.concat(/* :: */[
-                                /* :: */[
-                                  /* LineComment */Block.__(13, ["Parameters"]),
-                                  /* [] */0
-                                ],
-                                /* :: */[
-                                  List.map(parameterVariableDoc, parameters),
+                    /* Empty */0,
+                    /* :: */[
+                      /* ClassDeclaration */Block.__(3, [{
+                            name: name,
+                            inherits: /* :: */[
+                              /* TypeName */Block.__(0, ["UIView"]),
+                              /* [] */0
+                            ],
+                            modifier: /* None */0,
+                            isFinal: /* false */0,
+                            body: List.concat(/* :: */[
                                   /* :: */[
+                                    /* LineComment */Block.__(13, ["Parameters"]),
+                                    /* [] */0
+                                  ],
+                                  /* :: */[
+                                    List.map(parameterVariableDoc, parameters),
                                     /* :: */[
-                                      /* LineComment */Block.__(13, ["Views"]),
-                                      /* [] */0
-                                    ],
-                                    /* :: */[
-                                      List.map(viewVariableDoc, nonRootLayers),
                                       /* :: */[
-                                        /* :: */[
-                                          /* Empty */0,
-                                          /* [] */0
-                                        ],
+                                        /* LineComment */Block.__(13, ["Views"]),
+                                        /* [] */0
+                                      ],
+                                      /* :: */[
+                                        List.map(viewVariableDoc, nonRootLayers),
                                         /* :: */[
                                           /* :: */[
-                                            initializerDoc(/* () */0),
+                                            /* Empty */0,
                                             /* [] */0
                                           ],
                                           /* :: */[
                                             /* :: */[
-                                              /* Empty */0,
+                                              initializerDoc(/* () */0),
                                               /* [] */0
                                             ],
                                             /* :: */[
                                               /* :: */[
-                                                setUpViewsDoc(rootLayer),
+                                                /* Empty */0,
                                                 /* [] */0
                                               ],
                                               /* :: */[
                                                 /* :: */[
-                                                  /* Empty */0,
+                                                  setUpViewsDoc(rootLayer),
                                                   /* [] */0
                                                 ],
                                                 /* :: */[
                                                   /* :: */[
-                                                    setUpConstraintsDoc(rootLayer),
+                                                    /* Empty */0,
                                                     /* [] */0
                                                   ],
-                                                  /* [] */0
+                                                  /* :: */[
+                                                    /* :: */[
+                                                      setUpConstraintsDoc(rootLayer),
+                                                      /* [] */0
+                                                    ],
+                                                    /* :: */[
+                                                      /* :: */[
+                                                        /* Empty */0,
+                                                        /* [] */0
+                                                      ],
+                                                      /* :: */[
+                                                        /* :: */[
+                                                          /* FunctionDeclaration */Block.__(8, [{
+                                                                name: "setUpDefaults",
+                                                                modifiers: /* [] */0,
+                                                                parameters: /* [] */0,
+                                                                body: /* [] */0
+                                                              }]),
+                                                          /* :: */[
+                                                            /* Empty */0,
+                                                            /* :: */[
+                                                              /* FunctionDeclaration */Block.__(8, [{
+                                                                    name: "update",
+                                                                    modifiers: /* [] */0,
+                                                                    parameters: /* [] */0,
+                                                                    body: /* [] */0
+                                                                  }]),
+                                                              /* [] */0
+                                                            ]
+                                                          ]
+                                                        ],
+                                                        /* [] */0
+                                                      ]
+                                                    ]
+                                                  ]
                                                 ]
                                               ]
                                             ]
@@ -355,10 +498,10 @@ function generate$1(name, json) {
                                       ]
                                     ]
                                   ]
-                                ]
-                              ])
-                        }]),
-                    /* [] */0
+                                ])
+                          }]),
+                      /* [] */0
+                    ]
                   ]
                 ]
               ]

@@ -131,6 +131,7 @@ module Swift = {
         group(concat([
           o##modifiers |> List.map(renderDeclarationModifier) |> join(s(" ")),
           List.length(o##modifiers) > 0 ? s(" ") : empty,
+          s("func "),
           s(o##name),
           s("("),
           indent(
@@ -172,7 +173,8 @@ module Swift = {
         s("}")
       };
     | TopLevelDeclaration(o) =>
-      join(concat([hardline, hardline]), o##statements |> List.map(render))
+      /* join(concat([hardline, hardline]), o##statements |> List.map(render)) */
+      join(concat([hardline]), o##statements |> List.map(render))
     }
   and renderLiteral = (node: literal) =>
     switch node {
@@ -254,7 +256,8 @@ module Swift = {
     |> render
     |> (
       (doc) => {
-        let printerOptions = {"printWidth": 100, "tabWidth": 2, "useTabs": false};
+        /* let printerOptions = {"printWidth": 100, "tabWidth": 2, "useTabs": false}; */
+        let printerOptions = {"printWidth": 140, "tabWidth": 2, "useTabs": false};
         Prettier.Doc.Printer.printDocToString(doc, printerOptions)##formatted
       }
     );
