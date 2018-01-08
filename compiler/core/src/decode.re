@@ -39,7 +39,7 @@ module Layer = {
       |> Js.Json.decodeObject
       |> Js.Option.getExn
       |> StringMap.fromJsDict
-      |> StringMap.mapi((key, value) => Value(Layer.parameterType(key), value));
+      |> StringMap.mapi((key, value) => {ltype: Layer.parameterType(key), data: value});
     {
       typeName: field("type", layerType, json),
       name: field("name", string, json),
@@ -69,7 +69,7 @@ let rec logicNode = (json) => {
     let literal = (json) => {
       let ltype = field("type", Types.lonaType, json);
       let data = field("data", (x) => x, json);
-      Logic.Literal(Value(ltype, data))
+      Logic.Literal({ltype, data})
     };
     switch (field("type", string, json)) {
     | "identifier" => field("value", identifier, json)

@@ -281,7 +281,7 @@ module JavaScript = {
     switch ast {
     | Ast.JavaScript.Identifier(path) =>
       path |> List.map(s) |> join(concat([softline, s(".")])) |> group
-    | Literal(Types.Value(_, json)) => s(Js.Json.stringify(json))
+    | Literal(value) => s(Js.Json.stringify(value.data))
     | VariableDeclaration(value) => group(concat([s("let "), render(value), s(";")]))
     | AssignmentExpression(name, value) =>
       fill([group(concat([render(name), line, s("=")])), s(" "), render(value)])

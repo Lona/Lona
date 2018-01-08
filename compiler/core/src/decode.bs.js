@@ -63,9 +63,9 @@ function layerType(json) {
 function layer(json) {
   var parameterDictionary = function (json) {
     return Curry._2(StringMap$LonaCompilerCore.mapi, (function (key, value) {
-                  return /* Value */[
-                          Layer$LonaCompilerCore.parameterType(key),
-                          value
+                  return /* record */[
+                          /* ltype */Layer$LonaCompilerCore.parameterType(key),
+                          /* data */value
                         ];
                 }), StringMap$LonaCompilerCore.fromJsDict(Js_option.getExn(Js_json.decodeObject(json))));
   };
@@ -120,9 +120,9 @@ function logicNode(json) {
       var data = Json_decode.field("data", (function (x) {
               return x;
             }), json);
-      return /* Literal */Block.__(1, [/* Value */[
-                  ltype,
-                  data
+      return /* Literal */Block.__(1, [/* record */[
+                  /* ltype */ltype,
+                  /* data */data
                 ]]);
     };
     var match = Json_decode.field("type", Json_decode.string, json);

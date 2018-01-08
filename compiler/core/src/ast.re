@@ -177,7 +177,7 @@ module JavaScript = {
   let optimizeTruthyBooleanExpression = (node) => {
     let booleanValue = (sub) =>
       switch sub {
-      | Literal(Types.Value(_, value)) => value |> Json.Decode.optional(Json.Decode.bool)
+      | Literal(value) => value.data |> Json.Decode.optional(Json.Decode.bool)
       | _ => (None: option(bool))
       };
     switch node {

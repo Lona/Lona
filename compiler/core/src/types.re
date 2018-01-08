@@ -6,8 +6,10 @@ type lonaType =
   | Reference(string)
   | Named(string, lonaType);
 
-type lonaValue =
-  | Value(lonaType, Js.Json.t);
+type lonaValue = {
+  ltype: lonaType,
+  data: Js.Json.t
+};
 
 type cmp =
   | Eq
