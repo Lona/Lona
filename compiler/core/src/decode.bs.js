@@ -69,17 +69,13 @@ function layer(json) {
                         ];
                 }), StringMap$LonaCompilerCore.fromJsDict(Js_option.getExn(Js_json.decodeObject(json))));
   };
-  var parameters = Json_decode.field("parameters", parameterDictionary, json);
-  var ltype = Json_decode.field("type", layerType, json);
-  var name = Json_decode.field("name", Json_decode.string, json);
-  var children = Json_decode.field("children", (function (param) {
-          return Json_decode.list(layer, param);
-        }), json);
-  return /* Layer */[
-          ltype,
-          name,
-          parameters,
-          children
+  return /* record */[
+          /* typeName */Json_decode.field("type", layerType, json),
+          /* name */Json_decode.field("name", Json_decode.string, json),
+          /* parameters */Json_decode.field("parameters", parameterDictionary, json),
+          /* children */Json_decode.field("children", (function (param) {
+                  return Json_decode.list(layer, param);
+                }), json)
         ];
 }
 

@@ -5,6 +5,7 @@ var $$Map                      = require("bs-platform/lib/js/map.js");
 var List                       = require("bs-platform/lib/js/list.js");
 var Block                      = require("bs-platform/lib/js/block.js");
 var Curry                      = require("bs-platform/lib/js/curry.js");
+var Pervasives                 = require("bs-platform/lib/js/pervasives.js");
 var Caml_string                = require("bs-platform/lib/js/caml_string.js");
 var Logic$LonaCompilerCore     = require("./logic.bs.js");
 var Caml_builtin_exceptions    = require("bs-platform/lib/js/caml_builtin_exceptions.js");
@@ -12,7 +13,7 @@ var StringMap$LonaCompilerCore = require("./stringMap.bs.js");
 var StringSet$LonaCompilerCore = require("./stringSet.bs.js");
 
 function compare(a, b) {
-  return Caml_string.caml_string_compare(a[1], b[1]);
+  return Caml_string.caml_string_compare(a[/* name */1], b[/* name */1]);
 }
 
 var include = $$Map.Make(/* module */[/* compare */compare]);
@@ -271,6 +272,7 @@ function parameterType(name) {
 
 function flatten(layer) {
   var inner = function (acc, layer) {
+    var children = layer[/* children */3];
     return List.flatten(/* :: */[
                 acc,
                 /* :: */[
@@ -280,7 +282,7 @@ function flatten(layer) {
                   ],
                   List.map((function (param) {
                           return inner(/* [] */0, param);
-                        }), layer[3])
+                        }), children)
                 ]
               ]);
   };
@@ -289,7 +291,7 @@ function flatten(layer) {
 
 function find$1(name, layer) {
   var matches = function (item) {
-    return +(name === item[1]);
+    return +(item[/* name */1] === name);
   };
   var exit = 0;
   var item;
@@ -308,6 +310,22 @@ function find$1(name, layer) {
     return /* Some */[item];
   }
   
+}
+
+function flatmapParent(f, layer) {
+  var inner = function (layer) {
+    return Pervasives.$at(List.map(Curry._1(f, /* Some */[layer]), layer[/* children */3]), List.concat(List.map(inner, layer[/* children */3])));
+  };
+  return Pervasives.$at(/* :: */[
+              Curry._2(f, /* None */0, layer),
+              /* [] */0
+            ], inner(layer));
+}
+
+function flatmap(f, layer) {
+  return flatmapParent((function (_, layer) {
+                return Curry._1(f, layer);
+              }), layer);
 }
 
 function parameterAssignments(layer, node) {
@@ -428,7 +446,7 @@ function createStyleAttributeAST(layerName, styles) {
 function toJavaScriptAST(variableMap, layer) {
   var params = Curry._2(StringMap$LonaCompilerCore.map, (function (item) {
           return /* Literal */Block.__(1, [item]);
-        }), layer[2]);
+        }), layer[/* parameters */2]);
   var match = Curry._2(StringMap$LonaCompilerCore.partition, (function (key, _) {
           return StringSet$LonaCompilerCore.has(key, stylesSet);
         }), params);
@@ -438,7 +456,7 @@ function toJavaScriptAST(variableMap, layer) {
           return StringSet$LonaCompilerCore.has(key, stylesSet);
         }), params$1);
   var main = StringMap$LonaCompilerCore.assign(match[1], match$2[1]);
-  var styleAttribute = createStyleAttributeAST(layer[1], match$2[0]);
+  var styleAttribute = createStyleAttributeAST(layer[/* name */1], match$2[0]);
   var attributes = List.map((function (param) {
           return /* JSXAttribute */Block.__(6, [
                     param[0],
@@ -446,14 +464,14 @@ function toJavaScriptAST(variableMap, layer) {
                   ]);
         }), Curry._1(StringMap$LonaCompilerCore.bindings, main));
   return /* JSXElement */Block.__(7, [
-            layerTypeToString(layer[0]),
+            layerTypeToString(layer[/* typeName */0]),
             /* :: */[
               styleAttribute,
               attributes
             ],
             List.map((function (param) {
                     return toJavaScriptAST(variableMap, param);
-                  }), layer[3])
+                  }), layer[/* children */3])
           ]);
 }
 
@@ -461,10 +479,10 @@ function toJavaScriptStyleSheetAST(layer) {
   var createStyleObjectForLayer = function (layer) {
     var styleParams = Curry._2(StringMap$LonaCompilerCore.filter, (function (key, _) {
             return StringSet$LonaCompilerCore.has(key, stylesSet);
-          }), layer[2]);
+          }), layer[/* parameters */2]);
     return /* ObjectProperty */Block.__(14, [
               /* Identifier */Block.__(2, [/* :: */[
-                    layer[1],
+                    layer[/* name */1],
                     /* [] */0
                   ]]),
               /* ObjectLiteral */Block.__(13, [List.map((function (param) {
@@ -506,6 +524,8 @@ exports.stylesSet                   = stylesSet;
 exports.parameterType               = parameterType;
 exports.flatten                     = flatten;
 exports.find                        = find$1;
+exports.flatmapParent               = flatmapParent;
+exports.flatmap                     = flatmap;
 exports.parameterAssignments        = parameterAssignments;
 exports.parameterIsStyle            = parameterIsStyle;
 exports.splitParamsMap              = splitParamsMap;

@@ -90,6 +90,15 @@ module Swift = {
           "body": list(node)
         }
       )
+    | FunctionDeclaration(
+        {
+          .
+          "name": string,
+          "modifiers": list(declarationModifier),
+          "parameters": list(node),
+          "body": list(node)
+        }
+      )
     | ImportDeclaration(string)
     | Parameter(
         {

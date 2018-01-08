@@ -33,5 +33,9 @@ type layerType =
   | Component
   | Unknown;
 
-type layer =
-  | Layer(layerType, string, StringMap.t(lonaValue), list(layer));
+type layer = {
+  typeName: layerType,
+  name: string,
+  parameters: StringMap.t(lonaValue),
+  children: list(layer)
+};

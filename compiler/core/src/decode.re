@@ -40,11 +40,12 @@ module Layer = {
       |> Js.Option.getExn
       |> StringMap.fromJsDict
       |> StringMap.mapi((key, value) => Value(Layer.parameterType(key), value));
-    let parameters = field("parameters", parameterDictionary, json);
-    let ltype = field("type", layerType, json);
-    let name = field("name", string, json);
-    let children = field("children", list(layer), json);
-    Layer(ltype, name, parameters, children)
+    {
+      typeName: field("type", layerType, json),
+      name: field("name", string, json),
+      parameters: field("parameters", parameterDictionary, json),
+      children: field("children", list(layer), json)
+    }
   };
 };
 

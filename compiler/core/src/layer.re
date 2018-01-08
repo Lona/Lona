@@ -3,10 +3,7 @@ module LayerMap = {
     Map.Make(
       {
         type t = Types.layer;
-        let compare = (a: t, b: t) : int =>
-          switch (a, b) {
-          | (Layer(_, aName, _, _), Layer(_, bName, _, _)) => compare(aName, bName)
-          };
+        let compare = (a: t, b: t) : int => compare(a.name, b.name);
       }
     );
   let find_opt = (key, map) =>
@@ -64,25 +61,30 @@ let parameterType = (name) =>
     Reference("Null")
   };
 
-let flatten = (layer) => {
-  let rec inner = (acc, layer) =>
-    switch layer {
-    | Types.Layer(_, _, _, children) =>
-      List.flatten([acc, [layer], ...List.map(inner([]), children)])
-    };
+let flatten = (layer: Types.layer) => {
+  let rec inner = (acc, layer: Types.layer) => {
+    let children = layer.children;
+    List.flatten([acc, [layer], ...List.map(inner([]), children)])
+  };
   inner([], layer)
 };
 
-let find = (name, layer) => {
-  let matches = (item) =>
-    switch item {
-    | Types.Layer(_, itemName, _, _) => name == itemName
-    };
+let find = (name, layer: Types.layer) => {
+  let matches = (item: Types.layer) => item.name == name;
   switch (List.find(matches, flatten(layer))) {
   | item => Some(item)
   | exception Not_found => None
   }
 };
+
+let rec flatmapParent = (f, layer: Types.layer) => {
+  let rec inner = (layer: Types.layer) =>
+    (layer.children |> List.map(f(Some(layer))))
+    @ (layer.children |> List.map(inner) |> List.concat);
+  [f(None, layer)] @ inner(layer)
+};
+
+let flatmap = (f, layer: Types.layer) => flatmapParent((_, layer) => f(layer), layer);
 
 let parameterAssignments = (layer, node) => {
   let identifiers = Logic.undeclaredIdentifiers(node);
@@ -128,7 +130,7 @@ let layerTypeToString = (x) =>
 
 let mapBindings = (f, map) => map |> StringMap.bindings |> List.map(f);
 
-let rec createStyleAttributeAST = (layerName, styles) =>
+let createStyleAttributeAST = (layerName, styles) =>
   Ast.JavaScript.(
     JSXAttribute(
       "style",
@@ -145,47 +147,42 @@ let rec createStyleAttributeAST = (layerName, styles) =>
     )
   );
 
-let rec toJavaScriptAST = (variableMap, layer) =>
-  Ast.JavaScript.(
-    switch layer {
-    | Types.Layer(layerType, name, params, children) =>
-      let (_, mainParams) = params |> parameterMapToLogicValueMap |> splitParamsMap;
-      let (styleVariables, mainVariables) =
-        (
-          switch (LayerMap.find_opt(layer, variableMap)) {
-          | Some(map) => map
-          | None => StringMap.empty
-          }
-        )
-        |> splitParamsMap;
-      let main = StringMap.assign(mainParams, mainVariables);
-      let styleAttribute = createStyleAttributeAST(name, styleVariables);
-      let attributes =
-        main
-        |> mapBindings(((key, value)) => JSXAttribute(key, Logic.logicValueToJavaScriptAST(value)));
-      JSXElement(
-        layerTypeToString(layerType),
-        [styleAttribute, ...attributes],
-        children |> List.map(toJavaScriptAST(variableMap))
-      )
-    }
-  );
-
-let toJavaScriptStyleSheetAST = (layer) => {
+let rec toJavaScriptAST = (variableMap, layer: Types.layer) => {
   open Ast.JavaScript;
-  let createStyleObjectForLayer = (layer) =>
-    switch layer {
-    | Types.Layer(_, name, params, _) =>
-      let styleParams = params |> StringMap.filter((key, _) => parameterIsStyle(key));
-      ObjectProperty(
-        Identifier([name]),
-        ObjectLiteral(
-          styleParams
-          |> StringMap.bindings
-          |> List.map(((key, value)) => ObjectProperty(Identifier([key]), Literal(value)))
-        )
+  let (_, mainParams) = layer.parameters |> parameterMapToLogicValueMap |> splitParamsMap;
+  let (styleVariables, mainVariables) =
+    (
+      switch (LayerMap.find_opt(layer, variableMap)) {
+      | Some(map) => map
+      | None => StringMap.empty
+      }
+    )
+    |> splitParamsMap;
+  let main = StringMap.assign(mainParams, mainVariables);
+  let styleAttribute = createStyleAttributeAST(layer.name, styleVariables);
+  let attributes =
+    main
+    |> mapBindings(((key, value)) => JSXAttribute(key, Logic.logicValueToJavaScriptAST(value)));
+  JSXElement(
+    layerTypeToString(layer.typeName),
+    [styleAttribute, ...attributes],
+    layer.children |> List.map(toJavaScriptAST(variableMap))
+  )
+};
+
+let toJavaScriptStyleSheetAST = (layer: Types.layer) => {
+  open Ast.JavaScript;
+  let createStyleObjectForLayer = (layer: Types.layer) => {
+    let styleParams = layer.parameters |> StringMap.filter((key, _) => parameterIsStyle(key));
+    ObjectProperty(
+      Identifier([layer.name]),
+      ObjectLiteral(
+        styleParams
+        |> StringMap.bindings
+        |> List.map(((key, value)) => ObjectProperty(Identifier([key]), Literal(value)))
       )
-    };
+    )
+  };
   let styleObjects = layer |> flatten |> List.map(createStyleObjectForLayer);
   VariableDeclaration(
     AssignmentExpression(

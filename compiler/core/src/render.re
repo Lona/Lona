@@ -126,6 +126,21 @@ module Swift = {
         render(Ast.Swift.CodeBlock({ "statements": o##body }))
       ];
       group(concat(parts))
+    | FunctionDeclaration(o) =>
+      group(concat([
+        group(concat([
+          o##modifiers |> List.map(renderDeclarationModifier) |> join(s(" ")),
+          List.length(o##modifiers) > 0 ? s(" ") : empty,
+          s(o##name),
+          s("("),
+          indent(
+            softline <+> join(s(",") <+> line, o##parameters |> List.map(render))
+          ),
+          s(")"),
+        ])),
+        line,
+        render(Ast.Swift.CodeBlock({ "statements": o##body }))
+      ]));
     | ImportDeclaration(v) => group(concat([s("import"), line, s(v)]))
     | FunctionCallArgument(o) =>
       switch o##name {
@@ -149,7 +164,12 @@ module Swift = {
     | CodeBlock(o) =>
       switch o##statements {
       | [] => s("{}")
-      | statements => s("{") <+> indent(line <+> join(concat([hardline]), statements |> List.map(render))) <+> line <+> s("}")
+      | [statement] => s("{") <+> line <+> render(statement) <+> line <+> s("}")
+      | statements =>
+        s("{") <+>
+        indent(prefixAll(concat([hardline]), statements |> List.map(render))) <+>
+        hardline <+>
+        s("}")
       };
     | TopLevelDeclaration(o) =>
       join(concat([hardline, hardline]), o##statements |> List.map(render))

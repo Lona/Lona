@@ -28,6 +28,8 @@ module Swift = {
     let nonRootLayers = rootLayer |> Layer.flatten |> List.tl;
     let parameters = json |> Decode.Component.parameters;
     open Ast.Swift;
+    let formatLayerName = (layerName) =>
+      Js.String.replace(" ", "", String.lowercase(layerName)) ++ "View";
     let typeAnnotationDoc =
       fun
       | Types.Reference(typeName) =>
@@ -35,7 +37,7 @@ module Swift = {
         | "Boolean" => TypeName("Bool")
         | _ => TypeName(typeName)
         }
-      | Named(name, ltype) => TypeName(name);
+      | Named(name, _) => TypeName(name);
     let parameterVariableDoc = (parameter: Decode.parameter) =>
       VariableDeclaration({
         "modifiers": [],
@@ -68,30 +70,28 @@ module Swift = {
       | Text => SwiftIdentifier("UILabel")
       | Image => SwiftIdentifier("UIImageView")
       | _ => SwiftIdentifier("TypeUnknown");
-    let viewVariableDoc =
-      fun
-      | Types.Layer(layerType, name, params, children) =>
-        VariableDeclaration({
-          "modifiers": [],
-          "pattern":
-            IdentifierPattern({
-              "identifier": Js.String.replace(" ", "", String.lowercase(name)) ++ "View",
-              "annotation": Some(layerType |> viewTypeDoc)
-            }),
-          "init":
-            Some(
-              FunctionCallExpression({
-                "name": layerType |> viewTypeInitDoc,
-                "arguments": [
-                  FunctionCallArgument({
-                    "name": Some(SwiftIdentifier("frame")),
-                    "value": SwiftIdentifier(".zero")
-                  })
-                ]
-              })
-            ),
-          "block": None
-        });
+    let viewVariableDoc = (layer: Types.layer) =>
+      VariableDeclaration({
+        "modifiers": [],
+        "pattern":
+          IdentifierPattern({
+            "identifier": layer.name |> formatLayerName,
+            "annotation": Some(layer.typeName |> viewTypeDoc)
+          }),
+        "init":
+          Some(
+            FunctionCallExpression({
+              "name": layer.typeName |> viewTypeInitDoc,
+              "arguments": [
+                FunctionCallArgument({
+                  "name": Some(SwiftIdentifier("frame")),
+                  "value": SwiftIdentifier(".zero")
+                })
+              ]
+            })
+          ),
+        "block": None
+      });
     let initParameterDoc = (parameter: Decode.parameter) =>
       Parameter({
         "externalName": None,
@@ -139,6 +139,50 @@ module Swift = {
             ]
           ])
       });
+    let parentNameOrSelf = (parent: Types.layer) =>
+      parent === rootLayer ? "self" : parent.name |> formatLayerName;
+    let memberOrSelfExpression = (firstIdentifier, statements) =>
+      switch firstIdentifier {
+      | "self" => MemberExpression(statements)
+      | _ => MemberExpression([SwiftIdentifier(firstIdentifier)] @ statements)
+      };
+    let setUpViewsDoc = (root: Types.layer) => {
+      let addSubviews = (parent: option(Types.layer), layer: Types.layer) =>
+        switch parent {
+        | None => []
+        | Some(parent) => [
+            FunctionCallExpression({
+              "name":
+                memberOrSelfExpression(parentNameOrSelf(parent), [SwiftIdentifier("addSubview")]),
+              "arguments": [SwiftIdentifier(layer.name |> formatLayerName)]
+            })
+          ]
+        };
+      FunctionDeclaration({
+        "name": "setUpViews",
+        "modifiers": [],
+        "parameters": [],
+        "body": Layer.flatmapParent(addSubviews, root) |> List.concat
+      })
+    };
+    let setUpConstraintsDoc = (root: Types.layer) => {
+      let rec addConstraints = (layer: Types.layer) =>
+        BinaryExpression({
+          "left":
+            memberOrSelfExpression(
+              parentNameOrSelf(layer),
+              [SwiftIdentifier("translatesAutoresizingMaskIntoConstraints")]
+            ),
+          "operator": "=",
+          "right": LiteralExpression(Boolean(false))
+        });
+      FunctionDeclaration({
+        "name": "setUpConstraints",
+        "modifiers": [],
+        "parameters": [],
+        "body": root |> Layer.flatmap(addConstraints)
+      })
+    };
     TopLevelDeclaration({
       "statements": [
         ImportDeclaration("UIKit"),
@@ -155,7 +199,11 @@ module Swift = {
               [LineComment("Views")],
               nonRootLayers |> List.map(viewVariableDoc),
               [Empty],
-              [initializerDoc()]
+              [initializerDoc()],
+              [Empty],
+              [setUpViewsDoc(rootLayer)],
+              [Empty],
+              [setUpConstraintsDoc(rootLayer)]
             ])
         })
       ]
