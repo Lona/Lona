@@ -38,26 +38,6 @@ module Swift = {
         | _ => TypeName(typeName)
         }
       | Named(name, _) => TypeName(name);
-    let lonaValueDoc = (value: Types.lonaValue) =>
-      switch value.ltype {
-      | Reference(typeName) =>
-        switch typeName {
-        | "Boolean" => LiteralExpression(Boolean(value.data |> Json.Decode.bool))
-        | "Number" => LiteralExpression(FloatingPoint(value.data |> Json.Decode.float))
-        | "String" => LiteralExpression(String(value.data |> Json.Decode.string))
-        | _ => SwiftIdentifier("UnknownReferenceType: " ++ typeName)
-        }
-      | Named(alias, subtype) =>
-        switch alias {
-        | "Color" =>
-          let rawValue = value.data |> Json.Decode.string;
-          switch (Color.find(colors, rawValue)) {
-          | Some(color) => SwiftIdentifier(color.id)
-          | None => LiteralExpression(Color(rawValue))
-          }
-        | _ => SwiftIdentifier("UnknownNamedTypeAlias" ++ alias)
-        }
-      };
     let parameterVariableDoc = (parameter: Decode.parameter) =>
       VariableDeclaration({
         "modifiers": [],
@@ -96,7 +76,7 @@ module Swift = {
         "pattern":
           IdentifierPattern({
             "identifier": layer.name |> Swift.Format.layerName,
-            "annotation": Some(layer.typeName |> viewTypeDoc)
+            "annotation": None /*Some(layer.typeName |> viewTypeDoc)*/
           }),
         "init":
           Some(
@@ -124,6 +104,33 @@ module Swift = {
         "left": MemberExpression([SwiftIdentifier("self"), SwiftIdentifier(parameter.name)]),
         "operator": "=",
         "right": SwiftIdentifier(parameter.name)
+      });
+    let initializerCoderDoc = () =>
+      /* required init?(coder aDecoder: NSCoder) {
+           fatalError("init(coder:) has not been implemented")
+         } */
+      InitializerDeclaration({
+        "modifiers": [RequiredModifier],
+        "parameters": [
+          Parameter({
+            "externalName": Some("coder"),
+            "localName": "aDecoder",
+            "annotation": TypeName("NSCoder"),
+            "defaultValue": None
+          })
+        ],
+        "failable": Some("?"),
+        "body": [
+          FunctionCallExpression({
+            "name": SwiftIdentifier("fatalError"),
+            "arguments": [
+              FunctionCallArgument({
+                "name": None,
+                "value": SwiftIdentifier("\"init(coder:) has not been implemented\"")
+              })
+            ]
+          })
+        ]
       });
     let initializerDoc = () =>
       InitializerDeclaration({
@@ -324,7 +331,7 @@ module Swift = {
          Layer.LayerMap.bindings(assignments) |> List.iter(printLayerBinding); */
       let initialValue = (layer: Types.layer, name) =>
         switch (StringMap.find_opt(name, layer.parameters)) {
-        | Some(value) => lonaValueDoc(value)
+        | Some(value) => Swift.Document.lonaValue(colors, value)
         | None => LiteralExpression(Integer(0))
         };
       let defineInitialValue = (layer: Types.layer, (name, value)) =>
@@ -333,15 +340,21 @@ module Swift = {
           "operator": "=",
           "right": initialValue(layer, name)
         });
+      /* TODO: Figure out how to handle images */
+      let filterProperties = ((name, _)) => name != "image" && name != "textStyle";
       let defineInitialValues = ((layer, propertyMap)) =>
-        propertyMap |> StringMap.bindings |> List.map(defineInitialValue(layer));
+        propertyMap
+        |> StringMap.bindings
+        |> List.filter(filterProperties)
+        |> List.map(defineInitialValue(layer));
       FunctionDeclaration({
         "name": "update",
         "modifiers": [AccessLevelModifier(PrivateModifier)],
         "parameters": [],
         "body":
           (assignments |> Layer.LayerMap.bindings |> List.map(defineInitialValues) |> List.concat)
-          @ [Logic.toSwiftAST(logic)]
+          @ [Empty]
+          @ [Logic.toSwiftAST(colors, logic)]
       })
     };
     TopLevelDeclaration({
@@ -376,7 +389,9 @@ module Swift = {
                 }),
                 Empty,
                 updateDoc()
-              ]
+              ],
+              [Empty],
+              [initializerCoderDoc()]
             ])
         })
       ]

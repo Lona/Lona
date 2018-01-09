@@ -282,12 +282,12 @@ function toJavaScriptAST(node) {
   }
 }
 
-function toSwiftAST(node) {
+function toSwiftAST(colors, node) {
   var logicValueToSwiftAST = function (x) {
     if (typeof x === "number") {
       return /* Empty */0;
     } else if (x.tag) {
-      return /* SwiftIdentifier */Block.__(4, [JSON.stringify(x[0][/* data */1])]);
+      return Swift$LonaCompilerCore.Document[/* lonaValue */0](colors, x[0]);
     } else {
       var node = x;
       if (typeof node === "number") {
@@ -349,6 +349,21 @@ function toSwiftAST(node) {
       
     }
   };
+  var unwrapBlock = function (param) {
+    if (typeof param === "number") {
+      return /* :: */[
+              node,
+              /* [] */0
+            ];
+    } else if (param.tag === 5) {
+      return param[0];
+    } else {
+      return /* :: */[
+              node,
+              /* [] */0
+            ];
+    }
+  };
   if (typeof node === "number") {
     return /* Empty */0;
   } else {
@@ -360,22 +375,21 @@ function toSwiftAST(node) {
                             operator: fromCmp(node[1]),
                             right: logicValueToSwiftAST(node[2])
                           }]),
-                      block: /* :: */[
-                        toSwiftAST(node[3]),
-                        /* [] */0
-                      ]
+                      block: List.map((function (param) {
+                              return toSwiftAST(colors, param);
+                            }), unwrapBlock(node[3]))
                     }]);
       case 1 : 
           return /* IfStatement */Block.__(10, [{
                       condition: logicValueToSwiftAST(node[0]),
-                      block: /* :: */[
-                        toSwiftAST(node[1]),
-                        /* [] */0
-                      ]
+                      block: List.map((function (param) {
+                              return toSwiftAST(colors, param);
+                            }), unwrapBlock(node[1]))
                     }]);
       case 2 : 
+          var left = logicValueToSwiftAST(node[1]);
           return /* BinaryExpression */Block.__(2, [{
-                      left: logicValueToSwiftAST(node[1]),
+                      left: left,
                       operator: "=",
                       right: logicValueToSwiftAST(node[0])
                     }]);
@@ -411,7 +425,9 @@ function toSwiftAST(node) {
           }
           break;
       case 5 : 
-          return /* StatementListHelper */Block.__(17, [List.map(toSwiftAST, node[0])]);
+          return /* StatementListHelper */Block.__(17, [List.map((function (param) {
+                            return toSwiftAST(colors, param);
+                          }), node[0])]);
       
     }
   }

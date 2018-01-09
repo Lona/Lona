@@ -181,7 +181,7 @@ module Swift = {
         s("}")
       };
     | StatementListHelper(v) => /* TODO: Get rid of this */
-      indent(join(hardline, v |> List.map(render))) <+> hardline
+      join(hardline, v |> List.map(render))
     | TopLevelDeclaration(o) =>
       /* join(concat([hardline, hardline]), o##statements |> List.map(render)) */
       join(concat([hardline]), o##statements |> List.map(render))

@@ -126,7 +126,7 @@ let rec toJavaScriptAST = (node) => {
   }
 };
 
-let rec toSwiftAST = (node) => {
+let rec toSwiftAST = (colors, node) => {
   let identifierName = (node) =>
     switch node {
     | Identifier(ltype, [head, ...tail]) =>
@@ -151,7 +151,7 @@ let rec toSwiftAST = (node) => {
   let logicValueToSwiftAST = (x) =>
     switch x {
     | Identifier(_) => identifierName(x)
-    | Literal(value) => SwiftIdentifier(value.data |> Js.Json.stringify)
+    | Literal(value) => Swift.Document.lonaValue(colors, value)
     | None => Empty
     };
   let typeAnnotationDoc =
@@ -172,16 +172,20 @@ let rec toSwiftAST = (node) => {
     | Lte => "<="
     | Unknown => "???"
     };
+  let unwrapBlock =
+    fun
+    | Block(body) => body
+    | _ => [node];
   switch node {
   | Assign(a, b) =>
-    Ast.Swift.BinaryExpression({
-      "left": logicValueToSwiftAST(b),
-      "operator": "=",
-      "right": logicValueToSwiftAST(a)
-    })
+    let left = logicValueToSwiftAST(b);
+    Ast.Swift.BinaryExpression({"left": left, "operator": "=", "right": logicValueToSwiftAST(a)})
   | IfExists(a, body) =>
-    Ast.Swift.IfStatement({"condition": logicValueToSwiftAST(a), "block": [toSwiftAST(body)]})
-  | Block(body) => Ast.Swift.StatementListHelper(body |> List.map(toSwiftAST))
+    Ast.Swift.IfStatement({
+      "condition": logicValueToSwiftAST(a),
+      "block": unwrapBlock(body) |> List.map(toSwiftAST(colors))
+    })
+  | Block(body) => Ast.Swift.StatementListHelper(body |> List.map(toSwiftAST(colors)))
   | If(a, cmp, b, body) =>
     Ast.Swift.IfStatement({
       "condition":
@@ -190,7 +194,7 @@ let rec toSwiftAST = (node) => {
           "operator": fromCmp(cmp),
           "right": logicValueToSwiftAST(b)
         }),
-      "block": [toSwiftAST(body)]
+      "block": unwrapBlock(body) |> List.map(toSwiftAST(colors))
     })
   | Add(lhs, rhs, value) =>
     BinaryExpression({

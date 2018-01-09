@@ -5,9 +5,7 @@ var List                       = require("bs-platform/lib/js/list.js");
 var Block                      = require("bs-platform/lib/js/block.js");
 var Curry                      = require("bs-platform/lib/js/curry.js");
 var Pervasives                 = require("bs-platform/lib/js/pervasives.js");
-var Json_decode                = require("bs-json/src/Json_decode.js");
 var Ast$LonaCompilerCore       = require("./ast.bs.js");
-var Color$LonaCompilerCore     = require("./color.bs.js");
 var Layer$LonaCompilerCore     = require("./layer.bs.js");
 var Logic$LonaCompilerCore     = require("./logic.bs.js");
 var Swift$LonaCompilerCore     = require("./swift.bs.js");
@@ -87,22 +85,6 @@ function generate$1(name, json, colors) {
                     }]]
               }]);
   };
-  var viewTypeDoc = function (param) {
-    switch (param) {
-      case 0 : 
-          return /* TypeName */Block.__(0, ["UIView"]);
-      case 1 : 
-          return /* TypeName */Block.__(0, ["UILabel"]);
-      case 2 : 
-          return /* TypeName */Block.__(0, ["UIImageView"]);
-      case 3 : 
-      case 4 : 
-      case 5 : 
-      case 6 : 
-          return /* TypeName */Block.__(0, ["TypeUnknown"]);
-      
-    }
-  };
   var viewTypeInitDoc = function (param) {
     switch (param) {
       case 0 : 
@@ -127,7 +109,7 @@ function generate$1(name, json, colors) {
                 ],
                 pattern: /* IdentifierPattern */Block.__(0, [{
                       identifier: Swift$LonaCompilerCore.Format[/* layerName */0](layer[/* name */1]),
-                      annotation: /* Some */[viewTypeDoc(layer[/* typeName */0])]
+                      annotation: /* None */0
                     }]),
                 init: /* Some */[/* FunctionCallExpression */Block.__(13, [{
                         name: viewTypeInitDoc(layer[/* typeName */0]),
@@ -161,6 +143,37 @@ function generate$1(name, json, colors) {
                     ]]),
                 operator: "=",
                 right: /* SwiftIdentifier */Block.__(4, [parameter[/* name */0]])
+              }]);
+  };
+  var initializerCoderDoc = function () {
+    return /* InitializerDeclaration */Block.__(7, [{
+                modifiers: /* :: */[
+                  /* RequiredModifier */10,
+                  /* [] */0
+                ],
+                parameters: /* :: */[
+                  /* Parameter */Block.__(11, [{
+                        externalName: /* Some */["coder"],
+                        localName: "aDecoder",
+                        annotation: /* TypeName */Block.__(0, ["NSCoder"]),
+                        defaultValue: /* None */0
+                      }]),
+                  /* [] */0
+                ],
+                failable: /* Some */["?"],
+                body: /* :: */[
+                  /* FunctionCallExpression */Block.__(13, [{
+                        name: /* SwiftIdentifier */Block.__(4, ["fatalError"]),
+                        arguments: /* :: */[
+                          /* FunctionCallArgument */Block.__(12, [{
+                                name: /* None */0,
+                                value: /* SwiftIdentifier */Block.__(4, ["\"init(coder:) has not been implemented\""])
+                              }]),
+                          /* [] */0
+                        ]
+                      }]),
+                  /* [] */0
+                ]
               }]);
   };
   var initializerDoc = function () {
@@ -413,36 +426,17 @@ function generate$1(name, json, colors) {
     var initialValue = function (layer, name) {
       var match = StringMap$LonaCompilerCore.find_opt(name, layer[/* parameters */2]);
       if (match) {
-        var value = match[0];
-        var match$1 = value[/* ltype */0];
-        if (match$1.tag) {
-          var alias = match$1[0];
-          if (alias === "Color") {
-            var rawValue = Json_decode.string(value[/* data */1]);
-            var match$2 = Color$LonaCompilerCore.find(colors, rawValue);
-            if (match$2) {
-              return /* SwiftIdentifier */Block.__(4, [match$2[0][/* id */0]]);
-            } else {
-              return /* LiteralExpression */Block.__(0, [/* Color */Block.__(4, [rawValue])]);
-            }
-          } else {
-            return /* SwiftIdentifier */Block.__(4, ["UnknownNamedTypeAlias" + alias]);
-          }
-        } else {
-          var typeName = match$1[0];
-          switch (typeName) {
-            case "Boolean" : 
-                return /* LiteralExpression */Block.__(0, [/* Boolean */Block.__(0, [Json_decode.bool(value[/* data */1])])]);
-            case "Number" : 
-                return /* LiteralExpression */Block.__(0, [/* FloatingPoint */Block.__(2, [Json_decode.$$float(value[/* data */1])])]);
-            case "String" : 
-                return /* LiteralExpression */Block.__(0, [/* String */Block.__(3, [Json_decode.string(value[/* data */1])])]);
-            default:
-              return /* SwiftIdentifier */Block.__(4, ["UnknownReferenceType: " + typeName]);
-          }
-        }
+        return Swift$LonaCompilerCore.Document[/* lonaValue */0](colors, match[0]);
       } else {
         return /* LiteralExpression */Block.__(0, [/* Integer */Block.__(1, [0])]);
+      }
+    };
+    var filterProperties = function (param) {
+      var name = param[0];
+      if (name !== "image") {
+        return +(name !== "textStyle");
+      } else {
+        return /* false */0;
       }
     };
     var defineInitialValues = function (param) {
@@ -459,7 +453,7 @@ function generate$1(name, json, colors) {
                                 operator: "=",
                                 right: initialValue(layer$1, name)
                               }]);
-                  }), Curry._1(StringMap$LonaCompilerCore.bindings, param[1]));
+                  }), List.filter(filterProperties)(Curry._1(StringMap$LonaCompilerCore.bindings, param[1])));
     };
     return /* FunctionDeclaration */Block.__(8, [{
                 name: "update",
@@ -468,10 +462,13 @@ function generate$1(name, json, colors) {
                   /* [] */0
                 ],
                 parameters: /* [] */0,
-                body: Pervasives.$at(List.concat(List.map(defineInitialValues, Curry._1(Layer$LonaCompilerCore.LayerMap[/* bindings */16], assignments))), /* :: */[
-                      Logic$LonaCompilerCore.toSwiftAST(logic),
-                      /* [] */0
-                    ])
+                body: Pervasives.$at(List.concat(List.map(defineInitialValues, Curry._1(Layer$LonaCompilerCore.LayerMap[/* bindings */16], assignments))), Pervasives.$at(/* :: */[
+                          /* Empty */0,
+                          /* [] */0
+                        ], /* :: */[
+                          Logic$LonaCompilerCore.toSwiftAST(colors, logic),
+                          /* [] */0
+                        ]))
               }]);
   };
   return /* TopLevelDeclaration */Block.__(18, [{
@@ -558,7 +555,19 @@ function generate$1(name, json, colors) {
                                                             ]
                                                           ]
                                                         ],
-                                                        /* [] */0
+                                                        /* :: */[
+                                                          /* :: */[
+                                                            /* Empty */0,
+                                                            /* [] */0
+                                                          ],
+                                                          /* :: */[
+                                                            /* :: */[
+                                                              initializerCoderDoc(/* () */0),
+                                                              /* [] */0
+                                                            ],
+                                                            /* [] */0
+                                                          ]
+                                                        ]
                                                       ]
                                                     ]
                                                   ]
@@ -584,4 +593,4 @@ var Swift = /* module */[/* generate */generate$1];
 
 exports.JavaScript = JavaScript;
 exports.Swift      = Swift;
-/* Color-LonaCompilerCore Not a pure module */
+/* Layer-LonaCompilerCore Not a pure module */
