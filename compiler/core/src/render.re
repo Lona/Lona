@@ -143,6 +143,14 @@ module Swift = {
         render(Ast.Swift.CodeBlock({ "statements": o##body }))
       ]));
     | ImportDeclaration(v) => group(concat([s("import"), line, s(v)]))
+    | IfStatement(o) =>
+      group(
+        s("if") <+>
+        line <+>
+        render(o##condition) <+>
+        line <+>
+        render(Ast.Swift.CodeBlock({ "statements": o##block }))
+      )
     | FunctionCallArgument(o) =>
       switch o##name {
       | None => group(concat([render(o##value)]))
@@ -168,10 +176,12 @@ module Swift = {
       | [statement] => s("{") <+> line <+> render(statement) <+> line <+> s("}")
       | statements =>
         s("{") <+>
-        indent(prefixAll(concat([hardline]), statements |> List.map(render))) <+>
+        indent(prefixAll(hardline, statements |> List.map(render))) <+>
         hardline <+>
         s("}")
       };
+    | StatementListHelper(v) => /* TODO: Get rid of this */
+      indent(join(hardline, v |> List.map(render))) <+> hardline
     | TopLevelDeclaration(o) =>
       /* join(concat([hardline, hardline]), o##statements |> List.map(render)) */
       join(concat([hardline]), o##statements |> List.map(render))

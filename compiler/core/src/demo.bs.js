@@ -2,6 +2,7 @@
 'use strict';
 
 var Fs                         = require("fs");
+var Path                       = require("path");
 var Process                    = require("process");
 var Caml_array                 = require("bs-platform/lib/js/caml_array.js");
 var Color$LonaCompilerCore     = require("./color.bs.js");
@@ -41,6 +42,25 @@ if (Process.argv.length < 4) {
 
 var command = Caml_array.caml_array_get(Process.argv, 3);
 
+function findWorkspaceDirectory(_path) {
+  while(true) {
+    var path = _path;
+    var exists = +Fs.existsSync(Path.join(path, "colors.json"));
+    if (exists !== 0) {
+      return /* Some */[path];
+    } else {
+      var parent = Path.dirname(path);
+      if (parent === "/") {
+        return /* None */0;
+      } else {
+        _path = parent;
+        continue ;
+        
+      }
+    }
+  };
+}
+
 switch (command) {
   case "colors" : 
       if (Process.argv.length < 5) {
@@ -58,18 +78,27 @@ switch (command) {
       var filename$1 = Caml_array.caml_array_get(Process.argv, 4);
       var content = Fs.readFileSync(filename$1, "utf8");
       var parsed = JSON.parse(content);
+      var name = Path.basename(filename$1, ".component");
       if (target !== 0) {
-        var result = Component$LonaCompilerCore.Swift[/* generate */0]("DocumentMarquee", parsed);
-        console.log(Render$LonaCompilerCore.Swift[/* toString */9](result));
+        var match$1 = findWorkspaceDirectory(filename$1);
+        if (match$1) {
+          var colors = Color$LonaCompilerCore.parseFile(Path.join(match$1[0], "colors.json"));
+          var result = Component$LonaCompilerCore.Swift[/* generate */0](name, parsed, colors);
+          console.log(Render$LonaCompilerCore.Swift[/* toString */9](result));
+        } else {
+          console.log("Couldn't find workspace directory. Try specifying it as a parameter (TODO)");
+          ((process.exit()));
+        }
       } else {
-        console.log(Render$LonaCompilerCore.JavaScript[/* toString */2](Component$LonaCompilerCore.JavaScript[/* generate */0]("DocumentMarquee", parsed)));
+        console.log(Render$LonaCompilerCore.JavaScript[/* toString */2](Component$LonaCompilerCore.JavaScript[/* generate */0](name, parsed)));
       }
       break;
   default:
     console.log("Invalid command", command);
 }
 
-exports.exit    = exit;
-exports.target  = target;
-exports.command = command;
+exports.exit                   = exit;
+exports.target                 = target;
+exports.command                = command;
+exports.findWorkspaceDirectory = findWorkspaceDirectory;
 /*  Not a pure module */

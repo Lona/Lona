@@ -125,3 +125,99 @@ let rec toJavaScriptAST = (node) => {
   | None => Unknown
   }
 };
+
+let rec toSwiftAST = (node) => {
+  let identifierName = (node) =>
+    switch node {
+    | Identifier(ltype, [head, ...tail]) =>
+      switch head {
+      | "parameters" => Ast.Swift.SwiftIdentifier(List.hd(tail))
+      | "layers" =>
+        switch tail {
+        | [second, ...tail] =>
+          Ast.Swift.SwiftIdentifier(
+            tail
+            |> List.fold_left(
+                 (a, b) => a ++ "." ++ Swift.Format.camelCase(b),
+                 Swift.Format.layerName(second)
+               )
+          )
+        | _ => SwiftIdentifier("BadIdentifier")
+        }
+      | _ => SwiftIdentifier("BadIdentifier")
+      }
+    | _ => SwiftIdentifier("BadIdentifier")
+    };
+  let logicValueToSwiftAST = (x) =>
+    switch x {
+    | Identifier(_) => identifierName(x)
+    | Literal(value) => SwiftIdentifier(value.data |> Js.Json.stringify)
+    | None => Empty
+    };
+  let typeAnnotationDoc =
+    fun
+    | Types.Reference(typeName) =>
+      switch typeName {
+      | "Boolean" => Ast.Swift.TypeName("Bool")
+      | _ => TypeName(typeName)
+      }
+    | Named(name, _) => TypeName(name);
+  let fromCmp = (x) =>
+    switch x {
+    | Types.Eq => "=="
+    | Neq => "!="
+    | Gt => ">"
+    | Gte => ">="
+    | Lt => "<"
+    | Lte => "<="
+    | Unknown => "???"
+    };
+  switch node {
+  | Assign(a, b) =>
+    Ast.Swift.BinaryExpression({
+      "left": logicValueToSwiftAST(b),
+      "operator": "=",
+      "right": logicValueToSwiftAST(a)
+    })
+  | IfExists(a, body) =>
+    Ast.Swift.IfStatement({"condition": logicValueToSwiftAST(a), "block": [toSwiftAST(body)]})
+  | Block(body) => Ast.Swift.StatementListHelper(body |> List.map(toSwiftAST))
+  | If(a, cmp, b, body) =>
+    Ast.Swift.IfStatement({
+      "condition":
+        Ast.Swift.BinaryExpression({
+          "left": logicValueToSwiftAST(a),
+          "operator": fromCmp(cmp),
+          "right": logicValueToSwiftAST(b)
+        }),
+      "block": [toSwiftAST(body)]
+    })
+  | Add(lhs, rhs, value) =>
+    BinaryExpression({
+      "left": logicValueToSwiftAST(value),
+      "operator": "=",
+      "right":
+        Ast.Swift.BinaryExpression({
+          "left": logicValueToSwiftAST(lhs),
+          "operator": "+",
+          "right": logicValueToSwiftAST(rhs)
+        })
+    })
+  | Let(value) =>
+    switch value {
+    | Identifier(ltype, path) =>
+      Ast.Swift.VariableDeclaration({
+        "modifiers": [],
+        "pattern":
+          Ast.Swift.IdentifierPattern({
+            "identifier": List.fold_left((a, b) => a ++ "." ++ b, List.hd(path), List.tl(path)),
+            "annotation": Some(ltype |> typeAnnotationDoc)
+          }),
+        "init": (None: option(Ast.Swift.node)),
+        "block": (None: option(Ast.Swift.initializerBlock))
+      })
+    | _ => Empty
+    }
+  | None => Empty
+  }
+};

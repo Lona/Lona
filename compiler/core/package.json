@@ -19,6 +19,7 @@
     "bs-json": "^0.2.4",
     "bs-node": "github:buckletypes/bs-node",
     "csscolorparser": "^1.0.3",
+    "lodash.camelcase": "^4.3.0",
     "prettier": "prettier/prettier#b63c669ed9821a0e0d6918243ef4f4a091b222a9"
   }
 }

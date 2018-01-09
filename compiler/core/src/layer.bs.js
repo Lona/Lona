@@ -9,6 +9,7 @@ var Pervasives                 = require("bs-platform/lib/js/pervasives.js");
 var Caml_string                = require("bs-platform/lib/js/caml_string.js");
 var Json_decode                = require("bs-json/src/Json_decode.js");
 var Logic$LonaCompilerCore     = require("./logic.bs.js");
+var Types$LonaCompilerCore     = require("./types.bs.js");
 var Caml_builtin_exceptions    = require("bs-platform/lib/js/caml_builtin_exceptions.js");
 var StringMap$LonaCompilerCore = require("./stringMap.bs.js");
 var StringSet$LonaCompilerCore = require("./stringSet.bs.js");
@@ -132,85 +133,97 @@ var parameterTypeMap = StringMap$LonaCompilerCore.fromList(/* :: */[
           ],
           /* :: */[
             /* tuple */[
-              "alignItems",
-              /* Reference */Block.__(0, ["String"])
+              "backgroundColor",
+              Types$LonaCompilerCore.colorType
             ],
             /* :: */[
               /* tuple */[
-                "alignSelf",
-                /* Reference */Block.__(0, ["String"])
+                "image",
+                Types$LonaCompilerCore.urlType
               ],
               /* :: */[
                 /* tuple */[
-                  "flex",
-                  /* Reference */Block.__(0, ["Number"])
+                  "alignItems",
+                  /* Reference */Block.__(0, ["String"])
                 ],
                 /* :: */[
                   /* tuple */[
-                    "flexDirection",
+                    "alignSelf",
                     /* Reference */Block.__(0, ["String"])
                   ],
                   /* :: */[
                     /* tuple */[
-                      "font",
-                      /* Reference */Block.__(0, ["String"])
+                      "flex",
+                      /* Reference */Block.__(0, ["Number"])
                     ],
                     /* :: */[
                       /* tuple */[
-                        "justifyContent",
+                        "flexDirection",
                         /* Reference */Block.__(0, ["String"])
                       ],
                       /* :: */[
                         /* tuple */[
-                          "marginTop",
-                          /* Reference */Block.__(0, ["Number"])
+                          "font",
+                          /* Reference */Block.__(0, ["String"])
                         ],
                         /* :: */[
                           /* tuple */[
-                            "marginRight",
-                            /* Reference */Block.__(0, ["Number"])
+                            "justifyContent",
+                            /* Reference */Block.__(0, ["String"])
                           ],
                           /* :: */[
                             /* tuple */[
-                              "marginBottom",
+                              "marginTop",
                               /* Reference */Block.__(0, ["Number"])
                             ],
                             /* :: */[
                               /* tuple */[
-                                "marginLeft",
+                                "marginRight",
                                 /* Reference */Block.__(0, ["Number"])
                               ],
                               /* :: */[
                                 /* tuple */[
-                                  "paddingTop",
+                                  "marginBottom",
                                   /* Reference */Block.__(0, ["Number"])
                                 ],
                                 /* :: */[
                                   /* tuple */[
-                                    "paddingRight",
+                                    "marginLeft",
                                     /* Reference */Block.__(0, ["Number"])
                                   ],
                                   /* :: */[
                                     /* tuple */[
-                                      "paddingBottom",
+                                      "paddingTop",
                                       /* Reference */Block.__(0, ["Number"])
                                     ],
                                     /* :: */[
                                       /* tuple */[
-                                        "paddingLeft",
+                                        "paddingRight",
                                         /* Reference */Block.__(0, ["Number"])
                                       ],
                                       /* :: */[
                                         /* tuple */[
-                                          "width",
+                                          "paddingBottom",
                                           /* Reference */Block.__(0, ["Number"])
                                         ],
                                         /* :: */[
                                           /* tuple */[
-                                            "height",
+                                            "paddingLeft",
                                             /* Reference */Block.__(0, ["Number"])
                                           ],
-                                          /* [] */0
+                                          /* :: */[
+                                            /* tuple */[
+                                              "width",
+                                              /* Reference */Block.__(0, ["Number"])
+                                            ],
+                                            /* :: */[
+                                              /* tuple */[
+                                                "height",
+                                                /* Reference */Block.__(0, ["Number"])
+                                              ],
+                                              /* [] */0
+                                            ]
+                                          ]
                                         ]
                                       ]
                                     ]
@@ -288,7 +301,7 @@ function parameterType(name) {
   catch (exn){
     if (exn === Caml_builtin_exceptions.not_found) {
       console.log("Unknown built-in parameter when deserializing:", name);
-      return /* Reference */Block.__(0, ["Null"]);
+      return /* Reference */Block.__(0, ["BuiltIn-Null"]);
     } else {
       throw exn;
     }
@@ -432,7 +445,7 @@ function getInsets(prefix, layer) {
           Caml_builtin_exceptions.match_failure,
           [
             "/Users/devin_abbott/Projects/ComponentStudio/ComponentStudio/compiler/core/src/layer.re",
-            115,
+            117,
             6
           ]
         ];

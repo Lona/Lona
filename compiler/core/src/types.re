@@ -6,6 +6,10 @@ type lonaType =
   | Reference(string)
   | Named(string, lonaType);
 
+let colorType = Named("Color", Reference("String"));
+
+let urlType = Named("URL", Reference("String"));
+
 type lonaValue = {
   ltype: lonaType,
   data: Js.Json.t

@@ -18,6 +18,8 @@ let parameterTypeMap =
     ("text", Types.Reference("String")),
     ("visible", Types.Reference("Boolean")),
     ("numberOfLines", Types.Reference("Number")),
+    ("backgroundColor", Types.colorType),
+    ("image", Types.urlType),
     /* Styles */
     ("alignItems", Types.Reference("String")),
     ("alignSelf", Types.Reference("String")),
@@ -63,7 +65,7 @@ let parameterType = (name) =>
   | item => item
   | exception Not_found =>
     Js.log2("Unknown built-in parameter when deserializing:", name);
-    Reference("Null")
+    Reference("BuiltIn-Null")
   };
 
 let flatten = (layer: Types.layer) => {
@@ -82,7 +84,7 @@ let find = (name, layer: Types.layer) => {
   }
 };
 
-let rec flatmapParent = (f, layer: Types.layer) => {
+let flatmapParent = (f, layer: Types.layer) => {
   let rec inner = (layer: Types.layer) =>
     (layer.children |> List.map(f(Some(layer))))
     @ (layer.children |> List.map(inner) |> List.concat);

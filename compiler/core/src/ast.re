@@ -100,6 +100,7 @@ module Swift = {
         }
       )
     | ImportDeclaration(string)
+    | IfStatement({. "condition": node, "block": list(node)})
     | Parameter(
         {
           .
@@ -115,6 +116,7 @@ module Swift = {
     | LineComment(string)
     | LineEndComment({. "comment": string, "line": node})
     | CodeBlock({. "statements": list(node)})
+    | StatementListHelper(list(node))
     | TopLevelDeclaration({. "statements": list(node)});
 };
 

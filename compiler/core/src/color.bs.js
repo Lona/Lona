@@ -5,6 +5,7 @@ var Fs                      = require("fs");
 var List                    = require("bs-platform/lib/js/list.js");
 var Block                   = require("bs-platform/lib/js/block.js");
 var Json_decode             = require("bs-json/src/Json_decode.js");
+var Caml_builtin_exceptions = require("bs-platform/lib/js/caml_builtin_exceptions.js");
 var Render$LonaCompilerCore = require("./render.bs.js");
 
 function parseFile(filename) {
@@ -22,10 +23,32 @@ function parseFile(filename) {
               }), parsed);
 }
 
+function find(colors, id) {
+  var exit = 0;
+  var color;
+  try {
+    color = List.find((function (color) {
+            return +(color[/* id */0] === id);
+          }), colors);
+    exit = 1;
+  }
+  catch (exn){
+    if (exn === Caml_builtin_exceptions.not_found) {
+      return /* None */0;
+    } else {
+      throw exn;
+    }
+  }
+  if (exit === 1) {
+    return /* Some */[color];
+  }
+  
+}
+
 function render(target, colors) {
   if (target !== 0) {
     var colorConstantDoc = function (color) {
-      return /* LineEndComment */Block.__(14, [{
+      return /* LineEndComment */Block.__(15, [{
                   comment: color[/* value */2],
                   line: /* ConstantDeclaration */Block.__(5, [{
                         modifiers: /* :: */[
@@ -43,7 +66,7 @@ function render(target, colors) {
                       }])
                 }]);
     };
-    return Render$LonaCompilerCore.Swift[/* toString */9](/* TopLevelDeclaration */Block.__(16, [{
+    return Render$LonaCompilerCore.Swift[/* toString */9](/* TopLevelDeclaration */Block.__(18, [{
                     statements: /* :: */[
                       /* ImportDeclaration */Block.__(9, ["UIKit"]),
                       /* :: */[
@@ -65,5 +88,6 @@ function render(target, colors) {
 }
 
 exports.parseFile = parseFile;
+exports.find      = find;
 exports.render    = render;
 /* fs Not a pure module */

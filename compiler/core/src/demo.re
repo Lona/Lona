@@ -22,6 +22,20 @@ if (Array.length(Process.argv) < 4) {
 
 let command = Process.argv[3];
 
+/* Primitive workspace detection */
+let rec findWorkspaceDirectory = (path) => {
+  let exists = Node.Fs.existsSync(Node.Path.join([|path, "colors.json"|]));
+
+  switch exists {
+  | true => Some(path)
+  | false =>
+    switch (Node.Path.dirname(path)) {
+    | "/" => None
+    | parent => findWorkspaceDirectory(parent)
+    };
+  };
+};
+
 switch command {
 | "component" =>
   if (Array.length(Process.argv) < 5) {
@@ -30,14 +44,18 @@ switch command {
   let filename = Process.argv[4];
   let content = Fs.readFileSync(filename, `utf8);
   let parsed = content |> Js.Json.parseExn;
+  let name = Node.Path.basenameExt(filename, ".component");
   switch target {
   | Types.JavaScript =>
-    Component.JavaScript.generate("DocumentMarquee", parsed)
-    |> Render.JavaScript.toString
-    |> Js.log
+    Component.JavaScript.generate(name, parsed) |> Render.JavaScript.toString |> Js.log
   | Swift =>
-    let result = Component.Swift.generate("DocumentMarquee", parsed);
-    result |> Render.Swift.toString |> Js.log
+    switch (findWorkspaceDirectory(filename)) {
+    | None => exit("Couldn't find workspace directory. Try specifying it as a parameter (TODO)")
+    | Some(workspace) =>
+      let colors = Color.parseFile(Node.Path.join([|workspace, "colors.json"|]));
+      let result = Component.Swift.generate(name, parsed, colors);
+      result |> Render.Swift.toString |> Js.log;
+    };
   }
 | "colors" =>
   if (Array.length(Process.argv) < 5) {

@@ -7,6 +7,7 @@ var Js_json                    = require("bs-platform/lib/js/js_json.js");
 var Js_option                  = require("bs-platform/lib/js/js_option.js");
 var Json_decode                = require("bs-json/src/Json_decode.js");
 var Layer$LonaCompilerCore     = require("./layer.bs.js");
+var Types$LonaCompilerCore     = require("./types.bs.js");
 var StringMap$LonaCompilerCore = require("./stringMap.bs.js");
 
 function lonaType(json) {
@@ -241,6 +242,12 @@ var Component = /* module */[
   /* logic */logic
 ];
 
+var colorType = Types$LonaCompilerCore.colorType;
+
+var urlType = Types$LonaCompilerCore.urlType;
+
+exports.colorType  = colorType;
+exports.urlType    = urlType;
 exports.Types      = Types;
 exports.Parameters = Parameters;
 exports.Layer      = Layer;

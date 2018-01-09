@@ -22,14 +22,14 @@ module JavaScript = {
 };
 
 module Swift = {
-  let generate = (name, json) => {
+  let generate = (name, json, colors) => {
     let rootLayer = json |> Decode.Component.rootLayer;
     /* Remove the root element */
     let nonRootLayers = rootLayer |> Layer.flatten |> List.tl;
+    let logic = json |> Decode.Component.logic;
+    let assignments = Layer.parameterAssignments(rootLayer, logic);
     let parameters = json |> Decode.Component.parameters;
     open Ast.Swift;
-    let formatLayerName = (layerName) =>
-      Js.String.replace(" ", "", String.lowercase(layerName)) ++ "View";
     let typeAnnotationDoc =
       fun
       | Types.Reference(typeName) =>
@@ -38,6 +38,26 @@ module Swift = {
         | _ => TypeName(typeName)
         }
       | Named(name, _) => TypeName(name);
+    let lonaValueDoc = (value: Types.lonaValue) =>
+      switch value.ltype {
+      | Reference(typeName) =>
+        switch typeName {
+        | "Boolean" => LiteralExpression(Boolean(value.data |> Json.Decode.bool))
+        | "Number" => LiteralExpression(FloatingPoint(value.data |> Json.Decode.float))
+        | "String" => LiteralExpression(String(value.data |> Json.Decode.string))
+        | _ => SwiftIdentifier("UnknownReferenceType: " ++ typeName)
+        }
+      | Named(alias, subtype) =>
+        switch alias {
+        | "Color" =>
+          let rawValue = value.data |> Json.Decode.string;
+          switch (Color.find(colors, rawValue)) {
+          | Some(color) => SwiftIdentifier(color.id)
+          | None => LiteralExpression(Color(rawValue))
+          }
+        | _ => SwiftIdentifier("UnknownNamedTypeAlias" ++ alias)
+        }
+      };
     let parameterVariableDoc = (parameter: Decode.parameter) =>
       VariableDeclaration({
         "modifiers": [],
@@ -72,10 +92,10 @@ module Swift = {
       | _ => SwiftIdentifier("TypeUnknown");
     let viewVariableDoc = (layer: Types.layer) =>
       VariableDeclaration({
-        "modifiers": [],
+        "modifiers": [AccessLevelModifier(PrivateModifier)],
         "pattern":
           IdentifierPattern({
-            "identifier": layer.name |> formatLayerName,
+            "identifier": layer.name |> Swift.Format.layerName,
             "annotation": Some(layer.typeName |> viewTypeDoc)
           }),
         "init":
@@ -139,28 +159,29 @@ module Swift = {
             ]
           ])
       });
-    let parentNameOrSelf = (parent: Types.layer) =>
-      parent === rootLayer ? "self" : parent.name |> formatLayerName;
     let memberOrSelfExpression = (firstIdentifier, statements) =>
       switch firstIdentifier {
       | "self" => MemberExpression(statements)
       | _ => MemberExpression([SwiftIdentifier(firstIdentifier)] @ statements)
       };
+    let parentNameOrSelf = (parent: Types.layer) =>
+      parent === rootLayer ? "self" : parent.name |> Swift.Format.layerName;
+    let layerMemberExpression = (layer: Types.layer, statements) =>
+      memberOrSelfExpression(parentNameOrSelf(layer), statements);
     let setUpViewsDoc = (root: Types.layer) => {
       let addSubviews = (parent: option(Types.layer), layer: Types.layer) =>
         switch parent {
         | None => []
         | Some(parent) => [
             FunctionCallExpression({
-              "name":
-                memberOrSelfExpression(parentNameOrSelf(parent), [SwiftIdentifier("addSubview")]),
-              "arguments": [SwiftIdentifier(layer.name |> formatLayerName)]
+              "name": layerMemberExpression(parent, [SwiftIdentifier("addSubview")]),
+              "arguments": [SwiftIdentifier(layer.name |> Swift.Format.layerName)]
             })
           ]
         };
       FunctionDeclaration({
         "name": "setUpViews",
-        "modifiers": [],
+        "modifiers": [AccessLevelModifier(PrivateModifier)],
         "parameters": [],
         "body": Layer.flatmapParent(addSubviews, root) |> List.concat
       })
@@ -169,8 +190,8 @@ module Swift = {
       let translatesAutoresizingMask = (layer: Types.layer) =>
         BinaryExpression({
           "left":
-            memberOrSelfExpression(
-              parentNameOrSelf(layer),
+            layerMemberExpression(
+              layer,
               [SwiftIdentifier("translatesAutoresizingMaskIntoConstraints")]
             ),
           "operator": "=",
@@ -181,15 +202,14 @@ module Swift = {
         BinaryExpression({
           "left":
             MemberExpression([
-              SwiftIdentifier(layer.name |> formatLayerName),
+              SwiftIdentifier(layer.name |> Swift.Format.layerName),
               SwiftIdentifier(anchor1),
               FunctionCallExpression({
                 "name": SwiftIdentifier("constraint"),
                 "arguments": [
                   FunctionCallArgument({
                     "name": Some(SwiftIdentifier("equalTo")),
-                    "value":
-                      memberOrSelfExpression(parentNameOrSelf(parent), [SwiftIdentifier(anchor2)])
+                    "value": layerMemberExpression(parent, [SwiftIdentifier(anchor2)])
                   }),
                   FunctionCallArgument({
                     "name": Some(SwiftIdentifier("constant")),
@@ -285,15 +305,43 @@ module Swift = {
       };
       FunctionDeclaration({
         "name": "setUpConstraints",
-        "modifiers": [],
+        "modifiers": [AccessLevelModifier(PrivateModifier)],
         "parameters": [],
         "body":
           List.concat([
             root |> Layer.flatmap(translatesAutoresizingMask),
             [Empty],
-            root |> Layer.flatmap(constrainAxes) |> List.concat,
-            []
+            root |> Layer.flatmap(constrainAxes) |> List.concat
           ])
+      })
+    };
+    let updateDoc = () => {
+      /* let printStringBinding = ((key, value)) => Js.log2(key, value);
+         let printLayerBinding = ((key: Types.layer, value)) => {
+           Js.log(key.name);
+           StringMap.bindings(value) |> List.iter(printStringBinding)
+         };
+         Layer.LayerMap.bindings(assignments) |> List.iter(printLayerBinding); */
+      let initialValue = (layer: Types.layer, name) =>
+        switch (StringMap.find_opt(name, layer.parameters)) {
+        | Some(value) => lonaValueDoc(value)
+        | None => LiteralExpression(Integer(0))
+        };
+      let defineInitialValue = (layer: Types.layer, (name, value)) =>
+        BinaryExpression({
+          "left": layerMemberExpression(layer, [SwiftIdentifier(name)]),
+          "operator": "=",
+          "right": initialValue(layer, name)
+        });
+      let defineInitialValues = ((layer, propertyMap)) =>
+        propertyMap |> StringMap.bindings |> List.map(defineInitialValue(layer));
+      FunctionDeclaration({
+        "name": "update",
+        "modifiers": [AccessLevelModifier(PrivateModifier)],
+        "parameters": [],
+        "body":
+          (assignments |> Layer.LayerMap.bindings |> List.map(defineInitialValues) |> List.concat)
+          @ [Logic.toSwiftAST(logic)]
       })
     };
     TopLevelDeclaration({
@@ -310,10 +358,10 @@ module Swift = {
             List.concat([
               [LineComment("Parameters")],
               parameters |> List.map(parameterVariableDoc),
-              [LineComment("Views")],
-              nonRootLayers |> List.map(viewVariableDoc),
               [Empty],
               [initializerDoc()],
+              [LineComment("Views")],
+              nonRootLayers |> List.map(viewVariableDoc),
               [Empty],
               [setUpViewsDoc(rootLayer)],
               [Empty],
@@ -322,17 +370,12 @@ module Swift = {
               [
                 FunctionDeclaration({
                   "name": "setUpDefaults",
-                  "modifiers": [],
+                  "modifiers": [AccessLevelModifier(PrivateModifier)],
                   "parameters": [],
                   "body": []
                 }),
                 Empty,
-                FunctionDeclaration({
-                  "name": "update",
-                  "modifiers": [],
-                  "parameters": [],
-                  "body": []
-                })
+                updateDoc()
               ]
             ])
         })

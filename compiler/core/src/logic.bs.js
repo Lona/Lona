@@ -7,7 +7,9 @@ var Block                   = require("bs-platform/lib/js/block.js");
 var Curry                   = require("bs-platform/lib/js/curry.js");
 var Caml_obj                = require("bs-platform/lib/js/caml_obj.js");
 var Caml_string             = require("bs-platform/lib/js/caml_string.js");
+var LodashCamelcase         = require("lodash.camelcase");
 var Tree$LonaCompilerCore   = require("./tree.bs.js");
+var Swift$LonaCompilerCore  = require("./swift.bs.js");
 var Render$LonaCompilerCore = require("./render.bs.js");
 
 function compare(a, b) {
@@ -280,10 +282,146 @@ function toJavaScriptAST(node) {
   }
 }
 
+function toSwiftAST(node) {
+  var logicValueToSwiftAST = function (x) {
+    if (typeof x === "number") {
+      return /* Empty */0;
+    } else if (x.tag) {
+      return /* SwiftIdentifier */Block.__(4, [JSON.stringify(x[0][/* data */1])]);
+    } else {
+      var node = x;
+      if (typeof node === "number") {
+        return /* SwiftIdentifier */Block.__(4, ["BadIdentifier"]);
+      } else if (node.tag) {
+        return /* SwiftIdentifier */Block.__(4, ["BadIdentifier"]);
+      } else {
+        var match = node[1];
+        if (match) {
+          var tail = match[1];
+          switch (match[0]) {
+            case "layers" : 
+                if (tail) {
+                  return /* SwiftIdentifier */Block.__(4, [List.fold_left((function (a, b) {
+                                    return a + ("." + LodashCamelcase(b));
+                                  }), Swift$LonaCompilerCore.Format[/* layerName */0](tail[0]), tail[1])]);
+                } else {
+                  return /* SwiftIdentifier */Block.__(4, ["BadIdentifier"]);
+                }
+            case "parameters" : 
+                return /* SwiftIdentifier */Block.__(4, [List.hd(tail)]);
+            default:
+              return /* SwiftIdentifier */Block.__(4, ["BadIdentifier"]);
+          }
+        } else {
+          return /* SwiftIdentifier */Block.__(4, ["BadIdentifier"]);
+        }
+      }
+    }
+  };
+  var typeAnnotationDoc = function (param) {
+    if (param.tag) {
+      return /* TypeName */Block.__(0, [param[0]]);
+    } else {
+      var typeName = param[0];
+      if (typeName === "Boolean") {
+        return /* TypeName */Block.__(0, ["Bool"]);
+      } else {
+        return /* TypeName */Block.__(0, [typeName]);
+      }
+    }
+  };
+  var fromCmp = function (x) {
+    switch (x) {
+      case 0 : 
+          return "==";
+      case 1 : 
+          return "!=";
+      case 2 : 
+          return ">";
+      case 3 : 
+          return ">=";
+      case 4 : 
+          return "<";
+      case 5 : 
+          return "<=";
+      case 6 : 
+          return "???";
+      
+    }
+  };
+  if (typeof node === "number") {
+    return /* Empty */0;
+  } else {
+    switch (node.tag | 0) {
+      case 0 : 
+          return /* IfStatement */Block.__(10, [{
+                      condition: /* BinaryExpression */Block.__(2, [{
+                            left: logicValueToSwiftAST(node[0]),
+                            operator: fromCmp(node[1]),
+                            right: logicValueToSwiftAST(node[2])
+                          }]),
+                      block: /* :: */[
+                        toSwiftAST(node[3]),
+                        /* [] */0
+                      ]
+                    }]);
+      case 1 : 
+          return /* IfStatement */Block.__(10, [{
+                      condition: logicValueToSwiftAST(node[0]),
+                      block: /* :: */[
+                        toSwiftAST(node[1]),
+                        /* [] */0
+                      ]
+                    }]);
+      case 2 : 
+          return /* BinaryExpression */Block.__(2, [{
+                      left: logicValueToSwiftAST(node[1]),
+                      operator: "=",
+                      right: logicValueToSwiftAST(node[0])
+                    }]);
+      case 3 : 
+          return /* BinaryExpression */Block.__(2, [{
+                      left: logicValueToSwiftAST(node[2]),
+                      operator: "=",
+                      right: /* BinaryExpression */Block.__(2, [{
+                            left: logicValueToSwiftAST(node[0]),
+                            operator: "+",
+                            right: logicValueToSwiftAST(node[1])
+                          }])
+                    }]);
+      case 4 : 
+          var value = node[0];
+          if (typeof value === "number") {
+            return /* Empty */0;
+          } else if (value.tag) {
+            return /* Empty */0;
+          } else {
+            var path = value[1];
+            return /* VariableDeclaration */Block.__(6, [{
+                        modifiers: /* [] */0,
+                        pattern: /* IdentifierPattern */Block.__(0, [{
+                              identifier: List.fold_left((function (a, b) {
+                                      return a + ("." + b);
+                                    }), List.hd(path), List.tl(path)),
+                              annotation: /* Some */[typeAnnotationDoc(value[0])]
+                            }]),
+                        init: /* None */0,
+                        block: /* None */0
+                      }]);
+          }
+          break;
+      case 5 : 
+          return /* StatementListHelper */Block.__(17, [List.map(toSwiftAST, node[0])]);
+      
+    }
+  }
+}
+
 exports.IdentifierSet             = IdentifierSet;
 exports.LogicTree                 = LogicTree;
 exports.undeclaredIdentifiers     = undeclaredIdentifiers;
 exports.addVariableDeclarations   = addVariableDeclarations;
 exports.logicValueToJavaScriptAST = logicValueToJavaScriptAST;
 exports.toJavaScriptAST           = toJavaScriptAST;
+exports.toSwiftAST                = toSwiftAST;
 /* include Not a pure module */

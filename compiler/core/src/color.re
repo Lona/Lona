@@ -16,6 +16,12 @@ let parseFile = (filename) => {
   field("colors", list(parseColor), parsed)
 };
 
+let find = (colors: list(t), id: string) =>
+  switch (colors |> List.find((color) => color.id == id)) {
+  | color => Some(color)
+  | exception Not_found => None
+  };
+
 let render = (target, colors) =>
   switch target {
   | Types.Swift =>
