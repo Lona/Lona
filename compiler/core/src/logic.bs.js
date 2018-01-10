@@ -282,7 +282,7 @@ function toJavaScriptAST(node) {
   }
 }
 
-function toSwiftAST(colors, node) {
+function toSwiftAST(colors, rootLayer, logicRootNode) {
   var logicValueToSwiftAST = function (x) {
     if (typeof x === "number") {
       return /* Empty */0;
@@ -301,12 +301,21 @@ function toSwiftAST(colors, node) {
           switch (match[0]) {
             case "layers" : 
                 if (tail) {
-                  return /* SwiftIdentifier */Block.__(4, [List.fold_left((function (a, b) {
-                                    return a + ("." + LodashCamelcase(b));
-                                  }), Swift$LonaCompilerCore.Format[/* layerName */0](tail[0]), tail[1])]);
+                  var tail$1 = tail[1];
+                  var second = tail[0];
+                  if (second === rootLayer[/* name */1]) {
+                    return /* SwiftIdentifier */Block.__(4, [List.fold_left((function (a, b) {
+                                      return a + ("." + LodashCamelcase(b));
+                                    }), List.hd(tail$1), List.tl(tail$1))]);
+                  } else {
+                    return /* SwiftIdentifier */Block.__(4, [List.fold_left((function (a, b) {
+                                      return a + ("." + LodashCamelcase(b));
+                                    }), Swift$LonaCompilerCore.Format[/* layerName */0](second), tail$1)]);
+                  }
                 } else {
                   return /* SwiftIdentifier */Block.__(4, ["BadIdentifier"]);
                 }
+                break;
             case "parameters" : 
                 return /* SwiftIdentifier */Block.__(4, [List.hd(tail)]);
             default:
@@ -349,14 +358,14 @@ function toSwiftAST(colors, node) {
       
     }
   };
-  var unwrapBlock = function (param) {
-    if (typeof param === "number") {
+  var unwrapBlock = function (node) {
+    if (typeof node === "number") {
       return /* :: */[
               node,
               /* [] */0
             ];
-    } else if (param.tag === 5) {
-      return param[0];
+    } else if (node.tag === 5) {
+      return node[0];
     } else {
       return /* :: */[
               node,
@@ -364,47 +373,94 @@ function toSwiftAST(colors, node) {
             ];
     }
   };
-  if (typeof node === "number") {
+  if (typeof logicRootNode === "number") {
     return /* Empty */0;
   } else {
-    switch (node.tag | 0) {
+    switch (logicRootNode.tag | 0) {
       case 0 : 
           return /* IfStatement */Block.__(10, [{
                       condition: /* BinaryExpression */Block.__(2, [{
-                            left: logicValueToSwiftAST(node[0]),
-                            operator: fromCmp(node[1]),
-                            right: logicValueToSwiftAST(node[2])
+                            left: logicValueToSwiftAST(logicRootNode[0]),
+                            operator: fromCmp(logicRootNode[1]),
+                            right: logicValueToSwiftAST(logicRootNode[2])
                           }]),
                       block: List.map((function (param) {
-                              return toSwiftAST(colors, param);
-                            }), unwrapBlock(node[3]))
+                              return toSwiftAST(colors, rootLayer, param);
+                            }), unwrapBlock(logicRootNode[3]))
                     }]);
       case 1 : 
           return /* IfStatement */Block.__(10, [{
-                      condition: logicValueToSwiftAST(node[0]),
+                      condition: logicValueToSwiftAST(logicRootNode[0]),
                       block: List.map((function (param) {
-                              return toSwiftAST(colors, param);
-                            }), unwrapBlock(node[1]))
+                              return toSwiftAST(colors, rootLayer, param);
+                            }), unwrapBlock(logicRootNode[1]))
                     }]);
       case 2 : 
-          var left = logicValueToSwiftAST(node[1]);
+          var match = logicValueToSwiftAST(logicRootNode[1]);
+          var match$1 = logicValueToSwiftAST(logicRootNode[0]);
+          var match$2;
+          if (typeof match === "number") {
+            match$2 = [
+              match,
+              match$1
+            ];
+          } else if (match.tag === 4) {
+            if (typeof match$1 === "number") {
+              match$2 = [
+                match,
+                match$1
+              ];
+            } else if (match$1.tag) {
+              match$2 = [
+                match,
+                match$1
+              ];
+            } else {
+              var match$3 = match$1[0];
+              if (typeof match$3 === "number") {
+                match$2 = [
+                  match,
+                  match$1
+                ];
+              } else if (match$3.tag) {
+                match$2 = [
+                  match,
+                  match$1
+                ];
+              } else {
+                var name = match[0];
+                match$2 = name.endsWith("visible") ? /* tuple */[
+                    /* SwiftIdentifier */Block.__(4, [name.replace("visible", "isHidden")]),
+                    /* LiteralExpression */Block.__(0, [/* Boolean */Block.__(0, [1 - match$3[0]])])
+                  ] : [
+                    match,
+                    match$1
+                  ];
+              }
+            }
+          } else {
+            match$2 = [
+              match,
+              match$1
+            ];
+          }
           return /* BinaryExpression */Block.__(2, [{
-                      left: left,
+                      left: match$2[0],
                       operator: "=",
-                      right: logicValueToSwiftAST(node[0])
+                      right: match$2[1]
                     }]);
       case 3 : 
           return /* BinaryExpression */Block.__(2, [{
-                      left: logicValueToSwiftAST(node[2]),
+                      left: logicValueToSwiftAST(logicRootNode[2]),
                       operator: "=",
                       right: /* BinaryExpression */Block.__(2, [{
-                            left: logicValueToSwiftAST(node[0]),
+                            left: logicValueToSwiftAST(logicRootNode[0]),
                             operator: "+",
-                            right: logicValueToSwiftAST(node[1])
+                            right: logicValueToSwiftAST(logicRootNode[1])
                           }])
                     }]);
       case 4 : 
-          var value = node[0];
+          var value = logicRootNode[0];
           if (typeof value === "number") {
             return /* Empty */0;
           } else if (value.tag) {
@@ -426,8 +482,8 @@ function toSwiftAST(colors, node) {
           break;
       case 5 : 
           return /* StatementListHelper */Block.__(17, [List.map((function (param) {
-                            return toSwiftAST(colors, param);
-                          }), node[0])]);
+                            return toSwiftAST(colors, rootLayer, param);
+                          }), logicRootNode[0])]);
       
     }
   }

@@ -70,14 +70,17 @@ function render(target, colors) {
                     statements: /* :: */[
                       /* ImportDeclaration */Block.__(9, ["UIKit"]),
                       /* :: */[
-                        /* ClassDeclaration */Block.__(3, [{
-                              name: "Colors",
-                              inherits: /* [] */0,
-                              modifier: /* None */0,
-                              isFinal: /* false */0,
-                              body: List.map(colorConstantDoc, colors)
-                            }]),
-                        /* [] */0
+                        /* Empty */0,
+                        /* :: */[
+                          /* ClassDeclaration */Block.__(3, [{
+                                name: "Colors",
+                                inherits: /* [] */0,
+                                modifier: /* None */0,
+                                isFinal: /* false */0,
+                                body: List.map(colorConstantDoc, colors)
+                              }]),
+                          /* [] */0
+                        ]
                       ]
                     ]
                   }]));

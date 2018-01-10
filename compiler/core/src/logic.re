@@ -126,7 +126,7 @@ let rec toJavaScriptAST = (node) => {
   }
 };
 
-let rec toSwiftAST = (colors, node) => {
+let rec toSwiftAST = (colors, rootLayer: Types.layer, logicRootNode) => {
   let identifierName = (node) =>
     switch node {
     | Identifier(ltype, [head, ...tail]) =>
@@ -134,6 +134,11 @@ let rec toSwiftAST = (colors, node) => {
       | "parameters" => Ast.Swift.SwiftIdentifier(List.hd(tail))
       | "layers" =>
         switch tail {
+        | [second, ...tail] when second == rootLayer.name =>
+          Ast.Swift.SwiftIdentifier(
+            List.tl(tail)
+            |> List.fold_left((a, b) => a ++ "." ++ Swift.Format.camelCase(b), List.hd(tail))
+          )
         | [second, ...tail] =>
           Ast.Swift.SwiftIdentifier(
             tail
@@ -175,17 +180,25 @@ let rec toSwiftAST = (colors, node) => {
   let unwrapBlock =
     fun
     | Block(body) => body
-    | _ => [node];
-  switch node {
+    | node => [node];
+  switch logicRootNode {
   | Assign(a, b) =>
-    let left = logicValueToSwiftAST(b);
-    Ast.Swift.BinaryExpression({"left": left, "operator": "=", "right": logicValueToSwiftAST(a)})
+    let (left, right) =
+      switch (logicValueToSwiftAST(b), logicValueToSwiftAST(a)) {
+      | (Ast.Swift.SwiftIdentifier(name), LiteralExpression(Boolean(value)))
+          when name |> Js.String.endsWith("visible") => (
+          Ast.Swift.SwiftIdentifier(name |> Js.String.replace("visible", "isHidden")),
+          Ast.Swift.LiteralExpression(Boolean(! value))
+        )
+      | nodes => nodes
+      };
+    Ast.Swift.BinaryExpression({"left": left, "operator": "=", "right": right})
   | IfExists(a, body) =>
     Ast.Swift.IfStatement({
       "condition": logicValueToSwiftAST(a),
-      "block": unwrapBlock(body) |> List.map(toSwiftAST(colors))
+      "block": unwrapBlock(body) |> List.map(toSwiftAST(colors, rootLayer))
     })
-  | Block(body) => Ast.Swift.StatementListHelper(body |> List.map(toSwiftAST(colors)))
+  | Block(body) => Ast.Swift.StatementListHelper(body |> List.map(toSwiftAST(colors, rootLayer)))
   | If(a, cmp, b, body) =>
     Ast.Swift.IfStatement({
       "condition":
@@ -194,7 +207,7 @@ let rec toSwiftAST = (colors, node) => {
           "operator": fromCmp(cmp),
           "right": logicValueToSwiftAST(b)
         }),
-      "block": unwrapBlock(body) |> List.map(toSwiftAST(colors))
+      "block": unwrapBlock(body) |> List.map(toSwiftAST(colors, rootLayer))
     })
   | Add(lhs, rhs, value) =>
     BinaryExpression({

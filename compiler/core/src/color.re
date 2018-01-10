@@ -40,6 +40,7 @@ let render = (target, colors) =>
       TopLevelDeclaration({
         "statements": [
           ImportDeclaration("UIKit"),
+          Empty,
           ClassDeclaration({
             "name": "Colors",
             "inherits": [],

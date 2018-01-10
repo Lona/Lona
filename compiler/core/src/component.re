@@ -82,12 +82,15 @@ module Swift = {
           Some(
             FunctionCallExpression({
               "name": layer.typeName |> viewTypeInitDoc,
-              "arguments": [
-                FunctionCallArgument({
-                  "name": Some(SwiftIdentifier("frame")),
-                  "value": SwiftIdentifier(".zero")
-                })
-              ]
+              "arguments":
+                layer.typeName == Types.Text ?
+                  [] :
+                  [
+                    FunctionCallArgument({
+                      "name": Some(SwiftIdentifier("frame")),
+                      "value": SwiftIdentifier(".zero")
+                    })
+                  ]
             })
           ),
         "block": None
@@ -334,12 +337,21 @@ module Swift = {
         | Some(value) => Swift.Document.lonaValue(colors, value)
         | None => LiteralExpression(Integer(0))
         };
-      let defineInitialValue = (layer: Types.layer, (name, value)) =>
+      let defineInitialValue = (layer: Types.layer, (name, value)) => {
+        let (left, right) =
+          switch (name, initialValue(layer, name)) {
+          | ("visible", LiteralExpression(Boolean(value))) => (
+              "isHidden",
+              Ast.Swift.LiteralExpression(Boolean(! value))
+            )
+          | nodes => nodes
+          };
         BinaryExpression({
-          "left": layerMemberExpression(layer, [SwiftIdentifier(name)]),
+          "left": layerMemberExpression(layer, [SwiftIdentifier(left)]),
           "operator": "=",
-          "right": initialValue(layer, name)
-        });
+          "right": right
+        })
+      };
       /* TODO: Figure out how to handle images */
       let filterProperties = ((name, _)) => name != "image" && name != "textStyle";
       let defineInitialValues = ((layer, propertyMap)) =>
@@ -354,13 +366,14 @@ module Swift = {
         "body":
           (assignments |> Layer.LayerMap.bindings |> List.map(defineInitialValues) |> List.concat)
           @ [Empty]
-          @ [Logic.toSwiftAST(colors, logic)]
+          @ [Logic.toSwiftAST(colors, rootLayer, logic)]
       })
     };
     TopLevelDeclaration({
       "statements": [
         ImportDeclaration("UIKit"),
         ImportDeclaration("Foundation"),
+        LineComment("MARK: - " ++ name),
         Empty,
         ClassDeclaration({
           "name": name,
@@ -369,11 +382,16 @@ module Swift = {
           "isFinal": false,
           "body":
             List.concat([
-              [LineComment("Parameters")],
-              parameters |> List.map(parameterVariableDoc),
+              [LineComment("MARK: Lifecycle")],
               [Empty],
               [initializerDoc()],
-              [LineComment("Views")],
+              [Empty],
+              [initializerCoderDoc()],
+              [LineComment("MARK: Public")],
+              [Empty],
+              parameters |> List.map(parameterVariableDoc),
+              [LineComment("MARK: Private")],
+              [Empty],
               nonRootLayers |> List.map(viewVariableDoc),
               [Empty],
               [setUpViewsDoc(rootLayer)],
@@ -389,9 +407,7 @@ module Swift = {
                 }),
                 Empty,
                 updateDoc()
-              ],
-              [Empty],
-              [initializerCoderDoc()]
+              ]
             ])
         })
       ]

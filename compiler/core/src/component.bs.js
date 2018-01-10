@@ -102,6 +102,7 @@ function generate$1(name, json, colors) {
     }
   };
   var viewVariableDoc = function (layer) {
+    var match = +(layer[/* typeName */0] === /* Text */1);
     return /* VariableDeclaration */Block.__(6, [{
                 modifiers: /* :: */[
                   /* AccessLevelModifier */Block.__(0, [/* PrivateModifier */0]),
@@ -113,13 +114,13 @@ function generate$1(name, json, colors) {
                     }]),
                 init: /* Some */[/* FunctionCallExpression */Block.__(13, [{
                         name: viewTypeInitDoc(layer[/* typeName */0]),
-                        arguments: /* :: */[
-                          /* FunctionCallArgument */Block.__(12, [{
-                                name: /* Some */[/* SwiftIdentifier */Block.__(4, ["frame"])],
-                                value: /* SwiftIdentifier */Block.__(4, [".zero"])
-                              }]),
-                          /* [] */0
-                        ]
+                        arguments: match !== 0 ? /* [] */0 : /* :: */[
+                            /* FunctionCallArgument */Block.__(12, [{
+                                  name: /* Some */[/* SwiftIdentifier */Block.__(4, ["frame"])],
+                                  value: /* SwiftIdentifier */Block.__(4, [".zero"])
+                                }]),
+                            /* [] */0
+                          ]
                       }])],
                 block: /* None */0
               }]);
@@ -445,13 +446,47 @@ function generate$1(name, json, colors) {
                     var layer$1 = layer;
                     var param$1 = param;
                     var name = param$1[0];
+                    var match = initialValue(layer$1, name);
+                    var match$1;
+                    if (name === "visible") {
+                      if (typeof match === "number") {
+                        match$1 = [
+                          name,
+                          match
+                        ];
+                      } else if (match.tag) {
+                        match$1 = [
+                          name,
+                          match
+                        ];
+                      } else {
+                        var match$2 = match[0];
+                        match$1 = typeof match$2 === "number" ? [
+                            name,
+                            match
+                          ] : (
+                            match$2.tag ? [
+                                name,
+                                match
+                              ] : /* tuple */[
+                                "isHidden",
+                                /* LiteralExpression */Block.__(0, [/* Boolean */Block.__(0, [1 - match$2[0]])])
+                              ]
+                          );
+                      }
+                    } else {
+                      match$1 = [
+                        name,
+                        match
+                      ];
+                    }
                     return /* BinaryExpression */Block.__(2, [{
                                 left: memberOrSelfExpression(parentNameOrSelf(layer$1), /* :: */[
-                                      /* SwiftIdentifier */Block.__(4, [name]),
+                                      /* SwiftIdentifier */Block.__(4, [match$1[0]]),
                                       /* [] */0
                                     ]),
                                 operator: "=",
-                                right: initialValue(layer$1, name)
+                                right: match$1[1]
                               }]);
                   }), List.filter(filterProperties)(Curry._1(StringMap$LonaCompilerCore.bindings, param[1])));
     };
@@ -466,7 +501,7 @@ function generate$1(name, json, colors) {
                           /* Empty */0,
                           /* [] */0
                         ], /* :: */[
-                          Logic$LonaCompilerCore.toSwiftAST(colors, logic),
+                          Logic$LonaCompilerCore.toSwiftAST(colors, rootLayer, logic),
                           /* [] */0
                         ]))
               }]);
@@ -477,23 +512,23 @@ function generate$1(name, json, colors) {
                 /* :: */[
                   /* ImportDeclaration */Block.__(9, ["Foundation"]),
                   /* :: */[
-                    /* Empty */0,
+                    /* LineComment */Block.__(14, ["MARK: - " + name]),
                     /* :: */[
-                      /* ClassDeclaration */Block.__(3, [{
-                            name: name,
-                            inherits: /* :: */[
-                              /* TypeName */Block.__(0, ["UIView"]),
-                              /* [] */0
-                            ],
-                            modifier: /* None */0,
-                            isFinal: /* false */0,
-                            body: List.concat(/* :: */[
-                                  /* :: */[
-                                    /* LineComment */Block.__(14, ["Parameters"]),
-                                    /* [] */0
-                                  ],
-                                  /* :: */[
-                                    List.map(parameterVariableDoc, parameters),
+                      /* Empty */0,
+                      /* :: */[
+                        /* ClassDeclaration */Block.__(3, [{
+                              name: name,
+                              inherits: /* :: */[
+                                /* TypeName */Block.__(0, ["UIView"]),
+                                /* [] */0
+                              ],
+                              modifier: /* None */0,
+                              isFinal: /* false */0,
+                              body: List.concat(/* :: */[
+                                    /* :: */[
+                                      /* LineComment */Block.__(14, ["MARK: Lifecycle"]),
+                                      /* [] */0
+                                    ],
                                     /* :: */[
                                       /* :: */[
                                         /* Empty */0,
@@ -506,29 +541,29 @@ function generate$1(name, json, colors) {
                                         ],
                                         /* :: */[
                                           /* :: */[
-                                            /* LineComment */Block.__(14, ["Views"]),
+                                            /* Empty */0,
                                             /* [] */0
                                           ],
                                           /* :: */[
-                                            List.map(viewVariableDoc, nonRootLayers),
+                                            /* :: */[
+                                              initializerCoderDoc(/* () */0),
+                                              /* [] */0
+                                            ],
                                             /* :: */[
                                               /* :: */[
-                                                /* Empty */0,
+                                                /* LineComment */Block.__(14, ["MARK: Public"]),
                                                 /* [] */0
                                               ],
                                               /* :: */[
                                                 /* :: */[
-                                                  setUpViewsDoc(rootLayer),
+                                                  /* Empty */0,
                                                   /* [] */0
                                                 ],
                                                 /* :: */[
-                                                  /* :: */[
-                                                    /* Empty */0,
-                                                    /* [] */0
-                                                  ],
+                                                  List.map(parameterVariableDoc, parameters),
                                                   /* :: */[
                                                     /* :: */[
-                                                      setUpConstraintsDoc(rootLayer),
+                                                      /* LineComment */Block.__(14, ["MARK: Private"]),
                                                       /* [] */0
                                                     ],
                                                     /* :: */[
@@ -537,24 +572,7 @@ function generate$1(name, json, colors) {
                                                         /* [] */0
                                                       ],
                                                       /* :: */[
-                                                        /* :: */[
-                                                          /* FunctionDeclaration */Block.__(8, [{
-                                                                name: "setUpDefaults",
-                                                                modifiers: /* :: */[
-                                                                  /* AccessLevelModifier */Block.__(0, [/* PrivateModifier */0]),
-                                                                  /* [] */0
-                                                                ],
-                                                                parameters: /* [] */0,
-                                                                body: /* [] */0
-                                                              }]),
-                                                          /* :: */[
-                                                            /* Empty */0,
-                                                            /* :: */[
-                                                              updateDoc(/* () */0),
-                                                              /* [] */0
-                                                            ]
-                                                          ]
-                                                        ],
+                                                        List.map(viewVariableDoc, nonRootLayers),
                                                         /* :: */[
                                                           /* :: */[
                                                             /* Empty */0,
@@ -562,10 +580,48 @@ function generate$1(name, json, colors) {
                                                           ],
                                                           /* :: */[
                                                             /* :: */[
-                                                              initializerCoderDoc(/* () */0),
+                                                              setUpViewsDoc(rootLayer),
                                                               /* [] */0
                                                             ],
-                                                            /* [] */0
+                                                            /* :: */[
+                                                              /* :: */[
+                                                                /* Empty */0,
+                                                                /* [] */0
+                                                              ],
+                                                              /* :: */[
+                                                                /* :: */[
+                                                                  setUpConstraintsDoc(rootLayer),
+                                                                  /* [] */0
+                                                                ],
+                                                                /* :: */[
+                                                                  /* :: */[
+                                                                    /* Empty */0,
+                                                                    /* [] */0
+                                                                  ],
+                                                                  /* :: */[
+                                                                    /* :: */[
+                                                                      /* FunctionDeclaration */Block.__(8, [{
+                                                                            name: "setUpDefaults",
+                                                                            modifiers: /* :: */[
+                                                                              /* AccessLevelModifier */Block.__(0, [/* PrivateModifier */0]),
+                                                                              /* [] */0
+                                                                            ],
+                                                                            parameters: /* [] */0,
+                                                                            body: /* [] */0
+                                                                          }]),
+                                                                      /* :: */[
+                                                                        /* Empty */0,
+                                                                        /* :: */[
+                                                                          updateDoc(/* () */0),
+                                                                          /* [] */0
+                                                                        ]
+                                                                      ]
+                                                                    ],
+                                                                    /* [] */0
+                                                                  ]
+                                                                ]
+                                                              ]
+                                                            ]
                                                           ]
                                                         ]
                                                       ]
@@ -578,10 +634,10 @@ function generate$1(name, json, colors) {
                                         ]
                                       ]
                                     ]
-                                  ]
-                                ])
-                          }]),
-                      /* [] */0
+                                  ])
+                            }]),
+                        /* [] */0
+                      ]
                     ]
                   ]
                 ]
