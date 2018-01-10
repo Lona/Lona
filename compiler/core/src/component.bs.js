@@ -632,10 +632,7 @@ function generate$1(name, json, colors) {
                 body: Swift$LonaCompilerCore.Document[/* joinGroups */1](/* Empty */0, /* :: */[
                       List.concat(List.map(defineInitialValues, Curry._1(Layer$LonaCompilerCore.LayerMap[/* bindings */16], assignments))),
                       /* :: */[
-                        /* :: */[
-                          Logic$LonaCompilerCore.toSwiftAST(colors, rootLayer, logic),
-                          /* [] */0
-                        ],
+                        Logic$LonaCompilerCore.toSwiftAST(colors, rootLayer, logic),
                         /* [] */0
                       ]
                     ])

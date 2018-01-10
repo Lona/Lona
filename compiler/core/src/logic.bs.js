@@ -451,120 +451,117 @@ function toSwiftAST(colors, rootLayer, logicRootNode) {
             ];
     }
   };
-  if (typeof logicRootNode === "number") {
-    return /* Empty */0;
-  } else {
-    switch (logicRootNode.tag | 0) {
-      case 0 : 
-          return /* IfStatement */Block.__(10, [{
-                      condition: /* BinaryExpression */Block.__(2, [{
-                            left: logicValueToSwiftAST(logicRootNode[0]),
-                            operator: fromCmp(logicRootNode[1]),
-                            right: logicValueToSwiftAST(logicRootNode[2])
-                          }]),
-                      block: List.map((function (param) {
-                              return toSwiftAST(colors, rootLayer, param);
-                            }), unwrapBlock(logicRootNode[3]))
-                    }]);
-      case 1 : 
-          return /* IfStatement */Block.__(10, [{
-                      condition: logicValueToSwiftAST(logicRootNode[0]),
-                      block: List.map((function (param) {
-                              return toSwiftAST(colors, rootLayer, param);
-                            }), unwrapBlock(logicRootNode[1]))
-                    }]);
-      case 2 : 
-          var match = logicValueToSwiftAST(logicRootNode[1]);
-          var match$1 = logicValueToSwiftAST(logicRootNode[0]);
-          var match$2;
-          if (typeof match === "number") {
-            match$2 = [
-              match,
-              match$1
-            ];
-          } else if (match.tag === 4) {
-            if (typeof match$1 === "number") {
+  var inner = function (logicRootNode) {
+    if (typeof logicRootNode === "number") {
+      return /* Empty */0;
+    } else {
+      switch (logicRootNode.tag | 0) {
+        case 0 : 
+            return /* IfStatement */Block.__(10, [{
+                        condition: /* BinaryExpression */Block.__(2, [{
+                              left: logicValueToSwiftAST(logicRootNode[0]),
+                              operator: fromCmp(logicRootNode[1]),
+                              right: logicValueToSwiftAST(logicRootNode[2])
+                            }]),
+                        block: List.map(inner, unwrapBlock(logicRootNode[3]))
+                      }]);
+        case 1 : 
+            return /* IfStatement */Block.__(10, [{
+                        condition: logicValueToSwiftAST(logicRootNode[0]),
+                        block: List.map(inner, unwrapBlock(logicRootNode[1]))
+                      }]);
+        case 2 : 
+            var match = logicValueToSwiftAST(logicRootNode[1]);
+            var match$1 = logicValueToSwiftAST(logicRootNode[0]);
+            var match$2;
+            if (typeof match === "number") {
               match$2 = [
                 match,
                 match$1
               ];
-            } else if (match$1.tag) {
-              match$2 = [
-                match,
-                match$1
-              ];
-            } else {
-              var match$3 = match$1[0];
-              if (typeof match$3 === "number") {
+            } else if (match.tag === 4) {
+              if (typeof match$1 === "number") {
                 match$2 = [
                   match,
                   match$1
                 ];
-              } else if (match$3.tag) {
+              } else if (match$1.tag) {
                 match$2 = [
                   match,
                   match$1
                 ];
               } else {
-                var name = match[0];
-                match$2 = name.endsWith("visible") ? /* tuple */[
-                    /* SwiftIdentifier */Block.__(4, [name.replace("visible", "isHidden")]),
-                    /* LiteralExpression */Block.__(0, [/* Boolean */Block.__(0, [1 - match$3[0]])])
-                  ] : [
+                var match$3 = match$1[0];
+                if (typeof match$3 === "number") {
+                  match$2 = [
                     match,
                     match$1
                   ];
+                } else if (match$3.tag) {
+                  match$2 = [
+                    match,
+                    match$1
+                  ];
+                } else {
+                  var name = match[0];
+                  match$2 = name.endsWith("visible") ? /* tuple */[
+                      /* SwiftIdentifier */Block.__(4, [name.replace("visible", "isHidden")]),
+                      /* LiteralExpression */Block.__(0, [/* Boolean */Block.__(0, [1 - match$3[0]])])
+                    ] : [
+                      match,
+                      match$1
+                    ];
+                }
               }
+            } else {
+              match$2 = [
+                match,
+                match$1
+              ];
             }
-          } else {
-            match$2 = [
-              match,
-              match$1
-            ];
-          }
-          return /* BinaryExpression */Block.__(2, [{
-                      left: match$2[0],
-                      operator: "=",
-                      right: match$2[1]
-                    }]);
-      case 3 : 
-          return /* BinaryExpression */Block.__(2, [{
-                      left: logicValueToSwiftAST(logicRootNode[2]),
-                      operator: "=",
-                      right: /* BinaryExpression */Block.__(2, [{
-                            left: logicValueToSwiftAST(logicRootNode[0]),
-                            operator: "+",
-                            right: logicValueToSwiftAST(logicRootNode[1])
-                          }])
-                    }]);
-      case 4 : 
-          var value = logicRootNode[0];
-          if (typeof value === "number") {
-            return /* Empty */0;
-          } else if (value.tag) {
-            return /* Empty */0;
-          } else {
-            var path = value[1];
-            return /* VariableDeclaration */Block.__(6, [{
-                        modifiers: /* [] */0,
-                        pattern: /* IdentifierPattern */Block.__(0, [{
-                              identifier: List.fold_left((function (a, b) {
-                                      return a + ("." + b);
-                                    }), List.hd(path), List.tl(path)),
-                              annotation: /* Some */[typeAnnotationDoc(value[0])]
-                            }]),
-                        init: /* None */0,
-                        block: /* None */0
+            return /* BinaryExpression */Block.__(2, [{
+                        left: match$2[0],
+                        operator: "=",
+                        right: match$2[1]
                       }]);
-          }
-          break;
-      case 5 : 
-          return /* StatementListHelper */Block.__(17, [List.map((function (param) {
-                            return toSwiftAST(colors, rootLayer, param);
-                          }), logicRootNode[0])]);
-      
+        case 3 : 
+            return /* BinaryExpression */Block.__(2, [{
+                        left: logicValueToSwiftAST(logicRootNode[2]),
+                        operator: "=",
+                        right: /* BinaryExpression */Block.__(2, [{
+                              left: logicValueToSwiftAST(logicRootNode[0]),
+                              operator: "+",
+                              right: logicValueToSwiftAST(logicRootNode[1])
+                            }])
+                      }]);
+        case 4 : 
+            var value = logicRootNode[0];
+            if (typeof value === "number") {
+              return /* Empty */0;
+            } else if (value.tag) {
+              return /* Empty */0;
+            } else {
+              var path = value[1];
+              return /* VariableDeclaration */Block.__(6, [{
+                          modifiers: /* [] */0,
+                          pattern: /* IdentifierPattern */Block.__(0, [{
+                                identifier: List.fold_left((function (a, b) {
+                                        return a + ("." + b);
+                                      }), List.hd(path), List.tl(path)),
+                                annotation: /* Some */[typeAnnotationDoc(value[0])]
+                              }]),
+                          init: /* None */0,
+                          block: /* None */0
+                        }]);
+            }
+            break;
+        case 5 : 
+            return /* StatementListHelper */Block.__(17, [List.map(inner, logicRootNode[0])]);
+        
+      }
     }
-  }
+  };
+  return List.map(inner, unwrapBlock(logicRootNode));
 }
 
 exports.IdentifierSet                    = IdentifierSet;

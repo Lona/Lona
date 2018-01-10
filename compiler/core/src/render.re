@@ -71,7 +71,7 @@ module Swift = {
     | Ast.Swift.SwiftIdentifier(v) => s(v)
     | LiteralExpression(v) => renderLiteral(v)
     | MemberExpression(v) =>
-      v |> List.map(render) |> join(concat([softline, s(".")])) |> group
+      v |> List.map(render) |> join(concat([softline, s(".")])) |> indent |> group
     | BinaryExpression(o) =>
       group(render(o##left) <+> s(" ") <+> s(o##operator) <+> line <+> render(o##right))
     | ClassDeclaration(o) =>
@@ -163,11 +163,23 @@ module Swift = {
       | Some(name) => group(concat([render(name), s(":"), line, render(o##value)]))
       }
     | FunctionCallExpression(o) =>
+      let endsWithLiteral = switch o##arguments {
+      | [FunctionCallArgument(args)] =>
+        switch (args##value) {
+        | LiteralExpression(_) => false
+        | _ => true
+        };
+      | _ => true
+      };
+      let arguments = concat([
+        endsWithLiteral ? softline : empty,
+        o##arguments |> List.map(render) |> join(concat([s(","), line]))
+      ]);
       group(
         concat([
           render(o##name),
           s("("),
-          concat([softline, o##arguments |> List.map(render) |> join(concat([s(","), line]))]) |> indent,
+          (endsWithLiteral ? indent(arguments) : arguments),
           s(")")
         ])
       )
@@ -187,7 +199,7 @@ module Swift = {
         s("}")
       };
     | StatementListHelper(v) => /* TODO: Get rid of this */
-      join(hardline, v |> List.map(render))
+      join(hardline, v |> List.map(render)) <+> lineSuffix(s(" // StatementListHelper"))
     | TopLevelDeclaration(o) =>
       /* join(concat([hardline, hardline]), o##statements |> List.map(render)) */
       join(concat([hardline]), o##statements |> List.map(render))
@@ -276,7 +288,6 @@ module Swift = {
     |> render
     |> (
       (doc) => {
-        /* let printerOptions = {"printWidth": 100, "tabWidth": 2, "useTabs": false}; */
         let printerOptions = {"printWidth": 140, "tabWidth": 2, "useTabs": false};
         Prettier.Doc.Printer.printDocToString(doc, printerOptions)##formatted
       }

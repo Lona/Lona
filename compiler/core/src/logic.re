@@ -206,60 +206,62 @@ let rec toSwiftAST = (colors, rootLayer: Types.layer, logicRootNode) => {
     fun
     | Block(body) => body
     | node => [node];
-  switch logicRootNode {
-  | Assign(a, b) =>
-    let (left, right) =
-      switch (logicValueToSwiftAST(b), logicValueToSwiftAST(a)) {
-      | (Ast.Swift.SwiftIdentifier(name), LiteralExpression(Boolean(value)))
-          when name |> Js.String.endsWith("visible") => (
-          Ast.Swift.SwiftIdentifier(name |> Js.String.replace("visible", "isHidden")),
-          Ast.Swift.LiteralExpression(Boolean(! value))
-        )
-      | nodes => nodes
-      };
-    Ast.Swift.BinaryExpression({"left": left, "operator": "=", "right": right})
-  | IfExists(a, body) =>
-    Ast.Swift.IfStatement({
-      "condition": logicValueToSwiftAST(a),
-      "block": unwrapBlock(body) |> List.map(toSwiftAST(colors, rootLayer))
-    })
-  | Block(body) => Ast.Swift.StatementListHelper(body |> List.map(toSwiftAST(colors, rootLayer)))
-  | If(a, cmp, b, body) =>
-    Ast.Swift.IfStatement({
-      "condition":
-        Ast.Swift.BinaryExpression({
-          "left": logicValueToSwiftAST(a),
-          "operator": fromCmp(cmp),
-          "right": logicValueToSwiftAST(b)
-        }),
-      "block": unwrapBlock(body) |> List.map(toSwiftAST(colors, rootLayer))
-    })
-  | Add(lhs, rhs, value) =>
-    BinaryExpression({
-      "left": logicValueToSwiftAST(value),
-      "operator": "=",
-      "right":
-        Ast.Swift.BinaryExpression({
-          "left": logicValueToSwiftAST(lhs),
-          "operator": "+",
-          "right": logicValueToSwiftAST(rhs)
-        })
-    })
-  | Let(value) =>
-    switch value {
-    | Identifier(ltype, path) =>
-      Ast.Swift.VariableDeclaration({
-        "modifiers": [],
-        "pattern":
-          Ast.Swift.IdentifierPattern({
-            "identifier": List.fold_left((a, b) => a ++ "." ++ b, List.hd(path), List.tl(path)),
-            "annotation": Some(ltype |> typeAnnotationDoc)
-          }),
-        "init": (None: option(Ast.Swift.node)),
-        "block": (None: option(Ast.Swift.initializerBlock))
+  let rec inner = (logicRootNode) =>
+    switch logicRootNode {
+    | Assign(a, b) =>
+      let (left, right) =
+        switch (logicValueToSwiftAST(b), logicValueToSwiftAST(a)) {
+        | (Ast.Swift.SwiftIdentifier(name), LiteralExpression(Boolean(value)))
+            when name |> Js.String.endsWith("visible") => (
+            Ast.Swift.SwiftIdentifier(name |> Js.String.replace("visible", "isHidden")),
+            Ast.Swift.LiteralExpression(Boolean(! value))
+          )
+        | nodes => nodes
+        };
+      Ast.Swift.BinaryExpression({"left": left, "operator": "=", "right": right})
+    | IfExists(a, body) =>
+      Ast.Swift.IfStatement({
+        "condition": logicValueToSwiftAST(a),
+        "block": unwrapBlock(body) |> List.map(inner)
       })
-    | _ => Empty
-    }
-  | None => Empty
-  }
+    | Block(body) => Ast.Swift.StatementListHelper(body |> List.map(inner))
+    | If(a, cmp, b, body) =>
+      Ast.Swift.IfStatement({
+        "condition":
+          Ast.Swift.BinaryExpression({
+            "left": logicValueToSwiftAST(a),
+            "operator": fromCmp(cmp),
+            "right": logicValueToSwiftAST(b)
+          }),
+        "block": unwrapBlock(body) |> List.map(inner)
+      })
+    | Add(lhs, rhs, value) =>
+      BinaryExpression({
+        "left": logicValueToSwiftAST(value),
+        "operator": "=",
+        "right":
+          Ast.Swift.BinaryExpression({
+            "left": logicValueToSwiftAST(lhs),
+            "operator": "+",
+            "right": logicValueToSwiftAST(rhs)
+          })
+      })
+    | Let(value) =>
+      switch value {
+      | Identifier(ltype, path) =>
+        Ast.Swift.VariableDeclaration({
+          "modifiers": [],
+          "pattern":
+            Ast.Swift.IdentifierPattern({
+              "identifier": List.fold_left((a, b) => a ++ "." ++ b, List.hd(path), List.tl(path)),
+              "annotation": Some(ltype |> typeAnnotationDoc)
+            }),
+          "init": (None: option(Ast.Swift.node)),
+          "block": (None: option(Ast.Swift.initializerBlock))
+        })
+      | _ => Empty
+      }
+    | None => Empty
+    };
+  logicRootNode |> unwrapBlock |> List.map(inner)
 };

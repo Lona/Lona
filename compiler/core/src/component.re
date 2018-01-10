@@ -468,7 +468,7 @@ module Swift = {
             Empty,
             [
               assignments |> Layer.LayerMap.bindings |> List.map(defineInitialValues) |> List.concat,
-              [Logic.toSwiftAST(colors, rootLayer, logic)]
+              Logic.toSwiftAST(colors, rootLayer, logic)
             ]
           )
       })
