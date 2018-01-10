@@ -212,7 +212,6 @@ module Swift = {
       })
     };
     let getConstraints = (root: Types.layer) => {
-      /* titleView.topAnchor.constraint(equalTo: self.topAnchor, constant: 24).isActive = true */
       let setUpContraint = (layer: Types.layer, anchor1, parent: Types.layer, anchor2, constant) => {
         let variableName =
           Swift.Format.layerName(layer.name) ++ Swift.Format.upperFirst(anchor1) ++ "Constraint";
@@ -236,16 +235,37 @@ module Swift = {
           ]);
         {variableName, initialValue}
       };
+      let setUpDimensionContraint = (layer: Types.layer, anchor, constant) => {
+        let variableName =
+          Swift.Format.layerName(layer.name) ++ Swift.Format.upperFirst(anchor) ++ "Constraint";
+        let initialValue =
+          MemberExpression([
+            SwiftIdentifier(layer.name |> Swift.Format.layerName),
+            SwiftIdentifier(anchor),
+            FunctionCallExpression({
+              "name": SwiftIdentifier("constraint"),
+              "arguments": [
+                FunctionCallArgument({
+                  "name": Some(SwiftIdentifier("equalToConstant")),
+                  "value": LiteralExpression(FloatingPoint(constant))
+                })
+              ]
+            })
+          ]);
+        {variableName, initialValue}
+      };
       let constrainAxes = (parent: Types.layer) => {
-        let direction = Layer.flexDirection(parent);
+        let direction = Layer.getFlexDirection(parent);
         let primaryBeforeAnchor = direction == "column" ? "topAnchor" : "leadingAnchor";
         let primaryAfterAnchor = direction == "column" ? "bottomAnchor" : "trailingAnchor";
         let secondaryBeforeAnchor = direction == "column" ? "leadingAnchor" : "topAnchor";
         let secondaryAfterAnchor = direction == "column" ? "trailingAnchor" : "bottomAnchor";
         let parentPadding = Layer.getPadding(parent);
         let addConstraints = (index, layer: Types.layer) => {
+          let height = Layer.getNumberParameterOpt("height", layer);
+          let width = Layer.getNumberParameterOpt("width", layer);
           let layerMargin = Layer.getMargin(layer);
-          let primaryAxisConstraints =
+          let firstViewConstraints =
             switch index {
             | 0 =>
               let primaryBeforeConstant =
@@ -260,13 +280,11 @@ module Swift = {
                   primaryBeforeConstant
                 )
               ]
+            | _ => []
+            };
+          let lastViewConstraints =
+            switch index {
             | x when x == List.length(parent.children) - 1 =>
-              let previousLayer = List.nth(parent.children, index - 1);
-              let previousMargin = Layer.getMargin(previousLayer);
-              let betweenConstant =
-                direction == "column" ?
-                  previousMargin.bottom +. layerMargin.top :
-                  previousMargin.right +. layerMargin.left;
               let primaryAfterConstant =
                 direction == "column" ?
                   parentPadding.bottom +. layerMargin.bottom :
@@ -274,19 +292,17 @@ module Swift = {
               [
                 setUpContraint(
                   layer,
-                  primaryBeforeAnchor,
-                  previousLayer,
-                  primaryAfterAnchor,
-                  betweenConstant
-                ),
-                setUpContraint(
-                  layer,
                   primaryAfterAnchor,
                   parent,
                   primaryAfterAnchor,
-                  primaryAfterConstant
+                  -. primaryAfterConstant
                 )
               ]
+            | _ => []
+            };
+          let middleViewConstraints =
+            switch index {
+            | 0 => []
             | _ =>
               let previousLayer = List.nth(parent.children, index - 1);
               let previousMargin = Layer.getMargin(previousLayer);
@@ -326,7 +342,22 @@ module Swift = {
               -. secondaryAfterConstant
             )
           ];
-          primaryAxisConstraints @ secondaryAxisConstraints
+          let heightConstraint =
+            switch height {
+            | Some(height) => [setUpDimensionContraint(layer, "heightAnchor", height)]
+            | None => []
+            };
+          let widthConstraint =
+            switch width {
+            | Some(width) => [setUpDimensionContraint(layer, "widthAnchor", width)]
+            | None => []
+            };
+          firstViewConstraints
+          @ lastViewConstraints
+          @ middleViewConstraints
+          @ secondaryAxisConstraints
+          @ heightConstraint
+          @ widthConstraint
         };
         parent.children |> List.mapi(addConstraints) |> List.concat
       };

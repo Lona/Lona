@@ -93,10 +93,22 @@ let flatmapParent = (f, layer: Types.layer) => {
 
 let flatmap = (f, layer: Types.layer) => flatmapParent((_, layer) => f(layer), layer);
 
-let flexDirection = (layer: Types.layer) =>
+let getFlexDirection = (layer: Types.layer) =>
   switch (StringMap.find("flexDirection", layer.parameters)) {
   | value => value.data |> Json.Decode.string
   | exception Not_found => "column"
+  };
+
+let getNumberParameterOpt = (parameterName, layer: Types.layer) =>
+  switch (StringMap.find(parameterName, layer.parameters)) {
+  | value => Some(value.data |> Json.Decode.float)
+  | exception Not_found => None
+  };
+
+let getNumberParameter = (parameterName, layer: Types.layer) =>
+  switch (getNumberParameterOpt(parameterName, layer)) {
+  | Some(value) => value
+  | None => 0.0
   };
 
 type edgeInsets = {
