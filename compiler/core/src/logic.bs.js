@@ -173,6 +173,84 @@ function undeclaredIdentifiers(node) {
   return Curry._3(LogicTree[/* reduce */0], inner, empty, node);
 }
 
+function assignedIdentifiers(node) {
+  var inner = function (node, identifiers) {
+    if (typeof node === "number") {
+      return identifiers;
+    } else if (node.tag === 2) {
+      var match = node[1];
+      if (typeof match === "number" || match.tag) {
+        return identifiers;
+      } else {
+        return Curry._2(add, /* tuple */[
+                    match[0],
+                    match[1]
+                  ], identifiers);
+      }
+    } else {
+      return identifiers;
+    }
+  };
+  return Curry._3(LogicTree[/* reduce */0], inner, empty, node);
+}
+
+function conditionallyAssignedIdentifiers(rootNode) {
+  var identifiers = undeclaredIdentifiers(rootNode);
+  var paths = Curry._1(elements, identifiers);
+  var isAlwaysAssigned = function (target, _node) {
+    while(true) {
+      var node = _node;
+      if (typeof node === "number") {
+        return /* false */0;
+      } else {
+        switch (node.tag | 0) {
+          case 0 : 
+              var match = node[2];
+              if (typeof match === "number") {
+                return /* false */0;
+              } else if (match.tag) {
+                return /* false */0;
+              } else if (Caml_obj.caml_equal(match[1], target)) {
+                _node = node[3];
+                continue ;
+                
+              } else {
+                return /* false */0;
+              }
+              break;
+          case 2 : 
+              var match$1 = node[1];
+              if (typeof match$1 === "number" || match$1.tag) {
+                return /* false */0;
+              } else {
+                return Caml_obj.caml_equal(match$1[1], target);
+              }
+              break;
+          case 5 : 
+              return List.exists((function (param) {
+                            return isAlwaysAssigned(target, param);
+                          }), node[0]);
+          default:
+            return /* false */0;
+        }
+      }
+    };
+  };
+  var accumulate = function (set, param) {
+    var path = param[1];
+    var match = isAlwaysAssigned(path, rootNode);
+    if (match !== 0) {
+      return set;
+    } else {
+      return Curry._2(add, /* tuple */[
+                  param[0],
+                  path
+                ], set);
+    }
+  };
+  return List.fold_left(accumulate, empty, paths);
+}
+
 function addVariableDeclarations(node) {
   var identifiers = undeclaredIdentifiers(node);
   return List.fold_left((function (acc, declaration) {
@@ -287,7 +365,7 @@ function toSwiftAST(colors, rootLayer, logicRootNode) {
     if (typeof x === "number") {
       return /* Empty */0;
     } else if (x.tag) {
-      return Swift$LonaCompilerCore.Document[/* lonaValue */0](colors, x[0]);
+      return Swift$LonaCompilerCore.Document[/* lonaValue */2](colors, x[0]);
     } else {
       var node = x;
       if (typeof node === "number") {
@@ -489,11 +567,13 @@ function toSwiftAST(colors, rootLayer, logicRootNode) {
   }
 }
 
-exports.IdentifierSet             = IdentifierSet;
-exports.LogicTree                 = LogicTree;
-exports.undeclaredIdentifiers     = undeclaredIdentifiers;
-exports.addVariableDeclarations   = addVariableDeclarations;
-exports.logicValueToJavaScriptAST = logicValueToJavaScriptAST;
-exports.toJavaScriptAST           = toJavaScriptAST;
-exports.toSwiftAST                = toSwiftAST;
+exports.IdentifierSet                    = IdentifierSet;
+exports.LogicTree                        = LogicTree;
+exports.undeclaredIdentifiers            = undeclaredIdentifiers;
+exports.assignedIdentifiers              = assignedIdentifiers;
+exports.conditionallyAssignedIdentifiers = conditionallyAssignedIdentifiers;
+exports.addVariableDeclarations          = addVariableDeclarations;
+exports.logicValueToJavaScriptAST        = logicValueToJavaScriptAST;
+exports.toJavaScriptAST                  = toJavaScriptAST;
+exports.toSwiftAST                       = toSwiftAST;
 /* include Not a pure module */

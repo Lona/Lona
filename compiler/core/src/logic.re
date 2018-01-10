@@ -55,6 +55,7 @@ module LogicTree =
     }
   );
 
+/* TODO: This only looks at assignments */
 let undeclaredIdentifiers = (node) => {
   let inner = (node, identifiers) =>
     switch node {
@@ -62,6 +63,30 @@ let undeclaredIdentifiers = (node) => {
     | _ => identifiers
     };
   LogicTree.reduce(inner, IdentifierSet.empty, node)
+};
+
+let assignedIdentifiers = (node) => {
+  let inner = (node, identifiers) =>
+    switch node {
+    | Assign(_, Identifier(type_, path)) => IdentifierSet.add((type_, path), identifiers)
+    | _ => identifiers
+    };
+  LogicTree.reduce(inner, IdentifierSet.empty, node)
+};
+
+let conditionallyAssignedIdentifiers = (rootNode) => {
+  let identifiers = undeclaredIdentifiers(rootNode);
+  let paths = identifiers |> IdentifierSet.elements;
+  let rec isAlwaysAssigned = (target, node) =>
+    switch node {
+    | Assign(_, Identifier(_, path)) => path == target
+    | If(_, _, Identifier(_, path), body) when path == target => isAlwaysAssigned(target, body)
+    | Block(nodes) => nodes |> List.exists(isAlwaysAssigned(target))
+    | _ => false
+    };
+  let accumulate = (set, (ltype, path)) =>
+    isAlwaysAssigned(path, rootNode) ? set : IdentifierSet.add((ltype, path), set);
+  paths |> List.fold_left(accumulate, IdentifierSet.empty)
 };
 
 /* let testNode = Assign(Identifier(Reference("OK"), ["a"]), Identifier(Reference("OK"), ["b"])); */

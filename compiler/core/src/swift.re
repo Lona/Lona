@@ -6,6 +6,18 @@ module Format = {
 
 module Document = {
   open Ast.Swift;
+  let join = (sep, nodes) =>
+    switch nodes {
+    | [] => []
+    | _ => nodes |> List.fold_left((acc, node) => acc @ [sep, node], [])
+    };
+  let joinGroups = (sep, groups) => {
+    let nonEmpty = groups |> List.filter((x) => List.length(x) > 0);
+    switch nonEmpty {
+    | [] => []
+    | [hd, ...tl] => tl |> List.fold_left((acc, nodes) => acc @ [sep] @ nodes, hd)
+    }
+  };
   let lonaValue = (colors, value: Types.lonaValue) =>
     switch value.ltype {
     | Reference(typeName) =>

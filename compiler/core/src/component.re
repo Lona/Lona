@@ -424,6 +424,8 @@ module Swift = {
            StringMap.bindings(value) |> List.iter(printStringBinding)
          };
          Layer.LayerMap.bindings(assignments) |> List.iter(printLayerBinding); */
+      let cond = Logic.conditionallyAssignedIdentifiers(logic);
+      cond |> Logic.IdentifierSet.elements |> List.iter(((ltype, path)) => Js.log(path));
       let initialValue = (layer: Types.layer, name) =>
         switch (StringMap.find_opt(name, layer.parameters)) {
         | Some(value) => Swift.Document.lonaValue(colors, value)
@@ -446,19 +448,29 @@ module Swift = {
       };
       /* TODO: Figure out how to handle images */
       let filterProperties = ((name, _)) => name != "image" && name != "textStyle";
+      let conditionallyAssigned = Logic.conditionallyAssignedIdentifiers(logic);
+      let filterConditionallyAssigned = (layer: Types.layer, (name, _)) => {
+        let isAssigned = ((_, value)) => value == ["layers", layer.name, name];
+        conditionallyAssigned |> Logic.IdentifierSet.exists(isAssigned)
+      };
       let defineInitialValues = ((layer, propertyMap)) =>
         propertyMap
         |> StringMap.bindings
         |> List.filter(filterProperties)
+        |> List.filter(filterConditionallyAssigned(layer))
         |> List.map(defineInitialValue(layer));
       FunctionDeclaration({
         "name": "update",
         "modifiers": [AccessLevelModifier(PrivateModifier)],
         "parameters": [],
         "body":
-          (assignments |> Layer.LayerMap.bindings |> List.map(defineInitialValues) |> List.concat)
-          @ [Empty]
-          @ [Logic.toSwiftAST(colors, rootLayer, logic)]
+          Swift.Document.joinGroups(
+            Empty,
+            [
+              assignments |> Layer.LayerMap.bindings |> List.map(defineInitialValues) |> List.concat,
+              [Logic.toSwiftAST(colors, rootLayer, logic)]
+            ]
+          )
       })
     };
     TopLevelDeclaration({

@@ -4,6 +4,7 @@
 var List                       = require("bs-platform/lib/js/list.js");
 var Block                      = require("bs-platform/lib/js/block.js");
 var Curry                      = require("bs-platform/lib/js/curry.js");
+var Caml_obj                   = require("bs-platform/lib/js/caml_obj.js");
 var Pervasives                 = require("bs-platform/lib/js/pervasives.js");
 var LodashUpperfirst           = require("lodash.upperfirst");
 var Ast$LonaCompilerCore       = require("./ast.bs.js");
@@ -532,10 +533,15 @@ function generate$1(name, json, colors) {
               }]);
   };
   var updateDoc = function () {
+    var cond = Logic$LonaCompilerCore.conditionallyAssignedIdentifiers(logic);
+    List.iter((function (param) {
+            console.log(param[1]);
+            return /* () */0;
+          }), Curry._1(Logic$LonaCompilerCore.IdentifierSet[/* elements */19], cond));
     var initialValue = function (layer, name) {
       var match = StringMap$LonaCompilerCore.find_opt(name, layer[/* parameters */2]);
       if (match) {
-        return Swift$LonaCompilerCore.Document[/* lonaValue */0](colors, match[0]);
+        return Swift$LonaCompilerCore.Document[/* lonaValue */2](colors, match[0]);
       } else {
         return /* LiteralExpression */Block.__(0, [/* Integer */Block.__(1, [0])]);
       }
@@ -548,6 +554,7 @@ function generate$1(name, json, colors) {
         return /* false */0;
       }
     };
+    var conditionallyAssigned = Logic$LonaCompilerCore.conditionallyAssignedIdentifiers(logic);
     var defineInitialValues = function (param) {
       var layer = param[0];
       return List.map((function (param) {
@@ -596,7 +603,24 @@ function generate$1(name, json, colors) {
                                 operator: "=",
                                 right: match$1[1]
                               }]);
-                  }), List.filter(filterProperties)(Curry._1(StringMap$LonaCompilerCore.bindings, param[1])));
+                  }), List.filter((function (param) {
+                          var layer$1 = layer;
+                          var param$1 = param;
+                          var name = param$1[0];
+                          var isAssigned = function (param) {
+                            return Caml_obj.caml_equal(param[1], /* :: */[
+                                        "layers",
+                                        /* :: */[
+                                          layer$1[/* name */1],
+                                          /* :: */[
+                                            name,
+                                            /* [] */0
+                                          ]
+                                        ]
+                                      ]);
+                          };
+                          return Curry._2(Logic$LonaCompilerCore.IdentifierSet[/* exists */15], isAssigned, conditionallyAssigned);
+                        }))(List.filter(filterProperties)(Curry._1(StringMap$LonaCompilerCore.bindings, param[1]))));
     };
     return /* FunctionDeclaration */Block.__(8, [{
                 name: "update",
@@ -605,13 +629,16 @@ function generate$1(name, json, colors) {
                   /* [] */0
                 ],
                 parameters: /* [] */0,
-                body: Pervasives.$at(List.concat(List.map(defineInitialValues, Curry._1(Layer$LonaCompilerCore.LayerMap[/* bindings */16], assignments))), Pervasives.$at(/* :: */[
-                          /* Empty */0,
-                          /* [] */0
-                        ], /* :: */[
+                body: Swift$LonaCompilerCore.Document[/* joinGroups */1](/* Empty */0, /* :: */[
+                      List.concat(List.map(defineInitialValues, Curry._1(Layer$LonaCompilerCore.LayerMap[/* bindings */16], assignments))),
+                      /* :: */[
+                        /* :: */[
                           Logic$LonaCompilerCore.toSwiftAST(colors, rootLayer, logic),
                           /* [] */0
-                        ]))
+                        ],
+                        /* [] */0
+                      ]
+                    ])
               }]);
   };
   return /* TopLevelDeclaration */Block.__(18, [{
