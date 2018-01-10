@@ -490,7 +490,7 @@ function getMargin(param) {
   return getInsets("margin", param);
 }
 
-function parameterAssignments(layer, node) {
+function parameterAssignmentsFromLogic(layer, node) {
   var identifiers = Logic$LonaCompilerCore.undeclaredIdentifiers(node);
   return List.fold_left((function (acc, item) {
                 if (typeof item === "number") {
@@ -680,27 +680,27 @@ function toJavaScriptStyleSheetAST(layer) {
               ])]);
 }
 
-exports.LayerMap                    = LayerMap;
-exports.parameterTypeMap            = parameterTypeMap;
-exports.stylesSet                   = stylesSet;
-exports.parameterType               = parameterType;
-exports.flatten                     = flatten;
-exports.find                        = find$1;
-exports.flatmapParent               = flatmapParent;
-exports.flatmap                     = flatmap;
-exports.getFlexDirection            = getFlexDirection;
-exports.getNumberParameterOpt       = getNumberParameterOpt;
-exports.getNumberParameter          = getNumberParameter;
-exports.getInsets                   = getInsets;
-exports.getPadding                  = getPadding;
-exports.getMargin                   = getMargin;
-exports.parameterAssignments        = parameterAssignments;
-exports.parameterIsStyle            = parameterIsStyle;
-exports.splitParamsMap              = splitParamsMap;
-exports.parameterMapToLogicValueMap = parameterMapToLogicValueMap;
-exports.layerTypeToString           = layerTypeToString;
-exports.mapBindings                 = mapBindings;
-exports.createStyleAttributeAST     = createStyleAttributeAST;
-exports.toJavaScriptAST             = toJavaScriptAST;
-exports.toJavaScriptStyleSheetAST   = toJavaScriptStyleSheetAST;
+exports.LayerMap                      = LayerMap;
+exports.parameterTypeMap              = parameterTypeMap;
+exports.stylesSet                     = stylesSet;
+exports.parameterType                 = parameterType;
+exports.flatten                       = flatten;
+exports.find                          = find$1;
+exports.flatmapParent                 = flatmapParent;
+exports.flatmap                       = flatmap;
+exports.getFlexDirection              = getFlexDirection;
+exports.getNumberParameterOpt         = getNumberParameterOpt;
+exports.getNumberParameter            = getNumberParameter;
+exports.getInsets                     = getInsets;
+exports.getPadding                    = getPadding;
+exports.getMargin                     = getMargin;
+exports.parameterAssignmentsFromLogic = parameterAssignmentsFromLogic;
+exports.parameterIsStyle              = parameterIsStyle;
+exports.splitParamsMap                = splitParamsMap;
+exports.parameterMapToLogicValueMap   = parameterMapToLogicValueMap;
+exports.layerTypeToString             = layerTypeToString;
+exports.mapBindings                   = mapBindings;
+exports.createStyleAttributeAST       = createStyleAttributeAST;
+exports.toJavaScriptAST               = toJavaScriptAST;
+exports.toJavaScriptStyleSheetAST     = toJavaScriptStyleSheetAST;
 /* include Not a pure module */

@@ -220,6 +220,7 @@ let rec toSwiftAST = (colors, rootLayer: Types.layer, logicRootNode) => {
         };
       Ast.Swift.BinaryExpression({"left": left, "operator": "=", "right": right})
     | IfExists(a, body) =>
+      /* TODO: Once we support optional params, compare to nil or extract via pattern */
       Ast.Swift.IfStatement({
         "condition": logicValueToSwiftAST(a),
         "block": unwrapBlock(body) |> List.map(inner)

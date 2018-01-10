@@ -17,7 +17,7 @@ var StringMap$LonaCompilerCore = require("./stringMap.bs.js");
 function generate(name, json) {
   var rootLayer = Decode$LonaCompilerCore.Component[/* rootLayer */1](json);
   var logic = Logic$LonaCompilerCore.addVariableDeclarations(Decode$LonaCompilerCore.Component[/* logic */2](json));
-  var assignments = Layer$LonaCompilerCore.parameterAssignments(rootLayer, logic);
+  var assignments = Layer$LonaCompilerCore.parameterAssignmentsFromLogic(rootLayer, logic);
   var rootLayerAST = Layer$LonaCompilerCore.toJavaScriptAST(assignments, rootLayer);
   var styleSheetAST = Layer$LonaCompilerCore.toJavaScriptStyleSheetAST(rootLayer);
   var logicAST = Ast$LonaCompilerCore.JavaScript[/* optimize */3](Logic$LonaCompilerCore.toJavaScriptAST(logic));
@@ -53,7 +53,7 @@ function generate$1(name, json, colors) {
   var rootLayer = Decode$LonaCompilerCore.Component[/* rootLayer */1](json);
   var nonRootLayers = List.tl(Layer$LonaCompilerCore.flatten(rootLayer));
   var logic = Decode$LonaCompilerCore.Component[/* logic */2](json);
-  var assignments = Layer$LonaCompilerCore.parameterAssignments(rootLayer, logic);
+  var assignments = Layer$LonaCompilerCore.parameterAssignmentsFromLogic(rootLayer, logic);
   var parameters = Decode$LonaCompilerCore.Component[/* parameters */0](json);
   var typeAnnotationDoc = function (param) {
     if (param.tag) {
@@ -532,21 +532,102 @@ function generate$1(name, json, colors) {
                     ])
               }]);
   };
-  var updateDoc = function () {
-    var cond = Logic$LonaCompilerCore.conditionallyAssignedIdentifiers(logic);
-    List.iter((function (param) {
-            console.log(param[1]);
-            return /* () */0;
-          }), Curry._1(Logic$LonaCompilerCore.IdentifierSet[/* elements */19], cond));
-    var initialValue = function (layer, name) {
-      var match = StringMap$LonaCompilerCore.find_opt(name, layer[/* parameters */2]);
-      if (match) {
-        return Swift$LonaCompilerCore.Document[/* lonaValue */2](colors, match[0]);
+  var initialLayerValue = function (layer, name) {
+    var match = StringMap$LonaCompilerCore.find_opt(name, layer[/* parameters */2]);
+    if (match) {
+      return Swift$LonaCompilerCore.Document[/* lonaValue */2](colors, match[0]);
+    } else {
+      return /* LiteralExpression */Block.__(0, [/* Integer */Block.__(1, [0])]);
+    }
+  };
+  var defineInitialLayerValue = function (layer, param) {
+    var name = param[0];
+    var match = initialLayerValue(layer, name);
+    var match$1;
+    if (name === "visible") {
+      if (typeof match === "number") {
+        match$1 = [
+          name,
+          match
+        ];
+      } else if (match.tag) {
+        match$1 = [
+          name,
+          match
+        ];
       } else {
-        return /* LiteralExpression */Block.__(0, [/* Integer */Block.__(1, [0])]);
+        var match$2 = match[0];
+        match$1 = typeof match$2 === "number" ? [
+            name,
+            match
+          ] : (
+            match$2.tag ? [
+                name,
+                match
+              ] : /* tuple */[
+                "isHidden",
+                /* LiteralExpression */Block.__(0, [/* Boolean */Block.__(0, [1 - match$2[0]])])
+              ]
+          );
+      }
+    } else {
+      match$1 = [
+        name,
+        match
+      ];
+    }
+    return /* BinaryExpression */Block.__(2, [{
+                left: memberOrSelfExpression(parentNameOrSelf(layer), /* :: */[
+                      /* SwiftIdentifier */Block.__(4, [match$1[0]]),
+                      /* [] */0
+                    ]),
+                operator: "=",
+                right: match$1[1]
+              }]);
+  };
+  var setUpDefaultsDoc = function () {
+    var filterParameters = function (param) {
+      var name = param[0];
+      if (name !== "image" && name !== "textStyle" && name !== "flexDirection" && name !== "justifyContent" && name !== "alignSelf" && name !== "alignItems" && name !== "flex" && name !== "font" && !name.startsWith("padding") && !name.startsWith("margin") && name !== "height") {
+        return +(name !== "width");
+      } else {
+        return /* false */0;
       }
     };
-    var filterProperties = function (param) {
+    var defineInitialLayerValues = function (layer) {
+      return List.map((function (param) {
+                    return defineInitialLayerValue(layer, /* tuple */[
+                                param[0],
+                                param[1]
+                              ]);
+                  }), List.filter((function (param) {
+                          var layer$1 = layer;
+                          var param$1 = param;
+                          var match = Layer$LonaCompilerCore.LayerMap[/* find_opt */24](layer$1, assignments);
+                          if (match) {
+                            var match$1 = StringMap$LonaCompilerCore.find_opt(param$1[0], match[0]);
+                            if (match$1) {
+                              return /* false */0;
+                            } else {
+                              return /* true */1;
+                            }
+                          } else {
+                            return /* true */1;
+                          }
+                        }))(List.filter(filterParameters)(Curry._1(StringMap$LonaCompilerCore.bindings, layer[/* parameters */2]))));
+    };
+    return /* FunctionDeclaration */Block.__(8, [{
+                name: "setUpDefaults",
+                modifiers: /* :: */[
+                  /* AccessLevelModifier */Block.__(0, [/* PrivateModifier */0]),
+                  /* [] */0
+                ],
+                parameters: /* [] */0,
+                body: Swift$LonaCompilerCore.Document[/* joinGroups */1](/* Empty */0, List.map(defineInitialLayerValues, Layer$LonaCompilerCore.flatten(rootLayer)))
+              }]);
+  };
+  var updateDoc = function () {
+    var filterParameters = function (param) {
       var name = param[0];
       if (name !== "image") {
         return +(name !== "textStyle");
@@ -555,54 +636,10 @@ function generate$1(name, json, colors) {
       }
     };
     var conditionallyAssigned = Logic$LonaCompilerCore.conditionallyAssignedIdentifiers(logic);
-    var defineInitialValues = function (param) {
+    var defineInitialLayerValues = function (param) {
       var layer = param[0];
       return List.map((function (param) {
-                    var layer$1 = layer;
-                    var param$1 = param;
-                    var name = param$1[0];
-                    var match = initialValue(layer$1, name);
-                    var match$1;
-                    if (name === "visible") {
-                      if (typeof match === "number") {
-                        match$1 = [
-                          name,
-                          match
-                        ];
-                      } else if (match.tag) {
-                        match$1 = [
-                          name,
-                          match
-                        ];
-                      } else {
-                        var match$2 = match[0];
-                        match$1 = typeof match$2 === "number" ? [
-                            name,
-                            match
-                          ] : (
-                            match$2.tag ? [
-                                name,
-                                match
-                              ] : /* tuple */[
-                                "isHidden",
-                                /* LiteralExpression */Block.__(0, [/* Boolean */Block.__(0, [1 - match$2[0]])])
-                              ]
-                          );
-                      }
-                    } else {
-                      match$1 = [
-                        name,
-                        match
-                      ];
-                    }
-                    return /* BinaryExpression */Block.__(2, [{
-                                left: memberOrSelfExpression(parentNameOrSelf(layer$1), /* :: */[
-                                      /* SwiftIdentifier */Block.__(4, [match$1[0]]),
-                                      /* [] */0
-                                    ]),
-                                operator: "=",
-                                right: match$1[1]
-                              }]);
+                    return defineInitialLayerValue(layer, param);
                   }), List.filter((function (param) {
                           var layer$1 = layer;
                           var param$1 = param;
@@ -620,7 +657,7 @@ function generate$1(name, json, colors) {
                                       ]);
                           };
                           return Curry._2(Logic$LonaCompilerCore.IdentifierSet[/* exists */15], isAssigned, conditionallyAssigned);
-                        }))(List.filter(filterProperties)(Curry._1(StringMap$LonaCompilerCore.bindings, param[1]))));
+                        }))(List.filter(filterParameters)(Curry._1(StringMap$LonaCompilerCore.bindings, param[1]))));
     };
     return /* FunctionDeclaration */Block.__(8, [{
                 name: "update",
@@ -630,7 +667,7 @@ function generate$1(name, json, colors) {
                 ],
                 parameters: /* [] */0,
                 body: Swift$LonaCompilerCore.Document[/* joinGroups */1](/* Empty */0, /* :: */[
-                      List.concat(List.map(defineInitialValues, Curry._1(Layer$LonaCompilerCore.LayerMap[/* bindings */16], assignments))),
+                      List.concat(List.map(defineInitialLayerValues, Curry._1(Layer$LonaCompilerCore.LayerMap[/* bindings */16], assignments))),
                       /* :: */[
                         Logic$LonaCompilerCore.toSwiftAST(colors, rootLayer, logic),
                         /* [] */0
@@ -753,24 +790,22 @@ function generate$1(name, json, colors) {
                                                                       ],
                                                                       /* :: */[
                                                                         /* :: */[
-                                                                          /* FunctionDeclaration */Block.__(8, [{
-                                                                                name: "setUpDefaults",
-                                                                                modifiers: /* :: */[
-                                                                                  /* AccessLevelModifier */Block.__(0, [/* PrivateModifier */0]),
-                                                                                  /* [] */0
-                                                                                ],
-                                                                                parameters: /* [] */0,
-                                                                                body: /* [] */0
-                                                                              }]),
+                                                                          setUpDefaultsDoc(/* () */0),
+                                                                          /* [] */0
+                                                                        ],
+                                                                        /* :: */[
                                                                           /* :: */[
                                                                             /* Empty */0,
+                                                                            /* [] */0
+                                                                          ],
+                                                                          /* :: */[
                                                                             /* :: */[
                                                                               updateDoc(/* () */0),
                                                                               /* [] */0
-                                                                            ]
+                                                                            ],
+                                                                            /* [] */0
                                                                           ]
-                                                                        ],
-                                                                        /* [] */0
+                                                                        ]
                                                                       ]
                                                                     ]
                                                                   ]

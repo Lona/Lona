@@ -134,7 +134,7 @@ let getPadding = getInsets("padding");
 
 let getMargin = getInsets("margin");
 
-let parameterAssignments = (layer, node) => {
+let parameterAssignmentsFromLogic = (layer, node) => {
   let identifiers = Logic.undeclaredIdentifiers(node);
   let updateAssignments = (layerName, propertyName, logicValue, acc) =>
     switch (find(layerName, layer)) {

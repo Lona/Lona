@@ -2,7 +2,7 @@ module JavaScript = {
   let generate = (name, json) => {
     let rootLayer = json |> Decode.Component.rootLayer;
     let logic = json |> Decode.Component.logic |> Logic.addVariableDeclarations;
-    let assignments = Layer.parameterAssignments(rootLayer, logic);
+    let assignments = Layer.parameterAssignmentsFromLogic(rootLayer, logic);
     let rootLayerAST = rootLayer |> Layer.toJavaScriptAST(assignments);
     let styleSheetAST = rootLayer |> Layer.toJavaScriptStyleSheetAST;
     let logicAST = logic |> Logic.toJavaScriptAST |> Ast.JavaScript.optimize;
@@ -31,7 +31,7 @@ module Swift = {
     /* Remove the root element */
     let nonRootLayers = rootLayer |> Layer.flatten |> List.tl;
     let logic = json |> Decode.Component.logic;
-    let assignments = Layer.parameterAssignments(rootLayer, logic);
+    let assignments = Layer.parameterAssignmentsFromLogic(rootLayer, logic);
     let parameters = json |> Decode.Component.parameters;
     open Ast.Swift;
     let typeAnnotationDoc =
@@ -417,6 +417,67 @@ module Swift = {
           ])
       })
     };
+    let initialLayerValue = (layer: Types.layer, name) =>
+      switch (StringMap.find_opt(name, layer.parameters)) {
+      | Some(value) => Swift.Document.lonaValue(colors, value)
+      | None => LiteralExpression(Integer(0))
+      };
+    let defineInitialLayerValue = (layer: Types.layer, (name, _)) => {
+      let (left, right) =
+        switch (name, initialLayerValue(layer, name)) {
+        | ("visible", LiteralExpression(Boolean(value))) => (
+            "isHidden",
+            Ast.Swift.LiteralExpression(Boolean(! value))
+          )
+        | nodes => nodes
+        };
+      BinaryExpression({
+        "left": layerMemberExpression(layer, [SwiftIdentifier(left)]),
+        "operator": "=",
+        "right": right
+      })
+    };
+    let setUpDefaultsDoc = () => {
+      let filterParameters = ((name, _)) =>
+        name != "image"
+        && name != "textStyle"
+        && name != "flexDirection"
+        && name != "justifyContent"
+        && name != "alignSelf"
+        && name != "alignItems"
+        && name != "flex"
+        && name != "font"
+        && ! Js.String.startsWith("padding", name)
+        && ! Js.String.startsWith("margin", name)
+        /* Handled by initial constraint setup */
+        && name != "height"
+        && name != "width";
+      let filterNotAssignedByLogic = (layer: Types.layer, (parameterName, _)) =>
+        switch (Layer.LayerMap.find_opt(layer, assignments)) {
+        | None => true
+        | Some(parameters) =>
+          switch (StringMap.find_opt(parameterName, parameters)) {
+          | None => true
+          | Some(_) => false
+          }
+        };
+      let defineInitialLayerValues = (layer: Types.layer) =>
+        layer.parameters
+        |> StringMap.bindings
+        |> List.filter(filterParameters)
+        |> List.filter(filterNotAssignedByLogic(layer))
+        |> List.map(((k, v)) => defineInitialLayerValue(layer, (k, v)));
+      FunctionDeclaration({
+        "name": "setUpDefaults",
+        "modifiers": [AccessLevelModifier(PrivateModifier)],
+        "parameters": [],
+        "body":
+          rootLayer
+          |> Layer.flatten
+          |> List.map(defineInitialLayerValues)
+          |> Swift.Document.joinGroups(Empty)
+      })
+    };
     let updateDoc = () => {
       /* let printStringBinding = ((key, value)) => Js.log2(key, value);
          let printLayerBinding = ((key: Types.layer, value)) => {
@@ -424,41 +485,21 @@ module Swift = {
            StringMap.bindings(value) |> List.iter(printStringBinding)
          };
          Layer.LayerMap.bindings(assignments) |> List.iter(printLayerBinding); */
-      let cond = Logic.conditionallyAssignedIdentifiers(logic);
-      cond |> Logic.IdentifierSet.elements |> List.iter(((ltype, path)) => Js.log(path));
-      let initialValue = (layer: Types.layer, name) =>
-        switch (StringMap.find_opt(name, layer.parameters)) {
-        | Some(value) => Swift.Document.lonaValue(colors, value)
-        | None => LiteralExpression(Integer(0))
-        };
-      let defineInitialValue = (layer: Types.layer, (name, value)) => {
-        let (left, right) =
-          switch (name, initialValue(layer, name)) {
-          | ("visible", LiteralExpression(Boolean(value))) => (
-              "isHidden",
-              Ast.Swift.LiteralExpression(Boolean(! value))
-            )
-          | nodes => nodes
-          };
-        BinaryExpression({
-          "left": layerMemberExpression(layer, [SwiftIdentifier(left)]),
-          "operator": "=",
-          "right": right
-        })
-      };
+      /* let cond = Logic.conditionallyAssignedIdentifiers(logic);
+         cond |> Logic.IdentifierSet.elements |> List.iter(((ltype, path)) => Js.log(path)); */
       /* TODO: Figure out how to handle images */
-      let filterProperties = ((name, _)) => name != "image" && name != "textStyle";
+      let filterParameters = ((name, _)) => name != "image" && name != "textStyle";
       let conditionallyAssigned = Logic.conditionallyAssignedIdentifiers(logic);
       let filterConditionallyAssigned = (layer: Types.layer, (name, _)) => {
         let isAssigned = ((_, value)) => value == ["layers", layer.name, name];
         conditionallyAssigned |> Logic.IdentifierSet.exists(isAssigned)
       };
-      let defineInitialValues = ((layer, propertyMap)) =>
+      let defineInitialLayerValues = ((layer, propertyMap)) =>
         propertyMap
         |> StringMap.bindings
-        |> List.filter(filterProperties)
+        |> List.filter(filterParameters)
         |> List.filter(filterConditionallyAssigned(layer))
-        |> List.map(defineInitialValue(layer));
+        |> List.map(defineInitialLayerValue(layer));
       FunctionDeclaration({
         "name": "update",
         "modifiers": [AccessLevelModifier(PrivateModifier)],
@@ -467,7 +508,10 @@ module Swift = {
           Swift.Document.joinGroups(
             Empty,
             [
-              assignments |> Layer.LayerMap.bindings |> List.map(defineInitialValues) |> List.concat,
+              assignments
+              |> Layer.LayerMap.bindings
+              |> List.map(defineInitialLayerValues)
+              |> List.concat,
               Logic.toSwiftAST(colors, rootLayer, logic)
             ]
           )
@@ -504,16 +548,9 @@ module Swift = {
               [Empty],
               [setUpConstraintsDoc(rootLayer)],
               [Empty],
-              [
-                FunctionDeclaration({
-                  "name": "setUpDefaults",
-                  "modifiers": [AccessLevelModifier(PrivateModifier)],
-                  "parameters": [],
-                  "body": []
-                }),
-                Empty,
-                updateDoc()
-              ]
+              [setUpDefaultsDoc()],
+              [Empty],
+              [updateDoc()]
             ])
         })
       ]
