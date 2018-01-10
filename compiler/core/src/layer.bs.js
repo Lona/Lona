@@ -213,15 +213,21 @@ var parameterTypeMap = StringMap$LonaCompilerCore.fromList(/* :: */[
                                           ],
                                           /* :: */[
                                             /* tuple */[
-                                              "width",
+                                              "borderRadius",
                                               /* Reference */Block.__(0, ["Number"])
                                             ],
                                             /* :: */[
                                               /* tuple */[
-                                                "height",
+                                                "width",
                                                 /* Reference */Block.__(0, ["Number"])
                                               ],
-                                              /* [] */0
+                                              /* :: */[
+                                                /* tuple */[
+                                                  "height",
+                                                  /* Reference */Block.__(0, ["Number"])
+                                                ],
+                                                /* [] */0
+                                              ]
                                             ]
                                           ]
                                         ]
@@ -474,7 +480,7 @@ function getInsets(prefix, layer) {
           Caml_builtin_exceptions.match_failure,
           [
             "/Users/devin_abbott/Projects/ComponentStudio/ComponentStudio/compiler/core/src/layer.re",
-            129,
+            130,
             6
           ]
         ];

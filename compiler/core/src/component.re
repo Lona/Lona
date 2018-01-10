@@ -426,13 +426,17 @@ module Swift = {
       let (left, right) =
         switch (name, initialLayerValue(layer, name)) {
         | ("visible", LiteralExpression(Boolean(value))) => (
-            "isHidden",
-            Ast.Swift.LiteralExpression(Boolean(! value))
+            [SwiftIdentifier("isHidden")],
+            LiteralExpression(Boolean(! value))
           )
-        | nodes => nodes
+        | ("borderRadius", LiteralExpression(FloatingPoint(_)) as right) => (
+            [SwiftIdentifier("layer"), SwiftIdentifier("cornerRadius")],
+            right
+          )
+        | (_, right) => ([SwiftIdentifier(name)], right)
         };
       BinaryExpression({
-        "left": layerMemberExpression(layer, [SwiftIdentifier(left)]),
+        "left": layerMemberExpression(layer, left),
         "operator": "=",
         "right": right
       })

@@ -544,43 +544,65 @@ function generate$1(name, json, colors) {
     var name = param[0];
     var match = initialLayerValue(layer, name);
     var match$1;
-    if (name === "visible") {
-      if (typeof match === "number") {
-        match$1 = [
-          name,
-          match
-        ];
-      } else if (match.tag) {
-        match$1 = [
-          name,
-          match
-        ];
-      } else {
-        var match$2 = match[0];
-        match$1 = typeof match$2 === "number" ? [
-            name,
-            match
-          ] : (
-            match$2.tag ? [
-                name,
+    var exit = 0;
+    switch (name) {
+      case "borderRadius" : 
+          if (typeof match === "number") {
+            exit = 1;
+          } else if (match.tag) {
+            exit = 1;
+          } else {
+            var tmp = match[0];
+            if (typeof tmp === "number" || tmp.tag !== 2) {
+              exit = 1;
+            } else {
+              match$1 = /* tuple */[
+                /* :: */[
+                  /* SwiftIdentifier */Block.__(4, ["layer"]),
+                  /* :: */[
+                    /* SwiftIdentifier */Block.__(4, ["cornerRadius"]),
+                    /* [] */0
+                  ]
+                ],
                 match
-              ] : /* tuple */[
-                "isHidden",
+              ];
+            }
+          }
+          break;
+      case "visible" : 
+          if (typeof match === "number") {
+            exit = 1;
+          } else if (match.tag) {
+            exit = 1;
+          } else {
+            var match$2 = match[0];
+            if (typeof match$2 === "number" || match$2.tag) {
+              exit = 1;
+            } else {
+              match$1 = /* tuple */[
+                /* :: */[
+                  /* SwiftIdentifier */Block.__(4, ["isHidden"]),
+                  /* [] */0
+                ],
                 /* LiteralExpression */Block.__(0, [/* Boolean */Block.__(0, [1 - match$2[0]])])
-              ]
-          );
-      }
-    } else {
-      match$1 = [
-        name,
+              ];
+            }
+          }
+          break;
+      default:
+        exit = 1;
+    }
+    if (exit === 1) {
+      match$1 = /* tuple */[
+        /* :: */[
+          /* SwiftIdentifier */Block.__(4, [name]),
+          /* [] */0
+        ],
         match
       ];
     }
     return /* BinaryExpression */Block.__(2, [{
-                left: memberOrSelfExpression(parentNameOrSelf(layer), /* :: */[
-                      /* SwiftIdentifier */Block.__(4, [match$1[0]]),
-                      /* [] */0
-                    ]),
+                left: memberOrSelfExpression(parentNameOrSelf(layer), match$1[0]),
                 operator: "=",
                 right: match$1[1]
               }]);

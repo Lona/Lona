@@ -480,39 +480,39 @@ function toSwiftAST(colors, rootLayer, logicRootNode) {
                 match$1
               ];
             } else if (match.tag === 4) {
+              var name = match[0];
+              var exit = 0;
               if (typeof match$1 === "number") {
-                match$2 = [
-                  match,
-                  match$1
-                ];
+                exit = 1;
               } else if (match$1.tag) {
-                match$2 = [
-                  match,
-                  match$1
-                ];
+                exit = 1;
               } else {
                 var match$3 = match$1[0];
-                if (typeof match$3 === "number") {
-                  match$2 = [
-                    match,
-                    match$1
-                  ];
-                } else if (match$3.tag) {
-                  match$2 = [
-                    match,
-                    match$1
-                  ];
+                if (typeof match$3 === "number" || !(!match$3.tag && name.endsWith("visible"))) {
+                  exit = 1;
                 } else {
-                  var name = match[0];
-                  match$2 = name.endsWith("visible") ? /* tuple */[
-                      /* SwiftIdentifier */Block.__(4, [name.replace("visible", "isHidden")]),
-                      /* LiteralExpression */Block.__(0, [/* Boolean */Block.__(0, [1 - match$3[0]])])
-                    ] : [
-                      match,
-                      match$1
-                    ];
+                  match$2 = /* tuple */[
+                    /* SwiftIdentifier */Block.__(4, [name.replace("visible", "isHidden")]),
+                    /* LiteralExpression */Block.__(0, [/* Boolean */Block.__(0, [1 - match$3[0]])])
+                  ];
                 }
               }
+              if (exit === 1) {
+                match$2 = name.endsWith("borderRadius") ? /* tuple */[
+                    /* MemberExpression */Block.__(1, [/* :: */[
+                          /* SwiftIdentifier */Block.__(4, ["layer"]),
+                          /* :: */[
+                            /* SwiftIdentifier */Block.__(4, [name.replace("borderRadius", "cornerRadius")]),
+                            /* [] */0
+                          ]
+                        ]]),
+                    match$1
+                  ] : [
+                    match,
+                    match$1
+                  ];
+              }
+              
             } else {
               match$2 = [
                 match,

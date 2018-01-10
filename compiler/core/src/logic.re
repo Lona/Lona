@@ -216,6 +216,13 @@ let rec toSwiftAST = (colors, rootLayer: Types.layer, logicRootNode) => {
             Ast.Swift.SwiftIdentifier(name |> Js.String.replace("visible", "isHidden")),
             Ast.Swift.LiteralExpression(Boolean(! value))
           )
+        | (Ast.Swift.SwiftIdentifier(name), right) when name |> Js.String.endsWith("borderRadius") => (
+            Ast.Swift.MemberExpression([
+              Ast.Swift.SwiftIdentifier("layer"),
+              Ast.Swift.SwiftIdentifier(name |> Js.String.replace("borderRadius", "cornerRadius"))
+            ]),
+            right
+          )
         | nodes => nodes
         };
       Ast.Swift.BinaryExpression({"left": left, "operator": "=", "right": right})

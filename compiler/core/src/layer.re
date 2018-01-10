@@ -35,6 +35,7 @@ let parameterTypeMap =
     ("paddingRight", Types.Reference("Number")),
     ("paddingBottom", Types.Reference("Number")),
     ("paddingLeft", Types.Reference("Number")),
+    ("borderRadius", Types.Reference("Number")),
     ("width", Types.Reference("Number")),
     ("height", Types.Reference("Number"))
   ]
