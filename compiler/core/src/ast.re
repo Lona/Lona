@@ -34,12 +34,13 @@ module Swift = {
     | FloatingPoint(float)
     | String(string)
     | Color(string)
+    | Array(list(node))
   and typeAnnotation =
     | TypeName(string)
     | TypeIdentifier({. "name": typeAnnotation, "member": typeAnnotation})
     | ArrayType({. "element": typeAnnotation})
     | DictionaryType({. "key": typeAnnotation, "value": typeAnnotation})
-    | OptionalType({. "value": typeAnnotation})
+    | OptionalType(typeAnnotation)
     | TypeInheritanceList({. "list": list(typeAnnotation)})
   and pattern =
     | WildcardPattern

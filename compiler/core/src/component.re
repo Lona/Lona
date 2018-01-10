@@ -22,6 +22,10 @@ module JavaScript = {
 };
 
 module Swift = {
+  type constraintDefinition = {
+    variableName: string,
+    initialValue: Ast.Swift.node
+  };
   let generate = (name, json, colors) => {
     let rootLayer = json |> Decode.Component.rootLayer;
     /* Remove the root element */
@@ -93,6 +97,17 @@ module Swift = {
                   ]
             })
           ),
+        "block": None
+      });
+    let constraintVariableDoc = (variableName) =>
+      VariableDeclaration({
+        "modifiers": [AccessLevelModifier(PrivateModifier)],
+        "pattern":
+          IdentifierPattern({
+            "identifier": variableName,
+            "annotation": Some(OptionalType(TypeName("NSLayoutConstraint")))
+          }),
+        "init": None,
         "block": None
       });
     let initParameterDoc = (parameter: Decode.parameter) =>
@@ -196,42 +211,31 @@ module Swift = {
         "body": Layer.flatmapParent(addSubviews, root) |> List.concat
       })
     };
-    let setUpConstraintsDoc = (root: Types.layer) => {
-      let translatesAutoresizingMask = (layer: Types.layer) =>
-        BinaryExpression({
-          "left":
-            layerMemberExpression(
-              layer,
-              [SwiftIdentifier("translatesAutoresizingMaskIntoConstraints")]
-            ),
-          "operator": "=",
-          "right": LiteralExpression(Boolean(false))
-        });
+    let getConstraints = (root: Types.layer) => {
       /* titleView.topAnchor.constraint(equalTo: self.topAnchor, constant: 24).isActive = true */
-      let setUpContraint = (layer: Types.layer, anchor1, parent: Types.layer, anchor2, constant) =>
-        BinaryExpression({
-          "left":
-            MemberExpression([
-              SwiftIdentifier(layer.name |> Swift.Format.layerName),
-              SwiftIdentifier(anchor1),
-              FunctionCallExpression({
-                "name": SwiftIdentifier("constraint"),
-                "arguments": [
-                  FunctionCallArgument({
-                    "name": Some(SwiftIdentifier("equalTo")),
-                    "value": layerMemberExpression(parent, [SwiftIdentifier(anchor2)])
-                  }),
-                  FunctionCallArgument({
-                    "name": Some(SwiftIdentifier("constant")),
-                    "value": LiteralExpression(FloatingPoint(constant))
-                  })
-                ]
-              }),
-              SwiftIdentifier("isActive")
-            ]),
-          "operator": "=",
-          "right": LiteralExpression(Boolean(true))
-        });
+      let setUpContraint = (layer: Types.layer, anchor1, parent: Types.layer, anchor2, constant) => {
+        let variableName =
+          Swift.Format.layerName(layer.name) ++ Swift.Format.upperFirst(anchor1) ++ "Constraint";
+        let initialValue =
+          MemberExpression([
+            SwiftIdentifier(layer.name |> Swift.Format.layerName),
+            SwiftIdentifier(anchor1),
+            FunctionCallExpression({
+              "name": SwiftIdentifier("constraint"),
+              "arguments": [
+                FunctionCallArgument({
+                  "name": Some(SwiftIdentifier("equalTo")),
+                  "value": layerMemberExpression(parent, [SwiftIdentifier(anchor2)])
+                }),
+                FunctionCallArgument({
+                  "name": Some(SwiftIdentifier("constant")),
+                  "value": LiteralExpression(FloatingPoint(constant))
+                })
+              ]
+            })
+          ]);
+        {variableName, initialValue}
+      };
       let constrainAxes = (parent: Types.layer) => {
         let direction = Layer.flexDirection(parent);
         let primaryBeforeAnchor = direction == "column" ? "topAnchor" : "leadingAnchor";
@@ -257,6 +261,12 @@ module Swift = {
                 )
               ]
             | x when x == List.length(parent.children) - 1 =>
+              let previousLayer = List.nth(parent.children, index - 1);
+              let previousMargin = Layer.getMargin(previousLayer);
+              let betweenConstant =
+                direction == "column" ?
+                  previousMargin.bottom +. layerMargin.top :
+                  previousMargin.right +. layerMargin.left;
               let primaryAfterConstant =
                 direction == "column" ?
                   parentPadding.bottom +. layerMargin.bottom :
@@ -264,14 +274,21 @@ module Swift = {
               [
                 setUpContraint(
                   layer,
+                  primaryBeforeAnchor,
+                  previousLayer,
+                  primaryAfterAnchor,
+                  betweenConstant
+                ),
+                setUpContraint(
+                  layer,
                   primaryAfterAnchor,
                   parent,
                   primaryAfterAnchor,
-                  -. primaryAfterConstant
+                  primaryAfterConstant
                 )
               ]
             | _ =>
-              let previousLayer = List.nth(parent.children, index);
+              let previousLayer = List.nth(parent.children, index - 1);
               let previousMargin = Layer.getMargin(previousLayer);
               let betweenConstant =
                 direction == "column" ?
@@ -309,10 +326,50 @@ module Swift = {
               -. secondaryAfterConstant
             )
           ];
-          primaryAxisConstraints @ secondaryAxisConstraints @ [Empty]
+          primaryAxisConstraints @ secondaryAxisConstraints
         };
         parent.children |> List.mapi(addConstraints) |> List.concat
       };
+      root |> Layer.flatmap(constrainAxes) |> List.concat
+    };
+    let constraints = getConstraints(rootLayer);
+    let setUpConstraintsDoc = (root: Types.layer) => {
+      let translatesAutoresizingMask = (layer: Types.layer) =>
+        BinaryExpression({
+          "left":
+            layerMemberExpression(
+              layer,
+              [SwiftIdentifier("translatesAutoresizingMaskIntoConstraints")]
+            ),
+          "operator": "=",
+          "right": LiteralExpression(Boolean(false))
+        });
+      let defineConstraint = (def) =>
+        ConstantDeclaration({
+          "modifiers": [],
+          "init": Some(def.initialValue),
+          "pattern": IdentifierPattern({"identifier": def.variableName, "annotation": None})
+        });
+      let activateConstraints = () =>
+        FunctionCallExpression({
+          "name":
+            MemberExpression([SwiftIdentifier("NSLayoutConstraint"), SwiftIdentifier("activate")]),
+          "arguments": [
+            FunctionCallArgument({
+              "name": None,
+              "value":
+                LiteralExpression(
+                  Array(constraints |> List.map((def) => SwiftIdentifier(def.variableName)))
+                )
+            })
+          ]
+        });
+      let assignConstraint = (def) =>
+        BinaryExpression({
+          "left": MemberExpression([SwiftIdentifier("self"), SwiftIdentifier(def.variableName)]),
+          "operator": "=",
+          "right": SwiftIdentifier(def.variableName)
+        });
       FunctionDeclaration({
         "name": "setUpConstraints",
         "modifiers": [AccessLevelModifier(PrivateModifier)],
@@ -321,7 +378,11 @@ module Swift = {
           List.concat([
             root |> Layer.flatmap(translatesAutoresizingMask),
             [Empty],
-            root |> Layer.flatmap(constrainAxes) |> List.concat
+            constraints |> List.map(defineConstraint),
+            [Empty],
+            [activateConstraints()],
+            [Empty],
+            constraints |> List.map(assignConstraint)
           ])
       })
     };
@@ -393,6 +454,8 @@ module Swift = {
               [LineComment("MARK: Private")],
               [Empty],
               nonRootLayers |> List.map(viewVariableDoc),
+              [Empty],
+              constraints |> List.map((def) => constraintVariableDoc(def.variableName)),
               [Empty],
               [setUpViewsDoc(rootLayer)],
               [Empty],

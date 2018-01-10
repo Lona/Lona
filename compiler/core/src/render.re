@@ -87,8 +87,14 @@ module Swift = {
     | ConstantDeclaration(o) =>
       let modifiers = o##modifiers |> List.map(renderDeclarationModifier) |> join(s(" "));
       let maybeInit =
-        o##init == None ? s("") : concat([s(" = "), o##init |> renderOptional(render)]);
-      let parts = [modifiers, s(" "), s("let"), s(" "), renderPattern(o##pattern), maybeInit];
+        o##init == None ? empty : concat([s(" = "), o##init |> renderOptional(render)]);
+      let parts = [
+        modifiers,
+        List.length(o##modifiers) > 0 ? s(" ") : empty,
+        s("let "),
+        renderPattern(o##pattern),
+        maybeInit
+      ];
       group(concat(parts))
     | VariableDeclaration(o) =>
       let modifiers = o##modifiers |> List.map(renderDeclarationModifier) |> join(s(" "));
@@ -98,8 +104,7 @@ module Swift = {
       let parts = [
         modifiers,
         List.length(o##modifiers) > 0 ? s(" ") : empty,
-        s("var"),
-        s(" "),
+        s("var "),
         renderPattern(o##pattern),
         maybeInit,
         maybeBlock
@@ -145,6 +150,7 @@ module Swift = {
     | ImportDeclaration(v) => group(concat([s("import"), line, s(v)]))
     | IfStatement(o) =>
       group(
+        hardline <+> /* Line break here due to personal preference */
         s("if") <+>
         line <+>
         render(o##condition) <+>
@@ -202,6 +208,10 @@ module Swift = {
         concat([s("alpha: "), renderFloat(rgba.a)]),
       ];
       concat([s("#colorLiteral("), join(s(", "), values), s(")")])
+    | Array(body) =>
+      let maybeLine = List.length(body) > 0 ? line : s("");
+      let body = body |> List.map(render) |> join(concat([s(","), line]));
+      group(concat([s("["), indent(concat([maybeLine, body])), maybeLine, s("]")]))
     }
   and renderTypeAnnotation = (node: typeAnnotation) =>
     switch node {
@@ -227,7 +237,7 @@ module Swift = {
           s("]")
         ])
       )
-    | OptionalType(o) => group(concat([renderTypeAnnotation(o##value), s("?")]))
+    | OptionalType(v) => group(concat([renderTypeAnnotation(v), s("?")]))
     | TypeInheritanceList(o) => group(o##list |> List.map(renderTypeAnnotation) |> join(s(", ")))
     }
   and renderPattern = (node) =>
