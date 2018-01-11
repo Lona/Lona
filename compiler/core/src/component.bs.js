@@ -323,19 +323,13 @@ function generate$1(name, json, colors) {
                                         arguments: /* [] */0
                                       }]),
                                   /* :: */[
-                                    /* FunctionCallExpression */Block.__(14, [{
-                                          name: /* SwiftIdentifier */Block.__(5, ["setUpDefaults"]),
-                                          arguments: /* [] */0
-                                        }]),
+                                    /* Empty */0,
                                     /* :: */[
-                                      /* Empty */0,
-                                      /* :: */[
-                                        /* FunctionCallExpression */Block.__(14, [{
-                                              name: /* SwiftIdentifier */Block.__(5, ["update"]),
-                                              arguments: /* [] */0
-                                            }]),
-                                        /* [] */0
-                                      ]
+                                      /* FunctionCallExpression */Block.__(14, [{
+                                            name: /* SwiftIdentifier */Block.__(5, ["update"]),
+                                            arguments: /* [] */0
+                                          }]),
+                                      /* [] */0
                                     ]
                                   ]
                                 ]
@@ -366,7 +360,160 @@ function generate$1(name, json, colors) {
       return Swift$LonaCompilerCore.Format[/* layerName */0](parent[/* name */1]);
     }
   };
+  var initialLayerValue = function (layer, name) {
+    var match = StringMap$LonaCompilerCore.find_opt(name, layer[/* parameters */2]);
+    if (match) {
+      return Swift$LonaCompilerCore.Document[/* lonaValue */2](colors, match[0]);
+    } else {
+      var param = name;
+      if (param === "backgroundColor") {
+        return /* MemberExpression */Block.__(1, [/* :: */[
+                    /* SwiftIdentifier */Block.__(5, ["UIColor"]),
+                    /* :: */[
+                      /* SwiftIdentifier */Block.__(5, ["clear"]),
+                      /* [] */0
+                    ]
+                  ]]);
+      } else {
+        return /* LiteralExpression */Block.__(0, [/* Integer */Block.__(1, [0])]);
+      }
+    }
+  };
+  var defineInitialLayerValue = function (layer, param) {
+    var name = param[0];
+    var match = initialLayerValue(layer, name);
+    var match$1;
+    var exit = 0;
+    switch (name) {
+      case "borderRadius" : 
+          if (typeof match === "number") {
+            exit = 1;
+          } else if (match.tag) {
+            exit = 1;
+          } else {
+            var tmp = match[0];
+            if (typeof tmp === "number" || tmp.tag !== 2) {
+              exit = 1;
+            } else {
+              match$1 = /* tuple */[
+                memberOrSelfExpression(parentNameOrSelf(layer), /* :: */[
+                      /* SwiftIdentifier */Block.__(5, ["layer"]),
+                      /* :: */[
+                        /* SwiftIdentifier */Block.__(5, ["cornerRadius"]),
+                        /* [] */0
+                      ]
+                    ]),
+                match
+              ];
+            }
+          }
+          break;
+      case "height" : 
+          if (typeof match === "number") {
+            exit = 1;
+          } else if (match.tag) {
+            exit = 1;
+          } else {
+            var tmp$1 = match[0];
+            if (typeof tmp$1 === "number" || tmp$1.tag !== 2) {
+              exit = 1;
+            } else {
+              match$1 = /* tuple */[
+                /* SwiftIdentifier */Block.__(5, [parentNameOrSelf(layer) + "HeightAnchorConstraint?.constant"]),
+                match
+              ];
+            }
+          }
+          break;
+      case "visible" : 
+          if (typeof match === "number") {
+            exit = 1;
+          } else if (match.tag) {
+            exit = 1;
+          } else {
+            var match$2 = match[0];
+            if (typeof match$2 === "number" || match$2.tag) {
+              exit = 1;
+            } else {
+              match$1 = /* tuple */[
+                memberOrSelfExpression(parentNameOrSelf(layer), /* :: */[
+                      /* SwiftIdentifier */Block.__(5, ["isHidden"]),
+                      /* [] */0
+                    ]),
+                /* LiteralExpression */Block.__(0, [/* Boolean */Block.__(0, [1 - match$2[0]])])
+              ];
+            }
+          }
+          break;
+      case "width" : 
+          if (typeof match === "number") {
+            exit = 1;
+          } else if (match.tag) {
+            exit = 1;
+          } else {
+            var tmp$2 = match[0];
+            if (typeof tmp$2 === "number" || tmp$2.tag !== 2) {
+              exit = 1;
+            } else {
+              match$1 = /* tuple */[
+                /* SwiftIdentifier */Block.__(5, [parentNameOrSelf(layer) + "WidthAnchorConstraint?.constant"]),
+                match
+              ];
+            }
+          }
+          break;
+      default:
+        exit = 1;
+    }
+    if (exit === 1) {
+      match$1 = /* tuple */[
+        memberOrSelfExpression(parentNameOrSelf(layer), /* :: */[
+              /* SwiftIdentifier */Block.__(5, [name]),
+              /* [] */0
+            ]),
+        match
+      ];
+    }
+    return /* BinaryExpression */Block.__(2, [{
+                left: match$1[0],
+                operator: "=",
+                right: match$1[1]
+              }]);
+  };
   var setUpViewsDoc = function (root) {
+    var setUpDefaultsDoc = function () {
+      var filterParameters = function (param) {
+        var name = param[0];
+        if (name !== "image" && name !== "textStyle" && name !== "flexDirection" && name !== "justifyContent" && name !== "alignSelf" && name !== "alignItems" && name !== "flex" && name !== "font" && !name.startsWith("padding") && !name.startsWith("margin") && name !== "height") {
+          return +(name !== "width");
+        } else {
+          return /* false */0;
+        }
+      };
+      var defineInitialLayerValues = function (layer) {
+        return List.map((function (param) {
+                      return defineInitialLayerValue(layer, /* tuple */[
+                                  param[0],
+                                  param[1]
+                                ]);
+                    }), List.filter((function (param) {
+                            var layer$1 = layer;
+                            var param$1 = param;
+                            var match = Layer$LonaCompilerCore.LayerMap[/* find_opt */24](layer$1, assignments);
+                            if (match) {
+                              var match$1 = StringMap$LonaCompilerCore.find_opt(param$1[0], match[0]);
+                              if (match$1) {
+                                return /* false */0;
+                              } else {
+                                return /* true */1;
+                              }
+                            } else {
+                              return /* true */1;
+                            }
+                          }))(List.filter(filterParameters)(Curry._1(StringMap$LonaCompilerCore.bindings, layer[/* parameters */2]))));
+      };
+      return List.concat(List.map(defineInitialLayerValues, Layer$LonaCompilerCore.flatten(rootLayer)));
+    };
     var addSubviews = function (parent, layer) {
       if (parent) {
         return /* :: */[
@@ -393,7 +540,13 @@ function generate$1(name, json, colors) {
                   /* [] */0
                 ],
                 parameters: /* [] */0,
-                body: List.concat(Layer$LonaCompilerCore.flatmapParent(addSubviews, root))
+                body: Swift$LonaCompilerCore.Document[/* joinGroups */1](/* Empty */0, /* :: */[
+                      List.concat(Layer$LonaCompilerCore.flatmapParent(addSubviews, root)),
+                      /* :: */[
+                        setUpDefaultsDoc(/* () */0),
+                        /* [] */0
+                      ]
+                    ])
               }]);
   };
   var getConstraints = function (root) {
@@ -656,167 +809,6 @@ function generate$1(name, json, colors) {
                     ])
               }]);
   };
-  var initialLayerValue = function (layer, name) {
-    var match = StringMap$LonaCompilerCore.find_opt(name, layer[/* parameters */2]);
-    if (match) {
-      return Swift$LonaCompilerCore.Document[/* lonaValue */2](colors, match[0]);
-    } else {
-      var param = name;
-      if (param === "backgroundColor") {
-        return /* MemberExpression */Block.__(1, [/* :: */[
-                    /* SwiftIdentifier */Block.__(5, ["UIColor"]),
-                    /* :: */[
-                      /* SwiftIdentifier */Block.__(5, ["clear"]),
-                      /* [] */0
-                    ]
-                  ]]);
-      } else {
-        return /* LiteralExpression */Block.__(0, [/* Integer */Block.__(1, [0])]);
-      }
-    }
-  };
-  var defineInitialLayerValue = function (layer, param) {
-    var name = param[0];
-    var match = initialLayerValue(layer, name);
-    var match$1;
-    var exit = 0;
-    switch (name) {
-      case "borderRadius" : 
-          if (typeof match === "number") {
-            exit = 1;
-          } else if (match.tag) {
-            exit = 1;
-          } else {
-            var tmp = match[0];
-            if (typeof tmp === "number" || tmp.tag !== 2) {
-              exit = 1;
-            } else {
-              match$1 = /* tuple */[
-                memberOrSelfExpression(parentNameOrSelf(layer), /* :: */[
-                      /* SwiftIdentifier */Block.__(5, ["layer"]),
-                      /* :: */[
-                        /* SwiftIdentifier */Block.__(5, ["cornerRadius"]),
-                        /* [] */0
-                      ]
-                    ]),
-                match
-              ];
-            }
-          }
-          break;
-      case "height" : 
-          if (typeof match === "number") {
-            exit = 1;
-          } else if (match.tag) {
-            exit = 1;
-          } else {
-            var tmp$1 = match[0];
-            if (typeof tmp$1 === "number" || tmp$1.tag !== 2) {
-              exit = 1;
-            } else {
-              match$1 = /* tuple */[
-                /* SwiftIdentifier */Block.__(5, [parentNameOrSelf(layer) + "HeightAnchorConstraint?.constant"]),
-                match
-              ];
-            }
-          }
-          break;
-      case "visible" : 
-          if (typeof match === "number") {
-            exit = 1;
-          } else if (match.tag) {
-            exit = 1;
-          } else {
-            var match$2 = match[0];
-            if (typeof match$2 === "number" || match$2.tag) {
-              exit = 1;
-            } else {
-              match$1 = /* tuple */[
-                memberOrSelfExpression(parentNameOrSelf(layer), /* :: */[
-                      /* SwiftIdentifier */Block.__(5, ["isHidden"]),
-                      /* [] */0
-                    ]),
-                /* LiteralExpression */Block.__(0, [/* Boolean */Block.__(0, [1 - match$2[0]])])
-              ];
-            }
-          }
-          break;
-      case "width" : 
-          if (typeof match === "number") {
-            exit = 1;
-          } else if (match.tag) {
-            exit = 1;
-          } else {
-            var tmp$2 = match[0];
-            if (typeof tmp$2 === "number" || tmp$2.tag !== 2) {
-              exit = 1;
-            } else {
-              match$1 = /* tuple */[
-                /* SwiftIdentifier */Block.__(5, [parentNameOrSelf(layer) + "WidthAnchorConstraint?.constant"]),
-                match
-              ];
-            }
-          }
-          break;
-      default:
-        exit = 1;
-    }
-    if (exit === 1) {
-      match$1 = /* tuple */[
-        memberOrSelfExpression(parentNameOrSelf(layer), /* :: */[
-              /* SwiftIdentifier */Block.__(5, [name]),
-              /* [] */0
-            ]),
-        match
-      ];
-    }
-    return /* BinaryExpression */Block.__(2, [{
-                left: match$1[0],
-                operator: "=",
-                right: match$1[1]
-              }]);
-  };
-  var setUpDefaultsDoc = function () {
-    var filterParameters = function (param) {
-      var name = param[0];
-      if (name !== "image" && name !== "textStyle" && name !== "flexDirection" && name !== "justifyContent" && name !== "alignSelf" && name !== "alignItems" && name !== "flex" && name !== "font" && !name.startsWith("padding") && !name.startsWith("margin") && name !== "height") {
-        return +(name !== "width");
-      } else {
-        return /* false */0;
-      }
-    };
-    var defineInitialLayerValues = function (layer) {
-      return List.map((function (param) {
-                    return defineInitialLayerValue(layer, /* tuple */[
-                                param[0],
-                                param[1]
-                              ]);
-                  }), List.filter((function (param) {
-                          var layer$1 = layer;
-                          var param$1 = param;
-                          var match = Layer$LonaCompilerCore.LayerMap[/* find_opt */24](layer$1, assignments);
-                          if (match) {
-                            var match$1 = StringMap$LonaCompilerCore.find_opt(param$1[0], match[0]);
-                            if (match$1) {
-                              return /* false */0;
-                            } else {
-                              return /* true */1;
-                            }
-                          } else {
-                            return /* true */1;
-                          }
-                        }))(List.filter(filterParameters)(Curry._1(StringMap$LonaCompilerCore.bindings, layer[/* parameters */2]))));
-    };
-    return /* FunctionDeclaration */Block.__(9, [{
-                name: "setUpDefaults",
-                modifiers: /* :: */[
-                  /* AccessLevelModifier */Block.__(0, [/* PrivateModifier */0]),
-                  /* [] */0
-                ],
-                parameters: /* [] */0,
-                body: List.concat(List.map(defineInitialLayerValues, Layer$LonaCompilerCore.flatten(rootLayer)))
-              }]);
-  };
   var updateDoc = function () {
     var filterParameters = function (param) {
       var name = param[0];
@@ -988,22 +980,10 @@ function generate$1(name, json, colors) {
                                                                           ],
                                                                           /* :: */[
                                                                             /* :: */[
-                                                                              setUpDefaultsDoc(/* () */0),
+                                                                              updateDoc(/* () */0),
                                                                               /* [] */0
                                                                             ],
-                                                                            /* :: */[
-                                                                              /* :: */[
-                                                                                /* Empty */0,
-                                                                                /* [] */0
-                                                                              ],
-                                                                              /* :: */[
-                                                                                /* :: */[
-                                                                                  updateDoc(/* () */0),
-                                                                                  /* [] */0
-                                                                                ],
-                                                                                /* [] */0
-                                                                              ]
-                                                                            ]
+                                                                            /* [] */0
                                                                           ]
                                                                         ]
                                                                       ]

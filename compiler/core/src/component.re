@@ -244,7 +244,6 @@ module Swift = {
                 "name": SwiftIdentifier("setUpConstraints"),
                 "arguments": []
               }),
-              FunctionCallExpression({"name": SwiftIdentifier("setUpDefaults"), "arguments": []}),
               Empty,
               FunctionCallExpression({"name": SwiftIdentifier("update"), "arguments": []})
             ]
@@ -259,7 +258,75 @@ module Swift = {
       parent === rootLayer ? "self" : parent.name |> Swift.Format.layerName;
     let layerMemberExpression = (layer: Types.layer, statements) =>
       memberOrSelfExpression(parentNameOrSelf(layer), statements);
+    let defaultValueForParameter =
+      fun
+      | "backgroundColor" =>
+        MemberExpression([SwiftIdentifier("UIColor"), SwiftIdentifier("clear")])
+      | _ => LiteralExpression(Integer(0));
+    let initialLayerValue = (layer: Types.layer, name) =>
+      switch (StringMap.find_opt(name, layer.parameters)) {
+      | Some(value) => Swift.Document.lonaValue(colors, value)
+      | None => defaultValueForParameter(name)
+      };
+    let defineInitialLayerValue = (layer: Types.layer, (name, _)) => {
+      let (left, right) =
+        switch (name, initialLayerValue(layer, name)) {
+        | ("visible", LiteralExpression(Boolean(value))) => (
+            layerMemberExpression(layer, [SwiftIdentifier("isHidden")]),
+            LiteralExpression(Boolean(! value))
+          )
+        | ("borderRadius", LiteralExpression(FloatingPoint(_)) as right) => (
+            layerMemberExpression(
+              layer,
+              [SwiftIdentifier("layer"), SwiftIdentifier("cornerRadius")]
+            ),
+            right
+          )
+        | ("height", LiteralExpression(FloatingPoint(_)) as right) => (
+            SwiftIdentifier(parentNameOrSelf(layer) ++ "HeightAnchorConstraint?.constant"),
+            right
+          )
+        | ("width", LiteralExpression(FloatingPoint(_)) as right) => (
+            SwiftIdentifier(parentNameOrSelf(layer) ++ "WidthAnchorConstraint?.constant"),
+            right
+          )
+        | (_, right) => (layerMemberExpression(layer, [SwiftIdentifier(name)]), right)
+        };
+      BinaryExpression({"left": left, "operator": "=", "right": right})
+    };
     let setUpViewsDoc = (root: Types.layer) => {
+      let setUpDefaultsDoc = () => {
+        let filterParameters = ((name, _)) =>
+          name != "image"
+          && name != "textStyle"
+          && name != "flexDirection"
+          && name != "justifyContent"
+          && name != "alignSelf"
+          && name != "alignItems"
+          && name != "flex"
+          && name != "font"
+          && ! Js.String.startsWith("padding", name)
+          && ! Js.String.startsWith("margin", name)
+          /* Handled by initial constraint setup */
+          && name != "height"
+          && name != "width";
+        let filterNotAssignedByLogic = (layer: Types.layer, (parameterName, _)) =>
+          switch (Layer.LayerMap.find_opt(layer, assignments)) {
+          | None => true
+          | Some(parameters) =>
+            switch (StringMap.find_opt(parameterName, parameters)) {
+            | None => true
+            | Some(_) => false
+            }
+          };
+        let defineInitialLayerValues = (layer: Types.layer) =>
+          layer.parameters
+          |> StringMap.bindings
+          |> List.filter(filterParameters)
+          |> List.filter(filterNotAssignedByLogic(layer))
+          |> List.map(((k, v)) => defineInitialLayerValue(layer, (k, v)));
+        rootLayer |> Layer.flatten |> List.map(defineInitialLayerValues) |> List.concat
+      };
       let addSubviews = (parent: option(Types.layer), layer: Types.layer) =>
         switch parent {
         | None => []
@@ -274,7 +341,11 @@ module Swift = {
         "name": "setUpViews",
         "modifiers": [AccessLevelModifier(PrivateModifier)],
         "parameters": [],
-        "body": Layer.flatmapParent(addSubviews, root) |> List.concat
+        "body":
+          Swift.Document.joinGroups(
+            Empty,
+            [Layer.flatmapParent(addSubviews, root) |> List.concat, setUpDefaultsDoc()]
+          )
       })
     };
     let getConstraints = (root: Types.layer) => {
@@ -538,79 +609,6 @@ module Swift = {
           ])
       })
     };
-    let defaultValueForParameter =
-      fun
-      | "backgroundColor" =>
-        MemberExpression([SwiftIdentifier("UIColor"), SwiftIdentifier("clear")])
-      | _ => LiteralExpression(Integer(0));
-    let initialLayerValue = (layer: Types.layer, name) =>
-      switch (StringMap.find_opt(name, layer.parameters)) {
-      | Some(value) => Swift.Document.lonaValue(colors, value)
-      | None => defaultValueForParameter(name)
-      };
-    let defineInitialLayerValue = (layer: Types.layer, (name, _)) => {
-      let (left, right) =
-        switch (name, initialLayerValue(layer, name)) {
-        | ("visible", LiteralExpression(Boolean(value))) => (
-            layerMemberExpression(layer, [SwiftIdentifier("isHidden")]),
-            LiteralExpression(Boolean(! value))
-          )
-        | ("borderRadius", LiteralExpression(FloatingPoint(_)) as right) => (
-            layerMemberExpression(
-              layer,
-              [SwiftIdentifier("layer"), SwiftIdentifier("cornerRadius")]
-            ),
-            right
-          )
-        | ("height", LiteralExpression(FloatingPoint(_)) as right) => (
-            SwiftIdentifier(parentNameOrSelf(layer) ++ "HeightAnchorConstraint?.constant"),
-            right
-          )
-        | ("width", LiteralExpression(FloatingPoint(_)) as right) => (
-            SwiftIdentifier(parentNameOrSelf(layer) ++ "WidthAnchorConstraint?.constant"),
-            right
-          )
-        | (_, right) => (layerMemberExpression(layer, [SwiftIdentifier(name)]), right)
-        };
-      BinaryExpression({"left": left, "operator": "=", "right": right})
-    };
-    let setUpDefaultsDoc = () => {
-      let filterParameters = ((name, _)) =>
-        name != "image"
-        && name != "textStyle"
-        && name != "flexDirection"
-        && name != "justifyContent"
-        && name != "alignSelf"
-        && name != "alignItems"
-        && name != "flex"
-        && name != "font"
-        && ! Js.String.startsWith("padding", name)
-        && ! Js.String.startsWith("margin", name)
-        /* Handled by initial constraint setup */
-        && name != "height"
-        && name != "width";
-      let filterNotAssignedByLogic = (layer: Types.layer, (parameterName, _)) =>
-        switch (Layer.LayerMap.find_opt(layer, assignments)) {
-        | None => true
-        | Some(parameters) =>
-          switch (StringMap.find_opt(parameterName, parameters)) {
-          | None => true
-          | Some(_) => false
-          }
-        };
-      let defineInitialLayerValues = (layer: Types.layer) =>
-        layer.parameters
-        |> StringMap.bindings
-        |> List.filter(filterParameters)
-        |> List.filter(filterNotAssignedByLogic(layer))
-        |> List.map(((k, v)) => defineInitialLayerValue(layer, (k, v)));
-      FunctionDeclaration({
-        "name": "setUpDefaults",
-        "modifiers": [AccessLevelModifier(PrivateModifier)],
-        "parameters": [],
-        "body": rootLayer |> Layer.flatten |> List.map(defineInitialLayerValues) |> List.concat
-      })
-    };
     let updateDoc = () => {
       /* let printStringBinding = ((key, value)) => Js.log2(key, value);
          let printLayerBinding = ((key: Types.layer, value)) => {
@@ -682,8 +680,6 @@ module Swift = {
               [setUpViewsDoc(rootLayer)],
               [Empty],
               [setUpConstraintsDoc(rootLayer)],
-              [Empty],
-              [setUpDefaultsDoc()],
               [Empty],
               [updateDoc()]
             ])
