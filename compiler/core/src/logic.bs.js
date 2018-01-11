@@ -499,18 +499,22 @@ function toSwiftAST(colors, rootLayer, logicRootNode) {
               }
               if (exit === 1) {
                 match$2 = name.endsWith("borderRadius") ? /* tuple */[
-                    /* MemberExpression */Block.__(1, [/* :: */[
-                          /* SwiftIdentifier */Block.__(5, ["layer"]),
-                          /* :: */[
-                            /* SwiftIdentifier */Block.__(5, [name.replace("borderRadius", "cornerRadius")]),
-                            /* [] */0
+                    /* SwiftIdentifier */Block.__(5, [name.replace("borderRadius", "layer.cornerRadius")]),
+                    match$1
+                  ] : (
+                    name.endsWith("height") ? /* tuple */[
+                        /* SwiftIdentifier */Block.__(5, [name.replace(".height", "HeightAnchorConstraint?.constant")]),
+                        match$1
+                      ] : (
+                        name.endsWith("width") ? /* tuple */[
+                            /* SwiftIdentifier */Block.__(5, [name.replace(".width", "WidthAnchorConstraint?.constant")]),
+                            match$1
+                          ] : [
+                            match,
+                            match$1
                           ]
-                        ]]),
-                    match$1
-                  ] : [
-                    match,
-                    match$1
-                  ];
+                      )
+                  );
               }
               
             } else {

@@ -538,29 +538,41 @@ module Swift = {
           ])
       })
     };
+    let defaultValueForParameter =
+      fun
+      | "backgroundColor" =>
+        MemberExpression([SwiftIdentifier("UIColor"), SwiftIdentifier("clear")])
+      | _ => LiteralExpression(Integer(0));
     let initialLayerValue = (layer: Types.layer, name) =>
       switch (StringMap.find_opt(name, layer.parameters)) {
       | Some(value) => Swift.Document.lonaValue(colors, value)
-      | None => LiteralExpression(Integer(0))
+      | None => defaultValueForParameter(name)
       };
     let defineInitialLayerValue = (layer: Types.layer, (name, _)) => {
       let (left, right) =
         switch (name, initialLayerValue(layer, name)) {
         | ("visible", LiteralExpression(Boolean(value))) => (
-            [SwiftIdentifier("isHidden")],
+            layerMemberExpression(layer, [SwiftIdentifier("isHidden")]),
             LiteralExpression(Boolean(! value))
           )
         | ("borderRadius", LiteralExpression(FloatingPoint(_)) as right) => (
-            [SwiftIdentifier("layer"), SwiftIdentifier("cornerRadius")],
+            layerMemberExpression(
+              layer,
+              [SwiftIdentifier("layer"), SwiftIdentifier("cornerRadius")]
+            ),
             right
           )
-        | (_, right) => ([SwiftIdentifier(name)], right)
+        | ("height", LiteralExpression(FloatingPoint(_)) as right) => (
+            SwiftIdentifier(parentNameOrSelf(layer) ++ "HeightAnchorConstraint?.constant"),
+            right
+          )
+        | ("width", LiteralExpression(FloatingPoint(_)) as right) => (
+            SwiftIdentifier(parentNameOrSelf(layer) ++ "WidthAnchorConstraint?.constant"),
+            right
+          )
+        | (_, right) => (layerMemberExpression(layer, [SwiftIdentifier(name)]), right)
         };
-      BinaryExpression({
-        "left": layerMemberExpression(layer, left),
-        "operator": "=",
-        "right": right
-      })
+      BinaryExpression({"left": left, "operator": "=", "right": right})
     };
     let setUpDefaultsDoc = () => {
       let filterParameters = ((name, _)) =>

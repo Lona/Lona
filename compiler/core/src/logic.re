@@ -217,10 +217,21 @@ let rec toSwiftAST = (colors, rootLayer: Types.layer, logicRootNode) => {
             Ast.Swift.LiteralExpression(Boolean(! value))
           )
         | (Ast.Swift.SwiftIdentifier(name), right) when name |> Js.String.endsWith("borderRadius") => (
-            Ast.Swift.MemberExpression([
-              Ast.Swift.SwiftIdentifier("layer"),
-              Ast.Swift.SwiftIdentifier(name |> Js.String.replace("borderRadius", "cornerRadius"))
-            ]),
+            Ast.Swift.SwiftIdentifier(
+              name |> Js.String.replace("borderRadius", "layer.cornerRadius")
+            ),
+            right
+          )
+        | (Ast.Swift.SwiftIdentifier(name), right) when name |> Js.String.endsWith("height") => (
+            Ast.Swift.SwiftIdentifier(
+              name |> Js.String.replace(".height", "HeightAnchorConstraint?.constant")
+            ),
+            right
+          )
+        | (Ast.Swift.SwiftIdentifier(name), right) when name |> Js.String.endsWith("width") => (
+            Ast.Swift.SwiftIdentifier(
+              name |> Js.String.replace(".width", "WidthAnchorConstraint?.constant")
+            ),
             right
           )
         | nodes => nodes

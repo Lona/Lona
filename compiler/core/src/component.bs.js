@@ -661,7 +661,18 @@ function generate$1(name, json, colors) {
     if (match) {
       return Swift$LonaCompilerCore.Document[/* lonaValue */2](colors, match[0]);
     } else {
-      return /* LiteralExpression */Block.__(0, [/* Integer */Block.__(1, [0])]);
+      var param = name;
+      if (param === "backgroundColor") {
+        return /* MemberExpression */Block.__(1, [/* :: */[
+                    /* SwiftIdentifier */Block.__(5, ["UIColor"]),
+                    /* :: */[
+                      /* SwiftIdentifier */Block.__(5, ["clear"]),
+                      /* [] */0
+                    ]
+                  ]]);
+      } else {
+        return /* LiteralExpression */Block.__(0, [/* Integer */Block.__(1, [0])]);
+      }
     }
   };
   var defineInitialLayerValue = function (layer, param) {
@@ -681,13 +692,30 @@ function generate$1(name, json, colors) {
               exit = 1;
             } else {
               match$1 = /* tuple */[
-                /* :: */[
-                  /* SwiftIdentifier */Block.__(5, ["layer"]),
-                  /* :: */[
-                    /* SwiftIdentifier */Block.__(5, ["cornerRadius"]),
-                    /* [] */0
-                  ]
-                ],
+                memberOrSelfExpression(parentNameOrSelf(layer), /* :: */[
+                      /* SwiftIdentifier */Block.__(5, ["layer"]),
+                      /* :: */[
+                        /* SwiftIdentifier */Block.__(5, ["cornerRadius"]),
+                        /* [] */0
+                      ]
+                    ]),
+                match
+              ];
+            }
+          }
+          break;
+      case "height" : 
+          if (typeof match === "number") {
+            exit = 1;
+          } else if (match.tag) {
+            exit = 1;
+          } else {
+            var tmp$1 = match[0];
+            if (typeof tmp$1 === "number" || tmp$1.tag !== 2) {
+              exit = 1;
+            } else {
+              match$1 = /* tuple */[
+                /* SwiftIdentifier */Block.__(5, [parentNameOrSelf(layer) + "HeightAnchorConstraint?.constant"]),
                 match
               ];
             }
@@ -704,11 +732,28 @@ function generate$1(name, json, colors) {
               exit = 1;
             } else {
               match$1 = /* tuple */[
-                /* :: */[
-                  /* SwiftIdentifier */Block.__(5, ["isHidden"]),
-                  /* [] */0
-                ],
+                memberOrSelfExpression(parentNameOrSelf(layer), /* :: */[
+                      /* SwiftIdentifier */Block.__(5, ["isHidden"]),
+                      /* [] */0
+                    ]),
                 /* LiteralExpression */Block.__(0, [/* Boolean */Block.__(0, [1 - match$2[0]])])
+              ];
+            }
+          }
+          break;
+      case "width" : 
+          if (typeof match === "number") {
+            exit = 1;
+          } else if (match.tag) {
+            exit = 1;
+          } else {
+            var tmp$2 = match[0];
+            if (typeof tmp$2 === "number" || tmp$2.tag !== 2) {
+              exit = 1;
+            } else {
+              match$1 = /* tuple */[
+                /* SwiftIdentifier */Block.__(5, [parentNameOrSelf(layer) + "WidthAnchorConstraint?.constant"]),
+                match
               ];
             }
           }
@@ -718,15 +763,15 @@ function generate$1(name, json, colors) {
     }
     if (exit === 1) {
       match$1 = /* tuple */[
-        /* :: */[
-          /* SwiftIdentifier */Block.__(5, [name]),
-          /* [] */0
-        ],
+        memberOrSelfExpression(parentNameOrSelf(layer), /* :: */[
+              /* SwiftIdentifier */Block.__(5, [name]),
+              /* [] */0
+            ]),
         match
       ];
     }
     return /* BinaryExpression */Block.__(2, [{
-                left: memberOrSelfExpression(parentNameOrSelf(layer), match$1[0]),
+                left: match$1[0],
                 operator: "=",
                 right: match$1[1]
               }]);

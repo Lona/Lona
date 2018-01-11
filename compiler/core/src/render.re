@@ -290,7 +290,7 @@ module Swift = {
     |> render
     |> (
       (doc) => {
-        let printerOptions = {"printWidth": 100, "tabWidth": 2, "useTabs": false};
+        let printerOptions = {"printWidth": 120, "tabWidth": 2, "useTabs": false};
         Prettier.Doc.Printer.printDocToString(doc, printerOptions)##formatted
       }
     );
