@@ -26,6 +26,10 @@ module Swift = {
     variableName: string,
     initialValue: Ast.Swift.node
   };
+  type directionParameter = {
+    lonaName: string,
+    swiftName: string
+  };
   let generate = (name, json, colors) => {
     let rootLayer = json |> Decode.Component.rootLayer;
     /* Remove the root element */
@@ -110,6 +114,68 @@ module Swift = {
         "init": None,
         "block": None
       });
+    let paddingParameters = [
+      {swiftName: "topPadding", lonaName: "paddingTop"},
+      {swiftName: "trailingPadding", lonaName: "paddingRight"},
+      {swiftName: "bottomPadding", lonaName: "paddingBottom"},
+      {swiftName: "leadingPadding", lonaName: "paddingLeft"}
+    ];
+    let marginParameters = [
+      {swiftName: "topMargin", lonaName: "marginTop"},
+      {swiftName: "trailingMargin", lonaName: "marginRight"},
+      {swiftName: "bottomMargin", lonaName: "marginBottom"},
+      {swiftName: "leadingMargin", lonaName: "marginLeft"}
+    ];
+    let spacingVariableDoc = (layer: Types.layer) => {
+      let variableName = (variable) =>
+        layer === rootLayer ?
+          variable : Swift.Format.layerName(layer.name) ++ Swift.Format.upperFirst(variable);
+      let marginVariables =
+        layer === rootLayer ?
+          [] :
+          {
+            let createVariable = (marginParameter: directionParameter) =>
+              VariableDeclaration({
+                "modifiers": [AccessLevelModifier(PrivateModifier)],
+                "pattern":
+                  IdentifierPattern({
+                    "identifier": variableName(marginParameter.swiftName),
+                    "annotation": Some(TypeName("CGFloat"))
+                  }),
+                "init":
+                  Some(
+                    LiteralExpression(
+                      FloatingPoint(Layer.getNumberParameter(marginParameter.lonaName, layer))
+                    )
+                  ),
+                "block": None
+              });
+            marginParameters |> List.map(createVariable)
+          };
+      let paddingVariables =
+        switch layer.children {
+        | [] => []
+        | _ =>
+          let createVariable = (paddingParameter: directionParameter) =>
+            VariableDeclaration({
+              "modifiers": [AccessLevelModifier(PrivateModifier)],
+              "pattern":
+                IdentifierPattern({
+                  "identifier": variableName(paddingParameter.swiftName),
+                  "annotation": Some(TypeName("CGFloat"))
+                }),
+              "init":
+                Some(
+                  LiteralExpression(
+                    FloatingPoint(Layer.getNumberParameter(paddingParameter.lonaName, layer))
+                  )
+                ),
+              "block": None
+            });
+          paddingParameters |> List.map(createVariable)
+        };
+      marginVariables @ paddingVariables
+    };
     let initParameterDoc = (parameter: Decode.parameter) =>
       Parameter({
         "externalName": None,
@@ -212,7 +278,7 @@ module Swift = {
       })
     };
     let getConstraints = (root: Types.layer) => {
-      let setUpContraint = (layer: Types.layer, anchor1, parent: Types.layer, anchor2, constant) => {
+      let setUpContraint = (layer: Types.layer, anchor1, parent: Types.layer, anchor2, value) => {
         let variableName =
           Swift.Format.layerName(layer.name) ++ Swift.Format.upperFirst(anchor1) ++ "Constraint";
         let initialValue =
@@ -226,10 +292,7 @@ module Swift = {
                   "name": Some(SwiftIdentifier("equalTo")),
                   "value": layerMemberExpression(parent, [SwiftIdentifier(anchor2)])
                 }),
-                FunctionCallArgument({
-                  "name": Some(SwiftIdentifier("constant")),
-                  "value": LiteralExpression(FloatingPoint(constant))
-                })
+                FunctionCallArgument({"name": Some(SwiftIdentifier("constant")), "value": value})
               ]
             })
           ]);
@@ -254,6 +317,19 @@ module Swift = {
           ]);
         {variableName, initialValue}
       };
+      let constraintConstantExpression =
+          (layer: Types.layer, variable1, parent: Types.layer, variable2, invert) => {
+        let variableName = (layer: Types.layer, variable) =>
+          layer === rootLayer ?
+            variable : Swift.Format.layerName(layer.name) ++ Swift.Format.upperFirst(variable);
+        let expression =
+          BinaryExpression({
+            "left": SwiftIdentifier(variableName(layer, variable1)),
+            "operator": "+",
+            "right": SwiftIdentifier(variableName(parent, variable2))
+          });
+        invert ? PrefixExpression({"operator": "-", "expression": expression}) : expression
+      };
       let constrainAxes = (parent: Types.layer) => {
         let direction = Layer.getFlexDirection(parent);
         let primaryBeforeAnchor = direction == "column" ? "topAnchor" : "leadingAnchor";
@@ -270,7 +346,14 @@ module Swift = {
             | 0 =>
               let primaryBeforeConstant =
                 direction == "column" ?
-                  parentPadding.top +. layerMargin.top : parentPadding.left +. layerMargin.left;
+                  constraintConstantExpression(parent, "topPadding", layer, "topMargin", false) :
+                  constraintConstantExpression(
+                    parent,
+                    "leadingPadding",
+                    layer,
+                    "leadingMargin",
+                    false
+                  );
               [
                 setUpContraint(
                   layer,
@@ -287,15 +370,27 @@ module Swift = {
             | x when x == List.length(parent.children) - 1 =>
               let primaryAfterConstant =
                 direction == "column" ?
-                  parentPadding.bottom +. layerMargin.bottom :
-                  parentPadding.right +. layerMargin.right;
+                  constraintConstantExpression(
+                    parent,
+                    "bottomPadding",
+                    layer,
+                    "bottomMargin",
+                    true
+                  ) :
+                  constraintConstantExpression(
+                    parent,
+                    "trailingPadding",
+                    layer,
+                    "trailingMargin",
+                    true
+                  );
               [
                 setUpContraint(
                   layer,
                   primaryAfterAnchor,
                   parent,
                   primaryAfterAnchor,
-                  -. primaryAfterConstant
+                  primaryAfterConstant
                 )
               ]
             | _ => []
@@ -308,8 +403,20 @@ module Swift = {
               let previousMargin = Layer.getMargin(previousLayer);
               let betweenConstant =
                 direction == "column" ?
-                  previousMargin.bottom +. layerMargin.top :
-                  previousMargin.right +. layerMargin.left;
+                  constraintConstantExpression(
+                    previousLayer,
+                    "bottomMargin",
+                    layer,
+                    "topMargin",
+                    false
+                  ) :
+                  constraintConstantExpression(
+                    previousLayer,
+                    "trailingMargin",
+                    layer,
+                    "leadingMargin",
+                    false
+                  );
               [
                 setUpContraint(
                   layer,
@@ -322,10 +429,24 @@ module Swift = {
             };
           let secondaryBeforeConstant =
             direction == "column" ?
-              parentPadding.left +. layerMargin.left : parentPadding.top +. layerMargin.top;
+              constraintConstantExpression(
+                parent,
+                "leadingPadding",
+                layer,
+                "leadingMargin",
+                false
+              ) :
+              constraintConstantExpression(parent, "topPadding", layer, "topMargin", false);
           let secondaryAfterConstant =
             direction == "column" ?
-              parentPadding.right +. layerMargin.right : parentPadding.bottom +. layerMargin.bottom;
+              constraintConstantExpression(
+                parent,
+                "trailingPadding",
+                layer,
+                "trailingMargin",
+                true
+              ) :
+              constraintConstantExpression(parent, "bottomPadding", layer, "bottomMargin", true);
           let secondaryAxisConstraints = [
             setUpContraint(
               layer,
@@ -339,7 +460,7 @@ module Swift = {
               secondaryAfterAnchor,
               parent,
               secondaryAfterAnchor,
-              -. secondaryAfterConstant
+              secondaryAfterConstant
             )
           ];
           let heightConstraint =
@@ -475,11 +596,7 @@ module Swift = {
         "name": "setUpDefaults",
         "modifiers": [AccessLevelModifier(PrivateModifier)],
         "parameters": [],
-        "body":
-          rootLayer
-          |> Layer.flatten
-          |> List.map(defineInitialLayerValues)
-          |> Swift.Document.joinGroups(Empty)
+        "body": rootLayer |> Layer.flatten |> List.map(defineInitialLayerValues) |> List.concat
       })
     };
     let updateDoc = () => {
@@ -545,6 +662,8 @@ module Swift = {
               [LineComment("MARK: Private")],
               [Empty],
               nonRootLayers |> List.map(viewVariableDoc),
+              [Empty],
+              rootLayer |> Layer.flatmap(spacingVariableDoc) |> List.concat,
               [Empty],
               constraints |> List.map((def) => constraintVariableDoc(def.variableName)),
               [Empty],

@@ -48,9 +48,9 @@ function find(colors, id) {
 function render(target, colors) {
   if (target !== 0) {
     var colorConstantDoc = function (color) {
-      return /* LineEndComment */Block.__(15, [{
+      return /* LineEndComment */Block.__(16, [{
                   comment: color[/* value */2],
-                  line: /* ConstantDeclaration */Block.__(5, [{
+                  line: /* ConstantDeclaration */Block.__(6, [{
                         modifiers: /* :: */[
                           /* AccessLevelModifier */Block.__(0, [/* PublicModifier */3]),
                           /* :: */[
@@ -66,13 +66,13 @@ function render(target, colors) {
                       }])
                 }]);
     };
-    return Render$LonaCompilerCore.Swift[/* toString */9](/* TopLevelDeclaration */Block.__(18, [{
+    return Render$LonaCompilerCore.Swift[/* toString */9](/* TopLevelDeclaration */Block.__(19, [{
                     statements: /* :: */[
-                      /* ImportDeclaration */Block.__(9, ["UIKit"]),
+                      /* ImportDeclaration */Block.__(10, ["UIKit"]),
                       /* :: */[
                         /* Empty */0,
                         /* :: */[
-                          /* ClassDeclaration */Block.__(3, [{
+                          /* ClassDeclaration */Block.__(4, [{
                                 name: "Colors",
                                 inherits: /* [] */0,
                                 modifier: /* None */0,

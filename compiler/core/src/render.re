@@ -74,6 +74,8 @@ module Swift = {
       v |> List.map(render) |> join(concat([softline, s(".")])) |> indent |> group
     | BinaryExpression(o) =>
       group(render(o##left) <+> s(" ") <+> s(o##operator) <+> line <+> render(o##right))
+    | PrefixExpression(o) =>
+      group(s(o##operator) <+> s("(") <+> softline <+> render(o##expression) <+> softline <+> s(")"))
     | ClassDeclaration(o) =>
       let maybeFinal = o##isFinal ? s("final") <+> line : empty;
       let maybeModifier = o##modifier != None ? concat([o##modifier |> renderOptional(renderAccessLevelModifier), line]) : empty;
@@ -288,7 +290,7 @@ module Swift = {
     |> render
     |> (
       (doc) => {
-        let printerOptions = {"printWidth": 140, "tabWidth": 2, "useTabs": false};
+        let printerOptions = {"printWidth": 100, "tabWidth": 2, "useTabs": false};
         Prettier.Doc.Printer.printDocToString(doc, printerOptions)##formatted
       }
     );

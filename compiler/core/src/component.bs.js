@@ -68,7 +68,7 @@ function generate$1(name, json, colors) {
     }
   };
   var parameterVariableDoc = function (parameter) {
-    return /* VariableDeclaration */Block.__(6, [{
+    return /* VariableDeclaration */Block.__(7, [{
                 modifiers: /* [] */0,
                 pattern: /* IdentifierPattern */Block.__(0, [{
                       identifier: parameter[/* name */0],
@@ -78,8 +78,8 @@ function generate$1(name, json, colors) {
                 block: /* Some */[/* WillSetDidSetBlock */[{
                       willSet: /* None */0,
                       didSet: /* Some */[/* :: */[
-                          /* FunctionCallExpression */Block.__(13, [{
-                                name: /* SwiftIdentifier */Block.__(4, ["update"]),
+                          /* FunctionCallExpression */Block.__(14, [{
+                                name: /* SwiftIdentifier */Block.__(5, ["update"]),
                                 arguments: /* [] */0
                               }]),
                           /* [] */0
@@ -90,22 +90,22 @@ function generate$1(name, json, colors) {
   var viewTypeInitDoc = function (param) {
     switch (param) {
       case 0 : 
-          return /* SwiftIdentifier */Block.__(4, ["UIView"]);
+          return /* SwiftIdentifier */Block.__(5, ["UIView"]);
       case 1 : 
-          return /* SwiftIdentifier */Block.__(4, ["UILabel"]);
+          return /* SwiftIdentifier */Block.__(5, ["UILabel"]);
       case 2 : 
-          return /* SwiftIdentifier */Block.__(4, ["UIImageView"]);
+          return /* SwiftIdentifier */Block.__(5, ["UIImageView"]);
       case 3 : 
       case 4 : 
       case 5 : 
       case 6 : 
-          return /* SwiftIdentifier */Block.__(4, ["TypeUnknown"]);
+          return /* SwiftIdentifier */Block.__(5, ["TypeUnknown"]);
       
     }
   };
   var viewVariableDoc = function (layer) {
     var match = +(layer[/* typeName */0] === /* Text */1);
-    return /* VariableDeclaration */Block.__(6, [{
+    return /* VariableDeclaration */Block.__(7, [{
                 modifiers: /* :: */[
                   /* AccessLevelModifier */Block.__(0, [/* PrivateModifier */0]),
                   /* [] */0
@@ -114,12 +114,12 @@ function generate$1(name, json, colors) {
                       identifier: Swift$LonaCompilerCore.Format[/* layerName */0](layer[/* name */1]),
                       annotation: /* None */0
                     }]),
-                init: /* Some */[/* FunctionCallExpression */Block.__(13, [{
+                init: /* Some */[/* FunctionCallExpression */Block.__(14, [{
                         name: viewTypeInitDoc(layer[/* typeName */0]),
                         arguments: match !== 0 ? /* [] */0 : /* :: */[
-                            /* FunctionCallArgument */Block.__(12, [{
-                                  name: /* Some */[/* SwiftIdentifier */Block.__(4, ["frame"])],
-                                  value: /* SwiftIdentifier */Block.__(4, [".zero"])
+                            /* FunctionCallArgument */Block.__(13, [{
+                                  name: /* Some */[/* SwiftIdentifier */Block.__(5, ["frame"])],
+                                  value: /* SwiftIdentifier */Block.__(5, [".zero"])
                                 }]),
                             /* [] */0
                           ]
@@ -127,8 +127,109 @@ function generate$1(name, json, colors) {
                 block: /* None */0
               }]);
   };
+  var spacingVariableDoc = function (layer) {
+    var variableName = function (variable) {
+      var match = +(layer === rootLayer);
+      if (match !== 0) {
+        return variable;
+      } else {
+        return Swift$LonaCompilerCore.Format[/* layerName */0](layer[/* name */1]) + LodashUpperfirst(variable);
+      }
+    };
+    var match = +(layer === rootLayer);
+    var marginVariables;
+    if (match !== 0) {
+      marginVariables = /* [] */0;
+    } else {
+      var createVariable = function (marginParameter) {
+        return /* VariableDeclaration */Block.__(7, [{
+                    modifiers: /* :: */[
+                      /* AccessLevelModifier */Block.__(0, [/* PrivateModifier */0]),
+                      /* [] */0
+                    ],
+                    pattern: /* IdentifierPattern */Block.__(0, [{
+                          identifier: variableName(marginParameter[/* swiftName */1]),
+                          annotation: /* Some */[/* TypeName */Block.__(0, ["CGFloat"])]
+                        }]),
+                    init: /* Some */[/* LiteralExpression */Block.__(0, [/* FloatingPoint */Block.__(2, [Layer$LonaCompilerCore.getNumberParameter(marginParameter[/* lonaName */0], layer)])])],
+                    block: /* None */0
+                  }]);
+      };
+      marginVariables = List.map(createVariable, /* :: */[
+            /* record */[
+              /* lonaName */"marginTop",
+              /* swiftName */"topMargin"
+            ],
+            /* :: */[
+              /* record */[
+                /* lonaName */"marginRight",
+                /* swiftName */"trailingMargin"
+              ],
+              /* :: */[
+                /* record */[
+                  /* lonaName */"marginBottom",
+                  /* swiftName */"bottomMargin"
+                ],
+                /* :: */[
+                  /* record */[
+                    /* lonaName */"marginLeft",
+                    /* swiftName */"leadingMargin"
+                  ],
+                  /* [] */0
+                ]
+              ]
+            ]
+          ]);
+    }
+    var match$1 = layer[/* children */3];
+    var paddingVariables;
+    if (match$1) {
+      var createVariable$1 = function (paddingParameter) {
+        return /* VariableDeclaration */Block.__(7, [{
+                    modifiers: /* :: */[
+                      /* AccessLevelModifier */Block.__(0, [/* PrivateModifier */0]),
+                      /* [] */0
+                    ],
+                    pattern: /* IdentifierPattern */Block.__(0, [{
+                          identifier: variableName(paddingParameter[/* swiftName */1]),
+                          annotation: /* Some */[/* TypeName */Block.__(0, ["CGFloat"])]
+                        }]),
+                    init: /* Some */[/* LiteralExpression */Block.__(0, [/* FloatingPoint */Block.__(2, [Layer$LonaCompilerCore.getNumberParameter(paddingParameter[/* lonaName */0], layer)])])],
+                    block: /* None */0
+                  }]);
+      };
+      paddingVariables = List.map(createVariable$1, /* :: */[
+            /* record */[
+              /* lonaName */"paddingTop",
+              /* swiftName */"topPadding"
+            ],
+            /* :: */[
+              /* record */[
+                /* lonaName */"paddingRight",
+                /* swiftName */"trailingPadding"
+              ],
+              /* :: */[
+                /* record */[
+                  /* lonaName */"paddingBottom",
+                  /* swiftName */"bottomPadding"
+                ],
+                /* :: */[
+                  /* record */[
+                    /* lonaName */"paddingLeft",
+                    /* swiftName */"leadingPadding"
+                  ],
+                  /* [] */0
+                ]
+              ]
+            ]
+          ]);
+    } else {
+      paddingVariables = /* [] */0;
+    }
+    return Pervasives.$at(marginVariables, paddingVariables);
+  };
   var initParameterDoc = function (parameter) {
-    return /* Parameter */Block.__(11, [{
+    return /* Parameter */Block.__(12, [{
                 externalName: /* None */0,
                 localName: parameter[/* name */0],
                 annotation: typeAnnotationDoc(parameter[/* ltype */1]),
@@ -138,24 +239,24 @@ function generate$1(name, json, colors) {
   var initParameterAssignmentDoc = function (parameter) {
     return /* BinaryExpression */Block.__(2, [{
                 left: /* MemberExpression */Block.__(1, [/* :: */[
-                      /* SwiftIdentifier */Block.__(4, ["self"]),
+                      /* SwiftIdentifier */Block.__(5, ["self"]),
                       /* :: */[
-                        /* SwiftIdentifier */Block.__(4, [parameter[/* name */0]]),
+                        /* SwiftIdentifier */Block.__(5, [parameter[/* name */0]]),
                         /* [] */0
                       ]
                     ]]),
                 operator: "=",
-                right: /* SwiftIdentifier */Block.__(4, [parameter[/* name */0]])
+                right: /* SwiftIdentifier */Block.__(5, [parameter[/* name */0]])
               }]);
   };
   var initializerCoderDoc = function () {
-    return /* InitializerDeclaration */Block.__(7, [{
+    return /* InitializerDeclaration */Block.__(8, [{
                 modifiers: /* :: */[
                   /* RequiredModifier */10,
                   /* [] */0
                 ],
                 parameters: /* :: */[
-                  /* Parameter */Block.__(11, [{
+                  /* Parameter */Block.__(12, [{
                         externalName: /* Some */["coder"],
                         localName: "aDecoder",
                         annotation: /* TypeName */Block.__(0, ["NSCoder"]),
@@ -165,12 +266,12 @@ function generate$1(name, json, colors) {
                 ],
                 failable: /* Some */["?"],
                 body: /* :: */[
-                  /* FunctionCallExpression */Block.__(13, [{
-                        name: /* SwiftIdentifier */Block.__(4, ["fatalError"]),
+                  /* FunctionCallExpression */Block.__(14, [{
+                        name: /* SwiftIdentifier */Block.__(5, ["fatalError"]),
                         arguments: /* :: */[
-                          /* FunctionCallArgument */Block.__(12, [{
+                          /* FunctionCallArgument */Block.__(13, [{
                                 name: /* None */0,
-                                value: /* SwiftIdentifier */Block.__(4, ["\"init(coder:) has not been implemented\""])
+                                value: /* SwiftIdentifier */Block.__(5, ["\"init(coder:) has not been implemented\""])
                               }]),
                           /* [] */0
                         ]
@@ -180,7 +281,7 @@ function generate$1(name, json, colors) {
               }]);
   };
   var initializerDoc = function () {
-    return /* InitializerDeclaration */Block.__(7, [{
+    return /* InitializerDeclaration */Block.__(8, [{
                 modifiers: /* :: */[
                   /* AccessLevelModifier */Block.__(0, [/* PublicModifier */3]),
                   /* [] */0
@@ -194,14 +295,14 @@ function generate$1(name, json, colors) {
                           /* Empty */0,
                           /* :: */[
                             /* MemberExpression */Block.__(1, [/* :: */[
-                                  /* SwiftIdentifier */Block.__(4, ["super"]),
+                                  /* SwiftIdentifier */Block.__(5, ["super"]),
                                   /* :: */[
-                                    /* FunctionCallExpression */Block.__(13, [{
-                                          name: /* SwiftIdentifier */Block.__(4, ["init"]),
+                                    /* FunctionCallExpression */Block.__(14, [{
+                                          name: /* SwiftIdentifier */Block.__(5, ["init"]),
                                           arguments: /* :: */[
-                                            /* FunctionCallArgument */Block.__(12, [{
-                                                  name: /* Some */[/* SwiftIdentifier */Block.__(4, ["frame"])],
-                                                  value: /* SwiftIdentifier */Block.__(4, [".zero"])
+                                            /* FunctionCallArgument */Block.__(13, [{
+                                                  name: /* Some */[/* SwiftIdentifier */Block.__(5, ["frame"])],
+                                                  value: /* SwiftIdentifier */Block.__(5, [".zero"])
                                                 }]),
                                             /* [] */0
                                           ]
@@ -212,25 +313,25 @@ function generate$1(name, json, colors) {
                             /* :: */[
                               /* Empty */0,
                               /* :: */[
-                                /* FunctionCallExpression */Block.__(13, [{
-                                      name: /* SwiftIdentifier */Block.__(4, ["setUpViews"]),
+                                /* FunctionCallExpression */Block.__(14, [{
+                                      name: /* SwiftIdentifier */Block.__(5, ["setUpViews"]),
                                       arguments: /* [] */0
                                     }]),
                                 /* :: */[
-                                  /* FunctionCallExpression */Block.__(13, [{
-                                        name: /* SwiftIdentifier */Block.__(4, ["setUpConstraints"]),
+                                  /* FunctionCallExpression */Block.__(14, [{
+                                        name: /* SwiftIdentifier */Block.__(5, ["setUpConstraints"]),
                                         arguments: /* [] */0
                                       }]),
                                   /* :: */[
-                                    /* FunctionCallExpression */Block.__(13, [{
-                                          name: /* SwiftIdentifier */Block.__(4, ["setUpDefaults"]),
+                                    /* FunctionCallExpression */Block.__(14, [{
+                                          name: /* SwiftIdentifier */Block.__(5, ["setUpDefaults"]),
                                           arguments: /* [] */0
                                         }]),
                                     /* :: */[
                                       /* Empty */0,
                                       /* :: */[
-                                        /* FunctionCallExpression */Block.__(13, [{
-                                              name: /* SwiftIdentifier */Block.__(4, ["update"]),
+                                        /* FunctionCallExpression */Block.__(14, [{
+                                              name: /* SwiftIdentifier */Block.__(5, ["update"]),
                                               arguments: /* [] */0
                                             }]),
                                         /* [] */0
@@ -252,7 +353,7 @@ function generate$1(name, json, colors) {
       return /* MemberExpression */Block.__(1, [statements]);
     } else {
       return /* MemberExpression */Block.__(1, [Pervasives.$at(/* :: */[
-                      /* SwiftIdentifier */Block.__(4, [firstIdentifier]),
+                      /* SwiftIdentifier */Block.__(5, [firstIdentifier]),
                       /* [] */0
                     ], statements)]);
     }
@@ -269,13 +370,13 @@ function generate$1(name, json, colors) {
     var addSubviews = function (parent, layer) {
       if (parent) {
         return /* :: */[
-                /* FunctionCallExpression */Block.__(13, [{
+                /* FunctionCallExpression */Block.__(14, [{
                       name: memberOrSelfExpression(parentNameOrSelf(parent[0]), /* :: */[
-                            /* SwiftIdentifier */Block.__(4, ["addSubview"]),
+                            /* SwiftIdentifier */Block.__(5, ["addSubview"]),
                             /* [] */0
                           ]),
                       arguments: /* :: */[
-                        /* SwiftIdentifier */Block.__(4, [Swift$LonaCompilerCore.Format[/* layerName */0](layer[/* name */1])]),
+                        /* SwiftIdentifier */Block.__(5, [Swift$LonaCompilerCore.Format[/* layerName */0](layer[/* name */1])]),
                         /* [] */0
                       ]
                     }]),
@@ -285,7 +386,7 @@ function generate$1(name, json, colors) {
         return /* [] */0;
       }
     };
-    return /* FunctionDeclaration */Block.__(8, [{
+    return /* FunctionDeclaration */Block.__(9, [{
                 name: "setUpViews",
                 modifiers: /* :: */[
                   /* AccessLevelModifier */Block.__(0, [/* PrivateModifier */0]),
@@ -296,27 +397,27 @@ function generate$1(name, json, colors) {
               }]);
   };
   var getConstraints = function (root) {
-    var setUpContraint = function (layer, anchor1, parent, anchor2, constant) {
+    var setUpContraint = function (layer, anchor1, parent, anchor2, value) {
       var variableName = Swift$LonaCompilerCore.Format[/* layerName */0](layer[/* name */1]) + (LodashUpperfirst(anchor1) + "Constraint");
       var initialValue = /* MemberExpression */Block.__(1, [/* :: */[
-            /* SwiftIdentifier */Block.__(4, [Swift$LonaCompilerCore.Format[/* layerName */0](layer[/* name */1])]),
+            /* SwiftIdentifier */Block.__(5, [Swift$LonaCompilerCore.Format[/* layerName */0](layer[/* name */1])]),
             /* :: */[
-              /* SwiftIdentifier */Block.__(4, [anchor1]),
+              /* SwiftIdentifier */Block.__(5, [anchor1]),
               /* :: */[
-                /* FunctionCallExpression */Block.__(13, [{
-                      name: /* SwiftIdentifier */Block.__(4, ["constraint"]),
+                /* FunctionCallExpression */Block.__(14, [{
+                      name: /* SwiftIdentifier */Block.__(5, ["constraint"]),
                       arguments: /* :: */[
-                        /* FunctionCallArgument */Block.__(12, [{
-                              name: /* Some */[/* SwiftIdentifier */Block.__(4, ["equalTo"])],
+                        /* FunctionCallArgument */Block.__(13, [{
+                              name: /* Some */[/* SwiftIdentifier */Block.__(5, ["equalTo"])],
                               value: memberOrSelfExpression(parentNameOrSelf(parent), /* :: */[
-                                    /* SwiftIdentifier */Block.__(4, [anchor2]),
+                                    /* SwiftIdentifier */Block.__(5, [anchor2]),
                                     /* [] */0
                                   ])
                             }]),
                         /* :: */[
-                          /* FunctionCallArgument */Block.__(12, [{
-                                name: /* Some */[/* SwiftIdentifier */Block.__(4, ["constant"])],
-                                value: /* LiteralExpression */Block.__(0, [/* FloatingPoint */Block.__(2, [constant])])
+                          /* FunctionCallArgument */Block.__(13, [{
+                                name: /* Some */[/* SwiftIdentifier */Block.__(5, ["constant"])],
+                                value: value
                               }]),
                           /* [] */0
                         ]
@@ -334,15 +435,15 @@ function generate$1(name, json, colors) {
     var setUpDimensionContraint = function (layer, anchor, constant) {
       var variableName = Swift$LonaCompilerCore.Format[/* layerName */0](layer[/* name */1]) + (LodashUpperfirst(anchor) + "Constraint");
       var initialValue = /* MemberExpression */Block.__(1, [/* :: */[
-            /* SwiftIdentifier */Block.__(4, [Swift$LonaCompilerCore.Format[/* layerName */0](layer[/* name */1])]),
+            /* SwiftIdentifier */Block.__(5, [Swift$LonaCompilerCore.Format[/* layerName */0](layer[/* name */1])]),
             /* :: */[
-              /* SwiftIdentifier */Block.__(4, [anchor]),
+              /* SwiftIdentifier */Block.__(5, [anchor]),
               /* :: */[
-                /* FunctionCallExpression */Block.__(13, [{
-                      name: /* SwiftIdentifier */Block.__(4, ["constraint"]),
+                /* FunctionCallExpression */Block.__(14, [{
+                      name: /* SwiftIdentifier */Block.__(5, ["constraint"]),
                       arguments: /* :: */[
-                        /* FunctionCallArgument */Block.__(12, [{
-                              name: /* Some */[/* SwiftIdentifier */Block.__(4, ["equalToConstant"])],
+                        /* FunctionCallArgument */Block.__(13, [{
+                              name: /* Some */[/* SwiftIdentifier */Block.__(5, ["equalToConstant"])],
                               value: /* LiteralExpression */Block.__(0, [/* FloatingPoint */Block.__(2, [constant])])
                             }]),
                         /* [] */0
@@ -357,6 +458,29 @@ function generate$1(name, json, colors) {
               /* initialValue */initialValue
             ];
     };
+    var constraintConstantExpression = function (layer, variable1, parent, variable2, invert) {
+      var variableName = function (layer, variable) {
+        var match = +(layer === rootLayer);
+        if (match !== 0) {
+          return variable;
+        } else {
+          return Swift$LonaCompilerCore.Format[/* layerName */0](layer[/* name */1]) + LodashUpperfirst(variable);
+        }
+      };
+      var expression = /* BinaryExpression */Block.__(2, [{
+            left: /* SwiftIdentifier */Block.__(5, [variableName(layer, variable1)]),
+            operator: "+",
+            right: /* SwiftIdentifier */Block.__(5, [variableName(parent, variable2)])
+          }]);
+      if (invert !== 0) {
+        return /* PrefixExpression */Block.__(3, [{
+                    operator: "-",
+                    expression: expression
+                  }]);
+      } else {
+        return expression;
+      }
+    };
     var constrainAxes = function (parent) {
       var direction = Layer$LonaCompilerCore.getFlexDirection(parent);
       var match = +(direction === "column");
@@ -367,17 +491,17 @@ function generate$1(name, json, colors) {
       var secondaryBeforeAnchor = match$2 !== 0 ? "leadingAnchor" : "topAnchor";
       var match$3 = +(direction === "column");
       var secondaryAfterAnchor = match$3 !== 0 ? "trailingAnchor" : "bottomAnchor";
-      var parentPadding = Layer$LonaCompilerCore.getPadding(parent);
+      Layer$LonaCompilerCore.getPadding(parent);
       var addConstraints = function (index, layer) {
         var height = Layer$LonaCompilerCore.getNumberParameterOpt("height", layer);
         var width = Layer$LonaCompilerCore.getNumberParameterOpt("width", layer);
-        var layerMargin = Layer$LonaCompilerCore.getMargin(layer);
+        Layer$LonaCompilerCore.getMargin(layer);
         var firstViewConstraints;
         if (index !== 0) {
           firstViewConstraints = /* [] */0;
         } else {
           var match = +(direction === "column");
-          var primaryBeforeConstant = match !== 0 ? parentPadding[/* top */0] + layerMargin[/* top */0] : parentPadding[/* left */3] + layerMargin[/* left */3];
+          var primaryBeforeConstant = match !== 0 ? constraintConstantExpression(parent, "topPadding", layer, "topMargin", /* false */0) : constraintConstantExpression(parent, "leadingPadding", layer, "leadingMargin", /* false */0);
           firstViewConstraints = /* :: */[
             setUpContraint(layer, primaryBeforeAnchor, parent, primaryBeforeAnchor, primaryBeforeConstant),
             /* [] */0
@@ -386,9 +510,9 @@ function generate$1(name, json, colors) {
         var lastViewConstraints;
         if (index === (List.length(parent[/* children */3]) - 1 | 0)) {
           var match$1 = +(direction === "column");
-          var primaryAfterConstant = match$1 !== 0 ? parentPadding[/* bottom */2] + layerMargin[/* bottom */2] : parentPadding[/* right */1] + layerMargin[/* right */1];
+          var primaryAfterConstant = match$1 !== 0 ? constraintConstantExpression(parent, "bottomPadding", layer, "bottomMargin", /* true */1) : constraintConstantExpression(parent, "trailingPadding", layer, "trailingMargin", /* true */1);
           lastViewConstraints = /* :: */[
-            setUpContraint(layer, primaryAfterAnchor, parent, primaryAfterAnchor, -primaryAfterConstant),
+            setUpContraint(layer, primaryAfterAnchor, parent, primaryAfterAnchor, primaryAfterConstant),
             /* [] */0
           ];
         } else {
@@ -397,9 +521,9 @@ function generate$1(name, json, colors) {
         var middleViewConstraints;
         if (index !== 0) {
           var previousLayer = List.nth(parent[/* children */3], index - 1 | 0);
-          var previousMargin = Layer$LonaCompilerCore.getMargin(previousLayer);
+          Layer$LonaCompilerCore.getMargin(previousLayer);
           var match$2 = +(direction === "column");
-          var betweenConstant = match$2 !== 0 ? previousMargin[/* bottom */2] + layerMargin[/* top */0] : previousMargin[/* right */1] + layerMargin[/* left */3];
+          var betweenConstant = match$2 !== 0 ? constraintConstantExpression(previousLayer, "bottomMargin", layer, "topMargin", /* false */0) : constraintConstantExpression(previousLayer, "trailingMargin", layer, "leadingMargin", /* false */0);
           middleViewConstraints = /* :: */[
             setUpContraint(layer, primaryBeforeAnchor, previousLayer, primaryAfterAnchor, betweenConstant),
             /* [] */0
@@ -408,12 +532,12 @@ function generate$1(name, json, colors) {
           middleViewConstraints = /* [] */0;
         }
         var match$3 = +(direction === "column");
-        var secondaryBeforeConstant = match$3 !== 0 ? parentPadding[/* left */3] + layerMargin[/* left */3] : parentPadding[/* top */0] + layerMargin[/* top */0];
+        var secondaryBeforeConstant = match$3 !== 0 ? constraintConstantExpression(parent, "leadingPadding", layer, "leadingMargin", /* false */0) : constraintConstantExpression(parent, "topPadding", layer, "topMargin", /* false */0);
         var match$4 = +(direction === "column");
-        var secondaryAfterConstant = match$4 !== 0 ? parentPadding[/* right */1] + layerMargin[/* right */1] : parentPadding[/* bottom */2] + layerMargin[/* bottom */2];
+        var secondaryAfterConstant = match$4 !== 0 ? constraintConstantExpression(parent, "trailingPadding", layer, "trailingMargin", /* true */1) : constraintConstantExpression(parent, "bottomPadding", layer, "bottomMargin", /* true */1);
         var secondaryAxisConstraints_000 = setUpContraint(layer, secondaryBeforeAnchor, parent, secondaryBeforeAnchor, secondaryBeforeConstant);
         var secondaryAxisConstraints_001 = /* :: */[
-          setUpContraint(layer, secondaryAfterAnchor, parent, secondaryAfterAnchor, -secondaryAfterConstant),
+          setUpContraint(layer, secondaryAfterAnchor, parent, secondaryAfterAnchor, secondaryAfterConstant),
           /* [] */0
         ];
         var secondaryAxisConstraints = /* :: */[
@@ -439,7 +563,7 @@ function generate$1(name, json, colors) {
     var translatesAutoresizingMask = function (layer) {
       return /* BinaryExpression */Block.__(2, [{
                   left: memberOrSelfExpression(parentNameOrSelf(layer), /* :: */[
-                        /* SwiftIdentifier */Block.__(4, ["translatesAutoresizingMaskIntoConstraints"]),
+                        /* SwiftIdentifier */Block.__(5, ["translatesAutoresizingMaskIntoConstraints"]),
                         /* [] */0
                       ]),
                   operator: "=",
@@ -447,7 +571,7 @@ function generate$1(name, json, colors) {
                 }]);
     };
     var defineConstraint = function (def) {
-      return /* ConstantDeclaration */Block.__(5, [{
+      return /* ConstantDeclaration */Block.__(6, [{
                   modifiers: /* [] */0,
                   init: /* Some */[def[/* initialValue */1]],
                   pattern: /* IdentifierPattern */Block.__(0, [{
@@ -457,19 +581,19 @@ function generate$1(name, json, colors) {
                 }]);
     };
     var activateConstraints = function () {
-      return /* FunctionCallExpression */Block.__(13, [{
+      return /* FunctionCallExpression */Block.__(14, [{
                   name: /* MemberExpression */Block.__(1, [/* :: */[
-                        /* SwiftIdentifier */Block.__(4, ["NSLayoutConstraint"]),
+                        /* SwiftIdentifier */Block.__(5, ["NSLayoutConstraint"]),
                         /* :: */[
-                          /* SwiftIdentifier */Block.__(4, ["activate"]),
+                          /* SwiftIdentifier */Block.__(5, ["activate"]),
                           /* [] */0
                         ]
                       ]]),
                   arguments: /* :: */[
-                    /* FunctionCallArgument */Block.__(12, [{
+                    /* FunctionCallArgument */Block.__(13, [{
                           name: /* None */0,
                           value: /* LiteralExpression */Block.__(0, [/* Array */Block.__(5, [List.map((function (def) {
-                                          return /* SwiftIdentifier */Block.__(4, [def[/* variableName */0]]);
+                                          return /* SwiftIdentifier */Block.__(5, [def[/* variableName */0]]);
                                         }), constraints)])])
                         }]),
                     /* [] */0
@@ -479,17 +603,17 @@ function generate$1(name, json, colors) {
     var assignConstraint = function (def) {
       return /* BinaryExpression */Block.__(2, [{
                   left: /* MemberExpression */Block.__(1, [/* :: */[
-                        /* SwiftIdentifier */Block.__(4, ["self"]),
+                        /* SwiftIdentifier */Block.__(5, ["self"]),
                         /* :: */[
-                          /* SwiftIdentifier */Block.__(4, [def[/* variableName */0]]),
+                          /* SwiftIdentifier */Block.__(5, [def[/* variableName */0]]),
                           /* [] */0
                         ]
                       ]]),
                   operator: "=",
-                  right: /* SwiftIdentifier */Block.__(4, [def[/* variableName */0]])
+                  right: /* SwiftIdentifier */Block.__(5, [def[/* variableName */0]])
                 }]);
     };
-    return /* FunctionDeclaration */Block.__(8, [{
+    return /* FunctionDeclaration */Block.__(9, [{
                 name: "setUpConstraints",
                 modifiers: /* :: */[
                   /* AccessLevelModifier */Block.__(0, [/* PrivateModifier */0]),
@@ -558,9 +682,9 @@ function generate$1(name, json, colors) {
             } else {
               match$1 = /* tuple */[
                 /* :: */[
-                  /* SwiftIdentifier */Block.__(4, ["layer"]),
+                  /* SwiftIdentifier */Block.__(5, ["layer"]),
                   /* :: */[
-                    /* SwiftIdentifier */Block.__(4, ["cornerRadius"]),
+                    /* SwiftIdentifier */Block.__(5, ["cornerRadius"]),
                     /* [] */0
                   ]
                 ],
@@ -581,7 +705,7 @@ function generate$1(name, json, colors) {
             } else {
               match$1 = /* tuple */[
                 /* :: */[
-                  /* SwiftIdentifier */Block.__(4, ["isHidden"]),
+                  /* SwiftIdentifier */Block.__(5, ["isHidden"]),
                   /* [] */0
                 ],
                 /* LiteralExpression */Block.__(0, [/* Boolean */Block.__(0, [1 - match$2[0]])])
@@ -595,7 +719,7 @@ function generate$1(name, json, colors) {
     if (exit === 1) {
       match$1 = /* tuple */[
         /* :: */[
-          /* SwiftIdentifier */Block.__(4, [name]),
+          /* SwiftIdentifier */Block.__(5, [name]),
           /* [] */0
         ],
         match
@@ -638,14 +762,14 @@ function generate$1(name, json, colors) {
                           }
                         }))(List.filter(filterParameters)(Curry._1(StringMap$LonaCompilerCore.bindings, layer[/* parameters */2]))));
     };
-    return /* FunctionDeclaration */Block.__(8, [{
+    return /* FunctionDeclaration */Block.__(9, [{
                 name: "setUpDefaults",
                 modifiers: /* :: */[
                   /* AccessLevelModifier */Block.__(0, [/* PrivateModifier */0]),
                   /* [] */0
                 ],
                 parameters: /* [] */0,
-                body: Swift$LonaCompilerCore.Document[/* joinGroups */1](/* Empty */0, List.map(defineInitialLayerValues, Layer$LonaCompilerCore.flatten(rootLayer)))
+                body: List.concat(List.map(defineInitialLayerValues, Layer$LonaCompilerCore.flatten(rootLayer)))
               }]);
   };
   var updateDoc = function () {
@@ -681,7 +805,7 @@ function generate$1(name, json, colors) {
                           return Curry._2(Logic$LonaCompilerCore.IdentifierSet[/* exists */15], isAssigned, conditionallyAssigned);
                         }))(List.filter(filterParameters)(Curry._1(StringMap$LonaCompilerCore.bindings, param[1]))));
     };
-    return /* FunctionDeclaration */Block.__(8, [{
+    return /* FunctionDeclaration */Block.__(9, [{
                 name: "update",
                 modifiers: /* :: */[
                   /* AccessLevelModifier */Block.__(0, [/* PrivateModifier */0]),
@@ -697,17 +821,17 @@ function generate$1(name, json, colors) {
                     ])
               }]);
   };
-  return /* TopLevelDeclaration */Block.__(18, [{
+  return /* TopLevelDeclaration */Block.__(19, [{
               statements: /* :: */[
-                /* ImportDeclaration */Block.__(9, ["UIKit"]),
+                /* ImportDeclaration */Block.__(10, ["UIKit"]),
                 /* :: */[
-                  /* ImportDeclaration */Block.__(9, ["Foundation"]),
+                  /* ImportDeclaration */Block.__(10, ["Foundation"]),
                   /* :: */[
-                    /* LineComment */Block.__(14, ["MARK: - " + name]),
+                    /* LineComment */Block.__(15, ["MARK: - " + name]),
                     /* :: */[
                       /* Empty */0,
                       /* :: */[
-                        /* ClassDeclaration */Block.__(3, [{
+                        /* ClassDeclaration */Block.__(4, [{
                               name: name,
                               inherits: /* :: */[
                                 /* TypeName */Block.__(0, ["UIView"]),
@@ -717,7 +841,7 @@ function generate$1(name, json, colors) {
                               isFinal: /* false */0,
                               body: List.concat(/* :: */[
                                     /* :: */[
-                                      /* LineComment */Block.__(14, ["MARK: Lifecycle"]),
+                                      /* LineComment */Block.__(15, ["MARK: Lifecycle"]),
                                       /* [] */0
                                     ],
                                     /* :: */[
@@ -742,7 +866,7 @@ function generate$1(name, json, colors) {
                                             ],
                                             /* :: */[
                                               /* :: */[
-                                                /* LineComment */Block.__(14, ["MARK: Public"]),
+                                                /* LineComment */Block.__(15, ["MARK: Public"]),
                                                 /* [] */0
                                               ],
                                               /* :: */[
@@ -754,7 +878,7 @@ function generate$1(name, json, colors) {
                                                   List.map(parameterVariableDoc, parameters),
                                                   /* :: */[
                                                     /* :: */[
-                                                      /* LineComment */Block.__(14, ["MARK: Private"]),
+                                                      /* LineComment */Block.__(15, ["MARK: Private"]),
                                                       /* [] */0
                                                     ],
                                                     /* :: */[
@@ -770,31 +894,28 @@ function generate$1(name, json, colors) {
                                                             /* [] */0
                                                           ],
                                                           /* :: */[
-                                                            List.map((function (def) {
-                                                                    var variableName = def[/* variableName */0];
-                                                                    return /* VariableDeclaration */Block.__(6, [{
-                                                                                modifiers: /* :: */[
-                                                                                  /* AccessLevelModifier */Block.__(0, [/* PrivateModifier */0]),
-                                                                                  /* [] */0
-                                                                                ],
-                                                                                pattern: /* IdentifierPattern */Block.__(0, [{
-                                                                                      identifier: variableName,
-                                                                                      annotation: /* Some */[/* OptionalType */Block.__(4, [/* TypeName */Block.__(0, ["NSLayoutConstraint"])])]
-                                                                                    }]),
-                                                                                init: /* None */0,
-                                                                                block: /* None */0
-                                                                              }]);
-                                                                  }), constraints),
+                                                            List.concat(Layer$LonaCompilerCore.flatmap(spacingVariableDoc, rootLayer)),
                                                             /* :: */[
                                                               /* :: */[
                                                                 /* Empty */0,
                                                                 /* [] */0
                                                               ],
                                                               /* :: */[
-                                                                /* :: */[
-                                                                  setUpViewsDoc(rootLayer),
-                                                                  /* [] */0
-                                                                ],
+                                                                List.map((function (def) {
+                                                                        var variableName = def[/* variableName */0];
+                                                                        return /* VariableDeclaration */Block.__(7, [{
+                                                                                    modifiers: /* :: */[
+                                                                                      /* AccessLevelModifier */Block.__(0, [/* PrivateModifier */0]),
+                                                                                      /* [] */0
+                                                                                    ],
+                                                                                    pattern: /* IdentifierPattern */Block.__(0, [{
+                                                                                          identifier: variableName,
+                                                                                          annotation: /* Some */[/* OptionalType */Block.__(4, [/* TypeName */Block.__(0, ["NSLayoutConstraint"])])]
+                                                                                        }]),
+                                                                                    init: /* None */0,
+                                                                                    block: /* None */0
+                                                                                  }]);
+                                                                      }), constraints),
                                                                 /* :: */[
                                                                   /* :: */[
                                                                     /* Empty */0,
@@ -802,7 +923,7 @@ function generate$1(name, json, colors) {
                                                                   ],
                                                                   /* :: */[
                                                                     /* :: */[
-                                                                      setUpConstraintsDoc(rootLayer),
+                                                                      setUpViewsDoc(rootLayer),
                                                                       /* [] */0
                                                                     ],
                                                                     /* :: */[
@@ -812,7 +933,7 @@ function generate$1(name, json, colors) {
                                                                       ],
                                                                       /* :: */[
                                                                         /* :: */[
-                                                                          setUpDefaultsDoc(/* () */0),
+                                                                          setUpConstraintsDoc(rootLayer),
                                                                           /* [] */0
                                                                         ],
                                                                         /* :: */[
@@ -822,10 +943,22 @@ function generate$1(name, json, colors) {
                                                                           ],
                                                                           /* :: */[
                                                                             /* :: */[
-                                                                              updateDoc(/* () */0),
+                                                                              setUpDefaultsDoc(/* () */0),
                                                                               /* [] */0
                                                                             ],
-                                                                            /* [] */0
+                                                                            /* :: */[
+                                                                              /* :: */[
+                                                                                /* Empty */0,
+                                                                                /* [] */0
+                                                                              ],
+                                                                              /* :: */[
+                                                                                /* :: */[
+                                                                                  updateDoc(/* () */0),
+                                                                                  /* [] */0
+                                                                                ],
+                                                                                /* [] */0
+                                                                              ]
+                                                                            ]
                                                                           ]
                                                                         ]
                                                                       ]

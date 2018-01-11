@@ -369,9 +369,9 @@ function toSwiftAST(colors, rootLayer, logicRootNode) {
     } else {
       var node = x;
       if (typeof node === "number") {
-        return /* SwiftIdentifier */Block.__(4, ["BadIdentifier"]);
+        return /* SwiftIdentifier */Block.__(5, ["BadIdentifier"]);
       } else if (node.tag) {
-        return /* SwiftIdentifier */Block.__(4, ["BadIdentifier"]);
+        return /* SwiftIdentifier */Block.__(5, ["BadIdentifier"]);
       } else {
         var match = node[1];
         if (match) {
@@ -382,25 +382,25 @@ function toSwiftAST(colors, rootLayer, logicRootNode) {
                   var tail$1 = tail[1];
                   var second = tail[0];
                   if (second === rootLayer[/* name */1]) {
-                    return /* SwiftIdentifier */Block.__(4, [List.fold_left((function (a, b) {
+                    return /* SwiftIdentifier */Block.__(5, [List.fold_left((function (a, b) {
                                       return a + ("." + LodashCamelcase(b));
                                     }), List.hd(tail$1), List.tl(tail$1))]);
                   } else {
-                    return /* SwiftIdentifier */Block.__(4, [List.fold_left((function (a, b) {
+                    return /* SwiftIdentifier */Block.__(5, [List.fold_left((function (a, b) {
                                       return a + ("." + LodashCamelcase(b));
                                     }), Swift$LonaCompilerCore.Format[/* layerName */0](second), tail$1)]);
                   }
                 } else {
-                  return /* SwiftIdentifier */Block.__(4, ["BadIdentifier"]);
+                  return /* SwiftIdentifier */Block.__(5, ["BadIdentifier"]);
                 }
                 break;
             case "parameters" : 
-                return /* SwiftIdentifier */Block.__(4, [List.hd(tail)]);
+                return /* SwiftIdentifier */Block.__(5, [List.hd(tail)]);
             default:
-              return /* SwiftIdentifier */Block.__(4, ["BadIdentifier"]);
+              return /* SwiftIdentifier */Block.__(5, ["BadIdentifier"]);
           }
         } else {
-          return /* SwiftIdentifier */Block.__(4, ["BadIdentifier"]);
+          return /* SwiftIdentifier */Block.__(5, ["BadIdentifier"]);
         }
       }
     }
@@ -457,7 +457,7 @@ function toSwiftAST(colors, rootLayer, logicRootNode) {
     } else {
       switch (logicRootNode.tag | 0) {
         case 0 : 
-            return /* IfStatement */Block.__(10, [{
+            return /* IfStatement */Block.__(11, [{
                         condition: /* BinaryExpression */Block.__(2, [{
                               left: logicValueToSwiftAST(logicRootNode[0]),
                               operator: fromCmp(logicRootNode[1]),
@@ -466,7 +466,7 @@ function toSwiftAST(colors, rootLayer, logicRootNode) {
                         block: List.map(inner, unwrapBlock(logicRootNode[3]))
                       }]);
         case 1 : 
-            return /* IfStatement */Block.__(10, [{
+            return /* IfStatement */Block.__(11, [{
                         condition: logicValueToSwiftAST(logicRootNode[0]),
                         block: List.map(inner, unwrapBlock(logicRootNode[1]))
                       }]);
@@ -479,7 +479,7 @@ function toSwiftAST(colors, rootLayer, logicRootNode) {
                 match,
                 match$1
               ];
-            } else if (match.tag === 4) {
+            } else if (match.tag === 5) {
               var name = match[0];
               var exit = 0;
               if (typeof match$1 === "number") {
@@ -492,7 +492,7 @@ function toSwiftAST(colors, rootLayer, logicRootNode) {
                   exit = 1;
                 } else {
                   match$2 = /* tuple */[
-                    /* SwiftIdentifier */Block.__(4, [name.replace("visible", "isHidden")]),
+                    /* SwiftIdentifier */Block.__(5, [name.replace("visible", "isHidden")]),
                     /* LiteralExpression */Block.__(0, [/* Boolean */Block.__(0, [1 - match$3[0]])])
                   ];
                 }
@@ -500,9 +500,9 @@ function toSwiftAST(colors, rootLayer, logicRootNode) {
               if (exit === 1) {
                 match$2 = name.endsWith("borderRadius") ? /* tuple */[
                     /* MemberExpression */Block.__(1, [/* :: */[
-                          /* SwiftIdentifier */Block.__(4, ["layer"]),
+                          /* SwiftIdentifier */Block.__(5, ["layer"]),
                           /* :: */[
-                            /* SwiftIdentifier */Block.__(4, [name.replace("borderRadius", "cornerRadius")]),
+                            /* SwiftIdentifier */Block.__(5, [name.replace("borderRadius", "cornerRadius")]),
                             /* [] */0
                           ]
                         ]]),
@@ -542,7 +542,7 @@ function toSwiftAST(colors, rootLayer, logicRootNode) {
               return /* Empty */0;
             } else {
               var path = value[1];
-              return /* VariableDeclaration */Block.__(6, [{
+              return /* VariableDeclaration */Block.__(7, [{
                           modifiers: /* [] */0,
                           pattern: /* IdentifierPattern */Block.__(0, [{
                                 identifier: List.fold_left((function (a, b) {
@@ -556,7 +556,7 @@ function toSwiftAST(colors, rootLayer, logicRootNode) {
             }
             break;
         case 5 : 
-            return /* StatementListHelper */Block.__(17, [List.map(inner, logicRootNode[0])]);
+            return /* StatementListHelper */Block.__(18, [List.map(inner, logicRootNode[0])]);
         
       }
     }

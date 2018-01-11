@@ -58,6 +58,7 @@ module Swift = {
     | LiteralExpression(literal)
     | MemberExpression(list(node))
     | BinaryExpression({. "left": node, "operator": string, "right": node})
+    | PrefixExpression({. "operator": string, "expression": node})
     | ClassDeclaration(
         {
           .
