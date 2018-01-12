@@ -708,6 +708,27 @@ function generate$1(name, json, colors) {
         ];
         return Pervasives.$at(firstViewConstraints, Pervasives.$at(lastViewConstraints, Pervasives.$at(middleViewConstraints, secondaryAxisConstraints)));
       };
+      var flexChildren = List.filter((function (child) {
+                return +(Layer$LonaCompilerCore.getNumberParameter("flex", child) === 1.0);
+              }))(parent[/* children */3]);
+      var flexChildrenConstraints;
+      if (flexChildren) {
+        var rest = flexChildren[1];
+        var first = flexChildren[0];
+        if (List.length(rest) > 0) {
+          var match$4 = +(direction === "column");
+          var sameAnchor = match$4 !== 0 ? "heightAnchor" : "widthAnchor";
+          flexChildrenConstraints = List.map((function (param) {
+                  var anchor = sameAnchor;
+                  var layer = param;
+                  return setUpContraint(first, anchor, layer, anchor, /* LiteralExpression */Block.__(0, [/* FloatingPoint */Block.__(2, [0.0])]));
+                }), rest);
+        } else {
+          flexChildrenConstraints = /* [] */0;
+        }
+      } else {
+        flexChildrenConstraints = /* [] */0;
+      }
       var heightConstraint = height ? /* :: */[
           setUpDimensionContraint(parent, "heightAnchor", height[0]),
           /* [] */0
@@ -720,7 +741,10 @@ function generate$1(name, json, colors) {
                       heightConstraint,
                       /* :: */[
                         widthConstraint,
-                        /* [] */0
+                        /* :: */[
+                          flexChildrenConstraints,
+                          /* [] */0
+                        ]
                       ]
                     ], List.mapi(addConstraints, parent[/* children */3])));
     };

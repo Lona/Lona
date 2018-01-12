@@ -549,6 +549,18 @@ module Swift = {
           @ middleViewConstraints
           @ secondaryAxisConstraints
         };
+        let flexChildren =
+          parent.children
+          |> List.filter((child: Types.layer) => Layer.getNumberParameter("flex", child) === 1.0);
+        let flexChildrenConstraints =
+          switch flexChildren {
+          | [first, ...rest] when List.length(rest) > 0 =>
+            let sameAnchor = direction == "column" ? "heightAnchor" : "widthAnchor";
+            let sameAnchorConstraint = (anchor, layer) =>
+              setUpContraint(first, anchor, layer, anchor, LiteralExpression(FloatingPoint(0.0)));
+            rest |> List.map(sameAnchorConstraint(sameAnchor))
+          | _ => []
+          };
         let heightConstraint =
           switch height {
           | Some(height) => [setUpDimensionContraint(parent, "heightAnchor", height)]
@@ -560,7 +572,8 @@ module Swift = {
           | None => []
           };
         let constraints =
-          [heightConstraint, widthConstraint] @ (parent.children |> List.mapi(addConstraints));
+          [heightConstraint, widthConstraint, flexChildrenConstraints]
+          @ (parent.children |> List.mapi(addConstraints));
         constraints |> List.concat
       };
       root |> Layer.flatmap(constrainAxes) |> List.concat
