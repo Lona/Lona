@@ -48,7 +48,7 @@ module Swift = {
       | Named(name, _) => TypeName(name);
     let parameterVariableDoc = (parameter: Decode.parameter) =>
       VariableDeclaration({
-        "modifiers": [],
+        "modifiers": [AccessLevelModifier(PublicModifier)],
         "pattern":
           IdentifierPattern({
             "identifier": parameter.name,
@@ -657,7 +657,7 @@ module Swift = {
         ClassDeclaration({
           "name": name,
           "inherits": [TypeName("UIView")],
-          "modifier": None,
+          "modifier": Some(PublicModifier),
           "isFinal": false,
           "body":
             List.concat([

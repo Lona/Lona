@@ -193,7 +193,7 @@ module Swift = {
     | CodeBlock(o) =>
       switch o##statements {
       | [] => s("{}")
-      | [statement] => s("{") <+> line <+> render(statement) <+> line <+> s("}")
+      /* | [statement] => s("{") <+> line <+> render(statement) <+> line <+> s("}") */
       | statements =>
         s("{") <+>
         indent(prefixAll(hardline, statements |> List.map(render))) <+>
@@ -279,8 +279,10 @@ module Swift = {
       );
       switch (o##willSet, o##didSet) {
       | (None, None) => empty
-      | (None, Some(_)) => group(join(line, [s("{"), didSet, s("}")]))
-      | (Some(_), None) => group(join(line, [s("{"), willSet, s("}")]))
+      /* | (None, Some(_)) => group(join(line, [s("{"), didSet, s("}")]))
+      | (Some(_), None) => group(join(line, [s("{"), willSet, s("}")])) */
+      | (None, Some(_)) => s("{") <+> indent(hardline <+> didSet) <+> hardline <+> s("}")
+      | (Some(_), None) => s("{") <+> indent(hardline <+> willSet) <+> hardline <+> s("}")
       | (Some(_), Some(_)) => s("{") <+> indent(hardline <+> willSet <+> hardline <+> didSet) <+> hardline <+> s("}")
       }
     };

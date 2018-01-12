@@ -69,7 +69,10 @@ function generate$1(name, json, colors) {
   };
   var parameterVariableDoc = function (parameter) {
     return /* VariableDeclaration */Block.__(7, [{
-                modifiers: /* [] */0,
+                modifiers: /* :: */[
+                  /* AccessLevelModifier */Block.__(0, [/* PublicModifier */3]),
+                  /* [] */0
+                ],
                 pattern: /* IdentifierPattern */Block.__(0, [{
                       identifier: parameter[/* name */0],
                       annotation: /* Some */[typeAnnotationDoc(parameter[/* ltype */1])]
@@ -874,7 +877,7 @@ function generate$1(name, json, colors) {
                                 /* TypeName */Block.__(0, ["UIView"]),
                                 /* [] */0
                               ],
-                              modifier: /* None */0,
+                              modifier: /* Some */[/* PublicModifier */3],
                               isFinal: /* false */0,
                               body: List.concat(/* :: */[
                                     /* :: */[
