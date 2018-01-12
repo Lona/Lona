@@ -351,7 +351,11 @@ module Swift = {
     let getConstraints = (root: Types.layer) => {
       let setUpContraint = (layer: Types.layer, anchor1, parent: Types.layer, anchor2, value) => {
         let variableName =
-          Swift.Format.layerName(layer.name) ++ Swift.Format.upperFirst(anchor1) ++ "Constraint";
+          (
+            layer === rootLayer ?
+              anchor1 : Swift.Format.layerName(layer.name) ++ Swift.Format.upperFirst(anchor1)
+          )
+          ++ "Constraint";
         let initialValue =
           MemberExpression([
             SwiftIdentifier(layer.name |> Swift.Format.layerName),
@@ -371,21 +375,27 @@ module Swift = {
       };
       let setUpDimensionContraint = (layer: Types.layer, anchor, constant) => {
         let variableName =
-          Swift.Format.layerName(layer.name) ++ Swift.Format.upperFirst(anchor) ++ "Constraint";
+          (
+            layer === rootLayer ?
+              anchor : Swift.Format.layerName(layer.name) ++ Swift.Format.upperFirst(anchor)
+          )
+          ++ "Constraint";
         let initialValue =
-          MemberExpression([
-            SwiftIdentifier(layer.name |> Swift.Format.layerName),
-            SwiftIdentifier(anchor),
-            FunctionCallExpression({
-              "name": SwiftIdentifier("constraint"),
-              "arguments": [
-                FunctionCallArgument({
-                  "name": Some(SwiftIdentifier("equalToConstant")),
-                  "value": LiteralExpression(FloatingPoint(constant))
-                })
-              ]
-            })
-          ]);
+          layerMemberExpression(
+            layer,
+            [
+              SwiftIdentifier(anchor),
+              FunctionCallExpression({
+                "name": SwiftIdentifier("constraint"),
+                "arguments": [
+                  FunctionCallArgument({
+                    "name": Some(SwiftIdentifier("equalToConstant")),
+                    "value": LiteralExpression(FloatingPoint(constant))
+                  })
+                ]
+              })
+            ]
+          );
         {variableName, initialValue}
       };
       let constraintConstantExpression =
@@ -408,9 +418,9 @@ module Swift = {
         let secondaryBeforeAnchor = direction == "column" ? "leadingAnchor" : "topAnchor";
         let secondaryAfterAnchor = direction == "column" ? "trailingAnchor" : "bottomAnchor";
         let parentPadding = Layer.getPadding(parent);
+        let height = Layer.getNumberParameterOpt("height", parent);
+        let width = Layer.getNumberParameterOpt("width", parent);
         let addConstraints = (index, layer: Types.layer) => {
-          let height = Layer.getNumberParameterOpt("height", layer);
-          let width = Layer.getNumberParameterOpt("width", layer);
           let layerMargin = Layer.getMargin(layer);
           let firstViewConstraints =
             switch index {
@@ -534,24 +544,24 @@ module Swift = {
               secondaryAfterConstant
             )
           ];
-          let heightConstraint =
-            switch height {
-            | Some(height) => [setUpDimensionContraint(layer, "heightAnchor", height)]
-            | None => []
-            };
-          let widthConstraint =
-            switch width {
-            | Some(width) => [setUpDimensionContraint(layer, "widthAnchor", width)]
-            | None => []
-            };
           firstViewConstraints
           @ lastViewConstraints
           @ middleViewConstraints
           @ secondaryAxisConstraints
-          @ heightConstraint
-          @ widthConstraint
         };
-        parent.children |> List.mapi(addConstraints) |> List.concat
+        let heightConstraint =
+          switch height {
+          | Some(height) => [setUpDimensionContraint(parent, "heightAnchor", height)]
+          | None => []
+          };
+        let widthConstraint =
+          switch width {
+          | Some(width) => [setUpDimensionContraint(parent, "widthAnchor", width)]
+          | None => []
+          };
+        let constraints =
+          [heightConstraint, widthConstraint] @ (parent.children |> List.mapi(addConstraints));
+        constraints |> List.concat
       };
       root |> Layer.flatmap(constrainAxes) |> List.concat
     };
