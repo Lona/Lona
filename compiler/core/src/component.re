@@ -194,7 +194,7 @@ module Swift = {
            fatalError("init(coder:) has not been implemented")
          } */
       InitializerDeclaration({
-        "modifiers": [RequiredModifier],
+        "modifiers": [AccessLevelModifier(PublicModifier), RequiredModifier],
         "parameters": [
           Parameter({
             "externalName": Some("coder"),

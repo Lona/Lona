@@ -255,8 +255,11 @@ function generate$1(name, json, colors) {
   var initializerCoderDoc = function () {
     return /* InitializerDeclaration */Block.__(8, [{
                 modifiers: /* :: */[
-                  /* RequiredModifier */10,
-                  /* [] */0
+                  /* AccessLevelModifier */Block.__(0, [/* PublicModifier */3]),
+                  /* :: */[
+                    /* RequiredModifier */10,
+                    /* [] */0
+                  ]
                 ],
                 parameters: /* :: */[
                   /* Parameter */Block.__(12, [{
