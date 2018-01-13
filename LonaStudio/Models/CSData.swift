@@ -267,7 +267,7 @@ enum CSData: Equatable, CustomDebugStringConvertible {
         if let _ = json as? NSNull {
             return CSData.Null
         } else if let value = json as? NSNumber {
-            return isBool(number: value) ? CSData.Bool(value.boolValue) : CSData.Number(Double(value))
+            return isBool(number: value) ? CSData.Bool(value.boolValue) : CSData.Number(Double(truncating: value))
         } else if let value = json as? NSString {
             return CSData.String(value as String)
         } else if let value = json as? NSArray {

@@ -8,7 +8,7 @@ PODS:
 DEPENDENCIES:
   - LetsMove
   - lottie-ios (from `https://github.com/dabbott/lottie-ios.git`, branch `master`)
-  - MASPreferences (~> 1.1)
+  - MASPreferences (~> 1.3)
   - Sparkle
   - Yoga (~> 1.6)
 
@@ -29,6 +29,6 @@ SPEC CHECKSUMS:
   Sparkle: 086de4e7a2c9e50ac4cf13bace65f9cae73d4c0c
   Yoga: 81670877477311136b1b3f69a6307ce62e1c89cf
 
-PODFILE CHECKSUM: 16779c97b4d37727ea59bc4dbacbff9b5dfb3715
+PODFILE CHECKSUM: e6c510396ba39180bc36fbfc8c5ee5d94b2918fb
 
 COCOAPODS: 1.4.0.beta.2

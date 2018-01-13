@@ -7,7 +7,7 @@ target 'LonaStudio' do
 
   # Pods for LonaStudio
   pod 'Yoga', '~> 1.6'
-  pod 'MASPreferences', '~> 1.1'
+  pod 'MASPreferences', '~> 1.3'
   pod 'Sparkle'
   pod 'LetsMove'
   pod 'lottie-ios', :git => 'https://github.com/dabbott/lottie-ios.git', :branch => 'master'

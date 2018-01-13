@@ -45,7 +45,7 @@ extension String {
             return results
         }
         
-        let matches = regex.matches(in: self, options: [], range: NSRange(location:0, length: self.characters.count))
+        let matches = regex.matches(in: self, options: [], range: NSRange(location:0, length: self.count))
         
         guard let match = matches.first else { return results }
         
@@ -69,8 +69,8 @@ extension String {
      - Returns: A `String` object.
      */
     func truncate(length: Int, trailing: String = "…") -> String {
-        if self.characters.count > length {
-            return String(self.characters.prefix(length)) + trailing
+        if self.count > length {
+            return String(self.prefix(length)) + trailing
         } else {
             return self
         }
@@ -110,7 +110,7 @@ extension String {
         
         var index = levelIndex
         while index < absolutePathComponents.count {
-            relativePath += (relativePath.characters.count > 0 ? "/" : "./") + absolutePathComponents[index]
+            relativePath += (relativePath.count > 0 ? "/" : "./") + absolutePathComponents[index]
             index += 1
         }
         
