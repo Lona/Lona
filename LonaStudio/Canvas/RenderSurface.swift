@@ -57,7 +57,7 @@ class RenderSurface: NSView {
     func renderTag(title: String) -> NSView {
         if #available(OSX 10.12, *) {
             let label = NSButton(title: title, target: nil, action: nil)
-            label.bezelStyle = NSBezelStyle.inline
+            label.bezelStyle = NSButton.BezelStyle.inline
             label.frame.size.height = 16
             label.frame.size.width = label.frame.size.width - 14
             label.wantsLayer = true

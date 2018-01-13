@@ -25,7 +25,7 @@ class ImageField: NSImageView, CSControl {
     required init?(coder: NSCoder) {
         super.init(coder: coder)
         // Declare and register an array of accepted types
-        register(forDraggedTypes: [NSFilenamesPboardType, NSURLPboardType, NSPasteboardTypeTIFF])
+        registerForDraggedTypes([NSFilenamesPboardType, NSURLPboardType, NSPasteboard.PasteboardType.tiff])
     }
     
     let sizeLabel = TextField(labelWithStringCompat: "")
@@ -44,7 +44,7 @@ class ImageField: NSImageView, CSControl {
         layer?.borderWidth = 1.0
         layer?.borderColor = #colorLiteral(red: 0.6000000238, green: 0.6000000238, blue: 0.6000000238, alpha: 1).cgColor
         
-        register(forDraggedTypes: [NSFilenamesPboardType, NSURLPboardType, NSPasteboardTypeTIFF])
+        registerForDraggedTypes([NSFilenamesPboardType, NSURLPboardType, NSPasteboard.PasteboardType.tiff])
     }
     
     let fileTypes = ["jpg", "jpeg", "bmp", "png", "gif", "pdf", "eps", "svg"]
@@ -86,7 +86,7 @@ class ImageField: NSImageView, CSControl {
     }
     
     override func performDragOperation(_ sender: NSDraggingInfo) -> Bool {
-        if let board = sender.draggingPasteboard().propertyList(forType: "NSFilenamesPboardType") as? NSArray,
+        if let board = sender.draggingPasteboard().propertyList(forType: NSPasteboard.PasteboardType(rawValue: "NSFilenamesPboardType")) as? NSArray,
             let imagePath = board[0] as? String {
             
             droppedFilePath = "file://" + imagePath
@@ -100,7 +100,7 @@ class ImageField: NSImageView, CSControl {
     }
     
     func checkExtension(drag: NSDraggingInfo) -> Bool {
-        if let board = drag.draggingPasteboard().propertyList(forType: "NSFilenamesPboardType") as? NSArray,
+        if let board = drag.draggingPasteboard().propertyList(forType: NSPasteboard.PasteboardType(rawValue: "NSFilenamesPboardType")) as? NSArray,
             let path = board[0] as? String {
             let url = NSURL(fileURLWithPath: path)
             if let fileExtension = url.pathExtension?.lowercased() {

@@ -18,7 +18,7 @@ extension NSImage {
         
         tintColor.set()
         let rect = NSRect(x: 0, y: 0, width: image.size.width, height: image.size.height)
-        NSRectFillUsingOperation(rect, NSCompositingOperation.sourceAtop)
+        rect.fill(using: NSCompositingOperation.sourceAtop)
         
         image.unlockFocus()
 //        image.isTemplate = false

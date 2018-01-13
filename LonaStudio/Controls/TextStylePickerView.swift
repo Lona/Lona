@@ -39,7 +39,7 @@ final class TextStylePickerView: PickerView<CSTextStyle> {
     private class func fitSize(with attributeString: NSAttributedString) -> NSSize {
         let fixedSize = NSSize(width: Constant.maxWidth, height: Constant.maxHeightRow)
         return attributeString.boundingRect(with: fixedSize,
-                                            options: .usesFontLeading).size
+                                            options: NSString.DrawingOptions.usesFontLeading).size
     }
     
     private class func fitTextSize(_ attributeText: NSAttributedString) -> NSSize {

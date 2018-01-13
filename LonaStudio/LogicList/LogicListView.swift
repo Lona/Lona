@@ -105,7 +105,7 @@ class LogicListView {
                     self.onChange(self.list)
                 }
                 
-                cell.onAddChild = { _ in self.editor?.add(element: LogicNode(), to: item) }
+                cell.onAddChild = {  self.editor?.add(element: LogicNode(), to: item) }
                 
                 return cell
             }),

@@ -73,7 +73,7 @@ class InspectorView: NSStackView {
     
     var value: Properties = [:]
     var onChange: (Properties) -> Void = {_ in}
-    var onChangeProperty: (Property, CSData) -> Void = {_ in}
+    var onChangeProperty: (Property, CSData) -> Void = {_,_  in}
     
     func handlePropertyChange(for property: Property, value: CSData) {
         self.value[property] = value
@@ -248,7 +248,7 @@ class InspectorView: NSStackView {
             let dashColor: NSColor = NSColor.parse(css: "rgb(190,190,190)")!
             
             // setup the context
-            let currentContext = NSGraphicsContext.current()!.cgContext
+            let currentContext = NSGraphicsContext.current!.cgContext
             currentContext.setLineWidth(dashHeight)
             currentContext.setLineDash(phase: 0, lengths: [dashLength])
             currentContext.setStrokeColor(dashColor.cgColor)
@@ -262,7 +262,7 @@ class InspectorView: NSStackView {
     func renderSection(title: String, views: [NSView]) -> DisclosureContentRow {
         let section = DisclosureContentRow(title: title, views: views, stretched: true)
         section.contentSpacing = 8
-        section.contentEdgeInsets = EdgeInsets(top: 0, left: 0, bottom: 15, right: 0)
+        section.contentEdgeInsets = NSEdgeInsets(top: 0, left: 0, bottom: 15, right: 0)
         
         return section
     }
@@ -449,7 +449,7 @@ class InspectorView: NSStackView {
         ], orientation: .horizontal)
         paddingRow.distribution = .fill
         paddingRow.spacing = 0
-        paddingRow.edgeInsets = EdgeInsets(top: 10, left: 0, bottom: 10, right: 0)
+        paddingRow.edgeInsets = NSEdgeInsets(top: 10, left: 0, bottom: 10, right: 0)
         
         let padding = NSStackView(views: [
             paddingTopView,
@@ -462,7 +462,7 @@ class InspectorView: NSStackView {
         padding.layer?.borderWidth = 1
         padding.layer?.borderColor = NSColor.parse(css: "rgb(209,209,209)")!.cgColor
         padding.layer?.cornerRadius = 3
-        padding.edgeInsets = EdgeInsets(top: 10, left: 0, bottom: 10, right: 0)
+        padding.edgeInsets = NSEdgeInsets(top: 10, left: 0, bottom: 10, right: 0)
         
         add(label: "PADDING", to: padding)
         
@@ -473,18 +473,18 @@ class InspectorView: NSStackView {
         ], orientation: .horizontal)
         marginRow.distribution = .fill
         marginRow.spacing = 0
-        marginRow.edgeInsets = EdgeInsets(top: 10, left: 0, bottom: 10, right: 0)
+        marginRow.edgeInsets = NSEdgeInsets(top: 10, left: 0, bottom: 10, right: 0)
         
         let margin = BorderedStackView(views: [], orientation: .vertical)
         margin.addArrangedSubview(marginTopView)
         margin.addArrangedSubview(marginRow, stretched: true)
         margin.addArrangedSubview(marginBottomView)
-        margin.edgeInsets = EdgeInsets(top: 10, left: 0, bottom: 10, right: 0)
+        margin.edgeInsets = NSEdgeInsets(top: 10, left: 0, bottom: 10, right: 0)
         
         add(label: "MARGIN", to: margin)
         
         let spacingSection = renderSection(title: "Spacing", views: [margin])
-        spacingSection.contentEdgeInsets = EdgeInsets(top: 0, left: 0, bottom: 25, right: 0)
+        spacingSection.contentEdgeInsets = NSEdgeInsets(top: 0, left: 0, bottom: 25, right: 0)
         
         return spacingSection
     }
@@ -560,7 +560,7 @@ class InspectorView: NSStackView {
             dialog.canChooseFiles = true
             dialog.allowsMultipleSelection = false
             
-            if dialog.runModal() == NSModalResponseOK {
+            if dialog.runModal() == NSApplication.ModalResponse.OK {
                 self.handlePropertyChange(for: .image, value: CSData.String(dialog.url!.absoluteString))
             }
         }
@@ -611,7 +611,7 @@ class InspectorView: NSStackView {
             dialog.canChooseFiles = true
             dialog.allowsMultipleSelection = false
             
-            if dialog.runModal() == NSModalResponseOK {
+            if dialog.runModal() == NSApplication.ModalResponse.OK {
                 self.handlePropertyChange(for: .animation, value: CSData.String(dialog.url!.absoluteString))
             }
         }

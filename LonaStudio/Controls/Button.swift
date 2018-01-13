@@ -11,9 +11,9 @@ import Cocoa
 
 class Button: NSButton {
     
-    var onPress: () -> Void = {_ in}
+    var onPress: () -> Void = {}
     
-    func handlePress() {
+    @objc func handlePress() {
         onPress()
     }
     
@@ -27,7 +27,7 @@ class Button: NSButton {
         setup()
     }
     
-    init(title: String, onPress: @escaping () -> Void = {_ in}) {
+    init(title: String, onPress: @escaping () -> Void = {}) {
         self.onPress = onPress
         super.init(frame: NSRect.zero)
         setup()

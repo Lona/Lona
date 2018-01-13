@@ -120,7 +120,7 @@ class ViewController: NSViewController, NSOutlineViewDataSource, NSOutlineViewDe
         dialog.allowsMultipleSelection = false;
         dialog.allowedFileTypes        = ["component"];
         
-        if dialog.runModal() == NSModalResponseOK {
+        if dialog.runModal() == NSApplication.ModalResponse.OK {
             let result = dialog.url
             
             if result != nil {
@@ -204,7 +204,7 @@ class ViewController: NSViewController, NSOutlineViewDataSource, NSOutlineViewDe
         dialog.canCreateDirectories    = true
         dialog.allowedFileTypes        = ["sketch"]
         
-        if dialog.runModal() == NSModalResponseOK {
+        if dialog.runModal() == NSApplication.ModalResponse.OK {
             return dialog.url
         } else {
             // User clicked on "Cancel"
@@ -222,7 +222,7 @@ class ViewController: NSViewController, NSOutlineViewDataSource, NSOutlineViewDe
         dialog.canChooseDirectories    = true
         dialog.canChooseFiles          = false
         
-        return dialog.runModal() == NSModalResponseOK ? dialog.url : nil
+        return dialog.runModal() == NSApplication.ModalResponse.OK ? dialog.url : nil
     }
     
     @IBAction func exportToAnimation(_ sender: AnyObject) {
@@ -545,15 +545,15 @@ class ViewController: NSViewController, NSOutlineViewDataSource, NSOutlineViewDe
     }
     
     func createOutlineView() -> NSOutlineView {
-        let column = NSTableColumn(identifier: "layer")
-        column.resizingMask = .autoresizingMask
-        let visibleColumn = NSTableColumn(identifier: "visible")
+        let column = NSTableColumn(identifier: NSUserInterfaceItemIdentifier(rawValue: "layer"))
+        column.resizingMask = NSTableColumn.ResizingOptions.autoresizingMask
+        let visibleColumn = NSTableColumn(identifier: NSUserInterfaceItemIdentifier(rawValue: "visible"))
         visibleColumn.maxWidth = 20
         
         column.title = "Song title"
         
         let outlineView = LayerList()
-        outlineView.onChange = {_ in
+        outlineView.onChange = {
             self.renderLayerList()
             self.render()
         }
@@ -568,7 +568,7 @@ class ViewController: NSViewController, NSOutlineViewDataSource, NSOutlineViewDe
         outlineView.addTableColumn(visibleColumn)
         outlineView.outlineTableColumn = column
         
-        outlineView.rowSizeStyle = NSTableViewRowSizeStyle.small
+        outlineView.rowSizeStyle = NSTableView.RowSizeStyle.small
         
         outlineView.dataSource = self
         outlineView.delegate = self
@@ -580,7 +580,7 @@ class ViewController: NSViewController, NSOutlineViewDataSource, NSOutlineViewDe
 //        outlineView.usesAlternatingRowBackgroundColors = true
         outlineView.intercellSpacing = NSSize(width: 10, height: 10)
         
-        outlineView.register(forDraggedTypes: ["component.layer"])
+        outlineView.registerForDraggedTypes([NSPasteboard.PasteboardType(rawValue: "component.layer")])
         
         outlineView.headerView = nil
         
@@ -589,7 +589,7 @@ class ViewController: NSViewController, NSOutlineViewDataSource, NSOutlineViewDe
         return outlineView
     }
     
-    func doubleClick(sender: AnyObject) {
+    @objc func doubleClick(sender: AnyObject) {
         outlineView!.editColumn(outlineView!.clickedColumn, row: outlineView!.clickedRow, with: nil, select: true)
     }
 
@@ -686,7 +686,7 @@ class ViewController: NSViewController, NSOutlineViewDataSource, NSOutlineViewDe
             
             let parametersSection = DisclosureContentRow(title: "Parameters", views: views.map({ $0.view }), stretched: true)
             parametersSection.contentSpacing = 8
-            parametersSection.contentEdgeInsets = EdgeInsets(top: 0, left: 0, bottom: 15, right: 0)
+            parametersSection.contentEdgeInsets = NSEdgeInsets(top: 0, left: 0, bottom: 15, right: 0)
             
             inspectorView = NSStackView(views: [parametersSection], orientation: .vertical, stretched: true)
             inspectorView.translatesAutoresizingMaskIntoConstraints = false
@@ -719,7 +719,7 @@ class ViewController: NSViewController, NSOutlineViewDataSource, NSOutlineViewDe
         scrollView.hasVerticalRuler = true
         scrollView.drawsBackground = false
         scrollView.automaticallyAdjustsContentInsets = false
-        scrollView.contentInsets = EdgeInsets(top: 0, left: 20, bottom: 0, right: 20)
+        scrollView.contentInsets = NSEdgeInsets(top: 0, left: 20, bottom: 0, right: 20)
         
         right.addSubviewStretched(subview: scrollView)
         
@@ -741,7 +741,7 @@ class ViewController: NSViewController, NSOutlineViewDataSource, NSOutlineViewDe
         if let _ = item as? DataNode {
             let index = outlineView.row(forItem: item)
             
-            pp.setString(String(index), forType: "component.layer")
+            pp.setString(String(index), forType: NSPasteboard.PasteboardType(rawValue: "component.layer"))
             
 //            print( "pb write \(fi.label)")
             
@@ -753,7 +753,7 @@ class ViewController: NSViewController, NSOutlineViewDataSource, NSOutlineViewDe
     }
     
     func outlineView(_ outlineView: NSOutlineView, validateDrop info: NSDraggingInfo, proposedItem item: Any?, proposedChildIndex index: Int) -> NSDragOperation {
-        let sourceIndexString = info.draggingPasteboard().string(forType: "component.layer")
+        let sourceIndexString = info.draggingPasteboard().string(forType: NSPasteboard.PasteboardType(rawValue: "component.layer"))
         
         if sourceIndexString != nil, let sourceIndex = Int(sourceIndexString!), let targetLayer = item as? CSLayer? {
             
@@ -781,7 +781,7 @@ class ViewController: NSViewController, NSOutlineViewDataSource, NSOutlineViewDe
     }
     
     func outlineView(_ outlineView: NSOutlineView, acceptDrop info: NSDraggingInfo, item: Any?, childIndex index: Int) -> Bool {
-        let sourceIndexString = info.draggingPasteboard().string(forType: "component.layer")
+        let sourceIndexString = info.draggingPasteboard().string(forType: NSPasteboard.PasteboardType(rawValue: "component.layer"))
         
         if sourceIndexString != nil, let sourceIndex = Int(sourceIndexString!) {
 //            print( "accept drop", item, "index", index, "drag index", sourceIndex)

@@ -69,7 +69,7 @@ class MetadataEditorView: NSStackView, CSControl {
         self.orientation = .vertical
         self.spacing = 12
         
-        self.edgeInsets = EdgeInsets(top: 20, left: 20, bottom: 20, right: 20)
+        self.edgeInsets = NSEdgeInsets(top: 20, left: 20, bottom: 20, right: 20)
         self.backgroundFill = CGColor.white
         
         render()

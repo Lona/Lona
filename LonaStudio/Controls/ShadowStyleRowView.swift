@@ -22,7 +22,7 @@ final class ShadowStyleRowView: NSStackView, Hoverable, PickerRowViewType {
         view.layer?.cornerRadius = 2
         return view
     }()
-    var onClick: () -> Void = {_ in}
+    var onClick: () -> Void = {}
     
     // MARK: - Init
     init(shadow: CSShadow, selected: Bool) {
@@ -50,7 +50,7 @@ final class ShadowStyleRowView: NSStackView, Hoverable, PickerRowViewType {
         orientation = .horizontal
         distribution = .fill
         alignment = .centerY
-        edgeInsets = EdgeInsets(top: 0, left: 8, bottom: 0, right: 8)
+        edgeInsets = NSEdgeInsets(top: 0, left: 8, bottom: 0, right: 8)
     }
     
     required init?(coder: NSCoder) {

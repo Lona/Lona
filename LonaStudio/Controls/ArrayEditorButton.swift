@@ -151,7 +151,7 @@ class ArrayEditorButton: NSButton, CSControl, NSPopoverDelegate {
         popover.show(relativeTo: NSRect.zero, of: self, preferredEdge: .maxY)
     }
     
-    func handleClick() {
+    @objc func handleClick() {
         showPopover()
     }
     

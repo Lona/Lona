@@ -22,7 +22,7 @@ struct CSShadow {
     }
     
     func attributeDictionary() -> [String: Any] {
-        return [NSShadowAttributeName: nsShadow]
+        return [NSAttributedStringKey.shadow.rawValue: nsShadow]
     }
 }
 

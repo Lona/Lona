@@ -30,7 +30,7 @@ class LayerThumbnail {
     }
     
     static func image(for layer: CSLayer) -> NSImage? {
-        let scale = NSApplication.shared().windows.first?.backingScaleFactor ?? 1
+        let scale = NSApplication.shared.windows.first?.backingScaleFactor ?? 1
         let size = 16 * scale
         
         switch (layer.type) {
@@ -43,7 +43,7 @@ class LayerThumbnail {
             
             let image = NSImage(size: NSSize(width: size, height: size), flipped: true, drawingHandler: { rect in
                 NSGraphicsContext.saveGraphicsState()
-                NSBezierPath.setDefaultLineWidth(scale)
+                NSBezierPath.defaultLineWidth = scale
         
                 let borderPath = NSBezierPath(rect: rect.insetBy(dx: 2.5 * scale, dy: 2.5 * scale))
                 var outlineColor = layerOutlineColor

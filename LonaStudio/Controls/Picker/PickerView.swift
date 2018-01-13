@@ -111,7 +111,7 @@ extension PickerView {
         let stackView = NSStackView(views: [searchStackView, list], orientation: .vertical, stretched: true)
         stackView.translatesAutoresizingMaskIntoConstraints = false
         stackView.spacing = 8
-        stackView.edgeInsets = EdgeInsets(top: 8, left: 0, bottom: 8, right: 0)
+        stackView.edgeInsets = NSEdgeInsets(top: 8, left: 0, bottom: 8, right: 0)
         
         // Constraint
         addSubview(stackView)
@@ -156,7 +156,7 @@ extension PickerView {
             ])
         
         let stackView = NSStackView(views: [searchField], orientation: .horizontal, stretched: true)
-        stackView.edgeInsets = EdgeInsets(top: 0, left: 8, bottom: 0, right: 8)
+        stackView.edgeInsets = NSEdgeInsets(top: 0, left: 8, bottom: 0, right: 8)
         return stackView
     }
     

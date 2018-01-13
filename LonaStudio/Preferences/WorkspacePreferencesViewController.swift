@@ -19,7 +19,7 @@ class WorkspacePreferencesViewController: NSViewController, MASPreferencesViewCo
             return LABEL
         }
         set {
-            super.identifier = newValue
+            super.identifier = newValue.map { NSUserInterfaceItemIdentifier(rawValue: $0) }
         }
     }
     
@@ -31,7 +31,7 @@ class WorkspacePreferencesViewController: NSViewController, MASPreferencesViewCo
                 CSWorkspacePreferences.workspaceURL = URL(fileURLWithPath: value.stringValue, isDirectory: true)
                 
                 // Close all documents, since preferences change things drastically
-                NSDocumentController.shared().closeAllDocuments(withDelegate: nil, didCloseAllSelector: nil, contextInfo: nil)
+                NSDocumentController.shared.closeAllDocuments(withDelegate: nil, didCloseAllSelector: nil, contextInfo: nil)
                 
                 // Load preferences for this new workspace if they exist
                 CSWorkspacePreferences.reload()
@@ -61,7 +61,7 @@ class WorkspacePreferencesViewController: NSViewController, MASPreferencesViewCo
         stackView.alignment = .left
         stackView.spacing = 5
         stackView.translatesAutoresizingMaskIntoConstraints = false
-        stackView.edgeInsets = EdgeInsets(top: 20, left: 20, bottom: 20, right: 20)
+        stackView.edgeInsets = NSEdgeInsets(top: 20, left: 20, bottom: 20, right: 20)
         
         view.addSubview(stackView)
         

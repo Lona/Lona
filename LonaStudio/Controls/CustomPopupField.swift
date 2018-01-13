@@ -18,12 +18,12 @@ class NSMenuItemView: NSView {
         
         super.init(frame: frameRect)
         
-        self.autoresizingMask.insert(NSView.AutoresizingMask.viewWidthSizable)
+        self.autoresizingMask.insert(NSView.AutoresizingMask.width)
         
         wantsLayer = true
         
         let backgroundField = NSTextField(frame: frameRect)
-        backgroundField.autoresizingMask.insert(NSView.AutoresizingMask.viewWidthSizable)
+        backgroundField.autoresizingMask.insert(NSView.AutoresizingMask.width)
         
         addSubview(backgroundField)
         addSubview(subview)
@@ -95,7 +95,7 @@ class NSMenuItemView: NSView {
     override func viewDidMoveToSuperview() {
         super.viewDidMoveToSuperview()
         
-        let trackingArea = NSTrackingArea(rect: bounds, options: [NSTrackingAreaOptions.mouseEnteredAndExited, NSTrackingAreaOptions.activeInActiveApp], owner: self, userInfo: nil)
+        let trackingArea = NSTrackingArea(rect: bounds, options: [NSTrackingArea.Options.mouseEnteredAndExited, NSTrackingArea.Options.activeInActiveApp], owner: self, userInfo: nil)
         
         addTrackingArea(trackingArea)
     }
@@ -153,7 +153,7 @@ class CustomPopupField<Value: Equatable>: NSPopUpButton, NSMenuDelegate {
             })
             
             let itemView = view(value)
-            let wrapper = NSMenuItemView(frame: itemView.frame, subview: itemView, onChange: { _ in
+            let wrapper = NSMenuItemView(frame: itemView.frame, subview: itemView, onChange: { 
                 onChange(value)
             })
             

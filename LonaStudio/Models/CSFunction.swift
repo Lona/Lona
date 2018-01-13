@@ -186,7 +186,7 @@ struct CSFunction {
     
     // Named parameters are populated (pulled from scope) by the execution context
     var invoke: (NamedArguments, CSScope) -> ReturnValue = { _, scope in .stepOver }
-    var updateScope: (NamedArguments, CSScope) -> Void = { _ in }
+    var updateScope: (NamedArguments, CSScope) -> Void = { _,_  in }
 
     static var registeredFunctionDeclarations: [String] {
         return Array(registeredFunctions.keys)
@@ -211,7 +211,7 @@ struct CSFunction {
             parameters: [],
             hasBody: false,
             invoke: { _, scope in .stepOver },
-            updateScope: { _ in }
+            updateScope: { _,_  in }
         )
     }
     
@@ -230,7 +230,7 @@ struct CSFunction {
             parameters: [],
             hasBody: true,
             invoke: { _, scope in .stepOver },
-            updateScope: { _ in }
+            updateScope: { _,_  in }
         )
     }
     
@@ -261,7 +261,7 @@ let CSAssignFunction = CSFunction(
         
         return .stepOver
     },
-    updateScope: { _ in }
+    updateScope: { _,_  in }
 )
 
 let CSIfFunction = CSFunction(
@@ -302,7 +302,7 @@ let CSIfFunction = CSFunction(
         
         return .stepOver
     },
-    updateScope: { _ in }
+    updateScope: { _,_  in }
 )
 
 let CSIfExistsFunction = CSFunction(
@@ -321,7 +321,7 @@ let CSIfExistsFunction = CSFunction(
         
         return .stepInto
     },
-    updateScope: { _ in }
+    updateScope: { _,_  in }
 )
 
 let CSDefineFunction = CSFunction(
@@ -383,7 +383,7 @@ let CSAddFunction = CSFunction(
 
         return .stepOver
     },
-    updateScope: { _ in }
+    updateScope: { _,_  in }
 )
 
 let CSAppendFunction = CSFunction(
@@ -405,7 +405,7 @@ let CSAppendFunction = CSFunction(
         
         return .stepOver
     },
-    updateScope: { _ in }
+    updateScope: { _,_  in }
 )
 
 let CSAccessArrayFunction = CSFunction(
@@ -431,7 +431,7 @@ let CSAccessArrayFunction = CSFunction(
         
         return .stepOver
     },
-    updateScope: { _ in }
+    updateScope: { _,_  in }
 )
 
 let CSForEachFunction = CSFunction(

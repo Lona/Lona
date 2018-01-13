@@ -12,35 +12,35 @@ import Cocoa
 class CanvasListEditor: NSOutlineView, NSOutlineViewDataSource, NSOutlineViewDelegate, NSTextFieldDelegate {
     
     func setup() {
-        let columnVisible = NSTableColumn(identifier: "Visible")
+        let columnVisible = NSTableColumn(identifier: NSUserInterfaceItemIdentifier(rawValue: "Visible"))
         columnVisible.width = 20
         columnVisible.title = ""
         
-        let columnName = NSTableColumn(identifier: "Name")
+        let columnName = NSTableColumn(identifier: NSUserInterfaceItemIdentifier(rawValue: "Name"))
         columnName.width = 150
         columnName.title = "Name"
         
-        let columnWidth = NSTableColumn(identifier: "Width")
+        let columnWidth = NSTableColumn(identifier: NSUserInterfaceItemIdentifier(rawValue: "Width"))
         columnWidth.width = 100
         columnWidth.title = "Width"
         
-        let columnHeightMode = NSTableColumn(identifier: "HeightMode")
+        let columnHeightMode = NSTableColumn(identifier: NSUserInterfaceItemIdentifier(rawValue: "HeightMode"))
         columnHeightMode.width = 100
         columnHeightMode.title = "Height Mode"
         
-        let columnHeight = NSTableColumn(identifier: "Height")
+        let columnHeight = NSTableColumn(identifier: NSUserInterfaceItemIdentifier(rawValue: "Height"))
         columnHeight.width = 100
         columnHeight.title = "Height"
         
-        let columnBackground = NSTableColumn(identifier: "Background")
+        let columnBackground = NSTableColumn(identifier: NSUserInterfaceItemIdentifier(rawValue: "Background"))
         columnBackground.width = 120
         columnBackground.title = "Background"
         
-        let columnScale = NSTableColumn(identifier: "Scale")
+        let columnScale = NSTableColumn(identifier: NSUserInterfaceItemIdentifier(rawValue: "Scale"))
         columnScale.width = 60
         columnScale.title = "Export At"
         
-        let columnParameters = NSTableColumn(identifier: "Parameters")
+        let columnParameters = NSTableColumn(identifier: NSUserInterfaceItemIdentifier(rawValue: "Parameters"))
         columnParameters.width = 120
         columnParameters.title = "Default Parameters"
         
@@ -59,7 +59,7 @@ class CanvasListEditor: NSOutlineView, NSOutlineViewDataSource, NSOutlineViewDel
         self.focusRingType = .none
         self.rowSizeStyle = .medium
         
-        self.register(forDraggedTypes: ["component.canvas"])
+        self.registerForDraggedTypes([NSPasteboard.PasteboardType(rawValue: "component.canvas")])
         
         self.reloadData()
         
@@ -68,7 +68,7 @@ class CanvasListEditor: NSOutlineView, NSOutlineViewDataSource, NSOutlineViewDel
     
     var component: CSComponent? = nil
     
-    func doubleClick(sender: AnyObject) {
+    @objc func doubleClick(sender: AnyObject) {
         editColumn(clickedColumn, row: clickedRow, with: nil, select: true)
     }
 
@@ -229,7 +229,7 @@ class CanvasListEditor: NSOutlineView, NSOutlineViewDataSource, NSOutlineViewDel
         
         let index = outlineView.row(forItem: item)
             
-        pasteboardItem.setString(String(index), forType: "component.canvas")
+        pasteboardItem.setString(String(index), forType: NSPasteboard.PasteboardType(rawValue: "component.canvas"))
         
         return pasteboardItem
     }
@@ -247,7 +247,7 @@ class CanvasListEditor: NSOutlineView, NSOutlineViewDataSource, NSOutlineViewDel
     
     func outlineView(_ outlineView: NSOutlineView, acceptDrop info: NSDraggingInfo, item: Any?, childIndex index: Int) -> Bool {
         
-        let sourceIndexString = info.draggingPasteboard().string(forType: "component.canvas")
+        let sourceIndexString = info.draggingPasteboard().string(forType: NSPasteboard.PasteboardType(rawValue: "component.canvas"))
         
         if sourceIndexString != nil, let sourceIndex = Int(sourceIndexString!) {
             

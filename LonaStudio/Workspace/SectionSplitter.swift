@@ -24,7 +24,7 @@ class SectionSplitter: NSSplitView {
     override func drawDivider(in rect: NSRect) {
         lockFocus()
         #colorLiteral(red: 0.9486700892, green: 0.9493889213, blue: 0.9487814307, alpha: 1).set()
-        NSRectFill(rect)
+        rect.fill()
         unlockFocus()
         
         splitterView?.ygNode?.width = rect.width
