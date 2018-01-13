@@ -45,3 +45,8 @@ type layer = {
   parameters: StringMap.t(lonaValue),
   children: list(layer)
 };
+
+type sizingRule =
+  | Fill
+  | FitContent
+  | Fixed(float);

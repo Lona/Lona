@@ -333,14 +333,11 @@ function flatten(layer) {
   return inner(/* [] */0, layer);
 }
 
-function find$1(name, layer) {
-  var matches = function (item) {
-    return +(item[/* name */1] === name);
-  };
+function find$1(f, rootLayer) {
   var exit = 0;
   var item;
   try {
-    item = List.find(matches, flatten(layer));
+    item = List.find(f, flatten(rootLayer));
     exit = 1;
   }
   catch (exn){
@@ -356,6 +353,12 @@ function find$1(name, layer) {
   
 }
 
+function findByName(name, rootLayer) {
+  return find$1((function (layer) {
+                return +(layer[/* name */1] === name);
+              }), rootLayer);
+}
+
 function flatmapParent(f, layer) {
   var inner = function (layer) {
     return Pervasives.$at(List.map(Curry._1(f, /* Some */[layer]), layer[/* children */3]), List.concat(List.map(inner, layer[/* children */3])));
@@ -364,6 +367,15 @@ function flatmapParent(f, layer) {
               Curry._2(f, /* None */0, layer),
               /* [] */0
             ], inner(layer));
+}
+
+function findParent(rootLayer, targetLayer) {
+  var containsChild = function (parent) {
+    return List.exists((function (child) {
+                  return +(child === targetLayer);
+                }), parent[/* children */3]);
+  };
+  return find$1(containsChild, rootLayer);
 }
 
 function flatmap(f, layer) {
@@ -441,6 +453,52 @@ function getNumberParameter(parameterName, layer) {
   }
 }
 
+function getSizingRules(parent, layer) {
+  var parentDirection = parent ? getFlexDirection(parent[0]) : "column";
+  var flex = getNumberParameterOpt("flex", layer);
+  var width = getNumberParameterOpt("width", layer);
+  var height = getNumberParameterOpt("height", layer);
+  var alignSelf = getStringParameterOpt("alignSelf", layer);
+  var widthSizingRule = parentDirection === "row" ? (
+      flex ? (
+          flex[0] !== 1.0 ? (
+              width ? /* Fixed */[width[0]] : /* FitContent */1
+            ) : /* Fill */0
+        ) : (
+          width ? /* Fixed */[width[0]] : /* FitContent */1
+        )
+    ) : (
+      alignSelf ? (
+          alignSelf[0] === "stretch" ? /* Fill */0 : (
+              width ? /* Fixed */[width[0]] : /* FitContent */1
+            )
+        ) : (
+          width ? /* Fixed */[width[0]] : /* FitContent */1
+        )
+    );
+  var heightSizingRule = parentDirection === "row" ? (
+      alignSelf ? (
+          alignSelf[0] === "stretch" ? /* Fill */0 : (
+              height ? /* Fixed */[height[0]] : /* FitContent */1
+            )
+        ) : (
+          height ? /* Fixed */[height[0]] : /* FitContent */1
+        )
+    ) : (
+      flex ? (
+          flex[0] !== 1.0 ? (
+              height ? /* Fixed */[height[0]] : /* FitContent */1
+            ) : /* Fill */0
+        ) : (
+          height ? /* Fixed */[height[0]] : /* FitContent */1
+        )
+    );
+  return /* record */[
+          /* width */widthSizingRule,
+          /* height */heightSizingRule
+        ];
+}
+
 function getInsets(prefix, layer) {
   var extract = function (key) {
     return StringMap$LonaCompilerCore.find_opt(prefix + key, layer[/* parameters */2]);
@@ -500,7 +558,7 @@ function getInsets(prefix, layer) {
           Caml_builtin_exceptions.match_failure,
           [
             "/Users/devin_abbott/Projects/ComponentStudio/ComponentStudio/compiler/core/src/layer.re",
-            136,
+            179,
             6
           ]
         ];
@@ -534,7 +592,7 @@ function parameterAssignmentsFromLogic(layer, node) {
                         var propertyName = match$2[0];
                         var logicValue = item;
                         var acc$1 = acc;
-                        var match$3 = find$1(layerName, layer);
+                        var match$3 = findByName(layerName, layer);
                         if (match$3) {
                           var found = match$3[0];
                           var match$4 = find_opt(found, acc$1);
@@ -712,12 +770,15 @@ exports.stylesSet                     = stylesSet;
 exports.parameterType                 = parameterType;
 exports.flatten                       = flatten;
 exports.find                          = find$1;
+exports.findByName                    = findByName;
 exports.flatmapParent                 = flatmapParent;
+exports.findParent                    = findParent;
 exports.flatmap                       = flatmap;
 exports.getFlexDirection              = getFlexDirection;
 exports.getStringParameterOpt         = getStringParameterOpt;
 exports.getNumberParameterOpt         = getNumberParameterOpt;
 exports.getNumberParameter            = getNumberParameter;
+exports.getSizingRules                = getSizingRules;
 exports.getInsets                     = getInsets;
 exports.getPadding                    = getPadding;
 exports.getMargin                     = getMargin;

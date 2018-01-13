@@ -77,19 +77,26 @@ let flatten = (layer: Types.layer) => {
   inner([], layer)
 };
 
-let find = (name, layer: Types.layer) => {
-  let matches = (item: Types.layer) => item.name == name;
-  switch (List.find(matches, flatten(layer))) {
+let find = (f, rootLayer: Types.layer) =>
+  switch (List.find(f, flatten(rootLayer))) {
   | item => Some(item)
   | exception Not_found => None
-  }
-};
+  };
+
+let findByName = (name, rootLayer: Types.layer) =>
+  rootLayer |> find((layer: Types.layer) => layer.name == name);
 
 let flatmapParent = (f, layer: Types.layer) => {
   let rec inner = (layer: Types.layer) =>
     (layer.children |> List.map(f(Some(layer))))
     @ (layer.children |> List.map(inner) |> List.concat);
   [f(None, layer)] @ inner(layer)
+};
+
+let findParent = (rootLayer: Types.layer, targetLayer: Types.layer) => {
+  let containsChild = (parent: Types.layer) =>
+    parent.children |> List.exists((child) => child === targetLayer);
+  rootLayer |> find(containsChild)
 };
 
 let flatmap = (f, layer: Types.layer) => flatmapParent((_, layer) => f(layer), layer);
@@ -118,6 +125,42 @@ let getNumberParameter = (parameterName, layer: Types.layer) =>
   | None => 0.0
   };
 
+type dimensionSizingRules = {
+  width: Types.sizingRule,
+  height: Types.sizingRule
+};
+
+let getSizingRules = (parent: option(Types.layer), layer: Types.layer) => {
+  let parentDirection =
+    switch parent {
+    | Some(parent) => getFlexDirection(parent)
+    | None => "column"
+    };
+  let flex = getNumberParameterOpt("flex", layer);
+  let width = getNumberParameterOpt("width", layer);
+  let height = getNumberParameterOpt("height", layer);
+  let alignSelf = getStringParameterOpt("alignSelf", layer);
+  let widthSizingRule =
+    switch (parentDirection, flex, width, alignSelf) {
+    | ("row", Some(1.0), _, _) => Types.Fill
+    | ("row", _, Some(value), _) => Types.Fixed(value)
+    | ("row", _, _, _) => Types.FitContent
+    | (_, _, _, Some("stretch")) => Types.Fill
+    | (_, _, Some(value), _) => Types.Fixed(value)
+    | (_, _, _, _) => Types.FitContent
+    };
+  let heightSizingRule =
+    switch (parentDirection, flex, height, alignSelf) {
+    | ("row", _, _, Some("stretch")) => Types.Fill
+    | ("row", _, Some(value), _) => Types.Fixed(value)
+    | ("row", _, _, _) => Types.FitContent
+    | (_, Some(1.0), _, _) => Types.Fill
+    | (_, _, Some(value), _) => Types.Fixed(value)
+    | (_, _, _, _) => Types.FitContent
+    };
+  {width: widthSizingRule, height: heightSizingRule}
+};
+
 type edgeInsets = {
   top: float,
   right: float,
@@ -144,7 +187,7 @@ let getMargin = getInsets("margin");
 let parameterAssignmentsFromLogic = (layer, node) => {
   let identifiers = Logic.undeclaredIdentifiers(node);
   let updateAssignments = (layerName, propertyName, logicValue, acc) =>
-    switch (find(layerName, layer)) {
+    switch (findByName(layerName, layer)) {
     | Some(found) =>
       switch (LayerMap.find_opt(found, acc)) {
       | Some(x) => LayerMap.add(found, StringMap.add(propertyName, logicValue, x), acc)

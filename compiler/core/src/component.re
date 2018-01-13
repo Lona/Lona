@@ -554,7 +554,7 @@ module Swift = {
              the secondary axis dimension is greater than every child's. */
           let fitContentSecondaryConstraint =
             Layer.getStringParameterOpt("alignSelf", parent) != Some("stretch")
-            && secondaryDimensionValue == None ?
+            && Layer.getNumberParameterOpt(secondaryDimension, parent) == None ?
               [
                 setUpLessThanOrEqualToContraint(
                   layer,
@@ -572,6 +572,10 @@ module Swift = {
                 )
               ] :
               [];
+          /* Js.log2(
+               "fit parent: " ++ parent.name ++ "child: " ++ layer.name,
+               fitContentSecondaryConstraint
+             ); */
           firstViewConstraints
           @ lastViewConstraints
           @ middleViewConstraints
@@ -653,6 +657,13 @@ module Swift = {
           "operator": "=",
           "right": SwiftIdentifier(def.variableName)
         });
+      let assignConstraintIdentifier = (def) =>
+        BinaryExpression({
+          "left":
+            MemberExpression([SwiftIdentifier(def.variableName), SwiftIdentifier("identifier")]),
+          "operator": "=",
+          "right": LiteralExpression(String(def.variableName))
+        });
       FunctionDeclaration({
         "name": "setUpConstraints",
         "modifiers": [AccessLevelModifier(PrivateModifier)],
@@ -665,7 +676,9 @@ module Swift = {
             [Empty],
             [activateConstraints()],
             [Empty],
-            constraints |> List.map(assignConstraint)
+            constraints |> List.map(assignConstraint),
+            [LineComment("For debugging")],
+            constraints |> List.map(assignConstraintIdentifier)
           ])
       })
     };

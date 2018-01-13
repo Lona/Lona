@@ -697,8 +697,7 @@ function generate$1(name, json, colors) {
       var secondaryDimension = match$5 !== 0 ? "width" : "height";
       var secondaryDimensionAnchor = secondaryDimension + "Anchor";
       +(direction === "column");
-      var match$6 = +(direction === "column");
-      var secondaryDimensionValue = match$6 !== 0 ? width : height;
+      +(direction === "column");
       var addConstraints = function (index, layer) {
         var firstViewConstraints;
         if (index !== 0) {
@@ -742,7 +741,7 @@ function generate$1(name, json, colors) {
         var secondaryAfterConstant = match$4 !== 0 ? constraintConstantExpression(parent, "trailingPadding", layer, "trailingMargin") : constraintConstantExpression(parent, "bottomPadding", layer, "bottomMargin");
         var secondaryBeforeConstraint = setUpContraint(layer, secondaryBeforeAnchor, parent, secondaryBeforeAnchor, "equalTo", secondaryBeforeConstant);
         var secondaryAfterConstraint = setUpContraint(layer, secondaryAfterAnchor, parent, secondaryAfterAnchor, "equalTo", negateNumber(secondaryAfterConstant));
-        var match$5 = Caml_obj.caml_notequal(Layer$LonaCompilerCore.getStringParameterOpt("alignSelf", parent), /* Some */["stretch"]) && +(secondaryDimensionValue === /* None */0);
+        var match$5 = Caml_obj.caml_notequal(Layer$LonaCompilerCore.getStringParameterOpt("alignSelf", parent), /* Some */["stretch"]) && +(Layer$LonaCompilerCore.getNumberParameterOpt(secondaryDimension, parent) === /* None */0);
         var fitContentSecondaryConstraint = match$5 !== 0 ? /* :: */[
             setUpLessThanOrEqualToContraint(layer, secondaryDimensionAnchor, parent, secondaryDimensionAnchor, negateNumber(/* BinaryExpression */Block.__(2, [{
                           left: secondaryBeforeConstant,
@@ -855,6 +854,19 @@ function generate$1(name, json, colors) {
                   right: /* SwiftIdentifier */Block.__(5, [def[/* variableName */0]])
                 }]);
     };
+    var assignConstraintIdentifier = function (def) {
+      return /* BinaryExpression */Block.__(2, [{
+                  left: /* MemberExpression */Block.__(1, [/* :: */[
+                        /* SwiftIdentifier */Block.__(5, [def[/* variableName */0]]),
+                        /* :: */[
+                          /* SwiftIdentifier */Block.__(5, ["identifier"]),
+                          /* [] */0
+                        ]
+                      ]]),
+                  operator: "=",
+                  right: /* LiteralExpression */Block.__(0, [/* String */Block.__(3, [def[/* variableName */0]])])
+                }]);
+    };
     return /* FunctionDeclaration */Block.__(9, [{
                 name: "setUpConstraints",
                 modifiers: /* :: */[
@@ -888,7 +900,16 @@ function generate$1(name, json, colors) {
                                 ],
                                 /* :: */[
                                   List.map(assignConstraint, constraints),
-                                  /* [] */0
+                                  /* :: */[
+                                    /* :: */[
+                                      /* LineComment */Block.__(15, ["For debugging"]),
+                                      /* [] */0
+                                    ],
+                                    /* :: */[
+                                      List.map(assignConstraintIdentifier, constraints),
+                                      /* [] */0
+                                    ]
+                                  ]
                                 ]
                               ]
                             ]
