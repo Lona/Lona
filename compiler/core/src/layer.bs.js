@@ -392,6 +392,26 @@ function getFlexDirection(layer) {
   
 }
 
+function getStringParameterOpt(parameterName, layer) {
+  var exit = 0;
+  var value;
+  try {
+    value = Curry._2(StringMap$LonaCompilerCore.find, parameterName, layer[/* parameters */2]);
+    exit = 1;
+  }
+  catch (exn){
+    if (exn === Caml_builtin_exceptions.not_found) {
+      return /* None */0;
+    } else {
+      throw exn;
+    }
+  }
+  if (exit === 1) {
+    return /* Some */[Json_decode.string(value[/* data */1])];
+  }
+  
+}
+
 function getNumberParameterOpt(parameterName, layer) {
   var exit = 0;
   var value;
@@ -480,7 +500,7 @@ function getInsets(prefix, layer) {
           Caml_builtin_exceptions.match_failure,
           [
             "/Users/devin_abbott/Projects/ComponentStudio/ComponentStudio/compiler/core/src/layer.re",
-            130,
+            136,
             6
           ]
         ];
@@ -695,6 +715,7 @@ exports.find                          = find$1;
 exports.flatmapParent                 = flatmapParent;
 exports.flatmap                       = flatmap;
 exports.getFlexDirection              = getFlexDirection;
+exports.getStringParameterOpt         = getStringParameterOpt;
 exports.getNumberParameterOpt         = getNumberParameterOpt;
 exports.getNumberParameter            = getNumberParameter;
 exports.getInsets                     = getInsets;

@@ -556,7 +556,7 @@ function generate$1(name, json, colors) {
               }]);
   };
   var getConstraints = function (root) {
-    var setUpContraint = function (layer, anchor1, parent, anchor2, value) {
+    var setUpContraint = function (layer, anchor1, parent, anchor2, relation, value) {
       var match = +(layer === rootLayer);
       var variableName = (
         match !== 0 ? anchor1 : Swift$LonaCompilerCore.Format[/* layerName */0](layer[/* name */1]) + LodashUpperfirst(anchor1)
@@ -570,7 +570,45 @@ function generate$1(name, json, colors) {
                       name: /* SwiftIdentifier */Block.__(5, ["constraint"]),
                       arguments: /* :: */[
                         /* FunctionCallArgument */Block.__(13, [{
-                              name: /* Some */[/* SwiftIdentifier */Block.__(5, ["equalTo"])],
+                              name: /* Some */[/* SwiftIdentifier */Block.__(5, [relation])],
+                              value: memberOrSelfExpression(parentNameOrSelf(parent), /* :: */[
+                                    /* SwiftIdentifier */Block.__(5, [anchor2]),
+                                    /* [] */0
+                                  ])
+                            }]),
+                        /* :: */[
+                          /* FunctionCallArgument */Block.__(13, [{
+                                name: /* Some */[/* SwiftIdentifier */Block.__(5, ["constant"])],
+                                value: value
+                              }]),
+                          /* [] */0
+                        ]
+                      ]
+                    }]),
+                /* [] */0
+              ]
+            ]
+          ]]);
+      return /* record */[
+              /* variableName */variableName,
+              /* initialValue */initialValue
+            ];
+    };
+    var setUpLessThanOrEqualToContraint = function (layer, anchor1, parent, anchor2, value, suffix) {
+      var match = +(layer === rootLayer);
+      var variableName = (
+        match !== 0 ? anchor1 : Swift$LonaCompilerCore.Format[/* layerName */0](layer[/* name */1]) + LodashUpperfirst(anchor1)
+      ) + suffix;
+      var initialValue = /* MemberExpression */Block.__(1, [/* :: */[
+            /* SwiftIdentifier */Block.__(5, [Swift$LonaCompilerCore.Format[/* layerName */0](layer[/* name */1])]),
+            /* :: */[
+              /* SwiftIdentifier */Block.__(5, [anchor1]),
+              /* :: */[
+                /* FunctionCallExpression */Block.__(14, [{
+                      name: /* SwiftIdentifier */Block.__(5, ["constraint"]),
+                      arguments: /* :: */[
+                        /* FunctionCallArgument */Block.__(13, [{
+                              name: /* Some */[/* SwiftIdentifier */Block.__(5, ["lessThanOrEqualTo"])],
                               value: memberOrSelfExpression(parentNameOrSelf(parent), /* :: */[
                                     /* SwiftIdentifier */Block.__(5, [anchor2]),
                                     /* [] */0
@@ -620,7 +658,13 @@ function generate$1(name, json, colors) {
               /* initialValue */initialValue
             ];
     };
-    var constraintConstantExpression = function (layer, variable1, parent, variable2, invert) {
+    var negateNumber = function (expression) {
+      return /* PrefixExpression */Block.__(3, [{
+                  operator: "-",
+                  expression: expression
+                }]);
+    };
+    var constraintConstantExpression = function (layer, variable1, parent, variable2) {
       var variableName = function (layer, variable) {
         var match = +(layer === rootLayer);
         if (match !== 0) {
@@ -629,19 +673,11 @@ function generate$1(name, json, colors) {
           return Swift$LonaCompilerCore.Format[/* layerName */0](layer[/* name */1]) + LodashUpperfirst(variable);
         }
       };
-      var expression = /* BinaryExpression */Block.__(2, [{
-            left: /* SwiftIdentifier */Block.__(5, [variableName(layer, variable1)]),
-            operator: "+",
-            right: /* SwiftIdentifier */Block.__(5, [variableName(parent, variable2)])
-          }]);
-      if (invert !== 0) {
-        return /* PrefixExpression */Block.__(3, [{
-                    operator: "-",
-                    expression: expression
-                  }]);
-      } else {
-        return expression;
-      }
+      return /* BinaryExpression */Block.__(2, [{
+                  left: /* SwiftIdentifier */Block.__(5, [variableName(layer, variable1)]),
+                  operator: "+",
+                  right: /* SwiftIdentifier */Block.__(5, [variableName(parent, variable2)])
+                }]);
     };
     var constrainAxes = function (parent) {
       var direction = Layer$LonaCompilerCore.getFlexDirection(parent);
@@ -653,30 +689,37 @@ function generate$1(name, json, colors) {
       var secondaryBeforeAnchor = match$2 !== 0 ? "leadingAnchor" : "topAnchor";
       var match$3 = +(direction === "column");
       var secondaryAfterAnchor = match$3 !== 0 ? "trailingAnchor" : "bottomAnchor";
-      Layer$LonaCompilerCore.getPadding(parent);
       var height = Layer$LonaCompilerCore.getNumberParameterOpt("height", parent);
       var width = Layer$LonaCompilerCore.getNumberParameterOpt("width", parent);
+      var match$4 = +(direction === "column");
+      var primaryDimension = match$4 !== 0 ? "height" : "width";
+      var match$5 = +(direction === "column");
+      var secondaryDimension = match$5 !== 0 ? "width" : "height";
+      var secondaryDimensionAnchor = secondaryDimension + "Anchor";
+      +(direction === "column");
+      var match$6 = +(direction === "column");
+      var secondaryDimensionValue = match$6 !== 0 ? width : height;
       var addConstraints = function (index, layer) {
-        Layer$LonaCompilerCore.getMargin(layer);
         var firstViewConstraints;
         if (index !== 0) {
           firstViewConstraints = /* [] */0;
         } else {
           var match = +(direction === "column");
-          var primaryBeforeConstant = match !== 0 ? constraintConstantExpression(parent, "topPadding", layer, "topMargin", /* false */0) : constraintConstantExpression(parent, "leadingPadding", layer, "leadingMargin", /* false */0);
+          var primaryBeforeConstant = match !== 0 ? constraintConstantExpression(parent, "topPadding", layer, "topMargin") : constraintConstantExpression(parent, "leadingPadding", layer, "leadingMargin");
           firstViewConstraints = /* :: */[
-            setUpContraint(layer, primaryBeforeAnchor, parent, primaryBeforeAnchor, primaryBeforeConstant),
+            setUpContraint(layer, primaryBeforeAnchor, parent, primaryBeforeAnchor, "equalTo", primaryBeforeConstant),
             /* [] */0
           ];
         }
         var lastViewConstraints;
         if (index === (List.length(parent[/* children */3]) - 1 | 0)) {
+          var needsPrimaryAfterConstraint = +(Layer$LonaCompilerCore.getNumberParameterOpt(primaryDimension, layer) === /* None */0 && Layer$LonaCompilerCore.getNumberParameterOpt("flex", layer) === /* None */0);
           var match$1 = +(direction === "column");
-          var primaryAfterConstant = match$1 !== 0 ? constraintConstantExpression(parent, "bottomPadding", layer, "bottomMargin", /* true */1) : constraintConstantExpression(parent, "trailingPadding", layer, "trailingMargin", /* true */1);
-          lastViewConstraints = /* :: */[
-            setUpContraint(layer, primaryAfterAnchor, parent, primaryAfterAnchor, primaryAfterConstant),
-            /* [] */0
-          ];
+          var primaryAfterConstant = match$1 !== 0 ? constraintConstantExpression(parent, "bottomPadding", layer, "bottomMargin") : constraintConstantExpression(parent, "trailingPadding", layer, "trailingMargin");
+          lastViewConstraints = needsPrimaryAfterConstraint !== 0 ? /* :: */[
+              setUpContraint(layer, primaryAfterAnchor, parent, primaryAfterAnchor, "equalTo", negateNumber(primaryAfterConstant)),
+              /* [] */0
+            ] : /* [] */0;
         } else {
           lastViewConstraints = /* [] */0;
         }
@@ -685,28 +728,36 @@ function generate$1(name, json, colors) {
           var previousLayer = List.nth(parent[/* children */3], index - 1 | 0);
           Layer$LonaCompilerCore.getMargin(previousLayer);
           var match$2 = +(direction === "column");
-          var betweenConstant = match$2 !== 0 ? constraintConstantExpression(previousLayer, "bottomMargin", layer, "topMargin", /* false */0) : constraintConstantExpression(previousLayer, "trailingMargin", layer, "leadingMargin", /* false */0);
+          var betweenConstant = match$2 !== 0 ? constraintConstantExpression(previousLayer, "bottomMargin", layer, "topMargin") : constraintConstantExpression(previousLayer, "trailingMargin", layer, "leadingMargin");
           middleViewConstraints = /* :: */[
-            setUpContraint(layer, primaryBeforeAnchor, previousLayer, primaryAfterAnchor, betweenConstant),
+            setUpContraint(layer, primaryBeforeAnchor, previousLayer, primaryAfterAnchor, "equalTo", betweenConstant),
             /* [] */0
           ];
         } else {
           middleViewConstraints = /* [] */0;
         }
         var match$3 = +(direction === "column");
-        var secondaryBeforeConstant = match$3 !== 0 ? constraintConstantExpression(parent, "leadingPadding", layer, "leadingMargin", /* false */0) : constraintConstantExpression(parent, "topPadding", layer, "topMargin", /* false */0);
+        var secondaryBeforeConstant = match$3 !== 0 ? constraintConstantExpression(parent, "leadingPadding", layer, "leadingMargin") : constraintConstantExpression(parent, "topPadding", layer, "topMargin");
         var match$4 = +(direction === "column");
-        var secondaryAfterConstant = match$4 !== 0 ? constraintConstantExpression(parent, "trailingPadding", layer, "trailingMargin", /* true */1) : constraintConstantExpression(parent, "bottomPadding", layer, "bottomMargin", /* true */1);
-        var secondaryAxisConstraints_000 = setUpContraint(layer, secondaryBeforeAnchor, parent, secondaryBeforeAnchor, secondaryBeforeConstant);
-        var secondaryAxisConstraints_001 = /* :: */[
-          setUpContraint(layer, secondaryAfterAnchor, parent, secondaryAfterAnchor, secondaryAfterConstant),
-          /* [] */0
-        ];
-        var secondaryAxisConstraints = /* :: */[
-          secondaryAxisConstraints_000,
-          secondaryAxisConstraints_001
-        ];
-        return Pervasives.$at(firstViewConstraints, Pervasives.$at(lastViewConstraints, Pervasives.$at(middleViewConstraints, secondaryAxisConstraints)));
+        var secondaryAfterConstant = match$4 !== 0 ? constraintConstantExpression(parent, "trailingPadding", layer, "trailingMargin") : constraintConstantExpression(parent, "bottomPadding", layer, "bottomMargin");
+        var secondaryBeforeConstraint = setUpContraint(layer, secondaryBeforeAnchor, parent, secondaryBeforeAnchor, "equalTo", secondaryBeforeConstant);
+        var secondaryAfterConstraint = setUpContraint(layer, secondaryAfterAnchor, parent, secondaryAfterAnchor, "equalTo", negateNumber(secondaryAfterConstant));
+        var match$5 = Caml_obj.caml_notequal(Layer$LonaCompilerCore.getStringParameterOpt("alignSelf", parent), /* Some */["stretch"]) && +(secondaryDimensionValue === /* None */0);
+        var fitContentSecondaryConstraint = match$5 !== 0 ? /* :: */[
+            setUpLessThanOrEqualToContraint(layer, secondaryDimensionAnchor, parent, secondaryDimensionAnchor, negateNumber(/* BinaryExpression */Block.__(2, [{
+                          left: secondaryBeforeConstant,
+                          operator: "+",
+                          right: secondaryAfterConstant
+                        }])), "ParentConstraint"),
+            /* [] */0
+          ] : /* [] */0;
+        return Pervasives.$at(firstViewConstraints, Pervasives.$at(lastViewConstraints, Pervasives.$at(middleViewConstraints, Pervasives.$at(/* :: */[
+                                secondaryBeforeConstraint,
+                                /* [] */0
+                              ], Pervasives.$at(/* :: */[
+                                    secondaryAfterConstraint,
+                                    /* [] */0
+                                  ], fitContentSecondaryConstraint)))));
       };
       var flexChildren = List.filter((function (child) {
                 return +(Layer$LonaCompilerCore.getNumberParameter("flex", child) === 1.0);
@@ -716,12 +767,11 @@ function generate$1(name, json, colors) {
         var rest = flexChildren[1];
         var first = flexChildren[0];
         if (List.length(rest) > 0) {
-          var match$4 = +(direction === "column");
-          var sameAnchor = match$4 !== 0 ? "heightAnchor" : "widthAnchor";
+          var sameAnchor = primaryDimension + "Anchor";
           flexChildrenConstraints = List.map((function (param) {
                   var anchor = sameAnchor;
                   var layer = param;
-                  return setUpContraint(first, anchor, layer, anchor, /* LiteralExpression */Block.__(0, [/* FloatingPoint */Block.__(2, [0.0])]));
+                  return setUpContraint(first, anchor, layer, anchor, "equalTo", /* LiteralExpression */Block.__(0, [/* FloatingPoint */Block.__(2, [0.0])]));
                 }), rest);
         } else {
           flexChildrenConstraints = /* [] */0;

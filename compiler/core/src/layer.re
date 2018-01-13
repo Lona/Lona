@@ -100,6 +100,12 @@ let getFlexDirection = (layer: Types.layer) =>
   | exception Not_found => "column"
   };
 
+let getStringParameterOpt = (parameterName, layer: Types.layer) =>
+  switch (StringMap.find(parameterName, layer.parameters)) {
+  | value => Some(value.data |> Json.Decode.string)
+  | exception Not_found => None
+  };
+
 let getNumberParameterOpt = (parameterName, layer: Types.layer) =>
   switch (StringMap.find(parameterName, layer.parameters)) {
   | value => Some(value.data |> Json.Decode.float)
