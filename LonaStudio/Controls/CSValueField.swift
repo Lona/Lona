@@ -241,7 +241,7 @@ class CSValueField {
             field.useYogaLayout = true
             field.value = value
             field.onChangeData = defaultChangeHandler
-        case .null():
+        case .null:
             let field = TextField(frame: NSRect(x: 0, y: 0, width: 80, height: 16))
             view = field
             

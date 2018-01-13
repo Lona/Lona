@@ -24,8 +24,8 @@ class ImageField: NSImageView, CSControl {
     
     required init?(coder: NSCoder) {
         super.init(coder: coder)
-        // Declare and register an array of accepted types
-        registerForDraggedTypes([NSFilenamesPboardType, NSURLPboardType, NSPasteboard.PasteboardType.tiff])
+        
+        registerForDragged()
     }
     
     let sizeLabel = TextField(labelWithStringCompat: "")
@@ -44,7 +44,7 @@ class ImageField: NSImageView, CSControl {
         layer?.borderWidth = 1.0
         layer?.borderColor = #colorLiteral(red: 0.6000000238, green: 0.6000000238, blue: 0.6000000238, alpha: 1).cgColor
         
-        registerForDraggedTypes([NSFilenamesPboardType, NSURLPboardType, NSPasteboard.PasteboardType.tiff])
+        registerForDragged()
     }
     
     let fileTypes = ["jpg", "jpeg", "bmp", "png", "gif", "pdf", "eps", "svg"]
@@ -108,5 +108,11 @@ class ImageField: NSImageView, CSControl {
             }
         }
         return false
+    }
+    
+    private func registerForDragged() {
+        registerForDraggedTypes([NSPasteboard.PasteboardType(kUTTypeFileURL as String),
+                                 NSPasteboard.PasteboardType(kUTTypeURL as String),
+                                 NSPasteboard.PasteboardType.tiff])
     }
 }

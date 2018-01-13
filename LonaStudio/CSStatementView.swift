@@ -11,16 +11,16 @@ import Cocoa
 
 let EDITABLE_TEXT_FIELD_TAG: Int = 10
 
-let editableFontAttributes: [String: Any] = [
-    NSAttributedStringKey.font.rawValue: NSFont.systemFont(ofSize: 12),
-    NSAttributedStringKey.underlineStyle.rawValue: NSUnderlineStyle.styleSingle.rawValue | NSUnderlineStyle.patternDot.rawValue,
-    NSAttributedStringKey.foregroundColor.rawValue: NSColor.parse(css: "#4A90E2")!,
+let editableFontAttributes: [NSAttributedStringKey: Any] = [
+    NSAttributedStringKey.font: NSFont.systemFont(ofSize: 12),
+    NSAttributedStringKey.underlineStyle: NSUnderlineStyle.styleSingle.rawValue | NSUnderlineStyle.patternDot.rawValue,
+    NSAttributedStringKey.foregroundColor: NSColor.parse(css: "#4A90E2")!,
 ]
 
-let disabledFontAttributes: [String: Any] = [
-    NSAttributedStringKey.font.rawValue: NSFont.systemFont(ofSize: 12),
-    NSAttributedStringKey.underlineStyle.rawValue: NSUnderlineStyle.styleSingle.rawValue | NSUnderlineStyle.patternDot.rawValue,
-    NSAttributedStringKey.foregroundColor.rawValue: NSColor.gray,
+let disabledFontAttributes: [NSAttributedStringKey: Any] = [
+    NSAttributedStringKey.font: NSFont.systemFont(ofSize: 12),
+    NSAttributedStringKey.underlineStyle: NSUnderlineStyle.styleSingle.rawValue | NSUnderlineStyle.patternDot.rawValue,
+    NSAttributedStringKey.foregroundColor: NSColor.gray,
 ]
 
 class CSStatementView: NSTableCellView {

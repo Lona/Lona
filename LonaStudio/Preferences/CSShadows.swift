@@ -21,8 +21,8 @@ struct CSShadow {
         return NSShadow(color: color, offset: CGSize(width: x, height: y), blur: blur)
     }
     
-    func attributeDictionary() -> [String: Any] {
-        return [NSAttributedStringKey.shadow.rawValue: nsShadow]
+    func attributeDictionary() -> [NSAttributedStringKey: Any] {
+        return [NSAttributedStringKey.shadow: nsShadow]
     }
 }
 
