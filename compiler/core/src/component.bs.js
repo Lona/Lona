@@ -679,8 +679,8 @@ function generate$1(name, json, colors) {
                   right: /* SwiftIdentifier */Block.__(5, [variableName(parent, variable2)])
                 }]);
     };
-    var constrainAxes = function (parent) {
-      var direction = Layer$LonaCompilerCore.getFlexDirection(parent);
+    var constrainAxes = function (layer) {
+      var direction = Layer$LonaCompilerCore.getFlexDirection(layer);
       var match = +(direction === "column");
       var primaryBeforeAnchor = match !== 0 ? "topAnchor" : "leadingAnchor";
       var match$1 = +(direction === "column");
@@ -689,8 +689,8 @@ function generate$1(name, json, colors) {
       var secondaryBeforeAnchor = match$2 !== 0 ? "leadingAnchor" : "topAnchor";
       var match$3 = +(direction === "column");
       var secondaryAfterAnchor = match$3 !== 0 ? "trailingAnchor" : "bottomAnchor";
-      var height = Layer$LonaCompilerCore.getNumberParameterOpt("height", parent);
-      var width = Layer$LonaCompilerCore.getNumberParameterOpt("width", parent);
+      var height = Layer$LonaCompilerCore.getNumberParameterOpt("height", layer);
+      var width = Layer$LonaCompilerCore.getNumberParameterOpt("width", layer);
       var match$4 = +(direction === "column");
       var primaryDimension = match$4 !== 0 ? "height" : "width";
       var match$5 = +(direction === "column");
@@ -698,25 +698,42 @@ function generate$1(name, json, colors) {
       var secondaryDimensionAnchor = secondaryDimension + "Anchor";
       +(direction === "column");
       +(direction === "column");
-      var addConstraints = function (index, layer) {
+      var sizingRules = Layer$LonaCompilerCore.getSizingRules(Layer$LonaCompilerCore.findParent(rootLayer, layer), layer);
+      var match$6 = +(direction === "column");
+      var primarySizingRule = match$6 !== 0 ? sizingRules[/* height */1] : sizingRules[/* width */0];
+      var match$7 = +(direction === "column");
+      var secondarySizingRule = match$7 !== 0 ? sizingRules[/* width */0] : sizingRules[/* height */1];
+      var flexChildren = List.filter((function (child) {
+                return +(Layer$LonaCompilerCore.getNumberParameter("flex", child) === 1.0);
+              }))(layer[/* children */3]);
+      var addConstraints = function (index, child) {
+        var childSizingRules = Layer$LonaCompilerCore.getSizingRules(/* Some */[layer], child);
+        +(direction === "column");
+        var match = +(direction === "column");
+        var childSecondarySizingRule = match !== 0 ? childSizingRules[/* width */0] : childSizingRules[/* height */1];
         var firstViewConstraints;
         if (index !== 0) {
           firstViewConstraints = /* [] */0;
         } else {
-          var match = +(direction === "column");
-          var primaryBeforeConstant = match !== 0 ? constraintConstantExpression(parent, "topPadding", layer, "topMargin") : constraintConstantExpression(parent, "leadingPadding", layer, "leadingMargin");
+          var match$1 = +(direction === "column");
+          var primaryBeforeConstant = match$1 !== 0 ? constraintConstantExpression(layer, "topPadding", child, "topMargin") : constraintConstantExpression(layer, "leadingPadding", child, "leadingMargin");
           firstViewConstraints = /* :: */[
-            setUpContraint(layer, primaryBeforeAnchor, parent, primaryBeforeAnchor, "equalTo", primaryBeforeConstant),
+            setUpContraint(child, primaryBeforeAnchor, layer, primaryBeforeAnchor, "equalTo", primaryBeforeConstant),
             /* [] */0
           ];
         }
         var lastViewConstraints;
-        if (index === (List.length(parent[/* children */3]) - 1 | 0)) {
-          var needsPrimaryAfterConstraint = +(Layer$LonaCompilerCore.getNumberParameterOpt(primaryDimension, layer) === /* None */0 && Layer$LonaCompilerCore.getNumberParameterOpt("flex", layer) === /* None */0);
-          var match$1 = +(direction === "column");
-          var primaryAfterConstant = match$1 !== 0 ? constraintConstantExpression(parent, "bottomPadding", layer, "bottomMargin") : constraintConstantExpression(parent, "trailingPadding", layer, "trailingMargin");
+        if (index === (List.length(layer[/* children */3]) - 1 | 0)) {
+          var match$2 = List.length(flexChildren);
+          var needsPrimaryAfterConstraint = typeof primarySizingRule === "number" ? (
+              primarySizingRule !== 0 || !match$2 ? /* false */0 : /* true */1
+            ) : (
+              match$2 ? /* true */1 : /* false */0
+            );
+          var match$3 = +(direction === "column");
+          var primaryAfterConstant = match$3 !== 0 ? constraintConstantExpression(layer, "bottomPadding", child, "bottomMargin") : constraintConstantExpression(layer, "trailingPadding", child, "trailingMargin");
           lastViewConstraints = needsPrimaryAfterConstraint !== 0 ? /* :: */[
-              setUpContraint(layer, primaryAfterAnchor, parent, primaryAfterAnchor, "equalTo", negateNumber(primaryAfterConstant)),
+              setUpContraint(child, primaryAfterAnchor, layer, primaryAfterAnchor, "equalTo", negateNumber(primaryAfterConstant)),
               /* [] */0
             ] : /* [] */0;
         } else {
@@ -724,26 +741,33 @@ function generate$1(name, json, colors) {
         }
         var middleViewConstraints;
         if (index !== 0) {
-          var previousLayer = List.nth(parent[/* children */3], index - 1 | 0);
+          var previousLayer = List.nth(layer[/* children */3], index - 1 | 0);
           Layer$LonaCompilerCore.getMargin(previousLayer);
-          var match$2 = +(direction === "column");
-          var betweenConstant = match$2 !== 0 ? constraintConstantExpression(previousLayer, "bottomMargin", layer, "topMargin") : constraintConstantExpression(previousLayer, "trailingMargin", layer, "leadingMargin");
+          var match$4 = +(direction === "column");
+          var betweenConstant = match$4 !== 0 ? constraintConstantExpression(previousLayer, "bottomMargin", child, "topMargin") : constraintConstantExpression(previousLayer, "trailingMargin", child, "leadingMargin");
           middleViewConstraints = /* :: */[
-            setUpContraint(layer, primaryBeforeAnchor, previousLayer, primaryAfterAnchor, "equalTo", betweenConstant),
+            setUpContraint(child, primaryBeforeAnchor, previousLayer, primaryAfterAnchor, "equalTo", betweenConstant),
             /* [] */0
           ];
         } else {
           middleViewConstraints = /* [] */0;
         }
-        var match$3 = +(direction === "column");
-        var secondaryBeforeConstant = match$3 !== 0 ? constraintConstantExpression(parent, "leadingPadding", layer, "leadingMargin") : constraintConstantExpression(parent, "topPadding", layer, "topMargin");
-        var match$4 = +(direction === "column");
-        var secondaryAfterConstant = match$4 !== 0 ? constraintConstantExpression(parent, "trailingPadding", layer, "trailingMargin") : constraintConstantExpression(parent, "bottomPadding", layer, "bottomMargin");
-        var secondaryBeforeConstraint = setUpContraint(layer, secondaryBeforeAnchor, parent, secondaryBeforeAnchor, "equalTo", secondaryBeforeConstant);
-        var secondaryAfterConstraint = setUpContraint(layer, secondaryAfterAnchor, parent, secondaryAfterAnchor, "equalTo", negateNumber(secondaryAfterConstant));
-        var match$5 = Caml_obj.caml_notequal(Layer$LonaCompilerCore.getStringParameterOpt("alignSelf", parent), /* Some */["stretch"]) && +(Layer$LonaCompilerCore.getNumberParameterOpt(secondaryDimension, parent) === /* None */0);
-        var fitContentSecondaryConstraint = match$5 !== 0 ? /* :: */[
-            setUpLessThanOrEqualToContraint(layer, secondaryDimensionAnchor, parent, secondaryDimensionAnchor, negateNumber(/* BinaryExpression */Block.__(2, [{
+        var match$5 = +(direction === "column");
+        var secondaryBeforeConstant = match$5 !== 0 ? constraintConstantExpression(layer, "leadingPadding", child, "leadingMargin") : constraintConstantExpression(layer, "topPadding", child, "topMargin");
+        var match$6 = +(direction === "column");
+        var secondaryAfterConstant = match$6 !== 0 ? constraintConstantExpression(layer, "trailingPadding", child, "trailingMargin") : constraintConstantExpression(layer, "bottomPadding", child, "bottomMargin");
+        var secondaryBeforeConstraint = setUpContraint(child, secondaryBeforeAnchor, layer, secondaryBeforeAnchor, "equalTo", secondaryBeforeConstant);
+        var secondaryAfterConstraint = typeof childSecondarySizingRule === "number" ? (
+            childSecondarySizingRule !== 0 ? /* :: */[
+                setUpContraint(child, secondaryAfterAnchor, layer, secondaryAfterAnchor, "lessThanOrEqualTo", negateNumber(secondaryAfterConstant)),
+                /* [] */0
+              ] : /* :: */[
+                setUpContraint(child, secondaryAfterAnchor, layer, secondaryAfterAnchor, "equalTo", negateNumber(secondaryAfterConstant)),
+                /* [] */0
+              ]
+          ) : /* [] */0;
+        var fitContentSecondaryConstraint = typeof secondarySizingRule === "number" && secondarySizingRule !== 0 ? /* :: */[
+            setUpLessThanOrEqualToContraint(child, secondaryDimensionAnchor, layer, secondaryDimensionAnchor, negateNumber(/* BinaryExpression */Block.__(2, [{
                           left: secondaryBeforeConstant,
                           operator: "+",
                           right: secondaryAfterConstant
@@ -753,14 +777,8 @@ function generate$1(name, json, colors) {
         return Pervasives.$at(firstViewConstraints, Pervasives.$at(lastViewConstraints, Pervasives.$at(middleViewConstraints, Pervasives.$at(/* :: */[
                                 secondaryBeforeConstraint,
                                 /* [] */0
-                              ], Pervasives.$at(/* :: */[
-                                    secondaryAfterConstraint,
-                                    /* [] */0
-                                  ], fitContentSecondaryConstraint)))));
+                              ], Pervasives.$at(secondaryAfterConstraint, fitContentSecondaryConstraint)))));
       };
-      var flexChildren = List.filter((function (child) {
-                return +(Layer$LonaCompilerCore.getNumberParameter("flex", child) === 1.0);
-              }))(parent[/* children */3]);
       var flexChildrenConstraints;
       if (flexChildren) {
         var rest = flexChildren[1];
@@ -779,23 +797,23 @@ function generate$1(name, json, colors) {
         flexChildrenConstraints = /* [] */0;
       }
       var heightConstraint = height ? /* :: */[
-          setUpDimensionContraint(parent, "heightAnchor", height[0]),
+          setUpDimensionContraint(layer, "heightAnchor", height[0]),
           /* [] */0
         ] : /* [] */0;
       var widthConstraint = width ? /* :: */[
-          setUpDimensionContraint(parent, "widthAnchor", width[0]),
+          setUpDimensionContraint(layer, "widthAnchor", width[0]),
           /* [] */0
         ] : /* [] */0;
       return List.concat(Pervasives.$at(/* :: */[
                       heightConstraint,
                       /* :: */[
                         widthConstraint,
-                        /* :: */[
+                        /* [] */0
+                      ]
+                    ], Pervasives.$at(/* :: */[
                           flexChildrenConstraints,
                           /* [] */0
-                        ]
-                      ]
-                    ], List.mapi(addConstraints, parent[/* children */3])));
+                        ], List.mapi(addConstraints, layer[/* children */3]))));
     };
     return List.concat(Layer$LonaCompilerCore.flatmap(constrainAxes, root));
   };

@@ -437,32 +437,43 @@ module Swift = {
           "right": SwiftIdentifier(variableName(parent, variable2))
         })
       };
-      let constrainAxes = (parent: Types.layer) => {
-        let direction = Layer.getFlexDirection(parent);
+      let constrainAxes = (layer: Types.layer) => {
+        let direction = Layer.getFlexDirection(layer);
         let primaryBeforeAnchor = direction == "column" ? "topAnchor" : "leadingAnchor";
         let primaryAfterAnchor = direction == "column" ? "bottomAnchor" : "trailingAnchor";
         let secondaryBeforeAnchor = direction == "column" ? "leadingAnchor" : "topAnchor";
         let secondaryAfterAnchor = direction == "column" ? "trailingAnchor" : "bottomAnchor";
-        let height = Layer.getNumberParameterOpt("height", parent);
-        let width = Layer.getNumberParameterOpt("width", parent);
+        let height = Layer.getNumberParameterOpt("height", layer);
+        let width = Layer.getNumberParameterOpt("width", layer);
         let primaryDimension = direction == "column" ? "height" : "width";
         let secondaryDimension = direction == "column" ? "width" : "height";
         let secondaryDimensionAnchor = secondaryDimension ++ "Anchor";
         let primaryDimensionValue = direction == "column" ? height : width;
         let secondaryDimensionValue = direction == "column" ? width : height;
-        let addConstraints = (index, layer: Types.layer) => {
+        let sizingRules = layer |> Layer.getSizingRules(Layer.findParent(rootLayer, layer));
+        let primarySizingRule = direction == "column" ? sizingRules.height : sizingRules.width;
+        let secondarySizingRule = direction == "column" ? sizingRules.width : sizingRules.height;
+        let flexChildren =
+          layer.children
+          |> List.filter((child: Types.layer) => Layer.getNumberParameter("flex", child) === 1.0);
+        let addConstraints = (index, child: Types.layer) => {
+          let childSizingRules = child |> Layer.getSizingRules(Some(layer));
+          let childPrimarySizingRule =
+            direction == "column" ? childSizingRules.height : childSizingRules.width;
+          let childSecondarySizingRule =
+            direction == "column" ? childSizingRules.width : childSizingRules.height;
           let firstViewConstraints =
             switch index {
             | 0 =>
               let primaryBeforeConstant =
                 direction == "column" ?
-                  constraintConstantExpression(parent, "topPadding", layer, "topMargin") :
-                  constraintConstantExpression(parent, "leadingPadding", layer, "leadingMargin");
+                  constraintConstantExpression(layer, "topPadding", child, "topMargin") :
+                  constraintConstantExpression(layer, "leadingPadding", child, "leadingMargin");
               [
                 setUpContraint(
-                  layer,
+                  child,
                   primaryBeforeAnchor,
-                  parent,
+                  layer,
                   primaryBeforeAnchor,
                   "equalTo",
                   primaryBeforeConstant
@@ -472,20 +483,29 @@ module Swift = {
             };
           let lastViewConstraints =
             switch index {
-            | x when x == List.length(parent.children) - 1 =>
+            | x when x == List.length(layer.children) - 1 =>
+              /* If the parent view has a fixed dimension, we don't need to add a constraint...
+                 unless any child has "flex: 1", in which case we do still need the constraint. */
               let needsPrimaryAfterConstraint =
-                Layer.getNumberParameterOpt(primaryDimension, layer) == None
-                && Layer.getNumberParameterOpt("flex", layer) == None;
+                switch (primarySizingRule, List.length(flexChildren)) {
+                | (FitContent, _) => false
+                | (Fill, count) when count == 0 => false
+                | (Fixed(_), count) when count == 0 => false
+                | (_, _) => true
+                };
+              /* let needsPrimaryAfterConstraint =
+                 Layer.getNumberParameterOpt(primaryDimension, layer) == None
+                 || List.length(flexChildren) > 0; */
               let primaryAfterConstant =
                 direction == "column" ?
-                  constraintConstantExpression(parent, "bottomPadding", layer, "bottomMargin") :
-                  constraintConstantExpression(parent, "trailingPadding", layer, "trailingMargin");
+                  constraintConstantExpression(layer, "bottomPadding", child, "bottomMargin") :
+                  constraintConstantExpression(layer, "trailingPadding", child, "trailingMargin");
               needsPrimaryAfterConstraint ?
                 [
                   setUpContraint(
-                    layer,
+                    child,
                     primaryAfterAnchor,
-                    parent,
+                    layer,
                     primaryAfterAnchor,
                     "equalTo",
                     negateNumber(primaryAfterConstant)
@@ -498,20 +518,20 @@ module Swift = {
             switch index {
             | 0 => []
             | _ =>
-              let previousLayer = List.nth(parent.children, index - 1);
+              let previousLayer = List.nth(layer.children, index - 1);
               let previousMargin = Layer.getMargin(previousLayer);
               let betweenConstant =
                 direction == "column" ?
-                  constraintConstantExpression(previousLayer, "bottomMargin", layer, "topMargin") :
+                  constraintConstantExpression(previousLayer, "bottomMargin", child, "topMargin") :
                   constraintConstantExpression(
                     previousLayer,
                     "trailingMargin",
-                    layer,
+                    child,
                     "leadingMargin"
                   );
               [
                 setUpContraint(
-                  layer,
+                  child,
                   primaryBeforeAnchor,
                   previousLayer,
                   primaryAfterAnchor,
@@ -522,44 +542,55 @@ module Swift = {
             };
           let secondaryBeforeConstant =
             direction == "column" ?
-              constraintConstantExpression(parent, "leadingPadding", layer, "leadingMargin") :
-              constraintConstantExpression(parent, "topPadding", layer, "topMargin");
+              constraintConstantExpression(layer, "leadingPadding", child, "leadingMargin") :
+              constraintConstantExpression(layer, "topPadding", child, "topMargin");
           let secondaryAfterConstant =
             direction == "column" ?
-              constraintConstantExpression(parent, "trailingPadding", layer, "trailingMargin") :
-              constraintConstantExpression(parent, "bottomPadding", layer, "bottomMargin");
+              constraintConstantExpression(layer, "trailingPadding", child, "trailingMargin") :
+              constraintConstantExpression(layer, "bottomPadding", child, "bottomMargin");
           let secondaryBeforeConstraint =
             setUpContraint(
-              layer,
+              child,
               secondaryBeforeAnchor,
-              parent,
+              layer,
               secondaryBeforeAnchor,
               "equalTo",
               secondaryBeforeConstant
             );
           let secondaryAfterConstraint =
-            setUpContraint(
-              layer,
-              secondaryAfterAnchor,
-              parent,
-              secondaryAfterAnchor,
-              "equalTo",
-              negateNumber(secondaryAfterConstant)
-            );
-          /* let needsSecondaryAfterConstraint =
-             Layer.getNumberParameterOpt(secondaryDimension, layer) == None
-             && Layer.getNumberParameterOpt("flex", layer) == None; */
-          /* Js.log2("Needs secondary " ++ layer.name, needsSecondaryAfterConstraint); */
-          /* If the parent's secondary axis is set to "fit content", this ensures
-             the secondary axis dimension is greater than every child's. */
-          let fitContentSecondaryConstraint =
-            Layer.getStringParameterOpt("alignSelf", parent) != Some("stretch")
-            && Layer.getNumberParameterOpt(secondaryDimension, parent) == None ?
-              [
-                setUpLessThanOrEqualToContraint(
+            switch (secondarySizingRule, childSecondarySizingRule) {
+            | (_, Fixed(_)) => [] /* Width/height constraints are added outside the child loop */
+            | (_, Fill) => [
+                setUpContraint(
+                  child,
+                  secondaryAfterAnchor,
                   layer,
+                  secondaryAfterAnchor,
+                  "equalTo",
+                  negateNumber(secondaryAfterConstant)
+                )
+              ]
+            | (_, FitContent) => [
+                setUpContraint(
+                  child,
+                  secondaryAfterAnchor,
+                  layer,
+                  secondaryAfterAnchor,
+                  "lessThanOrEqualTo",
+                  negateNumber(secondaryAfterConstant)
+                )
+              ]
+            };
+          /* If the parent's secondary axis is set to "fit content", this ensures
+             the secondary axis dimension is greater than every child's.
+             We apply these in the child loop for easier variable naming (due to current setup). */
+          let fitContentSecondaryConstraint =
+            switch secondarySizingRule {
+            | FitContent => [
+                setUpLessThanOrEqualToContraint(
+                  child,
                   secondaryDimensionAnchor,
-                  parent,
+                  layer,
                   secondaryDimensionAnchor,
                   negateNumber(
                     BinaryExpression({
@@ -570,22 +601,30 @@ module Swift = {
                   ),
                   "ParentConstraint"
                 )
-              ] :
-              [];
-          /* Js.log2(
-               "fit parent: " ++ parent.name ++ "child: " ++ layer.name,
-               fitContentSecondaryConstraint
-             ); */
+              ]
+            | _ => []
+            };
           firstViewConstraints
           @ lastViewConstraints
           @ middleViewConstraints
           @ [secondaryBeforeConstraint]
-          @ [secondaryAfterConstraint]
+          @ secondaryAfterConstraint
           @ fitContentSecondaryConstraint
+          /* TODO:
+               It looks like we need to use priorities for this.
+               A "FitContent" view needs height >= each of its children.
+               Yet a "Fill" sibling needs to have height unspecified, and
+               a side anchor equal to the side of the "FitContent" view.
+               The "FitContent" view's height constraints seem to take priority
+               over the "Fill" view's height constraints.
+               We may be able to solve this be making the priorities of "FitContent"
+               height lower.
+
+               Impl: maybe return priority in the constraint definition object
+               from "setUpLessThanOrEqualToContraint"
+             */
         };
-        let flexChildren =
-          parent.children
-          |> List.filter((child: Types.layer) => Layer.getNumberParameter("flex", child) === 1.0);
+        /* Children with "flex: 1" should all have equal dimensions along the primary axis */
         let flexChildrenConstraints =
           switch flexChildren {
           | [first, ...rest] when List.length(rest) > 0 =>
@@ -604,17 +643,18 @@ module Swift = {
           };
         let heightConstraint =
           switch height {
-          | Some(height) => [setUpDimensionContraint(parent, "heightAnchor", height)]
+          | Some(height) => [setUpDimensionContraint(layer, "heightAnchor", height)]
           | None => []
           };
         let widthConstraint =
           switch width {
-          | Some(width) => [setUpDimensionContraint(parent, "widthAnchor", width)]
+          | Some(width) => [setUpDimensionContraint(layer, "widthAnchor", width)]
           | None => []
           };
         let constraints =
-          [heightConstraint, widthConstraint, flexChildrenConstraints]
-          @ (parent.children |> List.mapi(addConstraints));
+          [heightConstraint, widthConstraint]
+          @ [flexChildrenConstraints]
+          @ (layer.children |> List.mapi(addConstraints));
         constraints |> List.concat
       };
       root |> Layer.flatmap(constrainAxes) |> List.concat

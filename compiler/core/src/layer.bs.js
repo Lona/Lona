@@ -499,6 +499,18 @@ function getSizingRules(parent, layer) {
         ];
 }
 
+function printSizingRule(param) {
+  if (typeof param === "number") {
+    if (param !== 0) {
+      return "fitContent";
+    } else {
+      return "fill";
+    }
+  } else {
+    return "fixed(" + (Pervasives.string_of_float(param[0]) + ")");
+  }
+}
+
 function getInsets(prefix, layer) {
   var extract = function (key) {
     return StringMap$LonaCompilerCore.find_opt(prefix + key, layer[/* parameters */2]);
@@ -558,7 +570,7 @@ function getInsets(prefix, layer) {
           Caml_builtin_exceptions.match_failure,
           [
             "/Users/devin_abbott/Projects/ComponentStudio/ComponentStudio/compiler/core/src/layer.re",
-            179,
+            185,
             6
           ]
         ];
@@ -779,6 +791,7 @@ exports.getStringParameterOpt         = getStringParameterOpt;
 exports.getNumberParameterOpt         = getNumberParameterOpt;
 exports.getNumberParameter            = getNumberParameter;
 exports.getSizingRules                = getSizingRules;
+exports.printSizingRule               = printSizingRule;
 exports.getInsets                     = getInsets;
 exports.getPadding                    = getPadding;
 exports.getMargin                     = getMargin;

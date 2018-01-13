@@ -161,6 +161,12 @@ let getSizingRules = (parent: option(Types.layer), layer: Types.layer) => {
   {width: widthSizingRule, height: heightSizingRule}
 };
 
+let printSizingRule =
+  fun
+  | Types.Fill => "fill"
+  | FitContent => "fitContent"
+  | Fixed(value) => "fixed(" ++ string_of_float(value) ++ ")";
+
 type edgeInsets = {
   top: float,
   right: float,
