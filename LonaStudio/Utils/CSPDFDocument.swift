@@ -450,8 +450,8 @@ class CSPDFDocument {
         var fillColor: CGColor = CGColor.clear
         var strokeColor: CGColor = CGColor.clear
         var lineWidth: CGFloat = 1
-        var lineCap: NSLineCapStyle = NSLineCapStyle.buttLineCapStyle
-        var lineJoin: NSLineJoinStyle = NSLineJoinStyle.miterLineJoinStyle
+        var lineCap: NSBezierPath.LineCapStyle = NSBezierPath.LineCapStyle.buttLineCapStyle
+        var lineJoin: NSBezierPath.LineJoinStyle = NSBezierPath.LineJoinStyle.miterLineJoinStyle
         var clippingPath: NSBezierPath? = nil
         var transformation: AffineTransform = AffineTransform.identity
         
@@ -563,11 +563,11 @@ class CSPDFDocument {
                 }
             case .setLineCap:
                 if let value = op.get(number: "lineCap") {
-                    context().lineCap = NSLineCapStyle(rawValue: UInt(value))!
+                    context().lineCap = NSBezierPath.LineCapStyle(rawValue: UInt(value))!
                 }
             case .setLineJoin:
                 if let value = op.get(number: "lineJoin") {
-                    context().lineJoin = NSLineJoinStyle(rawValue: UInt(value))!
+                    context().lineJoin = NSBezierPath.LineJoinStyle(rawValue: UInt(value))!
                 }
             case .closePath:
                 currentPath.close()

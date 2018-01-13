@@ -12,15 +12,15 @@ import Cocoa
 let EDITABLE_TEXT_FIELD_TAG: Int = 10
 
 let editableFontAttributes: [String: Any] = [
-    NSFontAttributeName: NSFont.systemFont(ofSize: 12),
-    NSUnderlineStyleAttributeName: NSUnderlineStyle.styleSingle.rawValue | NSUnderlineStyle.patternDot.rawValue,
-    NSForegroundColorAttributeName: NSColor.parse(css: "#4A90E2")!,
+    NSAttributedStringKey.font.rawValue: NSFont.systemFont(ofSize: 12),
+    NSAttributedStringKey.underlineStyle.rawValue: NSUnderlineStyle.styleSingle.rawValue | NSUnderlineStyle.patternDot.rawValue,
+    NSAttributedStringKey.foregroundColor.rawValue: NSColor.parse(css: "#4A90E2")!,
 ]
 
 let disabledFontAttributes: [String: Any] = [
-    NSFontAttributeName: NSFont.systemFont(ofSize: 12),
-    NSUnderlineStyleAttributeName: NSUnderlineStyle.styleSingle.rawValue | NSUnderlineStyle.patternDot.rawValue,
-    NSForegroundColorAttributeName: NSColor.gray,
+    NSAttributedStringKey.font.rawValue: NSFont.systemFont(ofSize: 12),
+    NSAttributedStringKey.underlineStyle.rawValue: NSUnderlineStyle.styleSingle.rawValue | NSUnderlineStyle.patternDot.rawValue,
+    NSAttributedStringKey.foregroundColor.rawValue: NSColor.gray,
 ]
 
 class CSStatementView: NSTableCellView {
@@ -32,8 +32,8 @@ class CSStatementView: NSTableCellView {
         case identifier(String, CSScope, CSType, CSAccess, [String])
     }
     
-    var onChangeValue: (String, CSValue, [String]) -> Void = { _ in }
-    var onAddChild: () -> Void = { _ in }
+    var onChangeValue: (String, CSValue, [String]) -> Void = { _,_,_  in }
+    var onAddChild: () -> Void = {  }
     
     func handleChange(component: Component, componentName: String, value: CSValue, keyPath: [String]) {
 //        if keyPath == ["custom", "type"] {
@@ -50,9 +50,9 @@ class CSStatementView: NSTableCellView {
             let rightButton = Button(frame: NSRect(x: 0, y: 0, width: 17, height: 17))
             rightButton.translatesAutoresizingMaskIntoConstraints = false
             rightButton.bezelStyle = .inline
-            rightButton.image = NSImage.init(named: NSImageNameAddTemplate)!
+            rightButton.image = NSImage.init(named: NSImage.Name.addTemplate)!
             rightButton.imageScaling = .scaleProportionallyDown
-            rightButton.onPress = { _ in self.onAddChild() }
+            rightButton.onPress = {  self.onAddChild() }
             
             self.addSubview(rightButton)
             
@@ -81,8 +81,8 @@ class CSStatementView: NSTableCellView {
             field.value = string
             field.usesSingleLineMode = true
             
-            let font = NSFont.systemFont(ofSize: NSFont.systemFontSize())
-            let attributedString = NSAttributedString(string: string, attributes: [NSFontAttributeName: font])
+            let font = NSFont.systemFont(ofSize: NSFont.systemFontSize)
+            let attributedString = NSAttributedString(string: string, attributes: [NSAttributedStringKey.font: font])
             field.frame.size = measureText(string: attributedString, width: 1000)
             //                name.frame.size.width += 10
             field.useYogaLayout = true
@@ -116,7 +116,7 @@ class CSStatementView: NSTableCellView {
                     let inset: CGFloat = 8
                     let width = max(subtitleText.intrinsicContentSize.width, titleText.intrinsicContentSize.width) + inset * 2
                     view.frame = NSRect(x: 0, y: 0, width: width, height: 34)
-                    view.edgeInsets = EdgeInsets(top: 0, left: inset, bottom: 0, right: inset)
+                    view.edgeInsets = NSEdgeInsets(top: 0, left: inset, bottom: 0, right: inset)
                     
                     return view
             },
@@ -280,8 +280,8 @@ class CSStatementView: NSTableCellView {
     func mouseDownForTextFields(with event: NSEvent) -> Bool {
         // If shift or command are being held, we're selecting rows, so ignore
         if (
-            event.modifierFlags.contains(NSEventModifierFlags.command) ||
-            event.modifierFlags.contains(NSEventModifierFlags.shift)
+            event.modifierFlags.contains(NSEvent.ModifierFlags.command) ||
+            event.modifierFlags.contains(NSEvent.ModifierFlags.shift)
         ) { 
             return false
         }

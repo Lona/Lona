@@ -13,7 +13,7 @@ class LayerList: NSOutlineView {
     
     var component: CSComponent? = nil
     
-    var onChange: () -> Void = {_ in}
+    var onChange: () -> Void = {}
     
     var selectedLayer: CSLayer? {
         return item(atRow: selectedRow) as! CSLayer?
@@ -83,18 +83,18 @@ class LayerList: NSOutlineView {
         return copy
     }
     
-    func duplicateAction(menuItem: NSMenuItem) {
+    @objc func duplicateAction(menuItem: NSMenuItem) {
         let layer = menuItem.representedObject as! CSLayer
         let copy = duplicate(layer: layer)
         
         select(item: copy)
     }
     
-    func openComponentAction(menuItem: NSMenuItem) {
+    @objc func openComponentAction(menuItem: NSMenuItem) {
         let layer = menuItem.representedObject as! CSComponentLayer
         let url = URL(string: layer.url!)!
         
-        let documentController = NSDocumentController.shared()
+        let documentController = NSDocumentController.shared
         
         documentController.openDocument(withContentsOf: url, display: true) {
             (document, documentWasAlreadyOpen, error) in
@@ -119,7 +119,7 @@ class LayerList: NSOutlineView {
         dialog.canCreateDirectories    = true
         dialog.allowedFileTypes        = ["component"]
         
-        if dialog.runModal() == NSModalResponseOK {
+        if dialog.runModal() == NSApplication.ModalResponse.OK {
             return dialog.url
         } else {
             // User clicked on "Cancel"
@@ -127,12 +127,12 @@ class LayerList: NSOutlineView {
         }
     }
     
-    func extractComponentAction(menuItem: NSMenuItem) {
+    @objc func extractComponentAction(menuItem: NSMenuItem) {
         let layer = menuItem.representedObject as! CSLayer
         
         guard let url = requestSaveFileURL() else { return }
         
-        let documentController = NSDocumentController.shared()
+        let documentController = NSDocumentController.shared
         
         let document = Document()
         
@@ -156,12 +156,12 @@ class LayerList: NSOutlineView {
         })
     }
     
-    func forkComponentAction(menuItem: NSMenuItem) {
+    @objc func forkComponentAction(menuItem: NSMenuItem) {
         let layer = menuItem.representedObject as! CSComponentLayer
         
         guard let url = requestSaveFileURL() else { return }
         
-        let documentController = NSDocumentController.shared()
+        let documentController = NSDocumentController.shared
         
         let existingURL = URL(string: layer.url!)!
         let existingFile = CSComponent(url: existingURL)!
@@ -186,7 +186,7 @@ class LayerList: NSOutlineView {
         })
     }
     
-    func extractLayersAction(menuItem: NSMenuItem) {
+    @objc func extractLayersAction(menuItem: NSMenuItem) {
         let layer = menuItem.representedObject as! CSComponentLayer
         
         replace(layer: layer, with: layer.component.rootLayer)

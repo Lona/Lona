@@ -90,7 +90,7 @@ class CSSearchField: NSSearchField, NSSearchFieldDelegate {
         focusRingType = .none
         
         let placeholderAttributes: [String: AnyObject] = [
-            NSForegroundColorAttributeName: NSColor.parse(css: "rgba(0,0,0,0.5)")!
+            NSAttributedStringKey.foregroundColor.rawValue: NSColor.parse(css: "rgba(0,0,0,0.5)")!
         ]
         let placeholderAttributedString = NSMutableAttributedString(string: options.placeholderText, attributes: placeholderAttributes)
         

@@ -13,7 +13,7 @@ extension NSPopover {
     convenience init(
         contentViewController: NSViewController,
         delegate: NSPopoverDelegate,
-        behavior: NSPopoverBehavior = NSPopoverBehavior.semitransient,
+        behavior: NSPopover.Behavior = NSPopover.Behavior.semitransient,
         animates: Bool = false
     ) {
         self.init()

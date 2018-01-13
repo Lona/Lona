@@ -31,7 +31,7 @@ class AnimationUtils {
                     
                         assetJSON["p"] = cacheKey
                         
-                        NSImage(contentsOf: imageURL)?.setName(cacheKey)
+                        NSImage(contentsOf: imageURL)?.setName(NSImage.Name(rawValue: cacheKey))
                     }
                 }
             }

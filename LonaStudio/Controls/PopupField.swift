@@ -84,7 +84,7 @@ class PopupField: NSPopUpButton, CSControl {
         return titles?[index]
     }
     
-    func handleChange() {
+    @objc func handleChange() {
         onChange(value)
         onChangeData(data)
     }

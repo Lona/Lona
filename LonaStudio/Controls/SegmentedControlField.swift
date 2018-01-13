@@ -49,7 +49,7 @@ class SegmentedControlField: NSSegmentedControl {
         setup(values: values)
     }
     
-    func handleChange() {
+    @objc func handleChange() {
         Swift.print("handle change", value)
         onChange(value)
     }

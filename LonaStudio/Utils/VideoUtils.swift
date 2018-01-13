@@ -93,7 +93,7 @@ class VideoUtils {
     
     private static func assetWriter(for url: URL, atFPS fps: Int32, size: CGSize) -> (writer: AVAssetWriter, input: AVAssetWriterInput)? {
         do {
-            let writer = try AVAssetWriter(outputURL: url, fileType: AVFileTypeMPEG4)
+            let writer = try AVAssetWriter(outputURL: url, fileType: AVFileType.mp4)
             
             let compressionProperties: NSDictionary = [
 //                AVVideoAverageBitRateKey : 10.1,
@@ -108,7 +108,7 @@ class VideoUtils {
                 AVVideoCompressionPropertiesKey: compressionProperties
             ]
             
-            let input = AVAssetWriterInput(mediaType: AVMediaTypeVideo, outputSettings: settings)
+            let input = AVAssetWriterInput(mediaType: AVMediaType.video, outputSettings: settings)
             
             writer.add(input)
             

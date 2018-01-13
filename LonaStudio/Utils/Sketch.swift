@@ -222,12 +222,12 @@ class SketchGroup: SketchLayer {
 }
 
 struct SketchBorderOptions {
-    var lineCapStyle: NSLineCapStyle = NSLineCapStyle.buttLineCapStyle
-    var lineJoinStyle: NSLineJoinStyle = NSLineJoinStyle.miterLineJoinStyle
+    var lineCapStyle: NSBezierPath.LineCapStyle = NSBezierPath.LineCapStyle.buttLineCapStyle
+    var lineJoinStyle: NSBezierPath.LineJoinStyle = NSBezierPath.LineJoinStyle.miterLineJoinStyle
     
     init() {}
     
-    init(lineCapStyle: NSLineCapStyle, lineJoinStyle: NSLineJoinStyle) {
+    init(lineCapStyle: NSBezierPath.LineCapStyle, lineJoinStyle: NSBezierPath.LineJoinStyle) {
         self.lineCapStyle = lineCapStyle
         self.lineJoinStyle = lineJoinStyle
     }
@@ -279,7 +279,7 @@ class SketchShapeGroup: SketchGroup {
     }
 }
 
-typealias PathElement = (type: NSBezierPathElement, points: [CGPoint])
+typealias PathElement = (type: NSBezierPath.ElementType, points: [CGPoint])
 
 extension NSBezierPath {
     func curvePoints() -> (points: [CurvePoint], isClosed: Bool) {

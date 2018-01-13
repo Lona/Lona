@@ -100,7 +100,7 @@ class PathSettingRow: SettingRow {
             dialog.canChooseFiles = false
             dialog.allowsMultipleSelection = false
             
-            if dialog.runModal() == NSModalResponseOK {
+            if dialog.runModal() == NSApplication.ModalResponse.OK {
                 self.onChange(CSData.String(dialog.url!.path))
             }
         }

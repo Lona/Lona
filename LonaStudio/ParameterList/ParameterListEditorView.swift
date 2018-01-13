@@ -34,7 +34,7 @@ class ParameterListEditorView: NSView {
     
     func renderPlusButton() -> Button {
         let button = Button(frame: NSRect(x: 0, y: 0, width: 24, height: 23))
-        button.image = NSImage.init(named: NSImageNameAddTemplate)!
+        button.image = NSImage.init(named: NSImage.Name.addTemplate)!
         button.bezelStyle = .smallSquare
         button.setButtonType(.momentaryPushIn)
         button.isBordered = false

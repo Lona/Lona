@@ -11,16 +11,16 @@ import Cocoa
 final class TextStyleRowView: NSStackView, Hoverable {
     
     // MARK: - Variable
-    fileprivate let tickView = NSImageView(image: NSImage(named: "icon-layer-list-tick")!)
+    fileprivate let tickView = NSImageView(image: NSImage(named: NSImage.Name(rawValue: "icon-layer-list-tick"))!)
     fileprivate let titleView: NSTextField
     fileprivate let attributeText: NSAttributedString
     fileprivate lazy var contractAttributeText: NSAttributedString = {
         var highlight = NSMutableAttributedString(attributedString: self.attributeText)
-        highlight.addAttributes([NSForegroundColorAttributeName: NSColor.white],
+        highlight.addAttributes([NSAttributedStringKey.foregroundColor: NSColor.white],
                                 range: NSRange(location: 0, length: self.attributeText.length))
         return highlight
     }()
-    var onClick: () -> Void = {_ in}
+    var onClick: () -> Void = {}
     
     // MARK: - Init
     init(textStyle: CSTextStyle, selected: Bool) {
@@ -32,8 +32,8 @@ final class TextStyleRowView: NSStackView, Hoverable {
         orientation = .horizontal
         distribution = .fill
         alignment = .centerY
-        edgeInsets = EdgeInsets(top: 0, left: 8, bottom: 0, right: 8)
-        tickView.setContentHuggingPriority(251, for: .horizontal)
+        edgeInsets = NSEdgeInsets(top: 0, left: 8, bottom: 0, right: 8)
+        tickView.setContentHuggingPriority(NSLayoutConstraint.Priority(rawValue: 251), for: .horizontal)
         
         addArrangedSubview(titleView)
         update(selected: selected)

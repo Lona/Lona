@@ -17,7 +17,7 @@ public class AttributedFont {
     public let weight: AttributedFontWeight
     public let color: NSColor
     public let textAlignment: NSTextAlignment
-    public let lineBreakMode: NSLineBreakMode
+    public let lineBreakMode: NSParagraphStyle.LineBreakMode
     
     public init(
         fontFamily: String,
@@ -27,7 +27,7 @@ public class AttributedFont {
         weight: AttributedFontWeight,
         color: NSColor = NSColor.black,
         textAlignment: NSTextAlignment = .left,
-        lineBreakMode: NSLineBreakMode = .byTruncatingTail)
+        lineBreakMode: NSParagraphStyle.LineBreakMode = .byTruncatingTail)
     {
         self.fontFamily = fontFamily
         self.fontSize = fontSize
@@ -40,13 +40,13 @@ public class AttributedFont {
     }
     
     public var nsFont: NSFont {
-        if let targetFont = NSFontManager.shared().font(withFamily: fontFamily, traits: NSFontTraitMask(rawValue: 0), weight: weight.rawValue, size: fontSize) {
+        if let targetFont = NSFontManager.shared.font(withFamily: fontFamily, traits: NSFontTraitMask(rawValue: 0), weight: weight.rawValue, size: fontSize) {
             return targetFont
         }
         
         Swift.print("Could not find font", fontFamily, "with size", fontSize, "and weight", weight.rawValue)
         
-        return NSFont.systemFont(ofSize: fontSize, weight: NSFontWeightRegular)
+        return NSFont.systemFont(ofSize: fontSize, weight: NSFont.Weight.regular)
     }
     
     public func apply(to string: String) -> NSAttributedString {
@@ -81,10 +81,10 @@ public class AttributedFont {
     
     func attributeDictionary() -> [String: Any] {
         return [
-            NSFontAttributeName: nsFont,
-            NSForegroundColorAttributeName: color,
-            NSKernAttributeName: kerning,
-            NSParagraphStyleAttributeName: paragraphStyle
+            NSAttributedStringKey.font.rawValue: nsFont,
+            NSAttributedStringKey.foregroundColor.rawValue: color,
+            NSAttributedStringKey.kern.rawValue: kerning,
+            NSAttributedStringKey.paragraphStyle.rawValue: paragraphStyle
         ]
     }
 }

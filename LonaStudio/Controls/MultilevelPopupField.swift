@@ -66,7 +66,7 @@ class MultilevelPopupField: NSPopUpButton, CSControl, NSMenuDelegate {
         }
     }
     
-    func handleChange(menuItem: NSMenuItem) {
+    @objc func handleChange(menuItem: NSMenuItem) {
         if let value = menuItem.representedObject as? [String] {
             Swift.print("Changed", value)
             

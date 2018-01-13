@@ -10,7 +10,7 @@ import Cocoa
 
 final class ColorSwatchRowView: NSStackView, Hoverable, PickerRowViewType {
     
-    var onClick: () -> Void = {_ in}
+    var onClick: () -> Void = {}
     
     override func hitTest(_ point: NSPoint) -> NSView? {
         return nil
@@ -43,7 +43,7 @@ final class ColorSwatchRowView: NSStackView, Hoverable, PickerRowViewType {
         orientation = .horizontal
         alignment = .centerY
         translatesAutoresizingMaskIntoConstraints = false
-        edgeInsets = EdgeInsets(top: 0, left: 4, bottom: 0, right: 4)
+        edgeInsets = NSEdgeInsets(top: 0, left: 4, bottom: 0, right: 4)
         
         let swatch = NSView(frame: NSRect.zero)
         swatch.translatesAutoresizingMaskIntoConstraints = false

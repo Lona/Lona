@@ -10,13 +10,13 @@ import Foundation
 import AppKit
 
 fileprivate class DisclosureHeader: NSStackView {
-    var onPress: () -> Void = {_ in}
+    var onPress: () -> Void = {}
     
     override func mouseDown(with event: NSEvent) {
         onPress()
     }
 
-    init(onPress: @escaping () -> Void = {_ in}) {
+    init(onPress: @escaping () -> Void = {}) {
         super.init(frame: NSRect.zero)
         self.onPress = onPress
         translatesAutoresizingMaskIntoConstraints = false
@@ -42,7 +42,7 @@ class DisclosureContentRow: NSStackView {
         set { disclosureContent.spacing = newValue }
     }
     
-    var contentEdgeInsets: EdgeInsets {
+    var contentEdgeInsets: NSEdgeInsets {
         get { return disclosureContent.edgeInsets }
         set { disclosureContent.edgeInsets = newValue }
     }
@@ -61,11 +61,11 @@ class DisclosureContentRow: NSStackView {
         if disclosureState {
             hideViews(views: [disclosureContent], animated: animated)
             disclosureState = false
-            disclosureArrow.state = 0
+            disclosureArrow.state = NSControl.StateValue(rawValue: 0)
         } else {
             showViews(views: [disclosureContent], animated: animated)
             disclosureState = true
-            disclosureArrow.state = 1
+            disclosureArrow.state = NSControl.StateValue(rawValue: 1)
         }
         UserDefaults().set(disclosureState, forKey: title)
     }
@@ -94,7 +94,7 @@ class DisclosureContentRow: NSStackView {
         disclosureArrow.bezelStyle = .disclosure
         disclosureArrow.title = ""
         disclosureArrow.setButtonType(.pushOnPushOff)
-        disclosureArrow.state = initialState ? 1 : 0
+        disclosureArrow.state = NSControl.StateValue(rawValue: initialState ? 1 : 0)
 
         super.init(frame: NSRect.zero)
         

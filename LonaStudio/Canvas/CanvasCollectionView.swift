@@ -31,8 +31,8 @@ class MatrixLayout: NSCollectionViewFlowLayout {
         fatalError()
     }
     
-    var _edgeInsets = EdgeInsets(top: 50, left: 50, bottom: 50, right: 50)
-    override var sectionInset: EdgeInsets {
+    var _edgeInsets = NSEdgeInsets(top: 50, left: 50, bottom: 50, right: 50)
+    override var sectionInset: NSEdgeInsets {
         get { return _edgeInsets }
         set { _edgeInsets = newValue }
     }
@@ -174,7 +174,7 @@ class CanvasCollectionView: NSView, NSCollectionViewDataSource, NSCollectionView
     }
     
     func collectionView(_ collectionView: NSCollectionView, itemForRepresentedObjectAt indexPath: IndexPath) -> NSCollectionViewItem {
-        let item = collectionView.makeItem(withIdentifier: CANVAS_IDENTIFIER, for: indexPath) as! CanvasItemViewController
+        let item = collectionView.makeItem(withIdentifier: NSUserInterfaceItemIdentifier(rawValue: CANVAS_IDENTIFIER), for: indexPath) as! CanvasItemViewController
 
         guard let options = options else { return item }
         
@@ -206,8 +206,8 @@ class CanvasCollectionView: NSView, NSCollectionViewDataSource, NSCollectionView
         return item
     }
 
-    func collectionView(_ collectionView: NSCollectionView, layout collectionViewLayout: NSCollectionViewLayout, insetForSectionAt section: Int) -> EdgeInsets {
-        return EdgeInsets(top: 20, left: 20, bottom: 20, right: 20)
+    func collectionView(_ collectionView: NSCollectionView, layout collectionViewLayout: NSCollectionViewLayout, insetForSectionAt section: Int) -> NSEdgeInsets {
+        return NSEdgeInsets(top: 20, left: 20, bottom: 20, right: 20)
     }
 
     func collectionView(_ collectionView: NSCollectionView, layout collectionViewLayout: NSCollectionViewLayout, minimumInteritemSpacingForSectionAt section: Int) -> CGFloat {
@@ -238,7 +238,7 @@ class CanvasCollectionView: NSView, NSCollectionViewDataSource, NSCollectionView
                 collectionView.setFrameSize(maxSize)
                 
                 if  let horizontalScroller = self.horizontalScroller,
-                    NSScroller.preferredScrollerStyle() == NSScrollerStyle.legacy
+                    NSScroller.preferredScrollerStyle == NSScroller.Style.legacy
                 {
                     horizontalScroller.isHidden = size.width < frame.width
                     
@@ -290,7 +290,7 @@ class CanvasCollectionView: NSView, NSCollectionViewDataSource, NSCollectionView
         addSubviewStretched(subview: visualEffectView)
         visualEffectView.addSubviewStretched(subview: scrollView)
         
-        collectionView.register(CanvasItemViewController.self, forItemWithIdentifier: CANVAS_IDENTIFIER)
+        collectionView.register(CanvasItemViewController.self, forItemWithIdentifier: NSUserInterfaceItemIdentifier(rawValue: CANVAS_IDENTIFIER))
     }
     
     required init?(coder decoder: NSCoder) {

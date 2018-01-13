@@ -64,7 +64,7 @@ public extension NSView {
         )
     }
     
-    func constrain(_ attribute: NSLayoutAttribute, as value: CGFloat) {
+    func constrain(_ attribute: NSLayoutConstraint.Attribute, as value: CGFloat) {
         let constraint = NSLayoutConstraint(
             item: self,
             attribute: attribute,
@@ -78,7 +78,7 @@ public extension NSView {
         self.addConstraint(constraint)
     }
     
-    func constrain(_ attribute: NSLayoutAttribute, to other: NSView, _ otherAttribute: NSLayoutAttribute) {
+    func constrain(_ attribute: NSLayoutConstraint.Attribute, to other: NSView, _ otherAttribute: NSLayoutConstraint.Attribute) {
         let constraint = NSLayoutConstraint(
             item: self,
             attribute: attribute,
@@ -92,7 +92,7 @@ public extension NSView {
         self.addConstraint(constraint)
     }
     
-    func constrain(to other: NSView, _ attribute: NSLayoutAttribute) {
+    func constrain(to other: NSView, _ attribute: NSLayoutConstraint.Attribute) {
         let constraint = NSLayoutConstraint(
             item: self,
             attribute: attribute,
@@ -106,7 +106,7 @@ public extension NSView {
         self.addConstraint(constraint)
     }
     
-    func constrain(by other: NSView, _ attribute: NSLayoutAttribute) {
+    func constrain(by other: NSView, _ attribute: NSLayoutConstraint.Attribute) {
         let constraint = NSLayoutConstraint(
             item: self,
             attribute: attribute,
@@ -120,11 +120,11 @@ public extension NSView {
         other.addConstraint(constraint)
     }
     
-    func constrain(by other: NSView, _ attributes: [NSLayoutAttribute]) {
+    func constrain(by other: NSView, _ attributes: [NSLayoutConstraint.Attribute]) {
         attributes.forEach({ self.constrain(by: other, $0) })
     }
     
-    func constrain(to other: NSView, _ attributes: [NSLayoutAttribute]) {
+    func constrain(to other: NSView, _ attributes: [NSLayoutConstraint.Attribute]) {
         attributes.forEach({ self.constrain(to: other, $0) })
     }
     
@@ -140,7 +140,7 @@ public extension NSView {
         self.constrain(to: subview, .bottom)
     }
     
-    @discardableResult func addBorderView(to side: NSLayoutAttribute, size: CGFloat = 1, color: CGColor = #colorLiteral(red: 0.8379167914, green: 0.8385563493, blue: 0.8380157948, alpha: 1).cgColor) -> NSView {
+    @discardableResult func addBorderView(to side: NSLayoutConstraint.Attribute, size: CGFloat = 1, color: CGColor = #colorLiteral(red: 0.8379167914, green: 0.8385563493, blue: 0.8380157948, alpha: 1).cgColor) -> NSView {
         let borderView = NSView()
         borderView.translatesAutoresizingMaskIntoConstraints = false
         borderView.wantsLayer = true
@@ -183,8 +183,8 @@ public extension NSView {
             samplesPerPixel: 4,
             hasAlpha: true,
             isPlanar: false,
-            colorSpaceName: NSCalibratedRGBColorSpace,
-            bitmapFormat: NSBitmapFormat(rawValue: 0),
+            colorSpaceName: NSColorSpaceName.calibratedRGB,
+            bitmapFormat: NSBitmapImageRep.Format(rawValue: 0),
             bytesPerRow: 4 * width,
             bitsPerPixel: 32
         ) else { return nil }
@@ -192,14 +192,14 @@ public extension NSView {
         guard let graphicsContext = NSGraphicsContext(bitmapImageRep: bitmapRep) else { return nil }
         
         NSGraphicsContext.saveGraphicsState()
-        NSGraphicsContext.setCurrent(graphicsContext)
+        NSGraphicsContext.current = graphicsContext
         
         graphicsContext.cgContext.scaleBy(x: scale, y: scale)
         displayIgnoringOpacity(bounds, in: graphicsContext)
         
         NSGraphicsContext.restoreGraphicsState()
         
-        return bitmapRep.representation(using: .PNG, properties: [:])
+        return bitmapRep.representation(using: .png, properties: [:])
     }
     
     func pixelBufferRepresentation(scaledBy scale: CGFloat) -> CVPixelBuffer? {

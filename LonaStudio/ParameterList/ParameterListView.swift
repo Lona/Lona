@@ -12,7 +12,7 @@ import Cocoa
 class ParameterListView: NSOutlineView, NSOutlineViewDataSource, NSOutlineViewDelegate, NSTextFieldDelegate {
     
     func setup() {
-        let columnName = NSTableColumn(identifier: "Parameter")
+        let columnName = NSTableColumn(identifier: NSUserInterfaceItemIdentifier(rawValue: "Parameter"))
         columnName.title = "Parameter"
         
         self.addTableColumn(columnName)
@@ -25,12 +25,12 @@ class ParameterListView: NSOutlineView, NSOutlineViewDataSource, NSOutlineViewDe
         self.rowSizeStyle = .medium
         self.headerView = nil
         
-        self.register(forDraggedTypes: ["component.parameter"])
+        self.registerForDraggedTypes([NSPasteboard.PasteboardType(rawValue: "component.parameter")])
         
         self.reloadData()
         
         columnAutoresizingStyle = .uniformColumnAutoresizingStyle
-        columnName.resizingMask = .autoresizingMask
+        columnName.resizingMask = NSTableColumn.ResizingOptions.autoresizingMask
     }
     
     override init(frame frameRect: NSRect) {
@@ -209,7 +209,7 @@ class ParameterListView: NSOutlineView, NSOutlineViewDataSource, NSOutlineViewDe
         
         let index = outlineView.row(forItem: item)
         
-        pasteboardItem.setString(String(index), forType: "component.parameter")
+        pasteboardItem.setString(String(index), forType: NSPasteboard.PasteboardType(rawValue: "component.parameter"))
         
         return pasteboardItem
     }
@@ -227,7 +227,7 @@ class ParameterListView: NSOutlineView, NSOutlineViewDataSource, NSOutlineViewDe
     
     func outlineView(_ outlineView: NSOutlineView, acceptDrop info: NSDraggingInfo, item: Any?, childIndex index: Int) -> Bool {
         
-        let sourceIndexString = info.draggingPasteboard().string(forType: "component.parameter")
+        let sourceIndexString = info.draggingPasteboard().string(forType: NSPasteboard.PasteboardType(rawValue: "component.parameter"))
         
         if sourceIndexString != nil, let sourceIndex = Int(sourceIndexString!) {
             

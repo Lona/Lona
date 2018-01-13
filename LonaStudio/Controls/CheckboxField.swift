@@ -34,7 +34,7 @@ class CheckboxField: NSButton, CSControl {
         target = self
     }
     
-    func handleChange() {
+    @objc func handleChange() {
         onChange(value)
         onChangeData(data)
     }

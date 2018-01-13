@@ -174,7 +174,7 @@ func renderBox(layer: CSLayer, node: YGNodeRef, options: RenderOptions) -> NSVie
         Swift.print("View was rendered with explicitly set width/height but with a 0 flexBasis. (This might be fixed by changing flex: to flexGrow:)", layer.name);
     }
     
-    let handleClick: () -> Void = {_ in options.onSelectLayer(layer) }
+    let handleClick: () -> Void = { options.onSelectLayer(layer) }
     let frame = NSRect(
         x: layout.left,
         y: layout.top,

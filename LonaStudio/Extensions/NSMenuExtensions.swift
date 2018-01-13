@@ -10,7 +10,7 @@ import Foundation
 import AppKit
 
 extension NSMenuItem {
-    func handleAction(_ menuItem: NSMenuItem) {
+    @objc func handleAction(_ menuItem: NSMenuItem) {
         guard let onClick = menuItem.representedObject as? () -> Void else { return }
         onClick()
     }

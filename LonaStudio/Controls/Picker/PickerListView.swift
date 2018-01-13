@@ -98,9 +98,9 @@ extension PickerListView {
         tableView.backgroundColor = NSColor.clear
         tableView.columnAutoresizingStyle = .uniformColumnAutoresizingStyle
         
-        let column = NSTableColumn(identifier: "style")
+        let column = NSTableColumn(identifier: NSUserInterfaceItemIdentifier(rawValue: "style"))
         column.title = "Style"
-        column.resizingMask = .autoresizingMask
+        column.resizingMask = NSTableColumn.ResizingOptions.autoresizingMask
         column.maxWidth = 1000
         
         tableView.addTableColumn(column)

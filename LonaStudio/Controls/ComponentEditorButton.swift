@@ -96,7 +96,7 @@ class ComponentEditorButton: Button, CSControl, NSPopoverDelegate {
                     setValue(withViewType: "Image")
                 }),
                 NSMenuItem.separator(),
-                NSMenuItem(title: "Component...", onClick: {_ in}),
+                NSMenuItem(title: "Component...", onClick: {}),
             ])
             popupButton.selectItem(withTitle: layerType(for: value))
             

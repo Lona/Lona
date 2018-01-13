@@ -158,7 +158,7 @@ class CSValueField {
                 dialog.canChooseFiles = true
                 dialog.allowsMultipleSelection = false
                 
-                if dialog.runModal() == NSModalResponseOK {
+                if dialog.runModal() == NSApplication.ModalResponse.OK {
                     defaultChangeHandler(CSData.String(dialog.url!.absoluteString))
                 }
             }

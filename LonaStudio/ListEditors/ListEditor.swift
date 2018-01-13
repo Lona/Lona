@@ -23,7 +23,7 @@ import Cocoa
 class ListView<Element: DataNode>: NSOutlineView, NSOutlineViewDataSource, NSOutlineViewDelegate, NSTextFieldDelegate {
     
     func setup() {
-        let columnName = NSTableColumn(identifier: "Element")
+        let columnName = NSTableColumn(identifier: NSUserInterfaceItemIdentifier(rawValue: "Element"))
         columnName.title = "Element"
         
         self.addTableColumn(columnName)
@@ -37,12 +37,12 @@ class ListView<Element: DataNode>: NSOutlineView, NSOutlineViewDataSource, NSOut
         self.headerView = nil
         
         // TODO Make this a parameter
-        self.register(forDraggedTypes: ["component.element"])
+        self.registerForDraggedTypes([NSPasteboard.PasteboardType(rawValue: "component.element")])
         
         self.reloadData()
         
         columnAutoresizingStyle = .uniformColumnAutoresizingStyle
-        columnName.resizingMask = .autoresizingMask
+        columnName.resizingMask = NSTableColumn.ResizingOptions.autoresizingMask
     }
     
     let options: ListEditor<Element>.Options
@@ -177,14 +177,14 @@ class ListView<Element: DataNode>: NSOutlineView, NSOutlineViewDataSource, NSOut
         
         let index = outlineView.row(forItem: item)
         
-        pasteboardItem.setString(String(index), forType: "component.element")
+        pasteboardItem.setString(String(index), forType: NSPasteboard.PasteboardType(rawValue: "component.element"))
         
         return pasteboardItem
     }
     
     func outlineView(_ outlineView: NSOutlineView, validateDrop info: NSDraggingInfo, proposedItem item: Any?, proposedChildIndex index: Int) -> NSDragOperation {
         
-        let sourceIndexString = info.draggingPasteboard().string(forType: "component.element")
+        let sourceIndexString = info.draggingPasteboard().string(forType: NSPasteboard.PasteboardType(rawValue: "component.element"))
         
         if  let sourceIndexString = sourceIndexString,
             let sourceIndex = Int(sourceIndexString),
@@ -208,7 +208,7 @@ class ListView<Element: DataNode>: NSOutlineView, NSOutlineViewDataSource, NSOut
     
     func outlineView(_ outlineView: NSOutlineView, acceptDrop info: NSDraggingInfo, item: Any?, childIndex index: Int) -> Bool {
         
-        let sourceIndexString = info.draggingPasteboard().string(forType: "component.element")
+        let sourceIndexString = info.draggingPasteboard().string(forType: NSPasteboard.PasteboardType(rawValue: "component.element"))
         
         if  let sourceIndexString = sourceIndexString,
             let sourceIndex = Int(sourceIndexString),
@@ -300,7 +300,7 @@ class ListEditor<Element>: NSView where Element: DataNode {
     }
     
     struct Options {
-        var onAddElement: () -> Void = {_ in}
+        var onAddElement: () -> Void = {}
         var onRemoveElement: (Element) -> Void = {_ in}
         var onMoveElement: (Element) -> Void = {_ in}
         var onContextMenu: ((Element) -> [NSMenuItem])? = nil
@@ -368,7 +368,7 @@ class ListEditor<Element>: NSView where Element: DataNode {
     func renderPlusButton() -> Button {
         let button = Button(frame: NSRect(x: 0, y: 0, width: 24, height: 23))
         button.translatesAutoresizingMaskIntoConstraints = false
-        button.image = NSImage.init(named: NSImageNameAddTemplate)!
+        button.image = NSImage.init(named: NSImage.Name.addTemplate)!
         button.bezelStyle = .smallSquare
         button.setButtonType(.momentaryPushIn)
         button.isBordered = false
@@ -379,7 +379,7 @@ class ListEditor<Element>: NSView where Element: DataNode {
     func renderMinusButton() -> Button {
         let button = Button(frame: NSRect(x: 0, y: 0, width: 24, height: 23))
         button.translatesAutoresizingMaskIntoConstraints = false
-        button.image = NSImage.init(named: NSImageNameRemoveTemplate)!
+        button.image = NSImage.init(named: NSImage.Name.removeTemplate)!
         button.bezelStyle = .smallSquare
         button.setButtonType(.momentaryPushIn)
         button.isBordered = false
