@@ -79,12 +79,12 @@ public class AttributedFont {
         return paragraphStyle
     }
     
-    func attributeDictionary() -> [String: Any] {
+    func attributeDictionary() -> [NSAttributedStringKey: Any] {
         return [
-            NSAttributedStringKey.font.rawValue: nsFont,
-            NSAttributedStringKey.foregroundColor.rawValue: color,
-            NSAttributedStringKey.kern.rawValue: kerning,
-            NSAttributedStringKey.paragraphStyle.rawValue: paragraphStyle
+            NSAttributedStringKey.font: nsFont,
+            NSAttributedStringKey.foregroundColor: color,
+            NSAttributedStringKey.kern: kerning,
+            NSAttributedStringKey.paragraphStyle: paragraphStyle
         ]
     }
 }

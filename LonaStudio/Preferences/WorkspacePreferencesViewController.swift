@@ -13,13 +13,17 @@ import MASPreferences
 let LABEL = "Workspace"
 
 class WorkspacePreferencesViewController: NSViewController, MASPreferencesViewController {
-    
-    override var identifier: String? {
+  
+    var viewIdentifier: String {
+        return identifier!.rawValue
+    }
+
+    override var identifier: NSUserInterfaceItemIdentifier? {
         get {
-            return LABEL
+            return NSUserInterfaceItemIdentifier(rawValue: LABEL)
         }
         set {
-            super.identifier = newValue.map { NSUserInterfaceItemIdentifier(rawValue: $0) }
+            super.identifier = newValue
         }
     }
     
@@ -75,11 +79,11 @@ class WorkspacePreferencesViewController: NSViewController, MASPreferencesViewCo
         render()
     }
     
-    var toolbarItemImage: NSImage! {
-        return #imageLiteral(resourceName: "icon-layer-list-text")
+    var toolbarItemLabel: String? {
+        return LABEL
     }
     
-    var toolbarItemLabel: String {
-        return LABEL
+    var toolbarItemImage: NSImage? {
+        return #imageLiteral(resourceName: "icon-layer-list-text")
     }
 }

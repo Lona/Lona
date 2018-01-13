@@ -111,7 +111,7 @@ class CanvasListEditor: NSOutlineView, NSOutlineViewDataSource, NSOutlineViewDel
         let canvas = item as! Canvas
         let cellView = NSTableCellView()
         
-        switch tableColumn!.identifier {
+        switch tableColumn!.identifier.rawValue {
         case "Visible":
             let field = CSValueField(value: CSValue(type: CSType.bool, data: CSData.Bool(canvas.visible)))
             field.onChangeData = { value in

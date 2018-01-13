@@ -19,9 +19,9 @@ class CheckboxField: NSButton, CSControl {
     var onChangeData: (CSData) -> Void = { _ in }
     
     var value: Bool {
-        get { return state == NSOnState }
+        get { return state == .on }
         set {
-            state = newValue ? NSOnState : NSOffState
+            state = newValue ? .on : .off
             onChange(newValue)
         }
     }

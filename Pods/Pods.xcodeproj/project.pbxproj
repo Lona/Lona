@@ -164,10 +164,10 @@
 		ECB8EC9BEE0AB6E89B955D09E755BAFF /* ja.lproj in Resources */ = {isa = PBXBuildFile; fileRef = 7DCA1B4D7B92083477CC2DD1FF209005 /* ja.lproj */; };
 		EDC6767475838AF97D5A044A0E14D89D /* LOTShapeTrimPath.h in Headers */ = {isa = PBXBuildFile; fileRef = 488C8ACC87BD11E2397D95495B3D7EB1 /* LOTShapeTrimPath.h */; settings = {ATTRIBUTES = (Project, ); }; };
 		F22702549B4430C94BDDA78692242981 /* it.lproj in Resources */ = {isa = PBXBuildFile; fileRef = 86A4BC172FCE8FEA26990CADD2BFE0EC /* it.lproj */; };
-		F32907E512ADC84BC6E5D6BFF193BBD3 /* MASPreferencesWindowController.m in Sources */ = {isa = PBXBuildFile; fileRef = 87C136CF275634E1DD3995BD669FE28B /* MASPreferencesWindowController.m */; settings = {COMPILER_FLAGS = "-fno-objc-arc"; }; };
 		F36B782B9836CE0E6802956659B9D2B6 /* Cocoa.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 318FC98A50C76D82401728F8E1D4E47F /* Cocoa.framework */; };
 		F5CED0AA1B75E908E27DCA1957B6BFB7 /* hu.lproj in Resources */ = {isa = PBXBuildFile; fileRef = 0FC6D4D462FE0BC5EE1DE8AD305F4898 /* hu.lproj */; };
 		F8BF9A1E3BF381CE12C223AFBF00F507 /* YGMacros.h in Headers */ = {isa = PBXBuildFile; fileRef = 5ABB3C67BF4770B0D6CCF302E6D68E10 /* YGMacros.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		F9202D86D110AE06369DDB2C9B3A7C7D /* MASPreferencesWindowController.m in Sources */ = {isa = PBXBuildFile; fileRef = 87C136CF275634E1DD3995BD669FE28B /* MASPreferencesWindowController.m */; settings = {COMPILER_FLAGS = "-DOS_OBJECT_USE_OBJC=0"; }; };
 		FA15087BECDA83DC317BDB0628E79598 /* LOTShapeStar.h in Headers */ = {isa = PBXBuildFile; fileRef = 58EE7263BDCFCA678D94ED60690C9D2F /* LOTShapeStar.h */; settings = {ATTRIBUTES = (Project, ); }; };
 		FA17814FB7E804AEBA535AFC0FE81F95 /* LOTGradientFillRender.m in Sources */ = {isa = PBXBuildFile; fileRef = 605B97E32A04E6B2363298604566767F /* LOTGradientFillRender.m */; };
 		FF034698BB38D5D72D81EBF8BF4AD40A /* LOTShapeGradientFill.h in Headers */ = {isa = PBXBuildFile; fileRef = B3CA63D06FD37532F90BE5580C96B190 /* LOTShapeGradientFill.h */; settings = {ATTRIBUTES = (Project, ); }; };
@@ -1191,7 +1191,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				4418F05CC4625892C589678BE34EFAEA /* MASPreferences-dummy.m in Sources */,
-				F32907E512ADC84BC6E5D6BFF193BBD3 /* MASPreferencesWindowController.m in Sources */,
+				F9202D86D110AE06369DDB2C9B3A7C7D /* MASPreferencesWindowController.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1237,9 +1237,9 @@
 /* End PBXVariantGroup section */
 
 /* Begin XCBuildConfiguration section */
-		025754E5A6198A9F4071D9B7F7CC17BD /* Debug */ = {
+		0BB19174DE219D2026ABA89CE9C3FE18 /* Release */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = 86CF574DACE8DCC588FB76C199B50D28 /* MASPreferences.xcconfig */;
+			baseConfigurationReference = 41B8DF18DF1BD9F5A4986F2330615ACF /* LetsMove.xcconfig */;
 			buildSettings = {
 				CODE_SIGN_IDENTITY = "";
 				"CODE_SIGN_IDENTITY[sdk=appletvos*]" = "";
@@ -1252,54 +1252,25 @@
 				DYLIB_CURRENT_VERSION = 1;
 				DYLIB_INSTALL_NAME_BASE = "@rpath";
 				FRAMEWORK_VERSION = A;
-				GCC_PREFIX_HEADER = "Target Support Files/MASPreferences/MASPreferences-prefix.pch";
-				INFOPLIST_FILE = "Target Support Files/MASPreferences/Info.plist";
+				GCC_PREFIX_HEADER = "Target Support Files/LetsMove/LetsMove-prefix.pch";
+				INFOPLIST_FILE = "Target Support Files/LetsMove/Info.plist";
 				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/../Frameworks @loader_path/Frameworks";
 				MACOSX_DEPLOYMENT_TARGET = 10.6;
-				MODULEMAP_FILE = "Target Support Files/MASPreferences/MASPreferences.modulemap";
-				PRODUCT_NAME = MASPreferences;
+				MODULEMAP_FILE = "Target Support Files/LetsMove/LetsMove.modulemap";
+				PRODUCT_NAME = LetsMove;
 				SDKROOT = macosx;
 				SKIP_INSTALL = YES;
-				SWIFT_VERSION = 3.0;
-				VERSIONING_SYSTEM = "apple-generic";
-				VERSION_INFO_PREFIX = "";
-			};
-			name = Debug;
-		};
-		04F9BA502282902339CB061427A876DC /* Release */ = {
-			isa = XCBuildConfiguration;
-			baseConfigurationReference = 86CF574DACE8DCC588FB76C199B50D28 /* MASPreferences.xcconfig */;
-			buildSettings = {
-				CODE_SIGN_IDENTITY = "";
-				"CODE_SIGN_IDENTITY[sdk=appletvos*]" = "";
-				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "";
-				"CODE_SIGN_IDENTITY[sdk=watchos*]" = "";
-				COMBINE_HIDPI_IMAGES = YES;
-				CURRENT_PROJECT_VERSION = 1;
-				DEFINES_MODULE = YES;
-				DYLIB_COMPATIBILITY_VERSION = 1;
-				DYLIB_CURRENT_VERSION = 1;
-				DYLIB_INSTALL_NAME_BASE = "@rpath";
-				FRAMEWORK_VERSION = A;
-				GCC_PREFIX_HEADER = "Target Support Files/MASPreferences/MASPreferences-prefix.pch";
-				INFOPLIST_FILE = "Target Support Files/MASPreferences/Info.plist";
-				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
-				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/../Frameworks @loader_path/Frameworks";
-				MACOSX_DEPLOYMENT_TARGET = 10.6;
-				MODULEMAP_FILE = "Target Support Files/MASPreferences/MASPreferences.modulemap";
-				PRODUCT_NAME = MASPreferences;
-				SDKROOT = macosx;
-				SKIP_INSTALL = YES;
-				SWIFT_VERSION = 3.0;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "$(inherited) ";
+				SWIFT_VERSION = 4.0;
 				VERSIONING_SYSTEM = "apple-generic";
 				VERSION_INFO_PREFIX = "";
 			};
 			name = Release;
 		};
-		1063BB1223E63835EB3A3125C1AADB4B /* Debug */ = {
+		1A50D6CAD3204AC83ACB433519C81C41 /* Release */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = 93160B7AE3A7AE289510FDC85A5999BD /* Yoga.xcconfig */;
+			baseConfigurationReference = 9CD211BFBF261E1F49825037A911678B /* lottie-ios.xcconfig */;
 			buildSettings = {
 				CODE_SIGN_IDENTITY = "";
 				"CODE_SIGN_IDENTITY[sdk=appletvos*]" = "";
@@ -1312,22 +1283,23 @@
 				DYLIB_CURRENT_VERSION = 1;
 				DYLIB_INSTALL_NAME_BASE = "@rpath";
 				FRAMEWORK_VERSION = A;
-				GCC_PREFIX_HEADER = "Target Support Files/Yoga/Yoga-prefix.pch";
-				INFOPLIST_FILE = "Target Support Files/Yoga/Info.plist";
+				GCC_PREFIX_HEADER = "Target Support Files/lottie-ios/lottie-ios-prefix.pch";
+				INFOPLIST_FILE = "Target Support Files/lottie-ios/Info.plist";
 				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/../Frameworks @loader_path/Frameworks";
-				MACOSX_DEPLOYMENT_TARGET = 10.6;
-				MODULEMAP_FILE = "Target Support Files/Yoga/Yoga.modulemap";
-				PRODUCT_NAME = yoga;
+				MACOSX_DEPLOYMENT_TARGET = 10.10;
+				MODULEMAP_FILE = "Target Support Files/lottie-ios/lottie-ios.modulemap";
+				PRODUCT_NAME = Lottie;
 				SDKROOT = macosx;
 				SKIP_INSTALL = YES;
-				SWIFT_VERSION = 3.0;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "$(inherited) ";
+				SWIFT_VERSION = 4.0;
 				VERSIONING_SYSTEM = "apple-generic";
 				VERSION_INFO_PREFIX = "";
 			};
-			name = Debug;
+			name = Release;
 		};
-		2A6C355C8DBA7E21C4F5043FE3EDDE29 /* Debug */ = {
+		3918C3731F97F7B1A6B91CA53EA9B086 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
@@ -1382,39 +1354,10 @@
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = NO_SIGNING/;
 				STRIP_INSTALLED_PRODUCT = NO;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = DEBUG;
 				SYMROOT = "${SRCROOT}/../build";
 			};
 			name = Debug;
-		};
-		452CA53C1F7F488017B469834067C0B2 /* Release */ = {
-			isa = XCBuildConfiguration;
-			baseConfigurationReference = 93160B7AE3A7AE289510FDC85A5999BD /* Yoga.xcconfig */;
-			buildSettings = {
-				CODE_SIGN_IDENTITY = "";
-				"CODE_SIGN_IDENTITY[sdk=appletvos*]" = "";
-				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "";
-				"CODE_SIGN_IDENTITY[sdk=watchos*]" = "";
-				COMBINE_HIDPI_IMAGES = YES;
-				CURRENT_PROJECT_VERSION = 1;
-				DEFINES_MODULE = YES;
-				DYLIB_COMPATIBILITY_VERSION = 1;
-				DYLIB_CURRENT_VERSION = 1;
-				DYLIB_INSTALL_NAME_BASE = "@rpath";
-				FRAMEWORK_VERSION = A;
-				GCC_PREFIX_HEADER = "Target Support Files/Yoga/Yoga-prefix.pch";
-				INFOPLIST_FILE = "Target Support Files/Yoga/Info.plist";
-				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
-				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/../Frameworks @loader_path/Frameworks";
-				MACOSX_DEPLOYMENT_TARGET = 10.6;
-				MODULEMAP_FILE = "Target Support Files/Yoga/Yoga.modulemap";
-				PRODUCT_NAME = yoga;
-				SDKROOT = macosx;
-				SKIP_INSTALL = YES;
-				SWIFT_VERSION = 3.0;
-				VERSIONING_SYSTEM = "apple-generic";
-				VERSION_INFO_PREFIX = "";
-			};
-			name = Release;
 		};
 		4B5947507757BCB431C626C56D4EDEB4 /* Debug */ = {
 			isa = XCBuildConfiguration;
@@ -1537,7 +1480,69 @@
 			};
 			name = Release;
 		};
-		880EDD3B189FBDB880196350B6D23567 /* Release */ = {
+		9492AF380CD31CBF5CCC12AC818AF428 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = 93160B7AE3A7AE289510FDC85A5999BD /* Yoga.xcconfig */;
+			buildSettings = {
+				CODE_SIGN_IDENTITY = "";
+				"CODE_SIGN_IDENTITY[sdk=appletvos*]" = "";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "";
+				"CODE_SIGN_IDENTITY[sdk=watchos*]" = "";
+				COMBINE_HIDPI_IMAGES = YES;
+				CURRENT_PROJECT_VERSION = 1;
+				DEFINES_MODULE = YES;
+				DYLIB_COMPATIBILITY_VERSION = 1;
+				DYLIB_CURRENT_VERSION = 1;
+				DYLIB_INSTALL_NAME_BASE = "@rpath";
+				FRAMEWORK_VERSION = A;
+				GCC_PREFIX_HEADER = "Target Support Files/Yoga/Yoga-prefix.pch";
+				INFOPLIST_FILE = "Target Support Files/Yoga/Info.plist";
+				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/../Frameworks @loader_path/Frameworks";
+				MACOSX_DEPLOYMENT_TARGET = 10.6;
+				MODULEMAP_FILE = "Target Support Files/Yoga/Yoga.modulemap";
+				PRODUCT_NAME = yoga;
+				SDKROOT = macosx;
+				SKIP_INSTALL = YES;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "$(inherited) ";
+				SWIFT_VERSION = 4.0;
+				VERSIONING_SYSTEM = "apple-generic";
+				VERSION_INFO_PREFIX = "";
+			};
+			name = Debug;
+		};
+		A578F37DC82AAC5434FB7871CE04D6B6 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = 86CF574DACE8DCC588FB76C199B50D28 /* MASPreferences.xcconfig */;
+			buildSettings = {
+				CODE_SIGN_IDENTITY = "";
+				"CODE_SIGN_IDENTITY[sdk=appletvos*]" = "";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "";
+				"CODE_SIGN_IDENTITY[sdk=watchos*]" = "";
+				COMBINE_HIDPI_IMAGES = YES;
+				CURRENT_PROJECT_VERSION = 1;
+				DEFINES_MODULE = YES;
+				DYLIB_COMPATIBILITY_VERSION = 1;
+				DYLIB_CURRENT_VERSION = 1;
+				DYLIB_INSTALL_NAME_BASE = "@rpath";
+				FRAMEWORK_VERSION = A;
+				GCC_PREFIX_HEADER = "Target Support Files/MASPreferences/MASPreferences-prefix.pch";
+				INFOPLIST_FILE = "Target Support Files/MASPreferences/Info.plist";
+				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/../Frameworks @loader_path/Frameworks";
+				MACOSX_DEPLOYMENT_TARGET = 10.6;
+				MODULEMAP_FILE = "Target Support Files/MASPreferences/MASPreferences.modulemap";
+				PRODUCT_NAME = MASPreferences;
+				SDKROOT = macosx;
+				SKIP_INSTALL = YES;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "$(inherited) ";
+				SWIFT_VERSION = 4.0;
+				VERSIONING_SYSTEM = "apple-generic";
+				VERSION_INFO_PREFIX = "";
+			};
+			name = Debug;
+		};
+		B9282E25976A7C10082744A831F18695 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = 9CD211BFBF261E1F49825037A911678B /* lottie-ios.xcconfig */;
 			buildSettings = {
@@ -1561,13 +1566,14 @@
 				PRODUCT_NAME = Lottie;
 				SDKROOT = macosx;
 				SKIP_INSTALL = YES;
-				SWIFT_VERSION = 3.0;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "$(inherited) ";
+				SWIFT_VERSION = 4.0;
 				VERSIONING_SYSTEM = "apple-generic";
 				VERSION_INFO_PREFIX = "";
 			};
-			name = Release;
+			name = Debug;
 		};
-		8FF0106838C4C889BB8BDF00FAA8261F /* Debug */ = {
+		CBFB0B3E8779BB87B9E3633D405700F0 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = 41B8DF18DF1BD9F5A4986F2330615ACF /* LetsMove.xcconfig */;
 			buildSettings = {
@@ -1591,15 +1597,16 @@
 				PRODUCT_NAME = LetsMove;
 				SDKROOT = macosx;
 				SKIP_INSTALL = YES;
-				SWIFT_VERSION = 3.0;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "$(inherited) ";
+				SWIFT_VERSION = 4.0;
 				VERSIONING_SYSTEM = "apple-generic";
 				VERSION_INFO_PREFIX = "";
 			};
 			name = Debug;
 		};
-		9CF0078FE285BFE98EEA137638862B36 /* Release */ = {
+		E6607E5FE237F7B28A916BEB80659BC3 /* Release */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = 41B8DF18DF1BD9F5A4986F2330615ACF /* LetsMove.xcconfig */;
+			baseConfigurationReference = 86CF574DACE8DCC588FB76C199B50D28 /* MASPreferences.xcconfig */;
 			buildSettings = {
 				CODE_SIGN_IDENTITY = "";
 				"CODE_SIGN_IDENTITY[sdk=appletvos*]" = "";
@@ -1612,24 +1619,25 @@
 				DYLIB_CURRENT_VERSION = 1;
 				DYLIB_INSTALL_NAME_BASE = "@rpath";
 				FRAMEWORK_VERSION = A;
-				GCC_PREFIX_HEADER = "Target Support Files/LetsMove/LetsMove-prefix.pch";
-				INFOPLIST_FILE = "Target Support Files/LetsMove/Info.plist";
+				GCC_PREFIX_HEADER = "Target Support Files/MASPreferences/MASPreferences-prefix.pch";
+				INFOPLIST_FILE = "Target Support Files/MASPreferences/Info.plist";
 				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/../Frameworks @loader_path/Frameworks";
 				MACOSX_DEPLOYMENT_TARGET = 10.6;
-				MODULEMAP_FILE = "Target Support Files/LetsMove/LetsMove.modulemap";
-				PRODUCT_NAME = LetsMove;
+				MODULEMAP_FILE = "Target Support Files/MASPreferences/MASPreferences.modulemap";
+				PRODUCT_NAME = MASPreferences;
 				SDKROOT = macosx;
 				SKIP_INSTALL = YES;
-				SWIFT_VERSION = 3.0;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "$(inherited) ";
+				SWIFT_VERSION = 4.0;
 				VERSIONING_SYSTEM = "apple-generic";
 				VERSION_INFO_PREFIX = "";
 			};
 			name = Release;
 		};
-		D7A60B4F3FE1F44AE0A7B598F80C816E /* Debug */ = {
+		EAEB34783086436D3073C4D74C9119DA /* Release */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = 9CD211BFBF261E1F49825037A911678B /* lottie-ios.xcconfig */;
+			baseConfigurationReference = 93160B7AE3A7AE289510FDC85A5999BD /* Yoga.xcconfig */;
 			buildSettings = {
 				CODE_SIGN_IDENTITY = "";
 				"CODE_SIGN_IDENTITY[sdk=appletvos*]" = "";
@@ -1642,20 +1650,21 @@
 				DYLIB_CURRENT_VERSION = 1;
 				DYLIB_INSTALL_NAME_BASE = "@rpath";
 				FRAMEWORK_VERSION = A;
-				GCC_PREFIX_HEADER = "Target Support Files/lottie-ios/lottie-ios-prefix.pch";
-				INFOPLIST_FILE = "Target Support Files/lottie-ios/Info.plist";
+				GCC_PREFIX_HEADER = "Target Support Files/Yoga/Yoga-prefix.pch";
+				INFOPLIST_FILE = "Target Support Files/Yoga/Info.plist";
 				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/../Frameworks @loader_path/Frameworks";
-				MACOSX_DEPLOYMENT_TARGET = 10.10;
-				MODULEMAP_FILE = "Target Support Files/lottie-ios/lottie-ios.modulemap";
-				PRODUCT_NAME = Lottie;
+				MACOSX_DEPLOYMENT_TARGET = 10.6;
+				MODULEMAP_FILE = "Target Support Files/Yoga/Yoga.modulemap";
+				PRODUCT_NAME = yoga;
 				SDKROOT = macosx;
 				SKIP_INSTALL = YES;
-				SWIFT_VERSION = 3.0;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "$(inherited) ";
+				SWIFT_VERSION = 4.0;
 				VERSIONING_SYSTEM = "apple-generic";
 				VERSION_INFO_PREFIX = "";
 			};
-			name = Debug;
+			name = Release;
 		};
 /* End XCBuildConfiguration section */
 
@@ -1663,8 +1672,8 @@
 		075389948F418388C5C859D4F13F3195 /* Build configuration list for PBXNativeTarget "MASPreferences" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
-				025754E5A6198A9F4071D9B7F7CC17BD /* Debug */,
-				04F9BA502282902339CB061427A876DC /* Release */,
+				A578F37DC82AAC5434FB7871CE04D6B6 /* Debug */,
+				E6607E5FE237F7B28A916BEB80659BC3 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
@@ -1672,8 +1681,8 @@
 		11888026D5A958E6080DE8D4A0176039 /* Build configuration list for PBXNativeTarget "lottie-ios" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
-				D7A60B4F3FE1F44AE0A7B598F80C816E /* Debug */,
-				880EDD3B189FBDB880196350B6D23567 /* Release */,
+				B9282E25976A7C10082744A831F18695 /* Debug */,
+				1A50D6CAD3204AC83ACB433519C81C41 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
@@ -1681,7 +1690,7 @@
 		2D8E8EC45A3A1A1D94AE762CB5028504 /* Build configuration list for PBXProject "Pods" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
-				2A6C355C8DBA7E21C4F5043FE3EDDE29 /* Debug */,
+				3918C3731F97F7B1A6B91CA53EA9B086 /* Debug */,
 				6560A4AFF004D1420AB4047ED7B3E45A /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
@@ -1690,8 +1699,8 @@
 		7835216103971CBC13C9EB5A2FE1669A /* Build configuration list for PBXNativeTarget "Yoga" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
-				1063BB1223E63835EB3A3125C1AADB4B /* Debug */,
-				452CA53C1F7F488017B469834067C0B2 /* Release */,
+				9492AF380CD31CBF5CCC12AC818AF428 /* Debug */,
+				EAEB34783086436D3073C4D74C9119DA /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
@@ -1699,8 +1708,8 @@
 		B1C9E1D1B2D3C40DDABE52C3094AD109 /* Build configuration list for PBXNativeTarget "LetsMove" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
-				8FF0106838C4C889BB8BDF00FAA8261F /* Debug */,
-				9CF0078FE285BFE98EEA137638862B36 /* Release */,
+				CBFB0B3E8779BB87B9E3633D405700F0 /* Debug */,
+				0BB19174DE219D2026ABA89CE9C3FE18 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;

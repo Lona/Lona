@@ -86,7 +86,7 @@ class ViewController: NSViewController, NSOutlineViewDataSource, NSOutlineViewDe
         let controllers = [workspace]
         
         let preferencesWindow = MASPreferencesWindowController(viewControllers: controllers, title: "Preferences")
-        preferencesWindow!.showWindow(sender)
+        preferencesWindow.showWindow(sender)
         
         self.preferencesWindow = preferencesWindow
     }
@@ -894,7 +894,7 @@ class ViewController: NSViewController, NSOutlineViewDataSource, NSOutlineViewDe
     func outlineView(_ outlineView: NSOutlineView, viewFor tableColumn: NSTableColumn?, item: Any) -> NSView? {
         let cellView = NSTableCellView()
         
-        switch tableColumn!.identifier {
+        switch tableColumn!.identifier.rawValue {
         case "layer":
             if let layer = item as? CSLayer {
                 let textField = NSTextField()
