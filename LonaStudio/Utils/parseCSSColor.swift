@@ -157,8 +157,8 @@ func parseCSSColor(_ css_str: String) -> CSSColor? {
     }
     
     // #abc and #abc123 syntax.
-    if (str.characters.first == "#") {
-        if (str.characters.count == 4) {
+    if (str.first == "#") {
+        if (str.count == 4) {
             str.remove(at: str.startIndex) // TODO(deanm): Stricter parsing.
             guard let iv = Int(str, radix: 16) else { return nil }
             if !(iv >= 0 && iv <= 0xfff) { return nil } // Covers NaN.
@@ -168,7 +168,7 @@ func parseCSSColor(_ css_str: String) -> CSSColor? {
                 (iv & 0xf) | ((iv & 0xf) << 4),
                 1
             )
-        } else if (str.characters.count == 7) {
+        } else if (str.count == 7) {
             str.remove(at: str.startIndex) // TODO(deanm): Stricter parsing.
             guard let iv = Int(str, radix: 16) else { return nil }
             if (!(iv >= 0 && iv <= 0xffffff)) { return nil } // Covers NaN.
@@ -187,9 +187,10 @@ func parseCSSColor(_ css_str: String) -> CSSColor? {
     let ep = str.index(of: ")")
     
     if let op = op, ep == str.index(before: str.endIndex), let ep = ep {
-        let fname = str.substring(to: op)
+        let fname = String(str[..<op])
+        
         let range: Range<String.Index> = str.index(after: op)..<ep
-        var params: [String] = str.substring(with: range).components(separatedBy: ",")
+        var params: [String] = String(str[range]).components(separatedBy: ",")
         
         var alpha: Double = 1;  // To allow case fallthrough.
         
