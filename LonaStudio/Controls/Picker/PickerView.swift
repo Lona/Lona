@@ -147,6 +147,7 @@ extension PickerView {
                     let index = self.currentHover - 1
                     updateHover(index: index)
                 case .enter:
+                    guard self.currentHover != -1 else { return }
                     guard self.currentHover < self.filterData.count else { return }
                     let item = self.filterData[self.currentHover]
                     self.parameter.didSelectItem(self, item)
