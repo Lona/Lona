@@ -22,9 +22,13 @@ module JavaScript = {
 };
 
 module Swift = {
+  type layoutPriority =
+    | Required
+    | Low;
   type constraintDefinition = {
     variableName: string,
-    initialValue: Ast.Swift.node
+    initialValue: Ast.Swift.node,
+    priority: layoutPriority
   };
   type directionParameter = {
     lonaName: string,
@@ -38,6 +42,10 @@ module Swift = {
     let assignments = Layer.parameterAssignmentsFromLogic(rootLayer, logic);
     let parameters = json |> Decode.Component.parameters;
     open Ast.Swift;
+    let priorityName =
+      fun
+      | Required => "required"
+      | Low => "defaultLow";
     let typeAnnotationDoc =
       fun
       | Types.Reference(typeName) =>
@@ -350,13 +358,13 @@ module Swift = {
     };
     let getConstraints = (root: Types.layer) => {
       let setUpContraint =
-          (layer: Types.layer, anchor1, parent: Types.layer, anchor2, relation, value) => {
+          (layer: Types.layer, anchor1, parent: Types.layer, anchor2, relation, value, suffix) => {
         let variableName =
           (
             layer === rootLayer ?
               anchor1 : Swift.Format.layerName(layer.name) ++ Swift.Format.upperFirst(anchor1)
           )
-          ++ "Constraint";
+          ++ suffix;
         let initialValue =
           MemberExpression([
             SwiftIdentifier(layer.name |> Swift.Format.layerName),
@@ -372,7 +380,7 @@ module Swift = {
               ]
             })
           ]);
-        {variableName, initialValue}
+        {variableName, initialValue, priority: Required}
       };
       let setUpLessThanOrEqualToContraint =
           (layer: Types.layer, anchor1, parent: Types.layer, anchor2, value, suffix) => {
@@ -397,7 +405,7 @@ module Swift = {
               ]
             })
           ]);
-        {variableName, initialValue}
+        {variableName, initialValue, priority: Low}
       };
       let setUpDimensionContraint = (layer: Types.layer, anchor, constant) => {
         let variableName =
@@ -422,7 +430,7 @@ module Swift = {
               })
             ]
           );
-        {variableName, initialValue}
+        {variableName, initialValue, priority: Required}
       };
       let negateNumber = (expression) =>
         PrefixExpression({"operator": "-", "expression": expression});
@@ -476,7 +484,8 @@ module Swift = {
                   layer,
                   primaryBeforeAnchor,
                   "equalTo",
-                  primaryBeforeConstant
+                  primaryBeforeConstant,
+                  "Constraint"
                 )
               ]
             | _ => []
@@ -508,7 +517,8 @@ module Swift = {
                     layer,
                     primaryAfterAnchor,
                     "equalTo",
-                    negateNumber(primaryAfterConstant)
+                    negateNumber(primaryAfterConstant),
+                    "Constraint"
                   )
                 ] :
                 []
@@ -536,7 +546,8 @@ module Swift = {
                   previousLayer,
                   primaryAfterAnchor,
                   "equalTo",
-                  betweenConstant
+                  betweenConstant,
+                  "Constraint"
                 )
               ]
             };
@@ -555,7 +566,8 @@ module Swift = {
               layer,
               secondaryBeforeAnchor,
               "equalTo",
-              secondaryBeforeConstant
+              secondaryBeforeConstant,
+              "Constraint"
             );
           let secondaryAfterConstraint =
             switch (secondarySizingRule, childSecondarySizingRule) {
@@ -567,7 +579,8 @@ module Swift = {
                   layer,
                   secondaryAfterAnchor,
                   "equalTo",
-                  negateNumber(secondaryAfterConstant)
+                  negateNumber(secondaryAfterConstant),
+                  "Constraint"
                 )
               ]
             | (_, FitContent) => [
@@ -577,13 +590,23 @@ module Swift = {
                   layer,
                   secondaryAfterAnchor,
                   "lessThanOrEqualTo",
-                  negateNumber(secondaryAfterConstant)
+                  negateNumber(secondaryAfterConstant),
+                  "Constraint"
                 )
               ]
             };
           /* If the parent's secondary axis is set to "fit content", this ensures
              the secondary axis dimension is greater than every child's.
              We apply these in the child loop for easier variable naming (due to current setup). */
+          /*
+             We need these constraints to be low priority. A "FitContent" view needs height >= each
+             of its children. Yet a "Fill" sibling needs to have height unspecified, and
+             a side anchor equal to the side of the "FitContent" view.
+             This layout is ambiguous (I think), despite no warnings at runtime. The "FitContent" view's
+             height constraints seem to take priority over the "Fill" view's height constraints, and the
+             "FitContent" view steals the height of the "Fill" view. We solve this by lowering the priority
+             of the "FitContent" view's height.
+           */
           let fitContentSecondaryConstraint =
             switch secondarySizingRule {
             | FitContent => [
@@ -610,35 +633,23 @@ module Swift = {
           @ [secondaryBeforeConstraint]
           @ secondaryAfterConstraint
           @ fitContentSecondaryConstraint
-          /* TODO:
-               It looks like we need to use priorities for this.
-               A "FitContent" view needs height >= each of its children.
-               Yet a "Fill" sibling needs to have height unspecified, and
-               a side anchor equal to the side of the "FitContent" view.
-               The "FitContent" view's height constraints seem to take priority
-               over the "Fill" view's height constraints.
-               We may be able to solve this be making the priorities of "FitContent"
-               height lower.
-
-               Impl: maybe return priority in the constraint definition object
-               from "setUpLessThanOrEqualToContraint"
-             */
         };
         /* Children with "flex: 1" should all have equal dimensions along the primary axis */
         let flexChildrenConstraints =
           switch flexChildren {
           | [first, ...rest] when List.length(rest) > 0 =>
             let sameAnchor = primaryDimension ++ "Anchor";
-            let sameAnchorConstraint = (anchor, layer) =>
+            let sameAnchorConstraint = (anchor, index, layer) =>
               setUpContraint(
                 first,
                 anchor,
                 layer,
                 anchor,
                 "equalTo",
-                LiteralExpression(FloatingPoint(0.0))
+                LiteralExpression(FloatingPoint(0.0)),
+                "SiblingConstraint" ++ string_of_int(index)
               );
-            rest |> List.map(sameAnchorConstraint(sameAnchor))
+            rest |> List.mapi(sameAnchorConstraint(sameAnchor))
           | _ => []
           };
         let heightConstraint =
@@ -677,6 +688,17 @@ module Swift = {
           "init": Some(def.initialValue),
           "pattern": IdentifierPattern({"identifier": def.variableName, "annotation": None})
         });
+      let setConstraintPriority = (def) =>
+        BinaryExpression({
+          "left":
+            MemberExpression([SwiftIdentifier(def.variableName), SwiftIdentifier("priority")]),
+          "operator": "=",
+          "right":
+            MemberExpression([
+              SwiftIdentifier("UILayoutPriority"),
+              SwiftIdentifier(priorityName(def.priority))
+            ])
+        });
       let activateConstraints = () =>
         FunctionCallExpression({
           "name":
@@ -713,6 +735,9 @@ module Swift = {
             root |> Layer.flatmap(translatesAutoresizingMask),
             [Empty],
             constraints |> List.map(defineConstraint),
+            constraints
+            |> List.filter((def) => def.priority == Low)
+            |> List.map(setConstraintPriority),
             [Empty],
             [activateConstraints()],
             [Empty],

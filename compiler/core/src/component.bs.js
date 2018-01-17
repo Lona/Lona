@@ -55,6 +55,13 @@ function generate$1(name, json, colors) {
   var logic = Decode$LonaCompilerCore.Component[/* logic */2](json);
   var assignments = Layer$LonaCompilerCore.parameterAssignmentsFromLogic(rootLayer, logic);
   var parameters = Decode$LonaCompilerCore.Component[/* parameters */0](json);
+  var priorityName = function (param) {
+    if (param !== 0) {
+      return "defaultLow";
+    } else {
+      return "required";
+    }
+  };
   var typeAnnotationDoc = function (param) {
     if (param.tag) {
       return /* TypeName */Block.__(0, [param[0]]);
@@ -556,11 +563,11 @@ function generate$1(name, json, colors) {
               }]);
   };
   var getConstraints = function (root) {
-    var setUpContraint = function (layer, anchor1, parent, anchor2, relation, value) {
+    var setUpContraint = function (layer, anchor1, parent, anchor2, relation, value, suffix) {
       var match = +(layer === rootLayer);
       var variableName = (
         match !== 0 ? anchor1 : Swift$LonaCompilerCore.Format[/* layerName */0](layer[/* name */1]) + LodashUpperfirst(anchor1)
-      ) + "Constraint";
+      ) + suffix;
       var initialValue = /* MemberExpression */Block.__(1, [/* :: */[
             /* SwiftIdentifier */Block.__(5, [Swift$LonaCompilerCore.Format[/* layerName */0](layer[/* name */1])]),
             /* :: */[
@@ -591,7 +598,8 @@ function generate$1(name, json, colors) {
           ]]);
       return /* record */[
               /* variableName */variableName,
-              /* initialValue */initialValue
+              /* initialValue */initialValue,
+              /* priority : Required */0
             ];
     };
     var setUpLessThanOrEqualToContraint = function (layer, anchor1, parent, anchor2, value, suffix) {
@@ -629,7 +637,8 @@ function generate$1(name, json, colors) {
           ]]);
       return /* record */[
               /* variableName */variableName,
-              /* initialValue */initialValue
+              /* initialValue */initialValue,
+              /* priority : Low */1
             ];
     };
     var setUpDimensionContraint = function (layer, anchor, constant) {
@@ -655,7 +664,8 @@ function generate$1(name, json, colors) {
           ]);
       return /* record */[
               /* variableName */variableName,
-              /* initialValue */initialValue
+              /* initialValue */initialValue,
+              /* priority : Required */0
             ];
     };
     var negateNumber = function (expression) {
@@ -718,7 +728,7 @@ function generate$1(name, json, colors) {
           var match$1 = +(direction === "column");
           var primaryBeforeConstant = match$1 !== 0 ? constraintConstantExpression(layer, "topPadding", child, "topMargin") : constraintConstantExpression(layer, "leadingPadding", child, "leadingMargin");
           firstViewConstraints = /* :: */[
-            setUpContraint(child, primaryBeforeAnchor, layer, primaryBeforeAnchor, "equalTo", primaryBeforeConstant),
+            setUpContraint(child, primaryBeforeAnchor, layer, primaryBeforeAnchor, "equalTo", primaryBeforeConstant, "Constraint"),
             /* [] */0
           ];
         }
@@ -733,7 +743,7 @@ function generate$1(name, json, colors) {
           var match$3 = +(direction === "column");
           var primaryAfterConstant = match$3 !== 0 ? constraintConstantExpression(layer, "bottomPadding", child, "bottomMargin") : constraintConstantExpression(layer, "trailingPadding", child, "trailingMargin");
           lastViewConstraints = needsPrimaryAfterConstraint !== 0 ? /* :: */[
-              setUpContraint(child, primaryAfterAnchor, layer, primaryAfterAnchor, "equalTo", negateNumber(primaryAfterConstant)),
+              setUpContraint(child, primaryAfterAnchor, layer, primaryAfterAnchor, "equalTo", negateNumber(primaryAfterConstant), "Constraint"),
               /* [] */0
             ] : /* [] */0;
         } else {
@@ -746,7 +756,7 @@ function generate$1(name, json, colors) {
           var match$4 = +(direction === "column");
           var betweenConstant = match$4 !== 0 ? constraintConstantExpression(previousLayer, "bottomMargin", child, "topMargin") : constraintConstantExpression(previousLayer, "trailingMargin", child, "leadingMargin");
           middleViewConstraints = /* :: */[
-            setUpContraint(child, primaryBeforeAnchor, previousLayer, primaryAfterAnchor, "equalTo", betweenConstant),
+            setUpContraint(child, primaryBeforeAnchor, previousLayer, primaryAfterAnchor, "equalTo", betweenConstant, "Constraint"),
             /* [] */0
           ];
         } else {
@@ -756,13 +766,13 @@ function generate$1(name, json, colors) {
         var secondaryBeforeConstant = match$5 !== 0 ? constraintConstantExpression(layer, "leadingPadding", child, "leadingMargin") : constraintConstantExpression(layer, "topPadding", child, "topMargin");
         var match$6 = +(direction === "column");
         var secondaryAfterConstant = match$6 !== 0 ? constraintConstantExpression(layer, "trailingPadding", child, "trailingMargin") : constraintConstantExpression(layer, "bottomPadding", child, "bottomMargin");
-        var secondaryBeforeConstraint = setUpContraint(child, secondaryBeforeAnchor, layer, secondaryBeforeAnchor, "equalTo", secondaryBeforeConstant);
+        var secondaryBeforeConstraint = setUpContraint(child, secondaryBeforeAnchor, layer, secondaryBeforeAnchor, "equalTo", secondaryBeforeConstant, "Constraint");
         var secondaryAfterConstraint = typeof childSecondarySizingRule === "number" ? (
             childSecondarySizingRule !== 0 ? /* :: */[
-                setUpContraint(child, secondaryAfterAnchor, layer, secondaryAfterAnchor, "lessThanOrEqualTo", negateNumber(secondaryAfterConstant)),
+                setUpContraint(child, secondaryAfterAnchor, layer, secondaryAfterAnchor, "lessThanOrEqualTo", negateNumber(secondaryAfterConstant), "Constraint"),
                 /* [] */0
               ] : /* :: */[
-                setUpContraint(child, secondaryAfterAnchor, layer, secondaryAfterAnchor, "equalTo", negateNumber(secondaryAfterConstant)),
+                setUpContraint(child, secondaryAfterAnchor, layer, secondaryAfterAnchor, "equalTo", negateNumber(secondaryAfterConstant), "Constraint"),
                 /* [] */0
               ]
           ) : /* [] */0;
@@ -785,10 +795,11 @@ function generate$1(name, json, colors) {
         var first = flexChildren[0];
         if (List.length(rest) > 0) {
           var sameAnchor = primaryDimension + "Anchor";
-          flexChildrenConstraints = List.map((function (param) {
+          flexChildrenConstraints = List.mapi((function (param, param$1) {
                   var anchor = sameAnchor;
-                  var layer = param;
-                  return setUpContraint(first, anchor, layer, anchor, "equalTo", /* LiteralExpression */Block.__(0, [/* FloatingPoint */Block.__(2, [0.0])]));
+                  var index = param;
+                  var layer = param$1;
+                  return setUpContraint(first, anchor, layer, anchor, "equalTo", /* LiteralExpression */Block.__(0, [/* FloatingPoint */Block.__(2, [0.0])]), "SiblingConstraint" + Pervasives.string_of_int(index));
                 }), rest);
         } else {
           flexChildrenConstraints = /* [] */0;
@@ -837,6 +848,25 @@ function generate$1(name, json, colors) {
                         identifier: def[/* variableName */0],
                         annotation: /* None */0
                       }])
+                }]);
+    };
+    var setConstraintPriority = function (def) {
+      return /* BinaryExpression */Block.__(2, [{
+                  left: /* MemberExpression */Block.__(1, [/* :: */[
+                        /* SwiftIdentifier */Block.__(5, [def[/* variableName */0]]),
+                        /* :: */[
+                          /* SwiftIdentifier */Block.__(5, ["priority"]),
+                          /* [] */0
+                        ]
+                      ]]),
+                  operator: "=",
+                  right: /* MemberExpression */Block.__(1, [/* :: */[
+                        /* SwiftIdentifier */Block.__(5, ["UILayoutPriority"]),
+                        /* :: */[
+                          /* SwiftIdentifier */Block.__(5, [priorityName(def[/* priority */2])]),
+                          /* [] */0
+                        ]
+                      ]])
                 }]);
     };
     var activateConstraints = function () {
@@ -902,30 +932,35 @@ function generate$1(name, json, colors) {
                         /* :: */[
                           List.map(defineConstraint, constraints),
                           /* :: */[
-                            /* :: */[
-                              /* Empty */0,
-                              /* [] */0
-                            ],
+                            List.map(setConstraintPriority, List.filter((function (def) {
+                                          return +(def[/* priority */2] === /* Low */1);
+                                        }))(constraints)),
                             /* :: */[
                               /* :: */[
-                                activateConstraints(/* () */0),
+                                /* Empty */0,
                                 /* [] */0
                               ],
                               /* :: */[
                                 /* :: */[
-                                  /* Empty */0,
+                                  activateConstraints(/* () */0),
                                   /* [] */0
                                 ],
                                 /* :: */[
-                                  List.map(assignConstraint, constraints),
                                   /* :: */[
+                                    /* Empty */0,
+                                    /* [] */0
+                                  ],
+                                  /* :: */[
+                                    List.map(assignConstraint, constraints),
                                     /* :: */[
-                                      /* LineComment */Block.__(15, ["For debugging"]),
-                                      /* [] */0
-                                    ],
-                                    /* :: */[
-                                      List.map(assignConstraintIdentifier, constraints),
-                                      /* [] */0
+                                      /* :: */[
+                                        /* LineComment */Block.__(15, ["For debugging"]),
+                                        /* [] */0
+                                      ],
+                                      /* :: */[
+                                        List.map(assignConstraintIdentifier, constraints),
+                                        /* [] */0
+                                      ]
                                     ]
                                   ]
                                 ]
