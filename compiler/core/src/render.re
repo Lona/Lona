@@ -271,18 +271,26 @@ module Swift = {
   and renderInitializerBlock = (node: initializerBlock) =>
     switch node {
     | WillSetDidSetBlock(o) =>
+      /* Special case single-statement willSet/didSet and render them in a single line
+         since they are common in our generated code and are easier to read than multiline */
+      let renderStatements = (statements) => {
+        switch (statements) {
+        | [only] => s("{ ") <+> render(only) <+> s(" }")
+        | _ => render(Ast.Swift.CodeBlock({ "statements": statements }))
+        };
+      };
       let willSet = o##willSet |> renderOptional((statements) =>
-        s("willSet ") <+> render(Ast.Swift.CodeBlock({ "statements": statements }))
+        s("willSet ") <+> renderStatements(statements)
       );
       let didSet = o##didSet |> renderOptional((statements) =>
-        s("didSet ") <+> render(Ast.Swift.CodeBlock({ "statements": statements }))
+        s("didSet ") <+> renderStatements(statements)
       );
       switch (o##willSet, o##didSet) {
       | (None, None) => empty
-      /* | (None, Some(_)) => group(join(line, [s("{"), didSet, s("}")]))
-      | (Some(_), None) => group(join(line, [s("{"), willSet, s("}")])) */
-      | (None, Some(_)) => s("{") <+> indent(hardline <+> didSet) <+> hardline <+> s("}")
-      | (Some(_), None) => s("{") <+> indent(hardline <+> willSet) <+> hardline <+> s("}")
+      | (None, Some(_)) => group(join(line, [s("{"), didSet, s("}")]))
+      | (Some(_), None) => group(join(line, [s("{"), willSet, s("}")]))
+      /* | (None, Some(_)) => s("{") <+> indent(hardline <+> didSet) <+> hardline <+> s("}")
+      | (Some(_), None) => s("{") <+> indent(hardline <+> willSet) <+> hardline <+> s("}") */
       | (Some(_), Some(_)) => s("{") <+> indent(hardline <+> willSet <+> hardline <+> didSet) <+> hardline <+> s("}")
       }
     };

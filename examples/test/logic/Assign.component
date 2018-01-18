@@ -1,0 +1,115 @@
+{
+  "canvases" : [
+    {
+      "backgroundColor" : "white",
+      "exportScale" : 1,
+      "height" : 100,
+      "heightMode" : "At Least",
+      "name" : "iPhone SE",
+      "parameters" : {
+
+      },
+      "visible" : true,
+      "width" : 320
+    },
+    {
+      "backgroundColor" : "white",
+      "exportScale" : 1,
+      "height" : 100,
+      "heightMode" : "At Least",
+      "name" : "iPhone 7",
+      "parameters" : {
+
+      },
+      "visible" : true,
+      "width" : 375
+    },
+    {
+      "backgroundColor" : "white",
+      "exportScale" : 1,
+      "height" : 100,
+      "heightMode" : "At Least",
+      "name" : "iPhone 7+",
+      "parameters" : {
+
+      },
+      "visible" : true,
+      "width" : 414
+    }
+  ],
+  "cases" : [
+    {
+      "name" : "Default",
+      "type" : "entry",
+      "value" : {
+
+      },
+      "visible" : true
+    }
+  ],
+  "config" : {
+    "canvasLayout" : "xy"
+  },
+  "logic" : [
+    {
+      "function" : {
+        "arguments" : {
+          "lhs" : {
+            "type" : "identifier",
+            "value" : {
+              "path" : [
+                "parameters",
+                "text"
+              ],
+              "type" : "String"
+            }
+          },
+          "rhs" : {
+            "type" : "identifier",
+            "value" : {
+              "path" : [
+                "layers",
+                "Text",
+                "text"
+              ],
+              "type" : "String"
+            }
+          }
+        },
+        "name" : "assign(lhs, to rhs)"
+      },
+      "nodes" : [
+
+      ]
+    }
+  ],
+  "metadata" : {
+
+  },
+  "parameters" : [
+    {
+      "name" : "text",
+      "type" : "String"
+    }
+  ],
+  "rootLayer" : {
+    "children" : [
+      {
+        "children" : [
+
+        ],
+        "name" : "Text",
+        "parameters" : {
+          "text" : "Text goes here"
+        },
+        "type" : "Text"
+      }
+    ],
+    "name" : "View",
+    "parameters" : {
+      "alignSelf" : "stretch",
+      "flex" : 0
+    },
+    "type" : "View"
+  }
+}

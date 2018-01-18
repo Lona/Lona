@@ -301,56 +301,53 @@ function generate$1(name, json, colors) {
                 ],
                 parameters: List.map(initParameterDoc, parameters),
                 failable: /* None */0,
-                body: List.concat(/* :: */[
+                body: Swift$LonaCompilerCore.Document[/* joinGroups */1](/* Empty */0, /* :: */[
                       List.map(initParameterAssignmentDoc, parameters),
                       /* :: */[
                         /* :: */[
-                          /* Empty */0,
-                          /* :: */[
-                            /* MemberExpression */Block.__(1, [/* :: */[
-                                  /* SwiftIdentifier */Block.__(5, ["super"]),
-                                  /* :: */[
-                                    /* FunctionCallExpression */Block.__(14, [{
-                                          name: /* SwiftIdentifier */Block.__(5, ["init"]),
-                                          arguments: /* :: */[
-                                            /* FunctionCallArgument */Block.__(13, [{
-                                                  name: /* Some */[/* SwiftIdentifier */Block.__(5, ["frame"])],
-                                                  value: /* SwiftIdentifier */Block.__(5, [".zero"])
-                                                }]),
-                                            /* [] */0
-                                          ]
-                                        }]),
-                                    /* [] */0
-                                  ]
-                                ]]),
-                            /* :: */[
-                              /* Empty */0,
-                              /* :: */[
-                                /* FunctionCallExpression */Block.__(14, [{
-                                      name: /* SwiftIdentifier */Block.__(5, ["setUpViews"]),
-                                      arguments: /* [] */0
-                                    }]),
+                          /* MemberExpression */Block.__(1, [/* :: */[
+                                /* SwiftIdentifier */Block.__(5, ["super"]),
                                 /* :: */[
                                   /* FunctionCallExpression */Block.__(14, [{
-                                        name: /* SwiftIdentifier */Block.__(5, ["setUpConstraints"]),
-                                        arguments: /* [] */0
+                                        name: /* SwiftIdentifier */Block.__(5, ["init"]),
+                                        arguments: /* :: */[
+                                          /* FunctionCallArgument */Block.__(13, [{
+                                                name: /* Some */[/* SwiftIdentifier */Block.__(5, ["frame"])],
+                                                value: /* SwiftIdentifier */Block.__(5, [".zero"])
+                                              }]),
+                                          /* [] */0
+                                        ]
                                       }]),
-                                  /* :: */[
-                                    /* Empty */0,
-                                    /* :: */[
-                                      /* FunctionCallExpression */Block.__(14, [{
-                                            name: /* SwiftIdentifier */Block.__(5, ["update"]),
-                                            arguments: /* [] */0
-                                          }]),
-                                      /* [] */0
-                                    ]
-                                  ]
+                                  /* [] */0
                                 ]
-                              ]
-                            ]
-                          ]
+                              ]]),
+                          /* [] */0
                         ],
-                        /* [] */0
+                        /* :: */[
+                          /* :: */[
+                            /* FunctionCallExpression */Block.__(14, [{
+                                  name: /* SwiftIdentifier */Block.__(5, ["setUpViews"]),
+                                  arguments: /* [] */0
+                                }]),
+                            /* :: */[
+                              /* FunctionCallExpression */Block.__(14, [{
+                                    name: /* SwiftIdentifier */Block.__(5, ["setUpConstraints"]),
+                                    arguments: /* [] */0
+                                  }]),
+                              /* [] */0
+                            ]
+                          ],
+                          /* :: */[
+                            /* :: */[
+                              /* FunctionCallExpression */Block.__(14, [{
+                                    name: /* SwiftIdentifier */Block.__(5, ["update"]),
+                                    arguments: /* [] */0
+                                  }]),
+                              /* [] */0
+                            ],
+                            /* [] */0
+                          ]
+                        ]
                       ]
                     ])
               }]);

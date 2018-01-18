@@ -230,32 +230,34 @@ module Swift = {
         "parameters": parameters |> List.map(initParameterDoc),
         "failable": None,
         "body":
-          List.concat([
-            parameters |> List.map(initParameterAssignmentDoc),
+          Swift.Document.joinGroups(
+            Empty,
             [
-              Empty,
-              MemberExpression([
-                SwiftIdentifier("super"),
+              parameters |> List.map(initParameterAssignmentDoc),
+              [
+                MemberExpression([
+                  SwiftIdentifier("super"),
+                  FunctionCallExpression({
+                    "name": SwiftIdentifier("init"),
+                    "arguments": [
+                      FunctionCallArgument({
+                        "name": Some(SwiftIdentifier("frame")),
+                        "value": SwiftIdentifier(".zero")
+                      })
+                    ]
+                  })
+                ])
+              ],
+              [
+                FunctionCallExpression({"name": SwiftIdentifier("setUpViews"), "arguments": []}),
                 FunctionCallExpression({
-                  "name": SwiftIdentifier("init"),
-                  "arguments": [
-                    FunctionCallArgument({
-                      "name": Some(SwiftIdentifier("frame")),
-                      "value": SwiftIdentifier(".zero")
-                    })
-                  ]
+                  "name": SwiftIdentifier("setUpConstraints"),
+                  "arguments": []
                 })
-              ]),
-              Empty,
-              FunctionCallExpression({"name": SwiftIdentifier("setUpViews"), "arguments": []}),
-              FunctionCallExpression({
-                "name": SwiftIdentifier("setUpConstraints"),
-                "arguments": []
-              }),
-              Empty,
-              FunctionCallExpression({"name": SwiftIdentifier("update"), "arguments": []})
+              ],
+              [FunctionCallExpression({"name": SwiftIdentifier("update"), "arguments": []})]
             ]
-          ])
+          )
       });
     let memberOrSelfExpression = (firstIdentifier, statements) =>
       switch firstIdentifier {

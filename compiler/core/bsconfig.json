@@ -9,7 +9,7 @@
     "in-source": true
   },
   "suffix": ".bs.js",
-  "bs-dependencies": ["bs-node", "bs-json", "bs-batteries"],
+  "bs-dependencies": ["bs-node", "bs-json", "bs-batteries", "bs-glob"],
   "namespace": true,
   "refmt": 3
 }

@@ -690,15 +690,26 @@ function renderPattern(node) {
 
 function renderInitializerBlock(node) {
   var o = node[0];
+  var renderStatements = function (statements) {
+    if (statements) {
+      if (statements[1]) {
+        return render(/* CodeBlock */Block.__(17, [{
+                        statements: statements
+                      }]));
+      } else {
+        return Curry._2(Prettier$LonaCompilerCore.Doc[/* Builders */0][/* <+> */5], Curry._2(Prettier$LonaCompilerCore.Doc[/* Builders */0][/* <+> */5], Curry._1(Prettier$LonaCompilerCore.Doc[/* Builders */0][/* s */0], "{ "), render(statements[0])), Curry._1(Prettier$LonaCompilerCore.Doc[/* Builders */0][/* s */0], " }"));
+      }
+    } else {
+      return render(/* CodeBlock */Block.__(17, [{
+                      statements: statements
+                    }]));
+    }
+  };
   var willSet = renderOptional((function (statements) {
-          return Curry._2(Prettier$LonaCompilerCore.Doc[/* Builders */0][/* <+> */5], Curry._1(Prettier$LonaCompilerCore.Doc[/* Builders */0][/* s */0], "willSet "), render(/* CodeBlock */Block.__(17, [{
-                              statements: statements
-                            }])));
+          return Curry._2(Prettier$LonaCompilerCore.Doc[/* Builders */0][/* <+> */5], Curry._1(Prettier$LonaCompilerCore.Doc[/* Builders */0][/* s */0], "willSet "), renderStatements(statements));
         }), o.willSet);
   var didSet = renderOptional((function (statements) {
-          return Curry._2(Prettier$LonaCompilerCore.Doc[/* Builders */0][/* <+> */5], Curry._1(Prettier$LonaCompilerCore.Doc[/* Builders */0][/* s */0], "didSet "), render(/* CodeBlock */Block.__(17, [{
-                              statements: statements
-                            }])));
+          return Curry._2(Prettier$LonaCompilerCore.Doc[/* Builders */0][/* <+> */5], Curry._1(Prettier$LonaCompilerCore.Doc[/* Builders */0][/* s */0], "didSet "), renderStatements(statements));
         }), o.didSet);
   var match = o.willSet;
   var match$1 = o.didSet;
@@ -706,10 +717,28 @@ function renderInitializerBlock(node) {
     if (match$1) {
       return Curry._2(Prettier$LonaCompilerCore.Doc[/* Builders */0][/* <+> */5], Curry._2(Prettier$LonaCompilerCore.Doc[/* Builders */0][/* <+> */5], Curry._2(Prettier$LonaCompilerCore.Doc[/* Builders */0][/* <+> */5], Curry._1(Prettier$LonaCompilerCore.Doc[/* Builders */0][/* s */0], "{"), Prettier.doc.builders.indent(Curry._2(Prettier$LonaCompilerCore.Doc[/* Builders */0][/* <+> */5], Curry._2(Prettier$LonaCompilerCore.Doc[/* Builders */0][/* <+> */5], Curry._2(Prettier$LonaCompilerCore.Doc[/* Builders */0][/* <+> */5], Prettier.doc.builders.hardline, willSet), Prettier.doc.builders.hardline), didSet))), Prettier.doc.builders.hardline), Curry._1(Prettier$LonaCompilerCore.Doc[/* Builders */0][/* s */0], "}"));
     } else {
-      return Curry._2(Prettier$LonaCompilerCore.Doc[/* Builders */0][/* <+> */5], Curry._2(Prettier$LonaCompilerCore.Doc[/* Builders */0][/* <+> */5], Curry._2(Prettier$LonaCompilerCore.Doc[/* Builders */0][/* <+> */5], Curry._1(Prettier$LonaCompilerCore.Doc[/* Builders */0][/* s */0], "{"), Prettier.doc.builders.indent(Curry._2(Prettier$LonaCompilerCore.Doc[/* Builders */0][/* <+> */5], Prettier.doc.builders.hardline, willSet))), Prettier.doc.builders.hardline), Curry._1(Prettier$LonaCompilerCore.Doc[/* Builders */0][/* s */0], "}"));
+      return Prettier.doc.builders.group(Curry._2(Prettier$LonaCompilerCore.Doc[/* Builders */0][/* join */4], Prettier.doc.builders.line, /* :: */[
+                      Curry._1(Prettier$LonaCompilerCore.Doc[/* Builders */0][/* s */0], "{"),
+                      /* :: */[
+                        willSet,
+                        /* :: */[
+                          Curry._1(Prettier$LonaCompilerCore.Doc[/* Builders */0][/* s */0], "}"),
+                          /* [] */0
+                        ]
+                      ]
+                    ]));
     }
   } else if (match$1) {
-    return Curry._2(Prettier$LonaCompilerCore.Doc[/* Builders */0][/* <+> */5], Curry._2(Prettier$LonaCompilerCore.Doc[/* Builders */0][/* <+> */5], Curry._2(Prettier$LonaCompilerCore.Doc[/* Builders */0][/* <+> */5], Curry._1(Prettier$LonaCompilerCore.Doc[/* Builders */0][/* s */0], "{"), Prettier.doc.builders.indent(Curry._2(Prettier$LonaCompilerCore.Doc[/* Builders */0][/* <+> */5], Prettier.doc.builders.hardline, didSet))), Prettier.doc.builders.hardline), Curry._1(Prettier$LonaCompilerCore.Doc[/* Builders */0][/* s */0], "}"));
+    return Prettier.doc.builders.group(Curry._2(Prettier$LonaCompilerCore.Doc[/* Builders */0][/* join */4], Prettier.doc.builders.line, /* :: */[
+                    Curry._1(Prettier$LonaCompilerCore.Doc[/* Builders */0][/* s */0], "{"),
+                    /* :: */[
+                      didSet,
+                      /* :: */[
+                        Curry._1(Prettier$LonaCompilerCore.Doc[/* Builders */0][/* s */0], "}"),
+                        /* [] */0
+                      ]
+                    ]
+                  ]));
   } else {
     return Prettier$LonaCompilerCore.Doc[/* Builders */0][/* empty */1];
   }

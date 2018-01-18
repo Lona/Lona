@@ -16,9 +16,11 @@
   },
   "dependencies": {
     "bs-batteries": "0.0.14",
+    "bs-glob": "reasonml-community/bs-glob",
     "bs-json": "^0.2.4",
     "bs-node": "github:buckletypes/bs-node",
     "csscolorparser": "^1.0.3",
+    "fs-extra": "^5.0.0",
     "lodash.camelcase": "^4.3.0",
     "lodash.upperfirst": "^4.3.1",
     "prettier": "prettier/prettier#b63c669ed9821a0e0d6918243ef4f4a091b222a9"
