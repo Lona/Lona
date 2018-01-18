@@ -16,26 +16,38 @@ let parseFile = (filename) => {
   field("colors", list(parseColor), parsed)
 };
 
+let find = (colors: list(t), id: string) =>
+  switch (colors |> List.find((color) => color.id == id)) {
+  | color => Some(color)
+  | exception Not_found => None
+  };
+
 let render = (target, colors) =>
   switch target {
   | Types.Swift =>
     open Ast.Swift;
-    let colorLiteralDoc = (value) => LiteralExpression(Color(value));
     let colorConstantDoc = (color) =>
-      LineComment({
+      LineEndComment({
         "comment": color.value,
         "line":
           ConstantDeclaration({
             "modifiers": [AccessLevelModifier(PublicModifier), StaticModifier],
-            "pattern": IdentifierPattern(color.id),
-            "init": Some(colorLiteralDoc(color.value))
+            "pattern": IdentifierPattern({"identifier": color.id, "annotation": None}),
+            "init": Some(LiteralExpression(Color(color.value)))
           })
       });
     let doc =
       TopLevelDeclaration({
         "statements": [
           ImportDeclaration("UIKit"),
-          ClassDeclaration({"name": "Colors", "body": colors |> List.map(colorConstantDoc)})
+          Empty,
+          ClassDeclaration({
+            "name": "Colors",
+            "inherits": [],
+            "modifier": None,
+            "isFinal": false,
+            "body": colors |> List.map(colorConstantDoc)
+          })
         ]
       });
     Render.Swift.toString(doc)

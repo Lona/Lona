@@ -5,14 +5,17 @@ var $$Map                      = require("bs-platform/lib/js/map.js");
 var List                       = require("bs-platform/lib/js/list.js");
 var Block                      = require("bs-platform/lib/js/block.js");
 var Curry                      = require("bs-platform/lib/js/curry.js");
+var Pervasives                 = require("bs-platform/lib/js/pervasives.js");
 var Caml_string                = require("bs-platform/lib/js/caml_string.js");
+var Json_decode                = require("bs-json/src/Json_decode.js");
 var Logic$LonaCompilerCore     = require("./logic.bs.js");
+var Types$LonaCompilerCore     = require("./types.bs.js");
 var Caml_builtin_exceptions    = require("bs-platform/lib/js/caml_builtin_exceptions.js");
 var StringMap$LonaCompilerCore = require("./stringMap.bs.js");
 var StringSet$LonaCompilerCore = require("./stringSet.bs.js");
 
 function compare(a, b) {
-  return Caml_string.caml_string_compare(a[1], b[1]);
+  return Caml_string.caml_string_compare(a[/* name */1], b[/* name */1]);
 }
 
 var include = $$Map.Make(/* module */[/* compare */compare]);
@@ -125,75 +128,111 @@ var parameterTypeMap = StringMap$LonaCompilerCore.fromList(/* :: */[
         ],
         /* :: */[
           /* tuple */[
-            "alignItems",
-            /* Reference */Block.__(0, ["String"])
+            "numberOfLines",
+            /* Reference */Block.__(0, ["Number"])
           ],
           /* :: */[
             /* tuple */[
-              "alignSelf",
-              /* Reference */Block.__(0, ["String"])
+              "backgroundColor",
+              Types$LonaCompilerCore.colorType
             ],
             /* :: */[
               /* tuple */[
-                "flex",
-                /* Reference */Block.__(0, ["Number"])
+                "image",
+                Types$LonaCompilerCore.urlType
               ],
               /* :: */[
                 /* tuple */[
-                  "flexDirection",
+                  "alignItems",
                   /* Reference */Block.__(0, ["String"])
                 ],
                 /* :: */[
                   /* tuple */[
-                    "font",
+                    "alignSelf",
                     /* Reference */Block.__(0, ["String"])
                   ],
                   /* :: */[
                     /* tuple */[
-                      "justifyContent",
-                      /* Reference */Block.__(0, ["String"])
+                      "flex",
+                      /* Reference */Block.__(0, ["Number"])
                     ],
                     /* :: */[
                       /* tuple */[
-                        "marginTop",
-                        /* Reference */Block.__(0, ["Number"])
+                        "flexDirection",
+                        /* Reference */Block.__(0, ["String"])
                       ],
                       /* :: */[
                         /* tuple */[
-                          "marginRight",
-                          /* Reference */Block.__(0, ["Number"])
+                          "font",
+                          /* Reference */Block.__(0, ["String"])
                         ],
                         /* :: */[
                           /* tuple */[
-                            "marginBottom",
-                            /* Reference */Block.__(0, ["Number"])
+                            "justifyContent",
+                            /* Reference */Block.__(0, ["String"])
                           ],
                           /* :: */[
                             /* tuple */[
-                              "marginLeft",
+                              "marginTop",
                               /* Reference */Block.__(0, ["Number"])
                             ],
                             /* :: */[
                               /* tuple */[
-                                "paddingTop",
+                                "marginRight",
                                 /* Reference */Block.__(0, ["Number"])
                               ],
                               /* :: */[
                                 /* tuple */[
-                                  "paddingRight",
+                                  "marginBottom",
                                   /* Reference */Block.__(0, ["Number"])
                                 ],
                                 /* :: */[
                                   /* tuple */[
-                                    "paddingBottom",
+                                    "marginLeft",
                                     /* Reference */Block.__(0, ["Number"])
                                   ],
                                   /* :: */[
                                     /* tuple */[
-                                      "paddingLeft",
+                                      "paddingTop",
                                       /* Reference */Block.__(0, ["Number"])
                                     ],
-                                    /* [] */0
+                                    /* :: */[
+                                      /* tuple */[
+                                        "paddingRight",
+                                        /* Reference */Block.__(0, ["Number"])
+                                      ],
+                                      /* :: */[
+                                        /* tuple */[
+                                          "paddingBottom",
+                                          /* Reference */Block.__(0, ["Number"])
+                                        ],
+                                        /* :: */[
+                                          /* tuple */[
+                                            "paddingLeft",
+                                            /* Reference */Block.__(0, ["Number"])
+                                          ],
+                                          /* :: */[
+                                            /* tuple */[
+                                              "borderRadius",
+                                              /* Reference */Block.__(0, ["Number"])
+                                            ],
+                                            /* :: */[
+                                              /* tuple */[
+                                                "width",
+                                                /* Reference */Block.__(0, ["Number"])
+                                              ],
+                                              /* :: */[
+                                                /* tuple */[
+                                                  "height",
+                                                  /* Reference */Block.__(0, ["Number"])
+                                                ],
+                                                /* [] */0
+                                              ]
+                                            ]
+                                          ]
+                                        ]
+                                      ]
+                                    ]
                                   ]
                                 ]
                               ]
@@ -239,7 +278,13 @@ var stylesSet = Curry._1(StringSet$LonaCompilerCore.of_list, /* :: */[
                               "paddingBottom",
                               /* :: */[
                                 "paddingLeft",
-                                /* [] */0
+                                /* :: */[
+                                  "width",
+                                  /* :: */[
+                                    "height",
+                                    /* [] */0
+                                  ]
+                                ]
                               ]
                             ]
                           ]
@@ -262,7 +307,7 @@ function parameterType(name) {
   catch (exn){
     if (exn === Caml_builtin_exceptions.not_found) {
       console.log("Unknown built-in parameter when deserializing:", name);
-      return /* Reference */Block.__(0, ["Null"]);
+      return /* Reference */Block.__(0, ["BuiltIn-Null"]);
     } else {
       throw exn;
     }
@@ -271,6 +316,7 @@ function parameterType(name) {
 
 function flatten(layer) {
   var inner = function (acc, layer) {
+    var children = layer[/* children */3];
     return List.flatten(/* :: */[
                 acc,
                 /* :: */[
@@ -280,21 +326,18 @@ function flatten(layer) {
                   ],
                   List.map((function (param) {
                           return inner(/* [] */0, param);
-                        }), layer[3])
+                        }), children)
                 ]
               ]);
   };
   return inner(/* [] */0, layer);
 }
 
-function find$1(name, layer) {
-  var matches = function (item) {
-    return +(name === item[1]);
-  };
+function find$1(f, rootLayer) {
   var exit = 0;
   var item;
   try {
-    item = List.find(matches, flatten(layer));
+    item = List.find(f, flatten(rootLayer));
     exit = 1;
   }
   catch (exn){
@@ -310,7 +353,240 @@ function find$1(name, layer) {
   
 }
 
-function parameterAssignments(layer, node) {
+function findByName(name, rootLayer) {
+  return find$1((function (layer) {
+                return +(layer[/* name */1] === name);
+              }), rootLayer);
+}
+
+function flatmapParent(f, layer) {
+  var inner = function (layer) {
+    return Pervasives.$at(List.map(Curry._1(f, /* Some */[layer]), layer[/* children */3]), List.concat(List.map(inner, layer[/* children */3])));
+  };
+  return Pervasives.$at(/* :: */[
+              Curry._2(f, /* None */0, layer),
+              /* [] */0
+            ], inner(layer));
+}
+
+function findParent(rootLayer, targetLayer) {
+  var containsChild = function (parent) {
+    return List.exists((function (child) {
+                  return +(child === targetLayer);
+                }), parent[/* children */3]);
+  };
+  return find$1(containsChild, rootLayer);
+}
+
+function flatmap(f, layer) {
+  return flatmapParent((function (_, layer) {
+                return Curry._1(f, layer);
+              }), layer);
+}
+
+function getFlexDirection(layer) {
+  var exit = 0;
+  var value;
+  try {
+    value = Curry._2(StringMap$LonaCompilerCore.find, "flexDirection", layer[/* parameters */2]);
+    exit = 1;
+  }
+  catch (exn){
+    if (exn === Caml_builtin_exceptions.not_found) {
+      return "column";
+    } else {
+      throw exn;
+    }
+  }
+  if (exit === 1) {
+    return Json_decode.string(value[/* data */1]);
+  }
+  
+}
+
+function getStringParameterOpt(parameterName, layer) {
+  var exit = 0;
+  var value;
+  try {
+    value = Curry._2(StringMap$LonaCompilerCore.find, parameterName, layer[/* parameters */2]);
+    exit = 1;
+  }
+  catch (exn){
+    if (exn === Caml_builtin_exceptions.not_found) {
+      return /* None */0;
+    } else {
+      throw exn;
+    }
+  }
+  if (exit === 1) {
+    return /* Some */[Json_decode.string(value[/* data */1])];
+  }
+  
+}
+
+function getNumberParameterOpt(parameterName, layer) {
+  var exit = 0;
+  var value;
+  try {
+    value = Curry._2(StringMap$LonaCompilerCore.find, parameterName, layer[/* parameters */2]);
+    exit = 1;
+  }
+  catch (exn){
+    if (exn === Caml_builtin_exceptions.not_found) {
+      return /* None */0;
+    } else {
+      throw exn;
+    }
+  }
+  if (exit === 1) {
+    return /* Some */[Json_decode.$$float(value[/* data */1])];
+  }
+  
+}
+
+function getNumberParameter(parameterName, layer) {
+  var match = getNumberParameterOpt(parameterName, layer);
+  if (match) {
+    return match[0];
+  } else {
+    return 0.0;
+  }
+}
+
+function getSizingRules(parent, layer) {
+  var parentDirection = parent ? getFlexDirection(parent[0]) : "column";
+  var flex = getNumberParameterOpt("flex", layer);
+  var width = getNumberParameterOpt("width", layer);
+  var height = getNumberParameterOpt("height", layer);
+  var alignSelf = getStringParameterOpt("alignSelf", layer);
+  var widthSizingRule = parentDirection === "row" ? (
+      flex ? (
+          flex[0] !== 1.0 ? (
+              width ? /* Fixed */[width[0]] : /* FitContent */1
+            ) : /* Fill */0
+        ) : (
+          width ? /* Fixed */[width[0]] : /* FitContent */1
+        )
+    ) : (
+      alignSelf ? (
+          alignSelf[0] === "stretch" ? /* Fill */0 : (
+              width ? /* Fixed */[width[0]] : /* FitContent */1
+            )
+        ) : (
+          width ? /* Fixed */[width[0]] : /* FitContent */1
+        )
+    );
+  var heightSizingRule = parentDirection === "row" ? (
+      alignSelf ? (
+          alignSelf[0] === "stretch" ? /* Fill */0 : (
+              height ? /* Fixed */[height[0]] : /* FitContent */1
+            )
+        ) : (
+          height ? /* Fixed */[height[0]] : /* FitContent */1
+        )
+    ) : (
+      flex ? (
+          flex[0] !== 1.0 ? (
+              height ? /* Fixed */[height[0]] : /* FitContent */1
+            ) : /* Fill */0
+        ) : (
+          height ? /* Fixed */[height[0]] : /* FitContent */1
+        )
+    );
+  return /* record */[
+          /* width */widthSizingRule,
+          /* height */heightSizingRule
+        ];
+}
+
+function printSizingRule(param) {
+  if (typeof param === "number") {
+    if (param !== 0) {
+      return "fitContent";
+    } else {
+      return "fill";
+    }
+  } else {
+    return "fixed(" + (Pervasives.string_of_float(param[0]) + ")");
+  }
+}
+
+function getInsets(prefix, layer) {
+  var extract = function (key) {
+    return StringMap$LonaCompilerCore.find_opt(prefix + key, layer[/* parameters */2]);
+  };
+  var unwrap = function (param) {
+    if (param) {
+      return Json_decode.$$float(param[0][/* data */1]);
+    } else {
+      return 0.0;
+    }
+  };
+  var values = List.map(unwrap, List.map(extract, /* :: */[
+            "Top",
+            /* :: */[
+              "Right",
+              /* :: */[
+                "Bottom",
+                /* :: */[
+                  "Left",
+                  /* [] */0
+                ]
+              ]
+            ]
+          ]));
+  var exit = 0;
+  if (values) {
+    var match = values[1];
+    if (match) {
+      var match$1 = match[1];
+      if (match$1) {
+        var match$2 = match$1[1];
+        if (match$2) {
+          if (match$2[1]) {
+            exit = 1;
+          } else {
+            return /* float array */[
+                    values[0],
+                    match[0],
+                    match$1[0],
+                    match$2[0]
+                  ];
+          }
+        } else {
+          exit = 1;
+        }
+      } else {
+        exit = 1;
+      }
+    } else {
+      exit = 1;
+    }
+  } else {
+    exit = 1;
+  }
+  if (exit === 1) {
+    throw [
+          Caml_builtin_exceptions.match_failure,
+          [
+            "/Users/devin_abbott/Projects/ComponentStudio/ComponentStudio/compiler/core/src/layer.re",
+            185,
+            6
+          ]
+        ];
+  }
+  
+}
+
+function getPadding(param) {
+  return getInsets("padding", param);
+}
+
+function getMargin(param) {
+  return getInsets("margin", param);
+}
+
+function parameterAssignmentsFromLogic(layer, node) {
   var identifiers = Logic$LonaCompilerCore.undeclaredIdentifiers(node);
   return List.fold_left((function (acc, item) {
                 if (typeof item === "number") {
@@ -328,7 +604,7 @@ function parameterAssignments(layer, node) {
                         var propertyName = match$2[0];
                         var logicValue = item;
                         var acc$1 = acc;
-                        var match$3 = find$1(layerName, layer);
+                        var match$3 = findByName(layerName, layer);
                         if (match$3) {
                           var found = match$3[0];
                           var match$4 = find_opt(found, acc$1);
@@ -428,7 +704,7 @@ function createStyleAttributeAST(layerName, styles) {
 function toJavaScriptAST(variableMap, layer) {
   var params = Curry._2(StringMap$LonaCompilerCore.map, (function (item) {
           return /* Literal */Block.__(1, [item]);
-        }), layer[2]);
+        }), layer[/* parameters */2]);
   var match = Curry._2(StringMap$LonaCompilerCore.partition, (function (key, _) {
           return StringSet$LonaCompilerCore.has(key, stylesSet);
         }), params);
@@ -438,7 +714,7 @@ function toJavaScriptAST(variableMap, layer) {
           return StringSet$LonaCompilerCore.has(key, stylesSet);
         }), params$1);
   var main = StringMap$LonaCompilerCore.assign(match[1], match$2[1]);
-  var styleAttribute = createStyleAttributeAST(layer[1], match$2[0]);
+  var styleAttribute = createStyleAttributeAST(layer[/* name */1], match$2[0]);
   var attributes = List.map((function (param) {
           return /* JSXAttribute */Block.__(6, [
                     param[0],
@@ -446,14 +722,14 @@ function toJavaScriptAST(variableMap, layer) {
                   ]);
         }), Curry._1(StringMap$LonaCompilerCore.bindings, main));
   return /* JSXElement */Block.__(7, [
-            layerTypeToString(layer[0]),
+            layerTypeToString(layer[/* typeName */0]),
             /* :: */[
               styleAttribute,
               attributes
             ],
             List.map((function (param) {
                     return toJavaScriptAST(variableMap, param);
-                  }), layer[3])
+                  }), layer[/* children */3])
           ]);
 }
 
@@ -461,10 +737,10 @@ function toJavaScriptStyleSheetAST(layer) {
   var createStyleObjectForLayer = function (layer) {
     var styleParams = Curry._2(StringMap$LonaCompilerCore.filter, (function (key, _) {
             return StringSet$LonaCompilerCore.has(key, stylesSet);
-          }), layer[2]);
+          }), layer[/* parameters */2]);
     return /* ObjectProperty */Block.__(14, [
               /* Identifier */Block.__(2, [/* :: */[
-                    layer[1],
+                    layer[/* name */1],
                     /* [] */0
                   ]]),
               /* ObjectLiteral */Block.__(13, [List.map((function (param) {
@@ -500,19 +776,32 @@ function toJavaScriptStyleSheetAST(layer) {
               ])]);
 }
 
-exports.LayerMap                    = LayerMap;
-exports.parameterTypeMap            = parameterTypeMap;
-exports.stylesSet                   = stylesSet;
-exports.parameterType               = parameterType;
-exports.flatten                     = flatten;
-exports.find                        = find$1;
-exports.parameterAssignments        = parameterAssignments;
-exports.parameterIsStyle            = parameterIsStyle;
-exports.splitParamsMap              = splitParamsMap;
-exports.parameterMapToLogicValueMap = parameterMapToLogicValueMap;
-exports.layerTypeToString           = layerTypeToString;
-exports.mapBindings                 = mapBindings;
-exports.createStyleAttributeAST     = createStyleAttributeAST;
-exports.toJavaScriptAST             = toJavaScriptAST;
-exports.toJavaScriptStyleSheetAST   = toJavaScriptStyleSheetAST;
+exports.LayerMap                      = LayerMap;
+exports.parameterTypeMap              = parameterTypeMap;
+exports.stylesSet                     = stylesSet;
+exports.parameterType                 = parameterType;
+exports.flatten                       = flatten;
+exports.find                          = find$1;
+exports.findByName                    = findByName;
+exports.flatmapParent                 = flatmapParent;
+exports.findParent                    = findParent;
+exports.flatmap                       = flatmap;
+exports.getFlexDirection              = getFlexDirection;
+exports.getStringParameterOpt         = getStringParameterOpt;
+exports.getNumberParameterOpt         = getNumberParameterOpt;
+exports.getNumberParameter            = getNumberParameter;
+exports.getSizingRules                = getSizingRules;
+exports.printSizingRule               = printSizingRule;
+exports.getInsets                     = getInsets;
+exports.getPadding                    = getPadding;
+exports.getMargin                     = getMargin;
+exports.parameterAssignmentsFromLogic = parameterAssignmentsFromLogic;
+exports.parameterIsStyle              = parameterIsStyle;
+exports.splitParamsMap                = splitParamsMap;
+exports.parameterMapToLogicValueMap   = parameterMapToLogicValueMap;
+exports.layerTypeToString             = layerTypeToString;
+exports.mapBindings                   = mapBindings;
+exports.createStyleAttributeAST       = createStyleAttributeAST;
+exports.toJavaScriptAST               = toJavaScriptAST;
+exports.toJavaScriptStyleSheetAST     = toJavaScriptStyleSheetAST;
 /* include Not a pure module */

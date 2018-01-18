@@ -1,0 +1,134 @@
+{
+  "canvases" : [
+    {
+      "backgroundColor" : "white",
+      "exportScale" : 1,
+      "height" : 100,
+      "heightMode" : "At Least",
+      "name" : "iPhone SE",
+      "parameters" : {
+
+      },
+      "visible" : true,
+      "width" : 320
+    },
+    {
+      "backgroundColor" : "white",
+      "exportScale" : 1,
+      "height" : 100,
+      "heightMode" : "At Least",
+      "name" : "iPhone 7",
+      "parameters" : {
+
+      },
+      "visible" : true,
+      "width" : 375
+    },
+    {
+      "backgroundColor" : "white",
+      "exportScale" : 1,
+      "height" : 100,
+      "heightMode" : "At Least",
+      "name" : "iPhone 7+",
+      "parameters" : {
+
+      },
+      "visible" : true,
+      "width" : 414
+    }
+  ],
+  "cases" : [
+    {
+      "name" : "Default",
+      "type" : "entry",
+      "value" : {
+
+      },
+      "visible" : true
+    }
+  ],
+  "config" : {
+    "canvasLayout" : "xy"
+  },
+  "logic" : [
+
+  ],
+  "metadata" : {
+
+  },
+  "parameters" : [
+
+  ],
+  "rootLayer" : {
+    "children" : [
+      {
+        "children" : [
+
+        ],
+        "name" : "Fixed",
+        "parameters" : {
+          "backgroundColor" : "#D8D8D8",
+          "height" : 100,
+          "marginBottom" : 24,
+          "width" : 100
+        },
+        "type" : "View"
+      },
+      {
+        "children" : [
+          {
+            "children" : [
+
+            ],
+            "name" : "Text",
+            "parameters" : {
+              "text" : "Text goes here"
+            },
+            "type" : "Text"
+          }
+        ],
+        "name" : "Fit",
+        "parameters" : {
+          "backgroundColor" : "#D8D8D8",
+          "marginBottom" : 24,
+          "width" : 100
+        },
+        "type" : "View"
+      },
+      {
+        "children" : [
+
+        ],
+        "name" : "Fill1",
+        "parameters" : {
+          "backgroundColor" : "cyan500",
+          "flex" : 1,
+          "width" : 100
+        },
+        "type" : "View"
+      },
+      {
+        "children" : [
+
+        ],
+        "name" : "Fill2",
+        "parameters" : {
+          "backgroundColor" : "blue500",
+          "flex" : 1,
+          "width" : 100
+        },
+        "type" : "View"
+      }
+    ],
+    "name" : "View",
+    "parameters" : {
+      "alignSelf" : "stretch",
+      "height" : 500,
+      "paddingBottom" : 24,
+      "paddingLeft" : 24,
+      "paddingRight" : 24,
+      "paddingTop" : 24
+    },
+    "type" : "View"
+  }
+}

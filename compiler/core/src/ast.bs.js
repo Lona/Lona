@@ -105,7 +105,7 @@ function optimizeTruthyBooleanExpression(node) {
     if (typeof sub === "number" || sub.tag !== 1) {
       return /* None */0;
     } else {
-      return Json_decode.optional(Json_decode.bool, sub[0][1]);
+      return Json_decode.optional(Json_decode.bool, sub[0][/* data */1]);
     }
   };
   if (typeof node === "number") {

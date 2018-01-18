@@ -7,6 +7,7 @@ var Js_json                    = require("bs-platform/lib/js/js_json.js");
 var Js_option                  = require("bs-platform/lib/js/js_option.js");
 var Json_decode                = require("bs-json/src/Json_decode.js");
 var Layer$LonaCompilerCore     = require("./layer.bs.js");
+var Types$LonaCompilerCore     = require("./types.bs.js");
 var StringMap$LonaCompilerCore = require("./stringMap.bs.js");
 
 function lonaType(json) {
@@ -15,10 +16,10 @@ function lonaType(json) {
   };
   var namedType = function (json) {
     var named = Json_decode.field("alias", Json_decode.string, json);
-    var type_ = Json_decode.field("of", Json_decode.string, json);
+    var ltype = Json_decode.field("of", Json_decode.string, json);
     return /* Named */Block.__(1, [
               named,
-              /* Reference */Block.__(0, [type_])
+              /* Reference */Block.__(0, [ltype])
             ]);
   };
   return Json_decode.either(referenceType, namedType)(json);
@@ -27,17 +28,14 @@ function lonaType(json) {
 var Types = /* module */[/* lonaType */lonaType];
 
 function parameter(json) {
-  var name = Json_decode.field("name", Json_decode.string, json);
-  var type_ = Json_decode.field("type", lonaType, json);
-  var defaultValue = Json_decode.optional((function (param) {
-          return Json_decode.field("defaultValue", (function (x) {
-                        return x;
-                      }), param);
-        }), json);
-  return /* Parameter */[
-          name,
-          type_,
-          defaultValue
+  return /* record */[
+          /* name */Json_decode.field("name", Json_decode.string, json),
+          /* ltype */Json_decode.field("type", lonaType, json),
+          /* defaultValue */Json_decode.optional((function (param) {
+                  return Json_decode.field("defaultValue", (function (x) {
+                                return x;
+                              }), param);
+                }), json)
         ];
 }
 
@@ -66,23 +64,19 @@ function layerType(json) {
 function layer(json) {
   var parameterDictionary = function (json) {
     return Curry._2(StringMap$LonaCompilerCore.mapi, (function (key, value) {
-                  return /* Value */[
-                          Layer$LonaCompilerCore.parameterType(key),
-                          value
+                  return /* record */[
+                          /* ltype */Layer$LonaCompilerCore.parameterType(key),
+                          /* data */value
                         ];
                 }), StringMap$LonaCompilerCore.fromJsDict(Js_option.getExn(Js_json.decodeObject(json))));
   };
-  var parameters = Json_decode.field("parameters", parameterDictionary, json);
-  var type_ = Json_decode.field("type", layerType, json);
-  var name = Json_decode.field("name", Json_decode.string, json);
-  var children = Json_decode.field("children", (function (param) {
-          return Json_decode.list(layer, param);
-        }), json);
-  return /* Layer */[
-          type_,
-          name,
-          parameters,
-          children
+  return /* record */[
+          /* typeName */Json_decode.field("type", layerType, json),
+          /* name */Json_decode.field("name", Json_decode.string, json),
+          /* parameters */Json_decode.field("parameters", parameterDictionary, json),
+          /* children */Json_decode.field("children", (function (param) {
+                  return Json_decode.list(layer, param);
+                }), json)
         ];
 }
 
@@ -113,23 +107,23 @@ function logicNode(json) {
   };
   var value = function (json) {
     var identifier = function (json) {
-      var type_ = Json_decode.field("type", lonaType, json);
+      var ltype = Json_decode.field("type", lonaType, json);
       var path = Json_decode.field("path", (function (param) {
               return Json_decode.list(Json_decode.string, param);
             }), json);
       return /* Identifier */Block.__(0, [
-                type_,
+                ltype,
                 path
               ]);
     };
     var literal = function (json) {
-      var type_ = Json_decode.field("type", lonaType, json);
+      var ltype = Json_decode.field("type", lonaType, json);
       var data = Json_decode.field("data", (function (x) {
               return x;
             }), json);
-      return /* Literal */Block.__(1, [/* Value */[
-                  type_,
-                  data
+      return /* Literal */Block.__(1, [/* record */[
+                  /* ltype */ltype,
+                  /* data */data
                 ]]);
     };
     var match = Json_decode.field("type", Json_decode.string, json);
@@ -248,6 +242,12 @@ var Component = /* module */[
   /* logic */logic
 ];
 
+var colorType = Types$LonaCompilerCore.colorType;
+
+var urlType = Types$LonaCompilerCore.urlType;
+
+exports.colorType  = colorType;
+exports.urlType    = urlType;
 exports.Types      = Types;
 exports.Parameters = Parameters;
 exports.Layer      = Layer;

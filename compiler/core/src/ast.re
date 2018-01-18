@@ -34,35 +34,91 @@ module Swift = {
     | FloatingPoint(float)
     | String(string)
     | Color(string)
+    | Array(list(node))
   and typeAnnotation =
     | TypeName(string)
     | TypeIdentifier({. "name": typeAnnotation, "member": typeAnnotation})
     | ArrayType({. "element": typeAnnotation})
     | DictionaryType({. "key": typeAnnotation, "value": typeAnnotation})
-    | OptionalType({. "value": typeAnnotation})
+    | OptionalType(typeAnnotation)
     | TypeInheritanceList({. "list": list(typeAnnotation)})
   and pattern =
     | WildcardPattern
-    | IdentifierPattern(string)
+    | IdentifierPattern({. "identifier": string, "annotation": option(typeAnnotation)})
     | ValueBindingPattern({. "kind": string, "pattern": pattern})
     | TuplePattern({. "elements": list(pattern)})
     | OptionalPattern({. "value": pattern})
     | ExpressionPattern({. "value": node})
   /* | IsPattern */
   /* | AsPattern */
+  and initializerBlock =
+    | WillSetDidSetBlock({. "willSet": option(list(node)), "didSet": option(list(node))})
   and node =
     /* | Operator(string) */
     | LiteralExpression(literal)
-    | ClassDeclaration({. "name": string, "body": list(node)})
+    | MemberExpression(list(node))
+    | BinaryExpression({. "left": node, "operator": string, "right": node})
+    | PrefixExpression({. "operator": string, "expression": node})
+    | ClassDeclaration(
+        {
+          .
+          "name": string,
+          "inherits": list(typeAnnotation),
+          "modifier": option(accessLevelModifier),
+          "isFinal": bool,
+          "body": list(node)
+        }
+      )
     /* | VariableDeclaration({. "pattern": pattern, "init": option(node)}) */
     | SwiftIdentifier(string)
     | ConstantDeclaration(
         {. "modifiers": list(declarationModifier), "pattern": pattern, "init": option(node)}
       )
+    | VariableDeclaration(
+        {
+          .
+          "modifiers": list(declarationModifier),
+          "pattern": pattern,
+          "init": option(node),
+          "block": option(initializerBlock)
+        }
+      )
+    | InitializerDeclaration(
+        {
+          .
+          "modifiers": list(declarationModifier),
+          "parameters": list(node),
+          "failable": option(string),
+          "body": list(node)
+        }
+      )
+    | FunctionDeclaration(
+        {
+          .
+          "name": string,
+          "modifiers": list(declarationModifier),
+          "parameters": list(node),
+          "body": list(node)
+        }
+      )
     | ImportDeclaration(string)
+    | IfStatement({. "condition": node, "block": list(node)})
+    | Parameter(
+        {
+          .
+          "externalName": option(string),
+          "localName": string,
+          "annotation": typeAnnotation,
+          "defaultValue": option(node)
+        }
+      )
     | FunctionCallArgument({. "name": option(node), "value": node})
     | FunctionCallExpression({. "name": node, "arguments": list(node)})
-    | LineComment({. "comment": string, "line": node})
+    | Empty
+    | LineComment(string)
+    | LineEndComment({. "comment": string, "line": node})
+    | CodeBlock({. "statements": list(node)})
+    | StatementListHelper(list(node))
     | TopLevelDeclaration({. "statements": list(node)});
 };
 
@@ -125,7 +181,7 @@ module JavaScript = {
   let optimizeTruthyBooleanExpression = (node) => {
     let booleanValue = (sub) =>
       switch sub {
-      | Literal(Types.Value(_, value)) => value |> Json.Decode.optional(Json.Decode.bool)
+      | Literal(value) => value.data |> Json.Decode.optional(Json.Decode.bool)
       | _ => (None: option(bool))
       };
     switch node {

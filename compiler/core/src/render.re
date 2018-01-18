@@ -1,10 +1,10 @@
 let indentLine = (amount, line) => Js.String.repeat(amount, " ") ++ line;
 
-let rec flatMap = (list) =>
+let rec flatMap = (f, list) =>
   switch list {
   | [head, ...tail] =>
     switch head {
-    | Some(a) => [a, ...flatMap(tail)]
+    | Some(a) => [a, ...flatMap(f, tail)]
     | None => []
     }
   | [] => []
@@ -14,7 +14,15 @@ module String = {
   let join = (sep, items) => items |> Array.of_list |> Js.Array.joinWith(sep);
 };
 
-let prefixAll = (sep, items) => Prettier.Doc.Builders.(concat([sep, join(sep, items)]));
+let prefixAll = (sep, items) => Prettier.Doc.Builders.(
+  items |> List.map((x) => sep <+> x) |> concat
+);
+
+let renderOptional = (render, item) =>
+  switch item {
+  | None => Prettier.Doc.Builders.empty
+  | Some(a) => render(a)
+  };
 
 module Swift = {
   open Prettier.Doc.Builders;
@@ -60,39 +68,143 @@ module Swift = {
     };
   let rec render = (ast) : Prettier.Doc.t('a) =>
     switch ast {
-    | Ast.Swift.LiteralExpression(v) => renderLiteral(v)
-    | SwiftIdentifier(v) => s(v)
+    | Ast.Swift.SwiftIdentifier(v) => s(v)
+    | LiteralExpression(v) => renderLiteral(v)
+    | MemberExpression(v) =>
+      v |> List.map(render) |> join(concat([softline, s(".")])) |> indent |> group
+    | BinaryExpression(o) =>
+      group(render(o##left) <+> s(" ") <+> s(o##operator) <+> line <+> render(o##right))
+    | PrefixExpression(o) =>
+      group(s(o##operator) <+> s("(") <+> softline <+> render(o##expression) <+> softline <+> s(")"))
     | ClassDeclaration(o) =>
-      let opening = group(concat([s("class"), line, s(o##name), line, s("{")]));
+      let maybeFinal = o##isFinal ? s("final") <+> line : empty;
+      let maybeModifier = o##modifier != None ? concat([o##modifier |> renderOptional(renderAccessLevelModifier), line]) : empty;
+      let maybeInherits = switch o##inherits {
+        | [] => empty
+        | typeAnnotations => s(": ") <+> (typeAnnotations |> List.map(renderTypeAnnotation) |> join(s(", ")));
+      };
+      let opening = group(concat([maybeModifier, maybeFinal, s("class"), line, s(o##name), maybeInherits, line, s("{")]));
       let closing = concat([hardline, s("}")]);
       concat([opening, o##body |> List.map(render) |> prefixAll(hardline) |> indent, closing])
     | ConstantDeclaration(o) =>
       let modifiers = o##modifiers |> List.map(renderDeclarationModifier) |> join(s(" "));
       let maybeInit =
-        o##init == None ? s("") : concat([s(" = "), renderOptional(o##init)]);
-      let parts = [modifiers, s(" "), s("let"), s(" "), renderPattern(o##pattern), maybeInit];
+        o##init == None ? empty : concat([s(" = "), o##init |> renderOptional(render)]);
+      let parts = [
+        modifiers,
+        List.length(o##modifiers) > 0 ? s(" ") : empty,
+        s("let "),
+        renderPattern(o##pattern),
+        maybeInit
+      ];
       group(concat(parts))
-      /* fill(parts) */
+    | VariableDeclaration(o) =>
+      let modifiers = o##modifiers |> List.map(renderDeclarationModifier) |> join(s(" "));
+      let maybeInit =
+        o##init == None ? empty : concat([s(" = "), o##init |> renderOptional(render)]);
+      let maybeBlock = o##block |> renderOptional((block) => line <+> renderInitializerBlock(block));
+      let parts = [
+        modifiers,
+        List.length(o##modifiers) > 0 ? s(" ") : empty,
+        s("var "),
+        renderPattern(o##pattern),
+        maybeInit,
+        maybeBlock
+      ];
+      group(concat(parts))
+    | Parameter(o) =>
+        (o##externalName |> renderOptional((name) => s(name) <+> s(" "))) <+>
+        s(o##localName) <+>
+        s(": ") <+>
+        renderTypeAnnotation(o##annotation) <+>
+        (o##defaultValue |> renderOptional((node) => s(" = ") <+> render(node)))
+    | InitializerDeclaration(o) =>
+      let parts = [
+        o##modifiers |> List.map(renderDeclarationModifier) |> join(s(" ")),
+        List.length(o##modifiers) > 0 ? s(" ") : empty,
+        s("init"),
+        o##failable |> renderOptional(s),
+        s("("),
+        indent(
+          softline <+> join(s(",") <+> line, o##parameters |> List.map(render))
+        ),
+        s(")"),
+        line,
+        render(Ast.Swift.CodeBlock({ "statements": o##body }))
+      ];
+      group(concat(parts))
+    | FunctionDeclaration(o) =>
+      group(concat([
+        group(concat([
+          o##modifiers |> List.map(renderDeclarationModifier) |> join(s(" ")),
+          List.length(o##modifiers) > 0 ? s(" ") : empty,
+          s("func "),
+          s(o##name),
+          s("("),
+          indent(
+            softline <+> join(s(",") <+> line, o##parameters |> List.map(render))
+          ),
+          s(")"),
+        ])),
+        line,
+        render(Ast.Swift.CodeBlock({ "statements": o##body }))
+      ]));
     | ImportDeclaration(v) => group(concat([s("import"), line, s(v)]))
+    | IfStatement(o) =>
+      group(
+        hardline <+> /* Line break here due to personal preference */
+        s("if") <+>
+        line <+>
+        render(o##condition) <+>
+        line <+>
+        render(Ast.Swift.CodeBlock({ "statements": o##block }))
+      )
     | FunctionCallArgument(o) =>
       switch o##name {
       | None => group(concat([render(o##value)]))
       | Some(name) => group(concat([render(name), s(":"), line, render(o##value)]))
       }
     | FunctionCallExpression(o) =>
+      let endsWithLiteral = switch o##arguments {
+      | [FunctionCallArgument(args)] =>
+        switch (args##value) {
+        | LiteralExpression(_) => false
+        | _ => true
+        };
+      | _ => true
+      };
+      let arguments = concat([
+        endsWithLiteral ? softline : empty,
+        o##arguments |> List.map(render) |> join(concat([s(","), line]))
+      ]);
       group(
         concat([
           render(o##name),
           s("("),
-          concat([softline, o##arguments |> List.map(render) |> join(concat([s(","), line]))]) |> indent,
+          (endsWithLiteral ? indent(arguments) : arguments),
           s(")")
         ])
       )
-    | LineComment(o) =>
+    | Empty => empty /* This only works if lines are added between statements... */
+    | LineComment(v) => hardline <+> s("// " ++ v)
+    | LineEndComment(o) =>
       /* concat([render(o##line), lineSuffix(s(" // " ++ o##comment)), lineSuffixBoundary]) */
       concat([render(o##line), lineSuffix(s(" // " ++ o##comment))])
+    | CodeBlock(o) =>
+      switch o##statements {
+      | [] => s("{}")
+      /* | [statement] => s("{") <+> line <+> render(statement) <+> line <+> s("}") */
+      | statements =>
+        s("{") <+>
+        indent(prefixAll(hardline, statements |> List.map(render))) <+>
+        hardline <+>
+        s("}")
+      };
+    | StatementListHelper(v) => /* TODO: Get rid of this */
+      join(hardline, v |> List.map(render)) <+> lineSuffix(s(" // StatementListHelper"))
     | TopLevelDeclaration(o) =>
-      join(concat([hardline, hardline]), o##statements |> List.map(render))
+      /* join(concat([hardline, hardline]), o##statements |> List.map(render)) */
+      join(concat([hardline]), o##statements |> List.map(render))
     }
   and renderLiteral = (node: literal) =>
     switch node {
@@ -110,6 +222,10 @@ module Swift = {
         concat([s("alpha: "), renderFloat(rgba.a)]),
       ];
       concat([s("#colorLiteral("), join(s(", "), values), s(")")])
+    | Array(body) =>
+      let maybeLine = List.length(body) > 0 ? line : s("");
+      let body = body |> List.map(render) |> join(concat([s(","), line]));
+      group(concat([s("["), indent(concat([maybeLine, body])), maybeLine, s("]")]))
     }
   and renderTypeAnnotation = (node: typeAnnotation) =>
     switch node {
@@ -135,24 +251,50 @@ module Swift = {
           s("]")
         ])
       )
-    | OptionalType(o) => group(concat([renderTypeAnnotation(o##value), s("?")]))
+    | OptionalType(v) => group(concat([renderTypeAnnotation(v), s("?")]))
     | TypeInheritanceList(o) => group(o##list |> List.map(renderTypeAnnotation) |> join(s(", ")))
     }
   and renderPattern = (node) =>
     switch node {
     | WildcardPattern => s("_")
-    | IdentifierPattern(value) => s(value)
+    | IdentifierPattern(o) =>
+      switch o##annotation {
+      | None => s(o##identifier)
+      | Some(typeAnnotation) => s(o##identifier) <+> s(": ") <+> renderTypeAnnotation(typeAnnotation)
+      };
     | ValueBindingPattern(o) => group(concat([s(o##kind), line, renderPattern(o##pattern)]))
     | TuplePattern(o) =>
       group(concat([s("("), o##elements |> List.map(renderPattern) |> join(s(", ")), s(")")]))
     | OptionalPattern(o) => concat([renderPattern(o##value), s("?")])
     | ExpressionPattern(o) => render(o##value)
     }
-  and renderOptional = (ast) =>
-    switch ast {
-    | None => s("")
-    | Some(a) => render(a)
+  and renderInitializerBlock = (node: initializerBlock) =>
+    switch node {
+    | WillSetDidSetBlock(o) =>
+      /* Special case single-statement willSet/didSet and render them in a single line
+         since they are common in our generated code and are easier to read than multiline */
+      let renderStatements = (statements) => {
+        switch (statements) {
+        | [only] => s("{ ") <+> render(only) <+> s(" }")
+        | _ => render(Ast.Swift.CodeBlock({ "statements": statements }))
+        };
+      };
+      let willSet = o##willSet |> renderOptional((statements) =>
+        s("willSet ") <+> renderStatements(statements)
+      );
+      let didSet = o##didSet |> renderOptional((statements) =>
+        s("didSet ") <+> renderStatements(statements)
+      );
+      switch (o##willSet, o##didSet) {
+      | (None, None) => empty
+      | (None, Some(_)) => group(join(line, [s("{"), didSet, s("}")]))
+      | (Some(_), None) => group(join(line, [s("{"), willSet, s("}")]))
+      /* | (None, Some(_)) => s("{") <+> indent(hardline <+> didSet) <+> hardline <+> s("}")
+      | (Some(_), None) => s("{") <+> indent(hardline <+> willSet) <+> hardline <+> s("}") */
+      | (Some(_), Some(_)) => s("{") <+> indent(hardline <+> willSet <+> hardline <+> didSet) <+> hardline <+> s("}")
+      }
     };
+
   let toString = (ast) =>
     ast
     |> render
@@ -185,7 +327,7 @@ module JavaScript = {
     switch ast {
     | Ast.JavaScript.Identifier(path) =>
       path |> List.map(s) |> join(concat([softline, s(".")])) |> group
-    | Literal(Types.Value(_, json)) => s(Js.Json.stringify(json))
+    | Literal(value) => s(Js.Json.stringify(value.data))
     | VariableDeclaration(value) => group(concat([s("let "), render(value), s(";")]))
     | AssignmentExpression(name, value) =>
       fill([group(concat([render(name), line, s("=")])), s(" "), render(value)])

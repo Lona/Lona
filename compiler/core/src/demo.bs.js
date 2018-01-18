@@ -2,7 +2,12 @@
 'use strict';
 
 var Fs                         = require("fs");
+var List                       = require("bs-platform/lib/js/list.js");
+var Glob                       = require("glob");
+var Path                       = require("path");
+var $$Array                    = require("bs-platform/lib/js/array.js");
 var Process                    = require("process");
+var FsExtra                    = require("fs-extra");
 var Caml_array                 = require("bs-platform/lib/js/caml_array.js");
 var Color$LonaCompilerCore     = require("./color.bs.js");
 var Render$LonaCompilerCore    = require("./render.bs.js");
@@ -14,11 +19,18 @@ function exit(message) {
 }
 
 if (Process.argv.length < 3) {
+  console.log("No command given");
+  ((process.exit()));
+}
+
+var command = Caml_array.caml_array_get(Process.argv, 2);
+
+if (Process.argv.length < 4) {
   console.log("No target given");
   ((process.exit()));
 }
 
-var match = Caml_array.caml_array_get(Process.argv, 2);
+var match = Caml_array.caml_array_get(Process.argv, 3);
 
 var target;
 
@@ -34,12 +46,87 @@ switch (match) {
     target = (process.exit());
 }
 
-if (Process.argv.length < 4) {
-  console.log("No command given");
-  ((process.exit()));
+function findWorkspaceDirectory(_path) {
+  while(true) {
+    var path = _path;
+    var exists = +Fs.existsSync(Path.join(path, "colors.json"));
+    if (exists !== 0) {
+      return /* Some */[path];
+    } else {
+      var parent = Path.dirname(path);
+      if (parent === "/") {
+        return /* None */0;
+      } else {
+        _path = parent;
+        continue ;
+        
+      }
+    }
+  };
 }
 
-var command = Caml_array.caml_array_get(Process.argv, 3);
+function concat(base, addition) {
+  return Path.join(base, addition);
+}
+
+function getTargetExtension(param) {
+  if (param !== 0) {
+    return ".swift";
+  } else {
+    return ".js";
+  }
+}
+
+var targetExtension = getTargetExtension(target);
+
+function convertColors(filename) {
+  return Color$LonaCompilerCore.render(target, Color$LonaCompilerCore.parseFile(filename));
+}
+
+function convertComponent(filename) {
+  var content = Fs.readFileSync(filename, "utf8");
+  var parsed = JSON.parse(content);
+  var name = Path.basename(filename, ".component");
+  if (target !== 0) {
+    var match = findWorkspaceDirectory(filename);
+    if (match) {
+      var colors = Color$LonaCompilerCore.parseFile(Path.join(match[0], "colors.json"));
+      return Render$LonaCompilerCore.Swift[/* toString */9](Component$LonaCompilerCore.Swift[/* generate */0](name, parsed, colors));
+    } else {
+      console.log("Couldn't find workspace directory. Try specifying it as a parameter (TODO)");
+      return (process.exit());
+    }
+  } else {
+    return Render$LonaCompilerCore.JavaScript[/* toString */2](Component$LonaCompilerCore.JavaScript[/* generate */0](name, parsed));
+  }
+}
+
+function convertWorkspace(workspace, output) {
+  var fromDirectory = Path.resolve(workspace);
+  var toDirectory = Path.resolve(output);
+  FsExtra.ensureDirSync(toDirectory);
+  var colorsInputPath = Path.join(fromDirectory, "colors.json");
+  var colorsOutputPath = Path.join(toDirectory, "colors" + targetExtension);
+  var colors = Color$LonaCompilerCore.render(target, Color$LonaCompilerCore.parseFile(colorsInputPath));
+  Fs.writeFileSync(colorsOutputPath, colors);
+  Glob(Path.join(fromDirectory, "**/*.component"), (function (_, files) {
+          var files$1 = $$Array.to_list(files);
+          var processFile = function (file) {
+            var fromRelativePath = Path.relative(fromDirectory, file);
+            var addition = Path.basename(fromRelativePath, ".component");
+            var base = Path.dirname(fromRelativePath);
+            var toRelativePath = Path.join(base, addition) + targetExtension;
+            var outputPath = Path.join(toDirectory, toRelativePath);
+            console.log(Path.join(workspace, fromRelativePath) + ("=>" + Path.join(output, toRelativePath)));
+            var content = convertComponent(file);
+            FsExtra.ensureDirSync(Path.dirname(outputPath));
+            Fs.writeFileSync(outputPath, content);
+            return /* () */0;
+          };
+          return List.iter(processFile, files$1);
+        }));
+  return /* () */0;
+}
 
 switch (command) {
   case "colors" : 
@@ -55,17 +142,31 @@ switch (command) {
         console.log("No filename given");
         ((process.exit()));
       }
-      var filename$1 = Caml_array.caml_array_get(Process.argv, 4);
-      var content = Fs.readFileSync(filename$1, "utf8");
-      var parsed = JSON.parse(content);
-      var result = Component$LonaCompilerCore.JavaScript[/* generate */0]("DocumentMarquee", parsed);
-      console.log(Render$LonaCompilerCore.JavaScript[/* toString */2](result));
+      console.log(convertComponent(Caml_array.caml_array_get(Process.argv, 4)));
+      break;
+  case "workspace" : 
+      if (Process.argv.length < 5) {
+        console.log("No workspace path given");
+        ((process.exit()));
+      }
+      if (Process.argv.length < 6) {
+        console.log("No output path given");
+        ((process.exit()));
+      }
+      convertWorkspace(Caml_array.caml_array_get(Process.argv, 4), Caml_array.caml_array_get(Process.argv, 5));
       break;
   default:
     console.log("Invalid command", command);
 }
 
-exports.exit    = exit;
-exports.target  = target;
-exports.command = command;
+exports.exit                   = exit;
+exports.command                = command;
+exports.target                 = target;
+exports.findWorkspaceDirectory = findWorkspaceDirectory;
+exports.concat                 = concat;
+exports.getTargetExtension     = getTargetExtension;
+exports.targetExtension        = targetExtension;
+exports.convertColors          = convertColors;
+exports.convertComponent       = convertComponent;
+exports.convertWorkspace       = convertWorkspace;
 /*  Not a pure module */

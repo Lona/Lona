@@ -7,8 +7,8 @@ module Types = {
     let referenceType = (json) => json |> string |> ((x) => Reference(x));
     let namedType = (json) => {
       let named = field("alias", string, json);
-      let type_ = field("of", string, json);
-      Named(named, Reference(type_))
+      let ltype = field("of", string, json);
+      Named(named, Reference(ltype))
     };
     json |> either(referenceType, namedType)
   };
@@ -16,10 +16,9 @@ module Types = {
 
 module Parameters = {
   let parameter = (json) => {
-    let name = field("name", string, json);
-    let type_ = field("type", Types.lonaType, json);
-    let defaultValue = json |> optional(field("defaultValue", (x) => x));
-    Parameter(name, type_, defaultValue)
+    name: json |> field("name", string),
+    ltype: json |> field("type", Types.lonaType),
+    defaultValue: json |> optional(field("defaultValue", (x) => x))
   };
 };
 
@@ -40,12 +39,13 @@ module Layer = {
       |> Js.Json.decodeObject
       |> Js.Option.getExn
       |> StringMap.fromJsDict
-      |> StringMap.mapi((key, value) => Value(Layer.parameterType(key), value));
-    let parameters = field("parameters", parameterDictionary, json);
-    let type_ = field("type", layerType, json);
-    let name = field("name", string, json);
-    let children = field("children", list(layer), json);
-    Layer(type_, name, parameters, children)
+      |> StringMap.mapi((key, value) => {ltype: Layer.parameterType(key), data: value});
+    {
+      typeName: field("type", layerType, json),
+      name: field("name", string, json),
+      parameters: field("parameters", parameterDictionary, json),
+      children: field("children", list(layer), json)
+    }
   };
 };
 
@@ -62,14 +62,14 @@ let rec logicNode = (json) => {
     };
   let value = (json) => {
     let identifier = (json) => {
-      let type_ = field("type", Types.lonaType, json);
+      let ltype = field("type", Types.lonaType, json);
       let path = field("path", list(string), json);
-      Logic.Identifier(type_, path)
+      Logic.Identifier(ltype, path)
     };
     let literal = (json) => {
-      let type_ = field("type", Types.lonaType, json);
+      let ltype = field("type", Types.lonaType, json);
       let data = field("data", (x) => x, json);
-      Logic.Literal(Value(type_, data))
+      Logic.Literal({ltype, data})
     };
     switch (field("type", string, json)) {
     | "identifier" => field("value", identifier, json)

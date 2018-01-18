@@ -6,8 +6,14 @@ type lonaType =
   | Reference(string)
   | Named(string, lonaType);
 
-type lonaValue =
-  | Value(lonaType, Js.Json.t);
+let colorType = Named("Color", Reference("String"));
+
+let urlType = Named("URL", Reference("String"));
+
+type lonaValue = {
+  ltype: lonaType,
+  data: Js.Json.t
+};
 
 type cmp =
   | Eq
@@ -18,8 +24,11 @@ type cmp =
   | Lte
   | Unknown;
 
-type parameter =
-  | Parameter(string, lonaType, option(Js.Json.t));
+type parameter = {
+  name: string,
+  ltype: lonaType,
+  defaultValue: option(Js.Json.t)
+};
 
 type layerType =
   | View
@@ -30,5 +39,14 @@ type layerType =
   | Component
   | Unknown;
 
-type layer =
-  | Layer(layerType, string, StringMap.t(lonaValue), list(layer));
+type layer = {
+  typeName: layerType,
+  name: string,
+  parameters: StringMap.t(lonaValue),
+  children: list(layer)
+};
+
+type sizingRule =
+  | Fill
+  | FitContent
+  | Fixed(float);

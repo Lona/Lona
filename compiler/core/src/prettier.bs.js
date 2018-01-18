@@ -11,6 +11,11 @@ function s(s$1) {
         };
 }
 
+var empty = {
+  type: "concat",
+  parts: /* array */[""]
+};
+
 function concat(items) {
   return Prettier.doc.builders.concat($$Array.of_list(items));
 }
@@ -23,11 +28,23 @@ function join(seperator, items) {
   return Prettier.doc.builders.join(seperator, $$Array.of_list(items));
 }
 
+function $less$plus$great(x, y) {
+  return Prettier.doc.builders.concat($$Array.of_list(/* :: */[
+                  x,
+                  /* :: */[
+                    y,
+                    /* [] */0
+                  ]
+                ]));
+}
+
 var Builders = /* module */[
   /* s */s,
+  /* empty */empty,
   /* concat */concat,
   /* fill */fill,
-  /* join */join
+  /* join */join,
+  /* <+> */$less$plus$great
 ];
 
 var Printer = /* module */[];
