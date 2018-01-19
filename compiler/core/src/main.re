@@ -53,7 +53,7 @@ let convertComponent = (filename) => {
   let parsed = content |> Js.Json.parseExn;
   let name = Path.basenameExt(~path=filename, ~ext=".component");
   switch target {
-  | Types.JavaScript => Component.JavaScript.generate(name, parsed) |> Render.JavaScript.toString
+  | Types.JavaScript => JavaScript.Component.generate(name, parsed) |> JavaScript.Render.toString
   | Swift =>
     switch (findWorkspaceDirectory(filename)) {
     | None => exit("Couldn't find workspace directory. Try specifying it as a parameter (TODO)")

@@ -525,108 +525,6 @@ function mapBindings(f, map) {
   return List.map(f, Curry._1(StringMap$LonaCompilerCore.bindings, map));
 }
 
-function createStyleAttributeAST(layerName, styles) {
-  return /* JSXAttribute */Block.__(6, [
-            "style",
-            /* ArrayLiteral */Block.__(12, [/* :: */[
-                  /* Identifier */Block.__(2, [/* :: */[
-                        "styles",
-                        /* :: */[
-                          layerName,
-                          /* [] */0
-                        ]
-                      ]]),
-                  /* :: */[
-                    /* ObjectLiteral */Block.__(13, [List.map((function (param) {
-                                return /* ObjectProperty */Block.__(14, [
-                                          /* Identifier */Block.__(2, [/* :: */[
-                                                param[0],
-                                                /* [] */0
-                                              ]]),
-                                          Logic$LonaCompilerCore.logicValueToJavaScriptAST(param[1])
-                                        ]);
-                              }), Curry._1(StringMap$LonaCompilerCore.bindings, styles))]),
-                    /* [] */0
-                  ]
-                ]])
-          ]);
-}
-
-function toJavaScriptAST(variableMap, layer) {
-  var params = Curry._2(StringMap$LonaCompilerCore.map, (function (item) {
-          return /* Literal */Block.__(1, [item]);
-        }), layer[/* parameters */2]);
-  var match = Curry._2(StringMap$LonaCompilerCore.partition, (function (key, _) {
-          return StringSet$LonaCompilerCore.has(key, stylesSet);
-        }), params);
-  var match$1 = find_opt(layer, variableMap);
-  var params$1 = match$1 ? match$1[0] : StringMap$LonaCompilerCore.empty;
-  var match$2 = Curry._2(StringMap$LonaCompilerCore.partition, (function (key, _) {
-          return StringSet$LonaCompilerCore.has(key, stylesSet);
-        }), params$1);
-  var main = StringMap$LonaCompilerCore.assign(match[1], match$2[1]);
-  var styleAttribute = createStyleAttributeAST(layer[/* name */1], match$2[0]);
-  var attributes = List.map((function (param) {
-          return /* JSXAttribute */Block.__(6, [
-                    param[0],
-                    Logic$LonaCompilerCore.logicValueToJavaScriptAST(param[1])
-                  ]);
-        }), Curry._1(StringMap$LonaCompilerCore.bindings, main));
-  return /* JSXElement */Block.__(7, [
-            layerTypeToString(layer[/* typeName */0]),
-            /* :: */[
-              styleAttribute,
-              attributes
-            ],
-            List.map((function (param) {
-                    return toJavaScriptAST(variableMap, param);
-                  }), layer[/* children */3])
-          ]);
-}
-
-function toJavaScriptStyleSheetAST(layer) {
-  var createStyleObjectForLayer = function (layer) {
-    var styleParams = Curry._2(StringMap$LonaCompilerCore.filter, (function (key, _) {
-            return StringSet$LonaCompilerCore.has(key, stylesSet);
-          }), layer[/* parameters */2]);
-    return /* ObjectProperty */Block.__(14, [
-              /* Identifier */Block.__(2, [/* :: */[
-                    layer[/* name */1],
-                    /* [] */0
-                  ]]),
-              /* ObjectLiteral */Block.__(13, [List.map((function (param) {
-                          return /* ObjectProperty */Block.__(14, [
-                                    /* Identifier */Block.__(2, [/* :: */[
-                                          param[0],
-                                          /* [] */0
-                                        ]]),
-                                    /* Literal */Block.__(1, [param[1]])
-                                  ]);
-                        }), Curry._1(StringMap$LonaCompilerCore.bindings, styleParams))])
-            ]);
-  };
-  var styleObjects = List.map(createStyleObjectForLayer, flatten(layer));
-  return /* VariableDeclaration */Block.__(8, [/* AssignmentExpression */Block.__(9, [
-                /* Identifier */Block.__(2, [/* :: */[
-                      "styles",
-                      /* [] */0
-                    ]]),
-                /* CallExpression */Block.__(5, [
-                    /* Identifier */Block.__(2, [/* :: */[
-                          "StyleSheet",
-                          /* :: */[
-                            "create",
-                            /* [] */0
-                          ]
-                        ]]),
-                    /* :: */[
-                      /* ObjectLiteral */Block.__(13, [styleObjects]),
-                      /* [] */0
-                    ]
-                  ])
-              ])]);
-}
-
 exports.LayerMap                      = LayerMap;
 exports.stylesSet                     = stylesSet;
 exports.flatten                       = flatten;
@@ -650,7 +548,4 @@ exports.splitParamsMap                = splitParamsMap;
 exports.parameterMapToLogicValueMap   = parameterMapToLogicValueMap;
 exports.layerTypeToString             = layerTypeToString;
 exports.mapBindings                   = mapBindings;
-exports.createStyleAttributeAST       = createStyleAttributeAST;
-exports.toJavaScriptAST               = toJavaScriptAST;
-exports.toJavaScriptStyleSheetAST     = toJavaScriptStyleSheetAST;
 /* include Not a pure module */

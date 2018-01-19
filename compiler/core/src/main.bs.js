@@ -10,8 +10,7 @@ var Process                         = require("process");
 var FsExtra                         = require("fs-extra");
 var Caml_array                      = require("bs-platform/lib/js/caml_array.js");
 var Color$LonaCompilerCore          = require("./color.bs.js");
-var Render$LonaCompilerCore         = require("./render.bs.js");
-var Component$LonaCompilerCore      = require("./component.bs.js");
+var JavaScript$LonaCompilerCore     = require("./javaScript.bs.js");
 var SwiftColor$LonaCompilerCore     = require("./swift/swiftColor.bs.js");
 var SwiftRender$LonaCompilerCore    = require("./swift/swiftRender.bs.js");
 var SwiftComponent$LonaCompilerCore = require("./swift/swiftComponent.bs.js");
@@ -100,7 +99,7 @@ function convertComponent(filename) {
       return (process.exit());
     }
   } else {
-    return Render$LonaCompilerCore.JavaScript[/* toString */2](Component$LonaCompilerCore.JavaScript[/* generate */0](name, parsed));
+    return JavaScript$LonaCompilerCore.Render[/* toString */2](JavaScript$LonaCompilerCore.Component[/* generate */0](name, parsed));
   }
 }
 
