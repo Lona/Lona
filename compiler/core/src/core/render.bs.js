@@ -4,7 +4,7 @@
 var List                      = require("bs-platform/lib/js/list.js");
 var $$Array                   = require("bs-platform/lib/js/array.js");
 var Curry                     = require("bs-platform/lib/js/curry.js");
-var Prettier$LonaCompilerCore = require("./prettier.bs.js");
+var Prettier$LonaCompilerCore = require("../utils/prettier.bs.js");
 
 function indentLine(amount, line) {
   return " ".repeat(amount) + line;

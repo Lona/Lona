@@ -8,7 +8,7 @@ var Js_option                  = require("bs-platform/lib/js/js_option.js");
 var Json_decode                = require("bs-json/src/Json_decode.js");
 var Types$LonaCompilerCore     = require("./types.bs.js");
 var Caml_builtin_exceptions    = require("bs-platform/lib/js/caml_builtin_exceptions.js");
-var StringMap$LonaCompilerCore = require("./stringMap.bs.js");
+var StringMap$LonaCompilerCore = require("../containers/stringMap.bs.js");
 
 var parameterTypeMap = StringMap$LonaCompilerCore.fromList(/* :: */[
       /* tuple */[

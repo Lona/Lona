@@ -6,9 +6,9 @@ var Block                     = require("bs-platform/lib/js/block.js");
 var Curry                     = require("bs-platform/lib/js/curry.js");
 var Prettier                  = require("prettier");
 var Pervasives                = require("bs-platform/lib/js/pervasives.js");
-var Css$LonaCompilerCore      = require("../css.bs.js");
-var Render$LonaCompilerCore   = require("../render.bs.js");
-var Prettier$LonaCompilerCore = require("../prettier.bs.js");
+var Css$LonaCompilerCore      = require("../utils/css.bs.js");
+var Render$LonaCompilerCore   = require("../core/render.bs.js");
+var Prettier$LonaCompilerCore = require("../utils/prettier.bs.js");
 
 function renderFloat(value) {
   var string = Pervasives.string_of_float(value);

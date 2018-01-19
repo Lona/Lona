@@ -7,7 +7,7 @@ var Block                   = require("bs-platform/lib/js/block.js");
 var Curry                   = require("bs-platform/lib/js/curry.js");
 var Caml_obj                = require("bs-platform/lib/js/caml_obj.js");
 var Caml_string             = require("bs-platform/lib/js/caml_string.js");
-var Tree$LonaCompilerCore   = require("./tree.bs.js");
+var Tree$LonaCompilerCore   = require("../containers/tree.bs.js");
 var Render$LonaCompilerCore = require("./render.bs.js");
 
 function compare(a, b) {

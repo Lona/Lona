@@ -10,8 +10,8 @@ var Caml_string                = require("bs-platform/lib/js/caml_string.js");
 var Json_decode                = require("bs-json/src/Json_decode.js");
 var Logic$LonaCompilerCore     = require("./logic.bs.js");
 var Caml_builtin_exceptions    = require("bs-platform/lib/js/caml_builtin_exceptions.js");
-var StringMap$LonaCompilerCore = require("./stringMap.bs.js");
-var StringSet$LonaCompilerCore = require("./stringSet.bs.js");
+var StringMap$LonaCompilerCore = require("../containers/stringMap.bs.js");
+var StringSet$LonaCompilerCore = require("../containers/stringSet.bs.js");
 
 function compare(a, b) {
   return Caml_string.caml_string_compare(a[/* name */1], b[/* name */1]);
@@ -420,7 +420,7 @@ function getInsets(prefix, layer) {
     throw [
           Caml_builtin_exceptions.match_failure,
           [
-            "/Users/devin_abbott/Projects/ComponentStudio/ComponentStudio/compiler/core/src/layer.re",
+            "/Users/devin_abbott/Projects/ComponentStudio/ComponentStudio/compiler/core/src/core/layer.re",
             149,
             6
           ]

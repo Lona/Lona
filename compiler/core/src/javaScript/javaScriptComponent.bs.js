@@ -4,10 +4,10 @@
 var List                             = require("bs-platform/lib/js/list.js");
 var Block                            = require("bs-platform/lib/js/block.js");
 var Curry                            = require("bs-platform/lib/js/curry.js");
-var Layer$LonaCompilerCore           = require("../layer.bs.js");
-var Logic$LonaCompilerCore           = require("../logic.bs.js");
-var Decode$LonaCompilerCore          = require("../decode.bs.js");
-var StringMap$LonaCompilerCore       = require("../stringMap.bs.js");
+var Layer$LonaCompilerCore           = require("../core/layer.bs.js");
+var Logic$LonaCompilerCore           = require("../core/logic.bs.js");
+var Decode$LonaCompilerCore          = require("../core/decode.bs.js");
+var StringMap$LonaCompilerCore       = require("../containers/stringMap.bs.js");
 var JavaScriptAst$LonaCompilerCore   = require("./javaScriptAst.bs.js");
 var JavaScriptLogic$LonaCompilerCore = require("./javaScriptLogic.bs.js");
 

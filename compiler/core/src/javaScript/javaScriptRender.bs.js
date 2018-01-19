@@ -4,8 +4,8 @@
 var List                      = require("bs-platform/lib/js/list.js");
 var Curry                     = require("bs-platform/lib/js/curry.js");
 var Prettier                  = require("prettier");
-var Render$LonaCompilerCore   = require("../render.bs.js");
-var Prettier$LonaCompilerCore = require("../prettier.bs.js");
+var Render$LonaCompilerCore   = require("../core/render.bs.js");
+var Prettier$LonaCompilerCore = require("../utils/prettier.bs.js");
 
 function renderBinaryOperator(x) {
   var tmp;
