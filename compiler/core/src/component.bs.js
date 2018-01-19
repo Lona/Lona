@@ -703,8 +703,6 @@ function generate$1(name, json, colors) {
       var match$5 = +(direction === "column");
       var secondaryDimension = match$5 !== 0 ? "width" : "height";
       var secondaryDimensionAnchor = secondaryDimension + "Anchor";
-      +(direction === "column");
-      +(direction === "column");
       var sizingRules = Layer$LonaCompilerCore.getSizingRules(Layer$LonaCompilerCore.findParent(rootLayer, layer), layer);
       var match$6 = +(direction === "column");
       var primarySizingRule = match$6 !== 0 ? sizingRules[/* height */1] : sizingRules[/* width */0];
@@ -715,7 +713,6 @@ function generate$1(name, json, colors) {
               }))(layer[/* children */3]);
       var addConstraints = function (index, child) {
         var childSizingRules = Layer$LonaCompilerCore.getSizingRules(/* Some */[layer], child);
-        +(direction === "column");
         var match = +(direction === "column");
         var childSecondarySizingRule = match !== 0 ? childSizingRules[/* width */0] : childSizingRules[/* height */1];
         var firstViewConstraints;
@@ -749,7 +746,6 @@ function generate$1(name, json, colors) {
         var middleViewConstraints;
         if (index !== 0) {
           var previousLayer = List.nth(layer[/* children */3], index - 1 | 0);
-          Layer$LonaCompilerCore.getMargin(previousLayer);
           var match$4 = +(direction === "column");
           var betweenConstant = match$4 !== 0 ? constraintConstantExpression(previousLayer, "bottomMargin", child, "topMargin") : constraintConstantExpression(previousLayer, "trailingMargin", child, "leadingMargin");
           middleViewConstraints = /* :: */[

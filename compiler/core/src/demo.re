@@ -26,7 +26,7 @@ let target =
 
 /* Rudimentary workspace detection */
 let rec findWorkspaceDirectory = (path) => {
-  let exists = Node.Fs.existsSync(Node.Path.join([|path, "colors.json"|]));
+  let exists = Fs.existsSync(Path.join([|path, "colors.json"|]));
   exists ?
     Some(path) :
     (
@@ -37,7 +37,7 @@ let rec findWorkspaceDirectory = (path) => {
     )
 };
 
-let concat = (base, addition) => Node.Path.join([|base, addition|]);
+let concat = (base, addition) => Path.join([|base, addition|]);
 
 let getTargetExtension =
   fun
@@ -51,14 +51,14 @@ let convertColors = (filename) => Color.parseFile(filename) |> Color.render(targ
 let convertComponent = (filename) => {
   let content = Fs.readFileSync(filename, `utf8);
   let parsed = content |> Js.Json.parseExn;
-  let name = Node.Path.basenameExt(filename, ".component");
+  let name = Path.basenameExt(~path=filename, ~ext=".component");
   switch target {
   | Types.JavaScript => Component.JavaScript.generate(name, parsed) |> Render.JavaScript.toString
   | Swift =>
     switch (findWorkspaceDirectory(filename)) {
     | None => exit("Couldn't find workspace directory. Try specifying it as a parameter (TODO)")
     | Some(workspace) =>
-      let colors = Color.parseFile(Node.Path.join([|workspace, "colors.json"|]));
+      let colors = Color.parseFile(Path.join([|workspace, "colors.json"|]));
       let result = Component.Swift.generate(name, parsed, colors);
       result |> Render.Swift.toString
     }
@@ -80,7 +80,10 @@ let convertWorkspace = (workspace, output) => {
       let processFile = (file) => {
         let fromRelativePath = Path.relative(~from=fromDirectory, ~to_=file, ());
         let toRelativePath =
-          concat(Path.dirname(fromRelativePath), Path.basenameExt(fromRelativePath, ".component"))
+          concat(
+            Path.dirname(fromRelativePath),
+            Path.basenameExt(~path=fromRelativePath, ~ext=".component")
+          )
           ++ targetExtension;
         let outputPath = Path.join([|toDirectory, toRelativePath|]);
         Js.log(

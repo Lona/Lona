@@ -74,12 +74,12 @@ module Swift = {
             })
           )
       });
-    let viewTypeDoc =
+    /* let viewTypeDoc =
       fun
       | Types.View => TypeName("UIView")
       | Text => TypeName("UILabel")
       | Image => TypeName("UIImageView")
-      | _ => TypeName("TypeUnknown");
+      | _ => TypeName("TypeUnknown"); */
     let viewTypeInitDoc =
       fun
       | Types.View => SwiftIdentifier("UIView")
@@ -458,8 +458,8 @@ module Swift = {
         let primaryDimension = direction == "column" ? "height" : "width";
         let secondaryDimension = direction == "column" ? "width" : "height";
         let secondaryDimensionAnchor = secondaryDimension ++ "Anchor";
-        let primaryDimensionValue = direction == "column" ? height : width;
-        let secondaryDimensionValue = direction == "column" ? width : height;
+        /* let primaryDimensionValue = direction == "column" ? height : width; */
+        /* let secondaryDimensionValue = direction == "column" ? width : height; */
         let sizingRules = layer |> Layer.getSizingRules(Layer.findParent(rootLayer, layer));
         let primarySizingRule = direction == "column" ? sizingRules.height : sizingRules.width;
         let secondarySizingRule = direction == "column" ? sizingRules.width : sizingRules.height;
@@ -468,8 +468,8 @@ module Swift = {
           |> List.filter((child: Types.layer) => Layer.getNumberParameter("flex", child) === 1.0);
         let addConstraints = (index, child: Types.layer) => {
           let childSizingRules = child |> Layer.getSizingRules(Some(layer));
-          let childPrimarySizingRule =
-            direction == "column" ? childSizingRules.height : childSizingRules.width;
+          /* let childPrimarySizingRule =
+            direction == "column" ? childSizingRules.height : childSizingRules.width; */
           let childSecondarySizingRule =
             direction == "column" ? childSizingRules.width : childSizingRules.height;
           let firstViewConstraints =
@@ -531,7 +531,6 @@ module Swift = {
             | 0 => []
             | _ =>
               let previousLayer = List.nth(layer.children, index - 1);
-              let previousMargin = Layer.getMargin(previousLayer);
               let betweenConstant =
                 direction == "column" ?
                   constraintConstantExpression(previousLayer, "bottomMargin", child, "topMargin") :
