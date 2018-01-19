@@ -499,7 +499,7 @@ module Swift = {
                  unless any child has "flex: 1", in which case we do still need the constraint. */
               let needsPrimaryAfterConstraint =
                 switch (primarySizingRule, List.length(flexChildren)) {
-                | (FitContent, _) => false
+                /* | (FitContent, _) => false */
                 | (Fill, count) when count == 0 => false
                 | (Fixed(_), count) when count == 0 => false
                 | (_, _) => true
@@ -585,7 +585,9 @@ module Swift = {
                   "Constraint"
                 )
               ]
-            | (_, FitContent) => [
+            | (_, FitContent) =>
+              let shrinkConstraint = setUpDimensionContraint(child, secondaryDimensionAnchor, 0.0);
+              [
                 setUpContraint(
                   child,
                   secondaryAfterAnchor,
@@ -594,7 +596,12 @@ module Swift = {
                   "lessThanOrEqualTo",
                   negateNumber(secondaryAfterConstant),
                   "Constraint"
-                )
+                ),
+                {
+                  variableName: shrinkConstraint.variableName,
+                  initialValue: shrinkConstraint.initialValue,
+                  priority: Low
+                }
               ]
             };
           /* If the parent's secondary axis is set to "fit content", this ensures

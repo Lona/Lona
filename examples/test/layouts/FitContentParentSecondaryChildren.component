@@ -65,49 +65,35 @@
         "children" : [
 
         ],
-        "name" : "Fixed",
+        "name" : "View 1",
         "parameters" : {
-          "backgroundColor" : "#D8D8D8",
-          "height" : 100,
-          "marginBottom" : 24,
+          "backgroundColor" : "blue500",
+          "height" : 60,
+          "width" : 60
+        },
+        "type" : "View"
+      },
+      {
+        "children" : [
+
+        ],
+        "name" : "View 3",
+        "parameters" : {
+          "backgroundColor" : "lightblue500",
+          "height" : 120,
           "width" : 100
         },
         "type" : "View"
       },
       {
         "children" : [
-          {
-            "children" : [
-
-            ],
-            "name" : "Text",
-            "parameters" : {
-              "text" : "Text goes here"
-            },
-            "type" : "Text"
-          }
-        ],
-        "name" : "Fit",
-        "parameters" : {
-          "backgroundColor" : "#D8D8D8",
-          "height" : 100,
-          "marginBottom" : 24,
-          "paddingBottom" : 12,
-          "paddingLeft" : 12,
-          "paddingRight" : 12,
-          "paddingTop" : 12
-        },
-        "type" : "View"
-      },
-      {
-        "children" : [
 
         ],
-        "name" : "Fill",
+        "name" : "View 2",
         "parameters" : {
-          "alignSelf" : "stretch",
-          "backgroundColor" : "#D8D8D8",
-          "height" : 100
+          "backgroundColor" : "cyan500",
+          "height" : 180,
+          "width" : 100
         },
         "type" : "View"
       }
@@ -115,7 +101,9 @@
     "name" : "Container",
     "parameters" : {
       "alignSelf" : "stretch",
+      "backgroundColor" : "bluegrey50",
       "flex" : 0,
+      "flexDirection" : "row",
       "paddingBottom" : 24,
       "paddingLeft" : 24,
       "paddingRight" : 24,

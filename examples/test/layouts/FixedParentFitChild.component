@@ -63,59 +63,50 @@
     "children" : [
       {
         "children" : [
-
-        ],
-        "name" : "Fixed",
-        "parameters" : {
-          "backgroundColor" : "#D8D8D8",
-          "height" : 100,
-          "marginBottom" : 24,
-          "width" : 100
-        },
-        "type" : "View"
-      },
-      {
-        "children" : [
           {
             "children" : [
 
             ],
-            "name" : "Text",
+            "name" : "View 4",
             "parameters" : {
-              "text" : "Text goes here"
+              "backgroundColor" : "red200",
+              "height" : 100,
+              "width" : 60
             },
-            "type" : "Text"
+            "type" : "View"
+          },
+          {
+            "children" : [
+
+            ],
+            "name" : "View 5",
+            "parameters" : {
+              "backgroundColor" : "deeporange200",
+              "height" : 60,
+              "marginLeft" : 12,
+              "width" : 60
+            },
+            "type" : "View"
           }
         ],
-        "name" : "Fit",
-        "parameters" : {
-          "backgroundColor" : "#D8D8D8",
-          "height" : 100,
-          "marginBottom" : 24,
-          "paddingBottom" : 12,
-          "paddingLeft" : 12,
-          "paddingRight" : 12,
-          "paddingTop" : 12
-        },
-        "type" : "View"
-      },
-      {
-        "children" : [
-
-        ],
-        "name" : "Fill",
+        "name" : "View 1",
         "parameters" : {
           "alignSelf" : "stretch",
-          "backgroundColor" : "#D8D8D8",
-          "height" : 100
+          "backgroundColor" : "red50",
+          "flexDirection" : "row",
+          "paddingBottom" : 24,
+          "paddingLeft" : 24,
+          "paddingRight" : 24,
+          "paddingTop" : 24
         },
         "type" : "View"
       }
     ],
-    "name" : "Container",
+    "name" : "View",
     "parameters" : {
       "alignSelf" : "stretch",
-      "flex" : 0,
+      "backgroundColor" : "bluegrey100",
+      "height" : 600,
       "paddingBottom" : 24,
       "paddingLeft" : 24,
       "paddingRight" : 24,
