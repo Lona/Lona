@@ -2,53 +2,13 @@
 'use strict';
 
 var List                      = require("bs-platform/lib/js/list.js");
-var $$Array                   = require("bs-platform/lib/js/array.js");
 var Block                     = require("bs-platform/lib/js/block.js");
 var Curry                     = require("bs-platform/lib/js/curry.js");
 var Prettier                  = require("prettier");
 var Pervasives                = require("bs-platform/lib/js/pervasives.js");
-var Css$LonaCompilerCore      = require("./css.bs.js");
-var Prettier$LonaCompilerCore = require("./prettier.bs.js");
-
-function indentLine(amount, line) {
-  return " ".repeat(amount) + line;
-}
-
-function flatMap(f, list) {
-  if (list) {
-    var head = list[0];
-    if (head) {
-      return /* :: */[
-              head[0],
-              flatMap(f, list[1])
-            ];
-    } else {
-      return /* [] */0;
-    }
-  } else {
-    return /* [] */0;
-  }
-}
-
-function join(sep, items) {
-  return $$Array.of_list(items).join(sep);
-}
-
-var $$String = /* module */[/* join */join];
-
-function prefixAll(sep, items) {
-  return Curry._1(Prettier$LonaCompilerCore.Doc[/* Builders */0][/* concat */2], List.map((function (x) {
-                    return Curry._2(Prettier$LonaCompilerCore.Doc[/* Builders */0][/* <+> */5], sep, x);
-                  }), items));
-}
-
-function renderOptional(render, item) {
-  if (item) {
-    return Curry._1(render, item[0]);
-  } else {
-    return Prettier$LonaCompilerCore.Doc[/* Builders */0][/* empty */1];
-  }
-}
+var Css$LonaCompilerCore      = require("../utils/css.bs.js");
+var Render$LonaCompilerCore   = require("../core/render.bs.js");
+var Prettier$LonaCompilerCore = require("../utils/prettier.bs.js");
 
 function renderFloat(value) {
   var string = Pervasives.string_of_float(value);
@@ -151,7 +111,7 @@ function render(ast) {
           var maybeFinal = match !== 0 ? Curry._2(Prettier$LonaCompilerCore.Doc[/* Builders */0][/* <+> */5], Curry._1(Prettier$LonaCompilerCore.Doc[/* Builders */0][/* s */0], "final"), Prettier.doc.builders.line) : Prettier$LonaCompilerCore.Doc[/* Builders */0][/* empty */1];
           var match$1 = +(o$2.modifier !== /* None */0);
           var maybeModifier = match$1 !== 0 ? Curry._1(Prettier$LonaCompilerCore.Doc[/* Builders */0][/* concat */2], /* :: */[
-                  renderOptional(renderAccessLevelModifier, o$2.modifier),
+                  Render$LonaCompilerCore.renderOptional(renderAccessLevelModifier, o$2.modifier),
                   /* :: */[
                     Prettier.doc.builders.line,
                     /* [] */0
@@ -194,7 +154,7 @@ function render(ast) {
           return Curry._1(Prettier$LonaCompilerCore.Doc[/* Builders */0][/* concat */2], /* :: */[
                       opening,
                       /* :: */[
-                        Prettier.doc.builders.indent(prefixAll(Prettier.doc.builders.hardline, List.map(render, o$2.body))),
+                        Prettier.doc.builders.indent(Render$LonaCompilerCore.prefixAll(Prettier.doc.builders.hardline, List.map(render, o$2.body))),
                         /* :: */[
                           closing,
                           /* [] */0
@@ -210,7 +170,7 @@ function render(ast) {
           var maybeInit = match$2 !== 0 ? Prettier$LonaCompilerCore.Doc[/* Builders */0][/* empty */1] : Curry._1(Prettier$LonaCompilerCore.Doc[/* Builders */0][/* concat */2], /* :: */[
                   Curry._1(Prettier$LonaCompilerCore.Doc[/* Builders */0][/* s */0], " = "),
                   /* :: */[
-                    renderOptional(render, o$3.init),
+                    Render$LonaCompilerCore.renderOptional(render, o$3.init),
                     /* [] */0
                   ]
                 ]);
@@ -240,11 +200,11 @@ function render(ast) {
           var maybeInit$1 = match$4 !== 0 ? Prettier$LonaCompilerCore.Doc[/* Builders */0][/* empty */1] : Curry._1(Prettier$LonaCompilerCore.Doc[/* Builders */0][/* concat */2], /* :: */[
                   Curry._1(Prettier$LonaCompilerCore.Doc[/* Builders */0][/* s */0], " = "),
                   /* :: */[
-                    renderOptional(render, o$4.init),
+                    Render$LonaCompilerCore.renderOptional(render, o$4.init),
                     /* [] */0
                   ]
                 ]);
-          var maybeBlock = renderOptional((function (block) {
+          var maybeBlock = Render$LonaCompilerCore.renderOptional((function (block) {
                   return Curry._2(Prettier$LonaCompilerCore.Doc[/* Builders */0][/* <+> */5], Prettier.doc.builders.line, renderInitializerBlock(block));
                 }), o$4.block);
           var match$5 = +(List.length(o$4.modifiers) > 0);
@@ -278,7 +238,7 @@ function render(ast) {
             /* :: */[
               Curry._1(Prettier$LonaCompilerCore.Doc[/* Builders */0][/* s */0], "init"),
               /* :: */[
-                renderOptional(Prettier$LonaCompilerCore.Doc[/* Builders */0][/* s */0], o$5.failable),
+                Render$LonaCompilerCore.renderOptional(Prettier$LonaCompilerCore.Doc[/* Builders */0][/* s */0], o$5.failable),
                 /* :: */[
                   Curry._1(Prettier$LonaCompilerCore.Doc[/* Builders */0][/* s */0], "("),
                   /* :: */[
@@ -359,9 +319,9 @@ function render(ast) {
                                 }]))));
       case 12 : 
           var o$8 = ast[0];
-          return Curry._2(Prettier$LonaCompilerCore.Doc[/* Builders */0][/* <+> */5], Curry._2(Prettier$LonaCompilerCore.Doc[/* Builders */0][/* <+> */5], Curry._2(Prettier$LonaCompilerCore.Doc[/* Builders */0][/* <+> */5], Curry._2(Prettier$LonaCompilerCore.Doc[/* Builders */0][/* <+> */5], renderOptional((function (name) {
+          return Curry._2(Prettier$LonaCompilerCore.Doc[/* Builders */0][/* <+> */5], Curry._2(Prettier$LonaCompilerCore.Doc[/* Builders */0][/* <+> */5], Curry._2(Prettier$LonaCompilerCore.Doc[/* Builders */0][/* <+> */5], Curry._2(Prettier$LonaCompilerCore.Doc[/* Builders */0][/* <+> */5], Render$LonaCompilerCore.renderOptional((function (name) {
                                         return Curry._2(Prettier$LonaCompilerCore.Doc[/* Builders */0][/* <+> */5], Curry._1(Prettier$LonaCompilerCore.Doc[/* Builders */0][/* s */0], name), Curry._1(Prettier$LonaCompilerCore.Doc[/* Builders */0][/* s */0], " "));
-                                      }), o$8.externalName), Curry._1(Prettier$LonaCompilerCore.Doc[/* Builders */0][/* s */0], o$8.localName)), Curry._1(Prettier$LonaCompilerCore.Doc[/* Builders */0][/* s */0], ": ")), renderTypeAnnotation(o$8.annotation)), renderOptional((function (node) {
+                                      }), o$8.externalName), Curry._1(Prettier$LonaCompilerCore.Doc[/* Builders */0][/* s */0], o$8.localName)), Curry._1(Prettier$LonaCompilerCore.Doc[/* Builders */0][/* s */0], ": ")), renderTypeAnnotation(o$8.annotation)), Render$LonaCompilerCore.renderOptional((function (node) {
                             return Curry._2(Prettier$LonaCompilerCore.Doc[/* Builders */0][/* <+> */5], Curry._1(Prettier$LonaCompilerCore.Doc[/* Builders */0][/* s */0], " = "), render(node));
                           }), o$8.defaultValue));
       case 13 : 
@@ -448,7 +408,7 @@ function render(ast) {
       case 17 : 
           var statements = ast[0].statements;
           if (statements) {
-            return Curry._2(Prettier$LonaCompilerCore.Doc[/* Builders */0][/* <+> */5], Curry._2(Prettier$LonaCompilerCore.Doc[/* Builders */0][/* <+> */5], Curry._2(Prettier$LonaCompilerCore.Doc[/* Builders */0][/* <+> */5], Curry._1(Prettier$LonaCompilerCore.Doc[/* Builders */0][/* s */0], "{"), Prettier.doc.builders.indent(prefixAll(Prettier.doc.builders.hardline, List.map(render, statements)))), Prettier.doc.builders.hardline), Curry._1(Prettier$LonaCompilerCore.Doc[/* Builders */0][/* s */0], "}"));
+            return Curry._2(Prettier$LonaCompilerCore.Doc[/* Builders */0][/* <+> */5], Curry._2(Prettier$LonaCompilerCore.Doc[/* Builders */0][/* <+> */5], Curry._2(Prettier$LonaCompilerCore.Doc[/* Builders */0][/* <+> */5], Curry._1(Prettier$LonaCompilerCore.Doc[/* Builders */0][/* s */0], "{"), Prettier.doc.builders.indent(Render$LonaCompilerCore.prefixAll(Prettier.doc.builders.hardline, List.map(render, statements)))), Prettier.doc.builders.hardline), Curry._1(Prettier$LonaCompilerCore.Doc[/* Builders */0][/* s */0], "}"));
           } else {
             return Curry._1(Prettier$LonaCompilerCore.Doc[/* Builders */0][/* s */0], "{}");
           }
@@ -705,10 +665,10 @@ function renderInitializerBlock(node) {
                     }]));
     }
   };
-  var willSet = renderOptional((function (statements) {
+  var willSet = Render$LonaCompilerCore.renderOptional((function (statements) {
           return Curry._2(Prettier$LonaCompilerCore.Doc[/* Builders */0][/* <+> */5], Curry._1(Prettier$LonaCompilerCore.Doc[/* Builders */0][/* s */0], "willSet "), renderStatements(statements));
         }), o.willSet);
-  var didSet = renderOptional((function (statements) {
+  var didSet = Render$LonaCompilerCore.renderOptional((function (statements) {
           return Curry._2(Prettier$LonaCompilerCore.Doc[/* Builders */0][/* <+> */5], Curry._1(Prettier$LonaCompilerCore.Doc[/* Builders */0][/* s */0], "didSet "), renderStatements(statements));
         }), o.didSet);
   var match = o.willSet;
@@ -754,444 +714,14 @@ function toString(ast) {
   return Prettier.doc.printer.printDocToString(doc, printerOptions).formatted;
 }
 
-var Swift = /* module */[
-  /* renderFloat */renderFloat,
-  /* renderAccessLevelModifier */renderAccessLevelModifier,
-  /* renderMutationModifier */renderMutationModifier,
-  /* renderDeclarationModifier */renderDeclarationModifier,
-  /* render */render,
-  /* renderLiteral */renderLiteral,
-  /* renderTypeAnnotation */renderTypeAnnotation,
-  /* renderPattern */renderPattern,
-  /* renderInitializerBlock */renderInitializerBlock,
-  /* toString */toString
-];
-
-function renderBinaryOperator(x) {
-  var tmp;
-  switch (x) {
-    case 0 : 
-        tmp = "===";
-        break;
-    case 1 : 
-        tmp = "!==";
-        break;
-    case 2 : 
-        tmp = ">";
-        break;
-    case 3 : 
-        tmp = ">=";
-        break;
-    case 4 : 
-        tmp = "<";
-        break;
-    case 5 : 
-        tmp = "<=";
-        break;
-    case 6 : 
-        tmp = "+";
-        break;
-    case 7 : 
-        tmp = "";
-        break;
-    
-  }
-  return Curry._1(Prettier$LonaCompilerCore.Doc[/* Builders */0][/* s */0], tmp);
-}
-
-function render$1(ast) {
-  if (typeof ast === "number") {
-    return Curry._1(Prettier$LonaCompilerCore.Doc[/* Builders */0][/* s */0], "");
-  } else {
-    switch (ast.tag | 0) {
-      case 0 : 
-          return Prettier.doc.builders.group(Curry._1(Prettier$LonaCompilerCore.Doc[/* Builders */0][/* concat */2], /* :: */[
-                          Prettier.doc.builders.group(Curry._1(Prettier$LonaCompilerCore.Doc[/* Builders */0][/* concat */2], /* :: */[
-                                    Curry._1(Prettier$LonaCompilerCore.Doc[/* Builders */0][/* s */0], "return"),
-                                    /* :: */[
-                                      Prettier.doc.builders.line,
-                                      /* :: */[
-                                        Curry._1(Prettier$LonaCompilerCore.Doc[/* Builders */0][/* s */0], "("),
-                                        /* [] */0
-                                      ]
-                                    ]
-                                  ])),
-                          /* :: */[
-                            Prettier.doc.builders.indent(Curry._1(Prettier$LonaCompilerCore.Doc[/* Builders */0][/* concat */2], /* :: */[
-                                      Prettier.doc.builders.line,
-                                      /* :: */[
-                                        render$1(ast[0]),
-                                        /* [] */0
-                                      ]
-                                    ])),
-                            /* :: */[
-                              Prettier.doc.builders.line,
-                              /* :: */[
-                                Curry._1(Prettier$LonaCompilerCore.Doc[/* Builders */0][/* s */0], ");"),
-                                /* [] */0
-                              ]
-                            ]
-                          ]
-                        ]));
-      case 1 : 
-          return Curry._1(Prettier$LonaCompilerCore.Doc[/* Builders */0][/* s */0], JSON.stringify(ast[0][/* data */1]));
-      case 2 : 
-          return Prettier.doc.builders.group(Curry._2(Prettier$LonaCompilerCore.Doc[/* Builders */0][/* join */4], Curry._1(Prettier$LonaCompilerCore.Doc[/* Builders */0][/* concat */2], /* :: */[
-                              Prettier.doc.builders.softline,
-                              /* :: */[
-                                Curry._1(Prettier$LonaCompilerCore.Doc[/* Builders */0][/* s */0], "."),
-                                /* [] */0
-                              ]
-                            ]), List.map(Prettier$LonaCompilerCore.Doc[/* Builders */0][/* s */0], ast[0])));
-      case 3 : 
-          var $$extends = ast[1];
-          var name = ast[0];
-          var decl = $$extends ? /* :: */[
-              Curry._1(Prettier$LonaCompilerCore.Doc[/* Builders */0][/* s */0], "class"),
-              /* :: */[
-                Curry._1(Prettier$LonaCompilerCore.Doc[/* Builders */0][/* s */0], name),
-                /* :: */[
-                  Curry._1(Prettier$LonaCompilerCore.Doc[/* Builders */0][/* s */0], "extends"),
-                  /* :: */[
-                    Curry._1(Prettier$LonaCompilerCore.Doc[/* Builders */0][/* s */0], $$extends[0]),
-                    /* [] */0
-                  ]
-                ]
-              ]
-            ] : /* :: */[
-              Curry._1(Prettier$LonaCompilerCore.Doc[/* Builders */0][/* s */0], "class"),
-              /* :: */[
-                Curry._1(Prettier$LonaCompilerCore.Doc[/* Builders */0][/* s */0], name),
-                /* [] */0
-              ]
-            ];
-          return Curry._1(Prettier$LonaCompilerCore.Doc[/* Builders */0][/* concat */2], /* :: */[
-                      Prettier.doc.builders.group(Curry._1(Prettier$LonaCompilerCore.Doc[/* Builders */0][/* concat */2], /* :: */[
-                                Curry._2(Prettier$LonaCompilerCore.Doc[/* Builders */0][/* join */4], Prettier.doc.builders.line, decl),
-                                /* :: */[
-                                  Curry._1(Prettier$LonaCompilerCore.Doc[/* Builders */0][/* s */0], " {"),
-                                  /* [] */0
-                                ]
-                              ])),
-                      /* :: */[
-                        Prettier.doc.builders.indent(prefixAll(Prettier.doc.builders.hardline, List.map(render$1, ast[2]))),
-                        /* :: */[
-                          Prettier.doc.builders.hardline,
-                          /* :: */[
-                            Curry._1(Prettier$LonaCompilerCore.Doc[/* Builders */0][/* s */0], "};"),
-                            /* [] */0
-                          ]
-                        ]
-                      ]
-                    ]);
-      case 4 : 
-          var parameterList = Curry._2(Prettier$LonaCompilerCore.Doc[/* Builders */0][/* join */4], Prettier.doc.builders.line, List.map(Prettier$LonaCompilerCore.Doc[/* Builders */0][/* s */0], ast[1]));
-          return Curry._1(Prettier$LonaCompilerCore.Doc[/* Builders */0][/* concat */2], /* :: */[
-                      Prettier.doc.builders.group(Curry._1(Prettier$LonaCompilerCore.Doc[/* Builders */0][/* concat */2], /* :: */[
-                                Curry._1(Prettier$LonaCompilerCore.Doc[/* Builders */0][/* s */0], ast[0]),
-                                /* :: */[
-                                  Curry._1(Prettier$LonaCompilerCore.Doc[/* Builders */0][/* s */0], "("),
-                                  /* :: */[
-                                    parameterList,
-                                    /* :: */[
-                                      Curry._1(Prettier$LonaCompilerCore.Doc[/* Builders */0][/* s */0], ")"),
-                                      /* :: */[
-                                        Prettier.doc.builders.line,
-                                        /* :: */[
-                                          Curry._1(Prettier$LonaCompilerCore.Doc[/* Builders */0][/* s */0], "{"),
-                                          /* [] */0
-                                        ]
-                                      ]
-                                    ]
-                                  ]
-                                ]
-                              ])),
-                      /* :: */[
-                        Prettier.doc.builders.indent(Curry._2(Prettier$LonaCompilerCore.Doc[/* Builders */0][/* join */4], Prettier.doc.builders.hardline, List.map(render$1, ast[2]))),
-                        /* :: */[
-                          Prettier.doc.builders.line,
-                          /* :: */[
-                            Curry._1(Prettier$LonaCompilerCore.Doc[/* Builders */0][/* s */0], "}"),
-                            /* [] */0
-                          ]
-                        ]
-                      ]
-                    ]);
-      case 5 : 
-          var parameterList$1 = Curry._2(Prettier$LonaCompilerCore.Doc[/* Builders */0][/* join */4], Curry._1(Prettier$LonaCompilerCore.Doc[/* Builders */0][/* s */0], ", "), List.map(render$1, ast[1]));
-          return Curry._1(Prettier$LonaCompilerCore.Doc[/* Builders */0][/* fill */3], /* :: */[
-                      render$1(ast[0]),
-                      /* :: */[
-                        Curry._1(Prettier$LonaCompilerCore.Doc[/* Builders */0][/* s */0], "("),
-                        /* :: */[
-                          parameterList$1,
-                          /* :: */[
-                            Curry._1(Prettier$LonaCompilerCore.Doc[/* Builders */0][/* s */0], ")"),
-                            /* [] */0
-                          ]
-                        ]
-                      ]
-                    ]);
-      case 6 : 
-          var value = render$1(ast[1]);
-          return Curry._1(Prettier$LonaCompilerCore.Doc[/* Builders */0][/* concat */2], /* :: */[
-                      Curry._1(Prettier$LonaCompilerCore.Doc[/* Builders */0][/* s */0], ast[0]),
-                      /* :: */[
-                        Curry._1(Prettier$LonaCompilerCore.Doc[/* Builders */0][/* s */0], "={"),
-                        /* :: */[
-                          value,
-                          /* :: */[
-                            Curry._1(Prettier$LonaCompilerCore.Doc[/* Builders */0][/* s */0], "}"),
-                            /* [] */0
-                          ]
-                        ]
-                      ]
-                    ]);
-      case 7 : 
-          var tag = ast[0];
-          var openingContent = Curry._2(Prettier$LonaCompilerCore.Doc[/* Builders */0][/* join */4], Prettier.doc.builders.line, List.map(render$1, ast[1]));
-          var opening = Prettier.doc.builders.group(Curry._1(Prettier$LonaCompilerCore.Doc[/* Builders */0][/* concat */2], /* :: */[
-                    Curry._1(Prettier$LonaCompilerCore.Doc[/* Builders */0][/* s */0], "<"),
-                    /* :: */[
-                      Curry._1(Prettier$LonaCompilerCore.Doc[/* Builders */0][/* s */0], tag),
-                      /* :: */[
-                        Prettier.doc.builders.indent(Curry._1(Prettier$LonaCompilerCore.Doc[/* Builders */0][/* concat */2], /* :: */[
-                                  Prettier.doc.builders.line,
-                                  /* :: */[
-                                    openingContent,
-                                    /* [] */0
-                                  ]
-                                ])),
-                        /* :: */[
-                          Prettier.doc.builders.softline,
-                          /* :: */[
-                            Curry._1(Prettier$LonaCompilerCore.Doc[/* Builders */0][/* s */0], ">"),
-                            /* [] */0
-                          ]
-                        ]
-                      ]
-                    ]
-                  ]));
-          var closing = Prettier.doc.builders.group(Curry._1(Prettier$LonaCompilerCore.Doc[/* Builders */0][/* concat */2], /* :: */[
-                    Curry._1(Prettier$LonaCompilerCore.Doc[/* Builders */0][/* s */0], "</"),
-                    /* :: */[
-                      Curry._1(Prettier$LonaCompilerCore.Doc[/* Builders */0][/* s */0], tag),
-                      /* :: */[
-                        Curry._1(Prettier$LonaCompilerCore.Doc[/* Builders */0][/* s */0], ">"),
-                        /* [] */0
-                      ]
-                    ]
-                  ]));
-          var children = Prettier.doc.builders.indent(Curry._1(Prettier$LonaCompilerCore.Doc[/* Builders */0][/* concat */2], /* :: */[
-                    Prettier.doc.builders.line,
-                    /* :: */[
-                      Curry._2(Prettier$LonaCompilerCore.Doc[/* Builders */0][/* join */4], Prettier.doc.builders.line, List.map(render$1, ast[2])),
-                      /* [] */0
-                    ]
-                  ]));
-          return Curry._1(Prettier$LonaCompilerCore.Doc[/* Builders */0][/* concat */2], /* :: */[
-                      opening,
-                      /* :: */[
-                        children,
-                        /* :: */[
-                          Prettier.doc.builders.line,
-                          /* :: */[
-                            closing,
-                            /* [] */0
-                          ]
-                        ]
-                      ]
-                    ]);
-      case 8 : 
-          return Prettier.doc.builders.group(Curry._1(Prettier$LonaCompilerCore.Doc[/* Builders */0][/* concat */2], /* :: */[
-                          Curry._1(Prettier$LonaCompilerCore.Doc[/* Builders */0][/* s */0], "let "),
-                          /* :: */[
-                            render$1(ast[0]),
-                            /* :: */[
-                              Curry._1(Prettier$LonaCompilerCore.Doc[/* Builders */0][/* s */0], ";"),
-                              /* [] */0
-                            ]
-                          ]
-                        ]));
-      case 9 : 
-          return Curry._1(Prettier$LonaCompilerCore.Doc[/* Builders */0][/* fill */3], /* :: */[
-                      Prettier.doc.builders.group(Curry._1(Prettier$LonaCompilerCore.Doc[/* Builders */0][/* concat */2], /* :: */[
-                                render$1(ast[0]),
-                                /* :: */[
-                                  Prettier.doc.builders.line,
-                                  /* :: */[
-                                    Curry._1(Prettier$LonaCompilerCore.Doc[/* Builders */0][/* s */0], "="),
-                                    /* [] */0
-                                  ]
-                                ]
-                              ])),
-                      /* :: */[
-                        Curry._1(Prettier$LonaCompilerCore.Doc[/* Builders */0][/* s */0], " "),
-                        /* :: */[
-                          render$1(ast[1]),
-                          /* [] */0
-                        ]
-                      ]
-                    ]);
-      case 10 : 
-          return Curry._1(Prettier$LonaCompilerCore.Doc[/* Builders */0][/* concat */2], /* :: */[
-                      render$1(ast[0]),
-                      /* :: */[
-                        renderBinaryOperator(ast[1]),
-                        /* :: */[
-                          render$1(ast[2]),
-                          /* [] */0
-                        ]
-                      ]
-                    ]);
-      case 11 : 
-          return Curry._1(Prettier$LonaCompilerCore.Doc[/* Builders */0][/* concat */2], /* :: */[
-                      Prettier.doc.builders.group(Curry._1(Prettier$LonaCompilerCore.Doc[/* Builders */0][/* concat */2], /* :: */[
-                                Curry._1(Prettier$LonaCompilerCore.Doc[/* Builders */0][/* s */0], "if"),
-                                /* :: */[
-                                  Prettier.doc.builders.line,
-                                  /* :: */[
-                                    Curry._1(Prettier$LonaCompilerCore.Doc[/* Builders */0][/* s */0], "("),
-                                    /* :: */[
-                                      Prettier.doc.builders.softline,
-                                      /* :: */[
-                                        render$1(ast[0]),
-                                        /* :: */[
-                                          Prettier.doc.builders.softline,
-                                          /* :: */[
-                                            Curry._1(Prettier$LonaCompilerCore.Doc[/* Builders */0][/* s */0], ")"),
-                                            /* :: */[
-                                              Prettier.doc.builders.line,
-                                              /* :: */[
-                                                Curry._1(Prettier$LonaCompilerCore.Doc[/* Builders */0][/* s */0], "{"),
-                                                /* [] */0
-                                              ]
-                                            ]
-                                          ]
-                                        ]
-                                      ]
-                                    ]
-                                  ]
-                                ]
-                              ])),
-                      /* :: */[
-                        Prettier.doc.builders.indent(Curry._2(Prettier$LonaCompilerCore.Doc[/* Builders */0][/* join */4], Prettier.doc.builders.hardline, List.map(render$1, ast[1]))),
-                        /* :: */[
-                          Prettier.doc.builders.hardline,
-                          /* :: */[
-                            Curry._1(Prettier$LonaCompilerCore.Doc[/* Builders */0][/* s */0], "}"),
-                            /* [] */0
-                          ]
-                        ]
-                      ]
-                    ]);
-      case 12 : 
-          var body = ast[0];
-          var match = +(List.length(body) > 0);
-          var maybeLine = match !== 0 ? Prettier.doc.builders.line : Curry._1(Prettier$LonaCompilerCore.Doc[/* Builders */0][/* s */0], "");
-          var body$1 = Curry._2(Prettier$LonaCompilerCore.Doc[/* Builders */0][/* join */4], Curry._1(Prettier$LonaCompilerCore.Doc[/* Builders */0][/* concat */2], /* :: */[
-                    Curry._1(Prettier$LonaCompilerCore.Doc[/* Builders */0][/* s */0], ","),
-                    /* :: */[
-                      Prettier.doc.builders.line,
-                      /* [] */0
-                    ]
-                  ]), List.map(render$1, body));
-          return Prettier.doc.builders.group(Curry._1(Prettier$LonaCompilerCore.Doc[/* Builders */0][/* concat */2], /* :: */[
-                          Curry._1(Prettier$LonaCompilerCore.Doc[/* Builders */0][/* s */0], "["),
-                          /* :: */[
-                            Prettier.doc.builders.indent(Curry._1(Prettier$LonaCompilerCore.Doc[/* Builders */0][/* concat */2], /* :: */[
-                                      maybeLine,
-                                      /* :: */[
-                                        body$1,
-                                        /* [] */0
-                                      ]
-                                    ])),
-                            /* :: */[
-                              maybeLine,
-                              /* :: */[
-                                Curry._1(Prettier$LonaCompilerCore.Doc[/* Builders */0][/* s */0], "]"),
-                                /* [] */0
-                              ]
-                            ]
-                          ]
-                        ]));
-      case 13 : 
-          var body$2 = ast[0];
-          var match$1 = +(List.length(body$2) > 0);
-          var maybeLine$1 = match$1 !== 0 ? Prettier.doc.builders.line : Curry._1(Prettier$LonaCompilerCore.Doc[/* Builders */0][/* s */0], "");
-          var body$3 = Curry._2(Prettier$LonaCompilerCore.Doc[/* Builders */0][/* join */4], Curry._1(Prettier$LonaCompilerCore.Doc[/* Builders */0][/* concat */2], /* :: */[
-                    Curry._1(Prettier$LonaCompilerCore.Doc[/* Builders */0][/* s */0], ","),
-                    /* :: */[
-                      Prettier.doc.builders.line,
-                      /* [] */0
-                    ]
-                  ]), List.map(render$1, body$2));
-          return Prettier.doc.builders.group(Curry._1(Prettier$LonaCompilerCore.Doc[/* Builders */0][/* concat */2], /* :: */[
-                          Curry._1(Prettier$LonaCompilerCore.Doc[/* Builders */0][/* s */0], "{"),
-                          /* :: */[
-                            Prettier.doc.builders.indent(Curry._1(Prettier$LonaCompilerCore.Doc[/* Builders */0][/* concat */2], /* :: */[
-                                      maybeLine$1,
-                                      /* :: */[
-                                        body$3,
-                                        /* [] */0
-                                      ]
-                                    ])),
-                            /* :: */[
-                              maybeLine$1,
-                              /* :: */[
-                                Curry._1(Prettier$LonaCompilerCore.Doc[/* Builders */0][/* s */0], "}"),
-                                /* [] */0
-                              ]
-                            ]
-                          ]
-                        ]));
-      case 14 : 
-          return Prettier.doc.builders.group(Curry._1(Prettier$LonaCompilerCore.Doc[/* Builders */0][/* concat */2], /* :: */[
-                          render$1(ast[0]),
-                          /* :: */[
-                            Curry._1(Prettier$LonaCompilerCore.Doc[/* Builders */0][/* s */0], ": "),
-                            /* :: */[
-                              render$1(ast[1]),
-                              /* [] */0
-                            ]
-                          ]
-                        ]));
-      case 15 : 
-          return prefixAll(Prettier.doc.builders.hardline, List.map(render$1, ast[0]));
-      case 16 : 
-          return Curry._2(Prettier$LonaCompilerCore.Doc[/* Builders */0][/* join */4], Curry._1(Prettier$LonaCompilerCore.Doc[/* Builders */0][/* concat */2], /* :: */[
-                          Prettier.doc.builders.hardline,
-                          /* :: */[
-                            Prettier.doc.builders.hardline,
-                            /* [] */0
-                          ]
-                        ]), List.map(render$1, ast[0]));
-      
-    }
-  }
-}
-
-function toString$1(ast) {
-  var doc = render$1(ast);
-  var printerOptions = {
-    printWidth: 80,
-    tabWidth: 2,
-    useTabs: /* false */0
-  };
-  return Prettier.doc.printer.printDocToString(doc, printerOptions).formatted;
-}
-
-var JavaScript = /* module */[
-  /* renderBinaryOperator */renderBinaryOperator,
-  /* render */render$1,
-  /* toString */toString$1
-];
-
-exports.indentLine     = indentLine;
-exports.flatMap        = flatMap;
-exports.$$String       = $$String;
-exports.prefixAll      = prefixAll;
-exports.renderOptional = renderOptional;
-exports.Swift          = Swift;
-exports.JavaScript     = JavaScript;
+exports.renderFloat               = renderFloat;
+exports.renderAccessLevelModifier = renderAccessLevelModifier;
+exports.renderMutationModifier    = renderMutationModifier;
+exports.renderDeclarationModifier = renderDeclarationModifier;
+exports.render                    = render;
+exports.renderLiteral             = renderLiteral;
+exports.renderTypeAnnotation      = renderTypeAnnotation;
+exports.renderPattern             = renderPattern;
+exports.renderInitializerBlock    = renderInitializerBlock;
+exports.toString                  = toString;
 /* prettier Not a pure module */

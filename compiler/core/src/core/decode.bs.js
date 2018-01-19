@@ -6,9 +6,157 @@ var Curry                      = require("bs-platform/lib/js/curry.js");
 var Js_json                    = require("bs-platform/lib/js/js_json.js");
 var Js_option                  = require("bs-platform/lib/js/js_option.js");
 var Json_decode                = require("bs-json/src/Json_decode.js");
-var Layer$LonaCompilerCore     = require("./layer.bs.js");
 var Types$LonaCompilerCore     = require("./types.bs.js");
-var StringMap$LonaCompilerCore = require("./stringMap.bs.js");
+var Caml_builtin_exceptions    = require("bs-platform/lib/js/caml_builtin_exceptions.js");
+var StringMap$LonaCompilerCore = require("../containers/stringMap.bs.js");
+
+var parameterTypeMap = StringMap$LonaCompilerCore.fromList(/* :: */[
+      /* tuple */[
+        "text",
+        /* Reference */Block.__(0, ["String"])
+      ],
+      /* :: */[
+        /* tuple */[
+          "visible",
+          /* Reference */Block.__(0, ["Boolean"])
+        ],
+        /* :: */[
+          /* tuple */[
+            "numberOfLines",
+            /* Reference */Block.__(0, ["Number"])
+          ],
+          /* :: */[
+            /* tuple */[
+              "backgroundColor",
+              Types$LonaCompilerCore.colorType
+            ],
+            /* :: */[
+              /* tuple */[
+                "image",
+                Types$LonaCompilerCore.urlType
+              ],
+              /* :: */[
+                /* tuple */[
+                  "alignItems",
+                  /* Reference */Block.__(0, ["String"])
+                ],
+                /* :: */[
+                  /* tuple */[
+                    "alignSelf",
+                    /* Reference */Block.__(0, ["String"])
+                  ],
+                  /* :: */[
+                    /* tuple */[
+                      "flex",
+                      /* Reference */Block.__(0, ["Number"])
+                    ],
+                    /* :: */[
+                      /* tuple */[
+                        "flexDirection",
+                        /* Reference */Block.__(0, ["String"])
+                      ],
+                      /* :: */[
+                        /* tuple */[
+                          "font",
+                          /* Reference */Block.__(0, ["String"])
+                        ],
+                        /* :: */[
+                          /* tuple */[
+                            "justifyContent",
+                            /* Reference */Block.__(0, ["String"])
+                          ],
+                          /* :: */[
+                            /* tuple */[
+                              "marginTop",
+                              /* Reference */Block.__(0, ["Number"])
+                            ],
+                            /* :: */[
+                              /* tuple */[
+                                "marginRight",
+                                /* Reference */Block.__(0, ["Number"])
+                              ],
+                              /* :: */[
+                                /* tuple */[
+                                  "marginBottom",
+                                  /* Reference */Block.__(0, ["Number"])
+                                ],
+                                /* :: */[
+                                  /* tuple */[
+                                    "marginLeft",
+                                    /* Reference */Block.__(0, ["Number"])
+                                  ],
+                                  /* :: */[
+                                    /* tuple */[
+                                      "paddingTop",
+                                      /* Reference */Block.__(0, ["Number"])
+                                    ],
+                                    /* :: */[
+                                      /* tuple */[
+                                        "paddingRight",
+                                        /* Reference */Block.__(0, ["Number"])
+                                      ],
+                                      /* :: */[
+                                        /* tuple */[
+                                          "paddingBottom",
+                                          /* Reference */Block.__(0, ["Number"])
+                                        ],
+                                        /* :: */[
+                                          /* tuple */[
+                                            "paddingLeft",
+                                            /* Reference */Block.__(0, ["Number"])
+                                          ],
+                                          /* :: */[
+                                            /* tuple */[
+                                              "borderRadius",
+                                              /* Reference */Block.__(0, ["Number"])
+                                            ],
+                                            /* :: */[
+                                              /* tuple */[
+                                                "width",
+                                                /* Reference */Block.__(0, ["Number"])
+                                              ],
+                                              /* :: */[
+                                                /* tuple */[
+                                                  "height",
+                                                  /* Reference */Block.__(0, ["Number"])
+                                                ],
+                                                /* [] */0
+                                              ]
+                                            ]
+                                          ]
+                                        ]
+                                      ]
+                                    ]
+                                  ]
+                                ]
+                              ]
+                            ]
+                          ]
+                        ]
+                      ]
+                    ]
+                  ]
+                ]
+              ]
+            ]
+          ]
+        ]
+      ]
+    ]);
+
+function parameterType(name) {
+  try {
+    return Curry._2(StringMap$LonaCompilerCore.find, name, parameterTypeMap);
+  }
+  catch (exn){
+    if (exn === Caml_builtin_exceptions.not_found) {
+      console.log("Unknown built-in parameter when deserializing:", name);
+      return /* Reference */Block.__(0, ["BuiltIn-Null"]);
+    } else {
+      throw exn;
+    }
+  }
+}
 
 function lonaType(json) {
   var referenceType = function (json) {
@@ -65,7 +213,7 @@ function layer(json) {
   var parameterDictionary = function (json) {
     return Curry._2(StringMap$LonaCompilerCore.mapi, (function (key, value) {
                   return /* record */[
-                          /* ltype */Layer$LonaCompilerCore.parameterType(key),
+                          /* ltype */parameterType(key),
                           /* data */value
                         ];
                 }), StringMap$LonaCompilerCore.fromJsDict(Js_option.getExn(Js_json.decodeObject(json))));
@@ -246,11 +394,13 @@ var colorType = Types$LonaCompilerCore.colorType;
 
 var urlType = Types$LonaCompilerCore.urlType;
 
-exports.colorType  = colorType;
-exports.urlType    = urlType;
-exports.Types      = Types;
-exports.Parameters = Parameters;
-exports.Layer      = Layer;
-exports.logicNode  = logicNode;
-exports.Component  = Component;
-/* Layer-LonaCompilerCore Not a pure module */
+exports.colorType        = colorType;
+exports.urlType          = urlType;
+exports.parameterTypeMap = parameterTypeMap;
+exports.parameterType    = parameterType;
+exports.Types            = Types;
+exports.Parameters       = Parameters;
+exports.Layer            = Layer;
+exports.logicNode        = logicNode;
+exports.Component        = Component;
+/* parameterTypeMap Not a pure module */

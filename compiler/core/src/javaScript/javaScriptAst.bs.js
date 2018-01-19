@@ -6,8 +6,6 @@ var Block       = require("bs-platform/lib/js/block.js");
 var Curry       = require("bs-platform/lib/js/curry.js");
 var Json_decode = require("bs-json/src/Json_decode.js");
 
-var Swift = /* module */[];
-
 function map(f, node) {
   if (typeof node === "number") {
     return Curry._1(f, node);
@@ -186,14 +184,9 @@ function prepareForRender(node) {
   return map(renameIdentifiers, node);
 }
 
-var JavaScript = /* module */[
-  /* map */map,
-  /* optimizeTruthyBooleanExpression */optimizeTruthyBooleanExpression,
-  /* renameIdentifiers */renameIdentifiers,
-  /* optimize */optimize,
-  /* prepareForRender */prepareForRender
-];
-
-exports.Swift      = Swift;
-exports.JavaScript = JavaScript;
+exports.map                             = map;
+exports.optimizeTruthyBooleanExpression = optimizeTruthyBooleanExpression;
+exports.renameIdentifiers               = renameIdentifiers;
+exports.optimize                        = optimize;
+exports.prepareForRender                = prepareForRender;
 /* No side effect */

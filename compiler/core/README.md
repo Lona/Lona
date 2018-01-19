@@ -37,7 +37,7 @@ npm run watch
 The will output the generated colors code to stdout.
 
 ```
-node src/demo.bs.js colors [target] [path-to-colors.json]
+node src/main.bs.js colors [target] [path-to-colors.json]
 ```
 
 ### Generate component
@@ -45,7 +45,7 @@ node src/demo.bs.js colors [target] [path-to-colors.json]
 The will output the generated component code to stdout.
 
 ```
-node src/demo.bs.js component [target] [path-to-component.component]
+node src/main.bs.js component [target] [path-to-component.component]
 ```
 
 ### Generate workspace
@@ -53,5 +53,5 @@ node src/demo.bs.js component [target] [path-to-component.component]
 This will generate the colors file and all components, writing them to `output-directory`, matching the directory structure of the workspace.
 
 ```
-node src/demo.bs.js workspace [target] [path-to-workspace] [output-directory]
+node src/main.bs.js workspace [target] [path-to-workspace] [output-directory]
 ```

@@ -1,32 +1,5 @@
-let indentLine = (amount, line) => Js.String.repeat(amount, " ") ++ line;
-
-let rec flatMap = (f, list) =>
-  switch list {
-  | [head, ...tail] =>
-    switch head {
-    | Some(a) => [a, ...flatMap(f, tail)]
-    | None => []
-    }
-  | [] => []
-  };
-
-module String = {
-  let join = (sep, items) => items |> Array.of_list |> Js.Array.joinWith(sep);
-};
-
-let prefixAll = (sep, items) => Prettier.Doc.Builders.(
-  items |> List.map((x) => sep <+> x) |> concat
-);
-
-let renderOptional = (render, item) =>
-  switch item {
-  | None => Prettier.Doc.Builders.empty
-  | Some(a) => render(a)
-  };
-
-module Swift = {
   open Prettier.Doc.Builders;
-  open Ast.Swift;
+  open SwiftAst;
   let renderFloat = (value) => {
     let string = string_of_float(value);
     let cleaned = (string |> Js.String.endsWith(".")) ? string |> Js.String.slice(~from=0, ~to_=-1) : string;
@@ -68,7 +41,7 @@ module Swift = {
     };
   let rec render = (ast) : Prettier.Doc.t('a) =>
     switch ast {
-    | Ast.Swift.SwiftIdentifier(v) => s(v)
+    | SwiftIdentifier(v) => s(v)
     | LiteralExpression(v) => renderLiteral(v)
     | MemberExpression(v) =>
       v |> List.map(render) |> join(concat([softline, s(".")])) |> indent |> group
@@ -78,18 +51,18 @@ module Swift = {
       group(s(o##operator) <+> s("(") <+> softline <+> render(o##expression) <+> softline <+> s(")"))
     | ClassDeclaration(o) =>
       let maybeFinal = o##isFinal ? s("final") <+> line : empty;
-      let maybeModifier = o##modifier != None ? concat([o##modifier |> renderOptional(renderAccessLevelModifier), line]) : empty;
+      let maybeModifier = o##modifier != None ? concat([o##modifier |> Render.renderOptional(renderAccessLevelModifier), line]) : empty;
       let maybeInherits = switch o##inherits {
         | [] => empty
         | typeAnnotations => s(": ") <+> (typeAnnotations |> List.map(renderTypeAnnotation) |> join(s(", ")));
       };
       let opening = group(concat([maybeModifier, maybeFinal, s("class"), line, s(o##name), maybeInherits, line, s("{")]));
       let closing = concat([hardline, s("}")]);
-      concat([opening, o##body |> List.map(render) |> prefixAll(hardline) |> indent, closing])
+      concat([opening, o##body |> List.map(render) |> Render.prefixAll(hardline) |> indent, closing])
     | ConstantDeclaration(o) =>
       let modifiers = o##modifiers |> List.map(renderDeclarationModifier) |> join(s(" "));
       let maybeInit =
-        o##init == None ? empty : concat([s(" = "), o##init |> renderOptional(render)]);
+        o##init == None ? empty : concat([s(" = "), o##init |> Render.renderOptional(render)]);
       let parts = [
         modifiers,
         List.length(o##modifiers) > 0 ? s(" ") : empty,
@@ -101,8 +74,8 @@ module Swift = {
     | VariableDeclaration(o) =>
       let modifiers = o##modifiers |> List.map(renderDeclarationModifier) |> join(s(" "));
       let maybeInit =
-        o##init == None ? empty : concat([s(" = "), o##init |> renderOptional(render)]);
-      let maybeBlock = o##block |> renderOptional((block) => line <+> renderInitializerBlock(block));
+        o##init == None ? empty : concat([s(" = "), o##init |> Render.renderOptional(render)]);
+      let maybeBlock = o##block |> Render.renderOptional((block) => line <+> renderInitializerBlock(block));
       let parts = [
         modifiers,
         List.length(o##modifiers) > 0 ? s(" ") : empty,
@@ -113,24 +86,24 @@ module Swift = {
       ];
       group(concat(parts))
     | Parameter(o) =>
-        (o##externalName |> renderOptional((name) => s(name) <+> s(" "))) <+>
+        (o##externalName |> Render.renderOptional((name) => s(name) <+> s(" "))) <+>
         s(o##localName) <+>
         s(": ") <+>
         renderTypeAnnotation(o##annotation) <+>
-        (o##defaultValue |> renderOptional((node) => s(" = ") <+> render(node)))
+        (o##defaultValue |> Render.renderOptional((node) => s(" = ") <+> render(node)))
     | InitializerDeclaration(o) =>
       let parts = [
         o##modifiers |> List.map(renderDeclarationModifier) |> join(s(" ")),
         List.length(o##modifiers) > 0 ? s(" ") : empty,
         s("init"),
-        o##failable |> renderOptional(s),
+        o##failable |> Render.renderOptional(s),
         s("("),
         indent(
           softline <+> join(s(",") <+> line, o##parameters |> List.map(render))
         ),
         s(")"),
         line,
-        render(Ast.Swift.CodeBlock({ "statements": o##body }))
+        render(CodeBlock({ "statements": o##body }))
       ];
       group(concat(parts))
     | FunctionDeclaration(o) =>
@@ -147,7 +120,7 @@ module Swift = {
           s(")"),
         ])),
         line,
-        render(Ast.Swift.CodeBlock({ "statements": o##body }))
+        render(CodeBlock({ "statements": o##body }))
       ]));
     | ImportDeclaration(v) => group(concat([s("import"), line, s(v)]))
     | IfStatement(o) =>
@@ -157,7 +130,7 @@ module Swift = {
         line <+>
         render(o##condition) <+>
         line <+>
-        render(Ast.Swift.CodeBlock({ "statements": o##block }))
+        render(CodeBlock({ "statements": o##block }))
       )
     | FunctionCallArgument(o) =>
       switch o##name {
@@ -196,7 +169,7 @@ module Swift = {
       /* | [statement] => s("{") <+> line <+> render(statement) <+> line <+> s("}") */
       | statements =>
         s("{") <+>
-        indent(prefixAll(hardline, statements |> List.map(render))) <+>
+        indent(Render.prefixAll(hardline, statements |> List.map(render))) <+>
         hardline <+>
         s("}")
       };
@@ -276,13 +249,13 @@ module Swift = {
       let renderStatements = (statements) => {
         switch (statements) {
         | [only] => s("{ ") <+> render(only) <+> s(" }")
-        | _ => render(Ast.Swift.CodeBlock({ "statements": statements }))
+        | _ => render(CodeBlock({ "statements": statements }))
         };
       };
-      let willSet = o##willSet |> renderOptional((statements) =>
+      let willSet = o##willSet |> Render.renderOptional((statements) =>
         s("willSet ") <+> renderStatements(statements)
       );
-      let didSet = o##didSet |> renderOptional((statements) =>
+      let didSet = o##didSet |> Render.renderOptional((statements) =>
         s("didSet ") <+> renderStatements(statements)
       );
       switch (o##willSet, o##didSet) {
@@ -304,116 +277,3 @@ module Swift = {
         Prettier.Doc.Printer.printDocToString(doc, printerOptions)##formatted
       }
     );
-};
-
-module JavaScript = {
-  open Prettier.Doc.Builders;
-  let renderBinaryOperator = (x) => {
-    let op =
-      switch x {
-      | Ast.JavaScript.Eq => "==="
-      | Neq => "!=="
-      | Gt => ">"
-      | Gte => ">="
-      | Lt => "<"
-      | Lte => "<="
-      | Plus => "+"
-      | Noop => ""
-      };
-    s(op)
-  };
-  /* Render AST */
-  let rec render = (ast) : Prettier.Doc.t('a) =>
-    switch ast {
-    | Ast.JavaScript.Identifier(path) =>
-      path |> List.map(s) |> join(concat([softline, s(".")])) |> group
-    | Literal(value) => s(Js.Json.stringify(value.data))
-    | VariableDeclaration(value) => group(concat([s("let "), render(value), s(";")]))
-    | AssignmentExpression(name, value) =>
-      fill([group(concat([render(name), line, s("=")])), s(" "), render(value)])
-    | BooleanExpression(lhs, cmp, rhs) =>
-      concat([render(lhs), renderBinaryOperator(cmp), render(rhs)])
-    | ConditionalStatement(condition, body) =>
-      concat([
-        group(
-          concat([
-            s("if"),
-            line,
-            s("("),
-            softline,
-            render(condition),
-            softline,
-            s(")"),
-            line,
-            s("{")
-          ])
-        ),
-        indent(join(hardline, body |> List.map(render))),
-        hardline,
-        s("}")
-      ])
-    | Class(name, extends, body) =>
-      let decl =
-        switch extends {
-        | Some(a) => [s("class"), s(name), s("extends"), s(a)]
-        | None => [s("class"), s(name)]
-        };
-      concat([
-        group(concat([join(line, decl), s(" {")])),
-        indent(prefixAll(hardline, body |> List.map(render))),
-        hardline,
-        s("};")
-      ])
-    | Method(name, parameters, body) =>
-      let parameterList = parameters |> List.map(s) |> join(line);
-      concat([
-        group(concat([s(name), s("("), parameterList, s(")"), line, s("{")])),
-        indent(join(hardline, body |> List.map(render))),
-        line,
-        s("}")
-      ])
-    | CallExpression(value, parameters) =>
-      let parameterList = parameters |> List.map(render) |> join(s(", "));
-      fill([render(value), s("("), parameterList, s(")")])
-    | Return(value) =>
-      group(
-        concat([
-          group(concat([s("return"), line, s("(")])),
-          indent(concat([line, render(value)])),
-          line,
-          s(");")
-        ])
-      )
-    | JSXAttribute(name, value) =>
-      let value = render(value);
-      concat([s(name), s("={"), value, s("}")])
-    | JSXElement(tag, attributes, body) =>
-      let openingContent = attributes |> List.map(render) |> join(line);
-      let opening =
-        group(concat([s("<"), s(tag), indent(concat([line, openingContent])), softline, s(">")]));
-      let closing = group(concat([s("</"), s(tag), s(">")]));
-      let children = indent(concat([line, join(line, body |> List.map(render))]));
-      concat([opening, children, line, closing])
-    | ArrayLiteral(body) =>
-      let maybeLine = List.length(body) > 0 ? line : s("");
-      let body = body |> List.map(render) |> join(concat([s(","), line]));
-      group(concat([s("["), indent(concat([maybeLine, body])), maybeLine, s("]")]))
-    | ObjectLiteral(body) =>
-      let maybeLine = List.length(body) > 0 ? line : s("");
-      let body = body |> List.map(render) |> join(concat([s(","), line]));
-      group(concat([s("{"), indent(concat([maybeLine, body])), maybeLine, s("}")]))
-    | ObjectProperty(name, value) => group(concat([render(name), s(": "), render(value)]))
-    | Program(body) => body |> List.map(render) |> join(concat([hardline, hardline]))
-    | Block(body) => body |> List.map(render) |> prefixAll(hardline)
-    | Unknown => s("")
-    };
-  let toString = (ast) =>
-    ast
-    |> render
-    |> (
-      (doc) => {
-        let printerOptions = {"printWidth": 80, "tabWidth": 2, "useTabs": false};
-        Prettier.Doc.Printer.printDocToString(doc, printerOptions)##formatted
-      }
-    );
-};

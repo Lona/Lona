@@ -5,14 +5,7 @@ var List                   = require("bs-platform/lib/js/list.js");
 var Block                  = require("bs-platform/lib/js/block.js");
 var Pervasives             = require("bs-platform/lib/js/pervasives.js");
 var Json_decode            = require("bs-json/src/Json_decode.js");
-var LodashCamelcase        = require("lodash.camelcase");
-var Color$LonaCompilerCore = require("./color.bs.js");
-
-function layerName(layerName$1) {
-  return LodashCamelcase(layerName$1) + "View";
-}
-
-var Format = /* module */[/* layerName */layerName];
+var Color$LonaCompilerCore = require("../core/color.bs.js");
 
 function join(sep, nodes) {
   if (nodes) {
@@ -82,12 +75,7 @@ function lonaValue(colors, value) {
   }
 }
 
-var Document = /* module */[
-  /* join */join,
-  /* joinGroups */joinGroups,
-  /* lonaValue */lonaValue
-];
-
-exports.Format   = Format;
-exports.Document = Document;
-/* lodash.camelcase Not a pure module */
+exports.join       = join;
+exports.joinGroups = joinGroups;
+exports.lonaValue  = lonaValue;
+/* Color-LonaCompilerCore Not a pure module */
