@@ -24,7 +24,7 @@ let styles = StyleSheet.create({
     flex: 0,
     paddingBottom: 24,
     paddingLeft: 24,
-    paddingRight: 42,
+    paddingRight: 24,
     paddingTop: 24
   },
   Fixed: { height: 100, marginBottom: 24, width: 100 },

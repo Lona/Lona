@@ -1,0 +1,140 @@
+{
+  "canvases" : [
+    {
+      "backgroundColor" : "white",
+      "exportScale" : 1,
+      "height" : 100,
+      "heightMode" : "At Least",
+      "name" : "iPhone SE",
+      "parameters" : {
+
+      },
+      "visible" : true,
+      "width" : 320
+    },
+    {
+      "backgroundColor" : "white",
+      "exportScale" : 1,
+      "height" : 100,
+      "heightMode" : "At Least",
+      "name" : "iPhone 7",
+      "parameters" : {
+
+      },
+      "visible" : true,
+      "width" : 375
+    },
+    {
+      "backgroundColor" : "white",
+      "exportScale" : 1,
+      "height" : 100,
+      "heightMode" : "At Least",
+      "name" : "iPhone 7+",
+      "parameters" : {
+
+      },
+      "visible" : true,
+      "width" : 414
+    }
+  ],
+  "cases" : [
+    {
+      "name" : "Default",
+      "type" : "entry",
+      "value" : {
+
+      },
+      "visible" : true
+    }
+  ],
+  "config" : {
+    "canvasLayout" : "xy"
+  },
+  "logic" : [
+
+  ],
+  "metadata" : {
+
+  },
+  "parameters" : [
+
+  ],
+  "rootLayer" : {
+    "children" : [
+      {
+        "children" : [
+          {
+            "children" : [
+
+            ],
+            "name" : "View 4",
+            "parameters" : {
+              "backgroundColor" : "red200",
+              "height" : 100,
+              "width" : 60
+            },
+            "type" : "View"
+          },
+          {
+            "children" : [
+
+            ],
+            "name" : "View 5",
+            "parameters" : {
+              "backgroundColor" : "deeporange200",
+              "height" : 60,
+              "marginLeft" : 12,
+              "width" : 60
+            },
+            "type" : "View"
+          }
+        ],
+        "name" : "View 1",
+        "parameters" : {
+          "alignSelf" : "stretch",
+          "backgroundColor" : "red50",
+          "flexDirection" : "row",
+          "paddingBottom" : 24,
+          "paddingLeft" : 24,
+          "paddingRight" : 24,
+          "paddingTop" : 24
+        },
+        "type" : "View"
+      },
+      {
+        "children" : [
+
+        ],
+        "name" : "View 2",
+        "parameters" : {
+          "alignSelf" : "stretch",
+          "backgroundColor" : "indigo100",
+          "flex" : 1
+        },
+        "type" : "View"
+      },
+      {
+        "children" : [
+
+        ],
+        "name" : "View 3",
+        "parameters" : {
+          "alignSelf" : "stretch",
+          "backgroundColor" : "teal100",
+          "flex" : 1
+        },
+        "type" : "View"
+      }
+    ],
+    "name" : "View",
+    "parameters" : {
+      "alignSelf" : "stretch",
+      "height" : 600,
+      "paddingBottom" : 24,
+      "paddingLeft" : 24,
+      "paddingRight" : 24,
+      "paddingTop" : 24
+    },
+    "type" : "View"
+  }
+}

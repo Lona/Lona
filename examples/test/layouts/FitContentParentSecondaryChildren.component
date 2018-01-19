@@ -1,0 +1,114 @@
+{
+  "canvases" : [
+    {
+      "backgroundColor" : "white",
+      "exportScale" : 1,
+      "height" : 100,
+      "heightMode" : "At Least",
+      "name" : "iPhone SE",
+      "parameters" : {
+
+      },
+      "visible" : true,
+      "width" : 320
+    },
+    {
+      "backgroundColor" : "white",
+      "exportScale" : 1,
+      "height" : 100,
+      "heightMode" : "At Least",
+      "name" : "iPhone 7",
+      "parameters" : {
+
+      },
+      "visible" : true,
+      "width" : 375
+    },
+    {
+      "backgroundColor" : "white",
+      "exportScale" : 1,
+      "height" : 100,
+      "heightMode" : "At Least",
+      "name" : "iPhone 7+",
+      "parameters" : {
+
+      },
+      "visible" : true,
+      "width" : 414
+    }
+  ],
+  "cases" : [
+    {
+      "name" : "Default",
+      "type" : "entry",
+      "value" : {
+
+      },
+      "visible" : true
+    }
+  ],
+  "config" : {
+    "canvasLayout" : "xy"
+  },
+  "logic" : [
+
+  ],
+  "metadata" : {
+
+  },
+  "parameters" : [
+
+  ],
+  "rootLayer" : {
+    "children" : [
+      {
+        "children" : [
+
+        ],
+        "name" : "View 1",
+        "parameters" : {
+          "backgroundColor" : "blue500",
+          "height" : 60,
+          "width" : 60
+        },
+        "type" : "View"
+      },
+      {
+        "children" : [
+
+        ],
+        "name" : "View 3",
+        "parameters" : {
+          "backgroundColor" : "lightblue500",
+          "height" : 120,
+          "width" : 100
+        },
+        "type" : "View"
+      },
+      {
+        "children" : [
+
+        ],
+        "name" : "View 2",
+        "parameters" : {
+          "backgroundColor" : "cyan500",
+          "height" : 180,
+          "width" : 100
+        },
+        "type" : "View"
+      }
+    ],
+    "name" : "Container",
+    "parameters" : {
+      "alignSelf" : "stretch",
+      "backgroundColor" : "bluegrey50",
+      "flex" : 0,
+      "flexDirection" : "row",
+      "paddingBottom" : 24,
+      "paddingLeft" : 24,
+      "paddingRight" : 24,
+      "paddingTop" : 24
+    },
+    "type" : "View"
+  }
+}
