@@ -46,7 +46,7 @@ let getTargetExtension =
 
 let targetExtension = getTargetExtension(target);
 
-let convertColors = (filename) => Color.parseFile(filename) |> Color.render(target);
+let convertColors = (filename) => Color.parseFile(filename) |> Swift.Color.render(target);
 
 let convertComponent = (filename) => {
   let content = Fs.readFileSync(filename, `utf8);
@@ -60,7 +60,7 @@ let convertComponent = (filename) => {
     | Some(workspace) =>
       let colors = Color.parseFile(Path.join([|workspace, "colors.json"|]));
       let result = Component.Swift.generate(name, parsed, colors);
-      result |> Render.Swift.toString
+      result |> Swift.Render.toString
     }
   }
 };
@@ -71,7 +71,7 @@ let convertWorkspace = (workspace, output) => {
   ensureDirSync(toDirectory);
   let colorsInputPath = concat(fromDirectory, "colors.json");
   let colorsOutputPath = concat(toDirectory, "colors" ++ targetExtension);
-  let colors = Color.parseFile(colorsInputPath) |> Color.render(target);
+  let colors = Color.parseFile(colorsInputPath) |> Swift.Color.render(target);
   Fs.writeFileSync(~filename=colorsOutputPath, ~text=colors);
   Glob.glob(
     concat(fromDirectory, "**/*.component"),

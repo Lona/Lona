@@ -27,7 +27,7 @@ module Swift = {
     | Low;
   type constraintDefinition = {
     variableName: string,
-    initialValue: Ast.Swift.node,
+    initialValue: Swift.Ast.node,
     priority: layoutPriority
   };
   type directionParameter = {
@@ -41,7 +41,7 @@ module Swift = {
     let logic = json |> Decode.Component.logic;
     let assignments = Layer.parameterAssignmentsFromLogic(rootLayer, logic);
     let parameters = json |> Decode.Component.parameters;
-    open Ast.Swift;
+    open Swift.Ast;
     let priorityName =
       fun
       | Required => "required"

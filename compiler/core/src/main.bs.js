@@ -10,6 +10,7 @@ var Process                    = require("process");
 var FsExtra                    = require("fs-extra");
 var Caml_array                 = require("bs-platform/lib/js/caml_array.js");
 var Color$LonaCompilerCore     = require("./color.bs.js");
+var Swift$LonaCompilerCore     = require("./swift.bs.js");
 var Render$LonaCompilerCore    = require("./render.bs.js");
 var Component$LonaCompilerCore = require("./component.bs.js");
 
@@ -80,7 +81,7 @@ function getTargetExtension(param) {
 var targetExtension = getTargetExtension(target);
 
 function convertColors(filename) {
-  return Color$LonaCompilerCore.render(target, Color$LonaCompilerCore.parseFile(filename));
+  return Swift$LonaCompilerCore.Color[/* render */0](target, Color$LonaCompilerCore.parseFile(filename));
 }
 
 function convertComponent(filename) {
@@ -91,7 +92,7 @@ function convertComponent(filename) {
     var match = findWorkspaceDirectory(filename);
     if (match) {
       var colors = Color$LonaCompilerCore.parseFile(Path.join(match[0], "colors.json"));
-      return Render$LonaCompilerCore.Swift[/* toString */9](Component$LonaCompilerCore.Swift[/* generate */0](name, parsed, colors));
+      return Swift$LonaCompilerCore.Render[/* toString */9](Component$LonaCompilerCore.Swift[/* generate */0](name, parsed, colors));
     } else {
       console.log("Couldn't find workspace directory. Try specifying it as a parameter (TODO)");
       return (process.exit());
@@ -107,7 +108,7 @@ function convertWorkspace(workspace, output) {
   FsExtra.ensureDirSync(toDirectory);
   var colorsInputPath = Path.join(fromDirectory, "colors.json");
   var colorsOutputPath = Path.join(toDirectory, "colors" + targetExtension);
-  var colors = Color$LonaCompilerCore.render(target, Color$LonaCompilerCore.parseFile(colorsInputPath));
+  var colors = Swift$LonaCompilerCore.Color[/* render */0](target, Color$LonaCompilerCore.parseFile(colorsInputPath));
   Fs.writeFileSync(colorsOutputPath, colors);
   Glob(Path.join(fromDirectory, "**/*.component"), (function (_, files) {
           var files$1 = $$Array.to_list(files);
@@ -134,8 +135,7 @@ switch (command) {
         console.log("No filename given");
         ((process.exit()));
       }
-      var filename = Caml_array.caml_array_get(Process.argv, 4);
-      console.log(Color$LonaCompilerCore.render(target, Color$LonaCompilerCore.parseFile(filename)));
+      console.log(convertColors(Caml_array.caml_array_get(Process.argv, 4)));
       break;
   case "component" : 
       if (Process.argv.length < 5) {

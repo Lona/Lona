@@ -6,8 +6,6 @@ var Block       = require("bs-platform/lib/js/block.js");
 var Curry       = require("bs-platform/lib/js/curry.js");
 var Json_decode = require("bs-json/src/Json_decode.js");
 
-var Swift = /* module */[];
-
 function map(f, node) {
   if (typeof node === "number") {
     return Curry._1(f, node);
@@ -194,6 +192,5 @@ var JavaScript = /* module */[
   /* prepareForRender */prepareForRender
 ];
 
-exports.Swift      = Swift;
 exports.JavaScript = JavaScript;
 /* No side effect */

@@ -156,16 +156,16 @@ let rec toSwiftAST = (colors, rootLayer: Types.layer, logicRootNode) => {
     switch node {
     | Identifier(ltype, [head, ...tail]) =>
       switch head {
-      | "parameters" => Ast.Swift.SwiftIdentifier(List.hd(tail))
+      | "parameters" => Swift.Ast.SwiftIdentifier(List.hd(tail))
       | "layers" =>
         switch tail {
         | [second, ...tail] when second == rootLayer.name =>
-          Ast.Swift.SwiftIdentifier(
+          Swift.Ast.SwiftIdentifier(
             List.tl(tail)
             |> List.fold_left((a, b) => a ++ "." ++ Swift.Format.camelCase(b), List.hd(tail))
           )
         | [second, ...tail] =>
-          Ast.Swift.SwiftIdentifier(
+          Swift.Ast.SwiftIdentifier(
             tail
             |> List.fold_left(
                  (a, b) => a ++ "." ++ Swift.Format.camelCase(b),
@@ -188,7 +188,7 @@ let rec toSwiftAST = (colors, rootLayer: Types.layer, logicRootNode) => {
     fun
     | Types.Reference(typeName) =>
       switch typeName {
-      | "Boolean" => Ast.Swift.TypeName("Bool")
+      | "Boolean" => Swift.Ast.TypeName("Bool")
       | _ => TypeName(typeName)
       }
     | Named(name, _) => TypeName(name);
@@ -211,43 +211,43 @@ let rec toSwiftAST = (colors, rootLayer: Types.layer, logicRootNode) => {
     | Assign(a, b) =>
       let (left, right) =
         switch (logicValueToSwiftAST(b), logicValueToSwiftAST(a)) {
-        | (Ast.Swift.SwiftIdentifier(name), LiteralExpression(Boolean(value)))
+        | (Swift.Ast.SwiftIdentifier(name), LiteralExpression(Boolean(value)))
             when name |> Js.String.endsWith("visible") => (
-            Ast.Swift.SwiftIdentifier(name |> Js.String.replace("visible", "isHidden")),
-            Ast.Swift.LiteralExpression(Boolean(! value))
+            Swift.Ast.SwiftIdentifier(name |> Js.String.replace("visible", "isHidden")),
+            Swift.Ast.LiteralExpression(Boolean(! value))
           )
-        | (Ast.Swift.SwiftIdentifier(name), right) when name |> Js.String.endsWith("borderRadius") => (
-            Ast.Swift.SwiftIdentifier(
+        | (Swift.Ast.SwiftIdentifier(name), right) when name |> Js.String.endsWith("borderRadius") => (
+            Swift.Ast.SwiftIdentifier(
               name |> Js.String.replace("borderRadius", "layer.cornerRadius")
             ),
             right
           )
-        | (Ast.Swift.SwiftIdentifier(name), right) when name |> Js.String.endsWith("height") => (
-            Ast.Swift.SwiftIdentifier(
+        | (Swift.Ast.SwiftIdentifier(name), right) when name |> Js.String.endsWith("height") => (
+            Swift.Ast.SwiftIdentifier(
               name |> Js.String.replace(".height", "HeightAnchorConstraint?.constant")
             ),
             right
           )
-        | (Ast.Swift.SwiftIdentifier(name), right) when name |> Js.String.endsWith("width") => (
-            Ast.Swift.SwiftIdentifier(
+        | (Swift.Ast.SwiftIdentifier(name), right) when name |> Js.String.endsWith("width") => (
+            Swift.Ast.SwiftIdentifier(
               name |> Js.String.replace(".width", "WidthAnchorConstraint?.constant")
             ),
             right
           )
         | nodes => nodes
         };
-      Ast.Swift.BinaryExpression({"left": left, "operator": "=", "right": right})
+      Swift.Ast.BinaryExpression({"left": left, "operator": "=", "right": right})
     | IfExists(a, body) =>
       /* TODO: Once we support optional params, compare to nil or extract via pattern */
-      Ast.Swift.IfStatement({
+      Swift.Ast.IfStatement({
         "condition": logicValueToSwiftAST(a),
         "block": unwrapBlock(body) |> List.map(inner)
       })
-    | Block(body) => Ast.Swift.StatementListHelper(body |> List.map(inner))
+    | Block(body) => Swift.Ast.StatementListHelper(body |> List.map(inner))
     | If(a, cmp, b, body) =>
-      Ast.Swift.IfStatement({
+      Swift.Ast.IfStatement({
         "condition":
-          Ast.Swift.BinaryExpression({
+          Swift.Ast.BinaryExpression({
             "left": logicValueToSwiftAST(a),
             "operator": fromCmp(cmp),
             "right": logicValueToSwiftAST(b)
@@ -259,7 +259,7 @@ let rec toSwiftAST = (colors, rootLayer: Types.layer, logicRootNode) => {
         "left": logicValueToSwiftAST(value),
         "operator": "=",
         "right":
-          Ast.Swift.BinaryExpression({
+          Swift.Ast.BinaryExpression({
             "left": logicValueToSwiftAST(lhs),
             "operator": "+",
             "right": logicValueToSwiftAST(rhs)
@@ -268,15 +268,15 @@ let rec toSwiftAST = (colors, rootLayer: Types.layer, logicRootNode) => {
     | Let(value) =>
       switch value {
       | Identifier(ltype, path) =>
-        Ast.Swift.VariableDeclaration({
+        Swift.Ast.VariableDeclaration({
           "modifiers": [],
           "pattern":
-            Ast.Swift.IdentifierPattern({
+            Swift.Ast.IdentifierPattern({
               "identifier": List.fold_left((a, b) => a ++ "." ++ b, List.hd(path), List.tl(path)),
               "annotation": Some(ltype |> typeAnnotationDoc)
             }),
-          "init": (None: option(Ast.Swift.node)),
-          "block": (None: option(Ast.Swift.initializerBlock))
+          "init": (None: option(Swift.Ast.node)),
+          "block": (None: option(Swift.Ast.initializerBlock))
         })
       | _ => Empty
       }
