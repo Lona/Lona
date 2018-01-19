@@ -12,9 +12,9 @@ var Caml_array                      = require("bs-platform/lib/js/caml_array.js"
 var Color$LonaCompilerCore          = require("./color.bs.js");
 var Render$LonaCompilerCore         = require("./render.bs.js");
 var Component$LonaCompilerCore      = require("./component.bs.js");
-var SwiftColor$LonaCompilerCore     = require("./swiftColor.bs.js");
-var SwiftRender$LonaCompilerCore    = require("./swiftRender.bs.js");
-var SwiftComponent$LonaCompilerCore = require("./swiftComponent.bs.js");
+var SwiftColor$LonaCompilerCore     = require("./swift/swiftColor.bs.js");
+var SwiftRender$LonaCompilerCore    = require("./swift/swiftRender.bs.js");
+var SwiftComponent$LonaCompilerCore = require("./swift/swiftComponent.bs.js");
 
 function exit(message) {
   console.log(message);

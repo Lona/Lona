@@ -5,7 +5,7 @@ var List                   = require("bs-platform/lib/js/list.js");
 var Block                  = require("bs-platform/lib/js/block.js");
 var Pervasives             = require("bs-platform/lib/js/pervasives.js");
 var Json_decode            = require("bs-json/src/Json_decode.js");
-var Color$LonaCompilerCore = require("./color.bs.js");
+var Color$LonaCompilerCore = require("../color.bs.js");
 
 function join(sep, nodes) {
   if (nodes) {
