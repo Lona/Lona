@@ -43,7 +43,6 @@ public class Assign: UIView {
   private var textViewBottomAnchorConstraint: NSLayoutConstraint?
   private var textViewLeadingAnchorConstraint: NSLayoutConstraint?
   private var textViewTrailingAnchorConstraint: NSLayoutConstraint?
-  private var textViewWidthAnchorConstraint: NSLayoutConstraint?
 
   private func setUpViews() {
     addSubview(textView)
@@ -65,29 +64,24 @@ public class Assign: UIView {
     let textViewTrailingAnchorConstraint = textView
       .trailingAnchor
       .constraint(lessThanOrEqualTo: trailingAnchor, constant: -(trailingPadding + textViewTrailingMargin))
-    let textViewWidthAnchorConstraint = textView.widthAnchor.constraint(equalToConstant: 0)
-    textViewWidthAnchorConstraint.priority = UILayoutPriority.defaultLow
 
     NSLayoutConstraint.activate([
       textViewTopAnchorConstraint,
       textViewBottomAnchorConstraint,
       textViewLeadingAnchorConstraint,
-      textViewTrailingAnchorConstraint,
-      textViewWidthAnchorConstraint
+      textViewTrailingAnchorConstraint
     ])
 
     self.textViewTopAnchorConstraint = textViewTopAnchorConstraint
     self.textViewBottomAnchorConstraint = textViewBottomAnchorConstraint
     self.textViewLeadingAnchorConstraint = textViewLeadingAnchorConstraint
     self.textViewTrailingAnchorConstraint = textViewTrailingAnchorConstraint
-    self.textViewWidthAnchorConstraint = textViewWidthAnchorConstraint
 
     // For debugging
     textViewTopAnchorConstraint.identifier = "textViewTopAnchorConstraint"
     textViewBottomAnchorConstraint.identifier = "textViewBottomAnchorConstraint"
     textViewLeadingAnchorConstraint.identifier = "textViewLeadingAnchorConstraint"
     textViewTrailingAnchorConstraint.identifier = "textViewTrailingAnchorConstraint"
-    textViewWidthAnchorConstraint.identifier = "textViewWidthAnchorConstraint"
   }
 
   private func update() {
