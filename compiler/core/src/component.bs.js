@@ -765,20 +765,17 @@ function generate$1(name, json, colors) {
         var secondaryAfterConstant = match$6 !== 0 ? constraintConstantExpression(layer, "trailingPadding", child, "trailingMargin") : constraintConstantExpression(layer, "bottomPadding", child, "bottomMargin");
         var secondaryBeforeConstraint = setUpContraint(child, secondaryBeforeAnchor, layer, secondaryBeforeAnchor, "equalTo", secondaryBeforeConstant, "Constraint");
         var secondaryAfterConstraint;
+        var exit = 0;
         if (typeof childSecondarySizingRule === "number") {
           if (childSecondarySizingRule !== 0) {
-            var shrinkConstraint = setUpDimensionContraint(child, secondaryDimensionAnchor, 0.0);
-            secondaryAfterConstraint = /* :: */[
-              setUpContraint(child, secondaryAfterAnchor, layer, secondaryAfterAnchor, "lessThanOrEqualTo", negateNumber(secondaryAfterConstant), "Constraint"),
-              /* :: */[
-                /* record */[
-                  /* variableName */shrinkConstraint[/* variableName */0],
-                  /* initialValue */shrinkConstraint[/* initialValue */1],
-                  /* priority : Low */1
-                ],
+            if (typeof secondarySizingRule === "number" && secondarySizingRule === 0) {
+              secondaryAfterConstraint = /* :: */[
+                setUpContraint(child, secondaryAfterAnchor, layer, secondaryAfterAnchor, "lessThanOrEqualTo", negateNumber(secondaryAfterConstant), "Constraint"),
                 /* [] */0
-              ]
-            ];
+              ];
+            } else {
+              exit = 1;
+            }
           } else {
             secondaryAfterConstraint = /* :: */[
               setUpContraint(child, secondaryAfterAnchor, layer, secondaryAfterAnchor, "equalTo", negateNumber(secondaryAfterConstant), "Constraint"),
@@ -787,6 +784,12 @@ function generate$1(name, json, colors) {
           }
         } else {
           secondaryAfterConstraint = /* [] */0;
+        }
+        if (exit === 1) {
+          secondaryAfterConstraint = /* :: */[
+            setUpContraint(child, secondaryAfterAnchor, layer, secondaryAfterAnchor, "equalTo", negateNumber(secondaryAfterConstant), "Constraint"),
+            /* [] */0
+          ];
         }
         var fitContentSecondaryConstraint = typeof secondarySizingRule === "number" && secondarySizingRule !== 0 ? /* :: */[
             setUpLessThanOrEqualToContraint(child, secondaryDimensionAnchor, layer, secondaryDimensionAnchor, negateNumber(/* BinaryExpression */Block.__(2, [{

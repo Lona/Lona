@@ -78,7 +78,6 @@ public class PrimaryAxis: UIView {
   private var textViewBottomAnchorConstraint: NSLayoutConstraint?
   private var textViewLeadingAnchorConstraint: NSLayoutConstraint?
   private var textViewTrailingAnchorConstraint: NSLayoutConstraint?
-  private var textViewWidthAnchorConstraint: NSLayoutConstraint?
   private var fill1ViewWidthAnchorConstraint: NSLayoutConstraint?
   private var fill2ViewWidthAnchorConstraint: NSLayoutConstraint?
 
@@ -150,13 +149,9 @@ public class PrimaryAxis: UIView {
       .constraint(equalTo: fitView.leadingAnchor, constant: fitViewLeadingPadding + textViewLeadingMargin)
     let textViewTrailingAnchorConstraint = textView
       .trailingAnchor
-      .constraint(
-        lessThanOrEqualTo: fitView.trailingAnchor,
-        constant: -(fitViewTrailingPadding + textViewTrailingMargin))
-    let textViewWidthAnchorConstraint = textView.widthAnchor.constraint(equalToConstant: 0)
+      .constraint(equalTo: fitView.trailingAnchor, constant: -(fitViewTrailingPadding + textViewTrailingMargin))
     let fill1ViewWidthAnchorConstraint = fill1View.widthAnchor.constraint(equalToConstant: 100)
     let fill2ViewWidthAnchorConstraint = fill2View.widthAnchor.constraint(equalToConstant: 100)
-    textViewWidthAnchorConstraint.priority = UILayoutPriority.defaultLow
 
     NSLayoutConstraint.activate([
       heightAnchorConstraint,
@@ -177,7 +172,6 @@ public class PrimaryAxis: UIView {
       textViewBottomAnchorConstraint,
       textViewLeadingAnchorConstraint,
       textViewTrailingAnchorConstraint,
-      textViewWidthAnchorConstraint,
       fill1ViewWidthAnchorConstraint,
       fill2ViewWidthAnchorConstraint
     ])
@@ -200,7 +194,6 @@ public class PrimaryAxis: UIView {
     self.textViewBottomAnchorConstraint = textViewBottomAnchorConstraint
     self.textViewLeadingAnchorConstraint = textViewLeadingAnchorConstraint
     self.textViewTrailingAnchorConstraint = textViewTrailingAnchorConstraint
-    self.textViewWidthAnchorConstraint = textViewWidthAnchorConstraint
     self.fill1ViewWidthAnchorConstraint = fill1ViewWidthAnchorConstraint
     self.fill2ViewWidthAnchorConstraint = fill2ViewWidthAnchorConstraint
 
@@ -223,7 +216,6 @@ public class PrimaryAxis: UIView {
     textViewBottomAnchorConstraint.identifier = "textViewBottomAnchorConstraint"
     textViewLeadingAnchorConstraint.identifier = "textViewLeadingAnchorConstraint"
     textViewTrailingAnchorConstraint.identifier = "textViewTrailingAnchorConstraint"
-    textViewWidthAnchorConstraint.identifier = "textViewWidthAnchorConstraint"
     fill1ViewWidthAnchorConstraint.identifier = "fill1ViewWidthAnchorConstraint"
     fill2ViewWidthAnchorConstraint.identifier = "fill2ViewWidthAnchorConstraint"
   }

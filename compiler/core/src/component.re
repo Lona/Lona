@@ -585,8 +585,7 @@ module Swift = {
                   "Constraint"
                 )
               ]
-            | (_, FitContent) =>
-              let shrinkConstraint = setUpDimensionContraint(child, secondaryDimensionAnchor, 0.0);
+            | (Fill, FitContent) =>
               [
                 setUpContraint(
                   child,
@@ -596,12 +595,19 @@ module Swift = {
                   "lessThanOrEqualTo",
                   negateNumber(secondaryAfterConstant),
                   "Constraint"
-                ),
-                {
-                  variableName: shrinkConstraint.variableName,
-                  initialValue: shrinkConstraint.initialValue,
-                  priority: Low
-                }
+                )
+              ]
+            | (_, FitContent) =>
+              [
+                setUpContraint(
+                  child,
+                  secondaryAfterAnchor,
+                  layer,
+                  secondaryAfterAnchor,
+                  "equalTo",
+                  negateNumber(secondaryAfterConstant),
+                  "Constraint"
+                )
               ]
             };
           /* If the parent's secondary axis is set to "fit content", this ensures
