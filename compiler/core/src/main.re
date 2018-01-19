@@ -59,7 +59,7 @@ let convertComponent = (filename) => {
     | None => exit("Couldn't find workspace directory. Try specifying it as a parameter (TODO)")
     | Some(workspace) =>
       let colors = Color.parseFile(Path.join([|workspace, "colors.json"|]));
-      let result = Component.Swift.generate(name, parsed, colors);
+      let result = Swift.Component.generate(name, parsed, colors);
       result |> Swift.Render.toString
     }
   }

@@ -92,7 +92,7 @@ function convertComponent(filename) {
     var match = findWorkspaceDirectory(filename);
     if (match) {
       var colors = Color$LonaCompilerCore.parseFile(Path.join(match[0], "colors.json"));
-      return Swift$LonaCompilerCore.Render[/* toString */9](Component$LonaCompilerCore.Swift[/* generate */0](name, parsed, colors));
+      return Swift$LonaCompilerCore.Render[/* toString */9](Swift$LonaCompilerCore.Component[/* generate */0](name, parsed, colors));
     } else {
       console.log("Couldn't find workspace directory. Try specifying it as a parameter (TODO)");
       return (process.exit());

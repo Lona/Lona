@@ -13,34 +13,6 @@ module LayerMap = {
     };
 };
 
-let parameterTypeMap =
-  [
-    ("text", Types.Reference("String")),
-    ("visible", Types.Reference("Boolean")),
-    ("numberOfLines", Types.Reference("Number")),
-    ("backgroundColor", Types.colorType),
-    ("image", Types.urlType),
-    /* Styles */
-    ("alignItems", Types.Reference("String")),
-    ("alignSelf", Types.Reference("String")),
-    ("flex", Types.Reference("Number")),
-    ("flexDirection", Types.Reference("String")),
-    ("font", Types.Reference("String")),
-    ("justifyContent", Types.Reference("String")),
-    ("marginTop", Types.Reference("Number")),
-    ("marginRight", Types.Reference("Number")),
-    ("marginBottom", Types.Reference("Number")),
-    ("marginLeft", Types.Reference("Number")),
-    ("paddingTop", Types.Reference("Number")),
-    ("paddingRight", Types.Reference("Number")),
-    ("paddingBottom", Types.Reference("Number")),
-    ("paddingLeft", Types.Reference("Number")),
-    ("borderRadius", Types.Reference("Number")),
-    ("width", Types.Reference("Number")),
-    ("height", Types.Reference("Number"))
-  ]
-  |> StringMap.fromList;
-
 let stylesSet =
   StringSet.of_list([
     "alignItems",
@@ -60,14 +32,6 @@ let stylesSet =
     "width",
     "height"
   ]);
-
-let parameterType = (name) =>
-  switch (StringMap.find(name, parameterTypeMap)) {
-  | item => item
-  | exception Not_found =>
-    Js.log2("Unknown built-in parameter when deserializing:", name);
-    Reference("BuiltIn-Null")
-  };
 
 let flatten = (layer: Types.layer) => {
   let rec inner = (acc, layer: Types.layer) => {
