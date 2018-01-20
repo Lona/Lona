@@ -11,6 +11,7 @@
 > We don't provide any support of any kind. You shouldn't use this for production unless you _really know what you're doing_. The API and file format will change without warning as we continue development. As this is largely still a research project, there are no automated tests and the code is not yet at the same degree of technical rigor as other Airbnb projects.
 
 ## Overview
+[![Build Status](https://travis-ci.org/airbnb/Lona.svg?branch=master)](https://travis-ci.org/airbnb/Lona)
 
 Lona is a collection of tools for building design systems and using them to generate cross-platform UI code, Sketch files, images, and other artifacts.
 
