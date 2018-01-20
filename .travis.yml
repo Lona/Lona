@@ -7,7 +7,7 @@ env:
   global:
     - WORKSPACE="LonaStudio.xcworkspace"
     - OSX_APP_SCHEME="LonaStudio"
-    - OSX_SDK=macosx10.12
+    - OSX_SDK=macosx10.13
   matrix:
     - DESTINATION="arch=x86_64"                      SCHEME="$OSX_APP_SCHEME"           SDK="$OSX_SDK"     RUN_TESTS="YES"    BUILD_EXAMPLE="YES"
 
