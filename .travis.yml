@@ -1,5 +1,8 @@
 language: objective-c
 osx_image: xcode9
+cache:
+  - bundler
+  - cocoapods
 rvm:
   - 2.2.2
 
