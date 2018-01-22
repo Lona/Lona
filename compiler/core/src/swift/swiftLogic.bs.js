@@ -146,20 +146,30 @@ function toSwiftAST(colors, rootLayer, logicRootNode) {
               }
               if (exit === 1) {
                 match$2 = name.endsWith("borderRadius") ? /* tuple */[
-                    /* SwiftIdentifier */Block.__(5, [name.replace("borderRadius", "layer.cornerRadius")]),
+                    /* SwiftIdentifier */Block.__(5, [name.replace("borderRadius", "cornerRadius")]),
                     match$1
                   ] : (
-                    name.endsWith("height") ? /* tuple */[
-                        /* SwiftIdentifier */Block.__(5, [name.replace(".height", "HeightAnchorConstraint?.constant")]),
+                    name.endsWith("text") ? /* tuple */[
+                        /* SwiftIdentifier */Block.__(5, [name.replace("text", "stringValue")]),
                         match$1
                       ] : (
-                        name.endsWith("width") ? /* tuple */[
-                            /* SwiftIdentifier */Block.__(5, [name.replace(".width", "WidthAnchorConstraint?.constant")]),
+                        name.endsWith("backgroundColor") ? /* tuple */[
+                            /* SwiftIdentifier */Block.__(5, [name.replace("backgroundColor", "fillColor")]),
                             match$1
-                          ] : [
-                            match,
-                            match$1
-                          ]
+                          ] : (
+                            name.endsWith("height") ? /* tuple */[
+                                /* SwiftIdentifier */Block.__(5, [name.replace(".height", "HeightAnchorConstraint?.constant")]),
+                                match$1
+                              ] : (
+                                name.endsWith("width") ? /* tuple */[
+                                    /* SwiftIdentifier */Block.__(5, [name.replace(".width", "WidthAnchorConstraint?.constant")]),
+                                    match$1
+                                  ] : [
+                                    match,
+                                    match$1
+                                  ]
+                              )
+                          )
                       )
                   );
               }

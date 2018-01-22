@@ -5,7 +5,7 @@ module Format = SwiftFormat;
 module Document = SwiftDocument;
 
 let rec toSwiftAST = (colors, rootLayer: Types.layer, logicRootNode) => {
-  let identifierName = (node) =>
+  let identifierName = node =>
     switch node {
     | Logic.Identifier(ltype, [head, ...tail]) =>
       switch head {
@@ -15,12 +15,18 @@ let rec toSwiftAST = (colors, rootLayer: Types.layer, logicRootNode) => {
         | [second, ...tail] when second == rootLayer.name =>
           Ast.SwiftIdentifier(
             List.tl(tail)
-            |> List.fold_left((a, b) => a ++ "." ++ Format.camelCase(b), List.hd(tail))
+            |> List.fold_left(
+                 (a, b) => a ++ "." ++ Format.camelCase(b),
+                 List.hd(tail)
+               )
           )
         | [second, ...tail] =>
           Ast.SwiftIdentifier(
             tail
-            |> List.fold_left((a, b) => a ++ "." ++ Format.camelCase(b), Format.layerName(second))
+            |> List.fold_left(
+                 (a, b) => a ++ "." ++ Format.camelCase(b),
+                 Format.layerName(second)
+               )
           )
         | _ => SwiftIdentifier("BadIdentifier")
         }
@@ -28,7 +34,7 @@ let rec toSwiftAST = (colors, rootLayer: Types.layer, logicRootNode) => {
       }
     | _ => SwiftIdentifier("BadIdentifier")
     };
-  let logicValueToSwiftAST = (x) =>
+  let logicValueToSwiftAST = x =>
     switch x {
     | Logic.Identifier(_) => identifierName(x)
     | Literal(value) => Document.lonaValue(colors, value)
@@ -42,7 +48,7 @@ let rec toSwiftAST = (colors, rootLayer: Types.layer, logicRootNode) => {
       | _ => TypeName(typeName)
       }
     | Named(name, _) => TypeName(name);
-  let fromCmp = (x) =>
+  let fromCmp = x =>
     switch x {
     | Types.Eq => "=="
     | Neq => "!="
@@ -56,35 +62,62 @@ let rec toSwiftAST = (colors, rootLayer: Types.layer, logicRootNode) => {
     fun
     | Logic.Block(body) => body
     | node => [node];
-  let rec inner = (logicRootNode) =>
+  let rec inner = logicRootNode =>
     switch logicRootNode {
     | Logic.Assign(a, b) =>
       let (left, right) =
         switch (logicValueToSwiftAST(b), logicValueToSwiftAST(a)) {
         | (Ast.SwiftIdentifier(name), LiteralExpression(Boolean(value)))
             when name |> Js.String.endsWith("visible") => (
-            Ast.SwiftIdentifier(name |> Js.String.replace("visible", "isHidden")),
+            Ast.SwiftIdentifier(
+              name |> Js.String.replace("visible", "isHidden")
+            ),
             Ast.LiteralExpression(Boolean(! value))
           )
-        | (Ast.SwiftIdentifier(name), right) when name |> Js.String.endsWith("borderRadius") => (
-            Ast.SwiftIdentifier(name |> Js.String.replace("borderRadius", "layer.cornerRadius")),
-            right
-          )
-        | (Ast.SwiftIdentifier(name), right) when name |> Js.String.endsWith("height") => (
+        | (Ast.SwiftIdentifier(name), right)
+            when name |> Js.String.endsWith("borderRadius") => (
             Ast.SwiftIdentifier(
-              name |> Js.String.replace(".height", "HeightAnchorConstraint?.constant")
+              name |> Js.String.replace("borderRadius", "cornerRadius")
             ),
             right
           )
-        | (Ast.SwiftIdentifier(name), right) when name |> Js.String.endsWith("width") => (
+        | (Ast.SwiftIdentifier(name), right)
+            when name |> Js.String.endsWith("text") => (
             Ast.SwiftIdentifier(
-              name |> Js.String.replace(".width", "WidthAnchorConstraint?.constant")
+              name |> Js.String.replace("text", "stringValue")
+            ),
+            right
+          )
+        | (Ast.SwiftIdentifier(name), right)
+            when name |> Js.String.endsWith("backgroundColor") => (
+            Ast.SwiftIdentifier(
+              name
+              |> Js.String.replace("backgroundColor", "fillColor")
+            ),
+            right
+          )
+        | (Ast.SwiftIdentifier(name), right)
+            when name |> Js.String.endsWith("height") => (
+            Ast.SwiftIdentifier(
+              name
+              |> Js.String.replace(
+                   ".height",
+                   "HeightAnchorConstraint?.constant"
+                 )
+            ),
+            right
+          )
+        | (Ast.SwiftIdentifier(name), right)
+            when name |> Js.String.endsWith("width") => (
+            Ast.SwiftIdentifier(
+              name
+              |> Js.String.replace(".width", "WidthAnchorConstraint?.constant")
             ),
             right
           )
         | nodes => nodes
         };
-      Ast.BinaryExpression({"left": left, "operator": "=", "right": right})
+      Ast.BinaryExpression({"left": left, "operator": "=", "right": right});
     | IfExists(a, body) =>
       /* TODO: Once we support optional params, compare to nil or extract via pattern */
       Ast.IfStatement({
@@ -120,7 +153,12 @@ let rec toSwiftAST = (colors, rootLayer: Types.layer, logicRootNode) => {
           "modifiers": [],
           "pattern":
             Ast.IdentifierPattern({
-              "identifier": List.fold_left((a, b) => a ++ "." ++ b, List.hd(path), List.tl(path)),
+              "identifier":
+                List.fold_left(
+                  (a, b) => a ++ "." ++ b,
+                  List.hd(path),
+                  List.tl(path)
+                ),
               "annotation": Some(ltype |> typeAnnotationDoc)
             }),
           "init": (None: option(Ast.node)),
@@ -130,5 +168,5 @@ let rec toSwiftAST = (colors, rootLayer: Types.layer, logicRootNode) => {
       }
     | None => Empty
     };
-  logicRootNode |> unwrapBlock |> List.map(inner)
+  logicRootNode |> unwrapBlock |> List.map(inner);
 };

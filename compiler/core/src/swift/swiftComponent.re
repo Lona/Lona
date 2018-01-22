@@ -55,20 +55,25 @@ let generate = (name, json, colors) => {
           WillSetDidSetBlock({
             "willSet": None,
             "didSet":
-              Some([FunctionCallExpression({"name": SwiftIdentifier("update"), "arguments": []})])
+              Some([
+                FunctionCallExpression({
+                  "name": SwiftIdentifier("update"),
+                  "arguments": []
+                })
+              ])
           })
         )
     });
   /* let viewTypeDoc =
      fun
-     | Types.View => TypeName("UIView")
+     | Types.View => TypeName("NSBox")
      | Text => TypeName("UILabel")
      | Image => TypeName("UIImageView")
      | _ => TypeName("TypeUnknown"); */
   let viewTypeInitDoc =
     fun
-    | Types.View => SwiftIdentifier("UIView")
-    | Text => SwiftIdentifier("UILabel")
+    | Types.View => SwiftIdentifier("NSBox")
+    | Text => SwiftIdentifier("NSTextField")
     | Image => SwiftIdentifier("UIImageView")
     | _ => SwiftIdentifier("TypeUnknown");
   let viewVariableDoc = (layer: Types.layer) =>
@@ -85,7 +90,12 @@ let generate = (name, json, colors) => {
             "name": layer.typeName |> viewTypeInitDoc,
             "arguments":
               layer.typeName == Types.Text ?
-                [] :
+                [
+                  FunctionCallArgument({
+                    "name": Some(SwiftIdentifier("labelWithString")),
+                    "value": LiteralExpression(String(""))
+                  })
+                ] :
                 [
                   FunctionCallArgument({
                     "name": Some(SwiftIdentifier("frame")),
@@ -96,7 +106,7 @@ let generate = (name, json, colors) => {
         ),
       "block": None
     });
-  let constraintVariableDoc = (variableName) =>
+  let constraintVariableDoc = variableName =>
     VariableDeclaration({
       "modifiers": [AccessLevelModifier(PrivateModifier)],
       "pattern":
@@ -120,8 +130,9 @@ let generate = (name, json, colors) => {
     {swiftName: "leadingMargin", lonaName: "marginLeft"}
   ];
   let spacingVariableDoc = (layer: Types.layer) => {
-    let variableName = (variable) =>
-      layer === rootLayer ? variable : Format.layerName(layer.name) ++ Format.upperFirst(variable);
+    let variableName = variable =>
+      layer === rootLayer ?
+        variable : Format.layerName(layer.name) ++ Format.upperFirst(variable);
     let marginVariables =
       layer === rootLayer ?
         [] :
@@ -137,12 +148,14 @@ let generate = (name, json, colors) => {
               "init":
                 Some(
                   LiteralExpression(
-                    FloatingPoint(Layer.getNumberParameter(marginParameter.lonaName, layer))
+                    FloatingPoint(
+                      Layer.getNumberParameter(marginParameter.lonaName, layer)
+                    )
                   )
                 ),
               "block": None
             });
-          marginParameters |> List.map(createVariable)
+          marginParameters |> List.map(createVariable);
         };
     let paddingVariables =
       switch layer.children {
@@ -159,14 +172,16 @@ let generate = (name, json, colors) => {
             "init":
               Some(
                 LiteralExpression(
-                  FloatingPoint(Layer.getNumberParameter(paddingParameter.lonaName, layer))
+                  FloatingPoint(
+                    Layer.getNumberParameter(paddingParameter.lonaName, layer)
+                  )
                 )
               ),
             "block": None
           });
-        paddingParameters |> List.map(createVariable)
+        paddingParameters |> List.map(createVariable);
       };
-    marginVariables @ paddingVariables
+    marginVariables @ paddingVariables;
   };
   let initParameterDoc = (parameter: Decode.parameter) =>
     Parameter({
@@ -177,7 +192,11 @@ let generate = (name, json, colors) => {
     });
   let initParameterAssignmentDoc = (parameter: Decode.parameter) =>
     BinaryExpression({
-      "left": MemberExpression([SwiftIdentifier("self"), SwiftIdentifier(parameter.name)]),
+      "left":
+        MemberExpression([
+          SwiftIdentifier("self"),
+          SwiftIdentifier(parameter.name)
+        ]),
       "operator": "=",
       "right": SwiftIdentifier(parameter.name)
     });
@@ -202,7 +221,8 @@ let generate = (name, json, colors) => {
           "arguments": [
             FunctionCallArgument({
               "name": None,
-              "value": SwiftIdentifier("\"init(coder:) has not been implemented\"")
+              "value":
+                SwiftIdentifier("\"init(coder:) has not been implemented\"")
             })
           ]
         })
@@ -233,13 +253,21 @@ let generate = (name, json, colors) => {
               ])
             ],
             [
-              FunctionCallExpression({"name": SwiftIdentifier("setUpViews"), "arguments": []}),
+              FunctionCallExpression({
+                "name": SwiftIdentifier("setUpViews"),
+                "arguments": []
+              }),
               FunctionCallExpression({
                 "name": SwiftIdentifier("setUpConstraints"),
                 "arguments": []
               })
             ],
-            [FunctionCallExpression({"name": SwiftIdentifier("update"), "arguments": []})]
+            [
+              FunctionCallExpression({
+                "name": SwiftIdentifier("update"),
+                "arguments": []
+              })
+            ]
           ]
         )
     });
@@ -254,7 +282,8 @@ let generate = (name, json, colors) => {
     memberOrSelfExpression(parentNameOrSelf(layer), statements);
   let defaultValueForParameter =
     fun
-    | "backgroundColor" => MemberExpression([SwiftIdentifier("UIColor"), SwiftIdentifier("clear")])
+    | "backgroundColor" =>
+      MemberExpression([SwiftIdentifier("NSColor"), SwiftIdentifier("clear")])
     | _ => LiteralExpression(Integer(0));
   let initialLayerValue = (layer: Types.layer, name) =>
     switch (StringMap.find_opt(name, layer.parameters)) {
@@ -271,21 +300,36 @@ let generate = (name, json, colors) => {
       | ("borderRadius", LiteralExpression(FloatingPoint(_)) as right) => (
           layerMemberExpression(
             layer,
-            [SwiftIdentifier("layer"), SwiftIdentifier("cornerRadius")]
+            [SwiftIdentifier("cornerRadius")]
           ),
           right
         )
+      | ("text", _ as right) => (
+          layerMemberExpression(layer, [SwiftIdentifier("stringValue")]),
+          right
+        )
+      | ("backgroundColor", _ as right) => (
+          layerMemberExpression(layer, [SwiftIdentifier("fillColor")]),
+          right
+        )
       | ("height", LiteralExpression(FloatingPoint(_)) as right) => (
-          SwiftIdentifier(parentNameOrSelf(layer) ++ "HeightAnchorConstraint?.constant"),
+          SwiftIdentifier(
+            parentNameOrSelf(layer) ++ "HeightAnchorConstraint?.constant"
+          ),
           right
         )
       | ("width", LiteralExpression(FloatingPoint(_)) as right) => (
-          SwiftIdentifier(parentNameOrSelf(layer) ++ "WidthAnchorConstraint?.constant"),
+          SwiftIdentifier(
+            parentNameOrSelf(layer) ++ "WidthAnchorConstraint?.constant"
+          ),
           right
         )
-      | (_, right) => (layerMemberExpression(layer, [SwiftIdentifier(name)]), right)
+      | (_, right) => (
+          layerMemberExpression(layer, [SwiftIdentifier(name)]),
+          right
+        )
       };
-    BinaryExpression({"left": left, "operator": "=", "right": right})
+    BinaryExpression({"left": left, "operator": "=", "right": right});
   };
   let setUpViewsDoc = (root: Types.layer) => {
     let setUpDefaultsDoc = () => {
@@ -318,17 +362,44 @@ let generate = (name, json, colors) => {
         |> List.filter(filterParameters)
         |> List.filter(filterNotAssignedByLogic(layer))
         |> List.map(((k, v)) => defineInitialLayerValue(layer, (k, v)));
-      rootLayer |> Layer.flatten |> List.map(defineInitialLayerValues) |> List.concat
+      rootLayer
+      |> Layer.flatten
+      |> List.map(defineInitialLayerValues)
+      |> List.concat;
     };
     let addSubviews = (parent: option(Types.layer), layer: Types.layer) =>
       switch parent {
       | None => []
       | Some(parent) => [
           FunctionCallExpression({
-            "name": layerMemberExpression(parent, [SwiftIdentifier("addSubview")]),
+            "name":
+              layerMemberExpression(parent, [SwiftIdentifier("addSubview")]),
             "arguments": [SwiftIdentifier(layer.name |> Format.layerName)]
           })
         ]
+      };
+    let initializeBox = (layer: Types.layer) =>
+      switch layer.typeName {
+      | View => [
+          BinaryExpression({
+            "left": layerMemberExpression(layer, [SwiftIdentifier("boxType")]),
+            "operator": "=",
+            "right": SwiftIdentifier(".custom")
+          }),
+          BinaryExpression({
+            "left":
+              layerMemberExpression(layer, [SwiftIdentifier("borderType")]),
+            "operator": "=",
+            "right": SwiftIdentifier(".noBorder")
+          }),
+          BinaryExpression({
+            "left":
+              layerMemberExpression(layer, [SwiftIdentifier("contentViewMargins")]),
+            "operator": "=",
+            "right": SwiftIdentifier(".zero")
+          })
+        ]
+      | _ => []
       };
     FunctionDeclaration({
       "name": "setUpViews",
@@ -337,16 +408,30 @@ let generate = (name, json, colors) => {
       "body":
         Document.joinGroups(
           Empty,
-          [Layer.flatmapParent(addSubviews, root) |> List.concat, setUpDefaultsDoc()]
+          [
+            Layer.flatmap(initializeBox, root) |> List.concat,
+            Layer.flatmapParent(addSubviews, root) |> List.concat,
+            setUpDefaultsDoc()
+          ]
         )
-    })
+    });
   };
   let getConstraints = (root: Types.layer) => {
     let setUpContraint =
-        (layer: Types.layer, anchor1, parent: Types.layer, anchor2, relation, value, suffix) => {
+        (
+          layer: Types.layer,
+          anchor1,
+          parent: Types.layer,
+          anchor2,
+          relation,
+          value,
+          suffix
+        ) => {
       let variableName =
         (
-          layer === rootLayer ? anchor1 : Format.layerName(layer.name) ++ Format.upperFirst(anchor1)
+          layer === rootLayer ?
+            anchor1 :
+            Format.layerName(layer.name) ++ Format.upperFirst(anchor1)
         )
         ++ suffix;
       let initialValue =
@@ -358,19 +443,32 @@ let generate = (name, json, colors) => {
             "arguments": [
               FunctionCallArgument({
                 "name": Some(SwiftIdentifier(relation)),
-                "value": layerMemberExpression(parent, [SwiftIdentifier(anchor2)])
+                "value":
+                  layerMemberExpression(parent, [SwiftIdentifier(anchor2)])
               }),
-              FunctionCallArgument({"name": Some(SwiftIdentifier("constant")), "value": value})
+              FunctionCallArgument({
+                "name": Some(SwiftIdentifier("constant")),
+                "value": value
+              })
             ]
           })
         ]);
-      {variableName, initialValue, priority: Required}
+      {variableName, initialValue, priority: Required};
     };
     let setUpLessThanOrEqualToContraint =
-        (layer: Types.layer, anchor1, parent: Types.layer, anchor2, value, suffix) => {
+        (
+          layer: Types.layer,
+          anchor1,
+          parent: Types.layer,
+          anchor2,
+          value,
+          suffix
+        ) => {
       let variableName =
         (
-          layer === rootLayer ? anchor1 : Format.layerName(layer.name) ++ Format.upperFirst(anchor1)
+          layer === rootLayer ?
+            anchor1 :
+            Format.layerName(layer.name) ++ Format.upperFirst(anchor1)
         )
         ++ suffix;
       let initialValue =
@@ -382,17 +480,24 @@ let generate = (name, json, colors) => {
             "arguments": [
               FunctionCallArgument({
                 "name": Some(SwiftIdentifier("lessThanOrEqualTo")),
-                "value": layerMemberExpression(parent, [SwiftIdentifier(anchor2)])
+                "value":
+                  layerMemberExpression(parent, [SwiftIdentifier(anchor2)])
               }),
-              FunctionCallArgument({"name": Some(SwiftIdentifier("constant")), "value": value})
+              FunctionCallArgument({
+                "name": Some(SwiftIdentifier("constant")),
+                "value": value
+              })
             ]
           })
         ]);
-      {variableName, initialValue, priority: Low}
+      {variableName, initialValue, priority: Low};
     };
     let setUpDimensionContraint = (layer: Types.layer, anchor, constant) => {
       let variableName =
-        (layer === rootLayer ? anchor : Format.layerName(layer.name) ++ Format.upperFirst(anchor))
+        (
+          layer === rootLayer ?
+            anchor : Format.layerName(layer.name) ++ Format.upperFirst(anchor)
+        )
         ++ "Constraint";
       let initialValue =
         layerMemberExpression(
@@ -410,27 +515,32 @@ let generate = (name, json, colors) => {
             })
           ]
         );
-      {variableName, initialValue, priority: Required}
+      {variableName, initialValue, priority: Required};
     };
-    let negateNumber = (expression) =>
+    let negateNumber = expression =>
       PrefixExpression({"operator": "-", "expression": expression});
     let constraintConstantExpression =
         (layer: Types.layer, variable1, parent: Types.layer, variable2) => {
       let variableName = (layer: Types.layer, variable) =>
         layer === rootLayer ?
-          variable : Format.layerName(layer.name) ++ Format.upperFirst(variable);
+          variable :
+          Format.layerName(layer.name) ++ Format.upperFirst(variable);
       BinaryExpression({
         "left": SwiftIdentifier(variableName(layer, variable1)),
         "operator": "+",
         "right": SwiftIdentifier(variableName(parent, variable2))
-      })
+      });
     };
     let constrainAxes = (layer: Types.layer) => {
       let direction = Layer.getFlexDirection(layer);
-      let primaryBeforeAnchor = direction == "column" ? "topAnchor" : "leadingAnchor";
-      let primaryAfterAnchor = direction == "column" ? "bottomAnchor" : "trailingAnchor";
-      let secondaryBeforeAnchor = direction == "column" ? "leadingAnchor" : "topAnchor";
-      let secondaryAfterAnchor = direction == "column" ? "trailingAnchor" : "bottomAnchor";
+      let primaryBeforeAnchor =
+        direction == "column" ? "topAnchor" : "leadingAnchor";
+      let primaryAfterAnchor =
+        direction == "column" ? "bottomAnchor" : "trailingAnchor";
+      let secondaryBeforeAnchor =
+        direction == "column" ? "leadingAnchor" : "topAnchor";
+      let secondaryAfterAnchor =
+        direction == "column" ? "trailingAnchor" : "bottomAnchor";
       let height = Layer.getNumberParameterOpt("height", layer);
       let width = Layer.getNumberParameterOpt("width", layer);
       let primaryDimension = direction == "column" ? "height" : "width";
@@ -438,25 +548,41 @@ let generate = (name, json, colors) => {
       let secondaryDimensionAnchor = secondaryDimension ++ "Anchor";
       /* let primaryDimensionValue = direction == "column" ? height : width; */
       /* let secondaryDimensionValue = direction == "column" ? width : height; */
-      let sizingRules = layer |> Layer.getSizingRules(Layer.findParent(rootLayer, layer));
-      let primarySizingRule = direction == "column" ? sizingRules.height : sizingRules.width;
-      let secondarySizingRule = direction == "column" ? sizingRules.width : sizingRules.height;
+      let sizingRules =
+        layer |> Layer.getSizingRules(Layer.findParent(rootLayer, layer));
+      let primarySizingRule =
+        direction == "column" ? sizingRules.height : sizingRules.width;
+      let secondarySizingRule =
+        direction == "column" ? sizingRules.width : sizingRules.height;
       let flexChildren =
         layer.children
-        |> List.filter((child: Types.layer) => Layer.getNumberParameter("flex", child) === 1.0);
+        |> List.filter((child: Types.layer) =>
+             Layer.getNumberParameter("flex", child) === 1.0
+           );
       let addConstraints = (index, child: Types.layer) => {
         let childSizingRules = child |> Layer.getSizingRules(Some(layer));
         /* let childPrimarySizingRule =
            direction == "column" ? childSizingRules.height : childSizingRules.width; */
         let childSecondarySizingRule =
-          direction == "column" ? childSizingRules.width : childSizingRules.height;
+          direction == "column" ?
+            childSizingRules.width : childSizingRules.height;
         let firstViewConstraints =
           switch index {
           | 0 =>
             let primaryBeforeConstant =
               direction == "column" ?
-                constraintConstantExpression(layer, "topPadding", child, "topMargin") :
-                constraintConstantExpression(layer, "leadingPadding", child, "leadingMargin");
+                constraintConstantExpression(
+                  layer,
+                  "topPadding",
+                  child,
+                  "topMargin"
+                ) :
+                constraintConstantExpression(
+                  layer,
+                  "leadingPadding",
+                  child,
+                  "leadingMargin"
+                );
             [
               setUpContraint(
                 child,
@@ -467,7 +593,7 @@ let generate = (name, json, colors) => {
                 primaryBeforeConstant,
                 "Constraint"
               )
-            ]
+            ];
           | _ => []
           };
         let lastViewConstraints =
@@ -487,8 +613,18 @@ let generate = (name, json, colors) => {
                || List.length(flexChildren) > 0; */
             let primaryAfterConstant =
               direction == "column" ?
-                constraintConstantExpression(layer, "bottomPadding", child, "bottomMargin") :
-                constraintConstantExpression(layer, "trailingPadding", child, "trailingMargin");
+                constraintConstantExpression(
+                  layer,
+                  "bottomPadding",
+                  child,
+                  "bottomMargin"
+                ) :
+                constraintConstantExpression(
+                  layer,
+                  "trailingPadding",
+                  child,
+                  "trailingMargin"
+                );
             needsPrimaryAfterConstraint ?
               [
                 setUpContraint(
@@ -501,7 +637,7 @@ let generate = (name, json, colors) => {
                   "Constraint"
                 )
               ] :
-              []
+              [];
           | _ => []
           };
         let middleViewConstraints =
@@ -511,7 +647,12 @@ let generate = (name, json, colors) => {
             let previousLayer = List.nth(layer.children, index - 1);
             let betweenConstant =
               direction == "column" ?
-                constraintConstantExpression(previousLayer, "bottomMargin", child, "topMargin") :
+                constraintConstantExpression(
+                  previousLayer,
+                  "bottomMargin",
+                  child,
+                  "topMargin"
+                ) :
                 constraintConstantExpression(
                   previousLayer,
                   "trailingMargin",
@@ -528,16 +669,36 @@ let generate = (name, json, colors) => {
                 betweenConstant,
                 "Constraint"
               )
-            ]
+            ];
           };
         let secondaryBeforeConstant =
           direction == "column" ?
-            constraintConstantExpression(layer, "leadingPadding", child, "leadingMargin") :
-            constraintConstantExpression(layer, "topPadding", child, "topMargin");
+            constraintConstantExpression(
+              layer,
+              "leadingPadding",
+              child,
+              "leadingMargin"
+            ) :
+            constraintConstantExpression(
+              layer,
+              "topPadding",
+              child,
+              "topMargin"
+            );
         let secondaryAfterConstant =
           direction == "column" ?
-            constraintConstantExpression(layer, "trailingPadding", child, "trailingMargin") :
-            constraintConstantExpression(layer, "bottomPadding", child, "bottomMargin");
+            constraintConstantExpression(
+              layer,
+              "trailingPadding",
+              child,
+              "trailingMargin"
+            ) :
+            constraintConstantExpression(
+              layer,
+              "bottomPadding",
+              child,
+              "bottomMargin"
+            );
         let secondaryBeforeConstraint =
           setUpContraint(
             child,
@@ -622,7 +783,7 @@ let generate = (name, json, colors) => {
         @ middleViewConstraints
         @ [secondaryBeforeConstraint]
         @ secondaryAfterConstraint
-        @ fitContentSecondaryConstraint
+        @ fitContentSecondaryConstraint;
       };
       /* Children with "flex: 1" should all have equal dimensions along the primary axis */
       let flexChildrenConstraints =
@@ -639,12 +800,14 @@ let generate = (name, json, colors) => {
               LiteralExpression(FloatingPoint(0.0)),
               "SiblingConstraint" ++ string_of_int(index)
             );
-          rest |> List.mapi(sameAnchorConstraint(sameAnchor))
+          rest |> List.mapi(sameAnchorConstraint(sameAnchor));
         | _ => []
         };
       let heightConstraint =
         switch height {
-        | Some(height) => [setUpDimensionContraint(layer, "heightAnchor", height)]
+        | Some(height) => [
+            setUpDimensionContraint(layer, "heightAnchor", height)
+          ]
         | None => []
         };
       let widthConstraint =
@@ -656,9 +819,9 @@ let generate = (name, json, colors) => {
         [heightConstraint, widthConstraint]
         @ [flexChildrenConstraints]
         @ (layer.children |> List.mapi(addConstraints));
-      constraints |> List.concat
+      constraints |> List.concat;
     };
-    root |> Layer.flatmap(constrainAxes) |> List.concat
+    root |> Layer.flatmap(constrainAxes) |> List.concat;
   };
   let constraints = getConstraints(rootLayer);
   let setUpConstraintsDoc = (root: Types.layer) => {
@@ -672,46 +835,68 @@ let generate = (name, json, colors) => {
         "operator": "=",
         "right": LiteralExpression(Boolean(false))
       });
-    let defineConstraint = (def) =>
+    let defineConstraint = def =>
       ConstantDeclaration({
         "modifiers": [],
         "init": Some(def.initialValue),
-        "pattern": IdentifierPattern({"identifier": def.variableName, "annotation": None})
+        "pattern":
+          IdentifierPattern({
+            "identifier": def.variableName,
+            "annotation": None
+          })
       });
-    let setConstraintPriority = (def) =>
+    let setConstraintPriority = def =>
       BinaryExpression({
-        "left": MemberExpression([SwiftIdentifier(def.variableName), SwiftIdentifier("priority")]),
+        "left":
+          MemberExpression([
+            SwiftIdentifier(def.variableName),
+            SwiftIdentifier("priority")
+          ]),
         "operator": "=",
         "right":
           MemberExpression([
-            SwiftIdentifier("UILayoutPriority"),
+            SwiftIdentifier("NSLayoutConstraint"),
+            SwiftIdentifier("Priority"),
             SwiftIdentifier(priorityName(def.priority))
           ])
       });
     let activateConstraints = () =>
       FunctionCallExpression({
         "name":
-          MemberExpression([SwiftIdentifier("NSLayoutConstraint"), SwiftIdentifier("activate")]),
+          MemberExpression([
+            SwiftIdentifier("NSLayoutConstraint"),
+            SwiftIdentifier("activate")
+          ]),
         "arguments": [
           FunctionCallArgument({
             "name": None,
             "value":
               LiteralExpression(
-                Array(constraints |> List.map((def) => SwiftIdentifier(def.variableName)))
+                Array(
+                  constraints
+                  |> List.map(def => SwiftIdentifier(def.variableName))
+                )
               )
           })
         ]
       });
-    let assignConstraint = (def) =>
+    let assignConstraint = def =>
       BinaryExpression({
-        "left": MemberExpression([SwiftIdentifier("self"), SwiftIdentifier(def.variableName)]),
+        "left":
+          MemberExpression([
+            SwiftIdentifier("self"),
+            SwiftIdentifier(def.variableName)
+          ]),
         "operator": "=",
         "right": SwiftIdentifier(def.variableName)
       });
-    let assignConstraintIdentifier = (def) =>
+    let assignConstraintIdentifier = def =>
       BinaryExpression({
         "left":
-          MemberExpression([SwiftIdentifier(def.variableName), SwiftIdentifier("identifier")]),
+          MemberExpression([
+            SwiftIdentifier(def.variableName),
+            SwiftIdentifier("identifier")
+          ]),
         "operator": "=",
         "right": LiteralExpression(String(def.variableName))
       });
@@ -725,7 +910,7 @@ let generate = (name, json, colors) => {
           [Empty],
           constraints |> List.map(defineConstraint),
           constraints
-          |> List.filter((def) => def.priority == Low)
+          |> List.filter(def => def.priority == Low)
           |> List.map(setConstraintPriority),
           [Empty],
           [activateConstraints()],
@@ -734,7 +919,7 @@ let generate = (name, json, colors) => {
           [LineComment("For debugging")],
           constraints |> List.map(assignConstraintIdentifier)
         ])
-    })
+    });
   };
   let updateDoc = () => {
     /* let printStringBinding = ((key, value)) => Js.log2(key, value);
@@ -746,11 +931,12 @@ let generate = (name, json, colors) => {
     /* let cond = Logic.conditionallyAssignedIdentifiers(logic);
        cond |> Logic.IdentifierSet.elements |> List.iter(((ltype, path)) => Js.log(path)); */
     /* TODO: Figure out how to handle images */
-    let filterParameters = ((name, _)) => name != "image" && name != "textStyle";
+    let filterParameters = ((name, _)) =>
+      name != "image" && name != "textStyle";
     let conditionallyAssigned = Logic.conditionallyAssignedIdentifiers(logic);
     let filterConditionallyAssigned = (layer: Types.layer, (name, _)) => {
       let isAssigned = ((_, value)) => value == ["layers", layer.name, name];
-      conditionallyAssigned |> Logic.IdentifierSet.exists(isAssigned)
+      conditionallyAssigned |> Logic.IdentifierSet.exists(isAssigned);
     };
     let defineInitialLayerValues = ((layer, propertyMap)) =>
       propertyMap
@@ -773,17 +959,17 @@ let generate = (name, json, colors) => {
             SwiftLogic.toSwiftAST(colors, rootLayer, logic)
           ]
         )
-    })
+    });
   };
   TopLevelDeclaration({
     "statements": [
-      ImportDeclaration("UIKit"),
+      ImportDeclaration("AppKit"),
       ImportDeclaration("Foundation"),
       LineComment("MARK: - " ++ name),
       Empty,
       ClassDeclaration({
         "name": name,
-        "inherits": [TypeName("UIView")],
+        "inherits": [TypeName("NSBox")],
         "modifier": Some(PublicModifier),
         "isFinal": false,
         "body":
@@ -802,7 +988,8 @@ let generate = (name, json, colors) => {
             [Empty],
             rootLayer |> Layer.flatmap(spacingVariableDoc) |> List.concat,
             [Empty],
-            constraints |> List.map((def) => constraintVariableDoc(def.variableName)),
+            constraints
+            |> List.map(def => constraintVariableDoc(def.variableName)),
             [Empty],
             [setUpViewsDoc(rootLayer)],
             [Empty],
@@ -812,5 +999,5 @@ let generate = (name, json, colors) => {
           ])
       })
     ]
-  })
+  });
 };

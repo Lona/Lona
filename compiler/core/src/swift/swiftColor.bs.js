@@ -28,7 +28,7 @@ function render(target, colors) {
     };
     return SwiftRender$LonaCompilerCore.toString(/* TopLevelDeclaration */Block.__(19, [{
                     statements: /* :: */[
-                      /* ImportDeclaration */Block.__(10, ["UIKit"]),
+                      /* ImportDeclaration */Block.__(10, ["AppKit"]),
                       /* :: */[
                         /* Empty */0,
                         /* :: */[

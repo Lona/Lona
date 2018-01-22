@@ -66,9 +66,9 @@ function generate(name, json, colors) {
   var viewTypeInitDoc = function (param) {
     switch (param) {
       case 0 : 
-          return /* SwiftIdentifier */Block.__(5, ["UIView"]);
+          return /* SwiftIdentifier */Block.__(5, ["NSBox"]);
       case 1 : 
-          return /* SwiftIdentifier */Block.__(5, ["UILabel"]);
+          return /* SwiftIdentifier */Block.__(5, ["NSTextField"]);
       case 2 : 
           return /* SwiftIdentifier */Block.__(5, ["UIImageView"]);
       case 3 : 
@@ -92,7 +92,13 @@ function generate(name, json, colors) {
                     }]),
                 init: /* Some */[/* FunctionCallExpression */Block.__(14, [{
                         name: viewTypeInitDoc(layer[/* typeName */0]),
-                        arguments: match !== 0 ? /* [] */0 : /* :: */[
+                        arguments: match !== 0 ? /* :: */[
+                            /* FunctionCallArgument */Block.__(13, [{
+                                  name: /* Some */[/* SwiftIdentifier */Block.__(5, ["labelWithString"])],
+                                  value: /* LiteralExpression */Block.__(0, [/* String */Block.__(3, [""])])
+                                }]),
+                            /* [] */0
+                          ] : /* :: */[
                             /* FunctionCallArgument */Block.__(13, [{
                                   name: /* Some */[/* SwiftIdentifier */Block.__(5, ["frame"])],
                                   value: /* SwiftIdentifier */Block.__(5, [".zero"])
@@ -344,7 +350,7 @@ function generate(name, json, colors) {
       var param = name;
       if (param === "backgroundColor") {
         return /* MemberExpression */Block.__(1, [/* :: */[
-                    /* SwiftIdentifier */Block.__(5, ["UIColor"]),
+                    /* SwiftIdentifier */Block.__(5, ["NSColor"]),
                     /* :: */[
                       /* SwiftIdentifier */Block.__(5, ["clear"]),
                       /* [] */0
@@ -361,6 +367,15 @@ function generate(name, json, colors) {
     var match$1;
     var exit = 0;
     switch (name) {
+      case "backgroundColor" : 
+          match$1 = /* tuple */[
+            memberOrSelfExpression(parentNameOrSelf(layer), /* :: */[
+                  /* SwiftIdentifier */Block.__(5, ["fillColor"]),
+                  /* [] */0
+                ]),
+            match
+          ];
+          break;
       case "borderRadius" : 
           if (typeof match === "number") {
             exit = 1;
@@ -373,11 +388,8 @@ function generate(name, json, colors) {
             } else {
               match$1 = /* tuple */[
                 memberOrSelfExpression(parentNameOrSelf(layer), /* :: */[
-                      /* SwiftIdentifier */Block.__(5, ["layer"]),
-                      /* :: */[
-                        /* SwiftIdentifier */Block.__(5, ["cornerRadius"]),
-                        /* [] */0
-                      ]
+                      /* SwiftIdentifier */Block.__(5, ["cornerRadius"]),
+                      /* [] */0
                     ]),
                 match
               ];
@@ -400,6 +412,15 @@ function generate(name, json, colors) {
               ];
             }
           }
+          break;
+      case "text" : 
+          match$1 = /* tuple */[
+            memberOrSelfExpression(parentNameOrSelf(layer), /* :: */[
+                  /* SwiftIdentifier */Block.__(5, ["stringValue"]),
+                  /* [] */0
+                ]),
+            match
+          ];
           break;
       case "visible" : 
           if (typeof match === "number") {
@@ -509,6 +530,44 @@ function generate(name, json, colors) {
         return /* [] */0;
       }
     };
+    var initializeBox = function (layer) {
+      var match = layer[/* typeName */0];
+      if (match !== 0) {
+        return /* [] */0;
+      } else {
+        return /* :: */[
+                /* BinaryExpression */Block.__(2, [{
+                      left: memberOrSelfExpression(parentNameOrSelf(layer), /* :: */[
+                            /* SwiftIdentifier */Block.__(5, ["boxType"]),
+                            /* [] */0
+                          ]),
+                      operator: "=",
+                      right: /* SwiftIdentifier */Block.__(5, [".custom"])
+                    }]),
+                /* :: */[
+                  /* BinaryExpression */Block.__(2, [{
+                        left: memberOrSelfExpression(parentNameOrSelf(layer), /* :: */[
+                              /* SwiftIdentifier */Block.__(5, ["borderType"]),
+                              /* [] */0
+                            ]),
+                        operator: "=",
+                        right: /* SwiftIdentifier */Block.__(5, [".noBorder"])
+                      }]),
+                  /* :: */[
+                    /* BinaryExpression */Block.__(2, [{
+                          left: memberOrSelfExpression(parentNameOrSelf(layer), /* :: */[
+                                /* SwiftIdentifier */Block.__(5, ["contentViewMargins"]),
+                                /* [] */0
+                              ]),
+                          operator: "=",
+                          right: /* SwiftIdentifier */Block.__(5, [".zero"])
+                        }]),
+                    /* [] */0
+                  ]
+                ]
+              ];
+      }
+    };
     return /* FunctionDeclaration */Block.__(9, [{
                 name: "setUpViews",
                 modifiers: /* :: */[
@@ -517,10 +576,13 @@ function generate(name, json, colors) {
                 ],
                 parameters: /* [] */0,
                 body: SwiftDocument$LonaCompilerCore.joinGroups(/* Empty */0, /* :: */[
-                      List.concat(Layer$LonaCompilerCore.flatmapParent(addSubviews, root)),
+                      List.concat(Layer$LonaCompilerCore.flatmap(initializeBox, root)),
                       /* :: */[
-                        setUpDefaultsDoc(/* () */0),
-                        /* [] */0
+                        List.concat(Layer$LonaCompilerCore.flatmapParent(addSubviews, root)),
+                        /* :: */[
+                          setUpDefaultsDoc(/* () */0),
+                          /* [] */0
+                        ]
                       ]
                     ])
               }]);
@@ -838,10 +900,13 @@ function generate(name, json, colors) {
                       ]]),
                   operator: "=",
                   right: /* MemberExpression */Block.__(1, [/* :: */[
-                        /* SwiftIdentifier */Block.__(5, ["UILayoutPriority"]),
+                        /* SwiftIdentifier */Block.__(5, ["NSLayoutConstraint"]),
                         /* :: */[
-                          /* SwiftIdentifier */Block.__(5, [priorityName(def[/* priority */2])]),
-                          /* [] */0
+                          /* SwiftIdentifier */Block.__(5, ["Priority"]),
+                          /* :: */[
+                            /* SwiftIdentifier */Block.__(5, [priorityName(def[/* priority */2])]),
+                            /* [] */0
+                          ]
                         ]
                       ]])
                 }]);
@@ -1000,7 +1065,7 @@ function generate(name, json, colors) {
   };
   return /* TopLevelDeclaration */Block.__(19, [{
               statements: /* :: */[
-                /* ImportDeclaration */Block.__(10, ["UIKit"]),
+                /* ImportDeclaration */Block.__(10, ["AppKit"]),
                 /* :: */[
                   /* ImportDeclaration */Block.__(10, ["Foundation"]),
                   /* :: */[
@@ -1011,7 +1076,7 @@ function generate(name, json, colors) {
                         /* ClassDeclaration */Block.__(4, [{
                               name: name,
                               inherits: /* :: */[
-                                /* TypeName */Block.__(0, ["UIView"]),
+                                /* TypeName */Block.__(0, ["NSBox"]),
                                 /* [] */0
                               ],
                               modifier: /* Some */[/* PublicModifier */3],

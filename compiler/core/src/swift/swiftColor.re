@@ -15,7 +15,7 @@ let render = (target, colors) =>
     let doc =
       TopLevelDeclaration({
         "statements": [
-          ImportDeclaration("UIKit"),
+          ImportDeclaration("AppKit"),
           Empty,
           ClassDeclaration({
             "name": "Colors",
