@@ -1,0 +1,42 @@
+language: objective-c
+osx_image: xcode9
+cache:
+  - bundler
+  - cocoapods
+rvm:
+  - 2.2.2
+
+env:
+  global:
+    - WORKSPACE="LonaStudio.xcworkspace"
+    - SCHEME="LonaStudio"
+    - DESTINATION="arch=x86_64"
+    - SDK=macosx10.13
+  matrix:
+    - BUILD_EXAMPLE="YES"
+    - RUN_TESTS="YES"
+
+before_install:
+  - bundle install
+  - bundle exec pod repo update
+  - bundle exec pod install
+
+script:
+  - set -o pipefail
+  - xcodebuild -version
+  - xcodebuild -showsdks
+  - xcodebuild -list
+  - bundle exec danger
+
+    # Build Lona
+  - if [ $BUILD_EXAMPLE == "YES" ]; then
+      xcodebuild -workspace "$WORKSPACE" -scheme "$SCHEME" -destination "$DESTINATION" -configuration Debug ONLY_ACTIVE_ARCH=NO CODE_SIGN_IDENTITY="" CODE_SIGNING_REQUIRED=NO build | xcpretty;
+    fi
+
+    # Run Tests
+  - if [ $RUN_TESTS == "YES" ]; then
+      xcodebuild -workspace "$WORKSPACE" -sdk "$SDK" -scheme "$SCHEME" -destination "$DESTINATION" -configuration Debug ONLY_ACTIVE_ARCH=NO ENABLE_TESTABILITY=YES CODE_SIGN_IDENTITY="" CODE_SIGNING_REQUIRED=NO test | xcpretty;
+    fi
+
+after_success:
+  - bash <(curl -s https://codecov.io/bash)
