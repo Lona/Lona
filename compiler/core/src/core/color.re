@@ -4,6 +4,10 @@ type t = {
   value: string
 };
 
+type colorValue =
+  | Inline(string)
+  | Reference(t);
+
 let parseFile = (filename) => {
   let content = Node.Fs.readFileSync(filename, `utf8);
   let parsed = content |> Js.Json.parseExn;

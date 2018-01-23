@@ -10,9 +10,11 @@ var Process                              = require("process");
 var FsExtra                              = require("fs-extra");
 var Caml_array                           = require("bs-platform/lib/js/caml_array.js");
 var Color$LonaCompilerCore               = require("./core/color.bs.js");
+var TextStyle$LonaCompilerCore           = require("./core/textStyle.bs.js");
 var SwiftColor$LonaCompilerCore          = require("./swift/swiftColor.bs.js");
 var SwiftRender$LonaCompilerCore         = require("./swift/swiftRender.bs.js");
 var SwiftComponent$LonaCompilerCore      = require("./swift/swiftComponent.bs.js");
+var SwiftTextStyle$LonaCompilerCore      = require("./swift/swiftTextStyle.bs.js");
 var JavaScriptRender$LonaCompilerCore    = require("./javaScript/javaScriptRender.bs.js");
 var JavaScriptComponent$LonaCompilerCore = require("./javaScript/javaScriptComponent.bs.js");
 
@@ -83,7 +85,18 @@ function getTargetExtension(param) {
 var targetExtension = getTargetExtension(target);
 
 function convertColors(filename) {
-  return SwiftColor$LonaCompilerCore.render(target, Color$LonaCompilerCore.parseFile(filename));
+  return SwiftColor$LonaCompilerCore.render(Color$LonaCompilerCore.parseFile(filename));
+}
+
+function convertTextStyles(filename) {
+  var match = findWorkspaceDirectory(filename);
+  if (match) {
+    var colors = Color$LonaCompilerCore.parseFile(Path.join(match[0], "textStyles.json"));
+    return SwiftTextStyle$LonaCompilerCore.render(colors, TextStyle$LonaCompilerCore.parseFile(filename));
+  } else {
+    console.log("Couldn't find workspace directory. Try specifying it as a parameter (TODO)");
+    return (process.exit());
+  }
 }
 
 function convertComponent(filename) {
@@ -104,14 +117,29 @@ function convertComponent(filename) {
   }
 }
 
+function copyStaticFiles(outputDirectory) {
+  if (target !== 0) {
+    var base = __dirname;
+    FsExtra.copySync(Path.join(base, "../static/swift/AttributedFont.swift"), Path.join(outputDirectory, "AttributedFont.swift"));
+    return /* () */0;
+  } else {
+    return /* () */0;
+  }
+}
+
 function convertWorkspace(workspace, output) {
   var fromDirectory = Path.resolve(workspace);
   var toDirectory = Path.resolve(output);
   FsExtra.ensureDirSync(toDirectory);
   var colorsInputPath = Path.join(fromDirectory, "colors.json");
-  var colorsOutputPath = Path.join(toDirectory, "colors" + targetExtension);
-  var colors = SwiftColor$LonaCompilerCore.render(target, Color$LonaCompilerCore.parseFile(colorsInputPath));
-  Fs.writeFileSync(colorsOutputPath, colors);
+  var colorsOutputPath = Path.join(toDirectory, "Colors" + targetExtension);
+  var colors = Color$LonaCompilerCore.parseFile(colorsInputPath);
+  Fs.writeFileSync(colorsOutputPath, SwiftColor$LonaCompilerCore.render(colors));
+  var textStylesInputPath = Path.join(fromDirectory, "textStyles.json");
+  var textStylesOutputPath = Path.join(toDirectory, "TextStyles" + targetExtension);
+  var textStyles = SwiftTextStyle$LonaCompilerCore.render(colors, TextStyle$LonaCompilerCore.parseFile(textStylesInputPath));
+  Fs.writeFileSync(textStylesOutputPath, textStyles);
+  copyStaticFiles(toDirectory);
   Glob(Path.join(fromDirectory, "**/*.component"), (function (_, files) {
           var files$1 = $$Array.to_list(files);
           var processFile = function (file) {
@@ -138,7 +166,7 @@ switch (command) {
         ((process.exit()));
       }
       var filename = Caml_array.caml_array_get(Process.argv, 4);
-      console.log(SwiftColor$LonaCompilerCore.render(target, Color$LonaCompilerCore.parseFile(filename)));
+      console.log(SwiftColor$LonaCompilerCore.render(Color$LonaCompilerCore.parseFile(filename)));
       break;
   case "component" : 
       if (Process.argv.length < 5) {
@@ -170,6 +198,8 @@ exports.concat                 = concat;
 exports.getTargetExtension     = getTargetExtension;
 exports.targetExtension        = targetExtension;
 exports.convertColors          = convertColors;
+exports.convertTextStyles      = convertTextStyles;
 exports.convertComponent       = convertComponent;
+exports.copyStaticFiles        = copyStaticFiles;
 exports.convertWorkspace       = convertWorkspace;
 /*  Not a pure module */

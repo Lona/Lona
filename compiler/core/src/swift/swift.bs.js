@@ -12,6 +12,8 @@ var Render = 0;
 
 var Color = 0;
 
+var TextStyle = 0;
+
 var Component = 0;
 
 exports.Format    = Format;
@@ -19,5 +21,6 @@ exports.Ast       = Ast;
 exports.Document  = Document;
 exports.Render    = Render;
 exports.Color     = Color;
+exports.TextStyle = TextStyle;
 exports.Component = Component;
 /* No side effect */

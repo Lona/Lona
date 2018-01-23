@@ -2,6 +2,8 @@ open Node;
 
 [@bs.val] [@bs.module "fs-extra"] external ensureDirSync : string => unit = "";
 
+[@bs.val] [@bs.module "fs-extra"] external copySync : (string, string) => unit = "";
+
 let exit = (message) => {
   Js.log(message);
   [%bs.raw {|process.exit()|}]
@@ -46,7 +48,15 @@ let getTargetExtension =
 
 let targetExtension = getTargetExtension(target);
 
-let convertColors = (filename) => Color.parseFile(filename) |> Swift.Color.render(target);
+let convertColors = (filename) => Color.parseFile(filename) |> Swift.Color.render;
+
+let convertTextStyles = (filename) =>
+  switch (findWorkspaceDirectory(filename)) {
+  | None => exit("Couldn't find workspace directory. Try specifying it as a parameter (TODO)")
+  | Some(workspace) =>
+    let colors = Color.parseFile(Path.join([|workspace, "textStyles.json"|]));
+    TextStyle.parseFile(filename) |> Swift.TextStyle.render(colors)
+  };
 
 let convertComponent = (filename) => {
   let content = Fs.readFileSync(filename, `utf8);
@@ -65,14 +75,29 @@ let convertComponent = (filename) => {
   }
 };
 
+let copyStaticFiles = (outputDirectory) =>
+  switch target {
+  | Types.Swift =>
+    copySync(
+      concat(NodeGlobal.__dirname, "../static/swift/AttributedFont.swift"),
+      concat(outputDirectory, "AttributedFont.swift")
+    )
+  | _ => ()
+  };
+
 let convertWorkspace = (workspace, output) => {
   let fromDirectory = Path.resolve([|workspace|]);
   let toDirectory = Path.resolve([|output|]);
   ensureDirSync(toDirectory);
   let colorsInputPath = concat(fromDirectory, "colors.json");
-  let colorsOutputPath = concat(toDirectory, "colors" ++ targetExtension);
-  let colors = Color.parseFile(colorsInputPath) |> Swift.Color.render(target);
-  Fs.writeFileSync(~filename=colorsOutputPath, ~text=colors);
+  let colorsOutputPath = concat(toDirectory, "Colors" ++ targetExtension);
+  let colors = Color.parseFile(colorsInputPath);
+  Fs.writeFileSync(~filename=colorsOutputPath, ~text=colors |> Swift.Color.render);
+  let textStylesInputPath = concat(fromDirectory, "textStyles.json");
+  let textStylesOutputPath = concat(toDirectory, "TextStyles" ++ targetExtension);
+  let textStyles = TextStyle.parseFile(textStylesInputPath) |> Swift.TextStyle.render(colors);
+  Fs.writeFileSync(~filename=textStylesOutputPath, ~text=textStyles);
+  copyStaticFiles(toDirectory);
   Glob.glob(
     concat(fromDirectory, "**/*.component"),
     (_, files) => {
