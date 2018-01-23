@@ -21,7 +21,7 @@ type directionParameter = {
   swiftName: string
 };
 
-let generate = (name, json, colors) => {
+let generate = (name, colors, textStyles, json) => {
   let rootLayer = json |> Decode.Component.rootLayer;
   /* Remove the root element */
   let nonRootLayers = rootLayer |> Layer.flatten |> List.tl;
@@ -94,6 +94,18 @@ let generate = (name, json, colors) => {
                 ]
           })
         ),
+      "block": None
+    });
+  let textStyleVariableDoc = (layer: Types.layer) =>
+    VariableDeclaration({
+      "modifiers": [AccessLevelModifier(PrivateModifier)],
+      "pattern":
+        IdentifierPattern({
+          "identifier": (layer.name |> Format.layerName) ++ "TextStyle",
+          "annotation": None /* Some(TypeName("AttributedFont")) */
+        }),
+      "init":
+        Some(FunctionCallExpression({"name": SwiftIdentifier("AttributedFont"), "arguments": []})),
       "block": None
     });
   let constraintVariableDoc = (variableName) =>
@@ -255,49 +267,107 @@ let generate = (name, json, colors) => {
   let defaultValueForParameter =
     fun
     | "backgroundColor" => MemberExpression([SwiftIdentifier("UIColor"), SwiftIdentifier("clear")])
+    | "textStyle" =>
+      FunctionCallExpression({"name": SwiftIdentifier("AttributedFont"), "arguments": []})
     | _ => LiteralExpression(Integer(0));
   let initialLayerValue = (layer: Types.layer, name) =>
     switch (StringMap.find_opt(name, layer.parameters)) {
-    | Some(value) => Document.lonaValue(colors, value)
+    | Some(value) => Document.lonaValue(colors, textStyles, value)
     | None => defaultValueForParameter(name)
     };
-  let defineInitialLayerValue = (layer: Types.layer, (name, _)) => {
-    let (left, right) =
-      switch (name, initialLayerValue(layer, name)) {
-      | ("visible", LiteralExpression(Boolean(value))) => (
-          layerMemberExpression(layer, [SwiftIdentifier("isHidden")]),
-          LiteralExpression(Boolean(! value))
-        )
-      | ("borderRadius", LiteralExpression(FloatingPoint(_)) as right) => (
-          layerMemberExpression(
-            layer,
-            [SwiftIdentifier("layer"), SwiftIdentifier("cornerRadius")]
-          ),
-          right
-        )
-      | ("height", LiteralExpression(FloatingPoint(_)) as right) => (
-          SwiftIdentifier(parentNameOrSelf(layer) ++ "HeightAnchorConstraint?.constant"),
-          right
-        )
-      | ("width", LiteralExpression(FloatingPoint(_)) as right) => (
-          SwiftIdentifier(parentNameOrSelf(layer) ++ "WidthAnchorConstraint?.constant"),
-          right
-        )
-      | (_, right) => (layerMemberExpression(layer, [SwiftIdentifier(name)]), right)
-      };
-    BinaryExpression({"left": left, "operator": "=", "right": right})
-  };
+  let defineInitialLayerValue = (layer: Types.layer, (name, _)) =>
+    switch (name, initialLayerValue(layer, name)) {
+    | ("visible", LiteralExpression(Boolean(value))) =>
+      BinaryExpression({
+        "left": layerMemberExpression(layer, [SwiftIdentifier("isHidden")]),
+        "operator": "=",
+        "right": LiteralExpression(Boolean(! value))
+      })
+    | ("text", LiteralExpression(String(value))) =>
+      BinaryExpression({
+        "left": layerMemberExpression(layer, [SwiftIdentifier("attributedText")]),
+        "operator": "=",
+        "right":
+          MemberExpression([
+            SwiftIdentifier((layer.name |> Format.layerName) ++ "TextStyle"),
+            FunctionCallExpression({
+              "name": SwiftIdentifier("apply"),
+              "arguments": [
+                FunctionCallArgument({
+                  "name": Some(SwiftIdentifier("to")),
+                  "value": LiteralExpression(String(value))
+                })
+              ]
+            })
+          ])
+      })
+    | ("font", right) =>
+      BinaryExpression({
+        "left": SwiftIdentifier((layer.name |> Format.layerName) ++ "TextStyle"),
+        "operator": "=",
+        "right": right
+      })
+    | ("textStyle", right) =>
+      Ast.StatementListHelper([
+        BinaryExpression({
+          "left": SwiftIdentifier((layer.name |> Format.layerName) ++ "TextStyle"),
+          "operator": "=",
+          "right": initialLayerValue(layer, "font")
+        }),
+        BinaryExpression({
+          "left": layerMemberExpression(layer, [SwiftIdentifier("attributedText")]),
+          "operator": "=",
+          "right":
+            MemberExpression([
+              SwiftIdentifier((layer.name |> Format.layerName) ++ "TextStyle"),
+              FunctionCallExpression({
+                "name": SwiftIdentifier("apply"),
+                "arguments": [
+                  FunctionCallArgument({
+                    "name": Some(SwiftIdentifier("to")),
+                    "value": layerMemberExpression(layer, [SwiftIdentifier("text ?? \"\"")])
+                  })
+                ]
+              })
+            ])
+        })
+      ])
+    | ("borderRadius", LiteralExpression(FloatingPoint(_)) as right) =>
+      BinaryExpression({
+        "left":
+          layerMemberExpression(layer, [SwiftIdentifier("layer"), SwiftIdentifier("cornerRadius")]),
+        "operator": "=",
+        "right": right
+      })
+    | ("height", LiteralExpression(FloatingPoint(_)) as right) =>
+      BinaryExpression({
+        "left": SwiftIdentifier(parentNameOrSelf(layer) ++ "HeightAnchorConstraint?.constant"),
+        "operator": "=",
+        "right": right
+      })
+    | ("width", LiteralExpression(FloatingPoint(_)) as right) =>
+      BinaryExpression({
+        "left": SwiftIdentifier(parentNameOrSelf(layer) ++ "WidthAnchorConstraint?.constant"),
+        "operator": "=",
+        "right": right
+      })
+    | (_, right) =>
+      BinaryExpression({
+        "left": layerMemberExpression(layer, [SwiftIdentifier(name)]),
+        "operator": "=",
+        "right": right
+      })
+    };
   let setUpViewsDoc = (root: Types.layer) => {
     let setUpDefaultsDoc = () => {
       let filterParameters = ((name, _)) =>
         name != "image"
-        && name != "textStyle"
         && name != "flexDirection"
         && name != "justifyContent"
         && name != "alignSelf"
         && name != "alignItems"
         && name != "flex"
-        && name != "font"
+        /* && name != "font" */
         && ! Js.String.startsWith("padding", name)
         && ! Js.String.startsWith("margin", name)
         /* Handled by initial constraint setup */
@@ -731,7 +801,7 @@ let generate = (name, json, colors) => {
           [activateConstraints()],
           [Empty],
           constraints |> List.map(assignConstraint),
-          [LineComment("For debugging")],
+          [Empty, LineComment("For debugging")],
           constraints |> List.map(assignConstraintIdentifier)
         ])
     })
@@ -746,7 +816,7 @@ let generate = (name, json, colors) => {
     /* let cond = Logic.conditionallyAssignedIdentifiers(logic);
        cond |> Logic.IdentifierSet.elements |> List.iter(((ltype, path)) => Js.log(path)); */
     /* TODO: Figure out how to handle images */
-    let filterParameters = ((name, _)) => name != "image" && name != "textStyle";
+    let filterParameters = ((name, _)) => name != "image";
     let conditionallyAssigned = Logic.conditionallyAssignedIdentifiers(logic);
     let filterConditionallyAssigned = (layer: Types.layer, (name, _)) => {
       let isAssigned = ((_, value)) => value == ["layers", layer.name, name];
@@ -770,15 +840,18 @@ let generate = (name, json, colors) => {
             |> Layer.LayerMap.bindings
             |> List.map(defineInitialLayerValues)
             |> List.concat,
-            SwiftLogic.toSwiftAST(colors, rootLayer, logic)
+            SwiftLogic.toSwiftAST(colors, textStyles, rootLayer, logic)
           ]
         )
     })
   };
+  let textLayers =
+    nonRootLayers |> List.filter((layer: Types.layer) => layer.typeName == Types.Text);
   TopLevelDeclaration({
     "statements": [
       ImportDeclaration("UIKit"),
       ImportDeclaration("Foundation"),
+      Empty,
       LineComment("MARK: - " ++ name),
       Empty,
       ClassDeclaration({
@@ -787,29 +860,24 @@ let generate = (name, json, colors) => {
         "modifier": Some(PublicModifier),
         "isFinal": false,
         "body":
-          List.concat([
-            [LineComment("MARK: Lifecycle")],
-            [Empty],
-            [initializerDoc()],
-            [Empty],
-            [initializerCoderDoc()],
-            [LineComment("MARK: Public")],
-            [Empty],
-            parameters |> List.map(parameterVariableDoc),
-            [LineComment("MARK: Private")],
-            [Empty],
-            nonRootLayers |> List.map(viewVariableDoc),
-            [Empty],
-            rootLayer |> Layer.flatmap(spacingVariableDoc) |> List.concat,
-            [Empty],
-            constraints |> List.map((def) => constraintVariableDoc(def.variableName)),
-            [Empty],
-            [setUpViewsDoc(rootLayer)],
-            [Empty],
-            [setUpConstraintsDoc(rootLayer)],
-            [Empty],
-            [updateDoc()]
-          ])
+          Document.joinGroups(
+            Empty,
+            [
+              [Empty, LineComment("MARK: Lifecycle")],
+              [initializerDoc()],
+              [initializerCoderDoc()],
+              List.length(parameters) > 0 ? [LineComment("MARK: Public")] : [],
+              parameters |> List.map(parameterVariableDoc),
+              [LineComment("MARK: Private")],
+              nonRootLayers |> List.map(viewVariableDoc),
+              textLayers |> List.map(textStyleVariableDoc),
+              rootLayer |> Layer.flatmap(spacingVariableDoc) |> List.concat,
+              constraints |> List.map((def) => constraintVariableDoc(def.variableName)),
+              [setUpViewsDoc(rootLayer)],
+              [setUpConstraintsDoc(rootLayer)],
+              [updateDoc()]
+            ]
+          )
       })
     ]
   })

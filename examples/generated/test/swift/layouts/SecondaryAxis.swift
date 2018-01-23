@@ -20,15 +20,14 @@ public class SecondaryAxis: UIView {
     fatalError("init(coder:) has not been implemented")
   }
 
-  // MARK: Public
-
-
   // MARK: Private
 
   private var fixedView = UIView(frame: .zero)
   private var fitView = UIView(frame: .zero)
   private var textView = UILabel()
   private var fillView = UIView(frame: .zero)
+
+  private var textViewTextStyle = AttributedFont()
 
   private var topPadding: CGFloat = 24
   private var trailingPadding: CGFloat = 24
@@ -82,7 +81,7 @@ public class SecondaryAxis: UIView {
     fixedView.backgroundColor =
     #colorLiteral(red: 0.847058823529, green: 0.847058823529, blue: 0.847058823529, alpha: 1)
     fitView.backgroundColor = #colorLiteral(red: 0.847058823529, green: 0.847058823529, blue: 0.847058823529, alpha: 1)
-    textView.text = "Text goes here"
+    textView.attributedText = textViewTextStyle.apply(to: "Text goes here")
     fillView.backgroundColor = #colorLiteral(red: 0.847058823529, green: 0.847058823529, blue: 0.847058823529, alpha: 1)
   }
 

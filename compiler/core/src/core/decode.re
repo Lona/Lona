@@ -14,7 +14,7 @@ let parameterTypeMap =
     ("alignSelf", Types.Reference("String")),
     ("flex", Types.Reference("Number")),
     ("flexDirection", Types.Reference("String")),
-    ("font", Types.Reference("String")),
+    ("font", Types.textStyleType),
     ("justifyContent", Types.Reference("String")),
     ("marginTop", Types.Reference("Number")),
     ("marginRight", Types.Reference("Number")),
@@ -29,7 +29,6 @@ let parameterTypeMap =
     ("height", Types.Reference("Number"))
   ]
   |> StringMap.fromList;
-
 
 let parameterType = (name) =>
   switch (StringMap.find(name, parameterTypeMap)) {

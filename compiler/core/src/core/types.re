@@ -8,6 +8,8 @@ type lonaType =
 
 let colorType = Named("Color", Reference("String"));
 
+let textStyleType = Named("TextStyle", Reference("String"));
+
 let urlType = Named("URL", Reference("String"));
 
 type lonaValue = {

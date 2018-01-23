@@ -37,6 +37,6 @@ let parseFile = (filename) => {
 
 let find = (textStyles: list(t), id: string) =>
   switch (textStyles |> List.find((textStyle) => textStyle.id == id)) {
-  | color => Some(color)
+  | textStyle => Some(textStyle)
   | exception Not_found => None
   };

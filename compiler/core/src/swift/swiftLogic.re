@@ -4,7 +4,7 @@ module Format = SwiftFormat;
 
 module Document = SwiftDocument;
 
-let rec toSwiftAST = (colors, rootLayer: Types.layer, logicRootNode) => {
+let toSwiftAST = (colors, textStyles, rootLayer: Types.layer, logicRootNode) => {
   let identifierName = (node) =>
     switch node {
     | Logic.Identifier(ltype, [head, ...tail]) =>
@@ -31,7 +31,7 @@ let rec toSwiftAST = (colors, rootLayer: Types.layer, logicRootNode) => {
   let logicValueToSwiftAST = (x) =>
     switch x {
     | Logic.Identifier(_) => identifierName(x)
-    | Literal(value) => Document.lonaValue(colors, value)
+    | Literal(value) => Document.lonaValue(colors, textStyles, value)
     | None => Empty
     };
   let typeAnnotationDoc =
@@ -59,32 +59,69 @@ let rec toSwiftAST = (colors, rootLayer: Types.layer, logicRootNode) => {
   let rec inner = (logicRootNode) =>
     switch logicRootNode {
     | Logic.Assign(a, b) =>
-      let (left, right) =
-        switch (logicValueToSwiftAST(b), logicValueToSwiftAST(a)) {
-        | (Ast.SwiftIdentifier(name), LiteralExpression(Boolean(value)))
-            when name |> Js.String.endsWith("visible") => (
-            Ast.SwiftIdentifier(name |> Js.String.replace("visible", "isHidden")),
-            Ast.LiteralExpression(Boolean(! value))
-          )
-        | (Ast.SwiftIdentifier(name), right) when name |> Js.String.endsWith("borderRadius") => (
+      switch (logicValueToSwiftAST(b), logicValueToSwiftAST(a)) {
+      | (Ast.SwiftIdentifier(name), LiteralExpression(Boolean(value)))
+          when name |> Js.String.endsWith("visible") =>
+        Ast.BinaryExpression({
+          "left": Ast.SwiftIdentifier(name |> Js.String.replace("visible", "isHidden")),
+          "operator": "=",
+          "right": Ast.LiteralExpression(Boolean(! value))
+        })
+      | (Ast.SwiftIdentifier(name), right) when name |> Js.String.endsWith("textStyle") =>
+        Ast.StatementListHelper([
+          Ast.BinaryExpression({
+            "left": Ast.SwiftIdentifier(name |> Js.String.replace(".textStyle", "TextStyle")),
+            "operator": "=",
+            "right": right
+          }),
+          Ast.BinaryExpression({
+            "left": Ast.SwiftIdentifier(name |> Js.String.replace(".textStyle", ".attributedText")),
+            "operator": "=",
+            "right":
+              Ast.MemberExpression([
+                Ast.SwiftIdentifier(name |> Js.String.replace(".textStyle", "TextStyle")),
+                Ast.FunctionCallExpression({
+                  "name": Ast.SwiftIdentifier("apply"),
+                  "arguments": [
+                    Ast.FunctionCallArgument({
+                      "name": Some(Ast.SwiftIdentifier("to")),
+                      "value":
+                        Ast.SwiftIdentifier(
+                          name |> Js.String.replace(".textStyle", ".text ?? \"\"")
+                        )
+                    })
+                  ]
+                })
+              ])
+          })
+        ])
+      | (Ast.SwiftIdentifier(name), right) when name |> Js.String.endsWith("borderRadius") =>
+        Ast.BinaryExpression({
+          "left":
             Ast.SwiftIdentifier(name |> Js.String.replace("borderRadius", "layer.cornerRadius")),
-            right
-          )
-        | (Ast.SwiftIdentifier(name), right) when name |> Js.String.endsWith("height") => (
+          "operator": "=",
+          "right": right
+        })
+      | (Ast.SwiftIdentifier(name), right) when name |> Js.String.endsWith("height") =>
+        Ast.BinaryExpression({
+          "left":
             Ast.SwiftIdentifier(
               name |> Js.String.replace(".height", "HeightAnchorConstraint?.constant")
             ),
-            right
-          )
-        | (Ast.SwiftIdentifier(name), right) when name |> Js.String.endsWith("width") => (
+          "operator": "=",
+          "right": right
+        })
+      | (Ast.SwiftIdentifier(name), right) when name |> Js.String.endsWith("width") =>
+        Ast.BinaryExpression({
+          "left":
             Ast.SwiftIdentifier(
               name |> Js.String.replace(".width", "WidthAnchorConstraint?.constant")
             ),
-            right
-          )
-        | nodes => nodes
-        };
-      Ast.BinaryExpression({"left": left, "operator": "=", "right": right})
+          "operator": "=",
+          "right": right
+        })
+      | (left, right) => Ast.BinaryExpression({"left": left, "operator": "=", "right": right})
+      }
     | IfExists(a, body) =>
       /* TODO: Once we support optional params, compare to nil or extract via pattern */
       Ast.IfStatement({

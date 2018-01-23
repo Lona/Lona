@@ -1,0 +1,182 @@
+{
+  "canvases" : [
+    {
+      "backgroundColor" : "white",
+      "exportScale" : 1,
+      "height" : 100,
+      "heightMode" : "At Least",
+      "name" : "iPhone SE",
+      "parameters" : {
+
+      },
+      "visible" : true,
+      "width" : 320
+    },
+    {
+      "backgroundColor" : "white",
+      "exportScale" : 1,
+      "height" : 100,
+      "heightMode" : "At Least",
+      "name" : "iPhone 7",
+      "parameters" : {
+
+      },
+      "visible" : true,
+      "width" : 375
+    },
+    {
+      "backgroundColor" : "white",
+      "exportScale" : 1,
+      "height" : 100,
+      "heightMode" : "At Least",
+      "name" : "iPhone 7+",
+      "parameters" : {
+
+      },
+      "visible" : true,
+      "width" : 414
+    }
+  ],
+  "cases" : [
+    {
+      "name" : "Default",
+      "type" : "entry",
+      "value" : {
+
+      },
+      "visible" : true
+    }
+  ],
+  "config" : {
+    "canvasLayout" : "xy"
+  },
+  "logic" : [
+
+  ],
+  "metadata" : {
+
+  },
+  "parameters" : [
+
+  ],
+  "rootLayer" : {
+    "children" : [
+      {
+        "children" : [
+
+        ],
+        "name" : "Text",
+        "parameters" : {
+          "font" : "display4",
+          "text" : "Text goes here"
+        },
+        "type" : "Text"
+      },
+      {
+        "children" : [
+
+        ],
+        "name" : "Text 1",
+        "parameters" : {
+          "font" : "display3",
+          "text" : "Text goes here"
+        },
+        "type" : "Text"
+      },
+      {
+        "children" : [
+
+        ],
+        "name" : "Text 2",
+        "parameters" : {
+          "font" : "display2",
+          "text" : "Text goes here"
+        },
+        "type" : "Text"
+      },
+      {
+        "children" : [
+
+        ],
+        "name" : "Text 3",
+        "parameters" : {
+          "font" : "display1",
+          "text" : "Text goes here"
+        },
+        "type" : "Text"
+      },
+      {
+        "children" : [
+
+        ],
+        "name" : "Text 4",
+        "parameters" : {
+          "font" : "headline",
+          "text" : "Text goes here"
+        },
+        "type" : "Text"
+      },
+      {
+        "children" : [
+
+        ],
+        "name" : "Text 5",
+        "parameters" : {
+          "font" : "subheading2",
+          "text" : "Text goes here"
+        },
+        "type" : "Text"
+      },
+      {
+        "children" : [
+
+        ],
+        "name" : "Text 6",
+        "parameters" : {
+          "font" : "subheading1",
+          "text" : "Text goes here"
+        },
+        "type" : "Text"
+      },
+      {
+        "children" : [
+
+        ],
+        "name" : "Text 7",
+        "parameters" : {
+          "font" : "body2",
+          "text" : "Text goes here"
+        },
+        "type" : "Text"
+      },
+      {
+        "children" : [
+
+        ],
+        "name" : "Text 8",
+        "parameters" : {
+          "font" : "body1",
+          "text" : "Text goes here"
+        },
+        "type" : "Text"
+      },
+      {
+        "children" : [
+
+        ],
+        "name" : "Text 9",
+        "parameters" : {
+          "font" : "caption",
+          "text" : "Text goes here"
+        },
+        "type" : "Text"
+      }
+    ],
+    "name" : "View",
+    "parameters" : {
+      "alignSelf" : "stretch",
+      "flex" : 0
+    },
+    "type" : "View"
+  }
+}

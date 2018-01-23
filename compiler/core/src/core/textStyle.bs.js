@@ -60,9 +60,9 @@ function parseFile(filename) {
 
 function find(textStyles, id) {
   var exit = 0;
-  var color;
+  var textStyle;
   try {
-    color = List.find((function (textStyle) {
+    textStyle = List.find((function (textStyle) {
             return +(textStyle[/* id */0] === id);
           }), textStyles);
     exit = 1;
@@ -75,7 +75,7 @@ function find(textStyles, id) {
     }
   }
   if (exit === 1) {
-    return /* Some */[color];
+    return /* Some */[textStyle];
   }
   
 }

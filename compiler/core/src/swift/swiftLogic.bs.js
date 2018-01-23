@@ -7,12 +7,12 @@ var LodashCamelcase                = require("lodash.camelcase");
 var SwiftFormat$LonaCompilerCore   = require("./swiftFormat.bs.js");
 var SwiftDocument$LonaCompilerCore = require("./swiftDocument.bs.js");
 
-function toSwiftAST(colors, rootLayer, logicRootNode) {
+function toSwiftAST(colors, textStyles, rootLayer, logicRootNode) {
   var logicValueToSwiftAST = function (x) {
     if (typeof x === "number") {
       return /* Empty */0;
     } else if (x.tag) {
-      return SwiftDocument$LonaCompilerCore.lonaValue(colors, x[0]);
+      return SwiftDocument$LonaCompilerCore.lonaValue(colors, textStyles, x[0]);
     } else {
       var node = x;
       if (typeof node === "number") {
@@ -120,61 +120,98 @@ function toSwiftAST(colors, rootLayer, logicRootNode) {
         case 2 : 
             var match = logicValueToSwiftAST(logicRootNode[1]);
             var match$1 = logicValueToSwiftAST(logicRootNode[0]);
-            var match$2;
+            var exit = 0;
             if (typeof match === "number") {
-              match$2 = [
-                match,
-                match$1
-              ];
+              exit = 1;
             } else if (match.tag === 5) {
               var name = match[0];
-              var exit = 0;
+              var exit$1 = 0;
               if (typeof match$1 === "number") {
-                exit = 1;
+                exit$1 = 2;
               } else if (match$1.tag) {
-                exit = 1;
+                exit$1 = 2;
               } else {
-                var match$3 = match$1[0];
-                if (typeof match$3 === "number" || !(!match$3.tag && name.endsWith("visible"))) {
-                  exit = 1;
+                var match$2 = match$1[0];
+                if (typeof match$2 === "number") {
+                  exit$1 = 2;
+                } else if (match$2.tag) {
+                  exit$1 = 2;
+                } else if (name.endsWith("visible")) {
+                  return /* BinaryExpression */Block.__(2, [{
+                              left: /* SwiftIdentifier */Block.__(5, [name.replace("visible", "isHidden")]),
+                              operator: "=",
+                              right: /* LiteralExpression */Block.__(0, [/* Boolean */Block.__(0, [1 - match$2[0]])])
+                            }]);
                 } else {
-                  match$2 = /* tuple */[
-                    /* SwiftIdentifier */Block.__(5, [name.replace("visible", "isHidden")]),
-                    /* LiteralExpression */Block.__(0, [/* Boolean */Block.__(0, [1 - match$3[0]])])
-                  ];
+                  exit$1 = 2;
                 }
               }
-              if (exit === 1) {
-                match$2 = name.endsWith("borderRadius") ? /* tuple */[
-                    /* SwiftIdentifier */Block.__(5, [name.replace("borderRadius", "layer.cornerRadius")]),
-                    match$1
-                  ] : (
-                    name.endsWith("height") ? /* tuple */[
-                        /* SwiftIdentifier */Block.__(5, [name.replace(".height", "HeightAnchorConstraint?.constant")]),
-                        match$1
-                      ] : (
-                        name.endsWith("width") ? /* tuple */[
-                            /* SwiftIdentifier */Block.__(5, [name.replace(".width", "WidthAnchorConstraint?.constant")]),
-                            match$1
-                          ] : [
-                            match,
-                            match$1
-                          ]
-                      )
-                  );
+              if (exit$1 === 2) {
+                if (name.endsWith("textStyle")) {
+                  return /* StatementListHelper */Block.__(18, [/* :: */[
+                              /* BinaryExpression */Block.__(2, [{
+                                    left: /* SwiftIdentifier */Block.__(5, [name.replace(".textStyle", "TextStyle")]),
+                                    operator: "=",
+                                    right: match$1
+                                  }]),
+                              /* :: */[
+                                /* BinaryExpression */Block.__(2, [{
+                                      left: /* SwiftIdentifier */Block.__(5, [name.replace(".textStyle", ".attributedText")]),
+                                      operator: "=",
+                                      right: /* MemberExpression */Block.__(1, [/* :: */[
+                                            /* SwiftIdentifier */Block.__(5, [name.replace(".textStyle", "TextStyle")]),
+                                            /* :: */[
+                                              /* FunctionCallExpression */Block.__(14, [{
+                                                    name: /* SwiftIdentifier */Block.__(5, ["apply"]),
+                                                    arguments: /* :: */[
+                                                      /* FunctionCallArgument */Block.__(13, [{
+                                                            name: /* Some */[/* SwiftIdentifier */Block.__(5, ["to"])],
+                                                            value: /* SwiftIdentifier */Block.__(5, [name.replace(".textStyle", ".text ?? \"\"")])
+                                                          }]),
+                                                      /* [] */0
+                                                    ]
+                                                  }]),
+                                              /* [] */0
+                                            ]
+                                          ]])
+                                    }]),
+                                /* [] */0
+                              ]
+                            ]]);
+                } else if (name.endsWith("borderRadius")) {
+                  return /* BinaryExpression */Block.__(2, [{
+                              left: /* SwiftIdentifier */Block.__(5, [name.replace("borderRadius", "layer.cornerRadius")]),
+                              operator: "=",
+                              right: match$1
+                            }]);
+                } else if (name.endsWith("height")) {
+                  return /* BinaryExpression */Block.__(2, [{
+                              left: /* SwiftIdentifier */Block.__(5, [name.replace(".height", "HeightAnchorConstraint?.constant")]),
+                              operator: "=",
+                              right: match$1
+                            }]);
+                } else if (name.endsWith("width")) {
+                  return /* BinaryExpression */Block.__(2, [{
+                              left: /* SwiftIdentifier */Block.__(5, [name.replace(".width", "WidthAnchorConstraint?.constant")]),
+                              operator: "=",
+                              right: match$1
+                            }]);
+                } else {
+                  exit = 1;
+                }
               }
               
             } else {
-              match$2 = [
-                match,
-                match$1
-              ];
+              exit = 1;
             }
-            return /* BinaryExpression */Block.__(2, [{
-                        left: match$2[0],
-                        operator: "=",
-                        right: match$2[1]
-                      }]);
+            if (exit === 1) {
+              return /* BinaryExpression */Block.__(2, [{
+                          left: match,
+                          operator: "=",
+                          right: match$1
+                        }]);
+            }
+            break;
         case 3 : 
             return /* BinaryExpression */Block.__(2, [{
                         left: logicValueToSwiftAST(logicRootNode[2]),

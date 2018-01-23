@@ -58,7 +58,7 @@ var parameterTypeMap = StringMap$LonaCompilerCore.fromList(/* :: */[
                       /* :: */[
                         /* tuple */[
                           "font",
-                          /* Reference */Block.__(0, ["String"])
+                          Types$LonaCompilerCore.textStyleType
                         ],
                         /* :: */[
                           /* tuple */[
@@ -392,9 +392,12 @@ var Component = /* module */[
 
 var colorType = Types$LonaCompilerCore.colorType;
 
+var textStyleType = Types$LonaCompilerCore.textStyleType;
+
 var urlType = Types$LonaCompilerCore.urlType;
 
 exports.colorType        = colorType;
+exports.textStyleType    = textStyleType;
 exports.urlType          = urlType;
 exports.parameterTypeMap = parameterTypeMap;
 exports.parameterType    = parameterType;

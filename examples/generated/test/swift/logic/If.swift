@@ -28,9 +28,6 @@ public class If: UIView {
 
   // MARK: Private
 
-
-
-
   private func setUpViews() {}
 
   private func setUpConstraints() {

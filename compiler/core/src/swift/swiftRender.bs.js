@@ -395,7 +395,7 @@ function render(ast) {
                           ]
                         ]));
       case 15 : 
-          return Curry._2(Prettier$LonaCompilerCore.Doc[/* Builders */0][/* <+> */5], Prettier.doc.builders.hardline, Curry._1(Prettier$LonaCompilerCore.Doc[/* Builders */0][/* s */0], "// " + ast[0]));
+          return Curry._1(Prettier$LonaCompilerCore.Doc[/* Builders */0][/* s */0], "// " + ast[0]);
       case 16 : 
           var o$11 = ast[0];
           return Curry._1(Prettier$LonaCompilerCore.Doc[/* Builders */0][/* concat */2], /* :: */[
