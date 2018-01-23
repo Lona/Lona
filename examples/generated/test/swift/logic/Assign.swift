@@ -87,6 +87,6 @@ public class Assign: UIView {
   }
 
   private func update() {
-    textView.text = text
+    textView.attributedText = textViewTextStyle.apply(to: text)
   }
 }

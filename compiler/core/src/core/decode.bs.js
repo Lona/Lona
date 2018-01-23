@@ -6,6 +6,7 @@ var Curry                      = require("bs-platform/lib/js/curry.js");
 var Js_json                    = require("bs-platform/lib/js/js_json.js");
 var Js_option                  = require("bs-platform/lib/js/js_option.js");
 var Json_decode                = require("bs-json/src/Json_decode.js");
+var Caml_exceptions            = require("bs-platform/lib/js/caml_exceptions.js");
 var Types$LonaCompilerCore     = require("./types.bs.js");
 var Caml_builtin_exceptions    = require("bs-platform/lib/js/caml_builtin_exceptions.js");
 var StringMap$LonaCompilerCore = require("../containers/stringMap.bs.js");
@@ -144,14 +145,18 @@ var parameterTypeMap = StringMap$LonaCompilerCore.fromList(/* :: */[
       ]
     ]);
 
+var UnknownParameter = Caml_exceptions.create("Decode-LonaCompilerCore.UnknownParameter");
+
 function parameterType(name) {
   try {
     return Curry._2(StringMap$LonaCompilerCore.find, name, parameterTypeMap);
   }
   catch (exn){
     if (exn === Caml_builtin_exceptions.not_found) {
-      console.log("Unknown built-in parameter when deserializing:", name);
-      return /* Reference */Block.__(0, ["BuiltIn-Null"]);
+      throw [
+            UnknownParameter,
+            name
+          ];
     } else {
       throw exn;
     }
@@ -400,6 +405,7 @@ exports.colorType        = colorType;
 exports.textStyleType    = textStyleType;
 exports.urlType          = urlType;
 exports.parameterTypeMap = parameterTypeMap;
+exports.UnknownParameter = UnknownParameter;
 exports.parameterType    = parameterType;
 exports.Types            = Types;
 exports.Parameters       = Parameters;

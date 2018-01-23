@@ -113,10 +113,16 @@ function toSwiftAST(colors, textStyles, rootLayer, logicRootNode) {
                         block: List.map(inner, unwrapBlock(logicRootNode[3]))
                       }]);
         case 1 : 
-            return /* IfStatement */Block.__(11, [{
-                        condition: logicValueToSwiftAST(logicRootNode[0]),
-                        block: List.map(inner, unwrapBlock(logicRootNode[1]))
-                      }]);
+            return /* StatementListHelper */Block.__(18, [/* :: */[
+                        /* LineComment */Block.__(15, ["TODO: IfExists"]),
+                        /* :: */[
+                          /* IfStatement */Block.__(11, [{
+                                condition: /* LiteralExpression */Block.__(0, [/* Boolean */Block.__(0, [/* true */1])]),
+                                block: List.map(inner, unwrapBlock(logicRootNode[1]))
+                              }]),
+                          /* [] */0
+                        ]
+                      ]]);
         case 2 : 
             var match = logicValueToSwiftAST(logicRootNode[1]);
             var match$1 = logicValueToSwiftAST(logicRootNode[0]);
@@ -126,7 +132,11 @@ function toSwiftAST(colors, textStyles, rootLayer, logicRootNode) {
             } else if (match.tag === 5) {
               var name = match[0];
               var exit$1 = 0;
-              if (typeof match$1 === "number") {
+              if (name.includes("margin") || name.includes("padding")) {
+                return /* LineComment */Block.__(15, ["TODO: Margin & padding"]);
+              } else if (name.includes("image")) {
+                return /* LineComment */Block.__(15, ["TODO: Images"]);
+              } else if (typeof match$1 === "number") {
                 exit$1 = 2;
               } else if (match$1.tag) {
                 exit$1 = 2;
@@ -178,6 +188,27 @@ function toSwiftAST(colors, textStyles, rootLayer, logicRootNode) {
                                 /* [] */0
                               ]
                             ]]);
+                } else if (name.endsWith("text")) {
+                  return /* BinaryExpression */Block.__(2, [{
+                              left: /* SwiftIdentifier */Block.__(5, [name.replace(".text", ".attributedText")]),
+                              operator: "=",
+                              right: /* MemberExpression */Block.__(1, [/* :: */[
+                                    /* SwiftIdentifier */Block.__(5, [name.replace(".text", "TextStyle")]),
+                                    /* :: */[
+                                      /* FunctionCallExpression */Block.__(14, [{
+                                            name: /* SwiftIdentifier */Block.__(5, ["apply"]),
+                                            arguments: /* :: */[
+                                              /* FunctionCallArgument */Block.__(13, [{
+                                                    name: /* Some */[/* SwiftIdentifier */Block.__(5, ["to"])],
+                                                    value: match$1
+                                                  }]),
+                                              /* [] */0
+                                            ]
+                                          }]),
+                                      /* [] */0
+                                    ]
+                                  ]])
+                            }]);
                 } else if (name.endsWith("borderRadius")) {
                   return /* BinaryExpression */Block.__(2, [{
                               left: /* SwiftIdentifier */Block.__(5, [name.replace("borderRadius", "layer.cornerRadius")]),

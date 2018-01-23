@@ -6,10 +6,13 @@ var List                                 = require("bs-platform/lib/js/list.js")
 var Glob                                 = require("glob");
 var Path                                 = require("path");
 var $$Array                              = require("bs-platform/lib/js/array.js");
+var Js_exn                               = require("bs-platform/lib/js/js_exn.js");
 var Process                              = require("process");
 var FsExtra                              = require("fs-extra");
 var Caml_array                           = require("bs-platform/lib/js/caml_array.js");
+var Json_decode                          = require("bs-json/src/Json_decode.js");
 var Color$LonaCompilerCore               = require("./core/color.bs.js");
+var Decode$LonaCompilerCore              = require("./core/decode.bs.js");
 var TextStyle$LonaCompilerCore           = require("./core/textStyle.bs.js");
 var SwiftColor$LonaCompilerCore          = require("./swift/swiftColor.bs.js");
 var SwiftRender$LonaCompilerCore         = require("./swift/swiftRender.bs.js");
@@ -151,10 +154,31 @@ function convertWorkspace(workspace, output) {
             var toRelativePath = Path.join(base, addition) + targetExtension;
             var outputPath = Path.join(toDirectory, toRelativePath);
             console.log(Path.join(workspace, fromRelativePath) + ("=>" + Path.join(output, toRelativePath)));
-            var content = convertComponent(file);
-            FsExtra.ensureDirSync(Path.dirname(outputPath));
-            Fs.writeFileSync(outputPath, content);
-            return /* () */0;
+            var exit = 0;
+            var content;
+            try {
+              content = convertComponent(file);
+              exit = 1;
+            }
+            catch (raw_exn){
+              var exn = Js_exn.internalToOCamlException(raw_exn);
+              if (exn[0] === Json_decode.DecodeError) {
+                console.log("Failed to decode " + file);
+                console.log(exn[1]);
+                return /* () */0;
+              } else if (exn[0] === Decode$LonaCompilerCore.UnknownParameter) {
+                console.log("Unknown parameter: " + exn[1]);
+                return /* () */0;
+              } else {
+                throw exn;
+              }
+            }
+            if (exit === 1) {
+              FsExtra.ensureDirSync(Path.dirname(outputPath));
+              Fs.writeFileSync(outputPath, content);
+              return /* () */0;
+            }
+            
           };
           return List.iter(processFile, files$1);
         }));

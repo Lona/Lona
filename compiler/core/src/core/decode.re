@@ -30,12 +30,15 @@ let parameterTypeMap =
   ]
   |> StringMap.fromList;
 
+exception UnknownParameter(string);
+
 let parameterType = (name) =>
   switch (StringMap.find(name, parameterTypeMap)) {
   | item => item
   | exception Not_found =>
-    Js.log2("Unknown built-in parameter when deserializing:", name);
-    Reference("BuiltIn-Null")
+    /* Js.log2("Unknown built-in parameter when deserializing:", name);
+       Reference("BuiltIn-Null") */
+    raise(UnknownParameter(name))
   };
 
 module Types = {

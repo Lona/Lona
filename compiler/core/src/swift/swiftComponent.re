@@ -267,6 +267,7 @@ let generate = (name, colors, textStyles, json) => {
   let defaultValueForParameter =
     fun
     | "backgroundColor" => MemberExpression([SwiftIdentifier("UIColor"), SwiftIdentifier("clear")])
+    | "font"
     | "textStyle" =>
       FunctionCallExpression({"name": SwiftIdentifier("AttributedFont"), "arguments": []})
     | _ => LiteralExpression(Integer(0));
@@ -816,7 +817,10 @@ let generate = (name, colors, textStyles, json) => {
     /* let cond = Logic.conditionallyAssignedIdentifiers(logic);
        cond |> Logic.IdentifierSet.elements |> List.iter(((ltype, path)) => Js.log(path)); */
     /* TODO: Figure out how to handle images */
-    let filterParameters = ((name, _)) => name != "image";
+    let filterParameters = ((name, _)) =>
+      name != "image"
+      && ! Js.String.includes("margin", name)
+      && ! Js.String.includes("padding", name);
     let conditionallyAssigned = Logic.conditionallyAssignedIdentifiers(logic);
     let filterConditionallyAssigned = (layer: Types.layer, (name, _)) => {
       let isAssigned = ((_, value)) => value == ["layers", layer.name, name];

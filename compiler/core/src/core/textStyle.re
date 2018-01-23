@@ -17,12 +17,14 @@ let normalizeFontWeight =
   | Some(_) as value => value
   | None => None;
 
+let normalizeId = (string) => Js.String.replaceByRe([%re "/\\+/g"], "Plus", string);
+
 let parseFile = (filename) => {
   let content = Node.Fs.readFileSync(filename, `utf8);
   let parsed = content |> Js.Json.parseExn;
   open Json.Decode;
   let parseTextStyle = (json) => {
-    id: json |> field("id", string),
+    id: json |> field("id", string) |> normalizeId,
     name: json |> optional(field("name", string)),
     fontName: json |> optional(field("fontName", string)),
     fontFamily: json |> optional(field("fontFamily", string)),

@@ -60,6 +60,11 @@ let toSwiftAST = (colors, textStyles, rootLayer: Types.layer, logicRootNode) => 
     switch logicRootNode {
     | Logic.Assign(a, b) =>
       switch (logicValueToSwiftAST(b), logicValueToSwiftAST(a)) {
+      | (Ast.SwiftIdentifier(name), _)
+          when name |> Js.String.includes("margin") || name |> Js.String.includes("padding") =>
+        Ast.LineComment("TODO: Margin & padding")
+      | (Ast.SwiftIdentifier(name), _) when name |> Js.String.includes("image") =>
+        Ast.LineComment("TODO: Images")
       | (Ast.SwiftIdentifier(name), LiteralExpression(Boolean(value)))
           when name |> Js.String.endsWith("visible") =>
         Ast.BinaryExpression({
@@ -95,6 +100,24 @@ let toSwiftAST = (colors, textStyles, rootLayer: Types.layer, logicRootNode) => 
               ])
           })
         ])
+      | (Ast.SwiftIdentifier(name), right) when name |> Js.String.endsWith("text") =>
+        Ast.BinaryExpression({
+          "left": Ast.SwiftIdentifier(name |> Js.String.replace(".text", ".attributedText")),
+          "operator": "=",
+          "right":
+            Ast.MemberExpression([
+              Ast.SwiftIdentifier(name |> Js.String.replace(".text", "TextStyle")),
+              Ast.FunctionCallExpression({
+                "name": Ast.SwiftIdentifier("apply"),
+                "arguments": [
+                  Ast.FunctionCallArgument({
+                    "name": Some(Ast.SwiftIdentifier("to")),
+                    "value": right
+                  })
+                ]
+              })
+            ])
+        })
       | (Ast.SwiftIdentifier(name), right) when name |> Js.String.endsWith("borderRadius") =>
         Ast.BinaryExpression({
           "left":
@@ -124,10 +147,17 @@ let toSwiftAST = (colors, textStyles, rootLayer: Types.layer, logicRootNode) => 
       }
     | IfExists(a, body) =>
       /* TODO: Once we support optional params, compare to nil or extract via pattern */
-      Ast.IfStatement({
-        "condition": logicValueToSwiftAST(a),
-        "block": unwrapBlock(body) |> List.map(inner)
-      })
+      /* Ast.IfStatement({
+           "condition": logicValueToSwiftAST(a),
+           "block": unwrapBlock(body) |> List.map(inner)
+         }) */
+      Ast.StatementListHelper([
+        Ast.LineComment("TODO: IfExists"),
+        Ast.IfStatement({
+          "condition": Ast.LiteralExpression(Ast.Boolean(true)),
+          "block": unwrapBlock(body) |> List.map(inner)
+        })
+      ])
     | Block(body) => Ast.StatementListHelper(body |> List.map(inner))
     | If(a, cmp, b, body) =>
       Ast.IfStatement({

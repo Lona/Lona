@@ -117,9 +117,16 @@ let convertWorkspace = (workspace, output) => {
           ++ "=>"
           ++ Path.join([|output, toRelativePath|])
         );
-        let content = convertComponent(file);
-        ensureDirSync(Path.dirname(outputPath));
-        Fs.writeFileSync(~filename=outputPath, ~text=content)
+        switch (convertComponent(file)) {
+        | exception Json_decode.DecodeError(reason) =>
+          Js.log("Failed to decode " ++ file);
+          Js.log(reason)
+        | exception Decode.UnknownParameter(name) =>
+          Js.log("Unknown parameter: " ++ name);
+        | content =>
+          ensureDirSync(Path.dirname(outputPath));
+          Fs.writeFileSync(~filename=outputPath, ~text=content)
+        };
       };
       files |> List.iter(processFile)
     }

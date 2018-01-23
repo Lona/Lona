@@ -368,6 +368,7 @@ function generate(name, colors, textStyles, json) {
                           /* [] */0
                         ]
                       ]]);
+        case "font" : 
         case "textStyle" : 
             return /* FunctionCallExpression */Block.__(14, [{
                         name: /* SwiftIdentifier */Block.__(5, ["AttributedFont"]),
@@ -1066,7 +1067,12 @@ function generate(name, colors, textStyles, json) {
   };
   var updateDoc = function () {
     var filterParameters = function (param) {
-      return +(param[0] !== "image");
+      var name = param[0];
+      if (name !== "image" && !name.includes("margin")) {
+        return 1 - +name.includes("padding");
+      } else {
+        return /* false */0;
+      }
     };
     var conditionallyAssigned = Logic$LonaCompilerCore.conditionallyAssignedIdentifiers(logic);
     var defineInitialLayerValues = function (param) {

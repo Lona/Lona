@@ -21,12 +21,17 @@ function normalizeFontWeight(value) {
   }
 }
 
+function normalizeId(string) {
+  return string.replace((/\+/g), "Plus");
+}
+
 function parseFile(filename) {
   var content = Fs.readFileSync(filename, "utf8");
   var parsed = JSON.parse(content);
   var parseTextStyle = function (json) {
+    var string = Json_decode.field("id", Json_decode.string, json);
     return /* record */[
-            /* id */Json_decode.field("id", Json_decode.string, json),
+            /* id */string.replace((/\+/g), "Plus"),
             /* name */Json_decode.optional((function (param) {
                     return Json_decode.field("name", Json_decode.string, param);
                   }), json),
@@ -81,6 +86,7 @@ function find(textStyles, id) {
 }
 
 exports.normalizeFontWeight = normalizeFontWeight;
+exports.normalizeId         = normalizeId;
 exports.parseFile           = parseFile;
 exports.find                = find;
 /* fs Not a pure module */
