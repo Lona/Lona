@@ -11,7 +11,7 @@ import Foundation
 indirect enum CSType: Equatable, CSDataSerializable, CSDataDeserializable {
     typealias SchemaRecord = (type: CSType, access: CSAccess)
     typealias Schema = [String: SchemaRecord]
-    
+
     case any
     case optional(CSType)
     case named(String, CSType) // TODO should we have a CSNamedType?
@@ -24,21 +24,21 @@ indirect enum CSType: Equatable, CSDataSerializable, CSDataDeserializable {
     case array(CSType)
     case dictionary(Schema)
     case enumeration([CSValue])
-    
+
     init(_ data: CSData) {
         self = .undefined
-        
+
         if let string = data.string {
             if let builtin = CSType.builtInTypes[string] {
                 self = builtin
                 return
             }
-            
+
             if let type = CSType.userType(named: string) {
                 self = type
                 return
             }
-            
+
             switch string {
             case "Null": self = .null
             case "Number": self = .number
@@ -67,21 +67,21 @@ indirect enum CSType: Equatable, CSDataSerializable, CSDataDeserializable {
             }
         }
     }
-    
+
     func typeAt(keyPath: [String]) -> CSType? {
         if keyPath.count == 0 { return self }
         guard case CSType.dictionary(let schema) = self else { return nil }
         guard let item = schema[keyPath[0]] else { return nil }
         return item.type.typeAt(keyPath: Array(keyPath[1..<keyPath.count]))
     }
-    
+
     var genericId: String? {
         guard case CSType.generic(let id, _) = self else { return nil }
         return id
     }
-    
+
     var isGeneric: Bool { return genericId != nil }
-    
+
     func unwrappedNamedType() -> CSType {
         switch self {
         case .named(_, let type):
@@ -90,7 +90,7 @@ indirect enum CSType: Equatable, CSDataSerializable, CSDataDeserializable {
             return self
         }
     }
-    
+
     func toString() -> String {
         switch self {
         case .bool: return "Boolean"
@@ -100,7 +100,7 @@ indirect enum CSType: Equatable, CSDataSerializable, CSDataDeserializable {
         default: return "Any"
         }
     }
-    
+
     // TODO Params on
     // optional, generic, array, dictionary
     func toData() -> CSData {
@@ -109,11 +109,11 @@ indirect enum CSType: Equatable, CSDataSerializable, CSDataDeserializable {
         case .optional(_): return .String("Optional")
         case .named(let name, let type):
             if CSType.userType(named: name) != nil { return .String(name) }
-            
+
             return .Object([
                 "name": "Named".toData(),
                 "alias": .String(name),
-                "of": type.toData(),
+                "of": type.toData()
             ])
         case .generic(_, _): return .String("Generic")
         case .undefined: return .String("Undefined")
@@ -124,7 +124,7 @@ indirect enum CSType: Equatable, CSDataSerializable, CSDataDeserializable {
         case .array(let innerType):
             return .Object([
                 "name": "Array".toData(),
-                "of": innerType.toData(),
+                "of": innerType.toData()
             ])
         case .dictionary(_): return .String("Dictionary")
         case .enumeration(let values):
@@ -134,28 +134,28 @@ indirect enum CSType: Equatable, CSDataSerializable, CSDataDeserializable {
             }) {
                 return .String(match.element.key)
             }
-            
+
             return CSData.Object([
                 "name": "Enumeration".toData(),
-                "of": CSData.Array(values.map({ $0.toData() })),
+                "of": CSData.Array(values.map({ $0.toData() }))
             ])
         }
     }
-    
+
     static func userType(named typeName: String) -> CSType? {
         for userType in CSUserTypes.types {
             if case CSType.named(let name, _) = userType, name == typeName {
                 return userType
             }
         }
-        
+
         return nil
     }
-    
+
     static func from(string: String) -> CSType {
         if let builtin = builtInTypes[string] { return builtin }
         if let type = userType(named: string) { return type }
-        
+
         switch string {
         case "Boolean": return .bool
         case "Number": return .number
@@ -163,7 +163,7 @@ indirect enum CSType: Equatable, CSDataSerializable, CSDataDeserializable {
         default: return .any
         }
     }
-    
+
     static func ==(lhs: CSType, rhs: CSType) -> Bool {
         switch (lhs, rhs) {
         case (.any, .any): return true
@@ -184,7 +184,7 @@ indirect enum CSType: Equatable, CSDataSerializable, CSDataDeserializable {
                     return false
                 }
             }
-            
+
             return true
         default:
             return false
@@ -194,26 +194,26 @@ indirect enum CSType: Equatable, CSDataSerializable, CSDataDeserializable {
     func merge(_ additional: CSType) -> CSType {
         guard case CSType.dictionary(let originalSchema) = self else { return self }
         guard case CSType.dictionary(let additionalSchema) = additional else { return self }
-        
+
         var merged: Schema = [:]
-        
+
         originalSchema.forEach({ (key, value) in
             merged[key] = value
         })
-        
+
         additionalSchema.forEach({ (key, value) in
             merged[key] = value
         })
-        
+
         return CSType.dictionary(merged)
     }
-    
+
     func merge(key name: String, type: CSType, access: CSAccess) -> CSType {
         let record: CSType.SchemaRecord = (type: type, access: access)
         let additional = CSType.dictionary([name: record])
         return merge(additional)
     }
-    
+
     static func parameterType() -> CSType {
         // TODO caching
         let values: [CSValue] = [
@@ -222,19 +222,19 @@ indirect enum CSType: Equatable, CSDataSerializable, CSDataDeserializable {
             CSValue(type: .string, data: .String("String")),
             CSValue(type: .string, data: .String("Color")),
             CSValue(type: .string, data: .String("TextStyle")),
-            CSValue(type: .string, data: .String("URL")),
+            CSValue(type: .string, data: .String("URL"))
 //            CSValue(type: .string, data: .String("Component")),
             ] + CSUserTypes.types.map({ CSValue(type: .string, data: $0.toString().toData()) })
 
         return CSType.enumeration(values)
     }
-    
+
     static var builtInTypes: [String: CSType] = [
         "Color": CSColorType,
         "TextStyle": CSTextStyleType,
         "Comparator": CSComparatorType,
         "URL": CSURLType,
-        "Component": CSComponentType,
+        "Component": CSComponentType
         ]
 }
 
@@ -261,13 +261,13 @@ let CSComparatorType = CSType.enumeration([
     CSValue(type: .string, data: .String("greater than")),
     CSValue(type: .string, data: .String("greater than or equal to")),
     CSValue(type: .string, data: .String("less than")),
-    CSValue(type: .string, data: .String("less than or equal to")),
+    CSValue(type: .string, data: .String("less than or equal to"))
 ])
 
 let CSLayerType = CSType.dictionary([
 //    "name": (type: .string, access: .read),
     "visible": (type: .bool, access: .write),
-    
+
     // Box Model
     "height": (type: .number, access: .write),
     "width": (type: .number, access: .write),
@@ -279,26 +279,17 @@ let CSLayerType = CSType.dictionary([
     "paddingRight": (type: .number, access: .write),
     "paddingBottom": (type: .number, access: .write),
     "paddingLeft": (type: .number, access: .write),
-    
+
     // Color
     "backgroundColor": (type: CSColorType, access: .write),
-    
+
     // Text
     "text": (type: .string, access: .write),
     "textStyle": (type: CSTextStyleType, access: .write),
-    
+
     // Image
     "image": (type: CSURLType, access: .write),
-    
+
     // Children
-    "children": (type: .array(.any), access: .write),
+    "children": (type: .array(.any), access: .write)
 ])
-
-
-
-
-
-
-
-
-

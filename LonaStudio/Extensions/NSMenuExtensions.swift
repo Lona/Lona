@@ -14,7 +14,7 @@ extension NSMenuItem {
         guard let onClick = menuItem.representedObject as? () -> Void else { return }
         onClick()
     }
-    
+
     convenience init(title: String, onClick: @escaping () -> Void, keyEquivalent charCode: String? = nil) {
         self.init(title: title, action: #selector(handleAction), keyEquivalent: charCode ?? "")
         target = self
@@ -25,7 +25,7 @@ extension NSMenuItem {
 extension NSMenu {
     convenience init(items: [NSMenuItem]) {
         self.init()
-        
+
         for item in items {
             addItem(item)
         }

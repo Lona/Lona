@@ -15,7 +15,7 @@ extension NSColor {
         let average = (rgbColor.redComponent + rgbColor.greenComponent + rgbColor.blueComponent) / 3//
         return (average >= 0.5) ? NSColor.black : NSColor.white
     }
-    
+
     var hexString: String {
         guard let rgbColor = usingColorSpaceName(NSColorSpaceName.calibratedRGB) else {
             return "#FFFFFF"
@@ -26,7 +26,7 @@ extension NSColor {
         let hexString = NSString(format: "#%02X%02X%02X", red, green, blue)
         return hexString as String
     }
-    
+
     var rgbaString: String {
         guard let rgbColor = usingColorSpaceName(NSColorSpaceName.calibratedRGB) else {
             return "rgba(255,255,255,1)"
@@ -37,7 +37,7 @@ extension NSColor {
         let rgbaString = NSString(format: "rgba(%d,%d,%d,%f)", red, green, blue, alphaComponent)
         return rgbaString as String
     }
-    
+
     var colorValue: CSValue {
         return CSValue(type: CSColorType, data: CSData.String(rgbaString))
     }

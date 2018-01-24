@@ -9,16 +9,16 @@
 import Cocoa
 
 class PickerView<Element: PickerItemType>: NSView {
-    
+
     enum Option {
         case placeholderText(String)
         case sizeForRow((Element) -> NSSize)
     }
-    
+
     struct Options {
         var placeholderText: String = "Search ..."
         var sizeForRow: ((Element) -> NSSize) = { _ in return NSSize(width: 44.0, height: 300)}
-        
+
         init(_ options: [Option]) {
             for option in options {
                 switch option {
@@ -30,14 +30,14 @@ class PickerView<Element: PickerItemType>: NSView {
             }
         }
     }
-    
+
     struct Parameter {
         var selected: String
         let data: [Element]
         let viewForItem: ((NSTableView, Element, Bool) -> PickerRowViewType)
         let didSelectItem: ((PickerView<Element>?, Element) -> Void)
         let options: Options
-        
+
         init(data: [Element],
              selected: String,
              viewForItem: @escaping ((NSTableView, Element, Bool) -> PickerRowViewType),
@@ -50,7 +50,7 @@ class PickerView<Element: PickerItemType>: NSView {
             self.options = options
         }
     }
-    
+
     // MARK: - Variable
     fileprivate let parameter: Parameter
     fileprivate var filterData: [Element]
@@ -63,14 +63,14 @@ class PickerView<Element: PickerItemType>: NSView {
         popover.contentSize = self.bounds.size
         return popover
     }()
-    
+
     // MARK: - Init
     init(data: [Element],
          selected: String,
          viewForItem: @escaping ((NSTableView, Element, Bool) -> PickerRowViewType),
          didSelectItem: @escaping ((PickerView<Element>?, Element) -> Void),
          options: [Option] = []) {
-        
+
         let option = PickerView<Element>.Options(options)
         parameter = Parameter(data: data,
                               selected: selected,
@@ -78,41 +78,41 @@ class PickerView<Element: PickerItemType>: NSView {
                               didSelectItem: didSelectItem,
                               options: option)
         filterData = parameter.data
-        
+
         super.init(frame: NSRect.zero)
-        
+
         initCommon()
         setupLayout()
     }
-    
+
     required init?(coder decoder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
-    
+
     // MARK: - Override
     override var isFlipped: Bool { return true }
 }
 
 // MARK: - Private
 extension PickerView {
-    
+
     fileprivate func initCommon() {
         translatesAutoresizingMaskIntoConstraints = false
     }
-    
+
     fileprivate func setupLayout() {
-        
+
         // Components
         let list = PickerListView(parameter: parameter)
         list.picker = self
         let searchStackView = setupSearchView(list)
-        
+
         // Stack View
         let stackView = NSStackView(views: [searchStackView, list], orientation: .vertical, stretched: true)
         stackView.translatesAutoresizingMaskIntoConstraints = false
         stackView.spacing = 8
         stackView.edgeInsets = NSEdgeInsets(top: 8, left: 0, bottom: 8, right: 0)
-        
+
         // Constraint
         addSubview(stackView)
         stackView.topAnchor.constraint(equalTo: topAnchor, constant: 8).isActive = true
@@ -120,7 +120,7 @@ extension PickerView {
         stackView.leftAnchor.constraint(equalTo: leftAnchor, constant: 0).isActive = true
         stackView.rightAnchor.constraint(equalTo: rightAnchor, constant: 0).isActive = true
     }
-    
+
     private func setupSearchView(_ list: PickerListView<Element>) -> NSStackView {
         let searchField = CSSearchField(options: [
             .placeholderText(parameter.options.placeholderText),
@@ -138,7 +138,7 @@ extension PickerView {
                     self.currentHover = max(0, min(index, self.filterData.count - 1))
                     list.updateHover(self.currentHover)
                 }
-                
+
                 switch keyCode {
                 case .down:
                     let index = self.currentHover + 1
@@ -155,12 +155,12 @@ extension PickerView {
                 }
             })
             ])
-        
+
         let stackView = NSStackView(views: [searchField], orientation: .horizontal, stretched: true)
         stackView.edgeInsets = NSEdgeInsets(top: 0, left: 8, bottom: 0, right: 8)
         return stackView
     }
-    
+
     fileprivate func embeddedViewController() -> NSViewController {
         return NSViewController(view: self)
     }

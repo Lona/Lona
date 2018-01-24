@@ -10,7 +10,7 @@ import Foundation
 
 enum DimensionSizingRule {
     case Fixed, Expand, Shrink
-    
+
     func toString() -> String {
         switch self {
         case .Fixed:
@@ -21,12 +21,12 @@ enum DimensionSizingRule {
             return "Shrink"
         }
     }
-    
+
     static func fromString(rawValue: String?) -> DimensionSizingRule {
         if rawValue == nil {
             return DimensionSizingRule.Expand
         }
-        
+
         switch rawValue! {
         case "Expand":
             return DimensionSizingRule.Expand
@@ -37,4 +37,3 @@ enum DimensionSizingRule {
         }
     }
 }
-

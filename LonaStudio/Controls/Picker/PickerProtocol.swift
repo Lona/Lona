@@ -9,12 +9,12 @@
 import Cocoa
 
 protocol Identify {
-    
+
     var id: String { get }
 }
 
 protocol Searchable {
-    
+
     var name: String { get }
 }
 

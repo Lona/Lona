@@ -13,4 +13,3 @@ disabled_rules:
   - line_length
   - large_tuple
   - shorthand_operator
-  - trailing_whitespace 

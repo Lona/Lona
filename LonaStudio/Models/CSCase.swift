@@ -12,35 +12,35 @@ final class CSCaseEntry: CSDataSerializable, CSDataDeserializable {
     var name: String
     var value: CSData
     var visible: Bool
-    
+
     init(name: String, value: CSData, visible: Bool) {
         self.name = name
         self.value = value
         self.visible = visible
     }
-    
+
     init(_ data: CSData) {
         name = data.get(key: "name").stringValue
         value = data.get(key: "value")
         // If the file is missing this key, show the cases anyway
         visible = data.get(key: "visible").bool ?? true
     }
-    
+
     func toData() -> CSData {
         return CSData.Object([
             "name": name.toData(),
             "value": value,
-            "visible": visible.toData(),
+            "visible": visible.toData()
         ])
     }
 }
 
 final class CSCase: DataNodeCopying {
-    
+
     enum CaseType {
         case entry(CSCaseEntry)
         case importedList(URL)
-        
+
         var typeName: String {
             switch self {
             case .entry(_): return "entry"
@@ -48,18 +48,18 @@ final class CSCase: DataNodeCopying {
             }
         }
     }
-    
+
     var caseType: CaseType = CaseType.entry(CSCaseEntry(name: "name", value: CSData.Object([:]), visible: true))
-    
+
     init() {}
-    
+
     init(name: String, value: CSData = CSData.Object([:])) {
         caseType = .entry(CSCaseEntry(name: name, value: value, visible: true))
     }
-    
+
     init(_ data: CSData) {
         let type = data["type"]?.string ?? "entry"
-        
+
         switch type {
         case "entry":
             let name = data.get(key: "name").stringValue
@@ -74,7 +74,7 @@ final class CSCase: DataNodeCopying {
             break
         }
     }
-    
+
     func caseList() -> [CSCaseEntry] {
         switch caseType {
         case .entry(let caseItem):
@@ -88,7 +88,7 @@ final class CSCase: DataNodeCopying {
             return list.map({ CSCaseEntry(name: $0["caseName"]?.string ?? "Artboard", value: $0, visible: true) })
         }
     }
-    
+
     func toData() -> CSData {
         switch caseType {
         case .entry(let caseItem):
@@ -96,21 +96,20 @@ final class CSCase: DataNodeCopying {
                 "type": caseType.typeName.toData(),
                 "name": caseItem.name.toData(),
                 "value": caseItem.value,
-                "visible": caseItem.visible.toData(),
+                "visible": caseItem.visible.toData()
             ])
         case .importedList(url: let url):
             return CSData.Object([
                 "type": caseType.typeName.toData(),
-                "url": url.absoluteString.toData(),
+                "url": url.absoluteString.toData()
             ])
         }
     }
-    
+
     func childCount() -> Int { return 0 }
     func child(at index: Int) -> Any { return 0 }
-    
+
     static var defaultCase: CSCase {
         return CSCase(name: "Default")
     }
 }
-

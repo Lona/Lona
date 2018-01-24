@@ -37,27 +37,27 @@ extension String {
     }
     func capturedGroups(withRegex pattern: String) -> [(value: String, range: NSRange)] {
         var results = [(String, NSRange)]()
-        
+
         var regex: NSRegularExpression
         do {
             regex = try NSRegularExpression(pattern: pattern, options: [])
         } catch {
             return results
         }
-        
+
         let matches = regex.matches(in: self, options: [], range: NSRange(location:0, length: self.count))
-        
+
         guard let match = matches.first else { return results }
-        
+
         let lastRangeIndex = match.numberOfRanges - 1
         guard lastRangeIndex >= 1 else { return results }
-        
+
         for i in 1...lastRangeIndex {
             let capturedGroupIndex = match.range(at: i)
             let matchedString = (self as NSString).substring(with: capturedGroupIndex)
             results.append((matchedString, capturedGroupIndex))
         }
-        
+
         return results
     }
     /**
@@ -75,30 +75,30 @@ extension String {
             return self
         }
     }
-    
+
     func pathRelativeTo(basePath: String) -> String? {
         guard let absolutePathComponents = URL(string: self)?.pathComponents else { return nil }
         guard let basePathComponents = URL(string: basePath)?.pathComponents else { return nil }
-        
+
         if absolutePathComponents.count < basePathComponents.count {
             return self
         }
-        
+
         var levelIndex = 0 //number of basePath components in absolute path
-        
+
         for (index, baseComponent) in basePathComponents.enumerated() {
             if (baseComponent != absolutePathComponents[index]) {
                 break
             }
             levelIndex += 1
         }
-        
+
         if levelIndex == 0 {
             return self
         }
-        
+
         var relativePath: String = ""
-        
+
         if levelIndex < basePathComponents.count {
             //outside of base path
             var index = levelIndex
@@ -107,13 +107,13 @@ extension String {
                 index += 1
             }
         }
-        
+
         var index = levelIndex
         while index < absolutePathComponents.count {
             relativePath += (relativePath.count > 0 ? "/" : "./") + absolutePathComponents[index]
             index += 1
         }
-        
+
         return relativePath
     }
 }

@@ -24,29 +24,29 @@ class ShadowStylePickerButton: NSButton, CSControl {
             setTitle(with: shadow)
         }
     }
-    
+
     // MARK: - Init
     required init?(coder aDecoder: NSCoder) {
         super.init(coder: aDecoder)
         setup()
     }
-    
+
     override init(frame frameRect: NSRect) {
         super.init(frame: frameRect)
         setup()
     }
-    
+
     private func setup() {
         action = #selector(handleClick)
         target = self
-        
+
         setButtonType(.momentaryPushIn)
         imagePosition = .imageLeft
         alignment = .left
         bezelStyle = .rounded
         title = "Custom shadow"
     }
-    
+
     // MARK: - Public
     func showPopover() {
         let picker = ShadowStylePickerView(selected: data.stringValue) {[weak self] (item) in
@@ -57,18 +57,18 @@ class ShadowStylePickerButton: NSButton, CSControl {
         }
         picker.popover.show(relativeTo: NSRect.zero, of: self, preferredEdge: .maxY)
     }
-    
+
     @objc func handleClick() {
         showPopover()
     }
 }
 
 extension ShadowStylePickerButton {
-    
+
     fileprivate func setImage(with shadow: CSShadow) {
         image = createCircularImage(size: 10, color: shadow.color)
     }
-    
+
     fileprivate func setTitle(with shadow: CSShadow) {
         if shadow.id == CSShadows.unstyledDefaultName {
             title = "\(shadow.name)"

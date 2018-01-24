@@ -11,14 +11,14 @@
 import Cocoa
 
 extension NSStackView {
-    
+
     func hideViews(views: [NSView], animated: Bool) {
         views.forEach { view in
             view.isHidden = true
             view.wantsLayer = true
             view.layer!.opacity = 0.0
         }
-        
+
         if animated {
             NSAnimationContext.runAnimationGroup({ context in
                 context.duration = 0.3
@@ -27,22 +27,22 @@ extension NSStackView {
             }, completionHandler: nil)
         }
     }
-    
+
     func showViews(views: [NSView], animated: Bool) {
         views.forEach { view in
             // unhide the view so the stack view knows how to layout…
             view.isHidden = false
-            
+
             if animated {
                 view.wantsLayer = true
                 // …but set opacity to 0 so the view is not visible during the animation
                 view.layer!.opacity = 0.0
             }
         }
-        
+
         if animated {
             views.forEach { view in view.layoutSubtreeIfNeeded() }
-            
+
             NSAnimationContext.runAnimationGroup({ context in
                 context.duration = 0.3
                 context.allowsImplicitAnimation = true
@@ -57,18 +57,18 @@ extension NSStackView {
             })
         }
     }
-    
+
     convenience init(views: [NSView], orientation: NSUserInterfaceLayoutOrientation, stretched: Bool = false) {
         self.init()
-        
+
         self.orientation = orientation
-        
+
         for view in views { addArrangedSubview(view, stretched: stretched) }
     }
-    
+
     func addArrangedSubview(_ view: NSView, stretched: Bool) {
         addArrangedSubview(view)
-        
+
         if stretched {
             switch orientation {
             case .horizontal:

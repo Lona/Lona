@@ -25,4 +25,3 @@ protocol DataNodeCopying: DataNode, CSDataSerializable, CSDataDeserializable {}
 //protocol MenuProvider {
 //    func defaultMenu<Element>(for listEditor: ListEditor<Element>) -> [NSMenuItem]
 //}
-

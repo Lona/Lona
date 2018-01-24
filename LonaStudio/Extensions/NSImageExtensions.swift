@@ -12,19 +12,17 @@ import AppKit
 extension NSImage {
     func tinted(color tintColor: NSColor) -> NSImage {
 //        if !isTemplate { return self }
-        
+
         let image = self.copy() as! NSImage
         image.lockFocus()
-        
+
         tintColor.set()
         let rect = NSRect(x: 0, y: 0, width: image.size.width, height: image.size.height)
         rect.fill(using: NSCompositingOperation.sourceAtop)
-        
+
         image.unlockFocus()
 //        image.isTemplate = false
-        
+
         return image
     }
 }
-
-

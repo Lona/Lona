@@ -12,7 +12,7 @@ protocol CSPreferencesFile {
     static var data: CSData { get set }
     static var url: URL { get }
     static var path: String { get }
-    
+
     static func save()
     static func load() -> CSData
     static func reload()
@@ -20,7 +20,7 @@ protocol CSPreferencesFile {
 
 extension CSPreferencesFile {
     static var path: String { return url.path }
-    
+
     static func save() {
         do {
             try data.toData()?.write(to: url)
@@ -28,11 +28,11 @@ extension CSPreferencesFile {
             Swift.print("Failed to save preferences to \(url.path)")
         }
     }
-    
+
     static func load() -> CSData {
         return CSData.from(fileAtPath: path) ?? CSData.Object([:])
     }
-    
+
     static func reload() {
         data = load()
     }
