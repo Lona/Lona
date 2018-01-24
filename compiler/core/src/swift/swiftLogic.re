@@ -160,15 +160,20 @@ let toSwiftAST = (colors, textStyles, rootLayer: Types.layer, logicRootNode) => 
       ])
     | Block(body) => Ast.StatementListHelper(body |> List.map(inner))
     | If(a, cmp, b, body) =>
-      Ast.IfStatement({
-        "condition":
-          Ast.BinaryExpression({
-            "left": logicValueToSwiftAST(a),
-            "operator": fromCmp(cmp),
-            "right": logicValueToSwiftAST(b)
-          }),
-        "block": unwrapBlock(body) |> List.map(inner)
-      })
+      let left = logicValueToSwiftAST(a);
+      let right = logicValueToSwiftAST(b);
+      let operator = fromCmp(cmp);
+      let body = unwrapBlock(body) |> List.map(inner);
+      switch (left, operator, right) {
+      | (Ast.LiteralExpression(Boolean(true)), "==", condition)
+      | (condition, "==", Ast.LiteralExpression(Boolean(true))) =>
+        Ast.IfStatement({"condition": condition, "block": body})
+      | _ =>
+        Ast.IfStatement({
+          "condition": Ast.BinaryExpression({"left": left, "operator": operator, "right": right}),
+          "block": body
+        })
+      }
     | Add(lhs, rhs, value) =>
       BinaryExpression({
         "left": logicValueToSwiftAST(value),

@@ -104,14 +104,73 @@ function toSwiftAST(colors, textStyles, rootLayer, logicRootNode) {
     } else {
       switch (logicRootNode.tag | 0) {
         case 0 : 
-            return /* IfStatement */Block.__(11, [{
-                        condition: /* BinaryExpression */Block.__(2, [{
-                              left: logicValueToSwiftAST(logicRootNode[0]),
-                              operator: fromCmp(logicRootNode[1]),
-                              right: logicValueToSwiftAST(logicRootNode[2])
-                            }]),
-                        block: List.map(inner, unwrapBlock(logicRootNode[3]))
-                      }]);
+            var left = logicValueToSwiftAST(logicRootNode[0]);
+            var right = logicValueToSwiftAST(logicRootNode[2]);
+            var operator = fromCmp(logicRootNode[1]);
+            var body = List.map(inner, unwrapBlock(logicRootNode[3]));
+            var exit = 0;
+            var exit$1 = 0;
+            if (typeof left === "number") {
+              exit$1 = 2;
+            } else if (left.tag) {
+              exit$1 = 2;
+            } else {
+              var match = left[0];
+              if (typeof match === "number") {
+                exit$1 = 2;
+              } else if (match.tag) {
+                exit$1 = 2;
+              } else if (match[0] !== 0) {
+                if (operator === "==") {
+                  var condition = right;
+                  return /* IfStatement */Block.__(11, [{
+                              condition: condition,
+                              block: body
+                            }]);
+                } else {
+                  exit$1 = 2;
+                }
+              } else {
+                exit$1 = 2;
+              }
+            }
+            if (exit$1 === 2) {
+              if (operator === "==") {
+                if (typeof right === "number") {
+                  exit = 1;
+                } else if (right.tag) {
+                  exit = 1;
+                } else {
+                  var match$1 = right[0];
+                  if (typeof match$1 === "number") {
+                    exit = 1;
+                  } else if (match$1.tag) {
+                    exit = 1;
+                  } else if (match$1[0] !== 0) {
+                    var condition$1 = left;
+                    return /* IfStatement */Block.__(11, [{
+                                condition: condition$1,
+                                block: body
+                              }]);
+                  } else {
+                    exit = 1;
+                  }
+                }
+              } else {
+                exit = 1;
+              }
+            }
+            if (exit === 1) {
+              return /* IfStatement */Block.__(11, [{
+                          condition: /* BinaryExpression */Block.__(2, [{
+                                left: left,
+                                operator: operator,
+                                right: right
+                              }]),
+                          block: body
+                        }]);
+            }
+            break;
         case 1 : 
             return /* StatementListHelper */Block.__(18, [/* :: */[
                         /* LineComment */Block.__(15, ["TODO: IfExists"]),
@@ -124,45 +183,45 @@ function toSwiftAST(colors, textStyles, rootLayer, logicRootNode) {
                         ]
                       ]]);
         case 2 : 
-            var match = logicValueToSwiftAST(logicRootNode[1]);
-            var match$1 = logicValueToSwiftAST(logicRootNode[0]);
-            var exit = 0;
-            if (typeof match === "number") {
-              exit = 1;
-            } else if (match.tag === 5) {
-              var name = match[0];
-              var exit$1 = 0;
+            var match$2 = logicValueToSwiftAST(logicRootNode[1]);
+            var match$3 = logicValueToSwiftAST(logicRootNode[0]);
+            var exit$2 = 0;
+            if (typeof match$2 === "number") {
+              exit$2 = 1;
+            } else if (match$2.tag === 5) {
+              var name = match$2[0];
+              var exit$3 = 0;
               if (name.includes("margin") || name.includes("padding")) {
                 return /* LineComment */Block.__(15, ["TODO: Margin & padding"]);
               } else if (name.includes("image")) {
                 return /* LineComment */Block.__(15, ["TODO: Images"]);
-              } else if (typeof match$1 === "number") {
-                exit$1 = 2;
-              } else if (match$1.tag) {
-                exit$1 = 2;
+              } else if (typeof match$3 === "number") {
+                exit$3 = 2;
+              } else if (match$3.tag) {
+                exit$3 = 2;
               } else {
-                var match$2 = match$1[0];
-                if (typeof match$2 === "number") {
-                  exit$1 = 2;
-                } else if (match$2.tag) {
-                  exit$1 = 2;
+                var match$4 = match$3[0];
+                if (typeof match$4 === "number") {
+                  exit$3 = 2;
+                } else if (match$4.tag) {
+                  exit$3 = 2;
                 } else if (name.endsWith("visible")) {
                   return /* BinaryExpression */Block.__(2, [{
                               left: /* SwiftIdentifier */Block.__(5, [name.replace("visible", "isHidden")]),
                               operator: "=",
-                              right: /* LiteralExpression */Block.__(0, [/* Boolean */Block.__(0, [1 - match$2[0]])])
+                              right: /* LiteralExpression */Block.__(0, [/* Boolean */Block.__(0, [1 - match$4[0]])])
                             }]);
                 } else {
-                  exit$1 = 2;
+                  exit$3 = 2;
                 }
               }
-              if (exit$1 === 2) {
+              if (exit$3 === 2) {
                 if (name.endsWith("textStyle")) {
                   return /* StatementListHelper */Block.__(18, [/* :: */[
                               /* BinaryExpression */Block.__(2, [{
                                     left: /* SwiftIdentifier */Block.__(5, [name.replace(".textStyle", "TextStyle")]),
                                     operator: "=",
-                                    right: match$1
+                                    right: match$3
                                   }]),
                               /* :: */[
                                 /* BinaryExpression */Block.__(2, [{
@@ -200,7 +259,7 @@ function toSwiftAST(colors, textStyles, rootLayer, logicRootNode) {
                                             arguments: /* :: */[
                                               /* FunctionCallArgument */Block.__(13, [{
                                                     name: /* Some */[/* SwiftIdentifier */Block.__(5, ["to"])],
-                                                    value: match$1
+                                                    value: match$3
                                                   }]),
                                               /* [] */0
                                             ]
@@ -213,33 +272,33 @@ function toSwiftAST(colors, textStyles, rootLayer, logicRootNode) {
                   return /* BinaryExpression */Block.__(2, [{
                               left: /* SwiftIdentifier */Block.__(5, [name.replace("borderRadius", "layer.cornerRadius")]),
                               operator: "=",
-                              right: match$1
+                              right: match$3
                             }]);
                 } else if (name.endsWith("height")) {
                   return /* BinaryExpression */Block.__(2, [{
                               left: /* SwiftIdentifier */Block.__(5, [name.replace(".height", "HeightAnchorConstraint?.constant")]),
                               operator: "=",
-                              right: match$1
+                              right: match$3
                             }]);
                 } else if (name.endsWith("width")) {
                   return /* BinaryExpression */Block.__(2, [{
                               left: /* SwiftIdentifier */Block.__(5, [name.replace(".width", "WidthAnchorConstraint?.constant")]),
                               operator: "=",
-                              right: match$1
+                              right: match$3
                             }]);
                 } else {
-                  exit = 1;
+                  exit$2 = 1;
                 }
               }
               
             } else {
-              exit = 1;
+              exit$2 = 1;
             }
-            if (exit === 1) {
+            if (exit$2 === 1) {
               return /* BinaryExpression */Block.__(2, [{
-                          left: match,
+                          left: match$2,
                           operator: "=",
-                          right: match$1
+                          right: match$3
                         }]);
             }
             break;
