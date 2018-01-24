@@ -5,9 +5,7 @@ var List  = require("bs-platform/lib/js/list.js");
 var Block = require("bs-platform/lib/js/block.js");
 
 function logicValueToJavaScriptAST(x) {
-  if (typeof x === "number") {
-    return /* Unknown */0;
-  } else if (x.tag) {
+  if (x.tag) {
     return /* Literal */Block.__(1, [x[0]]);
   } else {
     return /* Identifier */Block.__(2, [x[1]]);
@@ -81,7 +79,7 @@ function toJavaScriptAST(node) {
                   ]);
       case 4 : 
           var value = node[0];
-          if (typeof value === "number" || value.tag) {
+          if (value.tag) {
             return /* Unknown */0;
           } else {
             return /* VariableDeclaration */Block.__(8, [/* Identifier */Block.__(2, [value[1]])]);

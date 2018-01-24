@@ -4,7 +4,6 @@ let logicValueToJavaScriptAST = (x) =>
   switch x {
   | Logic.Identifier(_, path) => Ast.Identifier(path)
   | Literal(x) => Literal(x)
-  | None => Unknown
   };
 
 let rec toJavaScriptAST = (node) => {

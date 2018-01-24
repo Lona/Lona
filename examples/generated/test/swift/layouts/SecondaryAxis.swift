@@ -79,7 +79,7 @@ public class SecondaryAxis: UIView {
     fitView.addSubview(textView)
 
     fixedView.backgroundColor =
-    #colorLiteral(red: 0.847058823529, green: 0.847058823529, blue: 0.847058823529, alpha: 1)
+      #colorLiteral(red: 0.847058823529, green: 0.847058823529, blue: 0.847058823529, alpha: 1)
     fitView.backgroundColor = #colorLiteral(red: 0.847058823529, green: 0.847058823529, blue: 0.847058823529, alpha: 1)
     textView.attributedText = textViewTextStyle.apply(to: "Text goes here")
     fillView.backgroundColor = #colorLiteral(red: 0.847058823529, green: 0.847058823529, blue: 0.847058823529, alpha: 1)

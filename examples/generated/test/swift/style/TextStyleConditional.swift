@@ -91,12 +91,12 @@ public class TextStyleConditional: UIView {
 
   private func update() {
     textViewTextStyle = TextStyles.headline
-    textView.attributedText = textViewTextStyle.apply(to: textView.text ?? "") // StatementListHelper
+    textView.attributedText = textViewTextStyle.apply(to: textView.text ?? "")
 
 
-    if large == true {
+    if large {
       textViewTextStyle = TextStyles.display2
-      textView.attributedText = textViewTextStyle.apply(to: textView.text ?? "") // StatementListHelper
+      textView.attributedText = textViewTextStyle.apply(to: textView.text ?? "")
     }
   }
 }

@@ -9,21 +9,18 @@ var SwiftDocument$LonaCompilerCore = require("./swiftDocument.bs.js");
 
 function toSwiftAST(colors, textStyles, rootLayer, logicRootNode) {
   var logicValueToSwiftAST = function (x) {
-    if (typeof x === "number") {
-      return /* Empty */0;
-    } else if (x.tag) {
+    if (x.tag) {
       return SwiftDocument$LonaCompilerCore.lonaValue(colors, textStyles, x[0]);
     } else {
       var node = x;
-      if (typeof node === "number") {
-        return /* SwiftIdentifier */Block.__(5, ["BadIdentifier"]);
-      } else if (node.tag) {
+      if (node.tag) {
         return /* SwiftIdentifier */Block.__(5, ["BadIdentifier"]);
       } else {
         var match = node[1];
         if (match) {
           var tail = match[1];
-          switch (match[0]) {
+          var head = match[0];
+          switch (head) {
             case "layers" : 
                 if (tail) {
                   var tail$1 = tail[1];
@@ -44,7 +41,7 @@ function toSwiftAST(colors, textStyles, rootLayer, logicRootNode) {
             case "parameters" : 
                 return /* SwiftIdentifier */Block.__(5, [List.hd(tail)]);
             default:
-              return /* SwiftIdentifier */Block.__(5, ["BadIdentifier"]);
+              return /* SwiftIdentifier */Block.__(5, [head]);
           }
         } else {
           return /* SwiftIdentifier */Block.__(5, ["BadIdentifier"]);
@@ -314,9 +311,7 @@ function toSwiftAST(colors, textStyles, rootLayer, logicRootNode) {
                       }]);
         case 4 : 
             var value = logicRootNode[0];
-            if (typeof value === "number") {
-              return /* Empty */0;
-            } else if (value.tag) {
+            if (value.tag) {
               return /* Empty */0;
             } else {
               var path = value[1];

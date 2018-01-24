@@ -173,8 +173,8 @@
         hardline <+>
         s("}")
       };
-    | StatementListHelper(v) => /* TODO: Get rid of this */
-      join(hardline, v |> List.map(render)) <+> lineSuffix(s(" // StatementListHelper"))
+    | StatementListHelper(v) => /* TODO: Get rid of this? */
+      join(hardline, v |> List.map(render))
     | TopLevelDeclaration(o) =>
       /* join(concat([hardline, hardline]), o##statements |> List.map(render)) */
       join(concat([hardline]), o##statements |> List.map(render))

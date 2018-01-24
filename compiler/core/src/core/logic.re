@@ -1,7 +1,6 @@
 type logicValue =
   | Identifier(Types.lonaType, list(string))
-  | Literal(Types.lonaValue)
-  | None;
+  | Literal(Types.lonaValue);
 
 type logicNode =
   | If(logicValue, Types.cmp, logicValue, logicNode)
@@ -55,6 +54,12 @@ module LogicTree =
     }
   );
 
+let getValueType = (value) =>
+  switch value {
+  | Identifier(ltype, _) => ltype
+  | Literal(lvalue) => lvalue.ltype
+  };
+
 /* TODO: This only looks at assignments */
 let undeclaredIdentifiers = (node) => {
   let inner = (node, identifiers) =>
@@ -100,4 +105,57 @@ let addVariableDeclarations = (node) => {
          LogicTree.insert_child((item) => item == acc ? Some(declaration) : None, acc),
        node
      )
+};
+
+let prepend = (newNode, node) => Block([newNode, node]);
+
+let append = (newNode, node) => Block([node, newNode]);
+
+/* let declareVariable = (lonaType, name, node) => {
+     let lonaValue = Identifier(lonaType, name);
+     let letNode = Let(lonaValue);
+     prepend(letNode, node)
+   }; */
+let setIdentiferName = (name, value) =>
+  switch value {
+  | Identifier(lonaType, _) => Identifier(lonaType, name)
+  | _ => value
+  };
+
+let replaceIdentifierName = (oldName, newName, value) =>
+  switch value {
+  | Identifier(lonaType, name) when name == oldName => Identifier(lonaType, newName)
+  | _ => value
+  };
+
+let rec replaceIdentifiersNamed = (oldName, newName, node) => {
+  let replace = replaceIdentifierName(oldName, newName);
+  let replaceChild = replaceIdentifiersNamed(oldName, newName);
+  switch node {
+  | If(a, cmp, b, body) => If(replace(a), cmp, replace(b), body |> replaceChild)
+  | IfExists(a, body) => IfExists(replace(a), body |> replaceChild)
+  | Assign(a, b) => Assign(replace(a), replace(b))
+  | Add(a, b, c) => Add(replace(a), replace(b), replace(c))
+  | Let(a) => Let(replace(a))
+  | Block(body) => Block(body |> List.map(replaceChild))
+  | _ => node
+  }
+};
+
+let addIntermediateVariable = (identifier, newName, defaultValue, node) => {
+  let ltype = getValueType(identifier);
+  let oldName =
+    switch identifier {
+    | Identifier(_, oldName) => oldName
+    | Literal(_) => raise(Not_found)
+    };
+  let newVariable = Identifier(ltype, newName);
+  let node =
+    Block([
+      Let(newVariable),
+      Assign(defaultValue, newVariable),
+      replaceIdentifiersNamed(oldName, newName, node),
+      Assign(newVariable, identifier)
+    ]);
+  node
 };

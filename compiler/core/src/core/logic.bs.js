@@ -8,6 +8,7 @@ var Curry                   = require("bs-platform/lib/js/curry.js");
 var Caml_obj                = require("bs-platform/lib/js/caml_obj.js");
 var Caml_string             = require("bs-platform/lib/js/caml_string.js");
 var Tree$LonaCompilerCore   = require("../containers/tree.bs.js");
+var Caml_builtin_exceptions = require("bs-platform/lib/js/caml_builtin_exceptions.js");
 var Render$LonaCompilerCore = require("./render.bs.js");
 
 function compare(a, b) {
@@ -150,13 +151,21 @@ var LogicTree = Tree$LonaCompilerCore.Make(/* module */[
       /* restore */restore
     ]);
 
+function getValueType(value) {
+  if (value.tag) {
+    return value[0][/* ltype */0];
+  } else {
+    return value[0];
+  }
+}
+
 function undeclaredIdentifiers(node) {
   var inner = function (node, identifiers) {
     if (typeof node === "number") {
       return identifiers;
     } else if (node.tag === 2) {
       var match = node[1];
-      if (typeof match === "number" || match.tag) {
+      if (match.tag) {
         return identifiers;
       } else {
         return Curry._2(add, /* tuple */[
@@ -177,7 +186,7 @@ function assignedIdentifiers(node) {
       return identifiers;
     } else if (node.tag === 2) {
       var match = node[1];
-      if (typeof match === "number" || match.tag) {
+      if (match.tag) {
         return identifiers;
       } else {
         return Curry._2(add, /* tuple */[
@@ -204,9 +213,7 @@ function conditionallyAssignedIdentifiers(rootNode) {
         switch (node.tag | 0) {
           case 0 : 
               var match = node[2];
-              if (typeof match === "number") {
-                return /* false */0;
-              } else if (match.tag) {
+              if (match.tag) {
                 return /* false */0;
               } else if (Caml_obj.caml_equal(match[1], target)) {
                 _node = node[3];
@@ -218,7 +225,7 @@ function conditionallyAssignedIdentifiers(rootNode) {
               break;
           case 2 : 
               var match$1 = node[1];
-              if (typeof match$1 === "number" || match$1.tag) {
+              if (match$1.tag) {
                 return /* false */0;
               } else {
                 return Caml_obj.caml_equal(match$1[1], target);
@@ -268,10 +275,132 @@ function addVariableDeclarations(node) {
                   }), Curry._1(elements, identifiers)));
 }
 
+function prepend(newNode, node) {
+  return /* Block */Block.__(5, [/* :: */[
+              newNode,
+              /* :: */[
+                node,
+                /* [] */0
+              ]
+            ]]);
+}
+
+function append(newNode, node) {
+  return /* Block */Block.__(5, [/* :: */[
+              node,
+              /* :: */[
+                newNode,
+                /* [] */0
+              ]
+            ]]);
+}
+
+function setIdentiferName(name, value) {
+  if (value.tag) {
+    return value;
+  } else {
+    return /* Identifier */Block.__(0, [
+              value[0],
+              name
+            ]);
+  }
+}
+
+function replaceIdentifierName(oldName, newName, value) {
+  if (!value.tag && Caml_obj.caml_equal(value[1], oldName)) {
+    return /* Identifier */Block.__(0, [
+              value[0],
+              newName
+            ]);
+  } else {
+    return value;
+  }
+}
+
+function replaceIdentifiersNamed(oldName, newName, node) {
+  var replaceChild = function (param) {
+    return replaceIdentifiersNamed(oldName, newName, param);
+  };
+  if (typeof node === "number") {
+    return node;
+  } else {
+    switch (node.tag | 0) {
+      case 0 : 
+          return /* If */Block.__(0, [
+                    replaceIdentifierName(oldName, newName, node[0]),
+                    node[1],
+                    replaceIdentifierName(oldName, newName, node[2]),
+                    replaceIdentifiersNamed(oldName, newName, node[3])
+                  ]);
+      case 1 : 
+          return /* IfExists */Block.__(1, [
+                    replaceIdentifierName(oldName, newName, node[0]),
+                    replaceIdentifiersNamed(oldName, newName, node[1])
+                  ]);
+      case 2 : 
+          return /* Assign */Block.__(2, [
+                    replaceIdentifierName(oldName, newName, node[0]),
+                    replaceIdentifierName(oldName, newName, node[1])
+                  ]);
+      case 3 : 
+          return /* Add */Block.__(3, [
+                    replaceIdentifierName(oldName, newName, node[0]),
+                    replaceIdentifierName(oldName, newName, node[1]),
+                    replaceIdentifierName(oldName, newName, node[2])
+                  ]);
+      case 4 : 
+          return /* Let */Block.__(4, [replaceIdentifierName(oldName, newName, node[0])]);
+      case 5 : 
+          return /* Block */Block.__(5, [List.map(replaceChild, node[0])]);
+      
+    }
+  }
+}
+
+function addIntermediateVariable(identifier, newName, defaultValue, node) {
+  var ltype = getValueType(identifier);
+  var oldName;
+  if (identifier.tag) {
+    throw Caml_builtin_exceptions.not_found;
+  } else {
+    oldName = identifier[1];
+  }
+  var newVariable = /* Identifier */Block.__(0, [
+      ltype,
+      newName
+    ]);
+  return /* Block */Block.__(5, [/* :: */[
+              /* Let */Block.__(4, [newVariable]),
+              /* :: */[
+                /* Assign */Block.__(2, [
+                    defaultValue,
+                    newVariable
+                  ]),
+                /* :: */[
+                  replaceIdentifiersNamed(oldName, newName, node),
+                  /* :: */[
+                    /* Assign */Block.__(2, [
+                        newVariable,
+                        identifier
+                      ]),
+                    /* [] */0
+                  ]
+                ]
+              ]
+            ]]);
+}
+
 exports.IdentifierSet                    = IdentifierSet;
 exports.LogicTree                        = LogicTree;
+exports.getValueType                     = getValueType;
 exports.undeclaredIdentifiers            = undeclaredIdentifiers;
 exports.assignedIdentifiers              = assignedIdentifiers;
 exports.conditionallyAssignedIdentifiers = conditionallyAssignedIdentifiers;
 exports.addVariableDeclarations          = addVariableDeclarations;
+exports.prepend                          = prepend;
+exports.append                           = append;
+exports.setIdentiferName                 = setIdentiferName;
+exports.replaceIdentifierName            = replaceIdentifierName;
+exports.replaceIdentifiersNamed          = replaceIdentifiersNamed;
+exports.addIntermediateVariable          = addIntermediateVariable;
 /* include Not a pure module */

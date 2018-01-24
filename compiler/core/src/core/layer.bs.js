@@ -440,9 +440,7 @@ function getMargin(param) {
 function parameterAssignmentsFromLogic(layer, node) {
   var identifiers = Logic$LonaCompilerCore.undeclaredIdentifiers(node);
   return List.fold_left((function (acc, item) {
-                if (typeof item === "number") {
-                  return acc;
-                } else if (item.tag) {
+                if (item.tag) {
                   return acc;
                 } else {
                   var match = item[1];

@@ -24,7 +24,7 @@ let toSwiftAST = (colors, textStyles, rootLayer: Types.layer, logicRootNode) => 
           )
         | _ => SwiftIdentifier("BadIdentifier")
         }
-      | _ => SwiftIdentifier("BadIdentifier")
+      | _ => SwiftIdentifier(head)
       }
     | _ => SwiftIdentifier("BadIdentifier")
     };
@@ -32,7 +32,6 @@ let toSwiftAST = (colors, textStyles, rootLayer: Types.layer, logicRootNode) => 
     switch x {
     | Logic.Identifier(_) => identifierName(x)
     | Literal(value) => Document.lonaValue(colors, textStyles, value)
-    | None => Empty
     };
   let typeAnnotationDoc =
     fun

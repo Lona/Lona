@@ -44,7 +44,7 @@ public class If: UIView {
     backgroundColor = UIColor.clear
 
 
-    if enabled == true {
+    if enabled {
       backgroundColor = Colors.red500
     }
   }
