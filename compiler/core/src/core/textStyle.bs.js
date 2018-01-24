@@ -6,6 +6,18 @@ var List                    = require("bs-platform/lib/js/list.js");
 var Json_decode             = require("bs-json/src/Json_decode.js");
 var Caml_builtin_exceptions = require("bs-platform/lib/js/caml_builtin_exceptions.js");
 
+var emptyStyle = /* record */[
+  /* id */"defaultStyle",
+  /* name : None */0,
+  /* fontName : None */0,
+  /* fontFamily : None */0,
+  /* fontWeight : None */0,
+  /* fontSize : None */0,
+  /* lineHeight : None */0,
+  /* letterSpacing : None */0,
+  /* color : None */0
+];
+
 function normalizeFontWeight(value) {
   if (value) {
     switch (value[0]) {
@@ -23,6 +35,29 @@ function normalizeFontWeight(value) {
 
 function normalizeId(string) {
   return string.replace((/\+/g), "Plus");
+}
+
+function find(textStyles, id) {
+  var normalizedId = id.replace((/\+/g), "Plus");
+  var exit = 0;
+  var textStyle;
+  try {
+    textStyle = List.find((function (textStyle) {
+            return +(textStyle[/* id */0] === normalizedId);
+          }), textStyles);
+    exit = 1;
+  }
+  catch (exn){
+    if (exn === Caml_builtin_exceptions.not_found) {
+      return /* None */0;
+    } else {
+      throw exn;
+    }
+  }
+  if (exit === 1) {
+    return /* Some */[textStyle];
+  }
+  
 }
 
 function parseFile(filename) {
@@ -58,36 +93,28 @@ function parseFile(filename) {
                   }), json)
           ];
   };
-  return Json_decode.field("styles", (function (param) {
-                return Json_decode.list(parseTextStyle, param);
-              }), parsed);
+  var styles = Json_decode.field("styles", (function (param) {
+          return Json_decode.list(parseTextStyle, param);
+        }), parsed);
+  var match = Json_decode.optional((function (param) {
+          return Json_decode.field("defaultStyleName", Json_decode.string, param);
+        }), parsed);
+  var defaultStyle;
+  if (match) {
+    var match$1 = find(styles, match[0]);
+    defaultStyle = match$1 ? match$1[0] : emptyStyle;
+  } else {
+    defaultStyle = emptyStyle;
+  }
+  return /* record */[
+          /* styles */styles,
+          /* defaultStyle */defaultStyle
+        ];
 }
 
-function find(textStyles, id) {
-  var normalizedId = id.replace((/\+/g), "Plus");
-  var exit = 0;
-  var textStyle;
-  try {
-    textStyle = List.find((function (textStyle) {
-            return +(textStyle[/* id */0] === normalizedId);
-          }), textStyles);
-    exit = 1;
-  }
-  catch (exn){
-    if (exn === Caml_builtin_exceptions.not_found) {
-      return /* None */0;
-    } else {
-      throw exn;
-    }
-  }
-  if (exit === 1) {
-    return /* Some */[textStyle];
-  }
-  
-}
-
+exports.emptyStyle          = emptyStyle;
 exports.normalizeFontWeight = normalizeFontWeight;
 exports.normalizeId         = normalizeId;
-exports.parseFile           = parseFile;
 exports.find                = find;
+exports.parseFile           = parseFile;
 /* fs Not a pure module */

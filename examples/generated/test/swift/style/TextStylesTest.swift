@@ -33,16 +33,16 @@ public class TextStylesTest: UIView {
   private var text8View = UILabel()
   private var text9View = UILabel()
 
-  private var textViewTextStyle = AttributedFont()
-  private var text1ViewTextStyle = AttributedFont()
-  private var text2ViewTextStyle = AttributedFont()
-  private var text3ViewTextStyle = AttributedFont()
-  private var text4ViewTextStyle = AttributedFont()
-  private var text5ViewTextStyle = AttributedFont()
-  private var text6ViewTextStyle = AttributedFont()
-  private var text7ViewTextStyle = AttributedFont()
-  private var text8ViewTextStyle = AttributedFont()
-  private var text9ViewTextStyle = AttributedFont()
+  private var textViewTextStyle = TextStyles.body1
+  private var text1ViewTextStyle = TextStyles.body1
+  private var text2ViewTextStyle = TextStyles.body1
+  private var text3ViewTextStyle = TextStyles.body1
+  private var text4ViewTextStyle = TextStyles.body1
+  private var text5ViewTextStyle = TextStyles.body1
+  private var text6ViewTextStyle = TextStyles.body1
+  private var text7ViewTextStyle = TextStyles.body1
+  private var text8ViewTextStyle = TextStyles.body1
+  private var text9ViewTextStyle = TextStyles.body1
 
   private var topPadding: CGFloat = 0
   private var trailingPadding: CGFloat = 0

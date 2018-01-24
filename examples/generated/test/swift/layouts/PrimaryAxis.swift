@@ -28,7 +28,7 @@ public class PrimaryAxis: UIView {
   private var fill1View = UIView(frame: .zero)
   private var fill2View = UIView(frame: .zero)
 
-  private var textViewTextStyle = AttributedFont()
+  private var textViewTextStyle = TextStyles.body1
 
   private var topPadding: CGFloat = 24
   private var trailingPadding: CGFloat = 24

@@ -21,7 +21,7 @@ type directionParameter = {
   swiftName: string
 };
 
-let generate = (name, colors, textStyles, json) => {
+let generate = (name, colors, textStyles: TextStyle.file, json) => {
   let rootLayer = json |> Decode.Component.rootLayer;
   /* Remove the root element */
   let nonRootLayers = rootLayer |> Layer.flatten |> List.tl;
@@ -105,7 +105,12 @@ let generate = (name, colors, textStyles, json) => {
           "annotation": None /* Some(TypeName("AttributedFont")) */
         }),
       "init":
-        Some(FunctionCallExpression({"name": SwiftIdentifier("AttributedFont"), "arguments": []})),
+        Some(
+          MemberExpression([
+            SwiftIdentifier("TextStyles"),
+            SwiftIdentifier(textStyles.defaultStyle.id)
+          ])
+        ),
       "block": None
     });
   let constraintVariableDoc = (variableName) =>
@@ -269,7 +274,10 @@ let generate = (name, colors, textStyles, json) => {
     | "backgroundColor" => MemberExpression([SwiftIdentifier("UIColor"), SwiftIdentifier("clear")])
     | "font"
     | "textStyle" =>
-      FunctionCallExpression({"name": SwiftIdentifier("AttributedFont"), "arguments": []})
+      MemberExpression([
+        SwiftIdentifier("TextStyles"),
+        SwiftIdentifier(textStyles.defaultStyle.id)
+      ])
     | _ => LiteralExpression(Integer(0));
   let initialLayerValue = (layer: Types.layer, name) =>
     switch (StringMap.find_opt(name, layer.parameters)) {

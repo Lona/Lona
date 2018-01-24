@@ -4,7 +4,9 @@
 var List                         = require("bs-platform/lib/js/list.js");
 var Block                        = require("bs-platform/lib/js/block.js");
 var Curry                        = require("bs-platform/lib/js/curry.js");
+var Pervasives                   = require("bs-platform/lib/js/pervasives.js");
 var Color$LonaCompilerCore       = require("../core/color.bs.js");
+var TextStyle$LonaCompilerCore   = require("../core/textStyle.bs.js");
 var SwiftRender$LonaCompilerCore = require("./swiftRender.bs.js");
 
 function render(colors, textStyles) {
@@ -137,6 +139,17 @@ function render(colors, textStyles) {
                       }])]
               }]);
   };
+  var defaultStyleDoc = function (textStyle) {
+    var match = TextStyle$LonaCompilerCore.find(textStyles[/* styles */0], textStyle[/* id */0]);
+    if (match) {
+      return /* [] */0;
+    } else {
+      return /* :: */[
+              textStyleConstantDoc(textStyle),
+              /* [] */0
+            ];
+    }
+  };
   return SwiftRender$LonaCompilerCore.toString(/* TopLevelDeclaration */Block.__(19, [{
                   statements: /* :: */[
                     /* ImportDeclaration */Block.__(10, ["UIKit"]),
@@ -148,7 +161,7 @@ function render(colors, textStyles) {
                               inherits: /* [] */0,
                               modifier: /* None */0,
                               isFinal: /* false */0,
-                              body: List.map(textStyleConstantDoc, textStyles)
+                              body: Pervasives.$at(List.map(textStyleConstantDoc, textStyles[/* styles */0]), defaultStyleDoc(textStyles[/* defaultStyle */1]))
                             }]),
                         /* [] */0
                       ]

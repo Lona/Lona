@@ -30,7 +30,7 @@ public class Assign: UIView {
 
   private var textView = UILabel()
 
-  private var textViewTextStyle = AttributedFont()
+  private var textViewTextStyle = TextStyles.body1
 
   private var topPadding: CGFloat = 0
   private var trailingPadding: CGFloat = 0

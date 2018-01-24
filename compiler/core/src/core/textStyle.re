@@ -10,6 +10,23 @@ type t = {
   color: option(string)
 };
 
+type file = {
+  styles: list(t),
+  defaultStyle: t
+};
+
+let emptyStyle = {
+  id: "defaultStyle",
+  name: None,
+  fontName: None,
+  fontFamily: None,
+  fontWeight: None,
+  fontSize: None,
+  lineHeight: None,
+  letterSpacing: None,
+  color: None
+};
+
 let normalizeFontWeight =
   fun
   | Some("normal") => Some("400")
@@ -18,6 +35,14 @@ let normalizeFontWeight =
   | None => None;
 
 let normalizeId = (string) => Js.String.replaceByRe([%re "/\\+/g"], "Plus", string);
+
+let find = (textStyles: list(t), id: string) => {
+  let normalizedId = normalizeId(id);
+  switch (textStyles |> List.find((textStyle) => textStyle.id == normalizedId)) {
+  | textStyle => Some(textStyle)
+  | exception Not_found => None
+  }
+};
 
 let parseFile = (filename) => {
   let content = Node.Fs.readFileSync(filename, `utf8);
@@ -29,18 +54,20 @@ let parseFile = (filename) => {
     fontName: json |> optional(field("fontName", string)),
     fontFamily: json |> optional(field("fontFamily", string)),
     fontWeight: json |> optional(field("fontWeight", string)) |> normalizeFontWeight,
-    fontSize: json |> optional(field("fontSize", float)),
-    lineHeight: json |> optional(field("lineHeight", float)),
-    letterSpacing: json |> optional(field("letterSpacing", float)),
+    fontSize: json |> optional(field("fontSize", Json.Decode.float)),
+    lineHeight: json |> optional(field("lineHeight", Json.Decode.float)),
+    letterSpacing: json |> optional(field("letterSpacing", Json.Decode.float)),
     color: json |> optional(field("color", string))
   };
-  field("styles", list(parseTextStyle), parsed)
-};
-
-let find = (textStyles: list(t), id: string) => {
-  let normalizedId = normalizeId(id);
-  switch (textStyles |> List.find((textStyle) => textStyle.id == normalizedId)) {
-  | textStyle => Some(textStyle)
-  | exception Not_found => None
-  }
+  let styles = parsed |> field("styles", list(parseTextStyle));
+  let defaultStyle =
+    switch (parsed |> optional(field("defaultStyleName", string))) {
+    | None => emptyStyle
+    | Some(id) =>
+      switch (find(styles, id)) {
+      | None => emptyStyle
+      | Some(textStyle) => textStyle
+      }
+    };
+  {styles, defaultStyle}
 };

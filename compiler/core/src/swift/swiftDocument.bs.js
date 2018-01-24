@@ -61,7 +61,7 @@ function lonaValue(colors, textStyles, value) {
           }
       case "TextStyle" : 
           var rawValue$1 = Json_decode.string(value[/* data */1]);
-          var match$2 = TextStyle$LonaCompilerCore.find(textStyles, rawValue$1);
+          var match$2 = TextStyle$LonaCompilerCore.find(textStyles[/* styles */0], rawValue$1);
           if (match$2) {
             return /* MemberExpression */Block.__(1, [/* :: */[
                         /* SwiftIdentifier */Block.__(5, ["TextStyles"]),
@@ -71,10 +71,13 @@ function lonaValue(colors, textStyles, value) {
                         ]
                       ]]);
           } else {
-            return /* FunctionCallExpression */Block.__(14, [{
-                        name: /* SwiftIdentifier */Block.__(5, ["AttributedFont"]),
-                        arguments: /* [] */0
-                      }]);
+            return /* MemberExpression */Block.__(1, [/* :: */[
+                        /* SwiftIdentifier */Block.__(5, ["TextStyles"]),
+                        /* :: */[
+                          /* SwiftIdentifier */Block.__(5, [textStyles[/* defaultStyle */1][/* id */0]]),
+                          /* [] */0
+                        ]
+                      ]]);
           }
       default:
         return /* SwiftIdentifier */Block.__(5, ["UnknownNamedTypeAlias" + alias]);

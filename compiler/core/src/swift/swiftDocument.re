@@ -14,7 +14,7 @@ let joinGroups = (sep, groups) => {
   }
 };
 
-let lonaValue = (colors, textStyles, value: Types.lonaValue) =>
+let lonaValue = (colors, textStyles: TextStyle.file, value: Types.lonaValue) =>
   switch value.ltype {
   | Reference(typeName) =>
     switch typeName {
@@ -33,11 +33,14 @@ let lonaValue = (colors, textStyles, value: Types.lonaValue) =>
       }
     | "TextStyle" =>
       let rawValue = value.data |> Json.Decode.string;
-      switch (TextStyle.find(textStyles, rawValue)) {
+      switch (TextStyle.find(textStyles.styles, rawValue)) {
       | Some(textStyle) =>
         MemberExpression([SwiftIdentifier("TextStyles"), SwiftIdentifier(textStyle.id)])
       | None =>
-        FunctionCallExpression({"name": SwiftIdentifier("AttributedFont"), "arguments": []})
+        MemberExpression([
+          SwiftIdentifier("TextStyles"),
+          SwiftIdentifier(textStyles.defaultStyle.id)
+        ])
       }
     | _ => SwiftIdentifier("UnknownNamedTypeAlias" ++ alias)
     }

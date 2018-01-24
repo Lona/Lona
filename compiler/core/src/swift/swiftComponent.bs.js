@@ -113,10 +113,13 @@ function generate(name, colors, textStyles, json) {
                       identifier: SwiftFormat$LonaCompilerCore.layerName(layer[/* name */1]) + "TextStyle",
                       annotation: /* None */0
                     }]),
-                init: /* Some */[/* FunctionCallExpression */Block.__(14, [{
-                        name: /* SwiftIdentifier */Block.__(5, ["AttributedFont"]),
-                        arguments: /* [] */0
-                      }])],
+                init: /* Some */[/* MemberExpression */Block.__(1, [/* :: */[
+                        /* SwiftIdentifier */Block.__(5, ["TextStyles"]),
+                        /* :: */[
+                          /* SwiftIdentifier */Block.__(5, [textStyles[/* defaultStyle */1][/* id */0]]),
+                          /* [] */0
+                        ]
+                      ]])],
                 block: /* None */0
               }]);
   };
@@ -359,6 +362,7 @@ function generate(name, colors, textStyles, json) {
       return SwiftDocument$LonaCompilerCore.lonaValue(colors, textStyles, match[0]);
     } else {
       var param = name;
+      var exit = 0;
       switch (param) {
         case "backgroundColor" : 
             return /* MemberExpression */Block.__(1, [/* :: */[
@@ -370,13 +374,21 @@ function generate(name, colors, textStyles, json) {
                       ]]);
         case "font" : 
         case "textStyle" : 
-            return /* FunctionCallExpression */Block.__(14, [{
-                        name: /* SwiftIdentifier */Block.__(5, ["AttributedFont"]),
-                        arguments: /* [] */0
-                      }]);
+            exit = 1;
+            break;
         default:
           return /* LiteralExpression */Block.__(0, [/* Integer */Block.__(1, [0])]);
       }
+      if (exit === 1) {
+        return /* MemberExpression */Block.__(1, [/* :: */[
+                    /* SwiftIdentifier */Block.__(5, ["TextStyles"]),
+                    /* :: */[
+                      /* SwiftIdentifier */Block.__(5, [textStyles[/* defaultStyle */1][/* id */0]]),
+                      /* [] */0
+                    ]
+                  ]]);
+      }
+      
     }
   };
   var defineInitialLayerValue = function (layer, param) {

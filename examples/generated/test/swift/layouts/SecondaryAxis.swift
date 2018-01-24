@@ -27,7 +27,7 @@ public class SecondaryAxis: UIView {
   private var textView = UILabel()
   private var fillView = UIView(frame: .zero)
 
-  private var textViewTextStyle = AttributedFont()
+  private var textViewTextStyle = TextStyles.body1
 
   private var topPadding: CGFloat = 24
   private var trailingPadding: CGFloat = 24
