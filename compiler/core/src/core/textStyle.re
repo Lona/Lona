@@ -37,8 +37,10 @@ let parseFile = (filename) => {
   field("styles", list(parseTextStyle), parsed)
 };
 
-let find = (textStyles: list(t), id: string) =>
-  switch (textStyles |> List.find((textStyle) => textStyle.id == id)) {
+let find = (textStyles: list(t), id: string) => {
+  let normalizedId = normalizeId(id);
+  switch (textStyles |> List.find((textStyle) => textStyle.id == normalizedId)) {
   | textStyle => Some(textStyle)
   | exception Not_found => None
-  };
+  }
+};

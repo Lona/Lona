@@ -64,11 +64,12 @@ function parseFile(filename) {
 }
 
 function find(textStyles, id) {
+  var normalizedId = id.replace((/\+/g), "Plus");
   var exit = 0;
   var textStyle;
   try {
     textStyle = List.find((function (textStyle) {
-            return +(textStyle[/* id */0] === id);
+            return +(textStyle[/* id */0] === normalizedId);
           }), textStyles);
     exit = 1;
   }
