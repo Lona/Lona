@@ -17,7 +17,7 @@ extension NSPopover {
         animates: Bool = false
     ) {
         self.init()
-        
+
         self.contentViewController = contentViewController
         self.delegate = delegate
         self.behavior = behavior

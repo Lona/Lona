@@ -18,59 +18,59 @@ private struct Constant {
 }
 
 final class PickerListView<Element: PickerItemType>: NSScrollView, NSTableViewDelegate, NSTableViewDataSource {
-    
+
     // MARK: - Variable
     fileprivate let tableView = NSTableView(frame: NSRect.zero)
     fileprivate var parameter: PickerView<Element>.Parameter
     fileprivate var data: [Element] = []
     fileprivate var sizeRows: [String: NSSize] = [:]
     weak var picker: PickerView<Element>?
-    
+
     // MARK: - Init
     init(parameter: PickerView<Element>.Parameter) {
         self.parameter = parameter
         self.data = parameter.data
-        
+
         super.init(frame: NSRect.zero)
-        
+
         setupCommon()
         cacheSize(data)
         fitSize()
         setupTableView()
     }
-    
+
     required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
-    
+
     // MARK: - Public
     func update(data: [Element], selected: String) {
         self.data = data
         parameter.selected = selected
-        
+
         tableView.reloadData()
     }
-    
+
     func updateHover(_ index: Int) {
         guard let view = tableView.view(atColumn: 0, row: index, makeIfNecessary: false) as? PickerRowViewType else { return }
         removeHover()
         view.onHover(true)
     }
-    
+
     func numberOfRows(in tableView: NSTableView) -> Int {
         return data.count
     }
-    
+
     func tableView(_ tableView: NSTableView, rowViewForRow row: Int) -> NSTableRowView? {
         return NSTableRowView(frame: NSRect(x: 0, y: 0, width: 200, height: 40))
     }
-    
+
     func tableView(_ tableView: NSTableView, viewFor tableColumn: NSTableColumn?, row: Int) -> NSView? {
         let item = data[row]
         let selected = item.id == parameter.selected
         return parameter.viewForItem(tableView, item, selected) as? NSView
     }
-    
+
     func tableView(_ tableView: NSTableView, heightOfRow row: Int) -> CGFloat {
         let item = data[row]
         if let size = sizeRows[item.id] {
@@ -78,7 +78,7 @@ final class PickerListView<Element: PickerItemType>: NSScrollView, NSTableViewDe
         }
         return Constant.minHeightRow
     }
-    
+
     func tableViewSelectionDidChange(_ notification: Notification) {
         let item = data[tableView.selectedRow]
         parameter.didSelectItem(picker, item)
@@ -87,22 +87,22 @@ final class PickerListView<Element: PickerItemType>: NSScrollView, NSTableViewDe
 
 // MARK: - Private
 extension PickerListView {
-    
+
     fileprivate func setupCommon() {
         translatesAutoresizingMaskIntoConstraints = false
         drawsBackground = false
         hasVerticalScroller = true
     }
-    
+
     fileprivate func setupTableView() {
         tableView.backgroundColor = NSColor.clear
         tableView.columnAutoresizingStyle = .uniformColumnAutoresizingStyle
-        
+
         let column = NSTableColumn(identifier: NSUserInterfaceItemIdentifier(rawValue: "style"))
         column.title = "Style"
         column.resizingMask = NSTableColumn.ResizingOptions.autoresizingMask
         column.maxWidth = 1000
-        
+
         tableView.addTableColumn(column)
         tableView.intercellSpacing = NSSize.zero
         tableView.headerView = nil
@@ -113,7 +113,7 @@ extension PickerListView {
         documentView = tableView
         tableView.sizeToFit()
     }
-    
+
     fileprivate func removeHover() {
         tableView.enumerateAvailableRowViews { (row, index) in
             let textRow = row.view(atColumn: 0) as! PickerRowViewType
@@ -124,7 +124,7 @@ extension PickerListView {
 
 // MARK: - Size
 extension PickerListView {
-    
+
     // MARK: - Calculate size for rows
     fileprivate func cacheSize(_ data: [Element]) {
         for item in data {
@@ -132,7 +132,7 @@ extension PickerListView {
             sizeRows[item.id] = size
         }
     }
-    
+
     fileprivate func fitSize() {
         var height: CGFloat = 0.0
         var width = Constant.minWidth
@@ -142,11 +142,11 @@ extension PickerListView {
                 width = size.width
             }
         }
-        
+
         // Make sure the size is in appropriate range
         height = max(min(height, Constant.maxHeight), Constant.minHeight)
         width = max(min(width, Constant.maxWidth), Constant.minWidth)
-        
+
         // Override Width/Height of entire NSPopover
         heightAnchor.constraint(equalToConstant: height).isActive = true
         widthAnchor.constraint(equalToConstant: width + 44).isActive = true

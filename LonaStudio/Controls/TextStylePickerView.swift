@@ -9,13 +9,13 @@
 import Cocoa
 
 final class TextStylePickerView: PickerView<CSTextStyle> {
-    
+
     private struct Constant {
         static let maxWidth: CGFloat = 1000
         static let minHeightRow: CGFloat = 32.0
         static let maxHeightRow: CGFloat = 200.0
     }
-    
+
     convenience init(selected: String, onChange: @escaping (CSTextStyle) -> Void) {
         let options: [PickerView<CSTextStyle>.Option] = [
             .placeholderText("Search text style ..."),
@@ -35,13 +35,13 @@ final class TextStylePickerView: PickerView<CSTextStyle> {
         },
                   options: options)
     }
-    
+
     private class func fitSize(with attributeString: NSAttributedString) -> NSSize {
         let fixedSize = NSSize(width: Constant.maxWidth, height: Constant.maxHeightRow)
         return attributeString.boundingRect(with: fixedSize,
                                             options: NSString.DrawingOptions.usesFontLeading).size
     }
-    
+
     private class func fitTextSize(_ attributeText: NSAttributedString) -> NSSize {
         let size = fitSize(with: attributeText)
         var height = size.height

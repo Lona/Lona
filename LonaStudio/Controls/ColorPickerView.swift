@@ -9,12 +9,12 @@
 import Cocoa
 
 class ColorPickerView: PickerView<CSColor> {
-    
+
     private struct Constant {
         static let heightRow: CGFloat = 37
         static let widthRow: CGFloat = 200
     }
-    
+
     convenience init(selected: String, onChange: @escaping (CSColor) -> Void) {
         let options: [PickerView<CSColor>.Option] = [
             .placeholderText("Search Color ..."),
@@ -34,4 +34,3 @@ class ColorPickerView: PickerView<CSColor> {
                   options: options)
     }
 }
-

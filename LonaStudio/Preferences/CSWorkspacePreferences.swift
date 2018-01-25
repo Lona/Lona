@@ -16,9 +16,9 @@ class CSWorkspacePreferences: CSPreferencesFile {
     static var url: URL {
         return workspaceURL.appendingPathComponent("workspace.json")
     }
-    
+
     static var data: CSData = load()
-    
+
     static var workspaceURL: URL {
         get {
             guard let path = CSUserPreferences.data["workspacePath"] else { return defaultWorkspaceURL() }

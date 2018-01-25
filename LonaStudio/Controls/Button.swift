@@ -10,23 +10,23 @@ import Foundation
 import Cocoa
 
 class Button: NSButton {
-    
+
     var onPress: () -> Void = {}
-    
+
     @objc func handlePress() {
         onPress()
     }
-    
+
     func setup() {
         action = #selector(handlePress)
         target = self
     }
-    
+
     override init(frame frameRect: NSRect) {
         super.init(frame: frameRect)
         setup()
     }
-    
+
     init(title: String, onPress: @escaping () -> Void = {}) {
         self.onPress = onPress
         super.init(frame: NSRect.zero)
@@ -37,7 +37,7 @@ class Button: NSButton {
         bezelStyle = .rounded
         self.title = title
     }
-    
+
     required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }

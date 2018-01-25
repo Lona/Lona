@@ -9,7 +9,7 @@
 import Foundation
 
 // https://stackoverflow.com/questions/30215680/is-there-a-correct-way-to-determine-that-an-nsnumber-is-derived-from-a-bool-usin/30223989#30223989
-fileprivate func isBool(number: NSNumber) -> Bool {
+private func isBool(number: NSNumber) -> Bool {
     let boolID = CFBooleanGetTypeID() // the type ID of CFBoolean
     let numID = CFGetTypeID(number) // the type ID of num
     return numID == boolID
@@ -22,7 +22,7 @@ enum CSData: Equatable, CustomDebugStringConvertible {
     case String(String)
     case Array([CSData])
     case Object([String: CSData])
-    
+
     var debugDescription: String {
         switch self {
         case .Null: return "null"
@@ -35,7 +35,7 @@ enum CSData: Equatable, CustomDebugStringConvertible {
             return "{" + value.map({ "\($0.key): \($0.value)" }).joined(separator: ", ") + "}"
         }
     }
-    
+
     static func ==(lhs: CSData, rhs: CSData) -> Bool {
         switch (lhs, rhs) {
         case (.Null, .Null): return true
@@ -61,13 +61,13 @@ enum CSData: Equatable, CustomDebugStringConvertible {
         default: return false
         }
     }
-    
+
     var isNull: Bool {
         get {
             return self == CSData.Null
         }
     }
-    
+
     var bool: Bool? {
         get {
             guard case CSData.Bool(let value) = self else { return nil }
@@ -80,7 +80,7 @@ enum CSData: Equatable, CustomDebugStringConvertible {
         }
     }
     var boolValue: Bool { return bool ?? false }
-    
+
     var number: Double? {
         get {
             guard case CSData.Number(let value) = self else { return nil }
@@ -93,7 +93,7 @@ enum CSData: Equatable, CustomDebugStringConvertible {
         }
     }
     var numberValue: Double { return number ?? 0 }
-    
+
     var string: String? {
         get {
             guard case CSData.String(let value) = self else { return nil }
@@ -106,7 +106,7 @@ enum CSData: Equatable, CustomDebugStringConvertible {
         }
     }
     var stringValue: String { return string ?? "" }
-    
+
     var array: [CSData]? {
         get {
             guard case CSData.Array(let value) = self else { return nil }
@@ -119,7 +119,7 @@ enum CSData: Equatable, CustomDebugStringConvertible {
         }
     }
     var arrayValue: [CSData] { return array ?? [] }
-    
+
     var object: [String: CSData]? {
         get {
             guard case CSData.Object(let value) = self else { return nil }
@@ -132,7 +132,7 @@ enum CSData: Equatable, CustomDebugStringConvertible {
         }
     }
     var objectValue: [String: CSData] { return object ?? [:] }
-    
+
     subscript(index: Int) -> CSData? {
         get {
             switch self {
@@ -157,7 +157,7 @@ enum CSData: Equatable, CustomDebugStringConvertible {
             }
         }
     }
-    
+
     subscript(index: String) -> CSData? {
         get {
             switch self {
@@ -181,49 +181,49 @@ enum CSData: Equatable, CustomDebugStringConvertible {
             }
         }
     }
-    
+
     func get(key: String) -> CSData {
         return self[key] ?? .Null
     }
-    
+
     func get(keyPath: [String]) -> CSData {
         return keyPath.reduce(self, { (result, key) in result.get(key: key) })
     }
-    
+
     @discardableResult mutating func set(keyPath: [String], to value: CSData) -> CSData {
         if keyPath.count == 0 {
             self = value
             return self
         }
-        
+
         let key = keyPath[0]
         var object = self[key] ?? CSData.Object([:])
-        
+
         self = merge(.Object([
             key: object.set(keyPath: Swift.Array(keyPath[1..<keyPath.count]), to: value)
         ]))
-        
+
         return self
     }
-    
+
     func merge(_ object: CSData) -> CSData {
         var merged = CSData.Object([:])
-        
+
         if let original = self.object {
             original.forEach({ (key, value) in
                 merged[key] = value
             })
         }
-        
+
         if let extra = object.object {
             extra.forEach({ (key, value) in
                 merged[key] = value
             })
         }
-        
+
         return merged
     }
-    
+
     func toAny() -> Any {
         switch self {
         case .Null:
@@ -240,10 +240,10 @@ enum CSData: Equatable, CustomDebugStringConvertible {
             return value.map({ $0.toAny() })
         }
     }
-    
+
     func toData() -> Data? {
         let options: JSONSerialization.WritingOptions
-        
+
         if #available(OSX 10.13, *) {
             options = [
                 JSONSerialization.WritingOptions.prettyPrinted,
@@ -251,18 +251,18 @@ enum CSData: Equatable, CustomDebugStringConvertible {
             ]
         } else {
             options = [
-                JSONSerialization.WritingOptions.prettyPrinted,
+                JSONSerialization.WritingOptions.prettyPrinted
             ]
         }
-        
+
         return try? JSONSerialization.data(withJSONObject: toAny(), options: options)
     }
-    
+
     static func from(data: Data) -> CSData? {
         guard let json = try? JSONSerialization.jsonObject(with: data) else { return nil }
         return from(json: json)
     }
-    
+
     static func from(json: Any) -> CSData {
         if let _ = json as? NSNull {
             return CSData.Null
@@ -276,13 +276,13 @@ enum CSData: Equatable, CustomDebugStringConvertible {
             )
         } else if let value = json as? NSDictionary {
             let object: [String: CSData] = value.map({ $0 }).key { (key: ($0.key as! NSString) as String, value: CSData.from(json: $0.value)) }
-            
+
             return CSData.Object(object)
         }
-        
+
         return CSData.Null
     }
-    
+
     static func from(fileAtPath path: String) -> CSData? {
         if let contents = try? Data(contentsOf: URL(fileURLWithPath: path)) {
             return CSData.from(data: contents)
@@ -359,15 +359,14 @@ extension Sequence where Iterator.Element: CSDataSerializable {
 extension Dictionary where Key: ExpressibleByStringLiteral, Value: CSDataSerializable {
     func toData() -> CSData {
         var items: [String: CSData] = [:]
-        
+
         for (_, item) in self.enumerated() {
             items["\(item.key)"] = item.value.toData()
         }
-        
+
         return CSData.Object(items)
     }
 }
 
 typealias CSDataChangeHandler = (CSData) -> Void
 let CSDataDefaultChangeHandler: CSDataChangeHandler = {_ in}
-

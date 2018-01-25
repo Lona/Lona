@@ -13,7 +13,7 @@ let CSCanvasType = CSType.dictionary([
     "width": (type: CSType.number, access: .read),
     "aspectRatio": (type: CSType.number, access: .read),
     "index": (type: CSType.number, access: .read),
-    "name": (type: CSType.number, access: .read),
+    "name": (type: CSType.number, access: .read)
 ])
 
 let CSEmptyCanvasValue = CSValue(type: CSCanvasType, data: .Object([
@@ -21,7 +21,7 @@ let CSEmptyCanvasValue = CSValue(type: CSCanvasType, data: .Object([
     "width": CSData.Null,
     "aspectRatio": CSData.Null,
     "index": CSData.Null,
-    "name": CSData.Null,
+    "name": CSData.Null
 ]))
 
 class Canvas: CSDataSerializable, CSDataDeserializable {
@@ -33,29 +33,29 @@ class Canvas: CSDataSerializable, CSDataDeserializable {
     var backgroundColor: String = "white"
     var exportScale: Double = 1
     var parameters: CSData = CSData.Object([:])
-    
+
     var label: String {
         return name
     }
-    
+
     var aspectRatio: Double {
         return width / height
     }
-    
+
     func value() -> CSValue {
         var data = toData()
         data.set(keyPath: ["aspectRatio"], to: aspectRatio.toData())
         return CSValue(type: CSCanvasType, data: data)
     }
-    
+
     func dimensionsString() -> String {
         return String(format: "%.0fx%.0f", width * exportScale, height * exportScale)
     }
-    
+
     static let defaults: Canvas = Canvas()
-    
+
     init() {}
-    
+
     required init(_ data: CSData) {
         visible = data.get(key: "visible").bool ?? true
         name = data.get(key: "name").stringValue
@@ -66,7 +66,7 @@ class Canvas: CSDataSerializable, CSDataDeserializable {
         backgroundColor = data.get(key: "backgroundColor").string ?? "white"
         parameters = data.get(key: "parameters")
     }
-    
+
     required init(visible: Bool, name: String, width: Double, height: Double, heightMode: String, exportScale: Double, backgroundColor: String, parameters: CSData = CSData.Object([:])) {
         self.visible = visible
         self.name = name
@@ -77,7 +77,7 @@ class Canvas: CSDataSerializable, CSDataDeserializable {
         self.backgroundColor = backgroundColor
         self.parameters = parameters
     }
-    
+
     func toData() -> CSData {
         return CSData.Object([
             "visible": visible.toData(),
@@ -87,7 +87,7 @@ class Canvas: CSDataSerializable, CSDataDeserializable {
             "heightMode": heightMode.toData(),
             "exportScale": exportScale.toData(),
             "backgroundColor": backgroundColor.toData(),
-            "parameters": parameters,
+            "parameters": parameters
         ])
     }
 }

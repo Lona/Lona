@@ -9,7 +9,7 @@
 import Cocoa
 
 final class ShadowStyleRowView: NSStackView, Hoverable, PickerRowViewType {
-    
+
     // MARK: - Variable
     private let titleView: NSTextField
     private let subtitleView: NSTextField
@@ -23,14 +23,14 @@ final class ShadowStyleRowView: NSStackView, Hoverable, PickerRowViewType {
         return view
     }()
     var onClick: () -> Void = {}
-    
+
     // MARK: - Init
     init(shadow: CSShadow, selected: Bool) {
         titleView = NSTextField(labelWithString: shadow.name)
         subtitleView = NSTextField(labelWithString: "x: \(shadow.x) y: \(shadow.y) blur: \(shadow.blur)")
-        
+
         super.init(frame: NSRect.zero)
-        
+
         initCommon()
         colorView.backgroundFill = shadow.color.cgColor
         let container = NSStackView(views: [titleView, subtitleView], orientation: .vertical)
@@ -40,11 +40,11 @@ final class ShadowStyleRowView: NSStackView, Hoverable, PickerRowViewType {
         startTrackingHover()
         onHover(selected)
     }
-    
+
     deinit {
         removeTrackingHover()
     }
-    
+
     private func initCommon() {
         spacing = 8
         orientation = .horizontal
@@ -52,19 +52,19 @@ final class ShadowStyleRowView: NSStackView, Hoverable, PickerRowViewType {
         alignment = .centerY
         edgeInsets = NSEdgeInsets(top: 0, left: 8, bottom: 0, right: 8)
     }
-    
+
     required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
-    
+
     override func hitTest(_ point: NSPoint) -> NSView? {
         return nil
     }
-    
+
     override func mouseDown(with event: NSEvent) {
         onClick()
     }
-    
+
     func onHover(_ hover: Bool) {
         if hover {
             startHover { [weak self] in
@@ -82,12 +82,12 @@ final class ShadowStyleRowView: NSStackView, Hoverable, PickerRowViewType {
             }
         }
     }
-    
+
     // MARK: - Hover
     override func mouseEntered(with theEvent: NSEvent) {
         onHover(true)
     }
-    
+
     override func mouseExited(with theEvent: NSEvent) {
         onHover(false)
     }

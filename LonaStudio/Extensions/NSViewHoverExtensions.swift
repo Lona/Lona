@@ -9,7 +9,7 @@
 import Cocoa
 
 protocol Hoverable {
-    
+
     func startHover(_ block: () -> Void)
     func stopHover(_ block: () -> Void)
 }
@@ -19,7 +19,7 @@ private struct AssociatedKeys {
 }
 
 extension Hoverable where Self: NSView {
-    
+
     var trackingArea: NSTrackingArea {
         get {
             if let tracking = objc_getAssociatedObject(self, &AssociatedKeys.HoverKey) as? NSTrackingArea {
@@ -35,26 +35,26 @@ extension Hoverable where Self: NSView {
             return tracking
         }
     }
-    
+
     func startTrackingHover() {
         guard !trackingAreas.contains(trackingArea) else {
             return
         }
         addTrackingArea(trackingArea)
     }
-    
+
     func removeTrackingHover() {
         removeTrackingArea(trackingArea)
     }
-    
+
     func startHover(_ block: () -> Void) {
         animateHover(block)
     }
-    
+
     func stopHover(_ block: () -> Void) {
         animateHover(block)
     }
-    
+
     private func animateHover(_ block: () -> Void) {
         block()
     }

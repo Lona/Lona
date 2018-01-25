@@ -11,21 +11,21 @@ import Foundation
 struct CSValue: Equatable, CSDataSerializable, CSDataDeserializable {
     var type: CSType
     var data: CSData
-    
+
     init(_ data: CSData) {
         self.type = CSType(data.get(key: "type"))
         self.data = data.get(key: "data")
     }
-    
+
     init(type: CSType, data: CSData) {
         self.type = type
         self.data = data
     }
-    
+
     func cast(to type: CSType) -> CSValue {
         // TODO make sure we return a copy
         if self.type == type { return self }
-        
+
         switch type {
         case .bool: return CSValue(type: type, data: .Bool(false))
         case .number: return CSValue(type: type, data: .Number(0))
@@ -39,33 +39,33 @@ struct CSValue: Equatable, CSDataSerializable, CSDataDeserializable {
         default: return CSValue(type: type, data: .Null)
         }
     }
-    
+
     func toData() -> CSData {
         return CSData.Object([
             "type": type.toData(),
-            "data": data,
+            "data": data
         ])
     }
-    
+
     func get(key: String) -> CSValue {
         guard case CSType.dictionary(let schema) = self.type else { return CSUndefinedValue }
         guard let record = schema.first(where: { key == $0.key }) else { return CSUndefinedValue }
-        
+
         return CSValue(type: record.value.type, data: data.get(key: key))
     }
-    
+
     func get(keyPath: [String]) -> CSValue {
         return keyPath.reduce(self, { (result, key) in result.get(key: key) })
     }
-    
+
     func unwrappedNamedType() -> CSValue {
         return CSValue(type: type.unwrappedNamedType(), data: data)
     }
-    
+
     static func ==(lhs: CSValue, rhs: CSValue) -> Bool {
         return lhs.type == rhs.type && lhs.data == rhs.data
     }
-    
+
     static func exampleValue(for type: CSType) -> CSValue {
         switch type {
         case .bool: return CSValue(type: type, data: .Bool(false))
@@ -76,7 +76,7 @@ struct CSValue: Equatable, CSDataSerializable, CSDataDeserializable {
             return CSValue(type: CSAnyType, data: CSData.Null)
         }
     }
-    
+
     func filteredData(typed typeFilter: CSType, accessed accessFilter: CSAccess) -> CSData {
         guard case CSType.dictionary(let schema) = self.type else {
             if typeFilter.isGeneric || self.type == typeFilter {
@@ -85,12 +85,12 @@ struct CSValue: Equatable, CSDataSerializable, CSDataDeserializable {
                 return CSData.Null
             }
         }
-        
+
         return self.data.objectValue.reduce(CSData.Object([:])) { (result, item) -> CSData in
             var result = result
-            
+
 //            Swift.print("filter", item.key)
-            
+
             if let schemaItem = schema[item.key] /*, schemaItem.access == accessFilter */ {
                 if item.value.object != nil {
                     let value = CSValue(type: schemaItem.type, data: item.value)
@@ -109,7 +109,7 @@ struct CSValue: Equatable, CSDataSerializable, CSDataDeserializable {
                     result[item.key] = item.value
                 }
             }
-            
+
             return result
         }
     }
@@ -120,4 +120,3 @@ let CSEmptyDictionaryValue = CSValue(type: .dictionary(CSType.Schema()), data: C
 
 typealias CSValueChangeHandler = (CSValue) -> Void
 let CSValueDefaultChangeHandler: CSValueChangeHandler = {_ in}
-

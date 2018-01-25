@@ -12,7 +12,7 @@ import AppKit
 extension NSViewController {
     convenience init(view: NSView) {
         self.init()
-        
+
         self.view = view
     }
 }

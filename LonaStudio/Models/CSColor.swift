@@ -14,11 +14,10 @@ struct CSColor {
     let name: String
     let color: NSColor
     let value: String
-    
+
     var resolvedValue: String {
         return id
     }
 }
 
 extension CSColor: Identify, Searchable {}
-

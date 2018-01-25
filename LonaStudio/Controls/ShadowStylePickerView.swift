@@ -9,12 +9,12 @@
 import Cocoa
 
 final class ShadowStylePickerView: PickerView<CSShadow> {
-    
+
     private struct Constant {
         static let heightRow: CGFloat = 44
         static let widthRow: CGFloat = 300
     }
-    
+
     convenience init(selected: String, onChange: @escaping (CSShadow) -> Void) {
         let options: [PickerView<CSShadow>.Option] = [
             .placeholderText("Search shadow style ..."),

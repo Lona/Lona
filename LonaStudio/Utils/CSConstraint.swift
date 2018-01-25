@@ -18,7 +18,7 @@ public enum CSConstraint {
     case bottomEqualTo(NSView)
     case leftEqualTo(NSView)
     case rightEqualTo(NSView)
-    
+
     static func apply(_ constraints: [CSConstraint], to view: NSView) {
         for constraint in constraints {
             switch constraint {
@@ -41,21 +41,20 @@ public enum CSConstraint {
             }
         }
     }
-    
+
     static func fill(view: NSView) -> [CSConstraint] {
         return [
             CSConstraint.topEqualTo(view),
             CSConstraint.rightEqualTo(view),
             CSConstraint.bottomEqualTo(view),
-            CSConstraint.leftEqualTo(view),
+            CSConstraint.leftEqualTo(view)
         ]
     }
-    
+
     static func size(width: CGFloat, height: CGFloat) -> [CSConstraint] {
         return [
             CSConstraint.width(width),
-            CSConstraint.height(height),
+            CSConstraint.height(height)
         ]
     }
 }
-

@@ -20,23 +20,23 @@ class SettingRow: NSStackView {
             return SettingRow()
         }
     }
-    
+
     var onChange: (CSData) -> Void = {_ in}
-    
+
     init(onChange: ((CSData) -> Void)? = nil) {
         super.init(frame: NSRect.zero)
-        
+
         orientation = .horizontal
         alignment = .centerY
         translatesAutoresizingMaskIntoConstraints = false
-        
+
         if onChange != nil {
             self.onChange = onChange!
         }
-        
+
         //        backgroundFill = NSColor.systemGreen.cgColor
     }
-    
+
     required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
@@ -45,19 +45,19 @@ class SettingRow: NSStackView {
 class BooleanSettingRow: SettingRow {
     init(title: String, value: Bool) {
         super.init()
-        
+
         let checkboxField = CheckboxField(frame: NSRect.zero)
         checkboxField.translatesAutoresizingMaskIntoConstraints = false
         checkboxField.value = value
         checkboxField.title = title
-        
+
         checkboxField.onChange = { value in self.onChange(CSData.Bool(value)) }
-        
+
         addArrangedSubview(checkboxField)
-        
+
         heightAnchor.constraint(equalToConstant: ROW_HEIGHT).isActive = true
     }
-    
+
     required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
@@ -66,7 +66,7 @@ class BooleanSettingRow: SettingRow {
 class PathSettingRow: SettingRow {
     init(title: String, value: String, onChange: ((CSData) -> Void)? = nil) {
         super.init(onChange: onChange)
-        
+
         let titleView: NSTextField
         if #available(OSX 10.12, *) {
             titleView = NSTextField(labelWithString: title)
@@ -74,24 +74,24 @@ class PathSettingRow: SettingRow {
             titleView = NSTextField()
         }
         titleView.translatesAutoresizingMaskIntoConstraints = false
-        
+
         let textField = TextField(frame: NSRect.zero)
         textField.translatesAutoresizingMaskIntoConstraints = false
         textField.value = value
-        
+
         // Don't allow direct editing of the path
         textField.isEnabled = false
-        
+
         textField.onChange = { value in self.onChange(CSData.String(value)) }
-        
+
         let button = Button(frame: NSRect.zero)
         button.title = "Choose path..."
         button.translatesAutoresizingMaskIntoConstraints = false
         button.bezelStyle = .rounded
-        
+
         button.onPress = {
             let dialog = NSOpenPanel()
-            
+
             dialog.title = "Choose \(title)"
             dialog.showsResizeIndicator = true
             dialog.showsHiddenFiles = false
@@ -99,23 +99,23 @@ class PathSettingRow: SettingRow {
             dialog.canChooseDirectories = true
             dialog.canChooseFiles = false
             dialog.allowsMultipleSelection = false
-            
+
             if dialog.runModal() == NSApplication.ModalResponse.OK {
                 self.onChange(CSData.String(dialog.url!.path))
             }
         }
-        
+
         addArrangedSubview(titleView)
         addArrangedSubview(textField)
         addArrangedSubview(button)
-        
+
         titleView.centerYAnchor.constraint(equalTo: centerYAnchor).isActive = true
         textField.centerYAnchor.constraint(equalTo: centerYAnchor).isActive = true
         button.centerYAnchor.constraint(equalTo: centerYAnchor).isActive = true
-        
+
         heightAnchor.constraint(equalToConstant: ROW_HEIGHT).isActive = true
     }
-    
+
     required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }

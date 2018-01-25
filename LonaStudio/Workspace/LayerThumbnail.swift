@@ -9,10 +9,10 @@
 import Foundation
 import AppKit
 
-fileprivate let layerOutlineColor = NSColor.black.withAlphaComponent(0.5)
-fileprivate let layerDirectionColor1 = NSColor.parse(css: "rgba(124,124,124,0.8)")!
-fileprivate let layerDirectionColor2 = NSColor.parse(css: "rgba(124,124,124,0.65)")!
-fileprivate let layerDirectionColor3 = NSColor.parse(css: "rgba(124,124,124,0.5)")!
+private let layerOutlineColor = NSColor.black.withAlphaComponent(0.5)
+private let layerDirectionColor1 = NSColor.parse(css: "rgba(124,124,124,0.8)")!
+private let layerDirectionColor2 = NSColor.parse(css: "rgba(124,124,124,0.65)")!
+private let layerDirectionColor3 = NSColor.parse(css: "rgba(124,124,124,0.5)")!
 
 class LayerThumbnail {
     static var cache: NSCache<NSString, NSImage> {
@@ -20,7 +20,7 @@ class LayerThumbnail {
         nsCache.countLimit = 100
         return nsCache
     }
-    
+
     static func cacheKeyForView(at scale: CGFloat, direction: String, backgroundColor: String? = nil) -> NSString {
         if let backgroundColor = backgroundColor {
             return NSString(string: "\(backgroundColor):\(scale):\(direction)")
@@ -28,43 +28,43 @@ class LayerThumbnail {
             return NSString(string: "View:\(scale):\(direction)")
         }
     }
-    
+
     static func image(for layer: CSLayer) -> NSImage? {
         let scale = NSApplication.shared.windows.first?.backingScaleFactor ?? 1
         let size = 16 * scale
-        
+
         switch (layer.type) {
         case "View":
             let cacheKey = cacheKeyForView(at: scale, direction: layer.flexDirection ?? "column", backgroundColor: layer.backgroundColor)
-            
+
             if let cached = cache.object(forKey: cacheKey) {
                 return cached
             }
-            
+
             let image = NSImage(size: NSSize(width: size, height: size), flipped: true, drawingHandler: { rect in
                 NSGraphicsContext.saveGraphicsState()
                 NSBezierPath.defaultLineWidth = scale
-        
+
                 let borderPath = NSBezierPath(rect: rect.insetBy(dx: 2.5 * scale, dy: 2.5 * scale))
                 var outlineColor = layerOutlineColor
-        
+
                 if let backgroundColor = layer.backgroundColor {
                     let color = CSColors.parse(css: backgroundColor).color
                     color.set()
                     outlineColor = color.contrastingLabelColor.withAlphaComponent(0.5)
                     NSBezierPath(rect: rect.insetBy(dx: 2 * scale, dy: 2 * scale)).fill()
                 }
-                
+
                 outlineColor.setStroke()
                 borderPath.stroke()
-                
+
                 let rowThickness = 2 * scale
                 let rowLength = 8 * scale
-                
+
                 let rowStart1 = 4 * scale
                 let rowStart2 = 7 * scale
                 let rowStart3 = 10 * scale
-                
+
                 if layer.flexDirection == "row" {
                     outlineColor.withAlphaComponent(0.4).setFill()
                     NSBezierPath(rect: NSRect(x: rowStart1, y: rowStart1, width: rowThickness, height: rowLength)).fill()
@@ -80,20 +80,20 @@ class LayerThumbnail {
                     outlineColor.withAlphaComponent(0.2).setFill()
                     NSBezierPath(rect: NSRect(x: rowStart1, y: rowStart3, width: rowLength, height: rowThickness)).fill()
                 }
-                
+
                 NSGraphicsContext.restoreGraphicsState()
                 return true
             })
-            
+
             cache.setObject(image, forKey: cacheKey)
-            
+
             return image
         case "Text":
             let template: NSImage = #imageLiteral(resourceName: "icon-layer-list-text")
-            
+
             if let font = layer.font {
                 let cacheKey = font as NSString
-                
+
                 // TODO: Can't use font name, since these may change. Or we need to invalidate on refresh
                 if let cached = cache.object(forKey: cacheKey) {
                     return cached
@@ -104,12 +104,12 @@ class LayerThumbnail {
                     return image
                 }
             }
-            
+
             return template
         case "Image":
             if let urlString = layer.image, let url = URL(string: urlString) {
                 let cacheKey = NSString(string: urlString)
-                
+
                 if let cached = cache.object(forKey: cacheKey) {
                     return cached
                 } else if let image = NSImage(contentsOf: url) {
@@ -118,12 +118,10 @@ class LayerThumbnail {
                     return image
                 }
             }
-            
+
             return #imageLiteral(resourceName: "icon-layer-list-image")
         default:
             return nil
         }
     }
 }
-
-

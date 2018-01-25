@@ -1,4 +1,3 @@
-
 import Foundation
 import AppKit
 
@@ -9,7 +8,7 @@ public enum AttributedFontWeight: Int {
 }
 
 public class AttributedFont {
-    
+
     public let fontFamily: String
     public var fontSize: CGFloat
     public let lineHeight: CGFloat
@@ -18,7 +17,7 @@ public class AttributedFont {
     public let color: NSColor
     public let textAlignment: NSTextAlignment
     public let lineBreakMode: NSParagraphStyle.LineBreakMode
-    
+
     public init(
         fontFamily: String,
         fontSize: CGFloat,
@@ -27,8 +26,7 @@ public class AttributedFont {
         weight: AttributedFontWeight,
         color: NSColor = NSColor.black,
         textAlignment: NSTextAlignment = .left,
-        lineBreakMode: NSParagraphStyle.LineBreakMode = .byTruncatingTail)
-    {
+        lineBreakMode: NSParagraphStyle.LineBreakMode = .byTruncatingTail) {
         self.fontFamily = fontFamily
         self.fontSize = fontSize
         self.lineHeight = lineHeight
@@ -38,23 +36,23 @@ public class AttributedFont {
         self.textAlignment = textAlignment
         self.lineBreakMode = lineBreakMode
     }
-    
+
     public var nsFont: NSFont {
         if let targetFont = NSFontManager.shared.font(withFamily: fontFamily, traits: NSFontTraitMask(rawValue: 0), weight: weight.rawValue, size: fontSize) {
             return targetFont
         }
-        
+
         Swift.print("Could not find font", fontFamily, "with size", fontSize, "and weight", weight.rawValue)
-        
+
         return NSFont.systemFont(ofSize: fontSize, weight: NSFont.Weight.regular)
     }
-    
+
     public func apply(to string: String) -> NSAttributedString {
         return NSAttributedString(
             string: string,
             attributes: attributeDictionary())
     }
-    
+
     public func apply(to attributedString: NSAttributedString) -> NSAttributedString {
         let styledString = NSMutableAttributedString(attributedString: attributedString)
         styledString.addAttributes(
@@ -62,23 +60,23 @@ public class AttributedFont {
             range: NSRange(location: 0, length: styledString.length))
         return styledString
     }
-    
+
     public func apply(to attributedString: NSMutableAttributedString, at range: NSRange) {
         attributedString.addAttributes(
             attributeDictionary(),
             range: range)
     }
-    
+
     public var paragraphStyle: NSParagraphStyle {
         let paragraphStyle = NSMutableParagraphStyle()
         paragraphStyle.minimumLineHeight = lineHeight
 //        paragraphStyle.maximumLineHeight = lineHeight
         paragraphStyle.alignment = textAlignment
         paragraphStyle.lineBreakMode = lineBreakMode
-        
+
         return paragraphStyle
     }
-    
+
     func attributeDictionary() -> [NSAttributedStringKey: Any] {
         return [
             NSAttributedStringKey.font: nsFont,
