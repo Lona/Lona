@@ -80,8 +80,7 @@ class CSComponent: DataNode, NSCopying {
     }
 
     func parametersType(withAccess access: CSAccess = CSAccess.read) -> CSType {
-        let parametersSchema: CSType.Schema = parameters.key {
-            (parameter) -> (key: String, value: (CSType, CSAccess)) in
+        let parametersSchema: CSType.Schema = parameters.key { (parameter) -> (key: String, value: (CSType, CSAccess)) in
             return (key: parameter.name, value: (parameter.type, access))
         }
 

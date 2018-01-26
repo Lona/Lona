@@ -13,7 +13,7 @@ import Lottie
 
 func measureText(string: NSAttributedString, width: CGFloat, maxNumberOfLines: Int = -1) -> NSSize {
     let textStorage = NSTextStorage(attributedString: string)
-    let textContainer = NSTextContainer(containerSize: NSMakeSize(width, CGFloat.greatestFiniteMagnitude))
+    let textContainer = NSTextContainer(containerSize: NSSize(width: width, height: CGFloat.greatestFiniteMagnitude))
     if maxNumberOfLines > -1 {
         textContainer.maximumNumberOfLines = maxNumberOfLines
     }
@@ -60,17 +60,13 @@ func numberValue(for layer: CSLayer, attributeChain: [String], optionalValues: [
     if let config = layer.config {
         for attribute in attributeChain {
             let raw = config.get(attribute: attribute, for: layer.name)
-
             if raw.number == nil { continue }
-
             return raw.numberValue
         }
     }
 
-    for value in optionalValues {
-        if value != nil {
-            return value!
-        }
+    for value in optionalValues where value != nil {
+        return value!
     }
 
     return defaultValue
@@ -168,9 +164,9 @@ func renderBox(layer: CSLayer, node: YGNodeRef, options: RenderOptions) -> NSVie
     // TODO: I copied this in from the React Native code to see if it's happening. It's probably not, so we can probably take it out.
     // This works around a breaking change in Yoga layout where setting flexBasis needs to be set explicitly, instead of relying on flex to propagate.
     // We check for it by seeing if a width/height is provided along with a flexBasis of 0 and the width/height is laid out as 0.
-    if (YGNodeStyleGetFlexBasis(node).unit == YGUnit.point && YGNodeStyleGetFlexBasis(node).value == 0 &&
+    if YGNodeStyleGetFlexBasis(node).unit == YGUnit.point && YGNodeStyleGetFlexBasis(node).value == 0 &&
         ((YGNodeStyleGetWidth(node).unit == YGUnit.point && YGNodeStyleGetWidth(node).value > 0 && YGNodeLayoutGetWidth(node) == 0) ||
-            (YGNodeStyleGetHeight(node).unit == YGUnit.point && YGNodeStyleGetHeight(node).value > 0 && YGNodeLayoutGetHeight(node) == 0))) {
+            (YGNodeStyleGetHeight(node).unit == YGUnit.point && YGNodeStyleGetHeight(node).value > 0 && YGNodeLayoutGetHeight(node) == 0)) {
         Swift.print("View was rendered with explicitly set width/height but with a 0 flexBasis. (This might be fixed by changing flex: to flexGrow:)", layer.name)
     }
 
@@ -450,7 +446,8 @@ func renderBoxJSON(layer: CSLayer, node: YGNodeRef, references: inout SketchFile
 func assignLayerConfig(layer: CSLayer, config: ComponentConfiguration) {
     layer.config = config
 
-    for (_, sub) in layer.computedChildren(for: config, shouldAssignConfig: true).enumerated() {
+    for item in layer.computedChildren(for: config, shouldAssignConfig: true).enumerated() {
+        let sub = item.element
         var childConfig = config
 
         // TODO This is a hack to return metadata about the layer.

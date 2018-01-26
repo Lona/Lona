@@ -34,10 +34,7 @@ class Document: NSDocument {
         // Returns the Storyboard that contains your Document window.
         let storyboard = NSStoryboard(name: NSStoryboard.Name(rawValue: "Main"), bundle: nil)
         let windowController = storyboard.instantiateController(withIdentifier: NSStoryboard.SceneIdentifier(rawValue: "Document Window Controller")) as! NSWindowController
-//        windowController.window?.makeKeyAndOrderFront(nil)
-
-//        wc = windowController
-        if (data != nil) {
+        if data != nil {
             let viewController = windowController.contentViewController as! ViewController
             viewController.setComponent(component: data!)
             viewController.fileURL = fileURL
@@ -69,26 +66,14 @@ class Document: NSDocument {
     }
 
     override func data(ofType typeName: String) throws -> Data {
-        // Insert code here to write your document to data of the specified type. If outError != nil, ensure that you create and set an appropriate error when returning nil.
-        // You can also choose to override fileWrapperOfType:error:, writeToURL:ofType:error:, or writeToURL:ofType:forSaveOperation:originalContentsURL:error: instead.
-//        print("Writing data", typeName)
-
-//        if let component = viewController?.component {
-//            
-////            return component.serialize()
-//        }
-
         var component: CSComponent? = nil
-
         if controller != nil {
             let viewController = controller!.contentViewController as! ViewController
             component = viewController.component
         }
-
         if data != nil {
             component = data
         }
-
         if let component = component, let json = component.toData(), let data = json.toData() {
             return data
         }

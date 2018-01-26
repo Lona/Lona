@@ -145,7 +145,7 @@ class LayerList: NSOutlineView {
             return
         }
 
-        documentController.openDocument(withContentsOf: url, display: true, completionHandler: { (document, documentWasAlreadyOpen, error) in
+        documentController.openDocument(withContentsOf: url, display: true, completionHandler: { (_, _, _) in
 
             let componentLayer = self.createComponentLayer(from: url)
             self.replace(layer: layer, with: componentLayer)
@@ -173,13 +173,10 @@ class LayerList: NSOutlineView {
             return
         }
 
-        documentController.openDocument(withContentsOf: url, display: true, completionHandler: {
-            (document, _, _) in
-
+        documentController.openDocument(withContentsOf: url, display: true, completionHandler: { (document, _, _) in
             layer.component = (document as! Document).file
             layer.url = url.absoluteString
             layer.name = self.componentName(for: url)
-
             self.onChange()
         })
     }

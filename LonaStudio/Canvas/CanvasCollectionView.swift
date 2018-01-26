@@ -20,7 +20,7 @@ struct CanvasCollectionOptions {
 
 class MatrixLayout: NSCollectionViewFlowLayout {
 
-    let delegate: NSCollectionViewDelegateFlowLayout
+    weak var delegate: NSCollectionViewDelegateFlowLayout?
 
     init(delegate: NSCollectionViewDelegateFlowLayout) {
         self.delegate = delegate
@@ -51,7 +51,7 @@ class MatrixLayout: NSCollectionViewFlowLayout {
             let itemCount = self.collectionView?.numberOfItems(inSection: section)
 
             for item in 0..<itemCount! {
-                indexPath = IndexPath(item:item, section: section)
+                indexPath = IndexPath(item: item, section: section)
                 let itemAttributes = NSCollectionViewLayoutAttributes(forItemWith: indexPath)
                 itemAttributes.frame = frameForCellAtIndexPath(indexPath: indexPath)
                 layoutInfo[indexPath] = itemAttributes
@@ -60,6 +60,9 @@ class MatrixLayout: NSCollectionViewFlowLayout {
     }
 
     func frameForCellAtIndexPath(indexPath: IndexPath) -> CGRect {
+        guard let delegate = delegate else {
+            return .zero
+        }
         let size = delegate.collectionView!(collectionView!, layout: self, sizeForItemAt: indexPath)
 
         var origin = CGPoint(x: sectionInset.left, y: sectionInset.top)
@@ -79,7 +82,7 @@ class MatrixLayout: NSCollectionViewFlowLayout {
         var allAttributes: [NSCollectionViewLayoutAttributes] = []
 
         for (_, attributes) in self.layoutInfo {
-            if (rect.intersects(attributes.frame)) {
+            if rect.intersects(attributes.frame) {
                 allAttributes.append(attributes)
             }
         }
@@ -95,7 +98,7 @@ class MatrixLayout: NSCollectionViewFlowLayout {
         var width: CGFloat = 0
         var height: CGFloat = 0
 
-        layoutInfo.forEach { (indexPath, attributes) in
+        layoutInfo.forEach { (_, attributes) in
             width = max(width, attributes.frame.maxX)
             height = max(height, attributes.frame.maxY)
         }

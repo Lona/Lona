@@ -46,8 +46,6 @@ class ListView<Element: DataNode>: NSOutlineView, NSOutlineViewDataSource, NSOut
     }
 
     let options: ListEditor<Element>.Options
-    // Introduce cyclic reference for convenience. TODO: Better?
-//    var listEditor: ListEditor<Element>? = nil
 
     init(
         frame frameRect: NSRect,
@@ -124,7 +122,7 @@ class ListView<Element: DataNode>: NSOutlineView, NSOutlineViewDataSource, NSOut
         let selfPoint = convert(event.locationInWindow, from: nil)
         let row = self.row(at: selfPoint)
 
-        if (row >= 0) {
+        if row >= 0 {
             let cell = view(atColumn: 0, row: row, makeIfNecessary: false)
 
             if let cell = cell as? CSStatementView {
@@ -140,7 +138,7 @@ class ListView<Element: DataNode>: NSOutlineView, NSOutlineViewDataSource, NSOut
     override func keyDown(with event: NSEvent) {
         let characters = event.charactersIgnoringModifiers!
 
-        if (characters == String(Character(UnicodeScalar(NSDeleteCharacter)!))) {
+        if characters == String(Character(UnicodeScalar(NSDeleteCharacter)!)) {
             if selectedItem == nil { return }
 
             if let item = selectedItem as? Element {
@@ -197,7 +195,7 @@ class ListView<Element: DataNode>: NSOutlineView, NSOutlineViewDataSource, NSOut
                 if relativeItem is DataNodeParent {
                     return NSDragOperation.move
                 }
-            case .intoContainer(_): return NSDragOperation.move
+            case .intoContainer: return NSDragOperation.move
             default: break
             }
         }
