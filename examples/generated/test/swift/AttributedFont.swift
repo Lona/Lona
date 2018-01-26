@@ -17,8 +17,7 @@ public class AttributedFont {
     size: CGFloat = UIFont.systemFontSize,
     lineHeight: CGFloat? = nil,
     kerning: Double = 0,
-    color: UIColor = UIColor.black)
-  {
+    color: UIColor = UIColor.black) {
     self.family = family
     self.name = name
     self.weight = weight
@@ -36,8 +35,7 @@ public class AttributedFont {
     lineHeight: CGFloat? = nil,
     kerning: Double? = nil,
     color: UIColor? = nil
-    ) -> AttributedFont
-  {
+    ) -> AttributedFont {
     return AttributedFont(
       family: family ?? self.family,
       name: name ?? self.name,

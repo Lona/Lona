@@ -52,10 +52,8 @@ enum CSData: Equatable, CustomDebugStringConvertible {
             return true
         case (.Object(let l), .Object(let r)):
             if l.count != r.count { return false }
-            for (key, value) in l {
-                if r[key] != value {
-                    return false
-                }
+            for (key, value) in l where r[key] != value {
+                return false
             }
             return true
         default: return false
@@ -63,9 +61,7 @@ enum CSData: Equatable, CustomDebugStringConvertible {
     }
 
     var isNull: Bool {
-        get {
-            return self == CSData.Null
-        }
+        return self == CSData.Null
     }
 
     var bool: Bool? {

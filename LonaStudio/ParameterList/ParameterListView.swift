@@ -108,7 +108,7 @@ class ParameterListView: NSOutlineView, NSOutlineViewDataSource, NSOutlineViewDe
                 .value("hasDefaultValue", CSValue(type: defaultValueType, data: parameter.hasDefaultValue ? .String("default") : .String("no default")), [])
             ]
 
-            if (parameter.hasDefaultValue) {
+            if parameter.hasDefaultValue {
                 components.append(.text("of"))
                 components.append(.value("defaultValue", parameter.defaultValue, []))
             }
@@ -131,7 +131,6 @@ class ParameterListView: NSOutlineView, NSOutlineViewDataSource, NSOutlineViewDe
 
                     // TODO: Cast all cases to their new type (?)
 //                    parameter.examples = parameter.examples.map({ $0.cast(to: parameter.type) })
-                    break
                 case "hasDefaultValue":
                     if value.data.stringValue == "no default" {
                         parameter.defaultValue = CSUndefinedValue
@@ -167,7 +166,7 @@ class ParameterListView: NSOutlineView, NSOutlineViewDataSource, NSOutlineViewDe
         let selfPoint = convert(event.locationInWindow, from: nil)
         let row = self.row(at: selfPoint)
 
-        if (row >= 0) {
+        if row >= 0 {
             let cell = view(atColumn: 0, row: row, makeIfNecessary: false)
 
             if let cell = cell as? CSStatementView {
@@ -183,15 +182,13 @@ class ParameterListView: NSOutlineView, NSOutlineViewDataSource, NSOutlineViewDe
     override func keyDown(with event: NSEvent) {
         let characters = event.charactersIgnoringModifiers!
 
-        if (characters == String(Character(UnicodeScalar(NSDeleteCharacter)!))) {
+        if characters == String(Character(UnicodeScalar(NSDeleteCharacter)!)) {
             if selectedItem == nil { return }
 
             if let parameter = selectedItem as? CSParameter {
-                for (index, item) in list.enumerated() {
-                    if item === parameter {
-                        list.remove(at: index)
-                        break
-                    }
+                for (index, item) in list.enumerated() where item === parameter {
+                    list.remove(at: index)
+                    break
                 }
             }
 

@@ -22,7 +22,6 @@ public class TextStyles: UIView {
 
   // MARK: Public
 
-
   // MARK: Private
 
   private var textView = UILabel()

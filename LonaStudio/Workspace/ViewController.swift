@@ -679,7 +679,7 @@ class ViewController: NSViewController, NSOutlineViewDataSource, NSOutlineViewDe
             })
 
             for (index, view) in views.enumerated() {
-                if (index == views.count - 1) { continue }
+                if index == views.count - 1 { continue }
 
                 view.keyView.nextKeyView = views[index + 1].keyView
             }
@@ -738,15 +738,9 @@ class ViewController: NSViewController, NSOutlineViewDataSource, NSOutlineViewDe
         let pp = NSPasteboardItem()
 
         // working as expected here
-        if let _ = item as? DataNode {
+        if let item = item as? DataNode {
             let index = outlineView.row(forItem: item)
-
             pp.setString(String(index), forType: NSPasteboard.PasteboardType(rawValue: "component.layer"))
-
-//            print( "pb write \(fi.label)")
-
-        } else {
-//            print( "pb write, not a file item \(item)")
         }
 
         return pp
@@ -846,13 +840,13 @@ class ViewController: NSViewController, NSOutlineViewDataSource, NSOutlineViewDe
                     }
                 }
 
-                if (shouldRenderOnSelectionChange) {
+                if shouldRenderOnSelectionChange {
                     renderInspector(item: item!)
                 }
             }
             previousRow = selectedRow
 
-            if (shouldRenderOnSelectionChange) {
+            if shouldRenderOnSelectionChange {
                 render()
             }
         }

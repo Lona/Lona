@@ -33,7 +33,7 @@ class LayerThumbnail {
         let scale = NSApplication.shared.windows.first?.backingScaleFactor ?? 1
         let size = 16 * scale
 
-        switch (layer.type) {
+        switch layer.type {
         case "View":
             let cacheKey = cacheKeyForView(at: scale, direction: layer.flexDirection ?? "column", backgroundColor: layer.backgroundColor)
 

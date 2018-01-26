@@ -33,7 +33,7 @@ class VideoUtils {
         writer.startWriting()
         writer.startSession(atSourceTime: kCMTimeZero)
 
-        if (adaptor.pixelBufferPool == nil) {
+        if adaptor.pixelBufferPool == nil {
             Swift.print("Failed to start asset writing session", url)
             return
         }
@@ -77,14 +77,14 @@ class VideoUtils {
         var currentFrame = 0
 
         input.requestMediaDataWhenReady(on: queue, using: {
-            while (input.isReadyForMoreMediaData && currentFrame < frameCount) {
+            while input.isReadyForMoreMediaData && currentFrame < frameCount {
                 write(currentFrame, currentTime)
 
                 currentTime = currentTime + frameDuration
                 currentFrame += 1
             }
 
-            if (currentFrame >= frameCount) {
+            if currentFrame >= frameCount {
                 done()
             }
         })
@@ -96,7 +96,7 @@ class VideoUtils {
 
             let compressionProperties: NSDictionary = [
 //                AVVideoAverageBitRateKey : 10.1,
-                AVVideoExpectedSourceFrameRateKey : fps
+                AVVideoExpectedSourceFrameRateKey: fps
 //                AVVideoMaxKeyFrameIntervalKey : fps,
             ]
 
