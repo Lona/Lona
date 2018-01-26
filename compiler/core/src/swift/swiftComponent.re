@@ -21,11 +21,18 @@ type directionParameter = {
   swiftName: string
 };
 
-let generate = (name, json, colors) => {
+let generate = (name, colors, textStyles: TextStyle.file, json) => {
   let rootLayer = json |> Decode.Component.rootLayer;
   /* Remove the root element */
   let nonRootLayers = rootLayer |> Layer.flatten |> List.tl;
   let logic = json |> Decode.Component.logic;
+  let logic =
+    Logic.enforceSingleAssignment(
+      (_, path) => ["_" ++ Format.variableNameFromIdentifier(rootLayer.name, path)],
+      (_, path) => Logic.Literal(LonaValue.defaultValueForParameter(List.nth(path, 2))),
+      logic
+    );
+  let layerParameterAssignments = Layer.logicAssignmentsFromLayerParameters(rootLayer);
   let assignments = Layer.parameterAssignmentsFromLogic(rootLayer, logic);
   let parameters = json |> Decode.Component.parameters;
   open Ast;
@@ -93,6 +100,23 @@ let generate = (name, json, colors) => {
                   })
                 ]
           })
+        ),
+      "block": None
+    });
+  let textStyleVariableDoc = (layer: Types.layer) =>
+    VariableDeclaration({
+      "modifiers": [AccessLevelModifier(PrivateModifier)],
+      "pattern":
+        IdentifierPattern({
+          "identifier": (layer.name |> Format.layerName) ++ "TextStyle",
+          "annotation": None /* Some(TypeName("AttributedFont")) */
+        }),
+      "init":
+        Some(
+          MemberExpression([
+            SwiftIdentifier("TextStyles"),
+            SwiftIdentifier(textStyles.defaultStyle.id)
+          ])
         ),
       "block": None
     });
@@ -255,49 +279,38 @@ let generate = (name, json, colors) => {
   let defaultValueForParameter =
     fun
     | "backgroundColor" => MemberExpression([SwiftIdentifier("UIColor"), SwiftIdentifier("clear")])
+    | "font"
+    | "textStyle" =>
+      MemberExpression([
+        SwiftIdentifier("TextStyles"),
+        SwiftIdentifier(textStyles.defaultStyle.id)
+      ])
     | _ => LiteralExpression(Integer(0));
-  let initialLayerValue = (layer: Types.layer, name) =>
-    switch (StringMap.find_opt(name, layer.parameters)) {
-    | Some(value) => Document.lonaValue(colors, value)
-    | None => defaultValueForParameter(name)
-    };
   let defineInitialLayerValue = (layer: Types.layer, (name, _)) => {
-    let (left, right) =
-      switch (name, initialLayerValue(layer, name)) {
-      | ("visible", LiteralExpression(Boolean(value))) => (
-          layerMemberExpression(layer, [SwiftIdentifier("isHidden")]),
-          LiteralExpression(Boolean(! value))
-        )
-      | ("borderRadius", LiteralExpression(FloatingPoint(_)) as right) => (
-          layerMemberExpression(
-            layer,
-            [SwiftIdentifier("layer"), SwiftIdentifier("cornerRadius")]
-          ),
-          right
-        )
-      | ("height", LiteralExpression(FloatingPoint(_)) as right) => (
-          SwiftIdentifier(parentNameOrSelf(layer) ++ "HeightAnchorConstraint?.constant"),
-          right
-        )
-      | ("width", LiteralExpression(FloatingPoint(_)) as right) => (
-          SwiftIdentifier(parentNameOrSelf(layer) ++ "WidthAnchorConstraint?.constant"),
-          right
-        )
-      | (_, right) => (layerMemberExpression(layer, [SwiftIdentifier(name)]), right)
-      };
-    BinaryExpression({"left": left, "operator": "=", "right": right})
+    let parameters = Layer.LayerMap.find_opt(layer, layerParameterAssignments);
+    switch parameters {
+    | None => LineComment(layer.name)
+    | Some(parameters) =>
+      let assignment = StringMap.find_opt(name, parameters);
+      let logic =
+        switch assignment {
+        | None => Logic.defaultAssignmentForLayerParameter(colors, textStyles, layer, name)
+        | Some(assignment) => assignment
+        };
+      let node = SwiftLogic.toSwiftAST(colors, textStyles, rootLayer, logic);
+      StatementListHelper(node)
+    }
   };
   let setUpViewsDoc = (root: Types.layer) => {
     let setUpDefaultsDoc = () => {
       let filterParameters = ((name, _)) =>
         name != "image"
-        && name != "textStyle"
         && name != "flexDirection"
         && name != "justifyContent"
         && name != "alignSelf"
         && name != "alignItems"
         && name != "flex"
-        && name != "font"
+        /* && name != "font" */
         && ! Js.String.startsWith("padding", name)
         && ! Js.String.startsWith("margin", name)
         /* Handled by initial constraint setup */
@@ -731,7 +744,7 @@ let generate = (name, json, colors) => {
           [activateConstraints()],
           [Empty],
           constraints |> List.map(assignConstraint),
-          [LineComment("For debugging")],
+          [Empty, LineComment("For debugging")],
           constraints |> List.map(assignConstraintIdentifier)
         ])
     })
@@ -746,7 +759,10 @@ let generate = (name, json, colors) => {
     /* let cond = Logic.conditionallyAssignedIdentifiers(logic);
        cond |> Logic.IdentifierSet.elements |> List.iter(((ltype, path)) => Js.log(path)); */
     /* TODO: Figure out how to handle images */
-    let filterParameters = ((name, _)) => name != "image" && name != "textStyle";
+    let filterParameters = ((name, _)) =>
+      name != "image"
+      && ! Js.String.includes("margin", name)
+      && ! Js.String.includes("padding", name);
     let conditionallyAssigned = Logic.conditionallyAssignedIdentifiers(logic);
     let filterConditionallyAssigned = (layer: Types.layer, (name, _)) => {
       let isAssigned = ((_, value)) => value == ["layers", layer.name, name];
@@ -763,22 +779,22 @@ let generate = (name, json, colors) => {
       "modifiers": [AccessLevelModifier(PrivateModifier)],
       "parameters": [],
       "body":
-        Document.joinGroups(
-          Empty,
-          [
-            assignments
-            |> Layer.LayerMap.bindings
-            |> List.map(defineInitialLayerValues)
-            |> List.concat,
-            SwiftLogic.toSwiftAST(colors, rootLayer, logic)
-          ]
+        (
+          assignments
+          |> Layer.LayerMap.bindings
+          |> List.map(defineInitialLayerValues)
+          |> List.concat
         )
+        @ SwiftLogic.toSwiftAST(colors, textStyles, rootLayer, logic)
     })
   };
+  let textLayers =
+    nonRootLayers |> List.filter((layer: Types.layer) => layer.typeName == Types.Text);
   TopLevelDeclaration({
     "statements": [
       ImportDeclaration("UIKit"),
       ImportDeclaration("Foundation"),
+      Empty,
       LineComment("MARK: - " ++ name),
       Empty,
       ClassDeclaration({
@@ -787,30 +803,26 @@ let generate = (name, json, colors) => {
         "modifier": Some(PublicModifier),
         "isFinal": false,
         "body":
-          List.concat([
-            [LineComment("MARK: Lifecycle")],
-            [Empty],
-            [initializerDoc()],
-            [Empty],
-            [initializerCoderDoc()],
-            [LineComment("MARK: Public")],
-            [Empty],
-            parameters |> List.map(parameterVariableDoc),
-            [LineComment("MARK: Private")],
-            [Empty],
-            nonRootLayers |> List.map(viewVariableDoc),
-            [Empty],
-            rootLayer |> Layer.flatmap(spacingVariableDoc) |> List.concat,
-            [Empty],
-            constraints |> List.map((def) => constraintVariableDoc(def.variableName)),
-            [Empty],
-            [setUpViewsDoc(rootLayer)],
-            [Empty],
-            [setUpConstraintsDoc(rootLayer)],
-            [Empty],
-            [updateDoc()]
-          ])
-      })
+          Document.joinGroups(
+            Empty,
+            [
+              [Empty, LineComment("MARK: Lifecycle")],
+              [initializerDoc()],
+              [initializerCoderDoc()],
+              List.length(parameters) > 0 ? [LineComment("MARK: Public")] : [],
+              parameters |> List.map(parameterVariableDoc),
+              [LineComment("MARK: Private")],
+              nonRootLayers |> List.map(viewVariableDoc),
+              textLayers |> List.map(textStyleVariableDoc),
+              rootLayer |> Layer.flatmap(spacingVariableDoc) |> List.concat,
+              constraints |> List.map((def) => constraintVariableDoc(def.variableName)),
+              [setUpViewsDoc(rootLayer)],
+              [setUpConstraintsDoc(rootLayer)],
+              [updateDoc()]
+            ]
+          )
+      }),
+      Empty
     ]
   })
 };

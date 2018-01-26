@@ -4,39 +4,41 @@ open Json.Decode;
 
 let parameterTypeMap =
   [
-    ("text", Types.Reference("String")),
-    ("visible", Types.Reference("Boolean")),
-    ("numberOfLines", Types.Reference("Number")),
+    ("text", Types.stringType),
+    ("visible", Types.booleanType),
+    ("numberOfLines", Types.numberType),
     ("backgroundColor", Types.colorType),
     ("image", Types.urlType),
     /* Styles */
-    ("alignItems", Types.Reference("String")),
-    ("alignSelf", Types.Reference("String")),
-    ("flex", Types.Reference("Number")),
-    ("flexDirection", Types.Reference("String")),
-    ("font", Types.Reference("String")),
-    ("justifyContent", Types.Reference("String")),
-    ("marginTop", Types.Reference("Number")),
-    ("marginRight", Types.Reference("Number")),
-    ("marginBottom", Types.Reference("Number")),
-    ("marginLeft", Types.Reference("Number")),
-    ("paddingTop", Types.Reference("Number")),
-    ("paddingRight", Types.Reference("Number")),
-    ("paddingBottom", Types.Reference("Number")),
-    ("paddingLeft", Types.Reference("Number")),
-    ("borderRadius", Types.Reference("Number")),
-    ("width", Types.Reference("Number")),
-    ("height", Types.Reference("Number"))
+    ("alignItems", Types.stringType),
+    ("alignSelf", Types.stringType),
+    ("flex", Types.numberType),
+    ("flexDirection", Types.stringType),
+    ("font", Types.textStyleType),
+    ("justifyContent", Types.stringType),
+    ("marginTop", Types.numberType),
+    ("marginRight", Types.numberType),
+    ("marginBottom", Types.numberType),
+    ("marginLeft", Types.numberType),
+    ("paddingTop", Types.numberType),
+    ("paddingRight", Types.numberType),
+    ("paddingBottom", Types.numberType),
+    ("paddingLeft", Types.numberType),
+    ("borderRadius", Types.numberType),
+    ("width", Types.numberType),
+    ("height", Types.numberType)
   ]
   |> StringMap.fromList;
 
+exception UnknownParameter(string);
 
 let parameterType = (name) =>
   switch (StringMap.find(name, parameterTypeMap)) {
   | item => item
   | exception Not_found =>
-    Js.log2("Unknown built-in parameter when deserializing:", name);
-    Reference("BuiltIn-Null")
+    /* Js.log2("Unknown built-in parameter when deserializing:", name);
+       Reference("BuiltIn-Null") */
+    raise(UnknownParameter(name))
   };
 
 module Types = {
@@ -86,6 +88,8 @@ module Layer = {
   };
 };
 
+exception UnknownLogicValue(string);
+
 let rec logicNode = (json) => {
   let cmp = (json) =>
     switch (string(json)) {
@@ -111,7 +115,7 @@ let rec logicNode = (json) => {
     switch (field("type", string, json)) {
     | "identifier" => field("value", identifier, json)
     | "value" => field("value", literal, json)
-    | _ => None
+    | value => raise(UnknownLogicValue(value))
     }
   };
   let nodes = at(["nodes"], list(logicNode), json);

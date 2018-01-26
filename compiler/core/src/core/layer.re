@@ -65,6 +65,12 @@ let findParent = (rootLayer: Types.layer, targetLayer: Types.layer) => {
 
 let flatmap = (f, layer: Types.layer) => flatmapParent((_, layer) => f(layer), layer);
 
+let flatmapParameters = (f, layer: Types.layer) => {
+  let parameterLists =
+    layer |> flatmap((layer: Types.layer) => layer.parameters |> StringMap.bindings);
+  List.concat(parameterLists) |> List.map(f(layer))
+};
+
 let getFlexDirection = (layer: Types.layer) =>
   switch (StringMap.find("flexDirection", layer.parameters)) {
   | value => value.data |> Json.Decode.string
@@ -155,7 +161,7 @@ let getPadding = getInsets("padding");
 let getMargin = getInsets("margin");
 
 let parameterAssignmentsFromLogic = (layer, node) => {
-  let identifiers = Logic.undeclaredIdentifiers(node);
+  let identifiers = Logic.accessedIdentifiers(node);
   let updateAssignments = (layerName, propertyName, logicValue, acc) =>
     switch (findByName(layerName, layer)) {
     | Some(found) =>
@@ -177,6 +183,23 @@ let parameterAssignmentsFromLogic = (layer, node) => {
          },
        LayerMap.empty
      )
+};
+
+let logicAssignmentsFromLayerParameters = (layer) => {
+  let layerMap = ref(LayerMap.empty);
+  let extractParameters = (layer: Types.layer) => {
+    let stringMap = ref(StringMap.empty);
+    let extractParameter = ((parameterName, lonaValue: Types.lonaValue)) => {
+      let receiver = Logic.Identifier(lonaValue.ltype, ["layers", layer.name, parameterName]);
+      let source = Logic.Literal(lonaValue);
+      let assignment = Logic.Assign(source, receiver);
+      stringMap := StringMap.add(parameterName, assignment, stringMap^)
+    };
+    layer.parameters |> StringMap.bindings |> List.iter(extractParameter);
+    layerMap := LayerMap.add(layer, stringMap^, layerMap^)
+  };
+  let _ = layer |> flatmap(extractParameters);
+  layerMap^
 };
 
 let parameterIsStyle = (name) => StringSet.has(name, stylesSet);

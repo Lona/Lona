@@ -1,14 +1,14 @@
 import UIKit
 import Foundation
 
-// MARK: - Assign
+// MARK: - TextStyleConditional
 
-public class Assign: UIView {
+public class TextStyleConditional: UIView {
 
   // MARK: Lifecycle
 
-  public init(text: String) {
-    self.text = text
+  public init(large: Bool) {
+    self.large = large
 
     super.init(frame: .zero)
 
@@ -24,7 +24,7 @@ public class Assign: UIView {
 
   // MARK: Public
 
-  public var text: String { didSet { update() } }
+  public var large: Bool { didSet { update() } }
 
   // MARK: Private
 
@@ -48,6 +48,9 @@ public class Assign: UIView {
 
   private func setUpViews() {
     addSubview(textView)
+
+    textViewTextStyle = TextStyles.headline
+    textView.attributedText = textViewTextStyle.apply(to: "Text goes here")
   }
 
   private func setUpConstraints() {
@@ -87,6 +90,10 @@ public class Assign: UIView {
   }
 
   private func update() {
-    textView.attributedText = textViewTextStyle.apply(to: text)
+    var _textViewTextStyle = TextStyles.body1
+    if large {
+      _textViewTextStyle = TextStyles.display2
+    }
+    textViewTextStyle = _textViewTextStyle
   }
 }

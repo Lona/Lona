@@ -6,9 +6,17 @@ type lonaType =
   | Reference(string)
   | Named(string, lonaType);
 
-let colorType = Named("Color", Reference("String"));
+let booleanType = Reference("Boolean");
 
-let urlType = Named("URL", Reference("String"));
+let numberType = Reference("Number");
+
+let stringType = Reference("String");
+
+let colorType = Named("Color", stringType);
+
+let textStyleType = Named("TextStyle", stringType);
+
+let urlType = Named("URL", stringType);
 
 type lonaValue = {
   ltype: lonaType,

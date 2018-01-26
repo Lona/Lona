@@ -1,0 +1,166 @@
+{
+  "canvases" : [
+    {
+      "backgroundColor" : "white",
+      "exportScale" : 1,
+      "height" : 100,
+      "heightMode" : "At Least",
+      "name" : "iPhone SE",
+      "parameters" : {
+
+      },
+      "visible" : true,
+      "width" : 320
+    },
+    {
+      "backgroundColor" : "white",
+      "exportScale" : 1,
+      "height" : 100,
+      "heightMode" : "At Least",
+      "name" : "iPhone 7",
+      "parameters" : {
+
+      },
+      "visible" : true,
+      "width" : 375
+    },
+    {
+      "backgroundColor" : "white",
+      "exportScale" : 1,
+      "height" : 100,
+      "heightMode" : "At Least",
+      "name" : "iPhone 7+",
+      "parameters" : {
+
+      },
+      "visible" : true,
+      "width" : 414
+    }
+  ],
+  "cases" : [
+    {
+      "name" : "Default",
+      "type" : "entry",
+      "value" : {
+
+      },
+      "visible" : true
+    },
+    {
+      "name" : "name",
+      "type" : "entry",
+      "value" : {
+        "large" : true
+      },
+      "visible" : true
+    }
+  ],
+  "config" : {
+    "canvasLayout" : "xy"
+  },
+  "logic" : [
+    {
+      "function" : {
+        "arguments" : {
+          "cmp" : {
+            "type" : "value",
+            "value" : {
+              "data" : "equal to",
+              "type" : "Comparator"
+            }
+          },
+          "lhs" : {
+            "type" : "identifier",
+            "value" : {
+              "path" : [
+                "parameters",
+                "large"
+              ],
+              "type" : "Boolean"
+            }
+          },
+          "rhs" : {
+            "type" : "value",
+            "value" : {
+              "data" : true,
+              "type" : "Boolean"
+            }
+          }
+        },
+        "name" : "if(lhs, is cmp, rhs)"
+      },
+      "nodes" : [
+        {
+          "function" : {
+            "arguments" : {
+              "lhs" : {
+                "type" : "value",
+                "value" : {
+                  "data" : "display2",
+                  "type" : {
+                    "alias" : "TextStyle",
+                    "name" : "Named",
+                    "of" : "String"
+                  }
+                }
+              },
+              "rhs" : {
+                "type" : "identifier",
+                "value" : {
+                  "path" : [
+                    "layers",
+                    "Text",
+                    "textStyle"
+                  ],
+                  "type" : {
+                    "alias" : "TextStyle",
+                    "name" : "Named",
+                    "of" : "String"
+                  }
+                }
+              }
+            },
+            "name" : "assign(lhs, to rhs)"
+          },
+          "nodes" : [
+
+          ]
+        }
+      ]
+    }
+  ],
+  "metadata" : {
+
+  },
+  "parameters" : [
+    {
+      "defaultValue" : {
+        "data" : false,
+        "type" : "Boolean"
+      },
+      "name" : "large",
+      "type" : "Boolean"
+    }
+  ],
+  "rootLayer" : {
+    "children" : [
+      {
+        "children" : [
+
+        ],
+        "name" : "Text",
+        "parameters" : {
+          "font" : "headline",
+          "text" : "Text goes here"
+        },
+        "type" : "Text"
+      }
+    ],
+    "name" : "View",
+    "parameters" : {
+      "alignSelf" : "stretch",
+      "flex" : 0
+    },
+    "type" : "View"
+  }
+}

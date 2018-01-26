@@ -20,9 +20,6 @@ public class PrimaryAxis: UIView {
     fatalError("init(coder:) has not been implemented")
   }
 
-  // MARK: Public
-
-
   // MARK: Private
 
   private var fixedView = UIView(frame: .zero)
@@ -30,6 +27,8 @@ public class PrimaryAxis: UIView {
   private var textView = UILabel()
   private var fill1View = UIView(frame: .zero)
   private var fill2View = UIView(frame: .zero)
+
+  private var textViewTextStyle = TextStyles.body1
 
   private var topPadding: CGFloat = 24
   private var trailingPadding: CGFloat = 24
@@ -89,9 +88,9 @@ public class PrimaryAxis: UIView {
     fitView.addSubview(textView)
 
     fixedView.backgroundColor =
-    #colorLiteral(red: 0.847058823529, green: 0.847058823529, blue: 0.847058823529, alpha: 1)
+      #colorLiteral(red: 0.847058823529, green: 0.847058823529, blue: 0.847058823529, alpha: 1)
     fitView.backgroundColor = #colorLiteral(red: 0.847058823529, green: 0.847058823529, blue: 0.847058823529, alpha: 1)
-    textView.text = "Text goes here"
+    textView.attributedText = textViewTextStyle.apply(to: "Text goes here")
     fill1View.backgroundColor = Colors.cyan500
     fill2View.backgroundColor = Colors.blue500
   }

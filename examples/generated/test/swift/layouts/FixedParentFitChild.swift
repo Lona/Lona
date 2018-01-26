@@ -20,9 +20,6 @@ public class FixedParentFitChild: UIView {
     fatalError("init(coder:) has not been implemented")
   }
 
-  // MARK: Public
-
-
   // MARK: Private
 
   private var view1View = UIView(frame: .zero)

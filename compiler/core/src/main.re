@@ -2,6 +2,8 @@ open Node;
 
 [@bs.val] [@bs.module "fs-extra"] external ensureDirSync : string => unit = "";
 
+[@bs.val] [@bs.module "fs-extra"] external copySync : (string, string) => unit = "";
+
 let exit = (message) => {
   Js.log(message);
   [%bs.raw {|process.exit()|}]
@@ -46,7 +48,27 @@ let getTargetExtension =
 
 let targetExtension = getTargetExtension(target);
 
-let convertColors = (filename) => Color.parseFile(filename) |> Swift.Color.render(target);
+let renderColors = (target, colors) =>
+  switch target {
+  | Types.Swift => Swift.Color.render(colors)
+  | _ => ""
+  };
+
+let renderTextStyles = (target, colors, textStyles) =>
+  switch target {
+  | Types.Swift => Swift.TextStyle.render(colors, textStyles)
+  | _ => ""
+  };
+
+let convertColors = (target, filename) => Color.parseFile(filename) |> renderColors(target);
+
+let convertTextStyles = (filename) =>
+  switch (findWorkspaceDirectory(filename)) {
+  | None => exit("Couldn't find workspace directory. Try specifying it as a parameter (TODO)")
+  | Some(workspace) =>
+    let colors = Color.parseFile(Path.join([|workspace, "textStyles.json"|]));
+    TextStyle.parseFile(filename) |> Swift.TextStyle.render(colors)
+  };
 
 let convertComponent = (filename) => {
   let content = Fs.readFileSync(filename, `utf8);
@@ -59,20 +81,36 @@ let convertComponent = (filename) => {
     | None => exit("Couldn't find workspace directory. Try specifying it as a parameter (TODO)")
     | Some(workspace) =>
       let colors = Color.parseFile(Path.join([|workspace, "colors.json"|]));
-      let result = Swift.Component.generate(name, parsed, colors);
+      let textStyles = TextStyle.parseFile(Path.join([|workspace, "textStyles.json"|]));
+      let result = Swift.Component.generate(name, colors, textStyles, parsed);
       result |> Swift.Render.toString
     }
   }
 };
+
+let copyStaticFiles = (outputDirectory) =>
+  switch target {
+  | Types.Swift =>
+    copySync(
+      concat(NodeGlobal.__dirname, "../static/swift/AttributedFont.swift"),
+      concat(outputDirectory, "AttributedFont.swift")
+    )
+  | _ => ()
+  };
 
 let convertWorkspace = (workspace, output) => {
   let fromDirectory = Path.resolve([|workspace|]);
   let toDirectory = Path.resolve([|output|]);
   ensureDirSync(toDirectory);
   let colorsInputPath = concat(fromDirectory, "colors.json");
-  let colorsOutputPath = concat(toDirectory, "colors" ++ targetExtension);
-  let colors = Color.parseFile(colorsInputPath) |> Swift.Color.render(target);
-  Fs.writeFileSync(~filename=colorsOutputPath, ~text=colors);
+  let colorsOutputPath = concat(toDirectory, "Colors" ++ targetExtension);
+  let colors = Color.parseFile(colorsInputPath);
+  Fs.writeFileSync(~filename=colorsOutputPath, ~text=colors |> renderColors(target));
+  let textStylesInputPath = concat(fromDirectory, "textStyles.json");
+  let textStylesOutputPath = concat(toDirectory, "TextStyles" ++ targetExtension);
+  let textStyles = TextStyle.parseFile(textStylesInputPath) |> renderTextStyles(target, colors);
+  Fs.writeFileSync(~filename=textStylesOutputPath, ~text=textStyles);
+  copyStaticFiles(toDirectory);
   Glob.glob(
     concat(fromDirectory, "**/*.component"),
     (_, files) => {
@@ -91,9 +129,15 @@ let convertWorkspace = (workspace, output) => {
           ++ "=>"
           ++ Path.join([|output, toRelativePath|])
         );
-        let content = convertComponent(file);
-        ensureDirSync(Path.dirname(outputPath));
-        Fs.writeFileSync(~filename=outputPath, ~text=content)
+        switch (convertComponent(file)) {
+        | exception (Json_decode.DecodeError(reason)) =>
+          Js.log("Failed to decode " ++ file);
+          Js.log(reason)
+        | exception (Decode.UnknownParameter(name)) => Js.log("Unknown parameter: " ++ name)
+        | content =>
+          ensureDirSync(Path.dirname(outputPath));
+          Fs.writeFileSync(~filename=outputPath, ~text=content)
+        }
       };
       files |> List.iter(processFile)
     }
@@ -118,6 +162,6 @@ switch command {
   if (Array.length(Process.argv) < 5) {
     exit("No filename given")
   };
-  convertColors(Process.argv[4]) |> Js.log
+  convertColors(target, Process.argv[4]) |> Js.log
 | _ => Js.log2("Invalid command", command)
 };

@@ -10,16 +10,26 @@ var LodashUpperfirst               = require("lodash.upperfirst");
 var Layer$LonaCompilerCore         = require("../core/layer.bs.js");
 var Logic$LonaCompilerCore         = require("../core/logic.bs.js");
 var Decode$LonaCompilerCore        = require("../core/decode.bs.js");
+var LonaValue$LonaCompilerCore     = require("../core/lonaValue.bs.js");
 var StringMap$LonaCompilerCore     = require("../containers/stringMap.bs.js");
 var SwiftLogic$LonaCompilerCore    = require("./swiftLogic.bs.js");
 var SwiftFormat$LonaCompilerCore   = require("./swiftFormat.bs.js");
 var SwiftDocument$LonaCompilerCore = require("./swiftDocument.bs.js");
 
-function generate(name, json, colors) {
+function generate(name, colors, textStyles, json) {
   var rootLayer = Decode$LonaCompilerCore.Component[/* rootLayer */1](json);
   var nonRootLayers = List.tl(Layer$LonaCompilerCore.flatten(rootLayer));
   var logic = Decode$LonaCompilerCore.Component[/* logic */2](json);
-  var assignments = Layer$LonaCompilerCore.parameterAssignmentsFromLogic(rootLayer, logic);
+  var logic$1 = Logic$LonaCompilerCore.enforceSingleAssignment((function (_, path) {
+          return /* :: */[
+                  "_" + SwiftFormat$LonaCompilerCore.variableNameFromIdentifier(rootLayer[/* name */1], path),
+                  /* [] */0
+                ];
+        }), (function (_, path) {
+          return /* Literal */Block.__(1, [LonaValue$LonaCompilerCore.defaultValueForParameter(List.nth(path, 2))]);
+        }), logic);
+  var layerParameterAssignments = Layer$LonaCompilerCore.logicAssignmentsFromLayerParameters(rootLayer);
+  var assignments = Layer$LonaCompilerCore.parameterAssignmentsFromLogic(rootLayer, logic$1);
   var parameters = Decode$LonaCompilerCore.Component[/* parameters */0](json);
   var priorityName = function (param) {
     if (param !== 0) {
@@ -100,6 +110,26 @@ function generate(name, json, colors) {
                             /* [] */0
                           ]
                       }])],
+                block: /* None */0
+              }]);
+  };
+  var textStyleVariableDoc = function (layer) {
+    return /* VariableDeclaration */Block.__(7, [{
+                modifiers: /* :: */[
+                  /* AccessLevelModifier */Block.__(0, [/* PrivateModifier */0]),
+                  /* [] */0
+                ],
+                pattern: /* IdentifierPattern */Block.__(0, [{
+                      identifier: SwiftFormat$LonaCompilerCore.layerName(layer[/* name */1]) + "TextStyle",
+                      annotation: /* None */0
+                    }]),
+                init: /* Some */[/* MemberExpression */Block.__(1, [/* :: */[
+                        /* SwiftIdentifier */Block.__(5, ["TextStyles"]),
+                        /* :: */[
+                          /* SwiftIdentifier */Block.__(5, [textStyles[/* defaultStyle */1][/* id */0]]),
+                          /* [] */0
+                        ]
+                      ]])],
                 block: /* None */0
               }]);
   };
@@ -336,131 +366,23 @@ function generate(name, json, colors) {
       return SwiftFormat$LonaCompilerCore.layerName(parent[/* name */1]);
     }
   };
-  var initialLayerValue = function (layer, name) {
-    var match = StringMap$LonaCompilerCore.find_opt(name, layer[/* parameters */2]);
-    if (match) {
-      return SwiftDocument$LonaCompilerCore.lonaValue(colors, match[0]);
-    } else {
-      var param = name;
-      if (param === "backgroundColor") {
-        return /* MemberExpression */Block.__(1, [/* :: */[
-                    /* SwiftIdentifier */Block.__(5, ["UIColor"]),
-                    /* :: */[
-                      /* SwiftIdentifier */Block.__(5, ["clear"]),
-                      /* [] */0
-                    ]
-                  ]]);
-      } else {
-        return /* LiteralExpression */Block.__(0, [/* Integer */Block.__(1, [0])]);
-      }
-    }
-  };
   var defineInitialLayerValue = function (layer, param) {
     var name = param[0];
-    var match = initialLayerValue(layer, name);
-    var match$1;
-    var exit = 0;
-    switch (name) {
-      case "borderRadius" : 
-          if (typeof match === "number") {
-            exit = 1;
-          } else if (match.tag) {
-            exit = 1;
-          } else {
-            var tmp = match[0];
-            if (typeof tmp === "number" || tmp.tag !== 2) {
-              exit = 1;
-            } else {
-              match$1 = /* tuple */[
-                memberOrSelfExpression(parentNameOrSelf(layer), /* :: */[
-                      /* SwiftIdentifier */Block.__(5, ["layer"]),
-                      /* :: */[
-                        /* SwiftIdentifier */Block.__(5, ["cornerRadius"]),
-                        /* [] */0
-                      ]
-                    ]),
-                match
-              ];
-            }
-          }
-          break;
-      case "height" : 
-          if (typeof match === "number") {
-            exit = 1;
-          } else if (match.tag) {
-            exit = 1;
-          } else {
-            var tmp$1 = match[0];
-            if (typeof tmp$1 === "number" || tmp$1.tag !== 2) {
-              exit = 1;
-            } else {
-              match$1 = /* tuple */[
-                /* SwiftIdentifier */Block.__(5, [parentNameOrSelf(layer) + "HeightAnchorConstraint?.constant"]),
-                match
-              ];
-            }
-          }
-          break;
-      case "visible" : 
-          if (typeof match === "number") {
-            exit = 1;
-          } else if (match.tag) {
-            exit = 1;
-          } else {
-            var match$2 = match[0];
-            if (typeof match$2 === "number" || match$2.tag) {
-              exit = 1;
-            } else {
-              match$1 = /* tuple */[
-                memberOrSelfExpression(parentNameOrSelf(layer), /* :: */[
-                      /* SwiftIdentifier */Block.__(5, ["isHidden"]),
-                      /* [] */0
-                    ]),
-                /* LiteralExpression */Block.__(0, [/* Boolean */Block.__(0, [1 - match$2[0]])])
-              ];
-            }
-          }
-          break;
-      case "width" : 
-          if (typeof match === "number") {
-            exit = 1;
-          } else if (match.tag) {
-            exit = 1;
-          } else {
-            var tmp$2 = match[0];
-            if (typeof tmp$2 === "number" || tmp$2.tag !== 2) {
-              exit = 1;
-            } else {
-              match$1 = /* tuple */[
-                /* SwiftIdentifier */Block.__(5, [parentNameOrSelf(layer) + "WidthAnchorConstraint?.constant"]),
-                match
-              ];
-            }
-          }
-          break;
-      default:
-        exit = 1;
+    var parameters = Layer$LonaCompilerCore.LayerMap[/* find_opt */24](layer, layerParameterAssignments);
+    if (parameters) {
+      var assignment = StringMap$LonaCompilerCore.find_opt(name, parameters[0]);
+      var logic = assignment ? assignment[0] : Logic$LonaCompilerCore.defaultAssignmentForLayerParameter(colors, textStyles, layer, name);
+      var node = SwiftLogic$LonaCompilerCore.toSwiftAST(colors, textStyles, rootLayer, logic);
+      return /* StatementListHelper */Block.__(18, [node]);
+    } else {
+      return /* LineComment */Block.__(15, [layer[/* name */1]]);
     }
-    if (exit === 1) {
-      match$1 = /* tuple */[
-        memberOrSelfExpression(parentNameOrSelf(layer), /* :: */[
-              /* SwiftIdentifier */Block.__(5, [name]),
-              /* [] */0
-            ]),
-        match
-      ];
-    }
-    return /* BinaryExpression */Block.__(2, [{
-                left: match$1[0],
-                operator: "=",
-                right: match$1[1]
-              }]);
   };
   var setUpViewsDoc = function (root) {
     var setUpDefaultsDoc = function () {
       var filterParameters = function (param) {
         var name = param[0];
-        if (name !== "image" && name !== "textStyle" && name !== "flexDirection" && name !== "justifyContent" && name !== "alignSelf" && name !== "alignItems" && name !== "flex" && name !== "font" && !name.startsWith("padding") && !name.startsWith("margin") && name !== "height") {
+        if (name !== "image" && name !== "flexDirection" && name !== "justifyContent" && name !== "alignSelf" && name !== "alignItems" && name !== "flex" && !name.startsWith("padding") && !name.startsWith("margin") && name !== "height") {
           return +(name !== "width");
         } else {
           return /* false */0;
@@ -931,8 +853,11 @@ function generate(name, json, colors) {
                                     List.map(assignConstraint, constraints),
                                     /* :: */[
                                       /* :: */[
-                                        /* LineComment */Block.__(15, ["For debugging"]),
-                                        /* [] */0
+                                        /* Empty */0,
+                                        /* :: */[
+                                          /* LineComment */Block.__(15, ["For debugging"]),
+                                          /* [] */0
+                                        ]
                                       ],
                                       /* :: */[
                                         List.map(assignConstraintIdentifier, constraints),
@@ -952,13 +877,13 @@ function generate(name, json, colors) {
   var updateDoc = function () {
     var filterParameters = function (param) {
       var name = param[0];
-      if (name !== "image") {
-        return +(name !== "textStyle");
+      if (name !== "image" && !name.includes("margin")) {
+        return 1 - +name.includes("padding");
       } else {
         return /* false */0;
       }
     };
-    var conditionallyAssigned = Logic$LonaCompilerCore.conditionallyAssignedIdentifiers(logic);
+    var conditionallyAssigned = Logic$LonaCompilerCore.conditionallyAssignedIdentifiers(logic$1);
     var defineInitialLayerValues = function (param) {
       var layer = param[0];
       return List.map((function (param) {
@@ -989,42 +914,40 @@ function generate(name, json, colors) {
                   /* [] */0
                 ],
                 parameters: /* [] */0,
-                body: SwiftDocument$LonaCompilerCore.joinGroups(/* Empty */0, /* :: */[
-                      List.concat(List.map(defineInitialLayerValues, Curry._1(Layer$LonaCompilerCore.LayerMap[/* bindings */16], assignments))),
-                      /* :: */[
-                        SwiftLogic$LonaCompilerCore.toSwiftAST(colors, rootLayer, logic),
-                        /* [] */0
-                      ]
-                    ])
+                body: Pervasives.$at(List.concat(List.map(defineInitialLayerValues, Curry._1(Layer$LonaCompilerCore.LayerMap[/* bindings */16], assignments))), SwiftLogic$LonaCompilerCore.toSwiftAST(colors, textStyles, rootLayer, logic$1))
               }]);
   };
+  var textLayers = List.filter((function (layer) {
+            return +(layer[/* typeName */0] === /* Text */1);
+          }))(nonRootLayers);
+  var match = +(List.length(parameters) > 0);
   return /* TopLevelDeclaration */Block.__(19, [{
               statements: /* :: */[
                 /* ImportDeclaration */Block.__(10, ["UIKit"]),
                 /* :: */[
                   /* ImportDeclaration */Block.__(10, ["Foundation"]),
                   /* :: */[
-                    /* LineComment */Block.__(15, ["MARK: - " + name]),
+                    /* Empty */0,
                     /* :: */[
-                      /* Empty */0,
+                      /* LineComment */Block.__(15, ["MARK: - " + name]),
                       /* :: */[
-                        /* ClassDeclaration */Block.__(4, [{
-                              name: name,
-                              inherits: /* :: */[
-                                /* TypeName */Block.__(0, ["UIView"]),
-                                /* [] */0
-                              ],
-                              modifier: /* Some */[/* PublicModifier */3],
-                              isFinal: /* false */0,
-                              body: List.concat(/* :: */[
-                                    /* :: */[
-                                      /* LineComment */Block.__(15, ["MARK: Lifecycle"]),
-                                      /* [] */0
-                                    ],
-                                    /* :: */[
+                        /* Empty */0,
+                        /* :: */[
+                          /* ClassDeclaration */Block.__(4, [{
+                                name: name,
+                                inherits: /* :: */[
+                                  /* TypeName */Block.__(0, ["UIView"]),
+                                  /* [] */0
+                                ],
+                                modifier: /* Some */[/* PublicModifier */3],
+                                isFinal: /* false */0,
+                                body: SwiftDocument$LonaCompilerCore.joinGroups(/* Empty */0, /* :: */[
                                       /* :: */[
                                         /* Empty */0,
-                                        /* [] */0
+                                        /* :: */[
+                                          /* LineComment */Block.__(15, ["MARK: Lifecycle"]),
+                                          /* [] */0
+                                        ]
                                       ],
                                       /* :: */[
                                         /* :: */[
@@ -1033,104 +956,59 @@ function generate(name, json, colors) {
                                         ],
                                         /* :: */[
                                           /* :: */[
-                                            /* Empty */0,
+                                            initializerCoderDoc(/* () */0),
                                             /* [] */0
                                           ],
                                           /* :: */[
-                                            /* :: */[
-                                              initializerCoderDoc(/* () */0),
-                                              /* [] */0
-                                            ],
-                                            /* :: */[
-                                              /* :: */[
+                                            match !== 0 ? /* :: */[
                                                 /* LineComment */Block.__(15, ["MARK: Public"]),
                                                 /* [] */0
-                                              ],
+                                              ] : /* [] */0,
+                                            /* :: */[
+                                              List.map(parameterVariableDoc, parameters),
                                               /* :: */[
                                                 /* :: */[
-                                                  /* Empty */0,
+                                                  /* LineComment */Block.__(15, ["MARK: Private"]),
                                                   /* [] */0
                                                 ],
                                                 /* :: */[
-                                                  List.map(parameterVariableDoc, parameters),
+                                                  List.map(viewVariableDoc, nonRootLayers),
                                                   /* :: */[
+                                                    List.map(textStyleVariableDoc, textLayers),
                                                     /* :: */[
-                                                      /* LineComment */Block.__(15, ["MARK: Private"]),
-                                                      /* [] */0
-                                                    ],
-                                                    /* :: */[
+                                                      List.concat(Layer$LonaCompilerCore.flatmap(spacingVariableDoc, rootLayer)),
                                                       /* :: */[
-                                                        /* Empty */0,
-                                                        /* [] */0
-                                                      ],
-                                                      /* :: */[
-                                                        List.map(viewVariableDoc, nonRootLayers),
+                                                        List.map((function (def) {
+                                                                var variableName = def[/* variableName */0];
+                                                                return /* VariableDeclaration */Block.__(7, [{
+                                                                            modifiers: /* :: */[
+                                                                              /* AccessLevelModifier */Block.__(0, [/* PrivateModifier */0]),
+                                                                              /* [] */0
+                                                                            ],
+                                                                            pattern: /* IdentifierPattern */Block.__(0, [{
+                                                                                  identifier: variableName,
+                                                                                  annotation: /* Some */[/* OptionalType */Block.__(4, [/* TypeName */Block.__(0, ["NSLayoutConstraint"])])]
+                                                                                }]),
+                                                                            init: /* None */0,
+                                                                            block: /* None */0
+                                                                          }]);
+                                                              }), constraints),
                                                         /* :: */[
                                                           /* :: */[
-                                                            /* Empty */0,
+                                                            setUpViewsDoc(rootLayer),
                                                             /* [] */0
                                                           ],
                                                           /* :: */[
-                                                            List.concat(Layer$LonaCompilerCore.flatmap(spacingVariableDoc, rootLayer)),
+                                                            /* :: */[
+                                                              setUpConstraintsDoc(rootLayer),
+                                                              /* [] */0
+                                                            ],
                                                             /* :: */[
                                                               /* :: */[
-                                                                /* Empty */0,
+                                                                updateDoc(/* () */0),
                                                                 /* [] */0
                                                               ],
-                                                              /* :: */[
-                                                                List.map((function (def) {
-                                                                        var variableName = def[/* variableName */0];
-                                                                        return /* VariableDeclaration */Block.__(7, [{
-                                                                                    modifiers: /* :: */[
-                                                                                      /* AccessLevelModifier */Block.__(0, [/* PrivateModifier */0]),
-                                                                                      /* [] */0
-                                                                                    ],
-                                                                                    pattern: /* IdentifierPattern */Block.__(0, [{
-                                                                                          identifier: variableName,
-                                                                                          annotation: /* Some */[/* OptionalType */Block.__(4, [/* TypeName */Block.__(0, ["NSLayoutConstraint"])])]
-                                                                                        }]),
-                                                                                    init: /* None */0,
-                                                                                    block: /* None */0
-                                                                                  }]);
-                                                                      }), constraints),
-                                                                /* :: */[
-                                                                  /* :: */[
-                                                                    /* Empty */0,
-                                                                    /* [] */0
-                                                                  ],
-                                                                  /* :: */[
-                                                                    /* :: */[
-                                                                      setUpViewsDoc(rootLayer),
-                                                                      /* [] */0
-                                                                    ],
-                                                                    /* :: */[
-                                                                      /* :: */[
-                                                                        /* Empty */0,
-                                                                        /* [] */0
-                                                                      ],
-                                                                      /* :: */[
-                                                                        /* :: */[
-                                                                          setUpConstraintsDoc(rootLayer),
-                                                                          /* [] */0
-                                                                        ],
-                                                                        /* :: */[
-                                                                          /* :: */[
-                                                                            /* Empty */0,
-                                                                            /* [] */0
-                                                                          ],
-                                                                          /* :: */[
-                                                                            /* :: */[
-                                                                              updateDoc(/* () */0),
-                                                                              /* [] */0
-                                                                            ],
-                                                                            /* [] */0
-                                                                          ]
-                                                                        ]
-                                                                      ]
-                                                                    ]
-                                                                  ]
-                                                                ]
-                                                              ]
+                                                              /* [] */0
                                                             ]
                                                           ]
                                                         ]
@@ -1143,10 +1021,13 @@ function generate(name, json, colors) {
                                           ]
                                         ]
                                       ]
-                                    ]
-                                  ])
-                            }]),
-                        /* [] */0
+                                    ])
+                              }]),
+                          /* :: */[
+                            /* Empty */0,
+                            /* [] */0
+                          ]
+                        ]
                       ]
                     ]
                   ]

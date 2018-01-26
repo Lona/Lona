@@ -46,9 +46,14 @@
     | MemberExpression(v) =>
       v |> List.map(render) |> join(concat([softline, s(".")])) |> indent |> group
     | BinaryExpression(o) =>
-      group(render(o##left) <+> s(" ") <+> s(o##operator) <+> line <+> render(o##right))
+      group(render(o##left) <+> s(" ") <+> s(o##operator) <+> indent(line <+> render(o##right)))
     | PrefixExpression(o) =>
-      group(s(o##operator) <+> s("(") <+> softline <+> render(o##expression) <+> softline <+> s(")"))
+      switch (o##expression) {
+      | LiteralExpression(_)
+      | SwiftIdentifier(_)
+      | MemberExpression(_) => group(s(o##operator) <+> s(" ") <+> render(o##expression))
+      | _ => group(s(o##operator) <+> s("(") <+> softline <+> render(o##expression) <+> softline <+> s(")"))
+      };
     | ClassDeclaration(o) =>
       let maybeFinal = o##isFinal ? s("final") <+> line : empty;
       let maybeModifier = o##modifier != None ? concat([o##modifier |> Render.renderOptional(renderAccessLevelModifier), line]) : empty;
@@ -125,7 +130,8 @@
     | ImportDeclaration(v) => group(concat([s("import"), line, s(v)]))
     | IfStatement(o) =>
       group(
-        hardline <+> /* Line break here due to personal preference */
+        /* Line break here due to personal preference */
+        /* hardline <+>  */
         s("if") <+>
         line <+>
         render(o##condition) <+>
@@ -159,7 +165,7 @@
         ])
       )
     | Empty => empty /* This only works if lines are added between statements... */
-    | LineComment(v) => hardline <+> s("// " ++ v)
+    | LineComment(v) => s("// " ++ v)
     | LineEndComment(o) =>
       /* concat([render(o##line), lineSuffix(s(" // " ++ o##comment)), lineSuffixBoundary]) */
       concat([render(o##line), lineSuffix(s(" // " ++ o##comment))])
@@ -173,8 +179,8 @@
         hardline <+>
         s("}")
       };
-    | StatementListHelper(v) => /* TODO: Get rid of this */
-      join(hardline, v |> List.map(render)) <+> lineSuffix(s(" // StatementListHelper"))
+    | StatementListHelper(v) => /* TODO: Get rid of this? */
+      join(hardline, v |> List.map(render))
     | TopLevelDeclaration(o) =>
       /* join(concat([hardline, hardline]), o##statements |> List.map(render)) */
       join(concat([hardline]), o##statements |> List.map(render))

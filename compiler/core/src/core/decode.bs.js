@@ -6,6 +6,7 @@ var Curry                      = require("bs-platform/lib/js/curry.js");
 var Js_json                    = require("bs-platform/lib/js/js_json.js");
 var Js_option                  = require("bs-platform/lib/js/js_option.js");
 var Json_decode                = require("bs-json/src/Json_decode.js");
+var Caml_exceptions            = require("bs-platform/lib/js/caml_exceptions.js");
 var Types$LonaCompilerCore     = require("./types.bs.js");
 var Caml_builtin_exceptions    = require("bs-platform/lib/js/caml_builtin_exceptions.js");
 var StringMap$LonaCompilerCore = require("../containers/stringMap.bs.js");
@@ -13,17 +14,17 @@ var StringMap$LonaCompilerCore = require("../containers/stringMap.bs.js");
 var parameterTypeMap = StringMap$LonaCompilerCore.fromList(/* :: */[
       /* tuple */[
         "text",
-        /* Reference */Block.__(0, ["String"])
+        Types$LonaCompilerCore.stringType
       ],
       /* :: */[
         /* tuple */[
           "visible",
-          /* Reference */Block.__(0, ["Boolean"])
+          Types$LonaCompilerCore.booleanType
         ],
         /* :: */[
           /* tuple */[
             "numberOfLines",
-            /* Reference */Block.__(0, ["Number"])
+            Types$LonaCompilerCore.numberType
           ],
           /* :: */[
             /* tuple */[
@@ -38,87 +39,87 @@ var parameterTypeMap = StringMap$LonaCompilerCore.fromList(/* :: */[
               /* :: */[
                 /* tuple */[
                   "alignItems",
-                  /* Reference */Block.__(0, ["String"])
+                  Types$LonaCompilerCore.stringType
                 ],
                 /* :: */[
                   /* tuple */[
                     "alignSelf",
-                    /* Reference */Block.__(0, ["String"])
+                    Types$LonaCompilerCore.stringType
                   ],
                   /* :: */[
                     /* tuple */[
                       "flex",
-                      /* Reference */Block.__(0, ["Number"])
+                      Types$LonaCompilerCore.numberType
                     ],
                     /* :: */[
                       /* tuple */[
                         "flexDirection",
-                        /* Reference */Block.__(0, ["String"])
+                        Types$LonaCompilerCore.stringType
                       ],
                       /* :: */[
                         /* tuple */[
                           "font",
-                          /* Reference */Block.__(0, ["String"])
+                          Types$LonaCompilerCore.textStyleType
                         ],
                         /* :: */[
                           /* tuple */[
                             "justifyContent",
-                            /* Reference */Block.__(0, ["String"])
+                            Types$LonaCompilerCore.stringType
                           ],
                           /* :: */[
                             /* tuple */[
                               "marginTop",
-                              /* Reference */Block.__(0, ["Number"])
+                              Types$LonaCompilerCore.numberType
                             ],
                             /* :: */[
                               /* tuple */[
                                 "marginRight",
-                                /* Reference */Block.__(0, ["Number"])
+                                Types$LonaCompilerCore.numberType
                               ],
                               /* :: */[
                                 /* tuple */[
                                   "marginBottom",
-                                  /* Reference */Block.__(0, ["Number"])
+                                  Types$LonaCompilerCore.numberType
                                 ],
                                 /* :: */[
                                   /* tuple */[
                                     "marginLeft",
-                                    /* Reference */Block.__(0, ["Number"])
+                                    Types$LonaCompilerCore.numberType
                                   ],
                                   /* :: */[
                                     /* tuple */[
                                       "paddingTop",
-                                      /* Reference */Block.__(0, ["Number"])
+                                      Types$LonaCompilerCore.numberType
                                     ],
                                     /* :: */[
                                       /* tuple */[
                                         "paddingRight",
-                                        /* Reference */Block.__(0, ["Number"])
+                                        Types$LonaCompilerCore.numberType
                                       ],
                                       /* :: */[
                                         /* tuple */[
                                           "paddingBottom",
-                                          /* Reference */Block.__(0, ["Number"])
+                                          Types$LonaCompilerCore.numberType
                                         ],
                                         /* :: */[
                                           /* tuple */[
                                             "paddingLeft",
-                                            /* Reference */Block.__(0, ["Number"])
+                                            Types$LonaCompilerCore.numberType
                                           ],
                                           /* :: */[
                                             /* tuple */[
                                               "borderRadius",
-                                              /* Reference */Block.__(0, ["Number"])
+                                              Types$LonaCompilerCore.numberType
                                             ],
                                             /* :: */[
                                               /* tuple */[
                                                 "width",
-                                                /* Reference */Block.__(0, ["Number"])
+                                                Types$LonaCompilerCore.numberType
                                               ],
                                               /* :: */[
                                                 /* tuple */[
                                                   "height",
-                                                  /* Reference */Block.__(0, ["Number"])
+                                                  Types$LonaCompilerCore.numberType
                                                 ],
                                                 /* [] */0
                                               ]
@@ -144,14 +145,18 @@ var parameterTypeMap = StringMap$LonaCompilerCore.fromList(/* :: */[
       ]
     ]);
 
+var UnknownParameter = Caml_exceptions.create("Decode-LonaCompilerCore.UnknownParameter");
+
 function parameterType(name) {
   try {
     return Curry._2(StringMap$LonaCompilerCore.find, name, parameterTypeMap);
   }
   catch (exn){
     if (exn === Caml_builtin_exceptions.not_found) {
-      console.log("Unknown built-in parameter when deserializing:", name);
-      return /* Reference */Block.__(0, ["BuiltIn-Null"]);
+      throw [
+            UnknownParameter,
+            name
+          ];
     } else {
       throw exn;
     }
@@ -233,6 +238,8 @@ var Layer = /* module */[
   /* layer */layer
 ];
 
+var UnknownLogicValue = Caml_exceptions.create("Decode-LonaCompilerCore.UnknownLogicValue");
+
 function logicNode(json) {
   var cmp = function (json) {
     var match = Json_decode.string(json);
@@ -274,14 +281,17 @@ function logicNode(json) {
                   /* data */data
                 ]]);
     };
-    var match = Json_decode.field("type", Json_decode.string, json);
-    switch (match) {
+    var value$1 = Json_decode.field("type", Json_decode.string, json);
+    switch (value$1) {
       case "identifier" : 
           return Json_decode.field("value", identifier, json);
       case "value" : 
           return Json_decode.field("value", literal, json);
       default:
-        return /* None */0;
+        throw [
+              UnknownLogicValue,
+              value$1
+            ];
     }
   };
   var nodes = Curry._1(Json_decode.at(/* :: */[
@@ -353,7 +363,7 @@ function logicNode(json) {
                         "rhs",
                         /* [] */0
                       ], value),
-                  /* Block */Block.__(5, [nodes])
+                  /* Block */Block.__(6, [nodes])
                 ]);
     case "if(value)" : 
         return /* IfExists */Block.__(1, [
@@ -361,7 +371,7 @@ function logicNode(json) {
                         "value",
                         /* [] */0
                       ], value),
-                  /* Block */Block.__(5, [nodes])
+                  /* Block */Block.__(6, [nodes])
                 ]);
     default:
       return /* None */0;
@@ -379,7 +389,7 @@ function rootLayer(json) {
 }
 
 function logic(json) {
-  return /* Block */Block.__(5, [Json_decode.field("logic", (function (param) {
+  return /* Block */Block.__(6, [Json_decode.field("logic", (function (param) {
                     return Json_decode.list(logicNode, param);
                   }), json)]);
 }
@@ -390,17 +400,31 @@ var Component = /* module */[
   /* logic */logic
 ];
 
+var booleanType = Types$LonaCompilerCore.booleanType;
+
+var numberType = Types$LonaCompilerCore.numberType;
+
+var stringType = Types$LonaCompilerCore.stringType;
+
 var colorType = Types$LonaCompilerCore.colorType;
+
+var textStyleType = Types$LonaCompilerCore.textStyleType;
 
 var urlType = Types$LonaCompilerCore.urlType;
 
-exports.colorType        = colorType;
-exports.urlType          = urlType;
-exports.parameterTypeMap = parameterTypeMap;
-exports.parameterType    = parameterType;
-exports.Types            = Types;
-exports.Parameters       = Parameters;
-exports.Layer            = Layer;
-exports.logicNode        = logicNode;
-exports.Component        = Component;
+exports.booleanType       = booleanType;
+exports.numberType        = numberType;
+exports.stringType        = stringType;
+exports.colorType         = colorType;
+exports.textStyleType     = textStyleType;
+exports.urlType           = urlType;
+exports.parameterTypeMap  = parameterTypeMap;
+exports.UnknownParameter  = UnknownParameter;
+exports.parameterType     = parameterType;
+exports.Types             = Types;
+exports.Parameters        = Parameters;
+exports.Layer             = Layer;
+exports.UnknownLogicValue = UnknownLogicValue;
+exports.logicNode         = logicNode;
+exports.Component         = Component;
 /* parameterTypeMap Not a pure module */

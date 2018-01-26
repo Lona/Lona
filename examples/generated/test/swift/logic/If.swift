@@ -28,9 +28,6 @@ public class If: UIView {
 
   // MARK: Private
 
-
-
-
   private func setUpViews() {}
 
   private func setUpConstraints() {
@@ -44,11 +41,10 @@ public class If: UIView {
   }
 
   private func update() {
-    backgroundColor = UIColor.clear
-
-
-    if enabled == true {
-      backgroundColor = Colors.red500
+    var _backgroundColor = #colorLiteral(red: 0, green: 0, blue: 0, alpha: 0)
+    if enabled {
+      _backgroundColor = Colors.red500
     }
+    backgroundColor = _backgroundColor
   }
 }

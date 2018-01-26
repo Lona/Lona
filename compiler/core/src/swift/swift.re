@@ -8,4 +8,6 @@ module Render = SwiftRender;
 
 module Color = SwiftColor;
 
+module TextStyle = SwiftTextStyle;
+
 module Component = SwiftComponent;

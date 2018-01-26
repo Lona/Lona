@@ -1,7 +1,6 @@
 type logicValue =
   | Identifier(Types.lonaType, list(string))
-  | Literal(Types.lonaValue)
-  | None;
+  | Literal(Types.lonaValue);
 
 type logicNode =
   | If(logicValue, Types.cmp, logicValue, logicNode)
@@ -9,6 +8,7 @@ type logicNode =
   | Assign(logicValue, logicValue)
   | Add(logicValue, logicValue, logicValue)
   | Let(logicValue)
+  | LetEqual(logicValue, logicValue)
   | Block(list(logicNode))
   | None;
 
@@ -38,6 +38,7 @@ module LogicTree =
         | IfExists(_, value) => [value]
         | Block(body) => body
         | Let(_) => []
+        | LetEqual(_, _) => []
         | None => []
         };
       let restore = (node, contents) => {
@@ -49,23 +50,21 @@ module LogicTree =
         | IfExists(a, _) => IfExists(a, at(0))
         | Block(_) => Block(contents)
         | Let(_) => node
+        | LetEqual(_, _) => node
         | None => node
         }
       };
     }
   );
 
-/* TODO: This only looks at assignments */
-let undeclaredIdentifiers = (node) => {
-  let inner = (node, identifiers) =>
-    switch node {
-    | Assign(_, Identifier(type_, path)) => IdentifierSet.add((type_, path), identifiers)
-    | _ => identifiers
-    };
-  LogicTree.reduce(inner, IdentifierSet.empty, node)
-};
+let getValueType = (value) =>
+  switch value {
+  | Identifier(ltype, _) => ltype
+  | Literal(lvalue) => lvalue.ltype
+  };
 
-let assignedIdentifiers = (node) => {
+/* TODO: This only looks at assignments */
+let accessedIdentifiers = (node) => {
   let inner = (node, identifiers) =>
     switch node {
     | Assign(_, Identifier(type_, path)) => IdentifierSet.add((type_, path), identifiers)
@@ -75,7 +74,7 @@ let assignedIdentifiers = (node) => {
 };
 
 let conditionallyAssignedIdentifiers = (rootNode) => {
-  let identifiers = undeclaredIdentifiers(rootNode);
+  let identifiers = accessedIdentifiers(rootNode);
   let paths = identifiers |> IdentifierSet.elements;
   let rec isAlwaysAssigned = (target, node) =>
     switch node {
@@ -89,9 +88,8 @@ let conditionallyAssignedIdentifiers = (rootNode) => {
   paths |> List.fold_left(accumulate, IdentifierSet.empty)
 };
 
-/* let testNode = Assign(Identifier(Reference("OK"), ["a"]), Identifier(Reference("OK"), ["b"])); */
 let addVariableDeclarations = (node) => {
-  let identifiers = undeclaredIdentifiers(node);
+  let identifiers = accessedIdentifiers(node);
   identifiers
   |> IdentifierSet.elements
   |> List.map(((type_, path)) => Let(Identifier(type_, path)))
@@ -100,4 +98,78 @@ let addVariableDeclarations = (node) => {
          LogicTree.insert_child((item) => item == acc ? Some(declaration) : None, acc),
        node
      )
+};
+
+let prepend = (newNode, node) => Block([newNode, node]);
+
+let append = (newNode, node) => Block([node, newNode]);
+
+let setIdentiferName = (name, value) =>
+  switch value {
+  | Identifier(lonaType, _) => Identifier(lonaType, name)
+  | _ => value
+  };
+
+let replaceIdentifierName = (oldName, newName, value) =>
+  switch value {
+  | Identifier(lonaType, name) when name == oldName => Identifier(lonaType, newName)
+  | _ => value
+  };
+
+let rec replaceIdentifiersNamed = (oldName, newName, node) => {
+  let replace = replaceIdentifierName(oldName, newName);
+  let replaceChild = replaceIdentifiersNamed(oldName, newName);
+  switch node {
+  | If(a, cmp, b, body) => If(replace(a), cmp, replace(b), body |> replaceChild)
+  | IfExists(a, body) => IfExists(replace(a), body |> replaceChild)
+  | Assign(a, b) => Assign(replace(a), replace(b))
+  | Add(a, b, c) => Add(replace(a), replace(b), replace(c))
+  | Let(a) => Let(replace(a))
+  | LetEqual(a, b) => LetEqual(replace(a), replace(b))
+  | Block(body) => Block(body |> List.map(replaceChild))
+  | None => node
+  }
+};
+
+let addIntermediateVariable = (identifier, newName, defaultValue, node) => {
+  let ltype = getValueType(identifier);
+  let oldName =
+    switch identifier {
+    | Identifier(_, oldName) => oldName
+    | Literal(_) => raise(Not_found)
+    };
+  let newVariable = Identifier(ltype, newName);
+  let node =
+    Block([
+      LetEqual(newVariable, defaultValue),
+      replaceIdentifiersNamed(oldName, newName, node),
+      Assign(newVariable, identifier)
+    ]);
+  node
+};
+
+let defaultValueForLayerParameter = (colors, textStyles: TextStyle.file, layer, parameterName) =>
+  switch parameterName {
+  | "font"
+  | "textStyle" => LonaValue.textStyle(textStyles.defaultStyle.id)
+  | "backgroundColor" => LonaValue.color("transparent")
+  | _ => LonaValue.defaultValueForParameter(parameterName)
+  };
+
+let defaultAssignmentForLayerParameter =
+    (colors, textStyles: TextStyle.file, layer: Types.layer, parameterName) => {
+  let value = defaultValueForLayerParameter(colors, textStyles, layer, parameterName);
+  let receiver = Identifier(value.ltype, ["layers", layer.name, parameterName]);
+  let source = Literal(value);
+  Assign(source, receiver)
+};
+
+let enforceSingleAssignment = (getIntermediateName, getDefaultValue, node) => {
+  let identifiers = conditionallyAssignedIdentifiers(node);
+  let addVariable = (node, (lonaType, name)) => {
+    let newName = getIntermediateName(lonaType, name);
+    let defaultValue = getDefaultValue(lonaType, name);
+    node |> addIntermediateVariable(Identifier(lonaType, name), newName, defaultValue)
+  };
+  List.fold_left(addVariable, node, identifiers |> IdentifierSet.elements)
 };
