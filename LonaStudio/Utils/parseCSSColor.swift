@@ -193,6 +193,7 @@ func parseCSSColor(_ css_str: String) -> CSSColor? {
 
         var alpha: Double = 1;  // To allow case fallthrough.
 
+        // swiftlint:disable fallthrough
         switch fname {
         case "rgba":
             if params.count != 4 { return nil }
@@ -229,6 +230,7 @@ func parseCSSColor(_ css_str: String) -> CSSColor? {
         default:
             return nil
         }
+        // swiftlint:enable fallthrough
     }
 
     return nil

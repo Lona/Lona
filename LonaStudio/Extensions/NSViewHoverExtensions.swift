@@ -21,19 +21,17 @@ private struct AssociatedKeys {
 extension Hoverable where Self: NSView {
 
     var trackingArea: NSTrackingArea {
-        get {
-            if let tracking = objc_getAssociatedObject(self, &AssociatedKeys.HoverKey) as? NSTrackingArea {
-                return tracking
-            }
-            let tracking = NSTrackingArea(rect: CGRect.zero,
-                                          options: [NSTrackingArea.Options.inVisibleRect,
-                                                    NSTrackingArea.Options.mouseEnteredAndExited,
-                                                    NSTrackingArea.Options.activeAlways],
-                                          owner: self,
-                                          userInfo: nil)
-            objc_setAssociatedObject(self, &AssociatedKeys.HoverKey, tracking, .OBJC_ASSOCIATION_RETAIN_NONATOMIC)
+        if let tracking = objc_getAssociatedObject(self, &AssociatedKeys.HoverKey) as? NSTrackingArea {
             return tracking
         }
+        let tracking = NSTrackingArea(rect: CGRect.zero,
+                                      options: [NSTrackingArea.Options.inVisibleRect,
+                                                NSTrackingArea.Options.mouseEnteredAndExited,
+                                                NSTrackingArea.Options.activeAlways],
+                                      owner: self,
+                                      userInfo: nil)
+        objc_setAssociatedObject(self, &AssociatedKeys.HoverKey, tracking, .OBJC_ASSOCIATION_RETAIN_NONATOMIC)
+        return tracking
     }
 
     func startTrackingHover() {
