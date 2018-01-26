@@ -174,4 +174,4 @@ function render(colors, textStyles) {
 }
 
 exports.render = render;
-/* TextStyle-LonaCompilerCore Not a pure module */
+/* SwiftRender-LonaCompilerCore Not a pure module */

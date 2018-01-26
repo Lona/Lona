@@ -123,9 +123,10 @@ function convertColors(target, content) {
 function convertTextStyles(target, filename) {
   var match = findWorkspaceDirectory(filename);
   if (match) {
-    var colorsFile = Fs.readFileSync(Path.join(match[0], "textStyles.json"), "utf8");
+    var colorsFile = Fs.readFileSync(Path.join(match[0], "colors.json"), "utf8");
     var colors = Color$LonaCompilerCore.parseFile(colorsFile);
-    return renderTextStyles(target, colors, TextStyle$LonaCompilerCore.parseFile(filename));
+    var textStylesFile = Fs.readFileSync(filename, "utf8");
+    return renderTextStyles(target, colors, TextStyle$LonaCompilerCore.parseFile(textStylesFile));
   } else {
     console.log("Couldn't find workspace directory. Try specifying it as a parameter (TODO)");
     return (process.exit(1));
@@ -143,8 +144,10 @@ function convertComponent(filename) {
         var match = findWorkspaceDirectory(filename);
         if (match) {
           var workspace = match[0];
-          var colors = Color$LonaCompilerCore.parseFile(Path.join(workspace, "colors.json"));
-          var textStyles = TextStyle$LonaCompilerCore.parseFile(Path.join(workspace, "textStyles.json"));
+          var colorsFile = Fs.readFileSync(Path.join(workspace, "colors.json"), "utf8");
+          var colors = Color$LonaCompilerCore.parseFile(colorsFile);
+          var textStylesFile = Fs.readFileSync(Path.join(workspace, "textStyles.json"), "utf8");
+          var textStyles = TextStyle$LonaCompilerCore.parseFile(textStylesFile);
           return SwiftRender$LonaCompilerCore.toString(SwiftComponent$LonaCompilerCore.generate(name, colors, textStyles, parsed));
         } else {
           console.log("Couldn't find workspace directory. Try specifying it as a parameter (TODO)");
@@ -174,11 +177,12 @@ function convertWorkspace(workspace, output) {
   FsExtra.ensureDirSync(toDirectory);
   var colorsInputPath = Path.join(fromDirectory, "colors.json");
   var colorsOutputPath = Path.join(toDirectory, "Colors" + targetExtension);
-  var colors = Color$LonaCompilerCore.parseFile(colorsInputPath);
+  var colors = Color$LonaCompilerCore.parseFile(Fs.readFileSync(colorsInputPath, "utf8"));
   Fs.writeFileSync(colorsOutputPath, renderColors(target, colors));
   var textStylesInputPath = Path.join(fromDirectory, "textStyles.json");
   var textStylesOutputPath = Path.join(toDirectory, "TextStyles" + targetExtension);
-  var textStyles = renderTextStyles(target, colors, TextStyle$LonaCompilerCore.parseFile(textStylesInputPath));
+  var textStylesFile = Fs.readFileSync(textStylesInputPath, "utf8");
+  var textStyles = renderTextStyles(target, colors, TextStyle$LonaCompilerCore.parseFile(textStylesFile));
   Fs.writeFileSync(textStylesOutputPath, textStyles);
   copyStaticFiles(toDirectory);
   Glob(Path.join(fromDirectory, "**/*.component"), (function (_, files) {

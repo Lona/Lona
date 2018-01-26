@@ -100,4 +100,4 @@ function lonaValue(colors, textStyles, value) {
 exports.join       = join;
 exports.joinGroups = joinGroups;
 exports.lonaValue  = lonaValue;
-/* TextStyle-LonaCompilerCore Not a pure module */
+/* No side effect */

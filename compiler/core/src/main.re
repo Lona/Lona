@@ -77,9 +77,10 @@ let convertTextStyles = (target, filename) =>
     )
   | Some(workspace) =>
     let colorsFile =
-      Node.Fs.readFileSync(Path.join([|workspace, "textStyles.json"|]), `utf8);
+      Node.Fs.readFileSync(Path.join([|workspace, "colors.json"|]), `utf8);
     let colors = Color.parseFile(colorsFile);
-    TextStyle.parseFile(filename) |> renderTextStyles(target, colors);
+    let textStylesFile = Node.Fs.readFileSync(filename, `utf8);
+    TextStyle.parseFile(textStylesFile) |> renderTextStyles(target, colors);
   };
 
 let convertComponent = filename => {
@@ -96,9 +97,15 @@ let convertComponent = filename => {
         "Couldn't find workspace directory. Try specifying it as a parameter (TODO)"
       )
     | Some(workspace) =>
-      let colors = Color.parseFile(Path.join([|workspace, "colors.json"|]));
-      let textStyles =
-        TextStyle.parseFile(Path.join([|workspace, "textStyles.json"|]));
+      let colorsFile =
+        Node.Fs.readFileSync(Path.join([|workspace, "colors.json"|]), `utf8);
+      let colors = Color.parseFile(colorsFile);
+      let textStylesFile =
+        Node.Fs.readFileSync(
+          Path.join([|workspace, "textStyles.json"|]),
+          `utf8
+        );
+      let textStyles = TextStyle.parseFile(textStylesFile);
       let result = Swift.Component.generate(name, colors, textStyles, parsed);
       result |> Swift.Render.toString;
     }
@@ -122,7 +129,7 @@ let convertWorkspace = (workspace, output) => {
   ensureDirSync(toDirectory);
   let colorsInputPath = concat(fromDirectory, "colors.json");
   let colorsOutputPath = concat(toDirectory, "Colors" ++ targetExtension);
-  let colors = Color.parseFile(colorsInputPath);
+  let colors = Color.parseFile(Node.Fs.readFileSync(colorsInputPath, `utf8));
   Fs.writeFileSync(
     ~filename=colorsOutputPath,
     ~text=colors |> renderColors(target)
@@ -130,9 +137,9 @@ let convertWorkspace = (workspace, output) => {
   let textStylesInputPath = concat(fromDirectory, "textStyles.json");
   let textStylesOutputPath =
     concat(toDirectory, "TextStyles" ++ targetExtension);
+  let textStylesFile = Node.Fs.readFileSync(textStylesInputPath, `utf8);
   let textStyles =
-    TextStyle.parseFile(textStylesInputPath)
-    |> renderTextStyles(target, colors);
+    TextStyle.parseFile(textStylesFile) |> renderTextStyles(target, colors);
   Fs.writeFileSync(~filename=textStylesOutputPath, ~text=textStyles);
   copyStaticFiles(toDirectory);
   Glob.glob(
