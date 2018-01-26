@@ -145,12 +145,7 @@ class LayerList: NSOutlineView {
             return
         }
 
-<<<<<<< HEAD
         documentController.openDocument(withContentsOf: url, display: true, completionHandler: { (_, _, _) in
-=======
-        documentController.openDocument(withContentsOf: url, display: true, completionHandler: { (document, documentWasAlreadyOpen, error) in
->>>>>>> 3ae83dd... Clean warning #1
-
             let componentLayer = self.createComponentLayer(from: url)
             self.replace(layer: layer, with: componentLayer)
 
