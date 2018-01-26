@@ -235,6 +235,13 @@ function flatmap(f, layer) {
               }), layer);
 }
 
+function flatmapParameters(f, layer) {
+  var parameterLists = flatmapParent((function (_, layer) {
+          return Curry._1(StringMap$LonaCompilerCore.bindings, layer[/* parameters */2]);
+        }), layer);
+  return List.map(Curry._1(f, layer), List.concat(parameterLists));
+}
+
 function getFlexDirection(layer) {
   var exit = 0;
   var value;
@@ -421,7 +428,7 @@ function getInsets(prefix, layer) {
           Caml_builtin_exceptions.match_failure,
           [
             "/Users/devin_abbott/Projects/ComponentStudio/ComponentStudio/compiler/core/src/core/layer.re",
-            149,
+            155,
             6
           ]
         ];
@@ -438,7 +445,7 @@ function getMargin(param) {
 }
 
 function parameterAssignmentsFromLogic(layer, node) {
-  var identifiers = Logic$LonaCompilerCore.undeclaredIdentifiers(node);
+  var identifiers = Logic$LonaCompilerCore.accessedIdentifiers(node);
   return List.fold_left((function (acc, item) {
                 if (item.tag) {
                   return acc;
@@ -483,6 +490,44 @@ function parameterAssignmentsFromLogic(layer, node) {
                   }), Curry._1(Logic$LonaCompilerCore.IdentifierSet[/* elements */19], identifiers)));
 }
 
+function logicAssignmentsFromLayerParameters(layer) {
+  var layerMap = [empty];
+  flatmapParent((function (_, layer) {
+          var layer$1 = layer;
+          var stringMap = [StringMap$LonaCompilerCore.empty];
+          var extractParameter = function (param) {
+            var lonaValue = param[1];
+            var parameterName = param[0];
+            var receiver_000 = lonaValue[/* ltype */0];
+            var receiver_001 = /* :: */[
+              "layers",
+              /* :: */[
+                layer$1[/* name */1],
+                /* :: */[
+                  parameterName,
+                  /* [] */0
+                ]
+              ]
+            ];
+            var receiver = /* Identifier */Block.__(0, [
+                receiver_000,
+                receiver_001
+              ]);
+            var source = /* Literal */Block.__(1, [lonaValue]);
+            var assignment = /* Assign */Block.__(2, [
+                source,
+                receiver
+              ]);
+            stringMap[0] = Curry._3(StringMap$LonaCompilerCore.add, parameterName, assignment, stringMap[0]);
+            return /* () */0;
+          };
+          List.iter(extractParameter, Curry._1(StringMap$LonaCompilerCore.bindings, layer$1[/* parameters */2]));
+          layerMap[0] = Curry._3(add, layer$1, stringMap[0], layerMap[0]);
+          return /* () */0;
+        }), layer);
+  return layerMap[0];
+}
+
 function parameterIsStyle(name) {
   return StringSet$LonaCompilerCore.has(name, stylesSet);
 }
@@ -523,27 +568,29 @@ function mapBindings(f, map) {
   return List.map(f, Curry._1(StringMap$LonaCompilerCore.bindings, map));
 }
 
-exports.LayerMap                      = LayerMap;
-exports.stylesSet                     = stylesSet;
-exports.flatten                       = flatten;
-exports.find                          = find$1;
-exports.findByName                    = findByName;
-exports.flatmapParent                 = flatmapParent;
-exports.findParent                    = findParent;
-exports.flatmap                       = flatmap;
-exports.getFlexDirection              = getFlexDirection;
-exports.getStringParameterOpt         = getStringParameterOpt;
-exports.getNumberParameterOpt         = getNumberParameterOpt;
-exports.getNumberParameter            = getNumberParameter;
-exports.getSizingRules                = getSizingRules;
-exports.printSizingRule               = printSizingRule;
-exports.getInsets                     = getInsets;
-exports.getPadding                    = getPadding;
-exports.getMargin                     = getMargin;
-exports.parameterAssignmentsFromLogic = parameterAssignmentsFromLogic;
-exports.parameterIsStyle              = parameterIsStyle;
-exports.splitParamsMap                = splitParamsMap;
-exports.parameterMapToLogicValueMap   = parameterMapToLogicValueMap;
-exports.layerTypeToString             = layerTypeToString;
-exports.mapBindings                   = mapBindings;
+exports.LayerMap                            = LayerMap;
+exports.stylesSet                           = stylesSet;
+exports.flatten                             = flatten;
+exports.find                                = find$1;
+exports.findByName                          = findByName;
+exports.flatmapParent                       = flatmapParent;
+exports.findParent                          = findParent;
+exports.flatmap                             = flatmap;
+exports.flatmapParameters                   = flatmapParameters;
+exports.getFlexDirection                    = getFlexDirection;
+exports.getStringParameterOpt               = getStringParameterOpt;
+exports.getNumberParameterOpt               = getNumberParameterOpt;
+exports.getNumberParameter                  = getNumberParameter;
+exports.getSizingRules                      = getSizingRules;
+exports.printSizingRule                     = printSizingRule;
+exports.getInsets                           = getInsets;
+exports.getPadding                          = getPadding;
+exports.getMargin                           = getMargin;
+exports.parameterAssignmentsFromLogic       = parameterAssignmentsFromLogic;
+exports.logicAssignmentsFromLayerParameters = logicAssignmentsFromLayerParameters;
+exports.parameterIsStyle                    = parameterIsStyle;
+exports.splitParamsMap                      = splitParamsMap;
+exports.parameterMapToLogicValueMap         = parameterMapToLogicValueMap;
+exports.layerTypeToString                   = layerTypeToString;
+exports.mapBindings                         = mapBindings;
 /* include Not a pure module */

@@ -363,7 +363,7 @@ function logicNode(json) {
                         "rhs",
                         /* [] */0
                       ], value),
-                  /* Block */Block.__(5, [nodes])
+                  /* Block */Block.__(6, [nodes])
                 ]);
     case "if(value)" : 
         return /* IfExists */Block.__(1, [
@@ -371,7 +371,7 @@ function logicNode(json) {
                         "value",
                         /* [] */0
                       ], value),
-                  /* Block */Block.__(5, [nodes])
+                  /* Block */Block.__(6, [nodes])
                 ]);
     default:
       return /* None */0;
@@ -389,7 +389,7 @@ function rootLayer(json) {
 }
 
 function logic(json) {
-  return /* Block */Block.__(5, [Json_decode.field("logic", (function (param) {
+  return /* Block */Block.__(6, [Json_decode.field("logic", (function (param) {
                     return Json_decode.list(logicNode, param);
                   }), json)]);
 }

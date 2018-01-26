@@ -26,6 +26,13 @@ let generate = (name, colors, textStyles: TextStyle.file, json) => {
   /* Remove the root element */
   let nonRootLayers = rootLayer |> Layer.flatten |> List.tl;
   let logic = json |> Decode.Component.logic;
+  let logic =
+    Logic.enforceSingleAssignment(
+      (_, path) => ["_" ++ Format.variableNameFromIdentifier(rootLayer.name, path)],
+      (_, path) => Logic.Literal(LonaValue.defaultValueForParameter(List.nth(path, 2))),
+      logic
+    );
+  let layerParameterAssignments = Layer.logicAssignmentsFromLayerParameters(rootLayer);
   let assignments = Layer.parameterAssignmentsFromLogic(rootLayer, logic);
   let parameters = json |> Decode.Component.parameters;
   open Ast;
@@ -279,94 +286,21 @@ let generate = (name, colors, textStyles: TextStyle.file, json) => {
         SwiftIdentifier(textStyles.defaultStyle.id)
       ])
     | _ => LiteralExpression(Integer(0));
-  let initialLayerValue = (layer: Types.layer, name) =>
-    switch (StringMap.find_opt(name, layer.parameters)) {
-    | Some(value) => Document.lonaValue(colors, textStyles, value)
-    | None => defaultValueForParameter(name)
-    };
-  let defineInitialLayerValue = (layer: Types.layer, (name, _)) =>
-    switch (name, initialLayerValue(layer, name)) {
-    | ("visible", LiteralExpression(Boolean(value))) =>
-      BinaryExpression({
-        "left": layerMemberExpression(layer, [SwiftIdentifier("isHidden")]),
-        "operator": "=",
-        "right": LiteralExpression(Boolean(! value))
-      })
-    | ("text", LiteralExpression(String(value))) =>
-      BinaryExpression({
-        "left": layerMemberExpression(layer, [SwiftIdentifier("attributedText")]),
-        "operator": "=",
-        "right":
-          MemberExpression([
-            SwiftIdentifier((layer.name |> Format.layerName) ++ "TextStyle"),
-            FunctionCallExpression({
-              "name": SwiftIdentifier("apply"),
-              "arguments": [
-                FunctionCallArgument({
-                  "name": Some(SwiftIdentifier("to")),
-                  "value": LiteralExpression(String(value))
-                })
-              ]
-            })
-          ])
-      })
-    | ("font", right) =>
-      BinaryExpression({
-        "left": SwiftIdentifier((layer.name |> Format.layerName) ++ "TextStyle"),
-        "operator": "=",
-        "right": right
-      })
-    | ("textStyle", right) =>
-      Ast.StatementListHelper([
-        BinaryExpression({
-          "left": SwiftIdentifier((layer.name |> Format.layerName) ++ "TextStyle"),
-          "operator": "=",
-          "right": initialLayerValue(layer, "font")
-        }),
-        BinaryExpression({
-          "left": layerMemberExpression(layer, [SwiftIdentifier("attributedText")]),
-          "operator": "=",
-          "right":
-            MemberExpression([
-              SwiftIdentifier((layer.name |> Format.layerName) ++ "TextStyle"),
-              FunctionCallExpression({
-                "name": SwiftIdentifier("apply"),
-                "arguments": [
-                  FunctionCallArgument({
-                    "name": Some(SwiftIdentifier("to")),
-                    "value": layerMemberExpression(layer, [SwiftIdentifier("text ?? \"\"")])
-                  })
-                ]
-              })
-            ])
-        })
-      ])
-    | ("borderRadius", LiteralExpression(FloatingPoint(_)) as right) =>
-      BinaryExpression({
-        "left":
-          layerMemberExpression(layer, [SwiftIdentifier("layer"), SwiftIdentifier("cornerRadius")]),
-        "operator": "=",
-        "right": right
-      })
-    | ("height", LiteralExpression(FloatingPoint(_)) as right) =>
-      BinaryExpression({
-        "left": SwiftIdentifier(parentNameOrSelf(layer) ++ "HeightAnchorConstraint?.constant"),
-        "operator": "=",
-        "right": right
-      })
-    | ("width", LiteralExpression(FloatingPoint(_)) as right) =>
-      BinaryExpression({
-        "left": SwiftIdentifier(parentNameOrSelf(layer) ++ "WidthAnchorConstraint?.constant"),
-        "operator": "=",
-        "right": right
-      })
-    | (_, right) =>
-      BinaryExpression({
-        "left": layerMemberExpression(layer, [SwiftIdentifier(name)]),
-        "operator": "=",
-        "right": right
-      })
-    };
+  let defineInitialLayerValue = (layer: Types.layer, (name, _)) => {
+    let parameters = Layer.LayerMap.find_opt(layer, layerParameterAssignments);
+    switch parameters {
+    | None => LineComment(layer.name)
+    | Some(parameters) =>
+      let assignment = StringMap.find_opt(name, parameters);
+      let logic =
+        switch assignment {
+        | None => Logic.defaultAssignmentForLayerParameter(colors, textStyles, layer, name)
+        | Some(assignment) => assignment
+        };
+      let node = SwiftLogic.toSwiftAST(colors, textStyles, rootLayer, logic);
+      StatementListHelper(node)
+    }
+  };
   let setUpViewsDoc = (root: Types.layer) => {
     let setUpDefaultsDoc = () => {
       let filterParameters = ((name, _)) =>
@@ -845,16 +779,13 @@ let generate = (name, colors, textStyles: TextStyle.file, json) => {
       "modifiers": [AccessLevelModifier(PrivateModifier)],
       "parameters": [],
       "body":
-        Document.joinGroups(
-          Empty,
-          [
-            assignments
-            |> Layer.LayerMap.bindings
-            |> List.map(defineInitialLayerValues)
-            |> List.concat,
-            SwiftLogic.toSwiftAST(colors, textStyles, rootLayer, logic)
-          ]
+        (
+          assignments
+          |> Layer.LayerMap.bindings
+          |> List.map(defineInitialLayerValues)
+          |> List.concat
         )
+        @ SwiftLogic.toSwiftAST(colors, textStyles, rootLayer, logic)
     })
   };
   let textLayers =

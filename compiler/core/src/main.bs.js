@@ -87,8 +87,24 @@ function getTargetExtension(param) {
 
 var targetExtension = getTargetExtension(target);
 
-function convertColors(filename) {
-  return SwiftColor$LonaCompilerCore.render(Color$LonaCompilerCore.parseFile(filename));
+function renderColors(target, colors) {
+  if (target !== 0) {
+    return SwiftColor$LonaCompilerCore.render(colors);
+  } else {
+    return "";
+  }
+}
+
+function renderTextStyles(target, colors, textStyles) {
+  if (target !== 0) {
+    return SwiftTextStyle$LonaCompilerCore.render(colors, textStyles);
+  } else {
+    return "";
+  }
+}
+
+function convertColors(target, filename) {
+  return renderColors(target, Color$LonaCompilerCore.parseFile(filename));
 }
 
 function convertTextStyles(filename) {
@@ -139,10 +155,10 @@ function convertWorkspace(workspace, output) {
   var colorsInputPath = Path.join(fromDirectory, "colors.json");
   var colorsOutputPath = Path.join(toDirectory, "Colors" + targetExtension);
   var colors = Color$LonaCompilerCore.parseFile(colorsInputPath);
-  Fs.writeFileSync(colorsOutputPath, SwiftColor$LonaCompilerCore.render(colors));
+  Fs.writeFileSync(colorsOutputPath, renderColors(target, colors));
   var textStylesInputPath = Path.join(fromDirectory, "textStyles.json");
   var textStylesOutputPath = Path.join(toDirectory, "TextStyles" + targetExtension);
-  var textStyles = SwiftTextStyle$LonaCompilerCore.render(colors, TextStyle$LonaCompilerCore.parseFile(textStylesInputPath));
+  var textStyles = renderTextStyles(target, colors, TextStyle$LonaCompilerCore.parseFile(textStylesInputPath));
   Fs.writeFileSync(textStylesOutputPath, textStyles);
   copyStaticFiles(toDirectory);
   Glob(Path.join(fromDirectory, "**/*.component"), (function (_, files) {
@@ -192,7 +208,7 @@ switch (command) {
         ((process.exit()));
       }
       var filename = Caml_array.caml_array_get(Process.argv, 4);
-      console.log(SwiftColor$LonaCompilerCore.render(Color$LonaCompilerCore.parseFile(filename)));
+      console.log(renderColors(target, Color$LonaCompilerCore.parseFile(filename)));
       break;
   case "component" : 
       if (Process.argv.length < 5) {
@@ -223,6 +239,8 @@ exports.findWorkspaceDirectory = findWorkspaceDirectory;
 exports.concat                 = concat;
 exports.getTargetExtension     = getTargetExtension;
 exports.targetExtension        = targetExtension;
+exports.renderColors           = renderColors;
+exports.renderTextStyles       = renderTextStyles;
 exports.convertColors          = convertColors;
 exports.convertTextStyles      = convertTextStyles;
 exports.convertComponent       = convertComponent;

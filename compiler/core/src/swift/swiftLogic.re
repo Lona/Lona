@@ -28,11 +28,28 @@ let toSwiftAST = (colors, textStyles, rootLayer: Types.layer, logicRootNode) => 
       }
     | _ => SwiftIdentifier("BadIdentifier")
     };
-  let logicValueToSwiftAST = (x) =>
-    switch x {
-    | Logic.Identifier(_) => identifierName(x)
-    | Literal(value) => Document.lonaValue(colors, textStyles, value)
-    };
+  let logicValueToSwiftAST = (x) => {
+    let initialValue =
+      switch x {
+      | Logic.Identifier(_) => identifierName(x)
+      | Literal(value) => Document.lonaValue(colors, textStyles, value)
+      };
+    /* Here is the only place we should handle Logic -> Swift identifier conversion */
+    switch initialValue {
+    | Ast.SwiftIdentifier(name)
+        when name |> Js.String.includes("margin") || name |> Js.String.includes("padding") =>
+      Ast.LineComment("TODO: Margin & padding")
+    | Ast.SwiftIdentifier(name) when name |> Js.String.toLowerCase |> Js.String.endsWith("image") =>
+      Ast.LineComment("TODO: Images")
+    | Ast.SwiftIdentifier(name) when name |> Js.String.endsWith("borderRadius") =>
+      Ast.SwiftIdentifier(name |> Js.String.replace("borderRadius", "layer.cornerRadius"))
+    | Ast.SwiftIdentifier(name) when name |> Js.String.endsWith("height") =>
+      Ast.SwiftIdentifier(name |> Js.String.replace(".height", "HeightAnchorConstraint?.constant"))
+    | Ast.SwiftIdentifier(name) when name |> Js.String.endsWith("width") =>
+      Ast.SwiftIdentifier(name |> Js.String.replace(".width", "WidthAnchorConstraint?.constant"))
+    | _ => initialValue
+    }
+  };
   let typeAnnotationDoc =
     fun
     | Types.Reference(typeName) =>
@@ -59,44 +76,28 @@ let toSwiftAST = (colors, textStyles, rootLayer: Types.layer, logicRootNode) => 
     switch logicRootNode {
     | Logic.Assign(a, b) =>
       switch (logicValueToSwiftAST(b), logicValueToSwiftAST(a)) {
-      | (Ast.SwiftIdentifier(name), _)
-          when name |> Js.String.includes("margin") || name |> Js.String.includes("padding") =>
-        Ast.LineComment("TODO: Margin & padding")
-      | (Ast.SwiftIdentifier(name), _) when name |> Js.String.includes("image") =>
-        Ast.LineComment("TODO: Images")
-      | (Ast.SwiftIdentifier(name), LiteralExpression(Boolean(value)))
-          when name |> Js.String.endsWith("visible") =>
+      | (Ast.SwiftIdentifier(name), other) when name |> Js.String.endsWith("visible") =>
         Ast.BinaryExpression({
           "left": Ast.SwiftIdentifier(name |> Js.String.replace("visible", "isHidden")),
           "operator": "=",
-          "right": Ast.LiteralExpression(Boolean(! value))
+          "right": Ast.PrefixExpression({operator: "!", expression: other})
         })
-      | (Ast.SwiftIdentifier(name), right) when name |> Js.String.endsWith("textStyle") =>
+      | (other, Ast.SwiftIdentifier(name)) when name |> Js.String.endsWith("visible") =>
+        Ast.BinaryExpression({
+          "left": Ast.PrefixExpression({operator: "!", expression: other}),
+          "operator": "=",
+          "right": Ast.SwiftIdentifier(name |> Js.String.replace("visible", "isHidden"))
+        })
+      | (Ast.SwiftIdentifier(name), right)
+          when name |> Js.String.endsWith("textStyle") || name |> Js.String.endsWith("font") =>
+        let name = name |> Js.String.replace(".font", ".textStyle");
+        /* TODO: We need to make sure we assign to attributed text at the end of the update
+           function if we assign to textStyle */
         Ast.StatementListHelper([
           Ast.BinaryExpression({
             "left": Ast.SwiftIdentifier(name |> Js.String.replace(".textStyle", "TextStyle")),
             "operator": "=",
             "right": right
-          }),
-          Ast.BinaryExpression({
-            "left": Ast.SwiftIdentifier(name |> Js.String.replace(".textStyle", ".attributedText")),
-            "operator": "=",
-            "right":
-              Ast.MemberExpression([
-                Ast.SwiftIdentifier(name |> Js.String.replace(".textStyle", "TextStyle")),
-                Ast.FunctionCallExpression({
-                  "name": Ast.SwiftIdentifier("apply"),
-                  "arguments": [
-                    Ast.FunctionCallArgument({
-                      "name": Some(Ast.SwiftIdentifier("to")),
-                      "value":
-                        Ast.SwiftIdentifier(
-                          name |> Js.String.replace(".textStyle", ".text ?? \"\"")
-                        )
-                    })
-                  ]
-                })
-              ])
           })
         ])
       | (Ast.SwiftIdentifier(name), right) when name |> Js.String.endsWith("text") =>
@@ -116,31 +117,6 @@ let toSwiftAST = (colors, textStyles, rootLayer: Types.layer, logicRootNode) => 
                 ]
               })
             ])
-        })
-      | (Ast.SwiftIdentifier(name), right) when name |> Js.String.endsWith("borderRadius") =>
-        Ast.BinaryExpression({
-          "left":
-            Ast.SwiftIdentifier(name |> Js.String.replace("borderRadius", "layer.cornerRadius")),
-          "operator": "=",
-          "right": right
-        })
-      | (Ast.SwiftIdentifier(name), right) when name |> Js.String.endsWith("height") =>
-        Ast.BinaryExpression({
-          "left":
-            Ast.SwiftIdentifier(
-              name |> Js.String.replace(".height", "HeightAnchorConstraint?.constant")
-            ),
-          "operator": "=",
-          "right": right
-        })
-      | (Ast.SwiftIdentifier(name), right) when name |> Js.String.endsWith("width") =>
-        Ast.BinaryExpression({
-          "left":
-            Ast.SwiftIdentifier(
-              name |> Js.String.replace(".width", "WidthAnchorConstraint?.constant")
-            ),
-          "operator": "=",
-          "right": right
         })
       | (left, right) => Ast.BinaryExpression({"left": left, "operator": "=", "right": right})
       }
@@ -196,6 +172,24 @@ let toSwiftAST = (colors, textStyles, rootLayer: Types.layer, logicRootNode) => 
             }),
           "init": (None: option(Ast.node)),
           "block": (None: option(Ast.initializerBlock))
+        })
+      | _ => Empty
+      }
+    | LetEqual(left, right) =>
+      /* TODO: This shouldn't just call into other nodes */
+      let value = Logic.Assign(left, right);
+      let variableName = Logic.Let(left);
+      switch (left, variableName |> inner, value |> inner) {
+      | (Identifier(_, path), Ast.VariableDeclaration(a), Ast.BinaryExpression(b)) =>
+        Ast.VariableDeclaration({
+          "modifiers": a##modifiers,
+          "pattern":
+            Ast.IdentifierPattern({
+              "identifier": List.fold_left((a, b) => a ++ "." ++ b, List.hd(path), List.tl(path)),
+              "annotation": None
+            }),
+          "init": Some(b##left),
+          "block": a##block
         })
       | _ => Empty
       }

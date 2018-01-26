@@ -48,7 +48,19 @@ let getTargetExtension =
 
 let targetExtension = getTargetExtension(target);
 
-let convertColors = (filename) => Color.parseFile(filename) |> Swift.Color.render;
+let renderColors = (target, colors) =>
+  switch target {
+  | Types.Swift => Swift.Color.render(colors)
+  | _ => ""
+  };
+
+let renderTextStyles = (target, colors, textStyles) =>
+  switch target {
+  | Types.Swift => Swift.TextStyle.render(colors, textStyles)
+  | _ => ""
+  };
+
+let convertColors = (target, filename) => Color.parseFile(filename) |> renderColors(target);
 
 let convertTextStyles = (filename) =>
   switch (findWorkspaceDirectory(filename)) {
@@ -93,10 +105,10 @@ let convertWorkspace = (workspace, output) => {
   let colorsInputPath = concat(fromDirectory, "colors.json");
   let colorsOutputPath = concat(toDirectory, "Colors" ++ targetExtension);
   let colors = Color.parseFile(colorsInputPath);
-  Fs.writeFileSync(~filename=colorsOutputPath, ~text=colors |> Swift.Color.render);
+  Fs.writeFileSync(~filename=colorsOutputPath, ~text=colors |> renderColors(target));
   let textStylesInputPath = concat(fromDirectory, "textStyles.json");
   let textStylesOutputPath = concat(toDirectory, "TextStyles" ++ targetExtension);
-  let textStyles = TextStyle.parseFile(textStylesInputPath) |> Swift.TextStyle.render(colors);
+  let textStyles = TextStyle.parseFile(textStylesInputPath) |> renderTextStyles(target, colors);
   Fs.writeFileSync(~filename=textStylesOutputPath, ~text=textStyles);
   copyStaticFiles(toDirectory);
   Glob.glob(
@@ -118,15 +130,14 @@ let convertWorkspace = (workspace, output) => {
           ++ Path.join([|output, toRelativePath|])
         );
         switch (convertComponent(file)) {
-        | exception Json_decode.DecodeError(reason) =>
+        | exception (Json_decode.DecodeError(reason)) =>
           Js.log("Failed to decode " ++ file);
           Js.log(reason)
-        | exception Decode.UnknownParameter(name) =>
-          Js.log("Unknown parameter: " ++ name);
+        | exception (Decode.UnknownParameter(name)) => Js.log("Unknown parameter: " ++ name)
         | content =>
           ensureDirSync(Path.dirname(outputPath));
           Fs.writeFileSync(~filename=outputPath, ~text=content)
-        };
+        }
       };
       files |> List.iter(processFile)
     }
@@ -151,6 +162,6 @@ switch command {
   if (Array.length(Process.argv) < 5) {
     exit("No filename given")
   };
-  convertColors(Process.argv[4]) |> Js.log
+  convertColors(target, Process.argv[4]) |> Js.log
 | _ => Js.log2("Invalid command", command)
 };

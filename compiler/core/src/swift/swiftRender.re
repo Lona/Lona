@@ -48,7 +48,12 @@
     | BinaryExpression(o) =>
       group(render(o##left) <+> s(" ") <+> s(o##operator) <+> indent(line <+> render(o##right)))
     | PrefixExpression(o) =>
-      group(s(o##operator) <+> s("(") <+> softline <+> render(o##expression) <+> softline <+> s(")"))
+      switch (o##expression) {
+      | LiteralExpression(_)
+      | SwiftIdentifier(_)
+      | MemberExpression(_) => group(s(o##operator) <+> s(" ") <+> render(o##expression))
+      | _ => group(s(o##operator) <+> s("(") <+> softline <+> render(o##expression) <+> softline <+> s(")"))
+      };
     | ClassDeclaration(o) =>
       let maybeFinal = o##isFinal ? s("final") <+> line : empty;
       let maybeModifier = o##modifier != None ? concat([o##modifier |> Render.renderOptional(renderAccessLevelModifier), line]) : empty;
@@ -125,7 +130,8 @@
     | ImportDeclaration(v) => group(concat([s("import"), line, s(v)]))
     | IfStatement(o) =>
       group(
-        hardline <+> /* Line break here due to personal preference */
+        /* Line break here due to personal preference */
+        /* hardline <+>  */
         s("if") <+>
         line <+>
         render(o##condition) <+>
