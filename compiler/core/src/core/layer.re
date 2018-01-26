@@ -202,23 +202,6 @@ let logicAssignmentsFromLayerParameters = (layer) => {
   layerMap^
 };
 
-/* let ensureVariableAssignment = (colors, textStyles, layer, node) => {
-     let updated = ref(node);
-     let mapLayer = (layer: Types.layer, (parameterName, value)) => {
-       updated :=
-         Logic.enforceSingleAssignment(
-           (_, _) => [layer.name ++ parameterName ++ "ref"],
-           (_, _) =>
-             Logic.Literal(
-               Logic.defaultValueForLayerParameter(colors, textStyles, layer, parameterName)
-             ),
-           node
-         );
-       ()
-     };
-     let _ = layer |> flatmapParameters(mapLayer);
-     updated^
-   }; */
 let parameterIsStyle = (name) => StringSet.has(name, stylesSet);
 
 let splitParamsMap = (params) => params |> StringMap.partition((key, _) => parameterIsStyle(key));

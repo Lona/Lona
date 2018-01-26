@@ -163,7 +163,10 @@ function render(colors, textStyles) {
                               isFinal: /* false */0,
                               body: Pervasives.$at(List.map(textStyleConstantDoc, textStyles[/* styles */0]), defaultStyleDoc(textStyles[/* defaultStyle */1]))
                             }]),
-                        /* [] */0
+                        /* :: */[
+                          /* Empty */0,
+                          /* [] */0
+                        ]
                       ]
                     ]
                   ]

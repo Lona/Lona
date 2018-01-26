@@ -127,7 +127,8 @@ let render = (colors, textStyles: TextStyle.file) => {
           "body":
             (textStyles.styles |> List.map(textStyleConstantDoc))
             @ (textStyles.defaultStyle |> defaultStyleDoc)
-        })
+        }),
+        Empty
       ]
     });
   SwiftRender.toString(doc)

@@ -22,7 +22,8 @@ let render = (colors) => {
           "modifier": None,
           "isFinal": false,
           "body": colors |> List.map(colorConstantDoc)
-        })
+        }),
+        Empty
       ]
     });
   SwiftRender.toString(doc)

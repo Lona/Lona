@@ -38,7 +38,10 @@ function render(colors) {
                               isFinal: /* false */0,
                               body: List.map(colorConstantDoc, colors)
                             }]),
-                        /* [] */0
+                        /* :: */[
+                          /* Empty */0,
+                          /* [] */0
+                        ]
                       ]
                     ]
                   ]

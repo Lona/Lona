@@ -88,7 +88,6 @@ let conditionallyAssignedIdentifiers = (rootNode) => {
   paths |> List.fold_left(accumulate, IdentifierSet.empty)
 };
 
-/* let testNode = Assign(Identifier(Reference("OK"), ["a"]), Identifier(Reference("OK"), ["b"])); */
 let addVariableDeclarations = (node) => {
   let identifiers = accessedIdentifiers(node);
   identifiers
@@ -105,11 +104,6 @@ let prepend = (newNode, node) => Block([newNode, node]);
 
 let append = (newNode, node) => Block([node, newNode]);
 
-/* let declareVariable = (lonaType, name, node) => {
-     let lonaValue = Identifier(lonaType, name);
-     let letNode = Let(lonaValue);
-     prepend(letNode, node)
-   }; */
 let setIdentiferName = (name, value) =>
   switch value {
   | Identifier(lonaType, _) => Identifier(lonaType, name)

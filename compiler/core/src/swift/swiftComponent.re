@@ -821,7 +821,8 @@ let generate = (name, colors, textStyles: TextStyle.file, json) => {
               [updateDoc()]
             ]
           )
-      })
+      }),
+      Empty
     ]
   })
 };

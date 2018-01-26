@@ -1023,7 +1023,10 @@ function generate(name, colors, textStyles, json) {
                                       ]
                                     ])
                               }]),
-                          /* [] */0
+                          /* :: */[
+                            /* Empty */0,
+                            /* [] */0
+                          ]
                         ]
                       ]
                     ]
