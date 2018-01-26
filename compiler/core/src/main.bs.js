@@ -9,10 +9,12 @@ var $$Array                              = require("bs-platform/lib/js/array.js"
 var Js_exn                               = require("bs-platform/lib/js/js_exn.js");
 var Process                              = require("process");
 var FsExtra                              = require("fs-extra");
+var GetStdin                             = require("get-stdin");
 var Caml_array                           = require("bs-platform/lib/js/caml_array.js");
 var Json_decode                          = require("bs-json/src/Json_decode.js");
 var Color$LonaCompilerCore               = require("./core/color.bs.js");
 var Decode$LonaCompilerCore              = require("./core/decode.bs.js");
+var XmlColor$LonaCompilerCore            = require("./xml/xmlColor.bs.js");
 var TextStyle$LonaCompilerCore           = require("./core/textStyle.bs.js");
 var SwiftColor$LonaCompilerCore          = require("./swift/swiftColor.bs.js");
 var SwiftRender$LonaCompilerCore         = require("./swift/swiftRender.bs.js");
@@ -23,19 +25,19 @@ var JavaScriptComponent$LonaCompilerCore = require("./javaScript/javaScriptCompo
 
 function exit(message) {
   console.log(message);
-  return (process.exit());
+  return (process.exit(1));
 }
 
 if (Process.argv.length < 3) {
   console.log("No command given");
-  ((process.exit()));
+  ((process.exit(1)));
 }
 
 var command = Caml_array.caml_array_get(Process.argv, 2);
 
 if (Process.argv.length < 4) {
   console.log("No target given");
-  ((process.exit()));
+  ((process.exit(1)));
 }
 
 var match = Caml_array.caml_array_get(Process.argv, 3);
@@ -49,9 +51,12 @@ switch (match) {
   case "swift" : 
       target = /* Swift */1;
       break;
+  case "xml" : 
+      target = /* Xml */2;
+      break;
   default:
     console.log("Unrecognized target");
-    target = (process.exit());
+    target = (process.exit(1));
 }
 
 function findWorkspaceDirectory(_path) {
@@ -78,43 +83,52 @@ function concat(base, addition) {
 }
 
 function getTargetExtension(param) {
-  if (param !== 0) {
-    return ".swift";
-  } else {
-    return ".js";
+  switch (param) {
+    case 0 : 
+        return ".js";
+    case 1 : 
+        return ".swift";
+    case 2 : 
+        return ".xml";
+    
   }
 }
 
 var targetExtension = getTargetExtension(target);
 
 function renderColors(target, colors) {
-  if (target !== 0) {
-    return SwiftColor$LonaCompilerCore.render(colors);
-  } else {
-    return "";
+  switch (target) {
+    case 0 : 
+        return "";
+    case 1 : 
+        return SwiftColor$LonaCompilerCore.render(colors);
+    case 2 : 
+        return XmlColor$LonaCompilerCore.render(colors);
+    
   }
 }
 
 function renderTextStyles(target, colors, textStyles) {
-  if (target !== 0) {
-    return SwiftTextStyle$LonaCompilerCore.render(colors, textStyles);
-  } else {
+  if (target !== 1) {
     return "";
+  } else {
+    return SwiftTextStyle$LonaCompilerCore.render(colors, textStyles);
   }
 }
 
-function convertColors(target, filename) {
-  return renderColors(target, Color$LonaCompilerCore.parseFile(filename));
+function convertColors(target, content) {
+  return renderColors(target, Color$LonaCompilerCore.parseFile(content));
 }
 
-function convertTextStyles(filename) {
+function convertTextStyles(target, filename) {
   var match = findWorkspaceDirectory(filename);
   if (match) {
-    var colors = Color$LonaCompilerCore.parseFile(Path.join(match[0], "textStyles.json"));
-    return SwiftTextStyle$LonaCompilerCore.render(colors, TextStyle$LonaCompilerCore.parseFile(filename));
+    var colorsFile = Fs.readFileSync(Path.join(match[0], "textStyles.json"), "utf8");
+    var colors = Color$LonaCompilerCore.parseFile(colorsFile);
+    return renderTextStyles(target, colors, TextStyle$LonaCompilerCore.parseFile(filename));
   } else {
     console.log("Couldn't find workspace directory. Try specifying it as a parameter (TODO)");
-    return (process.exit());
+    return (process.exit(1));
   }
 }
 
@@ -122,28 +136,34 @@ function convertComponent(filename) {
   var content = Fs.readFileSync(filename, "utf8");
   var parsed = JSON.parse(content);
   var name = Path.basename(filename, ".component");
-  if (target !== 0) {
-    var match = findWorkspaceDirectory(filename);
-    if (match) {
-      var workspace = match[0];
-      var colors = Color$LonaCompilerCore.parseFile(Path.join(workspace, "colors.json"));
-      var textStyles = TextStyle$LonaCompilerCore.parseFile(Path.join(workspace, "textStyles.json"));
-      return SwiftRender$LonaCompilerCore.toString(SwiftComponent$LonaCompilerCore.generate(name, colors, textStyles, parsed));
-    } else {
-      console.log("Couldn't find workspace directory. Try specifying it as a parameter (TODO)");
-      return (process.exit());
-    }
-  } else {
-    return JavaScriptRender$LonaCompilerCore.toString(JavaScriptComponent$LonaCompilerCore.generate(name, parsed));
+  switch (target) {
+    case 0 : 
+        return JavaScriptRender$LonaCompilerCore.toString(JavaScriptComponent$LonaCompilerCore.generate(name, parsed));
+    case 1 : 
+        var match = findWorkspaceDirectory(filename);
+        if (match) {
+          var workspace = match[0];
+          var colors = Color$LonaCompilerCore.parseFile(Path.join(workspace, "colors.json"));
+          var textStyles = TextStyle$LonaCompilerCore.parseFile(Path.join(workspace, "textStyles.json"));
+          return SwiftRender$LonaCompilerCore.toString(SwiftComponent$LonaCompilerCore.generate(name, colors, textStyles, parsed));
+        } else {
+          console.log("Couldn't find workspace directory. Try specifying it as a parameter (TODO)");
+          return (process.exit(1));
+        }
+        break;
+    case 2 : 
+        console.log("Unrecognized target");
+        return (process.exit(1));
+    
   }
 }
 
 function copyStaticFiles(outputDirectory) {
-  if (target !== 0) {
-    var base = __dirname;
-    FsExtra.copySync(Path.join(base, "../static/swift/AttributedFont.swift"), Path.join(outputDirectory, "AttributedFont.swift"));
+  if (target !== 1) {
     return /* () */0;
   } else {
+    var base = __dirname;
+    FsExtra.copySync(Path.join(base, "../static/swift/AttributedFont.swift"), Path.join(outputDirectory, "AttributedFont.swift"));
     return /* () */0;
   }
 }
@@ -204,27 +224,30 @@ function convertWorkspace(workspace, output) {
 switch (command) {
   case "colors" : 
       if (Process.argv.length < 5) {
-        console.log("No filename given");
-        ((process.exit()));
+        var render = function (content) {
+          return Promise.resolve((console.log(renderColors(target, Color$LonaCompilerCore.parseFile(content))), /* () */0));
+        };
+        GetStdin().then(render);
+      } else {
+        var content = Fs.readFileSync(Caml_array.caml_array_get(Process.argv, 4), "utf8");
+        console.log(renderColors(target, Color$LonaCompilerCore.parseFile(content)));
       }
-      var filename = Caml_array.caml_array_get(Process.argv, 4);
-      console.log(renderColors(target, Color$LonaCompilerCore.parseFile(filename)));
       break;
   case "component" : 
       if (Process.argv.length < 5) {
         console.log("No filename given");
-        ((process.exit()));
+        ((process.exit(1)));
       }
       console.log(convertComponent(Caml_array.caml_array_get(Process.argv, 4)));
       break;
   case "workspace" : 
       if (Process.argv.length < 5) {
         console.log("No workspace path given");
-        ((process.exit()));
+        ((process.exit(1)));
       }
       if (Process.argv.length < 6) {
         console.log("No output path given");
-        ((process.exit()));
+        ((process.exit(1)));
       }
       convertWorkspace(Caml_array.caml_array_get(Process.argv, 4), Caml_array.caml_array_get(Process.argv, 5));
       break;

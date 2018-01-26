@@ -50,9 +50,9 @@ function lonaValue(colors, textStyles, value) {
           var match$1 = Color$LonaCompilerCore.find(colors, rawValue);
           if (match$1) {
             return /* MemberExpression */Block.__(1, [/* :: */[
-                        /* SwiftIdentifier */Block.__(5, ["Colors"]),
+                        /* SwiftIdentifier */Block.__(6, ["Colors"]),
                         /* :: */[
-                          /* SwiftIdentifier */Block.__(5, [match$1[0][/* id */0]]),
+                          /* SwiftIdentifier */Block.__(6, [match$1[0][/* id */0]]),
                           /* [] */0
                         ]
                       ]]);
@@ -64,23 +64,23 @@ function lonaValue(colors, textStyles, value) {
           var match$2 = TextStyle$LonaCompilerCore.find(textStyles[/* styles */0], rawValue$1);
           if (match$2) {
             return /* MemberExpression */Block.__(1, [/* :: */[
-                        /* SwiftIdentifier */Block.__(5, ["TextStyles"]),
+                        /* SwiftIdentifier */Block.__(6, ["TextStyles"]),
                         /* :: */[
-                          /* SwiftIdentifier */Block.__(5, [match$2[0][/* id */0]]),
+                          /* SwiftIdentifier */Block.__(6, [match$2[0][/* id */0]]),
                           /* [] */0
                         ]
                       ]]);
           } else {
             return /* MemberExpression */Block.__(1, [/* :: */[
-                        /* SwiftIdentifier */Block.__(5, ["TextStyles"]),
+                        /* SwiftIdentifier */Block.__(6, ["TextStyles"]),
                         /* :: */[
-                          /* SwiftIdentifier */Block.__(5, [textStyles[/* defaultStyle */1][/* id */0]]),
+                          /* SwiftIdentifier */Block.__(6, [textStyles[/* defaultStyle */1][/* id */0]]),
                           /* [] */0
                         ]
                       ]]);
           }
       default:
-        return /* SwiftIdentifier */Block.__(5, ["UnknownNamedTypeAlias" + alias]);
+        return /* SwiftIdentifier */Block.__(6, ["UnknownNamedTypeAlias" + alias]);
     }
   } else {
     var typeName = match[0];
@@ -92,7 +92,7 @@ function lonaValue(colors, textStyles, value) {
       case "String" : 
           return /* LiteralExpression */Block.__(0, [/* String */Block.__(3, [Json_decode.string(value[/* data */1])])]);
       default:
-        return /* SwiftIdentifier */Block.__(5, ["UnknownReferenceType: " + typeName]);
+        return /* SwiftIdentifier */Block.__(6, ["UnknownReferenceType: " + typeName]);
     }
   }
 }
@@ -100,4 +100,4 @@ function lonaValue(colors, textStyles, value) {
 exports.join       = join;
 exports.joinGroups = joinGroups;
 exports.lonaValue  = lonaValue;
-/* Color-LonaCompilerCore Not a pure module */
+/* TextStyle-LonaCompilerCore Not a pure module */

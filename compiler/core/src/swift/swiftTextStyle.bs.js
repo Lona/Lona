@@ -47,28 +47,28 @@ function render(colors, textStyles) {
   var argumentsDoc = function (textStyle) {
     return List.concat(/* :: */[
                 unwrapOptional((function (value) {
-                        return /* FunctionCallArgument */Block.__(13, [{
-                                    name: /* Some */[/* SwiftIdentifier */Block.__(5, ["family"])],
+                        return /* FunctionCallArgument */Block.__(14, [{
+                                    name: /* Some */[/* SwiftIdentifier */Block.__(6, ["family"])],
                                     value: /* LiteralExpression */Block.__(0, [/* String */Block.__(3, [value])])
                                   }]);
                       }), textStyle[/* fontFamily */3]),
                 /* :: */[
                   unwrapOptional((function (value) {
-                          return /* FunctionCallArgument */Block.__(13, [{
-                                      name: /* Some */[/* SwiftIdentifier */Block.__(5, ["name"])],
+                          return /* FunctionCallArgument */Block.__(14, [{
+                                      name: /* Some */[/* SwiftIdentifier */Block.__(6, ["name"])],
                                       value: /* LiteralExpression */Block.__(0, [/* String */Block.__(3, [value])])
                                     }]);
                         }), textStyle[/* fontName */2]),
                   /* :: */[
                     unwrapOptional((function (value) {
-                            return /* FunctionCallArgument */Block.__(13, [{
-                                        name: /* Some */[/* SwiftIdentifier */Block.__(5, ["weight"])],
+                            return /* FunctionCallArgument */Block.__(14, [{
+                                        name: /* Some */[/* SwiftIdentifier */Block.__(6, ["weight"])],
                                         value: /* MemberExpression */Block.__(1, [/* :: */[
-                                              /* SwiftIdentifier */Block.__(5, ["UIFont"]),
+                                              /* SwiftIdentifier */Block.__(6, ["UIFont"]),
                                               /* :: */[
-                                                /* SwiftIdentifier */Block.__(5, ["Weight"]),
+                                                /* SwiftIdentifier */Block.__(6, ["Weight"]),
                                                 /* :: */[
-                                                  /* SwiftIdentifier */Block.__(5, [convertFontWeight(value)]),
+                                                  /* SwiftIdentifier */Block.__(6, [convertFontWeight(value)]),
                                                   /* [] */0
                                                 ]
                                               ]
@@ -77,22 +77,22 @@ function render(colors, textStyles) {
                           }), textStyle[/* fontWeight */4]),
                     /* :: */[
                       unwrapOptional((function (value) {
-                              return /* FunctionCallArgument */Block.__(13, [{
-                                          name: /* Some */[/* SwiftIdentifier */Block.__(5, ["size"])],
+                              return /* FunctionCallArgument */Block.__(14, [{
+                                          name: /* Some */[/* SwiftIdentifier */Block.__(6, ["size"])],
                                           value: /* LiteralExpression */Block.__(0, [/* FloatingPoint */Block.__(2, [value])])
                                         }]);
                             }), textStyle[/* fontSize */5]),
                       /* :: */[
                         unwrapOptional((function (value) {
-                                return /* FunctionCallArgument */Block.__(13, [{
-                                            name: /* Some */[/* SwiftIdentifier */Block.__(5, ["lineHeight"])],
+                                return /* FunctionCallArgument */Block.__(14, [{
+                                            name: /* Some */[/* SwiftIdentifier */Block.__(6, ["lineHeight"])],
                                             value: /* LiteralExpression */Block.__(0, [/* FloatingPoint */Block.__(2, [value])])
                                           }]);
                               }), textStyle[/* lineHeight */6]),
                         /* :: */[
                           unwrapOptional((function (value) {
-                                  return /* FunctionCallArgument */Block.__(13, [{
-                                              name: /* Some */[/* SwiftIdentifier */Block.__(5, ["kerning"])],
+                                  return /* FunctionCallArgument */Block.__(14, [{
+                                              name: /* Some */[/* SwiftIdentifier */Block.__(6, ["kerning"])],
                                               value: /* LiteralExpression */Block.__(0, [/* FloatingPoint */Block.__(2, [value])])
                                             }]);
                                 }), textStyle[/* letterSpacing */7]),
@@ -100,14 +100,14 @@ function render(colors, textStyles) {
                             unwrapOptional((function (value) {
                                     var match = Color$LonaCompilerCore.find(colors, value);
                                     var value$1 = match ? /* MemberExpression */Block.__(1, [/* :: */[
-                                            /* SwiftIdentifier */Block.__(5, ["Colors"]),
+                                            /* SwiftIdentifier */Block.__(6, ["Colors"]),
                                             /* :: */[
-                                              /* SwiftIdentifier */Block.__(5, [match[0][/* id */0]]),
+                                              /* SwiftIdentifier */Block.__(6, [match[0][/* id */0]]),
                                               /* [] */0
                                             ]
                                           ]]) : /* LiteralExpression */Block.__(0, [/* Color */Block.__(4, [value])]);
-                                    return /* FunctionCallArgument */Block.__(13, [{
-                                                name: /* Some */[/* SwiftIdentifier */Block.__(5, ["color"])],
+                                    return /* FunctionCallArgument */Block.__(14, [{
+                                                name: /* Some */[/* SwiftIdentifier */Block.__(6, ["color"])],
                                                 value: value$1
                                               }]);
                                   }), textStyle[/* color */8]),
@@ -121,7 +121,7 @@ function render(colors, textStyles) {
               ]);
   };
   var textStyleConstantDoc = function (textStyle) {
-    return /* ConstantDeclaration */Block.__(6, [{
+    return /* ConstantDeclaration */Block.__(7, [{
                 modifiers: /* :: */[
                   /* AccessLevelModifier */Block.__(0, [/* PublicModifier */3]),
                   /* :: */[
@@ -133,8 +133,8 @@ function render(colors, textStyles) {
                       identifier: textStyle[/* id */0],
                       annotation: /* None */0
                     }]),
-                init: /* Some */[/* FunctionCallExpression */Block.__(14, [{
-                        name: /* SwiftIdentifier */Block.__(5, ["AttributedFont"]),
+                init: /* Some */[/* FunctionCallExpression */Block.__(15, [{
+                        name: /* SwiftIdentifier */Block.__(6, ["AttributedFont"]),
                         arguments: argumentsDoc(textStyle)
                       }])]
               }]);
@@ -150,9 +150,9 @@ function render(colors, textStyles) {
             ];
     }
   };
-  return SwiftRender$LonaCompilerCore.toString(/* TopLevelDeclaration */Block.__(19, [{
+  return SwiftRender$LonaCompilerCore.toString(/* TopLevelDeclaration */Block.__(20, [{
                   statements: /* :: */[
-                    /* ImportDeclaration */Block.__(10, ["UIKit"]),
+                    /* ImportDeclaration */Block.__(11, ["UIKit"]),
                     /* :: */[
                       /* Empty */0,
                       /* :: */[
@@ -174,4 +174,4 @@ function render(colors, textStyles) {
 }
 
 exports.render = render;
-/* Color-LonaCompilerCore Not a pure module */
+/* TextStyle-LonaCompilerCore Not a pure module */

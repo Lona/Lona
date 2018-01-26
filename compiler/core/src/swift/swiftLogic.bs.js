@@ -10,7 +10,7 @@ var SwiftDocument$LonaCompilerCore = require("./swiftDocument.bs.js");
 function toSwiftAST(colors, textStyles, rootLayer, logicRootNode) {
   var identifierName = function (node) {
     if (node.tag) {
-      return /* SwiftIdentifier */Block.__(5, ["BadIdentifier"]);
+      return /* SwiftIdentifier */Block.__(6, ["BadIdentifier"]);
     } else {
       var match = node[1];
       if (match) {
@@ -22,25 +22,25 @@ function toSwiftAST(colors, textStyles, rootLayer, logicRootNode) {
                 var tail$1 = tail[1];
                 var second = tail[0];
                 if (second === rootLayer[/* name */1]) {
-                  return /* SwiftIdentifier */Block.__(5, [List.fold_left((function (a, b) {
+                  return /* SwiftIdentifier */Block.__(6, [List.fold_left((function (a, b) {
                                     return a + ("." + LodashCamelcase(b));
                                   }), List.hd(tail$1), List.tl(tail$1))]);
                 } else {
-                  return /* SwiftIdentifier */Block.__(5, [List.fold_left((function (a, b) {
+                  return /* SwiftIdentifier */Block.__(6, [List.fold_left((function (a, b) {
                                     return a + ("." + LodashCamelcase(b));
                                   }), SwiftFormat$LonaCompilerCore.layerName(second), tail$1)]);
                 }
               } else {
-                return /* SwiftIdentifier */Block.__(5, ["BadIdentifier"]);
+                return /* SwiftIdentifier */Block.__(6, ["BadIdentifier"]);
               }
               break;
           case "parameters" : 
-              return /* SwiftIdentifier */Block.__(5, [List.hd(tail)]);
+              return /* SwiftIdentifier */Block.__(6, [List.hd(tail)]);
           default:
-            return /* SwiftIdentifier */Block.__(5, [head]);
+            return /* SwiftIdentifier */Block.__(6, [head]);
         }
       } else {
-        return /* SwiftIdentifier */Block.__(5, ["BadIdentifier"]);
+        return /* SwiftIdentifier */Block.__(6, ["BadIdentifier"]);
       }
     }
   };
@@ -49,18 +49,18 @@ function toSwiftAST(colors, textStyles, rootLayer, logicRootNode) {
     initialValue = x.tag ? SwiftDocument$LonaCompilerCore.lonaValue(colors, textStyles, x[0]) : identifierName(x);
     if (typeof initialValue === "number") {
       return initialValue;
-    } else if (initialValue.tag === 5) {
+    } else if (initialValue.tag === 6) {
       var name = initialValue[0];
       if (name.includes("margin") || name.includes("padding")) {
-        return /* LineComment */Block.__(15, ["TODO: Margin & padding"]);
+        return /* LineComment */Block.__(16, ["TODO: Margin & padding"]);
       } else if (name.toLowerCase().endsWith("image")) {
-        return /* LineComment */Block.__(15, ["TODO: Images"]);
+        return /* LineComment */Block.__(16, ["TODO: Images"]);
       } else if (name.endsWith("borderRadius")) {
-        return /* SwiftIdentifier */Block.__(5, [name.replace("borderRadius", "layer.cornerRadius")]);
+        return /* SwiftIdentifier */Block.__(6, [name.replace("borderRadius", "layer.cornerRadius")]);
       } else if (name.endsWith("height")) {
-        return /* SwiftIdentifier */Block.__(5, [name.replace(".height", "HeightAnchorConstraint?.constant")]);
+        return /* SwiftIdentifier */Block.__(6, [name.replace(".height", "HeightAnchorConstraint?.constant")]);
       } else if (name.endsWith("width")) {
-        return /* SwiftIdentifier */Block.__(5, [name.replace(".width", "WidthAnchorConstraint?.constant")]);
+        return /* SwiftIdentifier */Block.__(6, [name.replace(".width", "WidthAnchorConstraint?.constant")]);
       } else {
         return initialValue;
       }
@@ -139,7 +139,7 @@ function toSwiftAST(colors, textStyles, rootLayer, logicRootNode) {
               } else if (match[0] !== 0) {
                 if (operator === "==") {
                   var condition = right;
-                  return /* IfStatement */Block.__(11, [{
+                  return /* IfStatement */Block.__(12, [{
                               condition: condition,
                               block: body
                             }]);
@@ -164,7 +164,7 @@ function toSwiftAST(colors, textStyles, rootLayer, logicRootNode) {
                     exit = 1;
                   } else if (match$1[0] !== 0) {
                     var condition$1 = left;
-                    return /* IfStatement */Block.__(11, [{
+                    return /* IfStatement */Block.__(12, [{
                                 condition: condition$1,
                                 block: body
                               }]);
@@ -177,7 +177,7 @@ function toSwiftAST(colors, textStyles, rootLayer, logicRootNode) {
               }
             }
             if (exit === 1) {
-              return /* IfStatement */Block.__(11, [{
+              return /* IfStatement */Block.__(12, [{
                           condition: /* BinaryExpression */Block.__(2, [{
                                 left: left,
                                 operator: operator,
@@ -188,10 +188,10 @@ function toSwiftAST(colors, textStyles, rootLayer, logicRootNode) {
             }
             break;
         case 1 : 
-            return /* StatementListHelper */Block.__(18, [/* :: */[
-                        /* LineComment */Block.__(15, ["TODO: IfExists"]),
+            return /* StatementListHelper */Block.__(19, [/* :: */[
+                        /* LineComment */Block.__(16, ["TODO: IfExists"]),
                         /* :: */[
-                          /* IfStatement */Block.__(11, [{
+                          /* IfStatement */Block.__(12, [{
                                 condition: /* LiteralExpression */Block.__(0, [/* Boolean */Block.__(0, [/* true */1])]),
                                 block: List.map(inner, unwrapBlock(logicRootNode[1]))
                               }]),
@@ -206,11 +206,11 @@ function toSwiftAST(colors, textStyles, rootLayer, logicRootNode) {
             var exit$4 = 0;
             if (typeof match$2 === "number") {
               exit$4 = 3;
-            } else if (match$2.tag === 5) {
+            } else if (match$2.tag === 6) {
               var name = match$2[0];
               if (name.endsWith("visible")) {
                 return /* BinaryExpression */Block.__(2, [{
-                            left: /* SwiftIdentifier */Block.__(5, [name.replace("visible", "isHidden")]),
+                            left: /* SwiftIdentifier */Block.__(6, [name.replace("visible", "isHidden")]),
                             operator: "=",
                             right: /* PrefixExpression */Block.__(3, [{
                                   operator: "!",
@@ -226,7 +226,7 @@ function toSwiftAST(colors, textStyles, rootLayer, logicRootNode) {
             if (exit$4 === 3) {
               if (typeof match$3 === "number") {
                 exit$3 = 2;
-              } else if (match$3.tag === 5) {
+              } else if (match$3.tag === 6) {
                 var name$1 = match$3[0];
                 if (name$1.endsWith("visible")) {
                   return /* BinaryExpression */Block.__(2, [{
@@ -235,7 +235,7 @@ function toSwiftAST(colors, textStyles, rootLayer, logicRootNode) {
                                     expression: match$2
                                   }]),
                               operator: "=",
-                              right: /* SwiftIdentifier */Block.__(5, [name$1.replace("visible", "isHidden")])
+                              right: /* SwiftIdentifier */Block.__(6, [name$1.replace("visible", "isHidden")])
                             }]);
                 } else {
                   exit$3 = 2;
@@ -247,13 +247,13 @@ function toSwiftAST(colors, textStyles, rootLayer, logicRootNode) {
             if (exit$3 === 2) {
               if (typeof match$2 === "number") {
                 exit$2 = 1;
-              } else if (match$2.tag === 5) {
+              } else if (match$2.tag === 6) {
                 var name$2 = match$2[0];
                 if (name$2.endsWith("textStyle") || name$2.endsWith("font")) {
                   var name$3 = name$2.replace(".font", ".textStyle");
-                  return /* StatementListHelper */Block.__(18, [/* :: */[
+                  return /* StatementListHelper */Block.__(19, [/* :: */[
                               /* BinaryExpression */Block.__(2, [{
-                                    left: /* SwiftIdentifier */Block.__(5, [name$3.replace(".textStyle", "TextStyle")]),
+                                    left: /* SwiftIdentifier */Block.__(6, [name$3.replace(".textStyle", "TextStyle")]),
                                     operator: "=",
                                     right: match$3
                                   }]),
@@ -261,16 +261,16 @@ function toSwiftAST(colors, textStyles, rootLayer, logicRootNode) {
                             ]]);
                 } else if (name$2.endsWith("text")) {
                   return /* BinaryExpression */Block.__(2, [{
-                              left: /* SwiftIdentifier */Block.__(5, [name$2.replace(".text", ".attributedText")]),
+                              left: /* SwiftIdentifier */Block.__(6, [name$2.replace(".text", ".attributedText")]),
                               operator: "=",
                               right: /* MemberExpression */Block.__(1, [/* :: */[
-                                    /* SwiftIdentifier */Block.__(5, [name$2.replace(".text", "TextStyle")]),
+                                    /* SwiftIdentifier */Block.__(6, [name$2.replace(".text", "TextStyle")]),
                                     /* :: */[
-                                      /* FunctionCallExpression */Block.__(14, [{
-                                            name: /* SwiftIdentifier */Block.__(5, ["apply"]),
+                                      /* FunctionCallExpression */Block.__(15, [{
+                                            name: /* SwiftIdentifier */Block.__(6, ["apply"]),
                                             arguments: /* :: */[
-                                              /* FunctionCallArgument */Block.__(13, [{
-                                                    name: /* Some */[/* SwiftIdentifier */Block.__(5, ["to"])],
+                                              /* FunctionCallArgument */Block.__(14, [{
+                                                    name: /* Some */[/* SwiftIdentifier */Block.__(6, ["to"])],
                                                     value: match$3
                                                   }]),
                                               /* [] */0
@@ -311,7 +311,7 @@ function toSwiftAST(colors, textStyles, rootLayer, logicRootNode) {
               return /* Empty */0;
             } else {
               var path = value[1];
-              return /* VariableDeclaration */Block.__(7, [{
+              return /* VariableDeclaration */Block.__(8, [{
                           modifiers: /* [] */0,
                           pattern: /* IdentifierPattern */Block.__(0, [{
                                 identifier: List.fold_left((function (a, b) {
@@ -338,13 +338,13 @@ function toSwiftAST(colors, textStyles, rootLayer, logicRootNode) {
               return /* Empty */0;
             } else if (typeof match$4 === "number") {
               return /* Empty */0;
-            } else if (match$4.tag === 7) {
+            } else if (match$4.tag === 8) {
               if (typeof match$5 === "number") {
                 return /* Empty */0;
               } else if (match$5.tag === 2) {
                 var a = match$4[0];
                 var path$1 = left$1[1];
-                return /* VariableDeclaration */Block.__(7, [{
+                return /* VariableDeclaration */Block.__(8, [{
                             modifiers: a.modifiers,
                             pattern: /* IdentifierPattern */Block.__(0, [{
                                   identifier: List.fold_left((function (a, b) {
@@ -363,7 +363,7 @@ function toSwiftAST(colors, textStyles, rootLayer, logicRootNode) {
             }
             break;
         case 6 : 
-            return /* StatementListHelper */Block.__(18, [List.map(inner, logicRootNode[0])]);
+            return /* StatementListHelper */Block.__(19, [List.map(inner, logicRootNode[0])]);
         
       }
     }
