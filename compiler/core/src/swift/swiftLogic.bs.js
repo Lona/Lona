@@ -64,8 +64,8 @@ function toSwiftAST(options, colors, textStyles, rootLayer, logicRootNode) {
         var name$1 = initialValue[0];
         if (name$1.endsWith(".borderRadius")) {
           return /* SwiftIdentifier */Block.__(6, [name$1.replace(".borderRadius", ".cornerRadius")]);
-        } else if (name$1.endsWith(".backgroundColor")) {
-          return /* SwiftIdentifier */Block.__(6, [name$1.replace(".backgroundColor", ".fillColor")]);
+        } else if (name$1.endsWith("backgroundColor")) {
+          return /* SwiftIdentifier */Block.__(6, [name$1.replace("backgroundColor", "fillColor")]);
         } else {
           return initialValue;
         }
@@ -323,13 +323,10 @@ function toSwiftAST(options, colors, textStyles, rootLayer, logicRootNode) {
             if (value.tag) {
               return /* Empty */0;
             } else {
-              var path = value[1];
               return /* VariableDeclaration */Block.__(8, [{
                           modifiers: /* [] */0,
                           pattern: /* IdentifierPattern */Block.__(0, [{
-                                identifier: /* SwiftIdentifier */Block.__(6, [List.fold_left((function (a, b) {
-                                            return a + ("." + b);
-                                          }), List.hd(path), List.tl(path))]),
+                                identifier: logicValueToSwiftAST(value),
                                 annotation: /* Some */[typeAnnotationDoc(value[0])]
                               }]),
                           init: /* None */0,
@@ -356,13 +353,10 @@ function toSwiftAST(options, colors, textStyles, rootLayer, logicRootNode) {
                 return /* Empty */0;
               } else if (match$5.tag === 2) {
                 var a = match$4[0];
-                var path$1 = left$1[1];
                 return /* VariableDeclaration */Block.__(8, [{
                             modifiers: a.modifiers,
                             pattern: /* IdentifierPattern */Block.__(0, [{
-                                  identifier: /* SwiftIdentifier */Block.__(6, [List.fold_left((function (a, b) {
-                                              return a + ("." + b);
-                                            }), List.hd(path$1), List.tl(path$1))]),
+                                  identifier: logicValueToSwiftAST(left$1),
                                   annotation: /* None */0
                                 }]),
                             init: /* Some */[match$5[0].left],

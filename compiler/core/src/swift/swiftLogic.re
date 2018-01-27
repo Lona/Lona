@@ -81,9 +81,9 @@ let toSwiftAST =
       )
     /* -- AppKit -- */
     | (AppKit, Ast.SwiftIdentifier(name))
-        when name |> Js.String.endsWith(".backgroundColor") =>
+        when name |> Js.String.endsWith("backgroundColor") =>
       Ast.SwiftIdentifier(
-        name |> Js.String.replace(".backgroundColor", ".fillColor")
+        name |> Js.String.replace("backgroundColor", "fillColor")
       )
     | _ => initialValue
     };
@@ -232,19 +232,12 @@ let toSwiftAST =
       })
     | Let(value) =>
       switch value {
-      | Identifier(ltype, path) =>
+      | Identifier(ltype, _) as identifier =>
         Ast.VariableDeclaration({
           "modifiers": [],
           "pattern":
             Ast.IdentifierPattern({
-              "identifier":
-                Ast.SwiftIdentifier(
-                  List.fold_left(
-                    (a, b) => a ++ "." ++ b,
-                    List.hd(path),
-                    List.tl(path)
-                  )
-                ),
+              "identifier": identifier |> logicValueToSwiftAST,
               "annotation": Some(ltype |> typeAnnotationDoc)
             }),
           "init": (None: option(Ast.node)),
@@ -258,7 +251,7 @@ let toSwiftAST =
       let variableName = Logic.Let(left);
       switch (left, variableName |> inner, value |> inner) {
       | (
-          Identifier(_, path),
+          Identifier(_) as identifier,
           Ast.VariableDeclaration(a),
           Ast.BinaryExpression(b)
         ) =>
@@ -266,14 +259,7 @@ let toSwiftAST =
           "modifiers": a##modifiers,
           "pattern":
             Ast.IdentifierPattern({
-              "identifier":
-                Ast.SwiftIdentifier(
-                  List.fold_left(
-                    (a, b) => a ++ "." ++ b,
-                    List.hd(path),
-                    List.tl(path)
-                  )
-                ),
+              "identifier": identifier |> logicValueToSwiftAST,
               "annotation": None
             }),
           "init": Some(b##left),
