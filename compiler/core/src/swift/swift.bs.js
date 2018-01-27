@@ -2,6 +2,8 @@
 'use strict';
 
 
+var Options = 0;
+
 var Format = 0;
 
 var Ast = 0;
@@ -16,6 +18,7 @@ var TextStyle = 0;
 
 var Component = 0;
 
+exports.Options   = Options;
 exports.Format    = Format;
 exports.Ast       = Ast;
 exports.Document  = Document;

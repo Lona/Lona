@@ -13,6 +13,7 @@ var GetStdin                             = require("get-stdin");
 var Caml_array                           = require("bs-platform/lib/js/caml_array.js");
 var Json_decode                          = require("bs-json/src/Json_decode.js");
 var Color$LonaCompilerCore               = require("./core/color.bs.js");
+var Caml_builtin_exceptions              = require("bs-platform/lib/js/caml_builtin_exceptions.js");
 var Decode$LonaCompilerCore              = require("./core/decode.bs.js");
 var XmlColor$LonaCompilerCore            = require("./xml/xmlColor.bs.js");
 var TextStyle$LonaCompilerCore           = require("./core/textStyle.bs.js");
@@ -23,12 +24,40 @@ var SwiftTextStyle$LonaCompilerCore      = require("./swift/swiftTextStyle.bs.js
 var JavaScriptRender$LonaCompilerCore    = require("./javaScript/javaScriptRender.bs.js");
 var JavaScriptComponent$LonaCompilerCore = require("./javaScript/javaScriptComponent.bs.js");
 
-function exit(message) {
+var $$arguments = $$Array.to_list(Process.argv);
+
+var tmp;
+
+var exit = 0;
+
+var arg;
+
+try {
+  arg = List.find((function (param) {
+          return +param.includes("--framework=");
+        }), $$arguments);
+  exit = 1;
+}
+catch (exn){
+  if (exn === Caml_builtin_exceptions.not_found) {
+    tmp = /* AppKit */1;
+  } else {
+    throw exn;
+  }
+}
+
+if (exit === 1) {
+  tmp = arg.endsWith("uikit") ? /* UIKit */0 : /* AppKit */1;
+}
+
+var swiftOptions = /* record */[/* framework */tmp];
+
+function exit$1(message) {
   console.log(message);
   return (process.exit(1));
 }
 
-if (Process.argv.length < 3) {
+if (List.length($$arguments) < 3) {
   console.log("No command given");
   ((process.exit(1)));
 }
@@ -101,7 +130,7 @@ function renderColors(target, colors) {
     case 0 : 
         return "";
     case 1 : 
-        return SwiftColor$LonaCompilerCore.render(colors);
+        return SwiftColor$LonaCompilerCore.render(swiftOptions, colors);
     case 2 : 
         return XmlColor$LonaCompilerCore.render(colors);
     
@@ -112,7 +141,7 @@ function renderTextStyles(target, colors, textStyles) {
   if (target !== 1) {
     return "";
   } else {
-    return SwiftTextStyle$LonaCompilerCore.render(colors, textStyles);
+    return SwiftTextStyle$LonaCompilerCore.render(swiftOptions, colors, textStyles);
   }
 }
 
@@ -148,7 +177,7 @@ function convertComponent(filename) {
           var colors = Color$LonaCompilerCore.parseFile(colorsFile);
           var textStylesFile = Fs.readFileSync(Path.join(workspace, "textStyles.json"), "utf8");
           var textStyles = TextStyle$LonaCompilerCore.parseFile(textStylesFile);
-          return SwiftRender$LonaCompilerCore.toString(SwiftComponent$LonaCompilerCore.generate(name, colors, textStyles, parsed));
+          return SwiftRender$LonaCompilerCore.toString(SwiftComponent$LonaCompilerCore.generate(swiftOptions, name, colors, textStyles, parsed));
         } else {
           console.log("Couldn't find workspace directory. Try specifying it as a parameter (TODO)");
           return (process.exit(1));
@@ -165,8 +194,10 @@ function copyStaticFiles(outputDirectory) {
   if (target !== 1) {
     return /* () */0;
   } else {
+    var match = swiftOptions[/* framework */0];
+    var framework = match !== 0 ? "appkit" : "uikit";
     var base = __dirname;
-    FsExtra.copySync(Path.join(base, "../static/swift/AttributedFont.swift"), Path.join(outputDirectory, "AttributedFont.swift"));
+    FsExtra.copySync(Path.join(base, "../static/swift/AttributedFont." + (framework + ".swift")), Path.join(outputDirectory, "AttributedFont.swift"));
     return /* () */0;
   }
 }
@@ -259,7 +290,9 @@ switch (command) {
     console.log("Invalid command", command);
 }
 
-exports.exit                   = exit;
+exports.$$arguments            = $$arguments;
+exports.swiftOptions           = swiftOptions;
+exports.exit                   = exit$1;
 exports.command                = command;
 exports.target                 = target;
 exports.findWorkspaceDirectory = findWorkspaceDirectory;
@@ -273,4 +306,4 @@ exports.convertTextStyles      = convertTextStyles;
 exports.convertComponent       = convertComponent;
 exports.copyStaticFiles        = copyStaticFiles;
 exports.convertWorkspace       = convertWorkspace;
-/*  Not a pure module */
+/* arguments Not a pure module */

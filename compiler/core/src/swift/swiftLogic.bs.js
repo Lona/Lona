@@ -7,7 +7,7 @@ var LodashCamelcase                = require("lodash.camelcase");
 var SwiftFormat$LonaCompilerCore   = require("./swiftFormat.bs.js");
 var SwiftDocument$LonaCompilerCore = require("./swiftDocument.bs.js");
 
-function toSwiftAST(colors, textStyles, rootLayer, logicRootNode) {
+function toSwiftAST(options, colors, textStyles, rootLayer, logicRootNode) {
   var identifierName = function (node) {
     if (node.tag) {
       return /* SwiftIdentifier */Block.__(6, ["BadIdentifier"]);
@@ -47,6 +47,7 @@ function toSwiftAST(colors, textStyles, rootLayer, logicRootNode) {
   var logicValueToSwiftAST = function (x) {
     var initialValue;
     initialValue = x.tag ? SwiftDocument$LonaCompilerCore.lonaValue(colors, textStyles, x[0]) : identifierName(x);
+    var match = options[/* framework */0];
     if (typeof initialValue === "number") {
       return initialValue;
     } else if (initialValue.tag === 6) {
@@ -55,14 +56,26 @@ function toSwiftAST(colors, textStyles, rootLayer, logicRootNode) {
         return /* LineComment */Block.__(16, ["TODO: Margin & padding"]);
       } else if (name.toLowerCase().endsWith("image")) {
         return /* LineComment */Block.__(16, ["TODO: Images"]);
-      } else if (name.endsWith("borderRadius")) {
-        return /* SwiftIdentifier */Block.__(6, [name.replace("borderRadius", "layer.cornerRadius")]);
       } else if (name.endsWith("height")) {
         return /* SwiftIdentifier */Block.__(6, [name.replace(".height", "HeightAnchorConstraint?.constant")]);
       } else if (name.endsWith("width")) {
         return /* SwiftIdentifier */Block.__(6, [name.replace(".width", "WidthAnchorConstraint?.constant")]);
+      } else if (match !== 0) {
+        var name$1 = initialValue[0];
+        if (name$1.endsWith(".borderRadius")) {
+          return /* SwiftIdentifier */Block.__(6, [name$1.replace(".borderRadius", ".cornerRadius")]);
+        } else if (name$1.endsWith(".backgroundColor")) {
+          return /* SwiftIdentifier */Block.__(6, [name$1.replace(".backgroundColor", ".fillColor")]);
+        } else {
+          return initialValue;
+        }
       } else {
-        return initialValue;
+        var name$2 = initialValue[0];
+        if (name$2.endsWith(".borderRadius")) {
+          return /* SwiftIdentifier */Block.__(6, [name$2.replace(".borderRadius", ".layer.cornerRadius")]);
+        } else {
+          return initialValue;
+        }
       }
     } else {
       return initialValue;
@@ -261,7 +274,7 @@ function toSwiftAST(colors, textStyles, rootLayer, logicRootNode) {
                             ]]);
                 } else if (name$2.endsWith("text")) {
                   return /* BinaryExpression */Block.__(2, [{
-                              left: /* SwiftIdentifier */Block.__(6, [name$2.replace(".text", ".attributedText")]),
+                              left: /* SwiftIdentifier */Block.__(6, [name$2.replace(".text", "." + SwiftDocument$LonaCompilerCore.labelAttributedTextName(options[/* framework */0]))]),
                               operator: "=",
                               right: /* MemberExpression */Block.__(1, [/* :: */[
                                     /* SwiftIdentifier */Block.__(6, [name$2.replace(".text", "TextStyle")]),

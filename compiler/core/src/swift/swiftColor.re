@@ -1,6 +1,6 @@
 open SwiftAst;
 
-let render = colors => {
+let render = (options: SwiftOptions.options, colors) => {
   let colorConstantDoc = (color: Color.t) =>
     LineEndComment({
       "comment":
@@ -22,7 +22,7 @@ let render = colors => {
   let doc =
     TopLevelDeclaration({
       "statements": [
-        ImportDeclaration("UIKit"),
+        SwiftDocument.importFramework(options.framework),
         Empty,
         EnumDeclaration({
           "name": "Colors",

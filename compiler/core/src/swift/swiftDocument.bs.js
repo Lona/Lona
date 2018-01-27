@@ -97,7 +97,58 @@ function lonaValue(colors, textStyles, value) {
   }
 }
 
-exports.join       = join;
-exports.joinGroups = joinGroups;
-exports.lonaValue  = lonaValue;
+function importFramework(framework) {
+  if (framework !== 0) {
+    return /* ImportDeclaration */Block.__(11, ["AppKit"]);
+  } else {
+    return /* ImportDeclaration */Block.__(11, ["UIKit"]);
+  }
+}
+
+function colorTypeName(framework) {
+  if (framework !== 0) {
+    return "NSColor";
+  } else {
+    return "UIColor";
+  }
+}
+
+function fontTypeName(framework) {
+  if (framework !== 0) {
+    return "NSFont";
+  } else {
+    return "UIFont";
+  }
+}
+
+function layoutPriorityTypeDoc(framework) {
+  if (framework !== 0) {
+    return /* MemberExpression */Block.__(1, [/* :: */[
+                /* SwiftIdentifier */Block.__(6, ["NSLayoutConstraint"]),
+                /* :: */[
+                  /* SwiftIdentifier */Block.__(6, ["Priority"]),
+                  /* [] */0
+                ]
+              ]]);
+  } else {
+    return /* SwiftIdentifier */Block.__(6, ["UILayoutConstraint"]);
+  }
+}
+
+function labelAttributedTextName(framework) {
+  if (framework !== 0) {
+    return "attributedStringValue";
+  } else {
+    return "attributedText";
+  }
+}
+
+exports.join                    = join;
+exports.joinGroups              = joinGroups;
+exports.lonaValue               = lonaValue;
+exports.importFramework         = importFramework;
+exports.colorTypeName           = colorTypeName;
+exports.fontTypeName            = fontTypeName;
+exports.layoutPriorityTypeDoc   = layoutPriorityTypeDoc;
+exports.labelAttributedTextName = labelAttributedTextName;
 /* No side effect */
