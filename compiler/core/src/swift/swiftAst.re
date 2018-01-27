@@ -39,28 +39,71 @@ type literal =
   | Array(list(node))
 and typeAnnotation =
   | TypeName(string)
-  | TypeIdentifier({. "name": typeAnnotation, "member": typeAnnotation})
+  | TypeIdentifier(
+      {
+        .
+        "name": typeAnnotation,
+        "member": typeAnnotation
+      }
+    )
   | ArrayType({. "element": typeAnnotation})
-  | DictionaryType({. "key": typeAnnotation, "value": typeAnnotation})
+  | DictionaryType(
+      {
+        .
+        "key": typeAnnotation,
+        "value": typeAnnotation
+      }
+    )
   | OptionalType(typeAnnotation)
   | TypeInheritanceList({. "list": list(typeAnnotation)})
 and pattern =
   | WildcardPattern
-  | IdentifierPattern({. "identifier": string, "annotation": option(typeAnnotation)})
-  | ValueBindingPattern({. "kind": string, "pattern": pattern})
+  | IdentifierPattern(
+      {
+        .
+        "identifier": string,
+        "annotation": option(typeAnnotation)
+      }
+    )
+  | ValueBindingPattern(
+      {
+        .
+        "kind": string,
+        "pattern": pattern
+      }
+    )
   | TuplePattern({. "elements": list(pattern)})
   | OptionalPattern({. "value": pattern})
   | ExpressionPattern({. "value": node})
 /* | IsPattern */
 /* | AsPattern */
 and initializerBlock =
-  | WillSetDidSetBlock({. "willSet": option(list(node)), "didSet": option(list(node))})
+  | WillSetDidSetBlock(
+      {
+        .
+        "willSet": option(list(node)),
+        "didSet": option(list(node))
+      }
+    )
 and node =
   /* | Operator(string) */
   | LiteralExpression(literal)
   | MemberExpression(list(node))
-  | BinaryExpression({. "left": node, "operator": string, "right": node})
-  | PrefixExpression({. "operator": string, "expression": node})
+  | BinaryExpression(
+      {
+        .
+        "left": node,
+        "operator": string,
+        "right": node
+      }
+    )
+  | PrefixExpression(
+      {
+        .
+        "operator": string,
+        "expression": node
+      }
+    )
   | ClassDeclaration(
       {
         .
@@ -71,10 +114,23 @@ and node =
         "body": list(node)
       }
     )
+  | EnumDeclaration(
+      {
+        .
+        "name": string,
+        "modifier": option(accessLevelModifier),
+        "body": list(node)
+      }
+    )
   /* | VariableDeclaration({. "pattern": pattern, "init": option(node)}) */
   | SwiftIdentifier(string)
   | ConstantDeclaration(
-      {. "modifiers": list(declarationModifier), "pattern": pattern, "init": option(node)}
+      {
+        .
+        "modifiers": list(declarationModifier),
+        "pattern": pattern,
+        "init": option(node)
+      }
     )
   | VariableDeclaration(
       {
@@ -104,7 +160,13 @@ and node =
       }
     )
   | ImportDeclaration(string)
-  | IfStatement({. "condition": node, "block": list(node)})
+  | IfStatement(
+      {
+        .
+        "condition": node,
+        "block": list(node)
+      }
+    )
   | Parameter(
       {
         .
@@ -114,11 +176,29 @@ and node =
         "defaultValue": option(node)
       }
     )
-  | FunctionCallArgument({. "name": option(node), "value": node})
-  | FunctionCallExpression({. "name": node, "arguments": list(node)})
+  | FunctionCallArgument(
+      {
+        .
+        "name": option(node),
+        "value": node
+      }
+    )
+  | FunctionCallExpression(
+      {
+        .
+        "name": node,
+        "arguments": list(node)
+      }
+    )
   | Empty
   | LineComment(string)
-  | LineEndComment({. "comment": string, "line": node})
+  | LineEndComment(
+      {
+        .
+        "comment": string,
+        "line": node
+      }
+    )
   | CodeBlock({. "statements": list(node)})
   | StatementListHelper(list(node))
   | TopLevelDeclaration({. "statements": list(node)});

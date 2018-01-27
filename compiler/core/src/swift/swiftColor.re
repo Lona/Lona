@@ -1,13 +1,21 @@
 open SwiftAst;
 
-let render = (colors) => {
+let render = colors => {
   let colorConstantDoc = (color: Color.t) =>
     LineEndComment({
-      "comment": color.value,
+      "comment":
+        (color.value |> String.uppercase)
+        ++ (
+          switch color.comment {
+          | Some(comment) => " - " ++ comment
+          | _ => ""
+          }
+        ),
       "line":
         ConstantDeclaration({
           "modifiers": [AccessLevelModifier(PublicModifier), StaticModifier],
-          "pattern": IdentifierPattern({"identifier": color.id, "annotation": None}),
+          "pattern":
+            IdentifierPattern({"identifier": color.id, "annotation": None}),
           "init": Some(LiteralExpression(Color(color.value)))
         })
     });
@@ -16,15 +24,12 @@ let render = (colors) => {
       "statements": [
         ImportDeclaration("UIKit"),
         Empty,
-        ClassDeclaration({
+        EnumDeclaration({
           "name": "Colors",
-          "inherits": [],
-          "modifier": None,
-          "isFinal": false,
+          "modifier": Some(PublicModifier),
           "body": colors |> List.map(colorConstantDoc)
-        }),
-        Empty
+        })
       ]
     });
-  SwiftRender.toString(doc)
+  SwiftRender.toString(doc);
 };

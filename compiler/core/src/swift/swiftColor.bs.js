@@ -3,13 +3,17 @@
 
 var List                         = require("bs-platform/lib/js/list.js");
 var Block                        = require("bs-platform/lib/js/block.js");
+var $$String                     = require("bs-platform/lib/js/string.js");
 var SwiftRender$LonaCompilerCore = require("./swiftRender.bs.js");
 
 function render(colors) {
   var colorConstantDoc = function (color) {
-    return /* LineEndComment */Block.__(16, [{
-                comment: color[/* value */2],
-                line: /* ConstantDeclaration */Block.__(6, [{
+    var match = color[/* comment */3];
+    return /* LineEndComment */Block.__(17, [{
+                comment: $$String.uppercase(color[/* value */2]) + (
+                  match ? " - " + match[0] : ""
+                ),
+                line: /* ConstantDeclaration */Block.__(7, [{
                       modifiers: /* :: */[
                         /* AccessLevelModifier */Block.__(0, [/* PublicModifier */3]),
                         /* :: */[
@@ -25,23 +29,18 @@ function render(colors) {
                     }])
               }]);
   };
-  return SwiftRender$LonaCompilerCore.toString(/* TopLevelDeclaration */Block.__(19, [{
+  return SwiftRender$LonaCompilerCore.toString(/* TopLevelDeclaration */Block.__(20, [{
                   statements: /* :: */[
-                    /* ImportDeclaration */Block.__(10, ["UIKit"]),
+                    /* ImportDeclaration */Block.__(11, ["UIKit"]),
                     /* :: */[
                       /* Empty */0,
                       /* :: */[
-                        /* ClassDeclaration */Block.__(4, [{
+                        /* EnumDeclaration */Block.__(5, [{
                               name: "Colors",
-                              inherits: /* [] */0,
-                              modifier: /* None */0,
-                              isFinal: /* false */0,
+                              modifier: /* Some */[/* PublicModifier */3],
                               body: List.map(colorConstantDoc, colors)
                             }]),
-                        /* :: */[
-                          /* Empty */0,
-                          /* [] */0
-                        ]
+                        /* [] */0
                       ]
                     ]
                   ]

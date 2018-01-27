@@ -1,6 +1,7 @@
 type compilerTarget =
   | JavaScript
-  | Swift;
+  | Swift
+  | Xml;
 
 type lonaType =
   | Reference(string)
