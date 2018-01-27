@@ -12,9 +12,9 @@ let arguments = Array.to_list(Process.argv);
 let swiftOptions: Swift.Options.options = {
   framework:
     switch (arguments |> List.find(Js.String.includes("--framework="))) {
-    | arg when arg |> Js.String.endsWith("uikit") => Swift.Options.UIKit
-    | _ => Swift.Options.AppKit
-    | exception Not_found => Swift.Options.AppKit
+    | arg when arg |> Js.String.endsWith("appkit") => Swift.Options.AppKit
+    | _ => Swift.Options.UIKit
+    | exception Not_found => Swift.Options.UIKit
     }
 };
 

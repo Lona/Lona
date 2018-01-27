@@ -75,7 +75,7 @@ let fontTypeName = framework =>
 
 let layoutPriorityTypeDoc = framework =>
   switch framework {
-  | SwiftOptions.UIKit => SwiftIdentifier("UILayoutConstraint")
+  | SwiftOptions.UIKit => SwiftIdentifier("UILayoutPriority")
   | SwiftOptions.AppKit =>
     MemberExpression([
       SwiftIdentifier("NSLayoutConstraint"),

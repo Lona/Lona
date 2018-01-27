@@ -131,7 +131,7 @@ function layoutPriorityTypeDoc(framework) {
                 ]
               ]]);
   } else {
-    return /* SwiftIdentifier */Block.__(6, ["UILayoutConstraint"]);
+    return /* SwiftIdentifier */Block.__(6, ["UILayoutPriority"]);
   }
 }
 

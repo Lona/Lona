@@ -40,14 +40,14 @@ try {
 }
 catch (exn){
   if (exn === Caml_builtin_exceptions.not_found) {
-    tmp = /* AppKit */1;
+    tmp = /* UIKit */0;
   } else {
     throw exn;
   }
 }
 
 if (exit === 1) {
-  tmp = arg.endsWith("uikit") ? /* UIKit */0 : /* AppKit */1;
+  tmp = arg.endsWith("appkit") ? /* AppKit */1 : /* UIKit */0;
 }
 
 var swiftOptions = /* record */[/* framework */tmp];
