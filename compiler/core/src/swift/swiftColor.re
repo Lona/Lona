@@ -15,7 +15,10 @@ let render = (options: SwiftOptions.options, colors) => {
         ConstantDeclaration({
           "modifiers": [AccessLevelModifier(PublicModifier), StaticModifier],
           "pattern":
-            IdentifierPattern({"identifier": color.id, "annotation": None}),
+            IdentifierPattern({
+              "identifier": SwiftIdentifier(color.id),
+              "annotation": None
+            }),
           "init": Some(LiteralExpression(Color(color.value)))
         })
     });

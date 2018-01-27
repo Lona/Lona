@@ -131,7 +131,7 @@ function render(options, colors, textStyles) {
                   ]
                 ],
                 pattern: /* IdentifierPattern */Block.__(0, [{
-                      identifier: textStyle[/* id */0],
+                      identifier: /* SwiftIdentifier */Block.__(6, [textStyle[/* id */0]]),
                       annotation: /* None */0
                     }]),
                 init: /* Some */[/* FunctionCallExpression */Block.__(15, [{

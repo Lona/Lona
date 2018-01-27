@@ -238,10 +238,12 @@ let toSwiftAST =
           "pattern":
             Ast.IdentifierPattern({
               "identifier":
-                List.fold_left(
-                  (a, b) => a ++ "." ++ b,
-                  List.hd(path),
-                  List.tl(path)
+                Ast.SwiftIdentifier(
+                  List.fold_left(
+                    (a, b) => a ++ "." ++ b,
+                    List.hd(path),
+                    List.tl(path)
+                  )
                 ),
               "annotation": Some(ltype |> typeAnnotationDoc)
             }),
@@ -265,10 +267,12 @@ let toSwiftAST =
           "pattern":
             Ast.IdentifierPattern({
               "identifier":
-                List.fold_left(
-                  (a, b) => a ++ "." ++ b,
-                  List.hd(path),
-                  List.tl(path)
+                Ast.SwiftIdentifier(
+                  List.fold_left(
+                    (a, b) => a ++ "." ++ b,
+                    List.hd(path),
+                    List.tl(path)
+                  )
                 ),
               "annotation": None
             }),

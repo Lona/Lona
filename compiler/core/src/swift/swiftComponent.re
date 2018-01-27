@@ -64,7 +64,7 @@ let generate =
       "modifiers": [AccessLevelModifier(PublicModifier)],
       "pattern":
         IdentifierPattern({
-          "identifier": parameter.name,
+          "identifier": SwiftIdentifier(parameter.name),
           "annotation": Some(parameter.ltype |> typeAnnotationDoc)
         }),
       "init": None,
@@ -124,7 +124,7 @@ let generate =
       "modifiers": [AccessLevelModifier(PrivateModifier)],
       "pattern":
         IdentifierPattern({
-          "identifier": layer.name |> Format.layerName,
+          "identifier": SwiftIdentifier(layer.name |> Format.layerName),
           "annotation": None /*Some(layer.typeName |> viewTypeDoc)*/
         }),
       "init": Some(getLayerInitCall(layer.typeName)),
@@ -135,7 +135,7 @@ let generate =
       "modifiers": [AccessLevelModifier(PrivateModifier)],
       "pattern":
         IdentifierPattern({
-          "identifier": (layer.name |> Format.layerName) ++ "TextStyle",
+          "identifier": SwiftIdentifier((layer.name |> Format.layerName) ++ "TextStyle"),
           "annotation": None /* Some(TypeName("AttributedFont")) */
         }),
       "init":
@@ -152,7 +152,7 @@ let generate =
       "modifiers": [AccessLevelModifier(PrivateModifier)],
       "pattern":
         IdentifierPattern({
-          "identifier": variableName,
+          "identifier": SwiftIdentifier(variableName),
           "annotation": Some(OptionalType(TypeName("NSLayoutConstraint")))
         }),
       "init": None,
@@ -183,7 +183,7 @@ let generate =
               "modifiers": [AccessLevelModifier(PrivateModifier)],
               "pattern":
                 IdentifierPattern({
-                  "identifier": variableName(marginParameter.swiftName),
+                  "identifier": SwiftIdentifier(variableName(marginParameter.swiftName)),
                   "annotation": Some(TypeName("CGFloat"))
                 }),
               "init":
@@ -207,7 +207,7 @@ let generate =
             "modifiers": [AccessLevelModifier(PrivateModifier)],
             "pattern":
               IdentifierPattern({
-                "identifier": variableName(paddingParameter.swiftName),
+                "identifier": SwiftIdentifier(variableName(paddingParameter.swiftName)),
                 "annotation": Some(TypeName("CGFloat"))
               }),
             "init":
@@ -867,7 +867,7 @@ let generate =
         "init": Some(def.initialValue),
         "pattern":
           IdentifierPattern({
-            "identifier": def.variableName,
+            "identifier": SwiftIdentifier(def.variableName),
             "annotation": None
           })
       });

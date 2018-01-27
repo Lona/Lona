@@ -57,7 +57,7 @@ function generate(options, name, colors, textStyles, json) {
                   /* [] */0
                 ],
                 pattern: /* IdentifierPattern */Block.__(0, [{
-                      identifier: parameter[/* name */0],
+                      identifier: /* SwiftIdentifier */Block.__(6, [parameter[/* name */0]]),
                       annotation: /* Some */[typeAnnotationDoc(parameter[/* ltype */1])]
                     }]),
                 init: /* None */0,
@@ -160,7 +160,7 @@ function generate(options, name, colors, textStyles, json) {
                   /* [] */0
                 ],
                 pattern: /* IdentifierPattern */Block.__(0, [{
-                      identifier: SwiftFormat$LonaCompilerCore.layerName(layer[/* name */1]),
+                      identifier: /* SwiftIdentifier */Block.__(6, [SwiftFormat$LonaCompilerCore.layerName(layer[/* name */1])]),
                       annotation: /* None */0
                     }]),
                 init: /* Some */[getLayerInitCall(layer[/* typeName */0])],
@@ -174,7 +174,7 @@ function generate(options, name, colors, textStyles, json) {
                   /* [] */0
                 ],
                 pattern: /* IdentifierPattern */Block.__(0, [{
-                      identifier: SwiftFormat$LonaCompilerCore.layerName(layer[/* name */1]) + "TextStyle",
+                      identifier: /* SwiftIdentifier */Block.__(6, [SwiftFormat$LonaCompilerCore.layerName(layer[/* name */1]) + "TextStyle"]),
                       annotation: /* None */0
                     }]),
                 init: /* Some */[/* MemberExpression */Block.__(1, [/* :: */[
@@ -208,7 +208,7 @@ function generate(options, name, colors, textStyles, json) {
                       /* [] */0
                     ],
                     pattern: /* IdentifierPattern */Block.__(0, [{
-                          identifier: variableName(marginParameter[/* swiftName */1]),
+                          identifier: /* SwiftIdentifier */Block.__(6, [variableName(marginParameter[/* swiftName */1])]),
                           annotation: /* Some */[/* TypeName */Block.__(0, ["CGFloat"])]
                         }]),
                     init: /* Some */[/* LiteralExpression */Block.__(0, [/* FloatingPoint */Block.__(2, [Layer$LonaCompilerCore.getNumberParameter(marginParameter[/* lonaName */0], layer)])])],
@@ -251,7 +251,7 @@ function generate(options, name, colors, textStyles, json) {
                       /* [] */0
                     ],
                     pattern: /* IdentifierPattern */Block.__(0, [{
-                          identifier: variableName(paddingParameter[/* swiftName */1]),
+                          identifier: /* SwiftIdentifier */Block.__(6, [variableName(paddingParameter[/* swiftName */1])]),
                           annotation: /* Some */[/* TypeName */Block.__(0, ["CGFloat"])]
                         }]),
                     init: /* Some */[/* LiteralExpression */Block.__(0, [/* FloatingPoint */Block.__(2, [Layer$LonaCompilerCore.getNumberParameter(paddingParameter[/* lonaName */0], layer)])])],
@@ -840,7 +840,7 @@ function generate(options, name, colors, textStyles, json) {
                   modifiers: /* [] */0,
                   init: /* Some */[def[/* initialValue */1]],
                   pattern: /* IdentifierPattern */Block.__(0, [{
-                        identifier: def[/* variableName */0],
+                        identifier: /* SwiftIdentifier */Block.__(6, [def[/* variableName */0]]),
                         annotation: /* None */0
                       }])
                 }]);
@@ -1082,7 +1082,7 @@ function generate(options, name, colors, textStyles, json) {
                                                                               /* [] */0
                                                                             ],
                                                                             pattern: /* IdentifierPattern */Block.__(0, [{
-                                                                                  identifier: variableName,
+                                                                                  identifier: /* SwiftIdentifier */Block.__(6, [variableName]),
                                                                                   annotation: /* Some */[/* OptionalType */Block.__(4, [/* TypeName */Block.__(0, ["NSLayoutConstraint"])])]
                                                                                 }]),
                                                                             init: /* None */0,

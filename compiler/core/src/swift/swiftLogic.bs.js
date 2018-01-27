@@ -327,9 +327,9 @@ function toSwiftAST(options, colors, textStyles, rootLayer, logicRootNode) {
               return /* VariableDeclaration */Block.__(8, [{
                           modifiers: /* [] */0,
                           pattern: /* IdentifierPattern */Block.__(0, [{
-                                identifier: List.fold_left((function (a, b) {
-                                        return a + ("." + b);
-                                      }), List.hd(path), List.tl(path)),
+                                identifier: /* SwiftIdentifier */Block.__(6, [List.fold_left((function (a, b) {
+                                            return a + ("." + b);
+                                          }), List.hd(path), List.tl(path))]),
                                 annotation: /* Some */[typeAnnotationDoc(value[0])]
                               }]),
                           init: /* None */0,
@@ -360,9 +360,9 @@ function toSwiftAST(options, colors, textStyles, rootLayer, logicRootNode) {
                 return /* VariableDeclaration */Block.__(8, [{
                             modifiers: a.modifiers,
                             pattern: /* IdentifierPattern */Block.__(0, [{
-                                  identifier: List.fold_left((function (a, b) {
-                                          return a + ("." + b);
-                                        }), List.hd(path$1), List.tl(path$1)),
+                                  identifier: /* SwiftIdentifier */Block.__(6, [List.fold_left((function (a, b) {
+                                              return a + ("." + b);
+                                            }), List.hd(path$1), List.tl(path$1))]),
                                   annotation: /* None */0
                                 }]),
                             init: /* Some */[match$5[0].left],

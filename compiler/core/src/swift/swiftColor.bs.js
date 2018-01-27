@@ -23,7 +23,7 @@ function render(options, colors) {
                         ]
                       ],
                       pattern: /* IdentifierPattern */Block.__(0, [{
-                            identifier: color[/* id */0],
+                            identifier: /* SwiftIdentifier */Block.__(6, [color[/* id */0]]),
                             annotation: /* None */0
                           }]),
                       init: /* Some */[/* LiteralExpression */Block.__(0, [/* Color */Block.__(4, [color[/* value */2]])])]

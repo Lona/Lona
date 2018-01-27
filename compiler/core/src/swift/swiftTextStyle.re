@@ -101,7 +101,10 @@ let render =
     ConstantDeclaration({
       "modifiers": [AccessLevelModifier(PublicModifier), StaticModifier],
       "pattern":
-        IdentifierPattern({"identifier": textStyle.id, "annotation": None}),
+        IdentifierPattern({
+          "identifier": SwiftIdentifier(textStyle.id),
+          "annotation": None
+        }),
       "init":
         Some(
           FunctionCallExpression({
