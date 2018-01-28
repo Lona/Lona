@@ -674,9 +674,9 @@ function renderPattern(node) {
           var o = node[0];
           var match = o.annotation;
           if (match) {
-            return Curry._2(Prettier$LonaCompilerCore.Doc[/* Builders */0][/* <+> */5], Curry._2(Prettier$LonaCompilerCore.Doc[/* Builders */0][/* <+> */5], Curry._1(Prettier$LonaCompilerCore.Doc[/* Builders */0][/* s */0], o.identifier), Curry._1(Prettier$LonaCompilerCore.Doc[/* Builders */0][/* s */0], ": ")), renderTypeAnnotation(match[0]));
+            return Curry._2(Prettier$LonaCompilerCore.Doc[/* Builders */0][/* <+> */5], Curry._2(Prettier$LonaCompilerCore.Doc[/* Builders */0][/* <+> */5], render(o.identifier), Curry._1(Prettier$LonaCompilerCore.Doc[/* Builders */0][/* s */0], ": ")), renderTypeAnnotation(match[0]));
           } else {
-            return Curry._1(Prettier$LonaCompilerCore.Doc[/* Builders */0][/* s */0], o.identifier);
+            return render(o.identifier);
           }
       case 1 : 
           var o$1 = node[0];

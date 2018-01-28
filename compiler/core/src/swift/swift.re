@@ -1,3 +1,5 @@
+module Options = SwiftOptions;
+
 module Format = SwiftFormat;
 
 module Ast = SwiftAst;

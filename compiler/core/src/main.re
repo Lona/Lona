@@ -7,12 +7,23 @@ external copySync : (string, string) => unit = "";
 
 [@bs.module] external getStdin : unit => Js_promise.t(string) = "get-stdin";
 
+let arguments = Array.to_list(Process.argv);
+
+let swiftOptions: Swift.Options.options = {
+  framework:
+    switch (arguments |> List.find(Js.String.includes("--framework="))) {
+    | arg when arg |> Js.String.endsWith("appkit") => Swift.Options.AppKit
+    | _ => Swift.Options.UIKit
+    | exception Not_found => Swift.Options.UIKit
+    }
+};
+
 let exit = message => {
   Js.log(message);
   [%bs.raw {|process.exit(1)|}];
 };
 
-if (Array.length(Process.argv) < 3) {
+if (List.length(arguments) < 3) {
   exit("No command given");
 };
 
@@ -55,14 +66,14 @@ let targetExtension = getTargetExtension(target);
 
 let renderColors = (target, colors) =>
   switch target {
-  | Types.Swift => Swift.Color.render(colors)
+  | Types.Swift => Swift.Color.render(swiftOptions, colors)
   | Xml => Xml.Color.render(colors)
   | _ => ""
   };
 
 let renderTextStyles = (target, colors, textStyles) =>
   switch target {
-  | Types.Swift => Swift.TextStyle.render(colors, textStyles)
+  | Types.Swift => Swift.TextStyle.render(swiftOptions, colors, textStyles)
   | _ => ""
   };
 
@@ -106,7 +117,14 @@ let convertComponent = filename => {
           `utf8
         );
       let textStyles = TextStyle.parseFile(textStylesFile);
-      let result = Swift.Component.generate(name, colors, textStyles, parsed);
+      let result =
+        Swift.Component.generate(
+          swiftOptions,
+          name,
+          colors,
+          textStyles,
+          parsed
+        );
       result |> Swift.Render.toString;
     }
   | _ => exit("Unrecognized target")
@@ -116,10 +134,18 @@ let convertComponent = filename => {
 let copyStaticFiles = outputDirectory =>
   switch target {
   | Types.Swift =>
+    let framework =
+      switch swiftOptions.framework {
+      | AppKit => "appkit"
+      | UIKit => "uikit"
+      };
     copySync(
-      concat(NodeGlobal.__dirname, "../static/swift/AttributedFont.swift"),
+      concat(
+        NodeGlobal.__dirname,
+        "../static/swift/AttributedFont." ++ framework ++ ".swift"
+      ),
       concat(outputDirectory, "AttributedFont.swift")
-    )
+    );
   | _ => ()
   };
 

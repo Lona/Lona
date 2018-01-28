@@ -333,9 +333,11 @@ and renderPattern = node =>
   | WildcardPattern => s("_")
   | IdentifierPattern(o) =>
     switch o##annotation {
-    | None => s(o##identifier)
+    | None => render(o##identifier)
     | Some(typeAnnotation) =>
-      s(o##identifier) <+> s(": ") <+> renderTypeAnnotation(typeAnnotation)
+      render(o##identifier)
+      <+> s(": ")
+      <+> renderTypeAnnotation(typeAnnotation)
     }
   | ValueBindingPattern(o) =>
     group(concat([s(o##kind), line, renderPattern(o##pattern)]))

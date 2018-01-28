@@ -9,7 +9,8 @@ open SwiftAst;
    public static let bold: UIFont.Weight
    public static let heavy: UIFont.Weight
    public static let black: UIFont.Weight */
-let render = (colors, textStyles: TextStyle.file) => {
+let render =
+    (options: SwiftOptions.options, colors, textStyles: TextStyle.file) => {
   let unwrapOptional = (f, a) =>
     switch a {
     | Some(value) => [f(value)]
@@ -30,76 +31,80 @@ let render = (colors, textStyles: TextStyle.file) => {
   let argumentsDoc = (textStyle: TextStyle.t) =>
     [
       textStyle.fontFamily
-      |> unwrapOptional(
-           (value) =>
-             FunctionCallArgument({
-               "name": Some(SwiftIdentifier("family")),
-               "value": LiteralExpression(String(value))
-             })
+      |> unwrapOptional(value =>
+           FunctionCallArgument({
+             "name": Some(SwiftIdentifier("family")),
+             "value": LiteralExpression(String(value))
+           })
          ),
       textStyle.fontName
-      |> unwrapOptional(
-           (value) =>
-             FunctionCallArgument({
-               "name": Some(SwiftIdentifier("name")),
-               "value": LiteralExpression(String(value))
-             })
+      |> unwrapOptional(value =>
+           FunctionCallArgument({
+             "name": Some(SwiftIdentifier("name")),
+             "value": LiteralExpression(String(value))
+           })
          ),
       textStyle.fontWeight
-      |> unwrapOptional(
-           (value) =>
-             FunctionCallArgument({
-               "name": Some(SwiftIdentifier("weight")),
-               "value":
-                 MemberExpression([
-                   SwiftIdentifier("UIFont"),
-                   SwiftIdentifier("Weight"),
-                   SwiftIdentifier(convertFontWeight(value))
-                 ])
-             })
+      |> unwrapOptional(value =>
+           FunctionCallArgument({
+             "name": Some(SwiftIdentifier("weight")),
+             "value":
+               MemberExpression([
+                 SwiftIdentifier(
+                   SwiftDocument.fontTypeName(options.framework)
+                 ),
+                 SwiftIdentifier("Weight"),
+                 SwiftIdentifier(convertFontWeight(value))
+               ])
+           })
          ),
       textStyle.fontSize
-      |> unwrapOptional(
-           (value) =>
-             FunctionCallArgument({
-               "name": Some(SwiftIdentifier("size")),
-               "value": LiteralExpression(FloatingPoint(value))
-             })
+      |> unwrapOptional(value =>
+           FunctionCallArgument({
+             "name": Some(SwiftIdentifier("size")),
+             "value": LiteralExpression(FloatingPoint(value))
+           })
          ),
       textStyle.lineHeight
-      |> unwrapOptional(
-           (value) =>
-             FunctionCallArgument({
-               "name": Some(SwiftIdentifier("lineHeight")),
-               "value": LiteralExpression(FloatingPoint(value))
-             })
+      |> unwrapOptional(value =>
+           FunctionCallArgument({
+             "name": Some(SwiftIdentifier("lineHeight")),
+             "value": LiteralExpression(FloatingPoint(value))
+           })
          ),
       textStyle.letterSpacing
-      |> unwrapOptional(
-           (value) =>
-             FunctionCallArgument({
-               "name": Some(SwiftIdentifier("kerning")),
-               "value": LiteralExpression(FloatingPoint(value))
-             })
+      |> unwrapOptional(value =>
+           FunctionCallArgument({
+             "name": Some(SwiftIdentifier("kerning")),
+             "value": LiteralExpression(FloatingPoint(value))
+           })
          ),
       textStyle.color
-      |> unwrapOptional(
-           (value) => {
-             let value =
-               switch (Color.find(colors, value)) {
-               | Some(color) =>
-                 MemberExpression([SwiftIdentifier("Colors"), SwiftIdentifier(color.id)])
-               | None => LiteralExpression(Color(value))
-               };
-             FunctionCallArgument({"name": Some(SwiftIdentifier("color")), "value": value})
-           }
-         )
+      |> unwrapOptional(value => {
+           let value =
+             switch (Color.find(colors, value)) {
+             | Some(color) =>
+               MemberExpression([
+                 SwiftIdentifier("Colors"),
+                 SwiftIdentifier(color.id)
+               ])
+             | None => LiteralExpression(Color(value))
+             };
+           FunctionCallArgument({
+             "name": Some(SwiftIdentifier("color")),
+             "value": value
+           });
+         })
     ]
     |> List.concat;
   let textStyleConstantDoc = (textStyle: TextStyle.t) =>
     ConstantDeclaration({
       "modifiers": [AccessLevelModifier(PublicModifier), StaticModifier],
-      "pattern": IdentifierPattern({"identifier": textStyle.id, "annotation": None}),
+      "pattern":
+        IdentifierPattern({
+          "identifier": SwiftIdentifier(textStyle.id),
+          "annotation": None
+        }),
       "init":
         Some(
           FunctionCallExpression({
@@ -117,7 +122,7 @@ let render = (colors, textStyles: TextStyle.file) => {
   let doc =
     TopLevelDeclaration({
       "statements": [
-        ImportDeclaration("UIKit"),
+        SwiftDocument.importFramework(options.framework),
         Empty,
         ClassDeclaration({
           "name": "TextStyles",
@@ -131,5 +136,5 @@ let render = (colors, textStyles: TextStyle.file) => {
         Empty
       ]
     });
-  SwiftRender.toString(doc)
+  SwiftRender.toString(doc);
 };

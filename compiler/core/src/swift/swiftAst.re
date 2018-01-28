@@ -61,7 +61,7 @@ and pattern =
   | IdentifierPattern(
       {
         .
-        "identifier": string,
+        "identifier": node,
         "annotation": option(typeAnnotation)
       }
     )
