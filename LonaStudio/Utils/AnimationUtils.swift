@@ -57,13 +57,11 @@ class AnimationUtils {
     static func assetMapValue(from animation: NSMutableDictionary) -> CSValue {
         let assetNames = AnimationUtils.assetNames(from: animation)
 
-        let valueMap = assetNames.key {
-            (name) -> (key: String, value: CSData) in
+        let valueMap = assetNames.key {(name) -> (key: String, value: CSData) in
             return (key: name, value: CSData.Null)
         }
 
-        let typeMap: CSType.Schema = assetNames.key {
-            (name) -> (key: String, value: (CSType, CSAccess)) in
+        let typeMap: CSType.Schema = assetNames.key {(name) -> (key: String, value: (CSType, CSAccess)) in
             return (key: name, value: (CSURLType, .write))
         }
 

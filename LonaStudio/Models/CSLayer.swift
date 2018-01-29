@@ -19,7 +19,7 @@ extension Dictionary {
     }
 
     func map<OutValue>(_ transform: (Value) throws -> OutValue) rethrows -> [Key: OutValue] {
-        return Dictionary<Key, OutValue>(try map { (k, v) in (k, try transform(v)) })
+        return [Key: OutValue](try map { (k, v) in (k, try transform(v)) })
     }
 }
 
@@ -41,7 +41,7 @@ enum PositionType: String {
 
 extension CSData {
     var int: Int {
-        get { return Int(numberValue) }
+        return Int(numberValue)
     }
 }
 
@@ -454,10 +454,8 @@ class CSLayer: CSDataDeserializable, CSDataSerializable, DataNode, NSCopying {
     func encodeParameters() -> [String: CSData] {
         var parameters = self.parameters
 
-        for (key, value) in parameters {
-            if value == CSData.Null {
-                parameters.removeValue(forKey: key)
-            }
+        for (key, value) in parameters where value == CSData.Null {
+            parameters.removeValue(forKey: key)
         }
 
         return parameters

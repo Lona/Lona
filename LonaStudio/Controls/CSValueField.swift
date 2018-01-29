@@ -227,14 +227,14 @@ class CSValueField {
             }
 
             type.onChangeData = defaultChangeHandler
-        case .dictionary(_):
+        case .dictionary:
             let field = DictionaryEditorButton(value: value, onChangeData: defaultChangeHandler)
 
             view = field
 
             field.frame = NSRect(x: 0, y: -2, width: 120, height: 26)
             field.useYogaLayout = true
-        case .array(_):
+        case .array:
             let field = ArrayEditorButton(frame: NSRect(x: 0, y: -2, width: 120, height: 26))
             view = field
 
@@ -259,8 +259,6 @@ class CSValueField {
             field.ygNode?.marginLeft = 2
         default:
             view.useYogaLayout = true
-
-            break
         }
     }
 }

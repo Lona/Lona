@@ -106,7 +106,7 @@ indirect enum CSType: Equatable, CSDataSerializable, CSDataDeserializable {
     func toData() -> CSData {
         switch self {
         case .any: return .String("Any")
-        case .optional(_): return .String("Optional")
+        case .optional: return .String("Optional")
         case .named(let name, let type):
             if CSType.userType(named: name) != nil { return .String(name) }
 
@@ -115,7 +115,7 @@ indirect enum CSType: Equatable, CSDataSerializable, CSDataDeserializable {
                 "alias": .String(name),
                 "of": type.toData()
             ])
-        case .generic(_, _): return .String("Generic")
+        case .generic: return .String("Generic")
         case .undefined: return .String("Undefined")
         case .null: return .String("Null")
         case .bool: return .String("Boolean")
@@ -126,7 +126,7 @@ indirect enum CSType: Equatable, CSDataSerializable, CSDataDeserializable {
                 "name": "Array".toData(),
                 "of": innerType.toData()
             ])
-        case .dictionary(_): return .String("Dictionary")
+        case .dictionary: return .String("Dictionary")
         case .enumeration(let values):
             if let match = CSType.builtInTypes.enumerated().first(where: { (arg) -> Bool in
                 let (_, item) = arg
@@ -164,7 +164,7 @@ indirect enum CSType: Equatable, CSDataSerializable, CSDataDeserializable {
         }
     }
 
-    static func ==(lhs: CSType, rhs: CSType) -> Bool {
+    static func == (lhs: CSType, rhs: CSType) -> Bool {
         switch (lhs, rhs) {
         case (.any, .any): return true
         case (.optional(let l), .optional(let r)): return l == r
@@ -179,10 +179,8 @@ indirect enum CSType: Equatable, CSDataSerializable, CSDataDeserializable {
             // TODO does this work?
             return NSDictionary(dictionary: l).isEqual(to: r)
         case (.enumeration(let l), .enumeration(let r)):
-            for pair in zip(l, r) {
-                if pair.0 != pair.1 {
-                    return false
-                }
+            for pair in zip(l, r) where pair.0 != pair.1 {
+                return false
             }
 
             return true

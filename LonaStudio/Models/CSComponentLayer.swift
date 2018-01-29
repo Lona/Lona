@@ -24,13 +24,11 @@ class CSComponentLayer: CSLayer {
     override func value() -> CSValue {
         if failedToLoad { return CSUndefinedValue }
 
-        let parametersSchema: CSType.Schema = component.parameters.key {
-            (parameter) -> (key: String, value: (CSType, CSAccess)) in
+        let parametersSchema: CSType.Schema = component.parameters.key {(parameter) -> (key: String, value: (CSType, CSAccess)) in
             return (key: parameter.name, value: (parameter.type, .write))
         }
 
-        let parametersMap: [String: CSData] = component.parameters.key {
-            (parameter) -> (key: String, value: CSData) in
+        let parametersMap: [String: CSData] = component.parameters.key {(parameter) -> (key: String, value: CSData) in
             return (key: parameter.name, value: parameters[parameter.name] ?? CSData.Null)
         }
 

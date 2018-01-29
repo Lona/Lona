@@ -50,7 +50,7 @@ class LayerList: NSOutlineView {
         let targetRow = row(forItem: targetLayer)
 
         // Root layer
-        if (targetRow == 0) {
+        if targetRow == 0 {
             targetLayer.appendChild(newLayer)
         } else {
             let parentLayer = parent(forItem: targetLayer) as! CSLayer
@@ -96,8 +96,7 @@ class LayerList: NSOutlineView {
 
         let documentController = NSDocumentController.shared
 
-        documentController.openDocument(withContentsOf: url, display: true) {
-            (document, documentWasAlreadyOpen, error) in
+        documentController.openDocument(withContentsOf: url, display: true) { (_, documentWasAlreadyOpen, error) in
             if error != nil {
                 Swift.print("An error occurred")
             } else {
@@ -146,8 +145,7 @@ class LayerList: NSOutlineView {
             return
         }
 
-        documentController.openDocument(withContentsOf: url, display: true, completionHandler: {
-            (document, documentWasAlreadyOpen, error) in
+        documentController.openDocument(withContentsOf: url, display: true, completionHandler: { (_, _, _) in
 
             let componentLayer = self.createComponentLayer(from: url)
             self.replace(layer: layer, with: componentLayer)
@@ -175,13 +173,10 @@ class LayerList: NSOutlineView {
             return
         }
 
-        documentController.openDocument(withContentsOf: url, display: true, completionHandler: {
-            (document, documentWasAlreadyOpen, error) in
-
+        documentController.openDocument(withContentsOf: url, display: true, completionHandler: { (document, _, _) in
             layer.component = (document as! Document).file
             layer.url = url.absoluteString
             layer.name = self.componentName(for: url)
-
             self.onChange()
         })
     }

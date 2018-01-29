@@ -31,11 +31,11 @@ struct CSValue: Equatable, CSDataSerializable, CSDataDeserializable {
         case .number: return CSValue(type: type, data: .Number(0))
         case .string: return CSValue(type: type, data: .String(""))
         case .named("Color", .string): return CSValue(type: type, data: .String("black"))
-        case .named(_):
+        case .named:
             var value = cast(to: type.unwrappedNamedType())
             value.type = type
             return value
-        case .array(_): return CSValue(type: type, data: .Array([]))
+        case .array: return CSValue(type: type, data: .Array([]))
         default: return CSValue(type: type, data: .Null)
         }
     }
@@ -62,7 +62,7 @@ struct CSValue: Equatable, CSDataSerializable, CSDataDeserializable {
         return CSValue(type: type.unwrappedNamedType(), data: data)
     }
 
-    static func ==(lhs: CSValue, rhs: CSValue) -> Bool {
+    static func == (lhs: CSValue, rhs: CSValue) -> Bool {
         return lhs.type == rhs.type && lhs.data == rhs.data
     }
 

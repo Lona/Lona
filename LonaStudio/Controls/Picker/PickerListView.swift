@@ -115,7 +115,7 @@ extension PickerListView {
     }
 
     fileprivate func removeHover() {
-        tableView.enumerateAvailableRowViews { (row, index) in
+        tableView.enumerateAvailableRowViews { (row, _) in
             let textRow = row.view(atColumn: 0) as! PickerRowViewType
             textRow.onHover(false)
         }

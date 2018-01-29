@@ -43,8 +43,8 @@ final class CSCase: DataNodeCopying {
 
         var typeName: String {
             switch self {
-            case .entry(_): return "entry"
-            case .importedList(_): return "importedList"
+            case .entry: return "entry"
+            case .importedList: return "importedList"
             }
         }
     }

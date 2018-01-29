@@ -32,10 +32,8 @@ struct CSFunction {
         var canBeInvoked: Bool {
             let function = CSFunction.getFunction(declaredAs: name)
 
-            for parameter in function.parameters {
-                if arguments[parameter.name] == nil {
-                    return false
-                }
+            for parameter in function.parameters where arguments[parameter.name] == nil {
+                return false
             }
 
             return true
@@ -158,7 +156,7 @@ struct CSFunction {
 
         var keyPath: [String]? {
             switch self {
-            case .value(_): return nil
+            case .value: return nil
             case .identifier(_, let name): return name
             }
         }
@@ -210,7 +208,7 @@ struct CSFunction {
             description: "Do nothing",
             parameters: [],
             hasBody: false,
-            invoke: { _, scope in .stepOver },
+            invoke: { _, _ in .stepOver },
             updateScope: { _, _  in }
         )
     }
@@ -229,7 +227,7 @@ struct CSFunction {
             description: "",
             parameters: [],
             hasBody: true,
-            invoke: { _, scope in .stepOver },
+            invoke: { _, _ in .stepOver },
             updateScope: { _, _  in }
         )
     }
