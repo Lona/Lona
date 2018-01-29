@@ -143,6 +143,14 @@ function labelAttributedTextName(framework) {
   }
 }
 
+function labelTextName(framework) {
+  if (framework !== 0) {
+    return "stringValue";
+  } else {
+    return "text";
+  }
+}
+
 exports.join                    = join;
 exports.joinGroups              = joinGroups;
 exports.lonaValue               = lonaValue;
@@ -151,4 +159,5 @@ exports.colorTypeName           = colorTypeName;
 exports.fontTypeName            = fontTypeName;
 exports.layoutPriorityTypeDoc   = layoutPriorityTypeDoc;
 exports.labelAttributedTextName = labelAttributedTextName;
+exports.labelTextName           = labelTextName;
 /* No side effect */

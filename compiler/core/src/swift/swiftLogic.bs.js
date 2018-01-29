@@ -48,6 +48,7 @@ function toSwiftAST(options, colors, textStyles, rootLayer, logicRootNode) {
     var initialValue;
     initialValue = x.tag ? SwiftDocument$LonaCompilerCore.lonaValue(colors, textStyles, x[0]) : identifierName(x);
     var match = options[/* framework */0];
+    var exit = 0;
     if (typeof initialValue === "number") {
       return initialValue;
     } else if (initialValue.tag === 6) {
@@ -61,25 +62,36 @@ function toSwiftAST(options, colors, textStyles, rootLayer, logicRootNode) {
       } else if (name.endsWith("width")) {
         return /* SwiftIdentifier */Block.__(6, [name.replace(".width", "WidthAnchorConstraint?.constant")]);
       } else if (match !== 0) {
+        exit = 1;
+      } else {
         var name$1 = initialValue[0];
         if (name$1.endsWith(".borderRadius")) {
-          return /* SwiftIdentifier */Block.__(6, [name$1.replace(".borderRadius", ".cornerRadius")]);
-        } else if (name$1.endsWith("backgroundColor")) {
-          return /* SwiftIdentifier */Block.__(6, [name$1.replace("backgroundColor", "fillColor")]);
+          return /* SwiftIdentifier */Block.__(6, [name$1.replace(".borderRadius", ".layer.cornerRadius")]);
         } else {
-          return initialValue;
-        }
-      } else {
-        var name$2 = initialValue[0];
-        if (name$2.endsWith(".borderRadius")) {
-          return /* SwiftIdentifier */Block.__(6, [name$2.replace(".borderRadius", ".layer.cornerRadius")]);
-        } else {
-          return initialValue;
+          exit = 1;
         }
       }
     } else {
       return initialValue;
     }
+    if (exit === 1) {
+      var name$2 = initialValue[0];
+      if (name$2.endsWith(".text")) {
+        return /* SwiftIdentifier */Block.__(6, [name$2.replace(".text", "." + SwiftDocument$LonaCompilerCore.labelTextName(options[/* framework */0]))]);
+      } else if (match !== 0) {
+        var name$3 = initialValue[0];
+        if (name$3.endsWith(".borderRadius")) {
+          return /* SwiftIdentifier */Block.__(6, [name$3.replace(".borderRadius", ".cornerRadius")]);
+        } else if (name$3.endsWith("backgroundColor")) {
+          return /* SwiftIdentifier */Block.__(6, [name$3.replace("backgroundColor", "fillColor")]);
+        } else {
+          return initialValue;
+        }
+      } else {
+        return initialValue;
+      }
+    }
+    
   };
   var typeAnnotationDoc = function (param) {
     if (param.tag) {
@@ -119,7 +131,7 @@ function toSwiftAST(options, colors, textStyles, rootLayer, logicRootNode) {
               /* [] */0
             ];
     } else if (node.tag === 6) {
-      return node[0];
+      return List.concat(List.map(unwrapBlock, node[0]));
     } else {
       return /* :: */[
               node,
@@ -272,12 +284,12 @@ function toSwiftAST(options, colors, textStyles, rootLayer, logicRootNode) {
                                   }]),
                               /* [] */0
                             ]]);
-                } else if (name$2.endsWith("text")) {
+                } else if (name$2.endsWith(SwiftDocument$LonaCompilerCore.labelTextName(options[/* framework */0]))) {
                   return /* BinaryExpression */Block.__(2, [{
-                              left: /* SwiftIdentifier */Block.__(6, [name$2.replace(".text", "." + SwiftDocument$LonaCompilerCore.labelAttributedTextName(options[/* framework */0]))]),
+                              left: /* SwiftIdentifier */Block.__(6, [name$2.replace("." + SwiftDocument$LonaCompilerCore.labelTextName(options[/* framework */0]), "." + SwiftDocument$LonaCompilerCore.labelAttributedTextName(options[/* framework */0]))]),
                               operator: "=",
                               right: /* MemberExpression */Block.__(1, [/* :: */[
-                                    /* SwiftIdentifier */Block.__(6, [name$2.replace(".text", "TextStyle")]),
+                                    /* SwiftIdentifier */Block.__(6, [name$2.replace("." + SwiftDocument$LonaCompilerCore.labelTextName(options[/* framework */0]), "TextStyle")]),
                                     /* :: */[
                                       /* FunctionCallExpression */Block.__(15, [{
                                             name: /* SwiftIdentifier */Block.__(6, ["apply"]),

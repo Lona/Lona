@@ -88,3 +88,9 @@ let labelAttributedTextName = framework =>
   | SwiftOptions.UIKit => "attributedText"
   | SwiftOptions.AppKit => "attributedStringValue"
   };
+
+let labelTextName = framework =>
+  switch framework {
+  | SwiftOptions.UIKit => "text"
+  | SwiftOptions.AppKit => "stringValue"
+  };

@@ -38,8 +38,21 @@ let generate =
       (_, path) => [
         "_" ++ Format.variableNameFromIdentifier(rootLayer.name, path)
       ],
-      (_, path) =>
-        Logic.Literal(LonaValue.defaultValueForParameter(List.nth(path, 2))),
+      (_, path) => {
+        let [_, layerName, parameterName] = path;
+        let defaultValue =
+          Logic.Literal(LonaValue.defaultValueForParameter(parameterName));
+        switch (Layer.findByName(layerName, rootLayer)) {
+        | Some((layer: Types.layer)) =>
+          let parameterName =
+            Js.String.replace("textStyle", "font", parameterName);
+          switch (StringMap.find_opt(parameterName, layer.parameters)) {
+          | Some(value) => Logic.Literal(value)
+          | _ => defaultValue
+          };
+        | None => defaultValue
+        };
+      },
       logic
     );
   let layerParameterAssignments =
@@ -135,7 +148,8 @@ let generate =
       "modifiers": [AccessLevelModifier(PrivateModifier)],
       "pattern":
         IdentifierPattern({
-          "identifier": SwiftIdentifier((layer.name |> Format.layerName) ++ "TextStyle"),
+          "identifier":
+            SwiftIdentifier((layer.name |> Format.layerName) ++ "TextStyle"),
           "annotation": None /* Some(TypeName("AttributedFont")) */
         }),
       "init":
@@ -183,7 +197,8 @@ let generate =
               "modifiers": [AccessLevelModifier(PrivateModifier)],
               "pattern":
                 IdentifierPattern({
-                  "identifier": SwiftIdentifier(variableName(marginParameter.swiftName)),
+                  "identifier":
+                    SwiftIdentifier(variableName(marginParameter.swiftName)),
                   "annotation": Some(TypeName("CGFloat"))
                 }),
               "init":
@@ -207,7 +222,8 @@ let generate =
             "modifiers": [AccessLevelModifier(PrivateModifier)],
             "pattern":
               IdentifierPattern({
-                "identifier": SwiftIdentifier(variableName(paddingParameter.swiftName)),
+                "identifier":
+                  SwiftIdentifier(variableName(paddingParameter.swiftName)),
                 "annotation": Some(TypeName("CGFloat"))
               }),
             "init":
@@ -335,27 +351,23 @@ let generate =
   let defineInitialLayerValue = (layer: Types.layer, (name, _)) => {
     let parameters = Layer.LayerMap.find_opt(layer, layerParameterAssignments);
     switch parameters {
-    | None => LineComment(layer.name)
+    | None => Logic.None /* TODO This may mean we're not handling a parameter */
     | Some(parameters) =>
       let assignment = StringMap.find_opt(name, parameters);
-      let logic =
-        switch assignment {
-        | None =>
-          Logic.defaultAssignmentForLayerParameter(
-            colors,
-            textStyles,
-            layer,
-            name
-          )
-        | Some(assignment) => assignment
-        };
-      let node =
-        SwiftLogic.toSwiftAST(options, colors, textStyles, rootLayer, logic);
-      StatementListHelper(node);
+      switch assignment {
+      | None =>
+        Logic.defaultAssignmentForLayerParameter(
+          colors,
+          textStyles,
+          layer,
+          name
+        )
+      | Some(assignment) => assignment
+      };
     };
   };
   let setUpViewsDoc = (root: Types.layer) => {
-    let setUpDefaultsDoc = () => {
+    let defaultAssignmentLogic = () => {
       let filterParameters = ((name, _)) =>
         name != "image"
         && name != "flexDirection"
@@ -437,7 +449,13 @@ let generate =
             options.framework == SwiftOptions.AppKit ?
               Layer.flatmap(initializeBox, root) |> List.concat : [],
             Layer.flatmapParent(addSubviews, root) |> List.concat,
-            setUpDefaultsDoc()
+            SwiftLogic.toSwiftAST(
+              options,
+              colors,
+              textStyles,
+              rootLayer,
+              Logic.Block(defaultAssignmentLogic())
+            )
           ]
         )
     });
@@ -971,18 +989,43 @@ let generate =
       |> List.filter(filterParameters)
       |> List.filter(filterConditionallyAssigned(layer))
       |> List.map(defineInitialLayerValue(layer));
+    let updateLogic =
+      (
+        assignments
+        |> Layer.LayerMap.bindings
+        |> List.map(defineInitialLayerValues)
+        |> List.concat
+      )
+      @ [logic];
+    let isTextStyleAssigned = (layer: Types.layer) => {
+      let identifier = (
+        Types.textStyleType,
+        ["layers", layer.name, "textStyle"]
+      );
+      let assignedIdentifiers =
+        Logic.assignedIdentifiers(Logic.Block(updateLogic));
+      Logic.IdentifierSet.mem(identifier, assignedIdentifiers) ? [layer] : [];
+    };
+    let assignedTextLayers =
+      rootLayer |> Layer.flatmap(isTextStyleAssigned) |> List.concat;
+    let textAssignment = (layer: Types.layer) => {
+      let identifier =
+        Logic.Identifier(Types.textStyleType, ["layers", layer.name, "text"]);
+      Logic.Assign(identifier, identifier);
+    };
+    let textAssignments = assignedTextLayers |> List.map(textAssignment);
     FunctionDeclaration({
       "name": "update",
       "modifiers": [AccessLevelModifier(PrivateModifier)],
       "parameters": [],
       "body":
-        (
-          assignments
-          |> Layer.LayerMap.bindings
-          |> List.map(defineInitialLayerValues)
-          |> List.concat
+        SwiftLogic.toSwiftAST(
+          options,
+          colors,
+          textStyles,
+          rootLayer,
+          Logic.Block(updateLogic @ textAssignments)
         )
-        @ SwiftLogic.toSwiftAST(options, colors, textStyles, rootLayer, logic)
     });
   };
   let textLayers =

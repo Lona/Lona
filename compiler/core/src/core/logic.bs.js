@@ -160,7 +160,7 @@ function getValueType(value) {
   }
 }
 
-function accessedIdentifiers(node) {
+function assignedIdentifiers(node) {
   var inner = function (node, identifiers) {
     if (typeof node === "number") {
       return identifiers;
@@ -182,7 +182,7 @@ function accessedIdentifiers(node) {
 }
 
 function conditionallyAssignedIdentifiers(rootNode) {
-  var identifiers = accessedIdentifiers(rootNode);
+  var identifiers = assignedIdentifiers(rootNode);
   var paths = Curry._1(elements, identifiers);
   var isAlwaysAssigned = function (target, _node) {
     while(true) {
@@ -237,7 +237,7 @@ function conditionallyAssignedIdentifiers(rootNode) {
 }
 
 function addVariableDeclarations(node) {
-  var identifiers = accessedIdentifiers(node);
+  var identifiers = assignedIdentifiers(node);
   return List.fold_left((function (acc, declaration) {
                 return Curry._2(LogicTree[/* insert_child */8], (function (item) {
                               var match = Caml_obj.caml_equal(item, acc);
@@ -426,7 +426,7 @@ function enforceSingleAssignment(getIntermediateName, getDefaultValue, node) {
 exports.IdentifierSet                      = IdentifierSet;
 exports.LogicTree                          = LogicTree;
 exports.getValueType                       = getValueType;
-exports.accessedIdentifiers                = accessedIdentifiers;
+exports.assignedIdentifiers                = assignedIdentifiers;
 exports.conditionallyAssignedIdentifiers   = conditionallyAssignedIdentifiers;
 exports.addVariableDeclarations            = addVariableDeclarations;
 exports.prepend                            = prepend;

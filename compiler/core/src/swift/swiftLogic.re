@@ -74,6 +74,14 @@ let toSwiftAST =
       Ast.SwiftIdentifier(
         name |> Js.String.replace(".borderRadius", ".layer.cornerRadius")
       )
+    | (_, Ast.SwiftIdentifier(name)) when name |> Js.String.endsWith(".text") =>
+      Ast.SwiftIdentifier(
+        name
+        |> Js.String.replace(
+             ".text",
+             "." ++ SwiftDocument.labelTextName(options.framework)
+           )
+      )
     | (AppKit, Ast.SwiftIdentifier(name))
         when name |> Js.String.endsWith(".borderRadius") =>
       Ast.SwiftIdentifier(
@@ -106,9 +114,9 @@ let toSwiftAST =
     | Lte => "<="
     | Unknown => "???"
     };
-  let unwrapBlock =
+  let rec unwrapBlock =
     fun
-    | Logic.Block(body) => body
+    | Logic.Block(body) => body |> List.map(unwrapBlock) |> List.concat
     | node => [node];
   let rec inner = logicRootNode =>
     switch logicRootNode {
@@ -154,13 +162,17 @@ let toSwiftAST =
           })
         ]);
       | (Ast.SwiftIdentifier(name), right)
-          when name |> Js.String.endsWith("text") =>
+          when
+            Js.String.endsWith(
+              SwiftDocument.labelTextName(options.framework),
+              name
+            ) =>
         Ast.BinaryExpression({
           "left":
             Ast.SwiftIdentifier(
               name
               |> Js.String.replace(
-                   ".text",
+                   "." ++ SwiftDocument.labelTextName(options.framework),
                    "."
                    ++ SwiftDocument.labelAttributedTextName(options.framework)
                  )
@@ -169,7 +181,11 @@ let toSwiftAST =
           "right":
             Ast.MemberExpression([
               Ast.SwiftIdentifier(
-                name |> Js.String.replace(".text", "TextStyle")
+                name
+                |> Js.String.replace(
+                     "." ++ SwiftDocument.labelTextName(options.framework),
+                     "TextStyle"
+                   )
               ),
               Ast.FunctionCallExpression({
                 "name": Ast.SwiftIdentifier("apply"),

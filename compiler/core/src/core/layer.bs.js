@@ -428,7 +428,7 @@ function getInsets(prefix, layer) {
           Caml_builtin_exceptions.match_failure,
           [
             "/Users/devinabbott/Projects/Lona/compiler/core/src/core/layer.re",
-            155,
+            157,
             6
           ]
         ];
@@ -445,7 +445,7 @@ function getMargin(param) {
 }
 
 function parameterAssignmentsFromLogic(layer, node) {
-  var identifiers = Logic$LonaCompilerCore.accessedIdentifiers(node);
+  var identifiers = Logic$LonaCompilerCore.assignedIdentifiers(node);
   return List.fold_left((function (acc, item) {
                 if (item.tag) {
                   return acc;

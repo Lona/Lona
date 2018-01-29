@@ -9,6 +9,8 @@ var Pervasives                     = require("bs-platform/lib/js/pervasives.js")
 var LodashUpperfirst               = require("lodash.upperfirst");
 var Layer$LonaCompilerCore         = require("../core/layer.bs.js");
 var Logic$LonaCompilerCore         = require("../core/logic.bs.js");
+var Types$LonaCompilerCore         = require("../core/types.bs.js");
+var Caml_builtin_exceptions        = require("bs-platform/lib/js/caml_builtin_exceptions.js");
 var Decode$LonaCompilerCore        = require("../core/decode.bs.js");
 var LonaValue$LonaCompilerCore     = require("../core/lonaValue.bs.js");
 var StringMap$LonaCompilerCore     = require("../containers/stringMap.bs.js");
@@ -26,7 +28,50 @@ function generate(options, name, colors, textStyles, json) {
                   /* [] */0
                 ];
         }), (function (_, path) {
-          return /* Literal */Block.__(1, [LonaValue$LonaCompilerCore.defaultValueForParameter(List.nth(path, 2))]);
+          var exit = 0;
+          if (path) {
+            var match = path[1];
+            if (match) {
+              var match$1 = match[1];
+              if (match$1) {
+                if (match$1[1]) {
+                  exit = 1;
+                } else {
+                  var parameterName = match$1[0];
+                  var defaultValue = /* Literal */Block.__(1, [LonaValue$LonaCompilerCore.defaultValueForParameter(parameterName)]);
+                  var match$2 = Layer$LonaCompilerCore.findByName(match[0], rootLayer);
+                  if (match$2) {
+                    var parameterName$1 = parameterName.replace("textStyle", "font");
+                    var match$3 = StringMap$LonaCompilerCore.find_opt(parameterName$1, match$2[0][/* parameters */2]);
+                    if (match$3) {
+                      return /* Literal */Block.__(1, [match$3[0]]);
+                    } else {
+                      return defaultValue;
+                    }
+                  } else {
+                    return defaultValue;
+                  }
+                }
+              } else {
+                exit = 1;
+              }
+            } else {
+              exit = 1;
+            }
+          } else {
+            exit = 1;
+          }
+          if (exit === 1) {
+            throw [
+                  Caml_builtin_exceptions.match_failure,
+                  [
+                    "/Users/devinabbott/Projects/Lona/compiler/core/src/swift/swiftComponent.re",
+                    42,
+                    12
+                  ]
+                ];
+          }
+          
         }), logic);
   var layerParameterAssignments = Layer$LonaCompilerCore.logicAssignmentsFromLayerParameters(rootLayer);
   var assignments = Layer$LonaCompilerCore.parameterAssignmentsFromLogic(rootLayer, logic$1);
@@ -425,15 +470,17 @@ function generate(options, name, colors, textStyles, json) {
     var parameters = Layer$LonaCompilerCore.LayerMap[/* find_opt */24](layer, layerParameterAssignments);
     if (parameters) {
       var assignment = StringMap$LonaCompilerCore.find_opt(name, parameters[0]);
-      var logic = assignment ? assignment[0] : Logic$LonaCompilerCore.defaultAssignmentForLayerParameter(colors, textStyles, layer, name);
-      var node = SwiftLogic$LonaCompilerCore.toSwiftAST(options, colors, textStyles, rootLayer, logic);
-      return /* StatementListHelper */Block.__(19, [node]);
+      if (assignment) {
+        return assignment[0];
+      } else {
+        return Logic$LonaCompilerCore.defaultAssignmentForLayerParameter(colors, textStyles, layer, name);
+      }
     } else {
-      return /* LineComment */Block.__(16, [layer[/* name */1]]);
+      return /* None */0;
     }
   };
   var setUpViewsDoc = function (root) {
-    var setUpDefaultsDoc = function () {
+    var defaultAssignmentLogic = function () {
       var filterParameters = function (param) {
         var name = param[0];
         if (name !== "image" && name !== "flexDirection" && name !== "justifyContent" && name !== "alignSelf" && name !== "alignItems" && name !== "flex" && !name.startsWith("padding") && !name.startsWith("margin") && name !== "height") {
@@ -536,7 +583,7 @@ function generate(options, name, colors, textStyles, json) {
                       /* :: */[
                         List.concat(Layer$LonaCompilerCore.flatmapParent(addSubviews, root)),
                         /* :: */[
-                          setUpDefaultsDoc(/* () */0),
+                          SwiftLogic$LonaCompilerCore.toSwiftAST(options, colors, textStyles, rootLayer, /* Block */Block.__(6, [defaultAssignmentLogic(/* () */0)])),
                           /* [] */0
                         ]
                       ]
@@ -1003,6 +1050,58 @@ function generate(options, name, colors, textStyles, json) {
                           return Curry._2(Logic$LonaCompilerCore.IdentifierSet[/* exists */15], isAssigned, conditionallyAssigned);
                         }))(List.filter(filterParameters)(Curry._1(StringMap$LonaCompilerCore.bindings, param[1]))));
     };
+    var updateLogic = Pervasives.$at(List.concat(List.map(defineInitialLayerValues, Curry._1(Layer$LonaCompilerCore.LayerMap[/* bindings */16], assignments))), /* :: */[
+          logic$1,
+          /* [] */0
+        ]);
+    var isTextStyleAssigned = function (layer) {
+      var identifier_001 = /* :: */[
+        "layers",
+        /* :: */[
+          layer[/* name */1],
+          /* :: */[
+            "textStyle",
+            /* [] */0
+          ]
+        ]
+      ];
+      var identifier = /* tuple */[
+        Types$LonaCompilerCore.textStyleType,
+        identifier_001
+      ];
+      var assignedIdentifiers = Logic$LonaCompilerCore.assignedIdentifiers(/* Block */Block.__(6, [updateLogic]));
+      var match = Curry._2(Logic$LonaCompilerCore.IdentifierSet[/* mem */2], identifier, assignedIdentifiers);
+      if (match !== 0) {
+        return /* :: */[
+                layer,
+                /* [] */0
+              ];
+      } else {
+        return /* [] */0;
+      }
+    };
+    var assignedTextLayers = List.concat(Layer$LonaCompilerCore.flatmap(isTextStyleAssigned, rootLayer));
+    var textAssignment = function (layer) {
+      var identifier_001 = /* :: */[
+        "layers",
+        /* :: */[
+          layer[/* name */1],
+          /* :: */[
+            "text",
+            /* [] */0
+          ]
+        ]
+      ];
+      var identifier = /* Identifier */Block.__(0, [
+          Types$LonaCompilerCore.textStyleType,
+          identifier_001
+        ]);
+      return /* Assign */Block.__(2, [
+                identifier,
+                identifier
+              ]);
+    };
+    var textAssignments = List.map(textAssignment, assignedTextLayers);
     return /* FunctionDeclaration */Block.__(10, [{
                 name: "update",
                 modifiers: /* :: */[
@@ -1010,7 +1109,7 @@ function generate(options, name, colors, textStyles, json) {
                   /* [] */0
                 ],
                 parameters: /* [] */0,
-                body: Pervasives.$at(List.concat(List.map(defineInitialLayerValues, Curry._1(Layer$LonaCompilerCore.LayerMap[/* bindings */16], assignments))), SwiftLogic$LonaCompilerCore.toSwiftAST(options, colors, textStyles, rootLayer, logic$1))
+                body: SwiftLogic$LonaCompilerCore.toSwiftAST(options, colors, textStyles, rootLayer, /* Block */Block.__(6, [Pervasives.$at(updateLogic, textAssignments)]))
               }]);
   };
   var textLayers = List.filter((function (layer) {
