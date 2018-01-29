@@ -223,7 +223,7 @@ enum CSData: Equatable, CustomDebugStringConvertible {
         case .Null:
             return NSNull()
         case .Bool(let value):
-            return NSNumber(value: value)
+            return NSNumber(booleanLiteral: value) // swiftlint:disable:this compiler_protocol_init
         case .Number(let value):
             return value
         case .String(let value):
