@@ -214,7 +214,7 @@ class CanvasListEditor: NSOutlineView, NSOutlineViewDataSource, NSOutlineViewDel
     override func keyDown(with event: NSEvent) {
         let characters = event.charactersIgnoringModifiers!
 
-        if (characters == String(Character(UnicodeScalar(NSDeleteCharacter)!))) {
+        if characters == String(Character(UnicodeScalar(NSDeleteCharacter)!)) {
             if selectedItem == nil { return }
 
             canvasList.remove(at: selectedRow)

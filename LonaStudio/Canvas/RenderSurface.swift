@@ -74,11 +74,9 @@ class RenderSurface: NSView {
 
         for (index, tag) in titles.enumerated() {
             let tagView = renderTag(title: tag)
-
-            if (index > 0) {
+            if index > 0 {
                 tagView.frame.origin.x = views[index - 1].frame.maxX + 4
             }
-
             views.append(tagView)
         }
 
@@ -297,7 +295,8 @@ class RenderSurface: NSView {
             var maxY: Double = 0.0
 
             var maxHeights: [Double] = []
-            for (_, stack) in matrix.enumerated() {
+            for item in matrix.enumerated() {
+                let stack = item.element
                 for (y, taggedCanvas) in stack.arrayValue.enumerated() {
                     if maxHeights.count <= y { maxHeights.append(0) }
                     maxHeights[y] = max(maxHeights[y], taggedCanvas.get(key: "height").numberValue)
@@ -330,7 +329,8 @@ class RenderSurface: NSView {
             var maxX: Double = 0.0
 
             var maxWidths: [Double] = []
-            for (_, stack) in matrix.enumerated() {
+            for item in matrix.enumerated() {
+                let stack = item.element
                 for (x, taggedCanvas) in stack.arrayValue.enumerated() {
                     if maxWidths.count <= x { maxWidths.append(0) }
                     maxWidths[x] = max(maxWidths[x], taggedCanvas.get(key: "width").numberValue)

@@ -36,7 +36,7 @@ enum CSData: Equatable, CustomDebugStringConvertible {
         }
     }
 
-    static func ==(lhs: CSData, rhs: CSData) -> Bool {
+    static func == (lhs: CSData, rhs: CSData) -> Bool {
         switch (lhs, rhs) {
         case (.Null, .Null): return true
         case (.Bool(let l), .Bool(let r)): return l == r
@@ -44,18 +44,14 @@ enum CSData: Equatable, CustomDebugStringConvertible {
         case (.String(let l), .String(let r)): return l == r
         case (.Array(let l), .Array(let r)):
             if l.count != r.count { return false }
-            for pair in zip(l, r) {
-                if pair.0 != pair.1 {
-                    return false
-                }
+            for pair in zip(l, r) where pair.0 != pair.1 {
+                return false
             }
             return true
         case (.Object(let l), .Object(let r)):
             if l.count != r.count { return false }
-            for (key, value) in l {
-                if r[key] != value {
-                    return false
-                }
+            for (key, value) in l where r[key] != value {
+                return false
             }
             return true
         default: return false
@@ -63,9 +59,7 @@ enum CSData: Equatable, CustomDebugStringConvertible {
     }
 
     var isNull: Bool {
-        get {
-            return self == CSData.Null
-        }
+        return self == CSData.Null
     }
 
     var bool: Bool? {
@@ -229,7 +223,7 @@ enum CSData: Equatable, CustomDebugStringConvertible {
         case .Null:
             return NSNull()
         case .Bool(let value):
-            return NSNumber(booleanLiteral: value)
+            return NSNumber(booleanLiteral: value) // swiftlint:disable:this compiler_protocol_init
         case .Number(let value):
             return value
         case .String(let value):
@@ -264,7 +258,7 @@ enum CSData: Equatable, CustomDebugStringConvertible {
     }
 
     static func from(json: Any) -> CSData {
-        if let _ = json as? NSNull {
+        if json as? NSNull != nil {
             return CSData.Null
         } else if let value = json as? NSNumber {
             return isBool(number: value) ? CSData.Bool(value.boolValue) : CSData.Number(Double(truncating: value))
@@ -360,8 +354,8 @@ extension Dictionary where Key: ExpressibleByStringLiteral, Value: CSDataSeriali
     func toData() -> CSData {
         var items: [String: CSData] = [:]
 
-        for (_, item) in self.enumerated() {
-            items["\(item.key)"] = item.value.toData()
+        for item in self.enumerated() {
+            items["\(item.element.key)"] = item.element.value.toData()
         }
 
         return CSData.Object(items)

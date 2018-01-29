@@ -45,7 +45,7 @@ extension String {
             return results
         }
 
-        let matches = regex.matches(in: self, options: [], range: NSRange(location:0, length: self.count))
+        let matches = regex.matches(in: self, options: [], range: NSRange(location: 0, length: self.count))
 
         guard let match = matches.first else { return results }
 
@@ -85,14 +85,14 @@ extension String {
         }
 
         var levelIndex = 0 //number of basePath components in absolute path
-
+        // swiftlint:disable control_statement
         for (index, baseComponent) in basePathComponents.enumerated() {
             if (baseComponent != absolutePathComponents[index]) {
                 break
             }
             levelIndex += 1
         }
-
+        // swiftlint:enable control_statement
         if levelIndex == 0 {
             return self
         }

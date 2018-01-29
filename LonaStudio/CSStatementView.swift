@@ -123,7 +123,7 @@ class CSStatementView: NSTableCellView {
                 onChange: { declaration in
                     self.handleChange(component: component, componentName: name, value: CSValue(type: CSType.string, data: CSData.String(declaration)), keyPath: [])
             },
-                frame:  NSRect(x: 0, y: 0, width: 70, height: 26)
+                frame: NSRect(x: 0, y: 0, width: 70, height: 26)
             )
 
             control.useYogaLayout = true
@@ -180,10 +180,7 @@ class CSStatementView: NSTableCellView {
             }
 
             styleItems(for: control.menu!)
-
             addSubview(control)
-
-            break
         }
     }
 
@@ -203,7 +200,7 @@ class CSStatementView: NSTableCellView {
 
             func needsInput(_ keyPath: [String]) {
                 switch parameter.type {
-                case .declaration():
+                case .declaration:
                     let value = CSValue(type: CSType.string, data: "".toData())
                     components.append(.value(parameter.name, value, []))
                 case .variable(type: let variableType, access: let access):
@@ -227,7 +224,7 @@ class CSStatementView: NSTableCellView {
                     }
                 case .value(let value):
                     switch parameter.type {
-                    case .declaration():
+                    case .declaration:
                         components.append(.value(parameter.name, value, []))
                     // TODO Use this instead of custom key path stuff?
                     case .variable(type: _, access: _):
@@ -278,10 +275,8 @@ class CSStatementView: NSTableCellView {
     // Respond to clicks within text fields only, because other clicks will be duplicates of events passed to mouseDown
     func mouseDownForTextFields(with event: NSEvent) -> Bool {
         // If shift or command are being held, we're selecting rows, so ignore
-        if (
-            event.modifierFlags.contains(NSEvent.ModifierFlags.command) ||
-            event.modifierFlags.contains(NSEvent.ModifierFlags.shift)
-        ) {
+        if event.modifierFlags.contains(NSEvent.ModifierFlags.command) ||
+            event.modifierFlags.contains(NSEvent.ModifierFlags.shift) {
             return false
         }
 

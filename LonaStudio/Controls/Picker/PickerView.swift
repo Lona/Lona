@@ -151,7 +151,6 @@ extension PickerView {
                     guard self.currentHover < self.filterData.count else { return }
                     let item = self.filterData[self.currentHover]
                     self.parameter.didSelectItem(self, item)
-                    break
                 }
             })
             ])

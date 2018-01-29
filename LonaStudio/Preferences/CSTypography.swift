@@ -57,8 +57,8 @@ class CSTypography: CSPreferencesFile {
     }
 
     static private func convertFontWeight(fontWeight: Double) -> AttributedFontWeight {
-        if (fontWeight < 400) { return AttributedFontWeight.standard }
-        if (fontWeight < 600) { return AttributedFontWeight.medium }
+        if fontWeight < 400 { return AttributedFontWeight.standard }
+        if fontWeight < 600 { return AttributedFontWeight.medium }
         return AttributedFontWeight.bold
     }
 

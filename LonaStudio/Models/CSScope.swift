@@ -83,14 +83,9 @@ class CSScope: CSRootScope {
     @discardableResult override func set(variable name: String, to variable: CSVariable) -> Bool {
         if let declared = variables[name] {
             switch declared.access {
-            case .inline:
-                fallthrough
-            case .read:
-                // TODO put this back
-//                Swift.print("Attempted to write to readonly variable", name)
-//                return false
-                fallthrough
-            case .write:
+            case .inline,
+                 .read,
+                 .write:
                 variables[name] = variable
                 return true
             }
@@ -100,8 +95,6 @@ class CSScope: CSRootScope {
             return parent.set(variable: name, to: variable)
         } else {
             Swift.print("Attempted to set undeclared variable", name)
-//            variables[name] = variable
-//            return true
             return false
         }
     }

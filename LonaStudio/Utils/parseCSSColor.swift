@@ -156,8 +156,8 @@ func parseCSSColor(_ css_str: String) -> CSSColor? {
     }
 
     // #abc and #abc123 syntax.
-    if (str.first == "#") {
-        if (str.count == 4) {
+    if str.first == "#" {
+        if str.count == 4 {
             str.remove(at: str.startIndex) // TODO(deanm): Stricter parsing.
             guard let iv = Int(str, radix: 16) else { return nil }
             if !(iv >= 0 && iv <= 0xfff) { return nil } // Covers NaN.
@@ -167,10 +167,10 @@ func parseCSSColor(_ css_str: String) -> CSSColor? {
                 (iv & 0xf) | ((iv & 0xf) << 4),
                 1
             )
-        } else if (str.count == 7) {
+        } else if str.count == 7 {
             str.remove(at: str.startIndex) // TODO(deanm): Stricter parsing.
             guard let iv = Int(str, radix: 16) else { return nil }
-            if (!(iv >= 0 && iv <= 0xffffff)) { return nil } // Covers NaN.
+            if !(iv >= 0 && iv <= 0xffffff) { return nil } // Covers NaN.
             return (
                 (iv & 0xff0000) >> 16,
                 (iv & 0xff00) >> 8,
@@ -193,13 +193,14 @@ func parseCSSColor(_ css_str: String) -> CSSColor? {
 
         var alpha: Double = 1;  // To allow case fallthrough.
 
-        switch (fname) {
+        // swiftlint:disable fallthrough
+        switch fname {
         case "rgba":
             if params.count != 4 { return nil }
             alpha = parse_css_float(params.popLast()!)
             fallthrough
         case "rgb":
-            if (params.count != 3) { return nil }
+            if params.count != 3 { return nil }
             return (
                 parse_css_int(params[0]),
                 parse_css_int(params[1]),
@@ -207,11 +208,11 @@ func parseCSSColor(_ css_str: String) -> CSSColor? {
                 alpha
             )
         case "hsla":
-            if (params.count != 4) { return nil }
+            if params.count != 4 { return nil }
             alpha = parse_css_float(params.popLast()!)
             fallthrough
         case "hsl":
-            if (params.count != 3) { return nil }
+            if params.count != 3 { return nil }
             let hue = Double(params[0]) ?? 0
             let h = (hue.remainder(dividingBy: 360) + 360).remainder(dividingBy: 360) / 360 // 0 .. 1
             // NOTE(deanm): According to the CSS spec s/l should only be
@@ -229,6 +230,7 @@ func parseCSSColor(_ css_str: String) -> CSSColor? {
         default:
             return nil
         }
+        // swiftlint:enable fallthrough
     }
 
     return nil

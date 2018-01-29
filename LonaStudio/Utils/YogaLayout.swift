@@ -351,7 +351,7 @@ extension NSView {
         let view = NSView(frame: NSRect(x: 0, y: 0, width: horizontal ? max(size, 0) : 0, height: horizontal ? 0 : max(size, 0)))
         view.useYogaLayout = true
 
-        if (size < 0) {
+        if size < 0 {
             view.ygNode?.flex = 1
         }
 

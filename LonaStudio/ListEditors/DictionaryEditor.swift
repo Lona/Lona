@@ -196,8 +196,7 @@ class DictionaryEditor: NSView, CSControl {
     }
 
     func dictionaryValue(from list: [DictionaryItem]) -> CSValue {
-        let data: [String: CSData] = list.key {
-            (item) -> (key: String, value: CSData) in
+        let data: [String: CSData] = list.key { (item) -> (key: String, value: CSData) in
             return (key: item.name, value: item.value.data)
         }
 
