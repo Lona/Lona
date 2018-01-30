@@ -1,29 +1,40 @@
 {
-  "name": "lona-compiler-core",
-  "version": "0.1.0",
+  "name": "lonac",
+  "version": "0.1.5",
+  "description": "Lona cross-platform code compiler",
+  "main": "build/index.js",
+  "bin": "./build/index.js",
+  "files": ["build/index.js", "README.md"],
   "scripts": {
     "build": "bsb -make-world",
     "start": "bsb -make-world -w",
-    "clean": "bsb -clean-world"
+    "clean": "bsb -clean-world",
+    "bundle": "webpack",
+    "prepublishOnly": "yarn clean && yarn build && yarn bundle"
   },
-  "keywords": [
-    "BuckleScript"
-  ],
-  "author": "",
+  "keywords": ["lona", "compiler", "react"],
+  "author": "Devin Abbott <devinabbott@gmail.com>",
   "license": "MIT",
-  "devDependencies": {
-    "bs-platform": "^2.1.0"
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/airbnb/Lona.git"
   },
-  "dependencies": {
+  "bugs": {
+    "url": "https://github.com/airbnb/Lona/issues"
+  },
+  "homepage": "https://github.com/airbnb/Lona",
+  "devDependencies": {
     "bs-batteries": "0.0.14",
     "bs-glob": "reasonml-community/bs-glob",
     "bs-json": "^0.2.4",
     "bs-node": "github:buckletypes/bs-node",
+    "bs-platform": "^2.1.0",
     "csscolorparser": "^1.0.3",
     "fs-extra": "^5.0.0",
     "get-stdin": "^5.0.1",
     "lodash.camelcase": "^4.3.0",
     "lodash.upperfirst": "^4.3.1",
-    "prettier": "prettier/prettier#b63c669ed9821a0e0d6918243ef4f4a091b222a9"
+    "prettier": "prettier/prettier#b63c669ed9821a0e0d6918243ef4f4a091b222a9",
+    "webpack": "^3.10.0"
   }
 }
