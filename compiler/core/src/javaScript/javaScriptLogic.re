@@ -1,13 +1,13 @@
 module Ast = JavaScriptAst;
 
-let logicValueToJavaScriptAST = (x) =>
+let logicValueToJavaScriptAST = x =>
   switch x {
   | Logic.Identifier(_, path) => Ast.Identifier(path)
   | Literal(x) => Literal(x)
   };
 
-let rec toJavaScriptAST = (node) => {
-  let fromCmp = (x) =>
+let rec toJavaScriptAST = node => {
+  let fromCmp = x =>
     switch x {
     | Types.Eq => Ast.Eq
     | Neq => Neq
@@ -19,7 +19,10 @@ let rec toJavaScriptAST = (node) => {
     };
   switch node {
   | Logic.Assign(a, b) =>
-    Ast.AssignmentExpression(logicValueToJavaScriptAST(b), logicValueToJavaScriptAST(a))
+    Ast.AssignmentExpression(
+      logicValueToJavaScriptAST(b),
+      logicValueToJavaScriptAST(a)
+    )
   | IfExists(a, body) =>
     ConditionalStatement(logicValueToJavaScriptAST(a), [toJavaScriptAST(body)])
   | Block(body) => Ast.Block(body |> List.map(toJavaScriptAST))
@@ -30,16 +33,20 @@ let rec toJavaScriptAST = (node) => {
         fromCmp(cmp),
         logicValueToJavaScriptAST(b)
       );
-    ConditionalStatement(condition, [toJavaScriptAST(body)])
+    ConditionalStatement(condition, [toJavaScriptAST(body)]);
   | Add(lhs, rhs, value) =>
     let addition =
-      Ast.BooleanExpression(logicValueToJavaScriptAST(lhs), Plus, logicValueToJavaScriptAST(rhs));
-    AssignmentExpression(logicValueToJavaScriptAST(value), addition)
+      Ast.BooleanExpression(
+        logicValueToJavaScriptAST(lhs),
+        Plus,
+        logicValueToJavaScriptAST(rhs)
+      );
+    AssignmentExpression(logicValueToJavaScriptAST(value), addition);
   | Let(value) =>
     switch value {
     | Identifier(_, path) => Ast.VariableDeclaration(Ast.Identifier(path))
     | _ => Unknown
     }
   | None => Unknown
-  }
+  };
 };

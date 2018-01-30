@@ -15,7 +15,7 @@ module String = {
 };
 
 let prefixAll = (sep, items) =>
-  Prettier.Doc.Builders.(items |> List.map((x) => sep <+> x) |> concat);
+  Prettier.Doc.Builders.(items |> List.map(x => sep <+> x) |> concat);
 
 let renderOptional = (render, item) =>
   switch item {

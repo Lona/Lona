@@ -10,12 +10,11 @@ let createStyleAttributeAST = (layerName, styles) =>
         Identifier(["styles", layerName]),
         ObjectLiteral(
           styles
-          |> Layer.mapBindings(
-               ((key, value)) =>
-                 ObjectProperty(
-                   Identifier([key]),
-                   JavaScriptLogic.logicValueToJavaScriptAST(value)
-                 )
+          |> Layer.mapBindings(((key, value)) =>
+               ObjectProperty(
+                 Identifier([key]),
+                 JavaScriptLogic.logicValueToJavaScriptAST(value)
+               )
              )
         )
       ])
@@ -25,7 +24,9 @@ let createStyleAttributeAST = (layerName, styles) =>
 let rec layerToJavaScriptAST = (variableMap, layer: Types.layer) => {
   open Ast;
   let (_, mainParams) =
-    layer.parameters |> Layer.parameterMapToLogicValueMap |> Layer.splitParamsMap;
+    layer.parameters
+    |> Layer.parameterMapToLogicValueMap
+    |> Layer.splitParamsMap;
   let (styleVariables, mainVariables) =
     (
       switch (Layer.LayerMap.find_opt(layer, variableMap)) {
@@ -38,37 +39,44 @@ let rec layerToJavaScriptAST = (variableMap, layer: Types.layer) => {
   let styleAttribute = createStyleAttributeAST(layer.name, styleVariables);
   let attributes =
     main
-    |> Layer.mapBindings(
-         ((key, value)) => JSXAttribute(key, JavaScriptLogic.logicValueToJavaScriptAST(value))
+    |> Layer.mapBindings(((key, value)) =>
+         JSXAttribute(key, JavaScriptLogic.logicValueToJavaScriptAST(value))
        );
   JSXElement(
     Layer.layerTypeToString(layer.typeName),
     [styleAttribute, ...attributes],
     layer.children |> List.map(layerToJavaScriptAST(variableMap))
-  )
+  );
 };
 
 let toJavaScriptStyleSheetAST = (layer: Types.layer) => {
   open Ast;
   let createStyleObjectForLayer = (layer: Types.layer) => {
     let styleParams =
-      layer.parameters |> StringMap.filter((key, _) => Layer.parameterIsStyle(key));
+      layer.parameters
+      |> StringMap.filter((key, _) => Layer.parameterIsStyle(key));
     ObjectProperty(
       Identifier([layer.name]),
       ObjectLiteral(
         styleParams
         |> StringMap.bindings
-        |> List.map(((key, value)) => ObjectProperty(Identifier([key]), Literal(value)))
+        |> List.map(((key, value)) =>
+             ObjectProperty(Identifier([key]), Literal(value))
+           )
       )
-    )
+    );
   };
-  let styleObjects = layer |> Layer.flatten |> List.map(createStyleObjectForLayer);
+  let styleObjects =
+    layer |> Layer.flatten |> List.map(createStyleObjectForLayer);
   VariableDeclaration(
     AssignmentExpression(
       Identifier(["styles"]),
-      CallExpression(Identifier(["StyleSheet", "create"]), [ObjectLiteral(styleObjects)])
+      CallExpression(
+        Identifier(["StyleSheet", "create"]),
+        [ObjectLiteral(styleObjects)]
+      )
     )
-  )
+  );
 };
 
 let generate = (name, json) => {
@@ -89,5 +97,5 @@ let generate = (name, json) => {
     ])
   )
   /* Renames variables */
-  |> Ast.prepareForRender
+  |> Ast.prepareForRender;
 };

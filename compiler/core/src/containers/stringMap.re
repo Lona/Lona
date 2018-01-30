@@ -6,10 +6,13 @@ include
     }
   );
 
-let fromList = (list) => List.fold_left((map, (key, value)) => add(key, value, map), empty, list);
+let fromList = list =>
+  List.fold_left((map, (key, value)) => add(key, value, map), empty, list);
 
-let fromJsDict = (dict) =>
-  dict |> Js.Dict.entries |> Js.Array.reduce((map, (key, value)) => add(key, value, map), empty);
+let fromJsDict = dict =>
+  dict
+  |> Js.Dict.entries
+  |> Js.Array.reduce((map, (key, value)) => add(key, value, map), empty);
 
 let assign = (base, extender) =>
   merge(

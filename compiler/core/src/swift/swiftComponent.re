@@ -135,7 +135,8 @@ let generate =
       "modifiers": [AccessLevelModifier(PrivateModifier)],
       "pattern":
         IdentifierPattern({
-          "identifier": SwiftIdentifier((layer.name |> Format.layerName) ++ "TextStyle"),
+          "identifier":
+            SwiftIdentifier((layer.name |> Format.layerName) ++ "TextStyle"),
           "annotation": None /* Some(TypeName("AttributedFont")) */
         }),
       "init":
@@ -183,7 +184,8 @@ let generate =
               "modifiers": [AccessLevelModifier(PrivateModifier)],
               "pattern":
                 IdentifierPattern({
-                  "identifier": SwiftIdentifier(variableName(marginParameter.swiftName)),
+                  "identifier":
+                    SwiftIdentifier(variableName(marginParameter.swiftName)),
                   "annotation": Some(TypeName("CGFloat"))
                 }),
               "init":
@@ -207,7 +209,8 @@ let generate =
             "modifiers": [AccessLevelModifier(PrivateModifier)],
             "pattern":
               IdentifierPattern({
-                "identifier": SwiftIdentifier(variableName(paddingParameter.swiftName)),
+                "identifier":
+                  SwiftIdentifier(variableName(paddingParameter.swiftName)),
                 "annotation": Some(TypeName("CGFloat"))
               }),
             "init":
