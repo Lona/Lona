@@ -1,4 +1,8 @@
-module type TREE_ITEM = {type t; let children: t => list(t); let restore: (t, list(t)) => t;};
+module type TREE_ITEM = {
+  type t;
+  let children: t => list(t);
+  let restore: (t, list(t)) => t;
+};
 
 module Make = (Item: TREE_ITEM) => {
   type node('a) =
@@ -9,19 +13,20 @@ module Make = (Item: TREE_ITEM) => {
       f(item, initialValue),
       Item.children(item)
     );
-  let rec map = (f, item) => f(Item.restore(item, Item.children(item) |> List.map(map(f))));
+  let rec map = (f, item) =>
+    f(Item.restore(item, Item.children(item) |> List.map(map(f))));
   let rec iter = (f, item) => {
     f(item);
-    Item.children(item) |> List.iter(iter(f))
+    Item.children(item) |> List.iter(iter(f));
   };
   let find_opt = (f, node) => {
-    let rec findList = (items) =>
+    let rec findList = items =>
       switch items {
       | [] => None
       | [head] => f(head) ? Some(head) : findList(Item.children(head))
       | [head, ...tail] => f(head) ? Some(head) : findList(tail)
       };
-    findList([node])
+    findList([node]);
   };
   let find = (f, item) =>
     switch (find_opt(f, item)) {
@@ -30,7 +35,7 @@ module Make = (Item: TREE_ITEM) => {
     };
   let replace_all = (f, root) =>
     map(
-      (item) =>
+      item =>
         switch (f(item)) {
         | Some(a) => a
         | None => item
@@ -40,37 +45,37 @@ module Make = (Item: TREE_ITEM) => {
   let replace = (f, root) => {
     let found = ref(false);
     map(
-      (item) =>
+      item =>
         if (found^) {
-          item
+          item;
         } else {
           switch (f(item)) {
           | Some(a) =>
             found := true;
-            a
+            a;
           | None => item
-          }
+          };
         },
       root
-    )
+    );
   };
   let replaceWith = (original, updated, root) =>
-    replace((item) => item == original ? Some(updated) : None, root);
+    replace(item => item == original ? Some(updated) : None, root);
   let insert_child = (f, root) => {
     let found = ref(false);
     map(
-      (item) =>
+      item =>
         if (found^) {
-          item
+          item;
         } else {
           switch (f(item)) {
           | Some(a) =>
             found := true;
-            Item.restore(item, [a, ...Item.children(item)])
+            Item.restore(item, [a, ...Item.children(item)]);
           | None => item
-          }
+          };
         },
       root
-    )
+    );
   };
 };

@@ -10,6 +10,7 @@
     "start": "bsb -make-world -w",
     "clean": "bsb -clean-world",
     "bundle": "webpack",
+    "format": "refmt --parse=re --print=re --in-place src/**/*.re",
     "prepublishOnly": "yarn clean && yarn build && yarn bundle"
   },
   "keywords": ["lona", "compiler", "react"],

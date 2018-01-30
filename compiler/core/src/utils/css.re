@@ -1,6 +1,5 @@
 [@bs.val] [@bs.module "csscolorparser"] [@bs.return nullable]
-external _parseCSSColor : string => option(array(float)) =
-  "parseCSSColor";
+external _parseCSSColor : string => option(array(float)) = "parseCSSColor";
 
 type cssColor = {
   r: float,
@@ -13,7 +12,7 @@ let parseColor = (value: string) =>
   switch (_parseCSSColor(value)) {
   | Some(arr) =>
     let [r, g, b, a] = Array.to_list(arr);
-    Some({r, g, b, a})
+    Some({r, g, b, a});
   | None => None
   };
 

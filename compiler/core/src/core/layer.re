@@ -36,9 +36,9 @@ let stylesSet =
 let flatten = (layer: Types.layer) => {
   let rec inner = (acc, layer: Types.layer) => {
     let children = layer.children;
-    List.flatten([acc, [layer], ...List.map(inner([]), children)])
+    List.flatten([acc, [layer], ...List.map(inner([]), children)]);
   };
-  inner([], layer)
+  inner([], layer);
 };
 
 let find = (f, rootLayer: Types.layer) =>
@@ -54,21 +54,23 @@ let flatmapParent = (f, layer: Types.layer) => {
   let rec inner = (layer: Types.layer) =>
     (layer.children |> List.map(f(Some(layer))))
     @ (layer.children |> List.map(inner) |> List.concat);
-  [f(None, layer)] @ inner(layer)
+  [f(None, layer)] @ inner(layer);
 };
 
 let findParent = (rootLayer: Types.layer, targetLayer: Types.layer) => {
   let containsChild = (parent: Types.layer) =>
-    parent.children |> List.exists((child) => child === targetLayer);
-  rootLayer |> find(containsChild)
+    parent.children |> List.exists(child => child === targetLayer);
+  rootLayer |> find(containsChild);
 };
 
-let flatmap = (f, layer: Types.layer) => flatmapParent((_, layer) => f(layer), layer);
+let flatmap = (f, layer: Types.layer) =>
+  flatmapParent((_, layer) => f(layer), layer);
 
 let flatmapParameters = (f, layer: Types.layer) => {
   let parameterLists =
-    layer |> flatmap((layer: Types.layer) => layer.parameters |> StringMap.bindings);
-  List.concat(parameterLists) |> List.map(f(layer))
+    layer
+    |> flatmap((layer: Types.layer) => layer.parameters |> StringMap.bindings);
+  List.concat(parameterLists) |> List.map(f(layer));
 };
 
 let getFlexDirection = (layer: Types.layer) =>
@@ -128,7 +130,7 @@ let getSizingRules = (parent: option(Types.layer), layer: Types.layer) => {
     | (_, _, Some(value), _) => Types.Fixed(value)
     | (_, _, _, _) => Types.FitContent
     };
-  {width: widthSizingRule, height: heightSizingRule}
+  {width: widthSizingRule, height: heightSizingRule};
 };
 
 let printSizingRule =
@@ -146,14 +148,14 @@ type edgeInsets = {
 
 let getInsets = (prefix, layer: Types.layer) => {
   let directions = ["Top", "Right", "Bottom", "Left"];
-  let extract = (key) => StringMap.find_opt(prefix ++ key, layer.parameters);
+  let extract = key => StringMap.find_opt(prefix ++ key, layer.parameters);
   let unwrap =
     fun
     | Some((value: Types.lonaValue)) => value.data |> Json.Decode.float
     | None => 0.0;
   let values = directions |> List.map(extract) |> List.map(unwrap);
   let [top, right, bottom, left] = values;
-  {top, right, bottom, left}
+  {top, right, bottom, left};
 };
 
 let getPadding = getInsets("padding");
@@ -166,8 +168,14 @@ let parameterAssignmentsFromLogic = (layer, node) => {
     switch (findByName(layerName, layer)) {
     | Some(found) =>
       switch (LayerMap.find_opt(found, acc)) {
-      | Some(x) => LayerMap.add(found, StringMap.add(propertyName, logicValue, x), acc)
-      | None => LayerMap.add(found, StringMap.add(propertyName, logicValue, StringMap.empty), acc)
+      | Some(x) =>
+        LayerMap.add(found, StringMap.add(propertyName, logicValue, x), acc)
+      | None =>
+        LayerMap.add(
+          found,
+          StringMap.add(propertyName, logicValue, StringMap.empty),
+          acc
+        )
       }
     | None => acc
     };
@@ -182,33 +190,39 @@ let parameterAssignmentsFromLogic = (layer, node) => {
          | _ => acc
          },
        LayerMap.empty
-     )
+     );
 };
 
-let logicAssignmentsFromLayerParameters = (layer) => {
+let logicAssignmentsFromLayerParameters = layer => {
   let layerMap = ref(LayerMap.empty);
   let extractParameters = (layer: Types.layer) => {
     let stringMap = ref(StringMap.empty);
     let extractParameter = ((parameterName, lonaValue: Types.lonaValue)) => {
-      let receiver = Logic.Identifier(lonaValue.ltype, ["layers", layer.name, parameterName]);
+      let receiver =
+        Logic.Identifier(
+          lonaValue.ltype,
+          ["layers", layer.name, parameterName]
+        );
       let source = Logic.Literal(lonaValue);
       let assignment = Logic.Assign(source, receiver);
-      stringMap := StringMap.add(parameterName, assignment, stringMap^)
+      stringMap := StringMap.add(parameterName, assignment, stringMap^);
     };
     layer.parameters |> StringMap.bindings |> List.iter(extractParameter);
-    layerMap := LayerMap.add(layer, stringMap^, layerMap^)
+    layerMap := LayerMap.add(layer, stringMap^, layerMap^);
   };
   let _ = layer |> flatmap(extractParameters);
-  layerMap^
+  layerMap^;
 };
 
-let parameterIsStyle = (name) => StringSet.has(name, stylesSet);
+let parameterIsStyle = name => StringSet.has(name, stylesSet);
 
-let splitParamsMap = (params) => params |> StringMap.partition((key, _) => parameterIsStyle(key));
+let splitParamsMap = params =>
+  params |> StringMap.partition((key, _) => parameterIsStyle(key));
 
-let parameterMapToLogicValueMap = (params) => StringMap.map((item) => Logic.Literal(item), params);
+let parameterMapToLogicValueMap = params =>
+  StringMap.map(item => Logic.Literal(item), params);
 
-let layerTypeToString = (x) =>
+let layerTypeToString = x =>
   switch x {
   | Types.View => "View"
   | Text => "Text"
