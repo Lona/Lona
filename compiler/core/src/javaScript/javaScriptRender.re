@@ -21,100 +21,84 @@ let renderBinaryOperator = x => {
 let rec render = ast : Prettier.Doc.t('a) =>
   switch ast {
   | Ast.Identifier(path) =>
-    path |> List.map(s) |> join(concat([softline, s(".")])) |> group
+    path |> List.map(s) |> join(softline <+> s(".")) |> group
   | Literal(value) => s(Js.Json.stringify(value.data))
-  | VariableDeclaration(value) =>
-    group(concat([s("let "), render(value), s(";")]))
-  | AssignmentExpression(name, value) =>
-    fill([group(concat([render(name), line, s("=")])), s(" "), render(value)])
-  | BooleanExpression(lhs, cmp, rhs) =>
-    concat([render(lhs), renderBinaryOperator(cmp), render(rhs)])
-  | ConditionalStatement(condition, body) =>
-    concat([
-      group(
-        concat([
-          s("if"),
-          line,
-          s("("),
-          softline,
-          render(condition),
-          softline,
-          s(")"),
-          line,
-          s("{")
-        ])
-      ),
-      indent(join(hardline, body |> List.map(render))),
-      hardline,
-      s("}")
+  | VariableDeclaration(value) => group(s("let ") <+> render(value) <+> s(";"))
+  | AssignmentExpression(o) =>
+    fill([
+      group(render(o##left) <+> line <+> s("=")),
+      s(" "),
+      render(o##right)
     ])
-  | Class(name, extends, body) =>
+  | BinaryExpression(o) =>
+    render(o##left) <+> renderBinaryOperator(o##operator) <+> render(o##right)
+  | IfStatement(o) =>
+    group(
+      s("if")
+      <+> line
+      <+> s("(")
+      <+> softline
+      <+> render(o##test)
+      <+> softline
+      <+> s(")")
+      <+> line
+      <+> s("{")
+    )
+    <+> indent(join(hardline, o##consequent |> List.map(render)))
+    <+> hardline
+    <+> s("}")
+  | ClassDeclaration(o) =>
     let decl =
-      switch extends {
-      | Some(a) => [s("class"), s(name), s("extends"), s(a)]
-      | None => [s("class"), s(name)]
+      switch o##superClass {
+      | Some(a) => [s("class"), s(o##id), s("extends"), s(a)]
+      | None => [s("class"), s(o##id)]
       };
-    concat([
-      group(concat([join(line, decl), s(" {")])),
-      indent(Render.prefixAll(hardline, body |> List.map(render))),
-      hardline,
-      s("};")
-    ]);
-  | Method(name, parameters, body) =>
-    let parameterList = parameters |> List.map(s) |> join(line);
-    concat([
-      group(concat([s(name), s("("), parameterList, s(")"), line, s("{")])),
-      indent(join(hardline, body |> List.map(render))),
-      line,
-      s("}")
-    ]);
-  | CallExpression(value, parameters) =>
-    let parameterList = parameters |> List.map(render) |> join(s(", "));
-    fill([render(value), s("("), parameterList, s(")")]);
+    group(join(line, decl) <+> s(" {"))
+    <+> indent(Render.prefixAll(hardline, o##body |> List.map(render)))
+    <+> hardline
+    <+> s("};");
+  | MethodDefinition(o) => group(s(o##key) <+> render(o##value))
+  | FunctionExpression(o) =>
+    /* TODO: o##id */
+    let parameterList = o##params |> List.map(s) |> join(line);
+    group(s("(") <+> parameterList <+> s(")") <+> line <+> s("{"))
+    <+> indent(join(hardline, o##body |> List.map(render)))
+    <+> hardline
+    <+> s("}");
+  | CallExpression(o) =>
+    let parameterList = o##arguments |> List.map(render) |> join(s(", "));
+    fill([render(o##callee), s("("), parameterList, s(")")]);
   | Return(value) =>
     group(
-      concat([
-        group(concat([s("return"), line, s("(")])),
-        indent(concat([line, render(value)])),
-        line,
-        s(");")
-      ])
+      group(s("return") <+> line <+> s("("))
+      <+> indent(line <+> render(value))
+      <+> line
+      <+> s(");")
     )
-  | JSXAttribute(name, value) =>
-    let value = render(value);
-    concat([s(name), s("={"), value, s("}")]);
-  | JSXElement(tag, attributes, body) =>
-    let openingContent = attributes |> List.map(render) |> join(line);
+  | JSXAttribute(o) => s(o##name) <+> s("={") <+> render(o##value) <+> s("}")
+  | JSXElement(o) =>
+    let openingContent = o##attributes |> List.map(render) |> join(line);
     let opening =
       group(
-        concat([
-          s("<"),
-          s(tag),
-          indent(concat([line, openingContent])),
-          softline,
-          s(">")
-        ])
+        s("<")
+        <+> s(o##tag)
+        <+> indent(line <+> openingContent)
+        <+> softline
+        <+> s(">")
       );
-    let closing = group(concat([s("</"), s(tag), s(">")]));
-    let children =
-      indent(concat([line, join(line, body |> List.map(render))]));
-    concat([opening, children, line, closing]);
+    let closing = group(s("</") <+> s(o##tag) <+> s(">"));
+    let children = indent(line <+> join(line, o##content |> List.map(render)));
+    opening <+> children <+> line <+> closing;
   | ArrayLiteral(body) =>
     let maybeLine = List.length(body) > 0 ? line : s("");
-    let body = body |> List.map(render) |> join(concat([s(","), line]));
-    group(
-      concat([s("["), indent(concat([maybeLine, body])), maybeLine, s("]")])
-    );
+    let body = body |> List.map(render) |> join(s(",") <+> line);
+    group(s("[") <+> indent(maybeLine <+> body) <+> maybeLine <+> s("]"));
   | ObjectLiteral(body) =>
     let maybeLine = List.length(body) > 0 ? line : s("");
-    let body = body |> List.map(render) |> join(concat([s(","), line]));
-    group(
-      concat([s("{"), indent(concat([maybeLine, body])), maybeLine, s("}")])
-    );
-  | ObjectProperty(name, value) =>
-    group(concat([render(name), s(": "), render(value)]))
-  | Program(body) =>
-    body |> List.map(render) |> join(concat([hardline, hardline]))
+    let body = body |> List.map(render) |> join(s(",") <+> line);
+    group(s("{") <+> indent(maybeLine <+> body) <+> maybeLine <+> s("}"));
+  | Property(o) => group(render(o##key) <+> s(": ") <+> render(o##value))
+  | Program(body) => body |> List.map(render) |> join(hardline <+> hardline)
   | Block(body) => body |> List.map(render) |> Render.prefixAll(hardline)
   | Unknown => s("")
   };
