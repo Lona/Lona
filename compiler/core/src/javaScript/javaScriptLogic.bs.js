@@ -38,52 +38,47 @@ function toJavaScriptAST(node) {
   } else {
     switch (node.tag | 0) {
       case 0 : 
-          var condition_000 = logicValueToJavaScriptAST(node[0]);
-          var condition_001 = fromCmp(node[1]);
-          var condition_002 = logicValueToJavaScriptAST(node[2]);
-          var condition = /* BooleanExpression */Block.__(10, [
-              condition_000,
-              condition_001,
-              condition_002
-            ]);
-          return /* ConditionalStatement */Block.__(11, [
-                    condition,
-                    /* :: */[
-                      toJavaScriptAST(node[3]),
-                      /* [] */0
-                    ]
-                  ]);
+          var condition = /* BinaryExpression */Block.__(11, [{
+                left: logicValueToJavaScriptAST(node[0]),
+                operator: fromCmp(node[1]),
+                right: logicValueToJavaScriptAST(node[2])
+              }]);
+          return /* IfStatement */Block.__(12, [{
+                      test: condition,
+                      consequent: /* :: */[
+                        toJavaScriptAST(node[3]),
+                        /* [] */0
+                      ]
+                    }]);
       case 1 : 
-          return /* ConditionalStatement */Block.__(11, [
-                    logicValueToJavaScriptAST(node[0]),
-                    /* :: */[
-                      toJavaScriptAST(node[1]),
-                      /* [] */0
-                    ]
-                  ]);
+          return /* IfStatement */Block.__(12, [{
+                      test: logicValueToJavaScriptAST(node[0]),
+                      consequent: /* :: */[
+                        toJavaScriptAST(node[1]),
+                        /* [] */0
+                      ]
+                    }]);
       case 2 : 
-          return /* AssignmentExpression */Block.__(9, [
-                    logicValueToJavaScriptAST(node[1]),
-                    logicValueToJavaScriptAST(node[0])
-                  ]);
+          return /* AssignmentExpression */Block.__(10, [{
+                      left: logicValueToJavaScriptAST(node[1]),
+                      right: logicValueToJavaScriptAST(node[0])
+                    }]);
       case 3 : 
-          var addition_000 = logicValueToJavaScriptAST(node[0]);
-          var addition_002 = logicValueToJavaScriptAST(node[1]);
-          var addition = /* BooleanExpression */Block.__(10, [
-              addition_000,
-              /* Plus */6,
-              addition_002
-            ]);
-          return /* AssignmentExpression */Block.__(9, [
-                    logicValueToJavaScriptAST(node[2]),
-                    addition
-                  ]);
+          var addition = /* BinaryExpression */Block.__(11, [{
+                left: logicValueToJavaScriptAST(node[0]),
+                operator: /* Plus */6,
+                right: logicValueToJavaScriptAST(node[1])
+              }]);
+          return /* AssignmentExpression */Block.__(10, [{
+                      left: logicValueToJavaScriptAST(node[2]),
+                      right: addition
+                    }]);
       case 4 : 
           var value = node[0];
           if (value.tag) {
             return /* Unknown */0;
           } else {
-            return /* VariableDeclaration */Block.__(8, [/* Identifier */Block.__(2, [value[1]])]);
+            return /* VariableDeclaration */Block.__(9, [/* Identifier */Block.__(2, [value[1]])]);
           }
           break;
       case 5 : 
@@ -96,7 +91,7 @@ function toJavaScriptAST(node) {
                 ]
               ];
       case 6 : 
-          return /* Block */Block.__(15, [List.map(toJavaScriptAST, node[0])]);
+          return /* Block */Block.__(16, [List.map(toJavaScriptAST, node[0])]);
       
     }
   }

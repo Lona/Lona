@@ -19,29 +19,35 @@ let rec toJavaScriptAST = node => {
     };
   switch node {
   | Logic.Assign(a, b) =>
-    Ast.AssignmentExpression(
-      logicValueToJavaScriptAST(b),
-      logicValueToJavaScriptAST(a)
-    )
+    Ast.AssignmentExpression({
+      "left": logicValueToJavaScriptAST(b),
+      "right": logicValueToJavaScriptAST(a)
+    })
   | IfExists(a, body) =>
-    ConditionalStatement(logicValueToJavaScriptAST(a), [toJavaScriptAST(body)])
+    IfStatement({
+      "test": logicValueToJavaScriptAST(a),
+      "consequent": [toJavaScriptAST(body)]
+    })
   | Block(body) => Ast.Block(body |> List.map(toJavaScriptAST))
   | If(a, cmp, b, body) =>
     let condition =
-      Ast.BooleanExpression(
-        logicValueToJavaScriptAST(a),
-        fromCmp(cmp),
-        logicValueToJavaScriptAST(b)
-      );
-    ConditionalStatement(condition, [toJavaScriptAST(body)]);
+      Ast.BinaryExpression({
+        "left": logicValueToJavaScriptAST(a),
+        "operator": fromCmp(cmp),
+        "right": logicValueToJavaScriptAST(b)
+      });
+    IfStatement({"test": condition, "consequent": [toJavaScriptAST(body)]});
   | Add(lhs, rhs, value) =>
     let addition =
-      Ast.BooleanExpression(
-        logicValueToJavaScriptAST(lhs),
-        Plus,
-        logicValueToJavaScriptAST(rhs)
-      );
-    AssignmentExpression(logicValueToJavaScriptAST(value), addition);
+      Ast.BinaryExpression({
+        "left": logicValueToJavaScriptAST(lhs),
+        "operator": Ast.Plus,
+        "right": logicValueToJavaScriptAST(rhs)
+      });
+    AssignmentExpression({
+      "left": logicValueToJavaScriptAST(value),
+      "right": addition
+    });
   | Let(value) =>
     switch value {
     | Identifier(_, path) => Ast.VariableDeclaration(Ast.Identifier(path))

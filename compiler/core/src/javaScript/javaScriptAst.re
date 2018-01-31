@@ -12,18 +12,83 @@ type node =
   | Return(node)
   | Literal(Types.lonaValue)
   | Identifier(list(string))
-  | Class(string, option(string), list(node))
-  | Method(string, list(string), list(node))
-  | CallExpression(node, list(node))
-  | JSXAttribute(string, node)
-  | JSXElement(string, list(node), list(node))
+  | ClassDeclaration(
+      {
+        .
+        "id": string,
+        "superClass": option(string),
+        "body": list(node)
+      }
+    )
+  | MethodDefinition(
+      {
+        .
+        "key": string,
+        "value": node
+      }
+    )
+  | FunctionExpression(
+      {
+        .
+        "id": option(string),
+        "params": list(string),
+        "body": list(node)
+      }
+    )
+  | CallExpression(
+      {
+        .
+        "callee": node,
+        "arguments": list(node)
+      }
+    )
+  | JSXAttribute(
+      {
+        .
+        "name": string,
+        "value": node
+      }
+    )
+  | JSXElement(
+      {
+        .
+        "tag": string,
+        "attributes": list(node),
+        "content": list(node)
+      }
+    )
   | VariableDeclaration(node)
-  | AssignmentExpression(node, node)
-  | BooleanExpression(node, binaryOperator, node)
-  | ConditionalStatement(node, list(node))
+  | AssignmentExpression(
+      {
+        .
+        "left": node,
+        "right": node
+      }
+    )
+  | BinaryExpression(
+      {
+        .
+        "left": node,
+        "operator": binaryOperator,
+        "right": node
+      }
+    )
+  | IfStatement(
+      {
+        .
+        "test": node,
+        "consequent": list(node)
+      }
+    )
   | ArrayLiteral(list(node))
   | ObjectLiteral(list(node))
-  | ObjectProperty(node, node)
+  | Property(
+      {
+        .
+        "key": node,
+        "value": node
+      }
+    )
   | Block(list(node))
   | Program(list(node))
   | Unknown;
@@ -34,45 +99,87 @@ let rec map = (f, node) =>
   | Return(value) => f(Return(value |> map(f)))
   | Literal(_) => f(node)
   | Identifier(_) => f(node)
-  | Class(a, b, body) => f(Class(a, b, body |> List.map(map(f))))
-  | Method(a, b, body) => f(Method(a, b, body |> List.map(map(f))))
-  | CallExpression(value, body) =>
-    f(CallExpression(value |> map(f), body |> List.map(map(f))))
-  | JSXAttribute(a, value) => f(JSXAttribute(a, value |> map(f)))
-  | JSXElement(a, attributes, body) =>
-    f(JSXElement(a, attributes |> List.map(map(f)), body |> List.map(map(f))))
+  | ClassDeclaration(o) =>
+    f(
+      ClassDeclaration({
+        "id": o##id,
+        "superClass": o##superClass,
+        "body": o##body |> List.map(map(f))
+      })
+    )
+  | MethodDefinition(o) =>
+    f(MethodDefinition({"key": o##key, "value": o##value |> map(f)}))
+  | FunctionExpression(o) =>
+    f(
+      FunctionExpression({
+        "id": o##id,
+        "params": o##params,
+        "body": o##body |> List.map(map(f))
+      })
+    )
+  | CallExpression(o) =>
+    f(
+      CallExpression({
+        "callee": o##callee |> map(f),
+        "arguments": o##arguments |> List.map(map(f))
+      })
+    )
+  | JSXAttribute(o) =>
+    f(JSXAttribute({"name": o##name, "value": o##value |> map(f)}))
+  | JSXElement(o) =>
+    f(
+      JSXElement({
+        "tag": o##tag,
+        "attributes": o##attributes |> List.map(map(f)),
+        "content": o##content |> List.map(map(f))
+      })
+    )
   | VariableDeclaration(value) => f(VariableDeclaration(value |> map(f)))
-  | AssignmentExpression(value1, value2) =>
-    f(AssignmentExpression(value1 |> map(f), value2 |> map(f)))
-  | BooleanExpression(value1, a, value2) =>
-    f(BooleanExpression(value1 |> map(f), a, value2 |> map(f)))
-  | ConditionalStatement(condition, body) =>
-    f(ConditionalStatement(condition |> map(f), body |> List.map(map(f))))
+  | AssignmentExpression(o) =>
+    f(
+      AssignmentExpression({
+        "left": o##left |> map(f),
+        "right": o##right |> map(f)
+      })
+    )
+  | BinaryExpression(o) =>
+    f(
+      BinaryExpression({
+        "left": o##left |> map(f),
+        "operator": o##operator,
+        "right": o##right |> map(f)
+      })
+    )
+  | IfStatement(o) =>
+    f(
+      IfStatement({
+        "test": o##test |> map(f),
+        "consequent": o##consequent |> List.map(map(f))
+      })
+    )
   | ArrayLiteral(body) => f(ArrayLiteral(body |> List.map(map(f))))
   | ObjectLiteral(body) => f(ObjectLiteral(body |> List.map(map(f))))
-  | ObjectProperty(value1, value2) =>
-    f(ObjectProperty(value1 |> map(f), value2 |> map(f)))
+  | Property(o) =>
+    f(Property({"key": o##key |> map(f), "value": o##value |> map(f)}))
   | Block(body) => f(Block(body |> List.map(map(f))))
   | Program(body) => f(Program(body |> List.map(map(f))))
   | Unknown => f(node)
   };
 
 /* Takes an expression like `a === true` and converts it to `a` */
-let optimizeTruthyBooleanExpression = node => {
+let optimizeTruthyBinaryExpression = node => {
   let booleanValue = sub =>
     switch sub {
     | Literal(value) => value.data |> Json.Decode.optional(Json.Decode.bool)
     | _ => (None: option(bool))
     };
   switch node {
-  | BooleanExpression(a, cmp, b) =>
-    let boolA = booleanValue(a);
-    let boolB = booleanValue(b);
-    switch (boolA, cmp, boolB) {
-    | (_, Eq, Some(true)) => a
-    | (Some(true), Eq, _) => b
+  | BinaryExpression(o) =>
+    switch (booleanValue(o##left), o##operator, booleanValue(o##right)) {
+    | (_, Eq, Some(true)) => o##left
+    | (Some(true), Eq, _) => o##right
     | _ => node
-    };
+    }
   | _ => node
   };
 };
@@ -94,6 +201,6 @@ let renameIdentifiers = node =>
   | _ => node
   };
 
-let optimize = node => node |> map(optimizeTruthyBooleanExpression);
+let optimize = node => node |> map(optimizeTruthyBinaryExpression);
 
 let prepareForRender = node => node |> map(renameIdentifiers);

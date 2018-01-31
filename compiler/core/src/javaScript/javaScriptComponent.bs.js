@@ -12,30 +12,30 @@ var JavaScriptAst$LonaCompilerCore   = require("./javaScriptAst.bs.js");
 var JavaScriptLogic$LonaCompilerCore = require("./javaScriptLogic.bs.js");
 
 function createStyleAttributeAST(layerName, styles) {
-  return /* JSXAttribute */Block.__(6, [
-            "style",
-            /* ArrayLiteral */Block.__(12, [/* :: */[
-                  /* Identifier */Block.__(2, [/* :: */[
-                        "styles",
-                        /* :: */[
-                          layerName,
-                          /* [] */0
-                        ]
-                      ]]),
-                  /* :: */[
-                    /* ObjectLiteral */Block.__(13, [Layer$LonaCompilerCore.mapBindings((function (param) {
-                                return /* ObjectProperty */Block.__(14, [
-                                          /* Identifier */Block.__(2, [/* :: */[
-                                                param[0],
-                                                /* [] */0
-                                              ]]),
-                                          JavaScriptLogic$LonaCompilerCore.logicValueToJavaScriptAST(param[1])
-                                        ]);
-                              }), styles)]),
-                    /* [] */0
-                  ]
-                ]])
-          ]);
+  return /* JSXAttribute */Block.__(7, [{
+              name: "style",
+              value: /* ArrayLiteral */Block.__(13, [/* :: */[
+                    /* Identifier */Block.__(2, [/* :: */[
+                          "styles",
+                          /* :: */[
+                            layerName,
+                            /* [] */0
+                          ]
+                        ]]),
+                    /* :: */[
+                      /* ObjectLiteral */Block.__(14, [Layer$LonaCompilerCore.mapBindings((function (param) {
+                                  return /* Property */Block.__(15, [{
+                                              key: /* Identifier */Block.__(2, [/* :: */[
+                                                    param[0],
+                                                    /* [] */0
+                                                  ]]),
+                                              value: JavaScriptLogic$LonaCompilerCore.logicValueToJavaScriptAST(param[1])
+                                            }]);
+                                }), styles)]),
+                      /* [] */0
+                    ]
+                  ]])
+            }]);
 }
 
 function layerToJavaScriptAST(variableMap, layer) {
@@ -45,21 +45,21 @@ function layerToJavaScriptAST(variableMap, layer) {
   var main = StringMap$LonaCompilerCore.assign(match[1], match$2[1]);
   var styleAttribute = createStyleAttributeAST(layer[/* name */1], match$2[0]);
   var attributes = Layer$LonaCompilerCore.mapBindings((function (param) {
-          return /* JSXAttribute */Block.__(6, [
-                    param[0],
-                    JavaScriptLogic$LonaCompilerCore.logicValueToJavaScriptAST(param[1])
-                  ]);
+          return /* JSXAttribute */Block.__(7, [{
+                      name: param[0],
+                      value: JavaScriptLogic$LonaCompilerCore.logicValueToJavaScriptAST(param[1])
+                    }]);
         }), main);
-  return /* JSXElement */Block.__(7, [
-            Layer$LonaCompilerCore.layerTypeToString(layer[/* typeName */0]),
-            /* :: */[
-              styleAttribute,
-              attributes
-            ],
-            List.map((function (param) {
-                    return layerToJavaScriptAST(variableMap, param);
-                  }), layer[/* children */3])
-          ]);
+  return /* JSXElement */Block.__(8, [{
+              tag: Layer$LonaCompilerCore.layerTypeToString(layer[/* typeName */0]),
+              attributes: /* :: */[
+                styleAttribute,
+                attributes
+              ],
+              content: List.map((function (param) {
+                      return layerToJavaScriptAST(variableMap, param);
+                    }), layer[/* children */3])
+            }]);
 }
 
 function toJavaScriptStyleSheetAST(layer) {
@@ -67,42 +67,42 @@ function toJavaScriptStyleSheetAST(layer) {
     var styleParams = Curry._2(StringMap$LonaCompilerCore.filter, (function (key, _) {
             return Layer$LonaCompilerCore.parameterIsStyle(key);
           }), layer[/* parameters */2]);
-    return /* ObjectProperty */Block.__(14, [
-              /* Identifier */Block.__(2, [/* :: */[
-                    layer[/* name */1],
-                    /* [] */0
-                  ]]),
-              /* ObjectLiteral */Block.__(13, [List.map((function (param) {
-                          return /* ObjectProperty */Block.__(14, [
-                                    /* Identifier */Block.__(2, [/* :: */[
-                                          param[0],
-                                          /* [] */0
-                                        ]]),
-                                    /* Literal */Block.__(1, [param[1]])
-                                  ]);
-                        }), Curry._1(StringMap$LonaCompilerCore.bindings, styleParams))])
-            ]);
-  };
-  var styleObjects = List.map(createStyleObjectForLayer, Layer$LonaCompilerCore.flatten(layer));
-  return /* VariableDeclaration */Block.__(8, [/* AssignmentExpression */Block.__(9, [
-                /* Identifier */Block.__(2, [/* :: */[
-                      "styles",
+    return /* Property */Block.__(15, [{
+                key: /* Identifier */Block.__(2, [/* :: */[
+                      layer[/* name */1],
                       /* [] */0
                     ]]),
-                /* CallExpression */Block.__(5, [
-                    /* Identifier */Block.__(2, [/* :: */[
-                          "StyleSheet",
-                          /* :: */[
-                            "create",
-                            /* [] */0
-                          ]
-                        ]]),
-                    /* :: */[
-                      /* ObjectLiteral */Block.__(13, [styleObjects]),
-                      /* [] */0
-                    ]
-                  ])
-              ])]);
+                value: /* ObjectLiteral */Block.__(14, [List.map((function (param) {
+                            return /* Property */Block.__(15, [{
+                                        key: /* Identifier */Block.__(2, [/* :: */[
+                                              param[0],
+                                              /* [] */0
+                                            ]]),
+                                        value: /* Literal */Block.__(1, [param[1]])
+                                      }]);
+                          }), Curry._1(StringMap$LonaCompilerCore.bindings, styleParams))])
+              }]);
+  };
+  var styleObjects = List.map(createStyleObjectForLayer, Layer$LonaCompilerCore.flatten(layer));
+  return /* VariableDeclaration */Block.__(9, [/* AssignmentExpression */Block.__(10, [{
+                  left: /* Identifier */Block.__(2, [/* :: */[
+                        "styles",
+                        /* [] */0
+                      ]]),
+                  right: /* CallExpression */Block.__(6, [{
+                        callee: /* Identifier */Block.__(2, [/* :: */[
+                              "StyleSheet",
+                              /* :: */[
+                                "create",
+                                /* [] */0
+                              ]
+                            ]]),
+                        arguments: /* :: */[
+                          /* ObjectLiteral */Block.__(14, [styleObjects]),
+                          /* [] */0
+                        ]
+                      }])
+                }])]);
 }
 
 function generate(name, json) {
@@ -112,25 +112,28 @@ function generate(name, json) {
   var rootLayerAST = layerToJavaScriptAST(assignments, rootLayer);
   var styleSheetAST = toJavaScriptStyleSheetAST(rootLayer);
   var logicAST = JavaScriptAst$LonaCompilerCore.optimize(JavaScriptLogic$LonaCompilerCore.toJavaScriptAST(logic));
-  return JavaScriptAst$LonaCompilerCore.prepareForRender(/* Program */Block.__(16, [/* :: */[
-                  /* Class */Block.__(3, [
-                      name,
-                      /* Some */["React.Component"],
-                      /* :: */[
-                        /* Method */Block.__(4, [
-                            "render",
-                            /* [] */0,
-                            /* :: */[
-                              logicAST,
-                              /* :: */[
-                                /* Return */Block.__(0, [rootLayerAST]),
-                                /* [] */0
-                              ]
-                            ]
-                          ]),
-                        /* [] */0
-                      ]
-                    ]),
+  return JavaScriptAst$LonaCompilerCore.prepareForRender(/* Program */Block.__(17, [/* :: */[
+                  /* ClassDeclaration */Block.__(3, [{
+                        id: name,
+                        superClass: /* Some */["React.Component"],
+                        body: /* :: */[
+                          /* MethodDefinition */Block.__(4, [{
+                                key: "render",
+                                value: /* FunctionExpression */Block.__(5, [{
+                                      id: /* None */0,
+                                      params: /* [] */0,
+                                      body: /* :: */[
+                                        logicAST,
+                                        /* :: */[
+                                          /* Return */Block.__(0, [rootLayerAST]),
+                                          /* [] */0
+                                        ]
+                                      ]
+                                    }])
+                              }]),
+                          /* [] */0
+                        ]
+                      }]),
                   /* :: */[
                     styleSheetAST,
                     /* [] */0

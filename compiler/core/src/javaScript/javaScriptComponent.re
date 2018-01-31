@@ -4,21 +4,22 @@ module Render = JavaScriptRender;
 
 let createStyleAttributeAST = (layerName, styles) =>
   Ast.(
-    JSXAttribute(
-      "style",
-      ArrayLiteral([
-        Identifier(["styles", layerName]),
-        ObjectLiteral(
-          styles
-          |> Layer.mapBindings(((key, value)) =>
-               ObjectProperty(
-                 Identifier([key]),
-                 JavaScriptLogic.logicValueToJavaScriptAST(value)
+    JSXAttribute({
+      "name": "style",
+      "value":
+        ArrayLiteral([
+          Identifier(["styles", layerName]),
+          ObjectLiteral(
+            styles
+            |> Layer.mapBindings(((key, value)) =>
+                 Property({
+                   "key": Identifier([key]),
+                   "value": JavaScriptLogic.logicValueToJavaScriptAST(value)
+                 })
                )
-             )
-        )
-      ])
-    )
+          )
+        ])
+    })
   );
 
 let rec layerToJavaScriptAST = (variableMap, layer: Types.layer) => {
@@ -40,13 +41,16 @@ let rec layerToJavaScriptAST = (variableMap, layer: Types.layer) => {
   let attributes =
     main
     |> Layer.mapBindings(((key, value)) =>
-         JSXAttribute(key, JavaScriptLogic.logicValueToJavaScriptAST(value))
+         JSXAttribute({
+           "name": key,
+           "value": JavaScriptLogic.logicValueToJavaScriptAST(value)
+         })
        );
-  JSXElement(
-    Layer.layerTypeToString(layer.typeName),
-    [styleAttribute, ...attributes],
-    layer.children |> List.map(layerToJavaScriptAST(variableMap))
-  );
+  JSXElement({
+    "tag": Layer.layerTypeToString(layer.typeName),
+    "attributes": [styleAttribute, ...attributes],
+    "content": layer.children |> List.map(layerToJavaScriptAST(variableMap))
+  });
 };
 
 let toJavaScriptStyleSheetAST = (layer: Types.layer) => {
@@ -55,27 +59,29 @@ let toJavaScriptStyleSheetAST = (layer: Types.layer) => {
     let styleParams =
       layer.parameters
       |> StringMap.filter((key, _) => Layer.parameterIsStyle(key));
-    ObjectProperty(
-      Identifier([layer.name]),
-      ObjectLiteral(
-        styleParams
-        |> StringMap.bindings
-        |> List.map(((key, value)) =>
-             ObjectProperty(Identifier([key]), Literal(value))
-           )
-      )
-    );
+    Property({
+      "key": Identifier([layer.name]),
+      "value":
+        ObjectLiteral(
+          styleParams
+          |> StringMap.bindings
+          |> List.map(((key, value)) =>
+               Property({"key": Identifier([key]), "value": Literal(value)})
+             )
+        )
+    });
   };
   let styleObjects =
     layer |> Layer.flatten |> List.map(createStyleObjectForLayer);
   VariableDeclaration(
-    AssignmentExpression(
-      Identifier(["styles"]),
-      CallExpression(
-        Identifier(["StyleSheet", "create"]),
-        [ObjectLiteral(styleObjects)]
-      )
-    )
+    AssignmentExpression({
+      "left": Identifier(["styles"]),
+      "right":
+        CallExpression({
+          "callee": Identifier(["StyleSheet", "create"]),
+          "arguments": [ObjectLiteral(styleObjects)]
+        })
+    })
   );
 };
 
@@ -88,11 +94,21 @@ let generate = (name, json) => {
   let logicAST = logic |> JavaScriptLogic.toJavaScriptAST |> Ast.optimize;
   Ast.(
     Program([
-      Class(
-        name,
-        Some("React.Component"),
-        [Method("render", [], [logicAST, Return(rootLayerAST)])]
-      ),
+      ClassDeclaration({
+        "id": name,
+        "superClass": Some("React.Component"),
+        "body": [
+          MethodDefinition({
+            "key": "render",
+            "value":
+              FunctionExpression({
+                "id": None,
+                "params": [],
+                "body": [logicAST, Return(rootLayerAST)]
+              })
+          })
+        ]
+      }),
       styleSheetAST
     ])
   )
