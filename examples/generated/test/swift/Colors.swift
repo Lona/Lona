@@ -1,7 +1,7 @@
 import UIKit
 
 public enum Colors {
-  public static let red50 = #colorLiteral(red: 1, green: 0.921568627451, blue: 0.933333333333, alpha: 1) // #FFEBEE
+  public static let red50 = #colorLiteral(red: 1, green: 0.921568627451, blue: 0.933333333333, alpha: 1) // #FFEBEE - Test comment
   public static let red100 = #colorLiteral(red: 1, green: 0.803921568627, blue: 0.823529411765, alpha: 1) // #FFCDD2
   public static let red200 = #colorLiteral(red: 0.937254901961, green: 0.603921568627, blue: 0.603921568627, alpha: 1) // #EF9A9A
   public static let red300 = #colorLiteral(red: 0.898039215686, green: 0.450980392157, blue: 0.450980392157, alpha: 1) // #E57373

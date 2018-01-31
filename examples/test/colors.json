@@ -1,6 +1,6 @@
 {
   "colors": [
-    { "name": "Red 50", "id": "red50", "value": "#ffebee" },
+    { "name": "Red 50", "id": "red50", "value": "#ffebee", "comment": "Test comment" },
     { "name": "Red 100", "id": "red100", "value": "#ffcdd2" },
     { "name": "Red 200", "id": "red200", "value": "#ef9a9a" },
     { "name": "Red 300", "id": "red300", "value": "#e57373" },

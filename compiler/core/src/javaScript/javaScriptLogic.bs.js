@@ -34,7 +34,7 @@ function toJavaScriptAST(node) {
     }
   };
   if (typeof node === "number") {
-    return /* Unknown */0;
+    return /* Unknown */1;
   } else {
     switch (node.tag | 0) {
       case 0 : 
@@ -76,7 +76,7 @@ function toJavaScriptAST(node) {
       case 4 : 
           var value = node[0];
           if (value.tag) {
-            return /* Unknown */0;
+            return /* Unknown */1;
           } else {
             return /* VariableDeclaration */Block.__(9, [/* Identifier */Block.__(2, [value[1]])]);
           }
@@ -91,7 +91,7 @@ function toJavaScriptAST(node) {
                 ]
               ];
       case 6 : 
-          return /* Block */Block.__(16, [List.map(toJavaScriptAST, node[0])]);
+          return /* Block */Block.__(17, [List.map(toJavaScriptAST, node[0])]);
       
     }
   }

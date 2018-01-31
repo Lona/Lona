@@ -109,6 +109,7 @@ let generate = (name, json) => {
           })
         ]
       }),
+      Empty,
       styleSheetAST
     ])
   )

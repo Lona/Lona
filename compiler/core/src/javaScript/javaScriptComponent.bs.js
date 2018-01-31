@@ -112,7 +112,7 @@ function generate(name, json) {
   var rootLayerAST = layerToJavaScriptAST(assignments, rootLayer);
   var styleSheetAST = toJavaScriptStyleSheetAST(rootLayer);
   var logicAST = JavaScriptAst$LonaCompilerCore.optimize(JavaScriptLogic$LonaCompilerCore.toJavaScriptAST(logic));
-  return JavaScriptAst$LonaCompilerCore.prepareForRender(/* Program */Block.__(17, [/* :: */[
+  return JavaScriptAst$LonaCompilerCore.prepareForRender(/* Program */Block.__(18, [/* :: */[
                   /* ClassDeclaration */Block.__(3, [{
                         id: name,
                         superClass: /* Some */["React.Component"],
@@ -135,8 +135,11 @@ function generate(name, json) {
                         ]
                       }]),
                   /* :: */[
-                    styleSheetAST,
-                    /* [] */0
+                    /* Empty */0,
+                    /* :: */[
+                      styleSheetAST,
+                      /* [] */0
+                    ]
                   ]
                 ]]));
 }

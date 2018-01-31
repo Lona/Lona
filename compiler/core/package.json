@@ -11,7 +11,12 @@
     "clean": "bsb -clean-world",
     "bundle": "webpack",
     "format": "refmt --parse=re --print=re --in-place src/**/*.re",
-    "prepublishOnly": "yarn clean && yarn build && yarn bundle"
+    "prepublishOnly": "yarn clean && yarn build && yarn bundle",
+    "snapshotJs":
+      "node src/main.bs.js workspace js ../../examples/test ../../examples/generated/test/js",
+    "snapshotSwift":
+      "node src/main.bs.js workspace swift ../../examples/test ../../examples/generated/test/swift",
+    "snapshot": "yarn snapshotJs && yarn snapshotSwift"
   },
   "keywords": ["lona", "compiler", "react"],
   "author": "Devin Abbott <devinabbott@gmail.com>",
