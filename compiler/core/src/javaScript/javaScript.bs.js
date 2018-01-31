@@ -8,10 +8,13 @@ var Render = 0;
 
 var Logic = 0;
 
+var Color = 0;
+
 var Component = 0;
 
 exports.Ast       = Ast;
 exports.Render    = Render;
 exports.Logic     = Logic;
+exports.Color     = Color;
 exports.Component = Component;
 /* No side effect */

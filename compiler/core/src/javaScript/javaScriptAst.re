@@ -89,8 +89,17 @@ type node =
         "value": node
       }
     )
+  | ExportDefaultDeclaration(node)
   | Block(list(node))
   | Program(list(node))
+  | LineEndComment(
+      {
+        .
+        "comment": string,
+        "line": node
+      }
+    )
+  | Empty
   | Unknown;
 
 /* Children are mapped first */
@@ -161,8 +170,12 @@ let rec map = (f, node) =>
   | ObjectLiteral(body) => f(ObjectLiteral(body |> List.map(map(f))))
   | Property(o) =>
     f(Property({"key": o##key |> map(f), "value": o##value |> map(f)}))
+  | ExportDefaultDeclaration(value) => f(ExportDefaultDeclaration(value |> map(f)))
   | Block(body) => f(Block(body |> List.map(map(f))))
   | Program(body) => f(Program(body |> List.map(map(f))))
+  | LineEndComment(o) =>
+    f(LineEndComment({"comment": o##comment, "line": o##line |> map(f)}))
+  | Empty
   | Unknown => f(node)
   };
 

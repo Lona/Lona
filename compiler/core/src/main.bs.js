@@ -21,6 +21,7 @@ var SwiftColor$LonaCompilerCore          = require("./swift/swiftColor.bs.js");
 var SwiftRender$LonaCompilerCore         = require("./swift/swiftRender.bs.js");
 var SwiftComponent$LonaCompilerCore      = require("./swift/swiftComponent.bs.js");
 var SwiftTextStyle$LonaCompilerCore      = require("./swift/swiftTextStyle.bs.js");
+var JavaScriptColor$LonaCompilerCore     = require("./javaScript/javaScriptColor.bs.js");
 var JavaScriptRender$LonaCompilerCore    = require("./javaScript/javaScriptRender.bs.js");
 var JavaScriptComponent$LonaCompilerCore = require("./javaScript/javaScriptComponent.bs.js");
 
@@ -128,7 +129,7 @@ var targetExtension = getTargetExtension(target);
 function renderColors(target, colors) {
   switch (target) {
     case 0 : 
-        return "";
+        return JavaScriptColor$LonaCompilerCore.render(colors);
     case 1 : 
         return SwiftColor$LonaCompilerCore.render(swiftOptions, colors);
     case 2 : 

@@ -67,8 +67,8 @@ let targetExtension = getTargetExtension(target);
 let renderColors = (target, colors) =>
   switch target {
   | Types.Swift => Swift.Color.render(swiftOptions, colors)
+  | JavaScript => JavaScript.Color.render(colors)
   | Xml => Xml.Color.render(colors)
-  | _ => ""
   };
 
 let renderTextStyles = (target, colors, textStyles) =>

@@ -13,6 +13,9 @@ function map(f, node) {
     switch (node.tag | 0) {
       case 0 : 
           return Curry._1(f, /* Return */Block.__(0, [map(f, node[0])]));
+      case 1 : 
+      case 2 : 
+          return Curry._1(f, node);
       case 3 : 
           var o = node[0];
           return Curry._1(f, /* ClassDeclaration */Block.__(3, [{
@@ -100,15 +103,22 @@ function map(f, node) {
                           value: map(f, o$9.value)
                         }]));
       case 16 : 
-          return Curry._1(f, /* Block */Block.__(16, [List.map((function (param) {
-                                return map(f, param);
-                              }), node[0])]));
+          return Curry._1(f, /* ExportDefaultDeclaration */Block.__(16, [map(f, node[0])]));
       case 17 : 
-          return Curry._1(f, /* Program */Block.__(17, [List.map((function (param) {
+          return Curry._1(f, /* Block */Block.__(17, [List.map((function (param) {
                                 return map(f, param);
                               }), node[0])]));
-      default:
-        return Curry._1(f, node);
+      case 18 : 
+          return Curry._1(f, /* Program */Block.__(18, [List.map((function (param) {
+                                return map(f, param);
+                              }), node[0])]));
+      case 19 : 
+          var o$10 = node[0];
+          return Curry._1(f, /* LineEndComment */Block.__(19, [{
+                          comment: o$10.comment,
+                          line: map(f, o$10.line)
+                        }]));
+      
     }
   }
 }

@@ -90,17 +90,22 @@ let rec render = ast : Prettier.Doc.t('a) =>
     let children = indent(line <+> join(line, o##content |> List.map(render)));
     opening <+> children <+> line <+> closing;
   | ArrayLiteral(body) =>
-    let maybeLine = List.length(body) > 0 ? line : s("");
+    let maybeLine = List.length(body) > 0 ? line : empty;
     let body = body |> List.map(render) |> join(s(",") <+> line);
     group(s("[") <+> indent(maybeLine <+> body) <+> maybeLine <+> s("]"));
   | ObjectLiteral(body) =>
-    let maybeLine = List.length(body) > 0 ? line : s("");
+    let maybeLine = List.length(body) > 0 ? line : empty;
     let body = body |> List.map(render) |> join(s(",") <+> line);
     group(s("{") <+> indent(maybeLine <+> body) <+> maybeLine <+> s("}"));
   | Property(o) => group(render(o##key) <+> s(": ") <+> render(o##value))
-  | Program(body) => body |> List.map(render) |> join(hardline <+> hardline)
+  | ExportDefaultDeclaration(value) =>
+    s("export default ") <+> render(value) <+> s(";")
+  | Program(body) => body |> List.map(render) |> join(hardline)
   | Block(body) => body |> List.map(render) |> Render.prefixAll(hardline)
-  | Unknown => s("")
+  | LineEndComment(o) =>
+    concat([render(o##line), lineSuffix(s(" // " ++ o##comment))])
+  | Empty
+  | Unknown => empty
   };
 
 let toString = ast =>
