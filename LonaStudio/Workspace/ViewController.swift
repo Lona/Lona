@@ -77,20 +77,6 @@ class ViewController: NSViewController, NSOutlineViewDataSource, NSOutlineViewDe
         canvasCollectionView?.zoomOut()
     }
 
-    var preferencesWindow: MASPreferencesWindowController?
-
-    @IBAction func showPreferences(_ sender: AnyObject) {
-        let workspace = WorkspacePreferencesViewController()
-        workspace.viewDidLoad()
-
-        let controllers = [workspace]
-
-        let preferencesWindow = MASPreferencesWindowController(viewControllers: controllers, title: "Preferences")
-        preferencesWindow.showWindow(sender)
-
-        self.preferencesWindow = preferencesWindow
-    }
-
     @IBAction func refresh(_ sender: AnyObject) {
         CSUserTypes.reload()
         CSColors.reload()
