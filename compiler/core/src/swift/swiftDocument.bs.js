@@ -2,6 +2,7 @@
 'use strict';
 
 var List                       = require("bs-platform/lib/js/list.js");
+var Path                       = require("path");
 var Block                      = require("bs-platform/lib/js/block.js");
 var Pervasives                 = require("bs-platform/lib/js/pervasives.js");
 var Json_decode                = require("bs-json/src/Json_decode.js");
@@ -40,7 +41,35 @@ function joinGroups(sep, groups) {
   }
 }
 
-function lonaValue(colors, textStyles, value) {
+function nameWithoutExtension(path) {
+  return Path.parse(path).name;
+}
+
+function localImageName(framework, name) {
+  var imageName = /* LiteralExpression */Block.__(0, [/* String */Block.__(3, [Path.parse(name).name])]);
+  if (framework !== 0) {
+    return /* FunctionCallExpression */Block.__(15, [{
+                name: /* MemberExpression */Block.__(1, [/* :: */[
+                      /* SwiftIdentifier */Block.__(6, ["NSImage"]),
+                      /* :: */[
+                        /* SwiftIdentifier */Block.__(6, ["Name"]),
+                        /* [] */0
+                      ]
+                    ]]),
+                arguments: /* :: */[
+                  /* FunctionCallArgument */Block.__(14, [{
+                        name: /* Some */[/* SwiftIdentifier */Block.__(6, ["rawValue"])],
+                        value: imageName
+                      }]),
+                  /* [] */0
+                ]
+              }]);
+  } else {
+    return imageName;
+  }
+}
+
+function lonaValue(framework, colors, textStyles, value) {
   var match = value[/* ltype */0];
   if (match.tag) {
     var alias = match[0];
@@ -78,6 +107,22 @@ function lonaValue(colors, textStyles, value) {
                           /* [] */0
                         ]
                       ]]);
+          }
+      case "URL" : 
+          var rawValue$2 = Json_decode.string(value[/* data */1]);
+          if (rawValue$2.startsWith("file://./")) {
+            return /* FunctionCallExpression */Block.__(15, [{
+                        name: /* SwiftIdentifier */Block.__(6, ["UIImage"]),
+                        arguments: /* :: */[
+                          /* FunctionCallArgument */Block.__(14, [{
+                                name: /* Some */[/* SwiftIdentifier */Block.__(6, ["named"])],
+                                value: localImageName(framework, rawValue$2)
+                              }]),
+                          /* [] */0
+                        ]
+                      }]);
+          } else {
+            return /* SwiftIdentifier */Block.__(6, ["RemoteOrAbsoluteImageNotHandled"]);
           }
       default:
         return /* SwiftIdentifier */Block.__(6, ["UnknownNamedTypeAlias" + alias]);
@@ -145,10 +190,12 @@ function labelAttributedTextName(framework) {
 
 exports.join                    = join;
 exports.joinGroups              = joinGroups;
+exports.nameWithoutExtension    = nameWithoutExtension;
+exports.localImageName          = localImageName;
 exports.lonaValue               = lonaValue;
 exports.importFramework         = importFramework;
 exports.colorTypeName           = colorTypeName;
 exports.fontTypeName            = fontTypeName;
 exports.layoutPriorityTypeDoc   = layoutPriorityTypeDoc;
 exports.labelAttributedTextName = labelAttributedTextName;
-/* No side effect */
+/* path Not a pure module */

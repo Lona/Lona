@@ -201,6 +201,24 @@ let convertWorkspace = (workspace, output) => {
       files |> List.iter(processFile);
     }
   );
+  Glob.glob(
+    concat(fromDirectory, "**/*.png"),
+    (_, files) => {
+      let files = Array.to_list(files);
+      let processFile = file => {
+        let fromRelativePath =
+          Path.relative(~from=fromDirectory, ~to_=file, ());
+        let outputPath = Path.join([|toDirectory, fromRelativePath|]);
+        Js.log(
+          Path.join([|workspace, fromRelativePath|])
+          ++ "=>"
+          ++ Path.join([|output, fromRelativePath|])
+        );
+        copySync(file, outputPath);
+      };
+      files |> List.iter(processFile);
+    }
+  );
 };
 
 switch command {

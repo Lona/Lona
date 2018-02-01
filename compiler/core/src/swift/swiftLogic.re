@@ -45,7 +45,8 @@ let toSwiftAST =
     let initialValue =
       switch x {
       | Logic.Identifier(_) => identifierName(x)
-      | Literal(value) => Document.lonaValue(colors, textStyles, value)
+      | Literal(value) =>
+        Document.lonaValue(options.framework, colors, textStyles, value)
       };
     /* Here is the only place we should handle Logic -> Swift identifier conversion */
     switch (options.framework, initialValue) {
@@ -56,9 +57,6 @@ let toSwiftAST =
           || name
           |> Js.String.includes("padding") =>
       Ast.LineComment("TODO: Margin & padding")
-    | (_, Ast.SwiftIdentifier(name))
-        when name |> Js.String.toLowerCase |> Js.String.endsWith("image") =>
-      Ast.LineComment("TODO: Images")
     | (_, Ast.SwiftIdentifier(name)) when name |> Js.String.endsWith("height") =>
       Ast.SwiftIdentifier(
         name

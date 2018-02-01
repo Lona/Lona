@@ -15,7 +15,36 @@ let joinGroups = (sep, groups) => {
   };
 };
 
-let lonaValue = (colors, textStyles: TextStyle.file, value: Types.lonaValue) =>
+let nameWithoutExtension = path => {
+  let obj: Node.Path.pathObject = Node.Path.parse(path);
+  obj##name;
+};
+
+let localImageName = (framework: SwiftOptions.framework, name) => {
+  let imageName = LiteralExpression(String(nameWithoutExtension(name)));
+  switch framework {
+  | SwiftOptions.UIKit => imageName
+  | SwiftOptions.AppKit =>
+    FunctionCallExpression({
+      "name":
+        MemberExpression([SwiftIdentifier("NSImage"), SwiftIdentifier("Name")]),
+      "arguments": [
+        FunctionCallArgument({
+          "name": Some(SwiftIdentifier("rawValue")),
+          "value": imageName
+        })
+      ]
+    })
+  };
+};
+
+let lonaValue =
+    (
+      framework: SwiftOptions.framework,
+      colors,
+      textStyles: TextStyle.file,
+      value: Types.lonaValue
+    ) =>
   switch value.ltype {
   | Reference(typeName) =>
     switch typeName {
@@ -36,6 +65,21 @@ let lonaValue = (colors, textStyles: TextStyle.file, value: Types.lonaValue) =>
           SwiftIdentifier(color.id)
         ])
       | None => LiteralExpression(Color(rawValue))
+      };
+    | "URL" =>
+      let rawValue = value.data |> Json.Decode.string;
+      if (rawValue |> Js.String.startsWith("file://./")) {
+        FunctionCallExpression({
+          "name": SwiftIdentifier("UIImage"),
+          "arguments": [
+            FunctionCallArgument({
+              "name": Some(SwiftIdentifier("named")),
+              "value": localImageName(framework, rawValue)
+            })
+          ]
+        });
+      } else {
+        SwiftIdentifier("RemoteOrAbsoluteImageNotHandled");
       };
     | "TextStyle" =>
       let rawValue = value.data |> Json.Decode.string;

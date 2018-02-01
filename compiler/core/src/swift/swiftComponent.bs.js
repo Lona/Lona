@@ -436,7 +436,7 @@ function generate(options, name, colors, textStyles, json) {
     var setUpDefaultsDoc = function () {
       var filterParameters = function (param) {
         var name = param[0];
-        if (name !== "image" && name !== "flexDirection" && name !== "justifyContent" && name !== "alignSelf" && name !== "alignItems" && name !== "flex" && !name.startsWith("padding") && !name.startsWith("margin") && name !== "height") {
+        if (name !== "flexDirection" && name !== "justifyContent" && name !== "alignSelf" && name !== "alignItems" && name !== "flex" && !name.startsWith("padding") && !name.startsWith("margin") && name !== "height") {
           return +(name !== "width");
         } else {
           return /* false */0;
@@ -973,10 +973,10 @@ function generate(options, name, colors, textStyles, json) {
   var updateDoc = function () {
     var filterParameters = function (param) {
       var name = param[0];
-      if (name !== "image" && !name.includes("margin")) {
-        return 1 - +name.includes("padding");
-      } else {
+      if (name.includes("margin")) {
         return /* false */0;
+      } else {
+        return 1 - +name.includes("padding");
       }
     };
     var conditionallyAssigned = Logic$LonaCompilerCore.conditionallyAssignedIdentifiers(logic$1);
