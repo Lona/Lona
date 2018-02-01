@@ -54,13 +54,16 @@ class ImageField: NSImageView, CSControl {
     var value: String {
         get { return droppedFilePath ?? "" }
         set {
-            droppedFilePath = newValue
-            if let url = URL(string: newValue) {
+            if let url = URL(string: newValue)?.absoluteURLForWorkspaceURL() {
                 image = NSImage(contentsOf: url)
 
                 if let image = image {
                     sizeLabel.value = "\(image.size.width) × \(image.size.height)"
                 }
+
+                droppedFilePath = url.absoluteString
+            } else {
+                droppedFilePath = newValue
             }
         }
     }
