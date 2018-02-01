@@ -1,7 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder3.Cocoa.Storyboard.XIB" version="3.0" toolsVersion="13529" targetRuntime="MacOSX.Cocoa" propertyAccessControl="none" useAutolayout="YES">
+<document type="com.apple.InterfaceBuilder3.Cocoa.Storyboard.XIB" version="3.0" toolsVersion="13771" targetRuntime="MacOSX.Cocoa" propertyAccessControl="none" useAutolayout="YES">
     <dependencies>
-        <plugIn identifier="com.apple.InterfaceBuilder.CocoaPlugin" version="13529"/>
+        <deployment identifier="macosx"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.CocoaPlugin" version="13771"/>
         <capability name="box content view" minToolsVersion="7.0"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
         <capability name="stacking Non-gravity area distributions on NSStackView" minToolsVersion="7.0" minSystemVersion="10.11"/>
@@ -32,7 +33,7 @@
                                         <menuItem isSeparatorItem="YES" id="VOq-y0-SEH"/>
                                         <menuItem title="Preferences…" keyEquivalent="," id="BOF-NM-1cW">
                                             <connections>
-                                                <action selector="showPreferences" target="Ady-hI-5gd" id="MOL-dM-VMG"/>
+                                                <action selector="showPreferences:" target="Voe-Tx-rLC" id="ySL-73-epV"/>
                                             </connections>
                                         </menuItem>
                                         <menuItem isSeparatorItem="YES" id="wFC-TO-SCJ"/>
@@ -723,7 +724,7 @@
                         <outlet property="delegate" destination="Voe-Tx-rLC" id="PrD-fu-P6m"/>
                     </connections>
                 </application>
-                <customObject id="Voe-Tx-rLC" customClass="AppDelegate" customModule="ComponentStudio" customModuleProvider="target"/>
+                <customObject id="Voe-Tx-rLC" customClass="AppDelegate" customModule="LonaStudio" customModuleProvider="target"/>
                 <customObject id="YtO-Qj-jGD" customClass="SUUpdater"/>
                 <customObject id="Ady-hI-5gd" userLabel="First Responder" customClass="NSResponder" sceneMemberID="firstResponder"/>
             </objects>
@@ -833,7 +834,7 @@
         <!--View Controller-->
         <scene sceneID="hIz-AP-VOD">
             <objects>
-                <viewController id="5gI-5U-AMq" customClass="ViewController" customModule="ComponentStudio" customModuleProvider="target" sceneMemberID="viewController">
+                <viewController id="5gI-5U-AMq" customClass="ViewController" customModule="LonaStudio" customModuleProvider="target" sceneMemberID="viewController">
                     <splitView key="view" arrangesAllSubviews="NO" dividerStyle="thin" vertical="YES" id="wR8-fK-fyL">
                         <rect key="frame" x="0.0" y="0.0" width="908" height="1065"/>
                         <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
@@ -849,7 +850,7 @@
                                     <stackView distribution="fill" orientation="horizontal" alignment="top" spacing="0.0" horizontalStackHuggingPriority="249.99998474121094" verticalStackHuggingPriority="249.99998474121094" detachesHiddenViews="YES" translatesAutoresizingMaskIntoConstraints="NO" id="5CG-f1-ih0">
                                         <rect key="frame" x="0.0" y="0.0" width="676" height="1065"/>
                                         <subviews>
-                                            <splitView arrangesAllSubviews="NO" translatesAutoresizingMaskIntoConstraints="NO" id="wvM-qC-Tgo" customClass="SectionSplitter" customModule="ComponentStudio" customModuleProvider="target">
+                                            <splitView arrangesAllSubviews="NO" translatesAutoresizingMaskIntoConstraints="NO" id="wvM-qC-Tgo" customClass="SectionSplitter" customModule="LonaStudio" customModuleProvider="target">
                                                 <rect key="frame" x="0.0" y="0.0" width="396" height="1065"/>
                                                 <subviews>
                                                     <customView id="JRH-I4-g9x">

@@ -8,6 +8,7 @@
 
 import Cocoa
 import LetsMove
+import MASPreferences
 
 @NSApplicationMain
 class AppDelegate: NSObject, NSApplicationDelegate {
@@ -19,11 +20,16 @@ class AppDelegate: NSObject, NSApplicationDelegate {
 #endif
     }
 
-    func applicationDidFinishLaunching(_ aNotification: Notification) {
-        // Insert code here to initialize your application
-    }
+    var preferencesWindow: MASPreferencesWindowController?
 
-    func applicationWillTerminate(_ aNotification: Notification) {
-        // Insert code here to tear down your application
+    @IBAction func showPreferences(_ sender: AnyObject) {
+        if preferencesWindow == nil {
+            let workspace = WorkspacePreferencesViewController()
+            workspace.viewDidLoad()
+
+            preferencesWindow = MASPreferencesWindowController(viewControllers: [workspace], title: "Preferences")
+        }
+
+        preferencesWindow?.showWindow(sender)
     }
 }
