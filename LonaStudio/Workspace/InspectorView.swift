@@ -560,7 +560,16 @@ class InspectorView: NSStackView {
             dialog.allowsMultipleSelection = false
 
             if dialog.runModal() == NSApplication.ModalResponse.OK {
-                self.handlePropertyChange(for: .image, value: CSData.String(dialog.url!.absoluteString))
+                guard let url = dialog.url else { return }
+
+                let path: String
+                if let relativePath = url.path.pathRelativeTo(basePath: CSWorkspacePreferences.workspaceURL.path) {
+                    path = "file://" + relativePath
+                } else {
+                    path = url.absoluteString
+                }
+
+                self.handlePropertyChange(for: .image, value: CSData.String(path))
             }
         }
 

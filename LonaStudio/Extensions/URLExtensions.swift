@@ -13,4 +13,14 @@ extension URL {
         guard let data = try? Data(contentsOf: self) else { return nil }
         return data.base64EncodedString()
     }
+
+    func absoluteURLForWorkspaceURL() -> URL {
+        if !absoluteString.starts(with: "file://./") { return self }
+
+        let resolved = absoluteString.replacingOccurrences(
+            of: "file://./",
+            with: "file://" + CSWorkspacePreferences.workspaceURL.path + "/")
+
+        return URL(string: resolved) ?? self
+    }
 }

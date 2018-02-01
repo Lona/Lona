@@ -235,7 +235,7 @@ func renderBox(layer: CSLayer, node: YGNodeRef, options: RenderOptions) -> NSVie
     } else if layer.type == "Image" {
         let image: String? = layer.config?.get(attribute: "image", for: layer.name).string ?? layer.image
 
-        if let image = image, let url = URL(string: image) {
+        if let image = image, let url = URL(string: image)?.absoluteURLForWorkspaceURL() {
             var scale: CGFloat = options.assetScale
 
             if url.pathExtension == "pdf", let document = CSPDFDocument(contentsOf: url, parsed: false) {

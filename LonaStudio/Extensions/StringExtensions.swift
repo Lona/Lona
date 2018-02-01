@@ -103,7 +103,7 @@ extension String {
             //outside of base path
             var index = levelIndex
             while index < basePathComponents.count {
-                relativePath += "../"
+                relativePath = (relativePath.count > 0 ? "../" : "..") + relativePath
                 index += 1
             }
         }
