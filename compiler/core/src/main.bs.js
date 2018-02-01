@@ -254,6 +254,17 @@ function convertWorkspace(workspace, output) {
           };
           return List.iter(processFile, files$1);
         }));
+  Glob(Path.join(fromDirectory, "**/*.png"), (function (_, files) {
+          var files$1 = $$Array.to_list(files);
+          var processFile = function (file) {
+            var fromRelativePath = Path.relative(fromDirectory, file);
+            var outputPath = Path.join(toDirectory, fromRelativePath);
+            console.log(Path.join(workspace, fromRelativePath) + ("=>" + Path.join(output, fromRelativePath)));
+            FsExtra.copySync(file, outputPath);
+            return /* () */0;
+          };
+          return List.iter(processFile, files$1);
+        }));
   return /* () */0;
 }
 

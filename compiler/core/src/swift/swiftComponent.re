@@ -360,8 +360,7 @@ let generate =
   let setUpViewsDoc = (root: Types.layer) => {
     let setUpDefaultsDoc = () => {
       let filterParameters = ((name, _)) =>
-        name != "image"
-        && name != "flexDirection"
+        name != "flexDirection"
         && name != "justifyContent"
         && name != "alignSelf"
         && name != "alignItems"
@@ -958,10 +957,8 @@ let generate =
        Layer.LayerMap.bindings(assignments) |> List.iter(printLayerBinding); */
     /* let cond = Logic.conditionallyAssignedIdentifiers(logic);
        cond |> Logic.IdentifierSet.elements |> List.iter(((ltype, path)) => Js.log(path)); */
-    /* TODO: Figure out how to handle images */
     let filterParameters = ((name, _)) =>
-      name != "image"
-      && ! Js.String.includes("margin", name)
+      ! Js.String.includes("margin", name)
       && ! Js.String.includes("padding", name);
     let conditionallyAssigned = Logic.conditionallyAssignedIdentifiers(logic);
     let filterConditionallyAssigned = (layer: Types.layer, (name, _)) => {

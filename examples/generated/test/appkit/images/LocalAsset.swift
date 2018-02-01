@@ -1,9 +1,9 @@
-import UIKit
+import AppKit
 import Foundation
 
 // MARK: - LocalAsset
 
-public class LocalAsset: UIView {
+public class LocalAsset: NSBox {
 
   // MARK: Lifecycle
 
@@ -22,7 +22,7 @@ public class LocalAsset: UIView {
 
   // MARK: Private
 
-  private var imageView = UIImageView(frame: .zero)
+  private var imageView = NSImageView()
 
   private var topPadding: CGFloat = 0
   private var trailingPadding: CGFloat = 0
@@ -40,11 +40,14 @@ public class LocalAsset: UIView {
   private var imageViewWidthAnchorConstraint: NSLayoutConstraint?
 
   private func setUpViews() {
+    boxType = .custom
+    borderType = .noBorder
+    contentViewMargins = .zero
+
     addSubview(imageView)
 
-    imageView.backgroundColor =
-      #colorLiteral(red: 0.847058823529, green: 0.847058823529, blue: 0.847058823529, alpha: 1)
-    imageView.image = UIImage(named: "icon_128x128")
+    imageView.fillColor = #colorLiteral(red: 0.847058823529, green: 0.847058823529, blue: 0.847058823529, alpha: 1)
+    imageView.image = UIImage(named: NSImage.Name(rawValue: "icon_128x128"))
   }
 
   private func setUpConstraints() {

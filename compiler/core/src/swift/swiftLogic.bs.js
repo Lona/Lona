@@ -46,7 +46,7 @@ function toSwiftAST(options, colors, textStyles, rootLayer, logicRootNode) {
   };
   var logicValueToSwiftAST = function (x) {
     var initialValue;
-    initialValue = x.tag ? SwiftDocument$LonaCompilerCore.lonaValue(colors, textStyles, x[0]) : identifierName(x);
+    initialValue = x.tag ? SwiftDocument$LonaCompilerCore.lonaValue(options[/* framework */0], colors, textStyles, x[0]) : identifierName(x);
     var match = options[/* framework */0];
     if (typeof initialValue === "number") {
       return initialValue;
@@ -54,8 +54,6 @@ function toSwiftAST(options, colors, textStyles, rootLayer, logicRootNode) {
       var name = initialValue[0];
       if (name.includes("margin") || name.includes("padding")) {
         return /* LineComment */Block.__(16, ["TODO: Margin & padding"]);
-      } else if (name.toLowerCase().endsWith("image")) {
-        return /* LineComment */Block.__(16, ["TODO: Images"]);
       } else if (name.endsWith("height")) {
         return /* SwiftIdentifier */Block.__(6, [name.replace(".height", "HeightAnchorConstraint?.constant")]);
       } else if (name.endsWith("width")) {
