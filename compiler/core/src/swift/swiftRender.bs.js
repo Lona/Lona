@@ -123,7 +123,7 @@ function render(ast) {
             case 1 : 
                 return Prettier.doc.builders.group(Curry._2(Prettier$LonaCompilerCore.Doc[/* Builders */0][/* <+> */5], Curry._2(Prettier$LonaCompilerCore.Doc[/* Builders */0][/* <+> */5], Curry._2(Prettier$LonaCompilerCore.Doc[/* Builders */0][/* <+> */5], Curry._2(Prettier$LonaCompilerCore.Doc[/* Builders */0][/* <+> */5], Curry._2(Prettier$LonaCompilerCore.Doc[/* Builders */0][/* <+> */5], Curry._1(Prettier$LonaCompilerCore.Doc[/* Builders */0][/* s */0], o$1.operator), Curry._1(Prettier$LonaCompilerCore.Doc[/* Builders */0][/* s */0], "(")), Prettier.doc.builders.softline), render(o$1.expression)), Prettier.doc.builders.softline), Curry._1(Prettier$LonaCompilerCore.Doc[/* Builders */0][/* s */0], ")")));
             case 2 : 
-                return Prettier.doc.builders.group(Curry._2(Prettier$LonaCompilerCore.Doc[/* Builders */0][/* <+> */5], Curry._2(Prettier$LonaCompilerCore.Doc[/* Builders */0][/* <+> */5], Curry._1(Prettier$LonaCompilerCore.Doc[/* Builders */0][/* s */0], o$1.operator), Curry._1(Prettier$LonaCompilerCore.Doc[/* Builders */0][/* s */0], " ")), render(o$1.expression)));
+                return Curry._2(Prettier$LonaCompilerCore.Doc[/* Builders */0][/* <+> */5], Curry._1(Prettier$LonaCompilerCore.Doc[/* Builders */0][/* s */0], o$1.operator), render(o$1.expression));
             
           }
           break;
