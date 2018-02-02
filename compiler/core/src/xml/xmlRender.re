@@ -42,7 +42,7 @@ let rec render = ast : Prettier.Doc.t('a) =>
               indent(softline <+> join(softline, List.map(render, children)))
             )
         <+> softline
-        <+> s("<")
+        <+> s("</")
         <+> s(o##tag)
         <+> s(">")
       )
