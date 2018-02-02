@@ -1,10 +1,14 @@
 {
   "name": "lonac",
-  "version": "0.2.1",
+  "version": "0.2.3",
   "description": "Lona cross-platform code compiler",
   "main": "build/index.js",
   "bin": "./build/index.js",
-  "files": ["build/index.js", "static", "README.md"],
+  "files": [
+    "build/index.js",
+    "static",
+    "README.md"
+  ],
   "scripts": {
     "build": "bsb -make-world",
     "start": "bsb -make-world -w",
@@ -12,15 +16,16 @@
     "bundle": "webpack",
     "format": "refmt --parse=re --print=re --in-place src/**/*.re",
     "prepublishOnly": "yarn clean && yarn build && yarn bundle",
-    "snapshotJs":
-      "node src/main.bs.js workspace js ../../examples/test ../../examples/generated/test/js",
-    "snapshotSwift":
-      "node src/main.bs.js workspace swift ../../examples/test ../../examples/generated/test/swift",
-    "snapshotAppkit":
-      "node src/main.bs.js workspace swift ../../examples/test ../../examples/generated/test/appkit --framework=appkit",
+    "snapshotJs": "node src/main.bs.js workspace js ../../examples/test ../../examples/generated/test/js",
+    "snapshotSwift": "node src/main.bs.js workspace swift ../../examples/test ../../examples/generated/test/swift",
+    "snapshotAppkit": "node src/main.bs.js workspace swift ../../examples/test ../../examples/generated/test/appkit --framework=appkit",
     "snapshot": "yarn snapshotJs && yarn snapshotSwift && yarn snapshotAppkit"
   },
-  "keywords": ["lona", "compiler", "react"],
+  "keywords": [
+    "lona",
+    "compiler",
+    "react"
+  ],
   "author": "Devin Abbott <devinabbott@gmail.com>",
   "license": "MIT",
   "repository": {
