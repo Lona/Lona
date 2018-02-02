@@ -68,8 +68,7 @@ let rec render = ast : Prettier.Doc.t('a) =>
     switch o##expression {
     | LiteralExpression(_)
     | SwiftIdentifier(_)
-    | MemberExpression(_) =>
-      group(s(o##operator) <+> s(" ") <+> render(o##expression))
+    | MemberExpression(_) => s(o##operator) <+> render(o##expression)
     | _ =>
       group(
         s(o##operator)
