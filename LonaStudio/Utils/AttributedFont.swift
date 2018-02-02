@@ -26,7 +26,7 @@ public class AttributedFont {
         weight: AttributedFontWeight,
         color: NSColor = NSColor.black,
         textAlignment: NSTextAlignment = .left,
-        lineBreakMode: NSParagraphStyle.LineBreakMode = .byTruncatingTail) {
+        lineBreakMode: NSParagraphStyle.LineBreakMode = .byWordWrapping) {
         self.fontFamily = fontFamily
         self.fontSize = fontSize
         self.lineHeight = lineHeight
