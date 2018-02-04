@@ -57,6 +57,11 @@ public class AttributedFont {
 
   public lazy var nsFontDescriptor: NSFontDescriptor = {
     var attributes: [NSFontDescriptor.AttributeName: Any] = [:]
+    var family = self.family
+
+    if family == nil && name == nil {
+      family = NSFont.systemFont(ofSize: NSFont.systemFontSize).familyName
+    }
 
     if let family = family {
       attributes[NSFontDescriptor.AttributeName.family] = family

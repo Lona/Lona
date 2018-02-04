@@ -125,6 +125,16 @@ public class TextStylesTest: NSBox {
     boxType = .custom
     borderType = .noBorder
     contentViewMargins = .zero
+    textView.lineBreakMode = .byWordWrapping
+    text1View.lineBreakMode = .byWordWrapping
+    text2View.lineBreakMode = .byWordWrapping
+    text3View.lineBreakMode = .byWordWrapping
+    text4View.lineBreakMode = .byWordWrapping
+    text5View.lineBreakMode = .byWordWrapping
+    text6View.lineBreakMode = .byWordWrapping
+    text7View.lineBreakMode = .byWordWrapping
+    text8View.lineBreakMode = .byWordWrapping
+    text9View.lineBreakMode = .byWordWrapping
 
     addSubview(textView)
     addSubview(text1View)

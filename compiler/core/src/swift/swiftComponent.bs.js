@@ -466,41 +466,55 @@ function generate(options, name, colors, textStyles, json) {
       };
       return List.concat(List.map(defineInitialLayerValues, Layer$LonaCompilerCore.flatten(rootLayer)));
     };
-    var initializeBox = function (layer) {
+    var resetViewStyling = function (layer) {
       var match = layer[/* typeName */0];
-      if (match !== 0) {
-        return /* [] */0;
-      } else {
-        return /* :: */[
-                /* BinaryExpression */Block.__(2, [{
-                      left: memberOrSelfExpression(parentNameOrSelf(layer), /* :: */[
-                            /* SwiftIdentifier */Block.__(6, ["boxType"]),
-                            /* [] */0
-                          ]),
-                      operator: "=",
-                      right: /* SwiftIdentifier */Block.__(6, [".custom"])
-                    }]),
-                /* :: */[
+      if (match !== 1) {
+        if (match !== 0) {
+          return /* [] */0;
+        } else {
+          return /* :: */[
                   /* BinaryExpression */Block.__(2, [{
                         left: memberOrSelfExpression(parentNameOrSelf(layer), /* :: */[
-                              /* SwiftIdentifier */Block.__(6, ["borderType"]),
+                              /* SwiftIdentifier */Block.__(6, ["boxType"]),
                               /* [] */0
                             ]),
                         operator: "=",
-                        right: /* SwiftIdentifier */Block.__(6, [".noBorder"])
+                        right: /* SwiftIdentifier */Block.__(6, [".custom"])
                       }]),
                   /* :: */[
                     /* BinaryExpression */Block.__(2, [{
                           left: memberOrSelfExpression(parentNameOrSelf(layer), /* :: */[
-                                /* SwiftIdentifier */Block.__(6, ["contentViewMargins"]),
+                                /* SwiftIdentifier */Block.__(6, ["borderType"]),
                                 /* [] */0
                               ]),
                           operator: "=",
-                          right: /* SwiftIdentifier */Block.__(6, [".zero"])
+                          right: /* SwiftIdentifier */Block.__(6, [".noBorder"])
                         }]),
-                    /* [] */0
+                    /* :: */[
+                      /* BinaryExpression */Block.__(2, [{
+                            left: memberOrSelfExpression(parentNameOrSelf(layer), /* :: */[
+                                  /* SwiftIdentifier */Block.__(6, ["contentViewMargins"]),
+                                  /* [] */0
+                                ]),
+                            operator: "=",
+                            right: /* SwiftIdentifier */Block.__(6, [".zero"])
+                          }]),
+                      /* [] */0
+                    ]
                   ]
-                ]
+                ];
+        }
+      } else {
+        return /* :: */[
+                /* BinaryExpression */Block.__(2, [{
+                      left: memberOrSelfExpression(parentNameOrSelf(layer), /* :: */[
+                            /* SwiftIdentifier */Block.__(6, ["lineBreakMode"]),
+                            /* [] */0
+                          ]),
+                      operator: "=",
+                      right: /* SwiftIdentifier */Block.__(6, [".byWordWrapping"])
+                    }]),
+                /* [] */0
               ];
       }
     };
@@ -532,7 +546,7 @@ function generate(options, name, colors, textStyles, json) {
                 ],
                 parameters: /* [] */0,
                 body: SwiftDocument$LonaCompilerCore.joinGroups(/* Empty */0, /* :: */[
-                      match !== 0 ? List.concat(Layer$LonaCompilerCore.flatmap(initializeBox, root)) : /* [] */0,
+                      match !== 0 ? List.concat(Layer$LonaCompilerCore.flatmap(resetViewStyling, root)) : /* [] */0,
                       /* :: */[
                         List.concat(Layer$LonaCompilerCore.flatmapParent(addSubviews, root)),
                         /* :: */[

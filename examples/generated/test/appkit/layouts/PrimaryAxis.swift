@@ -96,6 +96,7 @@ public class PrimaryAxis: NSBox {
     fill2View.boxType = .custom
     fill2View.borderType = .noBorder
     fill2View.contentViewMargins = .zero
+    textView.lineBreakMode = .byWordWrapping
 
     addSubview(fixedView)
     addSubview(fitView)

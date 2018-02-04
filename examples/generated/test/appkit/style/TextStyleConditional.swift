@@ -50,6 +50,7 @@ public class TextStyleConditional: NSBox {
     boxType = .custom
     borderType = .noBorder
     contentViewMargins = .zero
+    textView.lineBreakMode = .byWordWrapping
 
     addSubview(textView)
 

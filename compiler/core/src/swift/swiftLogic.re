@@ -83,6 +83,11 @@ let toSwiftAST =
       Ast.SwiftIdentifier(
         name |> Js.String.replace("backgroundColor", "fillColor")
       )
+    | (AppKit, Ast.SwiftIdentifier(name))
+        when name |> Js.String.endsWith("numberOfLines") =>
+      Ast.SwiftIdentifier(
+        name |> Js.String.replace("numberOfLines", "maximumNumberOfLines")
+      )
     | _ => initialValue
     };
   };
