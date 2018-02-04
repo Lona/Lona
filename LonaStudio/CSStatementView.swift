@@ -287,7 +287,7 @@ class CSStatementView: NSTableCellView {
             if activated { return }
 
             if view.tag == EDITABLE_TEXT_FIELD_TAG {
-                if NSPointInRect(point, view.frame) {
+                if view.frame.contains(point) {
                     window?.makeFirstResponder(view)
                     activated = true
                 }
