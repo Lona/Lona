@@ -391,7 +391,7 @@ let generate =
       |> List.map(defineInitialLayerValues)
       |> List.concat;
     };
-    let initializeBox = (layer: Types.layer) =>
+    let resetViewStyling = (layer: Types.layer) =>
       switch layer.typeName {
       | View => [
           BinaryExpression({
@@ -413,6 +413,14 @@ let generate =
               ),
             "operator": "=",
             "right": SwiftIdentifier(".zero")
+          })
+        ]
+      | Text => [
+          BinaryExpression({
+            "left":
+              layerMemberExpression(layer, [SwiftIdentifier("lineBreakMode")]),
+            "operator": "=",
+            "right": SwiftIdentifier(".byWordWrapping")
           })
         ]
       | _ => []
@@ -437,7 +445,7 @@ let generate =
           Empty,
           [
             options.framework == SwiftOptions.AppKit ?
-              Layer.flatmap(initializeBox, root) |> List.concat : [],
+              Layer.flatmap(resetViewStyling, root) |> List.concat : [],
             Layer.flatmapParent(addSubviews, root) |> List.concat,
             setUpDefaultsDoc()
           ]

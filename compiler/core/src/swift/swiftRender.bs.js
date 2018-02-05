@@ -507,7 +507,7 @@ function renderLiteral(node) {
           return Curry._1(Prettier$LonaCompilerCore.Doc[/* Builders */0][/* concat */2], /* :: */[
                       Curry._1(Prettier$LonaCompilerCore.Doc[/* Builders */0][/* s */0], "\""),
                       /* :: */[
-                        Curry._1(Prettier$LonaCompilerCore.Doc[/* Builders */0][/* s */0], node[0]),
+                        Curry._1(Prettier$LonaCompilerCore.Doc[/* Builders */0][/* s */0], node[0].replace((/"/g), "\\\"")),
                         /* :: */[
                           Curry._1(Prettier$LonaCompilerCore.Doc[/* Builders */0][/* s */0], "\""),
                           /* [] */0

@@ -85,6 +85,7 @@ public class SecondaryAxis: NSBox {
     fillView.boxType = .custom
     fillView.borderType = .noBorder
     fillView.contentViewMargins = .zero
+    textView.lineBreakMode = .byWordWrapping
 
     addSubview(fixedView)
     addSubview(fitView)

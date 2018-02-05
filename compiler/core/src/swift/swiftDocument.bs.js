@@ -45,6 +45,60 @@ function nameWithoutExtension(path) {
   return Path.parse(path).name;
 }
 
+function importFramework(framework) {
+  if (framework !== 0) {
+    return /* ImportDeclaration */Block.__(11, ["AppKit"]);
+  } else {
+    return /* ImportDeclaration */Block.__(11, ["UIKit"]);
+  }
+}
+
+function colorTypeName(framework) {
+  if (framework !== 0) {
+    return "NSColor";
+  } else {
+    return "UIColor";
+  }
+}
+
+function fontTypeName(framework) {
+  if (framework !== 0) {
+    return "NSFont";
+  } else {
+    return "UIFont";
+  }
+}
+
+function imageTypeName(framework) {
+  if (framework !== 0) {
+    return "NSImage";
+  } else {
+    return "UIImage";
+  }
+}
+
+function layoutPriorityTypeDoc(framework) {
+  if (framework !== 0) {
+    return /* MemberExpression */Block.__(1, [/* :: */[
+                /* SwiftIdentifier */Block.__(6, ["NSLayoutConstraint"]),
+                /* :: */[
+                  /* SwiftIdentifier */Block.__(6, ["Priority"]),
+                  /* [] */0
+                ]
+              ]]);
+  } else {
+    return /* SwiftIdentifier */Block.__(6, ["UILayoutPriority"]);
+  }
+}
+
+function labelAttributedTextName(framework) {
+  if (framework !== 0) {
+    return "attributedStringValue";
+  } else {
+    return "attributedText";
+  }
+}
+
 function localImageName(framework, name) {
   var imageName = /* LiteralExpression */Block.__(0, [/* String */Block.__(3, [Path.parse(name).name])]);
   if (framework !== 0) {
@@ -112,7 +166,7 @@ function lonaValue(framework, colors, textStyles, value) {
           var rawValue$2 = Json_decode.string(value[/* data */1]);
           if (rawValue$2.startsWith("file://./")) {
             return /* FunctionCallExpression */Block.__(15, [{
-                        name: /* SwiftIdentifier */Block.__(6, ["UIImage"]),
+                        name: /* SwiftIdentifier */Block.__(6, [imageTypeName(framework)]),
                         arguments: /* :: */[
                           /* FunctionCallArgument */Block.__(14, [{
                                 name: /* Some */[/* SwiftIdentifier */Block.__(6, ["named"])],
@@ -142,60 +196,15 @@ function lonaValue(framework, colors, textStyles, value) {
   }
 }
 
-function importFramework(framework) {
-  if (framework !== 0) {
-    return /* ImportDeclaration */Block.__(11, ["AppKit"]);
-  } else {
-    return /* ImportDeclaration */Block.__(11, ["UIKit"]);
-  }
-}
-
-function colorTypeName(framework) {
-  if (framework !== 0) {
-    return "NSColor";
-  } else {
-    return "UIColor";
-  }
-}
-
-function fontTypeName(framework) {
-  if (framework !== 0) {
-    return "NSFont";
-  } else {
-    return "UIFont";
-  }
-}
-
-function layoutPriorityTypeDoc(framework) {
-  if (framework !== 0) {
-    return /* MemberExpression */Block.__(1, [/* :: */[
-                /* SwiftIdentifier */Block.__(6, ["NSLayoutConstraint"]),
-                /* :: */[
-                  /* SwiftIdentifier */Block.__(6, ["Priority"]),
-                  /* [] */0
-                ]
-              ]]);
-  } else {
-    return /* SwiftIdentifier */Block.__(6, ["UILayoutPriority"]);
-  }
-}
-
-function labelAttributedTextName(framework) {
-  if (framework !== 0) {
-    return "attributedStringValue";
-  } else {
-    return "attributedText";
-  }
-}
-
 exports.join                    = join;
 exports.joinGroups              = joinGroups;
 exports.nameWithoutExtension    = nameWithoutExtension;
-exports.localImageName          = localImageName;
-exports.lonaValue               = lonaValue;
 exports.importFramework         = importFramework;
 exports.colorTypeName           = colorTypeName;
 exports.fontTypeName            = fontTypeName;
+exports.imageTypeName           = imageTypeName;
 exports.layoutPriorityTypeDoc   = layoutPriorityTypeDoc;
 exports.labelAttributedTextName = labelAttributedTextName;
+exports.localImageName          = localImageName;
+exports.lonaValue               = lonaValue;
 /* path Not a pure module */

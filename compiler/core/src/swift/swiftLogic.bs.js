@@ -64,6 +64,8 @@ function toSwiftAST(options, colors, textStyles, rootLayer, logicRootNode) {
           return /* SwiftIdentifier */Block.__(6, [name$1.replace(".borderRadius", ".cornerRadius")]);
         } else if (name$1.endsWith("backgroundColor")) {
           return /* SwiftIdentifier */Block.__(6, [name$1.replace("backgroundColor", "fillColor")]);
+        } else if (name$1.endsWith("numberOfLines")) {
+          return /* SwiftIdentifier */Block.__(6, [name$1.replace("numberOfLines", "maximumNumberOfLines")]);
         } else {
           return initialValue;
         }

@@ -281,7 +281,12 @@ and renderLiteral = (node: literal) =>
   | Boolean(value) => s(value ? "true" : "false")
   | Integer(value) => s(string_of_int(value))
   | FloatingPoint(value) => renderFloat(value)
-  | String(value) => concat([s("\""), s(value), s("\"")])
+  | String(value) =>
+    concat([
+      s("\""),
+      s(value |> Js.String.replaceByRe([%re "/\"/g"], "\\\"")),
+      s("\"")
+    ])
   | Color(value) =>
     let rgba = Css.parseColorDefault("black", value);
     let values = [

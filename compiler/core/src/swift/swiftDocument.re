@@ -20,6 +20,46 @@ let nameWithoutExtension = path => {
   obj##name;
 };
 
+let importFramework = framework =>
+  switch framework {
+  | SwiftOptions.UIKit => ImportDeclaration("UIKit")
+  | SwiftOptions.AppKit => ImportDeclaration("AppKit")
+  };
+
+let colorTypeName = framework =>
+  switch framework {
+  | SwiftOptions.UIKit => "UIColor"
+  | SwiftOptions.AppKit => "NSColor"
+  };
+
+let fontTypeName = framework =>
+  switch framework {
+  | SwiftOptions.UIKit => "UIFont"
+  | SwiftOptions.AppKit => "NSFont"
+  };
+
+let imageTypeName = framework =>
+  switch framework {
+  | SwiftOptions.UIKit => "UIImage"
+  | SwiftOptions.AppKit => "NSImage"
+  };
+
+let layoutPriorityTypeDoc = framework =>
+  switch framework {
+  | SwiftOptions.UIKit => SwiftIdentifier("UILayoutPriority")
+  | SwiftOptions.AppKit =>
+    MemberExpression([
+      SwiftIdentifier("NSLayoutConstraint"),
+      SwiftIdentifier("Priority")
+    ])
+  };
+
+let labelAttributedTextName = framework =>
+  switch framework {
+  | SwiftOptions.UIKit => "attributedText"
+  | SwiftOptions.AppKit => "attributedStringValue"
+  };
+
 let localImageName = (framework: SwiftOptions.framework, name) => {
   let imageName = LiteralExpression(String(nameWithoutExtension(name)));
   switch framework {
@@ -70,7 +110,7 @@ let lonaValue =
       let rawValue = value.data |> Json.Decode.string;
       if (rawValue |> Js.String.startsWith("file://./")) {
         FunctionCallExpression({
-          "name": SwiftIdentifier("UIImage"),
+          "name": SwiftIdentifier(imageTypeName(framework)),
           "arguments": [
             FunctionCallArgument({
               "name": Some(SwiftIdentifier("named")),
@@ -97,38 +137,4 @@ let lonaValue =
       };
     | _ => SwiftIdentifier("UnknownNamedTypeAlias" ++ alias)
     }
-  };
-
-let importFramework = framework =>
-  switch framework {
-  | SwiftOptions.UIKit => ImportDeclaration("UIKit")
-  | SwiftOptions.AppKit => ImportDeclaration("AppKit")
-  };
-
-let colorTypeName = framework =>
-  switch framework {
-  | SwiftOptions.UIKit => "UIColor"
-  | SwiftOptions.AppKit => "NSColor"
-  };
-
-let fontTypeName = framework =>
-  switch framework {
-  | SwiftOptions.UIKit => "UIFont"
-  | SwiftOptions.AppKit => "NSFont"
-  };
-
-let layoutPriorityTypeDoc = framework =>
-  switch framework {
-  | SwiftOptions.UIKit => SwiftIdentifier("UILayoutPriority")
-  | SwiftOptions.AppKit =>
-    MemberExpression([
-      SwiftIdentifier("NSLayoutConstraint"),
-      SwiftIdentifier("Priority")
-    ])
-  };
-
-let labelAttributedTextName = framework =>
-  switch framework {
-  | SwiftOptions.UIKit => "attributedText"
-  | SwiftOptions.AppKit => "attributedStringValue"
   };
