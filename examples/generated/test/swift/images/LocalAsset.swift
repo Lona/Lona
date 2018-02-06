@@ -42,8 +42,7 @@ public class LocalAsset: UIView {
   private func setUpViews() {
     addSubview(imageView)
 
-    imageView.backgroundColor =
-      #colorLiteral(red: 0.847058823529, green: 0.847058823529, blue: 0.847058823529, alpha: 1)
+    imageView.backgroundColor = #colorLiteral(red: 0.847058823529, green: 0.847058823529, blue: 0.847058823529, alpha: 1)
     imageView.image = UIImage(named: "icon_128x128")
   }
 
