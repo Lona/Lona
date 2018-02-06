@@ -9,12 +9,30 @@ external copySync : (string, string) => unit = "";
 
 let arguments = Array.to_list(Process.argv);
 
+let positionalArguments = arguments |> List.filter((arg) => !Js.String.startsWith("--", arg));
+
+let getArgument = name => {
+  let prefix = "--" ++ name ++ "=";
+  switch (arguments |> List.find(Js.String.startsWith(prefix))) {
+  | value =>
+    Some(value |> Js.String.sliceToEnd(~from=Js.String.length(prefix)))
+  | exception Not_found => None
+  };
+};
+
+let options: LonaCompilerCore.Options.options = {
+  preset:
+    switch (getArgument("preset")) {
+    | Some("airbnb") => Airbnb
+    | _ => Standard
+    }
+};
+
 let swiftOptions: Swift.Options.options = {
   framework:
-    switch (arguments |> List.find(Js.String.includes("--framework="))) {
-    | arg when arg |> Js.String.endsWith("appkit") => Swift.Options.AppKit
+    switch (getArgument("framework")) {
+    | Some("appkit") => Swift.Options.AppKit
     | _ => Swift.Options.UIKit
-    | exception Not_found => Swift.Options.UIKit
     }
 };
 
@@ -23,18 +41,18 @@ let exit = message => {
   [%bs.raw {|process.exit(1)|}];
 };
 
-if (List.length(arguments) < 3) {
+if (List.length(positionalArguments) < 3) {
   exit("No command given");
 };
 
-let command = Process.argv[2];
+let command = List.nth(positionalArguments, 2);
 
-if (Array.length(Process.argv) < 4) {
+if (List.length(positionalArguments) < 4) {
   exit("No target given");
 };
 
 let target =
-  switch Process.argv[3] {
+  switch (List.nth(positionalArguments, 3)) {
   | "js" => Types.JavaScript
   | "swift" => Types.Swift
   | "xml" => Types.Xml
@@ -66,7 +84,7 @@ let targetExtension = getTargetExtension(target);
 
 let renderColors = (target, colors) =>
   switch target {
-  | Types.Swift => Swift.Color.render(swiftOptions, colors)
+  | Types.Swift => Swift.Color.render(options, swiftOptions, colors)
   | JavaScript => JavaScript.Color.render(colors)
   | Xml => Xml.Color.render(colors)
   };
@@ -119,6 +137,7 @@ let convertComponent = filename => {
       let textStyles = TextStyle.parseFile(textStylesFile);
       let result =
         Swift.Component.generate(
+          options,
           swiftOptions,
           name,
           colors,
@@ -223,25 +242,25 @@ let convertWorkspace = (workspace, output) => {
 
 switch command {
 | "workspace" =>
-  if (Array.length(Process.argv) < 5) {
+  if (List.length(positionalArguments) < 5) {
     exit("No workspace path given");
   };
-  if (Array.length(Process.argv) < 6) {
+  if (List.length(positionalArguments) < 6) {
     exit("No output path given");
   };
-  convertWorkspace(Process.argv[4], Process.argv[5]);
+  convertWorkspace(List.nth(positionalArguments, 4), List.nth(positionalArguments, 5));
 | "component" =>
-  if (Array.length(Process.argv) < 5) {
+  if (List.length(positionalArguments) < 5) {
     exit("No filename given");
   };
-  convertComponent(Process.argv[4]) |> Js.log;
+  convertComponent(List.nth(positionalArguments, 4)) |> Js.log;
 | "colors" =>
-  if (Array.length(Process.argv) < 5) {
+  if (List.length(positionalArguments) < 5) {
     let render = content =>
       Js.Promise.resolve(convertColors(target, content) |> Js.log);
     getStdin() |> Js.Promise.then_(render) |> ignore;
   } else {
-    let content = Node.Fs.readFileSync(Process.argv[4], `utf8);
+    let content = Node.Fs.readFileSync(List.nth(positionalArguments, 4), `utf8);
     convertColors(target, content) |> Js.log;
   }
 | _ => Js.log2("Invalid command", command)

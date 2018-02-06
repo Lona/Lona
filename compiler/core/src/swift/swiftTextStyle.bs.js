@@ -48,21 +48,21 @@ function render(options, colors, textStyles) {
   var argumentsDoc = function (textStyle) {
     return List.concat(/* :: */[
                 unwrapOptional((function (value) {
-                        return /* FunctionCallArgument */Block.__(14, [{
+                        return /* FunctionCallArgument */Block.__(15, [{
                                     name: /* Some */[/* SwiftIdentifier */Block.__(6, ["family"])],
                                     value: /* LiteralExpression */Block.__(0, [/* String */Block.__(3, [value])])
                                   }]);
                       }), textStyle[/* fontFamily */3]),
                 /* :: */[
                   unwrapOptional((function (value) {
-                          return /* FunctionCallArgument */Block.__(14, [{
+                          return /* FunctionCallArgument */Block.__(15, [{
                                       name: /* Some */[/* SwiftIdentifier */Block.__(6, ["name"])],
                                       value: /* LiteralExpression */Block.__(0, [/* String */Block.__(3, [value])])
                                     }]);
                         }), textStyle[/* fontName */2]),
                   /* :: */[
                     unwrapOptional((function (value) {
-                            return /* FunctionCallArgument */Block.__(14, [{
+                            return /* FunctionCallArgument */Block.__(15, [{
                                         name: /* Some */[/* SwiftIdentifier */Block.__(6, ["weight"])],
                                         value: /* MemberExpression */Block.__(1, [/* :: */[
                                               /* SwiftIdentifier */Block.__(6, [SwiftDocument$LonaCompilerCore.fontTypeName(options[/* framework */0])]),
@@ -78,21 +78,21 @@ function render(options, colors, textStyles) {
                           }), textStyle[/* fontWeight */4]),
                     /* :: */[
                       unwrapOptional((function (value) {
-                              return /* FunctionCallArgument */Block.__(14, [{
+                              return /* FunctionCallArgument */Block.__(15, [{
                                           name: /* Some */[/* SwiftIdentifier */Block.__(6, ["size"])],
                                           value: /* LiteralExpression */Block.__(0, [/* FloatingPoint */Block.__(2, [value])])
                                         }]);
                             }), textStyle[/* fontSize */5]),
                       /* :: */[
                         unwrapOptional((function (value) {
-                                return /* FunctionCallArgument */Block.__(14, [{
+                                return /* FunctionCallArgument */Block.__(15, [{
                                             name: /* Some */[/* SwiftIdentifier */Block.__(6, ["lineHeight"])],
                                             value: /* LiteralExpression */Block.__(0, [/* FloatingPoint */Block.__(2, [value])])
                                           }]);
                               }), textStyle[/* lineHeight */6]),
                         /* :: */[
                           unwrapOptional((function (value) {
-                                  return /* FunctionCallArgument */Block.__(14, [{
+                                  return /* FunctionCallArgument */Block.__(15, [{
                                               name: /* Some */[/* SwiftIdentifier */Block.__(6, ["kerning"])],
                                               value: /* LiteralExpression */Block.__(0, [/* FloatingPoint */Block.__(2, [value])])
                                             }]);
@@ -107,7 +107,7 @@ function render(options, colors, textStyles) {
                                               /* [] */0
                                             ]
                                           ]]) : /* LiteralExpression */Block.__(0, [/* Color */Block.__(4, [value])]);
-                                    return /* FunctionCallArgument */Block.__(14, [{
+                                    return /* FunctionCallArgument */Block.__(15, [{
                                                 name: /* Some */[/* SwiftIdentifier */Block.__(6, ["color"])],
                                                 value: value$1
                                               }]);
@@ -134,7 +134,7 @@ function render(options, colors, textStyles) {
                       identifier: /* SwiftIdentifier */Block.__(6, [textStyle[/* id */0]]),
                       annotation: /* None */0
                     }]),
-                init: /* Some */[/* FunctionCallExpression */Block.__(15, [{
+                init: /* Some */[/* FunctionCallExpression */Block.__(16, [{
                         name: /* SwiftIdentifier */Block.__(6, ["AttributedFont"]),
                         arguments: argumentsDoc(textStyle)
                       }])]
@@ -151,7 +151,7 @@ function render(options, colors, textStyles) {
             ];
     }
   };
-  return SwiftRender$LonaCompilerCore.toString(/* TopLevelDeclaration */Block.__(20, [{
+  return SwiftRender$LonaCompilerCore.toString(/* TopLevelDeclaration */Block.__(22, [{
                   statements: /* :: */[
                     SwiftDocument$LonaCompilerCore.importFramework(options[/* framework */0]),
                     /* :: */[

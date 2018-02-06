@@ -7,45 +7,147 @@ var $$String                       = require("bs-platform/lib/js/string.js");
 var SwiftRender$LonaCompilerCore   = require("./swiftRender.bs.js");
 var SwiftDocument$LonaCompilerCore = require("./swiftDocument.bs.js");
 
-function render(options, colors) {
-  var colorConstantDoc = function (color) {
-    var match = color[/* comment */3];
-    return /* LineEndComment */Block.__(17, [{
-                comment: $$String.uppercase(color[/* value */2]) + (
-                  match ? " - " + match[0] : ""
-                ),
-                line: /* ConstantDeclaration */Block.__(7, [{
-                      modifiers: /* :: */[
-                        /* AccessLevelModifier */Block.__(0, [/* PublicModifier */3]),
-                        /* :: */[
-                          /* StaticModifier */11,
-                          /* [] */0
-                        ]
-                      ],
-                      pattern: /* IdentifierPattern */Block.__(0, [{
-                            identifier: /* SwiftIdentifier */Block.__(6, [color[/* id */0]]),
-                            annotation: /* None */0
+function render(options, swiftOptions, colors) {
+  var doc = function () {
+    var colorConstantDoc = function (color) {
+      var match = color[/* comment */3];
+      return /* LineEndComment */Block.__(19, [{
+                  comment: $$String.uppercase(color[/* value */2]) + (
+                    match ? " - " + match[0] : ""
+                  ),
+                  line: /* ConstantDeclaration */Block.__(7, [{
+                        modifiers: /* :: */[
+                          /* AccessLevelModifier */Block.__(0, [/* PublicModifier */3]),
+                          /* :: */[
+                            /* StaticModifier */11,
+                            /* [] */0
+                          ]
+                        ],
+                        pattern: /* IdentifierPattern */Block.__(0, [{
+                              identifier: /* SwiftIdentifier */Block.__(6, [color[/* id */0]]),
+                              annotation: /* None */0
+                            }]),
+                        init: /* Some */[/* LiteralExpression */Block.__(0, [/* Color */Block.__(4, [color[/* value */2]])])]
+                      }])
+                }]);
+    };
+    return /* TopLevelDeclaration */Block.__(22, [{
+                statements: /* :: */[
+                  SwiftDocument$LonaCompilerCore.importFramework(swiftOptions[/* framework */0]),
+                  /* :: */[
+                    /* Empty */0,
+                    /* :: */[
+                      /* EnumDeclaration */Block.__(5, [{
+                            name: "Colors",
+                            modifier: /* Some */[/* PublicModifier */3],
+                            body: List.map(colorConstantDoc, colors)
                           }]),
-                      init: /* Some */[/* LiteralExpression */Block.__(0, [/* Color */Block.__(4, [color[/* value */2]])])]
-                    }])
+                      /* [] */0
+                    ]
+                  ]
+                ]
               }]);
   };
-  return SwiftRender$LonaCompilerCore.toString(/* TopLevelDeclaration */Block.__(20, [{
-                  statements: /* :: */[
-                    SwiftDocument$LonaCompilerCore.importFramework(options[/* framework */0]),
+  var airbnbDoc = function () {
+    var colorConstantDoc = function (color) {
+      return /* ConstantDeclaration */Block.__(7, [{
+                  modifiers: /* :: */[
+                    /* AccessLevelModifier */Block.__(0, [/* PublicModifier */3]),
                     /* :: */[
-                      /* Empty */0,
+                      /* StaticModifier */11,
+                      /* [] */0
+                    ]
+                  ],
+                  pattern: /* IdentifierPattern */Block.__(0, [{
+                        identifier: /* SwiftIdentifier */Block.__(6, [color[/* id */0]]),
+                        annotation: /* None */0
+                      }]),
+                  init: /* Some */[/* FunctionCallExpression */Block.__(16, [{
+                          name: /* SwiftIdentifier */Block.__(6, ["color"]),
+                          arguments: /* :: */[
+                            /* FunctionCallArgument */Block.__(15, [{
+                                  name: /* Some */[/* SwiftIdentifier */Block.__(6, ["hex"])],
+                                  value: /* LiteralExpression */Block.__(0, [/* String */Block.__(3, [color[/* value */2]])])
+                                }]),
+                            /* :: */[
+                              /* FunctionCallArgument */Block.__(15, [{
+                                    name: /* Some */[/* SwiftIdentifier */Block.__(6, ["preview"])],
+                                    value: /* LiteralExpression */Block.__(0, [/* Color */Block.__(4, [color[/* value */2]])])
+                                  }]),
+                              /* [] */0
+                            ]
+                          ]
+                        }])]
+                }]);
+    };
+    var colorFuncDoc = function () {
+      return /* FunctionDeclaration */Block.__(10, [{
+                  name: "color",
+                  modifiers: /* [] */0,
+                  parameters: /* :: */[
+                    /* Parameter */Block.__(14, [{
+                          annotation: /* TypeName */Block.__(0, ["String"]),
+                          externalName: /* None */0,
+                          localName: "hex",
+                          defaultValue: /* None */0
+                        }]),
+                    /* :: */[
+                      /* Parameter */Block.__(14, [{
+                            annotation: /* TypeName */Block.__(0, [SwiftDocument$LonaCompilerCore.colorTypeName(swiftOptions[/* framework */0])]),
+                            externalName: /* None */0,
+                            localName: "preview",
+                            defaultValue: /* None */0
+                          }]),
+                      /* [] */0
+                    ]
+                  ],
+                  body: /* :: */[
+                    /* ReturnStatement */Block.__(13, [/* Some */[/* FunctionCallExpression */Block.__(16, [{
+                                name: /* SwiftIdentifier */Block.__(6, [SwiftDocument$LonaCompilerCore.colorTypeName(swiftOptions[/* framework */0])]),
+                                arguments: /* :: */[
+                                  /* FunctionCallArgument */Block.__(15, [{
+                                        name: /* Some */[/* SwiftIdentifier */Block.__(6, ["hex"])],
+                                        value: /* SwiftIdentifier */Block.__(6, ["hex"])
+                                      }]),
+                                  /* [] */0
+                                ]
+                              }])]]),
+                    /* [] */0
+                  ],
+                  result: /* Some */[/* TypeName */Block.__(0, [SwiftDocument$LonaCompilerCore.colorTypeName(swiftOptions[/* framework */0])])]
+                }]);
+    };
+    return /* TopLevelDeclaration */Block.__(22, [{
+                statements: /* :: */[
+                  SwiftDocument$LonaCompilerCore.importFramework(swiftOptions[/* framework */0]),
+                  /* :: */[
+                    /* Empty */0,
+                    /* :: */[
+                      /* DocComment */Block.__(18, ["DLS-defined color values"]),
                       /* :: */[
                         /* EnumDeclaration */Block.__(5, [{
                               name: "Colors",
                               modifier: /* Some */[/* PublicModifier */3],
                               body: List.map(colorConstantDoc, colors)
                             }]),
-                        /* [] */0
+                        /* :: */[
+                          /* Empty */0,
+                          /* :: */[
+                            /* DocComment */Block.__(18, ["Returns a color represented by `hex` string. We send #colorLiteral in `preview` to make it easy for developers to see which color the hex string is referring to. Please keep these in sync."]),
+                            /* :: */[
+                              colorFuncDoc(/* () */0),
+                              /* [] */0
+                            ]
+                          ]
+                        ]
                       ]
                     ]
                   ]
-                }]));
+                ]
+              }]);
+  };
+  var match = +(options[/* preset */0] === /* Airbnb */1);
+  return SwiftRender$LonaCompilerCore.toString(match !== 0 ? airbnbDoc(/* () */0) : doc(/* () */0));
 }
 
 exports.render = render;

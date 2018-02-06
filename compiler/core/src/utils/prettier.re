@@ -13,6 +13,8 @@ module Doc = {
     external _join : (t('a), array(t('b))) => Js.t({..}) = "join";
     let join = (seperator, items) => _join(seperator, Array.of_list(items));
     [@bs.val] [@bs.module "prettier"] [@bs.scope ("doc", "builders")]
+    external fixedWidth : (t('a), int) => Js.t({..}) = "";
+    [@bs.val] [@bs.module "prettier"] [@bs.scope ("doc", "builders")]
     external indent : t('a) => Js.t({..}) = "";
     [@bs.val] [@bs.module "prettier"] [@bs.scope ("doc", "builders")]
     external group : t('a) => Js.t({..}) = "";

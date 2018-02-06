@@ -16,7 +16,7 @@ var SwiftLogic$LonaCompilerCore    = require("./swiftLogic.bs.js");
 var SwiftFormat$LonaCompilerCore   = require("./swiftFormat.bs.js");
 var SwiftDocument$LonaCompilerCore = require("./swiftDocument.bs.js");
 
-function generate(options, name, colors, textStyles, json) {
+function generate(_, swiftOptions, name, colors, textStyles, json) {
   var rootLayer = Decode$LonaCompilerCore.Component[/* rootLayer */1](json);
   var nonRootLayers = List.tl(Layer$LonaCompilerCore.flatten(rootLayer));
   var logic = Decode$LonaCompilerCore.Component[/* logic */2](json);
@@ -64,7 +64,7 @@ function generate(options, name, colors, textStyles, json) {
                 block: /* Some */[/* WillSetDidSetBlock */[{
                       willSet: /* None */0,
                       didSet: /* Some */[/* :: */[
-                          /* FunctionCallExpression */Block.__(15, [{
+                          /* FunctionCallExpression */Block.__(16, [{
                                 name: /* SwiftIdentifier */Block.__(6, ["update"]),
                                 arguments: /* [] */0
                               }]),
@@ -74,7 +74,7 @@ function generate(options, name, colors, textStyles, json) {
               }]);
   };
   var getLayerTypeName = function (layerType) {
-    var match = options[/* framework */0];
+    var match = swiftOptions[/* framework */0];
     if (match !== 0) {
       switch (layerType) {
         case 0 : 
@@ -109,18 +109,18 @@ function generate(options, name, colors, textStyles, json) {
   };
   var getLayerInitCall = function (layerType) {
     var typeName = /* SwiftIdentifier */Block.__(6, [getLayerTypeName(layerType)]);
-    var match = options[/* framework */0];
+    var match = swiftOptions[/* framework */0];
     if (match !== 0) {
       if (layerType !== 1) {
-        return /* FunctionCallExpression */Block.__(15, [{
+        return /* FunctionCallExpression */Block.__(16, [{
                     name: typeName,
                     arguments: /* [] */0
                   }]);
       } else {
-        return /* FunctionCallExpression */Block.__(15, [{
+        return /* FunctionCallExpression */Block.__(16, [{
                     name: typeName,
                     arguments: /* :: */[
-                      /* FunctionCallArgument */Block.__(14, [{
+                      /* FunctionCallArgument */Block.__(15, [{
                             name: /* Some */[/* SwiftIdentifier */Block.__(6, ["labelWithString"])],
                             value: /* LiteralExpression */Block.__(0, [/* String */Block.__(3, [""])])
                           }]),
@@ -130,15 +130,15 @@ function generate(options, name, colors, textStyles, json) {
       }
     } else if (layerType !== 1) {
       if (layerType >= 3) {
-        return /* FunctionCallExpression */Block.__(15, [{
+        return /* FunctionCallExpression */Block.__(16, [{
                     name: typeName,
                     arguments: /* [] */0
                   }]);
       } else {
-        return /* FunctionCallExpression */Block.__(15, [{
+        return /* FunctionCallExpression */Block.__(16, [{
                     name: typeName,
                     arguments: /* :: */[
-                      /* FunctionCallArgument */Block.__(14, [{
+                      /* FunctionCallArgument */Block.__(15, [{
                             name: /* Some */[/* SwiftIdentifier */Block.__(6, ["frame"])],
                             value: /* SwiftIdentifier */Block.__(6, [".zero"])
                           }]),
@@ -147,7 +147,7 @@ function generate(options, name, colors, textStyles, json) {
                   }]);
       }
     } else {
-      return /* FunctionCallExpression */Block.__(15, [{
+      return /* FunctionCallExpression */Block.__(16, [{
                   name: typeName,
                   arguments: /* [] */0
                 }]);
@@ -289,7 +289,7 @@ function generate(options, name, colors, textStyles, json) {
     return Pervasives.$at(marginVariables, paddingVariables);
   };
   var initParameterDoc = function (parameter) {
-    return /* Parameter */Block.__(13, [{
+    return /* Parameter */Block.__(14, [{
                 externalName: /* None */0,
                 localName: parameter[/* name */0],
                 annotation: typeAnnotationDoc(parameter[/* ltype */1]),
@@ -319,7 +319,7 @@ function generate(options, name, colors, textStyles, json) {
                   ]
                 ],
                 parameters: /* :: */[
-                  /* Parameter */Block.__(13, [{
+                  /* Parameter */Block.__(14, [{
                         externalName: /* Some */["coder"],
                         localName: "aDecoder",
                         annotation: /* TypeName */Block.__(0, ["NSCoder"]),
@@ -329,10 +329,10 @@ function generate(options, name, colors, textStyles, json) {
                 ],
                 failable: /* Some */["?"],
                 body: /* :: */[
-                  /* FunctionCallExpression */Block.__(15, [{
+                  /* FunctionCallExpression */Block.__(16, [{
                         name: /* SwiftIdentifier */Block.__(6, ["fatalError"]),
                         arguments: /* :: */[
-                          /* FunctionCallArgument */Block.__(14, [{
+                          /* FunctionCallArgument */Block.__(15, [{
                                 name: /* None */0,
                                 value: /* SwiftIdentifier */Block.__(6, ["\"init(coder:) has not been implemented\""])
                               }]),
@@ -358,10 +358,10 @@ function generate(options, name, colors, textStyles, json) {
                           /* MemberExpression */Block.__(1, [/* :: */[
                                 /* SwiftIdentifier */Block.__(6, ["super"]),
                                 /* :: */[
-                                  /* FunctionCallExpression */Block.__(15, [{
+                                  /* FunctionCallExpression */Block.__(16, [{
                                         name: /* SwiftIdentifier */Block.__(6, ["init"]),
                                         arguments: /* :: */[
-                                          /* FunctionCallArgument */Block.__(14, [{
+                                          /* FunctionCallArgument */Block.__(15, [{
                                                 name: /* Some */[/* SwiftIdentifier */Block.__(6, ["frame"])],
                                                 value: /* SwiftIdentifier */Block.__(6, [".zero"])
                                               }]),
@@ -375,12 +375,12 @@ function generate(options, name, colors, textStyles, json) {
                         ],
                         /* :: */[
                           /* :: */[
-                            /* FunctionCallExpression */Block.__(15, [{
+                            /* FunctionCallExpression */Block.__(16, [{
                                   name: /* SwiftIdentifier */Block.__(6, ["setUpViews"]),
                                   arguments: /* [] */0
                                 }]),
                             /* :: */[
-                              /* FunctionCallExpression */Block.__(15, [{
+                              /* FunctionCallExpression */Block.__(16, [{
                                     name: /* SwiftIdentifier */Block.__(6, ["setUpConstraints"]),
                                     arguments: /* [] */0
                                   }]),
@@ -389,7 +389,7 @@ function generate(options, name, colors, textStyles, json) {
                           ],
                           /* :: */[
                             /* :: */[
-                              /* FunctionCallExpression */Block.__(15, [{
+                              /* FunctionCallExpression */Block.__(16, [{
                                     name: /* SwiftIdentifier */Block.__(6, ["update"]),
                                     arguments: /* [] */0
                                   }]),
@@ -426,10 +426,10 @@ function generate(options, name, colors, textStyles, json) {
     if (parameters) {
       var assignment = StringMap$LonaCompilerCore.find_opt(name, parameters[0]);
       var logic = assignment ? assignment[0] : Logic$LonaCompilerCore.defaultAssignmentForLayerParameter(colors, textStyles, layer, name);
-      var node = SwiftLogic$LonaCompilerCore.toSwiftAST(options, colors, textStyles, rootLayer, logic);
-      return /* StatementListHelper */Block.__(19, [node]);
+      var node = SwiftLogic$LonaCompilerCore.toSwiftAST(swiftOptions, colors, textStyles, rootLayer, logic);
+      return /* StatementListHelper */Block.__(21, [node]);
     } else {
-      return /* LineComment */Block.__(16, [layer[/* name */1]]);
+      return /* LineComment */Block.__(17, [layer[/* name */1]]);
     }
   };
   var setUpViewsDoc = function (root) {
@@ -521,7 +521,7 @@ function generate(options, name, colors, textStyles, json) {
     var addSubviews = function (parent, layer) {
       if (parent) {
         return /* :: */[
-                /* FunctionCallExpression */Block.__(15, [{
+                /* FunctionCallExpression */Block.__(16, [{
                       name: memberOrSelfExpression(parentNameOrSelf(parent[0]), /* :: */[
                             /* SwiftIdentifier */Block.__(6, ["addSubview"]),
                             /* [] */0
@@ -537,7 +537,7 @@ function generate(options, name, colors, textStyles, json) {
         return /* [] */0;
       }
     };
-    var match = +(options[/* framework */0] === /* AppKit */1);
+    var match = +(swiftOptions[/* framework */0] === /* AppKit */1);
     return /* FunctionDeclaration */Block.__(10, [{
                 name: "setUpViews",
                 modifiers: /* :: */[
@@ -545,6 +545,7 @@ function generate(options, name, colors, textStyles, json) {
                   /* [] */0
                 ],
                 parameters: /* [] */0,
+                result: /* None */0,
                 body: SwiftDocument$LonaCompilerCore.joinGroups(/* Empty */0, /* :: */[
                       match !== 0 ? List.concat(Layer$LonaCompilerCore.flatmap(resetViewStyling, root)) : /* [] */0,
                       /* :: */[
@@ -568,10 +569,10 @@ function generate(options, name, colors, textStyles, json) {
             /* :: */[
               /* SwiftIdentifier */Block.__(6, [anchor1]),
               /* :: */[
-                /* FunctionCallExpression */Block.__(15, [{
+                /* FunctionCallExpression */Block.__(16, [{
                       name: /* SwiftIdentifier */Block.__(6, ["constraint"]),
                       arguments: /* :: */[
-                        /* FunctionCallArgument */Block.__(14, [{
+                        /* FunctionCallArgument */Block.__(15, [{
                               name: /* Some */[/* SwiftIdentifier */Block.__(6, [relation])],
                               value: memberOrSelfExpression(parentNameOrSelf(parent), /* :: */[
                                     /* SwiftIdentifier */Block.__(6, [anchor2]),
@@ -579,7 +580,7 @@ function generate(options, name, colors, textStyles, json) {
                                   ])
                             }]),
                         /* :: */[
-                          /* FunctionCallArgument */Block.__(14, [{
+                          /* FunctionCallArgument */Block.__(15, [{
                                 name: /* Some */[/* SwiftIdentifier */Block.__(6, ["constant"])],
                                 value: value
                               }]),
@@ -607,10 +608,10 @@ function generate(options, name, colors, textStyles, json) {
             /* :: */[
               /* SwiftIdentifier */Block.__(6, [anchor1]),
               /* :: */[
-                /* FunctionCallExpression */Block.__(15, [{
+                /* FunctionCallExpression */Block.__(16, [{
                       name: /* SwiftIdentifier */Block.__(6, ["constraint"]),
                       arguments: /* :: */[
-                        /* FunctionCallArgument */Block.__(14, [{
+                        /* FunctionCallArgument */Block.__(15, [{
                               name: /* Some */[/* SwiftIdentifier */Block.__(6, ["lessThanOrEqualTo"])],
                               value: memberOrSelfExpression(parentNameOrSelf(parent), /* :: */[
                                     /* SwiftIdentifier */Block.__(6, [anchor2]),
@@ -618,7 +619,7 @@ function generate(options, name, colors, textStyles, json) {
                                   ])
                             }]),
                         /* :: */[
-                          /* FunctionCallArgument */Block.__(14, [{
+                          /* FunctionCallArgument */Block.__(15, [{
                                 name: /* Some */[/* SwiftIdentifier */Block.__(6, ["constant"])],
                                 value: value
                               }]),
@@ -644,10 +645,10 @@ function generate(options, name, colors, textStyles, json) {
       var initialValue = memberOrSelfExpression(parentNameOrSelf(layer), /* :: */[
             /* SwiftIdentifier */Block.__(6, [anchor]),
             /* :: */[
-              /* FunctionCallExpression */Block.__(15, [{
+              /* FunctionCallExpression */Block.__(16, [{
                     name: /* SwiftIdentifier */Block.__(6, ["constraint"]),
                     arguments: /* :: */[
-                      /* FunctionCallArgument */Block.__(14, [{
+                      /* FunctionCallArgument */Block.__(15, [{
                             name: /* Some */[/* SwiftIdentifier */Block.__(6, ["equalToConstant"])],
                             value: /* LiteralExpression */Block.__(0, [/* FloatingPoint */Block.__(2, [constant])])
                           }]),
@@ -870,7 +871,7 @@ function generate(options, name, colors, textStyles, json) {
                       ]]),
                   operator: "=",
                   right: /* MemberExpression */Block.__(1, [/* :: */[
-                        SwiftDocument$LonaCompilerCore.layoutPriorityTypeDoc(options[/* framework */0]),
+                        SwiftDocument$LonaCompilerCore.layoutPriorityTypeDoc(swiftOptions[/* framework */0]),
                         /* :: */[
                           /* SwiftIdentifier */Block.__(6, [priorityName(def[/* priority */2])]),
                           /* [] */0
@@ -879,7 +880,7 @@ function generate(options, name, colors, textStyles, json) {
                 }]);
     };
     var activateConstraints = function () {
-      return /* FunctionCallExpression */Block.__(15, [{
+      return /* FunctionCallExpression */Block.__(16, [{
                   name: /* MemberExpression */Block.__(1, [/* :: */[
                         /* SwiftIdentifier */Block.__(6, ["NSLayoutConstraint"]),
                         /* :: */[
@@ -888,7 +889,7 @@ function generate(options, name, colors, textStyles, json) {
                         ]
                       ]]),
                   arguments: /* :: */[
-                    /* FunctionCallArgument */Block.__(14, [{
+                    /* FunctionCallArgument */Block.__(15, [{
                           name: /* None */0,
                           value: /* LiteralExpression */Block.__(0, [/* Array */Block.__(5, [List.map((function (def) {
                                           return /* SwiftIdentifier */Block.__(6, [def[/* variableName */0]]);
@@ -931,6 +932,7 @@ function generate(options, name, colors, textStyles, json) {
                   /* [] */0
                 ],
                 parameters: /* [] */0,
+                result: /* None */0,
                 body: List.concat(/* :: */[
                       Layer$LonaCompilerCore.flatmap(translatesAutoresizingMask, root),
                       /* :: */[
@@ -965,7 +967,7 @@ function generate(options, name, colors, textStyles, json) {
                                       /* :: */[
                                         /* Empty */0,
                                         /* :: */[
-                                          /* LineComment */Block.__(16, ["For debugging"]),
+                                          /* LineComment */Block.__(17, ["For debugging"]),
                                           /* [] */0
                                         ]
                                       ],
@@ -1024,22 +1026,23 @@ function generate(options, name, colors, textStyles, json) {
                   /* [] */0
                 ],
                 parameters: /* [] */0,
-                body: Pervasives.$at(List.concat(List.map(defineInitialLayerValues, Curry._1(Layer$LonaCompilerCore.LayerMap[/* bindings */16], assignments))), SwiftLogic$LonaCompilerCore.toSwiftAST(options, colors, textStyles, rootLayer, logic$1))
+                result: /* None */0,
+                body: Pervasives.$at(List.concat(List.map(defineInitialLayerValues, Curry._1(Layer$LonaCompilerCore.LayerMap[/* bindings */16], assignments))), SwiftLogic$LonaCompilerCore.toSwiftAST(swiftOptions, colors, textStyles, rootLayer, logic$1))
               }]);
   };
   var textLayers = List.filter((function (layer) {
             return +(layer[/* typeName */0] === /* Text */1);
           }))(nonRootLayers);
   var match = +(List.length(parameters) > 0);
-  return /* TopLevelDeclaration */Block.__(20, [{
+  return /* TopLevelDeclaration */Block.__(22, [{
               statements: /* :: */[
-                SwiftDocument$LonaCompilerCore.importFramework(options[/* framework */0]),
+                SwiftDocument$LonaCompilerCore.importFramework(swiftOptions[/* framework */0]),
                 /* :: */[
                   /* ImportDeclaration */Block.__(11, ["Foundation"]),
                   /* :: */[
                     /* Empty */0,
                     /* :: */[
-                      /* LineComment */Block.__(16, ["MARK: - " + name]),
+                      /* LineComment */Block.__(17, ["MARK: - " + name]),
                       /* :: */[
                         /* Empty */0,
                         /* :: */[
@@ -1055,7 +1058,7 @@ function generate(options, name, colors, textStyles, json) {
                                       /* :: */[
                                         /* Empty */0,
                                         /* :: */[
-                                          /* LineComment */Block.__(16, ["MARK: Lifecycle"]),
+                                          /* LineComment */Block.__(17, ["MARK: Lifecycle"]),
                                           /* [] */0
                                         ]
                                       ],
@@ -1071,14 +1074,14 @@ function generate(options, name, colors, textStyles, json) {
                                           ],
                                           /* :: */[
                                             match !== 0 ? /* :: */[
-                                                /* LineComment */Block.__(16, ["MARK: Public"]),
+                                                /* LineComment */Block.__(17, ["MARK: Public"]),
                                                 /* [] */0
                                               ] : /* [] */0,
                                             /* :: */[
                                               List.map(parameterVariableDoc, parameters),
                                               /* :: */[
                                                 /* :: */[
-                                                  /* LineComment */Block.__(16, ["MARK: Private"]),
+                                                  /* LineComment */Block.__(17, ["MARK: Private"]),
                                                   /* [] */0
                                                 ],
                                                 /* :: */[
