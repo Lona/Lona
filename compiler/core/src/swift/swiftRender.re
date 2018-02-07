@@ -192,6 +192,8 @@ let rec render = ast : Prettier.Doc.t('a) =>
     ];
     group(concat(parts));
   | FunctionDeclaration(o) =>
+    let renderResult = result =>
+      s(" -> ") <+> (result |> renderTypeAnnotation);
     group(
       concat([
         group(
@@ -205,13 +207,14 @@ let rec render = ast : Prettier.Doc.t('a) =>
               softline
               <+> join(s(",") <+> line, o##parameters |> List.map(render))
             ),
-            s(")")
+            s(")"),
+            o##result |> Render.renderOptional(renderResult)
           ])
         ),
         line,
         render(CodeBlock({"statements": o##body}))
       ])
-    )
+    );
   | ImportDeclaration(v) => group(concat([s("import"), line, s(v)]))
   | IfStatement(o) =>
     group
@@ -224,6 +227,8 @@ let rec render = ast : Prettier.Doc.t('a) =>
         <+> line
         <+> render(CodeBlock({"statements": o##block}))
       )
+  | ReturnStatement(value) =>
+    group(s("return ") <+> (value |> Render.renderOptional(render)))
   | FunctionCallArgument(o) =>
     switch o##name {
     | None => group(concat([render(o##value)]))
@@ -255,6 +260,17 @@ let rec render = ast : Prettier.Doc.t('a) =>
     );
   | Empty => empty /* This only works if lines are added between statements... */
   | LineComment(v) => s("// " ++ v)
+  | DocComment(v) =>
+    let comment = v |> Js.String.match([%re "/.{1,100}/g"]);
+    switch comment {
+    | None => s("///")
+    | Some(chunks) =>
+      s(
+        chunks
+        |> Js.Array.map(chunk => "/// " ++ chunk)
+        |> Js.Array.joinWith("\n")
+      )
+    };
   | LineEndComment(o) =>
     /* concat([render(o##line), lineSuffix(s(" // " ++ o##comment)), lineSuffixBoundary]) */
     concat([render(o##line), lineSuffix(s(" // " ++ o##comment))])
@@ -295,7 +311,10 @@ and renderLiteral = (node: literal) =>
       concat([s("blue: "), renderFloat(rgba.b /. 255.0)]),
       concat([s("alpha: "), renderFloat(rgba.a)])
     ];
-    concat([s("#colorLiteral("), join(s(", "), values), s(")")]);
+    fixedWidth(
+      concat([s("#colorLiteral("), join(s(", "), values), s(")")]),
+      2
+    );
   | Array(body) =>
     let maybeLine = List.length(body) > 0 ? line : s("");
     let body = body |> List.map(render) |> join(concat([s(","), line]));

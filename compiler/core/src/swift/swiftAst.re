@@ -156,6 +156,7 @@ and node =
         "name": string,
         "modifiers": list(declarationModifier),
         "parameters": list(node),
+        "result": option(typeAnnotation),
         "body": list(node)
       }
     )
@@ -167,6 +168,7 @@ and node =
         "block": list(node)
       }
     )
+  | ReturnStatement(option(node))
   | Parameter(
       {
         .
@@ -192,6 +194,7 @@ and node =
     )
   | Empty
   | LineComment(string)
+  | DocComment(string)
   | LineEndComment(
       {
         .

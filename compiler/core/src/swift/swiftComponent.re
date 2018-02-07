@@ -23,7 +23,8 @@ type directionParameter = {
 
 let generate =
     (
-      options: SwiftOptions.options,
+      options: Options.options,
+      swiftOptions: SwiftOptions.options,
       name,
       colors,
       textStyles: TextStyle.file,
@@ -83,7 +84,7 @@ let generate =
         )
     });
   let getLayerTypeName = layerType =>
-    switch (options.framework, layerType) {
+    switch (swiftOptions.framework, layerType) {
     | (UIKit, Types.View) => "UIView"
     | (UIKit, Text) => "UILabel"
     | (UIKit, Image) => "UIImageView"
@@ -94,7 +95,7 @@ let generate =
     };
   let getLayerInitCall = layerType => {
     let typeName = SwiftIdentifier(layerType |> getLayerTypeName);
-    switch (options.framework, layerType) {
+    switch (swiftOptions.framework, layerType) {
     | (UIKit, Types.View)
     | (UIKit, Image) =>
       FunctionCallExpression({
@@ -353,7 +354,13 @@ let generate =
         | Some(assignment) => assignment
         };
       let node =
-        SwiftLogic.toSwiftAST(options, colors, textStyles, rootLayer, logic);
+        SwiftLogic.toSwiftAST(
+          swiftOptions,
+          colors,
+          textStyles,
+          rootLayer,
+          logic
+        );
       StatementListHelper(node);
     };
   };
@@ -440,11 +447,12 @@ let generate =
       "name": "setUpViews",
       "modifiers": [AccessLevelModifier(PrivateModifier)],
       "parameters": [],
+      "result": None,
       "body":
         Document.joinGroups(
           Empty,
           [
-            options.framework == SwiftOptions.AppKit ?
+            swiftOptions.framework == SwiftOptions.AppKit ?
               Layer.flatmap(resetViewStyling, root) |> List.concat : [],
             Layer.flatmapParent(addSubviews, root) |> List.concat,
             setUpDefaultsDoc()
@@ -891,7 +899,7 @@ let generate =
         "operator": "=",
         "right":
           MemberExpression([
-            SwiftDocument.layoutPriorityTypeDoc(options.framework),
+            SwiftDocument.layoutPriorityTypeDoc(swiftOptions.framework),
             SwiftIdentifier(priorityName(def.priority))
           ])
       });
@@ -939,6 +947,7 @@ let generate =
       "name": "setUpConstraints",
       "modifiers": [AccessLevelModifier(PrivateModifier)],
       "parameters": [],
+      "result": None,
       "body":
         List.concat([
           root |> Layer.flatmap(translatesAutoresizingMask),
@@ -983,6 +992,7 @@ let generate =
       "name": "update",
       "modifiers": [AccessLevelModifier(PrivateModifier)],
       "parameters": [],
+      "result": None,
       "body":
         (
           assignments
@@ -990,7 +1000,13 @@ let generate =
           |> List.map(defineInitialLayerValues)
           |> List.concat
         )
-        @ SwiftLogic.toSwiftAST(options, colors, textStyles, rootLayer, logic)
+        @ SwiftLogic.toSwiftAST(
+            swiftOptions,
+            colors,
+            textStyles,
+            rootLayer,
+            logic
+          )
     });
   };
   let textLayers =
@@ -998,7 +1014,7 @@ let generate =
     |> List.filter((layer: Types.layer) => layer.typeName == Types.Text);
   TopLevelDeclaration({
     "statements": [
-      SwiftDocument.importFramework(options.framework),
+      SwiftDocument.importFramework(swiftOptions.framework),
       ImportDeclaration("Foundation"),
       Empty,
       LineComment("MARK: - " ++ name),

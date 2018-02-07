@@ -10,7 +10,6 @@ var Js_exn                               = require("bs-platform/lib/js/js_exn.js
 var Process                              = require("process");
 var FsExtra                              = require("fs-extra");
 var GetStdin                             = require("get-stdin");
-var Caml_array                           = require("bs-platform/lib/js/caml_array.js");
 var Json_decode                          = require("bs-json/src/Json_decode.js");
 var Color$LonaCompilerCore               = require("./core/color.bs.js");
 var Caml_builtin_exceptions              = require("bs-platform/lib/js/caml_builtin_exceptions.js");
@@ -27,54 +26,71 @@ var JavaScriptComponent$LonaCompilerCore = require("./javaScript/javaScriptCompo
 
 var $$arguments = $$Array.to_list(Process.argv);
 
+var positionalArguments = List.filter((function (arg) {
+          return 1 - +arg.startsWith("--");
+        }))($$arguments);
+
+function getArgument(name) {
+  var prefix = "--" + (name + "=");
+  var exit = 0;
+  var value;
+  try {
+    value = List.find((function (param) {
+            return +param.startsWith(prefix);
+          }), $$arguments);
+    exit = 1;
+  }
+  catch (exn){
+    if (exn === Caml_builtin_exceptions.not_found) {
+      return /* None */0;
+    } else {
+      throw exn;
+    }
+  }
+  if (exit === 1) {
+    return /* Some */[value.slice(prefix.length)];
+  }
+  
+}
+
+var match = getArgument("preset");
+
 var tmp;
 
-var exit = 0;
+tmp = match && match[0] === "airbnb" ? /* Airbnb */1 : /* Standard */0;
 
-var arg;
+var options = /* record */[/* preset */tmp];
 
-try {
-  arg = List.find((function (param) {
-          return +param.includes("--framework=");
-        }), $$arguments);
-  exit = 1;
-}
-catch (exn){
-  if (exn === Caml_builtin_exceptions.not_found) {
-    tmp = /* UIKit */0;
-  } else {
-    throw exn;
-  }
-}
+var match$1 = getArgument("framework");
 
-if (exit === 1) {
-  tmp = arg.endsWith("appkit") ? /* AppKit */1 : /* UIKit */0;
-}
+var tmp$1;
 
-var swiftOptions = /* record */[/* framework */tmp];
+tmp$1 = match$1 && match$1[0] === "appkit" ? /* AppKit */1 : /* UIKit */0;
 
-function exit$1(message) {
+var swiftOptions = /* record */[/* framework */tmp$1];
+
+function exit(message) {
   console.log(message);
   return (process.exit(1));
 }
 
-if (List.length($$arguments) < 3) {
+if (List.length(positionalArguments) < 3) {
   console.log("No command given");
   ((process.exit(1)));
 }
 
-var command = Caml_array.caml_array_get(Process.argv, 2);
+var command = List.nth(positionalArguments, 2);
 
-if (Process.argv.length < 4) {
+if (List.length(positionalArguments) < 4) {
   console.log("No target given");
   ((process.exit(1)));
 }
 
-var match = Caml_array.caml_array_get(Process.argv, 3);
+var match$2 = List.nth(positionalArguments, 3);
 
 var target;
 
-switch (match) {
+switch (match$2) {
   case "js" : 
       target = /* JavaScript */0;
       break;
@@ -131,7 +147,7 @@ function renderColors(target, colors) {
     case 0 : 
         return JavaScriptColor$LonaCompilerCore.render(colors);
     case 1 : 
-        return SwiftColor$LonaCompilerCore.render(swiftOptions, colors);
+        return SwiftColor$LonaCompilerCore.render(options, swiftOptions, colors);
     case 2 : 
         return XmlColor$LonaCompilerCore.render(colors);
     
@@ -178,7 +194,7 @@ function convertComponent(filename) {
           var colors = Color$LonaCompilerCore.parseFile(colorsFile);
           var textStylesFile = Fs.readFileSync(Path.join(workspace, "textStyles.json"), "utf8");
           var textStyles = TextStyle$LonaCompilerCore.parseFile(textStylesFile);
-          return SwiftRender$LonaCompilerCore.toString(SwiftComponent$LonaCompilerCore.generate(swiftOptions, name, colors, textStyles, parsed));
+          return SwiftRender$LonaCompilerCore.toString(SwiftComponent$LonaCompilerCore.generate(options, swiftOptions, name, colors, textStyles, parsed));
         } else {
           console.log("Couldn't find workspace directory. Try specifying it as a parameter (TODO)");
           return (process.exit(1));
@@ -270,41 +286,44 @@ function convertWorkspace(workspace, output) {
 
 switch (command) {
   case "colors" : 
-      if (Process.argv.length < 5) {
+      if (List.length(positionalArguments) < 5) {
         var render = function (content) {
           return Promise.resolve((console.log(renderColors(target, Color$LonaCompilerCore.parseFile(content))), /* () */0));
         };
         GetStdin().then(render);
       } else {
-        var content = Fs.readFileSync(Caml_array.caml_array_get(Process.argv, 4), "utf8");
+        var content = Fs.readFileSync(List.nth(positionalArguments, 4), "utf8");
         console.log(renderColors(target, Color$LonaCompilerCore.parseFile(content)));
       }
       break;
   case "component" : 
-      if (Process.argv.length < 5) {
+      if (List.length(positionalArguments) < 5) {
         console.log("No filename given");
         ((process.exit(1)));
       }
-      console.log(convertComponent(Caml_array.caml_array_get(Process.argv, 4)));
+      console.log(convertComponent(List.nth(positionalArguments, 4)));
       break;
   case "workspace" : 
-      if (Process.argv.length < 5) {
+      if (List.length(positionalArguments) < 5) {
         console.log("No workspace path given");
         ((process.exit(1)));
       }
-      if (Process.argv.length < 6) {
+      if (List.length(positionalArguments) < 6) {
         console.log("No output path given");
         ((process.exit(1)));
       }
-      convertWorkspace(Caml_array.caml_array_get(Process.argv, 4), Caml_array.caml_array_get(Process.argv, 5));
+      convertWorkspace(List.nth(positionalArguments, 4), List.nth(positionalArguments, 5));
       break;
   default:
     console.log("Invalid command", command);
 }
 
 exports.$$arguments            = $$arguments;
+exports.positionalArguments    = positionalArguments;
+exports.getArgument            = getArgument;
+exports.options                = options;
 exports.swiftOptions           = swiftOptions;
-exports.exit                   = exit$1;
+exports.exit                   = exit;
 exports.command                = command;
 exports.target                 = target;
 exports.findWorkspaceDirectory = findWorkspaceDirectory;

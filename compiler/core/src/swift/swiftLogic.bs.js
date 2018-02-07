@@ -53,7 +53,7 @@ function toSwiftAST(options, colors, textStyles, rootLayer, logicRootNode) {
     } else if (initialValue.tag === 6) {
       var name = initialValue[0];
       if (name.includes("margin") || name.includes("padding")) {
-        return /* LineComment */Block.__(16, ["TODO: Margin & padding"]);
+        return /* LineComment */Block.__(17, ["TODO: Margin & padding"]);
       } else if (name.endsWith("height")) {
         return /* SwiftIdentifier */Block.__(6, [name.replace(".height", "HeightAnchorConstraint?.constant")]);
       } else if (name.endsWith("width")) {
@@ -201,8 +201,8 @@ function toSwiftAST(options, colors, textStyles, rootLayer, logicRootNode) {
             }
             break;
         case 1 : 
-            return /* StatementListHelper */Block.__(19, [/* :: */[
-                        /* LineComment */Block.__(16, ["TODO: IfExists"]),
+            return /* StatementListHelper */Block.__(21, [/* :: */[
+                        /* LineComment */Block.__(17, ["TODO: IfExists"]),
                         /* :: */[
                           /* IfStatement */Block.__(12, [{
                                 condition: /* LiteralExpression */Block.__(0, [/* Boolean */Block.__(0, [/* true */1])]),
@@ -264,7 +264,7 @@ function toSwiftAST(options, colors, textStyles, rootLayer, logicRootNode) {
                 var name$2 = match$2[0];
                 if (name$2.endsWith("textStyle") || name$2.endsWith("font")) {
                   var name$3 = name$2.replace(".font", ".textStyle");
-                  return /* StatementListHelper */Block.__(19, [/* :: */[
+                  return /* StatementListHelper */Block.__(21, [/* :: */[
                               /* BinaryExpression */Block.__(2, [{
                                     left: /* SwiftIdentifier */Block.__(6, [name$3.replace(".textStyle", "TextStyle")]),
                                     operator: "=",
@@ -279,10 +279,10 @@ function toSwiftAST(options, colors, textStyles, rootLayer, logicRootNode) {
                               right: /* MemberExpression */Block.__(1, [/* :: */[
                                     /* SwiftIdentifier */Block.__(6, [name$2.replace(".text", "TextStyle")]),
                                     /* :: */[
-                                      /* FunctionCallExpression */Block.__(15, [{
+                                      /* FunctionCallExpression */Block.__(16, [{
                                             name: /* SwiftIdentifier */Block.__(6, ["apply"]),
                                             arguments: /* :: */[
-                                              /* FunctionCallArgument */Block.__(14, [{
+                                              /* FunctionCallArgument */Block.__(15, [{
                                                     name: /* Some */[/* SwiftIdentifier */Block.__(6, ["to"])],
                                                     value: match$3
                                                   }]),
@@ -370,7 +370,7 @@ function toSwiftAST(options, colors, textStyles, rootLayer, logicRootNode) {
             }
             break;
         case 6 : 
-            return /* StatementListHelper */Block.__(19, [List.map(inner, logicRootNode[0])]);
+            return /* StatementListHelper */Block.__(21, [List.map(inner, logicRootNode[0])]);
         
       }
     }

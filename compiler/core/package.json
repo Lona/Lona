@@ -1,6 +1,6 @@
 {
   "name": "lonac",
-  "version": "0.2.3",
+  "version": "0.2.5",
   "description": "Lona cross-platform code compiler",
   "main": "build/index.js",
   "bin": "./build/index.js",
@@ -47,7 +47,7 @@
     "get-stdin": "^5.0.1",
     "lodash.camelcase": "^4.3.0",
     "lodash.upperfirst": "^4.3.1",
-    "prettier": "prettier/prettier#b63c669ed9821a0e0d6918243ef4f4a091b222a9",
+    "prettier": "dabbott/prettier#28eebd6d150746b91f581e18bef8352e2bae5623",
     "webpack": "^3.10.0"
   }
 }

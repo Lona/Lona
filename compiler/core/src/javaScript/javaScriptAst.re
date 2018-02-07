@@ -170,7 +170,8 @@ let rec map = (f, node) =>
   | ObjectLiteral(body) => f(ObjectLiteral(body |> List.map(map(f))))
   | Property(o) =>
     f(Property({"key": o##key |> map(f), "value": o##value |> map(f)}))
-  | ExportDefaultDeclaration(value) => f(ExportDefaultDeclaration(value |> map(f)))
+  | ExportDefaultDeclaration(value) =>
+    f(ExportDefaultDeclaration(value |> map(f)))
   | Block(body) => f(Block(body |> List.map(map(f))))
   | Program(body) => f(Program(body |> List.map(map(f))))
   | LineEndComment(o) =>

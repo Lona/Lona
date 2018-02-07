@@ -102,7 +102,7 @@ function labelAttributedTextName(framework) {
 function localImageName(framework, name) {
   var imageName = /* LiteralExpression */Block.__(0, [/* String */Block.__(3, [Path.parse(name).name])]);
   if (framework !== 0) {
-    return /* FunctionCallExpression */Block.__(15, [{
+    return /* FunctionCallExpression */Block.__(16, [{
                 name: /* MemberExpression */Block.__(1, [/* :: */[
                       /* SwiftIdentifier */Block.__(6, ["NSImage"]),
                       /* :: */[
@@ -111,7 +111,7 @@ function localImageName(framework, name) {
                       ]
                     ]]),
                 arguments: /* :: */[
-                  /* FunctionCallArgument */Block.__(14, [{
+                  /* FunctionCallArgument */Block.__(15, [{
                         name: /* Some */[/* SwiftIdentifier */Block.__(6, ["rawValue"])],
                         value: imageName
                       }]),
@@ -165,10 +165,10 @@ function lonaValue(framework, colors, textStyles, value) {
       case "URL" : 
           var rawValue$2 = Json_decode.string(value[/* data */1]);
           if (rawValue$2.startsWith("file://./")) {
-            return /* FunctionCallExpression */Block.__(15, [{
+            return /* FunctionCallExpression */Block.__(16, [{
                         name: /* SwiftIdentifier */Block.__(6, [imageTypeName(framework)]),
                         arguments: /* :: */[
-                          /* FunctionCallArgument */Block.__(14, [{
+                          /* FunctionCallArgument */Block.__(15, [{
                                 name: /* Some */[/* SwiftIdentifier */Block.__(6, ["named"])],
                                 value: localImageName(framework, rawValue$2)
                               }]),
