@@ -9,7 +9,8 @@ external copySync : (string, string) => unit = "";
 
 let arguments = Array.to_list(Process.argv);
 
-let positionalArguments = arguments |> List.filter((arg) => !Js.String.startsWith("--", arg));
+let positionalArguments =
+  arguments |> List.filter(arg => ! Js.String.startsWith("--", arg));
 
 let getArgument = name => {
   let prefix = "--" ++ name ++ "=";
@@ -95,8 +96,8 @@ let renderTextStyles = (target, colors, textStyles) =>
   | _ => ""
   };
 
-let convertColors = (target, content) =>
-  Color.parseFile(content) |> renderColors(target);
+let convertColors = (target, contents) =>
+  Color.parseFile(contents) |> renderColors(target);
 
 let convertTextStyles = (target, filename) =>
   switch (findWorkspaceDirectory(filename)) {
@@ -113,8 +114,8 @@ let convertTextStyles = (target, filename) =>
   };
 
 let convertComponent = filename => {
-  let content = Fs.readFileSync(filename, `utf8);
-  let parsed = content |> Js.Json.parseExn;
+  let contents = Fs.readFileSync(filename, `utf8);
+  let parsed = contents |> Js.Json.parseExn;
   let name = Path.basenameExt(~path=filename, ~ext=".component");
   switch target {
   | Types.JavaScript =>
@@ -168,6 +169,42 @@ let copyStaticFiles = outputDirectory =>
   | _ => ()
   };
 
+let findContentsAbove = contents => {
+  let lines = contents |> Js.String.split("\n");
+  let index =
+    lines
+    |> Js.Array.findIndex(line =>
+         line |> Js.String.includes("LONA: KEEP ABOVE")
+       );
+  switch index {
+  | (-1) => None
+  | _ =>
+    Some(
+      (
+        lines
+        |> Js.Array.slice(~start=0, ~end_=index + 1)
+        |> Js.Array.joinWith("\n")
+      ) ++ "\n\n"
+    )
+  };
+};
+
+let findContentsBelow = contents => {
+  let lines = contents |> Js.String.split("\n");
+  let index =
+    lines
+    |> Js.Array.findIndex(line =>
+         line |> Js.String.includes("LONA: KEEP BELOW")
+       );
+  switch index {
+  | (-1) => None
+  | _ =>
+    Some(
+      "\n" ++ (lines |> Js.Array.sliceFrom(index) |> Js.Array.joinWith("\n"))
+    )
+  };
+};
+
 let convertWorkspace = (workspace, output) => {
   let fromDirectory = Path.resolve([|workspace|]);
   let toDirectory = Path.resolve([|output|]);
@@ -212,9 +249,24 @@ let convertWorkspace = (workspace, output) => {
           Js.log(reason);
         | exception (Decode.UnknownParameter(name)) =>
           Js.log("Unknown parameter: " ++ name)
-        | content =>
+        | contents =>
           ensureDirSync(Path.dirname(outputPath));
-          Fs.writeFileSync(~filename=outputPath, ~text=content);
+          let (contentsAbove, contentsBelow) =
+            switch (Fs.readFileAsUtf8Sync(outputPath)) {
+            | existing => (findContentsAbove(existing), findContentsBelow(existing))
+            | exception _ => (None, None)
+            };
+          let contents =
+            switch contentsAbove {
+            | Some(contentsAbove) => contentsAbove ++ contents
+            | None => contents
+            };
+          let contents =
+            switch contentsBelow {
+            | Some(contentsBelow) => contents ++ contentsBelow
+            | None => contents
+            };
+          Fs.writeFileSync(~filename=outputPath, ~text=contents);
         };
       };
       files |> List.iter(processFile);
@@ -248,7 +300,10 @@ switch command {
   if (List.length(positionalArguments) < 6) {
     exit("No output path given");
   };
-  convertWorkspace(List.nth(positionalArguments, 4), List.nth(positionalArguments, 5));
+  convertWorkspace(
+    List.nth(positionalArguments, 4),
+    List.nth(positionalArguments, 5)
+  );
 | "component" =>
   if (List.length(positionalArguments) < 5) {
     exit("No filename given");
@@ -256,12 +311,13 @@ switch command {
   convertComponent(List.nth(positionalArguments, 4)) |> Js.log;
 | "colors" =>
   if (List.length(positionalArguments) < 5) {
-    let render = content =>
-      Js.Promise.resolve(convertColors(target, content) |> Js.log);
+    let render = contents =>
+      Js.Promise.resolve(convertColors(target, contents) |> Js.log);
     getStdin() |> Js.Promise.then_(render) |> ignore;
   } else {
-    let content = Node.Fs.readFileSync(List.nth(positionalArguments, 4), `utf8);
-    convertColors(target, content) |> Js.log;
+    let contents =
+      Node.Fs.readFileSync(List.nth(positionalArguments, 4), `utf8);
+    convertColors(target, contents) |> Js.log;
   }
 | _ => Js.log2("Invalid command", command)
 };

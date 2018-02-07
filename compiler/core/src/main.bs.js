@@ -162,8 +162,8 @@ function renderTextStyles(target, colors, textStyles) {
   }
 }
 
-function convertColors(target, content) {
-  return renderColors(target, Color$LonaCompilerCore.parseFile(content));
+function convertColors(target, contents) {
+  return renderColors(target, Color$LonaCompilerCore.parseFile(contents));
 }
 
 function convertTextStyles(target, filename) {
@@ -180,8 +180,8 @@ function convertTextStyles(target, filename) {
 }
 
 function convertComponent(filename) {
-  var content = Fs.readFileSync(filename, "utf8");
-  var parsed = JSON.parse(content);
+  var contents = Fs.readFileSync(filename, "utf8");
+  var parsed = JSON.parse(contents);
   var name = Path.basename(filename, ".component");
   switch (target) {
     case 0 : 
@@ -219,6 +219,30 @@ function copyStaticFiles(outputDirectory) {
   }
 }
 
+function findContentsAbove(contents) {
+  var lines = contents.split("\n");
+  var index = lines.findIndex((function (line) {
+          return +line.includes("LONA: KEEP ABOVE");
+        }));
+  if (index !== -1) {
+    return /* Some */[lines.slice(0, index + 1 | 0).join("\n") + "\n\n"];
+  } else {
+    return /* None */0;
+  }
+}
+
+function findContentsBelow(contents) {
+  var lines = contents.split("\n");
+  var index = lines.findIndex((function (line) {
+          return +line.includes("LONA: KEEP BELOW");
+        }));
+  if (index !== -1) {
+    return /* Some */["\n" + lines.slice(index).join("\n")];
+  } else {
+    return /* None */0;
+  }
+}
+
 function convertWorkspace(workspace, output) {
   var fromDirectory = Path.resolve(workspace);
   var toDirectory = Path.resolve(output);
@@ -243,9 +267,9 @@ function convertWorkspace(workspace, output) {
             var outputPath = Path.join(toDirectory, toRelativePath);
             console.log(Path.join(workspace, fromRelativePath) + ("=>" + Path.join(output, toRelativePath)));
             var exit = 0;
-            var content;
+            var contents;
             try {
-              content = convertComponent(file);
+              contents = convertComponent(file);
               exit = 1;
             }
             catch (raw_exn){
@@ -263,7 +287,30 @@ function convertWorkspace(workspace, output) {
             }
             if (exit === 1) {
               FsExtra.ensureDirSync(Path.dirname(outputPath));
-              Fs.writeFileSync(outputPath, content);
+              var match;
+              var exit$1 = 0;
+              var existing;
+              try {
+                existing = Fs.readFileSync(outputPath, "utf8");
+                exit$1 = 2;
+              }
+              catch (exn$1){
+                match = /* tuple */[
+                  /* None */0,
+                  /* None */0
+                ];
+              }
+              if (exit$1 === 2) {
+                match = /* tuple */[
+                  findContentsAbove(existing),
+                  findContentsBelow(existing)
+                ];
+              }
+              var contentsBelow = match[1];
+              var contentsAbove = match[0];
+              var contents$1 = contentsAbove ? contentsAbove[0] + contents : contents;
+              var contents$2 = contentsBelow ? contents$1 + contentsBelow[0] : contents$1;
+              Fs.writeFileSync(outputPath, contents$2);
               return /* () */0;
             }
             
@@ -287,13 +334,13 @@ function convertWorkspace(workspace, output) {
 switch (command) {
   case "colors" : 
       if (List.length(positionalArguments) < 5) {
-        var render = function (content) {
-          return Promise.resolve((console.log(renderColors(target, Color$LonaCompilerCore.parseFile(content))), /* () */0));
+        var render = function (contents) {
+          return Promise.resolve((console.log(renderColors(target, Color$LonaCompilerCore.parseFile(contents))), /* () */0));
         };
         GetStdin().then(render);
       } else {
-        var content = Fs.readFileSync(List.nth(positionalArguments, 4), "utf8");
-        console.log(renderColors(target, Color$LonaCompilerCore.parseFile(content)));
+        var contents = Fs.readFileSync(List.nth(positionalArguments, 4), "utf8");
+        console.log(renderColors(target, Color$LonaCompilerCore.parseFile(contents)));
       }
       break;
   case "component" : 
@@ -336,5 +383,7 @@ exports.convertColors          = convertColors;
 exports.convertTextStyles      = convertTextStyles;
 exports.convertComponent       = convertComponent;
 exports.copyStaticFiles        = copyStaticFiles;
+exports.findContentsAbove      = findContentsAbove;
+exports.findContentsBelow      = findContentsBelow;
 exports.convertWorkspace       = convertWorkspace;
 /* arguments Not a pure module */
