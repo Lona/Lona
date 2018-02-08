@@ -523,31 +523,25 @@ let generate =
       )
       ++ suffix;
     };
-    switch (Constraint.getRole(constr), constr) {
-    | (
-        FlexSibling,
-        Relation(
-          (layer1: Types.layer),
-          edge1,
-          _,
-          (layer2: Types.layer),
-          _,
-          _,
-          _
-        )
+    switch constr {
+    | Relation(
+        (layer1: Types.layer),
+        edge1,
+        _,
+        (layer2: Types.layer),
+        _,
+        _,
+        FlexSibling
       ) =>
       Format.layerName(layer1.name)
       ++ Format.upperFirst(Format.layerName(layer2.name))
       ++ Format.upperFirst(Constraint.anchorToString(edge1))
       ++ "SiblingConstraint"
-    | (
-        FitContentSecondary,
-        Relation((layer1: Types.layer), edge1, _, _, _, _, _)
-      ) =>
+    | Relation((layer1: Types.layer), edge1, _, _, _, _, FitContentSecondary) =>
       formatAnchorVariableName(layer1, edge1, "ParentConstraint")
-    | (_, Relation((layer1: Types.layer), edge1, _, _, _, _, _)) =>
+    | Relation((layer1: Types.layer), edge1, _, _, _, _, _) =>
       formatAnchorVariableName(layer1, edge1, "Constraint")
-    | (_, Constraint.Dimension((layer: Types.layer), dimension, _, _)) =>
+    | Constraint.Dimension((layer: Types.layer), dimension, _, _) =>
       formatAnchorVariableName(layer, dimension, "Constraint")
     };
   };

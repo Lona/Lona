@@ -624,25 +624,22 @@ function generate(_, swiftOptions, name, colors, textStyles, json) {
               match !== 0 ? anchorString : SwiftFormat$LonaCompilerCore.layerName(layer[/* name */1]) + LodashUpperfirst(anchorString)
             ) + suffix;
     };
-    var match = Constraint$LonaCompilerCore.getRole(constr);
-    var exit = 0;
-    if (match !== 5) {
-      if (match !== 6) {
-        exit = 1;
-      } else if (constr.tag) {
-        return SwiftFormat$LonaCompilerCore.layerName(constr[0][/* name */1]) + (LodashUpperfirst(SwiftFormat$LonaCompilerCore.layerName(constr[3][/* name */1])) + (LodashUpperfirst(Constraint$LonaCompilerCore.anchorToString(constr[1])) + "SiblingConstraint"));
+    if (constr.tag) {
+      var match = constr[6];
+      var edge1 = constr[1];
+      var layer1 = constr[0];
+      if (match !== 5) {
+        if (match !== 6) {
+          return formatAnchorVariableName(layer1, edge1, "Constraint");
+        } else {
+          return SwiftFormat$LonaCompilerCore.layerName(layer1[/* name */1]) + (LodashUpperfirst(SwiftFormat$LonaCompilerCore.layerName(constr[3][/* name */1])) + (LodashUpperfirst(Constraint$LonaCompilerCore.anchorToString(edge1)) + "SiblingConstraint"));
+        }
       } else {
-        exit = 1;
+        return formatAnchorVariableName(layer1, edge1, "ParentConstraint");
       }
-    } else if (constr.tag) {
-      return formatAnchorVariableName(constr[0], constr[1], "ParentConstraint");
     } else {
-      exit = 1;
-    }
-    if (exit === 1) {
       return formatAnchorVariableName(constr[0], constr[1], "Constraint");
     }
-    
   };
   var getConstraints = function (root) {
     var setUpContraint = function (layer, anchor1, parent, anchor2, relation, value, role) {
