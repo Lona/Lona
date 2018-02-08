@@ -653,37 +653,6 @@ let generate =
     };
   };
   let getConstraints = (root: Types.layer) => {
-    let setUpContraint =
-        (
-          layer: Types.layer,
-          anchor1: Constraint.anchor,
-          parent: Types.layer,
-          anchor2: Constraint.anchor,
-          relation,
-          role
-        ) =>
-      Constraint.Relation(
-        layer,
-        anchor1,
-        relation,
-        parent,
-        anchor2,
-        Constraint.Required,
-        role
-      );
-    let setUpLessThanOrEqualToContraint =
-        (layer: Types.layer, anchor1, parent: Types.layer, anchor2, role) =>
-      Constraint.Relation(
-        layer,
-        anchor1,
-        Constraint.Leq,
-        parent,
-        anchor2,
-        Constraint.Low,
-        role
-      );
-    let setUpDimensionContraint = (layer: Types.layer, anchor, role) =>
-      Constraint.Dimension(layer, anchor, Constraint.Required, role);
     let constrainAxes = (layer: Types.layer) => {
       open Constraint;
       let direction = Layer.getFlexDirection(layer);
@@ -716,12 +685,13 @@ let generate =
         let firstViewConstraints =
           switch index {
           | 0 => [
-              setUpContraint(
+              Relation(
                 child,
                 primaryBeforeAnchor,
+                Eq,
                 layer,
                 primaryBeforeAnchor,
-                Eq,
+                Required,
                 PrimaryBefore
               )
             ]
@@ -740,12 +710,13 @@ let generate =
               };
             needsPrimaryAfterConstraint ?
               [
-                setUpContraint(
+                Relation(
                   child,
                   primaryAfterAnchor,
+                  Eq,
                   layer,
                   primaryAfterAnchor,
-                  Eq,
+                  Required,
                   PrimaryAfter
                 )
               ] :
@@ -758,46 +729,50 @@ let generate =
           | _ =>
             let previousLayer = List.nth(layer.children, index - 1);
             [
-              setUpContraint(
+              Relation(
                 child,
                 primaryBeforeAnchor,
+                Eq,
                 previousLayer,
                 primaryAfterAnchor,
-                Eq,
+                Required,
                 PrimaryBetween
               )
             ];
           };
         let secondaryBeforeConstraint =
-          setUpContraint(
+          Relation(
             child,
             secondaryBeforeAnchor,
+            Eq,
             layer,
             secondaryBeforeAnchor,
-            Eq,
+            Required,
             SecondaryBefore
           );
         let secondaryAfterConstraint =
           switch (secondarySizingRule, childSecondarySizingRule) {
           | (Fill, FitContent) => [
-              setUpContraint(
+              Relation(
                 child,
                 secondaryAfterAnchor,
+                Leq,
                 layer,
                 secondaryAfterAnchor,
-                Leq,
+                Required,
                 SecondaryAfter
               )
             ]
           | (_, Fixed(_)) => [] /* Width/height constraints are added outside the child loop */
           | (_, Fill)
           | (_, FitContent) => [
-              setUpContraint(
+              Relation(
                 child,
                 secondaryAfterAnchor,
+                Eq,
                 layer,
                 secondaryAfterAnchor,
-                Eq,
+                Required,
                 SecondaryAfter
               )
             ]
@@ -817,11 +792,13 @@ let generate =
         let fitContentSecondaryConstraint =
           switch secondarySizingRule {
           | FitContent => [
-              setUpLessThanOrEqualToContraint(
+              Relation(
                 child,
                 secondaryDimensionAnchor,
+                Leq,
                 layer,
                 secondaryDimensionAnchor,
+                Low,
                 FitContentSecondary
               )
             ]
@@ -840,18 +817,18 @@ let generate =
         | [first, ...rest] when List.length(rest) > 0 =>
           let sameAnchor = primaryDimensionAnchor;
           let sameAnchorConstraint = (anchor, layer) =>
-            setUpContraint(first, anchor, layer, anchor, Eq, FlexSibling);
+            Relation(first, anchor, Eq, layer, anchor, Required, FlexSibling);
           rest |> List.map(sameAnchorConstraint(sameAnchor));
         | _ => []
         };
       let heightConstraint =
         switch height {
         | Some(_) => [
-            setUpDimensionContraint(
+            Dimension(
               layer,
               Height,
-              isColumn ?
-                Constraint.PrimaryDimension : Constraint.SecondaryDimension
+              Required,
+              isColumn ? PrimaryDimension : SecondaryDimension
             )
           ]
         | None => []
@@ -859,11 +836,11 @@ let generate =
       let widthConstraint =
         switch width {
         | Some(_) => [
-            setUpDimensionContraint(
+            Dimension(
               layer,
               Width,
-              isColumn ?
-                Constraint.SecondaryDimension : Constraint.PrimaryDimension
+              Required,
+              isColumn ? SecondaryDimension : PrimaryDimension
             )
           ]
         | None => []
