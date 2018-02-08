@@ -873,55 +873,34 @@ function generate(_, swiftOptions, name, colors, textStyles, json) {
   };
   var getConstraints = function (root) {
     var setUpContraint = function (layer, anchor1, parent, anchor2, relation, role) {
-      var constr = /* Relation */Block.__(1, [
-          layer,
-          anchor1,
-          relation,
-          parent,
-          anchor2,
-          /* Required */0,
-          role
-        ]);
-      var variableName = formatConstraintVariableName(constr);
-      var initialValue = generateConstraintWithInitialValue(constr, generateConstantFromConstraint(constr));
-      return /* record */[
-              /* variableName */variableName,
-              /* initialValue */initialValue,
-              /* priority */Constraint$LonaCompilerCore.getPriority(constr)
-            ];
+      return /* Relation */Block.__(1, [
+                layer,
+                anchor1,
+                relation,
+                parent,
+                anchor2,
+                /* Required */0,
+                role
+              ]);
     };
     var setUpLessThanOrEqualToContraint = function (layer, anchor1, parent, anchor2, role) {
-      var constr = /* Relation */Block.__(1, [
-          layer,
-          anchor1,
-          /* Leq */2,
-          parent,
-          anchor2,
-          /* Low */1,
-          role
-        ]);
-      var variableName = formatConstraintVariableName(constr);
-      var initialValue = generateConstraintWithInitialValue(constr, generateConstantFromConstraint(constr));
-      return /* record */[
-              /* variableName */variableName,
-              /* initialValue */initialValue,
-              /* priority */Constraint$LonaCompilerCore.getPriority(constr)
-            ];
+      return /* Relation */Block.__(1, [
+                layer,
+                anchor1,
+                /* Leq */2,
+                parent,
+                anchor2,
+                /* Low */1,
+                role
+              ]);
     };
     var setUpDimensionContraint = function (layer, anchor, role) {
-      var constr = /* Dimension */Block.__(0, [
-          layer,
-          anchor,
-          /* Required */0,
-          role
-        ]);
-      var variableName = formatConstraintVariableName(constr);
-      var initialValue = generateConstraintWithInitialValue(constr, generateConstantFromConstraint(constr));
-      return /* record */[
-              /* variableName */variableName,
-              /* initialValue */initialValue,
-              /* priority */Constraint$LonaCompilerCore.getPriority(constr)
-            ];
+      return /* Dimension */Block.__(0, [
+                layer,
+                anchor,
+                /* Required */0,
+                role
+              ]);
     };
     var constrainAxes = function (layer) {
       var direction = Layer$LonaCompilerCore.getFlexDirection(layer);
@@ -1050,9 +1029,9 @@ function generate(_, swiftOptions, name, colors, textStyles, json) {
     var defineConstraint = function (def) {
       return /* ConstantDeclaration */Block.__(7, [{
                   modifiers: /* [] */0,
-                  init: /* Some */[def[/* initialValue */1]],
+                  init: /* Some */[generateConstraintWithInitialValue(def, generateConstantFromConstraint(def))],
                   pattern: /* IdentifierPattern */Block.__(0, [{
-                        identifier: /* SwiftIdentifier */Block.__(6, [def[/* variableName */0]]),
+                        identifier: /* SwiftIdentifier */Block.__(6, [formatConstraintVariableName(def)]),
                         annotation: /* None */0
                       }])
                 }]);
@@ -1060,7 +1039,7 @@ function generate(_, swiftOptions, name, colors, textStyles, json) {
     var setConstraintPriority = function (def) {
       return /* BinaryExpression */Block.__(2, [{
                   left: /* MemberExpression */Block.__(1, [/* :: */[
-                        /* SwiftIdentifier */Block.__(6, [def[/* variableName */0]]),
+                        /* SwiftIdentifier */Block.__(6, [formatConstraintVariableName(def)]),
                         /* :: */[
                           /* SwiftIdentifier */Block.__(6, ["priority"]),
                           /* [] */0
@@ -1070,7 +1049,7 @@ function generate(_, swiftOptions, name, colors, textStyles, json) {
                   right: /* MemberExpression */Block.__(1, [/* :: */[
                         SwiftDocument$LonaCompilerCore.layoutPriorityTypeDoc(swiftOptions[/* framework */0]),
                         /* :: */[
-                          /* SwiftIdentifier */Block.__(6, [priorityName(def[/* priority */2])]),
+                          /* SwiftIdentifier */Block.__(6, [priorityName(Constraint$LonaCompilerCore.getPriority(def))]),
                           /* [] */0
                         ]
                       ]])
@@ -1089,7 +1068,7 @@ function generate(_, swiftOptions, name, colors, textStyles, json) {
                     /* FunctionCallArgument */Block.__(15, [{
                           name: /* None */0,
                           value: /* LiteralExpression */Block.__(0, [/* Array */Block.__(5, [List.map((function (def) {
-                                          return /* SwiftIdentifier */Block.__(6, [def[/* variableName */0]]);
+                                          return /* SwiftIdentifier */Block.__(6, [formatConstraintVariableName(def)]);
                                         }), constraints)])])
                         }]),
                     /* [] */0
@@ -1101,25 +1080,25 @@ function generate(_, swiftOptions, name, colors, textStyles, json) {
                   left: /* MemberExpression */Block.__(1, [/* :: */[
                         /* SwiftIdentifier */Block.__(6, ["self"]),
                         /* :: */[
-                          /* SwiftIdentifier */Block.__(6, [def[/* variableName */0]]),
+                          /* SwiftIdentifier */Block.__(6, [formatConstraintVariableName(def)]),
                           /* [] */0
                         ]
                       ]]),
                   operator: "=",
-                  right: /* SwiftIdentifier */Block.__(6, [def[/* variableName */0]])
+                  right: /* SwiftIdentifier */Block.__(6, [formatConstraintVariableName(def)])
                 }]);
     };
     var assignConstraintIdentifier = function (def) {
       return /* BinaryExpression */Block.__(2, [{
                   left: /* MemberExpression */Block.__(1, [/* :: */[
-                        /* SwiftIdentifier */Block.__(6, [def[/* variableName */0]]),
+                        /* SwiftIdentifier */Block.__(6, [formatConstraintVariableName(def)]),
                         /* :: */[
                           /* SwiftIdentifier */Block.__(6, ["identifier"]),
                           /* [] */0
                         ]
                       ]]),
                   operator: "=",
-                  right: /* LiteralExpression */Block.__(0, [/* String */Block.__(3, [def[/* variableName */0]])])
+                  right: /* LiteralExpression */Block.__(0, [/* String */Block.__(3, [formatConstraintVariableName(def)])])
                 }]);
     };
     return /* FunctionDeclaration */Block.__(10, [{
@@ -1141,7 +1120,7 @@ function generate(_, swiftOptions, name, colors, textStyles, json) {
                           List.map(defineConstraint, constraints),
                           /* :: */[
                             List.map(setConstraintPriority, List.filter((function (def) {
-                                          return +(def[/* priority */2] === /* Low */1);
+                                          return +(Constraint$LonaCompilerCore.getPriority(def) === /* Low */1);
                                         }))(constraints)),
                             /* :: */[
                               /* :: */[
@@ -1289,7 +1268,7 @@ function generate(_, swiftOptions, name, colors, textStyles, json) {
                                                       List.concat(Layer$LonaCompilerCore.flatmap(spacingVariableDoc, rootLayer)),
                                                       /* :: */[
                                                         List.map((function (def) {
-                                                                var variableName = def[/* variableName */0];
+                                                                var variableName = formatConstraintVariableName(def);
                                                                 return /* VariableDeclaration */Block.__(8, [{
                                                                             modifiers: /* :: */[
                                                                               /* AccessLevelModifier */Block.__(0, [/* PrivateModifier */0]),

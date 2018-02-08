@@ -661,56 +661,29 @@ let generate =
           anchor2: Constraint.anchor,
           relation,
           role
-        ) => {
-      let constr =
-        Constraint.Relation(
-          layer,
-          anchor1,
-          relation,
-          parent,
-          anchor2,
-          Constraint.Required,
-          role
-        );
-      let variableName = formatConstraintVariableName(constr);
-      let initialValue =
-        generateConstraintWithInitialValue(
-          constr,
-          generateConstantFromConstraint(constr)
-        );
-      {variableName, initialValue, priority: Constraint.getPriority(constr)};
-    };
+        ) =>
+      Constraint.Relation(
+        layer,
+        anchor1,
+        relation,
+        parent,
+        anchor2,
+        Constraint.Required,
+        role
+      );
     let setUpLessThanOrEqualToContraint =
-        (layer: Types.layer, anchor1, parent: Types.layer, anchor2, role) => {
-      let constr =
-        Constraint.Relation(
-          layer,
-          anchor1,
-          Constraint.Leq,
-          parent,
-          anchor2,
-          Constraint.Low,
-          role
-        );
-      let variableName = formatConstraintVariableName(constr);
-      let initialValue =
-        generateConstraintWithInitialValue(
-          constr,
-          generateConstantFromConstraint(constr)
-        );
-      {variableName, initialValue, priority: Constraint.getPriority(constr)};
-    };
-    let setUpDimensionContraint = (layer: Types.layer, anchor, role) => {
-      let constr =
-        Constraint.Dimension(layer, anchor, Constraint.Required, role);
-      let variableName = formatConstraintVariableName(constr);
-      let initialValue =
-        generateConstraintWithInitialValue(
-          constr,
-          generateConstantFromConstraint(constr)
-        );
-      {variableName, initialValue, priority: Constraint.getPriority(constr)};
-    };
+        (layer: Types.layer, anchor1, parent: Types.layer, anchor2, role) =>
+      Constraint.Relation(
+        layer,
+        anchor1,
+        Constraint.Leq,
+        parent,
+        anchor2,
+        Constraint.Low,
+        role
+      );
+    let setUpDimensionContraint = (layer: Types.layer, anchor, role) =>
+      Constraint.Dimension(layer, anchor, Constraint.Required, role);
     let constrainAxes = (layer: Types.layer) => {
       open Constraint;
       let direction = Layer.getFlexDirection(layer);
@@ -915,13 +888,18 @@ let generate =
         "operator": "=",
         "right": LiteralExpression(Boolean(false))
       });
+    let getInitialValue = constr =>
+      generateConstraintWithInitialValue(
+        constr,
+        generateConstantFromConstraint(constr)
+      );
     let defineConstraint = def =>
       ConstantDeclaration({
         "modifiers": [],
-        "init": Some(def.initialValue),
+        "init": Some(getInitialValue(def)),
         "pattern":
           IdentifierPattern({
-            "identifier": SwiftIdentifier(def.variableName),
+            "identifier": SwiftIdentifier(formatConstraintVariableName(def)),
             "annotation": None
           })
       });
@@ -929,14 +907,14 @@ let generate =
       BinaryExpression({
         "left":
           MemberExpression([
-            SwiftIdentifier(def.variableName),
+            SwiftIdentifier(formatConstraintVariableName(def)),
             SwiftIdentifier("priority")
           ]),
         "operator": "=",
         "right":
           MemberExpression([
             SwiftDocument.layoutPriorityTypeDoc(swiftOptions.framework),
-            SwiftIdentifier(priorityName(def.priority))
+            SwiftIdentifier(priorityName(Constraint.getPriority(def)))
           ])
       });
     let activateConstraints = () =>
@@ -953,7 +931,9 @@ let generate =
               LiteralExpression(
                 Array(
                   constraints
-                  |> List.map(def => SwiftIdentifier(def.variableName))
+                  |> List.map(def =>
+                       SwiftIdentifier(formatConstraintVariableName(def))
+                     )
                 )
               )
           })
@@ -964,20 +944,20 @@ let generate =
         "left":
           MemberExpression([
             SwiftIdentifier("self"),
-            SwiftIdentifier(def.variableName)
+            SwiftIdentifier(formatConstraintVariableName(def))
           ]),
         "operator": "=",
-        "right": SwiftIdentifier(def.variableName)
+        "right": SwiftIdentifier(formatConstraintVariableName(def))
       });
     let assignConstraintIdentifier = def =>
       BinaryExpression({
         "left":
           MemberExpression([
-            SwiftIdentifier(def.variableName),
+            SwiftIdentifier(formatConstraintVariableName(def)),
             SwiftIdentifier("identifier")
           ]),
         "operator": "=",
-        "right": LiteralExpression(String(def.variableName))
+        "right": LiteralExpression(String(formatConstraintVariableName(def)))
       });
     FunctionDeclaration({
       "name": "setUpConstraints",
@@ -990,7 +970,7 @@ let generate =
           [Empty],
           constraints |> List.map(defineConstraint),
           constraints
-          |> List.filter(def => def.priority == Low)
+          |> List.filter(def => Constraint.getPriority(def) == Low)
           |> List.map(setConstraintPriority),
           [Empty],
           [activateConstraints()],
@@ -1074,7 +1054,9 @@ let generate =
               textLayers |> List.map(textStyleVariableDoc),
               rootLayer |> Layer.flatmap(spacingVariableDoc) |> List.concat,
               constraints
-              |> List.map(def => constraintVariableDoc(def.variableName)),
+              |> List.map(def =>
+                   constraintVariableDoc(formatConstraintVariableName(def))
+                 ),
               [setUpViewsDoc(rootLayer)],
               [setUpConstraintsDoc(rootLayer)],
               [updateDoc()]
