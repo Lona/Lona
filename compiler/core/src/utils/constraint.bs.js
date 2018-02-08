@@ -92,9 +92,9 @@ function getPriority(param) {
 
 function getRole(param) {
   if (param.tag) {
-    return param[5];
+    return param[6];
   } else {
-    return param[2];
+    return param[3];
   }
 }
 

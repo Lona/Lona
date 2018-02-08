@@ -60,7 +60,7 @@ public class PrimaryAxis: UIView {
   private var textViewLeadingMargin: CGFloat = 0
 
   private var heightAnchorConstraint: NSLayoutConstraint?
-  private var fill1ViewHeightAnchorSiblingConstraint0: NSLayoutConstraint?
+  private var fill1ViewFill2ViewHeightAnchorSiblingConstraint: NSLayoutConstraint?
   private var fixedViewTopAnchorConstraint: NSLayoutConstraint?
   private var fixedViewLeadingAnchorConstraint: NSLayoutConstraint?
   private var fitViewTopAnchorConstraint: NSLayoutConstraint?
@@ -103,7 +103,7 @@ public class PrimaryAxis: UIView {
     textView.translatesAutoresizingMaskIntoConstraints = false
 
     let heightAnchorConstraint = heightAnchor.constraint(equalToConstant: 500)
-    let fill1ViewHeightAnchorSiblingConstraint0 = fill1View
+    let fill1ViewFill2ViewHeightAnchorSiblingConstraint = fill1View
       .heightAnchor
       .constraint(equalTo: fill2View.heightAnchor, constant: 0)
     let fixedViewTopAnchorConstraint = fixedView
@@ -153,7 +153,7 @@ public class PrimaryAxis: UIView {
 
     NSLayoutConstraint.activate([
       heightAnchorConstraint,
-      fill1ViewHeightAnchorSiblingConstraint0,
+      fill1ViewFill2ViewHeightAnchorSiblingConstraint,
       fixedViewTopAnchorConstraint,
       fixedViewLeadingAnchorConstraint,
       fitViewTopAnchorConstraint,
@@ -175,7 +175,7 @@ public class PrimaryAxis: UIView {
     ])
 
     self.heightAnchorConstraint = heightAnchorConstraint
-    self.fill1ViewHeightAnchorSiblingConstraint0 = fill1ViewHeightAnchorSiblingConstraint0
+    self.fill1ViewFill2ViewHeightAnchorSiblingConstraint = fill1ViewFill2ViewHeightAnchorSiblingConstraint
     self.fixedViewTopAnchorConstraint = fixedViewTopAnchorConstraint
     self.fixedViewLeadingAnchorConstraint = fixedViewLeadingAnchorConstraint
     self.fitViewTopAnchorConstraint = fitViewTopAnchorConstraint
@@ -197,7 +197,7 @@ public class PrimaryAxis: UIView {
 
     // For debugging
     heightAnchorConstraint.identifier = "heightAnchorConstraint"
-    fill1ViewHeightAnchorSiblingConstraint0.identifier = "fill1ViewHeightAnchorSiblingConstraint0"
+    fill1ViewFill2ViewHeightAnchorSiblingConstraint.identifier = "fill1ViewFill2ViewHeightAnchorSiblingConstraint"
     fixedViewTopAnchorConstraint.identifier = "fixedViewTopAnchorConstraint"
     fixedViewLeadingAnchorConstraint.identifier = "fixedViewLeadingAnchorConstraint"
     fitViewTopAnchorConstraint.identifier = "fitViewTopAnchorConstraint"

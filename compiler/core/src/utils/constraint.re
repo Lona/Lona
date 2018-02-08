@@ -75,8 +75,8 @@ let getPriority =
 
 let getRole =
   fun
-  | Dimension(_, _, role, _) => role
-  | Relation(_, _, _, _, _, role, _) => role;
+  | Dimension(_, _, _, role) => role
+  | Relation(_, _, _, _, _, _, role) => role;
 
 module ConstraintMap = {
   include

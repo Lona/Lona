@@ -512,14 +512,44 @@ let generate =
       constr,
       LiteralExpression(FloatingPoint(constant))
     );
-  let formatAnchorVariableName = (layer: Types.layer, anchor, suffix) => {
-    let anchorString = Constraint.anchorToString(anchor);
-    (
-      layer === rootLayer ?
-        anchorString :
-        Format.layerName(layer.name) ++ Format.upperFirst(anchorString)
-    )
-    ++ suffix;
+  let formatConstraintVariableName = (constr: Constraint.t) => {
+    open Constraint;
+    let formatAnchorVariableName = (layer: Types.layer, anchor, suffix) => {
+      let anchorString = Constraint.anchorToString(anchor);
+      (
+        layer === rootLayer ?
+          anchorString :
+          Format.layerName(layer.name) ++ Format.upperFirst(anchorString)
+      )
+      ++ suffix;
+    };
+    switch (Constraint.getRole(constr), constr) {
+    | (
+        FlexSibling,
+        Relation(
+          (layer1: Types.layer),
+          edge1,
+          _,
+          (layer2: Types.layer),
+          _,
+          _,
+          _
+        )
+      ) =>
+      Format.layerName(layer1.name)
+      ++ Format.upperFirst(Format.layerName(layer2.name))
+      ++ Format.upperFirst(Constraint.anchorToString(edge1))
+      ++ "SiblingConstraint"
+    | (
+        FitContentSecondary,
+        Relation((layer1: Types.layer), edge1, _, _, _, _, _)
+      ) =>
+      formatAnchorVariableName(layer1, edge1, "ParentConstraint")
+    | (_, Relation((layer1: Types.layer), edge1, _, _, _, _, _)) =>
+      formatAnchorVariableName(layer1, edge1, "Constraint")
+    | (_, Constraint.Dimension((layer: Types.layer), dimension, _, _)) =>
+      formatAnchorVariableName(layer, dimension, "Constraint")
+    };
   };
   let getConstraints = (root: Types.layer) => {
     let setUpContraint =
@@ -530,10 +560,8 @@ let generate =
           anchor2: Constraint.anchor,
           relation,
           value,
-          suffix,
           role
         ) => {
-      let variableName = formatAnchorVariableName(layer, anchor1, suffix);
       let constr =
         Constraint.Relation(
           layer,
@@ -544,6 +572,7 @@ let generate =
           Constraint.Required,
           role
         );
+      let variableName = formatConstraintVariableName(constr);
       let initialValue = generateConstraintWithInitialValue(constr, value);
       {variableName, initialValue, priority: Constraint.getPriority(constr)};
     };
@@ -554,10 +583,8 @@ let generate =
           parent: Types.layer,
           anchor2,
           value,
-          suffix,
           role
         ) => {
-      let variableName = formatAnchorVariableName(layer, anchor1, suffix);
       let constr =
         Constraint.Relation(
           layer,
@@ -568,13 +595,14 @@ let generate =
           Constraint.Low,
           role
         );
+      let variableName = formatConstraintVariableName(constr);
       let initialValue = generateConstraintWithInitialValue(constr, value);
       {variableName, initialValue, priority: Constraint.getPriority(constr)};
     };
     let setUpDimensionContraint = (layer: Types.layer, anchor, constant, role) => {
-      let variableName = formatAnchorVariableName(layer, anchor, "Constraint");
       let constr =
         Constraint.Dimension(layer, anchor, Constraint.Required, role);
+      let variableName = formatConstraintVariableName(constr);
       let initialValue = generateConstraintWithConstant(constr, constant);
       {variableName, initialValue, priority: Constraint.getPriority(constr)};
     };
@@ -646,7 +674,6 @@ let generate =
                 primaryBeforeAnchor,
                 Eq,
                 primaryBeforeConstant,
-                "Constraint",
                 PrimaryBefore
               )
             ];
@@ -690,7 +717,6 @@ let generate =
                   primaryAfterAnchor,
                   Eq,
                   negateNumber(primaryAfterConstant),
-                  "Constraint",
                   PrimaryAfter
                 )
               ] :
@@ -724,7 +750,6 @@ let generate =
                 primaryAfterAnchor,
                 Eq,
                 betweenConstant,
-                "Constraint",
                 PrimaryBetween
               )
             ];
@@ -765,7 +790,6 @@ let generate =
             secondaryBeforeAnchor,
             Eq,
             secondaryBeforeConstant,
-            "Constraint",
             SecondaryBefore
           );
         let secondaryAfterConstraint =
@@ -778,7 +802,6 @@ let generate =
                 secondaryAfterAnchor,
                 Leq,
                 negateNumber(secondaryAfterConstant),
-                "Constraint",
                 SecondaryAfter
               )
             ]
@@ -792,7 +815,6 @@ let generate =
                 secondaryAfterAnchor,
                 Eq,
                 negateNumber(secondaryAfterConstant),
-                "Constraint",
                 SecondaryAfter
               )
             ]
@@ -824,7 +846,6 @@ let generate =
                     "right": secondaryAfterConstant
                   })
                 ),
-                "ParentConstraint",
                 FitContentSecondary
               )
             ]
@@ -850,7 +871,6 @@ let generate =
               anchor,
               Eq,
               LiteralExpression(FloatingPoint(0.0)),
-              "SiblingConstraint" ++ string_of_int(index),
               FlexSibling
             );
           rest |> List.mapi(sameAnchorConstraint(sameAnchor));
