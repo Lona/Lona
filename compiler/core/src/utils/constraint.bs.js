@@ -43,14 +43,14 @@ function anchorFromString(param) {
             Caml_builtin_exceptions.match_failure,
             [
               "/Users/devin_abbott/Projects/ComponentStudio/ComponentStudio/compiler/core/src/utils/constraint.re",
-              28,
+              51,
               2
             ]
           ];
   }
 }
 
-function relationFromString(param) {
+function cmpFromString(param) {
   switch (param) {
     case "equalTo" : 
         return /* Eq */0;
@@ -63,14 +63,14 @@ function relationFromString(param) {
             Caml_builtin_exceptions.match_failure,
             [
               "/Users/devin_abbott/Projects/ComponentStudio/ComponentStudio/compiler/core/src/utils/constraint.re",
-              37,
+              60,
               2
             ]
           ];
   }
 }
 
-function relationToString(param) {
+function cmpToString(param) {
   switch (param) {
     case 0 : 
         return "equalTo";
@@ -79,6 +79,22 @@ function relationToString(param) {
     case 2 : 
         return "lessThanOrEqualTo";
     
+  }
+}
+
+function getPriority(param) {
+  if (param.tag) {
+    return param[5];
+  } else {
+    return param[2];
+  }
+}
+
+function getRole(param) {
+  if (param.tag) {
+    return param[5];
+  } else {
+    return param[2];
   }
 }
 
@@ -210,9 +226,11 @@ var ConstraintMap = /* module */[
   /* find_opt */find_opt
 ];
 
-exports.anchorToString     = anchorToString;
-exports.anchorFromString   = anchorFromString;
-exports.relationFromString = relationFromString;
-exports.relationToString   = relationToString;
-exports.ConstraintMap      = ConstraintMap;
+exports.anchorToString   = anchorToString;
+exports.anchorFromString = anchorFromString;
+exports.cmpFromString    = cmpFromString;
+exports.cmpToString      = cmpToString;
+exports.getPriority      = getPriority;
+exports.getRole          = getRole;
+exports.ConstraintMap    = ConstraintMap;
 /* include Not a pure module */

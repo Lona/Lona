@@ -6,14 +6,10 @@ module Document = SwiftDocument;
 
 module Render = SwiftRender;
 
-type layoutPriority =
-  | Required
-  | Low;
-
 type constraintDefinition = {
   variableName: string,
   initialValue: Ast.node,
-  priority: layoutPriority
+  priority: Constraint.layoutPriority
 };
 
 type directionParameter = {
@@ -50,7 +46,7 @@ let generate =
   open Ast;
   let priorityName =
     fun
-    | Required => "required"
+    | Constraint.Required => "required"
     | Low => "defaultLow";
   let typeAnnotationDoc =
     fun
@@ -462,7 +458,7 @@ let generate =
   };
   let generateConstraintWithInitialValue = (constr: Constraint.t, node) =>
     switch constr {
-    | Constraint.Dimension((layer: Types.layer), dimension, constant) =>
+    | Constraint.Dimension((layer: Types.layer), dimension, _, _) =>
       layerMemberExpression(
         layer,
         [
@@ -478,13 +474,14 @@ let generate =
           })
         ]
       )
-    | Constraint.Edge(
+    | Constraint.Relation(
         (layer1: Types.layer),
         edge1,
         relation,
         (layer2: Types.layer),
         edge2,
-        constant
+        _,
+        _
       ) =>
       layerMemberExpression(
         layer1,
@@ -494,8 +491,7 @@ let generate =
             "name": SwiftIdentifier("constraint"),
             "arguments": [
               FunctionCallArgument({
-                "name":
-                  Some(SwiftIdentifier(Constraint.relationToString(relation))),
+                "name": Some(SwiftIdentifier(Constraint.cmpToString(relation))),
                 "value":
                   layerMemberExpression(
                     layer2,
@@ -534,20 +530,22 @@ let generate =
           anchor2: Constraint.anchor,
           relation,
           value,
-          suffix
+          suffix,
+          role
         ) => {
       let variableName = formatAnchorVariableName(layer, anchor1, suffix);
       let constr =
-        Constraint.Edge(
+        Constraint.Relation(
           layer,
           anchor1,
-          Constraint.relationFromString(relation),
+          relation,
           parent,
           anchor2,
-          0.0
+          Constraint.Required,
+          role
         );
       let initialValue = generateConstraintWithInitialValue(constr, value);
-      {variableName, initialValue, priority: Required};
+      {variableName, initialValue, priority: Constraint.getPriority(constr)};
     };
     let setUpLessThanOrEqualToContraint =
         (
@@ -556,19 +554,29 @@ let generate =
           parent: Types.layer,
           anchor2,
           value,
-          suffix
+          suffix,
+          role
         ) => {
       let variableName = formatAnchorVariableName(layer, anchor1, suffix);
       let constr =
-        Constraint.Edge(layer, anchor1, Constraint.Leq, parent, anchor2, 0.0);
+        Constraint.Relation(
+          layer,
+          anchor1,
+          Constraint.Leq,
+          parent,
+          anchor2,
+          Constraint.Low,
+          role
+        );
       let initialValue = generateConstraintWithInitialValue(constr, value);
-      {variableName, initialValue, priority: Low};
+      {variableName, initialValue, priority: Constraint.getPriority(constr)};
     };
-    let setUpDimensionContraint = (layer: Types.layer, anchor, constant) => {
+    let setUpDimensionContraint = (layer: Types.layer, anchor, constant, role) => {
       let variableName = formatAnchorVariableName(layer, anchor, "Constraint");
-      let constr = Constraint.Dimension(layer, anchor, constant);
+      let constr =
+        Constraint.Dimension(layer, anchor, Constraint.Required, role);
       let initialValue = generateConstraintWithConstant(constr, constant);
-      {variableName, initialValue, priority: Required};
+      {variableName, initialValue, priority: Constraint.getPriority(constr)};
     };
     let negateNumber = expression =>
       PrefixExpression({"operator": "-", "expression": expression});
@@ -636,9 +644,10 @@ let generate =
                 primaryBeforeAnchor,
                 layer,
                 primaryBeforeAnchor,
-                "equalTo",
+                Eq,
                 primaryBeforeConstant,
-                "Constraint"
+                "Constraint",
+                PrimaryBefore
               )
             ];
           | _ => []
@@ -679,9 +688,10 @@ let generate =
                   primaryAfterAnchor,
                   layer,
                   primaryAfterAnchor,
-                  "equalTo",
+                  Eq,
                   negateNumber(primaryAfterConstant),
-                  "Constraint"
+                  "Constraint",
+                  PrimaryAfter
                 )
               ] :
               [];
@@ -712,9 +722,10 @@ let generate =
                 primaryBeforeAnchor,
                 previousLayer,
                 primaryAfterAnchor,
-                "equalTo",
+                Eq,
                 betweenConstant,
-                "Constraint"
+                "Constraint",
+                PrimaryBetween
               )
             ];
           };
@@ -752,44 +763,37 @@ let generate =
             secondaryBeforeAnchor,
             layer,
             secondaryBeforeAnchor,
-            "equalTo",
+            Eq,
             secondaryBeforeConstant,
-            "Constraint"
+            "Constraint",
+            SecondaryBefore
           );
         let secondaryAfterConstraint =
           switch (secondarySizingRule, childSecondarySizingRule) {
-          | (_, Fixed(_)) => [] /* Width/height constraints are added outside the child loop */
-          | (_, Fill) => [
-              setUpContraint(
-                child,
-                secondaryAfterAnchor,
-                layer,
-                secondaryAfterAnchor,
-                "equalTo",
-                negateNumber(secondaryAfterConstant),
-                "Constraint"
-              )
-            ]
           | (Fill, FitContent) => [
               setUpContraint(
                 child,
                 secondaryAfterAnchor,
                 layer,
                 secondaryAfterAnchor,
-                "lessThanOrEqualTo",
+                Leq,
                 negateNumber(secondaryAfterConstant),
-                "Constraint"
+                "Constraint",
+                SecondaryAfter
               )
             ]
+          | (_, Fixed(_)) => [] /* Width/height constraints are added outside the child loop */
+          | (_, Fill)
           | (_, FitContent) => [
               setUpContraint(
                 child,
                 secondaryAfterAnchor,
                 layer,
                 secondaryAfterAnchor,
-                "equalTo",
+                Eq,
                 negateNumber(secondaryAfterConstant),
-                "Constraint"
+                "Constraint",
+                SecondaryAfter
               )
             ]
           };
@@ -820,7 +824,8 @@ let generate =
                     "right": secondaryAfterConstant
                   })
                 ),
-                "ParentConstraint"
+                "ParentConstraint",
+                FitContentSecondary
               )
             ]
           | _ => []
@@ -843,21 +848,38 @@ let generate =
               anchor,
               layer,
               anchor,
-              "equalTo",
+              Eq,
               LiteralExpression(FloatingPoint(0.0)),
-              "SiblingConstraint" ++ string_of_int(index)
+              "SiblingConstraint" ++ string_of_int(index),
+              FlexSibling
             );
           rest |> List.mapi(sameAnchorConstraint(sameAnchor));
         | _ => []
         };
       let heightConstraint =
         switch height {
-        | Some(height) => [setUpDimensionContraint(layer, Height, height)]
+        | Some(height) => [
+            setUpDimensionContraint(
+              layer,
+              Height,
+              height,
+              isColumn ?
+                Constraint.PrimaryDimension : Constraint.SecondaryDimension
+            )
+          ]
         | None => []
         };
       let widthConstraint =
         switch width {
-        | Some(width) => [setUpDimensionContraint(layer, Width, width)]
+        | Some(width) => [
+            setUpDimensionContraint(
+              layer,
+              Width,
+              width,
+              isColumn ?
+                Constraint.SecondaryDimension : Constraint.PrimaryDimension
+            )
+          ]
         | None => []
         };
       let constraints =

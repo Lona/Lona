@@ -1,3 +1,7 @@
+type layoutPriority =
+  | Required
+  | Low;
+
 type anchor =
   | Width
   | Height
@@ -6,14 +10,33 @@ type anchor =
   | Leading
   | Trailing;
 
-type relation =
+type cmp =
   | Eq
   | Geq
   | Leq;
 
+type role =
+  | PrimaryBefore
+  | PrimaryBetween
+  | PrimaryAfter
+  | SecondaryBefore
+  | SecondaryAfter
+  | FitContentSecondary
+  | FlexSibling
+  | PrimaryDimension
+  | SecondaryDimension;
+
 type _t =
-  | Dimension(Types.layer, anchor, float)
-  | Edge(Types.layer, anchor, relation, Types.layer, anchor, float);
+  | Dimension(Types.layer, anchor, layoutPriority, role)
+  | Relation(
+      Types.layer,
+      anchor,
+      cmp,
+      Types.layer,
+      anchor,
+      layoutPriority,
+      role
+    );
 
 let anchorToString =
   fun
@@ -33,17 +56,27 @@ let anchorFromString =
   | "widthAnchor" => Width
   | "heightAnchor" => Height;
 
-let relationFromString =
+let cmpFromString =
   fun
   | "equalTo" => Eq
   | "lessThanOrEqualTo" => Leq
   | "greaterThanOrEqualTo" => Geq;
 
-let relationToString =
+let cmpToString =
   fun
   | Eq => "equalTo"
   | Leq => "lessThanOrEqualTo"
   | Geq => "greaterThanOrEqualTo";
+
+let getPriority =
+  fun
+  | Dimension(_, _, priority, _) => priority
+  | Relation(_, _, _, _, _, priority, _) => priority;
+
+let getRole =
+  fun
+  | Dimension(_, _, role, _) => role
+  | Relation(_, _, _, _, _, role, _) => role;
 
 module ConstraintMap = {
   include
@@ -53,20 +86,20 @@ module ConstraintMap = {
         let compare = (a: t, b: t) : int =>
           switch (a, b) {
           | (
-              Dimension(layer1, dimension1, _),
-              Dimension(layer2, dimension2, _)
+              Dimension(layer1, dimension1, _, _),
+              Dimension(layer2, dimension2, _, _)
             ) =>
             compare((layer1.name, dimension1), (layer2.name, dimension2))
           | (
-              Edge(layer1a, anchor1a, _, layer1b, anchor1b, _),
-              Edge(layer2a, anchor2a, _, layer2b, anchor2b, _)
+              Relation(layer1a, anchor1a, _, layer1b, anchor1b, _, _),
+              Relation(layer2a, anchor2a, _, layer2b, anchor2b, _, _)
             ) =>
             compare(
               (layer1a.name, anchor1a, layer1b.name, anchor1b),
               (layer2a.name, anchor2a, layer2b.name, anchor2b)
             )
-          | (Edge(_), Dimension(_)) => (-1)
-          | (Dimension(_), Edge(_)) => 1
+          | (Relation(_), Dimension(_)) => (-1)
+          | (Dimension(_), Relation(_)) => 1
           };
       }
     );
