@@ -58,7 +58,7 @@ public class FixedParentFillAndFitChildren: NSBox {
   private var view5ViewLeadingMargin: CGFloat = 12
 
   private var heightAnchorConstraint: NSLayoutConstraint?
-  private var view2ViewHeightAnchorSiblingConstraint0: NSLayoutConstraint?
+  private var view2ViewView3ViewHeightAnchorSiblingConstraint: NSLayoutConstraint?
   private var view1ViewTopAnchorConstraint: NSLayoutConstraint?
   private var view1ViewLeadingAnchorConstraint: NSLayoutConstraint?
   private var view1ViewTrailingAnchorConstraint: NSLayoutConstraint?
@@ -122,7 +122,7 @@ public class FixedParentFillAndFitChildren: NSBox {
     view5View.translatesAutoresizingMaskIntoConstraints = false
 
     let heightAnchorConstraint = heightAnchor.constraint(equalToConstant: 600)
-    let view2ViewHeightAnchorSiblingConstraint0 = view2View
+    let view2ViewView3ViewHeightAnchorSiblingConstraint = view2View
       .heightAnchor
       .constraint(equalTo: view3View.heightAnchor, constant: 0)
     let view1ViewTopAnchorConstraint = view1View
@@ -186,7 +186,7 @@ public class FixedParentFillAndFitChildren: NSBox {
 
     NSLayoutConstraint.activate([
       heightAnchorConstraint,
-      view2ViewHeightAnchorSiblingConstraint0,
+      view2ViewView3ViewHeightAnchorSiblingConstraint,
       view1ViewTopAnchorConstraint,
       view1ViewLeadingAnchorConstraint,
       view1ViewTrailingAnchorConstraint,
@@ -210,7 +210,7 @@ public class FixedParentFillAndFitChildren: NSBox {
     ])
 
     self.heightAnchorConstraint = heightAnchorConstraint
-    self.view2ViewHeightAnchorSiblingConstraint0 = view2ViewHeightAnchorSiblingConstraint0
+    self.view2ViewView3ViewHeightAnchorSiblingConstraint = view2ViewView3ViewHeightAnchorSiblingConstraint
     self.view1ViewTopAnchorConstraint = view1ViewTopAnchorConstraint
     self.view1ViewLeadingAnchorConstraint = view1ViewLeadingAnchorConstraint
     self.view1ViewTrailingAnchorConstraint = view1ViewTrailingAnchorConstraint
@@ -234,7 +234,7 @@ public class FixedParentFillAndFitChildren: NSBox {
 
     // For debugging
     heightAnchorConstraint.identifier = "heightAnchorConstraint"
-    view2ViewHeightAnchorSiblingConstraint0.identifier = "view2ViewHeightAnchorSiblingConstraint0"
+    view2ViewView3ViewHeightAnchorSiblingConstraint.identifier = "view2ViewView3ViewHeightAnchorSiblingConstraint"
     view1ViewTopAnchorConstraint.identifier = "view1ViewTopAnchorConstraint"
     view1ViewLeadingAnchorConstraint.identifier = "view1ViewLeadingAnchorConstraint"
     view1ViewTrailingAnchorConstraint.identifier = "view1ViewTrailingAnchorConstraint"

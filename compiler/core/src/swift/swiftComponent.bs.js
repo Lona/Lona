@@ -872,7 +872,7 @@ function generate(_, swiftOptions, name, colors, textStyles, json) {
     }
   };
   var getConstraints = function (root) {
-    var setUpContraint = function (layer, anchor1, parent, anchor2, relation, _, role) {
+    var setUpContraint = function (layer, anchor1, parent, anchor2, relation, role) {
       var constr = /* Relation */Block.__(1, [
           layer,
           anchor1,
@@ -890,7 +890,7 @@ function generate(_, swiftOptions, name, colors, textStyles, json) {
               /* priority */Constraint$LonaCompilerCore.getPriority(constr)
             ];
     };
-    var setUpLessThanOrEqualToContraint = function (layer, anchor1, parent, anchor2, _, role) {
+    var setUpLessThanOrEqualToContraint = function (layer, anchor1, parent, anchor2, role) {
       var constr = /* Relation */Block.__(1, [
           layer,
           anchor1,
@@ -908,7 +908,7 @@ function generate(_, swiftOptions, name, colors, textStyles, json) {
               /* priority */Constraint$LonaCompilerCore.getPriority(constr)
             ];
     };
-    var setUpDimensionContraint = function (layer, anchor, _, role) {
+    var setUpDimensionContraint = function (layer, anchor, role) {
       var constr = /* Dimension */Block.__(0, [
           layer,
           anchor,
@@ -943,16 +943,10 @@ function generate(_, swiftOptions, name, colors, textStyles, json) {
       var addConstraints = function (index, child) {
         var childSizingRules = Layer$LonaCompilerCore.getSizingRules(/* Some */[layer], child);
         var childSecondarySizingRule = isColumn !== 0 ? childSizingRules[/* width */0] : childSizingRules[/* height */1];
-        var firstViewConstraints;
-        if (index !== 0) {
-          firstViewConstraints = /* [] */0;
-        } else {
-          var primaryBeforeConstant = isColumn !== 0 ? constraintConstantExpression(layer, "topPadding", child, "topMargin") : constraintConstantExpression(layer, "leadingPadding", child, "leadingMargin");
-          firstViewConstraints = /* :: */[
-            setUpContraint(child, primaryBeforeAnchor, layer, primaryBeforeAnchor, /* Eq */0, primaryBeforeConstant, /* PrimaryBefore */0),
+        var firstViewConstraints = index !== 0 ? /* [] */0 : /* :: */[
+            setUpContraint(child, primaryBeforeAnchor, layer, primaryBeforeAnchor, /* Eq */0, /* PrimaryBefore */0),
             /* [] */0
           ];
-        }
         var lastViewConstraints;
         if (index === (List.length(layer[/* children */3]) - 1 | 0)) {
           var match = List.length(flexChildren);
@@ -961,9 +955,8 @@ function generate(_, swiftOptions, name, colors, textStyles, json) {
             ) : (
               match ? /* true */1 : /* false */0
             );
-          var primaryAfterConstant = isColumn !== 0 ? constraintConstantExpression(layer, "bottomPadding", child, "bottomMargin") : constraintConstantExpression(layer, "trailingPadding", child, "trailingMargin");
           lastViewConstraints = needsPrimaryAfterConstraint !== 0 ? /* :: */[
-              setUpContraint(child, primaryAfterAnchor, layer, primaryAfterAnchor, /* Eq */0, negateNumber(primaryAfterConstant), /* PrimaryAfter */2),
+              setUpContraint(child, primaryAfterAnchor, layer, primaryAfterAnchor, /* Eq */0, /* PrimaryAfter */2),
               /* [] */0
             ] : /* [] */0;
         } else {
@@ -972,22 +965,19 @@ function generate(_, swiftOptions, name, colors, textStyles, json) {
         var middleViewConstraints;
         if (index !== 0) {
           var previousLayer = List.nth(layer[/* children */3], index - 1 | 0);
-          var betweenConstant = isColumn !== 0 ? constraintConstantExpression(previousLayer, "bottomMargin", child, "topMargin") : constraintConstantExpression(previousLayer, "trailingMargin", child, "leadingMargin");
           middleViewConstraints = /* :: */[
-            setUpContraint(child, primaryBeforeAnchor, previousLayer, primaryAfterAnchor, /* Eq */0, betweenConstant, /* PrimaryBetween */1),
+            setUpContraint(child, primaryBeforeAnchor, previousLayer, primaryAfterAnchor, /* Eq */0, /* PrimaryBetween */1),
             /* [] */0
           ];
         } else {
           middleViewConstraints = /* [] */0;
         }
-        var secondaryBeforeConstant = isColumn !== 0 ? constraintConstantExpression(layer, "leadingPadding", child, "leadingMargin") : constraintConstantExpression(layer, "topPadding", child, "topMargin");
-        var secondaryAfterConstant = isColumn !== 0 ? constraintConstantExpression(layer, "trailingPadding", child, "trailingMargin") : constraintConstantExpression(layer, "bottomPadding", child, "bottomMargin");
-        var secondaryBeforeConstraint = setUpContraint(child, secondaryBeforeAnchor, layer, secondaryBeforeAnchor, /* Eq */0, secondaryBeforeConstant, /* SecondaryBefore */3);
+        var secondaryBeforeConstraint = setUpContraint(child, secondaryBeforeAnchor, layer, secondaryBeforeAnchor, /* Eq */0, /* SecondaryBefore */3);
         var secondaryAfterConstraint;
         var exit = 0;
         if (typeof secondarySizingRule === "number" && !(secondarySizingRule !== 0 || !(typeof childSecondarySizingRule === "number" && childSecondarySizingRule !== 0))) {
           secondaryAfterConstraint = /* :: */[
-            setUpContraint(child, secondaryAfterAnchor, layer, secondaryAfterAnchor, /* Leq */2, negateNumber(secondaryAfterConstant), /* SecondaryAfter */4),
+            setUpContraint(child, secondaryAfterAnchor, layer, secondaryAfterAnchor, /* Leq */2, /* SecondaryAfter */4),
             /* [] */0
           ];
         } else {
@@ -995,16 +985,12 @@ function generate(_, swiftOptions, name, colors, textStyles, json) {
         }
         if (exit === 1) {
           secondaryAfterConstraint = typeof childSecondarySizingRule === "number" ? /* :: */[
-              setUpContraint(child, secondaryAfterAnchor, layer, secondaryAfterAnchor, /* Eq */0, negateNumber(secondaryAfterConstant), /* SecondaryAfter */4),
+              setUpContraint(child, secondaryAfterAnchor, layer, secondaryAfterAnchor, /* Eq */0, /* SecondaryAfter */4),
               /* [] */0
             ] : /* [] */0;
         }
         var fitContentSecondaryConstraint = typeof secondarySizingRule === "number" && secondarySizingRule !== 0 ? /* :: */[
-            setUpLessThanOrEqualToContraint(child, secondaryDimensionAnchor, layer, secondaryDimensionAnchor, negateNumber(/* BinaryExpression */Block.__(2, [{
-                          left: secondaryBeforeConstant,
-                          operator: "+",
-                          right: secondaryAfterConstant
-                        }])), /* FitContentSecondary */5),
+            setUpLessThanOrEqualToContraint(child, secondaryDimensionAnchor, layer, secondaryDimensionAnchor, /* FitContentSecondary */5),
             /* [] */0
           ] : /* [] */0;
         return Pervasives.$at(firstViewConstraints, Pervasives.$at(lastViewConstraints, Pervasives.$at(middleViewConstraints, Pervasives.$at(/* :: */[
@@ -1017,10 +1003,10 @@ function generate(_, swiftOptions, name, colors, textStyles, json) {
         var rest = flexChildren[1];
         var first = flexChildren[0];
         if (List.length(rest) > 0) {
-          flexChildrenConstraints = List.mapi((function (param, param$1) {
+          flexChildrenConstraints = List.map((function (param) {
                   var anchor = primaryDimensionAnchor;
-                  var layer = param$1;
-                  return setUpContraint(first, anchor, layer, anchor, /* Eq */0, /* LiteralExpression */Block.__(0, [/* FloatingPoint */Block.__(2, [0.0])]), /* FlexSibling */6);
+                  var layer = param;
+                  return setUpContraint(first, anchor, layer, anchor, /* Eq */0, /* FlexSibling */6);
                 }), rest);
         } else {
           flexChildrenConstraints = /* [] */0;
@@ -1029,11 +1015,11 @@ function generate(_, swiftOptions, name, colors, textStyles, json) {
         flexChildrenConstraints = /* [] */0;
       }
       var heightConstraint = height ? /* :: */[
-          setUpDimensionContraint(layer, /* Height */1, height[0], isColumn !== 0 ? /* PrimaryDimension */7 : /* SecondaryDimension */8),
+          setUpDimensionContraint(layer, /* Height */1, isColumn !== 0 ? /* PrimaryDimension */7 : /* SecondaryDimension */8),
           /* [] */0
         ] : /* [] */0;
       var widthConstraint = width ? /* :: */[
-          setUpDimensionContraint(layer, /* Width */0, width[0], isColumn !== 0 ? /* SecondaryDimension */8 : /* PrimaryDimension */7),
+          setUpDimensionContraint(layer, /* Width */0, isColumn !== 0 ? /* SecondaryDimension */8 : /* PrimaryDimension */7),
           /* [] */0
         ] : /* [] */0;
       return List.concat(Pervasives.$at(/* :: */[

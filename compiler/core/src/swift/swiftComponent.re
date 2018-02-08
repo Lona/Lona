@@ -660,7 +660,6 @@ let generate =
           parent: Types.layer,
           anchor2: Constraint.anchor,
           relation,
-          value,
           role
         ) => {
       let constr =
@@ -682,14 +681,7 @@ let generate =
       {variableName, initialValue, priority: Constraint.getPriority(constr)};
     };
     let setUpLessThanOrEqualToContraint =
-        (
-          layer: Types.layer,
-          anchor1,
-          parent: Types.layer,
-          anchor2,
-          value,
-          role
-        ) => {
+        (layer: Types.layer, anchor1, parent: Types.layer, anchor2, role) => {
       let constr =
         Constraint.Relation(
           layer,
@@ -708,7 +700,7 @@ let generate =
         );
       {variableName, initialValue, priority: Constraint.getPriority(constr)};
     };
-    let setUpDimensionContraint = (layer: Types.layer, anchor, constant, role) => {
+    let setUpDimensionContraint = (layer: Types.layer, anchor, role) => {
       let constr =
         Constraint.Dimension(layer, anchor, Constraint.Required, role);
       let variableName = formatConstraintVariableName(constr);
@@ -750,32 +742,16 @@ let generate =
           isColumn ? childSizingRules.width : childSizingRules.height;
         let firstViewConstraints =
           switch index {
-          | 0 =>
-            let primaryBeforeConstant =
-              isColumn ?
-                constraintConstantExpression(
-                  layer,
-                  "topPadding",
-                  child,
-                  "topMargin"
-                ) :
-                constraintConstantExpression(
-                  layer,
-                  "leadingPadding",
-                  child,
-                  "leadingMargin"
-                );
-            [
+          | 0 => [
               setUpContraint(
                 child,
                 primaryBeforeAnchor,
                 layer,
                 primaryBeforeAnchor,
                 Eq,
-                primaryBeforeConstant,
                 PrimaryBefore
               )
-            ];
+            ]
           | _ => []
           };
         let lastViewConstraints =
@@ -785,28 +761,10 @@ let generate =
                unless any child has "flex: 1", in which case we do still need the constraint. */
             let needsPrimaryAfterConstraint =
               switch (primarySizingRule, List.length(flexChildren)) {
-              /* | (FitContent, _) => false */
               | (Fill, count) when count == 0 => false
               | (Fixed(_), count) when count == 0 => false
               | (_, _) => true
               };
-            /* let needsPrimaryAfterConstraint =
-               Layer.getNumberParameterOpt(primaryDimension, layer) == None
-               || List.length(flexChildren) > 0; */
-            let primaryAfterConstant =
-              isColumn ?
-                constraintConstantExpression(
-                  layer,
-                  "bottomPadding",
-                  child,
-                  "bottomMargin"
-                ) :
-                constraintConstantExpression(
-                  layer,
-                  "trailingPadding",
-                  child,
-                  "trailingMargin"
-                );
             needsPrimaryAfterConstraint ?
               [
                 setUpContraint(
@@ -815,7 +773,6 @@ let generate =
                   layer,
                   primaryAfterAnchor,
                   Eq,
-                  negateNumber(primaryAfterConstant),
                   PrimaryAfter
                 )
               ] :
@@ -827,20 +784,6 @@ let generate =
           | 0 => []
           | _ =>
             let previousLayer = List.nth(layer.children, index - 1);
-            let betweenConstant =
-              isColumn ?
-                constraintConstantExpression(
-                  previousLayer,
-                  "bottomMargin",
-                  child,
-                  "topMargin"
-                ) :
-                constraintConstantExpression(
-                  previousLayer,
-                  "trailingMargin",
-                  child,
-                  "leadingMargin"
-                );
             [
               setUpContraint(
                 child,
@@ -848,39 +791,10 @@ let generate =
                 previousLayer,
                 primaryAfterAnchor,
                 Eq,
-                betweenConstant,
                 PrimaryBetween
               )
             ];
           };
-        let secondaryBeforeConstant =
-          isColumn ?
-            constraintConstantExpression(
-              layer,
-              "leadingPadding",
-              child,
-              "leadingMargin"
-            ) :
-            constraintConstantExpression(
-              layer,
-              "topPadding",
-              child,
-              "topMargin"
-            );
-        let secondaryAfterConstant =
-          isColumn ?
-            constraintConstantExpression(
-              layer,
-              "trailingPadding",
-              child,
-              "trailingMargin"
-            ) :
-            constraintConstantExpression(
-              layer,
-              "bottomPadding",
-              child,
-              "bottomMargin"
-            );
         let secondaryBeforeConstraint =
           setUpContraint(
             child,
@@ -888,7 +802,6 @@ let generate =
             layer,
             secondaryBeforeAnchor,
             Eq,
-            secondaryBeforeConstant,
             SecondaryBefore
           );
         let secondaryAfterConstraint =
@@ -900,7 +813,6 @@ let generate =
                 layer,
                 secondaryAfterAnchor,
                 Leq,
-                negateNumber(secondaryAfterConstant),
                 SecondaryAfter
               )
             ]
@@ -913,7 +825,6 @@ let generate =
                 layer,
                 secondaryAfterAnchor,
                 Eq,
-                negateNumber(secondaryAfterConstant),
                 SecondaryAfter
               )
             ]
@@ -938,13 +849,6 @@ let generate =
                 secondaryDimensionAnchor,
                 layer,
                 secondaryDimensionAnchor,
-                negateNumber(
-                  BinaryExpression({
-                    "left": secondaryBeforeConstant,
-                    "operator": "+",
-                    "right": secondaryAfterConstant
-                  })
-                ),
                 FitContentSecondary
               )
             ]
@@ -962,26 +866,17 @@ let generate =
         switch flexChildren {
         | [first, ...rest] when List.length(rest) > 0 =>
           let sameAnchor = primaryDimensionAnchor;
-          let sameAnchorConstraint = (anchor, index, layer) =>
-            setUpContraint(
-              first,
-              anchor,
-              layer,
-              anchor,
-              Eq,
-              LiteralExpression(FloatingPoint(0.0)),
-              FlexSibling
-            );
-          rest |> List.mapi(sameAnchorConstraint(sameAnchor));
+          let sameAnchorConstraint = (anchor, layer) =>
+            setUpContraint(first, anchor, layer, anchor, Eq, FlexSibling);
+          rest |> List.map(sameAnchorConstraint(sameAnchor));
         | _ => []
         };
       let heightConstraint =
         switch height {
-        | Some(height) => [
+        | Some(_) => [
             setUpDimensionContraint(
               layer,
               Height,
-              height,
               isColumn ?
                 Constraint.PrimaryDimension : Constraint.SecondaryDimension
             )
@@ -990,11 +885,10 @@ let generate =
         };
       let widthConstraint =
         switch width {
-        | Some(width) => [
+        | Some(_) => [
             setUpDimensionContraint(
               layer,
               Width,
-              width,
               isColumn ?
                 Constraint.SecondaryDimension : Constraint.PrimaryDimension
             )
