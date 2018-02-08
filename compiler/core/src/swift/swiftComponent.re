@@ -6,14 +6,10 @@ module Document = SwiftDocument;
 
 module Render = SwiftRender;
 
-type layoutPriority =
-  | Required
-  | Low;
-
 type constraintDefinition = {
   variableName: string,
   initialValue: Ast.node,
-  priority: layoutPriority
+  priority: Constraint.layoutPriority
 };
 
 type directionParameter = {
@@ -50,7 +46,7 @@ let generate =
   open Ast;
   let priorityName =
     fun
-    | Required => "required"
+    | Constraint.Required => "required"
     | Low => "defaultLow";
   let typeAnnotationDoc =
     fun
@@ -460,414 +456,203 @@ let generate =
         )
     });
   };
-  let getConstraints = (root: Types.layer) => {
-    let setUpContraint =
-        (
-          layer: Types.layer,
-          anchor1,
-          parent: Types.layer,
-          anchor2,
-          relation,
-          value,
-          suffix
-        ) => {
-      let variableName =
-        (
-          layer === rootLayer ?
-            anchor1 :
-            Format.layerName(layer.name) ++ Format.upperFirst(anchor1)
-        )
-        ++ suffix;
-      let initialValue =
-        MemberExpression([
-          SwiftIdentifier(layer.name |> Format.layerName),
-          SwiftIdentifier(anchor1),
-          FunctionCallExpression({
-            "name": SwiftIdentifier("constraint"),
-            "arguments": [
-              FunctionCallArgument({
-                "name": Some(SwiftIdentifier(relation)),
-                "value":
-                  layerMemberExpression(parent, [SwiftIdentifier(anchor2)])
-              }),
-              FunctionCallArgument({
-                "name": Some(SwiftIdentifier("constant")),
-                "value": value
-              })
-            ]
-          })
-        ]);
-      {variableName, initialValue, priority: Required};
-    };
-    let setUpLessThanOrEqualToContraint =
-        (
-          layer: Types.layer,
-          anchor1,
-          parent: Types.layer,
-          anchor2,
-          value,
-          suffix
-        ) => {
-      let variableName =
-        (
-          layer === rootLayer ?
-            anchor1 :
-            Format.layerName(layer.name) ++ Format.upperFirst(anchor1)
-        )
-        ++ suffix;
-      let initialValue =
-        MemberExpression([
-          SwiftIdentifier(layer.name |> Format.layerName),
-          SwiftIdentifier(anchor1),
-          FunctionCallExpression({
-            "name": SwiftIdentifier("constraint"),
-            "arguments": [
-              FunctionCallArgument({
-                "name": Some(SwiftIdentifier("lessThanOrEqualTo")),
-                "value":
-                  layerMemberExpression(parent, [SwiftIdentifier(anchor2)])
-              }),
-              FunctionCallArgument({
-                "name": Some(SwiftIdentifier("constant")),
-                "value": value
-              })
-            ]
-          })
-        ]);
-      {variableName, initialValue, priority: Low};
-    };
-    let setUpDimensionContraint = (layer: Types.layer, anchor, constant) => {
-      let variableName =
-        (
-          layer === rootLayer ?
-            anchor : Format.layerName(layer.name) ++ Format.upperFirst(anchor)
-        )
-        ++ "Constraint";
-      let initialValue =
-        layerMemberExpression(
-          layer,
-          [
-            SwiftIdentifier(anchor),
-            FunctionCallExpression({
-              "name": SwiftIdentifier("constraint"),
-              "arguments": [
-                FunctionCallArgument({
-                  "name": Some(SwiftIdentifier("equalToConstant")),
-                  "value": LiteralExpression(FloatingPoint(constant))
-                })
-              ]
-            })
-          ]
-        );
-      {variableName, initialValue, priority: Required};
-    };
-    let negateNumber = expression =>
-      PrefixExpression({"operator": "-", "expression": expression});
-    let constraintConstantExpression =
-        (layer: Types.layer, variable1, parent: Types.layer, variable2) => {
-      let variableName = (layer: Types.layer, variable) =>
-        layer === rootLayer ?
-          variable :
-          Format.layerName(layer.name) ++ Format.upperFirst(variable);
-      BinaryExpression({
-        "left": SwiftIdentifier(variableName(layer, variable1)),
-        "operator": "+",
-        "right": SwiftIdentifier(variableName(parent, variable2))
-      });
-    };
-    let constrainAxes = (layer: Types.layer) => {
-      let direction = Layer.getFlexDirection(layer);
-      let primaryBeforeAnchor =
-        direction == "column" ? "topAnchor" : "leadingAnchor";
-      let primaryAfterAnchor =
-        direction == "column" ? "bottomAnchor" : "trailingAnchor";
-      let secondaryBeforeAnchor =
-        direction == "column" ? "leadingAnchor" : "topAnchor";
-      let secondaryAfterAnchor =
-        direction == "column" ? "trailingAnchor" : "bottomAnchor";
-      let height = Layer.getNumberParameterOpt("height", layer);
-      let width = Layer.getNumberParameterOpt("width", layer);
-      let primaryDimension = direction == "column" ? "height" : "width";
-      let secondaryDimension = direction == "column" ? "width" : "height";
-      let secondaryDimensionAnchor = secondaryDimension ++ "Anchor";
-      /* let primaryDimensionValue = direction == "column" ? height : width; */
-      /* let secondaryDimensionValue = direction == "column" ? width : height; */
-      let sizingRules =
-        layer |> Layer.getSizingRules(Layer.findParent(rootLayer, layer));
-      let primarySizingRule =
-        direction == "column" ? sizingRules.height : sizingRules.width;
-      let secondarySizingRule =
-        direction == "column" ? sizingRules.width : sizingRules.height;
-      let flexChildren =
-        layer.children
-        |> List.filter((child: Types.layer) =>
-             Layer.getNumberParameter("flex", child) === 1.0
-           );
-      let addConstraints = (index, child: Types.layer) => {
-        let childSizingRules = child |> Layer.getSizingRules(Some(layer));
-        /* let childPrimarySizingRule =
-           direction == "column" ? childSizingRules.height : childSizingRules.width; */
-        let childSecondarySizingRule =
-          direction == "column" ?
-            childSizingRules.width : childSizingRules.height;
-        let firstViewConstraints =
-          switch index {
-          | 0 =>
-            let primaryBeforeConstant =
-              direction == "column" ?
-                constraintConstantExpression(
-                  layer,
-                  "topPadding",
-                  child,
-                  "topMargin"
-                ) :
-                constraintConstantExpression(
-                  layer,
-                  "leadingPadding",
-                  child,
-                  "leadingMargin"
-                );
-            [
-              setUpContraint(
-                child,
-                primaryBeforeAnchor,
-                layer,
-                primaryBeforeAnchor,
-                "equalTo",
-                primaryBeforeConstant,
-                "Constraint"
-              )
-            ];
-          | _ => []
-          };
-        let lastViewConstraints =
-          switch index {
-          | x when x == List.length(layer.children) - 1 =>
-            /* If the parent view has a fixed dimension, we don't need to add a constraint...
-               unless any child has "flex: 1", in which case we do still need the constraint. */
-            let needsPrimaryAfterConstraint =
-              switch (primarySizingRule, List.length(flexChildren)) {
-              /* | (FitContent, _) => false */
-              | (Fill, count) when count == 0 => false
-              | (Fixed(_), count) when count == 0 => false
-              | (_, _) => true
-              };
-            /* let needsPrimaryAfterConstraint =
-               Layer.getNumberParameterOpt(primaryDimension, layer) == None
-               || List.length(flexChildren) > 0; */
-            let primaryAfterConstant =
-              direction == "column" ?
-                constraintConstantExpression(
-                  layer,
-                  "bottomPadding",
-                  child,
-                  "bottomMargin"
-                ) :
-                constraintConstantExpression(
-                  layer,
-                  "trailingPadding",
-                  child,
-                  "trailingMargin"
-                );
-            needsPrimaryAfterConstraint ?
-              [
-                setUpContraint(
-                  child,
-                  primaryAfterAnchor,
-                  layer,
-                  primaryAfterAnchor,
-                  "equalTo",
-                  negateNumber(primaryAfterConstant),
-                  "Constraint"
-                )
-              ] :
-              [];
-          | _ => []
-          };
-        let middleViewConstraints =
-          switch index {
-          | 0 => []
-          | _ =>
-            let previousLayer = List.nth(layer.children, index - 1);
-            let betweenConstant =
-              direction == "column" ?
-                constraintConstantExpression(
-                  previousLayer,
-                  "bottomMargin",
-                  child,
-                  "topMargin"
-                ) :
-                constraintConstantExpression(
-                  previousLayer,
-                  "trailingMargin",
-                  child,
-                  "leadingMargin"
-                );
-            [
-              setUpContraint(
-                child,
-                primaryBeforeAnchor,
-                previousLayer,
-                primaryAfterAnchor,
-                "equalTo",
-                betweenConstant,
-                "Constraint"
-              )
-            ];
-          };
-        let secondaryBeforeConstant =
-          direction == "column" ?
-            constraintConstantExpression(
-              layer,
-              "leadingPadding",
-              child,
-              "leadingMargin"
-            ) :
-            constraintConstantExpression(
-              layer,
-              "topPadding",
-              child,
-              "topMargin"
-            );
-        let secondaryAfterConstant =
-          direction == "column" ?
-            constraintConstantExpression(
-              layer,
-              "trailingPadding",
-              child,
-              "trailingMargin"
-            ) :
-            constraintConstantExpression(
-              layer,
-              "bottomPadding",
-              child,
-              "bottomMargin"
-            );
-        let secondaryBeforeConstraint =
-          setUpContraint(
-            child,
-            secondaryBeforeAnchor,
-            layer,
-            secondaryBeforeAnchor,
-            "equalTo",
-            secondaryBeforeConstant,
-            "Constraint"
-          );
-        let secondaryAfterConstraint =
-          switch (secondarySizingRule, childSecondarySizingRule) {
-          | (_, Fixed(_)) => [] /* Width/height constraints are added outside the child loop */
-          | (_, Fill) => [
-              setUpContraint(
-                child,
-                secondaryAfterAnchor,
-                layer,
-                secondaryAfterAnchor,
-                "equalTo",
-                negateNumber(secondaryAfterConstant),
-                "Constraint"
-              )
-            ]
-          | (Fill, FitContent) => [
-              setUpContraint(
-                child,
-                secondaryAfterAnchor,
-                layer,
-                secondaryAfterAnchor,
-                "lessThanOrEqualTo",
-                negateNumber(secondaryAfterConstant),
-                "Constraint"
-              )
-            ]
-          | (_, FitContent) => [
-              setUpContraint(
-                child,
-                secondaryAfterAnchor,
-                layer,
-                secondaryAfterAnchor,
-                "equalTo",
-                negateNumber(secondaryAfterConstant),
-                "Constraint"
-              )
-            ]
-          };
-        /* If the parent's secondary axis is set to "fit content", this ensures
-           the secondary axis dimension is greater than every child's.
-           We apply these in the child loop for easier variable naming (due to current setup). */
-        /*
-           We need these constraints to be low priority. A "FitContent" view needs height >= each
-           of its children. Yet a "Fill" sibling needs to have height unspecified, and
-           a side anchor equal to the side of the "FitContent" view.
-           This layout is ambiguous (I think), despite no warnings at runtime. The "FitContent" view's
-           height constraints seem to take priority over the "Fill" view's height constraints, and the
-           "FitContent" view steals the height of the "Fill" view. We solve this by lowering the priority
-           of the "FitContent" view's height.
-         */
-        let fitContentSecondaryConstraint =
-          switch secondarySizingRule {
-          | FitContent => [
-              setUpLessThanOrEqualToContraint(
-                child,
-                secondaryDimensionAnchor,
-                layer,
-                secondaryDimensionAnchor,
-                negateNumber(
-                  BinaryExpression({
-                    "left": secondaryBeforeConstant,
-                    "operator": "+",
-                    "right": secondaryAfterConstant
-                  })
-                ),
-                "ParentConstraint"
-              )
-            ]
-          | _ => []
-          };
-        firstViewConstraints
-        @ lastViewConstraints
-        @ middleViewConstraints
-        @ [secondaryBeforeConstraint]
-        @ secondaryAfterConstraint
-        @ fitContentSecondaryConstraint;
-      };
-      /* Children with "flex: 1" should all have equal dimensions along the primary axis */
-      let flexChildrenConstraints =
-        switch flexChildren {
-        | [first, ...rest] when List.length(rest) > 0 =>
-          let sameAnchor = primaryDimension ++ "Anchor";
-          let sameAnchorConstraint = (anchor, index, layer) =>
-            setUpContraint(
-              first,
-              anchor,
-              layer,
-              anchor,
-              "equalTo",
-              LiteralExpression(FloatingPoint(0.0)),
-              "SiblingConstraint" ++ string_of_int(index)
-            );
-          rest |> List.mapi(sameAnchorConstraint(sameAnchor));
-        | _ => []
-        };
-      let heightConstraint =
-        switch height {
-        | Some(height) => [
-            setUpDimensionContraint(layer, "heightAnchor", height)
-          ]
-        | None => []
-        };
-      let widthConstraint =
-        switch width {
-        | Some(width) => [setUpDimensionContraint(layer, "widthAnchor", width)]
-        | None => []
-        };
-      let constraints =
-        [heightConstraint, widthConstraint]
-        @ [flexChildrenConstraints]
-        @ (layer.children |> List.mapi(addConstraints));
-      constraints |> List.concat;
-    };
-    root |> Layer.flatmap(constrainAxes) |> List.concat;
+  let negateNumber = expression =>
+    PrefixExpression({"operator": "-", "expression": expression});
+  let constraintConstantExpression =
+      (layer: Types.layer, variable1, parent: Types.layer, variable2) => {
+    let variableName = (layer: Types.layer, variable) =>
+      layer === rootLayer ?
+        variable : Format.layerName(layer.name) ++ Format.upperFirst(variable);
+    BinaryExpression({
+      "left": SwiftIdentifier(variableName(layer, variable1)),
+      "operator": "+",
+      "right": SwiftIdentifier(variableName(parent, variable2))
+    });
   };
-  let constraints = getConstraints(rootLayer);
+  let generateConstraintWithInitialValue = (constr: Constraint.t, node) =>
+    switch constr {
+    | Constraint.Dimension((layer: Types.layer), dimension, _, _) =>
+      layerMemberExpression(
+        layer,
+        [
+          SwiftIdentifier(Constraint.anchorToString(dimension)),
+          FunctionCallExpression({
+            "name": SwiftIdentifier("constraint"),
+            "arguments": [
+              FunctionCallArgument({
+                "name": Some(SwiftIdentifier("equalToConstant")),
+                "value": node
+              })
+            ]
+          })
+        ]
+      )
+    | Constraint.Relation(
+        (layer1: Types.layer),
+        edge1,
+        relation,
+        (layer2: Types.layer),
+        edge2,
+        _,
+        _
+      ) =>
+      layerMemberExpression(
+        layer1,
+        [
+          SwiftIdentifier(Constraint.anchorToString(edge1)),
+          FunctionCallExpression({
+            "name": SwiftIdentifier("constraint"),
+            "arguments": [
+              FunctionCallArgument({
+                "name": Some(SwiftIdentifier(Constraint.cmpToString(relation))),
+                "value":
+                  layerMemberExpression(
+                    layer2,
+                    [SwiftIdentifier(Constraint.anchorToString(edge2))]
+                  )
+              }),
+              FunctionCallArgument({
+                "name": Some(SwiftIdentifier("constant")),
+                "value": node
+              })
+            ]
+          })
+        ]
+      )
+    };
+  let generateConstantFromConstraint = (constr: Constraint.t) =>
+    Constraint.(
+      switch constr {
+      | Relation(child, Top, _, layer, Top, _, PrimaryBefore)
+      | Relation(child, Top, _, layer, Top, _, SecondaryBefore) =>
+        constraintConstantExpression(layer, "topPadding", child, "topMargin")
+      | Relation(child, Leading, _, layer, Leading, _, PrimaryBefore)
+      | Relation(child, Leading, _, layer, Leading, _, SecondaryBefore) =>
+        constraintConstantExpression(
+          layer,
+          "leadingPadding",
+          child,
+          "leadingMargin"
+        )
+      | Relation(child, Bottom, _, layer, Bottom, _, PrimaryAfter)
+      | Relation(child, Bottom, _, layer, Bottom, _, SecondaryAfter) =>
+        negateNumber(
+          constraintConstantExpression(
+            layer,
+            "bottomPadding",
+            child,
+            "bottomMargin"
+          )
+        )
+      | Relation(child, Trailing, _, layer, Trailing, _, SecondaryAfter)
+      | Relation(child, Trailing, _, layer, Trailing, _, PrimaryAfter) =>
+        negateNumber(
+          constraintConstantExpression(
+            layer,
+            "trailingPadding",
+            child,
+            "trailingMargin"
+          )
+        )
+      | Relation(child, Top, _, previousLayer, Bottom, _, PrimaryBetween) =>
+        constraintConstantExpression(
+          previousLayer,
+          "bottomMargin",
+          child,
+          "topMargin"
+        )
+      | Relation(child, Leading, _, previousLayer, Trailing, _, PrimaryBetween) =>
+        constraintConstantExpression(
+          previousLayer,
+          "trailingMargin",
+          child,
+          "leadingMargin"
+        )
+      | Relation(child, Width, Leq, layer, Width, _, FitContentSecondary) =>
+        negateNumber(
+          BinaryExpression({
+            "left":
+              constraintConstantExpression(
+                layer,
+                "leadingPadding",
+                child,
+                "leadingMargin"
+              ),
+            "operator": "+",
+            "right":
+              constraintConstantExpression(
+                layer,
+                "trailingPadding",
+                child,
+                "trailingMargin"
+              )
+          })
+        )
+      | Relation(child, Height, Leq, layer, Height, _, FitContentSecondary) =>
+        negateNumber(
+          BinaryExpression({
+            "left":
+              constraintConstantExpression(
+                layer,
+                "topPadding",
+                child,
+                "topMargin"
+              ),
+            "operator": "+",
+            "right":
+              constraintConstantExpression(
+                layer,
+                "bottomPadding",
+                child,
+                "bottomMargin"
+              )
+          })
+        )
+      | Relation(_, _, _, _, _, _, FlexSibling) =>
+        LiteralExpression(FloatingPoint(0.0))
+      | Dimension((layer: Types.layer), Height, _, _) =>
+        let constant = Layer.getNumberParameter("height", layer);
+        LiteralExpression(FloatingPoint(constant));
+      | Dimension((layer: Types.layer), Width, _, _) =>
+        let constant = Layer.getNumberParameter("width", layer);
+        LiteralExpression(FloatingPoint(constant));
+      | _ => raise(Not_found)
+      }
+    );
+  let formatConstraintVariableName = (constr: Constraint.t) => {
+    open Constraint;
+    let formatAnchorVariableName = (layer: Types.layer, anchor, suffix) => {
+      let anchorString = Constraint.anchorToString(anchor);
+      (
+        layer === rootLayer ?
+          anchorString :
+          Format.layerName(layer.name) ++ Format.upperFirst(anchorString)
+      )
+      ++ suffix;
+    };
+    switch constr {
+    | Relation(
+        (layer1: Types.layer),
+        edge1,
+        _,
+        (layer2: Types.layer),
+        _,
+        _,
+        FlexSibling
+      ) =>
+      Format.layerName(layer1.name)
+      ++ Format.upperFirst(Format.layerName(layer2.name))
+      ++ Format.upperFirst(Constraint.anchorToString(edge1))
+      ++ "SiblingConstraint"
+    | Relation((layer1: Types.layer), edge1, _, _, _, _, FitContentSecondary) =>
+      formatAnchorVariableName(layer1, edge1, "ParentConstraint")
+    | Relation((layer1: Types.layer), edge1, _, _, _, _, _) =>
+      formatAnchorVariableName(layer1, edge1, "Constraint")
+    | Dimension((layer: Types.layer), dimension, _, _) =>
+      formatAnchorVariableName(layer, dimension, "Constraint")
+    };
+  };
+  let constraints = Constraint.getConstraints(rootLayer);
   let setUpConstraintsDoc = (root: Types.layer) => {
     let translatesAutoresizingMask = (layer: Types.layer) =>
       BinaryExpression({
@@ -879,13 +664,18 @@ let generate =
         "operator": "=",
         "right": LiteralExpression(Boolean(false))
       });
+    let getInitialValue = constr =>
+      generateConstraintWithInitialValue(
+        constr,
+        generateConstantFromConstraint(constr)
+      );
     let defineConstraint = def =>
       ConstantDeclaration({
         "modifiers": [],
-        "init": Some(def.initialValue),
+        "init": Some(getInitialValue(def)),
         "pattern":
           IdentifierPattern({
-            "identifier": SwiftIdentifier(def.variableName),
+            "identifier": SwiftIdentifier(formatConstraintVariableName(def)),
             "annotation": None
           })
       });
@@ -893,14 +683,14 @@ let generate =
       BinaryExpression({
         "left":
           MemberExpression([
-            SwiftIdentifier(def.variableName),
+            SwiftIdentifier(formatConstraintVariableName(def)),
             SwiftIdentifier("priority")
           ]),
         "operator": "=",
         "right":
           MemberExpression([
             SwiftDocument.layoutPriorityTypeDoc(swiftOptions.framework),
-            SwiftIdentifier(priorityName(def.priority))
+            SwiftIdentifier(priorityName(Constraint.getPriority(def)))
           ])
       });
     let activateConstraints = () =>
@@ -917,7 +707,9 @@ let generate =
               LiteralExpression(
                 Array(
                   constraints
-                  |> List.map(def => SwiftIdentifier(def.variableName))
+                  |> List.map(def =>
+                       SwiftIdentifier(formatConstraintVariableName(def))
+                     )
                 )
               )
           })
@@ -928,20 +720,20 @@ let generate =
         "left":
           MemberExpression([
             SwiftIdentifier("self"),
-            SwiftIdentifier(def.variableName)
+            SwiftIdentifier(formatConstraintVariableName(def))
           ]),
         "operator": "=",
-        "right": SwiftIdentifier(def.variableName)
+        "right": SwiftIdentifier(formatConstraintVariableName(def))
       });
     let assignConstraintIdentifier = def =>
       BinaryExpression({
         "left":
           MemberExpression([
-            SwiftIdentifier(def.variableName),
+            SwiftIdentifier(formatConstraintVariableName(def)),
             SwiftIdentifier("identifier")
           ]),
         "operator": "=",
-        "right": LiteralExpression(String(def.variableName))
+        "right": LiteralExpression(String(formatConstraintVariableName(def)))
       });
     FunctionDeclaration({
       "name": "setUpConstraints",
@@ -954,7 +746,7 @@ let generate =
           [Empty],
           constraints |> List.map(defineConstraint),
           constraints
-          |> List.filter(def => def.priority == Low)
+          |> List.filter(def => Constraint.getPriority(def) == Low)
           |> List.map(setConstraintPriority),
           [Empty],
           [activateConstraints()],
@@ -1038,7 +830,9 @@ let generate =
               textLayers |> List.map(textStyleVariableDoc),
               rootLayer |> Layer.flatmap(spacingVariableDoc) |> List.concat,
               constraints
-              |> List.map(def => constraintVariableDoc(def.variableName)),
+              |> List.map(def =>
+                   constraintVariableDoc(formatConstraintVariableName(def))
+                 ),
               [setUpViewsDoc(rootLayer)],
               [setUpConstraintsDoc(rootLayer)],
               [updateDoc()]

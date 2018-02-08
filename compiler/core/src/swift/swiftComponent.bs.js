@@ -9,9 +9,11 @@ var Pervasives                     = require("bs-platform/lib/js/pervasives.js")
 var LodashUpperfirst               = require("lodash.upperfirst");
 var Layer$LonaCompilerCore         = require("../core/layer.bs.js");
 var Logic$LonaCompilerCore         = require("../core/logic.bs.js");
+var Caml_builtin_exceptions        = require("bs-platform/lib/js/caml_builtin_exceptions.js");
 var Decode$LonaCompilerCore        = require("../core/decode.bs.js");
 var LonaValue$LonaCompilerCore     = require("../core/lonaValue.bs.js");
 var StringMap$LonaCompilerCore     = require("../containers/stringMap.bs.js");
+var Constraint$LonaCompilerCore    = require("../utils/constraint.bs.js");
 var SwiftLogic$LonaCompilerCore    = require("./swiftLogic.bs.js");
 var SwiftFormat$LonaCompilerCore   = require("./swiftFormat.bs.js");
 var SwiftDocument$LonaCompilerCore = require("./swiftDocument.bs.js");
@@ -558,287 +560,318 @@ function generate(_, swiftOptions, name, colors, textStyles, json) {
                     ])
               }]);
   };
-  var getConstraints = function (root) {
-    var setUpContraint = function (layer, anchor1, parent, anchor2, relation, value, suffix) {
+  var negateNumber = function (expression) {
+    return /* PrefixExpression */Block.__(3, [{
+                operator: "-",
+                expression: expression
+              }]);
+  };
+  var constraintConstantExpression = function (layer, variable1, parent, variable2) {
+    var variableName = function (layer, variable) {
       var match = +(layer === rootLayer);
-      var variableName = (
-        match !== 0 ? anchor1 : SwiftFormat$LonaCompilerCore.layerName(layer[/* name */1]) + LodashUpperfirst(anchor1)
-      ) + suffix;
-      var initialValue = /* MemberExpression */Block.__(1, [/* :: */[
-            /* SwiftIdentifier */Block.__(6, [SwiftFormat$LonaCompilerCore.layerName(layer[/* name */1])]),
-            /* :: */[
-              /* SwiftIdentifier */Block.__(6, [anchor1]),
-              /* :: */[
-                /* FunctionCallExpression */Block.__(16, [{
-                      name: /* SwiftIdentifier */Block.__(6, ["constraint"]),
-                      arguments: /* :: */[
-                        /* FunctionCallArgument */Block.__(15, [{
-                              name: /* Some */[/* SwiftIdentifier */Block.__(6, [relation])],
-                              value: memberOrSelfExpression(parentNameOrSelf(parent), /* :: */[
-                                    /* SwiftIdentifier */Block.__(6, [anchor2]),
-                                    /* [] */0
-                                  ])
-                            }]),
-                        /* :: */[
-                          /* FunctionCallArgument */Block.__(15, [{
-                                name: /* Some */[/* SwiftIdentifier */Block.__(6, ["constant"])],
-                                value: value
-                              }]),
-                          /* [] */0
-                        ]
-                      ]
+      if (match !== 0) {
+        return variable;
+      } else {
+        return SwiftFormat$LonaCompilerCore.layerName(layer[/* name */1]) + LodashUpperfirst(variable);
+      }
+    };
+    return /* BinaryExpression */Block.__(2, [{
+                left: /* SwiftIdentifier */Block.__(6, [variableName(layer, variable1)]),
+                operator: "+",
+                right: /* SwiftIdentifier */Block.__(6, [variableName(parent, variable2)])
+              }]);
+  };
+  var generateConstraintWithInitialValue = function (constr, node) {
+    if (constr.tag) {
+      var statements_000 = /* SwiftIdentifier */Block.__(6, [Constraint$LonaCompilerCore.anchorToString(constr[4])]);
+      var statements = /* :: */[
+        statements_000,
+        /* [] */0
+      ];
+      var statements_000$1 = /* SwiftIdentifier */Block.__(6, [Constraint$LonaCompilerCore.anchorToString(constr[1])]);
+      var statements_001 = /* :: */[
+        /* FunctionCallExpression */Block.__(16, [{
+              name: /* SwiftIdentifier */Block.__(6, ["constraint"]),
+              arguments: /* :: */[
+                /* FunctionCallArgument */Block.__(15, [{
+                      name: /* Some */[/* SwiftIdentifier */Block.__(6, [Constraint$LonaCompilerCore.cmpToString(constr[2])])],
+                      value: memberOrSelfExpression(parentNameOrSelf(constr[3]), statements)
+                    }]),
+                /* :: */[
+                  /* FunctionCallArgument */Block.__(15, [{
+                        name: /* Some */[/* SwiftIdentifier */Block.__(6, ["constant"])],
+                        value: node
+                      }]),
+                  /* [] */0
+                ]
+              ]
+            }]),
+        /* [] */0
+      ];
+      var statements$1 = /* :: */[
+        statements_000$1,
+        statements_001
+      ];
+      return memberOrSelfExpression(parentNameOrSelf(constr[0]), statements$1);
+    } else {
+      var statements_000$2 = /* SwiftIdentifier */Block.__(6, [Constraint$LonaCompilerCore.anchorToString(constr[1])]);
+      var statements_001$1 = /* :: */[
+        /* FunctionCallExpression */Block.__(16, [{
+              name: /* SwiftIdentifier */Block.__(6, ["constraint"]),
+              arguments: /* :: */[
+                /* FunctionCallArgument */Block.__(15, [{
+                      name: /* Some */[/* SwiftIdentifier */Block.__(6, ["equalToConstant"])],
+                      value: node
                     }]),
                 /* [] */0
               ]
-            ]
-          ]]);
-      return /* record */[
-              /* variableName */variableName,
-              /* initialValue */initialValue,
-              /* priority : Required */0
-            ];
-    };
-    var setUpLessThanOrEqualToContraint = function (layer, anchor1, parent, anchor2, value, suffix) {
-      var match = +(layer === rootLayer);
-      var variableName = (
-        match !== 0 ? anchor1 : SwiftFormat$LonaCompilerCore.layerName(layer[/* name */1]) + LodashUpperfirst(anchor1)
-      ) + suffix;
-      var initialValue = /* MemberExpression */Block.__(1, [/* :: */[
-            /* SwiftIdentifier */Block.__(6, [SwiftFormat$LonaCompilerCore.layerName(layer[/* name */1])]),
-            /* :: */[
-              /* SwiftIdentifier */Block.__(6, [anchor1]),
-              /* :: */[
-                /* FunctionCallExpression */Block.__(16, [{
-                      name: /* SwiftIdentifier */Block.__(6, ["constraint"]),
-                      arguments: /* :: */[
-                        /* FunctionCallArgument */Block.__(15, [{
-                              name: /* Some */[/* SwiftIdentifier */Block.__(6, ["lessThanOrEqualTo"])],
-                              value: memberOrSelfExpression(parentNameOrSelf(parent), /* :: */[
-                                    /* SwiftIdentifier */Block.__(6, [anchor2]),
-                                    /* [] */0
-                                  ])
-                            }]),
-                        /* :: */[
-                          /* FunctionCallArgument */Block.__(15, [{
-                                name: /* Some */[/* SwiftIdentifier */Block.__(6, ["constant"])],
-                                value: value
-                              }]),
-                          /* [] */0
-                        ]
-                      ]
-                    }]),
-                /* [] */0
-              ]
-            ]
-          ]]);
-      return /* record */[
-              /* variableName */variableName,
-              /* initialValue */initialValue,
-              /* priority : Low */1
-            ];
-    };
-    var setUpDimensionContraint = function (layer, anchor, constant) {
-      var match = +(layer === rootLayer);
-      var variableName = (
-        match !== 0 ? anchor : SwiftFormat$LonaCompilerCore.layerName(layer[/* name */1]) + LodashUpperfirst(anchor)
-      ) + "Constraint";
-      var initialValue = memberOrSelfExpression(parentNameOrSelf(layer), /* :: */[
-            /* SwiftIdentifier */Block.__(6, [anchor]),
-            /* :: */[
-              /* FunctionCallExpression */Block.__(16, [{
-                    name: /* SwiftIdentifier */Block.__(6, ["constraint"]),
-                    arguments: /* :: */[
-                      /* FunctionCallArgument */Block.__(15, [{
-                            name: /* Some */[/* SwiftIdentifier */Block.__(6, ["equalToConstant"])],
-                            value: /* LiteralExpression */Block.__(0, [/* FloatingPoint */Block.__(2, [constant])])
-                          }]),
-                      /* [] */0
-                    ]
-                  }]),
-              /* [] */0
-            ]
-          ]);
-      return /* record */[
-              /* variableName */variableName,
-              /* initialValue */initialValue,
-              /* priority : Required */0
-            ];
-    };
-    var negateNumber = function (expression) {
-      return /* PrefixExpression */Block.__(3, [{
-                  operator: "-",
-                  expression: expression
-                }]);
-    };
-    var constraintConstantExpression = function (layer, variable1, parent, variable2) {
-      var variableName = function (layer, variable) {
-        var match = +(layer === rootLayer);
-        if (match !== 0) {
-          return variable;
-        } else {
-          return SwiftFormat$LonaCompilerCore.layerName(layer[/* name */1]) + LodashUpperfirst(variable);
-        }
-      };
-      return /* BinaryExpression */Block.__(2, [{
-                  left: /* SwiftIdentifier */Block.__(6, [variableName(layer, variable1)]),
-                  operator: "+",
-                  right: /* SwiftIdentifier */Block.__(6, [variableName(parent, variable2)])
-                }]);
-    };
-    var constrainAxes = function (layer) {
-      var direction = Layer$LonaCompilerCore.getFlexDirection(layer);
-      var match = +(direction === "column");
-      var primaryBeforeAnchor = match !== 0 ? "topAnchor" : "leadingAnchor";
-      var match$1 = +(direction === "column");
-      var primaryAfterAnchor = match$1 !== 0 ? "bottomAnchor" : "trailingAnchor";
-      var match$2 = +(direction === "column");
-      var secondaryBeforeAnchor = match$2 !== 0 ? "leadingAnchor" : "topAnchor";
-      var match$3 = +(direction === "column");
-      var secondaryAfterAnchor = match$3 !== 0 ? "trailingAnchor" : "bottomAnchor";
-      var height = Layer$LonaCompilerCore.getNumberParameterOpt("height", layer);
-      var width = Layer$LonaCompilerCore.getNumberParameterOpt("width", layer);
-      var match$4 = +(direction === "column");
-      var primaryDimension = match$4 !== 0 ? "height" : "width";
-      var match$5 = +(direction === "column");
-      var secondaryDimension = match$5 !== 0 ? "width" : "height";
-      var secondaryDimensionAnchor = secondaryDimension + "Anchor";
-      var sizingRules = Layer$LonaCompilerCore.getSizingRules(Layer$LonaCompilerCore.findParent(rootLayer, layer), layer);
-      var match$6 = +(direction === "column");
-      var primarySizingRule = match$6 !== 0 ? sizingRules[/* height */1] : sizingRules[/* width */0];
-      var match$7 = +(direction === "column");
-      var secondarySizingRule = match$7 !== 0 ? sizingRules[/* width */0] : sizingRules[/* height */1];
-      var flexChildren = List.filter((function (child) {
-                return +(Layer$LonaCompilerCore.getNumberParameter("flex", child) === 1.0);
-              }))(layer[/* children */3]);
-      var addConstraints = function (index, child) {
-        var childSizingRules = Layer$LonaCompilerCore.getSizingRules(/* Some */[layer], child);
-        var match = +(direction === "column");
-        var childSecondarySizingRule = match !== 0 ? childSizingRules[/* width */0] : childSizingRules[/* height */1];
-        var firstViewConstraints;
-        if (index !== 0) {
-          firstViewConstraints = /* [] */0;
-        } else {
-          var match$1 = +(direction === "column");
-          var primaryBeforeConstant = match$1 !== 0 ? constraintConstantExpression(layer, "topPadding", child, "topMargin") : constraintConstantExpression(layer, "leadingPadding", child, "leadingMargin");
-          firstViewConstraints = /* :: */[
-            setUpContraint(child, primaryBeforeAnchor, layer, primaryBeforeAnchor, "equalTo", primaryBeforeConstant, "Constraint"),
-            /* [] */0
-          ];
-        }
-        var lastViewConstraints;
-        if (index === (List.length(layer[/* children */3]) - 1 | 0)) {
-          var match$2 = List.length(flexChildren);
-          var needsPrimaryAfterConstraint = typeof primarySizingRule === "number" ? (
-              primarySizingRule !== 0 || match$2 ? /* true */1 : /* false */0
-            ) : (
-              match$2 ? /* true */1 : /* false */0
-            );
-          var match$3 = +(direction === "column");
-          var primaryAfterConstant = match$3 !== 0 ? constraintConstantExpression(layer, "bottomPadding", child, "bottomMargin") : constraintConstantExpression(layer, "trailingPadding", child, "trailingMargin");
-          lastViewConstraints = needsPrimaryAfterConstraint !== 0 ? /* :: */[
-              setUpContraint(child, primaryAfterAnchor, layer, primaryAfterAnchor, "equalTo", negateNumber(primaryAfterConstant), "Constraint"),
-              /* [] */0
-            ] : /* [] */0;
-        } else {
-          lastViewConstraints = /* [] */0;
-        }
-        var middleViewConstraints;
-        if (index !== 0) {
-          var previousLayer = List.nth(layer[/* children */3], index - 1 | 0);
-          var match$4 = +(direction === "column");
-          var betweenConstant = match$4 !== 0 ? constraintConstantExpression(previousLayer, "bottomMargin", child, "topMargin") : constraintConstantExpression(previousLayer, "trailingMargin", child, "leadingMargin");
-          middleViewConstraints = /* :: */[
-            setUpContraint(child, primaryBeforeAnchor, previousLayer, primaryAfterAnchor, "equalTo", betweenConstant, "Constraint"),
-            /* [] */0
-          ];
-        } else {
-          middleViewConstraints = /* [] */0;
-        }
-        var match$5 = +(direction === "column");
-        var secondaryBeforeConstant = match$5 !== 0 ? constraintConstantExpression(layer, "leadingPadding", child, "leadingMargin") : constraintConstantExpression(layer, "topPadding", child, "topMargin");
-        var match$6 = +(direction === "column");
-        var secondaryAfterConstant = match$6 !== 0 ? constraintConstantExpression(layer, "trailingPadding", child, "trailingMargin") : constraintConstantExpression(layer, "bottomPadding", child, "bottomMargin");
-        var secondaryBeforeConstraint = setUpContraint(child, secondaryBeforeAnchor, layer, secondaryBeforeAnchor, "equalTo", secondaryBeforeConstant, "Constraint");
-        var secondaryAfterConstraint;
-        var exit = 0;
-        if (typeof childSecondarySizingRule === "number") {
-          if (childSecondarySizingRule !== 0) {
-            if (typeof secondarySizingRule === "number" && secondarySizingRule === 0) {
-              secondaryAfterConstraint = /* :: */[
-                setUpContraint(child, secondaryAfterAnchor, layer, secondaryAfterAnchor, "lessThanOrEqualTo", negateNumber(secondaryAfterConstant), "Constraint"),
-                /* [] */0
-              ];
+            }]),
+        /* [] */0
+      ];
+      var statements$2 = /* :: */[
+        statements_000$2,
+        statements_001$1
+      ];
+      return memberOrSelfExpression(parentNameOrSelf(constr[0]), statements$2);
+    }
+  };
+  var generateConstantFromConstraint = function (constr) {
+    if (constr.tag) {
+      var child = constr[0];
+      var exit = 0;
+      switch (constr[1]) {
+        case 0 : 
+            if (constr[2] >= 2) {
+              if (constr[4] !== 0) {
+                exit = 1;
+              } else {
+                var match = constr[6];
+                var layer = constr[3];
+                if (match !== 5) {
+                  if (match !== 6) {
+                    throw Caml_builtin_exceptions.not_found;
+                  } else {
+                    exit = 1;
+                  }
+                } else {
+                  return negateNumber(/* BinaryExpression */Block.__(2, [{
+                                  left: constraintConstantExpression(layer, "leadingPadding", child, "leadingMargin"),
+                                  operator: "+",
+                                  right: constraintConstantExpression(layer, "trailingPadding", child, "trailingMargin")
+                                }]));
+                }
+              }
             } else {
               exit = 1;
             }
-          } else {
-            secondaryAfterConstraint = /* :: */[
-              setUpContraint(child, secondaryAfterAnchor, layer, secondaryAfterAnchor, "equalTo", negateNumber(secondaryAfterConstant), "Constraint"),
-              /* [] */0
-            ];
-          }
+            break;
+        case 1 : 
+            if (constr[2] >= 2) {
+              if (constr[4] !== 1) {
+                exit = 1;
+              } else {
+                var match$1 = constr[6];
+                var layer$1 = constr[3];
+                if (match$1 !== 5) {
+                  if (match$1 !== 6) {
+                    throw Caml_builtin_exceptions.not_found;
+                  } else {
+                    exit = 1;
+                  }
+                } else {
+                  return negateNumber(/* BinaryExpression */Block.__(2, [{
+                                  left: constraintConstantExpression(layer$1, "topPadding", child, "topMargin"),
+                                  operator: "+",
+                                  right: constraintConstantExpression(layer$1, "bottomPadding", child, "bottomMargin")
+                                }]));
+                }
+              }
+            } else {
+              exit = 1;
+            }
+            break;
+        case 2 : 
+            var match$2 = constr[4];
+            var previousLayer = constr[3];
+            if (match$2 !== 2) {
+              if (match$2 !== 3) {
+                exit = 1;
+              } else {
+                var match$3 = constr[6];
+                if (match$3 !== 1) {
+                  if (match$3 !== 6) {
+                    throw Caml_builtin_exceptions.not_found;
+                  } else {
+                    exit = 1;
+                  }
+                } else {
+                  return constraintConstantExpression(previousLayer, "bottomMargin", child, "topMargin");
+                }
+              }
+            } else {
+              switch (constr[6]) {
+                case 0 : 
+                case 3 : 
+                    return constraintConstantExpression(previousLayer, "topPadding", child, "topMargin");
+                case 6 : 
+                    exit = 1;
+                    break;
+                case 1 : 
+                case 2 : 
+                case 4 : 
+                case 5 : 
+                case 7 : 
+                case 8 : 
+                    throw Caml_builtin_exceptions.not_found;
+                
+              }
+            }
+            break;
+        case 3 : 
+            if (constr[4] !== 3) {
+              exit = 1;
+            } else {
+              var exit$1 = 0;
+              switch (constr[6]) {
+                case 2 : 
+                case 4 : 
+                    exit$1 = 2;
+                    break;
+                case 6 : 
+                    exit = 1;
+                    break;
+                case 0 : 
+                case 1 : 
+                case 3 : 
+                case 5 : 
+                case 7 : 
+                case 8 : 
+                    throw Caml_builtin_exceptions.not_found;
+                
+              }
+              if (exit$1 === 2) {
+                return negateNumber(constraintConstantExpression(constr[3], "bottomPadding", child, "bottomMargin"));
+              }
+              
+            }
+            break;
+        case 4 : 
+            var match$4 = constr[4];
+            var previousLayer$1 = constr[3];
+            if (match$4 !== 4) {
+              if (match$4 >= 5) {
+                var match$5 = constr[6];
+                if (match$5 !== 1) {
+                  if (match$5 !== 6) {
+                    throw Caml_builtin_exceptions.not_found;
+                  } else {
+                    exit = 1;
+                  }
+                } else {
+                  return constraintConstantExpression(previousLayer$1, "trailingMargin", child, "leadingMargin");
+                }
+              } else {
+                exit = 1;
+              }
+            } else {
+              switch (constr[6]) {
+                case 0 : 
+                case 3 : 
+                    return constraintConstantExpression(previousLayer$1, "leadingPadding", child, "leadingMargin");
+                case 6 : 
+                    exit = 1;
+                    break;
+                case 1 : 
+                case 2 : 
+                case 4 : 
+                case 5 : 
+                case 7 : 
+                case 8 : 
+                    throw Caml_builtin_exceptions.not_found;
+                
+              }
+            }
+            break;
+        case 5 : 
+            if (constr[4] >= 5) {
+              var exit$2 = 0;
+              switch (constr[6]) {
+                case 2 : 
+                case 4 : 
+                    exit$2 = 2;
+                    break;
+                case 6 : 
+                    exit = 1;
+                    break;
+                case 0 : 
+                case 1 : 
+                case 3 : 
+                case 5 : 
+                case 7 : 
+                case 8 : 
+                    throw Caml_builtin_exceptions.not_found;
+                
+              }
+              if (exit$2 === 2) {
+                return negateNumber(constraintConstantExpression(constr[3], "trailingPadding", child, "trailingMargin"));
+              }
+              
+            } else {
+              exit = 1;
+            }
+            break;
+        
+      }
+      if (exit === 1) {
+        if (constr[6] !== 6) {
+          throw Caml_builtin_exceptions.not_found;
         } else {
-          secondaryAfterConstraint = /* [] */0;
+          return /* LiteralExpression */Block.__(0, [/* FloatingPoint */Block.__(2, [0.0])]);
         }
-        if (exit === 1) {
-          secondaryAfterConstraint = /* :: */[
-            setUpContraint(child, secondaryAfterAnchor, layer, secondaryAfterAnchor, "equalTo", negateNumber(secondaryAfterConstant), "Constraint"),
-            /* [] */0
-          ];
-        }
-        var fitContentSecondaryConstraint = typeof secondarySizingRule === "number" && secondarySizingRule !== 0 ? /* :: */[
-            setUpLessThanOrEqualToContraint(child, secondaryDimensionAnchor, layer, secondaryDimensionAnchor, negateNumber(/* BinaryExpression */Block.__(2, [{
-                          left: secondaryBeforeConstant,
-                          operator: "+",
-                          right: secondaryAfterConstant
-                        }])), "ParentConstraint"),
-            /* [] */0
-          ] : /* [] */0;
-        return Pervasives.$at(firstViewConstraints, Pervasives.$at(lastViewConstraints, Pervasives.$at(middleViewConstraints, Pervasives.$at(/* :: */[
-                                secondaryBeforeConstraint,
-                                /* [] */0
-                              ], Pervasives.$at(secondaryAfterConstraint, fitContentSecondaryConstraint)))));
-      };
-      var flexChildrenConstraints;
-      if (flexChildren) {
-        var rest = flexChildren[1];
-        var first = flexChildren[0];
-        if (List.length(rest) > 0) {
-          var sameAnchor = primaryDimension + "Anchor";
-          flexChildrenConstraints = List.mapi((function (param, param$1) {
-                  var anchor = sameAnchor;
-                  var index = param;
-                  var layer = param$1;
-                  return setUpContraint(first, anchor, layer, anchor, "equalTo", /* LiteralExpression */Block.__(0, [/* FloatingPoint */Block.__(2, [0.0])]), "SiblingConstraint" + Pervasives.string_of_int(index));
-                }), rest);
+      }
+      
+    } else {
+      var match$6 = constr[1];
+      var layer$2 = constr[0];
+      if (match$6 !== 1) {
+        if (match$6 !== 0) {
+          throw Caml_builtin_exceptions.not_found;
         } else {
-          flexChildrenConstraints = /* [] */0;
+          var constant = Layer$LonaCompilerCore.getNumberParameter("width", layer$2);
+          return /* LiteralExpression */Block.__(0, [/* FloatingPoint */Block.__(2, [constant])]);
         }
       } else {
-        flexChildrenConstraints = /* [] */0;
+        var constant$1 = Layer$LonaCompilerCore.getNumberParameter("height", layer$2);
+        return /* LiteralExpression */Block.__(0, [/* FloatingPoint */Block.__(2, [constant$1])]);
       }
-      var heightConstraint = height ? /* :: */[
-          setUpDimensionContraint(layer, "heightAnchor", height[0]),
-          /* [] */0
-        ] : /* [] */0;
-      var widthConstraint = width ? /* :: */[
-          setUpDimensionContraint(layer, "widthAnchor", width[0]),
-          /* [] */0
-        ] : /* [] */0;
-      return List.concat(Pervasives.$at(/* :: */[
-                      heightConstraint,
-                      /* :: */[
-                        widthConstraint,
-                        /* [] */0
-                      ]
-                    ], Pervasives.$at(/* :: */[
-                          flexChildrenConstraints,
-                          /* [] */0
-                        ], List.mapi(addConstraints, layer[/* children */3]))));
-    };
-    return List.concat(Layer$LonaCompilerCore.flatmap(constrainAxes, root));
+    }
   };
-  var constraints = getConstraints(rootLayer);
+  var formatConstraintVariableName = function (constr) {
+    var formatAnchorVariableName = function (layer, anchor, suffix) {
+      var anchorString = Constraint$LonaCompilerCore.anchorToString(anchor);
+      var match = +(layer === rootLayer);
+      return (
+              match !== 0 ? anchorString : SwiftFormat$LonaCompilerCore.layerName(layer[/* name */1]) + LodashUpperfirst(anchorString)
+            ) + suffix;
+    };
+    if (constr.tag) {
+      var match = constr[6];
+      var edge1 = constr[1];
+      var layer1 = constr[0];
+      if (match !== 5) {
+        if (match !== 6) {
+          return formatAnchorVariableName(layer1, edge1, "Constraint");
+        } else {
+          return SwiftFormat$LonaCompilerCore.layerName(layer1[/* name */1]) + (LodashUpperfirst(SwiftFormat$LonaCompilerCore.layerName(constr[3][/* name */1])) + (LodashUpperfirst(Constraint$LonaCompilerCore.anchorToString(edge1)) + "SiblingConstraint"));
+        }
+      } else {
+        return formatAnchorVariableName(layer1, edge1, "ParentConstraint");
+      }
+    } else {
+      return formatAnchorVariableName(constr[0], constr[1], "Constraint");
+    }
+  };
+  var constraints = Constraint$LonaCompilerCore.getConstraints(rootLayer);
   var setUpConstraintsDoc = function (root) {
     var translatesAutoresizingMask = function (layer) {
       return /* BinaryExpression */Block.__(2, [{
@@ -853,9 +886,9 @@ function generate(_, swiftOptions, name, colors, textStyles, json) {
     var defineConstraint = function (def) {
       return /* ConstantDeclaration */Block.__(7, [{
                   modifiers: /* [] */0,
-                  init: /* Some */[def[/* initialValue */1]],
+                  init: /* Some */[generateConstraintWithInitialValue(def, generateConstantFromConstraint(def))],
                   pattern: /* IdentifierPattern */Block.__(0, [{
-                        identifier: /* SwiftIdentifier */Block.__(6, [def[/* variableName */0]]),
+                        identifier: /* SwiftIdentifier */Block.__(6, [formatConstraintVariableName(def)]),
                         annotation: /* None */0
                       }])
                 }]);
@@ -863,7 +896,7 @@ function generate(_, swiftOptions, name, colors, textStyles, json) {
     var setConstraintPriority = function (def) {
       return /* BinaryExpression */Block.__(2, [{
                   left: /* MemberExpression */Block.__(1, [/* :: */[
-                        /* SwiftIdentifier */Block.__(6, [def[/* variableName */0]]),
+                        /* SwiftIdentifier */Block.__(6, [formatConstraintVariableName(def)]),
                         /* :: */[
                           /* SwiftIdentifier */Block.__(6, ["priority"]),
                           /* [] */0
@@ -873,7 +906,7 @@ function generate(_, swiftOptions, name, colors, textStyles, json) {
                   right: /* MemberExpression */Block.__(1, [/* :: */[
                         SwiftDocument$LonaCompilerCore.layoutPriorityTypeDoc(swiftOptions[/* framework */0]),
                         /* :: */[
-                          /* SwiftIdentifier */Block.__(6, [priorityName(def[/* priority */2])]),
+                          /* SwiftIdentifier */Block.__(6, [priorityName(Constraint$LonaCompilerCore.getPriority(def))]),
                           /* [] */0
                         ]
                       ]])
@@ -892,7 +925,7 @@ function generate(_, swiftOptions, name, colors, textStyles, json) {
                     /* FunctionCallArgument */Block.__(15, [{
                           name: /* None */0,
                           value: /* LiteralExpression */Block.__(0, [/* Array */Block.__(5, [List.map((function (def) {
-                                          return /* SwiftIdentifier */Block.__(6, [def[/* variableName */0]]);
+                                          return /* SwiftIdentifier */Block.__(6, [formatConstraintVariableName(def)]);
                                         }), constraints)])])
                         }]),
                     /* [] */0
@@ -904,25 +937,25 @@ function generate(_, swiftOptions, name, colors, textStyles, json) {
                   left: /* MemberExpression */Block.__(1, [/* :: */[
                         /* SwiftIdentifier */Block.__(6, ["self"]),
                         /* :: */[
-                          /* SwiftIdentifier */Block.__(6, [def[/* variableName */0]]),
+                          /* SwiftIdentifier */Block.__(6, [formatConstraintVariableName(def)]),
                           /* [] */0
                         ]
                       ]]),
                   operator: "=",
-                  right: /* SwiftIdentifier */Block.__(6, [def[/* variableName */0]])
+                  right: /* SwiftIdentifier */Block.__(6, [formatConstraintVariableName(def)])
                 }]);
     };
     var assignConstraintIdentifier = function (def) {
       return /* BinaryExpression */Block.__(2, [{
                   left: /* MemberExpression */Block.__(1, [/* :: */[
-                        /* SwiftIdentifier */Block.__(6, [def[/* variableName */0]]),
+                        /* SwiftIdentifier */Block.__(6, [formatConstraintVariableName(def)]),
                         /* :: */[
                           /* SwiftIdentifier */Block.__(6, ["identifier"]),
                           /* [] */0
                         ]
                       ]]),
                   operator: "=",
-                  right: /* LiteralExpression */Block.__(0, [/* String */Block.__(3, [def[/* variableName */0]])])
+                  right: /* LiteralExpression */Block.__(0, [/* String */Block.__(3, [formatConstraintVariableName(def)])])
                 }]);
     };
     return /* FunctionDeclaration */Block.__(10, [{
@@ -944,7 +977,7 @@ function generate(_, swiftOptions, name, colors, textStyles, json) {
                           List.map(defineConstraint, constraints),
                           /* :: */[
                             List.map(setConstraintPriority, List.filter((function (def) {
-                                          return +(def[/* priority */2] === /* Low */1);
+                                          return +(Constraint$LonaCompilerCore.getPriority(def) === /* Low */1);
                                         }))(constraints)),
                             /* :: */[
                               /* :: */[
@@ -1092,7 +1125,7 @@ function generate(_, swiftOptions, name, colors, textStyles, json) {
                                                       List.concat(Layer$LonaCompilerCore.flatmap(spacingVariableDoc, rootLayer)),
                                                       /* :: */[
                                                         List.map((function (def) {
-                                                                var variableName = def[/* variableName */0];
+                                                                var variableName = formatConstraintVariableName(def);
                                                                 return /* VariableDeclaration */Block.__(8, [{
                                                                             modifiers: /* :: */[
                                                                               /* AccessLevelModifier */Block.__(0, [/* PrivateModifier */0]),
