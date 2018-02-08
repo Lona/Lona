@@ -9,6 +9,7 @@ var Pervasives                     = require("bs-platform/lib/js/pervasives.js")
 var LodashUpperfirst               = require("lodash.upperfirst");
 var Layer$LonaCompilerCore         = require("../core/layer.bs.js");
 var Logic$LonaCompilerCore         = require("../core/logic.bs.js");
+var Caml_builtin_exceptions        = require("bs-platform/lib/js/caml_builtin_exceptions.js");
 var Decode$LonaCompilerCore        = require("../core/decode.bs.js");
 var LonaValue$LonaCompilerCore     = require("../core/lonaValue.bs.js");
 var StringMap$LonaCompilerCore     = require("../containers/stringMap.bs.js");
@@ -559,6 +560,27 @@ function generate(_, swiftOptions, name, colors, textStyles, json) {
                     ])
               }]);
   };
+  var negateNumber = function (expression) {
+    return /* PrefixExpression */Block.__(3, [{
+                operator: "-",
+                expression: expression
+              }]);
+  };
+  var constraintConstantExpression = function (layer, variable1, parent, variable2) {
+    var variableName = function (layer, variable) {
+      var match = +(layer === rootLayer);
+      if (match !== 0) {
+        return variable;
+      } else {
+        return SwiftFormat$LonaCompilerCore.layerName(layer[/* name */1]) + LodashUpperfirst(variable);
+      }
+    };
+    return /* BinaryExpression */Block.__(2, [{
+                left: /* SwiftIdentifier */Block.__(6, [variableName(layer, variable1)]),
+                operator: "+",
+                right: /* SwiftIdentifier */Block.__(6, [variableName(parent, variable2)])
+              }]);
+  };
   var generateConstraintWithInitialValue = function (constr, node) {
     if (constr.tag) {
       var statements_000 = /* SwiftIdentifier */Block.__(6, [Constraint$LonaCompilerCore.anchorToString(constr[4])]);
@@ -613,8 +635,216 @@ function generate(_, swiftOptions, name, colors, textStyles, json) {
       return memberOrSelfExpression(parentNameOrSelf(constr[0]), statements$2);
     }
   };
-  var generateConstraintWithConstant = function (constr, constant) {
-    return generateConstraintWithInitialValue(constr, /* LiteralExpression */Block.__(0, [/* FloatingPoint */Block.__(2, [constant])]));
+  var generateConstantFromConstraint = function (constr) {
+    if (constr.tag) {
+      var child = constr[0];
+      var exit = 0;
+      switch (constr[1]) {
+        case 0 : 
+            if (constr[2] >= 2) {
+              if (constr[4] !== 0) {
+                exit = 1;
+              } else {
+                var match = constr[6];
+                var layer = constr[3];
+                if (match !== 5) {
+                  if (match !== 6) {
+                    throw Caml_builtin_exceptions.not_found;
+                  } else {
+                    exit = 1;
+                  }
+                } else {
+                  return negateNumber(/* BinaryExpression */Block.__(2, [{
+                                  left: constraintConstantExpression(layer, "leadingPadding", child, "leadingMargin"),
+                                  operator: "+",
+                                  right: constraintConstantExpression(layer, "trailingPadding", child, "trailingMargin")
+                                }]));
+                }
+              }
+            } else {
+              exit = 1;
+            }
+            break;
+        case 1 : 
+            if (constr[2] >= 2) {
+              if (constr[4] !== 1) {
+                exit = 1;
+              } else {
+                var match$1 = constr[6];
+                var layer$1 = constr[3];
+                if (match$1 !== 5) {
+                  if (match$1 !== 6) {
+                    throw Caml_builtin_exceptions.not_found;
+                  } else {
+                    exit = 1;
+                  }
+                } else {
+                  return negateNumber(/* BinaryExpression */Block.__(2, [{
+                                  left: constraintConstantExpression(layer$1, "topPadding", child, "topMargin"),
+                                  operator: "+",
+                                  right: constraintConstantExpression(layer$1, "bottomPadding", child, "bottomMargin")
+                                }]));
+                }
+              }
+            } else {
+              exit = 1;
+            }
+            break;
+        case 2 : 
+            var match$2 = constr[4];
+            var previousLayer = constr[3];
+            if (match$2 !== 2) {
+              if (match$2 !== 3) {
+                exit = 1;
+              } else {
+                var match$3 = constr[6];
+                if (match$3 !== 1) {
+                  if (match$3 !== 6) {
+                    throw Caml_builtin_exceptions.not_found;
+                  } else {
+                    exit = 1;
+                  }
+                } else {
+                  return constraintConstantExpression(previousLayer, "bottomMargin", child, "topMargin");
+                }
+              }
+            } else {
+              switch (constr[6]) {
+                case 0 : 
+                case 3 : 
+                    return constraintConstantExpression(previousLayer, "topPadding", child, "topMargin");
+                case 6 : 
+                    exit = 1;
+                    break;
+                case 1 : 
+                case 2 : 
+                case 4 : 
+                case 5 : 
+                case 7 : 
+                case 8 : 
+                    throw Caml_builtin_exceptions.not_found;
+                
+              }
+            }
+            break;
+        case 3 : 
+            if (constr[4] !== 3) {
+              exit = 1;
+            } else {
+              var exit$1 = 0;
+              switch (constr[6]) {
+                case 2 : 
+                case 4 : 
+                    exit$1 = 2;
+                    break;
+                case 6 : 
+                    exit = 1;
+                    break;
+                case 0 : 
+                case 1 : 
+                case 3 : 
+                case 5 : 
+                case 7 : 
+                case 8 : 
+                    throw Caml_builtin_exceptions.not_found;
+                
+              }
+              if (exit$1 === 2) {
+                return negateNumber(constraintConstantExpression(constr[3], "bottomPadding", child, "bottomMargin"));
+              }
+              
+            }
+            break;
+        case 4 : 
+            var match$4 = constr[4];
+            var previousLayer$1 = constr[3];
+            if (match$4 !== 4) {
+              if (match$4 >= 5) {
+                var match$5 = constr[6];
+                if (match$5 !== 1) {
+                  if (match$5 !== 6) {
+                    throw Caml_builtin_exceptions.not_found;
+                  } else {
+                    exit = 1;
+                  }
+                } else {
+                  return constraintConstantExpression(previousLayer$1, "trailingMargin", child, "leadingMargin");
+                }
+              } else {
+                exit = 1;
+              }
+            } else {
+              switch (constr[6]) {
+                case 0 : 
+                case 3 : 
+                    return constraintConstantExpression(previousLayer$1, "leadingPadding", child, "leadingMargin");
+                case 6 : 
+                    exit = 1;
+                    break;
+                case 1 : 
+                case 2 : 
+                case 4 : 
+                case 5 : 
+                case 7 : 
+                case 8 : 
+                    throw Caml_builtin_exceptions.not_found;
+                
+              }
+            }
+            break;
+        case 5 : 
+            if (constr[4] >= 5) {
+              var exit$2 = 0;
+              switch (constr[6]) {
+                case 2 : 
+                case 4 : 
+                    exit$2 = 2;
+                    break;
+                case 6 : 
+                    exit = 1;
+                    break;
+                case 0 : 
+                case 1 : 
+                case 3 : 
+                case 5 : 
+                case 7 : 
+                case 8 : 
+                    throw Caml_builtin_exceptions.not_found;
+                
+              }
+              if (exit$2 === 2) {
+                return negateNumber(constraintConstantExpression(constr[3], "trailingPadding", child, "trailingMargin"));
+              }
+              
+            } else {
+              exit = 1;
+            }
+            break;
+        
+      }
+      if (exit === 1) {
+        if (constr[6] !== 6) {
+          throw Caml_builtin_exceptions.not_found;
+        } else {
+          return /* LiteralExpression */Block.__(0, [/* FloatingPoint */Block.__(2, [0.0])]);
+        }
+      }
+      
+    } else {
+      var match$6 = constr[1];
+      var layer$2 = constr[0];
+      if (match$6 !== 1) {
+        if (match$6 !== 0) {
+          throw Caml_builtin_exceptions.not_found;
+        } else {
+          var constant = Layer$LonaCompilerCore.getNumberParameter("width", layer$2);
+          return /* LiteralExpression */Block.__(0, [/* FloatingPoint */Block.__(2, [constant])]);
+        }
+      } else {
+        var constant$1 = Layer$LonaCompilerCore.getNumberParameter("height", layer$2);
+        return /* LiteralExpression */Block.__(0, [/* FloatingPoint */Block.__(2, [constant$1])]);
+      }
+    }
   };
   var formatConstraintVariableName = function (constr) {
     var formatAnchorVariableName = function (layer, anchor, suffix) {
@@ -642,7 +872,7 @@ function generate(_, swiftOptions, name, colors, textStyles, json) {
     }
   };
   var getConstraints = function (root) {
-    var setUpContraint = function (layer, anchor1, parent, anchor2, relation, value, role) {
+    var setUpContraint = function (layer, anchor1, parent, anchor2, relation, _, role) {
       var constr = /* Relation */Block.__(1, [
           layer,
           anchor1,
@@ -653,14 +883,14 @@ function generate(_, swiftOptions, name, colors, textStyles, json) {
           role
         ]);
       var variableName = formatConstraintVariableName(constr);
-      var initialValue = generateConstraintWithInitialValue(constr, value);
+      var initialValue = generateConstraintWithInitialValue(constr, generateConstantFromConstraint(constr));
       return /* record */[
               /* variableName */variableName,
               /* initialValue */initialValue,
               /* priority */Constraint$LonaCompilerCore.getPriority(constr)
             ];
     };
-    var setUpLessThanOrEqualToContraint = function (layer, anchor1, parent, anchor2, value, role) {
+    var setUpLessThanOrEqualToContraint = function (layer, anchor1, parent, anchor2, _, role) {
       var constr = /* Relation */Block.__(1, [
           layer,
           anchor1,
@@ -671,14 +901,14 @@ function generate(_, swiftOptions, name, colors, textStyles, json) {
           role
         ]);
       var variableName = formatConstraintVariableName(constr);
-      var initialValue = generateConstraintWithInitialValue(constr, value);
+      var initialValue = generateConstraintWithInitialValue(constr, generateConstantFromConstraint(constr));
       return /* record */[
               /* variableName */variableName,
               /* initialValue */initialValue,
               /* priority */Constraint$LonaCompilerCore.getPriority(constr)
             ];
     };
-    var setUpDimensionContraint = function (layer, anchor, constant, role) {
+    var setUpDimensionContraint = function (layer, anchor, _, role) {
       var constr = /* Dimension */Block.__(0, [
           layer,
           anchor,
@@ -686,33 +916,12 @@ function generate(_, swiftOptions, name, colors, textStyles, json) {
           role
         ]);
       var variableName = formatConstraintVariableName(constr);
-      var initialValue = generateConstraintWithConstant(constr, constant);
+      var initialValue = generateConstraintWithInitialValue(constr, generateConstantFromConstraint(constr));
       return /* record */[
               /* variableName */variableName,
               /* initialValue */initialValue,
               /* priority */Constraint$LonaCompilerCore.getPriority(constr)
             ];
-    };
-    var negateNumber = function (expression) {
-      return /* PrefixExpression */Block.__(3, [{
-                  operator: "-",
-                  expression: expression
-                }]);
-    };
-    var constraintConstantExpression = function (layer, variable1, parent, variable2) {
-      var variableName = function (layer, variable) {
-        var match = +(layer === rootLayer);
-        if (match !== 0) {
-          return variable;
-        } else {
-          return SwiftFormat$LonaCompilerCore.layerName(layer[/* name */1]) + LodashUpperfirst(variable);
-        }
-      };
-      return /* BinaryExpression */Block.__(2, [{
-                  left: /* SwiftIdentifier */Block.__(6, [variableName(layer, variable1)]),
-                  operator: "+",
-                  right: /* SwiftIdentifier */Block.__(6, [variableName(parent, variable2)])
-                }]);
     };
     var constrainAxes = function (layer) {
       var direction = Layer$LonaCompilerCore.getFlexDirection(layer);

@@ -456,6 +456,19 @@ let generate =
         )
     });
   };
+  let negateNumber = expression =>
+    PrefixExpression({"operator": "-", "expression": expression});
+  let constraintConstantExpression =
+      (layer: Types.layer, variable1, parent: Types.layer, variable2) => {
+    let variableName = (layer: Types.layer, variable) =>
+      layer === rootLayer ?
+        variable : Format.layerName(layer.name) ++ Format.upperFirst(variable);
+    BinaryExpression({
+      "left": SwiftIdentifier(variableName(layer, variable1)),
+      "operator": "+",
+      "right": SwiftIdentifier(variableName(parent, variable2))
+    });
+  };
   let generateConstraintWithInitialValue = (constr: Constraint.t, node) =>
     switch constr {
     | Constraint.Dimension((layer: Types.layer), dimension, _, _) =>
@@ -507,10 +520,104 @@ let generate =
         ]
       )
     };
-  let generateConstraintWithConstant = (constr: Constraint.t, constant) =>
-    generateConstraintWithInitialValue(
-      constr,
-      LiteralExpression(FloatingPoint(constant))
+  let generateConstantFromConstraint = (constr: Constraint.t) =>
+    Constraint.(
+      switch constr {
+      | Relation(child, Top, _, layer, Top, _, PrimaryBefore)
+      | Relation(child, Top, _, layer, Top, _, SecondaryBefore) =>
+        constraintConstantExpression(layer, "topPadding", child, "topMargin")
+      | Relation(child, Leading, _, layer, Leading, _, PrimaryBefore)
+      | Relation(child, Leading, _, layer, Leading, _, SecondaryBefore) =>
+        constraintConstantExpression(
+          layer,
+          "leadingPadding",
+          child,
+          "leadingMargin"
+        )
+      | Relation(child, Bottom, _, layer, Bottom, _, PrimaryAfter)
+      | Relation(child, Bottom, _, layer, Bottom, _, SecondaryAfter) =>
+        negateNumber(
+          constraintConstantExpression(
+            layer,
+            "bottomPadding",
+            child,
+            "bottomMargin"
+          )
+        )
+      | Relation(child, Trailing, _, layer, Trailing, _, SecondaryAfter)
+      | Relation(child, Trailing, _, layer, Trailing, _, PrimaryAfter) =>
+        negateNumber(
+          constraintConstantExpression(
+            layer,
+            "trailingPadding",
+            child,
+            "trailingMargin"
+          )
+        )
+      | Relation(child, Top, _, previousLayer, Bottom, _, PrimaryBetween) =>
+        constraintConstantExpression(
+          previousLayer,
+          "bottomMargin",
+          child,
+          "topMargin"
+        )
+      | Relation(child, Leading, _, previousLayer, Trailing, _, PrimaryBetween) =>
+        constraintConstantExpression(
+          previousLayer,
+          "trailingMargin",
+          child,
+          "leadingMargin"
+        )
+      | Relation(child, Width, Leq, layer, Width, _, FitContentSecondary) =>
+        negateNumber(
+          BinaryExpression({
+            "left":
+              constraintConstantExpression(
+                layer,
+                "leadingPadding",
+                child,
+                "leadingMargin"
+              ),
+            "operator": "+",
+            "right":
+              constraintConstantExpression(
+                layer,
+                "trailingPadding",
+                child,
+                "trailingMargin"
+              )
+          })
+        )
+      | Relation(child, Height, Leq, layer, Height, _, FitContentSecondary) =>
+        negateNumber(
+          BinaryExpression({
+            "left":
+              constraintConstantExpression(
+                layer,
+                "topPadding",
+                child,
+                "topMargin"
+              ),
+            "operator": "+",
+            "right":
+              constraintConstantExpression(
+                layer,
+                "bottomPadding",
+                child,
+                "bottomMargin"
+              )
+          })
+        )
+      | Relation(_, _, _, _, _, _, FlexSibling) =>
+        LiteralExpression(FloatingPoint(0.0))
+      | Dimension((layer: Types.layer), Height, _, _) =>
+        let constant = Layer.getNumberParameter("height", layer);
+        LiteralExpression(FloatingPoint(constant));
+      | Dimension((layer: Types.layer), Width, _, _) =>
+        let constant = Layer.getNumberParameter("width", layer);
+        LiteralExpression(FloatingPoint(constant));
+      | _ => raise(Not_found)
+      }
     );
   let formatConstraintVariableName = (constr: Constraint.t) => {
     open Constraint;
@@ -541,7 +648,7 @@ let generate =
       formatAnchorVariableName(layer1, edge1, "ParentConstraint")
     | Relation((layer1: Types.layer), edge1, _, _, _, _, _) =>
       formatAnchorVariableName(layer1, edge1, "Constraint")
-    | Constraint.Dimension((layer: Types.layer), dimension, _, _) =>
+    | Dimension((layer: Types.layer), dimension, _, _) =>
       formatAnchorVariableName(layer, dimension, "Constraint")
     };
   };
@@ -567,7 +674,11 @@ let generate =
           role
         );
       let variableName = formatConstraintVariableName(constr);
-      let initialValue = generateConstraintWithInitialValue(constr, value);
+      let initialValue =
+        generateConstraintWithInitialValue(
+          constr,
+          generateConstantFromConstraint(constr)
+        );
       {variableName, initialValue, priority: Constraint.getPriority(constr)};
     };
     let setUpLessThanOrEqualToContraint =
@@ -590,29 +701,23 @@ let generate =
           role
         );
       let variableName = formatConstraintVariableName(constr);
-      let initialValue = generateConstraintWithInitialValue(constr, value);
+      let initialValue =
+        generateConstraintWithInitialValue(
+          constr,
+          generateConstantFromConstraint(constr)
+        );
       {variableName, initialValue, priority: Constraint.getPriority(constr)};
     };
     let setUpDimensionContraint = (layer: Types.layer, anchor, constant, role) => {
       let constr =
         Constraint.Dimension(layer, anchor, Constraint.Required, role);
       let variableName = formatConstraintVariableName(constr);
-      let initialValue = generateConstraintWithConstant(constr, constant);
+      let initialValue =
+        generateConstraintWithInitialValue(
+          constr,
+          generateConstantFromConstraint(constr)
+        );
       {variableName, initialValue, priority: Constraint.getPriority(constr)};
-    };
-    let negateNumber = expression =>
-      PrefixExpression({"operator": "-", "expression": expression});
-    let constraintConstantExpression =
-        (layer: Types.layer, variable1, parent: Types.layer, variable2) => {
-      let variableName = (layer: Types.layer, variable) =>
-        layer === rootLayer ?
-          variable :
-          Format.layerName(layer.name) ++ Format.upperFirst(variable);
-      BinaryExpression({
-        "left": SwiftIdentifier(variableName(layer, variable1)),
-        "operator": "+",
-        "right": SwiftIdentifier(variableName(parent, variable2))
-      });
     };
     let constrainAxes = (layer: Types.layer) => {
       open Constraint;
