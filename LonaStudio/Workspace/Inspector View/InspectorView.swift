@@ -14,7 +14,7 @@ class InspectorView: NSStackView {
 
     typealias Properties = [Property: CSData]
 
-    enum Property {
+    enum Property: String {
         // Layout
         case direction
         case horizontalAlignment
@@ -770,8 +770,25 @@ class InspectorView: NSStackView {
 
         fields.forEach({ (control, property) in
             var control = control
-            control.onChangeData = { data in self.handlePropertyChange(for: property, value: data) }
+
+            // Set default value before setting onChangeData in order to avoid calling twice
             if let value = properties[property] { control.data = value }
+
+            // Setup onChangeData
+            control.onChangeData = { data in
+
+                let oldValue = self.value[property]
+
+                // Register Undo
+                UndoManager.shared.run(name: property.rawValue, execute: {[unowned self] in
+                    control.data = data
+                    self.handlePropertyChange(for: property, value: data)
+                }, undo: { [unowned self] in
+                    let value = oldValue ?? properties[property]!
+                    control.data = value
+                    self.handlePropertyChange(for: property, value: value)
+                })
+            }
         })
 
         let updateList: [Property] = [

@@ -114,6 +114,7 @@
 		76AB58E053220594F098A3C5 /* Pods_LonaStudioTests.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = EDA2F7370DB15639E08B399A /* Pods_LonaStudioTests.framework */; };
 		783A74CD337C61784E60C467 /* Pods_LonaStudio.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 7949560983378CFD6EC6FFD5 /* Pods_LonaStudio.framework */; };
 		BA0D85E41FD5AC2000D817C3 /* NSViewHoverExtensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = BA0D85E31FD5AC2000D817C3 /* NSViewHoverExtensions.swift */; };
+		BA153BCA202B2D1F002A83A5 /* UndoManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = BA153BC9202B2D1F002A83A5 /* UndoManager.swift */; };
 		BA3001761FDB97260003E7D2 /* ShadowStylePickerButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = BA3001751FDB97260003E7D2 /* ShadowStylePickerButton.swift */; };
 		BA3001781FDB97430003E7D2 /* ShadowStylePickerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = BA3001771FDB97430003E7D2 /* ShadowStylePickerView.swift */; };
 		BA4854981FEF6CC800AB7923 /* PickerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = BA4854971FEF6CC800AB7923 /* PickerView.swift */; };
@@ -250,6 +251,7 @@
 		918CC9C994C57DEF6340692F /* Pods-LonaStudioTests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-LonaStudioTests.release.xcconfig"; path = "Pods/Target Support Files/Pods-LonaStudioTests/Pods-LonaStudioTests.release.xcconfig"; sourceTree = "<group>"; };
 		ABA583EA99B83FD52B085CE5 /* Pods-LonaStudio.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-LonaStudio.release.xcconfig"; path = "Pods/Target Support Files/Pods-LonaStudio/Pods-LonaStudio.release.xcconfig"; sourceTree = "<group>"; };
 		BA0D85E31FD5AC2000D817C3 /* NSViewHoverExtensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NSViewHoverExtensions.swift; sourceTree = "<group>"; };
+		BA153BC9202B2D1F002A83A5 /* UndoManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UndoManager.swift; sourceTree = "<group>"; };
 		BA3001751FDB97260003E7D2 /* ShadowStylePickerButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ShadowStylePickerButton.swift; sourceTree = "<group>"; };
 		BA3001771FDB97430003E7D2 /* ShadowStylePickerView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ShadowStylePickerView.swift; sourceTree = "<group>"; };
 		BA4854971FEF6CC800AB7923 /* PickerView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PickerView.swift; sourceTree = "<group>"; };
@@ -527,6 +529,7 @@
 		6B0AEFB61EBF74D800F35BBF /* LonaStudio */ = {
 			isa = PBXGroup;
 			children = (
+				BA153BC8202B2CBA002A83A5 /* Undo */,
 				6B0AEFB71EBF74D800F35BBF /* AppDelegate.swift */,
 				30CE64481F008F43008D01AD /* Assets */,
 				6B0AEFBD1EBF74D800F35BBF /* Assets.xcassets */,
@@ -548,6 +551,14 @@
 				3030311F1F34E7200078086F /* Workspace */,
 			);
 			path = LonaStudio;
+			sourceTree = "<group>";
+		};
+		BA153BC8202B2CBA002A83A5 /* Undo */ = {
+			isa = PBXGroup;
+			children = (
+				BA153BC9202B2D1F002A83A5 /* UndoManager.swift */,
+			);
+			path = Undo;
 			sourceTree = "<group>";
 		};
 		BA4854961FEF6CA700AB7923 /* Picker */ = {
@@ -861,6 +872,7 @@
 				306DA4F11F33EA74002772DC /* CSTextView.swift in Sources */,
 				BACCB4271FEFA05B00B58E32 /* TextStylePickerView.swift in Sources */,
 				300302741EDC7FA90085E140 /* CSStatementView.swift in Sources */,
+				BA153BCA202B2D1F002A83A5 /* UndoManager.swift in Sources */,
 				3005A5381FA00FE000ABC5C2 /* CustomPopupField.swift in Sources */,
 				30EFC9581EF369DC0087711D /* ImageField.swift in Sources */,
 				30CE47811ED73FC800BBF716 /* TextField.swift in Sources */,
