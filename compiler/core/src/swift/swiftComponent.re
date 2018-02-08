@@ -460,43 +460,93 @@ let generate =
         )
     });
   };
-  let getConstraints = (root: Types.layer) => {
-    let setUpContraint =
-        (
-          layer: Types.layer,
-          anchor1,
-          parent: Types.layer,
-          anchor2,
-          relation,
-          value,
-          suffix
-        ) => {
-      let variableName =
-        (
-          layer === rootLayer ?
-            anchor1 :
-            Format.layerName(layer.name) ++ Format.upperFirst(anchor1)
-        )
-        ++ suffix;
-      let initialValue =
-        MemberExpression([
-          SwiftIdentifier(layer.name |> Format.layerName),
-          SwiftIdentifier(anchor1),
+  let generateConstraintWithInitialValue = (constr: Constraint.t, node) =>
+    switch constr {
+    | Constraint.Dimension((layer: Types.layer), dimension, constant) =>
+      layerMemberExpression(
+        layer,
+        [
+          SwiftIdentifier(Constraint.anchorToString(dimension)),
           FunctionCallExpression({
             "name": SwiftIdentifier("constraint"),
             "arguments": [
               FunctionCallArgument({
-                "name": Some(SwiftIdentifier(relation)),
-                "value":
-                  layerMemberExpression(parent, [SwiftIdentifier(anchor2)])
-              }),
-              FunctionCallArgument({
-                "name": Some(SwiftIdentifier("constant")),
-                "value": value
+                "name": Some(SwiftIdentifier("equalToConstant")),
+                "value": node
               })
             ]
           })
-        ]);
+        ]
+      )
+    | Constraint.Edge(
+        (layer1: Types.layer),
+        edge1,
+        relation,
+        (layer2: Types.layer),
+        edge2,
+        constant
+      ) =>
+      layerMemberExpression(
+        layer1,
+        [
+          SwiftIdentifier(Constraint.anchorToString(edge1)),
+          FunctionCallExpression({
+            "name": SwiftIdentifier("constraint"),
+            "arguments": [
+              FunctionCallArgument({
+                "name":
+                  Some(SwiftIdentifier(Constraint.relationToString(relation))),
+                "value":
+                  layerMemberExpression(
+                    layer2,
+                    [SwiftIdentifier(Constraint.anchorToString(edge2))]
+                  )
+              }),
+              FunctionCallArgument({
+                "name": Some(SwiftIdentifier("constant")),
+                "value": node
+              })
+            ]
+          })
+        ]
+      )
+    };
+  let generateConstraintWithConstant = (constr: Constraint.t, constant) =>
+    generateConstraintWithInitialValue(
+      constr,
+      LiteralExpression(FloatingPoint(constant))
+    );
+  let formatAnchorVariableName = (layer: Types.layer, anchor, suffix) => {
+    let anchorString = Constraint.anchorToString(anchor);
+    (
+      layer === rootLayer ?
+        anchorString :
+        Format.layerName(layer.name) ++ Format.upperFirst(anchorString)
+    )
+    ++ suffix;
+  };
+  let getConstraints = (root: Types.layer) => {
+    let setUpContraint =
+        (
+          layer: Types.layer,
+          anchor1: Constraint.anchor,
+          parent: Types.layer,
+          anchor2: Constraint.anchor,
+          relation,
+          value,
+          suffix
+        ) => {
+      let variableName = formatAnchorVariableName(layer, anchor1, suffix);
+      let constr =
+        Constraint.Edge(
+          layer,
+          anchor1,
+          Constraint.relationFromString(relation),
+          parent,
+          anchor2,
+          0.0
+        );
+      let initialValue = generateConstraintWithInitialValue(constr, value);
       {variableName, initialValue, priority: Required};
     };
     let setUpLessThanOrEqualToContraint =
@@ -508,57 +558,16 @@ let generate =
           value,
           suffix
         ) => {
-      let variableName =
-        (
-          layer === rootLayer ?
-            anchor1 :
-            Format.layerName(layer.name) ++ Format.upperFirst(anchor1)
-        )
-        ++ suffix;
-      let initialValue =
-        MemberExpression([
-          SwiftIdentifier(layer.name |> Format.layerName),
-          SwiftIdentifier(anchor1),
-          FunctionCallExpression({
-            "name": SwiftIdentifier("constraint"),
-            "arguments": [
-              FunctionCallArgument({
-                "name": Some(SwiftIdentifier("lessThanOrEqualTo")),
-                "value":
-                  layerMemberExpression(parent, [SwiftIdentifier(anchor2)])
-              }),
-              FunctionCallArgument({
-                "name": Some(SwiftIdentifier("constant")),
-                "value": value
-              })
-            ]
-          })
-        ]);
+      let variableName = formatAnchorVariableName(layer, anchor1, suffix);
+      let constr =
+        Constraint.Edge(layer, anchor1, Constraint.Leq, parent, anchor2, 0.0);
+      let initialValue = generateConstraintWithInitialValue(constr, value);
       {variableName, initialValue, priority: Low};
     };
     let setUpDimensionContraint = (layer: Types.layer, anchor, constant) => {
-      let variableName =
-        (
-          layer === rootLayer ?
-            anchor : Format.layerName(layer.name) ++ Format.upperFirst(anchor)
-        )
-        ++ "Constraint";
-      let initialValue =
-        layerMemberExpression(
-          layer,
-          [
-            SwiftIdentifier(anchor),
-            FunctionCallExpression({
-              "name": SwiftIdentifier("constraint"),
-              "arguments": [
-                FunctionCallArgument({
-                  "name": Some(SwiftIdentifier("equalToConstant")),
-                  "value": LiteralExpression(FloatingPoint(constant))
-                })
-              ]
-            })
-          ]
-        );
+      let variableName = formatAnchorVariableName(layer, anchor, "Constraint");
+      let constr = Constraint.Dimension(layer, anchor, constant);
+      let initialValue = generateConstraintWithConstant(constr, constant);
       {variableName, initialValue, priority: Required};
     };
     let negateNumber = expression =>
@@ -576,28 +585,23 @@ let generate =
       });
     };
     let constrainAxes = (layer: Types.layer) => {
+      open Constraint;
       let direction = Layer.getFlexDirection(layer);
-      let primaryBeforeAnchor =
-        direction == "column" ? "topAnchor" : "leadingAnchor";
-      let primaryAfterAnchor =
-        direction == "column" ? "bottomAnchor" : "trailingAnchor";
-      let secondaryBeforeAnchor =
-        direction == "column" ? "leadingAnchor" : "topAnchor";
-      let secondaryAfterAnchor =
-        direction == "column" ? "trailingAnchor" : "bottomAnchor";
+      let isColumn = direction == "column";
+      let primaryBeforeAnchor = isColumn ? Top : Leading;
+      let primaryAfterAnchor = isColumn ? Bottom : Trailing;
+      let secondaryBeforeAnchor = isColumn ? Leading : Top;
+      let secondaryAfterAnchor = isColumn ? Trailing : Bottom;
+      let primaryDimensionAnchor = isColumn ? Height : Width;
+      let secondaryDimensionAnchor = isColumn ? Width : Height;
       let height = Layer.getNumberParameterOpt("height", layer);
       let width = Layer.getNumberParameterOpt("width", layer);
-      let primaryDimension = direction == "column" ? "height" : "width";
-      let secondaryDimension = direction == "column" ? "width" : "height";
-      let secondaryDimensionAnchor = secondaryDimension ++ "Anchor";
-      /* let primaryDimensionValue = direction == "column" ? height : width; */
-      /* let secondaryDimensionValue = direction == "column" ? width : height; */
       let sizingRules =
         layer |> Layer.getSizingRules(Layer.findParent(rootLayer, layer));
       let primarySizingRule =
-        direction == "column" ? sizingRules.height : sizingRules.width;
+        isColumn ? sizingRules.height : sizingRules.width;
       let secondarySizingRule =
-        direction == "column" ? sizingRules.width : sizingRules.height;
+        isColumn ? sizingRules.width : sizingRules.height;
       let flexChildren =
         layer.children
         |> List.filter((child: Types.layer) =>
@@ -606,15 +610,14 @@ let generate =
       let addConstraints = (index, child: Types.layer) => {
         let childSizingRules = child |> Layer.getSizingRules(Some(layer));
         /* let childPrimarySizingRule =
-           direction == "column" ? childSizingRules.height : childSizingRules.width; */
+           isColumn ? childSizingRules.height : childSizingRules.width; */
         let childSecondarySizingRule =
-          direction == "column" ?
-            childSizingRules.width : childSizingRules.height;
+          isColumn ? childSizingRules.width : childSizingRules.height;
         let firstViewConstraints =
           switch index {
           | 0 =>
             let primaryBeforeConstant =
-              direction == "column" ?
+              isColumn ?
                 constraintConstantExpression(
                   layer,
                   "topPadding",
@@ -656,7 +659,7 @@ let generate =
                Layer.getNumberParameterOpt(primaryDimension, layer) == None
                || List.length(flexChildren) > 0; */
             let primaryAfterConstant =
-              direction == "column" ?
+              isColumn ?
                 constraintConstantExpression(
                   layer,
                   "bottomPadding",
@@ -690,7 +693,7 @@ let generate =
           | _ =>
             let previousLayer = List.nth(layer.children, index - 1);
             let betweenConstant =
-              direction == "column" ?
+              isColumn ?
                 constraintConstantExpression(
                   previousLayer,
                   "bottomMargin",
@@ -716,7 +719,7 @@ let generate =
             ];
           };
         let secondaryBeforeConstant =
-          direction == "column" ?
+          isColumn ?
             constraintConstantExpression(
               layer,
               "leadingPadding",
@@ -730,7 +733,7 @@ let generate =
               "topMargin"
             );
         let secondaryAfterConstant =
-          direction == "column" ?
+          isColumn ?
             constraintConstantExpression(
               layer,
               "trailingPadding",
@@ -833,7 +836,7 @@ let generate =
       let flexChildrenConstraints =
         switch flexChildren {
         | [first, ...rest] when List.length(rest) > 0 =>
-          let sameAnchor = primaryDimension ++ "Anchor";
+          let sameAnchor = primaryDimensionAnchor;
           let sameAnchorConstraint = (anchor, index, layer) =>
             setUpContraint(
               first,
@@ -849,14 +852,12 @@ let generate =
         };
       let heightConstraint =
         switch height {
-        | Some(height) => [
-            setUpDimensionContraint(layer, "heightAnchor", height)
-          ]
+        | Some(height) => [setUpDimensionContraint(layer, Height, height)]
         | None => []
         };
       let widthConstraint =
         switch width {
-        | Some(width) => [setUpDimensionContraint(layer, "widthAnchor", width)]
+        | Some(width) => [setUpDimensionContraint(layer, Width, width)]
         | None => []
         };
       let constraints =
