@@ -27,6 +27,7 @@
 		3040EFC81F2FAC9C007C5368 /* Operators.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3040EFC71F2FAC9C007C5368 /* Operators.swift */; };
 		3043A0CC1F46653B00EF31EF /* Label.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3043A0CB1F46653B00EF31EF /* Label.swift */; };
 		304478BC1F32923700FD06E0 /* NSPointExtensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 304478BB1F32923700FD06E0 /* NSPointExtensions.swift */; };
+		30453E3E202E0CDE00BA5BFB /* ColorBrowser.swift in Sources */ = {isa = PBXBuildFile; fileRef = 30453E3D202E0CDE00BA5BFB /* ColorBrowser.swift */; };
 		30516B491F43C46200940B3B /* SequenceExtensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 30516B481F43C46200940B3B /* SequenceExtensions.swift */; };
 		305589431EC4E4D600420BBD /* RenderSurface.swift in Sources */ = {isa = PBXBuildFile; fileRef = 305589421EC4E4D600420BBD /* RenderSurface.swift */; };
 		3056275C1FBA07C800026796 /* DictionaryEditor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3056275B1FBA07C800026796 /* DictionaryEditor.swift */; };
@@ -155,6 +156,7 @@
 		3040EFC71F2FAC9C007C5368 /* Operators.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Operators.swift; sourceTree = "<group>"; };
 		3043A0CB1F46653B00EF31EF /* Label.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Label.swift; sourceTree = "<group>"; };
 		304478BB1F32923700FD06E0 /* NSPointExtensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NSPointExtensions.swift; sourceTree = "<group>"; };
+		30453E3D202E0CDE00BA5BFB /* ColorBrowser.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ColorBrowser.swift; sourceTree = "<group>"; };
 		30516B481F43C46200940B3B /* SequenceExtensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SequenceExtensions.swift; sourceTree = "<group>"; };
 		305589421EC4E4D600420BBD /* RenderSurface.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RenderSurface.swift; sourceTree = "<group>"; };
 		3056275B1FBA07C800026796 /* DictionaryEditor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DictionaryEditor.swift; sourceTree = "<group>"; };
@@ -321,6 +323,7 @@
 		3030311F1F34E7200078086F /* Workspace */ = {
 			isa = PBXGroup;
 			children = (
+				30453E3D202E0CDE00BA5BFB /* ColorBrowser.swift */,
 				305A19551F463A2800EA033C /* DisclosureContentRow.swift */,
 				30F7C9511ED4AE23009D27DF /* InspectorView.swift */,
 				307718E91F355D31003A597B /* LayerInspectorView.swift */,
@@ -852,6 +855,7 @@
 				BACCB42B1FEFA26E00B58E32 /* ShadowStyleRowView.swift in Sources */,
 				306D2FF01F847DCB00907B4E /* NSImageExtensions.swift in Sources */,
 				30DE88091FBA18A600D62A50 /* NSPopoverExtensions.swift in Sources */,
+				30453E3E202E0CDE00BA5BFB /* ColorBrowser.swift in Sources */,
 				30EFC9561EF1AA0B0087711D /* StringExtensions.swift in Sources */,
 				309777741F2BB75B004C8975 /* CSUserPreferences.swift in Sources */,
 				3094DFE31F68D19C00E5C7F0 /* CALayerExtensions.swift in Sources */,
