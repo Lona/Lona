@@ -25,7 +25,6 @@ class NumberField: NSTextField, NSTextFieldDelegate, NSControlTextEditingDelegat
         set {
             stringValue = String(newValue)
             onChange(value)
-            onChangeData(CSData.Number(value))
         }
     }
 

@@ -778,6 +778,9 @@ class InspectorView: NSStackView {
             control.onChangeData = { data in
 
                 let oldValue = self.value[property]
+                guard oldValue != data else {
+                    return
+                }
 
                 // Register Undo
                 UndoManager.shared.run(name: property.rawValue, execute: {[unowned self] in

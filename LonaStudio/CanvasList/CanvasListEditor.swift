@@ -111,12 +111,20 @@ class CanvasListEditor: NSOutlineView, NSOutlineViewDataSource, NSOutlineViewDel
         let canvas = item as! Canvas
         let cellView = NSTableCellView()
 
+        // Old value
+        let oldCanvas = canvas.copy() as! Canvas
+        let index = self.canvasList.index(where: { $0 === canvas })!
+        let undoFunc = {
+            self.canvasList[index] = oldCanvas
+            self.onChange(self.canvasList)
+        }
         switch tableColumn!.identifier.rawValue {
         case "Visible":
             let field = CSValueField(value: CSValue(type: CSType.bool, data: CSData.Bool(canvas.visible)))
             field.onChangeData = { value in
-                canvas.visible = value.boolValue
-                self.onChange(self.canvasList)
+                self.changedData(execute: {
+                    canvas.visible = value.boolValue
+                }, undo: undoFunc)
             }
             return field.view
         case "Name":
@@ -126,8 +134,9 @@ class CanvasListEditor: NSOutlineView, NSOutlineViewDataSource, NSOutlineViewDel
             field.value = canvas.name
 
             field.onChange = { value in
-                canvas.name = value
-                self.onChange(self.canvasList)
+                self.changedData(execute: {
+                    canvas.name = value
+                }, undo: undoFunc)
             }
 
             cellView.textField = field
@@ -142,8 +151,9 @@ class CanvasListEditor: NSOutlineView, NSOutlineViewDataSource, NSOutlineViewDel
             cellView.addSubview(field)
 
             field.onChange = { value in
-                canvas.width = value
-                self.onChange(self.canvasList)
+                self.changedData(execute: {
+                    canvas.width = value
+                }, undo: undoFunc)
             }
 
             return cellView
@@ -158,8 +168,9 @@ class CanvasListEditor: NSOutlineView, NSOutlineViewDataSource, NSOutlineViewDel
             cellView.addSubview(field)
 
             field.onChange = { value in
-                canvas.height = value
-                self.onChange(self.canvasList)
+                self.changedData(execute: {
+                    canvas.height = value
+                }, undo: undoFunc)
             }
 
             return cellView
@@ -168,18 +179,19 @@ class CanvasListEditor: NSOutlineView, NSOutlineViewDataSource, NSOutlineViewDel
             field.isBordered = false
 
             field.onChange = { value in
-                canvas.heightMode = value
-                self.onChange(self.canvasList)
+                self.changedData(execute: {
+                    canvas.heightMode = value
+                }, undo: undoFunc)
             }
 
             return field
         case "Scale":
             let field = PopupField(frame: NSRect.zero, values: ["1x", "2x"], initialValue: String(format: "%.0fx", canvas.exportScale))
             field.isBordered = false
-
             field.onChange = { value in
-                canvas.exportScale = value == "2x" ? 2 : 1
-                self.onChange(self.canvasList)
+                self.changedData(execute: {
+                    canvas.exportScale = value == "2x" ? 2 : 1
+                }, undo: undoFunc)
             }
 
             return field
@@ -187,17 +199,20 @@ class CanvasListEditor: NSOutlineView, NSOutlineViewDataSource, NSOutlineViewDel
             let colorValue = CSValue(type: CSColorType, data: CSData.String(canvas.backgroundColor))
             let field = CSValueField(value: colorValue)
             field.onChangeData = { value in
-                canvas.backgroundColor = value.stringValue
-                self.onChange(self.canvasList)
+                self.changedData(execute: {
+                    canvas.backgroundColor = value.stringValue
+                }, undo: undoFunc)
             }
+
             return field.view
         case "Parameters":
             guard let component = component else { break }
 
             let field = CSValueField(value: CSValue(type: component.parametersType(), data: canvas.parameters))
             field.onChangeData = { value in
-                canvas.parameters = value
-                self.onChange(self.canvasList)
+                self.changedData(execute: {
+                    canvas.parameters = value
+                }, undo: undoFunc)
             }
             return field.view
         default:
@@ -205,6 +220,13 @@ class CanvasListEditor: NSOutlineView, NSOutlineViewDataSource, NSOutlineViewDel
         }
 
         return cellView
+    }
+
+    private func changedData(execute: @escaping () -> Void, undo: @escaping () -> Void) {
+        UndoManager.shared.run(name: "Changed", execute: {
+            execute()
+            self.onChange(self.canvasList)
+        }, undo: undo)
     }
 
     var selectedItem: Canvas? {

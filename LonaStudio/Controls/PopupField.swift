@@ -14,8 +14,6 @@ class PopupField: NSPopUpButton, CSControl {
         get { return valueFor(title: titleOfSelectedItem ?? "") ?? "" }
         set {
             selectItem(withTitle: titleFor(value: newValue) ?? "")
-            onChange(value)
-            onChangeData(data)
         }
     }
 
