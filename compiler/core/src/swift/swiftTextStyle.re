@@ -29,73 +29,76 @@ let render =
     | "900" => "black"
     | _ => "regular";
   let argumentsDoc = (textStyle: TextStyle.t) =>
-    [
-      textStyle.fontFamily
-      |> unwrapOptional(value =>
-           FunctionCallArgument({
-             "name": Some(SwiftIdentifier("family")),
-             "value": LiteralExpression(String(value))
+    {
+      let lookup = f => TextStyle.lookup(textStyles.styles, textStyle, f);
+      [
+        lookup(style => style.fontFamily)
+        |> unwrapOptional(value =>
+             FunctionCallArgument({
+               "name": Some(SwiftIdentifier("family")),
+               "value": LiteralExpression(String(value))
+             })
+           ),
+        lookup(style => style.fontName)
+        |> unwrapOptional(value =>
+             FunctionCallArgument({
+               "name": Some(SwiftIdentifier("name")),
+               "value": LiteralExpression(String(value))
+             })
+           ),
+        lookup(style => style.fontWeight)
+        |> unwrapOptional(value =>
+             FunctionCallArgument({
+               "name": Some(SwiftIdentifier("weight")),
+               "value":
+                 MemberExpression([
+                   SwiftIdentifier(
+                     SwiftDocument.fontTypeName(options.framework)
+                   ),
+                   SwiftIdentifier("Weight"),
+                   SwiftIdentifier(convertFontWeight(value))
+                 ])
+             })
+           ),
+        lookup(style => style.fontSize)
+        |> unwrapOptional(value =>
+             FunctionCallArgument({
+               "name": Some(SwiftIdentifier("size")),
+               "value": LiteralExpression(FloatingPoint(value))
+             })
+           ),
+        lookup(style => style.lineHeight)
+        |> unwrapOptional(value =>
+             FunctionCallArgument({
+               "name": Some(SwiftIdentifier("lineHeight")),
+               "value": LiteralExpression(FloatingPoint(value))
+             })
+           ),
+        lookup(style => style.letterSpacing)
+        |> unwrapOptional(value =>
+             FunctionCallArgument({
+               "name": Some(SwiftIdentifier("kerning")),
+               "value": LiteralExpression(FloatingPoint(value))
+             })
+           ),
+        lookup(style => style.color)
+        |> unwrapOptional(value => {
+             let value =
+               switch (Color.find(colors, value)) {
+               | Some(color) =>
+                 MemberExpression([
+                   SwiftIdentifier("Colors"),
+                   SwiftIdentifier(color.id)
+                 ])
+               | None => LiteralExpression(Color(value))
+               };
+             FunctionCallArgument({
+               "name": Some(SwiftIdentifier("color")),
+               "value": value
+             });
            })
-         ),
-      textStyle.fontName
-      |> unwrapOptional(value =>
-           FunctionCallArgument({
-             "name": Some(SwiftIdentifier("name")),
-             "value": LiteralExpression(String(value))
-           })
-         ),
-      textStyle.fontWeight
-      |> unwrapOptional(value =>
-           FunctionCallArgument({
-             "name": Some(SwiftIdentifier("weight")),
-             "value":
-               MemberExpression([
-                 SwiftIdentifier(
-                   SwiftDocument.fontTypeName(options.framework)
-                 ),
-                 SwiftIdentifier("Weight"),
-                 SwiftIdentifier(convertFontWeight(value))
-               ])
-           })
-         ),
-      textStyle.fontSize
-      |> unwrapOptional(value =>
-           FunctionCallArgument({
-             "name": Some(SwiftIdentifier("size")),
-             "value": LiteralExpression(FloatingPoint(value))
-           })
-         ),
-      textStyle.lineHeight
-      |> unwrapOptional(value =>
-           FunctionCallArgument({
-             "name": Some(SwiftIdentifier("lineHeight")),
-             "value": LiteralExpression(FloatingPoint(value))
-           })
-         ),
-      textStyle.letterSpacing
-      |> unwrapOptional(value =>
-           FunctionCallArgument({
-             "name": Some(SwiftIdentifier("kerning")),
-             "value": LiteralExpression(FloatingPoint(value))
-           })
-         ),
-      textStyle.color
-      |> unwrapOptional(value => {
-           let value =
-             switch (Color.find(colors, value)) {
-             | Some(color) =>
-               MemberExpression([
-                 SwiftIdentifier("Colors"),
-                 SwiftIdentifier(color.id)
-               ])
-             | None => LiteralExpression(Color(value))
-             };
-           FunctionCallArgument({
-             "name": Some(SwiftIdentifier("color")),
-             "value": value
-           });
-         })
-    ]
+      ];
+    }
     |> List.concat;
   let textStyleConstantDoc = (textStyle: TextStyle.t) =>
     ConstantDeclaration({

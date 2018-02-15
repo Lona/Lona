@@ -46,20 +46,27 @@ function render(options, colors, textStyles) {
     }
   };
   var argumentsDoc = function (textStyle) {
+    var lookup = function (f) {
+      return TextStyle$LonaCompilerCore.lookup(textStyles[/* styles */0], textStyle, f);
+    };
     return List.concat(/* :: */[
                 unwrapOptional((function (value) {
                         return /* FunctionCallArgument */Block.__(15, [{
                                     name: /* Some */[/* SwiftIdentifier */Block.__(6, ["family"])],
                                     value: /* LiteralExpression */Block.__(0, [/* String */Block.__(3, [value])])
                                   }]);
-                      }), textStyle[/* fontFamily */3]),
+                      }), lookup((function (style) {
+                            return style[/* fontFamily */3];
+                          }))),
                 /* :: */[
                   unwrapOptional((function (value) {
                           return /* FunctionCallArgument */Block.__(15, [{
                                       name: /* Some */[/* SwiftIdentifier */Block.__(6, ["name"])],
                                       value: /* LiteralExpression */Block.__(0, [/* String */Block.__(3, [value])])
                                     }]);
-                        }), textStyle[/* fontName */2]),
+                        }), lookup((function (style) {
+                              return style[/* fontName */2];
+                            }))),
                   /* :: */[
                     unwrapOptional((function (value) {
                             return /* FunctionCallArgument */Block.__(15, [{
@@ -75,28 +82,36 @@ function render(options, colors, textStyles) {
                                               ]
                                             ]])
                                       }]);
-                          }), textStyle[/* fontWeight */4]),
+                          }), lookup((function (style) {
+                                return style[/* fontWeight */4];
+                              }))),
                     /* :: */[
                       unwrapOptional((function (value) {
                               return /* FunctionCallArgument */Block.__(15, [{
                                           name: /* Some */[/* SwiftIdentifier */Block.__(6, ["size"])],
                                           value: /* LiteralExpression */Block.__(0, [/* FloatingPoint */Block.__(2, [value])])
                                         }]);
-                            }), textStyle[/* fontSize */5]),
+                            }), lookup((function (style) {
+                                  return style[/* fontSize */5];
+                                }))),
                       /* :: */[
                         unwrapOptional((function (value) {
                                 return /* FunctionCallArgument */Block.__(15, [{
                                             name: /* Some */[/* SwiftIdentifier */Block.__(6, ["lineHeight"])],
                                             value: /* LiteralExpression */Block.__(0, [/* FloatingPoint */Block.__(2, [value])])
                                           }]);
-                              }), textStyle[/* lineHeight */6]),
+                              }), lookup((function (style) {
+                                    return style[/* lineHeight */6];
+                                  }))),
                         /* :: */[
                           unwrapOptional((function (value) {
                                   return /* FunctionCallArgument */Block.__(15, [{
                                               name: /* Some */[/* SwiftIdentifier */Block.__(6, ["kerning"])],
                                               value: /* LiteralExpression */Block.__(0, [/* FloatingPoint */Block.__(2, [value])])
                                             }]);
-                                }), textStyle[/* letterSpacing */7]),
+                                }), lookup((function (style) {
+                                      return style[/* letterSpacing */7];
+                                    }))),
                           /* :: */[
                             unwrapOptional((function (value) {
                                     var match = Color$LonaCompilerCore.find(colors, value);
@@ -111,7 +126,9 @@ function render(options, colors, textStyles) {
                                                 name: /* Some */[/* SwiftIdentifier */Block.__(6, ["color"])],
                                                 value: value$1
                                               }]);
-                                  }), textStyle[/* color */8]),
+                                  }), lookup((function (style) {
+                                        return style[/* color */8];
+                                      }))),
                             /* [] */0
                           ]
                         ]
