@@ -21,9 +21,9 @@ protocol LayerListDelegate: class {
     func layerList(_ layerList: LayerList, do action: LayerListAction)
 }
 
-final class LayerList: NSOutlineView {
+final class LayerList: NSOutlineView, NSTextFieldDelegate {
 
-    struct Constants {
+    fileprivate struct Constants {
         static let CheckBoxTag = 20
     }
 
@@ -31,21 +31,21 @@ final class LayerList: NSOutlineView {
     weak var layerDelegate: LayerListDelegate?
     fileprivate var shouldRenderOnSelectionChange = true
     fileprivate var previousRow = -1
-    var dataRoot: CSLayer {
+    fileprivate var dataRoot: CSLayer {
         return self.layerDelegate!.dataRootForLayerList()
     }
 
     var onChange: () -> Void = {}
 
-    var selectedLayer: CSLayer? {
+    fileprivate var selectedLayer: CSLayer? {
         return item(atRow: selectedRow) as! CSLayer?
     }
 
-    var selectedLayerOrRoot: CSLayer {
+    fileprivate var selectedLayerOrRoot: CSLayer {
         return selectedLayer ?? (item(atRow: 0) as! CSLayer)
     }
 
-    func componentName(for url: URL) -> String {
+    fileprivate func componentName(for url: URL) -> String {
         return url.deletingPathExtension().lastPathComponent
     }
 
@@ -61,6 +61,8 @@ final class LayerList: NSOutlineView {
     required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
+
+    // MARK: - Public
 
     func createComponentLayer(from url: URL) -> CSComponentLayer {
         let file = CSComponent(url: url)!
@@ -81,166 +83,6 @@ final class LayerList: NSOutlineView {
         return newLayer
     }
 
-    func add(layer newLayer: CSLayer, to targetLayer: CSLayer) {
-        let targetRow = row(forItem: targetLayer)
-
-        // Root layer
-        if targetRow == 0 {
-            targetLayer.appendChild(newLayer)
-        } else {
-            let parentLayer = parent(forItem: targetLayer) as! CSLayer
-            let index = childIndex(forItem: targetLayer)
-            parentLayer.insertChild(newLayer, at: index + 1)
-        }
-    }
-
-    func replace(layer oldLayer: CSLayer, with newLayer: CSLayer) {
-        // TODO Should we be able to replace the root?
-        if row(forItem: oldLayer) == 0 { return }
-
-        let parent = self.parent(forItem: oldLayer) as! CSLayer
-        parent.children = parent.children.map({ $0 === oldLayer ? newLayer : $0 })
-
-        onChange()
-    }
-
-    @discardableResult func duplicate(layer: CSLayer) -> CSLayer {
-        let copy = layer.copy() as! CSLayer
-
-        if copy is CSComponentLayer {
-            copy.name += " copy"
-        }
-
-        add(layer: copy, to: layer)
-
-        onChange()
-
-        return copy
-    }
-
-    @objc func duplicateAction(menuItem: NSMenuItem) {
-        let layer = menuItem.representedObject as! CSLayer
-        let copy = duplicate(layer: layer)
-
-        select(item: copy)
-    }
-
-    @objc func openComponentAction(menuItem: NSMenuItem) {
-        let layer = menuItem.representedObject as! CSComponentLayer
-        let url = URL(string: layer.url!)!
-
-        let documentController = NSDocumentController.shared
-
-        documentController.openDocument(withContentsOf: url, display: true) { (_, documentWasAlreadyOpen, error) in
-            if error != nil {
-                Swift.print("An error occurred")
-            } else {
-                if documentWasAlreadyOpen {
-                    Swift.print("documentWasAlreadyOpen: true")
-                } else {
-                    Swift.print("documentWasAlreadyOpen: false")
-                }
-            }
-        }
-    }
-
-    func requestSaveFileURL() -> URL? {
-        let dialog = NSSavePanel()
-
-        dialog.title                   = "Save .component file"
-        dialog.showsResizeIndicator    = true
-        dialog.showsHiddenFiles        = false
-        dialog.canCreateDirectories    = true
-        dialog.allowedFileTypes        = ["component"]
-
-        if dialog.runModal() == NSApplication.ModalResponse.OK {
-            return dialog.url
-        } else {
-            // User clicked on "Cancel"
-            return nil
-        }
-    }
-
-    @objc func extractComponentAction(menuItem: NSMenuItem) {
-        let layer = menuItem.representedObject as! CSLayer
-
-        guard let url = requestSaveFileURL() else { return }
-
-        let documentController = NSDocumentController.shared
-
-        let document = Document()
-
-        document.data = CSComponent(name: layer.name, canvas: component?.canvas ?? [], rootLayer: layer, parameters: [], cases: [CSCase.defaultCase], logic: [], config: component?.config ?? CSData.Object([:]), metadata: component?.metadata ?? CSData.Object([:]))
-
-        Swift.print("Writing to", url)
-
-        do {
-            try document.write(to: url, ofType: ".component")
-        } catch {
-            return
-        }
-
-        documentController.openDocument(withContentsOf: url, display: true, completionHandler: { (_, _, _) in
-
-            let componentLayer = self.createComponentLayer(from: url)
-            self.replace(layer: layer, with: componentLayer)
-
-            self.onChange()
-        })
-    }
-
-    @objc func forkComponentAction(menuItem: NSMenuItem) {
-        let layer = menuItem.representedObject as! CSComponentLayer
-
-        guard let url = requestSaveFileURL() else { return }
-
-        let documentController = NSDocumentController.shared
-
-        let existingURL = URL(string: layer.url!)!
-        let existingFile = CSComponent(url: existingURL)!
-
-        let document = Document()
-        document.data = existingFile
-
-        do {
-            try document.write(to: url, ofType: ".component")
-        } catch {
-            return
-        }
-
-        documentController.openDocument(withContentsOf: url, display: true, completionHandler: { (document, _, _) in
-            layer.component = (document as! Document).file
-            layer.url = url.absoluteString
-            layer.name = self.componentName(for: url)
-            self.onChange()
-        })
-    }
-
-    @objc func extractLayersAction(menuItem: NSMenuItem) {
-        let layer = menuItem.representedObject as! CSComponentLayer
-
-        replace(layer: layer, with: layer.component.rootLayer)
-    }
-
-    func buildMenu(for layer: CSLayer) -> NSMenu {
-        let menu = NSMenu(title: "Test")
-
-        menu.addItem(withTitle: "Duplicate", action: #selector(duplicateAction(menuItem:)), keyEquivalent: "")
-        menu.addItem(NSMenuItem.separator())
-        menu.addItem(withTitle: "New Component from Layer", action: #selector(extractComponentAction(menuItem:)), keyEquivalent: "")
-
-        if layer is CSComponentLayer {
-            menu.addItem(NSMenuItem.separator())
-            menu.addItem(withTitle: "Open Component", action: #selector(openComponentAction(menuItem:)), keyEquivalent: "")
-            menu.addItem(withTitle: "Fork Component", action: #selector(forkComponentAction(menuItem:)), keyEquivalent: "")
-            menu.addItem(withTitle: "Extract Layers", action: #selector(extractLayersAction(menuItem:)), keyEquivalent: "")
-        }
-
-        menu.items.forEach({ $0.representedObject = layer })
-
-        return menu
-    }
-
     override func menu(for event: NSEvent) -> NSMenu? {
         let point = convert(event.locationInWindow, from: nil)
         let index = row(at: point)
@@ -251,7 +93,7 @@ final class LayerList: NSOutlineView {
         return buildMenu(for: layer)
     }
 
-    func renderLayerList(fullRender: Bool = false) {
+    func render(fullRender: Bool = false) {
         let selection = selectedRow
 
         // Editing during a reload can cause a crash
@@ -271,6 +113,8 @@ final class LayerList: NSOutlineView {
         }
     }
 }
+
+// MARK: - Private
 
 extension LayerList {
 
@@ -311,7 +155,175 @@ extension LayerList {
     @objc fileprivate func doubleClick(sender: AnyObject) {
         editColumn(clickedColumn, row: clickedRow, with: nil, select: true)
     }
+
+    fileprivate func buildMenu(for layer: CSLayer) -> NSMenu {
+        let menu = NSMenu(title: "Test")
+
+        menu.addItem(withTitle: "Duplicate", action: #selector(duplicateAction(menuItem:)), keyEquivalent: "")
+        menu.addItem(NSMenuItem.separator())
+        menu.addItem(withTitle: "New Component from Layer", action: #selector(extractComponentAction(menuItem:)), keyEquivalent: "")
+
+        if layer is CSComponentLayer {
+            menu.addItem(NSMenuItem.separator())
+            menu.addItem(withTitle: "Open Component", action: #selector(openComponentAction(menuItem:)), keyEquivalent: "")
+            menu.addItem(withTitle: "Fork Component", action: #selector(forkComponentAction(menuItem:)), keyEquivalent: "")
+            menu.addItem(withTitle: "Extract Layers", action: #selector(extractLayersAction(menuItem:)), keyEquivalent: "")
+        }
+
+        menu.items.forEach({ $0.representedObject = layer })
+
+        return menu
+    }
+
+    fileprivate func add(layer newLayer: CSLayer, to targetLayer: CSLayer) {
+        let targetRow = row(forItem: targetLayer)
+
+        // Root layer
+        if targetRow == 0 {
+            targetLayer.appendChild(newLayer)
+        } else {
+            let parentLayer = parent(forItem: targetLayer) as! CSLayer
+            let index = childIndex(forItem: targetLayer)
+            parentLayer.insertChild(newLayer, at: index + 1)
+        }
+    }
+
+    fileprivate func replace(layer oldLayer: CSLayer, with newLayer: CSLayer) {
+        // TODO Should we be able to replace the root?
+        if row(forItem: oldLayer) == 0 { return }
+
+        let parent = self.parent(forItem: oldLayer) as! CSLayer
+        parent.children = parent.children.map({ $0 === oldLayer ? newLayer : $0 })
+
+        onChange()
+    }
+
+    @discardableResult
+    fileprivate func duplicate(layer: CSLayer) -> CSLayer {
+        let copy = layer.copy() as! CSLayer
+
+        if copy is CSComponentLayer {
+            copy.name += " copy"
+        }
+
+        add(layer: copy, to: layer)
+
+        onChange()
+
+        return copy
+    }
+
+    @objc
+    fileprivate func duplicateAction(menuItem: NSMenuItem) {
+        let layer = menuItem.representedObject as! CSLayer
+        let copy = duplicate(layer: layer)
+
+        select(item: copy)
+    }
+
+    @objc
+    fileprivate func openComponentAction(menuItem: NSMenuItem) {
+        let layer = menuItem.representedObject as! CSComponentLayer
+        let url = URL(string: layer.url!)!
+
+        let documentController = NSDocumentController.shared
+
+        documentController.openDocument(withContentsOf: url, display: true) { (_, documentWasAlreadyOpen, error) in
+            if error != nil {
+                Swift.print("An error occurred")
+            } else {
+                if documentWasAlreadyOpen {
+                    Swift.print("documentWasAlreadyOpen: true")
+                } else {
+                    Swift.print("documentWasAlreadyOpen: false")
+                }
+            }
+        }
+    }
+
+    fileprivate func requestSaveFileURL() -> URL? {
+        let dialog = NSSavePanel()
+
+        dialog.title                   = "Save .component file"
+        dialog.showsResizeIndicator    = true
+        dialog.showsHiddenFiles        = false
+        dialog.canCreateDirectories    = true
+        dialog.allowedFileTypes        = ["component"]
+
+        if dialog.runModal() == NSApplication.ModalResponse.OK {
+            return dialog.url
+        } else {
+            // User clicked on "Cancel"
+            return nil
+        }
+    }
+
+    @objc
+    fileprivate func extractComponentAction(menuItem: NSMenuItem) {
+        let layer = menuItem.representedObject as! CSLayer
+
+        guard let url = requestSaveFileURL() else { return }
+
+        let documentController = NSDocumentController.shared
+
+        let document = Document()
+
+        document.data = CSComponent(name: layer.name, canvas: component?.canvas ?? [], rootLayer: layer, parameters: [], cases: [CSCase.defaultCase], logic: [], config: component?.config ?? CSData.Object([:]), metadata: component?.metadata ?? CSData.Object([:]))
+
+        Swift.print("Writing to", url)
+
+        do {
+            try document.write(to: url, ofType: ".component")
+        } catch {
+            return
+        }
+
+        documentController.openDocument(withContentsOf: url, display: true, completionHandler: { (_, _, _) in
+
+            let componentLayer = self.createComponentLayer(from: url)
+            self.replace(layer: layer, with: componentLayer)
+
+            self.onChange()
+        })
+    }
+
+    @objc
+    fileprivate func forkComponentAction(menuItem: NSMenuItem) {
+        let layer = menuItem.representedObject as! CSComponentLayer
+
+        guard let url = requestSaveFileURL() else { return }
+
+        let documentController = NSDocumentController.shared
+
+        let existingURL = URL(string: layer.url!)!
+        let existingFile = CSComponent(url: existingURL)!
+
+        let document = Document()
+        document.data = existingFile
+
+        do {
+            try document.write(to: url, ofType: ".component")
+        } catch {
+            return
+        }
+
+        documentController.openDocument(withContentsOf: url, display: true, completionHandler: { (document, _, _) in
+            layer.component = (document as! Document).file
+            layer.url = url.absoluteString
+            layer.name = self.componentName(for: url)
+            self.onChange()
+        })
+    }
+
+    @objc
+    fileprivate func extractLayersAction(menuItem: NSMenuItem) {
+        let layer = menuItem.representedObject as! CSComponentLayer
+
+        replace(layer: layer, with: layer.component.rootLayer)
+    }
 }
+
+// MARK: - NSOutlineViewDataSource
 
 extension LayerList: NSOutlineViewDelegate, NSOutlineViewDataSource {
     func outlineView(_ outlineView: NSOutlineView, numberOfChildrenOfItem item: Any?) -> Int {
@@ -348,7 +360,7 @@ extension LayerList: NSOutlineViewDelegate, NSOutlineViewDataSource {
                 let textField = NSTextField()
 
                 textField.isEditable = true
-//                textField.delegate = self
+                textField.delegate = self
                 textField.isBordered = false
                 textField.drawsBackground = false
                 textField.stringValue = layer.name
@@ -447,7 +459,7 @@ extension LayerList: NSOutlineViewDelegate, NSOutlineViewDataSource {
                 }
             }
 
-            renderLayerList()
+            render()
             layerDelegate?.layerList(self, do: .render)
 
             return true

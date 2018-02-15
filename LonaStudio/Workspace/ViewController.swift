@@ -36,12 +36,10 @@ class ViewController: NSViewController, NSOutlineViewDataSource, NSOutlineViewDe
             parent.insertChild(newLayer, at: index + 1)
         }
 
-        outlineView.renderLayerList()
+        outlineView.render()
 
         let newLayerIndex = outlineView.row(forItem: newLayer)
         let selection: IndexSet = [newLayerIndex]
-
-//        outlineView.editColumn(0, row: newLayerIndex, with: nil, select: true)
 
         outlineView.selectRowIndexes(selection, byExtendingSelection: false)
 
@@ -89,7 +87,7 @@ class ViewController: NSViewController, NSOutlineViewDataSource, NSOutlineViewDe
                 layer.reload()
             })
 
-        outlineView.renderLayerList()
+        outlineView.render()
         render()
     }
 
@@ -373,7 +371,7 @@ class ViewController: NSViewController, NSOutlineViewDataSource, NSOutlineViewDe
         self.canvasListView?.editorView.component = component
         self.metadataEditorView?.update(data: component.metadata)
 
-        outlineView.renderLayerList()
+        outlineView.render()
         render()
     }
 
@@ -502,8 +500,8 @@ class ViewController: NSViewController, NSOutlineViewDataSource, NSOutlineViewDe
 
     func setupLayerList() {
         let outlineView = LayerList(layerDelegate: self)
-        outlineView.onChange = {
-            self.outlineView.renderLayerList()
+        outlineView.onChange = {[unowned self] in
+            self.outlineView.render()
             self.render()
         }
         outlineView.expandItem(dataRoot)
@@ -530,7 +528,7 @@ class ViewController: NSViewController, NSOutlineViewDataSource, NSOutlineViewDe
             parent.children = parent.children.filter({ $0 !== targetLayer })
 
             clearInspector()
-            outlineView.renderLayerList()
+            outlineView.render()
             render()
         } else if characters == String(Character(" ")) {
             canvasCollectionView?.panningEnabled = true
@@ -581,7 +579,7 @@ class ViewController: NSViewController, NSOutlineViewDataSource, NSOutlineViewDe
                         layer.parameters[parameter.name] = data
                     }
 
-                    self.outlineView.renderLayerList()
+                    self.outlineView.render()
                     self.render()
                 }
 
@@ -618,7 +616,7 @@ class ViewController: NSViewController, NSOutlineViewDataSource, NSOutlineViewDe
                     self.outlineView?.reloadItem(layer)
                     self.render()
                 case .full:
-                    self.outlineView.renderLayerList(fullRender: true)
+                    self.outlineView.render(fullRender: true)
                     self.render()
                 }
             }
@@ -655,7 +653,7 @@ class ViewController: NSViewController, NSOutlineViewDataSource, NSOutlineViewDe
     override func controlTextDidEndEditing(_ obj: Notification) {
         selectedLayer?.name = (obj.object as! NSTextField).stringValue
 
-        self.outlineView.renderLayerList()
+        self.outlineView.render()
         render()
     }
 }
