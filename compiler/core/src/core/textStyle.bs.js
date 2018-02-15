@@ -2,6 +2,7 @@
 'use strict';
 
 var List                    = require("bs-platform/lib/js/list.js");
+var Curry                   = require("bs-platform/lib/js/curry.js");
 var Json_decode             = require("bs-json/src/Json_decode.js");
 var Caml_builtin_exceptions = require("bs-platform/lib/js/caml_builtin_exceptions.js");
 
@@ -14,7 +15,8 @@ var emptyStyle = /* record */[
   /* fontSize : None */0,
   /* lineHeight : None */0,
   /* letterSpacing : None */0,
-  /* color : None */0
+  /* color : None */0,
+  /* extends : None */0
 ];
 
 function normalizeFontWeight(value) {
@@ -59,6 +61,28 @@ function find(textStyles, id) {
   
 }
 
+function lookup(textStyles, _style, f) {
+  while(true) {
+    var style = _style;
+    var match = Curry._1(f, style);
+    var match$1 = style[/* extends */9];
+    if (match) {
+      return /* Some */[match[0]];
+    } else if (match$1) {
+      var match$2 = find(textStyles, match$1[0]);
+      if (match$2) {
+        _style = match$2[0];
+        continue ;
+        
+      } else {
+        return /* None */0;
+      }
+    } else {
+      return /* None */0;
+    }
+  };
+}
+
 function parseFile(content) {
   var parsed = JSON.parse(content);
   var parseTextStyle = function (json) {
@@ -88,6 +112,9 @@ function parseFile(content) {
                   }), json),
             /* color */Json_decode.optional((function (param) {
                     return Json_decode.field("color", Json_decode.string, param);
+                  }), json),
+            /* extends */Json_decode.optional((function (param) {
+                    return Json_decode.field("extends", Json_decode.string, param);
                   }), json)
           ];
   };
@@ -114,5 +141,6 @@ exports.emptyStyle          = emptyStyle;
 exports.normalizeFontWeight = normalizeFontWeight;
 exports.normalizeId         = normalizeId;
 exports.find                = find;
+exports.lookup              = lookup;
 exports.parseFile           = parseFile;
 /* No side effect */

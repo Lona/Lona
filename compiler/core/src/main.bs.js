@@ -166,17 +166,10 @@ function convertColors(target, contents) {
   return renderColors(target, Color$LonaCompilerCore.parseFile(contents));
 }
 
-function convertTextStyles(target, filename) {
-  var match = findWorkspaceDirectory(filename);
-  if (match) {
-    var colorsFile = Fs.readFileSync(Path.join(match[0], "colors.json"), "utf8");
-    var colors = Color$LonaCompilerCore.parseFile(colorsFile);
-    var textStylesFile = Fs.readFileSync(filename, "utf8");
-    return renderTextStyles(target, colors, TextStyle$LonaCompilerCore.parseFile(textStylesFile));
-  } else {
-    console.log("Couldn't find workspace directory. Try specifying it as a parameter (TODO)");
-    return (process.exit(1));
-  }
+function convertTextStyles(target, workspacePath, content) {
+  var colorsFile = Fs.readFileSync(Path.join(workspacePath, "colors.json"), "utf8");
+  var colors = Color$LonaCompilerCore.parseFile(colorsFile);
+  return renderTextStyles(target, colors, TextStyle$LonaCompilerCore.parseFile(content));
 }
 
 function convertComponent(filename) {
@@ -349,6 +342,24 @@ switch (command) {
         ((process.exit(1)));
       }
       console.log(convertComponent(List.nth(positionalArguments, 4)));
+      break;
+  case "textStyles" : 
+      if (List.length(positionalArguments) < 5) {
+        var render$1 = function (content) {
+          return Promise.resolve((console.log(renderColors(target, Color$LonaCompilerCore.parseFile(content))), /* () */0));
+        };
+        GetStdin().then(render$1);
+      } else {
+        var filename = List.nth(positionalArguments, 4);
+        var match$3 = findWorkspaceDirectory(filename);
+        if (match$3) {
+          var content = Fs.readFileSync(filename, "utf8");
+          console.log(convertTextStyles(target, match$3[0], content));
+        } else {
+          console.log("Couldn't find workspace directory. Try specifying it as a parameter (TODO)");
+          ((process.exit(1)));
+        }
+      }
       break;
   case "workspace" : 
       if (List.length(positionalArguments) < 5) {

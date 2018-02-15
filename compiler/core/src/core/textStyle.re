@@ -7,7 +7,8 @@ type t = {
   fontSize: option(float),
   lineHeight: option(float),
   letterSpacing: option(float),
-  color: option(string)
+  color: option(string),
+  extends: option(string)
 };
 
 type file = {
@@ -24,7 +25,8 @@ let emptyStyle = {
   fontSize: None,
   lineHeight: None,
   letterSpacing: None,
-  color: None
+  color: None,
+  extends: None
 };
 
 let normalizeFontWeight =
@@ -45,6 +47,17 @@ let find = (textStyles: list(t), id: string) => {
   };
 };
 
+let rec lookup = (textStyles: list(t), style: t, f: t => option('a)) =>
+  switch (f(style), style.extends) {
+  | (Some(result), _) => Some(result)
+  | (None, Some(id)) =>
+    switch (find(textStyles, id)) {
+    | Some(parent) => lookup(textStyles, parent, f)
+    | None => (None: option('a))
+    }
+  | (None, None) => (None: option('a))
+  };
+
 let parseFile = content => {
   let parsed = content |> Js.Json.parseExn;
   open Json.Decode;
@@ -58,7 +71,8 @@ let parseFile = content => {
     fontSize: json |> optional(field("fontSize", Json.Decode.float)),
     lineHeight: json |> optional(field("lineHeight", Json.Decode.float)),
     letterSpacing: json |> optional(field("letterSpacing", Json.Decode.float)),
-    color: json |> optional(field("color", string))
+    color: json |> optional(field("color", string)),
+    extends: json |> optional(field("extends", string))
   };
   let styles = parsed |> field("styles", list(parseTextStyle));
   let defaultStyle =

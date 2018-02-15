@@ -99,19 +99,12 @@ let renderTextStyles = (target, colors, textStyles) =>
 let convertColors = (target, contents) =>
   Color.parseFile(contents) |> renderColors(target);
 
-let convertTextStyles = (target, filename) =>
-  switch (findWorkspaceDirectory(filename)) {
-  | None =>
-    exit(
-      "Couldn't find workspace directory. Try specifying it as a parameter (TODO)"
-    )
-  | Some(workspace) =>
-    let colorsFile =
-      Node.Fs.readFileSync(Path.join([|workspace, "colors.json"|]), `utf8);
-    let colors = Color.parseFile(colorsFile);
-    let textStylesFile = Node.Fs.readFileSync(filename, `utf8);
-    TextStyle.parseFile(textStylesFile) |> renderTextStyles(target, colors);
-  };
+let convertTextStyles = (target, workspacePath, content) => {
+  let colorsFile =
+    Node.Fs.readFileSync(Path.join([|workspacePath, "colors.json"|]), `utf8);
+  let colors = Color.parseFile(colorsFile);
+  TextStyle.parseFile(content) |> renderTextStyles(target, colors);
+};
 
 let convertComponent = filename => {
   let contents = Fs.readFileSync(filename, `utf8);
@@ -184,7 +177,8 @@ let findContentsAbove = contents => {
         lines
         |> Js.Array.slice(~start=0, ~end_=index + 1)
         |> Js.Array.joinWith("\n")
-      ) ++ "\n\n"
+      )
+      ++ "\n\n"
     )
   };
 };
@@ -253,7 +247,10 @@ let convertWorkspace = (workspace, output) => {
           ensureDirSync(Path.dirname(outputPath));
           let (contentsAbove, contentsBelow) =
             switch (Fs.readFileAsUtf8Sync(outputPath)) {
-            | existing => (findContentsAbove(existing), findContentsBelow(existing))
+            | existing => (
+                findContentsAbove(existing),
+                findContentsBelow(existing)
+              )
             | exception _ => (None, None)
             };
           let contents =
@@ -315,9 +312,25 @@ switch command {
       Js.Promise.resolve(convertColors(target, contents) |> Js.log);
     getStdin() |> Js.Promise.then_(render) |> ignore;
   } else {
-    let contents =
-      Node.Fs.readFileSync(List.nth(positionalArguments, 4), `utf8);
+    let contents = Node.Fs.readFileSync(List.nth(positionalArguments, 4), `utf8);
     convertColors(target, contents) |> Js.log;
+  };
+| "textStyles" =>
+  if (List.length(positionalArguments) < 5) {
+    let render = content =>
+      Js.Promise.resolve(convertColors(target, content) |> Js.log);
+    getStdin() |> Js.Promise.then_(render) |> ignore;
+  } else {
+    let filename = List.nth(positionalArguments, 4);
+    switch (findWorkspaceDirectory(filename)) {
+    | None =>
+      exit(
+        "Couldn't find workspace directory. Try specifying it as a parameter (TODO)"
+      )
+    | Some(workspacePath) =>
+      let content = Node.Fs.readFileSync(filename, `utf8);
+      convertTextStyles(target, workspacePath, content) |> Js.log;
+    };
   }
 | _ => Js.log2("Invalid command", command)
 };
