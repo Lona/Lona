@@ -81,18 +81,6 @@ function toSwiftAST(options, colors, textStyles, rootLayer, logicRootNode) {
       return initialValue;
     }
   };
-  var typeAnnotationDoc = function (param) {
-    if (param.tag) {
-      return /* TypeName */Block.__(0, [param[0]]);
-    } else {
-      var typeName = param[0];
-      if (typeName === "Boolean") {
-        return /* TypeName */Block.__(0, ["Bool"]);
-      } else {
-        return /* TypeName */Block.__(0, [typeName]);
-      }
-    }
-  };
   var fromCmp = function (x) {
     switch (x) {
       case 0 : 
@@ -327,7 +315,7 @@ function toSwiftAST(options, colors, textStyles, rootLayer, logicRootNode) {
                           modifiers: /* [] */0,
                           pattern: /* IdentifierPattern */Block.__(0, [{
                                 identifier: logicValueToSwiftAST(value),
-                                annotation: /* Some */[typeAnnotationDoc(value[0])]
+                                annotation: /* Some */[SwiftDocument$LonaCompilerCore.typeAnnotationDoc(value[0])]
                               }]),
                           init: /* None */0,
                           block: /* None */0

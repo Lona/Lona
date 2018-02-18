@@ -91,14 +91,6 @@ let toSwiftAST =
     | _ => initialValue
     };
   };
-  let typeAnnotationDoc =
-    fun
-    | Types.Reference(typeName) =>
-      switch typeName {
-      | "Boolean" => Ast.TypeName("Bool")
-      | _ => TypeName(typeName)
-      }
-    | Named(name, _) => TypeName(name);
   let fromCmp = x =>
     switch x {
     | Types.Eq => "=="
@@ -241,7 +233,7 @@ let toSwiftAST =
           "pattern":
             Ast.IdentifierPattern({
               "identifier": identifier |> logicValueToSwiftAST,
-              "annotation": Some(ltype |> typeAnnotationDoc)
+              "annotation": Some(ltype |> SwiftDocument.typeAnnotationDoc)
             }),
           "init": (None: option(Ast.node)),
           "block": (None: option(Ast.initializerBlock))

@@ -78,6 +78,16 @@ let localImageName = (framework: SwiftOptions.framework, name) => {
   };
 };
 
+let typeAnnotationDoc =
+  fun
+  | Types.Reference(typeName) =>
+    switch typeName {
+    | "Boolean" => TypeName("Bool")
+    | _ => TypeName(typeName)
+    }
+  | Named(name, _) => TypeName(name)
+  | Function(_, _) => TypeName("(() -> Void)?");
+
 let lonaValue =
     (
       framework: SwiftOptions.framework,
@@ -94,6 +104,7 @@ let lonaValue =
     | "String" => LiteralExpression(String(value.data |> Json.Decode.string))
     | _ => SwiftIdentifier("UnknownReferenceType: " ++ typeName)
     }
+  | Function(_) => SwiftIdentifier("PLACEHOLDER")
   | Named(alias, subtype) =>
     switch alias {
     | "Color" =>

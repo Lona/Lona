@@ -24,6 +24,7 @@ indirect enum CSType: Equatable, CSDataSerializable, CSDataDeserializable {
     case array(CSType)
     case dictionary(Schema)
     case enumeration([CSValue])
+    case function([(String, CSType)], CSType)
 
     init(_ data: CSData) {
         self = .undefined
@@ -61,6 +62,18 @@ indirect enum CSType: Equatable, CSDataSerializable, CSDataDeserializable {
                     if let values = object["of"]?.array {
                         self = .enumeration(values.map({ CSValue($0) }))
                     }
+                case "Function":
+                    var parameters: [(String, CSType)] = []
+                    var returnType: CSType = .undefined
+                    if let values = object["parameters"]?.array {
+                        parameters = values.map({ (arg) in
+                            return (arg.get(key: "label").stringValue, CSType(arg.get(key: "type")))
+                        })
+                    }
+                    if let value = object["returnType"] {
+                        returnType = CSType(value)
+                    }
+                    self = .function(parameters, returnType)
                 default:
                     break
                 }
@@ -96,6 +109,7 @@ indirect enum CSType: Equatable, CSDataSerializable, CSDataDeserializable {
         case .bool: return "Boolean"
         case .number: return "Number"
         case .string: return "String"
+        case .function: return "Function"
         case .named(let name, _): return name
         default: return "Any"
         }
@@ -139,6 +153,25 @@ indirect enum CSType: Equatable, CSDataSerializable, CSDataDeserializable {
                 "name": "Enumeration".toData(),
                 "of": CSData.Array(values.map({ $0.toData() }))
             ])
+        case .function(let parameters, let returnType):
+            var data: CSData = .Object([
+                "name": "Function".toData()
+                ])
+
+            if parameters.count > 0 {
+                data["parameters"] = CSData.Array(parameters.map({ (arg) -> CSData in
+                    return CSData.Object([
+                        "label": arg.0.toData(),
+                        "type": arg.1.toData()
+                        ])
+                }))
+            }
+
+            if returnType != .undefined {
+                data["returnType"] = returnType.toData()
+            }
+
+            return data
         }
     }
 
@@ -160,6 +193,7 @@ indirect enum CSType: Equatable, CSDataSerializable, CSDataDeserializable {
         case "Boolean": return .bool
         case "Number": return .number
         case "String": return .string
+        case "Function": return CSHandlerType
         default: return .any
         }
     }
@@ -184,6 +218,12 @@ indirect enum CSType: Equatable, CSDataSerializable, CSDataDeserializable {
             }
 
             return true
+        case (.function(let lParams, let lReturnType), .function(let rParams, let rReturnType)):
+            for pair in zip(lParams, rParams) where pair.0 != pair.1 {
+                return false
+            }
+
+            return lReturnType == rReturnType
         default:
             return false
         }
@@ -220,7 +260,8 @@ indirect enum CSType: Equatable, CSDataSerializable, CSDataDeserializable {
             CSValue(type: .string, data: .String("String")),
             CSValue(type: .string, data: .String("Color")),
             CSValue(type: .string, data: .String("TextStyle")),
-            CSValue(type: .string, data: .String("URL"))
+            CSValue(type: .string, data: .String("URL")),
+            CSValue(type: .string, data: .String("Function"))
 //            CSValue(type: .string, data: .String("Component")),
             ] + CSUserTypes.types.map({ CSValue(type: .string, data: $0.toString().toData()) })
 
@@ -243,6 +284,7 @@ let CSColorType = CSType.named("Color", .string)
 let CSTextStyleType = CSType.named("TextStyle", .string)
 let CSURLType = CSType.named("URL", .string)
 let CSComponentType = CSType.named("Component", .any)
+let CSHandlerType = CSType.function([], .undefined)
 
 //let CSParameterType = CSType.enumeration([
 //    CSValue(type: .string, data: .String("Boolean")),
@@ -287,6 +329,13 @@ let CSLayerType = CSType.dictionary([
 
     // Image
     "image": (type: CSURLType, access: .write),
+
+    // States
+    "pressed": (type: .bool, access: .read),
+    "hovered": (type: .bool, access: .read),
+
+    // Interactivity
+    "onPress": (type: CSHandlerType, access: .write),
 
     // Children
     "children": (type: .array(.any), access: .write)

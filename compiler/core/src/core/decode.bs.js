@@ -121,7 +121,25 @@ var parameterTypeMap = StringMap$LonaCompilerCore.fromList(/* :: */[
                                                   "height",
                                                   Types$LonaCompilerCore.numberType
                                                 ],
-                                                /* [] */0
+                                                /* :: */[
+                                                  /* tuple */[
+                                                    "pressed",
+                                                    Types$LonaCompilerCore.booleanType
+                                                  ],
+                                                  /* :: */[
+                                                    /* tuple */[
+                                                      "hovered",
+                                                      Types$LonaCompilerCore.booleanType
+                                                    ],
+                                                    /* :: */[
+                                                      /* tuple */[
+                                                        "onPress",
+                                                        Types$LonaCompilerCore.handlerType
+                                                      ],
+                                                      /* [] */0
+                                                    ]
+                                                  ]
+                                                ]
                                               ]
                                             ]
                                           ]
@@ -147,6 +165,8 @@ var parameterTypeMap = StringMap$LonaCompilerCore.fromList(/* :: */[
 
 var UnknownParameter = Caml_exceptions.create("Decode-LonaCompilerCore.UnknownParameter");
 
+var UnknownType = Caml_exceptions.create("Decode-LonaCompilerCore.UnknownType");
+
 function parameterType(name) {
   try {
     return Curry._2(StringMap$LonaCompilerCore.find, name, parameterTypeMap);
@@ -167,15 +187,55 @@ function lonaType(json) {
   var referenceType = function (json) {
     return /* Reference */Block.__(0, [Json_decode.string(json)]);
   };
-  var namedType = function (json) {
-    var named = Json_decode.field("alias", Json_decode.string, json);
-    var ltype = Json_decode.field("of", Json_decode.string, json);
-    return /* Named */Block.__(1, [
-              named,
-              /* Reference */Block.__(0, [ltype])
-            ]);
+  var otherType = function (json) {
+    var name = Json_decode.field("name", Json_decode.string, json);
+    switch (name) {
+      case "Function" : 
+          var json$1 = json;
+          var argumentType = function (json) {
+            return {
+                    label: Json_decode.field("label", Json_decode.string, json),
+                    type: Json_decode.field("type", lonaType, json)
+                  };
+          };
+          var match = Json_decode.optional((function (param) {
+                  return Json_decode.field("arguments", (function (param) {
+                                return Json_decode.list(argumentType, param);
+                              }), param);
+                }), json$1);
+          var $$arguments = match ? match[0] : /* [] */0;
+          var match$1 = Json_decode.optional((function (param) {
+                  return Json_decode.field("arguments", (function (param) {
+                                return Json_decode.field("returnType", lonaType, param);
+                              }), param);
+                }), json$1);
+          var returnType = match$1 ? match$1[0] : Types$LonaCompilerCore.undefinedType;
+          return /* Function */Block.__(2, [
+                    $$arguments,
+                    returnType
+                  ]);
+      case "Named" : 
+          var json$2 = json;
+          var named = Json_decode.field("alias", Json_decode.string, json$2);
+          var ltype = Json_decode.field("of", lonaType, json$2);
+          return /* Named */Block.__(1, [
+                    named,
+                    ltype
+                  ]);
+      default:
+        throw [
+              UnknownType,
+              name
+            ];
+    }
   };
-  return Json_decode.either(referenceType, namedType)(json);
+  return Json_decode.oneOf(/* :: */[
+              referenceType,
+              /* :: */[
+                otherType,
+                /* [] */0
+              ]
+            ], json);
 }
 
 var Types = /* module */[/* lonaType */lonaType];
@@ -400,6 +460,8 @@ var Component = /* module */[
   /* logic */logic
 ];
 
+var undefinedType = Types$LonaCompilerCore.undefinedType;
+
 var booleanType = Types$LonaCompilerCore.booleanType;
 
 var numberType = Types$LonaCompilerCore.numberType;
@@ -412,14 +474,19 @@ var textStyleType = Types$LonaCompilerCore.textStyleType;
 
 var urlType = Types$LonaCompilerCore.urlType;
 
+var handlerType = Types$LonaCompilerCore.handlerType;
+
+exports.undefinedType     = undefinedType;
 exports.booleanType       = booleanType;
 exports.numberType        = numberType;
 exports.stringType        = stringType;
 exports.colorType         = colorType;
 exports.textStyleType     = textStyleType;
 exports.urlType           = urlType;
+exports.handlerType       = handlerType;
 exports.parameterTypeMap  = parameterTypeMap;
 exports.UnknownParameter  = UnknownParameter;
+exports.UnknownType       = UnknownType;
 exports.parameterType     = parameterType;
 exports.Types             = Types;
 exports.Parameters        = Parameters;

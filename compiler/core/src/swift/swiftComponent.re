@@ -17,6 +17,9 @@ type directionParameter = {
   swiftName: string
 };
 
+let isFunctionParameter = (param: Types.parameter) =>
+  param.ltype == Types.handlerType;
+
 let generate =
     (
       options: Options.options,
@@ -48,36 +51,31 @@ let generate =
     fun
     | Constraint.Required => "required"
     | Low => "defaultLow";
-  let typeAnnotationDoc =
-    fun
-    | Types.Reference(typeName) =>
-      switch typeName {
-      | "Boolean" => TypeName("Bool")
-      | _ => TypeName(typeName)
-      }
-    | Named(name, _) => TypeName(name);
-  let parameterVariableDoc = (parameter: Decode.parameter) =>
+  let parameterVariableDoc = (parameter: Types.parameter) =>
     VariableDeclaration({
       "modifiers": [AccessLevelModifier(PublicModifier)],
       "pattern":
         IdentifierPattern({
           "identifier": SwiftIdentifier(parameter.name),
-          "annotation": Some(parameter.ltype |> typeAnnotationDoc)
+          "annotation":
+            Some(parameter.ltype |> SwiftDocument.typeAnnotationDoc)
         }),
       "init": None,
       "block":
-        Some(
-          WillSetDidSetBlock({
-            "willSet": None,
-            "didSet":
-              Some([
-                FunctionCallExpression({
-                  "name": SwiftIdentifier("update"),
-                  "arguments": []
-                })
-              ])
-          })
-        )
+        isFunctionParameter(parameter) ?
+          None :
+          Some(
+            WillSetDidSetBlock({
+              "willSet": None,
+              "didSet":
+                Some([
+                  FunctionCallExpression({
+                    "name": SwiftIdentifier("update"),
+                    "arguments": []
+                  })
+                ])
+            })
+          )
     });
   let getLayerTypeName = layerType =>
     switch (swiftOptions.framework, layerType) {
@@ -228,7 +226,7 @@ let generate =
     Parameter({
       "externalName": None,
       "localName": parameter.name,
-      "annotation": parameter.ltype |> typeAnnotationDoc,
+      "annotation": parameter.ltype |> SwiftDocument.typeAnnotationDoc,
       "defaultValue": None
     });
   let initParameterAssignmentDoc = (parameter: Decode.parameter) =>
@@ -272,7 +270,10 @@ let generate =
   let initializerDoc = () =>
     InitializerDeclaration({
       "modifiers": [AccessLevelModifier(PublicModifier)],
-      "parameters": parameters |> List.map(initParameterDoc),
+      "parameters":
+        parameters
+        |> List.filter(param => ! isFunctionParameter(param))
+        |> List.map(initParameterDoc),
       "failable": None,
       "body":
         Document.joinGroups(

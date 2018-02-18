@@ -1,0 +1,123 @@
+{
+  "metadata" : {
+
+  },
+  "cases" : [
+    {
+      "name" : "Default",
+      "value" : {
+
+      },
+      "type" : "entry",
+      "visible" : true
+    }
+  ],
+  "rootLayer" : {
+    "parameters" : {
+      "flex" : 0,
+      "alignSelf" : "stretch"
+    },
+    "name" : "View",
+    "type" : "View",
+    "children" : [
+      {
+        "parameters" : {
+          "backgroundColor" : "#D8D8D8",
+          "height" : 100,
+          "width" : 100
+        },
+        "name" : "View 1",
+        "type" : "View",
+        "children" : [
+
+        ]
+      }
+    ]
+  },
+  "logic" : [
+    {
+      "function" : {
+        "name" : "assign(lhs, to rhs)",
+        "arguments" : {
+          "rhs" : {
+            "type" : "identifier",
+            "value" : {
+              "type" : {
+                "name" : "Function"
+              },
+              "path" : [
+                "layers",
+                "View",
+                "onPress"
+              ]
+            }
+          },
+          "lhs" : {
+            "type" : "identifier",
+            "value" : {
+              "type" : {
+                "name" : "Function"
+              },
+              "path" : [
+                "parameters",
+                "onPress"
+              ]
+            }
+          }
+        }
+      },
+      "nodes" : [
+
+      ]
+    }
+  ],
+  "parameters" : [
+    {
+      "type" : {
+        "name" : "Function"
+      },
+      "name" : "onPress"
+    }
+  ],
+  "canvases" : [
+    {
+      "name" : "iPhone SE",
+      "height" : 100,
+      "heightMode" : "At Least",
+      "exportScale" : 1,
+      "backgroundColor" : "white",
+      "width" : 320,
+      "parameters" : {
+
+      },
+      "visible" : true
+    },
+    {
+      "name" : "iPhone 7",
+      "height" : 100,
+      "heightMode" : "At Least",
+      "exportScale" : 1,
+      "backgroundColor" : "white",
+      "width" : 375,
+      "parameters" : {
+
+      },
+      "visible" : true
+    },
+    {
+      "name" : "iPhone 7+",
+      "height" : 100,
+      "heightMode" : "At Least",
+      "exportScale" : 1,
+      "backgroundColor" : "white",
+      "width" : 414,
+      "parameters" : {
+
+      },
+      "visible" : true
+    }
+  ],
+  "config" : {
+    "canvasLayout" : "xy"
+  }
+}

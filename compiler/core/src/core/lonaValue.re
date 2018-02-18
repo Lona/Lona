@@ -1,3 +1,8 @@
+let null = () : Types.lonaValue => {
+  ltype: Types.undefinedType,
+  data: Js.Json.null
+};
+
 let boolean = value : Types.lonaValue => {
   ltype: Types.booleanType,
   data: Js.Json.boolean(Js.Boolean.to_js_boolean(value))
@@ -53,7 +58,11 @@ let parameterDefaultValueMap =
     ("paddingLeft", number(0.)),
     ("borderRadius", number(0.)),
     ("width", number(0.)),
-    ("height", number(0.))
+    ("height", number(0.)),
+    /* Interactivity */
+    ("pressed", boolean(false)),
+    ("hovered", boolean(false)),
+    ("onPress", null())
   ]
   |> StringMap.fromList;
 

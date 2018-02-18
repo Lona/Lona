@@ -9,6 +9,7 @@ var Pervasives                     = require("bs-platform/lib/js/pervasives.js")
 var LodashUpperfirst               = require("lodash.upperfirst");
 var Layer$LonaCompilerCore         = require("../core/layer.bs.js");
 var Logic$LonaCompilerCore         = require("../core/logic.bs.js");
+var Types$LonaCompilerCore         = require("../core/types.bs.js");
 var Caml_builtin_exceptions        = require("bs-platform/lib/js/caml_builtin_exceptions.js");
 var Decode$LonaCompilerCore        = require("../core/decode.bs.js");
 var LonaValue$LonaCompilerCore     = require("../core/lonaValue.bs.js");
@@ -17,6 +18,10 @@ var Constraint$LonaCompilerCore    = require("../utils/constraint.bs.js");
 var SwiftLogic$LonaCompilerCore    = require("./swiftLogic.bs.js");
 var SwiftFormat$LonaCompilerCore   = require("./swiftFormat.bs.js");
 var SwiftDocument$LonaCompilerCore = require("./swiftDocument.bs.js");
+
+function isFunctionParameter(param) {
+  return Caml_obj.caml_equal(param[/* ltype */1], Types$LonaCompilerCore.handlerType);
+}
 
 function generate(_, swiftOptions, name, colors, textStyles, json) {
   var rootLayer = Decode$LonaCompilerCore.Component[/* rootLayer */1](json);
@@ -40,19 +45,8 @@ function generate(_, swiftOptions, name, colors, textStyles, json) {
       return "required";
     }
   };
-  var typeAnnotationDoc = function (param) {
-    if (param.tag) {
-      return /* TypeName */Block.__(0, [param[0]]);
-    } else {
-      var typeName = param[0];
-      if (typeName === "Boolean") {
-        return /* TypeName */Block.__(0, ["Bool"]);
-      } else {
-        return /* TypeName */Block.__(0, [typeName]);
-      }
-    }
-  };
   var parameterVariableDoc = function (parameter) {
+    var match = Caml_obj.caml_equal(parameter[/* ltype */1], Types$LonaCompilerCore.handlerType);
     return /* VariableDeclaration */Block.__(8, [{
                 modifiers: /* :: */[
                   /* AccessLevelModifier */Block.__(0, [/* PublicModifier */3]),
@@ -60,19 +54,19 @@ function generate(_, swiftOptions, name, colors, textStyles, json) {
                 ],
                 pattern: /* IdentifierPattern */Block.__(0, [{
                       identifier: /* SwiftIdentifier */Block.__(6, [parameter[/* name */0]]),
-                      annotation: /* Some */[typeAnnotationDoc(parameter[/* ltype */1])]
+                      annotation: /* Some */[SwiftDocument$LonaCompilerCore.typeAnnotationDoc(parameter[/* ltype */1])]
                     }]),
                 init: /* None */0,
-                block: /* Some */[/* WillSetDidSetBlock */[{
-                      willSet: /* None */0,
-                      didSet: /* Some */[/* :: */[
-                          /* FunctionCallExpression */Block.__(16, [{
-                                name: /* SwiftIdentifier */Block.__(6, ["update"]),
-                                arguments: /* [] */0
-                              }]),
-                          /* [] */0
-                        ]]
-                    }]]
+                block: match !== 0 ? /* None */0 : /* Some */[/* WillSetDidSetBlock */[{
+                        willSet: /* None */0,
+                        didSet: /* Some */[/* :: */[
+                            /* FunctionCallExpression */Block.__(16, [{
+                                  name: /* SwiftIdentifier */Block.__(6, ["update"]),
+                                  arguments: /* [] */0
+                                }]),
+                            /* [] */0
+                          ]]
+                      }]]
               }]);
   };
   var getLayerTypeName = function (layerType) {
@@ -294,7 +288,7 @@ function generate(_, swiftOptions, name, colors, textStyles, json) {
     return /* Parameter */Block.__(14, [{
                 externalName: /* None */0,
                 localName: parameter[/* name */0],
-                annotation: typeAnnotationDoc(parameter[/* ltype */1]),
+                annotation: SwiftDocument$LonaCompilerCore.typeAnnotationDoc(parameter[/* ltype */1]),
                 defaultValue: /* None */0
               }]);
   };
@@ -351,7 +345,9 @@ function generate(_, swiftOptions, name, colors, textStyles, json) {
                   /* AccessLevelModifier */Block.__(0, [/* PublicModifier */3]),
                   /* [] */0
                 ],
-                parameters: List.map(initParameterDoc, parameters),
+                parameters: List.map(initParameterDoc, List.filter((function (param) {
+                              return 1 - Caml_obj.caml_equal(param[/* ltype */1], Types$LonaCompilerCore.handlerType);
+                            }))(parameters)),
                 failable: /* None */0,
                 body: SwiftDocument$LonaCompilerCore.joinGroups(/* Empty */0, /* :: */[
                       List.map(initParameterAssignmentDoc, parameters),
@@ -1190,9 +1186,10 @@ var Document = 0;
 
 var Render = 0;
 
-exports.Format   = Format;
-exports.Ast      = Ast;
-exports.Document = Document;
-exports.Render   = Render;
-exports.generate = generate;
+exports.Format              = Format;
+exports.Ast                 = Ast;
+exports.Document            = Document;
+exports.Render              = Render;
+exports.isFunctionParameter = isFunctionParameter;
+exports.generate            = generate;
 /* lodash.upperfirst Not a pure module */
