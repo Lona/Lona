@@ -18,7 +18,7 @@ class LayerInspectorView: InspectorView {
 
     var onChangeInspector: (ChangeType) -> Void = {_ in}
 
-    init(frame frameRect: NSRect, layer: CSLayer) {
+    init(layer: CSLayer) {
         let properties: Properties = [
             // Layout
             InspectorView.Property.direction: CSData.String(layer.flexDirection ?? "column"),
@@ -76,7 +76,7 @@ class LayerInspectorView: InspectorView {
             InspectorView.Property.animationSpeed: CSData.Number(layer.animationSpeed ?? 1)
         ]
 
-        super.init(frame: frameRect, layerType: layer.type, properties: properties)
+        super.init(frame: NSRect.zero, layerType: layer.type, properties: properties)
 
         self.onChangeProperty = { property, value in
             var changeType: ChangeType = .canvas

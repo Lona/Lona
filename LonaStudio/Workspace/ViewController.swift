@@ -547,13 +547,12 @@ class ViewController: NSViewController, NSOutlineViewDataSource, NSOutlineViewDe
 
     func renderInspector(item: DataNode) {
         clearInspector()
-
         guard let layer = item as? CSLayer else { return }
 
         let inspectorView: NSView
-
         if layer.type == "Component", let layer = layer as? CSComponentLayer {
-            inspectorView = ComponentInspectorView(componentLayer: layer, onChangeData: {[unowned self] (data, parameter) in
+            let componentLayer = ComponentInspectorView(componentLayer: layer)
+            componentLayer.onChangeData = {[unowned self] (data, parameter) in
                 // Handle the empty strings specially - convert to null.
                 // TODO: How can we always allow a null state?
                 if let value = data.string, value == "" {
@@ -563,11 +562,11 @@ class ViewController: NSViewController, NSOutlineViewDataSource, NSOutlineViewDe
                 }
                 self.outlineView.render()
                 self.render()
-            })
+            }
+            inspectorView = componentLayer
         } else {
-            let layerInspector = LayerInspectorView(frame: NSRect.zero, layer: layer)
-
-            layerInspector.onChangeInspector = { changeType in
+            let layerInspector = LayerInspectorView(layer: layer)
+            layerInspector.onChangeInspector = {[unowned self] changeType in
                 switch changeType {
                 case .canvas:
                     self.outlineView?.reloadItem(layer)
@@ -577,31 +576,11 @@ class ViewController: NSViewController, NSOutlineViewDataSource, NSOutlineViewDe
                     self.render()
                 }
             }
-
             inspectorView = layerInspector
         }
 
-        // Flip the content within the scrollview so it starts at the top
-        let flippedView = FlippedView()
-        flippedView.translatesAutoresizingMaskIntoConstraints = false
-        flippedView.addSubview(inspectorView)
-
-        let scrollView = NSScrollView()
-        scrollView.translatesAutoresizingMaskIntoConstraints = false
-//        scrollView.addSubview(flippedView)
-        scrollView.documentView = flippedView
-        scrollView.hasVerticalRuler = true
-        scrollView.drawsBackground = false
-        scrollView.automaticallyAdjustsContentInsets = false
-        scrollView.contentInsets = NSEdgeInsets(top: 0, left: 20, bottom: 0, right: 20)
-
+        let scrollView = InspectorContentView(inspectorView: inspectorView)
         right.addSubviewStretched(subview: scrollView)
-
-        inspectorView.widthAnchor.constraint(equalTo: flippedView.widthAnchor).isActive = true
-        inspectorView.heightAnchor.constraint(equalTo: flippedView.heightAnchor).isActive = true
-
-        flippedView.leftAnchor.constraint(equalTo: scrollView.leftAnchor, constant: 20).isActive = true
-        flippedView.rightAnchor.constraint(equalTo: scrollView.rightAnchor, constant: -20).isActive = true
 
         // Keep a reference so we can remove it from its superview later
         self.inspectorContent = scrollView

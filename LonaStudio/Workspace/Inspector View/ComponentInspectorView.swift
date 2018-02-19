@@ -11,13 +11,14 @@ import Cocoa
 final class ComponentInspectorView: NSStackView {
 
     // MARK: - Variable
+
     private let componentLayer: CSComponentLayer
-    private let onChangeData: (CSData, CSParameter) -> Void
+    var onChangeData: (CSData, CSParameter) -> Void = {_, _ in}
 
     // MARK: - Init
-    init(componentLayer: CSComponentLayer, onChangeData: @escaping (CSData, CSParameter) -> Void) {
+
+    init(componentLayer: CSComponentLayer) {
         self.componentLayer = componentLayer
-        self.onChangeData = onChangeData
         super.init(frame: NSRect.zero)
         setupViews()
     }
