@@ -28,6 +28,9 @@ public class PressableRootView: UIView {
   // MARK: Private
 
   private var innerView = UIView(frame: .zero)
+  private var innerTextView = UILabel()
+
+  private var innerTextViewTextStyle = TextStyles.body1
 
   private var topPadding: CGFloat = 24
   private var trailingPadding: CGFloat = 24
@@ -37,6 +40,14 @@ public class PressableRootView: UIView {
   private var innerViewTrailingMargin: CGFloat = 0
   private var innerViewBottomMargin: CGFloat = 0
   private var innerViewLeadingMargin: CGFloat = 0
+  private var innerViewTopPadding: CGFloat = 0
+  private var innerViewTrailingPadding: CGFloat = 0
+  private var innerViewBottomPadding: CGFloat = 0
+  private var innerViewLeadingPadding: CGFloat = 0
+  private var innerTextViewTopMargin: CGFloat = 0
+  private var innerTextViewTrailingMargin: CGFloat = 0
+  private var innerTextViewBottomMargin: CGFloat = 0
+  private var innerTextViewLeadingMargin: CGFloat = 0
 
   private var hovered = false
   private var pressed = false
@@ -50,14 +61,21 @@ public class PressableRootView: UIView {
   private var innerViewLeadingAnchorConstraint: NSLayoutConstraint?
   private var innerViewHeightAnchorConstraint: NSLayoutConstraint?
   private var innerViewWidthAnchorConstraint: NSLayoutConstraint?
+  private var innerTextViewTopAnchorConstraint: NSLayoutConstraint?
+  private var innerTextViewLeadingAnchorConstraint: NSLayoutConstraint?
+  private var innerTextViewTrailingAnchorConstraint: NSLayoutConstraint?
 
   private func setUpViews() {
     addSubview(innerView)
+    innerView.addSubview(innerTextView)
+
+    innerTextViewTextStyle = TextStyles.headline
   }
 
   private func setUpConstraints() {
     translatesAutoresizingMaskIntoConstraints = false
     innerView.translatesAutoresizingMaskIntoConstraints = false
+    innerTextView.translatesAutoresizingMaskIntoConstraints = false
 
     let innerViewTopAnchorConstraint = innerView
       .topAnchor
@@ -70,13 +88,27 @@ public class PressableRootView: UIView {
       .constraint(equalTo: leadingAnchor, constant: leadingPadding + innerViewLeadingMargin)
     let innerViewHeightAnchorConstraint = innerView.heightAnchor.constraint(equalToConstant: 100)
     let innerViewWidthAnchorConstraint = innerView.widthAnchor.constraint(equalToConstant: 100)
+    let innerTextViewTopAnchorConstraint = innerTextView
+      .topAnchor
+      .constraint(equalTo: innerView.topAnchor, constant: innerViewTopPadding + innerTextViewTopMargin)
+    let innerTextViewLeadingAnchorConstraint = innerTextView
+      .leadingAnchor
+      .constraint(equalTo: innerView.leadingAnchor, constant: innerViewLeadingPadding + innerTextViewLeadingMargin)
+    let innerTextViewTrailingAnchorConstraint = innerTextView
+      .trailingAnchor
+      .constraint(
+        equalTo: innerView.trailingAnchor,
+        constant: -(innerViewTrailingPadding + innerTextViewTrailingMargin))
 
     NSLayoutConstraint.activate([
       innerViewTopAnchorConstraint,
       innerViewBottomAnchorConstraint,
       innerViewLeadingAnchorConstraint,
       innerViewHeightAnchorConstraint,
-      innerViewWidthAnchorConstraint
+      innerViewWidthAnchorConstraint,
+      innerTextViewTopAnchorConstraint,
+      innerTextViewLeadingAnchorConstraint,
+      innerTextViewTrailingAnchorConstraint
     ])
 
     self.innerViewTopAnchorConstraint = innerViewTopAnchorConstraint
@@ -84,6 +116,9 @@ public class PressableRootView: UIView {
     self.innerViewLeadingAnchorConstraint = innerViewLeadingAnchorConstraint
     self.innerViewHeightAnchorConstraint = innerViewHeightAnchorConstraint
     self.innerViewWidthAnchorConstraint = innerViewWidthAnchorConstraint
+    self.innerTextViewTopAnchorConstraint = innerTextViewTopAnchorConstraint
+    self.innerTextViewLeadingAnchorConstraint = innerTextViewLeadingAnchorConstraint
+    self.innerTextViewTrailingAnchorConstraint = innerTextViewTrailingAnchorConstraint
 
     // For debugging
     innerViewTopAnchorConstraint.identifier = "innerViewTopAnchorConstraint"
@@ -91,14 +126,35 @@ public class PressableRootView: UIView {
     innerViewLeadingAnchorConstraint.identifier = "innerViewLeadingAnchorConstraint"
     innerViewHeightAnchorConstraint.identifier = "innerViewHeightAnchorConstraint"
     innerViewWidthAnchorConstraint.identifier = "innerViewWidthAnchorConstraint"
+    innerTextViewTopAnchorConstraint.identifier = "innerTextViewTopAnchorConstraint"
+    innerTextViewLeadingAnchorConstraint.identifier = "innerTextViewLeadingAnchorConstraint"
+    innerTextViewTrailingAnchorConstraint.identifier = "innerTextViewTrailingAnchorConstraint"
   }
 
   private func update() {
+    backgroundColor = Colors.grey50
     innerView.backgroundColor = Colors.blue500
+    innerTextView.attributedText = innerTextViewTextStyle.apply(to: "")
     onPress = onPressButton
     innerViewOnPress = onPressInner
+    if hovered {
+      backgroundColor = Colors.grey100
+    }
+    if pressed {
+      backgroundColor = Colors.grey300
+    }
     if innerViewHovered {
       innerView.backgroundColor = Colors.blue300
+      innerTextView.attributedText = innerTextViewTextStyle.apply(to: "Hovered")
+    }
+    if innerViewPressed {
+      innerView.backgroundColor = Colors.blue800
+      innerTextView.attributedText = innerTextViewTextStyle.apply(to: "Pressed")
+    }
+    if innerViewHovered {
+      if innerViewPressed {
+        innerTextView.attributedText = innerTextViewTextStyle.apply(to: "Hovered & Pressed")
+      }
     }
   }
 }

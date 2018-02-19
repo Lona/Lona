@@ -1211,7 +1211,10 @@ function generate(_, swiftOptions, name, colors, textStyles, json) {
                                                                       updateDoc(/* () */0),
                                                                       /* [] */0
                                                                     ],
-                                                                    /* [] */0
+                                                                    /* :: */[
+                                                                      needsTracking !== 0 ? AppkitPressable$LonaCompilerCore.mouseTrackingFunctions(rootLayer, pressableLayers) : /* [] */0,
+                                                                      /* [] */0
+                                                                    ]
                                                                   ]
                                                                 ]
                                                               ]

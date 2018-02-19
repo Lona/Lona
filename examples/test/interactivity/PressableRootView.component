@@ -14,9 +14,10 @@
   ],
   "rootLayer" : {
     "parameters" : {
-      "paddingTop" : 24,
       "flex" : 0,
       "alignSelf" : "stretch",
+      "backgroundColor" : "grey50",
+      "paddingTop" : 24,
       "paddingBottom" : 24,
       "paddingLeft" : 24,
       "paddingRight" : 24
@@ -33,7 +34,17 @@
         "name" : "Inner",
         "type" : "View",
         "children" : [
+          {
+            "parameters" : {
+              "text" : "",
+              "font" : "headline"
+            },
+            "name" : "InnerText",
+            "type" : "Text",
+            "children" : [
 
+            ]
+          }
         ]
       }
     ]
@@ -133,6 +144,146 @@
               "type" : "Boolean",
               "path" : [
                 "layers",
+                "Button",
+                "hovered"
+              ]
+            }
+          }
+        }
+      },
+      "nodes" : [
+        {
+          "function" : {
+            "name" : "assign(lhs, to rhs)",
+            "arguments" : {
+              "rhs" : {
+                "type" : "identifier",
+                "value" : {
+                  "type" : {
+                    "name" : "Named",
+                    "of" : "String",
+                    "alias" : "Color"
+                  },
+                  "path" : [
+                    "layers",
+                    "Button",
+                    "backgroundColor"
+                  ]
+                }
+              },
+              "lhs" : {
+                "type" : "value",
+                "value" : {
+                  "type" : {
+                    "name" : "Named",
+                    "of" : "String",
+                    "alias" : "Color"
+                  },
+                  "data" : "grey100"
+                }
+              }
+            }
+          },
+          "nodes" : [
+
+          ]
+        }
+      ]
+    },
+    {
+      "function" : {
+        "name" : "if(lhs, is cmp, rhs)",
+        "arguments" : {
+          "cmp" : {
+            "type" : "value",
+            "value" : {
+              "type" : "Comparator",
+              "data" : "equal to"
+            }
+          },
+          "rhs" : {
+            "type" : "value",
+            "value" : {
+              "type" : "Boolean",
+              "data" : true
+            }
+          },
+          "lhs" : {
+            "type" : "identifier",
+            "value" : {
+              "type" : "Boolean",
+              "path" : [
+                "layers",
+                "Button",
+                "pressed"
+              ]
+            }
+          }
+        }
+      },
+      "nodes" : [
+        {
+          "function" : {
+            "name" : "assign(lhs, to rhs)",
+            "arguments" : {
+              "rhs" : {
+                "type" : "identifier",
+                "value" : {
+                  "type" : {
+                    "name" : "Named",
+                    "of" : "String",
+                    "alias" : "Color"
+                  },
+                  "path" : [
+                    "layers",
+                    "Button",
+                    "backgroundColor"
+                  ]
+                }
+              },
+              "lhs" : {
+                "type" : "value",
+                "value" : {
+                  "type" : {
+                    "name" : "Named",
+                    "of" : "String",
+                    "alias" : "Color"
+                  },
+                  "data" : "grey300"
+                }
+              }
+            }
+          },
+          "nodes" : [
+
+          ]
+        }
+      ]
+    },
+    {
+      "function" : {
+        "name" : "if(lhs, is cmp, rhs)",
+        "arguments" : {
+          "cmp" : {
+            "type" : "value",
+            "value" : {
+              "type" : "Comparator",
+              "data" : "equal to"
+            }
+          },
+          "rhs" : {
+            "type" : "value",
+            "value" : {
+              "type" : "Boolean",
+              "data" : true
+            }
+          },
+          "lhs" : {
+            "type" : "identifier",
+            "value" : {
+              "type" : "Boolean",
+              "path" : [
+                "layers",
                 "Inner",
                 "hovered"
               ]
@@ -175,6 +326,228 @@
           },
           "nodes" : [
 
+          ]
+        },
+        {
+          "function" : {
+            "name" : "assign(lhs, to rhs)",
+            "arguments" : {
+              "rhs" : {
+                "type" : "identifier",
+                "value" : {
+                  "type" : "String",
+                  "path" : [
+                    "layers",
+                    "InnerText",
+                    "text"
+                  ]
+                }
+              },
+              "lhs" : {
+                "type" : "value",
+                "value" : {
+                  "type" : "String",
+                  "data" : "Hovered"
+                }
+              }
+            }
+          },
+          "nodes" : [
+
+          ]
+        }
+      ]
+    },
+    {
+      "function" : {
+        "name" : "if(lhs, is cmp, rhs)",
+        "arguments" : {
+          "cmp" : {
+            "type" : "value",
+            "value" : {
+              "type" : "Comparator",
+              "data" : "equal to"
+            }
+          },
+          "rhs" : {
+            "type" : "value",
+            "value" : {
+              "type" : "Boolean",
+              "data" : true
+            }
+          },
+          "lhs" : {
+            "type" : "identifier",
+            "value" : {
+              "type" : "Boolean",
+              "path" : [
+                "layers",
+                "Inner",
+                "pressed"
+              ]
+            }
+          }
+        }
+      },
+      "nodes" : [
+        {
+          "function" : {
+            "name" : "assign(lhs, to rhs)",
+            "arguments" : {
+              "rhs" : {
+                "type" : "identifier",
+                "value" : {
+                  "type" : {
+                    "name" : "Named",
+                    "of" : "String",
+                    "alias" : "Color"
+                  },
+                  "path" : [
+                    "layers",
+                    "Inner",
+                    "backgroundColor"
+                  ]
+                }
+              },
+              "lhs" : {
+                "type" : "value",
+                "value" : {
+                  "type" : {
+                    "name" : "Named",
+                    "of" : "String",
+                    "alias" : "Color"
+                  },
+                  "data" : "blue800"
+                }
+              }
+            }
+          },
+          "nodes" : [
+
+          ]
+        },
+        {
+          "function" : {
+            "name" : "assign(lhs, to rhs)",
+            "arguments" : {
+              "rhs" : {
+                "type" : "identifier",
+                "value" : {
+                  "type" : "String",
+                  "path" : [
+                    "layers",
+                    "InnerText",
+                    "text"
+                  ]
+                }
+              },
+              "lhs" : {
+                "type" : "value",
+                "value" : {
+                  "type" : "String",
+                  "data" : "Pressed"
+                }
+              }
+            }
+          },
+          "nodes" : [
+
+          ]
+        }
+      ]
+    },
+    {
+      "function" : {
+        "name" : "if(lhs, is cmp, rhs)",
+        "arguments" : {
+          "cmp" : {
+            "type" : "value",
+            "value" : {
+              "type" : "Comparator",
+              "data" : "equal to"
+            }
+          },
+          "rhs" : {
+            "type" : "value",
+            "value" : {
+              "type" : "Boolean",
+              "data" : true
+            }
+          },
+          "lhs" : {
+            "type" : "identifier",
+            "value" : {
+              "type" : "Boolean",
+              "path" : [
+                "layers",
+                "Inner",
+                "hovered"
+              ]
+            }
+          }
+        }
+      },
+      "nodes" : [
+        {
+          "function" : {
+            "name" : "if(lhs, is cmp, rhs)",
+            "arguments" : {
+              "cmp" : {
+                "type" : "value",
+                "value" : {
+                  "type" : "Comparator",
+                  "data" : "equal to"
+                }
+              },
+              "rhs" : {
+                "type" : "value",
+                "value" : {
+                  "type" : "Boolean",
+                  "data" : true
+                }
+              },
+              "lhs" : {
+                "type" : "identifier",
+                "value" : {
+                  "type" : "Boolean",
+                  "path" : [
+                    "layers",
+                    "Inner",
+                    "pressed"
+                  ]
+                }
+              }
+            }
+          },
+          "nodes" : [
+            {
+              "function" : {
+                "name" : "assign(lhs, to rhs)",
+                "arguments" : {
+                  "rhs" : {
+                    "type" : "identifier",
+                    "value" : {
+                      "type" : "String",
+                      "path" : [
+                        "layers",
+                        "InnerText",
+                        "text"
+                      ]
+                    }
+                  },
+                  "lhs" : {
+                    "type" : "value",
+                    "value" : {
+                      "type" : "String",
+                      "data" : "Hovered & Pressed"
+                    }
+                  }
+                }
+              },
+              "nodes" : [
+
+              ]
+            }
           ]
         }
       ]

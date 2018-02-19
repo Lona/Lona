@@ -149,3 +149,29 @@ let lonaValue =
     | _ => SwiftIdentifier("UnknownNamedTypeAlias" ++ alias)
     }
   };
+
+let memberOrSelfExpression = (first, statements) =>
+  switch first {
+  | SwiftIdentifier("self") => MemberExpression(statements)
+  | _ => MemberExpression([first] @ statements)
+  };
+
+let layerNameOrSelf = (rootLayer, layer: Types.layer) =>
+  SwiftIdentifier(
+    layer === rootLayer ? "self" : layer.name |> SwiftFormat.layerName
+  );
+
+let layerMemberExpression = (rootLayer, layer: Types.layer, statements) =>
+  memberOrSelfExpression(layerNameOrSelf(rootLayer, layer), statements);
+
+let rec binaryExpressionList = (operator, items) =>
+  switch items {
+  | [] => Empty
+  | [x] => x
+  | [hd, ...tl] =>
+    BinaryExpression({
+      "left": hd,
+      "operator": operator,
+      "right": binaryExpressionList(operator, tl)
+    })
+  };

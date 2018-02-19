@@ -890,7 +890,13 @@ let generate =
                  ),
               [setUpViewsDoc(rootLayer)],
               [setUpConstraintsDoc(rootLayer)],
-              [updateDoc()]
+              [updateDoc()],
+              needsTracking ?
+                AppkitPressable.mouseTrackingFunctions(
+                  rootLayer,
+                  pressableLayers
+                ) :
+                []
             ]
           )
       }),
