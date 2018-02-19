@@ -120,6 +120,7 @@
 		BA48549A1FEF6EC800AB7923 /* PickerListView.swift in Sources */ = {isa = PBXBuildFile; fileRef = BA4854991FEF6EC800AB7923 /* PickerListView.swift */; };
 		BA48549C1FEF7A6500AB7923 /* PickerProtocol.swift in Sources */ = {isa = PBXBuildFile; fileRef = BA48549B1FEF7A6500AB7923 /* PickerProtocol.swift */; };
 		BA9BDC5620132C29004C4D9D /* LonaStudioTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = BA9BDC5520132C29004C4D9D /* LonaStudioTests.swift */; };
+		BAC24A90203578190005B16F /* ComponentInspectorView.swift in Sources */ = {isa = PBXBuildFile; fileRef = BAC24A8F203578190005B16F /* ComponentInspectorView.swift */; };
 		BACCB4271FEFA05B00B58E32 /* TextStylePickerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = BACCB4261FEFA05B00B58E32 /* TextStylePickerView.swift */; };
 		BACCB42B1FEFA26E00B58E32 /* ShadowStyleRowView.swift in Sources */ = {isa = PBXBuildFile; fileRef = BACCB42A1FEFA26E00B58E32 /* ShadowStyleRowView.swift */; };
 		BACCB42D1FEFA50500B58E32 /* ColorSwatchRowView.swift in Sources */ = {isa = PBXBuildFile; fileRef = BACCB42C1FEFA50500B58E32 /* ColorSwatchRowView.swift */; };
@@ -256,6 +257,7 @@
 		BA9BDC5320132C29004C4D9D /* LonaStudioTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = LonaStudioTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		BA9BDC5520132C29004C4D9D /* LonaStudioTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LonaStudioTests.swift; sourceTree = "<group>"; };
 		BA9BDC5720132C29004C4D9D /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		BAC24A8F203578190005B16F /* ComponentInspectorView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ComponentInspectorView.swift; sourceTree = "<group>"; };
 		BACCB4261FEFA05B00B58E32 /* TextStylePickerView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TextStylePickerView.swift; sourceTree = "<group>"; };
 		BACCB42A1FEFA26E00B58E32 /* ShadowStyleRowView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ShadowStyleRowView.swift; sourceTree = "<group>"; };
 		BACCB42C1FEFA50500B58E32 /* ColorSwatchRowView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ColorSwatchRowView.swift; sourceTree = "<group>"; };
@@ -323,10 +325,9 @@
 		3030311F1F34E7200078086F /* Workspace */ = {
 			isa = PBXGroup;
 			children = (
+				BAC24A8E203576730005B16F /* Inspector View */,
 				30453E3D202E0CDE00BA5BFB /* ColorBrowser.swift */,
 				305A19551F463A2800EA033C /* DisclosureContentRow.swift */,
-				30F7C9511ED4AE23009D27DF /* InspectorView.swift */,
-				307718E91F355D31003A597B /* LayerInspectorView.swift */,
 				6B6017CF1EBF9EFA001E02C1 /* LayerList.swift */,
 				306D2FED1F84735900907B4E /* LayerThumbnail.swift */,
 				307B7B4E1F9A71C5001A62D9 /* MetadataEditorView.swift */,
@@ -564,6 +565,16 @@
 				BA9BDC5720132C29004C4D9D /* Info.plist */,
 			);
 			path = LonaStudioTests;
+			sourceTree = "<group>";
+		};
+		BAC24A8E203576730005B16F /* Inspector View */ = {
+			isa = PBXGroup;
+			children = (
+				30F7C9511ED4AE23009D27DF /* InspectorView.swift */,
+				307718E91F355D31003A597B /* LayerInspectorView.swift */,
+				BAC24A8F203578190005B16F /* ComponentInspectorView.swift */,
+			);
+			path = "Inspector View";
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -878,6 +889,7 @@
 				3069E0A01F3254E10005E9A8 /* CSTypography.swift in Sources */,
 				301493A71EC0F415005BC573 /* CanvasView.swift in Sources */,
 				30DE880B1FBA194F00D62A50 /* NSViewControllerExtensions.swift in Sources */,
+				BAC24A90203578190005B16F /* ComponentInspectorView.swift in Sources */,
 				BACCB42D1FEFA50500B58E32 /* ColorSwatchRowView.swift in Sources */,
 				309777701F2A8EC1004C8975 /* WorkspacePreferencesViewController.swift in Sources */,
 				3069E09A1F3243780005E9A8 /* parseCSSColor.swift in Sources */,

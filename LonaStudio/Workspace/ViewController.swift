@@ -553,60 +553,17 @@ class ViewController: NSViewController, NSOutlineViewDataSource, NSOutlineViewDe
         let inspectorView: NSView
 
         if layer.type == "Component", let layer = layer as? CSComponentLayer {
-            let views: [(view: NSView, keyView: NSView)] = layer.component.parameters.map({ parameter in
-                let data = layer.parameters[parameter.name] ?? CSData.Null
-                let value = CSValue(type: parameter.type, data: data)
-                var usesYogaLayout = true
-                if case .named("URL", .string) = value.type {
-                    usesYogaLayout = false
+            inspectorView = ComponentInspectorView(componentLayer: layer, onChangeData: {[unowned self] (data, parameter) in
+                // Handle the empty strings specially - convert to null.
+                // TODO: How can we always allow a null state?
+                if let value = data.string, value == "" {
+                    layer.parameters[parameter.name] = CSData.Null
+                } else {
+                    layer.parameters[parameter.name] = data
                 }
-
-                let valueField = CSValueField(value: value, options: [
-                    CSValueField.Options.isBordered: true,
-                    CSValueField.Options.drawsBackground: true,
-//                    CSValueField.Options.submitOnChange: true,
-                    CSValueField.Options.submitOnChange: false,
-                    CSValueField.Options.usesLinkStyle: false,
-                    CSValueField.Options.usesYogaLayout: usesYogaLayout
-                ])
-
-                valueField.onChangeData = { data in
-                    // Handle the empty strings specially - convert to null.
-                    // TODO: How can we always allow a null state?
-                    if let value = data.string, value == "" {
-                        layer.parameters[parameter.name] = CSData.Null
-                    } else {
-                        layer.parameters[parameter.name] = data
-                    }
-
-                    self.outlineView.render()
-                    self.render()
-                }
-
-                valueField.view.translatesAutoresizingMaskIntoConstraints = false
-
-                let stackView = NSStackView(views: [
-                    NSTextField(labelWithStringCompat: parameter.name)
-                ], orientation: .vertical)
-                stackView.alignment = .left
-
-                stackView.addArrangedSubview(valueField.view, stretched: !(valueField.view is CheckboxField))
-
-                return (view: stackView, keyView: valueField.view)
+                self.outlineView.render()
+                self.render()
             })
-
-            for (index, view) in views.enumerated() {
-                if index == views.count - 1 { continue }
-
-                view.keyView.nextKeyView = views[index + 1].keyView
-            }
-
-            let parametersSection = DisclosureContentRow(title: "Parameters", views: views.map({ $0.view }), stretched: true)
-            parametersSection.contentSpacing = 8
-            parametersSection.contentEdgeInsets = NSEdgeInsets(top: 0, left: 0, bottom: 15, right: 0)
-
-            inspectorView = NSStackView(views: [parametersSection], orientation: .vertical, stretched: true)
-            inspectorView.translatesAutoresizingMaskIntoConstraints = false
         } else {
             let layerInspector = LayerInspectorView(frame: NSRect.zero, layer: layer)
 
@@ -657,6 +614,8 @@ class ViewController: NSViewController, NSOutlineViewDataSource, NSOutlineViewDe
         render()
     }
 }
+
+// MARK: - LayerListDelegate
 
 extension ViewController: LayerListDelegate {
 
