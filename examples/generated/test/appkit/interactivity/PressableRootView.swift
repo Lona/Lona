@@ -28,7 +28,7 @@ public class PressableRootView: NSBox {
 
   // MARK: Public
 
-  public var onPressButton: (() -> Void)?
+  public var onPressOuter: (() -> Void)?
   public var onPressInner: (() -> Void)?
 
   // MARK: Private
@@ -151,10 +151,10 @@ public class PressableRootView: NSBox {
   }
 
   private func update() {
-    fillColor = Colors.grey50
     innerView.fillColor = Colors.blue500
     innerTextView.attributedStringValue = innerTextViewTextStyle.apply(to: "")
-    onPress = onPressButton
+    fillColor = Colors.grey50
+    onPress = onPressOuter
     innerViewOnPress = onPressInner
     if hovered {
       fillColor = Colors.grey100

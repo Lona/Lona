@@ -22,7 +22,7 @@
       "paddingLeft" : 24,
       "paddingRight" : 24
     },
-    "name" : "Button",
+    "name" : "Outer",
     "type" : "View",
     "children" : [
       {
@@ -62,7 +62,7 @@
               },
               "path" : [
                 "layers",
-                "Button",
+                "Outer",
                 "onPress"
               ]
             }
@@ -75,7 +75,7 @@
               },
               "path" : [
                 "parameters",
-                "onPressButton"
+                "onPressOuter"
               ]
             }
           }
@@ -144,7 +144,7 @@
               "type" : "Boolean",
               "path" : [
                 "layers",
-                "Button",
+                "Outer",
                 "hovered"
               ]
             }
@@ -166,7 +166,7 @@
                   },
                   "path" : [
                     "layers",
-                    "Button",
+                    "Outer",
                     "backgroundColor"
                   ]
                 }
@@ -214,7 +214,7 @@
               "type" : "Boolean",
               "path" : [
                 "layers",
-                "Button",
+                "Outer",
                 "pressed"
               ]
             }
@@ -236,7 +236,7 @@
                   },
                   "path" : [
                     "layers",
-                    "Button",
+                    "Outer",
                     "backgroundColor"
                   ]
                 }
@@ -558,7 +558,7 @@
       "type" : {
         "name" : "Function"
       },
-      "name" : "onPressButton"
+      "name" : "onPressOuter"
     },
     {
       "type" : {

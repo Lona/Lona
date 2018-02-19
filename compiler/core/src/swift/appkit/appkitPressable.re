@@ -75,20 +75,7 @@ let deinitTrackingArea =
     })
   ]);
 
-/* override func mouseMoved(with event: NSEvent) {
-       let point = convert(event.locationInWindow, to: nil)
-       let otherViewHovered = otherView.hitTest(point) != nil
-       let mainViewHovered = mainView.hitTest(point) != nil
-
-       if otherViewHovered != self.otherViewHovered || mainViewHovered != self.mainViewHovered {
-           self.otherViewHovered = otherViewHovered
-           self.mainViewHovered = mainViewHovered
-
-           update()
-       }
-   } */
 let mouseTrackingFunctions = (rootLayer, pressableLayers: list(Types.layer)) => {
-  /* otherView.bounds.contains(otherView.convert(event.locationInWindow, from: nil)) */
   let containsPoint = (layer: Types.layer) =>
     SwiftDocument.layerMemberExpression(
       rootLayer,
@@ -153,9 +140,6 @@ let mouseTrackingFunctions = (rootLayer, pressableLayers: list(Types.layer)) => 
           SwiftDocument.binaryExpressionList(
             "&&",
             [
-              /* SwiftIdentifier(
-                   SwiftFormat.layerVariableName(rootLayer, layer, "hovered")
-                 ), */
               SwiftIdentifier(
                 SwiftFormat.layerVariableName(rootLayer, layer, "pressed")
               ),
@@ -317,7 +301,6 @@ let mouseTrackingFunctions = (rootLayer, pressableLayers: list(Types.layer)) => 
   let mouseMoved = eventHandler("mouseMoved", [invokeUpdateHoverState]);
   let mouseDragged = eventHandler("mouseDragged", [invokeUpdateHoverState]);
   let mouseExited = eventHandler("mouseExited", [invokeUpdateHoverState]);
-  /* let mouseExited = eventHandler("mouseExited", [ifTrueSetFalse("hovered")]); */
   let mouseDown =
     eventHandler(
       "mouseDown",

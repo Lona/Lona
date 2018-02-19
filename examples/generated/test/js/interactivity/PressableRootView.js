@@ -1,17 +1,17 @@
 class PressableRootView extends React.Component {
   render() {
+    let Outer$onPress;
+    let Outer$backgroundColor;
     let Inner$onPress;
     let Inner$backgroundColor;
     let InnerText$text;
-    let Button$onPress;
-    let Button$backgroundColor;
-    Button$onPress = this.props.onPressButton
+    Outer$onPress = this.props.onPressOuter
     Inner$onPress = this.props.onPressInner
-    if (Button$hovered) {
-      Button$backgroundColor = "grey100"
+    if (Outer$hovered) {
+      Outer$backgroundColor = "grey100"
     }
-    if (Button$pressed) {
-      Button$backgroundColor = "grey300"
+    if (Outer$pressed) {
+      Outer$backgroundColor = "grey300"
     }
     if (Inner$hovered) {
       Inner$backgroundColor = "blue300"
@@ -28,8 +28,8 @@ class PressableRootView extends React.Component {
     }
     return (
       <View
-        style={[ styles.Button, { onPress: Button$onPress } ]}
-        backgroundColor={Button$backgroundColor}
+        style={[ styles.Outer, { onPress: Outer$onPress } ]}
+        backgroundColor={Outer$backgroundColor}
       >
         <View
           style={[ styles.Inner, { onPress: Inner$onPress } ]}
@@ -45,7 +45,7 @@ class PressableRootView extends React.Component {
 };
 
 let styles = StyleSheet.create({
-  Button: {
+  Outer: {
     alignSelf: "stretch",
     flex: 0,
     paddingBottom: 24,

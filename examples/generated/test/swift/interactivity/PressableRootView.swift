@@ -22,7 +22,7 @@ public class PressableRootView: UIView {
 
   // MARK: Public
 
-  public var onPressButton: (() -> Void)?
+  public var onPressOuter: (() -> Void)?
   public var onPressInner: (() -> Void)?
 
   // MARK: Private
@@ -132,10 +132,10 @@ public class PressableRootView: UIView {
   }
 
   private func update() {
-    backgroundColor = Colors.grey50
     innerView.backgroundColor = Colors.blue500
     innerTextView.attributedText = innerTextViewTextStyle.apply(to: "")
-    onPress = onPressButton
+    backgroundColor = Colors.grey50
+    onPress = onPressOuter
     innerViewOnPress = onPressInner
     if hovered {
       backgroundColor = Colors.grey100
