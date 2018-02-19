@@ -41,10 +41,9 @@ public class If: UIView {
   }
 
   private func update() {
-    var _backgroundColor = #colorLiteral(red: 0, green: 0, blue: 0, alpha: 0)
+    backgroundColor = #colorLiteral(red: 0, green: 0, blue: 0, alpha: 0)
     if enabled {
-      _backgroundColor = Colors.red500
+      backgroundColor = Colors.red500
     }
-    backgroundColor = _backgroundColor
   }
 }

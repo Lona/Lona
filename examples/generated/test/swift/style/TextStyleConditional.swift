@@ -90,10 +90,9 @@ public class TextStyleConditional: UIView {
   }
 
   private func update() {
-    var _textViewTextStyle = TextStyles.body1
+    textViewTextStyle = TextStyles.body1
     if large {
-      _textViewTextStyle = TextStyles.display2
+      textViewTextStyle = TextStyles.display2
     }
-    textViewTextStyle = _textViewTextStyle
   }
 }

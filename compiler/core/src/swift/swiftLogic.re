@@ -66,6 +66,12 @@ let toSwiftAST =
       Ast.SwiftIdentifier(
         name |> Js.String.replace(".width", "WidthAnchorConstraint?.constant")
       )
+    | (_, Ast.SwiftIdentifier(name)) when name |> Js.String.endsWith("onPress") =>
+      Ast.SwiftIdentifier(name |> Js.String.replace(".onPress", "OnPress"))
+    | (_, Ast.SwiftIdentifier(name)) when name |> Js.String.endsWith("hovered") =>
+      Ast.SwiftIdentifier(name |> Js.String.replace(".hovered", "Hovered"))
+    | (_, Ast.SwiftIdentifier(name)) when name |> Js.String.endsWith("pressed") =>
+      Ast.SwiftIdentifier(name |> Js.String.replace(".pressed", "Pressed"))
     /* -- UIKit -- */
     | (UIKit, Ast.SwiftIdentifier(name))
         when name |> Js.String.endsWith(".borderRadius") =>

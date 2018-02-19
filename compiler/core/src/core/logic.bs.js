@@ -22,6 +22,8 @@ var empty = include[0];
 
 var add = include[3];
 
+var exists = include[15];
+
 var elements = include[19];
 
 var IdentifierSet_001 = /* is_empty */include[1];
@@ -49,8 +51,6 @@ var IdentifierSet_012 = /* iter */include[12];
 var IdentifierSet_013 = /* fold */include[13];
 
 var IdentifierSet_014 = /* for_all */include[14];
-
-var IdentifierSet_015 = /* exists */include[15];
 
 var IdentifierSet_016 = /* filter */include[16];
 
@@ -86,7 +86,7 @@ var IdentifierSet = /* module */[
   IdentifierSet_012,
   IdentifierSet_013,
   IdentifierSet_014,
-  IdentifierSet_015,
+  /* exists */exists,
   IdentifierSet_016,
   IdentifierSet_017,
   IdentifierSet_018,
@@ -179,6 +179,22 @@ function accessedIdentifiers(node) {
     }
   };
   return Curry._3(LogicTree[/* reduce */0], inner, empty, node);
+}
+
+function isLayerParameterAssigned(logicNode, parameterName, layer) {
+  var isAssigned = function (param) {
+    return Caml_obj.caml_equal(param[1], /* :: */[
+                "layers",
+                /* :: */[
+                  layer[/* name */1],
+                  /* :: */[
+                    parameterName,
+                    /* [] */0
+                  ]
+                ]
+              ]);
+  };
+  return Curry._2(exists, isAssigned, accessedIdentifiers(logicNode));
 }
 
 function conditionallyAssignedIdentifiers(rootNode) {
@@ -427,6 +443,7 @@ exports.IdentifierSet                      = IdentifierSet;
 exports.LogicTree                          = LogicTree;
 exports.getValueType                       = getValueType;
 exports.accessedIdentifiers                = accessedIdentifiers;
+exports.isLayerParameterAssigned           = isLayerParameterAssigned;
 exports.conditionallyAssignedIdentifiers   = conditionallyAssignedIdentifiers;
 exports.addVariableDeclarations            = addVariableDeclarations;
 exports.prepend                            = prepend;

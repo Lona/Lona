@@ -14,19 +14,23 @@
   ],
   "rootLayer" : {
     "parameters" : {
+      "paddingTop" : 24,
       "flex" : 0,
-      "alignSelf" : "stretch"
+      "alignSelf" : "stretch",
+      "paddingBottom" : 24,
+      "paddingLeft" : 24,
+      "paddingRight" : 24
     },
-    "name" : "View",
+    "name" : "Button",
     "type" : "View",
     "children" : [
       {
         "parameters" : {
-          "backgroundColor" : "#D8D8D8",
+          "backgroundColor" : "blue500",
           "height" : 100,
           "width" : 100
         },
-        "name" : "View 1",
+        "name" : "Inner",
         "type" : "View",
         "children" : [
 
@@ -47,7 +51,7 @@
               },
               "path" : [
                 "layers",
-                "View",
+                "Button",
                 "onPress"
               ]
             }
@@ -60,7 +64,7 @@
               },
               "path" : [
                 "parameters",
-                "onPress"
+                "onPressButton"
               ]
             }
           }
@@ -69,6 +73,111 @@
       "nodes" : [
 
       ]
+    },
+    {
+      "function" : {
+        "name" : "assign(lhs, to rhs)",
+        "arguments" : {
+          "rhs" : {
+            "type" : "identifier",
+            "value" : {
+              "type" : {
+                "name" : "Function"
+              },
+              "path" : [
+                "layers",
+                "Inner",
+                "onPress"
+              ]
+            }
+          },
+          "lhs" : {
+            "type" : "identifier",
+            "value" : {
+              "type" : {
+                "name" : "Function"
+              },
+              "path" : [
+                "parameters",
+                "onPressInner"
+              ]
+            }
+          }
+        }
+      },
+      "nodes" : [
+
+      ]
+    },
+    {
+      "function" : {
+        "name" : "if(lhs, is cmp, rhs)",
+        "arguments" : {
+          "cmp" : {
+            "type" : "value",
+            "value" : {
+              "type" : "Comparator",
+              "data" : "equal to"
+            }
+          },
+          "rhs" : {
+            "type" : "value",
+            "value" : {
+              "type" : "Boolean",
+              "data" : true
+            }
+          },
+          "lhs" : {
+            "type" : "identifier",
+            "value" : {
+              "type" : "Boolean",
+              "path" : [
+                "layers",
+                "Inner",
+                "hovered"
+              ]
+            }
+          }
+        }
+      },
+      "nodes" : [
+        {
+          "function" : {
+            "name" : "assign(lhs, to rhs)",
+            "arguments" : {
+              "rhs" : {
+                "type" : "identifier",
+                "value" : {
+                  "type" : {
+                    "name" : "Named",
+                    "of" : "String",
+                    "alias" : "Color"
+                  },
+                  "path" : [
+                    "layers",
+                    "Inner",
+                    "backgroundColor"
+                  ]
+                }
+              },
+              "lhs" : {
+                "type" : "value",
+                "value" : {
+                  "type" : {
+                    "name" : "Named",
+                    "of" : "String",
+                    "alias" : "Color"
+                  },
+                  "data" : "blue300"
+                }
+              }
+            }
+          },
+          "nodes" : [
+
+          ]
+        }
+      ]
     }
   ],
   "parameters" : [
@@ -76,7 +185,13 @@
       "type" : {
         "name" : "Function"
       },
-      "name" : "onPress"
+      "name" : "onPressButton"
+    },
+    {
+      "type" : {
+        "name" : "Function"
+      },
+      "name" : "onPressInner"
     }
   ],
   "canvases" : [

@@ -8,95 +8,115 @@ public class PressableRootView: NSBox {
   // MARK: Lifecycle
 
   public init() {
-    self.onPress = onPress
-
     super.init(frame: .zero)
 
     setUpViews()
     setUpConstraints()
 
     update()
+
+    addTrackingArea(trackingArea)
   }
 
   public required init?(coder aDecoder: NSCoder) {
     fatalError("init(coder:) has not been implemented")
   }
 
+  deinit {
+    removeTrackingArea(trackingArea)
+  }
+
   // MARK: Public
 
-  public var onPress: (() -> Void)?
+  public var onPressButton: (() -> Void)?
+  public var onPressInner: (() -> Void)?
 
   // MARK: Private
 
-  private var view1View = NSBox()
+  private lazy var trackingArea = NSTrackingArea(
+    rect: self.frame,
+    options: [.mouseEnteredAndExited, .activeAlways, .mouseMoved, .inVisibleRect],
+    owner: self)
 
-  private var topPadding: CGFloat = 0
-  private var trailingPadding: CGFloat = 0
-  private var bottomPadding: CGFloat = 0
-  private var leadingPadding: CGFloat = 0
-  private var view1ViewTopMargin: CGFloat = 0
-  private var view1ViewTrailingMargin: CGFloat = 0
-  private var view1ViewBottomMargin: CGFloat = 0
-  private var view1ViewLeadingMargin: CGFloat = 0
+  private var innerView = NSBox()
 
-  private var view1ViewTopAnchorConstraint: NSLayoutConstraint?
-  private var view1ViewBottomAnchorConstraint: NSLayoutConstraint?
-  private var view1ViewLeadingAnchorConstraint: NSLayoutConstraint?
-  private var view1ViewHeightAnchorConstraint: NSLayoutConstraint?
-  private var view1ViewWidthAnchorConstraint: NSLayoutConstraint?
+  private var topPadding: CGFloat = 24
+  private var trailingPadding: CGFloat = 24
+  private var bottomPadding: CGFloat = 24
+  private var leadingPadding: CGFloat = 24
+  private var innerViewTopMargin: CGFloat = 0
+  private var innerViewTrailingMargin: CGFloat = 0
+  private var innerViewBottomMargin: CGFloat = 0
+  private var innerViewLeadingMargin: CGFloat = 0
+
+  private var hovered = false
+  private var pressed = false
+  private var onPress: (() -> Void)?
+  private var innerViewHovered = false
+  private var innerViewPressed = false
+  private var innerViewOnPress: (() -> Void)?
+
+  private var innerViewTopAnchorConstraint: NSLayoutConstraint?
+  private var innerViewBottomAnchorConstraint: NSLayoutConstraint?
+  private var innerViewLeadingAnchorConstraint: NSLayoutConstraint?
+  private var innerViewHeightAnchorConstraint: NSLayoutConstraint?
+  private var innerViewWidthAnchorConstraint: NSLayoutConstraint?
 
   private func setUpViews() {
     boxType = .custom
     borderType = .noBorder
     contentViewMargins = .zero
-    view1View.boxType = .custom
-    view1View.borderType = .noBorder
-    view1View.contentViewMargins = .zero
+    innerView.boxType = .custom
+    innerView.borderType = .noBorder
+    innerView.contentViewMargins = .zero
 
-    addSubview(view1View)
-
-    view1View.fillColor = #colorLiteral(red: 0.847058823529, green: 0.847058823529, blue: 0.847058823529, alpha: 1)
+    addSubview(innerView)
   }
 
   private func setUpConstraints() {
     translatesAutoresizingMaskIntoConstraints = false
-    view1View.translatesAutoresizingMaskIntoConstraints = false
+    innerView.translatesAutoresizingMaskIntoConstraints = false
 
-    let view1ViewTopAnchorConstraint = view1View
+    let innerViewTopAnchorConstraint = innerView
       .topAnchor
-      .constraint(equalTo: topAnchor, constant: topPadding + view1ViewTopMargin)
-    let view1ViewBottomAnchorConstraint = view1View
+      .constraint(equalTo: topAnchor, constant: topPadding + innerViewTopMargin)
+    let innerViewBottomAnchorConstraint = innerView
       .bottomAnchor
-      .constraint(equalTo: bottomAnchor, constant: -(bottomPadding + view1ViewBottomMargin))
-    let view1ViewLeadingAnchorConstraint = view1View
+      .constraint(equalTo: bottomAnchor, constant: -(bottomPadding + innerViewBottomMargin))
+    let innerViewLeadingAnchorConstraint = innerView
       .leadingAnchor
-      .constraint(equalTo: leadingAnchor, constant: leadingPadding + view1ViewLeadingMargin)
-    let view1ViewHeightAnchorConstraint = view1View.heightAnchor.constraint(equalToConstant: 100)
-    let view1ViewWidthAnchorConstraint = view1View.widthAnchor.constraint(equalToConstant: 100)
+      .constraint(equalTo: leadingAnchor, constant: leadingPadding + innerViewLeadingMargin)
+    let innerViewHeightAnchorConstraint = innerView.heightAnchor.constraint(equalToConstant: 100)
+    let innerViewWidthAnchorConstraint = innerView.widthAnchor.constraint(equalToConstant: 100)
 
     NSLayoutConstraint.activate([
-      view1ViewTopAnchorConstraint,
-      view1ViewBottomAnchorConstraint,
-      view1ViewLeadingAnchorConstraint,
-      view1ViewHeightAnchorConstraint,
-      view1ViewWidthAnchorConstraint
+      innerViewTopAnchorConstraint,
+      innerViewBottomAnchorConstraint,
+      innerViewLeadingAnchorConstraint,
+      innerViewHeightAnchorConstraint,
+      innerViewWidthAnchorConstraint
     ])
 
-    self.view1ViewTopAnchorConstraint = view1ViewTopAnchorConstraint
-    self.view1ViewBottomAnchorConstraint = view1ViewBottomAnchorConstraint
-    self.view1ViewLeadingAnchorConstraint = view1ViewLeadingAnchorConstraint
-    self.view1ViewHeightAnchorConstraint = view1ViewHeightAnchorConstraint
-    self.view1ViewWidthAnchorConstraint = view1ViewWidthAnchorConstraint
+    self.innerViewTopAnchorConstraint = innerViewTopAnchorConstraint
+    self.innerViewBottomAnchorConstraint = innerViewBottomAnchorConstraint
+    self.innerViewLeadingAnchorConstraint = innerViewLeadingAnchorConstraint
+    self.innerViewHeightAnchorConstraint = innerViewHeightAnchorConstraint
+    self.innerViewWidthAnchorConstraint = innerViewWidthAnchorConstraint
 
     // For debugging
-    view1ViewTopAnchorConstraint.identifier = "view1ViewTopAnchorConstraint"
-    view1ViewBottomAnchorConstraint.identifier = "view1ViewBottomAnchorConstraint"
-    view1ViewLeadingAnchorConstraint.identifier = "view1ViewLeadingAnchorConstraint"
-    view1ViewHeightAnchorConstraint.identifier = "view1ViewHeightAnchorConstraint"
-    view1ViewWidthAnchorConstraint.identifier = "view1ViewWidthAnchorConstraint"
+    innerViewTopAnchorConstraint.identifier = "innerViewTopAnchorConstraint"
+    innerViewBottomAnchorConstraint.identifier = "innerViewBottomAnchorConstraint"
+    innerViewLeadingAnchorConstraint.identifier = "innerViewLeadingAnchorConstraint"
+    innerViewHeightAnchorConstraint.identifier = "innerViewHeightAnchorConstraint"
+    innerViewWidthAnchorConstraint.identifier = "innerViewWidthAnchorConstraint"
   }
 
   private func update() {
-    onPress = onPress
+    innerView.fillColor = Colors.blue500
+    onPress = onPressButton
+    innerViewOnPress = onPressInner
+    if innerViewHovered {
+      innerView.fillColor = Colors.blue300
+    }
   }
 }
