@@ -11,8 +11,6 @@ import MASPreferences
 
 class ViewController: NSViewController, NSOutlineViewDataSource, NSOutlineViewDelegate, NSTextFieldDelegate {
 
-    static let CHECKBOX_TAG = 20
-
     @IBOutlet weak var bottom: NSView!
     @IBOutlet weak var left: NSView!
     @IBOutlet weak var drawingSurface: NSView!
@@ -20,7 +18,7 @@ class ViewController: NSViewController, NSOutlineViewDataSource, NSOutlineViewDe
     @IBOutlet weak var verticalSplitter: SectionSplitter!
 
     var selectedLayer: CSLayer? {
-        return outlineView!.item(atRow: outlineView!.selectedRow) as! CSLayer?
+        return outlineView.item(atRow: outlineView.selectedRow) as! CSLayer?
     }
 
     var selectedLayerOrRoot: CSLayer {
@@ -33,19 +31,17 @@ class ViewController: NSViewController, NSOutlineViewDataSource, NSOutlineViewDe
         if targetLayer === dataRoot {
             targetLayer.appendChild(newLayer)
         } else {
-            let parent = outlineView!.parent(forItem: targetLayer) as! CSLayer
-            let index = outlineView!.childIndex(forItem: targetLayer)
+            let parent = outlineView.parent(forItem: targetLayer) as! CSLayer
+            let index = outlineView.childIndex(forItem: targetLayer)
             parent.insertChild(newLayer, at: index + 1)
         }
 
-        renderLayerList()
+        outlineView.render()
 
-        let newLayerIndex = outlineView!.row(forItem: newLayer)
+        let newLayerIndex = outlineView.row(forItem: newLayer)
         let selection: IndexSet = [newLayerIndex]
 
-//        outlineView!.editColumn(0, row: newLayerIndex, with: nil, select: true)
-
-        outlineView!.selectRowIndexes(selection, byExtendingSelection: false)
+        outlineView.selectRowIndexes(selection, byExtendingSelection: false)
 
         render()
     }
@@ -91,7 +87,7 @@ class ViewController: NSViewController, NSOutlineViewDataSource, NSOutlineViewDe
                 layer.reload()
             })
 
-        renderLayerList()
+        outlineView.render()
         render()
     }
 
@@ -110,7 +106,7 @@ class ViewController: NSViewController, NSOutlineViewDataSource, NSOutlineViewDe
             let result = dialog.url
 
             if result != nil {
-                let newLayer = outlineView!.createComponentLayer(from: result!)
+                let newLayer = outlineView.createComponentLayer(from: result!)
 
                 // Add number suffix if needed
                 newLayer.name = component.getNewLayerName(startingWith: newLayer.name)
@@ -331,7 +327,7 @@ class ViewController: NSViewController, NSOutlineViewDataSource, NSOutlineViewDe
 
     var dataRoot: CSLayer { return component.rootLayer }
 
-    var outlineView: LayerList?
+    var outlineView: LayerList!
     var renderSurface: RenderSurface?
     var canvasCollectionView: CanvasCollectionView?
 
@@ -344,7 +340,7 @@ class ViewController: NSViewController, NSOutlineViewDataSource, NSOutlineViewDe
                 topLevelLayer = parent
             }
 
-            self.outlineView!.select(item: topLevelLayer!)
+            self.outlineView.select(item: topLevelLayer!)
         }
 
         if canvasCollectionView == nil {
@@ -362,27 +358,6 @@ class ViewController: NSViewController, NSOutlineViewDataSource, NSOutlineViewDe
         canvasCollectionView?.update(options: options)
     }
 
-    func renderLayerList(fullRender: Bool = false) {
-        let selection = outlineView!.selectedRow
-
-        // Editing during a reload can cause a crash
-        outlineView!.stopEditing()
-
-        outlineView!.reloadData()
-
-        // TODO Is this what we want here? Won't this get rid of all expand/collapse
-        outlineView!.expandItem(dataRoot, expandChildren: true)
-
-        if fullRender {
-            outlineView!.select(row: selection)
-        } else {
-            makeChangeWithoutRendering {
-                // Currently rendering resets the selection, so we set it again manually
-                outlineView!.select(row: selection)
-            }
-        }
-    }
-
     func setComponent(component: CSComponent) {
         self.component = component
         self.outlineView?.component = component
@@ -396,7 +371,7 @@ class ViewController: NSViewController, NSOutlineViewDataSource, NSOutlineViewDe
         self.canvasListView?.editorView.component = component
         self.metadataEditorView?.update(data: component.metadata)
 
-        renderLayerList()
+        outlineView.render()
         render()
     }
 
@@ -485,14 +460,7 @@ class ViewController: NSViewController, NSOutlineViewDataSource, NSOutlineViewDe
 
         // Outline view setup
 
-        let scrollView = NSScrollView()
-
-        let outlineView = createOutlineView()
-        scrollView.addSubview(outlineView)
-        scrollView.backgroundColor = NSColor.parse(css: "rgb(240,240,240)")!
-        scrollView.documentView = outlineView
-
-        left.addSubviewStretched(subview: scrollView)
+        setupLayerList()
 
         // Tab switching
 
@@ -530,59 +498,22 @@ class ViewController: NSViewController, NSOutlineViewDataSource, NSOutlineViewDe
         setComponent(component: component)
     }
 
-    func createOutlineView() -> NSOutlineView {
-        let column = NSTableColumn(identifier: NSUserInterfaceItemIdentifier(rawValue: "layer"))
-        column.resizingMask = NSTableColumn.ResizingOptions.autoresizingMask
-        let visibleColumn = NSTableColumn(identifier: NSUserInterfaceItemIdentifier(rawValue: "visible"))
-        visibleColumn.maxWidth = 20
-
-        column.title = "Song title"
-
-        let outlineView = LayerList()
-        outlineView.onChange = {
-            self.renderLayerList()
+    func setupLayerList() {
+        let outlineView = LayerList(layerDelegate: self)
+        outlineView.onChange = {[unowned self] in
+            self.outlineView.render()
             self.render()
         }
-
-        outlineView.backgroundColor = NSColor.clear
-        outlineView.wantsLayer = true
-        outlineView.columnAutoresizingStyle = .firstColumnOnlyAutoresizingStyle
-
-        self.outlineView = outlineView
-
-        outlineView.addTableColumn(column)
-        outlineView.addTableColumn(visibleColumn)
-        outlineView.outlineTableColumn = column
-
-        outlineView.rowSizeStyle = NSTableView.RowSizeStyle.small
-
-        outlineView.dataSource = self
-        outlineView.delegate = self
-
-        outlineView.reloadData()
         outlineView.expandItem(dataRoot)
+        outlineView.reloadData()
 
-        outlineView.focusRingType = .none
-//        outlineView.usesAlternatingRowBackgroundColors = true
-        outlineView.intercellSpacing = NSSize(width: 10, height: 10)
+        let scrollView = NSScrollView()
+        scrollView.addSubview(outlineView)
+        scrollView.backgroundColor = NSColor.parse(css: "rgb(240,240,240)")!
+        scrollView.documentView = outlineView
 
-        outlineView.registerForDraggedTypes([NSPasteboard.PasteboardType(rawValue: "component.layer")])
-
-        outlineView.headerView = nil
-
-        outlineView.doubleAction = #selector(doubleClick(sender:))
-
-        return outlineView
-    }
-
-    @objc func doubleClick(sender: AnyObject) {
-        outlineView!.editColumn(outlineView!.clickedColumn, row: outlineView!.clickedRow, with: nil, select: true)
-    }
-
-    override var representedObject: Any? {
-        didSet {
-        // Update the view, if already loaded.
-        }
+        left.addSubviewStretched(subview: scrollView)
+        self.outlineView = outlineView
     }
 
     override func keyDown(with event: NSEvent) {
@@ -593,11 +524,11 @@ class ViewController: NSViewController, NSOutlineViewDataSource, NSOutlineViewDe
 
             if targetLayer === dataRoot { return }
 
-            let parent = outlineView!.parent(forItem: targetLayer) as! CSLayer
+            let parent = outlineView.parent(forItem: targetLayer) as! CSLayer
             parent.children = parent.children.filter({ $0 !== targetLayer })
 
             clearInspector()
-            renderLayerList()
+            outlineView.render()
             render()
         } else if characters == String(Character(" ")) {
             canvasCollectionView?.panningEnabled = true
@@ -616,306 +547,69 @@ class ViewController: NSViewController, NSOutlineViewDataSource, NSOutlineViewDe
 
     func renderInspector(item: DataNode) {
         clearInspector()
-
         guard let layer = item as? CSLayer else { return }
 
         let inspectorView: NSView
-
         if layer.type == "Component", let layer = layer as? CSComponentLayer {
-            let views: [(view: NSView, keyView: NSView)] = layer.component.parameters.map({ parameter in
-                let data = layer.parameters[parameter.name] ?? CSData.Null
-                let value = CSValue(type: parameter.type, data: data)
-                var usesYogaLayout = true
-                if case .named("URL", .string) = value.type {
-                    usesYogaLayout = false
+            let componentLayer = ComponentInspectorView(componentLayer: layer)
+            componentLayer.onChangeData = {[unowned self] (data, parameter) in
+                // Handle the empty strings specially - convert to null.
+                // TODO: How can we always allow a null state?
+                if let value = data.string, value == "" {
+                    layer.parameters[parameter.name] = CSData.Null
+                } else {
+                    layer.parameters[parameter.name] = data
                 }
-
-                let valueField = CSValueField(value: value, options: [
-                    CSValueField.Options.isBordered: true,
-                    CSValueField.Options.drawsBackground: true,
-//                    CSValueField.Options.submitOnChange: true,
-                    CSValueField.Options.submitOnChange: false,
-                    CSValueField.Options.usesLinkStyle: false,
-                    CSValueField.Options.usesYogaLayout: usesYogaLayout
-                ])
-
-                valueField.onChangeData = { data in
-                    // Handle the empty strings specially - convert to null.
-                    // TODO: How can we always allow a null state?
-                    if let value = data.string, value == "" {
-                        layer.parameters[parameter.name] = CSData.Null
-                    } else {
-                        layer.parameters[parameter.name] = data
-                    }
-
-                    self.renderLayerList()
-                    self.render()
-                }
-
-                valueField.view.translatesAutoresizingMaskIntoConstraints = false
-
-                let stackView = NSStackView(views: [
-                    NSTextField(labelWithStringCompat: parameter.name)
-                ], orientation: .vertical)
-                stackView.alignment = .left
-
-                stackView.addArrangedSubview(valueField.view, stretched: !(valueField.view is CheckboxField))
-
-                return (view: stackView, keyView: valueField.view)
-            })
-
-            for (index, view) in views.enumerated() {
-                if index == views.count - 1 { continue }
-
-                view.keyView.nextKeyView = views[index + 1].keyView
+                self.outlineView.render()
+                self.render()
             }
-
-            let parametersSection = DisclosureContentRow(title: "Parameters", views: views.map({ $0.view }), stretched: true)
-            parametersSection.contentSpacing = 8
-            parametersSection.contentEdgeInsets = NSEdgeInsets(top: 0, left: 0, bottom: 15, right: 0)
-
-            inspectorView = NSStackView(views: [parametersSection], orientation: .vertical, stretched: true)
-            inspectorView.translatesAutoresizingMaskIntoConstraints = false
+            inspectorView = componentLayer
         } else {
-            let layerInspector = LayerInspectorView(frame: NSRect.zero, layer: layer)
-
-            layerInspector.onChangeInspector = { changeType in
+            let layerInspector = LayerInspectorView(layer: layer)
+            layerInspector.onChangeInspector = {[unowned self] changeType in
                 switch changeType {
                 case .canvas:
                     self.outlineView?.reloadItem(layer)
                     self.render()
                 case .full:
-                    self.renderLayerList(fullRender: true)
+                    self.outlineView.render(fullRender: true)
                     self.render()
                 }
             }
-
             inspectorView = layerInspector
         }
 
-        // Flip the content within the scrollview so it starts at the top
-        let flippedView = FlippedView()
-        flippedView.translatesAutoresizingMaskIntoConstraints = false
-        flippedView.addSubview(inspectorView)
-
-        let scrollView = NSScrollView()
-        scrollView.translatesAutoresizingMaskIntoConstraints = false
-//        scrollView.addSubview(flippedView)
-        scrollView.documentView = flippedView
-        scrollView.hasVerticalRuler = true
-        scrollView.drawsBackground = false
-        scrollView.automaticallyAdjustsContentInsets = false
-        scrollView.contentInsets = NSEdgeInsets(top: 0, left: 20, bottom: 0, right: 20)
-
+        let scrollView = InspectorContentView(inspectorView: inspectorView)
         right.addSubviewStretched(subview: scrollView)
-
-        inspectorView.widthAnchor.constraint(equalTo: flippedView.widthAnchor).isActive = true
-        inspectorView.heightAnchor.constraint(equalTo: flippedView.heightAnchor).isActive = true
-
-        flippedView.leftAnchor.constraint(equalTo: scrollView.leftAnchor, constant: 20).isActive = true
-        flippedView.rightAnchor.constraint(equalTo: scrollView.rightAnchor, constant: -20).isActive = true
 
         // Keep a reference so we can remove it from its superview later
         self.inspectorContent = scrollView
     }
 
-    func outlineView(_ outlineView: NSOutlineView, pasteboardWriterForItem item: Any) -> NSPasteboardWriting? {
-
-        let pp = NSPasteboardItem()
-
-        // working as expected here
-        if let item = item as? DataNode {
-            let index = outlineView.row(forItem: item)
-            pp.setString(String(index), forType: NSPasteboard.PasteboardType(rawValue: "component.layer"))
-        }
-
-        return pp
-    }
-
-    func outlineView(_ outlineView: NSOutlineView, validateDrop info: NSDraggingInfo, proposedItem item: Any?, proposedChildIndex index: Int) -> NSDragOperation {
-        let sourceIndexString = info.draggingPasteboard().string(forType: NSPasteboard.PasteboardType(rawValue: "component.layer"))
-
-        if sourceIndexString != nil, let sourceIndex = Int(sourceIndexString!), let targetLayer = item as? CSLayer? {
-
-            // Can't drop before or after the root view
-            if targetLayer == nil { return NSDragOperation() }
-
-            // Can't move the root
-            if sourceIndex == 0 { return NSDragOperation() }
-
-            let sourceLayer = outlineView.item(atRow: sourceIndex) as! CSLayer
-
-            // Don't allow an item to be dragged into itself
-            if targetLayer === sourceLayer { return NSDragOperation() }
-
-            // Don't allow an item to be dragged into its own subtree
-            var parent = outlineView.parent(forItem: item) as! CSLayer?
-            while parent != nil {
-                if parent === sourceLayer { return NSDragOperation() }
-
-                parent = outlineView.parent(forItem: parent) as! CSLayer?
-            }
-        }
-
-        return NSDragOperation.move
-    }
-
-    func outlineView(_ outlineView: NSOutlineView, acceptDrop info: NSDraggingInfo, item: Any?, childIndex index: Int) -> Bool {
-        let sourceIndexString = info.draggingPasteboard().string(forType: NSPasteboard.PasteboardType(rawValue: "component.layer"))
-
-        if sourceIndexString != nil, let sourceIndex = Int(sourceIndexString!) {
-//            print( "accept drop", item, "index", index, "drag index", sourceIndex)
-
-            let sourceLayer = outlineView.item(atRow: sourceIndex) as! CSLayer
-
-            let oldIndexWithinParent = sourceLayer.removeFromParent()
-
-            let targetLayer = item as! CSLayer
-
-            // Index is -1 when item is dropped directly on another item, rather than above or below
-            if index == -1 {
-                targetLayer.appendChild(sourceLayer)
-            } else {
-                if sourceLayer.parent === targetLayer && oldIndexWithinParent >= 0 && oldIndexWithinParent < index {
-                    targetLayer.insertChild(sourceLayer, at: index - 1)
-                } else {
-                    targetLayer.insertChild(sourceLayer, at: index)
-                }
-            }
-
-            renderLayerList()
-            render()
-
-            return true
-        }
-
-        return false
-    }
-
-    var previousRow: Int?
-
-    var shouldRenderOnSelectionChange = true
-
-    func makeChangeWithoutRendering(f: () -> Void) {
-        shouldRenderOnSelectionChange = false
-        f()
-        shouldRenderOnSelectionChange = true
-    }
-
-    func outlineViewSelectionDidChange(_ notification: Notification) {
-        if let selectedRow = outlineView?.selectedRow {
-            if previousRow != nil && previousRow! >= 0 && previousRow! < outlineView!.numberOfRows {
-                let view = outlineView?.view(atColumn: 1, row: previousRow!, makeIfNecessary: true)
-                let checkbox = view?.viewWithTag(ViewController.CHECKBOX_TAG)
-                if checkbox != nil && !(checkbox!.isHidden) {
-                    checkbox?.isHidden = true
-                }
-            }
-
-            if selectedRow == -1 {
-                clearInspector()
-            } else {
-                let item = outlineView?.item(atRow: selectedRow) as! DataNode!
-
-                // Don't allow hiding the root layer
-                if selectedRow != 0 {
-                    let view = outlineView?.view(atColumn: 1, row: selectedRow, makeIfNecessary: true)
-                    let checkbox = view?.viewWithTag(ViewController.CHECKBOX_TAG)
-                    if checkbox != nil && checkbox!.isHidden {
-                        checkbox?.isHidden = false
-                    }
-                }
-
-                if shouldRenderOnSelectionChange {
-                    renderInspector(item: item!)
-                }
-            }
-            previousRow = selectedRow
-
-            if shouldRenderOnSelectionChange {
-                render()
-            }
-        }
-    }
-
     override func controlTextDidEndEditing(_ obj: Notification) {
         selectedLayer?.name = (obj.object as! NSTextField).stringValue
 
-        renderLayerList()
+        self.outlineView.render()
         render()
     }
+}
 
-    func outlineView(_ outlineView: NSOutlineView, numberOfChildrenOfItem item: Any?) -> Int {
-        if item == nil {
-            return 1
-        } else {
-            let node = item as! DataNode?
-            return node!.childCount()
+// MARK: - LayerListDelegate
+
+extension ViewController: LayerListDelegate {
+
+    func dataRootForLayerList() -> CSLayer {
+        return dataRoot
+    }
+
+    func layerList(_ layerList: LayerList, do action: LayerListAction) {
+        switch action {
+        case .clearInspector:
+            clearInspector()
+        case .render:
+            render()
+        case .renderInspector(let node):
+            renderInspector(item: node)
         }
-    }
-    func outlineView(_ outlineView: NSOutlineView, child index: Int, ofItem item: Any?) -> Any {
-
-        if item == nil {
-            return dataRoot
-        } else {
-            let node = item as! DataNode
-            return node.child(at: index)
-        }
-    }
-
-    func outlineView(_ outlineView: NSOutlineView, isItemExpandable item: Any) -> Bool {
-        return self.outlineView(outlineView, numberOfChildrenOfItem: item) > 0
-    }
-
-    func outlineView(_ outlineView: NSOutlineView, heightOfRowByItem item: Any) -> CGFloat {
-        return 18
-    }
-
-    func outlineView(_ outlineView: NSOutlineView, viewFor tableColumn: NSTableColumn?, item: Any) -> NSView? {
-        let cellView = NSTableCellView()
-
-        switch tableColumn!.identifier.rawValue {
-        case "layer":
-            if let layer = item as? CSLayer {
-                let textField = NSTextField()
-
-                textField.isEditable = true
-                textField.delegate = self
-                textField.isBordered = false
-                textField.drawsBackground = false
-                textField.stringValue = layer.name
-
-                if layer.type == "Component" {
-                    textField.textColor = NSColor.parse(css: "rgb(101,53,160)")!
-                }
-
-                cellView.textField = textField
-                cellView.addSubview(textField)
-
-                if #available(OSX 10.12, *) {
-                    if let image = LayerThumbnail.image(for: layer) {
-                        let imageView = NSImageView(image: image)
-                        cellView.imageView = imageView
-                        cellView.addSubview(imageView)
-                    }
-                }
-            }
-        case "visible":
-            if let layer = item as? CSLayer {
-                let checkbox = CheckboxField(frame: NSRect(x: 0, y: 0, width: 20, height: 20))
-                checkbox.value = layer.visible
-                checkbox.onChange = { value in
-                    layer.visible = value
-                    self.render()
-                }
-                cellView.addSubview(checkbox)
-                checkbox.tag = ViewController.CHECKBOX_TAG
-                checkbox.isHidden = true
-            }
-        default:
-            break
-        }
-
-        return cellView
     }
 }
