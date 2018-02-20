@@ -93,6 +93,15 @@ Open LonaStudio.xcworkspace and build in Xcode 9 on Sierra+. If there are warnin
 
 > It will build on El Capitan, but it likely won't be usable. The changes needed to make are small, if anybody wants to add support.
 
+### Component-to-Sketch
+
+To use the component export to Sketch functionality. You first have to install some node modules. 
+
+```
+$ cd /Lona/LonaStudio/Scripting/Modules/component-to-sketch
+$ npm install
+```
+
 ## Workspace
 
 To work in Lona Studio, you'll need a properly configured *workspace*. A workspace is a directory containing, optionally, the following files:
