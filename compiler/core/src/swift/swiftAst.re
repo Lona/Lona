@@ -1,3 +1,4 @@
+[@bs.deriving accessors]
 type accessLevelModifier =
   | PrivateModifier
   | FileprivateModifier
@@ -5,10 +6,12 @@ type accessLevelModifier =
   | PublicModifier
   | OpenModifier;
 
+[@bs.deriving accessors]
 type mutationModifier =
   | MutatingModifier
   | NonmutatingModifier;
 
+[@bs.deriving accessors]
 type declarationModifier =
   | ClassModifier
   | ConvenienceModifier
@@ -85,6 +88,7 @@ and initializerBlock =
         "didSet": option(list(node))
       }
     )
+[@bs.deriving accessors]
 and node =
   /* | Operator(string) */
   | LiteralExpression(literal)

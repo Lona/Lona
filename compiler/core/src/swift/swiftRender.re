@@ -1,7 +1,5 @@
 open Prettier.Doc.Builders;
 
-open SwiftAst;
-
 let renderFloat = value => {
   let string = string_of_float(value);
   let cleaned =
@@ -12,7 +10,7 @@ let renderFloat = value => {
 
 let renderAccessLevelModifier = node =>
   switch node {
-  | PrivateModifier => s("private")
+  | SwiftAst.PrivateModifier => s("private")
   | FileprivateModifier => s("fileprivate")
   | InternalModifier => s("internal")
   | PublicModifier => s("public")
@@ -21,13 +19,13 @@ let renderAccessLevelModifier = node =>
 
 let renderMutationModifier = node =>
   switch node {
-  | MutatingModifier => s("mutating")
+  | SwiftAst.MutatingModifier => s("mutating")
   | NonmutatingModifier => s("nonmutating")
   };
 
 let renderDeclarationModifier = node =>
   switch node {
-  | ClassModifier => s("class")
+  | SwiftAst.ClassModifier => s("class")
   | ConvenienceModifier => s("convenience")
   | DynamicModifier => s("dynamic")
   | FinalModifier => s("final")
@@ -49,7 +47,7 @@ let renderDeclarationModifier = node =>
 
 let rec render = ast : Prettier.Doc.t('a) =>
   switch ast {
-  | SwiftIdentifier(v) => s(v)
+  | SwiftAst.SwiftIdentifier(v) => s(v)
   | LiteralExpression(v) => renderLiteral(v)
   | MemberExpression(v) =>
     v
@@ -293,7 +291,7 @@ let rec render = ast : Prettier.Doc.t('a) =>
     /* join(concat([hardline, hardline]), o##statements |> List.map(render)) */
     join(concat([hardline]), o##statements |> List.map(render))
   }
-and renderLiteral = (node: literal) =>
+and renderLiteral = (node: SwiftAst.literal) =>
   switch node {
   | Nil => s("nil")
   | Boolean(value) => s(value ? "true" : "false")
@@ -324,7 +322,7 @@ and renderLiteral = (node: literal) =>
       concat([s("["), indent(concat([maybeLine, body])), maybeLine, s("]")])
     );
   }
-and renderTypeAnnotation = (node: typeAnnotation) =>
+and renderTypeAnnotation = (node: SwiftAst.typeAnnotation) =>
   switch node {
   | TypeName(value) => s(value)
   | TypeIdentifier(o) =>
@@ -377,7 +375,7 @@ and renderPattern = node =>
   | OptionalPattern(o) => concat([renderPattern(o##value), s("?")])
   | ExpressionPattern(o) => render(o##value)
   }
-and renderInitializerBlock = (node: initializerBlock) =>
+and renderInitializerBlock = (node: SwiftAst.initializerBlock) =>
   switch node {
   | WillSetDidSetBlock(o) =>
     /* Special case single-statement willSet/didSet and render them in a single line

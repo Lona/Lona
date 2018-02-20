@@ -1,3 +1,4 @@
+[@bs.deriving accessors]
 type binaryOperator =
   | Eq
   | Neq
@@ -8,6 +9,7 @@ type binaryOperator =
   | Plus
   | Noop;
 
+[@bs.deriving accessors]
 type node =
   | Return(node)
   | Literal(Types.lonaValue)
