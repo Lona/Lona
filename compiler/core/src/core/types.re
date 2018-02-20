@@ -5,7 +5,19 @@ type compilerTarget =
 
 type lonaType =
   | Reference(string)
-  | Named(string, lonaType);
+  | Named(string, lonaType)
+  | Function(
+      list(
+        {
+          .
+          "label": string,
+          "type": lonaType
+        }
+      ),
+      lonaType
+    );
+
+let undefinedType = Reference("Undefined");
 
 let booleanType = Reference("Boolean");
 
@@ -18,6 +30,8 @@ let colorType = Named("Color", stringType);
 let textStyleType = Named("TextStyle", stringType);
 
 let urlType = Named("URL", stringType);
+
+let handlerType = Function([], Reference("Undefined"));
 
 type lonaValue = {
   ltype: lonaType,

@@ -45,10 +45,9 @@ public class If: NSBox {
   }
 
   private func update() {
-    var _fillColor = #colorLiteral(red: 0, green: 0, blue: 0, alpha: 0)
+    fillColor = #colorLiteral(red: 0, green: 0, blue: 0, alpha: 0)
     if enabled {
-      _fillColor = Colors.red500
+      fillColor = Colors.red500
     }
-    fillColor = _fillColor
   }
 }

@@ -66,6 +66,12 @@ let toSwiftAST =
       Ast.SwiftIdentifier(
         name |> Js.String.replace(".width", "WidthAnchorConstraint?.constant")
       )
+    | (_, Ast.SwiftIdentifier(name)) when name |> Js.String.endsWith("onPress") =>
+      Ast.SwiftIdentifier(name |> Js.String.replace(".onPress", "OnPress"))
+    | (_, Ast.SwiftIdentifier(name)) when name |> Js.String.endsWith("hovered") =>
+      Ast.SwiftIdentifier(name |> Js.String.replace(".hovered", "Hovered"))
+    | (_, Ast.SwiftIdentifier(name)) when name |> Js.String.endsWith("pressed") =>
+      Ast.SwiftIdentifier(name |> Js.String.replace(".pressed", "Pressed"))
     /* -- UIKit -- */
     | (UIKit, Ast.SwiftIdentifier(name))
         when name |> Js.String.endsWith(".borderRadius") =>
@@ -91,14 +97,6 @@ let toSwiftAST =
     | _ => initialValue
     };
   };
-  let typeAnnotationDoc =
-    fun
-    | Types.Reference(typeName) =>
-      switch typeName {
-      | "Boolean" => Ast.TypeName("Bool")
-      | _ => TypeName(typeName)
-      }
-    | Named(name, _) => TypeName(name);
   let fromCmp = x =>
     switch x {
     | Types.Eq => "=="
@@ -241,7 +239,7 @@ let toSwiftAST =
           "pattern":
             Ast.IdentifierPattern({
               "identifier": identifier |> logicValueToSwiftAST,
-              "annotation": Some(ltype |> typeAnnotationDoc)
+              "annotation": Some(ltype |> SwiftDocument.typeAnnotationDoc)
             }),
           "init": (None: option(Ast.node)),
           "block": (None: option(Ast.initializerBlock))

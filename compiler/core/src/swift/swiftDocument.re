@@ -78,6 +78,16 @@ let localImageName = (framework: SwiftOptions.framework, name) => {
   };
 };
 
+let typeAnnotationDoc =
+  fun
+  | Types.Reference(typeName) =>
+    switch typeName {
+    | "Boolean" => TypeName("Bool")
+    | _ => TypeName(typeName)
+    }
+  | Named(name, _) => TypeName(name)
+  | Function(_, _) => TypeName("(() -> Void)?");
+
 let lonaValue =
     (
       framework: SwiftOptions.framework,
@@ -94,6 +104,7 @@ let lonaValue =
     | "String" => LiteralExpression(String(value.data |> Json.Decode.string))
     | _ => SwiftIdentifier("UnknownReferenceType: " ++ typeName)
     }
+  | Function(_) => SwiftIdentifier("PLACEHOLDER")
   | Named(alias, subtype) =>
     switch alias {
     | "Color" =>
@@ -137,4 +148,30 @@ let lonaValue =
       };
     | _ => SwiftIdentifier("UnknownNamedTypeAlias" ++ alias)
     }
+  };
+
+let memberOrSelfExpression = (first, statements) =>
+  switch first {
+  | SwiftIdentifier("self") => MemberExpression(statements)
+  | _ => MemberExpression([first] @ statements)
+  };
+
+let layerNameOrSelf = (rootLayer, layer: Types.layer) =>
+  SwiftIdentifier(
+    layer === rootLayer ? "self" : layer.name |> SwiftFormat.layerName
+  );
+
+let layerMemberExpression = (rootLayer, layer: Types.layer, statements) =>
+  memberOrSelfExpression(layerNameOrSelf(rootLayer, layer), statements);
+
+let rec binaryExpressionList = (operator, items) =>
+  switch items {
+  | [] => Empty
+  | [x] => x
+  | [hd, ...tl] =>
+    BinaryExpression({
+      "left": hd,
+      "operator": operator,
+      "right": binaryExpressionList(operator, tl)
+    })
   };

@@ -26,11 +26,17 @@ let parameterTypeMap =
     ("paddingLeft", Types.numberType),
     ("borderRadius", Types.numberType),
     ("width", Types.numberType),
-    ("height", Types.numberType)
+    ("height", Types.numberType),
+    /* Interactivity */
+    ("pressed", Types.booleanType),
+    ("hovered", Types.booleanType),
+    ("onPress", Types.handlerType)
   ]
   |> StringMap.fromList;
 
 exception UnknownParameter(string);
+
+exception UnknownType(string);
 
 let parameterType = name =>
   switch (StringMap.find(name, parameterTypeMap)) {
@@ -42,14 +48,41 @@ let parameterType = name =>
   };
 
 module Types = {
-  let lonaType = json => {
-    let referenceType = json => json |> string |> (x => Reference(x));
+  let rec lonaType = json => {
     let namedType = json => {
       let named = field("alias", string, json);
-      let ltype = field("of", string, json);
-      Named(named, Reference(ltype));
+      let ltype = field("of", lonaType, json);
+      Named(named, ltype);
     };
-    json |> either(referenceType, namedType);
+    let functionType = json => {
+      let argumentType = json => {
+        "label": field("label", string, json),
+        "type": field("type", lonaType, json)
+      };
+      let arguments =
+        switch (json |> optional(field("arguments", list(argumentType)))) {
+        | Some(decoded) => decoded
+        | None => []
+        };
+      let returnType =
+        switch (
+          json |> optional(field("arguments", field("returnType", lonaType)))
+        ) {
+        | Some(decoded) => decoded
+        | None => Types.undefinedType
+        };
+      Function(arguments, returnType);
+    };
+    let referenceType = json => json |> string |> (x => Reference(x));
+    let otherType = json => {
+      let name = field("name", string, json);
+      switch name {
+      | "Named" => namedType(json)
+      | "Function" => functionType(json)
+      | _ => raise(UnknownType(name))
+      };
+    };
+    json |> oneOf([referenceType, otherType]);
   };
 };
 

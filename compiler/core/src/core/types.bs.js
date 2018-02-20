@@ -20,14 +20,23 @@ var urlType = /* Named */Block.__(1, [
     stringType
   ]);
 
+var undefinedType = /* Reference */Block.__(0, ["Undefined"]);
+
 var booleanType = /* Reference */Block.__(0, ["Boolean"]);
 
 var numberType = /* Reference */Block.__(0, ["Number"]);
 
+var handlerType = /* Function */Block.__(2, [
+    /* [] */0,
+    /* Reference */Block.__(0, ["Undefined"])
+  ]);
+
+exports.undefinedType = undefinedType;
 exports.booleanType   = booleanType;
 exports.numberType    = numberType;
 exports.stringType    = stringType;
 exports.colorType     = colorType;
 exports.textStyleType = textStyleType;
 exports.urlType       = urlType;
+exports.handlerType   = handlerType;
 /* No side effect */

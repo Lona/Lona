@@ -53,11 +53,17 @@ function toSwiftAST(options, colors, textStyles, rootLayer, logicRootNode) {
     } else if (initialValue.tag === 6) {
       var name = initialValue[0];
       if (name.includes("margin") || name.includes("padding")) {
-        return /* LineComment */Block.__(17, ["TODO: Margin & padding"]);
+        return /* LineComment */Block.__(18, ["TODO: Margin & padding"]);
       } else if (name.endsWith("height")) {
         return /* SwiftIdentifier */Block.__(6, [name.replace(".height", "HeightAnchorConstraint?.constant")]);
       } else if (name.endsWith("width")) {
         return /* SwiftIdentifier */Block.__(6, [name.replace(".width", "WidthAnchorConstraint?.constant")]);
+      } else if (name.endsWith("onPress")) {
+        return /* SwiftIdentifier */Block.__(6, [name.replace(".onPress", "OnPress")]);
+      } else if (name.endsWith("hovered")) {
+        return /* SwiftIdentifier */Block.__(6, [name.replace(".hovered", "Hovered")]);
+      } else if (name.endsWith("pressed")) {
+        return /* SwiftIdentifier */Block.__(6, [name.replace(".pressed", "Pressed")]);
       } else if (match !== 0) {
         var name$1 = initialValue[0];
         if (name$1.endsWith(".borderRadius")) {
@@ -79,18 +85,6 @@ function toSwiftAST(options, colors, textStyles, rootLayer, logicRootNode) {
       }
     } else {
       return initialValue;
-    }
-  };
-  var typeAnnotationDoc = function (param) {
-    if (param.tag) {
-      return /* TypeName */Block.__(0, [param[0]]);
-    } else {
-      var typeName = param[0];
-      if (typeName === "Boolean") {
-        return /* TypeName */Block.__(0, ["Bool"]);
-      } else {
-        return /* TypeName */Block.__(0, [typeName]);
-      }
     }
   };
   var fromCmp = function (x) {
@@ -152,7 +146,7 @@ function toSwiftAST(options, colors, textStyles, rootLayer, logicRootNode) {
               } else if (match[0] !== 0) {
                 if (operator === "==") {
                   var condition = right;
-                  return /* IfStatement */Block.__(12, [{
+                  return /* IfStatement */Block.__(13, [{
                               condition: condition,
                               block: body
                             }]);
@@ -177,7 +171,7 @@ function toSwiftAST(options, colors, textStyles, rootLayer, logicRootNode) {
                     exit = 1;
                   } else if (match$1[0] !== 0) {
                     var condition$1 = left;
-                    return /* IfStatement */Block.__(12, [{
+                    return /* IfStatement */Block.__(13, [{
                                 condition: condition$1,
                                 block: body
                               }]);
@@ -190,7 +184,7 @@ function toSwiftAST(options, colors, textStyles, rootLayer, logicRootNode) {
               }
             }
             if (exit === 1) {
-              return /* IfStatement */Block.__(12, [{
+              return /* IfStatement */Block.__(13, [{
                           condition: /* BinaryExpression */Block.__(2, [{
                                 left: left,
                                 operator: operator,
@@ -201,10 +195,10 @@ function toSwiftAST(options, colors, textStyles, rootLayer, logicRootNode) {
             }
             break;
         case 1 : 
-            return /* StatementListHelper */Block.__(21, [/* :: */[
-                        /* LineComment */Block.__(17, ["TODO: IfExists"]),
+            return /* StatementListHelper */Block.__(22, [/* :: */[
+                        /* LineComment */Block.__(18, ["TODO: IfExists"]),
                         /* :: */[
-                          /* IfStatement */Block.__(12, [{
+                          /* IfStatement */Block.__(13, [{
                                 condition: /* LiteralExpression */Block.__(0, [/* Boolean */Block.__(0, [/* true */1])]),
                                 block: List.map(inner, unwrapBlock(logicRootNode[1]))
                               }]),
@@ -264,7 +258,7 @@ function toSwiftAST(options, colors, textStyles, rootLayer, logicRootNode) {
                 var name$2 = match$2[0];
                 if (name$2.endsWith("textStyle") || name$2.endsWith("font")) {
                   var name$3 = name$2.replace(".font", ".textStyle");
-                  return /* StatementListHelper */Block.__(21, [/* :: */[
+                  return /* StatementListHelper */Block.__(22, [/* :: */[
                               /* BinaryExpression */Block.__(2, [{
                                     left: /* SwiftIdentifier */Block.__(6, [name$3.replace(".textStyle", "TextStyle")]),
                                     operator: "=",
@@ -279,10 +273,10 @@ function toSwiftAST(options, colors, textStyles, rootLayer, logicRootNode) {
                               right: /* MemberExpression */Block.__(1, [/* :: */[
                                     /* SwiftIdentifier */Block.__(6, [name$2.replace(".text", "TextStyle")]),
                                     /* :: */[
-                                      /* FunctionCallExpression */Block.__(16, [{
+                                      /* FunctionCallExpression */Block.__(17, [{
                                             name: /* SwiftIdentifier */Block.__(6, ["apply"]),
                                             arguments: /* :: */[
-                                              /* FunctionCallArgument */Block.__(15, [{
+                                              /* FunctionCallArgument */Block.__(16, [{
                                                     name: /* Some */[/* SwiftIdentifier */Block.__(6, ["to"])],
                                                     value: match$3
                                                   }]),
@@ -327,7 +321,7 @@ function toSwiftAST(options, colors, textStyles, rootLayer, logicRootNode) {
                           modifiers: /* [] */0,
                           pattern: /* IdentifierPattern */Block.__(0, [{
                                 identifier: logicValueToSwiftAST(value),
-                                annotation: /* Some */[typeAnnotationDoc(value[0])]
+                                annotation: /* Some */[SwiftDocument$LonaCompilerCore.typeAnnotationDoc(value[0])]
                               }]),
                           init: /* None */0,
                           block: /* None */0
@@ -370,7 +364,7 @@ function toSwiftAST(options, colors, textStyles, rootLayer, logicRootNode) {
             }
             break;
         case 6 : 
-            return /* StatementListHelper */Block.__(21, [List.map(inner, logicRootNode[0])]);
+            return /* StatementListHelper */Block.__(22, [List.map(inner, logicRootNode[0])]);
         
       }
     }

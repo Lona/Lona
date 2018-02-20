@@ -9,6 +9,15 @@ function layerName(layerName$1) {
   return LodashCamelcase(layerName$1) + "View";
 }
 
+function layerVariableName(rootLayer, layer, variableName) {
+  var match = +(layer === rootLayer);
+  if (match !== 0) {
+    return variableName;
+  } else {
+    return LodashCamelcase(layer[/* name */1]) + "View" + LodashUpperfirst(variableName);
+  }
+}
+
 function variableNameFromIdentifier(rootLayerName, path) {
   if (path) {
     var tail = path[1];
@@ -42,5 +51,6 @@ function variableNameFromIdentifier(rootLayerName, path) {
 }
 
 exports.layerName                  = layerName;
+exports.layerVariableName          = layerVariableName;
 exports.variableNameFromIdentifier = variableNameFromIdentifier;
 /* lodash.camelcase Not a pure module */

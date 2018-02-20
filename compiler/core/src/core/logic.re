@@ -74,6 +74,12 @@ let accessedIdentifiers = node => {
   LogicTree.reduce(inner, IdentifierSet.empty, node);
 };
 
+let isLayerParameterAssigned = (logicNode, parameterName, layer: Types.layer) => {
+  let isAssigned = ((_, value)) =>
+    value == ["layers", layer.name, parameterName];
+  accessedIdentifiers(logicNode) |> IdentifierSet.exists(isAssigned);
+};
+
 let conditionallyAssignedIdentifiers = rootNode => {
   let identifiers = accessedIdentifiers(rootNode);
   let paths = identifiers |> IdentifierSet.elements;

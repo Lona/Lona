@@ -652,6 +652,12 @@ class CSLayer: CSDataDeserializable, CSDataSerializable, DataNode, NSCopying {
             "children": CSData.Array([])
         ])
 
+        if type == "View" {
+            data["pressed"] = CSData.Bool(false)
+            data["hovered"] = CSData.Bool(false)
+            data["onPress"] = CSData.Null
+        }
+
         // Text
         if let value = text {
             data["text"] = CSData.String(value)

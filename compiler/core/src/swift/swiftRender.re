@@ -191,6 +191,8 @@ let rec render = ast : Prettier.Doc.t('a) =>
       render(CodeBlock({"statements": o##body}))
     ];
     group(concat(parts));
+  | DeinitializerDeclaration(body) =>
+    s("deinit ") <+> render(CodeBlock({"statements": body}))
   | FunctionDeclaration(o) =>
     let renderResult = result =>
       s(" -> ") <+> (result |> renderTypeAnnotation);
@@ -316,7 +318,7 @@ and renderLiteral = (node: literal) =>
       2
     );
   | Array(body) =>
-    let maybeLine = List.length(body) > 0 ? line : s("");
+    let maybeLine = List.length(body) > 0 ? softline : s("");
     let body = body |> List.map(render) |> join(concat([s(","), line]));
     group(
       concat([s("["), indent(concat([maybeLine, body])), maybeLine, s("]")])

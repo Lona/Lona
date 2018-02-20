@@ -30,7 +30,10 @@ let stylesSet =
     "paddingBottom",
     "paddingLeft",
     "width",
-    "height"
+    "height",
+    "pressed",
+    "hovered",
+    "onPress"
   ]);
 
 let flatten = (layer: Types.layer) => {

@@ -150,6 +150,7 @@ and node =
         "body": list(node)
       }
     )
+  | DeinitializerDeclaration(list(node))
   | FunctionDeclaration(
       {
         .

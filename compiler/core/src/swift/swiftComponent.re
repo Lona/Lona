@@ -17,6 +17,9 @@ type directionParameter = {
   swiftName: string
 };
 
+let isFunctionParameter = (param: Types.parameter) =>
+  param.ltype == Types.handlerType;
+
 let generate =
     (
       options: Options.options,
@@ -30,15 +33,25 @@ let generate =
   /* Remove the root element */
   let nonRootLayers = rootLayer |> Layer.flatten |> List.tl;
   let logic = json |> Decode.Component.logic;
-  let logic =
-    Logic.enforceSingleAssignment(
-      (_, path) => [
-        "_" ++ Format.variableNameFromIdentifier(rootLayer.name, path)
-      ],
-      (_, path) =>
-        Logic.Literal(LonaValue.defaultValueForParameter(List.nth(path, 2))),
-      logic
-    );
+  let textLayers =
+    nonRootLayers
+    |> List.filter((layer: Types.layer) => layer.typeName == Types.Text);
+  let pressableLayers =
+    rootLayer
+    |> Layer.flatten
+    |> List.filter(Logic.isLayerParameterAssigned(logic, "onPress"));
+  let needsTracking =
+    swiftOptions.framework == SwiftOptions.AppKit
+    && List.length(pressableLayers) > 0;
+  /* let logic =
+     Logic.enforceSingleAssignment(
+       (_, path) => [
+         "_" ++ Format.variableNameFromIdentifier(rootLayer.name, path)
+       ],
+       (_, path) =>
+         Logic.Literal(LonaValue.defaultValueForParameter(List.nth(path, 2))),
+       logic
+     ); */
   let layerParameterAssignments =
     Layer.logicAssignmentsFromLayerParameters(rootLayer);
   let assignments = Layer.parameterAssignmentsFromLogic(rootLayer, logic);
@@ -48,36 +61,31 @@ let generate =
     fun
     | Constraint.Required => "required"
     | Low => "defaultLow";
-  let typeAnnotationDoc =
-    fun
-    | Types.Reference(typeName) =>
-      switch typeName {
-      | "Boolean" => TypeName("Bool")
-      | _ => TypeName(typeName)
-      }
-    | Named(name, _) => TypeName(name);
-  let parameterVariableDoc = (parameter: Decode.parameter) =>
+  let parameterVariableDoc = (parameter: Types.parameter) =>
     VariableDeclaration({
       "modifiers": [AccessLevelModifier(PublicModifier)],
       "pattern":
         IdentifierPattern({
           "identifier": SwiftIdentifier(parameter.name),
-          "annotation": Some(parameter.ltype |> typeAnnotationDoc)
+          "annotation":
+            Some(parameter.ltype |> SwiftDocument.typeAnnotationDoc)
         }),
       "init": None,
       "block":
-        Some(
-          WillSetDidSetBlock({
-            "willSet": None,
-            "didSet":
-              Some([
-                FunctionCallExpression({
-                  "name": SwiftIdentifier("update"),
-                  "arguments": []
-                })
-              ])
-          })
-        )
+        isFunctionParameter(parameter) ?
+          None :
+          Some(
+            WillSetDidSetBlock({
+              "willSet": None,
+              "didSet":
+                Some([
+                  FunctionCallExpression({
+                    "name": SwiftIdentifier("update"),
+                    "arguments": []
+                  })
+                ])
+            })
+          )
     });
   let getLayerTypeName = layerType =>
     switch (swiftOptions.framework, layerType) {
@@ -224,11 +232,52 @@ let generate =
       };
     marginVariables @ paddingVariables;
   };
+  let pressableVariableDoc = (layer: Types.layer) => [
+    VariableDeclaration({
+      "modifiers": [AccessLevelModifier(PrivateModifier)],
+      "pattern":
+        IdentifierPattern({
+          "identifier":
+            SwiftIdentifier(
+              Format.layerVariableName(rootLayer, layer, "hovered")
+            ),
+          "annotation": None
+        }),
+      "init": Some(LiteralExpression(Boolean(false))),
+      "block": None
+    }),
+    VariableDeclaration({
+      "modifiers": [AccessLevelModifier(PrivateModifier)],
+      "pattern":
+        IdentifierPattern({
+          "identifier":
+            SwiftIdentifier(
+              Format.layerVariableName(rootLayer, layer, "pressed")
+            ),
+          "annotation": None
+        }),
+      "init": Some(LiteralExpression(Boolean(false))),
+      "block": None
+    }),
+    VariableDeclaration({
+      "modifiers": [AccessLevelModifier(PrivateModifier)],
+      "pattern":
+        IdentifierPattern({
+          "identifier":
+            SwiftIdentifier(
+              Format.layerVariableName(rootLayer, layer, "onPress")
+            ),
+          "annotation": Some(OptionalType(TypeName("(() -> Void)")))
+        }),
+      "init": None,
+      "block": None
+    })
+  ];
   let initParameterDoc = (parameter: Decode.parameter) =>
     Parameter({
       "externalName": None,
       "localName": parameter.name,
-      "annotation": parameter.ltype |> typeAnnotationDoc,
+      "annotation": parameter.ltype |> SwiftDocument.typeAnnotationDoc,
       "defaultValue": None
     });
   let initParameterAssignmentDoc = (parameter: Decode.parameter) =>
@@ -272,13 +321,18 @@ let generate =
   let initializerDoc = () =>
     InitializerDeclaration({
       "modifiers": [AccessLevelModifier(PublicModifier)],
-      "parameters": parameters |> List.map(initParameterDoc),
+      "parameters":
+        parameters
+        |> List.filter(param => ! isFunctionParameter(param))
+        |> List.map(initParameterDoc),
       "failable": None,
       "body":
         Document.joinGroups(
           Empty,
           [
-            parameters |> List.map(initParameterAssignmentDoc),
+            parameters
+            |> List.filter(param => ! isFunctionParameter(param))
+            |> List.map(initParameterAssignmentDoc),
             [
               MemberExpression([
                 SwiftIdentifier("super"),
@@ -308,7 +362,8 @@ let generate =
                 "name": SwiftIdentifier("update"),
                 "arguments": []
               })
-            ]
+            ],
+            needsTracking ? [AppkitPressable.addTrackingArea] : []
           ]
         )
     });
@@ -801,9 +856,6 @@ let generate =
           )
     });
   };
-  let textLayers =
-    nonRootLayers
-    |> List.filter((layer: Types.layer) => layer.typeName == Types.Text);
   TopLevelDeclaration({
     "statements": [
       SwiftDocument.importFramework(swiftOptions.framework),
@@ -823,19 +875,28 @@ let generate =
               [Empty, LineComment("MARK: Lifecycle")],
               [initializerDoc()],
               [initializerCoderDoc()],
+              needsTracking ? [AppkitPressable.deinitTrackingArea] : [],
               List.length(parameters) > 0 ? [LineComment("MARK: Public")] : [],
               parameters |> List.map(parameterVariableDoc),
               [LineComment("MARK: Private")],
+              needsTracking ? [AppkitPressable.trackingAreaVar] : [],
               nonRootLayers |> List.map(viewVariableDoc),
               textLayers |> List.map(textStyleVariableDoc),
               rootLayer |> Layer.flatmap(spacingVariableDoc) |> List.concat,
+              pressableLayers |> List.map(pressableVariableDoc) |> List.concat,
               constraints
               |> List.map(def =>
                    constraintVariableDoc(formatConstraintVariableName(def))
                  ),
               [setUpViewsDoc(rootLayer)],
               [setUpConstraintsDoc(rootLayer)],
-              [updateDoc()]
+              [updateDoc()],
+              needsTracking ?
+                AppkitPressable.mouseTrackingFunctions(
+                  rootLayer,
+                  pressableLayers
+                ) :
+                []
             ]
           )
       }),

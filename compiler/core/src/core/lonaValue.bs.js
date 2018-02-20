@@ -6,6 +6,13 @@ var Js_boolean                 = require("bs-platform/lib/js/js_boolean.js");
 var Types$LonaCompilerCore     = require("./types.bs.js");
 var StringMap$LonaCompilerCore = require("../containers/stringMap.bs.js");
 
+function $$null$1() {
+  return /* record */[
+          /* ltype */Types$LonaCompilerCore.undefinedType,
+          /* data */null
+        ];
+}
+
 function $$boolean(value) {
   return /* record */[
           /* ltype */Types$LonaCompilerCore.booleanType,
@@ -232,7 +239,34 @@ var parameterDefaultValueMap = StringMap$LonaCompilerCore.fromList(/* :: */[
                                                       /* data */0
                                                     ]
                                                   ],
-                                                  /* [] */0
+                                                  /* :: */[
+                                                    /* tuple */[
+                                                      "pressed",
+                                                      /* record */[
+                                                        /* ltype */Types$LonaCompilerCore.booleanType,
+                                                        /* data */Js_boolean.to_js_boolean(/* false */0)
+                                                      ]
+                                                    ],
+                                                    /* :: */[
+                                                      /* tuple */[
+                                                        "hovered",
+                                                        /* record */[
+                                                          /* ltype */Types$LonaCompilerCore.booleanType,
+                                                          /* data */Js_boolean.to_js_boolean(/* false */0)
+                                                        ]
+                                                      ],
+                                                      /* :: */[
+                                                        /* tuple */[
+                                                          "onPress",
+                                                          /* record */[
+                                                            /* ltype */Types$LonaCompilerCore.undefinedType,
+                                                            /* data */null
+                                                          ]
+                                                        ],
+                                                        /* [] */0
+                                                      ]
+                                                    ]
+                                                  ]
                                                 ]
                                               ]
                                             ]
@@ -261,6 +295,7 @@ function defaultValueForParameter(name) {
   return Curry._2(StringMap$LonaCompilerCore.find, name, parameterDefaultValueMap);
 }
 
+exports.$$null                   = $$null$1;
 exports.$$boolean                = $$boolean;
 exports.number                   = number;
 exports.string                   = string;
