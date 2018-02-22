@@ -83,11 +83,7 @@
                 "Image",
                 "image"
               ],
-              "type" : {
-                "alias" : "URL",
-                "name" : "Named",
-                "of" : "String"
-              }
+              "type" : "URL"
             }
           }
         },
@@ -132,37 +128,6 @@
       "function" : {
         "arguments" : {
           "lhs" : {
-            "type" : "identifier",
-            "value" : {
-              "path" : [
-                "parameters",
-                "body"
-              ],
-              "type" : "String"
-            }
-          },
-          "rhs" : {
-            "type" : "identifier",
-            "value" : {
-              "path" : [
-                "layers",
-                "Body",
-                "text"
-              ],
-              "type" : "String"
-            }
-          }
-        },
-        "name" : "assign(lhs, to rhs)"
-      },
-      "nodes" : [
-
-      ]
-    },
-    {
-      "function" : {
-        "arguments" : {
-          "lhs" : {
             "type" : "value",
             "value" : {
               "data" : 20,
@@ -178,11 +143,48 @@
               ],
               "type" : "String"
             }
+          },
+          "variable" : {
+            "type" : "value",
+            "value" : {
+              "data" : "item",
+              "type" : "String"
+            }
           }
         },
-        "name" : "if(value)"
+        "name" : "if let(variable, equal value)"
       },
       "nodes" : [
+        {
+          "function" : {
+            "arguments" : {
+              "lhs" : {
+                "type" : "identifier",
+                "value" : {
+                  "path" : [
+                    "item"
+                  ],
+                  "type" : "String"
+                }
+              },
+              "rhs" : {
+                "type" : "identifier",
+                "value" : {
+                  "path" : [
+                    "layers",
+                    "Body",
+                    "text"
+                  ],
+                  "type" : "String"
+                }
+              }
+            },
+            "name" : "assign(lhs, to rhs)"
+          },
+          "nodes" : [
+
+          ]
+        },
         {
           "function" : {
             "arguments" : {
@@ -220,19 +222,22 @@
   "parameters" : [
     {
       "name" : "image",
-      "type" : {
-        "alias" : "URL",
-        "name" : "Named",
-        "of" : "String"
-      }
+      "type" : "URL"
     },
     {
       "name" : "headline",
       "type" : "String"
     },
     {
+      "defaultValue" : {
+        "data" : {
+          "data" : null,
+          "tag" : "None"
+        },
+        "type" : "String?"
+      },
       "name" : "body",
-      "type" : "String"
+      "type" : "String?"
     }
   ],
   "rootLayer" : {
