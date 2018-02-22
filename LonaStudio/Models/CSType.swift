@@ -133,6 +133,10 @@ indirect enum CSType: Equatable, CSDataSerializable, CSDataDeserializable {
     // TODO Params on
     // optional, generic, array, dictionary
     func toData() -> CSData {
+        for (name, type) in CSType.builtInTypes where self == type {
+            return name.toData()
+        }
+
         switch self {
         case .any: return .String("Any")
         case .named(let name, let type):
@@ -307,13 +311,25 @@ indirect enum CSType: Equatable, CSDataSerializable, CSDataDeserializable {
         return CSType.enumeration(values)
     }
 
-    static var builtInTypes: [String: CSType] = [
-        "Color": CSColorType,
-        "TextStyle": CSTextStyleType,
-        "Comparator": CSComparatorType,
-        "URL": CSURLType,
-        "Component": CSComponentType
-        ]
+    static var builtInTypes: [String: CSType] = {
+        var data: [String: CSType] = [
+            "Boolean": CSType.bool,
+            "Number": CSType.number,
+            "String": CSType.string,
+            "Color": CSColorType,
+            "TextStyle": CSTextStyleType,
+            "Comparator": CSComparatorType,
+            "URL": CSURLType,
+            "Component": CSComponentType
+            ]
+
+        data.forEach({ pair in
+            let (k, v) = pair
+            data[k + "?"] = v.makeOptional()
+        })
+
+        return data
+    }()
 }
 
 // MARK: - Optional Handling
@@ -356,15 +372,6 @@ let CSTextStyleType = CSType.named("TextStyle", .string)
 let CSURLType = CSType.named("URL", .string)
 let CSComponentType = CSType.named("Component", .any)
 let CSHandlerType = CSType.function([], .undefined)
-
-//let CSParameterType = CSType.enumeration([
-//    CSValue(type: .string, data: .String("Boolean")),
-//    CSValue(type: .string, data: .String("Number")),
-//    CSValue(type: .string, data: .String("String")),
-//    CSValue(type: .string, data: .String("Color")),
-//    CSValue(type: .string, data: .String("TextStyle")),
-//    CSValue(type: .string, data: .String("URL")),
-//])
 
 let CSComparatorType = CSType.enumeration([
     CSValue(type: .string, data: .String("equal to")),
