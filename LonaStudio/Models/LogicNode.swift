@@ -20,10 +20,15 @@ class LogicNode: DataNodeParent, DataNodeCopying {
     required init() {}
 
     func toData() -> CSData {
-        return CSData.Object([
-            "nodes": nodes.toData(),
+        var data = CSData.Object([
             "function": invocation.toData()
         ])
+
+        if !nodes.isEmpty {
+            data["nodes"] = nodes.toData()
+        }
+
+        return data
     }
 
     func childCount() -> Int { return nodes.count }

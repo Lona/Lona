@@ -451,6 +451,21 @@ class CSLayer: CSDataDeserializable, CSDataSerializable, DataNode, NSCopying {
         }
     }
 
+    static let defaultParameterValue: [String: CSData] = [
+        "borderRadius": CSData.Number(0),
+        "flex": CSData.Number(0),
+        "flexDirection": CSData.String("column"),
+        "marginTop": CSData.Number(0),
+        "marginRight": CSData.Number(0),
+        "marginBottom": CSData.Number(0),
+        "marginLeft": CSData.Number(0),
+        "paddingTop": CSData.Number(0),
+        "paddingRight": CSData.Number(0),
+        "paddingBottom": CSData.Number(0),
+        "paddingLeft": CSData.Number(0),
+        "visible": CSData.Bool(true)
+    ]
+
     func encodeParameters() -> [String: CSData] {
         var parameters = self.parameters
 
@@ -458,16 +473,27 @@ class CSLayer: CSDataDeserializable, CSDataSerializable, DataNode, NSCopying {
             parameters.removeValue(forKey: key)
         }
 
+        for (key, defaultValue) in CSLayer.defaultParameterValue {
+            if let value = parameters[key], value == defaultValue {
+                parameters.removeValue(forKey: key)
+            }
+        }
+
         return parameters
     }
 
     func toData() -> CSData {
-        return CSData.Object([
+        var data = CSData.Object([
             "name": name.toData(),
             "type": type.toData(),
-            "parameters": CSData.Object(encodeParameters()),
-            "children": children.toData()
+            "parameters": CSData.Object(encodeParameters())
         ])
+
+        if !children.isEmpty {
+            data["children"] = children.toData()
+        }
+
+        return data
     }
 
     func copy(with zone: NSZone? = nil) -> Any {

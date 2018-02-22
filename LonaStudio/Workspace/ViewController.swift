@@ -315,8 +315,7 @@ class ViewController: NSViewController, NSOutlineViewDataSource, NSOutlineViewDe
             Canvas(visible: true, name: "iPhone 7+", width: 414, height: 100, heightMode: "At Least", exportScale: 1, backgroundColor: "white")
         ],
         rootLayer: CSLayer(name: "View", type: "View", parameters: [
-            "alignSelf": "stretch".toData(),
-            "flex": 0.toData()
+            "alignSelf": "stretch".toData()
         ]),
         parameters: [],
         cases: [CSCase.defaultCase],
