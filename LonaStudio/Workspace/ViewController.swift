@@ -9,7 +9,7 @@
 import Cocoa
 import MASPreferences
 
-class ViewController: NSViewController, NSOutlineViewDataSource, NSOutlineViewDelegate, NSTextFieldDelegate {
+class ViewController: NSViewController, NSOutlineViewDataSource, NSOutlineViewDelegate {
 
     @IBOutlet weak var bottom: NSView!
     @IBOutlet weak var left: NSView!
@@ -551,8 +551,8 @@ class ViewController: NSViewController, NSOutlineViewDataSource, NSOutlineViewDe
 
         let inspectorView: NSView
         if layer.type == "Component", let layer = layer as? CSComponentLayer {
-            let componentLayer = ComponentInspectorView(componentLayer: layer)
-            componentLayer.onChangeData = {[unowned self] (data, parameter) in
+            let componentInspectorView = ComponentInspectorView(componentLayer: layer)
+            componentInspectorView.onChangeData = {[unowned self] (data, parameter) in
                 // Handle the empty strings specially - convert to null.
                 // TODO: How can we always allow a null state?
                 if let value = data.string, value == "" {
@@ -562,8 +562,9 @@ class ViewController: NSViewController, NSOutlineViewDataSource, NSOutlineViewDe
                 }
                 self.outlineView.render()
                 self.render()
+                componentInspectorView.reload()
             }
-            inspectorView = componentLayer
+            inspectorView = componentInspectorView
         } else {
             let layerInspector = LayerInspectorView(layer: layer)
             layerInspector.onChangeInspector = {[unowned self] changeType in
@@ -584,13 +585,6 @@ class ViewController: NSViewController, NSOutlineViewDataSource, NSOutlineViewDe
 
         // Keep a reference so we can remove it from its superview later
         self.inspectorContent = scrollView
-    }
-
-    override func controlTextDidEndEditing(_ obj: Notification) {
-        selectedLayer?.name = (obj.object as! NSTextField).stringValue
-
-        self.outlineView.render()
-        render()
     }
 }
 

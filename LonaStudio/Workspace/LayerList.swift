@@ -112,6 +112,11 @@ final class LayerList: NSOutlineView, NSTextFieldDelegate {
             }
         }
     }
+
+    override func controlTextDidEndEditing(_ obj: Notification) {
+        selectedLayer?.name = (obj.object as! NSTextField).stringValue
+        render()
+    }
 }
 
 // MARK: - Private

@@ -27,6 +27,16 @@ final class ComponentInspectorView: NSStackView {
         fatalError("init(coder:) has not been implemented")
     }
 
+    // MARK: - Public
+
+    func reload() {
+        subviews.forEach({ subview in subview.removeFromSuperview() })
+
+        setupViews()
+    }
+
+    // MARK: - Private
+
     private func setupViews() {
         let views = setupValueFields()
         let parametersSection = DisclosureContentRow(title: "Parameters", views: views.map({ $0.view }), stretched: true)
@@ -42,10 +52,17 @@ final class ComponentInspectorView: NSStackView {
 
     private func setupValueFields() -> [(view: NSView, keyView: NSView)] {
         let views: [(view: NSView, keyView: NSView)] = componentLayer.component.parameters.map({ parameter in
-            let data = componentLayer.parameters[parameter.name] ?? CSData.Null
+            let data: CSData
+            if parameter.type.isOptional() {
+                data = componentLayer.parameters[parameter.name] ?? CSUnitValue.wrap(in: parameter.type, tagged: "None").data
+            } else {
+                data = componentLayer.parameters[parameter.name] ?? CSData.Null
+            }
             let value = CSValue(type: parameter.type, data: data)
             var usesYogaLayout = true
             if case .named("URL", .string) = value.type {
+                usesYogaLayout = false
+            } else if case .variant(_) = value.type {
                 usesYogaLayout = false
             }
 
