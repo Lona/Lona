@@ -304,22 +304,46 @@ let CSIfFunction = CSFunction(
 )
 
 let CSIfExistsFunction = CSFunction(
-    name: "If",
-    description: "Check if a value exists",
+    name: "If let",
+    description: "Assign an optional value to a new variable",
     parameters: [
-        CSFunction.Parameter(label: nil, name: "value", type: .variable(type: CSGenericTypeA, access: .read))
+        CSFunction.Parameter(label: nil, name: "variable", type: .declaration()),
+        CSFunction.Parameter(label: "equal", name: "value", type: .variable(type: CSGenericTypeA, access: .read))
         ],
     hasBody: true,
     invoke: { arguments, scope in
+        let variable: CSValue = arguments["variable"]!.resolve(in: scope)
         let value: CSValue = arguments["value"]!.resolve(in: scope)
+
+        if value.type.isOptional() {
+            if value.tag() == "None" {
+                return .stepOver
+            } else {
+                let s: CSScope = scope
+
+                if let name = variable.data.string {
+                    s.declare(variable: name, as: (value: value.unwrapVariant() ?? CSUndefinedValue, access: CSAccess.write))
+                }
+
+                return .stepInto
+            }
+        }
 
         if value.data.isNull {
             return .stepOver
+        } else {
+            return .stepInto
         }
-
-        return .stepInto
     },
-    updateScope: { _, _  in }
+    updateScope: { arguments, scope in
+        let variable: CSValue = arguments["variable"]!.resolve(in: scope)
+        let value: CSValue = arguments["value"]!.resolve(in: scope)
+        let unwrappedType = value.type.unwrapOptional() ?? CSType.undefined
+
+        if let name = variable.data.string {
+            scope.declare(variable: name, as: (value: CSValue(type: unwrappedType, data: .Null), access: CSAccess.write))
+        }
+    }
 )
 
 let CSDefineFunction = CSFunction(

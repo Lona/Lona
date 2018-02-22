@@ -1,15 +1,165 @@
 {
-  "metadata" : {
+  "canvases" : [
+    {
+      "backgroundColor" : "white",
+      "exportScale" : 1,
+      "height" : 0,
+      "heightMode" : "At Least",
+      "name" : "iPhone SE",
+      "parameters" : {
 
-  },
+      },
+      "visible" : true,
+      "width" : 320
+    },
+    {
+      "backgroundColor" : "white",
+      "exportScale" : 1,
+      "height" : 0,
+      "heightMode" : "At Least",
+      "name" : "iPhone 7",
+      "parameters" : {
+
+      },
+      "visible" : true,
+      "width" : 375
+    },
+    {
+      "backgroundColor" : "white",
+      "exportScale" : 1,
+      "height" : 0,
+      "heightMode" : "At Least",
+      "name" : "iPhone 7+",
+      "parameters" : {
+
+      },
+      "visible" : true,
+      "width" : 414
+    }
+  ],
   "cases" : [
     {
       "name" : "Default",
+      "type" : "entry",
       "value" : {
 
       },
-      "type" : "entry",
       "visible" : true
+    }
+  ],
+  "config" : {
+    "canvasLayout" : "xy"
+  },
+  "logic" : [
+    {
+      "function" : {
+        "arguments" : {
+          "lhs" : {
+            "type" : "identifier",
+            "value" : {
+              "path" : [
+                "parameters",
+                "primaryText"
+              ],
+              "type" : "String"
+            }
+          },
+          "rhs" : {
+            "type" : "identifier",
+            "value" : {
+              "path" : [
+                "layers",
+                "Primary Text",
+                "text"
+              ],
+              "type" : "String"
+            }
+          }
+        },
+        "name" : "assign(lhs, to rhs)"
+      },
+      "nodes" : [
+
+      ]
+    },
+    {
+      "function" : {
+        "arguments" : {
+          "lhs" : {
+            "type" : "identifier",
+            "value" : {
+              "path" : [
+                "parameters",
+                "secondaryText"
+              ],
+              "type" : "String"
+            }
+          },
+          "rhs" : {
+            "type" : "identifier",
+            "value" : {
+              "path" : [
+                "layers",
+                "Secondary Text",
+                "text"
+              ],
+              "type" : "String"
+            }
+          }
+        },
+        "name" : "assign(lhs, to rhs)"
+      },
+      "nodes" : [
+
+      ]
+    },
+    {
+      "function" : {
+        "arguments" : {
+          "lhs" : {
+            "type" : "identifier",
+            "value" : {
+              "path" : [
+                "parameters",
+                "image"
+              ],
+              "type" : "URL"
+            }
+          },
+          "rhs" : {
+            "type" : "identifier",
+            "value" : {
+              "path" : [
+                "layers",
+                "Image",
+                "image"
+              ],
+              "type" : "URL"
+            }
+          }
+        },
+        "name" : "assign(lhs, to rhs)"
+      },
+      "nodes" : [
+
+      ]
+    }
+  ],
+  "metadata" : {
+
+  },
+  "parameters" : [
+    {
+      "name" : "primaryText",
+      "type" : "String"
+    },
+    {
+      "name" : "secondaryText",
+      "type" : "String"
+    },
+    {
+      "name" : "image",
+      "type" : "URL"
     }
   ],
   "rootLayer" : {
@@ -19,14 +169,14 @@
 
         ],
         "name" : "Image",
-        "type" : "Image",
         "parameters" : {
-          "height" : 44,
-          "borderRadius" : 22,
-          "marginTop" : 4,
           "backgroundColor" : "grey200",
+          "borderRadius" : 22,
+          "height" : 44,
+          "marginTop" : 4,
           "width" : 44
-        }
+        },
+        "type" : "Image"
       },
       {
         "children" : [
@@ -35,201 +185,43 @@
 
             ],
             "name" : "Primary Text",
-            "type" : "Text",
             "parameters" : {
-              "text" : "Two-line item",
-              "font" : "subheading1"
-            }
+              "font" : "subheading1",
+              "text" : "Two-line item"
+            },
+            "type" : "Text"
           },
           {
             "children" : [
 
             ],
             "name" : "Secondary Text",
-            "type" : "Text",
             "parameters" : {
-              "text" : "Secondary text",
-              "font" : "body1"
-            }
+              "font" : "body1",
+              "text" : "Secondary text"
+            },
+            "type" : "Text"
           }
         ],
         "name" : "View 1",
-        "type" : "View",
         "parameters" : {
           "flex" : 1,
           "marginLeft" : 16,
           "marginTop" : 0
-        }
+        },
+        "type" : "View"
       }
     ],
     "name" : "View",
-    "type" : "View",
     "parameters" : {
-      "flex" : 0,
       "alignSelf" : "stretch",
+      "flex" : 0,
       "flexDirection" : "row",
-      "paddingTop" : 16,
       "paddingBottom" : 16,
       "paddingLeft" : 16,
-      "paddingRight" : 16
-    }
-  },
-  "logic" : [
-    {
-      "function" : {
-        "name" : "assign(lhs, to rhs)",
-        "arguments" : {
-          "rhs" : {
-            "type" : "identifier",
-            "value" : {
-              "type" : "String",
-              "path" : [
-                "layers",
-                "Primary Text",
-                "text"
-              ]
-            }
-          },
-          "lhs" : {
-            "type" : "identifier",
-            "value" : {
-              "type" : "String",
-              "path" : [
-                "parameters",
-                "primaryText"
-              ]
-            }
-          }
-        }
-      },
-      "nodes" : [
-
-      ]
+      "paddingRight" : 16,
+      "paddingTop" : 16
     },
-    {
-      "function" : {
-        "name" : "assign(lhs, to rhs)",
-        "arguments" : {
-          "rhs" : {
-            "type" : "identifier",
-            "value" : {
-              "type" : "String",
-              "path" : [
-                "layers",
-                "Secondary Text",
-                "text"
-              ]
-            }
-          },
-          "lhs" : {
-            "type" : "identifier",
-            "value" : {
-              "type" : "String",
-              "path" : [
-                "parameters",
-                "secondaryText"
-              ]
-            }
-          }
-        }
-      },
-      "nodes" : [
-
-      ]
-    },
-    {
-      "function" : {
-        "name" : "assign(lhs, to rhs)",
-        "arguments" : {
-          "rhs" : {
-            "type" : "identifier",
-            "value" : {
-              "type" : {
-                "name" : "Named",
-                "of" : "String",
-                "alias" : "URL"
-              },
-              "path" : [
-                "layers",
-                "Image",
-                "image"
-              ]
-            }
-          },
-          "lhs" : {
-            "type" : "identifier",
-            "value" : {
-              "type" : {
-                "name" : "Named",
-                "of" : "String",
-                "alias" : "URL"
-              },
-              "path" : [
-                "parameters",
-                "image"
-              ]
-            }
-          }
-        }
-      },
-      "nodes" : [
-
-      ]
-    }
-  ],
-  "parameters" : [
-    {
-      "type" : "String",
-      "name" : "primaryText"
-    },
-    {
-      "type" : "String",
-      "name" : "secondaryText"
-    },
-    {
-      "type" : "URL",
-      "name" : "image"
-    }
-  ],
-  "canvases" : [
-    {
-      "name" : "iPhone SE",
-      "height" : 0,
-      "heightMode" : "At Least",
-      "exportScale" : 1,
-      "backgroundColor" : "white",
-      "width" : 320,
-      "parameters" : {
-
-      },
-      "visible" : true
-    },
-    {
-      "name" : "iPhone 7",
-      "height" : 0,
-      "heightMode" : "At Least",
-      "exportScale" : 1,
-      "backgroundColor" : "white",
-      "width" : 375,
-      "parameters" : {
-
-      },
-      "visible" : true
-    },
-    {
-      "name" : "iPhone 7+",
-      "height" : 0,
-      "heightMode" : "At Least",
-      "exportScale" : 1,
-      "backgroundColor" : "white",
-      "width" : 414,
-      "parameters" : {
-
-      },
-      "visible" : true
-    }
-  ],
-  "config" : {
-    "canvasLayout" : "xy"
+    "type" : "View"
   }
 }

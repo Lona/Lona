@@ -26,6 +26,16 @@ struct CSValue: Equatable, CSDataSerializable, CSDataDeserializable {
         // TODO make sure we return a copy
         if self.type == type { return self }
 
+        if !self.type.isOptional(), let unwrappedType = type.unwrapOptional() {
+            let newValue = self.cast(to: unwrappedType)
+            return newValue.wrap(in: type, tagged: newValue.data == CSData.Null ? "None" : "Some")
+        } else if self.type.isOptional(), let unwrappedType = type.unwrapOptional() {
+            let newValue = self.unwrapVariant()?.cast(to: unwrappedType) ?? CSValue.defaultValue(for: unwrappedType)
+            return newValue.wrap(in: type, tagged: newValue.data == CSData.Null ? "None" : "Some")
+        } else if self.type.isOptional() && !type.isOptional() {
+            return self.unwrapVariant()?.cast(to: type) ?? CSValue.defaultValue(for: type)
+        }
+
         switch type {
         case .bool: return CSValue(type: type, data: .Bool(false))
         case .number: return CSValue(type: type, data: .Number(0))
@@ -105,6 +115,10 @@ struct CSValue: Equatable, CSDataSerializable, CSDataDeserializable {
                     innerTypeFilter.isGeneric || innerTypeFilter == CSType.any || innerTypeFilter == innerSchemaType
                 {
                     result[item.key] = item.value
+                } else if
+                    case CSType.variant(let cases) = typeFilter,
+                    cases.contains(where: { arg in schemaItem.type == arg.1 }) {
+                    result[item.key] = item.value
                 } else if typeFilter.isGeneric || typeFilter == CSType.any || typeFilter == schemaItem.type {
                     result[item.key] = item.value
                 }
@@ -115,6 +129,66 @@ struct CSValue: Equatable, CSDataSerializable, CSDataDeserializable {
     }
 }
 
+// MARK: - Variant Handling
+
+extension CSValue {
+    func tag() -> String {
+        return self.data.get(key: "tag").stringValue
+    }
+
+    func wrap(in variant: CSType, tagged tag: String) -> CSValue {
+        guard case CSType.variant(let cases) = variant else {
+            Swift.print("Attempted to wrap", self, "in non-variant type", variant)
+            return CSUndefinedValue
+        }
+
+        guard cases.contains(where: { item in item.0 == tag && item.1 == self.type }) else {
+            Swift.print("Could not find tag", tag, "and type", self.type, "in variant type", variant)
+            return CSUndefinedValue
+        }
+
+        return CSValue(type: variant, data: CSData.Object([
+            "tag": tag.toData(),
+            "data": data
+            ]))
+    }
+
+    func unwrapVariant() -> CSValue? {
+        guard case CSType.variant(let cases) = self.type else {
+            Swift.print("Attempted to unwrap non-variant type of value", self)
+            return nil
+        }
+
+        let tag = self.data.get(key: "tag").stringValue
+        guard let match = cases.first(where: { item in item.0 == tag }) else {
+            Swift.print("Could not find tag", tag, "in variant type of value", self)
+            return nil
+        }
+
+        return CSValue(type: match.1, data: self.data.get(key: "data"))
+    }
+
+    static func defaultValue(for type: CSType) -> CSValue {
+        return CSUndefinedValue.cast(to: type)
+    }
+
+    func with(data newData: CSData) -> CSValue {
+        return CSValue(type: (self.unwrapVariant() ?? CSUndefinedValue).type, data: newData)
+            .wrap(in: self.type, tagged: self.tag())
+    }
+
+    func with(tag newTag: String) -> CSValue {
+        guard case CSType.variant(let cases) = self.type else {
+            Swift.print("Attempted to modify tag of non-variant type of value", self)
+            return CSUndefinedValue
+        }
+        let newType = cases.first(where: { item in item.0 == newTag })?.1 ?? CSType.undefined
+        let unwrappedValue = self.unwrapVariant() ?? CSValue.defaultValue(for: newType)
+        return unwrappedValue.cast(to: newType).wrap(in: self.type, tagged: newTag)
+    }
+}
+
+let CSUnitValue = CSValue(type: .unit, data: CSData.Null)
 let CSUndefinedValue = CSValue(type: .undefined, data: CSData.Null)
 let CSEmptyDictionaryValue = CSValue(type: .dictionary(CSType.Schema()), data: CSData.Object([:]))
 

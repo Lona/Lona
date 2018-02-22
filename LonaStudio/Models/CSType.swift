@@ -13,10 +13,10 @@ indirect enum CSType: Equatable, CSDataSerializable, CSDataDeserializable {
     typealias Schema = [String: SchemaRecord]
 
     case any
-    case optional(CSType)
     case named(String, CSType) // TODO should we have a CSNamedType?
     case generic(String, CSType)
     case undefined
+    case unit
     case null
     case bool
     case number
@@ -25,6 +25,7 @@ indirect enum CSType: Equatable, CSDataSerializable, CSDataDeserializable {
     case dictionary(Schema)
     case enumeration([CSValue])
     case function([(String, CSType)], CSType)
+    case variant([(String, CSType)])
 
     init(_ data: CSData) {
         self = .undefined
@@ -45,6 +46,8 @@ indirect enum CSType: Equatable, CSDataSerializable, CSDataDeserializable {
             case "Number": self = .number
             case "Boolean": self = .bool
             case "String": self = .string
+            case "Unit": self = .unit
+            case "Undefined": self = .undefined
             default: self = .undefined
             }
         } else if let object = data.object {
@@ -74,6 +77,14 @@ indirect enum CSType: Equatable, CSDataSerializable, CSDataDeserializable {
                         returnType = CSType(value)
                     }
                     self = .function(parameters, returnType)
+                case "Variant":
+                    var parameters: [(String, CSType)] = []
+                    if let values = object["cases"]?.array {
+                        parameters = values.map({ (arg) in
+                            return (arg.get(key: "tag").stringValue, CSType(arg.get(key: "type")))
+                        })
+                    }
+                    self = .variant(parameters)
                 default:
                     break
                 }
@@ -105,6 +116,10 @@ indirect enum CSType: Equatable, CSDataSerializable, CSDataDeserializable {
     }
 
     func toString() -> String {
+        if let unwrapped = self.unwrapOptional() {
+            return unwrapped.toString()
+        }
+
         switch self {
         case .bool: return "Boolean"
         case .number: return "Number"
@@ -118,9 +133,12 @@ indirect enum CSType: Equatable, CSDataSerializable, CSDataDeserializable {
     // TODO Params on
     // optional, generic, array, dictionary
     func toData() -> CSData {
+        for (name, type) in CSType.builtInTypes where self == type {
+            return name.toData()
+        }
+
         switch self {
         case .any: return .String("Any")
-        case .optional: return .String("Optional")
         case .named(let name, let type):
             if CSType.userType(named: name) != nil { return .String(name) }
 
@@ -172,6 +190,25 @@ indirect enum CSType: Equatable, CSDataSerializable, CSDataDeserializable {
             }
 
             return data
+        case .variant(let cases):
+            var data: CSData = .Object([
+                "name": "Variant".toData()
+                ])
+
+            if cases.count > 0 {
+                data["cases"] = CSData.Array(cases.map({ (arg) -> CSData in
+                    let (tag, innerType) = arg
+
+                    return CSData.Object([
+                        "tag": tag.toData(),
+                        "type": innerType.toData()
+                        ])
+                }))
+            }
+
+            return data
+        case .unit:
+            return "Unit".toData()
         }
     }
 
@@ -201,8 +238,8 @@ indirect enum CSType: Equatable, CSDataSerializable, CSDataDeserializable {
     static func == (lhs: CSType, rhs: CSType) -> Bool {
         switch (lhs, rhs) {
         case (.any, .any): return true
-        case (.optional(let l), .optional(let r)): return l == r
         case (.named(let ln, let l), .named(let rn, let r)): return ln == rn && l == r
+        case (.unit, .unit): return true
         case (.undefined, .undefined): return true
         case (.null, .null): return true
         case (.bool, .bool): return true
@@ -224,6 +261,12 @@ indirect enum CSType: Equatable, CSDataSerializable, CSDataDeserializable {
             }
 
             return lReturnType == rReturnType
+        case (.variant(let l), .variant(let r)):
+            for pair in zip(l, r) where pair.0 != pair.1 {
+                return false
+            }
+
+            return true
         default:
             return false
         }
@@ -268,13 +311,57 @@ indirect enum CSType: Equatable, CSDataSerializable, CSDataDeserializable {
         return CSType.enumeration(values)
     }
 
-    static var builtInTypes: [String: CSType] = [
-        "Color": CSColorType,
-        "TextStyle": CSTextStyleType,
-        "Comparator": CSComparatorType,
-        "URL": CSURLType,
-        "Component": CSComponentType
-        ]
+    static var builtInTypes: [String: CSType] = {
+        var data: [String: CSType] = [
+            "Boolean": CSType.bool,
+            "Number": CSType.number,
+            "String": CSType.string,
+            "Color": CSColorType,
+            "TextStyle": CSTextStyleType,
+            "Comparator": CSComparatorType,
+            "URL": CSURLType,
+            "Component": CSComponentType
+            ]
+
+        data.forEach({ pair in
+            let (k, v) = pair
+            data[k + "?"] = v.makeOptional()
+        })
+
+        return data
+    }()
+}
+
+// MARK: - Optional Handling
+
+extension CSType {
+    static func createOptional(_ inner: CSType) -> CSType {
+        return CSType.variant([
+            ("Some", inner),
+            ("None", .unit)
+            ])
+    }
+
+    func makeOptional() -> CSType {
+        return CSType.createOptional(self)
+    }
+
+    func unwrapOptional() -> CSType? {
+        guard case CSType.variant(let cases) = self else { return nil }
+        guard cases.count == 2 else { return nil }
+
+        let (firstName, firstType) = cases[0]
+        let (secondName, secondType) = cases[1]
+
+        guard firstName == "Some" && secondName == "None" &&
+            secondType == .unit else { return nil }
+
+        return firstType
+    }
+
+    func isOptional() -> Bool {
+        return unwrapOptional() != nil
+    }
 }
 
 let CSAnyType = CSType.any
@@ -285,15 +372,6 @@ let CSTextStyleType = CSType.named("TextStyle", .string)
 let CSURLType = CSType.named("URL", .string)
 let CSComponentType = CSType.named("Component", .any)
 let CSHandlerType = CSType.function([], .undefined)
-
-//let CSParameterType = CSType.enumeration([
-//    CSValue(type: .string, data: .String("Boolean")),
-//    CSValue(type: .string, data: .String("Number")),
-//    CSValue(type: .string, data: .String("String")),
-//    CSValue(type: .string, data: .String("Color")),
-//    CSValue(type: .string, data: .String("TextStyle")),
-//    CSValue(type: .string, data: .String("URL")),
-//])
 
 let CSComparatorType = CSType.enumeration([
     CSValue(type: .string, data: .String("equal to")),

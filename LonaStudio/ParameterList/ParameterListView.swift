@@ -99,11 +99,18 @@ class ParameterListView: NSOutlineView, NSOutlineViewDataSource, NSOutlineViewDe
                 CSValue(type: .string, data: .String("default"))
             ])
 
+            let requiredType = CSType.enumeration([
+                CSValue(type: .string, data: .String("required")),
+                CSValue(type: .string, data: .String("optional"))
+                ])
+
             var components: [CSStatementView.Component] = [
                 .text("Parameter"),
                 .value("name", CSValue(type: .string, data: CSData.String(parameter.name)), []),
                 .text("of type"),
                 .value("type", CSValue(type: CSType.parameterType(), data: .String(parameter.type.toString())), []),
+                .text("that is"),
+                .value("required", CSValue(type: requiredType, data: parameter.type.isOptional() ? .String("optional") : .String("required")), []),
                 .text("with"),
                 .value("hasDefaultValue", CSValue(type: defaultValueType, data: parameter.hasDefaultValue ? .String("default") : .String("no default")), [])
             ]
@@ -123,7 +130,9 @@ class ParameterListView: NSOutlineView, NSOutlineViewDataSource, NSOutlineViewDe
                 case "name":
                     parameter.name = value.data.stringValue
                 case "type":
-                    parameter.type = CSType.from(string: value.data.stringValue)
+                    let newBaseType = CSType.from(string: value.data.stringValue)
+
+                    parameter.type = parameter.type.isOptional() ? newBaseType.makeOptional() : newBaseType
 
                     if parameter.hasDefaultValue {
                         parameter.defaultValue = parameter.defaultValue.cast(to: parameter.type)
@@ -131,6 +140,20 @@ class ParameterListView: NSOutlineView, NSOutlineViewDataSource, NSOutlineViewDe
 
                     // TODO: Cast all cases to their new type (?)
 //                    parameter.examples = parameter.examples.map({ $0.cast(to: parameter.type) })
+                case "required":
+                    if value.data.stringValue == "required" {
+                        if let unwrappedType = parameter.type.unwrapOptional() {
+                            parameter.type = unwrappedType
+                        }
+                    } else {
+                        if !parameter.type.isOptional() {
+                            parameter.type = parameter.type.makeOptional()
+                        }
+                    }
+
+                    if parameter.hasDefaultValue {
+                        parameter.defaultValue = parameter.defaultValue.cast(to: parameter.type)
+                    }
                 case "hasDefaultValue":
                     if value.data.stringValue == "no default" {
                         parameter.defaultValue = CSUndefinedValue

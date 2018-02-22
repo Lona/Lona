@@ -196,6 +196,69 @@ class CSValueField {
 
                 view = field
             }
+        case .variant(let cases):
+            if cases.isEmpty {
+                Swift.print("Empty variant for value", value)
+                return
+            }
+
+            let tags = cases.map({ value in value.0 })
+            let currentTag = tags.contains(value.tag()) ? value.tag() : tags[0]
+
+            let tagValues = tags.map({ tag in CSValue(type: .string, data: .String(tag)) })
+            let tagPickerValue = CSValue(type: CSType.enumeration(tagValues), data: .String(currentTag))
+            let tagField = CSValueField(value: tagPickerValue, options: options)
+            tagField.onChangeData = { data in
+                defaultChangeHandler(value.with(tag: data.stringValue).data)
+            }
+
+            let valueField: CSValueField
+
+            // If we have a valid variant case
+            if let unwrapped = value.unwrapVariant() {
+                valueField = CSValueField(value: unwrapped, options: options)
+                valueField.onChangeData = { newData in
+                    defaultChangeHandler(value.with(data: newData).data)
+                }
+            // If we don't have a valid variant case, we the default value of the first possible case
+            } else if let currentType = cases.first(where: { item in item.0 == currentTag })?.1 {
+                valueField = CSValueField(value: CSValue.defaultValue(for: currentType), options: options)
+                valueField.onChangeData = { newData in
+                    defaultChangeHandler(
+                        CSValue(type: currentType, data: newData).wrap(in: value.type, tagged: currentTag).data)
+                }
+            } else {
+                valueField = CSValueField(value: CSUndefinedValue, options: options)
+            }
+
+            if usesYogaLayout {
+                let field = NSView(frame: NSRect(x: 0, y: 0, width: 160, height: 126))
+
+                field.useYogaLayout = true
+                field.ygNode?.flexDirection = .row
+                field.ygNode?.alignItems = .center
+
+                tagField.view.useYogaLayout = true
+                valueField.view.useYogaLayout = true
+
+                field.addSubview(tagField.view)
+                field.addSubview(valueField.view)
+
+                view = field
+            } else {
+                let field = NSStackView(views: [
+                    tagField.view,
+                    valueField.view
+                    ], orientation: .horizontal)
+
+                field.heightAnchor.constraint(equalToConstant: 30).isActive = true
+
+                tagField.view.translatesAutoresizingMaskIntoConstraints = false
+                valueField.view.translatesAutoresizingMaskIntoConstraints = false
+                field.translatesAutoresizingMaskIntoConstraints = false
+
+                view = field
+            }
 
         // Generic fallthrough for user types
         case .named(_, let type):
