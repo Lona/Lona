@@ -171,15 +171,28 @@ class CSComponent: DataNode, NSCopying {
     }
 
     func toData() -> CSData? {
-        return CSData.Object([
+        var data = CSData.Object([
             "parameters": CSData.Array(parameters.map({ $0.toData() })),
             "rootLayer": rootLayer.toData(),
             "logic": logic.toData(),
             "canvases": canvas.toData(),
-            "config": config,
-            "metadata": metadata,
             "cases": cases.toData()
         ])
+
+        var config = self.config
+        if config["canvasLayout"]?.stringValue == "xy" {
+            config["canvasLayout"] = nil
+        }
+
+        if !config.objectValue.isEmpty {
+            data["config"] = config
+        }
+
+        if !metadata.objectValue.isEmpty {
+            data["metadata"] = metadata
+        }
+
+        return data
     }
 
     init(_ json: CSData) {
@@ -187,8 +200,8 @@ class CSComponent: DataNode, NSCopying {
         rootLayer = CSLayer.deserialize(json.get(key: "rootLayer"))!
         logic = json.get(key: "logic").arrayValue.map({ LogicNode($0) })
         canvas = json.get(key: "canvases").arrayValue.map({ Canvas($0) })
-        config = json.get(key: "config")
-        metadata = json.get(key: "metadata")
+        config = json["config"] ?? CSData.Object([:])
+        metadata = json["metadata"] ?? CSData.Object([:])
         cases = json.get(key: "cases").arrayValue.map({ CSCase($0) })
     }
 

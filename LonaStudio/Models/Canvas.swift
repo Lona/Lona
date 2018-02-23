@@ -64,7 +64,7 @@ class Canvas: CSDataSerializable, CSDataDeserializable {
         heightMode = data.get(key: "heightMode").stringValue
         exportScale = data.get(key: "exportScale").number ?? 1
         backgroundColor = data.get(key: "backgroundColor").string ?? "white"
-        parameters = data.get(key: "parameters")
+        parameters = data["parameters"] ?? CSData.Object([:])
     }
 
     required init(visible: Bool, name: String, width: Double, height: Double, heightMode: String, exportScale: Double, backgroundColor: String, parameters: CSData = CSData.Object([:])) {
@@ -79,15 +79,29 @@ class Canvas: CSDataSerializable, CSDataDeserializable {
     }
 
     func toData() -> CSData {
-        return CSData.Object([
-            "visible": visible.toData(),
+        var data = CSData.Object([
             "name": name.toData(),
             "width": width.toData(),
             "height": height.toData(),
-            "heightMode": heightMode.toData(),
-            "exportScale": exportScale.toData(),
-            "backgroundColor": backgroundColor.toData(),
-            "parameters": parameters
+            "heightMode": heightMode.toData()
         ])
+
+        if !visible {
+            data["visible"] = visible.toData()
+        }
+
+        if exportScale != 1 {
+            data["exportScale"] = exportScale.toData()
+        }
+
+        if backgroundColor != "white" {
+            data["backgroundColor"] = backgroundColor.toData()
+        }
+
+        if !parameters.objectValue.isEmpty {
+            data["parameters"] = parameters
+        }
+
+        return data
     }
 }

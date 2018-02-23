@@ -1,39 +1,21 @@
 {
   "canvases" : [
     {
-      "backgroundColor" : "white",
-      "exportScale" : 1,
       "height" : 0,
       "heightMode" : "At Least",
       "name" : "iPhone SE",
-      "parameters" : {
-
-      },
-      "visible" : true,
       "width" : 320
     },
     {
-      "backgroundColor" : "white",
-      "exportScale" : 1,
       "height" : 0,
       "heightMode" : "At Least",
       "name" : "iPhone 7",
-      "parameters" : {
-
-      },
-      "visible" : true,
       "width" : 375
     },
     {
-      "backgroundColor" : "white",
-      "exportScale" : 1,
       "height" : 0,
       "heightMode" : "At Least",
       "name" : "iPhone 7+",
-      "parameters" : {
-
-      },
-      "visible" : true,
       "width" : 414
     }
   ],
@@ -47,9 +29,6 @@
       "visible" : true
     }
   ],
-  "config" : {
-    "canvasLayout" : "xy"
-  },
   "logic" : [
     {
       "function" : {
@@ -77,10 +56,7 @@
           }
         },
         "name" : "assign(lhs, to rhs)"
-      },
-      "nodes" : [
-
-      ]
+      }
     },
     {
       "function" : {
@@ -108,10 +84,7 @@
           }
         },
         "name" : "assign(lhs, to rhs)"
-      },
-      "nodes" : [
-
-      ]
+      }
     },
     {
       "function" : {
@@ -139,15 +112,9 @@
           }
         },
         "name" : "assign(lhs, to rhs)"
-      },
-      "nodes" : [
-
-      ]
+      }
     }
   ],
-  "metadata" : {
-
-  },
   "parameters" : [
     {
       "name" : "primaryText",
@@ -165,9 +132,6 @@
   "rootLayer" : {
     "children" : [
       {
-        "children" : [
-
-        ],
         "name" : "Image",
         "parameters" : {
           "backgroundColor" : "grey200",
@@ -181,9 +145,6 @@
       {
         "children" : [
           {
-            "children" : [
-
-            ],
             "name" : "Primary Text",
             "parameters" : {
               "font" : "subheading1",
@@ -192,9 +153,6 @@
             "type" : "Text"
           },
           {
-            "children" : [
-
-            ],
             "name" : "Secondary Text",
             "parameters" : {
               "font" : "body1",
@@ -206,8 +164,7 @@
         "name" : "View 1",
         "parameters" : {
           "flex" : 1,
-          "marginLeft" : 16,
-          "marginTop" : 0
+          "marginLeft" : 16
         },
         "type" : "View"
       }
@@ -215,7 +172,6 @@
     "name" : "View",
     "parameters" : {
       "alignSelf" : "stretch",
-      "flex" : 0,
       "flexDirection" : "row",
       "paddingBottom" : 16,
       "paddingLeft" : 16,

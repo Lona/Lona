@@ -1,39 +1,21 @@
 {
   "canvases" : [
     {
-      "backgroundColor" : "white",
-      "exportScale" : 1,
       "height" : 100,
       "heightMode" : "At Least",
       "name" : "iPhone SE",
-      "parameters" : {
-
-      },
-      "visible" : true,
       "width" : 320
     },
     {
-      "backgroundColor" : "white",
-      "exportScale" : 1,
       "height" : 100,
       "heightMode" : "At Least",
       "name" : "iPhone 7",
-      "parameters" : {
-
-      },
-      "visible" : true,
       "width" : 375
     },
     {
-      "backgroundColor" : "white",
-      "exportScale" : 1,
       "height" : 100,
       "heightMode" : "At Least",
       "name" : "iPhone 7+",
-      "parameters" : {
-
-      },
-      "visible" : true,
       "width" : 414
     }
   ],
@@ -51,16 +33,16 @@
       "name" : "All content",
       "type" : "entry",
       "value" : {
-        "body" : "Located two hours south of Sydney in the Souther Highlands of New South Wales, this destination is truly one you won't want to miss.",
+        "body" : {
+          "data" : "Located two hours south of Sydney in the Souther Highlands of New South Wales, this destination is truly one you won't want to miss.",
+          "tag" : "Some"
+        },
         "headline" : "Kangaroo Valley Safari",
         "image" : "https:\/\/picsum.photos\/600\/600?image=10"
       },
       "visible" : true
     }
   ],
-  "config" : {
-    "canvasLayout" : "xy"
-  },
   "logic" : [
     {
       "function" : {
@@ -88,10 +70,7 @@
           }
         },
         "name" : "assign(lhs, to rhs)"
-      },
-      "nodes" : [
-
-      ]
+      }
     },
     {
       "function" : {
@@ -119,10 +98,7 @@
           }
         },
         "name" : "assign(lhs, to rhs)"
-      },
-      "nodes" : [
-
-      ]
+      }
     },
     {
       "function" : {
@@ -180,10 +156,7 @@
               }
             },
             "name" : "assign(lhs, to rhs)"
-          },
-          "nodes" : [
-
-          ]
+          }
         },
         {
           "function" : {
@@ -208,17 +181,11 @@
               }
             },
             "name" : "assign(lhs, to rhs)"
-          },
-          "nodes" : [
-
-          ]
+          }
         }
       ]
     }
   ],
-  "metadata" : {
-
-  },
   "parameters" : [
     {
       "name" : "image",
@@ -243,9 +210,6 @@
   "rootLayer" : {
     "children" : [
       {
-        "children" : [
-
-        ],
         "name" : "Image",
         "parameters" : {
           "alignSelf" : "stretch",
@@ -258,24 +222,14 @@
       {
         "children" : [
           {
-            "children" : [
-
-            ],
             "name" : "Headline",
             "parameters" : {
               "font" : "headline",
-              "paddingBottom" : 0,
-              "paddingLeft" : 0,
-              "paddingRight" : 0,
-              "paddingTop" : 0,
               "text" : "Headline"
             },
             "type" : "Text"
           },
           {
-            "children" : [
-
-            ],
             "name" : "Body",
             "parameters" : {
               "font" : "body2",
@@ -299,8 +253,7 @@
     ],
     "name" : "View",
     "parameters" : {
-      "alignSelf" : "stretch",
-      "flex" : 0
+      "alignSelf" : "stretch"
     },
     "type" : "View"
   }
