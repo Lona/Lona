@@ -50,7 +50,7 @@ class ViewController: NSViewController, NSOutlineViewDataSource, NSOutlineViewDe
     }
 
     private func relayoutLayerList(_ newLayer: CSLayer? = nil) {
-        renderLayerList()
+        outlineView.render()
 
         // Selection
         if let newLayer = newLayer {
@@ -566,7 +566,7 @@ class ViewController: NSViewController, NSOutlineViewDataSource, NSOutlineViewDe
         if shouldClearInspector {
             clearInspector()
         }
-        renderLayerList()
+        outlineView.render()
         render()
     }
 
@@ -640,182 +640,5 @@ extension ViewController: LayerListDelegate {
         case .renderInspector(let node):
             renderInspector(item: node)
         }
-    }
-
-    func outlineView(_ outlineView: NSOutlineView, acceptDrop info: NSDraggingInfo, item: Any?, childIndex index: Int) -> Bool {
-        let sourceIndexString = info.draggingPasteboard().string(forType: NSPasteboard.PasteboardType(rawValue: "component.layer"))
-
-        if sourceIndexString != nil, let sourceIndex = Int(sourceIndexString!) {
-//            print( "accept drop", item, "index", index, "drag index", sourceIndex)
-
-            let sourceLayer = outlineView.item(atRow: sourceIndex) as! CSLayer
-            let targetLayer = item as! CSLayer
-            let renderFunc = {[unowned self] in
-                self.renderLayerList()
-                self.render()
-            }
-            let oldParent = sourceLayer.parent!
-            let oldIndex = oldParent.children.index(where: { (layer) -> Bool in
-                return layer === sourceLayer
-            })!
-
-            UndoManager.shared.run(name: "Append", execute: {
-                sourceLayer.removeFromParent()
-
-                // Index is -1 when item is dropped directly on another item, rather than above or below
-                if index == -1 {
-                    targetLayer.appendChild(sourceLayer)
-                } else {
-                    let insertIndex = (sourceLayer.parent === targetLayer && oldIndex >= 0 && oldIndex < index) ? index - 1 : index
-                    targetLayer.insertChild(sourceLayer, at: insertIndex)
-                }
-                renderFunc()
-            }, undo: {
-                sourceLayer.removeFromParent()
-                oldParent.insertChild(sourceLayer, at: oldIndex)
-                renderFunc()
-            })
-
-            return true
-        }
-
-        return false
-    }
-
-    var previousRow: Int?
-
-    var shouldRenderOnSelectionChange = true
-
-    func makeChangeWithoutRendering(f: () -> Void) {
-        shouldRenderOnSelectionChange = false
-        f()
-        shouldRenderOnSelectionChange = true
-    }
-
-    func outlineViewSelectionDidChange(_ notification: Notification) {
-        if let selectedRow = outlineView?.selectedRow {
-            if previousRow != nil && previousRow! >= 0 && previousRow! < outlineView!.numberOfRows {
-                let view = outlineView?.view(atColumn: 1, row: previousRow!, makeIfNecessary: true)
-                let checkbox = view?.viewWithTag(ViewController.CHECKBOX_TAG)
-                if checkbox != nil && !(checkbox!.isHidden) {
-                    checkbox?.isHidden = true
-                }
-            }
-
-            if selectedRow == -1 {
-                clearInspector()
-            } else {
-                let item = outlineView?.item(atRow: selectedRow) as! DataNode!
-
-                // Don't allow hiding the root layer
-                if selectedRow != 0 {
-                    let view = outlineView?.view(atColumn: 1, row: selectedRow, makeIfNecessary: true)
-                    let checkbox = view?.viewWithTag(ViewController.CHECKBOX_TAG)
-                    if checkbox != nil && checkbox!.isHidden {
-                        checkbox?.isHidden = false
-                    }
-                }
-
-                if shouldRenderOnSelectionChange {
-                    renderInspector(item: item!)
-                }
-            }
-            previousRow = selectedRow
-
-            if shouldRenderOnSelectionChange {
-                render()
-            }
-        }
-    }
-
-    override func controlTextDidEndEditing(_ obj: Notification) {
-        selectedLayer?.name = (obj.object as! NSTextField).stringValue
-
-        renderLayerList()
-        render()
-    }
-
-    func outlineView(_ outlineView: NSOutlineView, numberOfChildrenOfItem item: Any?) -> Int {
-        if item == nil {
-            return 1
-        } else {
-            let node = item as! DataNode?
-            return node!.childCount()
-        }
-    }
-    func outlineView(_ outlineView: NSOutlineView, child index: Int, ofItem item: Any?) -> Any {
-
-        if item == nil {
-            return dataRoot
-        } else {
-            let node = item as! DataNode
-            return node.child(at: index)
-        }
-    }
-
-    func outlineView(_ outlineView: NSOutlineView, isItemExpandable item: Any) -> Bool {
-        return self.outlineView(outlineView, numberOfChildrenOfItem: item) > 0
-    }
-
-    func outlineView(_ outlineView: NSOutlineView, heightOfRowByItem item: Any) -> CGFloat {
-        return 18
-    }
-
-    func outlineView(_ outlineView: NSOutlineView, viewFor tableColumn: NSTableColumn?, item: Any) -> NSView? {
-        let cellView = NSTableCellView()
-
-        switch tableColumn!.identifier.rawValue {
-        case "layer":
-            if let layer = item as? CSLayer {
-                let textField = NSTextField()
-
-                textField.isEditable = true
-                textField.delegate = self
-                textField.isBordered = false
-                textField.drawsBackground = false
-                textField.stringValue = layer.name
-
-                if layer.type == "Component" {
-                    textField.textColor = NSColor.parse(css: "rgb(101,53,160)")!
-                }
-
-                cellView.textField = textField
-                cellView.addSubview(textField)
-
-                if #available(OSX 10.12, *) {
-                    if let image = LayerThumbnail.image(for: layer) {
-                        let imageView = NSImageView(image: image)
-                        cellView.imageView = imageView
-                        cellView.addSubview(imageView)
-                    }
-                }
-            }
-        case "visible":
-            if let layer = item as? CSLayer {
-                let checkbox = CheckboxField(frame: NSRect(x: 0, y: 0, width: 20, height: 20))
-                checkbox.value = layer.visible
-                checkbox.onChange = {[unowned self] value in
-
-                    let oldValue = layer.visible
-                    UndoManager.shared.run(name: "Visible", execute: {[unowned self] in
-                        layer.visible = value
-                        checkbox.state = value ? .on : .off
-                        self.render()
-                    }, undo: {[unowned self] in
-                        layer.visible = oldValue
-                        checkbox.state = oldValue ? .on : .off
-                        self.render()
-                    })
-                }
-                cellView.addSubview(checkbox)
-                checkbox.tag = ViewController.CHECKBOX_TAG
-                checkbox.isHidden = true
-            }
-        default:
-            break
-        }
-
-        return cellView
->>>>>>> 20bbf7e... Support undo/redo for many components
     }
 }

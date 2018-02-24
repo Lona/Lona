@@ -389,9 +389,18 @@ extension LayerList: NSOutlineViewDelegate, NSOutlineViewDataSource {
             if let layer = item as? CSLayer {
                 let checkbox = CheckboxField(frame: NSRect(x: 0, y: 0, width: 20, height: 20))
                 checkbox.value = layer.visible
-                checkbox.onChange = { value in
-                    layer.visible = value
-                    self.layerDelegate?.layerList(self, do: .render)
+                checkbox.onChange = {[unowned self] value in
+
+                    let oldValue = layer.visible
+                    UndoManager.shared.run(name: "Visible", execute: {[unowned self] in
+                        layer.visible = value
+                        checkbox.state = value ? .on : .off
+                        self.layerDelegate?.layerList(self, do: .render)
+                    }, undo: {[unowned self] in
+                        layer.visible = oldValue
+                        checkbox.state = oldValue ? .on : .off
+                        self.layerDelegate?.layerList(self, do: .render)
+                    })
                 }
                 cellView.addSubview(checkbox)
                 checkbox.tag = Constants.CheckBoxTag
@@ -449,23 +458,34 @@ extension LayerList: NSOutlineViewDelegate, NSOutlineViewDataSource {
         let sourceIndexString = info.draggingPasteboard().string(forType: NSPasteboard.PasteboardType(rawValue: "component.layer"))
 
         if sourceIndexString != nil, let sourceIndex = Int(sourceIndexString!) {
+            //            print( "accept drop", item, "index", index, "drag index", sourceIndex)
             let sourceLayer = outlineView.item(atRow: sourceIndex) as! CSLayer
-            let oldIndexWithinParent = sourceLayer.removeFromParent()
             let targetLayer = item as! CSLayer
-
-            // Index is -1 when item is dropped directly on another item, rather than above or below
-            if index == -1 {
-                targetLayer.appendChild(sourceLayer)
-            } else {
-                if sourceLayer.parent === targetLayer && oldIndexWithinParent >= 0 && oldIndexWithinParent < index {
-                    targetLayer.insertChild(sourceLayer, at: index - 1)
-                } else {
-                    targetLayer.insertChild(sourceLayer, at: index)
-                }
+            let renderFunc = {[unowned self] in
+                self.render()
+                self.layerDelegate?.layerList(self, do: .render)
             }
+            let oldParent = sourceLayer.parent!
+            let oldIndex = oldParent.children.index(where: { (layer) -> Bool in
+                return layer === sourceLayer
+            })!
 
-            render()
-            layerDelegate?.layerList(self, do: .render)
+            UndoManager.shared.run(name: "Append", execute: {
+                sourceLayer.removeFromParent()
+
+                // Index is -1 when item is dropped directly on another item, rather than above or below
+                if index == -1 {
+                    targetLayer.appendChild(sourceLayer)
+                } else {
+                    let insertIndex = (sourceLayer.parent === targetLayer && oldIndex >= 0 && oldIndex < index) ? index - 1 : index
+                    targetLayer.insertChild(sourceLayer, at: insertIndex)
+                }
+                renderFunc()
+            }, undo: {
+                sourceLayer.removeFromParent()
+                oldParent.insertChild(sourceLayer, at: oldIndex)
+                renderFunc()
+            })
 
             return true
         }
