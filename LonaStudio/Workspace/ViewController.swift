@@ -27,21 +27,37 @@ class ViewController: NSViewController, NSOutlineViewDataSource, NSOutlineViewDe
 
     func addLayer(layer newLayer: CSLayer) {
         let targetLayer = selectedLayerOrRoot
+        var parent: CSLayer!
+        var index: Int!
 
-        if targetLayer === dataRoot {
-            targetLayer.appendChild(newLayer)
+        if targetLayer === self.dataRoot {
+            parent = targetLayer
+            index = parent.children.count
         } else {
-            let parent = outlineView.parent(forItem: targetLayer) as! CSLayer
-            let index = outlineView.childIndex(forItem: targetLayer)
-            parent.insertChild(newLayer, at: index + 1)
+            parent = self.outlineView!.parent(forItem: targetLayer) as! CSLayer
+            index = self.outlineView!.childIndex(forItem: targetLayer) + 1
         }
 
+        // Undo
+        let oldChildren = parent.children
+        UndoManager.shared.run(name: "Add", execute: {[unowned self] in
+            parent.insertChild(newLayer, at: index)
+            self.relayoutLayerList(newLayer)
+        }, undo: {[unowned self] in
+            self.updateChildren(children: oldChildren, for: parent)
+            self.relayoutLayerList()
+        })
+    }
+
+    private func relayoutLayerList(_ newLayer: CSLayer? = nil) {
         outlineView.render()
 
-        let newLayerIndex = outlineView.row(forItem: newLayer)
-        let selection: IndexSet = [newLayerIndex]
-
-        outlineView.selectRowIndexes(selection, byExtendingSelection: false)
+        // Selection
+        if let newLayer = newLayer {
+            let newLayerIndex = outlineView!.row(forItem: newLayer)
+            let selection: IndexSet = [newLayerIndex]
+            outlineView!.selectRowIndexes(selection, byExtendingSelection: false)
+        }
 
         render()
     }
@@ -520,18 +536,38 @@ class ViewController: NSViewController, NSOutlineViewDataSource, NSOutlineViewDe
 
         if characters == String(Character(UnicodeScalar(NSDeleteCharacter)!)) {
             guard let targetLayer = selectedLayer else { return }
-
             if targetLayer === dataRoot { return }
 
-            let parent = outlineView.parent(forItem: targetLayer) as! CSLayer
-            parent.children = parent.children.filter({ $0 !== targetLayer })
+            let parent = outlineView!.parent(forItem: targetLayer) as! CSLayer
 
-            clearInspector()
-            outlineView.render()
-            render()
+            // Undo
+            let oldChildren = parent.children
+            let children = parent.children.filter({ $0 !== targetLayer })
+            UndoManager.shared.run(name: "Delete", execute: {[unowned self] in
+                self.updateChildren(children: children, for: parent)
+            }, undo: {[unowned self] in
+                self.updateChildren(children: oldChildren, for: parent)
+            })
         } else if characters == String(Character(" ")) {
             canvasCollectionView?.panningEnabled = true
         }
+    }
+
+    private func updateChildren(children: [CSLayer], for parent: CSLayer) {
+
+        // Change
+        parent.children = children
+
+        // Refresh
+        refreshDocument(shouldClearInspector: true)
+    }
+
+    private func refreshDocument(shouldClearInspector: Bool = false) {
+        if shouldClearInspector {
+            clearInspector()
+        }
+        outlineView.render()
+        render()
     }
 
     override func keyUp(with event: NSEvent) {

@@ -24,7 +24,8 @@ let CSEmptyCanvasValue = CSValue(type: CSCanvasType, data: .Object([
     "name": CSData.Null
 ]))
 
-class Canvas: CSDataSerializable, CSDataDeserializable {
+class Canvas: CSDataSerializable, CSDataDeserializable, NSCopying {
+
     var visible: Bool = true
     var name: String = "Canvas"
     var width: Double = 375
@@ -103,5 +104,11 @@ class Canvas: CSDataSerializable, CSDataDeserializable {
         }
 
         return data
+    }
+
+    func copy(with zone: NSZone? = nil) -> Any {
+        let copyData = toData()
+        let copy = Canvas.init(copyData)
+        return copy
     }
 }
