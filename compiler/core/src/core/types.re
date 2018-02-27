@@ -3,6 +3,7 @@ type compilerTarget =
   | Swift
   | Xml;
 
+[@bs.deriving accessors]
 type lonaType =
   | Reference(string)
   | Named(string, lonaType)
@@ -18,6 +19,12 @@ type lonaType =
     );
 
 let undefinedType = Reference("Undefined");
+
+let referenceFromJs = ltype =>
+  switch ltype {
+  | Reference(name) => Some(name)
+  | _ => None
+  };
 
 let booleanType = Reference("Boolean");
 
@@ -47,6 +54,7 @@ type cmp =
   | Lte
   | Unknown;
 
+[@bs.deriving jsConverter]
 type parameter = {
   name: string,
   ltype: lonaType,

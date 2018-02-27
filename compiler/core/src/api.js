@@ -34,6 +34,13 @@ module.exports = {
     color: require("./xml/xmlColor.bs")
   },
   reason: {
-    list: require("bs-platform/lib/js/array.js").to_list
+    list: require("bs-platform/lib/js/array.js").to_list,
+    array: require("bs-platform/lib/js/array.js").of_list,
+    none: 0,
+    // TODO: Can this come from Reason side?
+    some: x => [x],
+    unwrap: x => x[0],
+    true: 1,
+    false: 0
   }
 };

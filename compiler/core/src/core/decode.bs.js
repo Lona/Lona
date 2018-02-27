@@ -460,7 +460,15 @@ var Component = /* module */[
   /* logic */logic
 ];
 
+var reference = Types$LonaCompilerCore.reference;
+
+var named = Types$LonaCompilerCore.named;
+
+var $$function = Types$LonaCompilerCore.$$function;
+
 var undefinedType = Types$LonaCompilerCore.undefinedType;
+
+var referenceFromJs = Types$LonaCompilerCore.referenceFromJs;
 
 var booleanType = Types$LonaCompilerCore.booleanType;
 
@@ -476,7 +484,21 @@ var urlType = Types$LonaCompilerCore.urlType;
 
 var handlerType = Types$LonaCompilerCore.handlerType;
 
+var parameterToJs = Types$LonaCompilerCore.parameterToJs;
+
+var parameterFromJs = Types$LonaCompilerCore.parameterFromJs;
+
+var decodeParameters = parameters;
+
+var decodeRootLayer = rootLayer;
+
+var decodeLogic = logic;
+
+exports.reference         = reference;
+exports.named             = named;
+exports.$$function        = $$function;
 exports.undefinedType     = undefinedType;
+exports.referenceFromJs   = referenceFromJs;
 exports.booleanType       = booleanType;
 exports.numberType        = numberType;
 exports.stringType        = stringType;
@@ -484,6 +506,8 @@ exports.colorType         = colorType;
 exports.textStyleType     = textStyleType;
 exports.urlType           = urlType;
 exports.handlerType       = handlerType;
+exports.parameterToJs     = parameterToJs;
+exports.parameterFromJs   = parameterFromJs;
 exports.parameterTypeMap  = parameterTypeMap;
 exports.UnknownParameter  = UnknownParameter;
 exports.UnknownType       = UnknownType;
@@ -494,4 +518,7 @@ exports.Layer             = Layer;
 exports.UnknownLogicValue = UnknownLogicValue;
 exports.logicNode         = logicNode;
 exports.Component         = Component;
+exports.decodeParameters  = decodeParameters;
+exports.decodeRootLayer   = decodeRootLayer;
+exports.decodeLogic       = decodeLogic;
 /* parameterTypeMap Not a pure module */

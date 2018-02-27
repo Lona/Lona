@@ -77,6 +77,14 @@ let rec render = ast : Prettier.Doc.t('a) =>
         <+> s(")")
       )
     }
+  | TryExpression(o) =>
+    let operator =
+      switch (o##forced, o##optional) {
+      | (true, false) => "try!"
+      | (false, true) => "try?"
+      | _ => "try"
+      };
+    s(operator) <+> line <+> (o##expression |> render);
   | ClassDeclaration(o) =>
     let maybeFinal = o##isFinal ? s("final") <+> line : empty;
     let maybeModifier =
@@ -114,6 +122,42 @@ let rec render = ast : Prettier.Doc.t('a) =>
       o##body |> List.map(render) |> Render.prefixAll(hardline) |> indent,
       closing
     ]);
+  | ExtensionDeclaration(o) =>
+    /* TODO: Where */
+    let maybeModifier =
+      o##modifier != None ?
+        concat([
+          o##modifier |> Render.renderOptional(renderAccessLevelModifier),
+          line
+        ]) :
+        empty;
+    let maybeProtocols =
+      switch o##protocols {
+      | [] => empty
+      | typeAnnotations =>
+        s(": ")
+        <+> (
+          typeAnnotations |> List.map(renderTypeAnnotation) |> join(s(", "))
+        )
+      };
+    let opening =
+      group(
+        concat([
+          maybeModifier,
+          s("extension"),
+          line,
+          s(o##name),
+          maybeProtocols,
+          line,
+          s("{")
+        ])
+      );
+    let closing = concat([hardline, s("}")]);
+    concat([
+      opening,
+      o##body |> List.map(render) |> Render.prefixAll(hardline) |> indent,
+      closing
+    ]);
   | EnumDeclaration(o) =>
     let maybeModifier =
       o##modifier != None ?
@@ -122,9 +166,26 @@ let rec render = ast : Prettier.Doc.t('a) =>
           line
         ]) :
         empty;
+    let maybeInherits =
+      switch o##inherits {
+      | [] => empty
+      | typeAnnotations =>
+        s(": ")
+        <+> (
+          typeAnnotations |> List.map(renderTypeAnnotation) |> join(s(", "))
+        )
+      };
     let opening =
       group(
-        concat([maybeModifier, s("enum"), line, s(o##name), line, s("{")])
+        concat([
+          maybeModifier,
+          s("enum"),
+          line,
+          s(o##name),
+          maybeInherits,
+          line,
+          s("{")
+        ])
       );
     let closing = concat([hardline, s("}")]);
     concat([
@@ -185,6 +246,7 @@ let rec render = ast : Prettier.Doc.t('a) =>
         softline <+> join(s(",") <+> line, o##parameters |> List.map(render))
       ),
       s(")"),
+      o##throws ? s(" throws") : empty,
       line,
       render(CodeBlock({"statements": o##body}))
     ];
@@ -208,7 +270,8 @@ let rec render = ast : Prettier.Doc.t('a) =>
               <+> join(s(",") <+> line, o##parameters |> List.map(render))
             ),
             s(")"),
-            o##result |> Render.renderOptional(renderResult)
+            o##result |> Render.renderOptional(renderResult),
+            o##throws ? s(" throws") : empty
           ])
         ),
         line,
@@ -258,6 +321,12 @@ let rec render = ast : Prettier.Doc.t('a) =>
         s(")")
       ])
     );
+  | EnumCase(o) =>
+    switch o##value {
+    | None => group(s("enum ") <+> render(o##name))
+    | Some(value) =>
+      group(s("enum ") <+> render(o##name) <+> s(" = ") <+> render(value))
+    }
   | Empty => empty /* This only works if lines are added between statements... */
   | LineComment(v) => s("// " ++ v)
   | DocComment(v) =>
