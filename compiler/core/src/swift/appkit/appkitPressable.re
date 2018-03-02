@@ -267,6 +267,7 @@ let mouseTrackingFunctions = (rootLayer, pressableLayers: list(Types.layer)) => 
           "annotation": TypeName("NSEvent")
         })
       ],
+      "throws": false,
       "result": None,
       "body": body
     });
@@ -282,6 +283,7 @@ let mouseTrackingFunctions = (rootLayer, pressableLayers: list(Types.layer)) => 
           "annotation": TypeName("NSEvent")
         })
       ],
+      "throws": false,
       "result": None,
       "body":
         (pressableLayers |> List.map(containsPointVariable("hovered")))

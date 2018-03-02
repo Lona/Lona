@@ -6,6 +6,86 @@ var Block       = require("bs-platform/lib/js/block.js");
 var Curry       = require("bs-platform/lib/js/curry.js");
 var Json_decode = require("bs-json/src/Json_decode.js");
 
+function $$return(param_0) {
+  return /* Return */Block.__(0, [param_0]);
+}
+
+function literal(param_0) {
+  return /* Literal */Block.__(1, [param_0]);
+}
+
+function identifier(param_0) {
+  return /* Identifier */Block.__(2, [param_0]);
+}
+
+function classDeclaration(param_0) {
+  return /* ClassDeclaration */Block.__(3, [param_0]);
+}
+
+function methodDefinition(param_0) {
+  return /* MethodDefinition */Block.__(4, [param_0]);
+}
+
+function functionExpression(param_0) {
+  return /* FunctionExpression */Block.__(5, [param_0]);
+}
+
+function callExpression(param_0) {
+  return /* CallExpression */Block.__(6, [param_0]);
+}
+
+function jSXAttribute(param_0) {
+  return /* JSXAttribute */Block.__(7, [param_0]);
+}
+
+function jSXElement(param_0) {
+  return /* JSXElement */Block.__(8, [param_0]);
+}
+
+function variableDeclaration(param_0) {
+  return /* VariableDeclaration */Block.__(9, [param_0]);
+}
+
+function assignmentExpression(param_0) {
+  return /* AssignmentExpression */Block.__(10, [param_0]);
+}
+
+function binaryExpression(param_0) {
+  return /* BinaryExpression */Block.__(11, [param_0]);
+}
+
+function ifStatement(param_0) {
+  return /* IfStatement */Block.__(12, [param_0]);
+}
+
+function arrayLiteral(param_0) {
+  return /* ArrayLiteral */Block.__(13, [param_0]);
+}
+
+function objectLiteral(param_0) {
+  return /* ObjectLiteral */Block.__(14, [param_0]);
+}
+
+function property(param_0) {
+  return /* Property */Block.__(15, [param_0]);
+}
+
+function exportDefaultDeclaration(param_0) {
+  return /* ExportDefaultDeclaration */Block.__(16, [param_0]);
+}
+
+function block(param_0) {
+  return /* Block */Block.__(17, [param_0]);
+}
+
+function program(param_0) {
+  return /* Program */Block.__(18, [param_0]);
+}
+
+function lineEndComment(param_0) {
+  return /* LineEndComment */Block.__(19, [param_0]);
+}
+
 function map(f, node) {
   if (typeof node === "number") {
     return Curry._1(f, node);
@@ -209,6 +289,56 @@ function prepareForRender(node) {
   return map(renameIdentifiers, node);
 }
 
+var eq = /* Eq */0;
+
+var neq = /* Neq */1;
+
+var gt = /* Gt */2;
+
+var gte = /* Gte */3;
+
+var lt = /* Lt */4;
+
+var lte = /* Lte */5;
+
+var plus = /* Plus */6;
+
+var noop = /* Noop */7;
+
+var empty = /* Empty */0;
+
+var unknown = /* Unknown */1;
+
+exports.eq                             = eq;
+exports.neq                            = neq;
+exports.gt                             = gt;
+exports.gte                            = gte;
+exports.lt                             = lt;
+exports.lte                            = lte;
+exports.plus                           = plus;
+exports.noop                           = noop;
+exports.$$return                       = $$return;
+exports.literal                        = literal;
+exports.identifier                     = identifier;
+exports.classDeclaration               = classDeclaration;
+exports.methodDefinition               = methodDefinition;
+exports.functionExpression             = functionExpression;
+exports.callExpression                 = callExpression;
+exports.jSXAttribute                   = jSXAttribute;
+exports.jSXElement                     = jSXElement;
+exports.variableDeclaration            = variableDeclaration;
+exports.assignmentExpression           = assignmentExpression;
+exports.binaryExpression               = binaryExpression;
+exports.ifStatement                    = ifStatement;
+exports.arrayLiteral                   = arrayLiteral;
+exports.objectLiteral                  = objectLiteral;
+exports.property                       = property;
+exports.exportDefaultDeclaration       = exportDefaultDeclaration;
+exports.block                          = block;
+exports.program                        = program;
+exports.lineEndComment                 = lineEndComment;
+exports.empty                          = empty;
+exports.unknown                        = unknown;
 exports.map                            = map;
 exports.optimizeTruthyBinaryExpression = optimizeTruthyBinaryExpression;
 exports.renameIdentifiers              = renameIdentifiers;

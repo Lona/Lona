@@ -436,7 +436,7 @@ function getInsets(prefix, layer) {
     throw [
           Caml_builtin_exceptions.match_failure,
           [
-            "/Users/devinabbott/Projects/Lona/compiler/core/src/core/layer.re",
+            "/Users/devin_abbott/Projects/ComponentStudio/ComponentStudio/compiler/core/src/core/layer.re",
             160,
             6
           ]

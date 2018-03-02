@@ -1,3 +1,4 @@
+[@bs.deriving accessors]
 type node =
   | Document(
       {

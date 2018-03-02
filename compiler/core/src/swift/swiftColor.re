@@ -30,6 +30,7 @@ let render =
         Empty,
         EnumDeclaration({
           "name": "Colors",
+          "inherits": [],
           "modifier": Some(PublicModifier),
           "body": colors |> List.map(colorConstantDoc)
         })
@@ -100,7 +101,8 @@ let render =
           )
         ],
         "result":
-          Some(TypeName(SwiftDocument.colorTypeName(swiftOptions.framework)))
+          Some(TypeName(SwiftDocument.colorTypeName(swiftOptions.framework))),
+        "throws": false
       });
     TopLevelDeclaration({
       "statements": [
@@ -109,6 +111,7 @@ let render =
         DocComment("DLS-defined color values"),
         EnumDeclaration({
           "name": "Colors",
+          "inherits": [],
           "modifier": Some(PublicModifier),
           "body": colors |> List.map(colorConstantDoc)
         }),

@@ -48,9 +48,9 @@ function nameWithoutExtension(path) {
 
 function importFramework(framework) {
   if (framework !== 0) {
-    return /* ImportDeclaration */Block.__(12, ["AppKit"]);
+    return /* ImportDeclaration */Block.__(14, ["AppKit"]);
   } else {
-    return /* ImportDeclaration */Block.__(12, ["UIKit"]);
+    return /* ImportDeclaration */Block.__(14, ["UIKit"]);
   }
 }
 
@@ -81,14 +81,14 @@ function imageTypeName(framework) {
 function layoutPriorityTypeDoc(framework) {
   if (framework !== 0) {
     return /* MemberExpression */Block.__(1, [/* :: */[
-                /* SwiftIdentifier */Block.__(6, ["NSLayoutConstraint"]),
+                /* SwiftIdentifier */Block.__(8, ["NSLayoutConstraint"]),
                 /* :: */[
-                  /* SwiftIdentifier */Block.__(6, ["Priority"]),
+                  /* SwiftIdentifier */Block.__(8, ["Priority"]),
                   /* [] */0
                 ]
               ]]);
   } else {
-    return /* SwiftIdentifier */Block.__(6, ["UILayoutPriority"]);
+    return /* SwiftIdentifier */Block.__(8, ["UILayoutPriority"]);
   }
 }
 
@@ -103,17 +103,17 @@ function labelAttributedTextName(framework) {
 function localImageName(framework, name) {
   var imageName = /* LiteralExpression */Block.__(0, [/* String */Block.__(3, [Path.parse(name).name])]);
   if (framework !== 0) {
-    return /* FunctionCallExpression */Block.__(17, [{
+    return /* FunctionCallExpression */Block.__(19, [{
                 name: /* MemberExpression */Block.__(1, [/* :: */[
-                      /* SwiftIdentifier */Block.__(6, ["NSImage"]),
+                      /* SwiftIdentifier */Block.__(8, ["NSImage"]),
                       /* :: */[
-                        /* SwiftIdentifier */Block.__(6, ["Name"]),
+                        /* SwiftIdentifier */Block.__(8, ["Name"]),
                         /* [] */0
                       ]
                     ]]),
                 arguments: /* :: */[
-                  /* FunctionCallArgument */Block.__(16, [{
-                        name: /* Some */[/* SwiftIdentifier */Block.__(6, ["rawValue"])],
+                  /* FunctionCallArgument */Block.__(18, [{
+                        name: /* Some */[/* SwiftIdentifier */Block.__(8, ["rawValue"])],
                         value: imageName
                       }]),
                   /* [] */0
@@ -155,7 +155,7 @@ function lonaValue(framework, colors, textStyles, value) {
           case "String" : 
               return /* LiteralExpression */Block.__(0, [/* String */Block.__(3, [Json_decode.string(value[/* data */1])])]);
           default:
-            return /* SwiftIdentifier */Block.__(6, ["UnknownReferenceType: " + typeName]);
+            return /* SwiftIdentifier */Block.__(8, ["UnknownReferenceType: " + typeName]);
         }
         break;
     case 1 : 
@@ -166,9 +166,9 @@ function lonaValue(framework, colors, textStyles, value) {
               var match$1 = Color$LonaCompilerCore.find(colors, rawValue);
               if (match$1) {
                 return /* MemberExpression */Block.__(1, [/* :: */[
-                            /* SwiftIdentifier */Block.__(6, ["Colors"]),
+                            /* SwiftIdentifier */Block.__(8, ["Colors"]),
                             /* :: */[
-                              /* SwiftIdentifier */Block.__(6, [match$1[0][/* id */0]]),
+                              /* SwiftIdentifier */Block.__(8, [match$1[0][/* id */0]]),
                               /* [] */0
                             ]
                           ]]);
@@ -180,17 +180,17 @@ function lonaValue(framework, colors, textStyles, value) {
               var match$2 = TextStyle$LonaCompilerCore.find(textStyles[/* styles */0], rawValue$1);
               if (match$2) {
                 return /* MemberExpression */Block.__(1, [/* :: */[
-                            /* SwiftIdentifier */Block.__(6, ["TextStyles"]),
+                            /* SwiftIdentifier */Block.__(8, ["TextStyles"]),
                             /* :: */[
-                              /* SwiftIdentifier */Block.__(6, [match$2[0][/* id */0]]),
+                              /* SwiftIdentifier */Block.__(8, [match$2[0][/* id */0]]),
                               /* [] */0
                             ]
                           ]]);
               } else {
                 return /* MemberExpression */Block.__(1, [/* :: */[
-                            /* SwiftIdentifier */Block.__(6, ["TextStyles"]),
+                            /* SwiftIdentifier */Block.__(8, ["TextStyles"]),
                             /* :: */[
-                              /* SwiftIdentifier */Block.__(6, [textStyles[/* defaultStyle */1][/* id */0]]),
+                              /* SwiftIdentifier */Block.__(8, [textStyles[/* defaultStyle */1][/* id */0]]),
                               /* [] */0
                             ]
                           ]]);
@@ -198,25 +198,25 @@ function lonaValue(framework, colors, textStyles, value) {
           case "URL" : 
               var rawValue$2 = Json_decode.string(value[/* data */1]);
               if (rawValue$2.startsWith("file://./")) {
-                return /* FunctionCallExpression */Block.__(17, [{
-                            name: /* SwiftIdentifier */Block.__(6, [imageTypeName(framework)]),
+                return /* FunctionCallExpression */Block.__(19, [{
+                            name: /* SwiftIdentifier */Block.__(8, [imageTypeName(framework)]),
                             arguments: /* :: */[
-                              /* FunctionCallArgument */Block.__(16, [{
-                                    name: /* Some */[/* SwiftIdentifier */Block.__(6, ["named"])],
+                              /* FunctionCallArgument */Block.__(18, [{
+                                    name: /* Some */[/* SwiftIdentifier */Block.__(8, ["named"])],
                                     value: localImageName(framework, rawValue$2)
                                   }]),
                               /* [] */0
                             ]
                           }]);
               } else {
-                return /* SwiftIdentifier */Block.__(6, ["RemoteOrAbsoluteImageNotHandled"]);
+                return /* SwiftIdentifier */Block.__(8, ["RemoteOrAbsoluteImageNotHandled"]);
               }
           default:
-            return /* SwiftIdentifier */Block.__(6, ["UnknownNamedTypeAlias" + alias]);
+            return /* SwiftIdentifier */Block.__(8, ["UnknownNamedTypeAlias" + alias]);
         }
         break;
     case 2 : 
-        return /* SwiftIdentifier */Block.__(6, ["PLACEHOLDER"]);
+        return /* SwiftIdentifier */Block.__(8, ["PLACEHOLDER"]);
     
   }
 }
@@ -225,7 +225,7 @@ function memberOrSelfExpression(first, statements) {
   var exit = 0;
   if (typeof first === "number") {
     exit = 1;
-  } else if (first.tag === 6) {
+  } else if (first.tag === 8) {
     if (first[0] === "self") {
       return /* MemberExpression */Block.__(1, [statements]);
     } else {
@@ -245,7 +245,7 @@ function memberOrSelfExpression(first, statements) {
 
 function layerNameOrSelf(rootLayer, layer) {
   var match = +(layer === rootLayer);
-  return /* SwiftIdentifier */Block.__(6, [match !== 0 ? "self" : SwiftFormat$LonaCompilerCore.layerName(layer[/* name */1])]);
+  return /* SwiftIdentifier */Block.__(8, [match !== 0 ? "self" : SwiftFormat$LonaCompilerCore.layerName(layer[/* name */1])]);
 }
 
 function layerMemberExpression(rootLayer, layer, statements) {

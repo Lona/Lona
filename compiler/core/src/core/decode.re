@@ -179,3 +179,10 @@ module Component = {
   let rootLayer = json => field("rootLayer", Layer.layer, json);
   let logic = json => Logic.Block(field("logic", list(logicNode), json));
 };
+
+/* For JS API */
+let decodeParameters = Component.parameters;
+
+let decodeRootLayer = Component.rootLayer;
+
+let decodeLogic = Component.logic;

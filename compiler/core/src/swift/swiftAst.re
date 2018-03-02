@@ -1,3 +1,4 @@
+[@bs.deriving accessors]
 type accessLevelModifier =
   | PrivateModifier
   | FileprivateModifier
@@ -5,10 +6,12 @@ type accessLevelModifier =
   | PublicModifier
   | OpenModifier;
 
+[@bs.deriving accessors]
 type mutationModifier =
   | MutatingModifier
   | NonmutatingModifier;
 
+[@bs.deriving accessors]
 type declarationModifier =
   | ClassModifier
   | ConvenienceModifier
@@ -85,6 +88,7 @@ and initializerBlock =
         "didSet": option(list(node))
       }
     )
+[@bs.deriving accessors]
 and node =
   /* | Operator(string) */
   | LiteralExpression(literal)
@@ -104,6 +108,14 @@ and node =
         "expression": node
       }
     )
+  | TryExpression(
+      {
+        .
+        "forced": bool,
+        "optional": bool,
+        "expression": node
+      }
+    )
   | ClassDeclaration(
       {
         .
@@ -118,6 +130,17 @@ and node =
       {
         .
         "name": string,
+        "inherits": list(typeAnnotation),
+        "modifier": option(accessLevelModifier),
+        "body": list(node)
+      }
+    )
+  | ExtensionDeclaration(
+      {
+        .
+        "name": string,
+        "protocols": list(typeAnnotation),
+        "where": option(node),
         "modifier": option(accessLevelModifier),
         "body": list(node)
       }
@@ -147,6 +170,7 @@ and node =
         "modifiers": list(declarationModifier),
         "parameters": list(node),
         "failable": option(string),
+        "throws": bool,
         "body": list(node)
       }
     )
@@ -158,7 +182,8 @@ and node =
         "modifiers": list(declarationModifier),
         "parameters": list(node),
         "result": option(typeAnnotation),
-        "body": list(node)
+        "body": list(node),
+        "throws": bool
       }
     )
   | ImportDeclaration(string)
@@ -191,6 +216,13 @@ and node =
         .
         "name": node,
         "arguments": list(node)
+      }
+    )
+  | EnumCase(
+      {
+        .
+        "name": node,
+        "value": option(node)
       }
     )
   | Empty

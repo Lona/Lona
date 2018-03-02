@@ -1,12 +1,10 @@
 open Prettier.Doc.Builders;
 
-open XmlAst;
-
 let quoted = doc => s("\"") <+> doc <+> s("\"");
 
 let rec render = ast : Prettier.Doc.t('a) =>
   switch ast {
-  | Document(o) => render(o##prolog) <+> hardline <+> render(o##element)
+  | XmlAst.Document(o) => render(o##prolog) <+> hardline <+> render(o##element)
   | Prolog(o) =>
     switch o##xmlDecl {
     | Some(node) => render(node)
