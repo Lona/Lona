@@ -68,10 +68,10 @@ class NumberField: NSTextField, NSTextFieldDelegate, NSControlTextEditingDelegat
         if changeBy != 0 {
             let newValue = value + changeBy
 
-            // TODO Should setting the value fire onChange? Or do we always want to call
-            // onChange manually?
             value = newValue
-            // onChange(newValue)
+
+            onChange(value)
+            onChangeData(CSData.Number(value))
         }
 
         return false
@@ -79,7 +79,6 @@ class NumberField: NSTextField, NSTextFieldDelegate, NSControlTextEditingDelegat
 
     override func controlTextDidChange(_ obj: Notification) {
         // TODO: https://stackoverflow.com/questions/6337464/nsnumberformatter-doesnt-allow-typing-decimal-numbers
-
         onChange(value)
         onChangeData(CSData.Number(value))
     }
