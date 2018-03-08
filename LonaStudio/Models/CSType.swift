@@ -61,6 +61,17 @@ indirect enum CSType: Equatable, CSDataSerializable, CSDataDeserializable {
                     if let innerType = object["of"] {
                         self = .array(CSType(innerType))
                     }
+                case "Record":
+                    if let fields = object["fields"]?.array {
+                        let schema: Schema = Schema(
+                            fields.map({ (arg) in
+                                let key = arg.get(key: "key").stringValue
+                                let valueType = CSType(arg.get(key: "type"))
+                                return (key, (valueType, CSAccess.write))
+                            })
+                        )
+                        self = .dictionary(schema)
+                    }
                 case "Enumeration":
                     if let values = object["of"]?.array {
                         self = .enumeration(values.map({ CSValue($0) }))
@@ -106,6 +117,11 @@ indirect enum CSType: Equatable, CSDataSerializable, CSDataDeserializable {
 
     var isGeneric: Bool { return genericId != nil }
 
+    var isVariant: Bool {
+        guard case CSType.variant(_) = self else { return false }
+        return true
+    }
+
     func unwrappedNamedType() -> CSType {
         switch self {
         case .named(_, let type):
@@ -124,6 +140,7 @@ indirect enum CSType: Equatable, CSDataSerializable, CSDataDeserializable {
         case .bool: return "Boolean"
         case .number: return "Number"
         case .string: return "String"
+        case .dictionary: return "Record"
         case .function: return "Function"
         case .named(let name, _): return name
         default: return "Any"
@@ -158,7 +175,22 @@ indirect enum CSType: Equatable, CSDataSerializable, CSDataDeserializable {
                 "name": "Array".toData(),
                 "of": innerType.toData()
             ])
-        case .dictionary: return .String("Dictionary")
+        case .dictionary(let schema):
+          var data: CSData = .Object([
+            "name": "Record".toData()
+            ])
+
+          if schema.count > 0 {
+            data["fields"] = CSData.Array(schema.map({ (arg) -> CSData in
+              let (key, value) = arg
+              return CSData.Object([
+                "key": key.toData(),
+                "type": value.type.toData()
+                ])
+            }))
+          }
+
+          return data
         case .enumeration(let values):
             if let match = CSType.builtInTypes.enumerated().first(where: { (arg) -> Bool in
                 let (_, item) = arg
@@ -301,6 +333,7 @@ indirect enum CSType: Equatable, CSDataSerializable, CSDataDeserializable {
             CSValue(type: .string, data: .String("Boolean")),
             CSValue(type: .string, data: .String("Number")),
             CSValue(type: .string, data: .String("String")),
+            CSValue(type: .string, data: .String("Record")),
             CSValue(type: .string, data: .String("Color")),
             CSValue(type: .string, data: .String("TextStyle")),
             CSValue(type: .string, data: .String("URL")),
@@ -316,6 +349,7 @@ indirect enum CSType: Equatable, CSDataSerializable, CSDataDeserializable {
             "Boolean": CSType.bool,
             "Number": CSType.number,
             "String": CSType.string,
+            "Record": CSEmptyRecordType,
             "Color": CSColorType,
             "TextStyle": CSTextStyleType,
             "Comparator": CSComparatorType,
@@ -372,6 +406,7 @@ let CSTextStyleType = CSType.named("TextStyle", .string)
 let CSURLType = CSType.named("URL", .string)
 let CSComponentType = CSType.named("Component", .any)
 let CSHandlerType = CSType.function([], .undefined)
+let CSEmptyRecordType = CSType.dictionary([:])
 
 let CSComparatorType = CSType.enumeration([
     CSValue(type: .string, data: .String("equal to")),

@@ -76,14 +76,39 @@ struct CSValue: Equatable, CSDataSerializable, CSDataDeserializable {
         return lhs.type == rhs.type && lhs.data == rhs.data
     }
 
+    /// A placeholder value, optimizing for showing something on the screen (human-friendly), rather than
+    /// optimizing for sensible code generation (computer-friendly)
     static func exampleValue(for type: CSType) -> CSValue {
         switch type {
         case .bool: return CSValue(type: type, data: .Bool(false))
         case .number: return CSValue(type: type, data: .Number(0))
         case .string: return CSValue(type: type, data: .String("Text"))
         case .named("Color", .string): return CSValue(type: type, data: .String("black"))
+        case .array: return CSValue(type: type, data: .Array([]))
+        case .dictionary(let schema):
+            let fields: [String: CSData] = schema.key({ (arg) in
+                return (key: arg.key, value: exampleValue(for: arg.value.type).data)
+            })
+            return CSValue(type: type, data: .Object(fields))
         default:
             return CSValue(type: CSAnyType, data: CSData.Null)
+        }
+    }
+
+    static func defaultValue(for type: CSType) -> CSValue {
+        switch type {
+        case .bool: return CSValue(type: type, data: .Bool(false))
+        case .number: return CSValue(type: type, data: .Number(0))
+        case .string: return CSValue(type: type, data: .String(""))
+        case .named("Color", .string): return CSValue(type: type, data: .String("transparent"))
+        case .array: return CSValue(type: type, data: .Array([]))
+        case .dictionary(let schema):
+            let fields: [String: CSData] = schema.key({ (arg) in
+                return (key: arg.key, value: defaultValue(for: arg.value.type).data)
+            })
+            return CSValue(type: type, data: .Object(fields))
+        default:
+            return CSUndefinedValue.cast(to: type)
         }
     }
 
@@ -166,10 +191,6 @@ extension CSValue {
         }
 
         return CSValue(type: match.1, data: self.data.get(key: "data"))
-    }
-
-    static func defaultValue(for type: CSType) -> CSValue {
-        return CSUndefinedValue.cast(to: type)
     }
 
     func with(data newData: CSData) -> CSValue {
