@@ -62,7 +62,16 @@ indirect enum CSType: Equatable, CSDataSerializable, CSDataDeserializable {
                         self = .array(CSType(innerType))
                     }
                 case "Record":
-                    if let fields = object["fields"]?.array {
+                    if let fields = object["fields"]?.object {
+                        let schema: Schema = Schema(
+                            fields.map({ (arg) in
+                                let key = arg.key
+                                let valueType = CSType(arg.value)
+                                return (key, (valueType, CSAccess.write))
+                            })
+                        )
+                        self = .dictionary(schema)
+                    } else if let fields = object["fields"]?.array {
                         let schema: Schema = Schema(
                             fields.map({ (arg) in
                                 let key = arg.get(key: "key").stringValue
@@ -180,14 +189,22 @@ indirect enum CSType: Equatable, CSDataSerializable, CSDataDeserializable {
             "name": "Record".toData()
             ])
 
-          if schema.count > 0 {
+          let hasAccessRules = schema.values.contains(where: { arg in arg.access != CSAccess.write })
+
+          if hasAccessRules {
             data["fields"] = CSData.Array(schema.map({ (arg) -> CSData in
               let (key, value) = arg
               return CSData.Object([
                 "key": key.toData(),
-                "type": value.type.toData()
+                "type": value.type.toData(),
+                "access": value.access.rawValue.toData()
                 ])
             }))
+          } else {
+            data["fields"] = CSData.Object(
+                schema.key({ arg in
+                    return (key: arg.key, value: arg.value.type.toData())
+                }))
           }
 
           return data
