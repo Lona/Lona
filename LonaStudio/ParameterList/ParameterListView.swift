@@ -108,12 +108,38 @@ class ParameterListView: NSOutlineView, NSOutlineViewDataSource, NSOutlineViewDe
                 .text("Parameter"),
                 .value("name", CSValue(type: .string, data: CSData.String(parameter.name)), []),
                 .text("of type"),
-                .value("type", CSValue(type: CSType.parameterType(), data: .String(parameter.type.toString())), []),
+                .value("type", CSValue(type: CSType.parameterType(), data: .String(parameter.type.toString())), [])
+            ]
+
+            switch parameter.type {
+            case .dictionary(let schema):
+                let recordFieldType = CSType.dictionary([
+                    "key": (CSType.string, .write),
+                    "type": (CSType.parameterType(), .write),
+                    "optional": (CSType.bool, .write)
+                    ])
+                let recordFieldsType = CSType.array(recordFieldType)
+                let fieldsData: [CSData] = schema.enumerated().map({ arg in
+                    let (key, value) = arg.element
+                    return CSData.Object([
+                        "key": key.toData(),
+                        "type": (value.type.unwrapOptional() ?? value.type).toString().toData(),
+                        "optional": value.type.isOptional().toData()
+                        ])
+                })
+                let fieldsValue = CSValue(type: recordFieldsType, data: CSData.Array(fieldsData))
+
+                components.append(.value("typedef", fieldsValue, []))
+            default:
+                break
+            }
+
+            components.append(contentsOf: [
                 .text("that is"),
                 .value("required", CSValue(type: requiredType, data: parameter.type.isOptional() ? .String("optional") : .String("required")), []),
                 .text("with"),
                 .value("hasDefaultValue", CSValue(type: defaultValueType, data: parameter.hasDefaultValue ? .String("default") : .String("no default")), [])
-            ]
+                ])
 
             if parameter.hasDefaultValue {
                 components.append(.text("of"))
@@ -140,6 +166,19 @@ class ParameterListView: NSOutlineView, NSOutlineViewDataSource, NSOutlineViewDe
 
                     // TODO: Cast all cases to their new type (?)
 //                    parameter.examples = parameter.examples.map({ $0.cast(to: parameter.type) })
+                case "typedef":
+                    let schema: CSType.Schema = value.data.arrayValue.key({ field in
+                        let key = field.get(key: "key").stringValue
+                        let type = CSType.from(string: field.get(key: "type").stringValue)
+                        let optional = field.get(key: "optional").boolValue
+                        return (key: key, value: (type: optional ? type.makeOptional() : type, access: .write))
+                    })
+
+                    parameter.type = CSType.dictionary(schema)
+
+                    if parameter.hasDefaultValue {
+                        parameter.defaultValue = parameter.defaultValue.cast(to: parameter.type)
+                    }
                 case "required":
                     if value.data.stringValue == "required" {
                         if let unwrappedType = parameter.type.unwrapOptional() {

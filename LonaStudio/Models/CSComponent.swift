@@ -110,7 +110,11 @@ class CSComponent: DataNode, NSCopying {
             .reduce(CSData.Object([:])) { (result, parameter) -> CSData in
                 var result = result
                 parametersSchema[parameter.name] = (type: parameter.type, access: CSAccess.read)
-                result[parameter.name] = CSData.Null
+                if case CSType.dictionary(_) = parameter.type {
+                    result[parameter.name] = CSValue.defaultValue(for: parameter.type).data
+                } else {
+                    result[parameter.name] = CSData.Null
+                }
                 return result
             }
 
