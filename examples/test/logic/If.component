@@ -1,39 +1,21 @@
 {
   "canvases" : [
     {
-      "backgroundColor" : "white",
-      "exportScale" : 1,
       "height" : 100,
       "heightMode" : "At Least",
       "name" : "iPhone SE",
-      "parameters" : {
-
-      },
-      "visible" : true,
       "width" : 320
     },
     {
-      "backgroundColor" : "white",
-      "exportScale" : 1,
       "height" : 100,
       "heightMode" : "At Least",
       "name" : "iPhone 7",
-      "parameters" : {
-
-      },
-      "visible" : true,
       "width" : 375
     },
     {
-      "backgroundColor" : "white",
-      "exportScale" : 1,
       "height" : 100,
       "heightMode" : "At Least",
       "name" : "iPhone 7+",
-      "parameters" : {
-
-      },
-      "visible" : true,
       "width" : 414
     }
   ],
@@ -55,9 +37,6 @@
       "visible" : true
     }
   ],
-  "config" : {
-    "canvasLayout" : "xy"
-  },
   "logic" : [
     {
       "function" : {
@@ -97,11 +76,7 @@
                 "type" : "value",
                 "value" : {
                   "data" : "red500",
-                  "type" : {
-                    "alias" : "Color",
-                    "name" : "Named",
-                    "of" : "String"
-                  }
+                  "type" : "Color"
                 }
               },
               "rhs" : {
@@ -112,26 +87,16 @@
                     "View",
                     "backgroundColor"
                   ],
-                  "type" : {
-                    "alias" : "Color",
-                    "name" : "Named",
-                    "of" : "String"
-                  }
+                  "type" : "Color"
                 }
               }
             },
             "name" : "assign(lhs, to rhs)"
-          },
-          "nodes" : [
-
-          ]
+          }
         }
       ]
     }
   ],
-  "metadata" : {
-
-  },
   "parameters" : [
     {
       "name" : "enabled",
@@ -139,13 +104,9 @@
     }
   ],
   "rootLayer" : {
-    "children" : [
-
-    ],
-    "name" : "View",
+    "id" : "View",
     "parameters" : {
-      "alignSelf" : "stretch",
-      "flex" : 0
+      "alignSelf" : "stretch"
     },
     "type" : "View"
   }

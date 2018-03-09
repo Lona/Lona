@@ -1,39 +1,21 @@
 {
   "canvases" : [
     {
-      "backgroundColor" : "white",
-      "exportScale" : 1,
       "height" : 100,
       "heightMode" : "At Least",
       "name" : "iPhone SE",
-      "parameters" : {
-
-      },
-      "visible" : true,
       "width" : 320
     },
     {
-      "backgroundColor" : "white",
-      "exportScale" : 1,
       "height" : 100,
       "heightMode" : "At Least",
       "name" : "iPhone 7",
-      "parameters" : {
-
-      },
-      "visible" : true,
       "width" : 375
     },
     {
-      "backgroundColor" : "white",
-      "exportScale" : 1,
       "height" : 100,
       "heightMode" : "At Least",
       "name" : "iPhone 7+",
-      "parameters" : {
-
-      },
-      "visible" : true,
       "width" : 414
     }
   ],
@@ -47,25 +29,16 @@
       "visible" : true
     }
   ],
-  "config" : {
-    "canvasLayout" : "xy"
-  },
   "logic" : [
 
   ],
-  "metadata" : {
-
-  },
   "parameters" : [
 
   ],
   "rootLayer" : {
     "children" : [
       {
-        "children" : [
-
-        ],
-        "name" : "View 1",
+        "id" : "View 1",
         "parameters" : {
           "backgroundColor" : "blue500",
           "height" : 60,
@@ -74,10 +47,7 @@
         "type" : "View"
       },
       {
-        "children" : [
-
-        ],
-        "name" : "View 3",
+        "id" : "View 3",
         "parameters" : {
           "backgroundColor" : "lightblue500",
           "height" : 120,
@@ -86,10 +56,7 @@
         "type" : "View"
       },
       {
-        "children" : [
-
-        ],
-        "name" : "View 2",
+        "id" : "View 2",
         "parameters" : {
           "backgroundColor" : "cyan500",
           "height" : 180,
@@ -98,11 +65,10 @@
         "type" : "View"
       }
     ],
-    "name" : "Container",
+    "id" : "Container",
     "parameters" : {
       "alignSelf" : "stretch",
       "backgroundColor" : "bluegrey50",
-      "flex" : 0,
       "flexDirection" : "row",
       "paddingBottom" : 24,
       "paddingLeft" : 24,

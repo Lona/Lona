@@ -132,7 +132,7 @@
   "rootLayer" : {
     "children" : [
       {
-        "name" : "Image",
+        "id" : "Image",
         "parameters" : {
           "backgroundColor" : "grey200",
           "borderRadius" : 22,
@@ -145,7 +145,7 @@
       {
         "children" : [
           {
-            "name" : "Primary Text",
+            "id" : "Primary Text",
             "parameters" : {
               "font" : "subheading1",
               "text" : "Two-line item"
@@ -153,7 +153,7 @@
             "type" : "Text"
           },
           {
-            "name" : "Secondary Text",
+            "id" : "Secondary Text",
             "parameters" : {
               "font" : "body1",
               "text" : "Secondary text"
@@ -161,7 +161,7 @@
             "type" : "Text"
           }
         ],
-        "name" : "View 1",
+        "id" : "View 1",
         "parameters" : {
           "flex" : 1,
           "marginLeft" : 16
@@ -169,7 +169,7 @@
         "type" : "View"
       }
     ],
-    "name" : "View",
+    "id" : "View",
     "parameters" : {
       "alignSelf" : "stretch",
       "flexDirection" : "row",

@@ -38,7 +38,7 @@ class TextStylesTest extends React.Component {
 };
 
 let styles = StyleSheet.create({
-  View: { alignSelf: "stretch", flex: 0 },
+  View: { alignSelf: "stretch" },
   Text: { font: "display4" },
   Text 1: { font: "display3" },
   Text 2: { font: "display2" },

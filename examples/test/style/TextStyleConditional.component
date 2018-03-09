@@ -1,39 +1,21 @@
 {
   "canvases" : [
     {
-      "backgroundColor" : "white",
-      "exportScale" : 1,
       "height" : 100,
       "heightMode" : "At Least",
       "name" : "iPhone SE",
-      "parameters" : {
-
-      },
-      "visible" : true,
       "width" : 320
     },
     {
-      "backgroundColor" : "white",
-      "exportScale" : 1,
       "height" : 100,
       "heightMode" : "At Least",
       "name" : "iPhone 7",
-      "parameters" : {
-
-      },
-      "visible" : true,
       "width" : 375
     },
     {
-      "backgroundColor" : "white",
-      "exportScale" : 1,
       "height" : 100,
       "heightMode" : "At Least",
       "name" : "iPhone 7+",
-      "parameters" : {
-
-      },
-      "visible" : true,
       "width" : 414
     }
   ],
@@ -55,9 +37,6 @@
       "visible" : true
     }
   ],
-  "config" : {
-    "canvasLayout" : "xy"
-  },
   "logic" : [
     {
       "function" : {
@@ -97,11 +76,7 @@
                 "type" : "value",
                 "value" : {
                   "data" : "display2",
-                  "type" : {
-                    "alias" : "TextStyle",
-                    "name" : "Named",
-                    "of" : "String"
-                  }
+                  "type" : "TextStyle"
                 }
               },
               "rhs" : {
@@ -112,26 +87,16 @@
                     "Text",
                     "textStyle"
                   ],
-                  "type" : {
-                    "alias" : "TextStyle",
-                    "name" : "Named",
-                    "of" : "String"
-                  }
+                  "type" : "TextStyle"
                 }
               }
             },
             "name" : "assign(lhs, to rhs)"
-          },
-          "nodes" : [
-
-          ]
+          }
         }
       ]
     }
   ],
-  "metadata" : {
-
-  },
   "parameters" : [
     {
       "defaultValue" : {
@@ -145,10 +110,7 @@
   "rootLayer" : {
     "children" : [
       {
-        "children" : [
-
-        ],
-        "name" : "Text",
+        "id" : "Text",
         "parameters" : {
           "font" : "headline",
           "text" : "Text goes here"
@@ -156,10 +118,9 @@
         "type" : "Text"
       }
     ],
-    "name" : "View",
+    "id" : "View",
     "parameters" : {
-      "alignSelf" : "stretch",
-      "flex" : 0
+      "alignSelf" : "stretch"
     },
     "type" : "View"
   }

@@ -15,6 +15,6 @@ class LocalAsset extends React.Component {
 };
 
 let styles = StyleSheet.create({
-  View: { alignSelf: "stretch", flex: 0 },
+  View: { alignSelf: "stretch" },
   Image: { height: 100, width: 100 }
 });

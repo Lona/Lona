@@ -47,7 +47,6 @@ class PressableRootView extends React.Component {
 let styles = StyleSheet.create({
   Outer: {
     alignSelf: "stretch",
-    flex: 0,
     paddingBottom: 24,
     paddingLeft: 24,
     paddingRight: 24,

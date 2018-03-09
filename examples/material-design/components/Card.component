@@ -210,7 +210,7 @@
   "rootLayer" : {
     "children" : [
       {
-        "name" : "Image",
+        "id" : "Image",
         "parameters" : {
           "alignSelf" : "stretch",
           "aspectRatio" : 2,
@@ -222,7 +222,7 @@
       {
         "children" : [
           {
-            "name" : "Headline",
+            "id" : "Headline",
             "parameters" : {
               "font" : "headline",
               "text" : "Headline"
@@ -230,7 +230,7 @@
             "type" : "Text"
           },
           {
-            "name" : "Body",
+            "id" : "Body",
             "parameters" : {
               "font" : "body2",
               "numberOfLines" : 2,
@@ -240,7 +240,7 @@
             "type" : "Text"
           }
         ],
-        "name" : "Description",
+        "id" : "Description",
         "parameters" : {
           "alignSelf" : "stretch",
           "paddingBottom" : 16,
@@ -251,7 +251,7 @@
         "type" : "View"
       }
     ],
-    "name" : "View",
+    "id" : "View",
     "parameters" : {
       "alignSelf" : "stretch"
     },

@@ -12,7 +12,4 @@ class Assign extends React.Component {
   }
 };
 
-let styles = StyleSheet.create({
-  View: { alignSelf: "stretch", flex: 0 },
-  Text: {}
-});
+let styles = StyleSheet.create({ View: { alignSelf: "stretch" }, Text: {} });

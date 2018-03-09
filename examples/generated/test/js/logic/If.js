@@ -12,4 +12,4 @@ class If extends React.Component {
   }
 };
 
-let styles = StyleSheet.create({ View: { alignSelf: "stretch", flex: 0 } });
+let styles = StyleSheet.create({ View: { alignSelf: "stretch" } });

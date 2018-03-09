@@ -1,39 +1,21 @@
 {
   "canvases" : [
     {
-      "backgroundColor" : "white",
-      "exportScale" : 1,
       "height" : 100,
       "heightMode" : "At Least",
       "name" : "iPhone SE",
-      "parameters" : {
-
-      },
-      "visible" : true,
       "width" : 320
     },
     {
-      "backgroundColor" : "white",
-      "exportScale" : 1,
       "height" : 100,
       "heightMode" : "At Least",
       "name" : "iPhone 7",
-      "parameters" : {
-
-      },
-      "visible" : true,
       "width" : 375
     },
     {
-      "backgroundColor" : "white",
-      "exportScale" : 1,
       "height" : 100,
       "heightMode" : "At Least",
       "name" : "iPhone 7+",
-      "parameters" : {
-
-      },
-      "visible" : true,
       "width" : 414
     }
   ],
@@ -47,15 +29,9 @@
       "visible" : true
     }
   ],
-  "config" : {
-    "canvasLayout" : "xy"
-  },
   "logic" : [
 
   ],
-  "metadata" : {
-
-  },
   "parameters" : [
 
   ],
@@ -64,10 +40,7 @@
       {
         "children" : [
           {
-            "children" : [
-
-            ],
-            "name" : "View 4",
+            "id" : "View 4",
             "parameters" : {
               "backgroundColor" : "red200",
               "height" : 100,
@@ -76,10 +49,7 @@
             "type" : "View"
           },
           {
-            "children" : [
-
-            ],
-            "name" : "View 5",
+            "id" : "View 5",
             "parameters" : {
               "backgroundColor" : "deeporange200",
               "height" : 60,
@@ -89,7 +59,7 @@
             "type" : "View"
           }
         ],
-        "name" : "View 1",
+        "id" : "View 1",
         "parameters" : {
           "alignSelf" : "stretch",
           "backgroundColor" : "red50",
@@ -102,10 +72,7 @@
         "type" : "View"
       },
       {
-        "children" : [
-
-        ],
-        "name" : "View 2",
+        "id" : "View 2",
         "parameters" : {
           "alignSelf" : "stretch",
           "backgroundColor" : "indigo100",
@@ -114,10 +81,7 @@
         "type" : "View"
       },
       {
-        "children" : [
-
-        ],
-        "name" : "View 3",
+        "id" : "View 3",
         "parameters" : {
           "alignSelf" : "stretch",
           "backgroundColor" : "teal100",
@@ -126,7 +90,7 @@
         "type" : "View"
       }
     ],
-    "name" : "View",
+    "id" : "View",
     "parameters" : {
       "alignSelf" : "stretch",
       "height" : 600,

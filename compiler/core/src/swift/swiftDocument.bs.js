@@ -142,83 +142,102 @@ function typeAnnotationDoc(param) {
   }
 }
 
-function lonaValue(framework, colors, textStyles, value) {
-  var match = value[/* ltype */0];
-  switch (match.tag | 0) {
-    case 0 : 
-        var typeName = match[0];
-        switch (typeName) {
-          case "Boolean" : 
-              return /* LiteralExpression */Block.__(0, [/* Boolean */Block.__(0, [Json_decode.bool(value[/* data */1])])]);
-          case "Number" : 
-              return /* LiteralExpression */Block.__(0, [/* FloatingPoint */Block.__(2, [Json_decode.$$float(value[/* data */1])])]);
-          case "String" : 
-              return /* LiteralExpression */Block.__(0, [/* String */Block.__(3, [Json_decode.string(value[/* data */1])])]);
-          default:
-            return /* SwiftIdentifier */Block.__(8, ["UnknownReferenceType: " + typeName]);
-        }
-        break;
-    case 1 : 
-        var alias = match[0];
-        switch (alias) {
-          case "Color" : 
-              var rawValue = Json_decode.string(value[/* data */1]);
-              var match$1 = Color$LonaCompilerCore.find(colors, rawValue);
-              if (match$1) {
-                return /* MemberExpression */Block.__(1, [/* :: */[
-                            /* SwiftIdentifier */Block.__(8, ["Colors"]),
-                            /* :: */[
-                              /* SwiftIdentifier */Block.__(8, [match$1[0][/* id */0]]),
-                              /* [] */0
-                            ]
-                          ]]);
-              } else {
-                return /* LiteralExpression */Block.__(0, [/* Color */Block.__(4, [rawValue])]);
-              }
-          case "TextStyle" : 
-              var rawValue$1 = Json_decode.string(value[/* data */1]);
-              var match$2 = TextStyle$LonaCompilerCore.find(textStyles[/* styles */0], rawValue$1);
-              if (match$2) {
-                return /* MemberExpression */Block.__(1, [/* :: */[
-                            /* SwiftIdentifier */Block.__(8, ["TextStyles"]),
-                            /* :: */[
-                              /* SwiftIdentifier */Block.__(8, [match$2[0][/* id */0]]),
-                              /* [] */0
-                            ]
-                          ]]);
-              } else {
-                return /* MemberExpression */Block.__(1, [/* :: */[
-                            /* SwiftIdentifier */Block.__(8, ["TextStyles"]),
-                            /* :: */[
-                              /* SwiftIdentifier */Block.__(8, [textStyles[/* defaultStyle */1][/* id */0]]),
-                              /* [] */0
-                            ]
-                          ]]);
-              }
-          case "URL" : 
-              var rawValue$2 = Json_decode.string(value[/* data */1]);
-              if (rawValue$2.startsWith("file://./")) {
-                return /* FunctionCallExpression */Block.__(19, [{
-                            name: /* SwiftIdentifier */Block.__(8, [imageTypeName(framework)]),
-                            arguments: /* :: */[
-                              /* FunctionCallArgument */Block.__(18, [{
-                                    name: /* Some */[/* SwiftIdentifier */Block.__(8, ["named"])],
-                                    value: localImageName(framework, rawValue$2)
-                                  }]),
-                              /* [] */0
-                            ]
-                          }]);
-              } else {
-                return /* SwiftIdentifier */Block.__(8, ["RemoteOrAbsoluteImageNotHandled"]);
-              }
-          default:
-            return /* SwiftIdentifier */Block.__(8, ["UnknownNamedTypeAlias" + alias]);
-        }
-        break;
-    case 2 : 
-        return /* SwiftIdentifier */Block.__(8, ["PLACEHOLDER"]);
-    
-  }
+function lonaValue(framework, colors, textStyles, _value) {
+  while(true) {
+    var value = _value;
+    var match = value[/* ltype */0];
+    switch (match.tag | 0) {
+      case 0 : 
+          var typeName = match[0];
+          var exit = 0;
+          switch (typeName) {
+            case "Boolean" : 
+                return /* LiteralExpression */Block.__(0, [/* Boolean */Block.__(0, [Json_decode.bool(value[/* data */1])])]);
+            case "Number" : 
+                return /* LiteralExpression */Block.__(0, [/* FloatingPoint */Block.__(2, [Json_decode.$$float(value[/* data */1])])]);
+            case "String" : 
+                return /* LiteralExpression */Block.__(0, [/* String */Block.__(3, [Json_decode.string(value[/* data */1])])]);
+            case "Color" : 
+            case "TextStyle" : 
+                exit = 1;
+                break;
+            default:
+              return /* SwiftIdentifier */Block.__(8, ["UnknownReferenceType: " + typeName]);
+          }
+          if (exit === 1) {
+            _value = /* record */[
+              /* ltype : Named */Block.__(1, [
+                  typeName,
+                  /* Reference */Block.__(0, ["String"])
+                ]),
+              /* data */value[/* data */1]
+            ];
+            continue ;
+            
+          }
+          break;
+      case 1 : 
+          var alias = match[0];
+          switch (alias) {
+            case "Color" : 
+                var rawValue = Json_decode.string(value[/* data */1]);
+                var match$1 = Color$LonaCompilerCore.find(colors, rawValue);
+                if (match$1) {
+                  return /* MemberExpression */Block.__(1, [/* :: */[
+                              /* SwiftIdentifier */Block.__(8, ["Colors"]),
+                              /* :: */[
+                                /* SwiftIdentifier */Block.__(8, [match$1[0][/* id */0]]),
+                                /* [] */0
+                              ]
+                            ]]);
+                } else {
+                  return /* LiteralExpression */Block.__(0, [/* Color */Block.__(4, [rawValue])]);
+                }
+            case "TextStyle" : 
+                var rawValue$1 = Json_decode.string(value[/* data */1]);
+                var match$2 = TextStyle$LonaCompilerCore.find(textStyles[/* styles */0], rawValue$1);
+                if (match$2) {
+                  return /* MemberExpression */Block.__(1, [/* :: */[
+                              /* SwiftIdentifier */Block.__(8, ["TextStyles"]),
+                              /* :: */[
+                                /* SwiftIdentifier */Block.__(8, [match$2[0][/* id */0]]),
+                                /* [] */0
+                              ]
+                            ]]);
+                } else {
+                  return /* MemberExpression */Block.__(1, [/* :: */[
+                              /* SwiftIdentifier */Block.__(8, ["TextStyles"]),
+                              /* :: */[
+                                /* SwiftIdentifier */Block.__(8, [textStyles[/* defaultStyle */1][/* id */0]]),
+                                /* [] */0
+                              ]
+                            ]]);
+                }
+            case "URL" : 
+                var rawValue$2 = Json_decode.string(value[/* data */1]);
+                if (rawValue$2.startsWith("file://./")) {
+                  return /* FunctionCallExpression */Block.__(19, [{
+                              name: /* SwiftIdentifier */Block.__(8, [imageTypeName(framework)]),
+                              arguments: /* :: */[
+                                /* FunctionCallArgument */Block.__(18, [{
+                                      name: /* Some */[/* SwiftIdentifier */Block.__(8, ["named"])],
+                                      value: localImageName(framework, rawValue$2)
+                                    }]),
+                                /* [] */0
+                              ]
+                            }]);
+                } else {
+                  return /* SwiftIdentifier */Block.__(8, ["RemoteOrAbsoluteImageNotHandled"]);
+                }
+            default:
+              return /* SwiftIdentifier */Block.__(8, ["UnknownNamedTypeAlias" + alias]);
+          }
+          break;
+      case 2 : 
+          return /* SwiftIdentifier */Block.__(8, ["PLACEHOLDER"]);
+      
+    }
+  };
 }
 
 function memberOrSelfExpression(first, statements) {
