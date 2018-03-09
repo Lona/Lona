@@ -37,7 +37,7 @@ class CSComponentLayer: CSLayer {
     }
 
     private static var defaultComponent: CSComponent {
-        let rootLayer = CSLayer(name: "Failed to Load Component", type: "View")
+        let rootLayer = CSLayer(name: "Failed to Load Component", type: .view)
         return CSComponent(name: nil, canvas: [], rootLayer: rootLayer, parameters: [], cases: [], logic: [], config: CSData.Object([:]), metadata: CSData.Object([:]))
     }
 
@@ -66,7 +66,7 @@ class CSComponentLayer: CSLayer {
 
     init(name: String, url: String, parameters: [String: CSData] = [:], children: [CSLayer] = []) {
         self.url = url
-        super.init(name: name, type: "Component", parameters: parameters, children: children)
+        super.init(name: name, type: .custom(name), parameters: parameters, children: children)
 
         reload()
     }

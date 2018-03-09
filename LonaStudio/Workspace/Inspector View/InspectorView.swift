@@ -687,7 +687,7 @@ class InspectorView: NSStackView {
         paddingBottomView.nextKeyView = paddingLeftView
     }
 
-    init(frame frameRect: NSRect, layerType: String, properties: Properties) {
+    init(frame frameRect: NSRect, layerType: CSLayer.LayerType, properties: Properties) {
         super.init(frame: frameRect)
         translatesAutoresizingMaskIntoConstraints = false
         orientation = .vertical
@@ -697,13 +697,13 @@ class InspectorView: NSStackView {
         setup(properties: properties)
 
         switch layerType {
-        case "Text":
+        case .builtIn(.text):
             textSection.isHidden = false
             layoutSection.isHidden = true
             shadowSection.isHidden = false
-        case "Image":
+        case .builtIn(.image):
             imageSection.isHidden = false
-        case "Animation":
+        case .builtIn(.animation):
             animationSection.isHidden = false
         default:
             break

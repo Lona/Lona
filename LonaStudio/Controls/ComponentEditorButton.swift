@@ -32,7 +32,8 @@ class ComponentEditorButton: Button, CSControl, NSPopoverDelegate {
     private var editor: DictionaryEditor?
 
     func layerValue(for input: CSValue, parameters: CSData? = nil) -> CSValue {
-        let layerType = input.data.get(key: "type").stringValue
+        // TODO: Need to test this after changing to enum-based layer types
+        let layerType = CSLayer.LayerType(input.data.get(key: "type"))
         let template = CSLayer(name: "Component", type: layerType).layerValue()
 
         let updatedData = parameters != nil ? input.data.merge(CSData.Object(["parameters": parameters!])) : input.data
@@ -65,7 +66,7 @@ class ComponentEditorButton: Button, CSControl, NSPopoverDelegate {
             self.editor = editor
 
             // TODO: All built-in components currently share the same CSType... need to use different types
-            func setValue(withViewType type: String) {
+            func setValue(withViewType type: CSLayer.LayerType) {
                 let template = CSLayer(name: "Component", type: type).layerValue()
                 let value = CSValue(type: template.type, data: CSData.Object([
                     "type": type.toData(),
@@ -73,7 +74,7 @@ class ComponentEditorButton: Button, CSControl, NSPopoverDelegate {
                 ]))
 
                 self.value = value
-                self.title = type
+                self.title = type.string
                 self.editor?.setParameters(value: value.get(key: "parameters"))
             }
 
@@ -87,13 +88,13 @@ class ComponentEditorButton: Button, CSControl, NSPopoverDelegate {
                 }),
                 NSMenuItem.separator(),
                 NSMenuItem(title: "View", onClick: {
-                    setValue(withViewType: "View")
+                    setValue(withViewType: .view)
                 }),
                 NSMenuItem(title: "Text", onClick: {
-                    setValue(withViewType: "Text")
+                    setValue(withViewType: .text)
                 }),
                 NSMenuItem(title: "Image", onClick: {
-                    setValue(withViewType: "Image")
+                    setValue(withViewType: .image)
                 }),
                 NSMenuItem.separator(),
                 NSMenuItem(title: "Component...", onClick: {})

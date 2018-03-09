@@ -370,7 +370,7 @@ extension LayerList: NSOutlineViewDelegate, NSOutlineViewDataSource {
                 textField.drawsBackground = false
                 textField.stringValue = layer.name
 
-                if layer.type == "Component" {
+                if case CSLayer.LayerType.custom = layer.type {
                     textField.textColor = NSColor.parse(css: "rgb(101,53,160)")!
                 }
 

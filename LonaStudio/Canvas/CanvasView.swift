@@ -206,7 +206,7 @@ func renderBox(layer: CSLayer, node: YGNodeRef, options: RenderOptions) -> NSVie
         box.layer?.borderColor = borderColor
     }
 
-    if layer.type == "Animation" {
+    if layer.type == .animation {
         let animation: String? = layer.config?.get(attribute: "animation", for: layer.name).string ?? layer.animation
 
         if  let animation = animation,
@@ -232,7 +232,7 @@ func renderBox(layer: CSLayer, node: YGNodeRef, options: RenderOptions) -> NSVie
                 animationView.play()
             }
         }
-    } else if layer.type == "Image" {
+    } else if layer.type == .image {
         let image: String? = layer.config?.get(attribute: "image", for: layer.name).string ?? layer.image
 
         if let image = image, let url = URL(string: image)?.absoluteURLForWorkspaceURL() {
@@ -292,7 +292,7 @@ func renderBox(layer: CSLayer, node: YGNodeRef, options: RenderOptions) -> NSVie
 //        return false
 //    }
 
-    if layer.type == "Text" {
+    if layer.type == .text {
         if #available(OSX 10.12, *) {
             let width = YGNodeLayoutGetWidth(node)
             let height = YGNodeLayoutGetHeight(node)
@@ -373,7 +373,7 @@ func renderBoxJSON(layer: CSLayer, node: YGNodeRef, references: inout SketchFile
 
     var sketchLayers = CSData.Array([])
 
-    if layer.type == "Image" {
+    if layer.type == .image {
         let image: String? = layer.config?.get(attribute: "image", for: layer.name).string ?? layer.image
 
         if let image = image {
@@ -469,7 +469,7 @@ func setFlexExpand(for layer: CSLayer, node: YGNodeRef) {
     node.flexShrink = 1
     node.flexGrow = 1
 
-    if layer.type == "Text" {
+    if layer.type == .text {
         node.flexBasis = .value(0)
     } else {
         node.flexBasis = .auto
@@ -596,7 +596,7 @@ func layoutLayer(layer: CSLayer, parentLayoutDirection: YGFlexDirection) -> YGNo
     }
 
     // Non-text layer
-    if layer.type == "Text" {
+    if layer.type == .text {
         YGNodeSetContext(node, UnsafeMutableRawPointer(Unmanaged.passUnretained(layer).toOpaque()))
         YGNodeSetMeasureFunc(node, measureFunc(node:width:widthMode:height:heightMode:))
     } else {

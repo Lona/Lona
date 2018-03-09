@@ -136,7 +136,7 @@ class ViewController: NSViewController, NSOutlineViewDataSource, NSOutlineViewDe
     }
 
     @IBAction func addChildren(_ sender: AnyObject) {
-        let newLayer = CSLayer(name: "Children", type: "Children", parameters: [
+        let newLayer = CSLayer(name: "Children", type: .children, parameters: [
             "width": 100.toData(),
             "height": 100.toData(),
             "backgroundColor": "#D8D8D8".toData()
@@ -148,7 +148,7 @@ class ViewController: NSViewController, NSOutlineViewDataSource, NSOutlineViewDe
     @IBAction func addImage(_ sender: AnyObject) {
         let name = component.getNewLayerName(startingWith: "Image")
 
-        let newLayer = CSLayer(name: name, type: "Image", parameters: [
+        let newLayer = CSLayer(name: name, type: .image, parameters: [
             "width": 100.toData(),
             "height": 100.toData(),
             "backgroundColor": "#D8D8D8".toData()
@@ -160,7 +160,7 @@ class ViewController: NSViewController, NSOutlineViewDataSource, NSOutlineViewDe
     @IBAction func addAnimation(_ sender: AnyObject) {
         let name = component.getNewLayerName(startingWith: "Animation")
 
-        let newLayer = CSLayer(name: name, type: "Animation", parameters: [
+        let newLayer = CSLayer(name: name, type: .animation, parameters: [
             "width": 100.toData(),
             "height": 100.toData(),
             "backgroundColor": "#D8D8D8".toData()
@@ -172,7 +172,7 @@ class ViewController: NSViewController, NSOutlineViewDataSource, NSOutlineViewDe
     @IBAction func addView(_ sender: AnyObject) {
         let name = component.getNewLayerName(startingWith: "View")
 
-        let newLayer = CSLayer(name: name, type: "View", parameters: [
+        let newLayer = CSLayer(name: name, type: .view, parameters: [
             "width": 100.toData(),
             "height": 100.toData(),
             "backgroundColor": "#D8D8D8".toData()
@@ -184,7 +184,7 @@ class ViewController: NSViewController, NSOutlineViewDataSource, NSOutlineViewDe
     @IBAction func addText(_ sender: AnyObject) {
         let name = component.getNewLayerName(startingWith: "Text")
 
-        let newLayer = CSLayer(name: name, type: "Text", parameters: [
+        let newLayer = CSLayer(name: name, type: .text, parameters: [
             "text": "Text goes here".toData(),
             "widthSizingRule": "Shrink".toData(),
             "heightSizingRule": "Shrink".toData()
@@ -330,7 +330,7 @@ class ViewController: NSViewController, NSOutlineViewDataSource, NSOutlineViewDe
             Canvas(visible: true, name: "iPhone 7", width: 375, height: 100, heightMode: "At Least", exportScale: 1, backgroundColor: "white"),
             Canvas(visible: true, name: "iPhone 7+", width: 414, height: 100, heightMode: "At Least", exportScale: 1, backgroundColor: "white")
         ],
-        rootLayer: CSLayer(name: "View", type: "View", parameters: [
+        rootLayer: CSLayer(name: "View", type: .view, parameters: [
             "alignSelf": "stretch".toData()
         ]),
         parameters: [],
@@ -585,7 +585,7 @@ class ViewController: NSViewController, NSOutlineViewDataSource, NSOutlineViewDe
         guard let layer = item as? CSLayer else { return }
 
         let inspectorView: NSView
-        if layer.type == "Component", let layer = layer as? CSComponentLayer {
+        if case CSLayer.LayerType.custom = layer.type, let layer = layer as? CSComponentLayer {
             let componentInspectorView = ComponentInspectorView(componentLayer: layer)
             componentInspectorView.onChangeData = {[unowned self] (data, parameter) in
                 layer.parameters[parameter.name] = data
