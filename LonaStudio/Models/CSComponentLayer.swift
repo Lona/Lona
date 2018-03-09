@@ -9,15 +9,16 @@
 import Foundation
 
 class CSComponentLayer: CSLayer {
-    var url: String?
+    var url: String
     var component: CSComponent!
     var failedToLoad: Bool = false
 
     func reload() {
-        if let path = url {
-            component = loadComponent(at: path)
+        if let component = CSComponentLayer.loadComponent(at: url) {
+            self.component = component
         } else {
-            component = defaultComponent
+            self.component = CSComponentLayer.defaultComponent
+            failedToLoad = true
         }
     }
 
@@ -35,31 +36,32 @@ class CSComponentLayer: CSLayer {
         return CSValue(type: CSType.dictionary(parametersSchema), data: CSData.Object(parametersMap))
     }
 
-    private var defaultComponent: CSComponent {
-        failedToLoad = true
+    private static var defaultComponent: CSComponent {
         let rootLayer = CSLayer(name: "Failed to Load Component", type: "View")
         return CSComponent(name: nil, canvas: [], rootLayer: rootLayer, parameters: [], cases: [], logic: [], config: CSData.Object([:]), metadata: CSData.Object([:]))
     }
 
-    private func loadComponent(at path: String) -> CSComponent? {
-        guard let url = URL(string: path) else { return defaultComponent }
-        guard let component = CSComponent(url: url) else { return defaultComponent }
-        failedToLoad = false
+    private static func loadComponent(at path: String) -> CSComponent? {
+        guard let url = URL(string: path) else { return nil }
+        guard let component = CSComponent(url: url) else { return nil }
         return component
     }
 
     required init(_ json: CSData) {
-        super.init(json)
+        let rawURL = json.get(key: "url").stringValue
 
-        let url = json.get(key: "url").stringValue
+        self.url = rawURL.hasPrefix("./")
+            ? URL(fileURLWithPath: rawURL, relativeTo: CSWorkspacePreferences.workspaceURL).absoluteString
+            : rawURL
 
-        if url.hasPrefix("./") {
-            self.url = URL(fileURLWithPath: url, relativeTo: CSWorkspacePreferences.workspaceURL).absoluteString
+        if let component = CSComponentLayer.loadComponent(at: self.url) {
+            self.component = component
         } else {
-            self.url = url
+            self.component = CSComponentLayer.defaultComponent
+            failedToLoad = true
         }
 
-        reload()
+        super.init(json)
     }
 
     init(name: String, url: String, parameters: [String: CSData] = [:], children: [CSLayer] = []) {
@@ -69,11 +71,32 @@ class CSComponentLayer: CSLayer {
         reload()
     }
 
+    override func encode(parameters: [String: CSData]) -> [String: CSData] {
+        var parameters = super.encode(parameters: parameters)
+
+        for (key, value) in parameters {
+            guard let parameter = component.parameters.first(where: { arg in arg.name == key }) else { continue }
+            parameters[key] = CSValue.compact(type: parameter.type, data: value)
+        }
+
+        return parameters
+    }
+
+    override func decode(parameters: [String: CSData]) -> [String: CSData] {
+        var parameters = super.decode(parameters: parameters)
+
+        for (key, value) in parameters {
+            guard let parameter = component.parameters.first(where: { arg in arg.name == key }) else { continue }
+            parameters[key] = CSValue.expand(type: parameter.type, data: value)
+        }
+
+        return parameters
+    }
+
     override func toData() -> CSData {
         var data = super.toData()
 
-        guard let absolutePathWithProtocol = url else { return data }
-        guard let absolutePath = URL(string: absolutePathWithProtocol)?.path else { return data }
+        guard let absolutePath = URL(string: url)?.path else { return data }
         let basePath = CSWorkspacePreferences.workspaceURL.path
 
         let relativePath = absolutePath.pathRelativeTo(basePath: basePath)

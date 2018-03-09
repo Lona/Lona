@@ -22,6 +22,64 @@ struct CSValue: Equatable, CSDataSerializable, CSDataDeserializable {
         self.data = data
     }
 
+    static func compact(type: CSType, data: CSData) -> CSData {
+        switch type.unwrappedNamedType() {
+        case CSType.variant(let cases):
+            let hasData = cases.contains(where: { arg in arg.1 != CSType.unit })
+
+            if !hasData, data.object != nil {
+                return data.get(key: "tag")
+            }
+
+            if type.isOptional(), data.get(key: "tag").string != nil {
+                return data.get(key: "data")
+            }
+        case CSType.dictionary(let schema):
+            var copy = data
+            schema.forEach({ arg in
+                let (key, value) = arg
+                copy[key] = CSValue.compact(type: value.type, data: data.get(key: key))
+            })
+            return copy
+        default:
+            break
+        }
+
+        return data
+    }
+
+    static func expand(type: CSType, data: CSData) -> CSData {
+        switch type.unwrappedNamedType() {
+        case CSType.variant(let cases):
+            let hasData = cases.contains(where: { arg in arg.1 != CSType.unit })
+
+            if !hasData, let tag = data.string {
+                return CSData.Object([
+                    "tag": tag.toData(),
+                    "data": CSData.Null
+                    ])
+            }
+
+            if type.isOptional(), data.get(key: "tag").string == nil {
+                return CSData.Object([
+                    "tag": (data.isNull ? "None" : "Some").toData(),
+                    "data": data
+                    ])
+            }
+        case CSType.dictionary(let schema):
+            var copy = data
+            schema.forEach({ arg in
+                let (key, value) = arg
+                copy[key] = CSValue.expand(type: value.type, data: data.get(key: key))
+            })
+            return copy
+        default:
+            break
+        }
+
+        return data
+    }
+
     func cast(to type: CSType) -> CSValue {
         // TODO make sure we return a copy
         if self.type == type { return self }

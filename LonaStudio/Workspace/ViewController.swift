@@ -588,13 +588,8 @@ class ViewController: NSViewController, NSOutlineViewDataSource, NSOutlineViewDe
         if layer.type == "Component", let layer = layer as? CSComponentLayer {
             let componentInspectorView = ComponentInspectorView(componentLayer: layer)
             componentInspectorView.onChangeData = {[unowned self] (data, parameter) in
-                // Handle the empty strings specially - convert to null.
-                // TODO: How can we always allow a null state?
-                if let value = data.string, value == "" {
-                    layer.parameters[parameter.name] = CSData.Null
-                } else {
-                    layer.parameters[parameter.name] = data
-                }
+                layer.parameters[parameter.name] = data
+
                 self.outlineView.render()
                 self.render()
                 componentInspectorView.reload()

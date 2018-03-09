@@ -52,15 +52,16 @@ final class ComponentInspectorView: NSStackView {
 
     private func setupValueFields() -> [(view: NSView, keyView: NSView)] {
         let views: [(view: NSView, keyView: NSView)] = componentLayer.component.parameters.map({ parameter in
-            let data: CSData
+            let defaultData: CSData
             if parameter.type.unwrappedNamedType().isOptional() {
-                data = componentLayer.parameters[parameter.name] ?? CSUnitValue.wrap(in: parameter.type, tagged: "None").data
+                defaultData = CSUnitValue.wrap(in: parameter.type, tagged: "None").data
             } else if parameter.type.unwrappedNamedType().isVariant {
-                data = componentLayer.parameters[parameter.name] ?? CSValue.defaultValue(for: parameter.type).data
+                defaultData = CSValue.defaultValue(for: parameter.type).data
             } else {
-                data = componentLayer.parameters[parameter.name] ?? CSData.Null
+                defaultData = CSData.Null
             }
-            let value = CSValue(type: parameter.type, data: data)
+
+            let value = CSValue(type: parameter.type, data: componentLayer.parameters[parameter.name] ?? defaultData)
             var usesYogaLayout = true
             if case .named("URL", .string) = value.type {
                 usesYogaLayout = false
