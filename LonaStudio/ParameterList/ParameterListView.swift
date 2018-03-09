@@ -130,7 +130,7 @@ class ParameterListView: NSOutlineView, NSOutlineViewDataSource, NSOutlineViewDe
                 let fieldsValue = CSValue(type: recordFieldsType, data: CSData.Array(fieldsData))
 
                 components.append(.value("typedef", fieldsValue, []))
-            case .variant(let cases):
+            case .variant(let cases) where !parameter.type.isOptional():
                 let variantCaseType = CSType.dictionary([
                     "tag": (CSType.string, .write),
                     "type": (CSType.parameterType(), .write)
