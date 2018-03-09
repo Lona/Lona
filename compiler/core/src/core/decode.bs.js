@@ -283,13 +283,20 @@ function layer(json) {
                         ];
                 }), StringMap$LonaCompilerCore.fromJsDict(Js_option.getExn(Js_json.decodeObject(json))));
   };
+  var tmp;
+  try {
+    tmp = Json_decode.field("children", (function (param) {
+            return Json_decode.list(layer, param);
+          }), json);
+  }
+  catch (exn){
+    tmp = /* [] */0;
+  }
   return /* record */[
           /* typeName */Json_decode.field("type", layerType, json),
-          /* name */Json_decode.field("name", Json_decode.string, json),
+          /* name */Json_decode.field("id", Json_decode.string, json),
           /* parameters */Json_decode.field("parameters", parameterDictionary, json),
-          /* children */Json_decode.field("children", (function (param) {
-                  return Json_decode.list(layer, param);
-                }), json)
+          /* children */tmp
         ];
 }
 
@@ -354,12 +361,18 @@ function logicNode(json) {
             ];
     }
   };
-  var nodes = Curry._1(Json_decode.at(/* :: */[
-            "nodes",
-            /* [] */0
-          ], (function (param) {
-              return Json_decode.list(logicNode, param);
-            })), json);
+  var nodes;
+  try {
+    nodes = Curry._1(Json_decode.at(/* :: */[
+              "nodes",
+              /* [] */0
+            ], (function (param) {
+                return Json_decode.list(logicNode, param);
+              })), json);
+  }
+  catch (exn){
+    nodes = /* [] */0;
+  }
   var arg = function (path, decoder) {
     return Curry._1(Json_decode.at(/* :: */[
                     "function",

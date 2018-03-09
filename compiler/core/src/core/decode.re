@@ -116,9 +116,13 @@ module Layer = {
          );
     {
       typeName: field("type", layerType, json),
-      name: field("name", string, json),
+      name: field("id", string, json),
       parameters: field("parameters", parameterDictionary, json),
-      children: field("children", list(layer), json)
+      children:
+        switch (field("children", list(layer), json)) {
+        | result => result
+        | exception _ => []
+        }
     };
   };
 };
@@ -153,7 +157,11 @@ let rec logicNode = json => {
     | value => raise(UnknownLogicValue(value))
     };
   };
-  let nodes = at(["nodes"], list(logicNode), json);
+  let nodes =
+    switch (at(["nodes"], list(logicNode), json)) {
+    | result => result
+    | exception _ => []
+    };
   let arg = (path, decoder) =>
     at(["function", "arguments", ...path], decoder, json);
   switch (at(["function", "name"], string, json)) {

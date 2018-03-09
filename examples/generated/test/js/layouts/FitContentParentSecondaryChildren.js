@@ -19,7 +19,6 @@ class FitContentParentSecondaryChildren extends React.Component {
 let styles = StyleSheet.create({
   Container: {
     alignSelf: "stretch",
-    flex: 0,
     flexDirection: "row",
     paddingBottom: 24,
     paddingLeft: 24,

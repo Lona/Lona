@@ -1,39 +1,21 @@
 {
   "canvases" : [
     {
-      "backgroundColor" : "white",
-      "exportScale" : 1,
       "height" : 100,
       "heightMode" : "At Least",
       "name" : "iPhone SE",
-      "parameters" : {
-
-      },
-      "visible" : true,
       "width" : 320
     },
     {
-      "backgroundColor" : "white",
-      "exportScale" : 1,
       "height" : 100,
       "heightMode" : "At Least",
       "name" : "iPhone 7",
-      "parameters" : {
-
-      },
-      "visible" : true,
       "width" : 375
     },
     {
-      "backgroundColor" : "white",
-      "exportScale" : 1,
       "height" : 100,
       "heightMode" : "At Least",
       "name" : "iPhone 7+",
-      "parameters" : {
-
-      },
-      "visible" : true,
       "width" : 414
     }
   ],
@@ -47,25 +29,16 @@
       "visible" : true
     }
   ],
-  "config" : {
-    "canvasLayout" : "xy"
-  },
   "logic" : [
 
   ],
-  "metadata" : {
-
-  },
   "parameters" : [
 
   ],
   "rootLayer" : {
     "children" : [
       {
-        "children" : [
-
-        ],
-        "name" : "Card",
+        "id" : "Card",
         "parameters" : {
           "body" : "Want to work with us? Reach out!",
           "headline" : "The Lona Team",
@@ -75,10 +48,7 @@
         "url" : ".\/components\/Card.component"
       },
       {
-        "children" : [
-
-        ],
-        "name" : "ListItem1",
+        "id" : "ListItem1",
         "parameters" : {
           "image" : "https:\/\/pbs.twimg.com\/profile_images\/697293943872970754\/dkgMlBJX_bigger.jpg",
           "primaryText" : "Devin Abbott",
@@ -88,10 +58,7 @@
         "url" : ".\/components\/ListItem.component"
       },
       {
-        "children" : [
-
-        ],
-        "name" : "ListItem2",
+        "id" : "ListItem2",
         "parameters" : {
           "image" : "https:\/\/pbs.twimg.com\/profile_images\/522867498337570818\/p9wlS3Q8_normal.jpeg",
           "primaryText" : "Ryan Gonzalez",
@@ -101,10 +68,7 @@
         "url" : ".\/components\/ListItem.component"
       },
       {
-        "children" : [
-
-        ],
-        "name" : "ListItem3",
+        "id" : "ListItem3",
         "parameters" : {
           "image" : "https:\/\/pbs.twimg.com\/profile_images\/1746609672\/Screen_shot_2011-10-05_at_7.25.01_PM_normal.png",
           "primaryText" : "Pablo Caro",
@@ -114,14 +78,9 @@
         "url" : ".\/components\/ListItem.component"
       }
     ],
-    "name" : "View",
+    "id" : "View",
     "parameters" : {
-      "alignSelf" : "stretch",
-      "flex" : 0,
-      "marginBottom" : 0,
-      "marginLeft" : 0,
-      "marginRight" : 0,
-      "marginTop" : 0
+      "alignSelf" : "stretch"
     },
     "type" : "View"
   }

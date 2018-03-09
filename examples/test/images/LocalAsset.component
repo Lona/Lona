@@ -1,39 +1,21 @@
 {
   "canvases" : [
     {
-      "backgroundColor" : "white",
-      "exportScale" : 1,
       "height" : 100,
       "heightMode" : "At Least",
       "name" : "iPhone SE",
-      "parameters" : {
-
-      },
-      "visible" : true,
       "width" : 320
     },
     {
-      "backgroundColor" : "white",
-      "exportScale" : 1,
       "height" : 100,
       "heightMode" : "At Least",
       "name" : "iPhone 7",
-      "parameters" : {
-
-      },
-      "visible" : true,
       "width" : 375
     },
     {
-      "backgroundColor" : "white",
-      "exportScale" : 1,
       "height" : 100,
       "heightMode" : "At Least",
       "name" : "iPhone 7+",
-      "parameters" : {
-
-      },
-      "visible" : true,
       "width" : 414
     }
   ],
@@ -47,25 +29,16 @@
       "visible" : true
     }
   ],
-  "config" : {
-    "canvasLayout" : "xy"
-  },
   "logic" : [
 
   ],
-  "metadata" : {
-
-  },
   "parameters" : [
 
   ],
   "rootLayer" : {
     "children" : [
       {
-        "children" : [
-
-        ],
-        "name" : "Image",
+        "id" : "Image",
         "parameters" : {
           "backgroundColor" : "#D8D8D8",
           "height" : 100,
@@ -75,10 +48,9 @@
         "type" : "Image"
       }
     ],
-    "name" : "View",
+    "id" : "View",
     "parameters" : {
-      "alignSelf" : "stretch",
-      "flex" : 0
+      "alignSelf" : "stretch"
     },
     "type" : "View"
   }

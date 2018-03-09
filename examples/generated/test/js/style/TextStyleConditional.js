@@ -19,6 +19,6 @@ class TextStyleConditional extends React.Component {
 };
 
 let styles = StyleSheet.create({
-  View: { alignSelf: "stretch", flex: 0 },
+  View: { alignSelf: "stretch" },
   Text: { font: "headline" }
 });

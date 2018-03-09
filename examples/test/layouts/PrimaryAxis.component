@@ -1,39 +1,21 @@
 {
   "canvases" : [
     {
-      "backgroundColor" : "white",
-      "exportScale" : 1,
       "height" : 100,
       "heightMode" : "At Least",
       "name" : "iPhone SE",
-      "parameters" : {
-
-      },
-      "visible" : true,
       "width" : 320
     },
     {
-      "backgroundColor" : "white",
-      "exportScale" : 1,
       "height" : 100,
       "heightMode" : "At Least",
       "name" : "iPhone 7",
-      "parameters" : {
-
-      },
-      "visible" : true,
       "width" : 375
     },
     {
-      "backgroundColor" : "white",
-      "exportScale" : 1,
       "height" : 100,
       "heightMode" : "At Least",
       "name" : "iPhone 7+",
-      "parameters" : {
-
-      },
-      "visible" : true,
       "width" : 414
     }
   ],
@@ -47,25 +29,16 @@
       "visible" : true
     }
   ],
-  "config" : {
-    "canvasLayout" : "xy"
-  },
   "logic" : [
 
   ],
-  "metadata" : {
-
-  },
   "parameters" : [
 
   ],
   "rootLayer" : {
     "children" : [
       {
-        "children" : [
-
-        ],
-        "name" : "Fixed",
+        "id" : "Fixed",
         "parameters" : {
           "backgroundColor" : "#D8D8D8",
           "height" : 100,
@@ -77,17 +50,14 @@
       {
         "children" : [
           {
-            "children" : [
-
-            ],
-            "name" : "Text",
+            "id" : "Text",
             "parameters" : {
               "text" : "Text goes here"
             },
             "type" : "Text"
           }
         ],
-        "name" : "Fit",
+        "id" : "Fit",
         "parameters" : {
           "backgroundColor" : "#D8D8D8",
           "marginBottom" : 24,
@@ -96,10 +66,7 @@
         "type" : "View"
       },
       {
-        "children" : [
-
-        ],
-        "name" : "Fill1",
+        "id" : "Fill1",
         "parameters" : {
           "backgroundColor" : "cyan500",
           "flex" : 1,
@@ -108,10 +75,7 @@
         "type" : "View"
       },
       {
-        "children" : [
-
-        ],
-        "name" : "Fill2",
+        "id" : "Fill2",
         "parameters" : {
           "backgroundColor" : "blue500",
           "flex" : 1,
@@ -120,7 +84,7 @@
         "type" : "View"
       }
     ],
-    "name" : "View",
+    "id" : "View",
     "parameters" : {
       "alignSelf" : "stretch",
       "height" : 500,

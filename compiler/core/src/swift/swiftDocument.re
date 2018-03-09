@@ -88,13 +88,13 @@ let typeAnnotationDoc =
   | Named(name, _) => TypeName(name)
   | Function(_, _) => TypeName("(() -> Void)?");
 
-let lonaValue =
-    (
-      framework: SwiftOptions.framework,
-      colors,
-      textStyles: TextStyle.file,
-      value: Types.lonaValue
-    ) =>
+let rec lonaValue =
+        (
+          framework: SwiftOptions.framework,
+          colors,
+          textStyles: TextStyle.file,
+          value: Types.lonaValue
+        ) =>
   switch value.ltype {
   | Reference(typeName) =>
     switch typeName {
@@ -102,6 +102,14 @@ let lonaValue =
     | "Number" =>
       LiteralExpression(FloatingPoint(value.data |> Json.Decode.float))
     | "String" => LiteralExpression(String(value.data |> Json.Decode.string))
+    | "TextStyle"
+    | "Color" =>
+      lonaValue(
+        framework,
+        colors,
+        textStyles,
+        {ltype: Named(typeName, Reference("String")), data: value.data}
+      )
     | _ => SwiftIdentifier("UnknownReferenceType: " ++ typeName)
     }
   | Function(_) => SwiftIdentifier("PLACEHOLDER")

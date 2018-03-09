@@ -1,39 +1,21 @@
 {
   "canvases" : [
     {
-      "backgroundColor" : "white",
-      "exportScale" : 1,
       "height" : 100,
       "heightMode" : "At Least",
       "name" : "iPhone SE",
-      "parameters" : {
-
-      },
-      "visible" : true,
       "width" : 320
     },
     {
-      "backgroundColor" : "white",
-      "exportScale" : 1,
       "height" : 100,
       "heightMode" : "At Least",
       "name" : "iPhone 7",
-      "parameters" : {
-
-      },
-      "visible" : true,
       "width" : 375
     },
     {
-      "backgroundColor" : "white",
-      "exportScale" : 1,
       "height" : 100,
       "heightMode" : "At Least",
       "name" : "iPhone 7+",
-      "parameters" : {
-
-      },
-      "visible" : true,
       "width" : 414
     }
   ],
@@ -47,25 +29,16 @@
       "visible" : true
     }
   ],
-  "config" : {
-    "canvasLayout" : "xy"
-  },
   "logic" : [
 
   ],
-  "metadata" : {
-
-  },
   "parameters" : [
 
   ],
   "rootLayer" : {
     "children" : [
       {
-        "children" : [
-
-        ],
-        "name" : "Fixed",
+        "id" : "Fixed",
         "parameters" : {
           "backgroundColor" : "#D8D8D8",
           "height" : 100,
@@ -77,17 +50,14 @@
       {
         "children" : [
           {
-            "children" : [
-
-            ],
-            "name" : "Text",
+            "id" : "Text",
             "parameters" : {
               "text" : "Text goes here"
             },
             "type" : "Text"
           }
         ],
-        "name" : "Fit",
+        "id" : "Fit",
         "parameters" : {
           "backgroundColor" : "#D8D8D8",
           "height" : 100,
@@ -100,10 +70,7 @@
         "type" : "View"
       },
       {
-        "children" : [
-
-        ],
-        "name" : "Fill",
+        "id" : "Fill",
         "parameters" : {
           "alignSelf" : "stretch",
           "backgroundColor" : "#D8D8D8",
@@ -112,10 +79,9 @@
         "type" : "View"
       }
     ],
-    "name" : "Container",
+    "id" : "Container",
     "parameters" : {
       "alignSelf" : "stretch",
-      "flex" : 0,
       "paddingBottom" : 24,
       "paddingLeft" : 24,
       "paddingRight" : 24,
