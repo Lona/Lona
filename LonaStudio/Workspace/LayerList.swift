@@ -229,7 +229,7 @@ extension LayerList {
     @objc
     fileprivate func openComponentAction(menuItem: NSMenuItem) {
         let layer = menuItem.representedObject as! CSComponentLayer
-        let url = URL(string: layer.url!)!
+        let url = URL(string: layer.url)!
 
         let documentController = NSDocumentController.shared
 
@@ -300,7 +300,7 @@ extension LayerList {
 
         let documentController = NSDocumentController.shared
 
-        let existingURL = URL(string: layer.url!)!
+        let existingURL = URL(string: layer.url)!
         let existingFile = CSComponent(url: existingURL)!
 
         let document = Document()
