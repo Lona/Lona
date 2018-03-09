@@ -45,7 +45,7 @@
           "marginBottom" : 24,
           "width" : 100
         },
-        "type" : "View"
+        "type" : "Lona:View"
       },
       {
         "children" : [
@@ -54,7 +54,7 @@
             "parameters" : {
               "text" : "Text goes here"
             },
-            "type" : "Text"
+            "type" : "Lona:Text"
           }
         ],
         "id" : "Fit",
@@ -63,7 +63,7 @@
           "marginBottom" : 24,
           "width" : 100
         },
-        "type" : "View"
+        "type" : "Lona:View"
       },
       {
         "id" : "Fill1",
@@ -72,7 +72,7 @@
           "flex" : 1,
           "width" : 100
         },
-        "type" : "View"
+        "type" : "Lona:View"
       },
       {
         "id" : "Fill2",
@@ -81,7 +81,7 @@
           "flex" : 1,
           "width" : 100
         },
-        "type" : "View"
+        "type" : "Lona:View"
       }
     ],
     "id" : "View",
@@ -93,6 +93,6 @@
       "paddingRight" : 24,
       "paddingTop" : 24
     },
-    "type" : "View"
+    "type" : "Lona:View"
   }
 }

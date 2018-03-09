@@ -46,7 +46,7 @@
               "height" : 100,
               "width" : 60
             },
-            "type" : "View"
+            "type" : "Lona:View"
           },
           {
             "id" : "View 5",
@@ -56,7 +56,7 @@
               "marginLeft" : 12,
               "width" : 60
             },
-            "type" : "View"
+            "type" : "Lona:View"
           }
         ],
         "id" : "View 1",
@@ -69,7 +69,7 @@
           "paddingRight" : 24,
           "paddingTop" : 24
         },
-        "type" : "View"
+        "type" : "Lona:View"
       },
       {
         "id" : "View 2",
@@ -78,7 +78,7 @@
           "backgroundColor" : "indigo100",
           "flex" : 1
         },
-        "type" : "View"
+        "type" : "Lona:View"
       },
       {
         "id" : "View 3",
@@ -87,7 +87,7 @@
           "backgroundColor" : "teal100",
           "flex" : 1
         },
-        "type" : "View"
+        "type" : "Lona:View"
       }
     ],
     "id" : "View",
@@ -99,6 +99,6 @@
       "paddingRight" : 24,
       "paddingTop" : 24
     },
-    "type" : "View"
+    "type" : "Lona:View"
   }
 }

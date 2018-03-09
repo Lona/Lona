@@ -44,8 +44,7 @@
           "headline" : "The Lona Team",
           "image" : "https:\/\/picsum.photos\/600\/600?image=202"
         },
-        "type" : "Component",
-        "url" : ".\/components\/Card.component"
+        "type" : "Card"
       },
       {
         "id" : "ListItem1",
@@ -54,8 +53,7 @@
           "primaryText" : "Devin Abbott",
           "secondaryText" : "Software Engineer @ Airbnb"
         },
-        "type" : "Component",
-        "url" : ".\/components\/ListItem.component"
+        "type" : "ListItem"
       },
       {
         "id" : "ListItem2",
@@ -64,8 +62,7 @@
           "primaryText" : "Ryan Gonzalez",
           "secondaryText" : "Design Technologist @ DoorDash"
         },
-        "type" : "Component",
-        "url" : ".\/components\/ListItem.component"
+        "type" : "ListItem"
       },
       {
         "id" : "ListItem3",
@@ -74,14 +71,13 @@
           "primaryText" : "Pablo Caro",
           "secondaryText" : "Design Systems Lead Designer @ Airbnb"
         },
-        "type" : "Component",
-        "url" : ".\/components\/ListItem.component"
+        "type" : "ListItem"
       }
     ],
     "id" : "View",
     "parameters" : {
       "alignSelf" : "stretch"
     },
-    "type" : "View"
+    "type" : "Lona:View"
   }
 }

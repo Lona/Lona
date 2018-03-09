@@ -140,7 +140,7 @@
           "marginTop" : 4,
           "width" : 44
         },
-        "type" : "Image"
+        "type" : "Lona:Image"
       },
       {
         "children" : [
@@ -150,7 +150,7 @@
               "font" : "subheading1",
               "text" : "Two-line item"
             },
-            "type" : "Text"
+            "type" : "Lona:Text"
           },
           {
             "id" : "Secondary Text",
@@ -158,7 +158,7 @@
               "font" : "body1",
               "text" : "Secondary text"
             },
-            "type" : "Text"
+            "type" : "Lona:Text"
           }
         ],
         "id" : "View 1",
@@ -166,7 +166,7 @@
           "flex" : 1,
           "marginLeft" : 16
         },
-        "type" : "View"
+        "type" : "Lona:View"
       }
     ],
     "id" : "View",
@@ -178,6 +178,6 @@
       "paddingRight" : 16,
       "paddingTop" : 16
     },
-    "type" : "View"
+    "type" : "Lona:View"
   }
 }

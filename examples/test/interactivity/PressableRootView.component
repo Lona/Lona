@@ -498,7 +498,7 @@
               "font" : "headline",
               "text" : ""
             },
-            "type" : "Text"
+            "type" : "Lona:Text"
           }
         ],
         "id" : "Inner",
@@ -507,7 +507,7 @@
           "height" : 100,
           "width" : 100
         },
-        "type" : "View"
+        "type" : "Lona:View"
       }
     ],
     "id" : "Outer",
@@ -519,6 +519,6 @@
       "paddingRight" : 24,
       "paddingTop" : 24
     },
-    "type" : "View"
+    "type" : "Lona:View"
   }
 }

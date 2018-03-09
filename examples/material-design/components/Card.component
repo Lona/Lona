@@ -217,7 +217,7 @@
           "backgroundColor" : "#D8D8D8",
           "image" : ""
         },
-        "type" : "Image"
+        "type" : "Lona:Image"
       },
       {
         "children" : [
@@ -227,7 +227,7 @@
               "font" : "headline",
               "text" : "Headline"
             },
-            "type" : "Text"
+            "type" : "Lona:Text"
           },
           {
             "id" : "Body",
@@ -237,7 +237,7 @@
               "text" : "Body",
               "visible" : false
             },
-            "type" : "Text"
+            "type" : "Lona:Text"
           }
         ],
         "id" : "Description",
@@ -248,13 +248,13 @@
           "paddingRight" : 16,
           "paddingTop" : 20
         },
-        "type" : "View"
+        "type" : "Lona:View"
       }
     ],
     "id" : "View",
     "parameters" : {
       "alignSelf" : "stretch"
     },
-    "type" : "View"
+    "type" : "Lona:View"
   }
 }

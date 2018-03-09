@@ -108,6 +108,6 @@
     "parameters" : {
       "alignSelf" : "stretch"
     },
-    "type" : "View"
+    "type" : "Lona:View"
   }
 }

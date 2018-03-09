@@ -43,7 +43,7 @@
           "font" : "display4",
           "text" : "Text goes here"
         },
-        "type" : "Text"
+        "type" : "Lona:Text"
       },
       {
         "id" : "Text 1",
@@ -51,7 +51,7 @@
           "font" : "display3",
           "text" : "Text goes here"
         },
-        "type" : "Text"
+        "type" : "Lona:Text"
       },
       {
         "id" : "Text 2",
@@ -59,7 +59,7 @@
           "font" : "display2",
           "text" : "Text goes here"
         },
-        "type" : "Text"
+        "type" : "Lona:Text"
       },
       {
         "id" : "Text 3",
@@ -67,7 +67,7 @@
           "font" : "display1",
           "text" : "Text goes here"
         },
-        "type" : "Text"
+        "type" : "Lona:Text"
       },
       {
         "id" : "Text 4",
@@ -75,7 +75,7 @@
           "font" : "headline",
           "text" : "Text goes here"
         },
-        "type" : "Text"
+        "type" : "Lona:Text"
       },
       {
         "id" : "Text 5",
@@ -83,7 +83,7 @@
           "font" : "subheading2",
           "text" : "Text goes here"
         },
-        "type" : "Text"
+        "type" : "Lona:Text"
       },
       {
         "id" : "Text 6",
@@ -91,7 +91,7 @@
           "font" : "subheading1",
           "text" : "Text goes here"
         },
-        "type" : "Text"
+        "type" : "Lona:Text"
       },
       {
         "id" : "Text 7",
@@ -99,7 +99,7 @@
           "font" : "body2",
           "text" : "Text goes here"
         },
-        "type" : "Text"
+        "type" : "Lona:Text"
       },
       {
         "id" : "Text 8",
@@ -107,7 +107,7 @@
           "font" : "body1",
           "text" : "Text goes here"
         },
-        "type" : "Text"
+        "type" : "Lona:Text"
       },
       {
         "id" : "Text 9",
@@ -115,13 +115,13 @@
           "font" : "caption",
           "text" : "Text goes here"
         },
-        "type" : "Text"
+        "type" : "Lona:Text"
       }
     ],
     "id" : "View",
     "parameters" : {
       "alignSelf" : "stretch"
     },
-    "type" : "View"
+    "type" : "Lona:View"
   }
 }

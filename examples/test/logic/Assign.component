@@ -72,13 +72,13 @@
         "parameters" : {
           "text" : "Text goes here"
         },
-        "type" : "Text"
+        "type" : "Lona:Text"
       }
     ],
     "id" : "View",
     "parameters" : {
       "alignSelf" : "stretch"
     },
-    "type" : "View"
+    "type" : "Lona:View"
   }
 }

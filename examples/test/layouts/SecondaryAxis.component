@@ -45,7 +45,7 @@
           "marginBottom" : 24,
           "width" : 100
         },
-        "type" : "View"
+        "type" : "Lona:View"
       },
       {
         "children" : [
@@ -54,7 +54,7 @@
             "parameters" : {
               "text" : "Text goes here"
             },
-            "type" : "Text"
+            "type" : "Lona:Text"
           }
         ],
         "id" : "Fit",
@@ -67,7 +67,7 @@
           "paddingRight" : 12,
           "paddingTop" : 12
         },
-        "type" : "View"
+        "type" : "Lona:View"
       },
       {
         "id" : "Fill",
@@ -76,7 +76,7 @@
           "backgroundColor" : "#D8D8D8",
           "height" : 100
         },
-        "type" : "View"
+        "type" : "Lona:View"
       }
     ],
     "id" : "Container",
@@ -87,6 +87,6 @@
       "paddingRight" : 24,
       "paddingTop" : 24
     },
-    "type" : "View"
+    "type" : "Lona:View"
   }
 }
