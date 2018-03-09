@@ -60,11 +60,11 @@ class CSLayer: CSDataDeserializable, CSDataSerializable, DataNode, NSCopying {
         case custom(String)
 
         init(from string: String) {
-            // TODO: This case is for backwards compat, before the "Lona/" prefix. Remove.
+            // TODO: This case is for backwards compat, before the "Lona:" prefix. Remove.
             if let layerType = BuiltInLayerType(rawValue: string) {
                 self = .builtIn(layerType)
-            } else if string.starts(with: "Lona/") {
-                let index = string.index(after: string.index(of: "/")!)
+            } else if string.starts(with: "Lona:") {
+                let index = string.index(after: string.index(of: ":")!)
                 let suffix = String(string[index...])
                 self = .builtIn(CSLayer.BuiltInLayerType(rawValue: suffix)!)
             } else {
@@ -79,7 +79,7 @@ class CSLayer: CSDataDeserializable, CSDataSerializable, DataNode, NSCopying {
         var string: String {
             switch self {
             case .builtIn(let builtInLayerType):
-                return "Lona/" + builtInLayerType.rawValue
+                return "Lona:" + builtInLayerType.rawValue
             case .custom(let layerType):
                 return layerType
             }
@@ -468,9 +468,9 @@ class CSLayer: CSDataDeserializable, CSDataSerializable, DataNode, NSCopying {
     }
 
     static func deserialize(_ json: CSData) -> CSLayer? {
-        let type = json.get(key: "type").stringValue
+        let type = LayerType(json.get(key: "type"))
 
-        if type == "Component" {
+        if case LayerType.custom = type {
             let layer = CSComponentLayer(json)
 
             if layer.failedToLoad {

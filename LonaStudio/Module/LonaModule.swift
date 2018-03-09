@@ -26,6 +26,10 @@ class LonaModule {
         return LonaModule.componentFiles(in: url)
     }
 
+    func componentFile(named name: String) -> ComponentFile? {
+        return componentFiles().first(where: { arg in arg.name == name })
+    }
+
     func component(url: URL) -> CSComponent? {
         guard let componentFile = componentFiles().first(where: { arg in arg.url == url }) else { return nil }
         return CSComponent(url: componentFile.url)

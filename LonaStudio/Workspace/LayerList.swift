@@ -68,16 +68,13 @@ final class LayerList: NSOutlineView, NSTextFieldDelegate {
         let file = CSComponent(url: url)!
         let name = componentName(for: url)
 
-        let newLayer = CSComponentLayer(name: name, url: url.absoluteString)
+        let newLayer = CSComponentLayer(name: name, type: .custom(url.deletingPathExtension().lastPathComponent))
         newLayer.component = file
 
         // Set default values for component parameters
         // TODO: Look at parameter.defaultValue if it exists
         file.parameters.forEach({ parameter in
-            switch parameter.type {
-            case .bool: newLayer.parameters[parameter.name] = false.toData()
-            default: break
-            }
+            newLayer.parameters[parameter.name] = CSValue.exampleValue(for: parameter.type).data
         })
 
         return newLayer
@@ -228,8 +225,13 @@ extension LayerList {
 
     @objc
     fileprivate func openComponentAction(menuItem: NSMenuItem) {
-        let layer = menuItem.representedObject as! CSComponentLayer
-        let url = URL(string: layer.url)!
+        guard
+            let layer = menuItem.representedObject as? CSComponentLayer,
+            case CSLayer.LayerType.custom(let name) = layer.type,
+            let url = LonaModule.current.componentFile(named: name)?.url
+        else {
+            return
+        }
 
         let documentController = NSDocumentController.shared
 
@@ -294,17 +296,18 @@ extension LayerList {
 
     @objc
     fileprivate func forkComponentAction(menuItem: NSMenuItem) {
-        let layer = menuItem.representedObject as! CSComponentLayer
+        guard
+            let layer = menuItem.representedObject as? CSComponentLayer,
+            case CSLayer.LayerType.custom(let name) = layer.type,
+            let existingComponent = LonaModule.current.component(named: name)
+        else {
+            return
+        }
 
         guard let url = requestSaveFileURL() else { return }
 
-        let documentController = NSDocumentController.shared
-
-        let existingURL = URL(string: layer.url)!
-        let existingFile = CSComponent(url: existingURL)!
-
         let document = Document()
-        document.data = existingFile
+        document.data = existingComponent
 
         do {
             try document.write(to: url, ofType: ".component")
@@ -312,10 +315,11 @@ extension LayerList {
             return
         }
 
-        documentController.openDocument(withContentsOf: url, display: true, completionHandler: { (document, _, _) in
+        NSDocumentController.shared.openDocument(
+            withContentsOf: url, display: true, completionHandler: { (document, _, _) in
             layer.component = (document as! Document).file
-            layer.url = url.absoluteString
             layer.name = self.componentName(for: url)
+            layer.type = CSLayer.LayerType.custom(url.deletingPathExtension().lastPathComponent)
             self.onChange()
         })
     }
