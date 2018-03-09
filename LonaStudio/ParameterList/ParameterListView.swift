@@ -130,6 +130,23 @@ class ParameterListView: NSOutlineView, NSOutlineViewDataSource, NSOutlineViewDe
                 let fieldsValue = CSValue(type: recordFieldsType, data: CSData.Array(fieldsData))
 
                 components.append(.value("typedef", fieldsValue, []))
+            case .variant(let cases):
+                let variantCaseType = CSType.dictionary([
+                    "tag": (CSType.string, .write),
+                    "type": (CSType.parameterType(), .write)
+                    ])
+                let variantCasesType = CSType.array(variantCaseType)
+                let casesData: [CSData] = cases.map({ arg in
+                    let (key, value) = arg
+                    return CSData.Object([
+                        "tag": key.toData(),
+                        "type": (value.unwrapOptional() ?? value).toString().toData(),
+                        "optional": value.isOptional().toData()
+                        ])
+                })
+                let fieldsValue = CSValue(type: variantCasesType, data: CSData.Array(casesData))
+
+                components.append(.value("typedef", fieldsValue, []))
             default:
                 break
             }
@@ -167,14 +184,28 @@ class ParameterListView: NSOutlineView, NSOutlineViewDataSource, NSOutlineViewDe
                     // TODO: Cast all cases to their new type (?)
 //                    parameter.examples = parameter.examples.map({ $0.cast(to: parameter.type) })
                 case "typedef":
-                    let schema: CSType.Schema = value.data.arrayValue.key({ field in
-                        let key = field.get(key: "key").stringValue
-                        let type = CSType.from(string: field.get(key: "type").stringValue)
-                        let optional = field.get(key: "optional").boolValue
-                        return (key: key, value: (type: optional ? type.makeOptional() : type, access: .write))
-                    })
+                    switch parameter.type {
+                    case .dictionary:
+                        let schema: CSType.Schema = value.data.arrayValue.key({ field in
+                            let key = field.get(key: "key").stringValue
+                            let type = CSType.from(string: field.get(key: "type").stringValue)
+                            let optional = field.get(key: "optional").boolValue
+                            return (key: key, value: (type: optional ? type.makeOptional() : type, access: .write))
+                        })
 
-                    parameter.type = CSType.dictionary(schema)
+                        parameter.type = CSType.dictionary(schema)
+                    case .variant:
+                        let cases: [(String, CSType)] = value.data.arrayValue.map({ field in
+                            let tag = field.get(key: "tag").stringValue
+                            let type = CSType.from(string: field.get(key: "type").stringValue)
+                            let optional = field.get(key: "optional").boolValue
+                            return (tag, type: optional ? type.makeOptional() : type)
+                        })
+
+                        parameter.type = CSType.variant(cases)
+                    default:
+                        break
+                    }
 
                     if parameter.hasDefaultValue {
                         parameter.defaultValue = parameter.defaultValue.cast(to: parameter.type)

@@ -146,10 +146,12 @@ indirect enum CSType: Equatable, CSDataSerializable, CSDataDeserializable {
         }
 
         switch self {
+        case .unit: return "Unit"
         case .bool: return "Boolean"
         case .number: return "Number"
         case .string: return "String"
         case .dictionary: return "Record"
+        case .variant: return "Variant"
         case .function: return "Function"
         case .named(let name, _): return name
         default: return "Any"
@@ -176,6 +178,7 @@ indirect enum CSType: Equatable, CSDataSerializable, CSDataDeserializable {
         case .generic: return .String("Generic")
         case .undefined: return .String("Undefined")
         case .null: return .String("Null")
+        case .unit: return "Unit".toData()
         case .bool: return .String("Boolean")
         case .number: return .String("Number")
         case .string: return .String("String")
@@ -256,8 +259,6 @@ indirect enum CSType: Equatable, CSDataSerializable, CSDataDeserializable {
             }
 
             return data
-        case .unit:
-            return "Unit".toData()
         }
     }
 
@@ -299,18 +300,30 @@ indirect enum CSType: Equatable, CSDataSerializable, CSDataDeserializable {
             // TODO does this work?
             return NSDictionary(dictionary: l).isEqual(to: r)
         case (.enumeration(let l), .enumeration(let r)):
+            if l.count != r.count {
+                return false
+            }
+
             for pair in zip(l, r) where pair.0 != pair.1 {
                 return false
             }
 
             return true
         case (.function(let lParams, let lReturnType), .function(let rParams, let rReturnType)):
+            if lParams.count != rParams.count {
+                return false
+            }
+
             for pair in zip(lParams, rParams) where pair.0 != pair.1 {
                 return false
             }
 
             return lReturnType == rReturnType
         case (.variant(let l), .variant(let r)):
+            if l.count != r.count {
+                return false
+            }
+
             for pair in zip(l, r) where pair.0 != pair.1 {
                 return false
             }
@@ -351,6 +364,8 @@ indirect enum CSType: Equatable, CSDataSerializable, CSDataDeserializable {
             CSValue(type: .string, data: .String("Number")),
             CSValue(type: .string, data: .String("String")),
             CSValue(type: .string, data: .String("Record")),
+            CSValue(type: .string, data: .String("Variant")),
+            CSValue(type: .string, data: .String("Unit")),
             CSValue(type: .string, data: .String("Color")),
             CSValue(type: .string, data: .String("TextStyle")),
             CSValue(type: .string, data: .String("URL")),
@@ -367,6 +382,8 @@ indirect enum CSType: Equatable, CSDataSerializable, CSDataDeserializable {
             "Number": CSType.number,
             "String": CSType.string,
             "Record": CSEmptyRecordType,
+            "Variant": CSEmptyVariantType,
+            "Unit": CSType.unit,
             "Color": CSColorType,
             "TextStyle": CSTextStyleType,
             "Comparator": CSComparatorType,
@@ -424,6 +441,7 @@ let CSURLType = CSType.named("URL", .string)
 let CSComponentType = CSType.named("Component", .any)
 let CSHandlerType = CSType.function([], .undefined)
 let CSEmptyRecordType = CSType.dictionary([:])
+let CSEmptyVariantType = CSType.variant([])
 
 let CSComparatorType = CSType.enumeration([
     CSValue(type: .string, data: .String("equal to")),
