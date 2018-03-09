@@ -36,6 +36,7 @@
 		305A19561F463A2800EA033C /* DisclosureContentRow.swift in Sources */ = {isa = PBXBuildFile; fileRef = 305A19551F463A2800EA033C /* DisclosureContentRow.swift */; };
 		305A19581F463BD300EA033C /* NSTextFieldExtensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 305A19571F463BD300EA033C /* NSTextFieldExtensions.swift */; };
 		305BDA211F648F6400AD2AA3 /* CSPDFDocument.swift in Sources */ = {isa = PBXBuildFile; fileRef = 305BDA201F648F6400AD2AA3 /* CSPDFDocument.swift */; };
+		305ED04620530257000D07C3 /* LonaModule.swift in Sources */ = {isa = PBXBuildFile; fileRef = 305ED04520530257000D07C3 /* LonaModule.swift */; };
 		306672C21F7D4C6400941554 /* CSGradients.swift in Sources */ = {isa = PBXBuildFile; fileRef = 306672C11F7D4C6400941554 /* CSGradients.swift */; };
 		3069E09A1F3243780005E9A8 /* parseCSSColor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3069E0991F3243780005E9A8 /* parseCSSColor.swift */; };
 		3069E09C1F324C550005E9A8 /* CSWorkspacePreferences.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3069E09B1F324C550005E9A8 /* CSWorkspacePreferences.swift */; };
@@ -168,6 +169,7 @@
 		305A19551F463A2800EA033C /* DisclosureContentRow.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DisclosureContentRow.swift; sourceTree = "<group>"; };
 		305A19571F463BD300EA033C /* NSTextFieldExtensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NSTextFieldExtensions.swift; sourceTree = "<group>"; };
 		305BDA201F648F6400AD2AA3 /* CSPDFDocument.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CSPDFDocument.swift; sourceTree = "<group>"; };
+		305ED04520530257000D07C3 /* LonaModule.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LonaModule.swift; sourceTree = "<group>"; };
 		306672C11F7D4C6400941554 /* CSGradients.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CSGradients.swift; sourceTree = "<group>"; };
 		3069E0991F3243780005E9A8 /* parseCSSColor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = parseCSSColor.swift; sourceTree = "<group>"; };
 		3069E09B1F324C550005E9A8 /* CSWorkspacePreferences.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CSWorkspacePreferences.swift; sourceTree = "<group>"; };
@@ -339,6 +341,14 @@
 				6B0AEFB91EBF74D800F35BBF /* ViewController.swift */,
 			);
 			path = Workspace;
+			sourceTree = "<group>";
+		};
+		305ED04420530238000D07C3 /* Module */ = {
+			isa = PBXGroup;
+			children = (
+				305ED04520530257000D07C3 /* LonaModule.swift */,
+			);
+			path = Module;
 			sourceTree = "<group>";
 		};
 		3069E0981F32432C0005E9A8 /* Utils */ = {
@@ -529,24 +539,25 @@
 		6B0AEFB61EBF74D800F35BBF /* LonaStudio */ = {
 			isa = PBXGroup;
 			children = (
-				BA153BC8202B2CBA002A83A5 /* Undo */,
+				6B0AEFC21EBF74D800F35BBF /* Info.plist */,
 				6B0AEFB71EBF74D800F35BBF /* AppDelegate.swift */,
-				30CE64481F008F43008D01AD /* Assets */,
+				300302731EDC7FA90085E140 /* CSStatementView.swift */,
+				6B0AEFBB1EBF74D800F35BBF /* Document.swift */,
 				6B0AEFBD1EBF74D800F35BBF /* Assets.xcassets */,
+				30CE64481F008F43008D01AD /* Assets */,
 				306DA4ED1F33E19F002772DC /* Canvas */,
 				3030311C1F34E6980078086F /* CanvasList */,
 				306DA4F21F34E265002772DC /* Controls */,
-				300302731EDC7FA90085E140 /* CSStatementView.swift */,
-				6B0AEFBB1EBF74D800F35BBF /* Document.swift */,
 				30C8BC291EDB640500B99F1B /* Extensions */,
-				6B0AEFC21EBF74D800F35BBF /* Info.plist */,
 				301433791F5C7AD100525DB1 /* ListEditors */,
 				3030311D1F34E6A70078086F /* LogicList */,
 				6B0AEFBF1EBF74D800F35BBF /* Main.storyboard */,
 				30C8BC301EDB757E00B99F1B /* Models */,
+				305ED04420530238000D07C3 /* Module */,
 				3030311E1F34E6B40078086F /* ParameterList */,
 				3097776E1F296A1F004C8975 /* Preferences */,
 				30DDEE881F47925C001D41AB /* Scripting */,
+				BA153BC8202B2CBA002A83A5 /* Undo */,
 				3069E0981F32432C0005E9A8 /* Utils */,
 				3030311F1F34E7200078086F /* Workspace */,
 			);
@@ -933,6 +944,7 @@
 				30D9B40E1F79BADC00C8A3D4 /* NSMenuExtensions.swift in Sources */,
 				30C8BC2D1EDB653400B99F1B /* CanvasListView.swift in Sources */,
 				3090D78D1F01B050009277E7 /* CSParameter.swift in Sources */,
+				305ED04620530257000D07C3 /* LonaModule.swift in Sources */,
 				6B0AEFBC1EBF74D800F35BBF /* Document.swift in Sources */,
 				306D2FEE1F84735900907B4E /* LayerThumbnail.swift in Sources */,
 				301433761F5B499900525DB1 /* DictionaryEditorButton.swift in Sources */,
