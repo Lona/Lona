@@ -1,5 +1,5 @@
 {
-  "canvases" : [
+  "devices" : [
     {
       "height" : 0,
       "heightMode" : "At Least",
@@ -113,7 +113,7 @@
       }
     }
   ],
-  "parameters" : [
+  "params" : [
     {
       "name" : "primaryText",
       "type" : "String"
@@ -127,11 +127,11 @@
       "type" : "URL"
     }
   ],
-  "rootLayer" : {
+  "root" : {
     "children" : [
       {
         "id" : "Image",
-        "parameters" : {
+        "params" : {
           "backgroundColor" : "grey200",
           "borderRadius" : 22,
           "height" : 44,
@@ -144,7 +144,7 @@
         "children" : [
           {
             "id" : "Primary Text",
-            "parameters" : {
+            "params" : {
               "font" : "subheading1",
               "text" : "Two-line item"
             },
@@ -152,7 +152,7 @@
           },
           {
             "id" : "Secondary Text",
-            "parameters" : {
+            "params" : {
               "font" : "body1",
               "text" : "Secondary text"
             },
@@ -160,7 +160,7 @@
           }
         ],
         "id" : "View 1",
-        "parameters" : {
+        "params" : {
           "flex" : 1,
           "marginLeft" : 16
         },
@@ -168,7 +168,7 @@
       }
     ],
     "id" : "View",
-    "parameters" : {
+    "params" : {
       "alignSelf" : "stretch",
       "flexDirection" : "row",
       "paddingBottom" : 16,

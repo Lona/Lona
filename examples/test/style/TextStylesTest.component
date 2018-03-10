@@ -1,5 +1,5 @@
 {
-  "canvases" : [
+  "devices" : [
     {
       "height" : 100,
       "heightMode" : "At Least",
@@ -30,14 +30,14 @@
   "logic" : [
 
   ],
-  "parameters" : [
+  "params" : [
 
   ],
-  "rootLayer" : {
+  "root" : {
     "children" : [
       {
         "id" : "Text",
-        "parameters" : {
+        "params" : {
           "font" : "display4",
           "text" : "Text goes here"
         },
@@ -45,7 +45,7 @@
       },
       {
         "id" : "Text 1",
-        "parameters" : {
+        "params" : {
           "font" : "display3",
           "text" : "Text goes here"
         },
@@ -53,7 +53,7 @@
       },
       {
         "id" : "Text 2",
-        "parameters" : {
+        "params" : {
           "font" : "display2",
           "text" : "Text goes here"
         },
@@ -61,7 +61,7 @@
       },
       {
         "id" : "Text 3",
-        "parameters" : {
+        "params" : {
           "font" : "display1",
           "text" : "Text goes here"
         },
@@ -69,7 +69,7 @@
       },
       {
         "id" : "Text 4",
-        "parameters" : {
+        "params" : {
           "font" : "headline",
           "text" : "Text goes here"
         },
@@ -77,7 +77,7 @@
       },
       {
         "id" : "Text 5",
-        "parameters" : {
+        "params" : {
           "font" : "subheading2",
           "text" : "Text goes here"
         },
@@ -85,7 +85,7 @@
       },
       {
         "id" : "Text 6",
-        "parameters" : {
+        "params" : {
           "font" : "subheading1",
           "text" : "Text goes here"
         },
@@ -93,7 +93,7 @@
       },
       {
         "id" : "Text 7",
-        "parameters" : {
+        "params" : {
           "font" : "body2",
           "text" : "Text goes here"
         },
@@ -101,7 +101,7 @@
       },
       {
         "id" : "Text 8",
-        "parameters" : {
+        "params" : {
           "font" : "body1",
           "text" : "Text goes here"
         },
@@ -109,7 +109,7 @@
       },
       {
         "id" : "Text 9",
-        "parameters" : {
+        "params" : {
           "font" : "caption",
           "text" : "Text goes here"
         },
@@ -117,7 +117,7 @@
       }
     ],
     "id" : "View",
-    "parameters" : {
+    "params" : {
       "alignSelf" : "stretch"
     },
     "type" : "Lona:View"

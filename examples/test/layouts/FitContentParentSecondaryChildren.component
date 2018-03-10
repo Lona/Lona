@@ -1,5 +1,5 @@
 {
-  "canvases" : [
+  "devices" : [
     {
       "height" : 100,
       "heightMode" : "At Least",
@@ -30,14 +30,14 @@
   "logic" : [
 
   ],
-  "parameters" : [
+  "params" : [
 
   ],
-  "rootLayer" : {
+  "root" : {
     "children" : [
       {
         "id" : "View 1",
-        "parameters" : {
+        "params" : {
           "backgroundColor" : "blue500",
           "height" : 60,
           "width" : 60
@@ -46,7 +46,7 @@
       },
       {
         "id" : "View 3",
-        "parameters" : {
+        "params" : {
           "backgroundColor" : "lightblue500",
           "height" : 120,
           "width" : 100
@@ -55,7 +55,7 @@
       },
       {
         "id" : "View 2",
-        "parameters" : {
+        "params" : {
           "backgroundColor" : "cyan500",
           "height" : 180,
           "width" : 100
@@ -64,7 +64,7 @@
       }
     ],
     "id" : "Container",
-    "parameters" : {
+    "params" : {
       "alignSelf" : "stretch",
       "backgroundColor" : "bluegrey50",
       "flexDirection" : "row",

@@ -116,7 +116,7 @@ module Layer = {
     {
       typeName: field("type", layerType, json),
       name: field("id", string, json),
-      parameters: field("parameters", parameterDictionary, json),
+      parameters: field("params", parameterDictionary, json),
       children:
         switch (field("children", list(layer), json)) {
         | result => result
@@ -182,8 +182,8 @@ let rec logicNode = json => {
 
 module Component = {
   let parameters = json =>
-    field("parameters", list(Parameters.parameter), json);
-  let rootLayer = json => field("rootLayer", Layer.layer, json);
+    field("params", list(Parameters.parameter), json);
+  let rootLayer = json => field("root", Layer.layer, json);
   let logic = json => Logic.Block(field("logic", list(logicNode), json));
 };
 

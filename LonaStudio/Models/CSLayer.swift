@@ -488,7 +488,7 @@ class CSLayer: CSDataDeserializable, CSDataSerializable, DataNode, NSCopying {
     required init(_ json: CSData) {
         name = json.get(key: "id").string ?? json.get(key: "name").stringValue
         type = LayerType(json.get(key: "type"))
-        parameters = decode(parameters: json.get(key: "parameters").objectValue)
+        parameters = decode(parameters: json.get(key: "params").object ?? json.get(key: "parameters").objectValue)
         children = json.get(key: "children").arrayValue.map({ CSLayer.deserialize($0) }).flatMap({ $0 })
         children.forEach({ $0.parent = self })
     }
@@ -550,7 +550,7 @@ class CSLayer: CSDataDeserializable, CSDataSerializable, DataNode, NSCopying {
         var data = CSData.Object([
             "id": name.toData(),
             "type": type.toData(),
-            "parameters": CSData.Object(encode(parameters: parameters))
+            "params": CSData.Object(encode(parameters: parameters))
         ])
 
         if !children.isEmpty {

@@ -293,7 +293,7 @@ function layer(json) {
   return /* record */[
           /* typeName */Json_decode.field("type", layerType, json),
           /* name */Json_decode.field("id", Json_decode.string, json),
-          /* parameters */Json_decode.field("parameters", parameterDictionary, json),
+          /* parameters */Json_decode.field("params", parameterDictionary, json),
           /* children */tmp
         ];
 }
@@ -450,13 +450,13 @@ function logicNode(json) {
 }
 
 function parameters(json) {
-  return Json_decode.field("parameters", (function (param) {
+  return Json_decode.field("params", (function (param) {
                 return Json_decode.list(parameter, param);
               }), json);
 }
 
 function rootLayer(json) {
-  return Json_decode.field("rootLayer", layer, json);
+  return Json_decode.field("root", layer, json);
 }
 
 function logic(json) {

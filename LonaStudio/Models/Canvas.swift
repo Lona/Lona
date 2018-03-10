@@ -65,7 +65,7 @@ class Canvas: CSDataSerializable, CSDataDeserializable, NSCopying {
         heightMode = data.get(key: "heightMode").stringValue
         exportScale = data.get(key: "exportScale").number ?? 1
         backgroundColor = data.get(key: "backgroundColor").string ?? "white"
-        parameters = data["parameters"] ?? CSData.Object([:])
+        parameters = data["params"] ?? data["parameters"] ?? CSData.Object([:])
     }
 
     required init(visible: Bool, name: String, width: Double, height: Double, heightMode: String, exportScale: Double, backgroundColor: String, parameters: CSData = CSData.Object([:])) {
@@ -100,7 +100,7 @@ class Canvas: CSDataSerializable, CSDataDeserializable, NSCopying {
         }
 
         if !parameters.objectValue.isEmpty {
-            data["parameters"] = parameters
+            data["params"] = parameters
         }
 
         return data

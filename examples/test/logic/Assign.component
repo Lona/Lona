@@ -1,5 +1,5 @@
 {
-  "canvases" : [
+  "devices" : [
     {
       "height" : 100,
       "heightMode" : "At Least",
@@ -57,24 +57,24 @@
       }
     }
   ],
-  "parameters" : [
+  "params" : [
     {
       "name" : "text",
       "type" : "String"
     }
   ],
-  "rootLayer" : {
+  "root" : {
     "children" : [
       {
         "id" : "Text",
-        "parameters" : {
+        "params" : {
           "text" : "Text goes here"
         },
         "type" : "Lona:Text"
       }
     ],
     "id" : "View",
-    "parameters" : {
+    "params" : {
       "alignSelf" : "stretch"
     },
     "type" : "Lona:View"
