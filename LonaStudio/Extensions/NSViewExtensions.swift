@@ -9,6 +9,24 @@
 import Foundation
 import Cocoa
 
+private func imageData(from pixelBuffer: CVPixelBuffer) -> Data? {
+    let imageRep = NSCIImageRep(ciImage: CIImage(cvPixelBuffer: pixelBuffer, options: nil))
+    let image = NSImage(size: imageRep.size)
+    image.addRepresentation(imageRep)
+
+    guard let bitmapData = image.tiffRepresentation else {
+        Swift.print("Failed to convert to tiff")
+        return nil
+    }
+
+    guard let bitmapRep = NSBitmapImageRep(data: bitmapData) else {
+        Swift.print("Failed to create NSBitmapImageRep")
+        return nil
+    }
+
+    return bitmapRep.representation(using: NSBitmapImageRep.FileType.png, properties: [:])
+}
+
 public extension NSView {
 
     static func placeholder(ofSize size: CGFloat, withColor color: CGColor = CGColor.clear) -> NSView {
@@ -165,44 +183,7 @@ public extension NSView {
         return borderView
     }
 
-//    func dataRepresentation() -> Data? {
-//        guard let rep = bitmapImageRepForCachingDisplay(in: self.bounds) else { return nil }
-//        cacheDisplay(in: self.bounds, to: rep)
-//        return rep.representation(using: .PNG, properties: [:])
-//    }
-
-    func dataRepresentation(scaledBy scale: CGFloat = 1) -> Data? {
-        let width = Int(scale * bounds.size.width)
-        let height = Int(scale * bounds.size.height)
-
-        guard let bitmapRep = NSBitmapImageRep(
-            bitmapDataPlanes: nil,
-            pixelsWide: width,
-            pixelsHigh: height,
-            bitsPerSample: 8,
-            samplesPerPixel: 4,
-            hasAlpha: true,
-            isPlanar: false,
-            colorSpaceName: NSColorSpaceName.calibratedRGB,
-            bitmapFormat: NSBitmapImageRep.Format(rawValue: 0),
-            bytesPerRow: 4 * width,
-            bitsPerPixel: 32
-        ) else { return nil }
-
-        guard let graphicsContext = NSGraphicsContext(bitmapImageRep: bitmapRep) else { return nil }
-
-        NSGraphicsContext.saveGraphicsState()
-        NSGraphicsContext.current = graphicsContext
-
-        graphicsContext.cgContext.scaleBy(x: scale, y: scale)
-        displayIgnoringOpacity(bounds, in: graphicsContext)
-
-        NSGraphicsContext.restoreGraphicsState()
-
-        return bitmapRep.representation(using: .png, properties: [:])
-    }
-
-    func pixelBufferRepresentation(scaledBy scale: CGFloat) -> CVPixelBuffer? {
+    func pixelBuffer(scaledBy scale: CGFloat = 1) -> CVPixelBuffer? {
         let width = Int(scale * bounds.size.width)
         let height = Int(scale * bounds.size.height)
 
@@ -225,27 +206,48 @@ public extension NSView {
             return status == kCVReturnSuccess ? pixelBuffer : nil
         }
 
-        guard let pixelBuffer = allocatePixelBuffer() else { return nil }
+        guard let bitmapRep = NSBitmapImageRep(
+            bitmapDataPlanes: nil,
+            pixelsWide: width,
+            pixelsHigh: height,
+            bitsPerSample: 8,
+            samplesPerPixel: 4,
+            hasAlpha: true,
+            isPlanar: false,
+            colorSpaceName: NSColorSpaceName.calibratedRGB,
+            bitmapFormat: NSBitmapImageRep.Format(rawValue: 0),
+            bytesPerRow: 4 * width,
+            bitsPerPixel: 32
+            ) else { return nil }
 
-        CVPixelBufferLockBaseAddress(pixelBuffer, CVPixelBufferLockFlags(rawValue: 0))
-        let pixelBufferBaseAddress = CVPixelBufferGetBaseAddress(pixelBuffer)
+        guard let graphicsContext = NSGraphicsContext(bitmapImageRep: bitmapRep) else { return nil }
 
-        let rgbColorSpace = CGColorSpaceCreateDeviceRGB()
-        guard let context = CGContext(
-            data: pixelBufferBaseAddress,
-            width: width,
-            height: height,
-            bitsPerComponent: 8,
-            bytesPerRow: CVPixelBufferGetBytesPerRow(pixelBuffer),
-            space: rgbColorSpace,
-            bitmapInfo: CGImageAlphaInfo.noneSkipFirst.rawValue
-        ) else { return nil }
+        NSGraphicsContext.saveGraphicsState()
+        NSGraphicsContext.current = graphicsContext
 
-        context.scaleBy(x: scale, y: scale)
-        layer?.render(in: context)
+        graphicsContext.cgContext.scaleBy(x: scale, y: scale)
+        displayIgnoringOpacity(bounds, in: graphicsContext)
 
-        CVPixelBufferUnlockBaseAddress(pixelBuffer, CVPixelBufferLockFlags(rawValue: 0))
+        guard
+            let pixelBuffer = allocatePixelBuffer(),
+            let image = CIImage(bitmapImageRep: bitmapRep),
+            let ciContext = graphicsContext.ciContext
+        else {
+            NSGraphicsContext.restoreGraphicsState()
+
+            return nil
+        }
+
+        ciContext.render(image, to: pixelBuffer)
+
+        NSGraphicsContext.restoreGraphicsState()
 
         return pixelBuffer
     }
+
+    func dataRepresentation(scaledBy scale: CGFloat = 1) -> Data? {
+        guard let buffer = pixelBuffer(scaledBy: scale) else { return nil }
+        return imageData(from: buffer)
+    }
+
 }
