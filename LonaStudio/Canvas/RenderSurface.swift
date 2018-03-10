@@ -10,8 +10,14 @@ import Foundation
 import Cocoa
 import Lottie
 
+struct RenderDescriptor {
+    let canvasName: String
+    let caseName: String
+    let dimensions: String
+}
+
 typealias ExampleDictionary = [String: CSData]
-typealias TaggedCanvas = (view: CanvasView, tags: [String], canvas: Canvas)
+typealias TaggedCanvas = (view: CanvasView, tags: RenderDescriptor, canvas: Canvas)
 
 class RenderSurface: NSView {
 
@@ -39,7 +45,10 @@ class RenderSurface: NSView {
 //                config.scope.declare(value: "cs:selected", as: CSValue(type: .string, data: .String(selected)))
 //            }
 
-            let tags = [canvas.name, caseItem.name, canvas.dimensionsString()]
+            let descriptor = RenderDescriptor(
+                canvasName: canvas.name,
+                caseName: caseItem.name,
+                dimensions: canvas.dimensionsString())
 
             let canvasView = CanvasView(
                 canvas: canvas,
@@ -50,7 +59,7 @@ class RenderSurface: NSView {
                 ] + options
             )
 
-            return (canvasView, tags, canvas)
+            return (canvasView, descriptor, canvas)
         })
     }
 
@@ -96,24 +105,38 @@ class RenderSurface: NSView {
     }
 
     func addCanvasToDocument(_ taggedCanvas: TaggedCanvas) {
-        let (view, tags, _) = taggedCanvas
+        let (view, descriptor, _) = taggedCanvas
+        let tags: [String] = [descriptor.canvasName, descriptor.caseName]
 
         documentView.addSubview(view)
         documentView.addSubview(renderTagList(with: tags, for: view))
     }
 
-    static func renderToImages(component: CSComponent, directory: URL) {
+    static func renderCurrentModuleToImages(savedTo directory: URL) {
+        LonaModule.current.componentFiles()
+            .forEach({ componentFile in
+                guard let component = CSComponent(url: componentFile.url) else { return }
+                renderToImages(component: component, directory: directory, namingScheme: { descriptor in
+                    return [componentFile.name, descriptor.canvasName, descriptor.caseName].joined(separator: "_")
+                })
+            })
+    }
+
+    static func renderToImages(component: CSComponent, directory: URL, namingScheme: ((RenderDescriptor) -> String)? = nil) {
         component.computedCanvases().forEach({ canvas in
             let stack = renderCanvasStack(component: component, canvas: canvas)
 
             for taggedCanvas in stack {
-                let (view, tags, _) = taggedCanvas
+                let (view, descriptor, _) = taggedCanvas
 
                 if let animationView = AnimationUtils.findAnimationView(in: view) {
                     animationView.layout()
                 }
 
-                let url = directory.appendingPathComponent(tags.joined(separator: "_")).appendingPathExtension("png")
+                let filename = namingScheme?(descriptor)
+                    ?? [descriptor.canvasName, descriptor.caseName, descriptor.dimensions].joined(separator: "_")
+                let url = directory.appendingPathComponent(filename).appendingPathExtension("png")
+
                 try? view.dataRepresentation(scaledBy: CGFloat(canvas.exportScale))?.write(to: url)
             }
         })
@@ -126,9 +149,11 @@ class RenderSurface: NSView {
                 ])
 
             for taggedCanvas in stack {
-                let (view, tags, _) = taggedCanvas
+                let (view, descriptor, _) = taggedCanvas
 
-                let url = directory.appendingPathComponent(tags.joined(separator: "_")).appendingPathExtension("json")
+                let tags: [String] = [descriptor.canvasName, descriptor.caseName, descriptor.dimensions]
+                let filename = tags.joined(separator: "_")
+                let url = directory.appendingPathComponent(filename).appendingPathExtension("json")
 
                 guard let animationView = AnimationUtils.findAnimationView(in: view) else { continue }
                 guard var animationData = animationView.data else { continue }
@@ -151,9 +176,11 @@ class RenderSurface: NSView {
             let stack = renderCanvasStack(component: component, canvas: canvas)
 
             for taggedCanvas in stack {
-                let (view, tags, _) = taggedCanvas
+                let (view, descriptor, _) = taggedCanvas
 
-                let url = directory.appendingPathComponent(tags.joined(separator: "_")).appendingPathExtension("mp4")
+                let tags: [String] = [descriptor.canvasName, descriptor.caseName, descriptor.dimensions]
+                let filename = tags.joined(separator: "_")
+                let url = directory.appendingPathComponent(filename).appendingPathExtension("mp4")
 
                 VideoUtils.writeVideo(capturing: view, scaledBy: CGFloat(canvas.exportScale), atFPS: 24, to: url)
             }
