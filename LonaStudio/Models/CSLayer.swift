@@ -47,11 +47,71 @@ extension CSData {
 
 class CSLayer: CSDataDeserializable, CSDataSerializable, DataNode, NSCopying {
 
+    enum BuiltInLayerType: String {
+        case view = "View"
+        case text = "Text"
+        case image = "Image"
+        case animation = "Animation"
+        case children = "Children"
+    }
+
+    enum LayerType {
+        case builtIn(BuiltInLayerType)
+        case custom(String)
+
+        init(from string: String) {
+            // TODO: This case is for backwards compat, before the "Lona:" prefix. Remove.
+            if let layerType = BuiltInLayerType(rawValue: string) {
+                self = .builtIn(layerType)
+            } else if string.starts(with: "Lona:") {
+                let index = string.index(after: string.index(of: ":")!)
+                let suffix = String(string[index...])
+                self = .builtIn(CSLayer.BuiltInLayerType(rawValue: suffix)!)
+            } else {
+                self = .custom(string)
+            }
+        }
+
+        init(_ data: CSData) {
+            self.init(from: data.stringValue)
+        }
+
+        var string: String {
+            switch self {
+            case .builtIn(let builtInLayerType):
+                return "Lona:" + builtInLayerType.rawValue
+            case .custom(let layerType):
+                return layerType
+            }
+        }
+
+        func toData() -> CSData {
+            return string.toData()
+        }
+
+        static let view = LayerType.builtIn(.view)
+        static let text = LayerType.builtIn(.text)
+        static let image = LayerType.builtIn(.image)
+        static let animation = LayerType.builtIn(.animation)
+        static let children = LayerType.builtIn(.children)
+
+        static func == (lhs: LayerType, rhs: LayerType) -> Bool {
+            switch (lhs, rhs) {
+            case (.builtIn(let l), .builtIn(let r)):
+                return l == r
+            case (.custom(let l), .custom(let r)):
+                return l == r
+            default:
+                return false
+            }
+        }
+    }
+
     // Hack: attach this for use in layout
     var config: ComponentConfiguration?
 
     var name: String = "Layer"
-    var type: String = "View"
+    var type: LayerType = .view
     var children: [CSLayer] = []
     var parent: CSLayer?
     var parameters: [String: CSData] = [:]
@@ -408,9 +468,9 @@ class CSLayer: CSDataDeserializable, CSDataSerializable, DataNode, NSCopying {
     }
 
     static func deserialize(_ json: CSData) -> CSLayer? {
-        let type = json.get(key: "type").stringValue
+        let type = LayerType(json.get(key: "type"))
 
-        if type == "Component" {
+        if case LayerType.custom = type {
             let layer = CSComponentLayer(json)
 
             if layer.failedToLoad {
@@ -427,13 +487,13 @@ class CSLayer: CSDataDeserializable, CSDataSerializable, DataNode, NSCopying {
 
     required init(_ json: CSData) {
         name = json.get(key: "id").string ?? json.get(key: "name").stringValue
-        type = json.get(key: "type").stringValue
+        type = LayerType(json.get(key: "type"))
         parameters = decode(parameters: json.get(key: "parameters").objectValue)
         children = json.get(key: "children").arrayValue.map({ CSLayer.deserialize($0) }).flatMap({ $0 })
         children.forEach({ $0.parent = self })
     }
 
-    init(name: String, type: String, parameters: [String: CSData] = [:], children: [CSLayer] = []) {
+    init(name: String, type: LayerType, parameters: [String: CSData] = [:], children: [CSLayer] = []) {
         self.name = name
         self.type = type
         self.parameters = parameters
@@ -628,7 +688,7 @@ class CSLayer: CSDataDeserializable, CSDataSerializable, DataNode, NSCopying {
                 }
             }
 
-            if layer.type == "Children" {
+            if layer.type == .children {
                 // TODO Maybe can consolidate and just store the link to the parent
 //                if let parent = config.parentComponentLayer {
 //                    parent.children.forEach({ result.append($0) })
@@ -682,7 +742,7 @@ class CSLayer: CSDataDeserializable, CSDataSerializable, DataNode, NSCopying {
             "children": CSData.Array([])
         ])
 
-        if type == "View" {
+        if type == .view {
             data["pressed"] = CSData.Bool(false)
             data["hovered"] = CSData.Bool(false)
             data["onPress"] = CSData.Null
@@ -695,12 +755,12 @@ class CSLayer: CSDataDeserializable, CSDataSerializable, DataNode, NSCopying {
         }
 
         // Image
-        if type == "Image" {
+        if type == .image {
             data["image"] = CSData.String(image ?? "")
         }
 
         // Animation
-        if type == "Animation",
+        if type == .animation,
             let animation = animation,
             let url = URL(string: animation),
             let animationData = AnimationUtils.decode(contentsOf: url) {

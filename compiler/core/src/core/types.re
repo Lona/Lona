@@ -67,7 +67,7 @@ type layerType =
   | Image
   | Animation
   | Children
-  | Component
+  | Component(string)
   | Unknown;
 
 type layer = {

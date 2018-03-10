@@ -554,22 +554,24 @@ function parameterMapToLogicValueMap(params) {
 }
 
 function layerTypeToString(x) {
-  switch (x) {
-    case 0 : 
-        return "View";
-    case 1 : 
-        return "Text";
-    case 2 : 
-        return "Image";
-    case 3 : 
-        return "Animation";
-    case 4 : 
-        return "Children";
-    case 5 : 
-        return "Component";
-    case 6 : 
-        return "Unknown";
-    
+  if (typeof x === "number") {
+    switch (x) {
+      case 0 : 
+          return "View";
+      case 1 : 
+          return "Text";
+      case 2 : 
+          return "Image";
+      case 3 : 
+          return "Animation";
+      case 4 : 
+          return "Children";
+      case 5 : 
+          return "Unknown";
+      
+    }
+  } else {
+    return x[0];
   }
 }
 

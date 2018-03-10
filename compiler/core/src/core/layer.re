@@ -232,7 +232,7 @@ let layerTypeToString = x =>
   | Image => "Image"
   | Animation => "Animation"
   | Children => "Children"
-  | Component => "Component"
+  | Component(value) => value
   | Unknown => "Unknown"
   };
 

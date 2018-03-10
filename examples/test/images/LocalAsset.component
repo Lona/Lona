@@ -45,13 +45,13 @@
           "image" : "file:\/\/.\/assets\/icon_128x128.png",
           "width" : 100
         },
-        "type" : "Image"
+        "type" : "Lona:Image"
       }
     ],
     "id" : "View",
     "parameters" : {
       "alignSelf" : "stretch"
     },
-    "type" : "View"
+    "type" : "Lona:View"
   }
 }

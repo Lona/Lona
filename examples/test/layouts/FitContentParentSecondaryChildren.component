@@ -44,7 +44,7 @@
           "height" : 60,
           "width" : 60
         },
-        "type" : "View"
+        "type" : "Lona:View"
       },
       {
         "id" : "View 3",
@@ -53,7 +53,7 @@
           "height" : 120,
           "width" : 100
         },
-        "type" : "View"
+        "type" : "Lona:View"
       },
       {
         "id" : "View 2",
@@ -62,7 +62,7 @@
           "height" : 180,
           "width" : 100
         },
-        "type" : "View"
+        "type" : "Lona:View"
       }
     ],
     "id" : "Container",
@@ -75,6 +75,6 @@
       "paddingRight" : 24,
       "paddingTop" : 24
     },
-    "type" : "View"
+    "type" : "Lona:View"
   }
 }

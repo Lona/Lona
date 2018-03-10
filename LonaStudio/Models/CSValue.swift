@@ -148,8 +148,13 @@ struct CSValue: Equatable, CSDataSerializable, CSDataDeserializable {
                 return (key: arg.key, value: exampleValue(for: arg.value.type).data)
             })
             return CSValue(type: type, data: .Object(fields))
+        case .variant(let cases):
+            guard let (tag, caseType) = cases.first else {
+                return CSValue(type: type, data: CSData.Null)
+            }
+            return exampleValue(for: caseType).wrap(in: type, tagged: tag)
         default:
-            return CSValue(type: CSAnyType, data: CSData.Null)
+            return CSValue(type: type, data: CSData.Null)
         }
     }
 
@@ -165,6 +170,11 @@ struct CSValue: Equatable, CSDataSerializable, CSDataDeserializable {
                 return (key: arg.key, value: defaultValue(for: arg.value.type).data)
             })
             return CSValue(type: type, data: .Object(fields))
+        case .variant(let cases):
+            guard let (tag, caseType) = cases.first else {
+                return CSValue(type: type, data: CSData.Null)
+            }
+            return defaultValue(for: caseType).wrap(in: type, tagged: tag)
         default:
             return CSUndefinedValue.cast(to: type)
         }

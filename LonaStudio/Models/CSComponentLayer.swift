@@ -9,13 +9,12 @@
 import Foundation
 
 class CSComponentLayer: CSLayer {
-    var url: String
     var component: CSComponent!
     var failedToLoad: Bool = false
 
     func reload() {
-        if let component = CSComponentLayer.loadComponent(at: url) {
-            self.component = component
+        if case CSLayer.LayerType.custom(let name) = type {
+            self.component = LonaModule.current.component(named: name)
         } else {
             self.component = CSComponentLayer.defaultComponent
             failedToLoad = true
@@ -37,7 +36,7 @@ class CSComponentLayer: CSLayer {
     }
 
     private static var defaultComponent: CSComponent {
-        let rootLayer = CSLayer(name: "Failed to Load Component", type: "View")
+        let rootLayer = CSLayer(name: "Failed to Load Component", type: .view)
         return CSComponent(name: nil, canvas: [], rootLayer: rootLayer, parameters: [], cases: [], logic: [], config: CSData.Object([:]), metadata: CSData.Object([:]))
     }
 
@@ -48,14 +47,8 @@ class CSComponentLayer: CSLayer {
     }
 
     required init(_ json: CSData) {
-        let rawURL = json.get(key: "url").stringValue
-
-        self.url = rawURL.hasPrefix("./")
-            ? URL(fileURLWithPath: rawURL, relativeTo: CSWorkspacePreferences.workspaceURL).absoluteString
-            : rawURL
-
-        if let component = CSComponentLayer.loadComponent(at: self.url) {
-            self.component = component
+        if case CSLayer.LayerType.custom(let name) = LayerType(json.get(key: "type")) {
+            self.component = LonaModule.current.component(named: name)
         } else {
             self.component = CSComponentLayer.defaultComponent
             failedToLoad = true
@@ -64,9 +57,8 @@ class CSComponentLayer: CSLayer {
         super.init(json)
     }
 
-    init(name: String, url: String, parameters: [String: CSData] = [:], children: [CSLayer] = []) {
-        self.url = url
-        super.init(name: name, type: "Component", parameters: parameters, children: children)
+    override init(name: String, type: LayerType, parameters: [String: CSData] = [:], children: [CSLayer] = []) {
+        super.init(name: name, type: type, parameters: parameters, children: children)
 
         reload()
     }
@@ -93,20 +85,4 @@ class CSComponentLayer: CSLayer {
         return parameters
     }
 
-    override func toData() -> CSData {
-        var data = super.toData()
-
-        guard let absolutePath = URL(string: url)?.path else { return data }
-        let basePath = CSWorkspacePreferences.workspaceURL.path
-
-        let relativePath = absolutePath.pathRelativeTo(basePath: basePath)
-
-//        Swift.print("absolute path", absolutePath)
-//        Swift.print("base path", basePath)
-//        Swift.print("relative path", relativePath)
-
-        data["url"] = relativePath?.toData()
-
-        return data
-    }
 }

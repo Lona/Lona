@@ -71,21 +71,24 @@ function generate(_, swiftOptions, name, colors, textStyles, json) {
   var getLayerTypeName = function (layerType) {
     var match = swiftOptions[/* framework */0];
     if (match !== 0) {
-      switch (layerType) {
-        case 0 : 
-            return "NSBox";
-        case 1 : 
-            return "NSTextField";
-        case 2 : 
-            return "NSImageView";
-        case 3 : 
-        case 4 : 
-        case 5 : 
-        case 6 : 
-            return "TypeUnknown";
-        
+      if (typeof layerType === "number") {
+        switch (layerType) {
+          case 0 : 
+              return "NSBox";
+          case 1 : 
+              return "NSTextField";
+          case 2 : 
+              return "NSImageView";
+          case 3 : 
+          case 4 : 
+          case 5 : 
+              return "TypeUnknown";
+          
+        }
+      } else {
+        return "TypeUnknown";
       }
-    } else {
+    } else if (typeof layerType === "number") {
       switch (layerType) {
         case 0 : 
             return "UIView";
@@ -96,49 +99,64 @@ function generate(_, swiftOptions, name, colors, textStyles, json) {
         case 3 : 
         case 4 : 
         case 5 : 
-        case 6 : 
             return "TypeUnknown";
         
       }
+    } else {
+      return "TypeUnknown";
     }
   };
   var getLayerInitCall = function (layerType) {
     var typeName = /* SwiftIdentifier */Block.__(8, [getLayerTypeName(layerType)]);
     var match = swiftOptions[/* framework */0];
     if (match !== 0) {
-      if (layerType !== 1) {
-        return /* FunctionCallExpression */Block.__(19, [{
-                    name: typeName,
-                    arguments: /* [] */0
-                  }]);
+      if (typeof layerType === "number") {
+        if (layerType !== 1) {
+          return /* FunctionCallExpression */Block.__(19, [{
+                      name: typeName,
+                      arguments: /* [] */0
+                    }]);
+        } else {
+          return /* FunctionCallExpression */Block.__(19, [{
+                      name: typeName,
+                      arguments: /* :: */[
+                        /* FunctionCallArgument */Block.__(18, [{
+                              name: /* Some */[/* SwiftIdentifier */Block.__(8, ["labelWithString"])],
+                              value: /* LiteralExpression */Block.__(0, [/* String */Block.__(3, [""])])
+                            }]),
+                        /* [] */0
+                      ]
+                    }]);
+        }
       } else {
         return /* FunctionCallExpression */Block.__(19, [{
                     name: typeName,
-                    arguments: /* :: */[
-                      /* FunctionCallArgument */Block.__(18, [{
-                            name: /* Some */[/* SwiftIdentifier */Block.__(8, ["labelWithString"])],
-                            value: /* LiteralExpression */Block.__(0, [/* String */Block.__(3, [""])])
-                          }]),
-                      /* [] */0
-                    ]
+                    arguments: /* [] */0
                   }]);
       }
-    } else if (layerType !== 1) {
-      if (layerType >= 3) {
-        return /* FunctionCallExpression */Block.__(19, [{
-                    name: typeName,
-                    arguments: /* [] */0
-                  }]);
+    } else if (typeof layerType === "number") {
+      if (layerType !== 1) {
+        if (layerType >= 3) {
+          return /* FunctionCallExpression */Block.__(19, [{
+                      name: typeName,
+                      arguments: /* [] */0
+                    }]);
+        } else {
+          return /* FunctionCallExpression */Block.__(19, [{
+                      name: typeName,
+                      arguments: /* :: */[
+                        /* FunctionCallArgument */Block.__(18, [{
+                              name: /* Some */[/* SwiftIdentifier */Block.__(8, ["frame"])],
+                              value: /* SwiftIdentifier */Block.__(8, [".zero"])
+                            }]),
+                        /* [] */0
+                      ]
+                    }]);
+        }
       } else {
         return /* FunctionCallExpression */Block.__(19, [{
                     name: typeName,
-                    arguments: /* :: */[
-                      /* FunctionCallArgument */Block.__(18, [{
-                            name: /* Some */[/* SwiftIdentifier */Block.__(8, ["frame"])],
-                            value: /* SwiftIdentifier */Block.__(8, [".zero"])
-                          }]),
-                      /* [] */0
-                    ]
+                    arguments: /* [] */0
                   }]);
       }
     } else {
@@ -520,54 +538,58 @@ function generate(_, swiftOptions, name, colors, textStyles, json) {
     };
     var resetViewStyling = function (layer) {
       var match = layer[/* typeName */0];
-      if (match !== 1) {
-        if (match !== 0) {
-          return /* [] */0;
-        } else {
-          return /* :: */[
-                  /* BinaryExpression */Block.__(2, [{
-                        left: memberOrSelfExpression(parentNameOrSelf(layer), /* :: */[
-                              /* SwiftIdentifier */Block.__(8, ["boxType"]),
-                              /* [] */0
-                            ]),
-                        operator: "=",
-                        right: /* SwiftIdentifier */Block.__(8, [".custom"])
-                      }]),
-                  /* :: */[
+      if (typeof match === "number") {
+        if (match !== 1) {
+          if (match !== 0) {
+            return /* [] */0;
+          } else {
+            return /* :: */[
                     /* BinaryExpression */Block.__(2, [{
                           left: memberOrSelfExpression(parentNameOrSelf(layer), /* :: */[
-                                /* SwiftIdentifier */Block.__(8, ["borderType"]),
+                                /* SwiftIdentifier */Block.__(8, ["boxType"]),
                                 /* [] */0
                               ]),
                           operator: "=",
-                          right: /* SwiftIdentifier */Block.__(8, [".noBorder"])
+                          right: /* SwiftIdentifier */Block.__(8, [".custom"])
                         }]),
                     /* :: */[
                       /* BinaryExpression */Block.__(2, [{
                             left: memberOrSelfExpression(parentNameOrSelf(layer), /* :: */[
-                                  /* SwiftIdentifier */Block.__(8, ["contentViewMargins"]),
+                                  /* SwiftIdentifier */Block.__(8, ["borderType"]),
                                   /* [] */0
                                 ]),
                             operator: "=",
-                            right: /* SwiftIdentifier */Block.__(8, [".zero"])
+                            right: /* SwiftIdentifier */Block.__(8, [".noBorder"])
                           }]),
-                      /* [] */0
+                      /* :: */[
+                        /* BinaryExpression */Block.__(2, [{
+                              left: memberOrSelfExpression(parentNameOrSelf(layer), /* :: */[
+                                    /* SwiftIdentifier */Block.__(8, ["contentViewMargins"]),
+                                    /* [] */0
+                                  ]),
+                              operator: "=",
+                              right: /* SwiftIdentifier */Block.__(8, [".zero"])
+                            }]),
+                        /* [] */0
+                      ]
                     ]
-                  ]
+                  ];
+          }
+        } else {
+          return /* :: */[
+                  /* BinaryExpression */Block.__(2, [{
+                        left: memberOrSelfExpression(parentNameOrSelf(layer), /* :: */[
+                              /* SwiftIdentifier */Block.__(8, ["lineBreakMode"]),
+                              /* [] */0
+                            ]),
+                        operator: "=",
+                        right: /* SwiftIdentifier */Block.__(8, [".byWordWrapping"])
+                      }]),
+                  /* [] */0
                 ];
         }
       } else {
-        return /* :: */[
-                /* BinaryExpression */Block.__(2, [{
-                      left: memberOrSelfExpression(parentNameOrSelf(layer), /* :: */[
-                            /* SwiftIdentifier */Block.__(8, ["lineBreakMode"]),
-                            /* [] */0
-                          ]),
-                      operator: "=",
-                      right: /* SwiftIdentifier */Block.__(8, [".byWordWrapping"])
-                    }]),
-                /* [] */0
-              ];
+        return /* [] */0;
       }
     };
     var addSubviews = function (parent, layer) {

@@ -34,7 +34,7 @@ class LayerThumbnail {
         let size = 16 * scale
 
         switch layer.type {
-        case "View":
+        case .builtIn(.view):
             let cacheKey = cacheKeyForView(at: scale, direction: layer.flexDirection ?? "column", backgroundColor: layer.backgroundColor)
 
             if let cached = cache.object(forKey: cacheKey) {
@@ -88,7 +88,7 @@ class LayerThumbnail {
             cache.setObject(image, forKey: cacheKey)
 
             return image
-        case "Text":
+        case .builtIn(.text):
             let template: NSImage = #imageLiteral(resourceName: "icon-layer-list-text")
 
             if let font = layer.font {
@@ -106,7 +106,7 @@ class LayerThumbnail {
             }
 
             return template
-        case "Image":
+        case .builtIn(.image):
             if let urlString = layer.image, let url = URL(string: urlString) {
                 let cacheKey = NSString(string: urlString)
 

@@ -255,22 +255,20 @@ function parameter(json) {
 var Parameters = /* module */[/* parameter */parameter];
 
 function layerType(json) {
-  var match = Json_decode.string(json);
-  switch (match) {
-    case "Animation" : 
+  var value = Json_decode.string(json);
+  switch (value) {
+    case "Lona:Animation" : 
         return /* Animation */3;
-    case "Children" : 
+    case "Lona:Children" : 
         return /* Children */4;
-    case "Component" : 
-        return /* Component */5;
-    case "Image" : 
+    case "Lona:Image" : 
         return /* Image */2;
-    case "Text" : 
+    case "Lona:Text" : 
         return /* Text */1;
-    case "View" : 
+    case "Lona:View" : 
         return /* View */0;
     default:
-      return /* Unknown */6;
+      return /* Component */[value];
   }
 }
 

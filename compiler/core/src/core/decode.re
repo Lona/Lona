@@ -97,13 +97,12 @@ module Parameters = {
 module Layer = {
   let layerType = json =>
     switch (string(json)) {
-    | "View" => View
-    | "Text" => Text
-    | "Image" => Image
-    | "Animation" => Animation
-    | "Children" => Children
-    | "Component" => Component
-    | _ => Unknown
+    | "Lona:View" => View
+    | "Lona:Text" => Text
+    | "Lona:Image" => Image
+    | "Lona:Animation" => Animation
+    | "Lona:Children" => Children
+    | value => Component(value)
     };
   let rec layer = json => {
     let parameterDictionary = json =>
