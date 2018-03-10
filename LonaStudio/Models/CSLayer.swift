@@ -599,8 +599,7 @@ class CSLayer: CSDataDeserializable, CSDataSerializable, DataNode, NSCopying {
 
     func attributesNames(for type: CSType) -> [String] {
         if let _self = self as? CSComponentLayer {
-            let component = _self.component!
-            return component.parameters.filter({ $0.type == type }).map({ $0.name })
+            return _self.component.parameters.filter({ $0.type == type }).map({ $0.name })
         }
 
         switch type {
@@ -660,7 +659,7 @@ class CSLayer: CSDataDeserializable, CSDataSerializable, DataNode, NSCopying {
             if let componentLayer = layer as? CSComponentLayer {
                 let originalLayer = layer
                 let originalName = layer.name
-                let component = componentLayer.component!
+                let component = componentLayer.component
                 layer = component.rootLayer
 
                 if shouldAssignConfig {

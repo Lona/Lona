@@ -317,7 +317,7 @@ extension LayerList {
 
         NSDocumentController.shared.openDocument(
             withContentsOf: url, display: true, completionHandler: { (document, _, _) in
-            layer.component = (document as! Document).file
+            layer.component = (document as! Document).file!
             layer.name = self.componentName(for: url)
             layer.type = CSLayer.LayerType.custom(url.deletingPathExtension().lastPathComponent)
             self.onChange()
