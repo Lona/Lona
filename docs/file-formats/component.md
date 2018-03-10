@@ -13,10 +13,10 @@ JSON is problematic because it's not easily mergeable or human-editable. It coul
 The file is an object containing top-level fields:
 
 - [**`metadata`**](#metadata)
-- [**`canvases`**](#canvases)
+- [**`devices`**](#devices)
 - [**`examples`**](#examples)
-- [**`parameters`**](#parameters)
-- [**`rootLayer`**](#rootLayer)
+- [**`params`**](#params)
+- [**`root`**](#root)
 - [**`logic`**](#logic)
 - [**`private`**](#private)
 
@@ -42,34 +42,34 @@ Component metadata for documentation, indexing, and other miscellaneous purposes
 // ...
 ```
 
-## Canvases
+## Devices
 
-The various canvases sizes to render a component within Lona Studio. These do not currently generate any code, although conceptually they could be useful for generating automated tests. This is an array of objects, where each object has the following fields:
+The various device sizes to render a component into within Lona Studio. These do not currently generate any code, although conceptually they could be useful for generating automated tests. This is an array of objects, where each object has the following fields:
 
 |Attribute|Type|Required|Description|
 |---|---|---|---|
-|`name`|`string`|Yes|The human-readable name of the canvas.|
-|`width`|`number`|Yes|The width the canvas.|
-|`height`|`number`|Yes|The height of the canvas, in density-independent pixels.|
-|`heightMode`|`'At Least' or 'Exactly'`|Yes|Should the canvas grow beyond the specified height when filled with components? If `'At Least'`, the canvas will grow. If `'Exactly'`, the canvas will always be the exact `height` given, and components at the bottom will get clipped. |
-|`visible`|`boolean`|Yes|This determines whether or not to draw this particular canvas on the screen.|
-|`parameters`|`JSON`|Yes|This contains optional parameter values for use within [`Logic`](#logic).|
+|`name`|`string`|Yes|The human-readable name of the device.|
+|`width`|`number`|Yes|The width the device.|
+|`height`|`number`|Yes|The height of the device, in density-independent pixels.|
+|`heightMode`|`'At Least' or 'Exactly'`|Yes|Should the device viewport grow beyond the specified height when filled with components? If `'At Least'`, the device viewport will grow. If `'Exactly'`, the device viewport will always be the exact `height` given, and components at the bottom will get clipped. |
+|`visible`|`boolean`|Yes|This determines whether or not to draw this particular device on the screen.|
+|`params`|`JSON`|Yes|This contains optional parameter values for use within [`Logic`](#logic).|
 |`exportScale`|`number`|Yes|The scale to export artifacts. Defaults to `1` for `1x` resolution.|
-|`backgroundColor`|[`Color`](./colors.md#color-type)|Yes|The canvas background color, displayed within Lona Studio and in exported artifacts.|
+|`backgroundColor`|[`Color`](./colors.md#color-type)|Yes|The device background color, displayed within Lona Studio and in exported artifacts.|
 
 ### Sample
 
 ```json
 // ...
 
-"canvases": [
+"devices": [
   {
     "name": "iPhone SE",
     "width" : 375,
     "height" : 100,
     "heightMode" : "At Least",
     "visible" : true,
-    "parameters" : {},
+    "params" : {},
     "exportScale" : 1,
     "backgroundColor" : "white"
   }
@@ -107,7 +107,7 @@ These are the _examples_ or _test cases_ for a component. These do not currently
 // ...
 ```
 
-## Parameters
+## Params
 
 |Attribute|Type|Required|Description|
 |---|---|---|---|
@@ -118,7 +118,7 @@ These are the _examples_ or _test cases_ for a component. These do not currently
 ```json
 // ...
 
-"parameters": [
+"params": [
   {
     "type" : "String",
     "name" : "title"
@@ -133,9 +133,9 @@ These are the _examples_ or _test cases_ for a component. These do not currently
 // ...
 ```
 
-## Root Layer
+## Root
 
-Layers define the UI tree. Each layer is an _instance_ of a component. The layer specifies which component it represents, and the parameters it will pass to that component. Layers may represent _built-in_ components or _custom_ components.
+This is the root of the layer hierarchy. Layers define the UI hierarchy. Each layer is an _instance_ of a component. The layer specifies which component it represents, and the params it will pass to that component. Layers may represent _built-in_ components or _custom_ components.
 
 Layers contain the following attributes:
 
@@ -143,12 +143,11 @@ Layers contain the following attributes:
 |---|---|---|---|
 |`id`|`string`|Yes|The unique id of the layer, used as a key within logic.|
 |`name`|`string`|Yes|The human-readable name of the layer. Naming the layer within Lona Studio updates the `id` field automatically by default.|
-|`type`|`string`|Yes|For built-in components, the possible types are: `"View"`, `"Text"`, `"Image"`, `"Animation"`. Custom components have the type `Component`. There's also the special case, `"Children"`, which represents a placeholder for components which can be used within this component.|
-|`parameters`|`JSON`|Yes|The input parameters for the specified component. For custom `Component` typed components, these are defined by the `parameters` attribute at the root level of the `.component` file for that component. For built-in types, these are defined below in this specification.|
-|`url`|`URL`|No|For `Component` typed components, this is the URL of the `.component` file that defines the component.|
-|`children`|`Component[]`|No|The built-in `View` and `Image` components render children components within themselves. Custom components can render children by including the placeholder `Children` type within their `children` array.|
+|`type`|`string`|Yes|For built-in components, the possible types are: `"Lona:View"`, `"Lona:Text"`, `"Lona:Image"`, `"Lona:Animation"`. Custom components have the same type as their filename, excluding the `.component` extension. There's also the special case, `"Lona:Children"`, which represents a placeholder for components which can be used within this component.|
+|`params`|`JSON`|Yes|The input params for the specified component. For custom components, these are defined by the `params` attribute at the root level of the `.component` file for that component. For built-in types, these are defined below in this specification.|
+|`children`|`Component[]`|No|The built-in `Lona:View` and `Lona:Image` components render children components within themselves. Custom components can render children by including the placeholder `Lona:Children` type within their `children` array.|
 
-### Built-in Component Parameters
+### Built-in Component Params
 
 Coming soon!
 
