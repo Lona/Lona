@@ -29,14 +29,14 @@ class CSComponent: DataNode, NSCopying {
 
     var canvasLayoutAxis: RenderSurface.Layout {
         get {
-            return config.get(key: "canvasLayout").stringValue == "yx"
+            return config.get(key: "deviceLayout").stringValue == "yx"
                 ? RenderSurface.Layout.caseXcanvasY
                 : RenderSurface.Layout.canvasXcaseY
         }
         set {
             switch newValue {
-            case .canvasXcaseY: config["canvasLayout"] = CSData.String("xy")
-            case .caseXcanvasY: config["canvasLayout"] = CSData.String("yx")
+            case .canvasXcaseY: config["deviceLayout"] = CSData.String("xy")
+            case .caseXcanvasY: config["deviceLayout"] = CSData.String("yx")
             }
         }
     }
@@ -178,16 +178,16 @@ class CSComponent: DataNode, NSCopying {
         let parametersType = CSParameter.csType(from: parameters)
 
         var data = CSData.Object([
-            "parameters": CSData.Array(parameters.map({ $0.toData() })),
-            "rootLayer": rootLayer.toData(),
+            "params": CSData.Array(parameters.map({ $0.toData() })),
+            "root": rootLayer.toData(),
             "logic": logic.toData(),
-            "canvases": canvas.toData(),
+            "devices": canvas.toData(),
             "examples": CSData.Array(cases.map({ $0.toData(parametersType: parametersType) }))
         ])
 
         var config = self.config
-        if config["canvasLayout"]?.stringValue == "xy" {
-            config["canvasLayout"] = nil
+        if config["deviceLayout"]?.stringValue == "xy" {
+            config["deviceLayout"] = nil
         }
 
         if !config.objectValue.isEmpty {
@@ -202,10 +202,10 @@ class CSComponent: DataNode, NSCopying {
     }
 
     init(_ json: CSData) {
-        parameters = json.get(key: "parameters").arrayValue.map({ CSParameter($0) })
-        rootLayer = CSLayer.deserialize(json.get(key: "rootLayer"))!
+        parameters = (json["params"] ?? json.get(key: "parameters")).arrayValue.map({ CSParameter($0) })
+        rootLayer = CSLayer.deserialize(json["root"] ?? json.get(key: "rootLayer"))!
         logic = json.get(key: "logic").arrayValue.map({ LogicNode($0) })
-        canvas = json.get(key: "canvases").arrayValue.map({ Canvas($0) })
+        canvas = (json["devices"] ?? json.get(key: "canvases")).arrayValue.map({ Canvas($0) })
         config = json["config"] ?? CSData.Object([:])
         metadata = json["metadata"] ?? CSData.Object([:])
 

@@ -1,5 +1,5 @@
 {
-  "canvases" : [
+  "devices" : [
     {
       "height" : 100,
       "heightMode" : "At Least",
@@ -30,14 +30,14 @@
   "logic" : [
 
   ],
-  "parameters" : [
+  "params" : [
 
   ],
-  "rootLayer" : {
+  "root" : {
     "children" : [
       {
         "id" : "Fixed",
-        "parameters" : {
+        "params" : {
           "backgroundColor" : "#D8D8D8",
           "height" : 100,
           "marginBottom" : 24,
@@ -49,14 +49,14 @@
         "children" : [
           {
             "id" : "Text",
-            "parameters" : {
+            "params" : {
               "text" : "Text goes here"
             },
             "type" : "Lona:Text"
           }
         ],
         "id" : "Fit",
-        "parameters" : {
+        "params" : {
           "backgroundColor" : "#D8D8D8",
           "height" : 100,
           "marginBottom" : 24,
@@ -69,7 +69,7 @@
       },
       {
         "id" : "Fill",
-        "parameters" : {
+        "params" : {
           "alignSelf" : "stretch",
           "backgroundColor" : "#D8D8D8",
           "height" : 100
@@ -78,7 +78,7 @@
       }
     ],
     "id" : "Container",
-    "parameters" : {
+    "params" : {
       "alignSelf" : "stretch",
       "paddingBottom" : 24,
       "paddingLeft" : 24,

@@ -1,5 +1,5 @@
 {
-  "canvases" : [
+  "devices" : [
     {
       "height" : 100,
       "heightMode" : "At Least",
@@ -93,15 +93,15 @@
       ]
     }
   ],
-  "parameters" : [
+  "params" : [
     {
       "name" : "enabled",
       "type" : "Boolean"
     }
   ],
-  "rootLayer" : {
+  "root" : {
     "id" : "View",
-    "parameters" : {
+    "params" : {
       "alignSelf" : "stretch"
     },
     "type" : "Lona:View"

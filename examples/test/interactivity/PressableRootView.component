@@ -1,5 +1,5 @@
 {
-  "canvases" : [
+  "devices" : [
     {
       "height" : 100,
       "heightMode" : "At Least",
@@ -472,7 +472,7 @@
       ]
     }
   ],
-  "parameters" : [
+  "params" : [
     {
       "name" : "onPressOuter",
       "type" : {
@@ -486,13 +486,13 @@
       }
     }
   ],
-  "rootLayer" : {
+  "root" : {
     "children" : [
       {
         "children" : [
           {
             "id" : "InnerText",
-            "parameters" : {
+            "params" : {
               "font" : "headline",
               "text" : ""
             },
@@ -500,7 +500,7 @@
           }
         ],
         "id" : "Inner",
-        "parameters" : {
+        "params" : {
           "backgroundColor" : "blue500",
           "height" : 100,
           "width" : 100
@@ -509,7 +509,7 @@
       }
     ],
     "id" : "Outer",
-    "parameters" : {
+    "params" : {
       "alignSelf" : "stretch",
       "backgroundColor" : "grey50",
       "paddingBottom" : 24,

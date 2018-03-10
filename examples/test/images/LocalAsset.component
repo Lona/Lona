@@ -1,5 +1,5 @@
 {
-  "canvases" : [
+  "devices" : [
     {
       "height" : 100,
       "heightMode" : "At Least",
@@ -30,14 +30,14 @@
   "logic" : [
 
   ],
-  "parameters" : [
+  "params" : [
 
   ],
-  "rootLayer" : {
+  "root" : {
     "children" : [
       {
         "id" : "Image",
-        "parameters" : {
+        "params" : {
           "backgroundColor" : "#D8D8D8",
           "height" : 100,
           "image" : "file:\/\/.\/assets\/icon_128x128.png",
@@ -47,7 +47,7 @@
       }
     ],
     "id" : "View",
-    "parameters" : {
+    "params" : {
       "alignSelf" : "stretch"
     },
     "type" : "Lona:View"

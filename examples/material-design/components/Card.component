@@ -1,5 +1,5 @@
 {
-  "canvases" : [
+  "devices" : [
     {
       "height" : 100,
       "heightMode" : "At Least",
@@ -179,7 +179,7 @@
       ]
     }
   ],
-  "parameters" : [
+  "params" : [
     {
       "name" : "image",
       "type" : "URL"
@@ -200,11 +200,11 @@
       "type" : "String?"
     }
   ],
-  "rootLayer" : {
+  "root" : {
     "children" : [
       {
         "id" : "Image",
-        "parameters" : {
+        "params" : {
           "alignSelf" : "stretch",
           "aspectRatio" : 2,
           "backgroundColor" : "#D8D8D8",
@@ -216,7 +216,7 @@
         "children" : [
           {
             "id" : "Headline",
-            "parameters" : {
+            "params" : {
               "font" : "headline",
               "text" : "Headline"
             },
@@ -224,7 +224,7 @@
           },
           {
             "id" : "Body",
-            "parameters" : {
+            "params" : {
               "font" : "body2",
               "numberOfLines" : 2,
               "text" : "Body",
@@ -234,7 +234,7 @@
           }
         ],
         "id" : "Description",
-        "parameters" : {
+        "params" : {
           "alignSelf" : "stretch",
           "paddingBottom" : 16,
           "paddingLeft" : 16,
@@ -245,7 +245,7 @@
       }
     ],
     "id" : "View",
-    "parameters" : {
+    "params" : {
       "alignSelf" : "stretch"
     },
     "type" : "Lona:View"
