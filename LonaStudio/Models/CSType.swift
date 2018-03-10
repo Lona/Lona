@@ -101,6 +101,10 @@ indirect enum CSType: Equatable, CSDataSerializable, CSDataDeserializable {
                     var parameters: [(String, CSType)] = []
                     if let values = object["cases"]?.array {
                         parameters = values.map({ (arg) in
+                            if let tag = arg.string {
+                                return (tag, CSType.unit)
+                            }
+
                             return (arg.get(key: "tag").stringValue, CSType(arg.get(key: "type")))
                         })
                     }
@@ -250,6 +254,10 @@ indirect enum CSType: Equatable, CSDataSerializable, CSDataDeserializable {
             if cases.count > 0 {
                 data["cases"] = CSData.Array(cases.map({ (arg) -> CSData in
                     let (tag, innerType) = arg
+
+                    if innerType == CSType.unit {
+                        return tag.toData()
+                    }
 
                     return CSData.Object([
                         "tag": tag.toData(),
