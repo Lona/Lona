@@ -9,12 +9,13 @@
 import Foundation
 
 class CSComponentLayer: CSLayer {
-    var component: CSComponent!
+    var component: CSComponent
     var failedToLoad: Bool = false
 
     func reload() {
-        if case CSLayer.LayerType.custom(let name) = type {
-            self.component = LonaModule.current.component(named: name)
+        if case CSLayer.LayerType.custom(let name) = type,
+            let component = LonaModule.current.component(named: name) {
+            self.component = component
         } else {
             self.component = CSComponentLayer.defaultComponent
             failedToLoad = true
@@ -47,8 +48,9 @@ class CSComponentLayer: CSLayer {
     }
 
     required init(_ json: CSData) {
-        if case CSLayer.LayerType.custom(let name) = LayerType(json.get(key: "type")) {
-            self.component = LonaModule.current.component(named: name)
+        if case CSLayer.LayerType.custom(let name) = LayerType(json.get(key: "type")),
+            let component = LonaModule.current.component(named: name) {
+            self.component = component
         } else {
             self.component = CSComponentLayer.defaultComponent
             failedToLoad = true
@@ -58,9 +60,15 @@ class CSComponentLayer: CSLayer {
     }
 
     override init(name: String, type: LayerType, parameters: [String: CSData] = [:], children: [CSLayer] = []) {
-        super.init(name: name, type: type, parameters: parameters, children: children)
+        if case CSLayer.LayerType.custom(let name) = type,
+            let component = LonaModule.current.component(named: name) {
+            self.component = component
+        } else {
+            self.component = CSComponentLayer.defaultComponent
+            failedToLoad = true
+        }
 
-        reload()
+        super.init(name: name, type: type, parameters: parameters, children: children)
     }
 
     override func encode(parameters: [String: CSData]) -> [String: CSData] {
