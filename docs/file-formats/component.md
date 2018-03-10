@@ -14,7 +14,7 @@ The file is an object containing top-level fields:
 
 - [**`metadata`**](#metadata)
 - [**`canvases`**](#canvases)
-- [**`cases`**](#cases)
+- [**`examples`**](#examples)
 - [**`parameters`**](#parameters)
 - [**`rootLayer`**](#rootLayer)
 - [**`logic`**](#logic)
@@ -78,31 +78,29 @@ The various canvases sizes to render a component within Lona Studio. These do no
 // ...
 ```
 
-## Cases
+## Examples
 
-These are the _use cases_ or _test cases_ for a component. These do not currently generate any code, although conceptually they could be useful for generating automated tests. This is an array of objects, where each object has the following fields:
+These are the _examples_ or _test cases_ for a component. These do not currently generate any code, although conceptually they could be useful for generating automated tests. This is an array of objects, where each object has the following fields:
 
 |Attribute|Type|Required|Description|
 |---|---|---|---|
-|`name`|`string`|Yes|The human-readable name of the test case.|
-|`type`|`'entry' or 'importedList'`|Yes|Is this an individual case defined explicitly, or a list of cases imported from JSON?|
-|`visible`|`boolean`|Yes|This determines whether or not to draw this particular test case on the screen.|
-|`parameters`|`JSON`|No|This contains optional parameter values for use within [`Logic`](#logic). This will only be defined for cases with a `type` of `entry`.|
-|`url`|`URL`|No|The URL of a list of cases defined in JSON. This will only be defined for cases with a `type` of `importedList`.|
+|`name`|`string`|Yes|The human-readable name of the example.|
+|`type`|`'entry' or 'importedList'`|No|Is this an individual case defined explicitly, or a list of examples imported from JSON? Defaults to `entry`.|
+|`visible`|`boolean`|No|This determines whether or not to draw this particular test case on the screen. Defaults to `true`.|
+|`params`|`JSON`|No|This contains optional parameter values for use within [`Logic`](#logic). This will only be defined for examples with a `type` of `entry`.|
+|`url`|`URL`|No|The URL of a list of examples defined in JSON. This will only be defined for examples with a `type` of `importedList`.|
 
 ### Sample
 
 ```json
 // ...
 
-"cases": [
+"examples": [
   {
     "name" : "Default case",
-    "value" : {
+    "params" : {
       "title" : "Header sample text"
-    },
-    "type" : "entry",
-    "visible" : true
+    }
   }
 ]
 

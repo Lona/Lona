@@ -175,12 +175,14 @@ class CSComponent: DataNode, NSCopying {
     }
 
     func toData() -> CSData? {
+        let parametersType = CSParameter.csType(from: parameters)
+
         var data = CSData.Object([
             "parameters": CSData.Array(parameters.map({ $0.toData() })),
             "rootLayer": rootLayer.toData(),
             "logic": logic.toData(),
             "canvases": canvas.toData(),
-            "cases": cases.toData()
+            "examples": CSData.Array(cases.map({ $0.toData(parametersType: parametersType) }))
         ])
 
         var config = self.config
@@ -206,7 +208,9 @@ class CSComponent: DataNode, NSCopying {
         canvas = json.get(key: "canvases").arrayValue.map({ Canvas($0) })
         config = json["config"] ?? CSData.Object([:])
         metadata = json["metadata"] ?? CSData.Object([:])
-        cases = json.get(key: "cases").arrayValue.map({ CSCase($0) })
+
+        let parametersType = CSParameter.csType(from: parameters)
+        cases = (json["examples"] ?? json.get(key: "cases")).arrayValue.map({ CSCase($0, parametersType: parametersType) })
     }
 
     convenience init?(url: URL) {

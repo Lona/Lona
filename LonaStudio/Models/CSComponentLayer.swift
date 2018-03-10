@@ -25,15 +25,11 @@ class CSComponentLayer: CSLayer {
     override func value() -> CSValue {
         if failedToLoad { return CSUndefinedValue }
 
-        let parametersSchema: CSType.Schema = component.parameters.key {(parameter) -> (key: String, value: (CSType, CSAccess)) in
-            return (key: parameter.name, value: (parameter.type, .write))
-        }
-
         let parametersMap: [String: CSData] = component.parameters.key {(parameter) -> (key: String, value: CSData) in
             return (key: parameter.name, value: parameters[parameter.name] ?? CSData.Null)
         }
 
-        return CSValue(type: CSType.dictionary(parametersSchema), data: CSData.Object(parametersMap))
+        return CSValue(type: CSParameter.csType(from: component.parameters), data: CSData.Object(parametersMap))
     }
 
     private static var defaultComponent: CSComponent {

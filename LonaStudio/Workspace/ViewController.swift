@@ -415,7 +415,7 @@ class ViewController: NSViewController, NSOutlineViewDataSource, NSOutlineViewDe
 
         // Splitter setup
 
-        let tabs = SegmentedControlField(frame: NSRect(x: 0, y: 0, width: 500, height: 24), values: ["Details", "Canvases", "Parameters", "Logic", "Cases"])
+        let tabs = SegmentedControlField(frame: NSRect(x: 0, y: 0, width: 500, height: 24), values: ["Details", "Canvases", "Parameters", "Logic", "Examples"])
         tabs.segmentWidth = 97
         tabs.useYogaLayout = true
         tabs.segmentStyle = .roundRect
@@ -489,7 +489,7 @@ class ViewController: NSViewController, NSOutlineViewDataSource, NSOutlineViewDe
             "Details": metadataEditorView,
             "Canvases": canvasListView,
             "Parameters": parameterListEditorView,
-            "Cases": caseList.editor,
+            "Examples": caseList.editor,
             "Logic": logicListView.editor
         ]
 

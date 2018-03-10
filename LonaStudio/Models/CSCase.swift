@@ -8,7 +8,7 @@
 
 import Foundation
 
-final class CSCaseEntry: CSDataSerializable, CSDataDeserializable {
+final class CSCaseEntry {
     var name: String
     var value: CSData
     var visible: Bool
@@ -22,7 +22,6 @@ final class CSCaseEntry: CSDataSerializable, CSDataDeserializable {
     init(_ data: CSData) {
         name = data.get(key: "name").stringValue
         value = data.get(key: "value")
-        // If the file is missing this key, show the cases anyway
         visible = data.get(key: "visible").bool ?? true
     }
 
@@ -57,19 +56,32 @@ final class CSCase: DataNodeCopying {
         caseType = .entry(CSCaseEntry(name: name, value: value, visible: true))
     }
 
+    /// Use this when deserializing for use within other Lona code
     init(_ data: CSData) {
         let type = data["type"]?.string ?? "entry"
 
         switch type {
         case "entry":
             let name = data.get(key: "name").stringValue
-            let value = data.get(key: "value")
+            let value = data["params"] ?? data.get(key: "value")
             let visible = data.get(key: "visible").bool ?? true
             caseType = .entry(CSCaseEntry(name: name, value: value, visible: visible))
         case "importedList":
             if let url = URL(string: data.get(key: "url").stringValue) {
                 caseType = .importedList(url)
             }
+        default:
+            break
+        }
+    }
+
+    /// Use this when deserializing from disk. We must expand params into the interal format before use.
+    convenience init(_ data: CSData, parametersType: CSType) {
+        self.init(data)
+
+        switch caseType {
+        case .entry(let caseItem):
+            caseItem.value = CSValue.expand(type: parametersType, data: caseItem.value)
         default:
             break
         }
@@ -89,21 +101,41 @@ final class CSCase: DataNodeCopying {
         }
     }
 
+    /// Use this when serializing for use within other Lona code
     func toData() -> CSData {
         switch caseType {
         case .entry(let caseItem):
-            return CSData.Object([
-                "type": caseType.typeName.toData(),
+            var data = CSData.Object([
                 "name": caseItem.name.toData(),
-                "value": caseItem.value,
-                "visible": caseItem.visible.toData()
-            ])
+                "params": caseItem.value
+                ])
+
+            if !caseItem.visible {
+                data["visible"] = caseItem.visible.toData()
+            }
+
+            return data
         case .importedList(url: let url):
             return CSData.Object([
                 "type": caseType.typeName.toData(),
                 "url": url.absoluteString.toData()
             ])
         }
+    }
+
+    /// Use this when serializing in preparation for saving to disk. We store params in a compact
+    /// format based on their types.
+    func toData(parametersType: CSType) -> CSData {
+        var data = self.toData()
+
+        switch caseType {
+        case .entry:
+            data["params"] = CSValue.compact(type: parametersType, data: data.get(key: "params"))
+        default:
+            break
+        }
+
+        return data
     }
 
     func childCount() -> Int { return 0 }
