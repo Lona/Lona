@@ -229,6 +229,12 @@ class ViewController: NSViewController, NSOutlineViewDataSource, NSOutlineViewDe
         RenderSurface.renderToAnimations(component: component, directory: url)
     }
 
+    @IBAction func exportCurrentModuleToImages(_ sender: AnyObject) {
+        guard let url = getDirectory() else { return }
+
+        RenderSurface.renderCurrentModuleToImages(savedTo: url)
+    }
+
     @IBAction func exportToImages(_ sender: AnyObject) {
         guard let url = getDirectory() else { return }
 

@@ -678,6 +678,13 @@
                                                 <action selector="exportToVideo:" target="Ady-hI-5gd" id="kYy-i7-x8y"/>
                                             </connections>
                                         </menuItem>
+                                        <menuItem isSeparatorItem="YES" id="ge8-iB-wyR"/>
+                                        <menuItem title="Snapshot Workspace..." id="ESP-TV-IH8">
+                                            <modifierMask key="keyEquivalentModifierMask"/>
+                                            <connections>
+                                                <action selector="exportCurrentModuleToImages:" target="Ady-hI-5gd" id="kU8-I0-RNJ"/>
+                                            </connections>
+                                        </menuItem>
                                     </items>
                                 </menu>
                             </menuItem>
