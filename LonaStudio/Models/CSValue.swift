@@ -38,7 +38,10 @@ struct CSValue: Equatable, CSDataSerializable, CSDataDeserializable {
             var copy = data
             schema.forEach({ arg in
                 let (key, value) = arg
-                copy[key] = CSValue.compact(type: value.type, data: data.get(key: key))
+
+                if data[key] != nil {
+                    copy[key] = CSValue.compact(type: value.type, data: data.get(key: key))
+                }
             })
             return copy
         default:
@@ -70,7 +73,10 @@ struct CSValue: Equatable, CSDataSerializable, CSDataDeserializable {
             var copy = data
             schema.forEach({ arg in
                 let (key, value) = arg
-                copy[key] = CSValue.expand(type: value.type, data: data.get(key: key))
+
+                if data[key] != nil {
+                    copy[key] = CSValue.expand(type: value.type, data: data.get(key: key))
+                }
             })
             return copy
         default:

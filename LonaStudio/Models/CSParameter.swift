@@ -53,3 +53,13 @@ final class CSParameter: CSDataDeserializable, CSDataSerializable, DataNode {
     func childCount() -> Int { return 0 }
     func child(at index: Int) -> Any { return 0 }
 }
+
+extension CSParameter {
+    static func csType(from parameters: [CSParameter]) -> CSType {
+        let parametersSchema: CSType.Schema = parameters.key {(parameter) -> (key: String, value: (CSType, CSAccess)) in
+            return (key: parameter.name, value: (parameter.type, .write))
+        }
+
+        return CSType.dictionary(parametersSchema)
+    }
+}

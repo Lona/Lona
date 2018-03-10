@@ -19,14 +19,12 @@
       "width" : 414
     }
   ],
-  "cases" : [
+  "examples" : [
     {
       "name" : "Default",
-      "type" : "entry",
-      "value" : {
+      "params" : {
 
-      },
-      "visible" : true
+      }
     }
   ],
   "logic" : [

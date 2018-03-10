@@ -19,28 +19,21 @@
       "width" : 414
     }
   ],
-  "cases" : [
+  "examples" : [
     {
       "name" : "Headline only",
-      "type" : "entry",
-      "value" : {
+      "params" : {
         "headline" : "Headline Only",
         "image" : "https:\/\/picsum.photos\/600\/600?image=20"
-      },
-      "visible" : true
+      }
     },
     {
       "name" : "All content",
-      "type" : "entry",
-      "value" : {
-        "body" : {
-          "data" : "Located two hours south of Sydney in the Souther Highlands of New South Wales, this destination is truly one you won't want to miss.",
-          "tag" : "Some"
-        },
+      "params" : {
+        "body" : "Located two hours south of Sydney in the Souther Highlands of New South Wales, this destination is truly one you won't want to miss.",
         "headline" : "Kangaroo Valley Safari",
         "image" : "https:\/\/picsum.photos\/600\/600?image=10"
-      },
-      "visible" : true
+      }
     }
   ],
   "logic" : [
