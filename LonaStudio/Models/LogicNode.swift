@@ -49,13 +49,27 @@ class LogicNode: DataNodeParent, DataNodeCopying {
         switch expression {
         case .assignmentExpression(let content):
             var invocation = CSFunction.Invocation()
-            if let arg = argument(from: content.content) {
-                invocation.arguments["lhs"] = arg
+            switch content.content {
+            case .binaryExpression(let bin):
+                if let arg = argument(from: content.assignee) {
+                    invocation.arguments["value"] = arg
+                }
+                if let arg = argument(from: bin.left) {
+                    invocation.arguments["lhs"] = arg
+                }
+                if let arg = argument(from: bin.right) {
+                    invocation.arguments["rhs"] = arg
+                }
+                invocation.name = "add(lhs, to rhs, and assign to value)"
+            default:
+                if let arg = argument(from: content.content) {
+                    invocation.arguments["lhs"] = arg
+                }
+                if let arg = argument(from: content.assignee) {
+                    invocation.arguments["rhs"] = arg
+                }
+                invocation.name = "assign(lhs, to rhs)"
             }
-            if let arg = argument(from: content.assignee) {
-                invocation.arguments["rhs"] = arg
-            }
-            invocation.name = "assign(lhs, to rhs)"
             node.invocation = invocation
         case .ifExpression(let content):
             var invocation = CSFunction.Invocation()
@@ -114,6 +128,15 @@ class LogicNode: DataNodeParent, DataNodeCopying {
         }
 
         switch invocation.name {
+        case "add(lhs, to rhs, and assign to value)":
+            let bin = BinaryExpressionNode(
+                left: optionalExpression(from: invocation.arguments["lhs"]),
+                op: .identifierExpression("+"),
+                right: optionalExpression(from: invocation.arguments["rhs"]))
+            let content = AssignmentExpressionNode(
+                assignee: optionalExpression(from: invocation.arguments["value"]),
+                content: .binaryExpression(bin))
+            return .assignmentExpression(content)
         case "assign(lhs, to rhs)":
             let content = AssignmentExpressionNode(
                 assignee: optionalExpression(from: invocation.arguments["rhs"]),
