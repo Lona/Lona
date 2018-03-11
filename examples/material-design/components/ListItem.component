@@ -29,88 +29,40 @@
   ],
   "logic" : [
     {
-      "function" : {
-        "arguments" : {
-          "lhs" : {
-            "type" : "identifier",
-            "value" : {
-              "path" : [
-                "parameters",
-                "primaryText"
-              ],
-              "type" : "String"
-            }
-          },
-          "rhs" : {
-            "type" : "identifier",
-            "value" : {
-              "path" : [
-                "layers",
-                "Primary Text",
-                "text"
-              ],
-              "type" : "String"
-            }
-          }
-        },
-        "name" : "assign(lhs, to rhs)"
-      }
+      "assignee" : [
+        "layers",
+        "Primary Text",
+        "text"
+      ],
+      "content" : [
+        "parameters",
+        "primaryText"
+      ],
+      "type" : "AssignExpr"
     },
     {
-      "function" : {
-        "arguments" : {
-          "lhs" : {
-            "type" : "identifier",
-            "value" : {
-              "path" : [
-                "parameters",
-                "secondaryText"
-              ],
-              "type" : "String"
-            }
-          },
-          "rhs" : {
-            "type" : "identifier",
-            "value" : {
-              "path" : [
-                "layers",
-                "Secondary Text",
-                "text"
-              ],
-              "type" : "String"
-            }
-          }
-        },
-        "name" : "assign(lhs, to rhs)"
-      }
+      "assignee" : [
+        "layers",
+        "Secondary Text",
+        "text"
+      ],
+      "content" : [
+        "parameters",
+        "secondaryText"
+      ],
+      "type" : "AssignExpr"
     },
     {
-      "function" : {
-        "arguments" : {
-          "lhs" : {
-            "type" : "identifier",
-            "value" : {
-              "path" : [
-                "parameters",
-                "image"
-              ],
-              "type" : "URL"
-            }
-          },
-          "rhs" : {
-            "type" : "identifier",
-            "value" : {
-              "path" : [
-                "layers",
-                "Image",
-                "image"
-              ],
-              "type" : "URL"
-            }
-          }
-        },
-        "name" : "assign(lhs, to rhs)"
-      }
+      "assignee" : [
+        "layers",
+        "Image",
+        "image"
+      ],
+      "content" : [
+        "parameters",
+        "image"
+      ],
+      "type" : "AssignExpr"
     }
   ],
   "params" : [

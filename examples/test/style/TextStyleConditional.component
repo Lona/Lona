@@ -35,62 +35,39 @@
   ],
   "logic" : [
     {
-      "function" : {
-        "arguments" : {
-          "cmp" : {
-            "type" : "value",
+      "body" : [
+        {
+          "assignee" : [
+            "layers",
+            "Text",
+            "textStyle"
+          ],
+          "content" : {
+            "type" : "LitExpr",
             "value" : {
-              "data" : "equal to",
-              "type" : "Comparator"
+              "data" : "display2",
+              "type" : "TextStyle"
             }
           },
-          "lhs" : {
-            "type" : "identifier",
-            "value" : {
-              "path" : [
-                "parameters",
-                "large"
-              ],
-              "type" : "Boolean"
-            }
-          },
-          "rhs" : {
-            "type" : "value",
-            "value" : {
-              "data" : true,
-              "type" : "Boolean"
-            }
+          "type" : "AssignExpr"
+        }
+      ],
+      "condition" : {
+        "left" : [
+          "parameters",
+          "large"
+        ],
+        "op" : "==",
+        "right" : {
+          "type" : "LitExpr",
+          "value" : {
+            "data" : true,
+            "type" : "Boolean"
           }
         },
-        "name" : "if(lhs, is cmp, rhs)"
+        "type" : "BinExpr"
       },
-      "nodes" : [
-        {
-          "function" : {
-            "arguments" : {
-              "lhs" : {
-                "type" : "value",
-                "value" : {
-                  "data" : "display2",
-                  "type" : "TextStyle"
-                }
-              },
-              "rhs" : {
-                "type" : "identifier",
-                "value" : {
-                  "path" : [
-                    "layers",
-                    "Text",
-                    "textStyle"
-                  ],
-                  "type" : "TextStyle"
-                }
-              }
-            },
-            "name" : "assign(lhs, to rhs)"
-          }
-        }
-      ]
+      "type" : "IfExpr"
     }
   ],
   "params" : [

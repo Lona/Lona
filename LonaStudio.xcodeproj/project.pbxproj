@@ -37,6 +37,7 @@
 		305A19581F463BD300EA033C /* NSTextFieldExtensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 305A19571F463BD300EA033C /* NSTextFieldExtensions.swift */; };
 		305BDA211F648F6400AD2AA3 /* CSPDFDocument.swift in Sources */ = {isa = PBXBuildFile; fileRef = 305BDA201F648F6400AD2AA3 /* CSPDFDocument.swift */; };
 		305ED04620530257000D07C3 /* LonaModule.swift in Sources */ = {isa = PBXBuildFile; fileRef = 305ED04520530257000D07C3 /* LonaModule.swift */; };
+		305ED1BD20548CA7000D07C3 /* LonaLogic.swift in Sources */ = {isa = PBXBuildFile; fileRef = 305ED1BC20548CA7000D07C3 /* LonaLogic.swift */; };
 		306672C21F7D4C6400941554 /* CSGradients.swift in Sources */ = {isa = PBXBuildFile; fileRef = 306672C11F7D4C6400941554 /* CSGradients.swift */; };
 		3069E09A1F3243780005E9A8 /* parseCSSColor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3069E0991F3243780005E9A8 /* parseCSSColor.swift */; };
 		3069E09C1F324C550005E9A8 /* CSWorkspacePreferences.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3069E09B1F324C550005E9A8 /* CSWorkspacePreferences.swift */; };
@@ -170,6 +171,7 @@
 		305A19571F463BD300EA033C /* NSTextFieldExtensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NSTextFieldExtensions.swift; sourceTree = "<group>"; };
 		305BDA201F648F6400AD2AA3 /* CSPDFDocument.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CSPDFDocument.swift; sourceTree = "<group>"; };
 		305ED04520530257000D07C3 /* LonaModule.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LonaModule.swift; sourceTree = "<group>"; };
+		305ED1BC20548CA7000D07C3 /* LonaLogic.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LonaLogic.swift; sourceTree = "<group>"; };
 		306672C11F7D4C6400941554 /* CSGradients.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CSGradients.swift; sourceTree = "<group>"; };
 		3069E0991F3243780005E9A8 /* parseCSSColor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = parseCSSColor.swift; sourceTree = "<group>"; };
 		3069E09B1F324C550005E9A8 /* CSWorkspacePreferences.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CSWorkspacePreferences.swift; sourceTree = "<group>"; };
@@ -473,6 +475,7 @@
 				306DA4F31F34E416002772DC /* DataNode.swift */,
 				306DA4F51F34E42F002772DC /* DimensionSizingRule.swift */,
 				300302791EDCDBA00085E140 /* LogicNode.swift */,
+				305ED1BC20548CA7000D07C3 /* LonaLogic.swift */,
 			);
 			path = Models;
 			sourceTree = "<group>";
@@ -856,6 +859,7 @@
 			files = (
 				30902A281F7B208A00B938BE /* CanvasCollectionView.swift in Sources */,
 				30D799821F2BE90E00EF12D7 /* SettingRow.swift in Sources */,
+				305ED1BD20548CA7000D07C3 /* LonaLogic.swift in Sources */,
 				30C8BC321EDB758C00B99F1B /* Canvas.swift in Sources */,
 				3003027C1EDCE0880085E140 /* CSComponent.swift in Sources */,
 				304004331ED8AB5A00AFCF2D /* CanvasListEditor.swift in Sources */,

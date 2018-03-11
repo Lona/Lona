@@ -29,447 +29,259 @@
   ],
   "logic" : [
     {
-      "function" : {
-        "arguments" : {
-          "lhs" : {
-            "type" : "identifier",
-            "value" : {
-              "path" : [
-                "parameters",
-                "onPressOuter"
-              ],
-              "type" : {
-                "name" : "Function"
-              }
-            }
-          },
-          "rhs" : {
-            "type" : "identifier",
-            "value" : {
-              "path" : [
-                "layers",
-                "Outer",
-                "onPress"
-              ],
-              "type" : {
-                "name" : "Function"
-              }
-            }
-          }
-        },
-        "name" : "assign(lhs, to rhs)"
-      }
+      "assignee" : [
+        "layers",
+        "Outer",
+        "onPress"
+      ],
+      "content" : [
+        "parameters",
+        "onPressOuter"
+      ],
+      "type" : "AssignExpr"
     },
     {
-      "function" : {
-        "arguments" : {
-          "lhs" : {
-            "type" : "identifier",
-            "value" : {
-              "path" : [
-                "parameters",
-                "onPressInner"
-              ],
-              "type" : {
-                "name" : "Function"
-              }
-            }
-          },
-          "rhs" : {
-            "type" : "identifier",
-            "value" : {
-              "path" : [
-                "layers",
-                "Inner",
-                "onPress"
-              ],
-              "type" : {
-                "name" : "Function"
-              }
-            }
-          }
-        },
-        "name" : "assign(lhs, to rhs)"
-      }
+      "assignee" : [
+        "layers",
+        "Inner",
+        "onPress"
+      ],
+      "content" : [
+        "parameters",
+        "onPressInner"
+      ],
+      "type" : "AssignExpr"
     },
     {
-      "function" : {
-        "arguments" : {
-          "cmp" : {
-            "type" : "value",
-            "value" : {
-              "data" : "equal to",
-              "type" : "Comparator"
-            }
-          },
-          "lhs" : {
-            "type" : "identifier",
-            "value" : {
-              "path" : [
-                "layers",
-                "Outer",
-                "hovered"
-              ],
-              "type" : "Boolean"
-            }
-          },
-          "rhs" : {
-            "type" : "value",
-            "value" : {
-              "data" : true,
-              "type" : "Boolean"
-            }
-          }
-        },
-        "name" : "if(lhs, is cmp, rhs)"
-      },
-      "nodes" : [
+      "body" : [
         {
-          "function" : {
-            "arguments" : {
-              "lhs" : {
-                "type" : "value",
-                "value" : {
-                  "data" : "grey100",
-                  "type" : "Color"
-                }
-              },
-              "rhs" : {
-                "type" : "identifier",
-                "value" : {
-                  "path" : [
-                    "layers",
-                    "Outer",
-                    "backgroundColor"
-                  ],
-                  "type" : "Color"
-                }
-              }
-            },
-            "name" : "assign(lhs, to rhs)"
-          }
+          "assignee" : [
+            "layers",
+            "Outer",
+            "backgroundColor"
+          ],
+          "content" : {
+            "type" : "LitExpr",
+            "value" : {
+              "data" : "grey100",
+              "type" : "Color"
+            }
+          },
+          "type" : "AssignExpr"
         }
-      ]
-    },
-    {
-      "function" : {
-        "arguments" : {
-          "cmp" : {
-            "type" : "value",
-            "value" : {
-              "data" : "equal to",
-              "type" : "Comparator"
-            }
-          },
-          "lhs" : {
-            "type" : "identifier",
-            "value" : {
-              "path" : [
-                "layers",
-                "Outer",
-                "pressed"
-              ],
-              "type" : "Boolean"
-            }
-          },
-          "rhs" : {
-            "type" : "value",
-            "value" : {
-              "data" : true,
-              "type" : "Boolean"
-            }
+      ],
+      "condition" : {
+        "left" : [
+          "layers",
+          "Outer",
+          "hovered"
+        ],
+        "op" : "==",
+        "right" : {
+          "type" : "LitExpr",
+          "value" : {
+            "data" : true,
+            "type" : "Boolean"
           }
         },
-        "name" : "if(lhs, is cmp, rhs)"
+        "type" : "BinExpr"
       },
-      "nodes" : [
+      "type" : "IfExpr"
+    },
+    {
+      "body" : [
         {
-          "function" : {
-            "arguments" : {
-              "lhs" : {
-                "type" : "value",
-                "value" : {
-                  "data" : "grey300",
-                  "type" : "Color"
-                }
-              },
-              "rhs" : {
-                "type" : "identifier",
-                "value" : {
-                  "path" : [
-                    "layers",
-                    "Outer",
-                    "backgroundColor"
-                  ],
-                  "type" : "Color"
-                }
-              }
-            },
-            "name" : "assign(lhs, to rhs)"
-          }
+          "assignee" : [
+            "layers",
+            "Outer",
+            "backgroundColor"
+          ],
+          "content" : {
+            "type" : "LitExpr",
+            "value" : {
+              "data" : "grey300",
+              "type" : "Color"
+            }
+          },
+          "type" : "AssignExpr"
         }
-      ]
+      ],
+      "condition" : {
+        "left" : [
+          "layers",
+          "Outer",
+          "pressed"
+        ],
+        "op" : "==",
+        "right" : {
+          "type" : "LitExpr",
+          "value" : {
+            "data" : true,
+            "type" : "Boolean"
+          }
+        },
+        "type" : "BinExpr"
+      },
+      "type" : "IfExpr"
     },
     {
-      "function" : {
-        "arguments" : {
-          "cmp" : {
-            "type" : "value",
+      "body" : [
+        {
+          "assignee" : [
+            "layers",
+            "Inner",
+            "backgroundColor"
+          ],
+          "content" : {
+            "type" : "LitExpr",
             "value" : {
-              "data" : "equal to",
-              "type" : "Comparator"
+              "data" : "blue300",
+              "type" : "Color"
             }
           },
-          "lhs" : {
-            "type" : "identifier",
+          "type" : "AssignExpr"
+        },
+        {
+          "assignee" : [
+            "layers",
+            "InnerText",
+            "text"
+          ],
+          "content" : {
+            "type" : "LitExpr",
             "value" : {
-              "path" : [
-                "layers",
-                "Inner",
-                "hovered"
-              ],
-              "type" : "Boolean"
+              "data" : "Hovered",
+              "type" : "String"
             }
           },
-          "rhs" : {
-            "type" : "value",
-            "value" : {
-              "data" : true,
-              "type" : "Boolean"
-            }
-          }
-        },
-        "name" : "if(lhs, is cmp, rhs)"
-      },
-      "nodes" : [
-        {
-          "function" : {
-            "arguments" : {
-              "lhs" : {
-                "type" : "value",
-                "value" : {
-                  "data" : "blue300",
-                  "type" : "Color"
-                }
-              },
-              "rhs" : {
-                "type" : "identifier",
-                "value" : {
-                  "path" : [
-                    "layers",
-                    "Inner",
-                    "backgroundColor"
-                  ],
-                  "type" : "Color"
-                }
-              }
-            },
-            "name" : "assign(lhs, to rhs)"
-          }
-        },
-        {
-          "function" : {
-            "arguments" : {
-              "lhs" : {
-                "type" : "value",
-                "value" : {
-                  "data" : "Hovered",
-                  "type" : "String"
-                }
-              },
-              "rhs" : {
-                "type" : "identifier",
-                "value" : {
-                  "path" : [
-                    "layers",
-                    "InnerText",
-                    "text"
-                  ],
-                  "type" : "String"
-                }
-              }
-            },
-            "name" : "assign(lhs, to rhs)"
-          }
+          "type" : "AssignExpr"
         }
-      ]
+      ],
+      "condition" : {
+        "left" : [
+          "layers",
+          "Inner",
+          "hovered"
+        ],
+        "op" : "==",
+        "right" : {
+          "type" : "LitExpr",
+          "value" : {
+            "data" : true,
+            "type" : "Boolean"
+          }
+        },
+        "type" : "BinExpr"
+      },
+      "type" : "IfExpr"
     },
     {
-      "function" : {
-        "arguments" : {
-          "cmp" : {
-            "type" : "value",
+      "body" : [
+        {
+          "assignee" : [
+            "layers",
+            "Inner",
+            "backgroundColor"
+          ],
+          "content" : {
+            "type" : "LitExpr",
             "value" : {
-              "data" : "equal to",
-              "type" : "Comparator"
+              "data" : "blue800",
+              "type" : "Color"
             }
           },
-          "lhs" : {
-            "type" : "identifier",
+          "type" : "AssignExpr"
+        },
+        {
+          "assignee" : [
+            "layers",
+            "InnerText",
+            "text"
+          ],
+          "content" : {
+            "type" : "LitExpr",
             "value" : {
-              "path" : [
-                "layers",
-                "Inner",
-                "pressed"
-              ],
-              "type" : "Boolean"
+              "data" : "Pressed",
+              "type" : "String"
             }
           },
-          "rhs" : {
-            "type" : "value",
-            "value" : {
-              "data" : true,
-              "type" : "Boolean"
-            }
-          }
-        },
-        "name" : "if(lhs, is cmp, rhs)"
-      },
-      "nodes" : [
-        {
-          "function" : {
-            "arguments" : {
-              "lhs" : {
-                "type" : "value",
-                "value" : {
-                  "data" : "blue800",
-                  "type" : "Color"
-                }
-              },
-              "rhs" : {
-                "type" : "identifier",
-                "value" : {
-                  "path" : [
-                    "layers",
-                    "Inner",
-                    "backgroundColor"
-                  ],
-                  "type" : "Color"
-                }
-              }
-            },
-            "name" : "assign(lhs, to rhs)"
-          }
-        },
-        {
-          "function" : {
-            "arguments" : {
-              "lhs" : {
-                "type" : "value",
-                "value" : {
-                  "data" : "Pressed",
-                  "type" : "String"
-                }
-              },
-              "rhs" : {
-                "type" : "identifier",
-                "value" : {
-                  "path" : [
-                    "layers",
-                    "InnerText",
-                    "text"
-                  ],
-                  "type" : "String"
-                }
-              }
-            },
-            "name" : "assign(lhs, to rhs)"
-          }
+          "type" : "AssignExpr"
         }
-      ]
-    },
-    {
-      "function" : {
-        "arguments" : {
-          "cmp" : {
-            "type" : "value",
-            "value" : {
-              "data" : "equal to",
-              "type" : "Comparator"
-            }
-          },
-          "lhs" : {
-            "type" : "identifier",
-            "value" : {
-              "path" : [
-                "layers",
-                "Inner",
-                "hovered"
-              ],
-              "type" : "Boolean"
-            }
-          },
-          "rhs" : {
-            "type" : "value",
-            "value" : {
-              "data" : true,
-              "type" : "Boolean"
-            }
+      ],
+      "condition" : {
+        "left" : [
+          "layers",
+          "Inner",
+          "pressed"
+        ],
+        "op" : "==",
+        "right" : {
+          "type" : "LitExpr",
+          "value" : {
+            "data" : true,
+            "type" : "Boolean"
           }
         },
-        "name" : "if(lhs, is cmp, rhs)"
+        "type" : "BinExpr"
       },
-      "nodes" : [
+      "type" : "IfExpr"
+    },
+    {
+      "body" : [
         {
-          "function" : {
-            "arguments" : {
-              "cmp" : {
-                "type" : "value",
-                "value" : {
-                  "data" : "equal to",
-                  "type" : "Comparator"
-                }
-              },
-              "lhs" : {
-                "type" : "identifier",
-                "value" : {
-                  "path" : [
-                    "layers",
-                    "Inner",
-                    "pressed"
-                  ],
-                  "type" : "Boolean"
-                }
-              },
-              "rhs" : {
-                "type" : "value",
-                "value" : {
-                  "data" : true,
-                  "type" : "Boolean"
-                }
-              }
-            },
-            "name" : "if(lhs, is cmp, rhs)"
-          },
-          "nodes" : [
+          "body" : [
             {
-              "function" : {
-                "arguments" : {
-                  "lhs" : {
-                    "type" : "value",
-                    "value" : {
-                      "data" : "Hovered & Pressed",
-                      "type" : "String"
-                    }
-                  },
-                  "rhs" : {
-                    "type" : "identifier",
-                    "value" : {
-                      "path" : [
-                        "layers",
-                        "InnerText",
-                        "text"
-                      ],
-                      "type" : "String"
-                    }
-                  }
-                },
-                "name" : "assign(lhs, to rhs)"
-              }
+              "assignee" : [
+                "layers",
+                "InnerText",
+                "text"
+              ],
+              "content" : {
+                "type" : "LitExpr",
+                "value" : {
+                  "data" : "Hovered & Pressed",
+                  "type" : "String"
+                }
+              },
+              "type" : "AssignExpr"
             }
-          ]
+          ],
+          "condition" : {
+            "left" : [
+              "layers",
+              "Inner",
+              "pressed"
+            ],
+            "op" : "==",
+            "right" : {
+              "type" : "LitExpr",
+              "value" : {
+                "data" : true,
+                "type" : "Boolean"
+              }
+            },
+            "type" : "BinExpr"
+          },
+          "type" : "IfExpr"
         }
-      ]
+      ],
+      "condition" : {
+        "left" : [
+          "layers",
+          "Inner",
+          "hovered"
+        ],
+        "op" : "==",
+        "right" : {
+          "type" : "LitExpr",
+          "value" : {
+            "data" : true,
+            "type" : "Boolean"
+          }
+        },
+        "type" : "BinExpr"
+      },
+      "type" : "IfExpr"
     }
   ],
   "params" : [

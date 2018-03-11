@@ -29,32 +29,16 @@
   ],
   "logic" : [
     {
-      "function" : {
-        "arguments" : {
-          "lhs" : {
-            "type" : "identifier",
-            "value" : {
-              "path" : [
-                "parameters",
-                "text"
-              ],
-              "type" : "String"
-            }
-          },
-          "rhs" : {
-            "type" : "identifier",
-            "value" : {
-              "path" : [
-                "layers",
-                "Text",
-                "text"
-              ],
-              "type" : "String"
-            }
-          }
-        },
-        "name" : "assign(lhs, to rhs)"
-      }
+      "assignee" : [
+        "layers",
+        "Text",
+        "text"
+      ],
+      "content" : [
+        "parameters",
+        "text"
+      ],
+      "type" : "AssignExpr"
     }
   ],
   "params" : [

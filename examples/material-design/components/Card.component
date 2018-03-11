@@ -38,145 +38,73 @@
   ],
   "logic" : [
     {
-      "function" : {
-        "arguments" : {
-          "lhs" : {
-            "type" : "identifier",
-            "value" : {
-              "path" : [
-                "parameters",
-                "image"
-              ],
-              "type" : "String"
-            }
-          },
-          "rhs" : {
-            "type" : "identifier",
-            "value" : {
-              "path" : [
-                "layers",
-                "Image",
-                "image"
-              ],
-              "type" : "URL"
-            }
-          }
-        },
-        "name" : "assign(lhs, to rhs)"
-      }
+      "assignee" : [
+        "layers",
+        "Image",
+        "image"
+      ],
+      "content" : [
+        "parameters",
+        "image"
+      ],
+      "type" : "AssignExpr"
     },
     {
-      "function" : {
-        "arguments" : {
-          "lhs" : {
-            "type" : "identifier",
-            "value" : {
-              "path" : [
-                "parameters",
-                "headline"
-              ],
-              "type" : "String"
-            }
-          },
-          "rhs" : {
-            "type" : "identifier",
-            "value" : {
-              "path" : [
-                "layers",
-                "Headline",
-                "text"
-              ],
-              "type" : "String"
-            }
-          }
-        },
-        "name" : "assign(lhs, to rhs)"
-      }
+      "assignee" : [
+        "layers",
+        "Headline",
+        "text"
+      ],
+      "content" : [
+        "parameters",
+        "headline"
+      ],
+      "type" : "AssignExpr"
     },
     {
-      "function" : {
-        "arguments" : {
-          "lhs" : {
-            "type" : "value",
-            "value" : {
-              "data" : 20,
-              "type" : "Number"
-            }
-          },
-          "value" : {
-            "type" : "identifier",
-            "value" : {
-              "path" : [
-                "parameters",
-                "body"
-              ],
-              "type" : "String"
-            }
-          },
-          "variable" : {
-            "type" : "value",
-            "value" : {
-              "data" : "item",
-              "type" : "String"
-            }
-          }
-        },
-        "name" : "if let(variable, equal value)"
-      },
-      "nodes" : [
+      "body" : [
         {
-          "function" : {
-            "arguments" : {
-              "lhs" : {
-                "type" : "identifier",
-                "value" : {
-                  "path" : [
-                    "item"
-                  ],
-                  "type" : "String"
-                }
-              },
-              "rhs" : {
-                "type" : "identifier",
-                "value" : {
-                  "path" : [
-                    "layers",
-                    "Body",
-                    "text"
-                  ],
-                  "type" : "String"
-                }
-              }
-            },
-            "name" : "assign(lhs, to rhs)"
-          }
+          "assignee" : [
+            "layers",
+            "Body",
+            "text"
+          ],
+          "content" : [
+            "item"
+          ],
+          "type" : "AssignExpr"
         },
         {
-          "function" : {
-            "arguments" : {
-              "lhs" : {
-                "type" : "value",
-                "value" : {
-                  "data" : true,
-                  "type" : "Boolean"
-                }
-              },
-              "rhs" : {
-                "type" : "identifier",
-                "value" : {
-                  "path" : [
-                    "layers",
-                    "Body",
-                    "visible"
-                  ],
-                  "type" : "Boolean"
-                }
-              }
-            },
-            "name" : "assign(lhs, to rhs)"
-          }
+          "assignee" : [
+            "layers",
+            "Body",
+            "visible"
+          ],
+          "content" : {
+            "type" : "LitExpr",
+            "value" : {
+              "data" : true,
+              "type" : "Boolean"
+            }
+          },
+          "type" : "AssignExpr"
         }
-      ]
+      ],
+      "condition" : {
+        "content" : [
+          "parameters",
+          "body"
+        ],
+        "id" : {
+          "type" : "LitExpr",
+          "value" : {
+            "data" : "item",
+            "type" : "String"
+          }
+        },
+        "type" : "VarDeclExpr"
+      },
+      "type" : "IfExpr"
     }
   ],
   "params" : [

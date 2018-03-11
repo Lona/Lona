@@ -126,63 +126,124 @@ module Layer = {
   };
 };
 
+exception UnknownExprType(string);
+
+let rec decodeExpr = json => {
+  open LonaLogic;
+  let decodePlaceholder = (_) => PlaceholderExpression;
+  let decodeIdentifier = json => IdentifierExpression(json |> string);
+  let decodeMemberExpression = json =>
+    MemberExpression(json |> list(decodeExpr));
+  let decodeTypedExpr = json => {
+    let exprType = json |> field("type", string);
+    switch exprType {
+    | "AssignExpr" =>
+      AssignmentExpression({
+        "assignee": json |> field("assignee", decodeExpr),
+        "content": json |> field("content", decodeExpr)
+      })
+    | "IfExpr" =>
+      IfExpression({
+        "condition": json |> field("condition", decodeExpr),
+        "body": json |> field("body", list(decodeExpr))
+      })
+    | "VarDeclExpr" =>
+      VariableDeclarationExpression({
+        "content": json |> field("content", decodeExpr),
+        "identifier": json |> field("identifier", decodeExpr)
+      })
+    | "BinExpr" =>
+      BinaryExpression({
+        "left": json |> field("left", decodeExpr),
+        "op": json |> field("op", decodeExpr),
+        "right": json |> field("right", decodeExpr)
+      })
+    | "LitExpr" =>
+      LiteralExpression({
+        ltype: json |> at(["value", "type"], Types.lonaType),
+        data: json |> at(["value", "data"], json => json)
+      })
+    | _ => raise(UnknownExprType(exprType))
+    };
+  };
+  oneOf([
+    decodeTypedExpr,
+    decodeIdentifier,
+    decodeMemberExpression,
+    decodePlaceholder
+  ]) @@
+  json;
+};
+
 exception UnknownLogicValue(string);
 
 let rec logicNode = json => {
-  let cmp = json =>
-    switch (string(json)) {
-    | "equal to" => Eq
-    | "not equal to" => Neq
-    | "greater than" => Gt
-    | "greater than or equal to" => Gte
-    | "less than" => Lt
-    | "less than or equal to" => Lte
+  let cmp = str =>
+    switch str {
+    | "==" => Eq
+    | "!=" => Neq
+    | ">" => Gt
+    | ">=" => Gte
+    | "<" => Lt
+    | "<=" => Lte
     | _ => Unknown
     };
-  let value = json => {
-    let identifier = json => {
-      let ltype = field("type", Types.lonaType, json);
-      let path = field("path", list(string), json);
+  let identifierFromExpr = expr =>
+    switch expr {
+    | LonaLogic.IdentifierExpression(str) => str
+    | _ => raise(UnknownExprType("Expected identifier"))
+    };
+  let rec logicValueFromExpr = expr =>
+    switch expr {
+    | LonaLogic.MemberExpression(items) =>
+      let ltype = Reference("???");
+      let path = items |> List.map(identifierFromExpr);
       Logic.Identifier(ltype, path);
-    };
-    let literal = json => {
-      let ltype = field("type", Types.lonaType, json);
-      let data = field("data", x => x, json);
-      Logic.Literal({ltype, data});
-    };
-    switch (field("type", string, json)) {
-    | "identifier" => field("value", identifier, json)
-    | "value" => field("value", literal, json)
-    | value => raise(UnknownLogicValue(value))
-    };
-  };
-  let nodes =
-    switch (at(["nodes"], list(logicNode), json)) {
-    | result => result
-    | exception _ => []
-    };
-  let arg = (path, decoder) =>
-    at(["function", "arguments", ...path], decoder, json);
-  switch (at(["function", "name"], string, json)) {
-  | "assign(lhs, to rhs)" =>
-    Logic.Assign(arg(["lhs"], value), arg(["rhs"], value))
-  | "if(lhs, is cmp, rhs)" =>
-    If(
-      arg(["lhs"], value),
-      arg(["cmp", "value", "data"], cmp),
-      arg(["rhs"], value),
-      Block(nodes)
-    )
-  | "if(value)" => IfExists(arg(["value"], value), Block(nodes))
-  | "add(lhs, to rhs, and assign to value)" =>
-    Add(arg(["lhs"], value), arg(["rhs"], value), arg(["value"], value))
-  | _ => None
-  };
+    | LonaLogic.LiteralExpression(value) => Logic.Literal(value)
+    | _ => raise(UnknownExprType("Failed to convert logic value"))
+    }
+  and fromExpr = expr =>
+    LonaLogic.(
+      switch expr {
+      | AssignmentExpression(o) =>
+        let content = o##content |> logicValueFromExpr;
+        let assignee = o##assignee |> logicValueFromExpr;
+        Logic.Assign(content, assignee);
+      | IfExpression(o) =>
+        let body = o##body |> List.map(fromExpr);
+        switch o##condition {
+        | VariableDeclarationExpression(decl) =>
+          raise(UnknownExprType("TODO: Support VarDeclExpr"))
+        | BinaryExpression(bin) =>
+          let left = bin##left |> logicValueFromExpr;
+          let right = bin##right |> logicValueFromExpr;
+          let op = bin##op |> identifierFromExpr |> cmp;
+          Logic.If(left, op, right, Logic.Block(body));
+        | _ => raise(UnknownExprType("Unknown IfExpr"))
+        };
+      | _ => Logic.None
+      }
+    );
+  fromExpr(decodeExpr(json));
+  /* switch (at(["function", "name"], string, json)) {
+     | "assign(lhs, to rhs)" =>
+       Logic.Assign(arg(["lhs"], value), arg(["rhs"], value))
+     | "if(lhs, is cmp, rhs)" =>
+       If(
+         arg(["lhs"], value),
+         arg(["cmp", "value", "data"], cmp),
+         arg(["rhs"], value),
+         Block(nodes)
+       )
+     | "if(value)" => IfExists(arg(["value"], value), Block(nodes))
+     | "add(lhs, to rhs, and assign to value)" =>
+       Add(arg(["lhs"], value), arg(["rhs"], value), arg(["value"], value))
+     | _ => None
+     }; */
 };
 
 module Component = {
-  let parameters = json =>
-    field("params", list(Parameters.parameter), json);
+  let parameters = json => field("params", list(Parameters.parameter), json);
   let rootLayer = json => field("root", Layer.layer, json);
   let logic = json => Logic.Block(field("logic", list(logicNode), json));
 };
