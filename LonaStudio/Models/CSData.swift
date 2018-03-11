@@ -252,6 +252,11 @@ enum CSData: Equatable, CustomDebugStringConvertible {
         return try? JSONSerialization.data(withJSONObject: toAny(), options: options)
     }
 
+    func jsonString() -> String? {
+        guard let data = toData() else { return nil }
+        return Swift.String(data: data, encoding: .utf8)
+    }
+
     static func from(data: Data) -> CSData? {
         guard let json = try? JSONSerialization.jsonObject(with: data) else { return nil }
         return from(json: json)
