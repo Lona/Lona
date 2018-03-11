@@ -76,8 +76,12 @@ class LogicNode: DataNodeParent, DataNodeCopying {
 
             switch content.condition {
             case .variableDeclarationExpression(let decl):
-                if let arg = argument(from: decl.identifier) {
-                    invocation.arguments["variable"] = arg
+                switch decl.identifier {
+                case .identifierExpression(let op):
+                    invocation.arguments["variable"] = CSFunction.Argument.value(
+                        CSValue(type: CSType.string, data: op.toData()))
+                default:
+                    break
                 }
                 if let arg = argument(from: decl.content) {
                     invocation.arguments["value"] = arg
@@ -157,8 +161,15 @@ class LogicNode: DataNodeParent, DataNodeCopying {
                 body: nodes.map({ logicNode in logicNode.expression() }))
             return .ifExpression(content)
         case "if let(variable, equal value)":
+            let id: LonaExpression
+            switch optionalExpression(from: invocation.arguments["variable"]) {
+            case .literalExpression(let value):
+                id = .identifierExpression(value.data.stringValue)
+            default:
+                id = .placeholderExpression
+            }
             let decl = VariableDeclarationNode(
-                identifier: optionalExpression(from: invocation.arguments["variable"]),
+                identifier: id,
                 content: optionalExpression(from: invocation.arguments["value"]))
             let content = IfExpressionNode(
                 condition: .variableDeclarationExpression(decl),

@@ -95,13 +95,7 @@
           "parameters",
           "body"
         ],
-        "id" : {
-          "type" : "LitExpr",
-          "value" : {
-            "data" : "item",
-            "type" : "String"
-          }
-        },
+        "id" : "item",
         "type" : "VarDeclExpr"
       },
       "type" : "IfExpr"
