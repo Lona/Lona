@@ -28,28 +28,55 @@ class WorkspacePreferencesViewController: NSViewController, MASPreferencesViewCo
     }
 
     func render() {
-        stackView.subviews.forEach({ $0.removeFromSuperview() })
+        stackView.arrangedSubviews.forEach({ $0.removeFromSuperview() })
+
+        let colorsPathRow = ValueSettingRow(
+            title: "Custom Colors Path",
+            value: CSWorkspacePreferences.colorsFilePathValue, onChange: { value in
+                CSWorkspacePreferences.colorsFilePathValue = CSValue(type: CSWorkspacePreferences.optionalURLType, data: value)
+                CSWorkspacePreferences.save()
+
+                CSColors.reload()
+
+                self.render()
+            })
+
+        let textStylesPathRow = ValueSettingRow(
+            title: "Custom Text Styles Path",
+            value: CSWorkspacePreferences.textStylesFilePathValue, onChange: { value in
+                CSWorkspacePreferences.textStylesFilePathValue = CSValue(type: CSWorkspacePreferences.optionalURLType, data: value)
+                CSWorkspacePreferences.save()
+
+                CSTypography.reload()
+
+                self.render()
+        })
 
         let views = [
-            PathSettingRow(title: "Workspace Path", value: CSWorkspacePreferences.workspaceURL.path, onChange: { value in
-                CSWorkspacePreferences.workspaceURL = URL(fileURLWithPath: value.stringValue, isDirectory: true)
+            PathSettingRow(title: "Workspace Path", value: CSUserPreferences.workspaceURL.path, onChange: { value in
+                CSUserPreferences.workspaceURL = URL(fileURLWithPath: value.stringValue, isDirectory: true)
 
                 // Close all documents, since preferences change things drastically
                 NSDocumentController.shared.closeAllDocuments(withDelegate: nil, didCloseAllSelector: nil, contextInfo: nil)
 
                 // Load preferences for this new workspace if they exist
                 CSWorkspacePreferences.reload()
+                CSUserTypes.reload()
                 CSColors.reload()
                 CSTypography.reload()
+                CSGradients.reload()
+                CSShadows.reload()
 
                 self.render()
-            })
+            }),
+            colorsPathRow,
+            textStylesPathRow
         ]
 
         views.forEach({ stackView.addArrangedSubview($0) })
     }
 
-    var stackView: NSStackView!
+    var stackView = NSStackView()
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -60,7 +87,6 @@ class WorkspacePreferencesViewController: NSViewController, MASPreferencesViewCo
         view = NSView(frame: NSRect(x: 0, y: 0, width: 600, height: 0))
         view.translatesAutoresizingMaskIntoConstraints = false
 
-        let stackView = NSStackView()
         stackView.orientation = .vertical
         stackView.alignment = .left
         stackView.spacing = 5
@@ -73,8 +99,6 @@ class WorkspacePreferencesViewController: NSViewController, MASPreferencesViewCo
         stackView.heightAnchor.constraint(equalTo: view.heightAnchor, multiplier: 1).isActive = true
         stackView.leftAnchor.constraint(equalTo: view.leftAnchor, constant: 0).isActive = true
         stackView.rightAnchor.constraint(equalTo: view.rightAnchor, constant: 0).isActive = true
-
-        self.stackView = stackView
 
         render()
     }

@@ -43,7 +43,7 @@ class LonaModule {
     // MARK: - STATIC
 
     static var current: LonaModule {
-        return LonaModule(url: CSWorkspacePreferences.workspaceURL)
+        return LonaModule(url: CSUserPreferences.workspaceURL)
     }
 
     static func componentFiles(in workspace: URL) -> [ComponentFile] {

@@ -19,7 +19,7 @@ extension URL {
 
         let resolved = absoluteString.replacingOccurrences(
             of: "file://./",
-            with: "file://" + CSWorkspacePreferences.workspaceURL.path + "/")
+            with: "file://" + CSUserPreferences.workspaceURL.path + "/")
 
         return URL(string: resolved) ?? self
     }

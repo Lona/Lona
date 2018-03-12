@@ -19,7 +19,7 @@ extension CSTextStyle: Identify, Searchable {}
 
 class CSTypography: CSPreferencesFile {
     static var url: URL {
-        return CSWorkspacePreferences.workspaceURL.appendingPathComponent("textStyles.json")
+        return CSWorkspacePreferences.textStylesFileURL
     }
 
     static private var parsedStyles: [CSTextStyle] = parse(data)
