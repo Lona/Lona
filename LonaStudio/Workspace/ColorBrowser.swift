@@ -14,14 +14,14 @@ private let titleStyle = AttributedFont(
     fontSize: 32,
     lineHeight: 38,
     kerning: 0,
-    weight: AttributedFontWeight.bold)
+    weight: NSFont.Weight.bold)
 
 private let colorNameStyle = AttributedFont(
     fontFamily: NSFont.systemFont(ofSize: NSFont.systemFontSize).familyName!,
     fontSize: 13,
     lineHeight: 13 * 1.62,
     kerning: 0,
-    weight: AttributedFontWeight.medium)
+    weight: NSFont.Weight.medium)
 
 private class ColorGridCell: NSBox {
 
@@ -61,7 +61,7 @@ private class ColorGridCell: NSBox {
         fontSize: 13,
         lineHeight: 13 * 1.62,
         kerning: 0,
-        weight: AttributedFontWeight.bold)
+        weight: NSFont.Weight.bold)
 
     func setUpViews() {
         boxType = .custom
@@ -123,7 +123,7 @@ private class ColorGridCell: NSBox {
             fontSize: 12,
             lineHeight: 12,
             kerning: 0,
-            weight: AttributedFontWeight.medium,
+            weight: NSFont.Weight.medium,
             color: color.contrastingLabelColor)
         titleView.attributedStringValue = colorNameStyle.apply(to: name)
         valueView.attributedStringValue = valueTextStyle.apply(to: value)
