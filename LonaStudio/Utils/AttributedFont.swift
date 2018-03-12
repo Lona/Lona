@@ -13,7 +13,7 @@ public class AttributedFont {
     public var fontSize: CGFloat
     public let lineHeight: CGFloat
     public let kerning: Double
-    public let weight: AttributedFontWeight
+    public let weight: NSFont.Weight
     public let color: NSColor
     public let textAlignment: NSTextAlignment
     public let lineBreakMode: NSParagraphStyle.LineBreakMode
@@ -23,7 +23,7 @@ public class AttributedFont {
         fontSize: CGFloat,
         lineHeight: CGFloat,
         kerning: Double,
-        weight: AttributedFontWeight,
+        weight: NSFont.Weight,
         color: NSColor = NSColor.black,
         textAlignment: NSTextAlignment = .left,
         lineBreakMode: NSParagraphStyle.LineBreakMode = .byWordWrapping) {
@@ -38,7 +38,7 @@ public class AttributedFont {
     }
 
     public var nsFont: NSFont {
-        if let targetFont = NSFontManager.shared.font(withFamily: fontFamily, traits: NSFontTraitMask(rawValue: 0), weight: weight.rawValue, size: fontSize) {
+        if let targetFont = NSFontManager.shared.font(withFamily: fontFamily, traits: NSFontTraitMask(rawValue: 0), weight: Int(weight.rawValue), size: fontSize) {
             return targetFont
         }
 

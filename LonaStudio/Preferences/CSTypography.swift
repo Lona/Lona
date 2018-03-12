@@ -9,10 +9,100 @@
 import Foundation
 import AppKit
 
+private func convertFontWeight(fontWeight: String) -> NSFont.Weight {
+    switch fontWeight {
+    case "100": return NSFont.Weight.ultraLight
+    case "200": return NSFont.Weight.thin
+    case "300": return NSFont.Weight.light
+    case "400": return NSFont.Weight.regular
+    case "500": return NSFont.Weight.medium
+    case "600": return NSFont.Weight.semibold
+    case "700": return NSFont.Weight.bold
+    case "800": return NSFont.Weight.heavy
+    case "900": return NSFont.Weight.black
+    default: return NSFont.Weight.regular
+    }
+}
+
 struct CSTextStyle {
-    let name: String
     let id: String
-    let font: AttributedFont
+    let name: String
+    let fontName: String?
+    let fontFamily: String?
+    let fontWeight: String?
+    let fontSize: Double?
+    let lineHeight: Double?
+    let letterSpacing: Double?
+    let color: NSColor?
+    let extends: String?
+
+    init(id: String,
+         name: String,
+         fontName: String? = nil,
+         fontFamily: String? = nil,
+         fontWeight: String? = nil,
+         fontSize: Double? = nil,
+         lineHeight: Double? = nil,
+         letterSpacing: Double? = nil,
+         color: NSColor? = nil,
+         extends: String? = nil) {
+        self.id = id
+        self.name = name
+        self.fontName = fontName
+        self.fontFamily = fontFamily
+        self.fontWeight = fontWeight
+        self.fontSize = fontSize
+        self.lineHeight = lineHeight
+        self.letterSpacing = letterSpacing
+        self.color = color
+        self.extends = extends
+    }
+
+    private func base() -> CSTextStyle? {
+        guard let extends = self.extends else { return nil }
+        return CSTypography.getFontBy(id: extends)
+    }
+
+    private func lookup<T>(_ property: (CSTextStyle) -> T?) -> T? {
+        if let result = property(self) { return result }
+        if let baseStyle = base() { return baseStyle.lookup(property) }
+        return nil
+    }
+
+    private let defaultFamilyName = NSFont.systemFont(ofSize: 14).familyName ?? ""
+    private let defaultFontSize = NSFont.systemFontSize
+
+    var font: AttributedFont {
+        let fontSize: CGFloat? = lookup { style in
+            guard let value = style.fontSize else { return nil }
+            return CGFloat(value)
+        }
+        let lineHeight: CGFloat? = lookup { style in
+            guard let value = style.lineHeight else { return nil }
+            return CGFloat(value)
+        }
+        let letterSpacing: Double? = lookup { style in
+            guard let value = style.letterSpacing else { return nil }
+            return value
+        }
+        let weight: String? = lookup { style in
+            guard let value = style.fontWeight else { return nil }
+            return value
+        }
+        let color: NSColor? = lookup { style in
+            guard let value = style.color else { return nil }
+            return value
+        }
+
+        return AttributedFont(
+            fontFamily: lookup({ style in style.fontFamily }) ?? defaultFamilyName,
+            fontSize: fontSize ?? defaultFontSize,
+            lineHeight: lineHeight ?? (fontSize ?? defaultFontSize) * 1.5,
+            kerning: letterSpacing ?? 0,
+            weight: convertFontWeight(fontWeight: weight ?? ""),
+            color: color ?? NSColor.black
+        )
+    }
 }
 
 extension CSTextStyle: Identify, Searchable {}
@@ -35,31 +125,18 @@ class CSTypography: CSPreferencesFile {
         defaultStyleName = data["defaultStyleName"]?.string
 
         return fontData.arrayValue.map({ font in
-            let id = font["id"]?.string ?? "missingFontId"
-            let name = font["name"]?.string ?? "Missing style name"
-            let fontFamily = font["fontFamily"]?.string ?? NSFont.systemFont(ofSize: 17).familyName ?? "Helvetica"
-            let fontSize = CGFloat(font["fontSize"]?.number ?? 12)
-            let fontWeight = font["fontWeight"]?.number ?? 400
-            let lineHeight = CGFloat(font["lineHeight"]?.number ?? Double(fontSize))
-            let kerning = font["letterSpacing"]?.number ?? 0
-            let color = CSColors.parse(css: font["color"]?.string ?? "black", withDefault: NSColor.black).color
-
-            let font = AttributedFont(
-                fontFamily: fontFamily,
-                fontSize: fontSize,
-                lineHeight: lineHeight,
-                kerning: kerning,
-                weight: convertFontWeight(fontWeight: fontWeight),
-                color: color
-            )
-            return CSTextStyle(name: name, id: id, font: font)
+            return CSTextStyle(
+                id: font["id"]?.string ?? "missingFontId",
+                name: font["name"]?.string ?? "Missing style name",
+                fontName: font["fontName"]?.string,
+                fontFamily: font["fontFamily"]?.string,
+                fontWeight: font["fontWeight"]?.string,
+                fontSize: font["fontSize"]?.number,
+                lineHeight: font["lineHeight"]?.number,
+                letterSpacing: font["letterSpacing"]?.number,
+                color: font["color"] != nil ? CSColors.parse(css: font["color"]?.string ?? "black", withDefault: NSColor.black).color : nil,
+                extends: font["extends"]?.string)
         })
-    }
-
-    static private func convertFontWeight(fontWeight: Double) -> AttributedFontWeight {
-        if fontWeight < 400 { return AttributedFontWeight.standard }
-        if fontWeight < 600 { return AttributedFontWeight.medium }
-        return AttributedFontWeight.bold
     }
 
     private static func getOptionalFontBy(id: String) -> CSTextStyle? {
@@ -93,15 +170,5 @@ class CSTypography: CSPreferencesFile {
         return unstyledDefaultFont
     }
 
-    public static let unstyledDefaultFont = CSTextStyle(
-        name: "Default",
-        id: unstyledDefaultName,
-        font: AttributedFont(
-            fontFamily: NSFont.systemFont(ofSize: 17).familyName ?? "Helvetica",
-            fontSize: 17,
-            lineHeight: 22,
-            kerning: 0.2,
-            weight: .standard
-        )
-    )
+    public static let unstyledDefaultFont = CSTextStyle(id: unstyledDefaultName, name: "Default")
 }
