@@ -85,7 +85,7 @@ class CaseList {
                     cell.onChangeValue = { key, value, _ in
                         switch key {
                         case "type":
-                            item.caseType = CSCase.CaseType.importedList(CSWorkspacePreferences.workspaceURL)
+                            item.caseType = CSCase.CaseType.importedList(CSUserPreferences.workspaceURL)
                         case "name":
                             item.caseType = CSCase.CaseType.entry(CSCaseEntry(name: value.data.stringValue, value: entry.value, visible: entry.visible))
                         case "data":

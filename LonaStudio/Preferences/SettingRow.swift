@@ -21,7 +21,7 @@ class SettingRow: NSStackView {
         }
     }
 
-    var onChange: (CSData) -> Void = {_ in}
+    var onChange: ((CSData) -> Void)?
 
     init(onChange: ((CSData) -> Void)? = nil) {
         super.init(frame: NSRect.zero)
@@ -30,11 +30,33 @@ class SettingRow: NSStackView {
         alignment = .centerY
         translatesAutoresizingMaskIntoConstraints = false
 
-        if onChange != nil {
-            self.onChange = onChange!
-        }
+        self.onChange = onChange
+    }
 
-        //        backgroundFill = NSColor.systemGreen.cgColor
+    required init?(coder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
+}
+
+class ValueSettingRow: SettingRow {
+    init(title: String, value: CSValue, onChange: ((CSData) -> Void)? = nil) {
+        super.init(onChange: onChange)
+
+        let titleView = NSTextField(labelWithString: title)
+        titleView.translatesAutoresizingMaskIntoConstraints = false
+
+        let valueField = CSValueField(value: value, options: [
+            CSValueField.Options.isBordered: true,
+            CSValueField.Options.drawsBackground: true,
+            CSValueField.Options.submitOnChange: false,
+            CSValueField.Options.usesLinkStyle: false,
+            CSValueField.Options.usesYogaLayout: false
+            ])
+        valueField.view.translatesAutoresizingMaskIntoConstraints = false
+        valueField.onChangeData = { value in self.onChange?(value) }
+
+        addArrangedSubview(titleView)
+        addArrangedSubview(valueField.view)
     }
 
     required init?(coder: NSCoder) {
@@ -51,7 +73,7 @@ class BooleanSettingRow: SettingRow {
         checkboxField.value = value
         checkboxField.title = title
 
-        checkboxField.onChange = { value in self.onChange(CSData.Bool(value)) }
+        checkboxField.onChange = { value in self.onChange?(CSData.Bool(value)) }
 
         addArrangedSubview(checkboxField)
 
@@ -82,7 +104,7 @@ class PathSettingRow: SettingRow {
         // Don't allow direct editing of the path
         textField.isEnabled = false
 
-        textField.onChange = { value in self.onChange(CSData.String(value)) }
+        textField.onChange = { value in self.onChange?(CSData.String(value)) }
 
         let button = Button(frame: NSRect.zero)
         button.title = "Choose path..."
@@ -101,7 +123,7 @@ class PathSettingRow: SettingRow {
             dialog.allowsMultipleSelection = false
 
             if dialog.runModal() == NSApplication.ModalResponse.OK {
-                self.onChange(CSData.String(dialog.url!.path))
+                self.onChange?(CSData.String(dialog.url!.path))
             }
         }
 

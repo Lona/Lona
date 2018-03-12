@@ -26,4 +26,16 @@ class CSUserPreferences: CSPreferencesFile {
     }
 
     static var data: CSData = load()
+
+    static var workspaceURL: URL {
+        get {
+            guard let path = CSUserPreferences.data["workspacePath"] else { return defaultWorkspaceURL() }
+            guard case CSData.String(let string) = path else { return defaultWorkspaceURL() }
+            return URL(fileURLWithPath: string)
+        }
+        set {
+            CSUserPreferences.data["workspacePath"] = CSData.String(newValue.path)
+            CSUserPreferences.save()
+        }
+    }
 }

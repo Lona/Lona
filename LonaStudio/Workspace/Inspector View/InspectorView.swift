@@ -563,7 +563,7 @@ class InspectorView: NSStackView {
                 guard let url = dialog.url else { return }
 
                 let path: String
-                if let relativePath = url.path.pathRelativeTo(basePath: CSWorkspacePreferences.workspaceURL.path) {
+                if let relativePath = url.path.pathRelativeTo(basePath: CSUserPreferences.workspaceURL.path) {
                     path = "file://" + relativePath
                 } else {
                     path = url.absoluteString

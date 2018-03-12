@@ -30,7 +30,7 @@ extension CSShadow: Identify, Searchable {}
 
 class CSShadows: CSPreferencesFile {
     static var url: URL {
-        return CSWorkspacePreferences.workspaceURL.appendingPathComponent("shadows.json")
+        return CSUserPreferences.workspaceURL.appendingPathComponent("shadows.json")
     }
 
     static private var parsedShadows: [CSShadow] = parse(data)
