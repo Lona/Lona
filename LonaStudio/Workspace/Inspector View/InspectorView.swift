@@ -772,7 +772,10 @@ class InspectorView: NSStackView {
             var control = control
 
             // Set default value before setting onChangeData in order to avoid calling twice
-            if let value = properties[property] { control.data = value }
+            if let value = properties[property] {
+                control.data = value
+                self.value[property] = value
+            }
 
             // Setup onChangeData
             control.onChangeData = { data in
