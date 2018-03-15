@@ -800,6 +800,7 @@ class InspectorView: NSStackView {
         let updateList: [Property] = [
             .heightSizingRule,
             .widthSizingRule,
+            .itemSpacingRule,
             .backgroundColorEnabled,
             .animation
         ]
