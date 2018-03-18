@@ -15,7 +15,7 @@ class ComponentConfiguration {
     var canvas: Canvas = Canvas()
 
     // For propagating the <Children /> element into a custom component
-    var children: [CSLayer]?
+    var configuredChildren: [ConfiguredLayer]?
 
     // Allows us to traverse back up the component scope hierarchy
     var parentComponentLayer: CSLayer?

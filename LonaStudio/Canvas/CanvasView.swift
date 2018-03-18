@@ -11,6 +11,21 @@ import Cocoa
 import yoga
 import Lottie
 
+struct ConfiguredLayer {
+    let layer: CSLayer
+    let config: ComponentConfiguration
+    let children: [ConfiguredLayer]
+}
+
+// Passed as a C pointer to Yoga, since we can't pass a struct
+class ConfiguredLayerRef {
+    let ref: ConfiguredLayer
+
+    init(ref: ConfiguredLayer) {
+        self.ref = ref
+    }
+}
+
 func measureText(string: NSAttributedString, width: CGFloat, maxNumberOfLines: Int = -1) -> NSSize {
     let textStorage = NSTextStorage(attributedString: string)
     let textContainer = NSTextContainer(containerSize: NSSize(width: width, height: CGFloat.greatestFiniteMagnitude))
@@ -27,42 +42,34 @@ func measureText(string: NSAttributedString, width: CGFloat, maxNumberOfLines: I
     return newSize.size
 }
 
-func getLayerText(layer: CSLayer) -> String {
-    var text: String = ""
-
-    if let config = layer.config {
-        text = config.get(attribute: "text", for: layer.name).string ?? layer.text ?? ""
-    }
-
-    return text
+func getLayerText(configuredLayer: ConfiguredLayer) -> String {
+    let layer = configuredLayer.layer
+    return configuredLayer.config.get(
+        attribute: "text",
+        for: layer.name).string ?? layer.text ?? ""
 }
 
-func getLayerFontName(layer: CSLayer) -> String {
-    var value: String = "regular"
-
-    if let config = layer.config {
-        value = config.get(attribute: "textStyle", for: layer.name).string ?? layer.font ?? value
-    }
-
-    return value
+func getLayerFontName(configuredLayer: ConfiguredLayer) -> String {
+    let layer = configuredLayer.layer
+    return configuredLayer.config.get(
+        attribute: "textStyle",
+        for: layer.name).string ?? layer.font ?? "regular"
 }
 
-func getLayerFont(layer: CSLayer) -> AttributedFont {
-    return CSTypography.getFontBy(id: getLayerFontName(layer: layer)).font
+func getLayerFont(configuredLayer: ConfiguredLayer) -> AttributedFont {
+    return CSTypography.getFontBy(id: getLayerFontName(configuredLayer: configuredLayer)).font
 }
 
-func getLayoutShadow(layout: CSLayer) -> CSShadow? {
-    guard let shadow = layout.shadow else { return nil }
+func getLayoutShadow(configuredLayer: ConfiguredLayer) -> CSShadow? {
+    guard let shadow = configuredLayer.layer.shadow else { return nil }
     return CSShadows.shadow(with: shadow)
 }
 
-func numberValue(for layer: CSLayer, attributeChain: [String], optionalValues: [Double?] = [], defaultValue: Double = 0) -> Double {
-    if let config = layer.config {
-        for attribute in attributeChain {
-            let raw = config.get(attribute: attribute, for: layer.name)
-            if raw.number == nil { continue }
-            return raw.numberValue
-        }
+func numberValue(for configuredLayer: ConfiguredLayer, attributeChain: [String], optionalValues: [Double?] = [], defaultValue: Double = 0) -> Double {
+    for attribute in attributeChain {
+        let raw = configuredLayer.config.get(attribute: attribute, for: configuredLayer.layer.name)
+        if raw.number == nil { continue }
+        return raw.numberValue
     }
 
     for value in optionalValues where value != nil {
@@ -72,29 +79,27 @@ func numberValue(for layer: CSLayer, attributeChain: [String], optionalValues: [
     return defaultValue
 }
 
-func attributedString(for layer: CSLayer) -> NSAttributedString {
-    let text = getLayerText(layer: layer)
+func attributedString(for configuredLayer: ConfiguredLayer) -> NSAttributedString {
+    let text = getLayerText(configuredLayer: configuredLayer)
 
     // Font
-    var attributeDict = getLayerFont(layer: layer).attributeDictionary()
+    var attributeDict = getLayerFont(configuredLayer: configuredLayer).attributeDictionary()
 
     // Shadow
-    if layer.shadow != nil,
-        let shadow = getLayoutShadow(layout: layer) {
+    if configuredLayer.layer.shadow != nil,
+        let shadow = getLayoutShadow(configuredLayer: configuredLayer) {
         let shadowAttributeText = shadow.attributeDictionary()
         attributeDict.merge(with: shadowAttributeText)
     }
     return NSAttributedString(string: text, attributes: attributeDict)
 }
 
-func paragraph(for layer: CSLayer) -> NSAttributedString {
+func paragraph(for configuredLayer: ConfiguredLayer) -> NSAttributedString {
     let string = NSMutableAttributedString()
 
-    string.append(attributedString(for: layer))
+    string.append(attributedString(for: configuredLayer))
 
-    guard let config = layer.config else { return string }
-
-    layer.computedChildren(for: config)
+    configuredLayer.children
 //        .filter({ $0.text != nil })
         .forEach({ string.append(paragraph(for: $0)) })
 //        .forEach({ string.append(attributedString(for: $0)) })
@@ -103,9 +108,10 @@ func paragraph(for layer: CSLayer) -> NSAttributedString {
 }
 
 func measureFunc(node: YGNodeRef?, width: Float, widthMode: YGMeasureMode, height: Float, heightMode: YGMeasureMode) -> YGSize {
-    let layer = Unmanaged<CSLayer>.fromOpaque(YGNodeGetContext(node)!).takeUnretainedValue()
+    let configuredLayerRef = Unmanaged<ConfiguredLayerRef>.fromOpaque(YGNodeGetContext(node)!).takeUnretainedValue()
 
-    let measured = measureText(string: paragraph(for: layer), width: CGFloat(width), maxNumberOfLines: layer.numberOfLines ?? -1)
+    let layer = configuredLayerRef.ref.layer
+    let measured = measureText(string: paragraph(for: configuredLayerRef.ref), width: CGFloat(width), maxNumberOfLines: layer.numberOfLines ?? -1)
 
     let size = YGSize(width: Float(measured.width), height: Float(measured.height))
 
@@ -114,7 +120,8 @@ func measureFunc(node: YGNodeRef?, width: Float, widthMode: YGMeasureMode, heigh
     return size
 }
 
-func renderTextLayer(layer: CSLayer, width: Float, height: Float) -> NSTextView {
+func renderTextLayer(configuredLayer: ConfiguredLayer, width: Float, height: Float) -> NSTextView {
+    let layer = configuredLayer.layer
     let textView = CSTextView()
     textView.isEditable = false
     textView.isSelectable = false
@@ -127,7 +134,7 @@ func renderTextLayer(layer: CSLayer, width: Float, height: Float) -> NSTextView 
         textView.textContainer!.maximumNumberOfLines = layer.numberOfLines!
     }
 
-    textView.textStorage!.append(paragraph(for: layer))
+    textView.textStorage!.append(paragraph(for: configuredLayer))
     textView.drawsBackground = false
 
 //    if let color = layer.backgroundColor {
@@ -158,8 +165,10 @@ let BORDERS: [(edge: NSRectEdge, key: String)] = [
 
 let imageCache = LayerContentsCache()
 
-func renderBox(layer: CSLayer, node: YGNodeRef, options: RenderOptions) -> NSView {
+func renderBox(configuredLayer: ConfiguredLayer, node: YGNodeRef, options: RenderOptions) -> NSView {
     let layout = node.layout
+    let config = configuredLayer.config
+    let layer = configuredLayer.layer
 
     // TODO: I copied this in from the React Native code to see if it's happening. It's probably not, so we can probably take it out.
     // This works around a breaking change in Yoga layout where setting flexBasis needs to be set explicitly, instead of relying on flex to propagate.
@@ -182,7 +191,7 @@ func renderBox(layer: CSLayer, node: YGNodeRef, options: RenderOptions) -> NSVie
 
     box.translatesAutoresizingMaskIntoConstraints = true
 
-    if layer.text == nil, let color = layer.config?.get(attribute: "backgroundColor", for: layer.name).string ?? layer.backgroundColor {
+    if layer.text == nil, let color = config.get(attribute: "backgroundColor", for: layer.name).string ?? layer.backgroundColor {
         box.layer?.backgroundColor = CSColors.parse(css: color, withDefault: NSColor.clear).color.cgColor
     }
 
@@ -190,14 +199,14 @@ func renderBox(layer: CSLayer, node: YGNodeRef, options: RenderOptions) -> NSVie
         box.layer = gradient.caGradientLayer
     }
 
-    if let borderRadius = layer.config?.get(attribute: "borderRadius", for: layer.name).number ?? layer.borderRadius {
+    if let borderRadius = config.get(attribute: "borderRadius", for: layer.name).number ?? layer.borderRadius {
         box.layer?.cornerRadius = min(CGFloat(borderRadius), layout.width / 2, layout.height / 2)
     }
 
-    let borderColorString = layer.config?.get(attribute: "borderColor", for: layer.name).string ?? layer.borderColor
+    let borderColorString = config.get(attribute: "borderColor", for: layer.name).string ?? layer.borderColor
     var borderColor = borderColorString != nil ? CSColors.parse(css: borderColorString!, withDefault: NSColor.clear).color.cgColor : nil
 
-    if let width = layer.config?.get(attribute: "borderWidth", for: layer.name).number ?? layer.borderWidth, width > 0 {
+    if let width = config.get(attribute: "borderWidth", for: layer.name).number ?? layer.borderWidth, width > 0 {
         box.layer?.borderWidth = CGFloat(width)
         borderColor ?= CGColor.clear
     }
@@ -207,16 +216,16 @@ func renderBox(layer: CSLayer, node: YGNodeRef, options: RenderOptions) -> NSVie
     }
 
     if layer.type == .animation {
-        let animation: String? = layer.config?.get(attribute: "animation", for: layer.name).string ?? layer.animation
+        let animation: String? = config.get(attribute: "animation", for: layer.name).string ?? layer.animation
 
         if  let animation = animation,
             let url = URL(string: animation),
-            let json = AnimationUtils.decode(contentsOf: url),
-            let assetMap = layer.config?
+            let json = AnimationUtils.decode(contentsOf: url) {
+            let assetMap = config
                 .get(attribute: "images", for: layer.name)
                 .objectValue
                 .filterValues(f: { $0.string != nil && URL(string: $0.stringValue) != nil })
-                .mapValues({ URL(string: $0.stringValue)! }) {
+                .mapValues({ URL(string: $0.stringValue)! })
             AnimationUtils.updateAssets(in: json, withFile: url, assetMap: assetMap)
             let animationView = LOTAnimationView(json: json as! [AnyHashable: Any])
             animationView.data = json
@@ -233,7 +242,7 @@ func renderBox(layer: CSLayer, node: YGNodeRef, options: RenderOptions) -> NSVie
             }
         }
     } else if layer.type == .image {
-        let image: String? = layer.config?.get(attribute: "image", for: layer.name).string ?? layer.image
+        let image: String? = config.get(attribute: "image", for: layer.name).string ?? layer.image
 
         if let image = image, let url = URL(string: image)?.absoluteURLForWorkspaceURL() {
             var scale: CGFloat = options.assetScale
@@ -272,7 +281,7 @@ func renderBox(layer: CSLayer, node: YGNodeRef, options: RenderOptions) -> NSVie
         }
     }
 
-    if layer.config?.scope.get(value: "cs:selected").data.stringValue == layer.name {
+    if config.scope.get(value: "cs:selected").data.stringValue == layer.name {
         if box.layer == nil {
             box.wantsLayer = true
             box.layer = CALayer()
@@ -297,7 +306,7 @@ func renderBox(layer: CSLayer, node: YGNodeRef, options: RenderOptions) -> NSVie
             let width = YGNodeLayoutGetWidth(node)
             let height = YGNodeLayoutGetHeight(node)
 //            print("Style width", YGNodeStyleGetWidth(textNode).value)
-            let textLayer = renderTextLayer(layer: layer, width: width, height: height)
+            let textLayer = renderTextLayer(configuredLayer: configuredLayer, width: width, height: height)
 
 //            Swift.print("Render text", width, height)
 
@@ -313,8 +322,8 @@ func renderBox(layer: CSLayer, node: YGNodeRef, options: RenderOptions) -> NSVie
             // Fallback on earlier versions
         }
     } else {
-        for (index, sub) in layer.computedChildren(for: layer.config!).enumerated() {
-            let child = renderBox(layer: sub, node: YGNodeGetChild(node, UInt32(index)), options: options)
+        for (index, sub) in configuredLayer.children.enumerated() {
+            let child = renderBox(configuredLayer: sub, node: YGNodeGetChild(node, UInt32(index)), options: options)
 
             box.addSubview(child)
         }
@@ -328,8 +337,10 @@ func renderBox(layer: CSLayer, node: YGNodeRef, options: RenderOptions) -> NSVie
 typealias SketchFileReference = (id: String, data: String)
 typealias SketchFileReferenceMap = [String: SketchFileReference]
 
-func renderBoxJSON(layer: CSLayer, node: YGNodeRef, references: inout SketchFileReferenceMap) -> CSData {
+func renderBoxJSON(configuredLayer: ConfiguredLayer, node: YGNodeRef, references: inout SketchFileReferenceMap) -> CSData {
     let layout = node.layout
+    let config = configuredLayer.config
+    let layer = configuredLayer.layer
 
     var output = layer.toData()
 
@@ -346,11 +357,11 @@ func renderBoxJSON(layer: CSLayer, node: YGNodeRef, references: inout SketchFile
 
     var propsJSON = CSData.Object([:])
 
-    if layer.text == nil, let color = layer.config?.get(attribute: "backgroundColor", for: layer.name).string ?? layer.backgroundColor {
+    if layer.text == nil, let color = config.get(attribute: "backgroundColor", for: layer.name).string ?? layer.backgroundColor {
         styleJSON["backgroundColor"] = CSColors.parse(css: color, withDefault: NSColor.clear).value.toData()
     }
 
-    if let borderRadius = layer.config?.get(attribute: "borderRadius", for: layer.name).number ?? layer.borderRadius {
+    if let borderRadius = config.get(attribute: "borderRadius", for: layer.name).number ?? layer.borderRadius {
         let radius = min(CGFloat(borderRadius), layout.width / 2, layout.height / 2).toData()
         styleJSON["borderTopLeftRadius"] = radius
         styleJSON["borderTopRightRadius"] = radius
@@ -358,14 +369,14 @@ func renderBoxJSON(layer: CSLayer, node: YGNodeRef, references: inout SketchFile
         styleJSON["borderBottomLeftRadius"] = radius
     }
 
-    if let borderColor = layer.config?.get(attribute: "borderColor", for: layer.name).string ?? layer.borderColor {
+    if let borderColor = config.get(attribute: "borderColor", for: layer.name).string ?? layer.borderColor {
         let color = CSColors.parse(css: borderColor, withDefault: NSColor.clear).value.toData()
         styleJSON["borderTopColor"] = color
         styleJSON["borderRightColor"] = color
         styleJSON["borderBottomColor"] = color
         styleJSON["borderLeftColor"] = color
         for (_, key) in BORDERS {
-            if let width = layer.config?.get(attribute: key, for: layer.name).number ?? layer.parameters[key]?.number, width > 0 {
+            if let width = config.get(attribute: key, for: layer.name).number ?? layer.parameters[key]?.number, width > 0 {
                 styleJSON[key] = width.toData()
             }
         }
@@ -374,7 +385,7 @@ func renderBoxJSON(layer: CSLayer, node: YGNodeRef, references: inout SketchFile
     var sketchLayers = CSData.Array([])
 
     if layer.type == .image {
-        let image: String? = layer.config?.get(attribute: "image", for: layer.name).string ?? layer.image
+        let image: String? = config.get(attribute: "image", for: layer.name).string ?? layer.image
 
         if let image = image {
             if image.isEmpty {
@@ -413,7 +424,7 @@ func renderBoxJSON(layer: CSLayer, node: YGNodeRef, references: inout SketchFile
 
     if layer.text != nil {
         // TODO: Sketch will strip out multiple styles in an attributed string. Figure out how to pass multiple attributed strings.
-        let attributedString = paragraph(for: layer)
+        let attributedString = paragraph(for: configuredLayer)
 
         output["value"] = attributedString.string.toData()
         output["textStyle"] = CSData.Object([
@@ -424,8 +435,8 @@ func renderBoxJSON(layer: CSLayer, node: YGNodeRef, references: inout SketchFile
     } else {
         var children: [CSData] = []
 
-        for (index, sub) in layer.computedChildren(for: layer.config!).enumerated() {
-            let child = renderBoxJSON(layer: sub, node: node.children[index], references: &references)
+        for (index, sub) in configuredLayer.children.enumerated() {
+            let child = renderBoxJSON(configuredLayer: sub, node: node.children[index], references: &references)
             children.append(child)
         }
 
@@ -443,26 +454,6 @@ func renderBoxJSON(layer: CSLayer, node: YGNodeRef, references: inout SketchFile
     return output
 }
 
-func assignLayerConfig(layer: CSLayer, config: ComponentConfiguration) {
-    layer.config = config
-
-    for item in layer.computedChildren(for: config, shouldAssignConfig: true).enumerated() {
-        let sub = item.element
-        var childConfig = config
-
-        // TODO This is a hack to return metadata about the layer.
-        // Config gets assigned by `computedChildren()`. Figure out a better way.
-        if sub.config != nil && sub.config!.scope.get(value: "cs:root").data.boolValue == true {
-            childConfig = sub.config!
-            sub.config!.scope.undeclare(variable: "cs:root")
-        }
-
-        sub.config = childConfig
-
-        assignLayerConfig(layer: sub, config: childConfig)
-    }
-}
-
 func setFlexExpand(for layer: CSLayer, node: YGNodeRef) {
     var node = node
 
@@ -476,9 +467,10 @@ func setFlexExpand(for layer: CSLayer, node: YGNodeRef) {
     }
 }
 
-func layoutLayer(layer: CSLayer, parentLayoutDirection: YGFlexDirection) -> YGNodeRef {
+func layoutLayer(configuredLayer: ConfiguredLayer, parentLayoutDirection: YGFlexDirection) -> YGNodeRef {
     var node = YGNodeRef.create()
 
+    let layer = configuredLayer.layer
     if let value = layer.top { node.top = CGFloat(value) }
     if let value = layer.right { node.right = CGFloat(value) }
     if let value = layer.bottom { node.bottom = CGFloat(value) }
@@ -490,7 +482,7 @@ func layoutLayer(layer: CSLayer, parentLayoutDirection: YGFlexDirection) -> YGNo
 
     switch layer.heightSizingRule {
     case .Fixed:
-        node.height = CGFloat(numberValue(for: layer, attributeChain: ["height"], optionalValues: [layer.height]))
+        node.height = CGFloat(numberValue(for: configuredLayer, attributeChain: ["height"], optionalValues: [layer.height]))
 
         if parentLayoutDirection == .column {
             node.flex = 0
@@ -509,7 +501,7 @@ func layoutLayer(layer: CSLayer, parentLayoutDirection: YGFlexDirection) -> YGNo
 
     switch layer.widthSizingRule {
     case .Fixed:
-        node.width = CGFloat(numberValue(for: layer, attributeChain: ["width"], optionalValues: [layer.width]))
+        node.width = CGFloat(numberValue(for: configuredLayer, attributeChain: ["width"], optionalValues: [layer.width]))
 
         if parentLayoutDirection == .row {
             node.flex = 0
@@ -576,20 +568,20 @@ func layoutLayer(layer: CSLayer, parentLayoutDirection: YGFlexDirection) -> YGNo
         node.justifyContent = .spaceBetween
     }
 
-    node.paddingTop = CGFloat(numberValue(for: layer, attributeChain: ["paddingTop", "paddingVertical", "padding"], optionalValues: [layer.paddingTop]))
-    node.paddingBottom = CGFloat(numberValue(for: layer, attributeChain: ["paddingBottom", "paddingVertical", "padding"], optionalValues: [layer.paddingBottom]))
-    node.paddingLeft = CGFloat(numberValue(for: layer, attributeChain: ["paddingLeft", "paddingHorizontal", "padding"], optionalValues: [layer.paddingLeft]))
-    node.paddingRight = CGFloat(numberValue(for: layer, attributeChain: ["paddingRight", "paddingHorizontal", "padding"], optionalValues: [layer.paddingRight]))
+    node.paddingTop = CGFloat(numberValue(for: configuredLayer, attributeChain: ["paddingTop", "paddingVertical", "padding"], optionalValues: [layer.paddingTop]))
+    node.paddingBottom = CGFloat(numberValue(for: configuredLayer, attributeChain: ["paddingBottom", "paddingVertical", "padding"], optionalValues: [layer.paddingBottom]))
+    node.paddingLeft = CGFloat(numberValue(for: configuredLayer, attributeChain: ["paddingLeft", "paddingHorizontal", "padding"], optionalValues: [layer.paddingLeft]))
+    node.paddingRight = CGFloat(numberValue(for: configuredLayer, attributeChain: ["paddingRight", "paddingHorizontal", "padding"], optionalValues: [layer.paddingRight]))
 
-    node.marginTop = CGFloat(numberValue(for: layer, attributeChain: ["marginTop", "marginVertical", "margin"], optionalValues: [layer.marginTop]))
-    node.marginBottom = CGFloat(numberValue(for: layer, attributeChain: ["marginBottom", "marginVertical", "margin"], optionalValues: [layer.marginBottom]))
-    node.marginLeft = CGFloat(numberValue(for: layer, attributeChain: ["marginLeft", "marginHorizontal", "margin"], optionalValues: [layer.marginLeft]))
-    node.marginRight = CGFloat(numberValue(for: layer, attributeChain: ["marginRight", "marginHorizontal", "margin"], optionalValues: [layer.marginRight]))
+    node.marginTop = CGFloat(numberValue(for: configuredLayer, attributeChain: ["marginTop", "marginVertical", "margin"], optionalValues: [layer.marginTop]))
+    node.marginBottom = CGFloat(numberValue(for: configuredLayer, attributeChain: ["marginBottom", "marginVertical", "margin"], optionalValues: [layer.marginBottom]))
+    node.marginLeft = CGFloat(numberValue(for: configuredLayer, attributeChain: ["marginLeft", "marginHorizontal", "margin"], optionalValues: [layer.marginLeft]))
+    node.marginRight = CGFloat(numberValue(for: configuredLayer, attributeChain: ["marginRight", "marginHorizontal", "margin"], optionalValues: [layer.marginRight]))
 
-    node.borderTop = CGFloat(numberValue(for: layer, attributeChain: ["borderTopWidth", "borderVerticalWidth", "borderWidth"], optionalValues: [layer.borderWidth]))
-    node.borderBottom = CGFloat(numberValue(for: layer, attributeChain: ["borderBottomWidth", "borderVerticalWidth", "borderWidth"], optionalValues: [layer.borderWidth]))
-    node.borderLeft = CGFloat(numberValue(for: layer, attributeChain: ["borderLeftWidth", "borderHorizontalWidth", "borderWidth"], optionalValues: [layer.borderWidth]))
-    node.borderRight = CGFloat(numberValue(for: layer, attributeChain: ["borderRightWidth", "borderHorizontalWidth", "borderWidth"], optionalValues: [layer.borderWidth]))
+    node.borderTop = CGFloat(numberValue(for: configuredLayer, attributeChain: ["borderTopWidth", "borderVerticalWidth", "borderWidth"], optionalValues: [layer.borderWidth]))
+    node.borderBottom = CGFloat(numberValue(for: configuredLayer, attributeChain: ["borderBottomWidth", "borderVerticalWidth", "borderWidth"], optionalValues: [layer.borderWidth]))
+    node.borderLeft = CGFloat(numberValue(for: configuredLayer, attributeChain: ["borderLeftWidth", "borderHorizontalWidth", "borderWidth"], optionalValues: [layer.borderWidth]))
+    node.borderRight = CGFloat(numberValue(for: configuredLayer, attributeChain: ["borderRightWidth", "borderHorizontalWidth", "borderWidth"], optionalValues: [layer.borderWidth]))
 
     if let aspectRatio = layer.aspectRatio, aspectRatio > 0 {
         YGNodeStyleSetAspectRatio(node, Float(aspectRatio))
@@ -597,14 +589,15 @@ func layoutLayer(layer: CSLayer, parentLayoutDirection: YGFlexDirection) -> YGNo
 
     // Non-text layer
     if layer.type == .text {
-        YGNodeSetContext(node, UnsafeMutableRawPointer(Unmanaged.passUnretained(layer).toOpaque()))
+        let ref = ConfiguredLayerRef(ref: configuredLayer)
+        YGNodeSetContext(node, UnsafeMutableRawPointer(Unmanaged.passRetained(ref).toOpaque()))
         YGNodeSetMeasureFunc(node, measureFunc(node:width:widthMode:height:heightMode:))
     } else {
-        for (index, sub) in layer.computedChildren(for: layer.config!).enumerated() {
-            var child = layoutLayer(layer: sub, parentLayoutDirection: flexDirection)
+        for (index, sub) in configuredLayer.children.enumerated() {
+            var child = layoutLayer(configuredLayer: sub, parentLayoutDirection: flexDirection)
 
             if layer.itemSpacingRule == .Fixed {
-                let itemSpacing = CGFloat(numberValue(for: layer, attributeChain: ["itemSpacing"], optionalValues: [layer.itemSpacing]))
+                let itemSpacing = CGFloat(numberValue(for: configuredLayer, attributeChain: ["itemSpacing"], optionalValues: [layer.itemSpacing]))
                 if node.flexDirection == .row && index != 0 {
                     child.marginLeft += itemSpacing
                 } else if node.flexDirection == .column && index != 0 {
@@ -627,8 +620,10 @@ func emptyCanvas() -> NSView {
     return FlippedView(frame: NSRect.square(ofSize: 100))
 }
 
-func layoutRoot(canvas: Canvas, rootLayer: CSLayer, config: ComponentConfiguration) -> (layoutNode: YGNodeRef, rootNode: YGNodeRef, height: CGFloat)? {
+func layoutRoot(canvas: Canvas, configuredRootLayer: ConfiguredLayer, config: ComponentConfiguration) -> (layoutNode: YGNodeRef, rootNode: YGNodeRef, height: CGFloat)? {
     guard let rootNode = YGNodeNew() else { return nil }
+
+    let rootLayer = configuredRootLayer.layer
 
     let useExactHeight = canvas.heightMode == "Exactly"
 
@@ -636,10 +631,8 @@ func layoutRoot(canvas: Canvas, rootLayer: CSLayer, config: ComponentConfigurati
     // We'll then measure the node to determine the canvas height.
     let canvasHeight = useExactHeight ? canvas.height : LARGE_CANVAS_SIZE
 
-    assignLayerConfig(layer: rootLayer, config: config)
-
     // Build layout hierarchy
-    var child = layoutLayer(layer: rootLayer, parentLayoutDirection: .column)
+    var child = layoutLayer(configuredLayer: configuredRootLayer, parentLayoutDirection: .column)
 
     // Use an extra child which can have a height greater than the root layer, allowing the root to expand
     guard var wrapper = YGNodeNew() else { return nil }
@@ -674,9 +667,15 @@ func layoutRoot(canvas: Canvas, rootLayer: CSLayer, config: ComponentConfigurati
 }
 
 func renderRootToJSON(canvas: Canvas, rootLayer: CSLayer, config: ComponentConfiguration, references: inout SketchFileReferenceMap) -> (layer: CSData, height: Double) {
-    guard let layout = layoutRoot(canvas: canvas, rootLayer: rootLayer, config: config) else { return (CSData.Null, 0) }
+    let configuredRootLayer = CanvasView.configureRoot(layer: rootLayer, with: config)
 
-    let rootLayer = renderBoxJSON(layer: rootLayer, node: layout.layoutNode, references: &references)
+    guard let layout = layoutRoot(
+        canvas: canvas,
+        configuredRootLayer:
+        configuredRootLayer, config: config)
+    else { return (CSData.Null, 0) }
+
+    let rootLayer = renderBoxJSON(configuredLayer: configuredRootLayer, node: layout.layoutNode, references: &references)
 
     layout.rootNode.free(recursive: true)
 
@@ -684,12 +683,18 @@ func renderRootToJSON(canvas: Canvas, rootLayer: CSLayer, config: ComponentConfi
 }
 
 func drawRoot(canvas: Canvas, rootLayer: CSLayer, config: ComponentConfiguration, options: RenderOptions) -> NSView {
-    guard let layout = layoutRoot(canvas: canvas, rootLayer: rootLayer, config: config) else { return emptyCanvas() }
+    let configuredRootLayer = CanvasView.configureRoot(layer: rootLayer, with: config)
+
+    guard let layout = layoutRoot(
+        canvas: canvas,
+        configuredRootLayer: configuredRootLayer,
+        config: config)
+    else { return emptyCanvas() }
 
     let canvasView = FlippedView(frame: NSRect(x: 0, y: 0, width: CGFloat(canvas.width), height: layout.height))
 
     // Render the root layer
-    let childView = renderBox(layer: rootLayer, node: layout.layoutNode, options: options)
+    let childView = renderBox(configuredLayer: configuredRootLayer, node: layout.layoutNode, options: options)
     canvasView.addSubview(childView)
 
     layout.rootNode.free(recursive: true)
@@ -724,6 +729,7 @@ struct RenderOptions {
 }
 
 class CanvasView: NSView {
+
     init(canvas: Canvas, rootLayer: CSLayer, config: ComponentConfiguration, options list: [RenderOption] = []) {
         let options = RenderOptions(list)
         let root = drawRoot(canvas: canvas, rootLayer: rootLayer, config: config, options: options)
@@ -749,5 +755,39 @@ class CanvasView: NSView {
 
     required init?(coder decoder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
+    }
+
+    // MARK: Configure
+
+    static func configureRoot(layer: CSLayer, with config: ComponentConfiguration) -> ConfiguredLayer {
+        return self.configure(layer: layer, with: config)[0]
+    }
+
+    static func configure(layer: CSLayer, with config: ComponentConfiguration) -> [ConfiguredLayer] {
+        let children: [ConfiguredLayer] = layer.visibleChildren(for: config).map({ child in
+            self.configure(layer: child, with: config)
+        }).flatMap({ $0 })
+
+        switch layer.type {
+        case .custom:
+            guard let componentLayer = layer as? CSComponentLayer else { return [] }
+
+            let componentConfig = ComponentConfiguration(
+                component: componentLayer.component,
+                arguments: config.getAllAttributes(for: componentLayer.name),
+                canvas: config.canvas)
+            componentConfig.configuredChildren = children
+
+            return self.configure(layer: componentLayer.component.rootLayer, with: componentConfig)
+        case .builtIn(.children):
+            if let componentChildren = config.configuredChildren {
+                return componentChildren
+            // Show children element directly when viewing parent element file
+            } else {
+                return [ConfiguredLayer(layer: layer, config: config, children: children)]
+            }
+        case .builtIn:
+            return [ConfiguredLayer(layer: layer, config: config, children: children)]
+        }
     }
 }

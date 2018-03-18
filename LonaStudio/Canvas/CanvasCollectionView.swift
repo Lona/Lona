@@ -153,7 +153,8 @@ class CanvasCollectionView: NSView, NSCollectionViewDataSource, NSCollectionView
             canvas: canvas
         )
 
-        guard let layout = layoutRoot(canvas: canvas, rootLayer: rootLayer, config: config) else { return NSSize.zero }
+        let configuredRootLayer = CanvasView.configureRoot(layer: rootLayer, with: config)
+        guard let layout = layoutRoot(canvas: canvas, configuredRootLayer: configuredRootLayer, config: config) else { return NSSize.zero }
 
         let size = NSSize(width: CGFloat(canvas.width) + CANVAS_INSET * 2, height: layout.height + CANVAS_INSET * 2)
 

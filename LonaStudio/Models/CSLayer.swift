@@ -107,9 +107,6 @@ class CSLayer: CSDataDeserializable, CSDataSerializable, DataNode, NSCopying {
         }
     }
 
-    // Hack: attach this for use in layout
-    var config: ComponentConfiguration?
-
     var name: String = "Layer"
     var type: LayerType = .view
     var children: [CSLayer] = []
@@ -565,7 +562,6 @@ class CSLayer: CSDataDeserializable, CSDataSerializable, DataNode, NSCopying {
         let copy = CSLayer.deserialize(serialized)!
 
         copy.parent = self.parent
-        copy.config = self.config
 
         return copy as Any
     }
@@ -612,8 +608,7 @@ class CSLayer: CSDataDeserializable, CSDataSerializable, DataNode, NSCopying {
                 "width",
                 "height",
                 "padding", "paddingVertical", "paddingHorizontal", "paddingLeft", "paddingTop", "paddingRight", "paddingBottom",
-                "margin", "marginVertical", "marginHorizontal", "marginLeft", "marginTop", "marginRight", "marginBottom",
-                "repeatCount"
+                "margin", "marginVertical", "marginHorizontal", "marginLeft", "marginTop", "marginRight", "marginBottom"
             ].sorted()
         case .bool:
             return ["visible"]
@@ -625,93 +620,18 @@ class CSLayer: CSDataDeserializable, CSDataSerializable, DataNode, NSCopying {
     func visibleChildren(for config: ComponentConfiguration) -> [CSLayer] {
         let dynamicChildren: [CSLayer] = config.get(attribute: "children", for: name).arrayValue.map({ childData in
             let layer = CSLayer.deserialize(childData)
-            layer?.config = config
+//            layer?.config = config
             return layer
         }).flatMap({ $0 })
 
-//        Swift.print("dynamic children", dynamicChildren)
-
         return (children + dynamicChildren).filter({ layer in
             var layerVisible = layer.visible
-
-//            let textOverride = config.get(attribute: "text", for: layer.name).string
-
-            // Don't render text layers without text
-            // - A text layer with an empty override
-            // - A text layer with no override and an empty default value
-//            if layer.text != nil && (textOverride == "" || (textOverride == nil && layer.text == "")) {
-//                return false
-//            }
 
             if let visible = config.get(attribute: "visible", for: layer.name).bool {
                 layerVisible = visible
             }
 
             return layerVisible
-        })
-    }
-
-    func computedChildren(for config: ComponentConfiguration, shouldAssignConfig: Bool = false) -> [CSLayer] {
-        return visibleChildren(for: config).reduce([], { (result, layer) in
-            var result = result
-            var layer = layer
-
-            if let componentLayer = layer as? CSComponentLayer {
-                let originalLayer = layer
-                let originalName = layer.name
-                let component = componentLayer.component
-                layer = component.rootLayer
-
-                if shouldAssignConfig {
-//                    var arguments = componentLayer.parameters
-//                    config.getAllAttributes(for: originalName).forEach({ (key, value) in
-//                        arguments[key] = JSON(stringLiteral: value)
-//                    })
-
-                    // TODO enable
-                    layer.config = ComponentConfiguration(
-                        component: component,
-                        arguments: config.getAllAttributes(for: originalName),
-                        canvas: config.canvas
-                    )
-                    layer.config!.scope.declare(value: "cs:root", as: CSValue(type: .bool, data: .Bool(true)))
-                    layer.config!.children = originalLayer.computedChildren(for: layer.config!, shouldAssignConfig: shouldAssignConfig)
-                    layer.config!.parentComponentLayer = originalLayer
-
-                    if config.scope.get(value: "cs:selected").data.stringValue == originalName {
-                        layer.config!.scope.declare(value: "cs:selected", as: CSValue(type: .string, data: .String(layer.name)))
-                    }
-//                    if config.has(attribute: "cs:selected", for: originalName) {
-//                        layer.config!.set(attribute: "cs:selected", for: layer.name, to: "true")
-//                    }
-                }
-            }
-
-            if layer.type == .children {
-                // TODO Maybe can consolidate and just store the link to the parent
-//                if let parent = config.parentComponentLayer {
-//                    parent.children.forEach({ result.append($0) })
-//                }
-
-                // Replace children element placeholder
-                if let children = config.children {
-                    children.forEach({ result.append($0) })
-                // Show children element directly when viewing parent element file
-                } else {
-                    result.append(layer)
-                }
-            } else {
-                var count = 1
-                if let repeatCount = config.get(attribute: "repeatCount", for: layer.name).number {
-                    count = Int(repeatCount)
-                }
-
-                for _ in 0..<count {
-                    result.append(layer)
-                }
-            }
-
-            return result
         })
     }
 

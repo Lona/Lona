@@ -356,12 +356,12 @@ class ViewController: NSViewController, NSOutlineViewDataSource, NSOutlineViewDe
         logicListView?.editor?.reloadData()
 
         let selectLayer: (CSLayer) -> Void = { layer in
-            var topLevelLayer: CSLayer? = layer
-            while let parent = topLevelLayer?.config?.parentComponentLayer {
-                topLevelLayer = parent
-            }
+//            var topLevelLayer: CSLayer? = layer
+//            while let parent = topLevelLayer?.config?.parentComponentLayer {
+//                topLevelLayer = parent
+//            }
 
-            self.outlineView.select(item: topLevelLayer!)
+//            self.outlineView.select(item: topLevelLayer!)
         }
 
         if canvasCollectionView == nil {
