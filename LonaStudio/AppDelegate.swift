@@ -70,4 +70,34 @@ class AppDelegate: NSObject, NSApplicationDelegate {
 
         colorBrowserWindow?.makeKeyAndOrderFront(nil)
     }
+
+    /*  Create a new component by duplicating the contents of an existing component
+        into a blank document, and opening the document.
+    */
+    @IBAction func newFromTemplate(_ sender: AnyObject) {
+        let dialog = NSOpenPanel()
+
+        dialog.title                   = "Choose a .component file"
+        dialog.showsResizeIndicator    = true
+        dialog.showsHiddenFiles        = false
+        dialog.canChooseDirectories    = false
+        dialog.canCreateDirectories    = false
+        dialog.allowsMultipleSelection = false
+        dialog.allowedFileTypes        = ["component"]
+
+        guard
+            dialog.runModal() == NSApplication.ModalResponse.OK,
+            let url = dialog.url
+        else { return }
+
+        do {
+            try NSDocumentController.shared.duplicateDocument(
+                withContentsOf: url,
+                copying: true,
+                displayName: url.deletingPathExtension().lastPathComponent)
+        } catch {
+            Swift.print("Failed to duplicate template", url)
+        }
+
+    }
 }
