@@ -726,7 +726,7 @@ class CanvasView: NSView {
         self.rootLayer = rootLayer
         self.config = config
         self.options = RenderOptions(list)
-        
+
         super.init(frame: .zero)
 
         rootView = render()
