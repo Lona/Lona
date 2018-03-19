@@ -116,15 +116,20 @@ class RenderSurface: NSView {
         LonaModule.current.componentFiles()
             .forEach({ componentFile in
                 guard let component = CSComponent(url: componentFile.url) else { return }
-                renderToImages(component: component, directory: directory, namingScheme: { descriptor in
+                renderToImages(component: component, directory: directory, namingScheme: ({ descriptor in
                     return [componentFile.name, descriptor.canvasName, descriptor.caseName].joined(separator: "_")
-                })
+                }), options: [RenderOption.renderCanvasShadow(true)])
             })
     }
 
-    static func renderToImages(component: CSComponent, directory: URL, namingScheme: ((RenderDescriptor) -> String)? = nil) {
+    static func renderToImages(
+        component: CSComponent,
+        directory: URL,
+        namingScheme: ((RenderDescriptor) -> String)? = nil,
+        options: [RenderOption] = []) {
+
         component.computedCanvases().forEach({ canvas in
-            let stack = renderCanvasStack(component: component, canvas: canvas)
+            let stack = renderCanvasStack(component: component, canvas: canvas, options: options)
 
             for taggedCanvas in stack {
                 let (view, descriptor, _) = taggedCanvas
