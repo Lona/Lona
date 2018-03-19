@@ -682,36 +682,18 @@ func renderRootToJSON(canvas: Canvas, rootLayer: CSLayer, config: ComponentConfi
     return (rootLayer, Double(layout.height))
 }
 
-func drawRoot(canvas: Canvas, rootLayer: CSLayer, config: ComponentConfiguration, options: RenderOptions) -> NSView {
-    let configuredRootLayer = CanvasView.configureRoot(layer: rootLayer, with: config)
-
-    guard let layout = layoutRoot(
-        canvas: canvas,
-        configuredRootLayer: configuredRootLayer,
-        config: config)
-    else { return emptyCanvas() }
-
-    let canvasView = FlippedView(frame: NSRect(x: 0, y: 0, width: CGFloat(canvas.width), height: layout.height))
-
-    // Render the root layer
-    let childView = renderBox(configuredLayer: configuredRootLayer, node: layout.layoutNode, options: options)
-    canvasView.addSubview(childView)
-
-    layout.rootNode.free(recursive: true)
-
-    return canvasView
-}
-
 enum RenderOption {
     case onSelectLayer((CSLayer) -> Void)
     case assetScale(CGFloat)
     case hideAnimationLayers(Bool)
+    case renderCanvasShadow(Bool)
 }
 
 struct RenderOptions {
     var onSelectLayer: (CSLayer) -> Void = {_ in}
     var assetScale: CGFloat = 1
     var hideAnimationLayers: Bool = false
+    var renderCanvasShadow: Bool = false
 
     mutating func merge(options: [RenderOption]) {
         options.forEach({ option in
@@ -719,6 +701,7 @@ struct RenderOptions {
             case .onSelectLayer(let f): onSelectLayer = f
             case .assetScale(let value): assetScale = value
             case .hideAnimationLayers(let value): hideAnimationLayers = value
+            case .renderCanvasShadow(let value): renderCanvasShadow = value
             }
         })
     }
@@ -730,31 +713,85 @@ struct RenderOptions {
 
 class CanvasView: NSView {
 
-    init(canvas: Canvas, rootLayer: CSLayer, config: ComponentConfiguration, options list: [RenderOption] = []) {
-        let options = RenderOptions(list)
-        let root = drawRoot(canvas: canvas, rootLayer: rootLayer, config: config, options: options)
+    var canvas: Canvas
+    var rootLayer: CSLayer
+    var config: ComponentConfiguration
+    var options: RenderOptions
 
-        super.init(frame: root.frame)
+    var rootView = NSView()
+    var backgroundView = NSBox()
+
+    init(canvas: Canvas, rootLayer: CSLayer, config: ComponentConfiguration, options list: [RenderOption] = []) {
+        self.canvas = canvas
+        self.rootLayer = rootLayer
+        self.config = config
+        self.options = RenderOptions(list)
+        
+        super.init(frame: .zero)
+
+        rootView = render()
+
+        setUpViews()
+    }
+
+    required init?(coder decoder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
+
+    func setUpViews() {
+        backgroundView.addSubview(rootView)
+        addSubview(backgroundView)
+
+        frame = rootView.frame
+        backgroundView.frame = rootView.frame
+
+        backgroundView.borderType = .noBorder
+        backgroundView.boxType = .custom
+        backgroundView.contentViewMargins = .zero
+
+        // Shadows & Fills
 
         // TODO: On High Sierra, if the canvas has a transparent fill, shadows show up behind each subview's layer.
         // Maybe we don't want shadows anyway though.
         wantsLayer = true
 
-        if let layer = self.layer {
-            layer.backgroundColor = CSColors.parse(css: canvas.backgroundColor, withDefault: NSColor.white).color.cgColor
+        backgroundView.fillColor = CSColors.parse(css: canvas.backgroundColor, withDefault: NSColor.white).color
 
-//            layer.shadowOpacity = 0.3
-//            layer.shadowColor = CGColor.black
-//            layer.shadowOffset = NSMakeSize(0, -1)
-//            layer.shadowRadius = 2
-//            layer.masksToBounds = false
+        if options.renderCanvasShadow {
+            layer?.backgroundColor = CGColor.white
+
+            frame.size.width += 10
+            frame.size.height += 10
+            backgroundView.frame.origin.x += 5
+            backgroundView.frame.origin.y += 5
+
+            backgroundView.shadow = NSShadow(
+                color: NSColor.black.withAlphaComponent(0.5),
+                offset: NSSize(width: 0, height: -1),
+                blur: 2)
         }
-
-        addSubview(root)
     }
 
-    required init?(coder decoder: NSCoder) {
-        fatalError("init(coder:) has not been implemented")
+    // MARK: Render
+
+    func render() -> NSView {
+        let configuredRootLayer = CanvasView.configureRoot(layer: rootLayer, with: config)
+
+        guard let layout = layoutRoot(
+            canvas: canvas,
+            configuredRootLayer: configuredRootLayer,
+            config: config)
+            else { return emptyCanvas() }
+
+        let canvasView = FlippedView(frame: NSRect(x: 0, y: 0, width: CGFloat(canvas.width), height: layout.height))
+
+        // Render the root layer
+        let childView = renderBox(configuredLayer: configuredRootLayer, node: layout.layoutNode, options: options)
+        canvasView.addSubview(childView)
+
+        layout.rootNode.free(recursive: true)
+
+        return canvasView
     }
 
     // MARK: Configure
