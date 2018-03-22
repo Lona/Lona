@@ -97,7 +97,7 @@ indirect enum CSType: Equatable, CSDataSerializable, CSDataDeserializable {
                         returnType = CSType(value)
                     }
                     self = .function(parameters, returnType)
-                case "Variant":
+                case "Enum", "Variant":
                     var parameters: [(String, CSType)] = []
                     if let values = object["cases"]?.array {
                         parameters = values.map({ (arg) in
@@ -105,7 +105,9 @@ indirect enum CSType: Equatable, CSDataSerializable, CSDataDeserializable {
                                 return (tag, CSType.unit)
                             }
 
-                            return (arg.get(key: "tag").stringValue, CSType(arg.get(key: "type")))
+                            return (
+                                arg.get(key: "case").string ?? arg.get(key: "tag").stringValue,
+                                CSType(arg.get(key: "type")))
                         })
                     }
                     self = .variant(parameters)
@@ -248,7 +250,7 @@ indirect enum CSType: Equatable, CSDataSerializable, CSDataDeserializable {
             return data
         case .variant(let cases):
             var data: CSData = .Object([
-                "name": "Variant".toData()
+                "name": "Enum".toData()
                 ])
 
             if cases.count > 0 {
@@ -260,7 +262,7 @@ indirect enum CSType: Equatable, CSDataSerializable, CSDataDeserializable {
                     }
 
                     return CSData.Object([
-                        "tag": tag.toData(),
+                        "case": tag.toData(),
                         "type": innerType.toData()
                         ])
                 }))
