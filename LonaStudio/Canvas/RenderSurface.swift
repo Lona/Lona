@@ -116,9 +116,16 @@ class RenderSurface: NSView {
         LonaModule.current.componentFiles()
             .forEach({ componentFile in
                 guard let component = CSComponent(url: componentFile.url) else { return }
-                renderToImages(component: component, directory: directory, namingScheme: ({ descriptor in
-                    return [componentFile.name, descriptor.canvasName, descriptor.caseName].joined(separator: "_")
-                }), options: [RenderOption.renderCanvasShadow(true)])
+
+                renderToImages(component: component, directory: directory, namingScheme: { descriptor in
+                    return [componentFile.name, descriptor.canvasName, descriptor.caseName]
+                      .joined(separator: "_")
+                      .replacingOccurrences(of: " ", with: "_")
+                      .replacingOccurrences(of: "(", with: "_")
+                      .replacingOccurrences(of: ")", with: "_")
+                      .replacingOccurrences(of: "+", with: "_")
+                      .replacingOccurrences(of: ",", with: "_")
+                }, options: [RenderOption.renderCanvasShadow(true)])
             })
     }
 
