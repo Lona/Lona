@@ -132,14 +132,14 @@ class ParameterListView: NSOutlineView, NSOutlineViewDataSource, NSOutlineViewDe
                 components.append(.value("typedef", fieldsValue, []))
             case .variant(let cases) where !parameter.type.isOptional():
                 let variantCaseType = CSType.dictionary([
-                    "tag": (CSType.string, .write),
+                    "case": (CSType.string, .write),
                     "type": (CSType.parameterType(), .write)
                     ])
                 let variantCasesType = CSType.array(variantCaseType)
                 let casesData: [CSData] = cases.map({ arg in
                     let (key, value) = arg
                     return CSData.Object([
-                        "tag": key.toData(),
+                        "case": key.toData(),
                         "type": (value.unwrapOptional() ?? value).toString().toData(),
                         "optional": value.isOptional().toData()
                         ])
@@ -196,7 +196,7 @@ class ParameterListView: NSOutlineView, NSOutlineViewDataSource, NSOutlineViewDe
                         parameter.type = CSType.dictionary(schema)
                     case .variant:
                         let cases: [(String, CSType)] = value.data.arrayValue.map({ field in
-                            let tag = field.get(key: "tag").stringValue
+                            let tag = field.get(key: "case").stringValue
                             let type = CSType.from(string: field.get(key: "type").stringValue)
                             let optional = field.get(key: "optional").boolValue
                             return (tag, type: optional ? type.makeOptional() : type)

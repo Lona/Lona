@@ -28,10 +28,10 @@ struct CSValue: Equatable, CSDataSerializable, CSDataDeserializable {
             let hasData = cases.contains(where: { arg in arg.1 != CSType.unit })
 
             if !hasData, data.object != nil {
-                return data.get(key: "tag")
+                return data.get(key: "case")
             }
 
-            if type.isOptional(), data.get(key: "tag").string != nil {
+            if type.isOptional(), data.get(key: "case").string != nil {
                 return data.get(key: "data")
             }
         case CSType.dictionary(let schema):
@@ -58,14 +58,14 @@ struct CSValue: Equatable, CSDataSerializable, CSDataDeserializable {
 
             if !hasData, let tag = data.string {
                 return CSData.Object([
-                    "tag": tag.toData(),
+                    "case": tag.toData(),
                     "data": CSData.Null
                     ])
             }
 
-            if type.isOptional(), data.get(key: "tag").string == nil {
+            if type.isOptional(), data.get(key: "case").string == nil {
                 return CSData.Object([
-                    "tag": (data.isNull ? "None" : "Some").toData(),
+                    "case": (data.isNull ? "None" : "Some").toData(),
                     "data": data
                     ])
             }
@@ -232,7 +232,7 @@ struct CSValue: Equatable, CSDataSerializable, CSDataDeserializable {
 
 extension CSValue {
     func tag() -> String {
-        return self.data.get(key: "tag").stringValue
+        return self.data.get(key: "case").stringValue
     }
 
     func wrap(in variant: CSType, tagged tag: String) -> CSValue {
@@ -247,7 +247,7 @@ extension CSValue {
         }
 
         return CSValue(type: variant, data: CSData.Object([
-            "tag": tag.toData(),
+            "case": tag.toData(),
             "data": data
             ]))
     }
@@ -258,7 +258,7 @@ extension CSValue {
             return nil
         }
 
-        let tag = self.data.get(key: "tag").stringValue
+        let tag = self.data.get(key: "case").stringValue
         guard let match = cases.first(where: { item in item.0 == tag }) else {
             Swift.print("Could not find tag", tag, "in variant type of value", self)
             return nil
