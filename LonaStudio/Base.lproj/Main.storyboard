@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder3.Cocoa.Storyboard.XIB" version="3.0" toolsVersion="13529" targetRuntime="MacOSX.Cocoa" propertyAccessControl="none" useAutolayout="YES">
+<document type="com.apple.InterfaceBuilder3.Cocoa.Storyboard.XIB" version="3.0" toolsVersion="13771" targetRuntime="MacOSX.Cocoa" propertyAccessControl="none" useAutolayout="YES">
     <dependencies>
         <deployment identifier="macosx"/>
-        <plugIn identifier="com.apple.InterfaceBuilder.CocoaPlugin" version="13529"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.CocoaPlugin" version="13771"/>
         <capability name="box content view" minToolsVersion="7.0"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
         <capability name="stacking Non-gravity area distributions on NSStackView" minToolsVersion="7.0" minSystemVersion="10.11"/>
@@ -768,10 +768,10 @@
                                     <popUpButton key="view" verticalHuggingPriority="750" springLoaded="YES" id="hqA-f1-Pie">
                                         <rect key="frame" x="0.0" y="14" width="80" height="28"/>
                                         <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
-                                        <popUpButtonCell key="cell" type="roundTextured" title="Add Layer" bezelStyle="texturedRounded" alignment="left" lineBreakMode="truncatingTail" state="on" borderStyle="border" imageScaling="proportionallyDown" inset="2" pullsDown="YES" altersStateOfSelectedItem="NO" id="O9n-m4-0VJ">
+                                        <popUpButtonCell key="cell" type="roundTextured" title="Add Layer" bezelStyle="texturedRounded" alignment="left" lineBreakMode="truncatingTail" state="on" borderStyle="border" imageScaling="proportionallyDown" inset="2" pullsDown="YES" autoenablesItems="NO" altersStateOfSelectedItem="NO" id="O9n-m4-0VJ">
                                             <behavior key="behavior" lightByBackground="YES" lightByGray="YES" accelerator="YES"/>
                                             <font key="font" metaFont="menu"/>
-                                            <menu key="menu" id="sPf-Ot-oWO">
+                                            <menu key="menu" autoenablesItems="NO" id="sPf-Ot-oWO" customClass="ComponentMenu" customModule="LonaStudio" customModuleProvider="target">
                                                 <items>
                                                     <menuItem title="Add Layer" state="on" hidden="YES" id="qur-u3-0qv"/>
                                                     <menuItem title="View" id="f7y-Lf-ik2">
