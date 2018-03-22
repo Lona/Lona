@@ -91,10 +91,13 @@ class AppDelegate: NSObject, NSApplicationDelegate {
         else { return }
 
         do {
-            try NSDocumentController.shared.duplicateDocument(
-                withContentsOf: url,
-                copying: true,
-                displayName: url.deletingPathExtension().lastPathComponent)
+            guard let document = try NSDocumentController.shared.openUntitledDocumentAndDisplay(true) as? Document else { return }
+
+            let componentLayer = CSComponentLayer.make(from: url)
+            let component = CSComponent.makeDefaultComponent()
+            component.rootLayer = componentLayer
+
+            document.set(component: component)
         } catch {
             Swift.print("Failed to duplicate template", url)
         }

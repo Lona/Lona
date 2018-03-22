@@ -31,6 +31,14 @@ class Document: NSDocument {
 
     var controller: NSWindowController?
 
+    func set(component: CSComponent) {
+        data = component
+
+        guard let viewController = self.viewController else { return }
+        viewController.setComponent(component: component)
+        viewController.fileURL = fileURL
+    }
+
     override func makeWindowControllers() {
         // Returns the Storyboard that contains your Document window.
         let storyboard = NSStoryboard(name: NSStoryboard.Name(rawValue: "Main"), bundle: nil)
