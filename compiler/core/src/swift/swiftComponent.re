@@ -451,6 +451,21 @@ let generate =
       |> List.map(defineInitialLayerValues)
       |> List.concat;
     };
+    /* contains & isPropertyUsed should be made more general if needed in other places */
+    let contains = (~value: 'a, theList: list('a)) => {
+      let f = (found, elem) => found || elem == value;
+      ListLabels.fold_left(~f, ~init=false, theList);
+    };
+    let isPropertyUsed = (root, property) => {
+      let bindings = 
+        root
+        |> Layer.flatten
+        |> List.map((v: Types.layer) => v.parameters |> StringMap.bindings)
+        |> List.flatten
+        |> List.map(((k, _)) => k);
+
+        contains(~value=property, bindings);
+    };
     let resetViewStyling = (layer: Types.layer) =>
       switch layer.typeName {
       | View => [
@@ -463,7 +478,7 @@ let generate =
             "left":
               layerMemberExpression(layer, [SwiftIdentifier("borderType")]),
             "operator": "=",
-            "right": SwiftIdentifier(".noBorder")
+            "right": isPropertyUsed(layer, "borderWidth") ? SwiftIdentifier(".lineBorder") : SwiftIdentifier(".noBorder")
           }),
           BinaryExpression({
             "left":

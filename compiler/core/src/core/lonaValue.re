@@ -57,6 +57,8 @@ let parameterDefaultValueMap =
     ("paddingBottom", number(0.)),
     ("paddingLeft", number(0.)),
     ("borderRadius", number(0.)),
+    ("borderWidth", number(0.)),
+    ("borderColor", color("transparent")),
     ("width", number(0.)),
     ("height", number(0.)),
     /* Interactivity */

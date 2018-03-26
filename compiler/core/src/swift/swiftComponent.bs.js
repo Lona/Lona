@@ -5,6 +5,7 @@ var List                             = require("bs-platform/lib/js/list.js");
 var Block                            = require("bs-platform/lib/js/block.js");
 var Curry                            = require("bs-platform/lib/js/curry.js");
 var Caml_obj                         = require("bs-platform/lib/js/caml_obj.js");
+var ListLabels                       = require("bs-platform/lib/js/listLabels.js");
 var Pervasives                       = require("bs-platform/lib/js/pervasives.js");
 var LodashUpperfirst                 = require("lodash.upperfirst");
 var Layer$LonaCompilerCore           = require("../core/layer.bs.js");
@@ -536,6 +537,23 @@ function generate(_, swiftOptions, name, colors, textStyles, json) {
       };
       return List.concat(List.map(defineInitialLayerValues, Layer$LonaCompilerCore.flatten(rootLayer)));
     };
+    var isPropertyUsed = function (root, property) {
+      var bindings = List.map((function (param) {
+              return param[0];
+            }), List.flatten(List.map((function (v) {
+                      return Curry._1(StringMap$LonaCompilerCore.bindings, v[/* parameters */2]);
+                    }), Layer$LonaCompilerCore.flatten(root))));
+      var value = property;
+      var theList = bindings;
+      var f = function (found, elem) {
+        if (found) {
+          return /* true */1;
+        } else {
+          return +(elem === value);
+        }
+      };
+      return ListLabels.fold_left(f, /* false */0, theList);
+    };
     var resetViewStyling = function (layer) {
       var match = layer[/* typeName */0];
       if (typeof match === "number") {
@@ -543,6 +561,7 @@ function generate(_, swiftOptions, name, colors, textStyles, json) {
           if (match !== 0) {
             return /* [] */0;
           } else {
+            var match$1 = isPropertyUsed(layer, "borderWidth");
             return /* :: */[
                     /* BinaryExpression */Block.__(2, [{
                           left: memberOrSelfExpression(parentNameOrSelf(layer), /* :: */[
@@ -559,7 +578,7 @@ function generate(_, swiftOptions, name, colors, textStyles, json) {
                                   /* [] */0
                                 ]),
                             operator: "=",
-                            right: /* SwiftIdentifier */Block.__(8, [".noBorder"])
+                            right: match$1 !== 0 ? /* SwiftIdentifier */Block.__(8, [".lineBorder"]) : /* SwiftIdentifier */Block.__(8, [".noBorder"])
                           }]),
                       /* :: */[
                         /* BinaryExpression */Block.__(2, [{

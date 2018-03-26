@@ -25,6 +25,8 @@ let parameterTypeMap =
     ("paddingBottom", Types.numberType),
     ("paddingLeft", Types.numberType),
     ("borderRadius", Types.numberType),
+    ("borderWidth", Types.numberType),
+    ("borderColor", Types.colorType),
     ("width", Types.numberType),
     ("height", Types.numberType),
     /* Interactivity */

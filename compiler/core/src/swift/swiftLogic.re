@@ -78,6 +78,11 @@ let toSwiftAST =
       Ast.SwiftIdentifier(
         name |> Js.String.replace(".borderRadius", ".layer.cornerRadius")
       )
+    | (UIKit, Ast.SwiftIdentifier(name))
+        when name |> Js.String.endsWith(".borderWidth") =>
+      Ast.SwiftIdentifier(
+        name |> Js.String.replace(".borderWidth", ".layer.borderWidth")
+      )
     | (AppKit, Ast.SwiftIdentifier(name))
         when name |> Js.String.endsWith(".borderRadius") =>
       Ast.SwiftIdentifier(
@@ -115,6 +120,20 @@ let toSwiftAST =
     switch logicRootNode {
     | Logic.Assign(a, b) =>
       switch (logicValueToSwiftAST(b), logicValueToSwiftAST(a)) {
+      | (Ast.SwiftIdentifier(name), Ast.MemberExpression(right))
+          when name |> Js.String.endsWith(".borderColor")
+          && options.framework == UIKit =>
+        Ast.BinaryExpression({
+          "left":
+            Ast.SwiftIdentifier(
+              name |> Js.String.replace(".borderColor", ".layer.borderColor")
+            ),
+          "operator": "=",
+          "right":
+            Ast.MemberExpression(
+                right @ [Ast.SwiftIdentifier("cgColor")]
+            )
+        })
       | (Ast.SwiftIdentifier(name), other)
           when name |> Js.String.endsWith("visible") =>
         Ast.BinaryExpression({
