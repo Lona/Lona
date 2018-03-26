@@ -95,6 +95,7 @@ class ViewController: NSViewController, NSOutlineViewDataSource, NSOutlineViewDe
         CSTypography.reload()
         CSGradients.reload()
         CSShadows.reload()
+        ComponentMenu.shared?.updateComponentsFromModule()
 
         component.layers
             .filter({ $0 is CSComponentLayer })
@@ -119,10 +120,8 @@ class ViewController: NSViewController, NSOutlineViewDataSource, NSOutlineViewDe
         dialog.allowedFileTypes        = ["component"]
 
         if dialog.runModal() == NSApplication.ModalResponse.OK {
-            let result = dialog.url
-
-            if result != nil {
-                let newLayer = outlineView.createComponentLayer(from: result!)
+            if let url = dialog.url {
+                let newLayer = CSComponentLayer.make(from: url)
 
                 // Add number suffix if needed
                 newLayer.name = component.getNewLayerName(startingWith: newLayer.name)
@@ -329,22 +328,7 @@ class ViewController: NSViewController, NSOutlineViewDataSource, NSOutlineViewDe
 //        }
     }
 
-    var component: CSComponent = CSComponent(
-        name: "Component",
-        canvas: [
-            Canvas(visible: true, name: "iPhone SE", width: 320, height: 100, heightMode: "At Least", exportScale: 1, backgroundColor: "white"),
-            Canvas(visible: true, name: "iPhone 7", width: 375, height: 100, heightMode: "At Least", exportScale: 1, backgroundColor: "white"),
-            Canvas(visible: true, name: "iPhone 7+", width: 414, height: 100, heightMode: "At Least", exportScale: 1, backgroundColor: "white")
-        ],
-        rootLayer: CSLayer(name: "View", type: .view, parameters: [
-            "alignSelf": "stretch".toData()
-        ]),
-        parameters: [],
-        cases: [CSCase.defaultCase],
-        logic: [],
-        config: CSData.Object([:]),
-        metadata: CSData.Object([:])
-    )
+    var component: CSComponent = CSComponent.makeDefaultComponent()
 
     var dataRoot: CSLayer { return component.rootLayer }
 

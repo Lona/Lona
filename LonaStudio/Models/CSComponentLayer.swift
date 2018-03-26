@@ -89,4 +89,16 @@ class CSComponentLayer: CSLayer {
         return parameters
     }
 
+    static func make(from url: URL) -> CSComponentLayer {
+        let componentName = CSComponent.componentName(from: url)
+        let componentLayer = CSComponentLayer(name: componentName, type: .custom(componentName))
+
+        // TODO: Look at parameter.defaultValue if it exists
+        componentLayer.component.parameters.forEach({ parameter in
+            componentLayer.parameters[parameter.name] = CSValue.exampleValue(for: parameter.type).data
+        })
+
+        return componentLayer
+    }
+
 }

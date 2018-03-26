@@ -45,7 +45,7 @@ final class LayerList: NSOutlineView, NSTextFieldDelegate {
         return selectedLayer ?? (item(atRow: 0) as! CSLayer)
     }
 
-    fileprivate func componentName(for url: URL) -> String {
+    static func componentName(for url: URL) -> String {
         return url.deletingPathExtension().lastPathComponent
     }
 
@@ -63,22 +63,6 @@ final class LayerList: NSOutlineView, NSTextFieldDelegate {
     }
 
     // MARK: - Public
-
-    func createComponentLayer(from url: URL) -> CSComponentLayer {
-        let file = CSComponent(url: url)!
-        let name = componentName(for: url)
-
-        let newLayer = CSComponentLayer(name: name, type: .custom(url.deletingPathExtension().lastPathComponent))
-        newLayer.component = file
-
-        // Set default values for component parameters
-        // TODO: Look at parameter.defaultValue if it exists
-        file.parameters.forEach({ parameter in
-            newLayer.parameters[parameter.name] = CSValue.exampleValue(for: parameter.type).data
-        })
-
-        return newLayer
-    }
 
     override func menu(for event: NSEvent) -> NSMenu? {
         let point = convert(event.locationInWindow, from: nil)
@@ -286,8 +270,7 @@ extension LayerList {
         }
 
         documentController.openDocument(withContentsOf: url, display: true, completionHandler: { (_, _, _) in
-
-            let componentLayer = self.createComponentLayer(from: url)
+            let componentLayer = CSComponentLayer.make(from: url)
             self.replace(layer: layer, with: componentLayer)
 
             self.onChange()
@@ -318,7 +301,7 @@ extension LayerList {
         NSDocumentController.shared.openDocument(
             withContentsOf: url, display: true, completionHandler: { (document, _, _) in
             layer.component = (document as! Document).file!
-            layer.name = self.componentName(for: url)
+            layer.name = CSComponent.componentName(from: url)
             layer.type = CSLayer.LayerType.custom(url.deletingPathExtension().lastPathComponent)
             self.onChange()
         })
