@@ -82,3 +82,4 @@ fastlane/test_output
 dmg/*.zip
 dmg/*.dmg
 dmg/*.app
+examples/generated/test/LonaViewer/LonaViewer.xcodeproj/project.xcworkspace/xcshareddata
