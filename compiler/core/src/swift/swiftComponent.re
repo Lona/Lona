@@ -451,20 +451,16 @@ let generate =
       |> List.map(defineInitialLayerValues)
       |> List.concat;
     };
-    /* contains & isPropertyUsed should be made more general if needed in other places */
-    let contains = (~value: 'a, theList: list('a)) => {
-      let f = (found, elem) => found || elem == value;
-      ListLabels.fold_left(~f, ~init=false, theList);
-    };
-    let isPropertyUsed = (root, property) => {
-      let bindings = 
-        root
-        |> Layer.flatten
-        |> List.map((v: Types.layer) => v.parameters |> StringMap.bindings)
-        |> List.flatten
-        |> List.map(((k, _)) => k);
-
-        contains(~value=property, bindings);
+    /* isPropertyUsed should be made more general if needed in other places */
+    let isPropertyUsed = (layer: Types.layer, property) => {
+      let assignedParameters =
+        Layer.LayerMap.find_opt(layer, layerParameterAssignments);
+      let parameterIsAssigned =
+        switch assignedParameters {
+        | Some(parameters) => StringMap.mem(property, parameters)
+        | None => false
+        };
+      parameterIsAssigned || StringMap.mem(property, layer.parameters);
     };
     let resetViewStyling = (layer: Types.layer) =>
       switch layer.typeName {

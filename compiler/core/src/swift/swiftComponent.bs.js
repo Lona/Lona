@@ -5,7 +5,6 @@ var List                             = require("bs-platform/lib/js/list.js");
 var Block                            = require("bs-platform/lib/js/block.js");
 var Curry                            = require("bs-platform/lib/js/curry.js");
 var Caml_obj                         = require("bs-platform/lib/js/caml_obj.js");
-var ListLabels                       = require("bs-platform/lib/js/listLabels.js");
 var Pervasives                       = require("bs-platform/lib/js/pervasives.js");
 var LodashUpperfirst                 = require("lodash.upperfirst");
 var Layer$LonaCompilerCore           = require("../core/layer.bs.js");
@@ -537,22 +536,14 @@ function generate(_, swiftOptions, name, colors, textStyles, json) {
       };
       return List.concat(List.map(defineInitialLayerValues, Layer$LonaCompilerCore.flatten(rootLayer)));
     };
-    var isPropertyUsed = function (root, property) {
-      var bindings = List.map((function (param) {
-              return param[0];
-            }), List.flatten(List.map((function (v) {
-                      return Curry._1(StringMap$LonaCompilerCore.bindings, v[/* parameters */2]);
-                    }), Layer$LonaCompilerCore.flatten(root))));
-      var value = property;
-      var theList = bindings;
-      var f = function (found, elem) {
-        if (found) {
-          return /* true */1;
-        } else {
-          return +(elem === value);
-        }
-      };
-      return ListLabels.fold_left(f, /* false */0, theList);
+    var isPropertyUsed = function (layer, property) {
+      var assignedParameters = Layer$LonaCompilerCore.LayerMap[/* find_opt */24](layer, layerParameterAssignments);
+      var parameterIsAssigned = assignedParameters ? Curry._2(StringMap$LonaCompilerCore.mem, property, assignedParameters[0]) : /* false */0;
+      if (parameterIsAssigned) {
+        return /* true */1;
+      } else {
+        return Curry._2(StringMap$LonaCompilerCore.mem, property, layer[/* parameters */2]);
+      }
     };
     var resetViewStyling = function (layer) {
       var match = layer[/* typeName */0];
