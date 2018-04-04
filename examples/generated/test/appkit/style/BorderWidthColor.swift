@@ -41,7 +41,7 @@ public class BorderWidthColor: NSBox {
 
   private func setUpViews() {
     boxType = .custom
-    borderType = .lineBorder
+    borderType = .noBorder
     contentViewMargins = .zero
     view1View.boxType = .custom
     view1View.borderType = .lineBorder
