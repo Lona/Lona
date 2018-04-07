@@ -114,30 +114,42 @@ var parameterTypeMap = StringMap$LonaCompilerCore.fromList(/* :: */[
                                             ],
                                             /* :: */[
                                               /* tuple */[
-                                                "width",
+                                                "borderWidth",
                                                 Types$LonaCompilerCore.numberType
                                               ],
                                               /* :: */[
                                                 /* tuple */[
-                                                  "height",
-                                                  Types$LonaCompilerCore.numberType
+                                                  "borderColor",
+                                                  Types$LonaCompilerCore.colorType
                                                 ],
                                                 /* :: */[
                                                   /* tuple */[
-                                                    "pressed",
-                                                    Types$LonaCompilerCore.booleanType
+                                                    "width",
+                                                    Types$LonaCompilerCore.numberType
                                                   ],
                                                   /* :: */[
                                                     /* tuple */[
-                                                      "hovered",
-                                                      Types$LonaCompilerCore.booleanType
+                                                      "height",
+                                                      Types$LonaCompilerCore.numberType
                                                     ],
                                                     /* :: */[
                                                       /* tuple */[
-                                                        "onPress",
-                                                        Types$LonaCompilerCore.handlerType
+                                                        "pressed",
+                                                        Types$LonaCompilerCore.booleanType
                                                       ],
-                                                      /* [] */0
+                                                      /* :: */[
+                                                        /* tuple */[
+                                                          "hovered",
+                                                          Types$LonaCompilerCore.booleanType
+                                                        ],
+                                                        /* :: */[
+                                                          /* tuple */[
+                                                            "onPress",
+                                                            Types$LonaCompilerCore.handlerType
+                                                          ],
+                                                          /* [] */0
+                                                        ]
+                                                      ]
                                                     ]
                                                   ]
                                                 ]

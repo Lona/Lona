@@ -451,6 +451,17 @@ let generate =
       |> List.map(defineInitialLayerValues)
       |> List.concat;
     };
+    /* isPropertyUsed should be made more general if needed in other places */
+    let isPropertyUsed = (layer: Types.layer, property) => {
+      let assignedParameters =
+        Layer.LayerMap.find_opt(layer, layerParameterAssignments);
+      let parameterIsAssigned =
+        switch assignedParameters {
+        | Some(parameters) => StringMap.mem(property, parameters)
+        | None => false
+        };
+      parameterIsAssigned || StringMap.mem(property, layer.parameters);
+    };
     let resetViewStyling = (layer: Types.layer) =>
       switch layer.typeName {
       | View => [
@@ -463,7 +474,7 @@ let generate =
             "left":
               layerMemberExpression(layer, [SwiftIdentifier("borderType")]),
             "operator": "=",
-            "right": SwiftIdentifier(".noBorder")
+            "right": isPropertyUsed(layer, "borderWidth") ? SwiftIdentifier(".lineBorder") : SwiftIdentifier(".noBorder")
           }),
           BinaryExpression({
             "left":

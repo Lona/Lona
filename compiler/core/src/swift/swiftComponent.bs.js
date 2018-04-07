@@ -536,6 +536,15 @@ function generate(_, swiftOptions, name, colors, textStyles, json) {
       };
       return List.concat(List.map(defineInitialLayerValues, Layer$LonaCompilerCore.flatten(rootLayer)));
     };
+    var isPropertyUsed = function (layer, property) {
+      var assignedParameters = Layer$LonaCompilerCore.LayerMap[/* find_opt */24](layer, layerParameterAssignments);
+      var parameterIsAssigned = assignedParameters ? Curry._2(StringMap$LonaCompilerCore.mem, property, assignedParameters[0]) : /* false */0;
+      if (parameterIsAssigned) {
+        return /* true */1;
+      } else {
+        return Curry._2(StringMap$LonaCompilerCore.mem, property, layer[/* parameters */2]);
+      }
+    };
     var resetViewStyling = function (layer) {
       var match = layer[/* typeName */0];
       if (typeof match === "number") {
@@ -543,6 +552,7 @@ function generate(_, swiftOptions, name, colors, textStyles, json) {
           if (match !== 0) {
             return /* [] */0;
           } else {
+            var match$1 = isPropertyUsed(layer, "borderWidth");
             return /* :: */[
                     /* BinaryExpression */Block.__(2, [{
                           left: memberOrSelfExpression(parentNameOrSelf(layer), /* :: */[
@@ -559,7 +569,7 @@ function generate(_, swiftOptions, name, colors, textStyles, json) {
                                   /* [] */0
                                 ]),
                             operator: "=",
-                            right: /* SwiftIdentifier */Block.__(8, [".noBorder"])
+                            right: match$1 !== 0 ? /* SwiftIdentifier */Block.__(8, [".lineBorder"]) : /* SwiftIdentifier */Block.__(8, [".noBorder"])
                           }]),
                       /* :: */[
                         /* BinaryExpression */Block.__(2, [{

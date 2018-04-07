@@ -225,7 +225,7 @@ var parameterDefaultValueMap = StringMap$LonaCompilerCore.fromList(/* :: */[
                                               ],
                                               /* :: */[
                                                 /* tuple */[
-                                                  "width",
+                                                  "borderWidth",
                                                   /* record */[
                                                     /* ltype */Types$LonaCompilerCore.numberType,
                                                     /* data */0
@@ -233,37 +233,55 @@ var parameterDefaultValueMap = StringMap$LonaCompilerCore.fromList(/* :: */[
                                                 ],
                                                 /* :: */[
                                                   /* tuple */[
-                                                    "height",
+                                                    "borderColor",
                                                     /* record */[
-                                                      /* ltype */Types$LonaCompilerCore.numberType,
-                                                      /* data */0
+                                                      /* ltype */Types$LonaCompilerCore.colorType,
+                                                      /* data */"transparent"
                                                     ]
                                                   ],
                                                   /* :: */[
                                                     /* tuple */[
-                                                      "pressed",
+                                                      "width",
                                                       /* record */[
-                                                        /* ltype */Types$LonaCompilerCore.booleanType,
-                                                        /* data */Js_boolean.to_js_boolean(/* false */0)
+                                                        /* ltype */Types$LonaCompilerCore.numberType,
+                                                        /* data */0
                                                       ]
                                                     ],
                                                     /* :: */[
                                                       /* tuple */[
-                                                        "hovered",
+                                                        "height",
                                                         /* record */[
-                                                          /* ltype */Types$LonaCompilerCore.booleanType,
-                                                          /* data */Js_boolean.to_js_boolean(/* false */0)
+                                                          /* ltype */Types$LonaCompilerCore.numberType,
+                                                          /* data */0
                                                         ]
                                                       ],
                                                       /* :: */[
                                                         /* tuple */[
-                                                          "onPress",
+                                                          "pressed",
                                                           /* record */[
-                                                            /* ltype */Types$LonaCompilerCore.undefinedType,
-                                                            /* data */null
+                                                            /* ltype */Types$LonaCompilerCore.booleanType,
+                                                            /* data */Js_boolean.to_js_boolean(/* false */0)
                                                           ]
                                                         ],
-                                                        /* [] */0
+                                                        /* :: */[
+                                                          /* tuple */[
+                                                            "hovered",
+                                                            /* record */[
+                                                              /* ltype */Types$LonaCompilerCore.booleanType,
+                                                              /* data */Js_boolean.to_js_boolean(/* false */0)
+                                                            ]
+                                                          ],
+                                                          /* :: */[
+                                                            /* tuple */[
+                                                              "onPress",
+                                                              /* record */[
+                                                                /* ltype */Types$LonaCompilerCore.undefinedType,
+                                                                /* data */null
+                                                              ]
+                                                            ],
+                                                            /* [] */0
+                                                          ]
+                                                        ]
                                                       ]
                                                     ]
                                                   ]
