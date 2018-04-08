@@ -1,0 +1,15 @@
+{
+  "name": "lona-extractor",
+  "version": "1.0.0",
+  "main": "index.js",
+  "license": "MIT",
+  "dependencies": {
+    "@babel/traverse": "^7.0.0-beta.44",
+    "babel-core": "^6.26.0",
+    "babel-preset-env": "^1.6.1",
+    "babel-preset-react": "^6.24.1",
+    "babel-preset-stage-0": "^6.24.1",
+    "babel-types": "^6.26.0",
+    "babylon": "^6.18.0"
+  }
+}
