@@ -5,7 +5,7 @@
   "license": "MIT",
   "scripts": {
     "snapshot":
-      "node index.js > workspace/View1.component && node ../compiler/core/src/main.bs.js workspace swift workspace out"
+      "node example.js && node ../compiler/core/src/main.bs.js workspace swift workspace out"
   },
   "dependencies": {
     "@babel/traverse": "^7.0.0-beta.44",

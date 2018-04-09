@@ -39,7 +39,7 @@
   "devDependencies": {
     "bs-batteries": "0.0.14",
     "bs-glob": "reasonml-community/bs-glob",
-    "bs-json": "^0.2.4",
+    "bs-json": "^1.0.1",
     "bs-node": "github:buckletypes/bs-node",
     "bs-platform": "^2.1.0",
     "csscolorparser": "^1.0.3",
@@ -49,5 +49,8 @@
     "lodash.upperfirst": "^4.3.1",
     "prettier": "dabbott/prettier#28eebd6d150746b91f581e18bef8352e2bae5623",
     "webpack": "^3.10.0"
+  },
+  "dependencies": {
+    "memfs": "^2.8.0"
   }
 }
