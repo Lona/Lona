@@ -474,7 +474,9 @@ let generate =
             "left":
               layerMemberExpression(layer, [SwiftIdentifier("borderType")]),
             "operator": "=",
-            "right": isPropertyUsed(layer, "borderWidth") ? SwiftIdentifier(".lineBorder") : SwiftIdentifier(".noBorder")
+            "right":
+              isPropertyUsed(layer, "borderWidth") ?
+                SwiftIdentifier(".lineBorder") : SwiftIdentifier(".noBorder")
           }),
           BinaryExpression({
             "left":

@@ -1,7 +1,12 @@
 import React, { Component } from "react";
-import { AppRegistry, View, StyleSheet } from "react-native";
+import { AppRegistry, PropTypes, View, StyleSheet } from "react-native";
 
 export default class App extends Component {
+  static propTypes = {
+    title: PropTypes.string.isRequired,
+    size: PropTypes.number
+  };
+
   render() {
     return (
       <View style={styles.container}>

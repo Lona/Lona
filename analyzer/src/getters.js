@@ -9,9 +9,13 @@ function getMethod(path, name) {
 }
 
 function getComponentClass(path) {
+  const predicate = babelTypes.buildMatchMemberExpression("React.Component");
+
   return find(path, "ClassDeclaration", c => {
     const superClass = c.get("superClass").node;
-    return superClass && superClass.name === "Component";
+    return (
+      superClass && (superClass.name === "Component" || predicate(superClass))
+    );
   })[0];
 }
 
@@ -19,6 +23,15 @@ function getComponentRenderFunction(path) {
   const componentClass = getComponentClass(path);
   if (!componentClass) return;
   return getMethod(componentClass, "render");
+}
+
+function getPropTypes(path) {
+  const componentClass = getComponentClass(path);
+  if (!componentClass) return;
+  return find(componentClass, "ClassProperty", c => {
+    const key = c.get("key").node;
+    return key && key.name === "propTypes";
+  })[0];
 }
 
 function getStyleSheet(path) {
@@ -31,6 +44,7 @@ function getStyleSheet(path) {
 }
 
 module.exports = {
+  getPropTypes,
   getMethod,
   getComponentClass,
   getComponentRenderFunction,

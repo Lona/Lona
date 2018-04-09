@@ -45,7 +45,7 @@ function parseColor(value) {
       throw [
             Caml_builtin_exceptions.match_failure,
             [
-              "/Users/devin_abbott/Projects/ComponentStudio/ComponentStudio/compiler/core/src/utils/css.re",
+              "/Users/devinabbott/Projects/Lona/compiler/core/src/utils/css.re",
               14,
               8
             ]

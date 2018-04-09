@@ -1,6 +1,6 @@
 {
   "root": {
-    "id": "Test",
+    "id": "View0",
     "type": "Lona:View",
     "params": {
       "flex": 1,
@@ -9,7 +9,7 @@
     },
     "children": [
       {
-        "id": "Test",
+        "id": "View1",
         "type": "Lona:View",
         "params": {
           "width": 200,
@@ -23,7 +23,16 @@
       }
     ]
   },
+  "params": [
+    {
+      "name": "title",
+      "type": "String"
+    },
+    {
+      "name": "size",
+      "type": "Number?"
+    }
+  ],
   "logic": [],
-  "params": [],
   "canvases": []
 }
