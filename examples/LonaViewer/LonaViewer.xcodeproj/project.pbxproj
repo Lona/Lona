@@ -189,7 +189,7 @@
 				12BBFDD8206B02720041620C /* assets */,
 			);
 			name = appkit;
-			path = ../../appkit;
+			path = ../../generated/test/appkit;
 			sourceTree = "<group>";
 		};
 		12BBFDC6206B02720041620C /* images */ = {
@@ -261,7 +261,7 @@
 				12BBFE00206B02AC0041620C /* assets */,
 			);
 			name = swift;
-			path = ../../swift;
+			path = ../../generated/test/swift;
 			sourceTree = "<group>";
 		};
 		12BBFDED206B02AC0041620C /* images */ = {
