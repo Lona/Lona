@@ -78,12 +78,7 @@ enum Generated: String {
 
     var constraints: [Constraint] {
         switch self {
-        case .localAsset:
-            return [
-                equal(\.topAnchor, \.safeAreaLayoutGuide.topAnchor),
-                equal(\.leftAnchor),
-            ]
-        case .pressableRootView:
+        case .localAsset, .pressableRootView:
             return [
                 equal(\.topAnchor, \.safeAreaLayoutGuide.topAnchor),
                 equal(\.leftAnchor),
