@@ -122,6 +122,17 @@ public class TextStylesTest: UIView {
   private var text9ViewTrailingAnchorConstraint: NSLayoutConstraint?
 
   private func setUpViews() {
+    textView.numberOfLines = 0
+    text1View.numberOfLines = 0
+    text2View.numberOfLines = 0
+    text3View.numberOfLines = 0
+    text4View.numberOfLines = 0
+    text5View.numberOfLines = 0
+    text6View.numberOfLines = 0
+    text7View.numberOfLines = 0
+    text8View.numberOfLines = 0
+    text9View.numberOfLines = 0
+
     addSubview(textView)
     addSubview(text1View)
     addSubview(text2View)

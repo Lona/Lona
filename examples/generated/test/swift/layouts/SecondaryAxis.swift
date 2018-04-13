@@ -73,6 +73,8 @@ public class SecondaryAxis: UIView {
   private var fillViewHeightAnchorConstraint: NSLayoutConstraint?
 
   private func setUpViews() {
+    textView.numberOfLines = 0
+
     addSubview(fixedView)
     addSubview(fitView)
     addSubview(fillView)

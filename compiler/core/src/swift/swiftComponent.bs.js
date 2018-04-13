@@ -536,67 +536,98 @@ function generate(_, swiftOptions, name, colors, textStyles, json) {
       };
       return List.concat(List.map(defineInitialLayerValues, Layer$LonaCompilerCore.flatten(rootLayer)));
     };
-    var isPropertyUsed = function (layer, property) {
+    var isParameterAssigned = function (layer, parameter) {
       var assignedParameters = Layer$LonaCompilerCore.LayerMap[/* find_opt */24](layer, layerParameterAssignments);
-      var parameterIsAssigned = assignedParameters ? Curry._2(StringMap$LonaCompilerCore.mem, property, assignedParameters[0]) : /* false */0;
-      if (parameterIsAssigned) {
+      if (assignedParameters) {
+        return Curry._2(StringMap$LonaCompilerCore.mem, parameter, assignedParameters[0]);
+      } else {
+        return /* false */0;
+      }
+    };
+    var isParameterUsed = function (layer, parameter) {
+      if (isParameterAssigned(layer, parameter)) {
         return /* true */1;
       } else {
-        return Curry._2(StringMap$LonaCompilerCore.mem, property, layer[/* parameters */2]);
+        return Curry._2(StringMap$LonaCompilerCore.mem, parameter, layer[/* parameters */2]);
       }
     };
     var resetViewStyling = function (layer) {
-      var match = layer[/* typeName */0];
-      if (typeof match === "number") {
-        if (match !== 1) {
-          if (match !== 0) {
-            return /* [] */0;
-          } else {
-            var match$1 = isPropertyUsed(layer, "borderWidth");
-            return /* :: */[
-                    /* BinaryExpression */Block.__(2, [{
-                          left: memberOrSelfExpression(parentNameOrSelf(layer), /* :: */[
-                                /* SwiftIdentifier */Block.__(8, ["boxType"]),
-                                /* [] */0
-                              ]),
-                          operator: "=",
-                          right: /* SwiftIdentifier */Block.__(8, [".custom"])
-                        }]),
-                    /* :: */[
+      var match = swiftOptions[/* framework */0];
+      var match$1 = layer[/* typeName */0];
+      if (match !== 0) {
+        if (typeof match$1 === "number") {
+          if (match$1 !== 1) {
+            if (match$1 !== 0) {
+              return /* [] */0;
+            } else {
+              var match$2 = isParameterUsed(layer, "borderWidth");
+              return /* :: */[
                       /* BinaryExpression */Block.__(2, [{
                             left: memberOrSelfExpression(parentNameOrSelf(layer), /* :: */[
-                                  /* SwiftIdentifier */Block.__(8, ["borderType"]),
+                                  /* SwiftIdentifier */Block.__(8, ["boxType"]),
                                   /* [] */0
                                 ]),
                             operator: "=",
-                            right: match$1 !== 0 ? /* SwiftIdentifier */Block.__(8, [".lineBorder"]) : /* SwiftIdentifier */Block.__(8, [".noBorder"])
+                            right: /* SwiftIdentifier */Block.__(8, [".custom"])
                           }]),
                       /* :: */[
                         /* BinaryExpression */Block.__(2, [{
                               left: memberOrSelfExpression(parentNameOrSelf(layer), /* :: */[
-                                    /* SwiftIdentifier */Block.__(8, ["contentViewMargins"]),
+                                    /* SwiftIdentifier */Block.__(8, ["borderType"]),
                                     /* [] */0
                                   ]),
                               operator: "=",
-                              right: /* SwiftIdentifier */Block.__(8, [".zero"])
+                              right: match$2 !== 0 ? /* SwiftIdentifier */Block.__(8, [".lineBorder"]) : /* SwiftIdentifier */Block.__(8, [".noBorder"])
                             }]),
-                        /* [] */0
+                        /* :: */[
+                          /* BinaryExpression */Block.__(2, [{
+                                left: memberOrSelfExpression(parentNameOrSelf(layer), /* :: */[
+                                      /* SwiftIdentifier */Block.__(8, ["contentViewMargins"]),
+                                      /* [] */0
+                                    ]),
+                                operator: "=",
+                                right: /* SwiftIdentifier */Block.__(8, [".zero"])
+                              }]),
+                          /* [] */0
+                        ]
                       ]
-                    ]
+                    ];
+            }
+          } else {
+            return /* :: */[
+                    /* BinaryExpression */Block.__(2, [{
+                          left: memberOrSelfExpression(parentNameOrSelf(layer), /* :: */[
+                                /* SwiftIdentifier */Block.__(8, ["lineBreakMode"]),
+                                /* [] */0
+                              ]),
+                          operator: "=",
+                          right: /* SwiftIdentifier */Block.__(8, [".byWordWrapping"])
+                        }]),
+                    /* [] */0
                   ];
           }
         } else {
-          return /* :: */[
-                  /* BinaryExpression */Block.__(2, [{
-                        left: memberOrSelfExpression(parentNameOrSelf(layer), /* :: */[
-                              /* SwiftIdentifier */Block.__(8, ["lineBreakMode"]),
-                              /* [] */0
-                            ]),
-                        operator: "=",
-                        right: /* SwiftIdentifier */Block.__(8, [".byWordWrapping"])
-                      }]),
-                  /* [] */0
-                ];
+          return /* [] */0;
+        }
+      } else if (typeof match$1 === "number") {
+        if (match$1 !== 1) {
+          return /* [] */0;
+        } else {
+          var match$3 = Curry._2(StringMap$LonaCompilerCore.mem, "numberOfLines", layer[/* parameters */2]);
+          return List.concat(/* :: */[
+                      match$3 !== 0 ? /* [] */0 : /* :: */[
+                          /* BinaryExpression */Block.__(2, [{
+                                left: memberOrSelfExpression(parentNameOrSelf(layer), /* :: */[
+                                      /* SwiftIdentifier */Block.__(8, ["numberOfLines"]),
+                                      /* [] */0
+                                    ]),
+                                operator: "=",
+                                right: /* LiteralExpression */Block.__(0, [/* Integer */Block.__(1, [0])])
+                              }]),
+                          /* [] */0
+                        ],
+                      /* [] */0
+                    ]);
         }
       } else {
         return /* [] */0;
@@ -621,7 +652,6 @@ function generate(_, swiftOptions, name, colors, textStyles, json) {
         return /* [] */0;
       }
     };
-    var match = +(swiftOptions[/* framework */0] === /* AppKit */1);
     return /* FunctionDeclaration */Block.__(13, [{
                 name: "setUpViews",
                 modifiers: /* :: */[
@@ -632,7 +662,7 @@ function generate(_, swiftOptions, name, colors, textStyles, json) {
                 result: /* None */0,
                 throws: /* false */0,
                 body: SwiftDocument$LonaCompilerCore.joinGroups(/* Empty */0, /* :: */[
-                      match !== 0 ? List.concat(Layer$LonaCompilerCore.flatmap(resetViewStyling, root)) : /* [] */0,
+                      List.concat(Layer$LonaCompilerCore.flatmap(resetViewStyling, root)),
                       /* :: */[
                         List.concat(Layer$LonaCompilerCore.flatmapParent(addSubviews, root)),
                         /* :: */[

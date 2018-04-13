@@ -81,6 +81,8 @@ public class PrimaryAxis: UIView {
   private var fill2ViewWidthAnchorConstraint: NSLayoutConstraint?
 
   private func setUpViews() {
+    textView.numberOfLines = 0
+
     addSubview(fixedView)
     addSubview(fitView)
     addSubview(fill1View)
