@@ -47,6 +47,8 @@ public class Assign: UIView {
   private var textViewTrailingAnchorConstraint: NSLayoutConstraint?
 
   private func setUpViews() {
+    textView.numberOfLines = 0
+
     addSubview(textView)
   }
 

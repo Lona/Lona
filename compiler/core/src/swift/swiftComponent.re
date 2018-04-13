@@ -451,20 +451,22 @@ let generate =
       |> List.map(defineInitialLayerValues)
       |> List.concat;
     };
-    /* isPropertyUsed should be made more general if needed in other places */
-    let isPropertyUsed = (layer: Types.layer, property) => {
+    let isParameterSetInitially = (layer: Types.layer, parameter) =>
+      StringMap.mem(parameter, layer.parameters);
+    let isParameterAssigned = (layer: Types.layer, parameter) => {
       let assignedParameters =
         Layer.LayerMap.find_opt(layer, layerParameterAssignments);
-      let parameterIsAssigned =
-        switch assignedParameters {
-        | Some(parameters) => StringMap.mem(property, parameters)
-        | None => false
-        };
-      parameterIsAssigned || StringMap.mem(property, layer.parameters);
+      switch assignedParameters {
+      | Some(parameters) => StringMap.mem(parameter, parameters)
+      | None => false
+      };
     };
+    let isParameterUsed = (layer: Types.layer, parameter) =>
+      isParameterAssigned(layer, parameter)
+      || isParameterSetInitially(layer, parameter);
     let resetViewStyling = (layer: Types.layer) =>
-      switch layer.typeName {
-      | View => [
+      switch (swiftOptions.framework, layer.typeName) {
+      | (SwiftOptions.AppKit, View) => [
           BinaryExpression({
             "left": layerMemberExpression(layer, [SwiftIdentifier("boxType")]),
             "operator": "=",
@@ -474,7 +476,9 @@ let generate =
             "left":
               layerMemberExpression(layer, [SwiftIdentifier("borderType")]),
             "operator": "=",
-            "right": isPropertyUsed(layer, "borderWidth") ? SwiftIdentifier(".lineBorder") : SwiftIdentifier(".noBorder")
+            "right":
+              isParameterUsed(layer, "borderWidth") ?
+                SwiftIdentifier(".lineBorder") : SwiftIdentifier(".noBorder")
           }),
           BinaryExpression({
             "left":
@@ -486,7 +490,7 @@ let generate =
             "right": SwiftIdentifier(".zero")
           })
         ]
-      | Text => [
+      | (SwiftOptions.AppKit, Text) => [
           BinaryExpression({
             "left":
               layerMemberExpression(layer, [SwiftIdentifier("lineBreakMode")]),
@@ -494,6 +498,23 @@ let generate =
             "right": SwiftIdentifier(".byWordWrapping")
           })
         ]
+      | (SwiftOptions.UIKit, Text) =>
+        [
+          isParameterSetInitially(layer, "numberOfLines") ?
+            [] :
+            [
+              BinaryExpression({
+                "left":
+                  layerMemberExpression(
+                    layer,
+                    [SwiftIdentifier("numberOfLines")]
+                  ),
+                "operator": "=",
+                "right": LiteralExpression(Integer(0))
+              })
+            ]
+        ]
+        |> List.concat
       | _ => []
       };
     let addSubviews = (parent: option(Types.layer), layer: Types.layer) =>
@@ -517,8 +538,7 @@ let generate =
         Document.joinGroups(
           Empty,
           [
-            swiftOptions.framework == SwiftOptions.AppKit ?
-              Layer.flatmap(resetViewStyling, root) |> List.concat : [],
+            Layer.flatmap(resetViewStyling, root) |> List.concat,
             Layer.flatmapParent(addSubviews, root) |> List.concat,
             setUpDefaultsDoc()
           ]

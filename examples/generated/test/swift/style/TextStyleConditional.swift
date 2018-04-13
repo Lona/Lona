@@ -47,6 +47,8 @@ public class TextStyleConditional: UIView {
   private var textViewTrailingAnchorConstraint: NSLayoutConstraint?
 
   private func setUpViews() {
+    textView.numberOfLines = 0
+
     addSubview(textView)
 
     textViewTextStyle = TextStyles.headline

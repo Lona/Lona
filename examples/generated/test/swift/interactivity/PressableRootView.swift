@@ -66,6 +66,8 @@ public class PressableRootView: UIView {
   private var innerTextViewTrailingAnchorConstraint: NSLayoutConstraint?
 
   private func setUpViews() {
+    innerTextView.numberOfLines = 0
+
     addSubview(innerView)
     innerView.addSubview(innerTextView)
 
