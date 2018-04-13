@@ -274,6 +274,9 @@ function convertWorkspace(workspace, output) {
               } else if (exn[0] === Decode$LonaCompilerCore.UnknownParameter) {
                 console.log("Unknown parameter: " + exn[1]);
                 return /* () */0;
+              } else if (exn[0] === Decode$LonaCompilerCore.UnknownExprType) {
+                console.log("Unkwown expr name: " + exn[1]);
+                return /* () */0;
               } else {
                 throw exn;
               }
