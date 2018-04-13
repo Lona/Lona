@@ -243,6 +243,8 @@ let convertWorkspace = (workspace, output) => {
           Js.log(reason);
         | exception (Decode.UnknownParameter(name)) =>
           Js.log("Unknown parameter: " ++ name)
+        | exception (Decode.UnknownExprType(name)) =>
+           Js.log("Unkwown expr name: " ++ name)
         | contents =>
           ensureDirSync(Path.dirname(outputPath));
           let (contentsAbove, contentsBelow) =
@@ -312,9 +314,10 @@ switch command {
       Js.Promise.resolve(convertColors(target, contents) |> Js.log);
     getStdin() |> Js.Promise.then_(render) |> ignore;
   } else {
-    let contents = Node.Fs.readFileSync(List.nth(positionalArguments, 4), `utf8);
+    let contents =
+      Node.Fs.readFileSync(List.nth(positionalArguments, 4), `utf8);
     convertColors(target, contents) |> Js.log;
-  };
+  }
 | "textStyles" =>
   if (List.length(positionalArguments) < 5) {
     let render = content =>
