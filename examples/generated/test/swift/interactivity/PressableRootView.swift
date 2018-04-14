@@ -30,7 +30,7 @@ public class PressableRootView: UIView {
   private var innerView = UIView(frame: .zero)
   private var innerTextView = UILabel()
 
-  private var innerTextViewTextStyle = TextStyles.body1
+  private var innerTextViewTextStyle = TextStyles.headline
 
   private var topPadding: CGFloat = 24
   private var trailingPadding: CGFloat = 24

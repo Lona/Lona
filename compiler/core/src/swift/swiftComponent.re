@@ -17,6 +17,12 @@ type directionParameter = {
   swiftName: string
 };
 
+/* type parameterAssignmentMode =
+   | Initialized
+   | AlwaysAssigned
+   | ConditionallyAssigned
+   | InitializedAndAlwaysAssigned
+   | InitializedAndConditionallyAssigned; */
 let isFunctionParameter = (param: Types.parameter) =>
   param.ltype == Types.handlerType;
 
@@ -159,7 +165,34 @@ let generate =
       "init": Some(getLayerInitCall(layer)),
       "block": None
     });
-  let textStyleVariableDoc = (layer: Types.layer) =>
+  let textStyleVariableDoc = (layer: Types.layer) => {
+    let styleName =
+      MemberExpression([
+        SwiftIdentifier("TextStyles"),
+        SwiftIdentifier(
+          isParameterSetInitially(layer, "font") ?
+            Layer.getStringParameter("font", layer) :
+            textStyles.defaultStyle.id
+        )
+      ]);
+    let styleName =
+      isParameterSetInitially(layer, "textAlign") ?
+        MemberExpression([
+          styleName,
+          FunctionCallExpression({
+            "name": SwiftIdentifier("with"),
+            "arguments": [
+              FunctionCallArgument({
+                "name": Some(SwiftIdentifier("alignment")),
+                "value":
+                  SwiftIdentifier(
+                    "." ++ Layer.getStringParameter("textAlign", layer)
+                  )
+              })
+            ]
+          })
+        ]) :
+        styleName;
     VariableDeclaration({
       "modifiers": [AccessLevelModifier(PrivateModifier)],
       "pattern":
@@ -168,15 +201,10 @@ let generate =
             SwiftIdentifier((layer.name |> Format.layerName) ++ "TextStyle"),
           "annotation": None /* Some(TypeName("AttributedFont")) */
         }),
-      "init":
-        Some(
-          MemberExpression([
-            SwiftIdentifier("TextStyles"),
-            SwiftIdentifier(textStyles.defaultStyle.id)
-          ])
-        ),
+      "init": Some(styleName),
       "block": None
     });
+  };
   let constraintVariableDoc = variableName =>
     VariableDeclaration({
       "modifiers": [AccessLevelModifier(PrivateModifier)],
@@ -474,7 +502,8 @@ let generate =
         && ! Js.String.startsWith("margin", name)
         /* Handled by initial constraint setup */
         && name != "height"
-        && name != "width";
+        && name != "width"
+        && name != "textAlign";
       let filterNotAssignedByLogic = (layer: Types.layer, (parameterName, _)) =>
         switch (Layer.LayerMap.find_opt(layer, assignments)) {
         | None => true

@@ -33,7 +33,8 @@ let stylesSet =
     "height",
     "pressed",
     "hovered",
-    "onPress"
+    "onPress",
+    "textAlign"
   ]);
 
 let flatten = (layer: Types.layer) => {
@@ -86,6 +87,12 @@ let getStringParameterOpt = (parameterName, layer: Types.layer) =>
   switch (StringMap.find(parameterName, layer.parameters)) {
   | value => Some(value.data |> Json.Decode.string)
   | exception Not_found => None
+  };
+
+let getStringParameter = (parameterName, layer: Types.layer) =>
+  switch (getStringParameterOpt(parameterName, layer)) {
+  | Some(value) => value
+  | None => ""
   };
 
 let getNumberParameterOpt = (parameterName, layer: Types.layer) =>

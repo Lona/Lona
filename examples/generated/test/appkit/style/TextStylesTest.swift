@@ -33,16 +33,16 @@ public class TextStylesTest: NSBox {
   private var text8View = NSTextField(labelWithString: "")
   private var text9View = NSTextField(labelWithString: "")
 
-  private var textViewTextStyle = TextStyles.body1
-  private var text1ViewTextStyle = TextStyles.body1
-  private var text2ViewTextStyle = TextStyles.body1
-  private var text3ViewTextStyle = TextStyles.body1
-  private var text4ViewTextStyle = TextStyles.body1
-  private var text5ViewTextStyle = TextStyles.body1
-  private var text6ViewTextStyle = TextStyles.body1
-  private var text7ViewTextStyle = TextStyles.body1
+  private var textViewTextStyle = TextStyles.display4
+  private var text1ViewTextStyle = TextStyles.display3
+  private var text2ViewTextStyle = TextStyles.display2
+  private var text3ViewTextStyle = TextStyles.display1
+  private var text4ViewTextStyle = TextStyles.headline
+  private var text5ViewTextStyle = TextStyles.subheading2
+  private var text6ViewTextStyle = TextStyles.subheading1
+  private var text7ViewTextStyle = TextStyles.body2
   private var text8ViewTextStyle = TextStyles.body1
-  private var text9ViewTextStyle = TextStyles.body1
+  private var text9ViewTextStyle = TextStyles.caption
 
   private var topPadding: CGFloat = 0
   private var trailingPadding: CGFloat = 0

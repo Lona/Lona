@@ -15,6 +15,7 @@ let parameterTypeMap =
     ("flex", Types.numberType),
     ("flexDirection", Types.stringType),
     ("font", Types.textStyleType),
+    ("textAlign", Types.stringType),
     ("justifyContent", Types.stringType),
     ("marginTop", Types.numberType),
     ("marginRight", Types.numberType),

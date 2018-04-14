@@ -216,6 +216,31 @@ function generate(options, swiftOptions, name, colors, textStyles, json) {
               }]);
   };
   var textStyleVariableDoc = function (layer) {
+    var match = Curry._2(StringMap$LonaCompilerCore.mem, "font", layer[/* parameters */2]);
+    var styleName = /* MemberExpression */Block.__(1, [/* :: */[
+          /* SwiftIdentifier */Block.__(8, ["TextStyles"]),
+          /* :: */[
+            /* SwiftIdentifier */Block.__(8, [match !== 0 ? Layer$LonaCompilerCore.getStringParameter("font", layer) : textStyles[/* defaultStyle */1][/* id */0]]),
+            /* [] */0
+          ]
+        ]]);
+    var match$1 = Curry._2(StringMap$LonaCompilerCore.mem, "textAlign", layer[/* parameters */2]);
+    var styleName$1 = match$1 !== 0 ? /* MemberExpression */Block.__(1, [/* :: */[
+            styleName,
+            /* :: */[
+              /* FunctionCallExpression */Block.__(19, [{
+                    name: /* SwiftIdentifier */Block.__(8, ["with"]),
+                    arguments: /* :: */[
+                      /* FunctionCallArgument */Block.__(18, [{
+                            name: /* Some */[/* SwiftIdentifier */Block.__(8, ["alignment"])],
+                            value: /* SwiftIdentifier */Block.__(8, ["." + Layer$LonaCompilerCore.getStringParameter("textAlign", layer)])
+                          }]),
+                      /* [] */0
+                    ]
+                  }]),
+              /* [] */0
+            ]
+          ]]) : styleName;
     return /* VariableDeclaration */Block.__(10, [{
                 modifiers: /* :: */[
                   /* AccessLevelModifier */Block.__(0, [/* PrivateModifier */0]),
@@ -225,13 +250,7 @@ function generate(options, swiftOptions, name, colors, textStyles, json) {
                       identifier: /* SwiftIdentifier */Block.__(8, [SwiftFormat$LonaCompilerCore.layerName(layer[/* name */1]) + "TextStyle"]),
                       annotation: /* None */0
                     }]),
-                init: /* Some */[/* MemberExpression */Block.__(1, [/* :: */[
-                        /* SwiftIdentifier */Block.__(8, ["TextStyles"]),
-                        /* :: */[
-                          /* SwiftIdentifier */Block.__(8, [textStyles[/* defaultStyle */1][/* id */0]]),
-                          /* [] */0
-                        ]
-                      ]])],
+                init: /* Some */[styleName$1],
                 block: /* None */0
               }]);
   };
@@ -567,8 +586,8 @@ function generate(options, swiftOptions, name, colors, textStyles, json) {
     var setUpDefaultsDoc = function () {
       var filterParameters = function (param) {
         var name = param[0];
-        if (name !== "flexDirection" && name !== "justifyContent" && name !== "alignSelf" && name !== "alignItems" && name !== "flex" && !name.startsWith("padding") && !name.startsWith("margin") && name !== "height") {
-          return +(name !== "width");
+        if (name !== "flexDirection" && name !== "justifyContent" && name !== "alignSelf" && name !== "alignItems" && name !== "flex" && !name.startsWith("padding") && !name.startsWith("margin") && name !== "height" && name !== "width") {
+          return +(name !== "textAlign");
         } else {
           return /* false */0;
         }

@@ -9,6 +9,7 @@ public class AttributedFont {
   public let lineHeight: CGFloat
   public let kerning: Double
   public let color: UIColor
+  public let alignment: NSTextAlignment
 
   public init(
     family: String? = nil,
@@ -17,7 +18,8 @@ public class AttributedFont {
     size: CGFloat = UIFont.systemFontSize,
     lineHeight: CGFloat? = nil,
     kerning: Double = 0,
-    color: UIColor = UIColor.black)
+    color: UIColor = UIColor.black,
+    alignment: NSTextAlignment = .left)
   {
     self.family = family
     self.name = name
@@ -26,6 +28,7 @@ public class AttributedFont {
     self.lineHeight = lineHeight ?? size * 1.5
     self.kerning = kerning
     self.color = color
+    self.alignment = alignment
   }
 
   public func with(
@@ -35,7 +38,8 @@ public class AttributedFont {
     size: CGFloat? = nil,
     lineHeight: CGFloat? = nil,
     kerning: Double? = nil,
-    color: UIColor? = nil
+    color: UIColor? = nil,
+    alignment: NSTextAlignment? = nil
     ) -> AttributedFont
   {
     return AttributedFont(
@@ -45,13 +49,15 @@ public class AttributedFont {
       size: size ?? self.size,
       lineHeight: lineHeight ?? self.lineHeight,
       kerning: kerning ?? self.kerning,
-      color: color ?? self.color)
+      color: color ?? self.color,
+      alignment: alignment ?? self.alignment)
   }
 
   public lazy var paragraphStyle: NSMutableParagraphStyle = {
     let paragraphStyle = NSMutableParagraphStyle()
     paragraphStyle.minimumLineHeight = lineHeight
     paragraphStyle.maximumLineHeight = lineHeight
+    paragraphStyle.alignment = alignment
     return paragraphStyle
   }()
 

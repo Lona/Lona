@@ -153,7 +153,10 @@ var stylesSet = Curry._1(StringSet$LonaCompilerCore.of_list, /* :: */[
                                         "hovered",
                                         /* :: */[
                                           "onPress",
-                                          /* [] */0
+                                          /* :: */[
+                                            "textAlign",
+                                            /* [] */0
+                                          ]
                                         ]
                                       ]
                                     ]
@@ -289,6 +292,15 @@ function getStringParameterOpt(parameterName, layer) {
     return /* Some */[Json_decode.string(value[/* data */1])];
   }
   
+}
+
+function getStringParameter(parameterName, layer) {
+  var match = getStringParameterOpt(parameterName, layer);
+  if (match) {
+    return match[0];
+  } else {
+    return "";
+  }
 }
 
 function getNumberParameterOpt(parameterName, layer) {
@@ -436,8 +448,8 @@ function getInsets(prefix, layer) {
     throw [
           Caml_builtin_exceptions.match_failure,
           [
-            "/Users/devin_abbott/Projects/ComponentStudio/ComponentStudio/compiler/core/src/core/layer.re",
-            160,
+            "/Users/devinabbott/Projects/Lona/compiler/core/src/core/layer.re",
+            167,
             6
           ]
         ];
@@ -590,6 +602,7 @@ exports.flatmap                             = flatmap;
 exports.flatmapParameters                   = flatmapParameters;
 exports.getFlexDirection                    = getFlexDirection;
 exports.getStringParameterOpt               = getStringParameterOpt;
+exports.getStringParameter                  = getStringParameter;
 exports.getNumberParameterOpt               = getNumberParameterOpt;
 exports.getNumberParameter                  = getNumberParameter;
 exports.getSizingRules                      = getSizingRules;

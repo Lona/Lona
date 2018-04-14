@@ -23,6 +23,7 @@ enum Generated: String {
     case textStyleConditionalTrue = "Text Style Conditional - True"
     case textStyleConditionalFalse = "Text Style Conditional - False"
     case textStylesTest = "Text Styles Test"
+    case textAlignment = "Text Alignment"
 
     static func allValues() -> [Generated] {
         return [
@@ -40,6 +41,7 @@ enum Generated: String {
             textStyleConditionalTrue,
             textStyleConditionalFalse,
             textStylesTest,
+            textAlignment,
         ]
     }
 
@@ -73,6 +75,8 @@ enum Generated: String {
             return TextStyleConditional(large: false)
         case .textStylesTest:
             return TextStylesTest()
+        case .textAlignment:
+            return TextAlignment()
         }
     }
 
@@ -88,7 +92,8 @@ enum Generated: String {
              .fixedParentFitChild,
              .primaryAxis,
              .secondaryAxis,
-             .borderWidthColor:
+             .borderWidthColor,
+             .textAlignment:
             return [
                 equal(\.topAnchor),
                 equal(\.leftAnchor),

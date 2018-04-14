@@ -5,6 +5,7 @@ var List                           = require("bs-platform/lib/js/list.js");
 var Block                          = require("bs-platform/lib/js/block.js");
 var Pervasives                     = require("bs-platform/lib/js/pervasives.js");
 var LodashCamelcase                = require("lodash.camelcase");
+var Layer$LonaCompilerCore         = require("../core/layer.bs.js");
 var SwiftFormat$LonaCompilerCore   = require("./swiftFormat.bs.js");
 var SwiftDocument$LonaCompilerCore = require("./swiftDocument.bs.js");
 
@@ -209,7 +210,8 @@ function toSwiftAST(options, colors, textStyles, rootLayer, logicRootNode) {
                         ]
                       ]]);
         case 2 : 
-            var match$2 = logicValueToSwiftAST(logicRootNode[1]);
+            var b = logicRootNode[1];
+            var match$2 = logicValueToSwiftAST(b);
             var match$3 = logicValueToSwiftAST(logicRootNode[0]);
             var exit$2 = 0;
             var exit$3 = 0;
@@ -283,11 +285,45 @@ function toSwiftAST(options, colors, textStyles, rootLayer, logicRootNode) {
                 var name$2 = match$2[0];
                 if (name$2.endsWith("textStyle") || name$2.endsWith("font")) {
                   var name$3 = name$2.replace(".font", ".textStyle");
+                  var right$1;
+                  if (b.tag) {
+                    right$1 = match$3;
+                  } else {
+                    var path = b[1];
+                    if (List.hd(path) === "layers" && List.length(path) > 2) {
+                      var layerName = List.nth(path, 1);
+                      var layer = Layer$LonaCompilerCore.findByName(layerName, rootLayer);
+                      if (layer) {
+                        var layer$1 = layer[0];
+                        var param = Layer$LonaCompilerCore.getStringParameterOpt("textAlign", layer$1);
+                        right$1 = param ? /* MemberExpression */Block.__(1, [/* :: */[
+                                match$3,
+                                /* :: */[
+                                  /* FunctionCallExpression */Block.__(19, [{
+                                        name: /* SwiftIdentifier */Block.__(8, ["with"]),
+                                        arguments: /* :: */[
+                                          /* FunctionCallArgument */Block.__(18, [{
+                                                name: /* Some */[/* SwiftIdentifier */Block.__(8, ["alignment"])],
+                                                value: /* SwiftIdentifier */Block.__(8, ["." + Layer$LonaCompilerCore.getStringParameter("textAlign", layer$1)])
+                                              }]),
+                                          /* [] */0
+                                        ]
+                                      }]),
+                                  /* [] */0
+                                ]
+                              ]]) : match$3;
+                      } else {
+                        right$1 = match$3;
+                      }
+                    } else {
+                      right$1 = match$3;
+                    }
+                  }
                   return /* StatementListHelper */Block.__(25, [/* :: */[
                               /* BinaryExpression */Block.__(2, [{
                                     left: /* SwiftIdentifier */Block.__(8, [name$3.replace(".textStyle", "TextStyle")]),
                                     operator: "=",
-                                    right: match$3
+                                    right: right$1
                                   }]),
                               /* [] */0
                             ]]);
