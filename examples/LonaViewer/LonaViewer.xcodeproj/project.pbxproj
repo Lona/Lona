@@ -52,6 +52,8 @@
 		12BBFE11206B02AC0041620C /* Colors.swift in Sources */ = {isa = PBXBuildFile; fileRef = 12BBFDFF206B02AC0041620C /* Colors.swift */; };
 		12BBFE12206B02AC0041620C /* icon_128x128.png in Resources */ = {isa = PBXBuildFile; fileRef = 12BBFE01206B02AC0041620C /* icon_128x128.png */; };
 		12BBFE14206B03FB0041620C /* LayoutExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 12BBFE13206B03FB0041620C /* LayoutExtension.swift */; };
+		6BD581DB2082521A0068FBC3 /* TextAlignment.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6BD581DA2082521A0068FBC3 /* TextAlignment.swift */; };
+		6BD581DD208252260068FBC3 /* TextAlignment.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6BD581DC208252250068FBC3 /* TextAlignment.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -105,6 +107,8 @@
 		12BBFDFF206B02AC0041620C /* Colors.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Colors.swift; sourceTree = "<group>"; };
 		12BBFE01206B02AC0041620C /* icon_128x128.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = icon_128x128.png; sourceTree = "<group>"; };
 		12BBFE13206B03FB0041620C /* LayoutExtension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LayoutExtension.swift; sourceTree = "<group>"; };
+		6BD581DA2082521A0068FBC3 /* TextAlignment.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TextAlignment.swift; sourceTree = "<group>"; };
+		6BD581DC208252250068FBC3 /* TextAlignment.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TextAlignment.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -213,6 +217,7 @@
 			isa = PBXGroup;
 			children = (
 				12BBFDCC206B02720041620C /* BorderWidthColor.swift */,
+				6BD581DC208252250068FBC3 /* TextAlignment.swift */,
 				12BBFDCD206B02720041620C /* TextStylesTest.swift */,
 				12BBFDCE206B02720041620C /* TextStyleConditional.swift */,
 			);
@@ -285,6 +290,7 @@
 			isa = PBXGroup;
 			children = (
 				12BBFDF4206B02AC0041620C /* BorderWidthColor.swift */,
+				6BD581DA2082521A0068FBC3 /* TextAlignment.swift */,
 				12BBFDF5206B02AC0041620C /* TextStylesTest.swift */,
 				12BBFDF6206B02AC0041620C /* TextStyleConditional.swift */,
 			);
@@ -438,6 +444,7 @@
 				12962560204C70280057CDFF /* Generated.swift in Sources */,
 				1286937D204A1AAA00E5E26F /* ViewSelectionVC.swift in Sources */,
 				12BBFE04206B02AC0041620C /* LocalAsset.swift in Sources */,
+				6BD581DB2082521A0068FBC3 /* TextAlignment.swift in Sources */,
 				12BBFE06206B02AC0041620C /* If.swift in Sources */,
 				12BBFE08206B02AC0041620C /* BorderWidthColor.swift in Sources */,
 				1286937B204A1AAA00E5E26F /* AppDelegate.swift in Sources */,
@@ -468,6 +475,7 @@
 				12BBFDE1206B02720041620C /* TextStyleConditional.swift in Sources */,
 				12BBFCF0206A8BCD0041620C /* Generated.swift in Sources */,
 				12BBFDE7206B02720041620C /* PrimaryAxis.swift in Sources */,
+				6BD581DD208252260068FBC3 /* TextAlignment.swift in Sources */,
 				12869395204A1B4E00E5E26F /* AppDelegate.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -643,7 +651,7 @@
 				COMBINE_HIDPI_IMAGES = YES;
 				INFOPLIST_FILE = MacOS/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/../Frameworks";
-				MACOSX_DEPLOYMENT_TARGET = 10.13;
+				MACOSX_DEPLOYMENT_TARGET = 10.12;
 				PRODUCT_BUNDLE_IDENTIFIER = com.Lona.app.MacOS;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SDKROOT = macosx;
@@ -661,7 +669,7 @@
 				COMBINE_HIDPI_IMAGES = YES;
 				INFOPLIST_FILE = MacOS/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/../Frameworks";
-				MACOSX_DEPLOYMENT_TARGET = 10.13;
+				MACOSX_DEPLOYMENT_TARGET = 10.12;
 				PRODUCT_BUNDLE_IDENTIFIER = com.Lona.app.MacOS;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SDKROOT = macosx;

@@ -390,6 +390,10 @@ class CSLayer: CSDataDeserializable, CSDataSerializable, DataNode, NSCopying {
         get { return parameters["font"]?.string }
         set { parameters["font"] = newValue?.toData() }
     }
+    var textAlign: String? {
+        get { return parameters["textAlign"]?.string }
+        set { parameters["textAlign"] = newValue?.toData() }
+    }
     var flexDirection: String? {
         get { return parameters["flexDirection"]?.string }
 
@@ -520,6 +524,7 @@ class CSLayer: CSDataDeserializable, CSDataSerializable, DataNode, NSCopying {
         "paddingRight": CSData.Number(0),
         "paddingBottom": CSData.Number(0),
         "paddingLeft": CSData.Number(0),
+        "textAlign": CSData.String("left"),
         "visible": CSData.Bool(true)
     ]
 

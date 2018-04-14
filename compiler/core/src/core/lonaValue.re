@@ -44,6 +44,7 @@ let parameterDefaultValueMap =
     ("alignItems", string("stretch")),
     ("alignSelf", string("flex-start")),
     ("flex", number(0.)),
+    ("textAlign", string("left")),
     ("flexDirection", string("column")),
     ("font", textStyle("defaultStyle")),
     ("textStyle", textStyle("defaultStyle")), /* ? */

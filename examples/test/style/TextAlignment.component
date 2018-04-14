@@ -1,0 +1,79 @@
+{
+  "root" : {
+    "id" : "View",
+    "type" : "Lona:View",
+    "params" : {
+      "alignSelf" : "stretch"
+    },
+    "children" : [
+      {
+        "id" : "View 1",
+        "type" : "Lona:View",
+        "params" : {
+          "height" : 400,
+          "alignSelf" : "stretch",
+          "justifyContent" : "center",
+          "alignItems" : "center"
+        },
+        "children" : [
+          {
+            "id" : "View 2",
+            "type" : "Lona:View",
+            "params" : {
+              "backgroundColor" : "#D8D8D8"
+            }
+          },
+          {
+            "id" : "Image",
+            "type" : "Lona:Image",
+            "params" : {
+              "image" : "file:\/\/.\/assets\/icon_128x128.png",
+              "height" : 100,
+              "width" : 100
+            }
+          },
+          {
+            "id" : "Text",
+            "type" : "Lona:Text",
+            "params" : {
+              "text" : "Welcome to Lona Studio",
+              "font" : "display1",
+              "marginTop" : 16
+            }
+          },
+          {
+            "id" : "Text 1",
+            "type" : "Lona:Text",
+            "params" : {
+              "text" : "Version 1.0.2",
+              "font" : "subheading2",
+              "marginTop" : 16
+            }
+          }
+        ]
+      }
+    ]
+  },
+  "devices" : [
+    {
+      "name" : "iPhone SE",
+      "height" : 100,
+      "heightMode" : "At Least",
+      "width" : 640
+    }
+  ],
+  "examples" : [
+    {
+      "name" : "Default",
+      "params" : {
+
+      }
+    }
+  ],
+  "logic" : [
+
+  ],
+  "params" : [
+
+  ]
+}

@@ -85,6 +85,11 @@ func attributedString(for configuredLayer: ConfiguredLayer) -> NSAttributedStrin
     // Font
     var attributeDict = getLayerFont(configuredLayer: configuredLayer).attributeDictionary()
 
+    // Alignment
+    let titleParagraphStyle = NSMutableParagraphStyle()
+    titleParagraphStyle.alignment = NSTextAlignment(configuredLayer.layer.textAlign ?? "left")
+    attributeDict[.paragraphStyle] = titleParagraphStyle
+
     // Shadow
     if configuredLayer.layer.shadow != nil,
         let shadow = getLayoutShadow(configuredLayer: configuredLayer) {
@@ -136,11 +141,6 @@ func renderTextLayer(configuredLayer: ConfiguredLayer, width: Float, height: Flo
 
     textView.textStorage!.append(paragraph(for: configuredLayer))
     textView.drawsBackground = false
-
-//    if let color = layer.backgroundColor {
-//        textView.drawsBackground = true
-//        textView.backgroundColor = CSColors.parse(css: color, withDefault: NSColor.clear).color
-//    }
 
     return textView
 }

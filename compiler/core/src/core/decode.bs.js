@@ -64,90 +64,96 @@ var parameterTypeMap = StringMap$LonaCompilerCore.fromList(/* :: */[
                         ],
                         /* :: */[
                           /* tuple */[
-                            "justifyContent",
+                            "textAlign",
                             Types$LonaCompilerCore.stringType
                           ],
                           /* :: */[
                             /* tuple */[
-                              "marginTop",
-                              Types$LonaCompilerCore.numberType
+                              "justifyContent",
+                              Types$LonaCompilerCore.stringType
                             ],
                             /* :: */[
                               /* tuple */[
-                                "marginRight",
+                                "marginTop",
                                 Types$LonaCompilerCore.numberType
                               ],
                               /* :: */[
                                 /* tuple */[
-                                  "marginBottom",
+                                  "marginRight",
                                   Types$LonaCompilerCore.numberType
                                 ],
                                 /* :: */[
                                   /* tuple */[
-                                    "marginLeft",
+                                    "marginBottom",
                                     Types$LonaCompilerCore.numberType
                                   ],
                                   /* :: */[
                                     /* tuple */[
-                                      "paddingTop",
+                                      "marginLeft",
                                       Types$LonaCompilerCore.numberType
                                     ],
                                     /* :: */[
                                       /* tuple */[
-                                        "paddingRight",
+                                        "paddingTop",
                                         Types$LonaCompilerCore.numberType
                                       ],
                                       /* :: */[
                                         /* tuple */[
-                                          "paddingBottom",
+                                          "paddingRight",
                                           Types$LonaCompilerCore.numberType
                                         ],
                                         /* :: */[
                                           /* tuple */[
-                                            "paddingLeft",
+                                            "paddingBottom",
                                             Types$LonaCompilerCore.numberType
                                           ],
                                           /* :: */[
                                             /* tuple */[
-                                              "borderRadius",
+                                              "paddingLeft",
                                               Types$LonaCompilerCore.numberType
                                             ],
                                             /* :: */[
                                               /* tuple */[
-                                                "borderWidth",
+                                                "borderRadius",
                                                 Types$LonaCompilerCore.numberType
                                               ],
                                               /* :: */[
                                                 /* tuple */[
-                                                  "borderColor",
-                                                  Types$LonaCompilerCore.colorType
+                                                  "borderWidth",
+                                                  Types$LonaCompilerCore.numberType
                                                 ],
                                                 /* :: */[
                                                   /* tuple */[
-                                                    "width",
-                                                    Types$LonaCompilerCore.numberType
+                                                    "borderColor",
+                                                    Types$LonaCompilerCore.colorType
                                                   ],
                                                   /* :: */[
                                                     /* tuple */[
-                                                      "height",
+                                                      "width",
                                                       Types$LonaCompilerCore.numberType
                                                     ],
                                                     /* :: */[
                                                       /* tuple */[
-                                                        "pressed",
-                                                        Types$LonaCompilerCore.booleanType
+                                                        "height",
+                                                        Types$LonaCompilerCore.numberType
                                                       ],
                                                       /* :: */[
                                                         /* tuple */[
-                                                          "hovered",
+                                                          "pressed",
                                                           Types$LonaCompilerCore.booleanType
                                                         ],
                                                         /* :: */[
                                                           /* tuple */[
-                                                            "onPress",
-                                                            Types$LonaCompilerCore.handlerType
+                                                            "hovered",
+                                                            Types$LonaCompilerCore.booleanType
                                                           ],
-                                                          /* [] */0
+                                                          /* :: */[
+                                                            /* tuple */[
+                                                              "onPress",
+                                                              Types$LonaCompilerCore.handlerType
+                                                            ],
+                                                            /* [] */0
+                                                          ]
                                                         ]
                                                       ]
                                                     ]

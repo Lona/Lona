@@ -121,23 +121,23 @@ var parameterDefaultValueMap = StringMap$LonaCompilerCore.fromList(/* :: */[
                     ],
                     /* :: */[
                       /* tuple */[
-                        "flexDirection",
+                        "textAlign",
                         /* record */[
                           /* ltype */Types$LonaCompilerCore.stringType,
-                          /* data */"column"
+                          /* data */"left"
                         ]
                       ],
                       /* :: */[
                         /* tuple */[
-                          "font",
+                          "flexDirection",
                           /* record */[
-                            /* ltype */Types$LonaCompilerCore.textStyleType,
-                            /* data */"defaultStyle"
+                            /* ltype */Types$LonaCompilerCore.stringType,
+                            /* data */"column"
                           ]
                         ],
                         /* :: */[
                           /* tuple */[
-                            "textStyle",
+                            "font",
                             /* record */[
                               /* ltype */Types$LonaCompilerCore.textStyleType,
                               /* data */"defaultStyle"
@@ -145,23 +145,23 @@ var parameterDefaultValueMap = StringMap$LonaCompilerCore.fromList(/* :: */[
                           ],
                           /* :: */[
                             /* tuple */[
-                              "justifyContent",
+                              "textStyle",
                               /* record */[
-                                /* ltype */Types$LonaCompilerCore.stringType,
-                                /* data */"flex-start"
+                                /* ltype */Types$LonaCompilerCore.textStyleType,
+                                /* data */"defaultStyle"
                               ]
                             ],
                             /* :: */[
                               /* tuple */[
-                                "marginTop",
+                                "justifyContent",
                                 /* record */[
-                                  /* ltype */Types$LonaCompilerCore.numberType,
-                                  /* data */0
+                                  /* ltype */Types$LonaCompilerCore.stringType,
+                                  /* data */"flex-start"
                                 ]
                               ],
                               /* :: */[
                                 /* tuple */[
-                                  "marginRight",
+                                  "marginTop",
                                   /* record */[
                                     /* ltype */Types$LonaCompilerCore.numberType,
                                     /* data */0
@@ -169,7 +169,7 @@ var parameterDefaultValueMap = StringMap$LonaCompilerCore.fromList(/* :: */[
                                 ],
                                 /* :: */[
                                   /* tuple */[
-                                    "marginBottom",
+                                    "marginRight",
                                     /* record */[
                                       /* ltype */Types$LonaCompilerCore.numberType,
                                       /* data */0
@@ -177,7 +177,7 @@ var parameterDefaultValueMap = StringMap$LonaCompilerCore.fromList(/* :: */[
                                   ],
                                   /* :: */[
                                     /* tuple */[
-                                      "marginLeft",
+                                      "marginBottom",
                                       /* record */[
                                         /* ltype */Types$LonaCompilerCore.numberType,
                                         /* data */0
@@ -185,7 +185,7 @@ var parameterDefaultValueMap = StringMap$LonaCompilerCore.fromList(/* :: */[
                                     ],
                                     /* :: */[
                                       /* tuple */[
-                                        "paddingTop",
+                                        "marginLeft",
                                         /* record */[
                                           /* ltype */Types$LonaCompilerCore.numberType,
                                           /* data */0
@@ -193,7 +193,7 @@ var parameterDefaultValueMap = StringMap$LonaCompilerCore.fromList(/* :: */[
                                       ],
                                       /* :: */[
                                         /* tuple */[
-                                          "paddingRight",
+                                          "paddingTop",
                                           /* record */[
                                             /* ltype */Types$LonaCompilerCore.numberType,
                                             /* data */0
@@ -201,7 +201,7 @@ var parameterDefaultValueMap = StringMap$LonaCompilerCore.fromList(/* :: */[
                                         ],
                                         /* :: */[
                                           /* tuple */[
-                                            "paddingBottom",
+                                            "paddingRight",
                                             /* record */[
                                               /* ltype */Types$LonaCompilerCore.numberType,
                                               /* data */0
@@ -209,7 +209,7 @@ var parameterDefaultValueMap = StringMap$LonaCompilerCore.fromList(/* :: */[
                                           ],
                                           /* :: */[
                                             /* tuple */[
-                                              "paddingLeft",
+                                              "paddingBottom",
                                               /* record */[
                                                 /* ltype */Types$LonaCompilerCore.numberType,
                                                 /* data */0
@@ -217,7 +217,7 @@ var parameterDefaultValueMap = StringMap$LonaCompilerCore.fromList(/* :: */[
                                             ],
                                             /* :: */[
                                               /* tuple */[
-                                                "borderRadius",
+                                                "paddingLeft",
                                                 /* record */[
                                                   /* ltype */Types$LonaCompilerCore.numberType,
                                                   /* data */0
@@ -225,7 +225,7 @@ var parameterDefaultValueMap = StringMap$LonaCompilerCore.fromList(/* :: */[
                                               ],
                                               /* :: */[
                                                 /* tuple */[
-                                                  "borderWidth",
+                                                  "borderRadius",
                                                   /* record */[
                                                     /* ltype */Types$LonaCompilerCore.numberType,
                                                     /* data */0
@@ -233,23 +233,23 @@ var parameterDefaultValueMap = StringMap$LonaCompilerCore.fromList(/* :: */[
                                                 ],
                                                 /* :: */[
                                                   /* tuple */[
-                                                    "borderColor",
+                                                    "borderWidth",
                                                     /* record */[
-                                                      /* ltype */Types$LonaCompilerCore.colorType,
-                                                      /* data */"transparent"
+                                                      /* ltype */Types$LonaCompilerCore.numberType,
+                                                      /* data */0
                                                     ]
                                                   ],
                                                   /* :: */[
                                                     /* tuple */[
-                                                      "width",
+                                                      "borderColor",
                                                       /* record */[
-                                                        /* ltype */Types$LonaCompilerCore.numberType,
-                                                        /* data */0
+                                                        /* ltype */Types$LonaCompilerCore.colorType,
+                                                        /* data */"transparent"
                                                       ]
                                                     ],
                                                     /* :: */[
                                                       /* tuple */[
-                                                        "height",
+                                                        "width",
                                                         /* record */[
                                                           /* ltype */Types$LonaCompilerCore.numberType,
                                                           /* data */0
@@ -257,15 +257,15 @@ var parameterDefaultValueMap = StringMap$LonaCompilerCore.fromList(/* :: */[
                                                       ],
                                                       /* :: */[
                                                         /* tuple */[
-                                                          "pressed",
+                                                          "height",
                                                           /* record */[
-                                                            /* ltype */Types$LonaCompilerCore.booleanType,
-                                                            /* data */Js_boolean.to_js_boolean(/* false */0)
+                                                            /* ltype */Types$LonaCompilerCore.numberType,
+                                                            /* data */0
                                                           ]
                                                         ],
                                                         /* :: */[
                                                           /* tuple */[
-                                                            "hovered",
+                                                            "pressed",
                                                             /* record */[
                                                               /* ltype */Types$LonaCompilerCore.booleanType,
                                                               /* data */Js_boolean.to_js_boolean(/* false */0)
@@ -273,13 +273,22 @@ var parameterDefaultValueMap = StringMap$LonaCompilerCore.fromList(/* :: */[
                                                           ],
                                                           /* :: */[
                                                             /* tuple */[
-                                                              "onPress",
+                                                              "hovered",
                                                               /* record */[
-                                                                /* ltype */Types$LonaCompilerCore.undefinedType,
-                                                                /* data */null
+                                                                /* ltype */Types$LonaCompilerCore.booleanType,
+                                                                /* data */Js_boolean.to_js_boolean(/* false */0)
                                                               ]
                                                             ],
-                                                            /* [] */0
+                                                            /* :: */[
+                                                              /* tuple */[
+                                                                "onPress",
+                                                                /* record */[
+                                                                  /* ltype */Types$LonaCompilerCore.undefinedType,
+                                                                  /* data */null
+                                                                ]
+                                                              ],
+                                                              /* [] */0
+                                                            ]
                                                           ]
                                                         ]
                                                       ]

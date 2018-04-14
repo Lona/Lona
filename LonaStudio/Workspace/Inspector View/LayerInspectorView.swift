@@ -65,6 +65,7 @@ class LayerInspectorView: InspectorView {
             // Text
             InspectorView.Property.text: CSData.String(layer.text ?? ""),
             InspectorView.Property.textStyle: CSData.String(layer.font ?? CSTypography.defaultName),
+            InspectorView.Property.textAlign: CSData.String(layer.textAlign ?? "left"),
             InspectorView.Property.numberOfLines: CSData.Number(Double(layer.numberOfLines ?? -1)),
 
             // Image
@@ -139,6 +140,7 @@ class LayerInspectorView: InspectorView {
             case .text: layer.text = value.stringValue
             case .numberOfLines: layer.numberOfLines = Int(value.numberValue)
             case .textStyle: layer.font = value.stringValue
+            case .textAlign: layer.textAlign = value.stringValue
 
             // Image
             case .image: layer.image = value.stringValue

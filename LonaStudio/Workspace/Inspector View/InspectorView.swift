@@ -60,6 +60,7 @@ class InspectorView: NSStackView {
         // Text
         case text
         case textStyle
+        case textAlign
         case numberOfLines
 
         // Image
@@ -144,6 +145,11 @@ class InspectorView: NSStackView {
     var shadowEnabledView = CheckboxField(frame: NSRect.zero)
     var shadowButton = ShadowStylePickerButton(frame: NSRect.zero)
 
+    var textAlignView = PopupField(
+        frame: NSRect.zero,
+        values: ["left", "center", "right"],
+        valueToTitle: ["left": "Left", "center": "Center", "right": "Right"]
+    )
     var textStyleView = TextStylePickerButton(frame: NSRect.zero)
     var numberOfLinesView = NumberField(frame: NSRect.zero)
 
@@ -533,6 +539,8 @@ class InspectorView: NSStackView {
             textView,
             NSTextField(labelWithStringCompat: "Style"),
             textStyleView,
+            NSTextField(labelWithStringCompat: "Alignment"),
+            textAlignView,
             NSTextField(labelWithStringCompat: "Max Lines"),
             numberOfLinesView
         ])
@@ -754,6 +762,7 @@ class InspectorView: NSStackView {
 
             // Text
             (textView, .text),
+            (textAlignView, .textAlign),
             (textStyleView, .textStyle),
             (numberOfLinesView, .numberOfLines),
 
