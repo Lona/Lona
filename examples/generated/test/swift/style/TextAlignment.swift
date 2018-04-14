@@ -28,13 +28,13 @@ public class TextAlignment: UIView {
   private var textView = UILabel()
   private var text1View = UILabel()
 
-  private var textViewTextStyle = TextStyles.body1
-  private var text1ViewTextStyle = TextStyles.body1
+  private var textViewTextStyle = TextStyles.display1.with(alignment: .center)
+  private var text1ViewTextStyle = TextStyles.subheading2.with(alignment: .center)
 
-  private var topPadding: CGFloat = 0
-  private var trailingPadding: CGFloat = 0
-  private var bottomPadding: CGFloat = 0
-  private var leadingPadding: CGFloat = 0
+  private var topPadding: CGFloat = 10
+  private var trailingPadding: CGFloat = 10
+  private var bottomPadding: CGFloat = 10
+  private var leadingPadding: CGFloat = 10
   private var view1ViewTopMargin: CGFloat = 0
   private var view1ViewTrailingMargin: CGFloat = 0
   private var view1ViewBottomMargin: CGFloat = 0
@@ -91,9 +91,9 @@ public class TextAlignment: UIView {
 
     view2View.backgroundColor = #colorLiteral(red: 0.847058823529, green: 0.847058823529, blue: 0.847058823529, alpha: 1)
     imageView.image = UIImage(named: "icon_128x128")
-    textViewTextStyle = TextStyles.display1
+    textViewTextStyle = TextStyles.display1.with(alignment: .center)
     textView.attributedText = textViewTextStyle.apply(to: "Welcome to Lona Studio")
-    text1ViewTextStyle = TextStyles.subheading2
+    text1ViewTextStyle = TextStyles.subheading2.with(alignment: .center)
     text1View.attributedText = text1ViewTextStyle.apply(to: "Version 1.0.2")
   }
 
@@ -143,9 +143,7 @@ public class TextAlignment: UIView {
       .constraint(equalTo: view1View.leadingAnchor, constant: view1ViewLeadingPadding + textViewLeadingMargin)
     let textViewTrailingAnchorConstraint = textView
       .trailingAnchor
-      .constraint(
-        lessThanOrEqualTo: view1View.trailingAnchor,
-        constant: -(view1ViewTrailingPadding + textViewTrailingMargin))
+      .constraint(equalTo: view1View.trailingAnchor, constant: -(view1ViewTrailingPadding + textViewTrailingMargin))
     let text1ViewTopAnchorConstraint = text1View
       .topAnchor
       .constraint(equalTo: textView.bottomAnchor, constant: textViewBottomMargin + text1ViewTopMargin)
@@ -154,9 +152,7 @@ public class TextAlignment: UIView {
       .constraint(equalTo: view1View.leadingAnchor, constant: view1ViewLeadingPadding + text1ViewLeadingMargin)
     let text1ViewTrailingAnchorConstraint = text1View
       .trailingAnchor
-      .constraint(
-        lessThanOrEqualTo: view1View.trailingAnchor,
-        constant: -(view1ViewTrailingPadding + text1ViewTrailingMargin))
+      .constraint(equalTo: view1View.trailingAnchor, constant: -(view1ViewTrailingPadding + text1ViewTrailingMargin))
     let imageViewHeightAnchorConstraint = imageView.heightAnchor.constraint(equalToConstant: 100)
     let imageViewWidthAnchorConstraint = imageView.widthAnchor.constraint(equalToConstant: 100)
 

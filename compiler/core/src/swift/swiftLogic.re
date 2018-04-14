@@ -121,8 +121,10 @@ let toSwiftAST =
     | Logic.Assign(a, b) =>
       switch (logicValueToSwiftAST(b), logicValueToSwiftAST(a)) {
       | (Ast.SwiftIdentifier(name), Ast.MemberExpression(right))
-          when name |> Js.String.endsWith(".borderColor")
-          && options.framework == UIKit =>
+          when
+            name
+            |> Js.String.endsWith(".borderColor")
+            && options.framework == UIKit =>
         Ast.BinaryExpression({
           "left":
             Ast.SwiftIdentifier(
@@ -130,9 +132,7 @@ let toSwiftAST =
             ),
           "operator": "=",
           "right":
-            Ast.MemberExpression(
-                right @ [Ast.SwiftIdentifier("cgColor")]
-            )
+            Ast.MemberExpression(right @ [Ast.SwiftIdentifier("cgColor")])
         })
       | (Ast.SwiftIdentifier(name), other)
           when name |> Js.String.endsWith("visible") =>
@@ -161,6 +161,41 @@ let toSwiftAST =
             || name
             |> Js.String.endsWith("font") =>
         let name = name |> Js.String.replace(".font", ".textStyle");
+        let right =
+          switch b {
+          | Identifier(_, path)
+              when List.hd(path) == "layers" && List.length(path) > 2 =>
+            let layerName = List.nth(path, 1);
+            let layer = Layer.findByName(layerName, rootLayer);
+            switch layer {
+            | Some(layer) =>
+              let param = Layer.getStringParameterOpt("textAlign", layer);
+              switch param {
+              | None => right
+              | Some(_) =>
+                Ast.(
+                  MemberExpression([
+                    right,
+                    FunctionCallExpression({
+                      "name": SwiftIdentifier("with"),
+                      "arguments": [
+                        FunctionCallArgument({
+                          "name": Some(SwiftIdentifier("alignment")),
+                          "value":
+                            SwiftIdentifier(
+                              "."
+                              ++ Layer.getStringParameter("textAlign", layer)
+                            )
+                        })
+                      ]
+                    })
+                  ])
+                )
+              };
+            | _ => right
+            };
+          | _ => right
+          };
         /* TODO: We need to make sure we assign to attributed text at the end of the update
            function if we assign to textStyle */
         Ast.StatementListHelper([

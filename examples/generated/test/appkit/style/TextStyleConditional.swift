@@ -30,7 +30,7 @@ public class TextStyleConditional: NSBox {
 
   private var textView = NSTextField(labelWithString: "")
 
-  private var textViewTextStyle = TextStyles.body1
+  private var textViewTextStyle = TextStyles.headline
 
   private var topPadding: CGFloat = 0
   private var trailingPadding: CGFloat = 0

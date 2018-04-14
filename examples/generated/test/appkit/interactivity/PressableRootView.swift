@@ -41,7 +41,7 @@ public class PressableRootView: NSBox {
   private var innerView = NSBox()
   private var innerTextView = NSTextField(labelWithString: "")
 
-  private var innerTextViewTextStyle = TextStyles.body1
+  private var innerTextViewTextStyle = TextStyles.headline
 
   private var topPadding: CGFloat = 24
   private var trailingPadding: CGFloat = 24

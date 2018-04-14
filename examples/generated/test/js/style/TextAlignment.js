@@ -25,7 +25,13 @@ class TextAlignment extends React.Component {
 };
 
 let styles = StyleSheet.create({
-  View: { alignSelf: "stretch" },
+  View: {
+    alignSelf: "stretch",
+    paddingBottom: 10,
+    paddingLeft: 10,
+    paddingRight: 10,
+    paddingTop: 10
+  },
   View 1: {
     alignItems: "center",
     alignSelf: "stretch",
@@ -34,6 +40,16 @@ let styles = StyleSheet.create({
   },
   View 2: {},
   Image: { height: 100, width: 100 },
-  Text: { font: "display1", marginTop: 16 },
-  Text 1: { font: "subheading2", marginTop: 16 }
+  Text: {
+    alignSelf: "stretch",
+    font: "display1",
+    marginTop: 16,
+    textAlign: "center"
+  },
+  Text 1: {
+    alignSelf: "stretch",
+    font: "subheading2",
+    marginTop: 16,
+    textAlign: "center"
+  }
 });

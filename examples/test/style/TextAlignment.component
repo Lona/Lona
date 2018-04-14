@@ -3,7 +3,11 @@
     "id" : "View",
     "type" : "Lona:View",
     "params" : {
-      "alignSelf" : "stretch"
+      "paddingTop" : 10,
+      "alignSelf" : "stretch",
+      "paddingBottom" : 10,
+      "paddingLeft" : 10,
+      "paddingRight" : 10
     },
     "children" : [
       {
@@ -11,8 +15,8 @@
         "type" : "Lona:View",
         "params" : {
           "height" : 400,
-          "alignSelf" : "stretch",
           "justifyContent" : "center",
+          "alignSelf" : "stretch",
           "alignItems" : "center"
         },
         "children" : [
@@ -36,18 +40,22 @@
             "id" : "Text",
             "type" : "Lona:Text",
             "params" : {
+              "alignSelf" : "stretch",
+              "marginTop" : 16,
               "text" : "Welcome to Lona Studio",
               "font" : "display1",
-              "marginTop" : 16
+              "textAlign" : "center"
             }
           },
           {
             "id" : "Text 1",
             "type" : "Lona:Text",
             "params" : {
+              "alignSelf" : "stretch",
+              "marginTop" : 16,
               "text" : "Version 1.0.2",
               "font" : "subheading2",
-              "marginTop" : 16
+              "textAlign" : "center"
             }
           }
         ]
