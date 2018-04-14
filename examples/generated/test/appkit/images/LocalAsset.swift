@@ -1,6 +1,19 @@
 import AppKit
 import Foundation
 
+// MARK: - ImageWithBackgroundColor
+
+private class ImageWithBackgroundColor: NSImageView {
+  var fillColor = NSColor.clear
+
+  override func draw(_ dirtyRect: NSRect) {
+    fillColor.set()
+    bounds.fill()
+    super.draw(dirtyRect)
+  }
+}
+
+
 // MARK: - LocalAsset
 
 public class LocalAsset: NSBox {
@@ -22,7 +35,7 @@ public class LocalAsset: NSBox {
 
   // MARK: Private
 
-  private var imageView = NSImageView()
+  private var imageView = ImageWithBackgroundColor()
 
   private var topPadding: CGFloat = 0
   private var trailingPadding: CGFloat = 0
@@ -46,8 +59,7 @@ public class LocalAsset: NSBox {
 
     addSubview(imageView)
 
-    // FIXME: Value of type 'NSImageView' has no member 'fillColor'
-//    imageView.fillColor = #colorLiteral(red: 0.847058823529, green: 0.847058823529, blue: 0.847058823529, alpha: 1)
+    imageView.fillColor = #colorLiteral(red: 0.847058823529, green: 0.847058823529, blue: 0.847058823529, alpha: 1)
     imageView.image = NSImage(named: NSImage.Name(rawValue: "icon_128x128"))
   }
 

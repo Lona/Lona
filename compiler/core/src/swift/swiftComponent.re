@@ -36,6 +36,9 @@ let generate =
   let textLayers =
     nonRootLayers
     |> List.filter((layer: Types.layer) => layer.typeName == Types.Text);
+  let imageLayers =
+    nonRootLayers
+    |> List.filter((layer: Types.layer) => layer.typeName == Types.Image);
   let pressableLayers =
     rootLayer
     |> Layer.flatten
@@ -61,6 +64,19 @@ let generate =
     fun
     | Constraint.Required => "required"
     | Low => "defaultLow";
+  let isParameterSetInitially = (layer: Types.layer, parameter) =>
+    StringMap.mem(parameter, layer.parameters);
+  let isParameterAssigned = (layer: Types.layer, parameter) => {
+    let assignedParameters =
+      Layer.LayerMap.find_opt(layer, layerParameterAssignments);
+    switch assignedParameters {
+    | Some(parameters) => StringMap.mem(parameter, parameters)
+    | None => false
+    };
+  };
+  let isParameterUsed = (layer: Types.layer, parameter) =>
+    isParameterAssigned(layer, parameter)
+    || isParameterSetInitially(layer, parameter);
   let parameterVariableDoc = (parameter: Types.parameter) =>
     VariableDeclaration({
       "modifiers": [AccessLevelModifier(PublicModifier)],
@@ -97,9 +113,9 @@ let generate =
     | (AppKit, Image) => "NSImageView"
     | _ => "TypeUnknown"
     };
-  let getLayerInitCall = layerType => {
-    let typeName = SwiftIdentifier(layerType |> getLayerTypeName);
-    switch (swiftOptions.framework, layerType) {
+  let getLayerInitCall = (layer: Types.layer) => {
+    let typeName = SwiftIdentifier(layer.typeName |> getLayerTypeName);
+    switch (swiftOptions.framework, layer.typeName) {
     | (UIKit, Types.View)
     | (UIKit, Image) =>
       FunctionCallExpression({
@@ -121,6 +137,14 @@ let generate =
           })
         ]
       })
+    | (AppKit, Image) =>
+      let hasBackground = isParameterAssigned(layer, "backgroundColor");
+      FunctionCallExpression({
+        "name":
+          hasBackground ?
+            SwiftIdentifier("ImageWithBackgroundColor") : typeName,
+        "arguments": []
+      });
     | _ => FunctionCallExpression({"name": typeName, "arguments": []})
     };
   };
@@ -132,7 +156,7 @@ let generate =
           "identifier": SwiftIdentifier(layer.name |> Format.layerName),
           "annotation": None /*Some(layer.typeName |> viewTypeDoc)*/
         }),
-      "init": Some(getLayerInitCall(layer.typeName)),
+      "init": Some(getLayerInitCall(layer)),
       "block": None
     });
   let textStyleVariableDoc = (layer: Types.layer) =>
@@ -417,6 +441,26 @@ let generate =
       StatementListHelper(node);
     };
   };
+  let containsImageWithBackgroundColor = () => {
+    let hasBackgroundColor = (layer: Types.layer) =>
+      isParameterAssigned(layer, "backgroundColor");
+    imageLayers |> List.exists(hasBackgroundColor);
+  };
+  let helperClasses =
+    switch swiftOptions.framework {
+    | SwiftOptions.AppKit =>
+      containsImageWithBackgroundColor() ?
+        [
+          [LineComment("MARK: - " ++ "ImageWithBackgroundColor"), Empty],
+          SwiftHelperClass.generateImageWithBackgroundColor(
+            options,
+            swiftOptions
+          )
+        ]
+        |> List.concat :
+        []
+    | SwiftOptions.UIKit => []
+    };
   let setUpViewsDoc = (root: Types.layer) => {
     let setUpDefaultsDoc = () => {
       let filterParameters = ((name, _)) =>
@@ -451,19 +495,6 @@ let generate =
       |> List.map(defineInitialLayerValues)
       |> List.concat;
     };
-    let isParameterSetInitially = (layer: Types.layer, parameter) =>
-      StringMap.mem(parameter, layer.parameters);
-    let isParameterAssigned = (layer: Types.layer, parameter) => {
-      let assignedParameters =
-        Layer.LayerMap.find_opt(layer, layerParameterAssignments);
-      switch assignedParameters {
-      | Some(parameters) => StringMap.mem(parameter, parameters)
-      | None => false
-      };
-    };
-    let isParameterUsed = (layer: Types.layer, parameter) =>
-      isParameterAssigned(layer, parameter)
-      || isParameterSetInitially(layer, parameter);
     let resetViewStyling = (layer: Types.layer) =>
       switch (swiftOptions.framework, layer.typeName) {
       | (SwiftOptions.AppKit, View) => [
@@ -893,50 +924,63 @@ let generate =
     });
   };
   TopLevelDeclaration({
-    "statements": [
-      SwiftDocument.importFramework(swiftOptions.framework),
-      ImportDeclaration("Foundation"),
-      Empty,
-      LineComment("MARK: - " ++ name),
-      Empty,
-      ClassDeclaration({
-        "name": name,
-        "inherits": [TypeName(Types.View |> getLayerTypeName)],
-        "modifier": Some(PublicModifier),
-        "isFinal": false,
-        "body":
-          Document.joinGroups(
-            Empty,
-            [
-              [Empty, LineComment("MARK: Lifecycle")],
-              [initializerDoc()],
-              [initializerCoderDoc()],
-              needsTracking ? [AppkitPressable.deinitTrackingArea] : [],
-              List.length(parameters) > 0 ? [LineComment("MARK: Public")] : [],
-              parameters |> List.map(parameterVariableDoc),
-              [LineComment("MARK: Private")],
-              needsTracking ? [AppkitPressable.trackingAreaVar] : [],
-              nonRootLayers |> List.map(viewVariableDoc),
-              textLayers |> List.map(textStyleVariableDoc),
-              rootLayer |> Layer.flatmap(spacingVariableDoc) |> List.concat,
-              pressableLayers |> List.map(pressableVariableDoc) |> List.concat,
-              constraints
-              |> List.map(def =>
-                   constraintVariableDoc(formatConstraintVariableName(def))
-                 ),
-              [setUpViewsDoc(rootLayer)],
-              [setUpConstraintsDoc(rootLayer)],
-              [updateDoc()],
-              needsTracking ?
-                AppkitPressable.mouseTrackingFunctions(
-                  rootLayer,
-                  pressableLayers
-                ) :
-                []
-            ]
-          )
-      }),
-      Empty
-    ]
+    "statements":
+      Document.joinGroups(
+        Empty,
+        [
+          [
+            SwiftDocument.importFramework(swiftOptions.framework),
+            ImportDeclaration("Foundation")
+          ],
+          helperClasses,
+          [LineComment("MARK: - " ++ name)],
+          [
+            ClassDeclaration({
+              "name": name,
+              "inherits": [TypeName(Types.View |> getLayerTypeName)],
+              "modifier": Some(PublicModifier),
+              "isFinal": false,
+              "body":
+                Document.joinGroups(
+                  Empty,
+                  [
+                    [Empty, LineComment("MARK: Lifecycle")],
+                    [initializerDoc()],
+                    [initializerCoderDoc()],
+                    needsTracking ? [AppkitPressable.deinitTrackingArea] : [],
+                    List.length(parameters) > 0 ?
+                      [LineComment("MARK: Public")] : [],
+                    parameters |> List.map(parameterVariableDoc),
+                    [LineComment("MARK: Private")],
+                    needsTracking ? [AppkitPressable.trackingAreaVar] : [],
+                    nonRootLayers |> List.map(viewVariableDoc),
+                    textLayers |> List.map(textStyleVariableDoc),
+                    rootLayer
+                    |> Layer.flatmap(spacingVariableDoc)
+                    |> List.concat,
+                    pressableLayers
+                    |> List.map(pressableVariableDoc)
+                    |> List.concat,
+                    constraints
+                    |> List.map(def =>
+                         constraintVariableDoc(
+                           formatConstraintVariableName(def)
+                         )
+                       ),
+                    [setUpViewsDoc(rootLayer)],
+                    [setUpConstraintsDoc(rootLayer)],
+                    [updateDoc()],
+                    needsTracking ?
+                      AppkitPressable.mouseTrackingFunctions(
+                        rootLayer,
+                        pressableLayers
+                      ) :
+                      []
+                  ]
+                )
+            })
+          ]
+        ]
+      )
   });
 };
