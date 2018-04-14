@@ -51,12 +51,12 @@ public class FixedParentFitChild: NSBox {
   private var view1ViewTopAnchorConstraint: NSLayoutConstraint?
   private var view1ViewLeadingAnchorConstraint: NSLayoutConstraint?
   private var view1ViewTrailingAnchorConstraint: NSLayoutConstraint?
+  private var view4ViewHeightAnchorParentConstraint: NSLayoutConstraint?
+  private var view5ViewHeightAnchorParentConstraint: NSLayoutConstraint?
   private var view4ViewLeadingAnchorConstraint: NSLayoutConstraint?
   private var view4ViewTopAnchorConstraint: NSLayoutConstraint?
-  private var view4ViewHeightAnchorParentConstraint: NSLayoutConstraint?
   private var view5ViewLeadingAnchorConstraint: NSLayoutConstraint?
   private var view5ViewTopAnchorConstraint: NSLayoutConstraint?
-  private var view5ViewHeightAnchorParentConstraint: NSLayoutConstraint?
   private var view4ViewHeightAnchorConstraint: NSLayoutConstraint?
   private var view4ViewWidthAnchorConstraint: NSLayoutConstraint?
   private var view5ViewHeightAnchorConstraint: NSLayoutConstraint?
@@ -102,28 +102,28 @@ public class FixedParentFitChild: NSBox {
     let view1ViewTrailingAnchorConstraint = view1View
       .trailingAnchor
       .constraint(equalTo: trailingAnchor, constant: -(trailingPadding + view1ViewTrailingMargin))
+    let view4ViewHeightAnchorParentConstraint = view4View
+      .heightAnchor
+      .constraint(
+        lessThanOrEqualTo: view1View.heightAnchor,
+        constant: -(view1ViewTopPadding + view4ViewTopMargin + view1ViewBottomPadding + view4ViewBottomMargin))
+    let view5ViewHeightAnchorParentConstraint = view5View
+      .heightAnchor
+      .constraint(
+        lessThanOrEqualTo: view1View.heightAnchor,
+        constant: -(view1ViewTopPadding + view5ViewTopMargin + view1ViewBottomPadding + view5ViewBottomMargin))
     let view4ViewLeadingAnchorConstraint = view4View
       .leadingAnchor
       .constraint(equalTo: view1View.leadingAnchor, constant: view1ViewLeadingPadding + view4ViewLeadingMargin)
     let view4ViewTopAnchorConstraint = view4View
       .topAnchor
       .constraint(equalTo: view1View.topAnchor, constant: view1ViewTopPadding + view4ViewTopMargin)
-    let view4ViewHeightAnchorParentConstraint = view4View
-      .heightAnchor
-      .constraint(
-        lessThanOrEqualTo: view1View.heightAnchor,
-        constant: -(view1ViewTopPadding + view4ViewTopMargin + view1ViewBottomPadding + view4ViewBottomMargin))
     let view5ViewLeadingAnchorConstraint = view5View
       .leadingAnchor
       .constraint(equalTo: view4View.trailingAnchor, constant: view4ViewTrailingMargin + view5ViewLeadingMargin)
     let view5ViewTopAnchorConstraint = view5View
       .topAnchor
       .constraint(equalTo: view1View.topAnchor, constant: view1ViewTopPadding + view5ViewTopMargin)
-    let view5ViewHeightAnchorParentConstraint = view5View
-      .heightAnchor
-      .constraint(
-        lessThanOrEqualTo: view1View.heightAnchor,
-        constant: -(view1ViewTopPadding + view5ViewTopMargin + view1ViewBottomPadding + view5ViewBottomMargin))
     let view4ViewHeightAnchorConstraint = view4View.heightAnchor.constraint(equalToConstant: 100)
     let view4ViewWidthAnchorConstraint = view4View.widthAnchor.constraint(equalToConstant: 60)
     let view5ViewHeightAnchorConstraint = view5View.heightAnchor.constraint(equalToConstant: 60)
@@ -136,12 +136,12 @@ public class FixedParentFitChild: NSBox {
       view1ViewTopAnchorConstraint,
       view1ViewLeadingAnchorConstraint,
       view1ViewTrailingAnchorConstraint,
+      view4ViewHeightAnchorParentConstraint,
+      view5ViewHeightAnchorParentConstraint,
       view4ViewLeadingAnchorConstraint,
       view4ViewTopAnchorConstraint,
-      view4ViewHeightAnchorParentConstraint,
       view5ViewLeadingAnchorConstraint,
       view5ViewTopAnchorConstraint,
-      view5ViewHeightAnchorParentConstraint,
       view4ViewHeightAnchorConstraint,
       view4ViewWidthAnchorConstraint,
       view5ViewHeightAnchorConstraint,
@@ -152,12 +152,12 @@ public class FixedParentFitChild: NSBox {
     self.view1ViewTopAnchorConstraint = view1ViewTopAnchorConstraint
     self.view1ViewLeadingAnchorConstraint = view1ViewLeadingAnchorConstraint
     self.view1ViewTrailingAnchorConstraint = view1ViewTrailingAnchorConstraint
+    self.view4ViewHeightAnchorParentConstraint = view4ViewHeightAnchorParentConstraint
+    self.view5ViewHeightAnchorParentConstraint = view5ViewHeightAnchorParentConstraint
     self.view4ViewLeadingAnchorConstraint = view4ViewLeadingAnchorConstraint
     self.view4ViewTopAnchorConstraint = view4ViewTopAnchorConstraint
-    self.view4ViewHeightAnchorParentConstraint = view4ViewHeightAnchorParentConstraint
     self.view5ViewLeadingAnchorConstraint = view5ViewLeadingAnchorConstraint
     self.view5ViewTopAnchorConstraint = view5ViewTopAnchorConstraint
-    self.view5ViewHeightAnchorParentConstraint = view5ViewHeightAnchorParentConstraint
     self.view4ViewHeightAnchorConstraint = view4ViewHeightAnchorConstraint
     self.view4ViewWidthAnchorConstraint = view4ViewWidthAnchorConstraint
     self.view5ViewHeightAnchorConstraint = view5ViewHeightAnchorConstraint
@@ -168,12 +168,12 @@ public class FixedParentFitChild: NSBox {
     view1ViewTopAnchorConstraint.identifier = "view1ViewTopAnchorConstraint"
     view1ViewLeadingAnchorConstraint.identifier = "view1ViewLeadingAnchorConstraint"
     view1ViewTrailingAnchorConstraint.identifier = "view1ViewTrailingAnchorConstraint"
+    view4ViewHeightAnchorParentConstraint.identifier = "view4ViewHeightAnchorParentConstraint"
+    view5ViewHeightAnchorParentConstraint.identifier = "view5ViewHeightAnchorParentConstraint"
     view4ViewLeadingAnchorConstraint.identifier = "view4ViewLeadingAnchorConstraint"
     view4ViewTopAnchorConstraint.identifier = "view4ViewTopAnchorConstraint"
-    view4ViewHeightAnchorParentConstraint.identifier = "view4ViewHeightAnchorParentConstraint"
     view5ViewLeadingAnchorConstraint.identifier = "view5ViewLeadingAnchorConstraint"
     view5ViewTopAnchorConstraint.identifier = "view5ViewTopAnchorConstraint"
-    view5ViewHeightAnchorParentConstraint.identifier = "view5ViewHeightAnchorParentConstraint"
     view4ViewHeightAnchorConstraint.identifier = "view4ViewHeightAnchorConstraint"
     view4ViewWidthAnchorConstraint.identifier = "view4ViewWidthAnchorConstraint"
     view5ViewHeightAnchorConstraint.identifier = "view5ViewHeightAnchorConstraint"

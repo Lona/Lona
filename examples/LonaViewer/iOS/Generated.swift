@@ -92,7 +92,8 @@ enum Generated: String {
              .primaryAxis,
              .secondaryAxis,
              .borderWidthColor,
-             .textAlignment:
+             .textAlignment,
+             .fitContentParentSecondaryChildren:
             return [
                 equal(\.topAnchor, \.safeAreaLayoutGuide.topAnchor),
                 equal(\.leftAnchor),

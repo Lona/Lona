@@ -8,7 +8,9 @@ type anchor =
   | Top
   | Bottom
   | Leading
-  | Trailing;
+  | Trailing
+  | CenterX
+  | CenterY;
 
 type cmp =
   | Eq
@@ -19,8 +21,10 @@ type role =
   | PrimaryBefore
   | PrimaryBetween
   | PrimaryAfter
+  | PrimaryCenter
   | SecondaryBefore
   | SecondaryAfter
+  | SecondaryCenter
   | FitContentSecondary
   | FlexSibling
   | PrimaryDimension
@@ -44,6 +48,8 @@ let anchorToString =
   | Bottom => "bottomAnchor"
   | Leading => "leadingAnchor"
   | Trailing => "trailingAnchor"
+  | CenterX => "centerXAnchor"
+  | CenterY => "centerYAnchor"
   | Width => "widthAnchor"
   | Height => "heightAnchor";
 
@@ -53,6 +59,8 @@ let anchorFromString =
   | "bottomAnchor" => Bottom
   | "leadingAnchor" => Leading
   | "trailingAnchor" => Trailing
+  | "centerXAnchor" => CenterX
+  | "centerYAnchor" => CenterY
   | "widthAnchor" => Width
   | "heightAnchor" => Height;
 
@@ -118,8 +126,10 @@ let getConstraints = (rootLayer: Types.layer) => {
     let isColumn = direction == "column";
     let primaryBeforeAnchor = isColumn ? Top : Leading;
     let primaryAfterAnchor = isColumn ? Bottom : Trailing;
+    let primaryCenterAnchor = isColumn ? CenterY : CenterX;
     let secondaryBeforeAnchor = isColumn ? Leading : Top;
     let secondaryAfterAnchor = isColumn ? Trailing : Bottom;
+    let secondaryCenterAnchor = isColumn ? CenterX : CenterY;
     let primaryDimensionAnchor = isColumn ? Height : Width;
     let secondaryDimensionAnchor = isColumn ? Width : Height;
     let height = Layer.getNumberParameterOpt("height", layer);
@@ -233,39 +243,11 @@ let getConstraints = (rootLayer: Types.layer) => {
             )
           ]
         };
-      /* If the parent's secondary axis is set to "fit content", this ensures
-         the secondary axis dimension is greater than every child's.
-         We apply these in the child loop for easier variable naming (due to current setup). */
-      /*
-         We need these constraints to be low priority. A "FitContent" view needs height >= each
-         of its children. Yet a "Fill" sibling needs to have height unspecified, and
-         a side anchor equal to the side of the "FitContent" view.
-         This layout is ambiguous (I think), despite no warnings at runtime. The "FitContent" view's
-         height constraints seem to take priority over the "Fill" view's height constraints, and the
-         "FitContent" view steals the height of the "Fill" view. We solve this by lowering the priority
-         of the "FitContent" view's height.
-       */
-      let fitContentSecondaryConstraint =
-        switch secondarySizingRule {
-        | FitContent => [
-            Relation(
-              child,
-              secondaryDimensionAnchor,
-              Leq,
-              layer,
-              secondaryDimensionAnchor,
-              Low,
-              FitContentSecondary
-            )
-          ]
-        | _ => []
-        };
       firstViewConstraints
       @ lastViewConstraints
       @ middleViewConstraints
       @ [secondaryBeforeConstraint]
-      @ secondaryAfterConstraint
-      @ fitContentSecondaryConstraint;
+      @ secondaryAfterConstraint;
     };
     /* Children with "flex: 1" should all have equal dimensions along the primary axis */
     let flexChildrenConstraints =
@@ -277,6 +259,34 @@ let getConstraints = (rootLayer: Types.layer) => {
         rest |> List.map(sameAnchorConstraint(sameAnchor));
       | _ => []
       };
+    /* If the parent's secondary axis is set to "fit content", this ensures
+       the secondary axis dimension is greater than every child's. */
+    /*
+       We need these constraints to be low priority. A "FitContent" view needs height >= each
+       of its children. Yet a "Fill" sibling needs to have height unspecified, and
+       a side anchor equal to the side of the "FitContent" view.
+       This layout is ambiguous (I think), despite no warnings at runtime. The "FitContent" view's
+       height constraints seem to take priority over the "Fill" view's height constraints, and the
+       "FitContent" view steals the height of the "Fill" view. We solve this by lowering the priority
+       of the "FitContent" view's height.
+     */
+    let fitContentSecondaryConstraint = child =>
+      switch secondarySizingRule {
+      | FitContent => [
+          Relation(
+            child,
+            secondaryDimensionAnchor,
+            Leq,
+            layer,
+            secondaryDimensionAnchor,
+            Low,
+            FitContentSecondary
+          )
+        ]
+      | _ => []
+      };
+    let fitContentSecondaryConstraints =
+      layer.children |> List.map(fitContentSecondaryConstraint) |> List.concat;
     let heightConstraint =
       switch height {
       | Some(_) => [
@@ -304,6 +314,7 @@ let getConstraints = (rootLayer: Types.layer) => {
     let constraints =
       [heightConstraint, widthConstraint]
       @ [flexChildrenConstraints]
+      @ [fitContentSecondaryConstraints]
       @ (layer.children |> List.mapi(addConstraints));
     constraints |> List.concat;
   };
