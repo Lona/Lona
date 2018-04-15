@@ -672,6 +672,8 @@ let generate =
   let generateConstantFromConstraint = (constr: Constraint.t) =>
     Constraint.(
       switch constr {
+      /* Currently centering doesn't require any constants, since a centered view also
+         has a pair of before/after constraints that include the constants */
       | Relation(_, CenterX, _, _, CenterX, _, _)
       | Relation(_, CenterY, _, _, CenterY, _, _) =>
         LiteralExpression(FloatingPoint(0.0))

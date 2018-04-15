@@ -234,7 +234,7 @@ let getConstraints = (rootLayer: Types.layer) => {
           layer,
           secondaryCenterAnchor,
           Required,
-          SecondaryBefore
+          SecondaryCenter
         );
       let secondaryAfterLeqConstraint =
         Relation(

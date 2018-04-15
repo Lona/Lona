@@ -338,7 +338,7 @@ function getConstraints(rootLayer) {
           layer,
           secondaryCenterAnchor,
           /* Required */0,
-          /* SecondaryBefore */4
+          /* SecondaryCenter */6
         ]);
       var secondaryAfterLeqConstraint = /* Relation */Block.__(1, [
           child,
