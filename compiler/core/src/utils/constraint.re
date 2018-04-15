@@ -206,7 +206,7 @@ let getConstraints = (rootLayer: Types.layer) => {
             )
           ];
         };
-      let secondaryBeforeConstraint =
+      let secondaryBeforeEqConstraint =
         Relation(
           child,
           secondaryBeforeAnchor,
@@ -216,7 +216,7 @@ let getConstraints = (rootLayer: Types.layer) => {
           Required,
           SecondaryBefore
         );
-      let secondaryAfterConstraintReversed =
+      let secondaryAfterEqConstraint =
         Relation(
           child,
           secondaryAfterAnchor,
@@ -236,59 +236,39 @@ let getConstraints = (rootLayer: Types.layer) => {
           Required,
           SecondaryBefore
         );
-      let secondaryAfterConstraint =
+      let secondaryAfterLeqConstraint =
+        Relation(
+          child,
+          secondaryAfterAnchor,
+          Leq,
+          layer,
+          secondaryAfterAnchor,
+          Required,
+          SecondaryAfter
+        );
+      let secondaryBeforeGeqConstraint =
+        Relation(
+          child,
+          secondaryBeforeAnchor,
+          Geq,
+          layer,
+          secondaryBeforeAnchor,
+          Required,
+          SecondaryBefore
+        );
+      let secondaryAfterFlexibleConstraint =
         switch (secondarySizingRule, childSecondarySizingRule) {
-        | (Fill, FitContent) => [
-            Relation(
-              child,
-              secondaryAfterAnchor,
-              Leq,
-              layer,
-              secondaryAfterAnchor,
-              Required,
-              SecondaryAfter
-            )
-          ]
+        | (Fill, FitContent) => [secondaryAfterLeqConstraint]
         | (_, Fixed(_)) => [] /* Width/height constraints are added outside the child loop */
         | (_, Fill)
-        | (_, FitContent) => [
-            Relation(
-              child,
-              secondaryAfterAnchor,
-              Eq,
-              layer,
-              secondaryAfterAnchor,
-              Required,
-              SecondaryAfter
-            )
-          ]
+        | (_, FitContent) => [secondaryAfterEqConstraint]
         };
-      let secondaryBeforeConstraintReversed =
+      let secondaryBeforeFlexibleConstraint =
         switch (secondarySizingRule, childSecondarySizingRule) {
-        | (Fill, FitContent) => [
-            Relation(
-              child,
-              secondaryBeforeAnchor,
-              Geq,
-              layer,
-              secondaryBeforeAnchor,
-              Required,
-              SecondaryBefore
-            )
-          ]
+        | (Fill, FitContent) => [secondaryBeforeGeqConstraint]
         | (_, Fixed(_)) => [] /* Width/height constraints are added outside the child loop */
         | (_, Fill)
-        | (_, FitContent) => [
-            Relation(
-              child,
-              secondaryBeforeAnchor,
-              Eq,
-              layer,
-              secondaryBeforeAnchor,
-              Required,
-              SecondaryBefore
-            )
-          ]
+        | (_, FitContent) => [secondaryBeforeEqConstraint]
         };
       let secondaryConstraints =
         switch (
@@ -299,17 +279,18 @@ let getConstraints = (rootLayer: Types.layer) => {
            The secondary dimension will be constrained in the outer loop to handle fit content. */
         | (Some("center"), Fixed(_)) => [secondaryCenterConstraint]
         /* Fit or fill children still need the sides constrained in addition to being centered.
-           Since one of the constraints is Leq, this shouldn't be overconstrained. */
+           Since the constraints are Leq/Geq, this shouldn't be overconstrained. (Actually, if even one
+           constraint is Leq/Geq, this seems to work) */
         | (Some("center"), _) =>
-          secondaryBeforeConstraintReversed
+          secondaryBeforeFlexibleConstraint
           @ [secondaryCenterConstraint]
-          @ secondaryAfterConstraint
+          @ secondaryAfterFlexibleConstraint
         /* With flex-end alignment, we want to do the opposite of flex-start alignment, flipping
            both the before and after constraints. */
         | (Some("flex-end"), _) =>
-          secondaryBeforeConstraintReversed
-          @ [secondaryAfterConstraintReversed]
-        | _ => [secondaryBeforeConstraint] @ secondaryAfterConstraint
+          secondaryBeforeFlexibleConstraint @ [secondaryAfterEqConstraint]
+        /* This is the default flex-start case. */
+        | _ => [secondaryBeforeEqConstraint] @ secondaryAfterFlexibleConstraint
         };
       firstViewConstraints
       @ lastViewConstraints

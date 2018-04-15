@@ -313,7 +313,7 @@ function getConstraints(rootLayer) {
       } else {
         middleViewConstraints = /* [] */0;
       }
-      var secondaryBeforeConstraint = /* Relation */Block.__(1, [
+      var secondaryBeforeEqConstraint = /* Relation */Block.__(1, [
           child,
           secondaryBeforeAnchor,
           /* Eq */0,
@@ -322,7 +322,7 @@ function getConstraints(rootLayer) {
           /* Required */0,
           /* SecondaryBefore */4
         ]);
-      var secondaryAfterConstraintReversed = /* Relation */Block.__(1, [
+      var secondaryAfterEqConstraint = /* Relation */Block.__(1, [
           child,
           secondaryAfterAnchor,
           /* Eq */0,
@@ -340,67 +340,53 @@ function getConstraints(rootLayer) {
           /* Required */0,
           /* SecondaryBefore */4
         ]);
-      var secondaryAfterConstraint;
+      var secondaryAfterLeqConstraint = /* Relation */Block.__(1, [
+          child,
+          secondaryAfterAnchor,
+          /* Leq */2,
+          layer,
+          secondaryAfterAnchor,
+          /* Required */0,
+          /* SecondaryAfter */5
+        ]);
+      var secondaryBeforeGeqConstraint = /* Relation */Block.__(1, [
+          child,
+          secondaryBeforeAnchor,
+          /* Geq */1,
+          layer,
+          secondaryBeforeAnchor,
+          /* Required */0,
+          /* SecondaryBefore */4
+        ]);
+      var secondaryAfterFlexibleConstraint;
       var exit = 0;
       if (typeof secondarySizingRule === "number" && !(secondarySizingRule !== 0 || !(typeof childSecondarySizingRule === "number" && childSecondarySizingRule !== 0))) {
-        secondaryAfterConstraint = /* :: */[
-          /* Relation */Block.__(1, [
-              child,
-              secondaryAfterAnchor,
-              /* Leq */2,
-              layer,
-              secondaryAfterAnchor,
-              /* Required */0,
-              /* SecondaryAfter */5
-            ]),
+        secondaryAfterFlexibleConstraint = /* :: */[
+          secondaryAfterLeqConstraint,
           /* [] */0
         ];
       } else {
         exit = 1;
       }
       if (exit === 1) {
-        secondaryAfterConstraint = typeof childSecondarySizingRule === "number" ? /* :: */[
-            /* Relation */Block.__(1, [
-                child,
-                secondaryAfterAnchor,
-                /* Eq */0,
-                layer,
-                secondaryAfterAnchor,
-                /* Required */0,
-                /* SecondaryAfter */5
-              ]),
+        secondaryAfterFlexibleConstraint = typeof childSecondarySizingRule === "number" ? /* :: */[
+            secondaryAfterEqConstraint,
             /* [] */0
           ] : /* [] */0;
       }
-      var secondaryBeforeConstraintReversed;
+      var secondaryBeforeFlexibleConstraint;
       var exit$1 = 0;
       if (typeof secondarySizingRule === "number" && !(secondarySizingRule !== 0 || !(typeof childSecondarySizingRule === "number" && childSecondarySizingRule !== 0))) {
-        secondaryBeforeConstraintReversed = /* :: */[
-          /* Relation */Block.__(1, [
-              child,
-              secondaryBeforeAnchor,
-              /* Geq */1,
-              layer,
-              secondaryBeforeAnchor,
-              /* Required */0,
-              /* SecondaryBefore */4
-            ]),
+        secondaryBeforeFlexibleConstraint = /* :: */[
+          secondaryBeforeGeqConstraint,
           /* [] */0
         ];
       } else {
         exit$1 = 1;
       }
       if (exit$1 === 1) {
-        secondaryBeforeConstraintReversed = typeof childSecondarySizingRule === "number" ? /* :: */[
-            /* Relation */Block.__(1, [
-                child,
-                secondaryBeforeAnchor,
-                /* Eq */0,
-                layer,
-                secondaryBeforeAnchor,
-                /* Required */0,
-                /* SecondaryBefore */4
-              ]),
+        secondaryBeforeFlexibleConstraint = typeof childSecondarySizingRule === "number" ? /* :: */[
+            secondaryBeforeEqConstraint,
             /* [] */0
           ] : /* [] */0;
       }
@@ -409,31 +395,31 @@ function getConstraints(rootLayer) {
       if (match$1) {
         switch (match$1[0]) {
           case "center" : 
-              secondaryConstraints = typeof childSecondarySizingRule === "number" ? Pervasives.$at(secondaryBeforeConstraintReversed, Pervasives.$at(/* :: */[
+              secondaryConstraints = typeof childSecondarySizingRule === "number" ? Pervasives.$at(secondaryBeforeFlexibleConstraint, Pervasives.$at(/* :: */[
                           secondaryCenterConstraint,
                           /* [] */0
-                        ], secondaryAfterConstraint)) : /* :: */[
+                        ], secondaryAfterFlexibleConstraint)) : /* :: */[
                   secondaryCenterConstraint,
                   /* [] */0
                 ];
               break;
           case "flex-end" : 
-              secondaryConstraints = Pervasives.$at(secondaryBeforeConstraintReversed, /* :: */[
-                    secondaryAfterConstraintReversed,
+              secondaryConstraints = Pervasives.$at(secondaryBeforeFlexibleConstraint, /* :: */[
+                    secondaryAfterEqConstraint,
                     /* [] */0
                   ]);
               break;
           default:
             secondaryConstraints = Pervasives.$at(/* :: */[
-                  secondaryBeforeConstraint,
+                  secondaryBeforeEqConstraint,
                   /* [] */0
-                ], secondaryAfterConstraint);
+                ], secondaryAfterFlexibleConstraint);
         }
       } else {
         secondaryConstraints = Pervasives.$at(/* :: */[
-              secondaryBeforeConstraint,
+              secondaryBeforeEqConstraint,
               /* [] */0
-            ], secondaryAfterConstraint);
+            ], secondaryAfterFlexibleConstraint);
       }
       return Pervasives.$at(firstViewConstraints, Pervasives.$at(lastViewConstraints, Pervasives.$at(middleViewConstraints, secondaryConstraints)));
     };
