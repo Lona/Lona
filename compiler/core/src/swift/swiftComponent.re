@@ -672,6 +672,9 @@ let generate =
   let generateConstantFromConstraint = (constr: Constraint.t) =>
     Constraint.(
       switch constr {
+      | Relation(_, CenterX, _, _, CenterX, _, _)
+      | Relation(_, CenterY, _, _, CenterY, _, _) =>
+        LiteralExpression(FloatingPoint(0.0))
       | Relation(child, Top, _, layer, Top, _, PrimaryBefore)
       | Relation(child, Top, _, layer, Top, _, SecondaryBefore) =>
         constraintConstantExpression(layer, "topPadding", child, "topMargin")
@@ -765,7 +768,9 @@ let generate =
       | Dimension((layer: Types.layer), Width, _, _) =>
         let constant = Layer.getNumberParameter("width", layer);
         LiteralExpression(FloatingPoint(constant));
-      | _ => raise(Not_found)
+      | _ =>
+        Js.log("Unknown constraint types");
+        raise(Not_found);
       }
     );
   let formatConstraintVariableName = (constr: Constraint.t) => {

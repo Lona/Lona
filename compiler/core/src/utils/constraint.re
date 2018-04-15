@@ -216,6 +216,26 @@ let getConstraints = (rootLayer: Types.layer) => {
           Required,
           SecondaryBefore
         );
+      let secondaryAfterConstraintReversed =
+        Relation(
+          child,
+          secondaryAfterAnchor,
+          Eq,
+          layer,
+          secondaryAfterAnchor,
+          Required,
+          SecondaryAfter
+        );
+      let secondaryCenterConstraint =
+        Relation(
+          child,
+          secondaryCenterAnchor,
+          Eq,
+          layer,
+          secondaryCenterAnchor,
+          Required,
+          SecondaryBefore
+        );
       let secondaryAfterConstraint =
         switch (secondarySizingRule, childSecondarySizingRule) {
         | (Fill, FitContent) => [
@@ -243,11 +263,58 @@ let getConstraints = (rootLayer: Types.layer) => {
             )
           ]
         };
+      let secondaryBeforeConstraintReversed =
+        switch (secondarySizingRule, childSecondarySizingRule) {
+        | (Fill, FitContent) => [
+            Relation(
+              child,
+              secondaryBeforeAnchor,
+              Geq,
+              layer,
+              secondaryBeforeAnchor,
+              Required,
+              SecondaryBefore
+            )
+          ]
+        | (_, Fixed(_)) => [] /* Width/height constraints are added outside the child loop */
+        | (_, Fill)
+        | (_, FitContent) => [
+            Relation(
+              child,
+              secondaryBeforeAnchor,
+              Eq,
+              layer,
+              secondaryBeforeAnchor,
+              Required,
+              SecondaryBefore
+            )
+          ]
+        };
+      let secondaryConstraints =
+        switch (
+          Layer.getStringParameterOpt("alignItems", layer),
+          childSecondarySizingRule
+        ) {
+        /* Fixed children don't need either side of the secondary axis anchored to the parent.
+           The secondary dimension will be constrained in the outer loop to handle fit content. */
+        | (Some("center"), Fixed(_)) => [secondaryCenterConstraint]
+        /* Fit or fill children still need the sides constrained in addition to being centered.
+           Since one of the constraints is Leq, this shouldn't be overconstrained. */
+        | (Some("center"), _) =>
+          secondaryBeforeConstraintReversed
+          @ [secondaryCenterConstraint]
+          @ secondaryAfterConstraint
+        /* With flex-end alignment, we want to do the opposite of flex-start alignment, flipping
+           both the before and after constraints. */
+        | (Some("flex-end"), _) =>
+          secondaryBeforeConstraintReversed
+          @ [secondaryAfterConstraintReversed]
+        | _ => [secondaryBeforeConstraint] @ secondaryAfterConstraint
+        };
       firstViewConstraints
       @ lastViewConstraints
       @ middleViewConstraints
-      @ [secondaryBeforeConstraint]
-      @ secondaryAfterConstraint;
+      @ secondaryConstraints;
     };
     /* Children with "flex: 1" should all have equal dimensions along the primary axis */
     let flexChildrenConstraints =

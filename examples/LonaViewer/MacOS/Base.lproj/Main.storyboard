@@ -1,7 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder3.Cocoa.Storyboard.XIB" version="3.0" toolsVersion="14109" targetRuntime="MacOSX.Cocoa" propertyAccessControl="none" useAutolayout="YES" initialViewController="B8D-0N-5wS">
+<document type="com.apple.InterfaceBuilder3.Cocoa.Storyboard.XIB" version="3.0" toolsVersion="13529" targetRuntime="MacOSX.Cocoa" propertyAccessControl="none" useAutolayout="YES" initialViewController="B8D-0N-5wS">
     <dependencies>
-        <plugIn identifier="com.apple.InterfaceBuilder.CocoaPlugin" version="14109"/>
+        <deployment identifier="macosx"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.CocoaPlugin" version="13529"/>
         <capability name="box content view" minToolsVersion="7.0"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
     </dependencies>
@@ -707,17 +708,17 @@
             <objects>
                 <viewController id="XfG-lQ-9wD" customClass="ViewSelectionVc" customModule="MacOS" customModuleProvider="target" sceneMemberID="viewController">
                     <view key="view" wantsLayer="YES" id="m2S-Jp-Qdl">
-                        <rect key="frame" x="0.0" y="0.0" width="480" height="270"/>
+                        <rect key="frame" x="0.0" y="0.0" width="640" height="270"/>
                         <autoresizingMask key="autoresizingMask"/>
                         <subviews>
                             <scrollView autohidesScrollers="YES" horizontalLineScroll="19" horizontalPageScroll="10" verticalLineScroll="19" verticalPageScroll="10" usesPredominantAxisScrolling="NO" translatesAutoresizingMaskIntoConstraints="NO" id="S5e-MK-4nB">
-                                <rect key="frame" x="0.0" y="0.0" width="480" height="270"/>
+                                <rect key="frame" x="0.0" y="0.0" width="640" height="270"/>
                                 <clipView key="contentView" id="nla-vZ-OZd">
-                                    <rect key="frame" x="1" y="1" width="478" height="268"/>
+                                    <rect key="frame" x="1" y="1" width="638" height="268"/>
                                     <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                     <subviews>
                                         <tableView verticalHuggingPriority="750" allowsExpansionToolTips="YES" columnAutoresizingStyle="none" columnSelection="YES" multipleSelection="NO" autosaveColumns="NO" rowSizeStyle="automatic" viewBased="YES" id="A4B-HO-DqO">
-                                            <rect key="frame" x="0.0" y="0.0" width="478" height="268"/>
+                                            <rect key="frame" x="0.0" y="0.0" width="638" height="268"/>
                                             <autoresizingMask key="autoresizingMask"/>
                                             <size key="intercellSpacing" width="3" height="2"/>
                                             <color key="backgroundColor" name="controlBackgroundColor" catalog="System" colorSpace="catalog"/>
@@ -786,14 +787,14 @@
                                 </scroller>
                             </scrollView>
                             <box boxType="custom" cornerRadius="4" title="Box" translatesAutoresizingMaskIntoConstraints="NO" id="Mtb-bs-Kue">
-                                <rect key="frame" x="115" y="-115" width="350" height="500"/>
+                                <rect key="frame" x="175" y="-115" width="450" height="500"/>
                                 <view key="contentView" id="AnN-Rj-rns">
-                                    <rect key="frame" x="1" y="1" width="348" height="498"/>
+                                    <rect key="frame" x="1" y="1" width="448" height="498"/>
                                     <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                 </view>
                                 <constraints>
                                     <constraint firstAttribute="height" constant="500" id="6Or-sQ-Aco"/>
-                                    <constraint firstAttribute="width" constant="350" id="rmL-Sr-4TX"/>
+                                    <constraint firstAttribute="width" constant="450" id="rmL-Sr-4TX"/>
                                 </constraints>
                             </box>
                         </subviews>

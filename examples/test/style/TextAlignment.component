@@ -6,6 +6,7 @@
       "paddingTop" : 10,
       "alignSelf" : "stretch",
       "paddingBottom" : 10,
+      "alignItems" : "flex-start",
       "paddingLeft" : 10,
       "paddingRight" : 10
     },
@@ -14,19 +15,12 @@
         "id" : "View 1",
         "type" : "Lona:View",
         "params" : {
-          "height" : 400,
-          "justifyContent" : "center",
           "alignSelf" : "stretch",
-          "alignItems" : "center"
+          "justifyContent" : "center",
+          "alignItems" : "center",
+          "backgroundColor" : "indigo50"
         },
         "children" : [
-          {
-            "id" : "View 2",
-            "type" : "Lona:View",
-            "params" : {
-              "backgroundColor" : "#D8D8D8"
-            }
-          },
           {
             "id" : "Image",
             "type" : "Lona:Image",
@@ -37,25 +31,173 @@
             }
           },
           {
+            "id" : "View 2",
+            "type" : "Lona:View",
+            "params" : {
+              "backgroundColor" : "#D8D8D8"
+            }
+          },
+          {
             "id" : "Text",
             "type" : "Lona:Text",
             "params" : {
-              "alignSelf" : "stretch",
               "marginTop" : 16,
+              "alignSelf" : "stretch",
               "text" : "Welcome to Lona Studio",
-              "font" : "display1",
-              "textAlign" : "center"
+              "textAlign" : "center",
+              "font" : "display1"
             }
           },
           {
             "id" : "Text 1",
             "type" : "Lona:Text",
             "params" : {
-              "alignSelf" : "stretch",
               "marginTop" : 16,
-              "text" : "Version 1.0.2",
-              "font" : "subheading2",
+              "textAlign" : "center",
+              "text" : "Centered - Width: Fit",
+              "font" : "subheading2"
+            }
+          },
+          {
+            "id" : "Text 2",
+            "type" : "Lona:Text",
+            "params" : {
+              "marginTop" : 12,
+              "text" : "Left aligned - Width: Fill",
+              "alignSelf" : "stretch"
+            }
+          },
+          {
+            "id" : "Text 3",
+            "type" : "Lona:Text",
+            "params" : {
+              "textAlign" : "right",
+              "text" : "Right aligned - Width: Fill",
+              "alignSelf" : "stretch"
+            }
+          },
+          {
+            "id" : "Text 4",
+            "type" : "Lona:Text",
+            "params" : {
+              "width" : 80,
+              "text" : "Centered - Width: 80",
               "textAlign" : "center"
+            }
+          }
+        ]
+      },
+      {
+        "id" : "View 3",
+        "type" : "Lona:View",
+        "params" : {
+          "paddingRight" : 12,
+          "alignItems" : "center",
+          "backgroundColor" : "#D8D8D8",
+          "paddingLeft" : 12
+        },
+        "children" : [
+          {
+            "id" : "Text 5",
+            "type" : "Lona:Text",
+            "params" : {
+              "text" : "Left aligned text, Fit w\/ secondary centering"
+            }
+          }
+        ]
+      },
+      {
+        "id" : "View 4",
+        "type" : "Lona:View",
+        "params" : {
+          "paddingLeft" : 12,
+          "paddingRight" : 12,
+          "alignItems" : "center",
+          "backgroundColor" : "#D8D8D8",
+          "width" : 400
+        },
+        "children" : [
+          {
+            "id" : "Text 6",
+            "type" : "Lona:Text",
+            "params" : {
+              "text" : "Left aligned text, Fixed w\/ secondary centering"
+            }
+          }
+        ]
+      },
+      {
+        "id" : "View 5",
+        "type" : "Lona:View",
+        "params" : {
+          "backgroundColor" : "#D8D8D8",
+          "paddingLeft" : 12,
+          "paddingRight" : 12
+        },
+        "children" : [
+          {
+            "id" : "Text 7",
+            "type" : "Lona:Text",
+            "params" : {
+              "text" : "Centered text, Fit parent no centering",
+              "textAlign" : "center"
+            }
+          }
+        ]
+      },
+      {
+        "id" : "View 6",
+        "type" : "Lona:View",
+        "params" : {
+          "width" : 400,
+          "backgroundColor" : "#D8D8D8",
+          "paddingLeft" : 12,
+          "paddingRight" : 12
+        },
+        "children" : [
+          {
+            "id" : "Text 8",
+            "type" : "Lona:Text",
+            "params" : {
+              "alignSelf" : "stretch",
+              "text" : "Centered text, Fixed parent no centering",
+              "textAlign" : "center"
+            }
+          }
+        ]
+      },
+      {
+        "id" : "RightAlignmentContainer",
+        "type" : "Lona:View",
+        "params" : {
+          "backgroundColor" : "#D8D8D8",
+          "alignItems" : "flex-end",
+          "alignSelf" : "stretch"
+        },
+        "children" : [
+          {
+            "id" : "Text 9",
+            "type" : "Lona:Text",
+            "params" : {
+              "text" : "Fit Text"
+            }
+          },
+          {
+            "id" : "Text 10",
+            "type" : "Lona:Text",
+            "params" : {
+              "alignSelf" : "stretch",
+              "text" : "Fill and center aligned text",
+              "textAlign" : "center"
+            }
+          },
+          {
+            "id" : "Image 1",
+            "type" : "Lona:Image",
+            "params" : {
+              "height" : 100,
+              "image" : "file:\/\/.\/assets\/icon_128x128.png",
+              "width" : 100
             }
           }
         ]

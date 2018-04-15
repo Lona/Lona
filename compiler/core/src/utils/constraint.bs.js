@@ -246,6 +246,7 @@ function getConstraints(rootLayer) {
     var primaryAfterAnchor = isColumn !== 0 ? /* Bottom */3 : /* Trailing */5;
     var secondaryBeforeAnchor = isColumn !== 0 ? /* Leading */4 : /* Top */2;
     var secondaryAfterAnchor = isColumn !== 0 ? /* Trailing */5 : /* Bottom */3;
+    var secondaryCenterAnchor = isColumn !== 0 ? /* CenterX */6 : /* CenterY */7;
     var primaryDimensionAnchor = isColumn !== 0 ? /* Height */1 : /* Width */0;
     var secondaryDimensionAnchor = isColumn !== 0 ? /* Width */0 : /* Height */1;
     var height = Layer$LonaCompilerCore.getNumberParameterOpt("height", layer);
@@ -321,6 +322,24 @@ function getConstraints(rootLayer) {
           /* Required */0,
           /* SecondaryBefore */4
         ]);
+      var secondaryAfterConstraintReversed = /* Relation */Block.__(1, [
+          child,
+          secondaryAfterAnchor,
+          /* Eq */0,
+          layer,
+          secondaryAfterAnchor,
+          /* Required */0,
+          /* SecondaryAfter */5
+        ]);
+      var secondaryCenterConstraint = /* Relation */Block.__(1, [
+          child,
+          secondaryCenterAnchor,
+          /* Eq */0,
+          layer,
+          secondaryCenterAnchor,
+          /* Required */0,
+          /* SecondaryBefore */4
+        ]);
       var secondaryAfterConstraint;
       var exit = 0;
       if (typeof secondarySizingRule === "number" && !(secondarySizingRule !== 0 || !(typeof childSecondarySizingRule === "number" && childSecondarySizingRule !== 0))) {
@@ -353,10 +372,70 @@ function getConstraints(rootLayer) {
             /* [] */0
           ] : /* [] */0;
       }
-      return Pervasives.$at(firstViewConstraints, Pervasives.$at(lastViewConstraints, Pervasives.$at(middleViewConstraints, Pervasives.$at(/* :: */[
-                              secondaryBeforeConstraint,
-                              /* [] */0
-                            ], secondaryAfterConstraint))));
+      var secondaryBeforeConstraintReversed;
+      var exit$1 = 0;
+      if (typeof secondarySizingRule === "number" && !(secondarySizingRule !== 0 || !(typeof childSecondarySizingRule === "number" && childSecondarySizingRule !== 0))) {
+        secondaryBeforeConstraintReversed = /* :: */[
+          /* Relation */Block.__(1, [
+              child,
+              secondaryBeforeAnchor,
+              /* Geq */1,
+              layer,
+              secondaryBeforeAnchor,
+              /* Required */0,
+              /* SecondaryBefore */4
+            ]),
+          /* [] */0
+        ];
+      } else {
+        exit$1 = 1;
+      }
+      if (exit$1 === 1) {
+        secondaryBeforeConstraintReversed = typeof childSecondarySizingRule === "number" ? /* :: */[
+            /* Relation */Block.__(1, [
+                child,
+                secondaryBeforeAnchor,
+                /* Eq */0,
+                layer,
+                secondaryBeforeAnchor,
+                /* Required */0,
+                /* SecondaryBefore */4
+              ]),
+            /* [] */0
+          ] : /* [] */0;
+      }
+      var match$1 = Layer$LonaCompilerCore.getStringParameterOpt("alignItems", layer);
+      var secondaryConstraints;
+      if (match$1) {
+        switch (match$1[0]) {
+          case "center" : 
+              secondaryConstraints = typeof childSecondarySizingRule === "number" ? Pervasives.$at(secondaryBeforeConstraintReversed, Pervasives.$at(/* :: */[
+                          secondaryCenterConstraint,
+                          /* [] */0
+                        ], secondaryAfterConstraint)) : /* :: */[
+                  secondaryCenterConstraint,
+                  /* [] */0
+                ];
+              break;
+          case "flex-end" : 
+              secondaryConstraints = Pervasives.$at(secondaryBeforeConstraintReversed, /* :: */[
+                    secondaryAfterConstraintReversed,
+                    /* [] */0
+                  ]);
+              break;
+          default:
+            secondaryConstraints = Pervasives.$at(/* :: */[
+                  secondaryBeforeConstraint,
+                  /* [] */0
+                ], secondaryAfterConstraint);
+        }
+      } else {
+        secondaryConstraints = Pervasives.$at(/* :: */[
+              secondaryBeforeConstraint,
+              /* [] */0
+            ], secondaryAfterConstraint);
+      }
+      return Pervasives.$at(firstViewConstraints, Pervasives.$at(lastViewConstraints, Pervasives.$at(middleViewConstraints, secondaryConstraints)));
     };
     var flexChildrenConstraints;
     if (flexChildren) {

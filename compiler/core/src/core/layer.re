@@ -84,9 +84,9 @@ let getFlexDirection = (layer: Types.layer) =>
   };
 
 let getStringParameterOpt = (parameterName, layer: Types.layer) =>
-  switch (StringMap.find(parameterName, layer.parameters)) {
-  | value => Some(value.data |> Json.Decode.string)
-  | exception Not_found => None
+  switch (StringMap.find_opt(parameterName, layer.parameters)) {
+  | Some(value) => Some(value.data |> Json.Decode.string)
+  | None => None
   };
 
 let getStringParameter = (parameterName, layer: Types.layer) =>
