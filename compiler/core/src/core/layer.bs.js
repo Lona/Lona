@@ -275,23 +275,12 @@ function getFlexDirection(layer) {
 }
 
 function getStringParameterOpt(parameterName, layer) {
-  var exit = 0;
-  var value;
-  try {
-    value = Curry._2(StringMap$LonaCompilerCore.find, parameterName, layer[/* parameters */2]);
-    exit = 1;
+  var match = StringMap$LonaCompilerCore.find_opt(parameterName, layer[/* parameters */2]);
+  if (match) {
+    return /* Some */[Json_decode.string(match[0][/* data */1])];
+  } else {
+    return /* None */0;
   }
-  catch (exn){
-    if (exn === Caml_builtin_exceptions.not_found) {
-      return /* None */0;
-    } else {
-      throw exn;
-    }
-  }
-  if (exit === 1) {
-    return /* Some */[Json_decode.string(value[/* data */1])];
-  }
-  
 }
 
 function getStringParameter(parameterName, layer) {

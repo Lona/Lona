@@ -8,7 +8,9 @@ type anchor =
   | Top
   | Bottom
   | Leading
-  | Trailing;
+  | Trailing
+  | CenterX
+  | CenterY;
 
 type cmp =
   | Eq
@@ -19,8 +21,10 @@ type role =
   | PrimaryBefore
   | PrimaryBetween
   | PrimaryAfter
+  | PrimaryCenter
   | SecondaryBefore
   | SecondaryAfter
+  | SecondaryCenter
   | FitContentSecondary
   | FlexSibling
   | PrimaryDimension
@@ -44,6 +48,8 @@ let anchorToString =
   | Bottom => "bottomAnchor"
   | Leading => "leadingAnchor"
   | Trailing => "trailingAnchor"
+  | CenterX => "centerXAnchor"
+  | CenterY => "centerYAnchor"
   | Width => "widthAnchor"
   | Height => "heightAnchor";
 
@@ -53,6 +59,8 @@ let anchorFromString =
   | "bottomAnchor" => Bottom
   | "leadingAnchor" => Leading
   | "trailingAnchor" => Trailing
+  | "centerXAnchor" => CenterX
+  | "centerYAnchor" => CenterY
   | "widthAnchor" => Width
   | "heightAnchor" => Height;
 
@@ -118,8 +126,10 @@ let getConstraints = (rootLayer: Types.layer) => {
     let isColumn = direction == "column";
     let primaryBeforeAnchor = isColumn ? Top : Leading;
     let primaryAfterAnchor = isColumn ? Bottom : Trailing;
+    let primaryCenterAnchor = isColumn ? CenterY : CenterX;
     let secondaryBeforeAnchor = isColumn ? Leading : Top;
     let secondaryAfterAnchor = isColumn ? Trailing : Bottom;
+    let secondaryCenterAnchor = isColumn ? CenterX : CenterY;
     let primaryDimensionAnchor = isColumn ? Height : Width;
     let secondaryDimensionAnchor = isColumn ? Width : Height;
     let height = Layer.getNumberParameterOpt("height", layer);
@@ -196,7 +206,7 @@ let getConstraints = (rootLayer: Types.layer) => {
             )
           ];
         };
-      let secondaryBeforeConstraint =
+      let secondaryBeforeEqConstraint =
         Relation(
           child,
           secondaryBeforeAnchor,
@@ -206,66 +216,86 @@ let getConstraints = (rootLayer: Types.layer) => {
           Required,
           SecondaryBefore
         );
-      let secondaryAfterConstraint =
+      let secondaryAfterEqConstraint =
+        Relation(
+          child,
+          secondaryAfterAnchor,
+          Eq,
+          layer,
+          secondaryAfterAnchor,
+          Required,
+          SecondaryAfter
+        );
+      let secondaryCenterConstraint =
+        Relation(
+          child,
+          secondaryCenterAnchor,
+          Eq,
+          layer,
+          secondaryCenterAnchor,
+          Required,
+          SecondaryCenter
+        );
+      let secondaryAfterLeqConstraint =
+        Relation(
+          child,
+          secondaryAfterAnchor,
+          Leq,
+          layer,
+          secondaryAfterAnchor,
+          Required,
+          SecondaryAfter
+        );
+      let secondaryBeforeGeqConstraint =
+        Relation(
+          child,
+          secondaryBeforeAnchor,
+          Geq,
+          layer,
+          secondaryBeforeAnchor,
+          Required,
+          SecondaryBefore
+        );
+      let secondaryAfterFlexibleConstraint =
         switch (secondarySizingRule, childSecondarySizingRule) {
-        | (Fill, FitContent) => [
-            Relation(
-              child,
-              secondaryAfterAnchor,
-              Leq,
-              layer,
-              secondaryAfterAnchor,
-              Required,
-              SecondaryAfter
-            )
-          ]
+        | (Fill, FitContent) => [secondaryAfterLeqConstraint]
         | (_, Fixed(_)) => [] /* Width/height constraints are added outside the child loop */
         | (_, Fill)
-        | (_, FitContent) => [
-            Relation(
-              child,
-              secondaryAfterAnchor,
-              Eq,
-              layer,
-              secondaryAfterAnchor,
-              Required,
-              SecondaryAfter
-            )
-          ]
+        | (_, FitContent) => [secondaryAfterEqConstraint]
         };
-      /* If the parent's secondary axis is set to "fit content", this ensures
-         the secondary axis dimension is greater than every child's.
-         We apply these in the child loop for easier variable naming (due to current setup). */
-      /*
-         We need these constraints to be low priority. A "FitContent" view needs height >= each
-         of its children. Yet a "Fill" sibling needs to have height unspecified, and
-         a side anchor equal to the side of the "FitContent" view.
-         This layout is ambiguous (I think), despite no warnings at runtime. The "FitContent" view's
-         height constraints seem to take priority over the "Fill" view's height constraints, and the
-         "FitContent" view steals the height of the "Fill" view. We solve this by lowering the priority
-         of the "FitContent" view's height.
-       */
-      let fitContentSecondaryConstraint =
-        switch secondarySizingRule {
-        | FitContent => [
-            Relation(
-              child,
-              secondaryDimensionAnchor,
-              Leq,
-              layer,
-              secondaryDimensionAnchor,
-              Low,
-              FitContentSecondary
-            )
-          ]
-        | _ => []
+      let secondaryBeforeFlexibleConstraint =
+        switch (secondarySizingRule, childSecondarySizingRule) {
+        | (Fill, FitContent) => [secondaryBeforeGeqConstraint]
+        | (_, Fixed(_)) => [] /* Width/height constraints are added outside the child loop */
+        | (_, Fill)
+        | (_, FitContent) => [secondaryBeforeEqConstraint]
+        };
+      let secondaryConstraints =
+        switch (
+          Layer.getStringParameterOpt("alignItems", layer),
+          childSecondarySizingRule
+        ) {
+        /* Fixed children don't need either side of the secondary axis anchored to the parent.
+           The secondary dimension will be constrained in the outer loop to handle fit content. */
+        | (Some("center"), Fixed(_)) => [secondaryCenterConstraint]
+        /* Fit or fill children still need the sides constrained in addition to being centered.
+           Since the constraints are Leq/Geq, this shouldn't be overconstrained. (Actually, if even one
+           constraint is Leq/Geq, this seems to work) */
+        | (Some("center"), _) =>
+          secondaryBeforeFlexibleConstraint
+          @ [secondaryCenterConstraint]
+          @ secondaryAfterFlexibleConstraint
+        /* With flex-end alignment, we want to do the opposite of flex-start alignment, flipping
+           both the before and after constraints. */
+        | (Some("flex-end"), _) =>
+          secondaryBeforeFlexibleConstraint @ [secondaryAfterEqConstraint]
+        /* This is the default flex-start case. */
+        | _ => [secondaryBeforeEqConstraint] @ secondaryAfterFlexibleConstraint
         };
       firstViewConstraints
       @ lastViewConstraints
       @ middleViewConstraints
-      @ [secondaryBeforeConstraint]
-      @ secondaryAfterConstraint
-      @ fitContentSecondaryConstraint;
+      @ secondaryConstraints;
     };
     /* Children with "flex: 1" should all have equal dimensions along the primary axis */
     let flexChildrenConstraints =
@@ -277,6 +307,34 @@ let getConstraints = (rootLayer: Types.layer) => {
         rest |> List.map(sameAnchorConstraint(sameAnchor));
       | _ => []
       };
+    /* If the parent's secondary axis is set to "fit content", this ensures
+       the secondary axis dimension is greater than every child's. */
+    /*
+       We need these constraints to be low priority. A "FitContent" view needs height >= each
+       of its children. Yet a "Fill" sibling needs to have height unspecified, and
+       a side anchor equal to the side of the "FitContent" view.
+       This layout is ambiguous (I think), despite no warnings at runtime. The "FitContent" view's
+       height constraints seem to take priority over the "Fill" view's height constraints, and the
+       "FitContent" view steals the height of the "Fill" view. We solve this by lowering the priority
+       of the "FitContent" view's height.
+     */
+    let fitContentSecondaryConstraint = child =>
+      switch secondarySizingRule {
+      | FitContent => [
+          Relation(
+            child,
+            secondaryDimensionAnchor,
+            Leq,
+            layer,
+            secondaryDimensionAnchor,
+            Low,
+            FitContentSecondary
+          )
+        ]
+      | _ => []
+      };
+    let fitContentSecondaryConstraints =
+      layer.children |> List.map(fitContentSecondaryConstraint) |> List.concat;
     let heightConstraint =
       switch height {
       | Some(_) => [
@@ -304,6 +362,7 @@ let getConstraints = (rootLayer: Types.layer) => {
     let constraints =
       [heightConstraint, widthConstraint]
       @ [flexChildrenConstraints]
+      @ [fitContentSecondaryConstraints]
       @ (layer.children |> List.mapi(addConstraints));
     constraints |> List.concat;
   };

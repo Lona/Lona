@@ -66,10 +66,10 @@ public class SecondaryAxis: NSBox {
   private var fixedViewHeightAnchorConstraint: NSLayoutConstraint?
   private var fixedViewWidthAnchorConstraint: NSLayoutConstraint?
   private var fitViewHeightAnchorConstraint: NSLayoutConstraint?
+  private var textViewWidthAnchorParentConstraint: NSLayoutConstraint?
   private var textViewTopAnchorConstraint: NSLayoutConstraint?
   private var textViewLeadingAnchorConstraint: NSLayoutConstraint?
   private var textViewTrailingAnchorConstraint: NSLayoutConstraint?
-  private var textViewWidthAnchorParentConstraint: NSLayoutConstraint?
   private var fillViewHeightAnchorConstraint: NSLayoutConstraint?
 
   private func setUpViews() {
@@ -135,6 +135,11 @@ public class SecondaryAxis: NSBox {
     let fixedViewHeightAnchorConstraint = fixedView.heightAnchor.constraint(equalToConstant: 100)
     let fixedViewWidthAnchorConstraint = fixedView.widthAnchor.constraint(equalToConstant: 100)
     let fitViewHeightAnchorConstraint = fitView.heightAnchor.constraint(equalToConstant: 100)
+    let textViewWidthAnchorParentConstraint = textView
+      .widthAnchor
+      .constraint(
+        lessThanOrEqualTo: fitView.widthAnchor,
+        constant: -(fitViewLeadingPadding + textViewLeadingMargin + fitViewTrailingPadding + textViewTrailingMargin))
     let textViewTopAnchorConstraint = textView
       .topAnchor
       .constraint(equalTo: fitView.topAnchor, constant: fitViewTopPadding + textViewTopMargin)
@@ -144,11 +149,6 @@ public class SecondaryAxis: NSBox {
     let textViewTrailingAnchorConstraint = textView
       .trailingAnchor
       .constraint(equalTo: fitView.trailingAnchor, constant: -(fitViewTrailingPadding + textViewTrailingMargin))
-    let textViewWidthAnchorParentConstraint = textView
-      .widthAnchor
-      .constraint(
-        lessThanOrEqualTo: fitView.widthAnchor,
-        constant: -(fitViewLeadingPadding + textViewLeadingMargin + fitViewTrailingPadding + textViewTrailingMargin))
     let fillViewHeightAnchorConstraint = fillView.heightAnchor.constraint(equalToConstant: 100)
     textViewWidthAnchorParentConstraint.priority = NSLayoutConstraint.Priority.defaultLow
 
@@ -165,10 +165,10 @@ public class SecondaryAxis: NSBox {
       fixedViewHeightAnchorConstraint,
       fixedViewWidthAnchorConstraint,
       fitViewHeightAnchorConstraint,
+      textViewWidthAnchorParentConstraint,
       textViewTopAnchorConstraint,
       textViewLeadingAnchorConstraint,
       textViewTrailingAnchorConstraint,
-      textViewWidthAnchorParentConstraint,
       fillViewHeightAnchorConstraint
     ])
 
@@ -184,10 +184,10 @@ public class SecondaryAxis: NSBox {
     self.fixedViewHeightAnchorConstraint = fixedViewHeightAnchorConstraint
     self.fixedViewWidthAnchorConstraint = fixedViewWidthAnchorConstraint
     self.fitViewHeightAnchorConstraint = fitViewHeightAnchorConstraint
+    self.textViewWidthAnchorParentConstraint = textViewWidthAnchorParentConstraint
     self.textViewTopAnchorConstraint = textViewTopAnchorConstraint
     self.textViewLeadingAnchorConstraint = textViewLeadingAnchorConstraint
     self.textViewTrailingAnchorConstraint = textViewTrailingAnchorConstraint
-    self.textViewWidthAnchorParentConstraint = textViewWidthAnchorParentConstraint
     self.fillViewHeightAnchorConstraint = fillViewHeightAnchorConstraint
 
     // For debugging
@@ -203,10 +203,10 @@ public class SecondaryAxis: NSBox {
     fixedViewHeightAnchorConstraint.identifier = "fixedViewHeightAnchorConstraint"
     fixedViewWidthAnchorConstraint.identifier = "fixedViewWidthAnchorConstraint"
     fitViewHeightAnchorConstraint.identifier = "fitViewHeightAnchorConstraint"
+    textViewWidthAnchorParentConstraint.identifier = "textViewWidthAnchorParentConstraint"
     textViewTopAnchorConstraint.identifier = "textViewTopAnchorConstraint"
     textViewLeadingAnchorConstraint.identifier = "textViewLeadingAnchorConstraint"
     textViewTrailingAnchorConstraint.identifier = "textViewTrailingAnchorConstraint"
-    textViewWidthAnchorParentConstraint.identifier = "textViewWidthAnchorParentConstraint"
     fillViewHeightAnchorConstraint.identifier = "fillViewHeightAnchorConstraint"
   }
 

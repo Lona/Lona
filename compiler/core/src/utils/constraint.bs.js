@@ -24,6 +24,10 @@ function anchorToString(param) {
         return "leadingAnchor";
     case 5 : 
         return "trailingAnchor";
+    case 6 : 
+        return "centerXAnchor";
+    case 7 : 
+        return "centerYAnchor";
     
   }
 }
@@ -32,6 +36,10 @@ function anchorFromString(param) {
   switch (param) {
     case "bottomAnchor" : 
         return /* Bottom */3;
+    case "centerXAnchor" : 
+        return /* CenterX */6;
+    case "centerYAnchor" : 
+        return /* CenterY */7;
     case "heightAnchor" : 
         return /* Height */1;
     case "leadingAnchor" : 
@@ -47,7 +55,7 @@ function anchorFromString(param) {
             Caml_builtin_exceptions.match_failure,
             [
               "/Users/devinabbott/Projects/Lona/compiler/core/src/utils/constraint.re",
-              51,
+              57,
               2
             ]
           ];
@@ -67,7 +75,7 @@ function cmpFromString(param) {
             Caml_builtin_exceptions.match_failure,
             [
               "/Users/devinabbott/Projects/Lona/compiler/core/src/utils/constraint.re",
-              60,
+              68,
               2
             ]
           ];
@@ -238,6 +246,7 @@ function getConstraints(rootLayer) {
     var primaryAfterAnchor = isColumn !== 0 ? /* Bottom */3 : /* Trailing */5;
     var secondaryBeforeAnchor = isColumn !== 0 ? /* Leading */4 : /* Top */2;
     var secondaryAfterAnchor = isColumn !== 0 ? /* Trailing */5 : /* Bottom */3;
+    var secondaryCenterAnchor = isColumn !== 0 ? /* CenterX */6 : /* CenterY */7;
     var primaryDimensionAnchor = isColumn !== 0 ? /* Height */1 : /* Width */0;
     var secondaryDimensionAnchor = isColumn !== 0 ? /* Width */0 : /* Height */1;
     var height = Layer$LonaCompilerCore.getNumberParameterOpt("height", layer);
@@ -304,63 +313,115 @@ function getConstraints(rootLayer) {
       } else {
         middleViewConstraints = /* [] */0;
       }
-      var secondaryBeforeConstraint = /* Relation */Block.__(1, [
+      var secondaryBeforeEqConstraint = /* Relation */Block.__(1, [
           child,
           secondaryBeforeAnchor,
           /* Eq */0,
           layer,
           secondaryBeforeAnchor,
           /* Required */0,
-          /* SecondaryBefore */3
+          /* SecondaryBefore */4
         ]);
-      var secondaryAfterConstraint;
+      var secondaryAfterEqConstraint = /* Relation */Block.__(1, [
+          child,
+          secondaryAfterAnchor,
+          /* Eq */0,
+          layer,
+          secondaryAfterAnchor,
+          /* Required */0,
+          /* SecondaryAfter */5
+        ]);
+      var secondaryCenterConstraint = /* Relation */Block.__(1, [
+          child,
+          secondaryCenterAnchor,
+          /* Eq */0,
+          layer,
+          secondaryCenterAnchor,
+          /* Required */0,
+          /* SecondaryCenter */6
+        ]);
+      var secondaryAfterLeqConstraint = /* Relation */Block.__(1, [
+          child,
+          secondaryAfterAnchor,
+          /* Leq */2,
+          layer,
+          secondaryAfterAnchor,
+          /* Required */0,
+          /* SecondaryAfter */5
+        ]);
+      var secondaryBeforeGeqConstraint = /* Relation */Block.__(1, [
+          child,
+          secondaryBeforeAnchor,
+          /* Geq */1,
+          layer,
+          secondaryBeforeAnchor,
+          /* Required */0,
+          /* SecondaryBefore */4
+        ]);
+      var secondaryAfterFlexibleConstraint;
       var exit = 0;
       if (typeof secondarySizingRule === "number" && !(secondarySizingRule !== 0 || !(typeof childSecondarySizingRule === "number" && childSecondarySizingRule !== 0))) {
-        secondaryAfterConstraint = /* :: */[
-          /* Relation */Block.__(1, [
-              child,
-              secondaryAfterAnchor,
-              /* Leq */2,
-              layer,
-              secondaryAfterAnchor,
-              /* Required */0,
-              /* SecondaryAfter */4
-            ]),
+        secondaryAfterFlexibleConstraint = /* :: */[
+          secondaryAfterLeqConstraint,
           /* [] */0
         ];
       } else {
         exit = 1;
       }
       if (exit === 1) {
-        secondaryAfterConstraint = typeof childSecondarySizingRule === "number" ? /* :: */[
-            /* Relation */Block.__(1, [
-                child,
-                secondaryAfterAnchor,
-                /* Eq */0,
-                layer,
-                secondaryAfterAnchor,
-                /* Required */0,
-                /* SecondaryAfter */4
-              ]),
+        secondaryAfterFlexibleConstraint = typeof childSecondarySizingRule === "number" ? /* :: */[
+            secondaryAfterEqConstraint,
             /* [] */0
           ] : /* [] */0;
       }
-      var fitContentSecondaryConstraint = typeof secondarySizingRule === "number" && secondarySizingRule !== 0 ? /* :: */[
-          /* Relation */Block.__(1, [
-              child,
-              secondaryDimensionAnchor,
-              /* Leq */2,
-              layer,
-              secondaryDimensionAnchor,
-              /* Low */1,
-              /* FitContentSecondary */5
-            ]),
+      var secondaryBeforeFlexibleConstraint;
+      var exit$1 = 0;
+      if (typeof secondarySizingRule === "number" && !(secondarySizingRule !== 0 || !(typeof childSecondarySizingRule === "number" && childSecondarySizingRule !== 0))) {
+        secondaryBeforeFlexibleConstraint = /* :: */[
+          secondaryBeforeGeqConstraint,
           /* [] */0
-        ] : /* [] */0;
-      return Pervasives.$at(firstViewConstraints, Pervasives.$at(lastViewConstraints, Pervasives.$at(middleViewConstraints, Pervasives.$at(/* :: */[
-                              secondaryBeforeConstraint,
-                              /* [] */0
-                            ], Pervasives.$at(secondaryAfterConstraint, fitContentSecondaryConstraint)))));
+        ];
+      } else {
+        exit$1 = 1;
+      }
+      if (exit$1 === 1) {
+        secondaryBeforeFlexibleConstraint = typeof childSecondarySizingRule === "number" ? /* :: */[
+            secondaryBeforeEqConstraint,
+            /* [] */0
+          ] : /* [] */0;
+      }
+      var match$1 = Layer$LonaCompilerCore.getStringParameterOpt("alignItems", layer);
+      var secondaryConstraints;
+      if (match$1) {
+        switch (match$1[0]) {
+          case "center" : 
+              secondaryConstraints = typeof childSecondarySizingRule === "number" ? Pervasives.$at(secondaryBeforeFlexibleConstraint, Pervasives.$at(/* :: */[
+                          secondaryCenterConstraint,
+                          /* [] */0
+                        ], secondaryAfterFlexibleConstraint)) : /* :: */[
+                  secondaryCenterConstraint,
+                  /* [] */0
+                ];
+              break;
+          case "flex-end" : 
+              secondaryConstraints = Pervasives.$at(secondaryBeforeFlexibleConstraint, /* :: */[
+                    secondaryAfterEqConstraint,
+                    /* [] */0
+                  ]);
+              break;
+          default:
+            secondaryConstraints = Pervasives.$at(/* :: */[
+                  secondaryBeforeEqConstraint,
+                  /* [] */0
+                ], secondaryAfterFlexibleConstraint);
+        }
+      } else {
+        secondaryConstraints = Pervasives.$at(/* :: */[
+              secondaryBeforeEqConstraint,
+              /* [] */0
+            ], secondaryAfterFlexibleConstraint);
+      }
+      return Pervasives.$at(firstViewConstraints, Pervasives.$at(lastViewConstraints, Pervasives.$at(middleViewConstraints, secondaryConstraints)));
     };
     var flexChildrenConstraints;
     if (flexChildren) {
@@ -377,7 +438,7 @@ function getConstraints(rootLayer) {
                           layer,
                           anchor,
                           /* Required */0,
-                          /* FlexSibling */6
+                          /* FlexSibling */8
                         ]);
               }), rest);
       } else {
@@ -386,12 +447,31 @@ function getConstraints(rootLayer) {
     } else {
       flexChildrenConstraints = /* [] */0;
     }
+    var fitContentSecondaryConstraint = function (child) {
+      if (typeof secondarySizingRule === "number" && secondarySizingRule !== 0) {
+        return /* :: */[
+                /* Relation */Block.__(1, [
+                    child,
+                    secondaryDimensionAnchor,
+                    /* Leq */2,
+                    layer,
+                    secondaryDimensionAnchor,
+                    /* Low */1,
+                    /* FitContentSecondary */7
+                  ]),
+                /* [] */0
+              ];
+      } else {
+        return /* [] */0;
+      }
+    };
+    var fitContentSecondaryConstraints = List.concat(List.map(fitContentSecondaryConstraint, layer[/* children */3]));
     var heightConstraint = height ? /* :: */[
         /* Dimension */Block.__(0, [
             layer,
             /* Height */1,
             /* Required */0,
-            isColumn !== 0 ? /* PrimaryDimension */7 : /* SecondaryDimension */8
+            isColumn !== 0 ? /* PrimaryDimension */9 : /* SecondaryDimension */10
           ]),
         /* [] */0
       ] : /* [] */0;
@@ -400,7 +480,7 @@ function getConstraints(rootLayer) {
             layer,
             /* Width */0,
             /* Required */0,
-            isColumn !== 0 ? /* SecondaryDimension */8 : /* PrimaryDimension */7
+            isColumn !== 0 ? /* SecondaryDimension */10 : /* PrimaryDimension */9
           ]),
         /* [] */0
       ] : /* [] */0;
@@ -413,7 +493,10 @@ function getConstraints(rootLayer) {
                   ], Pervasives.$at(/* :: */[
                         flexChildrenConstraints,
                         /* [] */0
-                      ], List.mapi(addConstraints, layer[/* children */3]))));
+                      ], Pervasives.$at(/* :: */[
+                            fitContentSecondaryConstraints,
+                            /* [] */0
+                          ], List.mapi(addConstraints, layer[/* children */3])))));
   };
   return List.concat(Layer$LonaCompilerCore.flatmap(constrainAxes, rootLayer));
 }

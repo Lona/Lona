@@ -815,18 +815,20 @@ function generate(options, swiftOptions, name, colors, textStyles, json) {
   };
   var generateConstantFromConstraint = function (constr) {
     if (constr.tag) {
+      var match = constr[1];
       var child = constr[0];
       var exit = 0;
-      switch (constr[1]) {
+      switch (match) {
         case 0 : 
             if (constr[2] >= 2) {
               if (constr[4] !== 0) {
                 exit = 1;
               } else {
-                var match = constr[6];
+                var match$1 = constr[6];
                 var layer = constr[3];
-                if (match !== 5) {
-                  if (match !== 6) {
+                if (match$1 !== 7) {
+                  if (match$1 !== 8) {
+                    console.log("Unknown constraint types");
                     throw Caml_builtin_exceptions.not_found;
                   } else {
                     exit = 1;
@@ -848,10 +850,11 @@ function generate(options, swiftOptions, name, colors, textStyles, json) {
               if (constr[4] !== 1) {
                 exit = 1;
               } else {
-                var match$1 = constr[6];
+                var match$2 = constr[6];
                 var layer$1 = constr[3];
-                if (match$1 !== 5) {
-                  if (match$1 !== 6) {
+                if (match$2 !== 7) {
+                  if (match$2 !== 8) {
+                    console.log("Unknown constraint types");
                     throw Caml_builtin_exceptions.not_found;
                   } else {
                     exit = 1;
@@ -869,15 +872,16 @@ function generate(options, swiftOptions, name, colors, textStyles, json) {
             }
             break;
         case 2 : 
-            var match$2 = constr[4];
+            var match$3 = constr[4];
             var previousLayer = constr[3];
-            if (match$2 !== 2) {
-              if (match$2 !== 3) {
+            if (match$3 !== 2) {
+              if (match$3 !== 3) {
                 exit = 1;
               } else {
-                var match$3 = constr[6];
-                if (match$3 !== 1) {
-                  if (match$3 !== 6) {
+                var match$4 = constr[6];
+                if (match$4 !== 1) {
+                  if (match$4 !== 8) {
+                    console.log("Unknown constraint types");
                     throw Caml_builtin_exceptions.not_found;
                   } else {
                     exit = 1;
@@ -889,17 +893,20 @@ function generate(options, swiftOptions, name, colors, textStyles, json) {
             } else {
               switch (constr[6]) {
                 case 0 : 
-                case 3 : 
+                case 4 : 
                     return constraintConstantExpression(previousLayer, "topPadding", child, "topMargin");
-                case 6 : 
+                case 8 : 
                     exit = 1;
                     break;
                 case 1 : 
                 case 2 : 
-                case 4 : 
+                case 3 : 
                 case 5 : 
+                case 6 : 
                 case 7 : 
-                case 8 : 
+                case 9 : 
+                case 10 : 
+                    console.log("Unknown constraint types");
                     throw Caml_builtin_exceptions.not_found;
                 
               }
@@ -912,18 +919,21 @@ function generate(options, swiftOptions, name, colors, textStyles, json) {
               var exit$1 = 0;
               switch (constr[6]) {
                 case 2 : 
-                case 4 : 
+                case 5 : 
                     exit$1 = 2;
                     break;
-                case 6 : 
+                case 8 : 
                     exit = 1;
                     break;
                 case 0 : 
                 case 1 : 
                 case 3 : 
-                case 5 : 
+                case 4 : 
+                case 6 : 
                 case 7 : 
-                case 8 : 
+                case 9 : 
+                case 10 : 
+                    console.log("Unknown constraint types");
                     throw Caml_builtin_exceptions.not_found;
                 
               }
@@ -934,13 +944,16 @@ function generate(options, swiftOptions, name, colors, textStyles, json) {
             }
             break;
         case 4 : 
-            var match$4 = constr[4];
+            var match$5 = constr[4];
             var previousLayer$1 = constr[3];
-            if (match$4 !== 4) {
-              if (match$4 >= 5) {
-                var match$5 = constr[6];
-                if (match$5 !== 1) {
-                  if (match$5 !== 6) {
+            if (match$5 !== 4) {
+              if (match$5 !== 5) {
+                exit = 1;
+              } else {
+                var match$6 = constr[6];
+                if (match$6 !== 1) {
+                  if (match$6 !== 8) {
+                    console.log("Unknown constraint types");
                     throw Caml_builtin_exceptions.not_found;
                   } else {
                     exit = 1;
@@ -948,45 +961,51 @@ function generate(options, swiftOptions, name, colors, textStyles, json) {
                 } else {
                   return constraintConstantExpression(previousLayer$1, "trailingMargin", child, "leadingMargin");
                 }
-              } else {
-                exit = 1;
               }
             } else {
               switch (constr[6]) {
                 case 0 : 
-                case 3 : 
+                case 4 : 
                     return constraintConstantExpression(previousLayer$1, "leadingPadding", child, "leadingMargin");
-                case 6 : 
+                case 8 : 
                     exit = 1;
                     break;
                 case 1 : 
                 case 2 : 
-                case 4 : 
+                case 3 : 
                 case 5 : 
+                case 6 : 
                 case 7 : 
-                case 8 : 
+                case 9 : 
+                case 10 : 
+                    console.log("Unknown constraint types");
                     throw Caml_builtin_exceptions.not_found;
                 
               }
             }
             break;
         case 5 : 
-            if (constr[4] >= 5) {
+            if (constr[4] !== 5) {
+              exit = 1;
+            } else {
               var exit$2 = 0;
               switch (constr[6]) {
                 case 2 : 
-                case 4 : 
+                case 5 : 
                     exit$2 = 2;
                     break;
-                case 6 : 
+                case 8 : 
                     exit = 1;
                     break;
                 case 0 : 
                 case 1 : 
                 case 3 : 
-                case 5 : 
+                case 4 : 
+                case 6 : 
                 case 7 : 
-                case 8 : 
+                case 9 : 
+                case 10 : 
+                    console.log("Unknown constraint types");
                     throw Caml_builtin_exceptions.not_found;
                 
               }
@@ -994,25 +1013,45 @@ function generate(options, swiftOptions, name, colors, textStyles, json) {
                 return negateNumber(constraintConstantExpression(constr[3], "trailingPadding", child, "trailingMargin"));
               }
               
-            } else {
-              exit = 1;
             }
+            break;
+        case 6 : 
+        case 7 : 
+            exit = 1;
             break;
         
       }
       if (exit === 1) {
-        if (constr[6] !== 6) {
-          throw Caml_builtin_exceptions.not_found;
+        if (constr[6] !== 8) {
+          if (match !== 6) {
+            if (match >= 7) {
+              if (constr[4] >= 7) {
+                return /* LiteralExpression */Block.__(0, [/* FloatingPoint */Block.__(2, [0.0])]);
+              } else {
+                console.log("Unknown constraint types");
+                throw Caml_builtin_exceptions.not_found;
+              }
+            } else {
+              console.log("Unknown constraint types");
+              throw Caml_builtin_exceptions.not_found;
+            }
+          } else if (constr[4] !== 6) {
+            console.log("Unknown constraint types");
+            throw Caml_builtin_exceptions.not_found;
+          } else {
+            return /* LiteralExpression */Block.__(0, [/* FloatingPoint */Block.__(2, [0.0])]);
+          }
         } else {
           return /* LiteralExpression */Block.__(0, [/* FloatingPoint */Block.__(2, [0.0])]);
         }
       }
       
     } else {
-      var match$6 = constr[1];
+      var match$7 = constr[1];
       var layer$2 = constr[0];
-      if (match$6 !== 1) {
-        if (match$6 !== 0) {
+      if (match$7 !== 1) {
+        if (match$7 !== 0) {
+          console.log("Unknown constraint types");
           throw Caml_builtin_exceptions.not_found;
         } else {
           var constant = Layer$LonaCompilerCore.getNumberParameter("width", layer$2);
@@ -1036,8 +1075,8 @@ function generate(options, swiftOptions, name, colors, textStyles, json) {
       var match = constr[6];
       var edge1 = constr[1];
       var layer1 = constr[0];
-      if (match !== 5) {
-        if (match !== 6) {
+      if (match !== 7) {
+        if (match !== 8) {
           return formatAnchorVariableName(layer1, edge1, "Constraint");
         } else {
           return SwiftFormat$LonaCompilerCore.layerName(layer1[/* name */1]) + (LodashUpperfirst(SwiftFormat$LonaCompilerCore.layerName(constr[3][/* name */1])) + (LodashUpperfirst(Constraint$LonaCompilerCore.anchorToString(edge1)) + "SiblingConstraint"));

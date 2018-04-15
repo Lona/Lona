@@ -265,20 +265,21 @@ function convertWorkspace(workspace, output) {
               contents = convertComponent(file);
               exit = 1;
             }
-            catch (raw_exn){
-              var exn = Js_exn.internalToOCamlException(raw_exn);
-              if (exn[0] === Json_decode.DecodeError) {
+            catch (raw_e){
+              var e = Js_exn.internalToOCamlException(raw_e);
+              if (e[0] === Json_decode.DecodeError) {
                 console.log("Failed to decode " + file);
-                console.log(exn[1]);
+                console.log(e[1]);
                 return /* () */0;
-              } else if (exn[0] === Decode$LonaCompilerCore.UnknownParameter) {
-                console.log("Unknown parameter: " + exn[1]);
+              } else if (e[0] === Decode$LonaCompilerCore.UnknownParameter) {
+                console.log("Unknown parameter: " + e[1]);
                 return /* () */0;
-              } else if (exn[0] === Decode$LonaCompilerCore.UnknownExprType) {
-                console.log("Unkwown expr name: " + exn[1]);
+              } else if (e[0] === Decode$LonaCompilerCore.UnknownExprType) {
+                console.log("Unknown expr name: " + e[1]);
                 return /* () */0;
               } else {
-                throw exn;
+                console.log(e);
+                return /* () */0;
               }
             }
             if (exit === 1) {
@@ -290,7 +291,7 @@ function convertWorkspace(workspace, output) {
                 existing = Fs.readFileSync(outputPath, "utf8");
                 exit$1 = 2;
               }
-              catch (exn$1){
+              catch (exn){
                 match = /* tuple */[
                   /* None */0,
                   /* None */0
