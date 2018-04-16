@@ -1,0 +1,161 @@
+{
+  "root" : {
+    "id" : "View",
+    "type" : "Lona:View",
+    "params" : {
+      "paddingTop" : 12,
+      "paddingBottom" : 12,
+      "backgroundColor" : "blue100",
+      "paddingLeft" : 16,
+      "paddingRight" : 16
+    },
+    "children" : [
+      {
+        "id" : "Text",
+        "type" : "Lona:Text",
+        "params" : {
+          "text" : "Text goes here",
+          "font" : "subheading2"
+        }
+      }
+    ]
+  },
+  "devices" : [
+    {
+      "name" : "iPhone SE",
+      "height" : 100,
+      "heightMode" : "At Least",
+      "width" : 320
+    },
+    {
+      "name" : "iPhone 7",
+      "height" : 100,
+      "heightMode" : "At Least",
+      "width" : 375
+    },
+    {
+      "name" : "iPhone 7+",
+      "height" : 100,
+      "heightMode" : "At Least",
+      "width" : 414
+    }
+  ],
+  "examples" : [
+    {
+      "name" : "Default",
+      "params" : {
+        "title" : "Button"
+      }
+    }
+  ],
+  "logic" : [
+    {
+      "type" : "AssignExpr",
+      "content" : [
+        "parameters",
+        "text"
+      ],
+      "assignee" : [
+        "layers",
+        "Text",
+        "text"
+      ]
+    },
+    {
+      "type" : "AssignExpr",
+      "content" : [
+        "parameters",
+        "onTap"
+      ],
+      "assignee" : [
+        "layers",
+        "View",
+        "onPress"
+      ]
+    },
+    {
+      "type" : "IfExpr",
+      "condition" : {
+        "left" : [
+          "layers",
+          "View",
+          "hovered"
+        ],
+        "right" : {
+          "type" : "LitExpr",
+          "value" : {
+            "type" : "Boolean",
+            "data" : true
+          }
+        },
+        "type" : "BinExpr",
+        "op" : "=="
+      },
+      "body" : [
+        {
+          "type" : "AssignExpr",
+          "content" : {
+            "type" : "LitExpr",
+            "value" : {
+              "type" : "Color",
+              "data" : "blue200"
+            }
+          },
+          "assignee" : [
+            "layers",
+            "View",
+            "backgroundColor"
+          ]
+        }
+      ]
+    },
+    {
+      "type" : "IfExpr",
+      "condition" : {
+        "left" : [
+          "layers",
+          "View",
+          "pressed"
+        ],
+        "right" : {
+          "type" : "LitExpr",
+          "value" : {
+            "type" : "Boolean",
+            "data" : true
+          }
+        },
+        "type" : "BinExpr",
+        "op" : "=="
+      },
+      "body" : [
+        {
+          "type" : "AssignExpr",
+          "content" : {
+            "type" : "LitExpr",
+            "value" : {
+              "type" : "Color",
+              "data" : "blue50"
+            }
+          },
+          "assignee" : [
+            "layers",
+            "View",
+            "backgroundColor"
+          ]
+        }
+      ]
+    }
+  ],
+  "params" : [
+    {
+      "type" : "String",
+      "name" : "text"
+    },
+    {
+      "type" : {
+        "name" : "Function"
+      },
+      "name" : "onTap"
+    }
+  ]
+}
