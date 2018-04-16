@@ -10,6 +10,7 @@ import UIKit
 
 enum Generated: String {
     case localAsset = "Local Asset"
+    case nestedComponent = "Nested Component"
     case pressableRootView = "Pressable Root View"
     case fitContentParentSecondaryChildren = "Fit Content Parent Secondary Children"
     case fixedParentFillAndFitChildren = "Fixed Parent Fill and Fit Children"
@@ -28,6 +29,7 @@ enum Generated: String {
     static func allValues() -> [Generated] {
         return [
             localAsset,
+            nestedComponent,
             pressableRootView,
             fitContentParentSecondaryChildren,
             fixedParentFillAndFitChildren,
@@ -49,6 +51,8 @@ enum Generated: String {
         switch self {
         case .localAsset:
             return LocalAsset()
+        case .nestedComponent:
+            return NestedComponent()
         case .pressableRootView:
             return PressableRootView()
         case .fitContentParentSecondaryChildren:
@@ -87,7 +91,8 @@ enum Generated: String {
                 equal(\.topAnchor, \.safeAreaLayoutGuide.topAnchor),
                 equal(\.leftAnchor),
             ]
-        case .fixedParentFillAndFitChildren,
+        case .nestedComponent,
+             .fixedParentFillAndFitChildren,
              .fixedParentFitChild,
              .primaryAxis,
              .secondaryAxis,

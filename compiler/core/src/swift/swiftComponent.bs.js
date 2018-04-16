@@ -24,7 +24,7 @@ function isFunctionParameter(param) {
   return Caml_obj.caml_equal(param[/* ltype */1], Types$LonaCompilerCore.handlerType);
 }
 
-function generate(options, swiftOptions, name, colors, textStyles, json) {
+function generate(options, swiftOptions, name, colors, textStyles, getComponent, json) {
   var rootLayer = Decode$LonaCompilerCore.Component[/* rootLayer */1](json);
   var nonRootLayers = List.tl(Layer$LonaCompilerCore.flatten(rootLayer));
   var logic = Decode$LonaCompilerCore.Component[/* logic */2](json);
@@ -105,7 +105,7 @@ function generate(options, swiftOptions, name, colors, textStyles, json) {
           
         }
       } else {
-        return "TypeUnknown";
+        return layerType[0];
       }
     } else if (typeof layerType === "number") {
       switch (layerType) {
@@ -122,7 +122,7 @@ function generate(options, swiftOptions, name, colors, textStyles, json) {
         
       }
     } else {
-      return "TypeUnknown";
+      return layerType[0];
     }
   };
   var getLayerInitCall = function (layer) {
@@ -1088,7 +1088,16 @@ function generate(options, swiftOptions, name, colors, textStyles, json) {
       return formatAnchorVariableName(constr[0], constr[1], "Constraint");
     }
   };
-  var constraints = Constraint$LonaCompilerCore.getConstraints(rootLayer);
+  var constraints = Constraint$LonaCompilerCore.getConstraints((function (layer, name) {
+          var component = Curry._1(getComponent, name);
+          var rootLayer = Decode$LonaCompilerCore.Component[/* rootLayer */1](component);
+          return /* record */[
+                  /* typeName */layer[/* typeName */0],
+                  /* name */layer[/* name */1],
+                  /* parameters */rootLayer[/* parameters */2],
+                  /* children */layer[/* children */3]
+                ];
+        }), rootLayer);
   var setUpConstraintsDoc = function (root) {
     var translatesAutoresizingMask = function (layer) {
       return /* BinaryExpression */Block.__(2, [{

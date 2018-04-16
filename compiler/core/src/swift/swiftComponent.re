@@ -33,6 +33,7 @@ let generate =
       name,
       colors,
       textStyles: TextStyle.file,
+      getComponent,
       json
     ) => {
   let rootLayer = json |> Decode.Component.rootLayer;
@@ -117,6 +118,7 @@ let generate =
     | (AppKit, Types.View) => "NSBox"
     | (AppKit, Text) => "NSTextField"
     | (AppKit, Image) => "NSImageView"
+    | (_, Component(name)) => name
     | _ => "TypeUnknown"
     };
   let getLayerInitCall = (layer: Types.layer) => {
@@ -808,7 +810,26 @@ let generate =
       formatAnchorVariableName(layer, dimension, "Constraint")
     };
   };
-  let constraints = Constraint.getConstraints(rootLayer);
+  let constraints =
+    Constraint.getConstraints
+      /* For the purposes of layouts, we want to swap the custom component layer
+         with the root layer from the custom component's definition. We should
+         use the parameters of the custom component's root layer, since these
+         determine layout. We should still use the type, name, and children of
+         the custom component layer. */
+      (
+        (layer: Types.layer, name) => {
+          let component = getComponent(name);
+          let rootLayer = component |> Decode.Component.rootLayer;
+          {
+            typeName: layer.typeName,
+            name: layer.name,
+            parameters: rootLayer.parameters,
+            children: layer.children
+          };
+        },
+        rootLayer
+      );
   let setUpConstraintsDoc = (root: Types.layer) => {
     let translatesAutoresizingMask = (layer: Types.layer) =>
       BinaryExpression({
