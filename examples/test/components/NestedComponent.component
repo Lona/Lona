@@ -1,0 +1,87 @@
+{
+  "root" : {
+    "id" : "View",
+    "type" : "Lona:View",
+    "params" : {
+      "paddingTop" : 10,
+      "alignSelf" : "stretch",
+      "paddingBottom" : 10,
+      "paddingLeft" : 10,
+      "paddingRight" : 10
+    },
+    "children" : [
+      {
+        "id" : "Text",
+        "type" : "Lona:Text",
+        "params" : {
+          "text" : "Example nested component",
+          "font" : "subheading2",
+          "marginBottom" : 8
+        }
+      },
+      {
+        "id" : "FitContentParentSecondaryChildren",
+        "type" : "FitContentParentSecondaryChildren",
+        "params" : {
+
+        }
+      },
+      {
+        "id" : "Text 1",
+        "type" : "Lona:Text",
+        "params" : {
+          "text" : "Text below",
+          "marginTop" : 12
+        }
+      },
+      {
+        "id" : "LocalAsset",
+        "type" : "LocalAsset",
+        "params" : {
+
+        }
+      },
+      {
+        "id" : "Text 2",
+        "type" : "Lona:Text",
+        "params" : {
+          "text" : "Very bottom"
+        }
+      }
+    ]
+  },
+  "devices" : [
+    {
+      "name" : "iPhone SE",
+      "height" : 100,
+      "heightMode" : "At Least",
+      "width" : 320
+    },
+    {
+      "name" : "iPhone 7",
+      "height" : 100,
+      "heightMode" : "At Least",
+      "width" : 375
+    },
+    {
+      "name" : "iPhone 7+",
+      "height" : 100,
+      "heightMode" : "At Least",
+      "width" : 414
+    }
+  ],
+  "examples" : [
+    {
+      "name" : "Default",
+      "params" : {
+
+      }
+    }
+  ],
+  "logic" : [
+
+  ],
+  "params" : [
+
+  ]
+}

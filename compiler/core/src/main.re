@@ -106,6 +106,23 @@ let convertTextStyles = (target, workspacePath, content) => {
   TextStyle.parseFile(content) |> renderTextStyles(target, colors);
 };
 
+exception ComponentNotFound(string);
+
+let findComponentFile = (fromDirectory, componentName) => {
+  let searchPath = "**/" ++ componentName ++ ".component";
+  let files = Glob.sync(concat(fromDirectory, searchPath)) |> Array.to_list;
+  switch (List.length(files)) {
+  | 0 => raise(ComponentNotFound(componentName))
+  | _ => List.hd(files)
+  };
+};
+
+let findComponent = (fromDirectory, componentName) => {
+  let filename = findComponentFile(fromDirectory, componentName);
+  let contents = Fs.readFileSync(filename, `utf8);
+  contents |> Js.Json.parseExn;
+};
+
 let convertComponent = filename => {
   let contents = Fs.readFileSync(filename, `utf8);
   let parsed = contents |> Js.Json.parseExn;
@@ -136,6 +153,7 @@ let convertComponent = filename => {
           name,
           colors,
           textStyles,
+          findComponent(workspace),
           parsed
         );
       result |> Swift.Render.toString;

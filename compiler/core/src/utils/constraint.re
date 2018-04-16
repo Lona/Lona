@@ -86,42 +86,51 @@ let getRole =
   | Dimension(_, _, _, role) => role
   | Relation(_, _, _, _, _, _, role) => role;
 
-module ConstraintMap = {
-  include
-    Map.Make(
-      {
-        type t = _t;
-        let compare = (a: t, b: t) : int =>
-          switch (a, b) {
-          | (
-              Dimension(layer1, dimension1, _, _),
-              Dimension(layer2, dimension2, _, _)
-            ) =>
-            compare((layer1.name, dimension1), (layer2.name, dimension2))
-          | (
-              Relation(layer1a, anchor1a, _, layer1b, anchor1b, _, _),
-              Relation(layer2a, anchor2a, _, layer2b, anchor2b, _, _)
-            ) =>
-            compare(
-              (layer1a.name, anchor1a, layer1b.name, anchor1b),
-              (layer2a.name, anchor2a, layer2b.name, anchor2b)
-            )
-          | (Relation(_), Dimension(_)) => (-1)
-          | (Dimension(_), Relation(_)) => 1
-          };
-      }
-    );
-  let find_opt = (key, map) =>
-    switch (find(key, map)) {
-    | item => Some(item)
-    | exception Not_found => None
-    };
-};
-
+/* module ConstraintMap = {
+     include
+       Map.Make(
+         {
+           type t = _t;
+           let compare = (a: t, b: t) : int =>
+             switch (a, b) {
+             | (
+                 Dimension(layer1, dimension1, _, _),
+                 Dimension(layer2, dimension2, _, _)
+               ) =>
+               compare((layer1.name, dimension1), (layer2.name, dimension2))
+             | (
+                 Relation(layer1a, anchor1a, _, layer1b, anchor1b, _, _),
+                 Relation(layer2a, anchor2a, _, layer2b, anchor2b, _, _)
+               ) =>
+               compare(
+                 (layer1a.name, anchor1a, layer1b.name, anchor1b),
+                 (layer2a.name, anchor2a, layer2b.name, anchor2b)
+               )
+             | (Relation(_), Dimension(_)) => (-1)
+             | (Dimension(_), Relation(_)) => 1
+             };
+         }
+       );
+     let find_opt = (key, map) =>
+       switch (find(key, map)) {
+       | item => Some(item)
+       | exception Not_found => None
+       };
+   }; */
 type t = _t;
 
-let getConstraints = (rootLayer: Types.layer) => {
+let getConstraints = (getRootLayerForComponentName, rootLayer: Types.layer) => {
+  /* Any time we access a layer, we want to use its proxy if it has one.
+     This is how we layout custom components.
+     TODO: When we handle "Children" components, we'll need to find a use
+     a different proxy */
+  let getProxyLayer = (layer: Types.layer) =>
+    switch layer.typeName {
+    | Types.Component(name) => getRootLayerForComponentName(layer, name)
+    | _ => layer
+    };
   let constrainAxes = (layer: Types.layer) => {
+    let layer = getProxyLayer(layer);
     let direction = Layer.getFlexDirection(layer);
     let isColumn = direction == "column";
     let primaryBeforeAnchor = isColumn ? Top : Leading;
@@ -141,6 +150,7 @@ let getConstraints = (rootLayer: Types.layer) => {
       isColumn ? sizingRules.width : sizingRules.height;
     let flexChildren =
       layer.children
+      |> List.map(getProxyLayer)
       |> List.filter((child: Types.layer) =>
            Layer.getNumberParameter("flex", child) === 1.0
          );
@@ -334,7 +344,10 @@ let getConstraints = (rootLayer: Types.layer) => {
       | _ => []
       };
     let fitContentSecondaryConstraints =
-      layer.children |> List.map(fitContentSecondaryConstraint) |> List.concat;
+      layer.children
+      |> List.map(getProxyLayer)
+      |> List.map(fitContentSecondaryConstraint)
+      |> List.concat;
     let heightConstraint =
       switch height {
       | Some(_) => [
@@ -363,7 +376,9 @@ let getConstraints = (rootLayer: Types.layer) => {
       [heightConstraint, widthConstraint]
       @ [flexChildrenConstraints]
       @ [fitContentSecondaryConstraints]
-      @ (layer.children |> List.mapi(addConstraints));
+      @ (
+        layer.children |> List.map(getProxyLayer) |> List.mapi(addConstraints)
+      );
     constraints |> List.concat;
   };
   rootLayer |> Layer.flatmap(constrainAxes) |> List.concat;
