@@ -35,7 +35,7 @@ var trackingAreaVar = /* VariableDeclaration */Block.__(10, [{
                 /* :: */[
                   /* FunctionCallArgument */Block.__(18, [{
                         name: /* Some */[/* SwiftIdentifier */Block.__(8, ["options"])],
-                        value: /* LiteralExpression */Block.__(0, [/* Array */Block.__(5, [/* :: */[
+                        value: /* LiteralExpression */Block.__(0, [/* Array */Block.__(6, [/* :: */[
                                   /* SwiftIdentifier */Block.__(8, [".mouseEnteredAndExited"]),
                                   /* :: */[
                                     /* SwiftIdentifier */Block.__(8, [".activeAlways"]),

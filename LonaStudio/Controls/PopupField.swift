@@ -46,7 +46,7 @@ class PopupField: NSPopUpButton, CSControl {
         super.init(frame: frameRect)
         setup()
 
-        let titles = values.map({ valueToTitle[$0] }).flatMap({ $0 })
+        let titles = values.map({ valueToTitle[$0] }).compactMap({ $0 })
         addItems(withTitles: titles)
 
         self.values = values

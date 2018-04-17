@@ -9,19 +9,8 @@
 import Foundation
 import AppKit
 
-private let titleStyle = AttributedFont(
-    fontFamily: NSFont.systemFont(ofSize: NSFont.systemFontSize).familyName!,
-    fontSize: 32,
-    lineHeight: 38,
-    kerning: 0,
-    weight: NSFont.Weight.bold)
-
-private let colorNameStyle = AttributedFont(
-    fontFamily: NSFont.systemFont(ofSize: NSFont.systemFontSize).familyName!,
-    fontSize: 13,
-    lineHeight: 13 * 1.62,
-    kerning: 0,
-    weight: NSFont.Weight.medium)
+private let titleStyle = AttributedFont(weight: .bold, size: 32, lineHeight: 38, kerning: 0)
+private let colorNameStyle = AttributedFont(weight: .medium, size: 13, lineHeight: 13 * 1.62, kerning: 0)
 
 private class ColorGridCell: NSBox {
 
@@ -57,11 +46,9 @@ private class ColorGridCell: NSBox {
     private var titleView = NSTextField(labelWithString: "")
     private var valueView = NSTextField(labelWithString: "")
     private var valueTextStyle = AttributedFont(
-        fontFamily: NSFont.systemFont(ofSize: NSFont.systemFontSize).familyName!,
-        fontSize: 13,
-        lineHeight: 13 * 1.62,
-        kerning: 0,
-        weight: NSFont.Weight.bold)
+        weight: .bold,
+        size: 13,
+        kerning: 0)
 
     func setUpViews() {
         boxType = .custom
@@ -119,11 +106,10 @@ private class ColorGridCell: NSBox {
     func update() {
         colorView.fillColor = color
         valueTextStyle = AttributedFont(
-            fontFamily: NSFont.systemFont(ofSize: NSFont.systemFontSize).familyName!,
-            fontSize: 12,
+            weight: .medium,
+            size: 12,
             lineHeight: 12,
             kerning: 0,
-            weight: NSFont.Weight.medium,
             color: color.contrastingLabelColor)
         titleView.attributedStringValue = colorNameStyle.apply(to: name)
         valueView.attributedStringValue = valueTextStyle.apply(to: value)

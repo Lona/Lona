@@ -384,6 +384,12 @@ and renderLiteral = (node: SwiftAst.literal) =>
       concat([s("#colorLiteral("), join(s(", "), values), s(")")]),
       2
     );
+  | Image(name) =>
+    /* #imageLiteral(resourceName: "name") */
+    fixedWidth(
+      concat([s("#imageLiteral(resourceName: \""), s(name), s("\")")]),
+      2
+    )
   | Array(body) =>
     let maybeLine = List.length(body) > 0 ? softline : s("");
     let body = body |> List.map(render) |> join(concat([s(","), line]));

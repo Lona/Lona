@@ -34,10 +34,10 @@ class LogicNode: DataNodeParent, DataNodeCopying {
             case .literalExpression(let value):
                 return .value(value)
             case .memberExpression(let identifiers):
-                let path = identifiers.map({ expression in
+                let path: [String] = identifiers.map({ expression in
                     guard case LonaExpression.identifierExpression(let identifier) = expression else { return nil }
                     return identifier
-                }).flatMap({ $0 })
+                }).compactMap({ $0 })
                 return .identifier(CSType.any, path)
             case .placeholderExpression:
                 return nil

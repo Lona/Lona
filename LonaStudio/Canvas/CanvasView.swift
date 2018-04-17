@@ -83,7 +83,7 @@ func attributedString(for configuredLayer: ConfiguredLayer) -> NSAttributedStrin
     let text = getLayerText(configuredLayer: configuredLayer)
 
     // Font
-    var attributeDict = getLayerFont(configuredLayer: configuredLayer).attributeDictionary()
+    var attributeDict = getLayerFont(configuredLayer: configuredLayer).attributeDictionary
 
     // Alignment
     let titleParagraphStyle = NSMutableParagraphStyle()
@@ -263,7 +263,7 @@ func renderBox(configuredLayer: ConfiguredLayer, node: YGNodeRef, options: Rende
 ////                box.layer?.contentsScale = actualScaleFactor
 //            }
 
-            box.layer?.contentsGravity = kCAGravityResizeAspectFill
+            box.layer?.contentsGravity = kCAGravityResizeAspect
             box.layer?.contentsScale = scale
             box.layer?.masksToBounds = true
 

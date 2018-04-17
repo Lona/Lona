@@ -31,9 +31,7 @@ final class TextStylePickerButton: NSButton, CSControl {
     }
 
     func setButtonTitle(value: String) {
-        // Make sure font size is suitable with textField but keeping another attribute
-        let copy = CSTypography.getFontBy(id: value).font.copy() as! AttributedFont
-        attributedTitle = smallSizeAttributeText(with: copy)
+        attributedTitle = CSTypography.getFontBy(id: value).font.with(size: 14).apply(to: value)
     }
 
     required init?(coder aDecoder: NSCoder) {
@@ -61,7 +59,6 @@ final class TextStylePickerButton: NSButton, CSControl {
     }
 
     private func smallSizeAttributeText(with csFont: AttributedFont) -> NSAttributedString {
-        csFont.fontSize = 14
-        return csFont.apply(to: value)
+        return csFont.with(size: 14).apply(to: value)
     }
 }

@@ -165,7 +165,7 @@ class DictionaryEditor: NSView, CSControl {
             if dictionary.data[key] != nil { return nil }
 
             return key
-        }).flatMap({ $0 })
+        }).compactMap({ $0 })
 
         // If we didn't include this key
         if let currentKey = currentKey, dictionary.data[currentKey] != nil {
@@ -192,7 +192,7 @@ class DictionaryEditor: NSView, CSControl {
 
             let value = CSValue(type: item.element.value.type, data: data)
             return DictionaryItem(name: key, value: value)
-        }).flatMap({ $0 })
+        }).compactMap({ $0 })
     }
 
     func dictionaryValue(from list: [DictionaryItem]) -> CSValue {

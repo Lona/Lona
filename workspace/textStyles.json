@@ -1,0 +1,49 @@
+{
+  "defaultStyleName": "regular",
+  "styles": [
+    {
+      "id": "title",
+      "name": "Title",
+      "fontWeight": "600",
+      "fontSize": 32,
+      "lineHeight": 38,
+      "color": "black"
+    },
+    {
+      "id": "versionInfo",
+      "name": "Version Info",
+      "fontSize": 20,
+      "lineHeight": 24,
+      "color": "#828282"
+    },
+    {
+      "id": "largeSemibold",
+      "name": "Large Semibold",
+      "fontWeight": "500",
+      "fontSize": 15,
+      "lineHeight": 17,
+      "color": "black"
+    },
+    {
+      "id": "large",
+      "name": "Large",
+      "fontSize": 15,
+      "lineHeight": 17,
+      "color": "black"
+    },
+    {
+      "id": "regular",
+      "name": "Regular",
+      "fontSize": 13,
+      "lineHeight": 15,
+      "color": "black"
+    },
+    {
+      "id": "regularMuted",
+      "name": "Regular Muted",
+      "fontSize": 13,
+      "lineHeight": 15,
+      "color": "#828282"
+    }
+  ]
+}

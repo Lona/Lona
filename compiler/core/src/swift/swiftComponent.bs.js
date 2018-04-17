@@ -1183,7 +1183,7 @@ function generate(options, swiftOptions, name, colors, textStyles, getComponent,
                   arguments: /* :: */[
                     /* FunctionCallArgument */Block.__(18, [{
                           name: /* None */0,
-                          value: /* LiteralExpression */Block.__(0, [/* Array */Block.__(5, [List.map((function (def) {
+                          value: /* LiteralExpression */Block.__(0, [/* Array */Block.__(6, [List.map((function (def) {
                                           return /* SwiftIdentifier */Block.__(8, [formatConstraintVariableName(def)]);
                                         }), constraints)])])
                         }]),
