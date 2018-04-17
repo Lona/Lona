@@ -81,18 +81,17 @@ let generate =
     isParameterAssigned(layer, parameter)
     || isParameterSetInitially(layer, parameter);
   let parameterVariableDoc = (parameter: Types.parameter) =>
-    VariableDeclaration({
-      "modifiers": [AccessLevelModifier(PublicModifier)],
-      "pattern":
-        IdentifierPattern({
-          "identifier": SwiftIdentifier(parameter.name),
-          "annotation":
-            Some(parameter.ltype |> SwiftDocument.typeAnnotationDoc)
-        }),
-      "init": None,
-      "block":
-        isFunctionParameter(parameter) ?
-          None :
+    VariableDeclaration
+      ({
+        "modifiers": [AccessLevelModifier(PublicModifier)],
+        "pattern":
+          IdentifierPattern({
+            "identifier": SwiftIdentifier(parameter.name),
+            "annotation":
+              Some(parameter.ltype |> SwiftDocument.typeAnnotationDoc)
+          }),
+        "init": None,
+        "block":
           Some(
             WillSetDidSetBlock({
               "willSet": None,
@@ -105,7 +104,11 @@ let generate =
                 ])
             })
           )
-    });
+      });
+      /* TODO: We don't need to update if onPress is only initialized in setUpViews
+         and never assigned in logic */
+      /* (isFunctionParameter(parameter) && !isParameterAssigned(parameter)) ?
+         None : */
   let getLayerTypeName = layerType =>
     switch (swiftOptions.framework, layerType) {
     | (UIKit, Types.View) => "UIView"

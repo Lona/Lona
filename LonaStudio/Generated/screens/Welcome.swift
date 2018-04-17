@@ -22,9 +22,9 @@ public class Welcome: NSBox {
 
   // MARK: Public
 
-  public var onCreateProject: (() -> Void)?
-  public var onOpenExample: (() -> Void)?
-  public var onOpenDocumentation: (() -> Void)?
+  public var onCreateProject: (() -> Void)? { didSet { update() } }
+  public var onOpenExample: (() -> Void)? { didSet { update() } }
+  public var onOpenDocumentation: (() -> Void)? { didSet { update() } }
 
   // MARK: Private
 

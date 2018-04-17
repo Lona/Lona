@@ -39,7 +39,7 @@ public class IconRow: NSBox {
   public var titleText: String { didSet { update() } }
   public var subtitleText: String { didSet { update() } }
   public var icon: NSImage { didSet { update() } }
-  public var onClick: (() -> Void)?
+  public var onClick: (() -> Void)? { didSet { update() } }
 
   // MARK: Private
 
