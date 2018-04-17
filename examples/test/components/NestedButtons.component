@@ -1,0 +1,71 @@
+{
+  "root" : {
+    "id" : "View",
+    "type" : "Lona:View",
+    "params" : {
+      "paddingTop" : 24,
+      "alignSelf" : "stretch",
+      "paddingBottom" : 24,
+      "paddingLeft" : 24,
+      "paddingRight" : 24
+    },
+    "children" : [
+      {
+        "id" : "Button",
+        "type" : "Button",
+        "params" : {
+          "label" : "Button 1"
+        }
+      },
+      {
+        "id" : "View 1",
+        "type" : "Lona:View",
+        "params" : {
+          "height" : 8,
+          "alignSelf" : "stretch"
+        }
+      },
+      {
+        "id" : "Button2",
+        "type" : "Button",
+        "params" : {
+          "label" : "Button 2"
+        }
+      }
+    ]
+  },
+  "devices" : [
+    {
+      "name" : "iPhone SE",
+      "height" : 100,
+      "heightMode" : "At Least",
+      "width" : 320
+    },
+    {
+      "name" : "iPhone 7",
+      "height" : 100,
+      "heightMode" : "At Least",
+      "width" : 375
+    },
+    {
+      "name" : "iPhone 7+",
+      "height" : 100,
+      "heightMode" : "At Least",
+      "width" : 414
+    }
+  ],
+  "examples" : [
+    {
+      "name" : "Default",
+      "params" : {
+
+      }
+    }
+  ],
+  "logic" : [
+
+  ],
+  "params" : [
+
+  ]
+}

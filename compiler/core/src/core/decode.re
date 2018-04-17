@@ -45,9 +45,8 @@ let parameterType = name =>
   switch (StringMap.find(name, parameterTypeMap)) {
   | item => item
   | exception Not_found =>
-    /* Js.log2("Unknown built-in parameter when deserializing:", name);
-       Reference("BuiltIn-Null") */
-    raise(UnknownParameter(name))
+    Js.log2("Unknown built-in parameter when deserializing:", name);
+    raise(UnknownParameter(name));
   };
 
 module Types = {
@@ -107,21 +106,35 @@ module Layer = {
     | "Lona:Children" => Children
     | value => Component(value)
     };
-  let rec layer = json => {
+  let rec layer = (getComponent, json) => {
+    let typeName = field("type", layerType, json);
     let parameterDictionary = json =>
       json
       |> Js.Json.decodeObject
       |> Js.Option.getExn
       |> StringMap.fromJsDict
       |> StringMap.mapi((key, value) =>
-           {ltype: parameterType(key), data: value}
+           switch typeName {
+           | Component(name) =>
+             let param =
+               getComponent(name)
+               |> field("params", list(Parameters.parameter))
+               |> List.find((param: parameter) => param.name == key);
+             switch param {
+             | _ => {ltype: param.ltype, data: value}
+             | exception _ =>
+               Js.log2("Unknown built-in parameter when deserializing:", key);
+               raise(UnknownParameter(key));
+             };
+           | _ => {ltype: parameterType(key), data: value}
+           }
          );
     {
-      typeName: field("type", layerType, json),
+      typeName,
       name: field("id", string, json),
       parameters: field("params", parameterDictionary, json),
       children:
-        switch (field("children", list(layer), json)) {
+        switch (field("children", list(layer(getComponent)), json)) {
         | result => result
         | exception _ => []
         }
@@ -247,7 +260,8 @@ let rec logicNode = json => {
 
 module Component = {
   let parameters = json => field("params", list(Parameters.parameter), json);
-  let rootLayer = json => field("root", Layer.layer, json);
+  let rootLayer = (getComponent, json) =>
+    field("root", Layer.layer(getComponent), json);
   let logic = json => Logic.Block(field("logic", list(logicNode), json));
 };
 

@@ -25,15 +25,11 @@ function isFunctionParameter(param) {
 }
 
 function generate(options, swiftOptions, name, colors, textStyles, getComponent, json) {
-  var rootLayer = Decode$LonaCompilerCore.Component[/* rootLayer */1](json);
+  var rootLayer = Decode$LonaCompilerCore.Component[/* rootLayer */1](getComponent, json);
   var nonRootLayers = List.tl(Layer$LonaCompilerCore.flatten(rootLayer));
   var logic = Decode$LonaCompilerCore.Component[/* logic */2](json);
-  var textLayers = List.filter((function (layer) {
-            return +(layer[/* typeName */0] === /* Text */1);
-          }))(nonRootLayers);
-  var imageLayers = List.filter((function (layer) {
-            return +(layer[/* typeName */0] === /* Image */2);
-          }))(nonRootLayers);
+  var textLayers = List.filter(Layer$LonaCompilerCore.isTextLayer)(nonRootLayers);
+  var imageLayers = List.filter(Layer$LonaCompilerCore.isImageLayer)(nonRootLayers);
   var pressableLayers = List.filter((function (param) {
             return Logic$LonaCompilerCore.isLayerParameterAssigned(logic, "onPress", param);
           }))(Layer$LonaCompilerCore.flatten(rootLayer));
@@ -523,6 +519,43 @@ function generate(options, swiftOptions, name, colors, textStyles, getComponent,
                           ]
                         ]
                       ]
+                    ])
+              }]);
+  };
+  var convenienceInitializerDoc = function () {
+    return /* InitializerDeclaration */Block.__(11, [{
+                modifiers: /* :: */[
+                  /* AccessLevelModifier */Block.__(0, [/* PublicModifier */3]),
+                  /* :: */[
+                    /* ConvenienceModifier */1,
+                    /* [] */0
+                  ]
+                ],
+                parameters: /* [] */0,
+                failable: /* None */0,
+                throws: /* false */0,
+                body: SwiftDocument$LonaCompilerCore.joinGroups(/* Empty */0, /* :: */[
+                      /* :: */[
+                        /* MemberExpression */Block.__(1, [/* :: */[
+                              /* SwiftIdentifier */Block.__(8, ["self"]),
+                              /* :: */[
+                                /* FunctionCallExpression */Block.__(19, [{
+                                      name: /* SwiftIdentifier */Block.__(8, ["init"]),
+                                      arguments: List.map((function (param) {
+                                              return /* FunctionCallArgument */Block.__(18, [{
+                                                          name: /* Some */[/* SwiftIdentifier */Block.__(8, [param[/* name */0]])],
+                                                          value: SwiftDocument$LonaCompilerCore.defaultValueForLonaType(swiftOptions[/* framework */0], colors, textStyles, param[/* ltype */1])
+                                                        }]);
+                                            }), List.filter((function (param) {
+                                                    return 1 - Caml_obj.caml_equal(param[/* ltype */1], Types$LonaCompilerCore.handlerType);
+                                                  }))(parameters))
+                                    }]),
+                                /* [] */0
+                              ]
+                            ]]),
+                        /* [] */0
+                      ],
+                      /* [] */0
                     ])
               }]);
   };
@@ -1090,7 +1123,7 @@ function generate(options, swiftOptions, name, colors, textStyles, getComponent,
   };
   var constraints = Constraint$LonaCompilerCore.getConstraints((function (layer, name) {
           var component = Curry._1(getComponent, name);
-          var rootLayer = Decode$LonaCompilerCore.Component[/* rootLayer */1](component);
+          var rootLayer = Decode$LonaCompilerCore.Component[/* rootLayer */1](getComponent, component);
           return /* record */[
                   /* typeName */layer[/* typeName */0],
                   /* name */layer[/* name */1],
@@ -1291,7 +1324,10 @@ function generate(options, swiftOptions, name, colors, textStyles, getComponent,
                 body: Pervasives.$at(List.concat(List.map(defineInitialLayerValues, Curry._1(Layer$LonaCompilerCore.LayerMap[/* bindings */16], assignments))), SwiftLogic$LonaCompilerCore.toSwiftAST(swiftOptions, colors, textStyles, rootLayer, logic))
               }]);
   };
-  var match$2 = +(List.length(parameters) > 0);
+  var match$2 = +(List.length(List.filter((function (param) {
+                  return 1 - Caml_obj.caml_equal(param[/* ltype */1], Types$LonaCompilerCore.handlerType);
+                }))(parameters)) > 0);
+  var match$3 = +(List.length(parameters) > 0);
   return /* TopLevelDeclaration */Block.__(26, [{
               statements: SwiftDocument$LonaCompilerCore.joinGroups(/* Empty */0, /* :: */[
                     /* :: */[
@@ -1332,74 +1368,80 @@ function generate(options, swiftOptions, name, colors, textStyles, getComponent,
                                             /* [] */0
                                           ],
                                           /* :: */[
+                                            match$2 !== 0 ? /* :: */[
+                                                convenienceInitializerDoc(/* () */0),
+                                                /* [] */0
+                                              ] : /* [] */0,
                                             /* :: */[
-                                              initializerCoderDoc(/* () */0),
-                                              /* [] */0
-                                            ],
-                                            /* :: */[
-                                              needsTracking !== 0 ? /* :: */[
-                                                  AppkitPressable$LonaCompilerCore.deinitTrackingArea,
-                                                  /* [] */0
-                                                ] : /* [] */0,
                                               /* :: */[
-                                                match$2 !== 0 ? /* :: */[
-                                                    /* LineComment */Block.__(21, ["MARK: Public"]),
+                                                initializerCoderDoc(/* () */0),
+                                                /* [] */0
+                                              ],
+                                              /* :: */[
+                                                needsTracking !== 0 ? /* :: */[
+                                                    AppkitPressable$LonaCompilerCore.deinitTrackingArea,
                                                     /* [] */0
                                                   ] : /* [] */0,
                                                 /* :: */[
-                                                  List.map(parameterVariableDoc, parameters),
-                                                  /* :: */[
-                                                    /* :: */[
-                                                      /* LineComment */Block.__(21, ["MARK: Private"]),
+                                                  match$3 !== 0 ? /* :: */[
+                                                      /* LineComment */Block.__(21, ["MARK: Public"]),
                                                       /* [] */0
-                                                    ],
+                                                    ] : /* [] */0,
+                                                  /* :: */[
+                                                    List.map(parameterVariableDoc, parameters),
                                                     /* :: */[
-                                                      needsTracking !== 0 ? /* :: */[
-                                                          AppkitPressable$LonaCompilerCore.trackingAreaVar,
-                                                          /* [] */0
-                                                        ] : /* [] */0,
                                                       /* :: */[
-                                                        List.map(viewVariableDoc, nonRootLayers),
+                                                        /* LineComment */Block.__(21, ["MARK: Private"]),
+                                                        /* [] */0
+                                                      ],
+                                                      /* :: */[
+                                                        needsTracking !== 0 ? /* :: */[
+                                                            AppkitPressable$LonaCompilerCore.trackingAreaVar,
+                                                            /* [] */0
+                                                          ] : /* [] */0,
                                                         /* :: */[
-                                                          List.map(textStyleVariableDoc, textLayers),
+                                                          List.map(viewVariableDoc, nonRootLayers),
                                                           /* :: */[
-                                                            List.concat(Layer$LonaCompilerCore.flatmap(spacingVariableDoc, rootLayer)),
+                                                            List.map(textStyleVariableDoc, textLayers),
                                                             /* :: */[
-                                                              List.concat(List.map(pressableVariableDoc, pressableLayers)),
+                                                              List.concat(Layer$LonaCompilerCore.flatmap(spacingVariableDoc, rootLayer)),
                                                               /* :: */[
-                                                                List.map((function (def) {
-                                                                        var variableName = formatConstraintVariableName(def);
-                                                                        return /* VariableDeclaration */Block.__(10, [{
-                                                                                    modifiers: /* :: */[
-                                                                                      /* AccessLevelModifier */Block.__(0, [/* PrivateModifier */0]),
-                                                                                      /* [] */0
-                                                                                    ],
-                                                                                    pattern: /* IdentifierPattern */Block.__(0, [{
-                                                                                          identifier: /* SwiftIdentifier */Block.__(8, [variableName]),
-                                                                                          annotation: /* Some */[/* OptionalType */Block.__(4, [/* TypeName */Block.__(0, ["NSLayoutConstraint"])])]
-                                                                                        }]),
-                                                                                    init: /* None */0,
-                                                                                    block: /* None */0
-                                                                                  }]);
-                                                                      }), constraints),
+                                                                List.concat(List.map(pressableVariableDoc, pressableLayers)),
                                                                 /* :: */[
-                                                                  /* :: */[
-                                                                    setUpViewsDoc(rootLayer),
-                                                                    /* [] */0
-                                                                  ],
+                                                                  List.map((function (def) {
+                                                                          var variableName = formatConstraintVariableName(def);
+                                                                          return /* VariableDeclaration */Block.__(10, [{
+                                                                                      modifiers: /* :: */[
+                                                                                        /* AccessLevelModifier */Block.__(0, [/* PrivateModifier */0]),
+                                                                                        /* [] */0
+                                                                                      ],
+                                                                                      pattern: /* IdentifierPattern */Block.__(0, [{
+                                                                                            identifier: /* SwiftIdentifier */Block.__(8, [variableName]),
+                                                                                            annotation: /* Some */[/* OptionalType */Block.__(4, [/* TypeName */Block.__(0, ["NSLayoutConstraint"])])]
+                                                                                          }]),
+                                                                                      init: /* None */0,
+                                                                                      block: /* None */0
+                                                                                    }]);
+                                                                        }), constraints),
                                                                   /* :: */[
                                                                     /* :: */[
-                                                                      setUpConstraintsDoc(rootLayer),
+                                                                      setUpViewsDoc(rootLayer),
                                                                       /* [] */0
                                                                     ],
                                                                     /* :: */[
                                                                       /* :: */[
-                                                                        updateDoc(/* () */0),
+                                                                        setUpConstraintsDoc(rootLayer),
                                                                         /* [] */0
                                                                       ],
                                                                       /* :: */[
-                                                                        needsTracking !== 0 ? AppkitPressable$LonaCompilerCore.mouseTrackingFunctions(rootLayer, pressableLayers) : /* [] */0,
-                                                                        /* [] */0
+                                                                        /* :: */[
+                                                                          updateDoc(/* () */0),
+                                                                          /* [] */0
+                                                                        ],
+                                                                        /* :: */[
+                                                                          needsTracking !== 0 ? AppkitPressable$LonaCompilerCore.mouseTrackingFunctions(rootLayer, pressableLayers) : /* [] */0,
+                                                                          /* [] */0
+                                                                        ]
                                                                       ]
                                                                     ]
                                                                   ]

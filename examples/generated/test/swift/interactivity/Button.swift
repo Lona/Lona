@@ -1,14 +1,14 @@
-import AppKit
+import UIKit
 import Foundation
 
-// MARK: - TextStyleConditional
+// MARK: - Button
 
-public class TextStyleConditional: NSBox {
+public class Button: UIView {
 
   // MARK: Lifecycle
 
-  public init(large: Bool) {
-    self.large = large
+  public init(label: String) {
+    self.label = label
 
     super.init(frame: .zero)
 
@@ -19,7 +19,7 @@ public class TextStyleConditional: NSBox {
   }
 
   public convenience init() {
-    self.init(large: false)
+    self.init(label: "")
   }
 
   public required init?(coder aDecoder: NSCoder) {
@@ -28,44 +28,51 @@ public class TextStyleConditional: NSBox {
 
   // MARK: Public
 
-  public var large: Bool { didSet { update() } }
+  public var label: String { didSet { update() } }
+  public var onTap: (() -> Void)?
 
   // MARK: Private
 
-  private var textView = NSTextField(labelWithString: "")
+  private var textView = UILabel()
 
-  private var textViewTextStyle = TextStyles.headline
+  private var textViewTextStyle = TextStyles.button
 
-  private var topPadding: CGFloat = 0
-  private var trailingPadding: CGFloat = 0
-  private var bottomPadding: CGFloat = 0
-  private var leadingPadding: CGFloat = 0
+  private var topPadding: CGFloat = 12
+  private var trailingPadding: CGFloat = 16
+  private var bottomPadding: CGFloat = 12
+  private var leadingPadding: CGFloat = 16
   private var textViewTopMargin: CGFloat = 0
   private var textViewTrailingMargin: CGFloat = 0
   private var textViewBottomMargin: CGFloat = 0
   private var textViewLeadingMargin: CGFloat = 0
 
+  private var hovered = false
+  private var pressed = false
+  private var onPress: (() -> Void)?
+
+  private var textViewWidthAnchorParentConstraint: NSLayoutConstraint?
   private var textViewTopAnchorConstraint: NSLayoutConstraint?
   private var textViewBottomAnchorConstraint: NSLayoutConstraint?
   private var textViewLeadingAnchorConstraint: NSLayoutConstraint?
   private var textViewTrailingAnchorConstraint: NSLayoutConstraint?
 
   private func setUpViews() {
-    boxType = .custom
-    borderType = .noBorder
-    contentViewMargins = .zero
-    textView.lineBreakMode = .byWordWrapping
+    textView.numberOfLines = 0
 
     addSubview(textView)
 
-    textViewTextStyle = TextStyles.headline
-    textView.attributedStringValue = textViewTextStyle.apply(to: "Text goes here")
+    textViewTextStyle = TextStyles.button
   }
 
   private func setUpConstraints() {
     translatesAutoresizingMaskIntoConstraints = false
     textView.translatesAutoresizingMaskIntoConstraints = false
 
+    let textViewWidthAnchorParentConstraint = textView
+      .widthAnchor
+      .constraint(
+        lessThanOrEqualTo: widthAnchor,
+        constant: -(leadingPadding + textViewLeadingMargin + trailingPadding + textViewTrailingMargin))
     let textViewTopAnchorConstraint = textView
       .topAnchor
       .constraint(equalTo: topAnchor, constant: topPadding + textViewTopMargin)
@@ -77,21 +84,25 @@ public class TextStyleConditional: NSBox {
       .constraint(equalTo: leadingAnchor, constant: leadingPadding + textViewLeadingMargin)
     let textViewTrailingAnchorConstraint = textView
       .trailingAnchor
-      .constraint(lessThanOrEqualTo: trailingAnchor, constant: -(trailingPadding + textViewTrailingMargin))
+      .constraint(equalTo: trailingAnchor, constant: -(trailingPadding + textViewTrailingMargin))
+    textViewWidthAnchorParentConstraint.priority = UILayoutPriority.defaultLow
 
     NSLayoutConstraint.activate([
+      textViewWidthAnchorParentConstraint,
       textViewTopAnchorConstraint,
       textViewBottomAnchorConstraint,
       textViewLeadingAnchorConstraint,
       textViewTrailingAnchorConstraint
     ])
 
+    self.textViewWidthAnchorParentConstraint = textViewWidthAnchorParentConstraint
     self.textViewTopAnchorConstraint = textViewTopAnchorConstraint
     self.textViewBottomAnchorConstraint = textViewBottomAnchorConstraint
     self.textViewLeadingAnchorConstraint = textViewLeadingAnchorConstraint
     self.textViewTrailingAnchorConstraint = textViewTrailingAnchorConstraint
 
     // For debugging
+    textViewWidthAnchorParentConstraint.identifier = "textViewWidthAnchorParentConstraint"
     textViewTopAnchorConstraint.identifier = "textViewTopAnchorConstraint"
     textViewBottomAnchorConstraint.identifier = "textViewBottomAnchorConstraint"
     textViewLeadingAnchorConstraint.identifier = "textViewLeadingAnchorConstraint"
@@ -99,9 +110,14 @@ public class TextStyleConditional: NSBox {
   }
 
   private func update() {
-    textViewTextStyle = TextStyles.body1
-    if large {
-      textViewTextStyle = TextStyles.display2
+    backgroundColor = Colors.blue100
+    textView.attributedText = textViewTextStyle.apply(to: label)
+    onPress = onTap
+    if hovered {
+      backgroundColor = Colors.blue200
+    }
+    if pressed {
+      backgroundColor = Colors.blue50
     }
   }
 }

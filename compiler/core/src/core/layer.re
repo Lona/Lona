@@ -244,3 +244,15 @@ let layerTypeToString = x =>
   };
 
 let mapBindings = (f, map) => map |> StringMap.bindings |> List.map(f);
+
+let isViewLayer = (layer: Types.layer) => layer.typeName == Types.View;
+
+let isTextLayer = (layer: Types.layer) => layer.typeName == Types.Text;
+
+let isImageLayer = (layer: Types.layer) => layer.typeName == Types.Image;
+
+let isComponentLayer = (layer: Types.layer) =>
+  switch layer.typeName {
+  | Component(_) => true
+  | _ => false
+  };

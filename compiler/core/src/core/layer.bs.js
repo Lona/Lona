@@ -437,7 +437,7 @@ function getInsets(prefix, layer) {
     throw [
           Caml_builtin_exceptions.match_failure,
           [
-            "/Users/devinabbott/Projects/Lona/compiler/core/src/core/layer.re",
+            "/Users/devin_abbott/Projects/ComponentStudio/ComponentStudio/compiler/core/src/core/layer.re",
             167,
             6
           ]
@@ -580,6 +580,27 @@ function mapBindings(f, map) {
   return List.map(f, Curry._1(StringMap$LonaCompilerCore.bindings, map));
 }
 
+function isViewLayer(layer) {
+  return +(layer[/* typeName */0] === /* View */0);
+}
+
+function isTextLayer(layer) {
+  return +(layer[/* typeName */0] === /* Text */1);
+}
+
+function isImageLayer(layer) {
+  return +(layer[/* typeName */0] === /* Image */2);
+}
+
+function isComponentLayer(layer) {
+  var match = layer[/* typeName */0];
+  if (typeof match === "number") {
+    return /* false */0;
+  } else {
+    return /* true */1;
+  }
+}
+
 exports.LayerMap                            = LayerMap;
 exports.stylesSet                           = stylesSet;
 exports.flatten                             = flatten;
@@ -606,4 +627,8 @@ exports.splitParamsMap                      = splitParamsMap;
 exports.parameterMapToLogicValueMap         = parameterMapToLogicValueMap;
 exports.layerTypeToString                   = layerTypeToString;
 exports.mapBindings                         = mapBindings;
+exports.isViewLayer                         = isViewLayer;
+exports.isTextLayer                         = isTextLayer;
+exports.isImageLayer                        = isImageLayer;
+exports.isComponentLayer                    = isComponentLayer;
 /* include Not a pure module */

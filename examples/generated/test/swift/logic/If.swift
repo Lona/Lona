@@ -18,6 +18,10 @@ public class If: UIView {
     update()
   }
 
+  public convenience init() {
+    self.init(enabled: false)
+  }
+
   public required init?(coder aDecoder: NSCoder) {
     fatalError("init(coder:) has not been implemented")
   }

@@ -105,8 +105,8 @@ function toJavaScriptStyleSheetAST(layer) {
                 }])]);
 }
 
-function generate(name, json) {
-  var rootLayer = Decode$LonaCompilerCore.Component[/* rootLayer */1](json);
+function generate(name, getComponent, json) {
+  var rootLayer = Decode$LonaCompilerCore.Component[/* rootLayer */1](getComponent, json);
   var logic = Logic$LonaCompilerCore.addVariableDeclarations(Decode$LonaCompilerCore.Component[/* logic */2](json));
   var assignments = Layer$LonaCompilerCore.parameterAssignmentsFromLogic(rootLayer, logic);
   var rootLayerAST = layerToJavaScriptAST(assignments, rootLayer);
