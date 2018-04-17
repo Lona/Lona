@@ -46,7 +46,7 @@ public class Button: NSBox {
 
   private var textView = NSTextField(labelWithString: "")
 
-  private var textViewTextStyle = TextStyles.subheading2
+  private var textViewTextStyle = TextStyles.button
 
   private var topPadding: CGFloat = 12
   private var trailingPadding: CGFloat = 16
@@ -75,7 +75,7 @@ public class Button: NSBox {
 
     addSubview(textView)
 
-    textViewTextStyle = TextStyles.subheading2
+    textViewTextStyle = TextStyles.button
   }
 
   private func setUpConstraints() {

@@ -142,7 +142,7 @@
       {
         "id" : "Text",
         "params" : {
-          "font" : "subheading2",
+          "font" : "button",
           "text" : "Text goes here"
         },
         "type" : "Lona:Text"

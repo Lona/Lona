@@ -11,6 +11,8 @@ import UIKit
 enum Generated: String {
     case localAsset = "Local Asset"
     case nestedComponent = "Nested Component"
+    case nestedButtons = "Nested Buttons"
+    case button = "Button"
     case pressableRootView = "Pressable Root View"
     case fitContentParentSecondaryChildren = "Fit Content Parent Secondary Children"
     case fixedParentFillAndFitChildren = "Fixed Parent Fill and Fit Children"
@@ -30,6 +32,8 @@ enum Generated: String {
         return [
             localAsset,
             nestedComponent,
+            nestedButtons,
+            button,
             pressableRootView,
             fitContentParentSecondaryChildren,
             fixedParentFillAndFitChildren,
@@ -53,6 +57,16 @@ enum Generated: String {
             return LocalAsset()
         case .nestedComponent:
             return NestedComponent()
+        case .nestedButtons:
+            return NestedButtons()
+        case .button:
+            var count = 0
+            let button = Button(label: "Tapped \(count)")
+            button.onTap = {
+                count += 1
+                button.label = "Tapped \(count)"
+            }
+            return button
         case .pressableRootView:
             return PressableRootView()
         case .fitContentParentSecondaryChildren:
@@ -91,7 +105,9 @@ enum Generated: String {
                 equal(\.topAnchor, \.safeAreaLayoutGuide.topAnchor),
                 equal(\.leftAnchor),
             ]
-        case .nestedComponent,
+        case .button,
+             .nestedComponent,
+             .nestedButtons,
              .fixedParentFillAndFitChildren,
              .fixedParentFitChild,
              .primaryAxis,

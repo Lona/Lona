@@ -31,5 +31,5 @@ let styles = StyleSheet.create({
     paddingRight: 16,
     paddingTop: 12
   },
-  Text: { font: "subheading2" }
+  Text: { font: "button" }
 });

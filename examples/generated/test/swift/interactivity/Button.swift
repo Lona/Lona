@@ -35,7 +35,7 @@ public class Button: UIView {
 
   private var textView = UILabel()
 
-  private var textViewTextStyle = TextStyles.subheading2
+  private var textViewTextStyle = TextStyles.button
 
   private var topPadding: CGFloat = 12
   private var trailingPadding: CGFloat = 16
@@ -61,7 +61,7 @@ public class Button: UIView {
 
     addSubview(textView)
 
-    textViewTextStyle = TextStyles.subheading2
+    textViewTextStyle = TextStyles.button
   }
 
   private func setUpConstraints() {
