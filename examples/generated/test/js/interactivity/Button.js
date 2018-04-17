@@ -3,7 +3,7 @@ class Button extends React.Component {
     let View$onPress;
     let View$backgroundColor;
     let Text$text;
-    Text$text = this.props.text
+    Text$text = this.props.label
     View$onPress = this.props.onTap
     if (View$hovered) {
       View$backgroundColor = "blue200"

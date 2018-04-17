@@ -18,6 +18,10 @@ public class Assign: NSBox {
     update()
   }
 
+  public convenience init() {
+    self.init(text: "")
+  }
+
   public required init?(coder aDecoder: NSCoder) {
     fatalError("init(coder:) has not been implemented")
   }

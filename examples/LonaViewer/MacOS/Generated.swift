@@ -61,10 +61,10 @@ enum Generated: String {
             return NestedButtons()
         case .button:
             var count = 0
-            let button = Button(text: "Tapped \(count)")
+            let button = Button(label: "Tapped \(count)")
             button.onTap = {
                 count += 1
-                button.text = "Tapped \(count)"
+                button.label = "Tapped \(count)"
             }
             return button
         case .pressableRootView:

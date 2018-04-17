@@ -198,13 +198,15 @@ function convertComponent(filename) {
   var contents = Fs.readFileSync(filename, "utf8");
   var parsed = JSON.parse(contents);
   var name = Path.basename(filename, ".component");
-  switch (target) {
-    case 0 : 
-        return JavaScriptRender$LonaCompilerCore.toString(JavaScriptComponent$LonaCompilerCore.generate(name, parsed));
-    case 1 : 
-        var match = findWorkspaceDirectory(filename);
-        if (match) {
-          var workspace = match[0];
+  var match = findWorkspaceDirectory(filename);
+  if (match) {
+    var workspace = match[0];
+    switch (target) {
+      case 0 : 
+          return JavaScriptRender$LonaCompilerCore.toString(JavaScriptComponent$LonaCompilerCore.generate(name, (function (param) {
+                            return findComponent(workspace, param);
+                          }), parsed));
+      case 1 : 
           var colorsFile = Fs.readFileSync(Path.join(workspace, "colors.json"), "utf8");
           var colors = Color$LonaCompilerCore.parseFile(colorsFile);
           var textStylesFile = Fs.readFileSync(Path.join(workspace, "textStyles.json"), "utf8");
@@ -212,15 +214,14 @@ function convertComponent(filename) {
           return SwiftRender$LonaCompilerCore.toString(SwiftComponent$LonaCompilerCore.generate(options, swiftOptions, name, colors, textStyles, (function (param) {
                             return findComponent(workspace, param);
                           }), parsed));
-        } else {
-          console.log("Couldn't find workspace directory. Try specifying it as a parameter (TODO)");
+      case 2 : 
+          console.log("Unrecognized target");
           return (process.exit(1));
-        }
-        break;
-    case 2 : 
-        console.log("Unrecognized target");
-        return (process.exit(1));
-    
+      
+    }
+  } else {
+    console.log("Couldn't find workspace directory. Try specifying it as a parameter (TODO)");
+    return (process.exit(1));
   }
 }
 

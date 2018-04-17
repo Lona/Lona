@@ -2,13 +2,13 @@ class NestedButtons extends React.Component {
   render() {
     return (
       <View style={[ styles.View, {} ]}>
-        <Button style={[ styles.Button, {} ]} text={"Button 1"}>
+        <Button style={[ styles.Button, {} ]} label={"Button 1"}>
 
         </Button>
         <View style={[ styles.View 1, {} ]}>
 
         </View>
-        <Button style={[ styles.Button2, {} ]} text={"Button 2"}>
+        <Button style={[ styles.Button2, {} ]} label={"Button 2"}>
 
         </Button>
       </View>

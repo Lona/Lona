@@ -60,8 +60,8 @@ public class NestedButtons: UIView {
     addSubview(view1View)
     addSubview(button2View)
 
-    buttonView.attributedText = buttonViewTextStyle.apply(to: "Button 1")
-    button2View.attributedText = button2ViewTextStyle.apply(to: "Button 2")
+    buttonView.label = "Button 1"
+    button2View.label = "Button 2"
   }
 
   private func setUpConstraints() {

@@ -127,16 +127,17 @@ let convertComponent = filename => {
   let contents = Fs.readFileSync(filename, `utf8);
   let parsed = contents |> Js.Json.parseExn;
   let name = Path.basenameExt(~path=filename, ~ext=".component");
-  switch target {
-  | Types.JavaScript =>
-    JavaScript.Component.generate(name, parsed) |> JavaScript.Render.toString
-  | Swift =>
-    switch (findWorkspaceDirectory(filename)) {
-    | None =>
-      exit(
-        "Couldn't find workspace directory. Try specifying it as a parameter (TODO)"
-      )
-    | Some(workspace) =>
+  switch (findWorkspaceDirectory(filename)) {
+  | None =>
+    exit(
+      "Couldn't find workspace directory. Try specifying it as a parameter (TODO)"
+    )
+  | Some(workspace) =>
+    switch target {
+    | Types.JavaScript =>
+      JavaScript.Component.generate(name, findComponent(workspace), parsed)
+      |> JavaScript.Render.toString
+    | Swift =>
       let colorsFile =
         Node.Fs.readFileSync(Path.join([|workspace, "colors.json"|]), `utf8);
       let colors = Color.parseFile(colorsFile);
@@ -157,8 +158,8 @@ let convertComponent = filename => {
           parsed
         );
       result |> Swift.Render.toString;
+    | _ => exit("Unrecognized target")
     }
-  | _ => exit("Unrecognized target")
   };
 };
 

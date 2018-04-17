@@ -1,42 +1,21 @@
 {
-  "root" : {
-    "id" : "View",
-    "type" : "Lona:View",
-    "params" : {
-      "paddingTop" : 12,
-      "paddingBottom" : 12,
-      "backgroundColor" : "blue100",
-      "paddingLeft" : 16,
-      "paddingRight" : 16
-    },
-    "children" : [
-      {
-        "id" : "Text",
-        "type" : "Lona:Text",
-        "params" : {
-          "text" : "Text goes here",
-          "font" : "subheading2"
-        }
-      }
-    ]
-  },
   "devices" : [
     {
-      "name" : "iPhone SE",
       "height" : 100,
       "heightMode" : "At Least",
+      "name" : "iPhone SE",
       "width" : 320
     },
     {
-      "name" : "iPhone 7",
       "height" : 100,
       "heightMode" : "At Least",
+      "name" : "iPhone 7",
       "width" : 375
     },
     {
-      "name" : "iPhone 7+",
       "height" : 100,
       "heightMode" : "At Least",
+      "name" : "iPhone 7+",
       "width" : 414
     }
   ],
@@ -44,118 +23,139 @@
     {
       "name" : "Default",
       "params" : {
-        "title" : "Button"
+        "label" : "Test"
       }
     }
   ],
   "logic" : [
     {
-      "type" : "AssignExpr",
-      "content" : [
-        "parameters",
-        "text"
-      ],
       "assignee" : [
         "layers",
         "Text",
         "text"
-      ]
-    },
-    {
-      "type" : "AssignExpr",
+      ],
       "content" : [
         "parameters",
-        "onTap"
+        "label"
       ],
+      "type" : "AssignExpr"
+    },
+    {
       "assignee" : [
         "layers",
         "View",
         "onPress"
-      ]
+      ],
+      "content" : [
+        "parameters",
+        "onTap"
+      ],
+      "type" : "AssignExpr"
     },
     {
-      "type" : "IfExpr",
+      "body" : [
+        {
+          "assignee" : [
+            "layers",
+            "View",
+            "backgroundColor"
+          ],
+          "content" : {
+            "type" : "LitExpr",
+            "value" : {
+              "data" : "blue200",
+              "type" : "Color"
+            }
+          },
+          "type" : "AssignExpr"
+        }
+      ],
       "condition" : {
         "left" : [
           "layers",
           "View",
           "hovered"
         ],
+        "op" : "==",
         "right" : {
           "type" : "LitExpr",
           "value" : {
-            "type" : "Boolean",
-            "data" : true
+            "data" : true,
+            "type" : "Boolean"
           }
         },
-        "type" : "BinExpr",
-        "op" : "=="
+        "type" : "BinExpr"
       },
+      "type" : "IfExpr"
+    },
+    {
       "body" : [
         {
-          "type" : "AssignExpr",
-          "content" : {
-            "type" : "LitExpr",
-            "value" : {
-              "type" : "Color",
-              "data" : "blue200"
-            }
-          },
           "assignee" : [
             "layers",
             "View",
             "backgroundColor"
-          ]
+          ],
+          "content" : {
+            "type" : "LitExpr",
+            "value" : {
+              "data" : "blue50",
+              "type" : "Color"
+            }
+          },
+          "type" : "AssignExpr"
         }
-      ]
-    },
-    {
-      "type" : "IfExpr",
+      ],
       "condition" : {
         "left" : [
           "layers",
           "View",
           "pressed"
         ],
+        "op" : "==",
         "right" : {
           "type" : "LitExpr",
           "value" : {
-            "type" : "Boolean",
-            "data" : true
+            "data" : true,
+            "type" : "Boolean"
           }
         },
-        "type" : "BinExpr",
-        "op" : "=="
+        "type" : "BinExpr"
       },
-      "body" : [
-        {
-          "type" : "AssignExpr",
-          "content" : {
-            "type" : "LitExpr",
-            "value" : {
-              "type" : "Color",
-              "data" : "blue50"
-            }
-          },
-          "assignee" : [
-            "layers",
-            "View",
-            "backgroundColor"
-          ]
-        }
-      ]
+      "type" : "IfExpr"
     }
   ],
   "params" : [
     {
-      "type" : "String",
-      "name" : "text"
+      "name" : "label",
+      "type" : "String"
     },
     {
+      "name" : "onTap",
       "type" : {
         "name" : "Function"
-      },
-      "name" : "onTap"
+      }
     }
-  ]
+  ],
+  "root" : {
+    "children" : [
+      {
+        "id" : "Text",
+        "params" : {
+          "font" : "subheading2",
+          "text" : "Text goes here"
+        },
+        "type" : "Lona:Text"
+      }
+    ],
+    "id" : "View",
+    "params" : {
+      "backgroundColor" : "blue100",
+      "paddingBottom" : 12,
+      "paddingLeft" : 16,
+      "paddingRight" : 16,
+      "paddingTop" : 12
+    },
+    "type" : "Lona:View"
+  }
 }

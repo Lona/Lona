@@ -158,6 +158,53 @@ let rec lonaValue =
     }
   };
 
+let rec defaultValueForLonaType =
+        (
+          framework: SwiftOptions.framework,
+          colors,
+          textStyles: TextStyle.file,
+          ltype: Types.lonaType
+        ) =>
+  switch ltype {
+  | Reference(typeName) =>
+    switch typeName {
+    | "Boolean" => LiteralExpression(Boolean(false))
+    | "Number" => LiteralExpression(FloatingPoint(0.))
+    | "String" => LiteralExpression(String(""))
+    | "TextStyle"
+    | "Color" =>
+      defaultValueForLonaType(
+        framework,
+        colors,
+        textStyles,
+        Named(typeName, Reference("String"))
+      )
+    | _ => SwiftIdentifier("UnknownReferenceType: " ++ typeName)
+    }
+  | Function(_) => SwiftIdentifier("PLACEHOLDER")
+  | Named(alias, _) =>
+    switch alias {
+    | "Color" =>
+      MemberExpression([SwiftIdentifier("UIColor"), SwiftIdentifier("clear")])
+    | "URL" =>
+      FunctionCallExpression({
+        "name": SwiftIdentifier(imageTypeName(framework)),
+        "arguments": [
+          FunctionCallArgument({
+            "name": Some(SwiftIdentifier("named")),
+            "value": localImageName(framework, "")
+          })
+        ]
+      })
+    | "TextStyle" =>
+      MemberExpression([
+        SwiftIdentifier("TextStyles"),
+        SwiftIdentifier(textStyles.defaultStyle.id)
+      ])
+    | _ => SwiftIdentifier("TypeUnknown" ++ alias)
+    }
+  };
+
 let memberOrSelfExpression = (first, statements) =>
   switch first {
   | SwiftIdentifier("self") => MemberExpression(statements)

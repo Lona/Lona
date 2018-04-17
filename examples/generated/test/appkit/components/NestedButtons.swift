@@ -22,9 +22,9 @@ public class NestedButtons: NSBox {
 
   // MARK: Private
 
-  private var buttonView = Button(text: "A")
+  private var buttonView = Button()
   private var view1View = NSBox()
-  private var button2View = Button(text: "B")
+  private var button2View = Button()
 
   private var topPadding: CGFloat = 24
   private var trailingPadding: CGFloat = 24
@@ -67,8 +67,8 @@ public class NestedButtons: NSBox {
     addSubview(view1View)
     addSubview(button2View)
 
-//    buttonView.attributedStringValue = buttonViewTextStyle.apply(to: "Button 1")
-//    button2View.attributedStringValue = button2ViewTextStyle.apply(to: "Button 2")
+    buttonView.label = "Button 1"
+    button2View.label = "Button 2"
   }
 
   private func setUpConstraints() {

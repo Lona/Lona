@@ -7,8 +7,8 @@ public class Button: NSBox {
 
   // MARK: Lifecycle
 
-  public init(text: String) {
-    self.text = text
+  public init(label: String) {
+    self.label = label
 
     super.init(frame: .zero)
 
@@ -18,6 +18,10 @@ public class Button: NSBox {
     update()
 
     addTrackingArea(trackingArea)
+  }
+
+  public convenience init() {
+    self.init(label: "")
   }
 
   public required init?(coder aDecoder: NSCoder) {
@@ -30,7 +34,7 @@ public class Button: NSBox {
 
   // MARK: Public
 
-  public var text: String { didSet { update() } }
+  public var label: String { didSet { update() } }
   public var onTap: (() -> Void)?
 
   // MARK: Private
@@ -121,7 +125,7 @@ public class Button: NSBox {
 
   private func update() {
     fillColor = Colors.blue100
-    textView.attributedStringValue = textViewTextStyle.apply(to: text)
+    textView.attributedStringValue = textViewTextStyle.apply(to: label)
     onPress = onTap
     if hovered {
       fillColor = Colors.blue200

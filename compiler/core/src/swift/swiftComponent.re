@@ -36,16 +36,12 @@ let generate =
       getComponent,
       json
     ) => {
-  let rootLayer = json |> Decode.Component.rootLayer;
+  let rootLayer = json |> Decode.Component.rootLayer(getComponent);
   /* Remove the root element */
   let nonRootLayers = rootLayer |> Layer.flatten |> List.tl;
   let logic = json |> Decode.Component.logic;
-  let textLayers =
-    nonRootLayers
-    |> List.filter((layer: Types.layer) => layer.typeName == Types.Text);
-  let imageLayers =
-    nonRootLayers
-    |> List.filter((layer: Types.layer) => layer.typeName == Types.Image);
+  let textLayers = nonRootLayers |> List.filter(Layer.isTextLayer);
+  let imageLayers = nonRootLayers |> List.filter(Layer.isImageLayer);
   let pressableLayers =
     rootLayer
     |> Layer.flatten
@@ -420,6 +416,42 @@ let generate =
               })
             ],
             needsTracking ? [AppkitPressable.addTrackingArea] : []
+          ]
+        )
+    });
+  let convenienceInitializerDoc = () =>
+    InitializerDeclaration({
+      "modifiers": [AccessLevelModifier(PublicModifier), ConvenienceModifier],
+      "parameters": [],
+      "failable": None,
+      "throws": false,
+      "body":
+        Document.joinGroups(
+          Empty,
+          [
+            [
+              MemberExpression([
+                SwiftIdentifier("self"),
+                FunctionCallExpression({
+                  "name": SwiftIdentifier("init"),
+                  "arguments":
+                    parameters
+                    |> List.filter(param => ! isFunctionParameter(param))
+                    |> List.map((param: Decode.parameter) =>
+                         FunctionCallArgument({
+                           "name": Some(SwiftIdentifier(param.name)),
+                           "value":
+                             Document.defaultValueForLonaType(
+                               swiftOptions.framework,
+                               colors,
+                               textStyles,
+                               param.ltype
+                             )
+                         })
+                       )
+                })
+              ])
+            ]
           ]
         )
     });
@@ -820,7 +852,8 @@ let generate =
       (
         (layer: Types.layer, name) => {
           let component = getComponent(name);
-          let rootLayer = component |> Decode.Component.rootLayer;
+          let rootLayer =
+            component |> Decode.Component.rootLayer(getComponent);
           {
             typeName: layer.typeName,
             name: layer.name,
@@ -1003,6 +1036,10 @@ let generate =
                   [
                     [Empty, LineComment("MARK: Lifecycle")],
                     [initializerDoc()],
+                    parameters
+                    |> List.filter(param => ! isFunctionParameter(param))
+                    |> List.length > 0 ?
+                      [convenienceInitializerDoc()] : [],
                     [initializerCoderDoc()],
                     needsTracking ? [AppkitPressable.deinitTrackingArea] : [],
                     List.length(parameters) > 0 ?

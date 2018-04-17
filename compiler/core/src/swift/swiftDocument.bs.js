@@ -240,6 +240,77 @@ function lonaValue(framework, colors, textStyles, _value) {
   };
 }
 
+function defaultValueForLonaType(framework, _, textStyles, _ltype) {
+  while(true) {
+    var ltype = _ltype;
+    switch (ltype.tag | 0) {
+      case 0 : 
+          var typeName = ltype[0];
+          var exit = 0;
+          switch (typeName) {
+            case "Boolean" : 
+                return /* LiteralExpression */Block.__(0, [/* Boolean */Block.__(0, [/* false */0])]);
+            case "Number" : 
+                return /* LiteralExpression */Block.__(0, [/* FloatingPoint */Block.__(2, [0])]);
+            case "String" : 
+                return /* LiteralExpression */Block.__(0, [/* String */Block.__(3, [""])]);
+            case "Color" : 
+            case "TextStyle" : 
+                exit = 1;
+                break;
+            default:
+              return /* SwiftIdentifier */Block.__(8, ["UnknownReferenceType: " + typeName]);
+          }
+          if (exit === 1) {
+            _ltype = /* Named */Block.__(1, [
+                typeName,
+                /* Reference */Block.__(0, ["String"])
+              ]);
+            continue ;
+            
+          }
+          break;
+      case 1 : 
+          var alias = ltype[0];
+          switch (alias) {
+            case "Color" : 
+                return /* MemberExpression */Block.__(1, [/* :: */[
+                            /* SwiftIdentifier */Block.__(8, ["UIColor"]),
+                            /* :: */[
+                              /* SwiftIdentifier */Block.__(8, ["clear"]),
+                              /* [] */0
+                            ]
+                          ]]);
+            case "TextStyle" : 
+                return /* MemberExpression */Block.__(1, [/* :: */[
+                            /* SwiftIdentifier */Block.__(8, ["TextStyles"]),
+                            /* :: */[
+                              /* SwiftIdentifier */Block.__(8, [textStyles[/* defaultStyle */1][/* id */0]]),
+                              /* [] */0
+                            ]
+                          ]]);
+            case "URL" : 
+                return /* FunctionCallExpression */Block.__(19, [{
+                            name: /* SwiftIdentifier */Block.__(8, [imageTypeName(framework)]),
+                            arguments: /* :: */[
+                              /* FunctionCallArgument */Block.__(18, [{
+                                    name: /* Some */[/* SwiftIdentifier */Block.__(8, ["named"])],
+                                    value: localImageName(framework, "")
+                                  }]),
+                              /* [] */0
+                            ]
+                          }]);
+            default:
+              return /* SwiftIdentifier */Block.__(8, ["TypeUnknown" + alias]);
+          }
+          break;
+      case 2 : 
+          return /* SwiftIdentifier */Block.__(8, ["PLACEHOLDER"]);
+      
+    }
+  };
+}
+
 function memberOrSelfExpression(first, statements) {
   var exit = 0;
   if (typeof first === "number") {
@@ -301,6 +372,7 @@ exports.labelAttributedTextName = labelAttributedTextName;
 exports.localImageName          = localImageName;
 exports.typeAnnotationDoc       = typeAnnotationDoc;
 exports.lonaValue               = lonaValue;
+exports.defaultValueForLonaType = defaultValueForLonaType;
 exports.memberOrSelfExpression  = memberOrSelfExpression;
 exports.layerNameOrSelf         = layerNameOrSelf;
 exports.layerMemberExpression   = layerMemberExpression;

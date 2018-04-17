@@ -85,8 +85,8 @@ let toJavaScriptStyleSheetAST = (layer: Types.layer) => {
   );
 };
 
-let generate = (name, json) => {
-  let rootLayer = json |> Decode.Component.rootLayer;
+let generate = (name, getComponent, json) => {
+  let rootLayer = json |> Decode.Component.rootLayer(getComponent);
   let logic = json |> Decode.Component.logic |> Logic.addVariableDeclarations;
   let assignments = Layer.parameterAssignmentsFromLogic(rootLayer, logic);
   let rootLayerAST = rootLayer |> layerToJavaScriptAST(assignments);

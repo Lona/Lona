@@ -7,8 +7,8 @@ public class Button: UIView {
 
   // MARK: Lifecycle
 
-  public init(text: String) {
-    self.text = text
+  public init(label: String) {
+    self.label = label
 
     super.init(frame: .zero)
 
@@ -18,13 +18,17 @@ public class Button: UIView {
     update()
   }
 
+  public convenience init() {
+    self.init(label: "")
+  }
+
   public required init?(coder aDecoder: NSCoder) {
     fatalError("init(coder:) has not been implemented")
   }
 
   // MARK: Public
 
-  public var text: String { didSet { update() } }
+  public var label: String { didSet { update() } }
   public var onTap: (() -> Void)?
 
   // MARK: Private
@@ -107,7 +111,7 @@ public class Button: UIView {
 
   private func update() {
     backgroundColor = Colors.blue100
-    textView.attributedText = textViewTextStyle.apply(to: text)
+    textView.attributedText = textViewTextStyle.apply(to: label)
     onPress = onTap
     if hovered {
       backgroundColor = Colors.blue200

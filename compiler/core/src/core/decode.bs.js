@@ -192,6 +192,7 @@ function parameterType(name) {
   }
   catch (exn){
     if (exn === Caml_builtin_exceptions.not_found) {
+      console.log("Unknown built-in parameter when deserializing:", name);
       throw [
             UnknownParameter,
             name
@@ -291,26 +292,57 @@ function layerType(json) {
   }
 }
 
-function layer(json) {
+function layer(getComponent, json) {
+  var typeName = Json_decode.field("type", layerType, json);
   var parameterDictionary = function (json) {
     return Curry._2(StringMap$LonaCompilerCore.mapi, (function (key, value) {
-                  return /* record */[
-                          /* ltype */parameterType(key),
-                          /* data */value
-                        ];
+                  if (typeof typeName === "number") {
+                    return /* record */[
+                            /* ltype */parameterType(key),
+                            /* data */value
+                          ];
+                  } else {
+                    var param = List.find((function (param) {
+                            return +(param[/* name */0] === key);
+                          }), Json_decode.field("params", (function (param) {
+                                return Json_decode.list(parameter, param);
+                              }), Curry._1(getComponent, typeName[0])));
+                    var exit = 0;
+                    var val;
+                    try {
+                      val = param;
+                      exit = 1;
+                    }
+                    catch (exn){
+                      console.log("Unknown built-in parameter when deserializing:", key);
+                      throw [
+                            UnknownParameter,
+                            key
+                          ];
+                    }
+                    if (exit === 1) {
+                      return /* record */[
+                              /* ltype */param[/* ltype */1],
+                              /* data */value
+                            ];
+                    }
+                    
+                  }
                 }), StringMap$LonaCompilerCore.fromJsDict(Js_option.getExn(Js_json.decodeObject(json))));
   };
   var tmp;
   try {
     tmp = Json_decode.field("children", (function (param) {
-            return Json_decode.list(layer, param);
+            return Json_decode.list((function (param) {
+                          return layer(getComponent, param);
+                        }), param);
           }), json);
   }
   catch (exn){
     tmp = /* [] */0;
   }
   return /* record */[
-          /* typeName */Json_decode.field("type", layerType, json),
+          /* typeName */typeName,
           /* name */Json_decode.field("id", Json_decode.string, json),
           /* parameters */Json_decode.field("params", parameterDictionary, json),
           /* children */tmp
@@ -523,8 +555,10 @@ function parameters(json) {
               }), json);
 }
 
-function rootLayer(json) {
-  return Json_decode.field("root", layer, json);
+function rootLayer(getComponent, json) {
+  return Json_decode.field("root", (function (param) {
+                return layer(getComponent, param);
+              }), json);
 }
 
 function logic(json) {
