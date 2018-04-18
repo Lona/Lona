@@ -29,7 +29,7 @@
     {
       "name" : "name",
       "params" : {
-        "icon" : "file:\/\/\/Users\/devin_abbott\/Projects\/ComponentStudio\/ComponentStudio\/workspace\/assets\/icon-documentation@2x.png"
+        "icon" : "file:\/\/.\/assets\/icon-documentation@2x.png"
       }
     }
   ],
