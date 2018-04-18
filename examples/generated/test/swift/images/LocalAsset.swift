@@ -43,7 +43,7 @@ public class LocalAsset: UIView {
     addSubview(imageView)
 
     imageView.backgroundColor = #colorLiteral(red: 0.847058823529, green: 0.847058823529, blue: 0.847058823529, alpha: 1)
-    imageView.image = UIImage(named: "icon_128x128")
+    imageView.image = #imageLiteral(resourceName: "icon_128x128")
   }
 
   private func setUpConstraints() {

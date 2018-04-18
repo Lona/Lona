@@ -28,6 +28,7 @@ final class LayerList: NSOutlineView, NSTextFieldDelegate {
     }
 
     var component: CSComponent?
+    // swiftlint:disable weak_delegate
     weak var layerDelegate: LayerListDelegate?
     fileprivate var shouldRenderOnSelectionChange = true
     fileprivate var previousRow = -1
@@ -491,7 +492,7 @@ extension LayerList: NSOutlineViewDelegate, NSOutlineViewDataSource {
         if selectedRow == -1 {
             layerDelegate?.layerList(self, do: .clearInspector)
         } else {
-            let item = self.item(atRow: selectedRow) as! DataNode!
+            let item = self.item(atRow: selectedRow) as! DataNode?
 
             // Don't allow hiding the root layer
             if selectedRow != 0 {

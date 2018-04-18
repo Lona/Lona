@@ -1,0 +1,10 @@
+{
+  "name": "lona-studio-design-system",
+  "version": "1.0.0",
+  "description": "Lona Studio's design system",
+  "main": "index.js",
+  "license": "MIT",
+  "scripts": {
+  	"generate": "node ../compiler/core/src/main.bs.js workspace swift . ../LonaStudio/Generated --framework=appkit"
+  }
+}

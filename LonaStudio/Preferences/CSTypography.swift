@@ -85,9 +85,9 @@ struct CSTextStyle {
             guard let value = style.letterSpacing else { return nil }
             return value
         }
-        let weight: String? = lookup { style in
+        let weight: NSFont.Weight? = lookup { style in
             guard let value = style.fontWeight else { return nil }
-            return value
+            return convertFontWeight(fontWeight: value)
         }
         let color: NSColor? = lookup { style in
             guard let value = style.color else { return nil }
@@ -95,13 +95,12 @@ struct CSTextStyle {
         }
 
         return AttributedFont(
-            fontFamily: lookup({ style in style.fontFamily }) ?? defaultFamilyName,
-            fontSize: fontSize ?? defaultFontSize,
-            lineHeight: lineHeight ?? (fontSize ?? defaultFontSize) * 1.5,
+            family: lookup({ style in style.fontFamily }) ?? defaultFamilyName,
+            weight: weight ?? .regular,
+            size: fontSize ?? defaultFontSize,
+            lineHeight: lineHeight,
             kerning: letterSpacing ?? 0,
-            weight: convertFontWeight(fontWeight: weight ?? ""),
-            color: color ?? NSColor.black
-        )
+            color: color ?? NSColor.black)
     }
 }
 

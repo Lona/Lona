@@ -586,10 +586,10 @@ function render(ast) {
       case 25 : 
           return Curry._2(Prettier$LonaCompilerCore.Doc[/* Builders */0][/* join */4], Prettier.doc.builders.hardline, List.map(render, ast[0]));
       case 26 : 
-          return Curry._2(Prettier$LonaCompilerCore.Doc[/* Builders */0][/* join */4], Curry._1(Prettier$LonaCompilerCore.Doc[/* Builders */0][/* concat */2], /* :: */[
-                          Prettier.doc.builders.hardline,
-                          /* [] */0
-                        ]), List.map(render, ast[0].statements));
+          return Curry._2(Prettier$LonaCompilerCore.Doc[/* Builders */0][/* <+> */5], Curry._2(Prettier$LonaCompilerCore.Doc[/* Builders */0][/* join */4], Curry._1(Prettier$LonaCompilerCore.Doc[/* Builders */0][/* concat */2], /* :: */[
+                              Prettier.doc.builders.hardline,
+                              /* [] */0
+                            ]), List.map(render, ast[0].statements)), Prettier.doc.builders.hardline);
       
     }
   }
@@ -669,6 +669,17 @@ function renderLiteral(node) {
                           ]
                         ]), 2);
       case 5 : 
+          return Prettier.doc.builders.fixedWidth(Curry._1(Prettier$LonaCompilerCore.Doc[/* Builders */0][/* concat */2], /* :: */[
+                          Curry._1(Prettier$LonaCompilerCore.Doc[/* Builders */0][/* s */0], "#imageLiteral(resourceName: \""),
+                          /* :: */[
+                            Curry._1(Prettier$LonaCompilerCore.Doc[/* Builders */0][/* s */0], node[0]),
+                            /* :: */[
+                              Curry._1(Prettier$LonaCompilerCore.Doc[/* Builders */0][/* s */0], "\")"),
+                              /* [] */0
+                            ]
+                          ]
+                        ]), 2);
+      case 6 : 
           var body = node[0];
           var match = +(List.length(body) > 0);
           var maybeLine = match !== 0 ? Prettier.doc.builders.softline : Curry._1(Prettier$LonaCompilerCore.Doc[/* Builders */0][/* s */0], "");

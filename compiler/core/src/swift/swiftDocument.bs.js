@@ -7,6 +7,7 @@ var Block                        = require("bs-platform/lib/js/block.js");
 var Pervasives                   = require("bs-platform/lib/js/pervasives.js");
 var Json_decode                  = require("bs-json/src/Json_decode.js");
 var Color$LonaCompilerCore       = require("../core/color.bs.js");
+var Types$LonaCompilerCore       = require("../core/types.bs.js");
 var TextStyle$LonaCompilerCore   = require("../core/textStyle.bs.js");
 var SwiftFormat$LonaCompilerCore = require("./swiftFormat.bs.js");
 
@@ -44,6 +45,10 @@ function joinGroups(sep, groups) {
 
 function nameWithoutExtension(path) {
   return Path.parse(path).name;
+}
+
+function nameWithoutPixelDensitySuffix(path) {
+  return path.replace((/@\d+x$/g), "");
 }
 
 function importFramework(framework) {
@@ -101,7 +106,8 @@ function labelAttributedTextName(framework) {
 }
 
 function localImageName(framework, name) {
-  var imageName = /* LiteralExpression */Block.__(0, [/* String */Block.__(3, [Path.parse(name).name])]);
+  var path = Path.parse(name).name;
+  var imageName = /* LiteralExpression */Block.__(0, [/* String */Block.__(3, [path.replace((/@\d+x$/g), "")])]);
   if (framework !== 0) {
     return /* FunctionCallExpression */Block.__(19, [{
                 name: /* MemberExpression */Block.__(1, [/* :: */[
@@ -124,25 +130,41 @@ function localImageName(framework, name) {
   }
 }
 
-function typeAnnotationDoc(param) {
-  switch (param.tag | 0) {
-    case 0 : 
-        var typeName = param[0];
-        if (typeName === "Boolean") {
-          return /* TypeName */Block.__(0, ["Bool"]);
-        } else {
-          return /* TypeName */Block.__(0, [typeName]);
-        }
-        break;
-    case 1 : 
-        return /* TypeName */Block.__(0, [param[0]]);
-    case 2 : 
-        return /* TypeName */Block.__(0, ["(() -> Void)?"]);
-    
-  }
+function typeAnnotationDoc(_param) {
+  while(true) {
+    var param = _param;
+    switch (param.tag | 0) {
+      case 0 : 
+          var typeName = param[0];
+          switch (typeName) {
+            case "Boolean" : 
+                return /* TypeName */Block.__(0, ["Bool"]);
+            case "URL" : 
+                _param = /* Named */Block.__(1, [
+                    "URL",
+                    Types$LonaCompilerCore.stringType
+                  ]);
+                continue ;
+                default:
+              return /* TypeName */Block.__(0, [typeName]);
+          }
+          break;
+      case 1 : 
+          var name = param[0];
+          if (name === "URL") {
+            return /* TypeName */Block.__(0, ["NSImage"]);
+          } else {
+            return /* TypeName */Block.__(0, [name]);
+          }
+          break;
+      case 2 : 
+          return /* TypeName */Block.__(0, ["(() -> Void)?"]);
+      
+    }
+  };
 }
 
-function lonaValue(framework, colors, textStyles, _value) {
+function lonaValue(_, colors, textStyles, _value) {
   while(true) {
     var value = _value;
     var match = value[/* ltype */0];
@@ -161,7 +183,16 @@ function lonaValue(framework, colors, textStyles, _value) {
             case "TextStyle" : 
                 exit = 1;
                 break;
-            default:
+            case "URL" : 
+                _value = /* record */[
+                  /* ltype : Named */Block.__(1, [
+                      typeName,
+                      /* Reference */Block.__(0, ["String"])
+                    ]),
+                  /* data */value[/* data */1]
+                ];
+                continue ;
+                default:
               return /* SwiftIdentifier */Block.__(8, ["UnknownReferenceType: " + typeName]);
           }
           if (exit === 1) {
@@ -216,19 +247,13 @@ function lonaValue(framework, colors, textStyles, _value) {
             case "URL" : 
                 var rawValue$2 = Json_decode.string(value[/* data */1]);
                 if (rawValue$2.startsWith("file://./")) {
-                  return /* FunctionCallExpression */Block.__(19, [{
-                              name: /* SwiftIdentifier */Block.__(8, [imageTypeName(framework)]),
-                              arguments: /* :: */[
-                                /* FunctionCallArgument */Block.__(18, [{
-                                      name: /* Some */[/* SwiftIdentifier */Block.__(8, ["named"])],
-                                      value: localImageName(framework, rawValue$2)
-                                    }]),
-                                /* [] */0
-                              ]
-                            }]);
+                  var path = Path.parse(rawValue$2).name;
+                  return /* LiteralExpression */Block.__(0, [/* Image */Block.__(5, [path.replace((/@\d+x$/g), "")])]);
                 } else {
+                  console.log("Image not handled", rawValue$2);
                   return /* SwiftIdentifier */Block.__(8, ["RemoteOrAbsoluteImageNotHandled"]);
                 }
+                break;
             default:
               return /* SwiftIdentifier */Block.__(8, ["UnknownNamedTypeAlias" + alias]);
           }
@@ -258,7 +283,13 @@ function defaultValueForLonaType(framework, _, textStyles, _ltype) {
             case "TextStyle" : 
                 exit = 1;
                 break;
-            default:
+            case "URL" : 
+                _ltype = /* Named */Block.__(1, [
+                    typeName,
+                    /* Reference */Block.__(0, ["String"])
+                  ]);
+                continue ;
+                default:
               return /* SwiftIdentifier */Block.__(8, ["UnknownReferenceType: " + typeName]);
           }
           if (exit === 1) {
@@ -292,13 +323,7 @@ function defaultValueForLonaType(framework, _, textStyles, _ltype) {
             case "URL" : 
                 return /* FunctionCallExpression */Block.__(19, [{
                             name: /* SwiftIdentifier */Block.__(8, [imageTypeName(framework)]),
-                            arguments: /* :: */[
-                              /* FunctionCallArgument */Block.__(18, [{
-                                    name: /* Some */[/* SwiftIdentifier */Block.__(8, ["named"])],
-                                    value: localImageName(framework, "")
-                                  }]),
-                              /* [] */0
-                            ]
+                            arguments: /* [] */0
                           }]);
             default:
               return /* SwiftIdentifier */Block.__(8, ["TypeUnknown" + alias]);
@@ -360,21 +385,22 @@ function binaryExpressionList(operator, items) {
   }
 }
 
-exports.join                    = join;
-exports.joinGroups              = joinGroups;
-exports.nameWithoutExtension    = nameWithoutExtension;
-exports.importFramework         = importFramework;
-exports.colorTypeName           = colorTypeName;
-exports.fontTypeName            = fontTypeName;
-exports.imageTypeName           = imageTypeName;
-exports.layoutPriorityTypeDoc   = layoutPriorityTypeDoc;
-exports.labelAttributedTextName = labelAttributedTextName;
-exports.localImageName          = localImageName;
-exports.typeAnnotationDoc       = typeAnnotationDoc;
-exports.lonaValue               = lonaValue;
-exports.defaultValueForLonaType = defaultValueForLonaType;
-exports.memberOrSelfExpression  = memberOrSelfExpression;
-exports.layerNameOrSelf         = layerNameOrSelf;
-exports.layerMemberExpression   = layerMemberExpression;
-exports.binaryExpressionList    = binaryExpressionList;
+exports.join                          = join;
+exports.joinGroups                    = joinGroups;
+exports.nameWithoutExtension          = nameWithoutExtension;
+exports.nameWithoutPixelDensitySuffix = nameWithoutPixelDensitySuffix;
+exports.importFramework               = importFramework;
+exports.colorTypeName                 = colorTypeName;
+exports.fontTypeName                  = fontTypeName;
+exports.imageTypeName                 = imageTypeName;
+exports.layoutPriorityTypeDoc         = layoutPriorityTypeDoc;
+exports.labelAttributedTextName       = labelAttributedTextName;
+exports.localImageName                = localImageName;
+exports.typeAnnotationDoc             = typeAnnotationDoc;
+exports.lonaValue                     = lonaValue;
+exports.defaultValueForLonaType       = defaultValueForLonaType;
+exports.memberOrSelfExpression        = memberOrSelfExpression;
+exports.layerNameOrSelf               = layerNameOrSelf;
+exports.layerMemberExpression         = layerMemberExpression;
+exports.binaryExpressionList          = binaryExpressionList;
 /* path Not a pure module */

@@ -31,8 +31,12 @@ function color(param_0) {
   return /* Color */Block.__(4, [param_0]);
 }
 
+function image(param_0) {
+  return /* Image */Block.__(5, [param_0]);
+}
+
 function array(param_0) {
-  return /* Array */Block.__(5, [param_0]);
+  return /* Array */Block.__(6, [param_0]);
 }
 
 function typeName(param_0) {
@@ -274,6 +278,7 @@ exports.integer                  = integer;
 exports.floatingPoint            = floatingPoint;
 exports.string                   = string;
 exports.color                    = color;
+exports.image                    = image;
 exports.array                    = array;
 exports.typeName                 = typeName;
 exports.typeIdentifier           = typeIdentifier;

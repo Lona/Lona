@@ -20,6 +20,9 @@ let nameWithoutExtension = path => {
   obj##name;
 };
 
+let nameWithoutPixelDensitySuffix = path =>
+  Js.String.replaceByRe([%re "/@\\d+x$/g"], "", path);
+
 let importFramework = framework =>
   switch framework {
   | SwiftOptions.UIKit => ImportDeclaration("UIKit")
@@ -61,7 +64,10 @@ let labelAttributedTextName = framework =>
   };
 
 let localImageName = (framework: SwiftOptions.framework, name) => {
-  let imageName = LiteralExpression(String(nameWithoutExtension(name)));
+  let imageName =
+    LiteralExpression(
+      String(nameWithoutPixelDensitySuffix(nameWithoutExtension(name)))
+    );
   switch framework {
   | SwiftOptions.UIKit => imageName
   | SwiftOptions.AppKit =>
@@ -78,13 +84,15 @@ let localImageName = (framework: SwiftOptions.framework, name) => {
   };
 };
 
-let typeAnnotationDoc =
+let rec typeAnnotationDoc =
   fun
   | Types.Reference(typeName) =>
     switch typeName {
     | "Boolean" => TypeName("Bool")
+    | "URL" => typeAnnotationDoc(Types.Named("URL", Types.stringType))
     | _ => TypeName(typeName)
     }
+  | Named("URL", _) => TypeName("NSImage")
   | Named(name, _) => TypeName(name)
   | Function(_, _) => TypeName("(() -> Void)?");
 
@@ -110,6 +118,13 @@ let rec lonaValue =
         textStyles,
         {ltype: Named(typeName, Reference("String")), data: value.data}
       )
+    | "URL" =>
+      lonaValue(
+        framework,
+        colors,
+        textStyles,
+        {ltype: Named(typeName, Reference("String")), data: value.data}
+      )
     | _ => SwiftIdentifier("UnknownReferenceType: " ++ typeName)
     }
   | Function(_) => SwiftIdentifier("PLACEHOLDER")
@@ -128,16 +143,21 @@ let rec lonaValue =
     | "URL" =>
       let rawValue = value.data |> Json.Decode.string;
       if (rawValue |> Js.String.startsWith("file://./")) {
-        FunctionCallExpression({
-          "name": SwiftIdentifier(imageTypeName(framework)),
-          "arguments": [
-            FunctionCallArgument({
-              "name": Some(SwiftIdentifier("named")),
-              "value": localImageName(framework, rawValue)
-            })
-          ]
-        });
+        LiteralExpression
+          (
+            Image(nameWithoutPixelDensitySuffix(nameWithoutExtension(rawValue)))
+          );
+          /* FunctionCallExpression({
+               "name": SwiftIdentifier(imageTypeName(framework)),
+               "arguments": [
+                 FunctionCallArgument({
+                   "name": Some(SwiftIdentifier("named")),
+                   "value": localImageName(framework, rawValue)
+                 })
+               ]
+             }); */
       } else {
+        Js.log2("Image not handled", rawValue);
         SwiftIdentifier("RemoteOrAbsoluteImageNotHandled");
       };
     | "TextStyle" =>
@@ -179,6 +199,13 @@ let rec defaultValueForLonaType =
         textStyles,
         Named(typeName, Reference("String"))
       )
+    | "URL" =>
+      defaultValueForLonaType(
+        framework,
+        colors,
+        textStyles,
+        Named(typeName, Reference("String"))
+      )
     | _ => SwiftIdentifier("UnknownReferenceType: " ++ typeName)
     }
   | Function(_) => SwiftIdentifier("PLACEHOLDER")
@@ -189,12 +216,7 @@ let rec defaultValueForLonaType =
     | "URL" =>
       FunctionCallExpression({
         "name": SwiftIdentifier(imageTypeName(framework)),
-        "arguments": [
-          FunctionCallArgument({
-            "name": Some(SwiftIdentifier("named")),
-            "value": localImageName(framework, "")
-          })
-        ]
+        "arguments": []
       })
     | "TextStyle" =>
       MemberExpression([

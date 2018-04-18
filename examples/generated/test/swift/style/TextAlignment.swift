@@ -278,7 +278,7 @@ public class TextAlignment: UIView {
     rightAlignmentContainerView.addSubview(image1View)
 
     view1View.backgroundColor = Colors.indigo50
-    imageView.image = UIImage(named: "icon_128x128")
+    imageView.image = #imageLiteral(resourceName: "icon_128x128")
     view2View.backgroundColor = #colorLiteral(red: 0.847058823529, green: 0.847058823529, blue: 0.847058823529, alpha: 1)
     textViewTextStyle = TextStyles.display1.with(alignment: .center)
     textView.attributedText = textViewTextStyle.apply(to: "Welcome to Lona Studio")
@@ -298,7 +298,7 @@ public class TextAlignment: UIView {
     rightAlignmentContainerView.backgroundColor = #colorLiteral(red: 0.847058823529, green: 0.847058823529, blue: 0.847058823529, alpha: 1)
     text9View.attributedText = text9ViewTextStyle.apply(to: "Fit Text")
     text10View.attributedText = text10ViewTextStyle.apply(to: "Fill and center aligned text")
-    image1View.image = UIImage(named: "icon_128x128")
+    image1View.image = #imageLiteral(resourceName: "icon_128x128")
   }
 
   private func setUpConstraints() {

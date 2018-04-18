@@ -90,7 +90,6 @@
 		30C8BC321EDB758C00B99F1B /* Canvas.swift in Sources */ = {isa = PBXBuildFile; fileRef = 30C8BC311EDB758C00B99F1B /* Canvas.swift */; };
 		30C8BC361EDB7AC400B99F1B /* ParameterListEditorView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 30C8BC351EDB7AC400B99F1B /* ParameterListEditorView.swift */; };
 		30CE47811ED73FC800BBF716 /* TextField.swift in Sources */ = {isa = PBXBuildFile; fileRef = 30CE47801ED73FC800BBF716 /* TextField.swift */; };
-		30CE47C71ED76EF700BBF716 /* AttributedFont.swift in Sources */ = {isa = PBXBuildFile; fileRef = 30CE47C61ED76EF700BBF716 /* AttributedFont.swift */; };
 		30CE47CD1ED776FA00BBF716 /* TextStylePickerButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = 30CE47CC1ED776FA00BBF716 /* TextStylePickerButton.swift */; };
 		30CE47CF1ED77C0200BBF716 /* TextStyleRowView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 30CE47CE1ED77C0200BBF716 /* TextStyleRowView.swift */; };
 		30D799821F2BE90E00EF12D7 /* SettingRow.swift in Sources */ = {isa = PBXBuildFile; fileRef = 30D799811F2BE90E00EF12D7 /* SettingRow.swift */; };
@@ -108,6 +107,28 @@
 		30F7C9501ED4ACD8009D27DF /* SegmentedControlField.swift in Sources */ = {isa = PBXBuildFile; fileRef = 30F7C94F1ED4ACD8009D27DF /* SegmentedControlField.swift */; };
 		30F7C9521ED4AE23009D27DF /* InspectorView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 30F7C9511ED4AE23009D27DF /* InspectorView.swift */; };
 		30F7C9561ED4E02F009D27DF /* YogaLayout.swift in Sources */ = {isa = PBXBuildFile; fileRef = 30F7C9551ED4E02F009D27DF /* YogaLayout.swift */; };
+		30F870D520865859007ADA5B /* TextStyles.swift in Sources */ = {isa = PBXBuildFile; fileRef = 30F870BD20865858007ADA5B /* TextStyles.swift */; };
+		30F870D620865859007ADA5B /* AttributedFont.swift in Sources */ = {isa = PBXBuildFile; fileRef = 30F870BE20865858007ADA5B /* AttributedFont.swift */; };
+		30F870D720865859007ADA5B /* Welcome.swift in Sources */ = {isa = PBXBuildFile; fileRef = 30F870C020865858007ADA5B /* Welcome.swift */; };
+		30F870D820865859007ADA5B /* IconRow.swift in Sources */ = {isa = PBXBuildFile; fileRef = 30F870C220865858007ADA5B /* IconRow.swift */; };
+		30F870D920865859007ADA5B /* Colors.swift in Sources */ = {isa = PBXBuildFile; fileRef = 30F870C320865858007ADA5B /* Colors.swift */; };
+		30F870DA20865859007ADA5B /* LonaIcon_32x32@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 30F870C520865858007ADA5B /* LonaIcon_32x32@2x.png */; };
+		30F870DB20865859007ADA5B /* icon-blank-document.png in Resources */ = {isa = PBXBuildFile; fileRef = 30F870C620865858007ADA5B /* icon-blank-document.png */; };
+		30F870DC20865859007ADA5B /* icon-blank-document@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 30F870C720865858007ADA5B /* icon-blank-document@2x.png */; };
+		30F870DD20865859007ADA5B /* icon-material-design-example.png in Resources */ = {isa = PBXBuildFile; fileRef = 30F870C820865858007ADA5B /* icon-material-design-example.png */; };
+		30F870DE20865859007ADA5B /* LonaIcon_32x32.png in Resources */ = {isa = PBXBuildFile; fileRef = 30F870C920865858007ADA5B /* LonaIcon_32x32.png */; };
+		30F870DF20865859007ADA5B /* LonaIcon_256x256.png in Resources */ = {isa = PBXBuildFile; fileRef = 30F870CA20865858007ADA5B /* LonaIcon_256x256.png */; };
+		30F870E020865859007ADA5B /* LonaIcon_512x512@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 30F870CB20865858007ADA5B /* LonaIcon_512x512@2x.png */; };
+		30F870E120865859007ADA5B /* LonaIcon_128x128@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 30F870CC20865858007ADA5B /* LonaIcon_128x128@2x.png */; };
+		30F870E220865859007ADA5B /* icon-documentation@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 30F870CD20865858007ADA5B /* icon-documentation@2x.png */; };
+		30F870E320865859007ADA5B /* LonaIcon_16x16.png in Resources */ = {isa = PBXBuildFile; fileRef = 30F870CE20865858007ADA5B /* LonaIcon_16x16.png */; };
+		30F870E420865859007ADA5B /* icon-documentation.png in Resources */ = {isa = PBXBuildFile; fileRef = 30F870CF20865858007ADA5B /* icon-documentation.png */; };
+		30F870E520865859007ADA5B /* LonaIcon_256x256@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 30F870D020865858007ADA5B /* LonaIcon_256x256@2x.png */; };
+		30F870E620865859007ADA5B /* LonaIcon_128x128.png in Resources */ = {isa = PBXBuildFile; fileRef = 30F870D120865858007ADA5B /* LonaIcon_128x128.png */; };
+		30F870E720865859007ADA5B /* icon-material-design-example@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 30F870D220865858007ADA5B /* icon-material-design-example@2x.png */; };
+		30F870E820865859007ADA5B /* LonaIcon_512x512.png in Resources */ = {isa = PBXBuildFile; fileRef = 30F870D320865858007ADA5B /* LonaIcon_512x512.png */; };
+		30F870E920865859007ADA5B /* LonaIcon_16x16@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 30F870D420865858007ADA5B /* LonaIcon_16x16@2x.png */; };
+		30F870EB20869644007ADA5B /* Fetch.swift in Sources */ = {isa = PBXBuildFile; fileRef = 30F870EA20869644007ADA5B /* Fetch.swift */; };
 		6B0AEFB81EBF74D800F35BBF /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6B0AEFB71EBF74D800F35BBF /* AppDelegate.swift */; };
 		6B0AEFBA1EBF74D800F35BBF /* ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6B0AEFB91EBF74D800F35BBF /* ViewController.swift */; };
 		6B0AEFBC1EBF74D800F35BBF /* Document.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6B0AEFBB1EBF74D800F35BBF /* Document.swift */; };
@@ -226,7 +247,6 @@
 		30C8BC311EDB758C00B99F1B /* Canvas.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Canvas.swift; sourceTree = "<group>"; };
 		30C8BC351EDB7AC400B99F1B /* ParameterListEditorView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ParameterListEditorView.swift; sourceTree = "<group>"; };
 		30CE47801ED73FC800BBF716 /* TextField.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TextField.swift; sourceTree = "<group>"; };
-		30CE47C61ED76EF700BBF716 /* AttributedFont.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AttributedFont.swift; sourceTree = "<group>"; };
 		30CE47CC1ED776FA00BBF716 /* TextStylePickerButton.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TextStylePickerButton.swift; sourceTree = "<group>"; };
 		30CE47CE1ED77C0200BBF716 /* TextStyleRowView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TextStyleRowView.swift; sourceTree = "<group>"; };
 		30D799811F2BE90E00EF12D7 /* SettingRow.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingRow.swift; sourceTree = "<group>"; };
@@ -245,6 +265,28 @@
 		30F7C94F1ED4ACD8009D27DF /* SegmentedControlField.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SegmentedControlField.swift; sourceTree = "<group>"; };
 		30F7C9511ED4AE23009D27DF /* InspectorView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = InspectorView.swift; sourceTree = "<group>"; };
 		30F7C9551ED4E02F009D27DF /* YogaLayout.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = YogaLayout.swift; sourceTree = "<group>"; };
+		30F870BD20865858007ADA5B /* TextStyles.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TextStyles.swift; sourceTree = "<group>"; };
+		30F870BE20865858007ADA5B /* AttributedFont.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AttributedFont.swift; sourceTree = "<group>"; };
+		30F870C020865858007ADA5B /* Welcome.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Welcome.swift; sourceTree = "<group>"; };
+		30F870C220865858007ADA5B /* IconRow.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = IconRow.swift; sourceTree = "<group>"; };
+		30F870C320865858007ADA5B /* Colors.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Colors.swift; sourceTree = "<group>"; };
+		30F870C520865858007ADA5B /* LonaIcon_32x32@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "LonaIcon_32x32@2x.png"; sourceTree = "<group>"; };
+		30F870C620865858007ADA5B /* icon-blank-document.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "icon-blank-document.png"; sourceTree = "<group>"; };
+		30F870C720865858007ADA5B /* icon-blank-document@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "icon-blank-document@2x.png"; sourceTree = "<group>"; };
+		30F870C820865858007ADA5B /* icon-material-design-example.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "icon-material-design-example.png"; sourceTree = "<group>"; };
+		30F870C920865858007ADA5B /* LonaIcon_32x32.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = LonaIcon_32x32.png; sourceTree = "<group>"; };
+		30F870CA20865858007ADA5B /* LonaIcon_256x256.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = LonaIcon_256x256.png; sourceTree = "<group>"; };
+		30F870CB20865858007ADA5B /* LonaIcon_512x512@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "LonaIcon_512x512@2x.png"; sourceTree = "<group>"; };
+		30F870CC20865858007ADA5B /* LonaIcon_128x128@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "LonaIcon_128x128@2x.png"; sourceTree = "<group>"; };
+		30F870CD20865858007ADA5B /* icon-documentation@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "icon-documentation@2x.png"; sourceTree = "<group>"; };
+		30F870CE20865858007ADA5B /* LonaIcon_16x16.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = LonaIcon_16x16.png; sourceTree = "<group>"; };
+		30F870CF20865858007ADA5B /* icon-documentation.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "icon-documentation.png"; sourceTree = "<group>"; };
+		30F870D020865858007ADA5B /* LonaIcon_256x256@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "LonaIcon_256x256@2x.png"; sourceTree = "<group>"; };
+		30F870D120865858007ADA5B /* LonaIcon_128x128.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = LonaIcon_128x128.png; sourceTree = "<group>"; };
+		30F870D220865858007ADA5B /* icon-material-design-example@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "icon-material-design-example@2x.png"; sourceTree = "<group>"; };
+		30F870D320865858007ADA5B /* LonaIcon_512x512.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = LonaIcon_512x512.png; sourceTree = "<group>"; };
+		30F870D420865858007ADA5B /* LonaIcon_16x16@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "LonaIcon_16x16@2x.png"; sourceTree = "<group>"; };
+		30F870EA20869644007ADA5B /* Fetch.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Fetch.swift; sourceTree = "<group>"; };
 		6B0AEFB41EBF74D800F35BBF /* LonaStudio.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = LonaStudio.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		6B0AEFB71EBF74D800F35BBF /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		6B0AEFB91EBF74D800F35BBF /* ViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewController.swift; sourceTree = "<group>"; };
@@ -361,7 +403,6 @@
 			isa = PBXGroup;
 			children = (
 				30F4FD521F76ADC70048691C /* AnimationUtils.swift */,
-				30CE47C61ED76EF700BBF716 /* AttributedFont.swift */,
 				3056275D1FBA0C0700026796 /* CSConstraint.swift */,
 				305BDA201F648F6400AD2AA3 /* CSPDFDocument.swift */,
 				3094DFE71F6ACF1E00E5C7F0 /* LayerContentsCache.swift */,
@@ -370,6 +411,7 @@
 				30ACB4E41F663D0A00EEFED6 /* Sketch.swift */,
 				303BDE6C1F76E61300B4CE5A /* VideoUtils.swift */,
 				30F7C9551ED4E02F009D27DF /* YogaLayout.swift */,
+				30F870EA20869644007ADA5B /* Fetch.swift */,
 			);
 			path = Utils;
 			sourceTree = "<group>";
@@ -505,6 +547,59 @@
 			path = Scripting;
 			sourceTree = "<group>";
 		};
+		30F870BC20865858007ADA5B /* Generated */ = {
+			isa = PBXGroup;
+			children = (
+				30F870BD20865858007ADA5B /* TextStyles.swift */,
+				30F870BE20865858007ADA5B /* AttributedFont.swift */,
+				30F870BF20865858007ADA5B /* screens */,
+				30F870C120865858007ADA5B /* components */,
+				30F870C320865858007ADA5B /* Colors.swift */,
+				30F870C420865858007ADA5B /* assets */,
+			);
+			name = Generated;
+			path = LonaStudio/Generated;
+			sourceTree = SOURCE_ROOT;
+		};
+		30F870BF20865858007ADA5B /* screens */ = {
+			isa = PBXGroup;
+			children = (
+				30F870C020865858007ADA5B /* Welcome.swift */,
+			);
+			path = screens;
+			sourceTree = "<group>";
+		};
+		30F870C120865858007ADA5B /* components */ = {
+			isa = PBXGroup;
+			children = (
+				30F870C220865858007ADA5B /* IconRow.swift */,
+			);
+			path = components;
+			sourceTree = "<group>";
+		};
+		30F870C420865858007ADA5B /* assets */ = {
+			isa = PBXGroup;
+			children = (
+				30F870C620865858007ADA5B /* icon-blank-document.png */,
+				30F870C720865858007ADA5B /* icon-blank-document@2x.png */,
+				30F870CF20865858007ADA5B /* icon-documentation.png */,
+				30F870CD20865858007ADA5B /* icon-documentation@2x.png */,
+				30F870C820865858007ADA5B /* icon-material-design-example.png */,
+				30F870D220865858007ADA5B /* icon-material-design-example@2x.png */,
+				30F870CE20865858007ADA5B /* LonaIcon_16x16.png */,
+				30F870D420865858007ADA5B /* LonaIcon_16x16@2x.png */,
+				30F870C920865858007ADA5B /* LonaIcon_32x32.png */,
+				30F870C520865858007ADA5B /* LonaIcon_32x32@2x.png */,
+				30F870D120865858007ADA5B /* LonaIcon_128x128.png */,
+				30F870CC20865858007ADA5B /* LonaIcon_128x128@2x.png */,
+				30F870CA20865858007ADA5B /* LonaIcon_256x256.png */,
+				30F870D020865858007ADA5B /* LonaIcon_256x256@2x.png */,
+				30F870D320865858007ADA5B /* LonaIcon_512x512.png */,
+				30F870CB20865858007ADA5B /* LonaIcon_512x512@2x.png */,
+			);
+			path = assets;
+			sourceTree = "<group>";
+		};
 		391EE9FEA8350B93A55FBF6F /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
@@ -558,6 +653,7 @@
 				3030311C1F34E6980078086F /* CanvasList */,
 				306DA4F21F34E265002772DC /* Controls */,
 				30C8BC291EDB640500B99F1B /* Extensions */,
+				30F870BC20865858007ADA5B /* Generated */,
 				301433791F5C7AD100525DB1 /* ListEditors */,
 				3030311D1F34E6A70078086F /* LogicList */,
 				6B0AEFBF1EBF74D800F35BBF /* Main.storyboard */,
@@ -702,11 +798,27 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				30F870E920865859007ADA5B /* LonaIcon_16x16@2x.png in Resources */,
+				30F870E620865859007ADA5B /* LonaIcon_128x128.png in Resources */,
+				30F870E020865859007ADA5B /* LonaIcon_512x512@2x.png in Resources */,
 				301D7EDC1F47A29D0098AB0D /* Modules in Resources */,
 				30C0C92E1F5F77040079D077 /* dsa_pub.pem in Resources */,
+				30F870DD20865859007ADA5B /* icon-material-design-example.png in Resources */,
+				30F870DF20865859007ADA5B /* LonaIcon_256x256.png in Resources */,
 				6B0AEFBE1EBF74D800F35BBF /* Assets.xcassets in Resources */,
+				30F870E420865859007ADA5B /* icon-documentation.png in Resources */,
+				30F870DE20865859007ADA5B /* LonaIcon_32x32.png in Resources */,
+				30F870E720865859007ADA5B /* icon-material-design-example@2x.png in Resources */,
 				30DDEE8A1F479280001D41AB /* node in Resources */,
+				30F870E120865859007ADA5B /* LonaIcon_128x128@2x.png in Resources */,
+				30F870E520865859007ADA5B /* LonaIcon_256x256@2x.png in Resources */,
+				30F870DB20865859007ADA5B /* icon-blank-document.png in Resources */,
+				30F870E220865859007ADA5B /* icon-documentation@2x.png in Resources */,
 				6B0AEFC11EBF74D800F35BBF /* Main.storyboard in Resources */,
+				30F870DC20865859007ADA5B /* icon-blank-document@2x.png in Resources */,
+				30F870E320865859007ADA5B /* LonaIcon_16x16.png in Resources */,
+				30F870E820865859007ADA5B /* LonaIcon_512x512.png in Resources */,
+				30F870DA20865859007ADA5B /* LonaIcon_32x32@2x.png in Resources */,
 				30DDEE8C1F4795A3001D41AB /* index.js in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -866,6 +978,7 @@
 				30902A281F7B208A00B938BE /* CanvasCollectionView.swift in Sources */,
 				305029C320643EC7002D9EE1 /* ComponentMenu.swift in Sources */,
 				30D799821F2BE90E00EF12D7 /* SettingRow.swift in Sources */,
+				30F870D920865859007ADA5B /* Colors.swift in Sources */,
 				305ED1BD20548CA7000D07C3 /* LonaLogic.swift in Sources */,
 				30C8BC321EDB758C00B99F1B /* Canvas.swift in Sources */,
 				3003027C1EDCE0880085E140 /* CSComponent.swift in Sources */,
@@ -878,10 +991,15 @@
 				30F7C9501ED4ACD8009D27DF /* SegmentedControlField.swift in Sources */,
 				30ACB4E51F663D0A00EEFED6 /* Sketch.swift in Sources */,
 				300A0AFC1EDA0CBC00704DB7 /* SectionSplitter.swift in Sources */,
+				30F870D820865859007ADA5B /* IconRow.swift in Sources */,
 				30C8BC2F1EDB749600B99F1B /* ParameterListView.swift in Sources */,
 				305589431EC4E4D600420BBD /* RenderSurface.swift in Sources */,
+				30F870D520865859007ADA5B /* TextStyles.swift in Sources */,
+				30F870D620865859007ADA5B /* AttributedFont.swift in Sources */,
+				30F870D720865859007ADA5B /* Welcome.swift in Sources */,
 				30990AB01FA4043600BC0CCE /* CSUserTypes.swift in Sources */,
 				3043A0CC1F46653B00EF31EF /* Label.swift in Sources */,
+				30F870EB20869644007ADA5B /* Fetch.swift in Sources */,
 				3090D7D31F032305009277E7 /* CSComponentLayer.swift in Sources */,
 				30F7C9521ED4AE23009D27DF /* InspectorView.swift in Sources */,
 				30335A0C1F5B2F8B006E507B /* CaseList.swift in Sources */,
@@ -971,7 +1089,6 @@
 				307719001F3CD3F1003A597B /* MultilevelPopupField.swift in Sources */,
 				307718F01F365BA3003A597B /* CSType.swift in Sources */,
 				3003027A1EDCDBA00085E140 /* LogicNode.swift in Sources */,
-				30CE47C71ED76EF700BBF716 /* AttributedFont.swift in Sources */,
 				307718F41F366AEA003A597B /* CSValueField.swift in Sources */,
 				BA48549A1FEF6EC800AB7923 /* PickerListView.swift in Sources */,
 				6B6017D01EBF9EFA001E02C1 /* LayerList.swift in Sources */,

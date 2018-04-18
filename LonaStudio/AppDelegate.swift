@@ -71,6 +71,62 @@ class AppDelegate: NSObject, NSApplicationDelegate {
         colorBrowserWindow?.makeKeyAndOrderFront(nil)
     }
 
+    var welcomeWindow: NSWindow?
+
+    @IBAction func showWelcomeWindow(_ sender: AnyObject) {
+        if welcomeWindow == nil {
+            let size = NSSize(width: 448, height: 480)
+            let initialRect = NSRect(origin: .zero, size: size)
+            let window = NSWindow(contentRect: initialRect, styleMask: [.closable, .titled], backing: .retained, defer: false)
+            window.center()
+            window.title = "Welcome"
+            window.isReleasedWhenClosed = false
+            window.minSize = size
+            window.isMovableByWindowBackground = true
+            window.hasShadow = true
+            window.titlebarAppearsTransparent = true
+            window.titleVisibility = .hidden
+            window.backgroundColor = NSColor.white
+            window.standardWindowButton(.miniaturizeButton)?.isHidden = true
+            window.standardWindowButton(.zoomButton)?.isHidden = true
+            window.standardWindowButton(.closeButton)?.backgroundFill = CGColor.clear
+
+            let view = NSBox()
+            view.boxType = .custom
+            view.borderType = .noBorder
+            view.contentViewMargins = .zero
+            view.translatesAutoresizingMaskIntoConstraints = false
+
+            window.contentView = view
+
+            // Set up welcome screen
+
+            let welcome = Welcome()
+
+            view.addSubview(welcome)
+
+            welcome.topAnchor.constraint(equalTo: view.topAnchor).isActive = true
+            welcome.leadingAnchor.constraint(equalTo: view.leadingAnchor).isActive = true
+            welcome.trailingAnchor.constraint(equalTo: view.trailingAnchor).isActive = true
+
+            welcome.onCreateProject = {
+                Swift.print("Create project")
+            }
+
+            welcome.onOpenExample = {
+                Swift.print("Open example")
+            }
+
+            welcome.onOpenDocumentation = {
+                Swift.print("Open documentation")
+            }
+
+            welcomeWindow = window
+        }
+
+        welcomeWindow?.makeKeyAndOrderFront(nil)
+    }
+
     /*  Create a new component by duplicating the contents of an existing component
         into a blank document, and opening the document.
     */

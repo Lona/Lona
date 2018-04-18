@@ -28,8 +28,8 @@ public class PressableRootView: NSBox {
 
   // MARK: Public
 
-  public var onPressOuter: (() -> Void)?
-  public var onPressInner: (() -> Void)?
+  public var onPressOuter: (() -> Void)? { didSet { update() } }
+  public var onPressInner: (() -> Void)? { didSet { update() } }
 
   // MARK: Private
 

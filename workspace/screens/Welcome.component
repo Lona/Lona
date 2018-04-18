@@ -1,0 +1,176 @@
+{
+  "devices" : [
+    {
+      "height" : 480,
+      "heightMode" : "At Least",
+      "name" : "iPhone SE",
+      "width" : 448
+    }
+  ],
+  "examples" : [
+    {
+      "name" : "Default",
+      "params" : {
+
+      }
+    }
+  ],
+  "logic" : [
+    {
+      "assignee" : [
+        "layers",
+        "NewButton",
+        "onClick"
+      ],
+      "content" : [
+        "parameters",
+        "onCreateProject"
+      ],
+      "type" : "AssignExpr"
+    },
+    {
+      "assignee" : [
+        "layers",
+        "ExampleButton",
+        "onClick"
+      ],
+      "content" : [
+        "parameters",
+        "onOpenExample"
+      ],
+      "type" : "AssignExpr"
+    },
+    {
+      "assignee" : [
+        "layers",
+        "DocumentationButton",
+        "onClick"
+      ],
+      "content" : [
+        "parameters",
+        "onOpenDocumentation"
+      ],
+      "type" : "AssignExpr"
+    }
+  ],
+  "params" : [
+    {
+      "name" : "onCreateProject",
+      "type" : {
+        "name" : "Function"
+      }
+    },
+    {
+      "name" : "onOpenExample",
+      "type" : {
+        "name" : "Function"
+      }
+    },
+    {
+      "name" : "onOpenDocumentation",
+      "type" : {
+        "name" : "Function"
+      }
+    }
+  ],
+  "root" : {
+    "children" : [
+      {
+        "children" : [
+          {
+            "id" : "Image",
+            "params" : {
+              "height" : 128,
+              "image" : "file:\/\/.\/assets\/LonaIcon_128x128@2x.png",
+              "width" : 128
+            },
+            "type" : "Lona:Image"
+          },
+          {
+            "id" : "Title",
+            "params" : {
+              "font" : "title",
+              "text" : "Welcome to Lona"
+            },
+            "type" : "Lona:Text"
+          },
+          {
+            "id" : "Version",
+            "params" : {
+              "font" : "versionInfo",
+              "text" : "Version 1.0.2"
+            },
+            "type" : "Lona:Text"
+          }
+        ],
+        "id" : "Banner",
+        "params" : {
+          "alignItems" : "center",
+          "alignSelf" : "stretch",
+          "paddingBottom" : 60,
+          "paddingTop" : 60
+        },
+        "type" : "Lona:View"
+      },
+      {
+        "children" : [
+          {
+            "id" : "NewButton",
+            "params" : {
+              "icon" : "file:\/\/.\/assets\/icon-blank-document@2x.png",
+              "subtitleText" : "Set up a new design system",
+              "titleText" : "Create a new Lona project"
+            },
+            "type" : "IconRow"
+          },
+          {
+            "id" : "Spacer",
+            "params" : {
+              "alignSelf" : "stretch",
+              "height" : 4
+            },
+            "type" : "Lona:View"
+          },
+          {
+            "id" : "ExampleButton",
+            "params" : {
+              "icon" : "file:\/\/.\/assets\/icon-material-design-example@2x.png",
+              "subtitleText" : "Explore the material design example project",
+              "titleText" : "Open an example project"
+            },
+            "type" : "IconRow"
+          },
+          {
+            "id" : "Spacer2",
+            "params" : {
+              "alignSelf" : "stretch",
+              "height" : 4
+            },
+            "type" : "Lona:View"
+          },
+          {
+            "id" : "DocumentationButton",
+            "params" : {
+              "icon" : "file:\/\/.\/assets\/icon-documentation@2x.png",
+              "subtitleText" : "Read the documentation to learn how Lona works",
+              "titleText" : "See documentation"
+            },
+            "type" : "IconRow"
+          }
+        ],
+        "id" : "Rows",
+        "params" : {
+          "alignSelf" : "stretch",
+          "paddingLeft" : 24,
+          "paddingRight" : 24
+        },
+        "type" : "Lona:View"
+      }
+    ],
+    "id" : "View",
+    "params" : {
+      "alignSelf" : "stretch"
+    },
+    "type" : "Lona:View"
+  }
+}

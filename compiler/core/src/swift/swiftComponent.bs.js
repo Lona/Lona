@@ -60,7 +60,6 @@ function generate(options, swiftOptions, name, colors, textStyles, getComponent,
     }
   };
   var parameterVariableDoc = function (parameter) {
-    var match = Caml_obj.caml_equal(parameter[/* ltype */1], Types$LonaCompilerCore.handlerType);
     return /* VariableDeclaration */Block.__(10, [{
                 modifiers: /* :: */[
                   /* AccessLevelModifier */Block.__(0, [/* PublicModifier */3]),
@@ -71,16 +70,16 @@ function generate(options, swiftOptions, name, colors, textStyles, getComponent,
                       annotation: /* Some */[SwiftDocument$LonaCompilerCore.typeAnnotationDoc(parameter[/* ltype */1])]
                     }]),
                 init: /* None */0,
-                block: match !== 0 ? /* None */0 : /* Some */[/* WillSetDidSetBlock */[{
-                        willSet: /* None */0,
-                        didSet: /* Some */[/* :: */[
-                            /* FunctionCallExpression */Block.__(19, [{
-                                  name: /* SwiftIdentifier */Block.__(8, ["update"]),
-                                  arguments: /* [] */0
-                                }]),
-                            /* [] */0
-                          ]]
-                      }]]
+                block: /* Some */[/* WillSetDidSetBlock */[{
+                      willSet: /* None */0,
+                      didSet: /* Some */[/* :: */[
+                          /* FunctionCallExpression */Block.__(19, [{
+                                name: /* SwiftIdentifier */Block.__(8, ["update"]),
+                                arguments: /* [] */0
+                              }]),
+                          /* [] */0
+                        ]]
+                    }]]
               }]);
   };
   var getLayerTypeName = function (layerType) {
@@ -1183,7 +1182,7 @@ function generate(options, swiftOptions, name, colors, textStyles, getComponent,
                   arguments: /* :: */[
                     /* FunctionCallArgument */Block.__(18, [{
                           name: /* None */0,
-                          value: /* LiteralExpression */Block.__(0, [/* Array */Block.__(5, [List.map((function (def) {
+                          value: /* LiteralExpression */Block.__(0, [/* Array */Block.__(6, [List.map((function (def) {
                                           return /* SwiftIdentifier */Block.__(8, [formatConstraintVariableName(def)]);
                                         }), constraints)])])
                         }]),

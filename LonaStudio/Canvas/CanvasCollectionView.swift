@@ -20,6 +20,7 @@ struct CanvasCollectionOptions {
 
 class MatrixLayout: NSCollectionViewFlowLayout {
 
+    // swiftlint:disable weak_delegate
     weak var delegate: NSCollectionViewDelegateFlowLayout?
 
     init(delegate: NSCollectionViewDelegateFlowLayout) {

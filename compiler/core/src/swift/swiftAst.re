@@ -39,6 +39,7 @@ type literal =
   | FloatingPoint(float)
   | String(string)
   | Color(string)
+  | Image(string)
   | Array(list(node))
 and typeAnnotation =
   | TypeName(string)
