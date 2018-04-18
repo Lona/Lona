@@ -29,7 +29,7 @@ public class Button: UIView {
   // MARK: Public
 
   public var label: String { didSet { update() } }
-  public var onTap: (() -> Void)?
+  public var onTap: (() -> Void)? { didSet { update() } }
 
   // MARK: Private
 

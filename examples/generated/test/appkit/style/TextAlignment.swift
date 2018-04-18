@@ -302,7 +302,7 @@ public class TextAlignment: NSBox {
     rightAlignmentContainerView.addSubview(image1View)
 
     view1View.fillColor = Colors.indigo50
-    imageView.image = NSImage(named: NSImage.Name(rawValue: "icon_128x128"))
+    imageView.image = #imageLiteral(resourceName: "icon_128x128")
     view2View.fillColor = #colorLiteral(red: 0.847058823529, green: 0.847058823529, blue: 0.847058823529, alpha: 1)
     textViewTextStyle = TextStyles.display1.with(alignment: .center)
     textView.attributedStringValue = textViewTextStyle.apply(to: "Welcome to Lona Studio")
@@ -322,7 +322,7 @@ public class TextAlignment: NSBox {
     rightAlignmentContainerView.fillColor = #colorLiteral(red: 0.847058823529, green: 0.847058823529, blue: 0.847058823529, alpha: 1)
     text9View.attributedStringValue = text9ViewTextStyle.apply(to: "Fit Text")
     text10View.attributedStringValue = text10ViewTextStyle.apply(to: "Fill and center aligned text")
-    image1View.image = NSImage(named: NSImage.Name(rawValue: "icon_128x128"))
+    image1View.image = #imageLiteral(resourceName: "icon_128x128")
   }
 
   private func setUpConstraints() {
