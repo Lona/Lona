@@ -358,7 +358,7 @@ let rec render = ast : Prettier.Doc.t('a) =>
     join(hardline, v |> List.map(render))
   | TopLevelDeclaration(o) =>
     /* join(concat([hardline, hardline]), o##statements |> List.map(render)) */
-    join(concat([hardline]), o##statements |> List.map(render))
+    join(concat([hardline]), o##statements |> List.map(render)) <+> hardline
   }
 and renderLiteral = (node: SwiftAst.literal) =>
   switch node {

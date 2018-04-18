@@ -586,10 +586,10 @@ function render(ast) {
       case 25 : 
           return Curry._2(Prettier$LonaCompilerCore.Doc[/* Builders */0][/* join */4], Prettier.doc.builders.hardline, List.map(render, ast[0]));
       case 26 : 
-          return Curry._2(Prettier$LonaCompilerCore.Doc[/* Builders */0][/* join */4], Curry._1(Prettier$LonaCompilerCore.Doc[/* Builders */0][/* concat */2], /* :: */[
-                          Prettier.doc.builders.hardline,
-                          /* [] */0
-                        ]), List.map(render, ast[0].statements));
+          return Curry._2(Prettier$LonaCompilerCore.Doc[/* Builders */0][/* <+> */5], Curry._2(Prettier$LonaCompilerCore.Doc[/* Builders */0][/* join */4], Curry._1(Prettier$LonaCompilerCore.Doc[/* Builders */0][/* concat */2], /* :: */[
+                              Prettier.doc.builders.hardline,
+                              /* [] */0
+                            ]), List.map(render, ast[0].statements)), Prettier.doc.builders.hardline);
       
     }
   }
