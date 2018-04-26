@@ -89,7 +89,7 @@ First, make sure you have [`bundler`](http://bundler.io/) and [Cocoapods](https:
 
 `bundle && bundle exec pod install`
 
-Open LonaStudio.xcworkspace and build in Xcode 9 on Sierra+. If there are warnings (e.g. about converting to Swift 4) you can ignore them.
+Open LonaStudio.xcworkspace and build in Xcode 9.3+ on High Sierra+. If there are warnings (e.g. about converting to Swift 4) you can ignore them.
 
 > It will build on El Capitan, but it likely won't be usable. The changes needed to make are small, if anybody wants to add support.
 
