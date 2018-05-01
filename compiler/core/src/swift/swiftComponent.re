@@ -81,34 +81,33 @@ let generate =
     isParameterAssigned(layer, parameter)
     || isParameterSetInitially(layer, parameter);
   let parameterVariableDoc = (parameter: Types.parameter) =>
-    VariableDeclaration
-      ({
-        "modifiers": [AccessLevelModifier(PublicModifier)],
-        "pattern":
-          IdentifierPattern({
-            "identifier": SwiftIdentifier(parameter.name),
-            "annotation":
-              Some(parameter.ltype |> SwiftDocument.typeAnnotationDoc)
-          }),
-        "init": None,
-        "block":
-          Some(
-            WillSetDidSetBlock({
-              "willSet": None,
-              "didSet":
-                Some([
-                  FunctionCallExpression({
-                    "name": SwiftIdentifier("update"),
-                    "arguments": []
-                  })
-                ])
-            })
-          )
-      });
-      /* TODO: We don't need to update if onPress is only initialized in setUpViews
-         and never assigned in logic */
-      /* (isFunctionParameter(parameter) && !isParameterAssigned(parameter)) ?
-         None : */
+    VariableDeclaration({
+      "modifiers": [AccessLevelModifier(PublicModifier)],
+      "pattern":
+        IdentifierPattern({
+          "identifier": SwiftIdentifier(parameter.name),
+          "annotation":
+            Some(parameter.ltype |> SwiftDocument.typeAnnotationDoc)
+        }),
+      "init": None,
+      "block":
+        Some(
+          WillSetDidSetBlock({
+            "willSet": None,
+            "didSet":
+              Some([
+                FunctionCallExpression({
+                  "name": SwiftIdentifier("update"),
+                  "arguments": []
+                })
+              ])
+          })
+        )
+    });
+  /* TODO: We don't need to update if onPress is only initialized in setUpViews
+     and never assigned in logic */
+  /* (isFunctionParameter(parameter) && !isParameterAssigned(parameter)) ?
+     None : */
   let getLayerTypeName = layerType =>
     switch (swiftOptions.framework, layerType) {
     | (UIKit, Types.View) => "UIView"
@@ -485,15 +484,25 @@ let generate =
     | Some(parameters) =>
       let assignment = StringMap.find_opt(name, parameters);
       let logic =
-        switch assignment {
-        | None =>
+        switch (assignment, layer.typeName) {
+        | (Some(assignment), _) => assignment
+        | (None, Component(componentName)) =>
+          let param =
+            getComponent(componentName)
+            |> Decode.Component.parameters
+            |> List.find((param: Types.parameter) => param.name == name);
+          Logic.assignmentForLayerParameter(
+            layer,
+            name,
+            Logic.defaultValueForType(param.ltype)
+          );
+        | (None, _) =>
           Logic.defaultAssignmentForLayerParameter(
             colors,
             textStyles,
             layer,
             name
           )
-        | Some(assignment) => assignment
         };
       let node =
         SwiftLogic.toSwiftAST(

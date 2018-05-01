@@ -1,0 +1,124 @@
+{
+  "devices" : [
+    {
+      "backgroundColor" : "grey100",
+      "height" : 60,
+      "heightMode" : "At Least",
+      "name" : "iPhone SE",
+      "width" : 60
+    }
+  ],
+  "examples" : [
+    {
+      "name" : "Default",
+      "params" : {
+
+      }
+    },
+    {
+      "name" : "name",
+      "params" : {
+        "selected" : true
+      }
+    }
+  ],
+  "logic" : [
+    {
+      "assignee" : [
+        "layers",
+        "Image",
+        "image"
+      ],
+      "content" : [
+        "parameters",
+        "icon"
+      ],
+      "type" : "AssignExpr"
+    },
+    {
+      "assignee" : [
+        "layers",
+        "View",
+        "onPress"
+      ],
+      "content" : [
+        "parameters",
+        "onClick"
+      ],
+      "type" : "AssignExpr"
+    },
+    {
+      "body" : [
+        {
+          "assignee" : [
+            "layers",
+            "View",
+            "backgroundColor"
+          ],
+          "content" : {
+            "type" : "LitExpr",
+            "value" : {
+              "data" : "grey300",
+              "type" : "Color"
+            }
+          },
+          "type" : "AssignExpr"
+        }
+      ],
+      "condition" : {
+        "left" : [
+          "parameters",
+          "selected"
+        ],
+        "op" : "==",
+        "right" : {
+          "type" : "LitExpr",
+          "value" : {
+            "data" : true,
+            "type" : "Boolean"
+          }
+        },
+        "type" : "BinExpr"
+      },
+      "type" : "IfExpr"
+    }
+  ],
+  "params" : [
+    {
+      "name" : "icon",
+      "type" : "URL"
+    },
+    {
+      "name" : "onClick",
+      "type" : {
+        "name" : "Function"
+      }
+    },
+    {
+      "name" : "selected",
+      "type" : "Boolean"
+    }
+  ],
+  "root" : {
+    "children" : [
+      {
+        "id" : "Image",
+        "params" : {
+          "height" : 26,
+          "image" : "file:\/\/.\/assets\/icon-tab-layers.png",
+          "width" : 26
+        },
+        "type" : "Lona:Image"
+      }
+    ],
+    "id" : "View",
+    "params" : {
+      "alignItems" : "center",
+      "height" : 60,
+      "paddingBottom" : 17,
+      "paddingTop" : 17,
+      "width" : 60
+    },
+    "type" : "Lona:View"
+  }
+}

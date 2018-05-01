@@ -865,12 +865,19 @@
                         <rect key="frame" x="0.0" y="0.0" width="908" height="1065"/>
                         <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                         <subviews>
+                            <customView id="Dhz-8v-y0T" userLabel="WorkspaceTabsContainer">
+                                <rect key="frame" x="0.0" y="0.0" width="60" height="1065"/>
+                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
+                                <constraints>
+                                    <constraint firstAttribute="width" constant="60" id="n5A-3e-8A2"/>
+                                </constraints>
+                            </customView>
                             <customView fixedFrame="YES" id="xoF-tO-Yjv">
-                                <rect key="frame" x="0.0" y="0.0" width="231" height="1065"/>
+                                <rect key="frame" x="61" y="0.0" width="239" height="1065"/>
                                 <autoresizingMask key="autoresizingMask"/>
                             </customView>
                             <customView id="8m0-fm-Vcx">
-                                <rect key="frame" x="232" y="0.0" width="676" height="1065"/>
+                                <rect key="frame" x="301" y="0.0" width="607" height="1065"/>
                                 <autoresizingMask key="autoresizingMask"/>
                                 <subviews>
                                     <stackView distribution="fill" orientation="horizontal" alignment="top" spacing="0.0" horizontalStackHuggingPriority="249.99998474121094" verticalStackHuggingPriority="249.99998474121094" detachesHiddenViews="YES" translatesAutoresizingMaskIntoConstraints="NO" id="5CG-f1-ih0">
@@ -879,7 +886,7 @@
                                             <splitView arrangesAllSubviews="NO" translatesAutoresizingMaskIntoConstraints="NO" id="wvM-qC-Tgo" customClass="SectionSplitter" customModule="LonaStudio" customModuleProvider="target">
                                                 <rect key="frame" x="0.0" y="0.0" width="396" height="1065"/>
                                                 <subviews>
-                                                    <customView id="JRH-I4-g9x">
+                                                    <customView misplaced="YES" id="JRH-I4-g9x">
                                                         <rect key="frame" x="0.0" y="0.0" width="396" height="879"/>
                                                         <autoresizingMask key="autoresizingMask"/>
                                                         <subviews>
@@ -898,7 +905,7 @@
                                                             <constraint firstItem="LQR-Dg-zfW" firstAttribute="top" secondItem="JRH-I4-g9x" secondAttribute="top" id="h4F-Ah-Y3S"/>
                                                         </constraints>
                                                     </customView>
-                                                    <customView id="6G8-EA-AQZ">
+                                                    <customView misplaced="YES" id="6G8-EA-AQZ">
                                                         <rect key="frame" x="0.0" y="888" width="396" height="177"/>
                                                         <autoresizingMask key="autoresizingMask"/>
                                                         <subviews>
@@ -954,7 +961,8 @@
                             </customView>
                         </subviews>
                         <holdingPriorities>
-                            <real value="251"/>
+                            <real value="490"/>
+                            <real value="250"/>
                             <real value="250"/>
                         </holdingPriorities>
                     </splitView>
@@ -964,6 +972,7 @@
                         <outlet property="left" destination="xoF-tO-Yjv" id="Veh-R6-U70"/>
                         <outlet property="right" destination="DDr-aE-YAO" id="DEB-Jd-94B"/>
                         <outlet property="verticalSplitter" destination="wvM-qC-Tgo" id="dZL-aj-bDp"/>
+                        <outlet property="workspaceTabsContainer" destination="Dhz-8v-y0T" id="YbK-yk-fr2"/>
                     </connections>
                 </viewController>
                 <customObject id="2Tp-Fl-jBw" userLabel="First Responder" customClass="NSResponder" sceneMemberID="firstResponder"/>

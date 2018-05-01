@@ -1,0 +1,171 @@
+{
+  "config" : {
+    "deviceLayout" : "yx"
+  },
+  "devices" : [
+    {
+      "backgroundColor" : "grey100",
+      "height" : 300,
+      "heightMode" : "At Least",
+      "name" : "iPhone SE",
+      "width" : 60
+    }
+  ],
+  "examples" : [
+    {
+      "name" : "Default",
+      "params" : {
+
+      }
+    },
+    {
+      "name" : "name",
+      "params" : {
+        "selectedValue" : "layers"
+      }
+    },
+    {
+      "name" : "name",
+      "params" : {
+        "selectedValue" : "documentation"
+      }
+    }
+  ],
+  "logic" : [
+    {
+      "assignee" : [
+        "layers",
+        "TabIconLayers",
+        "onClick"
+      ],
+      "content" : [
+        "parameters",
+        "onClickLayers"
+      ],
+      "type" : "AssignExpr"
+    },
+    {
+      "assignee" : [
+        "layers",
+        "TabIconDocumentation",
+        "onClick"
+      ],
+      "content" : [
+        "parameters",
+        "onClickDocumentation"
+      ],
+      "type" : "AssignExpr"
+    },
+    {
+      "body" : [
+        {
+          "assignee" : [
+            "layers",
+            "TabIconLayers",
+            "selected"
+          ],
+          "content" : {
+            "type" : "LitExpr",
+            "value" : {
+              "data" : true,
+              "type" : "Boolean"
+            }
+          },
+          "type" : "AssignExpr"
+        }
+      ],
+      "condition" : {
+        "left" : [
+          "parameters",
+          "selectedValue"
+        ],
+        "op" : "==",
+        "right" : {
+          "type" : "LitExpr",
+          "value" : {
+            "data" : "layers",
+            "type" : "String"
+          }
+        },
+        "type" : "BinExpr"
+      },
+      "type" : "IfExpr"
+    },
+    {
+      "body" : [
+        {
+          "assignee" : [
+            "layers",
+            "TabIconDocumentation",
+            "selected"
+          ],
+          "content" : {
+            "type" : "LitExpr",
+            "value" : {
+              "data" : true,
+              "type" : "Boolean"
+            }
+          },
+          "type" : "AssignExpr"
+        }
+      ],
+      "condition" : {
+        "left" : [
+          "parameters",
+          "selectedValue"
+        ],
+        "op" : "==",
+        "right" : {
+          "type" : "LitExpr",
+          "value" : {
+            "data" : "documentation",
+            "type" : "String"
+          }
+        },
+        "type" : "BinExpr"
+      },
+      "type" : "IfExpr"
+    }
+  ],
+  "params" : [
+    {
+      "name" : "onClickLayers",
+      "type" : {
+        "name" : "Function"
+      }
+    },
+    {
+      "name" : "onClickDocumentation",
+      "type" : {
+        "name" : "Function"
+      }
+    },
+    {
+      "name" : "selectedValue",
+      "type" : "String"
+    }
+  ],
+  "root" : {
+    "children" : [
+      {
+        "id" : "TabIconLayers",
+        "params" : {
+          "icon" : "file:\/\/.\/assets\/icon-tab-layers.png"
+        },
+        "type" : "TabIcon"
+      },
+      {
+        "id" : "TabIconDocumentation",
+        "params" : {
+          "icon" : "file:\/\/.\/assets\/icon-tab-docs.png"
+        },
+        "type" : "TabIcon"
+      }
+    ],
+    "id" : "Container",
+    "params" : {
+      "alignSelf" : "stretch"
+    },
+    "type" : "Lona:View"
+  }
+}

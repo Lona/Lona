@@ -16,6 +16,7 @@ class ViewController: NSViewController, NSOutlineViewDataSource, NSOutlineViewDe
     @IBOutlet weak var drawingSurface: NSView!
     @IBOutlet weak var right: NSView!
     @IBOutlet weak var verticalSplitter: SectionSplitter!
+    @IBOutlet weak var workspaceTabsContainer: NSView!
 
     var selectedLayer: CSLayer? {
         return outlineView.item(atRow: outlineView.selectedRow) as! CSLayer?
@@ -393,6 +394,17 @@ class ViewController: NSViewController, NSOutlineViewDataSource, NSOutlineViewDe
 
     override func viewDidLoad() {
         super.viewDidLoad()
+
+        let workspaceVerticalTabs = WorkspaceVerticalTabs()
+        workspaceVerticalTabs.selectedValue = "layers"
+        workspaceVerticalTabs.onClickLayers = {
+            workspaceVerticalTabs.selectedValue = "layers"
+        }
+        workspaceVerticalTabs.onClickDocumentation = {
+            workspaceVerticalTabs.selectedValue = "documentation"
+        }
+        workspaceTabsContainer.addSubview(workspaceVerticalTabs)
+        workspaceTabsContainer.constrain(to: workspaceVerticalTabs, [.leading, .top, .trailing])
 
         right.addBorderView(to: .left)
         right.backgroundFill = #colorLiteral(red: 0.9486700892, green: 0.9493889213, blue: 0.9487814307, alpha: 1).cgColor
