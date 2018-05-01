@@ -162,6 +162,16 @@ let addIntermediateVariable = (identifier, newName, defaultValue, node) => {
   node;
 };
 
+let defaultValueForType = (lonaType: Types.lonaType) =>
+  switch lonaType {
+  | Reference("Boolean") => LonaValue.boolean(false)
+  | Reference("Number") => LonaValue.number(0.)
+  | Reference("String") => LonaValue.string("")
+  | _ =>
+    Js.log("No default value for lonaType");
+    raise(Not_found);
+  };
+
 let defaultValueForLayerParameter =
     (colors, textStyles: TextStyle.file, layer, parameterName) =>
   switch parameterName {
@@ -171,14 +181,19 @@ let defaultValueForLayerParameter =
   | _ => LonaValue.defaultValueForParameter(parameterName)
   };
 
-let defaultAssignmentForLayerParameter =
-    (colors, textStyles: TextStyle.file, layer: Types.layer, parameterName) => {
-  let value =
-    defaultValueForLayerParameter(colors, textStyles, layer, parameterName);
+let assignmentForLayerParameter =
+    (layer: Types.layer, parameterName, value: Types.lonaValue) => {
   let receiver =
     Identifier(value.ltype, ["layers", layer.name, parameterName]);
   let source = Literal(value);
   Assign(source, receiver);
+};
+
+let defaultAssignmentForLayerParameter =
+    (colors, textStyles: TextStyle.file, layer: Types.layer, parameterName) => {
+  let value =
+    defaultValueForLayerParameter(colors, textStyles, layer, parameterName);
+  assignmentForLayerParameter(layer, parameterName, value);
 };
 
 let enforceSingleAssignment = (getIntermediateName, getDefaultValue, node) => {

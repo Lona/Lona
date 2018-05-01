@@ -264,7 +264,9 @@ let convertWorkspace = (workspace, output) => {
           Js.log("Unknown parameter: " ++ name)
         | exception (Decode.UnknownExprType(name)) =>
           Js.log("Unknown expr name: " ++ name)
-        | exception e => Js.log(e)
+        | exception e =>
+          Js.log("Unknown error");
+          Js.log(e);
         | contents =>
           ensureDirSync(Path.dirname(outputPath));
           let (contentsAbove, contentsBelow) =
