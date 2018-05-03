@@ -1,0 +1,150 @@
+/*
+BSD License
+
+Copyright (c) 2016-present, Devin Abbott. All rights reserved.
+
+Redistribution and use in source and binary forms, with or without modification,
+are permitted provided that the following conditions are met:
+
+ * Redistributions of source code must retain the above copyright notice, this
+   list of conditions and the following disclaimer.
+
+ * Redistributions in binary form must reproduce the above copyright notice,
+   this list of conditions and the following disclaimer in the documentation
+   and/or other materials provided with the distribution.
+
+ * Neither the name Facebook nor the names of its contributors may be used to
+   endorse or promote products derived from this software without specific
+   prior written permission.
+
+THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
+ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE FOR
+ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
+(INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
+LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON
+ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+(INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
+SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+*/
+
+/* Adapted from react-native-web-player */
+
+.cm-s-react {
+  font-family: 'source-code-pro', Menlo, 'Courier New', Consolas, monospace;
+  font-size: 13px;
+  line-height: 20px;
+  color: #484848;
+}
+
+.cm-s-react .CodeMirror-linenumber {
+  color: #d8d8d8;
+  padding: 0 3px 0 3px;
+  font-size: 10px;
+  line-height: 22px;
+}
+
+.cm-s-react .CodeMirror-gutters {
+  background: white;
+  border-left: 4px solid rgba(238, 238, 238, 1);
+  border-right: 0px;
+}
+
+.cm-s-react span.cm-keyword {
+  color: #1990b8;
+}
+.cm-s-react span.cm-atom {
+  color: #c92c2c;
+}
+.cm-s-react span.cm-number {
+  color: #c92c2c;
+}
+.cm-s-react span.cm-variable {
+  color: black;
+}
+.cm-s-react span.cm-variable-2 {
+  color: #0000c0;
+}
+.cm-s-react span.cm-variable-3 {
+  color: #0000c0;
+}
+.cm-s-react span.cm-property {
+  color: black;
+}
+.cm-s-react span.cm-operator {
+  color: black;
+}
+.cm-s-react span.cm-comment {
+  color: #7d8b99;
+}
+.cm-s-react span.cm-string {
+  color: #2f9c0a;
+}
+.cm-s-react span.cm-string-2 {
+  color: #2f9c0a;
+}
+.cm-s-react span.cm-link {
+  color: #c92c2c;
+}
+
+.cm-s-react .CodeMirror-activeline-background {
+  background: #e8f2ff;
+}
+.cm-s-react .CodeMirror-matchingtag {
+  background: transparent;
+}
+.cm-s-react .cm-tag.CodeMirror-matchingtag:not(.cm-bracket) {
+  text-decoration: underline;
+}
+
+@keyframes cm-line-warning {
+  0% {
+    background-color: white;
+  }
+  66% {
+    background-color: white;
+  }
+  100% {
+    background-color: #ffdada;
+  }
+}
+
+.cm-s-react .cm-line-error {
+  background-color: #ffdada;
+  animation: cm-line-warning 0.5s;
+}
+
+/* read-only styles */
+
+.read-only .CodeMirror,
+.read-only .CodeMirror-gutters {
+  background: rgb(238, 238, 238);
+}
+
+.read-only .CodeMirror-linenumber {
+  color: #bcbcbc;
+}
+
+/* hint styles */
+
+.CodeMirror-hints {
+  box-shadow: rgba(0, 0, 0, 0.2) 0px 1px 1px;
+  -webkit-box-shadow: rgba(0, 0, 0, 0.2) 0px 1px 1px;
+  -moz-box-shadow: rgba(0, 0, 0, 0.2) 0px 1px 1px;
+  border: 1px solid rgb(219, 219, 219);
+}
+
+.CodeMirror-hint {
+  display: flex;
+  align-items: center;
+  padding: 4px 8px;
+  font-family: 'source-code-pro', Menlo, 'Courier New', Consolas, monospace;
+  font-size: 13px;
+  line-height: 20px;
+  color: #484848;
+}
+
+.CodeMirror-hint-active {
+  color: white;
+}

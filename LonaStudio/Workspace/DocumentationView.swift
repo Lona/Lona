@@ -48,7 +48,7 @@ class DocumentationView: NSBox {
         contentViewMargins = .zero
 
         let app = Bundle.main.resourceURL!.appendingPathComponent("Web")
-        let url = app.appendingPathComponent("test.html")
+        let url = app.appendingPathComponent("markdown-editor.html")
         markdownEditorView.loadLocalApp(main: url, directory: app)
 
         addSubview(titleView)

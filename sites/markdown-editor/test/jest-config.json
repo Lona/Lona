@@ -1,0 +1,9 @@
+{
+  "bail": false,
+  "collectCoverageFrom": ["src/**/*"],
+  "coverageReporters": ["json-summary", "lcov", "html"],
+  "rootDir": "../",
+  "testEnvironment": "node",
+  "testRegex": "test/.*_test\\.jsx?$",
+  "testURL": "https://airbnb.com"
+}
