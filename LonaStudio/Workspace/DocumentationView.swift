@@ -40,16 +40,16 @@ class DocumentationView: NSBox {
     // MARK: Private
 
     private var titleView = NSTextField(labelWithString: "")
-    private var markdownEditorView = WKWebView(frame: .zero)
+    private var markdownEditorView = LonaWebView()
 
     private func setUpViews() {
         boxType = .custom
         borderType = .noBorder
         contentViewMargins = .zero
 
-//        var webkitConfig = WKWebViewConfiguration()
-
-        markdownEditorView.load(URLRequest(url: URL(string: "https://www.google.com")!))
+        let app = Bundle.main.resourceURL!.appendingPathComponent("Web")
+        let url = app.appendingPathComponent("test.html")
+        markdownEditorView.loadLocalApp(main: url, directory: app)
 
         addSubview(titleView)
         addSubview(markdownEditorView)
