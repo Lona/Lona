@@ -17,6 +17,7 @@ class ViewController: NSViewController, NSOutlineViewDataSource, NSOutlineViewDe
     @IBOutlet weak var right: NSView!
     @IBOutlet weak var verticalSplitter: SectionSplitter!
     @IBOutlet weak var workspaceTabsContainer: NSView!
+    @IBOutlet weak var workspaceSplitView: NSSplitView!
 
     var selectedLayer: CSLayer? {
         return outlineView.item(atRow: outlineView.selectedRow) as! CSLayer?
@@ -391,6 +392,7 @@ class ViewController: NSViewController, NSOutlineViewDataSource, NSOutlineViewDe
     var parameterListEditorView: ParameterListEditorView?
     var caseList: CaseList?
     var metadataEditorView: MetadataEditorView?
+    var documentationView: NSView?
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -399,12 +401,33 @@ class ViewController: NSViewController, NSOutlineViewDataSource, NSOutlineViewDe
         workspaceVerticalTabs.selectedValue = "layers"
         workspaceVerticalTabs.onClickLayers = {
             workspaceVerticalTabs.selectedValue = "layers"
+            self.workspaceSplitView.isHidden = false
+            self.documentationView?.isHidden = true
         }
+
         workspaceVerticalTabs.onClickDocumentation = {
             workspaceVerticalTabs.selectedValue = "documentation"
+
+            self.workspaceSplitView.isHidden = true
+
+            if self.documentationView == nil {
+                let documentationView = NSView(frame: .zero)
+                documentationView.translatesAutoresizingMaskIntoConstraints = false
+
+                self.view.addSubview(documentationView)
+
+                documentationView.leadingAnchor.constraint(equalTo: self.view.leadingAnchor, constant: 60).isActive = true
+                documentationView.topAnchor.constraint(equalTo: self.view.topAnchor).isActive = true
+                documentationView.trailingAnchor.constraint(equalTo: self.view.trailingAnchor).isActive = true
+                documentationView.bottomAnchor.constraint(equalTo: self.view.bottomAnchor).isActive = true
+
+                self.documentationView = documentationView
+            }
+
+            self.documentationView?.isHidden = false
         }
         workspaceTabsContainer.addSubview(workspaceVerticalTabs)
-        workspaceTabsContainer.constrain(to: workspaceVerticalTabs, [.leading, .top, .trailing])
+        workspaceTabsContainer.constrain(to: workspaceVerticalTabs, [.leading, .top, .trailing, .bottom])
 
         right.addBorderView(to: .left)
         right.backgroundFill = #colorLiteral(red: 0.9486700892, green: 0.9493889213, blue: 0.9487814307, alpha: 1).cgColor
