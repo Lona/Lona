@@ -69,6 +69,8 @@
 		307D44172097DDAB004B57F5 /* icon-tab-layers@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 307D44132097DDAB004B57F5 /* icon-tab-layers@2x.png */; };
 		307D44182097DDAB004B57F5 /* icon-tab-docs@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 307D44142097DDAB004B57F5 /* icon-tab-docs@2x.png */; };
 		307D441E209B657B004B57F5 /* DocumentationView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 307D441D209B657B004B57F5 /* DocumentationView.swift */; };
+		307D4420209B6CEA004B57F5 /* Web in Resources */ = {isa = PBXBuildFile; fileRef = 307D441F209B6CE9004B57F5 /* Web */; };
+		307D4422209B75C0004B57F5 /* LonaWebView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 307D4421209B75C0004B57F5 /* LonaWebView.swift */; };
 		3080AD401FBCE21600B485DC /* CSShadows.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3080AD3F1FBCE21600B485DC /* CSShadows.swift */; };
 		3080AD421FBCECAB00B485DC /* NSShadowExtensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3080AD411FBCECAB00B485DC /* NSShadowExtensions.swift */; };
 		3084164D1EDB2A5B00A1CA6D /* Button.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3084164C1EDB2A5B00A1CA6D /* Button.swift */; };
@@ -233,6 +235,8 @@
 		307D44132097DDAB004B57F5 /* icon-tab-layers@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "icon-tab-layers@2x.png"; sourceTree = "<group>"; };
 		307D44142097DDAB004B57F5 /* icon-tab-docs@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "icon-tab-docs@2x.png"; sourceTree = "<group>"; };
 		307D441D209B657B004B57F5 /* DocumentationView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DocumentationView.swift; sourceTree = "<group>"; };
+		307D441F209B6CE9004B57F5 /* Web */ = {isa = PBXFileReference; lastKnownFileType = folder; name = Web; path = LonaStudio/Web; sourceTree = SOURCE_ROOT; };
+		307D4421209B75C0004B57F5 /* LonaWebView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LonaWebView.swift; sourceTree = "<group>"; };
 		3080AD3F1FBCE21600B485DC /* CSShadows.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CSShadows.swift; sourceTree = "<group>"; };
 		3080AD411FBCECAB00B485DC /* NSShadowExtensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NSShadowExtensions.swift; sourceTree = "<group>"; };
 		3084164C1EDB2A5B00A1CA6D /* Button.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Button.swift; sourceTree = "<group>"; };
@@ -393,15 +397,16 @@
 		3030311F1F34E7200078086F /* Workspace */ = {
 			isa = PBXGroup;
 			children = (
-				BAC24A8E203576730005B16F /* Inspector View */,
 				30453E3D202E0CDE00BA5BFB /* ColorBrowser.swift */,
 				305A19551F463A2800EA033C /* DisclosureContentRow.swift */,
+				307D441D209B657B004B57F5 /* DocumentationView.swift */,
 				6B6017CF1EBF9EFA001E02C1 /* LayerList.swift */,
 				306D2FED1F84735900907B4E /* LayerThumbnail.swift */,
+				307D4421209B75C0004B57F5 /* LonaWebView.swift */,
 				307B7B4E1F9A71C5001A62D9 /* MetadataEditorView.swift */,
 				300A0AFB1EDA0CBC00704DB7 /* SectionSplitter.swift */,
 				6B0AEFB91EBF74D800F35BBF /* ViewController.swift */,
-				307D441D209B657B004B57F5 /* DocumentationView.swift */,
+				BAC24A8E203576730005B16F /* Inspector View */,
 			);
 			path = Workspace;
 			sourceTree = "<group>";
@@ -685,6 +690,7 @@
 				30DDEE881F47925C001D41AB /* Scripting */,
 				BA153BC8202B2CBA002A83A5 /* Undo */,
 				3069E0981F32432C0005E9A8 /* Utils */,
+				307D441F209B6CE9004B57F5 /* Web */,
 				3030311F1F34E7200078086F /* Workspace */,
 			);
 			path = LonaStudio;
@@ -819,6 +825,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				307D4420209B6CEA004B57F5 /* Web in Resources */,
 				307D44162097DDAB004B57F5 /* icon-tab-layers.png in Resources */,
 				30F870E920865859007ADA5B /* LonaIcon_16x16@2x.png in Resources */,
 				30F870E620865859007ADA5B /* LonaIcon_128x128.png in Resources */,
@@ -1056,6 +1063,7 @@
 				BA3001761FDB97260003E7D2 /* ShadowStylePickerButton.swift in Sources */,
 				305A19581F463BD300EA033C /* NSTextFieldExtensions.swift in Sources */,
 				3069E09C1F324C550005E9A8 /* CSWorkspacePreferences.swift in Sources */,
+				307D4422209B75C0004B57F5 /* LonaWebView.swift in Sources */,
 				300302761EDCDA030085E140 /* LogicListView.swift in Sources */,
 				304478BC1F32923700FD06E0 /* NSPointExtensions.swift in Sources */,
 				3040EFC81F2FAC9C007C5368 /* Operators.swift in Sources */,
