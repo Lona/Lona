@@ -1,0 +1,24 @@
+{
+  "extends": ["airbnb", "plugin:airbnb/recommended"],
+  "plugins": ["airbnb"],
+  "env": {
+    "browser": true,
+    "node": true
+  },
+  "rules": {
+    "arrow-parens": "off",
+    "import/prefer-default-export": "off",
+    "indent": "off",
+    "global-require": "off",
+    "react/prefer-stateless-function": "off",
+    "react/prop-types": "off",
+    "react/no-array-index-key": "off",
+    "react/no-multi-comp": "off",
+    "no-plusplus": "off",
+    "no-underscore-dangle": "off",
+    "no-new-func": "off",
+    "no-restricted-syntax": "off",
+    "no-shadow": "off"
+  },
+  "root": true
+}
