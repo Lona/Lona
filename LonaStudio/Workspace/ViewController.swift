@@ -392,7 +392,7 @@ class ViewController: NSViewController, NSOutlineViewDataSource, NSOutlineViewDe
     var parameterListEditorView: ParameterListEditorView?
     var caseList: CaseList?
     var metadataEditorView: MetadataEditorView?
-    var documentationView: NSView?
+    var documentationView: DocumentationView?
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -411,8 +411,7 @@ class ViewController: NSViewController, NSOutlineViewDataSource, NSOutlineViewDe
             self.workspaceSplitView.isHidden = true
 
             if self.documentationView == nil {
-                let documentationView = NSView(frame: .zero)
-                documentationView.translatesAutoresizingMaskIntoConstraints = false
+                let documentationView = DocumentationView()
 
                 self.view.addSubview(documentationView)
 
@@ -423,6 +422,12 @@ class ViewController: NSViewController, NSOutlineViewDataSource, NSOutlineViewDe
 
                 self.documentationView = documentationView
             }
+
+            var componentName = "Untitled"
+            if let fileURL = self.fileURL {
+                componentName = CSComponent.componentName(from: fileURL)
+            }
+            self.documentationView?.componentName = componentName
 
             self.documentationView?.isHidden = false
         }

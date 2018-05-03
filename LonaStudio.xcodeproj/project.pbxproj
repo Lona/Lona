@@ -68,6 +68,7 @@
 		307D44162097DDAB004B57F5 /* icon-tab-layers.png in Resources */ = {isa = PBXBuildFile; fileRef = 307D44122097DDAB004B57F5 /* icon-tab-layers.png */; };
 		307D44172097DDAB004B57F5 /* icon-tab-layers@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 307D44132097DDAB004B57F5 /* icon-tab-layers@2x.png */; };
 		307D44182097DDAB004B57F5 /* icon-tab-docs@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 307D44142097DDAB004B57F5 /* icon-tab-docs@2x.png */; };
+		307D441E209B657B004B57F5 /* DocumentationView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 307D441D209B657B004B57F5 /* DocumentationView.swift */; };
 		3080AD401FBCE21600B485DC /* CSShadows.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3080AD3F1FBCE21600B485DC /* CSShadows.swift */; };
 		3080AD421FBCECAB00B485DC /* NSShadowExtensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3080AD411FBCECAB00B485DC /* NSShadowExtensions.swift */; };
 		3084164D1EDB2A5B00A1CA6D /* Button.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3084164C1EDB2A5B00A1CA6D /* Button.swift */; };
@@ -231,6 +232,7 @@
 		307D44122097DDAB004B57F5 /* icon-tab-layers.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "icon-tab-layers.png"; sourceTree = "<group>"; };
 		307D44132097DDAB004B57F5 /* icon-tab-layers@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "icon-tab-layers@2x.png"; sourceTree = "<group>"; };
 		307D44142097DDAB004B57F5 /* icon-tab-docs@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "icon-tab-docs@2x.png"; sourceTree = "<group>"; };
+		307D441D209B657B004B57F5 /* DocumentationView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DocumentationView.swift; sourceTree = "<group>"; };
 		3080AD3F1FBCE21600B485DC /* CSShadows.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CSShadows.swift; sourceTree = "<group>"; };
 		3080AD411FBCECAB00B485DC /* NSShadowExtensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NSShadowExtensions.swift; sourceTree = "<group>"; };
 		3084164C1EDB2A5B00A1CA6D /* Button.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Button.swift; sourceTree = "<group>"; };
@@ -399,6 +401,7 @@
 				307B7B4E1F9A71C5001A62D9 /* MetadataEditorView.swift */,
 				300A0AFB1EDA0CBC00704DB7 /* SectionSplitter.swift */,
 				6B0AEFB91EBF74D800F35BBF /* ViewController.swift */,
+				307D441D209B657B004B57F5 /* DocumentationView.swift */,
 			);
 			path = Workspace;
 			sourceTree = "<group>";
@@ -1030,6 +1033,7 @@
 				3090D7931F01B2EF009277E7 /* CSLayer.swift in Sources */,
 				30335A101F5B3023006E507B /* CSCase.swift in Sources */,
 				BA48549C1FEF7A6500AB7923 /* PickerProtocol.swift in Sources */,
+				307D441E209B657B004B57F5 /* DocumentationView.swift in Sources */,
 				30B5B1A11EC36A70002068CE /* PopupField.swift in Sources */,
 				306DA4F11F33EA74002772DC /* CSTextView.swift in Sources */,
 				BACCB4271FEFA05B00B58E32 /* TextStylePickerView.swift in Sources */,
