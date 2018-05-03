@@ -973,6 +973,8 @@
                             <constraint firstItem="Dhz-8v-y0T" firstAttribute="top" secondItem="xWc-ZW-8Re" secondAttribute="top" id="7a7-sl-Wiv"/>
                             <constraint firstAttribute="bottom" secondItem="Dhz-8v-y0T" secondAttribute="bottom" id="BWu-GY-B9V"/>
                             <constraint firstItem="Dhz-8v-y0T" firstAttribute="leading" secondItem="xWc-ZW-8Re" secondAttribute="leading" id="Wwi-gu-oos"/>
+                            <constraint firstItem="Dhz-8v-y0T" firstAttribute="top" secondItem="xWc-ZW-8Re" secondAttribute="top" id="bNH-LX-JFk"/>
+                            <constraint firstAttribute="bottom" secondItem="Dhz-8v-y0T" secondAttribute="bottom" id="iWZ-6h-Hgc"/>
                             <constraint firstAttribute="bottom" secondItem="wR8-fK-fyL" secondAttribute="bottom" id="mlN-7j-XFV"/>
                             <constraint firstAttribute="trailing" secondItem="wR8-fK-fyL" secondAttribute="trailing" id="uzS-QC-M0h"/>
                             <constraint firstItem="wR8-fK-fyL" firstAttribute="leading" secondItem="xWc-ZW-8Re" secondAttribute="leading" constant="60" id="wCk-e2-HDj"/>
