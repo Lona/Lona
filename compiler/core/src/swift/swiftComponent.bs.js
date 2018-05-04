@@ -581,7 +581,19 @@ function generate(options, swiftOptions, name, colors, textStyles, getComponent,
     var parameters = Layer$LonaCompilerCore.LayerMap[/* find_opt */24](layer, layerParameterAssignments);
     if (parameters) {
       var assignment = StringMap$LonaCompilerCore.find_opt(name, parameters[0]);
-      var logic = assignment ? assignment[0] : Logic$LonaCompilerCore.defaultAssignmentForLayerParameter(colors, textStyles, layer, name);
+      var match = layer[/* typeName */0];
+      var logic;
+      if (assignment) {
+        logic = assignment[0];
+      } else if (typeof match === "number") {
+        logic = Logic$LonaCompilerCore.defaultAssignmentForLayerParameter(colors, textStyles, layer, name);
+      } else {
+        var param$1 = List.find((function (param) {
+                return +(param[/* name */0] === name);
+              }), Decode$LonaCompilerCore.Component[/* parameters */0](Curry._1(getComponent, match[0])));
+        console.log("in here", layer[/* name */1]);
+        logic = Logic$LonaCompilerCore.assignmentForLayerParameter(layer, name, Logic$LonaCompilerCore.defaultValueForType(param$1[/* ltype */1]));
+      }
       var node = SwiftLogic$LonaCompilerCore.toSwiftAST(swiftOptions, colors, textStyles, rootLayer, logic);
       return /* StatementListHelper */Block.__(25, [node]);
     } else {

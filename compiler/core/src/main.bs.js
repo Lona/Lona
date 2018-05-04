@@ -303,6 +303,7 @@ function convertWorkspace(workspace, output) {
                 console.log("Unknown expr name: " + e[1]);
                 return /* () */0;
               } else {
+                console.log("Unknown error");
                 console.log(e);
                 return /* () */0;
               }

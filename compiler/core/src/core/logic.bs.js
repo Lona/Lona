@@ -388,6 +388,29 @@ function addIntermediateVariable(identifier, newName, defaultValue, node) {
             ]]);
 }
 
+function defaultValueForType(lonaType) {
+  switch (lonaType.tag | 0) {
+    case 0 : 
+        switch (lonaType[0]) {
+          case "Boolean" : 
+              return LonaValue$LonaCompilerCore.$$boolean(/* false */0);
+          case "Number" : 
+              return LonaValue$LonaCompilerCore.number(0);
+          case "String" : 
+              return LonaValue$LonaCompilerCore.string("");
+          default:
+            console.log("No default value for lonaType");
+            throw Caml_builtin_exceptions.not_found;
+        }
+        break;
+    case 1 : 
+    case 2 : 
+        console.log("No default value for lonaType");
+        throw Caml_builtin_exceptions.not_found;
+    
+  }
+}
+
 function defaultValueForLayerParameter(_, textStyles, _$1, parameterName) {
   switch (parameterName) {
     case "backgroundColor" : 
@@ -400,8 +423,7 @@ function defaultValueForLayerParameter(_, textStyles, _$1, parameterName) {
   }
 }
 
-function defaultAssignmentForLayerParameter(colors, textStyles, layer, parameterName) {
-  var value = defaultValueForLayerParameter(colors, textStyles, layer, parameterName);
+function assignmentForLayerParameter(layer, parameterName, value) {
   var receiver_000 = value[/* ltype */0];
   var receiver_001 = /* :: */[
     "layers",
@@ -422,6 +444,11 @@ function defaultAssignmentForLayerParameter(colors, textStyles, layer, parameter
             source,
             receiver
           ]);
+}
+
+function defaultAssignmentForLayerParameter(colors, textStyles, layer, parameterName) {
+  var value = defaultValueForLayerParameter(colors, textStyles, layer, parameterName);
+  return assignmentForLayerParameter(layer, parameterName, value);
 }
 
 function enforceSingleAssignment(getIntermediateName, getDefaultValue, node) {
@@ -452,7 +479,9 @@ exports.setIdentiferName                   = setIdentiferName;
 exports.replaceIdentifierName              = replaceIdentifierName;
 exports.replaceIdentifiersNamed            = replaceIdentifiersNamed;
 exports.addIntermediateVariable            = addIntermediateVariable;
+exports.defaultValueForType                = defaultValueForType;
 exports.defaultValueForLayerParameter      = defaultValueForLayerParameter;
+exports.assignmentForLayerParameter        = assignmentForLayerParameter;
 exports.defaultAssignmentForLayerParameter = defaultAssignmentForLayerParameter;
 exports.enforceSingleAssignment            = enforceSingleAssignment;
 /* include Not a pure module */

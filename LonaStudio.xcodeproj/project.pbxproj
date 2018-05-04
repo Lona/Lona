@@ -62,6 +62,15 @@
 		307719001F3CD3F1003A597B /* MultilevelPopupField.swift in Sources */ = {isa = PBXBuildFile; fileRef = 307718FF1F3CD3F1003A597B /* MultilevelPopupField.swift */; };
 		307B7B4F1F9A71C5001A62D9 /* MetadataEditorView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 307B7B4E1F9A71C5001A62D9 /* MetadataEditorView.swift */; };
 		307B7B511F9A8EE5001A62D9 /* ArrayEditorButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = 307B7B501F9A8EE5001A62D9 /* ArrayEditorButton.swift */; };
+		307D440F2097DC17004B57F5 /* WorkspaceVerticalTabs.swift in Sources */ = {isa = PBXBuildFile; fileRef = 307D440D2097DC16004B57F5 /* WorkspaceVerticalTabs.swift */; };
+		307D44102097DC17004B57F5 /* TabIcon.swift in Sources */ = {isa = PBXBuildFile; fileRef = 307D440E2097DC17004B57F5 /* TabIcon.swift */; };
+		307D44152097DDAB004B57F5 /* icon-tab-docs.png in Resources */ = {isa = PBXBuildFile; fileRef = 307D44112097DDAB004B57F5 /* icon-tab-docs.png */; };
+		307D44162097DDAB004B57F5 /* icon-tab-layers.png in Resources */ = {isa = PBXBuildFile; fileRef = 307D44122097DDAB004B57F5 /* icon-tab-layers.png */; };
+		307D44172097DDAB004B57F5 /* icon-tab-layers@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 307D44132097DDAB004B57F5 /* icon-tab-layers@2x.png */; };
+		307D44182097DDAB004B57F5 /* icon-tab-docs@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 307D44142097DDAB004B57F5 /* icon-tab-docs@2x.png */; };
+		307D441E209B657B004B57F5 /* DocumentationView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 307D441D209B657B004B57F5 /* DocumentationView.swift */; };
+		307D4420209B6CEA004B57F5 /* Web in Resources */ = {isa = PBXBuildFile; fileRef = 307D441F209B6CE9004B57F5 /* Web */; };
+		307D4422209B75C0004B57F5 /* LonaWebView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 307D4421209B75C0004B57F5 /* LonaWebView.swift */; };
 		3080AD401FBCE21600B485DC /* CSShadows.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3080AD3F1FBCE21600B485DC /* CSShadows.swift */; };
 		3080AD421FBCECAB00B485DC /* NSShadowExtensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3080AD411FBCECAB00B485DC /* NSShadowExtensions.swift */; };
 		3084164D1EDB2A5B00A1CA6D /* Button.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3084164C1EDB2A5B00A1CA6D /* Button.swift */; };
@@ -219,6 +228,15 @@
 		307718FF1F3CD3F1003A597B /* MultilevelPopupField.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MultilevelPopupField.swift; sourceTree = "<group>"; };
 		307B7B4E1F9A71C5001A62D9 /* MetadataEditorView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MetadataEditorView.swift; sourceTree = "<group>"; };
 		307B7B501F9A8EE5001A62D9 /* ArrayEditorButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ArrayEditorButton.swift; sourceTree = "<group>"; };
+		307D440D2097DC16004B57F5 /* WorkspaceVerticalTabs.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = WorkspaceVerticalTabs.swift; sourceTree = "<group>"; };
+		307D440E2097DC17004B57F5 /* TabIcon.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TabIcon.swift; sourceTree = "<group>"; };
+		307D44112097DDAB004B57F5 /* icon-tab-docs.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "icon-tab-docs.png"; sourceTree = "<group>"; };
+		307D44122097DDAB004B57F5 /* icon-tab-layers.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "icon-tab-layers.png"; sourceTree = "<group>"; };
+		307D44132097DDAB004B57F5 /* icon-tab-layers@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "icon-tab-layers@2x.png"; sourceTree = "<group>"; };
+		307D44142097DDAB004B57F5 /* icon-tab-docs@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "icon-tab-docs@2x.png"; sourceTree = "<group>"; };
+		307D441D209B657B004B57F5 /* DocumentationView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DocumentationView.swift; sourceTree = "<group>"; };
+		307D441F209B6CE9004B57F5 /* Web */ = {isa = PBXFileReference; lastKnownFileType = folder; name = Web; path = LonaStudio/Web; sourceTree = SOURCE_ROOT; };
+		307D4421209B75C0004B57F5 /* LonaWebView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LonaWebView.swift; sourceTree = "<group>"; };
 		3080AD3F1FBCE21600B485DC /* CSShadows.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CSShadows.swift; sourceTree = "<group>"; };
 		3080AD411FBCECAB00B485DC /* NSShadowExtensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NSShadowExtensions.swift; sourceTree = "<group>"; };
 		3084164C1EDB2A5B00A1CA6D /* Button.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Button.swift; sourceTree = "<group>"; };
@@ -379,14 +397,16 @@
 		3030311F1F34E7200078086F /* Workspace */ = {
 			isa = PBXGroup;
 			children = (
-				BAC24A8E203576730005B16F /* Inspector View */,
 				30453E3D202E0CDE00BA5BFB /* ColorBrowser.swift */,
 				305A19551F463A2800EA033C /* DisclosureContentRow.swift */,
+				307D441D209B657B004B57F5 /* DocumentationView.swift */,
 				6B6017CF1EBF9EFA001E02C1 /* LayerList.swift */,
 				306D2FED1F84735900907B4E /* LayerThumbnail.swift */,
+				307D4421209B75C0004B57F5 /* LonaWebView.swift */,
 				307B7B4E1F9A71C5001A62D9 /* MetadataEditorView.swift */,
 				300A0AFB1EDA0CBC00704DB7 /* SectionSplitter.swift */,
 				6B0AEFB91EBF74D800F35BBF /* ViewController.swift */,
+				BAC24A8E203576730005B16F /* Inspector View */,
 			);
 			path = Workspace;
 			sourceTree = "<group>";
@@ -573,6 +593,8 @@
 			isa = PBXGroup;
 			children = (
 				30F870C220865858007ADA5B /* IconRow.swift */,
+				307D440E2097DC17004B57F5 /* TabIcon.swift */,
+				307D440D2097DC16004B57F5 /* WorkspaceVerticalTabs.swift */,
 			);
 			path = components;
 			sourceTree = "<group>";
@@ -580,6 +602,10 @@
 		30F870C420865858007ADA5B /* assets */ = {
 			isa = PBXGroup;
 			children = (
+				307D44112097DDAB004B57F5 /* icon-tab-docs.png */,
+				307D44142097DDAB004B57F5 /* icon-tab-docs@2x.png */,
+				307D44122097DDAB004B57F5 /* icon-tab-layers.png */,
+				307D44132097DDAB004B57F5 /* icon-tab-layers@2x.png */,
 				30F870C620865858007ADA5B /* icon-blank-document.png */,
 				30F870C720865858007ADA5B /* icon-blank-document@2x.png */,
 				30F870CF20865858007ADA5B /* icon-documentation.png */,
@@ -664,6 +690,7 @@
 				30DDEE881F47925C001D41AB /* Scripting */,
 				BA153BC8202B2CBA002A83A5 /* Undo */,
 				3069E0981F32432C0005E9A8 /* Utils */,
+				307D441F209B6CE9004B57F5 /* Web */,
 				3030311F1F34E7200078086F /* Workspace */,
 			);
 			path = LonaStudio;
@@ -798,9 +825,13 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				307D4420209B6CEA004B57F5 /* Web in Resources */,
+				307D44162097DDAB004B57F5 /* icon-tab-layers.png in Resources */,
 				30F870E920865859007ADA5B /* LonaIcon_16x16@2x.png in Resources */,
 				30F870E620865859007ADA5B /* LonaIcon_128x128.png in Resources */,
 				30F870E020865859007ADA5B /* LonaIcon_512x512@2x.png in Resources */,
+				307D44182097DDAB004B57F5 /* icon-tab-docs@2x.png in Resources */,
+				307D44152097DDAB004B57F5 /* icon-tab-docs.png in Resources */,
 				301D7EDC1F47A29D0098AB0D /* Modules in Resources */,
 				30C0C92E1F5F77040079D077 /* dsa_pub.pem in Resources */,
 				30F870DD20865859007ADA5B /* icon-material-design-example.png in Resources */,
@@ -820,6 +851,7 @@
 				30F870E820865859007ADA5B /* LonaIcon_512x512.png in Resources */,
 				30F870DA20865859007ADA5B /* LonaIcon_32x32@2x.png in Resources */,
 				30DDEE8C1F4795A3001D41AB /* index.js in Resources */,
+				307D44172097DDAB004B57F5 /* icon-tab-layers@2x.png in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1008,6 +1040,7 @@
 				3090D7931F01B2EF009277E7 /* CSLayer.swift in Sources */,
 				30335A101F5B3023006E507B /* CSCase.swift in Sources */,
 				BA48549C1FEF7A6500AB7923 /* PickerProtocol.swift in Sources */,
+				307D441E209B657B004B57F5 /* DocumentationView.swift in Sources */,
 				30B5B1A11EC36A70002068CE /* PopupField.swift in Sources */,
 				306DA4F11F33EA74002772DC /* CSTextView.swift in Sources */,
 				BACCB4271FEFA05B00B58E32 /* TextStylePickerView.swift in Sources */,
@@ -1021,6 +1054,7 @@
 				BACCB42B1FEFA26E00B58E32 /* ShadowStyleRowView.swift in Sources */,
 				306D2FF01F847DCB00907B4E /* NSImageExtensions.swift in Sources */,
 				30DE88091FBA18A600D62A50 /* NSPopoverExtensions.swift in Sources */,
+				307D44102097DC17004B57F5 /* TabIcon.swift in Sources */,
 				30453E3E202E0CDE00BA5BFB /* ColorBrowser.swift in Sources */,
 				30EFC9561EF1AA0B0087711D /* StringExtensions.swift in Sources */,
 				309777741F2BB75B004C8975 /* CSUserPreferences.swift in Sources */,
@@ -1029,6 +1063,7 @@
 				BA3001761FDB97260003E7D2 /* ShadowStylePickerButton.swift in Sources */,
 				305A19581F463BD300EA033C /* NSTextFieldExtensions.swift in Sources */,
 				3069E09C1F324C550005E9A8 /* CSWorkspacePreferences.swift in Sources */,
+				307D4422209B75C0004B57F5 /* LonaWebView.swift in Sources */,
 				300302761EDCDA030085E140 /* LogicListView.swift in Sources */,
 				304478BC1F32923700FD06E0 /* NSPointExtensions.swift in Sources */,
 				3040EFC81F2FAC9C007C5368 /* Operators.swift in Sources */,
@@ -1080,6 +1115,7 @@
 				301433761F5B499900525DB1 /* DictionaryEditorButton.swift in Sources */,
 				30CE47CF1ED77C0200BBF716 /* TextStyleRowView.swift in Sources */,
 				30A3F13E1F300294004C7631 /* NSColorExtensions.swift in Sources */,
+				307D440F2097DC17004B57F5 /* WorkspaceVerticalTabs.swift in Sources */,
 				30F4FD551F76B9DB0048691C /* DictionaryExtensions.swift in Sources */,
 				3094DFE81F6ACF1E00E5C7F0 /* LayerContentsCache.swift in Sources */,
 				306DA4F41F34E416002772DC /* DataNode.swift in Sources */,
