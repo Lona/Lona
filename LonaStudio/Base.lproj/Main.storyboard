@@ -862,40 +862,40 @@
             <objects>
                 <viewController id="5gI-5U-AMq" customClass="ViewController" customModule="LonaStudio" customModuleProvider="target" sceneMemberID="viewController">
                     <customView key="view" id="xWc-ZW-8Re">
-                        <rect key="frame" x="0.0" y="0.0" width="738" height="1065"/>
+                        <rect key="frame" x="0.0" y="0.0" width="1200" height="800"/>
                         <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                         <subviews>
                             <customView translatesAutoresizingMaskIntoConstraints="NO" id="Dhz-8v-y0T" userLabel="WorkspaceTabsContainer">
-                                <rect key="frame" x="0.0" y="0.0" width="60" height="1065"/>
+                                <rect key="frame" x="0.0" y="0.0" width="60" height="950"/>
                                 <constraints>
                                     <constraint firstAttribute="width" constant="60" id="n5A-3e-8A2"/>
                                 </constraints>
                             </customView>
                             <splitView arrangesAllSubviews="NO" dividerStyle="thin" vertical="YES" translatesAutoresizingMaskIntoConstraints="NO" id="wR8-fK-fyL">
-                                <rect key="frame" x="60" y="0.0" width="678" height="1065"/>
+                                <rect key="frame" x="60" y="0.0" width="1140" height="950"/>
                                 <subviews>
                                     <customView fixedFrame="YES" id="xoF-tO-Yjv">
-                                        <rect key="frame" x="0.0" y="0.0" width="191" height="1065"/>
+                                        <rect key="frame" x="0.0" y="0.0" width="191" height="950"/>
                                         <autoresizingMask key="autoresizingMask"/>
                                     </customView>
-                                    <customView id="8m0-fm-Vcx">
-                                        <rect key="frame" x="192" y="0.0" width="486" height="1065"/>
+                                    <customView misplaced="YES" id="8m0-fm-Vcx">
+                                        <rect key="frame" x="192" y="0.0" width="948" height="950"/>
                                         <autoresizingMask key="autoresizingMask"/>
                                         <subviews>
                                             <stackView distribution="fill" orientation="horizontal" alignment="top" spacing="0.0" horizontalStackHuggingPriority="249.99998474121094" verticalStackHuggingPriority="249.99998474121094" detachesHiddenViews="YES" translatesAutoresizingMaskIntoConstraints="NO" id="5CG-f1-ih0">
-                                                <rect key="frame" x="0.0" y="0.0" width="676" height="1065"/>
+                                                <rect key="frame" x="0.0" y="0.0" width="948" height="950"/>
                                                 <subviews>
                                                     <splitView arrangesAllSubviews="NO" translatesAutoresizingMaskIntoConstraints="NO" id="wvM-qC-Tgo" customClass="SectionSplitter" customModule="LonaStudio" customModuleProvider="target">
-                                                        <rect key="frame" x="0.0" y="0.0" width="396" height="1065"/>
+                                                        <rect key="frame" x="0.0" y="0.0" width="668" height="950"/>
                                                         <subviews>
                                                             <customView misplaced="YES" id="JRH-I4-g9x">
-                                                                <rect key="frame" x="0.0" y="0.0" width="396" height="879"/>
+                                                                <rect key="frame" x="0.0" y="0.0" width="668" height="764"/>
                                                                 <autoresizingMask key="autoresizingMask"/>
                                                                 <subviews>
                                                                     <box boxType="custom" borderType="none" borderWidth="0.0" title="Box" translatesAutoresizingMaskIntoConstraints="NO" id="LQR-Dg-zfW">
-                                                                        <rect key="frame" x="0.0" y="0.0" width="396" height="879"/>
+                                                                        <rect key="frame" x="0.0" y="0.0" width="668" height="764"/>
                                                                         <view key="contentView" id="TQI-E0-XPk">
-                                                                            <rect key="frame" x="0.0" y="0.0" width="396" height="879"/>
+                                                                            <rect key="frame" x="0.0" y="0.0" width="668" height="764"/>
                                                                             <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                                                         </view>
                                                                     </box>
@@ -907,12 +907,12 @@
                                                                     <constraint firstItem="LQR-Dg-zfW" firstAttribute="top" secondItem="JRH-I4-g9x" secondAttribute="top" id="h4F-Ah-Y3S"/>
                                                                 </constraints>
                                                             </customView>
-                                                            <customView misplaced="YES" id="6G8-EA-AQZ">
-                                                                <rect key="frame" x="0.0" y="888" width="396" height="177"/>
+                                                            <customView id="6G8-EA-AQZ">
+                                                                <rect key="frame" x="0.0" y="773" width="668" height="177"/>
                                                                 <autoresizingMask key="autoresizingMask"/>
                                                                 <subviews>
                                                                     <customView translatesAutoresizingMaskIntoConstraints="NO" id="0di-7K-4hy" userLabel="Bottom">
-                                                                        <rect key="frame" x="0.0" y="0.0" width="396" height="177"/>
+                                                                        <rect key="frame" x="0.0" y="0.0" width="668" height="177"/>
                                                                     </customView>
                                                                 </subviews>
                                                                 <constraints>
@@ -929,9 +929,9 @@
                                                         </holdingPriorities>
                                                     </splitView>
                                                     <box boxType="custom" borderWidth="0.0" title="Box" translatesAutoresizingMaskIntoConstraints="NO" id="lbg-XB-k8t">
-                                                        <rect key="frame" x="396" y="0.0" width="280" height="1065"/>
+                                                        <rect key="frame" x="668" y="0.0" width="280" height="950"/>
                                                         <view key="contentView" id="DDr-aE-YAO">
-                                                            <rect key="frame" x="0.0" y="0.0" width="280" height="1065"/>
+                                                            <rect key="frame" x="0.0" y="0.0" width="280" height="950"/>
                                                             <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                                         </view>
                                                         <constraints>
@@ -990,7 +990,7 @@
                 </viewController>
                 <customObject id="2Tp-Fl-jBw" userLabel="First Responder" customClass="NSResponder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="901" y="567"/>
+            <point key="canvasLocation" x="1130.5" y="566.5"/>
         </scene>
     </scenes>
 </document>
