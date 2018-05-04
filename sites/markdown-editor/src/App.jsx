@@ -4,24 +4,47 @@ import ReactMarkdown from 'react-markdown';
 
 import Editor from './components/Editor';
 
+function sendNotification(notification) {
+  try {
+    window.webkit.messageHandlers.notification.postMessage(notification);
+  } catch (e) {
+    console.log('No webkit messageHandlers', e);
+  }
+}
+
+let initialValue = '';
+let onChangeValue = () => {};
+
+window.update = ({ type, payload }) => {
+  switch (type) {
+    case 'setDescription':
+      initialValue = payload;
+      onChangeValue(payload);
+    default:
+      break;
+  }
+};
+
+sendNotification({ type: 'ready' });
+
 class App extends React.Component {
   constructor(props) {
     super(props);
 
     this.state = {
-      value: '',
+      value: initialValue,
     };
 
     this.handleChange = this.handleChange.bind(this);
+
+    onChangeValue = code => {
+      this.setState({ value: code });
+    };
   }
 
   handleChange(code) {
-    try {
-      this.setState({ value: code });
-      window.webkit.messageHandlers.notification.postMessage({ payload: code });
-    } catch (e) {
-      console.log('No webkit messageHandlers', e);
-    }
+    this.setState({ value: code });
+    sendNotification({ type: 'description', payload: code });
   }
 
   render() {
@@ -33,13 +56,13 @@ class App extends React.Component {
 
     return (
       <div {...css(styles.row)}>
+        <ReactMarkdown {...markdownCss} source={value} />
         <Editor
-          initialValue={''}
+          value={value}
           filename={'README.md'}
           onChange={this.handleChange}
           errorLineNumber={false}
         />
-        <ReactMarkdown {...markdownCss} source={value} />
       </div>
     );
   }

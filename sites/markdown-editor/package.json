@@ -5,7 +5,8 @@
   "main": "build/index.js",
   "scripts": {
     "predeploy": "npm run build",
-    "deploy": "cp build/markdown-editor.html ../../LonaStudio/Web/markdown-editor.html",
+    "deploy":
+      "cp build/markdown-editor.html ../../LonaStudio/Web/markdown-editor.html",
     "dev": "webpack-dev-server",
     "build": "webpack -p",
     "prebuild": "npm run clean",
@@ -17,10 +18,6 @@
     "pretest": "npm run lint",
     "test:only": "npm run jest",
     "test": "npm run test:only"
-  },
-  "repository": {
-    "type": "git",
-    "url": "git@git.musta.ch:airbnb/dls-documentation.git"
   },
   "keywords": [],
   "author": "Devin Abbott <devinabbott@gmail.com>",

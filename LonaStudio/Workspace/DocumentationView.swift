@@ -14,8 +14,9 @@ class DocumentationView: NSBox {
 
     // MARK: Lifecycle
 
-    public init(componentName: String) {
+    public init(componentName: String, descriptionText: String) {
         self.componentName = componentName
+        self.descriptionText = descriptionText
 
         super.init(frame: .zero)
 
@@ -26,7 +27,7 @@ class DocumentationView: NSBox {
     }
 
     public convenience init() {
-        self.init(componentName: "")
+        self.init(componentName: "", descriptionText: "")
     }
 
     public required init?(coder aDecoder: NSCoder) {
@@ -36,11 +37,14 @@ class DocumentationView: NSBox {
     // MARK: Public
 
     public var componentName: String { didSet { update() } }
+    public var descriptionText: String { didSet { update() } }
+    public var onChangeDescription: ((String) -> Void)?
 
     // MARK: Private
 
     private var titleView = NSTextField(labelWithString: "")
     private var markdownEditorView = LonaWebView()
+    private var markdownEditorLoaded = false { didSet { update() } }
 
     private func setUpViews() {
         boxType = .custom
@@ -50,6 +54,19 @@ class DocumentationView: NSBox {
         let app = Bundle.main.resourceURL!.appendingPathComponent("Web")
         let url = app.appendingPathComponent("markdown-editor.html")
         markdownEditorView.loadLocalApp(main: url, directory: app)
+        markdownEditorView.onMessage = { data in
+            guard let messageType = data.get(key: "type").string else { return }
+
+            switch messageType {
+            case "ready":
+                self.markdownEditorLoaded = true
+            case "description":
+                guard let stringValue = data.get(key: "payload").string else { return }
+                self.onChangeDescription?(stringValue)
+            default:
+                break
+            }
+        }
 
         addSubview(titleView)
         addSubview(markdownEditorView)
@@ -69,7 +86,18 @@ class DocumentationView: NSBox {
         markdownEditorView.trailingAnchor.constraint(equalTo: trailingAnchor, constant: -48).isActive = true
     }
 
+    private func updateDescription() {
+        let payload = CSData.Object([
+            "type": "setDescription".toData(),
+            "payload": descriptionText.toData()
+            ])
+        if let json = payload.jsonString() {
+            markdownEditorView.evaluateJavaScript("window.update(\(json))", completionHandler: nil)
+        }
+    }
+
     private func update() {
         titleView.attributedStringValue = TextStyles.title.apply(to: componentName)
+        updateDescription()
     }
 }

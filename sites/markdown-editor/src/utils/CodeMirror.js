@@ -31,11 +31,12 @@
 
 export const options = {
   value: '',
-  mode: 'jsx',
+  mode: 'markdown',
   theme: 'react',
   keyMap: 'sublime',
   indentUnit: 2,
   lineNumbers: true,
+  lineWrapping: true,
   dragDrop: false,
   showCursorWhenSelecting: true,
   autoCloseBrackets: true,
@@ -44,19 +45,12 @@ export const options = {
   },
   extraKeys: {
     Tab: 'indentMore',
-    'Cmd-/': cm => {
-      cm.listSelections().forEach(() => {
-        cm.toggleComment({ lineComment: '//' });
-      });
-    },
   },
 };
 
 export const requireAddons = () => {
-  require('codemirror/mode/jsx/jsx');
+  require('codemirror/mode/markdown/markdown');
   require('codemirror/keymap/sublime');
-  require('codemirror/addon/fold/xml-fold'); // required for matchtags
-  require('codemirror/addon/edit/matchtags');
   require('codemirror/addon/edit/closebrackets');
   require('codemirror/addon/comment/comment');
   require('codemirror/addon/selection/active-line');
