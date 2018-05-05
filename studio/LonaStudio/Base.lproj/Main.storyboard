@@ -694,6 +694,16 @@
                                     </items>
                                 </menu>
                             </menuItem>
+                            <menuItem title="Plugins" id="Y7G-94-YF6">
+                                <modifierMask key="keyEquivalentModifierMask"/>
+                                <menu key="submenu" title="Plugins" id="M6r-Xb-mG3" customClass="PluginMenu" customModule="LonaStudio" customModuleProvider="target">
+                                    <items>
+                                        <menuItem title="Show in Finder" id="4rd-Ub-SLq">
+                                            <modifierMask key="keyEquivalentModifierMask"/>
+                                        </menuItem>
+                                    </items>
+                                </menu>
+                            </menuItem>
                             <menuItem title="Window" id="aUF-d1-5bR">
                                 <modifierMask key="keyEquivalentModifierMask"/>
                                 <menu key="submenu" title="Window" systemMenu="window" id="Td7-aD-5lo">
