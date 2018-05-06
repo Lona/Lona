@@ -4,7 +4,7 @@ cache:
   - bundler
   - cocoapods
 rvm:
-  - 2.2.2
+  - 2.3.3p222
 
 env:
   global:
@@ -27,7 +27,7 @@ script:
   - xcodebuild -version
   - xcodebuild -showsdks
   - xcodebuild -list
-  - bundle exec danger
+  - bundle exec danger --dangerfile=../Dangerfile
 
     # Build Lona
   - if [ $BUILD_EXAMPLE == "YES" ]; then
