@@ -17,6 +17,7 @@ env:
     - RUN_TESTS="YES"
 
 before_install:
+  - cd project
   - bundle install
   - bundle exec pod repo update
   - bundle exec pod install
