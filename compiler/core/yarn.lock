@@ -338,9 +338,9 @@ bs-glob@reasonml-community/bs-glob:
   dependencies:
     glob "^7.1.2"
 
-bs-json@^0.2.4:
-  version "0.2.4"
-  resolved "https://registry.yarnpkg.com/bs-json/-/bs-json-0.2.4.tgz#dc09dad32ebb27ba71ed587ed76366f193fb96e8"
+bs-json@^1.0.1:
+  version "1.0.1"
+  resolved "https://registry.yarnpkg.com/bs-json/-/bs-json-1.0.1.tgz#0e25ed5ba7164ab131e494669b755da9844cc37e"
 
 "bs-node@github:buckletypes/bs-node":
   version "0.0.1"
@@ -885,6 +885,10 @@ fast-deep-equal@^1.0.0:
   version "1.0.0"
   resolved "https://registry.yarnpkg.com/fast-deep-equal/-/fast-deep-equal-1.0.0.tgz#96256a3bc975595eb36d82e9929d060d893439ff"
 
+fast-extend@0.0.2:
+  version "0.0.2"
+  resolved "https://registry.yarnpkg.com/fast-extend/-/fast-extend-0.0.2.tgz#f5ec42cf40b9460f521a6387dfb52deeed671dbd"
+
 fast-json-stable-stringify@^2.0.0:
   version "2.0.0"
   resolved "https://registry.yarnpkg.com/fast-json-stable-stringify/-/fast-json-stable-stringify-2.0.0.tgz#d5142c0caee6b1189f87d3a76111064f86c8bbf2"
@@ -960,6 +964,10 @@ fs-extra@^5.0.0:
     graceful-fs "^4.1.2"
     jsonfile "^4.0.0"
     universalify "^0.1.0"
+
+fs-monkey@^0.3.0:
+  version "0.3.1"
+  resolved "https://registry.yarnpkg.com/fs-monkey/-/fs-monkey-0.3.1.tgz#69edd8420e04da04d4d3ea200da1ccdc444eecd0"
 
 fs.realpath@^1.0.0:
   version "1.0.0"
@@ -1541,6 +1549,13 @@ mem@1.1.0, mem@^1.1.0:
   resolved "https://registry.yarnpkg.com/mem/-/mem-1.1.0.tgz#5edd52b485ca1d900fe64895505399a0dfa45f76"
   dependencies:
     mimic-fn "^1.0.0"
+
+memfs@^2.8.0:
+  version "2.8.0"
+  resolved "https://registry.yarnpkg.com/memfs/-/memfs-2.8.0.tgz#a64887d6b540084be5847eb1bd3b5ac8f759c114"
+  dependencies:
+    fast-extend "0.0.2"
+    fs-monkey "^0.3.0"
 
 memory-fs@^0.4.0, memory-fs@~0.4.1:
   version "0.4.1"

@@ -591,7 +591,6 @@ function generate(options, swiftOptions, name, colors, textStyles, getComponent,
         var param$1 = List.find((function (param) {
                 return +(param[/* name */0] === name);
               }), Decode$LonaCompilerCore.Component[/* parameters */0](Curry._1(getComponent, match[0])));
-        console.log("in here", layer[/* name */1]);
         logic = Logic$LonaCompilerCore.assignmentForLayerParameter(layer, name, Logic$LonaCompilerCore.defaultValueForType(param$1[/* ltype */1]));
       }
       var node = SwiftLogic$LonaCompilerCore.toSwiftAST(swiftOptions, colors, textStyles, rootLayer, logic);
