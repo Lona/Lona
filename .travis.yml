@@ -4,7 +4,7 @@ cache:
   - bundler
   - cocoapods
 rvm:
-  - 2.3.3p222
+  - 2.2.2
 
 env:
   global:
