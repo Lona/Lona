@@ -25,5 +25,10 @@ if has_app_changes && !tests_updated
   warn("The library files were changed, but the tests remained unmodified. Consider updating or adding to the tests to match the library changes.")
 end
 
+# Debugging
+message "[[danger pwd]]"
+message Dir.pwd
+
 # Run SwiftLint
+swiftlint.directory = "studio"
 swiftlint.lint_files inline_mode: true

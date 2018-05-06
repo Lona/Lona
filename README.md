@@ -1,5 +1,5 @@
 <p align="center">
-  <img src="LonaStudio/Assets.xcassets/AppIcon.appiconset/icon_256x256@2x.png" width="256" height="256" />
+  <img src="studio/LonaStudio/Assets.xcassets/AppIcon.appiconset/icon_256x256@2x.png" width="256" height="256" />
 </p>
 
 <h1 align="center">Lona (Developer Preview)</h1>
