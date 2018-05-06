@@ -83,3 +83,4 @@ dmg/*.zip
 dmg/*.dmg
 dmg/*.app
 examples/generated/test/LonaViewer/LonaViewer.xcodeproj/project.xcworkspace/xcshareddata
+examples/LonaViewer/LonaViewer.xcodeproj/project.xcworkspace/contents.xcworkspacedata
