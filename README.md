@@ -1,24 +1,26 @@
 <p align="center">
-  <img src="LonaStudio/Assets.xcassets/AppIcon.appiconset/icon_256x256@2x.png" width="256" height="256" />
+  <img src="studio/LonaStudio/Assets.xcassets/AppIcon.appiconset/icon_256x256@2x.png" width="256" height="256" />
 </p>
 
 <h1 align="center">Lona (Developer Preview)</h1>
 
 <br />
 
-> This is a *highly experimental* prototype. We've made it public to begin a conversation with other people who are interested in design at scale. While this tool handles the Airbnb design system fairly well (at a rudimentary level), there are many gaps. We hope to collaborate with others to identify and fill these gaps.
+> This is a _highly experimental_ prototype. We've made it public to begin a conversation with other people who are interested in design at scale. While this tool handles the Airbnb design system fairly well (at a rudimentary level), there are many gaps. We hope to collaborate with others to identify and fill these gaps.
 >
 > We don't provide any support of any kind. You shouldn't use this for production unless you _really know what you're doing_. The API and file format will change without warning as we continue development. As this is largely still a research project, there are no automated tests and the code is not yet at the same degree of technical rigor as other Airbnb projects.
 
 ## Overview
+
 [![Build Status](https://travis-ci.org/airbnb/Lona.svg?branch=master)](https://travis-ci.org/airbnb/Lona)
 
 Lona is a collection of tools for building design systems and using them to generate cross-platform UI code, Sketch files, images, and other artifacts.
 
 A design system is defined in JSON as a collection of:
-- Components (can be nested)
-- Colors, Text Styles, Gradients, and Shadows
-- Data Types
+
+* Components (can be nested)
+* Colors, Text Styles, Gradients, and Shadows
+* Data Types
 
 The specification for these files can be found in the [docs](./docs/file-formats/README.md).
 
@@ -27,23 +29,25 @@ The specification for these files can be found in the [docs](./docs/file-formats
 Lona Studio provides a graphical interface for working with these JSON files.
 
 Lona Studio is useful for:
-- Building component systems
-- Quickly mocking up new screens from existing components
-- Viewing designs with real data from JSON files or APIs
-- Experimenting with designs across multiple screen sizes
-- Automating design tasks - e.g. localizing screenshots for different languages and exporting hundreds of images
-- Working with animations (Lottie) and rendering videos from them (can plug into distributed renderer API)
-- and more!
+
+* Building component systems
+* Quickly mocking up new screens from existing components
+* Viewing designs with real data from JSON files or APIs
+* Experimenting with designs across multiple screen sizes
+* Automating design tasks - e.g. localizing screenshots for different languages and exporting hundreds of images
+* Working with animations (Lottie) and rendering videos from them (can plug into distributed renderer API)
+* and more!
 
 ### Lona Compiler
 
 Lona Compiler converts .component files to UI code for various targets.
 
 Support is planned for:
-- Web (React)
-- iOS (Swift)
-- Android (Kotlin)
-- React Native
+
+* Web (React)
+* iOS (Swift)
+* Android (Kotlin)
+* React Native
 
 Currently, the only target is React Native, and it's extremely rough (i.e. not really usable).
 
@@ -56,20 +60,21 @@ Airbnb created a design system called [DLS](https://airbnb.design/building-a-vis
 This design system was defined in Sketch. Design files required manual translation to code for each of the 4 platforms. This translation process was time consuming and error prone. The fundamental problem: most design file formats can't encode all of the necessary details needed to make a perfect translation.
 
 We need a tool for dealing with the layouts, constraints, and states of a real application:
-- Layout reflow for multiple screen sizes
-- Variable-length text
-- Error states
-- Lists of different kinds and quantities of items: 0, 1, 2, 10…
-- Min and max width/height
-- Max lines of text
-- Pressed/unpressed state
-- Themes (inverse, compact)
+
+* Layout reflow for multiple screen sizes
+* Variable-length text
+* Error states
+* Lists of different kinds and quantities of items: 0, 1, 2, 10…
+* Min and max width/height
+* Max lines of text
+* Pressed/unpressed state
+* Themes (inverse, compact)
 
 Since many decisions must be made that can't be recorded in design files, the individual engineer on each platform often makes a judgement call, resulting in subtle inconsistencies.
 
 ### The Solution
 
-What if we had a single design system specification that encodes *all* of the detail needed to accurately translate from design to code? This spec would act as the source of truth. An engineer could then write code which captures the design with *100% accuracy*. If the design file is missing a key piece of information, the designer and engineer could work together to add it to the source of truth.
+What if we had a single design system specification that encodes _all_ of the detail needed to accurately translate from design to code? This spec would act as the source of truth. An engineer could then write code which captures the design with _100% accuracy_. If the design file is missing a key piece of information, the designer and engineer could work together to add it to the source of truth.
 
 If an engineer can manually translate this file format into UI code with 100% accuracy, then fundamentally we should also be able to use this file format to generate the UI code.
 
@@ -87,21 +92,22 @@ The easiest way to use Lona Studio is by downloading the prebuilt Mac App binary
 
 First, make sure you have [`bundler`](http://bundler.io/) and [Cocoapods](https://cocoapods.org/) installed. Then checkout the repo and run:
 
-`bundle && bundle exec pod install`
+```
+cd studio
+bundle && bundle exec pod install
+```
 
-Open LonaStudio.xcworkspace and build in Xcode 9.3+ on High Sierra+. If there are warnings (e.g. about converting to Swift 4) you can ignore them.
-
-> It will build on El Capitan, but it likely won't be usable. The changes needed to make are small, if anybody wants to add support.
+Open LonaStudio.xcworkspace and build in Xcode 9.3+ on High Sierra+. If there are warnings (e.g. about project settings) you can ignore them.
 
 ## Workspace
 
-To work in Lona Studio, you'll need a properly configured *workspace*. A workspace is a directory containing, optionally, the following files:
+To work in Lona Studio, you'll need a properly configured _workspace_. A workspace is a directory containing, optionally, the following files:
 
-- `colors.json`
-- `textStyles.json`
-- `gradients.json`
-- `shadows.json`
-- `types.json`
+* `colors.json`
+* `textStyles.json`
+* `gradients.json`
+* `shadows.json`
+* `types.json`
 
 You can read more about these in the [file formats docs](./docs/file-formats/README.md). Without these, Lona Studio will not display any colors or text styles in the pickers.
 
@@ -151,11 +157,11 @@ As an example of how building native helps us move quickly: native code has a mu
 
 As an added bonus, it's also much easier to interop with Sketch. For example, Sketch stores some text styles as encoded `NSAttributedString` objects. Lona Studio is able to read and write these directly. It would be difficult to do so in a non-Mac environment.
 
-### Can we use *just* Lona Studio, rather than starting in another design tool like Sketch?
+### Can we use _just_ Lona Studio, rather than starting in another design tool like Sketch?
 
-Yes, but I don't really recommend it. Sketch pioneered an incredibly effective workflow for rapidly iterating on ideas. The infinite canvas, instant artboard duplication, and intuitive hotkeys are key to translating an idea into digital form. Designing in Sketch should be *easy* and *playful*.
+Yes, but I don't really recommend it. Sketch pioneered an incredibly effective workflow for rapidly iterating on ideas. The infinite canvas, instant artboard duplication, and intuitive hotkeys are key to translating an idea into digital form. Designing in Sketch should be _easy_ and _playful_.
 
-Designing in Lona Studio, by contrast, is intended to be *powerful* and *precise*. A much greater degree of rigor is required to *build* the same thing you *mocked up* in Sketch. You won't have the same ability to rapidly play with different ideas, look at all 10 of them, and continue moving forward from your favorite. Instead, you get to see your design on 5 screen sizes at once in all possible configurations using real data.
+Designing in Lona Studio, by contrast, is intended to be _powerful_ and _precise_. A much greater degree of rigor is required to _build_ the same thing you _mocked up_ in Sketch. You won't have the same ability to rapidly play with different ideas, look at all 10 of them, and continue moving forward from your favorite. Instead, you get to see your design on 5 screen sizes at once in all possible configurations using real data.
 
 ### How does the layout algorithm work?
 
@@ -171,8 +177,8 @@ Time constraints 😅
 
 ## The Team
 
-- Created by [@dvnabbott](https://twitter.com/dvnabbott)
-- Design & development help by [@ryngonzalez](https://twitter.com/ryngonzalez)
-- Gorgeous logo by [@pablocar0](https://twitter.com/pablocar0)
-- Lona Studio development by [Nghia Tran](https://github.com/NghiaTranUIT)
-- Swift code generation help by [Laura Skelton](https://twitter.com/skelovenko)
+* Created by [@dvnabbott](https://twitter.com/dvnabbott)
+* Design & development help by [@ryngonzalez](https://twitter.com/ryngonzalez)
+* Gorgeous logo by [@pablocar0](https://twitter.com/pablocar0)
+* Lona Studio development by [Nghia Tran](https://github.com/NghiaTranUIT)
+* Swift code generation help by [Laura Skelton](https://twitter.com/skelovenko)
