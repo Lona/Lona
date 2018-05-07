@@ -32,7 +32,7 @@ class LonaPlugins {
                 currentDirectoryPath: url.path,
                 onSuccess: { output in
                     Swift.print("Output", output ?? "")
-                    
+
                     DispatchQueue.main.async {
                         let alert = NSAlert()
                         alert.messageText = "Finished running \(self.name)"

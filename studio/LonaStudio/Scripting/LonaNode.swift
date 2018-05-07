@@ -18,8 +18,7 @@ enum LonaNode {
         inputData: CSData? = nil,
         currentDirectoryPath: String? = nil,
         onSuccess: ((String?) -> Void)? = nil,
-        onFailure: ((Int, String?) -> Void)? = nil)
-    {
+        onFailure: ((Int, String?) -> Void)? = nil) {
         guard let nodePath = LonaNode.binaryPath else { return }
 
         DispatchQueue.global().async {
