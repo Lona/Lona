@@ -27,7 +27,9 @@ script:
   - xcodebuild -version
   - xcodebuild -showsdks
   - xcodebuild -list
-  - bundle exec danger --dangerfile=../Dangerfile
+  - cd ..
+  - BUNDLE_GEMFILE=studio/Gemfile bundle exec danger
+  - cd studio
 
     # Build Lona
   - if [ $BUILD_EXAMPLE == "YES" ]; then
