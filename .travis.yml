@@ -20,7 +20,7 @@ before_install:
   - bundle install
   - BUNDLE_GEMFILE=studio/Gemfile bundle install
   - BUNDLE_GEMFILE=studio/Gemfile bundle exec pod repo update
-  - BUNDLE_GEMFILE=studio/Gemfile bundle exec pod install
+  - BUNDLE_GEMFILE=studio/Gemfile bundle exec pod install --project-directory=studio
 
 script:
   - set -o pipefail
