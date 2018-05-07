@@ -8,7 +8,7 @@ rvm:
 
 env:
   global:
-    - WORKSPACE="LonaStudio.xcworkspace"
+    - WORKSPACE="studio/LonaStudio.xcworkspace"
     - SCHEME="LonaStudio"
     - DESTINATION="arch=x86_64"
     - SDK=macosx10.13
@@ -21,15 +21,14 @@ before_install:
   - bundle install
   - bundle exec pod repo update
   - bundle exec pod install
+  - cd ..
 
 script:
   - set -o pipefail
   - xcodebuild -version
   - xcodebuild -showsdks
   - xcodebuild -list
-  - cd ..
   - BUNDLE_GEMFILE=studio/Gemfile bundle exec danger --dangerfile=studio/Dangerfile
-  - cd studio
 
     # Build Lona
   - if [ $BUILD_EXAMPLE == "YES" ]; then
