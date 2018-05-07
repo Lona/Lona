@@ -28,6 +28,8 @@
 		3043A0CC1F46653B00EF31EF /* Label.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3043A0CB1F46653B00EF31EF /* Label.swift */; };
 		304478BC1F32923700FD06E0 /* NSPointExtensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 304478BB1F32923700FD06E0 /* NSPointExtensions.swift */; };
 		30453E3E202E0CDE00BA5BFB /* ColorBrowser.swift in Sources */ = {isa = PBXBuildFile; fileRef = 30453E3D202E0CDE00BA5BFB /* ColorBrowser.swift */; };
+		304ADD52209D2A66001B9A43 /* PluginMenu.swift in Sources */ = {isa = PBXBuildFile; fileRef = 304ADD51209D2A66001B9A43 /* PluginMenu.swift */; };
+		304ADD55209D2CA0001B9A43 /* LonaPlugins.swift in Sources */ = {isa = PBXBuildFile; fileRef = 304ADD54209D2CA0001B9A43 /* LonaPlugins.swift */; };
 		305029C320643EC7002D9EE1 /* ComponentMenu.swift in Sources */ = {isa = PBXBuildFile; fileRef = 305029C220643EC7002D9EE1 /* ComponentMenu.swift */; };
 		30516B491F43C46200940B3B /* SequenceExtensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 30516B481F43C46200940B3B /* SequenceExtensions.swift */; };
 		305589431EC4E4D600420BBD /* RenderSurface.swift in Sources */ = {isa = PBXBuildFile; fileRef = 305589421EC4E4D600420BBD /* RenderSurface.swift */; };
@@ -88,6 +90,7 @@
 		30990AB01FA4043600BC0CCE /* CSUserTypes.swift in Sources */ = {isa = PBXBuildFile; fileRef = 30990AAF1FA4043600BC0CCE /* CSUserTypes.swift */; };
 		30A3F13E1F300294004C7631 /* NSColorExtensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 30A3F13D1F300294004C7631 /* NSColorExtensions.swift */; };
 		30ACB4E51F663D0A00EEFED6 /* Sketch.swift in Sources */ = {isa = PBXBuildFile; fileRef = 30ACB4E41F663D0A00EEFED6 /* Sketch.swift */; };
+		30AEA12A20A0DA410021C981 /* LonaNode.swift in Sources */ = {isa = PBXBuildFile; fileRef = 30AEA12920A0DA410021C981 /* LonaNode.swift */; };
 		30B5B19F1EC29D84002068CE /* NumberField.swift in Sources */ = {isa = PBXBuildFile; fileRef = 30B5B19E1EC29D84002068CE /* NumberField.swift */; };
 		30B5B1A11EC36A70002068CE /* PopupField.swift in Sources */ = {isa = PBXBuildFile; fileRef = 30B5B1A01EC36A70002068CE /* PopupField.swift */; };
 		30B5B1A31EC3AE44002068CE /* ColorPickerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 30B5B1A21EC3AE44002068CE /* ColorPickerView.swift */; };
@@ -194,6 +197,8 @@
 		3043A0CB1F46653B00EF31EF /* Label.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Label.swift; sourceTree = "<group>"; };
 		304478BB1F32923700FD06E0 /* NSPointExtensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NSPointExtensions.swift; sourceTree = "<group>"; };
 		30453E3D202E0CDE00BA5BFB /* ColorBrowser.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ColorBrowser.swift; sourceTree = "<group>"; };
+		304ADD51209D2A66001B9A43 /* PluginMenu.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PluginMenu.swift; sourceTree = "<group>"; };
+		304ADD54209D2CA0001B9A43 /* LonaPlugins.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LonaPlugins.swift; sourceTree = "<group>"; };
 		305029C220643EC7002D9EE1 /* ComponentMenu.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ComponentMenu.swift; sourceTree = "<group>"; };
 		30516B481F43C46200940B3B /* SequenceExtensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SequenceExtensions.swift; sourceTree = "<group>"; };
 		305589421EC4E4D600420BBD /* RenderSurface.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RenderSurface.swift; sourceTree = "<group>"; };
@@ -254,6 +259,7 @@
 		30990AAF1FA4043600BC0CCE /* CSUserTypes.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CSUserTypes.swift; sourceTree = "<group>"; };
 		30A3F13D1F300294004C7631 /* NSColorExtensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NSColorExtensions.swift; sourceTree = "<group>"; };
 		30ACB4E41F663D0A00EEFED6 /* Sketch.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Sketch.swift; sourceTree = "<group>"; };
+		30AEA12920A0DA410021C981 /* LonaNode.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LonaNode.swift; sourceTree = "<group>"; };
 		30B5B19E1EC29D84002068CE /* NumberField.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NumberField.swift; sourceTree = "<group>"; };
 		30B5B1A01EC36A70002068CE /* PopupField.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PopupField.swift; sourceTree = "<group>"; };
 		30B5B1A21EC3AE44002068CE /* ColorPickerView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ColorPickerView.swift; sourceTree = "<group>"; };
@@ -411,6 +417,14 @@
 			path = Workspace;
 			sourceTree = "<group>";
 		};
+		304ADD53209D2C89001B9A43 /* Plugins */ = {
+			isa = PBXGroup;
+			children = (
+				304ADD54209D2CA0001B9A43 /* LonaPlugins.swift */,
+			);
+			path = Plugins;
+			sourceTree = "<group>";
+		};
 		305ED04420530238000D07C3 /* Module */ = {
 			isa = PBXGroup;
 			children = (
@@ -468,6 +482,7 @@
 				3043A0CB1F46653B00EF31EF /* Label.swift */,
 				307718FF1F3CD3F1003A597B /* MultilevelPopupField.swift */,
 				30B5B19E1EC29D84002068CE /* NumberField.swift */,
+				304ADD51209D2A66001B9A43 /* PluginMenu.swift */,
 				30B5B1A01EC36A70002068CE /* PopupField.swift */,
 				30F7C94F1ED4ACD8009D27DF /* SegmentedControlField.swift */,
 				BA3001751FDB97260003E7D2 /* ShadowStylePickerButton.swift */,
@@ -563,6 +578,7 @@
 				30DDEE8B1F4795A3001D41AB /* index.js */,
 				30DDEE891F479280001D41AB /* node */,
 				30DDEE8E1F4799F6001D41AB /* nodeversion */,
+				30AEA12920A0DA410021C981 /* LonaNode.swift */,
 			);
 			path = Scripting;
 			sourceTree = "<group>";
@@ -669,6 +685,7 @@
 		6B0AEFB61EBF74D800F35BBF /* LonaStudio */ = {
 			isa = PBXGroup;
 			children = (
+				307D441F209B6CE9004B57F5 /* Web */,
 				6B0AEFC21EBF74D800F35BBF /* Info.plist */,
 				6B0AEFB71EBF74D800F35BBF /* AppDelegate.swift */,
 				300302731EDC7FA90085E140 /* CSStatementView.swift */,
@@ -686,11 +703,11 @@
 				30C8BC301EDB757E00B99F1B /* Models */,
 				305ED04420530238000D07C3 /* Module */,
 				3030311E1F34E6B40078086F /* ParameterList */,
+				304ADD53209D2C89001B9A43 /* Plugins */,
 				3097776E1F296A1F004C8975 /* Preferences */,
 				30DDEE881F47925C001D41AB /* Scripting */,
 				BA153BC8202B2CBA002A83A5 /* Undo */,
 				3069E0981F32432C0005E9A8 /* Utils */,
-				307D441F209B6CE9004B57F5 /* Web */,
 				3030311F1F34E7200078086F /* Workspace */,
 			);
 			path = LonaStudio;
@@ -1020,12 +1037,14 @@
 				309777721F2BA78E004C8975 /* CSData.swift in Sources */,
 				BA0D85E41FD5AC2000D817C3 /* NSViewHoverExtensions.swift in Sources */,
 				30335A071F5A2878006E507B /* URLExtensions.swift in Sources */,
+				30AEA12A20A0DA410021C981 /* LonaNode.swift in Sources */,
 				30F7C9501ED4ACD8009D27DF /* SegmentedControlField.swift in Sources */,
 				30ACB4E51F663D0A00EEFED6 /* Sketch.swift in Sources */,
 				300A0AFC1EDA0CBC00704DB7 /* SectionSplitter.swift in Sources */,
 				30F870D820865859007ADA5B /* IconRow.swift in Sources */,
 				30C8BC2F1EDB749600B99F1B /* ParameterListView.swift in Sources */,
 				305589431EC4E4D600420BBD /* RenderSurface.swift in Sources */,
+				304ADD52209D2A66001B9A43 /* PluginMenu.swift in Sources */,
 				30F870D520865859007ADA5B /* TextStyles.swift in Sources */,
 				30F870D620865859007ADA5B /* AttributedFont.swift in Sources */,
 				30F870D720865859007ADA5B /* Welcome.swift in Sources */,
@@ -1125,6 +1144,7 @@
 				307719001F3CD3F1003A597B /* MultilevelPopupField.swift in Sources */,
 				307718F01F365BA3003A597B /* CSType.swift in Sources */,
 				3003027A1EDCDBA00085E140 /* LogicNode.swift in Sources */,
+				304ADD55209D2CA0001B9A43 /* LonaPlugins.swift in Sources */,
 				307718F41F366AEA003A597B /* CSValueField.swift in Sources */,
 				BA48549A1FEF6EC800AB7923 /* PickerListView.swift in Sources */,
 				6B6017D01EBF9EFA001E02C1 /* LayerList.swift in Sources */,

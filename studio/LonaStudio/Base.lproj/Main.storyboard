@@ -694,6 +694,16 @@
                                     </items>
                                 </menu>
                             </menuItem>
+                            <menuItem title="Plugins" id="Y7G-94-YF6">
+                                <modifierMask key="keyEquivalentModifierMask"/>
+                                <menu key="submenu" title="Plugins" id="M6r-Xb-mG3" customClass="PluginMenu" customModule="LonaStudio" customModuleProvider="target">
+                                    <items>
+                                        <menuItem title="Show in Finder" id="4rd-Ub-SLq">
+                                            <modifierMask key="keyEquivalentModifierMask"/>
+                                        </menuItem>
+                                    </items>
+                                </menu>
+                            </menuItem>
                             <menuItem title="Window" id="aUF-d1-5bR">
                                 <modifierMask key="keyEquivalentModifierMask"/>
                                 <menu key="submenu" title="Window" systemMenu="window" id="Td7-aD-5lo">
@@ -866,36 +876,36 @@
                         <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                         <subviews>
                             <customView translatesAutoresizingMaskIntoConstraints="NO" id="Dhz-8v-y0T" userLabel="WorkspaceTabsContainer">
-                                <rect key="frame" x="0.0" y="0.0" width="60" height="950"/>
+                                <rect key="frame" x="0.0" y="0.0" width="60" height="800"/>
                                 <constraints>
                                     <constraint firstAttribute="width" constant="60" id="n5A-3e-8A2"/>
                                 </constraints>
                             </customView>
                             <splitView arrangesAllSubviews="NO" dividerStyle="thin" vertical="YES" translatesAutoresizingMaskIntoConstraints="NO" id="wR8-fK-fyL">
-                                <rect key="frame" x="60" y="0.0" width="1140" height="950"/>
+                                <rect key="frame" x="60" y="0.0" width="1140" height="800"/>
                                 <subviews>
                                     <customView fixedFrame="YES" id="xoF-tO-Yjv">
-                                        <rect key="frame" x="0.0" y="0.0" width="191" height="950"/>
+                                        <rect key="frame" x="0.0" y="0.0" width="191" height="800"/>
                                         <autoresizingMask key="autoresizingMask"/>
                                     </customView>
-                                    <customView misplaced="YES" id="8m0-fm-Vcx">
-                                        <rect key="frame" x="192" y="0.0" width="948" height="950"/>
+                                    <customView id="8m0-fm-Vcx">
+                                        <rect key="frame" x="192" y="0.0" width="948" height="800"/>
                                         <autoresizingMask key="autoresizingMask"/>
                                         <subviews>
                                             <stackView distribution="fill" orientation="horizontal" alignment="top" spacing="0.0" horizontalStackHuggingPriority="249.99998474121094" verticalStackHuggingPriority="249.99998474121094" detachesHiddenViews="YES" translatesAutoresizingMaskIntoConstraints="NO" id="5CG-f1-ih0">
-                                                <rect key="frame" x="0.0" y="0.0" width="948" height="950"/>
+                                                <rect key="frame" x="0.0" y="0.0" width="948" height="800"/>
                                                 <subviews>
                                                     <splitView arrangesAllSubviews="NO" translatesAutoresizingMaskIntoConstraints="NO" id="wvM-qC-Tgo" customClass="SectionSplitter" customModule="LonaStudio" customModuleProvider="target">
-                                                        <rect key="frame" x="0.0" y="0.0" width="668" height="950"/>
+                                                        <rect key="frame" x="0.0" y="0.0" width="668" height="800"/>
                                                         <subviews>
-                                                            <customView misplaced="YES" id="JRH-I4-g9x">
-                                                                <rect key="frame" x="0.0" y="0.0" width="668" height="764"/>
+                                                            <customView id="JRH-I4-g9x">
+                                                                <rect key="frame" x="0.0" y="0.0" width="668" height="614"/>
                                                                 <autoresizingMask key="autoresizingMask"/>
                                                                 <subviews>
                                                                     <box boxType="custom" borderType="none" borderWidth="0.0" title="Box" translatesAutoresizingMaskIntoConstraints="NO" id="LQR-Dg-zfW">
-                                                                        <rect key="frame" x="0.0" y="0.0" width="668" height="764"/>
+                                                                        <rect key="frame" x="0.0" y="0.0" width="668" height="614"/>
                                                                         <view key="contentView" id="TQI-E0-XPk">
-                                                                            <rect key="frame" x="0.0" y="0.0" width="668" height="764"/>
+                                                                            <rect key="frame" x="0.0" y="0.0" width="668" height="614"/>
                                                                             <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                                                         </view>
                                                                     </box>
@@ -908,7 +918,7 @@
                                                                 </constraints>
                                                             </customView>
                                                             <customView id="6G8-EA-AQZ">
-                                                                <rect key="frame" x="0.0" y="773" width="668" height="177"/>
+                                                                <rect key="frame" x="0.0" y="623" width="668" height="177"/>
                                                                 <autoresizingMask key="autoresizingMask"/>
                                                                 <subviews>
                                                                     <customView translatesAutoresizingMaskIntoConstraints="NO" id="0di-7K-4hy" userLabel="Bottom">
@@ -929,9 +939,9 @@
                                                         </holdingPriorities>
                                                     </splitView>
                                                     <box boxType="custom" borderWidth="0.0" title="Box" translatesAutoresizingMaskIntoConstraints="NO" id="lbg-XB-k8t">
-                                                        <rect key="frame" x="668" y="0.0" width="280" height="950"/>
+                                                        <rect key="frame" x="668" y="0.0" width="280" height="800"/>
                                                         <view key="contentView" id="DDr-aE-YAO">
-                                                            <rect key="frame" x="0.0" y="0.0" width="280" height="950"/>
+                                                            <rect key="frame" x="0.0" y="0.0" width="280" height="800"/>
                                                             <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                                         </view>
                                                         <constraints>
