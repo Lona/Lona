@@ -26,4 +26,5 @@ if has_app_changes && !tests_updated
 end
 
 # Run SwiftLint
-swiftlint.lint_files inline_mode: true
+swiftlint.directory = "studio"
+swiftlint.lint_files  inline_mode: true
