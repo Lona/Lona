@@ -28,7 +28,7 @@ script:
   - xcodebuild -showsdks
   - xcodebuild -list
   - cd ..
-  - BUNDLE_GEMFILE=studio/Gemfile bundle exec danger
+  - BUNDLE_GEMFILE=studio/Gemfile bundle exec danger --dangerfile=studio/Dangerfile
   - cd studio
 
     # Build Lona
