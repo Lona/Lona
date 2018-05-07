@@ -8,7 +8,7 @@ rvm:
 
 env:
   global:
-    - WORKSPACE="studio/LonaStudio.xcworkspace"
+    - WORKSPACE="LonaStudio.xcworkspace"
     - SCHEME="LonaStudio"
     - DESTINATION="arch=x86_64"
     - SDK=macosx10.13
