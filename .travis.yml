@@ -17,14 +17,14 @@ env:
     - RUN_TESTS="YES"
 
 before_install:
-  - bundle install
+  - BUNDLE_GEMFILE=ci/Gemfile bundle install
   - BUNDLE_GEMFILE=studio/Gemfile bundle install
   - BUNDLE_GEMFILE=studio/Gemfile bundle exec pod repo update
   - BUNDLE_GEMFILE=studio/Gemfile bundle exec pod install --project-directory=studio
 
 script:
   - set -o pipefail
-  - bundle exec danger
+  - BUNDLE_GEMFILE=ci/Gemfile bundle exec danger --dangerfile=ci/Dangerfile
   - cd studio
   - xcodebuild -version
   - xcodebuild -showsdks
