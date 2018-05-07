@@ -18,11 +18,9 @@ env:
 
 before_install:
   - bundle install
-  - cd studio
-  - bundle install
-  - bundle exec pod repo update
-  - bundle exec pod install
-  - cd ..
+  - BUNDLE_GEMFILE=studio/Gemfile bundle install
+  - BUNDLE_GEMFILE=studio/Gemfile bundle exec pod repo update
+  - BUNDLE_GEMFILE=studio/Gemfile bundle exec pod install
 
 script:
   - set -o pipefail
