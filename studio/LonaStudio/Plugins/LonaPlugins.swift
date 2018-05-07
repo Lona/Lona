@@ -8,6 +8,10 @@
 
 import Foundation
 
+private struct LonaPluginConfig: Decodable {
+    var main: String
+}
+
 class LonaPlugins {
     struct PluginFile {
 
@@ -21,7 +25,13 @@ class LonaPlugins {
 
         func run(onSuccess: (String) -> Void) {
             guard let config = config else { return }
-            config.run(pluginDirectory: url, onSuccess: onSuccess)
+
+            LonaNode.run(
+                scriptPath: url.appendingPathComponent(config.main).path,
+                currentDirectoryPath: url.path,
+                onSuccess: { output in
+                    Swift.print("Output", output ?? "")
+            })
         }
 
         // MARK: Private
@@ -73,5 +83,9 @@ class LonaPlugins {
         }
 
         return files
+    }
+
+    static var nodePath: String? {
+        return Bundle.main.path(forResource: "node", ofType: "")
     }
 }

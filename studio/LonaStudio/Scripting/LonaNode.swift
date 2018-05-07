@@ -1,5 +1,5 @@
 //
-//  LonaNodePlugin.swift
+//  LonaNode.swift
 //  LonaStudio
 //
 //  Created by devin_abbott on 5/4/18.
@@ -9,22 +9,29 @@
 import Foundation
 import AppKit
 
-struct LonaPluginConfig: Decodable {
+enum LonaNode {
 
     // MARK: Public
 
-    var main: String
-
-    func run(pluginDirectory: URL, onSuccess: (String) -> Void) {
-        guard let nodePath = LonaPluginConfig.nodePath else { return }
+    static func run(
+        scriptPath: String,
+        inputData: CSData? = nil,
+        currentDirectoryPath: String? = nil,
+        onSuccess: ((String?) -> Void)? = nil,
+        onFailure: ((Int, String?) -> Void)? = nil)
+    {
+        guard let nodePath = LonaNode.binaryPath else { return }
 
         DispatchQueue.global().async {
             let task = Process()
 
             // Set the task parameters
             task.launchPath = nodePath
-            task.arguments = [pluginDirectory.appendingPathComponent(self.main).path]
-            task.currentDirectoryPath = CSUserPreferences.workspaceURL.path
+            task.arguments = [scriptPath]
+
+            if let currentDirectoryPath = currentDirectoryPath {
+                task.currentDirectoryPath = currentDirectoryPath
+            }
 
             let stdin = Pipe()
             let stdout = Pipe()
@@ -35,7 +42,10 @@ struct LonaPluginConfig: Decodable {
             // Launch the task
             task.launch()
 
-//            stdin.fileHandleForWriting.write(data)
+            if let inputData = inputData, let data = inputData.toData() {
+                stdin.fileHandleForWriting.write(data)
+            }
+
             stdin.fileHandleForWriting.closeFile()
 
             task.waitUntilExit()
@@ -44,11 +54,11 @@ struct LonaPluginConfig: Decodable {
             let data = handle.readDataToEndOfFile()
             let out = NSString(data: data, encoding: String.Encoding.utf8.rawValue)
 
-            Swift.print("result", out ?? "stdout empty")
+            onSuccess?(out as String?)
         }
     }
 
-    static var nodePath: String? {
+    static var binaryPath: String? {
         return Bundle.main.path(forResource: "node", ofType: "")
     }
 }

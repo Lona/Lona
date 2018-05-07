@@ -30,7 +30,6 @@
 		30453E3E202E0CDE00BA5BFB /* ColorBrowser.swift in Sources */ = {isa = PBXBuildFile; fileRef = 30453E3D202E0CDE00BA5BFB /* ColorBrowser.swift */; };
 		304ADD52209D2A66001B9A43 /* PluginMenu.swift in Sources */ = {isa = PBXBuildFile; fileRef = 304ADD51209D2A66001B9A43 /* PluginMenu.swift */; };
 		304ADD55209D2CA0001B9A43 /* LonaPlugins.swift in Sources */ = {isa = PBXBuildFile; fileRef = 304ADD54209D2CA0001B9A43 /* LonaPlugins.swift */; };
-		304ADD59209D3FB3001B9A43 /* LonaNodePlugin.swift in Sources */ = {isa = PBXBuildFile; fileRef = 304ADD58209D3FB3001B9A43 /* LonaNodePlugin.swift */; };
 		305029C320643EC7002D9EE1 /* ComponentMenu.swift in Sources */ = {isa = PBXBuildFile; fileRef = 305029C220643EC7002D9EE1 /* ComponentMenu.swift */; };
 		30516B491F43C46200940B3B /* SequenceExtensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 30516B481F43C46200940B3B /* SequenceExtensions.swift */; };
 		305589431EC4E4D600420BBD /* RenderSurface.swift in Sources */ = {isa = PBXBuildFile; fileRef = 305589421EC4E4D600420BBD /* RenderSurface.swift */; };
@@ -91,6 +90,7 @@
 		30990AB01FA4043600BC0CCE /* CSUserTypes.swift in Sources */ = {isa = PBXBuildFile; fileRef = 30990AAF1FA4043600BC0CCE /* CSUserTypes.swift */; };
 		30A3F13E1F300294004C7631 /* NSColorExtensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 30A3F13D1F300294004C7631 /* NSColorExtensions.swift */; };
 		30ACB4E51F663D0A00EEFED6 /* Sketch.swift in Sources */ = {isa = PBXBuildFile; fileRef = 30ACB4E41F663D0A00EEFED6 /* Sketch.swift */; };
+		30AEA12A20A0DA410021C981 /* LonaNode.swift in Sources */ = {isa = PBXBuildFile; fileRef = 30AEA12920A0DA410021C981 /* LonaNode.swift */; };
 		30B5B19F1EC29D84002068CE /* NumberField.swift in Sources */ = {isa = PBXBuildFile; fileRef = 30B5B19E1EC29D84002068CE /* NumberField.swift */; };
 		30B5B1A11EC36A70002068CE /* PopupField.swift in Sources */ = {isa = PBXBuildFile; fileRef = 30B5B1A01EC36A70002068CE /* PopupField.swift */; };
 		30B5B1A31EC3AE44002068CE /* ColorPickerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 30B5B1A21EC3AE44002068CE /* ColorPickerView.swift */; };
@@ -199,7 +199,6 @@
 		30453E3D202E0CDE00BA5BFB /* ColorBrowser.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ColorBrowser.swift; sourceTree = "<group>"; };
 		304ADD51209D2A66001B9A43 /* PluginMenu.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PluginMenu.swift; sourceTree = "<group>"; };
 		304ADD54209D2CA0001B9A43 /* LonaPlugins.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LonaPlugins.swift; sourceTree = "<group>"; };
-		304ADD58209D3FB3001B9A43 /* LonaNodePlugin.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = LonaNodePlugin.swift; sourceTree = "<group>"; };
 		305029C220643EC7002D9EE1 /* ComponentMenu.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ComponentMenu.swift; sourceTree = "<group>"; };
 		30516B481F43C46200940B3B /* SequenceExtensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SequenceExtensions.swift; sourceTree = "<group>"; };
 		305589421EC4E4D600420BBD /* RenderSurface.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RenderSurface.swift; sourceTree = "<group>"; };
@@ -260,6 +259,7 @@
 		30990AAF1FA4043600BC0CCE /* CSUserTypes.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CSUserTypes.swift; sourceTree = "<group>"; };
 		30A3F13D1F300294004C7631 /* NSColorExtensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NSColorExtensions.swift; sourceTree = "<group>"; };
 		30ACB4E41F663D0A00EEFED6 /* Sketch.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Sketch.swift; sourceTree = "<group>"; };
+		30AEA12920A0DA410021C981 /* LonaNode.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LonaNode.swift; sourceTree = "<group>"; };
 		30B5B19E1EC29D84002068CE /* NumberField.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NumberField.swift; sourceTree = "<group>"; };
 		30B5B1A01EC36A70002068CE /* PopupField.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PopupField.swift; sourceTree = "<group>"; };
 		30B5B1A21EC3AE44002068CE /* ColorPickerView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ColorPickerView.swift; sourceTree = "<group>"; };
@@ -421,7 +421,6 @@
 			isa = PBXGroup;
 			children = (
 				304ADD54209D2CA0001B9A43 /* LonaPlugins.swift */,
-				304ADD58209D3FB3001B9A43 /* LonaNodePlugin.swift */,
 			);
 			path = Plugins;
 			sourceTree = "<group>";
@@ -579,6 +578,7 @@
 				30DDEE8B1F4795A3001D41AB /* index.js */,
 				30DDEE891F479280001D41AB /* node */,
 				30DDEE8E1F4799F6001D41AB /* nodeversion */,
+				30AEA12920A0DA410021C981 /* LonaNode.swift */,
 			);
 			path = Scripting;
 			sourceTree = "<group>";
@@ -1037,6 +1037,7 @@
 				309777721F2BA78E004C8975 /* CSData.swift in Sources */,
 				BA0D85E41FD5AC2000D817C3 /* NSViewHoverExtensions.swift in Sources */,
 				30335A071F5A2878006E507B /* URLExtensions.swift in Sources */,
+				30AEA12A20A0DA410021C981 /* LonaNode.swift in Sources */,
 				30F7C9501ED4ACD8009D27DF /* SegmentedControlField.swift in Sources */,
 				30ACB4E51F663D0A00EEFED6 /* Sketch.swift in Sources */,
 				300A0AFC1EDA0CBC00704DB7 /* SectionSplitter.swift in Sources */,
@@ -1054,7 +1055,6 @@
 				30F7C9521ED4AE23009D27DF /* InspectorView.swift in Sources */,
 				30335A0C1F5B2F8B006E507B /* CaseList.swift in Sources */,
 				3056275C1FBA07C800026796 /* DictionaryEditor.swift in Sources */,
-				304ADD59209D3FB3001B9A43 /* LonaNodePlugin.swift in Sources */,
 				30F7C9561ED4E02F009D27DF /* YogaLayout.swift in Sources */,
 				3090D7931F01B2EF009277E7 /* CSLayer.swift in Sources */,
 				30335A101F5B3023006E507B /* CSCase.swift in Sources */,
