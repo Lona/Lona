@@ -26,7 +26,8 @@ if has_app_changes && !tests_updated
 end
 
 # Debugging
-puts Dir.pwd
+message "[[danger pwd]]"
+message Dir.pwd
 
 # Run SwiftLint
 swiftlint.directory = "studio"
