@@ -13,6 +13,3 @@ disabled_rules:
   - large_tuple
   - shorthand_operator
   - todo
-
-included:
-  - studio
