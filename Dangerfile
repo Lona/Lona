@@ -28,4 +28,5 @@ end
 # Run SwiftLint
 swiftlint.binary_path = "studio/Pods/SwiftLint/swiftlint"
 swiftlint.directory = "studio"
+swiftlint.verbose = true
 swiftlint.lint_files inline_mode: true
