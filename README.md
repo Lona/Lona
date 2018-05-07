@@ -47,6 +47,8 @@ Lona Studio is primarily for building component systems, but can also be used fo
 
 If you have Xcode installed, you can try it out by following the [installation instructions](./studio/README.md).
 
+> Wondering if this replaces Sketch? Why a native Mac App? I answer some common questions here in the [FAQ](./docs/overview/faq.md).
+
 ### Lona Compiler
 
 Lona Compiler converts .component files to UI code for various targets.
