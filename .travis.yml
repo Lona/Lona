@@ -17,6 +17,7 @@ env:
     - RUN_TESTS="YES"
 
 before_install:
+  - bundle install
   - cd studio
   - bundle install
   - bundle exec pod repo update
@@ -25,10 +26,11 @@ before_install:
 
 script:
   - set -o pipefail
+  - bundle exec danger
+  - cd studio
   - xcodebuild -version
   - xcodebuild -showsdks
   - xcodebuild -list
-  - BUNDLE_GEMFILE=studio/Gemfile bundle exec danger --dangerfile=studio/Dangerfile
 
     # Build Lona
   - if [ $BUILD_EXAMPLE == "YES" ]; then
