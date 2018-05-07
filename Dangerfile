@@ -29,4 +29,4 @@ end
 swiftlint.binary_path = "studio/Pods/SwiftLint/swiftlint"
 swiftlint.directory = "studio"
 swiftlint.verbose = true
-swiftlint.lint_files inline_mode: true
+swiftlint.lint_files "*.swift", inline_mode: true
