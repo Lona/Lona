@@ -7,6 +7,7 @@
 //
 
 import Foundation
+import AppKit
 
 private struct LonaPluginConfig: Decodable {
     var main: String
@@ -31,6 +32,13 @@ class LonaPlugins {
                 currentDirectoryPath: url.path,
                 onSuccess: { output in
                     Swift.print("Output", output ?? "")
+                    
+                    DispatchQueue.main.async {
+                        let alert = NSAlert()
+                        alert.messageText = "Finished running \(self.name)"
+                        alert.informativeText = output ?? ""
+                        alert.runModal()
+                    }
             })
         }
 
@@ -83,9 +91,5 @@ class LonaPlugins {
         }
 
         return files
-    }
-
-    static var nodePath: String? {
-        return Bundle.main.path(forResource: "node", ofType: "")
     }
 }
