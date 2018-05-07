@@ -25,8 +25,10 @@ if has_app_changes && !tests_updated
   warn("The library files were changed, but the tests remained unmodified. Consider updating or adding to the tests to match the library changes.")
 end
 
+# Debugging
+puts Dir.pwd
+
 # Run SwiftLint
-# swiftlint.binary_path = "studio/Pods/SwiftLint/swiftlint"
 swiftlint.directory = "studio"
 swiftlint.verbose = true
 swiftlint.lint_files "**/*.swift", inline_mode: true

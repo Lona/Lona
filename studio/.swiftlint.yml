@@ -1,6 +1,5 @@
 disabled_rules:
-  - block_based_kvo
-  - variable_name
+  - identifier_name
   - cyclomatic_complexity
   - function_body_length
   - file_length
@@ -8,7 +7,6 @@ disabled_rules:
   - force_cast
   - force_try
   - function_parameter_count
-  - multiple_closures_with_trailing_closure
   - line_length
   - large_tuple
   - shorthand_operator
