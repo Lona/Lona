@@ -27,5 +27,4 @@ end
 
 # Run SwiftLint
 swiftlint.directory = "studio"
-swiftlint.verbose = true
 swiftlint.lint_files inline_mode: true
