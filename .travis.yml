@@ -24,7 +24,7 @@ before_install:
 
 script:
   - set -o pipefail
-  - BUNDLE_GEMFILE=ci/Gemfile bundle exec danger
+  - BUNDLE_GEMFILE=ci/Gemfile bundle exec danger --dangerfile=ci/Dangerfile
   - cd studio
   - xcodebuild -version
   - xcodebuild -showsdks
