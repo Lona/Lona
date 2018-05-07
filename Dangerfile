@@ -26,7 +26,7 @@ if has_app_changes && !tests_updated
 end
 
 # Run SwiftLint
-swiftlint.binary_path = "studio/Pods/SwiftLint/swiftlint"
+# swiftlint.binary_path = "studio/Pods/SwiftLint/swiftlint"
 swiftlint.directory = "studio"
 swiftlint.verbose = true
 swiftlint.lint_files "**/*.swift", inline_mode: true
