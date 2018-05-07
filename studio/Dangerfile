@@ -26,5 +26,4 @@ if has_app_changes && !tests_updated
 end
 
 # Run SwiftLint
-swiftlint.directory "/Users/travis/build/airbnb/Lona/studio/LonaStudio"
 swiftlint.lint_files inline_mode: true
