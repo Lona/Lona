@@ -20,6 +20,14 @@ class AppDelegate: NSObject, NSApplicationDelegate {
 #endif
     }
 
+    func applicationDidFinishLaunching(_ notification: Notification) {
+        showWelcomeWindow(self)
+    }
+
+    func applicationShouldOpenUntitledFile(_ sender: NSApplication) -> Bool {
+        return false
+    }
+
     var preferencesWindow: MASPreferencesWindowController?
 
     @IBAction func showPreferences(_ sender: AnyObject) {
@@ -111,6 +119,16 @@ class AppDelegate: NSObject, NSApplicationDelegate {
 
             welcome.onCreateProject = {
                 Swift.print("Create project")
+
+                let result = self.createWorkspace()
+                switch result {
+                case .failure:
+                    Swift.print("Failed to create workspace")
+                case .canceled:
+                    Swift.print("Canceled create workspace")
+                case .success:
+                    window.close()
+                }
             }
 
             welcome.onOpenExample = {
@@ -118,7 +136,8 @@ class AppDelegate: NSObject, NSApplicationDelegate {
             }
 
             welcome.onOpenDocumentation = {
-                Swift.print("Open documentation")
+                guard let url = URL(string: "https://github.com/airbnb/Lona/blob/master/README.md") else { return }
+                NSWorkspace.shared.open(url)
             }
 
             welcomeWindow = window
@@ -159,4 +178,44 @@ class AppDelegate: NSObject, NSApplicationDelegate {
         }
 
     }
+
+    // MARK: - Creating Workspaces
+
+    private enum CreateWorkspaceState {
+        case canceled, failure, success
+    }
+
+    private func createWorkspaceDialog() -> URL? {
+        let dialog = NSSavePanel()
+
+        dialog.title                   = "Create a workspace directory"
+        dialog.showsResizeIndicator    = true
+        dialog.showsHiddenFiles        = false
+        dialog.canCreateDirectories    = true
+
+        if dialog.runModal() == NSApplication.ModalResponse.OK {
+            return dialog.url
+        } else {
+            // User clicked on "Cancel"
+            return nil
+        }
+    }
+
+    private func createWorkspace() -> CreateWorkspaceState {
+        guard let url = createWorkspaceDialog() else { return .canceled }
+
+        do {
+            try LonaModule.createWorkspace(at: url)
+        } catch {
+            let alert = NSAlert()
+            alert.messageText = "Failed to create workspace \(url.lastPathComponent) in \(url.deletingLastPathComponent().lastPathComponent)"
+            alert.runModal()
+            return .failure
+        }
+
+        CSUserPreferences.workspaceURL = url
+
+        return .success
+    }
+
 }
