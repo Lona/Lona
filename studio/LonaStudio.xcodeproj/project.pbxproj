@@ -24,6 +24,9 @@
 		30335A101F5B3023006E507B /* CSCase.swift in Sources */ = {isa = PBXBuildFile; fileRef = 30335A0F1F5B3023006E507B /* CSCase.swift */; };
 		303BDE6D1F76E61300B4CE5A /* VideoUtils.swift in Sources */ = {isa = PBXBuildFile; fileRef = 303BDE6C1F76E61300B4CE5A /* VideoUtils.swift */; };
 		303C3FE820A375E8008E1541 /* VirtualFileSystem.swift in Sources */ = {isa = PBXBuildFile; fileRef = 303C3FE720A375E8008E1541 /* VirtualFileSystem.swift */; };
+		303C3FEB20A396BB008E1541 /* icon-plus.png in Resources */ = {isa = PBXBuildFile; fileRef = 303C3FE920A396BA008E1541 /* icon-plus.png */; };
+		303C3FEC20A396BB008E1541 /* icon-plus@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 303C3FEA20A396BB008E1541 /* icon-plus@2x.png */; };
+		303C3FEE20A396C3008E1541 /* OpenProjectButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = 303C3FED20A396C3008E1541 /* OpenProjectButton.swift */; };
 		304004331ED8AB5A00AFCF2D /* CanvasListEditor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 304004321ED8AB5A00AFCF2D /* CanvasListEditor.swift */; };
 		3040EFC81F2FAC9C007C5368 /* Operators.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3040EFC71F2FAC9C007C5368 /* Operators.swift */; };
 		3043A0CC1F46653B00EF31EF /* Label.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3043A0CB1F46653B00EF31EF /* Label.swift */; };
@@ -194,6 +197,9 @@
 		30335A0F1F5B3023006E507B /* CSCase.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CSCase.swift; sourceTree = "<group>"; };
 		303BDE6C1F76E61300B4CE5A /* VideoUtils.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VideoUtils.swift; sourceTree = "<group>"; };
 		303C3FE720A375E8008E1541 /* VirtualFileSystem.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VirtualFileSystem.swift; sourceTree = "<group>"; };
+		303C3FE920A396BA008E1541 /* icon-plus.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "icon-plus.png"; sourceTree = "<group>"; };
+		303C3FEA20A396BB008E1541 /* icon-plus@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "icon-plus@2x.png"; sourceTree = "<group>"; };
+		303C3FED20A396C3008E1541 /* OpenProjectButton.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = OpenProjectButton.swift; sourceTree = "<group>"; };
 		304004321ED8AB5A00AFCF2D /* CanvasListEditor.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CanvasListEditor.swift; sourceTree = "<group>"; };
 		3040EFC71F2FAC9C007C5368 /* Operators.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Operators.swift; sourceTree = "<group>"; };
 		3043A0CB1F46653B00EF31EF /* Label.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Label.swift; sourceTree = "<group>"; };
@@ -612,6 +618,7 @@
 			isa = PBXGroup;
 			children = (
 				30F870C220865858007ADA5B /* IconRow.swift */,
+				303C3FED20A396C3008E1541 /* OpenProjectButton.swift */,
 				307D440E2097DC17004B57F5 /* TabIcon.swift */,
 				307D440D2097DC16004B57F5 /* WorkspaceVerticalTabs.swift */,
 			);
@@ -621,6 +628,8 @@
 		30F870C420865858007ADA5B /* assets */ = {
 			isa = PBXGroup;
 			children = (
+				303C3FE920A396BA008E1541 /* icon-plus.png */,
+				303C3FEA20A396BB008E1541 /* icon-plus@2x.png */,
 				307D44112097DDAB004B57F5 /* icon-tab-docs.png */,
 				307D44142097DDAB004B57F5 /* icon-tab-docs@2x.png */,
 				307D44122097DDAB004B57F5 /* icon-tab-layers.png */,
@@ -859,6 +868,7 @@
 				6B0AEFBE1EBF74D800F35BBF /* Assets.xcassets in Resources */,
 				30F870E420865859007ADA5B /* icon-documentation.png in Resources */,
 				30F870DE20865859007ADA5B /* LonaIcon_32x32.png in Resources */,
+				303C3FEB20A396BB008E1541 /* icon-plus.png in Resources */,
 				30F870E720865859007ADA5B /* icon-material-design-example@2x.png in Resources */,
 				30DDEE8A1F479280001D41AB /* node in Resources */,
 				30F870E120865859007ADA5B /* LonaIcon_128x128@2x.png in Resources */,
@@ -872,6 +882,7 @@
 				30F870DA20865859007ADA5B /* LonaIcon_32x32@2x.png in Resources */,
 				30DDEE8C1F4795A3001D41AB /* index.js in Resources */,
 				307D44172097DDAB004B57F5 /* icon-tab-layers@2x.png in Resources */,
+				303C3FEC20A396BB008E1541 /* icon-plus@2x.png in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1114,6 +1125,7 @@
 				307718E81F35241A003A597B /* CSControl.swift in Sources */,
 				303BDE6D1F76E61300B4CE5A /* VideoUtils.swift in Sources */,
 				305A19521F4638F800EA033C /* NSStackViewExtensions.swift in Sources */,
+				303C3FEE20A396C3008E1541 /* OpenProjectButton.swift in Sources */,
 				30DE880D1FBA22FB00D62A50 /* ComponentEditorButton.swift in Sources */,
 				303C3FE820A375E8008E1541 /* VirtualFileSystem.swift in Sources */,
 				30F4FD531F76ADC70048691C /* AnimationUtils.swift in Sources */,

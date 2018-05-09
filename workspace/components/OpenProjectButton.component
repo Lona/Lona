@@ -1,0 +1,143 @@
+{
+  "devices" : [
+    {
+      "height" : 48,
+      "heightMode" : "At Least",
+      "name" : "iPhone SE",
+      "width" : 320
+    }
+  ],
+  "examples" : [
+    {
+      "name" : "Default",
+      "params" : {
+        "titleText" : "Open another project..."
+      }
+    }
+  ],
+  "logic" : [
+    {
+      "assignee" : [
+        "layers",
+        "Title",
+        "text"
+      ],
+      "content" : [
+        "parameters",
+        "titleText"
+      ],
+      "type" : "AssignExpr"
+    },
+    {
+      "assignee" : [
+        "layers",
+        "TitleContainer",
+        "onPress"
+      ],
+      "content" : [
+        "parameters",
+        "onPressTitle"
+      ],
+      "type" : "AssignExpr"
+    },
+    {
+      "assignee" : [
+        "layers",
+        "PlusContainer",
+        "onPress"
+      ],
+      "content" : [
+        "parameters",
+        "onPressPlus"
+      ],
+      "type" : "AssignExpr"
+    }
+  ],
+  "params" : [
+    {
+      "name" : "titleText",
+      "type" : "String"
+    },
+    {
+      "name" : "onPressTitle",
+      "type" : {
+        "name" : "Function"
+      }
+    },
+    {
+      "name" : "onPressPlus",
+      "type" : {
+        "name" : "Function"
+      }
+    }
+  ],
+  "root" : {
+    "children" : [
+      {
+        "id" : "TopBorder",
+        "params" : {
+          "alignSelf" : "stretch",
+          "backgroundColor" : "grey200",
+          "height" : 1
+        },
+        "type" : "Lona:View"
+      },
+      {
+        "children" : [
+          {
+            "children" : [
+              {
+                "id" : "Title",
+                "params" : {
+                  "text" : "Text goes here"
+                },
+                "type" : "Lona:Text"
+              }
+            ],
+            "id" : "TitleContainer",
+            "params" : {
+              "backgroundColor" : "reda400",
+              "flex" : 1,
+              "marginRight" : 20
+            },
+            "type" : "Lona:View"
+          },
+          {
+            "children" : [
+              {
+                "id" : "Plus",
+                "params" : {
+                  "height" : 20,
+                  "image" : "file:\/\/.\/assets\/icon-plus.png",
+                  "width" : 20
+                },
+                "type" : "Lona:Image"
+              }
+            ],
+            "id" : "PlusContainer",
+            "params" : {
+
+            },
+            "type" : "Lona:View"
+          }
+        ],
+        "id" : "Inner",
+        "params" : {
+          "alignItems" : "center",
+          "alignSelf" : "stretch",
+          "flex" : 1,
+          "flexDirection" : "row",
+          "paddingLeft" : 20,
+          "paddingRight" : 20
+        },
+        "type" : "Lona:View"
+      }
+    ],
+    "id" : "View",
+    "params" : {
+      "alignSelf" : "stretch",
+      "height" : 48
+    },
+    "type" : "Lona:View"
+  }
+}
