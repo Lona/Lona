@@ -15,11 +15,15 @@ extension URL {
     }
 
     func absoluteURLForWorkspaceURL() -> URL {
-        if !absoluteString.starts(with: "file://./") { return self }
+        if !(absoluteString.starts(with: "file://./") || absoluteString.starts(with: "file://../")) { return self }
 
-        let resolved = absoluteString.replacingOccurrences(
+        var resolved = absoluteString.replacingOccurrences(
             of: "file://./",
             with: "file://" + CSUserPreferences.workspaceURL.path + "/")
+
+        resolved = resolved.replacingOccurrences(
+            of: "file://../",
+            with: "file://" + CSUserPreferences.workspaceURL.path + "/../")
 
         return URL(string: resolved) ?? self
     }

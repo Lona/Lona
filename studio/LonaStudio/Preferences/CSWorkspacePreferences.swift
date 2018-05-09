@@ -25,14 +25,16 @@ class CSWorkspacePreferences: CSPreferencesFile {
     }
 
     static var colorsFileURL: URL {
-        if let string = colorsFilePathValue.data.get(key: "data").string, let url = URL(string: string) {
+        if let string = colorsFilePathValue.data.get(key: "data").string,
+            let url = URL(string: string)?.absoluteURLForWorkspaceURL() {
             return url
         }
         return CSUserPreferences.workspaceURL.appendingPathComponent("colors.json")
     }
 
     static var textStylesFileURL: URL {
-        if let string = textStylesFilePathValue.data.get(key: "data").string, let url = URL(string: string) {
+        if let string = textStylesFilePathValue.data.get(key: "data").string,
+            let url = URL(string: string)?.absoluteURLForWorkspaceURL() {
             return url
         }
         return CSUserPreferences.workspaceURL.appendingPathComponent("textStyles.json")
