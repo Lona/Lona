@@ -157,7 +157,6 @@ public class OpenProjectButton: NSBox {
     plusContainerView.addSubview(plusView)
 
     topBorderView.fillColor = Colors.grey200
-    titleContainerView.fillColor = Colors.reda400
     plusView.image = #imageLiteral(resourceName: "icon-plus")
   }
 

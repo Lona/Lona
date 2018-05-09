@@ -96,7 +96,6 @@
             ],
             "id" : "TitleContainer",
             "params" : {
-              "backgroundColor" : "reda400",
               "flex" : 1,
               "marginRight" : 20
             },

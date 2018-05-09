@@ -83,9 +83,9 @@ class AppDelegate: NSObject, NSApplicationDelegate {
 
     @IBAction func showWelcomeWindow(_ sender: AnyObject) {
         if welcomeWindow == nil {
-            let size = NSSize(width: 448, height: 460)
+            let size = NSSize(width: 720, height: 460)
             let initialRect = NSRect(origin: .zero, size: size)
-            let window = NSWindow(contentRect: initialRect, styleMask: [.closable, .titled], backing: .retained, defer: false)
+            let window = NSWindow(contentRect: initialRect, styleMask: [.closable, .titled, .fullSizeContentView], backing: .retained, defer: false)
             window.center()
             window.title = "Welcome"
             window.isReleasedWhenClosed = false
@@ -114,21 +114,27 @@ class AppDelegate: NSObject, NSApplicationDelegate {
             view.addSubview(welcome)
 
             welcome.topAnchor.constraint(equalTo: view.topAnchor).isActive = true
+            welcome.bottomAnchor.constraint(equalTo: view.bottomAnchor).isActive = true
             welcome.leadingAnchor.constraint(equalTo: view.leadingAnchor).isActive = true
             welcome.trailingAnchor.constraint(equalTo: view.trailingAnchor).isActive = true
 
             welcome.onCreateProject = {
-                Swift.print("Create project")
+                guard let url = self.createWorkspaceDialog() else { return }
 
-                let result = self.createWorkspace()
-                switch result {
-                case .failure:
+                let ok = self.createWorkspace(url: url)
+                if !ok {
                     Swift.print("Failed to create workspace")
-                case .canceled:
-                    Swift.print("Canceled create workspace")
-                case .success:
-                    window.close()
+                    return
                 }
+
+                window.close()
+                self.openWorkspace(url: url)
+            }
+
+            welcome.onOpenProject = {
+                guard let url = self.openWorkspaceDialog() else { return }
+                window.close()
+                self.openWorkspace(url: url)
             }
 
             welcome.onOpenExample = {
@@ -179,11 +185,31 @@ class AppDelegate: NSObject, NSApplicationDelegate {
 
     }
 
-    // MARK: - Creating Workspaces
+    // MARK: - Opening Workspaces
 
-    private enum CreateWorkspaceState {
-        case canceled, failure, success
+    private func openWorkspaceDialog() -> URL? {
+        let dialog = NSOpenPanel()
+
+        dialog.title                   = "Choose a workspace"
+        dialog.showsResizeIndicator    = true
+        dialog.showsHiddenFiles        = false
+        dialog.canChooseFiles          = false
+        dialog.canChooseDirectories    = true
+        dialog.canCreateDirectories    = false
+        dialog.allowsMultipleSelection = false
+
+        guard dialog.runModal() == NSApplication.ModalResponse.OK else { return nil }
+
+        return dialog.url
     }
+
+    private func openWorkspace(url: URL) {
+        CSUserPreferences.workspaceURL = url
+
+        CSWorkspacePreferences.reloadAllConfigurationFiles(closeDocuments: true)
+    }
+
+    // MARK: - Creating Workspaces
 
     private func createWorkspaceDialog() -> URL? {
         let dialog = NSSavePanel()
@@ -201,21 +227,16 @@ class AppDelegate: NSObject, NSApplicationDelegate {
         }
     }
 
-    private func createWorkspace() -> CreateWorkspaceState {
-        guard let url = createWorkspaceDialog() else { return .canceled }
-
+    private func createWorkspace(url: URL) -> Bool {
         do {
             try LonaModule.createWorkspace(at: url)
         } catch {
             let alert = NSAlert()
             alert.messageText = "Failed to create workspace \(url.lastPathComponent) in \(url.deletingLastPathComponent().lastPathComponent)"
             alert.runModal()
-            return .failure
+            return false
         }
 
-        CSUserPreferences.workspaceURL = url
-
-        return .success
+        return true
     }
-
 }

@@ -56,16 +56,7 @@ class WorkspacePreferencesViewController: NSViewController, MASPreferencesViewCo
             PathSettingRow(title: "Workspace Path", value: CSUserPreferences.workspaceURL.path, onChange: { value in
                 CSUserPreferences.workspaceURL = URL(fileURLWithPath: value.stringValue, isDirectory: true)
 
-                // Close all documents, since preferences change things drastically
-                NSDocumentController.shared.closeAllDocuments(withDelegate: nil, didCloseAllSelector: nil, contextInfo: nil)
-
-                // Load preferences for this new workspace if they exist
-                CSWorkspacePreferences.reload()
-                CSUserTypes.reload()
-                CSColors.reload()
-                CSTypography.reload()
-                CSGradients.reload()
-                CSShadows.reload()
+                CSWorkspacePreferences.reloadAllConfigurationFiles(closeDocuments: true)
 
                 self.render()
             }),
