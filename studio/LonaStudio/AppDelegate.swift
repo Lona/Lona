@@ -138,7 +138,8 @@ class AppDelegate: NSObject, NSApplicationDelegate {
             }
 
             welcome.onOpenExample = {
-                Swift.print("Open example")
+                guard let url = URL(string: "https://github.com/airbnb/Lona/tree/master/examples/material-design") else { return }
+                NSWorkspace.shared.open(url)
             }
 
             welcome.onOpenDocumentation = {
