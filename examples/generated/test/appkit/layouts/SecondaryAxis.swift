@@ -150,6 +150,7 @@ public class SecondaryAxis: NSBox {
       .trailingAnchor
       .constraint(equalTo: fitView.trailingAnchor, constant: -(fitViewTrailingPadding + textViewTrailingMargin))
     let fillViewHeightAnchorConstraint = fillView.heightAnchor.constraint(equalToConstant: 100)
+
     textViewWidthAnchorParentConstraint.priority = NSLayoutConstraint.Priority.defaultLow
 
     NSLayoutConstraint.activate([

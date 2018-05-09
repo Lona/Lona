@@ -190,6 +190,7 @@ public class IconRow: NSBox {
       .constraint(
         equalTo: rowContentView.trailingAnchor,
         constant: -(rowContentViewTrailingPadding + subtitleViewTrailingMargin))
+
     imageViewHeightAnchorParentConstraint.priority = NSLayoutConstraint.Priority.defaultLow
     rowContentViewHeightAnchorParentConstraint.priority = NSLayoutConstraint.Priority.defaultLow
 

@@ -1227,6 +1227,7 @@ function generate(options, swiftOptions, name, colors, textStyles, getComponent,
                   right: /* LiteralExpression */Block.__(0, [/* String */Block.__(3, [formatConstraintVariableName(def)])])
                 }]);
     };
+    var match = +(List.length(constraints) > 0);
     return /* FunctionDeclaration */Block.__(13, [{
                 name: "setUpConstraints",
                 modifiers: /* :: */[
@@ -1236,51 +1237,27 @@ function generate(options, swiftOptions, name, colors, textStyles, getComponent,
                 parameters: /* [] */0,
                 result: /* None */0,
                 throws: /* false */0,
-                body: List.concat(/* :: */[
+                body: SwiftDocument$LonaCompilerCore.joinGroups(/* Empty */0, /* :: */[
                       Layer$LonaCompilerCore.flatmap(translatesAutoresizingMask, root),
                       /* :: */[
+                        List.map(defineConstraint, constraints),
                         /* :: */[
-                          /* Empty */0,
-                          /* [] */0
-                        ],
-                        /* :: */[
-                          List.map(defineConstraint, constraints),
+                          List.map(setConstraintPriority, List.filter((function (def) {
+                                        return +(Constraint$LonaCompilerCore.getPriority(def) === /* Low */1);
+                                      }))(constraints)),
                           /* :: */[
-                            List.map(setConstraintPriority, List.filter((function (def) {
-                                          return +(Constraint$LonaCompilerCore.getPriority(def) === /* Low */1);
-                                        }))(constraints)),
                             /* :: */[
+                              activateConstraints(/* () */0),
+                              /* [] */0
+                            ],
+                            /* :: */[
+                              List.map(assignConstraint, constraints),
                               /* :: */[
-                                /* Empty */0,
+                                match !== 0 ? /* :: */[
+                                    /* LineComment */Block.__(21, ["For debugging"]),
+                                    List.map(assignConstraintIdentifier, constraints)
+                                  ] : /* [] */0,
                                 /* [] */0
-                              ],
-                              /* :: */[
-                                /* :: */[
-                                  activateConstraints(/* () */0),
-                                  /* [] */0
-                                ],
-                                /* :: */[
-                                  /* :: */[
-                                    /* Empty */0,
-                                    /* [] */0
-                                  ],
-                                  /* :: */[
-                                    List.map(assignConstraint, constraints),
-                                    /* :: */[
-                                      /* :: */[
-                                        /* Empty */0,
-                                        /* :: */[
-                                          /* LineComment */Block.__(21, ["For debugging"]),
-                                          /* [] */0
-                                        ]
-                                      ],
-                                      /* :: */[
-                                        List.map(assignConstraintIdentifier, constraints),
-                                        /* [] */0
-                                      ]
-                                    ]
-                                  ]
-                                ]
                               ]
                             ]
                           ]

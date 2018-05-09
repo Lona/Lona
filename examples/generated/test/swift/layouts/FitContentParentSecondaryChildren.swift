@@ -115,6 +115,7 @@ public class FitContentParentSecondaryChildren: UIView {
     let view3ViewWidthAnchorConstraint = view3View.widthAnchor.constraint(equalToConstant: 100)
     let view2ViewHeightAnchorConstraint = view2View.heightAnchor.constraint(equalToConstant: 180)
     let view2ViewWidthAnchorConstraint = view2View.widthAnchor.constraint(equalToConstant: 100)
+
     view1ViewHeightAnchorParentConstraint.priority = UILayoutPriority.defaultLow
     view3ViewHeightAnchorParentConstraint.priority = UILayoutPriority.defaultLow
     view2ViewHeightAnchorParentConstraint.priority = UILayoutPriority.defaultLow

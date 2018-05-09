@@ -271,6 +271,7 @@ public class OpenProjectButton: NSBox {
         constant: plusContainerViewLeadingPadding + plusViewLeadingMargin)
     let plusViewHeightAnchorConstraint = plusView.heightAnchor.constraint(equalToConstant: 20)
     let plusViewWidthAnchorConstraint = plusView.widthAnchor.constraint(equalToConstant: 20)
+
     plusViewWidthAnchorParentConstraint.priority = NSLayoutConstraint.Priority.defaultLow
 
     NSLayoutConstraint.activate([
