@@ -50,7 +50,7 @@ public class Welcome: NSBox {
   private var bannerViewTrailingMargin: CGFloat = 0
   private var bannerViewBottomMargin: CGFloat = 0
   private var bannerViewLeadingMargin: CGFloat = 0
-  private var bannerViewTopPadding: CGFloat = 60
+  private var bannerViewTopPadding: CGFloat = 40
   private var bannerViewTrailingPadding: CGFloat = 0
   private var bannerViewBottomPadding: CGFloat = 60
   private var bannerViewLeadingPadding: CGFloat = 0
@@ -168,7 +168,7 @@ public class Welcome: NSBox {
     titleViewTextStyle = TextStyles.title
     titleView.attributedStringValue = titleViewTextStyle.apply(to: "Welcome to Lona")
     versionViewTextStyle = TextStyles.versionInfo
-    versionView.attributedStringValue = versionViewTextStyle.apply(to: "Version 1.0.2")
+    versionView.attributedStringValue = versionViewTextStyle.apply(to: "Developer Preview")
     newButtonView.icon = #imageLiteral(resourceName: "icon-blank-document")
     newButtonView.subtitleText = "Set up a new design system"
     newButtonView.titleText = "Create a new Lona project"
@@ -176,8 +176,8 @@ public class Welcome: NSBox {
     exampleButtonView.subtitleText = "Explore the material design example project"
     exampleButtonView.titleText = "Open an example project"
     documentationButtonView.icon = #imageLiteral(resourceName: "icon-documentation")
-    documentationButtonView.subtitleText = "Read the documentation to learn how Lona works"
-    documentationButtonView.titleText = "See documentation"
+    documentationButtonView.subtitleText = "Check out the documentation to learn how Lona works"
+    documentationButtonView.titleText = "Explore documentation"
   }
 
   private func setUpConstraints() {

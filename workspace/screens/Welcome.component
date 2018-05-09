@@ -1,7 +1,7 @@
 {
   "devices" : [
     {
-      "height" : 480,
+      "height" : 460,
       "heightMode" : "At Least",
       "name" : "iPhone SE",
       "width" : 448
@@ -98,7 +98,7 @@
             "id" : "Version",
             "params" : {
               "font" : "versionInfo",
-              "text" : "Version 1.0.2"
+              "text" : "Developer Preview"
             },
             "type" : "Lona:Text"
           }
@@ -108,7 +108,7 @@
           "alignItems" : "center",
           "alignSelf" : "stretch",
           "paddingBottom" : 60,
-          "paddingTop" : 60
+          "paddingTop" : 40
         },
         "type" : "Lona:View"
       },
@@ -152,8 +152,8 @@
             "id" : "DocumentationButton",
             "params" : {
               "icon" : "file:\/\/.\/assets\/icon-documentation@2x.png",
-              "subtitleText" : "Read the documentation to learn how Lona works",
-              "titleText" : "See documentation"
+              "subtitleText" : "Check out the documentation to learn how Lona works",
+              "titleText" : "Explore documentation"
             },
             "type" : "IconRow"
           }

@@ -83,7 +83,7 @@ class AppDelegate: NSObject, NSApplicationDelegate {
 
     @IBAction func showWelcomeWindow(_ sender: AnyObject) {
         if welcomeWindow == nil {
-            let size = NSSize(width: 448, height: 480)
+            let size = NSSize(width: 448, height: 460)
             let initialRect = NSRect(origin: .zero, size: size)
             let window = NSWindow(contentRect: initialRect, styleMask: [.closable, .titled], backing: .retained, defer: false)
             window.center()
