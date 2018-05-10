@@ -1,7 +1,6 @@
 {
   "devices" : [
     {
-      "backgroundColor" : "black",
       "height" : 240,
       "heightMode" : "Exactly",
       "name" : "iPhone SE",
@@ -22,6 +21,18 @@
         "layers",
         "ComponentName",
         "text"
+      ],
+      "content" : [
+        "parameters",
+        "componentName"
+      ],
+      "type" : "AssignExpr"
+    },
+    {
+      "assignee" : [
+        "layers",
+        "ComponentPreview",
+        "componentName"
       ],
       "content" : [
         "parameters",
@@ -57,11 +68,24 @@
   "root" : {
     "children" : [
       {
+        "children" : [
+          {
+            "id" : "ComponentPreview",
+            "params" : {
+
+            },
+            "type" : "ComponentPreview"
+          }
+        ],
         "id" : "Preview",
         "params" : {
           "alignSelf" : "stretch",
           "backgroundColor" : "grey100",
-          "flex" : 1
+          "flex" : 1,
+          "paddingBottom" : 10,
+          "paddingLeft" : 10,
+          "paddingRight" : 10,
+          "paddingTop" : 10
         },
         "type" : "Lona:View"
       },
@@ -81,6 +105,8 @@
             "params" : {
               "alignSelf" : "stretch",
               "font" : "large",
+              "height" : 18,
+              "numberOfLines" : 1,
               "text" : "Component"
             },
             "type" : "Lona:Text"

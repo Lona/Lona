@@ -45,6 +45,7 @@ public class ComponentPreviewCard: NSBox {
     owner: self)
 
   private var previewView = NSBox()
+  private var componentPreviewView = ComponentPreview()
   private var dividerView = NSBox()
   private var detailsView = NSBox()
   private var componentNameView = NSTextField(labelWithString: "")
@@ -59,6 +60,10 @@ public class ComponentPreviewCard: NSBox {
   private var previewViewTrailingMargin: CGFloat = 0
   private var previewViewBottomMargin: CGFloat = 0
   private var previewViewLeadingMargin: CGFloat = 0
+  private var previewViewTopPadding: CGFloat = 10
+  private var previewViewTrailingPadding: CGFloat = 10
+  private var previewViewBottomPadding: CGFloat = 10
+  private var previewViewLeadingPadding: CGFloat = 10
   private var dividerViewTopMargin: CGFloat = 0
   private var dividerViewTrailingMargin: CGFloat = 0
   private var dividerViewBottomMargin: CGFloat = 0
@@ -71,6 +76,10 @@ public class ComponentPreviewCard: NSBox {
   private var detailsViewTrailingPadding: CGFloat = 20
   private var detailsViewBottomPadding: CGFloat = 16
   private var detailsViewLeadingPadding: CGFloat = 20
+  private var componentPreviewViewTopMargin: CGFloat = 0
+  private var componentPreviewViewTrailingMargin: CGFloat = 0
+  private var componentPreviewViewBottomMargin: CGFloat = 0
+  private var componentPreviewViewLeadingMargin: CGFloat = 0
   private var componentNameViewTopMargin: CGFloat = 0
   private var componentNameViewTrailingMargin: CGFloat = 0
   private var componentNameViewBottomMargin: CGFloat = 0
@@ -90,11 +99,16 @@ public class ComponentPreviewCard: NSBox {
   private var detailsViewTopAnchorConstraint: NSLayoutConstraint?
   private var detailsViewLeadingAnchorConstraint: NSLayoutConstraint?
   private var detailsViewTrailingAnchorConstraint: NSLayoutConstraint?
+  private var componentPreviewViewTopAnchorConstraint: NSLayoutConstraint?
+  private var componentPreviewViewBottomAnchorConstraint: NSLayoutConstraint?
+  private var componentPreviewViewLeadingAnchorConstraint: NSLayoutConstraint?
+  private var componentPreviewViewTrailingAnchorConstraint: NSLayoutConstraint?
   private var dividerViewHeightAnchorConstraint: NSLayoutConstraint?
   private var componentNameViewTopAnchorConstraint: NSLayoutConstraint?
   private var componentNameViewBottomAnchorConstraint: NSLayoutConstraint?
   private var componentNameViewLeadingAnchorConstraint: NSLayoutConstraint?
   private var componentNameViewTrailingAnchorConstraint: NSLayoutConstraint?
+  private var componentNameViewHeightAnchorConstraint: NSLayoutConstraint?
 
   private func setUpViews() {
     boxType = .custom
@@ -114,6 +128,7 @@ public class ComponentPreviewCard: NSBox {
     addSubview(previewView)
     addSubview(dividerView)
     addSubview(detailsView)
+    previewView.addSubview(componentPreviewView)
     detailsView.addSubview(componentNameView)
 
     fillColor = Colors.white
@@ -123,6 +138,7 @@ public class ComponentPreviewCard: NSBox {
     previewView.fillColor = Colors.grey100
     dividerView.fillColor = Colors.grey300
     componentNameViewTextStyle = TextStyles.large
+    componentNameView.maximumNumberOfLines = 1
   }
 
   private func setUpConstraints() {
@@ -130,6 +146,7 @@ public class ComponentPreviewCard: NSBox {
     previewView.translatesAutoresizingMaskIntoConstraints = false
     dividerView.translatesAutoresizingMaskIntoConstraints = false
     detailsView.translatesAutoresizingMaskIntoConstraints = false
+    componentPreviewView.translatesAutoresizingMaskIntoConstraints = false
     componentNameView.translatesAutoresizingMaskIntoConstraints = false
 
     let previewViewTopAnchorConstraint = previewView
@@ -162,6 +179,24 @@ public class ComponentPreviewCard: NSBox {
     let detailsViewTrailingAnchorConstraint = detailsView
       .trailingAnchor
       .constraint(equalTo: trailingAnchor, constant: -(trailingPadding + detailsViewTrailingMargin))
+    let componentPreviewViewTopAnchorConstraint = componentPreviewView
+      .topAnchor
+      .constraint(equalTo: previewView.topAnchor, constant: previewViewTopPadding + componentPreviewViewTopMargin)
+    let componentPreviewViewBottomAnchorConstraint = componentPreviewView
+      .bottomAnchor
+      .constraint(
+        equalTo: previewView.bottomAnchor,
+        constant: -(previewViewBottomPadding + componentPreviewViewBottomMargin))
+    let componentPreviewViewLeadingAnchorConstraint = componentPreviewView
+      .leadingAnchor
+      .constraint(
+        equalTo: previewView.leadingAnchor,
+        constant: previewViewLeadingPadding + componentPreviewViewLeadingMargin)
+    let componentPreviewViewTrailingAnchorConstraint = componentPreviewView
+      .trailingAnchor
+      .constraint(
+        equalTo: previewView.trailingAnchor,
+        constant: -(previewViewTrailingPadding + componentPreviewViewTrailingMargin))
     let dividerViewHeightAnchorConstraint = dividerView.heightAnchor.constraint(equalToConstant: 1)
     let componentNameViewTopAnchorConstraint = componentNameView
       .topAnchor
@@ -181,6 +216,7 @@ public class ComponentPreviewCard: NSBox {
       .constraint(
         equalTo: detailsView.trailingAnchor,
         constant: -(detailsViewTrailingPadding + componentNameViewTrailingMargin))
+    let componentNameViewHeightAnchorConstraint = componentNameView.heightAnchor.constraint(equalToConstant: 18)
 
     NSLayoutConstraint.activate([
       previewViewTopAnchorConstraint,
@@ -193,11 +229,16 @@ public class ComponentPreviewCard: NSBox {
       detailsViewTopAnchorConstraint,
       detailsViewLeadingAnchorConstraint,
       detailsViewTrailingAnchorConstraint,
+      componentPreviewViewTopAnchorConstraint,
+      componentPreviewViewBottomAnchorConstraint,
+      componentPreviewViewLeadingAnchorConstraint,
+      componentPreviewViewTrailingAnchorConstraint,
       dividerViewHeightAnchorConstraint,
       componentNameViewTopAnchorConstraint,
       componentNameViewBottomAnchorConstraint,
       componentNameViewLeadingAnchorConstraint,
-      componentNameViewTrailingAnchorConstraint
+      componentNameViewTrailingAnchorConstraint,
+      componentNameViewHeightAnchorConstraint
     ])
 
     self.previewViewTopAnchorConstraint = previewViewTopAnchorConstraint
@@ -210,11 +251,16 @@ public class ComponentPreviewCard: NSBox {
     self.detailsViewTopAnchorConstraint = detailsViewTopAnchorConstraint
     self.detailsViewLeadingAnchorConstraint = detailsViewLeadingAnchorConstraint
     self.detailsViewTrailingAnchorConstraint = detailsViewTrailingAnchorConstraint
+    self.componentPreviewViewTopAnchorConstraint = componentPreviewViewTopAnchorConstraint
+    self.componentPreviewViewBottomAnchorConstraint = componentPreviewViewBottomAnchorConstraint
+    self.componentPreviewViewLeadingAnchorConstraint = componentPreviewViewLeadingAnchorConstraint
+    self.componentPreviewViewTrailingAnchorConstraint = componentPreviewViewTrailingAnchorConstraint
     self.dividerViewHeightAnchorConstraint = dividerViewHeightAnchorConstraint
     self.componentNameViewTopAnchorConstraint = componentNameViewTopAnchorConstraint
     self.componentNameViewBottomAnchorConstraint = componentNameViewBottomAnchorConstraint
     self.componentNameViewLeadingAnchorConstraint = componentNameViewLeadingAnchorConstraint
     self.componentNameViewTrailingAnchorConstraint = componentNameViewTrailingAnchorConstraint
+    self.componentNameViewHeightAnchorConstraint = componentNameViewHeightAnchorConstraint
 
     // For debugging
     previewViewTopAnchorConstraint.identifier = "previewViewTopAnchorConstraint"
@@ -227,15 +273,21 @@ public class ComponentPreviewCard: NSBox {
     detailsViewTopAnchorConstraint.identifier = "detailsViewTopAnchorConstraint"
     detailsViewLeadingAnchorConstraint.identifier = "detailsViewLeadingAnchorConstraint"
     detailsViewTrailingAnchorConstraint.identifier = "detailsViewTrailingAnchorConstraint"
+    componentPreviewViewTopAnchorConstraint.identifier = "componentPreviewViewTopAnchorConstraint"
+    componentPreviewViewBottomAnchorConstraint.identifier = "componentPreviewViewBottomAnchorConstraint"
+    componentPreviewViewLeadingAnchorConstraint.identifier = "componentPreviewViewLeadingAnchorConstraint"
+    componentPreviewViewTrailingAnchorConstraint.identifier = "componentPreviewViewTrailingAnchorConstraint"
     dividerViewHeightAnchorConstraint.identifier = "dividerViewHeightAnchorConstraint"
     componentNameViewTopAnchorConstraint.identifier = "componentNameViewTopAnchorConstraint"
     componentNameViewBottomAnchorConstraint.identifier = "componentNameViewBottomAnchorConstraint"
     componentNameViewLeadingAnchorConstraint.identifier = "componentNameViewLeadingAnchorConstraint"
     componentNameViewTrailingAnchorConstraint.identifier = "componentNameViewTrailingAnchorConstraint"
+    componentNameViewHeightAnchorConstraint.identifier = "componentNameViewHeightAnchorConstraint"
   }
 
   private func update() {
     componentNameView.attributedStringValue = componentNameViewTextStyle.apply(to: componentName)
+    componentPreviewView.componentName = componentName
     onPress = onClick
   }
 
