@@ -63,7 +63,11 @@ public class ComponentPreview: NSBox {
     private func update() {
         guard let component = LonaModule.current.component(named: componentName),
             let canvas = component.computedCanvases().first,
-            let caseItem = component.computedCases(for: canvas).first else { return }
+            let caseItem = component.computedCases(for: canvas).first
+        else {
+            imageView.image = NSImage()
+            return
+        }
 
         let config = ComponentConfiguration(
             component: component,

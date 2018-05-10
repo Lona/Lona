@@ -39,6 +39,8 @@ class ComponentPreviewCollectionView: NSView {
     private let scrollView = NSScrollView()
 
     private func setUpViews() {
+        wantsLayer = true
+
         let gridLayout = NSCollectionViewGridLayout()
         gridLayout.minimumItemSize = NSSize(width: 240, height: 240)
         gridLayout.maximumItemSize = NSSize(width: 264, height: 240)
