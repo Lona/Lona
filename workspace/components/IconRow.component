@@ -93,42 +93,6 @@
           "content" : {
             "type" : "LitExpr",
             "value" : {
-              "data" : "red50",
-              "type" : "Color"
-            }
-          },
-          "type" : "AssignExpr"
-        }
-      ],
-      "condition" : {
-        "left" : [
-          "layers",
-          "Container",
-          "hovered"
-        ],
-        "op" : "==",
-        "right" : {
-          "type" : "LitExpr",
-          "value" : {
-            "data" : true,
-            "type" : "Boolean"
-          }
-        },
-        "type" : "BinExpr"
-      },
-      "type" : "IfExpr"
-    },
-    {
-      "body" : [
-        {
-          "assignee" : [
-            "layers",
-            "Container",
-            "backgroundColor"
-          ],
-          "content" : {
-            "type" : "LitExpr",
-            "value" : {
               "data" : "pink50",
               "type" : "Color"
             }

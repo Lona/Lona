@@ -85,6 +85,7 @@ public class Button: UIView {
     let textViewTrailingAnchorConstraint = textView
       .trailingAnchor
       .constraint(equalTo: trailingAnchor, constant: -(trailingPadding + textViewTrailingMargin))
+
     textViewWidthAnchorParentConstraint.priority = UILayoutPriority.defaultLow
 
     NSLayoutConstraint.activate([

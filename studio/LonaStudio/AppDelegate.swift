@@ -20,6 +20,14 @@ class AppDelegate: NSObject, NSApplicationDelegate {
 #endif
     }
 
+    func applicationDidFinishLaunching(_ notification: Notification) {
+        showWelcomeWindow(self)
+    }
+
+    func applicationShouldOpenUntitledFile(_ sender: NSApplication) -> Bool {
+        return false
+    }
+
     var preferencesWindow: MASPreferencesWindowController?
 
     @IBAction func showPreferences(_ sender: AnyObject) {
@@ -75,9 +83,9 @@ class AppDelegate: NSObject, NSApplicationDelegate {
 
     @IBAction func showWelcomeWindow(_ sender: AnyObject) {
         if welcomeWindow == nil {
-            let size = NSSize(width: 448, height: 480)
+            let size = NSSize(width: 720, height: 460)
             let initialRect = NSRect(origin: .zero, size: size)
-            let window = NSWindow(contentRect: initialRect, styleMask: [.closable, .titled], backing: .retained, defer: false)
+            let window = NSWindow(contentRect: initialRect, styleMask: [.closable, .titled, .fullSizeContentView], backing: .retained, defer: false)
             window.center()
             window.title = "Welcome"
             window.isReleasedWhenClosed = false
@@ -106,19 +114,37 @@ class AppDelegate: NSObject, NSApplicationDelegate {
             view.addSubview(welcome)
 
             welcome.topAnchor.constraint(equalTo: view.topAnchor).isActive = true
+            welcome.bottomAnchor.constraint(equalTo: view.bottomAnchor).isActive = true
             welcome.leadingAnchor.constraint(equalTo: view.leadingAnchor).isActive = true
             welcome.trailingAnchor.constraint(equalTo: view.trailingAnchor).isActive = true
 
             welcome.onCreateProject = {
-                Swift.print("Create project")
+                guard let url = self.createWorkspaceDialog() else { return }
+
+                let ok = self.createWorkspace(url: url)
+                if !ok {
+                    Swift.print("Failed to create workspace")
+                    return
+                }
+
+                window.close()
+                self.openWorkspace(url: url)
+            }
+
+            welcome.onOpenProject = {
+                guard let url = self.openWorkspaceDialog() else { return }
+                window.close()
+                self.openWorkspace(url: url)
             }
 
             welcome.onOpenExample = {
-                Swift.print("Open example")
+                guard let url = URL(string: "https://github.com/airbnb/Lona/tree/master/examples/material-design") else { return }
+                NSWorkspace.shared.open(url)
             }
 
             welcome.onOpenDocumentation = {
-                Swift.print("Open documentation")
+                guard let url = URL(string: "https://github.com/airbnb/Lona/blob/master/README.md") else { return }
+                NSWorkspace.shared.open(url)
             }
 
             welcomeWindow = window
@@ -158,5 +184,60 @@ class AppDelegate: NSObject, NSApplicationDelegate {
             Swift.print("Failed to duplicate template", url)
         }
 
+    }
+
+    // MARK: - Opening Workspaces
+
+    private func openWorkspaceDialog() -> URL? {
+        let dialog = NSOpenPanel()
+
+        dialog.title                   = "Choose a workspace"
+        dialog.showsResizeIndicator    = true
+        dialog.showsHiddenFiles        = false
+        dialog.canChooseFiles          = false
+        dialog.canChooseDirectories    = true
+        dialog.canCreateDirectories    = false
+        dialog.allowsMultipleSelection = false
+
+        guard dialog.runModal() == NSApplication.ModalResponse.OK else { return nil }
+
+        return dialog.url
+    }
+
+    private func openWorkspace(url: URL) {
+        CSUserPreferences.workspaceURL = url
+
+        CSWorkspacePreferences.reloadAllConfigurationFiles(closeDocuments: true)
+    }
+
+    // MARK: - Creating Workspaces
+
+    private func createWorkspaceDialog() -> URL? {
+        let dialog = NSSavePanel()
+
+        dialog.title                   = "Create a workspace directory"
+        dialog.showsResizeIndicator    = true
+        dialog.showsHiddenFiles        = false
+        dialog.canCreateDirectories    = true
+
+        if dialog.runModal() == NSApplication.ModalResponse.OK {
+            return dialog.url
+        } else {
+            // User clicked on "Cancel"
+            return nil
+        }
+    }
+
+    private func createWorkspace(url: URL) -> Bool {
+        do {
+            try LonaModule.createWorkspace(at: url)
+        } catch {
+            let alert = NSAlert()
+            alert.messageText = "Failed to create workspace \(url.lastPathComponent) in \(url.deletingLastPathComponent().lastPathComponent)"
+            alert.runModal()
+            return false
+        }
+
+        return true
     }
 }

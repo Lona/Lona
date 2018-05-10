@@ -232,7 +232,7 @@ function copyStaticFiles(outputDirectory) {
     var match = swiftOptions[/* framework */0];
     var framework = match !== 0 ? "appkit" : "uikit";
     var base = __dirname;
-    FsExtra.copySync(Path.join(base, "../static/swift/AttributedFont." + (framework + ".swift")), Path.join(outputDirectory, "AttributedFont.swift"));
+    FsExtra.copySync(Path.join(base, "static/swift/AttributedFont." + (framework + ".swift")), Path.join(outputDirectory, "AttributedFont.swift"));
     return /* () */0;
   }
 }

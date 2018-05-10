@@ -7,6 +7,7 @@
 //
 
 import Foundation
+import AppKit
 
 class LonaModule {
     struct ComponentFile {
@@ -66,5 +67,23 @@ class LonaModule {
         }
 
         return files
+    }
+
+    static func createWorkspace(at url: URL) throws {
+        let workspaceName = url.lastPathComponent
+        let workspaceParent = url.deletingLastPathComponent()
+
+        let root = VirtualDirectory(name: workspaceName, children: [
+            VirtualFile(name: "colors.json", data: CSData.Object([
+                "colors": CSData.Array([])
+                ])),
+            VirtualFile(name: "textStyles.json", data: CSData.Object([
+                "styles": CSData.Array([])
+                ])),
+            VirtualDirectory(name: "assets"),
+            VirtualDirectory(name: "components")
+            ])
+
+        try VirtualFileSystem.write(node: root, relativeTo: workspaceParent)
     }
 }

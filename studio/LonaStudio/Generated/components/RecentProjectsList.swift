@@ -1,15 +1,13 @@
 import AppKit
 import Foundation
 
-// MARK: - If
+// MARK: - RecentProjectsList
 
-public class If: NSBox {
+public class RecentProjectsList: NSBox {
 
   // MARK: Lifecycle
 
-  public init(enabled: Bool) {
-    self.enabled = enabled
-
+  public init() {
     super.init(frame: .zero)
 
     setUpViews()
@@ -18,17 +16,9 @@ public class If: NSBox {
     update()
   }
 
-  public convenience init() {
-    self.init(enabled: false)
-  }
-
   public required init?(coder aDecoder: NSCoder) {
     fatalError("init(coder:) has not been implemented")
   }
-
-  // MARK: Public
-
-  public var enabled: Bool { didSet { update() } }
 
   // MARK: Private
 
@@ -36,6 +26,8 @@ public class If: NSBox {
     boxType = .custom
     borderType = .noBorder
     contentViewMargins = .zero
+
+    fillColor = Colors.pink50
   }
 
   private func setUpConstraints() {
@@ -44,10 +36,5 @@ public class If: NSBox {
     NSLayoutConstraint.activate([])
   }
 
-  private func update() {
-    fillColor = #colorLiteral(red: 0, green: 0, blue: 0, alpha: 0)
-    if enabled {
-      fillColor = Colors.red500
-    }
-  }
+  private func update() {}
 }

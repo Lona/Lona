@@ -99,6 +99,7 @@ public class Button: NSBox {
     let textViewTrailingAnchorConstraint = textView
       .trailingAnchor
       .constraint(equalTo: trailingAnchor, constant: -(trailingPadding + textViewTrailingMargin))
+
     textViewWidthAnchorParentConstraint.priority = NSLayoutConstraint.Priority.defaultLow
 
     NSLayoutConstraint.activate([

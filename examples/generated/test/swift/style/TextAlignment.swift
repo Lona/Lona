@@ -574,6 +574,7 @@ public class TextAlignment: UIView {
     let text4ViewWidthAnchorConstraint = text4View.widthAnchor.constraint(equalToConstant: 80)
     let image1ViewHeightAnchorConstraint = image1View.heightAnchor.constraint(equalToConstant: 100)
     let image1ViewWidthAnchorConstraint = image1View.widthAnchor.constraint(equalToConstant: 100)
+
     text5ViewWidthAnchorParentConstraint.priority = UILayoutPriority.defaultLow
     text7ViewWidthAnchorParentConstraint.priority = UILayoutPriority.defaultLow
 

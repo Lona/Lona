@@ -964,20 +964,24 @@ let generate =
       "result": None,
       "throws": false,
       "body":
-        List.concat([
-          root |> Layer.flatmap(translatesAutoresizingMask),
-          [Empty],
-          constraints |> List.map(defineConstraint),
-          constraints
-          |> List.filter(def => Constraint.getPriority(def) == Low)
-          |> List.map(setConstraintPriority),
-          [Empty],
-          [activateConstraints()],
-          [Empty],
-          constraints |> List.map(assignConstraint),
-          [Empty, LineComment("For debugging")],
-          constraints |> List.map(assignConstraintIdentifier)
-        ])
+        Document.joinGroups(
+          Empty,
+          [
+            root |> Layer.flatmap(translatesAutoresizingMask),
+            constraints |> List.map(defineConstraint),
+            constraints
+            |> List.filter(def => Constraint.getPriority(def) == Low)
+            |> List.map(setConstraintPriority),
+            [activateConstraints()],
+            constraints |> List.map(assignConstraint),
+            List.length(constraints) > 0 ?
+              [
+                LineComment("For debugging"),
+                ...constraints |> List.map(assignConstraintIdentifier)
+              ] :
+              []
+          ]
+        )
     });
   };
   let updateDoc = () => {

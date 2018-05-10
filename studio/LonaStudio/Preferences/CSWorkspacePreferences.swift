@@ -7,6 +7,7 @@
 //
 
 import Foundation
+import AppKit
 
 func defaultWorkspaceURL() -> URL {
     return preferencesDirectory().appendingPathComponent("LonaWorkspace", isDirectory: true)
@@ -71,4 +72,17 @@ class CSWorkspacePreferences: CSPreferencesFile {
     }
 
     static var data: CSData = load()
+
+    static func reloadAllConfigurationFiles(closeDocuments: Bool) {
+        if closeDocuments {
+            NSDocumentController.shared.closeAllDocuments(withDelegate: nil, didCloseAllSelector: nil, contextInfo: nil)
+        }
+
+        CSWorkspacePreferences.reload()
+        CSUserTypes.reload()
+        CSColors.reload()
+        CSTypography.reload()
+        CSGradients.reload()
+        CSShadows.reload()
+    }
 }

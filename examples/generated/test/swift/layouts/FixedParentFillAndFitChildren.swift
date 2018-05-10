@@ -162,6 +162,7 @@ public class FixedParentFillAndFitChildren: UIView {
     let view4ViewWidthAnchorConstraint = view4View.widthAnchor.constraint(equalToConstant: 60)
     let view5ViewHeightAnchorConstraint = view5View.heightAnchor.constraint(equalToConstant: 60)
     let view5ViewWidthAnchorConstraint = view5View.widthAnchor.constraint(equalToConstant: 60)
+
     view4ViewHeightAnchorParentConstraint.priority = UILayoutPriority.defaultLow
     view5ViewHeightAnchorParentConstraint.priority = UILayoutPriority.defaultLow
 

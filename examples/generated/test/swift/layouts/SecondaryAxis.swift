@@ -138,6 +138,7 @@ public class SecondaryAxis: UIView {
       .trailingAnchor
       .constraint(equalTo: fitView.trailingAnchor, constant: -(fitViewTrailingPadding + textViewTrailingMargin))
     let fillViewHeightAnchorConstraint = fillView.heightAnchor.constraint(equalToConstant: 100)
+
     textViewWidthAnchorParentConstraint.priority = UILayoutPriority.defaultLow
 
     NSLayoutConstraint.activate([

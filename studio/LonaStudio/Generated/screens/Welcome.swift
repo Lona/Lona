@@ -23,11 +23,13 @@ public class Welcome: NSBox {
   // MARK: Public
 
   public var onCreateProject: (() -> Void)? { didSet { update() } }
+  public var onOpenProject: (() -> Void)? { didSet { update() } }
   public var onOpenExample: (() -> Void)? { didSet { update() } }
   public var onOpenDocumentation: (() -> Void)? { didSet { update() } }
 
   // MARK: Private
 
+  private var splashView = NSBox()
   private var bannerView = NSBox()
   private var imageView = NSImageView()
   private var titleView = NSTextField(labelWithString: "")
@@ -38,6 +40,10 @@ public class Welcome: NSBox {
   private var exampleButtonView = IconRow()
   private var spacer2View = NSBox()
   private var documentationButtonView = IconRow()
+  private var dividerView = NSBox()
+  private var projectsView = NSBox()
+  private var recentProjectsListView = RecentProjectsList()
+  private var openProjectButtonView = OpenProjectButton()
 
   private var titleViewTextStyle = TextStyles.title
   private var versionViewTextStyle = TextStyles.versionInfo
@@ -46,6 +52,26 @@ public class Welcome: NSBox {
   private var trailingPadding: CGFloat = 0
   private var bottomPadding: CGFloat = 0
   private var leadingPadding: CGFloat = 0
+  private var splashViewTopMargin: CGFloat = 0
+  private var splashViewTrailingMargin: CGFloat = 0
+  private var splashViewBottomMargin: CGFloat = 20
+  private var splashViewLeadingMargin: CGFloat = 0
+  private var splashViewTopPadding: CGFloat = 0
+  private var splashViewTrailingPadding: CGFloat = 0
+  private var splashViewBottomPadding: CGFloat = 0
+  private var splashViewLeadingPadding: CGFloat = 0
+  private var dividerViewTopMargin: CGFloat = 0
+  private var dividerViewTrailingMargin: CGFloat = 0
+  private var dividerViewBottomMargin: CGFloat = 0
+  private var dividerViewLeadingMargin: CGFloat = 0
+  private var projectsViewTopMargin: CGFloat = 0
+  private var projectsViewTrailingMargin: CGFloat = 0
+  private var projectsViewBottomMargin: CGFloat = 0
+  private var projectsViewLeadingMargin: CGFloat = 0
+  private var projectsViewTopPadding: CGFloat = 0
+  private var projectsViewTrailingPadding: CGFloat = 0
+  private var projectsViewBottomPadding: CGFloat = 0
+  private var projectsViewLeadingPadding: CGFloat = 0
   private var bannerViewTopMargin: CGFloat = 0
   private var bannerViewTrailingMargin: CGFloat = 0
   private var bannerViewBottomMargin: CGFloat = 0
@@ -94,7 +120,26 @@ public class Welcome: NSBox {
   private var documentationButtonViewTrailingMargin: CGFloat = 0
   private var documentationButtonViewBottomMargin: CGFloat = 0
   private var documentationButtonViewLeadingMargin: CGFloat = 0
+  private var recentProjectsListViewTopMargin: CGFloat = 0
+  private var recentProjectsListViewTrailingMargin: CGFloat = 0
+  private var recentProjectsListViewBottomMargin: CGFloat = 0
+  private var recentProjectsListViewLeadingMargin: CGFloat = 0
+  private var openProjectButtonViewTopMargin: CGFloat = 0
+  private var openProjectButtonViewTrailingMargin: CGFloat = 0
+  private var openProjectButtonViewBottomMargin: CGFloat = 0
+  private var openProjectButtonViewLeadingMargin: CGFloat = 0
 
+  private var splashViewLeadingAnchorConstraint: NSLayoutConstraint?
+  private var splashViewTopAnchorConstraint: NSLayoutConstraint?
+  private var splashViewBottomAnchorConstraint: NSLayoutConstraint?
+  private var dividerViewLeadingAnchorConstraint: NSLayoutConstraint?
+  private var dividerViewTopAnchorConstraint: NSLayoutConstraint?
+  private var dividerViewBottomAnchorConstraint: NSLayoutConstraint?
+  private var projectsViewTrailingAnchorConstraint: NSLayoutConstraint?
+  private var projectsViewLeadingAnchorConstraint: NSLayoutConstraint?
+  private var projectsViewTopAnchorConstraint: NSLayoutConstraint?
+  private var projectsViewBottomAnchorConstraint: NSLayoutConstraint?
+  private var splashViewWidthAnchorConstraint: NSLayoutConstraint?
   private var bannerViewTopAnchorConstraint: NSLayoutConstraint?
   private var bannerViewLeadingAnchorConstraint: NSLayoutConstraint?
   private var bannerViewTrailingAnchorConstraint: NSLayoutConstraint?
@@ -102,13 +147,20 @@ public class Welcome: NSBox {
   private var rowsViewTopAnchorConstraint: NSLayoutConstraint?
   private var rowsViewLeadingAnchorConstraint: NSLayoutConstraint?
   private var rowsViewTrailingAnchorConstraint: NSLayoutConstraint?
+  private var dividerViewWidthAnchorConstraint: NSLayoutConstraint?
+  private var recentProjectsListViewTopAnchorConstraint: NSLayoutConstraint?
+  private var recentProjectsListViewLeadingAnchorConstraint: NSLayoutConstraint?
+  private var recentProjectsListViewTrailingAnchorConstraint: NSLayoutConstraint?
+  private var openProjectButtonViewBottomAnchorConstraint: NSLayoutConstraint?
+  private var openProjectButtonViewTopAnchorConstraint: NSLayoutConstraint?
+  private var openProjectButtonViewLeadingAnchorConstraint: NSLayoutConstraint?
+  private var openProjectButtonViewTrailingAnchorConstraint: NSLayoutConstraint?
   private var imageViewTopAnchorConstraint: NSLayoutConstraint?
   private var imageViewCenterXAnchorConstraint: NSLayoutConstraint?
   private var titleViewTopAnchorConstraint: NSLayoutConstraint?
   private var titleViewLeadingAnchorConstraint: NSLayoutConstraint?
   private var titleViewCenterXAnchorConstraint: NSLayoutConstraint?
   private var titleViewTrailingAnchorConstraint: NSLayoutConstraint?
-  private var versionViewBottomAnchorConstraint: NSLayoutConstraint?
   private var versionViewTopAnchorConstraint: NSLayoutConstraint?
   private var versionViewLeadingAnchorConstraint: NSLayoutConstraint?
   private var versionViewCenterXAnchorConstraint: NSLayoutConstraint?
@@ -133,11 +185,21 @@ public class Welcome: NSBox {
   private var imageViewWidthAnchorConstraint: NSLayoutConstraint?
   private var spacerViewHeightAnchorConstraint: NSLayoutConstraint?
   private var spacer2ViewHeightAnchorConstraint: NSLayoutConstraint?
+  private var openProjectButtonViewHeightAnchorConstraint: NSLayoutConstraint?
 
   private func setUpViews() {
     boxType = .custom
     borderType = .noBorder
     contentViewMargins = .zero
+    splashView.boxType = .custom
+    splashView.borderType = .noBorder
+    splashView.contentViewMargins = .zero
+    dividerView.boxType = .custom
+    dividerView.borderType = .noBorder
+    dividerView.contentViewMargins = .zero
+    projectsView.boxType = .custom
+    projectsView.borderType = .noBorder
+    projectsView.contentViewMargins = .zero
     bannerView.boxType = .custom
     bannerView.borderType = .noBorder
     bannerView.contentViewMargins = .zero
@@ -153,8 +215,11 @@ public class Welcome: NSBox {
     spacer2View.borderType = .noBorder
     spacer2View.contentViewMargins = .zero
 
-    addSubview(bannerView)
-    addSubview(rowsView)
+    addSubview(splashView)
+    addSubview(dividerView)
+    addSubview(projectsView)
+    splashView.addSubview(bannerView)
+    splashView.addSubview(rowsView)
     bannerView.addSubview(imageView)
     bannerView.addSubview(titleView)
     bannerView.addSubview(versionView)
@@ -163,25 +228,33 @@ public class Welcome: NSBox {
     rowsView.addSubview(exampleButtonView)
     rowsView.addSubview(spacer2View)
     rowsView.addSubview(documentationButtonView)
+    projectsView.addSubview(recentProjectsListView)
+    projectsView.addSubview(openProjectButtonView)
 
     imageView.image = #imageLiteral(resourceName: "LonaIcon_128x128")
     titleViewTextStyle = TextStyles.title
     titleView.attributedStringValue = titleViewTextStyle.apply(to: "Welcome to Lona")
     versionViewTextStyle = TextStyles.versionInfo
-    versionView.attributedStringValue = versionViewTextStyle.apply(to: "Version 1.0.2")
+    versionView.attributedStringValue = versionViewTextStyle.apply(to: "Developer Preview")
     newButtonView.icon = #imageLiteral(resourceName: "icon-blank-document")
     newButtonView.subtitleText = "Set up a new design system"
-    newButtonView.titleText = "Create a new Lona project"
+    newButtonView.titleText = "Create a new Lona workspace"
     exampleButtonView.icon = #imageLiteral(resourceName: "icon-material-design-example")
-    exampleButtonView.subtitleText = "Explore the material design example project"
-    exampleButtonView.titleText = "Open an example project"
+    exampleButtonView.subtitleText = "Explore the material design example workspace"
+    exampleButtonView.titleText = "Open an example workspace"
     documentationButtonView.icon = #imageLiteral(resourceName: "icon-documentation")
-    documentationButtonView.subtitleText = "Read the documentation to learn how Lona works"
-    documentationButtonView.titleText = "See documentation"
+    documentationButtonView.subtitleText = "Check out the documentation to learn how Lona works"
+    documentationButtonView.titleText = "Explore documentation"
+    dividerView.fillColor = Colors.grey200
+    projectsView.fillColor = Colors.grey50
+    openProjectButtonView.titleText = "Open workspace..."
   }
 
   private func setUpConstraints() {
     translatesAutoresizingMaskIntoConstraints = false
+    splashView.translatesAutoresizingMaskIntoConstraints = false
+    dividerView.translatesAutoresizingMaskIntoConstraints = false
+    projectsView.translatesAutoresizingMaskIntoConstraints = false
     bannerView.translatesAutoresizingMaskIntoConstraints = false
     rowsView.translatesAutoresizingMaskIntoConstraints = false
     imageView.translatesAutoresizingMaskIntoConstraints = false
@@ -192,28 +265,95 @@ public class Welcome: NSBox {
     exampleButtonView.translatesAutoresizingMaskIntoConstraints = false
     spacer2View.translatesAutoresizingMaskIntoConstraints = false
     documentationButtonView.translatesAutoresizingMaskIntoConstraints = false
+    recentProjectsListView.translatesAutoresizingMaskIntoConstraints = false
+    openProjectButtonView.translatesAutoresizingMaskIntoConstraints = false
 
+    let splashViewLeadingAnchorConstraint = splashView
+      .leadingAnchor
+      .constraint(equalTo: leadingAnchor, constant: leadingPadding + splashViewLeadingMargin)
+    let splashViewTopAnchorConstraint = splashView
+      .topAnchor
+      .constraint(equalTo: topAnchor, constant: topPadding + splashViewTopMargin)
+    let splashViewBottomAnchorConstraint = splashView
+      .bottomAnchor
+      .constraint(lessThanOrEqualTo: bottomAnchor, constant: -(bottomPadding + splashViewBottomMargin))
+    let dividerViewLeadingAnchorConstraint = dividerView
+      .leadingAnchor
+      .constraint(equalTo: splashView.trailingAnchor, constant: splashViewTrailingMargin + dividerViewLeadingMargin)
+    let dividerViewTopAnchorConstraint = dividerView
+      .topAnchor
+      .constraint(equalTo: topAnchor, constant: topPadding + dividerViewTopMargin)
+    let dividerViewBottomAnchorConstraint = dividerView
+      .bottomAnchor
+      .constraint(equalTo: bottomAnchor, constant: -(bottomPadding + dividerViewBottomMargin))
+    let projectsViewTrailingAnchorConstraint = projectsView
+      .trailingAnchor
+      .constraint(equalTo: trailingAnchor, constant: -(trailingPadding + projectsViewTrailingMargin))
+    let projectsViewLeadingAnchorConstraint = projectsView
+      .leadingAnchor
+      .constraint(equalTo: dividerView.trailingAnchor, constant: dividerViewTrailingMargin + projectsViewLeadingMargin)
+    let projectsViewTopAnchorConstraint = projectsView
+      .topAnchor
+      .constraint(equalTo: topAnchor, constant: topPadding + projectsViewTopMargin)
+    let projectsViewBottomAnchorConstraint = projectsView
+      .bottomAnchor
+      .constraint(equalTo: bottomAnchor, constant: -(bottomPadding + projectsViewBottomMargin))
+    let splashViewWidthAnchorConstraint = splashView.widthAnchor.constraint(equalToConstant: 448)
     let bannerViewTopAnchorConstraint = bannerView
       .topAnchor
-      .constraint(equalTo: topAnchor, constant: topPadding + bannerViewTopMargin)
+      .constraint(equalTo: splashView.topAnchor, constant: splashViewTopPadding + bannerViewTopMargin)
     let bannerViewLeadingAnchorConstraint = bannerView
       .leadingAnchor
-      .constraint(equalTo: leadingAnchor, constant: leadingPadding + bannerViewLeadingMargin)
+      .constraint(equalTo: splashView.leadingAnchor, constant: splashViewLeadingPadding + bannerViewLeadingMargin)
     let bannerViewTrailingAnchorConstraint = bannerView
       .trailingAnchor
-      .constraint(equalTo: trailingAnchor, constant: -(trailingPadding + bannerViewTrailingMargin))
+      .constraint(equalTo: splashView.trailingAnchor, constant: -(splashViewTrailingPadding + bannerViewTrailingMargin))
     let rowsViewBottomAnchorConstraint = rowsView
       .bottomAnchor
-      .constraint(equalTo: bottomAnchor, constant: -(bottomPadding + rowsViewBottomMargin))
+      .constraint(equalTo: splashView.bottomAnchor, constant: -(splashViewBottomPadding + rowsViewBottomMargin))
     let rowsViewTopAnchorConstraint = rowsView
       .topAnchor
       .constraint(equalTo: bannerView.bottomAnchor, constant: bannerViewBottomMargin + rowsViewTopMargin)
     let rowsViewLeadingAnchorConstraint = rowsView
       .leadingAnchor
-      .constraint(equalTo: leadingAnchor, constant: leadingPadding + rowsViewLeadingMargin)
+      .constraint(equalTo: splashView.leadingAnchor, constant: splashViewLeadingPadding + rowsViewLeadingMargin)
     let rowsViewTrailingAnchorConstraint = rowsView
       .trailingAnchor
-      .constraint(equalTo: trailingAnchor, constant: -(trailingPadding + rowsViewTrailingMargin))
+      .constraint(equalTo: splashView.trailingAnchor, constant: -(splashViewTrailingPadding + rowsViewTrailingMargin))
+    let dividerViewWidthAnchorConstraint = dividerView.widthAnchor.constraint(equalToConstant: 1)
+    let recentProjectsListViewTopAnchorConstraint = recentProjectsListView
+      .topAnchor
+      .constraint(equalTo: projectsView.topAnchor, constant: projectsViewTopPadding + recentProjectsListViewTopMargin)
+    let recentProjectsListViewLeadingAnchorConstraint = recentProjectsListView
+      .leadingAnchor
+      .constraint(
+        equalTo: projectsView.leadingAnchor,
+        constant: projectsViewLeadingPadding + recentProjectsListViewLeadingMargin)
+    let recentProjectsListViewTrailingAnchorConstraint = recentProjectsListView
+      .trailingAnchor
+      .constraint(
+        equalTo: projectsView.trailingAnchor,
+        constant: -(projectsViewTrailingPadding + recentProjectsListViewTrailingMargin))
+    let openProjectButtonViewBottomAnchorConstraint = openProjectButtonView
+      .bottomAnchor
+      .constraint(
+        equalTo: projectsView.bottomAnchor,
+        constant: -(projectsViewBottomPadding + openProjectButtonViewBottomMargin))
+    let openProjectButtonViewTopAnchorConstraint = openProjectButtonView
+      .topAnchor
+      .constraint(
+        equalTo: recentProjectsListView.bottomAnchor,
+        constant: recentProjectsListViewBottomMargin + openProjectButtonViewTopMargin)
+    let openProjectButtonViewLeadingAnchorConstraint = openProjectButtonView
+      .leadingAnchor
+      .constraint(
+        equalTo: projectsView.leadingAnchor,
+        constant: projectsViewLeadingPadding + openProjectButtonViewLeadingMargin)
+    let openProjectButtonViewTrailingAnchorConstraint = openProjectButtonView
+      .trailingAnchor
+      .constraint(
+        equalTo: projectsView.trailingAnchor,
+        constant: -(projectsViewTrailingPadding + openProjectButtonViewTrailingMargin))
     let imageViewTopAnchorConstraint = imageView
       .topAnchor
       .constraint(equalTo: bannerView.topAnchor, constant: bannerViewTopPadding + imageViewTopMargin)
@@ -236,9 +376,6 @@ public class Welcome: NSBox {
       .constraint(
         lessThanOrEqualTo: bannerView.trailingAnchor,
         constant: -(bannerViewTrailingPadding + titleViewTrailingMargin))
-    let versionViewBottomAnchorConstraint = versionView
-      .bottomAnchor
-      .constraint(equalTo: bannerView.bottomAnchor, constant: -(bannerViewBottomPadding + versionViewBottomMargin))
     let versionViewTopAnchorConstraint = versionView
       .topAnchor
       .constraint(equalTo: titleView.bottomAnchor, constant: titleViewBottomMargin + versionViewTopMargin)
@@ -319,8 +456,20 @@ public class Welcome: NSBox {
     let imageViewWidthAnchorConstraint = imageView.widthAnchor.constraint(equalToConstant: 128)
     let spacerViewHeightAnchorConstraint = spacerView.heightAnchor.constraint(equalToConstant: 4)
     let spacer2ViewHeightAnchorConstraint = spacer2View.heightAnchor.constraint(equalToConstant: 4)
+    let openProjectButtonViewHeightAnchorConstraint = openProjectButtonView.heightAnchor.constraint(equalToConstant: 48)
 
     NSLayoutConstraint.activate([
+      splashViewLeadingAnchorConstraint,
+      splashViewTopAnchorConstraint,
+      splashViewBottomAnchorConstraint,
+      dividerViewLeadingAnchorConstraint,
+      dividerViewTopAnchorConstraint,
+      dividerViewBottomAnchorConstraint,
+      projectsViewTrailingAnchorConstraint,
+      projectsViewLeadingAnchorConstraint,
+      projectsViewTopAnchorConstraint,
+      projectsViewBottomAnchorConstraint,
+      splashViewWidthAnchorConstraint,
       bannerViewTopAnchorConstraint,
       bannerViewLeadingAnchorConstraint,
       bannerViewTrailingAnchorConstraint,
@@ -328,13 +477,20 @@ public class Welcome: NSBox {
       rowsViewTopAnchorConstraint,
       rowsViewLeadingAnchorConstraint,
       rowsViewTrailingAnchorConstraint,
+      dividerViewWidthAnchorConstraint,
+      recentProjectsListViewTopAnchorConstraint,
+      recentProjectsListViewLeadingAnchorConstraint,
+      recentProjectsListViewTrailingAnchorConstraint,
+      openProjectButtonViewBottomAnchorConstraint,
+      openProjectButtonViewTopAnchorConstraint,
+      openProjectButtonViewLeadingAnchorConstraint,
+      openProjectButtonViewTrailingAnchorConstraint,
       imageViewTopAnchorConstraint,
       imageViewCenterXAnchorConstraint,
       titleViewTopAnchorConstraint,
       titleViewLeadingAnchorConstraint,
       titleViewCenterXAnchorConstraint,
       titleViewTrailingAnchorConstraint,
-      versionViewBottomAnchorConstraint,
       versionViewTopAnchorConstraint,
       versionViewLeadingAnchorConstraint,
       versionViewCenterXAnchorConstraint,
@@ -358,9 +514,21 @@ public class Welcome: NSBox {
       imageViewHeightAnchorConstraint,
       imageViewWidthAnchorConstraint,
       spacerViewHeightAnchorConstraint,
-      spacer2ViewHeightAnchorConstraint
+      spacer2ViewHeightAnchorConstraint,
+      openProjectButtonViewHeightAnchorConstraint
     ])
 
+    self.splashViewLeadingAnchorConstraint = splashViewLeadingAnchorConstraint
+    self.splashViewTopAnchorConstraint = splashViewTopAnchorConstraint
+    self.splashViewBottomAnchorConstraint = splashViewBottomAnchorConstraint
+    self.dividerViewLeadingAnchorConstraint = dividerViewLeadingAnchorConstraint
+    self.dividerViewTopAnchorConstraint = dividerViewTopAnchorConstraint
+    self.dividerViewBottomAnchorConstraint = dividerViewBottomAnchorConstraint
+    self.projectsViewTrailingAnchorConstraint = projectsViewTrailingAnchorConstraint
+    self.projectsViewLeadingAnchorConstraint = projectsViewLeadingAnchorConstraint
+    self.projectsViewTopAnchorConstraint = projectsViewTopAnchorConstraint
+    self.projectsViewBottomAnchorConstraint = projectsViewBottomAnchorConstraint
+    self.splashViewWidthAnchorConstraint = splashViewWidthAnchorConstraint
     self.bannerViewTopAnchorConstraint = bannerViewTopAnchorConstraint
     self.bannerViewLeadingAnchorConstraint = bannerViewLeadingAnchorConstraint
     self.bannerViewTrailingAnchorConstraint = bannerViewTrailingAnchorConstraint
@@ -368,13 +536,20 @@ public class Welcome: NSBox {
     self.rowsViewTopAnchorConstraint = rowsViewTopAnchorConstraint
     self.rowsViewLeadingAnchorConstraint = rowsViewLeadingAnchorConstraint
     self.rowsViewTrailingAnchorConstraint = rowsViewTrailingAnchorConstraint
+    self.dividerViewWidthAnchorConstraint = dividerViewWidthAnchorConstraint
+    self.recentProjectsListViewTopAnchorConstraint = recentProjectsListViewTopAnchorConstraint
+    self.recentProjectsListViewLeadingAnchorConstraint = recentProjectsListViewLeadingAnchorConstraint
+    self.recentProjectsListViewTrailingAnchorConstraint = recentProjectsListViewTrailingAnchorConstraint
+    self.openProjectButtonViewBottomAnchorConstraint = openProjectButtonViewBottomAnchorConstraint
+    self.openProjectButtonViewTopAnchorConstraint = openProjectButtonViewTopAnchorConstraint
+    self.openProjectButtonViewLeadingAnchorConstraint = openProjectButtonViewLeadingAnchorConstraint
+    self.openProjectButtonViewTrailingAnchorConstraint = openProjectButtonViewTrailingAnchorConstraint
     self.imageViewTopAnchorConstraint = imageViewTopAnchorConstraint
     self.imageViewCenterXAnchorConstraint = imageViewCenterXAnchorConstraint
     self.titleViewTopAnchorConstraint = titleViewTopAnchorConstraint
     self.titleViewLeadingAnchorConstraint = titleViewLeadingAnchorConstraint
     self.titleViewCenterXAnchorConstraint = titleViewCenterXAnchorConstraint
     self.titleViewTrailingAnchorConstraint = titleViewTrailingAnchorConstraint
-    self.versionViewBottomAnchorConstraint = versionViewBottomAnchorConstraint
     self.versionViewTopAnchorConstraint = versionViewTopAnchorConstraint
     self.versionViewLeadingAnchorConstraint = versionViewLeadingAnchorConstraint
     self.versionViewCenterXAnchorConstraint = versionViewCenterXAnchorConstraint
@@ -399,8 +574,20 @@ public class Welcome: NSBox {
     self.imageViewWidthAnchorConstraint = imageViewWidthAnchorConstraint
     self.spacerViewHeightAnchorConstraint = spacerViewHeightAnchorConstraint
     self.spacer2ViewHeightAnchorConstraint = spacer2ViewHeightAnchorConstraint
+    self.openProjectButtonViewHeightAnchorConstraint = openProjectButtonViewHeightAnchorConstraint
 
     // For debugging
+    splashViewLeadingAnchorConstraint.identifier = "splashViewLeadingAnchorConstraint"
+    splashViewTopAnchorConstraint.identifier = "splashViewTopAnchorConstraint"
+    splashViewBottomAnchorConstraint.identifier = "splashViewBottomAnchorConstraint"
+    dividerViewLeadingAnchorConstraint.identifier = "dividerViewLeadingAnchorConstraint"
+    dividerViewTopAnchorConstraint.identifier = "dividerViewTopAnchorConstraint"
+    dividerViewBottomAnchorConstraint.identifier = "dividerViewBottomAnchorConstraint"
+    projectsViewTrailingAnchorConstraint.identifier = "projectsViewTrailingAnchorConstraint"
+    projectsViewLeadingAnchorConstraint.identifier = "projectsViewLeadingAnchorConstraint"
+    projectsViewTopAnchorConstraint.identifier = "projectsViewTopAnchorConstraint"
+    projectsViewBottomAnchorConstraint.identifier = "projectsViewBottomAnchorConstraint"
+    splashViewWidthAnchorConstraint.identifier = "splashViewWidthAnchorConstraint"
     bannerViewTopAnchorConstraint.identifier = "bannerViewTopAnchorConstraint"
     bannerViewLeadingAnchorConstraint.identifier = "bannerViewLeadingAnchorConstraint"
     bannerViewTrailingAnchorConstraint.identifier = "bannerViewTrailingAnchorConstraint"
@@ -408,13 +595,20 @@ public class Welcome: NSBox {
     rowsViewTopAnchorConstraint.identifier = "rowsViewTopAnchorConstraint"
     rowsViewLeadingAnchorConstraint.identifier = "rowsViewLeadingAnchorConstraint"
     rowsViewTrailingAnchorConstraint.identifier = "rowsViewTrailingAnchorConstraint"
+    dividerViewWidthAnchorConstraint.identifier = "dividerViewWidthAnchorConstraint"
+    recentProjectsListViewTopAnchorConstraint.identifier = "recentProjectsListViewTopAnchorConstraint"
+    recentProjectsListViewLeadingAnchorConstraint.identifier = "recentProjectsListViewLeadingAnchorConstraint"
+    recentProjectsListViewTrailingAnchorConstraint.identifier = "recentProjectsListViewTrailingAnchorConstraint"
+    openProjectButtonViewBottomAnchorConstraint.identifier = "openProjectButtonViewBottomAnchorConstraint"
+    openProjectButtonViewTopAnchorConstraint.identifier = "openProjectButtonViewTopAnchorConstraint"
+    openProjectButtonViewLeadingAnchorConstraint.identifier = "openProjectButtonViewLeadingAnchorConstraint"
+    openProjectButtonViewTrailingAnchorConstraint.identifier = "openProjectButtonViewTrailingAnchorConstraint"
     imageViewTopAnchorConstraint.identifier = "imageViewTopAnchorConstraint"
     imageViewCenterXAnchorConstraint.identifier = "imageViewCenterXAnchorConstraint"
     titleViewTopAnchorConstraint.identifier = "titleViewTopAnchorConstraint"
     titleViewLeadingAnchorConstraint.identifier = "titleViewLeadingAnchorConstraint"
     titleViewCenterXAnchorConstraint.identifier = "titleViewCenterXAnchorConstraint"
     titleViewTrailingAnchorConstraint.identifier = "titleViewTrailingAnchorConstraint"
-    versionViewBottomAnchorConstraint.identifier = "versionViewBottomAnchorConstraint"
     versionViewTopAnchorConstraint.identifier = "versionViewTopAnchorConstraint"
     versionViewLeadingAnchorConstraint.identifier = "versionViewLeadingAnchorConstraint"
     versionViewCenterXAnchorConstraint.identifier = "versionViewCenterXAnchorConstraint"
@@ -439,10 +633,13 @@ public class Welcome: NSBox {
     imageViewWidthAnchorConstraint.identifier = "imageViewWidthAnchorConstraint"
     spacerViewHeightAnchorConstraint.identifier = "spacerViewHeightAnchorConstraint"
     spacer2ViewHeightAnchorConstraint.identifier = "spacer2ViewHeightAnchorConstraint"
+    openProjectButtonViewHeightAnchorConstraint.identifier = "openProjectButtonViewHeightAnchorConstraint"
   }
 
   private func update() {
     newButtonView.onClick = onCreateProject
+    openProjectButtonView.onPressPlus = onCreateProject
+    openProjectButtonView.onPressTitle = onOpenProject
     exampleButtonView.onClick = onOpenExample
     documentationButtonView.onClick = onOpenDocumentation
   }

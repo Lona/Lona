@@ -190,6 +190,7 @@ public class IconRow: NSBox {
       .constraint(
         equalTo: rowContentView.trailingAnchor,
         constant: -(rowContentViewTrailingPadding + subtitleViewTrailingMargin))
+
     imageViewHeightAnchorParentConstraint.priority = NSLayoutConstraint.Priority.defaultLow
     rowContentViewHeightAnchorParentConstraint.priority = NSLayoutConstraint.Priority.defaultLow
 
@@ -257,9 +258,6 @@ public class IconRow: NSBox {
     titleView.attributedStringValue = titleViewTextStyle.apply(to: titleText)
     subtitleView.attributedStringValue = subtitleViewTextStyle.apply(to: subtitleText)
     imageView.image = icon
-    if hovered {
-      fillColor = Colors.red50
-    }
     if pressed {
       fillColor = Colors.pink50
     }
