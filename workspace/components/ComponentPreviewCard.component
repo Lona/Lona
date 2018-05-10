@@ -51,6 +51,57 @@
         "onClick"
       ],
       "type" : "AssignExpr"
+    },
+    {
+      "body" : [
+        {
+          "assignee" : [
+            "layers",
+            "Preview",
+            "backgroundColor"
+          ],
+          "content" : {
+            "type" : "LitExpr",
+            "value" : {
+              "data" : "grey200",
+              "type" : "Color"
+            }
+          },
+          "type" : "AssignExpr"
+        },
+        {
+          "assignee" : [
+            "layers",
+            "Details",
+            "backgroundColor"
+          ],
+          "content" : {
+            "type" : "LitExpr",
+            "value" : {
+              "data" : "grey50",
+              "type" : "Color"
+            }
+          },
+          "type" : "AssignExpr"
+        }
+      ],
+      "condition" : {
+        "left" : [
+          "layers",
+          "Container",
+          "pressed"
+        ],
+        "op" : "==",
+        "right" : {
+          "type" : "LitExpr",
+          "value" : {
+            "data" : true,
+            "type" : "Boolean"
+          }
+        },
+        "type" : "BinExpr"
+      },
+      "type" : "IfExpr"
     }
   ],
   "params" : [

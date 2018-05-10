@@ -135,7 +135,6 @@ public class ComponentPreviewCard: NSBox {
     borderColor = Colors.grey300
     cornerRadius = 4
     borderWidth = 1
-    previewView.fillColor = Colors.grey100
     dividerView.fillColor = Colors.grey300
     componentNameViewTextStyle = TextStyles.large
     componentNameView.maximumNumberOfLines = 1
@@ -286,9 +285,15 @@ public class ComponentPreviewCard: NSBox {
   }
 
   private func update() {
+    detailsView.fillColor = #colorLiteral(red: 0, green: 0, blue: 0, alpha: 0)
+    previewView.fillColor = Colors.grey100
     componentNameView.attributedStringValue = componentNameViewTextStyle.apply(to: componentName)
     componentPreviewView.componentName = componentName
     onPress = onClick
+    if pressed {
+      previewView.fillColor = Colors.grey200
+      detailsView.fillColor = Colors.grey50
+    }
   }
 
   private func updateHoverState(with event: NSEvent) {
