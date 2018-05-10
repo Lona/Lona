@@ -84,30 +84,18 @@ class AppDelegate: NSObject, NSApplicationDelegate {
     @IBAction func showComponentBrowser(_ sender: AnyObject) {
         if colorBrowserWindow == nil {
             let initialRect = NSRect(x: 0, y: 0, width: 1280, height: 720)
-            let window = NSWindow(contentRect: initialRect, styleMask: [.closable, .titled, .resizable], backing: .retained, defer: false)
+            let window = NSWindow(
+                contentRect: initialRect,
+                styleMask: [.closable, .titled, .resizable],
+                backing: .retained,
+                defer: false)
             window.center()
             window.title = "Component Browser"
             window.isReleasedWhenClosed = false
             window.minSize = NSSize(width: 936, height: 300)
+            window.animationBehavior = .documentWindow
 
-            let view = NSBox()
-            view.boxType = .custom
-            view.borderType = .noBorder
-            view.contentViewMargins = .zero
-            view.translatesAutoresizingMaskIntoConstraints = false
-
-            window.contentView = view
-
-            // Set up color browser
-
-            let colorBrowser = ComponentBrowser()
-
-            view.addSubview(colorBrowser)
-
-            colorBrowser.topAnchor.constraint(equalTo: view.topAnchor).isActive = true
-            colorBrowser.bottomAnchor.constraint(equalTo: view.bottomAnchor).isActive = true
-            colorBrowser.leadingAnchor.constraint(equalTo: view.leadingAnchor).isActive = true
-            colorBrowser.rightAnchor.constraint(equalTo: view.rightAnchor).isActive = true
+            window.contentView = ComponentBrowser()
 
             componentBrowserWindow = window
         }
