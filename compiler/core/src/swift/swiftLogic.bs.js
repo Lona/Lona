@@ -68,8 +68,8 @@ function toSwiftAST(options, colors, textStyles, rootLayer, logicRootNode) {
         return /* SwiftIdentifier */Block.__(8, [name.replace(".pressed", "Pressed")]);
       } else if (match !== 0) {
         var name$1 = initialValue[0];
-        if (name$1.endsWith(".borderRadius")) {
-          return /* SwiftIdentifier */Block.__(8, [name$1.replace(".borderRadius", ".cornerRadius")]);
+        if (name$1.endsWith(".borderRadius") || name$1 === "borderRadius") {
+          return /* SwiftIdentifier */Block.__(8, [name$1.replace("borderRadius", "cornerRadius")]);
         } else if (name$1.endsWith("backgroundColor")) {
           return /* SwiftIdentifier */Block.__(8, [name$1.replace("backgroundColor", "fillColor")]);
         } else if (name$1.endsWith("numberOfLines")) {
@@ -79,8 +79,8 @@ function toSwiftAST(options, colors, textStyles, rootLayer, logicRootNode) {
         }
       } else {
         var name$2 = initialValue[0];
-        if (name$2.endsWith(".borderRadius")) {
-          return /* SwiftIdentifier */Block.__(8, [name$2.replace(".borderRadius", ".layer.cornerRadius")]);
+        if (name$2.endsWith(".borderRadius") || name$2 === "borderRadius") {
+          return /* SwiftIdentifier */Block.__(8, [name$2.replace("borderRadius", "layer.cornerRadius")]);
         } else if (name$2.endsWith(".borderWidth")) {
           return /* SwiftIdentifier */Block.__(8, [name$2.replace(".borderWidth", ".layer.borderWidth")]);
         } else {

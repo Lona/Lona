@@ -1,0 +1,188 @@
+{
+  "devices" : [
+    {
+      "height" : 240,
+      "heightMode" : "Exactly",
+      "name" : "iPhone SE",
+      "width" : 260
+    }
+  ],
+  "examples" : [
+    {
+      "name" : "Default",
+      "params" : {
+        "componentName" : "Lona Component"
+      }
+    }
+  ],
+  "logic" : [
+    {
+      "assignee" : [
+        "layers",
+        "ComponentName",
+        "text"
+      ],
+      "content" : [
+        "parameters",
+        "componentName"
+      ],
+      "type" : "AssignExpr"
+    },
+    {
+      "assignee" : [
+        "layers",
+        "ComponentPreview",
+        "componentName"
+      ],
+      "content" : [
+        "parameters",
+        "componentName"
+      ],
+      "type" : "AssignExpr"
+    },
+    {
+      "assignee" : [
+        "layers",
+        "Container",
+        "onPress"
+      ],
+      "content" : [
+        "parameters",
+        "onClick"
+      ],
+      "type" : "AssignExpr"
+    },
+    {
+      "body" : [
+        {
+          "assignee" : [
+            "layers",
+            "Preview",
+            "backgroundColor"
+          ],
+          "content" : {
+            "type" : "LitExpr",
+            "value" : {
+              "data" : "grey200",
+              "type" : "Color"
+            }
+          },
+          "type" : "AssignExpr"
+        },
+        {
+          "assignee" : [
+            "layers",
+            "Details",
+            "backgroundColor"
+          ],
+          "content" : {
+            "type" : "LitExpr",
+            "value" : {
+              "data" : "grey50",
+              "type" : "Color"
+            }
+          },
+          "type" : "AssignExpr"
+        }
+      ],
+      "condition" : {
+        "left" : [
+          "layers",
+          "Container",
+          "pressed"
+        ],
+        "op" : "==",
+        "right" : {
+          "type" : "LitExpr",
+          "value" : {
+            "data" : true,
+            "type" : "Boolean"
+          }
+        },
+        "type" : "BinExpr"
+      },
+      "type" : "IfExpr"
+    }
+  ],
+  "params" : [
+    {
+      "name" : "componentName",
+      "type" : "String"
+    },
+    {
+      "name" : "onClick",
+      "type" : {
+        "name" : "Function"
+      }
+    }
+  ],
+  "root" : {
+    "children" : [
+      {
+        "children" : [
+          {
+            "id" : "ComponentPreview",
+            "params" : {
+
+            },
+            "type" : "ComponentPreview"
+          }
+        ],
+        "id" : "Preview",
+        "params" : {
+          "alignSelf" : "stretch",
+          "backgroundColor" : "grey100",
+          "flex" : 1,
+          "paddingBottom" : 10,
+          "paddingLeft" : 10,
+          "paddingRight" : 10,
+          "paddingTop" : 10
+        },
+        "type" : "Lona:View"
+      },
+      {
+        "id" : "Divider",
+        "params" : {
+          "alignSelf" : "stretch",
+          "backgroundColor" : "grey300",
+          "height" : 1
+        },
+        "type" : "Lona:View"
+      },
+      {
+        "children" : [
+          {
+            "id" : "ComponentName",
+            "params" : {
+              "alignSelf" : "stretch",
+              "font" : "large",
+              "height" : 18,
+              "numberOfLines" : 1,
+              "text" : "Component"
+            },
+            "type" : "Lona:Text"
+          }
+        ],
+        "id" : "Details",
+        "params" : {
+          "alignSelf" : "stretch",
+          "paddingBottom" : 16,
+          "paddingLeft" : 20,
+          "paddingRight" : 20,
+          "paddingTop" : 16
+        },
+        "type" : "Lona:View"
+      }
+    ],
+    "id" : "Container",
+    "params" : {
+      "alignSelf" : "stretch",
+      "backgroundColor" : "white",
+      "borderColor" : "grey300",
+      "borderRadius" : 4,
+      "borderWidth" : 1,
+      "flex" : 1
+    },
+    "type" : "Lona:View"
+  }
+}

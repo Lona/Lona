@@ -79,6 +79,33 @@ class AppDelegate: NSObject, NSApplicationDelegate {
         colorBrowserWindow?.makeKeyAndOrderFront(nil)
     }
 
+    var componentBrowserWindow: NSWindow?
+
+    @IBAction func showComponentBrowser(_ sender: AnyObject) {
+        if colorBrowserWindow == nil {
+            let initialRect = NSRect(x: 0, y: 0, width: 1280, height: 720)
+            let window = NSWindow(
+                contentRect: initialRect,
+                styleMask: [.closable, .titled, .resizable],
+                backing: .retained,
+                defer: false)
+            window.center()
+            window.title = "Component Browser"
+            window.isReleasedWhenClosed = false
+            window.minSize = NSSize(width: 936, height: 300)
+            window.animationBehavior = .documentWindow
+
+            window.contentView = ComponentBrowser()
+
+            componentBrowserWindow = window
+        }
+
+        // TODO: Set components every time we show the browser in case they've changed.
+        // Also consider hooking into "Refresh"
+
+        componentBrowserWindow?.makeKeyAndOrderFront(nil)
+    }
+
     var welcomeWindow: NSWindow?
 
     @IBAction func showWelcomeWindow(_ sender: AnyObject) {

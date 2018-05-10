@@ -73,22 +73,26 @@ let toSwiftAST =
     | (_, Ast.SwiftIdentifier(name)) when name |> Js.String.endsWith("pressed") =>
       Ast.SwiftIdentifier(name |> Js.String.replace(".pressed", "Pressed"))
     /* -- UIKit -- */
+    /* TODO: Make sure "borderRadius" without the "." doesn't match intermediate variables */
     | (UIKit, Ast.SwiftIdentifier(name))
-        when name |> Js.String.endsWith(".borderRadius") =>
+        when
+          name |> Js.String.endsWith(".borderRadius") || name == "borderRadius" =>
       Ast.SwiftIdentifier(
-        name |> Js.String.replace(".borderRadius", ".layer.cornerRadius")
+        name |> Js.String.replace("borderRadius", "layer.cornerRadius")
       )
     | (UIKit, Ast.SwiftIdentifier(name))
         when name |> Js.String.endsWith(".borderWidth") =>
       Ast.SwiftIdentifier(
         name |> Js.String.replace(".borderWidth", ".layer.borderWidth")
       )
-    | (AppKit, Ast.SwiftIdentifier(name))
-        when name |> Js.String.endsWith(".borderRadius") =>
-      Ast.SwiftIdentifier(
-        name |> Js.String.replace(".borderRadius", ".cornerRadius")
-      )
     /* -- AppKit -- */
+    /* TODO: Make sure "borderRadius" without the "." doesn't match intermediate variables */
+    | (AppKit, Ast.SwiftIdentifier(name))
+        when
+          name |> Js.String.endsWith(".borderRadius") || name == "borderRadius" =>
+      Ast.SwiftIdentifier(
+        name |> Js.String.replace("borderRadius", "cornerRadius")
+      )
     | (AppKit, Ast.SwiftIdentifier(name))
         when name |> Js.String.endsWith("backgroundColor") =>
       Ast.SwiftIdentifier(
