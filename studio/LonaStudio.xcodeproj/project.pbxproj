@@ -28,6 +28,9 @@
 		303C3FEC20A396BB008E1541 /* icon-plus@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 303C3FEA20A396BB008E1541 /* icon-plus@2x.png */; };
 		303C3FEE20A396C3008E1541 /* OpenProjectButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = 303C3FED20A396C3008E1541 /* OpenProjectButton.swift */; };
 		303C3FF020A3A05D008E1541 /* RecentProjectsList.swift in Sources */ = {isa = PBXBuildFile; fileRef = 303C3FEF20A3A05D008E1541 /* RecentProjectsList.swift */; };
+		303C3FF320A4E396008E1541 /* ComponentBrowser.swift in Sources */ = {isa = PBXBuildFile; fileRef = 303C3FF220A4E396008E1541 /* ComponentBrowser.swift */; };
+		303C3FF520A4E3C1008E1541 /* ComponentPreviewCollection.swift in Sources */ = {isa = PBXBuildFile; fileRef = 303C3FF420A4E3C1008E1541 /* ComponentPreviewCollection.swift */; };
+		303C3FF720A4EFC6008E1541 /* ComponentPreviewCard.swift in Sources */ = {isa = PBXBuildFile; fileRef = 303C3FF620A4EFC6008E1541 /* ComponentPreviewCard.swift */; };
 		304004331ED8AB5A00AFCF2D /* CanvasListEditor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 304004321ED8AB5A00AFCF2D /* CanvasListEditor.swift */; };
 		3040EFC81F2FAC9C007C5368 /* Operators.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3040EFC71F2FAC9C007C5368 /* Operators.swift */; };
 		3043A0CC1F46653B00EF31EF /* Label.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3043A0CB1F46653B00EF31EF /* Label.swift */; };
@@ -202,6 +205,9 @@
 		303C3FEA20A396BB008E1541 /* icon-plus@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "icon-plus@2x.png"; sourceTree = "<group>"; };
 		303C3FED20A396C3008E1541 /* OpenProjectButton.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = OpenProjectButton.swift; sourceTree = "<group>"; };
 		303C3FEF20A3A05D008E1541 /* RecentProjectsList.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RecentProjectsList.swift; sourceTree = "<group>"; };
+		303C3FF220A4E396008E1541 /* ComponentBrowser.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ComponentBrowser.swift; sourceTree = "<group>"; };
+		303C3FF420A4E3C1008E1541 /* ComponentPreviewCollection.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ComponentPreviewCollection.swift; sourceTree = "<group>"; };
+		303C3FF620A4EFC6008E1541 /* ComponentPreviewCard.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ComponentPreviewCard.swift; sourceTree = "<group>"; };
 		304004321ED8AB5A00AFCF2D /* CanvasListEditor.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CanvasListEditor.swift; sourceTree = "<group>"; };
 		3040EFC71F2FAC9C007C5368 /* Operators.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Operators.swift; sourceTree = "<group>"; };
 		3043A0CB1F46653B00EF31EF /* Label.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Label.swift; sourceTree = "<group>"; };
@@ -414,16 +420,17 @@
 			isa = PBXGroup;
 			children = (
 				30453E3D202E0CDE00BA5BFB /* ColorBrowser.swift */,
+				303C3FF420A4E3C1008E1541 /* ComponentPreviewCollection.swift */,
 				305A19551F463A2800EA033C /* DisclosureContentRow.swift */,
 				307D441D209B657B004B57F5 /* DocumentationView.swift */,
 				6B6017CF1EBF9EFA001E02C1 /* LayerList.swift */,
 				306D2FED1F84735900907B4E /* LayerThumbnail.swift */,
 				307D4421209B75C0004B57F5 /* LonaWebView.swift */,
 				307B7B4E1F9A71C5001A62D9 /* MetadataEditorView.swift */,
+				303C3FEF20A3A05D008E1541 /* RecentProjectsList.swift */,
 				300A0AFB1EDA0CBC00704DB7 /* SectionSplitter.swift */,
 				6B0AEFB91EBF74D800F35BBF /* ViewController.swift */,
 				BAC24A8E203576730005B16F /* Inspector View */,
-				303C3FEF20A3A05D008E1541 /* RecentProjectsList.swift */,
 			);
 			path = Workspace;
 			sourceTree = "<group>";
@@ -612,6 +619,7 @@
 		30F870BF20865858007ADA5B /* screens */ = {
 			isa = PBXGroup;
 			children = (
+				303C3FF220A4E396008E1541 /* ComponentBrowser.swift */,
 				30F870C020865858007ADA5B /* Welcome.swift */,
 			);
 			path = screens;
@@ -620,6 +628,7 @@
 		30F870C120865858007ADA5B /* components */ = {
 			isa = PBXGroup;
 			children = (
+				303C3FF620A4EFC6008E1541 /* ComponentPreviewCard.swift */,
 				30F870C220865858007ADA5B /* IconRow.swift */,
 				303C3FED20A396C3008E1541 /* OpenProjectButton.swift */,
 				307D440E2097DC17004B57F5 /* TabIcon.swift */,
@@ -1043,6 +1052,7 @@
 			files = (
 				30902A281F7B208A00B938BE /* CanvasCollectionView.swift in Sources */,
 				305029C320643EC7002D9EE1 /* ComponentMenu.swift in Sources */,
+				303C3FF320A4E396008E1541 /* ComponentBrowser.swift in Sources */,
 				30D799821F2BE90E00EF12D7 /* SettingRow.swift in Sources */,
 				30F870D920865859007ADA5B /* Colors.swift in Sources */,
 				305ED1BD20548CA7000D07C3 /* LonaLogic.swift in Sources */,
@@ -1068,6 +1078,7 @@
 				30990AB01FA4043600BC0CCE /* CSUserTypes.swift in Sources */,
 				3043A0CC1F46653B00EF31EF /* Label.swift in Sources */,
 				30F870EB20869644007ADA5B /* Fetch.swift in Sources */,
+				303C3FF520A4E3C1008E1541 /* ComponentPreviewCollection.swift in Sources */,
 				3090D7D31F032305009277E7 /* CSComponentLayer.swift in Sources */,
 				30F7C9521ED4AE23009D27DF /* InspectorView.swift in Sources */,
 				30335A0C1F5B2F8B006E507B /* CaseList.swift in Sources */,
@@ -1167,6 +1178,7 @@
 				304ADD55209D2CA0001B9A43 /* LonaPlugins.swift in Sources */,
 				307718F41F366AEA003A597B /* CSValueField.swift in Sources */,
 				BA48549A1FEF6EC800AB7923 /* PickerListView.swift in Sources */,
+				303C3FF720A4EFC6008E1541 /* ComponentPreviewCard.swift in Sources */,
 				6B6017D01EBF9EFA001E02C1 /* LayerList.swift in Sources */,
 				305BDA211F648F6400AD2AA3 /* CSPDFDocument.swift in Sources */,
 				305A19561F463A2800EA033C /* DisclosureContentRow.swift in Sources */,
