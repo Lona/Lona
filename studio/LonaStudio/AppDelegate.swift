@@ -28,6 +28,14 @@ class AppDelegate: NSObject, NSApplicationDelegate {
         return false
     }
 
+    func applicationShouldHandleReopen(_ sender: NSApplication, hasVisibleWindows flag: Bool) -> Bool {
+        if !flag {
+            showComponentBrowser(self)
+            return true
+        }
+        return false
+    }
+
     var preferencesWindow: MASPreferencesWindowController?
 
     @IBAction func showPreferences(_ sender: AnyObject) {
@@ -156,12 +164,14 @@ class AppDelegate: NSObject, NSApplicationDelegate {
 
                 window.close()
                 self.openWorkspace(url: url)
+                self.showComponentBrowser(self)
             }
 
             welcome.onOpenProject = {
                 guard let url = self.openWorkspaceDialog() else { return }
                 window.close()
                 self.openWorkspace(url: url)
+                self.showComponentBrowser(self)
             }
 
             welcome.onOpenExample = {

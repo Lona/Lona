@@ -778,8 +778,7 @@
                 <windowController storyboardIdentifier="Document Window Controller" id="jGA-0Y-lOj" sceneMemberID="viewController">
                     <window key="window" title="Window" allowsToolTipsWhenApplicationIsInactive="NO" autorecalculatesKeyViewLoop="NO" oneShot="NO" releasedWhenClosed="NO" showsToolbarButton="NO" animationBehavior="default" id="Ckk-yw-fiv">
                         <windowStyleMask key="styleMask" titled="YES" closable="YES" miniaturizable="YES" resizable="YES"/>
-                        <windowPositionMask key="initialPositionMask" leftStrut="YES" rightStrut="YES" topStrut="YES"/>
-                        <rect key="contentRect" x="183" y="600" width="480" height="270"/>
+                        <rect key="contentRect" x="183" y="1147" width="480" height="270"/>
                         <rect key="screenRect" x="0.0" y="0.0" width="2560" height="1417"/>
                         <toolbar key="toolbar" implicitIdentifier="D6C7C4C5-C6B7-42C1-838D-12172F5225A4" autosavesConfiguration="NO" displayMode="iconOnly" sizeMode="regular" id="6EW-82-lVR">
                             <allowedToolbarItems>
