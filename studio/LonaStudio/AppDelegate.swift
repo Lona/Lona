@@ -10,6 +10,8 @@ import Cocoa
 import LetsMove
 import MASPreferences
 
+let segmentedControlId = NSToolbarItem.Identifier("com.devinabbott.lona.WorkspaceTabs")
+
 @NSApplicationMain
 class AppDelegate: NSObject, NSApplicationDelegate {
 
@@ -99,9 +101,30 @@ class AppDelegate: NSObject, NSApplicationDelegate {
                 defer: false)
             window.center()
             window.title = "Component Browser"
+            window.titleVisibility = .hidden
             window.isReleasedWhenClosed = false
             window.minSize = NSSize(width: 936, height: 300)
             window.animationBehavior = .documentWindow
+
+            if #available(OSX 10.13, *) {
+                let toolbar = NSToolbar()
+                toolbar.delegate = self
+
+//                let segmentedControl = SegmentedControlField(frame: NSRect(x: 0, y: 0, width: 300, height: 24), values: [
+//                    "Components",
+//                    "Colors"
+//                    ])
+//
+//                let toolbarItem = NSToolbarItem(itemIdentifier: segmentedControlId)
+//
+//                toolbarItem.view = segmentedControl
+//
+//                toolbar.insertItem(withItemIdentifier: segmentedControlId, at: 0)
+
+                window.toolbar = toolbar
+            } else {
+                // Fallback on earlier versions
+            }
 
             window.contentView = ComponentBrowser()
 
@@ -276,5 +299,34 @@ class AppDelegate: NSObject, NSApplicationDelegate {
         }
 
         return true
+    }
+}
+
+extension AppDelegate: NSToolbarDelegate {
+    func toolbarAllowedItemIdentifiers(_ toolbar: NSToolbar) -> [NSToolbarItem.Identifier] {
+        return [segmentedControlId, NSToolbarItem.Identifier.flexibleSpace]
+    }
+
+    func toolbarDefaultItemIdentifiers(_ toolbar: NSToolbar) -> [NSToolbarItem.Identifier] {
+        return [NSToolbarItem.Identifier.flexibleSpace, segmentedControlId, NSToolbarItem.Identifier.flexibleSpace]
+    }
+
+    func toolbar(_ toolbar: NSToolbar, itemForItemIdentifier itemIdentifier: NSToolbarItem.Identifier, willBeInsertedIntoToolbar flag: Bool) -> NSToolbarItem? {
+        switch itemIdentifier.rawValue {
+        case segmentedControlId.rawValue:
+            let segmentedControl = SegmentedControlField(frame: NSRect(x: 0, y: 0, width: 200, height: 24), values: [
+                "Components",
+                "Colors"
+                ])
+
+            let toolbarItem = NSToolbarItem(itemIdentifier: segmentedControlId)
+
+            toolbarItem.view = segmentedControl
+
+
+            return toolbarItem
+        default:
+            return nil
+        }
     }
 }
