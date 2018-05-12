@@ -41,6 +41,7 @@ class AppDelegate: NSObject, NSApplicationDelegate {
 
         switch FileUtils.fileExists(atPath: filename) {
         case .directory:
+            welcomeWindow?.close()
             openWorkspace(url: url)
             showComponentBrowser(self)
             return true

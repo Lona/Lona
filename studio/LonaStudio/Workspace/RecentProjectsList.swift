@@ -13,7 +13,7 @@ class RecentProjectsTableCellView: NSTableCellView {
 
     // MARK: - Lifecycle
 
-    init(project: String) {
+    init(project: URL) {
         self.project = project
 
         super.init(frame: .zero)
@@ -25,7 +25,7 @@ class RecentProjectsTableCellView: NSTableCellView {
     }
 
     convenience init() {
-        self.init(project: "")
+        self.init(project: URL(fileURLWithPath: ""))
     }
 
     required init?(coder decoder: NSCoder) {
@@ -34,7 +34,7 @@ class RecentProjectsTableCellView: NSTableCellView {
 
     // MARK: - Public
 
-    public var project: String { didSet { update() } }
+    public var project: URL { didSet { update() } }
 
     // MARK: - Override
 
@@ -67,7 +67,8 @@ class RecentProjectsTableCellView: NSTableCellView {
     }
 
     private func update() {
-        recentProjectView.projectName = project
+        recentProjectView.projectName = project.lastPathComponent
+        recentProjectView.projectDirectoryPath = project.deletingLastPathComponent().path
     }
 }
 
@@ -75,7 +76,7 @@ class RecentProjectsTableView: NSView {
 
     // MARK: - Lifecycle
 
-    init(projects: [String]) {
+    init(projects: [URL]) {
         self.projects = projects
 
         super.init(frame: .zero)
@@ -96,8 +97,8 @@ class RecentProjectsTableView: NSView {
 
     // MARK: - Public
 
-    public var projects: [String] { didSet { update() } }
-    public var onOpenProject: ((String) -> Void)?
+    public var projects: [URL] { didSet { update() } }
+    public var onOpenProject: ((URL) -> Void)?
 
     // MARK: - Private
 
@@ -200,9 +201,15 @@ class RecentProjectsList: NSBox {
         borderType = .noBorder
         contentViewMargins = .zero
 
-        recentProjectsTableView.projects = ["a", "b", "c"]
+        let projects = NSDocumentController.shared.recentDocumentURLs.filter({ url in
+            return FileUtils.fileExists(atPath: url.path) == FileUtils.FileExistsType.directory
+        })
+
+        recentProjectsTableView.projects = projects
         recentProjectsTableView.onOpenProject = { filename in
-            Swift.print("Open", filename)
+            let application = NSApplication.shared
+            let appDelegate = application.delegate as? AppDelegate
+            _ = appDelegate?.application(application, openFile: filename.path)
         }
 
         addSubview(recentProjectsTableView)
