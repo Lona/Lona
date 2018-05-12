@@ -726,13 +726,7 @@
                                                 <action selector="showWelcomeWindow:" target="Ady-hI-5gd" id="XbB-ha-VEd"/>
                                             </connections>
                                         </menuItem>
-                                        <menuItem title="Color Browser" id="LEL-yJ-Idq">
-                                            <modifierMask key="keyEquivalentModifierMask"/>
-                                            <connections>
-                                                <action selector="showColorBrowser:" target="Voe-Tx-rLC" id="tUJ-bY-GAz"/>
-                                            </connections>
-                                        </menuItem>
-                                        <menuItem title="Component Browser" id="Pej-oB-iZ5" userLabel="Component Browser">
+                                        <menuItem title="Workspace Browser" id="Pej-oB-iZ5" userLabel="Component Browser">
                                             <modifierMask key="keyEquivalentModifierMask"/>
                                             <connections>
                                                 <action selector="showComponentBrowser:" target="Ady-hI-5gd" id="1qd-ja-TML"/>

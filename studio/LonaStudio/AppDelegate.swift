@@ -10,8 +10,6 @@ import Cocoa
 import LetsMove
 import MASPreferences
 
-let segmentedControlId = NSToolbarItem.Identifier("com.devinabbott.lona.WorkspaceTabs")
-
 @NSApplicationMain
 class AppDelegate: NSObject, NSApplicationDelegate {
 
@@ -51,48 +49,10 @@ class AppDelegate: NSObject, NSApplicationDelegate {
         preferencesWindow?.showWindow(sender)
     }
 
-    var colorBrowserWindow: NSWindow?
-
-    @IBAction func showColorBrowser(_ sender: AnyObject) {
-        if colorBrowserWindow == nil {
-            let initialRect = NSRect(x: 0, y: 0, width: 1280, height: 720)
-            let window = NSWindow(contentRect: initialRect, styleMask: [.closable, .titled, .resizable], backing: .retained, defer: false)
-            window.center()
-            window.title = "Color Browser"
-            window.isReleasedWhenClosed = false
-            window.minSize = NSSize(width: 784, height: 300)
-
-            let view = NSBox()
-            view.boxType = .custom
-            view.borderType = .noBorder
-            view.contentViewMargins = .zero
-            view.translatesAutoresizingMaskIntoConstraints = false
-
-            window.contentView = view
-
-            // Set up color browser
-
-            let colorBrowser = ColorBrowser(colors: CSColors.colors)
-
-            view.addSubview(colorBrowser)
-
-            colorBrowser.topAnchor.constraint(equalTo: view.topAnchor).isActive = true
-            colorBrowser.bottomAnchor.constraint(equalTo: view.bottomAnchor).isActive = true
-            colorBrowser.centerXAnchor.constraint(equalTo: view.centerXAnchor).isActive = true
-
-            colorBrowserWindow = window
-        }
-
-        // TODO: Set colors every time we show the browser in case they've changed.
-        // Also consider hooking into "Refresh" 
-
-        colorBrowserWindow?.makeKeyAndOrderFront(nil)
-    }
-
     var componentBrowserWindow: NSWindow?
 
     @IBAction func showComponentBrowser(_ sender: AnyObject) {
-        if colorBrowserWindow == nil {
+        if componentBrowserWindow == nil {
             let initialRect = NSRect(x: 0, y: 0, width: 1280, height: 720)
             let window = NSWindow(
                 contentRect: initialRect,
@@ -100,33 +60,28 @@ class AppDelegate: NSObject, NSApplicationDelegate {
                 backing: .retained,
                 defer: false)
             window.center()
-            window.title = "Component Browser"
+            window.title = "Workspace Browser"
             window.titleVisibility = .hidden
             window.isReleasedWhenClosed = false
             window.minSize = NSSize(width: 936, height: 300)
             window.animationBehavior = .documentWindow
 
-            if #available(OSX 10.13, *) {
-                let toolbar = NSToolbar()
-                toolbar.delegate = self
+            let toolbar = BrowserToolbar()
+            window.toolbar = toolbar
 
-//                let segmentedControl = SegmentedControlField(frame: NSRect(x: 0, y: 0, width: 300, height: 24), values: [
-//                    "Components",
-//                    "Colors"
-//                    ])
-//
-//                let toolbarItem = NSToolbarItem(itemIdentifier: segmentedControlId)
-//
-//                toolbarItem.view = segmentedControl
-//
-//                toolbar.insertItem(withItemIdentifier: segmentedControlId, at: 0)
+            let componentBrowser = ComponentBrowser()
+            let colorBrowser = ColorBrowser()
 
-                window.toolbar = toolbar
-            } else {
-                // Fallback on earlier versions
+            toolbar.onChangeTab = { tab in
+                switch tab {
+                case .components:
+                    window.contentView = componentBrowser
+                case .colors:
+                    window.contentView = colorBrowser
+                }
             }
 
-            window.contentView = ComponentBrowser()
+            window.contentView = componentBrowser
 
             componentBrowserWindow = window
         }
@@ -299,34 +254,5 @@ class AppDelegate: NSObject, NSApplicationDelegate {
         }
 
         return true
-    }
-}
-
-extension AppDelegate: NSToolbarDelegate {
-    func toolbarAllowedItemIdentifiers(_ toolbar: NSToolbar) -> [NSToolbarItem.Identifier] {
-        return [segmentedControlId, NSToolbarItem.Identifier.flexibleSpace]
-    }
-
-    func toolbarDefaultItemIdentifiers(_ toolbar: NSToolbar) -> [NSToolbarItem.Identifier] {
-        return [NSToolbarItem.Identifier.flexibleSpace, segmentedControlId, NSToolbarItem.Identifier.flexibleSpace]
-    }
-
-    func toolbar(_ toolbar: NSToolbar, itemForItemIdentifier itemIdentifier: NSToolbarItem.Identifier, willBeInsertedIntoToolbar flag: Bool) -> NSToolbarItem? {
-        switch itemIdentifier.rawValue {
-        case segmentedControlId.rawValue:
-            let segmentedControl = SegmentedControlField(frame: NSRect(x: 0, y: 0, width: 200, height: 24), values: [
-                "Components",
-                "Colors"
-                ])
-
-            let toolbarItem = NSToolbarItem(itemIdentifier: segmentedControlId)
-
-            toolbarItem.view = segmentedControl
-
-
-            return toolbarItem
-        default:
-            return nil
-        }
     }
 }

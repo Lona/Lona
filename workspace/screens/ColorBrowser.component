@@ -1,0 +1,72 @@
+{
+  "devices" : [
+    {
+      "height" : 640,
+      "heightMode" : "At Least",
+      "name" : "iPhone SE",
+      "width" : 1040
+    }
+  ],
+  "examples" : [
+    {
+      "name" : "Default",
+      "params" : {
+
+      }
+    }
+  ],
+  "logic" : [
+
+  ],
+  "params" : [
+
+  ],
+  "root" : {
+    "children" : [
+      {
+        "children" : [
+          {
+            "id" : "Title",
+            "params" : {
+              "font" : "title",
+              "text" : "Colors"
+            },
+            "type" : "Lona:Text"
+          },
+          {
+            "id" : "Spacer",
+            "params" : {
+              "alignSelf" : "stretch",
+              "height" : 24
+            },
+            "type" : "Lona:View"
+          },
+          {
+            "id" : "ColorPreviewCollection",
+            "params" : {
+
+            },
+            "type" : "ColorPreviewCollection"
+          }
+        ],
+        "id" : "Inner",
+        "params" : {
+          "flex" : 1,
+          "width" : 840
+        },
+        "type" : "Lona:View"
+      }
+    ],
+    "id" : "Container",
+    "params" : {
+      "alignItems" : "center",
+      "alignSelf" : "stretch",
+      "flex" : 1,
+      "paddingBottom" : 48,
+      "paddingLeft" : 48,
+      "paddingRight" : 48,
+      "paddingTop" : 48
+    },
+    "type" : "Lona:View"
+  }
+}
