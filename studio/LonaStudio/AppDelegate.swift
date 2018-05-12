@@ -36,6 +36,25 @@ class AppDelegate: NSObject, NSApplicationDelegate {
         return false
     }
 
+    func application(_ sender: NSApplication, openFile filename: String) -> Bool {
+        let url = URL(fileURLWithPath: filename)
+
+        switch FileUtils.fileExists(atPath: filename) {
+        case .directory:
+            openWorkspace(url: url)
+            showComponentBrowser(self)
+            return true
+        case .file:
+            NSDocumentController.shared.openDocument(
+                withContentsOf: url,
+                display: true,
+                completionHandler: { _, _, _ in })
+            return true
+        case .none:
+            return false
+        }
+    }
+
     var preferencesWindow: MASPreferencesWindowController?
 
     @IBAction func showPreferences(_ sender: AnyObject) {
@@ -78,6 +97,8 @@ class AppDelegate: NSObject, NSApplicationDelegate {
                     window.contentView = componentBrowser
                 case .colors:
                     window.contentView = colorBrowser
+                default:
+                    window.contentView = NSView()
                 }
             }
 
@@ -221,6 +242,8 @@ class AppDelegate: NSObject, NSApplicationDelegate {
 
     private func openWorkspace(url: URL) {
         CSUserPreferences.workspaceURL = url
+
+        NSDocumentController.shared.noteNewRecentDocumentURL(url)
 
         CSWorkspacePreferences.reloadAllConfigurationFiles(closeDocuments: true)
     }

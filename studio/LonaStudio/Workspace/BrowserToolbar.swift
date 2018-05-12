@@ -18,6 +18,10 @@ class BrowserToolbar: NSToolbar {
     enum Tab: String {
         case components = "Components"
         case colors = "Colors"
+        case textStyles = "Text Styles"
+        case shadows = "Shadows"
+        case gradients = "Gradients"
+        case dataTypes = "Data Types"
     }
 
     // MARK: - Lifecycle
@@ -46,8 +50,15 @@ extension BrowserToolbar: NSToolbarDelegate {
         switch itemIdentifier {
         case .tabs:
             let segmentedControl = SegmentedControlField(
-                frame: NSRect(x: 0, y: 0, width: 200, height: 24),
-                values: [Tab.components.rawValue, Tab.colors.rawValue])
+                frame: NSRect(x: 0, y: 0, width: 500, height: 24),
+                values: [
+                    Tab.components.rawValue,
+                    Tab.colors.rawValue,
+                    Tab.textStyles.rawValue,
+                    Tab.shadows.rawValue,
+                    Tab.gradients.rawValue,
+                    Tab.dataTypes.rawValue
+                ])
             segmentedControl.value = Tab.components.rawValue
             segmentedControl.onChange = { value in
                 guard let tab = Tab(rawValue: value) else { return }

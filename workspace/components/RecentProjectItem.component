@@ -1,0 +1,88 @@
+{
+  "devices" : [
+    {
+      "height" : 0,
+      "heightMode" : "At Least",
+      "name" : "iPhone SE",
+      "width" : 320
+    }
+  ],
+  "examples" : [
+    {
+      "name" : "Default",
+      "params" : {
+
+      }
+    }
+  ],
+  "logic" : [
+    {
+      "assignee" : [
+        "layers",
+        "ProjectName",
+        "text"
+      ],
+      "content" : [
+        "parameters",
+        "projectName"
+      ],
+      "type" : "AssignExpr"
+    },
+    {
+      "assignee" : [
+        "layers",
+        "ProjectDirectoryPath",
+        "text"
+      ],
+      "content" : [
+        "parameters",
+        "projectDirectoryPath"
+      ],
+      "type" : "AssignExpr"
+    }
+  ],
+  "params" : [
+    {
+      "name" : "projectName",
+      "type" : "String"
+    },
+    {
+      "name" : "projectDirectoryPath",
+      "type" : "String"
+    }
+  ],
+  "root" : {
+    "children" : [
+      {
+        "id" : "ProjectName",
+        "params" : {
+          "alignSelf" : "stretch",
+          "font" : "large",
+          "numberOfLines" : 1,
+          "text" : "Airbnb"
+        },
+        "type" : "Lona:Text"
+      },
+      {
+        "id" : "ProjectDirectoryPath",
+        "params" : {
+          "alignSelf" : "stretch",
+          "marginTop" : 2,
+          "numberOfLines" : 1,
+          "text" : "\/Users\/devinabbott\/Projects"
+        },
+        "type" : "Lona:Text"
+      }
+    ],
+    "id" : "Container",
+    "params" : {
+      "alignSelf" : "stretch",
+      "height" : 58,
+      "paddingBottom" : 10,
+      "paddingLeft" : 12,
+      "paddingRight" : 12,
+      "paddingTop" : 10
+    },
+    "type" : "Lona:View"
+  }
+}
