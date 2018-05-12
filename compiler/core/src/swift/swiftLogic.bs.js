@@ -382,7 +382,7 @@ function toSwiftAST(options, colors, textStyles, rootLayer, logicRootNode) {
                           modifiers: /* [] */0,
                           pattern: /* IdentifierPattern */Block.__(0, [{
                                 identifier: logicValueToSwiftAST(value),
-                                annotation: /* Some */[SwiftDocument$LonaCompilerCore.typeAnnotationDoc(value[0])]
+                                annotation: /* Some */[SwiftDocument$LonaCompilerCore.typeAnnotationDoc(options[/* framework */0], value[0])]
                               }]),
                           init: /* None */0,
                           block: /* None */0

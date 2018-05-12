@@ -130,18 +130,19 @@ function localImageName(framework, name) {
   }
 }
 
-function typeAnnotationDoc(_param) {
+function typeAnnotationDoc(framework, _ltype) {
   while(true) {
-    var param = _param;
-    switch (param.tag | 0) {
+    var ltype = _ltype;
+    switch (ltype.tag | 0) {
       case 0 : 
-          var typeName = param[0];
+          var typeName = ltype[0];
           switch (typeName) {
             case "Boolean" : 
                 return /* TypeName */Block.__(0, ["Bool"]);
+            case "Color" : 
             case "URL" : 
-                _param = /* Named */Block.__(1, [
-                    "URL",
+                _ltype = /* Named */Block.__(1, [
+                    typeName,
                     Types$LonaCompilerCore.stringType
                   ]);
                 continue ;
@@ -150,11 +151,14 @@ function typeAnnotationDoc(_param) {
           }
           break;
       case 1 : 
-          var name = param[0];
-          if (name === "URL") {
-            return /* TypeName */Block.__(0, ["NSImage"]);
-          } else {
-            return /* TypeName */Block.__(0, [name]);
+          var name = ltype[0];
+          switch (name) {
+            case "Color" : 
+                return /* TypeName */Block.__(0, [colorTypeName(framework)]);
+            case "URL" : 
+                return /* TypeName */Block.__(0, ["NSImage"]);
+            default:
+              return /* TypeName */Block.__(0, [name]);
           }
           break;
       case 2 : 
@@ -306,7 +310,7 @@ function defaultValueForLonaType(framework, _, textStyles, _ltype) {
           switch (alias) {
             case "Color" : 
                 return /* MemberExpression */Block.__(1, [/* :: */[
-                            /* SwiftIdentifier */Block.__(8, ["UIColor"]),
+                            /* SwiftIdentifier */Block.__(8, [colorTypeName(framework)]),
                             /* :: */[
                               /* SwiftIdentifier */Block.__(8, ["clear"]),
                               /* [] */0

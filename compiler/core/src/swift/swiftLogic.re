@@ -297,7 +297,10 @@ let toSwiftAST =
           "pattern":
             Ast.IdentifierPattern({
               "identifier": identifier |> logicValueToSwiftAST,
-              "annotation": Some(ltype |> SwiftDocument.typeAnnotationDoc)
+              "annotation":
+                Some(
+                  ltype |> SwiftDocument.typeAnnotationDoc(options.framework)
+                )
             }),
           "init": (None: option(Ast.node)),
           "block": (None: option(Ast.initializerBlock))

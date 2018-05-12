@@ -87,7 +87,10 @@ let generate =
         IdentifierPattern({
           "identifier": SwiftIdentifier(parameter.name),
           "annotation":
-            Some(parameter.ltype |> SwiftDocument.typeAnnotationDoc)
+            Some(
+              parameter.ltype
+              |> SwiftDocument.typeAnnotationDoc(swiftOptions.framework)
+            )
         }),
       "init": None,
       "block":
@@ -329,7 +332,9 @@ let generate =
     Parameter({
       "externalName": None,
       "localName": parameter.name,
-      "annotation": parameter.ltype |> SwiftDocument.typeAnnotationDoc,
+      "annotation":
+        parameter.ltype
+        |> SwiftDocument.typeAnnotationDoc(swiftOptions.framework),
       "defaultValue": None
     });
   let initParameterAssignmentDoc = (parameter: Decode.parameter) =>

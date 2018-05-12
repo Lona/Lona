@@ -67,7 +67,7 @@ function generate(options, swiftOptions, name, colors, textStyles, getComponent,
                 ],
                 pattern: /* IdentifierPattern */Block.__(0, [{
                       identifier: /* SwiftIdentifier */Block.__(8, [parameter[/* name */0]]),
-                      annotation: /* Some */[SwiftDocument$LonaCompilerCore.typeAnnotationDoc(parameter[/* ltype */1])]
+                      annotation: /* Some */[SwiftDocument$LonaCompilerCore.typeAnnotationDoc(swiftOptions[/* framework */0], parameter[/* ltype */1])]
                     }]),
                 init: /* None */0,
                 block: /* Some */[/* WillSetDidSetBlock */[{
@@ -399,7 +399,7 @@ function generate(options, swiftOptions, name, colors, textStyles, getComponent,
     return /* Parameter */Block.__(17, [{
                 externalName: /* None */0,
                 localName: parameter[/* name */0],
-                annotation: SwiftDocument$LonaCompilerCore.typeAnnotationDoc(parameter[/* ltype */1]),
+                annotation: SwiftDocument$LonaCompilerCore.typeAnnotationDoc(swiftOptions[/* framework */0], parameter[/* ltype */1]),
                 defaultValue: /* None */0
               }]);
   };
