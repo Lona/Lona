@@ -56,7 +56,7 @@ public class TextStyleConditional: UIView {
     addSubview(textView)
 
     textViewTextStyle = TextStyles.headline
-    textView.attributedText = textViewTextStyle.apply(to: textView.attributedText)
+    textView.attributedText = textViewTextStyle.apply(to: textView.attributedText ?? NSAttributedString())
     textView.attributedText = textViewTextStyle.apply(to: "Text goes here")
   }
 
@@ -98,10 +98,10 @@ public class TextStyleConditional: UIView {
 
   private func update() {
     textViewTextStyle = TextStyles.headline
-    textView.attributedText = textViewTextStyle.apply(to: textView.attributedText)
+    textView.attributedText = textViewTextStyle.apply(to: textView.attributedText ?? NSAttributedString())
     if large {
       textViewTextStyle = TextStyles.display2
-      textView.attributedText = textViewTextStyle.apply(to: textView.attributedText)
+      textView.attributedText = textViewTextStyle.apply(to: textView.attributedText ?? NSAttributedString())
     }
   }
 }

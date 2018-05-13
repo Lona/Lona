@@ -62,7 +62,7 @@ public class Button: UIView {
     addSubview(textView)
 
     textViewTextStyle = TextStyles.button
-    textView.attributedText = textViewTextStyle.apply(to: textView.attributedText)
+    textView.attributedText = textViewTextStyle.apply(to: textView.attributedText ?? NSAttributedString())
   }
 
   private func setUpConstraints() {
