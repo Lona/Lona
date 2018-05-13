@@ -105,6 +105,14 @@ function labelAttributedTextName(framework) {
   }
 }
 
+function labelAttributedTextValue(framework) {
+  if (framework !== 0) {
+    return labelAttributedTextName(framework);
+  } else {
+    return labelAttributedTextName(framework) + " ?? NSAttributedString()";
+  }
+}
+
 function localImageName(framework, name) {
   var path = Path.parse(name).name;
   var imageName = /* LiteralExpression */Block.__(0, [/* String */Block.__(3, [path.replace((/@\d+x$/g), "")])]);
@@ -156,7 +164,7 @@ function typeAnnotationDoc(framework, _ltype) {
             case "Color" : 
                 return /* TypeName */Block.__(0, [colorTypeName(framework)]);
             case "URL" : 
-                return /* TypeName */Block.__(0, ["NSImage"]);
+                return /* TypeName */Block.__(0, [imageTypeName(framework)]);
             default:
               return /* TypeName */Block.__(0, [name]);
           }
@@ -399,6 +407,7 @@ exports.fontTypeName                  = fontTypeName;
 exports.imageTypeName                 = imageTypeName;
 exports.layoutPriorityTypeDoc         = layoutPriorityTypeDoc;
 exports.labelAttributedTextName       = labelAttributedTextName;
+exports.labelAttributedTextValue      = labelAttributedTextValue;
 exports.localImageName                = localImageName;
 exports.typeAnnotationDoc             = typeAnnotationDoc;
 exports.lonaValue                     = lonaValue;

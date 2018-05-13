@@ -81,9 +81,10 @@ let toSwiftAST =
         name |> Js.String.replace("borderRadius", "layer.cornerRadius")
       )
     | (UIKit, Ast.SwiftIdentifier(name))
-        when name |> Js.String.endsWith(".borderWidth") =>
+        when
+          name |> Js.String.endsWith(".borderWidth") || name == "borderWidth" =>
       Ast.SwiftIdentifier(
-        name |> Js.String.replace(".borderWidth", ".layer.borderWidth")
+        name |> Js.String.replace("borderWidth", "layer.borderWidth")
       )
     /* -- AppKit -- */
     /* TODO: Make sure "borderRadius" without the "." doesn't match intermediate variables */
@@ -127,12 +128,12 @@ let toSwiftAST =
       | (Ast.SwiftIdentifier(name), Ast.MemberExpression(right))
           when
             name
-            |> Js.String.endsWith(".borderColor")
+            |> Js.String.endsWith("borderColor")
             && options.framework == UIKit =>
         Ast.BinaryExpression({
           "left":
             Ast.SwiftIdentifier(
-              name |> Js.String.replace(".borderColor", ".layer.borderColor")
+              name |> Js.String.replace("borderColor", "layer.borderColor")
             ),
           "operator": "=",
           "right":
@@ -240,7 +241,7 @@ let toSwiftAST =
                           |> Js.String.replace(
                                ".textStyle",
                                "."
-                               ++ SwiftDocument.labelAttributedTextName(
+                               ++ SwiftDocument.labelAttributedTextValue(
                                     options.framework
                                   )
                              )
