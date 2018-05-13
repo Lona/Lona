@@ -86,6 +86,7 @@ public class NestedComponent: UIView {
     addSubview(text2View)
 
     textViewTextStyle = TextStyles.subheading2
+    textView.attributedText = textViewTextStyle.apply(to: textView.attributedText)
     textView.attributedText = textViewTextStyle.apply(to: "Example nested component")
     text1View.attributedText = text1ViewTextStyle.apply(to: "Text below")
     text2View.attributedText = text2ViewTextStyle.apply(to: "Very bottom")

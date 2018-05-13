@@ -203,6 +203,9 @@ let parameterAssignmentsFromLogic = (layer, node) => {
      );
 };
 
+/* Build a map from each layer, to a map from its parameter name to an assignment
+   [layer: [parameterName: Logic.Assign]]
+    */
 let logicAssignmentsFromLayerParameters = layer => {
   let layerMap = ref(LayerMap.empty);
   let extractParameters = (layer: Types.layer) => {

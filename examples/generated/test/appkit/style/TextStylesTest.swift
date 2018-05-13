@@ -148,24 +148,34 @@ public class TextStylesTest: NSBox {
     addSubview(text9View)
 
     textViewTextStyle = TextStyles.display4
+    textView.attributedStringValue = textViewTextStyle.apply(to: textView.attributedStringValue)
     textView.attributedStringValue = textViewTextStyle.apply(to: "Text goes here")
     text1ViewTextStyle = TextStyles.display3
+    text1View.attributedStringValue = text1ViewTextStyle.apply(to: text1View.attributedStringValue)
     text1View.attributedStringValue = text1ViewTextStyle.apply(to: "Text goes here")
     text2ViewTextStyle = TextStyles.display2
+    text2View.attributedStringValue = text2ViewTextStyle.apply(to: text2View.attributedStringValue)
     text2View.attributedStringValue = text2ViewTextStyle.apply(to: "Text goes here")
     text3ViewTextStyle = TextStyles.display1
+    text3View.attributedStringValue = text3ViewTextStyle.apply(to: text3View.attributedStringValue)
     text3View.attributedStringValue = text3ViewTextStyle.apply(to: "Text goes here")
     text4ViewTextStyle = TextStyles.headline
+    text4View.attributedStringValue = text4ViewTextStyle.apply(to: text4View.attributedStringValue)
     text4View.attributedStringValue = text4ViewTextStyle.apply(to: "Text goes here")
     text5ViewTextStyle = TextStyles.subheading2
+    text5View.attributedStringValue = text5ViewTextStyle.apply(to: text5View.attributedStringValue)
     text5View.attributedStringValue = text5ViewTextStyle.apply(to: "Text goes here")
     text6ViewTextStyle = TextStyles.subheading1
+    text6View.attributedStringValue = text6ViewTextStyle.apply(to: text6View.attributedStringValue)
     text6View.attributedStringValue = text6ViewTextStyle.apply(to: "Text goes here")
     text7ViewTextStyle = TextStyles.body2
+    text7View.attributedStringValue = text7ViewTextStyle.apply(to: text7View.attributedStringValue)
     text7View.attributedStringValue = text7ViewTextStyle.apply(to: "Text goes here")
     text8ViewTextStyle = TextStyles.body1
+    text8View.attributedStringValue = text8ViewTextStyle.apply(to: text8View.attributedStringValue)
     text8View.attributedStringValue = text8ViewTextStyle.apply(to: "Text goes here")
     text9ViewTextStyle = TextStyles.caption
+    text9View.attributedStringValue = text9ViewTextStyle.apply(to: text9View.attributedStringValue)
     text9View.attributedStringValue = text9ViewTextStyle.apply(to: "Text goes here")
   }
 

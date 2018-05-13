@@ -138,6 +138,7 @@ public class ColorPreviewCard: NSBox {
     borderWidth = 1
     dividerView.fillColor = Colors.grey300
     colorNameViewTextStyle = TextStyles.large
+    colorNameView.attributedStringValue = colorNameViewTextStyle.apply(to: colorNameView.attributedStringValue)
     colorNameView.maximumNumberOfLines = 1
   }
 

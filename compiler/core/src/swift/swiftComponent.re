@@ -69,6 +69,8 @@ let generate =
     | Low => "defaultLow";
   let isParameterSetInitially = (layer: Types.layer, parameter) =>
     StringMap.mem(parameter, layer.parameters);
+  let getParameter = (layer: Types.layer, parameter) =>
+    StringMap.find_opt(parameter, layer.parameters);
   let isParameterAssigned = (layer: Types.layer, parameter) => {
     let assignedParameters =
       Layer.LayerMap.find_opt(layer, layerParameterAssignments);
@@ -488,10 +490,16 @@ let generate =
     | None => LineComment(layer.name)
     | Some(parameters) =>
       let assignment = StringMap.find_opt(name, parameters);
+      let parameterName =
+        switch name {
+        | "textStyle" => "font"
+        | _ => name
+        };
+      let parameterValue = getParameter(layer, parameterName);
       let logic =
-        switch (assignment, layer.typeName) {
-        | (Some(assignment), _) => assignment
-        | (None, Component(componentName)) =>
+        switch (assignment, layer.typeName, parameterValue) {
+        | (Some(assignment), _, _) => assignment
+        | (None, Component(componentName), _) =>
           let param =
             getComponent(componentName)
             |> Decode.Component.parameters
@@ -501,7 +509,9 @@ let generate =
             name,
             Logic.defaultValueForType(param.ltype)
           );
-        | (None, _) =>
+        | (None, _, Some(value)) =>
+          Logic.assignmentForLayerParameter(layer, name, value)
+        | (None, _, None) =>
           Logic.defaultAssignmentForLayerParameter(
             colors,
             textStyles,

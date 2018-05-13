@@ -76,6 +76,7 @@ public class Button: NSBox {
     addSubview(textView)
 
     textViewTextStyle = TextStyles.button
+    textView.attributedStringValue = textViewTextStyle.apply(to: textView.attributedStringValue)
   }
 
   private func setUpConstraints() {

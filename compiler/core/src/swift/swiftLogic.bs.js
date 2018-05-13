@@ -325,7 +325,29 @@ function toSwiftAST(options, colors, textStyles, rootLayer, logicRootNode) {
                                     operator: "=",
                                     right: right$1
                                   }]),
-                              /* [] */0
+                              /* :: */[
+                                /* BinaryExpression */Block.__(2, [{
+                                      left: /* SwiftIdentifier */Block.__(8, [name$3.replace(".textStyle", "." + SwiftDocument$LonaCompilerCore.labelAttributedTextName(options[/* framework */0]))]),
+                                      operator: "=",
+                                      right: /* MemberExpression */Block.__(1, [/* :: */[
+                                            /* SwiftIdentifier */Block.__(8, [name$3.replace(".textStyle", "TextStyle")]),
+                                            /* :: */[
+                                              /* FunctionCallExpression */Block.__(19, [{
+                                                    name: /* SwiftIdentifier */Block.__(8, ["apply"]),
+                                                    arguments: /* :: */[
+                                                      /* FunctionCallArgument */Block.__(18, [{
+                                                            name: /* Some */[/* SwiftIdentifier */Block.__(8, ["to"])],
+                                                            value: /* SwiftIdentifier */Block.__(8, [name$3.replace(".textStyle", "." + SwiftDocument$LonaCompilerCore.labelAttributedTextName(options[/* framework */0]))])
+                                                          }]),
+                                                      /* [] */0
+                                                    ]
+                                                  }]),
+                                              /* [] */0
+                                            ]
+                                          ]])
+                                    }]),
+                                /* [] */0
+                              ]
                             ]]);
                 } else if (name$2.endsWith("text")) {
                   return /* BinaryExpression */Block.__(2, [{

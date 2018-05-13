@@ -89,6 +89,7 @@ public class PressableRootView: NSBox {
     innerView.addSubview(innerTextView)
 
     innerTextViewTextStyle = TextStyles.headline
+    innerTextView.attributedStringValue = innerTextViewTextStyle.apply(to: innerTextView.attributedStringValue)
   }
 
   private func setUpConstraints() {

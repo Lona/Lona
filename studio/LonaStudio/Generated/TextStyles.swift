@@ -14,5 +14,10 @@ class TextStyles {
     color: Colors.black)
   public static let large = AttributedFont(size: 15, lineHeight: 17, color: Colors.black)
   public static let regular = AttributedFont(size: 13, lineHeight: 15, color: Colors.black)
+  public static let small = AttributedFont(size: 11, lineHeight: 13, color: Colors.black)
   public static let regularMuted = AttributedFont(size: 13, lineHeight: 15, color: #colorLiteral(red: 0.509803921569, green: 0.509803921569, blue: 0.509803921569, alpha: 1))
+  public static let smallMuted = AttributedFont(size: 11, lineHeight: 13, color: #colorLiteral(red: 0.509803921569, green: 0.509803921569, blue: 0.509803921569, alpha: 1))
+  public static let largeInverse = AttributedFont(size: 15, lineHeight: 17, color: Colors.white)
+  public static let regularInverse = AttributedFont(size: 13, lineHeight: 15, color: Colors.white)
+  public static let smallInverse = AttributedFont(size: 11, lineHeight: 13, color: Colors.white)
 }

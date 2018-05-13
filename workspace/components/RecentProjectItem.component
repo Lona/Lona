@@ -1,10 +1,23 @@
 {
+  "config" : {
+    "deviceLayout" : "yx"
+  },
   "devices" : [
     {
       "height" : 0,
       "heightMode" : "At Least",
       "name" : "iPhone SE",
-      "width" : 320
+      "width" : 160
+    },
+    {
+      "backgroundColor" : "black",
+      "height" : 0,
+      "heightMode" : "At Least",
+      "name" : "Canvas",
+      "params" : {
+        "selected" : true
+      },
+      "width" : 375
     }
   ],
   "examples" : [
@@ -39,6 +52,56 @@
         "projectDirectoryPath"
       ],
       "type" : "AssignExpr"
+    },
+    {
+      "body" : [
+        {
+          "assignee" : [
+            "layers",
+            "ProjectName",
+            "textStyle"
+          ],
+          "content" : {
+            "type" : "LitExpr",
+            "value" : {
+              "data" : "regularInverse",
+              "type" : "TextStyle"
+            }
+          },
+          "type" : "AssignExpr"
+        },
+        {
+          "assignee" : [
+            "layers",
+            "ProjectDirectoryPath",
+            "textStyle"
+          ],
+          "content" : {
+            "type" : "LitExpr",
+            "value" : {
+              "data" : "regularInverse",
+              "type" : "TextStyle"
+            }
+          },
+          "type" : "AssignExpr"
+        }
+      ],
+      "condition" : {
+        "left" : [
+          "parameters",
+          "selected"
+        ],
+        "op" : "==",
+        "right" : {
+          "type" : "LitExpr",
+          "value" : {
+            "data" : true,
+            "type" : "Boolean"
+          }
+        },
+        "type" : "BinExpr"
+      },
+      "type" : "IfExpr"
     }
   ],
   "params" : [
@@ -49,6 +112,10 @@
     {
       "name" : "projectDirectoryPath",
       "type" : "String"
+    },
+    {
+      "name" : "selected",
+      "type" : "Boolean"
     }
   ],
   "root" : {
@@ -57,7 +124,7 @@
         "id" : "ProjectName",
         "params" : {
           "alignSelf" : "stretch",
-          "font" : "large",
+          "font" : "regular",
           "numberOfLines" : 1,
           "text" : "Airbnb"
         },
@@ -67,7 +134,8 @@
         "id" : "ProjectDirectoryPath",
         "params" : {
           "alignSelf" : "stretch",
-          "marginTop" : 2,
+          "font" : "regularMuted",
+          "marginTop" : 4,
           "numberOfLines" : 1,
           "text" : "\/Users\/devinabbott\/Projects"
         },
@@ -77,8 +145,8 @@
     "id" : "Container",
     "params" : {
       "alignSelf" : "stretch",
-      "height" : 58,
-      "paddingBottom" : 10,
+      "height" : 54,
+      "paddingBottom" : 8,
       "paddingLeft" : 12,
       "paddingRight" : 12,
       "paddingTop" : 10

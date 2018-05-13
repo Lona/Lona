@@ -7,9 +7,10 @@ public class RecentProjectItem: NSBox {
 
   // MARK: Lifecycle
 
-  public init(projectName: String, projectDirectoryPath: String) {
+  public init(projectName: String, projectDirectoryPath: String, selected: Bool) {
     self.projectName = projectName
     self.projectDirectoryPath = projectDirectoryPath
+    self.selected = selected
 
     super.init(frame: .zero)
 
@@ -20,7 +21,7 @@ public class RecentProjectItem: NSBox {
   }
 
   public convenience init() {
-    self.init(projectName: "", projectDirectoryPath: "")
+    self.init(projectName: "", projectDirectoryPath: "", selected: false)
   }
 
   public required init?(coder aDecoder: NSCoder) {
@@ -31,24 +32,25 @@ public class RecentProjectItem: NSBox {
 
   public var projectName: String { didSet { update() } }
   public var projectDirectoryPath: String { didSet { update() } }
+  public var selected: Bool { didSet { update() } }
 
   // MARK: Private
 
   private var projectNameView = NSTextField(labelWithString: "")
   private var projectDirectoryPathView = NSTextField(labelWithString: "")
 
-  private var projectNameViewTextStyle = TextStyles.large
-  private var projectDirectoryPathViewTextStyle = TextStyles.regular
+  private var projectNameViewTextStyle = TextStyles.regular
+  private var projectDirectoryPathViewTextStyle = TextStyles.regularMuted
 
   private var topPadding: CGFloat = 10
   private var trailingPadding: CGFloat = 12
-  private var bottomPadding: CGFloat = 10
+  private var bottomPadding: CGFloat = 8
   private var leadingPadding: CGFloat = 12
   private var projectNameViewTopMargin: CGFloat = 0
   private var projectNameViewTrailingMargin: CGFloat = 0
   private var projectNameViewBottomMargin: CGFloat = 0
   private var projectNameViewLeadingMargin: CGFloat = 0
-  private var projectDirectoryPathViewTopMargin: CGFloat = 2
+  private var projectDirectoryPathViewTopMargin: CGFloat = 4
   private var projectDirectoryPathViewTrailingMargin: CGFloat = 0
   private var projectDirectoryPathViewBottomMargin: CGFloat = 0
   private var projectDirectoryPathViewLeadingMargin: CGFloat = 0
@@ -71,8 +73,12 @@ public class RecentProjectItem: NSBox {
     addSubview(projectNameView)
     addSubview(projectDirectoryPathView)
 
-    projectNameViewTextStyle = TextStyles.large
+    projectNameViewTextStyle = TextStyles.regular
+    projectNameView.attributedStringValue = projectNameViewTextStyle.apply(to: projectNameView.attributedStringValue)
     projectNameView.maximumNumberOfLines = 1
+    projectDirectoryPathViewTextStyle = TextStyles.regularMuted
+    projectDirectoryPathView.attributedStringValue =
+      projectDirectoryPathViewTextStyle.apply(to: projectDirectoryPathView.attributedStringValue)
     projectDirectoryPathView.maximumNumberOfLines = 1
   }
 
@@ -81,7 +87,7 @@ public class RecentProjectItem: NSBox {
     projectNameView.translatesAutoresizingMaskIntoConstraints = false
     projectDirectoryPathView.translatesAutoresizingMaskIntoConstraints = false
 
-    let heightAnchorConstraint = heightAnchor.constraint(equalToConstant: 58)
+    let heightAnchorConstraint = heightAnchor.constraint(equalToConstant: 56)
     let projectNameViewTopAnchorConstraint = projectNameView
       .topAnchor
       .constraint(equalTo: topAnchor, constant: topPadding + projectNameViewTopMargin)
@@ -132,7 +138,19 @@ public class RecentProjectItem: NSBox {
   }
 
   private func update() {
+    projectDirectoryPathViewTextStyle = TextStyles.regularMuted
+    projectDirectoryPathView.attributedStringValue =
+      projectDirectoryPathViewTextStyle.apply(to: projectDirectoryPathView.attributedStringValue)
+    projectNameViewTextStyle = TextStyles.regular
+    projectNameView.attributedStringValue = projectNameViewTextStyle.apply(to: projectNameView.attributedStringValue)
     projectNameView.attributedStringValue = projectNameViewTextStyle.apply(to: projectName)
     projectDirectoryPathView.attributedStringValue = projectDirectoryPathViewTextStyle.apply(to: projectDirectoryPath)
+    if selected {
+      projectNameViewTextStyle = TextStyles.regularInverse
+      projectNameView.attributedStringValue = projectNameViewTextStyle.apply(to: projectNameView.attributedStringValue)
+      projectDirectoryPathViewTextStyle = TextStyles.regularInverse
+      projectDirectoryPathView.attributedStringValue =
+        projectDirectoryPathViewTextStyle.apply(to: projectDirectoryPathView.attributedStringValue)
+    }
   }
 }

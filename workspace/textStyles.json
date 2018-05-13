@@ -39,11 +39,46 @@
       "color": "black"
     },
     {
+      "id": "small",
+      "name": "Small",
+      "fontSize": 11,
+      "lineHeight": 13,
+      "color": "black"
+    },
+    {
       "id": "regularMuted",
       "name": "Regular Muted",
       "fontSize": 13,
       "lineHeight": 15,
       "color": "#828282"
+    },
+    {
+      "id": "smallMuted",
+      "name": "Small Muted",
+      "fontSize": 11,
+      "lineHeight": 13,
+      "color": "#828282"
+    },
+    {
+      "id": "largeInverse",
+      "name": "Large Inverse",
+      "fontSize": 15,
+      "lineHeight": 17,
+      "color": "white"
+    },
+    {
+      "id": "regularInverse",
+      "name": "Regular Inverse",
+      "fontSize": 13,
+      "lineHeight": 15,
+      "color": "white"
+    },
+    {
+      "id": "smallInverse",
+      "name": "Small Inverse",
+      "fontSize": 11,
+      "lineHeight": 13,
+      "color": "white"
     }
   ]
 }

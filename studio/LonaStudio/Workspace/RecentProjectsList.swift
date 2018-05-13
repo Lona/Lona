@@ -38,13 +38,15 @@ class RecentProjectsTableCellView: NSTableCellView {
 
     // MARK: - Override
 
+    private var selected: Bool = false { didSet { update() } }
+
     override var backgroundStyle: NSView.BackgroundStyle {
         didSet {
-//            if self.backgroundStyle == .light {
-//                recentProjectView.textColor = NSColor.controlTextColor
-//            } else if self.backgroundStyle == .dark {
-//                recentProjectView.textColor = NSColor.alternateSelectedControlTextColor
-//            }
+            if self.backgroundStyle == .light {
+                selected = false
+            } else if self.backgroundStyle == .dark {
+                selected = true
+            }
         }
     }
 
@@ -69,6 +71,7 @@ class RecentProjectsTableCellView: NSTableCellView {
     private func update() {
         recentProjectView.projectName = project.lastPathComponent
         recentProjectView.projectDirectoryPath = project.deletingLastPathComponent().path
+        recentProjectView.selected = selected
     }
 }
 
@@ -127,6 +130,7 @@ class RecentProjectsTableView: NSView {
         scrollView.documentView = tableView
         tableView.sizeToFit()
         tableView.doubleAction = #selector(handleClickItem(_:))
+//        tableView.selectionHighlightStyle = .sourceList
 
         addSubview(scrollView)
     }
@@ -157,7 +161,7 @@ extension RecentProjectsTableView: NSTableViewDelegate {
     }
 
     func tableView(_ tableView: NSTableView, heightOfRow row: Int) -> CGFloat {
-        return 58
+        return 52
     }
 
     @objc func handleClickItem(_ sender: AnyObject) {

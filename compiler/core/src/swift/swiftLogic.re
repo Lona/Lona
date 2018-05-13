@@ -210,6 +210,45 @@ let toSwiftAST =
               ),
             "operator": "=",
             "right": right
+          }),
+          Ast.BinaryExpression({
+            "left":
+              Ast.SwiftIdentifier(
+                name
+                |> Js.String.replace(
+                     ".textStyle",
+                     "."
+                     ++ SwiftDocument.labelAttributedTextName(
+                          options.framework
+                        )
+                   )
+              ),
+            "operator": "=",
+            "right":
+              Ast.MemberExpression([
+                Ast.SwiftIdentifier(
+                  name |> Js.String.replace(".textStyle", "TextStyle")
+                ),
+                Ast.FunctionCallExpression({
+                  "name": Ast.SwiftIdentifier("apply"),
+                  "arguments": [
+                    Ast.FunctionCallArgument({
+                      "name": Some(Ast.SwiftIdentifier("to")),
+                      "value":
+                        Ast.SwiftIdentifier(
+                          name
+                          |> Js.String.replace(
+                               ".textStyle",
+                               "."
+                               ++ SwiftDocument.labelAttributedTextName(
+                                    options.framework
+                                  )
+                             )
+                        )
+                    })
+                  ]
+                })
+              ])
           })
         ]);
       | (Ast.SwiftIdentifier(name), right)

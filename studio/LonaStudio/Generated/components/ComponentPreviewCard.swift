@@ -137,6 +137,8 @@ public class ComponentPreviewCard: NSBox {
     borderWidth = 1
     dividerView.fillColor = Colors.grey300
     componentNameViewTextStyle = TextStyles.large
+    componentNameView.attributedStringValue =
+      componentNameViewTextStyle.apply(to: componentNameView.attributedStringValue)
     componentNameView.maximumNumberOfLines = 1
   }
 

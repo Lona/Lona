@@ -581,12 +581,14 @@ function generate(options, swiftOptions, name, colors, textStyles, getComponent,
     var parameters = Layer$LonaCompilerCore.LayerMap[/* find_opt */24](layer, layerParameterAssignments);
     if (parameters) {
       var assignment = StringMap$LonaCompilerCore.find_opt(name, parameters[0]);
+      var parameterName = name === "textStyle" ? "font" : name;
+      var parameterValue = StringMap$LonaCompilerCore.find_opt(parameterName, layer[/* parameters */2]);
       var match = layer[/* typeName */0];
       var logic;
       if (assignment) {
         logic = assignment[0];
       } else if (typeof match === "number") {
-        logic = Logic$LonaCompilerCore.defaultAssignmentForLayerParameter(colors, textStyles, layer, name);
+        logic = parameterValue ? Logic$LonaCompilerCore.assignmentForLayerParameter(layer, name, parameterValue[0]) : Logic$LonaCompilerCore.defaultAssignmentForLayerParameter(colors, textStyles, layer, name);
       } else {
         var param$1 = List.find((function (param) {
                 return +(param[/* name */0] === name);

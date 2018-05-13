@@ -88,6 +88,7 @@ public class ColorBrowser: NSBox {
     innerView.addSubview(colorPreviewCollectionView)
 
     titleViewTextStyle = TextStyles.title
+    titleView.attributedStringValue = titleViewTextStyle.apply(to: titleView.attributedStringValue)
     titleView.attributedStringValue = titleViewTextStyle.apply(to: "Colors")
   }
 

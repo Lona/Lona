@@ -72,6 +72,7 @@ public class PressableRootView: UIView {
     innerView.addSubview(innerTextView)
 
     innerTextViewTextStyle = TextStyles.headline
+    innerTextView.attributedText = innerTextViewTextStyle.apply(to: innerTextView.attributedText)
   }
 
   private func setUpConstraints() {
