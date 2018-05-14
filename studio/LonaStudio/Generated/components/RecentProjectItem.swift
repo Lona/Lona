@@ -87,7 +87,7 @@ public class RecentProjectItem: NSBox {
     projectNameView.translatesAutoresizingMaskIntoConstraints = false
     projectDirectoryPathView.translatesAutoresizingMaskIntoConstraints = false
 
-    let heightAnchorConstraint = heightAnchor.constraint(equalToConstant: 56)
+    let heightAnchorConstraint = heightAnchor.constraint(equalToConstant: 54)
     let projectNameViewTopAnchorConstraint = projectNameView
       .topAnchor
       .constraint(equalTo: topAnchor, constant: topPadding + projectNameViewTopMargin)

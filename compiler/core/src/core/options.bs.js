@@ -4,12 +4,16 @@
 
 function optionsToJs(param) {
   return {
-          preset: param[/* preset */0]
+          preset: param[/* preset */0],
+          filterComponents: param[/* filterComponents */1]
         };
 }
 
 function optionsFromJs(param) {
-  return /* record */[/* preset */param.preset];
+  return /* record */[
+          /* preset */param.preset,
+          /* filterComponents */param.filterComponents
+        ];
 }
 
 var standard = /* Standard */0;

@@ -134,9 +134,12 @@ module Layer = {
       name: field("id", string, json),
       parameters: field("params", parameterDictionary, json),
       children:
-        switch (field("children", list(layer(getComponent)), json)) {
-        | result => result
-        | exception _ => []
+        switch (json |> optional(field("children", list(layer(getComponent))))) {
+        | Some(result) => result
+        | None => []
+        | exception e =>
+          Js.log2("Failed to decode children of", typeName);
+          raise(e);
         }
     };
   };

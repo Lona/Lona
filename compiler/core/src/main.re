@@ -26,7 +26,8 @@ let options: LonaCompilerCore.Options.options = {
     switch (getArgument("preset")) {
     | Some("airbnb") => Airbnb
     | _ => Standard
-    }
+    },
+  filterComponents: getArgument("filterComponents")
 };
 
 let swiftOptions: Swift.Options.options = {
@@ -240,7 +241,14 @@ let convertWorkspace = (workspace, output) => {
   Glob.glob(
     concat(fromDirectory, "**/*.component"),
     (_, files) => {
-      let files = Array.to_list(files);
+      let files =
+        Array.to_list(files)
+        |> List.filter(file =>
+             switch options.filterComponents {
+             | Some(value) => Js.Re.test(file, Js.Re.fromString(value))
+             | None => true
+             }
+           );
       let processFile = file => {
         let fromRelativePath =
           Path.relative(~from=fromDirectory, ~to_=file, ());

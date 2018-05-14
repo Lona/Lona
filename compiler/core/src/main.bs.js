@@ -60,7 +60,12 @@ var tmp;
 
 tmp = match && match[0] === "airbnb" ? /* Airbnb */1 : /* Standard */0;
 
-var options = /* record */[/* preset */tmp];
+var options_001 = /* filterComponents */getArgument("filterComponents");
+
+var options = /* record */[
+  /* preset */tmp,
+  options_001
+];
 
 var match$1 = getArgument("framework");
 
@@ -276,7 +281,14 @@ function convertWorkspace(workspace, output) {
   Fs.writeFileSync(textStylesOutputPath, textStyles);
   copyStaticFiles(toDirectory);
   Glob(Path.join(fromDirectory, "**/*.component"), (function (_, files) {
-          var files$1 = $$Array.to_list(files);
+          var files$1 = List.filter((function (file) {
+                    var match = options_001;
+                    if (match) {
+                      return +new RegExp(match[0]).test(file);
+                    } else {
+                      return /* true */1;
+                    }
+                  }))($$Array.to_list(files));
           var processFile = function (file) {
             var fromRelativePath = Path.relative(fromDirectory, file);
             var addition = Path.basename(fromRelativePath, ".component");
