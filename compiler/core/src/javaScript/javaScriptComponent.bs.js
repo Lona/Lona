@@ -19,7 +19,7 @@ var JavaScriptFormat$LonaCompilerCore = require("./javaScriptFormat.bs.js");
 function createStyleAttributeAST(_, _$1, layer, styles) {
   return /* JSXAttribute */Block.__(10, [{
               name: "style",
-              value: /* ArrayLiteral */Block.__(17, [/* :: */[
+              value: /* ArrayLiteral */Block.__(18, [/* :: */[
                     /* Identifier */Block.__(2, [/* :: */[
                           "styles",
                           /* :: */[
@@ -28,8 +28,8 @@ function createStyleAttributeAST(_, _$1, layer, styles) {
                           ]
                         ]]),
                     /* :: */[
-                      /* ObjectLiteral */Block.__(18, [Layer$LonaCompilerCore.mapBindings((function (param) {
-                                  return /* Property */Block.__(19, [{
+                      /* ObjectLiteral */Block.__(19, [Layer$LonaCompilerCore.mapBindings((function (param) {
+                                  return /* Property */Block.__(20, [{
                                               key: /* Identifier */Block.__(2, [/* :: */[
                                                     param[0],
                                                     /* [] */0
@@ -120,13 +120,13 @@ function toJavaScriptStyleSheetAST(colors, layer) {
     var styleParams = Curry._2(StringMap$LonaCompilerCore.filter, (function (key, _) {
             return Layer$LonaCompilerCore.parameterIsStyle(key);
           }), layer[/* parameters */2]);
-    return /* Property */Block.__(19, [{
+    return /* Property */Block.__(20, [{
                 key: /* Identifier */Block.__(2, [/* :: */[
                       JavaScriptFormat$LonaCompilerCore.styleVariableName(layer[/* name */1]),
                       /* [] */0
                     ]]),
-                value: /* ObjectLiteral */Block.__(18, [List.map((function (param) {
-                            return /* Property */Block.__(19, [{
+                value: /* ObjectLiteral */Block.__(19, [List.map((function (param) {
+                            return /* Property */Block.__(20, [{
                                         key: /* Identifier */Block.__(2, [/* :: */[
                                               param[0],
                                               /* [] */0
@@ -139,7 +139,7 @@ function toJavaScriptStyleSheetAST(colors, layer) {
               }]);
   };
   var styleObjects = List.map(createStyleObjectForLayer, Layer$LonaCompilerCore.flatten(layer));
-  return /* VariableDeclaration */Block.__(13, [/* AssignmentExpression */Block.__(14, [{
+  return /* VariableDeclaration */Block.__(14, [/* AssignmentExpression */Block.__(15, [{
                   left: /* Identifier */Block.__(2, [/* :: */[
                         "styles",
                         /* [] */0
@@ -153,7 +153,7 @@ function toJavaScriptStyleSheetAST(colors, layer) {
                               ]
                             ]]),
                         arguments: /* :: */[
-                          /* ObjectLiteral */Block.__(18, [styleObjects]),
+                          /* ObjectLiteral */Block.__(19, [styleObjects]),
                           /* [] */0
                         ]
                       }])
@@ -201,7 +201,7 @@ function generate(name, colorsFilePath, textStylesFilePath, colors, textStyles, 
   var styleSheetAST = toJavaScriptStyleSheetAST(colors, rootLayer);
   var logicAST = JavaScriptAst$LonaCompilerCore.optimize(JavaScriptLogic$LonaCompilerCore.toJavaScriptAST(logic));
   var match = importComponents(getComponentFile, rootLayer);
-  return JavaScriptAst$LonaCompilerCore.prepareForRender(/* Program */Block.__(22, [SwiftDocument$LonaCompilerCore.joinGroups(/* Empty */0, /* :: */[
+  return JavaScriptAst$LonaCompilerCore.prepareForRender(/* Program */Block.__(23, [SwiftDocument$LonaCompilerCore.joinGroups(/* Empty */0, /* :: */[
                       Pervasives.$at(/* :: */[
                             /* ImportDeclaration */Block.__(3, [{
                                   source: "react",
@@ -234,7 +234,7 @@ function generate(name, colorsFilePath, textStylesFilePath, colors, textStyles, 
                             ], match[/* relative */1]),
                         /* :: */[
                           /* :: */[
-                            /* ExportDefaultDeclaration */Block.__(20, [/* ClassDeclaration */Block.__(6, [{
+                            /* ExportDefaultDeclaration */Block.__(21, [/* ClassDeclaration */Block.__(6, [{
                                       id: name,
                                       superClass: /* Some */["React.Component"],
                                       body: /* :: */[

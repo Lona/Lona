@@ -26,6 +26,7 @@ var SwiftTextStyle$LonaCompilerCore      = require("./swift/swiftTextStyle.bs.js
 var JavaScriptColor$LonaCompilerCore     = require("./javaScript/javaScriptColor.bs.js");
 var JavaScriptRender$LonaCompilerCore    = require("./javaScript/javaScriptRender.bs.js");
 var JavaScriptComponent$LonaCompilerCore = require("./javaScript/javaScriptComponent.bs.js");
+var JavaScriptTextStyle$LonaCompilerCore = require("./javaScript/javaScriptTextStyle.bs.js");
 
 var $$arguments = $$Array.to_list(Process.argv);
 
@@ -171,10 +172,14 @@ function renderColors(target, colors) {
 }
 
 function renderTextStyles(target, colors, textStyles) {
-  if (target !== 1) {
-    return "";
-  } else {
-    return SwiftTextStyle$LonaCompilerCore.render(swiftOptions, colors, textStyles);
+  switch (target) {
+    case 0 : 
+        return JavaScriptTextStyle$LonaCompilerCore.render(textStyles);
+    case 1 : 
+        return SwiftTextStyle$LonaCompilerCore.render(swiftOptions, colors, textStyles);
+    case 2 : 
+        return "";
+    
   }
 }
 

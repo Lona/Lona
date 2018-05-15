@@ -75,6 +75,7 @@ type node =
       }
     )
   | JSXExpressionContainer(node)
+  | SpreadElement(node)
   | VariableDeclaration(node)
   | AssignmentExpression(
       {
@@ -129,7 +130,8 @@ let rec map = (f, node) =>
   | ImportDeclaration(_)
   | ImportSpecifier(_)
   | ImportDefaultSpecifier(_) => f(node)
-  | JSXExpressionContainer(o) => JSXExpressionContainer(f(o))
+  | JSXExpressionContainer(value) => JSXExpressionContainer(f(value))
+  | SpreadElement(value) => SpreadElement(f(value))
   | ClassDeclaration(o) =>
     f(
       ClassDeclaration({

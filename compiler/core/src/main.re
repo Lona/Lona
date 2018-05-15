@@ -101,6 +101,7 @@ let renderColors = (target, colors) =>
 let renderTextStyles = (target, colors, textStyles) =>
   switch target {
   | Types.Swift => Swift.TextStyle.render(swiftOptions, colors, textStyles)
+  | JavaScript => JavaScriptTextStyle.render(textStyles)
   | _ => ""
   };
 
@@ -138,7 +139,8 @@ let getComponentRelativePath =
   let importedPath = findComponentFile(fromDirectory, importedComponent);
   let relativePath =
     Node.Path.relative(~from=sourcePath, ~to_=importedPath, ());
-  Js.String.startsWith(".", relativePath) ? relativePath : "./" ++ relativePath ;
+  Js.String.startsWith(".", relativePath) ?
+    relativePath : "./" ++ relativePath;
 };
 
 let convertComponent = filename => {
@@ -161,8 +163,16 @@ let convertComponent = filename => {
     | Types.JavaScript =>
       JavaScript.Component.generate(
         name,
-        Node.Path.relative(~from=Node.Path.dirname(filename), ~to_=colorsFilePath, ()),
-        Node.Path.relative(~from=Node.Path.dirname(filename), ~to_=textStylesFilePath, ()),
+        Node.Path.relative(
+          ~from=Node.Path.dirname(filename),
+          ~to_=colorsFilePath,
+          ()
+        ),
+        Node.Path.relative(
+          ~from=Node.Path.dirname(filename),
+          ~to_=textStylesFilePath,
+          ()
+        ),
         colors,
         textStyles,
         findComponent(workspace),

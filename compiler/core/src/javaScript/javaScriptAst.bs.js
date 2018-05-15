@@ -58,48 +58,52 @@ function jSXExpressionContainer(param_0) {
   return /* JSXExpressionContainer */Block.__(12, [param_0]);
 }
 
+function spreadElement(param_0) {
+  return /* SpreadElement */Block.__(13, [param_0]);
+}
+
 function variableDeclaration(param_0) {
-  return /* VariableDeclaration */Block.__(13, [param_0]);
+  return /* VariableDeclaration */Block.__(14, [param_0]);
 }
 
 function assignmentExpression(param_0) {
-  return /* AssignmentExpression */Block.__(14, [param_0]);
+  return /* AssignmentExpression */Block.__(15, [param_0]);
 }
 
 function binaryExpression(param_0) {
-  return /* BinaryExpression */Block.__(15, [param_0]);
+  return /* BinaryExpression */Block.__(16, [param_0]);
 }
 
 function ifStatement(param_0) {
-  return /* IfStatement */Block.__(16, [param_0]);
+  return /* IfStatement */Block.__(17, [param_0]);
 }
 
 function arrayLiteral(param_0) {
-  return /* ArrayLiteral */Block.__(17, [param_0]);
+  return /* ArrayLiteral */Block.__(18, [param_0]);
 }
 
 function objectLiteral(param_0) {
-  return /* ObjectLiteral */Block.__(18, [param_0]);
+  return /* ObjectLiteral */Block.__(19, [param_0]);
 }
 
 function property(param_0) {
-  return /* Property */Block.__(19, [param_0]);
+  return /* Property */Block.__(20, [param_0]);
 }
 
 function exportDefaultDeclaration(param_0) {
-  return /* ExportDefaultDeclaration */Block.__(20, [param_0]);
+  return /* ExportDefaultDeclaration */Block.__(21, [param_0]);
 }
 
 function block(param_0) {
-  return /* Block */Block.__(21, [param_0]);
+  return /* Block */Block.__(22, [param_0]);
 }
 
 function program(param_0) {
-  return /* Program */Block.__(22, [param_0]);
+  return /* Program */Block.__(23, [param_0]);
 }
 
 function lineEndComment(param_0) {
-  return /* LineEndComment */Block.__(23, [param_0]);
+  return /* LineEndComment */Block.__(24, [param_0]);
 }
 
 function map(f, node) {
@@ -161,55 +165,57 @@ function map(f, node) {
       case 12 : 
           return /* JSXExpressionContainer */Block.__(12, [Curry._1(f, node[0])]);
       case 13 : 
-          return Curry._1(f, /* VariableDeclaration */Block.__(13, [map(f, node[0])]));
+          return /* SpreadElement */Block.__(13, [Curry._1(f, node[0])]);
       case 14 : 
+          return Curry._1(f, /* VariableDeclaration */Block.__(14, [map(f, node[0])]));
+      case 15 : 
           var o$6 = node[0];
-          return Curry._1(f, /* AssignmentExpression */Block.__(14, [{
+          return Curry._1(f, /* AssignmentExpression */Block.__(15, [{
                           left: map(f, o$6.left),
                           right: map(f, o$6.right)
                         }]));
-      case 15 : 
+      case 16 : 
           var o$7 = node[0];
-          return Curry._1(f, /* BinaryExpression */Block.__(15, [{
+          return Curry._1(f, /* BinaryExpression */Block.__(16, [{
                           left: map(f, o$7.left),
                           operator: o$7.operator,
                           right: map(f, o$7.right)
                         }]));
-      case 16 : 
+      case 17 : 
           var o$8 = node[0];
-          return Curry._1(f, /* IfStatement */Block.__(16, [{
+          return Curry._1(f, /* IfStatement */Block.__(17, [{
                           test: map(f, o$8.test),
                           consequent: List.map((function (param) {
                                   return map(f, param);
                                 }), o$8.consequent)
                         }]));
-      case 17 : 
-          return Curry._1(f, /* ArrayLiteral */Block.__(17, [List.map((function (param) {
-                                return map(f, param);
-                              }), node[0])]));
       case 18 : 
-          return Curry._1(f, /* ObjectLiteral */Block.__(18, [List.map((function (param) {
+          return Curry._1(f, /* ArrayLiteral */Block.__(18, [List.map((function (param) {
                                 return map(f, param);
                               }), node[0])]));
       case 19 : 
+          return Curry._1(f, /* ObjectLiteral */Block.__(19, [List.map((function (param) {
+                                return map(f, param);
+                              }), node[0])]));
+      case 20 : 
           var o$9 = node[0];
-          return Curry._1(f, /* Property */Block.__(19, [{
+          return Curry._1(f, /* Property */Block.__(20, [{
                           key: map(f, o$9.key),
                           value: map(f, o$9.value)
                         }]));
-      case 20 : 
-          return Curry._1(f, /* ExportDefaultDeclaration */Block.__(20, [map(f, node[0])]));
       case 21 : 
-          return Curry._1(f, /* Block */Block.__(21, [List.map((function (param) {
-                                return map(f, param);
-                              }), node[0])]));
+          return Curry._1(f, /* ExportDefaultDeclaration */Block.__(21, [map(f, node[0])]));
       case 22 : 
-          return Curry._1(f, /* Program */Block.__(22, [List.map((function (param) {
+          return Curry._1(f, /* Block */Block.__(22, [List.map((function (param) {
                                 return map(f, param);
                               }), node[0])]));
       case 23 : 
+          return Curry._1(f, /* Program */Block.__(23, [List.map((function (param) {
+                                return map(f, param);
+                              }), node[0])]));
+      case 24 : 
           var o$10 = node[0];
-          return Curry._1(f, /* LineEndComment */Block.__(23, [{
+          return Curry._1(f, /* LineEndComment */Block.__(24, [{
                           comment: o$10.comment,
                           line: map(f, o$10.line)
                         }]));
@@ -229,7 +235,7 @@ function optimizeTruthyBinaryExpression(node) {
   };
   if (typeof node === "number") {
     return node;
-  } else if (node.tag === 15) {
+  } else if (node.tag === 16) {
     var o = node[0];
     var match = booleanValue(o.left);
     var match$1 = o.operator;
@@ -346,6 +352,7 @@ exports.callExpression                 = callExpression;
 exports.jSXAttribute                   = jSXAttribute;
 exports.jSXElement                     = jSXElement;
 exports.jSXExpressionContainer         = jSXExpressionContainer;
+exports.spreadElement                  = spreadElement;
 exports.variableDeclaration            = variableDeclaration;
 exports.assignmentExpression           = assignmentExpression;
 exports.binaryExpression               = binaryExpression;
