@@ -133,11 +133,12 @@ let findComponent = (fromDirectory, componentName) => {
 
 let getComponentRelativePath =
     (fromDirectory, sourceComponent, importedComponent) => {
-  let sourcePath = findComponentFile(fromDirectory, sourceComponent);
+  let sourcePath =
+    Node.Path.dirname(findComponentFile(fromDirectory, sourceComponent));
   let importedPath = findComponentFile(fromDirectory, importedComponent);
   let relativePath =
     Node.Path.relative(~from=sourcePath, ~to_=importedPath, ());
-  relativePath;
+  Js.String.startsWith(".", relativePath) ? relativePath : "./" ++ relativePath ;
 };
 
 let convertComponent = filename => {
@@ -160,8 +161,8 @@ let convertComponent = filename => {
     | Types.JavaScript =>
       JavaScript.Component.generate(
         name,
-        Node.Path.relative(~from=filename, ~to_=colorsFilePath, ()),
-        Node.Path.relative(~from=filename, ~to_=textStylesFilePath, ()),
+        Node.Path.relative(~from=Node.Path.dirname(filename), ~to_=colorsFilePath, ()),
+        Node.Path.relative(~from=Node.Path.dirname(filename), ~to_=textStylesFilePath, ()),
         colors,
         textStyles,
         findComponent(workspace),

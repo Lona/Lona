@@ -1,8 +1,8 @@
 import React from "react"
-import { View } from "react-native"
+import { View, StyleSheet } from "react-native"
 
-import colors from "../../colors"
-import textStyles from "../../textStyles"
+import colors from "../colors"
+import textStyles from "../textStyles"
 
 export default class BorderWidthColor extends React.Component {
   render() {

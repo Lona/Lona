@@ -119,13 +119,16 @@ let importComponents = (getComponentFile, rootLayer) => {
       Ast.ImportDeclaration({
         "source": "react-native",
         "specifiers":
-          List.map(typeName =>
-            Ast.ImportSpecifier({
-              "imported": Layer.layerTypeToString(typeName),
-              "local": None
-            })
-          ) @@
-          builtIn
+          (
+            List.map(typeName =>
+              Ast.ImportSpecifier({
+                "imported": Layer.layerTypeToString(typeName),
+                "local": None
+              })
+            ) @@
+            builtIn
+          )
+          @ [Ast.ImportSpecifier({"imported": "StyleSheet", "local": None})]
       })
     ],
     relative:

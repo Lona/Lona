@@ -210,9 +210,15 @@ function findComponent(fromDirectory, componentName) {
 }
 
 function getComponentRelativePath(fromDirectory, sourceComponent, importedComponent) {
-  var sourcePath = findComponentFile(fromDirectory, sourceComponent);
+  var sourcePath = Path.dirname(findComponentFile(fromDirectory, sourceComponent));
   var importedPath = findComponentFile(fromDirectory, importedComponent);
-  return Path.relative(sourcePath, importedPath);
+  var relativePath = Path.relative(sourcePath, importedPath);
+  var match = +relativePath.startsWith(".");
+  if (match !== 0) {
+    return relativePath;
+  } else {
+    return "./" + relativePath;
+  }
 }
 
 function convertComponent(filename) {
@@ -230,7 +236,7 @@ function convertComponent(filename) {
     var textStyles = TextStyle$LonaCompilerCore.parseFile(textStylesFile);
     switch (target) {
       case 0 : 
-          return JavaScriptRender$LonaCompilerCore.toString(JavaScriptComponent$LonaCompilerCore.generate(name, Path.relative(filename, colorsFilePath), Path.relative(filename, textStylesFilePath), colors, textStyles, (function (param) {
+          return JavaScriptRender$LonaCompilerCore.toString(JavaScriptComponent$LonaCompilerCore.generate(name, Path.relative(Path.dirname(filename), colorsFilePath), Path.relative(Path.dirname(filename), textStylesFilePath), colors, textStyles, (function (param) {
                             return findComponent(workspace, param);
                           }), (function (param) {
                             return getComponentRelativePath(workspace, name, param);

@@ -1,8 +1,8 @@
 import React from "react"
-import { Text, Image, View } from "react-native"
+import { Text, Image, View, StyleSheet } from "react-native"
 
-import colors from "../../colors"
-import textStyles from "../../textStyles"
+import colors from "../colors"
+import textStyles from "../textStyles"
 
 export default class TextAlignment extends React.Component {
   render() {

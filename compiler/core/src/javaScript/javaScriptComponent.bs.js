@@ -145,12 +145,18 @@ function importComponents(getComponentFile, rootLayer) {
           /* absolute : :: */[
             /* ImportDeclaration */Block.__(3, [{
                   source: "react-native",
-                  specifiers: List.map((function (typeName) {
-                          return /* ImportSpecifier */Block.__(4, [{
-                                      imported: Layer$LonaCompilerCore.layerTypeToString(typeName),
-                                      local: /* None */0
-                                    }]);
-                        }), match[/* builtIn */0])
+                  specifiers: Pervasives.$at(List.map((function (typeName) {
+                              return /* ImportSpecifier */Block.__(4, [{
+                                          imported: Layer$LonaCompilerCore.layerTypeToString(typeName),
+                                          local: /* None */0
+                                        }]);
+                            }), match[/* builtIn */0]), /* :: */[
+                        /* ImportSpecifier */Block.__(4, [{
+                              imported: "StyleSheet",
+                              local: /* None */0
+                            }]),
+                        /* [] */0
+                      ])
                 }]),
             /* [] */0
           ],
