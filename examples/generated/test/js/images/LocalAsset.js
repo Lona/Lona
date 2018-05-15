@@ -3,7 +3,7 @@ import { Image, View } from "react-native"
 import colors from "../../colors"
 import textStyles from "../../textStyles"
 
-class LocalAsset extends React.Component {
+export default class LocalAsset extends React.Component {
   render() {
     return (
       <View style={[ styles.view, {} ]}>

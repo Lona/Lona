@@ -4,7 +4,7 @@ import colors from "../../colors"
 import textStyles from "../../textStyles"
 import Button from "../../interactivity/Button"
 
-class NestedButtons extends React.Component {
+export default class NestedButtons extends React.Component {
   render() {
     return (
       <View style={[ styles.view, {} ]}>

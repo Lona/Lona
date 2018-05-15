@@ -3,7 +3,7 @@ import { Text, View } from "react-native"
 import colors from "../../colors"
 import textStyles from "../../textStyles"
 
-class PrimaryAxis extends React.Component {
+export default class PrimaryAxis extends React.Component {
   render() {
     return (
       <View style={[ styles.view, {} ]}>

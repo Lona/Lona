@@ -3,7 +3,7 @@ import { Text, Image, View } from "react-native"
 import colors from "../../colors"
 import textStyles from "../../textStyles"
 
-class TextAlignment extends React.Component {
+export default class TextAlignment extends React.Component {
   render() {
     return (
       <View style={[ styles.view, {} ]}>

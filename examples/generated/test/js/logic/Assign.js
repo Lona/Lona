@@ -3,7 +3,7 @@ import { Text, View } from "react-native"
 import colors from "../../colors"
 import textStyles from "../../textStyles"
 
-class Assign extends React.Component {
+export default class Assign extends React.Component {
   render() {
     let Text$text;
     Text$text = this.props.text

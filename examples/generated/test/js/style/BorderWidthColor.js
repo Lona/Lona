@@ -3,7 +3,7 @@ import { View } from "react-native"
 import colors from "../../colors"
 import textStyles from "../../textStyles"
 
-class BorderWidthColor extends React.Component {
+export default class BorderWidthColor extends React.Component {
   render() {
     return (
       <View style={[ styles.view, {} ]}>

@@ -6,7 +6,7 @@ import FitContentParentSecondaryChildren from
   "../../layouts/FitContentParentSecondaryChildren"
 import LocalAsset from "../../images/LocalAsset"
 
-class NestedComponent extends React.Component {
+export default class NestedComponent extends React.Component {
   render() {
     return (
       <View style={[ styles.view, {} ]}>

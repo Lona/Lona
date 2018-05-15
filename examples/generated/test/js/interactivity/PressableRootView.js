@@ -3,7 +3,7 @@ import { Text, View } from "react-native"
 import colors from "../../colors"
 import textStyles from "../../textStyles"
 
-class PressableRootView extends React.Component {
+export default class PressableRootView extends React.Component {
   render() {
     let Outer$onPress;
     let Outer$backgroundColor;

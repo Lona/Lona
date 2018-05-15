@@ -101,7 +101,7 @@ let rec render = ast : Prettier.Doc.t('a) =>
     group(join(line, decl) <+> s(" {"))
     <+> indent(Render.prefixAll(hardline, o##body |> List.map(render)))
     <+> hardline
-    <+> s("};");
+    <+> s("}");
   | MethodDefinition(o) => group(s(o##key) <+> render(o##value))
   | FunctionExpression(o) =>
     /* TODO: o##id */

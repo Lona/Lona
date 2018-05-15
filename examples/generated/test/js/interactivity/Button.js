@@ -3,7 +3,7 @@ import { Text, View } from "react-native"
 import colors from "../../colors"
 import textStyles from "../../textStyles"
 
-class Button extends React.Component {
+export default class Button extends React.Component {
   render() {
     let View$onPress;
     let View$backgroundColor;

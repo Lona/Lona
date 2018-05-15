@@ -178,21 +178,23 @@ let generate =
           ]
           @ relative,
           [
-            ClassDeclaration({
-              "id": name,
-              "superClass": Some("React.Component"),
-              "body": [
-                MethodDefinition({
-                  "key": "render",
-                  "value":
-                    FunctionExpression({
-                      "id": None,
-                      "params": [],
-                      "body": [logicAST, Return(rootLayerAST)]
-                    })
-                })
-              ]
-            })
+            ExportDefaultDeclaration(
+              ClassDeclaration({
+                "id": name,
+                "superClass": Some("React.Component"),
+                "body": [
+                  MethodDefinition({
+                    "key": "render",
+                    "value":
+                      FunctionExpression({
+                        "id": None,
+                        "params": [],
+                        "body": [logicAST, Return(rootLayerAST)]
+                      })
+                  })
+                ]
+              })
+            )
           ],
           [styleSheetAST]
         ]

@@ -198,27 +198,27 @@ function generate(name, colorsFilePath, textStylesFilePath, colors, textStyles, 
                             ], match[/* relative */1]),
                         /* :: */[
                           /* :: */[
-                            /* ClassDeclaration */Block.__(6, [{
-                                  id: name,
-                                  superClass: /* Some */["React.Component"],
-                                  body: /* :: */[
-                                    /* MethodDefinition */Block.__(7, [{
-                                          key: "render",
-                                          value: /* FunctionExpression */Block.__(8, [{
-                                                id: /* None */0,
-                                                params: /* [] */0,
-                                                body: /* :: */[
-                                                  logicAST,
-                                                  /* :: */[
-                                                    /* Return */Block.__(0, [rootLayerAST]),
-                                                    /* [] */0
-                                                  ]
-                                                ]
-                                              }])
-                                        }]),
-                                    /* [] */0
-                                  ]
-                                }]),
+                            /* ExportDefaultDeclaration */Block.__(19, [/* ClassDeclaration */Block.__(6, [{
+                                      id: name,
+                                      superClass: /* Some */["React.Component"],
+                                      body: /* :: */[
+                                        /* MethodDefinition */Block.__(7, [{
+                                              key: "render",
+                                              value: /* FunctionExpression */Block.__(8, [{
+                                                    id: /* None */0,
+                                                    params: /* [] */0,
+                                                    body: /* :: */[
+                                                      logicAST,
+                                                      /* :: */[
+                                                        /* Return */Block.__(0, [rootLayerAST]),
+                                                        /* [] */0
+                                                      ]
+                                                    ]
+                                                  }])
+                                            }]),
+                                        /* [] */0
+                                      ]
+                                    }])]),
                             /* [] */0
                           ],
                           /* :: */[
