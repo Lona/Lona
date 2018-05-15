@@ -1,3 +1,8 @@
+import { Image, View } from "react-native"
+
+import colors from "../../colors"
+import textStyles from "../../textStyles"
+
 class LocalAsset extends React.Component {
   render() {
     return (

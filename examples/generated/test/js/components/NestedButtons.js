@@ -1,3 +1,9 @@
+import { View } from "react-native"
+
+import colors from "../../colors"
+import textStyles from "../../textStyles"
+import Button from "../../interactivity/Button"
+
 class NestedButtons extends React.Component {
   render() {
     return (

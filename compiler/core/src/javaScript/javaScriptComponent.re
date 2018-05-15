@@ -85,33 +85,95 @@ let toJavaScriptStyleSheetAST = (layer: Types.layer) => {
   );
 };
 
-let generate = (name, getComponent, json) => {
+type componentImports = {
+  absolute: list(Ast.node),
+  relative: list(Ast.node)
+};
+
+let importComponents = (getComponentFile, rootLayer) => {
+  let {builtIn, custom}: Layer.availableTypeNames =
+    rootLayer |> Layer.getTypeNames;
+  {
+    absolute: [
+      Ast.ImportDeclaration({
+        "source": "react-native",
+        "specifiers":
+          List.map(typeName =>
+            Ast.ImportSpecifier({
+              "imported": Layer.layerTypeToString(typeName),
+              "local": None
+            })
+          ) @@
+          builtIn
+      })
+    ],
+    relative:
+      List.map(componentName =>
+        Ast.ImportDeclaration({
+          "source":
+            getComponentFile(componentName)
+            |> Js.String.replace(".component", ""),
+          "specifiers": [Ast.ImportDefaultSpecifier(componentName)]
+        })
+      ) @@
+      custom
+  };
+};
+
+let generate =
+    (
+      name,
+      colorsFilePath,
+      textStylesFilePath,
+      getComponent,
+      getComponentFile,
+      json
+    ) => {
   let rootLayer = json |> Decode.Component.rootLayer(getComponent);
   let logic = json |> Decode.Component.logic |> Logic.addVariableDeclarations;
   let assignments = Layer.parameterAssignmentsFromLogic(rootLayer, logic);
   let rootLayerAST = rootLayer |> layerToJavaScriptAST(assignments);
   let styleSheetAST = rootLayer |> toJavaScriptStyleSheetAST;
   let logicAST = logic |> JavaScriptLogic.toJavaScriptAST |> Ast.optimize;
+  let {absolute, relative} = rootLayer |> importComponents(getComponentFile);
   Ast.(
-    Program([
-      ClassDeclaration({
-        "id": name,
-        "superClass": Some("React.Component"),
-        "body": [
-          MethodDefinition({
-            "key": "render",
-            "value":
-              FunctionExpression({
-                "id": None,
-                "params": [],
-                "body": [logicAST, Return(rootLayerAST)]
-              })
-          })
+    Program(
+      SwiftDocument.joinGroups(
+        Ast.Empty,
+        [
+          absolute,
+          [
+            ImportDeclaration({
+              "source": colorsFilePath |> Js.String.replace(".json", ""),
+              "specifiers": [ImportDefaultSpecifier("colors")]
+            }),
+            ImportDeclaration({
+              "source": textStylesFilePath |> Js.String.replace(".json", ""),
+              "specifiers": [ImportDefaultSpecifier("textStyles")]
+            })
+          ]
+          @ relative,
+          [
+            ClassDeclaration({
+              "id": name,
+              "superClass": Some("React.Component"),
+              "body": [
+                MethodDefinition({
+                  "key": "render",
+                  "value":
+                    FunctionExpression({
+                      "id": None,
+                      "params": [],
+                      "body": [logicAST, Return(rootLayerAST)]
+                    })
+                })
+              ]
+            })
+          ],
+          [styleSheetAST]
         ]
-      }),
-      Empty,
-      styleSheetAST
-    ])
+      )
+    )
   )
   /* Renames variables */
   |> Ast.prepareForRender;

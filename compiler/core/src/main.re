@@ -82,6 +82,13 @@ let getTargetExtension =
   | Swift => ".swift"
   | Xml => ".xml";
 
+let formatFilename = (target, filename) =>
+  switch target {
+  | Types.Xml
+  | Types.JavaScript => Format.camelCase(filename)
+  | Types.Swift => Format.upperFirst(Format.camelCase(filename))
+  };
+
 let targetExtension = getTargetExtension(target);
 
 let renderColors = (target, colors) =>
@@ -124,6 +131,15 @@ let findComponent = (fromDirectory, componentName) => {
   contents |> Js.Json.parseExn;
 };
 
+let getComponentRelativePath =
+    (fromDirectory, sourceComponent, importedComponent) => {
+  let sourcePath = findComponentFile(fromDirectory, sourceComponent);
+  let importedPath = findComponentFile(fromDirectory, importedComponent);
+  let relativePath =
+    Node.Path.relative(~from=sourcePath, ~to_=importedPath, ());
+  relativePath;
+};
+
 let convertComponent = filename => {
   let contents = Fs.readFileSync(filename, `utf8);
   let parsed = contents |> Js.Json.parseExn;
@@ -134,19 +150,23 @@ let convertComponent = filename => {
       "Couldn't find workspace directory. Try specifying it as a parameter (TODO)"
     )
   | Some(workspace) =>
+    let colorsFilePath = Path.join([|workspace, "colors.json"|]);
+    let textStylesFilePath = Path.join([|workspace, "textStyles.json"|]);
     switch target {
     | Types.JavaScript =>
-      JavaScript.Component.generate(name, findComponent(workspace), parsed)
+      JavaScript.Component.generate(
+        name,
+        Node.Path.relative(~from=filename, ~to_=colorsFilePath, ()),
+        Node.Path.relative(~from=filename, ~to_=textStylesFilePath, ()),
+        findComponent(workspace),
+        getComponentRelativePath(workspace, name),
+        parsed
+      )
       |> JavaScript.Render.toString
     | Swift =>
-      let colorsFile =
-        Node.Fs.readFileSync(Path.join([|workspace, "colors.json"|]), `utf8);
+      let colorsFile = Node.Fs.readFileSync(colorsFilePath, `utf8);
       let colors = Color.parseFile(colorsFile);
-      let textStylesFile =
-        Node.Fs.readFileSync(
-          Path.join([|workspace, "textStyles.json"|]),
-          `utf8
-        );
+      let textStylesFile = Node.Fs.readFileSync(textStylesFilePath, `utf8);
       let textStyles = TextStyle.parseFile(textStylesFile);
       let result =
         Swift.Component.generate(
@@ -160,7 +180,7 @@ let convertComponent = filename => {
         );
       result |> Swift.Render.toString;
     | _ => exit("Unrecognized target")
-    }
+    };
   };
 };
 
@@ -224,7 +244,8 @@ let convertWorkspace = (workspace, output) => {
   let toDirectory = Path.resolve([|output|]);
   ensureDirSync(toDirectory);
   let colorsInputPath = concat(fromDirectory, "colors.json");
-  let colorsOutputPath = concat(toDirectory, "Colors" ++ targetExtension);
+  let colorsOutputPath =
+    concat(toDirectory, formatFilename(target, "Colors") ++ targetExtension);
   let colors = Color.parseFile(Node.Fs.readFileSync(colorsInputPath, `utf8));
   Fs.writeFileSync(
     ~filename=colorsOutputPath,
@@ -232,7 +253,10 @@ let convertWorkspace = (workspace, output) => {
   );
   let textStylesInputPath = concat(fromDirectory, "textStyles.json");
   let textStylesOutputPath =
-    concat(toDirectory, "TextStyles" ++ targetExtension);
+    concat(
+      toDirectory,
+      formatFilename(target, "TextStyles") ++ targetExtension
+    );
   let textStylesFile = Node.Fs.readFileSync(textStylesInputPath, `utf8);
   let textStyles =
     TextStyle.parseFile(textStylesFile) |> renderTextStyles(target, colors);

@@ -457,12 +457,9 @@ function toSwiftAST(options, colors, textStyles, rootLayer, logicRootNode) {
 
 var Ast = 0;
 
-var Format = 0;
-
 var Document = 0;
 
 exports.Ast        = Ast;
-exports.Format     = Format;
 exports.Document   = Document;
 exports.toSwiftAST = toSwiftAST;
 /* lodash.camelcase Not a pure module */

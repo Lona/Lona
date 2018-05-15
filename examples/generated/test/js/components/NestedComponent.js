@@ -1,3 +1,11 @@
+import { Text, View } from "react-native"
+
+import colors from "../../colors"
+import textStyles from "../../textStyles"
+import FitContentParentSecondaryChildren from
+  "../../layouts/FitContentParentSecondaryChildren"
+import LocalAsset from "../../images/LocalAsset"
+
 class NestedComponent extends React.Component {
   render() {
     return (

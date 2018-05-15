@@ -47,6 +47,51 @@ let rec render = ast : Prettier.Doc.t('a) =>
     <+> indent(join(hardline, o##consequent |> List.map(render)))
     <+> hardline
     <+> s("}")
+  | ImportDefaultSpecifier(o) => s(o)
+  | ImportSpecifier(o) =>
+    switch o##local {
+    | Some(local) => s(o##imported ++ " as " ++ local)
+    | None => s(o##imported)
+    }
+  | ImportDeclaration(o) =>
+    let defaultSpecifiers =
+      o##specifiers
+      |> List.filter(
+           fun
+           | Ast.ImportDefaultSpecifier(_) => true
+           | _ => false
+         );
+    let specifiers =
+      o##specifiers
+      |> List.filter(
+           fun
+           | Ast.ImportSpecifier(_) => true
+           | _ => false
+         );
+    let namedImports =
+      group(
+        s("{")
+        <+> line
+        <+> (specifiers |> List.map(render) |> join(s(", ")))
+        <+> line
+        <+> s("}")
+      );
+    let imports =
+      group(
+        join(
+          s(", "),
+          (defaultSpecifiers |> List.map(render))
+          @ (List.length(defaultSpecifiers) > 0 ? [] : [namedImports])
+        )
+      );
+    group(
+      s("import")
+      <+> s(" ")
+      <+> imports
+      <+> s(" ")
+      <+> s("from")
+      <+> indent(line <+> s("\"" ++ o##source ++ "\""))
+    );
   | ClassDeclaration(o) =>
     let decl =
       switch o##superClass {

@@ -1,3 +1,8 @@
+import { Text, View } from "react-native"
+
+import colors from "../../colors"
+import textStyles from "../../textStyles"
+
 class TextStyleConditional extends React.Component {
   render() {
     let Text$textStyle;

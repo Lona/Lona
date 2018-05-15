@@ -1459,15 +1459,12 @@ function generate(options, swiftOptions, name, colors, textStyles, getComponent,
             }]);
 }
 
-var Format = 0;
-
 var Ast = 0;
 
 var Document = 0;
 
 var Render = 0;
 
-exports.Format              = Format;
 exports.Ast                 = Ast;
 exports.Document            = Document;
 exports.Render              = Render;

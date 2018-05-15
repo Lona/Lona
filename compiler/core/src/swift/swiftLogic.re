@@ -1,7 +1,5 @@
 module Ast = SwiftAst;
 
-module Format = SwiftFormat;
-
 module Document = SwiftDocument;
 
 let toSwiftAST =
@@ -32,7 +30,7 @@ let toSwiftAST =
             tail
             |> List.fold_left(
                  (a, b) => a ++ "." ++ Format.camelCase(b),
-                 Format.layerName(second)
+                 SwiftFormat.layerName(second)
                )
           )
         | _ => SwiftIdentifier("BadIdentifier")

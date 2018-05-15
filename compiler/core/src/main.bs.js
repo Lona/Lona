@@ -12,6 +12,8 @@ var FsExtra                              = require("fs-extra");
 var GetStdin                             = require("get-stdin");
 var Json_decode                          = require("bs-json/src/Json_decode.js");
 var Caml_exceptions                      = require("bs-platform/lib/js/caml_exceptions.js");
+var LodashCamelcase                      = require("lodash.camelcase");
+var LodashUpperfirst                     = require("lodash.upperfirst");
 var Color$LonaCompilerCore               = require("./core/color.bs.js");
 var Caml_builtin_exceptions              = require("bs-platform/lib/js/caml_builtin_exceptions.js");
 var Decode$LonaCompilerCore              = require("./core/decode.bs.js");
@@ -146,6 +148,14 @@ function getTargetExtension(param) {
   }
 }
 
+function formatFilename(target, filename) {
+  if (target !== 1) {
+    return LodashCamelcase(filename);
+  } else {
+    return LodashUpperfirst(LodashCamelcase(filename));
+  }
+}
+
 var targetExtension = getTargetExtension(target);
 
 function renderColors(target, colors) {
@@ -199,6 +209,12 @@ function findComponent(fromDirectory, componentName) {
   return JSON.parse(Fs.readFileSync(filename, "utf8"));
 }
 
+function getComponentRelativePath(fromDirectory, sourceComponent, importedComponent) {
+  var sourcePath = findComponentFile(fromDirectory, sourceComponent);
+  var importedPath = findComponentFile(fromDirectory, importedComponent);
+  return Path.relative(sourcePath, importedPath);
+}
+
 function convertComponent(filename) {
   var contents = Fs.readFileSync(filename, "utf8");
   var parsed = JSON.parse(contents);
@@ -206,15 +222,19 @@ function convertComponent(filename) {
   var match = findWorkspaceDirectory(filename);
   if (match) {
     var workspace = match[0];
+    var colorsFilePath = Path.join(workspace, "colors.json");
+    var textStylesFilePath = Path.join(workspace, "textStyles.json");
     switch (target) {
       case 0 : 
-          return JavaScriptRender$LonaCompilerCore.toString(JavaScriptComponent$LonaCompilerCore.generate(name, (function (param) {
+          return JavaScriptRender$LonaCompilerCore.toString(JavaScriptComponent$LonaCompilerCore.generate(name, Path.relative(filename, colorsFilePath), Path.relative(filename, textStylesFilePath), (function (param) {
                             return findComponent(workspace, param);
+                          }), (function (param) {
+                            return getComponentRelativePath(workspace, name, param);
                           }), parsed));
       case 1 : 
-          var colorsFile = Fs.readFileSync(Path.join(workspace, "colors.json"), "utf8");
+          var colorsFile = Fs.readFileSync(colorsFilePath, "utf8");
           var colors = Color$LonaCompilerCore.parseFile(colorsFile);
-          var textStylesFile = Fs.readFileSync(Path.join(workspace, "textStyles.json"), "utf8");
+          var textStylesFile = Fs.readFileSync(textStylesFilePath, "utf8");
           var textStyles = TextStyle$LonaCompilerCore.parseFile(textStylesFile);
           return SwiftRender$LonaCompilerCore.toString(SwiftComponent$LonaCompilerCore.generate(options, swiftOptions, name, colors, textStyles, (function (param) {
                             return findComponent(workspace, param);
@@ -271,11 +291,13 @@ function convertWorkspace(workspace, output) {
   var toDirectory = Path.resolve(output);
   FsExtra.ensureDirSync(toDirectory);
   var colorsInputPath = Path.join(fromDirectory, "colors.json");
-  var colorsOutputPath = Path.join(toDirectory, "Colors" + targetExtension);
+  var addition = formatFilename(target, "Colors") + targetExtension;
+  var colorsOutputPath = Path.join(toDirectory, addition);
   var colors = Color$LonaCompilerCore.parseFile(Fs.readFileSync(colorsInputPath, "utf8"));
   Fs.writeFileSync(colorsOutputPath, renderColors(target, colors));
   var textStylesInputPath = Path.join(fromDirectory, "textStyles.json");
-  var textStylesOutputPath = Path.join(toDirectory, "TextStyles" + targetExtension);
+  var addition$1 = formatFilename(target, "TextStyles") + targetExtension;
+  var textStylesOutputPath = Path.join(toDirectory, addition$1);
   var textStylesFile = Fs.readFileSync(textStylesInputPath, "utf8");
   var textStyles = renderTextStyles(target, colors, TextStyle$LonaCompilerCore.parseFile(textStylesFile));
   Fs.writeFileSync(textStylesOutputPath, textStyles);
@@ -418,28 +440,30 @@ switch (command) {
     console.log("Invalid command", command);
 }
 
-exports.$$arguments            = $$arguments;
-exports.positionalArguments    = positionalArguments;
-exports.getArgument            = getArgument;
-exports.options                = options;
-exports.swiftOptions           = swiftOptions;
-exports.exit                   = exit;
-exports.command                = command;
-exports.target                 = target;
-exports.findWorkspaceDirectory = findWorkspaceDirectory;
-exports.concat                 = concat;
-exports.getTargetExtension     = getTargetExtension;
-exports.targetExtension        = targetExtension;
-exports.renderColors           = renderColors;
-exports.renderTextStyles       = renderTextStyles;
-exports.convertColors          = convertColors;
-exports.convertTextStyles      = convertTextStyles;
-exports.ComponentNotFound      = ComponentNotFound;
-exports.findComponentFile      = findComponentFile;
-exports.findComponent          = findComponent;
-exports.convertComponent       = convertComponent;
-exports.copyStaticFiles        = copyStaticFiles;
-exports.findContentsAbove      = findContentsAbove;
-exports.findContentsBelow      = findContentsBelow;
-exports.convertWorkspace       = convertWorkspace;
+exports.$$arguments              = $$arguments;
+exports.positionalArguments      = positionalArguments;
+exports.getArgument              = getArgument;
+exports.options                  = options;
+exports.swiftOptions             = swiftOptions;
+exports.exit                     = exit;
+exports.command                  = command;
+exports.target                   = target;
+exports.findWorkspaceDirectory   = findWorkspaceDirectory;
+exports.concat                   = concat;
+exports.getTargetExtension       = getTargetExtension;
+exports.formatFilename           = formatFilename;
+exports.targetExtension          = targetExtension;
+exports.renderColors             = renderColors;
+exports.renderTextStyles         = renderTextStyles;
+exports.convertColors            = convertColors;
+exports.convertTextStyles        = convertTextStyles;
+exports.ComponentNotFound        = ComponentNotFound;
+exports.findComponentFile        = findComponentFile;
+exports.findComponent            = findComponent;
+exports.getComponentRelativePath = getComponentRelativePath;
+exports.convertComponent         = convertComponent;
+exports.copyStaticFiles          = copyStaticFiles;
+exports.findContentsAbove        = findContentsAbove;
+exports.findContentsBelow        = findContentsBelow;
+exports.convertWorkspace         = convertWorkspace;
 /* arguments Not a pure module */

@@ -1,3 +1,8 @@
+import { View } from "react-native"
+
+import colors from "../../colors"
+import textStyles from "../../textStyles"
+
 class FixedParentFillAndFitChildren extends React.Component {
   render() {
     return (
