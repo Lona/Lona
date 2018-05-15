@@ -12,7 +12,7 @@ export default class NestedComponent extends React.Component {
     return (
       <View style={[ styles.view, {} ]}>
         <Text style={[ styles.text, {} ]} text={"Example nested component"}>
-
+          {"Example nested component"}
         </Text>
         <FitContentParentSecondaryChildren
           style={[ styles.fitContentParentSecondaryChildren, {} ]}
@@ -20,13 +20,13 @@ export default class NestedComponent extends React.Component {
 
         </FitContentParentSecondaryChildren>
         <Text style={[ styles.text1, {} ]} text={"Text below"}>
-
+          {"Text below"}
         </Text>
         <LocalAsset style={[ styles.localAsset, {} ]}>
 
         </LocalAsset>
         <Text style={[ styles.text2, {} ]} text={"Very bottom"}>
-
+          {"Very bottom"}
         </Text>
       </View>
     );
@@ -41,7 +41,7 @@ let styles = StyleSheet.create({
     paddingRight: 10,
     paddingTop: 10
   },
-  text: { font: "subheading2", marginBottom: 8 },
+  text: { marginBottom: 8 },
   fitContentParentSecondaryChildren: {},
   text1: { marginTop: 12 },
   localAsset: {},

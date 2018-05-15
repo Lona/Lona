@@ -38,12 +38,12 @@ function toJavaScriptAST(node) {
   } else {
     switch (node.tag | 0) {
       case 0 : 
-          var condition = /* BinaryExpression */Block.__(14, [{
+          var condition = /* BinaryExpression */Block.__(15, [{
                 left: logicValueToJavaScriptAST(node[0]),
                 operator: fromCmp(node[1]),
                 right: logicValueToJavaScriptAST(node[2])
               }]);
-          return /* IfStatement */Block.__(15, [{
+          return /* IfStatement */Block.__(16, [{
                       test: condition,
                       consequent: /* :: */[
                         toJavaScriptAST(node[3]),
@@ -51,7 +51,7 @@ function toJavaScriptAST(node) {
                       ]
                     }]);
       case 1 : 
-          return /* IfStatement */Block.__(15, [{
+          return /* IfStatement */Block.__(16, [{
                       test: logicValueToJavaScriptAST(node[0]),
                       consequent: /* :: */[
                         toJavaScriptAST(node[1]),
@@ -59,17 +59,17 @@ function toJavaScriptAST(node) {
                       ]
                     }]);
       case 2 : 
-          return /* AssignmentExpression */Block.__(13, [{
+          return /* AssignmentExpression */Block.__(14, [{
                       left: logicValueToJavaScriptAST(node[1]),
                       right: logicValueToJavaScriptAST(node[0])
                     }]);
       case 3 : 
-          var addition = /* BinaryExpression */Block.__(14, [{
+          var addition = /* BinaryExpression */Block.__(15, [{
                 left: logicValueToJavaScriptAST(node[0]),
                 operator: /* Plus */6,
                 right: logicValueToJavaScriptAST(node[1])
               }]);
-          return /* AssignmentExpression */Block.__(13, [{
+          return /* AssignmentExpression */Block.__(14, [{
                       left: logicValueToJavaScriptAST(node[2]),
                       right: addition
                     }]);
@@ -78,7 +78,7 @@ function toJavaScriptAST(node) {
           if (value.tag) {
             return /* Unknown */1;
           } else {
-            return /* VariableDeclaration */Block.__(12, [/* Identifier */Block.__(2, [value[1]])]);
+            return /* VariableDeclaration */Block.__(13, [/* Identifier */Block.__(2, [value[1]])]);
           }
           break;
       case 5 : 
@@ -91,7 +91,7 @@ function toJavaScriptAST(node) {
                 ]
               ];
       case 6 : 
-          return /* Block */Block.__(20, [List.map(toJavaScriptAST, node[0])]);
+          return /* Block */Block.__(21, [List.map(toJavaScriptAST, node[0])]);
       
     }
   }

@@ -17,14 +17,11 @@ export default class TextStyleConditional extends React.Component {
           text={"Text goes here"}
           textStyle={Text$textStyle}
         >
-
+          {"Text goes here"}
         </Text>
       </View>
     );
   }
 };
 
-let styles = StyleSheet.create({
-  view: { alignSelf: "stretch" },
-  text: { font: "headline" }
-});
+let styles = StyleSheet.create({ view: { alignSelf: "stretch" }, text: {} });

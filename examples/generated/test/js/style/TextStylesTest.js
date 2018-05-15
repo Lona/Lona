@@ -9,34 +9,34 @@ export default class TextStylesTest extends React.Component {
     return (
       <View style={[ styles.view, {} ]}>
         <Text style={[ styles.text, {} ]} text={"Text goes here"}>
-
+          {"Text goes here"}
         </Text>
         <Text style={[ styles.text1, {} ]} text={"Text goes here"}>
-
+          {"Text goes here"}
         </Text>
         <Text style={[ styles.text2, {} ]} text={"Text goes here"}>
-
+          {"Text goes here"}
         </Text>
         <Text style={[ styles.text3, {} ]} text={"Text goes here"}>
-
+          {"Text goes here"}
         </Text>
         <Text style={[ styles.text4, {} ]} text={"Text goes here"}>
-
+          {"Text goes here"}
         </Text>
         <Text style={[ styles.text5, {} ]} text={"Text goes here"}>
-
+          {"Text goes here"}
         </Text>
         <Text style={[ styles.text6, {} ]} text={"Text goes here"}>
-
+          {"Text goes here"}
         </Text>
         <Text style={[ styles.text7, {} ]} text={"Text goes here"}>
-
+          {"Text goes here"}
         </Text>
         <Text style={[ styles.text8, {} ]} text={"Text goes here"}>
-
+          {"Text goes here"}
         </Text>
         <Text style={[ styles.text9, {} ]} text={"Text goes here"}>
-
+          {"Text goes here"}
         </Text>
       </View>
     );
@@ -45,14 +45,14 @@ export default class TextStylesTest extends React.Component {
 
 let styles = StyleSheet.create({
   view: { alignSelf: "stretch" },
-  text: { font: "display4" },
-  text1: { font: "display3" },
-  text2: { font: "display2" },
-  text3: { font: "display1" },
-  text4: { font: "headline" },
-  text5: { font: "subheading2" },
-  text6: { font: "subheading1" },
-  text7: { font: "body2" },
-  text8: { font: "body1" },
-  text9: { font: "caption" }
+  text: {},
+  text1: {},
+  text2: {},
+  text3: {},
+  text4: {},
+  text5: {},
+  text6: {},
+  text7: {},
+  text8: {},
+  text9: {}
 });

@@ -11,7 +11,7 @@ export default class Assign extends React.Component {
     return (
       <View style={[ styles.view, {} ]}>
         <Text style={[ styles.text, {} ]} text={Text$text}>
-
+          {Text$text}
         </Text>
       </View>
     );

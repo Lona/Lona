@@ -51,12 +51,30 @@ let rec layerToJavaScriptAST =
            "value": JavaScriptLogic.logicValueToJavaScriptAST(value)
          })
        );
+  let textParam =
+    switch (
+      main |> StringMap.find_opt("text"),
+      layer.parameters |> StringMap.find_opt("text")
+    ) {
+    | (Some(param), _) => Some(param)
+    | (None, Some(param)) => Some(Logic.Literal(param))
+    | _ => None
+    };
+  let content =
+    switch (layer.typeName, textParam) {
+    | (Types.Text, Some(textValue)) => [
+        JSXExpressionContainer(
+          JavaScriptLogic.logicValueToJavaScriptAST(textValue)
+        )
+      ]
+    | _ =>
+      layer.children
+      |> List.map(layerToJavaScriptAST(colors, textStyles, variableMap))
+    };
   JSXElement({
     "tag": Layer.layerTypeToString(layer.typeName),
     "attributes": [styleAttribute, ...attributes],
-    "content":
-      layer.children
-      |> List.map(layerToJavaScriptAST(colors, textStyles, variableMap))
+    "content": content
   });
 };
 
@@ -83,6 +101,8 @@ let toJavaScriptStyleSheetAST = (colors, layer: Types.layer) => {
         ObjectLiteral(
           styleParams
           |> StringMap.bindings
+          /* TODO: Spread font */
+          |> List.filter(((key, value)) => key !== "font")
           |> List.map(((key, value)) =>
                Property({
                  "key": Identifier([key]),

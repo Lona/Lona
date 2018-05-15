@@ -25,7 +25,7 @@ export default class Button extends React.Component {
         ]}
       >
         <Text style={[ styles.text, {} ]} text={Text$text}>
-
+          {Text$text}
         </Text>
       </View>
     );
@@ -40,5 +40,5 @@ let styles = StyleSheet.create({
     paddingRight: 16,
     paddingTop: 12
   },
-  text: { font: "button" }
+  text: {}
 });

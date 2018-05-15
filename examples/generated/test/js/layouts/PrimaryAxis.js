@@ -13,7 +13,7 @@ export default class PrimaryAxis extends React.Component {
         </View>
         <View style={[ styles.fit, {} ]}>
           <Text style={[ styles.text, {} ]} text={"Text goes here"}>
-
+            {"Text goes here"}
           </Text>
         </View>
         <View style={[ styles.fill1, {} ]}>

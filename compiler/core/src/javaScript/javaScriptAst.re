@@ -74,6 +74,7 @@ type node =
         "content": list(node)
       }
     )
+  | JSXExpressionContainer(node)
   | VariableDeclaration(node)
   | AssignmentExpression(
       {
@@ -128,6 +129,7 @@ let rec map = (f, node) =>
   | ImportDeclaration(_)
   | ImportSpecifier(_)
   | ImportDefaultSpecifier(_) => f(node)
+  | JSXExpressionContainer(o) => JSXExpressionContainer(f(o))
   | ClassDeclaration(o) =>
     f(
       ClassDeclaration({
