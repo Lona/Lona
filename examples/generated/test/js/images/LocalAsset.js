@@ -6,10 +6,9 @@ import textStyles from "../../textStyles"
 class LocalAsset extends React.Component {
   render() {
     return (
-      <View style={[ styles.View, {} ]}>
+      <View style={[ styles.view, {} ]}>
         <Image
-          style={[ styles.Image, {} ]}
-          backgroundColor={"#D8D8D8"}
+          style={[ styles.image, {} ]}
           image={"file://./assets/icon_128x128.png"}
         >
 
@@ -20,6 +19,6 @@ class LocalAsset extends React.Component {
 };
 
 let styles = StyleSheet.create({
-  View: { alignSelf: "stretch" },
-  Image: { height: 100, width: 100 }
+  view: { alignSelf: "stretch" },
+  image: { backgroundColor: "#D8D8D8", height: 100, width: 100 }
 });

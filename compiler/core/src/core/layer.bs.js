@@ -156,14 +156,23 @@ var stylesSet = Curry._1(StringSet$LonaCompilerCore.of_list, /* :: */[
                                   /* :: */[
                                     "height",
                                     /* :: */[
-                                      "pressed",
+                                      "backgroundColor",
                                       /* :: */[
-                                        "hovered",
+                                        "borderColor",
                                         /* :: */[
-                                          "onPress",
+                                          "borderWidth",
                                           /* :: */[
                                             "textAlign",
-                                            /* [] */0
+                                            /* :: */[
+                                              "pressed",
+                                              /* :: */[
+                                                "hovered",
+                                                /* :: */[
+                                                  "onPress",
+                                                  /* [] */0
+                                                ]
+                                              ]
+                                            ]
                                           ]
                                         ]
                                       ]
@@ -446,7 +455,7 @@ function getInsets(prefix, layer) {
           Caml_builtin_exceptions.match_failure,
           [
             "/Users/devinabbott/Projects/Lona/compiler/core/src/core/layer.re",
-            178,
+            182,
             6
           ]
         ];

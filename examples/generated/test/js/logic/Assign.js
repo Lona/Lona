@@ -8,8 +8,8 @@ class Assign extends React.Component {
     let Text$text;
     Text$text = this.props.text
     return (
-      <View style={[ styles.View, {} ]}>
-        <Text style={[ styles.Text, {} ]} text={Text$text}>
+      <View style={[ styles.view, {} ]}>
+        <Text style={[ styles.text, {} ]} text={Text$text}>
 
         </Text>
       </View>
@@ -17,4 +17,4 @@ class Assign extends React.Component {
   }
 };
 
-let styles = StyleSheet.create({ View: { alignSelf: "stretch" }, Text: {} });
+let styles = StyleSheet.create({ view: { alignSelf: "stretch" }, text: {} });

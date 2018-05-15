@@ -9,22 +9,22 @@ import LocalAsset from "../../images/LocalAsset"
 class NestedComponent extends React.Component {
   render() {
     return (
-      <View style={[ styles.View, {} ]}>
-        <Text style={[ styles.Text, {} ]} text={"Example nested component"}>
+      <View style={[ styles.view, {} ]}>
+        <Text style={[ styles.text, {} ]} text={"Example nested component"}>
 
         </Text>
         <FitContentParentSecondaryChildren
-          style={[ styles.FitContentParentSecondaryChildren, {} ]}
+          style={[ styles.fitContentParentSecondaryChildren, {} ]}
         >
 
         </FitContentParentSecondaryChildren>
-        <Text style={[ styles.Text 1, {} ]} text={"Text below"}>
+        <Text style={[ styles.text1, {} ]} text={"Text below"}>
 
         </Text>
-        <LocalAsset style={[ styles.LocalAsset, {} ]}>
+        <LocalAsset style={[ styles.localAsset, {} ]}>
 
         </LocalAsset>
-        <Text style={[ styles.Text 2, {} ]} text={"Very bottom"}>
+        <Text style={[ styles.text2, {} ]} text={"Very bottom"}>
 
         </Text>
       </View>
@@ -33,16 +33,16 @@ class NestedComponent extends React.Component {
 };
 
 let styles = StyleSheet.create({
-  View: {
+  view: {
     alignSelf: "stretch",
     paddingBottom: 10,
     paddingLeft: 10,
     paddingRight: 10,
     paddingTop: 10
   },
-  Text: { font: "subheading2", marginBottom: 8 },
-  FitContentParentSecondaryChildren: {},
-  Text 1: { marginTop: 12 },
-  LocalAsset: {},
-  Text 2: {}
+  text: { font: "subheading2", marginBottom: 8 },
+  fitContentParentSecondaryChildren: {},
+  text1: { marginTop: 12 },
+  localAsset: {},
+  text2: {}
 });

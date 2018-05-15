@@ -6,19 +6,19 @@ import textStyles from "../../textStyles"
 class PrimaryAxis extends React.Component {
   render() {
     return (
-      <View style={[ styles.View, {} ]}>
-        <View style={[ styles.Fixed, {} ]} backgroundColor={"#D8D8D8"}>
+      <View style={[ styles.view, {} ]}>
+        <View style={[ styles.fixed, {} ]}>
 
         </View>
-        <View style={[ styles.Fit, {} ]} backgroundColor={"#D8D8D8"}>
-          <Text style={[ styles.Text, {} ]} text={"Text goes here"}>
+        <View style={[ styles.fit, {} ]}>
+          <Text style={[ styles.text, {} ]} text={"Text goes here"}>
 
           </Text>
         </View>
-        <View style={[ styles.Fill1, {} ]} backgroundColor={"cyan500"}>
+        <View style={[ styles.fill1, {} ]}>
 
         </View>
-        <View style={[ styles.Fill2, {} ]} backgroundColor={"blue500"}>
+        <View style={[ styles.fill2, {} ]}>
 
         </View>
       </View>
@@ -27,7 +27,7 @@ class PrimaryAxis extends React.Component {
 };
 
 let styles = StyleSheet.create({
-  View: {
+  view: {
     alignSelf: "stretch",
     height: 500,
     paddingBottom: 24,
@@ -35,9 +35,14 @@ let styles = StyleSheet.create({
     paddingRight: 24,
     paddingTop: 24
   },
-  Fixed: { height: 100, marginBottom: 24, width: 100 },
-  Fit: { marginBottom: 24, width: 100 },
-  Text: {},
-  Fill1: { flex: 1, width: 100 },
-  Fill2: { flex: 1, width: 100 }
+  fixed: {
+    backgroundColor: "#D8D8D8",
+    height: 100,
+    marginBottom: 24,
+    width: 100
+  },
+  fit: { backgroundColor: "#D8D8D8", marginBottom: 24, width: 100 },
+  text: {},
+  fill1: { backgroundColor: "cyan500", flex: 1, width: 100 },
+  fill2: { backgroundColor: "blue500", flex: 1, width: 100 }
 });

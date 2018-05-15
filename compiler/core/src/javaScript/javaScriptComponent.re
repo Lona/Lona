@@ -8,7 +8,10 @@ let createStyleAttributeAST = (layerName, styles) =>
       "name": "style",
       "value":
         ArrayLiteral([
-          Identifier(["styles", layerName]),
+          Identifier([
+            "styles",
+            JavaScriptFormat.styleVariableName(layerName)
+          ]),
           ObjectLiteral(
             styles
             |> Layer.mapBindings(((key, value)) =>
@@ -60,7 +63,7 @@ let toJavaScriptStyleSheetAST = (layer: Types.layer) => {
       layer.parameters
       |> StringMap.filter((key, _) => Layer.parameterIsStyle(key));
     Property({
-      "key": Identifier([layer.name]),
+      "key": Identifier([JavaScriptFormat.styleVariableName(layer.name)]),
       "value":
         ObjectLiteral(
           styleParams

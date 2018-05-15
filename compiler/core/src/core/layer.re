@@ -42,10 +42,14 @@ let stylesSet =
     "paddingLeft",
     "width",
     "height",
+    "backgroundColor",
+    "borderColor",
+    "borderWidth",
+    "textAlign",
+    /* TODO: Move these elsewhere */
     "pressed",
     "hovered",
-    "onPress",
-    "textAlign"
+    "onPress"
   ]);
 
 let flatten = (layer: Types.layer) => {

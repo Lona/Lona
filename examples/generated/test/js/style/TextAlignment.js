@@ -6,86 +6,83 @@ import textStyles from "../../textStyles"
 class TextAlignment extends React.Component {
   render() {
     return (
-      <View style={[ styles.View, {} ]}>
-        <View style={[ styles.View 1, {} ]} backgroundColor={"indigo50"}>
+      <View style={[ styles.view, {} ]}>
+        <View style={[ styles.view1, {} ]}>
           <Image
-            style={[ styles.Image, {} ]}
+            style={[ styles.image, {} ]}
             image={"file://./assets/icon_128x128.png"}
           >
 
           </Image>
-          <View style={[ styles.View 2, {} ]} backgroundColor={"#D8D8D8"}>
+          <View style={[ styles.view2, {} ]}>
 
           </View>
-          <Text style={[ styles.Text, {} ]} text={"Welcome to Lona Studio"}>
+          <Text style={[ styles.text, {} ]} text={"Welcome to Lona Studio"}>
 
           </Text>
-          <Text style={[ styles.Text 1, {} ]} text={"Centered - Width: Fit"}>
+          <Text style={[ styles.text1, {} ]} text={"Centered - Width: Fit"}>
 
           </Text>
           <Text
-            style={[ styles.Text 2, {} ]}
+            style={[ styles.text2, {} ]}
             text={"Left aligned - Width: Fill"}
           >
 
           </Text>
           <Text
-            style={[ styles.Text 3, {} ]}
+            style={[ styles.text3, {} ]}
             text={"Right aligned - Width: Fill"}
           >
 
           </Text>
-          <Text style={[ styles.Text 4, {} ]} text={"Centered - Width: 80"}>
+          <Text style={[ styles.text4, {} ]} text={"Centered - Width: 80"}>
 
           </Text>
         </View>
-        <View style={[ styles.View 3, {} ]} backgroundColor={"#D8D8D8"}>
+        <View style={[ styles.view3, {} ]}>
           <Text
-            style={[ styles.Text 5, {} ]}
+            style={[ styles.text5, {} ]}
             text={"Left aligned text, Fit w/ secondary centering"}
           >
 
           </Text>
         </View>
-        <View style={[ styles.View 4, {} ]} backgroundColor={"#D8D8D8"}>
+        <View style={[ styles.view4, {} ]}>
           <Text
-            style={[ styles.Text 6, {} ]}
+            style={[ styles.text6, {} ]}
             text={"Left aligned text, Fixed w/ secondary centering"}
           >
 
           </Text>
         </View>
-        <View style={[ styles.View 5, {} ]} backgroundColor={"#D8D8D8"}>
+        <View style={[ styles.view5, {} ]}>
           <Text
-            style={[ styles.Text 7, {} ]}
+            style={[ styles.text7, {} ]}
             text={"Centered text, Fit parent no centering"}
           >
 
           </Text>
         </View>
-        <View style={[ styles.View 6, {} ]} backgroundColor={"#D8D8D8"}>
+        <View style={[ styles.view6, {} ]}>
           <Text
-            style={[ styles.Text 8, {} ]}
+            style={[ styles.text8, {} ]}
             text={"Centered text, Fixed parent no centering"}
           >
 
           </Text>
         </View>
-        <View
-          style={[ styles.RightAlignmentContainer, {} ]}
-          backgroundColor={"#D8D8D8"}
-        >
-          <Text style={[ styles.Text 9, {} ]} text={"Fit Text"}>
+        <View style={[ styles.rightAlignmentContainer, {} ]}>
+          <Text style={[ styles.text9, {} ]} text={"Fit Text"}>
 
           </Text>
           <Text
-            style={[ styles.Text 10, {} ]}
+            style={[ styles.text10, {} ]}
             text={"Fill and center aligned text"}
           >
 
           </Text>
           <Image
-            style={[ styles.Image 1, {} ]}
+            style={[ styles.image1, {} ]}
             image={"file://./assets/icon_128x128.png"}
           >
 
@@ -97,7 +94,7 @@ class TextAlignment extends React.Component {
 };
 
 let styles = StyleSheet.create({
-  View: {
+  view: {
     alignItems: "flex-start",
     alignSelf: "stretch",
     paddingBottom: 10,
@@ -105,38 +102,54 @@ let styles = StyleSheet.create({
     paddingRight: 10,
     paddingTop: 10
   },
-  View 1: {
+  view1: {
     alignItems: "center",
     alignSelf: "stretch",
+    backgroundColor: "indigo50",
     justifyContent: "center"
   },
-  Image: { height: 100, width: 100 },
-  View 2: {},
-  Text: {
+  image: { height: 100, width: 100 },
+  view2: { backgroundColor: "#D8D8D8" },
+  text: {
     alignSelf: "stretch",
     font: "display1",
     marginTop: 16,
     textAlign: "center"
   },
-  Text 1: { font: "subheading2", marginTop: 16, textAlign: "center" },
-  Text 2: { alignSelf: "stretch", marginTop: 12 },
-  Text 3: { alignSelf: "stretch", textAlign: "right" },
-  Text 4: { textAlign: "center", width: 80 },
-  View 3: { alignItems: "center", paddingLeft: 12, paddingRight: 12 },
-  Text 5: {},
-  View 4: {
+  text1: { font: "subheading2", marginTop: 16, textAlign: "center" },
+  text2: { alignSelf: "stretch", marginTop: 12 },
+  text3: { alignSelf: "stretch", textAlign: "right" },
+  text4: { textAlign: "center", width: 80 },
+  view3: {
     alignItems: "center",
+    backgroundColor: "#D8D8D8",
+    paddingLeft: 12,
+    paddingRight: 12
+  },
+  text5: {},
+  view4: {
+    alignItems: "center",
+    backgroundColor: "#D8D8D8",
     paddingLeft: 12,
     paddingRight: 12,
     width: 400
   },
-  Text 6: {},
-  View 5: { paddingLeft: 12, paddingRight: 12 },
-  Text 7: { textAlign: "center" },
-  View 6: { paddingLeft: 12, paddingRight: 12, width: 400 },
-  Text 8: { alignSelf: "stretch", textAlign: "center" },
-  RightAlignmentContainer: { alignItems: "flex-end", alignSelf: "stretch" },
-  Text 9: {},
-  Text 10: { alignSelf: "stretch", textAlign: "center" },
-  Image 1: { height: 100, width: 100 }
+  text6: {},
+  view5: { backgroundColor: "#D8D8D8", paddingLeft: 12, paddingRight: 12 },
+  text7: { textAlign: "center" },
+  view6: {
+    backgroundColor: "#D8D8D8",
+    paddingLeft: 12,
+    paddingRight: 12,
+    width: 400
+  },
+  text8: { alignSelf: "stretch", textAlign: "center" },
+  rightAlignmentContainer: {
+    alignItems: "flex-end",
+    alignSelf: "stretch",
+    backgroundColor: "#D8D8D8"
+  },
+  text9: {},
+  text10: { alignSelf: "stretch", textAlign: "center" },
+  image1: { height: 100, width: 100 }
 });

@@ -18,10 +18,12 @@ class Button extends React.Component {
     }
     return (
       <View
-        style={[ styles.View, { onPress: View$onPress } ]}
-        backgroundColor={View$backgroundColor}
+        style={[
+          styles.view,
+          { backgroundColor: View$backgroundColor, onPress: View$onPress }
+        ]}
       >
-        <Text style={[ styles.Text, {} ]} text={Text$text}>
+        <Text style={[ styles.text, {} ]} text={Text$text}>
 
         </Text>
       </View>
@@ -30,11 +32,12 @@ class Button extends React.Component {
 };
 
 let styles = StyleSheet.create({
-  View: {
+  view: {
+    backgroundColor: "blue100",
     paddingBottom: 12,
     paddingLeft: 16,
     paddingRight: 16,
     paddingTop: 12
   },
-  Text: { font: "button" }
+  text: { font: "button" }
 });

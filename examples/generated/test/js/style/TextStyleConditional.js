@@ -10,9 +10,9 @@ class TextStyleConditional extends React.Component {
       Text$textStyle = "display2"
     }
     return (
-      <View style={[ styles.View, {} ]}>
+      <View style={[ styles.view, {} ]}>
         <Text
-          style={[ styles.Text, {} ]}
+          style={[ styles.text, {} ]}
           text={"Text goes here"}
           textStyle={Text$textStyle}
         >
@@ -24,6 +24,6 @@ class TextStyleConditional extends React.Component {
 };
 
 let styles = StyleSheet.create({
-  View: { alignSelf: "stretch" },
-  Text: { font: "headline" }
+  view: { alignSelf: "stretch" },
+  text: { font: "headline" }
 });

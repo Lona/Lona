@@ -33,14 +33,18 @@ class PressableRootView extends React.Component {
     }
     return (
       <View
-        style={[ styles.Outer, { onPress: Outer$onPress } ]}
-        backgroundColor={Outer$backgroundColor}
+        style={[
+          styles.outer,
+          { backgroundColor: Outer$backgroundColor, onPress: Outer$onPress }
+        ]}
       >
         <View
-          style={[ styles.Inner, { onPress: Inner$onPress } ]}
-          backgroundColor={Inner$backgroundColor}
+          style={[
+            styles.inner,
+            { backgroundColor: Inner$backgroundColor, onPress: Inner$onPress }
+          ]}
         >
-          <Text style={[ styles.InnerText, {} ]} text={InnerText$text}>
+          <Text style={[ styles.innerText, {} ]} text={InnerText$text}>
 
           </Text>
         </View>
@@ -50,13 +54,14 @@ class PressableRootView extends React.Component {
 };
 
 let styles = StyleSheet.create({
-  Outer: {
+  outer: {
     alignSelf: "stretch",
+    backgroundColor: "grey50",
     paddingBottom: 24,
     paddingLeft: 24,
     paddingRight: 24,
     paddingTop: 24
   },
-  Inner: { height: 100, width: 100 },
-  InnerText: { font: "headline" }
+  inner: { backgroundColor: "blue500", height: 100, width: 100 },
+  innerText: { font: "headline" }
 });
