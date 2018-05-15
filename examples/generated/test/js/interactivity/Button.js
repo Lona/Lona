@@ -33,7 +33,7 @@ class Button extends React.Component {
 
 let styles = StyleSheet.create({
   view: {
-    backgroundColor: "blue100",
+    backgroundColor: colors.blue100,
     paddingBottom: 12,
     paddingLeft: 16,
     paddingRight: 16,

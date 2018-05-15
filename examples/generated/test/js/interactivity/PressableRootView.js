@@ -56,12 +56,12 @@ class PressableRootView extends React.Component {
 let styles = StyleSheet.create({
   outer: {
     alignSelf: "stretch",
-    backgroundColor: "grey50",
+    backgroundColor: colors.grey50,
     paddingBottom: 24,
     paddingLeft: 24,
     paddingRight: 24,
     paddingTop: 24
   },
-  inner: { backgroundColor: "blue500", height: 100, width: 100 },
+  inner: { backgroundColor: colors.blue500, height: 100, width: 100 },
   innerText: { font: "headline" }
 });

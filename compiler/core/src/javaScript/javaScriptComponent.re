@@ -2,7 +2,7 @@ module Ast = JavaScriptAst;
 
 module Render = JavaScriptRender;
 
-let createStyleAttributeAST = (layerName, styles) =>
+let createStyleAttributeAST = (colors, textStyles, layer: Types.layer, styles) =>
   Ast.(
     JSXAttribute({
       "name": "style",
@@ -10,22 +10,23 @@ let createStyleAttributeAST = (layerName, styles) =>
         ArrayLiteral([
           Identifier([
             "styles",
-            JavaScriptFormat.styleVariableName(layerName)
+            JavaScriptFormat.styleVariableName(layer.name)
           ]),
           ObjectLiteral(
+            Layer.mapBindings(((key, value)) =>
+              Property({
+                "key": Identifier([key]),
+                "value": JavaScriptLogic.logicValueToJavaScriptAST(value)
+              })
+            ) @@
             styles
-            |> Layer.mapBindings(((key, value)) =>
-                 Property({
-                   "key": Identifier([key]),
-                   "value": JavaScriptLogic.logicValueToJavaScriptAST(value)
-                 })
-               )
           )
         ])
     })
   );
 
-let rec layerToJavaScriptAST = (variableMap, layer: Types.layer) => {
+let rec layerToJavaScriptAST =
+        (colors, textStyles, variableMap, layer: Types.layer) => {
   open Ast;
   let (_, mainParams) =
     layer.parameters
@@ -40,7 +41,8 @@ let rec layerToJavaScriptAST = (variableMap, layer: Types.layer) => {
     )
     |> Layer.splitParamsMap;
   let main = StringMap.assign(mainParams, mainVariables);
-  let styleAttribute = createStyleAttributeAST(layer.name, styleVariables);
+  let styleAttribute =
+    createStyleAttributeAST(colors, textStyles, layer, styleVariables);
   let attributes =
     main
     |> Layer.mapBindings(((key, value)) =>
@@ -52,11 +54,24 @@ let rec layerToJavaScriptAST = (variableMap, layer: Types.layer) => {
   JSXElement({
     "tag": Layer.layerTypeToString(layer.typeName),
     "attributes": [styleAttribute, ...attributes],
-    "content": layer.children |> List.map(layerToJavaScriptAST(variableMap))
+    "content":
+      layer.children
+      |> List.map(layerToJavaScriptAST(colors, textStyles, variableMap))
   });
 };
 
-let toJavaScriptStyleSheetAST = (layer: Types.layer) => {
+let getStyleValue = (colors, value: Types.lonaValue) =>
+  switch value.ltype {
+  | Named("Color", _) =>
+    let data = value.data |> Json.Decode.string;
+    switch (Color.find(colors, data)) {
+    | Some(color) => Ast.Identifier(["colors", color.id])
+    | None => Ast.Literal(value)
+    };
+  | _ => Ast.Literal(value)
+  };
+
+let toJavaScriptStyleSheetAST = (colors, layer: Types.layer) => {
   open Ast;
   let createStyleObjectForLayer = (layer: Types.layer) => {
     let styleParams =
@@ -69,7 +84,10 @@ let toJavaScriptStyleSheetAST = (layer: Types.layer) => {
           styleParams
           |> StringMap.bindings
           |> List.map(((key, value)) =>
-               Property({"key": Identifier([key]), "value": Literal(value)})
+               Property({
+                 "key": Identifier([key]),
+                 "value": getStyleValue(colors, value)
+               })
              )
         )
     });
@@ -128,6 +146,8 @@ let generate =
       name,
       colorsFilePath,
       textStylesFilePath,
+      colors,
+      textStyles,
       getComponent,
       getComponentFile,
       json
@@ -135,8 +155,9 @@ let generate =
   let rootLayer = json |> Decode.Component.rootLayer(getComponent);
   let logic = json |> Decode.Component.logic |> Logic.addVariableDeclarations;
   let assignments = Layer.parameterAssignmentsFromLogic(rootLayer, logic);
-  let rootLayerAST = rootLayer |> layerToJavaScriptAST(assignments);
-  let styleSheetAST = rootLayer |> toJavaScriptStyleSheetAST;
+  let rootLayerAST =
+    rootLayer |> layerToJavaScriptAST(colors, textStyles, assignments);
+  let styleSheetAST = rootLayer |> toJavaScriptStyleSheetAST(colors);
   let logicAST = logic |> JavaScriptLogic.toJavaScriptAST |> Ast.optimize;
   let {absolute, relative} = rootLayer |> importComponents(getComponentFile);
   Ast.(

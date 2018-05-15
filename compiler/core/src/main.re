@@ -151,23 +151,25 @@ let convertComponent = filename => {
     )
   | Some(workspace) =>
     let colorsFilePath = Path.join([|workspace, "colors.json"|]);
+    let colorsFile = Node.Fs.readFileSync(colorsFilePath, `utf8);
+    let colors = Color.parseFile(colorsFile);
     let textStylesFilePath = Path.join([|workspace, "textStyles.json"|]);
+    let textStylesFile = Node.Fs.readFileSync(textStylesFilePath, `utf8);
+    let textStyles = TextStyle.parseFile(textStylesFile);
     switch target {
     | Types.JavaScript =>
       JavaScript.Component.generate(
         name,
         Node.Path.relative(~from=filename, ~to_=colorsFilePath, ()),
         Node.Path.relative(~from=filename, ~to_=textStylesFilePath, ()),
+        colors,
+        textStyles,
         findComponent(workspace),
         getComponentRelativePath(workspace, name),
         parsed
       )
       |> JavaScript.Render.toString
     | Swift =>
-      let colorsFile = Node.Fs.readFileSync(colorsFilePath, `utf8);
-      let colors = Color.parseFile(colorsFile);
-      let textStylesFile = Node.Fs.readFileSync(textStylesFilePath, `utf8);
-      let textStyles = TextStyle.parseFile(textStylesFile);
       let result =
         Swift.Component.generate(
           options,

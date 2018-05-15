@@ -17,5 +17,10 @@ class BorderWidthColor extends React.Component {
 
 let styles = StyleSheet.create({
   view: { alignSelf: "stretch" },
-  view1: { borderColor: "blue300", borderWidth: 20, height: 100, width: 100 }
+  view1: {
+    borderColor: colors.blue300,
+    borderWidth: 20,
+    height: 100,
+    width: 100
+  }
 });

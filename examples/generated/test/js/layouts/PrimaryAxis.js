@@ -43,6 +43,6 @@ let styles = StyleSheet.create({
   },
   fit: { backgroundColor: "#D8D8D8", marginBottom: 24, width: 100 },
   text: {},
-  fill1: { backgroundColor: "cyan500", flex: 1, width: 100 },
-  fill2: { backgroundColor: "blue500", flex: 1, width: 100 }
+  fill1: { backgroundColor: colors.cyan500, flex: 1, width: 100 },
+  fill2: { backgroundColor: colors.blue500, flex: 1, width: 100 }
 });

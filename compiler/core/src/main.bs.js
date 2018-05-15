@@ -223,19 +223,19 @@ function convertComponent(filename) {
   if (match) {
     var workspace = match[0];
     var colorsFilePath = Path.join(workspace, "colors.json");
+    var colorsFile = Fs.readFileSync(colorsFilePath, "utf8");
+    var colors = Color$LonaCompilerCore.parseFile(colorsFile);
     var textStylesFilePath = Path.join(workspace, "textStyles.json");
+    var textStylesFile = Fs.readFileSync(textStylesFilePath, "utf8");
+    var textStyles = TextStyle$LonaCompilerCore.parseFile(textStylesFile);
     switch (target) {
       case 0 : 
-          return JavaScriptRender$LonaCompilerCore.toString(JavaScriptComponent$LonaCompilerCore.generate(name, Path.relative(filename, colorsFilePath), Path.relative(filename, textStylesFilePath), (function (param) {
+          return JavaScriptRender$LonaCompilerCore.toString(JavaScriptComponent$LonaCompilerCore.generate(name, Path.relative(filename, colorsFilePath), Path.relative(filename, textStylesFilePath), colors, textStyles, (function (param) {
                             return findComponent(workspace, param);
                           }), (function (param) {
                             return getComponentRelativePath(workspace, name, param);
                           }), parsed));
       case 1 : 
-          var colorsFile = Fs.readFileSync(colorsFilePath, "utf8");
-          var colors = Color$LonaCompilerCore.parseFile(colorsFile);
-          var textStylesFile = Fs.readFileSync(textStylesFilePath, "utf8");
-          var textStyles = TextStyle$LonaCompilerCore.parseFile(textStylesFile);
           return SwiftRender$LonaCompilerCore.toString(SwiftComponent$LonaCompilerCore.generate(options, swiftOptions, name, colors, textStyles, (function (param) {
                             return findComponent(workspace, param);
                           }), parsed));

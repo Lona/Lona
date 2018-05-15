@@ -37,20 +37,20 @@ let styles = StyleSheet.create({
   },
   view1: {
     alignSelf: "stretch",
-    backgroundColor: "red50",
+    backgroundColor: colors.red50,
     flexDirection: "row",
     paddingBottom: 24,
     paddingLeft: 24,
     paddingRight: 24,
     paddingTop: 24
   },
-  view4: { backgroundColor: "red200", height: 100, width: 60 },
+  view4: { backgroundColor: colors.red200, height: 100, width: 60 },
   view5: {
-    backgroundColor: "deeporange200",
+    backgroundColor: colors.deeporange200,
     height: 60,
     marginLeft: 12,
     width: 60
   },
-  view2: { alignSelf: "stretch", backgroundColor: "indigo100", flex: 1 },
-  view3: { alignSelf: "stretch", backgroundColor: "teal100", flex: 1 }
+  view2: { alignSelf: "stretch", backgroundColor: colors.indigo100, flex: 1 },
+  view3: { alignSelf: "stretch", backgroundColor: colors.teal100, flex: 1 }
 });

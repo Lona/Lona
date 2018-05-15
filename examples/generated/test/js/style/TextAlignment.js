@@ -105,7 +105,7 @@ let styles = StyleSheet.create({
   view1: {
     alignItems: "center",
     alignSelf: "stretch",
-    backgroundColor: "indigo50",
+    backgroundColor: colors.indigo50,
     justifyContent: "center"
   },
   image: { height: 100, width: 100 },
