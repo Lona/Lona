@@ -175,7 +175,16 @@ function generate(name, colorsFilePath, textStylesFilePath, colors, textStyles, 
   var logicAST = JavaScriptAst$LonaCompilerCore.optimize(JavaScriptLogic$LonaCompilerCore.toJavaScriptAST(logic));
   var match = importComponents(getComponentFile, rootLayer);
   return JavaScriptAst$LonaCompilerCore.prepareForRender(/* Program */Block.__(21, [SwiftDocument$LonaCompilerCore.joinGroups(/* Empty */0, /* :: */[
-                      match[/* absolute */0],
+                      Pervasives.$at(/* :: */[
+                            /* ImportDeclaration */Block.__(3, [{
+                                  source: "react",
+                                  specifiers: /* :: */[
+                                    /* ImportDefaultSpecifier */Block.__(5, ["React"]),
+                                    /* [] */0
+                                  ]
+                                }]),
+                            /* [] */0
+                          ], match[/* absolute */0]),
                       /* :: */[
                         Pervasives.$at(/* :: */[
                               /* ImportDeclaration */Block.__(3, [{

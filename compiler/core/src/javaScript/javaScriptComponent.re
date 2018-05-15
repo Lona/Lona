@@ -165,7 +165,13 @@ let generate =
       SwiftDocument.joinGroups(
         Ast.Empty,
         [
-          absolute,
+          [
+            ImportDeclaration({
+              "source": "react",
+              "specifiers": [ImportDefaultSpecifier("React")]
+            })
+          ]
+          @ absolute,
           [
             ImportDeclaration({
               "source": colorsFilePath |> Js.String.replace(".json", ""),

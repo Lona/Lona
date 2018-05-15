@@ -1,3 +1,4 @@
+import React from "react"
 import { Image, View } from "react-native"
 
 import colors from "../../colors"
