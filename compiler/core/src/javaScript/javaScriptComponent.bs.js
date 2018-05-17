@@ -4,11 +4,13 @@
 var List                              = require("bs-platform/lib/js/list.js");
 var Block                             = require("bs-platform/lib/js/block.js");
 var Curry                             = require("bs-platform/lib/js/curry.js");
+var Js_json                           = require("bs-platform/lib/js/js_json.js");
 var Pervasives                        = require("bs-platform/lib/js/pervasives.js");
 var Json_decode                       = require("bs-json/src/Json_decode.js");
 var Color$LonaCompilerCore            = require("../core/color.bs.js");
 var Layer$LonaCompilerCore            = require("../core/layer.bs.js");
 var Logic$LonaCompilerCore            = require("../core/logic.bs.js");
+var Caml_builtin_exceptions           = require("bs-platform/lib/js/caml_builtin_exceptions.js");
 var Decode$LonaCompilerCore           = require("../core/decode.bs.js");
 var StringMap$LonaCompilerCore        = require("../containers/stringMap.bs.js");
 var JavaScriptAst$LonaCompilerCore    = require("./javaScriptAst.bs.js");
@@ -126,16 +128,32 @@ function toJavaScriptStyleSheetAST(colors, layer) {
                       /* [] */0
                     ]]),
                 value: /* ObjectLiteral */Block.__(19, [List.map((function (param) {
-                            return /* Property */Block.__(20, [{
-                                        key: /* Identifier */Block.__(2, [/* :: */[
-                                              param[0],
-                                              /* [] */0
-                                            ]]),
-                                        value: getStyleValue(colors, param[1])
-                                      }]);
-                          }), List.filter((function (param) {
-                                  return +(param[0] !== "font");
-                                }))(Curry._1(StringMap$LonaCompilerCore.bindings, styleParams)))])
+                            var value = param[1];
+                            var key = param[0];
+                            if (key === "font") {
+                              var match = Js_json.decodeString(value[/* data */1]);
+                              if (match) {
+                                return /* SpreadElement */Block.__(13, [/* Identifier */Block.__(2, [/* :: */[
+                                                "textStyles",
+                                                /* :: */[
+                                                  match[0],
+                                                  /* [] */0
+                                                ]
+                                              ]])]);
+                              } else {
+                                console.log("Unknown TextStyle name");
+                                throw Caml_builtin_exceptions.not_found;
+                              }
+                            } else {
+                              return /* Property */Block.__(20, [{
+                                          key: /* Identifier */Block.__(2, [/* :: */[
+                                                key,
+                                                /* [] */0
+                                              ]]),
+                                          value: getStyleValue(colors, value)
+                                        }]);
+                            }
+                          }), Curry._1(StringMap$LonaCompilerCore.bindings, styleParams))])
               }]);
   };
   var styleObjects = List.map(createStyleObjectForLayer, Layer$LonaCompilerCore.flatten(layer));

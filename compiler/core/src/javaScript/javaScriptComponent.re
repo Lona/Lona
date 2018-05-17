@@ -101,13 +101,22 @@ let toJavaScriptStyleSheetAST = (colors, layer: Types.layer) => {
         ObjectLiteral(
           styleParams
           |> StringMap.bindings
-          /* TODO: Spread font */
-          |> List.filter(((key, value)) => key !== "font")
-          |> List.map(((key, value)) =>
-               Property({
-                 "key": Identifier([key]),
-                 "value": getStyleValue(colors, value)
-               })
+          |> List.map(((key, value: Types.lonaValue)) =>
+               switch key {
+               | "font" =>
+                 switch (value.data |> Js.Json.decodeString) {
+                 | Some(textStyleName) =>
+                   SpreadElement(Identifier(["textStyles", textStyleName]))
+                 | None =>
+                   Js.log("Unknown TextStyle name");
+                   raise(Not_found);
+                 }
+               | _ =>
+                 Property({
+                   "key": Identifier([key]),
+                   "value": getStyleValue(colors, value)
+                 })
+               }
              )
         )
     });

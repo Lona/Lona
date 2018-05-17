@@ -5,7 +5,6 @@ var List                      = require("bs-platform/lib/js/list.js");
 var Curry                     = require("bs-platform/lib/js/curry.js");
 var Prettier                  = require("prettier");
 var Pervasives                = require("bs-platform/lib/js/pervasives.js");
-var Caml_builtin_exceptions   = require("bs-platform/lib/js/caml_builtin_exceptions.js");
 var Render$LonaCompilerCore   = require("../core/render.bs.js");
 var Prettier$LonaCompilerCore = require("../utils/prettier.bs.js");
 
@@ -144,14 +143,7 @@ function render(ast) {
       case 12 : 
           return Prettier.doc.builders.group(Curry._2(Prettier$LonaCompilerCore.Doc[/* Builders */0][/* <+> */5], Curry._2(Prettier$LonaCompilerCore.Doc[/* Builders */0][/* <+> */5], Curry._2(Prettier$LonaCompilerCore.Doc[/* Builders */0][/* <+> */5], Curry._2(Prettier$LonaCompilerCore.Doc[/* Builders */0][/* <+> */5], Curry._1(Prettier$LonaCompilerCore.Doc[/* Builders */0][/* s */0], "{"), Prettier.doc.builders.softline), render(ast[0])), Prettier.doc.builders.softline), Curry._1(Prettier$LonaCompilerCore.Doc[/* Builders */0][/* s */0], "}")));
       case 13 : 
-          throw [
-                Caml_builtin_exceptions.match_failure,
-                [
-                  "/Users/devinabbott/Projects/Lona/compiler/core/src/javaScript/javaScriptRender.re",
-                  22,
-                  2
-                ]
-              ];
+          return Curry._2(Prettier$LonaCompilerCore.Doc[/* Builders */0][/* <+> */5], Curry._1(Prettier$LonaCompilerCore.Doc[/* Builders */0][/* s */0], "..."), render(ast[0]));
       case 14 : 
           return Prettier.doc.builders.group(Curry._2(Prettier$LonaCompilerCore.Doc[/* Builders */0][/* <+> */5], Curry._2(Prettier$LonaCompilerCore.Doc[/* Builders */0][/* <+> */5], Curry._1(Prettier$LonaCompilerCore.Doc[/* Builders */0][/* s */0], "let "), render(ast[0])), Curry._1(Prettier$LonaCompilerCore.Doc[/* Builders */0][/* s */0], ";")));
       case 15 : 

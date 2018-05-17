@@ -136,6 +136,7 @@ let rec render = ast : Prettier.Doc.t('a) =>
     opening <+> children <+> line <+> closing;
   | JSXExpressionContainer(o) =>
     group(s("{") <+> softline <+> render(o) <+> softline <+> s("}"))
+  | SpreadElement(value) => s("...") <+> render(value)
   | ArrayLiteral(body) =>
     let maybeLine = List.length(body) > 0 ? line : empty;
     let body = body |> List.map(render) |> join(s(",") <+> line);
