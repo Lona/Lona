@@ -114,4 +114,13 @@ class Document: NSDocument {
         // If you override either of these, you should also override -isEntireFileLoaded to return false if the contents are lazily loaded.
 //        throw NSError(domain: NSOSStatusErrorDomain, code: unimpErr, userInfo: nil)
     }
+
+    override func save(to url: URL, ofType typeName: String, for saveOperation: NSDocument.SaveOperationType, completionHandler: @escaping (Error?) -> Void) {
+
+        LonaPlugins.current.pluginFilesActivatingOn(eventType: .onSaveComponent).forEach({
+            $0.run(onSuccess: {_ in })
+        })
+
+        super.save(to: url, ofType: typeName, for: saveOperation, completionHandler: completionHandler)
+    }
 }
