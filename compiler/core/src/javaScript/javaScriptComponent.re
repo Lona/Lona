@@ -26,7 +26,7 @@ let createStyleAttributeAST = (colors, textStyles, layer: Types.layer, styles) =
   );
 
 let rec layerToJavaScriptAST =
-        (colors, textStyles, variableMap, layer: Types.layer) => {
+        (colors, textStyles, variableMap, getAssetPath, layer: Types.layer) => {
   open Ast;
   let (_, mainParams) =
     layer.parameters
@@ -45,23 +45,44 @@ let rec layerToJavaScriptAST =
     createStyleAttributeAST(colors, textStyles, layer, styleVariables);
   let attributes =
     main
-    |> Layer.mapBindings(((key, value)) =>
-         JSXAttribute({
-           "name": key,
-           "value": JavaScriptLogic.logicValueToJavaScriptAST(value)
-         })
-       );
-  let textParam =
+    |> Layer.mapBindings(((key, value)) => {
+         let key =
+           switch (layer.typeName, key) {
+           | (Types.Image, "image") => "source"
+           | _ => key
+           };
+         let attributeValue =
+           switch value {
+           | Logic.Literal(lonaValue) when lonaValue.ltype == Types.urlType =>
+             let path =
+               switch (lonaValue.data |> Js.Json.decodeString) {
+               | Some(url) =>
+                 getAssetPath(url |> Js.String.replace("file://", ""))
+               | None => ""
+               };
+             let pathValue: Types.lonaValue = {
+               ltype: Types.urlType,
+               data: Js.Json.string(path)
+             };
+             CallExpression({
+               "callee": Identifier(["require"]),
+               "arguments": [Literal(pathValue)]
+             });
+           | _ => JavaScriptLogic.logicValueToJavaScriptAST(value)
+           };
+         JSXAttribute({"name": key, "value": attributeValue});
+       });
+  let dynamicOrStaticValue = key =>
     switch (
-      main |> StringMap.find_opt("text"),
-      layer.parameters |> StringMap.find_opt("text")
+      main |> StringMap.find_opt(key),
+      layer.parameters |> StringMap.find_opt(key)
     ) {
     | (Some(param), _) => Some(param)
     | (None, Some(param)) => Some(Logic.Literal(param))
     | _ => None
     };
   let content =
-    switch (layer.typeName, textParam) {
+    switch (layer.typeName, dynamicOrStaticValue("text")) {
     | (Types.Text, Some(textValue)) => [
         JSXExpressionContainer(
           JavaScriptLogic.logicValueToJavaScriptAST(textValue)
@@ -69,7 +90,9 @@ let rec layerToJavaScriptAST =
       ]
     | _ =>
       layer.children
-      |> List.map(layerToJavaScriptAST(colors, textStyles, variableMap))
+      |> List.map(
+           layerToJavaScriptAST(colors, textStyles, variableMap, getAssetPath)
+         )
     };
   JSXElement({
     "tag": Layer.layerTypeToString(layer.typeName),
@@ -182,13 +205,15 @@ let generate =
       textStyles,
       getComponent,
       getComponentFile,
+      getAssetPath,
       json
     ) => {
   let rootLayer = json |> Decode.Component.rootLayer(getComponent);
   let logic = json |> Decode.Component.logic |> Logic.addVariableDeclarations;
   let assignments = Layer.parameterAssignmentsFromLogic(rootLayer, logic);
   let rootLayerAST =
-    rootLayer |> layerToJavaScriptAST(colors, textStyles, assignments);
+    rootLayer
+    |> layerToJavaScriptAST(colors, textStyles, assignments, getAssetPath);
   let styleSheetAST = rootLayer |> toJavaScriptStyleSheetAST(colors);
   let logicAST = logic |> JavaScriptLogic.toJavaScriptAST |> Ast.optimize;
   let {absolute, relative} = rootLayer |> importComponents(getComponentFile);

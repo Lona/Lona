@@ -226,6 +226,18 @@ function getComponentRelativePath(fromDirectory, sourceComponent, importedCompon
   }
 }
 
+function getAssetRelativePath(fromDirectory, sourceComponent, importedPath) {
+  var sourcePath = Path.dirname(findComponentFile(fromDirectory, sourceComponent));
+  var importedPath$1 = Path.join(fromDirectory, importedPath);
+  var relativePath = Path.relative(sourcePath, importedPath$1);
+  var match = +relativePath.startsWith(".");
+  if (match !== 0) {
+    return relativePath;
+  } else {
+    return "./" + relativePath;
+  }
+}
+
 function convertComponent(filename) {
   var contents = Fs.readFileSync(filename, "utf8");
   var parsed = JSON.parse(contents);
@@ -245,6 +257,8 @@ function convertComponent(filename) {
                             return findComponent(workspace, param);
                           }), (function (param) {
                             return getComponentRelativePath(workspace, name, param);
+                          }), (function (param) {
+                            return getAssetRelativePath(workspace, name, param);
                           }), parsed));
       case 1 : 
           return SwiftRender$LonaCompilerCore.toString(SwiftComponent$LonaCompilerCore.generate(options, swiftOptions, name, colors, textStyles, (function (param) {
@@ -472,6 +486,7 @@ exports.ComponentNotFound        = ComponentNotFound;
 exports.findComponentFile        = findComponentFile;
 exports.findComponent            = findComponent;
 exports.getComponentRelativePath = getComponentRelativePath;
+exports.getAssetRelativePath     = getAssetRelativePath;
 exports.convertComponent         = convertComponent;
 exports.copyStaticFiles          = copyStaticFiles;
 exports.findContentsAbove        = findContentsAbove;

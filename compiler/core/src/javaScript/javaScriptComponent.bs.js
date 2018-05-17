@@ -5,11 +5,13 @@ var List                              = require("bs-platform/lib/js/list.js");
 var Block                             = require("bs-platform/lib/js/block.js");
 var Curry                             = require("bs-platform/lib/js/curry.js");
 var Js_json                           = require("bs-platform/lib/js/js_json.js");
+var Caml_obj                          = require("bs-platform/lib/js/caml_obj.js");
 var Pervasives                        = require("bs-platform/lib/js/pervasives.js");
 var Json_decode                       = require("bs-json/src/Json_decode.js");
 var Color$LonaCompilerCore            = require("../core/color.bs.js");
 var Layer$LonaCompilerCore            = require("../core/layer.bs.js");
 var Logic$LonaCompilerCore            = require("../core/logic.bs.js");
+var Types$LonaCompilerCore            = require("../core/types.bs.js");
 var Caml_builtin_exceptions           = require("bs-platform/lib/js/caml_builtin_exceptions.js");
 var Decode$LonaCompilerCore           = require("../core/decode.bs.js");
 var StringMap$LonaCompilerCore        = require("../containers/stringMap.bs.js");
@@ -45,29 +47,66 @@ function createStyleAttributeAST(_, _$1, layer, styles) {
             }]);
 }
 
-function layerToJavaScriptAST(colors, textStyles, variableMap, layer) {
+function layerToJavaScriptAST(colors, textStyles, variableMap, getAssetPath, layer) {
   var match = Layer$LonaCompilerCore.splitParamsMap(Layer$LonaCompilerCore.parameterMapToLogicValueMap(layer[/* parameters */2]));
   var match$1 = Layer$LonaCompilerCore.LayerMap[/* find_opt */24](layer, variableMap);
   var match$2 = Layer$LonaCompilerCore.splitParamsMap(match$1 ? match$1[0] : StringMap$LonaCompilerCore.empty);
   var main = StringMap$LonaCompilerCore.assign(match[1], match$2[1]);
   var styleAttribute = createStyleAttributeAST(colors, textStyles, layer, match$2[0]);
   var attributes = Layer$LonaCompilerCore.mapBindings((function (param) {
+          var value = param[1];
+          var key = param[0];
+          var match = layer[/* typeName */0];
+          var key$1 = typeof match === "number" && !(match !== 2 || key !== "image") ? "source" : key;
+          var attributeValue;
+          if (value.tag) {
+            var lonaValue = value[0];
+            if (Caml_obj.caml_equal(lonaValue[/* ltype */0], Types$LonaCompilerCore.urlType)) {
+              var match$1 = Js_json.decodeString(lonaValue[/* data */1]);
+              var path = match$1 ? Curry._1(getAssetPath, match$1[0].replace("file://", "")) : "";
+              var pathValue = /* record */[
+                /* ltype */Types$LonaCompilerCore.urlType,
+                /* data */path
+              ];
+              attributeValue = /* CallExpression */Block.__(9, [{
+                    callee: /* Identifier */Block.__(2, [/* :: */[
+                          "require",
+                          /* [] */0
+                        ]]),
+                    arguments: /* :: */[
+                      /* Literal */Block.__(1, [pathValue]),
+                      /* [] */0
+                    ]
+                  }]);
+            } else {
+              attributeValue = JavaScriptLogic$LonaCompilerCore.logicValueToJavaScriptAST(value);
+            }
+          } else {
+            attributeValue = JavaScriptLogic$LonaCompilerCore.logicValueToJavaScriptAST(value);
+          }
           return /* JSXAttribute */Block.__(10, [{
-                      name: param[0],
-                      value: JavaScriptLogic$LonaCompilerCore.logicValueToJavaScriptAST(param[1])
+                      name: key$1,
+                      value: attributeValue
                     }]);
         }), main);
-  var match$3 = StringMap$LonaCompilerCore.find_opt("text", main);
-  var match$4 = StringMap$LonaCompilerCore.find_opt("text", layer[/* parameters */2]);
-  var textParam = match$3 ? /* Some */[match$3[0]] : (
-      match$4 ? /* Some */[/* Literal */Block.__(1, [match$4[0]])] : /* None */0
-    );
-  var match$5 = layer[/* typeName */0];
+  var dynamicOrStaticValue = function (key) {
+    var match = StringMap$LonaCompilerCore.find_opt(key, main);
+    var match$1 = StringMap$LonaCompilerCore.find_opt(key, layer[/* parameters */2]);
+    if (match) {
+      return /* Some */[match[0]];
+    } else if (match$1) {
+      return /* Some */[/* Literal */Block.__(1, [match$1[0]])];
+    } else {
+      return /* None */0;
+    }
+  };
+  var match$3 = layer[/* typeName */0];
+  var match$4 = dynamicOrStaticValue("text");
   var content;
   var exit = 0;
-  if (typeof match$5 === "number" && !(match$5 !== 1 || !textParam)) {
+  if (typeof match$3 === "number" && !(match$3 !== 1 || !match$4)) {
     content = /* :: */[
-      /* JSXExpressionContainer */Block.__(12, [JavaScriptLogic$LonaCompilerCore.logicValueToJavaScriptAST(textParam[0])]),
+      /* JSXExpressionContainer */Block.__(12, [JavaScriptLogic$LonaCompilerCore.logicValueToJavaScriptAST(match$4[0])]),
       /* [] */0
     ];
   } else {
@@ -75,7 +114,7 @@ function layerToJavaScriptAST(colors, textStyles, variableMap, layer) {
   }
   if (exit === 1) {
     content = List.map((function (param) {
-            return layerToJavaScriptAST(colors, textStyles, variableMap, param);
+            return layerToJavaScriptAST(colors, textStyles, variableMap, getAssetPath, param);
           }), layer[/* children */3]);
   }
   return /* JSXElement */Block.__(11, [{
@@ -211,11 +250,11 @@ function importComponents(getComponentFile, rootLayer) {
         ];
 }
 
-function generate(name, colorsFilePath, textStylesFilePath, colors, textStyles, getComponent, getComponentFile, json) {
+function generate(name, colorsFilePath, textStylesFilePath, colors, textStyles, getComponent, getComponentFile, getAssetPath, json) {
   var rootLayer = Decode$LonaCompilerCore.Component[/* rootLayer */1](getComponent, json);
   var logic = Logic$LonaCompilerCore.addVariableDeclarations(Decode$LonaCompilerCore.Component[/* logic */2](json));
   var assignments = Layer$LonaCompilerCore.parameterAssignmentsFromLogic(rootLayer, logic);
-  var rootLayerAST = layerToJavaScriptAST(colors, textStyles, assignments, rootLayer);
+  var rootLayerAST = layerToJavaScriptAST(colors, textStyles, assignments, getAssetPath, rootLayer);
   var styleSheetAST = toJavaScriptStyleSheetAST(colors, rootLayer);
   var logicAST = JavaScriptAst$LonaCompilerCore.optimize(JavaScriptLogic$LonaCompilerCore.toJavaScriptAST(logic));
   var match = importComponents(getComponentFile, rootLayer);

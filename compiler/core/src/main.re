@@ -143,6 +143,16 @@ let getComponentRelativePath =
     relativePath : "./" ++ relativePath;
 };
 
+let getAssetRelativePath = (fromDirectory, sourceComponent, importedPath) => {
+  let sourcePath =
+    Node.Path.dirname(findComponentFile(fromDirectory, sourceComponent));
+  let importedPath = Node.Path.join([|fromDirectory, importedPath|]);
+  let relativePath =
+    Node.Path.relative(~from=sourcePath, ~to_=importedPath, ());
+  Js.String.startsWith(".", relativePath) ?
+    relativePath : "./" ++ relativePath;
+};
+
 let convertComponent = filename => {
   let contents = Fs.readFileSync(filename, `utf8);
   let parsed = contents |> Js.Json.parseExn;
@@ -177,6 +187,7 @@ let convertComponent = filename => {
         textStyles,
         findComponent(workspace),
         getComponentRelativePath(workspace, name),
+        getAssetRelativePath(workspace, name),
         parsed
       )
       |> JavaScript.Render.toString
