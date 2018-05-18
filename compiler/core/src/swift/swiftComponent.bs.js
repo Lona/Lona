@@ -1230,6 +1230,7 @@ function generate(options, swiftOptions, name, colors, textStyles, getComponent,
                 }]);
     };
     var match = +(List.length(constraints) > 0);
+    var match$1 = +(List.length(constraints) > 0);
     return /* FunctionDeclaration */Block.__(13, [{
                 name: "setUpConstraints",
                 modifiers: /* :: */[
@@ -1248,14 +1249,14 @@ function generate(options, swiftOptions, name, colors, textStyles, getComponent,
                                         return +(Constraint$LonaCompilerCore.getPriority(def) === /* Low */1);
                                       }))(constraints)),
                           /* :: */[
-                            /* :: */[
-                              activateConstraints(/* () */0),
-                              /* [] */0
-                            ],
+                            match !== 0 ? /* :: */[
+                                activateConstraints(/* () */0),
+                                /* [] */0
+                              ] : /* [] */0,
                             /* :: */[
                               List.map(assignConstraint, constraints),
                               /* :: */[
-                                match !== 0 ? /* :: */[
+                                match$1 !== 0 ? /* :: */[
                                     /* LineComment */Block.__(21, ["For debugging"]),
                                     List.map(assignConstraintIdentifier, constraints)
                                   ] : /* [] */0,

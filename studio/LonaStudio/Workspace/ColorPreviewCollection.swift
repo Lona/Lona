@@ -79,6 +79,19 @@ class ColorPreviewCollectionView: NSView {
     }
 }
 
+// MARK: - Imperative API
+
+extension ColorPreviewCollectionView {
+    func cardView(at index: Int) -> ColorPreviewCard? {
+        guard let item = collectionView.item(at: index) as? ColorPreviewItemViewController else { return nil }
+        return item.view as? ColorPreviewCard
+    }
+
+    func reloadData() {
+        collectionView.reloadData()
+    }
+}
+
 // MARK: - NSCollectionViewDelegate
 
 extension ColorPreviewCollectionView: NSCollectionViewDelegate {
@@ -105,7 +118,7 @@ extension ColorPreviewCollectionView: NSCollectionViewDataSource {
             componentPreviewCard.colorCode = componentFile.value
             componentPreviewCard.color = componentFile.color
             componentPreviewCard.onClick = {
-                self.onClickColor?(componentFile.name)
+                self.onClickColor?(componentFile.id)
             }
         }
 
@@ -155,10 +168,31 @@ public class ColorPreviewCollection: NSBox {
 
         collectionView.items = CSColors.colors
 
+        // TODO: Not this
+        LonaPlugins.current.register(handler: {
+            self.collectionView.items = CSColors.colors
+            self.collectionView.reloadData()
+        }, for: .onSaveColors)
+
         // TODO: This callback should propagate up to the root. Currently Lona doesn't
         // generate callbacks with params, so we'll handle it here for now.
         collectionView.onClickColor = { color in
-            Swift.print(color)
+            guard let csColor = CSColors.colors.first(where: { $0.id == color }) else { return }
+            guard let index = CSColors.colors.index(where: { $0.id == color }) else { return }
+
+            let editor = DictionaryEditor(
+                value: csColor.toValue(),
+                onChange: { updated in
+                    CSColors.updateAndSave(color: updated.data, at: index)
+            },
+                layout: CSConstraint.size(width: 300, height: 200)
+            )
+
+            let viewController = NSViewController(view: editor)
+            let popover = NSPopover(contentViewController: viewController, delegate: self)
+
+            guard let cardView = self.collectionView.cardView(at: index) else { return }
+            popover.show(relativeTo: NSRect.zero, of: cardView, preferredEdge: .maxY)
         }
 
         addSubview(collectionView)
@@ -175,4 +209,8 @@ public class ColorPreviewCollection: NSBox {
     }
 
     private func update() {}
+}
+
+extension ColorPreviewCollection: NSPopoverDelegate {
+
 }

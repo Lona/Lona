@@ -219,7 +219,14 @@ let rec defaultValueForLonaType =
         textStyles,
         Named(typeName, Reference("String"))
       )
-    | _ => SwiftIdentifier("UnknownReferenceType: " ++ typeName)
+    | value when Js.String.endsWith("?", value) =>
+      defaultValueForLonaType(
+        framework,
+        colors,
+        textStyles,
+        Reference(Js.String.replace("?", "", value))
+      )
+    | _ => SwiftIdentifier(typeName)
     }
   | Function(_) => SwiftIdentifier("PLACEHOLDER")
   | Named(alias, _) =>

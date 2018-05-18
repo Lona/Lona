@@ -989,7 +989,7 @@ let generate =
             constraints
             |> List.filter(def => Constraint.getPriority(def) == Low)
             |> List.map(setConstraintPriority),
-            [activateConstraints()],
+            List.length(constraints) > 0 ? [activateConstraints()] : [],
             constraints |> List.map(assignConstraint),
             List.length(constraints) > 0 ?
               [

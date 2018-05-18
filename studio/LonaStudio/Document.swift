@@ -117,10 +117,8 @@ class Document: NSDocument {
 
     override func save(to url: URL, ofType typeName: String, for saveOperation: NSDocument.SaveOperationType, completionHandler: @escaping (Error?) -> Void) {
 
-        LonaPlugins.current.pluginFilesActivatingOn(eventType: .onSaveComponent).forEach({
-            $0.run(onSuccess: {_ in })
-        })
-
         super.save(to: url, ofType: typeName, for: saveOperation, completionHandler: completionHandler)
+
+        LonaPlugins.current.trigger(eventType: .onSaveComponent)
     }
 }

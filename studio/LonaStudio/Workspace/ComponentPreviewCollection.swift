@@ -79,6 +79,12 @@ class ComponentPreviewCollectionView: NSView {
     }
 }
 
+extension ComponentPreviewCollectionView {
+    func reloadData() {
+        collectionView.reloadData()
+    }
+}
+
 // MARK: - NSCollectionViewDelegate
 
 extension ComponentPreviewCollectionView: NSCollectionViewDelegate {
@@ -154,6 +160,17 @@ public class ComponentPreviewCollection: NSBox {
         collectionView.items = LonaModule.current.componentFiles().sorted(by: { a, b in
             return a.name < b.name
         })
+
+        let updateHandler: () -> Void = {
+            self.collectionView.items = LonaModule.current.componentFiles().sorted(by: { a, b in
+                return a.name < b.name
+            })
+            self.collectionView.reloadData()
+        }
+
+        // TODO: Not this
+        LonaPlugins.current.register(handler: updateHandler, for: .onSaveColors)
+        LonaPlugins.current.register(handler: updateHandler, for: .onSaveComponent)
 
         // TODO: This callback should propagate up to the root. Currently Lona doesn't
         // generate callbacks with params, so we'll handle it here for now.
