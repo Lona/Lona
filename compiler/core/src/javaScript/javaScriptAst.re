@@ -14,6 +14,21 @@ type node =
   | Return(node)
   | Literal(Types.lonaValue)
   | Identifier(list(string))
+  | ImportDeclaration(
+      {
+        .
+        "source": string,
+        "specifiers": list(node)
+      }
+    )
+  | ImportSpecifier(
+      {
+        .
+        "imported": string,
+        "local": option(string)
+      }
+    )
+  | ImportDefaultSpecifier(string)
   | ClassDeclaration(
       {
         .
@@ -59,6 +74,8 @@ type node =
         "content": list(node)
       }
     )
+  | JSXExpressionContainer(node)
+  | SpreadElement(node)
   | VariableDeclaration(node)
   | AssignmentExpression(
       {
@@ -108,8 +125,13 @@ type node =
 let rec map = (f, node) =>
   switch node {
   | Return(value) => f(Return(value |> map(f)))
-  | Literal(_) => f(node)
-  | Identifier(_) => f(node)
+  | Literal(_)
+  | Identifier(_)
+  | ImportDeclaration(_)
+  | ImportSpecifier(_)
+  | ImportDefaultSpecifier(_) => f(node)
+  | JSXExpressionContainer(value) => JSXExpressionContainer(f(value))
+  | SpreadElement(value) => SpreadElement(f(value))
   | ClassDeclaration(o) =>
     f(
       ClassDeclaration({

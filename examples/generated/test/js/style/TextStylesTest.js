@@ -1,36 +1,42 @@
-class TextStylesTest extends React.Component {
+import React from "react"
+import { Text, View, StyleSheet } from "react-native"
+
+import colors from "../colors"
+import textStyles from "../textStyles"
+
+export default class TextStylesTest extends React.Component {
   render() {
     return (
-      <View style={[ styles.View, {} ]}>
-        <Text style={[ styles.Text, {} ]} text={"Text goes here"}>
-
+      <View style={[ styles.view, {} ]}>
+        <Text style={[ styles.text, {} ]} text={"Text goes here"}>
+          {"Text goes here"}
         </Text>
-        <Text style={[ styles.Text 1, {} ]} text={"Text goes here"}>
-
+        <Text style={[ styles.text1, {} ]} text={"Text goes here"}>
+          {"Text goes here"}
         </Text>
-        <Text style={[ styles.Text 2, {} ]} text={"Text goes here"}>
-
+        <Text style={[ styles.text2, {} ]} text={"Text goes here"}>
+          {"Text goes here"}
         </Text>
-        <Text style={[ styles.Text 3, {} ]} text={"Text goes here"}>
-
+        <Text style={[ styles.text3, {} ]} text={"Text goes here"}>
+          {"Text goes here"}
         </Text>
-        <Text style={[ styles.Text 4, {} ]} text={"Text goes here"}>
-
+        <Text style={[ styles.text4, {} ]} text={"Text goes here"}>
+          {"Text goes here"}
         </Text>
-        <Text style={[ styles.Text 5, {} ]} text={"Text goes here"}>
-
+        <Text style={[ styles.text5, {} ]} text={"Text goes here"}>
+          {"Text goes here"}
         </Text>
-        <Text style={[ styles.Text 6, {} ]} text={"Text goes here"}>
-
+        <Text style={[ styles.text6, {} ]} text={"Text goes here"}>
+          {"Text goes here"}
         </Text>
-        <Text style={[ styles.Text 7, {} ]} text={"Text goes here"}>
-
+        <Text style={[ styles.text7, {} ]} text={"Text goes here"}>
+          {"Text goes here"}
         </Text>
-        <Text style={[ styles.Text 8, {} ]} text={"Text goes here"}>
-
+        <Text style={[ styles.text8, {} ]} text={"Text goes here"}>
+          {"Text goes here"}
         </Text>
-        <Text style={[ styles.Text 9, {} ]} text={"Text goes here"}>
-
+        <Text style={[ styles.text9, {} ]} text={"Text goes here"}>
+          {"Text goes here"}
         </Text>
       </View>
     );
@@ -38,15 +44,15 @@ class TextStylesTest extends React.Component {
 };
 
 let styles = StyleSheet.create({
-  View: { alignSelf: "stretch" },
-  Text: { font: "display4" },
-  Text 1: { font: "display3" },
-  Text 2: { font: "display2" },
-  Text 3: { font: "display1" },
-  Text 4: { font: "headline" },
-  Text 5: { font: "subheading2" },
-  Text 6: { font: "subheading1" },
-  Text 7: { font: "body2" },
-  Text 8: { font: "body1" },
-  Text 9: { font: "caption" }
+  view: { alignSelf: "stretch" },
+  text: {},
+  text1: {},
+  text2: {},
+  text3: {},
+  text4: {},
+  text5: {},
+  text6: {},
+  text7: {},
+  text8: {},
+  text9: {}
 });

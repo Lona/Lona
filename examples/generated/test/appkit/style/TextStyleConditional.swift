@@ -59,6 +59,7 @@ public class TextStyleConditional: NSBox {
     addSubview(textView)
 
     textViewTextStyle = TextStyles.headline
+    textView.attributedStringValue = textViewTextStyle.apply(to: textView.attributedStringValue)
     textView.attributedStringValue = textViewTextStyle.apply(to: "Text goes here")
   }
 
@@ -99,9 +100,11 @@ public class TextStyleConditional: NSBox {
   }
 
   private func update() {
-    textViewTextStyle = TextStyles.body1
+    textViewTextStyle = TextStyles.headline
+    textView.attributedStringValue = textViewTextStyle.apply(to: textView.attributedStringValue)
     if large {
       textViewTextStyle = TextStyles.display2
+      textView.attributedStringValue = textViewTextStyle.apply(to: textView.attributedStringValue)
     }
   }
 }

@@ -1,7 +1,5 @@
 module Ast = SwiftAst;
 
-module Format = SwiftFormat;
-
 module Document = SwiftDocument;
 
 let toSwiftAST =
@@ -32,7 +30,7 @@ let toSwiftAST =
             tail
             |> List.fold_left(
                  (a, b) => a ++ "." ++ Format.camelCase(b),
-                 Format.layerName(second)
+                 SwiftFormat.layerName(second)
                )
           )
         | _ => SwiftIdentifier("BadIdentifier")
@@ -81,9 +79,10 @@ let toSwiftAST =
         name |> Js.String.replace("borderRadius", "layer.cornerRadius")
       )
     | (UIKit, Ast.SwiftIdentifier(name))
-        when name |> Js.String.endsWith(".borderWidth") =>
+        when
+          name |> Js.String.endsWith(".borderWidth") || name == "borderWidth" =>
       Ast.SwiftIdentifier(
-        name |> Js.String.replace(".borderWidth", ".layer.borderWidth")
+        name |> Js.String.replace("borderWidth", "layer.borderWidth")
       )
     /* -- AppKit -- */
     /* TODO: Make sure "borderRadius" without the "." doesn't match intermediate variables */
@@ -127,12 +126,12 @@ let toSwiftAST =
       | (Ast.SwiftIdentifier(name), Ast.MemberExpression(right))
           when
             name
-            |> Js.String.endsWith(".borderColor")
+            |> Js.String.endsWith("borderColor")
             && options.framework == UIKit =>
         Ast.BinaryExpression({
           "left":
             Ast.SwiftIdentifier(
-              name |> Js.String.replace(".borderColor", ".layer.borderColor")
+              name |> Js.String.replace("borderColor", "layer.borderColor")
             ),
           "operator": "=",
           "right":
@@ -210,6 +209,45 @@ let toSwiftAST =
               ),
             "operator": "=",
             "right": right
+          }),
+          Ast.BinaryExpression({
+            "left":
+              Ast.SwiftIdentifier(
+                name
+                |> Js.String.replace(
+                     ".textStyle",
+                     "."
+                     ++ SwiftDocument.labelAttributedTextName(
+                          options.framework
+                        )
+                   )
+              ),
+            "operator": "=",
+            "right":
+              Ast.MemberExpression([
+                Ast.SwiftIdentifier(
+                  name |> Js.String.replace(".textStyle", "TextStyle")
+                ),
+                Ast.FunctionCallExpression({
+                  "name": Ast.SwiftIdentifier("apply"),
+                  "arguments": [
+                    Ast.FunctionCallArgument({
+                      "name": Some(Ast.SwiftIdentifier("to")),
+                      "value":
+                        Ast.SwiftIdentifier(
+                          name
+                          |> Js.String.replace(
+                               ".textStyle",
+                               "."
+                               ++ SwiftDocument.labelAttributedTextValue(
+                                    options.framework
+                                  )
+                             )
+                        )
+                    })
+                  ]
+                })
+              ])
           })
         ]);
       | (Ast.SwiftIdentifier(name), right)
@@ -297,7 +335,10 @@ let toSwiftAST =
           "pattern":
             Ast.IdentifierPattern({
               "identifier": identifier |> logicValueToSwiftAST,
-              "annotation": Some(ltype |> SwiftDocument.typeAnnotationDoc)
+              "annotation":
+                Some(
+                  ltype |> SwiftDocument.typeAnnotationDoc(options.framework)
+                )
             }),
           "init": (None: option(Ast.node)),
           "block": (None: option(Ast.initializerBlock))

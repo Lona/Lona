@@ -1,14 +1,20 @@
-class FitContentParentSecondaryChildren extends React.Component {
+import React from "react"
+import { View, StyleSheet } from "react-native"
+
+import colors from "../colors"
+import textStyles from "../textStyles"
+
+export default class FitContentParentSecondaryChildren extends React.Component {
   render() {
     return (
-      <View style={[ styles.Container, {} ]} backgroundColor={"bluegrey50"}>
-        <View style={[ styles.View 1, {} ]} backgroundColor={"blue500"}>
+      <View style={[ styles.container, {} ]}>
+        <View style={[ styles.view1, {} ]}>
 
         </View>
-        <View style={[ styles.View 3, {} ]} backgroundColor={"lightblue500"}>
+        <View style={[ styles.view3, {} ]}>
 
         </View>
-        <View style={[ styles.View 2, {} ]} backgroundColor={"cyan500"}>
+        <View style={[ styles.view2, {} ]}>
 
         </View>
       </View>
@@ -17,15 +23,16 @@ class FitContentParentSecondaryChildren extends React.Component {
 };
 
 let styles = StyleSheet.create({
-  Container: {
+  container: {
     alignSelf: "stretch",
+    backgroundColor: colors.bluegrey50,
     flexDirection: "row",
     paddingBottom: 24,
     paddingLeft: 24,
     paddingRight: 24,
     paddingTop: 24
   },
-  View 1: { height: 60, width: 60 },
-  View 3: { height: 120, width: 100 },
-  View 2: { height: 180, width: 100 }
+  view1: { backgroundColor: colors.blue500, height: 60, width: 60 },
+  view3: { backgroundColor: colors.lightblue500, height: 120, width: 100 },
+  view2: { backgroundColor: colors.cyan500, height: 180, width: 100 }
 });

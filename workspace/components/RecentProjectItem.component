@@ -1,0 +1,156 @@
+{
+  "config" : {
+    "deviceLayout" : "yx"
+  },
+  "devices" : [
+    {
+      "height" : 0,
+      "heightMode" : "At Least",
+      "name" : "iPhone SE",
+      "width" : 160
+    },
+    {
+      "backgroundColor" : "black",
+      "height" : 0,
+      "heightMode" : "At Least",
+      "name" : "Canvas",
+      "params" : {
+        "selected" : true
+      },
+      "width" : 375
+    }
+  ],
+  "examples" : [
+    {
+      "name" : "Default",
+      "params" : {
+
+      }
+    }
+  ],
+  "logic" : [
+    {
+      "assignee" : [
+        "layers",
+        "ProjectName",
+        "text"
+      ],
+      "content" : [
+        "parameters",
+        "projectName"
+      ],
+      "type" : "AssignExpr"
+    },
+    {
+      "assignee" : [
+        "layers",
+        "ProjectDirectoryPath",
+        "text"
+      ],
+      "content" : [
+        "parameters",
+        "projectDirectoryPath"
+      ],
+      "type" : "AssignExpr"
+    },
+    {
+      "body" : [
+        {
+          "assignee" : [
+            "layers",
+            "ProjectName",
+            "textStyle"
+          ],
+          "content" : {
+            "type" : "LitExpr",
+            "value" : {
+              "data" : "regularInverse",
+              "type" : "TextStyle"
+            }
+          },
+          "type" : "AssignExpr"
+        },
+        {
+          "assignee" : [
+            "layers",
+            "ProjectDirectoryPath",
+            "textStyle"
+          ],
+          "content" : {
+            "type" : "LitExpr",
+            "value" : {
+              "data" : "regularInverse",
+              "type" : "TextStyle"
+            }
+          },
+          "type" : "AssignExpr"
+        }
+      ],
+      "condition" : {
+        "left" : [
+          "parameters",
+          "selected"
+        ],
+        "op" : "==",
+        "right" : {
+          "type" : "LitExpr",
+          "value" : {
+            "data" : true,
+            "type" : "Boolean"
+          }
+        },
+        "type" : "BinExpr"
+      },
+      "type" : "IfExpr"
+    }
+  ],
+  "params" : [
+    {
+      "name" : "projectName",
+      "type" : "String"
+    },
+    {
+      "name" : "projectDirectoryPath",
+      "type" : "String"
+    },
+    {
+      "name" : "selected",
+      "type" : "Boolean"
+    }
+  ],
+  "root" : {
+    "children" : [
+      {
+        "id" : "ProjectName",
+        "params" : {
+          "alignSelf" : "stretch",
+          "font" : "regular",
+          "numberOfLines" : 1,
+          "text" : "Airbnb"
+        },
+        "type" : "Lona:Text"
+      },
+      {
+        "id" : "ProjectDirectoryPath",
+        "params" : {
+          "alignSelf" : "stretch",
+          "font" : "regularMuted",
+          "marginTop" : 4,
+          "numberOfLines" : 1,
+          "text" : "\/Users\/devinabbott\/Projects"
+        },
+        "type" : "Lona:Text"
+      }
+    ],
+    "id" : "Container",
+    "params" : {
+      "alignSelf" : "stretch",
+      "height" : 54,
+      "paddingBottom" : 8,
+      "paddingLeft" : 12,
+      "paddingRight" : 12,
+      "paddingTop" : 10
+    },
+    "type" : "Lona:View"
+  }
+}

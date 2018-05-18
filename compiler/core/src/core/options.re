@@ -4,4 +4,7 @@ type preset =
   | Airbnb;
 
 [@bs.deriving jsConverter]
-type options = {preset};
+type options = {
+  preset,
+  filterComponents: option(string)
+};

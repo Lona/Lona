@@ -331,15 +331,24 @@ function layer(getComponent, json) {
                 }), StringMap$LonaCompilerCore.fromJsDict(Js_option.getExn(Js_json.decodeObject(json))));
   };
   var tmp;
+  var exit = 0;
+  var val;
   try {
-    tmp = Json_decode.field("children", (function (param) {
-            return Json_decode.list((function (param) {
-                          return layer(getComponent, param);
+    val = Json_decode.optional((function (param) {
+            return Json_decode.field("children", (function (param) {
+                          return Json_decode.list((function (param) {
+                                        return layer(getComponent, param);
+                                      }), param);
                         }), param);
           }), json);
+    exit = 1;
   }
-  catch (exn){
-    tmp = /* [] */0;
+  catch (e){
+    console.log("Failed to decode children of", typeName);
+    throw e;
+  }
+  if (exit === 1) {
+    tmp = val ? val[0] : /* [] */0;
   }
   return /* record */[
           /* typeName */typeName,

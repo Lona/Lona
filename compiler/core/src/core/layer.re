@@ -13,6 +13,17 @@ module LayerMap = {
     };
 };
 
+let isPrimitiveTypeName = (typeName: Types.layerType) =>
+  switch typeName {
+  | Types.View
+  | Types.Text
+  | Types.Image
+  | Types.Animation => true
+  | Types.Children
+  | Types.Component(_)
+  | Types.Unknown => false
+  };
+
 let stylesSet =
   StringSet.of_list([
     "alignItems",
@@ -31,10 +42,14 @@ let stylesSet =
     "paddingLeft",
     "width",
     "height",
+    "backgroundColor",
+    "borderColor",
+    "borderWidth",
+    "textAlign",
+    /* TODO: Move these elsewhere */
     "pressed",
     "hovered",
-    "onPress",
-    "textAlign"
+    "onPress"
   ]);
 
 let flatten = (layer: Types.layer) => {
@@ -203,6 +218,9 @@ let parameterAssignmentsFromLogic = (layer, node) => {
      );
 };
 
+/* Build a map from each layer, to a map from its parameter name to an assignment
+   [layer: [parameterName: Logic.Assign]]
+    */
 let logicAssignmentsFromLayerParameters = layer => {
   let layerMap = ref(LayerMap.empty);
   let extractParameters = (layer: Types.layer) => {
@@ -256,3 +274,31 @@ let isComponentLayer = (layer: Types.layer) =>
   | Component(_) => true
   | _ => false
   };
+
+type availableTypeNames = {
+  builtIn: list(Types.layerType),
+  custom: list(string)
+};
+
+let getTypeNames = rootLayer => {
+  let typeNames =
+    rootLayer
+    |> flatten
+    |> List.map((layer: Types.layer) => layer.typeName)
+    |> List.fold_left(
+         (acc, item) => List.mem(item, acc) ? acc : [item, ...acc],
+         []
+       );
+  let builtInTypeNames = typeNames |> List.filter(isPrimitiveTypeName);
+  let customTypeNames =
+    typeNames
+    |> List.fold_left(
+         (acc, item) =>
+           switch item {
+           | Types.Component(name) => [name, ...acc]
+           | _ => acc
+           },
+         []
+       );
+  {builtIn: builtInTypeNames, custom: customTypeNames};
+};

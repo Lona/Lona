@@ -12,6 +12,8 @@ var FsExtra                              = require("fs-extra");
 var GetStdin                             = require("get-stdin");
 var Json_decode                          = require("bs-json/src/Json_decode.js");
 var Caml_exceptions                      = require("bs-platform/lib/js/caml_exceptions.js");
+var LodashCamelcase                      = require("lodash.camelcase");
+var LodashUpperfirst                     = require("lodash.upperfirst");
 var Color$LonaCompilerCore               = require("./core/color.bs.js");
 var Caml_builtin_exceptions              = require("bs-platform/lib/js/caml_builtin_exceptions.js");
 var Decode$LonaCompilerCore              = require("./core/decode.bs.js");
@@ -24,6 +26,7 @@ var SwiftTextStyle$LonaCompilerCore      = require("./swift/swiftTextStyle.bs.js
 var JavaScriptColor$LonaCompilerCore     = require("./javaScript/javaScriptColor.bs.js");
 var JavaScriptRender$LonaCompilerCore    = require("./javaScript/javaScriptRender.bs.js");
 var JavaScriptComponent$LonaCompilerCore = require("./javaScript/javaScriptComponent.bs.js");
+var JavaScriptTextStyle$LonaCompilerCore = require("./javaScript/javaScriptTextStyle.bs.js");
 
 var $$arguments = $$Array.to_list(Process.argv);
 
@@ -60,7 +63,12 @@ var tmp;
 
 tmp = match && match[0] === "airbnb" ? /* Airbnb */1 : /* Standard */0;
 
-var options = /* record */[/* preset */tmp];
+var options_001 = /* filterComponents */getArgument("filterComponents");
+
+var options = /* record */[
+  /* preset */tmp,
+  options_001
+];
 
 var match$1 = getArgument("framework");
 
@@ -141,6 +149,14 @@ function getTargetExtension(param) {
   }
 }
 
+function formatFilename(target, filename) {
+  if (target !== 1) {
+    return LodashCamelcase(filename);
+  } else {
+    return LodashUpperfirst(LodashCamelcase(filename));
+  }
+}
+
 var targetExtension = getTargetExtension(target);
 
 function renderColors(target, colors) {
@@ -156,10 +172,14 @@ function renderColors(target, colors) {
 }
 
 function renderTextStyles(target, colors, textStyles) {
-  if (target !== 1) {
-    return "";
-  } else {
-    return SwiftTextStyle$LonaCompilerCore.render(swiftOptions, colors, textStyles);
+  switch (target) {
+    case 0 : 
+        return JavaScriptTextStyle$LonaCompilerCore.render(textStyles);
+    case 1 : 
+        return SwiftTextStyle$LonaCompilerCore.render(swiftOptions, colors, textStyles);
+    case 2 : 
+        return "";
+    
   }
 }
 
@@ -194,6 +214,30 @@ function findComponent(fromDirectory, componentName) {
   return JSON.parse(Fs.readFileSync(filename, "utf8"));
 }
 
+function getComponentRelativePath(fromDirectory, sourceComponent, importedComponent) {
+  var sourcePath = Path.dirname(findComponentFile(fromDirectory, sourceComponent));
+  var importedPath = findComponentFile(fromDirectory, importedComponent);
+  var relativePath = Path.relative(sourcePath, importedPath);
+  var match = +relativePath.startsWith(".");
+  if (match !== 0) {
+    return relativePath;
+  } else {
+    return "./" + relativePath;
+  }
+}
+
+function getAssetRelativePath(fromDirectory, sourceComponent, importedPath) {
+  var sourcePath = Path.dirname(findComponentFile(fromDirectory, sourceComponent));
+  var importedPath$1 = Path.join(fromDirectory, importedPath);
+  var relativePath = Path.relative(sourcePath, importedPath$1);
+  var match = +relativePath.startsWith(".");
+  if (match !== 0) {
+    return relativePath;
+  } else {
+    return "./" + relativePath;
+  }
+}
+
 function convertComponent(filename) {
   var contents = Fs.readFileSync(filename, "utf8");
   var parsed = JSON.parse(contents);
@@ -201,16 +245,22 @@ function convertComponent(filename) {
   var match = findWorkspaceDirectory(filename);
   if (match) {
     var workspace = match[0];
+    var colorsFilePath = Path.join(workspace, "colors.json");
+    var colorsFile = Fs.readFileSync(colorsFilePath, "utf8");
+    var colors = Color$LonaCompilerCore.parseFile(colorsFile);
+    var textStylesFilePath = Path.join(workspace, "textStyles.json");
+    var textStylesFile = Fs.readFileSync(textStylesFilePath, "utf8");
+    var textStyles = TextStyle$LonaCompilerCore.parseFile(textStylesFile);
     switch (target) {
       case 0 : 
-          return JavaScriptRender$LonaCompilerCore.toString(JavaScriptComponent$LonaCompilerCore.generate(name, (function (param) {
+          return JavaScriptRender$LonaCompilerCore.toString(JavaScriptComponent$LonaCompilerCore.generate(name, Path.relative(Path.dirname(filename), colorsFilePath), Path.relative(Path.dirname(filename), textStylesFilePath), colors, textStyles, (function (param) {
                             return findComponent(workspace, param);
+                          }), (function (param) {
+                            return getComponentRelativePath(workspace, name, param);
+                          }), (function (param) {
+                            return getAssetRelativePath(workspace, name, param);
                           }), parsed));
       case 1 : 
-          var colorsFile = Fs.readFileSync(Path.join(workspace, "colors.json"), "utf8");
-          var colors = Color$LonaCompilerCore.parseFile(colorsFile);
-          var textStylesFile = Fs.readFileSync(Path.join(workspace, "textStyles.json"), "utf8");
-          var textStyles = TextStyle$LonaCompilerCore.parseFile(textStylesFile);
           return SwiftRender$LonaCompilerCore.toString(SwiftComponent$LonaCompilerCore.generate(options, swiftOptions, name, colors, textStyles, (function (param) {
                             return findComponent(workspace, param);
                           }), parsed));
@@ -266,17 +316,26 @@ function convertWorkspace(workspace, output) {
   var toDirectory = Path.resolve(output);
   FsExtra.ensureDirSync(toDirectory);
   var colorsInputPath = Path.join(fromDirectory, "colors.json");
-  var colorsOutputPath = Path.join(toDirectory, "Colors" + targetExtension);
+  var addition = formatFilename(target, "Colors") + targetExtension;
+  var colorsOutputPath = Path.join(toDirectory, addition);
   var colors = Color$LonaCompilerCore.parseFile(Fs.readFileSync(colorsInputPath, "utf8"));
   Fs.writeFileSync(colorsOutputPath, renderColors(target, colors));
   var textStylesInputPath = Path.join(fromDirectory, "textStyles.json");
-  var textStylesOutputPath = Path.join(toDirectory, "TextStyles" + targetExtension);
+  var addition$1 = formatFilename(target, "TextStyles") + targetExtension;
+  var textStylesOutputPath = Path.join(toDirectory, addition$1);
   var textStylesFile = Fs.readFileSync(textStylesInputPath, "utf8");
   var textStyles = renderTextStyles(target, colors, TextStyle$LonaCompilerCore.parseFile(textStylesFile));
   Fs.writeFileSync(textStylesOutputPath, textStyles);
   copyStaticFiles(toDirectory);
   Glob(Path.join(fromDirectory, "**/*.component"), (function (_, files) {
-          var files$1 = $$Array.to_list(files);
+          var files$1 = List.filter((function (file) {
+                    var match = options_001;
+                    if (match) {
+                      return +new RegExp(match[0]).test(file);
+                    } else {
+                      return /* true */1;
+                    }
+                  }))($$Array.to_list(files));
           var processFile = function (file) {
             var fromRelativePath = Path.relative(fromDirectory, file);
             var addition = Path.basename(fromRelativePath, ".component");
@@ -406,28 +465,31 @@ switch (command) {
     console.log("Invalid command", command);
 }
 
-exports.$$arguments            = $$arguments;
-exports.positionalArguments    = positionalArguments;
-exports.getArgument            = getArgument;
-exports.options                = options;
-exports.swiftOptions           = swiftOptions;
-exports.exit                   = exit;
-exports.command                = command;
-exports.target                 = target;
-exports.findWorkspaceDirectory = findWorkspaceDirectory;
-exports.concat                 = concat;
-exports.getTargetExtension     = getTargetExtension;
-exports.targetExtension        = targetExtension;
-exports.renderColors           = renderColors;
-exports.renderTextStyles       = renderTextStyles;
-exports.convertColors          = convertColors;
-exports.convertTextStyles      = convertTextStyles;
-exports.ComponentNotFound      = ComponentNotFound;
-exports.findComponentFile      = findComponentFile;
-exports.findComponent          = findComponent;
-exports.convertComponent       = convertComponent;
-exports.copyStaticFiles        = copyStaticFiles;
-exports.findContentsAbove      = findContentsAbove;
-exports.findContentsBelow      = findContentsBelow;
-exports.convertWorkspace       = convertWorkspace;
+exports.$$arguments              = $$arguments;
+exports.positionalArguments      = positionalArguments;
+exports.getArgument              = getArgument;
+exports.options                  = options;
+exports.swiftOptions             = swiftOptions;
+exports.exit                     = exit;
+exports.command                  = command;
+exports.target                   = target;
+exports.findWorkspaceDirectory   = findWorkspaceDirectory;
+exports.concat                   = concat;
+exports.getTargetExtension       = getTargetExtension;
+exports.formatFilename           = formatFilename;
+exports.targetExtension          = targetExtension;
+exports.renderColors             = renderColors;
+exports.renderTextStyles         = renderTextStyles;
+exports.convertColors            = convertColors;
+exports.convertTextStyles        = convertTextStyles;
+exports.ComponentNotFound        = ComponentNotFound;
+exports.findComponentFile        = findComponentFile;
+exports.findComponent            = findComponent;
+exports.getComponentRelativePath = getComponentRelativePath;
+exports.getAssetRelativePath     = getAssetRelativePath;
+exports.convertComponent         = convertComponent;
+exports.copyStaticFiles          = copyStaticFiles;
+exports.findContentsAbove        = findContentsAbove;
+exports.findContentsBelow        = findContentsBelow;
+exports.convertWorkspace         = convertWorkspace;
 /* arguments Not a pure module */

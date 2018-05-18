@@ -1,4 +1,10 @@
-class Button extends React.Component {
+import React from "react"
+import { Text, View, StyleSheet } from "react-native"
+
+import colors from "../colors"
+import textStyles from "../textStyles"
+
+export default class Button extends React.Component {
   render() {
     let View$onPress;
     let View$backgroundColor;
@@ -13,11 +19,13 @@ class Button extends React.Component {
     }
     return (
       <View
-        style={[ styles.View, { onPress: View$onPress } ]}
-        backgroundColor={View$backgroundColor}
+        style={[
+          styles.view,
+          { backgroundColor: View$backgroundColor, onPress: View$onPress }
+        ]}
       >
-        <Text style={[ styles.Text, {} ]} text={Text$text}>
-
+        <Text style={[ styles.text, {} ]} text={Text$text}>
+          {Text$text}
         </Text>
       </View>
     );
@@ -25,11 +33,12 @@ class Button extends React.Component {
 };
 
 let styles = StyleSheet.create({
-  View: {
+  view: {
+    backgroundColor: colors.blue100,
     paddingBottom: 12,
     paddingLeft: 16,
     paddingRight: 16,
     paddingTop: 12
   },
-  Text: { font: "button" }
+  text: {}
 });

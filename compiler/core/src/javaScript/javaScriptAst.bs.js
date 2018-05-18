@@ -18,72 +18,92 @@ function identifier(param_0) {
   return /* Identifier */Block.__(2, [param_0]);
 }
 
+function importDeclaration(param_0) {
+  return /* ImportDeclaration */Block.__(3, [param_0]);
+}
+
+function importSpecifier(param_0) {
+  return /* ImportSpecifier */Block.__(4, [param_0]);
+}
+
+function importDefaultSpecifier(param_0) {
+  return /* ImportDefaultSpecifier */Block.__(5, [param_0]);
+}
+
 function classDeclaration(param_0) {
-  return /* ClassDeclaration */Block.__(3, [param_0]);
+  return /* ClassDeclaration */Block.__(6, [param_0]);
 }
 
 function methodDefinition(param_0) {
-  return /* MethodDefinition */Block.__(4, [param_0]);
+  return /* MethodDefinition */Block.__(7, [param_0]);
 }
 
 function functionExpression(param_0) {
-  return /* FunctionExpression */Block.__(5, [param_0]);
+  return /* FunctionExpression */Block.__(8, [param_0]);
 }
 
 function callExpression(param_0) {
-  return /* CallExpression */Block.__(6, [param_0]);
+  return /* CallExpression */Block.__(9, [param_0]);
 }
 
 function jSXAttribute(param_0) {
-  return /* JSXAttribute */Block.__(7, [param_0]);
+  return /* JSXAttribute */Block.__(10, [param_0]);
 }
 
 function jSXElement(param_0) {
-  return /* JSXElement */Block.__(8, [param_0]);
+  return /* JSXElement */Block.__(11, [param_0]);
+}
+
+function jSXExpressionContainer(param_0) {
+  return /* JSXExpressionContainer */Block.__(12, [param_0]);
+}
+
+function spreadElement(param_0) {
+  return /* SpreadElement */Block.__(13, [param_0]);
 }
 
 function variableDeclaration(param_0) {
-  return /* VariableDeclaration */Block.__(9, [param_0]);
+  return /* VariableDeclaration */Block.__(14, [param_0]);
 }
 
 function assignmentExpression(param_0) {
-  return /* AssignmentExpression */Block.__(10, [param_0]);
+  return /* AssignmentExpression */Block.__(15, [param_0]);
 }
 
 function binaryExpression(param_0) {
-  return /* BinaryExpression */Block.__(11, [param_0]);
+  return /* BinaryExpression */Block.__(16, [param_0]);
 }
 
 function ifStatement(param_0) {
-  return /* IfStatement */Block.__(12, [param_0]);
+  return /* IfStatement */Block.__(17, [param_0]);
 }
 
 function arrayLiteral(param_0) {
-  return /* ArrayLiteral */Block.__(13, [param_0]);
+  return /* ArrayLiteral */Block.__(18, [param_0]);
 }
 
 function objectLiteral(param_0) {
-  return /* ObjectLiteral */Block.__(14, [param_0]);
+  return /* ObjectLiteral */Block.__(19, [param_0]);
 }
 
 function property(param_0) {
-  return /* Property */Block.__(15, [param_0]);
+  return /* Property */Block.__(20, [param_0]);
 }
 
 function exportDefaultDeclaration(param_0) {
-  return /* ExportDefaultDeclaration */Block.__(16, [param_0]);
+  return /* ExportDefaultDeclaration */Block.__(21, [param_0]);
 }
 
 function block(param_0) {
-  return /* Block */Block.__(17, [param_0]);
+  return /* Block */Block.__(22, [param_0]);
 }
 
 function program(param_0) {
-  return /* Program */Block.__(18, [param_0]);
+  return /* Program */Block.__(23, [param_0]);
 }
 
 function lineEndComment(param_0) {
-  return /* LineEndComment */Block.__(19, [param_0]);
+  return /* LineEndComment */Block.__(24, [param_0]);
 }
 
 function map(f, node) {
@@ -93,50 +113,47 @@ function map(f, node) {
     switch (node.tag | 0) {
       case 0 : 
           return Curry._1(f, /* Return */Block.__(0, [map(f, node[0])]));
-      case 1 : 
-      case 2 : 
-          return Curry._1(f, node);
-      case 3 : 
+      case 6 : 
           var o = node[0];
-          return Curry._1(f, /* ClassDeclaration */Block.__(3, [{
+          return Curry._1(f, /* ClassDeclaration */Block.__(6, [{
                           id: o.id,
                           superClass: o.superClass,
                           body: List.map((function (param) {
                                   return map(f, param);
                                 }), o.body)
                         }]));
-      case 4 : 
+      case 7 : 
           var o$1 = node[0];
-          return Curry._1(f, /* MethodDefinition */Block.__(4, [{
+          return Curry._1(f, /* MethodDefinition */Block.__(7, [{
                           key: o$1.key,
                           value: map(f, o$1.value)
                         }]));
-      case 5 : 
+      case 8 : 
           var o$2 = node[0];
-          return Curry._1(f, /* FunctionExpression */Block.__(5, [{
+          return Curry._1(f, /* FunctionExpression */Block.__(8, [{
                           id: o$2.id,
                           params: o$2.params,
                           body: List.map((function (param) {
                                   return map(f, param);
                                 }), o$2.body)
                         }]));
-      case 6 : 
+      case 9 : 
           var o$3 = node[0];
-          return Curry._1(f, /* CallExpression */Block.__(6, [{
+          return Curry._1(f, /* CallExpression */Block.__(9, [{
                           callee: map(f, o$3.callee),
                           arguments: List.map((function (param) {
                                   return map(f, param);
                                 }), o$3.arguments)
                         }]));
-      case 7 : 
+      case 10 : 
           var o$4 = node[0];
-          return Curry._1(f, /* JSXAttribute */Block.__(7, [{
+          return Curry._1(f, /* JSXAttribute */Block.__(10, [{
                           name: o$4.name,
                           value: map(f, o$4.value)
                         }]));
-      case 8 : 
+      case 11 : 
           var o$5 = node[0];
-          return Curry._1(f, /* JSXElement */Block.__(8, [{
+          return Curry._1(f, /* JSXElement */Block.__(11, [{
                           tag: o$5.tag,
                           attributes: List.map((function (param) {
                                   return map(f, param);
@@ -145,60 +162,65 @@ function map(f, node) {
                                   return map(f, param);
                                 }), o$5.content)
                         }]));
-      case 9 : 
-          return Curry._1(f, /* VariableDeclaration */Block.__(9, [map(f, node[0])]));
-      case 10 : 
+      case 12 : 
+          return /* JSXExpressionContainer */Block.__(12, [Curry._1(f, node[0])]);
+      case 13 : 
+          return /* SpreadElement */Block.__(13, [Curry._1(f, node[0])]);
+      case 14 : 
+          return Curry._1(f, /* VariableDeclaration */Block.__(14, [map(f, node[0])]));
+      case 15 : 
           var o$6 = node[0];
-          return Curry._1(f, /* AssignmentExpression */Block.__(10, [{
+          return Curry._1(f, /* AssignmentExpression */Block.__(15, [{
                           left: map(f, o$6.left),
                           right: map(f, o$6.right)
                         }]));
-      case 11 : 
+      case 16 : 
           var o$7 = node[0];
-          return Curry._1(f, /* BinaryExpression */Block.__(11, [{
+          return Curry._1(f, /* BinaryExpression */Block.__(16, [{
                           left: map(f, o$7.left),
                           operator: o$7.operator,
                           right: map(f, o$7.right)
                         }]));
-      case 12 : 
+      case 17 : 
           var o$8 = node[0];
-          return Curry._1(f, /* IfStatement */Block.__(12, [{
+          return Curry._1(f, /* IfStatement */Block.__(17, [{
                           test: map(f, o$8.test),
                           consequent: List.map((function (param) {
                                   return map(f, param);
                                 }), o$8.consequent)
                         }]));
-      case 13 : 
-          return Curry._1(f, /* ArrayLiteral */Block.__(13, [List.map((function (param) {
-                                return map(f, param);
-                              }), node[0])]));
-      case 14 : 
-          return Curry._1(f, /* ObjectLiteral */Block.__(14, [List.map((function (param) {
-                                return map(f, param);
-                              }), node[0])]));
-      case 15 : 
-          var o$9 = node[0];
-          return Curry._1(f, /* Property */Block.__(15, [{
-                          key: map(f, o$9.key),
-                          value: map(f, o$9.value)
-                        }]));
-      case 16 : 
-          return Curry._1(f, /* ExportDefaultDeclaration */Block.__(16, [map(f, node[0])]));
-      case 17 : 
-          return Curry._1(f, /* Block */Block.__(17, [List.map((function (param) {
-                                return map(f, param);
-                              }), node[0])]));
       case 18 : 
-          return Curry._1(f, /* Program */Block.__(18, [List.map((function (param) {
+          return Curry._1(f, /* ArrayLiteral */Block.__(18, [List.map((function (param) {
                                 return map(f, param);
                               }), node[0])]));
       case 19 : 
+          return Curry._1(f, /* ObjectLiteral */Block.__(19, [List.map((function (param) {
+                                return map(f, param);
+                              }), node[0])]));
+      case 20 : 
+          var o$9 = node[0];
+          return Curry._1(f, /* Property */Block.__(20, [{
+                          key: map(f, o$9.key),
+                          value: map(f, o$9.value)
+                        }]));
+      case 21 : 
+          return Curry._1(f, /* ExportDefaultDeclaration */Block.__(21, [map(f, node[0])]));
+      case 22 : 
+          return Curry._1(f, /* Block */Block.__(22, [List.map((function (param) {
+                                return map(f, param);
+                              }), node[0])]));
+      case 23 : 
+          return Curry._1(f, /* Program */Block.__(23, [List.map((function (param) {
+                                return map(f, param);
+                              }), node[0])]));
+      case 24 : 
           var o$10 = node[0];
-          return Curry._1(f, /* LineEndComment */Block.__(19, [{
+          return Curry._1(f, /* LineEndComment */Block.__(24, [{
                           comment: o$10.comment,
                           line: map(f, o$10.line)
                         }]));
-      
+      default:
+        return Curry._1(f, node);
     }
   }
 }
@@ -213,7 +235,7 @@ function optimizeTruthyBinaryExpression(node) {
   };
   if (typeof node === "number") {
     return node;
-  } else if (node.tag === 11) {
+  } else if (node.tag === 16) {
     var o = node[0];
     var match = booleanValue(o.left);
     var match$1 = o.operator;
@@ -320,12 +342,17 @@ exports.noop                           = noop;
 exports.$$return                       = $$return;
 exports.literal                        = literal;
 exports.identifier                     = identifier;
+exports.importDeclaration              = importDeclaration;
+exports.importSpecifier                = importSpecifier;
+exports.importDefaultSpecifier         = importDefaultSpecifier;
 exports.classDeclaration               = classDeclaration;
 exports.methodDefinition               = methodDefinition;
 exports.functionExpression             = functionExpression;
 exports.callExpression                 = callExpression;
 exports.jSXAttribute                   = jSXAttribute;
 exports.jSXElement                     = jSXElement;
+exports.jSXExpressionContainer         = jSXExpressionContainer;
+exports.spreadElement                  = spreadElement;
 exports.variableDeclaration            = variableDeclaration;
 exports.assignmentExpression           = assignmentExpression;
 exports.binaryExpression               = binaryExpression;

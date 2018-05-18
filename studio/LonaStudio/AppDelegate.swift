@@ -36,6 +36,26 @@ class AppDelegate: NSObject, NSApplicationDelegate {
         return false
     }
 
+    func application(_ sender: NSApplication, openFile filename: String) -> Bool {
+        let url = URL(fileURLWithPath: filename)
+
+        switch FileUtils.fileExists(atPath: filename) {
+        case .directory:
+            welcomeWindow?.close()
+            openWorkspace(url: url)
+            showComponentBrowser(self)
+            return true
+        case .file:
+            NSDocumentController.shared.openDocument(
+                withContentsOf: url,
+                display: true,
+                completionHandler: { _, _, _ in })
+            return true
+        case .none:
+            return false
+        }
+    }
+
     var preferencesWindow: MASPreferencesWindowController?
 
     @IBAction func showPreferences(_ sender: AnyObject) {
@@ -49,48 +69,10 @@ class AppDelegate: NSObject, NSApplicationDelegate {
         preferencesWindow?.showWindow(sender)
     }
 
-    var colorBrowserWindow: NSWindow?
-
-    @IBAction func showColorBrowser(_ sender: AnyObject) {
-        if colorBrowserWindow == nil {
-            let initialRect = NSRect(x: 0, y: 0, width: 1280, height: 720)
-            let window = NSWindow(contentRect: initialRect, styleMask: [.closable, .titled, .resizable], backing: .retained, defer: false)
-            window.center()
-            window.title = "Color Browser"
-            window.isReleasedWhenClosed = false
-            window.minSize = NSSize(width: 784, height: 300)
-
-            let view = NSBox()
-            view.boxType = .custom
-            view.borderType = .noBorder
-            view.contentViewMargins = .zero
-            view.translatesAutoresizingMaskIntoConstraints = false
-
-            window.contentView = view
-
-            // Set up color browser
-
-            let colorBrowser = ColorBrowser(colors: CSColors.colors)
-
-            view.addSubview(colorBrowser)
-
-            colorBrowser.topAnchor.constraint(equalTo: view.topAnchor).isActive = true
-            colorBrowser.bottomAnchor.constraint(equalTo: view.bottomAnchor).isActive = true
-            colorBrowser.centerXAnchor.constraint(equalTo: view.centerXAnchor).isActive = true
-
-            colorBrowserWindow = window
-        }
-
-        // TODO: Set colors every time we show the browser in case they've changed.
-        // Also consider hooking into "Refresh" 
-
-        colorBrowserWindow?.makeKeyAndOrderFront(nil)
-    }
-
     var componentBrowserWindow: NSWindow?
 
     @IBAction func showComponentBrowser(_ sender: AnyObject) {
-        if colorBrowserWindow == nil {
+        if componentBrowserWindow == nil {
             let initialRect = NSRect(x: 0, y: 0, width: 1280, height: 720)
             let window = NSWindow(
                 contentRect: initialRect,
@@ -98,12 +80,30 @@ class AppDelegate: NSObject, NSApplicationDelegate {
                 backing: .retained,
                 defer: false)
             window.center()
-            window.title = "Component Browser"
+            window.title = "Workspace Browser"
+            window.titleVisibility = .hidden
             window.isReleasedWhenClosed = false
             window.minSize = NSSize(width: 936, height: 300)
             window.animationBehavior = .documentWindow
 
-            window.contentView = ComponentBrowser()
+            let toolbar = BrowserToolbar()
+            window.toolbar = toolbar
+
+            let componentBrowser = ComponentBrowser()
+            let colorBrowser = ColorBrowser()
+
+            toolbar.onChangeTab = { tab in
+                switch tab {
+                case .components:
+                    window.contentView = componentBrowser
+                case .colors:
+                    window.contentView = colorBrowser
+                default:
+                    window.contentView = NSView()
+                }
+            }
+
+            window.contentView = componentBrowser
 
             componentBrowserWindow = window
         }
@@ -243,6 +243,8 @@ class AppDelegate: NSObject, NSApplicationDelegate {
 
     private func openWorkspace(url: URL) {
         CSUserPreferences.workspaceURL = url
+
+        NSDocumentController.shared.noteNewRecentDocumentURL(url)
 
         CSWorkspacePreferences.reloadAllConfigurationFiles(closeDocuments: true)
     }

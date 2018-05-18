@@ -88,6 +88,7 @@ public class ComponentBrowser: NSBox {
     innerView.addSubview(componentPreviewCollectionView)
 
     titleViewTextStyle = TextStyles.title
+    titleView.attributedStringValue = titleViewTextStyle.apply(to: titleView.attributedStringValue)
     titleView.attributedStringValue = titleViewTextStyle.apply(to: "Components")
   }
 

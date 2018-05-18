@@ -9,8 +9,13 @@
 import Foundation
 import AppKit
 
-private struct LonaPluginConfig: Decodable {
+enum LonaPluginActivationEvent: String, Decodable {
+    case onSaveComponent = "onSave:component"
+}
+
+struct LonaPluginConfig: Decodable {
     var main: String
+    var activationEvents: [LonaPluginActivationEvent]?
 }
 
 class LonaPlugins {
@@ -33,18 +38,18 @@ class LonaPlugins {
                 onSuccess: { output in
                     Swift.print("Output", output ?? "")
 
-                    DispatchQueue.main.async {
-                        let alert = NSAlert()
-                        alert.messageText = "Finished running \(self.name)"
-                        alert.informativeText = output ?? ""
-                        alert.runModal()
-                    }
+//                    DispatchQueue.main.async {
+//                        let alert = NSAlert()
+//                        alert.messageText = "Finished running \(self.name)"
+//                        alert.informativeText = output ?? ""
+//                        alert.runModal()
+//                    }
             })
         }
 
         // MARK: Private
 
-        private var config: LonaPluginConfig? {
+        var config: LonaPluginConfig? {
             let configUrl = url.appendingPathComponent("lonaplugin.json", isDirectory: false)
             guard let contents = try? Data(contentsOf: configUrl) else { return nil }
             return try? JSONDecoder().decode(LonaPluginConfig.self, from: contents)
@@ -63,6 +68,12 @@ class LonaPlugins {
 
     func pluginFile(named name: String) -> PluginFile? {
         return pluginFiles().first(where: { arg in arg.name == name })
+    }
+
+    func pluginFilesActivatingOn(eventType: LonaPluginActivationEvent) -> [PluginFile] {
+        return pluginFiles().filter({ file in
+            file.config?.activationEvents?.contains(eventType) ?? false
+        })
     }
 
     // MARK: - STATIC

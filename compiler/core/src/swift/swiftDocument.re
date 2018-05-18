@@ -63,6 +63,13 @@ let labelAttributedTextName = framework =>
   | SwiftOptions.AppKit => "attributedStringValue"
   };
 
+let labelAttributedTextValue = framework =>
+  switch framework {
+  | SwiftOptions.UIKit =>
+    labelAttributedTextName(framework) ++ " ?? NSAttributedString()"
+  | SwiftOptions.AppKit => labelAttributedTextName(framework)
+  };
+
 let localImageName = (framework: SwiftOptions.framework, name) => {
   let imageName =
     LiteralExpression(
@@ -85,16 +92,22 @@ let localImageName = (framework: SwiftOptions.framework, name) => {
 };
 
 let rec typeAnnotationDoc =
-  fun
+        (framework: SwiftOptions.framework, ltype: Types.lonaType) =>
+  switch ltype {
   | Types.Reference(typeName) =>
     switch typeName {
     | "Boolean" => TypeName("Bool")
-    | "URL" => typeAnnotationDoc(Types.Named("URL", Types.stringType))
+    | "URL" =>
+      typeAnnotationDoc(framework, Types.Named(typeName, Types.stringType))
+    | "Color" =>
+      typeAnnotationDoc(framework, Types.Named(typeName, Types.stringType))
     | _ => TypeName(typeName)
     }
-  | Named("URL", _) => TypeName("NSImage")
+  | Named("URL", _) => TypeName(imageTypeName(framework))
+  | Named("Color", _) => TypeName(colorTypeName(framework))
   | Named(name, _) => TypeName(name)
-  | Function(_, _) => TypeName("(() -> Void)?");
+  | Function(_, _) => TypeName("(() -> Void)?")
+  };
 
 let rec lonaValue =
         (
@@ -212,7 +225,10 @@ let rec defaultValueForLonaType =
   | Named(alias, _) =>
     switch alias {
     | "Color" =>
-      MemberExpression([SwiftIdentifier("UIColor"), SwiftIdentifier("clear")])
+      MemberExpression([
+        SwiftIdentifier(colorTypeName(framework)),
+        SwiftIdentifier("clear")
+      ])
     | "URL" =>
       FunctionCallExpression({
         "name": SwiftIdentifier(imageTypeName(framework)),

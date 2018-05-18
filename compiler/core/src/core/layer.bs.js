@@ -115,6 +115,14 @@ var LayerMap = /* module */[
   /* find_opt */find_opt
 ];
 
+function isPrimitiveTypeName(typeName) {
+  if (typeof typeName === "number" && typeName < 4) {
+    return /* true */1;
+  } else {
+    return /* false */0;
+  }
+}
+
 var stylesSet = Curry._1(StringSet$LonaCompilerCore.of_list, /* :: */[
       "alignItems",
       /* :: */[
@@ -148,14 +156,23 @@ var stylesSet = Curry._1(StringSet$LonaCompilerCore.of_list, /* :: */[
                                   /* :: */[
                                     "height",
                                     /* :: */[
-                                      "pressed",
+                                      "backgroundColor",
                                       /* :: */[
-                                        "hovered",
+                                        "borderColor",
                                         /* :: */[
-                                          "onPress",
+                                          "borderWidth",
                                           /* :: */[
                                             "textAlign",
-                                            /* [] */0
+                                            /* :: */[
+                                              "pressed",
+                                              /* :: */[
+                                                "hovered",
+                                                /* :: */[
+                                                  "onPress",
+                                                  /* [] */0
+                                                ]
+                                              ]
+                                            ]
                                           ]
                                         ]
                                       ]
@@ -437,8 +454,8 @@ function getInsets(prefix, layer) {
     throw [
           Caml_builtin_exceptions.match_failure,
           [
-            "/Users/devin_abbott/Projects/ComponentStudio/ComponentStudio/compiler/core/src/core/layer.re",
-            167,
+            "/Users/devinabbott/Projects/Lona/compiler/core/src/core/layer.re",
+            182,
             6
           ]
         ];
@@ -601,7 +618,39 @@ function isComponentLayer(layer) {
   }
 }
 
+function getTypeNames(rootLayer) {
+  var typeNames = List.fold_left((function (acc, item) {
+          var match = List.mem(item, acc);
+          if (match !== 0) {
+            return acc;
+          } else {
+            return /* :: */[
+                    item,
+                    acc
+                  ];
+          }
+        }), /* [] */0, List.map((function (layer) {
+              return layer[/* typeName */0];
+            }), flatten(rootLayer)));
+  var builtInTypeNames = List.filter(isPrimitiveTypeName)(typeNames);
+  var customTypeNames = List.fold_left((function (acc, item) {
+          if (typeof item === "number") {
+            return acc;
+          } else {
+            return /* :: */[
+                    item[0],
+                    acc
+                  ];
+          }
+        }), /* [] */0, typeNames);
+  return /* record */[
+          /* builtIn */builtInTypeNames,
+          /* custom */customTypeNames
+        ];
+}
+
 exports.LayerMap                            = LayerMap;
+exports.isPrimitiveTypeName                 = isPrimitiveTypeName;
 exports.stylesSet                           = stylesSet;
 exports.flatten                             = flatten;
 exports.find                                = find$1;
@@ -631,4 +680,5 @@ exports.isViewLayer                         = isViewLayer;
 exports.isTextLayer                         = isTextLayer;
 exports.isImageLayer                        = isImageLayer;
 exports.isComponentLayer                    = isComponentLayer;
+exports.getTypeNames                        = getTypeNames;
 /* include Not a pure module */

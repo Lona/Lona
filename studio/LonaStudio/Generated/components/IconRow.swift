@@ -119,7 +119,9 @@ public class IconRow: NSBox {
     rowContentView.addSubview(subtitleView)
 
     titleViewTextStyle = TextStyles.largeSemibold
+    titleView.attributedStringValue = titleViewTextStyle.apply(to: titleView.attributedStringValue)
     subtitleViewTextStyle = TextStyles.regularMuted
+    subtitleView.attributedStringValue = subtitleViewTextStyle.apply(to: subtitleView.attributedStringValue)
   }
 
   private func setUpConstraints() {

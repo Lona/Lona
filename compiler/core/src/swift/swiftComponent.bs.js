@@ -67,7 +67,7 @@ function generate(options, swiftOptions, name, colors, textStyles, getComponent,
                 ],
                 pattern: /* IdentifierPattern */Block.__(0, [{
                       identifier: /* SwiftIdentifier */Block.__(8, [parameter[/* name */0]]),
-                      annotation: /* Some */[SwiftDocument$LonaCompilerCore.typeAnnotationDoc(parameter[/* ltype */1])]
+                      annotation: /* Some */[SwiftDocument$LonaCompilerCore.typeAnnotationDoc(swiftOptions[/* framework */0], parameter[/* ltype */1])]
                     }]),
                 init: /* None */0,
                 block: /* Some */[/* WillSetDidSetBlock */[{
@@ -399,7 +399,7 @@ function generate(options, swiftOptions, name, colors, textStyles, getComponent,
     return /* Parameter */Block.__(17, [{
                 externalName: /* None */0,
                 localName: parameter[/* name */0],
-                annotation: SwiftDocument$LonaCompilerCore.typeAnnotationDoc(parameter[/* ltype */1]),
+                annotation: SwiftDocument$LonaCompilerCore.typeAnnotationDoc(swiftOptions[/* framework */0], parameter[/* ltype */1]),
                 defaultValue: /* None */0
               }]);
   };
@@ -581,12 +581,14 @@ function generate(options, swiftOptions, name, colors, textStyles, getComponent,
     var parameters = Layer$LonaCompilerCore.LayerMap[/* find_opt */24](layer, layerParameterAssignments);
     if (parameters) {
       var assignment = StringMap$LonaCompilerCore.find_opt(name, parameters[0]);
+      var parameterName = name === "textStyle" ? "font" : name;
+      var parameterValue = StringMap$LonaCompilerCore.find_opt(parameterName, layer[/* parameters */2]);
       var match = layer[/* typeName */0];
       var logic;
       if (assignment) {
         logic = assignment[0];
       } else if (typeof match === "number") {
-        logic = Logic$LonaCompilerCore.defaultAssignmentForLayerParameter(colors, textStyles, layer, name);
+        logic = parameterValue ? Logic$LonaCompilerCore.assignmentForLayerParameter(layer, name, parameterValue[0]) : Logic$LonaCompilerCore.defaultAssignmentForLayerParameter(colors, textStyles, layer, name);
       } else {
         var param$1 = List.find((function (param) {
                 return +(param[/* name */0] === name);
@@ -1457,15 +1459,12 @@ function generate(options, swiftOptions, name, colors, textStyles, getComponent,
             }]);
 }
 
-var Format = 0;
-
 var Ast = 0;
 
 var Document = 0;
 
 var Render = 0;
 
-exports.Format              = Format;
 exports.Ast                 = Ast;
 exports.Document            = Document;
 exports.Render              = Render;

@@ -38,12 +38,12 @@ function toJavaScriptAST(node) {
   } else {
     switch (node.tag | 0) {
       case 0 : 
-          var condition = /* BinaryExpression */Block.__(11, [{
+          var condition = /* BinaryExpression */Block.__(16, [{
                 left: logicValueToJavaScriptAST(node[0]),
                 operator: fromCmp(node[1]),
                 right: logicValueToJavaScriptAST(node[2])
               }]);
-          return /* IfStatement */Block.__(12, [{
+          return /* IfStatement */Block.__(17, [{
                       test: condition,
                       consequent: /* :: */[
                         toJavaScriptAST(node[3]),
@@ -51,7 +51,7 @@ function toJavaScriptAST(node) {
                       ]
                     }]);
       case 1 : 
-          return /* IfStatement */Block.__(12, [{
+          return /* IfStatement */Block.__(17, [{
                       test: logicValueToJavaScriptAST(node[0]),
                       consequent: /* :: */[
                         toJavaScriptAST(node[1]),
@@ -59,17 +59,17 @@ function toJavaScriptAST(node) {
                       ]
                     }]);
       case 2 : 
-          return /* AssignmentExpression */Block.__(10, [{
+          return /* AssignmentExpression */Block.__(15, [{
                       left: logicValueToJavaScriptAST(node[1]),
                       right: logicValueToJavaScriptAST(node[0])
                     }]);
       case 3 : 
-          var addition = /* BinaryExpression */Block.__(11, [{
+          var addition = /* BinaryExpression */Block.__(16, [{
                 left: logicValueToJavaScriptAST(node[0]),
                 operator: /* Plus */6,
                 right: logicValueToJavaScriptAST(node[1])
               }]);
-          return /* AssignmentExpression */Block.__(10, [{
+          return /* AssignmentExpression */Block.__(15, [{
                       left: logicValueToJavaScriptAST(node[2]),
                       right: addition
                     }]);
@@ -78,20 +78,20 @@ function toJavaScriptAST(node) {
           if (value.tag) {
             return /* Unknown */1;
           } else {
-            return /* VariableDeclaration */Block.__(9, [/* Identifier */Block.__(2, [value[1]])]);
+            return /* VariableDeclaration */Block.__(14, [/* Identifier */Block.__(2, [value[1]])]);
           }
           break;
       case 5 : 
           throw [
                 Caml_builtin_exceptions.match_failure,
                 [
-                  "/Users/devin_abbott/Projects/ComponentStudio/ComponentStudio/compiler/core/src/javaScript/javaScriptLogic.re",
+                  "/Users/devinabbott/Projects/Lona/compiler/core/src/javaScript/javaScriptLogic.re",
                   20,
                   2
                 ]
               ];
       case 6 : 
-          return /* Block */Block.__(17, [List.map(toJavaScriptAST, node[0])]);
+          return /* Block */Block.__(22, [List.map(toJavaScriptAST, node[0])]);
       
     }
   }

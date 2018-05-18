@@ -47,6 +47,51 @@ let rec render = ast : Prettier.Doc.t('a) =>
     <+> indent(join(hardline, o##consequent |> List.map(render)))
     <+> hardline
     <+> s("}")
+  | ImportDefaultSpecifier(o) => s(o)
+  | ImportSpecifier(o) =>
+    switch o##local {
+    | Some(local) => s(o##imported ++ " as " ++ local)
+    | None => s(o##imported)
+    }
+  | ImportDeclaration(o) =>
+    let defaultSpecifiers =
+      o##specifiers
+      |> List.filter(
+           fun
+           | Ast.ImportDefaultSpecifier(_) => true
+           | _ => false
+         );
+    let specifiers =
+      o##specifiers
+      |> List.filter(
+           fun
+           | Ast.ImportSpecifier(_) => true
+           | _ => false
+         );
+    let namedImports =
+      group(
+        s("{")
+        <+> line
+        <+> (specifiers |> List.map(render) |> join(s(", ")))
+        <+> line
+        <+> s("}")
+      );
+    let imports =
+      group(
+        join(
+          s(", "),
+          (defaultSpecifiers |> List.map(render))
+          @ (List.length(defaultSpecifiers) > 0 ? [] : [namedImports])
+        )
+      );
+    group(
+      s("import")
+      <+> s(" ")
+      <+> imports
+      <+> s(" ")
+      <+> s("from")
+      <+> indent(line <+> s("\"" ++ o##source ++ "\""))
+    );
   | ClassDeclaration(o) =>
     let decl =
       switch o##superClass {
@@ -56,7 +101,7 @@ let rec render = ast : Prettier.Doc.t('a) =>
     group(join(line, decl) <+> s(" {"))
     <+> indent(Render.prefixAll(hardline, o##body |> List.map(render)))
     <+> hardline
-    <+> s("};");
+    <+> s("}");
   | MethodDefinition(o) => group(s(o##key) <+> render(o##value))
   | FunctionExpression(o) =>
     /* TODO: o##id */
@@ -89,6 +134,9 @@ let rec render = ast : Prettier.Doc.t('a) =>
     let closing = group(s("</") <+> s(o##tag) <+> s(">"));
     let children = indent(line <+> join(line, o##content |> List.map(render)));
     opening <+> children <+> line <+> closing;
+  | JSXExpressionContainer(o) =>
+    group(s("{") <+> softline <+> render(o) <+> softline <+> s("}"))
+  | SpreadElement(value) => s("...") <+> render(value)
   | ArrayLiteral(body) =>
     let maybeLine = List.length(body) > 0 ? line : empty;
     let body = body |> List.map(render) |> join(s(",") <+> line);

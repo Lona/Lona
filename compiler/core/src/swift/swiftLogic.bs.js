@@ -81,8 +81,8 @@ function toSwiftAST(options, colors, textStyles, rootLayer, logicRootNode) {
         var name$2 = initialValue[0];
         if (name$2.endsWith(".borderRadius") || name$2 === "borderRadius") {
           return /* SwiftIdentifier */Block.__(8, [name$2.replace("borderRadius", "layer.cornerRadius")]);
-        } else if (name$2.endsWith(".borderWidth")) {
-          return /* SwiftIdentifier */Block.__(8, [name$2.replace(".borderWidth", ".layer.borderWidth")]);
+        } else if (name$2.endsWith(".borderWidth") || name$2 === "borderWidth") {
+          return /* SwiftIdentifier */Block.__(8, [name$2.replace("borderWidth", "layer.borderWidth")]);
         } else {
           return initialValue;
         }
@@ -224,9 +224,9 @@ function toSwiftAST(options, colors, textStyles, rootLayer, logicRootNode) {
               if (typeof match$3 === "number") {
                 exit$5 = 4;
               } else if (match$3.tag === 1) {
-                if (name.endsWith(".borderColor") && options[/* framework */0] === /* UIKit */0) {
+                if (name.endsWith("borderColor") && options[/* framework */0] === /* UIKit */0) {
                   return /* BinaryExpression */Block.__(2, [{
-                              left: /* SwiftIdentifier */Block.__(8, [name.replace(".borderColor", ".layer.borderColor")]),
+                              left: /* SwiftIdentifier */Block.__(8, [name.replace("borderColor", "layer.borderColor")]),
                               operator: "=",
                               right: /* MemberExpression */Block.__(1, [Pervasives.$at(match$3[0], /* :: */[
                                         /* SwiftIdentifier */Block.__(8, ["cgColor"]),
@@ -325,7 +325,29 @@ function toSwiftAST(options, colors, textStyles, rootLayer, logicRootNode) {
                                     operator: "=",
                                     right: right$1
                                   }]),
-                              /* [] */0
+                              /* :: */[
+                                /* BinaryExpression */Block.__(2, [{
+                                      left: /* SwiftIdentifier */Block.__(8, [name$3.replace(".textStyle", "." + SwiftDocument$LonaCompilerCore.labelAttributedTextName(options[/* framework */0]))]),
+                                      operator: "=",
+                                      right: /* MemberExpression */Block.__(1, [/* :: */[
+                                            /* SwiftIdentifier */Block.__(8, [name$3.replace(".textStyle", "TextStyle")]),
+                                            /* :: */[
+                                              /* FunctionCallExpression */Block.__(19, [{
+                                                    name: /* SwiftIdentifier */Block.__(8, ["apply"]),
+                                                    arguments: /* :: */[
+                                                      /* FunctionCallArgument */Block.__(18, [{
+                                                            name: /* Some */[/* SwiftIdentifier */Block.__(8, ["to"])],
+                                                            value: /* SwiftIdentifier */Block.__(8, [name$3.replace(".textStyle", "." + SwiftDocument$LonaCompilerCore.labelAttributedTextValue(options[/* framework */0]))])
+                                                          }]),
+                                                      /* [] */0
+                                                    ]
+                                                  }]),
+                                              /* [] */0
+                                            ]
+                                          ]])
+                                    }]),
+                                /* [] */0
+                              ]
                             ]]);
                 } else if (name$2.endsWith("text")) {
                   return /* BinaryExpression */Block.__(2, [{
@@ -382,7 +404,7 @@ function toSwiftAST(options, colors, textStyles, rootLayer, logicRootNode) {
                           modifiers: /* [] */0,
                           pattern: /* IdentifierPattern */Block.__(0, [{
                                 identifier: logicValueToSwiftAST(value),
-                                annotation: /* Some */[SwiftDocument$LonaCompilerCore.typeAnnotationDoc(value[0])]
+                                annotation: /* Some */[SwiftDocument$LonaCompilerCore.typeAnnotationDoc(options[/* framework */0], value[0])]
                               }]),
                           init: /* None */0,
                           block: /* None */0
@@ -435,12 +457,9 @@ function toSwiftAST(options, colors, textStyles, rootLayer, logicRootNode) {
 
 var Ast = 0;
 
-var Format = 0;
-
 var Document = 0;
 
 exports.Ast        = Ast;
-exports.Format     = Format;
 exports.Document   = Document;
 exports.toSwiftAST = toSwiftAST;
 /* lodash.camelcase Not a pure module */

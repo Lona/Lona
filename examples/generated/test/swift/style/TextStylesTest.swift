@@ -145,24 +145,34 @@ public class TextStylesTest: UIView {
     addSubview(text9View)
 
     textViewTextStyle = TextStyles.display4
+    textView.attributedText = textViewTextStyle.apply(to: textView.attributedText ?? NSAttributedString())
     textView.attributedText = textViewTextStyle.apply(to: "Text goes here")
     text1ViewTextStyle = TextStyles.display3
+    text1View.attributedText = text1ViewTextStyle.apply(to: text1View.attributedText ?? NSAttributedString())
     text1View.attributedText = text1ViewTextStyle.apply(to: "Text goes here")
     text2ViewTextStyle = TextStyles.display2
+    text2View.attributedText = text2ViewTextStyle.apply(to: text2View.attributedText ?? NSAttributedString())
     text2View.attributedText = text2ViewTextStyle.apply(to: "Text goes here")
     text3ViewTextStyle = TextStyles.display1
+    text3View.attributedText = text3ViewTextStyle.apply(to: text3View.attributedText ?? NSAttributedString())
     text3View.attributedText = text3ViewTextStyle.apply(to: "Text goes here")
     text4ViewTextStyle = TextStyles.headline
+    text4View.attributedText = text4ViewTextStyle.apply(to: text4View.attributedText ?? NSAttributedString())
     text4View.attributedText = text4ViewTextStyle.apply(to: "Text goes here")
     text5ViewTextStyle = TextStyles.subheading2
+    text5View.attributedText = text5ViewTextStyle.apply(to: text5View.attributedText ?? NSAttributedString())
     text5View.attributedText = text5ViewTextStyle.apply(to: "Text goes here")
     text6ViewTextStyle = TextStyles.subheading1
+    text6View.attributedText = text6ViewTextStyle.apply(to: text6View.attributedText ?? NSAttributedString())
     text6View.attributedText = text6ViewTextStyle.apply(to: "Text goes here")
     text7ViewTextStyle = TextStyles.body2
+    text7View.attributedText = text7ViewTextStyle.apply(to: text7View.attributedText ?? NSAttributedString())
     text7View.attributedText = text7ViewTextStyle.apply(to: "Text goes here")
     text8ViewTextStyle = TextStyles.body1
+    text8View.attributedText = text8ViewTextStyle.apply(to: text8View.attributedText ?? NSAttributedString())
     text8View.attributedText = text8ViewTextStyle.apply(to: "Text goes here")
     text9ViewTextStyle = TextStyles.caption
+    text9View.attributedText = text9ViewTextStyle.apply(to: text9View.attributedText ?? NSAttributedString())
     text9View.attributedText = text9ViewTextStyle.apply(to: "Text goes here")
   }
 

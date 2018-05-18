@@ -1,5 +1,3 @@
-module Format = SwiftFormat;
-
 module Ast = SwiftAst;
 
 module Document = SwiftDocument;
@@ -69,6 +67,8 @@ let generate =
     | Low => "defaultLow";
   let isParameterSetInitially = (layer: Types.layer, parameter) =>
     StringMap.mem(parameter, layer.parameters);
+  let getParameter = (layer: Types.layer, parameter) =>
+    StringMap.find_opt(parameter, layer.parameters);
   let isParameterAssigned = (layer: Types.layer, parameter) => {
     let assignedParameters =
       Layer.LayerMap.find_opt(layer, layerParameterAssignments);
@@ -87,7 +87,10 @@ let generate =
         IdentifierPattern({
           "identifier": SwiftIdentifier(parameter.name),
           "annotation":
-            Some(parameter.ltype |> SwiftDocument.typeAnnotationDoc)
+            Some(
+              parameter.ltype
+              |> SwiftDocument.typeAnnotationDoc(swiftOptions.framework)
+            )
         }),
       "init": None,
       "block":
@@ -159,7 +162,7 @@ let generate =
       "modifiers": [AccessLevelModifier(PrivateModifier)],
       "pattern":
         IdentifierPattern({
-          "identifier": SwiftIdentifier(layer.name |> Format.layerName),
+          "identifier": SwiftIdentifier(layer.name |> SwiftFormat.layerName),
           "annotation": None /*Some(layer.typeName |> viewTypeDoc)*/
         }),
       "init": Some(getLayerInitCall(layer)),
@@ -198,7 +201,9 @@ let generate =
       "pattern":
         IdentifierPattern({
           "identifier":
-            SwiftIdentifier((layer.name |> Format.layerName) ++ "TextStyle"),
+            SwiftIdentifier(
+              (layer.name |> SwiftFormat.layerName) ++ "TextStyle"
+            ),
           "annotation": None /* Some(TypeName("AttributedFont")) */
         }),
       "init": Some(styleName),
@@ -231,7 +236,8 @@ let generate =
   let spacingVariableDoc = (layer: Types.layer) => {
     let variableName = variable =>
       layer === rootLayer ?
-        variable : Format.layerName(layer.name) ++ Format.upperFirst(variable);
+        variable :
+        SwiftFormat.layerName(layer.name) ++ Format.upperFirst(variable);
     let marginVariables =
       layer === rootLayer ?
         [] :
@@ -291,7 +297,7 @@ let generate =
         IdentifierPattern({
           "identifier":
             SwiftIdentifier(
-              Format.layerVariableName(rootLayer, layer, "hovered")
+              SwiftFormat.layerVariableName(rootLayer, layer, "hovered")
             ),
           "annotation": None
         }),
@@ -304,7 +310,7 @@ let generate =
         IdentifierPattern({
           "identifier":
             SwiftIdentifier(
-              Format.layerVariableName(rootLayer, layer, "pressed")
+              SwiftFormat.layerVariableName(rootLayer, layer, "pressed")
             ),
           "annotation": None
         }),
@@ -317,7 +323,7 @@ let generate =
         IdentifierPattern({
           "identifier":
             SwiftIdentifier(
-              Format.layerVariableName(rootLayer, layer, "onPress")
+              SwiftFormat.layerVariableName(rootLayer, layer, "onPress")
             ),
           "annotation": Some(OptionalType(TypeName("(() -> Void)")))
         }),
@@ -329,7 +335,9 @@ let generate =
     Parameter({
       "externalName": None,
       "localName": parameter.name,
-      "annotation": parameter.ltype |> SwiftDocument.typeAnnotationDoc,
+      "annotation":
+        parameter.ltype
+        |> SwiftDocument.typeAnnotationDoc(swiftOptions.framework),
       "defaultValue": None
     });
   let initParameterAssignmentDoc = (parameter: Decode.parameter) =>
@@ -463,7 +471,7 @@ let generate =
     | _ => MemberExpression([SwiftIdentifier(firstIdentifier)] @ statements)
     };
   let parentNameOrSelf = (parent: Types.layer) =>
-    parent === rootLayer ? "self" : parent.name |> Format.layerName;
+    parent === rootLayer ? "self" : parent.name |> SwiftFormat.layerName;
   let layerMemberExpression = (layer: Types.layer, statements) =>
     memberOrSelfExpression(parentNameOrSelf(layer), statements);
   let defaultValueForParameter =
@@ -483,10 +491,16 @@ let generate =
     | None => LineComment(layer.name)
     | Some(parameters) =>
       let assignment = StringMap.find_opt(name, parameters);
+      let parameterName =
+        switch name {
+        | "textStyle" => "font"
+        | _ => name
+        };
+      let parameterValue = getParameter(layer, parameterName);
       let logic =
-        switch (assignment, layer.typeName) {
-        | (Some(assignment), _) => assignment
-        | (None, Component(componentName)) =>
+        switch (assignment, layer.typeName, parameterValue) {
+        | (Some(assignment), _, _) => assignment
+        | (None, Component(componentName), _) =>
           let param =
             getComponent(componentName)
             |> Decode.Component.parameters
@@ -496,7 +510,9 @@ let generate =
             name,
             Logic.defaultValueForType(param.ltype)
           );
-        | (None, _) =>
+        | (None, _, Some(value)) =>
+          Logic.assignmentForLayerParameter(layer, name, value)
+        | (None, _, None) =>
           Logic.defaultAssignmentForLayerParameter(
             colors,
             textStyles,
@@ -630,7 +646,7 @@ let generate =
           FunctionCallExpression({
             "name":
               layerMemberExpression(parent, [SwiftIdentifier("addSubview")]),
-            "arguments": [SwiftIdentifier(layer.name |> Format.layerName)]
+            "arguments": [SwiftIdentifier(layer.name |> SwiftFormat.layerName)]
           })
         ]
       };
@@ -657,7 +673,8 @@ let generate =
       (layer: Types.layer, variable1, parent: Types.layer, variable2) => {
     let variableName = (layer: Types.layer, variable) =>
       layer === rootLayer ?
-        variable : Format.layerName(layer.name) ++ Format.upperFirst(variable);
+        variable :
+        SwiftFormat.layerName(layer.name) ++ Format.upperFirst(variable);
     BinaryExpression({
       "left": SwiftIdentifier(variableName(layer, variable1)),
       "operator": "+",
@@ -828,7 +845,7 @@ let generate =
       (
         layer === rootLayer ?
           anchorString :
-          Format.layerName(layer.name) ++ Format.upperFirst(anchorString)
+          SwiftFormat.layerName(layer.name) ++ Format.upperFirst(anchorString)
       )
       ++ suffix;
     };
@@ -842,8 +859,8 @@ let generate =
         _,
         FlexSibling
       ) =>
-      Format.layerName(layer1.name)
-      ++ Format.upperFirst(Format.layerName(layer2.name))
+      SwiftFormat.layerName(layer1.name)
+      ++ Format.upperFirst(SwiftFormat.layerName(layer2.name))
       ++ Format.upperFirst(Constraint.anchorToString(edge1))
       ++ "SiblingConstraint"
     | Relation((layer1: Types.layer), edge1, _, _, _, _, FitContentSecondary) =>

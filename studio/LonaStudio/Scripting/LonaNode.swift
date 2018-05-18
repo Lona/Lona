@@ -24,6 +24,13 @@ enum LonaNode {
         DispatchQueue.global().async {
             let task = Process()
 
+            var env = ProcessInfo.processInfo.environment
+            if let path = env["PATH"], let binaryPath = binaryPath {
+                let nodeDirectory = URL(fileURLWithPath: binaryPath).deletingLastPathComponent()
+                env["PATH"] = "\(nodeDirectory):" + path
+            }
+            task.environment = env
+
             // Set the task parameters
             task.launchPath = nodePath
             task.arguments = [scriptPath]

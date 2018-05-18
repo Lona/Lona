@@ -1,13 +1,14 @@
-class BorderWidthColor extends React.Component {
+import React from "react"
+import { View, StyleSheet } from "react-native"
+
+import colors from "../colors"
+import textStyles from "../textStyles"
+
+export default class BorderWidthColor extends React.Component {
   render() {
     return (
-      <View style={[ styles.View, {} ]}>
-        <View
-          style={[ styles.View 1, {} ]}
-          borderColor={"blue300"}
-          borderRadius={10}
-          borderWidth={20}
-        >
+      <View style={[ styles.view, {} ]}>
+        <View style={[ styles.view1, {} ]} borderRadius={10}>
 
         </View>
       </View>
@@ -16,6 +17,11 @@ class BorderWidthColor extends React.Component {
 };
 
 let styles = StyleSheet.create({
-  View: { alignSelf: "stretch" },
-  View 1: { height: 100, width: 100 }
+  view: { alignSelf: "stretch" },
+  view1: {
+    borderColor: colors.blue300,
+    borderWidth: 20,
+    height: 100,
+    width: 100
+  }
 });

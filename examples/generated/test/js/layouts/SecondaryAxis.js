@@ -1,16 +1,22 @@
-class SecondaryAxis extends React.Component {
+import React from "react"
+import { Text, View, StyleSheet } from "react-native"
+
+import colors from "../colors"
+import textStyles from "../textStyles"
+
+export default class SecondaryAxis extends React.Component {
   render() {
     return (
-      <View style={[ styles.Container, {} ]}>
-        <View style={[ styles.Fixed, {} ]} backgroundColor={"#D8D8D8"}>
+      <View style={[ styles.container, {} ]}>
+        <View style={[ styles.fixed, {} ]}>
 
         </View>
-        <View style={[ styles.Fit, {} ]} backgroundColor={"#D8D8D8"}>
-          <Text style={[ styles.Text, {} ]} text={"Text goes here"}>
-
+        <View style={[ styles.fit, {} ]}>
+          <Text style={[ styles.text, {} ]} text={"Text goes here"}>
+            {"Text goes here"}
           </Text>
         </View>
-        <View style={[ styles.Fill, {} ]} backgroundColor={"#D8D8D8"}>
+        <View style={[ styles.fill, {} ]}>
 
         </View>
       </View>
@@ -19,15 +25,21 @@ class SecondaryAxis extends React.Component {
 };
 
 let styles = StyleSheet.create({
-  Container: {
+  container: {
     alignSelf: "stretch",
     paddingBottom: 24,
     paddingLeft: 24,
     paddingRight: 24,
     paddingTop: 24
   },
-  Fixed: { height: 100, marginBottom: 24, width: 100 },
-  Fit: {
+  fixed: {
+    backgroundColor: "#D8D8D8",
+    height: 100,
+    marginBottom: 24,
+    width: 100
+  },
+  fit: {
+    backgroundColor: "#D8D8D8",
     height: 100,
     marginBottom: 24,
     paddingBottom: 12,
@@ -35,6 +47,6 @@ let styles = StyleSheet.create({
     paddingRight: 12,
     paddingTop: 12
   },
-  Text: {},
-  Fill: { alignSelf: "stretch", height: 100 }
+  text: {},
+  fill: { alignSelf: "stretch", backgroundColor: "#D8D8D8", height: 100 }
 });
