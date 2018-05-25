@@ -11,7 +11,7 @@ export default class TextAlignment extends React.Component {
         <View style={[ styles.view1, {} ]}>
           <Image
             style={[ styles.image, {} ]}
-            image={"file://./assets/icon_128x128.png"}
+            source={require("../assets/icon_128x128.png")}
           >
 
           </Image>
@@ -84,7 +84,7 @@ export default class TextAlignment extends React.Component {
           </Text>
           <Image
             style={[ styles.image1, {} ]}
-            image={"file://./assets/icon_128x128.png"}
+            source={require("../assets/icon_128x128.png")}
           >
 
           </Image>
@@ -111,8 +111,13 @@ let styles = StyleSheet.create({
   },
   image: { height: 100, width: 100 },
   view2: { backgroundColor: "#D8D8D8" },
-  text: { alignSelf: "stretch", marginTop: 16, textAlign: "center" },
-  text1: { marginTop: 16, textAlign: "center" },
+  text: {
+    alignSelf: "stretch",
+    ...textStyles.display1,
+    marginTop: 16,
+    textAlign: "center"
+  },
+  text1: { ...textStyles.subheading2, marginTop: 16, textAlign: "center" },
   text2: { alignSelf: "stretch", marginTop: 12 },
   text3: { alignSelf: "stretch", textAlign: "right" },
   text4: { textAlign: "center", width: 80 },

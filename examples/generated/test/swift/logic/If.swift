@@ -36,8 +36,6 @@ public class If: UIView {
 
   private func setUpConstraints() {
     translatesAutoresizingMaskIntoConstraints = false
-
-    NSLayoutConstraint.activate([])
   }
 
   private func update() {

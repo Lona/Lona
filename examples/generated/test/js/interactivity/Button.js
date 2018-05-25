@@ -40,5 +40,5 @@ let styles = StyleSheet.create({
     paddingRight: 16,
     paddingTop: 12
   },
-  text: {}
+  text: { ...textStyles.button }
 });
