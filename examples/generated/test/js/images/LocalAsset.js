@@ -10,7 +10,7 @@ export default class LocalAsset extends React.Component {
       <View style={[ styles.view, {} ]}>
         <Image
           style={[ styles.image, {} ]}
-          image={"file://./assets/icon_128x128.png"}
+          source={require("../assets/icon_128x128.png")}
         >
 
         </Image>

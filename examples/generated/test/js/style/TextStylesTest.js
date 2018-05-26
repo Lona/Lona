@@ -45,14 +45,14 @@ export default class TextStylesTest extends React.Component {
 
 let styles = StyleSheet.create({
   view: { alignSelf: "stretch" },
-  text: {},
-  text1: {},
-  text2: {},
-  text3: {},
-  text4: {},
-  text5: {},
-  text6: {},
-  text7: {},
-  text8: {},
-  text9: {}
+  text: { ...textStyles.display4 },
+  text1: { ...textStyles.display3 },
+  text2: { ...textStyles.display2 },
+  text3: { ...textStyles.display1 },
+  text4: { ...textStyles.headline },
+  text5: { ...textStyles.subheading2 },
+  text6: { ...textStyles.subheading1 },
+  text7: { ...textStyles.body2 },
+  text8: { ...textStyles.body1 },
+  text9: { ...textStyles.caption }
 });

@@ -24,19 +24,26 @@ class CSColors: CSPreferencesFile {
     private static func parse(_ data: CSData) -> [CSColor] {
         guard let colorData = data["colors"] else { return [] }
 
-        return colorData.arrayValue.map({ color in
-            let id = color["id"]?.string ?? ""
-            let name = color["name"]?.string ?? "No name"
-            let value = color["value"]?.string ?? "#000000"
-            let nsColor = NSColor.parse(css: value) ?? NSColor.black
-
-            return CSColor(id: id, name: name, color: nsColor, value: value)
-        })
+        return colorData.arrayValue.map({ color in CSColor.fromData(color) })
     }
 
     static func parse(css string: String, withDefault defaultColor: NSColor = NSColor.clear) -> CSColor {
         let match = CSColors.colors.first(where: { $0.id.uppercased() == string.uppercased() })
 
         return match ?? CSColor(id: "custom", name: "Custom color", color: NSColor.parse(css: string) ?? defaultColor, value: string)
+    }
+
+    static func updateAndSave(color c: CSData, at index: Int) {
+        guard let colorData = data["colors"] else { return }
+
+        let updated = colorData.arrayValue.enumerated().map({ offset, element in
+            return index == offset ? c : element
+        })
+
+        data.set(keyPath: ["colors"], to: CSData.Array(updated))
+
+        save()
+
+        LonaPlugins.current.trigger(eventType: .onSaveColors)
     }
 }

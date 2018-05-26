@@ -41,7 +41,7 @@ let styles = StyleSheet.create({
     paddingRight: 10,
     paddingTop: 10
   },
-  text: { marginBottom: 8 },
+  text: { ...textStyles.subheading2, marginBottom: 8 },
   fitContentParentSecondaryChildren: {},
   text1: { marginTop: 12 },
   localAsset: {},

@@ -64,5 +64,5 @@ let styles = StyleSheet.create({
     paddingTop: 24
   },
   inner: { backgroundColor: colors.blue500, height: 100, width: 100 },
-  innerText: {}
+  innerText: { ...textStyles.headline }
 });

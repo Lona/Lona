@@ -302,7 +302,13 @@ function defaultValueForLonaType(framework, _, textStyles, _ltype) {
                   ]);
                 continue ;
                 default:
-              return /* SwiftIdentifier */Block.__(8, ["UnknownReferenceType: " + typeName]);
+              if (typeName.endsWith("?")) {
+                _ltype = /* Reference */Block.__(0, [typeName.replace("?", "")]);
+                continue ;
+                
+              } else {
+                return /* SwiftIdentifier */Block.__(8, [typeName]);
+              }
           }
           if (exit === 1) {
             _ltype = /* Named */Block.__(1, [

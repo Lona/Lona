@@ -11,6 +11,7 @@ import AppKit
 
 enum LonaPluginActivationEvent: String, Decodable {
     case onSaveComponent = "onSave:component"
+    case onSaveColors = "onSave:colors"
 }
 
 struct LonaPluginConfig: Decodable {
@@ -58,6 +59,8 @@ class LonaPlugins {
 
     let url: URL
 
+    private static var handlers: [LonaPluginActivationEvent: [() -> Void]] = [:]
+
     init(url: URL) {
         self.url = url
     }
@@ -74,6 +77,20 @@ class LonaPlugins {
         return pluginFiles().filter({ file in
             file.config?.activationEvents?.contains(eventType) ?? false
         })
+    }
+
+    func register(handler: @escaping () -> Void, for eventType: LonaPluginActivationEvent) {
+        var handlerList = LonaPlugins.handlers[eventType] ?? []
+        handlerList.append(handler)
+        LonaPlugins.handlers[eventType] = handlerList
+    }
+
+    func trigger(eventType: LonaPluginActivationEvent) {
+        LonaPlugins.current.pluginFilesActivatingOn(eventType: eventType).forEach({
+            $0.run(onSuccess: {_ in })
+        })
+
+        LonaPlugins.handlers[eventType]?.forEach({ $0() })
     }
 
     // MARK: - STATIC

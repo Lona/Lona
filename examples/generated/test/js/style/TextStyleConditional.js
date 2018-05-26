@@ -24,4 +24,7 @@ export default class TextStyleConditional extends React.Component {
   }
 };
 
-let styles = StyleSheet.create({ view: { alignSelf: "stretch" }, text: {} });
+let styles = StyleSheet.create({
+  view: { alignSelf: "stretch" },
+  text: { ...textStyles.headline }
+});
