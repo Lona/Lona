@@ -32,8 +32,6 @@ public class ColorPreviewCollection: NSBox {
 
   private func setUpConstraints() {
     translatesAutoresizingMaskIntoConstraints = false
-
-    NSLayoutConstraint.activate([])
   }
 
   private func update() {}

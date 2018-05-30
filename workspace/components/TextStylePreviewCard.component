@@ -1,0 +1,220 @@
+{
+  "devices" : [
+    {
+      "height" : 0,
+      "heightMode" : "At Least",
+      "name" : "iPhone SE",
+      "width" : 420
+    }
+  ],
+  "examples" : [
+    {
+      "name" : "Default",
+      "params" : {
+        "example" : "The quick brown fox jumped over the lazy dog",
+        "textStyle" : "title",
+        "textStyleName" : "Title 1",
+        "textStyleSummary" : "Bold 46\/52"
+      }
+    }
+  ],
+  "logic" : [
+    {
+      "assignee" : [
+        "layers",
+        "ExampleText",
+        "text"
+      ],
+      "content" : [
+        "parameters",
+        "example"
+      ],
+      "type" : "AssignExpr"
+    },
+    {
+      "assignee" : [
+        "layers",
+        "TextStyleName",
+        "text"
+      ],
+      "content" : [
+        "parameters",
+        "textStyleName"
+      ],
+      "type" : "AssignExpr"
+    },
+    {
+      "assignee" : [
+        "layers",
+        "TextStyleSummary",
+        "text"
+      ],
+      "content" : [
+        "parameters",
+        "textStyleSummary"
+      ],
+      "type" : "AssignExpr"
+    },
+    {
+      "assignee" : [
+        "layers",
+        "ExampleText",
+        "textStyle"
+      ],
+      "content" : [
+        "parameters",
+        "textStyle"
+      ],
+      "type" : "AssignExpr"
+    },
+    {
+      "assignee" : [
+        "layers",
+        "Container",
+        "onPress"
+      ],
+      "content" : [
+        "parameters",
+        "onClick"
+      ],
+      "type" : "AssignExpr"
+    },
+    {
+      "body" : [
+        {
+          "assignee" : [
+            "layers",
+            "Details",
+            "backgroundColor"
+          ],
+          "content" : {
+            "type" : "LitExpr",
+            "value" : {
+              "data" : "grey50",
+              "type" : "Color"
+            }
+          },
+          "type" : "AssignExpr"
+        }
+      ],
+      "condition" : {
+        "left" : [
+          "layers",
+          "Container",
+          "pressed"
+        ],
+        "op" : "==",
+        "right" : {
+          "type" : "LitExpr",
+          "value" : {
+            "data" : true,
+            "type" : "Boolean"
+          }
+        },
+        "type" : "BinExpr"
+      },
+      "type" : "IfExpr"
+    }
+  ],
+  "params" : [
+    {
+      "name" : "example",
+      "type" : "String"
+    },
+    {
+      "name" : "textStyleName",
+      "type" : "String"
+    },
+    {
+      "name" : "textStyleSummary",
+      "type" : "String"
+    },
+    {
+      "name" : "textStyle",
+      "type" : "TextStyle"
+    },
+    {
+      "name" : "onClick",
+      "type" : {
+        "name" : "Function"
+      }
+    }
+  ],
+  "root" : {
+    "children" : [
+      {
+        "children" : [
+          {
+            "id" : "ExampleText",
+            "params" : {
+              "numberOfLines" : 1,
+              "text" : "Text goes here"
+            },
+            "type" : "Lona:Text"
+          }
+        ],
+        "id" : "Preview",
+        "params" : {
+          "alignSelf" : "stretch",
+          "backgroundColor" : "white",
+          "paddingBottom" : 16,
+          "paddingLeft" : 20,
+          "paddingRight" : 20,
+          "paddingTop" : 16
+        },
+        "type" : "Lona:View"
+      },
+      {
+        "id" : "Divider",
+        "params" : {
+          "alignSelf" : "stretch",
+          "backgroundColor" : "grey300",
+          "height" : 1
+        },
+        "type" : "Lona:View"
+      },
+      {
+        "children" : [
+          {
+            "id" : "TextStyleName",
+            "params" : {
+              "alignSelf" : "stretch",
+              "font" : "large",
+              "height" : 18,
+              "numberOfLines" : 1,
+              "text" : "Component"
+            },
+            "type" : "Lona:Text"
+          },
+          {
+            "id" : "TextStyleSummary",
+            "params" : {
+              "marginTop" : 6,
+              "text" : "Text goes here"
+            },
+            "type" : "Lona:Text"
+          }
+        ],
+        "id" : "Details",
+        "params" : {
+          "alignSelf" : "stretch",
+          "paddingBottom" : 16,
+          "paddingLeft" : 20,
+          "paddingRight" : 20,
+          "paddingTop" : 16
+        },
+        "type" : "Lona:View"
+      }
+    ],
+    "id" : "Container",
+    "params" : {
+      "alignSelf" : "stretch",
+      "backgroundColor" : "white",
+      "borderColor" : "grey300",
+      "borderRadius" : 4,
+      "borderWidth" : 1,
+      "flex" : 1
+    },
+    "type" : "Lona:View"
+  }
+}

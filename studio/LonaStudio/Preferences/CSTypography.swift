@@ -24,6 +24,21 @@ private func convertFontWeight(fontWeight: String) -> NSFont.Weight {
     }
 }
 
+private func fontWeightName(fontWeight: NSFont.Weight) -> String {
+    switch fontWeight {
+    case NSFont.Weight.ultraLight: return "Ultra Light"
+    case NSFont.Weight.thin: return "Thin"
+    case NSFont.Weight.light: return "Light"
+    case NSFont.Weight.regular: return "Regular"
+    case NSFont.Weight.medium: return "Medium"
+    case NSFont.Weight.semibold: return "Semibold"
+    case NSFont.Weight.bold: return "Bold"
+    case NSFont.Weight.heavy: return "Heavy"
+    case NSFont.Weight.black: return "Black"
+    default: return "Regular"
+    }
+}
+
 struct CSTextStyle {
     let id: String
     let name: String
@@ -56,6 +71,11 @@ struct CSTextStyle {
         self.letterSpacing = letterSpacing
         self.color = color
         self.extends = extends
+    }
+
+    var summary: String {
+        let weight = fontWeightName(fontWeight: font.weight)
+        return "\(weight) \(font.size)/\(font.lineHeight)"
     }
 
     private func base() -> CSTextStyle? {

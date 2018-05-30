@@ -1,9 +1,9 @@
 import AppKit
 import Foundation
 
-// MARK: - RecentProjectsList
+// MARK: - TextStylePreviewCollection
 
-public class RecentProjectsList: NSBox {
+public class TextStylePreviewCollection: NSBox {
 
   // MARK: Lifecycle
 
