@@ -168,9 +168,7 @@ public class ComponentPreviewCollection: NSBox {
             self.collectionView.reloadData()
         }
 
-        // TODO: Not this
-        LonaPlugins.current.register(handler: updateHandler, for: .onSaveColors)
-        LonaPlugins.current.register(handler: updateHandler, for: .onSaveComponent)
+        _ = LonaPlugins.current.register(eventTypes: [.onSaveColors, .onSaveComponent, .onReloadWorkspace], handler: updateHandler)
 
         // TODO: This callback should propagate up to the root. Currently Lona doesn't
         // generate callbacks with params, so we'll handle it here for now.

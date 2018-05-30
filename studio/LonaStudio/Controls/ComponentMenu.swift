@@ -18,6 +18,10 @@ class ComponentMenu: NSMenu {
         updateComponentsFromModule()
 
         ComponentMenu.shared = self
+
+        _ = LonaPlugins.current.register(eventType: .onReloadWorkspace) {
+            self.updateComponentsFromModule()
+        }
     }
 
     func updateComponentsFromModule() {
@@ -37,7 +41,7 @@ class ComponentMenu: NSMenu {
 
             var results = [header]
 
-            results.append(contentsOf: files.map({ file in
+            results.append(contentsOf: files.sorted(by: { a, b in a.name < b.name }).map({ file in
                 NSMenuItem(title: file.name, onClick: {
                     guard let viewController = NSApplication.shared.mainWindow?.contentViewController as? ViewController else { return }
                     viewController.addLayer(layer: CSComponentLayer.make(from: file.url))

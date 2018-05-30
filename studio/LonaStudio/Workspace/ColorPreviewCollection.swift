@@ -169,10 +169,10 @@ public class ColorPreviewCollection: NSBox {
         collectionView.items = CSColors.colors
 
         // TODO: Not this
-        LonaPlugins.current.register(handler: {
+        _ = LonaPlugins.current.register(eventTypes: [.onSaveColors, .onReloadWorkspace], handler: {
             self.collectionView.items = CSColors.colors
             self.collectionView.reloadData()
-        }, for: .onSaveColors)
+        })
 
         // TODO: This callback should propagate up to the root. Currently Lona doesn't
         // generate callbacks with params, so we'll handle it here for now.

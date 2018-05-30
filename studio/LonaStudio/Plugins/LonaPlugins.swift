@@ -12,6 +12,7 @@ import AppKit
 enum LonaPluginActivationEvent: String, Decodable {
     case onSaveComponent = "onSave:component"
     case onSaveColors = "onSave:colors"
+    case onReloadWorkspace = "onReload:workspace"
 }
 
 struct LonaPluginConfig: Decodable {
@@ -20,6 +21,14 @@ struct LonaPluginConfig: Decodable {
 }
 
 class LonaPlugins {
+    class Handler {
+        var callback: () -> Void
+
+        init(callback: @escaping () -> Void) {
+            self.callback = callback
+        }
+    }
+
     struct PluginFile {
 
         // MARK: Public
@@ -59,7 +68,7 @@ class LonaPlugins {
 
     let url: URL
 
-    private static var handlers: [LonaPluginActivationEvent: [() -> Void]] = [:]
+    private static var handlers: [LonaPluginActivationEvent: [Handler]] = [:]
 
     init(url: URL) {
         self.url = url
@@ -79,10 +88,24 @@ class LonaPlugins {
         })
     }
 
-    func register(handler: @escaping () -> Void, for eventType: LonaPluginActivationEvent) {
+    func register(eventType: LonaPluginActivationEvent, handler callback: @escaping () -> Void) -> (() -> Void) {
+        let handler = Handler(callback: callback)
+
         var handlerList = LonaPlugins.handlers[eventType] ?? []
         handlerList.append(handler)
         LonaPlugins.handlers[eventType] = handlerList
+
+        return {
+            let handlerList = LonaPlugins.handlers[eventType] ?? []
+            LonaPlugins.handlers[eventType] = handlerList.filter({ $0 !== handler })
+        }
+    }
+
+    func register(eventTypes: [LonaPluginActivationEvent], handler callback: @escaping () -> Void) -> (() -> Void) {
+        let subscriptions = eventTypes.map({ register(eventType: $0, handler: callback) })
+        return {
+            subscriptions.forEach({ sub in sub() })
+        }
     }
 
     func trigger(eventType: LonaPluginActivationEvent) {
@@ -90,7 +113,7 @@ class LonaPlugins {
             $0.run(onSuccess: {_ in })
         })
 
-        LonaPlugins.handlers[eventType]?.forEach({ $0() })
+        LonaPlugins.handlers[eventType]?.forEach({ $0.callback() })
     }
 
     // MARK: - STATIC
