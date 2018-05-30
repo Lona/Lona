@@ -16,6 +16,16 @@
         "textStyleName" : "Title 1",
         "textStyleSummary" : "Bold 46\/52"
       }
+    },
+    {
+      "name" : "Default",
+      "params" : {
+        "example" : "The quick brown fox jumped over the lazy dog",
+        "previewBackgroundColor" : "black",
+        "textStyle" : "largeInverse",
+        "textStyleName" : "Title 1",
+        "textStyleSummary" : "Bold 46\/52"
+      }
     }
   ],
   "logic" : [
@@ -64,6 +74,18 @@
       "content" : [
         "parameters",
         "textStyle"
+      ],
+      "type" : "AssignExpr"
+    },
+    {
+      "assignee" : [
+        "layers",
+        "Preview",
+        "backgroundColor"
+      ],
+      "content" : [
+        "parameters",
+        "previewBackgroundColor"
       ],
       "type" : "AssignExpr"
     },
@@ -138,6 +160,10 @@
       "type" : {
         "name" : "Function"
       }
+    },
+    {
+      "name" : "previewBackgroundColor",
+      "type" : "Color"
     }
   ],
   "root" : {

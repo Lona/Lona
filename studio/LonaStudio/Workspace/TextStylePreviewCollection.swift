@@ -129,6 +129,7 @@ extension TextStylePreviewCollectionView: NSCollectionViewDataSource {
             textStylePreviewCard.textStyleName = textStyle.name
             textStylePreviewCard.textStyleSummary = textStyle.summary
             textStylePreviewCard.textStyle = textStyle.font
+            textStylePreviewCard.previewBackgroundColor = textStyle.color?.contrastingLabelColor ?? .clear
             textStylePreviewCard.onClick = {
                 self.onClickTextStyle?(textStyle.id)
             }

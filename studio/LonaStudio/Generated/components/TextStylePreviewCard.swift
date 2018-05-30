@@ -7,11 +7,18 @@ public class TextStylePreviewCard: NSBox {
 
   // MARK: Lifecycle
 
-  public init(example: String, textStyleName: String, textStyleSummary: String, textStyle: AttributedFont) {
+  public init(
+    example: String,
+    textStyleName: String,
+    textStyleSummary: String,
+    textStyle: AttributedFont,
+    previewBackgroundColor: NSColor)
+  {
     self.example = example
     self.textStyleName = textStyleName
     self.textStyleSummary = textStyleSummary
     self.textStyle = textStyle
+    self.previewBackgroundColor = previewBackgroundColor
 
     super.init(frame: .zero)
 
@@ -24,7 +31,13 @@ public class TextStylePreviewCard: NSBox {
   }
 
   public convenience init() {
-    self.init(example: "", textStyleName: "", textStyleSummary: "", textStyle: AttributedFont())
+    self
+      .init(
+        example: "",
+        textStyleName: "",
+        textStyleSummary: "",
+        textStyle: TextStyles.regular,
+        previewBackgroundColor: NSColor.clear)
   }
 
   public required init?(coder aDecoder: NSCoder) {
@@ -42,6 +55,7 @@ public class TextStylePreviewCard: NSBox {
   public var textStyleSummary: String { didSet { update() } }
   public var textStyle: AttributedFont { didSet { update() } }
   public var onClick: (() -> Void)? { didSet { update() } }
+  public var previewBackgroundColor: NSColor { didSet { update() } }
 
   // MARK: Private
 
@@ -153,7 +167,6 @@ public class TextStylePreviewCard: NSBox {
     borderColor = Colors.grey300
     cornerRadius = 4
     borderWidth = 1
-    previewView.fillColor = Colors.white
     exampleTextView.maximumNumberOfLines = 1
     dividerView.fillColor = Colors.grey300
     textStyleNameViewTextStyle = TextStyles.large
@@ -332,6 +345,7 @@ public class TextStylePreviewCard: NSBox {
     textStyleSummaryView.attributedStringValue = textStyleSummaryViewTextStyle.apply(to: textStyleSummary)
     exampleTextViewTextStyle = textStyle
     exampleTextView.attributedStringValue = exampleTextViewTextStyle.apply(to: exampleTextView.attributedStringValue)
+    previewView.fillColor = previewBackgroundColor
     onPress = onClick
     if pressed {
       detailsView.fillColor = Colors.grey50
