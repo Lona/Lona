@@ -279,4 +279,18 @@ class AppDelegate: NSObject, NSApplicationDelegate {
 
         return true
     }
+
+    // MARK: - Reloading
+
+    @IBAction func reload(_ sender: AnyObject) {
+        CSUserTypes.reload()
+        CSColors.reload()
+        CSTypography.reload()
+        CSGradients.reload()
+        CSShadows.reload()
+
+        ComponentMenu.shared?.updateComponentsFromModule()
+
+        LonaPlugins.current.trigger(eventType: .onReloadWorkspace)
+    }
 }

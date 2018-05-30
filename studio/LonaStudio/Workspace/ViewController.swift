@@ -91,25 +91,6 @@ class ViewController: NSViewController, NSOutlineViewDataSource, NSOutlineViewDe
         canvasCollectionView?.zoomOut()
     }
 
-    @IBAction func refresh(_ sender: AnyObject) {
-        CSUserTypes.reload()
-        CSColors.reload()
-        CSTypography.reload()
-        CSGradients.reload()
-        CSShadows.reload()
-        ComponentMenu.shared?.updateComponentsFromModule()
-
-        component.layers
-            .filter({ $0 is CSComponentLayer })
-            .forEach({ layer in
-                let layer = layer as! CSComponentLayer
-                layer.reload()
-            })
-
-        outlineView.render()
-        render()
-    }
-
     @IBAction func addComponent(_ sender: AnyObject) {
         let dialog = NSOpenPanel()
 
@@ -551,6 +532,28 @@ class ViewController: NSViewController, NSOutlineViewDataSource, NSOutlineViewDe
         // Init with data
 
         setComponent(component: component)
+    }
+
+    var subscriptions: [() -> Void] = []
+
+    override func viewWillAppear() {
+        subscriptions.append(
+            LonaPlugins.current.register(eventType: .onReloadWorkspace) {
+                self.component.layers
+                    .filter({ $0 is CSComponentLayer })
+                    .forEach({ layer in
+                        let layer = layer as! CSComponentLayer
+                        layer.reload()
+                    })
+
+                self.outlineView.render()
+                self.render()
+            }
+        )
+    }
+
+    override func viewWillDisappear() {
+        subscriptions.forEach({ sub in sub() })
     }
 
     func setupLayerList() {

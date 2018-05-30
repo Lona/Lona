@@ -637,7 +637,7 @@
                                         <menuItem isSeparatorItem="YES" id="fuh-on-blc"/>
                                         <menuItem title="Refresh" keyEquivalent="R" id="QLO-Cm-lh1">
                                             <connections>
-                                                <action selector="refresh:" target="Ady-hI-5gd" id="RDC-AQ-7JW"/>
+                                                <action selector="reload:" target="Voe-Tx-rLC" id="22q-X4-ezE"/>
                                             </connections>
                                         </menuItem>
                                         <menuItem isSeparatorItem="YES" id="f7E-A6-THe"/>
