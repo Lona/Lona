@@ -117,7 +117,8 @@
                                                 <action selector="saveDocumentAs:" target="Ady-hI-5gd" id="mDf-zr-I0C"/>
                                             </connections>
                                         </menuItem>
-                                        <menuItem title="Revert to Saved" keyEquivalent="r" id="KaW-ft-85H">
+                                        <menuItem title="Revert to Saved" id="KaW-ft-85H">
+                                            <modifierMask key="keyEquivalentModifierMask"/>
                                             <connections>
                                                 <action selector="revertDocumentToSaved:" target="Ady-hI-5gd" id="iJ3-Pv-kwq"/>
                                             </connections>
@@ -635,7 +636,7 @@
                                             </connections>
                                         </menuItem>
                                         <menuItem isSeparatorItem="YES" id="fuh-on-blc"/>
-                                        <menuItem title="Refresh" keyEquivalent="R" id="QLO-Cm-lh1">
+                                        <menuItem title="Refresh" keyEquivalent="r" id="QLO-Cm-lh1">
                                             <connections>
                                                 <action selector="reload:" target="Voe-Tx-rLC" id="22q-X4-ezE"/>
                                             </connections>
