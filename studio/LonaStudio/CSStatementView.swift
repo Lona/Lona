@@ -77,7 +77,7 @@ class CSStatementView: NSTableCellView {
             let field = TextField(frame: NSRect(x: 0, y: 0, width: 80, height: 16))
             field.isEditable = false
             field.isBordered = false
-            field.drawsBackground = true
+            field.drawsBackground = false
             field.value = string
             field.usesSingleLineMode = true
 
