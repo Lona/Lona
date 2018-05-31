@@ -42,7 +42,6 @@ class TextStylePreviewCollectionView: NSView {
         wantsLayer = true
 
         let flowLayout = NSCollectionViewFlowLayout()
-        flowLayout.minimumInteritemSpacing = 0
         flowLayout.minimumLineSpacing = 24
         flowLayout.minimumInteritemSpacing = 24
 
@@ -53,6 +52,9 @@ class TextStylePreviewCollectionView: NSView {
         collectionView.register(
             TextStylePreviewItemViewController.self,
             forItemWithIdentifier: ITEM_IDENTIFIER)
+        collectionView.registerForDraggedTypes([NSPasteboard.PasteboardType(kUTTypeItem as String)])
+        collectionView.setDraggingSourceOperationMask(.move, forLocal: true)
+        collectionView.isSelectable = true
 
         scrollView.verticalScrollElasticity = .allowed
         scrollView.horizontalScrollElasticity = .allowed
@@ -98,8 +100,8 @@ extension TextStylePreviewCollectionView: NSCollectionViewDelegateFlowLayout {
         let textStyle = items[indexPath.item]
 
         return NSSize(
-            width: collectionView.frame.size.width,
-            height: textStyle.font.lineHeight + 104)
+            width: 260,
+            height: textStyle.font.lineHeight + 81)
     }
 }
 
@@ -113,6 +115,16 @@ extension TextStylePreviewCollectionView: NSCollectionViewDelegate {
     func collectionView(_ collectionView: NSCollectionView, numberOfItemsInSection section: Int) -> Int {
         return items.count
     }
+
+    func collectionView(_ collectionView: NSCollectionView, canDragItemsAt indexPaths: Set<IndexPath>, with event: NSEvent) -> Bool {
+        NSPasteboard.general.declareTypes([NSPasteboard.PasteboardType(kUTTypeItem as String)], owner: self)
+
+        return true
+    }
+
+    func collectionView(_ collectionView: NSCollectionView, writeItemsAt indexPaths: Set<IndexPath>, to pasteboard: NSPasteboard) -> Bool {
+        return true
+    }
 }
 
 // MARK: - NSCollectionViewDataSource
@@ -125,8 +137,7 @@ extension TextStylePreviewCollectionView: NSCollectionViewDataSource {
 
         if let textStylePreviewCard = item.view as? TextStylePreviewCard {
             let textStyle = items[indexPath.item]
-            textStylePreviewCard.example = "The quick brown fox jumped over the lazy dog"
-            textStylePreviewCard.textStyleName = textStyle.name
+            textStylePreviewCard.example = textStyle.name
             textStylePreviewCard.textStyleSummary = textStyle.summary
             textStylePreviewCard.textStyle = textStyle.font
             textStylePreviewCard.previewBackgroundColor = textStyle.color?.contrastingLabelColor ?? .clear

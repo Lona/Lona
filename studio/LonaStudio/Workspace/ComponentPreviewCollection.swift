@@ -41,15 +41,12 @@ class ComponentPreviewCollectionView: NSView {
     private func setUpViews() {
         wantsLayer = true
 
-        let gridLayout = NSCollectionViewGridLayout()
-        gridLayout.minimumItemSize = NSSize(width: 240, height: 240)
-        gridLayout.maximumItemSize = NSSize(width: 264, height: 240)
-        gridLayout.minimumLineSpacing = 24
-        gridLayout.minimumInteritemSpacing = 24
-        gridLayout.margins = NSEdgeInsetsZero
-        gridLayout.maximumNumberOfColumns = 3
+        let flowLayout = NSCollectionViewFlowLayout()
+        flowLayout.minimumLineSpacing = 24
+        flowLayout.minimumInteritemSpacing = 12
+        flowLayout.itemSize = NSSize(width: 260, height: 240)
 
-        collectionView.collectionViewLayout = gridLayout
+        collectionView.collectionViewLayout = flowLayout
         collectionView.delegate = self
         collectionView.dataSource = self
         collectionView.backgroundColors = [NSColor.clear]

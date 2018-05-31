@@ -7,15 +7,8 @@ public class TextStylePreviewCard: NSBox {
 
   // MARK: Lifecycle
 
-  public init(
-    example: String,
-    textStyleName: String,
-    textStyleSummary: String,
-    textStyle: AttributedFont,
-    previewBackgroundColor: NSColor)
-  {
+  public init(example: String, textStyleSummary: String, textStyle: AttributedFont, previewBackgroundColor: NSColor) {
     self.example = example
-    self.textStyleName = textStyleName
     self.textStyleSummary = textStyleSummary
     self.textStyle = textStyle
     self.previewBackgroundColor = previewBackgroundColor
@@ -31,13 +24,7 @@ public class TextStylePreviewCard: NSBox {
   }
 
   public convenience init() {
-    self
-      .init(
-        example: "",
-        textStyleName: "",
-        textStyleSummary: "",
-        textStyle: TextStyles.regular,
-        previewBackgroundColor: NSColor.clear)
+    self.init(example: "", textStyleSummary: "", textStyle: TextStyles.regular, previewBackgroundColor: NSColor.clear)
   }
 
   public required init?(coder aDecoder: NSCoder) {
@@ -51,7 +38,6 @@ public class TextStylePreviewCard: NSBox {
   // MARK: Public
 
   public var example: String { didSet { update() } }
-  public var textStyleName: String { didSet { update() } }
   public var textStyleSummary: String { didSet { update() } }
   public var textStyle: AttributedFont { didSet { update() } }
   public var onClick: (() -> Void)? { didSet { update() } }
@@ -68,11 +54,9 @@ public class TextStylePreviewCard: NSBox {
   private var exampleTextView = NSTextField(labelWithString: "")
   private var dividerView = NSBox()
   private var detailsView = NSBox()
-  private var textStyleNameView = NSTextField(labelWithString: "")
   private var textStyleSummaryView = NSTextField(labelWithString: "")
 
   private var exampleTextViewTextStyle = TextStyles.regular
-  private var textStyleNameViewTextStyle = TextStyles.large
   private var textStyleSummaryViewTextStyle = TextStyles.regular
 
   private var topPadding: CGFloat = 0
@@ -103,11 +87,7 @@ public class TextStylePreviewCard: NSBox {
   private var exampleTextViewTrailingMargin: CGFloat = 0
   private var exampleTextViewBottomMargin: CGFloat = 0
   private var exampleTextViewLeadingMargin: CGFloat = 0
-  private var textStyleNameViewTopMargin: CGFloat = 0
-  private var textStyleNameViewTrailingMargin: CGFloat = 0
-  private var textStyleNameViewBottomMargin: CGFloat = 0
-  private var textStyleNameViewLeadingMargin: CGFloat = 0
-  private var textStyleSummaryViewTopMargin: CGFloat = 6
+  private var textStyleSummaryViewTopMargin: CGFloat = 0
   private var textStyleSummaryViewTrailingMargin: CGFloat = 0
   private var textStyleSummaryViewBottomMargin: CGFloat = 0
   private var textStyleSummaryViewLeadingMargin: CGFloat = 0
@@ -130,14 +110,10 @@ public class TextStylePreviewCard: NSBox {
   private var exampleTextViewLeadingAnchorConstraint: NSLayoutConstraint?
   private var exampleTextViewTrailingAnchorConstraint: NSLayoutConstraint?
   private var dividerViewHeightAnchorConstraint: NSLayoutConstraint?
-  private var textStyleNameViewTopAnchorConstraint: NSLayoutConstraint?
-  private var textStyleNameViewLeadingAnchorConstraint: NSLayoutConstraint?
-  private var textStyleNameViewTrailingAnchorConstraint: NSLayoutConstraint?
-  private var textStyleSummaryViewBottomAnchorConstraint: NSLayoutConstraint?
   private var textStyleSummaryViewTopAnchorConstraint: NSLayoutConstraint?
+  private var textStyleSummaryViewBottomAnchorConstraint: NSLayoutConstraint?
   private var textStyleSummaryViewLeadingAnchorConstraint: NSLayoutConstraint?
   private var textStyleSummaryViewTrailingAnchorConstraint: NSLayoutConstraint?
-  private var textStyleNameViewHeightAnchorConstraint: NSLayoutConstraint?
 
   private func setUpViews() {
     boxType = .custom
@@ -153,14 +129,12 @@ public class TextStylePreviewCard: NSBox {
     detailsView.borderType = .noBorder
     detailsView.contentViewMargins = .zero
     exampleTextView.lineBreakMode = .byWordWrapping
-    textStyleNameView.lineBreakMode = .byWordWrapping
     textStyleSummaryView.lineBreakMode = .byWordWrapping
 
     addSubview(previewView)
     addSubview(dividerView)
     addSubview(detailsView)
     previewView.addSubview(exampleTextView)
-    detailsView.addSubview(textStyleNameView)
     detailsView.addSubview(textStyleSummaryView)
 
     fillColor = Colors.white
@@ -169,10 +143,6 @@ public class TextStylePreviewCard: NSBox {
     borderWidth = 1
     exampleTextView.maximumNumberOfLines = 1
     dividerView.fillColor = Colors.grey300
-    textStyleNameViewTextStyle = TextStyles.large
-    textStyleNameView.attributedStringValue =
-      textStyleNameViewTextStyle.apply(to: textStyleNameView.attributedStringValue)
-    textStyleNameView.maximumNumberOfLines = 1
   }
 
   private func setUpConstraints() {
@@ -181,7 +151,6 @@ public class TextStylePreviewCard: NSBox {
     dividerView.translatesAutoresizingMaskIntoConstraints = false
     detailsView.translatesAutoresizingMaskIntoConstraints = false
     exampleTextView.translatesAutoresizingMaskIntoConstraints = false
-    textStyleNameView.translatesAutoresizingMaskIntoConstraints = false
     textStyleSummaryView.translatesAutoresizingMaskIntoConstraints = false
 
     let previewViewTopAnchorConstraint = previewView
@@ -230,29 +199,14 @@ public class TextStylePreviewCard: NSBox {
         lessThanOrEqualTo: previewView.trailingAnchor,
         constant: -(previewViewTrailingPadding + exampleTextViewTrailingMargin))
     let dividerViewHeightAnchorConstraint = dividerView.heightAnchor.constraint(equalToConstant: 1)
-    let textStyleNameViewTopAnchorConstraint = textStyleNameView
+    let textStyleSummaryViewTopAnchorConstraint = textStyleSummaryView
       .topAnchor
-      .constraint(equalTo: detailsView.topAnchor, constant: detailsViewTopPadding + textStyleNameViewTopMargin)
-    let textStyleNameViewLeadingAnchorConstraint = textStyleNameView
-      .leadingAnchor
-      .constraint(
-        equalTo: detailsView.leadingAnchor,
-        constant: detailsViewLeadingPadding + textStyleNameViewLeadingMargin)
-    let textStyleNameViewTrailingAnchorConstraint = textStyleNameView
-      .trailingAnchor
-      .constraint(
-        equalTo: detailsView.trailingAnchor,
-        constant: -(detailsViewTrailingPadding + textStyleNameViewTrailingMargin))
+      .constraint(equalTo: detailsView.topAnchor, constant: detailsViewTopPadding + textStyleSummaryViewTopMargin)
     let textStyleSummaryViewBottomAnchorConstraint = textStyleSummaryView
       .bottomAnchor
       .constraint(
         equalTo: detailsView.bottomAnchor,
         constant: -(detailsViewBottomPadding + textStyleSummaryViewBottomMargin))
-    let textStyleSummaryViewTopAnchorConstraint = textStyleSummaryView
-      .topAnchor
-      .constraint(
-        equalTo: textStyleNameView.bottomAnchor,
-        constant: textStyleNameViewBottomMargin + textStyleSummaryViewTopMargin)
     let textStyleSummaryViewLeadingAnchorConstraint = textStyleSummaryView
       .leadingAnchor
       .constraint(
@@ -263,7 +217,6 @@ public class TextStylePreviewCard: NSBox {
       .constraint(
         lessThanOrEqualTo: detailsView.trailingAnchor,
         constant: -(detailsViewTrailingPadding + textStyleSummaryViewTrailingMargin))
-    let textStyleNameViewHeightAnchorConstraint = textStyleNameView.heightAnchor.constraint(equalToConstant: 18)
 
     NSLayoutConstraint.activate([
       previewViewTopAnchorConstraint,
@@ -280,14 +233,10 @@ public class TextStylePreviewCard: NSBox {
       exampleTextViewLeadingAnchorConstraint,
       exampleTextViewTrailingAnchorConstraint,
       dividerViewHeightAnchorConstraint,
-      textStyleNameViewTopAnchorConstraint,
-      textStyleNameViewLeadingAnchorConstraint,
-      textStyleNameViewTrailingAnchorConstraint,
-      textStyleSummaryViewBottomAnchorConstraint,
       textStyleSummaryViewTopAnchorConstraint,
+      textStyleSummaryViewBottomAnchorConstraint,
       textStyleSummaryViewLeadingAnchorConstraint,
-      textStyleSummaryViewTrailingAnchorConstraint,
-      textStyleNameViewHeightAnchorConstraint
+      textStyleSummaryViewTrailingAnchorConstraint
     ])
 
     self.previewViewTopAnchorConstraint = previewViewTopAnchorConstraint
@@ -304,14 +253,10 @@ public class TextStylePreviewCard: NSBox {
     self.exampleTextViewLeadingAnchorConstraint = exampleTextViewLeadingAnchorConstraint
     self.exampleTextViewTrailingAnchorConstraint = exampleTextViewTrailingAnchorConstraint
     self.dividerViewHeightAnchorConstraint = dividerViewHeightAnchorConstraint
-    self.textStyleNameViewTopAnchorConstraint = textStyleNameViewTopAnchorConstraint
-    self.textStyleNameViewLeadingAnchorConstraint = textStyleNameViewLeadingAnchorConstraint
-    self.textStyleNameViewTrailingAnchorConstraint = textStyleNameViewTrailingAnchorConstraint
-    self.textStyleSummaryViewBottomAnchorConstraint = textStyleSummaryViewBottomAnchorConstraint
     self.textStyleSummaryViewTopAnchorConstraint = textStyleSummaryViewTopAnchorConstraint
+    self.textStyleSummaryViewBottomAnchorConstraint = textStyleSummaryViewBottomAnchorConstraint
     self.textStyleSummaryViewLeadingAnchorConstraint = textStyleSummaryViewLeadingAnchorConstraint
     self.textStyleSummaryViewTrailingAnchorConstraint = textStyleSummaryViewTrailingAnchorConstraint
-    self.textStyleNameViewHeightAnchorConstraint = textStyleNameViewHeightAnchorConstraint
 
     // For debugging
     previewViewTopAnchorConstraint.identifier = "previewViewTopAnchorConstraint"
@@ -328,20 +273,15 @@ public class TextStylePreviewCard: NSBox {
     exampleTextViewLeadingAnchorConstraint.identifier = "exampleTextViewLeadingAnchorConstraint"
     exampleTextViewTrailingAnchorConstraint.identifier = "exampleTextViewTrailingAnchorConstraint"
     dividerViewHeightAnchorConstraint.identifier = "dividerViewHeightAnchorConstraint"
-    textStyleNameViewTopAnchorConstraint.identifier = "textStyleNameViewTopAnchorConstraint"
-    textStyleNameViewLeadingAnchorConstraint.identifier = "textStyleNameViewLeadingAnchorConstraint"
-    textStyleNameViewTrailingAnchorConstraint.identifier = "textStyleNameViewTrailingAnchorConstraint"
-    textStyleSummaryViewBottomAnchorConstraint.identifier = "textStyleSummaryViewBottomAnchorConstraint"
     textStyleSummaryViewTopAnchorConstraint.identifier = "textStyleSummaryViewTopAnchorConstraint"
+    textStyleSummaryViewBottomAnchorConstraint.identifier = "textStyleSummaryViewBottomAnchorConstraint"
     textStyleSummaryViewLeadingAnchorConstraint.identifier = "textStyleSummaryViewLeadingAnchorConstraint"
     textStyleSummaryViewTrailingAnchorConstraint.identifier = "textStyleSummaryViewTrailingAnchorConstraint"
-    textStyleNameViewHeightAnchorConstraint.identifier = "textStyleNameViewHeightAnchorConstraint"
   }
 
   private func update() {
     detailsView.fillColor = #colorLiteral(red: 0, green: 0, blue: 0, alpha: 0)
     exampleTextView.attributedStringValue = exampleTextViewTextStyle.apply(to: example)
-    textStyleNameView.attributedStringValue = textStyleNameViewTextStyle.apply(to: textStyleName)
     textStyleSummaryView.attributedStringValue = textStyleSummaryViewTextStyle.apply(to: textStyleSummary)
     exampleTextViewTextStyle = textStyle
     exampleTextView.attributedStringValue = exampleTextViewTextStyle.apply(to: exampleTextView.attributedStringValue)

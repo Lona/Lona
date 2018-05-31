@@ -51,8 +51,8 @@
         ],
         "id" : "Inner",
         "params" : {
-          "flex" : 1,
-          "width" : 840
+          "alignSelf" : "stretch",
+          "flex" : 1
         },
         "type" : "Lona:View"
       }
@@ -63,8 +63,8 @@
       "alignSelf" : "stretch",
       "flex" : 1,
       "paddingBottom" : 48,
-      "paddingLeft" : 48,
-      "paddingRight" : 48,
+      "paddingLeft" : 64,
+      "paddingRight" : 64,
       "paddingTop" : 48
     },
     "type" : "Lona:View"

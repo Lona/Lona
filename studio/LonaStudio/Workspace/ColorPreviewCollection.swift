@@ -10,6 +10,32 @@ import AppKit
 import Foundation
 
 private let ITEM_IDENTIFIER = NSUserInterfaceItemIdentifier(rawValue: "color")
+private let COLOR_PASTEBOARD_TYPE = NSPasteboard.PasteboardType("lona.color")
+
+class DoubleClickableColorPreviewCard: ColorPreviewCard {
+    var onDoubleClick: (() -> Void)?
+
+    override func mouseDown(with event: NSEvent) {
+        if event.clickCount == 2 {
+            onDoubleClick?()
+        } else {
+            super.mouseDown(with: event)
+        }
+    }
+}
+
+class KeyHandlingCollectionView: NSCollectionView {
+    public var onDeleteItem: ((Int) -> Void)?
+
+    override func keyDown(with event: NSEvent) {
+        guard let characters = event.charactersIgnoringModifiers,
+            let item = selectionIndexPaths.first?.item else { return }
+
+        if characters == String(Character(UnicodeScalar(NSDeleteCharacter)!)) {
+            onDeleteItem?(item)
+        }
+    }
+}
 
 class ColorPreviewCollectionView: NSView {
 
@@ -31,28 +57,34 @@ class ColorPreviewCollectionView: NSView {
     // MARK: - Public
 
     public var items: [CSColor] = [] { didSet { update() } }
-    public var onClickColor: ((String) -> Void)?
+    public var onClickColor: ((String) -> Void)? { didSet { update(withoutReloading: true) } }
+    public var onMoveColor: ((Int, Int) -> Void)? { didSet { update(withoutReloading: true) } }
+    public var onDeleteColor: ((Int) -> Void)? { didSet { update(withoutReloading: true) } }
 
     // MARK: - Private
 
-    private let collectionView = NSCollectionView(frame: .zero)
+    private let collectionView = KeyHandlingCollectionView(frame: .zero)
     private let scrollView = NSScrollView()
 
     private func setUpViews() {
         wantsLayer = true
 
-        let gridLayout = NSCollectionViewGridLayout()
-        gridLayout.minimumItemSize = NSSize(width: 140, height: 160)
-        gridLayout.maximumItemSize = NSSize(width: 160, height: 160)
-        gridLayout.minimumLineSpacing = 24
-        gridLayout.minimumInteritemSpacing = 24
-        gridLayout.margins = NSEdgeInsetsZero
-        gridLayout.maximumNumberOfColumns = 5
+        let flowLayout = NSCollectionViewFlowLayout()
+        flowLayout.minimumLineSpacing = 24
+        flowLayout.minimumInteritemSpacing = 12
+        flowLayout.itemSize = NSSize(width: 140, height: 160)
 
-        collectionView.collectionViewLayout = gridLayout
+        collectionView.collectionViewLayout = flowLayout
         collectionView.delegate = self
         collectionView.dataSource = self
         collectionView.backgroundColors = [NSColor.clear]
+
+        collectionView.registerForDraggedTypes([COLOR_PASTEBOARD_TYPE])
+        collectionView.setDraggingSourceOperationMask(.move, forLocal: true)
+        collectionView.isSelectable = true
+//        collectionView.allowsMultipleSelection = true
+        collectionView.allowsEmptySelection = true
+
         collectionView.register(
             ColorPreviewItemViewController.self,
             forItemWithIdentifier: ITEM_IDENTIFIER)
@@ -74,8 +106,12 @@ class ColorPreviewCollectionView: NSView {
         scrollView.translatesAutoresizingMaskIntoConstraints = false
     }
 
-    private func update() {
-        collectionView.reloadData()
+    private func update(withoutReloading: Bool = false) {
+        if !withoutReloading {
+            collectionView.reloadData()
+        }
+
+        collectionView.onDeleteItem = onDeleteColor
     }
 }
 
@@ -90,6 +126,16 @@ extension ColorPreviewCollectionView {
     func reloadData() {
         collectionView.reloadData()
     }
+
+    func moveItem(from sourceIndex: Int, to targetIndex: Int) {
+        collectionView.animator().moveItem(
+            at: IndexPath(item: sourceIndex, section: 0),
+            to: IndexPath(item: sourceIndex < targetIndex ? targetIndex - 1 : targetIndex, section: 0))
+    }
+
+    func deleteItem(at index: Int) {
+        collectionView.animator().deleteItems(at: [IndexPath(item: index, section: 0)])
+    }
 }
 
 // MARK: - NSCollectionViewDelegate
@@ -102,6 +148,51 @@ extension ColorPreviewCollectionView: NSCollectionViewDelegate {
     func collectionView(_ collectionView: NSCollectionView, numberOfItemsInSection section: Int) -> Int {
         return items.count
     }
+
+    func collectionView(_ collectionView: NSCollectionView, canDragItemsAt indexPaths: Set<IndexPath>, with event: NSEvent) -> Bool {
+        return true
+    }
+
+    func collectionView(_ collectionView: NSCollectionView, writeItemsAt indexPaths: Set<IndexPath>, to pasteboard: NSPasteboard) -> Bool {
+
+        guard let sourceIndex = indexPaths.first?.item,
+            let data = CSData.Array([sourceIndex.toData()]).toData()
+            else { return false }
+
+        pasteboard.declareTypes([COLOR_PASTEBOARD_TYPE], owner: self)
+        pasteboard.setData(data, forType: COLOR_PASTEBOARD_TYPE)
+
+        return true
+    }
+
+    func collectionView(
+        _ collectionView: NSCollectionView,
+        validateDrop draggingInfo: NSDraggingInfo,
+        proposedIndexPath proposedDropIndexPath: AutoreleasingUnsafeMutablePointer<NSIndexPath>,
+        dropOperation proposedDropOperation: UnsafeMutablePointer<NSCollectionView.DropOperation>) -> NSDragOperation {
+
+        if proposedDropOperation.pointee == NSCollectionView.DropOperation.on {
+            proposedDropOperation.pointee = NSCollectionView.DropOperation.before
+        }
+
+        return NSDragOperation.move
+    }
+
+    func collectionView(
+        _ collectionView: NSCollectionView,
+        acceptDrop draggingInfo: NSDraggingInfo,
+        indexPath: IndexPath,
+        dropOperation: NSCollectionView.DropOperation) -> Bool {
+        guard let data = draggingInfo.draggingPasteboard().data(forType: COLOR_PASTEBOARD_TYPE),
+            let sourceIndexPath = CSData.from(data: data)?.array?.first?.number else {
+            Swift.print("Can't move color item - bad pasteboard data")
+            return false
+        }
+
+        onMoveColor?(Int(sourceIndexPath), indexPath.item)
+
+        return true
+    }
 }
 
 // MARK: - NSCollectionViewDataSource
@@ -112,12 +203,12 @@ extension ColorPreviewCollectionView: NSCollectionViewDataSource {
             withIdentifier: ITEM_IDENTIFIER,
             for: indexPath) as! ColorPreviewItemViewController
 
-        if let componentPreviewCard = item.view as? ColorPreviewCard {
+        if let componentPreviewCard = item.view as? DoubleClickableColorPreviewCard {
             let componentFile = items[indexPath.item]
             componentPreviewCard.colorName = componentFile.name
             componentPreviewCard.colorCode = componentFile.value
             componentPreviewCard.color = componentFile.color
-            componentPreviewCard.onClick = {
+            componentPreviewCard.onDoubleClick = {
                 self.onClickColor?(componentFile.id)
             }
         }
@@ -130,7 +221,16 @@ extension ColorPreviewCollectionView: NSCollectionViewDataSource {
 
 class ColorPreviewItemViewController: NSCollectionViewItem {
     override func loadView() {
-        view = ColorPreviewCard()
+        view = DoubleClickableColorPreviewCard()
+    }
+
+    override var isSelected: Bool {
+        get {
+            return (view as? DoubleClickableColorPreviewCard)?.selected ?? false
+        }
+        set {
+            (view as? DoubleClickableColorPreviewCard)?.selected = newValue
+        }
     }
 }
 
@@ -168,11 +268,22 @@ public class ColorPreviewCollection: NSBox {
 
         collectionView.items = CSColors.colors
 
-        // TODO: Not this
         _ = LonaPlugins.current.register(eventTypes: [.onSaveColors, .onReloadWorkspace], handler: {
             self.collectionView.items = CSColors.colors
             self.collectionView.reloadData()
         })
+
+        collectionView.onMoveColor = { sourceIndex, targetIndex in
+            CSColors.moveColor(from: sourceIndex, to: targetIndex)
+            self.collectionView.items = CSColors.colors
+            self.collectionView.moveItem(from: sourceIndex, to: targetIndex)
+        }
+
+        collectionView.onDeleteColor = { index in
+            CSColors.deleteColor(at: index)
+            self.collectionView.items = CSColors.colors
+            self.collectionView.deleteItem(at: index)
+        }
 
         // TODO: This callback should propagate up to the root. Currently Lona doesn't
         // generate callbacks with params, so we'll handle it here for now.
@@ -183,7 +294,7 @@ public class ColorPreviewCollection: NSBox {
             let editor = DictionaryEditor(
                 value: csColor.toValue(),
                 onChange: { updated in
-                    CSColors.updateAndSave(color: updated.data, at: index)
+                    CSColors.update(color: updated.data, at: index)
             },
                 layout: CSConstraint.size(width: 300, height: 200)
             )

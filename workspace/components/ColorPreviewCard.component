@@ -15,6 +15,15 @@
         "colorCode" : "#FF0000",
         "colorName" : "Red 600"
       }
+    },
+    {
+      "name" : "Default",
+      "params" : {
+        "color" : "red600",
+        "colorCode" : "#FF0000",
+        "colorName" : "Red 600",
+        "selected" : true
+      }
     }
   ],
   "logic" : [
@@ -55,18 +64,6 @@
       "type" : "AssignExpr"
     },
     {
-      "assignee" : [
-        "layers",
-        "Container",
-        "onPress"
-      ],
-      "content" : [
-        "parameters",
-        "onClick"
-      ],
-      "type" : "AssignExpr"
-    },
-    {
       "body" : [
         {
           "assignee" : [
@@ -77,8 +74,38 @@
           "content" : {
             "type" : "LitExpr",
             "value" : {
-              "data" : "grey50",
+              "data" : "lightblue600",
               "type" : "Color"
+            }
+          },
+          "type" : "AssignExpr"
+        },
+        {
+          "assignee" : [
+            "layers",
+            "ColorName",
+            "textStyle"
+          ],
+          "content" : {
+            "type" : "LitExpr",
+            "value" : {
+              "data" : "largeInverse",
+              "type" : "TextStyle"
+            }
+          },
+          "type" : "AssignExpr"
+        },
+        {
+          "assignee" : [
+            "layers",
+            "ColorCode",
+            "textStyle"
+          ],
+          "content" : {
+            "type" : "LitExpr",
+            "value" : {
+              "data" : "regularInverse",
+              "type" : "TextStyle"
             }
           },
           "type" : "AssignExpr"
@@ -86,9 +113,8 @@
       ],
       "condition" : {
         "left" : [
-          "layers",
-          "Container",
-          "pressed"
+          "parameters",
+          "selected"
         ],
         "op" : "==",
         "right" : {
@@ -117,10 +143,8 @@
       "type" : "Color"
     },
     {
-      "name" : "onClick",
-      "type" : {
-        "name" : "Function"
-      }
+      "name" : "selected",
+      "type" : "Boolean"
     }
   ],
   "root" : {

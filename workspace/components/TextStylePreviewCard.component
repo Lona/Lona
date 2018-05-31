@@ -44,18 +44,6 @@
     {
       "assignee" : [
         "layers",
-        "TextStyleName",
-        "text"
-      ],
-      "content" : [
-        "parameters",
-        "textStyleName"
-      ],
-      "type" : "AssignExpr"
-    },
-    {
-      "assignee" : [
-        "layers",
         "TextStyleSummary",
         "text"
       ],
@@ -144,10 +132,6 @@
       "type" : "String"
     },
     {
-      "name" : "textStyleName",
-      "type" : "String"
-    },
-    {
       "name" : "textStyleSummary",
       "type" : "String"
     },
@@ -202,20 +186,8 @@
       {
         "children" : [
           {
-            "id" : "TextStyleName",
-            "params" : {
-              "alignSelf" : "stretch",
-              "font" : "large",
-              "height" : 18,
-              "numberOfLines" : 1,
-              "text" : "Component"
-            },
-            "type" : "Lona:Text"
-          },
-          {
             "id" : "TextStyleSummary",
             "params" : {
-              "marginTop" : 6,
               "text" : "Text goes here"
             },
             "type" : "Lona:Text"
