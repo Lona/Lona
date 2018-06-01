@@ -152,7 +152,7 @@ function render(options, colors, textStyles) {
                       annotation: /* None */0
                     }]),
                 init: /* Some */[/* FunctionCallExpression */Block.__(19, [{
-                        name: /* SwiftIdentifier */Block.__(8, ["AttributedFont"]),
+                        name: /* SwiftIdentifier */Block.__(8, ["TextStyle"]),
                         arguments: argumentsDoc(textStyle)
                       }])]
               }]);

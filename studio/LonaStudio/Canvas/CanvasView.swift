@@ -56,7 +56,7 @@ func getLayerFontName(configuredLayer: ConfiguredLayer) -> String {
         for: layer.name).string ?? layer.font ?? "regular"
 }
 
-func getLayerFont(configuredLayer: ConfiguredLayer) -> AttributedFont {
+func getLayerFont(configuredLayer: ConfiguredLayer) -> TextStyle {
     return CSTypography.getFontBy(id: getLayerFontName(configuredLayer: configuredLayer)).font
 }
 

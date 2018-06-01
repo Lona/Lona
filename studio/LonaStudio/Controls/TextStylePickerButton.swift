@@ -58,7 +58,7 @@ final class TextStylePickerButton: NSButton, CSControl {
         showPopover()
     }
 
-    private func smallSizeAttributeText(with csFont: AttributedFont) -> NSAttributedString {
+    private func smallSizeAttributeText(with csFont: TextStyle) -> NSAttributedString {
         return csFont.with(size: 14).apply(to: value)
     }
 }

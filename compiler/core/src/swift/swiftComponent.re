@@ -204,7 +204,7 @@ let generate =
             SwiftIdentifier(
               (layer.name |> SwiftFormat.layerName) ++ "TextStyle"
             ),
-          "annotation": None /* Some(TypeName("AttributedFont")) */
+          "annotation": None /* Some(TypeName("TextStyle")) */
         }),
       "init": Some(styleName),
       "block": None

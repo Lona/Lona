@@ -92,7 +92,7 @@ struct CSTextStyle {
     private let defaultFamilyName = NSFont.systemFont(ofSize: 14).familyName ?? ""
     private let defaultFontSize = NSFont.systemFontSize
 
-    var font: AttributedFont {
+    var font: TextStyle {
         let fontSize: CGFloat? = lookup { style in
             guard let value = style.fontSize else { return nil }
             return CGFloat(value)
@@ -114,7 +114,7 @@ struct CSTextStyle {
             return value
         }
 
-        return AttributedFont(
+        return TextStyle(
             family: lookup({ style in style.fontFamily }) ?? defaultFamilyName,
             weight: weight ?? .regular,
             size: fontSize ?? defaultFontSize,

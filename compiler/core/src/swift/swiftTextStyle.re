@@ -111,7 +111,7 @@ let render =
       "init":
         Some(
           FunctionCallExpression({
-            name: SwiftIdentifier("AttributedFont"),
+            name: SwiftIdentifier("TextStyle"),
             arguments: argumentsDoc(textStyle)
           })
         )

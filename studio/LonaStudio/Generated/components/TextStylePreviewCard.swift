@@ -10,9 +10,10 @@ public class TextStylePreviewCard: NSBox {
   public init(
     example: String,
     textStyleSummary: String,
-    textStyle: AttributedFont,
+    textStyle: TextStyle,
     previewBackgroundColor: NSColor,
-    selected: Bool) {
+    selected: Bool)
+  {
     self.example = example
     self.textStyleSummary = textStyleSummary
     self.textStyle = textStyle
@@ -45,7 +46,7 @@ public class TextStylePreviewCard: NSBox {
 
   public var example: String { didSet { update() } }
   public var textStyleSummary: String { didSet { update() } }
-  public var textStyle: AttributedFont { didSet { update() } }
+  public var textStyle: TextStyle { didSet { update() } }
   public var previewBackgroundColor: NSColor { didSet { update() } }
   public var selected: Bool { didSet { update() } }
 
