@@ -21,6 +21,15 @@
       "name" : "Default",
       "params" : {
         "example" : "The quick brown fox jumped over the lazy dog",
+        "selected" : true,
+        "textStyle" : "title",
+        "textStyleSummary" : "Bold 46\/52"
+      }
+    },
+    {
+      "name" : "Default",
+      "params" : {
+        "example" : "The quick brown fox jumped over the lazy dog",
         "previewBackgroundColor" : "black",
         "textStyle" : "largeInverse",
         "textStyleName" : "Title 1",
@@ -78,18 +87,6 @@
       "type" : "AssignExpr"
     },
     {
-      "assignee" : [
-        "layers",
-        "Container",
-        "onPress"
-      ],
-      "content" : [
-        "parameters",
-        "onClick"
-      ],
-      "type" : "AssignExpr"
-    },
-    {
       "body" : [
         {
           "assignee" : [
@@ -100,8 +97,23 @@
           "content" : {
             "type" : "LitExpr",
             "value" : {
-              "data" : "grey50",
+              "data" : "lightblue600",
               "type" : "Color"
+            }
+          },
+          "type" : "AssignExpr"
+        },
+        {
+          "assignee" : [
+            "layers",
+            "TextStyleSummary",
+            "textStyle"
+          ],
+          "content" : {
+            "type" : "LitExpr",
+            "value" : {
+              "data" : "regularInverse",
+              "type" : "TextStyle"
             }
           },
           "type" : "AssignExpr"
@@ -109,9 +121,8 @@
       ],
       "condition" : {
         "left" : [
-          "layers",
-          "Container",
-          "pressed"
+          "parameters",
+          "selected"
         ],
         "op" : "==",
         "right" : {
@@ -140,14 +151,12 @@
       "type" : "TextStyle"
     },
     {
-      "name" : "onClick",
-      "type" : {
-        "name" : "Function"
-      }
-    },
-    {
       "name" : "previewBackgroundColor",
       "type" : "Color"
+    },
+    {
+      "name" : "selected",
+      "type" : "Boolean"
     }
   ],
   "root" : {

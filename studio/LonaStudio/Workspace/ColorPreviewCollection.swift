@@ -12,7 +12,7 @@ import Foundation
 private let ITEM_IDENTIFIER = NSUserInterfaceItemIdentifier(rawValue: "color")
 private let COLOR_PASTEBOARD_TYPE = NSPasteboard.PasteboardType("lona.color")
 
-class DoubleClickableColorPreviewCard: ColorPreviewCard {
+private class DoubleClickableColorPreviewCard: ColorPreviewCard {
     var onDoubleClick: (() -> Void)?
 
     override func mouseDown(with event: NSEvent) {

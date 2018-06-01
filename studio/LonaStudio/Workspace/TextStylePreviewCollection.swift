@@ -10,6 +10,19 @@ import AppKit
 import Foundation
 
 private let ITEM_IDENTIFIER = NSUserInterfaceItemIdentifier(rawValue: "color")
+private let COLOR_PASTEBOARD_TYPE = NSPasteboard.PasteboardType("textStyle")
+
+class DoubleClickableTextStylePreviewCard: TextStylePreviewCard {
+    var onDoubleClick: (() -> Void)?
+
+    override func mouseDown(with event: NSEvent) {
+        if event.clickCount == 2 {
+            onDoubleClick?()
+        } else {
+            super.mouseDown(with: event)
+        }
+    }
+}
 
 class TextStylePreviewCollectionView: NSView {
 
@@ -81,9 +94,9 @@ class TextStylePreviewCollectionView: NSView {
 // MARK: - Imperative API
 
 extension TextStylePreviewCollectionView {
-    func cardView(at index: Int) -> TextStylePreviewCard? {
+    func cardView(at index: Int) -> DoubleClickableTextStylePreviewCard? {
         guard let item = collectionView.item(at: index) as? TextStylePreviewItemViewController else { return nil }
-        return item.view as? TextStylePreviewCard
+        return item.view as? DoubleClickableTextStylePreviewCard
     }
 
     func reloadData() {
@@ -135,14 +148,14 @@ extension TextStylePreviewCollectionView: NSCollectionViewDataSource {
             withIdentifier: ITEM_IDENTIFIER,
             for: indexPath) as! TextStylePreviewItemViewController
 
-        if let textStylePreviewCard = item.view as? TextStylePreviewCard {
+        if let textStylePreviewCard = item.view as? DoubleClickableTextStylePreviewCard {
             let textStyle = items[indexPath.item]
             textStylePreviewCard.example = textStyle.name
             textStylePreviewCard.textStyleSummary = textStyle.summary
             textStylePreviewCard.textStyle = textStyle.font
             textStylePreviewCard.previewBackgroundColor = textStyle.color?.contrastingLabelColor ?? .clear
-            textStylePreviewCard.onClick = {
-                self.onClickTextStyle?(textStyle.id)
+            textStylePreviewCard.onDoubleClick = {
+                
             }
         }
 
@@ -154,7 +167,16 @@ extension TextStylePreviewCollectionView: NSCollectionViewDataSource {
 
 class TextStylePreviewItemViewController: NSCollectionViewItem {
     override func loadView() {
-        view = TextStylePreviewCard()
+        view = DoubleClickableTextStylePreviewCard()
+    }
+
+    override var isSelected: Bool {
+        get {
+            return (view as? DoubleClickableTextStylePreviewCard)?.selected ?? false
+        }
+        set {
+            (view as? DoubleClickableTextStylePreviewCard)?.selected = newValue
+        }
     }
 }
 
@@ -197,6 +219,18 @@ public class TextStylePreviewCollection: NSBox {
             self.collectionView.items = CSTypography.styles
             self.collectionView.reloadData()
         })
+
+//        collectionView.onMoveColor = { sourceIndex, targetIndex in
+//            CSColors.moveColor(from: sourceIndex, to: targetIndex)
+//            self.collectionView.items = CSColors.colors
+//            self.collectionView.moveItem(from: sourceIndex, to: targetIndex)
+//        }
+//
+//        collectionView.onDeleteColor = { index in
+//            CSColors.deleteColor(at: index)
+//            self.collectionView.items = CSColors.colors
+//            self.collectionView.deleteItem(at: index)
+//        }
 
         // TODO: This callback should propagate up to the root. Currently Lona doesn't
         // generate callbacks with params, so we'll handle it here for now.

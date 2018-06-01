@@ -7,11 +7,17 @@ public class TextStylePreviewCard: NSBox {
 
   // MARK: Lifecycle
 
-  public init(example: String, textStyleSummary: String, textStyle: AttributedFont, previewBackgroundColor: NSColor) {
+  public init(
+    example: String,
+    textStyleSummary: String,
+    textStyle: AttributedFont,
+    previewBackgroundColor: NSColor,
+    selected: Bool) {
     self.example = example
     self.textStyleSummary = textStyleSummary
     self.textStyle = textStyle
     self.previewBackgroundColor = previewBackgroundColor
+    self.selected = selected
 
     super.init(frame: .zero)
 
@@ -19,20 +25,20 @@ public class TextStylePreviewCard: NSBox {
     setUpConstraints()
 
     update()
-
-    addTrackingArea(trackingArea)
   }
 
   public convenience init() {
-    self.init(example: "", textStyleSummary: "", textStyle: TextStyles.regular, previewBackgroundColor: NSColor.clear)
+    self
+      .init(
+        example: "",
+        textStyleSummary: "",
+        textStyle: TextStyles.regular,
+        previewBackgroundColor: NSColor.clear,
+        selected: false)
   }
 
   public required init?(coder aDecoder: NSCoder) {
     fatalError("init(coder:) has not been implemented")
-  }
-
-  deinit {
-    removeTrackingArea(trackingArea)
   }
 
   // MARK: Public
@@ -40,15 +46,10 @@ public class TextStylePreviewCard: NSBox {
   public var example: String { didSet { update() } }
   public var textStyleSummary: String { didSet { update() } }
   public var textStyle: AttributedFont { didSet { update() } }
-  public var onClick: (() -> Void)? { didSet { update() } }
   public var previewBackgroundColor: NSColor { didSet { update() } }
+  public var selected: Bool { didSet { update() } }
 
   // MARK: Private
-
-  private lazy var trackingArea = NSTrackingArea(
-    rect: self.frame,
-    options: [.mouseEnteredAndExited, .activeAlways, .mouseMoved, .inVisibleRect],
-    owner: self)
 
   private var previewView = NSBox()
   private var exampleTextView = NSTextField(labelWithString: "")
@@ -91,10 +92,6 @@ public class TextStylePreviewCard: NSBox {
   private var textStyleSummaryViewTrailingMargin: CGFloat = 0
   private var textStyleSummaryViewBottomMargin: CGFloat = 0
   private var textStyleSummaryViewLeadingMargin: CGFloat = 0
-
-  private var hovered = false
-  private var pressed = false
-  private var onPress: (() -> Void)?
 
   private var previewViewTopAnchorConstraint: NSLayoutConstraint?
   private var previewViewLeadingAnchorConstraint: NSLayoutConstraint?
@@ -281,62 +278,19 @@ public class TextStylePreviewCard: NSBox {
 
   private func update() {
     detailsView.fillColor = #colorLiteral(red: 0, green: 0, blue: 0, alpha: 0)
+    textStyleSummaryViewTextStyle = TextStyles.regular
+    textStyleSummaryView.attributedStringValue =
+      textStyleSummaryViewTextStyle.apply(to: textStyleSummaryView.attributedStringValue)
     exampleTextView.attributedStringValue = exampleTextViewTextStyle.apply(to: example)
     textStyleSummaryView.attributedStringValue = textStyleSummaryViewTextStyle.apply(to: textStyleSummary)
     exampleTextViewTextStyle = textStyle
     exampleTextView.attributedStringValue = exampleTextViewTextStyle.apply(to: exampleTextView.attributedStringValue)
     previewView.fillColor = previewBackgroundColor
-    onPress = onClick
-    if pressed {
-      detailsView.fillColor = Colors.grey50
-    }
-  }
-
-  private func updateHoverState(with event: NSEvent) {
-    let hovered = bounds.contains(convert(event.locationInWindow, from: nil))
-    if hovered != self.hovered {
-      self.hovered = hovered
-
-      update()
-    }
-  }
-
-  public override func mouseEntered(with event: NSEvent) {
-    updateHoverState(with: event)
-  }
-
-  public override func mouseMoved(with event: NSEvent) {
-    updateHoverState(with: event)
-  }
-
-  public override func mouseDragged(with event: NSEvent) {
-    updateHoverState(with: event)
-  }
-
-  public override func mouseExited(with event: NSEvent) {
-    updateHoverState(with: event)
-  }
-
-  public override func mouseDown(with event: NSEvent) {
-    let pressed = bounds.contains(convert(event.locationInWindow, from: nil))
-    if pressed != self.pressed {
-      self.pressed = pressed
-
-      update()
-    }
-  }
-
-  public override func mouseUp(with event: NSEvent) {
-    let clicked = pressed && bounds.contains(convert(event.locationInWindow, from: nil))
-
-    if pressed {
-      pressed = false
-
-      update()
-    }
-
-    if clicked {
-      onPress?()
+    if selected {
+      detailsView.fillColor = Colors.lightblue600
+      textStyleSummaryViewTextStyle = TextStyles.regularInverse
+      textStyleSummaryView.attributedStringValue =
+        textStyleSummaryViewTextStyle.apply(to: textStyleSummaryView.attributedStringValue)
     }
   }
 }
