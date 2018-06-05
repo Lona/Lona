@@ -31,7 +31,7 @@ To work in Lona Studio, you'll need a properly configured _workspace_. A workspa
 
 Opening the material design directory in the `examples` directory of the repo is a good place to start.
 
-You can read more about these in the [file formats docs](./docs/file-formats/README.md). Without these, Lona Studio will not display any colors or text styles in the pickers.
+You can read more about these in the [file formats docs](../docs/file-formats/README.md). Without these, Lona Studio will not display any colors or text styles in the pickers.
 
 ### Creating a Workspace
 
