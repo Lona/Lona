@@ -26,6 +26,13 @@ private class DoubleClickableColorPreviewCard: ColorPreviewCard {
 
 class KeyHandlingCollectionView: NSCollectionView {
     public var onDeleteItem: ((Int) -> Void)?
+    public var onCopy: ((Int) -> Void)?
+
+    @IBAction func copy(_ sender: AnyObject) {
+        guard let item = selectionIndexPaths.first?.item else { return }
+
+        onCopy?(item)
+    }
 
     override func keyDown(with event: NSEvent) {
         guard let characters = event.charactersIgnoringModifiers,
