@@ -122,6 +122,41 @@ struct CSTextStyle {
             kerning: letterSpacing ?? 0,
             color: color ?? NSColor.black)
     }
+
+    func toData() -> CSData {
+        return CSData.Object([
+            "id": id.toData(),
+            "name": name.toData(),
+            "fontName": fontName?.toData() ?? CSData.Null,
+            "fontFamily": fontFamily?.toData() ?? CSData.Null,
+            "fontWeight": fontWeight?.toData() ?? CSData.Null,
+            "fontSize": fontSize?.toData() ?? CSData.Null,
+            "lineHeight": lineHeight?.toData() ?? CSData.Null,
+            "letterSpacing": letterSpacing?.toData() ?? CSData.Null,
+//            "color": color?.toData() ?? CSData.Null,
+            "extends": extends?.toData() ?? CSData.Null
+            ])
+    }
+
+    func toValue() -> CSValue {
+        let csType = type(of: self).csType
+        return CSValue(type: csType, data: CSValue.expand(type: csType, data: toData()))
+    }
+
+    static var csType: CSType {
+        return CSType.dictionary([
+            "id": (CSType.string, CSAccess.write),
+            "name": (CSType.string, CSAccess.write),
+            "fontName": (CSType.string.makeOptional(), CSAccess.write),
+            "fontFamily": (CSType.string.makeOptional(), CSAccess.write),
+            "fontWeight": (CSType.number.makeOptional(), CSAccess.write),
+            "fontSize": (CSType.number.makeOptional(), CSAccess.write),
+            "lineHeight": (CSType.number.makeOptional(), CSAccess.write),
+            "letterSpacing": (CSType.number.makeOptional(), CSAccess.write),
+//            "color": (CSType.number.makeOptional(), CSAccess.write),
+            "extends": (CSType.string.makeOptional(), CSAccess.write)
+            ])
+    }
 }
 
 extension CSTextStyle: Identify, Searchable {}
@@ -190,4 +225,49 @@ class CSTypography: CSPreferencesFile {
     }
 
     public static let unstyledDefaultFont = CSTextStyle(id: unstyledDefaultName, name: "Default")
+
+    static func save(list: CSData) {
+        data.set(keyPath: ["styles"], to: list)
+        data = data.removingKeysForNullValues()
+
+        save()
+
+        LonaPlugins.current.trigger(eventType: .onSaveTextStyles)
+    }
+
+    static func delete(at index: Int) {
+        guard var list = data["styles"]?.array else { return }
+
+        list.remove(at: index)
+
+        save(list: CSData.Array(list))
+    }
+
+    static func move(from sourceIndex: Int, to targetIndex: Int) {
+        guard var list = data["styles"]?.array else { return }
+
+        let item = list[sourceIndex]
+
+        list.remove(at: sourceIndex)
+
+        if sourceIndex < targetIndex {
+            list.insert(item, at: targetIndex - 1)
+        } else {
+            list.insert(item, at: targetIndex)
+        }
+
+        save(list: CSData.Array(list))
+    }
+
+    static func update(textStyle textStyleData: CSData, at index: Int) {
+        guard let list = data["styles"] else { return }
+
+        let updated = list.arrayValue.enumerated().map({ offset, element in
+            return index == offset
+                ? CSValue.compact(type: CSTextStyle.csType, data: textStyleData)
+                : element
+        })
+
+        save(list: CSData.Array(updated))
+    }
 }

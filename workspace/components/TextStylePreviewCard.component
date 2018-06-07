@@ -18,7 +18,7 @@
       }
     },
     {
-      "name" : "Default",
+      "name" : "Selected",
       "params" : {
         "example" : "The quick brown fox jumped over the lazy dog",
         "selected" : true,
@@ -27,12 +27,21 @@
       }
     },
     {
-      "name" : "Default",
+      "name" : "Inverse",
       "params" : {
         "example" : "The quick brown fox jumped over the lazy dog",
-        "previewBackgroundColor" : "black",
+        "inverse" : true,
         "textStyle" : "largeInverse",
-        "textStyleName" : "Title 1",
+        "textStyleSummary" : "Bold 46\/52"
+      }
+    },
+    {
+      "name" : "Selected Inverse",
+      "params" : {
+        "example" : "The quick brown fox jumped over the lazy dog",
+        "inverse" : true,
+        "selected" : true,
+        "textStyle" : "largeInverse",
         "textStyleSummary" : "Bold 46\/52"
       }
     }
@@ -75,16 +84,69 @@
       "type" : "AssignExpr"
     },
     {
-      "assignee" : [
-        "layers",
-        "Preview",
-        "backgroundColor"
+      "body" : [
+        {
+          "assignee" : [
+            "layers",
+            "Preview",
+            "backgroundColor"
+          ],
+          "content" : {
+            "type" : "LitExpr",
+            "value" : {
+              "data" : "grey900",
+              "type" : "Color"
+            }
+          },
+          "type" : "AssignExpr"
+        },
+        {
+          "assignee" : [
+            "layers",
+            "TopLine",
+            "backgroundColor"
+          ],
+          "content" : {
+            "type" : "LitExpr",
+            "value" : {
+              "data" : "grey900",
+              "type" : "Color"
+            }
+          },
+          "type" : "AssignExpr"
+        },
+        {
+          "assignee" : [
+            "layers",
+            "BottomLine",
+            "backgroundColor"
+          ],
+          "content" : {
+            "type" : "LitExpr",
+            "value" : {
+              "data" : "grey900",
+              "type" : "Color"
+            }
+          },
+          "type" : "AssignExpr"
+        }
       ],
-      "content" : [
-        "parameters",
-        "previewBackgroundColor"
-      ],
-      "type" : "AssignExpr"
+      "condition" : {
+        "left" : [
+          "parameters",
+          "inverse"
+        ],
+        "op" : "==",
+        "right" : {
+          "type" : "LitExpr",
+          "value" : {
+            "data" : true,
+            "type" : "Boolean"
+          }
+        },
+        "type" : "BinExpr"
+      },
+      "type" : "IfExpr"
     },
     {
       "body" : [
@@ -106,6 +168,36 @@
         {
           "assignee" : [
             "layers",
+            "TopLine",
+            "backgroundColor"
+          ],
+          "content" : {
+            "type" : "LitExpr",
+            "value" : {
+              "data" : "grey200",
+              "type" : "Color"
+            }
+          },
+          "type" : "AssignExpr"
+        },
+        {
+          "assignee" : [
+            "layers",
+            "BottomLine",
+            "backgroundColor"
+          ],
+          "content" : {
+            "type" : "LitExpr",
+            "value" : {
+              "data" : "grey200",
+              "type" : "Color"
+            }
+          },
+          "type" : "AssignExpr"
+        },
+        {
+          "assignee" : [
+            "layers",
             "TextStyleSummary",
             "textStyle"
           ],
@@ -117,6 +209,56 @@
             }
           },
           "type" : "AssignExpr"
+        },
+        {
+          "body" : [
+            {
+              "assignee" : [
+                "layers",
+                "TopLine",
+                "backgroundColor"
+              ],
+              "content" : {
+                "type" : "LitExpr",
+                "value" : {
+                  "data" : "grey700",
+                  "type" : "Color"
+                }
+              },
+              "type" : "AssignExpr"
+            },
+            {
+              "assignee" : [
+                "layers",
+                "BottomLine",
+                "backgroundColor"
+              ],
+              "content" : {
+                "type" : "LitExpr",
+                "value" : {
+                  "data" : "grey700",
+                  "type" : "Color"
+                }
+              },
+              "type" : "AssignExpr"
+            }
+          ],
+          "condition" : {
+            "left" : [
+              "parameters",
+              "inverse"
+            ],
+            "op" : "==",
+            "right" : {
+              "type" : "LitExpr",
+              "value" : {
+                "data" : true,
+                "type" : "Boolean"
+              }
+            },
+            "type" : "BinExpr"
+          },
+          "type" : "IfExpr"
         }
       ],
       "condition" : {
@@ -151,11 +293,11 @@
       "type" : "TextStyle"
     },
     {
-      "name" : "previewBackgroundColor",
-      "type" : "Color"
+      "name" : "selected",
+      "type" : "Boolean"
     },
     {
-      "name" : "selected",
+      "name" : "inverse",
       "type" : "Boolean"
     }
   ],
@@ -164,12 +306,32 @@
       {
         "children" : [
           {
+            "id" : "TopLine",
+            "params" : {
+              "alignSelf" : "stretch",
+              "backgroundColor" : "white",
+              "height" : 1
+            },
+            "type" : "Lona:View"
+          },
+          {
             "id" : "ExampleText",
             "params" : {
+              "marginLeft" : 20,
+              "marginRight" : 20,
               "numberOfLines" : 1,
               "text" : "Text goes here"
             },
             "type" : "Lona:Text"
+          },
+          {
+            "id" : "BottomLine",
+            "params" : {
+              "alignSelf" : "stretch",
+              "backgroundColor" : "white",
+              "height" : 1
+            },
+            "type" : "Lona:View"
           }
         ],
         "id" : "Preview",
@@ -177,8 +339,6 @@
           "alignSelf" : "stretch",
           "backgroundColor" : "white",
           "paddingBottom" : 16,
-          "paddingLeft" : 20,
-          "paddingRight" : 20,
           "paddingTop" : 16
         },
         "type" : "Lona:View"
