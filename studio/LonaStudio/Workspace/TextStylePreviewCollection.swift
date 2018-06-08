@@ -265,7 +265,6 @@ public class TextStylePreviewCollection: NSBox {
 
         collectionView.items = CSTypography.styles
 
-        // TODO: Not this
         _ = LonaPlugins.current.register(eventTypes: [.onSaveTextStyles, .onReloadWorkspace], handler: {
             self.collectionView.items = CSTypography.styles
             self.collectionView.reloadData()
@@ -285,9 +284,9 @@ public class TextStylePreviewCollection: NSBox {
 
         // TODO: This callback should propagate up to the root. Currently Lona doesn't
         // generate callbacks with params, so we'll handle it here for now.
-        collectionView.onClickTextStyle = { color in
-            guard let csTextStyle = CSTypography.styles.first(where: { $0.id == color }) else { return }
-            guard let index = CSTypography.styles.index(where: { $0.id == color }) else { return }
+        collectionView.onClickTextStyle = { textStyle in
+            guard let csTextStyle = CSTypography.styles.first(where: { $0.id == textStyle }) else { return }
+            guard let index = CSTypography.styles.index(where: { $0.id == textStyle }) else { return }
 
             let editor = DictionaryEditor(
                 value: csTextStyle.toValue(),

@@ -72,16 +72,19 @@ function createImageNode(layer) {
 function createNode(layer) {
   switch (layer.type) {
     case "View":
+    case "Lona:View":
       return createViewNode(layer);
     case "Text":
+    case "Lona:Text":
       return createTextNode(layer);
     case "Image":
+    case "Lona:Image":
       return createImageNode(layer);
   }
   if (layer._class) {
     return layer;
   }
-  throw new Error("Invalid layer type");
+  throw new Error("Invalid layer type", layer.type);
 }
 
 function convertArtboard(parameters) {
