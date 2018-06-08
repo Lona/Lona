@@ -95,7 +95,7 @@ func attributedString(for configuredLayer: ConfiguredLayer) -> NSAttributedStrin
         let shadowAttributeText = shadow.attributeDictionary()
         attributeDict.merge(with: shadowAttributeText)
     }
-    
+
     return NSAttributedString(string: text, attributes: attributeDict)
 }
 
