@@ -52,7 +52,7 @@ function anchorFromString(param) {
       throw [
             Caml_builtin_exceptions.match_failure,
             [
-              "/Users/devinabbott/Projects/Lona/compiler/core/src/utils/constraint.re",
+              "/Users/devin_abbott/Projects/ComponentStudio/ComponentStudio/compiler/core/src/utils/constraint.re",
               57,
               2
             ]
@@ -72,7 +72,7 @@ function cmpFromString(param) {
       throw [
             Caml_builtin_exceptions.match_failure,
             [
-              "/Users/devinabbott/Projects/Lona/compiler/core/src/utils/constraint.re",
+              "/Users/devin_abbott/Projects/ComponentStudio/ComponentStudio/compiler/core/src/utils/constraint.re",
               68,
               2
             ]

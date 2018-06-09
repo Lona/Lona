@@ -16,6 +16,7 @@ var StringMap$LonaCompilerCore        = require("../containers/stringMap.bs.js")
 var Constraint$LonaCompilerCore       = require("../utils/constraint.bs.js");
 var SwiftLogic$LonaCompilerCore       = require("./swiftLogic.bs.js");
 var SwiftFormat$LonaCompilerCore      = require("./swiftFormat.bs.js");
+var ParameterKey$LonaCompilerCore     = require("../core/parameterKey.bs.js");
 var SwiftDocument$LonaCompilerCore    = require("./swiftDocument.bs.js");
 var AppkitPressable$LonaCompilerCore  = require("./appkit/appkitPressable.bs.js");
 var SwiftHelperClass$LonaCompilerCore = require("./swiftHelperClass.bs.js");
@@ -66,7 +67,7 @@ function generate(options, swiftOptions, name, colors, textStyles, getComponent,
                   /* [] */0
                 ],
                 pattern: /* IdentifierPattern */Block.__(0, [{
-                      identifier: /* SwiftIdentifier */Block.__(8, [parameter[/* name */0]]),
+                      identifier: /* SwiftIdentifier */Block.__(8, [ParameterKey$LonaCompilerCore.toString(parameter[/* name */0])]),
                       annotation: /* Some */[SwiftDocument$LonaCompilerCore.typeAnnotationDoc(swiftOptions[/* framework */0], parameter[/* ltype */1])]
                     }]),
                 init: /* None */0,
@@ -398,7 +399,7 @@ function generate(options, swiftOptions, name, colors, textStyles, getComponent,
   var initParameterDoc = function (parameter) {
     return /* Parameter */Block.__(17, [{
                 externalName: /* None */0,
-                localName: parameter[/* name */0],
+                localName: ParameterKey$LonaCompilerCore.toString(parameter[/* name */0]),
                 annotation: SwiftDocument$LonaCompilerCore.typeAnnotationDoc(swiftOptions[/* framework */0], parameter[/* ltype */1]),
                 defaultValue: /* None */0
               }]);
@@ -408,12 +409,12 @@ function generate(options, swiftOptions, name, colors, textStyles, getComponent,
                 left: /* MemberExpression */Block.__(1, [/* :: */[
                       /* SwiftIdentifier */Block.__(8, ["self"]),
                       /* :: */[
-                        /* SwiftIdentifier */Block.__(8, [parameter[/* name */0]]),
+                        /* SwiftIdentifier */Block.__(8, [ParameterKey$LonaCompilerCore.toString(parameter[/* name */0])]),
                         /* [] */0
                       ]
                     ]]),
                 operator: "=",
-                right: /* SwiftIdentifier */Block.__(8, [parameter[/* name */0]])
+                right: /* SwiftIdentifier */Block.__(8, [ParameterKey$LonaCompilerCore.toString(parameter[/* name */0])])
               }]);
   };
   var initializerCoderDoc = function () {
@@ -542,7 +543,7 @@ function generate(options, swiftOptions, name, colors, textStyles, getComponent,
                                       name: /* SwiftIdentifier */Block.__(8, ["init"]),
                                       arguments: List.map((function (param) {
                                               return /* FunctionCallArgument */Block.__(18, [{
-                                                          name: /* Some */[/* SwiftIdentifier */Block.__(8, [param[/* name */0]])],
+                                                          name: /* Some */[/* SwiftIdentifier */Block.__(8, [ParameterKey$LonaCompilerCore.toString(param[/* name */0])])],
                                                           value: SwiftDocument$LonaCompilerCore.defaultValueForLonaType(swiftOptions[/* framework */0], colors, textStyles, param[/* ltype */1])
                                                         }]);
                                             }), List.filter((function (param) {
@@ -591,7 +592,7 @@ function generate(options, swiftOptions, name, colors, textStyles, getComponent,
         logic = parameterValue ? Logic$LonaCompilerCore.assignmentForLayerParameter(layer, name, parameterValue[0]) : Logic$LonaCompilerCore.defaultAssignmentForLayerParameter(colors, textStyles, layer, name);
       } else {
         var param$1 = List.find((function (param) {
-                return +(param[/* name */0] === name);
+                return +(ParameterKey$LonaCompilerCore.toString(param[/* name */0]) === name);
               }), Decode$LonaCompilerCore.Component[/* parameters */0](Curry._1(getComponent, match[0])));
         logic = Logic$LonaCompilerCore.assignmentForLayerParameter(layer, name, Logic$LonaCompilerCore.defaultValueForType(param$1[/* ltype */1]));
       }

@@ -85,7 +85,7 @@ function toJavaScriptAST(node) {
           throw [
                 Caml_builtin_exceptions.match_failure,
                 [
-                  "/Users/devinabbott/Projects/Lona/compiler/core/src/javaScript/javaScriptLogic.re",
+                  "/Users/devin_abbott/Projects/ComponentStudio/ComponentStudio/compiler/core/src/javaScript/javaScriptLogic.re",
                   20,
                   2
                 ]

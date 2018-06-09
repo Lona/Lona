@@ -89,8 +89,9 @@ module Types = {
 };
 
 module Parameters = {
+  let parameterKey = json => json |> string |> ParameterKey.fromString;
   let parameter = json => {
-    name: json |> field("name", string),
+    name: json |> field("name", parameterKey),
     ltype: json |> field("type", Types.lonaType),
     defaultValue: json |> optional(field("defaultValue", x => x))
   };
@@ -119,7 +120,9 @@ module Layer = {
              let param =
                getComponent(name)
                |> field("params", list(Parameters.parameter))
-               |> List.find((param: parameter) => param.name == key);
+               |> List.find((param: parameter) =>
+                    param.name == ParameterKey.fromString(key)
+                  );
              switch param {
              | _ => {ltype: param.ltype, data: value}
              | exception _ =>

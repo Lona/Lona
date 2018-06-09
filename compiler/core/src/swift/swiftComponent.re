@@ -85,7 +85,8 @@ let generate =
       "modifiers": [AccessLevelModifier(PublicModifier)],
       "pattern":
         IdentifierPattern({
-          "identifier": SwiftIdentifier(parameter.name),
+          "identifier":
+            SwiftIdentifier(parameter.name |> ParameterKey.toString),
           "annotation":
             Some(
               parameter.ltype
@@ -334,7 +335,7 @@ let generate =
   let initParameterDoc = (parameter: Decode.parameter) =>
     Parameter({
       "externalName": None,
-      "localName": parameter.name,
+      "localName": parameter.name |> ParameterKey.toString,
       "annotation":
         parameter.ltype
         |> SwiftDocument.typeAnnotationDoc(swiftOptions.framework),
@@ -345,10 +346,10 @@ let generate =
       "left":
         MemberExpression([
           SwiftIdentifier("self"),
-          SwiftIdentifier(parameter.name)
+          SwiftIdentifier(parameter.name |> ParameterKey.toString)
         ]),
       "operator": "=",
-      "right": SwiftIdentifier(parameter.name)
+      "right": SwiftIdentifier(parameter.name |> ParameterKey.toString)
     });
   let initializerCoderDoc = () =>
     /* required init?(coder aDecoder: NSCoder) {
@@ -449,7 +450,12 @@ let generate =
                     |> List.filter(param => ! isFunctionParameter(param))
                     |> List.map((param: Decode.parameter) =>
                          FunctionCallArgument({
-                           "name": Some(SwiftIdentifier(param.name)),
+                           "name":
+                             Some(
+                               SwiftIdentifier(
+                                 param.name |> ParameterKey.toString
+                               )
+                             ),
                            "value":
                              Document.defaultValueForLonaType(
                                swiftOptions.framework,
@@ -504,7 +510,9 @@ let generate =
           let param =
             getComponent(componentName)
             |> Decode.Component.parameters
-            |> List.find((param: Types.parameter) => param.name == name);
+            |> List.find((param: Types.parameter) =>
+                 ParameterKey.toString(param.name) == name
+               );
           Logic.assignmentForLayerParameter(
             layer,
             name,

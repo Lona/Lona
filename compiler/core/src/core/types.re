@@ -56,7 +56,7 @@ type cmp =
 
 [@bs.deriving jsConverter]
 type parameter = {
-  name: string,
+  name: ParameterKey.t,
   ltype: lonaType,
   defaultValue: option(Js.Json.t)
 };
