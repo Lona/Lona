@@ -218,6 +218,31 @@ enum CSData: Equatable, CustomDebugStringConvertible {
         return merged
     }
 
+    func removingKeysForNullValues(deep: Bool = true) -> CSData {
+        var updated = CSData.Object([:])
+
+        guard let object = self.object else { return self }
+
+        object.forEach({ (key, value) in
+            switch value {
+            case .Null:
+                break
+            case let .Array(list):
+                updated[key] = deep
+                    ? CSData.Array(list.map({ $0.removingKeysForNullValues(deep: deep) }))
+                    : value
+            case .Object:
+                updated[key] = deep
+                    ? value.removingKeysForNullValues(deep: deep)
+                    : value
+            default:
+                updated[key] = value
+            }
+        })
+
+        return updated
+    }
+
     func toAny() -> Any {
         switch self {
         case .Null:

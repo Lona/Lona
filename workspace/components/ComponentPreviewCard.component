@@ -13,6 +13,13 @@
       "params" : {
         "componentName" : "Lona Component"
       }
+    },
+    {
+      "name" : "Default",
+      "params" : {
+        "componentName" : "Lona Component",
+        "selected" : true
+      }
     }
   ],
   "logic" : [
@@ -41,18 +48,6 @@
       "type" : "AssignExpr"
     },
     {
-      "assignee" : [
-        "layers",
-        "Container",
-        "onPress"
-      ],
-      "content" : [
-        "parameters",
-        "onClick"
-      ],
-      "type" : "AssignExpr"
-    },
-    {
       "body" : [
         {
           "assignee" : [
@@ -63,7 +58,7 @@
           "content" : {
             "type" : "LitExpr",
             "value" : {
-              "data" : "grey200",
+              "data" : "lightblue600",
               "type" : "Color"
             }
           },
@@ -78,8 +73,38 @@
           "content" : {
             "type" : "LitExpr",
             "value" : {
-              "data" : "grey50",
+              "data" : "lightblue600",
               "type" : "Color"
+            }
+          },
+          "type" : "AssignExpr"
+        },
+        {
+          "assignee" : [
+            "layers",
+            "Divider",
+            "backgroundColor"
+          ],
+          "content" : {
+            "type" : "LitExpr",
+            "value" : {
+              "data" : "lightblue700",
+              "type" : "Color"
+            }
+          },
+          "type" : "AssignExpr"
+        },
+        {
+          "assignee" : [
+            "layers",
+            "ComponentName",
+            "textStyle"
+          ],
+          "content" : {
+            "type" : "LitExpr",
+            "value" : {
+              "data" : "largeInverse",
+              "type" : "TextStyle"
             }
           },
           "type" : "AssignExpr"
@@ -87,9 +112,8 @@
       ],
       "condition" : {
         "left" : [
-          "layers",
-          "Container",
-          "pressed"
+          "parameters",
+          "selected"
         ],
         "op" : "==",
         "right" : {
@@ -110,10 +134,8 @@
       "type" : "String"
     },
     {
-      "name" : "onClick",
-      "type" : {
-        "name" : "Function"
-      }
+      "name" : "selected",
+      "type" : "Boolean"
     }
   ],
   "root" : {

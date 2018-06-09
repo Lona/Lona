@@ -56,7 +56,7 @@ func getLayerFontName(configuredLayer: ConfiguredLayer) -> String {
         for: layer.name).string ?? layer.font ?? "regular"
 }
 
-func getLayerFont(configuredLayer: ConfiguredLayer) -> AttributedFont {
+func getLayerFont(configuredLayer: ConfiguredLayer) -> TextStyle {
     return CSTypography.getFontBy(id: getLayerFontName(configuredLayer: configuredLayer)).font
 }
 
@@ -81,12 +81,11 @@ func numberValue(for configuredLayer: ConfiguredLayer, attributeChain: [String],
 
 func attributedString(for configuredLayer: ConfiguredLayer) -> NSAttributedString {
     let text = getLayerText(configuredLayer: configuredLayer)
-
-    // Font
-    var attributeDict = getLayerFont(configuredLayer: configuredLayer).attributeDictionary
+    let textStyle = getLayerFont(configuredLayer: configuredLayer)
+    var attributeDict = textStyle.attributeDictionary
 
     // Alignment
-    let titleParagraphStyle = NSMutableParagraphStyle()
+    let titleParagraphStyle = textStyle.paragraphStyle
     titleParagraphStyle.alignment = NSTextAlignment(configuredLayer.layer.textAlign ?? "left")
     attributeDict[.paragraphStyle] = titleParagraphStyle
 
@@ -96,6 +95,7 @@ func attributedString(for configuredLayer: ConfiguredLayer) -> NSAttributedStrin
         let shadowAttributeText = shadow.attributeDictionary()
         attributeDict.merge(with: shadowAttributeText)
     }
+
     return NSAttributedString(string: text, attributes: attributeDict)
 }
 

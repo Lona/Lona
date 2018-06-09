@@ -12,6 +12,7 @@ import AppKit
 enum LonaPluginActivationEvent: String, Decodable {
     case onSaveComponent = "onSave:component"
     case onSaveColors = "onSave:colors"
+    case onSaveTextStyles = "onSave:textStyles"
     case onReloadWorkspace = "onReload:workspace"
 }
 

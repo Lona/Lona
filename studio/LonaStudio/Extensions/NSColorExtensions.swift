@@ -10,10 +10,14 @@ import Foundation
 import AppKit
 
 extension NSColor {
+    var isLightColor: Bool {
+        guard let rgbColor = usingColorSpace(.genericRGB) else { return true }
+        let average = (rgbColor.redComponent + rgbColor.greenComponent + rgbColor.blueComponent) / 3
+        return average >= 0.5
+    }
+
     var contrastingLabelColor: NSColor {
-        guard let rgbColor = usingColorSpace(.genericRGB) else { return NSColor.black }
-        let average = (rgbColor.redComponent + rgbColor.greenComponent + rgbColor.blueComponent) / 3//
-        return (average >= 0.5) ? NSColor.black : NSColor.white
+        return isLightColor ? NSColor.black : NSColor.white
     }
 
     var hexString: String {

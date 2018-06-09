@@ -29,7 +29,7 @@
             "id" : "Title",
             "params" : {
               "font" : "title",
-              "text" : "Colors"
+              "text" : "Text Styles"
             },
             "type" : "Lona:Text"
           },
@@ -42,11 +42,11 @@
             "type" : "Lona:View"
           },
           {
-            "id" : "ColorPreviewCollection",
+            "id" : "TextStylePreviewCollection",
             "params" : {
 
             },
-            "type" : "ColorPreviewCollection"
+            "type" : "TextStylePreviewCollection"
           }
         ],
         "id" : "Inner",

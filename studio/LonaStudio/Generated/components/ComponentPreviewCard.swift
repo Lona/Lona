@@ -7,8 +7,9 @@ public class ComponentPreviewCard: NSBox {
 
   // MARK: Lifecycle
 
-  public init(componentName: String) {
+  public init(componentName: String, selected: Bool) {
     self.componentName = componentName
+    self.selected = selected
 
     super.init(frame: .zero)
 
@@ -16,33 +17,22 @@ public class ComponentPreviewCard: NSBox {
     setUpConstraints()
 
     update()
-
-    addTrackingArea(trackingArea)
   }
 
   public convenience init() {
-    self.init(componentName: "")
+    self.init(componentName: "", selected: false)
   }
 
   public required init?(coder aDecoder: NSCoder) {
     fatalError("init(coder:) has not been implemented")
   }
 
-  deinit {
-    removeTrackingArea(trackingArea)
-  }
-
   // MARK: Public
 
   public var componentName: String { didSet { update() } }
-  public var onClick: (() -> Void)? { didSet { update() } }
+  public var selected: Bool { didSet { update() } }
 
   // MARK: Private
-
-  private lazy var trackingArea = NSTrackingArea(
-    rect: self.frame,
-    options: [.mouseEnteredAndExited, .activeAlways, .mouseMoved, .inVisibleRect],
-    owner: self)
 
   private var previewView = NSBox()
   private var componentPreviewView = ComponentPreview()
@@ -84,10 +74,6 @@ public class ComponentPreviewCard: NSBox {
   private var componentNameViewTrailingMargin: CGFloat = 0
   private var componentNameViewBottomMargin: CGFloat = 0
   private var componentNameViewLeadingMargin: CGFloat = 0
-
-  private var hovered = false
-  private var pressed = false
-  private var onPress: (() -> Void)?
 
   private var previewViewTopAnchorConstraint: NSLayoutConstraint?
   private var previewViewLeadingAnchorConstraint: NSLayoutConstraint?
@@ -135,7 +121,6 @@ public class ComponentPreviewCard: NSBox {
     borderColor = Colors.grey300
     cornerRadius = 4
     borderWidth = 1
-    dividerView.fillColor = Colors.grey300
     componentNameViewTextStyle = TextStyles.large
     componentNameView.attributedStringValue =
       componentNameViewTextStyle.apply(to: componentNameView.attributedStringValue)
@@ -287,62 +272,21 @@ public class ComponentPreviewCard: NSBox {
   }
 
   private func update() {
+    componentNameViewTextStyle = TextStyles.large
+    componentNameView.attributedStringValue =
+      componentNameViewTextStyle.apply(to: componentNameView.attributedStringValue)
     detailsView.fillColor = #colorLiteral(red: 0, green: 0, blue: 0, alpha: 0)
+    dividerView.fillColor = Colors.grey300
     previewView.fillColor = Colors.grey100
     componentNameView.attributedStringValue = componentNameViewTextStyle.apply(to: componentName)
     componentPreviewView.componentName = componentName
-    onPress = onClick
-    if pressed {
-      previewView.fillColor = Colors.grey200
-      detailsView.fillColor = Colors.grey50
-    }
-  }
-
-  private func updateHoverState(with event: NSEvent) {
-    let hovered = bounds.contains(convert(event.locationInWindow, from: nil))
-    if hovered != self.hovered {
-      self.hovered = hovered
-
-      update()
-    }
-  }
-
-  public override func mouseEntered(with event: NSEvent) {
-    updateHoverState(with: event)
-  }
-
-  public override func mouseMoved(with event: NSEvent) {
-    updateHoverState(with: event)
-  }
-
-  public override func mouseDragged(with event: NSEvent) {
-    updateHoverState(with: event)
-  }
-
-  public override func mouseExited(with event: NSEvent) {
-    updateHoverState(with: event)
-  }
-
-  public override func mouseDown(with event: NSEvent) {
-    let pressed = bounds.contains(convert(event.locationInWindow, from: nil))
-    if pressed != self.pressed {
-      self.pressed = pressed
-
-      update()
-    }
-  }
-
-  public override func mouseUp(with event: NSEvent) {
-    let clicked = pressed && bounds.contains(convert(event.locationInWindow, from: nil))
-
-    if pressed {
-      pressed = false
-
-      update()
-    }
-
-    if clicked {
-      onPress?()
+    if selected {
+      previewView.fillColor = Colors.lightblue600
+      detailsView.fillColor = Colors.lightblue600
+      dividerView.fillColor = Colors.lightblue700
+      componentNameViewTextStyle = TextStyles.largeInverse
+      componentNameView.attributedStringValue =
+        componentNameViewTextStyle.apply(to: componentNameView.attributedStringValue)
     }
   }
 }

@@ -30,9 +30,9 @@ public class ComponentBrowser: NSBox {
   private var titleViewTextStyle = TextStyles.title
 
   private var topPadding: CGFloat = 48
-  private var trailingPadding: CGFloat = 48
+  private var trailingPadding: CGFloat = 64
   private var bottomPadding: CGFloat = 48
-  private var leadingPadding: CGFloat = 48
+  private var leadingPadding: CGFloat = 64
   private var innerViewTopMargin: CGFloat = 0
   private var innerViewTrailingMargin: CGFloat = 0
   private var innerViewBottomMargin: CGFloat = 0
@@ -56,8 +56,9 @@ public class ComponentBrowser: NSBox {
 
   private var innerViewTopAnchorConstraint: NSLayoutConstraint?
   private var innerViewBottomAnchorConstraint: NSLayoutConstraint?
+  private var innerViewLeadingAnchorConstraint: NSLayoutConstraint?
   private var innerViewCenterXAnchorConstraint: NSLayoutConstraint?
-  private var innerViewWidthAnchorConstraint: NSLayoutConstraint?
+  private var innerViewTrailingAnchorConstraint: NSLayoutConstraint?
   private var titleViewTopAnchorConstraint: NSLayoutConstraint?
   private var titleViewLeadingAnchorConstraint: NSLayoutConstraint?
   private var titleViewTrailingAnchorConstraint: NSLayoutConstraint?
@@ -105,8 +106,13 @@ public class ComponentBrowser: NSBox {
     let innerViewBottomAnchorConstraint = innerView
       .bottomAnchor
       .constraint(equalTo: bottomAnchor, constant: -(bottomPadding + innerViewBottomMargin))
+    let innerViewLeadingAnchorConstraint = innerView
+      .leadingAnchor
+      .constraint(equalTo: leadingAnchor, constant: leadingPadding + innerViewLeadingMargin)
     let innerViewCenterXAnchorConstraint = innerView.centerXAnchor.constraint(equalTo: centerXAnchor, constant: 0)
-    let innerViewWidthAnchorConstraint = innerView.widthAnchor.constraint(equalToConstant: 840)
+    let innerViewTrailingAnchorConstraint = innerView
+      .trailingAnchor
+      .constraint(equalTo: trailingAnchor, constant: -(trailingPadding + innerViewTrailingMargin))
     let titleViewTopAnchorConstraint = titleView
       .topAnchor
       .constraint(equalTo: innerView.topAnchor, constant: innerViewTopPadding + titleViewTopMargin)
@@ -115,7 +121,9 @@ public class ComponentBrowser: NSBox {
       .constraint(equalTo: innerView.leadingAnchor, constant: innerViewLeadingPadding + titleViewLeadingMargin)
     let titleViewTrailingAnchorConstraint = titleView
       .trailingAnchor
-      .constraint(equalTo: innerView.trailingAnchor, constant: -(innerViewTrailingPadding + titleViewTrailingMargin))
+      .constraint(
+        lessThanOrEqualTo: innerView.trailingAnchor,
+        constant: -(innerViewTrailingPadding + titleViewTrailingMargin))
     let spacerViewTopAnchorConstraint = spacerView
       .topAnchor
       .constraint(equalTo: titleView.bottomAnchor, constant: titleViewBottomMargin + spacerViewTopMargin)
@@ -150,8 +158,9 @@ public class ComponentBrowser: NSBox {
     NSLayoutConstraint.activate([
       innerViewTopAnchorConstraint,
       innerViewBottomAnchorConstraint,
+      innerViewLeadingAnchorConstraint,
       innerViewCenterXAnchorConstraint,
-      innerViewWidthAnchorConstraint,
+      innerViewTrailingAnchorConstraint,
       titleViewTopAnchorConstraint,
       titleViewLeadingAnchorConstraint,
       titleViewTrailingAnchorConstraint,
@@ -167,8 +176,9 @@ public class ComponentBrowser: NSBox {
 
     self.innerViewTopAnchorConstraint = innerViewTopAnchorConstraint
     self.innerViewBottomAnchorConstraint = innerViewBottomAnchorConstraint
+    self.innerViewLeadingAnchorConstraint = innerViewLeadingAnchorConstraint
     self.innerViewCenterXAnchorConstraint = innerViewCenterXAnchorConstraint
-    self.innerViewWidthAnchorConstraint = innerViewWidthAnchorConstraint
+    self.innerViewTrailingAnchorConstraint = innerViewTrailingAnchorConstraint
     self.titleViewTopAnchorConstraint = titleViewTopAnchorConstraint
     self.titleViewLeadingAnchorConstraint = titleViewLeadingAnchorConstraint
     self.titleViewTrailingAnchorConstraint = titleViewTrailingAnchorConstraint
@@ -184,8 +194,9 @@ public class ComponentBrowser: NSBox {
     // For debugging
     innerViewTopAnchorConstraint.identifier = "innerViewTopAnchorConstraint"
     innerViewBottomAnchorConstraint.identifier = "innerViewBottomAnchorConstraint"
+    innerViewLeadingAnchorConstraint.identifier = "innerViewLeadingAnchorConstraint"
     innerViewCenterXAnchorConstraint.identifier = "innerViewCenterXAnchorConstraint"
-    innerViewWidthAnchorConstraint.identifier = "innerViewWidthAnchorConstraint"
+    innerViewTrailingAnchorConstraint.identifier = "innerViewTrailingAnchorConstraint"
     titleViewTopAnchorConstraint.identifier = "titleViewTopAnchorConstraint"
     titleViewLeadingAnchorConstraint.identifier = "titleViewLeadingAnchorConstraint"
     titleViewTrailingAnchorConstraint.identifier = "titleViewTrailingAnchorConstraint"

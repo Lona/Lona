@@ -11,6 +11,18 @@ import Foundation
 
 private let ITEM_IDENTIFIER = NSUserInterfaceItemIdentifier(rawValue: "component")
 
+private class DoubleClickableComponentPreviewCard: ComponentPreviewCard {
+    var onDoubleClick: (() -> Void)?
+
+    override func mouseDown(with event: NSEvent) {
+        if event.clickCount == 2 {
+            onDoubleClick?()
+        } else {
+            super.mouseDown(with: event)
+        }
+    }
+}
+
 class ComponentPreviewCollectionView: NSView {
 
     // MARK: - Lifecycle
@@ -31,31 +43,30 @@ class ComponentPreviewCollectionView: NSView {
     // MARK: - Public
 
     public var items: [LonaModule.ComponentFile] = [] { didSet { update() } }
-    public var onClickComponent: ((URL) -> Void)?
+    public var onClickComponent: ((URL) -> Void)? { didSet { update(withoutReloading: true) } }
+    public var onCopy: ((Int) -> Void)? { didSet { update(withoutReloading: true) } }
 
     // MARK: - Private
 
-    private let collectionView = NSCollectionView(frame: .zero)
+    private let collectionView = KeyHandlingCollectionView(frame: .zero)
     private let scrollView = NSScrollView()
 
     private func setUpViews() {
         wantsLayer = true
 
-        let gridLayout = NSCollectionViewGridLayout()
-        gridLayout.minimumItemSize = NSSize(width: 240, height: 240)
-        gridLayout.maximumItemSize = NSSize(width: 264, height: 240)
-        gridLayout.minimumLineSpacing = 24
-        gridLayout.minimumInteritemSpacing = 24
-        gridLayout.margins = NSEdgeInsetsZero
-        gridLayout.maximumNumberOfColumns = 3
+        let flowLayout = NSCollectionViewFlowLayout()
+        flowLayout.minimumLineSpacing = 24
+        flowLayout.minimumInteritemSpacing = 12
+        flowLayout.itemSize = NSSize(width: 260, height: 240)
 
-        collectionView.collectionViewLayout = gridLayout
+        collectionView.collectionViewLayout = flowLayout
         collectionView.delegate = self
         collectionView.dataSource = self
         collectionView.backgroundColors = [NSColor.clear]
         collectionView.register(
             ComponentPreviewItemViewController.self,
             forItemWithIdentifier: ITEM_IDENTIFIER)
+        collectionView.isSelectable = true
 
         scrollView.verticalScrollElasticity = .allowed
         scrollView.horizontalScrollElasticity = .allowed
@@ -74,8 +85,12 @@ class ComponentPreviewCollectionView: NSView {
         scrollView.translatesAutoresizingMaskIntoConstraints = false
     }
 
-    private func update() {
-        collectionView.reloadData()
+    private func update(withoutReloading: Bool = false) {
+        if !withoutReloading {
+            collectionView.reloadData()
+        }
+
+        collectionView.onCopy = onCopy
     }
 }
 
@@ -105,10 +120,10 @@ extension ComponentPreviewCollectionView: NSCollectionViewDataSource {
             withIdentifier: ITEM_IDENTIFIER,
             for: indexPath) as! ComponentPreviewItemViewController
 
-        if let componentPreviewCard = item.view as? ComponentPreviewCard {
+        if let componentPreviewCard = item.view as? DoubleClickableComponentPreviewCard {
             let componentFile = items[indexPath.item]
             componentPreviewCard.componentName = componentFile.name
-            componentPreviewCard.onClick = {
+            componentPreviewCard.onDoubleClick = {
                 self.onClickComponent?(componentFile.url)
             }
         }
@@ -121,7 +136,16 @@ extension ComponentPreviewCollectionView: NSCollectionViewDataSource {
 
 class ComponentPreviewItemViewController: NSCollectionViewItem {
     override func loadView() {
-        view = ComponentPreviewCard()
+        view = DoubleClickableComponentPreviewCard()
+    }
+
+    override var isSelected: Bool {
+        get {
+            return (view as? DoubleClickableComponentPreviewCard)?.selected ?? false
+        }
+        set {
+            (view as? DoubleClickableComponentPreviewCard)?.selected = newValue
+        }
     }
 }
 
@@ -169,6 +193,34 @@ public class ComponentPreviewCollection: NSBox {
         }
 
         _ = LonaPlugins.current.register(eventTypes: [.onSaveColors, .onSaveComponent, .onReloadWorkspace], handler: updateHandler)
+
+        collectionView.onCopy = { index in
+            let item = self.collectionView.items[index]
+
+            guard let component = LonaModule.current.component(named: item.name),
+                let canvas = component.computedCanvases().first,
+                let caseItem = component.computedCases(for: canvas).first
+                else { return }
+
+            let config = ComponentConfiguration(
+                component: component,
+                arguments: caseItem.value.objectValue,
+                canvas: canvas
+            )
+
+            let canvasView = CanvasView(
+                canvas: canvas,
+                rootLayer: component.rootLayer,
+                config: config,
+                options: [RenderOption.assetScale(1)]
+            )
+
+            NSPasteboard.general.clearContents()
+
+            if let data = canvasView.dataRepresentation(scaledBy: 1), let image = NSImage(data: data) {
+                NSPasteboard.general.writeObjects([image])
+            }
+        }
 
         // TODO: This callback should propagate up to the root. Currently Lona doesn't
         // generate callbacks with params, so we'll handle it here for now.

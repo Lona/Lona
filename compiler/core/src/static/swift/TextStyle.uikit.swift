@@ -1,7 +1,7 @@
 import Foundation
 import UIKit
 
-public class AttributedFont {
+public class TextStyle {
   public let family: String?
   public let name: String?
   public let weight: UIFont.Weight
@@ -39,8 +39,8 @@ public class AttributedFont {
     kerning: Double? = nil,
     color: UIColor? = nil,
     alignment: NSTextAlignment? = nil
-    ) -> AttributedFont {
-    return AttributedFont(
+    ) -> TextStyle {
+    return TextStyle(
       family: family ?? self.family,
       name: name ?? self.name,
       weight: weight ?? self.weight,

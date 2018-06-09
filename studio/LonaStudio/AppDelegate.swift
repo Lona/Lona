@@ -91,6 +91,7 @@ class AppDelegate: NSObject, NSApplicationDelegate {
 
             let componentBrowser = ComponentBrowser()
             let colorBrowser = ColorBrowser()
+            let textStyleBrowser = TextStyleBrowser()
 
             toolbar.onChangeTab = { tab in
                 switch tab {
@@ -98,6 +99,8 @@ class AppDelegate: NSObject, NSApplicationDelegate {
                     window.contentView = componentBrowser
                 case .colors:
                     window.contentView = colorBrowser
+                case .textStyles:
+                    window.contentView = textStyleBrowser
                 default:
                     window.contentView = NSView()
                 }

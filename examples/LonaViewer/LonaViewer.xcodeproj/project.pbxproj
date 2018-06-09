@@ -20,7 +20,6 @@
 		12962560204C70280057CDFF /* Generated.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1296255F204C70280057CDFF /* Generated.swift */; };
 		12BBFCF0206A8BCD0041620C /* Generated.swift in Sources */ = {isa = PBXBuildFile; fileRef = 12BBFCEF206A8BCD0041620C /* Generated.swift */; };
 		12BBFDDA206B02720041620C /* TextStyles.swift in Sources */ = {isa = PBXBuildFile; fileRef = 12BBFDC4206B02720041620C /* TextStyles.swift */; };
-		12BBFDDB206B02720041620C /* AttributedFont.swift in Sources */ = {isa = PBXBuildFile; fileRef = 12BBFDC5206B02720041620C /* AttributedFont.swift */; };
 		12BBFDDC206B02720041620C /* LocalAsset.swift in Sources */ = {isa = PBXBuildFile; fileRef = 12BBFDC7206B02720041620C /* LocalAsset.swift */; };
 		12BBFDDD206B02720041620C /* Assign.swift in Sources */ = {isa = PBXBuildFile; fileRef = 12BBFDC9206B02720041620C /* Assign.swift */; };
 		12BBFDDE206B02720041620C /* If.swift in Sources */ = {isa = PBXBuildFile; fileRef = 12BBFDCA206B02720041620C /* If.swift */; };
@@ -36,7 +35,6 @@
 		12BBFDE8206B02720041620C /* Colors.swift in Sources */ = {isa = PBXBuildFile; fileRef = 12BBFDD7206B02720041620C /* Colors.swift */; };
 		12BBFDE9206B02720041620C /* icon_128x128.png in Resources */ = {isa = PBXBuildFile; fileRef = 12BBFDD9206B02720041620C /* icon_128x128.png */; };
 		12BBFE02206B02AC0041620C /* TextStyles.swift in Sources */ = {isa = PBXBuildFile; fileRef = 12BBFDEB206B02AC0041620C /* TextStyles.swift */; };
-		12BBFE03206B02AC0041620C /* AttributedFont.swift in Sources */ = {isa = PBXBuildFile; fileRef = 12BBFDEC206B02AC0041620C /* AttributedFont.swift */; };
 		12BBFE04206B02AC0041620C /* LocalAsset.swift in Sources */ = {isa = PBXBuildFile; fileRef = 12BBFDEE206B02AC0041620C /* LocalAsset.swift */; };
 		12BBFE05206B02AC0041620C /* Assign.swift in Sources */ = {isa = PBXBuildFile; fileRef = 12BBFDF0206B02AC0041620C /* Assign.swift */; };
 		12BBFE06206B02AC0041620C /* If.swift in Sources */ = {isa = PBXBuildFile; fileRef = 12BBFDF1206B02AC0041620C /* If.swift */; };
@@ -52,6 +50,8 @@
 		12BBFE11206B02AC0041620C /* Colors.swift in Sources */ = {isa = PBXBuildFile; fileRef = 12BBFDFF206B02AC0041620C /* Colors.swift */; };
 		12BBFE12206B02AC0041620C /* icon_128x128.png in Resources */ = {isa = PBXBuildFile; fileRef = 12BBFE01206B02AC0041620C /* icon_128x128.png */; };
 		12BBFE14206B03FB0041620C /* LayoutExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 12BBFE13206B03FB0041620C /* LayoutExtension.swift */; };
+		301C262620C1C5A700F18F73 /* TextStyle.swift in Sources */ = {isa = PBXBuildFile; fileRef = 301C262520C1C5A700F18F73 /* TextStyle.swift */; };
+		301C262820C1C5BF00F18F73 /* TextStyle.swift in Sources */ = {isa = PBXBuildFile; fileRef = 301C262720C1C5BF00F18F73 /* TextStyle.swift */; };
 		30F870B920864A88007ADA5B /* NestedButtons.swift in Sources */ = {isa = PBXBuildFile; fileRef = 30F870B820864A88007ADA5B /* NestedButtons.swift */; };
 		30F870BB20864AEE007ADA5B /* Button.swift in Sources */ = {isa = PBXBuildFile; fileRef = 30F870BA20864AEE007ADA5B /* Button.swift */; };
 		6BA694032082E4420090CA74 /* NestedComponent.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6BA694022082E4420090CA74 /* NestedComponent.swift */; };
@@ -81,7 +81,6 @@
 		1296255F204C70280057CDFF /* Generated.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Generated.swift; sourceTree = "<group>"; };
 		12BBFCEF206A8BCD0041620C /* Generated.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Generated.swift; sourceTree = "<group>"; };
 		12BBFDC4206B02720041620C /* TextStyles.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TextStyles.swift; sourceTree = "<group>"; };
-		12BBFDC5206B02720041620C /* AttributedFont.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AttributedFont.swift; sourceTree = "<group>"; };
 		12BBFDC7206B02720041620C /* LocalAsset.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = LocalAsset.swift; sourceTree = "<group>"; };
 		12BBFDC9206B02720041620C /* Assign.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Assign.swift; sourceTree = "<group>"; };
 		12BBFDCA206B02720041620C /* If.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = If.swift; sourceTree = "<group>"; };
@@ -97,7 +96,6 @@
 		12BBFDD7206B02720041620C /* Colors.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Colors.swift; sourceTree = "<group>"; };
 		12BBFDD9206B02720041620C /* icon_128x128.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = icon_128x128.png; sourceTree = "<group>"; };
 		12BBFDEB206B02AC0041620C /* TextStyles.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TextStyles.swift; sourceTree = "<group>"; };
-		12BBFDEC206B02AC0041620C /* AttributedFont.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AttributedFont.swift; sourceTree = "<group>"; };
 		12BBFDEE206B02AC0041620C /* LocalAsset.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = LocalAsset.swift; sourceTree = "<group>"; };
 		12BBFDF0206B02AC0041620C /* Assign.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Assign.swift; sourceTree = "<group>"; };
 		12BBFDF1206B02AC0041620C /* If.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = If.swift; sourceTree = "<group>"; };
@@ -113,6 +111,8 @@
 		12BBFDFF206B02AC0041620C /* Colors.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Colors.swift; sourceTree = "<group>"; };
 		12BBFE01206B02AC0041620C /* icon_128x128.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = icon_128x128.png; sourceTree = "<group>"; };
 		12BBFE13206B03FB0041620C /* LayoutExtension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LayoutExtension.swift; sourceTree = "<group>"; };
+		301C262520C1C5A700F18F73 /* TextStyle.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TextStyle.swift; sourceTree = "<group>"; };
+		301C262720C1C5BF00F18F73 /* TextStyle.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TextStyle.swift; sourceTree = "<group>"; };
 		30F870B820864A88007ADA5B /* NestedButtons.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NestedButtons.swift; sourceTree = "<group>"; };
 		30F870BA20864AEE007ADA5B /* Button.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Button.swift; sourceTree = "<group>"; };
 		6BA694022082E4420090CA74 /* NestedComponent.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NestedComponent.swift; sourceTree = "<group>"; };
@@ -195,7 +195,7 @@
 			isa = PBXGroup;
 			children = (
 				12BBFDC4206B02720041620C /* TextStyles.swift */,
-				12BBFDC5206B02720041620C /* AttributedFont.swift */,
+				301C262720C1C5BF00F18F73 /* TextStyle.swift */,
 				6BA694012082E4420090CA74 /* components */,
 				12BBFDC6206B02720041620C /* images */,
 				12BBFDC8206B02720041620C /* logic */,
@@ -270,7 +270,7 @@
 			isa = PBXGroup;
 			children = (
 				12BBFDEB206B02AC0041620C /* TextStyles.swift */,
-				12BBFDEC206B02AC0041620C /* AttributedFont.swift */,
+				301C262520C1C5A700F18F73 /* TextStyle.swift */,
 				6BA69404208439DB0090CA74 /* components */,
 				12BBFDED206B02AC0041620C /* images */,
 				12BBFDEF206B02AC0041620C /* logic */,
@@ -463,6 +463,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				301C262620C1C5A700F18F73 /* TextStyle.swift in Sources */,
 				12BBFE02206B02AC0041620C /* TextStyles.swift in Sources */,
 				12BBFE09206B02AC0041620C /* TextStylesTest.swift in Sources */,
 				12BBFE05206B02AC0041620C /* Assign.swift in Sources */,
@@ -476,7 +477,6 @@
 				12BBFE11206B02AC0041620C /* Colors.swift in Sources */,
 				30F870B920864A88007ADA5B /* NestedButtons.swift in Sources */,
 				12BBFE0D206B02AC0041620C /* FixedParentFitChild.swift in Sources */,
-				12BBFE03206B02AC0041620C /* AttributedFont.swift in Sources */,
 				12962560204C70280057CDFF /* Generated.swift in Sources */,
 				1286937D204A1AAA00E5E26F /* ViewSelectionVC.swift in Sources */,
 				12BBFE04206B02AC0041620C /* LocalAsset.swift in Sources */,
@@ -498,6 +498,7 @@
 				12BBFDE8206B02720041620C /* Colors.swift in Sources */,
 				12BBFDDF206B02720041620C /* BorderWidthColor.swift in Sources */,
 				12BBFDE2206B02720041620C /* PressableRootView.swift in Sources */,
+				301C262820C1C5BF00F18F73 /* TextStyle.swift in Sources */,
 				12BBFDDA206B02720041620C /* TextStyles.swift in Sources */,
 				12BBFDE5206B02720041620C /* SecondaryAxis.swift in Sources */,
 				12BBFDDE206B02720041620C /* If.swift in Sources */,
@@ -509,7 +510,6 @@
 				12BBFDE3206B02720041620C /* FixedParentFillAndFitChildren.swift in Sources */,
 				12BBFDDD206B02720041620C /* Assign.swift in Sources */,
 				12BBFDE6206B02720041620C /* FitContentParentSecondaryChildren.swift in Sources */,
-				12BBFDDB206B02720041620C /* AttributedFont.swift in Sources */,
 				12BBFDE1206B02720041620C /* TextStyleConditional.swift in Sources */,
 				12BBFCF0206A8BCD0041620C /* Generated.swift in Sources */,
 				6BA694032082E4420090CA74 /* NestedComponent.swift in Sources */,

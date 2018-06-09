@@ -24,6 +24,21 @@ private func convertFontWeight(fontWeight: String) -> NSFont.Weight {
     }
 }
 
+private func fontWeightName(fontWeight: NSFont.Weight) -> String {
+    switch fontWeight {
+    case NSFont.Weight.ultraLight: return "Ultra Light"
+    case NSFont.Weight.thin: return "Thin"
+    case NSFont.Weight.light: return "Light"
+    case NSFont.Weight.regular: return "Regular"
+    case NSFont.Weight.medium: return "Medium"
+    case NSFont.Weight.semibold: return "Semibold"
+    case NSFont.Weight.bold: return "Bold"
+    case NSFont.Weight.heavy: return "Heavy"
+    case NSFont.Weight.black: return "Black"
+    default: return "Regular"
+    }
+}
+
 struct CSTextStyle {
     let id: String
     let name: String
@@ -58,6 +73,11 @@ struct CSTextStyle {
         self.extends = extends
     }
 
+    var summary: String {
+        let weight = fontWeightName(fontWeight: font.weight)
+        return "\(weight) \(font.size)/\(font.lineHeight)"
+    }
+
     private func base() -> CSTextStyle? {
         guard let extends = self.extends else { return nil }
         return CSTypography.getFontBy(id: extends)
@@ -72,7 +92,7 @@ struct CSTextStyle {
     private let defaultFamilyName = NSFont.systemFont(ofSize: 14).familyName ?? ""
     private let defaultFontSize = NSFont.systemFontSize
 
-    var font: AttributedFont {
+    var font: TextStyle {
         let fontSize: CGFloat? = lookup { style in
             guard let value = style.fontSize else { return nil }
             return CGFloat(value)
@@ -94,13 +114,48 @@ struct CSTextStyle {
             return value
         }
 
-        return AttributedFont(
+        return TextStyle(
             family: lookup({ style in style.fontFamily }) ?? defaultFamilyName,
             weight: weight ?? .regular,
             size: fontSize ?? defaultFontSize,
             lineHeight: lineHeight,
             kerning: letterSpacing ?? 0,
             color: color ?? NSColor.black)
+    }
+
+    func toData() -> CSData {
+        return CSData.Object([
+            "id": id.toData(),
+            "name": name.toData(),
+            "fontName": fontName?.toData() ?? CSData.Null,
+            "fontFamily": fontFamily?.toData() ?? CSData.Null,
+            "fontWeight": fontWeight?.toData() ?? CSData.Null,
+            "fontSize": fontSize?.toData() ?? CSData.Null,
+            "lineHeight": lineHeight?.toData() ?? CSData.Null,
+            "letterSpacing": letterSpacing?.toData() ?? CSData.Null,
+//            "color": color?.toData() ?? CSData.Null,
+            "extends": extends?.toData() ?? CSData.Null
+            ])
+    }
+
+    func toValue() -> CSValue {
+        let csType = type(of: self).csType
+        return CSValue(type: csType, data: CSValue.expand(type: csType, data: toData()))
+    }
+
+    static var csType: CSType {
+        return CSType.dictionary([
+            "id": (CSType.string, CSAccess.write),
+            "name": (CSType.string, CSAccess.write),
+            "fontName": (CSType.string.makeOptional(), CSAccess.write),
+            "fontFamily": (CSType.string.makeOptional(), CSAccess.write),
+            "fontWeight": (CSType.number.makeOptional(), CSAccess.write),
+            "fontSize": (CSType.number.makeOptional(), CSAccess.write),
+            "lineHeight": (CSType.number.makeOptional(), CSAccess.write),
+            "letterSpacing": (CSType.number.makeOptional(), CSAccess.write),
+//            "color": (CSType.number.makeOptional(), CSAccess.write),
+            "extends": (CSType.string.makeOptional(), CSAccess.write)
+            ])
     }
 }
 
@@ -170,4 +225,49 @@ class CSTypography: CSPreferencesFile {
     }
 
     public static let unstyledDefaultFont = CSTextStyle(id: unstyledDefaultName, name: "Default")
+
+    static func save(list: CSData) {
+        data.set(keyPath: ["styles"], to: list)
+        data = data.removingKeysForNullValues()
+
+        save()
+
+        LonaPlugins.current.trigger(eventType: .onSaveTextStyles)
+    }
+
+    static func delete(at index: Int) {
+        guard var list = data["styles"]?.array else { return }
+
+        list.remove(at: index)
+
+        save(list: CSData.Array(list))
+    }
+
+    static func move(from sourceIndex: Int, to targetIndex: Int) {
+        guard var list = data["styles"]?.array else { return }
+
+        let item = list[sourceIndex]
+
+        list.remove(at: sourceIndex)
+
+        if sourceIndex < targetIndex {
+            list.insert(item, at: targetIndex - 1)
+        } else {
+            list.insert(item, at: targetIndex)
+        }
+
+        save(list: CSData.Array(list))
+    }
+
+    static func update(textStyle textStyleData: CSData, at index: Int) {
+        guard let list = data["styles"] else { return }
+
+        let updated = list.arrayValue.enumerated().map({ offset, element in
+            return index == offset
+                ? CSValue.compact(type: CSTextStyle.csType, data: textStyleData)
+                : element
+        })
+
+        save(list: CSData.Array(updated))
+    }
 }

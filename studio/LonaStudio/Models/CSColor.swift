@@ -14,6 +14,7 @@ struct CSColor {
     let name: String
     let color: NSColor
     let value: String
+    let comment: String
 
     var resolvedValue: String {
         return id
@@ -23,7 +24,8 @@ struct CSColor {
         return CSData.Object([
             "id": id.toData(),
             "name": name.toData(),
-            "value": value.toData()
+            "value": value.toData(),
+            "comment": comment.toData()
             ])
     }
 
@@ -35,7 +37,8 @@ struct CSColor {
         return CSType.dictionary([
             "id": (CSType.string, CSAccess.write),
             "name": (CSType.string, CSAccess.write),
-            "value": (CSType.string, CSAccess.write)
+            "value": (CSType.string, CSAccess.write),
+            "comment": (CSType.string, CSAccess.write)
             ])
     }
 
@@ -43,9 +46,10 @@ struct CSColor {
         let id = data["id"]?.string ?? ""
         let name = data["name"]?.string ?? "No name"
         let value = data["value"]?.string ?? "#000000"
+        let comment = data["comment"]?.string ?? ""
         let nsColor = NSColor.parse(css: value) ?? NSColor.black
 
-        return CSColor(id: id, name: name, color: nsColor, value: value)
+        return CSColor(id: id, name: name, color: nsColor, value: value, comment: comment)
     }
 }
 

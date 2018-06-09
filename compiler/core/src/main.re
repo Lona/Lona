@@ -219,9 +219,9 @@ let copyStaticFiles = outputDirectory =>
     copySync(
       concat(
         NodeGlobal.__dirname,
-        "static/swift/AttributedFont." ++ framework ++ ".swift"
+        "static/swift/TextStyle." ++ framework ++ ".swift"
       ),
-      concat(outputDirectory, "AttributedFont.swift")
+      concat(outputDirectory, "TextStyle.swift")
     );
   | _ => ()
   };

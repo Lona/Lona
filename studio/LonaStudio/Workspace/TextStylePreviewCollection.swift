@@ -1,5 +1,5 @@
 //
-//  ColorPreviewCollection.swift
+//  TextStylePreviewCollection.swift
 //  LonaStudio
 //
 //  Created by devin_abbott on 5/10/18.
@@ -9,10 +9,10 @@
 import AppKit
 import Foundation
 
-private let ITEM_IDENTIFIER = NSUserInterfaceItemIdentifier(rawValue: "color")
-private let COLOR_PASTEBOARD_TYPE = NSPasteboard.PasteboardType("lona.color")
+private let ITEM_IDENTIFIER = NSUserInterfaceItemIdentifier(rawValue: "textStyle")
+private let TEXT_STYLE_PASTEBOARD_TYPE = NSPasteboard.PasteboardType("textStyle")
 
-private class DoubleClickableColorPreviewCard: ColorPreviewCard {
+class DoubleClickableTextStylePreviewCard: TextStylePreviewCard {
     var onDoubleClick: (() -> Void)?
 
     override func mouseDown(with event: NSEvent) {
@@ -24,27 +24,7 @@ private class DoubleClickableColorPreviewCard: ColorPreviewCard {
     }
 }
 
-class KeyHandlingCollectionView: NSCollectionView {
-    public var onDeleteItem: ((Int) -> Void)?
-    public var onCopy: ((Int) -> Void)?
-
-    @IBAction func copy(_ sender: AnyObject) {
-        guard let item = selectionIndexPaths.first?.item else { return }
-
-        onCopy?(item)
-    }
-
-    override func keyDown(with event: NSEvent) {
-        guard let characters = event.charactersIgnoringModifiers,
-            let item = selectionIndexPaths.first?.item else { return }
-
-        if characters == String(Character(UnicodeScalar(NSDeleteCharacter)!)) {
-            onDeleteItem?(item)
-        }
-    }
-}
-
-class ColorPreviewCollectionView: NSView {
+class TextStylePreviewCollectionView: NSView {
 
     // MARK: - Lifecycle
 
@@ -63,10 +43,10 @@ class ColorPreviewCollectionView: NSView {
 
     // MARK: - Public
 
-    public var items: [CSColor] = [] { didSet { update() } }
-    public var onClickColor: ((String) -> Void)? { didSet { update(withoutReloading: true) } }
-    public var onMoveColor: ((Int, Int) -> Void)? { didSet { update(withoutReloading: true) } }
-    public var onDeleteColor: ((Int) -> Void)? { didSet { update(withoutReloading: true) } }
+    public var items: [CSTextStyle] = [] { didSet { update() } }
+    public var onClickTextStyle: ((String) -> Void)? { didSet { update(withoutReloading: true) } }
+    public var onMoveItem: ((Int, Int) -> Void)? { didSet { update(withoutReloading: true) } }
+    public var onDeleteItem: ((Int) -> Void)? { didSet { update(withoutReloading: true) } }
 
     // MARK: - Private
 
@@ -78,23 +58,18 @@ class ColorPreviewCollectionView: NSView {
 
         let flowLayout = NSCollectionViewFlowLayout()
         flowLayout.minimumLineSpacing = 24
-        flowLayout.minimumInteritemSpacing = 12
-        flowLayout.itemSize = NSSize(width: 140, height: 160)
+        flowLayout.minimumInteritemSpacing = 24
 
         collectionView.collectionViewLayout = flowLayout
         collectionView.delegate = self
         collectionView.dataSource = self
         collectionView.backgroundColors = [NSColor.clear]
-
-        collectionView.registerForDraggedTypes([COLOR_PASTEBOARD_TYPE])
+        collectionView.register(
+            TextStylePreviewItemViewController.self,
+            forItemWithIdentifier: ITEM_IDENTIFIER)
+        collectionView.registerForDraggedTypes([NSPasteboard.PasteboardType(kUTTypeItem as String)])
         collectionView.setDraggingSourceOperationMask(.move, forLocal: true)
         collectionView.isSelectable = true
-//        collectionView.allowsMultipleSelection = true
-        collectionView.allowsEmptySelection = true
-
-        collectionView.register(
-            ColorPreviewItemViewController.self,
-            forItemWithIdentifier: ITEM_IDENTIFIER)
 
         scrollView.verticalScrollElasticity = .allowed
         scrollView.horizontalScrollElasticity = .allowed
@@ -118,16 +93,16 @@ class ColorPreviewCollectionView: NSView {
             collectionView.reloadData()
         }
 
-        collectionView.onDeleteItem = onDeleteColor
+        collectionView.onDeleteItem = onDeleteItem
     }
 }
 
 // MARK: - Imperative API
 
-extension ColorPreviewCollectionView {
-    func cardView(at index: Int) -> ColorPreviewCard? {
-        guard let item = collectionView.item(at: index) as? ColorPreviewItemViewController else { return nil }
-        return item.view as? ColorPreviewCard
+extension TextStylePreviewCollectionView {
+    func cardView(at index: Int) -> DoubleClickableTextStylePreviewCard? {
+        guard let item = collectionView.item(at: index) as? TextStylePreviewItemViewController else { return nil }
+        return item.view as? DoubleClickableTextStylePreviewCard
     }
 
     func reloadData() {
@@ -145,9 +120,23 @@ extension ColorPreviewCollectionView {
     }
 }
 
+extension TextStylePreviewCollectionView: NSCollectionViewDelegateFlowLayout {
+    func collectionView(
+        _ collectionView: NSCollectionView,
+        layout collectionViewLayout: NSCollectionViewLayout,
+        sizeForItemAt indexPath: IndexPath) -> NSSize {
+
+        let textStyle = items[indexPath.item]
+
+        return NSSize(
+            width: 260,
+            height: textStyle.font.lineHeight + 81)
+    }
+}
+
 // MARK: - NSCollectionViewDelegate
 
-extension ColorPreviewCollectionView: NSCollectionViewDelegate {
+extension TextStylePreviewCollectionView: NSCollectionViewDelegate {
     func numberOfSections(in collectionView: NSCollectionView) -> Int {
         return 1
     }
@@ -166,8 +155,8 @@ extension ColorPreviewCollectionView: NSCollectionViewDelegate {
             let data = CSData.Array([sourceIndex.toData()]).toData()
             else { return false }
 
-        pasteboard.declareTypes([COLOR_PASTEBOARD_TYPE], owner: self)
-        pasteboard.setData(data, forType: COLOR_PASTEBOARD_TYPE)
+        pasteboard.declareTypes([TEXT_STYLE_PASTEBOARD_TYPE], owner: self)
+        pasteboard.setData(data, forType: TEXT_STYLE_PASTEBOARD_TYPE)
 
         return true
     }
@@ -190,13 +179,13 @@ extension ColorPreviewCollectionView: NSCollectionViewDelegate {
         acceptDrop draggingInfo: NSDraggingInfo,
         indexPath: IndexPath,
         dropOperation: NSCollectionView.DropOperation) -> Bool {
-        guard let data = draggingInfo.draggingPasteboard().data(forType: COLOR_PASTEBOARD_TYPE),
+        guard let data = draggingInfo.draggingPasteboard().data(forType: TEXT_STYLE_PASTEBOARD_TYPE),
             let sourceIndexPath = CSData.from(data: data)?.array?.first?.number else {
-            Swift.print("Can't move color item - bad pasteboard data")
-            return false
+                Swift.print("Can't move text style item - bad pasteboard data")
+                return false
         }
 
-        onMoveColor?(Int(sourceIndexPath), indexPath.item)
+        onMoveItem?(Int(sourceIndexPath), indexPath.item)
 
         return true
     }
@@ -204,19 +193,20 @@ extension ColorPreviewCollectionView: NSCollectionViewDelegate {
 
 // MARK: - NSCollectionViewDataSource
 
-extension ColorPreviewCollectionView: NSCollectionViewDataSource {
+extension TextStylePreviewCollectionView: NSCollectionViewDataSource {
     func collectionView(_ collectionView: NSCollectionView, itemForRepresentedObjectAt indexPath: IndexPath) -> NSCollectionViewItem {
         let item = collectionView.makeItem(
             withIdentifier: ITEM_IDENTIFIER,
-            for: indexPath) as! ColorPreviewItemViewController
+            for: indexPath) as! TextStylePreviewItemViewController
 
-        if let componentPreviewCard = item.view as? DoubleClickableColorPreviewCard {
-            let componentFile = items[indexPath.item]
-            componentPreviewCard.colorName = componentFile.name
-            componentPreviewCard.colorCode = componentFile.value
-            componentPreviewCard.color = componentFile.color
-            componentPreviewCard.onDoubleClick = {
-                self.onClickColor?(componentFile.id)
+        if let textStylePreviewCard = item.view as? DoubleClickableTextStylePreviewCard {
+            let textStyle = items[indexPath.item]
+            textStylePreviewCard.example = textStyle.name
+            textStylePreviewCard.textStyleSummary = textStyle.summary
+            textStylePreviewCard.textStyle = textStyle.font
+            textStylePreviewCard.inverse = textStyle.color?.isLightColor ?? false
+            textStylePreviewCard.onDoubleClick = {
+                self.onClickTextStyle?(textStyle.id)
             }
         }
 
@@ -224,26 +214,26 @@ extension ColorPreviewCollectionView: NSCollectionViewDataSource {
     }
 }
 
-// MARK: - ColorPreviewItemViewController
+// MARK: - TextStylePreviewItemViewController
 
-class ColorPreviewItemViewController: NSCollectionViewItem {
+class TextStylePreviewItemViewController: NSCollectionViewItem {
     override func loadView() {
-        view = DoubleClickableColorPreviewCard()
+        view = DoubleClickableTextStylePreviewCard()
     }
 
     override var isSelected: Bool {
         get {
-            return (view as? DoubleClickableColorPreviewCard)?.selected ?? false
+            return (view as? DoubleClickableTextStylePreviewCard)?.selected ?? false
         }
         set {
-            (view as? DoubleClickableColorPreviewCard)?.selected = newValue
+            (view as? DoubleClickableTextStylePreviewCard)?.selected = newValue
         }
     }
 }
 
-// MARK: - ColorPreviewCollection
+// MARK: - TextStylePreviewCollection
 
-public class ColorPreviewCollection: NSBox {
+public class TextStylePreviewCollection: NSBox {
 
     // MARK: Lifecycle
 
@@ -262,46 +252,46 @@ public class ColorPreviewCollection: NSBox {
 
     // MARK: Public
 
-    public var onClickColor: ((String) -> Void)?
+    public var onClickTextStyle: ((String) -> Void)?
 
     // MARK: Private
 
-    private let collectionView = ColorPreviewCollectionView(frame: .zero)
+    private let collectionView = TextStylePreviewCollectionView(frame: .zero)
 
     private func setUpViews() {
         boxType = .custom
         borderType = .noBorder
         contentViewMargins = .zero
 
-        collectionView.items = CSColors.colors
+        collectionView.items = CSTypography.styles
 
-        _ = LonaPlugins.current.register(eventTypes: [.onSaveColors, .onReloadWorkspace], handler: {
-            self.collectionView.items = CSColors.colors
+        _ = LonaPlugins.current.register(eventTypes: [.onSaveTextStyles, .onReloadWorkspace], handler: {
+            self.collectionView.items = CSTypography.styles
             self.collectionView.reloadData()
         })
 
-        collectionView.onMoveColor = { sourceIndex, targetIndex in
-            CSColors.moveColor(from: sourceIndex, to: targetIndex)
-            self.collectionView.items = CSColors.colors
+        collectionView.onMoveItem = { sourceIndex, targetIndex in
+            CSTypography.move(from: sourceIndex, to: targetIndex)
+            self.collectionView.items = CSTypography.styles
             self.collectionView.moveItem(from: sourceIndex, to: targetIndex)
         }
 
-        collectionView.onDeleteColor = { index in
-            CSColors.deleteColor(at: index)
-            self.collectionView.items = CSColors.colors
+        collectionView.onDeleteItem = { index in
+            CSTypography.delete(at: index)
+            self.collectionView.items = CSTypography.styles
             self.collectionView.deleteItem(at: index)
         }
 
         // TODO: This callback should propagate up to the root. Currently Lona doesn't
         // generate callbacks with params, so we'll handle it here for now.
-        collectionView.onClickColor = { color in
-            guard let csColor = CSColors.colors.first(where: { $0.id == color }) else { return }
-            guard let index = CSColors.colors.index(where: { $0.id == color }) else { return }
+        collectionView.onClickTextStyle = { textStyle in
+            guard let csTextStyle = CSTypography.styles.first(where: { $0.id == textStyle }) else { return }
+            guard let index = CSTypography.styles.index(where: { $0.id == textStyle }) else { return }
 
             let editor = DictionaryEditor(
-                value: csColor.toValue(),
+                value: csTextStyle.toValue(),
                 onChange: { updated in
-                    CSColors.update(color: updated.data, at: index)
+                    CSTypography.update(textStyle: updated.data, at: index)
             },
                 layout: CSConstraint.size(width: 300, height: 200)
             )
@@ -329,6 +319,6 @@ public class ColorPreviewCollection: NSBox {
     private func update() {}
 }
 
-extension ColorPreviewCollection: NSPopoverDelegate {
+extension TextStylePreviewCollection: NSPopoverDelegate {
 
 }
