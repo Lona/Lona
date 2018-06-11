@@ -88,9 +88,9 @@ public class ColorBrowser: NSBox {
     innerView.addSubview(spacerView)
     innerView.addSubview(colorPreviewCollectionView)
 
+    titleView.attributedStringValue = titleViewTextStyle.apply(to: "Colors")
     titleViewTextStyle = TextStyles.title
     titleView.attributedStringValue = titleViewTextStyle.apply(to: titleView.attributedStringValue)
-    titleView.attributedStringValue = titleViewTextStyle.apply(to: "Colors")
   }
 
   private func setUpConstraints() {

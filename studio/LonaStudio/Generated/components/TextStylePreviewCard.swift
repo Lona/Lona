@@ -150,9 +150,9 @@ public class TextStylePreviewCard: NSBox {
     detailsView.addSubview(textStyleSummaryView)
 
     fillColor = Colors.white
-    borderColor = Colors.grey300
     cornerRadius = 4
     borderWidth = 1
+    borderColor = Colors.grey300
     exampleTextView.maximumNumberOfLines = 1
     dividerView.fillColor = Colors.grey300
   }

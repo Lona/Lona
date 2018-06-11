@@ -118,12 +118,9 @@ public class ComponentPreviewCard: NSBox {
     detailsView.addSubview(componentNameView)
 
     fillColor = Colors.white
-    borderColor = Colors.grey300
     cornerRadius = 4
     borderWidth = 1
-    componentNameViewTextStyle = TextStyles.large
-    componentNameView.attributedStringValue =
-      componentNameViewTextStyle.apply(to: componentNameView.attributedStringValue)
+    borderColor = Colors.grey300
     componentNameView.maximumNumberOfLines = 1
   }
 

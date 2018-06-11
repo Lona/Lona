@@ -119,12 +119,10 @@ public class ColorPreviewCard: NSBox {
     detailsView.addSubview(colorCodeView)
 
     fillColor = Colors.white
-    borderColor = Colors.grey300
     cornerRadius = 4
     borderWidth = 1
+    borderColor = Colors.grey300
     dividerView.fillColor = Colors.grey300
-    colorNameViewTextStyle = TextStyles.large
-    colorNameView.attributedStringValue = colorNameViewTextStyle.apply(to: colorNameView.attributedStringValue)
     colorNameView.maximumNumberOfLines = 1
   }
 
