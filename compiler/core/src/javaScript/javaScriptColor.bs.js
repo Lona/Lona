@@ -35,4 +35,4 @@ function render(colors) {
 }
 
 exports.render = render;
-/* LonaValue-LonaCompilerCore Not a pure module */
+/* JavaScriptRender-LonaCompilerCore Not a pure module */

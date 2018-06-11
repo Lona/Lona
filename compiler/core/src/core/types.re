@@ -56,7 +56,7 @@ type cmp =
 
 [@bs.deriving jsConverter]
 type parameter = {
-  name: string,
+  name: ParameterKey.t,
   ltype: lonaType,
   defaultValue: option(Js.Json.t)
 };
@@ -73,7 +73,7 @@ type layerType =
 type layer = {
   typeName: layerType,
   name: string,
-  parameters: StringMap.t(lonaValue),
+  parameters: ParameterMap.t(lonaValue),
   children: list(layer)
 };
 

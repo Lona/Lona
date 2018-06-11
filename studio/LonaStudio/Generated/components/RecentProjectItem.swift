@@ -73,12 +73,7 @@ public class RecentProjectItem: NSBox {
     addSubview(projectNameView)
     addSubview(projectDirectoryPathView)
 
-    projectNameViewTextStyle = TextStyles.regular
-    projectNameView.attributedStringValue = projectNameViewTextStyle.apply(to: projectNameView.attributedStringValue)
     projectNameView.maximumNumberOfLines = 1
-    projectDirectoryPathViewTextStyle = TextStyles.regularMuted
-    projectDirectoryPathView.attributedStringValue =
-      projectDirectoryPathViewTextStyle.apply(to: projectDirectoryPathView.attributedStringValue)
     projectDirectoryPathView.maximumNumberOfLines = 1
   }
 

@@ -35,10 +35,10 @@ export default class Button extends React.Component {
 let styles = StyleSheet.create({
   view: {
     backgroundColor: colors.blue100,
-    paddingBottom: 12,
-    paddingLeft: 16,
+    paddingTop: 12,
     paddingRight: 16,
-    paddingTop: 12
+    paddingBottom: 12,
+    paddingLeft: 16
   },
   text: { ...textStyles.button }
 });

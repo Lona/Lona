@@ -2,49 +2,45 @@ include Types;
 
 open Json.Decode;
 
-let parameterTypeMap =
-  [
-    ("text", Types.stringType),
-    ("visible", Types.booleanType),
-    ("numberOfLines", Types.numberType),
-    ("backgroundColor", Types.colorType),
-    ("image", Types.urlType),
-    /* Styles */
-    ("alignItems", Types.stringType),
-    ("alignSelf", Types.stringType),
-    ("flex", Types.numberType),
-    ("flexDirection", Types.stringType),
-    ("font", Types.textStyleType),
-    ("textAlign", Types.stringType),
-    ("justifyContent", Types.stringType),
-    ("marginTop", Types.numberType),
-    ("marginRight", Types.numberType),
-    ("marginBottom", Types.numberType),
-    ("marginLeft", Types.numberType),
-    ("paddingTop", Types.numberType),
-    ("paddingRight", Types.numberType),
-    ("paddingBottom", Types.numberType),
-    ("paddingLeft", Types.numberType),
-    ("borderRadius", Types.numberType),
-    ("borderWidth", Types.numberType),
-    ("borderColor", Types.colorType),
-    ("width", Types.numberType),
-    ("height", Types.numberType),
-    /* Interactivity */
-    ("pressed", Types.booleanType),
-    ("hovered", Types.booleanType),
-    ("onPress", Types.handlerType)
-  ]
-  |> StringMap.fromList;
-
 exception UnknownParameter(string);
 
 exception UnknownType(string);
 
-let parameterType = name =>
-  switch (StringMap.find(name, parameterTypeMap)) {
-  | item => item
-  | exception Not_found =>
+let parameterType = key =>
+  switch key {
+  | ParameterKey.Text => Types.stringType
+  | Visible => Types.booleanType
+  | NumberOfLines => Types.numberType
+  | BackgroundColor => Types.colorType
+  | Image => Types.urlType
+  /* Styles */
+  | AlignItems => Types.stringType
+  | AlignSelf => Types.stringType
+  | Flex => Types.numberType
+  | FlexDirection => Types.stringType
+  | TextAlign => Types.stringType
+  | JustifyContent => Types.stringType
+  | MarginTop => Types.numberType
+  | MarginRight => Types.numberType
+  | MarginBottom => Types.numberType
+  | MarginLeft => Types.numberType
+  | PaddingTop => Types.numberType
+  | PaddingRight => Types.numberType
+  | PaddingBottom => Types.numberType
+  | PaddingLeft => Types.numberType
+  | BorderRadius => Types.numberType
+  | BorderWidth => Types.numberType
+  | BorderColor => Types.colorType
+  | Width => Types.numberType
+  | Height => Types.numberType
+  | TextStyle => Types.textStyleType
+  /* Interactivity */
+  | Pressed => Types.booleanType
+  | Hovered => Types.booleanType
+  | OnPress => Types.handlerType
+  /* Custom */
+  /* | Custom("font") => Types.textStyleType */
+  | Custom(name) =>
     Js.log2("Unknown built-in parameter when deserializing:", name);
     raise(UnknownParameter(name));
   };
@@ -89,8 +85,9 @@ module Types = {
 };
 
 module Parameters = {
+  let parameterKey = json => json |> string |> ParameterKey.fromString;
   let parameter = json => {
-    name: json |> field("name", string),
+    name: json |> field("name", parameterKey),
     ltype: json |> field("type", Types.lonaType),
     defaultValue: json |> optional(field("defaultValue", x => x))
   };
@@ -112,8 +109,8 @@ module Layer = {
       json
       |> Js.Json.decodeObject
       |> Js.Option.getExn
-      |> StringMap.fromJsDict
-      |> StringMap.mapi((key, value) =>
+      |> ParameterMap.fromJsDict
+      |> ParameterMap.mapi((key, value) =>
            switch typeName {
            | Component(name) =>
              let param =
@@ -124,7 +121,7 @@ module Layer = {
              | _ => {ltype: param.ltype, data: value}
              | exception _ =>
                Js.log2("Unknown built-in parameter when deserializing:", key);
-               raise(UnknownParameter(key));
+               raise(UnknownParameter(ParameterKey.toString(key)));
              };
            | _ => {ltype: parameterType(key), data: value}
            }

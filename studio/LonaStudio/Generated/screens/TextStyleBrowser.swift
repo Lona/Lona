@@ -88,9 +88,9 @@ public class TextStyleBrowser: NSBox {
     innerView.addSubview(spacerView)
     innerView.addSubview(textStylePreviewCollectionView)
 
+    titleView.attributedStringValue = titleViewTextStyle.apply(to: "Text Styles")
     titleViewTextStyle = TextStyles.title
     titleView.attributedStringValue = titleViewTextStyle.apply(to: titleView.attributedStringValue)
-    titleView.attributedStringValue = titleViewTextStyle.apply(to: "Text Styles")
   }
 
   private func setUpConstraints() {

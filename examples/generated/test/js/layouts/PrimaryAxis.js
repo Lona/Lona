@@ -30,17 +30,17 @@ export default class PrimaryAxis extends React.Component {
 let styles = StyleSheet.create({
   view: {
     alignSelf: "stretch",
-    height: 500,
+    paddingTop: 24,
+    paddingRight: 24,
     paddingBottom: 24,
     paddingLeft: 24,
-    paddingRight: 24,
-    paddingTop: 24
+    height: 500
   },
   fixed: {
     backgroundColor: "#D8D8D8",
-    height: 100,
     marginBottom: 24,
-    width: 100
+    width: 100,
+    height: 100
   },
   fit: { backgroundColor: "#D8D8D8", marginBottom: 24, width: 100 },
   text: {},

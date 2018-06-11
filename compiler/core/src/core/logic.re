@@ -175,16 +175,18 @@ let defaultValueForType = (lonaType: Types.lonaType) =>
 let defaultValueForLayerParameter =
     (colors, textStyles: TextStyle.file, layer, parameterName) =>
   switch parameterName {
-  | "font"
-  | "textStyle" => LonaValue.textStyle(textStyles.defaultStyle.id)
-  | "backgroundColor" => LonaValue.color("transparent")
+  | ParameterKey.TextStyle => LonaValue.textStyle(textStyles.defaultStyle.id)
+  | ParameterKey.BackgroundColor => LonaValue.color("transparent")
   | _ => LonaValue.defaultValueForParameter(parameterName)
   };
 
 let assignmentForLayerParameter =
     (layer: Types.layer, parameterName, value: Types.lonaValue) => {
   let receiver =
-    Identifier(value.ltype, ["layers", layer.name, parameterName]);
+    Identifier(
+      value.ltype,
+      ["layers", layer.name, parameterName |> ParameterKey.toString]
+    );
   let source = Literal(value);
   Assign(source, receiver);
 };

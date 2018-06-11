@@ -232,12 +232,12 @@ public class Welcome: NSBox {
     projectsView.addSubview(openProjectButtonView)
 
     imageView.image = #imageLiteral(resourceName: "LonaIcon_128x128")
+    titleView.attributedStringValue = titleViewTextStyle.apply(to: "Welcome to Lona")
     titleViewTextStyle = TextStyles.title
     titleView.attributedStringValue = titleViewTextStyle.apply(to: titleView.attributedStringValue)
-    titleView.attributedStringValue = titleViewTextStyle.apply(to: "Welcome to Lona")
+    versionView.attributedStringValue = versionViewTextStyle.apply(to: "Developer Preview")
     versionViewTextStyle = TextStyles.versionInfo
     versionView.attributedStringValue = versionViewTextStyle.apply(to: versionView.attributedStringValue)
-    versionView.attributedStringValue = versionViewTextStyle.apply(to: "Developer Preview")
     newButtonView.icon = #imageLiteral(resourceName: "icon-blank-document")
     newButtonView.subtitleText = "Set up a new design system"
     newButtonView.titleText = "Create a new Lona workspace"

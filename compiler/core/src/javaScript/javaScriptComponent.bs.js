@@ -14,11 +14,20 @@ var Logic$LonaCompilerCore            = require("../core/logic.bs.js");
 var Types$LonaCompilerCore            = require("../core/types.bs.js");
 var Caml_builtin_exceptions           = require("bs-platform/lib/js/caml_builtin_exceptions.js");
 var Decode$LonaCompilerCore           = require("../core/decode.bs.js");
-var StringMap$LonaCompilerCore        = require("../containers/stringMap.bs.js");
+var ParameterKey$LonaCompilerCore     = require("../core/parameterKey.bs.js");
+var ParameterMap$LonaCompilerCore     = require("../containers/parameterMap.bs.js");
 var JavaScriptAst$LonaCompilerCore    = require("./javaScriptAst.bs.js");
 var SwiftDocument$LonaCompilerCore    = require("../swift/swiftDocument.bs.js");
 var JavaScriptLogic$LonaCompilerCore  = require("./javaScriptLogic.bs.js");
 var JavaScriptFormat$LonaCompilerCore = require("./javaScriptFormat.bs.js");
+
+function styleNameKey(key) {
+  if (typeof key === "number" && key === 3) {
+    return "font";
+  } else {
+    return ParameterKey$LonaCompilerCore.toString(key);
+  }
+}
 
 function createStyleAttributeAST(_, _$1, layer, styles) {
   return /* JSXAttribute */Block.__(10, [{
@@ -35,7 +44,7 @@ function createStyleAttributeAST(_, _$1, layer, styles) {
                       /* ObjectLiteral */Block.__(19, [Layer$LonaCompilerCore.mapBindings((function (param) {
                                   return /* Property */Block.__(20, [{
                                               key: /* Identifier */Block.__(2, [/* :: */[
-                                                    param[0],
+                                                    styleNameKey(param[0]),
                                                     /* [] */0
                                                   ]]),
                                               value: JavaScriptLogic$LonaCompilerCore.logicValueToJavaScriptAST(param[1])
@@ -50,14 +59,14 @@ function createStyleAttributeAST(_, _$1, layer, styles) {
 function layerToJavaScriptAST(colors, textStyles, variableMap, getAssetPath, layer) {
   var match = Layer$LonaCompilerCore.splitParamsMap(Layer$LonaCompilerCore.parameterMapToLogicValueMap(layer[/* parameters */2]));
   var match$1 = Layer$LonaCompilerCore.LayerMap[/* find_opt */24](layer, variableMap);
-  var match$2 = Layer$LonaCompilerCore.splitParamsMap(match$1 ? match$1[0] : StringMap$LonaCompilerCore.empty);
-  var main = StringMap$LonaCompilerCore.assign(match[1], match$2[1]);
+  var match$2 = Layer$LonaCompilerCore.splitParamsMap(match$1 ? match$1[0] : ParameterMap$LonaCompilerCore.empty);
+  var main = ParameterMap$LonaCompilerCore.assign(match[1], match$2[1]);
   var styleAttribute = createStyleAttributeAST(colors, textStyles, layer, match$2[0]);
   var attributes = Layer$LonaCompilerCore.mapBindings((function (param) {
           var value = param[1];
           var key = param[0];
           var match = layer[/* typeName */0];
-          var key$1 = typeof match === "number" && !(match !== 2 || key !== "image") ? "source" : key;
+          var key$1 = typeof match === "number" && !(match !== 2 || !(typeof key === "number" && key === 5)) ? "source" : ParameterKey$LonaCompilerCore.toString(key);
           var attributeValue;
           if (value.tag) {
             var lonaValue = value[0];
@@ -90,8 +99,8 @@ function layerToJavaScriptAST(colors, textStyles, variableMap, getAssetPath, lay
                     }]);
         }), main);
   var dynamicOrStaticValue = function (key) {
-    var match = StringMap$LonaCompilerCore.find_opt(key, main);
-    var match$1 = StringMap$LonaCompilerCore.find_opt(key, layer[/* parameters */2]);
+    var match = ParameterMap$LonaCompilerCore.find_opt(key, main);
+    var match$1 = ParameterMap$LonaCompilerCore.find_opt(key, layer[/* parameters */2]);
     if (match) {
       return /* Some */[match[0]];
     } else if (match$1) {
@@ -101,7 +110,7 @@ function layerToJavaScriptAST(colors, textStyles, variableMap, getAssetPath, lay
     }
   };
   var match$3 = layer[/* typeName */0];
-  var match$4 = dynamicOrStaticValue("text");
+  var match$4 = dynamicOrStaticValue(/* Text */1);
   var content;
   var exit = 0;
   if (typeof match$3 === "number" && !(match$3 !== 1 || !match$4)) {
@@ -158,7 +167,7 @@ function getStyleValue(colors, value) {
 
 function toJavaScriptStyleSheetAST(colors, layer) {
   var createStyleObjectForLayer = function (layer) {
-    var styleParams = Curry._2(StringMap$LonaCompilerCore.filter, (function (key, _) {
+    var styleParams = Curry._2(ParameterMap$LonaCompilerCore.filter, (function (key, _) {
             return Layer$LonaCompilerCore.parameterIsStyle(key);
           }), layer[/* parameters */2]);
     return /* Property */Block.__(20, [{
@@ -169,30 +178,39 @@ function toJavaScriptStyleSheetAST(colors, layer) {
                 value: /* ObjectLiteral */Block.__(19, [List.map((function (param) {
                             var value = param[1];
                             var key = param[0];
-                            if (key === "font") {
-                              var match = Js_json.decodeString(value[/* data */1]);
-                              if (match) {
-                                return /* SpreadElement */Block.__(13, [/* Identifier */Block.__(2, [/* :: */[
-                                                "textStyles",
-                                                /* :: */[
-                                                  match[0],
-                                                  /* [] */0
-                                                ]
-                                              ]])]);
+                            var exit = 0;
+                            if (typeof key === "number") {
+                              if (key !== 3) {
+                                exit = 1;
                               } else {
-                                console.log("Unknown TextStyle name");
-                                throw Caml_builtin_exceptions.not_found;
+                                var match = Js_json.decodeString(value[/* data */1]);
+                                if (match) {
+                                  return /* SpreadElement */Block.__(13, [/* Identifier */Block.__(2, [/* :: */[
+                                                  "textStyles",
+                                                  /* :: */[
+                                                    match[0],
+                                                    /* [] */0
+                                                  ]
+                                                ]])]);
+                                } else {
+                                  console.log("Unknown TextStyle name");
+                                  throw Caml_builtin_exceptions.not_found;
+                                }
                               }
                             } else {
+                              exit = 1;
+                            }
+                            if (exit === 1) {
                               return /* Property */Block.__(20, [{
                                           key: /* Identifier */Block.__(2, [/* :: */[
-                                                key,
+                                                ParameterKey$LonaCompilerCore.toString(key),
                                                 /* [] */0
                                               ]]),
                                           value: getStyleValue(colors, value)
                                         }]);
                             }
-                          }), Curry._1(StringMap$LonaCompilerCore.bindings, styleParams))])
+                            
+                          }), Curry._1(ParameterMap$LonaCompilerCore.bindings, styleParams))])
               }]);
   };
   var styleObjects = List.map(createStyleObjectForLayer, Layer$LonaCompilerCore.flatten(layer));
@@ -332,6 +350,7 @@ var Render = 0;
 
 exports.Ast                       = Ast;
 exports.Render                    = Render;
+exports.styleNameKey              = styleNameKey;
 exports.createStyleAttributeAST   = createStyleAttributeAST;
 exports.layerToJavaScriptAST      = layerToJavaScriptAST;
 exports.getStyleValue             = getStyleValue;

@@ -141,8 +141,8 @@ let getConstraints = (getRootLayerForComponentName, rootLayer: Types.layer) => {
     let secondaryCenterAnchor = isColumn ? CenterX : CenterY;
     let primaryDimensionAnchor = isColumn ? Height : Width;
     let secondaryDimensionAnchor = isColumn ? Width : Height;
-    let height = Layer.getNumberParameterOpt("height", layer);
-    let width = Layer.getNumberParameterOpt("width", layer);
+    let height = Layer.getNumberParameterOpt(Height, layer);
+    let width = Layer.getNumberParameterOpt(Width, layer);
     let sizingRules =
       layer |> Layer.getSizingRules(Layer.findParent(rootLayer, layer));
     let primarySizingRule = isColumn ? sizingRules.height : sizingRules.width;
@@ -152,7 +152,7 @@ let getConstraints = (getRootLayerForComponentName, rootLayer: Types.layer) => {
       layer.children
       |> List.map(getProxyLayer)
       |> List.filter((child: Types.layer) =>
-           Layer.getNumberParameter("flex", child) === 1.0
+           Layer.getNumberParameter(Flex, child) === 1.0
          );
     let addConstraints = (index, child: Types.layer) => {
       let childSizingRules = child |> Layer.getSizingRules(Some(layer));
@@ -282,7 +282,7 @@ let getConstraints = (getRootLayerForComponentName, rootLayer: Types.layer) => {
         };
       let secondaryConstraints =
         switch (
-          Layer.getStringParameterOpt("alignItems", layer),
+          Layer.getStringParameterOpt(AlignItems, layer),
           childSecondarySizingRule
         ) {
         /* Fixed children don't need either side of the secondary axis anchored to the parent.

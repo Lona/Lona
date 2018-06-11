@@ -24,33 +24,32 @@ let isPrimitiveTypeName = (typeName: Types.layerType) =>
   | Types.Unknown => false
   };
 
-let stylesSet =
-  StringSet.of_list([
-    "alignItems",
-    "alignSelf",
-    "flex",
-    "flexDirection",
-    "font",
-    "justifyContent",
-    "marginTop",
-    "marginRight",
-    "marginBottom",
-    "marginLeft",
-    "paddingTop",
-    "paddingRight",
-    "paddingBottom",
-    "paddingLeft",
-    "width",
-    "height",
-    "backgroundColor",
-    "borderColor",
-    "borderWidth",
-    "textAlign",
-    /* TODO: Move these elsewhere */
-    "pressed",
-    "hovered",
-    "onPress"
-  ]);
+let styleParamKeys = [
+  ParameterKey.AlignItems,
+  AlignSelf,
+  Flex,
+  FlexDirection,
+  TextStyle,
+  JustifyContent,
+  MarginTop,
+  MarginRight,
+  MarginBottom,
+  MarginLeft,
+  PaddingTop,
+  PaddingRight,
+  PaddingBottom,
+  PaddingLeft,
+  Width,
+  Height,
+  BackgroundColor,
+  BorderColor,
+  BorderWidth,
+  TextAlign,
+  /* TODO: Move these elsewhere */
+  Pressed,
+  Hovered,
+  OnPress
+];
 
 let flatten = (layer: Types.layer) => {
   let rec inner = (acc, layer: Types.layer) => {
@@ -88,18 +87,20 @@ let flatmap = (f, layer: Types.layer) =>
 let flatmapParameters = (f, layer: Types.layer) => {
   let parameterLists =
     layer
-    |> flatmap((layer: Types.layer) => layer.parameters |> StringMap.bindings);
+    |> flatmap((layer: Types.layer) =>
+         layer.parameters |> ParameterMap.bindings
+       );
   List.concat(parameterLists) |> List.map(f(layer));
 };
 
 let getFlexDirection = (layer: Types.layer) =>
-  switch (StringMap.find("flexDirection", layer.parameters)) {
+  switch (ParameterMap.find(ParameterKey.FlexDirection, layer.parameters)) {
   | value => value.data |> Json.Decode.string
   | exception Not_found => "column"
   };
 
 let getStringParameterOpt = (parameterName, layer: Types.layer) =>
-  switch (StringMap.find_opt(parameterName, layer.parameters)) {
+  switch (ParameterMap.find_opt(parameterName, layer.parameters)) {
   | Some(value) => Some(value.data |> Json.Decode.string)
   | None => None
   };
@@ -111,7 +112,7 @@ let getStringParameter = (parameterName, layer: Types.layer) =>
   };
 
 let getNumberParameterOpt = (parameterName, layer: Types.layer) =>
-  switch (StringMap.find(parameterName, layer.parameters)) {
+  switch (ParameterMap.find(parameterName, layer.parameters)) {
   | value => Some(value.data |> Json.Decode.float)
   | exception Not_found => None
   };
@@ -133,10 +134,10 @@ let getSizingRules = (parent: option(Types.layer), layer: Types.layer) => {
     | Some(parent) => getFlexDirection(parent)
     | None => "column"
     };
-  let flex = getNumberParameterOpt("flex", layer);
-  let width = getNumberParameterOpt("width", layer);
-  let height = getNumberParameterOpt("height", layer);
-  let alignSelf = getStringParameterOpt("alignSelf", layer);
+  let flex = getNumberParameterOpt(Flex, layer);
+  let width = getNumberParameterOpt(Width, layer);
+  let height = getNumberParameterOpt(Height, layer);
+  let alignSelf = getStringParameterOpt(AlignSelf, layer);
   let widthSizingRule =
     switch (parentDirection, flex, width, alignSelf) {
     | ("row", Some(1.0), _, _) => Types.Fill
@@ -173,7 +174,11 @@ type edgeInsets = {
 
 let getInsets = (prefix, layer: Types.layer) => {
   let directions = ["Top", "Right", "Bottom", "Left"];
-  let extract = key => StringMap.find_opt(prefix ++ key, layer.parameters);
+  let extract = key =>
+    ParameterMap.find_opt(
+      ParameterKey.fromString(prefix ++ key),
+      layer.parameters
+    );
   let unwrap =
     fun
     | Some((value: Types.lonaValue)) => value.data |> Json.Decode.float
@@ -194,11 +199,11 @@ let parameterAssignmentsFromLogic = (layer, node) => {
     | Some(found) =>
       switch (LayerMap.find_opt(found, acc)) {
       | Some(x) =>
-        LayerMap.add(found, StringMap.add(propertyName, logicValue, x), acc)
+        LayerMap.add(found, ParameterMap.add(propertyName, logicValue, x), acc)
       | None =>
         LayerMap.add(
           found,
-          StringMap.add(propertyName, logicValue, StringMap.empty),
+          ParameterMap.add(propertyName, logicValue, ParameterMap.empty),
           acc
         )
       }
@@ -211,7 +216,12 @@ let parameterAssignmentsFromLogic = (layer, node) => {
        (acc, item) =>
          switch item {
          | Logic.Identifier(_, [_, layerName, propertyName]) =>
-           updateAssignments(layerName, propertyName, item, acc)
+           updateAssignments(
+             layerName,
+             propertyName |> ParameterKey.fromString,
+             item,
+             acc
+           )
          | _ => acc
          },
        LayerMap.empty
@@ -224,31 +234,33 @@ let parameterAssignmentsFromLogic = (layer, node) => {
 let logicAssignmentsFromLayerParameters = layer => {
   let layerMap = ref(LayerMap.empty);
   let extractParameters = (layer: Types.layer) => {
-    let stringMap = ref(StringMap.empty);
+    let parameterMap = ref(ParameterMap.empty);
     let extractParameter = ((parameterName, lonaValue: Types.lonaValue)) => {
       let receiver =
         Logic.Identifier(
           lonaValue.ltype,
-          ["layers", layer.name, parameterName]
+          ["layers", layer.name, parameterName |> ParameterKey.toString]
         );
       let source = Logic.Literal(lonaValue);
       let assignment = Logic.Assign(source, receiver);
-      stringMap := StringMap.add(parameterName, assignment, stringMap^);
+      parameterMap :=
+        ParameterMap.add(parameterName, assignment, parameterMap^);
     };
-    layer.parameters |> StringMap.bindings |> List.iter(extractParameter);
-    layerMap := LayerMap.add(layer, stringMap^, layerMap^);
+    layer.parameters |> ParameterMap.bindings |> List.iter(extractParameter);
+    layerMap := LayerMap.add(layer, parameterMap^, layerMap^);
   };
   let _ = layer |> flatmap(extractParameters);
   layerMap^;
 };
 
-let parameterIsStyle = name => StringSet.has(name, stylesSet);
+let parameterIsStyle = name =>
+  styleParamKeys |> List.exists(key => key == name);
 
 let splitParamsMap = params =>
-  params |> StringMap.partition((key, _) => parameterIsStyle(key));
+  params |> ParameterMap.partition((key, _) => parameterIsStyle(key));
 
 let parameterMapToLogicValueMap = params =>
-  StringMap.map(item => Logic.Literal(item), params);
+  ParameterMap.map(item => Logic.Literal(item), params);
 
 let layerTypeToString = x =>
   switch x {
@@ -261,7 +273,7 @@ let layerTypeToString = x =>
   | Unknown => "Unknown"
   };
 
-let mapBindings = (f, map) => map |> StringMap.bindings |> List.map(f);
+let mapBindings = (f, map) => map |> ParameterMap.bindings |> List.map(f);
 
 let isViewLayer = (layer: Types.layer) => layer.typeName == Types.View;
 

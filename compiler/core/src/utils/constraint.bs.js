@@ -52,7 +52,7 @@ function anchorFromString(param) {
       throw [
             Caml_builtin_exceptions.match_failure,
             [
-              "/Users/devinabbott/Projects/Lona/compiler/core/src/utils/constraint.re",
+              "/Users/devin_abbott/Projects/ComponentStudio/ComponentStudio/compiler/core/src/utils/constraint.re",
               57,
               2
             ]
@@ -72,7 +72,7 @@ function cmpFromString(param) {
       throw [
             Caml_builtin_exceptions.match_failure,
             [
-              "/Users/devinabbott/Projects/Lona/compiler/core/src/utils/constraint.re",
+              "/Users/devin_abbott/Projects/ComponentStudio/ComponentStudio/compiler/core/src/utils/constraint.re",
               68,
               2
             ]
@@ -128,13 +128,13 @@ function getConstraints(getRootLayerForComponentName, rootLayer) {
     var secondaryCenterAnchor = isColumn !== 0 ? /* CenterX */6 : /* CenterY */7;
     var primaryDimensionAnchor = isColumn !== 0 ? /* Height */1 : /* Width */0;
     var secondaryDimensionAnchor = isColumn !== 0 ? /* Width */0 : /* Height */1;
-    var height = Layer$LonaCompilerCore.getNumberParameterOpt("height", layer$1);
-    var width = Layer$LonaCompilerCore.getNumberParameterOpt("width", layer$1);
+    var height = Layer$LonaCompilerCore.getNumberParameterOpt(/* Height */24, layer$1);
+    var width = Layer$LonaCompilerCore.getNumberParameterOpt(/* Width */23, layer$1);
     var sizingRules = Layer$LonaCompilerCore.getSizingRules(Layer$LonaCompilerCore.findParent(rootLayer, layer$1), layer$1);
     var primarySizingRule = isColumn !== 0 ? sizingRules[/* height */1] : sizingRules[/* width */0];
     var secondarySizingRule = isColumn !== 0 ? sizingRules[/* width */0] : sizingRules[/* height */1];
     var flexChildren = List.filter((function (child) {
-              return +(Layer$LonaCompilerCore.getNumberParameter("flex", child) === 1.0);
+              return +(Layer$LonaCompilerCore.getNumberParameter(/* Flex */9, child) === 1.0);
             }))(List.map(getProxyLayer, layer$1[/* children */3]));
     var addConstraints = function (index, child) {
       var childSizingRules = Layer$LonaCompilerCore.getSizingRules(/* Some */[layer$1], child);
@@ -269,7 +269,7 @@ function getConstraints(getRootLayerForComponentName, rootLayer) {
             /* [] */0
           ] : /* [] */0;
       }
-      var match$1 = Layer$LonaCompilerCore.getStringParameterOpt("alignItems", layer$1);
+      var match$1 = Layer$LonaCompilerCore.getStringParameterOpt(/* AlignItems */6, layer$1);
       var secondaryConstraints;
       if (match$1) {
         switch (match$1[0]) {

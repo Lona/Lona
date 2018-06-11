@@ -2,6 +2,12 @@ module Ast = JavaScriptAst;
 
 module Render = JavaScriptRender;
 
+let styleNameKey = key =>
+  switch key {
+  | ParameterKey.TextStyle => "font"
+  | _ => key |> ParameterKey.toString
+  };
+
 let createStyleAttributeAST = (colors, textStyles, layer: Types.layer, styles) =>
   Ast.(
     JSXAttribute({
@@ -15,7 +21,7 @@ let createStyleAttributeAST = (colors, textStyles, layer: Types.layer, styles) =
           ObjectLiteral(
             Layer.mapBindings(((key, value)) =>
               Property({
-                "key": Identifier([key]),
+                "key": Identifier([key |> styleNameKey]),
                 "value": JavaScriptLogic.logicValueToJavaScriptAST(value)
               })
             ) @@
@@ -36,11 +42,11 @@ let rec layerToJavaScriptAST =
     (
       switch (Layer.LayerMap.find_opt(layer, variableMap)) {
       | Some(map) => map
-      | None => StringMap.empty
+      | None => ParameterMap.empty
       }
     )
     |> Layer.splitParamsMap;
-  let main = StringMap.assign(mainParams, mainVariables);
+  let main = ParameterMap.assign(mainParams, mainVariables);
   let styleAttribute =
     createStyleAttributeAST(colors, textStyles, layer, styleVariables);
   let attributes =
@@ -48,8 +54,8 @@ let rec layerToJavaScriptAST =
     |> Layer.mapBindings(((key, value)) => {
          let key =
            switch (layer.typeName, key) {
-           | (Types.Image, "image") => "source"
-           | _ => key
+           | (Types.Image, ParameterKey.Image) => "source"
+           | _ => key |> ParameterKey.toString
            };
          let attributeValue =
            switch value {
@@ -74,15 +80,15 @@ let rec layerToJavaScriptAST =
        });
   let dynamicOrStaticValue = key =>
     switch (
-      main |> StringMap.find_opt(key),
-      layer.parameters |> StringMap.find_opt(key)
+      main |> ParameterMap.find_opt(key),
+      layer.parameters |> ParameterMap.find_opt(key)
     ) {
     | (Some(param), _) => Some(param)
     | (None, Some(param)) => Some(Logic.Literal(param))
     | _ => None
     };
   let content =
-    switch (layer.typeName, dynamicOrStaticValue("text")) {
+    switch (layer.typeName, dynamicOrStaticValue(Text)) {
     | (Types.Text, Some(textValue)) => [
         JSXExpressionContainer(
           JavaScriptLogic.logicValueToJavaScriptAST(textValue)
@@ -117,16 +123,16 @@ let toJavaScriptStyleSheetAST = (colors, layer: Types.layer) => {
   let createStyleObjectForLayer = (layer: Types.layer) => {
     let styleParams =
       layer.parameters
-      |> StringMap.filter((key, _) => Layer.parameterIsStyle(key));
+      |> ParameterMap.filter((key, _) => Layer.parameterIsStyle(key));
     Property({
       "key": Identifier([JavaScriptFormat.styleVariableName(layer.name)]),
       "value":
         ObjectLiteral(
           styleParams
-          |> StringMap.bindings
+          |> ParameterMap.bindings
           |> List.map(((key, value: Types.lonaValue)) =>
                switch key {
-               | "font" =>
+               | ParameterKey.TextStyle =>
                  switch (value.data |> Js.Json.decodeString) {
                  | Some(textStyleName) =>
                    SpreadElement(Identifier(["textStyles", textStyleName]))
@@ -136,7 +142,7 @@ let toJavaScriptStyleSheetAST = (colors, layer: Types.layer) => {
                  }
                | _ =>
                  Property({
-                   "key": Identifier([key]),
+                   "key": Identifier([key |> ParameterKey.toString]),
                    "value": getStyleValue(colors, value)
                  })
                }

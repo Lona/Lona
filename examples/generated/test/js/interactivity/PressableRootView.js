@@ -58,11 +58,11 @@ let styles = StyleSheet.create({
   outer: {
     alignSelf: "stretch",
     backgroundColor: colors.grey50,
-    paddingBottom: 24,
-    paddingLeft: 24,
+    paddingTop: 24,
     paddingRight: 24,
-    paddingTop: 24
+    paddingBottom: 24,
+    paddingLeft: 24
   },
-  inner: { backgroundColor: colors.blue500, height: 100, width: 100 },
+  inner: { backgroundColor: colors.blue500, width: 100, height: 100 },
   innerText: { ...textStyles.headline }
 });

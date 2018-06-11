@@ -12,10 +12,11 @@ var Logic$LonaCompilerCore            = require("../core/logic.bs.js");
 var Types$LonaCompilerCore            = require("../core/types.bs.js");
 var Caml_builtin_exceptions           = require("bs-platform/lib/js/caml_builtin_exceptions.js");
 var Decode$LonaCompilerCore           = require("../core/decode.bs.js");
-var StringMap$LonaCompilerCore        = require("../containers/stringMap.bs.js");
 var Constraint$LonaCompilerCore       = require("../utils/constraint.bs.js");
 var SwiftLogic$LonaCompilerCore       = require("./swiftLogic.bs.js");
 var SwiftFormat$LonaCompilerCore      = require("./swiftFormat.bs.js");
+var ParameterKey$LonaCompilerCore     = require("../core/parameterKey.bs.js");
+var ParameterMap$LonaCompilerCore     = require("../containers/parameterMap.bs.js");
 var SwiftDocument$LonaCompilerCore    = require("./swiftDocument.bs.js");
 var AppkitPressable$LonaCompilerCore  = require("./appkit/appkitPressable.bs.js");
 var SwiftHelperClass$LonaCompilerCore = require("./swiftHelperClass.bs.js");
@@ -47,7 +48,7 @@ function generate(options, swiftOptions, name, colors, textStyles, getComponent,
   var isParameterAssigned = function (layer, parameter) {
     var assignedParameters = Layer$LonaCompilerCore.LayerMap[/* find_opt */24](layer, layerParameterAssignments);
     if (assignedParameters) {
-      return Curry._2(StringMap$LonaCompilerCore.mem, parameter, assignedParameters[0]);
+      return Curry._2(ParameterMap$LonaCompilerCore.mem, parameter, assignedParameters[0]);
     } else {
       return /* false */0;
     }
@@ -56,7 +57,7 @@ function generate(options, swiftOptions, name, colors, textStyles, getComponent,
     if (isParameterAssigned(layer, parameter)) {
       return /* true */1;
     } else {
-      return Curry._2(StringMap$LonaCompilerCore.mem, parameter, layer[/* parameters */2]);
+      return Curry._2(ParameterMap$LonaCompilerCore.mem, parameter, layer[/* parameters */2]);
     }
   };
   var parameterVariableDoc = function (parameter) {
@@ -66,7 +67,7 @@ function generate(options, swiftOptions, name, colors, textStyles, getComponent,
                   /* [] */0
                 ],
                 pattern: /* IdentifierPattern */Block.__(0, [{
-                      identifier: /* SwiftIdentifier */Block.__(8, [parameter[/* name */0]]),
+                      identifier: /* SwiftIdentifier */Block.__(8, [ParameterKey$LonaCompilerCore.toString(parameter[/* name */0])]),
                       annotation: /* Some */[SwiftDocument$LonaCompilerCore.typeAnnotationDoc(swiftOptions[/* framework */0], parameter[/* ltype */1])]
                     }]),
                 init: /* None */0,
@@ -150,7 +151,7 @@ function generate(options, swiftOptions, name, colors, textStyles, getComponent,
                             ]
                           }]);
             case 2 : 
-                var hasBackground = isParameterAssigned(layer, "backgroundColor");
+                var hasBackground = isParameterAssigned(layer, /* BackgroundColor */8);
                 return /* FunctionCallExpression */Block.__(19, [{
                             name: hasBackground !== 0 ? /* SwiftIdentifier */Block.__(8, ["ImageWithBackgroundColor"]) : typeName,
                             arguments: /* [] */0
@@ -211,15 +212,15 @@ function generate(options, swiftOptions, name, colors, textStyles, getComponent,
               }]);
   };
   var textStyleVariableDoc = function (layer) {
-    var match = Curry._2(StringMap$LonaCompilerCore.mem, "font", layer[/* parameters */2]);
+    var match = Curry._2(ParameterMap$LonaCompilerCore.mem, /* TextStyle */3, layer[/* parameters */2]);
     var styleName = /* MemberExpression */Block.__(1, [/* :: */[
           /* SwiftIdentifier */Block.__(8, ["TextStyles"]),
           /* :: */[
-            /* SwiftIdentifier */Block.__(8, [match !== 0 ? Layer$LonaCompilerCore.getStringParameter("font", layer) : textStyles[/* defaultStyle */1][/* id */0]]),
+            /* SwiftIdentifier */Block.__(8, [match !== 0 ? Layer$LonaCompilerCore.getStringParameter(/* TextStyle */3, layer) : textStyles[/* defaultStyle */1][/* id */0]]),
             /* [] */0
           ]
         ]]);
-    var match$1 = Curry._2(StringMap$LonaCompilerCore.mem, "textAlign", layer[/* parameters */2]);
+    var match$1 = Curry._2(ParameterMap$LonaCompilerCore.mem, /* TextAlign */2, layer[/* parameters */2]);
     var styleName$1 = match$1 !== 0 ? /* MemberExpression */Block.__(1, [/* :: */[
             styleName,
             /* :: */[
@@ -228,7 +229,7 @@ function generate(options, swiftOptions, name, colors, textStyles, getComponent,
                     arguments: /* :: */[
                       /* FunctionCallArgument */Block.__(18, [{
                             name: /* Some */[/* SwiftIdentifier */Block.__(8, ["alignment"])],
-                            value: /* SwiftIdentifier */Block.__(8, ["." + Layer$LonaCompilerCore.getStringParameter("textAlign", layer)])
+                            value: /* SwiftIdentifier */Block.__(8, ["." + Layer$LonaCompilerCore.getStringParameter(/* TextAlign */2, layer)])
                           }]),
                       /* [] */0
                     ]
@@ -279,22 +280,22 @@ function generate(options, swiftOptions, name, colors, textStyles, getComponent,
       };
       marginVariables = List.map(createVariable, /* :: */[
             /* record */[
-              /* lonaName */"marginTop",
+              /* lonaName : MarginTop */12,
               /* swiftName */"topMargin"
             ],
             /* :: */[
               /* record */[
-                /* lonaName */"marginRight",
+                /* lonaName : MarginRight */13,
                 /* swiftName */"trailingMargin"
               ],
               /* :: */[
                 /* record */[
-                  /* lonaName */"marginBottom",
+                  /* lonaName : MarginBottom */14,
                   /* swiftName */"bottomMargin"
                 ],
                 /* :: */[
                   /* record */[
-                    /* lonaName */"marginLeft",
+                    /* lonaName : MarginLeft */15,
                     /* swiftName */"leadingMargin"
                   ],
                   /* [] */0
@@ -322,22 +323,22 @@ function generate(options, swiftOptions, name, colors, textStyles, getComponent,
       };
       paddingVariables = List.map(createVariable$1, /* :: */[
             /* record */[
-              /* lonaName */"paddingTop",
+              /* lonaName : PaddingTop */16,
               /* swiftName */"topPadding"
             ],
             /* :: */[
               /* record */[
-                /* lonaName */"paddingRight",
+                /* lonaName : PaddingRight */17,
                 /* swiftName */"trailingPadding"
               ],
               /* :: */[
                 /* record */[
-                  /* lonaName */"paddingBottom",
+                  /* lonaName : PaddingBottom */18,
                   /* swiftName */"bottomPadding"
                 ],
                 /* :: */[
                   /* record */[
-                    /* lonaName */"paddingLeft",
+                    /* lonaName : PaddingLeft */19,
                     /* swiftName */"leadingPadding"
                   ],
                   /* [] */0
@@ -398,7 +399,7 @@ function generate(options, swiftOptions, name, colors, textStyles, getComponent,
   var initParameterDoc = function (parameter) {
     return /* Parameter */Block.__(17, [{
                 externalName: /* None */0,
-                localName: parameter[/* name */0],
+                localName: ParameterKey$LonaCompilerCore.toString(parameter[/* name */0]),
                 annotation: SwiftDocument$LonaCompilerCore.typeAnnotationDoc(swiftOptions[/* framework */0], parameter[/* ltype */1]),
                 defaultValue: /* None */0
               }]);
@@ -408,12 +409,12 @@ function generate(options, swiftOptions, name, colors, textStyles, getComponent,
                 left: /* MemberExpression */Block.__(1, [/* :: */[
                       /* SwiftIdentifier */Block.__(8, ["self"]),
                       /* :: */[
-                        /* SwiftIdentifier */Block.__(8, [parameter[/* name */0]]),
+                        /* SwiftIdentifier */Block.__(8, [ParameterKey$LonaCompilerCore.toString(parameter[/* name */0])]),
                         /* [] */0
                       ]
                     ]]),
                 operator: "=",
-                right: /* SwiftIdentifier */Block.__(8, [parameter[/* name */0]])
+                right: /* SwiftIdentifier */Block.__(8, [ParameterKey$LonaCompilerCore.toString(parameter[/* name */0])])
               }]);
   };
   var initializerCoderDoc = function () {
@@ -542,7 +543,7 @@ function generate(options, swiftOptions, name, colors, textStyles, getComponent,
                                       name: /* SwiftIdentifier */Block.__(8, ["init"]),
                                       arguments: List.map((function (param) {
                                               return /* FunctionCallArgument */Block.__(18, [{
-                                                          name: /* Some */[/* SwiftIdentifier */Block.__(8, [param[/* name */0]])],
+                                                          name: /* Some */[/* SwiftIdentifier */Block.__(8, [ParameterKey$LonaCompilerCore.toString(param[/* name */0])])],
                                                           value: SwiftDocument$LonaCompilerCore.defaultValueForLonaType(swiftOptions[/* framework */0], colors, textStyles, param[/* ltype */1])
                                                         }]);
                                             }), List.filter((function (param) {
@@ -580,9 +581,8 @@ function generate(options, swiftOptions, name, colors, textStyles, getComponent,
     var name = param[0];
     var parameters = Layer$LonaCompilerCore.LayerMap[/* find_opt */24](layer, layerParameterAssignments);
     if (parameters) {
-      var assignment = StringMap$LonaCompilerCore.find_opt(name, parameters[0]);
-      var parameterName = name === "textStyle" ? "font" : name;
-      var parameterValue = StringMap$LonaCompilerCore.find_opt(parameterName, layer[/* parameters */2]);
+      var assignment = ParameterMap$LonaCompilerCore.find_opt(name, parameters[0]);
+      var parameterValue = ParameterMap$LonaCompilerCore.find_opt(name, layer[/* parameters */2]);
       var match = layer[/* typeName */0];
       var logic;
       if (assignment) {
@@ -591,7 +591,7 @@ function generate(options, swiftOptions, name, colors, textStyles, getComponent,
         logic = parameterValue ? Logic$LonaCompilerCore.assignmentForLayerParameter(layer, name, parameterValue[0]) : Logic$LonaCompilerCore.defaultAssignmentForLayerParameter(colors, textStyles, layer, name);
       } else {
         var param$1 = List.find((function (param) {
-                return +(param[/* name */0] === name);
+                return Caml_obj.caml_equal(param[/* name */0], name);
               }), Decode$LonaCompilerCore.Component[/* parameters */0](Curry._1(getComponent, match[0])));
         logic = Logic$LonaCompilerCore.assignmentForLayerParameter(layer, name, Logic$LonaCompilerCore.defaultValueForType(param$1[/* ltype */1]));
       }
@@ -603,7 +603,7 @@ function generate(options, swiftOptions, name, colors, textStyles, getComponent,
   };
   var containsImageWithBackgroundColor = function () {
     var hasBackgroundColor = function (layer) {
-      return isParameterAssigned(layer, "backgroundColor");
+      return isParameterAssigned(layer, /* BackgroundColor */8);
     };
     return List.exists(hasBackgroundColor, imageLayers);
   };
@@ -631,8 +631,8 @@ function generate(options, swiftOptions, name, colors, textStyles, getComponent,
     var setUpDefaultsDoc = function () {
       var filterParameters = function (param) {
         var name = param[0];
-        if (name !== "flexDirection" && name !== "justifyContent" && name !== "alignSelf" && name !== "alignItems" && name !== "flex" && !name.startsWith("padding") && !name.startsWith("margin") && name !== "height" && name !== "width") {
-          return +(name !== "textAlign");
+        if (name !== /* FlexDirection */10 && name !== /* JustifyContent */11 && name !== /* AlignSelf */7 && name !== /* AlignItems */6 && name !== /* Flex */9 && name !== /* PaddingTop */16 && name !== /* PaddingRight */17 && name !== /* PaddingBottom */18 && name !== /* PaddingLeft */19 && name !== /* MarginTop */12 && name !== /* MarginRight */13 && name !== /* MarginBottom */14 && name !== /* MarginLeft */15 && name !== /* Height */24 && name !== /* Width */23) {
+          return +(name !== /* TextAlign */2);
         } else {
           return /* false */0;
         }
@@ -648,7 +648,7 @@ function generate(options, swiftOptions, name, colors, textStyles, getComponent,
                             var param$1 = param;
                             var match = Layer$LonaCompilerCore.LayerMap[/* find_opt */24](layer$1, assignments);
                             if (match) {
-                              var match$1 = StringMap$LonaCompilerCore.find_opt(param$1[0], match[0]);
+                              var match$1 = ParameterMap$LonaCompilerCore.find_opt(param$1[0], match[0]);
                               if (match$1) {
                                 return /* false */0;
                               } else {
@@ -657,7 +657,7 @@ function generate(options, swiftOptions, name, colors, textStyles, getComponent,
                             } else {
                               return /* true */1;
                             }
-                          }))(List.filter(filterParameters)(Curry._1(StringMap$LonaCompilerCore.bindings, layer[/* parameters */2]))));
+                          }))(List.filter(filterParameters)(Curry._1(ParameterMap$LonaCompilerCore.bindings, layer[/* parameters */2]))));
       };
       return List.concat(List.map(defineInitialLayerValues, Layer$LonaCompilerCore.flatten(rootLayer)));
     };
@@ -670,7 +670,7 @@ function generate(options, swiftOptions, name, colors, textStyles, getComponent,
             if (match$1 !== 0) {
               return /* [] */0;
             } else {
-              var match$2 = isParameterUsed(layer, "borderWidth");
+              var match$2 = isParameterUsed(layer, /* BorderWidth */21);
               return /* :: */[
                       /* BinaryExpression */Block.__(2, [{
                             left: memberOrSelfExpression(parentNameOrSelf(layer), /* :: */[
@@ -723,7 +723,7 @@ function generate(options, swiftOptions, name, colors, textStyles, getComponent,
         if (match$1 !== 1) {
           return /* [] */0;
         } else {
-          var match$3 = Curry._2(StringMap$LonaCompilerCore.mem, "numberOfLines", layer[/* parameters */2]);
+          var match$3 = Curry._2(ParameterMap$LonaCompilerCore.mem, /* NumberOfLines */4, layer[/* parameters */2]);
           return List.concat(/* :: */[
                       match$3 !== 0 ? /* [] */0 : /* :: */[
                           /* BinaryExpression */Block.__(2, [{
@@ -1099,11 +1099,11 @@ function generate(options, swiftOptions, name, colors, textStyles, getComponent,
           console.log("Unknown constraint types");
           throw Caml_builtin_exceptions.not_found;
         } else {
-          var constant = Layer$LonaCompilerCore.getNumberParameter("width", layer$2);
+          var constant = Layer$LonaCompilerCore.getNumberParameter(/* Width */23, layer$2);
           return /* LiteralExpression */Block.__(0, [/* FloatingPoint */Block.__(2, [constant])]);
         }
       } else {
-        var constant$1 = Layer$LonaCompilerCore.getNumberParameter("height", layer$2);
+        var constant$1 = Layer$LonaCompilerCore.getNumberParameter(/* Height */24, layer$2);
         return /* LiteralExpression */Block.__(0, [/* FloatingPoint */Block.__(2, [constant$1])]);
       }
     }
@@ -1272,10 +1272,10 @@ function generate(options, swiftOptions, name, colors, textStyles, getComponent,
   var updateDoc = function () {
     var filterParameters = function (param) {
       var name = param[0];
-      if (name.includes("margin")) {
-        return /* false */0;
+      if (name !== /* PaddingTop */16 && name !== /* PaddingRight */17 && name !== /* PaddingBottom */18 && name !== /* PaddingLeft */19 && name !== /* MarginTop */12 && name !== /* MarginRight */13 && name !== /* MarginBottom */14) {
+        return +(name !== /* MarginLeft */15);
       } else {
-        return 1 - +name.includes("padding");
+        return /* false */0;
       }
     };
     var conditionallyAssigned = Logic$LonaCompilerCore.conditionallyAssignedIdentifiers(logic);
@@ -1293,14 +1293,14 @@ function generate(options, swiftOptions, name, colors, textStyles, getComponent,
                                         /* :: */[
                                           layer$1[/* name */1],
                                           /* :: */[
-                                            name,
+                                            ParameterKey$LonaCompilerCore.toString(name),
                                             /* [] */0
                                           ]
                                         ]
                                       ]);
                           };
                           return Curry._2(Logic$LonaCompilerCore.IdentifierSet[/* exists */15], isAssigned, conditionallyAssigned);
-                        }))(List.filter(filterParameters)(Curry._1(StringMap$LonaCompilerCore.bindings, param[1]))));
+                        }))(List.filter(filterParameters)(Curry._1(ParameterMap$LonaCompilerCore.bindings, param[1]))));
     };
     return /* FunctionDeclaration */Block.__(13, [{
                 name: "update",

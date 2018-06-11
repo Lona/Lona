@@ -88,9 +88,9 @@ public class ComponentBrowser: NSBox {
     innerView.addSubview(spacerView)
     innerView.addSubview(componentPreviewCollectionView)
 
+    titleView.attributedStringValue = titleViewTextStyle.apply(to: "Components")
     titleViewTextStyle = TextStyles.title
     titleView.attributedStringValue = titleViewTextStyle.apply(to: titleView.attributedStringValue)
-    titleView.attributedStringValue = titleViewTextStyle.apply(to: "Components")
   }
 
   private func setUpConstraints() {
