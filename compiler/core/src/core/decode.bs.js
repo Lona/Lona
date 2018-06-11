@@ -10,198 +10,60 @@ var Js_option                     = require("bs-platform/lib/js/js_option.js");
 var Json_decode                   = require("bs-json/src/Json_decode.js");
 var Caml_exceptions               = require("bs-platform/lib/js/caml_exceptions.js");
 var Types$LonaCompilerCore        = require("./types.bs.js");
-var Caml_builtin_exceptions       = require("bs-platform/lib/js/caml_builtin_exceptions.js");
-var StringMap$LonaCompilerCore    = require("../containers/stringMap.bs.js");
 var ParameterKey$LonaCompilerCore = require("./parameterKey.bs.js");
-
-var parameterTypeMap = StringMap$LonaCompilerCore.fromList(/* :: */[
-      /* tuple */[
-        "text",
-        Types$LonaCompilerCore.stringType
-      ],
-      /* :: */[
-        /* tuple */[
-          "visible",
-          Types$LonaCompilerCore.booleanType
-        ],
-        /* :: */[
-          /* tuple */[
-            "numberOfLines",
-            Types$LonaCompilerCore.numberType
-          ],
-          /* :: */[
-            /* tuple */[
-              "backgroundColor",
-              Types$LonaCompilerCore.colorType
-            ],
-            /* :: */[
-              /* tuple */[
-                "image",
-                Types$LonaCompilerCore.urlType
-              ],
-              /* :: */[
-                /* tuple */[
-                  "alignItems",
-                  Types$LonaCompilerCore.stringType
-                ],
-                /* :: */[
-                  /* tuple */[
-                    "alignSelf",
-                    Types$LonaCompilerCore.stringType
-                  ],
-                  /* :: */[
-                    /* tuple */[
-                      "flex",
-                      Types$LonaCompilerCore.numberType
-                    ],
-                    /* :: */[
-                      /* tuple */[
-                        "flexDirection",
-                        Types$LonaCompilerCore.stringType
-                      ],
-                      /* :: */[
-                        /* tuple */[
-                          "font",
-                          Types$LonaCompilerCore.textStyleType
-                        ],
-                        /* :: */[
-                          /* tuple */[
-                            "textAlign",
-                            Types$LonaCompilerCore.stringType
-                          ],
-                          /* :: */[
-                            /* tuple */[
-                              "justifyContent",
-                              Types$LonaCompilerCore.stringType
-                            ],
-                            /* :: */[
-                              /* tuple */[
-                                "marginTop",
-                                Types$LonaCompilerCore.numberType
-                              ],
-                              /* :: */[
-                                /* tuple */[
-                                  "marginRight",
-                                  Types$LonaCompilerCore.numberType
-                                ],
-                                /* :: */[
-                                  /* tuple */[
-                                    "marginBottom",
-                                    Types$LonaCompilerCore.numberType
-                                  ],
-                                  /* :: */[
-                                    /* tuple */[
-                                      "marginLeft",
-                                      Types$LonaCompilerCore.numberType
-                                    ],
-                                    /* :: */[
-                                      /* tuple */[
-                                        "paddingTop",
-                                        Types$LonaCompilerCore.numberType
-                                      ],
-                                      /* :: */[
-                                        /* tuple */[
-                                          "paddingRight",
-                                          Types$LonaCompilerCore.numberType
-                                        ],
-                                        /* :: */[
-                                          /* tuple */[
-                                            "paddingBottom",
-                                            Types$LonaCompilerCore.numberType
-                                          ],
-                                          /* :: */[
-                                            /* tuple */[
-                                              "paddingLeft",
-                                              Types$LonaCompilerCore.numberType
-                                            ],
-                                            /* :: */[
-                                              /* tuple */[
-                                                "borderRadius",
-                                                Types$LonaCompilerCore.numberType
-                                              ],
-                                              /* :: */[
-                                                /* tuple */[
-                                                  "borderWidth",
-                                                  Types$LonaCompilerCore.numberType
-                                                ],
-                                                /* :: */[
-                                                  /* tuple */[
-                                                    "borderColor",
-                                                    Types$LonaCompilerCore.colorType
-                                                  ],
-                                                  /* :: */[
-                                                    /* tuple */[
-                                                      "width",
-                                                      Types$LonaCompilerCore.numberType
-                                                    ],
-                                                    /* :: */[
-                                                      /* tuple */[
-                                                        "height",
-                                                        Types$LonaCompilerCore.numberType
-                                                      ],
-                                                      /* :: */[
-                                                        /* tuple */[
-                                                          "pressed",
-                                                          Types$LonaCompilerCore.booleanType
-                                                        ],
-                                                        /* :: */[
-                                                          /* tuple */[
-                                                            "hovered",
-                                                            Types$LonaCompilerCore.booleanType
-                                                          ],
-                                                          /* :: */[
-                                                            /* tuple */[
-                                                              "onPress",
-                                                              Types$LonaCompilerCore.handlerType
-                                                            ],
-                                                            /* [] */0
-                                                          ]
-                                                        ]
-                                                      ]
-                                                    ]
-                                                  ]
-                                                ]
-                                              ]
-                                            ]
-                                          ]
-                                        ]
-                                      ]
-                                    ]
-                                  ]
-                                ]
-                              ]
-                            ]
-                          ]
-                        ]
-                      ]
-                    ]
-                  ]
-                ]
-              ]
-            ]
-          ]
-        ]
-      ]
-    ]);
+var ParameterMap$LonaCompilerCore = require("../containers/parameterMap.bs.js");
 
 var UnknownParameter = Caml_exceptions.create("Decode-LonaCompilerCore.UnknownParameter");
 
 var UnknownType = Caml_exceptions.create("Decode-LonaCompilerCore.UnknownType");
 
-function parameterType(name) {
-  try {
-    return Curry._2(StringMap$LonaCompilerCore.find, name, parameterTypeMap);
-  }
-  catch (exn){
-    if (exn === Caml_builtin_exceptions.not_found) {
-      console.log("Unknown built-in parameter when deserializing:", name);
-      throw [
-            UnknownParameter,
-            name
-          ];
-    } else {
-      throw exn;
+function parameterType(key) {
+  if (typeof key === "number") {
+    switch (key) {
+      case 3 : 
+          return Types$LonaCompilerCore.textStyleType;
+      case 5 : 
+          return Types$LonaCompilerCore.urlType;
+      case 1 : 
+      case 2 : 
+      case 6 : 
+      case 7 : 
+      case 10 : 
+      case 11 : 
+          return Types$LonaCompilerCore.stringType;
+      case 8 : 
+      case 22 : 
+          return Types$LonaCompilerCore.colorType;
+      case 4 : 
+      case 9 : 
+      case 12 : 
+      case 13 : 
+      case 14 : 
+      case 15 : 
+      case 16 : 
+      case 17 : 
+      case 18 : 
+      case 19 : 
+      case 20 : 
+      case 21 : 
+      case 23 : 
+      case 24 : 
+          return Types$LonaCompilerCore.numberType;
+      case 0 : 
+      case 25 : 
+      case 26 : 
+          return Types$LonaCompilerCore.booleanType;
+      case 27 : 
+          return Types$LonaCompilerCore.handlerType;
+      
     }
+  } else {
+    var name = key[0];
+    console.log("Unknown built-in parameter when deserializing:", name);
+    throw [
+          UnknownParameter,
+          name
+        ];
   }
 }
 
@@ -304,7 +166,7 @@ function layerType(json) {
 function layer(getComponent, json) {
   var typeName = Json_decode.field("type", layerType, json);
   var parameterDictionary = function (json) {
-    return Curry._2(StringMap$LonaCompilerCore.mapi, (function (key, value) {
+    return Curry._2(ParameterMap$LonaCompilerCore.mapi, (function (key, value) {
                   if (typeof typeName === "number") {
                     return /* record */[
                             /* ltype */parameterType(key),
@@ -312,7 +174,7 @@ function layer(getComponent, json) {
                           ];
                   } else {
                     var param = List.find((function (param) {
-                            return Caml_obj.caml_equal(param[/* name */0], ParameterKey$LonaCompilerCore.fromString(key));
+                            return Caml_obj.caml_equal(param[/* name */0], key);
                           }), Json_decode.field("params", (function (param) {
                                 return Json_decode.list(parameter, param);
                               }), Curry._1(getComponent, typeName[0])));
@@ -326,7 +188,7 @@ function layer(getComponent, json) {
                       console.log("Unknown built-in parameter when deserializing:", key);
                       throw [
                             UnknownParameter,
-                            key
+                            ParameterKey$LonaCompilerCore.toString(key)
                           ];
                     }
                     if (exit === 1) {
@@ -337,7 +199,7 @@ function layer(getComponent, json) {
                     }
                     
                   }
-                }), StringMap$LonaCompilerCore.fromJsDict(Js_option.getExn(Js_json.decodeObject(json))));
+                }), ParameterMap$LonaCompilerCore.fromJsDict(Js_option.getExn(Js_json.decodeObject(json))));
   };
   var tmp;
   var exit = 0;
@@ -639,7 +501,6 @@ exports.urlType           = urlType;
 exports.handlerType       = handlerType;
 exports.parameterToJs     = parameterToJs;
 exports.parameterFromJs   = parameterFromJs;
-exports.parameterTypeMap  = parameterTypeMap;
 exports.UnknownParameter  = UnknownParameter;
 exports.UnknownType       = UnknownType;
 exports.parameterType     = parameterType;
@@ -654,4 +515,4 @@ exports.Component         = Component;
 exports.decodeParameters  = decodeParameters;
 exports.decodeRootLayer   = decodeRootLayer;
 exports.decodeLogic       = decodeLogic;
-/* parameterTypeMap Not a pure module */
+/* ParameterMap-LonaCompilerCore Not a pure module */

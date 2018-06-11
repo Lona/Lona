@@ -30,27 +30,27 @@ export default class FixedParentFillAndFitChildren extends React.Component {
 let styles = StyleSheet.create({
   view: {
     alignSelf: "stretch",
-    height: 600,
+    paddingTop: 24,
+    paddingRight: 24,
     paddingBottom: 24,
     paddingLeft: 24,
-    paddingRight: 24,
-    paddingTop: 24
+    height: 600
   },
   view1: {
     alignSelf: "stretch",
     backgroundColor: colors.red50,
     flexDirection: "row",
-    paddingBottom: 24,
-    paddingLeft: 24,
+    paddingTop: 24,
     paddingRight: 24,
-    paddingTop: 24
+    paddingBottom: 24,
+    paddingLeft: 24
   },
-  view4: { backgroundColor: colors.red200, height: 100, width: 60 },
+  view4: { backgroundColor: colors.red200, width: 60, height: 100 },
   view5: {
     backgroundColor: colors.deeporange200,
-    height: 60,
     marginLeft: 12,
-    width: 60
+    width: 60,
+    height: 60
   },
   view2: { alignSelf: "stretch", backgroundColor: colors.indigo100, flex: 1 },
   view3: { alignSelf: "stretch", backgroundColor: colors.teal100, flex: 1 }

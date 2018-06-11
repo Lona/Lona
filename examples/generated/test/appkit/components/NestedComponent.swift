@@ -88,9 +88,9 @@ public class NestedComponent: NSBox {
     addSubview(localAssetView)
     addSubview(text2View)
 
+    textView.attributedStringValue = textViewTextStyle.apply(to: "Example nested component")
     textViewTextStyle = TextStyles.subheading2
     textView.attributedStringValue = textViewTextStyle.apply(to: textView.attributedStringValue)
-    textView.attributedStringValue = textViewTextStyle.apply(to: "Example nested component")
     text1View.attributedStringValue = text1ViewTextStyle.apply(to: "Text below")
     text2View.attributedStringValue = text2ViewTextStyle.apply(to: "Very bottom")
   }

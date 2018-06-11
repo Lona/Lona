@@ -26,10 +26,10 @@ export default class NestedButtons extends React.Component {
 let styles = StyleSheet.create({
   view: {
     alignSelf: "stretch",
-    paddingBottom: 24,
-    paddingLeft: 24,
+    paddingTop: 24,
     paddingRight: 24,
-    paddingTop: 24
+    paddingBottom: 24,
+    paddingLeft: 24
   },
   button: {},
   view1: { alignSelf: "stretch", height: 8 },

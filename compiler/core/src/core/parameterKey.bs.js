@@ -20,8 +20,6 @@ function fromString(string) {
         return /* Flex */9;
     case "flexDirection" : 
         return /* FlexDirection */10;
-    case "font" : 
-        return /* Font */3;
     case "height" : 
         return /* Height */24;
     case "hovered" : 
@@ -56,6 +54,9 @@ function fromString(string) {
         return /* Text */1;
     case "textAlign" : 
         return /* TextAlign */2;
+    case "font" : 
+    case "textStyle" : 
+        return /* TextStyle */3;
     case "visible" : 
         return /* Visible */0;
     case "width" : 
@@ -75,7 +76,7 @@ function toString(key) {
       case 2 : 
           return "textAlign";
       case 3 : 
-          return "font";
+          return "textStyle";
       case 4 : 
           return "numberOfLines";
       case 5 : 

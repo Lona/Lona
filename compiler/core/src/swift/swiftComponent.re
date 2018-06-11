@@ -11,7 +11,7 @@ type constraintDefinition = {
 };
 
 type directionParameter = {
-  lonaName: string,
+  lonaName: ParameterKey.t,
   swiftName: string
 };
 
@@ -66,14 +66,14 @@ let generate =
     | Constraint.Required => "required"
     | Low => "defaultLow";
   let isParameterSetInitially = (layer: Types.layer, parameter) =>
-    StringMap.mem(parameter, layer.parameters);
+    ParameterMap.mem(parameter, layer.parameters);
   let getParameter = (layer: Types.layer, parameter) =>
-    StringMap.find_opt(parameter, layer.parameters);
+    ParameterMap.find_opt(parameter, layer.parameters);
   let isParameterAssigned = (layer: Types.layer, parameter) => {
     let assignedParameters =
       Layer.LayerMap.find_opt(layer, layerParameterAssignments);
     switch assignedParameters {
-    | Some(parameters) => StringMap.mem(parameter, parameters)
+    | Some(parameters) => ParameterMap.mem(parameter, parameters)
     | None => false
     };
   };
@@ -148,7 +148,7 @@ let generate =
         ]
       })
     | (AppKit, Image) =>
-      let hasBackground = isParameterAssigned(layer, "backgroundColor");
+      let hasBackground = isParameterAssigned(layer, BackgroundColor);
       FunctionCallExpression({
         "name":
           hasBackground ?
@@ -174,13 +174,13 @@ let generate =
       MemberExpression([
         SwiftIdentifier("TextStyles"),
         SwiftIdentifier(
-          isParameterSetInitially(layer, "font") ?
-            Layer.getStringParameter("font", layer) :
+          isParameterSetInitially(layer, TextStyle) ?
+            Layer.getStringParameter(TextStyle, layer) :
             textStyles.defaultStyle.id
         )
       ]);
     let styleName =
-      isParameterSetInitially(layer, "textAlign") ?
+      isParameterSetInitially(layer, TextAlign) ?
         MemberExpression([
           styleName,
           FunctionCallExpression({
@@ -190,7 +190,7 @@ let generate =
                 "name": Some(SwiftIdentifier("alignment")),
                 "value":
                   SwiftIdentifier(
-                    "." ++ Layer.getStringParameter("textAlign", layer)
+                    "." ++ Layer.getStringParameter(TextAlign, layer)
                   )
               })
             ]
@@ -223,16 +223,16 @@ let generate =
       "block": None
     });
   let paddingParameters = [
-    {swiftName: "topPadding", lonaName: "paddingTop"},
-    {swiftName: "trailingPadding", lonaName: "paddingRight"},
-    {swiftName: "bottomPadding", lonaName: "paddingBottom"},
-    {swiftName: "leadingPadding", lonaName: "paddingLeft"}
+    {swiftName: "topPadding", lonaName: PaddingTop},
+    {swiftName: "trailingPadding", lonaName: PaddingRight},
+    {swiftName: "bottomPadding", lonaName: PaddingBottom},
+    {swiftName: "leadingPadding", lonaName: PaddingLeft}
   ];
   let marginParameters = [
-    {swiftName: "topMargin", lonaName: "marginTop"},
-    {swiftName: "trailingMargin", lonaName: "marginRight"},
-    {swiftName: "bottomMargin", lonaName: "marginBottom"},
-    {swiftName: "leadingMargin", lonaName: "marginLeft"}
+    {swiftName: "topMargin", lonaName: MarginTop},
+    {swiftName: "trailingMargin", lonaName: MarginRight},
+    {swiftName: "bottomMargin", lonaName: MarginBottom},
+    {swiftName: "leadingMargin", lonaName: MarginLeft}
   ];
   let spacingVariableDoc = (layer: Types.layer) => {
     let variableName = variable =>
@@ -496,13 +496,8 @@ let generate =
     switch parameters {
     | None => LineComment(layer.name)
     | Some(parameters) =>
-      let assignment = StringMap.find_opt(name, parameters);
-      let parameterName =
-        switch name {
-        | "textStyle" => "font"
-        | _ => name
-        };
-      let parameterValue = getParameter(layer, parameterName);
+      let assignment = ParameterMap.find_opt(name, parameters);
+      let parameterValue = getParameter(layer, name);
       let logic =
         switch (assignment, layer.typeName, parameterValue) {
         | (Some(assignment), _, _) => assignment
@@ -510,9 +505,7 @@ let generate =
           let param =
             getComponent(componentName)
             |> Decode.Component.parameters
-            |> List.find((param: Types.parameter) =>
-                 ParameterKey.toString(param.name) == name
-               );
+            |> List.find((param: Types.parameter) => param.name == name);
           Logic.assignmentForLayerParameter(
             layer,
             name,
@@ -541,7 +534,7 @@ let generate =
   };
   let containsImageWithBackgroundColor = () => {
     let hasBackgroundColor = (layer: Types.layer) =>
-      isParameterAssigned(layer, "backgroundColor");
+      isParameterAssigned(layer, BackgroundColor);
     imageLayers |> List.exists(hasBackgroundColor);
   };
   let helperClasses =
@@ -562,30 +555,35 @@ let generate =
   let setUpViewsDoc = (root: Types.layer) => {
     let setUpDefaultsDoc = () => {
       let filterParameters = ((name, _)) =>
-        name != "flexDirection"
-        && name != "justifyContent"
-        && name != "alignSelf"
-        && name != "alignItems"
-        && name != "flex"
-        /* && name != "font" */
-        && ! Js.String.startsWith("padding", name)
-        && ! Js.String.startsWith("margin", name)
+        name != ParameterKey.FlexDirection
+        && name != JustifyContent
+        && name != AlignSelf
+        && name != AlignItems
+        && name != Flex
+        && name != PaddingTop
+        && name != PaddingRight
+        && name != PaddingBottom
+        && name != PaddingLeft
+        && name != MarginTop
+        && name != MarginRight
+        && name != MarginBottom
+        && name != MarginLeft
         /* Handled by initial constraint setup */
-        && name != "height"
-        && name != "width"
-        && name != "textAlign";
+        && name != Height
+        && name != Width
+        && name != TextAlign;
       let filterNotAssignedByLogic = (layer: Types.layer, (parameterName, _)) =>
         switch (Layer.LayerMap.find_opt(layer, assignments)) {
         | None => true
         | Some(parameters) =>
-          switch (StringMap.find_opt(parameterName, parameters)) {
+          switch (ParameterMap.find_opt(parameterName, parameters)) {
           | None => true
           | Some(_) => false
           }
         };
       let defineInitialLayerValues = (layer: Types.layer) =>
         layer.parameters
-        |> StringMap.bindings
+        |> ParameterMap.bindings
         |> List.filter(filterParameters)
         |> List.filter(filterNotAssignedByLogic(layer))
         |> List.map(((k, v)) => defineInitialLayerValue(layer, (k, v)));
@@ -607,7 +605,7 @@ let generate =
               layerMemberExpression(layer, [SwiftIdentifier("borderType")]),
             "operator": "=",
             "right":
-              isParameterUsed(layer, "borderWidth") ?
+              isParameterUsed(layer, BorderWidth) ?
                 SwiftIdentifier(".lineBorder") : SwiftIdentifier(".noBorder")
           }),
           BinaryExpression({
@@ -630,7 +628,7 @@ let generate =
         ]
       | (SwiftOptions.UIKit, Text) =>
         [
-          isParameterSetInitially(layer, "numberOfLines") ?
+          isParameterSetInitially(layer, NumberOfLines) ?
             [] :
             [
               BinaryExpression({
@@ -836,10 +834,10 @@ let generate =
       | Relation(_, _, _, _, _, _, FlexSibling) =>
         LiteralExpression(FloatingPoint(0.0))
       | Dimension((layer: Types.layer), Height, _, _) =>
-        let constant = Layer.getNumberParameter("height", layer);
+        let constant = Layer.getNumberParameter(Height, layer);
         LiteralExpression(FloatingPoint(constant));
       | Dimension((layer: Types.layer), Width, _, _) =>
-        let constant = Layer.getNumberParameter("width", layer);
+        let constant = Layer.getNumberParameter(Width, layer);
         LiteralExpression(FloatingPoint(constant));
       | _ =>
         Js.log("Unknown constraint types");
@@ -1019,16 +1017,23 @@ let generate =
     /* let cond = Logic.conditionallyAssignedIdentifiers(logic);
        cond |> Logic.IdentifierSet.elements |> List.iter(((ltype, path)) => Js.log(path)); */
     let filterParameters = ((name, _)) =>
-      ! Js.String.includes("margin", name)
-      && ! Js.String.includes("padding", name);
+      name != ParameterKey.PaddingTop
+      && name != PaddingRight
+      && name != PaddingBottom
+      && name != PaddingLeft
+      && name != MarginTop
+      && name != MarginRight
+      && name != MarginBottom
+      && name != MarginLeft;
     let conditionallyAssigned = Logic.conditionallyAssignedIdentifiers(logic);
     let filterConditionallyAssigned = (layer: Types.layer, (name, _)) => {
-      let isAssigned = ((_, value)) => value == ["layers", layer.name, name];
+      let isAssigned = ((_, value)) =>
+        value == ["layers", layer.name, name |> ParameterKey.toString];
       conditionallyAssigned |> Logic.IdentifierSet.exists(isAssigned);
     };
     let defineInitialLayerValues = ((layer, propertyMap)) =>
       propertyMap
-      |> StringMap.bindings
+      |> ParameterMap.bindings
       |> List.filter(filterParameters)
       |> List.filter(filterConditionallyAssigned(layer))
       |> List.map(defineInitialLayerValue(layer));

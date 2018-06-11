@@ -55,8 +55,6 @@ public class TextStyleConditional: UIView {
 
     addSubview(textView)
 
-    textViewTextStyle = TextStyles.headline
-    textView.attributedText = textViewTextStyle.apply(to: textView.attributedText ?? NSAttributedString())
     textView.attributedText = textViewTextStyle.apply(to: "Text goes here")
   }
 

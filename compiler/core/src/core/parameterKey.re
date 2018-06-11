@@ -5,7 +5,9 @@ type t =
   /* Text */
   | Text
   | TextAlign
-  | Font
+  /* TODO: We should try to use just TextStyle. Change font => textStyle in save format? */
+  /* | Font */
+  | TextStyle
   | NumberOfLines
   /* Image */
   | Image
@@ -41,7 +43,8 @@ let fromString = string =>
   /* Text */
   | "text" => Text
   | "textAlign" => TextAlign
-  | "font" => Font
+  | "font" => TextStyle
+  | "textStyle" => TextStyle
   | "numberOfLines" => NumberOfLines
   /* Image */
   | "image" => Image
@@ -80,7 +83,7 @@ let toString = key =>
   /* Text */
   | Text => "text"
   | TextAlign => "textAlign"
-  | Font => "font"
+  | TextStyle => "textStyle"
   | NumberOfLines => "numberOfLines"
   /* Image */
   | Image => "image"

@@ -49,9 +49,9 @@ public class BorderWidthColor: NSBox {
 
     addSubview(view1View)
 
-    view1View.borderColor = Colors.blue300
     view1View.cornerRadius = 10
     view1View.borderWidth = 20
+    view1View.borderColor = Colors.blue300
   }
 
   private func setUpConstraints() {

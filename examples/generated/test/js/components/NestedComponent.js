@@ -36,10 +36,10 @@ export default class NestedComponent extends React.Component {
 let styles = StyleSheet.create({
   view: {
     alignSelf: "stretch",
-    paddingBottom: 10,
-    paddingLeft: 10,
+    paddingTop: 10,
     paddingRight: 10,
-    paddingTop: 10
+    paddingBottom: 10,
+    paddingLeft: 10
   },
   text: { ...textStyles.subheading2, marginBottom: 8 },
   fitContentParentSecondaryChildren: {},

@@ -73,7 +73,7 @@ type layerType =
 type layer = {
   typeName: layerType,
   name: string,
-  parameters: StringMap.t(lonaValue),
+  parameters: ParameterMap.t(lonaValue),
   children: list(layer)
 };
 

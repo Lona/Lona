@@ -283,8 +283,7 @@ function toSwiftAST(options, colors, textStyles, rootLayer, logicRootNode) {
                 exit$2 = 1;
               } else if (match$2.tag === 8) {
                 var name$2 = match$2[0];
-                if (name$2.endsWith("textStyle") || name$2.endsWith("font")) {
-                  var name$3 = name$2.replace(".font", ".textStyle");
+                if (name$2.endsWith("textStyle")) {
                   var right$1;
                   if (b.tag) {
                     right$1 = match$3;
@@ -295,7 +294,7 @@ function toSwiftAST(options, colors, textStyles, rootLayer, logicRootNode) {
                       var layer = Layer$LonaCompilerCore.findByName(layerName, rootLayer);
                       if (layer) {
                         var layer$1 = layer[0];
-                        var param = Layer$LonaCompilerCore.getStringParameterOpt("textAlign", layer$1);
+                        var param = Layer$LonaCompilerCore.getStringParameterOpt(/* TextAlign */2, layer$1);
                         right$1 = param ? /* MemberExpression */Block.__(1, [/* :: */[
                                 match$3,
                                 /* :: */[
@@ -304,7 +303,7 @@ function toSwiftAST(options, colors, textStyles, rootLayer, logicRootNode) {
                                         arguments: /* :: */[
                                           /* FunctionCallArgument */Block.__(18, [{
                                                 name: /* Some */[/* SwiftIdentifier */Block.__(8, ["alignment"])],
-                                                value: /* SwiftIdentifier */Block.__(8, ["." + Layer$LonaCompilerCore.getStringParameter("textAlign", layer$1)])
+                                                value: /* SwiftIdentifier */Block.__(8, ["." + Layer$LonaCompilerCore.getStringParameter(/* TextAlign */2, layer$1)])
                                               }]),
                                           /* [] */0
                                         ]
@@ -321,23 +320,23 @@ function toSwiftAST(options, colors, textStyles, rootLayer, logicRootNode) {
                   }
                   return /* StatementListHelper */Block.__(25, [/* :: */[
                               /* BinaryExpression */Block.__(2, [{
-                                    left: /* SwiftIdentifier */Block.__(8, [name$3.replace(".textStyle", "TextStyle")]),
+                                    left: /* SwiftIdentifier */Block.__(8, [name$2.replace(".textStyle", "TextStyle")]),
                                     operator: "=",
                                     right: right$1
                                   }]),
                               /* :: */[
                                 /* BinaryExpression */Block.__(2, [{
-                                      left: /* SwiftIdentifier */Block.__(8, [name$3.replace(".textStyle", "." + SwiftDocument$LonaCompilerCore.labelAttributedTextName(options[/* framework */0]))]),
+                                      left: /* SwiftIdentifier */Block.__(8, [name$2.replace(".textStyle", "." + SwiftDocument$LonaCompilerCore.labelAttributedTextName(options[/* framework */0]))]),
                                       operator: "=",
                                       right: /* MemberExpression */Block.__(1, [/* :: */[
-                                            /* SwiftIdentifier */Block.__(8, [name$3.replace(".textStyle", "TextStyle")]),
+                                            /* SwiftIdentifier */Block.__(8, [name$2.replace(".textStyle", "TextStyle")]),
                                             /* :: */[
                                               /* FunctionCallExpression */Block.__(19, [{
                                                     name: /* SwiftIdentifier */Block.__(8, ["apply"]),
                                                     arguments: /* :: */[
                                                       /* FunctionCallArgument */Block.__(18, [{
                                                             name: /* Some */[/* SwiftIdentifier */Block.__(8, ["to"])],
-                                                            value: /* SwiftIdentifier */Block.__(8, [name$3.replace(".textStyle", "." + SwiftDocument$LonaCompilerCore.labelAttributedTextValue(options[/* framework */0]))])
+                                                            value: /* SwiftIdentifier */Block.__(8, [name$2.replace(".textStyle", "." + SwiftDocument$LonaCompilerCore.labelAttributedTextValue(options[/* framework */0]))])
                                                           }]),
                                                       /* [] */0
                                                     ]

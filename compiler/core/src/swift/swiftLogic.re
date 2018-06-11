@@ -158,12 +158,7 @@ let toSwiftAST =
             )
         })
       | (Ast.SwiftIdentifier(name), right)
-          when
-            name
-            |> Js.String.endsWith("textStyle")
-            || name
-            |> Js.String.endsWith("font") =>
-        let name = name |> Js.String.replace(".font", ".textStyle");
+          when name |> Js.String.endsWith("textStyle") =>
         let right =
           switch b {
           | Identifier(_, path)
@@ -172,7 +167,7 @@ let toSwiftAST =
             let layer = Layer.findByName(layerName, rootLayer);
             switch layer {
             | Some(layer) =>
-              let param = Layer.getStringParameterOpt("textAlign", layer);
+              let param = Layer.getStringParameterOpt(TextAlign, layer);
               switch param {
               | None => right
               | Some(_) =>
@@ -186,8 +181,7 @@ let toSwiftAST =
                           "name": Some(SwiftIdentifier("alignment")),
                           "value":
                             SwiftIdentifier(
-                              "."
-                              ++ Layer.getStringParameter("textAlign", layer)
+                              "." ++ Layer.getStringParameter(TextAlign, layer)
                             )
                         })
                       ]

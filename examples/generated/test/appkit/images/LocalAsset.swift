@@ -59,8 +59,8 @@ public class LocalAsset: NSBox {
 
     addSubview(imageView)
 
-    imageView.fillColor = #colorLiteral(red: 0.847058823529, green: 0.847058823529, blue: 0.847058823529, alpha: 1)
     imageView.image = #imageLiteral(resourceName: "icon_128x128")
+    imageView.fillColor = #colorLiteral(red: 0.847058823529, green: 0.847058823529, blue: 0.847058823529, alpha: 1)
   }
 
   private func setUpConstraints() {

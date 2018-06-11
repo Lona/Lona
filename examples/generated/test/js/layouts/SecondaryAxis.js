@@ -27,25 +27,25 @@ export default class SecondaryAxis extends React.Component {
 let styles = StyleSheet.create({
   container: {
     alignSelf: "stretch",
-    paddingBottom: 24,
-    paddingLeft: 24,
+    paddingTop: 24,
     paddingRight: 24,
-    paddingTop: 24
+    paddingBottom: 24,
+    paddingLeft: 24
   },
   fixed: {
     backgroundColor: "#D8D8D8",
-    height: 100,
     marginBottom: 24,
-    width: 100
+    width: 100,
+    height: 100
   },
   fit: {
     backgroundColor: "#D8D8D8",
-    height: 100,
     marginBottom: 24,
+    paddingTop: 12,
+    paddingRight: 12,
     paddingBottom: 12,
     paddingLeft: 12,
-    paddingRight: 12,
-    paddingTop: 12
+    height: 100
   },
   text: {},
   fill: { alignSelf: "stretch", backgroundColor: "#D8D8D8", height: 100 }

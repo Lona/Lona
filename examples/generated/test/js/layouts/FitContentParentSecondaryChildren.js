@@ -27,12 +27,12 @@ let styles = StyleSheet.create({
     alignSelf: "stretch",
     backgroundColor: colors.bluegrey50,
     flexDirection: "row",
-    paddingBottom: 24,
-    paddingLeft: 24,
+    paddingTop: 24,
     paddingRight: 24,
-    paddingTop: 24
+    paddingBottom: 24,
+    paddingLeft: 24
   },
-  view1: { backgroundColor: colors.blue500, height: 60, width: 60 },
-  view3: { backgroundColor: colors.lightblue500, height: 120, width: 100 },
-  view2: { backgroundColor: colors.cyan500, height: 180, width: 100 }
+  view1: { backgroundColor: colors.blue500, width: 60, height: 60 },
+  view3: { backgroundColor: colors.lightblue500, width: 100, height: 120 },
+  view2: { backgroundColor: colors.cyan500, width: 100, height: 180 }
 });

@@ -42,9 +42,9 @@ public class BorderWidthColor: UIView {
   private func setUpViews() {
     addSubview(view1View)
 
-    view1View.layer.borderColor = Colors.blue300.cgColor
     view1View.layer.cornerRadius = 10
     view1View.layer.borderWidth = 20
+    view1View.layer.borderColor = Colors.blue300.cgColor
   }
 
   private func setUpConstraints() {

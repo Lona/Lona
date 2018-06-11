@@ -58,8 +58,6 @@ public class TextStyleConditional: NSBox {
 
     addSubview(textView)
 
-    textViewTextStyle = TextStyles.headline
-    textView.attributedStringValue = textViewTextStyle.apply(to: textView.attributedStringValue)
     textView.attributedStringValue = textViewTextStyle.apply(to: "Text goes here")
   }
 

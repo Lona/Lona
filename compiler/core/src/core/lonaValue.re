@@ -33,41 +33,39 @@ let url = value : Types.lonaValue => {
   data: Js.Json.string(value)
 };
 
-let parameterDefaultValueMap =
-  [
-    ("text", string("")),
-    ("visible", boolean(true)),
-    ("numberOfLines", number(0.)),
-    ("backgroundColor", color("transparent")),
-    ("image", url("")),
+let parameterDefaultValue = (key) => {
+  switch (key) {
+    | ParameterKey.Text => string("")
+    | ParameterKey.Visible => boolean(true)
+    | ParameterKey.NumberOfLines => number(0.)
+    | ParameterKey.BackgroundColor => color("transparent")
+    | ParameterKey.Image => url("")
     /* Styles */
-    ("alignItems", string("stretch")),
-    ("alignSelf", string("flex-start")),
-    ("flex", number(0.)),
-    ("textAlign", string("left")),
-    ("flexDirection", string("column")),
-    ("font", textStyle("defaultStyle")),
-    ("textStyle", textStyle("defaultStyle")), /* ? */
-    ("justifyContent", string("flex-start")),
-    ("marginTop", number(0.)),
-    ("marginRight", number(0.)),
-    ("marginBottom", number(0.)),
-    ("marginLeft", number(0.)),
-    ("paddingTop", number(0.)),
-    ("paddingRight", number(0.)),
-    ("paddingBottom", number(0.)),
-    ("paddingLeft", number(0.)),
-    ("borderRadius", number(0.)),
-    ("borderWidth", number(0.)),
-    ("borderColor", color("transparent")),
-    ("width", number(0.)),
-    ("height", number(0.)),
+    | ParameterKey.AlignItems => string("stretch")
+    | ParameterKey.AlignSelf => string("flex-start")
+    | ParameterKey.Flex => number(0.)
+    | ParameterKey.TextAlign => string("left")
+    | ParameterKey.FlexDirection => string("column")
+    | ParameterKey.TextStyle => textStyle("defaultStyle") /* ? */
+    | ParameterKey.JustifyContent => string("flex-start")
+    | ParameterKey.MarginTop => number(0.)
+    | ParameterKey.MarginRight => number(0.)
+    | ParameterKey.MarginBottom => number(0.)
+    | ParameterKey.MarginLeft => number(0.)
+    | ParameterKey.PaddingTop => number(0.)
+    | ParameterKey.PaddingRight => number(0.)
+    | ParameterKey.PaddingBottom => number(0.)
+    | ParameterKey.PaddingLeft => number(0.)
+    | ParameterKey.BorderRadius => number(0.)
+    | ParameterKey.BorderWidth => number(0.)
+    | ParameterKey.BorderColor => color("transparent")
+    | ParameterKey.Width => number(0.)
+    | ParameterKey.Height => number(0.)
     /* Interactivity */
-    ("pressed", boolean(false)),
-    ("hovered", boolean(false)),
-    ("onPress", null())
-  ]
-  |> StringMap.fromList;
+    | ParameterKey.Pressed => boolean(false)
+    | ParameterKey.Hovered => boolean(false)
+    | ParameterKey.OnPress => null()
+  }
+};
 
-let defaultValueForParameter = name =>
-  StringMap.find(name, parameterDefaultValueMap);
+let defaultValueForParameter = name => parameterDefaultValue(name);
