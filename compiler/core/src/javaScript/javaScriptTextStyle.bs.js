@@ -4,11 +4,13 @@
 var List                              = require("bs-platform/lib/js/list.js");
 var Block                             = require("bs-platform/lib/js/block.js");
 var Curry                             = require("bs-platform/lib/js/curry.js");
+var Color$LonaCompilerCore            = require("../core/color.bs.js");
 var Types$LonaCompilerCore            = require("../core/types.bs.js");
 var TextStyle$LonaCompilerCore        = require("../core/textStyle.bs.js");
+var JavaScriptFormat$LonaCompilerCore = require("./javaScriptFormat.bs.js");
 var JavaScriptRender$LonaCompilerCore = require("./javaScriptRender.bs.js");
 
-function render(textStyles) {
+function render(colors, textStyles) {
   var unwrapOptional = function (f, a) {
     if (a) {
       return /* :: */[
@@ -105,16 +107,29 @@ function render(textStyles) {
                             }))),
                   /* :: */[
                     unwrapOptional((function (value) {
-                            var lonaValue = /* record */[
-                              /* ltype */Types$LonaCompilerCore.colorType,
-                              /* data */value
-                            ];
+                            var match = Color$LonaCompilerCore.find(colors, value);
+                            var value$1;
+                            if (match) {
+                              value$1 = /* Identifier */Block.__(2, [/* :: */[
+                                    "colors",
+                                    /* :: */[
+                                      match[0][/* id */0],
+                                      /* [] */0
+                                    ]
+                                  ]]);
+                            } else {
+                              var lonaValue = /* record */[
+                                /* ltype */Types$LonaCompilerCore.colorType,
+                                /* data */value
+                              ];
+                              value$1 = /* Literal */Block.__(1, [lonaValue]);
+                            }
                             return /* Property */Block.__(20, [{
                                         key: /* Identifier */Block.__(2, [/* :: */[
                                               "color",
                                               /* [] */0
                                             ]]),
-                                        value: /* Literal */Block.__(1, [lonaValue])
+                                        value: value$1
                                       }]);
                           }), lookup((function (style) {
                                 return style[/* color */8];
@@ -128,20 +143,32 @@ function render(textStyles) {
         ]);
     return /* Property */Block.__(20, [{
                 key: /* Identifier */Block.__(2, [/* :: */[
-                      textStyle[/* id */0],
+                      JavaScriptFormat$LonaCompilerCore.styleVariableName(textStyle[/* id */0]),
                       /* [] */0
                     ]]),
                 value: /* ObjectLiteral */Block.__(19, [variables])
               }]);
   };
   return JavaScriptRender$LonaCompilerCore.toString(/* Program */Block.__(23, [/* :: */[
-                  /* ExportDefaultDeclaration */Block.__(21, [/* ObjectLiteral */Block.__(19, [List.map(propertyDoc, textStyles[/* styles */0])])]),
+                  /* ImportDeclaration */Block.__(3, [{
+                        source: "./colors",
+                        specifiers: /* :: */[
+                          /* ImportDefaultSpecifier */Block.__(5, ["colors"]),
+                          /* [] */0
+                        ]
+                      }]),
                   /* :: */[
                     /* Empty */0,
-                    /* [] */0
+                    /* :: */[
+                      /* ExportDefaultDeclaration */Block.__(21, [/* ObjectLiteral */Block.__(19, [List.map(propertyDoc, textStyles[/* styles */0])])]),
+                      /* :: */[
+                        /* Empty */0,
+                        /* [] */0
+                      ]
+                    ]
                   ]
                 ]]));
 }
 
 exports.render = render;
-/* JavaScriptRender-LonaCompilerCore Not a pure module */
+/* JavaScriptFormat-LonaCompilerCore Not a pure module */

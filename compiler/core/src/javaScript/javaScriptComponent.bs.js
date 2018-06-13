@@ -188,7 +188,7 @@ function toJavaScriptStyleSheetAST(colors, layer) {
                                   return /* SpreadElement */Block.__(13, [/* Identifier */Block.__(2, [/* :: */[
                                                   "textStyles",
                                                   /* :: */[
-                                                    match[0],
+                                                    JavaScriptFormat$LonaCompilerCore.styleVariableName(match[0]),
                                                     /* [] */0
                                                   ]
                                                 ]])]);
@@ -235,12 +235,12 @@ function toJavaScriptStyleSheetAST(colors, layer) {
                 }])]);
 }
 
-function importComponents(getComponentFile, rootLayer) {
+function importComponents(framework, getComponentFile, rootLayer) {
   var match = Layer$LonaCompilerCore.getTypeNames(rootLayer);
   return /* record */[
           /* absolute : :: */[
             /* ImportDeclaration */Block.__(3, [{
-                  source: "react-native",
+                  source: framework >= 2 ? "react-sketchapp" : "react-native",
                   specifiers: Pervasives.$at(List.map((function (typeName) {
                               return /* ImportSpecifier */Block.__(4, [{
                                           imported: Types$LonaCompilerCore.layerTypeToString(typeName),
@@ -268,14 +268,14 @@ function importComponents(getComponentFile, rootLayer) {
         ];
 }
 
-function generate(name, colorsFilePath, textStylesFilePath, colors, textStyles, getComponent, getComponentFile, getAssetPath, json) {
+function generate(options, name, colorsFilePath, textStylesFilePath, colors, textStyles, getComponent, getComponentFile, getAssetPath, json) {
   var rootLayer = Decode$LonaCompilerCore.Component[/* rootLayer */1](getComponent, json);
   var logic = Logic$LonaCompilerCore.addVariableDeclarations(Decode$LonaCompilerCore.Component[/* logic */2](json));
   var assignments = Layer$LonaCompilerCore.parameterAssignmentsFromLogic(rootLayer, logic);
   var rootLayerAST = layerToJavaScriptAST(colors, textStyles, assignments, getAssetPath, rootLayer);
   var styleSheetAST = toJavaScriptStyleSheetAST(colors, rootLayer);
   var logicAST = JavaScriptAst$LonaCompilerCore.optimize(JavaScriptLogic$LonaCompilerCore.toJavaScriptAST(logic));
-  var match = importComponents(getComponentFile, rootLayer);
+  var match = importComponents(options[/* framework */0], getComponentFile, rootLayer);
   return JavaScriptAst$LonaCompilerCore.prepareForRender(/* Program */Block.__(23, [SwiftDocument$LonaCompilerCore.joinGroups(/* Empty */0, /* :: */[
                       Pervasives.$at(/* :: */[
                             /* ImportDeclaration */Block.__(3, [{
