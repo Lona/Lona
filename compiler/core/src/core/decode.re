@@ -126,16 +126,21 @@ module Layer = {
            | _ => {ltype: parameterType(key), data: value}
            }
          );
+    let name = field("id", string, json);
     {
       typeName,
-      name: field("id", string, json),
+      name,
       parameters: field("params", parameterDictionary, json),
       children:
         switch (json |> optional(field("children", list(layer(getComponent))))) {
         | Some(result) => result
         | None => []
         | exception e =>
-          Js.log2("Failed to decode children of", typeName);
+          Js.log3(
+            "Failed to decode children of",
+            typeName |> LonaCompilerCore.Types.layerTypeToString,
+            name
+          );
           raise(e);
         }
     };

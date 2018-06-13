@@ -201,6 +201,7 @@ function layer(getComponent, json) {
                   }
                 }), ParameterMap$LonaCompilerCore.fromJsDict(Js_option.getExn(Js_json.decodeObject(json))));
   };
+  var name = Json_decode.field("id", Json_decode.string, json);
   var tmp;
   var exit = 0;
   var val;
@@ -215,7 +216,7 @@ function layer(getComponent, json) {
     exit = 1;
   }
   catch (e){
-    console.log("Failed to decode children of", typeName);
+    console.log("Failed to decode children of", Types$LonaCompilerCore.layerTypeToString(typeName), name);
     throw e;
   }
   if (exit === 1) {
@@ -223,7 +224,7 @@ function layer(getComponent, json) {
   }
   return /* record */[
           /* typeName */typeName,
-          /* name */Json_decode.field("id", Json_decode.string, json),
+          /* name */name,
           /* parameters */Json_decode.field("params", parameterDictionary, json),
           /* children */tmp
         ];
@@ -481,6 +482,8 @@ var parameterToJs = Types$LonaCompilerCore.parameterToJs;
 
 var parameterFromJs = Types$LonaCompilerCore.parameterFromJs;
 
+var layerTypeToString = Types$LonaCompilerCore.layerTypeToString;
+
 var decodeParameters = parameters;
 
 var decodeRootLayer = rootLayer;
@@ -501,6 +504,7 @@ exports.urlType           = urlType;
 exports.handlerType       = handlerType;
 exports.parameterToJs     = parameterToJs;
 exports.parameterFromJs   = parameterFromJs;
+exports.layerTypeToString = layerTypeToString;
 exports.UnknownParameter  = UnknownParameter;
 exports.UnknownType       = UnknownType;
 exports.parameterType     = parameterType;

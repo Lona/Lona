@@ -65,6 +65,28 @@ function parameterFromJs(param) {
         ];
 }
 
+function layerTypeToString(x) {
+  if (typeof x === "number") {
+    switch (x) {
+      case 0 : 
+          return "View";
+      case 1 : 
+          return "Text";
+      case 2 : 
+          return "Image";
+      case 3 : 
+          return "Animation";
+      case 4 : 
+          return "Children";
+      case 5 : 
+          return "Unknown";
+      
+    }
+  } else {
+    return x[0];
+  }
+}
+
 var undefinedType = /* Reference */Block.__(0, ["Undefined"]);
 
 var booleanType = /* Reference */Block.__(0, ["Boolean"]);
@@ -76,18 +98,19 @@ var handlerType = /* Function */Block.__(2, [
     /* Reference */Block.__(0, ["Undefined"])
   ]);
 
-exports.reference       = reference;
-exports.named           = named;
-exports.$$function      = $$function;
-exports.undefinedType   = undefinedType;
-exports.referenceFromJs = referenceFromJs;
-exports.booleanType     = booleanType;
-exports.numberType      = numberType;
-exports.stringType      = stringType;
-exports.colorType       = colorType;
-exports.textStyleType   = textStyleType;
-exports.urlType         = urlType;
-exports.handlerType     = handlerType;
-exports.parameterToJs   = parameterToJs;
-exports.parameterFromJs = parameterFromJs;
+exports.reference         = reference;
+exports.named             = named;
+exports.$$function        = $$function;
+exports.undefinedType     = undefinedType;
+exports.referenceFromJs   = referenceFromJs;
+exports.booleanType       = booleanType;
+exports.numberType        = numberType;
+exports.stringType        = stringType;
+exports.colorType         = colorType;
+exports.textStyleType     = textStyleType;
+exports.urlType           = urlType;
+exports.handlerType       = handlerType;
+exports.parameterToJs     = parameterToJs;
+exports.parameterFromJs   = parameterFromJs;
+exports.layerTypeToString = layerTypeToString;
 /* No side effect */

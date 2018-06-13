@@ -70,6 +70,17 @@ type layerType =
   | Component(string)
   | Unknown;
 
+let layerTypeToString = x =>
+  switch x {
+  | View => "View"
+  | Text => "Text"
+  | Image => "Image"
+  | Animation => "Animation"
+  | Children => "Children"
+  | Component(value) => value
+  | Unknown => "Unknown"
+  };
+
 type layer = {
   typeName: layerType,
   name: string,

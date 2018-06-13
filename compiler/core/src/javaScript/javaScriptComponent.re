@@ -101,7 +101,7 @@ let rec layerToJavaScriptAST =
          )
     };
   JSXElement({
-    "tag": Layer.layerTypeToString(layer.typeName),
+    "tag": Types.layerTypeToString(layer.typeName),
     "attributes": [styleAttribute, ...attributes],
     "content": content
   });
@@ -180,7 +180,7 @@ let importComponents = (getComponentFile, rootLayer) => {
           (
             List.map(typeName =>
               Ast.ImportSpecifier({
-                "imported": Layer.layerTypeToString(typeName),
+                "imported": Types.layerTypeToString(typeName),
                 "local": None
               })
             ) @@

@@ -127,7 +127,7 @@ function layerToJavaScriptAST(colors, textStyles, variableMap, getAssetPath, lay
           }), layer[/* children */3]);
   }
   return /* JSXElement */Block.__(11, [{
-              tag: Layer$LonaCompilerCore.layerTypeToString(layer[/* typeName */0]),
+              tag: Types$LonaCompilerCore.layerTypeToString(layer[/* typeName */0]),
               attributes: /* :: */[
                 styleAttribute,
                 attributes
@@ -243,7 +243,7 @@ function importComponents(getComponentFile, rootLayer) {
                   source: "react-native",
                   specifiers: Pervasives.$at(List.map((function (typeName) {
                               return /* ImportSpecifier */Block.__(4, [{
-                                          imported: Layer$LonaCompilerCore.layerTypeToString(typeName),
+                                          imported: Types$LonaCompilerCore.layerTypeToString(typeName),
                                           local: /* None */0
                                         }]);
                             }), match[/* builtIn */0]), /* :: */[

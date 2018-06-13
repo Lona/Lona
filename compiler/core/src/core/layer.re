@@ -262,17 +262,6 @@ let splitParamsMap = params =>
 let parameterMapToLogicValueMap = params =>
   ParameterMap.map(item => Logic.Literal(item), params);
 
-let layerTypeToString = x =>
-  switch x {
-  | Types.View => "View"
-  | Text => "Text"
-  | Image => "Image"
-  | Animation => "Animation"
-  | Children => "Children"
-  | Component(value) => value
-  | Unknown => "Unknown"
-  };
-
 let mapBindings = (f, map) => map |> ParameterMap.bindings |> List.map(f);
 
 let isViewLayer = (layer: Types.layer) => layer.typeName == Types.View;
