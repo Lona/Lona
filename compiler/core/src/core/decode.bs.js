@@ -290,7 +290,7 @@ function decodeExpr(json) {
       case "VarDeclExpr" : 
           return /* VariableDeclarationExpression */Block.__(2, [{
                       content: Json_decode.field("content", decodeExpr, json),
-                      identifier: Json_decode.field("identifier", decodeExpr, json)
+                      identifier: Json_decode.field("id", decodeExpr, json)
                     }]);
       default:
         throw [
@@ -394,15 +394,40 @@ function logicNode(json) {
             if (typeof match === "number") {
               throw [
                     UnknownExprType,
-                    "Unknown IfExpr"
+                    "Unknown PlaceholderExpression"
                   ];
             } else {
               switch (match.tag | 0) {
-                case 2 : 
+                case 0 : 
                     throw [
                           UnknownExprType,
-                          "TODO: Support VarDeclExpr"
+                          "Unknown AssignmentExpression"
                         ];
+                case 1 : 
+                    throw [
+                          UnknownExprType,
+                          "Unknown IfExpression"
+                        ];
+                case 2 : 
+                    var decl = match[0];
+                    var id = identifierFromExpr(decl.identifier);
+                    var content$1 = logicValueFromExpr(decl.content);
+                    return /* IfExists */Block.__(1, [
+                              content$1,
+                              /* Block */Block.__(6, [/* :: */[
+                                    /* LetEqual */Block.__(5, [
+                                        /* Identifier */Block.__(0, [
+                                            Types$LonaCompilerCore.undefinedType,
+                                            /* :: */[
+                                              id,
+                                              /* [] */0
+                                            ]
+                                          ]),
+                                        content$1
+                                      ]),
+                                    body
+                                  ]])
+                            ]);
                 case 3 : 
                     var bin = match[0];
                     var left = logicValueFromExpr(bin.left);
@@ -414,11 +439,22 @@ function logicNode(json) {
                               right,
                               /* Block */Block.__(6, [body])
                             ]);
-                default:
-                  throw [
-                        UnknownExprType,
-                        "Unknown IfExpr"
-                      ];
+                case 4 : 
+                    throw [
+                          UnknownExprType,
+                          "Unknown MemberExpression"
+                        ];
+                case 5 : 
+                    throw [
+                          UnknownExprType,
+                          "Unknown IdentifierExpression"
+                        ];
+                case 6 : 
+                    throw [
+                          UnknownExprType,
+                          "Unknown LiteralExpression"
+                        ];
+                
               }
             }
             break;
