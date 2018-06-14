@@ -20,7 +20,8 @@
       "node src/main.bs.js workspace swift ../../examples/test ../../examples/generated/test/swift",
     "snapshotAppkit":
       "node src/main.bs.js workspace swift ../../examples/test ../../examples/generated/test/appkit --framework=appkit",
-    "snapshot": "yarn snapshotJs && yarn snapshotSwift && yarn snapshotAppkit"
+    "snapshot":
+      "yarn snapshotSwift && yarn snapshotAppkit && yarn snapshotJs && yarn snapshotSketch"
   },
   "keywords": ["lona", "compiler", "react"],
   "author": "Devin Abbott <devinabbott@gmail.com>",

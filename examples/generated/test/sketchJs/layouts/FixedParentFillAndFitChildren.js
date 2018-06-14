@@ -1,10 +1,10 @@
 import React from "react"
-import { View, StyleSheet } from "react-native"
+import { View, StyleSheet } from "react-sketchapp"
 
 import colors from "../colors"
 import textStyles from "../textStyles"
 
-export default class FixedParentFitChild extends React.Component {
+export default class FixedParentFillAndFitChildren extends React.Component {
   render() {
     return (
       <View style={[ styles.view, {} ]}>
@@ -16,6 +16,12 @@ export default class FixedParentFitChild extends React.Component {
 
           </View>
         </View>
+        <View style={[ styles.view2, {} ]}>
+
+        </View>
+        <View style={[ styles.view3, {} ]}>
+
+        </View>
       </View>
     );
   }
@@ -24,7 +30,6 @@ export default class FixedParentFitChild extends React.Component {
 let styles = StyleSheet.create({
   view: {
     alignSelf: "stretch",
-    backgroundColor: colors.bluegrey100,
     paddingTop: 24,
     paddingRight: 24,
     paddingBottom: 24,
@@ -46,5 +51,7 @@ let styles = StyleSheet.create({
     marginLeft: 12,
     width: 60,
     height: 60
-  }
+  },
+  view2: { alignSelf: "stretch", backgroundColor: colors.indigo100, flex: 1 },
+  view3: { alignSelf: "stretch", backgroundColor: colors.teal100, flex: 1 }
 })

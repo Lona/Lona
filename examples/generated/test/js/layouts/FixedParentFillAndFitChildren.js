@@ -54,4 +54,4 @@ let styles = StyleSheet.create({
   },
   view2: { alignSelf: "stretch", backgroundColor: colors.indigo100, flex: 1 },
   view3: { alignSelf: "stretch", backgroundColor: colors.teal100, flex: 1 }
-});
+})
