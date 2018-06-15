@@ -53,6 +53,15 @@ let rec toJavaScriptAST = node => {
     | Identifier(_, path) => Ast.VariableDeclaration(Ast.Identifier(path))
     | _ => Unknown
     }
+  | LetEqual(value, content) =>
+    Ast.AssignmentExpression({
+      "left":
+        switch value {
+        | Identifier(_, path) => Ast.VariableDeclaration(Ast.Identifier(path))
+        | _ => Unknown
+        },
+      "right": logicValueToJavaScriptAST(content)
+    })
   | None => Unknown
   };
 };

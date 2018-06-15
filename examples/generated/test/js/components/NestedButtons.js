@@ -34,4 +34,4 @@ let styles = StyleSheet.create({
   button: {},
   view1: { alignSelf: "stretch", height: 8 },
   button2: {}
-});
+})

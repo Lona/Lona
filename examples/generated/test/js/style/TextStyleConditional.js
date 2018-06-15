@@ -6,7 +6,7 @@ import textStyles from "../textStyles"
 
 export default class TextStyleConditional extends React.Component {
   render() {
-    let Text$textStyle;
+    let Text$textStyle
     if (this.props.large) {
       Text$textStyle = "display2"
     }
@@ -26,4 +26,4 @@ export default class TextStyleConditional extends React.Component {
 let styles = StyleSheet.create({
   view: { alignSelf: "stretch" },
   text: { ...textStyles.headline }
-});
+})

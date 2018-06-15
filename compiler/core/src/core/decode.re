@@ -126,16 +126,21 @@ module Layer = {
            | _ => {ltype: parameterType(key), data: value}
            }
          );
+    let name = field("id", string, json);
     {
       typeName,
-      name: field("id", string, json),
+      name,
       parameters: field("params", parameterDictionary, json),
       children:
         switch (json |> optional(field("children", list(layer(getComponent))))) {
         | Some(result) => result
         | None => []
         | exception e =>
-          Js.log2("Failed to decode children of", typeName);
+          Js.log3(
+            "Failed to decode children of",
+            typeName |> LonaCompilerCore.Types.layerTypeToString,
+            name
+          );
           raise(e);
         }
     };
@@ -166,7 +171,7 @@ let rec decodeExpr = json => {
     | "VarDeclExpr" =>
       VariableDeclarationExpression({
         "content": json |> field("content", decodeExpr),
-        "identifier": json |> field("identifier", decodeExpr)
+        "identifier": json |> field("id", decodeExpr)
       })
     | "BinExpr" =>
       BinaryExpression({
@@ -229,13 +234,31 @@ let rec logicNode = json => {
         let body = o##body |> List.map(fromExpr);
         switch o##condition {
         | VariableDeclarationExpression(decl) =>
-          raise(UnknownExprType("TODO: Support VarDeclExpr"))
+          let id = decl##identifier |> identifierFromExpr;
+          let content = decl##content |> logicValueFromExpr;
+          Logic.IfExists(
+            content,
+            Logic.Block([
+              Logic.LetEqual(Logic.Identifier(undefinedType, [id]), content),
+              ...body
+            ])
+          );
         | BinaryExpression(bin) =>
           let left = bin##left |> logicValueFromExpr;
           let right = bin##right |> logicValueFromExpr;
           let op = bin##op |> identifierFromExpr |> cmp;
           Logic.If(left, op, right, Logic.Block(body));
-        | _ => raise(UnknownExprType("Unknown IfExpr"))
+        | AssignmentExpression(_) =>
+          raise(UnknownExprType("Unknown AssignmentExpression"))
+        | IfExpression(_) => raise(UnknownExprType("Unknown IfExpression"))
+        | MemberExpression(_) =>
+          raise(UnknownExprType("Unknown MemberExpression"))
+        | IdentifierExpression(_) =>
+          raise(UnknownExprType("Unknown IdentifierExpression"))
+        | LiteralExpression(_) =>
+          raise(UnknownExprType("Unknown LiteralExpression"))
+        | PlaceholderExpression =>
+          raise(UnknownExprType("Unknown PlaceholderExpression"))
         };
       | _ => Logic.None
       }

@@ -47,4 +47,4 @@ let styles = StyleSheet.create({
     width: 60,
     height: 60
   }
-});
+})

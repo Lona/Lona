@@ -46,4 +46,4 @@ let styles = StyleSheet.create({
   text1: { marginTop: 12 },
   localAsset: {},
   text2: {}
-});
+})

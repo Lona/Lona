@@ -46,4 +46,4 @@ let styles = StyleSheet.create({
   text: {},
   fill1: { backgroundColor: colors.cyan500, flex: 1, width: 100 },
   fill2: { backgroundColor: colors.blue500, flex: 1, width: 100 }
-});
+})

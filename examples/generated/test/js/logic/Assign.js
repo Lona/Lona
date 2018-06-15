@@ -6,7 +6,7 @@ import textStyles from "../textStyles"
 
 export default class Assign extends React.Component {
   render() {
-    let Text$text;
+    let Text$text
     Text$text = this.props.text
     return (
       <View style={[ styles.view, {} ]}>
@@ -18,4 +18,4 @@ export default class Assign extends React.Component {
   }
 };
 
-let styles = StyleSheet.create({ view: { alignSelf: "stretch" }, text: {} });
+let styles = StyleSheet.create({ view: { alignSelf: "stretch" }, text: {} })

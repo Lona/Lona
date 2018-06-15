@@ -35,4 +35,4 @@ let styles = StyleSheet.create({
   view1: { backgroundColor: colors.blue500, width: 60, height: 60 },
   view3: { backgroundColor: colors.lightblue500, width: 100, height: 120 },
   view2: { backgroundColor: colors.cyan500, width: 100, height: 180 }
-});
+})

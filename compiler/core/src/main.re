@@ -38,6 +38,15 @@ let swiftOptions: Swift.Options.options = {
     }
 };
 
+let javaScriptOptions: JavaScriptOptions.options = {
+  framework:
+    switch (getArgument("framework")) {
+    | Some("reactsketchapp") => JavaScriptOptions.ReactSketchapp
+    | Some("reactdom") => JavaScriptOptions.ReactDOM
+    | _ => JavaScriptOptions.ReactNative
+    }
+};
+
 let exit = message => {
   Js.log(message);
   [%bs.raw {|process.exit(1)|}];
@@ -101,7 +110,7 @@ let renderColors = (target, colors) =>
 let renderTextStyles = (target, colors, textStyles) =>
   switch target {
   | Types.Swift => Swift.TextStyle.render(swiftOptions, colors, textStyles)
-  | JavaScript => JavaScriptTextStyle.render(textStyles)
+  | JavaScript => JavaScriptTextStyle.render(colors, textStyles)
   | _ => ""
   };
 
@@ -172,6 +181,7 @@ let convertComponent = filename => {
     switch target {
     | Types.JavaScript =>
       JavaScript.Component.generate(
+        javaScriptOptions,
         name,
         Node.Path.relative(
           ~from=Node.Path.dirname(filename),

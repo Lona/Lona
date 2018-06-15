@@ -23,7 +23,13 @@ let rec render = ast : Prettier.Doc.t('a) =>
   | Ast.Identifier(path) =>
     path |> List.map(s) |> join(softline <+> s(".")) |> group
   | Literal(value) => s(Js.Json.stringify(value.data))
-  | VariableDeclaration(value) => group(s("let ") <+> render(value) <+> s(";"))
+  | StringLiteral(value) =>
+    concat([
+      s("\""),
+      s(value |> Js.String.replaceByRe([%re "/\"/g"], "\\\"")),
+      s("\"")
+    ])
+  | VariableDeclaration(value) => group(s("let ") <+> render(value))
   | AssignmentExpression(o) =>
     fill([
       group(render(o##left) <+> line <+> s("=")),

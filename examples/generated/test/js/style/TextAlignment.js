@@ -153,4 +153,4 @@ let styles = StyleSheet.create({
   text9: {},
   text10: { textAlign: "center", alignSelf: "stretch" },
   image1: { width: 100, height: 100 }
-});
+})

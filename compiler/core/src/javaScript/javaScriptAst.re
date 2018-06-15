@@ -13,6 +13,7 @@ type binaryOperator =
 type node =
   | Return(node)
   | Literal(Types.lonaValue)
+  | StringLiteral(string)
   | Identifier(list(string))
   | ImportDeclaration(
       {
@@ -126,6 +127,7 @@ let rec map = (f, node) =>
   switch node {
   | Return(value) => f(Return(value |> map(f)))
   | Literal(_)
+  | StringLiteral(_)
   | Identifier(_)
   | ImportDeclaration(_)
   | ImportSpecifier(_)

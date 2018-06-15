@@ -49,4 +49,4 @@ let styles = StyleSheet.create({
   },
   text: {},
   fill: { alignSelf: "stretch", backgroundColor: "#D8D8D8", height: 100 }
-});
+})

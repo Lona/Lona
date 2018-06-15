@@ -78,6 +78,27 @@ tmp$1 = match$1 && match$1[0] === "appkit" ? /* AppKit */1 : /* UIKit */0;
 
 var swiftOptions = /* record */[/* framework */tmp$1];
 
+var match$2 = getArgument("framework");
+
+var tmp$2;
+
+if (match$2) {
+  switch (match$2[0]) {
+    case "reactdom" : 
+        tmp$2 = /* ReactDOM */0;
+        break;
+    case "reactsketchapp" : 
+        tmp$2 = /* ReactSketchapp */2;
+        break;
+    default:
+      tmp$2 = /* ReactNative */1;
+  }
+} else {
+  tmp$2 = /* ReactNative */1;
+}
+
+var javaScriptOptions = /* record */[/* framework */tmp$2];
+
 function exit(message) {
   console.log(message);
   return (process.exit(1));
@@ -95,11 +116,11 @@ if (List.length(positionalArguments) < 4) {
   ((process.exit(1)));
 }
 
-var match$2 = List.nth(positionalArguments, 3);
+var match$3 = List.nth(positionalArguments, 3);
 
 var target;
 
-switch (match$2) {
+switch (match$3) {
   case "js" : 
       target = /* JavaScript */0;
       break;
@@ -174,7 +195,7 @@ function renderColors(target, colors) {
 function renderTextStyles(target, colors, textStyles) {
   switch (target) {
     case 0 : 
-        return JavaScriptTextStyle$LonaCompilerCore.render(textStyles);
+        return JavaScriptTextStyle$LonaCompilerCore.render(colors, textStyles);
     case 1 : 
         return SwiftTextStyle$LonaCompilerCore.render(swiftOptions, colors, textStyles);
     case 2 : 
@@ -253,7 +274,7 @@ function convertComponent(filename) {
     var textStyles = TextStyle$LonaCompilerCore.parseFile(textStylesFile);
     switch (target) {
       case 0 : 
-          return JavaScriptRender$LonaCompilerCore.toString(JavaScriptComponent$LonaCompilerCore.generate(name, Path.relative(Path.dirname(filename), colorsFilePath), Path.relative(Path.dirname(filename), textStylesFilePath), colors, textStyles, (function (param) {
+          return JavaScriptRender$LonaCompilerCore.toString(JavaScriptComponent$LonaCompilerCore.generate(javaScriptOptions, name, Path.relative(Path.dirname(filename), colorsFilePath), Path.relative(Path.dirname(filename), textStylesFilePath), colors, textStyles, (function (param) {
                             return findComponent(workspace, param);
                           }), (function (param) {
                             return getComponentRelativePath(workspace, name, param);
@@ -440,10 +461,10 @@ switch (command) {
         GetStdin().then(render$1);
       } else {
         var filename = List.nth(positionalArguments, 4);
-        var match$3 = findWorkspaceDirectory(filename);
-        if (match$3) {
+        var match$4 = findWorkspaceDirectory(filename);
+        if (match$4) {
           var content = Fs.readFileSync(filename, "utf8");
-          console.log(convertTextStyles(target, match$3[0], content));
+          console.log(convertTextStyles(target, match$4[0], content));
         } else {
           console.log("Couldn't find workspace directory. Try specifying it as a parameter (TODO)");
           ((process.exit(1)));
@@ -470,6 +491,7 @@ exports.positionalArguments      = positionalArguments;
 exports.getArgument              = getArgument;
 exports.options                  = options;
 exports.swiftOptions             = swiftOptions;
+exports.javaScriptOptions        = javaScriptOptions;
 exports.exit                     = exit;
 exports.command                  = command;
 exports.target                   = target;

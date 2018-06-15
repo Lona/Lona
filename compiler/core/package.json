@@ -4,11 +4,7 @@
   "description": "Lona cross-platform code compiler",
   "main": "build/index.js",
   "bin": "./build/index.js",
-  "files": [
-    "build/index.js",
-    "static",
-    "README.md"
-  ],
+  "files": ["build/index.js", "static", "README.md"],
   "scripts": {
     "build": "bsb -make-world",
     "start": "bsb -make-world -w",
@@ -16,16 +12,18 @@
     "bundle": "npm run clean && npm run build && webpack",
     "format": "refmt --parse=re --print=re --in-place src/**/*.re",
     "prepublishOnly": "yarn clean && yarn build && yarn bundle",
-    "snapshotJs": "node src/main.bs.js workspace js ../../examples/test ../../examples/generated/test/js",
-    "snapshotSwift": "node src/main.bs.js workspace swift ../../examples/test ../../examples/generated/test/swift",
-    "snapshotAppkit": "node src/main.bs.js workspace swift ../../examples/test ../../examples/generated/test/appkit --framework=appkit",
-    "snapshot": "yarn snapshotJs && yarn snapshotSwift && yarn snapshotAppkit"
+    "snapshotJs":
+      "node src/main.bs.js workspace js ../../examples/test ../../examples/generated/test/js",
+    "snapshotSketch":
+      "node src/main.bs.js workspace js ../../examples/test ../../examples/generated/test/sketchJs --framework=reactsketchapp",
+    "snapshotSwift":
+      "node src/main.bs.js workspace swift ../../examples/test ../../examples/generated/test/swift",
+    "snapshotAppkit":
+      "node src/main.bs.js workspace swift ../../examples/test ../../examples/generated/test/appkit --framework=appkit",
+    "snapshot":
+      "yarn snapshotSwift && yarn snapshotAppkit && yarn snapshotJs && yarn snapshotSketch"
   },
-  "keywords": [
-    "lona",
-    "compiler",
-    "react"
-  ],
+  "keywords": ["lona", "compiler", "react"],
   "author": "Devin Abbott <devinabbott@gmail.com>",
   "license": "MIT",
   "repository": {

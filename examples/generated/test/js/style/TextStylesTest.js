@@ -55,4 +55,4 @@ let styles = StyleSheet.create({
   text7: { ...textStyles.body2 },
   text8: { ...textStyles.body1 },
   text9: { ...textStyles.caption }
-});
+})

@@ -574,28 +574,6 @@ function parameterMapToLogicValueMap(params) {
               }), params);
 }
 
-function layerTypeToString(x) {
-  if (typeof x === "number") {
-    switch (x) {
-      case 0 : 
-          return "View";
-      case 1 : 
-          return "Text";
-      case 2 : 
-          return "Image";
-      case 3 : 
-          return "Animation";
-      case 4 : 
-          return "Children";
-      case 5 : 
-          return "Unknown";
-      
-    }
-  } else {
-    return x[0];
-  }
-}
-
 function mapBindings(f, map) {
   return List.map(f, Curry._1(ParameterMap$LonaCompilerCore.bindings, map));
 }
@@ -677,7 +655,6 @@ exports.logicAssignmentsFromLayerParameters = logicAssignmentsFromLayerParameter
 exports.parameterIsStyle                    = parameterIsStyle;
 exports.splitParamsMap                      = splitParamsMap;
 exports.parameterMapToLogicValueMap         = parameterMapToLogicValueMap;
-exports.layerTypeToString                   = layerTypeToString;
 exports.mapBindings                         = mapBindings;
 exports.isViewLayer                         = isViewLayer;
 exports.isTextLayer                         = isTextLayer;

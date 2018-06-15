@@ -201,6 +201,7 @@ function layer(getComponent, json) {
                   }
                 }), ParameterMap$LonaCompilerCore.fromJsDict(Js_option.getExn(Js_json.decodeObject(json))));
   };
+  var name = Json_decode.field("id", Json_decode.string, json);
   var tmp;
   var exit = 0;
   var val;
@@ -215,7 +216,7 @@ function layer(getComponent, json) {
     exit = 1;
   }
   catch (e){
-    console.log("Failed to decode children of", typeName);
+    console.log("Failed to decode children of", Types$LonaCompilerCore.layerTypeToString(typeName), name);
     throw e;
   }
   if (exit === 1) {
@@ -223,7 +224,7 @@ function layer(getComponent, json) {
   }
   return /* record */[
           /* typeName */typeName,
-          /* name */Json_decode.field("id", Json_decode.string, json),
+          /* name */name,
           /* parameters */Json_decode.field("params", parameterDictionary, json),
           /* children */tmp
         ];
@@ -289,7 +290,7 @@ function decodeExpr(json) {
       case "VarDeclExpr" : 
           return /* VariableDeclarationExpression */Block.__(2, [{
                       content: Json_decode.field("content", decodeExpr, json),
-                      identifier: Json_decode.field("identifier", decodeExpr, json)
+                      identifier: Json_decode.field("id", decodeExpr, json)
                     }]);
       default:
         throw [
@@ -393,15 +394,40 @@ function logicNode(json) {
             if (typeof match === "number") {
               throw [
                     UnknownExprType,
-                    "Unknown IfExpr"
+                    "Unknown PlaceholderExpression"
                   ];
             } else {
               switch (match.tag | 0) {
-                case 2 : 
+                case 0 : 
                     throw [
                           UnknownExprType,
-                          "TODO: Support VarDeclExpr"
+                          "Unknown AssignmentExpression"
                         ];
+                case 1 : 
+                    throw [
+                          UnknownExprType,
+                          "Unknown IfExpression"
+                        ];
+                case 2 : 
+                    var decl = match[0];
+                    var id = identifierFromExpr(decl.identifier);
+                    var content$1 = logicValueFromExpr(decl.content);
+                    return /* IfExists */Block.__(1, [
+                              content$1,
+                              /* Block */Block.__(6, [/* :: */[
+                                    /* LetEqual */Block.__(5, [
+                                        /* Identifier */Block.__(0, [
+                                            Types$LonaCompilerCore.undefinedType,
+                                            /* :: */[
+                                              id,
+                                              /* [] */0
+                                            ]
+                                          ]),
+                                        content$1
+                                      ]),
+                                    body
+                                  ]])
+                            ]);
                 case 3 : 
                     var bin = match[0];
                     var left = logicValueFromExpr(bin.left);
@@ -413,11 +439,22 @@ function logicNode(json) {
                               right,
                               /* Block */Block.__(6, [body])
                             ]);
-                default:
-                  throw [
-                        UnknownExprType,
-                        "Unknown IfExpr"
-                      ];
+                case 4 : 
+                    throw [
+                          UnknownExprType,
+                          "Unknown MemberExpression"
+                        ];
+                case 5 : 
+                    throw [
+                          UnknownExprType,
+                          "Unknown IdentifierExpression"
+                        ];
+                case 6 : 
+                    throw [
+                          UnknownExprType,
+                          "Unknown LiteralExpression"
+                        ];
+                
               }
             }
             break;
@@ -481,6 +518,8 @@ var parameterToJs = Types$LonaCompilerCore.parameterToJs;
 
 var parameterFromJs = Types$LonaCompilerCore.parameterFromJs;
 
+var layerTypeToString = Types$LonaCompilerCore.layerTypeToString;
+
 var decodeParameters = parameters;
 
 var decodeRootLayer = rootLayer;
@@ -501,6 +540,7 @@ exports.urlType           = urlType;
 exports.handlerType       = handlerType;
 exports.parameterToJs     = parameterToJs;
 exports.parameterFromJs   = parameterFromJs;
+exports.layerTypeToString = layerTypeToString;
 exports.UnknownParameter  = UnknownParameter;
 exports.UnknownType       = UnknownType;
 exports.parameterType     = parameterType;

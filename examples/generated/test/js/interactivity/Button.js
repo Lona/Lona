@@ -6,9 +6,9 @@ import textStyles from "../textStyles"
 
 export default class Button extends React.Component {
   render() {
-    let View$onPress;
-    let View$backgroundColor;
-    let Text$text;
+    let View$onPress
+    let View$backgroundColor
+    let Text$text
     Text$text = this.props.label
     View$onPress = this.props.onTap
     if (View$hovered) {
@@ -41,4 +41,4 @@ let styles = StyleSheet.create({
     paddingLeft: 16
   },
   text: { ...textStyles.button }
-});
+})

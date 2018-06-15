@@ -101,7 +101,7 @@ let rec layerToJavaScriptAST =
          )
     };
   JSXElement({
-    "tag": Layer.layerTypeToString(layer.typeName),
+    "tag": Types.layerTypeToString(layer.typeName),
     "attributes": [styleAttribute, ...attributes],
     "content": content
   });
@@ -118,7 +118,8 @@ let getStyleValue = (colors, value: Types.lonaValue) =>
   | _ => Ast.Literal(value)
   };
 
-let toJavaScriptStyleSheetAST = (colors, layer: Types.layer) => {
+let toJavaScriptStyleSheetAST =
+    (framework: JavaScriptOptions.framework, colors, layer: Types.layer) => {
   open Ast;
   let createStyleObjectForLayer = (layer: Types.layer) => {
     let styleParams =
@@ -135,7 +136,25 @@ let toJavaScriptStyleSheetAST = (colors, layer: Types.layer) => {
                | ParameterKey.TextStyle =>
                  switch (value.data |> Js.Json.decodeString) {
                  | Some(textStyleName) =>
-                   SpreadElement(Identifier(["textStyles", textStyleName]))
+                   let inner =
+                     switch framework {
+                     | JavaScriptOptions.ReactSketchapp =>
+                       CallExpression({
+                         "callee": Identifier(["TextStyles", "get"]),
+                         "arguments": [
+                           StringLiteral(
+                             textStyleName
+                             |> JavaScriptFormat.styleVariableName
+                           )
+                         ]
+                       })
+                     | _ =>
+                       Identifier([
+                         "textStyles",
+                         textStyleName |> JavaScriptFormat.styleVariableName
+                       ])
+                     };
+                   SpreadElement(inner);
                  | None =>
                    Js.log("Unknown TextStyle name");
                    raise(Not_found);
@@ -169,24 +188,37 @@ type componentImports = {
   relative: list(Ast.node)
 };
 
-let importComponents = (getComponentFile, rootLayer) => {
+let importComponents =
+    (framework: JavaScriptOptions.framework, getComponentFile, rootLayer) => {
   let {builtIn, custom}: Layer.availableTypeNames =
     rootLayer |> Layer.getTypeNames;
   {
     absolute: [
       Ast.ImportDeclaration({
-        "source": "react-native",
+        "source":
+          switch framework {
+          | JavaScriptOptions.ReactSketchapp => "@mathieudutour/react-sketchapp"
+          | _ => "react-native"
+          },
         "specifiers":
           (
             List.map(typeName =>
               Ast.ImportSpecifier({
-                "imported": Layer.layerTypeToString(typeName),
+                "imported": Types.layerTypeToString(typeName),
                 "local": None
               })
             ) @@
             builtIn
           )
           @ [Ast.ImportSpecifier({"imported": "StyleSheet", "local": None})]
+          @ (
+            switch framework {
+            | JavaScriptOptions.ReactSketchapp => [
+                Ast.ImportSpecifier({"imported": "TextStyles", "local": None})
+              ]
+            | _ => []
+            }
+          )
       })
     ],
     relative:
@@ -204,6 +236,7 @@ let importComponents = (getComponentFile, rootLayer) => {
 
 let generate =
     (
+      options: JavaScriptOptions.options,
       name,
       colorsFilePath,
       textStylesFilePath,
@@ -220,9 +253,11 @@ let generate =
   let rootLayerAST =
     rootLayer
     |> layerToJavaScriptAST(colors, textStyles, assignments, getAssetPath);
-  let styleSheetAST = rootLayer |> toJavaScriptStyleSheetAST(colors);
+  let styleSheetAST =
+    rootLayer |> toJavaScriptStyleSheetAST(options.framework, colors);
   let logicAST = logic |> JavaScriptLogic.toJavaScriptAST |> Ast.optimize;
-  let {absolute, relative} = rootLayer |> importComponents(getComponentFile);
+  let {absolute, relative} =
+    rootLayer |> importComponents(options.framework, getComponentFile);
   Ast.(
     Program(
       SwiftDocument.joinGroups(

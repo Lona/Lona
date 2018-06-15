@@ -6,11 +6,11 @@ import textStyles from "../textStyles"
 
 export default class PressableRootView extends React.Component {
   render() {
-    let Outer$onPress;
-    let Outer$backgroundColor;
-    let Inner$onPress;
-    let Inner$backgroundColor;
-    let InnerText$text;
+    let Outer$onPress
+    let Outer$backgroundColor
+    let Inner$onPress
+    let Inner$backgroundColor
+    let InnerText$text
     Outer$onPress = this.props.onPressOuter
     Inner$onPress = this.props.onPressInner
     if (Outer$hovered) {
@@ -65,4 +65,4 @@ let styles = StyleSheet.create({
   },
   inner: { backgroundColor: colors.blue500, width: 100, height: 100 },
   innerText: { ...textStyles.headline }
-});
+})
