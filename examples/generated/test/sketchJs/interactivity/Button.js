@@ -1,5 +1,6 @@
 import React from "react"
-import { Text, View, StyleSheet } from "react-sketchapp"
+import { Text, View, StyleSheet, TextStyles } from
+  "@mathieudutour/react-sketchapp"
 
 import colors from "../colors"
 import textStyles from "../textStyles"
@@ -40,5 +41,5 @@ let styles = StyleSheet.create({
     paddingBottom: 12,
     paddingLeft: 16
   },
-  text: { ...textStyles.button }
+  text: { ...TextStyles.get("button") }
 })

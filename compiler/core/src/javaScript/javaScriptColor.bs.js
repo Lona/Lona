@@ -8,8 +8,8 @@ var JavaScriptRender$LonaCompilerCore = require("./javaScriptRender.bs.js");
 
 function render(colors) {
   var propertyDoc = function (color) {
-    var property = /* Property */Block.__(20, [{
-          key: /* Identifier */Block.__(2, [/* :: */[
+    var property = /* Property */Block.__(21, [{
+          key: /* Identifier */Block.__(3, [/* :: */[
                 color[/* id */0],
                 /* [] */0
               ]]),
@@ -17,7 +17,7 @@ function render(colors) {
         }]);
     var match = color[/* comment */3];
     if (match) {
-      return /* LineEndComment */Block.__(24, [{
+      return /* LineEndComment */Block.__(25, [{
                   comment: match[0],
                   line: property
                 }]);
@@ -25,8 +25,8 @@ function render(colors) {
       return property;
     }
   };
-  return JavaScriptRender$LonaCompilerCore.toString(/* Program */Block.__(23, [/* :: */[
-                  /* ExportDefaultDeclaration */Block.__(21, [/* ObjectLiteral */Block.__(19, [List.map(propertyDoc, colors)])]),
+  return JavaScriptRender$LonaCompilerCore.toString(/* Program */Block.__(24, [/* :: */[
+                  /* ExportDefaultDeclaration */Block.__(22, [/* ObjectLiteral */Block.__(20, [List.map(propertyDoc, colors)])]),
                   /* :: */[
                     /* Empty */0,
                     /* [] */0

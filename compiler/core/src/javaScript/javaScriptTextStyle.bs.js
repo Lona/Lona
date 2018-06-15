@@ -31,8 +31,8 @@ function render(colors, textStyles) {
                     /* ltype */Types$LonaCompilerCore.stringType,
                     /* data */value
                   ];
-                  return /* Property */Block.__(20, [{
-                              key: /* Identifier */Block.__(2, [/* :: */[
+                  return /* Property */Block.__(21, [{
+                              key: /* Identifier */Block.__(3, [/* :: */[
                                     "family",
                                     /* [] */0
                                   ]]),
@@ -47,8 +47,8 @@ function render(colors, textStyles) {
                       /* ltype */Types$LonaCompilerCore.stringType,
                       /* data */value
                     ];
-                    return /* Property */Block.__(20, [{
-                                key: /* Identifier */Block.__(2, [/* :: */[
+                    return /* Property */Block.__(21, [{
+                                key: /* Identifier */Block.__(3, [/* :: */[
                                       "fontWeight",
                                       /* [] */0
                                     ]]),
@@ -63,8 +63,8 @@ function render(colors, textStyles) {
                         /* ltype */Types$LonaCompilerCore.numberType,
                         /* data */value
                       ];
-                      return /* Property */Block.__(20, [{
-                                  key: /* Identifier */Block.__(2, [/* :: */[
+                      return /* Property */Block.__(21, [{
+                                  key: /* Identifier */Block.__(3, [/* :: */[
                                         "fontSize",
                                         /* [] */0
                                       ]]),
@@ -79,8 +79,8 @@ function render(colors, textStyles) {
                           /* ltype */Types$LonaCompilerCore.numberType,
                           /* data */value
                         ];
-                        return /* Property */Block.__(20, [{
-                                    key: /* Identifier */Block.__(2, [/* :: */[
+                        return /* Property */Block.__(21, [{
+                                    key: /* Identifier */Block.__(3, [/* :: */[
                                           "lineHeight",
                                           /* [] */0
                                         ]]),
@@ -95,8 +95,8 @@ function render(colors, textStyles) {
                             /* ltype */Types$LonaCompilerCore.numberType,
                             /* data */value
                           ];
-                          return /* Property */Block.__(20, [{
-                                      key: /* Identifier */Block.__(2, [/* :: */[
+                          return /* Property */Block.__(21, [{
+                                      key: /* Identifier */Block.__(3, [/* :: */[
                                             "letterSpacing",
                                             /* [] */0
                                           ]]),
@@ -110,7 +110,7 @@ function render(colors, textStyles) {
                             var match = Color$LonaCompilerCore.find(colors, value);
                             var value$1;
                             if (match) {
-                              value$1 = /* Identifier */Block.__(2, [/* :: */[
+                              value$1 = /* Identifier */Block.__(3, [/* :: */[
                                     "colors",
                                     /* :: */[
                                       match[0][/* id */0],
@@ -124,8 +124,8 @@ function render(colors, textStyles) {
                               ];
                               value$1 = /* Literal */Block.__(1, [lonaValue]);
                             }
-                            return /* Property */Block.__(20, [{
-                                        key: /* Identifier */Block.__(2, [/* :: */[
+                            return /* Property */Block.__(21, [{
+                                        key: /* Identifier */Block.__(3, [/* :: */[
                                               "color",
                                               /* [] */0
                                             ]]),
@@ -141,26 +141,26 @@ function render(colors, textStyles) {
             ]
           ]
         ]);
-    return /* Property */Block.__(20, [{
-                key: /* Identifier */Block.__(2, [/* :: */[
+    return /* Property */Block.__(21, [{
+                key: /* Identifier */Block.__(3, [/* :: */[
                       JavaScriptFormat$LonaCompilerCore.styleVariableName(textStyle[/* id */0]),
                       /* [] */0
                     ]]),
-                value: /* ObjectLiteral */Block.__(19, [variables])
+                value: /* ObjectLiteral */Block.__(20, [variables])
               }]);
   };
-  return JavaScriptRender$LonaCompilerCore.toString(/* Program */Block.__(23, [/* :: */[
-                  /* ImportDeclaration */Block.__(3, [{
+  return JavaScriptRender$LonaCompilerCore.toString(/* Program */Block.__(24, [/* :: */[
+                  /* ImportDeclaration */Block.__(4, [{
                         source: "./colors",
                         specifiers: /* :: */[
-                          /* ImportDefaultSpecifier */Block.__(5, ["colors"]),
+                          /* ImportDefaultSpecifier */Block.__(6, ["colors"]),
                           /* [] */0
                         ]
                       }]),
                   /* :: */[
                     /* Empty */0,
                     /* :: */[
-                      /* ExportDefaultDeclaration */Block.__(21, [/* ObjectLiteral */Block.__(19, [List.map(propertyDoc, textStyles[/* styles */0])])]),
+                      /* ExportDefaultDeclaration */Block.__(22, [/* ObjectLiteral */Block.__(20, [List.map(propertyDoc, textStyles[/* styles */0])])]),
                       /* :: */[
                         /* Empty */0,
                         /* [] */0

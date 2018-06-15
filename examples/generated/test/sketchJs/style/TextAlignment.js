@@ -1,5 +1,6 @@
 import React from "react"
-import { Text, Image, View, StyleSheet } from "react-sketchapp"
+import { Text, Image, View, StyleSheet, TextStyles } from
+  "@mathieudutour/react-sketchapp"
 
 import colors from "../colors"
 import textStyles from "../textStyles"
@@ -113,11 +114,15 @@ let styles = StyleSheet.create({
   view2: { backgroundColor: "#D8D8D8" },
   text: {
     textAlign: "center",
-    ...textStyles.display1,
+    ...TextStyles.get("display1"),
     alignSelf: "stretch",
     marginTop: 16
   },
-  text1: { textAlign: "center", ...textStyles.subheading2, marginTop: 16 },
+  text1: {
+    textAlign: "center",
+    ...TextStyles.get("subheading2"),
+    marginTop: 16
+  },
   text2: { alignSelf: "stretch", marginTop: 12 },
   text3: { textAlign: "right", alignSelf: "stretch" },
   text4: { textAlign: "center", width: 80 },

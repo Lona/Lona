@@ -1,5 +1,6 @@
 import React from "react"
-import { Text, View, StyleSheet } from "react-sketchapp"
+import { Text, View, StyleSheet, TextStyles } from
+  "@mathieudutour/react-sketchapp"
 
 import colors from "../colors"
 import textStyles from "../textStyles"
@@ -45,14 +46,14 @@ export default class TextStylesTest extends React.Component {
 
 let styles = StyleSheet.create({
   view: { alignSelf: "stretch" },
-  text: { ...textStyles.display4 },
-  text1: { ...textStyles.display3 },
-  text2: { ...textStyles.display2 },
-  text3: { ...textStyles.display1 },
-  text4: { ...textStyles.headline },
-  text5: { ...textStyles.subheading2 },
-  text6: { ...textStyles.subheading1 },
-  text7: { ...textStyles.body2 },
-  text8: { ...textStyles.body1 },
-  text9: { ...textStyles.caption }
+  text: { ...TextStyles.get("display4") },
+  text1: { ...TextStyles.get("display3") },
+  text2: { ...TextStyles.get("display2") },
+  text3: { ...TextStyles.get("display1") },
+  text4: { ...TextStyles.get("headline") },
+  text5: { ...TextStyles.get("subheading2") },
+  text6: { ...TextStyles.get("subheading1") },
+  text7: { ...TextStyles.get("body2") },
+  text8: { ...TextStyles.get("body1") },
+  text9: { ...TextStyles.get("caption") }
 })

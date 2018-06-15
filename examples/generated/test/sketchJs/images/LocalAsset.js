@@ -1,5 +1,6 @@
 import React from "react"
-import { Image, View, StyleSheet } from "react-sketchapp"
+import { Image, View, StyleSheet, TextStyles } from
+  "@mathieudutour/react-sketchapp"
 
 import colors from "../colors"
 import textStyles from "../textStyles"

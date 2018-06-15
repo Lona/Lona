@@ -1,5 +1,6 @@
 import React from "react"
-import { Text, View, StyleSheet } from "react-sketchapp"
+import { Text, View, StyleSheet, TextStyles } from
+  "@mathieudutour/react-sketchapp"
 
 import colors from "../colors"
 import textStyles from "../textStyles"
@@ -41,7 +42,7 @@ let styles = StyleSheet.create({
     paddingBottom: 10,
     paddingLeft: 10
   },
-  text: { ...textStyles.subheading2, marginBottom: 8 },
+  text: { ...TextStyles.get("subheading2"), marginBottom: 8 },
   fitContentParentSecondaryChildren: {},
   text1: { marginTop: 12 },
   localAsset: {},
