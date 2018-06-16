@@ -12,6 +12,10 @@ import Foundation
 class ComponentMenu: NSMenu {
     var additionalMenuItems: [NSMenuItem] = []
 
+    // These represent parameters of type Component. This allows inserting
+    // placeholders into the layer list.
+    var componentParameterItems: [NSMenuItem] = []
+
     required init(coder decoder: NSCoder) {
         super.init(coder: decoder)
 
@@ -22,6 +26,27 @@ class ComponentMenu: NSMenu {
         _ = LonaPlugins.current.register(eventType: .onReloadWorkspace) {
             self.updateComponentsFromModule()
         }
+    }
+
+    func update(componentParameterNames: [String]) {
+        self.componentParameterItems.forEach({ item in
+            self.removeItem(item)
+        })
+
+        let childrenItemIndex = indexOfItem(withTitle: "Children")
+
+        let componentParameterItems = componentParameterNames.map({ name in
+            NSMenuItem(title: name, onClick: {
+                guard let viewController = NSApplication.shared.mainWindow?.contentViewController as? ViewController else { return }
+                viewController.addLayer(layer: CSParameterLayer(name: name, parameterName: name))
+            })
+        })
+
+        self.componentParameterItems = componentParameterItems
+
+        componentParameterItems.forEach({ item in
+            self.insertItem(item, at: childrenItemIndex + 1)
+        })
     }
 
     func updateComponentsFromModule() {

@@ -1,0 +1,53 @@
+{
+  "devices" : [
+    {
+      "height" : 0,
+      "heightMode" : "At Least",
+      "name" : "iPhone SE",
+      "width" : 320
+    }
+  ],
+  "examples" : [
+    {
+      "name" : "Default",
+      "params" : {
+
+      }
+    }
+  ],
+  "logic" : [
+
+  ],
+  "params" : [
+
+  ],
+  "root" : {
+    "children" : [
+      {
+        "id" : "ComponentParameterTemplate",
+        "params" : {
+          "subtitleComponent" : {
+            "parameters" : {
+              "text" : "Subtitle",
+              "textStyle" : "subheading2"
+            },
+            "type" : "Lona:Text"
+          },
+          "titleComponent" : {
+            "parameters" : {
+              "text" : "Title",
+              "textStyle" : "headline"
+            },
+            "type" : "Lona:Text"
+          }
+        },
+        "type" : "ComponentParameterTemplate"
+      }
+    ],
+    "id" : "View",
+    "params" : {
+      "alignSelf" : "stretch"
+    },
+    "type" : "Lona:View"
+  }
+}

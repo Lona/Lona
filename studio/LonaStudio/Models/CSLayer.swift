@@ -387,7 +387,7 @@ class CSLayer: CSDataDeserializable, CSDataSerializable, DataNode, NSCopying {
         set { parameters["text"] = newValue?.toData() }
     }
     var font: String? {
-        get { return parameters["font"]?.string }
+        get { return parameters["textStyle"]?.string ?? parameters["font"]?.string }
         set { parameters["font"] = newValue?.toData() }
     }
     var textAlign: String? {
@@ -479,6 +479,8 @@ class CSLayer: CSDataDeserializable, CSDataSerializable, DataNode, NSCopying {
             }
 
             return layer
+        } else if case LayerType.builtIn(.children) = type {
+            return CSParameterLayer(json)
         }
 
         return CSLayer(json)

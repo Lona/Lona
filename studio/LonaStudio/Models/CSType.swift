@@ -379,8 +379,8 @@ indirect enum CSType: Equatable, CSDataSerializable, CSDataDeserializable {
             CSValue(type: .string, data: .String("Color")),
             CSValue(type: .string, data: .String("TextStyle")),
             CSValue(type: .string, data: .String("URL")),
-            CSValue(type: .string, data: .String("Function"))
-//            CSValue(type: .string, data: .String("Component")),
+            CSValue(type: .string, data: .String("Function")),
+            CSValue(type: .string, data: .String("Component"))
             ] + CSUserTypes.types.map({ CSValue(type: .string, data: $0.toString().toData()) })
 
         return CSType.enumeration(values)

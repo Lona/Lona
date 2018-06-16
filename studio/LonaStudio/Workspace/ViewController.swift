@@ -468,6 +468,10 @@ class ViewController: NSViewController, NSOutlineViewDataSource, NSOutlineViewDe
             self.component.parameters = value
             self.caseList?.editor?.reloadData()
             self.render()
+
+            let componentParameters = value.filter({ $0.type == CSComponentType })
+            let componentParameterNames = componentParameters.map({ $0.name })
+            ComponentMenu.shared?.update(componentParameterNames: componentParameterNames)
         }
 
         // Case list setup
