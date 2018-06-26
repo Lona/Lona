@@ -1,14 +1,14 @@
 module Ast = JavaScriptAst;
 
 let logicValueToJavaScriptAST = x =>
-  switch x {
+  switch (x) {
   | Logic.Identifier(_, path) => Ast.Identifier(path)
   | Literal(x) => Literal(x)
   };
 
 let rec toJavaScriptAST = node => {
   let fromCmp = x =>
-    switch x {
+    switch (x) {
     | Types.Eq => Ast.Eq
     | Neq => Neq
     | Gt => Gt
@@ -17,16 +17,16 @@ let rec toJavaScriptAST = node => {
     | Lte => Lte
     | Unknown => Noop
     };
-  switch node {
+  switch (node) {
   | Logic.Assign(a, b) =>
     Ast.AssignmentExpression({
       "left": logicValueToJavaScriptAST(b),
-      "right": logicValueToJavaScriptAST(a)
+      "right": logicValueToJavaScriptAST(a),
     })
   | IfExists(a, body) =>
     IfStatement({
       "test": logicValueToJavaScriptAST(a),
-      "consequent": [toJavaScriptAST(body)]
+      "consequent": [toJavaScriptAST(body)],
     })
   | Block(body) => Ast.Block(body |> List.map(toJavaScriptAST))
   | If(a, cmp, b, body) =>
@@ -34,7 +34,7 @@ let rec toJavaScriptAST = node => {
       Ast.BinaryExpression({
         "left": logicValueToJavaScriptAST(a),
         "operator": fromCmp(cmp),
-        "right": logicValueToJavaScriptAST(b)
+        "right": logicValueToJavaScriptAST(b),
       });
     IfStatement({"test": condition, "consequent": [toJavaScriptAST(body)]});
   | Add(lhs, rhs, value) =>
@@ -42,25 +42,26 @@ let rec toJavaScriptAST = node => {
       Ast.BinaryExpression({
         "left": logicValueToJavaScriptAST(lhs),
         "operator": Ast.Plus,
-        "right": logicValueToJavaScriptAST(rhs)
+        "right": logicValueToJavaScriptAST(rhs),
       });
     AssignmentExpression({
       "left": logicValueToJavaScriptAST(value),
-      "right": addition
+      "right": addition,
     });
   | Let(value) =>
-    switch value {
+    switch (value) {
     | Identifier(_, path) => Ast.VariableDeclaration(Ast.Identifier(path))
     | _ => Unknown
     }
   | LetEqual(value, content) =>
     Ast.AssignmentExpression({
       "left":
-        switch value {
-        | Identifier(_, path) => Ast.VariableDeclaration(Ast.Identifier(path))
+        switch (value) {
+        | Identifier(_, path) =>
+          Ast.VariableDeclaration(Ast.Identifier(path))
         | _ => Unknown
         },
-      "right": logicValueToJavaScriptAST(content)
+      "right": logicValueToJavaScriptAST(content),
     })
   | None => Unknown
   };

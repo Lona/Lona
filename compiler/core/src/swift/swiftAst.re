@@ -47,16 +47,16 @@ and typeAnnotation =
       {
         .
         "name": typeAnnotation,
-        "member": typeAnnotation
-      }
+        "member": typeAnnotation,
+      },
     )
   | ArrayType({. "element": typeAnnotation})
   | DictionaryType(
       {
         .
         "key": typeAnnotation,
-        "value": typeAnnotation
-      }
+        "value": typeAnnotation,
+      },
     )
   | OptionalType(typeAnnotation)
   | TypeInheritanceList({. "list": list(typeAnnotation)})
@@ -66,15 +66,15 @@ and pattern =
       {
         .
         "identifier": node,
-        "annotation": option(typeAnnotation)
-      }
+        "annotation": option(typeAnnotation),
+      },
     )
   | ValueBindingPattern(
       {
         .
         "kind": string,
-        "pattern": pattern
-      }
+        "pattern": pattern,
+      },
     )
   | TuplePattern({. "elements": list(pattern)})
   | OptionalPattern({. "value": pattern})
@@ -86,8 +86,8 @@ and initializerBlock =
       {
         .
         "willSet": option(list(node)),
-        "didSet": option(list(node))
-      }
+        "didSet": option(list(node)),
+      },
     )
 [@bs.deriving accessors]
 and node =
@@ -99,23 +99,23 @@ and node =
         .
         "left": node,
         "operator": string,
-        "right": node
-      }
+        "right": node,
+      },
     )
   | PrefixExpression(
       {
         .
         "operator": string,
-        "expression": node
-      }
+        "expression": node,
+      },
     )
   | TryExpression(
       {
         .
         "forced": bool,
         "optional": bool,
-        "expression": node
-      }
+        "expression": node,
+      },
     )
   | ClassDeclaration(
       {
@@ -124,8 +124,8 @@ and node =
         "inherits": list(typeAnnotation),
         "modifier": option(accessLevelModifier),
         "isFinal": bool,
-        "body": list(node)
-      }
+        "body": list(node),
+      },
     )
   | EnumDeclaration(
       {
@@ -133,8 +133,8 @@ and node =
         "name": string,
         "inherits": list(typeAnnotation),
         "modifier": option(accessLevelModifier),
-        "body": list(node)
-      }
+        "body": list(node),
+      },
     )
   | ExtensionDeclaration(
       {
@@ -143,8 +143,8 @@ and node =
         "protocols": list(typeAnnotation),
         "where": option(node),
         "modifier": option(accessLevelModifier),
-        "body": list(node)
-      }
+        "body": list(node),
+      },
     )
   /* | VariableDeclaration({. "pattern": pattern, "init": option(node)}) */
   | SwiftIdentifier(string)
@@ -153,8 +153,8 @@ and node =
         .
         "modifiers": list(declarationModifier),
         "pattern": pattern,
-        "init": option(node)
-      }
+        "init": option(node),
+      },
     )
   | VariableDeclaration(
       {
@@ -162,8 +162,8 @@ and node =
         "modifiers": list(declarationModifier),
         "pattern": pattern,
         "init": option(node),
-        "block": option(initializerBlock)
-      }
+        "block": option(initializerBlock),
+      },
     )
   | InitializerDeclaration(
       {
@@ -172,8 +172,8 @@ and node =
         "parameters": list(node),
         "failable": option(string),
         "throws": bool,
-        "body": list(node)
-      }
+        "body": list(node),
+      },
     )
   | DeinitializerDeclaration(list(node))
   | FunctionDeclaration(
@@ -184,16 +184,16 @@ and node =
         "parameters": list(node),
         "result": option(typeAnnotation),
         "body": list(node),
-        "throws": bool
-      }
+        "throws": bool,
+      },
     )
   | ImportDeclaration(string)
   | IfStatement(
       {
         .
         "condition": node,
-        "block": list(node)
-      }
+        "block": list(node),
+      },
     )
   | ReturnStatement(option(node))
   | Parameter(
@@ -202,29 +202,29 @@ and node =
         "externalName": option(string),
         "localName": string,
         "annotation": typeAnnotation,
-        "defaultValue": option(node)
-      }
+        "defaultValue": option(node),
+      },
     )
   | FunctionCallArgument(
       {
         .
         "name": option(node),
-        "value": node
-      }
+        "value": node,
+      },
     )
   | FunctionCallExpression(
       {
         .
         "name": node,
-        "arguments": list(node)
-      }
+        "arguments": list(node),
+      },
     )
   | EnumCase(
       {
         .
         "name": node,
-        "value": option(node)
-      }
+        "value": option(node),
+      },
     )
   | Empty
   | LineComment(string)
@@ -233,8 +233,8 @@ and node =
       {
         .
         "comment": string,
-        "line": node
-      }
+        "line": node,
+      },
     )
   | CodeBlock({. "statements": list(node)})
   | StatementListHelper(list(node))

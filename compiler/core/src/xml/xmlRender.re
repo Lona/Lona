@@ -3,10 +3,11 @@ open Prettier.Doc.Builders;
 let quoted = doc => s("\"") <+> doc <+> s("\"");
 
 let rec render = ast : Prettier.Doc.t('a) =>
-  switch ast {
-  | XmlAst.Document(o) => render(o##prolog) <+> hardline <+> render(o##element)
+  switch (ast) {
+  | XmlAst.Document(o) =>
+    render(o##prolog) <+> hardline <+> render(o##element)
   | Prolog(o) =>
-    switch o##xmlDecl {
+    switch (o##xmlDecl) {
     | Some(node) => render(node)
     | None => empty
     }
@@ -15,20 +16,21 @@ let rec render = ast : Prettier.Doc.t('a) =>
     <+> s("version=")
     <+> quoted(s(o##version))
     <+> (
-      switch o##encoding {
-      | Some(encoding) => s(" ") <+> s("encoding=") <+> quoted(s(encoding))
+      switch (o##encoding) {
+      | Some(encoding) =>
+        s(" ") <+> s("encoding=") <+> quoted(s(encoding))
       | None => empty
       }
     )
     <+> s("?>")
   | Element(o) =>
     let attributes =
-      switch o##attributes {
+      switch (o##attributes) {
       | [] => empty
       | attributes =>
         indent(line <+> group(join(line, List.map(render, attributes))))
       };
-    switch o##content {
+    switch (o##content) {
     | [] => group(s("<") <+> s(o##tag) <+> attributes <+> s(" />"))
     | children =>
       group(
@@ -37,17 +39,21 @@ let rec render = ast : Prettier.Doc.t('a) =>
         <+> attributes
         <+> s(">")
         <+> group(
-              indent(softline <+> join(softline, List.map(render, children)))
+              indent(
+                softline <+> join(softline, List.map(render, children)),
+              ),
             )
         <+> softline
         <+> s("</")
         <+> s(o##tag)
-        <+> s(">")
+        <+> s(">"),
       )
     };
   | Comment(value) => s("<!-- " ++ value ++ " -->")
   | Attribute(o) =>
-    group(s(o##name) <+> s("=") <+> indent(softline <+> quoted(s(o##value))))
+    group(
+      s(o##name) <+> s("=") <+> indent(softline <+> quoted(s(o##value))),
+    )
   | CharData(value) => s(value)
   | Empty => empty
   };
@@ -60,7 +66,7 @@ let toString = ast =>
       let printerOptions = {
         "printWidth": 120,
         "tabWidth": 2,
-        "useTabs": false
+        "useTabs": false,
       };
       Prettier.Doc.Printer.printDocToString(doc, printerOptions)##formatted;
     }

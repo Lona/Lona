@@ -19,15 +19,15 @@ type node =
       {
         .
         "source": string,
-        "specifiers": list(node)
-      }
+        "specifiers": list(node),
+      },
     )
   | ImportSpecifier(
       {
         .
         "imported": string,
-        "local": option(string)
-      }
+        "local": option(string),
+      },
     )
   | ImportDefaultSpecifier(string)
   | ClassDeclaration(
@@ -35,45 +35,45 @@ type node =
         .
         "id": string,
         "superClass": option(string),
-        "body": list(node)
-      }
+        "body": list(node),
+      },
     )
   | MethodDefinition(
       {
         .
         "key": string,
-        "value": node
-      }
+        "value": node,
+      },
     )
   | FunctionExpression(
       {
         .
         "id": option(string),
         "params": list(string),
-        "body": list(node)
-      }
+        "body": list(node),
+      },
     )
   | CallExpression(
       {
         .
         "callee": node,
-        "arguments": list(node)
-      }
+        "arguments": list(node),
+      },
     )
   | JSXAttribute(
       {
         .
         "name": string,
-        "value": node
-      }
+        "value": node,
+      },
     )
   | JSXElement(
       {
         .
         "tag": string,
         "attributes": list(node),
-        "content": list(node)
-      }
+        "content": list(node),
+      },
     )
   | JSXExpressionContainer(node)
   | SpreadElement(node)
@@ -82,23 +82,23 @@ type node =
       {
         .
         "left": node,
-        "right": node
-      }
+        "right": node,
+      },
     )
   | BinaryExpression(
       {
         .
         "left": node,
         "operator": binaryOperator,
-        "right": node
-      }
+        "right": node,
+      },
     )
   | IfStatement(
       {
         .
         "test": node,
-        "consequent": list(node)
-      }
+        "consequent": list(node),
+      },
     )
   | ArrayLiteral(list(node))
   | ObjectLiteral(list(node))
@@ -106,8 +106,8 @@ type node =
       {
         .
         "key": node,
-        "value": node
-      }
+        "value": node,
+      },
     )
   | ExportDefaultDeclaration(node)
   | Block(list(node))
@@ -116,15 +116,15 @@ type node =
       {
         .
         "comment": string,
-        "line": node
-      }
+        "line": node,
+      },
     )
   | Empty
   | Unknown;
 
 /* Children are mapped first */
 let rec map = (f, node) =>
-  switch node {
+  switch (node) {
   | Return(value) => f(Return(value |> map(f)))
   | Literal(_)
   | StringLiteral(_)
@@ -139,8 +139,8 @@ let rec map = (f, node) =>
       ClassDeclaration({
         "id": o##id,
         "superClass": o##superClass,
-        "body": o##body |> List.map(map(f))
-      })
+        "body": o##body |> List.map(map(f)),
+      }),
     )
   | MethodDefinition(o) =>
     f(MethodDefinition({"key": o##key, "value": o##value |> map(f)}))
@@ -149,15 +149,15 @@ let rec map = (f, node) =>
       FunctionExpression({
         "id": o##id,
         "params": o##params,
-        "body": o##body |> List.map(map(f))
-      })
+        "body": o##body |> List.map(map(f)),
+      }),
     )
   | CallExpression(o) =>
     f(
       CallExpression({
         "callee": o##callee |> map(f),
-        "arguments": o##arguments |> List.map(map(f))
-      })
+        "arguments": o##arguments |> List.map(map(f)),
+      }),
     )
   | JSXAttribute(o) =>
     f(JSXAttribute({"name": o##name, "value": o##value |> map(f)}))
@@ -166,31 +166,31 @@ let rec map = (f, node) =>
       JSXElement({
         "tag": o##tag,
         "attributes": o##attributes |> List.map(map(f)),
-        "content": o##content |> List.map(map(f))
-      })
+        "content": o##content |> List.map(map(f)),
+      }),
     )
   | VariableDeclaration(value) => f(VariableDeclaration(value |> map(f)))
   | AssignmentExpression(o) =>
     f(
       AssignmentExpression({
         "left": o##left |> map(f),
-        "right": o##right |> map(f)
-      })
+        "right": o##right |> map(f),
+      }),
     )
   | BinaryExpression(o) =>
     f(
       BinaryExpression({
         "left": o##left |> map(f),
         "operator": o##operator,
-        "right": o##right |> map(f)
-      })
+        "right": o##right |> map(f),
+      }),
     )
   | IfStatement(o) =>
     f(
       IfStatement({
         "test": o##test |> map(f),
-        "consequent": o##consequent |> List.map(map(f))
-      })
+        "consequent": o##consequent |> List.map(map(f)),
+      }),
     )
   | ArrayLiteral(body) => f(ArrayLiteral(body |> List.map(map(f))))
   | ObjectLiteral(body) => f(ObjectLiteral(body |> List.map(map(f))))
@@ -209,11 +209,11 @@ let rec map = (f, node) =>
 /* Takes an expression like `a === true` and converts it to `a` */
 let optimizeTruthyBinaryExpression = node => {
   let booleanValue = sub =>
-    switch sub {
+    switch (sub) {
     | Literal(value) => value.data |> Json.Decode.optional(Json.Decode.bool)
     | _ => (None: option(bool))
     };
-  switch node {
+  switch (node) {
   | BinaryExpression(o) =>
     switch (booleanValue(o##left), o##operator, booleanValue(o##right)) {
     | (_, Eq, Some(true)) => o##left
@@ -226,14 +226,16 @@ let optimizeTruthyBinaryExpression = node => {
 
 /* Renamed "layer.View.backgroundColor" to something JS-safe and nice looking */
 let renameIdentifiers = node =>
-  switch node {
+  switch (node) {
   | Identifier([head, ...tail]) =>
-    switch head {
+    switch (head) {
     | "parameters" => Identifier(["this", "props", ...tail])
     | "layers" =>
-      switch tail {
+      switch (tail) {
       | [second, ...tail] =>
-        Identifier([tail |> List.fold_left((a, b) => a ++ "$" ++ b, second)])
+        Identifier([
+          tail |> List.fold_left((a, b) => a ++ "$" ++ b, second),
+        ])
       | _ => node
       }
     | _ => node

@@ -1,14 +1,14 @@
 open SwiftAst;
 
 let join = (sep, nodes) =>
-  switch nodes {
+  switch (nodes) {
   | [] => []
   | _ => nodes |> List.fold_left((acc, node) => acc @ [sep, node], [])
   };
 
 let joinGroups = (sep, groups) => {
   let nonEmpty = groups |> List.filter(x => List.length(x) > 0);
-  switch nonEmpty {
+  switch (nonEmpty) {
   | [] => []
   | [hd, ...tl] =>
     tl |> List.fold_left((acc, nodes) => acc @ [sep] @ nodes, hd)
@@ -24,47 +24,47 @@ let nameWithoutPixelDensitySuffix = path =>
   Js.String.replaceByRe([%re "/@\\d+x$/g"], "", path);
 
 let importFramework = framework =>
-  switch framework {
+  switch (framework) {
   | SwiftOptions.UIKit => ImportDeclaration("UIKit")
   | SwiftOptions.AppKit => ImportDeclaration("AppKit")
   };
 
 let colorTypeName = framework =>
-  switch framework {
+  switch (framework) {
   | SwiftOptions.UIKit => "UIColor"
   | SwiftOptions.AppKit => "NSColor"
   };
 
 let fontTypeName = framework =>
-  switch framework {
+  switch (framework) {
   | SwiftOptions.UIKit => "UIFont"
   | SwiftOptions.AppKit => "NSFont"
   };
 
 let imageTypeName = framework =>
-  switch framework {
+  switch (framework) {
   | SwiftOptions.UIKit => "UIImage"
   | SwiftOptions.AppKit => "NSImage"
   };
 
 let layoutPriorityTypeDoc = framework =>
-  switch framework {
+  switch (framework) {
   | SwiftOptions.UIKit => SwiftIdentifier("UILayoutPriority")
   | SwiftOptions.AppKit =>
     MemberExpression([
       SwiftIdentifier("NSLayoutConstraint"),
-      SwiftIdentifier("Priority")
+      SwiftIdentifier("Priority"),
     ])
   };
 
 let labelAttributedTextName = framework =>
-  switch framework {
+  switch (framework) {
   | SwiftOptions.UIKit => "attributedText"
   | SwiftOptions.AppKit => "attributedStringValue"
   };
 
 let labelAttributedTextValue = framework =>
-  switch framework {
+  switch (framework) {
   | SwiftOptions.UIKit =>
     labelAttributedTextName(framework) ++ " ?? NSAttributedString()"
   | SwiftOptions.AppKit => labelAttributedTextName(framework)
@@ -73,29 +73,32 @@ let labelAttributedTextValue = framework =>
 let localImageName = (framework: SwiftOptions.framework, name) => {
   let imageName =
     LiteralExpression(
-      String(nameWithoutPixelDensitySuffix(nameWithoutExtension(name)))
+      String(nameWithoutPixelDensitySuffix(nameWithoutExtension(name))),
     );
-  switch framework {
+  switch (framework) {
   | SwiftOptions.UIKit => imageName
   | SwiftOptions.AppKit =>
     FunctionCallExpression({
       "name":
-        MemberExpression([SwiftIdentifier("NSImage"), SwiftIdentifier("Name")]),
+        MemberExpression([
+          SwiftIdentifier("NSImage"),
+          SwiftIdentifier("Name"),
+        ]),
       "arguments": [
         FunctionCallArgument({
           "name": Some(SwiftIdentifier("rawValue")),
-          "value": imageName
-        })
-      ]
+          "value": imageName,
+        }),
+      ],
     })
   };
 };
 
 let rec typeAnnotationDoc =
         (framework: SwiftOptions.framework, ltype: Types.lonaType) =>
-  switch ltype {
+  switch (ltype) {
   | Types.Reference(typeName) =>
-    switch typeName {
+    switch (typeName) {
     | "Boolean" => TypeName("Bool")
     | "URL" =>
       typeAnnotationDoc(framework, Types.Named(typeName, Types.stringType))
@@ -114,11 +117,11 @@ let rec lonaValue =
           framework: SwiftOptions.framework,
           colors,
           textStyles: TextStyle.file,
-          value: Types.lonaValue
+          value: Types.lonaValue,
         ) =>
-  switch value.ltype {
+  switch (value.ltype) {
   | Reference(typeName) =>
-    switch typeName {
+    switch (typeName) {
     | "Boolean" => LiteralExpression(Boolean(value.data |> Json.Decode.bool))
     | "Number" =>
       LiteralExpression(FloatingPoint(value.data |> Json.Decode.float))
@@ -129,27 +132,27 @@ let rec lonaValue =
         framework,
         colors,
         textStyles,
-        {ltype: Named(typeName, Reference("String")), data: value.data}
+        {ltype: Named(typeName, Reference("String")), data: value.data},
       )
     | "URL" =>
       lonaValue(
         framework,
         colors,
         textStyles,
-        {ltype: Named(typeName, Reference("String")), data: value.data}
+        {ltype: Named(typeName, Reference("String")), data: value.data},
       )
     | _ => SwiftIdentifier("UnknownReferenceType: " ++ typeName)
     }
   | Function(_) => SwiftIdentifier("PLACEHOLDER")
   | Named(alias, subtype) =>
-    switch alias {
+    switch (alias) {
     | "Color" =>
       let rawValue = value.data |> Json.Decode.string;
       switch (Color.find(colors, rawValue)) {
       | Some(color) =>
         MemberExpression([
           SwiftIdentifier("Colors"),
-          SwiftIdentifier(color.id)
+          SwiftIdentifier(color.id),
         ])
       | None => LiteralExpression(Color(rawValue))
       };
@@ -158,7 +161,9 @@ let rec lonaValue =
       if (rawValue |> Js.String.startsWith("file://./")) {
         LiteralExpression
           (
-            Image(nameWithoutPixelDensitySuffix(nameWithoutExtension(rawValue)))
+            Image(
+              nameWithoutPixelDensitySuffix(nameWithoutExtension(rawValue)),
+            ),
           );
           /* FunctionCallExpression({
                "name": SwiftIdentifier(imageTypeName(framework)),
@@ -179,12 +184,12 @@ let rec lonaValue =
       | Some(textStyle) =>
         MemberExpression([
           SwiftIdentifier("TextStyles"),
-          SwiftIdentifier(textStyle.id)
+          SwiftIdentifier(textStyle.id),
         ])
       | None =>
         MemberExpression([
           SwiftIdentifier("TextStyles"),
-          SwiftIdentifier(textStyles.defaultStyle.id)
+          SwiftIdentifier(textStyles.defaultStyle.id),
         ])
       };
     | _ => SwiftIdentifier("UnknownNamedTypeAlias" ++ alias)
@@ -196,11 +201,11 @@ let rec defaultValueForLonaType =
           framework: SwiftOptions.framework,
           colors,
           textStyles: TextStyle.file,
-          ltype: Types.lonaType
+          ltype: Types.lonaType,
         ) =>
-  switch ltype {
+  switch (ltype) {
   | Reference(typeName) =>
-    switch typeName {
+    switch (typeName) {
     | "Boolean" => LiteralExpression(Boolean(false))
     | "Number" => LiteralExpression(FloatingPoint(0.))
     | "String" => LiteralExpression(String(""))
@@ -210,68 +215,68 @@ let rec defaultValueForLonaType =
         framework,
         colors,
         textStyles,
-        Named(typeName, Reference("String"))
+        Named(typeName, Reference("String")),
       )
     | "URL" =>
       defaultValueForLonaType(
         framework,
         colors,
         textStyles,
-        Named(typeName, Reference("String"))
+        Named(typeName, Reference("String")),
       )
     | value when Js.String.endsWith("?", value) =>
       defaultValueForLonaType(
         framework,
         colors,
         textStyles,
-        Reference(Js.String.replace("?", "", value))
+        Reference(Js.String.replace("?", "", value)),
       )
     | _ => SwiftIdentifier(typeName)
     }
   | Function(_) => SwiftIdentifier("PLACEHOLDER")
   | Named(alias, _) =>
-    switch alias {
+    switch (alias) {
     | "Color" =>
       MemberExpression([
         SwiftIdentifier(colorTypeName(framework)),
-        SwiftIdentifier("clear")
+        SwiftIdentifier("clear"),
       ])
     | "URL" =>
       FunctionCallExpression({
         "name": SwiftIdentifier(imageTypeName(framework)),
-        "arguments": []
+        "arguments": [],
       })
     | "TextStyle" =>
       MemberExpression([
         SwiftIdentifier("TextStyles"),
-        SwiftIdentifier(textStyles.defaultStyle.id)
+        SwiftIdentifier(textStyles.defaultStyle.id),
       ])
     | _ => SwiftIdentifier("TypeUnknown" ++ alias)
     }
   };
 
 let memberOrSelfExpression = (first, statements) =>
-  switch first {
+  switch (first) {
   | SwiftIdentifier("self") => MemberExpression(statements)
   | _ => MemberExpression([first] @ statements)
   };
 
 let layerNameOrSelf = (rootLayer, layer: Types.layer) =>
   SwiftIdentifier(
-    layer === rootLayer ? "self" : layer.name |> SwiftFormat.layerName
+    layer === rootLayer ? "self" : layer.name |> SwiftFormat.layerName,
   );
 
 let layerMemberExpression = (rootLayer, layer: Types.layer, statements) =>
   memberOrSelfExpression(layerNameOrSelf(rootLayer, layer), statements);
 
 let rec binaryExpressionList = (operator, items) =>
-  switch items {
+  switch (items) {
   | [] => Empty
   | [x] => x
   | [hd, ...tl] =>
     BinaryExpression({
       "left": hd,
       "operator": operator,
-      "right": binaryExpressionList(operator, tl)
+      "right": binaryExpressionList(operator, tl),
     })
   };

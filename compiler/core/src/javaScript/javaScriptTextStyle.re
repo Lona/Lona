@@ -2,7 +2,7 @@ open JavaScriptAst;
 
 let render = (colors, textStyles: TextStyle.file) => {
   let unwrapOptional = (f, a) =>
-    switch a {
+    switch (a) {
     | Some(value) => [f(value)]
     | None => []
     };
@@ -14,55 +14,55 @@ let render = (colors, textStyles: TextStyle.file) => {
         |> unwrapOptional(value => {
              let lonaValue: Types.lonaValue = {
                ltype: Types.stringType,
-               data: Js.Json.string(value)
+               data: Js.Json.string(value),
              };
              Property({
                "key": Identifier(["family"]),
-               "value": Literal(lonaValue)
+               "value": Literal(lonaValue),
              });
            }),
         lookup(style => style.fontWeight)
         |> unwrapOptional(value => {
              let lonaValue: Types.lonaValue = {
                ltype: Types.stringType,
-               data: Js.Json.string(value)
+               data: Js.Json.string(value),
              };
              Property({
                "key": Identifier(["fontWeight"]),
-               "value": Literal(lonaValue)
+               "value": Literal(lonaValue),
              });
            }),
         lookup(style => style.fontSize)
         |> unwrapOptional(value => {
              let lonaValue: Types.lonaValue = {
                ltype: Types.numberType,
-               data: Js.Json.number(value)
+               data: Js.Json.number(value),
              };
              Property({
                "key": Identifier(["fontSize"]),
-               "value": Literal(lonaValue)
+               "value": Literal(lonaValue),
              });
            }),
         lookup(style => style.lineHeight)
         |> unwrapOptional(value => {
              let lonaValue: Types.lonaValue = {
                ltype: Types.numberType,
-               data: Js.Json.number(value)
+               data: Js.Json.number(value),
              };
              Property({
                "key": Identifier(["lineHeight"]),
-               "value": Literal(lonaValue)
+               "value": Literal(lonaValue),
              });
            }),
         lookup(style => style.letterSpacing)
         |> unwrapOptional(value => {
              let lonaValue: Types.lonaValue = {
                ltype: Types.numberType,
-               data: Js.Json.number(value)
+               data: Js.Json.number(value),
              };
              Property({
                "key": Identifier(["letterSpacing"]),
-               "value": Literal(lonaValue)
+               "value": Literal(lonaValue),
              });
            }),
         lookup(style => style.color)
@@ -73,30 +73,30 @@ let render = (colors, textStyles: TextStyle.file) => {
                | None =>
                  let lonaValue: Types.lonaValue = {
                    ltype: Types.colorType,
-                   data: Js.Json.string(value)
+                   data: Js.Json.string(value),
                  };
                  Literal(lonaValue);
                };
              Property({"key": Identifier(["color"]), "value": value});
-           })
+           }),
       ]
       |> List.concat;
     Property({
       "key": Identifier([textStyle.id |> JavaScriptFormat.styleVariableName]),
-      "value": ObjectLiteral(variables)
+      "value": ObjectLiteral(variables),
     });
   };
   let doc =
     Program([
       ImportDeclaration({
         "source": "./colors",
-        "specifiers": [ImportDefaultSpecifier("colors")]
+        "specifiers": [ImportDefaultSpecifier("colors")],
       }),
       Empty,
       ExportDefaultDeclaration(
-        ObjectLiteral(textStyles.styles |> List.map(propertyDoc))
+        ObjectLiteral(textStyles.styles |> List.map(propertyDoc)),
       ),
-      Empty
+      Empty,
     ]);
   JavaScriptRender.toString(doc);
 };

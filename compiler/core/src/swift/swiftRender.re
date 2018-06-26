@@ -9,7 +9,7 @@ let renderFloat = value => {
 };
 
 let renderAccessLevelModifier = node =>
-  switch node {
+  switch (node) {
   | SwiftAst.PrivateModifier => s("private")
   | FileprivateModifier => s("fileprivate")
   | InternalModifier => s("internal")
@@ -18,13 +18,13 @@ let renderAccessLevelModifier = node =>
   };
 
 let renderMutationModifier = node =>
-  switch node {
+  switch (node) {
   | SwiftAst.MutatingModifier => s("mutating")
   | NonmutatingModifier => s("nonmutating")
   };
 
 let renderDeclarationModifier = node =>
-  switch node {
+  switch (node) {
   | SwiftAst.ClassModifier => s("class")
   | ConvenienceModifier => s("convenience")
   | DynamicModifier => s("dynamic")
@@ -46,7 +46,7 @@ let renderDeclarationModifier = node =>
   };
 
 let rec render = ast : Prettier.Doc.t('a) =>
-  switch ast {
+  switch (ast) {
   | SwiftAst.SwiftIdentifier(v) => s(v)
   | LiteralExpression(v) => renderLiteral(v)
   | MemberExpression(v) =>
@@ -60,10 +60,10 @@ let rec render = ast : Prettier.Doc.t('a) =>
       render(o##left)
       <+> s(" ")
       <+> s(o##operator)
-      <+> indent(line <+> render(o##right))
+      <+> indent(line <+> render(o##right)),
     )
   | PrefixExpression(o) =>
-    switch o##expression {
+    switch (o##expression) {
     | LiteralExpression(_)
     | SwiftIdentifier(_)
     | MemberExpression(_) => s(o##operator) <+> render(o##expression)
@@ -74,7 +74,7 @@ let rec render = ast : Prettier.Doc.t('a) =>
         <+> softline
         <+> render(o##expression)
         <+> softline
-        <+> s(")")
+        <+> s(")"),
       )
     }
   | TryExpression(o) =>
@@ -91,11 +91,11 @@ let rec render = ast : Prettier.Doc.t('a) =>
       o##modifier != None ?
         concat([
           o##modifier |> Render.renderOptional(renderAccessLevelModifier),
-          line
+          line,
         ]) :
         empty;
     let maybeInherits =
-      switch o##inherits {
+      switch (o##inherits) {
       | [] => empty
       | typeAnnotations =>
         s(": ")
@@ -113,14 +113,14 @@ let rec render = ast : Prettier.Doc.t('a) =>
           s(o##name),
           maybeInherits,
           line,
-          s("{")
-        ])
+          s("{"),
+        ]),
       );
     let closing = concat([hardline, s("}")]);
     concat([
       opening,
       o##body |> List.map(render) |> Render.prefixAll(hardline) |> indent,
-      closing
+      closing,
     ]);
   | ExtensionDeclaration(o) =>
     /* TODO: Where */
@@ -128,11 +128,11 @@ let rec render = ast : Prettier.Doc.t('a) =>
       o##modifier != None ?
         concat([
           o##modifier |> Render.renderOptional(renderAccessLevelModifier),
-          line
+          line,
         ]) :
         empty;
     let maybeProtocols =
-      switch o##protocols {
+      switch (o##protocols) {
       | [] => empty
       | typeAnnotations =>
         s(": ")
@@ -149,25 +149,25 @@ let rec render = ast : Prettier.Doc.t('a) =>
           s(o##name),
           maybeProtocols,
           line,
-          s("{")
-        ])
+          s("{"),
+        ]),
       );
     let closing = concat([hardline, s("}")]);
     concat([
       opening,
       o##body |> List.map(render) |> Render.prefixAll(hardline) |> indent,
-      closing
+      closing,
     ]);
   | EnumDeclaration(o) =>
     let maybeModifier =
       o##modifier != None ?
         concat([
           o##modifier |> Render.renderOptional(renderAccessLevelModifier),
-          line
+          line,
         ]) :
         empty;
     let maybeInherits =
-      switch o##inherits {
+      switch (o##inherits) {
       | [] => empty
       | typeAnnotations =>
         s(": ")
@@ -184,14 +184,14 @@ let rec render = ast : Prettier.Doc.t('a) =>
           s(o##name),
           maybeInherits,
           line,
-          s("{")
-        ])
+          s("{"),
+        ]),
       );
     let closing = concat([hardline, s("}")]);
     concat([
       opening,
       o##body |> List.map(render) |> Render.prefixAll(hardline) |> indent,
-      closing
+      closing,
     ]);
   | ConstantDeclaration(o) =>
     let modifiers =
@@ -204,7 +204,7 @@ let rec render = ast : Prettier.Doc.t('a) =>
       List.length(o##modifiers) > 0 ? s(" ") : empty,
       s("let "),
       renderPattern(o##pattern),
-      maybeInit
+      maybeInit,
     ];
     group(concat(parts));
   | VariableDeclaration(o) =>
@@ -215,14 +215,16 @@ let rec render = ast : Prettier.Doc.t('a) =>
         empty : concat([s(" = "), o##init |> Render.renderOptional(render)]);
     let maybeBlock =
       o##block
-      |> Render.renderOptional(block => line <+> renderInitializerBlock(block));
+      |> Render.renderOptional(block =>
+           line <+> renderInitializerBlock(block)
+         );
     let parts = [
       modifiers,
       List.length(o##modifiers) > 0 ? s(" ") : empty,
       s("var "),
       renderPattern(o##pattern),
       maybeInit,
-      maybeBlock
+      maybeBlock,
     ];
     group(concat(parts));
   | Parameter(o) =>
@@ -243,12 +245,13 @@ let rec render = ast : Prettier.Doc.t('a) =>
       o##failable |> Render.renderOptional(s),
       s("("),
       indent(
-        softline <+> join(s(",") <+> line, o##parameters |> List.map(render))
+        softline
+        <+> join(s(",") <+> line, o##parameters |> List.map(render)),
       ),
       s(")"),
       o##throws ? s(" throws") : empty,
       line,
-      render(CodeBlock({"statements": o##body}))
+      render(CodeBlock({"statements": o##body})),
     ];
     group(concat(parts));
   | DeinitializerDeclaration(body) =>
@@ -260,49 +263,50 @@ let rec render = ast : Prettier.Doc.t('a) =>
       concat([
         group(
           concat([
-            o##modifiers |> List.map(renderDeclarationModifier) |> join(s(" ")),
+            o##modifiers
+            |> List.map(renderDeclarationModifier)
+            |> join(s(" ")),
             List.length(o##modifiers) > 0 ? s(" ") : empty,
             s("func "),
             s(o##name),
             s("("),
             indent(
               softline
-              <+> join(s(",") <+> line, o##parameters |> List.map(render))
+              <+> join(s(",") <+> line, o##parameters |> List.map(render)),
             ),
             s(")"),
             o##result |> Render.renderOptional(renderResult),
-            o##throws ? s(" throws") : empty
-          ])
+            o##throws ? s(" throws") : empty,
+          ]),
         ),
         line,
-        render(CodeBlock({"statements": o##body}))
-      ])
+        render(CodeBlock({"statements": o##body})),
+      ]),
     );
   | ImportDeclaration(v) => group(concat([s("import"), line, s(v)]))
   | IfStatement(o) =>
-    group
+    group(
       /* Line break here due to personal preference */
       /* hardline <+>  */
-      (
-        s("if")
-        <+> line
-        <+> render(o##condition)
-        <+> line
-        <+> render(CodeBlock({"statements": o##block}))
-      )
+      s("if")
+      <+> line
+      <+> render(o##condition)
+      <+> line
+      <+> render(CodeBlock({"statements": o##block})),
+    )
   | ReturnStatement(value) =>
     group(s("return ") <+> (value |> Render.renderOptional(render)))
   | FunctionCallArgument(o) =>
-    switch o##name {
+    switch (o##name) {
     | None => group(concat([render(o##value)]))
     | Some(name) =>
       group(concat([render(name), s(":"), line, render(o##value)]))
     }
   | FunctionCallExpression(o) =>
     let endsWithLiteral =
-      switch o##arguments {
+      switch (o##arguments) {
       | [FunctionCallArgument(args)] =>
-        switch args##value {
+        switch (args##value) {
         | LiteralExpression(_) => false
         | _ => true
         }
@@ -311,18 +315,18 @@ let rec render = ast : Prettier.Doc.t('a) =>
     let arguments =
       concat([
         endsWithLiteral ? softline : empty,
-        o##arguments |> List.map(render) |> join(concat([s(","), line]))
+        o##arguments |> List.map(render) |> join(concat([s(","), line])),
       ]);
     group(
       concat([
         render(o##name),
         s("("),
         endsWithLiteral ? indent(arguments) : arguments,
-        s(")")
-      ])
+        s(")"),
+      ]),
     );
   | EnumCase(o) =>
-    switch o##value {
+    switch (o##value) {
     | None => group(s("enum ") <+> render(o##name))
     | Some(value) =>
       group(s("enum ") <+> render(o##name) <+> s(" = ") <+> render(value))
@@ -331,25 +335,27 @@ let rec render = ast : Prettier.Doc.t('a) =>
   | LineComment(v) => s("// " ++ v)
   | DocComment(v) =>
     let comment = v |> Js.String.match([%re "/.{1,100}/g"]);
-    switch comment {
+    switch (comment) {
     | None => s("///")
     | Some(chunks) =>
       s(
         chunks
         |> Js.Array.map(chunk => "/// " ++ chunk)
-        |> Js.Array.joinWith("\n")
+        |> Js.Array.joinWith("\n"),
       )
     };
   | LineEndComment(o) =>
     /* concat([render(o##line), lineSuffix(s(" // " ++ o##comment)), lineSuffixBoundary]) */
     concat([render(o##line), lineSuffix(s(" // " ++ o##comment))])
   | CodeBlock(o) =>
-    switch o##statements {
+    switch (o##statements) {
     | [] => s("{}")
     /* | [statement] => s("{") <+> line <+> render(statement) <+> line <+> s("}") */
     | statements =>
       s("{")
-      <+> indent(Render.prefixAll(hardline, statements |> List.map(render)))
+      <+> indent(
+            Render.prefixAll(hardline, statements |> List.map(render)),
+          )
       <+> hardline
       <+> s("}")
     }
@@ -361,7 +367,7 @@ let rec render = ast : Prettier.Doc.t('a) =>
     join(concat([hardline]), o##statements |> List.map(render)) <+> hardline
   }
 and renderLiteral = (node: SwiftAst.literal) =>
-  switch node {
+  switch (node) {
   | Nil => s("nil")
   | Boolean(value) => s(value ? "true" : "false")
   | Integer(value) => s(string_of_int(value))
@@ -370,7 +376,7 @@ and renderLiteral = (node: SwiftAst.literal) =>
     concat([
       s("\""),
       s(value |> Js.String.replaceByRe([%re "/\"/g"], "\\\"")),
-      s("\"")
+      s("\""),
     ])
   | Color(value) =>
     let rgba = Css.parseColorDefault("black", value);
@@ -378,27 +384,32 @@ and renderLiteral = (node: SwiftAst.literal) =>
       concat([s("red: "), renderFloat(rgba.r /. 255.0)]),
       concat([s("green: "), renderFloat(rgba.g /. 255.0)]),
       concat([s("blue: "), renderFloat(rgba.b /. 255.0)]),
-      concat([s("alpha: "), renderFloat(rgba.a)])
+      concat([s("alpha: "), renderFloat(rgba.a)]),
     ];
     fixedWidth(
       concat([s("#colorLiteral("), join(s(", "), values), s(")")]),
-      2
+      2,
     );
   | Image(name) =>
     /* #imageLiteral(resourceName: "name") */
     fixedWidth(
       concat([s("#imageLiteral(resourceName: \""), s(name), s("\")")]),
-      2
+      2,
     )
   | Array(body) =>
     let maybeLine = List.length(body) > 0 ? softline : s("");
     let body = body |> List.map(render) |> join(concat([s(","), line]));
     group(
-      concat([s("["), indent(concat([maybeLine, body])), maybeLine, s("]")])
+      concat([
+        s("["),
+        indent(concat([maybeLine, body])),
+        maybeLine,
+        s("]"),
+      ]),
     );
   }
 and renderTypeAnnotation = (node: SwiftAst.typeAnnotation) =>
-  switch node {
+  switch (node) {
   | TypeName(value) => s(value)
   | TypeIdentifier(o) =>
     group(
@@ -407,8 +418,8 @@ and renderTypeAnnotation = (node: SwiftAst.typeAnnotation) =>
         line,
         s("."),
         line,
-        renderTypeAnnotation(o##member)
-      ])
+        renderTypeAnnotation(o##member),
+      ]),
     )
   | ArrayType(o) =>
     group(concat([s("["), renderTypeAnnotation(o##element), s("]")]))
@@ -419,18 +430,18 @@ and renderTypeAnnotation = (node: SwiftAst.typeAnnotation) =>
         renderTypeAnnotation(o##key),
         s(": "),
         renderTypeAnnotation(o##value),
-        s("]")
-      ])
+        s("]"),
+      ]),
     )
   | OptionalType(v) => group(concat([renderTypeAnnotation(v), s("?")]))
   | TypeInheritanceList(o) =>
     group(o##list |> List.map(renderTypeAnnotation) |> join(s(", ")))
   }
 and renderPattern = node =>
-  switch node {
+  switch (node) {
   | WildcardPattern => s("_")
   | IdentifierPattern(o) =>
-    switch o##annotation {
+    switch (o##annotation) {
     | None => render(o##identifier)
     | Some(typeAnnotation) =>
       render(o##identifier)
@@ -444,19 +455,19 @@ and renderPattern = node =>
       concat([
         s("("),
         o##elements |> List.map(renderPattern) |> join(s(", ")),
-        s(")")
-      ])
+        s(")"),
+      ]),
     )
   | OptionalPattern(o) => concat([renderPattern(o##value), s("?")])
   | ExpressionPattern(o) => render(o##value)
   }
 and renderInitializerBlock = (node: SwiftAst.initializerBlock) =>
-  switch node {
+  switch (node) {
   | WillSetDidSetBlock(o) =>
     /* Special case single-statement willSet/didSet and render them in a single line
        since they are common in our generated code and are easier to read than multiline */
     let renderStatements = statements =>
-      switch statements {
+      switch (statements) {
       | [only] => s("{ ") <+> render(only) <+> s(" }")
       | _ => render(CodeBlock({"statements": statements}))
       };
@@ -492,7 +503,7 @@ let toString = ast =>
       let printerOptions = {
         "printWidth": 120,
         "tabWidth": 2,
-        "useTabs": false
+        "useTabs": false,
       };
       Prettier.Doc.Printer.printDocToString(doc, printerOptions)##formatted;
     }

@@ -5,7 +5,7 @@ type cssColor = {
   r: float,
   g: float,
   b: float,
-  a: float
+  a: float,
 };
 
 let parseColor = (value: string) =>

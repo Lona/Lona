@@ -2,7 +2,7 @@ type t = {
   id: string,
   name: string,
   value: string,
-  comment: option(string)
+  comment: option(string),
 };
 
 type colorValue =
@@ -16,7 +16,7 @@ let parseFile = content => {
     id: field("id", string, json),
     name: field("name", string, json),
     value: field("value", string, json),
-    comment: json |> optional(field("comment", string))
+    comment: json |> optional(field("comment", string)),
   };
   field("colors", list(parseColor), parsed);
 };
