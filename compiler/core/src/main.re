@@ -67,6 +67,7 @@ let target =
   | "js" => Types.JavaScript
   | "swift" => Types.Swift
   | "xml" => Types.Xml
+  | "designlint" => Types.DesignLint
   | _ => exit("Unrecognized target")
   };
 
@@ -87,12 +88,14 @@ let concat = (base, addition) => Path.join([|base, addition|]);
 
 let getTargetExtension =
   fun
+  | Types.DesignLint => ""
   | Types.JavaScript => ".js"
   | Swift => ".swift"
   | Xml => ".xml";
 
 let formatFilename = (target, filename) =>
-  switch target {
+  switch (target) {
+  | Types.DesignLint
   | Types.Xml
   | Types.JavaScript => Format.camelCase(filename)
   | Types.Swift => Format.upperFirst(Format.camelCase(filename))
@@ -101,7 +104,8 @@ let formatFilename = (target, filename) =>
 let targetExtension = getTargetExtension(target);
 
 let renderColors = (target, colors) =>
-  switch target {
+  switch (target) {
+  | Types.DesignLint => DesignLint.Color.render(colors)
   | Types.Swift => Swift.Color.render(options, swiftOptions, colors)
   | JavaScript => JavaScript.Color.render(colors)
   | Xml => Xml.Color.render(colors)

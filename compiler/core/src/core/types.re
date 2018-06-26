@@ -1,4 +1,5 @@
 type compilerTarget =
+  | DesignLint
   | JavaScript
   | Swift
   | Xml;
