@@ -113,6 +113,7 @@
 		30C8BC2F1EDB749600B99F1B /* ParameterListView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 30C8BC2E1EDB749600B99F1B /* ParameterListView.swift */; };
 		30C8BC321EDB758C00B99F1B /* Canvas.swift in Sources */ = {isa = PBXBuildFile; fileRef = 30C8BC311EDB758C00B99F1B /* Canvas.swift */; };
 		30C8BC361EDB7AC400B99F1B /* ParameterListEditorView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 30C8BC351EDB7AC400B99F1B /* ParameterListEditorView.swift */; };
+		30CC1B1320EA91FA00613E51 /* NSDataExtensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 30CC1B1220EA91FA00613E51 /* NSDataExtensions.swift */; };
 		30CE47811ED73FC800BBF716 /* TextField.swift in Sources */ = {isa = PBXBuildFile; fileRef = 30CE47801ED73FC800BBF716 /* TextField.swift */; };
 		30CE47CD1ED776FA00BBF716 /* TextStylePickerButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = 30CE47CC1ED776FA00BBF716 /* TextStylePickerButton.swift */; };
 		30CE47CF1ED77C0200BBF716 /* TextStyleRowView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 30CE47CE1ED77C0200BBF716 /* TextStyleRowView.swift */; };
@@ -299,6 +300,7 @@
 		30C8BC2E1EDB749600B99F1B /* ParameterListView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ParameterListView.swift; sourceTree = "<group>"; };
 		30C8BC311EDB758C00B99F1B /* Canvas.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Canvas.swift; sourceTree = "<group>"; };
 		30C8BC351EDB7AC400B99F1B /* ParameterListEditorView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ParameterListEditorView.swift; sourceTree = "<group>"; };
+		30CC1B1220EA91FA00613E51 /* NSDataExtensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NSDataExtensions.swift; sourceTree = "<group>"; };
 		30CE47801ED73FC800BBF716 /* TextField.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TextField.swift; sourceTree = "<group>"; };
 		30CE47CC1ED776FA00BBF716 /* TextStylePickerButton.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TextStylePickerButton.swift; sourceTree = "<group>"; };
 		30CE47CE1ED77C0200BBF716 /* TextStyleRowView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TextStyleRowView.swift; sourceTree = "<group>"; };
@@ -561,6 +563,7 @@
 				3094DFE21F68D19C00E5C7F0 /* CALayerExtensions.swift */,
 				30F4FD541F76B9DB0048691C /* DictionaryExtensions.swift */,
 				30A3F13D1F300294004C7631 /* NSColorExtensions.swift */,
+				30CC1B1220EA91FA00613E51 /* NSDataExtensions.swift */,
 				306D2FEF1F847DCB00907B4E /* NSImageExtensions.swift */,
 				30D9B40D1F79BADC00C8A3D4 /* NSMenuExtensions.swift */,
 				3094DFE91F6AECB300E5C7F0 /* NSOutlineViewExtensions.swift */,
@@ -1135,6 +1138,7 @@
 				6B4DFCEB20A75B900048BB43 /* ColorPreviewCard.swift in Sources */,
 				30DE88091FBA18A600D62A50 /* NSPopoverExtensions.swift in Sources */,
 				307D44102097DC17004B57F5 /* TabIcon.swift in Sources */,
+				30CC1B1320EA91FA00613E51 /* NSDataExtensions.swift in Sources */,
 				30EFC9561EF1AA0B0087711D /* StringExtensions.swift in Sources */,
 				309777741F2BB75B004C8975 /* CSUserPreferences.swift in Sources */,
 				3094DFE31F68D19C00E5C7F0 /* CALayerExtensions.swift in Sources */,
