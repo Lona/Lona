@@ -1,0 +1,80 @@
+{
+  "devices" : [
+    {
+      "height" : 100,
+      "heightMode" : "At Least",
+      "name" : "iPhone SE",
+      "width" : 320
+    },
+    {
+      "height" : 100,
+      "heightMode" : "At Least",
+      "name" : "iPhone 7",
+      "width" : 375
+    },
+    {
+      "height" : 100,
+      "heightMode" : "At Least",
+      "name" : "iPhone 7+",
+      "width" : 414
+    }
+  ],
+  "examples" : [
+    {
+      "name" : "Default",
+      "params" : {
+
+      }
+    }
+  ],
+  "logic" : [
+
+  ],
+  "params" : [
+    {
+      "name" : "titleComponent",
+      "type" : "Component"
+    },
+    {
+      "name" : "subtitleComponent",
+      "type" : "Component"
+    }
+  ],
+  "root" : {
+    "children" : [
+      {
+        "id" : "titleComponent",
+        "params" : {
+          "parameterName" : "titleComponent"
+        },
+        "type" : "Lona:Children"
+      },
+      {
+        "id" : "View 1",
+        "params" : {
+          "backgroundColor" : "#D8D8D8",
+          "height" : 8,
+          "width" : 0
+        },
+        "type" : "Lona:View"
+      },
+      {
+        "id" : "subtitleComponent",
+        "params" : {
+          "parameterName" : "subtitleComponent"
+        },
+        "type" : "Lona:Children"
+      }
+    ],
+    "id" : "View",
+    "params" : {
+      "alignSelf" : "stretch",
+      "backgroundColor" : "lightblue50",
+      "paddingBottom" : 24,
+      "paddingLeft" : 24,
+      "paddingRight" : 24,
+      "paddingTop" : 24
+    },
+    "type" : "Lona:View"
+  }
+}

@@ -106,6 +106,7 @@ final class CSCase: DataNodeCopying {
         switch caseType {
         case .entry(let caseItem):
             var data = CSData.Object([
+                "id": caseItem.name.sanitizedFileName.toData(),
                 "name": caseItem.name.toData(),
                 "params": caseItem.value
                 ])

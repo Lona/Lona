@@ -817,10 +817,24 @@ class CanvasView: NSView {
 
             return self.configure(layer: componentLayer.component.rootLayer, with: componentConfig)
         case .builtIn(.children):
-            if let componentChildren = config.configuredChildren {
-                return componentChildren
-            // Show children element directly when viewing parent element file
+            guard let parameterLayer = layer as? CSParameterLayer else { return [] }
+
+            if parameterLayer.parameterName == "children" {
+                if let componentChildren = config.configuredChildren {
+                    return componentChildren
+                // Show children element directly when viewing parent element file
+                } else {
+                    return [ConfiguredLayer(layer: layer, config: config, children: children)]
+                }
             } else {
+                let argument = config.scope.getValueAt(keyPath: ["parameters", parameterLayer.parameterName]).data
+
+                guard let layer = CSLayer.deserialize(argument) else { return [] }
+
+                layer.name = parameterLayer.parameterName
+
+                config.scope.set(keyPath: ["layers", parameterLayer.parameterName], to: layer.value())
+
                 return [ConfiguredLayer(layer: layer, config: config, children: children)]
             }
         case .builtIn:

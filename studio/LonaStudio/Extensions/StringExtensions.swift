@@ -117,3 +117,10 @@ extension String {
         return relativePath
     }
 }
+
+extension String {
+    var sanitizedFileName: String {
+        let characterSet = NSCharacterSet(charactersIn: " \"\\/?<>:+*%|")
+        return components(separatedBy: characterSet as CharacterSet).joined(separator: "_")
+    }
+}
