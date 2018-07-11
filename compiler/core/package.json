@@ -35,11 +35,10 @@
   },
   "homepage": "https://github.com/airbnb/Lona",
   "devDependencies": {
-    "bs-batteries": "0.0.14",
     "bs-glob": "reasonml-community/bs-glob",
     "bs-json": "^1.0.1",
     "bs-node": "github:buckletypes/bs-node",
-    "bs-platform": "^2.1.0",
+    "bs-platform": "^3.1.5",
     "copy-webpack-plugin": "^4.5.1",
     "csscolorparser": "^1.0.3",
     "fs-extra": "^5.0.0",

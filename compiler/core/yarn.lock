@@ -332,13 +332,9 @@ browserify-zlib@^0.2.0:
   dependencies:
     pako "~1.0.5"
 
-bs-batteries@0.0.14:
-  version "0.0.14"
-  resolved "https://registry.yarnpkg.com/bs-batteries/-/bs-batteries-0.0.14.tgz#51536a489615087c05774525c38ab56b4d45df4c"
-
 bs-glob@reasonml-community/bs-glob:
-  version "0.1.0"
-  resolved "https://codeload.github.com/reasonml-community/bs-glob/tar.gz/96cc8573edfd59e104ba929dc739b51413c6716e"
+  version "0.1.1"
+  resolved "https://codeload.github.com/reasonml-community/bs-glob/tar.gz/5a6f38370d1c0abd12480b1f7bbcbd577dd45bf9"
   dependencies:
     glob "^7.1.2"
 
@@ -350,9 +346,9 @@ bs-json@^1.0.1:
   version "0.0.1"
   resolved "https://codeload.github.com/buckletypes/bs-node/tar.gz/2feff70afcead1f32c5ae9d49f49977dd30c5e2c"
 
-bs-platform@^2.1.0:
-  version "2.1.0"
-  resolved "https://registry.yarnpkg.com/bs-platform/-/bs-platform-2.1.0.tgz#63560ff8f7142c9c0631559df1c35590b9f6d8b2"
+bs-platform@^3.1.5:
+  version "3.1.5"
+  resolved "https://registry.yarnpkg.com/bs-platform/-/bs-platform-3.1.5.tgz#fb34ee4702bc9163848d5537096c4f31ebaeed40"
 
 buffer-from@^1.0.0:
   version "1.0.0"
