@@ -305,7 +305,7 @@ function defaultValueForLonaType(framework, _, textStyles, _ltype) {
                 _ltype = /* Reference */Block.__(0, [typeName.replace("?", "")]);
                 continue ;
               } else {
-                return /* SwiftIdentifier */Block.__(8, [typeName]);
+                return /* LiteralExpression */Block.__(0, [/* Nil */0]);
               }
           }
           if (exit === 1) {

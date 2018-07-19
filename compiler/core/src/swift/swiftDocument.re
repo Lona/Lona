@@ -226,7 +226,7 @@ let rec defaultValueForLonaType =
         textStyles,
         Reference(Js.String.replace("?", "", value))
       )
-    | _ => SwiftIdentifier(typeName)
+    | _ => LiteralExpression(Nil)
     }
   | Function(_) => SwiftIdentifier("PLACEHOLDER")
   | Named(alias, _) =>
