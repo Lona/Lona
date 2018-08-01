@@ -26,6 +26,7 @@ let isFunctionParameter = (param: Types.parameter) =>
 
 let generate =
     (
+      config: Config.t,
       options: Options.options,
       swiftOptions: SwiftOptions.options,
       name,
@@ -112,17 +113,25 @@ let generate =
      and never assigned in logic */
   /* (isFunctionParameter(parameter) && !isParameterAssigned(parameter)) ?
      None : */
-  let getLayerTypeName = layerType =>
-    switch (swiftOptions.framework, layerType) {
-    | (UIKit, Types.View) => "UIView"
-    | (UIKit, Text) => "UILabel"
-    | (UIKit, Image) => "UIImageView"
-    | (AppKit, Types.View) => "NSBox"
-    | (AppKit, Text) => "NSTextField"
-    | (AppKit, Image) => "NSImageView"
-    | (_, Component(name)) => name
-    | _ => "TypeUnknown"
-    };
+  let pluginContext: Plugin.context = {
+    "target": "swift",
+    "framework": SwiftOptions.frameworkToString(swiftOptions.framework)
+  };
+  let getLayerTypeName = layerType => {
+    let typeName =
+      switch (swiftOptions.framework, layerType) {
+      | (UIKit, Types.View) => "UIView"
+      | (UIKit, Text) => "UILabel"
+      | (UIKit, Image) => "UIImageView"
+      | (AppKit, Types.View) => "NSBox"
+      | (AppKit, Text) => "NSTextField"
+      | (AppKit, Image) => "NSImageView"
+      | (_, Component(name)) => name
+      | _ => "TypeUnknown"
+      };
+    typeName
+    |> Plugin.applyTransformTypePlugins(config.plugins, pluginContext, name);
+  };
   let getLayerInitCall = (layer: Types.layer) => {
     let typeName = SwiftIdentifier(layer.typeName |> getLayerTypeName);
     switch (swiftOptions.framework, layer.typeName) {

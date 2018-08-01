@@ -178,6 +178,8 @@ let convertComponent = filename => {
     let textStylesFilePath = Path.join([|workspace, "textStyles.json"|]);
     let textStylesFile = Node.Fs.readFileSync(textStylesFilePath, `utf8);
     let textStyles = TextStyle.parseFile(textStylesFile);
+    let configInputPath = Path.join([|workspace, "compiler.js"|]);
+    let config = Config.loadConfig(configInputPath);
     switch target {
     | Types.JavaScript =>
       JavaScript.Component.generate(
@@ -204,6 +206,7 @@ let convertComponent = filename => {
     | Swift =>
       let result =
         Swift.Component.generate(
+          config,
           options,
           swiftOptions,
           name,

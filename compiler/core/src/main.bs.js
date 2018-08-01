@@ -16,6 +16,7 @@ var LodashCamelcase = require("lodash.camelcase");
 var LodashUpperfirst = require("lodash.upperfirst");
 var Color$LonaCompilerCore = require("./core/color.bs.js");
 var Caml_builtin_exceptions = require("bs-platform/lib/js/caml_builtin_exceptions.js");
+var Config$LonaCompilerCore = require("./core/config.bs.js");
 var Decode$LonaCompilerCore = require("./core/decode.bs.js");
 var XmlColor$LonaCompilerCore = require("./xml/xmlColor.bs.js");
 var TextStyle$LonaCompilerCore = require("./core/textStyle.bs.js");
@@ -268,6 +269,8 @@ function convertComponent(filename) {
     var textStylesFilePath = Path.join(workspace, "textStyles.json");
     var textStylesFile = Fs.readFileSync(textStylesFilePath, "utf8");
     var textStyles = TextStyle$LonaCompilerCore.parseFile(textStylesFile);
+    var configInputPath = Path.join(workspace, "compiler.js");
+    var config = Config$LonaCompilerCore.loadConfig(configInputPath);
     switch (target) {
       case 0 : 
           return JavaScriptRender$LonaCompilerCore.toString(JavaScriptComponent$LonaCompilerCore.generate(javaScriptOptions, name, Path.relative(Path.dirname(filename), colorsFilePath), Path.relative(Path.dirname(filename), textStylesFilePath), colors, textStyles, (function (param) {
@@ -278,7 +281,7 @@ function convertComponent(filename) {
                             return getAssetRelativePath(workspace, name, param);
                           }), parsed));
       case 1 : 
-          return SwiftRender$LonaCompilerCore.toString(SwiftComponent$LonaCompilerCore.generate(options, swiftOptions, name, colors, textStyles, (function (param) {
+          return SwiftRender$LonaCompilerCore.toString(SwiftComponent$LonaCompilerCore.generate(config, options, swiftOptions, name, colors, textStyles, (function (param) {
                             return findComponent(workspace, param);
                           }), parsed));
       case 2 : 
