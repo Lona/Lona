@@ -12,11 +12,13 @@ var Logic$LonaCompilerCore = require("../core/logic.bs.js");
 var Types$LonaCompilerCore = require("../core/types.bs.js");
 var Caml_builtin_exceptions = require("bs-platform/lib/js/caml_builtin_exceptions.js");
 var Decode$LonaCompilerCore = require("../core/decode.bs.js");
+var Plugin$LonaCompilerCore = require("../core/plugin.bs.js");
 var Constraint$LonaCompilerCore = require("../utils/constraint.bs.js");
 var SwiftLogic$LonaCompilerCore = require("./swiftLogic.bs.js");
 var SwiftFormat$LonaCompilerCore = require("./swiftFormat.bs.js");
 var ParameterKey$LonaCompilerCore = require("../core/parameterKey.bs.js");
 var ParameterMap$LonaCompilerCore = require("../containers/parameterMap.bs.js");
+var SwiftOptions$LonaCompilerCore = require("./swiftOptions.bs.js");
 var SwiftDocument$LonaCompilerCore = require("./swiftDocument.bs.js");
 var AppkitPressable$LonaCompilerCore = require("./appkit/appkitPressable.bs.js");
 var SwiftHelperClass$LonaCompilerCore = require("./swiftHelperClass.bs.js");
@@ -25,7 +27,7 @@ function isFunctionParameter(param) {
   return Caml_obj.caml_equal(param[/* ltype */1], Types$LonaCompilerCore.handlerType);
 }
 
-function generate(options, swiftOptions, name, colors, textStyles, getComponent, json) {
+function generate(config, options, swiftOptions, name, colors, textStyles, getComponent, json) {
   var rootLayer = Decode$LonaCompilerCore.Component[/* rootLayer */1](getComponent, json);
   var nonRootLayers = List.tl(Layer$LonaCompilerCore.flatten(rootLayer));
   var logic = Decode$LonaCompilerCore.Component[/* logic */2](json);
@@ -76,43 +78,57 @@ function generate(options, swiftOptions, name, colors, textStyles, getComponent,
                     }]]
               }]);
   };
+  var pluginContext = {
+    target: "swift",
+    framework: SwiftOptions$LonaCompilerCore.frameworkToString(swiftOptions[/* framework */0])
+  };
   var getLayerTypeName = function (layerType) {
     var match = swiftOptions[/* framework */0];
+    var typeName;
     if (match) {
       if (typeof layerType === "number") {
         switch (layerType) {
           case 0 : 
-              return "NSBox";
+              typeName = "NSBox";
+              break;
           case 1 : 
-              return "NSTextField";
+              typeName = "NSTextField";
+              break;
           case 2 : 
-              return "NSImageView";
+              typeName = "NSImageView";
+              break;
           case 3 : 
           case 4 : 
           case 5 : 
-              return "TypeUnknown";
+              typeName = "TypeUnknown";
+              break;
           
         }
       } else {
-        return layerType[0];
+        typeName = layerType[0];
       }
     } else if (typeof layerType === "number") {
       switch (layerType) {
         case 0 : 
-            return "UIView";
+            typeName = "UIView";
+            break;
         case 1 : 
-            return "UILabel";
+            typeName = "UILabel";
+            break;
         case 2 : 
-            return "UIImageView";
+            typeName = "UIImageView";
+            break;
         case 3 : 
         case 4 : 
         case 5 : 
-            return "TypeUnknown";
+            typeName = "TypeUnknown";
+            break;
         
       }
     } else {
-      return layerType[0];
+      typeName = layerType[0];
     }
+    return Plugin$LonaCompilerCore.applyTransformTypePlugins(config[/* plugins */0], pluginContext, name, typeName);
   };
   var getLayerInitCall = function (layer) {
     var typeName = /* SwiftIdentifier */Block.__(8, [getLayerTypeName(layer[/* typeName */0])]);
