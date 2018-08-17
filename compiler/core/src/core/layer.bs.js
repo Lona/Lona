@@ -5,7 +5,6 @@ var $$Map = require("bs-platform/lib/js/map.js");
 var List = require("bs-platform/lib/js/list.js");
 var Block = require("bs-platform/lib/js/block.js");
 var Curry = require("bs-platform/lib/js/curry.js");
-var Caml_obj = require("bs-platform/lib/js/caml_obj.js");
 var Pervasives = require("bs-platform/lib/js/pervasives.js");
 var Json_decode = require("bs-json/src/Json_decode.js");
 var Caml_primitive = require("bs-platform/lib/js/caml_primitive.js");
@@ -124,76 +123,34 @@ function isPrimitiveTypeName(typeName) {
   }
 }
 
-var styleParamKeys = /* :: */[
-  /* AlignItems */6,
-  /* :: */[
-    /* AlignSelf */7,
-    /* :: */[
-      /* Flex */9,
-      /* :: */[
-        /* FlexDirection */10,
-        /* :: */[
-          /* TextStyle */3,
-          /* :: */[
-            /* JustifyContent */11,
-            /* :: */[
-              /* MarginTop */12,
-              /* :: */[
-                /* MarginRight */13,
-                /* :: */[
-                  /* MarginBottom */14,
-                  /* :: */[
-                    /* MarginLeft */15,
-                    /* :: */[
-                      /* PaddingTop */16,
-                      /* :: */[
-                        /* PaddingRight */17,
-                        /* :: */[
-                          /* PaddingBottom */18,
-                          /* :: */[
-                            /* PaddingLeft */19,
-                            /* :: */[
-                              /* Width */23,
-                              /* :: */[
-                                /* Height */24,
-                                /* :: */[
-                                  /* BackgroundColor */8,
-                                  /* :: */[
-                                    /* BorderColor */22,
-                                    /* :: */[
-                                      /* BorderWidth */21,
-                                      /* :: */[
-                                        /* TextAlign */2,
-                                        /* :: */[
-                                          /* Pressed */25,
-                                          /* :: */[
-                                            /* Hovered */26,
-                                            /* :: */[
-                                              /* OnPress */27,
-                                              /* [] */0
-                                            ]
-                                          ]
-                                        ]
-                                      ]
-                                    ]
-                                  ]
-                                ]
-                              ]
-                            ]
-                          ]
-                        ]
-                      ]
-                    ]
-                  ]
-                ]
-              ]
-            ]
-          ]
-        ]
-      ]
-    ]
-  ]
-];
+function getParameterCategory(x) {
+  if (typeof x === "number") {
+    if (x >= 25) {
+      if (x >= 27) {
+        return /* Prop */1;
+      } else {
+        return /* Meta */2;
+      }
+    } else if (x >= 6) {
+      return /* Style */0;
+    } else {
+      switch (x) {
+        case 0 : 
+            return /* Meta */2;
+        case 2 : 
+        case 3 : 
+            return /* Style */0;
+        case 1 : 
+        case 4 : 
+        case 5 : 
+            return /* Prop */1;
+        
+      }
+    }
+  } else {
+    return /* Prop */1;
+  }
+}
 
 function flatten(layer) {
   var inner = function (acc, layer) {
@@ -452,7 +409,7 @@ function getInsets(prefix, layer) {
           Caml_builtin_exceptions.match_failure,
           [
             "layer.re",
-            187,
+            205,
             6
           ]
         ];
@@ -552,15 +509,13 @@ function logicAssignmentsFromLayerParameters(layer) {
   return layerMap[0];
 }
 
-function parameterIsStyle(name) {
-  return List.exists((function (key) {
-                return Caml_obj.caml_equal(key, name);
-              }), styleParamKeys);
+function parameterIsStyle(key) {
+  return getParameterCategory(key) === /* Style */0;
 }
 
 function splitParamsMap(params) {
   return Curry._2(ParameterMap$LonaCompilerCore.partition, (function (key, _) {
-                return parameterIsStyle(key);
+                return getParameterCategory(key) === /* Style */0;
               }), params);
 }
 
@@ -628,7 +583,7 @@ function getTypeNames(rootLayer) {
 
 exports.LayerMap = LayerMap;
 exports.isPrimitiveTypeName = isPrimitiveTypeName;
-exports.styleParamKeys = styleParamKeys;
+exports.getParameterCategory = getParameterCategory;
 exports.flatten = flatten;
 exports.find = find$1;
 exports.findByName = findByName;

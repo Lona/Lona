@@ -24,32 +24,50 @@ let isPrimitiveTypeName = (typeName: Types.layerType) =>
   | Types.Unknown => false
   };
 
-let styleParamKeys = [
-  ParameterKey.AlignItems,
-  AlignSelf,
-  Flex,
-  FlexDirection,
-  TextStyle,
-  JustifyContent,
-  MarginTop,
-  MarginRight,
-  MarginBottom,
-  MarginLeft,
-  PaddingTop,
-  PaddingRight,
-  PaddingBottom,
-  PaddingLeft,
-  Width,
-  Height,
-  BackgroundColor,
-  BorderColor,
-  BorderWidth,
-  TextAlign,
-  /* TODO: Move these elsewhere */
-  Pressed,
-  Hovered,
-  OnPress
-];
+/* Parameter category is used to determine whether to put props in a
+   style object or on the element when generating JSX */
+type parameterCategory =
+  | Style
+  | Prop
+  | Meta;
+
+let getParameterCategory = (x: ParameterKey.t) =>
+  switch x {
+  | AlignItems => Style
+  | AlignSelf => Style
+  | Flex => Style
+  | FlexDirection => Style
+  | TextStyle => Style
+  | JustifyContent => Style
+  | MarginTop => Style
+  | MarginRight => Style
+  | MarginBottom => Style
+  | MarginLeft => Style
+  | PaddingTop => Style
+  | PaddingRight => Style
+  | PaddingBottom => Style
+  | PaddingLeft => Style
+  | Width => Style
+  | Height => Style
+  | BackgroundColor => Style
+  | BorderColor => Style
+  | BorderRadius => Style
+  | BorderWidth => Style
+  | TextAlign => Style
+  /* Props */
+  | NumberOfLines => Prop
+  | Text => Prop
+  | Image => Prop
+  | OnPress => Prop
+  | Custom(_) => Prop
+  /* Meta: these are treated like props within Lona for simplicity, but they are
+     not actually props. These must be translated into something platform-specific
+     when generating code. E.g. when not `visible`, a React component should not
+     be rendered at all. */
+  | Pressed => Meta
+  | Hovered => Meta
+  | Visible => Meta
+  };
 
 let flatten = (layer: Types.layer) => {
   let rec inner = (acc, layer: Types.layer) => {
@@ -253,8 +271,7 @@ let logicAssignmentsFromLayerParameters = layer => {
   layerMap^;
 };
 
-let parameterIsStyle = name =>
-  styleParamKeys |> List.exists(key => key == name);
+let parameterIsStyle = key => getParameterCategory(key) == Style;
 
 let splitParamsMap = params =>
   params |> ParameterMap.partition((key, _) => parameterIsStyle(key));

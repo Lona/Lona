@@ -20,10 +20,8 @@ export default class Button extends React.Component {
     }
     return (
       <View
-        style={[
-          styles.view,
-          { backgroundColor: View$backgroundColor, onPress: View$onPress }
-        ]}
+        style={[ styles.view, { backgroundColor: View$backgroundColor } ]}
+        onPress={View$onPress}
       >
         <Text style={[ styles.text, {} ]} text={Text$text}>
           {Text$text}
