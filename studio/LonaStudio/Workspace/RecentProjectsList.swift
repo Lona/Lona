@@ -161,7 +161,7 @@ extension RecentProjectsTableView: NSTableViewDelegate {
     }
 
     func tableView(_ tableView: NSTableView, heightOfRow row: Int) -> CGFloat {
-        return 52
+        return 54
     }
 
     @objc func handleClickItem(_ sender: AnyObject) {
