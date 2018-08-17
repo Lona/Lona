@@ -35,16 +35,12 @@ export default class PressableRootView extends React.Component {
     }
     return (
       <View
-        style={[
-          styles.outer,
-          { backgroundColor: Outer$backgroundColor, onPress: Outer$onPress }
-        ]}
+        style={[ styles.outer, { backgroundColor: Outer$backgroundColor } ]}
+        onPress={Outer$onPress}
       >
         <View
-          style={[
-            styles.inner,
-            { backgroundColor: Inner$backgroundColor, onPress: Inner$onPress }
-          ]}
+          style={[ styles.inner, { backgroundColor: Inner$backgroundColor } ]}
+          onPress={Inner$onPress}
         >
           <Text style={[ styles.innerText, {} ]} text={InnerText$text}>
             {InnerText$text}
