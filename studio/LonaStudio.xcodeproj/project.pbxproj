@@ -153,6 +153,7 @@
 		30F870E820865859007ADA5B /* LonaIcon_512x512.png in Resources */ = {isa = PBXBuildFile; fileRef = 30F870D320865858007ADA5B /* LonaIcon_512x512.png */; };
 		30F870E920865859007ADA5B /* LonaIcon_16x16@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 30F870D420865858007ADA5B /* LonaIcon_16x16@2x.png */; };
 		30F870EB20869644007ADA5B /* Fetch.swift in Sources */ = {isa = PBXBuildFile; fileRef = 30F870EA20869644007ADA5B /* Fetch.swift */; };
+		6B0A29E6212736F900A96B0F /* Alert.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6B0A29E5212736F900A96B0F /* Alert.swift */; };
 		6B0AEFB81EBF74D800F35BBF /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6B0AEFB71EBF74D800F35BBF /* AppDelegate.swift */; };
 		6B0AEFBA1EBF74D800F35BBF /* ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6B0AEFB91EBF74D800F35BBF /* ViewController.swift */; };
 		6B0AEFBC1EBF74D800F35BBF /* Document.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6B0AEFBB1EBF74D800F35BBF /* Document.swift */; };
@@ -341,6 +342,7 @@
 		30F870D320865858007ADA5B /* LonaIcon_512x512.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = LonaIcon_512x512.png; sourceTree = "<group>"; };
 		30F870D420865858007ADA5B /* LonaIcon_16x16@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "LonaIcon_16x16@2x.png"; sourceTree = "<group>"; };
 		30F870EA20869644007ADA5B /* Fetch.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Fetch.swift; sourceTree = "<group>"; };
+		6B0A29E5212736F900A96B0F /* Alert.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Alert.swift; sourceTree = "<group>"; };
 		6B0AEFB41EBF74D800F35BBF /* LonaStudio.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = LonaStudio.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		6B0AEFB71EBF74D800F35BBF /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		6B0AEFB91EBF74D800F35BBF /* ViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewController.swift; sourceTree = "<group>"; };
@@ -536,6 +538,7 @@
 				BACCB4261FEFA05B00B58E32 /* TextStylePickerView.swift */,
 				30CE47CE1ED77C0200BBF716 /* TextStyleRowView.swift */,
 				BA4854961FEF6CA700AB7923 /* Picker */,
+				6B0A29E5212736F900A96B0F /* Alert.swift */,
 			);
 			path = Controls;
 			sourceTree = "<group>";
@@ -1176,6 +1179,7 @@
 				307718E81F35241A003A597B /* CSControl.swift in Sources */,
 				303BDE6D1F76E61300B4CE5A /* VideoUtils.swift in Sources */,
 				305A19521F4638F800EA033C /* NSStackViewExtensions.swift in Sources */,
+				6B0A29E6212736F900A96B0F /* Alert.swift in Sources */,
 				303C3FEE20A396C3008E1541 /* OpenProjectButton.swift in Sources */,
 				30DE880D1FBA22FB00D62A50 /* ComponentEditorButton.swift in Sources */,
 				303C3FE820A375E8008E1541 /* VirtualFileSystem.swift in Sources */,

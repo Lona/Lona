@@ -74,6 +74,7 @@ class LonaModule {
         let workspaceParent = url.deletingLastPathComponent()
 
         let root = VirtualDirectory(name: workspaceName, children: [
+            VirtualFile(name: "lona.json", data: CSData.Object([:])),
             VirtualFile(name: "colors.json", data: CSData.Object([
                 "colors": CSData.Array([])
                 ])),

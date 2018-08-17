@@ -41,10 +41,13 @@ class AppDelegate: NSObject, NSApplicationDelegate {
 
         switch FileUtils.fileExists(atPath: filename) {
         case .directory:
-            welcomeWindow?.close()
-            openWorkspace(url: url)
-            showComponentBrowser(self)
-            return true
+            if openWorkspace(url: url) {
+                welcomeWindow?.close()
+                showComponentBrowser(self)
+                return true
+            } else {
+                return false
+            }
         case .file:
             NSDocumentController.shared.openDocument(
                 withContentsOf: url,
@@ -165,16 +168,19 @@ class AppDelegate: NSObject, NSApplicationDelegate {
                     return
                 }
 
-                window.close()
-                self.openWorkspace(url: url)
-                self.showComponentBrowser(self)
+                if self.openWorkspace(url: url) {
+                    window.close()
+                    self.showComponentBrowser(self)
+                }
             }
 
             welcome.onOpenProject = {
                 guard let url = self.openWorkspaceDialog() else { return }
-                window.close()
-                self.openWorkspace(url: url)
-                self.showComponentBrowser(self)
+
+                if self.openWorkspace(url: url) {
+                    window.close()
+                    self.showComponentBrowser(self)
+                }
             }
 
             welcome.onOpenExample = {
@@ -244,12 +250,18 @@ class AppDelegate: NSObject, NSApplicationDelegate {
         return dialog.url
     }
 
-    private func openWorkspace(url: URL) {
+    private func openWorkspace(url: URL) -> Bool {
+        if !CSWorkspacePreferences.validateProposedWorkspace(url: url) {
+            return false
+        }
+
         CSUserPreferences.workspaceURL = url
 
         NSDocumentController.shared.noteNewRecentDocumentURL(url)
 
         CSWorkspacePreferences.reloadAllConfigurationFiles(closeDocuments: true)
+
+        return true
     }
 
     // MARK: - Creating Workspaces
