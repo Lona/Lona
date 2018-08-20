@@ -17,15 +17,23 @@ env:
     - RUN_TESTS="YES"
 
 before_install:
+  - brew update
+  - brew outdated carthage || brew upgrade carthage
   - BUNDLE_GEMFILE=ci/Gemfile bundle install
   - BUNDLE_GEMFILE=studio/Gemfile bundle install
   - BUNDLE_GEMFILE=studio/Gemfile bundle exec pod repo update
   - BUNDLE_GEMFILE=studio/Gemfile bundle exec pod install --project-directory=studio
 
+before_script:
+  - cd studio
+  - carthage bootstrap
+  - cd ..
+
 script:
   - set -o pipefail
   - BUNDLE_GEMFILE=ci/Gemfile bundle exec danger --dangerfile=ci/Dangerfile
   - cd studio
+  - carthage build
   - xcodebuild -version
   - xcodebuild -showsdks
   - xcodebuild -list
