@@ -25,7 +25,9 @@ before_install:
   - BUNDLE_GEMFILE=studio/Gemfile bundle exec pod install --project-directory=studio
 
 before_script:
+  - cd studio
   - carthage bootstrap
+  - cd ..
 
 script:
   - set -o pipefail
