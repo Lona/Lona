@@ -1,5 +1,5 @@
 //
-//  Document.swift
+//  ComponentDocument.swift
 //  ComponentStudio
 //
 //  Created by Devin Abbott on 5/7/17.
@@ -8,7 +8,7 @@
 
 import Cocoa
 
-class Document: NSDocument {
+class ComponentDocument: NSDocument {
 
     override init() {
         super.init()
@@ -38,26 +38,39 @@ class Document: NSDocument {
         viewController.fileURL = fileURL
     }
 
+    private let viewControllerId = NSStoryboard.SceneIdentifier(rawValue: "MainWorkspace")
     private let windowControllerId = NSStoryboard.SceneIdentifier(rawValue: "Document Window Controller")
     private let storyboardName = NSStoryboard.Name(rawValue: "Main")
+
+    func createWorkspaceController() -> WorkspaceViewController {
+        let vc = WorkspaceViewController()
+        vc.view.frame = NSRect(x: 0, y: 0, width: 1000, height: 600)
+        return vc
+    }
 
     override func makeWindowControllers() {
         let storyboard = NSStoryboard(name: storyboardName, bundle: nil)
 
+        let workspaceViewController = createWorkspaceController()
+        workspaceViewController.component = file
+
         let windowController = storyboard.instantiateController(withIdentifier: windowControllerId) as! NSWindowController
         windowController.window?.tabbingMode = .preferred
+        windowController.contentViewController = workspaceViewController
+
+//        windowController.contentViewController = storyboard.instantiateController(withIdentifier: viewControllerId) as! ViewController
 
         self.addWindowController(windowController)
 
-        if data != nil {
-            viewController?.setComponent(component: data!)
-            viewController?.fileURL = fileURL
-        }
-
-        if let file = file {
-            viewController?.setComponent(component: file)
-            viewController?.fileURL = fileURL
-        }
+//        if data != nil {
+//            viewController?.setComponent(component: data!)
+//            viewController?.fileURL = fileURL
+//        }
+//
+//        if let file = file {
+//            viewController?.setComponent(component: file)
+//            viewController?.fileURL = fileURL
+//        }
 
         controller = windowController
     }

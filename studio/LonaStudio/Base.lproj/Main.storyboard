@@ -859,9 +859,6 @@
                             <outlet property="delegate" destination="jGA-0Y-lOj" id="neQ-vi-PT1"/>
                         </connections>
                     </window>
-                    <connections>
-                        <segue destination="5gI-5U-AMq" kind="relationship" relationship="window.shadowedContentViewController" id="nsd-lR-9xd"/>
-                    </connections>
                 </windowController>
                 <customObject id="6f7-a7-6o1" userLabel="First Responder" customClass="NSResponder" sceneMemberID="firstResponder"/>
             </objects>
@@ -870,7 +867,7 @@
         <!--View Controller-->
         <scene sceneID="hIz-AP-VOD">
             <objects>
-                <viewController id="5gI-5U-AMq" customClass="ViewController" customModule="LonaStudio" customModuleProvider="target" sceneMemberID="viewController">
+                <viewController identifier="MainWorkspace" storyboardIdentifier="MainWorkspace" id="5gI-5U-AMq" customClass="ViewController" customModule="LonaStudio" customModuleProvider="target" sceneMemberID="viewController">
                     <customView key="view" id="xWc-ZW-8Re">
                         <rect key="frame" x="0.0" y="0.0" width="1200" height="800"/>
                         <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>

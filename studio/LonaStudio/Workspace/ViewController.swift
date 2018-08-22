@@ -282,7 +282,7 @@ class ViewController: NSViewController, NSOutlineViewDataSource, NSOutlineViewDe
 
     var dataRoot: CSLayer { return component.rootLayer }
 
-    var outlineView: LayerList!
+    var outlineView: LayerListOutlineView!
     var renderSurface: RenderSurface?
     var canvasCollectionView: CanvasCollectionView?
 
@@ -319,8 +319,7 @@ class ViewController: NSViewController, NSOutlineViewDataSource, NSOutlineViewDe
         self.component = component
         utilitiesView.component = component
         outlineView?.component = component
-
-        outlineView.render()
+        outlineView?.render()
         render()
     }
 
@@ -431,7 +430,7 @@ class ViewController: NSViewController, NSOutlineViewDataSource, NSOutlineViewDe
     }
 
     func setUpLayerList() {
-        let outlineView = LayerList(layerDelegate: self)
+        let outlineView = LayerListOutlineView(layerDelegate: self)
         outlineView.onChange = {[unowned self] in
             self.outlineView.render()
             self.render()
@@ -543,7 +542,7 @@ extension ViewController: LayerListDelegate {
         return dataRoot
     }
 
-    func layerList(_ layerList: LayerList, do action: LayerListAction) {
+    func layerList(_ layerList: LayerListOutlineView, do action: LayerListAction) {
         switch action {
         case .clearInspector:
             clearInspector()

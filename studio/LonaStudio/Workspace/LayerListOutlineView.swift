@@ -18,22 +18,83 @@ enum LayerListAction {
 protocol LayerListDelegate: class {
 
     func dataRootForLayerList() -> CSLayer
-    func layerList(_ layerList: LayerList, do action: LayerListAction)
+    func layerList(_ layerList: LayerListOutlineView, do action: LayerListAction)
 }
 
-final class LayerList: NSOutlineView, NSTextFieldDelegate {
+public class LayerList: NSBox {
+
+    // MARK: Lifecycle
+
+    init() {
+        super.init(frame: .zero)
+
+        setUpViews()
+        setUpConstraints()
+
+        update()
+    }
+
+    public required init?(coder decoder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
+
+    // MARK: Public
+
+    var component: CSComponent? { didSet { update() } }
+
+    // MARK: Private
+
+    private var outlineView = LayerListOutlineView()
+    private var scrollView = NSScrollView(frame: .zero)
+
+    private func setUpViews() {
+        boxType = .custom
+        borderType = .noBorder
+        contentViewMargins = .zero
+
+//        scrollView.hasVerticalScroller = true
+        scrollView.drawsBackground = false
+        scrollView.addSubview(outlineView)
+        scrollView.documentView = outlineView
+
+        outlineView.sizeToFit()
+
+        addSubview(scrollView)
+    }
+
+    private func setUpConstraints() {
+        translatesAutoresizingMaskIntoConstraints = false
+        scrollView.translatesAutoresizingMaskIntoConstraints = false
+
+        topAnchor.constraint(equalTo: scrollView.topAnchor).isActive = true
+        bottomAnchor.constraint(equalTo: scrollView.bottomAnchor).isActive = true
+        leadingAnchor.constraint(equalTo: scrollView.leadingAnchor).isActive = true
+        trailingAnchor.constraint(equalTo: scrollView.trailingAnchor).isActive = true
+    }
+
+    private func update() {
+        outlineView.component = component
+    }
+}
+
+final class LayerListOutlineView: NSOutlineView, NSTextFieldDelegate {
 
     fileprivate struct Constants {
         static let CheckBoxTag = 20
     }
 
-    var component: CSComponent?
+    var component: CSComponent? {
+        didSet {
+            render(fullRender: true)
+        }
+    }
+
     // swiftlint:disable weak_delegate
     weak var layerDelegate: LayerListDelegate?
     fileprivate var shouldRenderOnSelectionChange = true
     fileprivate var previousRow = -1
-    fileprivate var dataRoot: CSLayer {
-        return self.layerDelegate!.dataRootForLayerList()
+    fileprivate var dataRoot: CSLayer? {
+        return component?.rootLayer
     }
 
     var onChange: () -> Void = {}
@@ -52,7 +113,7 @@ final class LayerList: NSOutlineView, NSTextFieldDelegate {
 
     // MARK: - Init
 
-    init(layerDelegate: LayerListDelegate) {
+    init(layerDelegate: LayerListDelegate? = nil) {
         self.layerDelegate = layerDelegate
         super.init(frame: NSRect.zero)
         initCommon()
@@ -103,7 +164,7 @@ final class LayerList: NSOutlineView, NSTextFieldDelegate {
 
 // MARK: - Private
 
-extension LayerList {
+extension LayerListOutlineView {
 
     fileprivate func initCommon() {
         backgroundColor = NSColor.clear
@@ -258,7 +319,7 @@ extension LayerList {
 
         let documentController = NSDocumentController.shared
 
-        let document = Document()
+        let document = ComponentDocument()
 
         document.data = CSComponent(name: layer.name, canvas: component?.canvas ?? [], rootLayer: layer, parameters: [], cases: [CSCase.defaultCase], logic: [], config: component?.config ?? CSData.Object([:]), metadata: component?.metadata ?? CSData.Object([:]))
 
@@ -290,7 +351,7 @@ extension LayerList {
 
         guard let url = requestSaveFileURL() else { return }
 
-        let document = Document()
+        let document = ComponentDocument()
         document.data = existingComponent
 
         do {
@@ -301,7 +362,7 @@ extension LayerList {
 
         NSDocumentController.shared.openDocument(
             withContentsOf: url, display: true, completionHandler: { (document, _, _) in
-            layer.component = (document as! Document).file!
+            layer.component = (document as! ComponentDocument).file!
             layer.name = CSComponent.componentName(from: url)
             layer.type = CSLayer.LayerType.custom(url.deletingPathExtension().lastPathComponent)
             self.onChange()
@@ -318,7 +379,7 @@ extension LayerList {
 
 // MARK: - NSOutlineViewDataSource
 
-extension LayerList: NSOutlineViewDelegate, NSOutlineViewDataSource {
+extension LayerListOutlineView: NSOutlineViewDelegate, NSOutlineViewDataSource {
     func outlineView(_ outlineView: NSOutlineView, numberOfChildrenOfItem item: Any?) -> Int {
         if item == nil {
             return 1
@@ -329,7 +390,7 @@ extension LayerList: NSOutlineViewDelegate, NSOutlineViewDataSource {
     }
     func outlineView(_ outlineView: NSOutlineView, child index: Int, ofItem item: Any?) -> Any {
         if item == nil {
-            return dataRoot
+            return dataRoot ?? CSLayer()
         } else {
             let node = item as! DataNode
             return node.child(at: index)
