@@ -54,6 +54,8 @@ class SectionSplitter: NSSplitView {
     }
 
     func setup() {
+        arrangesAllSubviews = false
+
         let view = FlippedView()
 
         view.useYogaLayout = true

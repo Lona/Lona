@@ -475,13 +475,11 @@ class ViewController: NSViewController, NSOutlineViewDataSource, NSOutlineViewDe
         parent.children = children
 
         // Refresh
-        refreshDocument(shouldClearInspector: true)
+        refreshDocument()
     }
 
-    private func refreshDocument(shouldClearInspector: Bool = false) {
-        if shouldClearInspector {
-            clearInspector()
-        }
+    private func refreshDocument() {
+        clearInspector()
         outlineView.render()
         render()
     }

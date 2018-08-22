@@ -29,6 +29,83 @@ class ColorVC: NSViewController {
     }
 }
 
+class ComponentEditorViewController: NSSplitViewController {
+    private let splitViewResorationIdentifier = "tech.lona.restorationId:componentEditorController"
+
+    // MARK: Lifecycle
+
+    override init(nibName nibNameOrNil: NSNib.Name?, bundle nibBundleOrNil: Bundle?) {
+        super.init(nibName: nibNameOrNil, bundle: nibBundleOrNil)
+        setUpViews()
+        setUpLayout()
+    }
+
+    required init?(coder: NSCoder) {
+        super.init(coder: coder)
+    }
+
+    // MARK: Public
+
+    public var component: CSComponent? = nil { didSet { update() } }
+
+    // MARK: Private
+
+    private lazy var utilitiesView = UtilitiesView()
+    private lazy var utilitiesViewController: NSViewController = {
+        return ViewController(view: utilitiesView)
+    }()
+
+    private lazy var vcB = ColorVC(backgroundColor: .green)
+//    private lazy var vcC = ColorVC(backgroundColor: .blue)
+
+    private func setUpViews() {
+        let tabs = SegmentedControlField(
+            frame: NSRect(x: 0, y: 0, width: 500, height: 24),
+            values: [
+                UtilitiesView.Tab.devices.rawValue,
+                UtilitiesView.Tab.parameters.rawValue,
+                UtilitiesView.Tab.logic.rawValue,
+                UtilitiesView.Tab.examples.rawValue,
+                UtilitiesView.Tab.details.rawValue
+            ])
+        tabs.segmentWidth = 97
+        tabs.useYogaLayout = true
+        tabs.segmentStyle = .roundRect
+        tabs.onChange = { value in
+            guard let tab = UtilitiesView.Tab(rawValue: value) else { return }
+            self.utilitiesView.currentTab = tab
+        }
+        tabs.value = UtilitiesView.Tab.devices.rawValue
+
+        let splitView = SectionSplitter()
+        splitView.addSubviewToDivider(tabs)
+
+        splitView.isVertical = false
+        splitView.dividerStyle = .thin
+        splitView.autosaveName = NSSplitView.AutosaveName(rawValue: splitViewResorationIdentifier)
+        splitView.identifier = NSUserInterfaceItemIdentifier(rawValue: splitViewResorationIdentifier)
+
+        self.splitView = splitView
+    }
+
+    private func setUpLayout() {
+        minimumThicknessForInlineSidebars = 180
+
+        let mainItem = NSSplitViewItem(viewController: vcB)
+        mainItem.minimumThickness = 300
+        addSplitViewItem(mainItem)
+
+        let bottomItem = NSSplitViewItem(viewController: utilitiesViewController)
+        bottomItem.canCollapse = false
+        bottomItem.minimumThickness = 120
+        addSplitViewItem(bottomItem)
+    }
+
+    private func update() {
+        utilitiesView.component = component
+    }
+}
+
 class WorkspaceViewController: NSSplitViewController {
     private let splitViewResorationIdentifier = "tech.lona.restorationId:workspaceViewController2"
 
@@ -55,11 +132,12 @@ class WorkspaceViewController: NSSplitViewController {
         return ViewController(view: layerList)
     }()
 
-    private lazy var vcB = ColorVC(backgroundColor: .green)
+    private lazy var componentEditorViewController = ComponentEditorViewController()
     private lazy var vcC = ColorVC(backgroundColor: .blue)
 
     private func update() {
         layerList.component = component
+        componentEditorViewController.component = component
     }
 }
 
@@ -79,7 +157,7 @@ extension WorkspaceViewController {
         contentListItem.minimumThickness = 140
         addSplitViewItem(contentListItem)
 
-        let mainItem = NSSplitViewItem(viewController: vcB)
+        let mainItem = NSSplitViewItem(viewController: componentEditorViewController)
         mainItem.minimumThickness = 300
         addSplitViewItem(mainItem)
 
