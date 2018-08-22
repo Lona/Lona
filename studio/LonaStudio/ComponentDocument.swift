@@ -21,7 +21,6 @@ class ComponentDocument: NSDocument {
     }
 
     var name: String = "Component"
-    var data: CSComponent?
     var file: CSComponent?
 
     var viewController: ViewController? {
@@ -31,10 +30,10 @@ class ComponentDocument: NSDocument {
     var controller: NSWindowController?
 
     func set(component: CSComponent) {
-        data = component
+        file = component
 
         guard let viewController = self.viewController else { return }
-        viewController.setComponent(component: component)
+        viewController.component = component
         viewController.fileURL = fileURL
     }
 
@@ -86,9 +85,9 @@ class ComponentDocument: NSDocument {
             let viewController = controller!.contentViewController as! ViewController
             component = viewController.component
         }
-        if data != nil {
-            component = data
-        }
+//        if data != nil {
+//            component = data
+//        }
         if let component = component, let json = component.toData(), let data = json.toData() {
             return data
         }

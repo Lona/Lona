@@ -40,6 +40,15 @@ public class LayerList: NSBox {
 
     var component: CSComponent? { didSet { update() } }
 
+    var onSelectLayer: ((CSLayer?) -> Void)? {
+        get { return outlineView.onSelectLayer }
+        set { outlineView.onSelectLayer = newValue }
+    }
+
+    func addLayer(layer newLayer: CSLayer) {
+        outlineView.addLayer(layer: newLayer)
+    }
+
     // MARK: Private
 
     private var outlineView = LayerListOutlineView()
@@ -97,8 +106,11 @@ final class LayerListOutlineView: NSOutlineView, NSTextFieldDelegate {
 
     var onChange: () -> Void = {}
 
+    var onSelectLayer: ((CSLayer?) -> Void)?
+
     fileprivate var selectedLayer: CSLayer? {
-        return item(atRow: selectedRow) as! CSLayer?
+        guard let item = item(atRow: selectedRow) else { return nil }
+        return item as? CSLayer
     }
 
     fileprivate var selectedLayerOrRoot: CSLayer {
@@ -123,6 +135,34 @@ final class LayerListOutlineView: NSOutlineView, NSTextFieldDelegate {
     }
 
     // MARK: - Public
+
+    func addLayer(layer newLayer: CSLayer) {
+        let targetLayer = selectedLayerOrRoot
+        var parent: CSLayer!
+        var index: Int!
+
+        if targetLayer === self.dataRoot {
+            parent = targetLayer
+            index = parent.children.count
+        } else {
+            parent = self.parent(forItem: targetLayer) as! CSLayer
+            index = self.childIndex(forItem: targetLayer) + 1
+        }
+
+        // Undo
+        let oldChildren = parent.children
+        UndoManager.shared.run(
+            name: "Add",
+            execute: {[unowned self] in
+                parent.insertChild(newLayer, at: index)
+                self.relayoutLayerList(newLayer)
+            },
+            undo: {[unowned self] in
+                parent.children = oldChildren
+                self.relayoutLayerList()
+            }
+        )
+    }
 
     override func menu(for event: NSEvent) -> NSMenu? {
         let point = convert(event.locationInWindow, from: nil)
@@ -163,6 +203,19 @@ final class LayerListOutlineView: NSOutlineView, NSTextFieldDelegate {
 // MARK: - Private
 
 extension LayerListOutlineView {
+
+    private func relayoutLayerList(_ newLayer: CSLayer? = nil) {
+        render()
+
+        // Selection
+        if let newLayer = newLayer {
+            let newLayerIndex = row(forItem: newLayer)
+            let selection: IndexSet = [newLayerIndex]
+            selectRowIndexes(selection, byExtendingSelection: false)
+        }
+
+        render()
+    }
 
     fileprivate func initCommon() {
         backgroundColor = NSColor.clear
@@ -319,7 +372,7 @@ extension LayerListOutlineView {
 
         let document = ComponentDocument()
 
-        document.data = CSComponent(name: layer.name, canvas: component?.canvas ?? [], rootLayer: layer, parameters: [], cases: [CSCase.defaultCase], logic: [], config: component?.config ?? CSData.Object([:]), metadata: component?.metadata ?? CSData.Object([:]))
+        document.file = CSComponent(name: layer.name, canvas: component?.canvas ?? [], rootLayer: layer, parameters: [], cases: [CSCase.defaultCase], logic: [], config: component?.config ?? CSData.Object([:]), metadata: component?.metadata ?? CSData.Object([:]))
 
         Swift.print("Writing to", url)
 
@@ -350,7 +403,7 @@ extension LayerListOutlineView {
         guard let url = requestSaveFileURL() else { return }
 
         let document = ComponentDocument()
-        document.data = existingComponent
+        document.file = existingComponent
 
         do {
             try document.write(to: url, ofType: ".component")
@@ -569,6 +622,8 @@ extension LayerListOutlineView: NSOutlineViewDelegate, NSOutlineViewDataSource {
         if shouldRenderOnSelectionChange {
             layerDelegate?.layerList(self, do: .render)
         }
+
+        self.onSelectLayer?(selectedLayer)
     }
 
     fileprivate func makeChangeWithoutRendering(f: () -> Void) {
