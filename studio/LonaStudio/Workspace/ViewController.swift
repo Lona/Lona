@@ -16,7 +16,6 @@ class ViewController: NSViewController, NSOutlineViewDataSource, NSOutlineViewDe
     @IBOutlet weak var drawingSurface: NSView!
     @IBOutlet weak var right: NSView!
     @IBOutlet weak var verticalSplitter: SectionSplitter!
-    @IBOutlet weak var workspaceTabsContainer: NSView!
     @IBOutlet weak var workspaceSplitView: NSSplitView!
 
     var selectedLayer: CSLayer? {
@@ -341,55 +340,9 @@ class ViewController: NSViewController, NSOutlineViewDataSource, NSOutlineViewDe
     var parameterListEditorView: ParameterListEditorView?
     var caseList: CaseList?
     var metadataEditorView: MetadataEditorView?
-    var documentationView: DocumentationView?
-
-    func setUpDocumentationView() {
-        let workspaceVerticalTabs = WorkspaceVerticalTabs()
-        workspaceVerticalTabs.selectedValue = "layers"
-        workspaceVerticalTabs.onClickLayers = {
-            workspaceVerticalTabs.selectedValue = "layers"
-            self.workspaceSplitView.isHidden = false
-            self.documentationView?.isHidden = true
-        }
-
-        workspaceVerticalTabs.onClickDocumentation = {
-            workspaceVerticalTabs.selectedValue = "documentation"
-
-            self.workspaceSplitView.isHidden = true
-
-            if self.documentationView == nil {
-                let documentationView = DocumentationView()
-
-                self.view.addSubview(documentationView)
-
-                documentationView.leadingAnchor.constraint(equalTo: self.view.leadingAnchor, constant: 60).isActive = true
-                documentationView.topAnchor.constraint(equalTo: self.view.topAnchor).isActive = true
-                documentationView.trailingAnchor.constraint(equalTo: self.view.trailingAnchor).isActive = true
-                documentationView.bottomAnchor.constraint(equalTo: self.view.bottomAnchor).isActive = true
-
-                documentationView.onChangeDescription = { description in
-                    self.component.metadata.set(keyPath: ["description"], to: description.toData())
-                }
-
-                self.documentationView = documentationView
-            }
-
-            var componentName = "Untitled"
-            if let fileURL = self.fileURL {
-                componentName = CSComponent.componentName(from: fileURL)
-            }
-            self.documentationView?.componentName = componentName
-            self.documentationView?.descriptionText = self.component.metadata.get(key: "description").stringValue
-            self.documentationView?.isHidden = false
-        }
-        workspaceTabsContainer.addSubview(workspaceVerticalTabs)
-        workspaceTabsContainer.constrain(to: workspaceVerticalTabs, [.leading, .top, .trailing, .bottom])
-    }
 
     override func viewDidLoad() {
         super.viewDidLoad()
-
-        setUpDocumentationView()
 
         right.addBorderView(to: .left)
         right.backgroundFill = #colorLiteral(red: 0.9486700892, green: 0.9493889213, blue: 0.9487814307, alpha: 1).cgColor
