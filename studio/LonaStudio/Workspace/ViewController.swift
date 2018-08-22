@@ -286,8 +286,10 @@ class ViewController: NSViewController, NSOutlineViewDataSource, NSOutlineViewDe
     var renderSurface: RenderSurface?
     var canvasCollectionView: CanvasCollectionView?
 
+    var utilitiesView: UtilitiesView = UtilitiesView()
+
     func render() {
-        logicListView?.editor?.reloadData()
+        utilitiesView.reloadData()
 
         let selectLayer: (CSLayer) -> Void = { layer in
 //            var topLevelLayer: CSLayer? = layer
@@ -316,15 +318,13 @@ class ViewController: NSViewController, NSOutlineViewDataSource, NSOutlineViewDe
     func setComponent(component: CSComponent) {
         self.component = component
         self.outlineView?.component = component
-        self.logicListView?.component = component
-        self.logicListView?.list = component.logic
-        self.parameterListEditorView?.parameterList = component.parameters
-        self.caseList?.component = component
-        self.caseList?.list = component.cases
-        self.canvasListView?.canvasList = component.canvas
-        self.canvasListView?.canvasLayout = component.canvasLayoutAxis
-        self.canvasListView?.editorView.component = component
-        self.metadataEditorView?.update(data: component.metadata)
+        utilitiesView.component = component
+        utilitiesView.logicList = component.logic
+        utilitiesView.parameterList = component.parameters
+        utilitiesView.caseList = component.cases
+        utilitiesView.canvasList = component.canvas
+        utilitiesView.canvasLayout = component.canvasLayoutAxis
+        utilitiesView.metadata = component.metadata
 
         outlineView.render()
         render()
@@ -334,12 +334,6 @@ class ViewController: NSViewController, NSOutlineViewDataSource, NSOutlineViewDe
         // We do this in order to preserve the border view in the `right` view
         inspectorContent?.removeFromSuperview()
     }
-
-    var canvasListView: CanvasListView?
-    var logicListView: LogicListView?
-    var parameterListEditorView: ParameterListEditorView?
-    var caseList: CaseList?
-    var metadataEditorView: MetadataEditorView?
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -351,43 +345,52 @@ class ViewController: NSViewController, NSOutlineViewDataSource, NSOutlineViewDe
 
         let tabs = SegmentedControlField(
             frame: NSRect(x: 0, y: 0, width: 500, height: 24),
-            values: ["Devices", "Parameters", "Logic", "Examples", "Details"])
+            values: [
+                UtilitiesView.Tab.devices.rawValue,
+                UtilitiesView.Tab.parameters.rawValue,
+                UtilitiesView.Tab.logic.rawValue,
+                UtilitiesView.Tab.examples.rawValue,
+                UtilitiesView.Tab.details.rawValue
+            ])
         tabs.segmentWidth = 97
         tabs.useYogaLayout = true
         tabs.segmentStyle = .roundRect
+        tabs.onChange = { value in
+            guard let tab = UtilitiesView.Tab(rawValue: value) else { return }
+            self.utilitiesView.currentTab = tab
+        }
+        tabs.value = UtilitiesView.Tab.devices.rawValue
 
         verticalSplitter.addSubviewToDivider(tabs)
 
+        bottom.addSubviewStretched(subview: utilitiesView)
+
         // Metadata editor setup
 
-        let metadataEditorView = MetadataEditorView(data: component.metadata, onChangeData: { value in
-            Swift.print("updated metadata", value)
+        utilitiesView.metadata = component.metadata
+        utilitiesView.onChangeMetadata = { value in
             self.component.metadata = value
             self.render()
-        })
+        }
 
         // Canvas list setup
 
-        let canvasListView = CanvasListView(frame: NSRect.zero)
-        canvasListView.canvasList = component.canvas
-        canvasListView.onChange = { value in
+        utilitiesView.canvasList = component.canvas
+        utilitiesView.onChangeCanvasList = { value in
             self.component.canvas = value
             self.render()
         }
-        canvasListView.onChangeLayout = { value in
+        utilitiesView.onChangeCanvasLayout = { value in
             self.component.canvasLayoutAxis = value
             self.render()
         }
 
-        bottom.addSubviewStretched(subview: canvasListView)
-
         // Parameter list setup
 
-        let parameterListEditorView = ParameterListEditorView(frame: bottom.frame)
-        parameterListEditorView.parameterList = component.parameters
-        parameterListEditorView.onChange = { value in
+        utilitiesView.parameterList = component.parameters
+        utilitiesView.onChangeParameterList = { value in
             self.component.parameters = value
-            self.caseList?.editor?.reloadData()
+            self.utilitiesView.reloadData()
             self.render()
 
             let componentParameters = value.filter({ $0.type == CSComponentType })
@@ -397,62 +400,23 @@ class ViewController: NSViewController, NSOutlineViewDataSource, NSOutlineViewDe
 
         // Case list setup
 
-        let caseList = CaseList(frame: bottom.frame)
-        caseList.list = component.cases
-        caseList.onChange = { value in
+        utilitiesView.caseList = component.cases
+        utilitiesView.onChangeCaseList = { value in
             self.component.cases = value
             self.render()
         }
 
         // Logic list setup
 
-        let logicListView = LogicListView(frame: bottom.frame)
-        logicListView.list = component.logic
-        logicListView.onChange = { value in
+        utilitiesView.logicList = component.logic
+        utilitiesView.onChangeLogicList = { value in
             self.component.logic = value
             self.render()
         }
 
-        self.logicListView = logicListView
-        self.parameterListEditorView = parameterListEditorView
-        self.caseList = caseList
-        self.canvasListView = canvasListView
-        self.metadataEditorView = metadataEditorView
-
         // Outline view setup
 
         setupLayerList()
-
-        // Tab switching
-
-        let tabMap: [String: NSView?] = [
-            "Details": metadataEditorView,
-            "Devices": canvasListView,
-            "Parameters": parameterListEditorView,
-            "Examples": caseList.editor,
-            "Logic": logicListView.editor
-        ]
-
-        tabs.onChange = { value in
-            for (tab, view) in tabMap {
-                guard let view = view else { continue }
-
-                if tab == value {
-                    self.bottom.addSubviewStretched(subview: view)
-                } else {
-                    view.removeFromSuperview()
-                }
-            }
-
-            switch value {
-            case "Logic":
-                logicListView.editor?.reloadData()
-            default:
-                break
-            }
-        }
-
-        tabs.value = "Devices"
 
         // Init with data
 
