@@ -119,6 +119,13 @@ class UtilitiesView: NSBox {
             logicListView.component = component
             caseListView.component = component
             canvasListView.editorView.component = component
+
+            logicList = component?.logic ?? []
+            parameterList = component?.parameters ?? []
+            caseList = component?.cases ?? []
+            canvasList = component?.canvas ?? []
+            canvasLayout = component?.canvasLayoutAxis ?? RenderSurface.Layout.canvasXcaseY
+            metadata = component?.metadata ?? .Null
         }
     }
 

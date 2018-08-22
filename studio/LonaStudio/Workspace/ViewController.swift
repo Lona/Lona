@@ -317,14 +317,8 @@ class ViewController: NSViewController, NSOutlineViewDataSource, NSOutlineViewDe
 
     func setComponent(component: CSComponent) {
         self.component = component
-        self.outlineView?.component = component
         utilitiesView.component = component
-        utilitiesView.logicList = component.logic
-        utilitiesView.parameterList = component.parameters
-        utilitiesView.caseList = component.cases
-        utilitiesView.canvasList = component.canvas
-        utilitiesView.canvasLayout = component.canvasLayoutAxis
-        utilitiesView.metadata = component.metadata
+        outlineView?.component = component
 
         outlineView.render()
         render()
@@ -363,60 +357,14 @@ class ViewController: NSViewController, NSOutlineViewDataSource, NSOutlineViewDe
 
         verticalSplitter.addSubviewToDivider(tabs)
 
+        // Utilities setup
+
         bottom.addSubviewStretched(subview: utilitiesView)
-
-        // Metadata editor setup
-
-        utilitiesView.metadata = component.metadata
-        utilitiesView.onChangeMetadata = { value in
-            self.component.metadata = value
-            self.render()
-        }
-
-        // Canvas list setup
-
-        utilitiesView.canvasList = component.canvas
-        utilitiesView.onChangeCanvasList = { value in
-            self.component.canvas = value
-            self.render()
-        }
-        utilitiesView.onChangeCanvasLayout = { value in
-            self.component.canvasLayoutAxis = value
-            self.render()
-        }
-
-        // Parameter list setup
-
-        utilitiesView.parameterList = component.parameters
-        utilitiesView.onChangeParameterList = { value in
-            self.component.parameters = value
-            self.utilitiesView.reloadData()
-            self.render()
-
-            let componentParameters = value.filter({ $0.type == CSComponentType })
-            let componentParameterNames = componentParameters.map({ $0.name })
-            ComponentMenu.shared?.update(componentParameterNames: componentParameterNames)
-        }
-
-        // Case list setup
-
-        utilitiesView.caseList = component.cases
-        utilitiesView.onChangeCaseList = { value in
-            self.component.cases = value
-            self.render()
-        }
-
-        // Logic list setup
-
-        utilitiesView.logicList = component.logic
-        utilitiesView.onChangeLogicList = { value in
-            self.component.logic = value
-            self.render()
-        }
+        setUpUtilities()
 
         // Outline view setup
 
-        setupLayerList()
+        setUpLayerList()
 
         // Init with data
 
@@ -445,7 +393,44 @@ class ViewController: NSViewController, NSOutlineViewDataSource, NSOutlineViewDe
         subscriptions.forEach({ sub in sub() })
     }
 
-    func setupLayerList() {
+    func setUpUtilities() {
+        utilitiesView.onChangeMetadata = { value in
+            self.component.metadata = value
+            self.render()
+        }
+
+        utilitiesView.onChangeCanvasList = { value in
+            self.component.canvas = value
+            self.render()
+        }
+
+        utilitiesView.onChangeCanvasLayout = { value in
+            self.component.canvasLayoutAxis = value
+            self.render()
+        }
+
+        utilitiesView.onChangeParameterList = { value in
+            self.component.parameters = value
+            self.utilitiesView.reloadData()
+            self.render()
+
+            let componentParameters = value.filter({ $0.type == CSComponentType })
+            let componentParameterNames = componentParameters.map({ $0.name })
+            ComponentMenu.shared?.update(componentParameterNames: componentParameterNames)
+        }
+
+        utilitiesView.onChangeCaseList = { value in
+            self.component.cases = value
+            self.render()
+        }
+
+        utilitiesView.onChangeLogicList = { value in
+            self.component.logic = value
+            self.render()
+        }
+    }
+
+    func setUpLayerList() {
         let outlineView = LayerList(layerDelegate: self)
         outlineView.onChange = {[unowned self] in
             self.outlineView.render()
