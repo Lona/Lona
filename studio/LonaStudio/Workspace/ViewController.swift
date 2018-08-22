@@ -500,7 +500,7 @@ class ViewController: NSViewController, NSOutlineViewDataSource, NSOutlineViewDe
 
         let inspectorView: NSView
         if case CSLayer.LayerType.custom = layer.type, let layer = layer as? CSComponentLayer {
-            let componentInspectorView = ComponentInspectorView(componentLayer: layer)
+            let componentInspectorView = CustomComponentInspectorView(componentLayer: layer)
             componentInspectorView.onChangeData = {[unowned self] (data, parameter) in
                 layer.parameters[parameter.name] = data
 
@@ -535,11 +535,6 @@ class ViewController: NSViewController, NSOutlineViewDataSource, NSOutlineViewDe
 // MARK: - LayerListDelegate
 
 extension ViewController: LayerListDelegate {
-
-    func dataRootForLayerList() -> CSLayer {
-        return dataRoot
-    }
-
     func layerList(_ layerList: LayerListOutlineView, do action: LayerListAction) {
         switch action {
         case .clearInspector:

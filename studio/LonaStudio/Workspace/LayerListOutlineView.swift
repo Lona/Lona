@@ -16,8 +16,6 @@ enum LayerListAction {
 }
 
 protocol LayerListDelegate: class {
-
-    func dataRootForLayerList() -> CSLayer
     func layerList(_ layerList: LayerListOutlineView, do action: LayerListAction)
 }
 

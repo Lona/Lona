@@ -8,7 +8,7 @@
 
 import Cocoa
 
-final class ComponentInspectorView: NSStackView {
+final class CustomComponentInspectorView: NSStackView {
 
     // MARK: - Variable
 

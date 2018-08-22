@@ -10,7 +10,7 @@ import Foundation
 import Cocoa
 import Lottie
 
-class InspectorView: NSStackView {
+class CoreComponentInspectorView: NSStackView {
 
     typealias Properties = [Property: CSData]
 
