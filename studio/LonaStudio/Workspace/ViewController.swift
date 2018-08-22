@@ -279,38 +279,6 @@ class ViewController: NSViewController, NSOutlineViewDataSource, NSOutlineViewDe
         }
     }
 
-    @IBAction func pushToSketch(_ sender: AnyObject) {
-//        let string = component.toJSONString()
-//
-//        let componentName = fileURL?.deletingPathExtension().lastPathComponent ?? "Untitled"
-//
-//        let componentPath = "/tmp/\(componentName).component";
-//        let url = URL(fileURLWithPath: componentPath)
-//        try! string.write(to: url, atomically: true, encoding: String.Encoding.utf8)
-//
-//        DispatchQueue.global().async {
-//            let task = Process()
-//
-//            // Set the task parameters
-//            task.launchPath = "/usr/local/opt/nvm/versions/node/v8.1.3/bin/node"
-//            task.arguments = [
-//                "/Users/devin_abbott/Projects/ComponentStudio/ComponentStudio/generators/react/index.js",
-//                componentPath,
-//                "/Users/devin_abbott/Projects/component-picker/sketchapp-demo-plugin/src/components/\(componentName).js",
-//                "--primitives",
-//            ]
-//            task.currentDirectoryPath = "/Users/devin_abbott/Projects/ComponentStudio/ComponentStudio/generators/react"
-//
-//            // Create a Pipe and make the task
-//            // put all the output there
-//            let pipe = Pipe()
-//            task.standardOutput = pipe
-//
-//            // Launch the task
-//            task.launch()
-//        }
-    }
-
     var component: CSComponent = CSComponent.makeDefaultComponent()
 
     var dataRoot: CSLayer { return component.rootLayer }
