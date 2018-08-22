@@ -106,7 +106,7 @@ final class LayerList: NSOutlineView, NSTextFieldDelegate {
 extension LayerList {
 
     fileprivate func initCommon() {
-        backgroundColor = NSColor.clear
+        backgroundColor = .white
         wantsLayer = true
         columnAutoresizingStyle = .firstColumnOnlyAutoresizingStyle
         rowSizeStyle = NSTableView.RowSizeStyle.small

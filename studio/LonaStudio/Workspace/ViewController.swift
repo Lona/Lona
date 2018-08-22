@@ -7,6 +7,7 @@
 //
 
 import Cocoa
+import FileTree
 import MASPreferences
 
 class ViewController: NSViewController, NSOutlineViewDataSource, NSOutlineViewDelegate {
@@ -17,7 +18,7 @@ class ViewController: NSViewController, NSOutlineViewDataSource, NSOutlineViewDe
     @IBOutlet weak var right: NSView!
     @IBOutlet weak var verticalSplitter: SectionSplitter!
     @IBOutlet weak var workspaceTabsContainer: NSView!
-    @IBOutlet weak var workspaceSplitView: NSSplitView!
+//    @IBOutlet weak var workspaceSplitView: NSSplitView!
 
     var selectedLayer: CSLayer? {
         return outlineView.item(atRow: outlineView.selectedRow) as! CSLayer?
@@ -376,46 +377,60 @@ class ViewController: NSViewController, NSOutlineViewDataSource, NSOutlineViewDe
     var documentationView: DocumentationView?
 
     func setUpDocumentationView() {
-        let workspaceVerticalTabs = WorkspaceVerticalTabs()
-        workspaceVerticalTabs.selectedValue = "layers"
-        workspaceVerticalTabs.onClickLayers = {
-            workspaceVerticalTabs.selectedValue = "layers"
-            self.workspaceSplitView.isHidden = false
-            self.documentationView?.isHidden = true
+        let fileTree = FileTree(rootPath: LonaModule.current.url.path)
+        fileTree.defaultRowHeight = 26
+        fileTree.defaultThumbnailSize = 16
+        fileTree.defaultFont = NSFont.systemFont(ofSize: NSFont.systemFontSize(for: .small))
+        fileTree.displayNameForFile = { path in
+            let url = URL(fileURLWithPath: path)
+
+            return url.pathExtension == "component"
+                ? url.deletingPathExtension().lastPathComponent
+                : url.lastPathComponent
         }
+        workspaceTabsContainer.addSubview(fileTree)
+        workspaceTabsContainer.constrain(to: fileTree, [.leading, .top, .trailing, .bottom])
 
-        workspaceVerticalTabs.onClickDocumentation = {
-            workspaceVerticalTabs.selectedValue = "documentation"
-
-            self.workspaceSplitView.isHidden = true
-
-            if self.documentationView == nil {
-                let documentationView = DocumentationView()
-
-                self.view.addSubview(documentationView)
-
-                documentationView.leadingAnchor.constraint(equalTo: self.view.leadingAnchor, constant: 60).isActive = true
-                documentationView.topAnchor.constraint(equalTo: self.view.topAnchor).isActive = true
-                documentationView.trailingAnchor.constraint(equalTo: self.view.trailingAnchor).isActive = true
-                documentationView.bottomAnchor.constraint(equalTo: self.view.bottomAnchor).isActive = true
-
-                documentationView.onChangeDescription = { description in
-                    self.component.metadata.set(keyPath: ["description"], to: description.toData())
-                }
-
-                self.documentationView = documentationView
-            }
-
-            var componentName = "Untitled"
-            if let fileURL = self.fileURL {
-                componentName = CSComponent.componentName(from: fileURL)
-            }
-            self.documentationView?.componentName = componentName
-            self.documentationView?.descriptionText = self.component.metadata.get(key: "description").stringValue
-            self.documentationView?.isHidden = false
-        }
-        workspaceTabsContainer.addSubview(workspaceVerticalTabs)
-        workspaceTabsContainer.constrain(to: workspaceVerticalTabs, [.leading, .top, .trailing, .bottom])
+//        let workspaceVerticalTabs = WorkspaceVerticalTabs()
+//        workspaceVerticalTabs.selectedValue = "layers"
+//        workspaceVerticalTabs.onClickLayers = {
+//            workspaceVerticalTabs.selectedValue = "layers"
+//            self.workspaceSplitView.isHidden = false
+//            self.documentationView?.isHidden = true
+//        }
+//
+//        workspaceVerticalTabs.onClickDocumentation = {
+//            workspaceVerticalTabs.selectedValue = "documentation"
+//
+//            self.workspaceSplitView.isHidden = true
+//
+//            if self.documentationView == nil {
+//                let documentationView = DocumentationView()
+//
+//                self.view.addSubview(documentationView)
+//
+//                documentationView.leadingAnchor.constraint(equalTo: self.view.leadingAnchor, constant: 60).isActive = true
+//                documentationView.topAnchor.constraint(equalTo: self.view.topAnchor).isActive = true
+//                documentationView.trailingAnchor.constraint(equalTo: self.view.trailingAnchor).isActive = true
+//                documentationView.bottomAnchor.constraint(equalTo: self.view.bottomAnchor).isActive = true
+//
+//                documentationView.onChangeDescription = { description in
+//                    self.component.metadata.set(keyPath: ["description"], to: description.toData())
+//                }
+//
+//                self.documentationView = documentationView
+//            }
+//
+//            var componentName = "Untitled"
+//            if let fileURL = self.fileURL {
+//                componentName = CSComponent.componentName(from: fileURL)
+//            }
+//            self.documentationView?.componentName = componentName
+//            self.documentationView?.descriptionText = self.component.metadata.get(key: "description").stringValue
+//            self.documentationView?.isHidden = false
+//        }
+//        workspaceTabsContainer.addSubview(workspaceVerticalTabs)
+//        workspaceTabsContainer.constrain(to: workspaceVerticalTabs, [.leading, .top, .trailing, .bottom])
     }
 
     override func viewDidLoad() {
