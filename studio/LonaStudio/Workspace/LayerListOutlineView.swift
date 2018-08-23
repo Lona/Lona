@@ -16,30 +16,102 @@ enum LayerListAction {
 }
 
 protocol LayerListDelegate: class {
-
-    func dataRootForLayerList() -> CSLayer
-    func layerList(_ layerList: LayerList, do action: LayerListAction)
+    func layerList(_ layerList: LayerListOutlineView, do action: LayerListAction)
 }
 
-final class LayerList: NSOutlineView, NSTextFieldDelegate {
+public class LayerList: NSBox {
+
+    // MARK: Lifecycle
+
+    init() {
+        super.init(frame: .zero)
+
+        setUpViews()
+        setUpConstraints()
+
+        update()
+    }
+
+    public required init?(coder decoder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
+
+    // MARK: Public
+
+    var component: CSComponent? { didSet { update() } }
+
+    var onChange: (() -> Void)? {
+        get { return outlineView.onChange }
+        set { outlineView.onChange = newValue }
+    }
+
+    var onSelectLayer: ((CSLayer?) -> Void)? {
+        get { return outlineView.onSelectLayer }
+        set { outlineView.onSelectLayer = newValue }
+    }
+
+    func addLayer(layer newLayer: CSLayer) {
+        outlineView.addLayer(layer: newLayer)
+    }
+
+    func reloadWithoutModifyingSelection() {
+        outlineView.render(fullRender: false)
+    }
+
+    // MARK: Private
+
+    private var outlineView = LayerListOutlineView()
+    private var scrollView = NSScrollView(frame: .zero)
+
+    private func setUpViews() {
+        boxType = .custom
+        borderType = .noBorder
+        contentViewMargins = .zero
+
+//        scrollView.hasVerticalScroller = true
+        scrollView.drawsBackground = false
+        scrollView.addSubview(outlineView)
+        scrollView.documentView = outlineView
+
+        outlineView.sizeToFit()
+
+        addSubview(scrollView)
+    }
+
+    private func setUpConstraints() {
+        translatesAutoresizingMaskIntoConstraints = false
+        scrollView.translatesAutoresizingMaskIntoConstraints = false
+
+        topAnchor.constraint(equalTo: scrollView.topAnchor).isActive = true
+        bottomAnchor.constraint(equalTo: scrollView.bottomAnchor).isActive = true
+        leadingAnchor.constraint(equalTo: scrollView.leadingAnchor).isActive = true
+        trailingAnchor.constraint(equalTo: scrollView.trailingAnchor).isActive = true
+    }
+
+    private func update() {
+        outlineView.component = component
+    }
+}
+
+final class LayerListOutlineView: NSOutlineView, NSTextFieldDelegate {
 
     fileprivate struct Constants {
         static let CheckBoxTag = 20
     }
 
-    var component: CSComponent?
-    // swiftlint:disable weak_delegate
-    weak var layerDelegate: LayerListDelegate?
     fileprivate var shouldRenderOnSelectionChange = true
     fileprivate var previousRow = -1
-    fileprivate var dataRoot: CSLayer {
-        return self.layerDelegate!.dataRootForLayerList()
+    fileprivate var dataRoot: CSLayer? {
+        return component?.rootLayer
     }
 
-    var onChange: () -> Void = {}
+    var onChange: (() -> Void)?
+
+    var onSelectLayer: ((CSLayer?) -> Void)?
 
     fileprivate var selectedLayer: CSLayer? {
-        return item(atRow: selectedRow) as! CSLayer?
+        guard let item = item(atRow: selectedRow) else { return nil }
+        return item as? CSLayer
     }
 
     fileprivate var selectedLayerOrRoot: CSLayer {
@@ -50,11 +122,11 @@ final class LayerList: NSOutlineView, NSTextFieldDelegate {
         return url.deletingPathExtension().lastPathComponent
     }
 
-    // MARK: - Init
+    // MARK: - Lifecycle
 
-    init(layerDelegate: LayerListDelegate) {
-        self.layerDelegate = layerDelegate
+    init() {
         super.init(frame: NSRect.zero)
+
         initCommon()
         setupDefaultColumns()
     }
@@ -64,6 +136,42 @@ final class LayerList: NSOutlineView, NSTextFieldDelegate {
     }
 
     // MARK: - Public
+
+    var component: CSComponent? {
+        didSet {
+            render(fullRender: true)
+        }
+    }
+
+    func addLayer(layer newLayer: CSLayer) {
+        let targetLayer = selectedLayerOrRoot
+        var parent: CSLayer!
+        var index: Int!
+
+        if targetLayer === self.dataRoot {
+            parent = targetLayer
+            index = parent.children.count
+        } else {
+            parent = self.parent(forItem: targetLayer) as! CSLayer
+            index = self.childIndex(forItem: targetLayer) + 1
+        }
+
+        // Undo
+        let oldChildren = parent.children
+        UndoManager.shared.run(
+            name: "Add",
+            execute: {[unowned self] in
+                parent.insertChild(newLayer, at: index)
+                self.relayoutLayerList(newLayer)
+                self.onChange?()
+            },
+            undo: {[unowned self] in
+                parent.children = oldChildren
+                self.relayoutLayerList()
+                self.onChange?()
+            }
+        )
+    }
 
     override func menu(for event: NSEvent) -> NSMenu? {
         let point = convert(event.locationInWindow, from: nil)
@@ -103,7 +211,20 @@ final class LayerList: NSOutlineView, NSTextFieldDelegate {
 
 // MARK: - Private
 
-extension LayerList {
+extension LayerListOutlineView {
+
+    private func relayoutLayerList(_ newLayer: CSLayer? = nil) {
+        render()
+
+        // Selection
+        if let newLayer = newLayer {
+            let newLayerIndex = row(forItem: newLayer)
+            let selection: IndexSet = [newLayerIndex]
+            selectRowIndexes(selection, byExtendingSelection: false)
+        }
+
+        render()
+    }
 
     fileprivate func initCommon() {
         backgroundColor = NSColor.clear
@@ -182,7 +303,7 @@ extension LayerList {
         let parent = self.parent(forItem: oldLayer) as! CSLayer
         parent.children = parent.children.map({ $0 === oldLayer ? newLayer : $0 })
 
-        onChange()
+        onChange?()
     }
 
     @discardableResult
@@ -195,7 +316,7 @@ extension LayerList {
 
         add(layer: copy, to: layer)
 
-        onChange()
+        onChange?()
 
         return copy
     }
@@ -258,9 +379,9 @@ extension LayerList {
 
         let documentController = NSDocumentController.shared
 
-        let document = Document()
+        let document = ComponentDocument()
 
-        document.data = CSComponent(name: layer.name, canvas: component?.canvas ?? [], rootLayer: layer, parameters: [], cases: [CSCase.defaultCase], logic: [], config: component?.config ?? CSData.Object([:]), metadata: component?.metadata ?? CSData.Object([:]))
+        document.file = CSComponent(name: layer.name, canvas: component?.canvas ?? [], rootLayer: layer, parameters: [], cases: [CSCase.defaultCase], logic: [], config: component?.config ?? CSData.Object([:]), metadata: component?.metadata ?? CSData.Object([:]))
 
         Swift.print("Writing to", url)
 
@@ -274,7 +395,7 @@ extension LayerList {
             let componentLayer = CSComponentLayer.make(from: url)
             self.replace(layer: layer, with: componentLayer)
 
-            self.onChange()
+            self.onChange?()
         })
     }
 
@@ -290,8 +411,8 @@ extension LayerList {
 
         guard let url = requestSaveFileURL() else { return }
 
-        let document = Document()
-        document.data = existingComponent
+        let document = ComponentDocument()
+        document.file = existingComponent
 
         do {
             try document.write(to: url, ofType: ".component")
@@ -301,10 +422,10 @@ extension LayerList {
 
         NSDocumentController.shared.openDocument(
             withContentsOf: url, display: true, completionHandler: { (document, _, _) in
-            layer.component = (document as! Document).file!
+            layer.component = (document as! ComponentDocument).file!
             layer.name = CSComponent.componentName(from: url)
             layer.type = CSLayer.LayerType.custom(url.deletingPathExtension().lastPathComponent)
-            self.onChange()
+            self.onChange?()
         })
     }
 
@@ -314,11 +435,41 @@ extension LayerList {
 
         replace(layer: layer, with: layer.component.rootLayer)
     }
+
+    override func keyDown(with event: NSEvent) {
+        let characters = event.charactersIgnoringModifiers!
+
+        if characters == String(Character(UnicodeScalar(NSDeleteCharacter)!)) {
+            guard let targetLayer = selectedLayer else { return }
+            if targetLayer === dataRoot { return }
+
+            guard let parent = self.parent(forItem: targetLayer) as? CSLayer else { return }
+
+            // Undo
+            let oldChildren = parent.children
+            let children = parent.children.filter({ $0 !== targetLayer })
+            UndoManager.shared.run(name: "Delete", execute: {[unowned self] in
+                parent.children = children
+                self.relayoutLayerList()
+                self.onChange?()
+                self.onSelectLayer?(nil)
+            }, undo: {[unowned self] in
+                parent.children = oldChildren
+                self.relayoutLayerList()
+                self.onChange?()
+                self.select(item: targetLayer)
+            })
+
+            return
+        }
+
+        super.keyDown(with: event)
+    }
 }
 
 // MARK: - NSOutlineViewDataSource
 
-extension LayerList: NSOutlineViewDelegate, NSOutlineViewDataSource {
+extension LayerListOutlineView: NSOutlineViewDelegate, NSOutlineViewDataSource {
     func outlineView(_ outlineView: NSOutlineView, numberOfChildrenOfItem item: Any?) -> Int {
         if item == nil {
             return 1
@@ -329,7 +480,7 @@ extension LayerList: NSOutlineViewDelegate, NSOutlineViewDataSource {
     }
     func outlineView(_ outlineView: NSOutlineView, child index: Int, ofItem item: Any?) -> Any {
         if item == nil {
-            return dataRoot
+            return dataRoot ?? CSLayer()
         } else {
             let node = item as! DataNode
             return node.child(at: index)
@@ -383,11 +534,11 @@ extension LayerList: NSOutlineViewDelegate, NSOutlineViewDataSource {
                     UndoManager.shared.run(name: "Visible", execute: {[unowned self] in
                         layer.visible = value
                         checkbox.state = value ? .on : .off
-                        self.layerDelegate?.layerList(self, do: .render)
+                        self.onChange?()
                     }, undo: {[unowned self] in
                         layer.visible = oldValue
                         checkbox.state = oldValue ? .on : .off
-                        self.layerDelegate?.layerList(self, do: .render)
+                        self.onChange?()
                     })
                 }
                 cellView.addSubview(checkbox)
@@ -451,7 +602,7 @@ extension LayerList: NSOutlineViewDelegate, NSOutlineViewDataSource {
             let targetLayer = item as! CSLayer
             let renderFunc = {[unowned self] in
                 self.render()
-                self.layerDelegate?.layerList(self, do: .render)
+                self.onChange?()
             }
             let oldParent = sourceLayer.parent!
             let oldIndex = oldParent.children.index(where: { (layer) -> Bool in
@@ -489,10 +640,8 @@ extension LayerList: NSOutlineViewDelegate, NSOutlineViewDataSource {
             }
         }
 
-        if selectedRow == -1 {
-            layerDelegate?.layerList(self, do: .clearInspector)
-        } else {
-            let item = self.item(atRow: selectedRow) as! DataNode?
+        if selectedRow != -1 {
+            let item = self.item(atRow: selectedRow) as? CSLayer
 
             // Don't allow hiding the root layer
             if selectedRow != 0 {
@@ -503,12 +652,14 @@ extension LayerList: NSOutlineViewDelegate, NSOutlineViewDataSource {
             }
 
             if shouldRenderOnSelectionChange {
-                layerDelegate?.layerList(self, do: .renderInspector(item!))
+                self.onSelectLayer?(item)
             }
         }
+
         previousRow = selectedRow
+
         if shouldRenderOnSelectionChange {
-            layerDelegate?.layerList(self, do: .render)
+            self.onSelectLayer?(selectedLayer)
         }
     }
 

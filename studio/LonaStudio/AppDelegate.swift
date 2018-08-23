@@ -219,7 +219,7 @@ class AppDelegate: NSObject, NSApplicationDelegate {
         else { return }
 
         do {
-            guard let document = try NSDocumentController.shared.openUntitledDocumentAndDisplay(true) as? Document else { return }
+            guard let document = try NSDocumentController.shared.openUntitledDocumentAndDisplay(true) as? ComponentDocument else { return }
 
             let componentLayer = CSComponentLayer.make(from: url)
             let component = CSComponent.makeDefaultComponent()

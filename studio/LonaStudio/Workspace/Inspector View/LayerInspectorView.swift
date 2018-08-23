@@ -9,7 +9,7 @@
 import Foundation
 import Cocoa
 
-class LayerInspectorView: InspectorView {
+class LayerInspectorView: CoreComponentInspectorView {
 
     enum ChangeType {
         case canvas
@@ -21,60 +21,60 @@ class LayerInspectorView: InspectorView {
     init(layer: CSLayer) {
         let properties: Properties = [
             // Layout
-            InspectorView.Property.direction: CSData.String(layer.flexDirection ?? "column"),
-            InspectorView.Property.horizontalAlignment: CSData.String(layer.horizontalAlignment),
-            InspectorView.Property.verticalAlignment: CSData.String(layer.verticalAlignment),
-            InspectorView.Property.widthSizingRule: CSData.String(layer.widthSizingRule.toString()),
-            InspectorView.Property.heightSizingRule: CSData.String(layer.heightSizingRule.toString()),
-            InspectorView.Property.itemSpacing: CSData.Number(layer.itemSpacing ?? 0),
-            InspectorView.Property.itemSpacingRule: CSData.String(layer.itemSpacingRule.toString()),
+            CoreComponentInspectorView.Property.direction: CSData.String(layer.flexDirection ?? "column"),
+            CoreComponentInspectorView.Property.horizontalAlignment: CSData.String(layer.horizontalAlignment),
+            CoreComponentInspectorView.Property.verticalAlignment: CSData.String(layer.verticalAlignment),
+            CoreComponentInspectorView.Property.widthSizingRule: CSData.String(layer.widthSizingRule.toString()),
+            CoreComponentInspectorView.Property.heightSizingRule: CSData.String(layer.heightSizingRule.toString()),
+            CoreComponentInspectorView.Property.itemSpacing: CSData.Number(layer.itemSpacing ?? 0),
+            CoreComponentInspectorView.Property.itemSpacingRule: CSData.String(layer.itemSpacingRule.toString()),
 
             // Box Model
-            InspectorView.Property.position: CSData.String(layer.position?.rawValue ?? "relative"),
-            InspectorView.Property.top: CSData.Number(layer.top ?? 0),
-            InspectorView.Property.right: CSData.Number(layer.right ?? 0),
-            InspectorView.Property.bottom: CSData.Number(layer.bottom ?? 0),
-            InspectorView.Property.left: CSData.Number(layer.left ?? 0),
-            InspectorView.Property.width: CSData.Number(layer.width ?? 0),
-            InspectorView.Property.height: CSData.Number(layer.height ?? 0),
-            InspectorView.Property.marginTop: CSData.Number(layer.marginTop ?? 0),
-            InspectorView.Property.marginRight: CSData.Number(layer.marginRight ?? 0),
-            InspectorView.Property.marginBottom: CSData.Number(layer.marginBottom ?? 0),
-            InspectorView.Property.marginLeft: CSData.Number(layer.marginLeft ?? 0),
-            InspectorView.Property.paddingTop: CSData.Number(layer.paddingTop ?? 0),
-            InspectorView.Property.paddingRight: CSData.Number(layer.paddingRight ?? 0),
-            InspectorView.Property.paddingBottom: CSData.Number(layer.paddingBottom ?? 0),
-            InspectorView.Property.paddingLeft: CSData.Number(layer.paddingLeft ?? 0),
-            InspectorView.Property.aspectRatio: CSData.Number(layer.aspectRatio ?? 0),
+            CoreComponentInspectorView.Property.position: CSData.String(layer.position?.rawValue ?? "relative"),
+            CoreComponentInspectorView.Property.top: CSData.Number(layer.top ?? 0),
+            CoreComponentInspectorView.Property.right: CSData.Number(layer.right ?? 0),
+            CoreComponentInspectorView.Property.bottom: CSData.Number(layer.bottom ?? 0),
+            CoreComponentInspectorView.Property.left: CSData.Number(layer.left ?? 0),
+            CoreComponentInspectorView.Property.width: CSData.Number(layer.width ?? 0),
+            CoreComponentInspectorView.Property.height: CSData.Number(layer.height ?? 0),
+            CoreComponentInspectorView.Property.marginTop: CSData.Number(layer.marginTop ?? 0),
+            CoreComponentInspectorView.Property.marginRight: CSData.Number(layer.marginRight ?? 0),
+            CoreComponentInspectorView.Property.marginBottom: CSData.Number(layer.marginBottom ?? 0),
+            CoreComponentInspectorView.Property.marginLeft: CSData.Number(layer.marginLeft ?? 0),
+            CoreComponentInspectorView.Property.paddingTop: CSData.Number(layer.paddingTop ?? 0),
+            CoreComponentInspectorView.Property.paddingRight: CSData.Number(layer.paddingRight ?? 0),
+            CoreComponentInspectorView.Property.paddingBottom: CSData.Number(layer.paddingBottom ?? 0),
+            CoreComponentInspectorView.Property.paddingLeft: CSData.Number(layer.paddingLeft ?? 0),
+            CoreComponentInspectorView.Property.aspectRatio: CSData.Number(layer.aspectRatio ?? 0),
 
             // Border
-            InspectorView.Property.borderRadius: CSData.Number(layer.borderRadius ?? 0),
-            InspectorView.Property.borderColor: CSData.String(layer.borderColor ?? "transparent"),
-            InspectorView.Property.borderColorEnabled: CSData.Bool(layer.borderColor != nil),
-            InspectorView.Property.borderWidth: CSData.Number(layer.borderWidth ?? 0),
+            CoreComponentInspectorView.Property.borderRadius: CSData.Number(layer.borderRadius ?? 0),
+            CoreComponentInspectorView.Property.borderColor: CSData.String(layer.borderColor ?? "transparent"),
+            CoreComponentInspectorView.Property.borderColorEnabled: CSData.Bool(layer.borderColor != nil),
+            CoreComponentInspectorView.Property.borderWidth: CSData.Number(layer.borderWidth ?? 0),
 
             // Color
-            InspectorView.Property.backgroundColor: CSData.String(layer.backgroundColor ?? "transparent"),
-            InspectorView.Property.backgroundColorEnabled: CSData.Bool(layer.backgroundColor != nil),
-            InspectorView.Property.backgroundGradient: CSData.String(layer.backgroundGradient ?? ""),
+            CoreComponentInspectorView.Property.backgroundColor: CSData.String(layer.backgroundColor ?? "transparent"),
+            CoreComponentInspectorView.Property.backgroundColorEnabled: CSData.Bool(layer.backgroundColor != nil),
+            CoreComponentInspectorView.Property.backgroundGradient: CSData.String(layer.backgroundGradient ?? ""),
 
             // Shadow
-            InspectorView.Property.shadow: CSData.String(layer.shadow ?? "default"),
-            InspectorView.Property.shadowEnabled: CSData.Bool(layer.shadow != nil),
+            CoreComponentInspectorView.Property.shadow: CSData.String(layer.shadow ?? "default"),
+            CoreComponentInspectorView.Property.shadowEnabled: CSData.Bool(layer.shadow != nil),
 
             // Text
-            InspectorView.Property.text: CSData.String(layer.text ?? ""),
-            InspectorView.Property.textStyle: CSData.String(layer.font ?? CSTypography.defaultName),
-            InspectorView.Property.textAlign: CSData.String(layer.textAlign ?? "left"),
-            InspectorView.Property.numberOfLines: CSData.Number(Double(layer.numberOfLines ?? -1)),
+            CoreComponentInspectorView.Property.text: CSData.String(layer.text ?? ""),
+            CoreComponentInspectorView.Property.textStyle: CSData.String(layer.font ?? CSTypography.defaultName),
+            CoreComponentInspectorView.Property.textAlign: CSData.String(layer.textAlign ?? "left"),
+            CoreComponentInspectorView.Property.numberOfLines: CSData.Number(Double(layer.numberOfLines ?? -1)),
 
             // Image
-            InspectorView.Property.image: CSData.String(layer.image ?? ""),
-            InspectorView.Property.resizeMode: CSData.String(layer.resizeMode?.rawValue ?? "cover"),
+            CoreComponentInspectorView.Property.image: CSData.String(layer.image ?? ""),
+            CoreComponentInspectorView.Property.resizeMode: CSData.String(layer.resizeMode?.rawValue ?? "cover"),
 
             // Animation
-            InspectorView.Property.animation: CSData.String(layer.animation ?? ""),
-            InspectorView.Property.animationSpeed: CSData.Number(layer.animationSpeed ?? 1)
+            CoreComponentInspectorView.Property.animation: CSData.String(layer.animation ?? ""),
+            CoreComponentInspectorView.Property.animationSpeed: CSData.Number(layer.animationSpeed ?? 1)
         ]
 
         super.init(frame: NSRect.zero, layerType: layer.type, properties: properties)

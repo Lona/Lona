@@ -15,6 +15,7 @@ First, make sure you have [`bundler`](http://bundler.io/) and [Cocoapods](https:
 ```
 cd studio
 bundle && bundle exec pod install
+carthage bootstrap
 ```
 
 Open LonaStudio.xcworkspace and build in Xcode 9.3+ on High Sierra+. If there are warnings (e.g. about project settings) you can ignore them.
@@ -23,11 +24,11 @@ Open LonaStudio.xcworkspace and build in Xcode 9.3+ on High Sierra+. If there ar
 
 To work in Lona Studio, you'll need a properly configured _workspace_. A workspace is a directory containing, optionally, the following files:
 
-* `colors.json`
-* `textStyles.json`
-* `gradients.json`
-* `shadows.json`
-* `types.json`
+- `colors.json`
+- `textStyles.json`
+- `gradients.json`
+- `shadows.json`
+- `types.json`
 
 Opening the material design directory in the `examples` directory of the repo is a good place to start.
 

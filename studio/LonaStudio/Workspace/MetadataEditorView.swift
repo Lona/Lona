@@ -11,7 +11,7 @@ import AppKit
 
 class MetadataEditorView: NSStackView, CSControl {
 
-    var data: CSData
+    var data: CSData { didSet { update() } }
     var onChangeData: CSControl.Handler
 
     func render() {
@@ -75,9 +75,11 @@ class MetadataEditorView: NSStackView, CSControl {
         render()
     }
 
-    func update(data: CSData) {
-        self.data = data
+    convenience init() {
+        self.init(data: .Null, onChangeData: {_ in })
+    }
 
+    func update() {
         for subview in arrangedSubviews { subview.removeFromSuperview() }
 
         render()

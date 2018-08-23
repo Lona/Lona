@@ -3,9 +3,7 @@
     <dependencies>
         <deployment identifier="macosx"/>
         <plugIn identifier="com.apple.InterfaceBuilder.CocoaPlugin" version="14109"/>
-        <capability name="box content view" minToolsVersion="7.0"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
-        <capability name="stacking Non-gravity area distributions on NSStackView" minToolsVersion="7.0" minSystemVersion="10.11"/>
     </dependencies>
     <scenes>
         <!--Application-->
@@ -859,148 +857,18 @@
                             <outlet property="delegate" destination="jGA-0Y-lOj" id="neQ-vi-PT1"/>
                         </connections>
                     </window>
-                    <connections>
-                        <segue destination="5gI-5U-AMq" kind="relationship" relationship="window.shadowedContentViewController" id="nsd-lR-9xd"/>
-                    </connections>
                 </windowController>
                 <customObject id="6f7-a7-6o1" userLabel="First Responder" customClass="NSResponder" sceneMemberID="firstResponder"/>
             </objects>
             <point key="canvasLocation" x="75" y="366"/>
         </scene>
-        <!--View Controller-->
+        <!--Workspace View Controller-->
         <scene sceneID="hIz-AP-VOD">
             <objects>
-                <viewController id="5gI-5U-AMq" customClass="ViewController" customModule="LonaStudio" customModuleProvider="target" sceneMemberID="viewController">
-                    <customView key="view" id="xWc-ZW-8Re">
-                        <rect key="frame" x="0.0" y="0.0" width="1200" height="800"/>
-                        <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
-                        <subviews>
-                            <customView translatesAutoresizingMaskIntoConstraints="NO" id="Dhz-8v-y0T" userLabel="WorkspaceTabsContainer">
-                                <rect key="frame" x="0.0" y="0.0" width="60" height="800"/>
-                                <constraints>
-                                    <constraint firstAttribute="width" constant="60" id="n5A-3e-8A2"/>
-                                </constraints>
-                            </customView>
-                            <splitView arrangesAllSubviews="NO" dividerStyle="thin" vertical="YES" translatesAutoresizingMaskIntoConstraints="NO" id="wR8-fK-fyL">
-                                <rect key="frame" x="60" y="0.0" width="1140" height="800"/>
-                                <subviews>
-                                    <customView fixedFrame="YES" id="xoF-tO-Yjv">
-                                        <rect key="frame" x="0.0" y="0.0" width="191" height="800"/>
-                                        <autoresizingMask key="autoresizingMask"/>
-                                    </customView>
-                                    <customView id="8m0-fm-Vcx">
-                                        <rect key="frame" x="192" y="0.0" width="948" height="800"/>
-                                        <autoresizingMask key="autoresizingMask"/>
-                                        <subviews>
-                                            <stackView distribution="fill" orientation="horizontal" alignment="top" spacing="0.0" horizontalStackHuggingPriority="249.99998474121094" verticalStackHuggingPriority="249.99998474121094" detachesHiddenViews="YES" translatesAutoresizingMaskIntoConstraints="NO" id="5CG-f1-ih0">
-                                                <rect key="frame" x="0.0" y="0.0" width="948" height="800"/>
-                                                <subviews>
-                                                    <splitView arrangesAllSubviews="NO" translatesAutoresizingMaskIntoConstraints="NO" id="wvM-qC-Tgo" customClass="SectionSplitter" customModule="LonaStudio" customModuleProvider="target">
-                                                        <rect key="frame" x="0.0" y="0.0" width="668" height="800"/>
-                                                        <subviews>
-                                                            <customView id="JRH-I4-g9x">
-                                                                <rect key="frame" x="0.0" y="0.0" width="668" height="614"/>
-                                                                <autoresizingMask key="autoresizingMask"/>
-                                                                <subviews>
-                                                                    <box boxType="custom" borderType="none" borderWidth="0.0" title="Box" translatesAutoresizingMaskIntoConstraints="NO" id="LQR-Dg-zfW">
-                                                                        <rect key="frame" x="0.0" y="0.0" width="668" height="614"/>
-                                                                        <view key="contentView" id="TQI-E0-XPk">
-                                                                            <rect key="frame" x="0.0" y="0.0" width="668" height="614"/>
-                                                                            <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
-                                                                        </view>
-                                                                    </box>
-                                                                </subviews>
-                                                                <constraints>
-                                                                    <constraint firstItem="LQR-Dg-zfW" firstAttribute="leading" secondItem="JRH-I4-g9x" secondAttribute="leading" id="6Pv-YP-HvH"/>
-                                                                    <constraint firstAttribute="trailing" secondItem="LQR-Dg-zfW" secondAttribute="trailing" id="93H-TS-trm"/>
-                                                                    <constraint firstAttribute="bottom" secondItem="LQR-Dg-zfW" secondAttribute="bottom" id="etI-Q0-N6f"/>
-                                                                    <constraint firstItem="LQR-Dg-zfW" firstAttribute="top" secondItem="JRH-I4-g9x" secondAttribute="top" id="h4F-Ah-Y3S"/>
-                                                                </constraints>
-                                                            </customView>
-                                                            <customView id="6G8-EA-AQZ">
-                                                                <rect key="frame" x="0.0" y="623" width="668" height="177"/>
-                                                                <autoresizingMask key="autoresizingMask"/>
-                                                                <subviews>
-                                                                    <customView translatesAutoresizingMaskIntoConstraints="NO" id="0di-7K-4hy" userLabel="Bottom">
-                                                                        <rect key="frame" x="0.0" y="0.0" width="668" height="177"/>
-                                                                    </customView>
-                                                                </subviews>
-                                                                <constraints>
-                                                                    <constraint firstItem="0di-7K-4hy" firstAttribute="leading" secondItem="6G8-EA-AQZ" secondAttribute="leading" id="CdO-bV-8KD"/>
-                                                                    <constraint firstAttribute="trailing" secondItem="0di-7K-4hy" secondAttribute="trailing" id="Stj-dT-JtK"/>
-                                                                    <constraint firstAttribute="bottom" secondItem="0di-7K-4hy" secondAttribute="bottom" id="d8y-zL-GxF"/>
-                                                                    <constraint firstItem="0di-7K-4hy" firstAttribute="top" secondItem="6G8-EA-AQZ" secondAttribute="top" id="j9l-8Z-Iex"/>
-                                                                </constraints>
-                                                            </customView>
-                                                        </subviews>
-                                                        <holdingPriorities>
-                                                            <real value="250"/>
-                                                            <real value="251"/>
-                                                        </holdingPriorities>
-                                                    </splitView>
-                                                    <box boxType="custom" borderWidth="0.0" title="Box" translatesAutoresizingMaskIntoConstraints="NO" id="lbg-XB-k8t">
-                                                        <rect key="frame" x="668" y="0.0" width="280" height="800"/>
-                                                        <view key="contentView" id="DDr-aE-YAO">
-                                                            <rect key="frame" x="0.0" y="0.0" width="280" height="800"/>
-                                                            <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
-                                                        </view>
-                                                        <constraints>
-                                                            <constraint firstAttribute="width" constant="280" id="Ymp-85-M91"/>
-                                                        </constraints>
-                                                        <color key="fillColor" red="0.99994784593582153" green="1" blue="0.9998740553855896" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
-                                                    </box>
-                                                </subviews>
-                                                <constraints>
-                                                    <constraint firstAttribute="bottom" secondItem="wvM-qC-Tgo" secondAttribute="bottom" id="cTA-D3-ZBM"/>
-                                                    <constraint firstItem="wvM-qC-Tgo" firstAttribute="top" secondItem="5CG-f1-ih0" secondAttribute="top" id="clL-NP-CC5"/>
-                                                </constraints>
-                                                <visibilityPriorities>
-                                                    <integer value="1000"/>
-                                                    <integer value="1000"/>
-                                                </visibilityPriorities>
-                                                <customSpacing>
-                                                    <real value="3.4028234663852886e+38"/>
-                                                    <real value="3.4028234663852886e+38"/>
-                                                </customSpacing>
-                                            </stackView>
-                                        </subviews>
-                                        <constraints>
-                                            <constraint firstAttribute="bottom" secondItem="5CG-f1-ih0" secondAttribute="bottom" id="In5-7R-n5S"/>
-                                            <constraint firstAttribute="trailing" secondItem="5CG-f1-ih0" secondAttribute="trailing" id="TbN-tA-7lz"/>
-                                            <constraint firstItem="5CG-f1-ih0" firstAttribute="top" secondItem="8m0-fm-Vcx" secondAttribute="top" id="UIL-aN-HOV"/>
-                                            <constraint firstItem="5CG-f1-ih0" firstAttribute="leading" secondItem="8m0-fm-Vcx" secondAttribute="leading" id="tDV-Ah-fPt"/>
-                                        </constraints>
-                                    </customView>
-                                </subviews>
-                                <holdingPriorities>
-                                    <real value="490"/>
-                                    <real value="250"/>
-                                </holdingPriorities>
-                            </splitView>
-                        </subviews>
-                        <constraints>
-                            <constraint firstItem="wR8-fK-fyL" firstAttribute="top" secondItem="xWc-ZW-8Re" secondAttribute="top" id="4HL-zp-1oB"/>
-                            <constraint firstItem="Dhz-8v-y0T" firstAttribute="leading" secondItem="xWc-ZW-8Re" secondAttribute="leading" id="Wwi-gu-oos"/>
-                            <constraint firstItem="Dhz-8v-y0T" firstAttribute="top" secondItem="xWc-ZW-8Re" secondAttribute="top" id="bNH-LX-JFk"/>
-                            <constraint firstAttribute="bottom" secondItem="Dhz-8v-y0T" secondAttribute="bottom" id="iWZ-6h-Hgc"/>
-                            <constraint firstAttribute="bottom" secondItem="wR8-fK-fyL" secondAttribute="bottom" id="mlN-7j-XFV"/>
-                            <constraint firstAttribute="trailing" secondItem="wR8-fK-fyL" secondAttribute="trailing" id="uzS-QC-M0h"/>
-                            <constraint firstItem="wR8-fK-fyL" firstAttribute="leading" secondItem="xWc-ZW-8Re" secondAttribute="leading" constant="60" id="wCk-e2-HDj"/>
-                        </constraints>
-                    </customView>
-                    <connections>
-                        <outlet property="bottom" destination="0di-7K-4hy" id="wjD-Qa-0yn"/>
-                        <outlet property="drawingSurface" destination="TQI-E0-XPk" id="zhz-GC-iED"/>
-                        <outlet property="left" destination="xoF-tO-Yjv" id="Veh-R6-U70"/>
-                        <outlet property="right" destination="DDr-aE-YAO" id="DEB-Jd-94B"/>
-                        <outlet property="verticalSplitter" destination="wvM-qC-Tgo" id="dZL-aj-bDp"/>
-                        <outlet property="workspaceSplitView" destination="wR8-fK-fyL" id="ZLh-oY-3O4"/>
-                        <outlet property="workspaceTabsContainer" destination="Dhz-8v-y0T" id="YbK-yk-fr2"/>
-                    </connections>
-                </viewController>
+                <viewController identifier="MainWorkspace" storyboardIdentifier="MainWorkspace" id="5gI-5U-AMq" customClass="WorkspaceViewController" customModule="LonaStudio" customModuleProvider="target" sceneMemberID="viewController"/>
                 <customObject id="2Tp-Fl-jBw" userLabel="First Responder" customClass="NSResponder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="1130.5" y="566.5"/>
+            <point key="canvasLocation" x="621" y="321"/>
         </scene>
     </scenes>
 </document>
