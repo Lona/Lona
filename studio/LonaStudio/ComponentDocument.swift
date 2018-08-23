@@ -12,6 +12,7 @@ class ComponentDocument: NSDocument {
 
     override init() {
         super.init()
+
         // Add your subclass-specific initialization here.
         self.hasUndoManager = true
     }
@@ -23,8 +24,8 @@ class ComponentDocument: NSDocument {
     var name: String = "Component"
     var file: CSComponent?
 
-    var viewController: ViewController? {
-        return windowControllers[0].contentViewController as? ViewController
+    var viewController: WorkspaceViewController? {
+        return windowControllers[0].contentViewController as? WorkspaceViewController
     }
 
     var controller: NSWindowController?
@@ -41,35 +42,18 @@ class ComponentDocument: NSDocument {
     private let windowControllerId = NSStoryboard.SceneIdentifier(rawValue: "Document Window Controller")
     private let storyboardName = NSStoryboard.Name(rawValue: "Main")
 
-    func createWorkspaceController() -> WorkspaceViewController {
-        let vc = WorkspaceViewController()
-        vc.view.frame = NSRect(x: 0, y: 0, width: 1000, height: 600)
-        return vc
-    }
-
     override func makeWindowControllers() {
         let storyboard = NSStoryboard(name: storyboardName, bundle: nil)
 
-        let workspaceViewController = createWorkspaceController()
+        let workspaceViewController = storyboard.instantiateController(withIdentifier: viewControllerId) as! WorkspaceViewController
         workspaceViewController.component = file
+        workspaceViewController.fileURL = fileURL
 
         let windowController = storyboard.instantiateController(withIdentifier: windowControllerId) as! NSWindowController
         windowController.window?.tabbingMode = .preferred
         windowController.contentViewController = workspaceViewController
 
-//        windowController.contentViewController = storyboard.instantiateController(withIdentifier: viewControllerId) as! ViewController
-
         self.addWindowController(windowController)
-
-//        if data != nil {
-//            viewController?.setComponent(component: data!)
-//            viewController?.fileURL = fileURL
-//        }
-//
-//        if let file = file {
-//            viewController?.setComponent(component: file)
-//            viewController?.fileURL = fileURL
-//        }
 
         controller = windowController
     }
@@ -80,15 +64,7 @@ class ComponentDocument: NSDocument {
     }
 
     override func data(ofType typeName: String) throws -> Data {
-        var component: CSComponent? = nil
-        if controller != nil {
-            let viewController = controller!.contentViewController as! ViewController
-            component = viewController.component
-        }
-//        if data != nil {
-//            component = data
-//        }
-        if let component = component, let json = component.toData(), let data = json.toData() {
+        if let file = file, let json = file.toData(), let data = json.toData() {
             return data
         }
 

@@ -9,6 +9,36 @@
 import AppKit
 import Foundation
 
+private func getDirectory() -> URL? {
+    let dialog = NSOpenPanel()
+
+    dialog.title                   = "Choose export directory"
+    dialog.showsResizeIndicator    = true
+    dialog.showsHiddenFiles        = false
+    dialog.canCreateDirectories    = true
+    dialog.canChooseDirectories    = true
+    dialog.canChooseFiles          = false
+
+    return dialog.runModal() == NSApplication.ModalResponse.OK ? dialog.url : nil
+}
+
+private func requestSketchFileSaveURL() -> URL? {
+    let dialog = NSSavePanel()
+
+    dialog.title                   = "Export .sketch file"
+    dialog.showsResizeIndicator    = true
+    dialog.showsHiddenFiles        = false
+    dialog.canCreateDirectories    = true
+    dialog.allowedFileTypes        = ["sketch"]
+
+    if dialog.runModal() == NSApplication.ModalResponse.OK {
+        return dialog.url
+    } else {
+        // User clicked on "Cancel"
+        return nil
+    }
+}
+
 class ColorVC: NSViewController {
 
     private let backgroundColor: NSColor
@@ -47,6 +77,22 @@ class ComponentEditorViewController: NSSplitViewController {
     // MARK: Public
 
     public var component: CSComponent? = nil { didSet { update() } }
+    public var canvasPanningEnabled: Bool {
+        get { return canvasCollectionView.panningEnabled }
+        set { canvasCollectionView.panningEnabled = newValue }
+    }
+
+    func zoomToActualSize() {
+        canvasCollectionView.zoom(to: 1)
+    }
+
+    func zoomIn() {
+        canvasCollectionView.zoomIn()
+    }
+
+    func zoomOut() {
+        canvasCollectionView.zoomOut()
+    }
 
     // MARK: Private
 
@@ -175,14 +221,18 @@ class WorkspaceViewController: NSSplitViewController {
 
     required init?(coder: NSCoder) {
         super.init(coder: coder)
+        setUpViews()
+        setUpLayout()
     }
 
     // MARK: Public
 
-    public var component: CSComponent? = nil { didSet { update() } }
-    public var selectedLayer: CSLayer? = nil { didSet { update() } }
+    public var component: CSComponent? { didSet { update() } }
+    public var fileURL: URL?
 
     // MARK: Private
+
+    private var selectedLayer: CSLayer?
 
     private lazy var layerList = LayerList()
     private lazy var layerListViewController: NSViewController = {
@@ -224,10 +274,21 @@ class WorkspaceViewController: NSSplitViewController {
     private func update() {
         layerList.component = component
         componentEditorViewController.component = component
-        inspectorView.content = nil
+        inspectorView.content = selectedLayer
 
         layerList.onSelectLayer = { layer in
+            self.selectedLayer = layer
             self.inspectorView.content = layer
+        }
+
+        layerList.onChange = {
+            self.componentEditorViewController.component = self.component
+            self.inspectorView.content = self.selectedLayer
+        }
+
+        inspectorView.onChangeContent = { layer in
+            self.componentEditorViewController.component = self.component
+            self.layerList.component = self.component
         }
     }
 
@@ -236,19 +297,226 @@ class WorkspaceViewController: NSSplitViewController {
     var subscriptions: [() -> Void] = []
 
     override func viewWillAppear() {
-        subscriptions.append( LonaPlugins.current.register(eventType: .onReloadWorkspace) {
+        subscriptions.append(LonaPlugins.current.register(eventType: .onReloadWorkspace) {
             self.component?.layers
                 .filter({ $0 is CSComponentLayer })
                 .forEach({ layer in
                     let layer = layer as! CSComponentLayer
                     layer.reload()
                 })
-//            layerList.render()
-//            render()
+
+            self.update()
         })
     }
 
     override func viewWillDisappear() {
         subscriptions.forEach({ sub in sub() })
     }
+
+    // Key handling
+
+    override func keyDown(with event: NSEvent) {
+        let characters = event.charactersIgnoringModifiers!
+
+        if characters == String(Character(" ")) {
+            componentEditorViewController.canvasPanningEnabled = true
+        }
+
+        super.keyDown(with: event)
+    }
+
+    override func keyUp(with event: NSEvent) {
+        let characters = event.charactersIgnoringModifiers!
+
+        if characters == String(Character(" ")) {
+            componentEditorViewController.canvasPanningEnabled = false
+        }
+
+        super.keyUp(with: event)
+    }
+}
+
+// MARK: - IBActions
+
+extension WorkspaceViewController {
+    @IBAction func zoomToActualSize(_ sender: AnyObject) {
+        componentEditorViewController.zoomToActualSize()
+    }
+
+    @IBAction func zoomIn(_ sender: AnyObject) {
+        componentEditorViewController.zoomIn()
+    }
+
+    @IBAction func zoomOut(_ sender: AnyObject) {
+        componentEditorViewController.zoomOut()
+    }
+
+    @IBAction func exportToAnimation(_ sender: AnyObject) {
+        guard let component = component, let url = getDirectory() else { return }
+
+        RenderSurface.renderToAnimations(component: component, directory: url)
+    }
+
+    @IBAction func exportCurrentModuleToImages(_ sender: AnyObject) {
+        guard let url = getDirectory() else { return }
+
+        RenderSurface.renderCurrentModuleToImages(savedTo: url)
+    }
+
+    @IBAction func exportToImages(_ sender: AnyObject) {
+        guard let component = component, let url = getDirectory() else { return }
+
+        RenderSurface.renderToImages(component: component, directory: url)
+    }
+
+    @IBAction func exportToVideo(_ sender: AnyObject) {
+        guard let component = component, let url = getDirectory() else { return }
+
+        RenderSurface.renderToVideos(component: component, directory: url)
+    }
+
+    @IBAction func exportToSketch(_ sender: AnyObject) {
+        guard let component = component, let outputFile = requestSketchFileSaveURL() else { return }
+
+        let mainBundle = Bundle.main
+
+        guard let pathToNode = mainBundle.path(forResource: "node", ofType: "") else { return }
+
+        let dirname = URL(fileURLWithPath: pathToNode).deletingLastPathComponent()
+        let componentToSketch = dirname
+            .appendingPathComponent("Modules", isDirectory: true)
+            .appendingPathComponent("component-to-sketch", isDirectory: true)
+
+        let output = RenderSurface.renderToJSON(layout: component.canvasLayoutAxis, component: component, selected: nil)
+        guard let data = output.toData() else { return }
+
+        guard #available(OSX 10.12, *) else { return }
+
+        DispatchQueue.global().async {
+            let task = Process()
+
+            // Set the task parameters
+            task.launchPath = pathToNode
+            task.arguments = [
+                componentToSketch.appendingPathComponent("index.js").path,
+                outputFile.path
+            ]
+            task.currentDirectoryPath = componentToSketch.path
+
+            let stdin = Pipe()
+            let stdout = Pipe()
+
+            task.standardInput = stdin
+            task.standardOutput = stdout
+
+            // Launch the task
+            task.launch()
+
+            stdin.fileHandleForWriting.write(data)
+            stdin.fileHandleForWriting.closeFile()
+
+            task.waitUntilExit()
+
+            let handle = stdout.fileHandleForReading
+            let data = handle.readDataToEndOfFile()
+            let out = NSString(data: data, encoding: String.Encoding.utf8.rawValue)
+
+            Swift.print("result", out ?? "stdout empty")
+        }
+    }
+
+    @IBAction func addComponent(_ sender: AnyObject) {
+        guard let component = component else { return }
+
+        let dialog = NSOpenPanel()
+
+        dialog.title                   = "Choose a .component file"
+        dialog.showsResizeIndicator    = true
+        dialog.showsHiddenFiles        = false
+        dialog.canChooseDirectories    = false
+        dialog.canCreateDirectories    = false
+        dialog.allowsMultipleSelection = false
+        dialog.allowedFileTypes        = ["component"]
+
+        if dialog.runModal() == NSApplication.ModalResponse.OK {
+            if let url = dialog.url {
+                let newLayer = CSComponentLayer.make(from: url)
+
+                // Add number suffix if needed
+                newLayer.name = component.getNewLayerName(startingWith: newLayer.name)
+
+                layerList.addLayer(layer: newLayer)
+            }
+        } else {
+            // User clicked on "Cancel"
+            return
+        }
+    }
+
+    @IBAction func addChildren(_ sender: AnyObject) {
+        let newLayer = CSLayer(name: "Children", type: .children, parameters: [
+            "width": 100.toData(),
+            "height": 100.toData(),
+            "backgroundColor": "#D8D8D8".toData()
+        ])
+
+        layerList.addLayer(layer: newLayer)
+    }
+
+    @IBAction func addImage(_ sender: AnyObject) {
+        guard let component = component else { return }
+
+        let name = component.getNewLayerName(startingWith: "Image")
+
+        let newLayer = CSLayer(name: name, type: .image, parameters: [
+            "width": 100.toData(),
+            "height": 100.toData(),
+            "backgroundColor": "#D8D8D8".toData()
+        ])
+
+        layerList.addLayer(layer: newLayer)
+    }
+
+    @IBAction func addAnimation(_ sender: AnyObject) {
+        guard let component = component else { return }
+
+        let name = component.getNewLayerName(startingWith: "Animation")
+
+        let newLayer = CSLayer(name: name, type: .animation, parameters: [
+            "width": 100.toData(),
+            "height": 100.toData(),
+            "backgroundColor": "#D8D8D8".toData()
+        ])
+
+        layerList.addLayer(layer: newLayer)
+    }
+
+    @IBAction func addView(_ sender: AnyObject) {
+        guard let component = component else { return }
+
+        let name = component.getNewLayerName(startingWith: "View")
+
+        let newLayer = CSLayer(name: name, type: .view, parameters: [
+            "width": 100.toData(),
+            "height": 100.toData(),
+            "backgroundColor": "#D8D8D8".toData()
+        ])
+
+        layerList.addLayer(layer: newLayer)
+    }
+
+    @IBAction func addText(_ sender: AnyObject) {
+        guard let component = component else { return }
+
+        let name = component.getNewLayerName(startingWith: "Text")
+
+        let newLayer = CSLayer(name: name, type: .text, parameters: [
+            "text": "Text goes here".toData(),
+            "widthSizingRule": "Shrink".toData(),
+            "heightSizingRule": "Shrink".toData()
+        ])
+
+        layerList.addLayer(layer: newLayer)
+    }
+
 }

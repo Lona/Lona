@@ -40,6 +40,11 @@ public class LayerList: NSBox {
 
     var component: CSComponent? { didSet { update() } }
 
+    var onChange: (() -> Void)? {
+        get { return outlineView.onChange }
+        set { outlineView.onChange = newValue }
+    }
+
     var onSelectLayer: ((CSLayer?) -> Void)? {
         get { return outlineView.onSelectLayer }
         set { outlineView.onSelectLayer = newValue }
@@ -96,15 +101,13 @@ final class LayerListOutlineView: NSOutlineView, NSTextFieldDelegate {
         }
     }
 
-    // swiftlint:disable weak_delegate
-    weak var layerDelegate: LayerListDelegate?
     fileprivate var shouldRenderOnSelectionChange = true
     fileprivate var previousRow = -1
     fileprivate var dataRoot: CSLayer? {
         return component?.rootLayer
     }
 
-    var onChange: () -> Void = {}
+    var onChange: (() -> Void)?
 
     var onSelectLayer: ((CSLayer?) -> Void)?
 
@@ -123,9 +126,9 @@ final class LayerListOutlineView: NSOutlineView, NSTextFieldDelegate {
 
     // MARK: - Init
 
-    init(layerDelegate: LayerListDelegate? = nil) {
-        self.layerDelegate = layerDelegate
+    init() {
         super.init(frame: NSRect.zero)
+
         initCommon()
         setupDefaultColumns()
     }
@@ -156,10 +159,12 @@ final class LayerListOutlineView: NSOutlineView, NSTextFieldDelegate {
             execute: {[unowned self] in
                 parent.insertChild(newLayer, at: index)
                 self.relayoutLayerList(newLayer)
+                self.onChange?()
             },
             undo: {[unowned self] in
                 parent.children = oldChildren
                 self.relayoutLayerList()
+                self.onChange?()
             }
         )
     }
@@ -294,7 +299,7 @@ extension LayerListOutlineView {
         let parent = self.parent(forItem: oldLayer) as! CSLayer
         parent.children = parent.children.map({ $0 === oldLayer ? newLayer : $0 })
 
-        onChange()
+        onChange?()
     }
 
     @discardableResult
@@ -307,7 +312,7 @@ extension LayerListOutlineView {
 
         add(layer: copy, to: layer)
 
-        onChange()
+        onChange?()
 
         return copy
     }
@@ -386,7 +391,7 @@ extension LayerListOutlineView {
             let componentLayer = CSComponentLayer.make(from: url)
             self.replace(layer: layer, with: componentLayer)
 
-            self.onChange()
+            self.onChange?()
         })
     }
 
@@ -416,7 +421,7 @@ extension LayerListOutlineView {
             layer.component = (document as! ComponentDocument).file!
             layer.name = CSComponent.componentName(from: url)
             layer.type = CSLayer.LayerType.custom(url.deletingPathExtension().lastPathComponent)
-            self.onChange()
+            self.onChange?()
         })
     }
 
@@ -425,6 +430,34 @@ extension LayerListOutlineView {
         let layer = menuItem.representedObject as! CSComponentLayer
 
         replace(layer: layer, with: layer.component.rootLayer)
+    }
+
+    override func keyDown(with event: NSEvent) {
+        let characters = event.charactersIgnoringModifiers!
+
+        if characters == String(Character(UnicodeScalar(NSDeleteCharacter)!)) {
+            guard let targetLayer = selectedLayer else { return }
+            if targetLayer === dataRoot { return }
+
+            guard let parent = self.parent(forItem: targetLayer) as? CSLayer else { return }
+
+            // Undo
+            let oldChildren = parent.children
+            let children = parent.children.filter({ $0 !== targetLayer })
+            UndoManager.shared.run(name: "Delete", execute: {[unowned self] in
+                parent.children = children
+                self.relayoutLayerList()
+                self.onChange?()
+            }, undo: {[unowned self] in
+                parent.children = oldChildren
+                self.relayoutLayerList()
+                self.onChange?()
+            })
+
+            return
+        }
+
+        super.keyDown(with: event)
     }
 }
 
@@ -495,11 +528,11 @@ extension LayerListOutlineView: NSOutlineViewDelegate, NSOutlineViewDataSource {
                     UndoManager.shared.run(name: "Visible", execute: {[unowned self] in
                         layer.visible = value
                         checkbox.state = value ? .on : .off
-                        self.layerDelegate?.layerList(self, do: .render)
+                        self.onChange?()
                     }, undo: {[unowned self] in
                         layer.visible = oldValue
                         checkbox.state = oldValue ? .on : .off
-                        self.layerDelegate?.layerList(self, do: .render)
+                        self.onChange?()
                     })
                 }
                 cellView.addSubview(checkbox)
@@ -563,7 +596,7 @@ extension LayerListOutlineView: NSOutlineViewDelegate, NSOutlineViewDataSource {
             let targetLayer = item as! CSLayer
             let renderFunc = {[unowned self] in
                 self.render()
-                self.layerDelegate?.layerList(self, do: .render)
+                self.onChange?()
             }
             let oldParent = sourceLayer.parent!
             let oldIndex = oldParent.children.index(where: { (layer) -> Bool in
@@ -601,10 +634,8 @@ extension LayerListOutlineView: NSOutlineViewDelegate, NSOutlineViewDataSource {
             }
         }
 
-        if selectedRow == -1 {
-            layerDelegate?.layerList(self, do: .clearInspector)
-        } else {
-            let item = self.item(atRow: selectedRow) as! DataNode?
+        if selectedRow != -1 {
+            let item = self.item(atRow: selectedRow) as? CSLayer
 
             // Don't allow hiding the root layer
             if selectedRow != 0 {
@@ -615,15 +646,15 @@ extension LayerListOutlineView: NSOutlineViewDelegate, NSOutlineViewDataSource {
             }
 
             if shouldRenderOnSelectionChange {
-                layerDelegate?.layerList(self, do: .renderInspector(item!))
+                self.onSelectLayer?(item)
             }
         }
-        previousRow = selectedRow
-        if shouldRenderOnSelectionChange {
-            layerDelegate?.layerList(self, do: .render)
-        }
 
-        self.onSelectLayer?(selectedLayer)
+        previousRow = selectedRow
+
+        if shouldRenderOnSelectionChange {
+            self.onSelectLayer?(selectedLayer)
+        }
     }
 
     fileprivate func makeChangeWithoutRendering(f: () -> Void) {
