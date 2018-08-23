@@ -37,10 +37,9 @@ class ComponentMenu: NSMenu {
 
         let componentParameterItems = componentParameterNames.map({ name in
             NSMenuItem(title: name, onClick: {
-                guard let viewController = NSApplication.shared.mainWindow?.contentViewController as? ViewController else { return }
+                guard let viewController = NSApplication.shared.mainWindow?.contentViewController as? WorkspaceViewController else { return }
 
-                // XXX
-//                viewController.addLayer(layer: CSParameterLayer(name: name, parameterName: name))
+                viewController.addLayer(CSParameterLayer(name: name, parameterName: name))
             })
         })
 
@@ -70,8 +69,9 @@ class ComponentMenu: NSMenu {
 
             results.append(contentsOf: files.sorted(by: { a, b in a.name < b.name }).map({ file in
                 NSMenuItem(title: file.name, onClick: {
-                    guard let viewController = NSApplication.shared.mainWindow?.contentViewController as? ViewController else { return }
-//                    viewController.addLayer(layer: CSComponentLayer.make(from: file.url))
+                    guard let viewController = NSApplication.shared.mainWindow?.contentViewController as? WorkspaceViewController else { return }
+
+                    viewController.addLayer(CSComponentLayer.make(from: file.url))
                 })
             }))
 

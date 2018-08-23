@@ -141,23 +141,19 @@ class ComponentEditorViewController: NSSplitViewController {
     func setUpUtilities() {
         utilitiesView.onChangeMetadata = { value in
             self.component?.metadata = value
-            self.render()
         }
 
         utilitiesView.onChangeCanvasList = { value in
             self.component?.canvas = value
-            self.render()
         }
 
         utilitiesView.onChangeCanvasLayout = { value in
             self.component?.canvasLayoutAxis = value
-            self.render()
         }
 
         utilitiesView.onChangeParameterList = { value in
             self.component?.parameters = value
             self.utilitiesView.reloadData()
-            self.render()
 
             let componentParameters = value.filter({ $0.type == CSComponentType })
             let componentParameterNames = componentParameters.map({ $0.name })
@@ -166,12 +162,10 @@ class ComponentEditorViewController: NSSplitViewController {
 
         utilitiesView.onChangeCaseList = { value in
             self.component?.cases = value
-            self.render()
         }
 
         utilitiesView.onChangeLogicList = { value in
             self.component?.logic = value
-            self.render()
         }
     }
 
@@ -202,10 +196,6 @@ class ComponentEditorViewController: NSSplitViewController {
 
         canvasCollectionView.update(options: options)
     }
-
-    private func render() {
-        // XXX
-    }
 }
 
 class WorkspaceViewController: NSSplitViewController {
@@ -229,6 +219,11 @@ class WorkspaceViewController: NSSplitViewController {
 
     public var component: CSComponent? { didSet { update() } }
     public var fileURL: URL?
+
+    // Called from the ComponentMenu
+    public func addLayer(_ layer: CSLayer) {
+        layerList.addLayer(layer: layer)
+    }
 
     // MARK: Private
 
