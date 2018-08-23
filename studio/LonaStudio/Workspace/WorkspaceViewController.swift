@@ -98,12 +98,12 @@ class ComponentEditorViewController: NSSplitViewController {
 
     private lazy var utilitiesView = UtilitiesView()
     private lazy var utilitiesViewController: NSViewController = {
-        return ViewController(view: utilitiesView)
+        return NSViewController(view: utilitiesView)
     }()
 
     private lazy var canvasCollectionView = CanvasCollectionView(frame: .zero)
     private lazy var canvasCollectionViewController: NSViewController = {
-        return ViewController(view: canvasCollectionView)
+        return NSViewController(view: canvasCollectionView)
     }()
 
     private func setUpViews() {
@@ -231,14 +231,14 @@ class WorkspaceViewController: NSSplitViewController {
 
     private lazy var layerList = LayerList()
     private lazy var layerListViewController: NSViewController = {
-        return ViewController(view: layerList)
+        return NSViewController(view: layerList)
     }()
 
     private lazy var componentEditorViewController = ComponentEditorViewController()
 
     private lazy var inspectorView = InspectorContentView()
     private lazy var inspectorViewController: NSViewController = {
-        return ViewController(view: inspectorView)
+        return NSViewController(view: inspectorView)
     }()
 
     private func setUpViews() {
