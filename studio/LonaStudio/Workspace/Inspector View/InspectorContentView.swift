@@ -27,7 +27,7 @@ final class InspectorContentView: NSBox {
 
     var content: CSLayer? { didSet { update() } }
 
-    var onChangeContent: ((CSLayer) -> Void)?
+    var onChangeContent: ((CSLayer, LayerInspectorView.ChangeType) -> Void)?
 
     // MARK: Private
 
@@ -80,14 +80,14 @@ final class InspectorContentView: NSBox {
             componentInspectorView.onChangeData = {[unowned self] (data, parameter) in
                 componentLayer.parameters[parameter.name] = data
 
-                self.onChangeContent?(componentLayer)
+                self.onChangeContent?(componentLayer, LayerInspectorView.ChangeType.full)
                 componentInspectorView.reload()
             }
             inspectorView = componentInspectorView
         } else {
             let layerInspector = LayerInspectorView(layer: content)
             layerInspector.onChangeInspector = {[unowned self] changeType in
-                self.onChangeContent?(content)
+                self.onChangeContent?(content, changeType)
             }
             inspectorView = layerInspector
         }

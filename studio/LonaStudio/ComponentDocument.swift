@@ -43,6 +43,12 @@ class ComponentDocument: NSDocument {
     private let storyboardName = NSStoryboard.Name(rawValue: "Main")
 
     override func makeWindowControllers() {
+
+        // This is a new document, so we need to initialize a component
+        if file == nil {
+            file = CSComponent.makeDefaultComponent()
+        }
+
         let storyboard = NSStoryboard(name: storyboardName, bundle: nil)
 
         let workspaceViewController = storyboard.instantiateController(withIdentifier: viewControllerId) as! WorkspaceViewController

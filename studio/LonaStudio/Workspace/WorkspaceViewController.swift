@@ -286,9 +286,9 @@ class WorkspaceViewController: NSSplitViewController {
             self.inspectorView.content = self.selectedLayer
         }
 
-        inspectorView.onChangeContent = { layer in
+        inspectorView.onChangeContent = { layer, changeType in
             self.componentEditorViewController.component = self.component
-            self.layerList.component = self.component
+            self.layerList.reloadWithoutModifyingSelection()
         }
     }
 

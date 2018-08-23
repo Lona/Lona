@@ -54,6 +54,10 @@ public class LayerList: NSBox {
         outlineView.addLayer(layer: newLayer)
     }
 
+    func reloadWithoutModifyingSelection() {
+        outlineView.render(fullRender: false)
+    }
+
     // MARK: Private
 
     private var outlineView = LayerListOutlineView()
@@ -95,12 +99,6 @@ final class LayerListOutlineView: NSOutlineView, NSTextFieldDelegate {
         static let CheckBoxTag = 20
     }
 
-    var component: CSComponent? {
-        didSet {
-            render(fullRender: true)
-        }
-    }
-
     fileprivate var shouldRenderOnSelectionChange = true
     fileprivate var previousRow = -1
     fileprivate var dataRoot: CSLayer? {
@@ -124,7 +122,7 @@ final class LayerListOutlineView: NSOutlineView, NSTextFieldDelegate {
         return url.deletingPathExtension().lastPathComponent
     }
 
-    // MARK: - Init
+    // MARK: - Lifecycle
 
     init() {
         super.init(frame: NSRect.zero)
@@ -138,6 +136,12 @@ final class LayerListOutlineView: NSOutlineView, NSTextFieldDelegate {
     }
 
     // MARK: - Public
+
+    var component: CSComponent? {
+        didSet {
+            render(fullRender: true)
+        }
+    }
 
     func addLayer(layer newLayer: CSLayer) {
         let targetLayer = selectedLayerOrRoot
@@ -448,10 +452,12 @@ extension LayerListOutlineView {
                 parent.children = children
                 self.relayoutLayerList()
                 self.onChange?()
+                self.onSelectLayer?(nil)
             }, undo: {[unowned self] in
                 parent.children = oldChildren
                 self.relayoutLayerList()
                 self.onChange?()
+                self.select(item: targetLayer)
             })
 
             return
