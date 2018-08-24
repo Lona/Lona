@@ -22,7 +22,7 @@ class ComponentDocument: NSDocument {
     }
 
     var name: String = "Component"
-    var file: CSComponent?
+    var component: CSComponent?
 
     var viewController: WorkspaceViewController? {
         return windowControllers[0].contentViewController as? WorkspaceViewController
@@ -31,11 +31,10 @@ class ComponentDocument: NSDocument {
     var controller: NSWindowController?
 
     func set(component: CSComponent) {
-        file = component
+        self.component = component
 
         guard let viewController = self.viewController else { return }
-        viewController.component = component
-        viewController.fileURL = fileURL
+        viewController.document = self
     }
 
     private let viewControllerId = NSStoryboard.SceneIdentifier(rawValue: "MainWorkspace")
@@ -45,15 +44,14 @@ class ComponentDocument: NSDocument {
     override func makeWindowControllers() {
 
         // This is a new document, so we need to initialize a component
-        if file == nil {
-            file = CSComponent.makeDefaultComponent()
+        if component == nil {
+            component = CSComponent.makeDefaultComponent()
         }
 
         let storyboard = NSStoryboard(name: storyboardName, bundle: nil)
 
         let workspaceViewController = storyboard.instantiateController(withIdentifier: viewControllerId) as! WorkspaceViewController
-        workspaceViewController.component = file
-        workspaceViewController.fileURL = fileURL
+        workspaceViewController.document = self
 
         let windowController = storyboard.instantiateController(withIdentifier: windowControllerId) as! NSWindowController
         windowController.window?.tabbingMode = .preferred
@@ -65,12 +63,13 @@ class ComponentDocument: NSDocument {
     }
 
     override func writeSafely(to url: URL, ofType typeName: String, for saveOperation: NSDocument.SaveOperationType) throws {
-        viewController?.fileURL = url
+        // TODO: Does this update automatically in the VC?
+//        viewController?.fileURL = url
         try super.writeSafely(to: url, ofType: typeName, for: saveOperation)
     }
 
     override func data(ofType typeName: String) throws -> Data {
-        if let file = file, let json = file.toData(), let data = json.toData() {
+        if let file = component, let json = file.toData(), let data = json.toData() {
             return data
         }
 
@@ -92,7 +91,7 @@ class ComponentDocument: NSDocument {
     override func read(from data: Data, ofType typeName: String) throws {
         guard let json = try? JSONSerialization.jsonObject(with: data) else { return }
 
-        file = CSComponent(CSData.from(json: json))
+        component = CSComponent(CSData.from(json: json))
     }
 
     override func save(to url: URL, ofType typeName: String, for saveOperation: NSDocument.SaveOperationType, completionHandler: @escaping (Error?) -> Void) {
