@@ -108,7 +108,7 @@ class MatrixLayout: NSCollectionViewFlowLayout {
     }
 }
 
-let CANVAS_INSET: CGFloat = 3
+let CANVAS_INSET: CGFloat = 10
 
 class CanvasCollectionView: NSView, NSCollectionViewDataSource, NSCollectionViewDelegate, NSCollectionViewDelegateFlowLayout {
 
@@ -196,7 +196,7 @@ class CanvasCollectionView: NSView, NSCollectionViewDataSource, NSCollectionView
             canvas: canvas
         )
 
-        let canvasView = CanvasView(canvas: canvas, rootLayer: rootLayer, config: config)
+        let canvasView = CanvasView(canvas: canvas, rootLayer: rootLayer, config: config, options: [.renderCanvasShadow(true)])
 
         let canvasContainerView = NSView(frame: canvasView.bounds.insetBy(dx: -CANVAS_INSET, dy: -CANVAS_INSET).offsetBy(dx: CANVAS_INSET, dy: CANVAS_INSET))
         canvasContainerView.addSubview(canvasView)
@@ -263,7 +263,7 @@ class CanvasCollectionView: NSView, NSCollectionViewDataSource, NSCollectionView
         wantsLayer = true
 
         let visualEffectView = NSVisualEffectView(frame: NSRect.zero)
-        visualEffectView.material = .mediumLight
+        visualEffectView.material = .light
         visualEffectView.blendingMode = .behindWindow
         visualEffectView.state = .active
 
@@ -271,7 +271,7 @@ class CanvasCollectionView: NSView, NSCollectionViewDataSource, NSCollectionView
         collectionView.collectionViewLayout = MatrixLayout(delegate: self)
         collectionView.delegate = self
         collectionView.dataSource = self
-        collectionView.backgroundColors = [NSColor.clear]
+        collectionView.backgroundColors = [NSColor.white.withAlphaComponent(0.5)]
         self.collectionView = collectionView
 
         let scrollView = CollectionScrollView()

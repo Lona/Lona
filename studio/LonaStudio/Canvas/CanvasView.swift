@@ -758,7 +758,7 @@ class CanvasView: NSView {
         backgroundView.fillColor = CSColors.parse(css: canvas.backgroundColor, withDefault: NSColor.white).color
 
         if options.renderCanvasShadow {
-            layer?.backgroundColor = CGColor.white
+//            layer?.backgroundColor = CGColor.white
 
             frame.size.width += 10
             frame.size.height += 10

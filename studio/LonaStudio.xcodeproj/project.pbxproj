@@ -166,6 +166,8 @@
 		6B4DFCED20A77C650048BB43 /* FileUtils.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6B4DFCEC20A77C650048BB43 /* FileUtils.swift */; };
 		6B4DFCEF20A795080048BB43 /* RecentProjectItem.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6B4DFCEE20A795070048BB43 /* RecentProjectItem.swift */; };
 		6B6017D01EBF9EFA001E02C1 /* LayerListOutlineView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6B6017CF1EBF9EFA001E02C1 /* LayerListOutlineView.swift */; };
+		6BA6E895212F92B0009CD33C /* Witness.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 6BA6E894212F92B0009CD33C /* Witness.framework */; };
+		6BA6E896212F92B0009CD33C /* Witness.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 6BA6E894212F92B0009CD33C /* Witness.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		6BBE0F6A212B26C900CEE8C1 /* FileTree.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 6BBE0F69212B26C900CEE8C1 /* FileTree.framework */; };
 		6BBE0F6B212B26C900CEE8C1 /* FileTree.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 6BBE0F69212B26C900CEE8C1 /* FileTree.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		6BD581D920824AF60068FBC3 /* NSTextAlignmentExtensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6BD581D820824AF60068FBC3 /* NSTextAlignmentExtensions.swift */; };
@@ -204,6 +206,7 @@
 			dstPath = "";
 			dstSubfolderSpec = 10;
 			files = (
+				6BA6E896212F92B0009CD33C /* Witness.framework in Embed Frameworks */,
 				6BBE0F6B212B26C900CEE8C1 /* FileTree.framework in Embed Frameworks */,
 			);
 			name = "Embed Frameworks";
@@ -374,6 +377,7 @@
 		6B4DFCEC20A77C650048BB43 /* FileUtils.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FileUtils.swift; sourceTree = "<group>"; };
 		6B4DFCEE20A795070048BB43 /* RecentProjectItem.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RecentProjectItem.swift; sourceTree = "<group>"; };
 		6B6017CF1EBF9EFA001E02C1 /* LayerListOutlineView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = LayerListOutlineView.swift; sourceTree = "<group>"; };
+		6BA6E894212F92B0009CD33C /* Witness.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Witness.framework; path = Carthage/Build/Mac/Witness.framework; sourceTree = "<group>"; };
 		6BBE0F69212B26C900CEE8C1 /* FileTree.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = FileTree.framework; path = Carthage/Build/Mac/FileTree.framework; sourceTree = "<group>"; };
 		6BD581D820824AF60068FBC3 /* NSTextAlignmentExtensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NSTextAlignmentExtensions.swift; sourceTree = "<group>"; };
 		6BDF4D2D20A67272006E99C4 /* BrowserToolbar.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BrowserToolbar.swift; sourceTree = "<group>"; };
@@ -405,6 +409,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				6BA6E895212F92B0009CD33C /* Witness.framework in Frameworks */,
 				6BBE0F6A212B26C900CEE8C1 /* FileTree.framework in Frameworks */,
 				783A74CD337C61784E60C467 /* Pods_LonaStudio.framework in Frameworks */,
 			);
@@ -724,6 +729,7 @@
 			isa = PBXGroup;
 			children = (
 				6BBE0F69212B26C900CEE8C1 /* FileTree.framework */,
+				6BA6E894212F92B0009CD33C /* Witness.framework */,
 				7949560983378CFD6EC6FFD5 /* Pods_LonaStudio.framework */,
 				EDA2F7370DB15639E08B399A /* Pods_LonaStudioTests.framework */,
 			);

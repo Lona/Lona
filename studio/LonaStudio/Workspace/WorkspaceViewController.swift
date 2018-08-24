@@ -7,6 +7,7 @@
 //
 
 import AppKit
+import FileTree
 import Foundation
 
 private func getDirectory() -> URL? {
@@ -61,6 +62,7 @@ class ColorVC: NSViewController {
 
 class ComponentEditorViewController: NSSplitViewController {
     private let splitViewResorationIdentifier = "tech.lona.restorationId:componentEditorController"
+    private let layerEditorViewResorationIdentifier = "tech.lona.restorationId:layerEditorController"
 
     // MARK: Lifecycle
 
@@ -80,6 +82,10 @@ class ComponentEditorViewController: NSSplitViewController {
     public var canvasPanningEnabled: Bool {
         get { return canvasCollectionView.panningEnabled }
         set { canvasCollectionView.panningEnabled = newValue }
+    }
+
+    public func addLayer(_ layer: CSLayer) {
+        layerList.addLayer(layer: layer)
     }
 
     func zoomToActualSize() {
@@ -106,8 +112,37 @@ class ComponentEditorViewController: NSSplitViewController {
         return NSViewController(view: canvasCollectionView)
     }()
 
+    private lazy var layerList = LayerList()
+    private lazy var layerListViewController: NSViewController = {
+        return NSViewController(view: layerList)
+    }()
+
+    private lazy var layerEditorController: NSViewController = {
+        let vc = NSSplitViewController(nibName: nil, bundle: nil)
+
+        vc.splitView.isVertical = true
+        vc.splitView.dividerStyle = .thin
+        vc.splitView.autosaveName = NSSplitView.AutosaveName(rawValue: layerEditorViewResorationIdentifier)
+        vc.splitView.identifier = NSUserInterfaceItemIdentifier(rawValue: layerEditorViewResorationIdentifier)
+
+        vc.minimumThicknessForInlineSidebars = 120
+
+        let leftItem = NSSplitViewItem(contentListWithViewController: layerListViewController)
+        leftItem.canCollapse = false
+//        leftItem.minimumThickness = 120
+        vc.addSplitViewItem(leftItem)
+
+        let mainItem = NSSplitViewItem(viewController: canvasCollectionViewController)
+        mainItem.minimumThickness = 300
+        vc.addSplitViewItem(mainItem)
+
+        return vc
+    }()
+
     private func setUpViews() {
         setUpUtilities()
+
+        layerList.fillColor = .white
 
         let tabs = SegmentedControlField(
             frame: NSRect(x: 0, y: 0, width: 500, height: 24),
@@ -172,7 +207,7 @@ class ComponentEditorViewController: NSSplitViewController {
     private func setUpLayout() {
         minimumThicknessForInlineSidebars = 180
 
-        let mainItem = NSSplitViewItem(viewController: canvasCollectionViewController)
+        let mainItem = NSSplitViewItem(viewController: layerEditorController)
         mainItem.minimumThickness = 300
         addSplitViewItem(mainItem)
 
@@ -184,6 +219,7 @@ class ComponentEditorViewController: NSSplitViewController {
 
     private func update() {
         utilitiesView.component = component
+        layerList.component = component
 
         guard let component = component else { return }
 
@@ -222,16 +258,18 @@ class WorkspaceViewController: NSSplitViewController {
 
     // Called from the ComponentMenu
     public func addLayer(_ layer: CSLayer) {
-        layerList.addLayer(layer: layer)
+        componentEditorViewController.addLayer(layer)
     }
 
     // MARK: Private
 
     private var selectedLayer: CSLayer?
 
-    private lazy var layerList = LayerList()
-    private lazy var layerListViewController: NSViewController = {
-        return NSViewController(view: layerList)
+    private lazy var fileTree: FileTree = {
+        return FileTree(rootPath: LonaModule.current.url.path)
+    }()
+    private lazy var fileTreeViewController: NSViewController = {
+        return NSViewController(view: fileTree)
     }()
 
     private lazy var componentEditorViewController = ComponentEditorViewController()
@@ -245,14 +283,61 @@ class WorkspaceViewController: NSSplitViewController {
         splitView.dividerStyle = .thin
         splitView.autosaveName = NSSplitView.AutosaveName(rawValue: splitViewResorationIdentifier)
         splitView.identifier = NSUserInterfaceItemIdentifier(rawValue: splitViewResorationIdentifier)
+
+//        fileTree.defaultThumbnailSize = NSSize(width: 40, height: 24)
+        fileTree.defaultFont = NSFont.systemFont(ofSize: NSFont.systemFontSize(for: .small))
+//        fileTree.defaultRowHeight = 44
+        fileTree.displayNameForFile = { path in
+            let url = URL(fileURLWithPath: path)
+            return url.pathExtension == "component" ? url.deletingPathExtension().lastPathComponent : url.lastPathComponent
+        }
+
+        fileTree.imageForFile = { path, size in
+            let url = URL(fileURLWithPath: path)
+
+            func defaultImage(for path: String) -> NSImage {
+                let image = NSWorkspace.shared.icon(forFile: path)
+//                image.size = NSSize(width: size.width, height: size.height)
+                return image
+            }
+
+            if url.pathExtension == "component" {
+                guard let component = LonaModule.current.component(named: url.deletingPathExtension().lastPathComponent),
+                    let canvas = component.computedCanvases().first,
+                    let caseItem = component.computedCases(for: canvas).first
+                    else { return defaultImage(for: path) }
+
+                let config = ComponentConfiguration(
+                    component: component,
+                    arguments: caseItem.value.objectValue,
+                    canvas: canvas
+                )
+
+                let canvasView = CanvasView(
+                    canvas: canvas,
+                    rootLayer: component.rootLayer,
+                    config: config,
+                    options: [RenderOption.assetScale(1)]
+                )
+
+                guard let data = canvasView.dataRepresentation(scaledBy: 0.25),
+                    let image = NSImage(data: data)
+                    else { return defaultImage(for: path) }
+                image.size = NSSize(width: size.width, height: (image.size.height / image.size.width) * size.height)
+                return image
+            } else {
+                return defaultImage(for: path)
+            }
+        }
     }
 
     private func setUpLayout() {
         minimumThicknessForInlineSidebars = 180
 
-        let contentListItem = NSSplitViewItem(contentListWithViewController: layerListViewController)
+        let contentListItem = NSSplitViewItem(contentListWithViewController: fileTreeViewController)
+//        let contentListItem = NSSplitViewItem(contentListWithViewController: layerListViewController)
         //        contentListItem.canCollapse = true
-        contentListItem.minimumThickness = 140
+//        contentListItem.minimumThickness = 140
         addSplitViewItem(contentListItem)
 
         let mainItem = NSSplitViewItem(viewController: componentEditorViewController)
@@ -267,23 +352,22 @@ class WorkspaceViewController: NSSplitViewController {
     }
 
     private func update() {
-        layerList.component = component
         componentEditorViewController.component = component
         inspectorView.content = selectedLayer
 
-        layerList.onSelectLayer = { layer in
-            self.selectedLayer = layer
-            self.inspectorView.content = layer
-        }
-
-        layerList.onChange = {
-            self.componentEditorViewController.component = self.component
-            self.inspectorView.content = self.selectedLayer
-        }
+//        layerList.onSelectLayer = { layer in
+//            self.selectedLayer = layer
+//            self.inspectorView.content = layer
+//        }
+//
+//        layerList.onChange = {
+//            self.componentEditorViewController.component = self.component
+//            self.inspectorView.content = self.selectedLayer
+//        }
 
         inspectorView.onChangeContent = { layer, changeType in
             self.componentEditorViewController.component = self.component
-            self.layerList.reloadWithoutModifyingSelection()
+//            self.layerList.reloadWithoutModifyingSelection()
         }
     }
 
@@ -440,7 +524,7 @@ extension WorkspaceViewController {
                 // Add number suffix if needed
                 newLayer.name = component.getNewLayerName(startingWith: newLayer.name)
 
-                layerList.addLayer(layer: newLayer)
+                componentEditorViewController.addLayer(newLayer)
             }
         } else {
             // User clicked on "Cancel"
@@ -455,7 +539,7 @@ extension WorkspaceViewController {
             "backgroundColor": "#D8D8D8".toData()
         ])
 
-        layerList.addLayer(layer: newLayer)
+        componentEditorViewController.addLayer(newLayer)
     }
 
     @IBAction func addImage(_ sender: AnyObject) {
@@ -469,7 +553,7 @@ extension WorkspaceViewController {
             "backgroundColor": "#D8D8D8".toData()
         ])
 
-        layerList.addLayer(layer: newLayer)
+        componentEditorViewController.addLayer(newLayer)
     }
 
     @IBAction func addAnimation(_ sender: AnyObject) {
@@ -483,7 +567,7 @@ extension WorkspaceViewController {
             "backgroundColor": "#D8D8D8".toData()
         ])
 
-        layerList.addLayer(layer: newLayer)
+        componentEditorViewController.addLayer(newLayer)
     }
 
     @IBAction func addView(_ sender: AnyObject) {
@@ -497,7 +581,7 @@ extension WorkspaceViewController {
             "backgroundColor": "#D8D8D8".toData()
         ])
 
-        layerList.addLayer(layer: newLayer)
+        componentEditorViewController.addLayer(newLayer)
     }
 
     @IBAction func addText(_ sender: AnyObject) {
@@ -511,7 +595,7 @@ extension WorkspaceViewController {
             "heightSizingRule": "Shrink".toData()
         ])
 
-        layerList.addLayer(layer: newLayer)
+        componentEditorViewController.addLayer(newLayer)
     }
 
 }
