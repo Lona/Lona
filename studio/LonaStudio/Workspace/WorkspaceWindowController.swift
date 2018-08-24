@@ -9,6 +9,4 @@
 import AppKit
 import Foundation
 
-class WorkspaceWindowController: NSWindowController {
-    
-}
+class WorkspaceWindowController: NSWindowController {}

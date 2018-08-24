@@ -8,7 +8,11 @@
 
 import Cocoa
 
-final class InspectorContentView: NSBox {
+final class InspectorView: NSBox {
+
+    enum Content {
+        case layer(CSLayer)
+    }
 
     // MARK: Lifecycle
 
@@ -25,9 +29,9 @@ final class InspectorContentView: NSBox {
 
     // MARK: Public
 
-    var content: CSLayer? { didSet { update() } }
+    var content: Content? { didSet { update() } }
 
-    var onChangeContent: ((CSLayer, LayerInspectorView.ChangeType) -> Void)?
+    var onChangeContent: ((Content, LayerInspectorView.ChangeType) -> Void)?
 
     // MARK: Private
 
@@ -75,21 +79,24 @@ final class InspectorContentView: NSBox {
 
         guard let content = content else { return }
 
-        if case CSLayer.LayerType.custom = content.type, let componentLayer = content as? CSComponentLayer {
-            let componentInspectorView = CustomComponentInspectorView(componentLayer: componentLayer)
-            componentInspectorView.onChangeData = {[unowned self] (data, parameter) in
-                componentLayer.parameters[parameter.name] = data
+        switch content {
+        case .layer(let content):
+            if case CSLayer.LayerType.custom = content.type, let componentLayer = content as? CSComponentLayer {
+                let componentInspectorView = CustomComponentInspectorView(componentLayer: componentLayer)
+                componentInspectorView.onChangeData = {[unowned self] (data, parameter) in
+                    componentLayer.parameters[parameter.name] = data
 
-                self.onChangeContent?(componentLayer, LayerInspectorView.ChangeType.full)
-                componentInspectorView.reload()
+                    self.onChangeContent?(.layer(componentLayer), LayerInspectorView.ChangeType.full)
+                    componentInspectorView.reload()
+                }
+                inspectorView = componentInspectorView
+            } else {
+                let layerInspector = LayerInspectorView(layer: content)
+                layerInspector.onChangeInspector = {[unowned self] changeType in
+                    self.onChangeContent?(.layer(content), changeType)
+                }
+                inspectorView = layerInspector
             }
-            inspectorView = componentInspectorView
-        } else {
-            let layerInspector = LayerInspectorView(layer: content)
-            layerInspector.onChangeInspector = {[unowned self] changeType in
-                self.onChangeContent?(content, changeType)
-            }
-            inspectorView = layerInspector
         }
 
         flippedView.addSubview(inspectorView)

@@ -72,7 +72,7 @@ class WorkspaceViewController: NSSplitViewController {
         return document?.component
     }
 
-    private var selectedLayer: CSLayer?
+    private var inspectedContent: InspectorView.Content?
 
     private lazy var fileTree: FileTree = {
         return FileTree(rootPath: LonaModule.current.url.path)
@@ -83,7 +83,7 @@ class WorkspaceViewController: NSSplitViewController {
 
     private lazy var componentEditorViewController = ComponentEditorViewController()
 
-    private lazy var inspectorView = InspectorContentView()
+    private lazy var inspectorView = InspectorView()
     private lazy var inspectorViewController: NSViewController = {
         return NSViewController(view: inspectorView)
     }()
@@ -190,21 +190,23 @@ class WorkspaceViewController: NSSplitViewController {
 
     private func update() {
         componentEditorViewController.component = component
-        inspectorView.content = selectedLayer
+        inspectorView.content = inspectedContent
 
-//        layerList.onSelectLayer = { layer in
-//            self.selectedLayer = layer
-//            self.inspectorView.content = layer
-//        }
-//
-//        layerList.onChange = {
-//            self.componentEditorViewController.component = self.component
-//            self.inspectorView.content = self.selectedLayer
-//        }
+        componentEditorViewController.onInspectLayer = { layer in
+            guard let layer = layer else {
+                self.inspectedContent = nil
+                return
+            }
+            self.inspectedContent = .layer(layer)
+            self.inspectorView.content = .layer(layer)
+        }
+
+        componentEditorViewController.onChangeInspectedLayer = {
+            self.inspectorView.content = self.inspectedContent
+        }
 
         inspectorView.onChangeContent = { layer, changeType in
-            self.componentEditorViewController.component = self.component
-//            self.layerList.reloadWithoutModifyingSelection()
+            self.componentEditorViewController.reloadLayerListWithoutModifyingSelection()
         }
     }
 

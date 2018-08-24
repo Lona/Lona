@@ -183,7 +183,7 @@
 		BA4854981FEF6CC800AB7923 /* PickerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = BA4854971FEF6CC800AB7923 /* PickerView.swift */; };
 		BA48549A1FEF6EC800AB7923 /* PickerListView.swift in Sources */ = {isa = PBXBuildFile; fileRef = BA4854991FEF6EC800AB7923 /* PickerListView.swift */; };
 		BA48549C1FEF7A6500AB7923 /* PickerProtocol.swift in Sources */ = {isa = PBXBuildFile; fileRef = BA48549B1FEF7A6500AB7923 /* PickerProtocol.swift */; };
-		BA547E5E203A9B1700136FC0 /* InspectorContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = BA547E5D203A9B1700136FC0 /* InspectorContentView.swift */; };
+		BA547E5E203A9B1700136FC0 /* InspectorView.swift in Sources */ = {isa = PBXBuildFile; fileRef = BA547E5D203A9B1700136FC0 /* InspectorView.swift */; };
 		BA9BDC5620132C29004C4D9D /* LonaStudioTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = BA9BDC5520132C29004C4D9D /* LonaStudioTests.swift */; };
 		BAC24A90203578190005B16F /* CustomComponentInspectorView.swift in Sources */ = {isa = PBXBuildFile; fileRef = BAC24A8F203578190005B16F /* CustomComponentInspectorView.swift */; };
 		BACCB4271FEFA05B00B58E32 /* TextStylePickerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = BACCB4261FEFA05B00B58E32 /* TextStylePickerView.swift */; };
@@ -396,7 +396,7 @@
 		BA4854971FEF6CC800AB7923 /* PickerView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PickerView.swift; sourceTree = "<group>"; };
 		BA4854991FEF6EC800AB7923 /* PickerListView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PickerListView.swift; sourceTree = "<group>"; };
 		BA48549B1FEF7A6500AB7923 /* PickerProtocol.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PickerProtocol.swift; sourceTree = "<group>"; };
-		BA547E5D203A9B1700136FC0 /* InspectorContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InspectorContentView.swift; sourceTree = "<group>"; };
+		BA547E5D203A9B1700136FC0 /* InspectorView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InspectorView.swift; sourceTree = "<group>"; };
 		BA9BDC5320132C29004C4D9D /* LonaStudioTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = LonaStudioTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		BA9BDC5520132C29004C4D9D /* LonaStudioTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LonaStudioTests.swift; sourceTree = "<group>"; };
 		BA9BDC5720132C29004C4D9D /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
@@ -836,7 +836,7 @@
 			children = (
 				BAC24A8F203578190005B16F /* CustomComponentInspectorView.swift */,
 				30F7C9511ED4AE23009D27DF /* CoreComponentInspectorView.swift */,
-				BA547E5D203A9B1700136FC0 /* InspectorContentView.swift */,
+				BA547E5D203A9B1700136FC0 /* InspectorView.swift */,
 				307718E91F355D31003A597B /* LayerInspectorView.swift */,
 			);
 			path = "Inspector View";
@@ -1224,7 +1224,7 @@
 				301C262420C1C3B500F18F73 /* TextStyle.swift in Sources */,
 				306DA4F61F34E42F002772DC /* DimensionSizingRule.swift in Sources */,
 				30516B491F43C46200940B3B /* SequenceExtensions.swift in Sources */,
-				BA547E5E203A9B1700136FC0 /* InspectorContentView.swift in Sources */,
+				BA547E5E203A9B1700136FC0 /* InspectorView.swift in Sources */,
 				3094DFEA1F6AECB300E5C7F0 /* NSOutlineViewExtensions.swift in Sources */,
 				6B0AEFB81EBF74D800F35BBF /* AppDelegate.swift in Sources */,
 				307718EC1F361925003A597B /* CSColor.swift in Sources */,

@@ -27,10 +27,16 @@ class ComponentEditorViewController: NSSplitViewController {
 
     // MARK: Public
 
-    public var component: CSComponent? = nil { didSet { update() } }
+    public var component: CSComponent? = nil { didSet { update(withoutModifyingSelection: false) } }
     public var canvasPanningEnabled: Bool {
         get { return canvasCollectionView.panningEnabled }
         set { canvasCollectionView.panningEnabled = newValue }
+    }
+    public var onInspectLayer: ((CSLayer?) -> Void)?
+    public var onChangeInspectedLayer: (() -> Void)?
+
+    public func reloadLayerListWithoutModifyingSelection() {
+        update(withoutModifyingSelection: true)
     }
 
     public func addLayer(_ layer: CSLayer) {
@@ -166,9 +172,23 @@ class ComponentEditorViewController: NSSplitViewController {
         addSplitViewItem(bottomItem)
     }
 
-    private func update() {
+    private func update(withoutModifyingSelection: Bool) {
         utilitiesView.component = component
-        layerList.component = component
+
+        if withoutModifyingSelection {
+            layerList.reloadWithoutModifyingSelection()
+        } else {
+            layerList.component = component
+        }
+
+        layerList.onSelectLayer = { layer in
+            self.onInspectLayer?(layer)
+        }
+
+        layerList.onChange = {
+            self.onChangeInspectedLayer?()
+            self.update(withoutModifyingSelection: false)
+        }
 
         guard let component = component else { return }
 
