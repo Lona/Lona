@@ -21,7 +21,7 @@ class CSColors: CSPreferencesFile {
         didSet { parsedColors = parse(data) }
     }
 
-    private static func parse(_ data: CSData) -> [CSColor] {
+    static func parse(_ data: CSData) -> [CSColor] {
         guard let colorData = data["colors"] else { return [] }
 
         return colorData.arrayValue.map({ color in CSColor.fromData(color) })

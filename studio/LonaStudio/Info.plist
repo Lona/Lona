@@ -26,6 +26,18 @@
 			<key>NSDocumentClass</key>
 			<string>$(PRODUCT_MODULE_NAME).ComponentDocument</string>
 		</dict>
+		<dict>
+			<key>CFBundleTypeExtensions</key>
+			<array>
+				<string>json</string>
+			</array>
+			<key>CFBundleTypeName</key>
+			<string>JSON</string>
+			<key>CFBundleTypeRole</key>
+			<string>Editor</string>
+			<key>NSDocumentClass</key>
+			<string>$(PRODUCT_MODULE_NAME).JSONDocument</string>
+		</dict>
 	</array>
 	<key>CFBundleExecutable</key>
 	<string>$(EXECUTABLE_NAME)</string>
@@ -58,13 +70,13 @@
 	<string>Main</string>
 	<key>NSPrincipalClass</key>
 	<string>NSApplication</string>
-	<key>SUFeedURL</key>
-	<string>https://www.componentstudioapp.com/updates/appcast.xml</string>
-	<key>SUPublicDSAKeyFile</key>
-	<string>dsa_pub.pem</string>
 	<key>SUEnableAutomaticChecks</key>
 	<true/>
 	<key>SUEnableSystemProfiling</key>
 	<true/>
+	<key>SUFeedURL</key>
+	<string>https://www.componentstudioapp.com/updates/appcast.xml</string>
+	<key>SUPublicDSAKeyFile</key>
+	<string>dsa_pub.pem</string>
 </dict>
 </plist>

@@ -769,10 +769,11 @@
         <scene sceneID="R2V-B0-nI4">
             <objects>
                 <windowController storyboardIdentifier="Document Window Controller" id="jGA-0Y-lOj" customClass="WorkspaceWindowController" customModule="LonaStudio" customModuleProvider="target" sceneMemberID="viewController">
-                    <window key="window" title="Window" allowsToolTipsWhenApplicationIsInactive="NO" autorecalculatesKeyViewLoop="NO" oneShot="NO" releasedWhenClosed="NO" showsToolbarButton="NO" animationBehavior="default" id="Ckk-yw-fiv">
+                    <window key="window" title="Window" allowsToolTipsWhenApplicationIsInactive="NO" autorecalculatesKeyViewLoop="NO" oneShot="NO" releasedWhenClosed="NO" showsToolbarButton="NO" frameAutosaveName="WorkspaceWindow" animationBehavior="default" tabbingIdentifier="WorkspaceWindow" id="Ckk-yw-fiv">
                         <windowStyleMask key="styleMask" titled="YES" closable="YES" miniaturizable="YES" resizable="YES"/>
-                        <rect key="contentRect" x="183" y="1147" width="480" height="270"/>
+                        <rect key="contentRect" x="183" y="1147" width="1000" height="640"/>
                         <rect key="screenRect" x="0.0" y="0.0" width="2560" height="1417"/>
+                        <value key="minSize" type="size" width="1000" height="640"/>
                         <toolbar key="toolbar" implicitIdentifier="D6C7C4C5-C6B7-42C1-838D-12172F5225A4" autosavesConfiguration="NO" displayMode="iconOnly" sizeMode="regular" id="6EW-82-lVR">
                             <allowedToolbarItems>
                                 <toolbarItem implicitItemIdentifier="879A98F0-5BE5-44C2-B853-1D98A25AC7E2" label="Action" paletteLabel="Action" id="wpH-BL-18a">
@@ -860,7 +861,7 @@
                 </windowController>
                 <customObject id="6f7-a7-6o1" userLabel="First Responder" customClass="NSResponder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="75" y="366"/>
+            <point key="canvasLocation" x="-38" y="697"/>
         </scene>
         <!--Workspace View Controller-->
         <scene sceneID="hIz-AP-VOD">
@@ -868,7 +869,7 @@
                 <viewController identifier="MainWorkspace" storyboardIdentifier="MainWorkspace" id="5gI-5U-AMq" customClass="WorkspaceViewController" customModule="LonaStudio" customModuleProvider="target" sceneMemberID="viewController"/>
                 <customObject id="2Tp-Fl-jBw" userLabel="First Responder" customClass="NSResponder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="621" y="321"/>
+            <point key="canvasLocation" x="727" y="469"/>
         </scene>
     </scenes>
 </document>

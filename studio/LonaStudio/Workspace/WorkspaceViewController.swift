@@ -41,6 +41,11 @@ private func requestSketchFileSaveURL() -> URL? {
 }
 
 class WorkspaceViewController: NSSplitViewController {
+    private enum DocumentAction: String {
+        case discardChanges = "Discard"
+        case saveChanges = "Save"
+    }
+
     private let splitViewResorationIdentifier = "tech.lona.restorationId:workspaceViewController2"
 
     // MARK: Lifecycle
@@ -49,17 +54,19 @@ class WorkspaceViewController: NSSplitViewController {
         super.init(nibName: nibNameOrNil, bundle: nibBundleOrNil)
         setUpViews()
         setUpLayout()
+        update()
     }
 
     required init?(coder: NSCoder) {
         super.init(coder: coder)
         setUpViews()
         setUpLayout()
+        update()
     }
 
     // MARK: Public
 
-    public var document: ComponentDocument? { didSet { update() } }
+    public var document: NSDocument? { didSet { update() } }
 
     // Called from the ComponentMenu
     public func addLayer(_ layer: CSLayer) {
@@ -69,7 +76,7 @@ class WorkspaceViewController: NSSplitViewController {
     // MARK: Private
 
     private var component: CSComponent? {
-        return document?.component
+        return (document as? ComponentDocument)?.component
     }
 
     private var inspectedContent: InspectorView.Content?
@@ -82,20 +89,33 @@ class WorkspaceViewController: NSSplitViewController {
     }()
 
     private lazy var componentEditorViewController = ComponentEditorViewController()
+    private lazy var colorEditorViewController = {
+        return NSViewController(view: ColorBrowser())
+    }()
 
     private lazy var inspectorView = InspectorView()
     private lazy var inspectorViewController: NSViewController = {
         return NSViewController(view: inspectorView)
     }()
 
+    // A document's window controllers are deallocated if there are no associated documents.
+    // This ViewController can contain a reference.
+    private var windowController: NSWindowController?
+
+    override func viewDidAppear() {
+        windowController = view.window?.windowController
+    }
+
+    override func viewDidDisappear() {
+        windowController = nil
+    }
+
     private func setUpViews() {
         splitView.dividerStyle = .thin
         splitView.autosaveName = NSSplitView.AutosaveName(rawValue: splitViewResorationIdentifier)
         splitView.identifier = NSUserInterfaceItemIdentifier(rawValue: splitViewResorationIdentifier)
 
-//        fileTree.defaultThumbnailSize = NSSize(width: 40, height: 24)
         fileTree.defaultFont = NSFont.systemFont(ofSize: NSFont.systemFontSize(for: .small))
-//        fileTree.defaultRowHeight = 44
         fileTree.displayNameForFile = { path in
             let url = URL(fileURLWithPath: path)
             return url.pathExtension == "component" ? url.deletingPathExtension().lastPathComponent : url.lastPathComponent
@@ -105,9 +125,7 @@ class WorkspaceViewController: NSSplitViewController {
             let url = URL(fileURLWithPath: path)
 
             func defaultImage(for path: String) -> NSImage {
-                let image = NSWorkspace.shared.icon(forFile: path)
-//                image.size = NSSize(width: size.width, height: size.height)
-                return image
+                return NSWorkspace.shared.icon(forFile: path)
             }
 
             if url.pathExtension == "component" {
@@ -140,7 +158,79 @@ class WorkspaceViewController: NSSplitViewController {
         }
 
         fileTree.onAction = { path in
-            guard let document = self.document else { return }
+            guard let document = self.document else {
+                let url = URL(fileURLWithPath: path)
+
+                NSDocumentController.shared.openDocument(withContentsOf: url, display: false, completionHandler: { newDocument, documentWasAlreadyOpen, error in
+
+                    guard let newDocument = newDocument else {
+                        Swift.print("Failed to open", url, error as Any)
+                        return
+                    }
+
+                    if documentWasAlreadyOpen {
+                        newDocument.showWindows()
+                        return
+                    }
+
+                    guard let windowController = self.view.window?.windowController else { return }
+
+                    newDocument.addWindowController(windowController)
+                    windowController.document = newDocument
+                    self.document = newDocument
+
+                    // Set this after updating the document (which calls update)
+                    // TODO: There shouldn't need to be an implicit ordering. Maybe we call update() manually.
+                    self.inspectedContent = nil
+                })
+
+                return
+            }
+
+            if document.fileURL?.path == path { return }
+
+            if document.isDocumentEdited {
+                let name = document.fileURL?.lastPathComponent ?? "Untitled"
+                guard let result = Alert(
+                    items: [DocumentAction.discardChanges, DocumentAction.saveChanges],
+                    messageText: "Save changes to \(name)",
+                    informativeText: "The document \(name) has unsaved changes. Save them now?").run()
+                    else { return }
+                switch result {
+                case .saveChanges:
+                    var saveURL: URL
+
+                    if let url = document.fileURL {
+                        saveURL = url
+                    } else {
+                        let dialog = NSSavePanel()
+
+                        dialog.title                   = "Save .component file"
+                        dialog.showsResizeIndicator    = true
+                        dialog.showsHiddenFiles        = false
+                        dialog.canCreateDirectories    = true
+                        dialog.allowedFileTypes        = ["component"]
+
+                        // User canceled the save. Don't swap out the document.
+                        if dialog.runModal() != NSApplication.ModalResponse.OK {
+                            return
+                        }
+
+                        guard let url = dialog.url else { return }
+
+                        saveURL = url
+                    }
+
+                    document.save(to: saveURL, ofType: document.fileType ?? "DocumentType", for: NSDocument.SaveOperationType.saveOperation, completionHandler: { error in
+                        // TODO: We should not close the document if it fails to save
+                        Swift.print("Failed to save", saveURL, error as Any)
+                    })
+
+                    LonaPlugins.current.trigger(eventType: .onSaveComponent)
+                case .discardChanges:
+                    break
+                }
+            }
 
             let url = URL(fileURLWithPath: path)
 
@@ -148,6 +238,13 @@ class WorkspaceViewController: NSSplitViewController {
 
                 guard let newDocument = newDocument else {
                     Swift.print("Failed to open", url, error as Any)
+                    NSDocumentController.shared.removeDocument(document)
+                    let windowController = document.windowControllers[0]
+                    windowController.document = nil
+                    document.removeWindowController(windowController)
+                    self.document = nil
+                    self.inspectedContent = nil
+
                     return
                 }
 
@@ -158,26 +255,26 @@ class WorkspaceViewController: NSSplitViewController {
 
                 NSDocumentController.shared.removeDocument(document)
 
-                guard let componentDocument = newDocument as? ComponentDocument else { return }
-
                 let windowController = document.windowControllers[0]
-                componentDocument.addWindowController(windowController)
-                windowController.document = componentDocument
-                self.document = componentDocument
+                newDocument.addWindowController(windowController)
+                windowController.document = newDocument
+                self.document = newDocument
+
+                // Set this after updating the document (which calls update)
+                // TODO: There shouldn't need to be an implicit ordering. Maybe we call update() manually.
+                self.inspectedContent = nil
             })
         }
     }
+
+    private lazy var mainItem = NSSplitViewItem(viewController: componentEditorViewController)
 
     private func setUpLayout() {
         minimumThicknessForInlineSidebars = 180
 
         let contentListItem = NSSplitViewItem(contentListWithViewController: fileTreeViewController)
-//        let contentListItem = NSSplitViewItem(contentListWithViewController: layerListViewController)
-        //        contentListItem.canCollapse = true
-//        contentListItem.minimumThickness = 140
         addSplitViewItem(contentListItem)
 
-        let mainItem = NSSplitViewItem(viewController: componentEditorViewController)
         mainItem.minimumThickness = 300
         addSplitViewItem(mainItem)
 
@@ -189,24 +286,50 @@ class WorkspaceViewController: NSSplitViewController {
     }
 
     private func update() {
-        componentEditorViewController.component = component
         inspectorView.content = inspectedContent
 
-        componentEditorViewController.onInspectLayer = { layer in
-            guard let layer = layer else {
-                self.inspectedContent = nil
-                return
+        guard let document = document else {
+            removeSplitViewItem(mainItem)
+            mainItem.viewController = NSViewController(view: NSView())
+            insertSplitViewItem(mainItem, at: 1)
+            return
+        }
+
+        if document is ComponentDocument {
+            if mainItem.viewController != componentEditorViewController {
+                removeSplitViewItem(mainItem)
+                mainItem.viewController = componentEditorViewController
+                insertSplitViewItem(mainItem, at: 1)
             }
-            self.inspectedContent = .layer(layer)
-            self.inspectorView.content = .layer(layer)
-        }
 
-        componentEditorViewController.onChangeInspectedLayer = {
-            self.inspectorView.content = self.inspectedContent
-        }
+            componentEditorViewController.component = component
 
-        inspectorView.onChangeContent = { layer, changeType in
-            self.componentEditorViewController.reloadLayerListWithoutModifyingSelection()
+            componentEditorViewController.onInspectLayer = { layer in
+                guard let layer = layer else {
+                    self.inspectedContent = nil
+                    return
+                }
+                self.inspectedContent = .layer(layer)
+                self.inspectorView.content = .layer(layer)
+            }
+
+            componentEditorViewController.onChangeInspectedLayer = {
+                self.inspectorView.content = self.inspectedContent
+            }
+
+            inspectorView.onChangeContent = { layer, changeType in
+                self.componentEditorViewController.reloadLayerListWithoutModifyingSelection()
+            }
+        } else if document is JSONDocument {
+            if mainItem.viewController != colorEditorViewController {
+                removeSplitViewItem(mainItem)
+                mainItem.viewController = colorEditorViewController
+                insertSplitViewItem(mainItem, at: 1)
+            }
+
+            inspectorView.onChangeContent = { layer, changeType in
+
+            }
         }
     }
 

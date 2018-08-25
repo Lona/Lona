@@ -21,14 +21,16 @@ class ComponentDocument: NSDocument {
         return true
     }
 
+    override var autosavingFileType: String? {
+        return nil
+    }
+
     var name: String = "Component"
     var component: CSComponent?
 
     var viewController: WorkspaceViewController? {
         return windowControllers[0].contentViewController as? WorkspaceViewController
     }
-
-    var controller: NSWindowController?
 
     func set(component: CSComponent) {
         self.component = component
@@ -37,10 +39,6 @@ class ComponentDocument: NSDocument {
         viewController.document = self
     }
 
-    private let viewControllerId = NSStoryboard.SceneIdentifier(rawValue: "MainWorkspace")
-    private let windowControllerId = NSStoryboard.SceneIdentifier(rawValue: "Document Window Controller")
-    private let storyboardName = NSStoryboard.Name(rawValue: "Main")
-
     override func makeWindowControllers() {
 
         // This is a new document, so we need to initialize a component
@@ -48,18 +46,7 @@ class ComponentDocument: NSDocument {
             component = CSComponent.makeDefaultComponent()
         }
 
-        let storyboard = NSStoryboard(name: storyboardName, bundle: nil)
-
-        let workspaceViewController = storyboard.instantiateController(withIdentifier: viewControllerId) as! WorkspaceViewController
-        workspaceViewController.document = self
-
-        let windowController = storyboard.instantiateController(withIdentifier: windowControllerId) as! NSWindowController
-        windowController.window?.tabbingMode = .preferred
-        windowController.contentViewController = workspaceViewController
-
-        self.addWindowController(windowController)
-
-        controller = windowController
+        WorkspaceWindowController.create(andAttachTo: self)
     }
 
     override func writeSafely(to url: URL, ofType typeName: String, for saveOperation: NSDocument.SaveOperationType) throws {

@@ -72,52 +72,9 @@ class AppDelegate: NSObject, NSApplicationDelegate {
         preferencesWindow?.showWindow(sender)
     }
 
-    var componentBrowserWindow: NSWindow?
-
     @IBAction func showComponentBrowser(_ sender: AnyObject) {
-        if componentBrowserWindow == nil {
-            let initialRect = NSRect(x: 0, y: 0, width: 1280, height: 720)
-            let window = NSWindow(
-                contentRect: initialRect,
-                styleMask: [.closable, .titled, .resizable],
-                backing: .retained,
-                defer: false)
-            window.center()
-            window.title = "Workspace Browser"
-            window.titleVisibility = .hidden
-            window.isReleasedWhenClosed = false
-            window.minSize = NSSize(width: 936, height: 300)
-            window.animationBehavior = .documentWindow
-
-            let toolbar = BrowserToolbar()
-            window.toolbar = toolbar
-
-            let componentBrowser = ComponentBrowser()
-            let colorBrowser = ColorBrowser()
-            let textStyleBrowser = TextStyleBrowser()
-
-            toolbar.onChangeTab = { tab in
-                switch tab {
-                case .components:
-                    window.contentView = componentBrowser
-                case .colors:
-                    window.contentView = colorBrowser
-                case .textStyles:
-                    window.contentView = textStyleBrowser
-                default:
-                    window.contentView = NSView()
-                }
-            }
-
-            window.contentView = componentBrowser
-
-            componentBrowserWindow = window
-        }
-
-        // TODO: Set components every time we show the browser in case they've changed.
-        // Also consider hooking into "Refresh"
-
-        componentBrowserWindow?.makeKeyAndOrderFront(nil)
+        let windowController = WorkspaceWindowController.create()
+        windowController.showWindow(self)
     }
 
     var welcomeWindow: NSWindow?
