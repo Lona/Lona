@@ -7,7 +7,9 @@ public class ColorBrowser: NSBox {
 
   // MARK: Lifecycle
 
-  public init() {
+  public init(onSelectColor: ColorHandler) {
+    self.onSelectColor = onSelectColor
+
     super.init(frame: .zero)
 
     setUpViews()
@@ -16,9 +18,17 @@ public class ColorBrowser: NSBox {
     update()
   }
 
+  public convenience init() {
+    self.init(onSelectColor: nil)
+  }
+
   public required init?(coder aDecoder: NSCoder) {
     fatalError("init(coder:) has not been implemented")
   }
+
+  // MARK: Public
+
+  public var onSelectColor: ColorHandler { didSet { update() } }
 
   // MARK: Private
 
@@ -210,5 +220,7 @@ public class ColorBrowser: NSBox {
     spacerViewHeightAnchorConstraint.identifier = "spacerViewHeightAnchorConstraint"
   }
 
-  private func update() {}
+  private func update() {
+    colorPreviewCollectionView.onSelectColor = onSelectColor
+  }
 }

@@ -5,22 +5,11 @@
       "heightMode" : "At Least",
       "name" : "iPhone SE",
       "width" : 320
-    },
-    {
-      "height" : 100,
-      "heightMode" : "At Least",
-      "name" : "iPhone 7",
-      "width" : 375
-    },
-    {
-      "height" : 100,
-      "heightMode" : "At Least",
-      "name" : "iPhone 7+",
-      "width" : 414
     }
   ],
   "examples" : [
     {
+      "id" : "Default",
       "name" : "Default",
       "params" : {
 
@@ -31,7 +20,14 @@
 
   ],
   "params" : [
-
+    {
+      "name" : "onSelectColor",
+      "type" : "ColorHandler"
+    },
+    {
+      "name" : "onChangeColor",
+      "type" : "ColorHandler"
+    }
   ],
   "root" : {
     "id" : "View",

@@ -12,6 +12,7 @@ final class InspectorView: NSBox {
 
     enum Content {
         case layer(CSLayer)
+        case color(CSColor)
     }
 
     // MARK: Lifecycle
@@ -68,8 +69,12 @@ final class InspectorView: NSBox {
         leadingAnchor.constraint(equalTo: scrollView.leadingAnchor).isActive = true
         trailingAnchor.constraint(equalTo: scrollView.trailingAnchor).isActive = true
 
+        flippedView.topAnchor.constraint(equalTo: scrollView.topAnchor).isActive = true
         flippedView.leftAnchor.constraint(equalTo: scrollView.leftAnchor, constant: 20).isActive = true
         flippedView.rightAnchor.constraint(equalTo: scrollView.rightAnchor, constant: -20).isActive = true
+
+//        flippedView.leftAnchor.constraint(equalTo: scrollView.contentView.leftAnchor, constant: 20).isActive = true
+//        flippedView.rightAnchor.constraint(equalTo: scrollView.contentView.rightAnchor, constant: -20).isActive = true
     }
 
     private var inspectorView = NSView()
@@ -97,11 +102,31 @@ final class InspectorView: NSBox {
                 }
                 inspectorView = layerInspector
             }
+
+            flippedView.addSubview(inspectorView)
+
+            inspectorView.widthAnchor.constraint(equalTo: flippedView.widthAnchor).isActive = true
+            inspectorView.heightAnchor.constraint(equalTo: flippedView.heightAnchor).isActive = true
+
+        case .color(let color):
+            let editor = DictionaryEditor(
+                value: color.toValue(),
+                onChange: { updated in
+//                    CSColors.update(color: updated.data, at: index)
+                    Swift.print("Updated", updated)
+                }
+            )
+
+            editor.heightAnchor.constraint(equalToConstant: 400).isActive = true
+
+            inspectorView = editor
+
+            flippedView.addSubview(inspectorView)
+
+            inspectorView.widthAnchor.constraint(equalTo: flippedView.widthAnchor).isActive = true
+            inspectorView.heightAnchor.constraint(equalTo: flippedView.heightAnchor).isActive = true
+            inspectorView.topAnchor.constraint(equalTo: flippedView.topAnchor).isActive = true
+            inspectorView.bottomAnchor.constraint(equalTo: flippedView.bottomAnchor).isActive = true
         }
-
-        flippedView.addSubview(inspectorView)
-
-        inspectorView.widthAnchor.constraint(equalTo: flippedView.widthAnchor).isActive = true
-        inspectorView.heightAnchor.constraint(equalTo: flippedView.heightAnchor).isActive = true
     }
 }

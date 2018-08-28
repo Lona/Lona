@@ -9,6 +9,7 @@
   ],
   "examples" : [
     {
+      "id" : "Default",
       "name" : "Default",
       "params" : {
 
@@ -16,10 +17,24 @@
     }
   ],
   "logic" : [
-
+    {
+      "assignee" : [
+        "layers",
+        "ColorPreviewCollection",
+        "onSelectColor"
+      ],
+      "content" : [
+        "parameters",
+        "onSelectColor"
+      ],
+      "type" : "AssignExpr"
+    }
   ],
   "params" : [
-
+    {
+      "name" : "onSelectColor",
+      "type" : "ColorHandler"
+    }
   ],
   "root" : {
     "children" : [

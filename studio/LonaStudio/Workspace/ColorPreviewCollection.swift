@@ -64,7 +64,7 @@ class ColorPreviewCollectionView: NSView {
     // MARK: - Public
 
     public var items: [CSColor] = [] { didSet { update() } }
-    public var onClickColor: ((String) -> Void)? { didSet { update(withoutReloading: true) } }
+    public var onSelectColor: ((CSColor) -> Void)? { didSet { update(withoutReloading: true) } }
     public var onMoveColor: ((Int, Int) -> Void)? { didSet { update(withoutReloading: true) } }
     public var onDeleteColor: ((Int) -> Void)? { didSet { update(withoutReloading: true) } }
 
@@ -200,6 +200,12 @@ extension ColorPreviewCollectionView: NSCollectionViewDelegate {
 
         return true
     }
+
+    func collectionView(_ collectionView: NSCollectionView, didSelectItemsAt indexPaths: Set<IndexPath>) {
+        guard let indexPath = indexPaths.first else { return }
+
+        self.onSelectColor?(items[indexPath.item])
+    }
 }
 
 // MARK: - NSCollectionViewDataSource
@@ -211,12 +217,12 @@ extension ColorPreviewCollectionView: NSCollectionViewDataSource {
             for: indexPath) as! ColorPreviewItemViewController
 
         if let componentPreviewCard = item.view as? DoubleClickableColorPreviewCard {
-            let componentFile = items[indexPath.item]
-            componentPreviewCard.colorName = componentFile.name
-            componentPreviewCard.colorCode = componentFile.value
-            componentPreviewCard.color = componentFile.color
+            let csColor = items[indexPath.item]
+            componentPreviewCard.colorName = csColor.name
+            componentPreviewCard.colorCode = csColor.value
+            componentPreviewCard.color = csColor.color
             componentPreviewCard.onDoubleClick = {
-                self.onClickColor?(componentFile.id)
+                self.onSelectColor?(csColor)
             }
         }
 
@@ -262,7 +268,9 @@ public class ColorPreviewCollection: NSBox {
 
     // MARK: Public
 
-    public var onClickColor: ((String) -> Void)?
+    public var onClickColor: ((CSColor) -> Void)?
+
+    public var onSelectColor: ColorHandler
 
     // MARK: Private
 
@@ -292,25 +300,8 @@ public class ColorPreviewCollection: NSBox {
             self.collectionView.deleteItem(at: index)
         }
 
-        // TODO: This callback should propagate up to the root. Currently Lona doesn't
-        // generate callbacks with params, so we'll handle it here for now.
-        collectionView.onClickColor = { color in
-            guard let csColor = CSColors.colors.first(where: { $0.id == color }) else { return }
-            guard let index = CSColors.colors.index(where: { $0.id == color }) else { return }
-
-            let editor = DictionaryEditor(
-                value: csColor.toValue(),
-                onChange: { updated in
-                    CSColors.update(color: updated.data, at: index)
-            },
-                layout: CSConstraint.size(width: 300, height: 200)
-            )
-
-            let viewController = NSViewController(view: editor)
-            let popover = NSPopover(contentViewController: viewController, delegate: self)
-
-            guard let cardView = self.collectionView.cardView(at: index) else { return }
-            popover.show(relativeTo: NSRect.zero, of: cardView, preferredEdge: .maxY)
+        collectionView.onSelectColor = { color in
+            self.onSelectColor?(color)
         }
 
         addSubview(collectionView)

@@ -7,7 +7,10 @@ public class ColorPreviewCollection: NSBox {
 
   // MARK: Lifecycle
 
-  public init() {
+  public init(onSelectColor: ColorHandler, onChangeColor: ColorHandler) {
+    self.onSelectColor = onSelectColor
+    self.onChangeColor = onChangeColor
+
     super.init(frame: .zero)
 
     setUpViews()
@@ -16,9 +19,18 @@ public class ColorPreviewCollection: NSBox {
     update()
   }
 
+  public convenience init() {
+    self.init(onSelectColor: nil, onChangeColor: nil)
+  }
+
   public required init?(coder aDecoder: NSCoder) {
     fatalError("init(coder:) has not been implemented")
   }
+
+  // MARK: Public
+
+  public var onSelectColor: ColorHandler { didSet { update() } }
+  public var onChangeColor: ColorHandler { didSet { update() } }
 
   // MARK: Private
 

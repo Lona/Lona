@@ -89,8 +89,16 @@ class WorkspaceViewController: NSSplitViewController {
     }()
 
     private lazy var componentEditorViewController = ComponentEditorViewController()
-    private lazy var colorEditorViewController = {
-        return NSViewController(view: ColorBrowser())
+    private lazy var colorEditorViewController: NSViewController = {
+        let colorBrowser = ColorBrowser()
+
+        colorBrowser.onSelectColor = { color in
+            Swift.print("Color", color)
+            self.inspectedContent = .color(color)
+            self.update()
+        }
+
+        return NSViewController(view: colorBrowser)
     }()
 
     private lazy var inspectorView = InspectorView()

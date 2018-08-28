@@ -1,0 +1,17 @@
+{
+  "types": [
+    {
+      "name": "Named",
+      "alias": "ColorHandler",
+      "of": {
+        "name": "Function",
+        "parameters": [
+          {
+            "label": "_",
+            "type": "CSColor"
+          }
+        ]
+      }
+    }
+  ]
+}

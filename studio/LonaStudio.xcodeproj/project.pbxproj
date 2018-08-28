@@ -171,6 +171,7 @@
 		6BA6E89921307D65009CD33C /* WorkspaceWindowController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6BA6E89821307D65009CD33C /* WorkspaceWindowController.swift */; };
 		6BA6E89B213080CE009CD33C /* ComponentEditorViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6BA6E89A213080CE009CD33C /* ComponentEditorViewController.swift */; };
 		6BA6E89D2131CD09009CD33C /* JSONDocument.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6BA6E89C2131CD09009CD33C /* JSONDocument.swift */; };
+		6BA6E89F21324207009CD33C /* ForeignTypes.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6BA6E89E21324207009CD33C /* ForeignTypes.swift */; };
 		6BBE0F6A212B26C900CEE8C1 /* FileTree.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 6BBE0F69212B26C900CEE8C1 /* FileTree.framework */; };
 		6BBE0F6B212B26C900CEE8C1 /* FileTree.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 6BBE0F69212B26C900CEE8C1 /* FileTree.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		6BD581D920824AF60068FBC3 /* NSTextAlignmentExtensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6BD581D820824AF60068FBC3 /* NSTextAlignmentExtensions.swift */; };
@@ -384,6 +385,7 @@
 		6BA6E89821307D65009CD33C /* WorkspaceWindowController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WorkspaceWindowController.swift; sourceTree = "<group>"; };
 		6BA6E89A213080CE009CD33C /* ComponentEditorViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ComponentEditorViewController.swift; sourceTree = "<group>"; };
 		6BA6E89C2131CD09009CD33C /* JSONDocument.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = JSONDocument.swift; sourceTree = "<group>"; };
+		6BA6E89E21324207009CD33C /* ForeignTypes.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ForeignTypes.swift; sourceTree = "<group>"; };
 		6BBE0F69212B26C900CEE8C1 /* FileTree.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = FileTree.framework; path = Carthage/Build/Mac/FileTree.framework; sourceTree = "<group>"; };
 		6BD581D820824AF60068FBC3 /* NSTextAlignmentExtensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NSTextAlignmentExtensions.swift; sourceTree = "<group>"; };
 		6BDF4D2D20A67272006E99C4 /* BrowserToolbar.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BrowserToolbar.swift; sourceTree = "<group>"; };
@@ -784,6 +786,7 @@
 				6B0AEFC21EBF74D800F35BBF /* Info.plist */,
 				6B0AEFB71EBF74D800F35BBF /* AppDelegate.swift */,
 				300302731EDC7FA90085E140 /* CSStatementView.swift */,
+				6BA6E89E21324207009CD33C /* ForeignTypes.swift */,
 				6B0AEFBD1EBF74D800F35BBF /* Assets.xcassets */,
 				30CE64481F008F43008D01AD /* Assets */,
 				306DA4ED1F33E19F002772DC /* Canvas */,
@@ -1129,6 +1132,7 @@
 				6B4DFCE920A75B320048BB43 /* ColorPreviewCollection.swift in Sources */,
 				30F870D920865859007ADA5B /* Colors.swift in Sources */,
 				30C203DB20BF5908007C3FE0 /* TextStylePreviewCard.swift in Sources */,
+				6BA6E89F21324207009CD33C /* ForeignTypes.swift in Sources */,
 				305ED1BD20548CA7000D07C3 /* LonaLogic.swift in Sources */,
 				30C8BC321EDB758C00B99F1B /* Canvas.swift in Sources */,
 				3003027C1EDCE0880085E140 /* CSComponent.swift in Sources */,

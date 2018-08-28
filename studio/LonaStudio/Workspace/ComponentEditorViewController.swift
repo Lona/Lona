@@ -131,14 +131,20 @@ class ComponentEditorViewController: NSSplitViewController {
     func setUpUtilities() {
         utilitiesView.onChangeMetadata = { value in
             self.component?.metadata = value
+            self.updateLayerList(withoutModifyingSelection: true)
+            self.updateCanvasCollectionView()
         }
 
         utilitiesView.onChangeCanvasList = { value in
             self.component?.canvas = value
+            self.updateLayerList(withoutModifyingSelection: true)
+            self.updateCanvasCollectionView()
         }
 
         utilitiesView.onChangeCanvasLayout = { value in
             self.component?.canvasLayoutAxis = value
+            self.updateLayerList(withoutModifyingSelection: true)
+            self.updateCanvasCollectionView()
         }
 
         utilitiesView.onChangeParameterList = { value in
@@ -152,10 +158,14 @@ class ComponentEditorViewController: NSSplitViewController {
 
         utilitiesView.onChangeCaseList = { value in
             self.component?.cases = value
+            self.updateLayerList(withoutModifyingSelection: true)
+            self.updateCanvasCollectionView()
         }
 
         utilitiesView.onChangeLogicList = { value in
             self.component?.logic = value
+            self.updateLayerList(withoutModifyingSelection: true)
+            self.updateCanvasCollectionView()
         }
     }
 
@@ -172,9 +182,17 @@ class ComponentEditorViewController: NSSplitViewController {
         addSplitViewItem(bottomItem)
     }
 
-    private func update(withoutModifyingSelection: Bool) {
-        utilitiesView.component = component
+    private func update(withoutModifyingSelection flag: Bool = false) {
+        updateUtilitiesView()
+        updateLayerList(withoutModifyingSelection: flag)
+        updateCanvasCollectionView()
+    }
 
+    private func updateUtilitiesView() {
+        utilitiesView.component = component
+    }
+
+    private func updateLayerList(withoutModifyingSelection: Bool) {
         if withoutModifyingSelection {
             layerList.reloadWithoutModifyingSelection()
         } else {
@@ -189,7 +207,9 @@ class ComponentEditorViewController: NSSplitViewController {
             self.onChangeInspectedLayer?()
             self.update(withoutModifyingSelection: false)
         }
+    }
 
+    private func updateCanvasCollectionView() {
         guard let component = component else { return }
 
         let options = CanvasCollectionOptions(

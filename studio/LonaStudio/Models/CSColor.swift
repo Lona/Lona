@@ -9,7 +9,7 @@
 import Foundation
 import AppKit
 
-struct CSColor {
+public struct CSColor {
     let id: String
     let name: String
     let color: NSColor
