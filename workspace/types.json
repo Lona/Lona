@@ -12,6 +12,27 @@
           }
         ]
       }
+    },
+    {
+      "name": "Named",
+      "alias": "StringHandler",
+      "of": {
+        "name": "Function",
+        "parameters": [
+          {
+            "label": "_",
+            "type": "String"
+          }
+        ]
+      }
+    },
+    {
+      "name": "Named",
+      "alias": "ColorList",
+      "of": {
+        "name": "Array",
+        "of": "CSColor"
+      }
     }
   ]
 }

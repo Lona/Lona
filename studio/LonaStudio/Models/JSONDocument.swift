@@ -70,10 +70,22 @@ class JSONDocument: NSDocument {
         }
     }
 
-//    override func save(to url: URL, ofType typeName: String, for saveOperation: NSDocument.SaveOperationType, completionHandler: @escaping (Error?) -> Void) {
-//
-//        super.save(to: url, ofType: typeName, for: saveOperation, completionHandler: completionHandler)
-//
-//        LonaPlugins.current.trigger(eventType: .onSaveComponent)
-//    }
+    override func save(to url: URL, ofType typeName: String, for saveOperation: NSDocument.SaveOperationType, completionHandler: @escaping (Error?) -> Void) {
+
+        super.save(to: url, ofType: typeName, for: saveOperation, completionHandler: completionHandler)
+
+        LonaPlugins.current.trigger(eventType: .onSaveColors)
+    }
+
+    // MARK: Colors
+
+    func update(color: CSColor, at index: Int) {
+        guard let content = content, case let Content.colors(colors) = content else { return }
+
+        let updated = colors.enumerated().map { offset, element in
+            return index == offset ? color : element
+        }
+
+        self.content = .colors(updated)
+    }
 }

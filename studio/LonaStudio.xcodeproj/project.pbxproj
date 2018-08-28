@@ -165,6 +165,10 @@
 		6B4DFCEB20A75B900048BB43 /* ColorPreviewCard.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6B4DFCEA20A75B900048BB43 /* ColorPreviewCard.swift */; };
 		6B4DFCED20A77C650048BB43 /* FileUtils.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6B4DFCEC20A77C650048BB43 /* FileUtils.swift */; };
 		6B4DFCEF20A795080048BB43 /* RecentProjectItem.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6B4DFCEE20A795070048BB43 /* RecentProjectItem.swift */; };
+		6B5886862134D6BB00CCA69F /* ControlledComponents.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 6B5886852134D6BB00CCA69F /* ControlledComponents.framework */; };
+		6B5886872134D6BB00CCA69F /* ControlledComponents.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 6B5886852134D6BB00CCA69F /* ControlledComponents.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
+		6B58868B2134D9E800CCA69F /* ColorInspector.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6B5886892134D9E800CCA69F /* ColorInspector.swift */; };
+		6B58868D2134DD3F00CCA69F /* CoreTextInput.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6B58868C2134DD3F00CCA69F /* CoreTextInput.swift */; };
 		6B6017D01EBF9EFA001E02C1 /* LayerListOutlineView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6B6017CF1EBF9EFA001E02C1 /* LayerListOutlineView.swift */; };
 		6BA6E895212F92B0009CD33C /* Witness.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 6BA6E894212F92B0009CD33C /* Witness.framework */; };
 		6BA6E896212F92B0009CD33C /* Witness.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 6BA6E894212F92B0009CD33C /* Witness.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
@@ -212,6 +216,7 @@
 			files = (
 				6BA6E896212F92B0009CD33C /* Witness.framework in Embed Frameworks */,
 				6BBE0F6B212B26C900CEE8C1 /* FileTree.framework in Embed Frameworks */,
+				6B5886872134D6BB00CCA69F /* ControlledComponents.framework in Embed Frameworks */,
 			);
 			name = "Embed Frameworks";
 			runOnlyForDeploymentPostprocessing = 0;
@@ -380,6 +385,9 @@
 		6B4DFCEA20A75B900048BB43 /* ColorPreviewCard.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ColorPreviewCard.swift; sourceTree = "<group>"; };
 		6B4DFCEC20A77C650048BB43 /* FileUtils.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FileUtils.swift; sourceTree = "<group>"; };
 		6B4DFCEE20A795070048BB43 /* RecentProjectItem.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RecentProjectItem.swift; sourceTree = "<group>"; };
+		6B5886852134D6BB00CCA69F /* ControlledComponents.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = ControlledComponents.framework; path = Carthage/Build/Mac/ControlledComponents.framework; sourceTree = "<group>"; };
+		6B5886892134D9E800CCA69F /* ColorInspector.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ColorInspector.swift; sourceTree = "<group>"; };
+		6B58868C2134DD3F00CCA69F /* CoreTextInput.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CoreTextInput.swift; sourceTree = "<group>"; };
 		6B6017CF1EBF9EFA001E02C1 /* LayerListOutlineView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = LayerListOutlineView.swift; sourceTree = "<group>"; };
 		6BA6E894212F92B0009CD33C /* Witness.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Witness.framework; path = Carthage/Build/Mac/Witness.framework; sourceTree = "<group>"; };
 		6BA6E89821307D65009CD33C /* WorkspaceWindowController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WorkspaceWindowController.swift; sourceTree = "<group>"; };
@@ -419,6 +427,7 @@
 			files = (
 				6BA6E895212F92B0009CD33C /* Witness.framework in Frameworks */,
 				6BBE0F6A212B26C900CEE8C1 /* FileTree.framework in Frameworks */,
+				6B5886862134D6BB00CCA69F /* ControlledComponents.framework in Frameworks */,
 				783A74CD337C61784E60C467 /* Pods_LonaStudio.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -696,12 +705,14 @@
 		30F870C120865858007ADA5B /* components */ = {
 			isa = PBXGroup;
 			children = (
+				6B5886892134D9E800CCA69F /* ColorInspector.swift */,
 				6B4DFCEA20A75B900048BB43 /* ColorPreviewCard.swift */,
 				303C3FF620A4EFC6008E1541 /* ComponentPreviewCard.swift */,
+				6B58868C2134DD3F00CCA69F /* CoreTextInput.swift */,
 				30F870C220865858007ADA5B /* IconRow.swift */,
 				303C3FED20A396C3008E1541 /* OpenProjectButton.swift */,
-				307D440E2097DC17004B57F5 /* TabIcon.swift */,
 				6B4DFCEE20A795070048BB43 /* RecentProjectItem.swift */,
+				307D440E2097DC17004B57F5 /* TabIcon.swift */,
 				30C203D920BF5907007C3FE0 /* TextStylePreviewCard.swift */,
 				307D440D2097DC16004B57F5 /* WorkspaceVerticalTabs.swift */,
 			);
@@ -762,6 +773,7 @@
 		6B0AEFAB1EBF74D700F35BBF = {
 			isa = PBXGroup;
 			children = (
+				6B5886852134D6BB00CCA69F /* ControlledComponents.framework */,
 				6B0AEFB61EBF74D800F35BBF /* LonaStudio */,
 				BA9BDC5420132C29004C4D9D /* LonaStudioTests */,
 				6B0AEFB51EBF74D800F35BBF /* Products */,
@@ -1168,6 +1180,7 @@
 				30335A101F5B3023006E507B /* CSCase.swift in Sources */,
 				6BDF4D2E20A67272006E99C4 /* BrowserToolbar.swift in Sources */,
 				302EC0DF20D46ACB00DD2EC1 /* CSParameterLayer.swift in Sources */,
+				6B58868D2134DD3F00CCA69F /* CoreTextInput.swift in Sources */,
 				BA48549C1FEF7A6500AB7923 /* PickerProtocol.swift in Sources */,
 				307D441E209B657B004B57F5 /* DocumentationView.swift in Sources */,
 				30B5B1A11EC36A70002068CE /* PopupField.swift in Sources */,
@@ -1221,6 +1234,7 @@
 				3080AD401FBCE21600B485DC /* CSShadows.swift in Sources */,
 				307B7B511F9A8EE5001A62D9 /* ArrayEditorButton.swift in Sources */,
 				307718E81F35241A003A597B /* CSControl.swift in Sources */,
+				6B58868B2134D9E800CCA69F /* ColorInspector.swift in Sources */,
 				303BDE6D1F76E61300B4CE5A /* VideoUtils.swift in Sources */,
 				305A19521F4638F800EA033C /* NSStackViewExtensions.swift in Sources */,
 				6B0A29E6212736F900A96B0F /* Alert.swift in Sources */,

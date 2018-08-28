@@ -28,12 +28,28 @@
         "onSelectColor"
       ],
       "type" : "AssignExpr"
+    },
+    {
+      "assignee" : [
+        "layers",
+        "ColorPreviewCollection",
+        "colors"
+      ],
+      "content" : [
+        "parameters",
+        "colors"
+      ],
+      "type" : "AssignExpr"
     }
   ],
   "params" : [
     {
       "name" : "onSelectColor",
       "type" : "ColorHandler"
+    },
+    {
+      "name" : "colors",
+      "type" : "ColorList"
     }
   ],
   "root" : {

@@ -93,8 +93,12 @@ class WorkspaceViewController: NSSplitViewController {
         let colorBrowser = ColorBrowser()
 
         colorBrowser.onSelectColor = { color in
-            Swift.print("Color", color)
-            self.inspectedContent = .color(color)
+//            Swift.print("Color", color)
+            if let color = color {
+                self.inspectedContent = .color(color)
+            } else {
+                self.inspectedContent = nil
+            }
             self.update()
         }
 
@@ -328,15 +332,37 @@ class WorkspaceViewController: NSSplitViewController {
             inspectorView.onChangeContent = { layer, changeType in
                 self.componentEditorViewController.reloadLayerListWithoutModifyingSelection()
             }
-        } else if document is JSONDocument {
+        } else if let document = document as? JSONDocument {
             if mainItem.viewController != colorEditorViewController {
                 removeSplitViewItem(mainItem)
                 mainItem.viewController = colorEditorViewController
                 insertSplitViewItem(mainItem, at: 1)
             }
 
-            inspectorView.onChangeContent = { layer, changeType in
+            if let content = document.content, case .colors(let colors) = content {
+                (colorEditorViewController.view as? ColorBrowser)?.colors = colors
+            }
 
+            inspectorView.onChangeContent = { newContent, changeType in
+                guard let oldContent = self.inspectedContent else { return }
+                guard let colors = document.content else { return }
+
+                switch (oldContent, newContent, colors) {
+                case (.color(let oldColor), .color(let newColor), .colors(let colors)):
+                    guard let index = colors.index(where: { $0.id == oldColor.id }) else { return }
+
+                    document.update(color: newColor, at: index)
+
+                    Swift.print("InspectorView.content", newColor.id, newColor.name)
+
+                    self.inspectorView.content = .color(newColor)
+
+                    if let content = document.content, case .colors(let colors) = content {
+                        (self.colorEditorViewController.view as? ColorBrowser)?.colors = colors
+                    }
+                default:
+                    break
+                }
             }
         }
     }

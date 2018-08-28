@@ -80,12 +80,16 @@ final class InspectorView: NSBox {
     private var inspectorView = NSView()
 
     func update() {
-        inspectorView.removeFromSuperview()
-
-        guard let content = content else { return }
+        guard let content = content else {
+            inspectorView.removeFromSuperview()
+            inspectorView = NSView()
+            return
+        }
 
         switch content {
         case .layer(let content):
+            inspectorView.removeFromSuperview()
+
             if case CSLayer.LayerType.custom = content.type, let componentLayer = content as? CSComponentLayer {
                 let componentInspectorView = CustomComponentInspectorView(componentLayer: componentLayer)
                 componentInspectorView.onChangeData = {[unowned self] (data, parameter) in
@@ -109,24 +113,41 @@ final class InspectorView: NSBox {
             inspectorView.heightAnchor.constraint(equalTo: flippedView.heightAnchor).isActive = true
 
         case .color(let color):
-            let editor = DictionaryEditor(
-                value: color.toValue(),
-                onChange: { updated in
-//                    CSColors.update(color: updated.data, at: index)
-                    Swift.print("Updated", updated)
-                }
-            )
+            let alreadyShowingColorInspector = inspectorView is ColorInspector
 
-            editor.heightAnchor.constraint(equalToConstant: 400).isActive = true
+            if !alreadyShowingColorInspector {
+                inspectorView.removeFromSuperview()
+            }
 
-            inspectorView = editor
+            let editor = (inspectorView as? ColorInspector) ?? ColorInspector()
 
-            flippedView.addSubview(inspectorView)
+            editor.idText = color.id
+            editor.nameText = color.name
+            editor.valueText = color.value
+            editor.descriptionText = color.comment
 
-            inspectorView.widthAnchor.constraint(equalTo: flippedView.widthAnchor).isActive = true
-            inspectorView.heightAnchor.constraint(equalTo: flippedView.heightAnchor).isActive = true
-            inspectorView.topAnchor.constraint(equalTo: flippedView.topAnchor).isActive = true
-            inspectorView.bottomAnchor.constraint(equalTo: flippedView.bottomAnchor).isActive = true
+            editor.onChangeIdText = { value in
+                var updated = color
+                updated.id = value
+                self.onChangeContent?(.color(updated), .canvas)
+            }
+
+            editor.onChangeNameText = { value in
+                var updated = color
+                updated.name = value
+                self.onChangeContent?(.color(updated), .canvas)
+            }
+
+            if !alreadyShowingColorInspector {
+                inspectorView = editor
+
+                flippedView.addSubview(inspectorView)
+
+                inspectorView.widthAnchor.constraint(equalTo: flippedView.widthAnchor).isActive = true
+                inspectorView.heightAnchor.constraint(equalTo: flippedView.heightAnchor).isActive = true
+                inspectorView.topAnchor.constraint(equalTo: flippedView.topAnchor).isActive = true
+                inspectorView.bottomAnchor.constraint(equalTo: flippedView.bottomAnchor).isActive = true
+            }
         }
     }
 }

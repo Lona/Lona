@@ -7,8 +7,9 @@ public class ColorBrowser: NSBox {
 
   // MARK: Lifecycle
 
-  public init(onSelectColor: ColorHandler) {
+  public init(onSelectColor: ColorHandler, colors: ColorList) {
     self.onSelectColor = onSelectColor
+    self.colors = colors
 
     super.init(frame: .zero)
 
@@ -19,7 +20,7 @@ public class ColorBrowser: NSBox {
   }
 
   public convenience init() {
-    self.init(onSelectColor: nil)
+    self.init(onSelectColor: nil, colors: nil)
   }
 
   public required init?(coder aDecoder: NSCoder) {
@@ -29,6 +30,7 @@ public class ColorBrowser: NSBox {
   // MARK: Public
 
   public var onSelectColor: ColorHandler { didSet { update() } }
+  public var colors: ColorList { didSet { update() } }
 
   // MARK: Private
 
@@ -222,5 +224,6 @@ public class ColorBrowser: NSBox {
 
   private func update() {
     colorPreviewCollectionView.onSelectColor = onSelectColor
+    colorPreviewCollectionView.colors = colors
   }
 }

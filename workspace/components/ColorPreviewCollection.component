@@ -27,6 +27,10 @@
     {
       "name" : "onChangeColor",
       "type" : "ColorHandler"
+    },
+    {
+      "name" : "colors",
+      "type" : "ColorList"
     }
   ],
   "root" : {
