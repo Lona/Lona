@@ -39,11 +39,24 @@ class JSONDocument: NSDocument {
     }
 
     override func data(ofType typeName: String) throws -> Data {
-//        if let file = component, let json = file.toData(), let data = json.toData() {
-//            return data
-//        }
+        guard let content = content else {
+            throw NSError(domain: NSOSStatusErrorDomain, code: unimpErr, userInfo: nil)
+        }
 
-        throw NSError(domain: NSOSStatusErrorDomain, code: unimpErr, userInfo: nil)
+        switch content {
+        case .colors(let colors):
+            do {
+                let data = CSData.Object(["colors": colors.toData()])
+
+                if let data = data.toData() {
+                    return data
+                } else {
+                    throw NSError(domain: NSOSStatusErrorDomain, code: unimpErr, userInfo: nil)
+                }
+            } catch {
+                throw NSError(domain: NSOSStatusErrorDomain, code: unimpErr, userInfo: nil)
+            }
+        }
     }
 
     override func read(from url: URL, ofType typeName: String) throws {
@@ -75,17 +88,5 @@ class JSONDocument: NSDocument {
         super.save(to: url, ofType: typeName, for: saveOperation, completionHandler: completionHandler)
 
         LonaPlugins.current.trigger(eventType: .onSaveColors)
-    }
-
-    // MARK: Colors
-
-    func update(color: CSColor, at index: Int) {
-        guard let content = content, case let Content.colors(colors) = content else { return }
-
-        let updated = colors.enumerated().map { offset, element in
-            return index == offset ? color : element
-        }
-
-        self.content = .colors(updated)
     }
 }

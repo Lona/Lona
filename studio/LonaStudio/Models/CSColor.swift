@@ -9,7 +9,7 @@
 import Foundation
 import AppKit
 
-public struct CSColor {
+public struct CSColor: CSDataSerializable {
     var id: String
     var name: String
     var value: String

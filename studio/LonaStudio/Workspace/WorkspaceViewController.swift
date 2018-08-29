@@ -344,22 +344,38 @@ class WorkspaceViewController: NSSplitViewController {
             }
 
             inspectorView.onChangeContent = { newContent, changeType in
+                // TODO: Fix this
+                if UndoManager.shared.isUndoing || UndoManager.shared.isRedoing {
+                    return
+                }
+
                 guard let oldContent = self.inspectedContent else { return }
                 guard let colors = document.content else { return }
 
                 switch (oldContent, newContent, colors) {
                 case (.color(let oldColor), .color(let newColor), .colors(let colors)):
+
+                    // Perform update using indexes in case the id was changed
                     guard let index = colors.index(where: { $0.id == oldColor.id }) else { return }
 
-                    document.update(color: newColor, at: index)
-
-                    Swift.print("InspectorView.content", newColor.id, newColor.name)
-
-                    self.inspectorView.content = .color(newColor)
-
-                    if let content = document.content, case .colors(let colors) = content {
-                        (self.colorEditorViewController.view as? ColorBrowser)?.colors = colors
+                    let updated = colors.enumerated().map { offset, element in
+                        return index == offset ? newColor : element
                     }
+
+                    // TODO: Fix this. It may be conflicting with the textfield's built-in undo
+                    UndoManager.shared.run(
+                        name: "Edit Color",
+                        execute: {[unowned self] in
+                            document.content = .colors(updated)
+                            self.inspectorView.content = .color(newColor)
+                            (self.colorEditorViewController.view as? ColorBrowser)?.colors = updated
+                        },
+                        undo: {[unowned self] in
+                            document.content = .colors(colors)
+                            self.inspectorView.content = .color(oldColor)
+                            (self.colorEditorViewController.view as? ColorBrowser)?.colors = updated
+                        }
+                    )
                 default:
                     break
                 }

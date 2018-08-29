@@ -138,6 +138,18 @@ final class InspectorView: NSBox {
                 self.onChangeContent?(.color(updated), .canvas)
             }
 
+            editor.onChangeValueText = { value in
+                var updated = color
+                updated.value = value
+                self.onChangeContent?(.color(updated), .canvas)
+            }
+
+            editor.onChangeDescriptionText = { value in
+                var updated = color
+                updated.comment = value
+                self.onChangeContent?(.color(updated), .canvas)
+            }
+
             if !alreadyShowingColorInspector {
                 inspectorView = editor
 
