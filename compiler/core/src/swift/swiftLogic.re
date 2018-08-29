@@ -12,7 +12,7 @@ let toSwiftAST =
     ) => {
   let identifierName = node =>
     switch node {
-    | Logic.Identifier(ltype, [head, ...tail]) =>
+    | Logic.Identifier(_, [head, ...tail]) =>
       switch head {
       | "parameters" => Ast.SwiftIdentifier(List.hd(tail))
       | "layers" =>

@@ -35,6 +35,7 @@ let getParameterCategory = (x: ParameterKey.t) =>
   switch x {
   | AlignItems => Style
   | AlignSelf => Style
+  | Display => Style
   | Flex => Style
   | FlexDirection => Style
   | TextStyle => Style

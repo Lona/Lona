@@ -289,22 +289,22 @@ function generate(config, options, swiftOptions, name, colors, textStyles, getCo
       };
       marginVariables = List.map(createVariable, /* :: */[
             /* record */[
-              /* lonaName : MarginTop */12,
+              /* lonaName : MarginTop */13,
               /* swiftName */"topMargin"
             ],
             /* :: */[
               /* record */[
-                /* lonaName : MarginRight */13,
+                /* lonaName : MarginRight */14,
                 /* swiftName */"trailingMargin"
               ],
               /* :: */[
                 /* record */[
-                  /* lonaName : MarginBottom */14,
+                  /* lonaName : MarginBottom */15,
                   /* swiftName */"bottomMargin"
                 ],
                 /* :: */[
                   /* record */[
-                    /* lonaName : MarginLeft */15,
+                    /* lonaName : MarginLeft */16,
                     /* swiftName */"leadingMargin"
                   ],
                   /* [] */0
@@ -332,22 +332,22 @@ function generate(config, options, swiftOptions, name, colors, textStyles, getCo
       };
       paddingVariables = List.map(createVariable$1, /* :: */[
             /* record */[
-              /* lonaName : PaddingTop */16,
+              /* lonaName : PaddingTop */17,
               /* swiftName */"topPadding"
             ],
             /* :: */[
               /* record */[
-                /* lonaName : PaddingRight */17,
+                /* lonaName : PaddingRight */18,
                 /* swiftName */"trailingPadding"
               ],
               /* :: */[
                 /* record */[
-                  /* lonaName : PaddingBottom */18,
+                  /* lonaName : PaddingBottom */19,
                   /* swiftName */"bottomPadding"
                 ],
                 /* :: */[
                   /* record */[
-                    /* lonaName : PaddingLeft */19,
+                    /* lonaName : PaddingLeft */20,
                     /* swiftName */"leadingPadding"
                   ],
                   /* [] */0
@@ -640,7 +640,7 @@ function generate(config, options, swiftOptions, name, colors, textStyles, getCo
     var setUpDefaultsDoc = function () {
       var filterParameters = function (param) {
         var name = param[0];
-        if (name !== /* FlexDirection */10 && name !== /* JustifyContent */11 && name !== /* AlignSelf */7 && name !== /* AlignItems */6 && name !== /* Flex */9 && name !== /* PaddingTop */16 && name !== /* PaddingRight */17 && name !== /* PaddingBottom */18 && name !== /* PaddingLeft */19 && name !== /* MarginTop */12 && name !== /* MarginRight */13 && name !== /* MarginBottom */14 && name !== /* MarginLeft */15 && name !== /* Height */24 && name !== /* Width */23) {
+        if (name !== /* FlexDirection */11 && name !== /* JustifyContent */12 && name !== /* AlignSelf */7 && name !== /* AlignItems */6 && name !== /* Flex */10 && name !== /* PaddingTop */17 && name !== /* PaddingRight */18 && name !== /* PaddingBottom */19 && name !== /* PaddingLeft */20 && name !== /* MarginTop */13 && name !== /* MarginRight */14 && name !== /* MarginBottom */15 && name !== /* MarginLeft */16 && name !== /* Height */25 && name !== /* Width */24) {
           return name !== /* TextAlign */2;
         } else {
           return false;
@@ -679,7 +679,7 @@ function generate(config, options, swiftOptions, name, colors, textStyles, getCo
             if (match$1 !== 0) {
               return /* [] */0;
             } else {
-              var match$2 = isParameterUsed(layer, /* BorderWidth */21);
+              var match$2 = isParameterUsed(layer, /* BorderWidth */22);
               return /* :: */[
                       /* BinaryExpression */Block.__(2, [{
                             left: memberOrSelfExpression(parentNameOrSelf(layer), /* :: */[
@@ -1096,11 +1096,11 @@ function generate(config, options, swiftOptions, name, colors, textStyles, getCo
           console.log("Unknown constraint types");
           throw Caml_builtin_exceptions.not_found;
         } else {
-          var constant = Layer$LonaCompilerCore.getNumberParameter(/* Width */23, layer$2);
+          var constant = Layer$LonaCompilerCore.getNumberParameter(/* Width */24, layer$2);
           return /* LiteralExpression */Block.__(0, [/* FloatingPoint */Block.__(2, [constant])]);
         }
       } else {
-        var constant$1 = Layer$LonaCompilerCore.getNumberParameter(/* Height */24, layer$2);
+        var constant$1 = Layer$LonaCompilerCore.getNumberParameter(/* Height */25, layer$2);
         return /* LiteralExpression */Block.__(0, [/* FloatingPoint */Block.__(2, [constant$1])]);
       }
     }
@@ -1270,8 +1270,8 @@ function generate(config, options, swiftOptions, name, colors, textStyles, getCo
   var updateDoc = function () {
     var filterParameters = function (param) {
       var name = param[0];
-      if (name !== /* PaddingTop */16 && name !== /* PaddingRight */17 && name !== /* PaddingBottom */18 && name !== /* PaddingLeft */19 && name !== /* MarginTop */12 && name !== /* MarginRight */13 && name !== /* MarginBottom */14) {
-        return name !== /* MarginLeft */15;
+      if (name !== /* PaddingTop */17 && name !== /* PaddingRight */18 && name !== /* PaddingBottom */19 && name !== /* PaddingLeft */20 && name !== /* MarginTop */13 && name !== /* MarginRight */14 && name !== /* MarginBottom */15) {
+        return name !== /* MarginLeft */16;
       } else {
         return false;
       }

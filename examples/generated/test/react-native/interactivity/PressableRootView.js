@@ -1,6 +1,5 @@
 import React from "react"
-import { Text, View, StyleSheet, TextStyles } from
-  "@mathieudutour/react-sketchapp"
+import { Text, View, StyleSheet } from "react-native"
 
 import colors from "../colors"
 import textStyles from "../textStyles"
@@ -61,5 +60,5 @@ let styles = StyleSheet.create({
     paddingLeft: 24
   },
   inner: { backgroundColor: colors.blue500, width: 100, height: 100 },
-  innerText: { ...TextStyles.get("headline") }
+  innerText: { ...textStyles.headline }
 })

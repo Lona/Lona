@@ -1,6 +1,4 @@
 import React from "react"
-import { Text, View, StyleSheet, TextStyles } from
-  "@mathieudutour/react-sketchapp"
 
 import colors from "../colors"
 import textStyles from "../textStyles"
@@ -19,25 +17,28 @@ export default class Button extends React.Component {
       View$backgroundColor = "blue50"
     }
     return (
-      <View
-        style={[ styles.view, { backgroundColor: View$backgroundColor } ]}
-        onPress={View$onPress}
+      <div
+        style={Object.assign(styles.view, {
+          backgroundColor: View$backgroundColor
+        })}
+        onClick={View$onPress}
       >
-        <Text style={[ styles.text, {} ]}>
+        <span style={Object.assign(styles.text, {})}>
           {Text$text}
-        </Text>
-      </View>
+        </span>
+      </div>
     );
   }
 };
 
-let styles = StyleSheet.create({
+let styles = {
   view: {
     backgroundColor: colors.blue100,
-    paddingTop: 12,
-    paddingRight: 16,
-    paddingBottom: 12,
-    paddingLeft: 16
+    display: "flex",
+    paddingTop: "12px",
+    paddingRight: "16px",
+    paddingBottom: "12px",
+    paddingLeft: "16px"
   },
-  text: { ...TextStyles.get("button") }
-})
+  text: { ...textStyles.button, display: "flex" }
+}

@@ -1,5 +1,4 @@
 import React from "react"
-import { Text, View, StyleSheet } from "react-native"
 
 import colors from "../colors"
 import textStyles from "../textStyles"
@@ -33,32 +32,42 @@ export default class PressableRootView extends React.Component {
       }
     }
     return (
-      <View
-        style={[ styles.outer, { backgroundColor: Outer$backgroundColor } ]}
-        onPress={Outer$onPress}
+      <div
+        style={Object.assign(styles.outer, {
+          backgroundColor: Outer$backgroundColor
+        })}
+        onClick={Outer$onPress}
       >
-        <View
-          style={[ styles.inner, { backgroundColor: Inner$backgroundColor } ]}
-          onPress={Inner$onPress}
+        <div
+          style={Object.assign(styles.inner, {
+            backgroundColor: Inner$backgroundColor
+          })}
+          onClick={Inner$onPress}
         >
-          <Text style={[ styles.innerText, {} ]} text={InnerText$text}>
+          <span style={Object.assign(styles.innerText, {})}>
             {InnerText$text}
-          </Text>
-        </View>
-      </View>
+          </span>
+        </div>
+      </div>
     );
   }
 };
 
-let styles = StyleSheet.create({
+let styles = {
   outer: {
     alignSelf: "stretch",
     backgroundColor: colors.grey50,
-    paddingTop: 24,
-    paddingRight: 24,
-    paddingBottom: 24,
-    paddingLeft: 24
+    display: "flex",
+    paddingTop: "24px",
+    paddingRight: "24px",
+    paddingBottom: "24px",
+    paddingLeft: "24px"
   },
-  inner: { backgroundColor: colors.blue500, width: 100, height: 100 },
-  innerText: { ...textStyles.headline }
-})
+  inner: {
+    backgroundColor: colors.blue500,
+    display: "flex",
+    width: "100px",
+    height: "100px"
+  },
+  innerText: { ...textStyles.headline, display: "flex" }
+}

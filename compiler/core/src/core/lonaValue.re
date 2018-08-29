@@ -44,6 +44,7 @@ let parameterDefaultValue = (key) => {
     | ParameterKey.AlignItems => string("stretch")
     | ParameterKey.AlignSelf => string("flex-start")
     | ParameterKey.Flex => number(0.)
+    | ParameterKey.Display => null()
     | ParameterKey.TextAlign => string("left")
     | ParameterKey.FlexDirection => string("column")
     | ParameterKey.TextStyle => textStyle("defaultStyle") /* ? */

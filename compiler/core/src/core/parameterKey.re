@@ -15,6 +15,7 @@ type t =
   | AlignItems
   | AlignSelf
   | BackgroundColor
+  | Display
   | Flex
   | FlexDirection
   | JustifyContent
@@ -52,6 +53,7 @@ let fromString = string =>
   | "alignItems" => AlignItems
   | "alignSelf" => AlignSelf
   | "backgroundColor" => BackgroundColor
+  | "display" => Display
   | "flex" => Flex
   | "flexDirection" => FlexDirection
   | "justifyContent" => JustifyContent
@@ -91,6 +93,7 @@ let toString = key =>
   | AlignItems => "alignItems"
   | AlignSelf => "alignSelf"
   | BackgroundColor => "backgroundColor"
+  | Display => "display"
   | Flex => "flex"
   | FlexDirection => "flexDirection"
   | JustifyContent => "justifyContent"

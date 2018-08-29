@@ -28,15 +28,15 @@ function parameterType(key) {
       case 2 : 
       case 6 : 
       case 7 : 
-      case 10 : 
+      case 9 : 
       case 11 : 
+      case 12 : 
           return Types$LonaCompilerCore.stringType;
       case 8 : 
-      case 22 : 
+      case 23 : 
           return Types$LonaCompilerCore.colorType;
       case 4 : 
-      case 9 : 
-      case 12 : 
+      case 10 : 
       case 13 : 
       case 14 : 
       case 15 : 
@@ -46,14 +46,15 @@ function parameterType(key) {
       case 19 : 
       case 20 : 
       case 21 : 
-      case 23 : 
+      case 22 : 
       case 24 : 
+      case 25 : 
           return Types$LonaCompilerCore.numberType;
       case 0 : 
-      case 25 : 
       case 26 : 
-          return Types$LonaCompilerCore.booleanType;
       case 27 : 
+          return Types$LonaCompilerCore.booleanType;
+      case 28 : 
           return Types$LonaCompilerCore.handlerType;
       
     }

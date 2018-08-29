@@ -16,6 +16,7 @@ let parameterType = key =>
   /* Styles */
   | AlignItems => Types.stringType
   | AlignSelf => Types.stringType
+  | Display => Types.stringType
   | Flex => Types.numberType
   | FlexDirection => Types.stringType
   | TextAlign => Types.stringType
