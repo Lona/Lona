@@ -373,7 +373,7 @@ class WorkspaceViewController: NSSplitViewController {
                         undo: {[unowned self] in
                             document.content = .colors(colors)
                             self.inspectorView.content = .color(oldColor)
-                            (self.colorEditorViewController.view as? ColorBrowser)?.colors = updated
+                            (self.colorEditorViewController.view as? ColorBrowser)?.colors = colors
                         }
                     )
                 default:

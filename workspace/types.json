@@ -33,6 +33,24 @@
         "name": "Array",
         "of": "CSColor"
       }
+    },
+    {
+      "name": "Named",
+      "alias": "ColorPickerHandler",
+      "of": {
+        "name": "Function",
+        "parameters": [
+          {
+            "label": "_",
+            "type": "Color"
+          }
+        ]
+      }
+    },
+    {
+      "name": "Named",
+      "alias": "ColorPickerColor",
+      "of": "Color"
     }
   ]
 }

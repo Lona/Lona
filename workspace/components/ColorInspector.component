@@ -125,6 +125,30 @@
         "onChangeDescriptionText"
       ],
       "type" : "AssignExpr"
+    },
+    {
+      "assignee" : [
+        "layers",
+        "CoreColorWellPicker",
+        "colorValue"
+      ],
+      "content" : [
+        "parameters",
+        "colorValue"
+      ],
+      "type" : "AssignExpr"
+    },
+    {
+      "assignee" : [
+        "layers",
+        "CoreColorWellPicker",
+        "onChangeColorValue"
+      ],
+      "content" : [
+        "parameters",
+        "onChangeColorValue"
+      ],
+      "type" : "AssignExpr"
     }
   ],
   "params" : [
@@ -159,6 +183,14 @@
     {
       "name" : "onChangeDescriptionText",
       "type" : "StringHandler"
+    },
+    {
+      "name" : "colorValue",
+      "type" : "ColorPickerColor"
+    },
+    {
+      "name" : "onChangeColorValue",
+      "type" : "ColorPickerHandler"
     }
   ],
   "root" : {
@@ -235,11 +267,35 @@
         "type" : "Lona:Text"
       },
       {
-        "id" : "ValueInput",
+        "children" : [
+          {
+            "id" : "CoreColorWellPicker",
+            "params" : {
+
+            },
+            "type" : "CoreColorWellPicker"
+          },
+          {
+            "id" : "SmallSpacer1",
+            "params" : {
+              "height" : 0,
+              "width" : 4
+            },
+            "type" : "Lona:View"
+          },
+          {
+            "id" : "ValueInput",
+            "params" : {
+              "textValue" : "Text"
+            },
+            "type" : "TextInput"
+          }
+        ],
+        "id" : "FitWidthFix_ValueContainer",
         "params" : {
-          "textValue" : "Text"
+          "flexDirection" : "row"
         },
-        "type" : "TextInput"
+        "type" : "Lona:View"
       },
       {
         "id" : "Spacer3",

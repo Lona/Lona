@@ -15,7 +15,9 @@ public class ColorInspector: NSBox {
     onChangeIdText: StringHandler,
     onChangeNameText: StringHandler,
     onChangeValueText: StringHandler,
-    onChangeDescriptionText: StringHandler)
+    onChangeDescriptionText: StringHandler,
+    colorValue: ColorPickerColor,
+    onChangeColorValue: ColorPickerHandler)
   {
     self.idText = idText
     self.nameText = nameText
@@ -25,6 +27,8 @@ public class ColorInspector: NSBox {
     self.onChangeNameText = onChangeNameText
     self.onChangeValueText = onChangeValueText
     self.onChangeDescriptionText = onChangeDescriptionText
+    self.colorValue = colorValue
+    self.onChangeColorValue = onChangeColorValue
 
     super.init(frame: .zero)
 
@@ -44,7 +48,9 @@ public class ColorInspector: NSBox {
         onChangeIdText: nil,
         onChangeNameText: nil,
         onChangeValueText: nil,
-        onChangeDescriptionText: nil)
+        onChangeDescriptionText: nil,
+        colorValue: nil,
+        onChangeColorValue: nil)
   }
 
   public required init?(coder aDecoder: NSCoder) {
@@ -61,6 +67,8 @@ public class ColorInspector: NSBox {
   public var onChangeNameText: StringHandler { didSet { update() } }
   public var onChangeValueText: StringHandler { didSet { update() } }
   public var onChangeDescriptionText: StringHandler { didSet { update() } }
+  public var colorValue: ColorPickerColor { didSet { update() } }
+  public var onChangeColorValue: ColorPickerHandler { didSet { update() } }
 
   // MARK: Private
 
@@ -72,6 +80,9 @@ public class ColorInspector: NSBox {
   private var idInputView = CoreTextInput()
   private var spacer2View = NSBox()
   private var valueLabelView = NSTextField(labelWithString: "")
+  private var fitWidthFixValueContainerView = NSBox()
+  private var coreColorWellPickerView = CoreColorWellPicker()
+  private var smallSpacer1View = NSBox()
   private var valueInputView = TextInput()
   private var spacer3View = NSBox()
   private var descriptionLabelView = NSTextField(labelWithString: "")
@@ -119,10 +130,14 @@ public class ColorInspector: NSBox {
   private var valueLabelViewTrailingMargin: CGFloat = 0
   private var valueLabelViewBottomMargin: CGFloat = 4
   private var valueLabelViewLeadingMargin: CGFloat = 0
-  private var valueInputViewTopMargin: CGFloat = 0
-  private var valueInputViewTrailingMargin: CGFloat = 0
-  private var valueInputViewBottomMargin: CGFloat = 0
-  private var valueInputViewLeadingMargin: CGFloat = 0
+  private var fitWidthFixValueContainerViewTopMargin: CGFloat = 0
+  private var fitWidthFixValueContainerViewTrailingMargin: CGFloat = 0
+  private var fitWidthFixValueContainerViewBottomMargin: CGFloat = 0
+  private var fitWidthFixValueContainerViewLeadingMargin: CGFloat = 0
+  private var fitWidthFixValueContainerViewTopPadding: CGFloat = 0
+  private var fitWidthFixValueContainerViewTrailingPadding: CGFloat = 0
+  private var fitWidthFixValueContainerViewBottomPadding: CGFloat = 0
+  private var fitWidthFixValueContainerViewLeadingPadding: CGFloat = 0
   private var spacer3ViewTopMargin: CGFloat = 0
   private var spacer3ViewTrailingMargin: CGFloat = 0
   private var spacer3ViewBottomMargin: CGFloat = 0
@@ -135,6 +150,18 @@ public class ColorInspector: NSBox {
   private var descriptionInputViewTrailingMargin: CGFloat = 0
   private var descriptionInputViewBottomMargin: CGFloat = 0
   private var descriptionInputViewLeadingMargin: CGFloat = 0
+  private var coreColorWellPickerViewTopMargin: CGFloat = 0
+  private var coreColorWellPickerViewTrailingMargin: CGFloat = 0
+  private var coreColorWellPickerViewBottomMargin: CGFloat = 0
+  private var coreColorWellPickerViewLeadingMargin: CGFloat = 0
+  private var smallSpacer1ViewTopMargin: CGFloat = 0
+  private var smallSpacer1ViewTrailingMargin: CGFloat = 0
+  private var smallSpacer1ViewBottomMargin: CGFloat = 0
+  private var smallSpacer1ViewLeadingMargin: CGFloat = 0
+  private var valueInputViewTopMargin: CGFloat = 0
+  private var valueInputViewTrailingMargin: CGFloat = 0
+  private var valueInputViewBottomMargin: CGFloat = 0
+  private var valueInputViewLeadingMargin: CGFloat = 0
 
   private var titleViewTopAnchorConstraint: NSLayoutConstraint?
   private var titleViewLeadingAnchorConstraint: NSLayoutConstraint?
@@ -158,9 +185,9 @@ public class ColorInspector: NSBox {
   private var valueLabelViewTopAnchorConstraint: NSLayoutConstraint?
   private var valueLabelViewLeadingAnchorConstraint: NSLayoutConstraint?
   private var valueLabelViewTrailingAnchorConstraint: NSLayoutConstraint?
-  private var valueInputViewTopAnchorConstraint: NSLayoutConstraint?
-  private var valueInputViewLeadingAnchorConstraint: NSLayoutConstraint?
-  private var valueInputViewTrailingAnchorConstraint: NSLayoutConstraint?
+  private var fitWidthFixValueContainerViewTopAnchorConstraint: NSLayoutConstraint?
+  private var fitWidthFixValueContainerViewLeadingAnchorConstraint: NSLayoutConstraint?
+  private var fitWidthFixValueContainerViewTrailingAnchorConstraint: NSLayoutConstraint?
   private var spacer3ViewTopAnchorConstraint: NSLayoutConstraint?
   private var spacer3ViewLeadingAnchorConstraint: NSLayoutConstraint?
   private var descriptionLabelViewTopAnchorConstraint: NSLayoutConstraint?
@@ -175,8 +202,23 @@ public class ColorInspector: NSBox {
   private var idInputViewHeightAnchorConstraint: NSLayoutConstraint?
   private var spacer2ViewHeightAnchorConstraint: NSLayoutConstraint?
   private var spacer2ViewWidthAnchorConstraint: NSLayoutConstraint?
+  private var coreColorWellPickerViewHeightAnchorParentConstraint: NSLayoutConstraint?
+  private var smallSpacer1ViewHeightAnchorParentConstraint: NSLayoutConstraint?
+  private var valueInputViewHeightAnchorParentConstraint: NSLayoutConstraint?
+  private var coreColorWellPickerViewLeadingAnchorConstraint: NSLayoutConstraint?
+  private var coreColorWellPickerViewTopAnchorConstraint: NSLayoutConstraint?
+  private var smallSpacer1ViewLeadingAnchorConstraint: NSLayoutConstraint?
+  private var smallSpacer1ViewTopAnchorConstraint: NSLayoutConstraint?
+  private var valueInputViewTrailingAnchorConstraint: NSLayoutConstraint?
+  private var valueInputViewLeadingAnchorConstraint: NSLayoutConstraint?
+  private var valueInputViewTopAnchorConstraint: NSLayoutConstraint?
+  private var valueInputViewBottomAnchorConstraint: NSLayoutConstraint?
   private var spacer3ViewHeightAnchorConstraint: NSLayoutConstraint?
   private var spacer3ViewWidthAnchorConstraint: NSLayoutConstraint?
+  private var coreColorWellPickerViewHeightAnchorConstraint: NSLayoutConstraint?
+  private var coreColorWellPickerViewWidthAnchorConstraint: NSLayoutConstraint?
+  private var smallSpacer1ViewHeightAnchorConstraint: NSLayoutConstraint?
+  private var smallSpacer1ViewWidthAnchorConstraint: NSLayoutConstraint?
 
   private func setUpViews() {
     boxType = .custom
@@ -192,10 +234,16 @@ public class ColorInspector: NSBox {
     spacer2View.borderType = .noBorder
     spacer2View.contentViewMargins = .zero
     valueLabelView.lineBreakMode = .byWordWrapping
+    fitWidthFixValueContainerView.boxType = .custom
+    fitWidthFixValueContainerView.borderType = .noBorder
+    fitWidthFixValueContainerView.contentViewMargins = .zero
     spacer3View.boxType = .custom
     spacer3View.borderType = .noBorder
     spacer3View.contentViewMargins = .zero
     descriptionLabelView.lineBreakMode = .byWordWrapping
+    smallSpacer1View.boxType = .custom
+    smallSpacer1View.borderType = .noBorder
+    smallSpacer1View.contentViewMargins = .zero
 
     addSubview(titleView)
     addSubview(nameLabelView)
@@ -205,10 +253,13 @@ public class ColorInspector: NSBox {
     addSubview(idInputView)
     addSubview(spacer2View)
     addSubview(valueLabelView)
-    addSubview(valueInputView)
+    addSubview(fitWidthFixValueContainerView)
     addSubview(spacer3View)
     addSubview(descriptionLabelView)
     addSubview(descriptionInputView)
+    fitWidthFixValueContainerView.addSubview(coreColorWellPickerView)
+    fitWidthFixValueContainerView.addSubview(smallSpacer1View)
+    fitWidthFixValueContainerView.addSubview(valueInputView)
 
     titleViewTextStyle = TextStyles.large
     titleView.attributedStringValue = titleViewTextStyle.apply(to: titleView.attributedStringValue)
@@ -240,10 +291,13 @@ public class ColorInspector: NSBox {
     idInputView.translatesAutoresizingMaskIntoConstraints = false
     spacer2View.translatesAutoresizingMaskIntoConstraints = false
     valueLabelView.translatesAutoresizingMaskIntoConstraints = false
-    valueInputView.translatesAutoresizingMaskIntoConstraints = false
+    fitWidthFixValueContainerView.translatesAutoresizingMaskIntoConstraints = false
     spacer3View.translatesAutoresizingMaskIntoConstraints = false
     descriptionLabelView.translatesAutoresizingMaskIntoConstraints = false
     descriptionInputView.translatesAutoresizingMaskIntoConstraints = false
+    coreColorWellPickerView.translatesAutoresizingMaskIntoConstraints = false
+    smallSpacer1View.translatesAutoresizingMaskIntoConstraints = false
+    valueInputView.translatesAutoresizingMaskIntoConstraints = false
 
     let titleViewTopAnchorConstraint = titleView
       .topAnchor
@@ -311,18 +365,24 @@ public class ColorInspector: NSBox {
     let valueLabelViewTrailingAnchorConstraint = valueLabelView
       .trailingAnchor
       .constraint(equalTo: trailingAnchor, constant: -(trailingPadding + valueLabelViewTrailingMargin))
-    let valueInputViewTopAnchorConstraint = valueInputView
+    let fitWidthFixValueContainerViewTopAnchorConstraint = fitWidthFixValueContainerView
       .topAnchor
-      .constraint(equalTo: valueLabelView.bottomAnchor, constant: valueLabelViewBottomMargin + valueInputViewTopMargin)
-    let valueInputViewLeadingAnchorConstraint = valueInputView
+      .constraint(
+        equalTo: valueLabelView.bottomAnchor,
+        constant: valueLabelViewBottomMargin + fitWidthFixValueContainerViewTopMargin)
+    let fitWidthFixValueContainerViewLeadingAnchorConstraint = fitWidthFixValueContainerView
       .leadingAnchor
-      .constraint(equalTo: leadingAnchor, constant: leadingPadding + valueInputViewLeadingMargin)
-    let valueInputViewTrailingAnchorConstraint = valueInputView
+      .constraint(equalTo: leadingAnchor, constant: leadingPadding + fitWidthFixValueContainerViewLeadingMargin)
+    let fitWidthFixValueContainerViewTrailingAnchorConstraint = fitWidthFixValueContainerView
       .trailingAnchor
-      .constraint(equalTo: trailingAnchor, constant: -(trailingPadding + valueInputViewTrailingMargin))
+      .constraint(
+        lessThanOrEqualTo: trailingAnchor,
+        constant: -(trailingPadding + fitWidthFixValueContainerViewTrailingMargin))
     let spacer3ViewTopAnchorConstraint = spacer3View
       .topAnchor
-      .constraint(equalTo: valueInputView.bottomAnchor, constant: valueInputViewBottomMargin + spacer3ViewTopMargin)
+      .constraint(
+        equalTo: fitWidthFixValueContainerView.bottomAnchor,
+        constant: fitWidthFixValueContainerViewBottomMargin + spacer3ViewTopMargin)
     let spacer3ViewLeadingAnchorConstraint = spacer3View
       .leadingAnchor
       .constraint(equalTo: leadingAnchor, constant: leadingPadding + spacer3ViewLeadingMargin)
@@ -354,8 +414,87 @@ public class ColorInspector: NSBox {
     let idInputViewHeightAnchorConstraint = idInputView.heightAnchor.constraint(equalToConstant: 21)
     let spacer2ViewHeightAnchorConstraint = spacer2View.heightAnchor.constraint(equalToConstant: 20)
     let spacer2ViewWidthAnchorConstraint = spacer2View.widthAnchor.constraint(equalToConstant: 0)
+    let coreColorWellPickerViewHeightAnchorParentConstraint = coreColorWellPickerView
+      .heightAnchor
+      .constraint(
+        lessThanOrEqualTo: fitWidthFixValueContainerView.heightAnchor,
+        constant:
+        -(
+        fitWidthFixValueContainerViewTopPadding + coreColorWellPickerViewTopMargin +
+          fitWidthFixValueContainerViewBottomPadding + coreColorWellPickerViewBottomMargin
+        ))
+    let smallSpacer1ViewHeightAnchorParentConstraint = smallSpacer1View
+      .heightAnchor
+      .constraint(
+        lessThanOrEqualTo: fitWidthFixValueContainerView.heightAnchor,
+        constant:
+        -(
+        fitWidthFixValueContainerViewTopPadding + smallSpacer1ViewTopMargin +
+          fitWidthFixValueContainerViewBottomPadding + smallSpacer1ViewBottomMargin
+        ))
+    let valueInputViewHeightAnchorParentConstraint = valueInputView
+      .heightAnchor
+      .constraint(
+        lessThanOrEqualTo: fitWidthFixValueContainerView.heightAnchor,
+        constant:
+        -(
+        fitWidthFixValueContainerViewTopPadding + valueInputViewTopMargin +
+          fitWidthFixValueContainerViewBottomPadding + valueInputViewBottomMargin
+        ))
+    let coreColorWellPickerViewLeadingAnchorConstraint = coreColorWellPickerView
+      .leadingAnchor
+      .constraint(
+        equalTo: fitWidthFixValueContainerView.leadingAnchor,
+        constant: fitWidthFixValueContainerViewLeadingPadding + coreColorWellPickerViewLeadingMargin)
+    let coreColorWellPickerViewTopAnchorConstraint = coreColorWellPickerView
+      .topAnchor
+      .constraint(
+        equalTo: fitWidthFixValueContainerView.topAnchor,
+        constant: fitWidthFixValueContainerViewTopPadding + coreColorWellPickerViewTopMargin)
+    let smallSpacer1ViewLeadingAnchorConstraint = smallSpacer1View
+      .leadingAnchor
+      .constraint(
+        equalTo: coreColorWellPickerView.trailingAnchor,
+        constant: coreColorWellPickerViewTrailingMargin + smallSpacer1ViewLeadingMargin)
+    let smallSpacer1ViewTopAnchorConstraint = smallSpacer1View
+      .topAnchor
+      .constraint(
+        equalTo: fitWidthFixValueContainerView.topAnchor,
+        constant: fitWidthFixValueContainerViewTopPadding + smallSpacer1ViewTopMargin)
+    let valueInputViewTrailingAnchorConstraint = valueInputView
+      .trailingAnchor
+      .constraint(
+        equalTo: fitWidthFixValueContainerView.trailingAnchor,
+        constant: -(fitWidthFixValueContainerViewTrailingPadding + valueInputViewTrailingMargin))
+    let valueInputViewLeadingAnchorConstraint = valueInputView
+      .leadingAnchor
+      .constraint(
+        equalTo: smallSpacer1View.trailingAnchor,
+        constant: smallSpacer1ViewTrailingMargin + valueInputViewLeadingMargin)
+    let valueInputViewTopAnchorConstraint = valueInputView
+      .topAnchor
+      .constraint(
+        equalTo: fitWidthFixValueContainerView.topAnchor,
+        constant: fitWidthFixValueContainerViewTopPadding + valueInputViewTopMargin)
+    let valueInputViewBottomAnchorConstraint = valueInputView
+      .bottomAnchor
+      .constraint(
+        equalTo: fitWidthFixValueContainerView.bottomAnchor,
+        constant: -(fitWidthFixValueContainerViewBottomPadding + valueInputViewBottomMargin))
     let spacer3ViewHeightAnchorConstraint = spacer3View.heightAnchor.constraint(equalToConstant: 20)
     let spacer3ViewWidthAnchorConstraint = spacer3View.widthAnchor.constraint(equalToConstant: 0)
+    let coreColorWellPickerViewHeightAnchorConstraint = coreColorWellPickerView
+      .heightAnchor
+      .constraint(equalToConstant: 22)
+    let coreColorWellPickerViewWidthAnchorConstraint = coreColorWellPickerView
+      .widthAnchor
+      .constraint(equalToConstant: 34)
+    let smallSpacer1ViewHeightAnchorConstraint = smallSpacer1View.heightAnchor.constraint(equalToConstant: 0)
+    let smallSpacer1ViewWidthAnchorConstraint = smallSpacer1View.widthAnchor.constraint(equalToConstant: 4)
+
+    coreColorWellPickerViewHeightAnchorParentConstraint.priority = NSLayoutConstraint.Priority.defaultLow
+    smallSpacer1ViewHeightAnchorParentConstraint.priority = NSLayoutConstraint.Priority.defaultLow
+    valueInputViewHeightAnchorParentConstraint.priority = NSLayoutConstraint.Priority.defaultLow
 
     NSLayoutConstraint.activate([
       titleViewTopAnchorConstraint,
@@ -380,9 +519,9 @@ public class ColorInspector: NSBox {
       valueLabelViewTopAnchorConstraint,
       valueLabelViewLeadingAnchorConstraint,
       valueLabelViewTrailingAnchorConstraint,
-      valueInputViewTopAnchorConstraint,
-      valueInputViewLeadingAnchorConstraint,
-      valueInputViewTrailingAnchorConstraint,
+      fitWidthFixValueContainerViewTopAnchorConstraint,
+      fitWidthFixValueContainerViewLeadingAnchorConstraint,
+      fitWidthFixValueContainerViewTrailingAnchorConstraint,
       spacer3ViewTopAnchorConstraint,
       spacer3ViewLeadingAnchorConstraint,
       descriptionLabelViewTopAnchorConstraint,
@@ -397,8 +536,23 @@ public class ColorInspector: NSBox {
       idInputViewHeightAnchorConstraint,
       spacer2ViewHeightAnchorConstraint,
       spacer2ViewWidthAnchorConstraint,
+      coreColorWellPickerViewHeightAnchorParentConstraint,
+      smallSpacer1ViewHeightAnchorParentConstraint,
+      valueInputViewHeightAnchorParentConstraint,
+      coreColorWellPickerViewLeadingAnchorConstraint,
+      coreColorWellPickerViewTopAnchorConstraint,
+      smallSpacer1ViewLeadingAnchorConstraint,
+      smallSpacer1ViewTopAnchorConstraint,
+      valueInputViewTrailingAnchorConstraint,
+      valueInputViewLeadingAnchorConstraint,
+      valueInputViewTopAnchorConstraint,
+      valueInputViewBottomAnchorConstraint,
       spacer3ViewHeightAnchorConstraint,
-      spacer3ViewWidthAnchorConstraint
+      spacer3ViewWidthAnchorConstraint,
+      coreColorWellPickerViewHeightAnchorConstraint,
+      coreColorWellPickerViewWidthAnchorConstraint,
+      smallSpacer1ViewHeightAnchorConstraint,
+      smallSpacer1ViewWidthAnchorConstraint
     ])
 
     self.titleViewTopAnchorConstraint = titleViewTopAnchorConstraint
@@ -423,9 +577,9 @@ public class ColorInspector: NSBox {
     self.valueLabelViewTopAnchorConstraint = valueLabelViewTopAnchorConstraint
     self.valueLabelViewLeadingAnchorConstraint = valueLabelViewLeadingAnchorConstraint
     self.valueLabelViewTrailingAnchorConstraint = valueLabelViewTrailingAnchorConstraint
-    self.valueInputViewTopAnchorConstraint = valueInputViewTopAnchorConstraint
-    self.valueInputViewLeadingAnchorConstraint = valueInputViewLeadingAnchorConstraint
-    self.valueInputViewTrailingAnchorConstraint = valueInputViewTrailingAnchorConstraint
+    self.fitWidthFixValueContainerViewTopAnchorConstraint = fitWidthFixValueContainerViewTopAnchorConstraint
+    self.fitWidthFixValueContainerViewLeadingAnchorConstraint = fitWidthFixValueContainerViewLeadingAnchorConstraint
+    self.fitWidthFixValueContainerViewTrailingAnchorConstraint = fitWidthFixValueContainerViewTrailingAnchorConstraint
     self.spacer3ViewTopAnchorConstraint = spacer3ViewTopAnchorConstraint
     self.spacer3ViewLeadingAnchorConstraint = spacer3ViewLeadingAnchorConstraint
     self.descriptionLabelViewTopAnchorConstraint = descriptionLabelViewTopAnchorConstraint
@@ -440,8 +594,23 @@ public class ColorInspector: NSBox {
     self.idInputViewHeightAnchorConstraint = idInputViewHeightAnchorConstraint
     self.spacer2ViewHeightAnchorConstraint = spacer2ViewHeightAnchorConstraint
     self.spacer2ViewWidthAnchorConstraint = spacer2ViewWidthAnchorConstraint
+    self.coreColorWellPickerViewHeightAnchorParentConstraint = coreColorWellPickerViewHeightAnchorParentConstraint
+    self.smallSpacer1ViewHeightAnchorParentConstraint = smallSpacer1ViewHeightAnchorParentConstraint
+    self.valueInputViewHeightAnchorParentConstraint = valueInputViewHeightAnchorParentConstraint
+    self.coreColorWellPickerViewLeadingAnchorConstraint = coreColorWellPickerViewLeadingAnchorConstraint
+    self.coreColorWellPickerViewTopAnchorConstraint = coreColorWellPickerViewTopAnchorConstraint
+    self.smallSpacer1ViewLeadingAnchorConstraint = smallSpacer1ViewLeadingAnchorConstraint
+    self.smallSpacer1ViewTopAnchorConstraint = smallSpacer1ViewTopAnchorConstraint
+    self.valueInputViewTrailingAnchorConstraint = valueInputViewTrailingAnchorConstraint
+    self.valueInputViewLeadingAnchorConstraint = valueInputViewLeadingAnchorConstraint
+    self.valueInputViewTopAnchorConstraint = valueInputViewTopAnchorConstraint
+    self.valueInputViewBottomAnchorConstraint = valueInputViewBottomAnchorConstraint
     self.spacer3ViewHeightAnchorConstraint = spacer3ViewHeightAnchorConstraint
     self.spacer3ViewWidthAnchorConstraint = spacer3ViewWidthAnchorConstraint
+    self.coreColorWellPickerViewHeightAnchorConstraint = coreColorWellPickerViewHeightAnchorConstraint
+    self.coreColorWellPickerViewWidthAnchorConstraint = coreColorWellPickerViewWidthAnchorConstraint
+    self.smallSpacer1ViewHeightAnchorConstraint = smallSpacer1ViewHeightAnchorConstraint
+    self.smallSpacer1ViewWidthAnchorConstraint = smallSpacer1ViewWidthAnchorConstraint
 
     // For debugging
     titleViewTopAnchorConstraint.identifier = "titleViewTopAnchorConstraint"
@@ -466,9 +635,11 @@ public class ColorInspector: NSBox {
     valueLabelViewTopAnchorConstraint.identifier = "valueLabelViewTopAnchorConstraint"
     valueLabelViewLeadingAnchorConstraint.identifier = "valueLabelViewLeadingAnchorConstraint"
     valueLabelViewTrailingAnchorConstraint.identifier = "valueLabelViewTrailingAnchorConstraint"
-    valueInputViewTopAnchorConstraint.identifier = "valueInputViewTopAnchorConstraint"
-    valueInputViewLeadingAnchorConstraint.identifier = "valueInputViewLeadingAnchorConstraint"
-    valueInputViewTrailingAnchorConstraint.identifier = "valueInputViewTrailingAnchorConstraint"
+    fitWidthFixValueContainerViewTopAnchorConstraint.identifier = "fitWidthFixValueContainerViewTopAnchorConstraint"
+    fitWidthFixValueContainerViewLeadingAnchorConstraint.identifier =
+      "fitWidthFixValueContainerViewLeadingAnchorConstraint"
+    fitWidthFixValueContainerViewTrailingAnchorConstraint.identifier =
+      "fitWidthFixValueContainerViewTrailingAnchorConstraint"
     spacer3ViewTopAnchorConstraint.identifier = "spacer3ViewTopAnchorConstraint"
     spacer3ViewLeadingAnchorConstraint.identifier = "spacer3ViewLeadingAnchorConstraint"
     descriptionLabelViewTopAnchorConstraint.identifier = "descriptionLabelViewTopAnchorConstraint"
@@ -483,8 +654,24 @@ public class ColorInspector: NSBox {
     idInputViewHeightAnchorConstraint.identifier = "idInputViewHeightAnchorConstraint"
     spacer2ViewHeightAnchorConstraint.identifier = "spacer2ViewHeightAnchorConstraint"
     spacer2ViewWidthAnchorConstraint.identifier = "spacer2ViewWidthAnchorConstraint"
+    coreColorWellPickerViewHeightAnchorParentConstraint.identifier =
+      "coreColorWellPickerViewHeightAnchorParentConstraint"
+    smallSpacer1ViewHeightAnchorParentConstraint.identifier = "smallSpacer1ViewHeightAnchorParentConstraint"
+    valueInputViewHeightAnchorParentConstraint.identifier = "valueInputViewHeightAnchorParentConstraint"
+    coreColorWellPickerViewLeadingAnchorConstraint.identifier = "coreColorWellPickerViewLeadingAnchorConstraint"
+    coreColorWellPickerViewTopAnchorConstraint.identifier = "coreColorWellPickerViewTopAnchorConstraint"
+    smallSpacer1ViewLeadingAnchorConstraint.identifier = "smallSpacer1ViewLeadingAnchorConstraint"
+    smallSpacer1ViewTopAnchorConstraint.identifier = "smallSpacer1ViewTopAnchorConstraint"
+    valueInputViewTrailingAnchorConstraint.identifier = "valueInputViewTrailingAnchorConstraint"
+    valueInputViewLeadingAnchorConstraint.identifier = "valueInputViewLeadingAnchorConstraint"
+    valueInputViewTopAnchorConstraint.identifier = "valueInputViewTopAnchorConstraint"
+    valueInputViewBottomAnchorConstraint.identifier = "valueInputViewBottomAnchorConstraint"
     spacer3ViewHeightAnchorConstraint.identifier = "spacer3ViewHeightAnchorConstraint"
     spacer3ViewWidthAnchorConstraint.identifier = "spacer3ViewWidthAnchorConstraint"
+    coreColorWellPickerViewHeightAnchorConstraint.identifier = "coreColorWellPickerViewHeightAnchorConstraint"
+    coreColorWellPickerViewWidthAnchorConstraint.identifier = "coreColorWellPickerViewWidthAnchorConstraint"
+    smallSpacer1ViewHeightAnchorConstraint.identifier = "smallSpacer1ViewHeightAnchorConstraint"
+    smallSpacer1ViewWidthAnchorConstraint.identifier = "smallSpacer1ViewWidthAnchorConstraint"
   }
 
   private func update() {
@@ -497,5 +684,7 @@ public class ColorInspector: NSBox {
     nameInputView.onChangeTextValue = onChangeNameText
     valueInputView.onChangeTextValue = onChangeValueText
     descriptionInputView.onChangeTextValue = onChangeDescriptionText
+    coreColorWellPickerView.colorValue = colorValue
+    coreColorWellPickerView.onChangeColorValue = onChangeColorValue
   }
 }

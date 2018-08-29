@@ -7,6 +7,8 @@
 //
 
 import Cocoa
+import Colors
+import ColorPicker
 
 final class InspectorView: NSBox {
 
@@ -126,6 +128,22 @@ final class InspectorView: NSBox {
             editor.valueText = color.value
             editor.descriptionText = color.comment
 
+            let cssColor = parseCSSColor(color.value) ?? CSSColor(0, 0, 0, 0)
+            var colorValue = Color(redInt: cssColor.r, greenInt: cssColor.g, blueInt: cssColor.b)
+            colorValue.alpha = Float(cssColor.a)
+
+            if editor.colorValue?.rgbaString != colorValue.rgbaString {
+                editor.colorValue = colorValue
+            }
+
+            editor.onChangeColorValue = { value in
+                editor.colorValue = value
+
+                var updated = color
+                updated.value = value.rgbaString
+                self.onChangeContent?(.color(updated), .canvas)
+            }
+
             editor.onChangeIdText = { value in
                 var updated = color
                 updated.id = value
@@ -161,5 +179,15 @@ final class InspectorView: NSBox {
                 inspectorView.bottomAnchor.constraint(equalTo: flippedView.bottomAnchor).isActive = true
             }
         }
+    }
+}
+
+extension Color {
+    var rgbaString: String {
+        let r = Int(rgb.red * 255)
+        let g = Int(rgb.green * 255)
+        let b = Int(rgb.blue * 255)
+        let a = round(alpha * 100) / 100
+        return "rgba(\(r),\(g),\(b),\(a))"
     }
 }

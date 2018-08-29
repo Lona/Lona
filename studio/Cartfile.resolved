@@ -1,3 +1,5 @@
+github "dabbott/ColorPicker" "d098b1cc2df8e3c9f133ded4111aa263a7eff18b"
 github "dabbott/ControlledComponents" "43fe46be0437f116793cec0d3b48222a134c6cc2"
 github "dabbott/FileTree" "2c167d0da5d4485bace76d66c49564fd0dd66c21"
+github "dylan/colors" "0.9.10"
 github "njdehoog/Witness" "0.1.3"
