@@ -77,6 +77,9 @@ class ColorPreviewCollectionView: NSView {
         wantsLayer = true
 
         let flowLayout = NSCollectionViewFlowLayout()
+
+        flowLayout.sectionInset = NSEdgeInsets(top: 36, left: 64, bottom: 36, right: 64)
+
         flowLayout.minimumLineSpacing = 24
         flowLayout.minimumInteritemSpacing = 12
         flowLayout.itemSize = NSSize(width: 140, height: 160)

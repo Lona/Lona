@@ -39,7 +39,7 @@ public class ColorWellPicker: NSBox {
     borderType = .noBorder
     contentViewMargins = .zero
 
-    fillColor = Colors.green50
+    fillColor = Colors.green100
   }
 
   private func setUpConstraints() {

@@ -60,17 +60,11 @@
             "id" : "Title",
             "params" : {
               "font" : "title",
+              "marginLeft" : 64,
+              "marginRight" : 64,
               "text" : "Colors"
             },
             "type" : "Lona:Text"
-          },
-          {
-            "id" : "Spacer",
-            "params" : {
-              "alignSelf" : "stretch",
-              "height" : 24
-            },
-            "type" : "Lona:View"
           },
           {
             "id" : "ColorPreviewCollection",
@@ -92,10 +86,8 @@
     "params" : {
       "alignItems" : "center",
       "alignSelf" : "stretch",
+      "backgroundColor" : "white",
       "flex" : 1,
-      "paddingBottom" : 48,
-      "paddingLeft" : 64,
-      "paddingRight" : 64,
       "paddingTop" : 48
     },
     "type" : "Lona:View"

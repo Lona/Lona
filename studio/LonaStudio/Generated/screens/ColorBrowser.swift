@@ -36,15 +36,14 @@ public class ColorBrowser: NSBox {
 
   private var innerView = NSBox()
   private var titleView = NSTextField(labelWithString: "")
-  private var spacerView = NSBox()
   private var colorPreviewCollectionView = ColorPreviewCollection()
 
   private var titleViewTextStyle = TextStyles.title
 
   private var topPadding: CGFloat = 48
-  private var trailingPadding: CGFloat = 64
-  private var bottomPadding: CGFloat = 48
-  private var leadingPadding: CGFloat = 64
+  private var trailingPadding: CGFloat = 0
+  private var bottomPadding: CGFloat = 0
+  private var leadingPadding: CGFloat = 0
   private var innerViewTopMargin: CGFloat = 0
   private var innerViewTrailingMargin: CGFloat = 0
   private var innerViewBottomMargin: CGFloat = 0
@@ -54,13 +53,9 @@ public class ColorBrowser: NSBox {
   private var innerViewBottomPadding: CGFloat = 0
   private var innerViewLeadingPadding: CGFloat = 0
   private var titleViewTopMargin: CGFloat = 0
-  private var titleViewTrailingMargin: CGFloat = 0
+  private var titleViewTrailingMargin: CGFloat = 64
   private var titleViewBottomMargin: CGFloat = 0
-  private var titleViewLeadingMargin: CGFloat = 0
-  private var spacerViewTopMargin: CGFloat = 0
-  private var spacerViewTrailingMargin: CGFloat = 0
-  private var spacerViewBottomMargin: CGFloat = 0
-  private var spacerViewLeadingMargin: CGFloat = 0
+  private var titleViewLeadingMargin: CGFloat = 64
   private var colorPreviewCollectionViewTopMargin: CGFloat = 0
   private var colorPreviewCollectionViewTrailingMargin: CGFloat = 0
   private var colorPreviewCollectionViewBottomMargin: CGFloat = 0
@@ -74,14 +69,10 @@ public class ColorBrowser: NSBox {
   private var titleViewTopAnchorConstraint: NSLayoutConstraint?
   private var titleViewLeadingAnchorConstraint: NSLayoutConstraint?
   private var titleViewTrailingAnchorConstraint: NSLayoutConstraint?
-  private var spacerViewTopAnchorConstraint: NSLayoutConstraint?
-  private var spacerViewLeadingAnchorConstraint: NSLayoutConstraint?
-  private var spacerViewTrailingAnchorConstraint: NSLayoutConstraint?
   private var colorPreviewCollectionViewBottomAnchorConstraint: NSLayoutConstraint?
   private var colorPreviewCollectionViewTopAnchorConstraint: NSLayoutConstraint?
   private var colorPreviewCollectionViewLeadingAnchorConstraint: NSLayoutConstraint?
   private var colorPreviewCollectionViewTrailingAnchorConstraint: NSLayoutConstraint?
-  private var spacerViewHeightAnchorConstraint: NSLayoutConstraint?
 
   private func setUpViews() {
     boxType = .custom
@@ -91,15 +82,12 @@ public class ColorBrowser: NSBox {
     innerView.borderType = .noBorder
     innerView.contentViewMargins = .zero
     titleView.lineBreakMode = .byWordWrapping
-    spacerView.boxType = .custom
-    spacerView.borderType = .noBorder
-    spacerView.contentViewMargins = .zero
 
     addSubview(innerView)
     innerView.addSubview(titleView)
-    innerView.addSubview(spacerView)
     innerView.addSubview(colorPreviewCollectionView)
 
+    fillColor = Colors.white
     titleView.attributedStringValue = titleViewTextStyle.apply(to: "Colors")
     titleViewTextStyle = TextStyles.title
     titleView.attributedStringValue = titleViewTextStyle.apply(to: titleView.attributedStringValue)
@@ -109,7 +97,6 @@ public class ColorBrowser: NSBox {
     translatesAutoresizingMaskIntoConstraints = false
     innerView.translatesAutoresizingMaskIntoConstraints = false
     titleView.translatesAutoresizingMaskIntoConstraints = false
-    spacerView.translatesAutoresizingMaskIntoConstraints = false
     colorPreviewCollectionView.translatesAutoresizingMaskIntoConstraints = false
 
     let innerViewTopAnchorConstraint = innerView
@@ -136,15 +123,6 @@ public class ColorBrowser: NSBox {
       .constraint(
         lessThanOrEqualTo: innerView.trailingAnchor,
         constant: -(innerViewTrailingPadding + titleViewTrailingMargin))
-    let spacerViewTopAnchorConstraint = spacerView
-      .topAnchor
-      .constraint(equalTo: titleView.bottomAnchor, constant: titleViewBottomMargin + spacerViewTopMargin)
-    let spacerViewLeadingAnchorConstraint = spacerView
-      .leadingAnchor
-      .constraint(equalTo: innerView.leadingAnchor, constant: innerViewLeadingPadding + spacerViewLeadingMargin)
-    let spacerViewTrailingAnchorConstraint = spacerView
-      .trailingAnchor
-      .constraint(equalTo: innerView.trailingAnchor, constant: -(innerViewTrailingPadding + spacerViewTrailingMargin))
     let colorPreviewCollectionViewBottomAnchorConstraint = colorPreviewCollectionView
       .bottomAnchor
       .constraint(
@@ -153,8 +131,8 @@ public class ColorBrowser: NSBox {
     let colorPreviewCollectionViewTopAnchorConstraint = colorPreviewCollectionView
       .topAnchor
       .constraint(
-        equalTo: spacerView.bottomAnchor,
-        constant: spacerViewBottomMargin + colorPreviewCollectionViewTopMargin)
+        equalTo: titleView.bottomAnchor,
+        constant: titleViewBottomMargin + colorPreviewCollectionViewTopMargin)
     let colorPreviewCollectionViewLeadingAnchorConstraint = colorPreviewCollectionView
       .leadingAnchor
       .constraint(
@@ -165,7 +143,6 @@ public class ColorBrowser: NSBox {
       .constraint(
         equalTo: innerView.trailingAnchor,
         constant: -(innerViewTrailingPadding + colorPreviewCollectionViewTrailingMargin))
-    let spacerViewHeightAnchorConstraint = spacerView.heightAnchor.constraint(equalToConstant: 24)
 
     NSLayoutConstraint.activate([
       innerViewTopAnchorConstraint,
@@ -176,14 +153,10 @@ public class ColorBrowser: NSBox {
       titleViewTopAnchorConstraint,
       titleViewLeadingAnchorConstraint,
       titleViewTrailingAnchorConstraint,
-      spacerViewTopAnchorConstraint,
-      spacerViewLeadingAnchorConstraint,
-      spacerViewTrailingAnchorConstraint,
       colorPreviewCollectionViewBottomAnchorConstraint,
       colorPreviewCollectionViewTopAnchorConstraint,
       colorPreviewCollectionViewLeadingAnchorConstraint,
-      colorPreviewCollectionViewTrailingAnchorConstraint,
-      spacerViewHeightAnchorConstraint
+      colorPreviewCollectionViewTrailingAnchorConstraint
     ])
 
     self.innerViewTopAnchorConstraint = innerViewTopAnchorConstraint
@@ -194,14 +167,10 @@ public class ColorBrowser: NSBox {
     self.titleViewTopAnchorConstraint = titleViewTopAnchorConstraint
     self.titleViewLeadingAnchorConstraint = titleViewLeadingAnchorConstraint
     self.titleViewTrailingAnchorConstraint = titleViewTrailingAnchorConstraint
-    self.spacerViewTopAnchorConstraint = spacerViewTopAnchorConstraint
-    self.spacerViewLeadingAnchorConstraint = spacerViewLeadingAnchorConstraint
-    self.spacerViewTrailingAnchorConstraint = spacerViewTrailingAnchorConstraint
     self.colorPreviewCollectionViewBottomAnchorConstraint = colorPreviewCollectionViewBottomAnchorConstraint
     self.colorPreviewCollectionViewTopAnchorConstraint = colorPreviewCollectionViewTopAnchorConstraint
     self.colorPreviewCollectionViewLeadingAnchorConstraint = colorPreviewCollectionViewLeadingAnchorConstraint
     self.colorPreviewCollectionViewTrailingAnchorConstraint = colorPreviewCollectionViewTrailingAnchorConstraint
-    self.spacerViewHeightAnchorConstraint = spacerViewHeightAnchorConstraint
 
     // For debugging
     innerViewTopAnchorConstraint.identifier = "innerViewTopAnchorConstraint"
@@ -212,14 +181,10 @@ public class ColorBrowser: NSBox {
     titleViewTopAnchorConstraint.identifier = "titleViewTopAnchorConstraint"
     titleViewLeadingAnchorConstraint.identifier = "titleViewLeadingAnchorConstraint"
     titleViewTrailingAnchorConstraint.identifier = "titleViewTrailingAnchorConstraint"
-    spacerViewTopAnchorConstraint.identifier = "spacerViewTopAnchorConstraint"
-    spacerViewLeadingAnchorConstraint.identifier = "spacerViewLeadingAnchorConstraint"
-    spacerViewTrailingAnchorConstraint.identifier = "spacerViewTrailingAnchorConstraint"
     colorPreviewCollectionViewBottomAnchorConstraint.identifier = "colorPreviewCollectionViewBottomAnchorConstraint"
     colorPreviewCollectionViewTopAnchorConstraint.identifier = "colorPreviewCollectionViewTopAnchorConstraint"
     colorPreviewCollectionViewLeadingAnchorConstraint.identifier = "colorPreviewCollectionViewLeadingAnchorConstraint"
     colorPreviewCollectionViewTrailingAnchorConstraint.identifier = "colorPreviewCollectionViewTrailingAnchorConstraint"
-    spacerViewHeightAnchorConstraint.identifier = "spacerViewHeightAnchorConstraint"
   }
 
   private func update() {

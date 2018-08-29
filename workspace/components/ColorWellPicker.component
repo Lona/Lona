@@ -45,7 +45,7 @@
     "id" : "View",
     "params" : {
       "alignSelf" : "stretch",
-      "backgroundColor" : "green50",
+      "backgroundColor" : "green100",
       "flex" : 1
     },
     "type" : "Lona:View"
