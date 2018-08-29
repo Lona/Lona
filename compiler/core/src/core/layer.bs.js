@@ -125,8 +125,8 @@ function isPrimitiveTypeName(typeName) {
 
 function getParameterCategory(x) {
   if (typeof x === "number") {
-    if (x >= 25) {
-      if (x >= 27) {
+    if (x >= 26) {
+      if (x >= 28) {
         return /* Prop */1;
       } else {
         return /* Meta */2;
@@ -233,7 +233,7 @@ function getFlexDirection(layer) {
   var exit = 0;
   var value;
   try {
-    value = Curry._2(ParameterMap$LonaCompilerCore.find, /* FlexDirection */10, layer[/* parameters */2]);
+    value = Curry._2(ParameterMap$LonaCompilerCore.find, /* FlexDirection */11, layer[/* parameters */2]);
     exit = 1;
   }
   catch (exn){
@@ -298,9 +298,9 @@ function getNumberParameter(parameterName, layer) {
 
 function getSizingRules(parent, layer) {
   var parentDirection = parent ? getFlexDirection(parent[0]) : "column";
-  var flex = getNumberParameterOpt(/* Flex */9, layer);
-  var width = getNumberParameterOpt(/* Width */23, layer);
-  var height = getNumberParameterOpt(/* Height */24, layer);
+  var flex = getNumberParameterOpt(/* Flex */10, layer);
+  var width = getNumberParameterOpt(/* Width */24, layer);
+  var height = getNumberParameterOpt(/* Height */25, layer);
   var alignSelf = getStringParameterOpt(/* AlignSelf */7, layer);
   var widthSizingRule = parentDirection === "row" ? (
       flex ? (
@@ -409,7 +409,7 @@ function getInsets(prefix, layer) {
           Caml_builtin_exceptions.match_failure,
           [
             "layer.re",
-            205,
+            206,
             6
           ]
         ];

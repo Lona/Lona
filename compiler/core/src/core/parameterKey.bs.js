@@ -11,45 +11,47 @@ function fromString(string) {
     case "backgroundColor" : 
         return /* BackgroundColor */8;
     case "borderColor" : 
-        return /* BorderColor */22;
+        return /* BorderColor */23;
     case "borderRadius" : 
-        return /* BorderRadius */20;
+        return /* BorderRadius */21;
     case "borderWidth" : 
-        return /* BorderWidth */21;
+        return /* BorderWidth */22;
+    case "display" : 
+        return /* Display */9;
     case "flex" : 
-        return /* Flex */9;
+        return /* Flex */10;
     case "flexDirection" : 
-        return /* FlexDirection */10;
+        return /* FlexDirection */11;
     case "height" : 
-        return /* Height */24;
+        return /* Height */25;
     case "hovered" : 
-        return /* Hovered */26;
+        return /* Hovered */27;
     case "image" : 
         return /* Image */5;
     case "justifyContent" : 
-        return /* JustifyContent */11;
+        return /* JustifyContent */12;
     case "marginBottom" : 
-        return /* MarginBottom */14;
+        return /* MarginBottom */15;
     case "marginLeft" : 
-        return /* MarginLeft */15;
+        return /* MarginLeft */16;
     case "marginRight" : 
-        return /* MarginRight */13;
+        return /* MarginRight */14;
     case "marginTop" : 
-        return /* MarginTop */12;
+        return /* MarginTop */13;
     case "numberOfLines" : 
         return /* NumberOfLines */4;
     case "onPress" : 
-        return /* OnPress */27;
+        return /* OnPress */28;
     case "paddingBottom" : 
-        return /* PaddingBottom */18;
+        return /* PaddingBottom */19;
     case "paddingLeft" : 
-        return /* PaddingLeft */19;
+        return /* PaddingLeft */20;
     case "paddingRight" : 
-        return /* PaddingRight */17;
+        return /* PaddingRight */18;
     case "paddingTop" : 
-        return /* PaddingTop */16;
+        return /* PaddingTop */17;
     case "pressed" : 
-        return /* Pressed */25;
+        return /* Pressed */26;
     case "text" : 
         return /* Text */1;
     case "textAlign" : 
@@ -60,7 +62,7 @@ function fromString(string) {
     case "visible" : 
         return /* Visible */0;
     case "width" : 
-        return /* Width */23;
+        return /* Width */24;
     default:
       return /* Custom */[string];
   }
@@ -88,42 +90,44 @@ function toString(key) {
       case 8 : 
           return "backgroundColor";
       case 9 : 
-          return "flex";
+          return "display";
       case 10 : 
-          return "flexDirection";
+          return "flex";
       case 11 : 
-          return "justifyContent";
+          return "flexDirection";
       case 12 : 
-          return "marginTop";
+          return "justifyContent";
       case 13 : 
-          return "marginRight";
+          return "marginTop";
       case 14 : 
-          return "marginBottom";
+          return "marginRight";
       case 15 : 
-          return "marginLeft";
+          return "marginBottom";
       case 16 : 
-          return "paddingTop";
+          return "marginLeft";
       case 17 : 
-          return "paddingRight";
+          return "paddingTop";
       case 18 : 
-          return "paddingBottom";
+          return "paddingRight";
       case 19 : 
-          return "paddingLeft";
+          return "paddingBottom";
       case 20 : 
-          return "borderRadius";
+          return "paddingLeft";
       case 21 : 
-          return "borderWidth";
+          return "borderRadius";
       case 22 : 
-          return "borderColor";
+          return "borderWidth";
       case 23 : 
-          return "width";
+          return "borderColor";
       case 24 : 
-          return "height";
+          return "width";
       case 25 : 
-          return "pressed";
+          return "height";
       case 26 : 
-          return "hovered";
+          return "pressed";
       case 27 : 
+          return "hovered";
+      case 28 : 
           return "onPress";
       
     }

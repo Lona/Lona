@@ -128,13 +128,13 @@ function getConstraints(getRootLayerForComponentName, rootLayer) {
     var secondaryCenterAnchor = isColumn ? /* CenterX */6 : /* CenterY */7;
     var primaryDimensionAnchor = isColumn ? /* Height */1 : /* Width */0;
     var secondaryDimensionAnchor = isColumn ? /* Width */0 : /* Height */1;
-    var height = Layer$LonaCompilerCore.getNumberParameterOpt(/* Height */24, layer$1);
-    var width = Layer$LonaCompilerCore.getNumberParameterOpt(/* Width */23, layer$1);
+    var height = Layer$LonaCompilerCore.getNumberParameterOpt(/* Height */25, layer$1);
+    var width = Layer$LonaCompilerCore.getNumberParameterOpt(/* Width */24, layer$1);
     var sizingRules = Layer$LonaCompilerCore.getSizingRules(Layer$LonaCompilerCore.findParent(rootLayer, layer$1), layer$1);
     var primarySizingRule = isColumn ? sizingRules[/* height */1] : sizingRules[/* width */0];
     var secondarySizingRule = isColumn ? sizingRules[/* width */0] : sizingRules[/* height */1];
     var flexChildren = List.filter((function (child) {
-              return Layer$LonaCompilerCore.getNumberParameter(/* Flex */9, child) === 1.0;
+              return Layer$LonaCompilerCore.getNumberParameter(/* Flex */10, child) === 1.0;
             }))(List.map(getProxyLayer, layer$1[/* children */3]));
     var addConstraints = function (index, child) {
       var childSizingRules = Layer$LonaCompilerCore.getSizingRules(/* Some */[layer$1], child);

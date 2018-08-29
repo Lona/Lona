@@ -18,68 +18,47 @@ export default class TextAlignment extends React.Component {
           <View style={[ styles.view2, {} ]}>
 
           </View>
-          <Text style={[ styles.text, {} ]} text={"Welcome to Lona Studio"}>
+          <Text style={[ styles.text, {} ]}>
             {"Welcome to Lona Studio"}
           </Text>
-          <Text style={[ styles.text1, {} ]} text={"Centered - Width: Fit"}>
+          <Text style={[ styles.text1, {} ]}>
             {"Centered - Width: Fit"}
           </Text>
-          <Text
-            style={[ styles.text2, {} ]}
-            text={"Left aligned - Width: Fill"}
-          >
+          <Text style={[ styles.text2, {} ]}>
             {"Left aligned - Width: Fill"}
           </Text>
-          <Text
-            style={[ styles.text3, {} ]}
-            text={"Right aligned - Width: Fill"}
-          >
+          <Text style={[ styles.text3, {} ]}>
             {"Right aligned - Width: Fill"}
           </Text>
-          <Text style={[ styles.text4, {} ]} text={"Centered - Width: 80"}>
+          <Text style={[ styles.text4, {} ]}>
             {"Centered - Width: 80"}
           </Text>
         </View>
         <View style={[ styles.view3, {} ]}>
-          <Text
-            style={[ styles.text5, {} ]}
-            text={"Left aligned text, Fit w/ secondary centering"}
-          >
+          <Text style={[ styles.text5, {} ]}>
             {"Left aligned text, Fit w/ secondary centering"}
           </Text>
         </View>
         <View style={[ styles.view4, {} ]}>
-          <Text
-            style={[ styles.text6, {} ]}
-            text={"Left aligned text, Fixed w/ secondary centering"}
-          >
+          <Text style={[ styles.text6, {} ]}>
             {"Left aligned text, Fixed w/ secondary centering"}
           </Text>
         </View>
         <View style={[ styles.view5, {} ]}>
-          <Text
-            style={[ styles.text7, {} ]}
-            text={"Centered text, Fit parent no centering"}
-          >
+          <Text style={[ styles.text7, {} ]}>
             {"Centered text, Fit parent no centering"}
           </Text>
         </View>
         <View style={[ styles.view6, {} ]}>
-          <Text
-            style={[ styles.text8, {} ]}
-            text={"Centered text, Fixed parent no centering"}
-          >
+          <Text style={[ styles.text8, {} ]}>
             {"Centered text, Fixed parent no centering"}
           </Text>
         </View>
         <View style={[ styles.rightAlignmentContainer, {} ]}>
-          <Text style={[ styles.text9, {} ]} text={"Fit Text"}>
+          <Text style={[ styles.text9, {} ]}>
             {"Fit Text"}
           </Text>
-          <Text
-            style={[ styles.text10, {} ]}
-            text={"Fill and center aligned text"}
-          >
+          <Text style={[ styles.text10, {} ]}>
             {"Fill and center aligned text"}
           </Text>
           <Image

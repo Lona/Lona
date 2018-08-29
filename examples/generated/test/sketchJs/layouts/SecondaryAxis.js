@@ -13,7 +13,7 @@ export default class SecondaryAxis extends React.Component {
 
         </View>
         <View style={[ styles.fit, {} ]}>
-          <Text style={[ styles.text, {} ]} text={"Text goes here"}>
+          <Text style={[ styles.text, {} ]}>
             {"Text goes here"}
           </Text>
         </View>

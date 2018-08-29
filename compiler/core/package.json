@@ -12,8 +12,10 @@
     "bundle": "npm run clean && npm run build && webpack",
     "format": "refmt --parse=re --print=re --in-place src/**/*.re",
     "prepublishOnly": "yarn clean && yarn build && yarn bundle",
-    "snapshotJs":
-      "node src/main.bs.js workspace js ../../examples/test ../../examples/generated/test/js",
+    "snapshotJsDom":
+      "node src/main.bs.js workspace js ../../examples/test ../../examples/generated/test/react-dom --framework=reactdom",
+    "snapshotJsNative":
+      "node src/main.bs.js workspace js ../../examples/test ../../examples/generated/test/react-native --framework=reactnative",
     "snapshotSketch":
       "node src/main.bs.js workspace js ../../examples/test ../../examples/generated/test/sketchJs --framework=reactsketchapp",
     "snapshotSwift":
@@ -21,7 +23,7 @@
     "snapshotAppkit":
       "node src/main.bs.js workspace swift ../../examples/test ../../examples/generated/test/appkit --framework=appkit",
     "snapshot":
-      "yarn snapshotSwift && yarn snapshotAppkit && yarn snapshotJs && yarn snapshotSketch"
+      "yarn snapshotSwift && yarn snapshotAppkit && yarn snapshotJsDom && yarn snapshotJsNative && yarn snapshotSketch"
   },
   "keywords": ["lona", "compiler", "react"],
   "author": "Devin Abbott <devinabbott@gmail.com>",
