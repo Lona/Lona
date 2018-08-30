@@ -398,18 +398,22 @@ class WorkspaceViewController: NSSplitViewController {
                 self.componentEditorViewController.reloadLayerListWithoutModifyingSelection()
             }
         } else if let document = document as? JSONDocument {
-            if mainItem.viewController != colorEditorViewController {
-                removeSplitViewItem(mainItem)
-                mainItem.viewController = colorEditorViewController
-                insertSplitViewItem(mainItem, at: 1)
-            }
-
             if let content = document.content, case .colors(let colors) = content {
+                if mainItem.viewController != colorEditorViewController {
+                    removeSplitViewItem(mainItem)
+                    mainItem.viewController = colorEditorViewController
+                    insertSplitViewItem(mainItem, at: 1)
+                }
+
                 (colorEditorViewController.view as? ColorBrowser)?.colors = colors
+            } else {
+                removeSplitViewItem(mainItem)
+                mainItem.viewController = NSViewController(view: NSView())
+                insertSplitViewItem(mainItem, at: 1)
+                return
             }
 
             inspectorView.onChangeContent = { newContent, changeType in
-                // TODO: Fix this
                 if UndoManager.shared.isUndoing || UndoManager.shared.isRedoing {
                     return
                 }
