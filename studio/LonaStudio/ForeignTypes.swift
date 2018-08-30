@@ -16,6 +16,7 @@ public typealias ColorHandler = ((CSColor?) -> Void)?
 public typealias StringHandler = ((String) -> Void)?
 public typealias ColorPickerColor = Color?
 public typealias ColorPickerHandler = ((Color) -> Void)?
+public typealias ItemMoveHandler = ((Int, Int) -> Void)?
 
 // Alias imported components for use in generated code
 public typealias TextInput = ControlledComponents.TextInput

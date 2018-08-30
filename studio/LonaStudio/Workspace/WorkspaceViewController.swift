@@ -106,6 +106,36 @@ class WorkspaceViewController: NSSplitViewController {
 
         }
 
+        colorBrowser.onDeleteColor = { color in
+            guard
+                let color = color,
+                let document = self.document as? JSONDocument,
+                let content = document.content,
+                case let .colors(colors) = content else { return }
+
+            let updated = colors.filter { element in
+                return color.id != element.id
+            }
+
+            let oldInspectedContent = self.inspectedContent
+
+            UndoManager.shared.run(
+                name: "Edit Color",
+                execute: {[unowned self] in
+                    document.content = .colors(updated)
+                    self.inspectedContent = nil
+                    self.inspectorView.content = nil
+                    (self.colorEditorViewController.view as? ColorBrowser)?.colors = updated
+                },
+                undo: {[unowned self] in
+                    document.content = .colors(colors)
+                    self.inspectedContent = oldInspectedContent
+                    self.inspectorView.content = oldInspectedContent
+                    (self.colorEditorViewController.view as? ColorBrowser)?.colors = colors
+                }
+            )
+        }
+
         return NSViewController(view: colorBrowser)
     }()
 

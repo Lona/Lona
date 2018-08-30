@@ -29,6 +29,10 @@
       "type" : "ColorHandler"
     },
     {
+      "name" : "onDeleteColor",
+      "type" : "ColorHandler"
+    },
+    {
       "name" : "colors",
       "type" : "ColorList"
     }

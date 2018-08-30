@@ -66,7 +66,7 @@ class ColorPreviewCollectionView: NSView {
     public var items: [CSColor] = [] { didSet { update() } }
     public var onSelectColor: ColorHandler { didSet { update(withoutReloading: true) } }
     public var onMoveColor: ((Int, Int) -> Void)? { didSet { update(withoutReloading: true) } }
-    public var onDeleteColor: ((Int) -> Void)? { didSet { update(withoutReloading: true) } }
+    public var onDeleteColor: ColorHandler { didSet { update(withoutReloading: true) } }
 
     // MARK: - Private
 
@@ -122,7 +122,9 @@ class ColorPreviewCollectionView: NSView {
             collectionView.reloadData()
         }
 
-        collectionView.onDeleteItem = onDeleteColor
+        collectionView.onDeleteItem = { index in
+            self.onDeleteColor?(self.items[index])
+        }
     }
 }
 
@@ -285,6 +287,8 @@ public class ColorPreviewCollection: NSBox {
 
     public var onSelectColor: ColorHandler
 
+    public var onDeleteColor: ColorHandler
+
     // MARK: Private
 
     private var selectedColorId: String?
@@ -307,11 +311,10 @@ public class ColorPreviewCollection: NSBox {
 //            self.collectionView.moveItem(from: sourceIndex, to: targetIndex)
 //        }
 //
-//        collectionView.onDeleteColor = { index in
-//            CSColors.deleteColor(at: index)
-//            self.collectionView.items = CSColors.colors
-//            self.collectionView.deleteItem(at: index)
-//        }
+        collectionView.onDeleteColor = { color in
+            self.selectedColorId = nil
+            self.onDeleteColor?(color)
+        }
 
         collectionView.onSelectColor = { color in
             self.selectedColorId = color?.id

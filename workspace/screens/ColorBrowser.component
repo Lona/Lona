@@ -33,6 +33,18 @@
       "assignee" : [
         "layers",
         "ColorPreviewCollection",
+        "onDeleteColor"
+      ],
+      "content" : [
+        "parameters",
+        "onDeleteColor"
+      ],
+      "type" : "AssignExpr"
+    },
+    {
+      "assignee" : [
+        "layers",
+        "ColorPreviewCollection",
         "colors"
       ],
       "content" : [
@@ -57,6 +69,10 @@
   "params" : [
     {
       "name" : "onSelectColor",
+      "type" : "ColorHandler"
+    },
+    {
+      "name" : "onDeleteColor",
       "type" : "ColorHandler"
     },
     {
