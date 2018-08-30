@@ -420,8 +420,6 @@ class WorkspaceViewController: NSSplitViewController {
                 switch (oldContent, newContent, colors) {
                 case (.color(let oldColor), .color(let newColor), .colors(let colors)):
 
-                    Swift.print("Old color", oldColor, "New color", newColor)
-
                     // Perform update using indexes in case the id was changed
                     guard let index = colors.index(where: { $0.id == oldColor.id }) else { return }
 
@@ -429,7 +427,7 @@ class WorkspaceViewController: NSSplitViewController {
                         return index == offset ? newColor : element
                     }
 
-                    // TODO: Fix this. It may be conflicting with the textfield's built-in undo
+                    // TODO: Improve this. It may be conflicting with the textfield's built-in undo
                     UndoManager.shared.run(
                         name: "Edit Color",
                         execute: {[unowned self] in
