@@ -110,7 +110,7 @@ let renderColors = (target, colors) =>
 let renderTextStyles = (target, colors, textStyles) =>
   switch target {
   | Types.Swift => Swift.TextStyle.render(swiftOptions, colors, textStyles)
-  | JavaScript => JavaScriptTextStyle.render(colors, textStyles)
+  | JavaScript => JavaScriptTextStyle.render(javaScriptOptions, colors, textStyles)
   | _ => ""
   };
 

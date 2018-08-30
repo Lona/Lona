@@ -1,5 +1,9 @@
 open ParameterKey;
 
+let styleUnit = "px";
+
+let convertUnitlessStyle = (value) => string_of_int(value |> Json.Decode.int) ++ styleUnit;
+
 let isUnitNumberParameter = key =>
   switch key {
   | MarginTop => true
