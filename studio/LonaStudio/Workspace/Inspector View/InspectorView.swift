@@ -15,6 +15,12 @@ final class InspectorView: NSBox {
     enum Content {
         case layer(CSLayer)
         case color(CSColor)
+
+        init?(_ color: CSColor?) {
+            guard let color = color else { return nil }
+
+            self = .color(color)
+        }
     }
 
     // MARK: Lifecycle

@@ -89,85 +89,42 @@ class WorkspaceViewController: NSSplitViewController {
     }()
 
     private lazy var componentEditorViewController = ComponentEditorViewController()
-    private lazy var colorEditorViewController: NSViewController = {
-        let colorBrowser = ColorBrowser()
 
-        colorBrowser.onSelectColor = { color in
-//            Swift.print("Color", color)
-            if let color = color {
-                self.inspectedContent = .color(color)
-            } else {
-                self.inspectedContent = nil
-            }
+    private lazy var colorEditorViewController: ColorEditorViewController = {
+        let controller = ColorEditorViewController()
+
+        controller.onInspectColor = { color in
+            self.inspectedContent = InspectorView.Content(color)
             self.update()
         }
 
-        colorBrowser.onClickAddColor = {
-
-        }
-
-        colorBrowser.onDeleteColor = { color in
+        controller.onChangeColors = { actionName, newColors, selectedColor in
             guard
-                let color = color,
                 let document = self.document as? JSONDocument,
                 let content = document.content,
-                case let .colors(colors) = content else { return }
-
-            let updated = colors.filter { element in
-                return color.id != element.id
-            }
+                case let .colors(oldColors) = content else { return }
 
             let oldInspectedContent = self.inspectedContent
+            let newInspectedContent = InspectorView.Content(selectedColor)
 
             UndoManager.shared.run(
-                name: "Edit Color",
+                name: actionName,
                 execute: {[unowned self] in
-                    document.content = .colors(updated)
-                    self.inspectedContent = nil
-                    self.inspectorView.content = nil
-                    (self.colorEditorViewController.view as? ColorBrowser)?.colors = updated
+                    document.content = .colors(newColors)
+                    self.inspectedContent = newInspectedContent
+                    self.inspectorView.content = newInspectedContent
+                    controller.colors = newColors
                 },
                 undo: {[unowned self] in
-                    document.content = .colors(colors)
+                    document.content = .colors(oldColors)
                     self.inspectedContent = oldInspectedContent
                     self.inspectorView.content = oldInspectedContent
-                    (self.colorEditorViewController.view as? ColorBrowser)?.colors = colors
+                    controller.colors = oldColors
                 }
             )
         }
 
-        colorBrowser.onMoveColor = { sourceIndex, targetIndex in
-            guard
-                let document = self.document as? JSONDocument,
-                let content = document.content,
-                case let .colors(colors) = content else { return }
-
-            var updated = colors
-
-            let item = colors[sourceIndex]
-
-            updated.remove(at: sourceIndex)
-
-            if sourceIndex < targetIndex {
-                updated.insert(item, at: targetIndex - 1)
-            } else {
-                updated.insert(item, at: targetIndex)
-            }
-
-            UndoManager.shared.run(
-                name: "Move Color",
-                execute: {[unowned self] in
-                    document.content = .colors(updated)
-                    (self.colorEditorViewController.view as? ColorBrowser)?.colors = updated
-                },
-                undo: {[unowned self] in
-                    document.content = .colors(colors)
-                    (self.colorEditorViewController.view as? ColorBrowser)?.colors = colors
-                }
-            )
-        }
-
-        return NSViewController(view: colorBrowser)
+        return controller
     }()
 
     private lazy var inspectorView = InspectorView()
@@ -405,7 +362,7 @@ class WorkspaceViewController: NSSplitViewController {
                     insertSplitViewItem(mainItem, at: 1)
                 }
 
-                (colorEditorViewController.view as? ColorBrowser)?.colors = colors
+                colorEditorViewController.colors = colors
             } else {
                 removeSplitViewItem(mainItem)
                 mainItem.viewController = NSViewController(view: NSView())
@@ -438,13 +395,13 @@ class WorkspaceViewController: NSSplitViewController {
                             document.content = .colors(updated)
                             self.inspectedContent = .color(newColor)
                             self.inspectorView.content = .color(newColor)
-                            (self.colorEditorViewController.view as? ColorBrowser)?.colors = updated
+                            self.colorEditorViewController.colors = updated
                         },
                         undo: {[unowned self] in
                             document.content = .colors(colors)
                             self.inspectedContent = .color(oldColor)
                             self.inspectorView.content = .color(oldColor)
-                            (self.colorEditorViewController.view as? ColorBrowser)?.colors = colors
+                            self.colorEditorViewController.colors = colors
                         }
                     )
                 default:
