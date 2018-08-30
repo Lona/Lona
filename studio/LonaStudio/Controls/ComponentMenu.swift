@@ -28,34 +28,18 @@ class ComponentMenu: NSMenu {
         }
     }
 
-    func update(componentParameterNames: [String]) {
-        self.componentParameterItems.forEach({ item in
-            self.removeItem(item)
-        })
-
-        let childrenItemIndex = indexOfItem(withTitle: "Children")
-
-        let componentParameterItems = componentParameterNames.map({ name in
+    static func menuItems(componentParameterNames: [String]) -> [NSMenuItem] {
+        return componentParameterNames.map({ name in
             NSMenuItem(title: name, onClick: {
                 guard let viewController = NSApplication.shared.mainWindow?.contentViewController as? WorkspaceViewController else { return }
 
                 viewController.addLayer(CSParameterLayer(name: name, parameterName: name))
             })
         })
-
-        self.componentParameterItems = componentParameterItems
-
-        componentParameterItems.forEach({ item in
-            self.insertItem(item, at: childrenItemIndex + 1)
-        })
     }
 
-    func updateComponentsFromModule() {
-        self.additionalMenuItems.forEach({ item in
-            self.removeItem(item)
-        })
-
-        let componentGroups = Dictionary(grouping: LonaModule.current.componentFiles(), by: { file in
+    static func menuItemsForModule(_ module: LonaModule = LonaModule.current) -> [NSMenuItem] {
+        let componentGroups = Dictionary(grouping: module.componentFiles(), by: { file in
             return file.url.deletingLastPathComponent().lastPathComponent
         })
 
@@ -85,7 +69,41 @@ class ComponentMenu: NSMenu {
             return acc
         })
 
+        return additionalMenuItems
+    }
+
+    func update(componentParameterNames: [String]) {
+        self.componentParameterItems.forEach({ item in
+            self.removeItem(item)
+        })
+
+        // Create menu items
+
+        let componentParameterItems = ComponentMenu.menuItems(componentParameterNames: componentParameterNames)
+
+        self.componentParameterItems = componentParameterItems
+
+        // Add to shared menu
+
+        let childrenItemIndex = indexOfItem(withTitle: "Children")
+
+        componentParameterItems.forEach({ item in
+            self.insertItem(item, at: childrenItemIndex + 1)
+        })
+    }
+
+    func updateComponentsFromModule() {
+        self.additionalMenuItems.forEach({ item in
+            self.removeItem(item)
+        })
+
+        // Create menu items
+
+        let additionalMenuItems = ComponentMenu.menuItemsForModule()
+
         self.additionalMenuItems = additionalMenuItems
+
+        // Add to shared menu
 
         additionalMenuItems.forEach({ item in
             self.addItem(item)

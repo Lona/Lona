@@ -1,97 +1,13 @@
 //
-//  LayerList.swift
-//  ComponentStudio
+//  LayerListOutlineView.swift
+//  LonaStudio
 //
 //  Created by Devin Abbott on 5/7/17.
 //  Copyright © 2017 Devin Abbott. All rights reserved.
 //
 
+import AppKit
 import Foundation
-import Cocoa
-
-enum LayerListAction {
-    case render
-    case clearInspector
-    case renderInspector(DataNode)
-}
-
-protocol LayerListDelegate: class {
-    func layerList(_ layerList: LayerListOutlineView, do action: LayerListAction)
-}
-
-public class LayerList: NSBox {
-
-    // MARK: Lifecycle
-
-    init() {
-        super.init(frame: .zero)
-
-        setUpViews()
-        setUpConstraints()
-
-        update()
-    }
-
-    public required init?(coder decoder: NSCoder) {
-        fatalError("init(coder:) has not been implemented")
-    }
-
-    // MARK: Public
-
-    var component: CSComponent? { didSet { update() } }
-
-    var onChange: (() -> Void)? {
-        get { return outlineView.onChange }
-        set { outlineView.onChange = newValue }
-    }
-
-    var onSelectLayer: ((CSLayer?) -> Void)? {
-        get { return outlineView.onSelectLayer }
-        set { outlineView.onSelectLayer = newValue }
-    }
-
-    func addLayer(layer newLayer: CSLayer) {
-        outlineView.addLayer(layer: newLayer)
-    }
-
-    func reloadWithoutModifyingSelection() {
-        outlineView.render(fullRender: false)
-    }
-
-    // MARK: Private
-
-    private var outlineView = LayerListOutlineView()
-    private var scrollView = NSScrollView(frame: .zero)
-
-    private func setUpViews() {
-        boxType = .custom
-        borderType = .noBorder
-        contentViewMargins = .zero
-
-//        scrollView.hasVerticalScroller = true
-        scrollView.drawsBackground = false
-        scrollView.addSubview(outlineView)
-        scrollView.documentView = outlineView
-
-        outlineView.sizeToFit()
-
-        addSubview(scrollView)
-    }
-
-    private func setUpConstraints() {
-        translatesAutoresizingMaskIntoConstraints = false
-        scrollView.translatesAutoresizingMaskIntoConstraints = false
-
-        topAnchor.constraint(equalTo: scrollView.topAnchor).isActive = true
-        bottomAnchor.constraint(equalTo: scrollView.bottomAnchor).isActive = true
-        leadingAnchor.constraint(equalTo: scrollView.leadingAnchor).isActive = true
-        trailingAnchor.constraint(equalTo: scrollView.trailingAnchor).isActive = true
-    }
-
-    private func update() {
-        outlineView.component = component
-    }
-}
 
 final class LayerListOutlineView: NSOutlineView, NSTextFieldDelegate {
 
