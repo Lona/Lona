@@ -64,6 +64,18 @@
         "onClickAddColor"
       ],
       "type" : "AssignExpr"
+    },
+    {
+      "assignee" : [
+        "layers",
+        "ColorPreviewCollection",
+        "onMoveColor"
+      ],
+      "content" : [
+        "parameters",
+        "onMoveColor"
+      ],
+      "type" : "AssignExpr"
     }
   ],
   "params" : [
@@ -84,6 +96,10 @@
       "type" : {
         "name" : "Function"
       }
+    },
+    {
+      "name" : "onMoveColor",
+      "type" : "ItemMoveHandler"
     }
   ],
   "root" : {

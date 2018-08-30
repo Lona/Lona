@@ -51,6 +51,23 @@
       "name": "Named",
       "alias": "ColorPickerColor",
       "of": "Color"
+    },
+    {
+      "name": "Named",
+      "alias": "ItemMoveHandler",
+      "of": {
+        "name": "Function",
+        "parameters": [
+          {
+            "label": "_",
+            "type": "Number"
+          },
+          {
+            "label": "_",
+            "type": "Number"
+          }
+        ]
+      }
     }
   ]
 }

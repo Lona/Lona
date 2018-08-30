@@ -11,11 +11,13 @@ public class ColorPreviewCollection: NSBox {
     onSelectColor: ColorHandler,
     onChangeColor: ColorHandler,
     onDeleteColor: ColorHandler,
+    onMoveColor: ItemMoveHandler,
     colors: ColorList)
   {
     self.onSelectColor = onSelectColor
     self.onChangeColor = onChangeColor
     self.onDeleteColor = onDeleteColor
+    self.onMoveColor = onMoveColor
     self.colors = colors
 
     super.init(frame: .zero)
@@ -27,7 +29,7 @@ public class ColorPreviewCollection: NSBox {
   }
 
   public convenience init() {
-    self.init(onSelectColor: nil, onChangeColor: nil, onDeleteColor: nil, colors: nil)
+    self.init(onSelectColor: nil, onChangeColor: nil, onDeleteColor: nil, onMoveColor: nil, colors: nil)
   }
 
   public required init?(coder aDecoder: NSCoder) {
@@ -39,6 +41,7 @@ public class ColorPreviewCollection: NSBox {
   public var onSelectColor: ColorHandler { didSet { update() } }
   public var onChangeColor: ColorHandler { didSet { update() } }
   public var onDeleteColor: ColorHandler { didSet { update() } }
+  public var onMoveColor: ItemMoveHandler { didSet { update() } }
   public var colors: ColorList { didSet { update() } }
 
   // MARK: Private

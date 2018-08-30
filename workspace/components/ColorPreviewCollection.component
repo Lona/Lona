@@ -33,6 +33,10 @@
       "type" : "ColorHandler"
     },
     {
+      "name" : "onMoveColor",
+      "type" : "ItemMoveHandler"
+    },
+    {
       "name" : "colors",
       "type" : "ColorList"
     }

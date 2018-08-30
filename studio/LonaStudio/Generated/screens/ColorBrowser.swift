@@ -7,10 +7,16 @@ public class ColorBrowser: NSBox {
 
   // MARK: Lifecycle
 
-  public init(onSelectColor: ColorHandler, onDeleteColor: ColorHandler, colors: ColorList) {
+  public init(
+    onSelectColor: ColorHandler,
+    onDeleteColor: ColorHandler,
+    colors: ColorList,
+    onMoveColor: ItemMoveHandler)
+  {
     self.onSelectColor = onSelectColor
     self.onDeleteColor = onDeleteColor
     self.colors = colors
+    self.onMoveColor = onMoveColor
 
     super.init(frame: .zero)
 
@@ -21,7 +27,7 @@ public class ColorBrowser: NSBox {
   }
 
   public convenience init() {
-    self.init(onSelectColor: nil, onDeleteColor: nil, colors: nil)
+    self.init(onSelectColor: nil, onDeleteColor: nil, colors: nil, onMoveColor: nil)
   }
 
   public required init?(coder aDecoder: NSCoder) {
@@ -34,6 +40,7 @@ public class ColorBrowser: NSBox {
   public var onDeleteColor: ColorHandler { didSet { update() } }
   public var colors: ColorList { didSet { update() } }
   public var onClickAddColor: (() -> Void)? { didSet { update() } }
+  public var onMoveColor: ItemMoveHandler { didSet { update() } }
 
   // MARK: Private
 
@@ -394,5 +401,6 @@ public class ColorBrowser: NSBox {
     colorPreviewCollectionView.onDeleteColor = onDeleteColor
     colorPreviewCollectionView.colors = colors
     addColorButtonView.onClick = onClickAddColor
+    colorPreviewCollectionView.onMoveColor = onMoveColor
   }
 }

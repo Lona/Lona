@@ -136,6 +136,37 @@ class WorkspaceViewController: NSSplitViewController {
             )
         }
 
+        colorBrowser.onMoveColor = { sourceIndex, targetIndex in
+            guard
+                let document = self.document as? JSONDocument,
+                let content = document.content,
+                case let .colors(colors) = content else { return }
+
+            var updated = colors
+
+            let item = colors[sourceIndex]
+
+            updated.remove(at: sourceIndex)
+
+            if sourceIndex < targetIndex {
+                updated.insert(item, at: targetIndex - 1)
+            } else {
+                updated.insert(item, at: targetIndex)
+            }
+
+            UndoManager.shared.run(
+                name: "Move Color",
+                execute: {[unowned self] in
+                    document.content = .colors(updated)
+                    (self.colorEditorViewController.view as? ColorBrowser)?.colors = updated
+                },
+                undo: {[unowned self] in
+                    document.content = .colors(colors)
+                    (self.colorEditorViewController.view as? ColorBrowser)?.colors = colors
+                }
+            )
+        }
+
         return NSViewController(view: colorBrowser)
     }()
 

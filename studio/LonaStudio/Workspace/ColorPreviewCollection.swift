@@ -289,6 +289,8 @@ public class ColorPreviewCollection: NSBox {
 
     public var onDeleteColor: ColorHandler
 
+    public var onMoveColor: ItemMoveHandler
+
     // MARK: Private
 
     private var selectedColorId: String?
@@ -305,11 +307,12 @@ public class ColorPreviewCollection: NSBox {
 //            self.collectionView.reloadData()
 //        })
 //
-//        collectionView.onMoveColor = { sourceIndex, targetIndex in
+        collectionView.onMoveColor = { sourceIndex, targetIndex in
+            self.onMoveColor?(sourceIndex, targetIndex)
 //            CSColors.moveColor(from: sourceIndex, to: targetIndex)
 //            self.collectionView.items = CSColors.colors
 //            self.collectionView.moveItem(from: sourceIndex, to: targetIndex)
-//        }
+        }
 //
         collectionView.onDeleteColor = { color in
             self.selectedColorId = nil

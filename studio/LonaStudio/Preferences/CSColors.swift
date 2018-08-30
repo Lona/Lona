@@ -33,36 +33,4 @@ class CSColors: CSPreferencesFile {
 
         return match ?? CSColor(id: "custom", name: "Custom color", value: value, comment: "")
     }
-
-    static func deleteColor(at index: Int) {
-        guard var colorListData = data["colors"]?.array else { return }
-
-        colorListData.remove(at: index)
-
-        data.set(keyPath: ["colors"], to: CSData.Array(colorListData))
-
-        save()
-
-        LonaPlugins.current.trigger(eventType: .onSaveColors)
-    }
-
-    static func moveColor(from sourceIndex: Int, to targetIndex: Int) {
-        guard var colorListData = data["colors"]?.array else { return }
-
-        let item = colorListData[sourceIndex]
-
-        colorListData.remove(at: sourceIndex)
-
-        if sourceIndex < targetIndex {
-            colorListData.insert(item, at: targetIndex - 1)
-        } else {
-            colorListData.insert(item, at: targetIndex)
-        }
-
-        data.set(keyPath: ["colors"], to: CSData.Array(colorListData))
-
-        save()
-
-        LonaPlugins.current.trigger(eventType: .onSaveColors)
-    }
 }
