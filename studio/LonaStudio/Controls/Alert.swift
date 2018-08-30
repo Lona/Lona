@@ -32,11 +32,11 @@ class Alert<Item: RawRepresentable> where Item.RawValue == String {
 
         switch response {
         case .alertFirstButtonReturn:
-            return items[0]
+            return items.reversed()[0]
         case .alertSecondButtonReturn:
-            return items[1]
+            return items.reversed()[1]
         case .alertThirdButtonReturn:
-            return items[2]
+            return items.reversed()[2]
         default:
             return nil
         }
@@ -49,7 +49,7 @@ class Alert<Item: RawRepresentable> where Item.RawValue == String {
         alert.messageText = messageText ?? ""
         alert.informativeText = informativeText ?? ""
 
-        items.forEach { item in
+        items.reversed().forEach { item in
             alert.addButton(withTitle: item.rawValue)
         }
 

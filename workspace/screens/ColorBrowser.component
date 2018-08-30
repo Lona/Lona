@@ -9,6 +9,7 @@
   ],
   "examples" : [
     {
+      "id" : "Default",
       "name" : "Default",
       "params" : {
 
@@ -16,28 +17,138 @@
     }
   ],
   "logic" : [
-
+    {
+      "assignee" : [
+        "layers",
+        "ColorPreviewCollection",
+        "onSelectColor"
+      ],
+      "content" : [
+        "parameters",
+        "onSelectColor"
+      ],
+      "type" : "AssignExpr"
+    },
+    {
+      "assignee" : [
+        "layers",
+        "ColorPreviewCollection",
+        "onDeleteColor"
+      ],
+      "content" : [
+        "parameters",
+        "onDeleteColor"
+      ],
+      "type" : "AssignExpr"
+    },
+    {
+      "assignee" : [
+        "layers",
+        "ColorPreviewCollection",
+        "colors"
+      ],
+      "content" : [
+        "parameters",
+        "colors"
+      ],
+      "type" : "AssignExpr"
+    },
+    {
+      "assignee" : [
+        "layers",
+        "AddColorButton",
+        "onClick"
+      ],
+      "content" : [
+        "parameters",
+        "onClickAddColor"
+      ],
+      "type" : "AssignExpr"
+    },
+    {
+      "assignee" : [
+        "layers",
+        "ColorPreviewCollection",
+        "onMoveColor"
+      ],
+      "content" : [
+        "parameters",
+        "onMoveColor"
+      ],
+      "type" : "AssignExpr"
+    }
   ],
   "params" : [
-
+    {
+      "name" : "onSelectColor",
+      "type" : "ColorHandler"
+    },
+    {
+      "name" : "onDeleteColor",
+      "type" : "ColorHandler"
+    },
+    {
+      "name" : "colors",
+      "type" : "ColorList"
+    },
+    {
+      "name" : "onClickAddColor",
+      "type" : {
+        "name" : "Function"
+      }
+    },
+    {
+      "name" : "onMoveColor",
+      "type" : "ItemMoveHandler"
+    }
   ],
   "root" : {
     "children" : [
       {
         "children" : [
           {
-            "id" : "Title",
+            "children" : [
+              {
+                "id" : "Title",
+                "params" : {
+                  "font" : "title",
+                  "text" : "Colors"
+                },
+                "type" : "Lona:Text"
+              },
+              {
+                "id" : "Spacer",
+                "params" : {
+                  "flex" : 1,
+                  "height" : 0
+                },
+                "type" : "Lona:View"
+              },
+              {
+                "children" : [
+                  {
+                    "id" : "AddColorButton",
+                    "params" : {
+                      "titleText" : "Add Color"
+                    },
+                    "type" : "Button"
+                  }
+                ],
+                "id" : "FixedHeightFix_ButtonContainer",
+                "params" : {
+
+                },
+                "type" : "Lona:View"
+              }
+            ],
+            "id" : "Header",
             "params" : {
-              "font" : "title",
-              "text" : "Colors"
-            },
-            "type" : "Lona:Text"
-          },
-          {
-            "id" : "Spacer",
-            "params" : {
+              "alignItems" : "center",
               "alignSelf" : "stretch",
-              "height" : 24
+              "flexDirection" : "row",
+              "height" : 38,
+              "paddingLeft" : 64,
+              "paddingRight" : 64
             },
             "type" : "Lona:View"
           },
@@ -61,10 +172,8 @@
     "params" : {
       "alignItems" : "center",
       "alignSelf" : "stretch",
+      "backgroundColor" : "white",
       "flex" : 1,
-      "paddingBottom" : 48,
-      "paddingLeft" : 64,
-      "paddingRight" : 64,
       "paddingTop" : 48
     },
     "type" : "Lona:View"

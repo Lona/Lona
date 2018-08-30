@@ -1,0 +1,72 @@
+{
+  "devices" : [
+    {
+      "height" : 0,
+      "heightMode" : "At Least",
+      "name" : "iPhone SE",
+      "width" : 320
+    }
+  ],
+  "examples" : [
+    {
+      "id" : "Default",
+      "name" : "Default",
+      "params" : {
+
+      }
+    }
+  ],
+  "logic" : [
+    {
+      "assignee" : [
+        "layers",
+        "TextInput",
+        "textValue"
+      ],
+      "content" : [
+        "parameters",
+        "textValue"
+      ],
+      "type" : "AssignExpr"
+    },
+    {
+      "assignee" : [
+        "layers",
+        "TextInput",
+        "onChangeTextValue"
+      ],
+      "content" : [
+        "parameters",
+        "onChangeTextValue"
+      ],
+      "type" : "AssignExpr"
+    }
+  ],
+  "params" : [
+    {
+      "name" : "textValue",
+      "type" : "String"
+    },
+    {
+      "name" : "onChangeTextValue",
+      "type" : "StringHandler"
+    }
+  ],
+  "root" : {
+    "children" : [
+      {
+        "id" : "TextInput",
+        "params" : {
+          "textValue" : "Text"
+        },
+        "type" : "TextInput"
+      }
+    ],
+    "id" : "View",
+    "params" : {
+      "alignSelf" : "stretch",
+      "height" : 21
+    },
+    "type" : "Lona:View"
+  }
+}

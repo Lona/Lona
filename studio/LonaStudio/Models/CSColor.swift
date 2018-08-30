@@ -9,12 +9,14 @@
 import Foundation
 import AppKit
 
-struct CSColor {
-    let id: String
-    let name: String
-    let color: NSColor
-    let value: String
-    let comment: String
+public struct CSColor: CSDataSerializable {
+    var id: String
+    var name: String
+    var value: String
+    var comment: String
+    var color: NSColor {
+        return NSColor.parse(css: value) ?? NSColor.black
+    }
 
     var resolvedValue: String {
         return id
@@ -47,9 +49,8 @@ struct CSColor {
         let name = data["name"]?.string ?? "No name"
         let value = data["value"]?.string ?? "#000000"
         let comment = data["comment"]?.string ?? ""
-        let nsColor = NSColor.parse(css: value) ?? NSColor.black
 
-        return CSColor(id: id, name: name, color: nsColor, value: value, comment: comment)
+        return CSColor(id: id, name: name, value: value, comment: comment)
     }
 }
 

@@ -1,0 +1,84 @@
+{
+  "devices" : [
+    {
+      "height" : 100,
+      "heightMode" : "At Least",
+      "name" : "iPhone SE",
+      "width" : 320
+    },
+    {
+      "height" : 100,
+      "heightMode" : "At Least",
+      "name" : "iPhone 7",
+      "width" : 375
+    },
+    {
+      "height" : 100,
+      "heightMode" : "At Least",
+      "name" : "iPhone 7+",
+      "width" : 414
+    }
+  ],
+  "examples" : [
+    {
+      "id" : "Default",
+      "name" : "Default",
+      "params" : {
+
+      }
+    }
+  ],
+  "logic" : [
+    {
+      "assignee" : [
+        "layers",
+        "ColorWellPicker",
+        "colorValue"
+      ],
+      "content" : [
+        "parameters",
+        "colorValue"
+      ],
+      "type" : "AssignExpr"
+    },
+    {
+      "assignee" : [
+        "layers",
+        "ColorWellPicker",
+        "onChangeColorValue"
+      ],
+      "content" : [
+        "parameters",
+        "onChangeColorValue"
+      ],
+      "type" : "AssignExpr"
+    }
+  ],
+  "params" : [
+    {
+      "name" : "colorValue",
+      "type" : "ColorPickerColor"
+    },
+    {
+      "name" : "onChangeColorValue",
+      "type" : "ColorPickerHandler"
+    }
+  ],
+  "root" : {
+    "children" : [
+      {
+        "id" : "ColorWellPicker",
+        "params" : {
+
+        },
+        "type" : "ColorWellPicker"
+      }
+    ],
+    "id" : "View",
+    "params" : {
+      "height" : 22,
+      "width" : 34
+    },
+    "type" : "Lona:View"
+  }
+}

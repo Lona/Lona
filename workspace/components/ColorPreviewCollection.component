@@ -1,26 +1,15 @@
 {
   "devices" : [
     {
-      "height" : 100,
+      "height" : 400,
       "heightMode" : "At Least",
       "name" : "iPhone SE",
-      "width" : 320
-    },
-    {
-      "height" : 100,
-      "heightMode" : "At Least",
-      "name" : "iPhone 7",
-      "width" : 375
-    },
-    {
-      "height" : 100,
-      "heightMode" : "At Least",
-      "name" : "iPhone 7+",
-      "width" : 414
+      "width" : 600
     }
   ],
   "examples" : [
     {
+      "id" : "Default",
       "name" : "Default",
       "params" : {
 
@@ -31,14 +20,90 @@
 
   ],
   "params" : [
-
+    {
+      "name" : "onSelectColor",
+      "type" : "ColorHandler"
+    },
+    {
+      "name" : "onChangeColor",
+      "type" : "ColorHandler"
+    },
+    {
+      "name" : "onDeleteColor",
+      "type" : "ColorHandler"
+    },
+    {
+      "name" : "onMoveColor",
+      "type" : "ItemMoveHandler"
+    },
+    {
+      "name" : "colors",
+      "type" : "ColorList"
+    }
   ],
   "root" : {
+    "children" : [
+      {
+        "children" : [
+          {
+            "id" : "ColorPreviewCard",
+            "params" : {
+              "color" : "red500",
+              "colorCode" : "#ff0000",
+              "colorName" : "Red",
+              "selected" : false
+            },
+            "type" : "ColorPreviewCard"
+          }
+        ],
+        "id" : "View 1",
+        "params" : {
+          "backgroundColor" : "#D8D8D8",
+          "height" : 140,
+          "width" : 120
+        },
+        "type" : "Lona:View"
+      },
+      {
+        "id" : "Spacer1",
+        "params" : {
+          "height" : 0,
+          "width" : 20
+        },
+        "type" : "Lona:View"
+      },
+      {
+        "children" : [
+          {
+            "id" : "ColorPreviewCard2",
+            "params" : {
+              "color" : "black",
+              "colorCode" : "Text",
+              "colorName" : "Text",
+              "selected" : false
+            },
+            "type" : "ColorPreviewCard"
+          }
+        ],
+        "id" : "View 2",
+        "params" : {
+          "backgroundColor" : "#D8D8D8",
+          "height" : 140,
+          "width" : 120
+        },
+        "type" : "Lona:View"
+      }
+    ],
     "id" : "View",
     "params" : {
       "alignSelf" : "stretch",
       "backgroundColor" : "pink50",
-      "flex" : 1
+      "flex" : 1,
+      "flexDirection" : "row",
+      "paddingBottom" : 36,
+      "paddingLeft" : 48,
+      "paddingRight" : 48,
+      "paddingTop" : 36
     },
     "type" : "Lona:View"
   }

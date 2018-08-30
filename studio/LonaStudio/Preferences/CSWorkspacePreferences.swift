@@ -102,7 +102,7 @@ class CSWorkspacePreferences: CSPreferencesFile {
             return true
         } catch {
             let alert = Alert(
-                items: [CreateWorkspace.cancel, CreateWorkspace.create],
+                items: [CreateWorkspace.create, CreateWorkspace.cancel],
                 messageText: "This doesn't appear to be a Lona workspace!",
                 informativeText: "There's no 'lona.json' file in \(url.path). If you're sure this is a workspace, we can create a 'lona.json' automatically now. Otherwise, press Cancel and open a different directory.")
 

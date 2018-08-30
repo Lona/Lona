@@ -64,22 +64,26 @@ class ColorPreviewCollectionView: NSView {
     // MARK: - Public
 
     public var items: [CSColor] = [] { didSet { update() } }
-    public var onClickColor: ((String) -> Void)? { didSet { update(withoutReloading: true) } }
+    public var onSelectColor: ColorHandler { didSet { update(withoutReloading: true) } }
     public var onMoveColor: ((Int, Int) -> Void)? { didSet { update(withoutReloading: true) } }
-    public var onDeleteColor: ((Int) -> Void)? { didSet { update(withoutReloading: true) } }
+    public var onDeleteColor: ColorHandler { didSet { update(withoutReloading: true) } }
 
     // MARK: - Private
 
-    private let collectionView = KeyHandlingCollectionView(frame: .zero)
+    public let collectionView = KeyHandlingCollectionView(frame: .zero)
     private let scrollView = NSScrollView()
 
     private func setUpViews() {
         wantsLayer = true
 
         let flowLayout = NSCollectionViewFlowLayout()
-        flowLayout.minimumLineSpacing = 24
+
+        // Items have a built-in padding of 4
+        flowLayout.sectionInset = NSEdgeInsets(top: 36, left: 64 - 4, bottom: 36, right: 64 - 4)
+
+        flowLayout.minimumLineSpacing = 12
         flowLayout.minimumInteritemSpacing = 12
-        flowLayout.itemSize = NSSize(width: 140, height: 160)
+        flowLayout.itemSize = NSSize(width: 90, height: 120)
 
         collectionView.collectionViewLayout = flowLayout
         collectionView.delegate = self
@@ -118,17 +122,19 @@ class ColorPreviewCollectionView: NSView {
             collectionView.reloadData()
         }
 
-        collectionView.onDeleteItem = onDeleteColor
+        collectionView.onDeleteItem = { index in
+            self.onDeleteColor?(self.items[index])
+        }
     }
 }
 
 // MARK: - Imperative API
 
 extension ColorPreviewCollectionView {
-    func cardView(at index: Int) -> ColorPreviewCard? {
-        guard let item = collectionView.item(at: index) as? ColorPreviewItemViewController else { return nil }
-        return item.view as? ColorPreviewCard
-    }
+//    func cardView(at index: Int) -> ColorPreviewCard? {
+//        guard let item = collectionView.item(at: index) as? ColorPreviewItemViewController else { return nil }
+//        return item.view as? ColorPreviewCard
+//    }
 
     func reloadData() {
         collectionView.reloadData()
@@ -200,6 +206,19 @@ extension ColorPreviewCollectionView: NSCollectionViewDelegate {
 
         return true
     }
+
+    func collectionView(_ collectionView: NSCollectionView, didSelectItemsAt indexPaths: Set<IndexPath>) {
+        guard let indexPath = indexPaths.first else {
+            self.onSelectColor?(nil)
+            return
+        }
+
+        self.onSelectColor?(items[indexPath.item])
+    }
+
+    func collectionView(_ collectionView: NSCollectionView, didDeselectItemsAt indexPaths: Set<IndexPath>) {
+        self.onSelectColor?(nil)
+    }
 }
 
 // MARK: - NSCollectionViewDataSource
@@ -211,13 +230,13 @@ extension ColorPreviewCollectionView: NSCollectionViewDataSource {
             for: indexPath) as! ColorPreviewItemViewController
 
         if let componentPreviewCard = item.view as? DoubleClickableColorPreviewCard {
-            let componentFile = items[indexPath.item]
-            componentPreviewCard.colorName = componentFile.name
-            componentPreviewCard.colorCode = componentFile.value
-            componentPreviewCard.color = componentFile.color
-            componentPreviewCard.onDoubleClick = {
-                self.onClickColor?(componentFile.id)
-            }
+            let csColor = items[indexPath.item]
+            componentPreviewCard.colorName = csColor.name
+            componentPreviewCard.colorCode = csColor.value
+            componentPreviewCard.color = csColor.color
+//            componentPreviewCard.onDoubleClick = {
+//                self.onSelectColor?(csColor)
+//            }
         }
 
         return item
@@ -262,9 +281,19 @@ public class ColorPreviewCollection: NSBox {
 
     // MARK: Public
 
-    public var onClickColor: ((String) -> Void)?
+    public var colors: [CSColor]? = [] { didSet { update() } }
+
+    public var onClickColor: ((CSColor) -> Void)?
+
+    public var onSelectColor: ColorHandler
+
+    public var onDeleteColor: ColorHandler
+
+    public var onMoveColor: ItemMoveHandler
 
     // MARK: Private
+
+    private var selectedColorId: String?
 
     private let collectionView = ColorPreviewCollectionView(frame: .zero)
 
@@ -273,44 +302,26 @@ public class ColorPreviewCollection: NSBox {
         borderType = .noBorder
         contentViewMargins = .zero
 
-        collectionView.items = CSColors.colors
-
-        _ = LonaPlugins.current.register(eventTypes: [.onSaveColors, .onReloadWorkspace], handler: {
-            self.collectionView.items = CSColors.colors
-            self.collectionView.reloadData()
-        })
-
+//        _ = LonaPlugins.current.register(eventTypes: [.onSaveColors, .onReloadWorkspace], handler: {
+//            self.collectionView.items = CSColors.colors
+//            self.collectionView.reloadData()
+//        })
+//
         collectionView.onMoveColor = { sourceIndex, targetIndex in
-            CSColors.moveColor(from: sourceIndex, to: targetIndex)
-            self.collectionView.items = CSColors.colors
-            self.collectionView.moveItem(from: sourceIndex, to: targetIndex)
+            self.onMoveColor?(sourceIndex, targetIndex)
+//            CSColors.moveColor(from: sourceIndex, to: targetIndex)
+//            self.collectionView.items = CSColors.colors
+//            self.collectionView.moveItem(from: sourceIndex, to: targetIndex)
+        }
+//
+        collectionView.onDeleteColor = { color in
+            self.selectedColorId = nil
+            self.onDeleteColor?(color)
         }
 
-        collectionView.onDeleteColor = { index in
-            CSColors.deleteColor(at: index)
-            self.collectionView.items = CSColors.colors
-            self.collectionView.deleteItem(at: index)
-        }
-
-        // TODO: This callback should propagate up to the root. Currently Lona doesn't
-        // generate callbacks with params, so we'll handle it here for now.
-        collectionView.onClickColor = { color in
-            guard let csColor = CSColors.colors.first(where: { $0.id == color }) else { return }
-            guard let index = CSColors.colors.index(where: { $0.id == color }) else { return }
-
-            let editor = DictionaryEditor(
-                value: csColor.toValue(),
-                onChange: { updated in
-                    CSColors.update(color: updated.data, at: index)
-            },
-                layout: CSConstraint.size(width: 300, height: 200)
-            )
-
-            let viewController = NSViewController(view: editor)
-            let popover = NSPopover(contentViewController: viewController, delegate: self)
-
-            guard let cardView = self.collectionView.cardView(at: index) else { return }
-            popover.show(relativeTo: NSRect.zero, of: cardView, preferredEdge: .maxY)
+        collectionView.onSelectColor = { color in
+            self.selectedColorId = color?.id
+            self.onSelectColor?(color)
         }
 
         addSubview(collectionView)
@@ -326,7 +337,14 @@ public class ColorPreviewCollection: NSBox {
         bottomAnchor.constraint(equalTo: collectionView.bottomAnchor).isActive = true
     }
 
-    private func update() {}
+    private func update() {
+        collectionView.items = colors ?? []
+
+        if let index = colors?.index(where: { $0.id == selectedColorId }) {
+            collectionView.collectionView.selectionIndexPaths = [IndexPath(item: index, section: 0)]
+//            collectionView.collectionView.selectItems(at: [IndexPath(item: index, section: 0)], scrollPosition: NSCollectionView.ScrollPosition)
+        }
+    }
 }
 
 extension ColorPreviewCollection: NSPopoverDelegate {

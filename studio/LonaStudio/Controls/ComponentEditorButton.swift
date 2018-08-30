@@ -50,7 +50,7 @@ class ComponentEditorButton: Button, CSControl, NSPopoverDelegate {
         self.value = value
         self.onChangeData = onChangeData
 
-        super.init(title: layerType(for: value))
+        super.init(titleText: layerType(for: value))
 
         self.onPress = {
             let editor = DictionaryEditor(

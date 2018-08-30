@@ -1,0 +1,72 @@
+{
+  "devices" : [
+    {
+      "height" : 280,
+      "heightMode" : "At Least",
+      "name" : "iPhone SE",
+      "width" : 280
+    }
+  ],
+  "examples" : [
+    {
+      "id" : "Default",
+      "name" : "Default",
+      "params" : {
+
+      }
+    }
+  ],
+  "logic" : [
+    {
+      "assignee" : [
+        "layers",
+        "ColorPicker",
+        "colorValue"
+      ],
+      "content" : [
+        "parameters",
+        "colorValue"
+      ],
+      "type" : "AssignExpr"
+    },
+    {
+      "assignee" : [
+        "layers",
+        "ColorPicker",
+        "onChangeColorValue"
+      ],
+      "content" : [
+        "parameters",
+        "onChangeColorValue"
+      ],
+      "type" : "AssignExpr"
+    }
+  ],
+  "params" : [
+    {
+      "name" : "colorValue",
+      "type" : "ColorPickerColor"
+    },
+    {
+      "name" : "onChangeColorValue",
+      "type" : "ColorPickerHandler"
+    }
+  ],
+  "root" : {
+    "children" : [
+      {
+        "id" : "ColorPicker",
+        "params" : {
+
+        },
+        "type" : "ColorPicker"
+      }
+    ],
+    "id" : "View",
+    "params" : {
+      "alignSelf" : "stretch",
+      "height" : 240
+    },
+    "type" : "Lona:View"
+  }
+}

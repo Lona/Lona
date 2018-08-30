@@ -1,0 +1,338 @@
+{
+  "devices" : [
+    {
+      "backgroundColor" : "grey200",
+      "height" : 0,
+      "heightMode" : "At Least",
+      "name" : "iPhone SE",
+      "width" : 320
+    }
+  ],
+  "examples" : [
+    {
+      "id" : "Default",
+      "name" : "Default",
+      "params" : {
+
+      }
+    }
+  ],
+  "logic" : [
+    {
+      "assignee" : [
+        "layers",
+        "Title",
+        "text"
+      ],
+      "content" : [
+        "parameters",
+        "titleText"
+      ],
+      "type" : "AssignExpr"
+    },
+    {
+      "assignee" : [
+        "layers",
+        "IdInput",
+        "textValue"
+      ],
+      "content" : [
+        "parameters",
+        "idText"
+      ],
+      "type" : "AssignExpr"
+    },
+    {
+      "assignee" : [
+        "layers",
+        "NameInput",
+        "textValue"
+      ],
+      "content" : [
+        "parameters",
+        "nameText"
+      ],
+      "type" : "AssignExpr"
+    },
+    {
+      "assignee" : [
+        "layers",
+        "ValueInput",
+        "textValue"
+      ],
+      "content" : [
+        "parameters",
+        "valueText"
+      ],
+      "type" : "AssignExpr"
+    },
+    {
+      "assignee" : [
+        "layers",
+        "DescriptionInput",
+        "textValue"
+      ],
+      "content" : [
+        "parameters",
+        "descriptionText"
+      ],
+      "type" : "AssignExpr"
+    },
+    {
+      "assignee" : [
+        "layers",
+        "IdInput",
+        "onChangeTextValue"
+      ],
+      "content" : [
+        "parameters",
+        "onChangeIdText"
+      ],
+      "type" : "AssignExpr"
+    },
+    {
+      "assignee" : [
+        "layers",
+        "NameInput",
+        "onChangeTextValue"
+      ],
+      "content" : [
+        "parameters",
+        "onChangeNameText"
+      ],
+      "type" : "AssignExpr"
+    },
+    {
+      "assignee" : [
+        "layers",
+        "ValueInput",
+        "onChangeTextValue"
+      ],
+      "content" : [
+        "parameters",
+        "onChangeValueText"
+      ],
+      "type" : "AssignExpr"
+    },
+    {
+      "assignee" : [
+        "layers",
+        "DescriptionInput",
+        "onChangeTextValue"
+      ],
+      "content" : [
+        "parameters",
+        "onChangeDescriptionText"
+      ],
+      "type" : "AssignExpr"
+    },
+    {
+      "assignee" : [
+        "layers",
+        "CoreColorWellPicker",
+        "colorValue"
+      ],
+      "content" : [
+        "parameters",
+        "colorValue"
+      ],
+      "type" : "AssignExpr"
+    },
+    {
+      "assignee" : [
+        "layers",
+        "CoreColorWellPicker",
+        "onChangeColorValue"
+      ],
+      "content" : [
+        "parameters",
+        "onChangeColorValue"
+      ],
+      "type" : "AssignExpr"
+    }
+  ],
+  "params" : [
+    {
+      "name" : "titleText",
+      "type" : "String"
+    },
+    {
+      "name" : "idText",
+      "type" : "String"
+    },
+    {
+      "name" : "nameText",
+      "type" : "String"
+    },
+    {
+      "name" : "valueText",
+      "type" : "String"
+    },
+    {
+      "name" : "descriptionText",
+      "type" : "String"
+    },
+    {
+      "name" : "onChangeIdText",
+      "type" : "StringHandler"
+    },
+    {
+      "name" : "onChangeNameText",
+      "type" : "StringHandler"
+    },
+    {
+      "name" : "onChangeValueText",
+      "type" : "StringHandler"
+    },
+    {
+      "name" : "onChangeDescriptionText",
+      "type" : "StringHandler"
+    },
+    {
+      "name" : "colorValue",
+      "type" : "ColorPickerColor"
+    },
+    {
+      "name" : "onChangeColorValue",
+      "type" : "ColorPickerHandler"
+    }
+  ],
+  "root" : {
+    "children" : [
+      {
+        "id" : "Title",
+        "params" : {
+          "font" : "large",
+          "marginBottom" : 20,
+          "text" : "Title"
+        },
+        "type" : "Lona:Text"
+      },
+      {
+        "id" : "NameLabel",
+        "params" : {
+          "alignSelf" : "stretch",
+          "font" : "small",
+          "marginBottom" : 4,
+          "text" : "NAME"
+        },
+        "type" : "Lona:Text"
+      },
+      {
+        "id" : "NameInput",
+        "params" : {
+          "textValue" : "Text"
+        },
+        "type" : "TextInput"
+      },
+      {
+        "id" : "Spacer1",
+        "params" : {
+          "backgroundColor" : "#D8D8D8",
+          "height" : 20,
+          "width" : 0
+        },
+        "type" : "Lona:View"
+      },
+      {
+        "id" : "IdLabel",
+        "params" : {
+          "alignSelf" : "stretch",
+          "font" : "small",
+          "marginBottom" : 4,
+          "text" : "ID"
+        },
+        "type" : "Lona:Text"
+      },
+      {
+        "id" : "IdInput",
+        "params" : {
+          "textValue" : "Text"
+        },
+        "type" : "CoreTextInput"
+      },
+      {
+        "id" : "Spacer2",
+        "params" : {
+          "backgroundColor" : "#D8D8D8",
+          "height" : 20,
+          "width" : 0
+        },
+        "type" : "Lona:View"
+      },
+      {
+        "id" : "ValueLabel",
+        "params" : {
+          "alignSelf" : "stretch",
+          "font" : "small",
+          "marginBottom" : 4,
+          "text" : "VALUE"
+        },
+        "type" : "Lona:Text"
+      },
+      {
+        "children" : [
+          {
+            "id" : "CoreColorWellPicker",
+            "params" : {
+
+            },
+            "type" : "CoreColorWellPicker"
+          },
+          {
+            "id" : "SmallSpacer1",
+            "params" : {
+              "height" : 0,
+              "width" : 4
+            },
+            "type" : "Lona:View"
+          },
+          {
+            "id" : "ValueInput",
+            "params" : {
+              "textValue" : "Text"
+            },
+            "type" : "TextInput"
+          }
+        ],
+        "id" : "FitWidthFix_ValueContainer",
+        "params" : {
+          "flexDirection" : "row"
+        },
+        "type" : "Lona:View"
+      },
+      {
+        "id" : "Spacer3",
+        "params" : {
+          "backgroundColor" : "#D8D8D8",
+          "height" : 20,
+          "width" : 0
+        },
+        "type" : "Lona:View"
+      },
+      {
+        "id" : "DescriptionLabel",
+        "params" : {
+          "alignSelf" : "stretch",
+          "font" : "small",
+          "marginBottom" : 4,
+          "text" : "DESCRIPTION"
+        },
+        "type" : "Lona:Text"
+      },
+      {
+        "id" : "DescriptionInput",
+        "params" : {
+          "textValue" : "Text"
+        },
+        "type" : "TextInput"
+      }
+    ],
+    "id" : "View",
+    "params" : {
+      "alignSelf" : "stretch",
+      "paddingTop" : 20
+    },
+    "type" : "Lona:View"
+  }
+}

@@ -39,39 +39,34 @@ public class ColorPreviewCard: NSBox {
   // MARK: Private
 
   private var previewView = NSBox()
-  private var dividerView = NSBox()
   private var detailsView = NSBox()
   private var colorNameView = NSTextField(labelWithString: "")
   private var colorCodeView = NSTextField(labelWithString: "")
 
-  private var colorNameViewTextStyle = TextStyles.large
-  private var colorCodeViewTextStyle = TextStyles.regular
+  private var colorNameViewTextStyle = TextStyles.regular
+  private var colorCodeViewTextStyle = TextStyles.monospacedMicro
 
-  private var topPadding: CGFloat = 0
-  private var trailingPadding: CGFloat = 0
-  private var bottomPadding: CGFloat = 0
-  private var leadingPadding: CGFloat = 0
+  private var topPadding: CGFloat = 4
+  private var trailingPadding: CGFloat = 4
+  private var bottomPadding: CGFloat = 4
+  private var leadingPadding: CGFloat = 4
   private var previewViewTopMargin: CGFloat = 0
   private var previewViewTrailingMargin: CGFloat = 0
   private var previewViewBottomMargin: CGFloat = 0
   private var previewViewLeadingMargin: CGFloat = 0
-  private var dividerViewTopMargin: CGFloat = 0
-  private var dividerViewTrailingMargin: CGFloat = 0
-  private var dividerViewBottomMargin: CGFloat = 0
-  private var dividerViewLeadingMargin: CGFloat = 0
-  private var detailsViewTopMargin: CGFloat = 0
+  private var detailsViewTopMargin: CGFloat = 5
   private var detailsViewTrailingMargin: CGFloat = 0
   private var detailsViewBottomMargin: CGFloat = 0
   private var detailsViewLeadingMargin: CGFloat = 0
-  private var detailsViewTopPadding: CGFloat = 16
-  private var detailsViewTrailingPadding: CGFloat = 20
-  private var detailsViewBottomPadding: CGFloat = 16
-  private var detailsViewLeadingPadding: CGFloat = 20
+  private var detailsViewTopPadding: CGFloat = 0
+  private var detailsViewTrailingPadding: CGFloat = 0
+  private var detailsViewBottomPadding: CGFloat = 0
+  private var detailsViewLeadingPadding: CGFloat = 0
   private var colorNameViewTopMargin: CGFloat = 0
   private var colorNameViewTrailingMargin: CGFloat = 0
   private var colorNameViewBottomMargin: CGFloat = 0
   private var colorNameViewLeadingMargin: CGFloat = 0
-  private var colorCodeViewTopMargin: CGFloat = 6
+  private var colorCodeViewTopMargin: CGFloat = 0
   private var colorCodeViewTrailingMargin: CGFloat = 0
   private var colorCodeViewBottomMargin: CGFloat = 0
   private var colorCodeViewLeadingMargin: CGFloat = 0
@@ -79,14 +74,10 @@ public class ColorPreviewCard: NSBox {
   private var previewViewTopAnchorConstraint: NSLayoutConstraint?
   private var previewViewLeadingAnchorConstraint: NSLayoutConstraint?
   private var previewViewTrailingAnchorConstraint: NSLayoutConstraint?
-  private var dividerViewTopAnchorConstraint: NSLayoutConstraint?
-  private var dividerViewLeadingAnchorConstraint: NSLayoutConstraint?
-  private var dividerViewTrailingAnchorConstraint: NSLayoutConstraint?
   private var detailsViewBottomAnchorConstraint: NSLayoutConstraint?
   private var detailsViewTopAnchorConstraint: NSLayoutConstraint?
   private var detailsViewLeadingAnchorConstraint: NSLayoutConstraint?
   private var detailsViewTrailingAnchorConstraint: NSLayoutConstraint?
-  private var dividerViewHeightAnchorConstraint: NSLayoutConstraint?
   private var colorNameViewTopAnchorConstraint: NSLayoutConstraint?
   private var colorNameViewLeadingAnchorConstraint: NSLayoutConstraint?
   private var colorNameViewTrailingAnchorConstraint: NSLayoutConstraint?
@@ -101,11 +92,8 @@ public class ColorPreviewCard: NSBox {
     borderType = .lineBorder
     contentViewMargins = .zero
     previewView.boxType = .custom
-    previewView.borderType = .noBorder
+    previewView.borderType = .lineBorder
     previewView.contentViewMargins = .zero
-    dividerView.boxType = .custom
-    dividerView.borderType = .noBorder
-    dividerView.contentViewMargins = .zero
     detailsView.boxType = .custom
     detailsView.borderType = .noBorder
     detailsView.contentViewMargins = .zero
@@ -113,23 +101,22 @@ public class ColorPreviewCard: NSBox {
     colorCodeView.lineBreakMode = .byWordWrapping
 
     addSubview(previewView)
-    addSubview(dividerView)
     addSubview(detailsView)
     detailsView.addSubview(colorNameView)
     detailsView.addSubview(colorCodeView)
 
-    fillColor = Colors.white
     cornerRadius = 4
-    borderWidth = 1
-    borderColor = Colors.grey300
-    dividerView.fillColor = Colors.grey300
-    colorNameView.maximumNumberOfLines = 1
+    borderWidth = 0
+    previewView.cornerRadius = 3
+    previewView.borderWidth = 1
+    previewView.borderColor = Colors.darkTransparentOutline
+    colorNameView.maximumNumberOfLines = 2
+    colorCodeView.maximumNumberOfLines = 2
   }
 
   private func setUpConstraints() {
     translatesAutoresizingMaskIntoConstraints = false
     previewView.translatesAutoresizingMaskIntoConstraints = false
-    dividerView.translatesAutoresizingMaskIntoConstraints = false
     detailsView.translatesAutoresizingMaskIntoConstraints = false
     colorNameView.translatesAutoresizingMaskIntoConstraints = false
     colorCodeView.translatesAutoresizingMaskIntoConstraints = false
@@ -143,28 +130,18 @@ public class ColorPreviewCard: NSBox {
     let previewViewTrailingAnchorConstraint = previewView
       .trailingAnchor
       .constraint(equalTo: trailingAnchor, constant: -(trailingPadding + previewViewTrailingMargin))
-    let dividerViewTopAnchorConstraint = dividerView
-      .topAnchor
-      .constraint(equalTo: previewView.bottomAnchor, constant: previewViewBottomMargin + dividerViewTopMargin)
-    let dividerViewLeadingAnchorConstraint = dividerView
-      .leadingAnchor
-      .constraint(equalTo: leadingAnchor, constant: leadingPadding + dividerViewLeadingMargin)
-    let dividerViewTrailingAnchorConstraint = dividerView
-      .trailingAnchor
-      .constraint(equalTo: trailingAnchor, constant: -(trailingPadding + dividerViewTrailingMargin))
     let detailsViewBottomAnchorConstraint = detailsView
       .bottomAnchor
       .constraint(equalTo: bottomAnchor, constant: -(bottomPadding + detailsViewBottomMargin))
     let detailsViewTopAnchorConstraint = detailsView
       .topAnchor
-      .constraint(equalTo: dividerView.bottomAnchor, constant: dividerViewBottomMargin + detailsViewTopMargin)
+      .constraint(equalTo: previewView.bottomAnchor, constant: previewViewBottomMargin + detailsViewTopMargin)
     let detailsViewLeadingAnchorConstraint = detailsView
       .leadingAnchor
       .constraint(equalTo: leadingAnchor, constant: leadingPadding + detailsViewLeadingMargin)
     let detailsViewTrailingAnchorConstraint = detailsView
       .trailingAnchor
       .constraint(equalTo: trailingAnchor, constant: -(trailingPadding + detailsViewTrailingMargin))
-    let dividerViewHeightAnchorConstraint = dividerView.heightAnchor.constraint(equalToConstant: 1)
     let colorNameViewTopAnchorConstraint = colorNameView
       .topAnchor
       .constraint(equalTo: detailsView.topAnchor, constant: detailsViewTopPadding + colorNameViewTopMargin)
@@ -196,14 +173,10 @@ public class ColorPreviewCard: NSBox {
       previewViewTopAnchorConstraint,
       previewViewLeadingAnchorConstraint,
       previewViewTrailingAnchorConstraint,
-      dividerViewTopAnchorConstraint,
-      dividerViewLeadingAnchorConstraint,
-      dividerViewTrailingAnchorConstraint,
       detailsViewBottomAnchorConstraint,
       detailsViewTopAnchorConstraint,
       detailsViewLeadingAnchorConstraint,
       detailsViewTrailingAnchorConstraint,
-      dividerViewHeightAnchorConstraint,
       colorNameViewTopAnchorConstraint,
       colorNameViewLeadingAnchorConstraint,
       colorNameViewTrailingAnchorConstraint,
@@ -217,14 +190,10 @@ public class ColorPreviewCard: NSBox {
     self.previewViewTopAnchorConstraint = previewViewTopAnchorConstraint
     self.previewViewLeadingAnchorConstraint = previewViewLeadingAnchorConstraint
     self.previewViewTrailingAnchorConstraint = previewViewTrailingAnchorConstraint
-    self.dividerViewTopAnchorConstraint = dividerViewTopAnchorConstraint
-    self.dividerViewLeadingAnchorConstraint = dividerViewLeadingAnchorConstraint
-    self.dividerViewTrailingAnchorConstraint = dividerViewTrailingAnchorConstraint
     self.detailsViewBottomAnchorConstraint = detailsViewBottomAnchorConstraint
     self.detailsViewTopAnchorConstraint = detailsViewTopAnchorConstraint
     self.detailsViewLeadingAnchorConstraint = detailsViewLeadingAnchorConstraint
     self.detailsViewTrailingAnchorConstraint = detailsViewTrailingAnchorConstraint
-    self.dividerViewHeightAnchorConstraint = dividerViewHeightAnchorConstraint
     self.colorNameViewTopAnchorConstraint = colorNameViewTopAnchorConstraint
     self.colorNameViewLeadingAnchorConstraint = colorNameViewLeadingAnchorConstraint
     self.colorNameViewTrailingAnchorConstraint = colorNameViewTrailingAnchorConstraint
@@ -238,14 +207,10 @@ public class ColorPreviewCard: NSBox {
     previewViewTopAnchorConstraint.identifier = "previewViewTopAnchorConstraint"
     previewViewLeadingAnchorConstraint.identifier = "previewViewLeadingAnchorConstraint"
     previewViewTrailingAnchorConstraint.identifier = "previewViewTrailingAnchorConstraint"
-    dividerViewTopAnchorConstraint.identifier = "dividerViewTopAnchorConstraint"
-    dividerViewLeadingAnchorConstraint.identifier = "dividerViewLeadingAnchorConstraint"
-    dividerViewTrailingAnchorConstraint.identifier = "dividerViewTrailingAnchorConstraint"
     detailsViewBottomAnchorConstraint.identifier = "detailsViewBottomAnchorConstraint"
     detailsViewTopAnchorConstraint.identifier = "detailsViewTopAnchorConstraint"
     detailsViewLeadingAnchorConstraint.identifier = "detailsViewLeadingAnchorConstraint"
     detailsViewTrailingAnchorConstraint.identifier = "detailsViewTrailingAnchorConstraint"
-    dividerViewHeightAnchorConstraint.identifier = "dividerViewHeightAnchorConstraint"
     colorNameViewTopAnchorConstraint.identifier = "colorNameViewTopAnchorConstraint"
     colorNameViewLeadingAnchorConstraint.identifier = "colorNameViewLeadingAnchorConstraint"
     colorNameViewTrailingAnchorConstraint.identifier = "colorNameViewTrailingAnchorConstraint"
@@ -257,19 +222,19 @@ public class ColorPreviewCard: NSBox {
   }
 
   private func update() {
-    colorCodeViewTextStyle = TextStyles.regular
+    colorCodeViewTextStyle = TextStyles.monospacedMicro
     colorCodeView.attributedStringValue = colorCodeViewTextStyle.apply(to: colorCodeView.attributedStringValue)
-    colorNameViewTextStyle = TextStyles.large
+    colorNameViewTextStyle = TextStyles.regular
     colorNameView.attributedStringValue = colorNameViewTextStyle.apply(to: colorNameView.attributedStringValue)
-    detailsView.fillColor = #colorLiteral(red: 0, green: 0, blue: 0, alpha: 0)
+    fillColor = Colors.white
     colorNameView.attributedStringValue = colorNameViewTextStyle.apply(to: colorName)
     colorCodeView.attributedStringValue = colorCodeViewTextStyle.apply(to: colorCode)
     previewView.fillColor = color
     if selected {
-      detailsView.fillColor = Colors.lightblue600
-      colorNameViewTextStyle = TextStyles.largeInverse
+      fillColor = Colors.lightblue600
+      colorNameViewTextStyle = TextStyles.regularInverse
       colorNameView.attributedStringValue = colorNameViewTextStyle.apply(to: colorNameView.attributedStringValue)
-      colorCodeViewTextStyle = TextStyles.regularInverse
+      colorCodeViewTextStyle = TextStyles.monospacedMicroInverse
       colorCodeView.attributedStringValue = colorCodeViewTextStyle.apply(to: colorCodeView.attributedStringValue)
     }
   }

@@ -177,6 +177,16 @@ func parseCSSColor(_ css_str: String) -> CSSColor? {
                 iv & 0xff,
                 1
             )
+        } else if str.count == 9 {
+            str.remove(at: str.startIndex)
+            guard let iv = Int(str, radix: 16) else { return nil }
+            if !(iv >= 0 && iv <= 0xffffffff) { return nil } // Covers NaN.
+            return (
+                (iv & 0xff000000) >> 24,
+                (iv & 0xff0000) >> 16,
+                (iv & 0xff00) >> 8,
+                Double((iv & 0xff) / 255)
+            )
         }
 
         return nil

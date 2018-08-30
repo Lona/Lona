@@ -15,7 +15,7 @@ First, make sure you have [`bundler`](http://bundler.io/) and [Cocoapods](https:
 ```
 cd studio
 bundle && bundle exec pod install
-carthage bootstrap
+carthage update --new-resolver --platform macOS
 ```
 
 Open LonaStudio.xcworkspace and build in Xcode 9.3+ on High Sierra+. If there are warnings (e.g. about project settings) you can ignore them.

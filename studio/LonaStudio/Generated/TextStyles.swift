@@ -16,4 +16,16 @@ class TextStyles {
   public static let largeInverse = TextStyle(size: 15, lineHeight: 17, color: Colors.white)
   public static let regularInverse = TextStyle(size: 13, lineHeight: 15, color: Colors.white)
   public static let smallInverse = TextStyle(size: 11, lineHeight: 13, color: Colors.white)
+  public static let monospacedMicro = TextStyle(
+    family: "Menlo",
+    weight: NSFont.Weight.bold,
+    size: 10,
+    lineHeight: 12,
+    color: #colorLiteral(red: 0, green: 0, blue: 0, alpha: 0.85))
+  public static let monospacedMicroInverse = TextStyle(
+    family: "Menlo",
+    weight: NSFont.Weight.bold,
+    size: 10,
+    lineHeight: 12,
+    color: #colorLiteral(red: 1, green: 1, blue: 1, alpha: 0.85))
 }

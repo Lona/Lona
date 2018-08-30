@@ -381,7 +381,7 @@ extension LayerListOutlineView {
 
         let document = ComponentDocument()
 
-        document.file = CSComponent(name: layer.name, canvas: component?.canvas ?? [], rootLayer: layer, parameters: [], cases: [CSCase.defaultCase], logic: [], config: component?.config ?? CSData.Object([:]), metadata: component?.metadata ?? CSData.Object([:]))
+        document.component = CSComponent(name: layer.name, canvas: component?.canvas ?? [], rootLayer: layer, parameters: [], cases: [CSCase.defaultCase], logic: [], config: component?.config ?? CSData.Object([:]), metadata: component?.metadata ?? CSData.Object([:]))
 
         Swift.print("Writing to", url)
 
@@ -412,7 +412,7 @@ extension LayerListOutlineView {
         guard let url = requestSaveFileURL() else { return }
 
         let document = ComponentDocument()
-        document.file = existingComponent
+        document.component = existingComponent
 
         do {
             try document.write(to: url, ofType: ".component")
@@ -422,7 +422,7 @@ extension LayerListOutlineView {
 
         NSDocumentController.shared.openDocument(
             withContentsOf: url, display: true, completionHandler: { (document, _, _) in
-            layer.component = (document as! ComponentDocument).file!
+            layer.component = (document as! ComponentDocument).component!
             layer.name = CSComponent.componentName(from: url)
             layer.type = CSLayer.LayerType.custom(url.deletingPathExtension().lastPathComponent)
             self.onChange?()

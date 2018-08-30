@@ -1,1 +1,3 @@
 github "dabbott/FileTree" "master"
+github "dabbott/ControlledComponents" "master"
+github "dabbott/ColorPicker" "master"

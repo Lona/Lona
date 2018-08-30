@@ -7,6 +7,7 @@
 //
 
 import AppKit
+import FileTree
 import Foundation
 
 private func getDirectory() -> URL? {
@@ -39,166 +40,13 @@ private func requestSketchFileSaveURL() -> URL? {
     }
 }
 
-class ColorVC: NSViewController {
-
-    private let backgroundColor: NSColor
-
-    init(backgroundColor: NSColor) {
-        self.backgroundColor = backgroundColor
-        super.init(nibName: nil, bundle: nil)
-    }
-
-    required init?(coder: NSCoder) {
-        fatalError("init(coder:) has not been implemented")
-    }
-
-    override func loadView() {
-        view = NSView()
-        view.wantsLayer = true
-        view.layer?.backgroundColor = backgroundColor.cgColor
-    }
-}
-
-class ComponentEditorViewController: NSSplitViewController {
-    private let splitViewResorationIdentifier = "tech.lona.restorationId:componentEditorController"
-
-    // MARK: Lifecycle
-
-    override init(nibName nibNameOrNil: NSNib.Name?, bundle nibBundleOrNil: Bundle?) {
-        super.init(nibName: nibNameOrNil, bundle: nibBundleOrNil)
-        setUpViews()
-        setUpLayout()
-    }
-
-    required init?(coder: NSCoder) {
-        super.init(coder: coder)
-    }
-
-    // MARK: Public
-
-    public var component: CSComponent? = nil { didSet { update() } }
-    public var canvasPanningEnabled: Bool {
-        get { return canvasCollectionView.panningEnabled }
-        set { canvasCollectionView.panningEnabled = newValue }
-    }
-
-    func zoomToActualSize() {
-        canvasCollectionView.zoom(to: 1)
-    }
-
-    func zoomIn() {
-        canvasCollectionView.zoomIn()
-    }
-
-    func zoomOut() {
-        canvasCollectionView.zoomOut()
-    }
-
-    // MARK: Private
-
-    private lazy var utilitiesView = UtilitiesView()
-    private lazy var utilitiesViewController: NSViewController = {
-        return NSViewController(view: utilitiesView)
-    }()
-
-    private lazy var canvasCollectionView = CanvasCollectionView(frame: .zero)
-    private lazy var canvasCollectionViewController: NSViewController = {
-        return NSViewController(view: canvasCollectionView)
-    }()
-
-    private func setUpViews() {
-        setUpUtilities()
-
-        let tabs = SegmentedControlField(
-            frame: NSRect(x: 0, y: 0, width: 500, height: 24),
-            values: [
-                UtilitiesView.Tab.devices.rawValue,
-                UtilitiesView.Tab.parameters.rawValue,
-                UtilitiesView.Tab.logic.rawValue,
-                UtilitiesView.Tab.examples.rawValue,
-                UtilitiesView.Tab.details.rawValue
-            ])
-        tabs.segmentWidth = 97
-        tabs.useYogaLayout = true
-        tabs.segmentStyle = .roundRect
-        tabs.onChange = { value in
-            guard let tab = UtilitiesView.Tab(rawValue: value) else { return }
-            self.utilitiesView.currentTab = tab
-        }
-        tabs.value = UtilitiesView.Tab.devices.rawValue
-
-        let splitView = SectionSplitter()
-        splitView.addSubviewToDivider(tabs)
-
-        splitView.isVertical = false
-        splitView.dividerStyle = .thin
-        splitView.autosaveName = NSSplitView.AutosaveName(rawValue: splitViewResorationIdentifier)
-        splitView.identifier = NSUserInterfaceItemIdentifier(rawValue: splitViewResorationIdentifier)
-
-        self.splitView = splitView
-    }
-
-    func setUpUtilities() {
-        utilitiesView.onChangeMetadata = { value in
-            self.component?.metadata = value
-        }
-
-        utilitiesView.onChangeCanvasList = { value in
-            self.component?.canvas = value
-        }
-
-        utilitiesView.onChangeCanvasLayout = { value in
-            self.component?.canvasLayoutAxis = value
-        }
-
-        utilitiesView.onChangeParameterList = { value in
-            self.component?.parameters = value
-            self.utilitiesView.reloadData()
-
-            let componentParameters = value.filter({ $0.type == CSComponentType })
-            let componentParameterNames = componentParameters.map({ $0.name })
-            ComponentMenu.shared?.update(componentParameterNames: componentParameterNames)
-        }
-
-        utilitiesView.onChangeCaseList = { value in
-            self.component?.cases = value
-        }
-
-        utilitiesView.onChangeLogicList = { value in
-            self.component?.logic = value
-        }
-    }
-
-    private func setUpLayout() {
-        minimumThicknessForInlineSidebars = 180
-
-        let mainItem = NSSplitViewItem(viewController: canvasCollectionViewController)
-        mainItem.minimumThickness = 300
-        addSplitViewItem(mainItem)
-
-        let bottomItem = NSSplitViewItem(viewController: utilitiesViewController)
-        bottomItem.canCollapse = false
-        bottomItem.minimumThickness = 120
-        addSplitViewItem(bottomItem)
-    }
-
-    private func update() {
-        utilitiesView.component = component
-
-        guard let component = component else { return }
-
-        let options = CanvasCollectionOptions(
-            layout: component.canvasLayoutAxis,
-            component: component,
-            selected: nil,
-            onSelectLayer: { _ in }
-        )
-
-        canvasCollectionView.update(options: options)
-    }
-}
-
 class WorkspaceViewController: NSSplitViewController {
+    private enum DocumentAction: String {
+        case cancel = "Cancel"
+        case discardChanges = "Discard"
+        case saveChanges = "Save"
+    }
+
     private let splitViewResorationIdentifier = "tech.lona.restorationId:workspaceViewController2"
 
     // MARK: Lifecycle
@@ -207,55 +55,266 @@ class WorkspaceViewController: NSSplitViewController {
         super.init(nibName: nibNameOrNil, bundle: nibBundleOrNil)
         setUpViews()
         setUpLayout()
+        update()
     }
 
     required init?(coder: NSCoder) {
         super.init(coder: coder)
         setUpViews()
         setUpLayout()
+        update()
     }
 
     // MARK: Public
 
-    public var component: CSComponent? { didSet { update() } }
-    public var fileURL: URL?
+    public var document: NSDocument? { didSet { update() } }
 
     // Called from the ComponentMenu
     public func addLayer(_ layer: CSLayer) {
-        layerList.addLayer(layer: layer)
+        componentEditorViewController.addLayer(layer)
     }
 
     // MARK: Private
 
-    private var selectedLayer: CSLayer?
+    private var component: CSComponent? {
+        return (document as? ComponentDocument)?.component
+    }
 
-    private lazy var layerList = LayerList()
-    private lazy var layerListViewController: NSViewController = {
-        return NSViewController(view: layerList)
+    private var inspectedContent: InspectorView.Content?
+
+    private lazy var fileTree: FileTree = {
+        return FileTree(rootPath: LonaModule.current.url.path)
+    }()
+    private lazy var fileTreeViewController: NSViewController = {
+        return NSViewController(view: fileTree)
     }()
 
     private lazy var componentEditorViewController = ComponentEditorViewController()
 
-    private lazy var inspectorView = InspectorContentView()
+    private lazy var colorEditorViewController: ColorEditorViewController = {
+        let controller = ColorEditorViewController()
+
+        controller.onInspectColor = { color in
+            self.inspectedContent = InspectorView.Content(color)
+            self.update()
+        }
+
+        controller.onChangeColors = { actionName, newColors, selectedColor in
+            guard
+                let document = self.document as? JSONDocument,
+                let content = document.content,
+                case let .colors(oldColors) = content else { return }
+
+            let oldInspectedContent = self.inspectedContent
+            let newInspectedContent = InspectorView.Content(selectedColor)
+
+            UndoManager.shared.run(
+                name: actionName,
+                execute: {[unowned self] in
+                    document.content = .colors(newColors)
+                    self.inspectedContent = newInspectedContent
+                    self.inspectorView.content = newInspectedContent
+                    controller.colors = newColors
+                },
+                undo: {[unowned self] in
+                    document.content = .colors(oldColors)
+                    self.inspectedContent = oldInspectedContent
+                    self.inspectorView.content = oldInspectedContent
+                    controller.colors = oldColors
+                }
+            )
+        }
+
+        return controller
+    }()
+
+    private lazy var inspectorView = InspectorView()
     private lazy var inspectorViewController: NSViewController = {
         return NSViewController(view: inspectorView)
     }()
+
+    // A document's window controllers are deallocated if there are no associated documents.
+    // This ViewController can contain a reference.
+    private var windowController: NSWindowController?
+
+    override func viewDidAppear() {
+        windowController = view.window?.windowController
+    }
+
+    override func viewDidDisappear() {
+        windowController = nil
+    }
 
     private func setUpViews() {
         splitView.dividerStyle = .thin
         splitView.autosaveName = NSSplitView.AutosaveName(rawValue: splitViewResorationIdentifier)
         splitView.identifier = NSUserInterfaceItemIdentifier(rawValue: splitViewResorationIdentifier)
+
+        fileTree.defaultFont = NSFont.systemFont(ofSize: NSFont.systemFontSize(for: .small))
+        fileTree.displayNameForFile = { path in
+            let url = URL(fileURLWithPath: path)
+            return url.pathExtension == "component" ? url.deletingPathExtension().lastPathComponent : url.lastPathComponent
+        }
+
+        fileTree.imageForFile = { path, size in
+            let url = URL(fileURLWithPath: path)
+
+            func defaultImage(for path: String) -> NSImage {
+                return NSWorkspace.shared.icon(forFile: path)
+            }
+
+            if url.pathExtension == "component" {
+                guard let component = LonaModule.current.component(named: url.deletingPathExtension().lastPathComponent),
+                    let canvas = component.computedCanvases().first,
+                    let caseItem = component.computedCases(for: canvas).first
+                    else { return defaultImage(for: path) }
+
+                let config = ComponentConfiguration(
+                    component: component,
+                    arguments: caseItem.value.objectValue,
+                    canvas: canvas
+                )
+
+                let canvasView = CanvasView(
+                    canvas: canvas,
+                    rootLayer: component.rootLayer,
+                    config: config,
+                    options: [RenderOption.assetScale(1)]
+                )
+
+                guard let data = canvasView.dataRepresentation(scaledBy: 0.25),
+                    let image = NSImage(data: data)
+                    else { return defaultImage(for: path) }
+                image.size = NSSize(width: size.width, height: (image.size.height / image.size.width) * size.height)
+                return image
+            } else {
+                return defaultImage(for: path)
+            }
+        }
+
+        fileTree.onAction = { path in
+            guard let document = self.document else {
+                let url = URL(fileURLWithPath: path)
+
+                NSDocumentController.shared.openDocument(withContentsOf: url, display: false, completionHandler: { newDocument, documentWasAlreadyOpen, error in
+
+                    guard let newDocument = newDocument else {
+                        Swift.print("Failed to open", url, error as Any)
+                        return
+                    }
+
+                    if documentWasAlreadyOpen {
+                        newDocument.showWindows()
+                        return
+                    }
+
+                    guard let windowController = self.view.window?.windowController else { return }
+
+                    newDocument.addWindowController(windowController)
+                    windowController.document = newDocument
+                    self.document = newDocument
+
+                    // Set this after updating the document (which calls update)
+                    // TODO: There shouldn't need to be an implicit ordering. Maybe we call update() manually.
+                    self.inspectedContent = nil
+                })
+
+                return
+            }
+
+            if document.fileURL?.path == path { return }
+
+            if document.isDocumentEdited {
+                let name = document.fileURL?.lastPathComponent ?? "Untitled"
+                guard let result = Alert(
+                    items: [
+                        DocumentAction.cancel,
+                        DocumentAction.discardChanges,
+                        DocumentAction.saveChanges],
+                    messageText: "Save changes to \(name)",
+                    informativeText: "The document \(name) has unsaved changes. Save them now?").run()
+                    else { return }
+                switch result {
+                case .saveChanges:
+                    var saveURL: URL
+
+                    if let url = document.fileURL {
+                        saveURL = url
+                    } else {
+                        let dialog = NSSavePanel()
+
+                        dialog.title                   = "Save .component file"
+                        dialog.showsResizeIndicator    = true
+                        dialog.showsHiddenFiles        = false
+                        dialog.canCreateDirectories    = true
+                        dialog.allowedFileTypes        = ["component"]
+
+                        // User canceled the save. Don't swap out the document.
+                        if dialog.runModal() != NSApplication.ModalResponse.OK {
+                            return
+                        }
+
+                        guard let url = dialog.url else { return }
+
+                        saveURL = url
+                    }
+
+                    document.save(to: saveURL, ofType: document.fileType ?? "DocumentType", for: NSDocument.SaveOperationType.saveOperation, completionHandler: { error in
+                        // TODO: We should not close the document if it fails to save
+                        Swift.print("Failed to save", saveURL, error as Any)
+                    })
+
+                    LonaPlugins.current.trigger(eventType: .onSaveComponent)
+                case .cancel:
+                    return
+                case .discardChanges:
+                    break
+                }
+            }
+
+            let url = URL(fileURLWithPath: path)
+
+            NSDocumentController.shared.openDocument(withContentsOf: url, display: false, completionHandler: { newDocument, documentWasAlreadyOpen, error in
+
+                guard let newDocument = newDocument else {
+                    Swift.print("Failed to open", url, error as Any)
+                    NSDocumentController.shared.removeDocument(document)
+                    let windowController = document.windowControllers[0]
+                    windowController.document = nil
+                    document.removeWindowController(windowController)
+                    self.document = nil
+                    self.inspectedContent = nil
+
+                    return
+                }
+
+                if documentWasAlreadyOpen {
+                    newDocument.showWindows()
+                    return
+                }
+
+                NSDocumentController.shared.removeDocument(document)
+
+                let windowController = document.windowControllers[0]
+                newDocument.addWindowController(windowController)
+                windowController.document = newDocument
+                self.document = newDocument
+
+                // Set this after updating the document (which calls update)
+                // TODO: There shouldn't need to be an implicit ordering. Maybe we call update() manually.
+                self.inspectedContent = nil
+            })
+        }
     }
+
+    private lazy var mainItem = NSSplitViewItem(viewController: componentEditorViewController)
 
     private func setUpLayout() {
         minimumThicknessForInlineSidebars = 180
 
-        let contentListItem = NSSplitViewItem(contentListWithViewController: layerListViewController)
-        //        contentListItem.canCollapse = true
-        contentListItem.minimumThickness = 140
+        let contentListItem = NSSplitViewItem(contentListWithViewController: fileTreeViewController)
         addSplitViewItem(contentListItem)
 
-        let mainItem = NSSplitViewItem(viewController: componentEditorViewController)
         mainItem.minimumThickness = 300
         addSplitViewItem(mainItem)
 
@@ -267,23 +326,94 @@ class WorkspaceViewController: NSSplitViewController {
     }
 
     private func update() {
-        layerList.component = component
-        componentEditorViewController.component = component
-        inspectorView.content = selectedLayer
+        inspectorView.content = inspectedContent
 
-        layerList.onSelectLayer = { layer in
-            self.selectedLayer = layer
-            self.inspectorView.content = layer
+        guard let document = document else {
+            removeSplitViewItem(mainItem)
+            mainItem.viewController = NSViewController(view: NSView())
+            insertSplitViewItem(mainItem, at: 1)
+            return
         }
 
-        layerList.onChange = {
-            self.componentEditorViewController.component = self.component
-            self.inspectorView.content = self.selectedLayer
-        }
+        if document is ComponentDocument {
+            if mainItem.viewController != componentEditorViewController {
+                removeSplitViewItem(mainItem)
+                mainItem.viewController = componentEditorViewController
+                insertSplitViewItem(mainItem, at: 1)
+            }
 
-        inspectorView.onChangeContent = { layer, changeType in
-            self.componentEditorViewController.component = self.component
-            self.layerList.reloadWithoutModifyingSelection()
+            componentEditorViewController.component = component
+
+            componentEditorViewController.onInspectLayer = { layer in
+                guard let layer = layer else {
+                    self.inspectedContent = nil
+                    return
+                }
+                self.inspectedContent = .layer(layer)
+                self.inspectorView.content = .layer(layer)
+            }
+
+            componentEditorViewController.onChangeInspectedLayer = {
+                self.inspectorView.content = self.inspectedContent
+            }
+
+            inspectorView.onChangeContent = { layer, changeType in
+                self.componentEditorViewController.reloadLayerListWithoutModifyingSelection()
+            }
+        } else if let document = document as? JSONDocument {
+            if let content = document.content, case .colors(let colors) = content {
+                if mainItem.viewController != colorEditorViewController {
+                    removeSplitViewItem(mainItem)
+                    mainItem.viewController = colorEditorViewController
+                    insertSplitViewItem(mainItem, at: 1)
+                }
+
+                colorEditorViewController.colors = colors
+            } else {
+                removeSplitViewItem(mainItem)
+                mainItem.viewController = NSViewController(view: NSView())
+                insertSplitViewItem(mainItem, at: 1)
+                return
+            }
+
+            inspectorView.onChangeContent = { newContent, changeType in
+                if UndoManager.shared.isUndoing || UndoManager.shared.isRedoing {
+                    return
+                }
+
+                guard let oldContent = self.inspectedContent else { return }
+                guard let colors = document.content else { return }
+
+                switch (oldContent, newContent, colors) {
+                case (.color(let oldColor), .color(let newColor), .colors(let colors)):
+
+                    // Perform update using indexes in case the id was changed
+                    guard let index = colors.index(where: { $0.id == oldColor.id }) else { return }
+
+                    let updated = colors.enumerated().map { offset, element in
+                        return index == offset ? newColor : element
+                    }
+
+                    // TODO: Improve this. It may be conflicting with the textfield's built-in undo
+                    UndoManager.shared.run(
+                        name: "Edit Color",
+                        execute: {[unowned self] in
+                            document.content = .colors(updated)
+                            self.inspectedContent = .color(newColor)
+                            self.inspectorView.content = .color(newColor)
+                            self.colorEditorViewController.colors = updated
+                        },
+                        undo: {[unowned self] in
+                            document.content = .colors(colors)
+                            self.inspectedContent = .color(oldColor)
+                            self.inspectorView.content = .color(oldColor)
+                            self.colorEditorViewController.colors = colors
+                        }
+                    )
+                default:
+                    break
+                }
+            }
         }
     }
 
@@ -440,7 +570,7 @@ extension WorkspaceViewController {
                 // Add number suffix if needed
                 newLayer.name = component.getNewLayerName(startingWith: newLayer.name)
 
-                layerList.addLayer(layer: newLayer)
+                componentEditorViewController.addLayer(newLayer)
             }
         } else {
             // User clicked on "Cancel"
@@ -455,7 +585,7 @@ extension WorkspaceViewController {
             "backgroundColor": "#D8D8D8".toData()
         ])
 
-        layerList.addLayer(layer: newLayer)
+        componentEditorViewController.addLayer(newLayer)
     }
 
     @IBAction func addImage(_ sender: AnyObject) {
@@ -469,7 +599,7 @@ extension WorkspaceViewController {
             "backgroundColor": "#D8D8D8".toData()
         ])
 
-        layerList.addLayer(layer: newLayer)
+        componentEditorViewController.addLayer(newLayer)
     }
 
     @IBAction func addAnimation(_ sender: AnyObject) {
@@ -483,7 +613,7 @@ extension WorkspaceViewController {
             "backgroundColor": "#D8D8D8".toData()
         ])
 
-        layerList.addLayer(layer: newLayer)
+        componentEditorViewController.addLayer(newLayer)
     }
 
     @IBAction func addView(_ sender: AnyObject) {
@@ -497,7 +627,7 @@ extension WorkspaceViewController {
             "backgroundColor": "#D8D8D8".toData()
         ])
 
-        layerList.addLayer(layer: newLayer)
+        componentEditorViewController.addLayer(newLayer)
     }
 
     @IBAction func addText(_ sender: AnyObject) {
@@ -511,7 +641,7 @@ extension WorkspaceViewController {
             "heightSizingRule": "Shrink".toData()
         ])
 
-        layerList.addLayer(layer: newLayer)
+        componentEditorViewController.addLayer(newLayer)
     }
 
 }

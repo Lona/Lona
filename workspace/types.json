@@ -1,0 +1,73 @@
+{
+  "types": [
+    {
+      "name": "Named",
+      "alias": "ColorHandler",
+      "of": {
+        "name": "Function",
+        "parameters": [
+          {
+            "label": "_",
+            "type": "CSColor"
+          }
+        ]
+      }
+    },
+    {
+      "name": "Named",
+      "alias": "StringHandler",
+      "of": {
+        "name": "Function",
+        "parameters": [
+          {
+            "label": "_",
+            "type": "String"
+          }
+        ]
+      }
+    },
+    {
+      "name": "Named",
+      "alias": "ColorList",
+      "of": {
+        "name": "Array",
+        "of": "CSColor"
+      }
+    },
+    {
+      "name": "Named",
+      "alias": "ColorPickerHandler",
+      "of": {
+        "name": "Function",
+        "parameters": [
+          {
+            "label": "_",
+            "type": "Color"
+          }
+        ]
+      }
+    },
+    {
+      "name": "Named",
+      "alias": "ColorPickerColor",
+      "of": "Color"
+    },
+    {
+      "name": "Named",
+      "alias": "ItemMoveHandler",
+      "of": {
+        "name": "Function",
+        "parameters": [
+          {
+            "label": "_",
+            "type": "Number"
+          },
+          {
+            "label": "_",
+            "type": "Number"
+          }
+        ]
+      }
+    }
+  ]
+}
