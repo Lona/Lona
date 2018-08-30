@@ -555,7 +555,7 @@ class CoreComponentInspectorView: NSStackView {
         imageView.constrain(aspectRatio: 1)
         imageView.widthAnchor.constraint(equalToConstant: 240).isActive = true
 
-        let button = Button(title: "Browse...")
+        let button = Button(titleText: "Browse...")
         button.onPress = {
             let dialog = NSOpenPanel()
 
@@ -615,7 +615,7 @@ class CoreComponentInspectorView: NSStackView {
         animationViewContainer.constrain(aspectRatio: 1)
         animationViewContainer.widthAnchor.constraint(equalToConstant: 240).isActive = true
 
-        let button = Button(title: "Browse...")
+        let button = Button(titleText: "Browse...")
         button.onPress = {
             let dialog = NSOpenPanel()
 

@@ -36,7 +36,7 @@ class DictionaryEditorButton: Button, CSControl, NSPopoverDelegate {
         self.value = value
         self.onChangeData = onChangeData
 
-        super.init(title: buttonTitle(for: value))
+        super.init(titleText: buttonTitle(for: value))
 
         self.onPress = {
             let editor = DictionaryEditor(

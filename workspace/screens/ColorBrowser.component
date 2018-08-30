@@ -40,6 +40,18 @@
         "colors"
       ],
       "type" : "AssignExpr"
+    },
+    {
+      "assignee" : [
+        "layers",
+        "AddColorButton",
+        "onClick"
+      ],
+      "content" : [
+        "parameters",
+        "onClickAddColor"
+      ],
+      "type" : "AssignExpr"
     }
   ],
   "params" : [
@@ -50,6 +62,12 @@
     {
       "name" : "colors",
       "type" : "ColorList"
+    },
+    {
+      "name" : "onClickAddColor",
+      "type" : {
+        "name" : "Function"
+      }
     }
   ],
   "root" : {
@@ -57,14 +75,50 @@
       {
         "children" : [
           {
-            "id" : "Title",
+            "children" : [
+              {
+                "id" : "Title",
+                "params" : {
+                  "font" : "title",
+                  "text" : "Colors"
+                },
+                "type" : "Lona:Text"
+              },
+              {
+                "id" : "Spacer",
+                "params" : {
+                  "flex" : 1,
+                  "height" : 0
+                },
+                "type" : "Lona:View"
+              },
+              {
+                "children" : [
+                  {
+                    "id" : "AddColorButton",
+                    "params" : {
+                      "titleText" : "Add Color"
+                    },
+                    "type" : "Button"
+                  }
+                ],
+                "id" : "FixedHeightFix_ButtonContainer",
+                "params" : {
+
+                },
+                "type" : "Lona:View"
+              }
+            ],
+            "id" : "Header",
             "params" : {
-              "font" : "title",
-              "marginLeft" : 64,
-              "marginRight" : 64,
-              "text" : "Colors"
+              "alignItems" : "center",
+              "alignSelf" : "stretch",
+              "flexDirection" : "row",
+              "height" : 38,
+              "paddingLeft" : 64,
+              "paddingRight" : 64
             },
-            "type" : "Lona:Text"
+            "type" : "Lona:View"
           },
           {
             "id" : "ColorPreviewCollection",

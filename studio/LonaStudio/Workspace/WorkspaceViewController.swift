@@ -102,6 +102,10 @@ class WorkspaceViewController: NSSplitViewController {
             self.update()
         }
 
+        colorBrowser.onClickAddColor = {
+
+        }
+
         return NSViewController(view: colorBrowser)
     }()
 

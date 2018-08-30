@@ -1,0 +1,70 @@
+{
+  "devices" : [
+    {
+      "height" : 22,
+      "heightMode" : "At Least",
+      "name" : "iPhone SE",
+      "width" : 80
+    }
+  ],
+  "examples" : [
+    {
+      "id" : "Default",
+      "name" : "Default",
+      "params" : {
+
+      }
+    }
+  ],
+  "logic" : [
+    {
+      "assignee" : [
+        "layers",
+        "Text",
+        "text"
+      ],
+      "content" : [
+        "parameters",
+        "titleText"
+      ],
+      "type" : "AssignExpr"
+    }
+  ],
+  "params" : [
+    {
+      "name" : "titleText",
+      "type" : "String"
+    },
+    {
+      "name" : "onClick",
+      "type" : {
+        "name" : "Function"
+      }
+    }
+  ],
+  "root" : {
+    "children" : [
+      {
+        "id" : "Text",
+        "params" : {
+          "text" : "Title"
+        },
+        "type" : "Lona:Text"
+      }
+    ],
+    "id" : "View",
+    "params" : {
+      "alignItems" : "center",
+      "backgroundColor" : "white",
+      "borderColor" : "darkTransparentOutline",
+      "borderRadius" : 3,
+      "borderWidth" : 1,
+      "justifyContent" : "center",
+      "paddingBottom" : 2,
+      "paddingLeft" : 10,
+      "paddingRight" : 10,
+      "paddingTop" : 2
+    },
+    "type" : "Lona:View"
+  }
+}

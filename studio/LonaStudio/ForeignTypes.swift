@@ -14,14 +14,10 @@ public typealias ColorList = [CSColor]?
 
 public typealias ColorHandler = ((CSColor?) -> Void)?
 public typealias StringHandler = ((String) -> Void)?
-public typealias TextInput = ControlledComponents.TextInput
-public typealias ColorWellPicker = ColorPicker.ColorWellPicker
-
 public typealias ColorPickerColor = Color?
 public typealias ColorPickerHandler = ((Color) -> Void)?
 
-extension TextInput {
-    public override var undoManager: UndoManager? {
-        return nil
-    }
-}
+// Alias imported components for use in generated code
+public typealias TextInput = ControlledComponents.TextInput
+public typealias Button = ControlledComponents.Button
+public typealias ColorWellPicker = ColorPicker.ColorWellPicker

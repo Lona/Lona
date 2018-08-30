@@ -106,7 +106,7 @@ class PathSettingRow: SettingRow {
 
         textField.onChange = { value in self.onChange?(CSData.String(value)) }
 
-        let button = Button(frame: NSRect.zero)
+        let button = Button()
         button.title = "Choose path..."
         button.translatesAutoresizingMaskIntoConstraints = false
         button.bezelStyle = .rounded
