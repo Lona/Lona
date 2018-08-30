@@ -206,7 +206,7 @@ let toJavaScriptStyleSheetAST =
                | (_, JavaScriptOptions.ReactDOM, true) =>
                 Property({
                   "key": Identifier([key |> ParameterKey.toString]),
-                  "value": Literal(LonaValue.string(string_of_int(value.data |> Json.Decode.int) ++ "px"))
+                  "value": Literal(LonaValue.string(value.data |> ReactDomTranslators.convertUnitlessStyle))
                 })
                | (ParameterKey.TextStyle, _, false) =>
                  switch (value.data |> Js.Json.decodeString) {

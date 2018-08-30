@@ -1,6 +1,14 @@
 open JavaScriptAst;
 
-let render = (colors, textStyles: TextStyle.file) => {
+let render = (options: JavaScriptOptions.options, colors, textStyles: TextStyle.file) => {
+  let buildStyleNodeForFramework = 
+    options.framework
+    |> (framework, value: Types.lonaValue) =>
+      switch framework {
+      | JavaScriptOptions.ReactDOM => Literal(LonaValue.string(value.data |> ReactDomTranslators.convertUnitlessStyle))
+      | _ => Literal(value)
+      };
+
   let unwrapOptional = (f, a) =>
     switch a {
     | Some(value) => [f(value)]
@@ -40,7 +48,7 @@ let render = (colors, textStyles: TextStyle.file) => {
              };
              Property({
                "key": Identifier(["fontSize"]),
-               "value": Literal(lonaValue)
+               "value": lonaValue |> buildStyleNodeForFramework
              });
            }),
         lookup(style => style.lineHeight)
@@ -51,7 +59,7 @@ let render = (colors, textStyles: TextStyle.file) => {
              };
              Property({
                "key": Identifier(["lineHeight"]),
-               "value": Literal(lonaValue)
+               "value": lonaValue |> buildStyleNodeForFramework
              });
            }),
         lookup(style => style.letterSpacing)
@@ -62,7 +70,7 @@ let render = (colors, textStyles: TextStyle.file) => {
              };
              Property({
                "key": Identifier(["letterSpacing"]),
-               "value": Literal(lonaValue)
+               "value": lonaValue |> buildStyleNodeForFramework
              });
            }),
         lookup(style => style.color)
