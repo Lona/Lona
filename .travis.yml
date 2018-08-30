@@ -33,7 +33,7 @@ script:
   - set -o pipefail
   - BUNDLE_GEMFILE=ci/Gemfile bundle exec danger --dangerfile=ci/Dangerfile
   - cd studio
-  - carthage build
+  - carthage build --platform macOS
   - xcodebuild -version
   - xcodebuild -showsdks
   - xcodebuild -list
