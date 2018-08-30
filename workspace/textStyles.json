@@ -79,6 +79,24 @@
       "fontSize": 11,
       "lineHeight": 13,
       "color": "white"
+    },
+    {
+      "id": "monospacedMicro",
+      "name": "Monospaced Micro",
+      "fontFamily": "Menlo",
+      "fontSize": 10,
+      "fontWeight": "bold",
+      "lineHeight": 12,
+      "color": "rgba(0,0,0,0.85)"
+    },
+    {
+      "id": "monospacedMicroInverse",
+      "name": "Monospaced Micro Inverse",
+      "fontFamily": "Menlo",
+      "fontSize": 10,
+      "fontWeight": "bold",
+      "lineHeight": 12,
+      "color": "rgba(255,255,255,0.85)"
     }
   ]
 }

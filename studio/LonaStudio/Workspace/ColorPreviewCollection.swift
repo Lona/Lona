@@ -78,11 +78,12 @@ class ColorPreviewCollectionView: NSView {
 
         let flowLayout = NSCollectionViewFlowLayout()
 
-        flowLayout.sectionInset = NSEdgeInsets(top: 36, left: 64, bottom: 36, right: 64)
+        // Items have a built-in padding of 4
+        flowLayout.sectionInset = NSEdgeInsets(top: 36, left: 64 - 4, bottom: 36, right: 64 - 4)
 
-        flowLayout.minimumLineSpacing = 24
+        flowLayout.minimumLineSpacing = 12
         flowLayout.minimumInteritemSpacing = 12
-        flowLayout.itemSize = NSSize(width: 140, height: 160)
+        flowLayout.itemSize = NSSize(width: 90, height: 120)
 
         collectionView.collectionViewLayout = flowLayout
         collectionView.delegate = self

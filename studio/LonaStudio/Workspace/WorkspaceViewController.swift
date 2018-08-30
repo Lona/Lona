@@ -355,6 +355,8 @@ class WorkspaceViewController: NSSplitViewController {
                 switch (oldContent, newContent, colors) {
                 case (.color(let oldColor), .color(let newColor), .colors(let colors)):
 
+                    Swift.print("Old color", oldColor, "New color", newColor)
+
                     // Perform update using indexes in case the id was changed
                     guard let index = colors.index(where: { $0.id == oldColor.id }) else { return }
 
@@ -367,11 +369,13 @@ class WorkspaceViewController: NSSplitViewController {
                         name: "Edit Color",
                         execute: {[unowned self] in
                             document.content = .colors(updated)
+                            self.inspectedContent = .color(newColor)
                             self.inspectorView.content = .color(newColor)
                             (self.colorEditorViewController.view as? ColorBrowser)?.colors = updated
                         },
                         undo: {[unowned self] in
                             document.content = .colors(colors)
+                            self.inspectedContent = .color(oldColor)
                             self.inspectorView.content = .color(oldColor)
                             (self.colorEditorViewController.view as? ColorBrowser)?.colors = colors
                         }
