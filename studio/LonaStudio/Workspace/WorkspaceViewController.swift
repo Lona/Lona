@@ -42,6 +42,7 @@ private func requestSketchFileSaveURL() -> URL? {
 
 class WorkspaceViewController: NSSplitViewController {
     private enum DocumentAction: String {
+        case cancel = "Cancel"
         case discardChanges = "Discard"
         case saveChanges = "Save"
     }
@@ -226,7 +227,10 @@ class WorkspaceViewController: NSSplitViewController {
             if document.isDocumentEdited {
                 let name = document.fileURL?.lastPathComponent ?? "Untitled"
                 guard let result = Alert(
-                    items: [DocumentAction.discardChanges, DocumentAction.saveChanges],
+                    items: [
+                        DocumentAction.cancel,
+                        DocumentAction.discardChanges,
+                        DocumentAction.saveChanges],
                     messageText: "Save changes to \(name)",
                     informativeText: "The document \(name) has unsaved changes. Save them now?").run()
                     else { return }
@@ -261,6 +265,8 @@ class WorkspaceViewController: NSSplitViewController {
                     })
 
                     LonaPlugins.current.trigger(eventType: .onSaveComponent)
+                case .cancel:
+                    return
                 case .discardChanges:
                     break
                 }

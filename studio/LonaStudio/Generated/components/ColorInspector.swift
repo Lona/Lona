@@ -8,6 +8,7 @@ public class ColorInspector: NSBox {
   // MARK: Lifecycle
 
   public init(
+    titleText: String,
     idText: String,
     nameText: String,
     valueText: String,
@@ -19,6 +20,7 @@ public class ColorInspector: NSBox {
     colorValue: ColorPickerColor,
     onChangeColorValue: ColorPickerHandler)
   {
+    self.titleText = titleText
     self.idText = idText
     self.nameText = nameText
     self.valueText = valueText
@@ -41,6 +43,7 @@ public class ColorInspector: NSBox {
   public convenience init() {
     self
       .init(
+        titleText: "",
         idText: "",
         nameText: "",
         valueText: "",
@@ -59,6 +62,7 @@ public class ColorInspector: NSBox {
 
   // MARK: Public
 
+  public var titleText: String { didSet { update() } }
   public var idText: String { didSet { update() } }
   public var nameText: String { didSet { update() } }
   public var valueText: String { didSet { update() } }
@@ -675,9 +679,9 @@ public class ColorInspector: NSBox {
   }
 
   private func update() {
+    titleView.attributedStringValue = titleViewTextStyle.apply(to: titleText)
     idInputView.textValue = idText
     nameInputView.textValue = nameText
-    titleView.attributedStringValue = titleViewTextStyle.apply(to: nameText)
     valueInputView.textValue = valueText
     descriptionInputView.textValue = descriptionText
     idInputView.onChangeTextValue = onChangeIdText

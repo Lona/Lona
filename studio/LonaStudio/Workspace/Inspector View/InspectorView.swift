@@ -131,6 +131,7 @@ final class InspectorView: NSBox {
 
             editor.idText = color.id
             editor.nameText = color.name
+            editor.titleText = color.name
             editor.valueText = color.value
             editor.descriptionText = color.comment
 
@@ -185,15 +186,5 @@ final class InspectorView: NSBox {
                 inspectorView.bottomAnchor.constraint(equalTo: flippedView.bottomAnchor).isActive = true
             }
         }
-    }
-}
-
-extension Color {
-    var rgbaString: String {
-        let r = Int(rgb.red * 255)
-        let g = Int(rgb.green * 255)
-        let b = Int(rgb.blue * 255)
-        let a = round(alpha * 100) / 100
-        return "rgba(\(r),\(g),\(b),\(a))"
     }
 }

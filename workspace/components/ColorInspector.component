@@ -21,6 +21,18 @@
     {
       "assignee" : [
         "layers",
+        "Title",
+        "text"
+      ],
+      "content" : [
+        "parameters",
+        "titleText"
+      ],
+      "type" : "AssignExpr"
+    },
+    {
+      "assignee" : [
+        "layers",
         "IdInput",
         "textValue"
       ],
@@ -35,18 +47,6 @@
         "layers",
         "NameInput",
         "textValue"
-      ],
-      "content" : [
-        "parameters",
-        "nameText"
-      ],
-      "type" : "AssignExpr"
-    },
-    {
-      "assignee" : [
-        "layers",
-        "Title",
-        "text"
       ],
       "content" : [
         "parameters",
@@ -152,6 +152,10 @@
     }
   ],
   "params" : [
+    {
+      "name" : "titleText",
+      "type" : "String"
+    },
     {
       "name" : "idText",
       "type" : "String"

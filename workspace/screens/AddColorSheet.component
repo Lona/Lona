@@ -1,0 +1,277 @@
+{
+  "devices" : [
+    {
+      "height" : 100,
+      "heightMode" : "At Least",
+      "name" : "iPhone SE",
+      "width" : 480
+    }
+  ],
+  "examples" : [
+    {
+      "id" : "Default",
+      "name" : "Default",
+      "params" : {
+
+      }
+    }
+  ],
+  "logic" : [
+    {
+      "assignee" : [
+        "layers",
+        "DoneButton",
+        "onClick"
+      ],
+      "content" : [
+        "parameters",
+        "onSubmit"
+      ],
+      "type" : "AssignExpr"
+    },
+    {
+      "assignee" : [
+        "layers",
+        "CancelButton",
+        "onClick"
+      ],
+      "content" : [
+        "parameters",
+        "onCancel"
+      ],
+      "type" : "AssignExpr"
+    },
+    {
+      "assignee" : [
+        "layers",
+        "ColorInspector",
+        "idText"
+      ],
+      "content" : [
+        "parameters",
+        "idText"
+      ],
+      "type" : "AssignExpr"
+    },
+    {
+      "assignee" : [
+        "layers",
+        "ColorInspector",
+        "nameText"
+      ],
+      "content" : [
+        "parameters",
+        "nameText"
+      ],
+      "type" : "AssignExpr"
+    },
+    {
+      "assignee" : [
+        "layers",
+        "ColorInspector",
+        "valueText"
+      ],
+      "content" : [
+        "parameters",
+        "valueText"
+      ],
+      "type" : "AssignExpr"
+    },
+    {
+      "assignee" : [
+        "layers",
+        "ColorInspector",
+        "descriptionText"
+      ],
+      "content" : [
+        "parameters",
+        "descriptionText"
+      ],
+      "type" : "AssignExpr"
+    },
+    {
+      "assignee" : [
+        "layers",
+        "ColorInspector",
+        "colorValue"
+      ],
+      "content" : [
+        "parameters",
+        "colorValue"
+      ],
+      "type" : "AssignExpr"
+    },
+    {
+      "assignee" : [
+        "layers",
+        "ColorInspector",
+        "onChangeIdText"
+      ],
+      "content" : [
+        "parameters",
+        "onChangeIdText"
+      ],
+      "type" : "AssignExpr"
+    },
+    {
+      "assignee" : [
+        "layers",
+        "ColorInspector",
+        "onChangeNameText"
+      ],
+      "content" : [
+        "parameters",
+        "onChangeNameText"
+      ],
+      "type" : "AssignExpr"
+    },
+    {
+      "assignee" : [
+        "layers",
+        "ColorInspector",
+        "onChangeValueText"
+      ],
+      "content" : [
+        "parameters",
+        "onChangeValueText"
+      ],
+      "type" : "AssignExpr"
+    },
+    {
+      "assignee" : [
+        "layers",
+        "ColorInspector",
+        "onChangeDescriptionText"
+      ],
+      "content" : [
+        "parameters",
+        "onChangeDescriptionText"
+      ],
+      "type" : "AssignExpr"
+    },
+    {
+      "assignee" : [
+        "layers",
+        "ColorInspector",
+        "onChangeColorValue"
+      ],
+      "content" : [
+        "parameters",
+        "onChangeColorValue"
+      ],
+      "type" : "AssignExpr"
+    }
+  ],
+  "params" : [
+    {
+      "name" : "onSubmit",
+      "type" : {
+        "name" : "Function"
+      }
+    },
+    {
+      "name" : "onCancel",
+      "type" : {
+        "name" : "Function"
+      }
+    },
+    {
+      "name" : "nameText",
+      "type" : "String"
+    },
+    {
+      "name" : "idText",
+      "type" : "String"
+    },
+    {
+      "name" : "valueText",
+      "type" : "String"
+    },
+    {
+      "name" : "descriptionText",
+      "type" : "String"
+    },
+    {
+      "name" : "colorValue",
+      "type" : "ColorPickerColor"
+    },
+    {
+      "name" : "onChangeNameText",
+      "type" : "StringHandler"
+    },
+    {
+      "name" : "onChangeIdText",
+      "type" : "StringHandler"
+    },
+    {
+      "name" : "onChangeValueText",
+      "type" : "StringHandler"
+    },
+    {
+      "name" : "onChangeDescriptionText",
+      "type" : "StringHandler"
+    },
+    {
+      "name" : "onChangeColorValue",
+      "type" : "ColorPickerHandler"
+    }
+  ],
+  "root" : {
+    "children" : [
+      {
+        "id" : "ColorInspector",
+        "params" : {
+          "descriptionText" : "Text",
+          "idText" : "Text",
+          "nameText" : "Text",
+          "titleText" : "New Color",
+          "valueText" : "Text"
+        },
+        "type" : "ColorInspector"
+      },
+      {
+        "children" : [
+          {
+            "id" : "CancelButton",
+            "params" : {
+              "titleText" : "Cancel"
+            },
+            "type" : "Button"
+          },
+          {
+            "id" : "FooterSpacer",
+            "params" : {
+              "backgroundColor" : "#D8D8D8",
+              "flex" : 1,
+              "height" : 0
+            },
+            "type" : "Lona:View"
+          },
+          {
+            "id" : "DoneButton",
+            "params" : {
+              "titleText" : "Done"
+            },
+            "type" : "Button"
+          }
+        ],
+        "id" : "Footer",
+        "params" : {
+          "alignItems" : "flex-end",
+          "alignSelf" : "stretch",
+          "flexDirection" : "row",
+          "marginBottom" : 20,
+          "marginTop" : 40
+        },
+        "type" : "Lona:View"
+      }
+    ],
+    "id" : "View",
+    "params" : {
+      "paddingLeft" : 20,
+      "paddingRight" : 20,
+      "width" : 480
+    },
+    "type" : "Lona:View"
+  }
+}
