@@ -26,28 +26,6 @@ public class LayerListHeader: NSBox {
         fatalError("init(coder:) has not been implemented")
     }
 
-    // MARK: Public
-
-//    var component: CSComponent? { didSet { update() } }
-//
-//    var onChange: (() -> Void)? {
-//        get { return outlineView.onChange }
-//        set { outlineView.onChange = newValue }
-//    }
-//
-//    var onSelectLayer: ((CSLayer?) -> Void)? {
-//        get { return outlineView.onSelectLayer }
-//        set { outlineView.onSelectLayer = newValue }
-//    }
-//
-//    func addLayer(layer newLayer: CSLayer) {
-//        outlineView.addLayer(layer: newLayer)
-//    }
-//
-//    func reloadWithoutModifyingSelection() {
-//        outlineView.render(fullRender: false)
-//    }
-
     // MARK: Private
 
     let titleView = NSTextField(labelWithString: "Layers")
@@ -87,7 +65,5 @@ public class LayerListHeader: NSBox {
         button.trailingAnchor.constraint(equalTo: trailingAnchor, constant: -10).isActive = true
     }
 
-    private func update() {
-//        outlineView.component = component
-    }
+    private func update() {}
 }

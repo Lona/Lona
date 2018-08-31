@@ -151,6 +151,7 @@ class ComponentEditorViewController: NSSplitViewController {
             self.component?.parameters = value
             self.utilitiesView.reloadData()
 
+            // TODO: Revisit parameters of type "Component" at some point
 //            let componentParameters = value.filter({ $0.type == CSComponentType })
 //            let componentParameterNames = componentParameters.map({ $0.name })
 //            ComponentMenu.shared?.update(componentParameterNames: componentParameterNames)
