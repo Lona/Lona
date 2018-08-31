@@ -578,7 +578,7 @@ extension WorkspaceViewController {
         }
     }
 
-    @IBAction func addChildren(_ sender: AnyObject) {
+    func addChildren() {
         let newLayer = CSLayer(name: "Children", type: .children, parameters: [
             "width": 100.toData(),
             "height": 100.toData(),
@@ -588,7 +588,7 @@ extension WorkspaceViewController {
         componentEditorViewController.addLayer(newLayer)
     }
 
-    @IBAction func addImage(_ sender: AnyObject) {
+    func addImage() {
         guard let component = component else { return }
 
         let name = component.getNewLayerName(startingWith: "Image")
@@ -602,7 +602,7 @@ extension WorkspaceViewController {
         componentEditorViewController.addLayer(newLayer)
     }
 
-    @IBAction func addAnimation(_ sender: AnyObject) {
+    func addAnimation() {
         guard let component = component else { return }
 
         let name = component.getNewLayerName(startingWith: "Animation")
@@ -616,7 +616,7 @@ extension WorkspaceViewController {
         componentEditorViewController.addLayer(newLayer)
     }
 
-    @IBAction func addView(_ sender: AnyObject) {
+    func addView() {
         guard let component = component else { return }
 
         let name = component.getNewLayerName(startingWith: "View")
@@ -630,7 +630,7 @@ extension WorkspaceViewController {
         componentEditorViewController.addLayer(newLayer)
     }
 
-    @IBAction func addText(_ sender: AnyObject) {
+    func addText() {
         guard let component = component else { return }
 
         let name = component.getNewLayerName(startingWith: "Text")

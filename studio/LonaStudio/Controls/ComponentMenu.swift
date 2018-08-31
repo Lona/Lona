@@ -9,53 +9,49 @@
 import AppKit
 import Foundation
 
-class ComponentMenu: NSMenu {
-    var additionalMenuItems: [NSMenuItem] = []
-
-    // These represent parameters of type Component. This allows inserting
-    // placeholders into the layer list.
-    var componentParameterItems: [NSMenuItem] = []
-
-    required init(coder decoder: NSCoder) {
-        super.init(coder: decoder)
-
-        updateComponentsFromModule()
-
-        ComponentMenu.shared = self
-
-        _ = LonaPlugins.current.register(eventType: .onReloadWorkspace) {
-            self.updateComponentsFromModule()
-        }
-    }
-
-    func update(componentParameterNames: [String]) {
-        self.componentParameterItems.forEach({ item in
-            self.removeItem(item)
-        })
-
-        let childrenItemIndex = indexOfItem(withTitle: "Children")
-
-        let componentParameterItems = componentParameterNames.map({ name in
+enum ComponentMenu {
+    static func menuItems(componentParameterNames: [String]) -> [NSMenuItem] {
+        return componentParameterNames.map({ name in
             NSMenuItem(title: name, onClick: {
                 guard let viewController = NSApplication.shared.mainWindow?.contentViewController as? WorkspaceViewController else { return }
 
                 viewController.addLayer(CSParameterLayer(name: name, parameterName: name))
             })
         })
-
-        self.componentParameterItems = componentParameterItems
-
-        componentParameterItems.forEach({ item in
-            self.insertItem(item, at: childrenItemIndex + 1)
-        })
     }
 
-    func updateComponentsFromModule() {
-        self.additionalMenuItems.forEach({ item in
-            self.removeItem(item)
-        })
+    static func menuItemsForCoreComponents() -> [NSMenuItem] {
+        let types = [
+            CSLayer.BuiltInLayerType.view,
+            CSLayer.BuiltInLayerType.text,
+            CSLayer.BuiltInLayerType.image,
+            CSLayer.BuiltInLayerType.animation,
+            CSLayer.BuiltInLayerType.children]
 
-        let componentGroups = Dictionary(grouping: LonaModule.current.componentFiles(), by: { file in
+        return types.map { layerType in
+            let name = layerType.rawValue
+            let uppercased = name.prefix(1).uppercased() + name.dropFirst()
+            return NSMenuItem(title: uppercased, onClick: {
+                guard let viewController = NSApplication.shared.mainWindow?.contentViewController as? WorkspaceViewController else { return }
+
+                switch layerType {
+                case .view:
+                    viewController.addView()
+                case .text:
+                    viewController.addText()
+                case .image:
+                    viewController.addImage()
+                case .animation:
+                    viewController.addAnimation()
+                case .children:
+                    viewController.addChildren()
+                }
+            })
+        }
+    }
+
+    static func menuItemsForModule(_ module: LonaModule = LonaModule.current) -> [NSMenuItem] {
+        let componentGroups = Dictionary(grouping: module.componentFiles(), by: { file in
             return file.url.deletingLastPathComponent().lastPathComponent
         })
 
@@ -85,12 +81,13 @@ class ComponentMenu: NSMenu {
             return acc
         })
 
-        self.additionalMenuItems = additionalMenuItems
-
-        additionalMenuItems.forEach({ item in
-            self.addItem(item)
-        })
+        return additionalMenuItems
     }
 
-    static var shared: ComponentMenu?
+    static func menuItems() -> [NSMenuItem] {
+        var items = menuItemsForCoreComponents()
+        items.append(NSMenuItem.separator())
+        items.append(contentsOf: menuItemsForModule())
+        return items
+    }
 }

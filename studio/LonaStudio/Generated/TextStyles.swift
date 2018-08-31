@@ -28,4 +28,5 @@ class TextStyles {
     size: 10,
     lineHeight: 12,
     color: #colorLiteral(red: 1, green: 1, blue: 1, alpha: 0.85))
+  public static let sectionTitle = TextStyle(weight: NSFont.Weight.medium, size: 12, lineHeight: 15, color: #colorLiteral(red: 0.329411764706, green: 0.329411764706, blue: 0.329411764706, alpha: 1))
 }
