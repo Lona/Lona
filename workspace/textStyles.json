@@ -97,6 +97,14 @@
       "fontWeight": "bold",
       "lineHeight": 12,
       "color": "rgba(255,255,255,0.85)"
+    },
+    {
+      "id": "sectionTitle",
+      "name": "Section Title",
+      "fontSize": 12,
+      "fontWeight": "500",
+      "lineHeight": 15,
+      "color": "#545454"
     }
   ]
 }

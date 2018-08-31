@@ -50,12 +50,15 @@ public class LayerListHeader: NSBox {
 
     // MARK: Private
 
-    let button = NSSegmentedControl(labels: ["Add Component"], trackingMode: .momentary, target: nil, action: nil)
+    let titleView = NSTextField(labelWithString: "Layers")
+    let button = NSSegmentedControl(labels: ["Add"], trackingMode: .momentary, target: nil, action: nil)
 
     private func setUpViews() {
         boxType = .custom
         borderType = .noBorder
         contentViewMargins = .zero
+
+        titleView.attributedStringValue = TextStyles.sectionTitle.apply(to: "Layers")
 
         button.isEnabled = true
 
@@ -67,16 +70,21 @@ public class LayerListHeader: NSBox {
         }
 
         addSubview(button)
+        addSubview(titleView)
     }
 
     private func setUpConstraints() {
         translatesAutoresizingMaskIntoConstraints = false
         button.translatesAutoresizingMaskIntoConstraints = false
+        titleView.translatesAutoresizingMaskIntoConstraints = false
 
-        topAnchor.constraint(equalTo: button.topAnchor, constant: -10).isActive = true
-        bottomAnchor.constraint(equalTo: button.bottomAnchor, constant: 10).isActive = true
-        leadingAnchor.constraint(equalTo: button.leadingAnchor, constant: -10).isActive = true
-        trailingAnchor.constraint(equalTo: button.trailingAnchor, constant: 10).isActive = true
+        titleView.centerYAnchor.constraint(equalTo: centerYAnchor).isActive = true
+        titleView.leadingAnchor.constraint(equalTo: leadingAnchor, constant: 10).isActive = true
+
+        button.centerYAnchor.constraint(equalTo: centerYAnchor).isActive = true
+        button.topAnchor.constraint(equalTo: topAnchor, constant: 10).isActive = true
+        button.bottomAnchor.constraint(equalTo: bottomAnchor, constant: -10).isActive = true
+        button.trailingAnchor.constraint(equalTo: trailingAnchor, constant: -10).isActive = true
     }
 
     private func update() {
