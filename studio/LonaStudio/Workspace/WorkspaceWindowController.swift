@@ -21,6 +21,8 @@ class WorkspaceWindowController: NSWindowController {
 
         let windowController = storyboard.instantiateController(withIdentifier: windowControllerId) as! WorkspaceWindowController
         windowController.window?.tabbingMode = .preferred
+        windowController.window?.titleVisibility = .hidden
+        windowController.window?.toolbar = WorkspaceToolbar()
         windowController.contentViewController = workspaceViewController
 
         // Connect the document to both the window and view controller
