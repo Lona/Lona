@@ -50,36 +50,20 @@ public class LayerListHeader: NSBox {
 
     // MARK: Private
 
-//    let button = PopupField(frame: .zero, values: ["a", "b"], valueToTitle: ["a": "A", "b": "B"])
-    let button = Button(titleText: "Add Component")
+    let button = NSSegmentedControl(labels: ["Add Component"], trackingMode: .momentary, target: nil, action: nil)
 
     private func setUpViews() {
         boxType = .custom
         borderType = .noBorder
         contentViewMargins = .zero
 
-//        (button.cell as? NSPopUpButtonCell)?.arrowPosition = .noArrow
+        button.isEnabled = true
 
-        button.bezelStyle = .regularSquare
-        button.onClick = {
-            let menu = NSMenu(items: ComponentMenu.menuItemsForModule())
+        let menu = NSMenu(items: ComponentMenu.menuItems())
+        button.setMenu(menu, forSegment: 0)
 
-            guard let event = NSApplication.shared.currentEvent else { return }
-
-            let point = NSPoint(x: self.button.frame.minX - 6, y: self.button.frame.maxY - 3)
-
-            let updatedEvent = NSEvent.mouseEvent(
-                with: .leftMouseDown,
-                location: self.button.convert(point, to: nil),
-                modifierFlags: event.modifierFlags,
-                timestamp: event.timestamp,
-                windowNumber: event.windowNumber,
-                context: nil,
-                eventNumber: event.eventNumber,
-                clickCount: event.clickCount,
-                pressure: event.pressure)
-
-            NSMenu.popUpContextMenu(menu, with: updatedEvent!, for: self.button)
+        if #available(OSX 10.13, *) {
+            button.setShowsMenuIndicator(true, forSegment: 0)
         }
 
         addSubview(button)
