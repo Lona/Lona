@@ -67,6 +67,21 @@ class WorkspaceViewController: NSSplitViewController {
 
     // MARK: Public
 
+    public var activePanes: [WorkspacePane] {
+        get {
+            return WorkspacePane.all.filter {
+                return !(splitViewItem(for: $0)?.isCollapsed ?? true)
+            }
+        }
+        set {
+            WorkspacePane.all.forEach {
+                setVisibility(to: newValue.contains($0), for: $0, animate: true)
+            }
+        }
+    }
+
+    public var onChangeActivePanes: (([WorkspacePane]) -> Void)?
+
     public var document: NSDocument? { didSet { update() } }
 
     // Called from the ComponentMenu
@@ -137,8 +152,32 @@ class WorkspaceViewController: NSSplitViewController {
     // This ViewController can contain a reference.
     private var windowController: NSWindowController?
 
+    private func splitViewItem(for workspacePane: WorkspacePane) -> NSSplitViewItem? {
+        switch workspacePane {
+        case .left:
+            return contentListItem
+        case .right:
+            return sidebarItem
+        case .bottom:
+            return nil
+        }
+    }
+
+    private func setVisibility(to visible: Bool, for pane: WorkspacePane, animate: Bool) {
+        guard let item = splitViewItem(for: pane) else { return }
+
+        if (visible && item.isCollapsed) || (!visible && !item.isCollapsed) {
+            if animate {
+                item.animator().isCollapsed = !visible
+            } else {
+                item.isCollapsed = !visible
+            }
+        }
+    }
+
     override func viewDidAppear() {
         windowController = view.window?.windowController
+        onChangeActivePanes?(activePanes)
     }
 
     override func viewDidDisappear() {
@@ -307,18 +346,20 @@ class WorkspaceViewController: NSSplitViewController {
         }
     }
 
+    private lazy var contentListItem = NSSplitViewItem(contentListWithViewController: fileTreeViewController)
     private lazy var mainItem = NSSplitViewItem(viewController: componentEditorViewController)
+    private lazy var sidebarItem = NSSplitViewItem(viewController: inspectorViewController)
 
     private func setUpLayout() {
         minimumThicknessForInlineSidebars = 180
 
-        let contentListItem = NSSplitViewItem(contentListWithViewController: fileTreeViewController)
+        contentListItem.collapseBehavior = .preferResizingSiblingsWithFixedSplitView
         addSplitViewItem(contentListItem)
 
         mainItem.minimumThickness = 300
         addSplitViewItem(mainItem)
 
-        let sidebarItem = NSSplitViewItem(viewController: inspectorViewController)
+        sidebarItem.collapseBehavior = .preferResizingSiblingsWithFixedSplitView
         sidebarItem.canCollapse = false
         sidebarItem.minimumThickness = 280
         sidebarItem.maximumThickness = 280

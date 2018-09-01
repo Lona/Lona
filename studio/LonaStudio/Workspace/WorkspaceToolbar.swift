@@ -37,6 +37,19 @@ enum WorkspacePane: String {
         }
     }
 
+    init?(index: Int) {
+        switch index {
+        case 0:
+            self = .left
+        case 1:
+            self = .bottom
+        case 2:
+            self = .right
+        default:
+            return nil
+        }
+    }
+
     static let all: [WorkspacePane] = [.left, .bottom, .right]
 }
 
@@ -54,22 +67,15 @@ class WorkspaceToolbar: NSToolbar {
         allowsUserCustomization = false
 
         setUpItems()
+        update()
     }
 
     // MARK: Public
 
-    public var activePanes: [WorkspacePane] = [] {
-        didSet {
-            guard let segmentedControl = paneToggleToolbarItem.view as? NSSegmentedControl else { return }
-
-            WorkspacePane.all.forEach { pane in
-                segmentedControl.setSelected(activePanes.contains(pane), forSegment: pane.index)
-            }
-        }
-    }
+    public var activePanes: [WorkspacePane] = WorkspacePane.all { didSet { update() } }
     public var onChangeActivePanes: (([WorkspacePane]) -> Void)?
 
-    static let identifier = NSToolbar.Identifier(rawValue: "Workspace Toolbar")
+    public static let identifier = NSToolbar.Identifier(rawValue: "Workspace Toolbar")
 
     // MARK: Private
 
@@ -104,6 +110,14 @@ class WorkspaceToolbar: NSToolbar {
 
     private func setUpItems() {
         setUpPaneToggle()
+    }
+
+    private func update() {
+        if let segmentedControl = paneToggleToolbarItem.view as? NSSegmentedControl {
+            WorkspacePane.all.forEach { pane in
+                segmentedControl.setSelected(activePanes.contains(pane), forSegment: pane.index)
+            }
+        }
     }
 
     @objc func handleTogglePane(_ sender: NSSegmentedControl) {
