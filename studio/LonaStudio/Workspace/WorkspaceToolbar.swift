@@ -11,6 +11,7 @@ import Foundation
 
 extension NSToolbarItem.Identifier {
     static let paneToggle = NSToolbarItem.Identifier("Navigation")
+    static let splitterToggle = NSToolbarItem.Identifier("Splitter")
 }
 
 // MARK: - WorkspacePane
@@ -72,6 +73,9 @@ class WorkspaceToolbar: NSToolbar {
 
     // MARK: Public
 
+    public var splitterState: Bool = false { didSet { update() } }
+    public var onChangeSplitterState: ((Bool) -> Void)?
+
     public var activePanes: [WorkspacePane] = WorkspacePane.all { didSet { update() } }
     public var onChangeActivePanes: (([WorkspacePane]) -> Void)?
 
@@ -79,7 +83,26 @@ class WorkspaceToolbar: NSToolbar {
 
     // MARK: Private
 
+    private var splitterToggleItem = NSToolbarItem(itemIdentifier: .splitterToggle)
+
     private var paneToggleToolbarItem = NSToolbarItemGroup(itemIdentifier: .paneToggle)
+
+    private func setUpSplitterToggle() {
+        let segmented = NSSegmentedControl(frame: NSRect(x: 0, y: 0, width: 31 + 4, height: 40))
+        segmented.segmentStyle = .texturedRounded
+        segmented.trackingMode = .selectAny
+        segmented.segmentCount = 1
+        segmented.target = self
+        segmented.action = #selector(handleSplitterPane(_:))
+
+        let icon = NSImage(named: NSImage.Name(rawValue: "icon-pane-splitter")) ?? NSImage()
+        icon.isTemplate = true
+
+        segmented.setImage(icon, forSegment: 0)
+        segmented.setWidth(31, forSegment: WorkspacePane.left.index)
+
+        splitterToggleItem.view = segmented
+    }
 
     private func setUpPaneToggle() {
         let group = paneToggleToolbarItem
@@ -109,6 +132,7 @@ class WorkspaceToolbar: NSToolbar {
     }
 
     private func setUpItems() {
+        setUpSplitterToggle()
         setUpPaneToggle()
     }
 
@@ -118,6 +142,14 @@ class WorkspaceToolbar: NSToolbar {
                 segmentedControl.setSelected(activePanes.contains(pane), forSegment: pane.index)
             }
         }
+
+        if let segmentedControl = splitterToggleItem.view as? NSSegmentedControl {
+            segmentedControl.setSelected(splitterState, forSegment: 0)
+        }
+    }
+
+    @objc func handleSplitterPane(_ sender: NSSegmentedControl) {
+        onChangeSplitterState?(sender.isSelected(forSegment: 0))
     }
 
     @objc func handleTogglePane(_ sender: NSSegmentedControl) {
@@ -133,17 +165,19 @@ class WorkspaceToolbar: NSToolbar {
 
 extension WorkspaceToolbar: NSToolbarDelegate {
     func toolbarDefaultItemIdentifiers(_ toolbar: NSToolbar) -> [NSToolbarItem.Identifier] {
-        return [.flexibleSpace, .paneToggle]
+        return [.flexibleSpace, .splitterToggle, .paneToggle]
     }
 
     func toolbarAllowedItemIdentifiers(_ toolbar: NSToolbar) -> [NSToolbarItem.Identifier] {
-        return [.paneToggle, .flexibleSpace]
+        return [.splitterToggle, .paneToggle, .flexibleSpace, .separator]
     }
 
     func toolbar(_ toolbar: NSToolbar, itemForItemIdentifier itemIdentifier: NSToolbarItem.Identifier, willBeInsertedIntoToolbar flag: Bool) -> NSToolbarItem? {
 
         if itemIdentifier == NSToolbarItem.Identifier.paneToggle {
             return paneToggleToolbarItem
+        } else if itemIdentifier == NSToolbarItem.Identifier.splitterToggle {
+            return splitterToggleItem
         }
 
         return nil
