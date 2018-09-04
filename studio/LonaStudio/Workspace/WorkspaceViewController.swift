@@ -114,6 +114,7 @@ class WorkspaceViewController: NSSplitViewController {
         return NSViewController(view: fileTree)
     }()
 
+    private lazy var editorViewController = EditorViewController()
     private lazy var componentEditorViewController = ComponentEditorViewController()
     private lazy var codeEditorViewController = CodeEditorViewController()
 
@@ -359,7 +360,7 @@ class WorkspaceViewController: NSSplitViewController {
     }
 
     private lazy var contentListItem = NSSplitViewItem(contentListWithViewController: fileTreeViewController)
-    private lazy var mainItem = NSSplitViewItem(viewController: componentEditorViewController)
+    private lazy var mainItem = NSSplitViewItem(viewController: editorViewController)
     private lazy var codeItem = NSSplitViewItem(viewController: codeEditorViewController)
     private lazy var sidebarItem = NSSplitViewItem(viewController: inspectorViewController)
 
@@ -386,21 +387,16 @@ class WorkspaceViewController: NSSplitViewController {
 
     private func update() {
         inspectorView.content = inspectedContent
+        editorViewController.document = document
         codeEditorViewController.document = document
 
         guard let document = document else {
-            removeSplitViewItem(mainItem)
-            mainItem.viewController = NSViewController(view: NSView())
-            insertSplitViewItem(mainItem, at: 1)
+            editorViewController.contentView = nil
             return
         }
 
         if document is ComponentDocument {
-            if mainItem.viewController != componentEditorViewController {
-                removeSplitViewItem(mainItem)
-                mainItem.viewController = componentEditorViewController
-                insertSplitViewItem(mainItem, at: 1)
-            }
+            editorViewController.contentView = componentEditorViewController.view
 
             componentEditorViewController.component = component
 
@@ -422,17 +418,11 @@ class WorkspaceViewController: NSSplitViewController {
             }
         } else if let document = document as? JSONDocument {
             if let content = document.content, case .colors(let colors) = content {
-                if mainItem.viewController != colorEditorViewController {
-                    removeSplitViewItem(mainItem)
-                    mainItem.viewController = colorEditorViewController
-                    insertSplitViewItem(mainItem, at: 1)
-                }
+                editorViewController.contentView = colorEditorViewController.view
 
                 colorEditorViewController.colors = colors
             } else {
-                removeSplitViewItem(mainItem)
-                mainItem.viewController = NSViewController(view: NSView())
-                insertSplitViewItem(mainItem, at: 1)
+                editorViewController.contentView = nil
                 return
             }
 
