@@ -75,12 +75,26 @@ class CodeEditorViewController: NSViewController {
                     onSuccess: { result in
                         guard let result = result else { return }
                         DispatchQueue.main.async {
+                            // There's a race condition here where the document may have changed
+                            // by the time this completes, and the text will be set for the wrong document.
+                            // Make sure we're looking at the same document before setting the text
+                            guard document == self.document else { return }
                             self.contentView.textValue = result
                         }
                 }, onFailure: { code, message in
                     Swift.print("Failed", code, message as Any)
                 })
+            } else {
+                contentView.titleText = ""
+                contentView.subtitleText = ""
+                contentView.fileIcon = NSImage()
+                contentView.textValue = ""
             }
+        } else {
+            contentView.titleText = ""
+            contentView.subtitleText = "No output"
+            contentView.fileIcon = NSImage()
+            contentView.textValue = ""
         }
     }
 }
