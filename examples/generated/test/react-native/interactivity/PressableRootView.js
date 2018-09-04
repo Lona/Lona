@@ -14,17 +14,17 @@ export default class PressableRootView extends React.Component {
     Outer$onPress = this.props.onPressOuter
     Inner$onPress = this.props.onPressInner
     if (Outer$hovered) {
-      Outer$backgroundColor = "grey100"
+      Outer$backgroundColor = colors.grey100
     }
     if (Outer$pressed) {
-      Outer$backgroundColor = "grey300"
+      Outer$backgroundColor = colors.grey300
     }
     if (Inner$hovered) {
-      Inner$backgroundColor = "blue300"
+      Inner$backgroundColor = colors.blue300
       InnerText$text = "Hovered"
     }
     if (Inner$pressed) {
-      Inner$backgroundColor = "blue800"
+      Inner$backgroundColor = colors.blue800
       InnerText$text = "Pressed"
     }
     if (Inner$hovered) {

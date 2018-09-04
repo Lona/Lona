@@ -8,7 +8,7 @@ let styleNameKey = key =>
   | _ => key |> ParameterKey.toString
   };
 
-let createStyleAttributeAST = (framework: JavaScriptOptions.framework, _colors, _textStyles, layer: Types.layer, styles) =>
+let createStyleAttributeAST = (framework: JavaScriptOptions.framework, colors, _textStyles, layer: Types.layer, styles) =>
   switch framework {
   | JavaScriptOptions.ReactDOM =>
       Ast.(
@@ -26,7 +26,7 @@ let createStyleAttributeAST = (framework: JavaScriptOptions.framework, _colors, 
                   Layer.mapBindings(((key, value)) =>
                     Property({
                       "key": Identifier([key |> styleNameKey]),
-                      "value": JavaScriptLogic.logicValueToJavaScriptAST(value)
+                      "value": JavaScriptLogic.logicValueToJavaScriptAST(colors, value)
                     })
                   ) @@
                   styles
@@ -49,7 +49,7 @@ let createStyleAttributeAST = (framework: JavaScriptOptions.framework, _colors, 
                 Layer.mapBindings(((key, value)) =>
                   Property({
                     "key": Identifier([key |> styleNameKey]),
-                    "value": JavaScriptLogic.logicValueToJavaScriptAST(value)
+                    "value": JavaScriptLogic.logicValueToJavaScriptAST(colors, value)
                   })
                 ) @@
                 styles
@@ -133,7 +133,7 @@ let rec layerToJavaScriptAST =
                 "callee": Identifier(["require"]),
                 "arguments": [Literal(pathValue)]
               });
-            | _ => JavaScriptLogic.logicValueToJavaScriptAST(value)
+            | _ => JavaScriptLogic.logicValueToJavaScriptAST(colors, value)
             };
 
          JSXAttribute({"name": key, "value": attributeValue});
@@ -151,7 +151,7 @@ let rec layerToJavaScriptAST =
     switch (layer.typeName, dynamicOrStaticValue(Text)) {
     | (Types.Text, Some(textValue)) => [
         JSXExpressionContainer(
-          JavaScriptLogic.logicValueToJavaScriptAST(textValue)
+          JavaScriptLogic.logicValueToJavaScriptAST(colors, textValue)
         )
       ]
     | _ =>
@@ -340,7 +340,7 @@ let generate =
     |> layerToJavaScriptAST(options.framework, colors, textStyles, assignments, getAssetPath);
   let styleSheetAST =
     rootLayer |> toJavaScriptStyleSheetAST(options.framework, colors);
-  let logicAST = logic |> JavaScriptLogic.toJavaScriptAST |> Ast.optimize;
+  let logicAST = logic |> JavaScriptLogic.toJavaScriptAST(options.framework, colors) |> Ast.optimize;
   let {absolute, relative} =
     rootLayer |> importComponents(options.framework, getComponentFile);
   Ast.(

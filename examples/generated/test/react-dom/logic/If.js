@@ -7,7 +7,7 @@ export default class If extends React.Component {
   render() {
     let View$backgroundColor
     if (this.props.enabled) {
-      View$backgroundColor = "red500"
+      View$backgroundColor = colors.red500
     }
     return (
       <div
