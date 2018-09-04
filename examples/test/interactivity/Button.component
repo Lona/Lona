@@ -21,9 +21,18 @@
   ],
   "examples" : [
     {
+      "id" : "Default",
       "name" : "Default",
       "params" : {
-        "label" : "Test"
+        "label" : "Primary Button"
+      }
+    },
+    {
+      "id" : "Secondary",
+      "name" : "Secondary",
+      "params" : {
+        "label" : "Secondary Button",
+        "secondary" : true
       }
     }
   ],
@@ -123,6 +132,44 @@
         "type" : "BinExpr"
       },
       "type" : "IfExpr"
+    },
+    {
+      "body" : [
+        {
+          "assignee" : {
+            "type" : "LitExpr",
+            "value" : {
+              "data" : "lightblue100",
+              "type" : "Color"
+            }
+          },
+          "content" : [
+            "layers",
+            "View",
+            "backgroundColor"
+          ],
+          "type" : "AssignExpr"
+        }
+      ],
+      "condition" : {
+        "left" : [
+          "parameters",
+          "secondary"
+        ],
+        "op" : "==",
+        "right" : {
+          "type" : "LitExpr",
+          "value" : {
+            "data" : {
+              "case" : "Some",
+              "data" : true
+            },
+            "type" : "Boolean?"
+          }
+        },
+        "type" : "BinExpr"
+      },
+      "type" : "IfExpr"
     }
   ],
   "params" : [
@@ -135,6 +182,14 @@
       "type" : {
         "name" : "Function"
       }
+    },
+    {
+      "defaultValue" : {
+        "data" : true,
+        "type" : "Boolean"
+      },
+      "name" : "secondary",
+      "type" : "Boolean"
     }
   ],
   "root" : {
