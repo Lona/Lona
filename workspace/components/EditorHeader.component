@@ -1,0 +1,145 @@
+{
+  "devices" : [
+    {
+      "height" : 0,
+      "heightMode" : "At Least",
+      "name" : "iPhone SE",
+      "width" : 320
+    }
+  ],
+  "examples" : [
+    {
+      "id" : "Default",
+      "name" : "Default",
+      "params" : {
+
+      }
+    }
+  ],
+  "logic" : [
+    {
+      "assignee" : [
+        "layers",
+        "Divider",
+        "backgroundColor"
+      ],
+      "content" : [
+        "parameters",
+        "dividerColor"
+      ],
+      "type" : "AssignExpr"
+    },
+    {
+      "assignee" : [
+        "layers",
+        "Title",
+        "text"
+      ],
+      "content" : [
+        "parameters",
+        "titleText"
+      ],
+      "type" : "AssignExpr"
+    },
+    {
+      "assignee" : [
+        "layers",
+        "Subtitle",
+        "text"
+      ],
+      "content" : [
+        "parameters",
+        "subtitleText"
+      ],
+      "type" : "AssignExpr"
+    },
+    {
+      "assignee" : [
+        "layers",
+        "Image",
+        "image"
+      ],
+      "content" : [
+        "parameters",
+        "fileIcon"
+      ],
+      "type" : "AssignExpr"
+    }
+  ],
+  "params" : [
+    {
+      "name" : "titleText",
+      "type" : "String"
+    },
+    {
+      "name" : "subtitleText",
+      "type" : "String"
+    },
+    {
+      "name" : "dividerColor",
+      "type" : "Color"
+    },
+    {
+      "name" : "fileIcon",
+      "type" : "URL"
+    }
+  ],
+  "root" : {
+    "children" : [
+      {
+        "children" : [
+          {
+            "id" : "Image",
+            "params" : {
+              "height" : 16,
+              "marginRight" : 4,
+              "width" : 16
+            },
+            "type" : "Lona:Image"
+          },
+          {
+            "id" : "Title",
+            "params" : {
+              "font" : "regular",
+              "text" : "Title"
+            },
+            "type" : "Lona:Text"
+          },
+          {
+            "id" : "Subtitle",
+            "params" : {
+              "font" : "regularDisabled",
+              "text" : " — Subtitle"
+            },
+            "type" : "Lona:Text"
+          }
+        ],
+        "id" : "Inner",
+        "params" : {
+          "alignItems" : "center",
+          "flex" : 1,
+          "flexDirection" : "row",
+          "justifyContent" : "flex-start"
+        },
+        "type" : "Lona:View"
+      },
+      {
+        "id" : "Divider",
+        "params" : {
+          "alignSelf" : "stretch",
+          "backgroundColor" : "#D8D8D8",
+          "height" : 1
+        },
+        "type" : "Lona:View"
+      }
+    ],
+    "id" : "Container",
+    "params" : {
+      "alignItems" : "center",
+      "alignSelf" : "stretch",
+      "backgroundColor" : "headerBackground",
+      "height" : 38
+    },
+    "type" : "Lona:View"
+  }
+}

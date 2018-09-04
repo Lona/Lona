@@ -19,6 +19,12 @@
       "value" : "rgba(0,0,0,0.1)"
     },
     {
+      "comment" : "Should be rgba(216,216,216,0.25) on white",
+      "id" : "headerBackground",
+      "name" : "Header Background",
+      "value" : "#F5F5F5"
+    },
+    {
       "comment" : "",
       "id" : "red50",
       "name" : "Red 50",

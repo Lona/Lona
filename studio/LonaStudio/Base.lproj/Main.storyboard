@@ -773,12 +773,6 @@
                         <rect key="contentRect" x="183" y="1147" width="1000" height="640"/>
                         <rect key="screenRect" x="0.0" y="0.0" width="2560" height="1417"/>
                         <value key="minSize" type="size" width="1000" height="640"/>
-                        <toolbar key="toolbar" implicitIdentifier="D6C7C4C5-C6B7-42C1-838D-12172F5225A4" autosavesConfiguration="NO" displayMode="iconOnly" sizeMode="regular" id="6EW-82-lVR">
-                            <allowedToolbarItems>
-                                <toolbarItem implicitItemIdentifier="NSToolbarFlexibleSpaceItem" id="4aI-4U-ixo"/>
-                            </allowedToolbarItems>
-                            <defaultToolbarItems/>
-                        </toolbar>
                         <connections>
                             <outlet property="delegate" destination="jGA-0Y-lOj" id="neQ-vi-PT1"/>
                         </connections>

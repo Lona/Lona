@@ -67,6 +67,33 @@ class WorkspaceViewController: NSSplitViewController {
 
     // MARK: Public
 
+    // TODO: Actually remove this splitViewItem when it isn't used so that the divider
+    // doesn't show up on the edge of the screen.
+    public var codeViewVisible: Bool {
+        get {
+            return !codeItem.isCollapsed
+        }
+        set {
+            codeItem.isCollapsed = !newValue
+        }
+    }
+    public var onChangeCodeViewVisible: ((Bool) -> Void)?
+
+    public var activePanes: [WorkspacePane] {
+        get {
+            return WorkspacePane.all.filter {
+                return !(splitViewItem(for: $0)?.isCollapsed ?? true)
+            }
+        }
+        set {
+            WorkspacePane.all.forEach {
+                setVisibility(to: newValue.contains($0), for: $0, animate: true)
+            }
+        }
+    }
+
+    public var onChangeActivePanes: (([WorkspacePane]) -> Void)?
+
     public var document: NSDocument? { didSet { update() } }
 
     // Called from the ComponentMenu
@@ -89,7 +116,9 @@ class WorkspaceViewController: NSSplitViewController {
         return NSViewController(view: fileTree)
     }()
 
+    private lazy var editorViewController = EditorViewController()
     private lazy var componentEditorViewController = ComponentEditorViewController()
+    private lazy var codeEditorViewController = CodeEditorViewController()
 
     private lazy var colorEditorViewController: ColorEditorViewController = {
         let controller = ColorEditorViewController()
@@ -137,8 +166,33 @@ class WorkspaceViewController: NSSplitViewController {
     // This ViewController can contain a reference.
     private var windowController: NSWindowController?
 
+    private func splitViewItem(for workspacePane: WorkspacePane) -> NSSplitViewItem? {
+        switch workspacePane {
+        case .left:
+            return contentListItem
+        case .right:
+            return sidebarItem
+        case .bottom:
+            return nil
+        }
+    }
+
+    private func setVisibility(to visible: Bool, for pane: WorkspacePane, animate: Bool) {
+        guard let item = splitViewItem(for: pane) else { return }
+
+        if (visible && item.isCollapsed) || (!visible && !item.isCollapsed) {
+            if animate {
+                item.animator().isCollapsed = !visible
+            } else {
+                item.isCollapsed = !visible
+            }
+        }
+    }
+
     override func viewDidAppear() {
         windowController = view.window?.windowController
+        onChangeActivePanes?(activePanes)
+        onChangeCodeViewVisible?(codeViewVisible)
     }
 
     override func viewDidDisappear() {
@@ -307,18 +361,26 @@ class WorkspaceViewController: NSSplitViewController {
         }
     }
 
-    private lazy var mainItem = NSSplitViewItem(viewController: componentEditorViewController)
+    private lazy var contentListItem = NSSplitViewItem(contentListWithViewController: fileTreeViewController)
+    private lazy var mainItem = NSSplitViewItem(viewController: editorViewController)
+    private lazy var codeItem = NSSplitViewItem(viewController: codeEditorViewController)
+    private lazy var sidebarItem = NSSplitViewItem(viewController: inspectorViewController)
 
     private func setUpLayout() {
         minimumThicknessForInlineSidebars = 180
 
-        let contentListItem = NSSplitViewItem(contentListWithViewController: fileTreeViewController)
+        contentListItem.collapseBehavior = .preferResizingSiblingsWithFixedSplitView
         addSplitViewItem(contentListItem)
 
         mainItem.minimumThickness = 300
+        mainItem.preferredThicknessFraction = 0.5
         addSplitViewItem(mainItem)
 
-        let sidebarItem = NSSplitViewItem(viewController: inspectorViewController)
+        codeItem.minimumThickness = 180
+        codeItem.preferredThicknessFraction = 0.5
+        addSplitViewItem(codeItem)
+
+        sidebarItem.collapseBehavior = .preferResizingSiblingsWithFixedSplitView
         sidebarItem.canCollapse = false
         sidebarItem.minimumThickness = 280
         sidebarItem.maximumThickness = 280
@@ -327,20 +389,16 @@ class WorkspaceViewController: NSSplitViewController {
 
     private func update() {
         inspectorView.content = inspectedContent
+        editorViewController.document = document
+        codeEditorViewController.document = document
 
         guard let document = document else {
-            removeSplitViewItem(mainItem)
-            mainItem.viewController = NSViewController(view: NSView())
-            insertSplitViewItem(mainItem, at: 1)
+            editorViewController.contentView = nil
             return
         }
 
         if document is ComponentDocument {
-            if mainItem.viewController != componentEditorViewController {
-                removeSplitViewItem(mainItem)
-                mainItem.viewController = componentEditorViewController
-                insertSplitViewItem(mainItem, at: 1)
-            }
+            editorViewController.contentView = componentEditorViewController.view
 
             componentEditorViewController.component = component
 
@@ -362,17 +420,11 @@ class WorkspaceViewController: NSSplitViewController {
             }
         } else if let document = document as? JSONDocument {
             if let content = document.content, case .colors(let colors) = content {
-                if mainItem.viewController != colorEditorViewController {
-                    removeSplitViewItem(mainItem)
-                    mainItem.viewController = colorEditorViewController
-                    insertSplitViewItem(mainItem, at: 1)
-                }
+                editorViewController.contentView = colorEditorViewController.view
 
                 colorEditorViewController.colors = colors
             } else {
-                removeSplitViewItem(mainItem)
-                mainItem.viewController = NSViewController(view: NSView())
-                insertSplitViewItem(mainItem, at: 1)
+                editorViewController.contentView = nil
                 return
             }
 

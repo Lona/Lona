@@ -21,6 +21,11 @@ func preferencesDirectory() -> URL {
 }
 
 class CSUserPreferences: CSPreferencesFile {
+
+    enum Keys: String {
+        case compilerPath
+    }
+
     static var url: URL {
         return preferencesDirectory().appendingPathComponent(".lonastudio")
     }
@@ -36,6 +41,31 @@ class CSUserPreferences: CSPreferencesFile {
         set {
             CSUserPreferences.data["workspacePath"] = CSData.String(newValue.path)
             CSUserPreferences.save()
+        }
+    }
+
+    static let optionalURLType = CSURLType.makeOptional()
+
+    static var compilerURL: URL? {
+        if let string = compilerPathValue.data.get(key: "data").string,
+            let url = URL(string: string)?.absoluteURLForWorkspaceURL() {
+            return url
+        }
+        return nil
+    }
+
+    static var compilerPathValue: CSValue {
+        get {
+            if let path = CSUserPreferences.data[Keys.compilerPath.rawValue] {
+                return CSValue(type: optionalURLType, data: CSValue.expand(type: optionalURLType, data: path))
+            } else {
+                return CSUnitValue.wrap(in: optionalURLType, tagged: "None")
+            }
+        }
+        set {
+            CSUserPreferences.data[Keys.compilerPath.rawValue] = newValue == CSUnitValue
+                ? nil
+                : CSValue.compact(type: optionalURLType, data: newValue.data)
         }
     }
 }
