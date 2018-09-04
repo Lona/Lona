@@ -11,10 +11,10 @@ export default class Button extends React.Component {
     Text$text = this.props.label
     View$onPress = this.props.onTap
     if (View$hovered) {
-      View$backgroundColor = "blue200"
+      View$backgroundColor = colors.blue200
     }
     if (View$pressed) {
-      View$backgroundColor = "blue50"
+      View$backgroundColor = colors.blue50
     }
     return (
       <div
