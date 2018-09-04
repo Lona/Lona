@@ -108,7 +108,7 @@
           {
             "id" : "Subtitle",
             "params" : {
-              "font" : "regularMuted",
+              "font" : "regularDisabled",
               "text" : " — Subtitle"
             },
             "type" : "Lona:Text"

@@ -39,39 +39,43 @@ class CodeEditorViewController: NSViewController {
 
     // MARK: Private
 
-    private let contentView = NSTextField(frame: .zero)
+    private var fileExtension = "js"
+
+    private var generatedFilename: String {
+        if let fileURL = document?.fileURL {
+            return fileURL.deletingPathExtension().lastPathComponent + "." + fileExtension
+        } else {
+            return "Untitled"
+        }
+    }
+
+    private let contentView = CodeEditor()
 
     private func setUpViews() {
-        contentView.focusRingType = .none
-        contentView.isBezeled = false
-        contentView.isEditable = false
-        contentView.isSelectable = true
-        contentView.font = TextStyles.monospacedMicro.nsFont
-
         self.view = contentView
     }
 
     private func setUpConstraints() {
         contentView.translatesAutoresizingMaskIntoConstraints = false
-        contentView.setContentHuggingPriority(.defaultLow, for: .vertical)
-        contentView.setContentHuggingPriority(.defaultLow, for: .horizontal)
-        contentView.setContentCompressionResistancePriority(.defaultLow, for: .vertical)
-        contentView.setContentCompressionResistancePriority(.defaultLow, for: .horizontal)
     }
 
     private func update() {
         if let document = document as? JSONDocument {
+            contentView.titleText = generatedFilename
+            contentView.subtitleText = " — Generated output"
+            contentView.fileIcon = NSWorkspace.shared.icon(forFileType: fileExtension)
+
             if let content = document.content, case .colors = content {
                 guard let compilerPath = CSUserPreferences.compilerURL?.path else { return }
                 guard let data = try? document.data(ofType: "JSONDocument") else { return }
 
                 LonaNode.run(
-                    arguments: [compilerPath, "colors", "swift"],
+                    arguments: [compilerPath, "colors", fileExtension],
                     inputData: data,
                     onSuccess: { result in
                         guard let result = result else { return }
                         DispatchQueue.main.async {
-                            self.contentView.stringValue = result
+                            self.contentView.textValue = result
                         }
                 }, onFailure: { code, message in
                     Swift.print("Failed", code, message as Any)

@@ -13,6 +13,8 @@ class TextStyles {
   public static let small = TextStyle(size: 11, lineHeight: 13, color: Colors.black)
   public static let regularMuted = TextStyle(size: 13, lineHeight: 15, color: #colorLiteral(red: 0.509803921569, green: 0.509803921569, blue: 0.509803921569, alpha: 1))
   public static let smallMuted = TextStyle(size: 11, lineHeight: 13, color: #colorLiteral(red: 0.509803921569, green: 0.509803921569, blue: 0.509803921569, alpha: 1))
+  public static let regularDisabled = TextStyle(size: 13, lineHeight: 15, color: #colorLiteral(red: 0.666666666667, green: 0.666666666667, blue: 0.666666666667, alpha: 1))
+  public static let smallDisabled = TextStyle(size: 11, lineHeight: 13, color: #colorLiteral(red: 0.666666666667, green: 0.666666666667, blue: 0.666666666667, alpha: 1))
   public static let largeInverse = TextStyle(size: 15, lineHeight: 17, color: Colors.white)
   public static let regularInverse = TextStyle(size: 13, lineHeight: 15, color: Colors.white)
   public static let smallInverse = TextStyle(size: 11, lineHeight: 13, color: Colors.white)

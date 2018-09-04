@@ -67,6 +67,8 @@ class WorkspaceViewController: NSSplitViewController {
 
     // MARK: Public
 
+    // TODO: Actually remove this splitViewItem when it isn't used so that the divider
+    // doesn't show up on the edge of the screen.
     public var codeViewVisible: Bool {
         get {
             return !codeItem.isCollapsed

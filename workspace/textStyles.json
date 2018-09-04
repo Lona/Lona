@@ -60,6 +60,20 @@
       "color": "#828282"
     },
     {
+      "id": "regularDisabled",
+      "name": "Regular Disabled",
+      "fontSize": 13,
+      "lineHeight": 15,
+      "color": "#AAAAAA"
+    },
+    {
+      "id": "smallDisabled",
+      "name": "Small Disabled",
+      "fontSize": 11,
+      "lineHeight": 13,
+      "color": "#AAAAAA"
+    },
+    {
       "id": "largeInverse",
       "name": "Large Inverse",
       "fontSize": 15,

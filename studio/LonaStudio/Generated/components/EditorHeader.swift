@@ -45,7 +45,7 @@ public class EditorHeader: NSBox {
   private var dividerView = NSBox()
 
   private var titleViewTextStyle = TextStyles.regular
-  private var subtitleViewTextStyle = TextStyles.regularMuted
+  private var subtitleViewTextStyle = TextStyles.regularDisabled
 
   private var topPadding: CGFloat = 0
   private var trailingPadding: CGFloat = 0
@@ -123,7 +123,7 @@ public class EditorHeader: NSBox {
     fillColor = Colors.headerBackground
     titleViewTextStyle = TextStyles.regular
     titleView.attributedStringValue = titleViewTextStyle.apply(to: titleView.attributedStringValue)
-    subtitleViewTextStyle = TextStyles.regularMuted
+    subtitleViewTextStyle = TextStyles.regularDisabled
     subtitleView.attributedStringValue = subtitleViewTextStyle.apply(to: subtitleView.attributedStringValue)
   }
 
