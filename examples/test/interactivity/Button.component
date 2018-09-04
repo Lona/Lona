@@ -136,18 +136,18 @@
     {
       "body" : [
         {
-          "assignee" : {
+          "assignee" : [
+            "layers",
+            "View",
+            "backgroundColor"
+          ],
+          "content" : {
             "type" : "LitExpr",
             "value" : {
               "data" : "lightblue100",
               "type" : "Color"
             }
           },
-          "content" : [
-            "layers",
-            "View",
-            "backgroundColor"
-          ],
           "type" : "AssignExpr"
         }
       ],
@@ -160,11 +160,8 @@
         "right" : {
           "type" : "LitExpr",
           "value" : {
-            "data" : {
-              "case" : "Some",
-              "data" : true
-            },
-            "type" : "Boolean?"
+            "data" : true,
+            "type" : "Boolean"
           }
         },
         "type" : "BinExpr"
@@ -184,10 +181,6 @@
       }
     },
     {
-      "defaultValue" : {
-        "data" : true,
-        "type" : "Boolean"
-      },
       "name" : "secondary",
       "type" : "Boolean"
     }

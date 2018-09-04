@@ -17,6 +17,9 @@ export default class Button extends React.Component {
     if (View$pressed) {
       View$backgroundColor = colors.blue50
     }
+    if (this.props.secondary) {
+      View$backgroundColor = colors.lightblue100
+    }
     return (
       <View
         style={[ styles.view, { backgroundColor: View$backgroundColor } ]}
