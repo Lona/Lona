@@ -14,8 +14,8 @@ enum LonaNode {
     // MARK: Public
 
     static func run(
-        scriptPath: String,
-        inputData: CSData? = nil,
+        arguments: [String],
+        inputData: Data? = nil,
         currentDirectoryPath: String? = nil,
         onSuccess: ((String?) -> Void)? = nil,
         onFailure: ((Int, String?) -> Void)? = nil) {
@@ -33,7 +33,7 @@ enum LonaNode {
 
             // Set the task parameters
             task.launchPath = nodePath
-            task.arguments = [scriptPath]
+            task.arguments = arguments
 
             if let currentDirectoryPath = currentDirectoryPath {
                 task.currentDirectoryPath = currentDirectoryPath
@@ -48,8 +48,8 @@ enum LonaNode {
             // Launch the task
             task.launch()
 
-            if let inputData = inputData, let data = inputData.toData() {
-                stdin.fileHandleForWriting.write(data)
+            if let inputData = inputData {
+                stdin.fileHandleForWriting.write(inputData)
             }
 
             stdin.fileHandleForWriting.closeFile()

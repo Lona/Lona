@@ -67,6 +67,16 @@ class WorkspaceViewController: NSSplitViewController {
 
     // MARK: Public
 
+    public var codeViewVisible: Bool {
+        get {
+            return !codeItem.isCollapsed
+        }
+        set {
+            codeItem.isCollapsed = !newValue
+        }
+    }
+    public var onChangeCodeViewVisible: ((Bool) -> Void)?
+
     public var activePanes: [WorkspacePane] {
         get {
             return WorkspacePane.all.filter {
@@ -105,6 +115,7 @@ class WorkspaceViewController: NSSplitViewController {
     }()
 
     private lazy var componentEditorViewController = ComponentEditorViewController()
+    private lazy var codeEditorViewController = CodeEditorViewController()
 
     private lazy var colorEditorViewController: ColorEditorViewController = {
         let controller = ColorEditorViewController()
@@ -178,6 +189,7 @@ class WorkspaceViewController: NSSplitViewController {
     override func viewDidAppear() {
         windowController = view.window?.windowController
         onChangeActivePanes?(activePanes)
+        onChangeCodeViewVisible?(codeViewVisible)
     }
 
     override func viewDidDisappear() {
@@ -348,6 +360,7 @@ class WorkspaceViewController: NSSplitViewController {
 
     private lazy var contentListItem = NSSplitViewItem(contentListWithViewController: fileTreeViewController)
     private lazy var mainItem = NSSplitViewItem(viewController: componentEditorViewController)
+    private lazy var codeItem = NSSplitViewItem(viewController: codeEditorViewController)
     private lazy var sidebarItem = NSSplitViewItem(viewController: inspectorViewController)
 
     private func setUpLayout() {
@@ -357,7 +370,12 @@ class WorkspaceViewController: NSSplitViewController {
         addSplitViewItem(contentListItem)
 
         mainItem.minimumThickness = 300
+        mainItem.preferredThicknessFraction = 0.5
         addSplitViewItem(mainItem)
+
+        codeItem.minimumThickness = 180
+        codeItem.preferredThicknessFraction = 0.5
+        addSplitViewItem(codeItem)
 
         sidebarItem.collapseBehavior = .preferResizingSiblingsWithFixedSplitView
         sidebarItem.canCollapse = false
@@ -368,6 +386,7 @@ class WorkspaceViewController: NSSplitViewController {
 
     private func update() {
         inspectorView.content = inspectedContent
+        codeEditorViewController.document = document
 
         guard let document = document else {
             removeSplitViewItem(mainItem)

@@ -23,12 +23,20 @@ class WorkspaceWindowController: NSWindowController {
 
         let toolbar = WorkspaceToolbar()
 
-        workspaceViewController.onChangeActivePanes = { activePanes in
-            toolbar.activePanes = activePanes
+        toolbar.onChangeSplitterState = { active in
+            workspaceViewController.codeViewVisible = active
         }
 
         toolbar.onChangeActivePanes = { activePanes in
             workspaceViewController.activePanes = activePanes
+        }
+
+        workspaceViewController.onChangeCodeViewVisible = { active in
+            toolbar.splitterState = active
+        }
+
+        workspaceViewController.onChangeActivePanes = { activePanes in
+            toolbar.activePanes = activePanes
         }
 
         windowController.window?.tabbingMode = .preferred

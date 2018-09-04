@@ -44,7 +44,7 @@ class LonaPlugins {
             guard let config = config else { return }
 
             LonaNode.run(
-                scriptPath: url.appendingPathComponent(config.main).path,
+                arguments: [url.appendingPathComponent(config.main).path],
                 currentDirectoryPath: url.path,
                 onSuccess: { output in
                     Swift.print("Output", output ?? "")
