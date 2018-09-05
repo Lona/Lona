@@ -7,8 +7,9 @@ public class Button: NSBox {
 
   // MARK: Lifecycle
 
-  public init(label: String) {
+  public init(label: String, secondary: Bool) {
     self.label = label
+    self.secondary = secondary
 
     super.init(frame: .zero)
 
@@ -21,7 +22,7 @@ public class Button: NSBox {
   }
 
   public convenience init() {
-    self.init(label: "")
+    self.init(label: "", secondary: false)
   }
 
   public required init?(coder aDecoder: NSCoder) {
@@ -36,6 +37,7 @@ public class Button: NSBox {
 
   public var label: String { didSet { update() } }
   public var onTap: (() -> Void)? { didSet { update() } }
+  public var secondary: Bool { didSet { update() } }
 
   // MARK: Private
 
@@ -134,6 +136,9 @@ public class Button: NSBox {
     }
     if pressed {
       fillColor = Colors.blue50
+    }
+    if secondary {
+      fillColor = Colors.lightblue100
     }
   }
 

@@ -7,8 +7,9 @@ public class Button: UIView {
 
   // MARK: Lifecycle
 
-  public init(label: String) {
+  public init(label: String, secondary: Bool) {
     self.label = label
+    self.secondary = secondary
 
     super.init(frame: .zero)
 
@@ -19,7 +20,7 @@ public class Button: UIView {
   }
 
   public convenience init() {
-    self.init(label: "")
+    self.init(label: "", secondary: false)
   }
 
   public required init?(coder aDecoder: NSCoder) {
@@ -30,6 +31,7 @@ public class Button: UIView {
 
   public var label: String { didSet { update() } }
   public var onTap: (() -> Void)? { didSet { update() } }
+  public var secondary: Bool { didSet { update() } }
 
   // MARK: Private
 
@@ -120,6 +122,9 @@ public class Button: UIView {
     }
     if pressed {
       backgroundColor = Colors.blue50
+    }
+    if secondary {
+      backgroundColor = Colors.lightblue100
     }
   }
 }
