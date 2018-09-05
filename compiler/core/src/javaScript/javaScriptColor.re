@@ -8,8 +8,9 @@ let render = colors => {
         "value": Literal(LonaValue.string(color.value))
       });
     switch color.comment {
+    | None
+    | Some("") => property
     | Some(comment) => LineEndComment({"comment": comment, "line": property})
-    | None => property
     };
   };
   let doc =
