@@ -18,7 +18,7 @@ Each shadow within the `"shadows"` array has the following attributes:
 |`blur`|`number`|No|The blur radius of the shadow, in pixels.|
 |`color`|[`Color`](./colors.md#color-type)|No|The CSS color value or the `id` of the color defined in `colors.json`.|
 
-The optional `"defaultShadowName"` determines the style of newly-created shadow within Lona Studio. This value should be the `id` of one of the shadows in the `"shadow"` array. This value will not be used in code.
+The optional `"defaultShadowName"` determines the style of newly-created shadow within Lona Studio. This value should be the `id` of one of the shadows in the `"shadows"` array. This value will not be used in code.
 
 ### Sample File
 
