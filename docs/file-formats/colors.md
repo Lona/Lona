@@ -16,7 +16,6 @@ Each color has the following attributes:
 |`comment`|`string`|No|An optional description of the color, explaining contextual information, such as how it should be used. This may be displayed in the Lona Studio UI. This will not appear in the generated code. |
 
 
-
 ### Color Type
 
 Colors may be referenced from other files by their `id` (a `string`). This helps us achieve a single source of truth for colors.
@@ -25,7 +24,7 @@ Colors may also appear _inline_ in other files (where a CSS color value is given
 
 ### Sample File
 
-`cscolors.json`
+`colors.json`
 
 ```json
 {

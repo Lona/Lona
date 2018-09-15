@@ -12,6 +12,6 @@ Lona additionally consumes a variety of other file formats for building design s
 |---|---|
 |[Colors](./colors.md)|`colors.json`|
 |[Text Styles](./text-styles.md)|`textStyles.json`|
-|Gradients|`gradients.json`|
-|Shadows|`shadows.json`|
+|[Gradients](./gradients.md)|`gradients.json`|
+|[Shadows](./shadows.md)|`shadows.json`|
 |Types|`types.json`|
