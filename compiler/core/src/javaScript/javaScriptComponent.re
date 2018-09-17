@@ -377,7 +377,7 @@ let generate =
   let rootLayer = json |> Decode.Component.rootLayer(getComponent);
   let logic = json |> Decode.Component.logic
 
-  let variableDeclarations = logic |> Logic.getVariableDeclarations;
+  let variableDeclarations = logic |> Logic.buildVariableDeclarations;
 
   let assignments = Layer.parameterAssignmentsFromLogic(rootLayer, logic);
 

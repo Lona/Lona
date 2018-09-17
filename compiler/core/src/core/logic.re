@@ -75,8 +75,28 @@ let getValueType = value =>
   | Literal(lvalue) => lvalue.ltype
   };
 
-/* TODO: This only looks at assignments */
+/* TODO: This should cover every kind of logic node */
 let accessedIdentifiers = node => {
+  let addLogicValue = (value, identifiers) =>
+    switch value {
+    | Identifier(type_, path) => IdentifierSet.add((type_, path), identifiers)
+    | _ => identifiers
+    };
+  let rec inner = (node, identifiers) =>
+    switch node {
+    | Assign(a, b) =>
+      let identifiers = addLogicValue(a, identifiers);
+      addLogicValue(b, identifiers);
+    | If(a, _, b, node) =>
+      let identifiers = addLogicValue(a, identifiers);
+      let identifiers = addLogicValue(b, identifiers);
+      inner(node, identifiers);
+    | _ => identifiers
+    };
+  LogicTree.reduce(inner, IdentifierSet.empty, node);
+};
+
+let assignedIdentifiers = node => {
   let inner = (node, identifiers) =>
     switch node {
     | Assign(_, Identifier(type_, path)) =>
@@ -89,14 +109,14 @@ let accessedIdentifiers = node => {
 let isLayerParameterAssigned = (logicNode, parameterName, layer: Types.layer) => {
   let isAssigned = ((_, value)) =>
     value == ["layers", layer.name, parameterName];
-  accessedIdentifiers(logicNode) |> IdentifierSet.exists(isAssigned);
+  assignedIdentifiers(logicNode) |> IdentifierSet.exists(isAssigned);
 };
 
 /* Exclusively returns variables that are conditionally assigned and
  * not assigned outside of a conditional.
  */
 let conditionallyAssignedIdentifiers = rootNode => {
-  let identifiers = accessedIdentifiers(rootNode);
+  let identifiers = assignedIdentifiers(rootNode);
   let paths = identifiers |> IdentifierSet.elements;
   let rec isAlwaysAssigned = (target, node) =>
     switch node {
@@ -112,21 +132,21 @@ let conditionallyAssignedIdentifiers = rootNode => {
   paths |> List.fold_left(accumulate, IdentifierSet.empty);
 };
 
-let getVariableDeclarations = node => {
+let buildVariableDeclarations = node => {
   let identifiers = accessedIdentifiers(node);
   let nodes =
     identifiers
     |> IdentifierSet.elements
+    /* Filter identifiers beginning with "parameters", since these are
+     * already declared within the React props or component class */
+    |> List.filter(((_, path)) =>
+         switch path {
+         | [hd, _] => hd != "parameters"
+         | _ => true
+         }
+       )
     |> List.map(((type_, path)) => Let(Identifier(type_, path)));
   Block(nodes);
-  /* |> List.fold_left(
-       (acc, declaration) =>
-         LogicTree.insert_child(
-           item => item == acc ? Some(declaration) : None,
-           acc
-         ),
-       node
-     ); */
 };
 
 let prepend = (newNode, node) => Block([newNode, node]);
