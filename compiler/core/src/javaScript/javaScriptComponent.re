@@ -12,7 +12,7 @@ let createStyleAttributeAST =
     (
       framework: JavaScriptOptions.framework,
       colors,
-      _textStyles,
+      textStyles,
       layer: Types.layer,
       styles
     ) =>
@@ -34,7 +34,7 @@ let createStyleAttributeAST =
                   Property({
                     "key": Identifier([key |> styleNameKey]),
                     "value":
-                      JavaScriptLogic.logicValueToJavaScriptAST(colors, value)
+                      JavaScriptLogic.logicValueToJavaScriptAST(colors, textStyles, value)
                   })
                 ) @@
                 styles
@@ -58,7 +58,7 @@ let createStyleAttributeAST =
                 Property({
                   "key": Identifier([key |> styleNameKey]),
                   "value":
-                    JavaScriptLogic.logicValueToJavaScriptAST(colors, value)
+                    JavaScriptLogic.logicValueToJavaScriptAST(colors, textStyles, value)
                 })
               ) @@
               styles
@@ -155,7 +155,7 @@ let rec layerToJavaScriptAST =
                "callee": Identifier(["require"]),
                "arguments": [Literal(pathValue)]
              });
-           | _ => JavaScriptLogic.logicValueToJavaScriptAST(colors, value)
+           | _ => JavaScriptLogic.logicValueToJavaScriptAST(colors, textStyles, value)
            };
          JSXAttribute({"name": key, "value": attributeValue});
        });
@@ -172,7 +172,7 @@ let rec layerToJavaScriptAST =
     switch (layer.typeName, dynamicOrStaticValue(Text)) {
     | (Types.Text, Some(textValue)) => [
         JSXExpressionContainer(
-          JavaScriptLogic.logicValueToJavaScriptAST(colors, textValue)
+          JavaScriptLogic.logicValueToJavaScriptAST(colors, textStyles, textValue)
         )
       ]
     | _ =>
@@ -453,7 +453,7 @@ let generate =
     rootLayer |> toJavaScriptStyleSheetAST(options.framework, colors);
   let logicAST =
     logic
-    |> JavaScriptLogic.toJavaScriptAST(options.framework, colors)
+    |> JavaScriptLogic.toJavaScriptAST(options.framework, colors, textStyles)
     |> Ast.optimize;
   let {absolute, relative} =
     rootLayer |> importComponents(options.framework, getComponentFile);

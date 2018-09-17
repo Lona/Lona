@@ -1,6 +1,7 @@
 module Ast = JavaScriptAst;
 
-let logicValueToJavaScriptAST = (colors, x: Logic.logicValue) =>
+let logicValueToJavaScriptAST =
+    (colors, textStyles: TextStyle.file, x: Logic.logicValue) =>
   switch x {
   | Logic.Identifier(_, path) => Ast.Identifier(path)
   | Literal(lonaValue) =>
@@ -12,12 +13,20 @@ let logicValueToJavaScriptAST = (colors, x: Logic.logicValue) =>
       | Some(color) => Ast.Identifier(["colors", color.id])
       | None => Literal(lonaValue)
       };
+    | Reference("TextStyle")
+    | Named("TextStyle", _) =>
+      let data = lonaValue.data |> Json.Decode.string;
+      switch (TextStyle.find(textStyles.styles, data)) {
+      | Some(textStyle) => Ast.Identifier(["textStyles", textStyle.id])
+      | None => Literal(lonaValue)
+      };
     | _ => Literal(lonaValue)
     }
   };
 
-let rec toJavaScriptAST = (framework, colors, node) => {
-  let logicValueToJavaScriptASTWithColors = logicValueToJavaScriptAST(colors);
+let rec toJavaScriptAST = (framework, colors, textStyles, node) => {
+  let logicValueToJavaScriptASTWithColors =
+    logicValueToJavaScriptAST(colors, textStyles);
   let fromCmp = x =>
     switch x {
     | Types.Eq => Ast.Eq
@@ -37,10 +46,10 @@ let rec toJavaScriptAST = (framework, colors, node) => {
   | IfExists(a, body) =>
     IfStatement({
       "test": logicValueToJavaScriptASTWithColors(a),
-      "consequent": [toJavaScriptAST(framework, colors, body)]
+      "consequent": [toJavaScriptAST(framework, colors, textStyles, body)]
     })
   | Block(body) =>
-    Ast.Block(body |> List.map(toJavaScriptAST(framework, colors)))
+    Ast.Block(body |> List.map(toJavaScriptAST(framework, colors, textStyles)))
   | If(a, cmp, b, body) =>
     let condition =
       Ast.BinaryExpression({
@@ -50,7 +59,7 @@ let rec toJavaScriptAST = (framework, colors, node) => {
       });
     IfStatement({
       "test": condition,
-      "consequent": [toJavaScriptAST(framework, colors, body)]
+      "consequent": [toJavaScriptAST(framework, colors, textStyles, body)]
     });
   | Add(lhs, rhs, value) =>
     let addition =
