@@ -10,6 +10,8 @@ import LocalAsset from "../images/LocalAsset"
 
 export default class NestedComponent extends React.Component {
   render() {
+
+
     return (
       <View style={[ styles.view, {} ]}>
         <Text style={[ styles.text, {} ]}>

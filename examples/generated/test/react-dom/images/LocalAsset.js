@@ -5,6 +5,8 @@ import textStyles from "../textStyles"
 
 export default class LocalAsset extends React.Component {
   render() {
+
+
     return (
       <div style={Object.assign(styles.view, {})}>
         <img

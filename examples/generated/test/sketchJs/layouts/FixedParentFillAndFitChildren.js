@@ -6,6 +6,8 @@ import textStyles from "../textStyles"
 
 export default class FixedParentFillAndFitChildren extends React.Component {
   render() {
+
+
     return (
       <View style={[ styles.view, {} ]}>
         <View style={[ styles.view1, {} ]}>

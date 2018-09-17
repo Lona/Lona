@@ -5,6 +5,8 @@ import textStyles from "../textStyles"
 
 export default class TextAlignment extends React.Component {
   render() {
+
+
     return (
       <div style={Object.assign(styles.view, {})}>
         <div style={Object.assign(styles.view1, {})}>

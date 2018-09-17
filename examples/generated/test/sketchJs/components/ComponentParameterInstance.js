@@ -7,6 +7,8 @@ import ComponentParameterTemplate from "./ComponentParameterTemplate"
 
 export default class ComponentParameterInstance extends React.Component {
   render() {
+
+
     return (
       <View style={[ styles.view, {} ]}>
         <ComponentParameterTemplate
