@@ -80,6 +80,9 @@ let isLayerParameterAssigned = (logicNode, parameterName, layer: Types.layer) =>
   accessedIdentifiers(logicNode) |> IdentifierSet.exists(isAssigned);
 };
 
+/* Exclusively returns variables that are conditionally assigned and
+ * not assigned outside of a conditional.
+ */
 let conditionallyAssignedIdentifiers = rootNode => {
   let identifiers = accessedIdentifiers(rootNode);
   let paths = identifiers |> IdentifierSet.elements;
@@ -97,19 +100,21 @@ let conditionallyAssignedIdentifiers = rootNode => {
   paths |> List.fold_left(accumulate, IdentifierSet.empty);
 };
 
-let addVariableDeclarations = node => {
+let getVariableDeclarations = node => {
   let identifiers = accessedIdentifiers(node);
-  identifiers
-  |> IdentifierSet.elements
-  |> List.map(((type_, path)) => Let(Identifier(type_, path)))
-  |> List.fold_left(
+  let nodes =
+    identifiers
+    |> IdentifierSet.elements
+    |> List.map(((type_, path)) => Let(Identifier(type_, path)));
+  Block(nodes);
+  /* |> List.fold_left(
        (acc, declaration) =>
          LogicTree.insert_child(
            item => item == acc ? Some(declaration) : None,
            acc
          ),
        node
-     );
+     ); */
 };
 
 let prepend = (newNode, node) => Block([newNode, node]);
