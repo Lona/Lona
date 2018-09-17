@@ -1,21 +1,20 @@
 module Ast = JavaScriptAst;
 
-let logicValueToJavaScriptAST = (colors, x: Logic.logicValue) => {
+let logicValueToJavaScriptAST = (colors, x: Logic.logicValue) =>
   switch x {
   | Logic.Identifier(_, path) => Ast.Identifier(path)
-  | Literal(lonaValue) => {
-      switch lonaValue.ltype {
-      | Reference("Color") =>
-          let data = lonaValue.data |> Json.Decode.string;
-          switch (Color.find(colors, data)) {
-            | Some(color) => Ast.Identifier(["colors", color.id])
-            | None => Literal(lonaValue)
-            };
-      | _ => Literal(lonaValue)
-      }
+  | Literal(lonaValue) =>
+    switch lonaValue.ltype {
+    | Reference("Color")
+    | Named("Color", _) =>
+      let data = lonaValue.data |> Json.Decode.string;
+      switch (Color.find(colors, data)) {
+      | Some(color) => Ast.Identifier(["colors", color.id])
+      | None => Literal(lonaValue)
+      };
+    | _ => Literal(lonaValue)
     }
   };
-}
 
 let rec toJavaScriptAST = (framework, colors, node) => {
   let logicValueToJavaScriptASTWithColors = logicValueToJavaScriptAST(colors);
@@ -40,7 +39,8 @@ let rec toJavaScriptAST = (framework, colors, node) => {
       "test": logicValueToJavaScriptASTWithColors(a),
       "consequent": [toJavaScriptAST(framework, colors, body)]
     })
-  | Block(body) => Ast.Block(body |> List.map(toJavaScriptAST(framework, colors)))
+  | Block(body) =>
+    Ast.Block(body |> List.map(toJavaScriptAST(framework, colors)))
   | If(a, cmp, b, body) =>
     let condition =
       Ast.BinaryExpression({
@@ -48,7 +48,10 @@ let rec toJavaScriptAST = (framework, colors, node) => {
         "operator": fromCmp(cmp),
         "right": logicValueToJavaScriptASTWithColors(b)
       });
-    IfStatement({"test": condition, "consequent": [toJavaScriptAST(framework, colors, body)]});
+    IfStatement({
+      "test": condition,
+      "consequent": [toJavaScriptAST(framework, colors, body)]
+    });
   | Add(lhs, rhs, value) =>
     let addition =
       Ast.BinaryExpression({

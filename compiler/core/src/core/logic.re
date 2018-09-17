@@ -12,6 +12,18 @@ type logicNode =
   | Block(list(logicNode))
   | None;
 
+let logicValueToString = (value: logicValue) : string =>
+  switch value {
+  | Identifier(ltype, ids) =>
+    "Identifier(" ++ Js.String.make(ids) ++ ":" ++ Js.String.make(ltype) ++ ")"
+  | Literal(lvalue) =>
+    "Literal("
+    ++ Js.String.make(lvalue.data)
+    ++ ":"
+    ++ Js.String.make(lvalue.ltype)
+    ++ ")"
+  };
+
 module IdentifierSet = {
   include
     Set.Make(
