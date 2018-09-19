@@ -34,7 +34,11 @@ let createStyleAttributeAST =
                   Property({
                     "key": Identifier([key |> styleNameKey]),
                     "value":
-                      JavaScriptLogic.logicValueToJavaScriptAST(colors, textStyles, value)
+                      JavaScriptLogic.logicValueToJavaScriptAST(
+                        colors,
+                        textStyles,
+                        value
+                      )
                   })
                 ) @@
                 styles
@@ -58,7 +62,11 @@ let createStyleAttributeAST =
                 Property({
                   "key": Identifier([key |> styleNameKey]),
                   "value":
-                    JavaScriptLogic.logicValueToJavaScriptAST(colors, textStyles, value)
+                    JavaScriptLogic.logicValueToJavaScriptAST(
+                      colors,
+                      textStyles,
+                      value
+                    )
                 })
               ) @@
               styles
@@ -155,7 +163,12 @@ let rec layerToJavaScriptAST =
                "callee": Identifier(["require"]),
                "arguments": [Literal(pathValue)]
              });
-           | _ => JavaScriptLogic.logicValueToJavaScriptAST(colors, textStyles, value)
+           | _ =>
+             JavaScriptLogic.logicValueToJavaScriptAST(
+               colors,
+               textStyles,
+               value
+             )
            };
          JSXAttribute({"name": key, "value": attributeValue});
        });
@@ -172,7 +185,11 @@ let rec layerToJavaScriptAST =
     switch (layer.typeName, dynamicOrStaticValue(Text)) {
     | (Types.Text, Some(textValue)) => [
         JSXExpressionContainer(
-          JavaScriptLogic.logicValueToJavaScriptAST(colors, textStyles, textValue)
+          JavaScriptLogic.logicValueToJavaScriptAST(
+            colors,
+            textStyles,
+            textValue
+          )
         )
       ]
     | _ =>
@@ -192,113 +209,6 @@ let rec layerToJavaScriptAST =
     "attributes": [styleAttribute, ...attributes],
     "content": content
   });
-};
-
-let getStyleValue = (colors, value: Types.lonaValue) =>
-  switch value.ltype {
-  | Named("Color", _) =>
-    let data = value.data |> Json.Decode.string;
-    switch (Color.find(colors, data)) {
-    | Some(color) => Ast.Identifier(["colors", color.id])
-    | None => Ast.Literal(value)
-    };
-  | _ => Ast.Literal(value)
-  };
-
-let toJavaScriptStyleSheetAST =
-    (framework: JavaScriptOptions.framework, colors, layer: Types.layer) => {
-  open Ast;
-  let createStyleObjectForLayer = (layer: Types.layer) => {
-    let styleParams =
-      layer.parameters
-      |> ParameterMap.filter((key, _) => Layer.parameterIsStyle(key));
-    let styleWithDefaultParams =
-      ParameterMap.assign(
-        styleParams,
-        switch framework {
-        | JavaScriptOptions.ReactDOM =>
-          ParameterMap.add(
-            ParameterKey.Display,
-            LonaValue.string("flex"),
-            ParameterMap.empty
-          )
-        | _ => ParameterMap.empty
-        }
-      );
-    Property({
-      "key": Identifier([JavaScriptFormat.styleVariableName(layer.name)]),
-      "value":
-        ObjectLiteral(
-          styleWithDefaultParams
-          |> ParameterMap.bindings
-          |> List.map(((key, value: Types.lonaValue)) =>
-               switch (
-                 key,
-                 framework,
-                 key |> ReactDomTranslators.isUnitNumberParameter
-               ) {
-               | (_, JavaScriptOptions.ReactDOM, true) =>
-                 Property({
-                   "key": Identifier([key |> ParameterKey.toString]),
-                   "value":
-                     Literal(
-                       LonaValue.string(
-                         value.data |> ReactDomTranslators.convertUnitlessStyle
-                       )
-                     )
-                 })
-               | (ParameterKey.TextStyle, _, false) =>
-                 switch (value.data |> Js.Json.decodeString) {
-                 | Some(textStyleName) =>
-                   let inner =
-                     switch framework {
-                     | JavaScriptOptions.ReactSketchapp =>
-                       CallExpression({
-                         "callee": Identifier(["TextStyles", "get"]),
-                         "arguments": [
-                           StringLiteral(
-                             textStyleName
-                             |> JavaScriptFormat.styleVariableName
-                           )
-                         ]
-                       })
-                     | _ =>
-                       Identifier([
-                         "textStyles",
-                         textStyleName |> JavaScriptFormat.styleVariableName
-                       ])
-                     };
-                   SpreadElement(inner);
-                 | None =>
-                   Js.log("Unknown TextStyle name");
-                   raise(Not_found);
-                 }
-               | (_, _, _) =>
-                 Property({
-                   "key": Identifier([key |> ParameterKey.toString]),
-                   "value": getStyleValue(colors, value)
-                 })
-               }
-             )
-        )
-    });
-  };
-  let styleObjects =
-    layer |> Layer.flatten |> List.map(createStyleObjectForLayer);
-  VariableDeclaration(
-    AssignmentExpression({
-      "left": Identifier(["styles"]),
-      "right":
-        switch framework {
-        | JavaScriptOptions.ReactDOM => ObjectLiteral(styleObjects)
-        | _ =>
-          CallExpression({
-            "callee": Identifier(["StyleSheet", "create"]),
-            "arguments": [ObjectLiteral(styleObjects)]
-          })
-        }
-    })
-  );
 };
 
 type componentImports = {
@@ -360,6 +270,7 @@ let importComponents =
       custom
   };
 };
+
 
 let generate =
     (
@@ -450,7 +361,7 @@ let generate =
          getAssetPath
        );
   let styleSheetAST =
-    rootLayer |> toJavaScriptStyleSheetAST(options.framework, colors);
+    rootLayer |> JavaScriptStyles.layerToJavaScriptStyleSheetAST(options.framework, colors);
   let logicAST =
     logic
     |> JavaScriptLogic.toJavaScriptAST(options.framework, colors, textStyles)
