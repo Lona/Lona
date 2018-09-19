@@ -8,6 +8,8 @@ import LocalAsset from "../images/LocalAsset"
 
 export default class NestedComponent extends React.Component {
   render() {
+
+
     return (
       <div style={Object.assign(styles.view, {})}>
         <span style={Object.assign(styles.text, {})}>

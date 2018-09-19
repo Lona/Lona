@@ -8,39 +8,23 @@ let styleNameKey = key =>
   | _ => key |> ParameterKey.toString
   };
 
-let createStyleAttributeAST = (framework: JavaScriptOptions.framework, colors, _textStyles, layer: Types.layer, styles) =>
+let createStyleAttributeAST =
+    (
+      framework: JavaScriptOptions.framework,
+      colors,
+      textStyles,
+      layer: Types.layer,
+      styles
+    ) =>
   switch framework {
   | JavaScriptOptions.ReactDOM =>
-      Ast.(
-        JSXAttribute({
-          "name": "style",
-          "value":
-            CallExpression({
-              "callee": Identifier(["Object", "assign"]),
-              "arguments": [
-                Identifier([
-                  "styles",
-                  JavaScriptFormat.styleVariableName(layer.name)
-                ]),
-                ObjectLiteral(
-                  Layer.mapBindings(((key, value)) =>
-                    Property({
-                      "key": Identifier([key |> styleNameKey]),
-                      "value": JavaScriptLogic.logicValueToJavaScriptAST(colors, value)
-                    })
-                  ) @@
-                  styles
-                )
-              ]
-            })
-        })
-      )
-  | _ => 
-      Ast.(
-        JSXAttribute({
-          "name": "style",
-          "value":
-            ArrayLiteral([
+    Ast.(
+      JSXAttribute({
+        "name": "style",
+        "value":
+          CallExpression({
+            "callee": Identifier(["Object", "assign"]),
+            "arguments": [
               Identifier([
                 "styles",
                 JavaScriptFormat.styleVariableName(layer.name)
@@ -49,44 +33,75 @@ let createStyleAttributeAST = (framework: JavaScriptOptions.framework, colors, _
                 Layer.mapBindings(((key, value)) =>
                   Property({
                     "key": Identifier([key |> styleNameKey]),
-                    "value": JavaScriptLogic.logicValueToJavaScriptAST(colors, value)
+                    "value":
+                      JavaScriptLogic.logicValueToJavaScriptAST(colors, textStyles, value)
                   })
                 ) @@
                 styles
               )
-            ])
-        })
-      )
+            ]
+          })
+      })
+    )
+  | _ =>
+    Ast.(
+      JSXAttribute({
+        "name": "style",
+        "value":
+          ArrayLiteral([
+            Identifier([
+              "styles",
+              JavaScriptFormat.styleVariableName(layer.name)
+            ]),
+            ObjectLiteral(
+              Layer.mapBindings(((key, value)) =>
+                Property({
+                  "key": Identifier([key |> styleNameKey]),
+                  "value":
+                    JavaScriptLogic.logicValueToJavaScriptAST(colors, textStyles, value)
+                })
+              ) @@
+              styles
+            )
+          ])
+      })
+    )
   };
 
-
-let getLayerTypeTagString = (framework: JavaScriptOptions.framework, layerType: Types.layerType) =>
+let getLayerTypeTagString =
+    (framework: JavaScriptOptions.framework, layerType: Types.layerType) =>
   switch framework {
-    | JavaScriptOptions.ReactDOM => layerType |> ReactDomTranslators.layerTypeTags
-    | _ =>
-      switch layerType {
-        | View => "View"
-        | Text => "Text"
-        | Image => "Image"
-        | Animation => "Animation"
-        | Children => "Children"
-        | Component(value) => value
-        | _ => "Unknown"
-        };
+  | JavaScriptOptions.ReactDOM =>
+    layerType |> ReactDomTranslators.layerTypeTags
+  | _ =>
+    switch layerType {
+    | View => "View"
+    | Text => "Text"
+    | Image => "Image"
+    | Animation => "Animation"
+    | Children => "Children"
+    | Component(value) => value
+    | _ => "Unknown"
+    }
   };
 
 let rec layerToJavaScriptAST =
-    (framework: JavaScriptOptions.framework, colors, textStyles, variableMap, getAssetPath, layer: Types.layer) => {
+        (
+          framework: JavaScriptOptions.framework,
+          colors,
+          textStyles,
+          variableMap,
+          getAssetPath,
+          layer: Types.layer
+        ) => {
   open Ast;
-
   let nonTextTypeName = (key: ParameterKey.t, _) =>
     switch key {
     | ParameterKey.Text => false
     | _ => true
     };
-
-  let removeTextParams = params => params |> ParameterMap.filter(nonTextTypeName);
-
+  let removeTextParams = params =>
+    params |> ParameterMap.filter(nonTextTypeName);
   let (_, mainParams) =
     layer.parameters
     |> removeTextParams
@@ -102,7 +117,13 @@ let rec layerToJavaScriptAST =
     |> Layer.splitParamsMap;
   let main = ParameterMap.assign(mainParams, mainVariables);
   let styleAttribute =
-    createStyleAttributeAST(framework, colors, textStyles, layer, styleVariables);
+    createStyleAttributeAST(
+      framework,
+      colors,
+      textStyles,
+      layer,
+      styleVariables
+    );
   let attributes =
     main
     |> removeTextParams
@@ -112,30 +133,30 @@ let rec layerToJavaScriptAST =
            | (Types.Image, ParameterKey.Image) => "source"
            | _ =>
              switch framework {
-             | JavaScriptOptions.ReactDOM => key |> ReactDomTranslators.variableNames
+             | JavaScriptOptions.ReactDOM =>
+               key |> ReactDomTranslators.variableNames
              | _ => key |> ParameterKey.toString
-             };
+             }
            };
          let attributeValue =
-            switch value {
-            | Logic.Literal(lonaValue) when lonaValue.ltype == Types.urlType =>
-              let path =
-                switch (lonaValue.data |> Js.Json.decodeString) {
-                | Some(url) =>
-                  getAssetPath(url |> Js.String.replace("file://", ""))
-                | None => ""
-                };
-              let pathValue: Types.lonaValue = {
-                ltype: Types.urlType,
-                data: Js.Json.string(path)
-              };
-              CallExpression({
-                "callee": Identifier(["require"]),
-                "arguments": [Literal(pathValue)]
-              });
-            | _ => JavaScriptLogic.logicValueToJavaScriptAST(colors, value)
-            };
-
+           switch value {
+           | Logic.Literal(lonaValue) when lonaValue.ltype == Types.urlType =>
+             let path =
+               switch (lonaValue.data |> Js.Json.decodeString) {
+               | Some(url) =>
+                 getAssetPath(url |> Js.String.replace("file://", ""))
+               | None => ""
+               };
+             let pathValue: Types.lonaValue = {
+               ltype: Types.urlType,
+               data: Js.Json.string(path)
+             };
+             CallExpression({
+               "callee": Identifier(["require"]),
+               "arguments": [Literal(pathValue)]
+             });
+           | _ => JavaScriptLogic.logicValueToJavaScriptAST(colors, textStyles, value)
+           };
          JSXAttribute({"name": key, "value": attributeValue});
        });
   let dynamicOrStaticValue = key =>
@@ -151,13 +172,19 @@ let rec layerToJavaScriptAST =
     switch (layer.typeName, dynamicOrStaticValue(Text)) {
     | (Types.Text, Some(textValue)) => [
         JSXExpressionContainer(
-          JavaScriptLogic.logicValueToJavaScriptAST(colors, textValue)
+          JavaScriptLogic.logicValueToJavaScriptAST(colors, textStyles, textValue)
         )
       ]
     | _ =>
       layer.children
       |> List.map(
-           layerToJavaScriptAST(framework, colors, textStyles, variableMap, getAssetPath)
+           layerToJavaScriptAST(
+             framework,
+             colors,
+             textStyles,
+             variableMap,
+             getAssetPath
+           )
          )
     };
   JSXElement({
@@ -185,16 +212,19 @@ let toJavaScriptStyleSheetAST =
     let styleParams =
       layer.parameters
       |> ParameterMap.filter((key, _) => Layer.parameterIsStyle(key));
-
-    let styleWithDefaultParams = ParameterMap.assign(
-      styleParams,
-      switch framework {
-      | JavaScriptOptions.ReactDOM => 
-          ParameterMap.add(ParameterKey.Display, LonaValue.string("flex"), ParameterMap.empty);
-      | _ => ParameterMap.empty
-      }
-    );
-
+    let styleWithDefaultParams =
+      ParameterMap.assign(
+        styleParams,
+        switch framework {
+        | JavaScriptOptions.ReactDOM =>
+          ParameterMap.add(
+            ParameterKey.Display,
+            LonaValue.string("flex"),
+            ParameterMap.empty
+          )
+        | _ => ParameterMap.empty
+        }
+      );
     Property({
       "key": Identifier([JavaScriptFormat.styleVariableName(layer.name)]),
       "value":
@@ -202,12 +232,21 @@ let toJavaScriptStyleSheetAST =
           styleWithDefaultParams
           |> ParameterMap.bindings
           |> List.map(((key, value: Types.lonaValue)) =>
-               switch (key, framework, key |> ReactDomTranslators.isUnitNumberParameter) {
+               switch (
+                 key,
+                 framework,
+                 key |> ReactDomTranslators.isUnitNumberParameter
+               ) {
                | (_, JavaScriptOptions.ReactDOM, true) =>
-                Property({
-                  "key": Identifier([key |> ParameterKey.toString]),
-                  "value": Literal(LonaValue.string(value.data |> ReactDomTranslators.convertUnitlessStyle))
-                })
+                 Property({
+                   "key": Identifier([key |> ParameterKey.toString]),
+                   "value":
+                     Literal(
+                       LonaValue.string(
+                         value.data |> ReactDomTranslators.convertUnitlessStyle
+                       )
+                     )
+                 })
                | (ParameterKey.TextStyle, _, false) =>
                  switch (value.data |> Js.Json.decodeString) {
                  | Some(textStyleName) =>
@@ -251,13 +290,12 @@ let toJavaScriptStyleSheetAST =
       "left": Identifier(["styles"]),
       "right":
         switch framework {
-        | JavaScriptOptions.ReactDOM =>
-            ObjectLiteral(styleObjects)
-        | _ => 
-            CallExpression({
-              "callee": Identifier(["StyleSheet", "create"]),
-              "arguments": [ObjectLiteral(styleObjects)]
-            })
+        | JavaScriptOptions.ReactDOM => ObjectLiteral(styleObjects)
+        | _ =>
+          CallExpression({
+            "callee": Identifier(["StyleSheet", "create"]),
+            "arguments": [ObjectLiteral(styleObjects)]
+          })
         }
     })
   );
@@ -273,7 +311,7 @@ let importComponents =
   let {builtIn, custom}: Layer.availableTypeNames =
     rootLayer |> Layer.getTypeNames;
   {
-    absolute: (
+    absolute:
       switch framework {
       | JavaScriptOptions.ReactDOM => []
       | _ => [
@@ -293,19 +331,23 @@ let importComponents =
                 ) @@
                 builtIn
               )
-              @ [Ast.ImportSpecifier({"imported": "StyleSheet", "local": None})]
+              @ [
+                Ast.ImportSpecifier({"imported": "StyleSheet", "local": None})
+              ]
               @ (
                 switch framework {
                 | JavaScriptOptions.ReactSketchapp => [
-                    Ast.ImportSpecifier({"imported": "TextStyles", "local": None})
+                    Ast.ImportSpecifier({
+                      "imported": "TextStyles",
+                      "local": None
+                    })
                   ]
                 | _ => []
                 }
               )
           })
         ]
-      }
-    ),
+      },
     relative:
       List.map(componentName =>
         Ast.ImportDeclaration({
@@ -333,14 +375,86 @@ let generate =
       json
     ) => {
   let rootLayer = json |> Decode.Component.rootLayer(getComponent);
-  let logic = json |> Decode.Component.logic |> Logic.addVariableDeclarations;
+  let logic = json |> Decode.Component.logic
+
+  let variableDeclarations = logic |> Logic.buildVariableDeclarations;
+
   let assignments = Layer.parameterAssignmentsFromLogic(rootLayer, logic);
+
+  let conditionalAssignments = Logic.conditionallyAssignedIdentifiers(logic);
+  let isConditionallyAssigned = (layer: Types.layer, (name, _)) => {
+    let isAssigned = ((_, value)) =>
+      value == ["layers", layer.name, name |> ParameterKey.toString];
+    Logic.IdentifierSet.exists(isAssigned, conditionalAssignments);
+  };
+
+  let defineInitialLayerValue = (layer: Types.layer, (name, _)) => {
+    let layerParameterAssignments = Layer.logicAssignmentsFromLayerParameters(rootLayer);
+    let parameters = Layer.LayerMap.find_opt(layer, layerParameterAssignments);
+    let getParameter = (layer: Types.layer, parameter) => ParameterMap.find_opt(parameter, layer.parameters);
+
+    switch parameters {
+    | None => Logic.None
+    | Some(parameters) =>
+      let assignment = ParameterMap.find_opt(name, parameters);
+      let parameterValue = getParameter(layer, name);
+      switch (assignment, layer.typeName, parameterValue) {
+      | (Some(assignment), _, _) =>
+        Js.log2("a", ParameterKey.toString(name));
+        assignment
+      | (None, Component(componentName), _) =>
+        let param =
+          getComponent(componentName)
+          |> Decode.Component.parameters
+          |> List.find((param: Types.parameter) => param.name == name);
+        Logic.assignmentForLayerParameter(
+          layer,
+          name,
+          Logic.defaultValueForType(param.ltype)
+        );
+      | (None, _, Some(value)) =>
+        Logic.assignmentForLayerParameter(layer, name, value)
+      | (None, _, None) =>
+        Logic.defaultAssignmentForLayerParameter(
+          colors,
+          textStyles,
+          layer,
+          name
+        )
+      };
+    };
+  };
+
+  /* let assignDefaultValue = (layer: Types.layer, (name, _)) =>
+    Logic.defaultAssignmentForLayerParameter(colors, textStyles, layer, name); */
+  let defineInitialLayerValues = ((layer, propertyMap)) =>
+    propertyMap
+    |> ParameterMap.bindings
+    |> List.filter(isConditionallyAssigned(layer))
+    |> List.map(((k, v)) => defineInitialLayerValue(layer, (k, v)));
+  let newVars =
+    assignments
+    |> Layer.LayerMap.bindings
+    |> List.map(defineInitialLayerValues)
+    |> List.concat;
+
+  let logic = Logic.Block([variableDeclarations] @ newVars @ [logic]);
+
   let rootLayerAST =
     rootLayer
-    |> layerToJavaScriptAST(options.framework, colors, textStyles, assignments, getAssetPath);
+    |> layerToJavaScriptAST(
+         options.framework,
+         colors,
+         textStyles,
+         assignments,
+         getAssetPath
+       );
   let styleSheetAST =
     rootLayer |> toJavaScriptStyleSheetAST(options.framework, colors);
-  let logicAST = logic |> JavaScriptLogic.toJavaScriptAST(options.framework, colors) |> Ast.optimize;
+  let logicAST =
+    logic
+    |> JavaScriptLogic.toJavaScriptAST(options.framework, colors, textStyles)
+    |> Ast.optimize;
   let {absolute, relative} =
     rootLayer |> importComponents(options.framework, getComponentFile);
   Ast.(
@@ -378,7 +492,7 @@ let generate =
                       FunctionExpression({
                         "id": None,
                         "params": [],
-                        "body": [logicAST, Return(rootLayerAST)]
+                        "body": /*newVars @*/ [logicAST, Return(rootLayerAST)]
                       })
                   })
                 ]

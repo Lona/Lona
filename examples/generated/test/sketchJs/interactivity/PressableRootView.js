@@ -7,11 +7,20 @@ import textStyles from "../textStyles"
 
 export default class PressableRootView extends React.Component {
   render() {
-    let Outer$onPress
-    let Outer$backgroundColor
-    let Inner$onPress
-    let Inner$backgroundColor
+
     let InnerText$text
+    let Inner$backgroundColor
+    let Inner$hovered
+    let Inner$onPress
+    let Inner$pressed
+    let Outer$backgroundColor
+    let Outer$hovered
+    let Outer$onPress
+    let Outer$pressed
+    Inner$backgroundColor = colors.blue500
+    InnerText$text = ""
+    Outer$backgroundColor = colors.grey50
+
     Outer$onPress = this.props.onPressOuter
     Inner$onPress = this.props.onPressInner
     if (Outer$hovered) {

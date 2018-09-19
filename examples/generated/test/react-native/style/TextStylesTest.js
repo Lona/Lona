@@ -6,6 +6,8 @@ import textStyles from "../textStyles"
 
 export default class TextStylesTest extends React.Component {
   render() {
+
+
     return (
       <View style={[ styles.view, {} ]}>
         <Text style={[ styles.text, {} ]}>

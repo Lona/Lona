@@ -20,12 +20,6 @@ type lonaType =
 
 let undefinedType = Reference("Undefined");
 
-let referenceFromJs = ltype =>
-  switch ltype {
-  | Reference(name) => Some(name)
-  | _ => None
-  };
-
 let booleanType = Reference("Boolean");
 
 let numberType = Reference("Number");

@@ -6,6 +6,8 @@ import ComponentParameterTemplate from "./ComponentParameterTemplate"
 
 export default class ComponentParameterInstance extends React.Component {
   render() {
+
+
     return (
       <div style={Object.assign(styles.view, {})}>
         <ComponentParameterTemplate

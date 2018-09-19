@@ -5,6 +5,8 @@ import textStyles from "../textStyles"
 
 export default class TextStylesTest extends React.Component {
   render() {
+
+
     return (
       <div style={Object.assign(styles.view, {})}>
         <span style={Object.assign(styles.text, {})}>

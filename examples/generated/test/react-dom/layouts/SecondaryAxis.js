@@ -5,6 +5,8 @@ import textStyles from "../textStyles"
 
 export default class SecondaryAxis extends React.Component {
   render() {
+
+
     return (
       <div style={Object.assign(styles.container, {})}>
         <div style={Object.assign(styles.fixed, {})}>
