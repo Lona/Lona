@@ -271,7 +271,6 @@ let importComponents =
   };
 };
 
-
 let generate =
     (
       options: JavaScriptOptions.options,
@@ -286,24 +285,21 @@ let generate =
       json
     ) => {
   let rootLayer = json |> Decode.Component.rootLayer(getComponent);
-  let logic = json |> Decode.Component.logic
-
+  let logic = json |> Decode.Component.logic;
   let variableDeclarations = logic |> Logic.buildVariableDeclarations;
-
   let assignments = Layer.parameterAssignmentsFromLogic(rootLayer, logic);
-
   let conditionalAssignments = Logic.conditionallyAssignedIdentifiers(logic);
   let isConditionallyAssigned = (layer: Types.layer, (name, _)) => {
     let isAssigned = ((_, value)) =>
       value == ["layers", layer.name, name |> ParameterKey.toString];
     Logic.IdentifierSet.exists(isAssigned, conditionalAssignments);
   };
-
   let defineInitialLayerValue = (layer: Types.layer, (name, _)) => {
-    let layerParameterAssignments = Layer.logicAssignmentsFromLayerParameters(rootLayer);
+    let layerParameterAssignments =
+      Layer.logicAssignmentsFromLayerParameters(rootLayer);
     let parameters = Layer.LayerMap.find_opt(layer, layerParameterAssignments);
-    let getParameter = (layer: Types.layer, parameter) => ParameterMap.find_opt(parameter, layer.parameters);
-
+    let getParameter = (layer: Types.layer, parameter) =>
+      ParameterMap.find_opt(parameter, layer.parameters);
     switch parameters {
     | None => Logic.None
     | Some(parameters) =>
@@ -312,7 +308,7 @@ let generate =
       switch (assignment, layer.typeName, parameterValue) {
       | (Some(assignment), _, _) =>
         Js.log2("a", ParameterKey.toString(name));
-        assignment
+        assignment;
       | (None, Component(componentName), _) =>
         let param =
           getComponent(componentName)
@@ -335,9 +331,6 @@ let generate =
       };
     };
   };
-
-  /* let assignDefaultValue = (layer: Types.layer, (name, _)) =>
-    Logic.defaultAssignmentForLayerParameter(colors, textStyles, layer, name); */
   let defineInitialLayerValues = ((layer, propertyMap)) =>
     propertyMap
     |> ParameterMap.bindings
@@ -348,9 +341,7 @@ let generate =
     |> Layer.LayerMap.bindings
     |> List.map(defineInitialLayerValues)
     |> List.concat;
-
   let logic = Logic.Block([variableDeclarations] @ newVars @ [logic]);
-
   let rootLayerAST =
     rootLayer
     |> layerToJavaScriptAST(
@@ -361,7 +352,11 @@ let generate =
          getAssetPath
        );
   let styleSheetAST =
-    rootLayer |> JavaScriptStyles.layerToJavaScriptStyleSheetAST(options.framework, colors);
+    rootLayer
+    |> JavaScriptStyles.layerToJavaScriptStyleSheetAST(
+         options.framework,
+         colors
+       );
   let logicAST =
     logic
     |> JavaScriptLogic.toJavaScriptAST(options.framework, colors, textStyles)
@@ -403,7 +398,7 @@ let generate =
                       FunctionExpression({
                         "id": None,
                         "params": [],
-                        "body": /*newVars @*/ [logicAST, Return(rootLayerAST)]
+                        "body": [logicAST, Return(rootLayerAST)]
                       })
                   })
                 ]
