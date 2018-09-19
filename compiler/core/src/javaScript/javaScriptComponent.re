@@ -306,9 +306,7 @@ let generate =
       let assignment = ParameterMap.find_opt(name, parameters);
       let parameterValue = getParameter(layer, name);
       switch (assignment, layer.typeName, parameterValue) {
-      | (Some(assignment), _, _) =>
-        Js.log2("a", ParameterKey.toString(name));
-        assignment;
+      | (Some(assignment), _, _) => assignment
       | (None, Component(componentName), _) =>
         let param =
           getComponent(componentName)
