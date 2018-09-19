@@ -20,11 +20,11 @@ let createStyleAttributeAST =
   | JavaScriptOptions.ReactDOM =>
     Ast.(
       JSXAttribute({
-        "name": "style",
-        "value":
+        name: "style",
+        value:
           CallExpression({
-            "callee": Identifier(["Object", "assign"]),
-            "arguments": [
+            callee: Identifier(["Object", "assign"]),
+            arguments: [
               Identifier([
                 "styles",
                 JavaScriptFormat.styleVariableName(layer.name)
@@ -32,8 +32,8 @@ let createStyleAttributeAST =
               ObjectLiteral(
                 Layer.mapBindings(((key, value)) =>
                   Property({
-                    "key": Identifier([key |> styleNameKey]),
-                    "value":
+                    key: Identifier([key |> styleNameKey]),
+                    value:
                       JavaScriptLogic.logicValueToJavaScriptAST(
                         colors,
                         textStyles,
@@ -50,8 +50,8 @@ let createStyleAttributeAST =
   | _ =>
     Ast.(
       JSXAttribute({
-        "name": "style",
-        "value":
+        name: "style",
+        value:
           ArrayLiteral([
             Identifier([
               "styles",
@@ -60,8 +60,8 @@ let createStyleAttributeAST =
             ObjectLiteral(
               Layer.mapBindings(((key, value)) =>
                 Property({
-                  "key": Identifier([key |> styleNameKey]),
-                  "value":
+                  key: Identifier([key |> styleNameKey]),
+                  value:
                     JavaScriptLogic.logicValueToJavaScriptAST(
                       colors,
                       textStyles,
@@ -160,8 +160,8 @@ let rec layerToJavaScriptAST =
                data: Js.Json.string(path)
              };
              CallExpression({
-               "callee": Identifier(["require"]),
-               "arguments": [Literal(pathValue)]
+               callee: Identifier(["require"]),
+               arguments: [Literal(pathValue)]
              });
            | _ =>
              JavaScriptLogic.logicValueToJavaScriptAST(
@@ -170,7 +170,7 @@ let rec layerToJavaScriptAST =
                value
              )
            };
-         JSXAttribute({"name": key, "value": attributeValue});
+         JSXAttribute({name: key, value: attributeValue});
        });
   let dynamicOrStaticValue = key =>
     switch (
@@ -205,9 +205,9 @@ let rec layerToJavaScriptAST =
          )
     };
   JSXElement({
-    "tag": getLayerTypeTagString(framework, layer.typeName),
-    "attributes": [styleAttribute, ...attributes],
-    "content": content
+    tag: getLayerTypeTagString(framework, layer.typeName),
+    attributes: [styleAttribute, ...attributes],
+    content
   });
 };
 
@@ -226,31 +226,26 @@ let importComponents =
       | JavaScriptOptions.ReactDOM => []
       | _ => [
           Ast.ImportDeclaration({
-            "source":
+            source:
               switch framework {
               | JavaScriptOptions.ReactSketchapp => "@mathieudutour/react-sketchapp"
               | _ => "react-native"
               },
-            "specifiers":
+            specifiers:
               (
                 List.map(typeName =>
                   Ast.ImportSpecifier({
-                    "imported": Types.layerTypeToString(typeName),
-                    "local": None
+                    imported: Types.layerTypeToString(typeName),
+                    local: None
                   })
                 ) @@
                 builtIn
               )
-              @ [
-                Ast.ImportSpecifier({"imported": "StyleSheet", "local": None})
-              ]
+              @ [Ast.ImportSpecifier({imported: "StyleSheet", local: None})]
               @ (
                 switch framework {
                 | JavaScriptOptions.ReactSketchapp => [
-                    Ast.ImportSpecifier({
-                      "imported": "TextStyles",
-                      "local": None
-                    })
+                    Ast.ImportSpecifier({imported: "TextStyles", local: None})
                   ]
                 | _ => []
                 }
@@ -261,10 +256,10 @@ let importComponents =
     relative:
       List.map(componentName =>
         Ast.ImportDeclaration({
-          "source":
+          source:
             getComponentFile(componentName)
             |> Js.String.replace(".component", ""),
-          "specifiers": [Ast.ImportDefaultSpecifier(componentName)]
+          specifiers: [Ast.ImportDefaultSpecifier(componentName)]
         })
       ) @@
       custom
@@ -361,6 +356,7 @@ let generate =
     |> Ast.optimize;
   let {absolute, relative} =
     rootLayer |> importComponents(options.framework, getComponentFile);
+  let componentName = name;
   Ast.(
     Program(
       SwiftDocument.joinGroups(
@@ -368,35 +364,35 @@ let generate =
         [
           [
             ImportDeclaration({
-              "source": "react",
-              "specifiers": [ImportDefaultSpecifier("React")]
+              source: "react",
+              specifiers: [ImportDefaultSpecifier("React")]
             })
           ]
           @ absolute,
           [
             ImportDeclaration({
-              "source": colorsFilePath |> Js.String.replace(".json", ""),
-              "specifiers": [ImportDefaultSpecifier("colors")]
+              source: colorsFilePath |> Js.String.replace(".json", ""),
+              specifiers: [ImportDefaultSpecifier("colors")]
             }),
             ImportDeclaration({
-              "source": textStylesFilePath |> Js.String.replace(".json", ""),
-              "specifiers": [ImportDefaultSpecifier("textStyles")]
+              source: textStylesFilePath |> Js.String.replace(".json", ""),
+              specifiers: [ImportDefaultSpecifier("textStyles")]
             })
           ]
           @ relative,
           [
             ExportDefaultDeclaration(
               ClassDeclaration({
-                "id": name,
-                "superClass": Some("React.Component"),
-                "body": [
+                id: componentName,
+                superClass: Some("React.Component"),
+                body: [
                   MethodDefinition({
-                    "key": "render",
-                    "value":
+                    key: "render",
+                    value:
                       FunctionExpression({
-                        "id": None,
-                        "params": [],
-                        "body": [logicAST, Return(rootLayerAST)]
+                        id: None,
+                        params: [],
+                        body: [logicAST, Return(rootLayerAST)]
                       })
                   })
                 ]

@@ -9,116 +9,90 @@ type binaryOperator =
   | Plus
   | Noop;
 
+type importDeclaration = {
+  source: string,
+  specifiers: list(node)
+}
+and importSpecifier = {
+  imported: string,
+  local: option(string)
+}
+and classDeclaration = {
+  id: string,
+  superClass: option(string),
+  body: list(node)
+}
+and methodDefinition = {
+  key: string,
+  value: node
+}
+and functionExpression = {
+  id: option(string),
+  params: list(string),
+  body: list(node)
+}
+and callExpression = {
+  callee: node,
+  arguments: list(node)
+}
+and jSXAttribute = {
+  name: string,
+  value: node
+}
+and jSXElement = {
+  tag: string,
+  attributes: list(node),
+  content: list(node)
+}
+and assignmentExpression = {
+  left: node,
+  right: node
+}
+and binaryExpression = {
+  left: node,
+  operator: binaryOperator,
+  right: node
+}
+and ifStatement = {
+  test: node,
+  consequent: list(node)
+}
+and property = {
+  key: node,
+  value: node
+}
+and lineEndComment = {
+  comment: string,
+  line: node
+}
 [@bs.deriving accessors]
-type node =
+and node =
   | Return(node)
   | Literal(Types.lonaValue)
   | StringLiteral(string)
   | Identifier(list(string))
-  | ImportDeclaration(
-      {
-        .
-        "source": string,
-        "specifiers": list(node)
-      }
-    )
-  | ImportSpecifier(
-      {
-        .
-        "imported": string,
-        "local": option(string)
-      }
-    )
+  | ImportDeclaration(importDeclaration)
+  | ImportSpecifier(importSpecifier)
   | ImportDefaultSpecifier(string)
-  | ClassDeclaration(
-      {
-        .
-        "id": string,
-        "superClass": option(string),
-        "body": list(node)
-      }
-    )
-  | MethodDefinition(
-      {
-        .
-        "key": string,
-        "value": node
-      }
-    )
-  | FunctionExpression(
-      {
-        .
-        "id": option(string),
-        "params": list(string),
-        "body": list(node)
-      }
-    )
-  | CallExpression(
-      {
-        .
-        "callee": node,
-        "arguments": list(node)
-      }
-    )
-  | JSXAttribute(
-      {
-        .
-        "name": string,
-        "value": node
-      }
-    )
-  | JSXElement(
-      {
-        .
-        "tag": string,
-        "attributes": list(node),
-        "content": list(node)
-      }
-    )
+  | ClassDeclaration(classDeclaration)
+  | MethodDefinition(methodDefinition)
+  | FunctionExpression(functionExpression)
+  | CallExpression(callExpression)
+  | JSXAttribute(jSXAttribute)
+  | JSXElement(jSXElement)
   | JSXExpressionContainer(node)
   | SpreadElement(node)
   | VariableDeclaration(node)
-  | AssignmentExpression(
-      {
-        .
-        "left": node,
-        "right": node
-      }
-    )
-  | BinaryExpression(
-      {
-        .
-        "left": node,
-        "operator": binaryOperator,
-        "right": node
-      }
-    )
-  | IfStatement(
-      {
-        .
-        "test": node,
-        "consequent": list(node)
-      }
-    )
+  | AssignmentExpression(assignmentExpression)
+  | BinaryExpression(binaryExpression)
+  | IfStatement(ifStatement)
   | ArrayLiteral(list(node))
   | ObjectLiteral(list(node))
-  | Property(
-      {
-        .
-        "key": node,
-        "value": node
-      }
-    )
+  | Property(property)
   | ExportDefaultDeclaration(node)
   | Block(list(node))
   | Program(list(node))
-  | LineEndComment(
-      {
-        .
-        "comment": string,
-        "line": node
-      }
-    )
+  | LineEndComment(lineEndComment)
   | Empty
   | Unknown;
 
@@ -137,71 +111,66 @@ let rec map = (f, node) =>
   | ClassDeclaration(o) =>
     f(
       ClassDeclaration({
-        "id": o##id,
-        "superClass": o##superClass,
-        "body": o##body |> List.map(map(f))
+        id: o.id,
+        superClass: o.superClass,
+        body: o.body |> List.map(map(f))
       })
     )
   | MethodDefinition(o) =>
-    f(MethodDefinition({"key": o##key, "value": o##value |> map(f)}))
+    f(MethodDefinition({key: o.key, value: o.value |> map(f)}))
   | FunctionExpression(o) =>
     f(
       FunctionExpression({
-        "id": o##id,
-        "params": o##params,
-        "body": o##body |> List.map(map(f))
+        id: o.id,
+        params: o.params,
+        body: o.body |> List.map(map(f))
       })
     )
   | CallExpression(o) =>
     f(
       CallExpression({
-        "callee": o##callee |> map(f),
-        "arguments": o##arguments |> List.map(map(f))
+        callee: o.callee |> map(f),
+        arguments: o.arguments |> List.map(map(f))
       })
     )
   | JSXAttribute(o) =>
-    f(JSXAttribute({"name": o##name, "value": o##value |> map(f)}))
+    f(JSXAttribute({name: o.name, value: o.value |> map(f)}))
   | JSXElement(o) =>
     f(
       JSXElement({
-        "tag": o##tag,
-        "attributes": o##attributes |> List.map(map(f)),
-        "content": o##content |> List.map(map(f))
+        tag: o.tag,
+        attributes: o.attributes |> List.map(map(f)),
+        content: o.content |> List.map(map(f))
       })
     )
   | VariableDeclaration(value) => f(VariableDeclaration(value |> map(f)))
   | AssignmentExpression(o) =>
-    f(
-      AssignmentExpression({
-        "left": o##left |> map(f),
-        "right": o##right |> map(f)
-      })
-    )
+    f(AssignmentExpression({left: o.left |> map(f), right: o.right |> map(f)}))
   | BinaryExpression(o) =>
     f(
       BinaryExpression({
-        "left": o##left |> map(f),
-        "operator": o##operator,
-        "right": o##right |> map(f)
+        left: o.left |> map(f),
+        operator: o.operator,
+        right: o.right |> map(f)
       })
     )
   | IfStatement(o) =>
     f(
       IfStatement({
-        "test": o##test |> map(f),
-        "consequent": o##consequent |> List.map(map(f))
+        test: o.test |> map(f),
+        consequent: o.consequent |> List.map(map(f))
       })
     )
   | ArrayLiteral(body) => f(ArrayLiteral(body |> List.map(map(f))))
   | ObjectLiteral(body) => f(ObjectLiteral(body |> List.map(map(f))))
   | Property(o) =>
-    f(Property({"key": o##key |> map(f), "value": o##value |> map(f)}))
+    f(Property({key: o.key |> map(f), value: o.value |> map(f)}))
   | ExportDefaultDeclaration(value) =>
     f(ExportDefaultDeclaration(value |> map(f)))
   | Block(body) => f(Block(body |> List.map(map(f))))
   | Program(body) => f(Program(body |> List.map(map(f))))
   | LineEndComment(o) =>
-    f(LineEndComment({"comment": o##comment, "line": o##line |> map(f)}))
+    f(LineEndComment({comment: o.comment, line: o.line |> map(f)}))
   | Empty
   | Unknown => f(node)
   };
@@ -215,9 +184,9 @@ let optimizeTruthyBinaryExpression = node => {
     };
   switch node {
   | BinaryExpression(o) =>
-    switch (booleanValue(o##left), o##operator, booleanValue(o##right)) {
-    | (_, Eq, Some(true)) => o##left
-    | (Some(true), Eq, _) => o##right
+    switch (booleanValue(o.left), o.operator, booleanValue(o.right)) {
+    | (_, Eq, Some(true)) => o.left
+    | (Some(true), Eq, _) => o.right
     | _ => node
     }
   | _ => node

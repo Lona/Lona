@@ -1,14 +1,21 @@
 open JavaScriptAst;
 
-let render = (options: JavaScriptOptions.options, colors, textStyles: TextStyle.file) => {
-  let buildStyleNodeForFramework = 
+let render =
+    (options: JavaScriptOptions.options, colors, textStyles: TextStyle.file) => {
+  let buildStyleNodeForFramework =
     options.framework
-    |> (framework, value: Types.lonaValue) =>
-      switch framework {
-      | JavaScriptOptions.ReactDOM => Literal(LonaValue.string(value.data |> ReactDomTranslators.convertUnitlessStyle))
-      | _ => Literal(value)
-      };
-
+    |> (
+      (framework, value: Types.lonaValue) =>
+        switch framework {
+        | JavaScriptOptions.ReactDOM =>
+          Literal(
+            LonaValue.string(
+              value.data |> ReactDomTranslators.convertUnitlessStyle
+            )
+          )
+        | _ => Literal(value)
+        }
+    );
   let unwrapOptional = (f, a) =>
     switch a {
     | Some(value) => [f(value)]
@@ -25,8 +32,8 @@ let render = (options: JavaScriptOptions.options, colors, textStyles: TextStyle.
                data: Js.Json.string(value)
              };
              Property({
-               "key": Identifier(["family"]),
-               "value": Literal(lonaValue)
+               key: Identifier(["family"]),
+               value: Literal(lonaValue)
              });
            }),
         lookup(style => style.fontWeight)
@@ -36,8 +43,8 @@ let render = (options: JavaScriptOptions.options, colors, textStyles: TextStyle.
                data: Js.Json.string(value)
              };
              Property({
-               "key": Identifier(["fontWeight"]),
-               "value": Literal(lonaValue)
+               key: Identifier(["fontWeight"]),
+               value: Literal(lonaValue)
              });
            }),
         lookup(style => style.fontSize)
@@ -47,8 +54,8 @@ let render = (options: JavaScriptOptions.options, colors, textStyles: TextStyle.
                data: Js.Json.number(value)
              };
              Property({
-               "key": Identifier(["fontSize"]),
-               "value": lonaValue |> buildStyleNodeForFramework
+               key: Identifier(["fontSize"]),
+               value: lonaValue |> buildStyleNodeForFramework
              });
            }),
         lookup(style => style.lineHeight)
@@ -58,8 +65,8 @@ let render = (options: JavaScriptOptions.options, colors, textStyles: TextStyle.
                data: Js.Json.number(value)
              };
              Property({
-               "key": Identifier(["lineHeight"]),
-               "value": lonaValue |> buildStyleNodeForFramework
+               key: Identifier(["lineHeight"]),
+               value: lonaValue |> buildStyleNodeForFramework
              });
            }),
         lookup(style => style.letterSpacing)
@@ -69,8 +76,8 @@ let render = (options: JavaScriptOptions.options, colors, textStyles: TextStyle.
                data: Js.Json.number(value)
              };
              Property({
-               "key": Identifier(["letterSpacing"]),
-               "value": lonaValue |> buildStyleNodeForFramework
+               key: Identifier(["letterSpacing"]),
+               value: lonaValue |> buildStyleNodeForFramework
              });
            }),
         lookup(style => style.color)
@@ -85,20 +92,20 @@ let render = (options: JavaScriptOptions.options, colors, textStyles: TextStyle.
                  };
                  Literal(lonaValue);
                };
-             Property({"key": Identifier(["color"]), "value": value});
+             Property({key: Identifier(["color"]), value});
            })
       ]
       |> List.concat;
     Property({
-      "key": Identifier([textStyle.id |> JavaScriptFormat.styleVariableName]),
-      "value": ObjectLiteral(variables)
+      key: Identifier([textStyle.id |> JavaScriptFormat.styleVariableName]),
+      value: ObjectLiteral(variables)
     });
   };
   let doc =
     Program([
       ImportDeclaration({
-        "source": "./colors",
-        "specifiers": [ImportDefaultSpecifier("colors")]
+        source: "./colors",
+        specifiers: [ImportDefaultSpecifier("colors")]
       }),
       Empty,
       ExportDefaultDeclaration(
