@@ -279,25 +279,22 @@ let rootLayerToJavaScriptAST =
       rootLayer,
     ) => {
   let astRootLayer =
-  rootLayer
-  |> layerToJavaScriptAST(
-       options.framework,
-       colors,
-       textStyles,
-       assignments,
-       getAssetPath,
-     );
+    rootLayer
+    |> layerToJavaScriptAST(
+         options.framework,
+         colors,
+         textStyles,
+         assignments,
+         getAssetPath,
+       );
 
   JavaScriptAst.(
     JSXElement({
       tag: "ThemeProvider",
       attributes: [
-        JSXAttribute({
-          name: "theme",
-          value: Identifier(["theme"])
-        })
+        JSXAttribute({name: "theme", value: Identifier(["theme"])}),
       ],
-      content: [astRootLayer]
+      content: [astRootLayer],
     })
   );
 };
