@@ -3,7 +3,7 @@ module Ast = JavaScriptAst;
 module Render = JavaScriptRender;
 
 let styleNameKey = key =>
-  switch key {
+  switch (key) {
   | ParameterKey.TextStyle => "font"
   | _ => key |> ParameterKey.toString
   };
@@ -14,9 +14,9 @@ let createStyleAttributeAST =
       colors,
       textStyles,
       layer: Types.layer,
-      styles
+      styles,
     ) =>
-  switch framework {
+  switch (framework) {
   | JavaScriptOptions.ReactDOM =>
     Ast.(
       JSXAttribute({
@@ -27,7 +27,7 @@ let createStyleAttributeAST =
             arguments: [
               Identifier([
                 "styles",
-                JavaScriptFormat.styleVariableName(layer.name)
+                JavaScriptFormat.styleVariableName(layer.name),
               ]),
               ObjectLiteral(
                 Layer.mapBindings(((key, value)) =>
@@ -37,14 +37,14 @@ let createStyleAttributeAST =
                       JavaScriptLogic.logicValueToJavaScriptAST(
                         colors,
                         textStyles,
-                        value
-                      )
+                        value,
+                      ),
                   })
                 ) @@
-                styles
-              )
-            ]
-          })
+                styles,
+              ),
+            ],
+          }),
       })
     )
   | _ =>
@@ -55,7 +55,7 @@ let createStyleAttributeAST =
           ArrayLiteral([
             Identifier([
               "styles",
-              JavaScriptFormat.styleVariableName(layer.name)
+              JavaScriptFormat.styleVariableName(layer.name),
             ]),
             ObjectLiteral(
               Layer.mapBindings(((key, value)) =>
@@ -65,24 +65,24 @@ let createStyleAttributeAST =
                     JavaScriptLogic.logicValueToJavaScriptAST(
                       colors,
                       textStyles,
-                      value
-                    )
+                      value,
+                    ),
                 })
               ) @@
-              styles
-            )
-          ])
+              styles,
+            ),
+          ]),
       })
     )
   };
 
 let getLayerTypeTagString =
     (framework: JavaScriptOptions.framework, layerType: Types.layerType) =>
-  switch framework {
+  switch (framework) {
   | JavaScriptOptions.ReactDOM =>
     layerType |> ReactDomTranslators.layerTypeTags
   | _ =>
-    switch layerType {
+    switch (layerType) {
     | View => "View"
     | Text => "Text"
     | Image => "Image"
@@ -100,11 +100,11 @@ let rec layerToJavaScriptAST =
           textStyles,
           variableMap,
           getAssetPath,
-          layer: Types.layer
+          layer: Types.layer,
         ) => {
   open Ast;
   let nonTextTypeName = (key: ParameterKey.t, _) =>
-    switch key {
+    switch (key) {
     | ParameterKey.Text => false
     | _ => true
     };
@@ -130,7 +130,7 @@ let rec layerToJavaScriptAST =
       colors,
       textStyles,
       layer,
-      styleVariables
+      styleVariables,
     );
   let attributes =
     main
@@ -140,14 +140,14 @@ let rec layerToJavaScriptAST =
            switch (layer.typeName, key) {
            | (Types.Image, ParameterKey.Image) => "source"
            | _ =>
-             switch framework {
+             switch (framework) {
              | JavaScriptOptions.ReactDOM =>
                key |> ReactDomTranslators.variableNames
              | _ => key |> ParameterKey.toString
              }
            };
          let attributeValue =
-           switch value {
+           switch (value) {
            | Logic.Literal(lonaValue) when lonaValue.ltype == Types.urlType =>
              let path =
                switch (lonaValue.data |> Js.Json.decodeString) {
@@ -157,17 +157,17 @@ let rec layerToJavaScriptAST =
                };
              let pathValue: Types.lonaValue = {
                ltype: Types.urlType,
-               data: Js.Json.string(path)
+               data: Js.Json.string(path),
              };
              CallExpression({
                callee: Identifier(["require"]),
-               arguments: [Literal(pathValue)]
+               arguments: [Literal(pathValue)],
              });
            | _ =>
              JavaScriptLogic.logicValueToJavaScriptAST(
                colors,
                textStyles,
-               value
+               value,
              )
            };
          JSXAttribute({name: key, value: attributeValue});
@@ -175,7 +175,7 @@ let rec layerToJavaScriptAST =
   let dynamicOrStaticValue = key =>
     switch (
       main |> ParameterMap.find_opt(key),
-      layer.parameters |> ParameterMap.find_opt(key)
+      layer.parameters |> ParameterMap.find_opt(key),
     ) {
     | (Some(param), _) => Some(param)
     | (None, Some(param)) => Some(Logic.Literal(param))
@@ -188,9 +188,9 @@ let rec layerToJavaScriptAST =
           JavaScriptLogic.logicValueToJavaScriptAST(
             colors,
             textStyles,
-            textValue
-          )
-        )
+            textValue,
+          ),
+        ),
       ]
     | _ =>
       layer.children
@@ -200,20 +200,20 @@ let rec layerToJavaScriptAST =
              colors,
              textStyles,
              variableMap,
-             getAssetPath
-           )
+             getAssetPath,
+           ),
          )
     };
   JSXElement({
     tag: getLayerTypeTagString(framework, layer.typeName),
     attributes: [styleAttribute, ...attributes],
-    content
+    content,
   });
 };
 
 type componentImports = {
   absolute: list(Ast.node),
-  relative: list(Ast.node)
+  relative: list(Ast.node),
 };
 
 let importComponents =
@@ -222,12 +222,12 @@ let importComponents =
     rootLayer |> Layer.getTypeNames;
   {
     absolute:
-      switch framework {
+      switch (framework) {
       | JavaScriptOptions.ReactDOM => []
       | _ => [
           Ast.ImportDeclaration({
             source:
-              switch framework {
+              switch (framework) {
               | JavaScriptOptions.ReactSketchapp => "@mathieudutour/react-sketchapp"
               | _ => "react-native"
               },
@@ -236,21 +236,24 @@ let importComponents =
                 List.map(typeName =>
                   Ast.ImportSpecifier({
                     imported: Types.layerTypeToString(typeName),
-                    local: None
+                    local: None,
                   })
                 ) @@
                 builtIn
               )
               @ [Ast.ImportSpecifier({imported: "StyleSheet", local: None})]
               @ (
-                switch framework {
+                switch (framework) {
                 | JavaScriptOptions.ReactSketchapp => [
-                    Ast.ImportSpecifier({imported: "TextStyles", local: None})
+                    Ast.ImportSpecifier({
+                      imported: "TextStyles",
+                      local: None,
+                    }),
                   ]
                 | _ => []
                 }
-              )
-          })
+              ),
+          }),
         ]
       },
     relative:
@@ -259,11 +262,44 @@ let importComponents =
           source:
             getComponentFile(componentName)
             |> Js.String.replace(".component", ""),
-          specifiers: [Ast.ImportDefaultSpecifier(componentName)]
+          specifiers: [Ast.ImportDefaultSpecifier(componentName)],
         })
       ) @@
-      custom
+      custom,
   };
+};
+
+let rootLayerToJavaScriptAST =
+    (
+      options: JavaScriptOptions.options,
+      colors,
+      textStyles,
+      getAssetPath,
+      assignments,
+      rootLayer,
+    ) => {
+  let astRootLayer =
+  rootLayer
+  |> layerToJavaScriptAST(
+       options.framework,
+       colors,
+       textStyles,
+       assignments,
+       getAssetPath,
+     );
+
+  JavaScriptAst.(
+    JSXElement({
+      tag: "ThemeProvider",
+      attributes: [
+        JSXAttribute({
+          name: "theme",
+          value: Identifier(["theme"])
+        })
+      ],
+      content: [astRootLayer]
+    })
+  );
 };
 
 let generate =
@@ -277,7 +313,7 @@ let generate =
       getComponent,
       getComponentFile,
       getAssetPath,
-      json
+      json,
     ) => {
   let rootLayer = json |> Decode.Component.rootLayer(getComponent);
   let logic = json |> Decode.Component.logic;
@@ -292,10 +328,11 @@ let generate =
   let defineInitialLayerValue = (layer: Types.layer, (name, _)) => {
     let layerParameterAssignments =
       Layer.logicAssignmentsFromLayerParameters(rootLayer);
-    let parameters = Layer.LayerMap.find_opt(layer, layerParameterAssignments);
+    let parameters =
+      Layer.LayerMap.find_opt(layer, layerParameterAssignments);
     let getParameter = (layer: Types.layer, parameter) =>
       ParameterMap.find_opt(parameter, layer.parameters);
-    switch parameters {
+    switch (parameters) {
     | None => Logic.None
     | Some(parameters) =>
       let assignment = ParameterMap.find_opt(name, parameters);
@@ -310,7 +347,7 @@ let generate =
         Logic.assignmentForLayerParameter(
           layer,
           name,
-          Logic.defaultValueForType(param.ltype)
+          Logic.defaultValueForType(param.ltype),
         );
       | (None, _, Some(value)) =>
         Logic.assignmentForLayerParameter(layer, name, value)
@@ -319,7 +356,7 @@ let generate =
           colors,
           textStyles,
           layer,
-          name
+          name,
         )
       };
     };
@@ -335,20 +372,21 @@ let generate =
     |> List.map(defineInitialLayerValues)
     |> List.concat;
   let logic = Logic.Block([variableDeclarations] @ newVars @ [logic]);
+
   let rootLayerAST =
     rootLayer
-    |> layerToJavaScriptAST(
-         options.framework,
+    |> rootLayerToJavaScriptAST(
+         options,
          colors,
          textStyles,
+         getAssetPath,
          assignments,
-         getAssetPath
        );
   let styleSheetAST =
     rootLayer
     |> JavaScriptStyles.layerToJavaScriptStyleSheetAST(
          options.framework,
-         colors
+         colors,
        );
   let logicAST =
     logic
@@ -365,19 +403,19 @@ let generate =
           [
             ImportDeclaration({
               source: "react",
-              specifiers: [ImportDefaultSpecifier("React")]
-            })
+              specifiers: [ImportDefaultSpecifier("React")],
+            }),
           ]
           @ absolute,
           [
             ImportDeclaration({
               source: colorsFilePath |> Js.String.replace(".json", ""),
-              specifiers: [ImportDefaultSpecifier("colors")]
+              specifiers: [ImportDefaultSpecifier("colors")],
             }),
             ImportDeclaration({
               source: textStylesFilePath |> Js.String.replace(".json", ""),
-              specifiers: [ImportDefaultSpecifier("textStyles")]
-            })
+              specifiers: [ImportDefaultSpecifier("textStyles")],
+            }),
           ]
           @ relative,
           [
@@ -392,16 +430,16 @@ let generate =
                       FunctionExpression({
                         id: None,
                         params: [],
-                        body: [logicAST, Return(rootLayerAST)]
-                      })
-                  })
-                ]
-              })
-            )
+                        body: [logicAST, Return(rootLayerAST)],
+                      }),
+                  }),
+                ],
+              }),
+            ),
           ],
-          [styleSheetAST]
-        ]
-      )
+          [styleSheetAST],
+        ],
+      ),
     )
   )
   /* Renames variables */
