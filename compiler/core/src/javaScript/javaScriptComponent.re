@@ -402,6 +402,13 @@ let generate =
               source: "react",
               specifiers: [ImportDefaultSpecifier("React")],
             }),
+            ImportDeclaration({
+              source: "styled-components",
+              specifiers: [
+                ImportDefaultSpecifier("styled"),
+                ImportSpecifier({imported: "ThemeProvider", local: None}),
+              ],
+            }),
           ]
           @ absolute,
           [
