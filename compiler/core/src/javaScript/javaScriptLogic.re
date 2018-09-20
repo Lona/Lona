@@ -40,37 +40,37 @@ let rec toJavaScriptAST = (framework, colors, textStyles, node) => {
   switch node {
   | Logic.Assign(a, b) =>
     Ast.AssignmentExpression({
-      "left": logicValueToJavaScriptASTWithColors(b),
-      "right": logicValueToJavaScriptASTWithColors(a)
+      left: logicValueToJavaScriptASTWithColors(b),
+      right: logicValueToJavaScriptASTWithColors(a)
     })
   | IfExists(a, body) =>
     IfStatement({
-      "test": logicValueToJavaScriptASTWithColors(a),
-      "consequent": [toJavaScriptAST(framework, colors, textStyles, body)]
+      test: logicValueToJavaScriptASTWithColors(a),
+      consequent: [toJavaScriptAST(framework, colors, textStyles, body)]
     })
   | Block(body) =>
     Ast.Block(body |> List.map(toJavaScriptAST(framework, colors, textStyles)))
   | If(a, cmp, b, body) =>
     let condition =
       Ast.BinaryExpression({
-        "left": logicValueToJavaScriptASTWithColors(a),
-        "operator": fromCmp(cmp),
-        "right": logicValueToJavaScriptASTWithColors(b)
+        left: logicValueToJavaScriptASTWithColors(a),
+        operator: fromCmp(cmp),
+        right: logicValueToJavaScriptASTWithColors(b)
       });
     IfStatement({
-      "test": condition,
-      "consequent": [toJavaScriptAST(framework, colors, textStyles, body)]
+      test: condition,
+      consequent: [toJavaScriptAST(framework, colors, textStyles, body)]
     });
   | Add(lhs, rhs, value) =>
     let addition =
       Ast.BinaryExpression({
-        "left": logicValueToJavaScriptASTWithColors(lhs),
-        "operator": Ast.Plus,
-        "right": logicValueToJavaScriptASTWithColors(rhs)
+        left: logicValueToJavaScriptASTWithColors(lhs),
+        operator: Ast.Plus,
+        right: logicValueToJavaScriptASTWithColors(rhs)
       });
     AssignmentExpression({
-      "left": logicValueToJavaScriptASTWithColors(value),
-      "right": addition
+      left: logicValueToJavaScriptASTWithColors(value),
+      right: addition
     });
   | Let(value) =>
     switch value {
@@ -79,12 +79,12 @@ let rec toJavaScriptAST = (framework, colors, textStyles, node) => {
     }
   | LetEqual(value, content) =>
     Ast.AssignmentExpression({
-      "left":
+      left:
         switch value {
         | Identifier(_, path) => Ast.VariableDeclaration(Ast.Identifier(path))
         | _ => Unknown
         },
-      "right": logicValueToJavaScriptASTWithColors(content)
+      right: logicValueToJavaScriptASTWithColors(content)
     })
   | None => Unknown
   };

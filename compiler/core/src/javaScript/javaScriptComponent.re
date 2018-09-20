@@ -20,11 +20,11 @@ let createStyleAttributeAST =
   | JavaScriptOptions.ReactDOM =>
     Ast.(
       JSXAttribute({
-        "name": "style",
-        "value":
+        name: "style",
+        value:
           CallExpression({
-            "callee": Identifier(["Object", "assign"]),
-            "arguments": [
+            callee: Identifier(["Object", "assign"]),
+            arguments: [
               Identifier([
                 "styles",
                 JavaScriptFormat.styleVariableName(layer.name)
@@ -32,9 +32,13 @@ let createStyleAttributeAST =
               ObjectLiteral(
                 Layer.mapBindings(((key, value)) =>
                   Property({
-                    "key": Identifier([key |> styleNameKey]),
-                    "value":
-                      JavaScriptLogic.logicValueToJavaScriptAST(colors, textStyles, value)
+                    key: Identifier([key |> styleNameKey]),
+                    value:
+                      JavaScriptLogic.logicValueToJavaScriptAST(
+                        colors,
+                        textStyles,
+                        value
+                      )
                   })
                 ) @@
                 styles
@@ -46,8 +50,8 @@ let createStyleAttributeAST =
   | _ =>
     Ast.(
       JSXAttribute({
-        "name": "style",
-        "value":
+        name: "style",
+        value:
           ArrayLiteral([
             Identifier([
               "styles",
@@ -56,9 +60,13 @@ let createStyleAttributeAST =
             ObjectLiteral(
               Layer.mapBindings(((key, value)) =>
                 Property({
-                  "key": Identifier([key |> styleNameKey]),
-                  "value":
-                    JavaScriptLogic.logicValueToJavaScriptAST(colors, textStyles, value)
+                  key: Identifier([key |> styleNameKey]),
+                  value:
+                    JavaScriptLogic.logicValueToJavaScriptAST(
+                      colors,
+                      textStyles,
+                      value
+                    )
                 })
               ) @@
               styles
@@ -152,12 +160,17 @@ let rec layerToJavaScriptAST =
                data: Js.Json.string(path)
              };
              CallExpression({
-               "callee": Identifier(["require"]),
-               "arguments": [Literal(pathValue)]
+               callee: Identifier(["require"]),
+               arguments: [Literal(pathValue)]
              });
-           | _ => JavaScriptLogic.logicValueToJavaScriptAST(colors, textStyles, value)
+           | _ =>
+             JavaScriptLogic.logicValueToJavaScriptAST(
+               colors,
+               textStyles,
+               value
+             )
            };
-         JSXAttribute({"name": key, "value": attributeValue});
+         JSXAttribute({name: key, value: attributeValue});
        });
   let dynamicOrStaticValue = key =>
     switch (
@@ -172,7 +185,11 @@ let rec layerToJavaScriptAST =
     switch (layer.typeName, dynamicOrStaticValue(Text)) {
     | (Types.Text, Some(textValue)) => [
         JSXExpressionContainer(
-          JavaScriptLogic.logicValueToJavaScriptAST(colors, textStyles, textValue)
+          JavaScriptLogic.logicValueToJavaScriptAST(
+            colors,
+            textStyles,
+            textValue
+          )
         )
       ]
     | _ =>
@@ -188,117 +205,10 @@ let rec layerToJavaScriptAST =
          )
     };
   JSXElement({
-    "tag": getLayerTypeTagString(framework, layer.typeName),
-    "attributes": [styleAttribute, ...attributes],
-    "content": content
+    tag: getLayerTypeTagString(framework, layer.typeName),
+    attributes: [styleAttribute, ...attributes],
+    content
   });
-};
-
-let getStyleValue = (colors, value: Types.lonaValue) =>
-  switch value.ltype {
-  | Named("Color", _) =>
-    let data = value.data |> Json.Decode.string;
-    switch (Color.find(colors, data)) {
-    | Some(color) => Ast.Identifier(["colors", color.id])
-    | None => Ast.Literal(value)
-    };
-  | _ => Ast.Literal(value)
-  };
-
-let toJavaScriptStyleSheetAST =
-    (framework: JavaScriptOptions.framework, colors, layer: Types.layer) => {
-  open Ast;
-  let createStyleObjectForLayer = (layer: Types.layer) => {
-    let styleParams =
-      layer.parameters
-      |> ParameterMap.filter((key, _) => Layer.parameterIsStyle(key));
-    let styleWithDefaultParams =
-      ParameterMap.assign(
-        styleParams,
-        switch framework {
-        | JavaScriptOptions.ReactDOM =>
-          ParameterMap.add(
-            ParameterKey.Display,
-            LonaValue.string("flex"),
-            ParameterMap.empty
-          )
-        | _ => ParameterMap.empty
-        }
-      );
-    Property({
-      "key": Identifier([JavaScriptFormat.styleVariableName(layer.name)]),
-      "value":
-        ObjectLiteral(
-          styleWithDefaultParams
-          |> ParameterMap.bindings
-          |> List.map(((key, value: Types.lonaValue)) =>
-               switch (
-                 key,
-                 framework,
-                 key |> ReactDomTranslators.isUnitNumberParameter
-               ) {
-               | (_, JavaScriptOptions.ReactDOM, true) =>
-                 Property({
-                   "key": Identifier([key |> ParameterKey.toString]),
-                   "value":
-                     Literal(
-                       LonaValue.string(
-                         value.data |> ReactDomTranslators.convertUnitlessStyle
-                       )
-                     )
-                 })
-               | (ParameterKey.TextStyle, _, false) =>
-                 switch (value.data |> Js.Json.decodeString) {
-                 | Some(textStyleName) =>
-                   let inner =
-                     switch framework {
-                     | JavaScriptOptions.ReactSketchapp =>
-                       CallExpression({
-                         "callee": Identifier(["TextStyles", "get"]),
-                         "arguments": [
-                           StringLiteral(
-                             textStyleName
-                             |> JavaScriptFormat.styleVariableName
-                           )
-                         ]
-                       })
-                     | _ =>
-                       Identifier([
-                         "textStyles",
-                         textStyleName |> JavaScriptFormat.styleVariableName
-                       ])
-                     };
-                   SpreadElement(inner);
-                 | None =>
-                   Js.log("Unknown TextStyle name");
-                   raise(Not_found);
-                 }
-               | (_, _, _) =>
-                 Property({
-                   "key": Identifier([key |> ParameterKey.toString]),
-                   "value": getStyleValue(colors, value)
-                 })
-               }
-             )
-        )
-    });
-  };
-  let styleObjects =
-    layer |> Layer.flatten |> List.map(createStyleObjectForLayer);
-  VariableDeclaration(
-    AssignmentExpression({
-      "left": Identifier(["styles"]),
-      "right":
-        switch framework {
-        | JavaScriptOptions.ReactDOM => ObjectLiteral(styleObjects)
-        | _ =>
-          CallExpression({
-            "callee": Identifier(["StyleSheet", "create"]),
-            "arguments": [ObjectLiteral(styleObjects)]
-          })
-        }
-    })
-  );
 };
 
 type componentImports = {
@@ -316,31 +226,26 @@ let importComponents =
       | JavaScriptOptions.ReactDOM => []
       | _ => [
           Ast.ImportDeclaration({
-            "source":
+            source:
               switch framework {
               | JavaScriptOptions.ReactSketchapp => "@mathieudutour/react-sketchapp"
               | _ => "react-native"
               },
-            "specifiers":
+            specifiers:
               (
                 List.map(typeName =>
                   Ast.ImportSpecifier({
-                    "imported": Types.layerTypeToString(typeName),
-                    "local": None
+                    imported: Types.layerTypeToString(typeName),
+                    local: None
                   })
                 ) @@
                 builtIn
               )
-              @ [
-                Ast.ImportSpecifier({"imported": "StyleSheet", "local": None})
-              ]
+              @ [Ast.ImportSpecifier({imported: "StyleSheet", local: None})]
               @ (
                 switch framework {
                 | JavaScriptOptions.ReactSketchapp => [
-                    Ast.ImportSpecifier({
-                      "imported": "TextStyles",
-                      "local": None
-                    })
+                    Ast.ImportSpecifier({imported: "TextStyles", local: None})
                   ]
                 | _ => []
                 }
@@ -351,10 +256,10 @@ let importComponents =
     relative:
       List.map(componentName =>
         Ast.ImportDeclaration({
-          "source":
+          source:
             getComponentFile(componentName)
             |> Js.String.replace(".component", ""),
-          "specifiers": [Ast.ImportDefaultSpecifier(componentName)]
+          specifiers: [Ast.ImportDefaultSpecifier(componentName)]
         })
       ) @@
       custom
@@ -375,33 +280,28 @@ let generate =
       json
     ) => {
   let rootLayer = json |> Decode.Component.rootLayer(getComponent);
-  let logic = json |> Decode.Component.logic
-
+  let logic = json |> Decode.Component.logic;
   let variableDeclarations = logic |> Logic.buildVariableDeclarations;
-
   let assignments = Layer.parameterAssignmentsFromLogic(rootLayer, logic);
-
   let conditionalAssignments = Logic.conditionallyAssignedIdentifiers(logic);
   let isConditionallyAssigned = (layer: Types.layer, (name, _)) => {
     let isAssigned = ((_, value)) =>
       value == ["layers", layer.name, name |> ParameterKey.toString];
     Logic.IdentifierSet.exists(isAssigned, conditionalAssignments);
   };
-
   let defineInitialLayerValue = (layer: Types.layer, (name, _)) => {
-    let layerParameterAssignments = Layer.logicAssignmentsFromLayerParameters(rootLayer);
+    let layerParameterAssignments =
+      Layer.logicAssignmentsFromLayerParameters(rootLayer);
     let parameters = Layer.LayerMap.find_opt(layer, layerParameterAssignments);
-    let getParameter = (layer: Types.layer, parameter) => ParameterMap.find_opt(parameter, layer.parameters);
-
+    let getParameter = (layer: Types.layer, parameter) =>
+      ParameterMap.find_opt(parameter, layer.parameters);
     switch parameters {
     | None => Logic.None
     | Some(parameters) =>
       let assignment = ParameterMap.find_opt(name, parameters);
       let parameterValue = getParameter(layer, name);
       switch (assignment, layer.typeName, parameterValue) {
-      | (Some(assignment), _, _) =>
-        Js.log2("a", ParameterKey.toString(name));
-        assignment
+      | (Some(assignment), _, _) => assignment
       | (None, Component(componentName), _) =>
         let param =
           getComponent(componentName)
@@ -424,9 +324,6 @@ let generate =
       };
     };
   };
-
-  /* let assignDefaultValue = (layer: Types.layer, (name, _)) =>
-    Logic.defaultAssignmentForLayerParameter(colors, textStyles, layer, name); */
   let defineInitialLayerValues = ((layer, propertyMap)) =>
     propertyMap
     |> ParameterMap.bindings
@@ -437,9 +334,7 @@ let generate =
     |> Layer.LayerMap.bindings
     |> List.map(defineInitialLayerValues)
     |> List.concat;
-
   let logic = Logic.Block([variableDeclarations] @ newVars @ [logic]);
-
   let rootLayerAST =
     rootLayer
     |> layerToJavaScriptAST(
@@ -450,13 +345,18 @@ let generate =
          getAssetPath
        );
   let styleSheetAST =
-    rootLayer |> toJavaScriptStyleSheetAST(options.framework, colors);
+    rootLayer
+    |> JavaScriptStyles.layerToJavaScriptStyleSheetAST(
+         options.framework,
+         colors
+       );
   let logicAST =
     logic
     |> JavaScriptLogic.toJavaScriptAST(options.framework, colors, textStyles)
     |> Ast.optimize;
   let {absolute, relative} =
     rootLayer |> importComponents(options.framework, getComponentFile);
+  let componentName = name;
   Ast.(
     Program(
       SwiftDocument.joinGroups(
@@ -464,35 +364,35 @@ let generate =
         [
           [
             ImportDeclaration({
-              "source": "react",
-              "specifiers": [ImportDefaultSpecifier("React")]
+              source: "react",
+              specifiers: [ImportDefaultSpecifier("React")]
             })
           ]
           @ absolute,
           [
             ImportDeclaration({
-              "source": colorsFilePath |> Js.String.replace(".json", ""),
-              "specifiers": [ImportDefaultSpecifier("colors")]
+              source: colorsFilePath |> Js.String.replace(".json", ""),
+              specifiers: [ImportDefaultSpecifier("colors")]
             }),
             ImportDeclaration({
-              "source": textStylesFilePath |> Js.String.replace(".json", ""),
-              "specifiers": [ImportDefaultSpecifier("textStyles")]
+              source: textStylesFilePath |> Js.String.replace(".json", ""),
+              specifiers: [ImportDefaultSpecifier("textStyles")]
             })
           ]
           @ relative,
           [
             ExportDefaultDeclaration(
               ClassDeclaration({
-                "id": name,
-                "superClass": Some("React.Component"),
-                "body": [
+                id: componentName,
+                superClass: Some("React.Component"),
+                body: [
                   MethodDefinition({
-                    "key": "render",
-                    "value":
+                    key: "render",
+                    value:
                       FunctionExpression({
-                        "id": None,
-                        "params": [],
-                        "body": /*newVars @*/ [logicAST, Return(rootLayerAST)]
+                        id: None,
+                        params: [],
+                        body: [logicAST, Return(rootLayerAST)]
                       })
                   })
                 ]

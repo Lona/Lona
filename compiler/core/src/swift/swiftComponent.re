@@ -24,6 +24,49 @@ type directionParameter = {
 let isFunctionParameter = (param: Types.parameter) =>
   param.ltype == Types.handlerType;
 
+let pressableVariableDoc = (rootLayer: Types.layer, layer: Types.layer) =>
+  SwiftAst.[
+    VariableDeclaration({
+      "modifiers": [AccessLevelModifier(PrivateModifier)],
+      "pattern":
+        IdentifierPattern({
+          "identifier":
+            SwiftIdentifier(
+              SwiftFormat.layerVariableName(rootLayer, layer, "hovered")
+            ),
+          "annotation": None
+        }),
+      "init": Some(LiteralExpression(Boolean(false))),
+      "block": None
+    }),
+    VariableDeclaration({
+      "modifiers": [AccessLevelModifier(PrivateModifier)],
+      "pattern":
+        IdentifierPattern({
+          "identifier":
+            SwiftIdentifier(
+              SwiftFormat.layerVariableName(rootLayer, layer, "pressed")
+            ),
+          "annotation": None
+        }),
+      "init": Some(LiteralExpression(Boolean(false))),
+      "block": None
+    }),
+    VariableDeclaration({
+      "modifiers": [AccessLevelModifier(PrivateModifier)],
+      "pattern":
+        IdentifierPattern({
+          "identifier":
+            SwiftIdentifier(
+              SwiftFormat.layerVariableName(rootLayer, layer, "onPress")
+            ),
+          "annotation": Some(OptionalType(TypeName("(() -> Void)")))
+        }),
+      "init": None,
+      "block": None
+    })
+  ];
+
 let generate =
     (
       config: Config.t,
@@ -300,47 +343,6 @@ let generate =
       };
     marginVariables @ paddingVariables;
   };
-  let pressableVariableDoc = (layer: Types.layer) => [
-    VariableDeclaration({
-      "modifiers": [AccessLevelModifier(PrivateModifier)],
-      "pattern":
-        IdentifierPattern({
-          "identifier":
-            SwiftIdentifier(
-              SwiftFormat.layerVariableName(rootLayer, layer, "hovered")
-            ),
-          "annotation": None
-        }),
-      "init": Some(LiteralExpression(Boolean(false))),
-      "block": None
-    }),
-    VariableDeclaration({
-      "modifiers": [AccessLevelModifier(PrivateModifier)],
-      "pattern":
-        IdentifierPattern({
-          "identifier":
-            SwiftIdentifier(
-              SwiftFormat.layerVariableName(rootLayer, layer, "pressed")
-            ),
-          "annotation": None
-        }),
-      "init": Some(LiteralExpression(Boolean(false))),
-      "block": None
-    }),
-    VariableDeclaration({
-      "modifiers": [AccessLevelModifier(PrivateModifier)],
-      "pattern":
-        IdentifierPattern({
-          "identifier":
-            SwiftIdentifier(
-              SwiftFormat.layerVariableName(rootLayer, layer, "onPress")
-            ),
-          "annotation": Some(OptionalType(TypeName("(() -> Void)")))
-        }),
-      "init": None,
-      "block": None
-    })
-  ];
   let initParameterDoc = (parameter: Decode.parameter) =>
     Parameter({
       "externalName": None,
@@ -1108,7 +1110,7 @@ let generate =
                     |> Layer.flatmap(spacingVariableDoc)
                     |> List.concat,
                     pressableLayers
-                    |> List.map(pressableVariableDoc)
+                    |> List.map(pressableVariableDoc(rootLayer))
                     |> List.concat,
                     constraints
                     |> List.map(def =>
