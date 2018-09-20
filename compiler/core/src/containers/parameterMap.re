@@ -1,18 +1,15 @@
-include
-  Map.Make(
-    {
-      type t = ParameterKey.t;
-      let compare = (a: ParameterKey.t, b: ParameterKey.t) : int =>
-        compare(a, b);
-    }
-  );
+include Map.Make({
+  type t = ParameterKey.t;
+  let compare = (a: ParameterKey.t, b: ParameterKey.t): int => compare(a, b);
+});
 
 let fromJsDict = dict =>
   dict
   |> Js.Dict.entries
   |> Array.fold_left(
-       (map, (key, value)) => add(ParameterKey.fromString(key), value, map),
-       empty
+       (map, (key, value)) =>
+         add(ParameterKey.fromString(key), value, map),
+       empty,
      );
 
 let find_opt = (key, map) =>
@@ -30,5 +27,5 @@ let assign = (base, extender) =>
       | (None, None) => None
       },
     base,
-    extender
+    extender,
   );

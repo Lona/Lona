@@ -1,7 +1,7 @@
 type context = {
   .
   "target": string,
-  "framework": string
+  "framework": string,
 };
 
 type t = {transformType: (context, string, string) => string};
@@ -13,6 +13,6 @@ let applyTransformTypePlugins = (plugins: list(t), context, filename, value) => 
   List.fold_left(
     (a, plugin) => f(context, filename, a, plugin),
     value,
-    plugins
+    plugins,
   );
 };

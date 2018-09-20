@@ -1,11 +1,11 @@
 [@bs.val] [@bs.module "csscolorparser"] [@bs.return nullable]
-external _parseCSSColor : string => option(array(float)) = "parseCSSColor";
+external _parseCSSColor: string => option(array(float)) = "parseCSSColor";
 
 type cssColor = {
   r: float,
   g: float,
   b: float,
-  a: float
+  a: float,
 };
 
 let parseColor = (value: string) =>

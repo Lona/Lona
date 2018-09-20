@@ -4,32 +4,32 @@ type node =
       {
         .
         "prolog": node,
-        "element": node
-      }
+        "element": node,
+      },
     )
   | Prolog({. "xmlDecl": option(node)})
   | XMLDecl(
       {
         .
         "version": string,
-        "encoding": option(string)
-      }
+        "encoding": option(string),
+      },
     )
   | Element(
       {
         .
         "tag": string,
         "attributes": list(node),
-        "content": list(node)
-      }
+        "content": list(node),
+      },
     )
   | Comment(string)
   | Attribute(
       {
         .
         "name": string,
-        "value": string
-      }
+        "value": string,
+      },
     )
   | CharData(string)
   | Empty;

@@ -8,12 +8,12 @@ type t = {
   lineHeight: option(float),
   letterSpacing: option(float),
   color: option(string),
-  extends: option(string)
+  extends: option(string),
 };
 
 type file = {
   styles: list(t),
-  defaultStyle: t
+  defaultStyle: t,
 };
 
 let emptyStyle = {
@@ -26,7 +26,7 @@ let emptyStyle = {
   lineHeight: None,
   letterSpacing: None,
   color: None,
-  extends: None
+  extends: None,
 };
 
 let normalizeFontWeight =
@@ -70,9 +70,10 @@ let parseFile = content => {
       json |> optional(field("fontWeight", string)) |> normalizeFontWeight,
     fontSize: json |> optional(field("fontSize", Json.Decode.float)),
     lineHeight: json |> optional(field("lineHeight", Json.Decode.float)),
-    letterSpacing: json |> optional(field("letterSpacing", Json.Decode.float)),
+    letterSpacing:
+      json |> optional(field("letterSpacing", Json.Decode.float)),
     color: json |> optional(field("color", string)),
-    extends: json |> optional(field("extends", string))
+    extends: json |> optional(field("extends", string)),
   };
   let styles = parsed |> field("styles", list(parseTextStyle));
   let defaultStyle =

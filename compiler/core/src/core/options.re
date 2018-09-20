@@ -6,5 +6,5 @@ type preset =
 [@bs.deriving jsConverter]
 type options = {
   preset,
-  filterComponents: option(string)
+  filterComponents: option(string),
 };

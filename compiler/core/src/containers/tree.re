@@ -11,7 +11,7 @@ module Make = (Item: TREE_ITEM) => {
     List.fold_left(
       (acc, item) => reduce(f, acc, item),
       f(item, initialValue),
-      Item.children(item)
+      Item.children(item),
     );
   let rec map = (f, item) =>
     f(Item.restore(item, Item.children(item) |> List.map(map(f))));
@@ -21,7 +21,7 @@ module Make = (Item: TREE_ITEM) => {
   };
   let find_opt = (f, node) => {
     let rec findList = items =>
-      switch items {
+      switch (items) {
       | [] => None
       | [head] => f(head) ? Some(head) : findList(Item.children(head))
       | [head, ...tail] => f(head) ? Some(head) : findList(tail)
@@ -40,7 +40,7 @@ module Make = (Item: TREE_ITEM) => {
         | Some(a) => a
         | None => item
         },
-      root
+      root,
     );
   let replace = (f, root) => {
     let found = ref(false);
@@ -56,7 +56,7 @@ module Make = (Item: TREE_ITEM) => {
           | None => item
           };
         },
-      root
+      root,
     );
   };
   let replaceWith = (original, updated, root) =>
@@ -75,7 +75,7 @@ module Make = (Item: TREE_ITEM) => {
           | None => item
           };
         },
-      root
+      root,
     );
   };
 };

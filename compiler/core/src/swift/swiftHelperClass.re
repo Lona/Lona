@@ -21,18 +21,18 @@ let generateImageWithBackgroundColor =
           "pattern":
             IdentifierPattern({
               "identifier": SwiftIdentifier("fillColor"),
-              "annotation": None
+              "annotation": None,
             }),
           "init":
             Some(
               MemberExpression([
                 SwiftIdentifier(
-                  SwiftDocument.colorTypeName(swiftOptions.framework)
+                  SwiftDocument.colorTypeName(swiftOptions.framework),
                 ),
-                SwiftIdentifier("clear")
-              ])
+                SwiftIdentifier("clear"),
+              ]),
             ),
-          "block": None
+          "block": None,
         }),
         Empty,
         FunctionDeclaration({
@@ -43,44 +43,44 @@ let generateImageWithBackgroundColor =
               "annotation": TypeName("NSRect"),
               "externalName": Some("_"),
               "localName": "dirtyRect",
-              "defaultValue": None
-            })
+              "defaultValue": None,
+            }),
           ],
           "body": [
             FunctionCallExpression({
               "name":
                 MemberExpression([
                   SwiftIdentifier("fillColor"),
-                  SwiftIdentifier("set")
+                  SwiftIdentifier("set"),
                 ]),
-              "arguments": []
+              "arguments": [],
             }),
             FunctionCallExpression({
               "name":
                 MemberExpression([
                   SwiftIdentifier("bounds"),
-                  SwiftIdentifier("fill")
+                  SwiftIdentifier("fill"),
                 ]),
-              "arguments": []
+              "arguments": [],
             }),
             FunctionCallExpression({
               "name":
                 MemberExpression([
                   SwiftIdentifier("super"),
-                  SwiftIdentifier("draw")
+                  SwiftIdentifier("draw"),
                 ]),
               "arguments": [
                 FunctionCallArgument({
                   "name": None,
-                  "value": SwiftIdentifier("dirtyRect")
-                })
-              ]
-            })
+                  "value": SwiftIdentifier("dirtyRect"),
+                }),
+              ],
+            }),
           ],
           "result": None,
-          "throws": false
-        })
-      ]
+          "throws": false,
+        }),
+      ],
     }),
-    Empty
+    Empty,
   ];
