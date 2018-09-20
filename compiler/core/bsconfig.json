@@ -14,7 +14,7 @@
     "in-source": true
   },
   "suffix": ".bs.js",
-  "bs-dependencies": ["bs-node", "bs-json", "bs-glob"],
+  "bs-dependencies": ["bs-node", "@glennsl/bs-json", "bs-glob"],
   "namespace": true,
   "refmt": 3
 }
