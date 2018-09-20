@@ -10,12 +10,15 @@ The easiest way to use Lona Studio is by downloading the prebuilt Mac App binary
 
 ## Building from Source
 
-First, make sure you have [`bundler`](http://bundler.io/) and [Cocoapods](https://cocoapods.org/) installed. Then checkout the repo and run:
+First, make sure you have [`bundler`](http://bundler.io/), [Cocoapods](https://cocoapods.org/) and [nvm](https://github.com/creationix/nvm/#installation) installed. Then checkout the repo and run:
 
 ```
 cd studio
 bundle && bundle exec pod install
 carthage update --new-resolver --platform macOS
+cd LonaStudio/Scripting/Modules/component-to-sketch
+nvm use 8.4
+npm install
 ```
 
 Open LonaStudio.xcworkspace and build in Xcode 9.3+ on High Sierra+. If there are warnings (e.g. about project settings) you can ignore them.
