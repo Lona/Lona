@@ -1,11 +1,8 @@
 module LayerMap = {
-  include
-    Map.Make(
-      {
-        type t = Types.layer;
-        let compare = (a: t, b: t) : int => compare(a.name, b.name);
-      }
-    );
+  include Map.Make({
+    type t = Types.layer;
+    let compare = (a: t, b: t): int => compare(a.name, b.name);
+  });
   let find_opt = (key, map) =>
     switch (find(key, map)) {
     | item => Some(item)
@@ -14,7 +11,7 @@ module LayerMap = {
 };
 
 let isPrimitiveTypeName = (typeName: Types.layerType) =>
-  switch typeName {
+  switch (typeName) {
   | Types.View
   | Types.Text
   | Types.Image
@@ -32,7 +29,7 @@ type parameterCategory =
   | Meta;
 
 let getParameterCategory = (x: ParameterKey.t) =>
-  switch x {
+  switch (x) {
   | AlignItems => Style
   | AlignSelf => Style
   | Display => Style
@@ -144,12 +141,12 @@ let getNumberParameter = (parameterName, layer: Types.layer) =>
 
 type dimensionSizingRules = {
   width: Types.sizingRule,
-  height: Types.sizingRule
+  height: Types.sizingRule,
 };
 
 let getSizingRules = (parent: option(Types.layer), layer: Types.layer) => {
   let parentDirection =
-    switch parent {
+    switch (parent) {
     | Some(parent) => getFlexDirection(parent)
     | None => "column"
     };
@@ -188,7 +185,7 @@ type edgeInsets = {
   top: float,
   right: float,
   bottom: float,
-  left: float
+  left: float,
 };
 
 let getInsets = (prefix, layer: Types.layer) => {
@@ -196,7 +193,7 @@ let getInsets = (prefix, layer: Types.layer) => {
   let extract = key =>
     ParameterMap.find_opt(
       ParameterKey.fromString(prefix ++ key),
-      layer.parameters
+      layer.parameters,
     );
   let unwrap =
     fun
@@ -218,12 +215,16 @@ let parameterAssignmentsFromLogic = (layer, node) => {
     | Some(found) =>
       switch (LayerMap.find_opt(found, acc)) {
       | Some(x) =>
-        LayerMap.add(found, ParameterMap.add(propertyName, logicValue, x), acc)
+        LayerMap.add(
+          found,
+          ParameterMap.add(propertyName, logicValue, x),
+          acc,
+        )
       | None =>
         LayerMap.add(
           found,
           ParameterMap.add(propertyName, logicValue, ParameterMap.empty),
-          acc
+          acc,
         )
       }
     | None => acc
@@ -233,17 +234,17 @@ let parameterAssignmentsFromLogic = (layer, node) => {
   |> List.map(((type_, path)) => Logic.Identifier(type_, path))
   |> List.fold_left(
        (acc, item) =>
-         switch item {
+         switch (item) {
          | Logic.Identifier(_, [_, layerName, propertyName]) =>
            updateAssignments(
              layerName,
              propertyName |> ParameterKey.fromString,
              item,
-             acc
+             acc,
            )
          | _ => acc
          },
-       LayerMap.empty
+       LayerMap.empty,
      );
 };
 
@@ -258,7 +259,7 @@ let logicAssignmentsFromLayerParameters = layer => {
       let receiver =
         Logic.Identifier(
           lonaValue.ltype,
-          ["layers", layer.name, parameterName |> ParameterKey.toString]
+          ["layers", layer.name, parameterName |> ParameterKey.toString],
         );
       let source = Logic.Literal(lonaValue);
       let assignment = Logic.Assign(source, receiver);
@@ -289,14 +290,14 @@ let isTextLayer = (layer: Types.layer) => layer.typeName == Types.Text;
 let isImageLayer = (layer: Types.layer) => layer.typeName == Types.Image;
 
 let isComponentLayer = (layer: Types.layer) =>
-  switch layer.typeName {
+  switch (layer.typeName) {
   | Component(_) => true
   | _ => false
   };
 
 type availableTypeNames = {
   builtIn: list(Types.layerType),
-  custom: list(string)
+  custom: list(string),
 };
 
 let getTypeNames = rootLayer => {
@@ -306,18 +307,18 @@ let getTypeNames = rootLayer => {
     |> List.map((layer: Types.layer) => layer.typeName)
     |> List.fold_left(
          (acc, item) => List.mem(item, acc) ? acc : [item, ...acc],
-         []
+         [],
        );
   let builtInTypeNames = typeNames |> List.filter(isPrimitiveTypeName);
   let customTypeNames =
     typeNames
     |> List.fold_left(
          (acc, item) =>
-           switch item {
+           switch (item) {
            | Types.Component(name) => [name, ...acc]
            | _ => acc
            },
-         []
+         [],
        );
   {builtIn: builtInTypeNames, custom: customTypeNames};
 };

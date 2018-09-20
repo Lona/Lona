@@ -1,10 +1,7 @@
-include
-  Map.Make(
-    {
-      type t = string;
-      let compare = (a: string, b: string) : int => compare(a, b);
-    }
-  );
+include Map.Make({
+  type t = string;
+  let compare = (a: string, b: string): int => compare(a, b);
+});
 
 let fromList = list =>
   List.fold_left((map, (key, value)) => add(key, value, map), empty, list);
@@ -23,7 +20,7 @@ let assign = (base, extender) =>
       | (None, None) => None
       },
     base,
-    extender
+    extender,
   );
 
 let find_opt = (key, map) =>

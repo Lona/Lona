@@ -3,30 +3,30 @@ type expr =
       {
         .
         "assignee": expr,
-        "content": expr
-      }
+        "content": expr,
+      },
     )
   | IfExpression(
       {
         .
         "condition": expr,
-        "body": list(expr)
-      }
+        "body": list(expr),
+      },
     )
   | VariableDeclarationExpression(
       {
         .
         "identifier": expr,
-        "content": expr
-      }
+        "content": expr,
+      },
     )
   | BinaryExpression(
       {
         .
         "left": expr,
         "op": expr,
-        "right": expr
-      }
+        "right": expr,
+      },
     )
   | MemberExpression(list(expr))
   | IdentifierExpression(string)

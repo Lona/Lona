@@ -1,10 +1,7 @@
-include
-  Set.Make(
-    {
-      type t = string;
-      let compare = (a: string, b: string) : int => compare(a, b);
-    }
-  );
+include Set.Make({
+  type t = string;
+  let compare = (a: string, b: string): int => compare(a, b);
+});
 
 let find_opt = (name, set) =>
   switch (find(name, set)) {

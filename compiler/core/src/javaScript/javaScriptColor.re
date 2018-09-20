@@ -5,9 +5,9 @@ let render = colors => {
     let property =
       Property({
         key: Identifier([color.id]),
-        value: Literal(LonaValue.string(color.value))
+        value: Literal(LonaValue.string(color.value)),
       });
-    switch color.comment {
+    switch (color.comment) {
     | None
     | Some("") => property
     | Some(comment) => LineEndComment({comment, line: property})
@@ -15,8 +15,10 @@ let render = colors => {
   };
   let doc =
     Program([
-      ExportDefaultDeclaration(ObjectLiteral(colors |> List.map(propertyDoc))),
-      Empty
+      ExportDefaultDeclaration(
+        ObjectLiteral(colors |> List.map(propertyDoc)),
+      ),
+      Empty,
     ]);
   JavaScriptRender.toString(doc);
 };

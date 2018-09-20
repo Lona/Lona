@@ -8,21 +8,24 @@ let render =
         "comment":
           (color.value |> String.uppercase)
           ++ (
-            switch color.comment {
+            switch (color.comment) {
             | Some(comment) => " - " ++ comment
             | _ => ""
             }
           ),
         "line":
           ConstantDeclaration({
-            "modifiers": [AccessLevelModifier(PublicModifier), StaticModifier],
+            "modifiers": [
+              AccessLevelModifier(PublicModifier),
+              StaticModifier,
+            ],
             "pattern":
               IdentifierPattern({
                 "identifier": SwiftIdentifier(color.id),
-                "annotation": None
+                "annotation": None,
               }),
-            "init": Some(LiteralExpression(Color(color.value)))
-          })
+            "init": Some(LiteralExpression(Color(color.value))),
+          }),
       });
     TopLevelDeclaration({
       "statements": [
@@ -32,9 +35,9 @@ let render =
           "name": "Colors",
           "inherits": [],
           "modifier": Some(PublicModifier),
-          "body": colors |> List.map(colorConstantDoc)
-        })
-      ]
+          "body": colors |> List.map(colorConstantDoc),
+        }),
+      ],
     });
   };
   let airbnbDoc = () => {
@@ -44,7 +47,7 @@ let render =
         "pattern":
           IdentifierPattern({
             "identifier": SwiftIdentifier(color.id),
-            "annotation": None
+            "annotation": None,
           }),
         "init":
           Some(
@@ -53,15 +56,15 @@ let render =
               "arguments": [
                 FunctionCallArgument({
                   "name": Some(SwiftIdentifier("hex")),
-                  "value": LiteralExpression(String(color.value))
+                  "value": LiteralExpression(String(color.value)),
                 }),
                 FunctionCallArgument({
                   "name": Some(SwiftIdentifier("preview")),
-                  "value": LiteralExpression(Color(color.value))
-                })
-              ]
-            })
-          )
+                  "value": LiteralExpression(Color(color.value)),
+                }),
+              ],
+            }),
+          ),
       });
     let colorFuncDoc = () =>
       FunctionDeclaration({
@@ -72,15 +75,15 @@ let render =
             "annotation": TypeName("String"),
             "externalName": None,
             "localName": "hex",
-            "defaultValue": None
+            "defaultValue": None,
           }),
           Parameter({
             "annotation":
               TypeName(SwiftDocument.colorTypeName(swiftOptions.framework)),
             "externalName": None,
             "localName": "preview",
-            "defaultValue": None
-          })
+            "defaultValue": None,
+          }),
         ],
         "body": [
           ReturnStatement(
@@ -88,21 +91,23 @@ let render =
               FunctionCallExpression({
                 "name":
                   SwiftIdentifier(
-                    SwiftDocument.colorTypeName(swiftOptions.framework)
+                    SwiftDocument.colorTypeName(swiftOptions.framework),
                   ),
                 "arguments": [
                   FunctionCallArgument({
                     "name": Some(SwiftIdentifier("hex")),
-                    "value": SwiftIdentifier("hex")
-                  })
-                ]
-              })
-            )
-          )
+                    "value": SwiftIdentifier("hex"),
+                  }),
+                ],
+              }),
+            ),
+          ),
         ],
         "result":
-          Some(TypeName(SwiftDocument.colorTypeName(swiftOptions.framework))),
-        "throws": false
+          Some(
+            TypeName(SwiftDocument.colorTypeName(swiftOptions.framework)),
+          ),
+        "throws": false,
       });
     TopLevelDeclaration({
       "statements": [
@@ -113,14 +118,14 @@ let render =
           "name": "Colors",
           "inherits": [],
           "modifier": Some(PublicModifier),
-          "body": colors |> List.map(colorConstantDoc)
+          "body": colors |> List.map(colorConstantDoc),
         }),
         Empty,
         DocComment(
-          "Returns a color represented by `hex` string. We send #colorLiteral in `preview` to make it easy for developers to see which color the hex string is referring to. Please keep these in sync."
+          "Returns a color represented by `hex` string. We send #colorLiteral in `preview` to make it easy for developers to see which color the hex string is referring to. Please keep these in sync.",
         ),
-        colorFuncDoc()
-      ]
+        colorFuncDoc(),
+      ],
     });
   };
   SwiftRender.toString(options.preset == Airbnb ? airbnbDoc() : doc());

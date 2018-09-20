@@ -12,7 +12,7 @@ open SwiftAst;
 let render =
     (options: SwiftOptions.options, colors, textStyles: TextStyle.file) => {
   let unwrapOptional = (f, a) =>
-    switch a {
+    switch (a) {
     | Some(value) => [f(value)]
     | None => []
     };
@@ -36,14 +36,14 @@ let render =
         |> unwrapOptional(value =>
              FunctionCallArgument({
                "name": Some(SwiftIdentifier("family")),
-               "value": LiteralExpression(String(value))
+               "value": LiteralExpression(String(value)),
              })
            ),
         lookup(style => style.fontName)
         |> unwrapOptional(value =>
              FunctionCallArgument({
                "name": Some(SwiftIdentifier("name")),
-               "value": LiteralExpression(String(value))
+               "value": LiteralExpression(String(value)),
              })
            ),
         lookup(style => style.fontWeight)
@@ -53,32 +53,32 @@ let render =
                "value":
                  MemberExpression([
                    SwiftIdentifier(
-                     SwiftDocument.fontTypeName(options.framework)
+                     SwiftDocument.fontTypeName(options.framework),
                    ),
                    SwiftIdentifier("Weight"),
-                   SwiftIdentifier(convertFontWeight(value))
-                 ])
+                   SwiftIdentifier(convertFontWeight(value)),
+                 ]),
              })
            ),
         lookup(style => style.fontSize)
         |> unwrapOptional(value =>
              FunctionCallArgument({
                "name": Some(SwiftIdentifier("size")),
-               "value": LiteralExpression(FloatingPoint(value))
+               "value": LiteralExpression(FloatingPoint(value)),
              })
            ),
         lookup(style => style.lineHeight)
         |> unwrapOptional(value =>
              FunctionCallArgument({
                "name": Some(SwiftIdentifier("lineHeight")),
-               "value": LiteralExpression(FloatingPoint(value))
+               "value": LiteralExpression(FloatingPoint(value)),
              })
            ),
         lookup(style => style.letterSpacing)
         |> unwrapOptional(value =>
              FunctionCallArgument({
                "name": Some(SwiftIdentifier("kerning")),
-               "value": LiteralExpression(FloatingPoint(value))
+               "value": LiteralExpression(FloatingPoint(value)),
              })
            ),
         lookup(style => style.color)
@@ -88,15 +88,15 @@ let render =
                | Some(color) =>
                  MemberExpression([
                    SwiftIdentifier("Colors"),
-                   SwiftIdentifier(color.id)
+                   SwiftIdentifier(color.id),
                  ])
                | None => LiteralExpression(Color(value))
                };
              FunctionCallArgument({
                "name": Some(SwiftIdentifier("color")),
-               "value": value
+               "value": value,
              });
-           })
+           }),
       ];
     }
     |> List.concat;
@@ -106,15 +106,15 @@ let render =
       "pattern":
         IdentifierPattern({
           "identifier": SwiftIdentifier(textStyle.id),
-          "annotation": None
+          "annotation": None,
         }),
       "init":
         Some(
           FunctionCallExpression({
             name: SwiftIdentifier("TextStyle"),
-            arguments: argumentsDoc(textStyle)
-          })
-        )
+            arguments: argumentsDoc(textStyle),
+          }),
+        ),
     });
   /* Print a generic default style if none is defined in `textStyles.json` */
   let defaultStyleDoc = (textStyle: TextStyle.t) =>
@@ -134,9 +134,9 @@ let render =
           "isFinal": false,
           "body":
             (textStyles.styles |> List.map(textStyleConstantDoc))
-            @ (textStyles.defaultStyle |> defaultStyleDoc)
-        })
-      ]
+            @ (textStyles.defaultStyle |> defaultStyleDoc),
+        }),
+      ],
     });
   SwiftRender.toString(doc);
 };

@@ -10,7 +10,7 @@
     "start": "bsb -make-world -w",
     "clean": "bsb -clean-world",
     "bundle": "npm run clean && npm run build && webpack",
-    "format": "refmt --parse=re --print=re --in-place src/**/*.re",
+    "format": "bsrefmt --parse=re --print=re --in-place src/**/*.re",
     "prepublishOnly": "yarn clean && yarn build && yarn bundle",
     "snapshotJsDom":
       "node src/main.bs.js workspace js ../../examples/test ../../examples/generated/test/react-dom --framework=reactdom",
