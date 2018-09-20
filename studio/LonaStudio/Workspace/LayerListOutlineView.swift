@@ -68,7 +68,7 @@ final class LayerListOutlineView: NSOutlineView, NSTextFieldDelegate {
             parent = targetLayer
             index = parent.children.count
         } else {
-            parent = self.parent(forItem: targetLayer) as! CSLayer
+            parent = self.parent(forItem: targetLayer) as? CSLayer
             index = self.childIndex(forItem: targetLayer) + 1
         }
 
