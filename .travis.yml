@@ -11,7 +11,7 @@ env:
     - WORKSPACE="LonaStudio.xcworkspace"
     - SCHEME="LonaStudio"
     - DESTINATION="arch=x86_64"
-    - SDK=macosx10.13
+    - SDK=macosx10.14
   matrix:
     - BUILD_EXAMPLE="YES"
     - RUN_TESTS="YES"
