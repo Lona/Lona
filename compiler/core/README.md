@@ -28,7 +28,13 @@ There are currently 3 commands:
 * `component` - Generate component code from a `.component` file
 * `workspace` - Generate a directory with code for colors, text styles, and every `.component` file in a directory
 
-For each command, you'll choose a code generation `target`: `swift`, `js`, or `xml`
+For each command, you'll choose a code generation `target`: `swift`, `js`, or `xml`.
+
+In the case of `js`, you can also specify a framework using the `--framework=...` option:
+
+* `reactnative`: [React Native](https://facebook.github.io/react-native/) (default)
+* `reactdom`: [React DOM](https://reactjs.org)
+* `reactsketchapp`: [React SketchApp](http://airbnb.io/react-sketchapp/)
 
 ### Generate colors
 
