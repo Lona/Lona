@@ -86,6 +86,66 @@ module Types = {
   };
 };
 
+module Styles = {
+  let optionalLonaValue = (name, ltype, json) =>
+    switch (json |> optional(field(name, x => x))) {
+    | Some(data) => Some({data, ltype: numberType})
+    | None => None
+    };
+  let border = json: Styles.border(option(lonaValue)) => {
+    borderRadius: json |> optionalLonaValue("borderRadius", numberType),
+    borderWidth: json |> optionalLonaValue("borderWidth", numberType),
+    borderColor: json |> optionalLonaValue("borderColor", colorType),
+  };
+  let edgeInsets = (prefix, json): Styles.edgeInsets(option(lonaValue)) => {
+    top: json |> optionalLonaValue(prefix ++ "Top", numberType),
+    right: json |> optionalLonaValue(prefix ++ "Right", numberType),
+    bottom: json |> optionalLonaValue(prefix ++ "Bottom", numberType),
+    left: json |> optionalLonaValue(prefix ++ "Left", numberType),
+  };
+  let flexLayout = json: Styles.flexLayout(option(lonaValue)) => {
+    alignItems: json |> optionalLonaValue("alignItems", stringType),
+    alignSelf: json |> optionalLonaValue("alignSelf", stringType),
+    display: json |> optionalLonaValue("display", stringType),
+    justifyContent: json |> optionalLonaValue("justifyContent", stringType),
+    flexDirection: json |> optionalLonaValue("flexDirection", stringType),
+    flex: json |> optionalLonaValue("flex", numberType),
+    width: json |> optionalLonaValue("width", numberType),
+    height: json |> optionalLonaValue("height", numberType),
+  };
+  let layout = json: Styles.layout(option(lonaValue)) => {
+    flex: json |> flexLayout,
+    padding: json |> edgeInsets("padding"),
+    margin: json |> edgeInsets("margin"),
+  };
+  let textStyles = json: Styles.textStyles(option(lonaValue)) => {
+    textAlign: json |> optionalLonaValue("textAlign", stringType),
+    textStyle: json |> optionalLonaValue("textStyle", stringType),
+  };
+  let viewLayerStyles = json: Styles.viewLayerStyles(option(lonaValue)) => {
+    layout: json |> layout,
+    border: json |> border,
+    backgroundColor: json |> optionalLonaValue("backgroundColor", colorType),
+    textStyles: json |> textStyles,
+  };
+  let styleSets = json: list(Styles.namedStyles(option(lonaValue))) =>
+    json
+    |> Js.Json.decodeObject
+    |> Js.Option.getExn
+    |> Js.Dict.entries
+    |> (
+      x =>
+        Array.to_list(x)
+        |> List.map(pair => {
+             let (name, styleSet) = pair;
+             (
+               {name, styles: styleSet |> viewLayerStyles}:
+                 Styles.namedStyles(option(lonaValue))
+             );
+           })
+    );
+};
+
 module Parameters = {
   let parameterKey = json => json |> string |> ParameterKey.fromString;
   let parameter = json => {
@@ -112,9 +172,15 @@ module Layer = {
       |> Js.Json.decodeObject
       |> Js.Option.getExn
       |> ParameterMap.fromJsDict
+      |> ParameterMap.filter((key, value) =>
+           switch (key) {
+           | Custom("styles") => false
+           | _ => true
+           }
+         )
       |> ParameterMap.mapi((key, value) =>
-           switch (typeName) {
-           | Component(name) =>
+           switch (typeName, key) {
+           | (Component(name), _) =>
              let param =
                getComponent(name)
                |> field("params", list(Parameters.parameter))
@@ -125,13 +191,17 @@ module Layer = {
                Js.log2("Unknown built-in parameter when deserializing:", key);
                raise(UnknownParameter(ParameterKey.toString(key)));
              };
-           | _ => {ltype: parameterType(key), data: value}
+           | (_, _) => {ltype: parameterType(key), data: value}
            }
          );
+    /* json
+       |> at(["params", "styles"], Styles.styleSets)
+       |> LonaCompilerCore.Styles.print; */
     let name = field("id", string, json);
     {
       typeName,
       name,
+      /* styles: json |> at(["params", "styles", "normal"], Styles.viewLayerStyles), */
       parameters: field("params", parameterDictionary, json),
       children:
         switch (
@@ -271,24 +341,10 @@ let rec logicNode = json => {
       }
     );
   fromExpr(decodeExpr(json));
-  /* switch (at(["function", "name"], string, json)) {
-     | "assign(lhs, to rhs)" =>
-       Logic.Assign(arg(["lhs"], value), arg(["rhs"], value))
-     | "if(lhs, is cmp, rhs)" =>
-       If(
-         arg(["lhs"], value),
-         arg(["cmp", "value", "data"], cmp),
-         arg(["rhs"], value),
-         Block(nodes)
-       )
-     | "if(value)" => IfExists(arg(["value"], value), Block(nodes))
-     | "add(lhs, to rhs, and assign to value)" =>
-       Add(arg(["lhs"], value), arg(["rhs"], value), arg(["value"], value))
-     | _ => None
-     }; */
 };
 
 module Component = {
+  open Json.Decode;
   let parameters = json => field("params", list(Parameters.parameter), json);
   let rootLayer = (getComponent, json) =>
     field("root", Layer.layer(getComponent), json);

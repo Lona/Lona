@@ -87,7 +87,7 @@ let rec render = ast: Prettier.Doc.t('a) =>
         join(
           s(", "),
           (defaultSpecifiers |> List.map(render))
-          @ (List.length(defaultSpecifiers) > 0 ? [] : [namedImports]),
+          @ (List.length(specifiers) > 0 ? [namedImports] : []),
         ),
       );
     group(

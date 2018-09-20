@@ -269,6 +269,36 @@ let importComponents =
   };
 };
 
+let rootLayerToJavaScriptAST =
+    (
+      options: JavaScriptOptions.options,
+      colors,
+      textStyles,
+      getAssetPath,
+      assignments,
+      rootLayer,
+    ) => {
+  let astRootLayer =
+    rootLayer
+    |> layerToJavaScriptAST(
+         options.framework,
+         colors,
+         textStyles,
+         assignments,
+         getAssetPath,
+       );
+
+  JavaScriptAst.(
+    JSXElement({
+      tag: "ThemeProvider",
+      attributes: [
+        JSXAttribute({name: "theme", value: Identifier(["theme"])}),
+      ],
+      content: [astRootLayer],
+    })
+  );
+};
+
 let generate =
     (
       options: JavaScriptOptions.options,
@@ -283,6 +313,9 @@ let generate =
       json,
     ) => {
   let rootLayer = json |> Decode.Component.rootLayer(getComponent);
+
+  /* Js.log2("styles", Js.String.make(rootLayer.styles)); */
+
   let logic = json |> Decode.Component.logic;
   let variableDeclarations = logic |> Logic.buildVariableDeclarations;
   let assignments = Layer.parameterAssignmentsFromLogic(rootLayer, logic);
@@ -339,14 +372,15 @@ let generate =
     |> List.map(defineInitialLayerValues)
     |> List.concat;
   let logic = Logic.Block([variableDeclarations] @ newVars @ [logic]);
+
   let rootLayerAST =
     rootLayer
-    |> layerToJavaScriptAST(
-         options.framework,
+    |> rootLayerToJavaScriptAST(
+         options,
          colors,
          textStyles,
-         assignments,
          getAssetPath,
+         assignments,
        );
   let styleSheetAST =
     rootLayer
@@ -370,6 +404,13 @@ let generate =
             ImportDeclaration({
               source: "react",
               specifiers: [ImportDefaultSpecifier("React")],
+            }),
+            ImportDeclaration({
+              source: "styled-components",
+              specifiers: [
+                ImportDefaultSpecifier("styled"),
+                ImportSpecifier({imported: "ThemeProvider", local: None}),
+              ],
             }),
           ]
           @ absolute,
