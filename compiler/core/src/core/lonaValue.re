@@ -5,7 +5,7 @@ let null = () : Types.lonaValue => {
 
 let boolean = value : Types.lonaValue => {
   ltype: Types.booleanType,
-  data: Js.Json.boolean(Js.Boolean.to_js_boolean(value))
+  data: Js.Json.boolean(value)
 };
 
 let number = value : Types.lonaValue => {
@@ -33,40 +33,39 @@ let url = value : Types.lonaValue => {
   data: Js.Json.string(value)
 };
 
-let parameterDefaultValue = (key) => {
-  switch (key) {
-    | ParameterKey.Text => string("")
-    | ParameterKey.Visible => boolean(true)
-    | ParameterKey.NumberOfLines => number(0.)
-    | ParameterKey.BackgroundColor => color("transparent")
-    | ParameterKey.Image => url("")
-    /* Styles */
-    | ParameterKey.AlignItems => string("stretch")
-    | ParameterKey.AlignSelf => string("flex-start")
-    | ParameterKey.Flex => number(0.)
-    | ParameterKey.Display => null()
-    | ParameterKey.TextAlign => string("left")
-    | ParameterKey.FlexDirection => string("column")
-    | ParameterKey.TextStyle => textStyle("defaultStyle") /* ? */
-    | ParameterKey.JustifyContent => string("flex-start")
-    | ParameterKey.MarginTop => number(0.)
-    | ParameterKey.MarginRight => number(0.)
-    | ParameterKey.MarginBottom => number(0.)
-    | ParameterKey.MarginLeft => number(0.)
-    | ParameterKey.PaddingTop => number(0.)
-    | ParameterKey.PaddingRight => number(0.)
-    | ParameterKey.PaddingBottom => number(0.)
-    | ParameterKey.PaddingLeft => number(0.)
-    | ParameterKey.BorderRadius => number(0.)
-    | ParameterKey.BorderWidth => number(0.)
-    | ParameterKey.BorderColor => color("transparent")
-    | ParameterKey.Width => number(0.)
-    | ParameterKey.Height => number(0.)
-    /* Interactivity */
-    | ParameterKey.Pressed => boolean(false)
-    | ParameterKey.Hovered => boolean(false)
-    | ParameterKey.OnPress => null()
-  }
-};
+let parameterDefaultValue = key =>
+  switch key {
+  | ParameterKey.Text => string("")
+  | ParameterKey.Visible => boolean(true)
+  | ParameterKey.NumberOfLines => number(0.)
+  | ParameterKey.BackgroundColor => color("transparent")
+  | ParameterKey.Image => url("")
+  /* Styles */
+  | ParameterKey.AlignItems => string("stretch")
+  | ParameterKey.AlignSelf => string("flex-start")
+  | ParameterKey.Flex => number(0.)
+  | ParameterKey.Display => null()
+  | ParameterKey.TextAlign => string("left")
+  | ParameterKey.FlexDirection => string("column")
+  | ParameterKey.TextStyle => textStyle("defaultStyle") /* ? */
+  | ParameterKey.JustifyContent => string("flex-start")
+  | ParameterKey.MarginTop => number(0.)
+  | ParameterKey.MarginRight => number(0.)
+  | ParameterKey.MarginBottom => number(0.)
+  | ParameterKey.MarginLeft => number(0.)
+  | ParameterKey.PaddingTop => number(0.)
+  | ParameterKey.PaddingRight => number(0.)
+  | ParameterKey.PaddingBottom => number(0.)
+  | ParameterKey.PaddingLeft => number(0.)
+  | ParameterKey.BorderRadius => number(0.)
+  | ParameterKey.BorderWidth => number(0.)
+  | ParameterKey.BorderColor => color("transparent")
+  | ParameterKey.Width => number(0.)
+  | ParameterKey.Height => number(0.)
+  /* Interactivity */
+  | ParameterKey.Pressed => boolean(false)
+  | ParameterKey.Hovered => boolean(false)
+  | ParameterKey.OnPress => null()
+  };
 
 let defaultValueForParameter = name => parameterDefaultValue(name);

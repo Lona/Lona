@@ -313,6 +313,9 @@ let generate =
       json,
     ) => {
   let rootLayer = json |> Decode.Component.rootLayer(getComponent);
+
+  /* Js.log2("styles", Js.String.make(rootLayer.styles)); */
+
   let logic = json |> Decode.Component.logic;
   let variableDeclarations = logic |> Logic.buildVariableDeclarations;
   let assignments = Layer.parameterAssignmentsFromLogic(rootLayer, logic);

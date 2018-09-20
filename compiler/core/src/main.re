@@ -110,7 +110,8 @@ let renderColors = (target, colors) =>
 let renderTextStyles = (target, colors, textStyles) =>
   switch target {
   | Types.Swift => Swift.TextStyle.render(swiftOptions, colors, textStyles)
-  | JavaScript => JavaScriptTextStyle.render(javaScriptOptions, colors, textStyles)
+  | JavaScript =>
+    JavaScriptTextStyle.render(javaScriptOptions, colors, textStyles)
   | _ => ""
   };
 
@@ -165,7 +166,7 @@ let getAssetRelativePath = (fromDirectory, sourceComponent, importedPath) => {
 let convertComponent = filename => {
   let contents = Fs.readFileSync(filename, `utf8);
   let parsed = contents |> Js.Json.parseExn;
-  let name = Path.basenameExt(~path=filename, ~ext=".component");
+  let name = Node.Path.basename_ext(filename, ".component");
   switch (findWorkspaceDirectory(filename)) {
   | None =>
     exit(
@@ -231,7 +232,7 @@ let copyStaticFiles = outputDirectory =>
       };
     copySync(
       concat(
-        NodeGlobal.__dirname,
+        [%bs.raw {| __dirname |}],
         "static/swift/TextStyle." ++ framework ++ ".swift"
       ),
       concat(outputDirectory, "TextStyle.swift")
@@ -277,17 +278,14 @@ let findContentsBelow = contents => {
 };
 
 let convertWorkspace = (workspace, output) => {
-  let fromDirectory = Path.resolve([|workspace|]);
-  let toDirectory = Path.resolve([|output|]);
+  let fromDirectory = Path.resolve(workspace, "");
+  let toDirectory = Path.resolve(output, "");
   ensureDirSync(toDirectory);
   let colorsInputPath = concat(fromDirectory, "colors.json");
   let colorsOutputPath =
     concat(toDirectory, formatFilename(target, "Colors") ++ targetExtension);
   let colors = Color.parseFile(Node.Fs.readFileSync(colorsInputPath, `utf8));
-  Fs.writeFileSync(
-    ~filename=colorsOutputPath,
-    ~text=colors |> renderColors(target)
-  );
+  Fs.writeFileSync(colorsOutputPath, colors |> renderColors(target), `utf8);
   let textStylesInputPath = concat(fromDirectory, "textStyles.json");
   let textStylesOutputPath =
     concat(
@@ -297,7 +295,7 @@ let convertWorkspace = (workspace, output) => {
   let textStylesFile = Node.Fs.readFileSync(textStylesInputPath, `utf8);
   let textStyles =
     TextStyle.parseFile(textStylesFile) |> renderTextStyles(target, colors);
-  Fs.writeFileSync(~filename=textStylesOutputPath, ~text=textStyles);
+  Fs.writeFileSync(textStylesOutputPath, textStyles, `utf8);
   copyStaticFiles(toDirectory);
   Glob.glob(
     concat(fromDirectory, "**/*.component"),
@@ -316,7 +314,7 @@ let convertWorkspace = (workspace, output) => {
         let toRelativePath =
           concat(
             Path.dirname(fromRelativePath),
-            Path.basenameExt(~path=fromRelativePath, ~ext=".component")
+            Path.basename_ext(fromRelativePath, ".component")
           )
           ++ targetExtension;
         let outputPath = Path.join([|toDirectory, toRelativePath|]);
@@ -356,7 +354,7 @@ let convertWorkspace = (workspace, output) => {
             | Some(contentsBelow) => contents ++ contentsBelow
             | None => contents
             };
-          Fs.writeFileSync(~filename=outputPath, ~text=contents);
+          Fs.writeFileSync(outputPath, contents, `utf8);
         };
       };
       files |> List.iter(processFile);

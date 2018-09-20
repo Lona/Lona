@@ -48,39 +48,6 @@ type cmp =
   | Lte
   | Unknown;
 
-type styles('a) = {
-  alignItems: 'a,
-  alignSelf: 'a,
-  display: 'a,
-  flex: 'a,
-  flexDirection: 'a,
-  textAlign: 'a,
-  justifyContent: 'a,
-  marginTop: 'a,
-  marginRight: 'a,
-  marginBottom: 'a,
-  marginLeft: 'a,
-  paddingTop: 'a,
-  paddingRight: 'a,
-  paddingBottom: 'a,
-  paddingLeft: 'a,
-  borderRadius: 'a,
-  borderWidth: 'a,
-  borderColor: 'a,
-  width: 'a,
-  height: 'a,
-  textStyle: 'a,
-};
-
-type styleValues = styles(lonaValue);
-
-type namedStyles('a) = {
-  name: string,
-  styles: styles('a)
-};
-
-type styleSets('a) = list(namedStyles('a));
-
 [@bs.deriving jsConverter]
 type parameter = {
   name: ParameterKey.t,
@@ -112,6 +79,7 @@ type layer = {
   typeName: layerType,
   name: string,
   parameters: ParameterMap.t(lonaValue),
+  /* styles: Styles.viewLayerStyles(option(lonaValue)), */
   children: list(layer)
 };
 
