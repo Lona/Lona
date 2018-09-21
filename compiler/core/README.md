@@ -87,5 +87,5 @@ I recommend developing with VSCode
 ### Build + Watch
 
 ```
-yarn watch
+yarn start
 ```
