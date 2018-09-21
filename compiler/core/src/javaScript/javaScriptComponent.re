@@ -11,7 +11,9 @@ let styleNameKey = key =>
 let getLayerTagString =
     (framework: JavaScriptOptions.framework, layer: Types.layer) =>
   switch (framework) {
-  | JavaScriptOptions.ReactDOM => JavaScriptFormat.elementName(layer.name)
+  | JavaScriptOptions.ReactDOM =>
+    ReactDomTranslators.layerTypeTags(layer.typeName)
+  /* | JavaScriptOptions.ReactDOM => JavaScriptFormat.elementName(layer.name) */
   | _ =>
     switch (layer.typeName) {
     | View => "View"
@@ -174,7 +176,7 @@ let rec layerToJavaScriptAST =
   let main = ParameterMap.assign(mainParams, mainVariables);
   let styleAttribute =
     switch (framework) {
-    | JavaScriptOptions.ReactDOM => []
+    /* | JavaScriptOptions.ReactDOM => [] */
     | _ => [
         createStyleAttributeAST(
           framework,
@@ -518,8 +520,8 @@ let generate =
             ),
           ],
           switch (options.framework) {
-          | JavaScriptOptions.ReactDOM =>
-            StyledComponents.createdAllStyledComponentsAST(rootLayer)
+          /* | JavaScriptOptions.ReactDOM =>
+             StyledComponents.createdAllStyledComponentsAST(rootLayer) */
           | _ => [styleSheetAST]
           },
         ],
