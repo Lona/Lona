@@ -179,8 +179,8 @@ module Layer = {
            }
          )
       |> ParameterMap.mapi((key, value) =>
-           switch (typeName, key) {
-           | (Component(name), _) =>
+           switch (typeName) {
+           | Component(name) =>
              let param =
                getComponent(name)
                |> field("params", list(Parameters.parameter))
@@ -191,12 +191,9 @@ module Layer = {
                Js.log2("Unknown built-in parameter when deserializing:", key);
                raise(UnknownParameter(ParameterKey.toString(key)));
              };
-           | (_, _) => {ltype: parameterType(key), data: value}
+           | _ => {ltype: parameterType(key), data: value}
            }
          );
-    /* json
-       |> at(["params", "styles"], Styles.styleSets)
-       |> LonaCompilerCore.Styles.print; */
     let name = field("id", string, json);
     {
       typeName,
