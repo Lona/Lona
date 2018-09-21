@@ -17,7 +17,7 @@ export default class TextStyleConditional extends React.Component {
     return (
       <ThemeProvider theme={theme}>
         <div style={Object.assign(styles.view, {})}>
-          <span style={Object.assign(styles.text, { font: Text$textStyle })}>
+          <span style={Object.assign(styles.text, { ...Text$textStyle })}>
             {"Text goes here"}
           </span>
         </div>
