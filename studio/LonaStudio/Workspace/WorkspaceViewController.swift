@@ -67,14 +67,16 @@ class WorkspaceViewController: NSSplitViewController {
 
     // MARK: Public
 
-    // TODO: Actually remove this splitViewItem when it isn't used so that the divider
-    // doesn't show up on the edge of the screen.
     public var codeViewVisible: Bool {
         get {
-            return !codeItem.isCollapsed
+            return splitViewItems.contains(codeItem)
         }
         set {
-            codeItem.isCollapsed = !newValue
+            if newValue && !codeViewVisible {
+                insertSplitViewItem(codeItem, at: 2)
+            } else if !newValue && codeViewVisible {
+                removeSplitViewItem(codeItem)
+            }
         }
     }
     public var onChangeCodeViewVisible: ((Bool) -> Void)?
@@ -376,9 +378,9 @@ class WorkspaceViewController: NSSplitViewController {
         mainItem.preferredThicknessFraction = 0.5
         addSplitViewItem(mainItem)
 
+        // The codeItem is added to the splitview dynamically, based on saved preference
         codeItem.minimumThickness = 180
         codeItem.preferredThicknessFraction = 0.5
-        addSplitViewItem(codeItem)
 
         sidebarItem.collapseBehavior = .preferResizingSiblingsWithFixedSplitView
         sidebarItem.canCollapse = false

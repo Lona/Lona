@@ -13,6 +13,8 @@ private let viewControllerId = NSStoryboard.SceneIdentifier(rawValue: "MainWorks
 private let windowControllerId = NSStoryboard.SceneIdentifier(rawValue: "Document Window Controller")
 private let storyboardName = NSStoryboard.Name(rawValue: "Main")
 
+private let codeViewVisibleKey = "LonaStudio code view visible"
+
 class WorkspaceWindowController: NSWindowController {
     @discardableResult static func create(andAttachTo document: NSDocument? = nil) -> WorkspaceWindowController {
         let storyboard = NSStoryboard(name: storyboardName, bundle: nil)
@@ -23,8 +25,11 @@ class WorkspaceWindowController: NSWindowController {
 
         let toolbar = WorkspaceToolbar()
 
+        workspaceViewController.codeViewVisible = UserDefaults.standard.bool(forKey: codeViewVisibleKey)
+
         toolbar.onChangeSplitterState = { active in
             workspaceViewController.codeViewVisible = active
+            UserDefaults.standard.set(active, forKey: codeViewVisibleKey)
         }
 
         toolbar.onChangeActivePanes = { activePanes in
