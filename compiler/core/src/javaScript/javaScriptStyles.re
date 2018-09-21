@@ -29,7 +29,8 @@ let getStyleProperty =
   let keyIdentifier =
     JavaScriptAst.Identifier([key |> ParameterKey.toString]);
   switch (value.ltype) {
-  | Named("TextStyle", _) =>
+  | Named("TextStyle", _)
+  | Reference("TextStyle") =>
     let data = value.data |> Js.Json.decodeString;
     switch (data) {
     | Some(textStyleId) => getTextStyleProperty(framework, textStyleId)
@@ -37,7 +38,8 @@ let getStyleProperty =
       Js.log("TextStyle id must be a string");
       raise(Not_found);
     };
-  | Named("Color", _) =>
+  | Named("Color", _)
+  | Reference("Color") =>
     let data = value.data |> Json.Decode.string;
     switch (Color.find(colors, data)) {
     | Some(color) =>
@@ -131,4 +133,105 @@ let layerToJavaScriptStyleSheetAST =
       }),
     )
   );
+};
+
+module StyleSet = {
+  let layerStyleBindings = (styles: Styles.viewLayerStyles('a)) => [
+    ("backgroundColor", styles.backgroundColor),
+    ("borderColor", styles.border.borderColor),
+    ("borderWidth", styles.border.borderWidth),
+    ("borderRadius", styles.border.borderRadius),
+    ("textAlign", styles.textStyles.textAlign),
+    ("textStyles", styles.textStyles.textStyle),
+    ("marginTop", styles.layout.margin.top),
+    ("marginRight", styles.layout.margin.right),
+    ("marginBottom", styles.layout.margin.bottom),
+    ("marginLeft", styles.layout.margin.left),
+    ("paddingTop", styles.layout.padding.top),
+    ("paddingRight", styles.layout.padding.right),
+    ("paddingBottom", styles.layout.padding.bottom),
+    ("paddingLeft", styles.layout.padding.left),
+    ("alignItems", styles.layout.flex.alignItems),
+    ("alignSelf", styles.layout.flex.alignSelf),
+    ("display", styles.layout.flex.display),
+    ("flex", styles.layout.flex.flex),
+    ("flexDirection", styles.layout.flex.flexDirection),
+    ("height", styles.layout.flex.height),
+    ("width", styles.layout.flex.width),
+    ("justifyContent", styles.layout.flex.justifyContent),
+  ];
+
+  let createViewLayerStylesAST =
+      (
+        framework,
+        colors,
+        styleSet: Styles.viewLayerStyles(option(Types.lonaValue)),
+      ) =>
+    styleSet
+    |> layerStyleBindings
+    |> List.map(((key, value)) =>
+         switch (value) {
+         | Some(lvalue) => [
+             getStylePropertyWithUnits(
+               framework,
+               colors,
+               ParameterKey.fromString(key),
+               lvalue,
+             ),
+           ]
+         | None => []
+         }
+       )
+    |> List.concat;
+
+  let createNameStyleSetAST = (setName: string, contents) =>
+    JavaScriptAst.(
+      Property({
+        key: StringLiteral(setName),
+        value: ObjectLiteral(contents),
+      })
+    );
+
+  let createLayerObjectAST = (layerName: string, contents) =>
+    JavaScriptAst.(
+      Property({
+        key: StringLiteral(layerName |> JavaScriptFormat.styleVariableName),
+        value: ObjectLiteral(contents),
+      })
+    );
+
+  let createThemeObjectAST = contents =>
+    JavaScriptAst.(
+      VariableDeclaration(
+        AssignmentExpression({
+          left: Identifier(["theme"]),
+          right: ObjectLiteral(contents),
+        }),
+      )
+    );
+
+  let layerToThemeAST = (framework, colors, layer: Types.layer) => {
+    let layerObjectsAst =
+      layer
+      |> Layer.flatten
+      |> List.map((layer: Types.layer) =>
+           createLayerObjectAST(
+             layer.name,
+             layer.styles
+             |> List.map(
+                  (styleSet: Styles.namedStyles(option(Types.lonaValue))) =>
+                  createNameStyleSetAST(
+                    styleSet.name,
+                    createViewLayerStylesAST(
+                      framework,
+                      colors,
+                      styleSet.styles,
+                    ),
+                  )
+                ),
+           )
+         );
+
+    createThemeObjectAST(layerObjectsAst);
+  };
 };

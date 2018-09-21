@@ -15,12 +15,9 @@ export default class TextAlignment extends React.Component {
           <Image
             style={[ styles.image, {} ]}
             source={require("../assets/icon_128x128.png")}
-          >
 
-          </Image>
-          <View style={[ styles.view2, {} ]}>
-
-          </View>
+          />
+          <View style={[ styles.view2, {} ]} />
           <Text style={[ styles.text, {} ]}>
             {"Welcome to Lona Studio"}
           </Text>
@@ -67,9 +64,8 @@ export default class TextAlignment extends React.Component {
           <Image
             style={[ styles.image1, {} ]}
             source={require("../assets/icon_128x128.png")}
-          >
 
-          </Image>
+          />
         </View>
       </View>
     );

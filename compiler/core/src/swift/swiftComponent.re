@@ -932,6 +932,7 @@ let generate =
         let rootLayer = component |> Decode.Component.rootLayer(getComponent);
         {
           typeName: layer.typeName,
+          styles: layer.styles,
           name: layer.name,
           parameters: rootLayer.parameters,
           children: layer.children,

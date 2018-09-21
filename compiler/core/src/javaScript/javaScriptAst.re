@@ -77,6 +77,7 @@ and node =
   | ClassDeclaration(classDeclaration)
   | MethodDefinition(methodDefinition)
   | FunctionExpression(functionExpression)
+  | ArrowFunctionExpression(functionExpression)
   | CallExpression(callExpression)
   | JSXAttribute(jSXAttribute)
   | JSXElement(jSXElement)
@@ -121,6 +122,14 @@ let rec map = (f, node) =>
   | FunctionExpression(o) =>
     f(
       FunctionExpression({
+        id: o.id,
+        params: o.params,
+        body: o.body |> List.map(map(f)),
+      }),
+    )
+  | ArrowFunctionExpression(o) =>
+    f(
+      ArrowFunctionExpression({
         id: o.id,
         params: o.params,
         body: o.body |> List.map(map(f)),

@@ -18,15 +18,12 @@ export default class NestedComponent extends React.Component {
         </Text>
         <FitContentParentSecondaryChildren
           style={[ styles.fitContentParentSecondaryChildren, {} ]}
-        >
 
-        </FitContentParentSecondaryChildren>
+        />
         <Text style={[ styles.text1, {} ]}>
           {"Text below"}
         </Text>
-        <LocalAsset style={[ styles.localAsset, {} ]}>
-
-        </LocalAsset>
+        <LocalAsset style={[ styles.localAsset, {} ]} />
         <Text style={[ styles.text2, {} ]}>
           {"Very bottom"}
         </Text>

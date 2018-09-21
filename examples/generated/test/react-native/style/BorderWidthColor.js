@@ -10,9 +10,7 @@ export default class BorderWidthColor extends React.Component {
 
     return (
       <View style={[ styles.view, {} ]}>
-        <View style={[ styles.view1, {} ]}>
-
-        </View>
+        <View style={[ styles.view1, {} ]} />
       </View>
     );
   }

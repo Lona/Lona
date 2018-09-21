@@ -14,9 +14,10 @@ export default class If extends React.Component {
       View$backgroundColor = colors.red500
     }
     return (
-      <View style={[ styles.view, { backgroundColor: View$backgroundColor } ]}>
+      <View
+        style={[ styles.view, { backgroundColor: View$backgroundColor } ]}
 
-      </View>
+      />
     );
   }
 };

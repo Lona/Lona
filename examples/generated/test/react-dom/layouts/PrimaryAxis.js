@@ -1,4 +1,5 @@
 import React from "react"
+import styled, { ThemeProvider } from "styled-components"
 
 import colors from "../colors"
 import textStyles from "../textStyles"
@@ -7,23 +8,27 @@ export default class PrimaryAxis extends React.Component {
   render() {
 
 
+    let theme = {
+      "view": { "normal": {} },
+      "fixed": { "normal": {} },
+      "fit": { "normal": {} },
+      "text": { "normal": {} },
+      "fill1": { "normal": {} },
+      "fill2": { "normal": {} }
+    }
     return (
-      <div style={Object.assign(styles.view, {})}>
-        <div style={Object.assign(styles.fixed, {})}>
-
+      <ThemeProvider theme={theme}>
+        <div style={Object.assign(styles.view, {})}>
+          <div style={Object.assign(styles.fixed, {})} />
+          <div style={Object.assign(styles.fit, {})}>
+            <span style={Object.assign(styles.text, {})}>
+              {"Text goes here"}
+            </span>
+          </div>
+          <div style={Object.assign(styles.fill1, {})} />
+          <div style={Object.assign(styles.fill2, {})} />
         </div>
-        <div style={Object.assign(styles.fit, {})}>
-          <span style={Object.assign(styles.text, {})}>
-            {"Text goes here"}
-          </span>
-        </div>
-        <div style={Object.assign(styles.fill1, {})}>
-
-        </div>
-        <div style={Object.assign(styles.fill2, {})}>
-
-        </div>
-      </div>
+      </ThemeProvider>
     );
   }
 };

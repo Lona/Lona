@@ -11,19 +11,11 @@ export default class FixedParentFillAndFitChildren extends React.Component {
     return (
       <View style={[ styles.view, {} ]}>
         <View style={[ styles.view1, {} ]}>
-          <View style={[ styles.view4, {} ]}>
-
-          </View>
-          <View style={[ styles.view5, {} ]}>
-
-          </View>
+          <View style={[ styles.view4, {} ]} />
+          <View style={[ styles.view5, {} ]} />
         </View>
-        <View style={[ styles.view2, {} ]}>
-
-        </View>
-        <View style={[ styles.view3, {} ]}>
-
-        </View>
+        <View style={[ styles.view2, {} ]} />
+        <View style={[ styles.view3, {} ]} />
       </View>
     );
   }

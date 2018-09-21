@@ -11,15 +11,9 @@ export default class NestedButtons extends React.Component {
 
     return (
       <View style={[ styles.view, {} ]}>
-        <Button style={[ styles.button, {} ]} label={"Button 1"}>
-
-        </Button>
-        <View style={[ styles.view1, {} ]}>
-
-        </View>
-        <Button style={[ styles.button2, {} ]} label={"Button 2"}>
-
-        </Button>
+        <Button style={[ styles.button, {} ]} label={"Button 1"} />
+        <View style={[ styles.view1, {} ]} />
+        <Button style={[ styles.button2, {} ]} label={"Button 2"} />
       </View>
     );
   }

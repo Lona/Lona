@@ -1,4 +1,5 @@
 import React from "react"
+import styled, { ThemeProvider } from "styled-components"
 
 import colors from "../colors"
 import textStyles from "../textStyles"
@@ -7,20 +8,25 @@ export default class SecondaryAxis extends React.Component {
   render() {
 
 
+    let theme = {
+      "container": { "normal": {} },
+      "fixed": { "normal": {} },
+      "fit": { "normal": {} },
+      "text": { "normal": {} },
+      "fill": { "normal": {} }
+    }
     return (
-      <div style={Object.assign(styles.container, {})}>
-        <div style={Object.assign(styles.fixed, {})}>
-
+      <ThemeProvider theme={theme}>
+        <div style={Object.assign(styles.container, {})}>
+          <div style={Object.assign(styles.fixed, {})} />
+          <div style={Object.assign(styles.fit, {})}>
+            <span style={Object.assign(styles.text, {})}>
+              {"Text goes here"}
+            </span>
+          </div>
+          <div style={Object.assign(styles.fill, {})} />
         </div>
-        <div style={Object.assign(styles.fit, {})}>
-          <span style={Object.assign(styles.text, {})}>
-            {"Text goes here"}
-          </span>
-        </div>
-        <div style={Object.assign(styles.fill, {})}>
-
-        </div>
-      </div>
+      </ThemeProvider>
     );
   }
 };
