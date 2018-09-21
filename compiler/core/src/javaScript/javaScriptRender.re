@@ -135,10 +135,12 @@ let rec render = ast: Prettier.Doc.t('a) =>
     fill([render(o.callee), s("("), parameterList, s(")")]);
   | Return(value) =>
     group(
-      group(s("return") <+> line <+> s("("))
-      <+> indent(line <+> render(value))
-      <+> line
-      <+> s(");"),
+      group(s("return "))
+      <+> ifBreak(s("("), s(""))
+      <+> indent(softline <+> render(value))
+      <+> softline
+      <+> ifBreak(s(")"), s(""))
+      <+> s(";"),
     )
   | JSXAttribute(o) => s(o.name) <+> s("={") <+> render(o.value) <+> s("}")
   | JSXElement(o) =>
@@ -154,7 +156,7 @@ let rec render = ast: Prettier.Doc.t('a) =>
           hasAttributes ?
             indent(line <+> openingContent) <+> softline : s("")
         )
-        <+> (hasChildren ? s(">") : s(" />")),
+        <+> (hasChildren ? s(">") : line <+> s("/>")),
       );
     if (hasChildren) {
       let closingTag = group(s("</") <+> s(o.tag) <+> s(">"));

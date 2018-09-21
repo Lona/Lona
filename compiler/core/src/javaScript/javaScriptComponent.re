@@ -45,7 +45,7 @@ module StyledComponents = {
       })
     );
 
-  let createStyledComponentAST = (framework, layer: Types.layer) =>
+  let createStyledComponentAST = (layer: Types.layer) =>
     JavaScriptAst.(
       VariableDeclaration(
         AssignmentExpression({
@@ -69,8 +69,8 @@ module StyledComponents = {
       )
     );
 
-  let createdAllStyledComponentsAST = (framework, layer: Types.layer) =>
-    layer |> Layer.flatten |> List.map(createStyledComponentAST(framework));
+  let createdAllStyledComponentsAST = (layer: Types.layer) =>
+    layer |> Layer.flatten |> List.map(createStyledComponentAST);
 };
 
 let createStyleAttributeAST =
@@ -502,7 +502,15 @@ let generate =
                       FunctionExpression({
                         id: None,
                         params: [],
-                        body: [logicAST, themeAST, Return(rootLayerAST)],
+                        body:
+                          [logicAST]
+                          @ (
+                            switch (options.framework) {
+                            | JavaScriptOptions.ReactDOM => [themeAST]
+                            | _ => []
+                            }
+                          )
+                          @ [Return(rootLayerAST)],
                       }),
                   }),
                 ],
@@ -511,10 +519,7 @@ let generate =
           ],
           switch (options.framework) {
           | JavaScriptOptions.ReactDOM =>
-            StyledComponents.createdAllStyledComponentsAST(
-              options.framework,
-              rootLayer,
-            )
+            StyledComponents.createdAllStyledComponentsAST(rootLayer)
           | _ => [styleSheetAST]
           },
         ],
