@@ -10,7 +10,7 @@ The easiest way to use Lona Studio is by downloading the prebuilt Mac App binary
 
 ## Building from Source
 
-First, make sure you have [`bundler`](http://bundler.io/), [Cocoapods](https://cocoapods.org/) and [nvm](https://github.com/creationix/nvm/#installation) installed. Then checkout the repo and run:
+First, make sure you have [`bundler`](http://bundler.io/) and [Cocoapods](https://cocoapods.org/) installed. Then checkout the repo and run:
 
 ```bash
 cd studio
@@ -22,7 +22,7 @@ Open LonaStudio.xcworkspace and build in Xcode 10+ on High Sierra+. If there are
 
 ### Sketch export (optional)
 
-To enable Sketch export (beta), you'll also need to run the following (assuming you're in the `studio` directory):
+To enable Sketch export (beta), you'll also need to install [nvm](https://github.com/creationix/nvm/#installation), and run the following (assuming you're in the `studio` directory):
 
 ```bash
 cd LonaStudio/Scripting/Modules/component-to-sketch
