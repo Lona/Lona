@@ -89,7 +89,7 @@ module Types = {
 module Styles = {
   let optionalLonaValue = (name, ltype, json) =>
     switch (json |> optional(field(name, x => x))) {
-    | Some(data) => Some({data, ltype: numberType})
+    | Some(data) => Some({data, ltype})
     | None => None
     };
   let border = json: Styles.border(option(lonaValue)) => {
@@ -201,7 +201,13 @@ module Layer = {
     {
       typeName,
       name,
-      /* styles: json |> at(["params", "styles", "normal"], Styles.viewLayerStyles), */
+      styles:
+        switch (
+          json |> optional(at(["params", "styles"], Styles.styleSets))
+        ) {
+        | Some(a) => a
+        | None => [LonaCompilerCore.Styles.emptyNamedStyle("normal")]
+        },
       parameters: field("params", parameterDictionary, json),
       children:
         switch (

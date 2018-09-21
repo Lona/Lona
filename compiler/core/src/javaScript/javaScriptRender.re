@@ -116,6 +116,20 @@ let rec render = ast: Prettier.Doc.t('a) =>
     <+> indent(join(hardline, o.body |> List.map(render)))
     <+> hardline
     <+> s("}");
+  | ArrowFunctionExpression(o) =>
+    let parameterList = o.params |> List.map(s) |> join(line);
+
+    switch (o.body) {
+    | [Return(ObjectLiteral(_) as literal)] =>
+      group(s("(") <+> parameterList <+> s(") => ("))
+      <+> render(literal)
+      <+> s(")")
+    | _ =>
+      group(s("(") <+> parameterList <+> s(") =>") <+> line <+> s("{"))
+      <+> indent(join(hardline, o.body |> List.map(render)))
+      <+> hardline
+      <+> s("}")
+    };
   | CallExpression(o) =>
     let parameterList = o.arguments |> List.map(render) |> join(s(", "));
     fill([render(o.callee), s("("), parameterList, s(")")]);
@@ -128,19 +142,29 @@ let rec render = ast: Prettier.Doc.t('a) =>
     )
   | JSXAttribute(o) => s(o.name) <+> s("={") <+> render(o.value) <+> s("}")
   | JSXElement(o) =>
+    let hasAttributes = List.length(o.attributes) > 0;
+    let hasChildren = List.length(o.content) > 0;
+
     let openingContent = o.attributes |> List.map(render) |> join(line);
-    let opening =
+    let openingTag =
       group(
         s("<")
         <+> s(o.tag)
-        <+> indent(line <+> openingContent)
-        <+> softline
-        <+> s(">"),
+        <+> (
+          hasAttributes ?
+            indent(line <+> openingContent) <+> softline : s("")
+        )
+        <+> (hasChildren ? s(">") : s(" />")),
       );
-    let closing = group(s("</") <+> s(o.tag) <+> s(">"));
-    let children =
-      indent(line <+> join(line, o.content |> List.map(render)));
-    opening <+> children <+> line <+> closing;
+    if (hasChildren) {
+      let closingTag = group(s("</") <+> s(o.tag) <+> s(">"));
+      let children =
+        indent(line <+> join(line, o.content |> List.map(render)));
+
+      openingTag <+> children <+> line <+> closingTag;
+    } else {
+      openingTag;
+    };
   | JSXExpressionContainer(o) =>
     group(s("{") <+> softline <+> render(o) <+> softline <+> s("}"))
   | SpreadElement(value) => s("...") <+> render(value)

@@ -48,11 +48,49 @@ type namedStyles('a) = {
 
 type styleSets('a) = list(namedStyles('a));
 
-let foo = 123;
-
 let print = (styleSets: styleSets('a)) =>
   styleSets
   |> List.iter(set => Js.log2(set.name, Js.String.make(set.styles)));
+
+let emptyNamedStyle = (name: string): namedStyles(option('a)) => {
+  name,
+  styles: {
+    layout: {
+      flex: {
+        alignItems: None,
+        alignSelf: None,
+        display: None,
+        justifyContent: None,
+        flex: None,
+        flexDirection: None,
+        width: None,
+        height: None,
+      },
+      padding: {
+        top: None,
+        right: None,
+        bottom: None,
+        left: None,
+      },
+      margin: {
+        top: None,
+        right: None,
+        bottom: None,
+        left: None,
+      },
+    },
+    border: {
+      borderRadius: None,
+      borderWidth: None,
+      borderColor: None,
+    },
+    backgroundColor: None,
+    textStyles: {
+      textAlign: None,
+      textStyle: None,
+    },
+  },
+};
 
 /* let map = (set: layerStyles('a)): layerStyles('b) => {
      {

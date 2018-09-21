@@ -8,6 +8,71 @@ let styleNameKey = key =>
   | _ => key |> ParameterKey.toString
   };
 
+let getLayerTagString =
+    (framework: JavaScriptOptions.framework, layer: Types.layer) =>
+  switch (framework) {
+  | JavaScriptOptions.ReactDOM => JavaScriptFormat.elementName(layer.name)
+  | _ =>
+    switch (layer.typeName) {
+    | View => "View"
+    | Text => "Text"
+    | Image => "Image"
+    | Animation => "Animation"
+    | Children => "Children"
+    | Component(value) => value
+    | _ => "Unknown"
+    }
+  };
+
+module StyledComponents = {
+  let createStyleSetObjectProperties = viewVariableName =>
+    JavaScriptAst.[
+      SpreadElement(
+        Identifier(["props", "theme", viewVariableName, "normal"]),
+      ),
+      Property({
+        key: StringLiteral(":hover"),
+        value: Identifier(["props", "theme", viewVariableName, "hovered"]),
+      }),
+    ];
+
+  let createDynamicStyles = contents =>
+    JavaScriptAst.(
+      ArrowFunctionExpression({
+        id: None,
+        params: ["props"],
+        body: [Return(ObjectLiteral(contents))],
+      })
+    );
+
+  let createStyledComponentAST = (framework, layer: Types.layer) =>
+    JavaScriptAst.(
+      VariableDeclaration(
+        AssignmentExpression({
+          left: Identifier([JavaScriptFormat.elementName(layer.name)]),
+          right:
+            CallExpression({
+              callee:
+                Identifier([
+                  "styled",
+                  layer.typeName |> ReactDomTranslators.layerTypeTags,
+                ]),
+              arguments: [
+                createDynamicStyles(
+                  createStyleSetObjectProperties(
+                    layer.name |> JavaScriptFormat.styleVariableName,
+                  ),
+                ),
+              ],
+            }),
+        }),
+      )
+    );
+
+  let createdAllStyledComponentsAST = (framework, layer: Types.layer) =>
+    layer |> Layer.flatten |> List.map(createStyledComponentAST(framework));
+};
+
 let createStyleAttributeAST =
     (
       framework: JavaScriptOptions.framework,
@@ -76,23 +141,6 @@ let createStyleAttributeAST =
     )
   };
 
-let getLayerTypeTagString =
-    (framework: JavaScriptOptions.framework, layerType: Types.layerType) =>
-  switch (framework) {
-  | JavaScriptOptions.ReactDOM =>
-    layerType |> ReactDomTranslators.layerTypeTags
-  | _ =>
-    switch (layerType) {
-    | View => "View"
-    | Text => "Text"
-    | Image => "Image"
-    | Animation => "Animation"
-    | Children => "Children"
-    | Component(value) => value
-    | _ => "Unknown"
-    }
-  };
-
 let rec layerToJavaScriptAST =
         (
           framework: JavaScriptOptions.framework,
@@ -125,13 +173,18 @@ let rec layerToJavaScriptAST =
     |> Layer.splitParamsMap;
   let main = ParameterMap.assign(mainParams, mainVariables);
   let styleAttribute =
-    createStyleAttributeAST(
-      framework,
-      colors,
-      textStyles,
-      layer,
-      styleVariables,
-    );
+    switch (framework) {
+    | JavaScriptOptions.ReactDOM => []
+    | _ => [
+        createStyleAttributeAST(
+          framework,
+          colors,
+          textStyles,
+          layer,
+          styleVariables,
+        ),
+      ]
+    };
   let attributes =
     main
     |> removeTextParams
@@ -205,8 +258,8 @@ let rec layerToJavaScriptAST =
          )
     };
   JSXElement({
-    tag: getLayerTypeTagString(framework, layer.typeName),
-    attributes: [styleAttribute, ...attributes],
+    tag: getLayerTagString(framework, layer),
+    attributes: styleAttribute @ attributes,
     content,
   });
 };
@@ -223,7 +276,15 @@ let importComponents =
   {
     absolute:
       switch (framework) {
-      | JavaScriptOptions.ReactDOM => []
+      | JavaScriptOptions.ReactDOM => [
+          Ast.ImportDeclaration({
+            source: "styled-components",
+            specifiers: [
+              ImportDefaultSpecifier("styled"),
+              ImportSpecifier({imported: "ThemeProvider", local: None}),
+            ],
+          }),
+        ]
       | _ => [
           Ast.ImportDeclaration({
             source:
@@ -288,15 +349,19 @@ let rootLayerToJavaScriptAST =
          getAssetPath,
        );
 
-  JavaScriptAst.(
-    JSXElement({
-      tag: "ThemeProvider",
-      attributes: [
-        JSXAttribute({name: "theme", value: Identifier(["theme"])}),
-      ],
-      content: [astRootLayer],
-    })
-  );
+  switch (options.framework) {
+  | ReactDOM =>
+    JavaScriptAst.(
+      JSXElement({
+        tag: "ThemeProvider",
+        attributes: [
+          JSXAttribute({name: "theme", value: Identifier(["theme"])}),
+        ],
+        content: [astRootLayer],
+      })
+    )
+  | _ => astRootLayer
+  };
 };
 
 let generate =
@@ -373,6 +438,13 @@ let generate =
     |> List.concat;
   let logic = Logic.Block([variableDeclarations] @ newVars @ [logic]);
 
+  let themeAST =
+    JavaScriptStyles.StyleSet.layerToThemeAST(
+      options.framework,
+      colors,
+      rootLayer,
+    );
+
   let rootLayerAST =
     rootLayer
     |> rootLayerToJavaScriptAST(
@@ -405,13 +477,6 @@ let generate =
               source: "react",
               specifiers: [ImportDefaultSpecifier("React")],
             }),
-            ImportDeclaration({
-              source: "styled-components",
-              specifiers: [
-                ImportDefaultSpecifier("styled"),
-                ImportSpecifier({imported: "ThemeProvider", local: None}),
-              ],
-            }),
           ]
           @ absolute,
           [
@@ -437,14 +502,21 @@ let generate =
                       FunctionExpression({
                         id: None,
                         params: [],
-                        body: [logicAST, Return(rootLayerAST)],
+                        body: [logicAST, themeAST, Return(rootLayerAST)],
                       }),
                   }),
                 ],
               }),
             ),
           ],
-          [styleSheetAST],
+          switch (options.framework) {
+          | JavaScriptOptions.ReactDOM =>
+            StyledComponents.createdAllStyledComponentsAST(
+              options.framework,
+              rootLayer,
+            )
+          | _ => [styleSheetAST]
+          },
         ],
       ),
     )
