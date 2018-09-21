@@ -7,12 +7,12 @@ module Render = SwiftRender;
 type constraintDefinition = {
   variableName: string,
   initialValue: Ast.node,
-  priority: Constraint.layoutPriority
+  priority: Constraint.layoutPriority,
 };
 
 type directionParameter = {
   lonaName: ParameterKey.t,
-  swiftName: string
+  swiftName: string,
 };
 
 /* type parameterAssignmentMode =
@@ -24,6 +24,49 @@ type directionParameter = {
 let isFunctionParameter = (param: Types.parameter) =>
   param.ltype == Types.handlerType;
 
+let pressableVariableDoc = (rootLayer: Types.layer, layer: Types.layer) =>
+  SwiftAst.[
+    VariableDeclaration({
+      "modifiers": [AccessLevelModifier(PrivateModifier)],
+      "pattern":
+        IdentifierPattern({
+          "identifier":
+            SwiftIdentifier(
+              SwiftFormat.layerVariableName(rootLayer, layer, "hovered"),
+            ),
+          "annotation": None,
+        }),
+      "init": Some(LiteralExpression(Boolean(false))),
+      "block": None,
+    }),
+    VariableDeclaration({
+      "modifiers": [AccessLevelModifier(PrivateModifier)],
+      "pattern":
+        IdentifierPattern({
+          "identifier":
+            SwiftIdentifier(
+              SwiftFormat.layerVariableName(rootLayer, layer, "pressed"),
+            ),
+          "annotation": None,
+        }),
+      "init": Some(LiteralExpression(Boolean(false))),
+      "block": None,
+    }),
+    VariableDeclaration({
+      "modifiers": [AccessLevelModifier(PrivateModifier)],
+      "pattern":
+        IdentifierPattern({
+          "identifier":
+            SwiftIdentifier(
+              SwiftFormat.layerVariableName(rootLayer, layer, "onPress"),
+            ),
+          "annotation": Some(OptionalType(TypeName("(() -> Void)"))),
+        }),
+      "init": None,
+      "block": None,
+    }),
+  ];
+
 let generate =
     (
       config: Config.t,
@@ -33,7 +76,7 @@ let generate =
       colors,
       textStyles: TextStyle.file,
       getComponent,
-      json
+      json,
     ) => {
   let rootLayer = json |> Decode.Component.rootLayer(getComponent);
   /* Remove the root element */
@@ -73,7 +116,7 @@ let generate =
   let isParameterAssigned = (layer: Types.layer, parameter) => {
     let assignedParameters =
       Layer.LayerMap.find_opt(layer, layerParameterAssignments);
-    switch assignedParameters {
+    switch (assignedParameters) {
     | Some(parameters) => ParameterMap.mem(parameter, parameters)
     | None => false
     };
@@ -91,8 +134,8 @@ let generate =
           "annotation":
             Some(
               parameter.ltype
-              |> SwiftDocument.typeAnnotationDoc(swiftOptions.framework)
-            )
+              |> SwiftDocument.typeAnnotationDoc(swiftOptions.framework),
+            ),
         }),
       "init": None,
       "block":
@@ -103,11 +146,11 @@ let generate =
               Some([
                 FunctionCallExpression({
                   "name": SwiftIdentifier("update"),
-                  "arguments": []
-                })
-              ])
-          })
-        )
+                  "arguments": [],
+                }),
+              ]),
+          }),
+        ),
     });
   /* TODO: We don't need to update if onPress is only initialized in setUpViews
      and never assigned in logic */
@@ -115,7 +158,7 @@ let generate =
      None : */
   let pluginContext: Plugin.context = {
     "target": "swift",
-    "framework": SwiftOptions.frameworkToString(swiftOptions.framework)
+    "framework": SwiftOptions.frameworkToString(swiftOptions.framework),
   };
   let getLayerTypeName = layerType => {
     let typeName =
@@ -142,9 +185,9 @@ let generate =
         "arguments": [
           FunctionCallArgument({
             "name": Some(SwiftIdentifier("frame")),
-            "value": SwiftIdentifier(".zero")
-          })
-        ]
+            "value": SwiftIdentifier(".zero"),
+          }),
+        ],
       })
     | (AppKit, Text) =>
       FunctionCallExpression({
@@ -152,9 +195,9 @@ let generate =
         "arguments": [
           FunctionCallArgument({
             "name": Some(SwiftIdentifier("labelWithString")),
-            "value": LiteralExpression(String(""))
-          })
-        ]
+            "value": LiteralExpression(String("")),
+          }),
+        ],
       })
     | (AppKit, Image) =>
       let hasBackground = isParameterAssigned(layer, BackgroundColor);
@@ -162,7 +205,7 @@ let generate =
         "name":
           hasBackground ?
             SwiftIdentifier("ImageWithBackgroundColor") : typeName,
-        "arguments": []
+        "arguments": [],
       });
     | _ => FunctionCallExpression({"name": typeName, "arguments": []})
     };
@@ -176,7 +219,7 @@ let generate =
           "annotation": None /*Some(layer.typeName |> viewTypeDoc)*/
         }),
       "init": Some(getLayerInitCall(layer)),
-      "block": None
+      "block": None,
     });
   let textStyleVariableDoc = (layer: Types.layer) => {
     let styleName =
@@ -185,8 +228,8 @@ let generate =
         SwiftIdentifier(
           isParameterSetInitially(layer, TextStyle) ?
             Layer.getStringParameter(TextStyle, layer) :
-            textStyles.defaultStyle.id
-        )
+            textStyles.defaultStyle.id,
+        ),
       ]);
     let styleName =
       isParameterSetInitially(layer, TextAlign) ?
@@ -199,11 +242,11 @@ let generate =
                 "name": Some(SwiftIdentifier("alignment")),
                 "value":
                   SwiftIdentifier(
-                    "." ++ Layer.getStringParameter(TextAlign, layer)
-                  )
-              })
-            ]
-          })
+                    "." ++ Layer.getStringParameter(TextAlign, layer),
+                  ),
+              }),
+            ],
+          }),
         ]) :
         styleName;
     VariableDeclaration({
@@ -212,12 +255,12 @@ let generate =
         IdentifierPattern({
           "identifier":
             SwiftIdentifier(
-              (layer.name |> SwiftFormat.layerName) ++ "TextStyle"
+              (layer.name |> SwiftFormat.layerName) ++ "TextStyle",
             ),
           "annotation": None /* Some(TypeName("TextStyle")) */
         }),
       "init": Some(styleName),
-      "block": None
+      "block": None,
     });
   };
   let constraintVariableDoc = variableName =>
@@ -226,22 +269,22 @@ let generate =
       "pattern":
         IdentifierPattern({
           "identifier": SwiftIdentifier(variableName),
-          "annotation": Some(OptionalType(TypeName("NSLayoutConstraint")))
+          "annotation": Some(OptionalType(TypeName("NSLayoutConstraint"))),
         }),
       "init": None,
-      "block": None
+      "block": None,
     });
   let paddingParameters = [
     {swiftName: "topPadding", lonaName: PaddingTop},
     {swiftName: "trailingPadding", lonaName: PaddingRight},
     {swiftName: "bottomPadding", lonaName: PaddingBottom},
-    {swiftName: "leadingPadding", lonaName: PaddingLeft}
+    {swiftName: "leadingPadding", lonaName: PaddingLeft},
   ];
   let marginParameters = [
     {swiftName: "topMargin", lonaName: MarginTop},
     {swiftName: "trailingMargin", lonaName: MarginRight},
     {swiftName: "bottomMargin", lonaName: MarginBottom},
-    {swiftName: "leadingMargin", lonaName: MarginLeft}
+    {swiftName: "leadingMargin", lonaName: MarginLeft},
   ];
   let spacingVariableDoc = (layer: Types.layer) => {
     let variableName = variable =>
@@ -259,22 +302,25 @@ let generate =
                 IdentifierPattern({
                   "identifier":
                     SwiftIdentifier(variableName(marginParameter.swiftName)),
-                  "annotation": Some(TypeName("CGFloat"))
+                  "annotation": Some(TypeName("CGFloat")),
                 }),
               "init":
                 Some(
                   LiteralExpression(
                     FloatingPoint(
-                      Layer.getNumberParameter(marginParameter.lonaName, layer)
-                    )
-                  )
+                      Layer.getNumberParameter(
+                        marginParameter.lonaName,
+                        layer,
+                      ),
+                    ),
+                  ),
                 ),
-              "block": None
+              "block": None,
             });
           marginParameters |> List.map(createVariable);
         };
     let paddingVariables =
-      switch layer.children {
+      switch (layer.children) {
       | [] => []
       | _ =>
         let createVariable = (paddingParameter: directionParameter) =>
@@ -284,63 +330,25 @@ let generate =
               IdentifierPattern({
                 "identifier":
                   SwiftIdentifier(variableName(paddingParameter.swiftName)),
-                "annotation": Some(TypeName("CGFloat"))
+                "annotation": Some(TypeName("CGFloat")),
               }),
             "init":
               Some(
                 LiteralExpression(
                   FloatingPoint(
-                    Layer.getNumberParameter(paddingParameter.lonaName, layer)
-                  )
-                )
+                    Layer.getNumberParameter(
+                      paddingParameter.lonaName,
+                      layer,
+                    ),
+                  ),
+                ),
               ),
-            "block": None
+            "block": None,
           });
         paddingParameters |> List.map(createVariable);
       };
     marginVariables @ paddingVariables;
   };
-  let pressableVariableDoc = (layer: Types.layer) => [
-    VariableDeclaration({
-      "modifiers": [AccessLevelModifier(PrivateModifier)],
-      "pattern":
-        IdentifierPattern({
-          "identifier":
-            SwiftIdentifier(
-              SwiftFormat.layerVariableName(rootLayer, layer, "hovered")
-            ),
-          "annotation": None
-        }),
-      "init": Some(LiteralExpression(Boolean(false))),
-      "block": None
-    }),
-    VariableDeclaration({
-      "modifiers": [AccessLevelModifier(PrivateModifier)],
-      "pattern":
-        IdentifierPattern({
-          "identifier":
-            SwiftIdentifier(
-              SwiftFormat.layerVariableName(rootLayer, layer, "pressed")
-            ),
-          "annotation": None
-        }),
-      "init": Some(LiteralExpression(Boolean(false))),
-      "block": None
-    }),
-    VariableDeclaration({
-      "modifiers": [AccessLevelModifier(PrivateModifier)],
-      "pattern":
-        IdentifierPattern({
-          "identifier":
-            SwiftIdentifier(
-              SwiftFormat.layerVariableName(rootLayer, layer, "onPress")
-            ),
-          "annotation": Some(OptionalType(TypeName("(() -> Void)")))
-        }),
-      "init": None,
-      "block": None
-    })
-  ];
   let initParameterDoc = (parameter: Decode.parameter) =>
     Parameter({
       "externalName": None,
@@ -348,17 +356,17 @@ let generate =
       "annotation":
         parameter.ltype
         |> SwiftDocument.typeAnnotationDoc(swiftOptions.framework),
-      "defaultValue": None
+      "defaultValue": None,
     });
   let initParameterAssignmentDoc = (parameter: Decode.parameter) =>
     BinaryExpression({
       "left":
         MemberExpression([
           SwiftIdentifier("self"),
-          SwiftIdentifier(parameter.name |> ParameterKey.toString)
+          SwiftIdentifier(parameter.name |> ParameterKey.toString),
         ]),
       "operator": "=",
-      "right": SwiftIdentifier(parameter.name |> ParameterKey.toString)
+      "right": SwiftIdentifier(parameter.name |> ParameterKey.toString),
     });
   let initializerCoderDoc = () =>
     /* required init?(coder aDecoder: NSCoder) {
@@ -371,8 +379,8 @@ let generate =
           "externalName": Some("coder"),
           "localName": "aDecoder",
           "annotation": TypeName("NSCoder"),
-          "defaultValue": None
-        })
+          "defaultValue": None,
+        }),
       ],
       "failable": Some("?"),
       "throws": false,
@@ -383,18 +391,18 @@ let generate =
             FunctionCallArgument({
               "name": None,
               "value":
-                SwiftIdentifier("\"init(coder:) has not been implemented\"")
-            })
-          ]
-        })
-      ]
+                SwiftIdentifier("\"init(coder:) has not been implemented\""),
+            }),
+          ],
+        }),
+      ],
     });
   let initializerDoc = () =>
     InitializerDeclaration({
       "modifiers": [AccessLevelModifier(PublicModifier)],
       "parameters":
         parameters
-        |> List.filter(param => ! isFunctionParameter(param))
+        |> List.filter(param => !isFunctionParameter(param))
         |> List.map(initParameterDoc),
       "failable": None,
       "throws": false,
@@ -403,7 +411,7 @@ let generate =
           Empty,
           [
             parameters
-            |> List.filter(param => ! isFunctionParameter(param))
+            |> List.filter(param => !isFunctionParameter(param))
             |> List.map(initParameterAssignmentDoc),
             [
               MemberExpression([
@@ -413,35 +421,38 @@ let generate =
                   "arguments": [
                     FunctionCallArgument({
                       "name": Some(SwiftIdentifier("frame")),
-                      "value": SwiftIdentifier(".zero")
-                    })
-                  ]
-                })
-              ])
+                      "value": SwiftIdentifier(".zero"),
+                    }),
+                  ],
+                }),
+              ]),
             ],
             [
               FunctionCallExpression({
                 "name": SwiftIdentifier("setUpViews"),
-                "arguments": []
+                "arguments": [],
               }),
               FunctionCallExpression({
                 "name": SwiftIdentifier("setUpConstraints"),
-                "arguments": []
-              })
+                "arguments": [],
+              }),
             ],
             [
               FunctionCallExpression({
                 "name": SwiftIdentifier("update"),
-                "arguments": []
-              })
+                "arguments": [],
+              }),
             ],
-            needsTracking ? [AppkitPressable.addTrackingArea] : []
-          ]
-        )
+            needsTracking ? [AppkitPressable.addTrackingArea] : [],
+          ],
+        ),
     });
   let convenienceInitializerDoc = () =>
     InitializerDeclaration({
-      "modifiers": [AccessLevelModifier(PublicModifier), ConvenienceModifier],
+      "modifiers": [
+        AccessLevelModifier(PublicModifier),
+        ConvenienceModifier,
+      ],
       "parameters": [],
       "failable": None,
       "throws": false,
@@ -456,32 +467,32 @@ let generate =
                   "name": SwiftIdentifier("init"),
                   "arguments":
                     parameters
-                    |> List.filter(param => ! isFunctionParameter(param))
+                    |> List.filter(param => !isFunctionParameter(param))
                     |> List.map((param: Decode.parameter) =>
                          FunctionCallArgument({
                            "name":
                              Some(
                                SwiftIdentifier(
-                                 param.name |> ParameterKey.toString
-                               )
+                                 param.name |> ParameterKey.toString,
+                               ),
                              ),
                            "value":
                              Document.defaultValueForLonaType(
                                swiftOptions.framework,
                                colors,
                                textStyles,
-                               param.ltype
-                             )
+                               param.ltype,
+                             ),
                          })
-                       )
-                })
-              ])
-            ]
-          ]
-        )
+                       ),
+                }),
+              ]),
+            ],
+          ],
+        ),
     });
   let memberOrSelfExpression = (firstIdentifier, statements) =>
-    switch firstIdentifier {
+    switch (firstIdentifier) {
     | "self" => MemberExpression(statements)
     | _ => MemberExpression([SwiftIdentifier(firstIdentifier)] @ statements)
     };
@@ -492,17 +503,21 @@ let generate =
   let defaultValueForParameter =
     fun
     | "backgroundColor" =>
-      MemberExpression([SwiftIdentifier("UIColor"), SwiftIdentifier("clear")])
+      MemberExpression([
+        SwiftIdentifier("UIColor"),
+        SwiftIdentifier("clear"),
+      ])
     | "font"
     | "textStyle" =>
       MemberExpression([
         SwiftIdentifier("TextStyles"),
-        SwiftIdentifier(textStyles.defaultStyle.id)
+        SwiftIdentifier(textStyles.defaultStyle.id),
       ])
     | _ => LiteralExpression(Integer(0));
   let defineInitialLayerValue = (layer: Types.layer, (name, _)) => {
-    let parameters = Layer.LayerMap.find_opt(layer, layerParameterAssignments);
-    switch parameters {
+    let parameters =
+      Layer.LayerMap.find_opt(layer, layerParameterAssignments);
+    switch (parameters) {
     | None => LineComment(layer.name)
     | Some(parameters) =>
       let assignment = ParameterMap.find_opt(name, parameters);
@@ -518,7 +533,7 @@ let generate =
           Logic.assignmentForLayerParameter(
             layer,
             name,
-            Logic.defaultValueForType(param.ltype)
+            Logic.defaultValueForType(param.ltype),
           );
         | (None, _, Some(value)) =>
           Logic.assignmentForLayerParameter(layer, name, value)
@@ -527,7 +542,7 @@ let generate =
             colors,
             textStyles,
             layer,
-            name
+            name,
           )
         };
       let node =
@@ -536,7 +551,7 @@ let generate =
           colors,
           textStyles,
           rootLayer,
-          logic
+          logic,
         );
       StatementListHelper(node);
     };
@@ -547,15 +562,15 @@ let generate =
     imageLayers |> List.exists(hasBackgroundColor);
   };
   let helperClasses =
-    switch swiftOptions.framework {
+    switch (swiftOptions.framework) {
     | SwiftOptions.AppKit =>
       containsImageWithBackgroundColor() ?
         [
           [LineComment("MARK: - " ++ "ImageWithBackgroundColor"), Empty],
           SwiftHelperClass.generateImageWithBackgroundColor(
             options,
-            swiftOptions
-          )
+            swiftOptions,
+          ),
         ]
         |> List.concat :
         []
@@ -605,9 +620,10 @@ let generate =
       switch (swiftOptions.framework, layer.typeName) {
       | (SwiftOptions.AppKit, View) => [
           BinaryExpression({
-            "left": layerMemberExpression(layer, [SwiftIdentifier("boxType")]),
+            "left":
+              layerMemberExpression(layer, [SwiftIdentifier("boxType")]),
             "operator": "=",
-            "right": SwiftIdentifier(".custom")
+            "right": SwiftIdentifier(".custom"),
           }),
           BinaryExpression({
             "left":
@@ -615,25 +631,28 @@ let generate =
             "operator": "=",
             "right":
               isParameterUsed(layer, BorderWidth) ?
-                SwiftIdentifier(".lineBorder") : SwiftIdentifier(".noBorder")
+                SwiftIdentifier(".lineBorder") : SwiftIdentifier(".noBorder"),
           }),
           BinaryExpression({
             "left":
               layerMemberExpression(
                 layer,
-                [SwiftIdentifier("contentViewMargins")]
+                [SwiftIdentifier("contentViewMargins")],
               ),
             "operator": "=",
-            "right": SwiftIdentifier(".zero")
-          })
+            "right": SwiftIdentifier(".zero"),
+          }),
         ]
       | (SwiftOptions.AppKit, Text) => [
           BinaryExpression({
             "left":
-              layerMemberExpression(layer, [SwiftIdentifier("lineBreakMode")]),
+              layerMemberExpression(
+                layer,
+                [SwiftIdentifier("lineBreakMode")],
+              ),
             "operator": "=",
-            "right": SwiftIdentifier(".byWordWrapping")
-          })
+            "right": SwiftIdentifier(".byWordWrapping"),
+          }),
         ]
       | (SwiftOptions.UIKit, Text) =>
         [
@@ -644,25 +663,30 @@ let generate =
                 "left":
                   layerMemberExpression(
                     layer,
-                    [SwiftIdentifier("numberOfLines")]
+                    [SwiftIdentifier("numberOfLines")],
                   ),
                 "operator": "=",
-                "right": LiteralExpression(Integer(0))
-              })
-            ]
+                "right": LiteralExpression(Integer(0)),
+              }),
+            ],
         ]
         |> List.concat
       | _ => []
       };
     let addSubviews = (parent: option(Types.layer), layer: Types.layer) =>
-      switch parent {
+      switch (parent) {
       | None => []
       | Some(parent) => [
           FunctionCallExpression({
             "name":
-              layerMemberExpression(parent, [SwiftIdentifier("addSubview")]),
-            "arguments": [SwiftIdentifier(layer.name |> SwiftFormat.layerName)]
-          })
+              layerMemberExpression(
+                parent,
+                [SwiftIdentifier("addSubview")],
+              ),
+            "arguments": [
+              SwiftIdentifier(layer.name |> SwiftFormat.layerName),
+            ],
+          }),
         ]
       };
     FunctionDeclaration({
@@ -677,9 +701,9 @@ let generate =
           [
             Layer.flatmap(resetViewStyling, root) |> List.concat,
             Layer.flatmapParent(addSubviews, root) |> List.concat,
-            setUpDefaultsDoc()
-          ]
-        )
+            setUpDefaultsDoc(),
+          ],
+        ),
     });
   };
   let negateNumber = expression =>
@@ -693,11 +717,11 @@ let generate =
     BinaryExpression({
       "left": SwiftIdentifier(variableName(layer, variable1)),
       "operator": "+",
-      "right": SwiftIdentifier(variableName(parent, variable2))
+      "right": SwiftIdentifier(variableName(parent, variable2)),
     });
   };
   let generateConstraintWithInitialValue = (constr: Constraint.t, node) =>
-    switch constr {
+    switch (constr) {
     | Constraint.Dimension((layer: Types.layer), dimension, _, _) =>
       layerMemberExpression(
         layer,
@@ -708,11 +732,11 @@ let generate =
             "arguments": [
               FunctionCallArgument({
                 "name": Some(SwiftIdentifier("equalToConstant")),
-                "value": node
-              })
-            ]
-          })
-        ]
+                "value": node,
+              }),
+            ],
+          }),
+        ],
       )
     | Constraint.Relation(
         (layer1: Types.layer),
@@ -721,7 +745,7 @@ let generate =
         (layer2: Types.layer),
         edge2,
         _,
-        _
+        _,
       ) =>
       layerMemberExpression(
         layer1,
@@ -731,25 +755,26 @@ let generate =
             "name": SwiftIdentifier("constraint"),
             "arguments": [
               FunctionCallArgument({
-                "name": Some(SwiftIdentifier(Constraint.cmpToString(relation))),
+                "name":
+                  Some(SwiftIdentifier(Constraint.cmpToString(relation))),
                 "value":
                   layerMemberExpression(
                     layer2,
-                    [SwiftIdentifier(Constraint.anchorToString(edge2))]
-                  )
+                    [SwiftIdentifier(Constraint.anchorToString(edge2))],
+                  ),
               }),
               FunctionCallArgument({
                 "name": Some(SwiftIdentifier("constant")),
-                "value": node
-              })
-            ]
-          })
-        ]
+                "value": node,
+              }),
+            ],
+          }),
+        ],
       )
     };
   let generateConstantFromConstraint = (constr: Constraint.t) =>
     Constraint.(
-      switch constr {
+      switch (constr) {
       /* Currently centering doesn't require any constants, since a centered view also
          has a pair of before/after constraints that include the constants */
       | Relation(_, CenterX, _, _, CenterX, _, _)
@@ -764,7 +789,7 @@ let generate =
           layer,
           "leadingPadding",
           child,
-          "leadingMargin"
+          "leadingMargin",
         )
       | Relation(child, Bottom, _, layer, Bottom, _, PrimaryAfter)
       | Relation(child, Bottom, _, layer, Bottom, _, SecondaryAfter) =>
@@ -773,8 +798,8 @@ let generate =
             layer,
             "bottomPadding",
             child,
-            "bottomMargin"
-          )
+            "bottomMargin",
+          ),
         )
       | Relation(child, Trailing, _, layer, Trailing, _, SecondaryAfter)
       | Relation(child, Trailing, _, layer, Trailing, _, PrimaryAfter) =>
@@ -783,22 +808,30 @@ let generate =
             layer,
             "trailingPadding",
             child,
-            "trailingMargin"
-          )
+            "trailingMargin",
+          ),
         )
       | Relation(child, Top, _, previousLayer, Bottom, _, PrimaryBetween) =>
         constraintConstantExpression(
           previousLayer,
           "bottomMargin",
           child,
-          "topMargin"
+          "topMargin",
         )
-      | Relation(child, Leading, _, previousLayer, Trailing, _, PrimaryBetween) =>
+      | Relation(
+          child,
+          Leading,
+          _,
+          previousLayer,
+          Trailing,
+          _,
+          PrimaryBetween,
+        ) =>
         constraintConstantExpression(
           previousLayer,
           "trailingMargin",
           child,
-          "leadingMargin"
+          "leadingMargin",
         )
       | Relation(child, Width, Leq, layer, Width, _, FitContentSecondary) =>
         negateNumber(
@@ -808,7 +841,7 @@ let generate =
                 layer,
                 "leadingPadding",
                 child,
-                "leadingMargin"
+                "leadingMargin",
               ),
             "operator": "+",
             "right":
@@ -816,9 +849,9 @@ let generate =
                 layer,
                 "trailingPadding",
                 child,
-                "trailingMargin"
-              )
-          })
+                "trailingMargin",
+              ),
+          }),
         )
       | Relation(child, Height, Leq, layer, Height, _, FitContentSecondary) =>
         negateNumber(
@@ -828,7 +861,7 @@ let generate =
                 layer,
                 "topPadding",
                 child,
-                "topMargin"
+                "topMargin",
               ),
             "operator": "+",
             "right":
@@ -836,9 +869,9 @@ let generate =
                 layer,
                 "bottomPadding",
                 child,
-                "bottomMargin"
-              )
-          })
+                "bottomMargin",
+              ),
+          }),
         )
       | Relation(_, _, _, _, _, _, FlexSibling) =>
         LiteralExpression(FloatingPoint(0.0))
@@ -860,11 +893,12 @@ let generate =
       (
         layer === rootLayer ?
           anchorString :
-          SwiftFormat.layerName(layer.name) ++ Format.upperFirst(anchorString)
+          SwiftFormat.layerName(layer.name)
+          ++ Format.upperFirst(anchorString)
       )
       ++ suffix;
     };
-    switch constr {
+    switch (constr) {
     | Relation(
         (layer1: Types.layer),
         edge1,
@@ -872,7 +906,7 @@ let generate =
         (layer2: Types.layer),
         _,
         _,
-        FlexSibling
+        FlexSibling,
       ) =>
       SwiftFormat.layerName(layer1.name)
       ++ Format.upperFirst(SwiftFormat.layerName(layer2.name))
@@ -887,41 +921,39 @@ let generate =
     };
   };
   let constraints =
-    Constraint.getConstraints
+    Constraint.getConstraints(
       /* For the purposes of layouts, we want to swap the custom component layer
          with the root layer from the custom component's definition. We should
          use the parameters of the custom component's root layer, since these
          determine layout. We should still use the type, name, and children of
          the custom component layer. */
-      (
-        (layer: Types.layer, name) => {
-          let component = getComponent(name);
-          let rootLayer =
-            component |> Decode.Component.rootLayer(getComponent);
-          {
-            typeName: layer.typeName,
-            name: layer.name,
-            parameters: rootLayer.parameters,
-            children: layer.children
-          };
-        },
-        rootLayer
-      );
+      (layer: Types.layer, name) => {
+        let component = getComponent(name);
+        let rootLayer = component |> Decode.Component.rootLayer(getComponent);
+        {
+          typeName: layer.typeName,
+          name: layer.name,
+          parameters: rootLayer.parameters,
+          children: layer.children,
+        };
+      },
+      rootLayer,
+    );
   let setUpConstraintsDoc = (root: Types.layer) => {
     let translatesAutoresizingMask = (layer: Types.layer) =>
       BinaryExpression({
         "left":
           layerMemberExpression(
             layer,
-            [SwiftIdentifier("translatesAutoresizingMaskIntoConstraints")]
+            [SwiftIdentifier("translatesAutoresizingMaskIntoConstraints")],
           ),
         "operator": "=",
-        "right": LiteralExpression(Boolean(false))
+        "right": LiteralExpression(Boolean(false)),
       });
     let getInitialValue = constr =>
       generateConstraintWithInitialValue(
         constr,
-        generateConstantFromConstraint(constr)
+        generateConstantFromConstraint(constr),
       );
     let defineConstraint = def =>
       ConstantDeclaration({
@@ -930,29 +962,29 @@ let generate =
         "pattern":
           IdentifierPattern({
             "identifier": SwiftIdentifier(formatConstraintVariableName(def)),
-            "annotation": None
-          })
+            "annotation": None,
+          }),
       });
     let setConstraintPriority = def =>
       BinaryExpression({
         "left":
           MemberExpression([
             SwiftIdentifier(formatConstraintVariableName(def)),
-            SwiftIdentifier("priority")
+            SwiftIdentifier("priority"),
           ]),
         "operator": "=",
         "right":
           MemberExpression([
             SwiftDocument.layoutPriorityTypeDoc(swiftOptions.framework),
-            SwiftIdentifier(priorityName(Constraint.getPriority(def)))
-          ])
+            SwiftIdentifier(priorityName(Constraint.getPriority(def))),
+          ]),
       });
     let activateConstraints = () =>
       FunctionCallExpression({
         "name":
           MemberExpression([
             SwiftIdentifier("NSLayoutConstraint"),
-            SwiftIdentifier("activate")
+            SwiftIdentifier("activate"),
           ]),
         "arguments": [
           FunctionCallArgument({
@@ -963,31 +995,32 @@ let generate =
                   constraints
                   |> List.map(def =>
                        SwiftIdentifier(formatConstraintVariableName(def))
-                     )
-                )
-              )
-          })
-        ]
+                     ),
+                ),
+              ),
+          }),
+        ],
       });
     let assignConstraint = def =>
       BinaryExpression({
         "left":
           MemberExpression([
             SwiftIdentifier("self"),
-            SwiftIdentifier(formatConstraintVariableName(def))
+            SwiftIdentifier(formatConstraintVariableName(def)),
           ]),
         "operator": "=",
-        "right": SwiftIdentifier(formatConstraintVariableName(def))
+        "right": SwiftIdentifier(formatConstraintVariableName(def)),
       });
     let assignConstraintIdentifier = def =>
       BinaryExpression({
         "left":
           MemberExpression([
             SwiftIdentifier(formatConstraintVariableName(def)),
-            SwiftIdentifier("identifier")
+            SwiftIdentifier("identifier"),
           ]),
         "operator": "=",
-        "right": LiteralExpression(String(formatConstraintVariableName(def)))
+        "right":
+          LiteralExpression(String(formatConstraintVariableName(def))),
       });
     FunctionDeclaration({
       "name": "setUpConstraints",
@@ -1009,11 +1042,11 @@ let generate =
             List.length(constraints) > 0 ?
               [
                 LineComment("For debugging"),
-                ...constraints |> List.map(assignConstraintIdentifier)
+                ...constraints |> List.map(assignConstraintIdentifier),
               ] :
-              []
-          ]
-        )
+              [],
+          ],
+        ),
     });
   };
   let updateDoc = () => {
@@ -1064,8 +1097,8 @@ let generate =
             colors,
             textStyles,
             rootLayer,
-            logic
-          )
+            logic,
+          ),
     });
   };
   TopLevelDeclaration({
@@ -1075,7 +1108,7 @@ let generate =
         [
           [
             SwiftDocument.importFramework(swiftOptions.framework),
-            ImportDeclaration("Foundation")
+            ImportDeclaration("Foundation"),
           ],
           helperClasses,
           [LineComment("MARK: - " ++ name)],
@@ -1092,7 +1125,7 @@ let generate =
                     [Empty, LineComment("MARK: Lifecycle")],
                     [initializerDoc()],
                     parameters
-                    |> List.filter(param => ! isFunctionParameter(param))
+                    |> List.filter(param => !isFunctionParameter(param))
                     |> List.length > 0 ?
                       [convenienceInitializerDoc()] : [],
                     [initializerCoderDoc()],
@@ -1108,12 +1141,12 @@ let generate =
                     |> Layer.flatmap(spacingVariableDoc)
                     |> List.concat,
                     pressableLayers
-                    |> List.map(pressableVariableDoc)
+                    |> List.map(pressableVariableDoc(rootLayer))
                     |> List.concat,
                     constraints
                     |> List.map(def =>
                          constraintVariableDoc(
-                           formatConstraintVariableName(def)
+                           formatConstraintVariableName(def),
                          )
                        ),
                     [setUpViewsDoc(rootLayer)],
@@ -1122,14 +1155,14 @@ let generate =
                     needsTracking ?
                       AppkitPressable.mouseTrackingFunctions(
                         rootLayer,
-                        pressableLayers
+                        pressableLayers,
                       ) :
-                      []
-                  ]
-                )
-            })
-          ]
-        ]
-      )
+                      [],
+                  ],
+                ),
+            }),
+          ],
+        ],
+      ),
   });
 };

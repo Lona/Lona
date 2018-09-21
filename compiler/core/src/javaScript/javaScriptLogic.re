@@ -2,10 +2,10 @@ module Ast = JavaScriptAst;
 
 let logicValueToJavaScriptAST =
     (colors, textStyles: TextStyle.file, x: Logic.logicValue) =>
-  switch x {
+  switch (x) {
   | Logic.Identifier(_, path) => Ast.Identifier(path)
   | Literal(lonaValue) =>
-    switch lonaValue.ltype {
+    switch (lonaValue.ltype) {
     | Reference("Color")
     | Named("Color", _) =>
       let data = lonaValue.data |> Json.Decode.string;
@@ -28,7 +28,7 @@ let rec toJavaScriptAST = (framework, colors, textStyles, node) => {
   let logicValueToJavaScriptASTWithColors =
     logicValueToJavaScriptAST(colors, textStyles);
   let fromCmp = x =>
-    switch x {
+    switch (x) {
     | Types.Eq => Ast.Eq
     | Neq => Neq
     | Gt => Gt
@@ -37,54 +37,57 @@ let rec toJavaScriptAST = (framework, colors, textStyles, node) => {
     | Lte => Lte
     | Unknown => Noop
     };
-  switch node {
+  switch (node) {
   | Logic.Assign(a, b) =>
     Ast.AssignmentExpression({
-      "left": logicValueToJavaScriptASTWithColors(b),
-      "right": logicValueToJavaScriptASTWithColors(a)
+      left: logicValueToJavaScriptASTWithColors(b),
+      right: logicValueToJavaScriptASTWithColors(a),
     })
   | IfExists(a, body) =>
     IfStatement({
-      "test": logicValueToJavaScriptASTWithColors(a),
-      "consequent": [toJavaScriptAST(framework, colors, textStyles, body)]
+      test: logicValueToJavaScriptASTWithColors(a),
+      consequent: [toJavaScriptAST(framework, colors, textStyles, body)],
     })
   | Block(body) =>
-    Ast.Block(body |> List.map(toJavaScriptAST(framework, colors, textStyles)))
+    Ast.Block(
+      body |> List.map(toJavaScriptAST(framework, colors, textStyles)),
+    )
   | If(a, cmp, b, body) =>
     let condition =
       Ast.BinaryExpression({
-        "left": logicValueToJavaScriptASTWithColors(a),
-        "operator": fromCmp(cmp),
-        "right": logicValueToJavaScriptASTWithColors(b)
+        left: logicValueToJavaScriptASTWithColors(a),
+        operator: fromCmp(cmp),
+        right: logicValueToJavaScriptASTWithColors(b),
       });
     IfStatement({
-      "test": condition,
-      "consequent": [toJavaScriptAST(framework, colors, textStyles, body)]
+      test: condition,
+      consequent: [toJavaScriptAST(framework, colors, textStyles, body)],
     });
   | Add(lhs, rhs, value) =>
     let addition =
       Ast.BinaryExpression({
-        "left": logicValueToJavaScriptASTWithColors(lhs),
-        "operator": Ast.Plus,
-        "right": logicValueToJavaScriptASTWithColors(rhs)
+        left: logicValueToJavaScriptASTWithColors(lhs),
+        operator: Ast.Plus,
+        right: logicValueToJavaScriptASTWithColors(rhs),
       });
     AssignmentExpression({
-      "left": logicValueToJavaScriptASTWithColors(value),
-      "right": addition
+      left: logicValueToJavaScriptASTWithColors(value),
+      right: addition,
     });
   | Let(value) =>
-    switch value {
+    switch (value) {
     | Identifier(_, path) => Ast.VariableDeclaration(Ast.Identifier(path))
     | _ => Unknown
     }
   | LetEqual(value, content) =>
     Ast.AssignmentExpression({
-      "left":
-        switch value {
-        | Identifier(_, path) => Ast.VariableDeclaration(Ast.Identifier(path))
+      left:
+        switch (value) {
+        | Identifier(_, path) =>
+          Ast.VariableDeclaration(Ast.Identifier(path))
         | _ => Unknown
         },
-      "right": logicValueToJavaScriptASTWithColors(content)
+      right: logicValueToJavaScriptASTWithColors(content),
     })
   | None => Unknown
   };

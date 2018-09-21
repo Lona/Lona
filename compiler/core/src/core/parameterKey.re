@@ -38,7 +38,7 @@ type t =
   | OnPress;
 
 let fromString = string =>
-  switch string {
+  switch (string) {
   /* Built-in */
   | "visible" => Visible
   /* Text */
@@ -79,7 +79,7 @@ let fromString = string =>
   };
 
 let toString = key =>
-  switch key {
+  switch (key) {
   /* Built-in */
   | Visible => "visible"
   /* Text */

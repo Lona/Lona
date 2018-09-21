@@ -9,7 +9,7 @@ let rec join = sep =>
 let render = colors => {
   let colorDoc = (color: Color.t) =>
     (
-      switch color.comment {
+      switch (color.comment) {
       | Some(comment) => [Comment(comment)]
       | None => []
       }
@@ -18,23 +18,23 @@ let render = colors => {
       Element({
         "tag": "color",
         "attributes": [Attribute({"name": "name", "value": color.id})],
-        "content": [CharData(color.value)]
-      })
+        "content": [CharData(color.value)],
+      }),
     ];
   let doc =
     Document({
       "prolog":
         Prolog({
           "xmlDecl":
-            Some(XMLDecl({"version": "1.0", "encoding": Some("utf-8")}))
+            Some(XMLDecl({"version": "1.0", "encoding": Some("utf-8")})),
         }),
       "element":
         Element({
           "tag": "resources",
           "attributes": [],
           "content":
-            colors |> List.map(colorDoc) |> join([Empty]) |> List.concat
-        })
+            colors |> List.map(colorDoc) |> join([Empty]) |> List.concat,
+        }),
     });
   XmlRender.toString(doc);
 };

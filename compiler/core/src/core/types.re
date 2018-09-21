@@ -8,14 +8,12 @@ type lonaType =
   | Reference(string)
   | Named(string, lonaType)
   | Function(
-      list(
-        {
-          .
-          "label": string,
-          "type": lonaType
-        }
-      ),
-      lonaType
+      list({
+        .
+        "label": string,
+        "type": lonaType,
+      }),
+      lonaType,
     );
 
 let undefinedType = Reference("Undefined");
@@ -36,7 +34,7 @@ let handlerType = Function([], Reference("Undefined"));
 
 type lonaValue = {
   ltype: lonaType,
-  data: Js.Json.t
+  data: Js.Json.t,
 };
 
 type cmp =
@@ -52,7 +50,7 @@ type cmp =
 type parameter = {
   name: ParameterKey.t,
   ltype: lonaType,
-  defaultValue: option(Js.Json.t)
+  defaultValue: option(Js.Json.t),
 };
 
 type layerType =
@@ -65,7 +63,7 @@ type layerType =
   | Unknown;
 
 let layerTypeToString = x =>
-  switch x {
+  switch (x) {
   | View => "View"
   | Text => "Text"
   | Image => "Image"
@@ -79,7 +77,7 @@ type layer = {
   typeName: layerType,
   name: string,
   parameters: ParameterMap.t(lonaValue),
-  children: list(layer)
+  children: list(layer),
 };
 
 type sizingRule =

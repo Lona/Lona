@@ -1,43 +1,43 @@
 module Doc = {
   type t('a) = {.. "type": string} as 'a;
   module Builders = {
-    let s = (s: string) : t('a) => {"type": "concat", "parts": [|s|]};
+    let s = (s: string): t('a) => {"type": "concat", "parts": [|s|]};
     let empty: t('a) = s("");
     [@bs.val] [@bs.module "prettier"] [@bs.scope ("doc", "builders")]
-    external _concat : array(t('a)) => Js.t({..}) = "concat";
+    external _concat: array(t('a)) => Js.t({..}) = "concat";
     let concat = items => _concat(Array.of_list(items));
     [@bs.val] [@bs.module "prettier"] [@bs.scope ("doc", "builders")]
-    external _fill : array(t('a)) => Js.t({..}) = "fill";
+    external _fill: array(t('a)) => Js.t({..}) = "fill";
     let fill = items => _fill(Array.of_list(items));
     [@bs.val] [@bs.module "prettier"] [@bs.scope ("doc", "builders")]
-    external _join : (t('a), array(t('b))) => Js.t({..}) = "join";
+    external _join: (t('a), array(t('b))) => Js.t({..}) = "join";
     let join = (seperator, items) => _join(seperator, Array.of_list(items));
     [@bs.val] [@bs.module "prettier"] [@bs.scope ("doc", "builders")]
-    external fixedWidth : (t('a), int) => Js.t({..}) = "";
+    external fixedWidth: (t('a), int) => Js.t({..}) = "";
     [@bs.val] [@bs.module "prettier"] [@bs.scope ("doc", "builders")]
-    external indent : t('a) => Js.t({..}) = "";
+    external indent: t('a) => Js.t({..}) = "";
     [@bs.val] [@bs.module "prettier"] [@bs.scope ("doc", "builders")]
-    external group : t('a) => Js.t({..}) = "";
+    external group: t('a) => Js.t({..}) = "";
     [@bs.val] [@bs.module "prettier"] [@bs.scope ("doc", "builders")]
-    external lineSuffix : t('a) => Js.t({..}) = "";
+    external lineSuffix: t('a) => Js.t({..}) = "";
     [@bs.val] [@bs.module "prettier"] [@bs.scope ("doc", "builders")]
-    external ifBreak : (t('a), t('b)) => Js.t({..}) = "";
+    external ifBreak: (t('a), t('b)) => Js.t({..}) = "";
     [@bs.val] [@bs.module "prettier"] [@bs.scope ("doc", "builders")]
-    external line : Js.t({..}) = "";
+    external line: Js.t({..}) = "";
     [@bs.val] [@bs.module "prettier"] [@bs.scope ("doc", "builders")]
-    external hardline : Js.t({..}) = "";
+    external hardline: Js.t({..}) = "";
     [@bs.val] [@bs.module "prettier"] [@bs.scope ("doc", "builders")]
-    external softline : Js.t({..}) = "";
+    external softline: Js.t({..}) = "";
     [@bs.val] [@bs.module "prettier"] [@bs.scope ("doc", "builders")]
-    external lineSuffixBoundary : Js.t({..}) = "";
+    external lineSuffixBoundary: Js.t({..}) = "";
     let (<+>): (t('a), t('b)) => t('c) = (x, y) => concat([x, y]);
   };
   module Printer = {
     [@bs.val] [@bs.module "prettier"] [@bs.scope ("doc", "printer")]
-    external printDocToString :
+    external printDocToString:
       (Js.t('a), {.. "printWidth": int}) => {.. "formatted": string} =
       "";
   };
 };
 
-[@bs.val] [@bs.module "prettier"] external format : string => string = "";
+[@bs.val] [@bs.module "prettier"] external format: string => string = "";

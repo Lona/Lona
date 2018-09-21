@@ -10,7 +10,7 @@
     "start": "bsb -make-world -w",
     "clean": "bsb -clean-world",
     "bundle": "npm run clean && npm run build && webpack",
-    "format": "refmt --parse=re --print=re --in-place src/**/*.re",
+    "format": "bsrefmt --parse=re --print=re --in-place src/**/*.re",
     "prepublishOnly": "yarn clean && yarn build && yarn bundle",
     "snapshotJsDom":
       "node src/main.bs.js workspace js ../../examples/test ../../examples/generated/test/react-dom --framework=reactdom",
@@ -38,9 +38,9 @@
   "homepage": "https://github.com/airbnb/Lona",
   "devDependencies": {
     "bs-glob": "reasonml-community/bs-glob",
-    "bs-json": "^1.0.1",
+    "@glennsl/bs-json": "*",
     "bs-node": "github:buckletypes/bs-node",
-    "bs-platform": "^3.1.5",
+    "bs-platform": "^4.0.5",
     "copy-webpack-plugin": "^4.5.1",
     "csscolorparser": "^1.0.3",
     "fs-extra": "^5.0.0",
