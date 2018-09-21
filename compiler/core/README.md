@@ -68,7 +68,7 @@ This project is written in ReasonML, an OCaml dialect that can compile to JavaSc
 
 #### 1. Install ReasonML
 
-Install from: https://reasonml.github.io/docs/en/global-installation.html
+Install from: [https://reasonml.github.io/docs/en/installation](https://reasonml.github.io/docs/en/installation)
 
 #### 2. Install dependencies with yarn
 
@@ -87,5 +87,5 @@ I recommend developing with VSCode
 ### Build + Watch
 
 ```
-yarn watch
+yarn start
 ```
