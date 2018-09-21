@@ -75,6 +75,21 @@ module StyledComponents = {
     layer |> Layer.flatten |> List.map(createStyledComponentAST);
 };
 
+let createStyleAttributePropertyAST =
+    (colors, textStyles, key: ParameterKey.t, value: Logic.logicValue) =>
+  switch (key) {
+  | ParameterKey.TextStyle =>
+    JavaScriptAst.SpreadElement(
+      JavaScriptLogic.logicValueToJavaScriptAST(colors, textStyles, value),
+    )
+  | _ =>
+    JavaScriptAst.Property({
+      key: Identifier([key |> styleNameKey]),
+      value:
+        JavaScriptLogic.logicValueToJavaScriptAST(colors, textStyles, value),
+    })
+  };
+
 let createStyleAttributeAST =
     (
       framework: JavaScriptOptions.framework,
@@ -98,15 +113,12 @@ let createStyleAttributeAST =
               ]),
               ObjectLiteral(
                 Layer.mapBindings(((key, value)) =>
-                  Property({
-                    key: Identifier([key |> styleNameKey]),
-                    value:
-                      JavaScriptLogic.logicValueToJavaScriptAST(
-                        colors,
-                        textStyles,
-                        value,
-                      ),
-                  })
+                  createStyleAttributePropertyAST(
+                    colors,
+                    textStyles,
+                    key,
+                    value,
+                  )
                 ) @@
                 styles,
               ),
@@ -126,15 +138,12 @@ let createStyleAttributeAST =
             ]),
             ObjectLiteral(
               Layer.mapBindings(((key, value)) =>
-                Property({
-                  key: Identifier([key |> styleNameKey]),
-                  value:
-                    JavaScriptLogic.logicValueToJavaScriptAST(
-                      colors,
-                      textStyles,
-                      value,
-                    ),
-                })
+                createStyleAttributePropertyAST(
+                  colors,
+                  textStyles,
+                  key,
+                  value,
+                )
               ) @@
               styles,
             ),
