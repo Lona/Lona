@@ -1,4 +1,5 @@
 import React from "react"
+import styled, { ThemeProvider } from "styled-components"
 
 import colors from "../colors"
 import textStyles from "../textStyles"
@@ -24,17 +25,20 @@ export default class Button extends React.Component {
     if (this.props.secondary) {
       View$backgroundColor = colors.lightblue100
     }
+    let theme = { "view": { "normal": {} }, "text": { "normal": {} } }
     return (
-      <div
-        style={Object.assign(styles.view, {
-          backgroundColor: View$backgroundColor
-        })}
-        onClick={View$onPress}
-      >
-        <span style={Object.assign(styles.text, {})}>
-          {Text$text}
-        </span>
-      </div>
+      <ThemeProvider theme={theme}>
+        <div
+          style={Object.assign(styles.view, {
+            backgroundColor: View$backgroundColor
+          })}
+          onClick={View$onPress}
+        >
+          <span style={Object.assign(styles.text, {})}>
+            {Text$text}
+          </span>
+        </div>
+      </ThemeProvider>
     );
   }
 };

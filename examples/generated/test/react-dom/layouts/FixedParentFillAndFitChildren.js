@@ -1,4 +1,5 @@
 import React from "react"
+import styled, { ThemeProvider } from "styled-components"
 
 import colors from "../colors"
 import textStyles from "../textStyles"
@@ -7,23 +8,25 @@ export default class FixedParentFillAndFitChildren extends React.Component {
   render() {
 
 
+    let theme = {
+      "view": { "normal": {} },
+      "view1": { "normal": {} },
+      "view4": { "normal": {} },
+      "view5": { "normal": {} },
+      "view2": { "normal": {} },
+      "view3": { "normal": {} }
+    }
     return (
-      <div style={Object.assign(styles.view, {})}>
-        <div style={Object.assign(styles.view1, {})}>
-          <div style={Object.assign(styles.view4, {})}>
-
+      <ThemeProvider theme={theme}>
+        <div style={Object.assign(styles.view, {})}>
+          <div style={Object.assign(styles.view1, {})}>
+            <div style={Object.assign(styles.view4, {})} />
+            <div style={Object.assign(styles.view5, {})} />
           </div>
-          <div style={Object.assign(styles.view5, {})}>
-
-          </div>
+          <div style={Object.assign(styles.view2, {})} />
+          <div style={Object.assign(styles.view3, {})} />
         </div>
-        <div style={Object.assign(styles.view2, {})}>
-
-        </div>
-        <div style={Object.assign(styles.view3, {})}>
-
-        </div>
-      </div>
+      </ThemeProvider>
     );
   }
 };

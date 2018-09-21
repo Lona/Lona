@@ -1,4 +1,5 @@
 import React from "react"
+import styled, { ThemeProvider } from "styled-components"
 
 import colors from "../colors"
 import textStyles from "../textStyles"
@@ -40,24 +41,31 @@ export default class PressableRootView extends React.Component {
         InnerText$text = "Hovered & Pressed"
       }
     }
+    let theme = {
+      "outer": { "normal": {} },
+      "inner": { "normal": {} },
+      "innerText": { "normal": {} }
+    }
     return (
-      <div
-        style={Object.assign(styles.outer, {
-          backgroundColor: Outer$backgroundColor
-        })}
-        onClick={Outer$onPress}
-      >
+      <ThemeProvider theme={theme}>
         <div
-          style={Object.assign(styles.inner, {
-            backgroundColor: Inner$backgroundColor
+          style={Object.assign(styles.outer, {
+            backgroundColor: Outer$backgroundColor
           })}
-          onClick={Inner$onPress}
+          onClick={Outer$onPress}
         >
-          <span style={Object.assign(styles.innerText, {})}>
-            {InnerText$text}
-          </span>
+          <div
+            style={Object.assign(styles.inner, {
+              backgroundColor: Inner$backgroundColor
+            })}
+            onClick={Inner$onPress}
+          >
+            <span style={Object.assign(styles.innerText, {})}>
+              {InnerText$text}
+            </span>
+          </div>
         </div>
-      </div>
+      </ThemeProvider>
     );
   }
 };

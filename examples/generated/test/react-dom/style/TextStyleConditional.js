@@ -1,4 +1,5 @@
 import React from "react"
+import styled, { ThemeProvider } from "styled-components"
 
 import colors from "../colors"
 import textStyles from "../textStyles"
@@ -12,12 +13,15 @@ export default class TextStyleConditional extends React.Component {
     if (this.props.large) {
       Text$textStyle = textStyles.display2
     }
+    let theme = { "view": { "normal": {} }, "text": { "normal": {} } }
     return (
-      <div style={Object.assign(styles.view, {})}>
-        <span style={Object.assign(styles.text, { font: Text$textStyle })}>
-          {"Text goes here"}
-        </span>
-      </div>
+      <ThemeProvider theme={theme}>
+        <div style={Object.assign(styles.view, {})}>
+          <span style={Object.assign(styles.text, { font: Text$textStyle })}>
+            {"Text goes here"}
+          </span>
+        </div>
+      </ThemeProvider>
     );
   }
 };

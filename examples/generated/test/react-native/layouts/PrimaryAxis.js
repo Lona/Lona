@@ -10,20 +10,14 @@ export default class PrimaryAxis extends React.Component {
 
     return (
       <View style={[ styles.view, {} ]}>
-        <View style={[ styles.fixed, {} ]}>
-
-        </View>
+        <View style={[ styles.fixed, {} ]} />
         <View style={[ styles.fit, {} ]}>
           <Text style={[ styles.text, {} ]}>
             {"Text goes here"}
           </Text>
         </View>
-        <View style={[ styles.fill1, {} ]}>
-
-        </View>
-        <View style={[ styles.fill2, {} ]}>
-
-        </View>
+        <View style={[ styles.fill1, {} ]} />
+        <View style={[ styles.fill2, {} ]} />
       </View>
     );
   }
