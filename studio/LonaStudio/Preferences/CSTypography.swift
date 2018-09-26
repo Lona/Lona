@@ -75,7 +75,10 @@ struct CSTextStyle {
 
     var summary: String {
         let weight = fontWeightName(fontWeight: font.weight)
-        return "\(weight) \(font.size)/\(font.lineHeight)"
+        if let lineHeight = font.lineHeight {
+            return "\(weight) \(font.size)/\(lineHeight)"
+        }
+        return "\(weight) \(font.size)"
     }
 
     private func base() -> CSTextStyle? {
