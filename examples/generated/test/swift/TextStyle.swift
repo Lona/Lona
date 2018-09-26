@@ -6,7 +6,7 @@ public class TextStyle {
   public let name: String?
   public let weight: UIFont.Weight
   public let size: CGFloat
-  public let lineHeight: CGFloat
+  public let lineHeight: CGFloat?
   public let kerning: Double
   public let color: UIColor
   public let alignment: NSTextAlignment
@@ -24,7 +24,7 @@ public class TextStyle {
     self.name = name
     self.weight = weight
     self.size = size
-    self.lineHeight = lineHeight ?? size * 1.5
+    self.lineHeight = lineHeight
     self.kerning = kerning
     self.color = color
     self.alignment = alignment
@@ -53,8 +53,10 @@ public class TextStyle {
 
   public lazy var paragraphStyle: NSMutableParagraphStyle = {
     let paragraphStyle = NSMutableParagraphStyle()
-    paragraphStyle.minimumLineHeight = lineHeight
-    paragraphStyle.maximumLineHeight = lineHeight
+    if let lineHeight = lineHeight {
+      paragraphStyle.minimumLineHeight = lineHeight
+      paragraphStyle.maximumLineHeight = lineHeight
+    }
     paragraphStyle.alignment = alignment
     return paragraphStyle
   }()

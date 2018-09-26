@@ -130,7 +130,7 @@ extension TextStylePreviewCollectionView: NSCollectionViewDelegateFlowLayout {
 
         return NSSize(
             width: 260,
-            height: textStyle.font.lineHeight + 81)
+            height: (textStyle.font.lineHeight ?? textStyle.font.nsFont.capHeight) + 81)
     }
 }
 
