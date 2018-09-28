@@ -77,9 +77,17 @@ and pattern =
         "pattern": pattern,
       },
     )
-  | TuplePattern({. "elements": list(pattern)})
+  | TuplePattern(list(pattern))
   | OptionalPattern({. "value": pattern})
   | ExpressionPattern({. "value": node})
+  | EnumCasePattern(
+      {
+        .
+        "typeIdentifier": option(string),
+        "caseName": string,
+        "tuplePattern": option(pattern),
+      },
+    )
 /* | IsPattern */
 /* | AsPattern */
 and initializerBlock =
@@ -212,6 +220,20 @@ and node =
         .
         "condition": node,
         "block": list(node),
+      },
+    )
+  | SwitchStatement(
+      {
+        .
+        "expression": node,
+        "cases": list(node),
+      },
+    )
+  | CaseLabel(
+      {
+        .
+        "patterns": list(pattern),
+        "statements": list(node),
       },
     )
   | ReturnStatement(option(node))

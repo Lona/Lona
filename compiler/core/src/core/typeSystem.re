@@ -38,6 +38,12 @@ module Access = {
     | RecordCase(name, _) => name
     };
 
+  let typeCaseParameterCount = (typeCase: typeCase): int =>
+    switch (typeCase) {
+    | NormalCase(_, parameters) => List.length(parameters)
+    | RecordCase(_, parameters) => List.length(parameters)
+    };
+
   let entityRecords =
       (entity: entity): list((string, list(recordTypeCaseParameter))) =>
     switch (entity) {

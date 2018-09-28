@@ -362,6 +362,25 @@ let rec render = ast: Prettier.Doc.t('a) =>
       <+> line
       <+> render(CodeBlock({"statements": o##block})),
     )
+  | SwitchStatement(o) =>
+    group(
+      s("switch")
+      <+> line
+      <+> render(o##expression)
+      <+> line
+      <+> render(CodeBlock({"statements": o##cases})),
+    )
+  | CaseLabel(o) =>
+    s("case ")
+    <+> (
+      o##patterns
+      |> List.map(renderPattern)
+      |> join(concat([s(","), line]))
+    )
+    <+> s(":")
+    <+> indent(
+          Render.prefixAll(hardline, o##statements |> List.map(render)),
+        )
   | ReturnStatement(value) =>
     group(s("return ") <+> (value |> Render.renderOptional(render)))
   | FunctionCallArgument(o) =>
@@ -529,16 +548,30 @@ and renderPattern = node =>
     }
   | ValueBindingPattern(o) =>
     group(concat([s(o##kind), line, renderPattern(o##pattern)]))
-  | TuplePattern(o) =>
+  | TuplePattern(v) =>
     group(
       concat([
         s("("),
-        o##elements |> List.map(renderPattern) |> join(s(", ")),
+        v |> List.map(renderPattern) |> join(s(", ")),
         s(")"),
       ]),
     )
   | OptionalPattern(o) => concat([renderPattern(o##value), s("?")])
   | ExpressionPattern(o) => render(o##value)
+  | EnumCasePattern(o) =>
+    let maybeTypeIdentifier =
+      switch (o##typeIdentifier) {
+      | Some(id) => s(id)
+      | None => s("")
+      };
+    let maybePattern =
+      switch (o##tuplePattern) {
+      | Some(pattern) => renderPattern(pattern)
+      | None => s("")
+      };
+    group(
+      maybeTypeIdentifier <+> s(".") <+> s(o##caseName) <+> maybePattern,
+    );
   }
 and renderInitializerBlock = (node: SwiftAst.initializerBlock) =>
   switch (node) {
