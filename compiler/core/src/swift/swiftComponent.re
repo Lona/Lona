@@ -9,8 +9,28 @@ type directionParameter = {
   swiftName: string,
 };
 
-let isFunctionParameter = (param: Types.parameter) =>
-  param.ltype == Types.handlerType;
+module Parameter = {
+  let isFunctionParameter = (param: Types.parameter) =>
+    param.ltype == Types.handlerType;
+
+  let isParameterSetInitially = (layer: Types.layer, parameter) =>
+    ParameterMap.mem(parameter, layer.parameters);
+
+  let getParameter = (layer: Types.layer, parameter) =>
+    ParameterMap.find_opt(parameter, layer.parameters);
+
+  let isParameterAssigned = (assignments, layer: Types.layer, parameter) => {
+    let assignedParameters = Layer.LayerMap.find_opt(layer, assignments);
+    switch (assignedParameters) {
+    | Some(parameters) => ParameterMap.mem(parameter, parameters)
+    | None => false
+    };
+  };
+
+  let isParameterUsed = (assignments, layer: Types.layer, parameter) =>
+    isParameterAssigned(assignments, layer, parameter)
+    || isParameterSetInitially(layer, parameter);
+};
 
 let pressableVariableDoc = (rootLayer: Types.layer, layer: Types.layer) =>
   SwiftAst.[
@@ -97,21 +117,7 @@ let generate =
     fun
     | Constraint.Required => "required"
     | Low => "defaultLow";
-  let isParameterSetInitially = (layer: Types.layer, parameter) =>
-    ParameterMap.mem(parameter, layer.parameters);
-  let getParameter = (layer: Types.layer, parameter) =>
-    ParameterMap.find_opt(parameter, layer.parameters);
-  let isParameterAssigned = (layer: Types.layer, parameter) => {
-    let assignedParameters =
-      Layer.LayerMap.find_opt(layer, layerParameterAssignments);
-    switch (assignedParameters) {
-    | Some(parameters) => ParameterMap.mem(parameter, parameters)
-    | None => false
-    };
-  };
-  let isParameterUsed = (layer: Types.layer, parameter) =>
-    isParameterAssigned(layer, parameter)
-    || isParameterSetInitially(layer, parameter);
+
   let parameterVariableDoc = (parameter: Types.parameter) =>
     VariableDeclaration({
       "modifiers": [AccessLevelModifier(PublicModifier)],
@@ -188,7 +194,12 @@ let generate =
         ],
       })
     | (AppKit, Image) =>
-      let hasBackground = isParameterAssigned(layer, BackgroundColor);
+      let hasBackground =
+        Parameter.isParameterAssigned(
+          layerParameterAssignments,
+          layer,
+          BackgroundColor,
+        );
       FunctionCallExpression({
         "name":
           hasBackground ?
@@ -214,13 +225,13 @@ let generate =
       MemberExpression([
         SwiftIdentifier("TextStyles"),
         SwiftIdentifier(
-          isParameterSetInitially(layer, TextStyle) ?
+          Parameter.isParameterSetInitially(layer, TextStyle) ?
             Layer.getStringParameter(TextStyle, layer) :
             textStyles.defaultStyle.id,
         ),
       ]);
     let styleName =
-      isParameterSetInitially(layer, TextAlign) ?
+      Parameter.isParameterSetInitially(layer, TextAlign) ?
         MemberExpression([
           styleName,
           FunctionCallExpression({
@@ -390,7 +401,7 @@ let generate =
       "modifiers": [AccessLevelModifier(PublicModifier)],
       "parameters":
         parameters
-        |> List.filter(param => !isFunctionParameter(param))
+        |> List.filter(param => !Parameter.isFunctionParameter(param))
         |> List.map(initParameterDoc),
       "failable": None,
       "throws": false,
@@ -399,7 +410,7 @@ let generate =
           Empty,
           [
             parameters
-            |> List.filter(param => !isFunctionParameter(param))
+            |> List.filter(param => !Parameter.isFunctionParameter(param))
             |> List.map(initParameterAssignmentDoc),
             [
               MemberExpression([
@@ -455,7 +466,9 @@ let generate =
                   "name": SwiftIdentifier("init"),
                   "arguments":
                     parameters
-                    |> List.filter(param => !isFunctionParameter(param))
+                    |> List.filter(param =>
+                         !Parameter.isFunctionParameter(param)
+                       )
                     |> List.map((param: Decode.parameter) =>
                          FunctionCallArgument({
                            "name":
@@ -509,7 +522,7 @@ let generate =
     | None => LineComment(layer.name)
     | Some(parameters) =>
       let assignment = ParameterMap.find_opt(name, parameters);
-      let parameterValue = getParameter(layer, name);
+      let parameterValue = Parameter.getParameter(layer, name);
       let logic =
         switch (assignment, layer.typeName, parameterValue) {
         | (Some(assignment), _, _) => assignment
@@ -546,7 +559,11 @@ let generate =
   };
   let containsImageWithBackgroundColor = () => {
     let hasBackgroundColor = (layer: Types.layer) =>
-      isParameterAssigned(layer, BackgroundColor);
+      Parameter.isParameterAssigned(
+        layerParameterAssignments,
+        layer,
+        BackgroundColor,
+      );
     imageLayers |> List.exists(hasBackgroundColor);
   };
   let helperClasses =
@@ -618,7 +635,11 @@ let generate =
               layerMemberExpression(layer, [SwiftIdentifier("borderType")]),
             "operator": "=",
             "right":
-              isParameterUsed(layer, BorderWidth) ?
+              Parameter.isParameterUsed(
+                layerParameterAssignments,
+                layer,
+                BorderWidth,
+              ) ?
                 SwiftIdentifier(".lineBorder") : SwiftIdentifier(".noBorder"),
           }),
           BinaryExpression({
@@ -644,7 +665,7 @@ let generate =
         ]
       | (SwiftOptions.UIKit, Text) =>
         [
-          isParameterSetInitially(layer, NumberOfLines) ?
+          Parameter.isParameterSetInitially(layer, NumberOfLines) ?
             [] :
             [
               BinaryExpression({
@@ -1114,7 +1135,9 @@ let generate =
                     [Empty, LineComment("MARK: Lifecycle")],
                     [initializerDoc()],
                     parameters
-                    |> List.filter(param => !isFunctionParameter(param))
+                    |> List.filter(param =>
+                         !Parameter.isFunctionParameter(param)
+                       )
                     |> List.length > 0 ?
                       [convenienceInitializerDoc()] : [],
                     [initializerCoderDoc()],
