@@ -59,6 +59,7 @@ and typeAnnotation =
       },
     )
   | OptionalType(typeAnnotation)
+  | TupleType(list(typeAnnotation))
   | TypeInheritanceList({. "list": list(typeAnnotation)})
 and pattern =
   | WildcardPattern
@@ -127,13 +128,31 @@ and node =
         "body": list(node),
       },
     )
-  | EnumDeclaration(
+  | StructDeclaration(
       {
         .
         "name": string,
         "inherits": list(typeAnnotation),
         "modifier": option(accessLevelModifier),
         "body": list(node),
+      },
+    )
+  | EnumDeclaration(
+      {
+        .
+        "name": string,
+        "isIndirect": bool,
+        "inherits": list(typeAnnotation),
+        "modifier": option(accessLevelModifier),
+        "body": list(node),
+      },
+    )
+  | TypealiasDeclaration(
+      {
+        .
+        "name": string,
+        "modifier": option(accessLevelModifier),
+        "annotation": typeAnnotation,
       },
     )
   | ExtensionDeclaration(
@@ -223,6 +242,7 @@ and node =
       {
         .
         "name": node,
+        "parameters": option(typeAnnotation),
         "value": option(node),
       },
     )

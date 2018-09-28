@@ -8,6 +8,17 @@ let renderFloat = value => {
   s(cleaned);
 };
 
+let reservedWords = ["true", "false"];
+
+let stringWithBackticksIfNeeded = (id: string) =>
+  List.mem(id, reservedWords) ? s("`") <+> s(id) <+> s("`") : s(id);
+
+let nodeWithBackticksIfNeeded = (id: SwiftAst.node) =>
+  switch (id) {
+  | SwiftAst.SwiftIdentifier(string) => stringWithBackticksIfNeeded(string)
+  | _ => s("$ Bad call to nodeWithBackticksIfNeeded")
+  };
+
 let renderAccessLevelModifier = node =>
   switch (node) {
   | SwiftAst.PrivateModifier => s("private")
@@ -122,6 +133,42 @@ let rec render = ast: Prettier.Doc.t('a) =>
       o##body |> List.map(render) |> Render.prefixAll(hardline) |> indent,
       closing,
     ]);
+  /* Copied from ClassDeclaration */
+  | StructDeclaration(o) =>
+    let maybeModifier =
+      o##modifier != None ?
+        concat([
+          o##modifier |> Render.renderOptional(renderAccessLevelModifier),
+          line,
+        ]) :
+        empty;
+    let maybeInherits =
+      switch (o##inherits) {
+      | [] => empty
+      | typeAnnotations =>
+        s(": ")
+        <+> (
+          typeAnnotations |> List.map(renderTypeAnnotation) |> join(s(", "))
+        )
+      };
+    let opening =
+      group(
+        concat([
+          maybeModifier,
+          s("struct"),
+          line,
+          s(o##name),
+          maybeInherits,
+          line,
+          s("{"),
+        ]),
+      );
+    let closing = concat([hardline, s("}")]);
+    concat([
+      opening,
+      o##body |> List.map(render) |> Render.prefixAll(hardline) |> indent,
+      closing,
+    ]);
   | ExtensionDeclaration(o) =>
     /* TODO: Where */
     let maybeModifier =
@@ -159,6 +206,8 @@ let rec render = ast: Prettier.Doc.t('a) =>
       closing,
     ]);
   | EnumDeclaration(o) =>
+    let maybeIndirect =
+      o##isIndirect ? concat([s("indirect"), line]) : empty;
     let maybeModifier =
       o##modifier != None ?
         concat([
@@ -179,6 +228,7 @@ let rec render = ast: Prettier.Doc.t('a) =>
       group(
         concat([
           maybeModifier,
+          maybeIndirect,
           s("enum"),
           line,
           s(o##name),
@@ -193,6 +243,24 @@ let rec render = ast: Prettier.Doc.t('a) =>
       o##body |> List.map(render) |> Render.prefixAll(hardline) |> indent,
       closing,
     ]);
+  | TypealiasDeclaration(o) =>
+    let maybeModifier =
+      o##modifier != None ?
+        concat([
+          o##modifier |> Render.renderOptional(renderAccessLevelModifier),
+          line,
+        ]) :
+        empty;
+    group(
+      maybeModifier
+      <+> s("typealias")
+      <+> line
+      <+> s(o##name)
+      <+> line
+      <+> s("=")
+      <+> line
+      <+> renderTypeAnnotation(o##annotation),
+    );
   | ConstantDeclaration(o) =>
     let modifiers =
       o##modifiers |> List.map(renderDeclarationModifier) |> join(s(" "));
@@ -326,11 +394,18 @@ let rec render = ast: Prettier.Doc.t('a) =>
       ]),
     );
   | EnumCase(o) =>
+    let name = nodeWithBackticksIfNeeded(o##name);
     switch (o##value) {
-    | None => group(s("enum ") <+> render(o##name))
+    | None =>
+      let parameters =
+        switch (o##parameters) {
+        | Some(annotation) => annotation |> renderTypeAnnotation
+        | None => s("")
+        };
+      group(s("case ") <+> name <+> parameters);
     | Some(value) =>
-      group(s("enum ") <+> render(o##name) <+> s(" = ") <+> render(value))
-    }
+      group(s("case ") <+> name <+> s(" = ") <+> render(value))
+    };
   | Empty => empty /* This only works if lines are added between statements... */
   | LineComment(v) => s("// " ++ v)
   | DocComment(v) =>
@@ -434,6 +509,10 @@ and renderTypeAnnotation = (node: SwiftAst.typeAnnotation) =>
       ]),
     )
   | OptionalType(v) => group(concat([renderTypeAnnotation(v), s("?")]))
+  | TupleType(o) =>
+    s("(")
+    <+> group(o |> List.map(renderTypeAnnotation) |> join(s(", ")))
+    <+> s(")")
   | TypeInheritanceList(o) =>
     group(o##list |> List.map(renderTypeAnnotation) |> join(s(", ")))
   }
