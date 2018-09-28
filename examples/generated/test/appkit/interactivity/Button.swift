@@ -132,7 +132,7 @@ public class Button: NSBox {
     textView.attributedStringValue = textViewTextStyle.apply(to: label)
     onPress = onTap
     if hovered {
-      fillColor = Colors.Dark-GoldenRod
+      fillColor = Colors.blue200
     }
     if pressed {
       fillColor = Colors.blue50

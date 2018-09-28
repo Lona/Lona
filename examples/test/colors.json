@@ -253,7 +253,6 @@
     { "name": "Bluegrey 600", "id": "bluegrey600", "value": "#546e7a" },
     { "name": "Bluegrey 700", "id": "bluegrey700", "value": "#455a64" },
     { "name": "Bluegrey 800", "id": "bluegrey800", "value": "#37474f" },
-    { "name": "Bluegrey 900", "id": "bluegrey900", "value": "#263238" },
-    { "name": "Dark Golden Rod", "id": "Dark-GoldenRod", "value": "#b8860b"}
+    { "name": "Bluegrey 900", "id": "bluegrey900", "value": "#263238" }
   ]
 }

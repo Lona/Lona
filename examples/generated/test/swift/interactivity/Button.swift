@@ -118,7 +118,7 @@ public class Button: UIView {
     textView.attributedText = textViewTextStyle.apply(to: label)
     onPress = onTap
     if hovered {
-      backgroundColor = Colors.Dark-GoldenRod
+      backgroundColor = Colors.blue200
     }
     if pressed {
       backgroundColor = Colors.blue50

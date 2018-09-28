@@ -17,7 +17,7 @@ export default class Button extends React.Component {
     Text$text = this.props.label
     View$onPress = this.props.onTap
     if (View$hovered) {
-      View$backgroundColor = colors['Dark-GoldenRod']
+      View$backgroundColor = colors.blue200
     }
     if (View$pressed) {
       View$backgroundColor = colors.blue50
