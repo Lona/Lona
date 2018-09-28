@@ -9,6 +9,35 @@ type directionParameter = {
   swiftName: string,
 };
 
+module Naming = {
+  let layerType =
+      (
+        config: Config.t,
+        pluginContext: Plugin.context,
+        swiftOptions: SwiftOptions.options,
+        componentName: string,
+        layerType,
+      ) => {
+    let typeName =
+      switch (swiftOptions.framework, layerType) {
+      | (UIKit, Types.View) => "UIView"
+      | (UIKit, Text) => "UILabel"
+      | (UIKit, Image) => "UIImageView"
+      | (AppKit, Types.View) => "NSBox"
+      | (AppKit, Text) => "NSTextField"
+      | (AppKit, Image) => "NSImageView"
+      | (_, Component(name)) => name
+      | _ => "TypeUnknown"
+      };
+    typeName
+    |> Plugin.applyTransformTypePlugins(
+         config.plugins,
+         pluginContext,
+         componentName,
+       );
+  };
+};
+
 module Parameter = {
   let isFunction = (param: Types.parameter) =>
     param.ltype == Types.handlerType;
@@ -30,347 +59,88 @@ module Parameter = {
   let isUsed = (assignments, layer: Types.layer, parameter) =>
     isAssigned(assignments, layer, parameter)
     || isSetInitially(layer, parameter);
-};
 
-let pressableVariableDoc = (rootLayer: Types.layer, layer: Types.layer) =>
-  SwiftAst.[
-    VariableDeclaration({
-      "modifiers": [AccessLevelModifier(PrivateModifier)],
-      "pattern":
-        IdentifierPattern({
-          "identifier":
-            SwiftIdentifier(
-              SwiftFormat.layerVariableName(rootLayer, layer, "hovered"),
-            ),
-          "annotation": None,
-        }),
-      "init": Some(LiteralExpression(Boolean(false))),
-      "block": None,
-    }),
-    VariableDeclaration({
-      "modifiers": [AccessLevelModifier(PrivateModifier)],
-      "pattern":
-        IdentifierPattern({
-          "identifier":
-            SwiftIdentifier(
-              SwiftFormat.layerVariableName(rootLayer, layer, "pressed"),
-            ),
-          "annotation": None,
-        }),
-      "init": Some(LiteralExpression(Boolean(false))),
-      "block": None,
-    }),
-    VariableDeclaration({
-      "modifiers": [AccessLevelModifier(PrivateModifier)],
-      "pattern":
-        IdentifierPattern({
-          "identifier":
-            SwiftIdentifier(
-              SwiftFormat.layerVariableName(rootLayer, layer, "onPress"),
-            ),
-          "annotation": Some(OptionalType(TypeName("(() -> Void)"))),
-        }),
-      "init": None,
-      "block": None,
-    }),
-  ];
-
-let generate =
-    (
-      config: Config.t,
-      options: Options.options,
-      swiftOptions: SwiftOptions.options,
-      name,
-      colors,
-      textStyles: TextStyle.file,
-      getComponent,
-      json,
-    ) => {
-  let rootLayer = json |> Decode.Component.rootLayer(getComponent);
-  /* Remove the root element */
-  let nonRootLayers = rootLayer |> Layer.flatten |> List.tl;
-  let logic = json |> Decode.Component.logic;
-  let textLayers = nonRootLayers |> List.filter(Layer.isTextLayer);
-  let imageLayers = nonRootLayers |> List.filter(Layer.isImageLayer);
-  let pressableLayers =
-    rootLayer
-    |> Layer.flatten
-    |> List.filter(Logic.isLayerParameterAssigned(logic, "onPress"));
-  let needsTracking =
-    swiftOptions.framework == SwiftOptions.AppKit
-    && List.length(pressableLayers) > 0;
-  /* let logic =
-     Logic.enforceSingleAssignment(
-       (_, path) => [
-         "_" ++ Format.variableNameFromIdentifier(rootLayer.name, path)
-       ],
-       (_, path) =>
-         Logic.Literal(LonaValue.defaultValueForParameter(List.nth(path, 2))),
-       logic
-     ); */
-  let layerParameterAssignments =
-    Layer.logicAssignmentsFromLayerParameters(rootLayer);
-  let assignments = Layer.parameterAssignmentsFromLogic(rootLayer, logic);
-  let parameters = json |> Decode.Component.parameters;
-  open SwiftAst;
-  let priorityName =
-    fun
-    | Constraint.Required => "required"
-    | Low => "defaultLow";
-
-  let parameterVariableDoc = (parameter: Types.parameter) =>
-    VariableDeclaration({
-      "modifiers": [AccessLevelModifier(PublicModifier)],
-      "pattern":
-        IdentifierPattern({
-          "identifier":
-            SwiftIdentifier(parameter.name |> ParameterKey.toString),
-          "annotation":
-            Some(
-              parameter.ltype
-              |> SwiftDocument.typeAnnotationDoc(swiftOptions.framework),
-            ),
-        }),
-      "init": None,
-      "block":
-        Some(
-          WillSetDidSetBlock({
-            "willSet": None,
-            "didSet":
-              Some([
-                FunctionCallExpression({
-                  "name": SwiftIdentifier("update"),
-                  "arguments": [],
-                }),
-              ]),
-          }),
-        ),
-    });
-  /* TODO: We don't need to update if onPress is only initialized in setUpViews
-     and never assigned in logic */
-  /* (isFunction(parameter) && !isAssigned(parameter)) ?
-     None : */
-  let pluginContext: Plugin.context = {
-    "target": "swift",
-    "framework": SwiftOptions.frameworkToString(swiftOptions.framework),
-  };
-  let getLayerTypeName = layerType => {
-    let typeName =
-      switch (swiftOptions.framework, layerType) {
-      | (UIKit, Types.View) => "UIView"
-      | (UIKit, Text) => "UILabel"
-      | (UIKit, Image) => "UIImageView"
-      | (AppKit, Types.View) => "NSBox"
-      | (AppKit, Text) => "NSTextField"
-      | (AppKit, Image) => "NSImageView"
-      | (_, Component(name)) => name
-      | _ => "TypeUnknown"
-      };
-    typeName
-    |> Plugin.applyTransformTypePlugins(config.plugins, pluginContext, name);
-  };
-  let getLayerInitCall = (layer: Types.layer) => {
-    let typeName = SwiftIdentifier(layer.typeName |> getLayerTypeName);
-    switch (swiftOptions.framework, layer.typeName) {
-    | (UIKit, Types.View)
-    | (UIKit, Image) =>
-      FunctionCallExpression({
-        "name": typeName,
-        "arguments": [
-          FunctionCallArgument({
-            "name": Some(SwiftIdentifier("frame")),
-            "value": SwiftIdentifier(".zero"),
-          }),
-        ],
-      })
-    | (AppKit, Text) =>
-      FunctionCallExpression({
-        "name": typeName,
-        "arguments": [
-          FunctionCallArgument({
-            "name": Some(SwiftIdentifier("labelWithString")),
-            "value": LiteralExpression(String("")),
-          }),
-        ],
-      })
-    | (AppKit, Image) =>
-      let hasBackground =
-        Parameter.isAssigned(
-          layerParameterAssignments,
-          layer,
-          BackgroundColor,
-        );
-      FunctionCallExpression({
-        "name":
-          hasBackground ?
-            SwiftIdentifier("ImageWithBackgroundColor") : typeName,
-        "arguments": [],
-      });
-    | _ => FunctionCallExpression({"name": typeName, "arguments": []})
-    };
-  };
-  let viewVariableDoc = (layer: Types.layer) =>
-    VariableDeclaration({
-      "modifiers": [AccessLevelModifier(PrivateModifier)],
-      "pattern":
-        IdentifierPattern({
-          "identifier": SwiftIdentifier(layer.name |> SwiftFormat.layerName),
-          "annotation": None /*Some(layer.typeName |> viewTypeDoc)*/
-        }),
-      "init": Some(getLayerInitCall(layer)),
-      "block": None,
-    });
-  let textStyleVariableDoc = (layer: Types.layer) => {
-    let styleName =
-      MemberExpression([
-        SwiftIdentifier("TextStyles"),
-        SwiftIdentifier(
-          Parameter.isSetInitially(layer, TextStyle) ?
-            Layer.getStringParameter(TextStyle, layer) :
-            textStyles.defaultStyle.id,
-        ),
-      ]);
-    let styleName =
-      Parameter.isSetInitially(layer, TextAlign) ?
-        MemberExpression([
-          styleName,
-          FunctionCallExpression({
-            "name": SwiftIdentifier("with"),
-            "arguments": [
-              FunctionCallArgument({
-                "name": Some(SwiftIdentifier("alignment")),
-                "value":
-                  SwiftIdentifier(
-                    "." ++ Layer.getStringParameter(TextAlign, layer),
-                  ),
-              }),
-            ],
-          }),
-        ]) :
-        styleName;
-    VariableDeclaration({
-      "modifiers": [AccessLevelModifier(PrivateModifier)],
-      "pattern":
-        IdentifierPattern({
-          "identifier":
-            SwiftIdentifier(
-              (layer.name |> SwiftFormat.layerName) ++ "TextStyle",
-            ),
-          "annotation": None /* Some(TypeName("TextStyle")) */
-        }),
-      "init": Some(styleName),
-      "block": None,
-    });
-  };
-  let constraintVariableDoc = variableName =>
-    VariableDeclaration({
-      "modifiers": [AccessLevelModifier(PrivateModifier)],
-      "pattern":
-        IdentifierPattern({
-          "identifier": SwiftIdentifier(variableName),
-          "annotation": Some(OptionalType(TypeName("NSLayoutConstraint"))),
-        }),
-      "init": None,
-      "block": None,
-    });
   let paddingParameters = [
     {swiftName: "topPadding", lonaName: PaddingTop},
     {swiftName: "trailingPadding", lonaName: PaddingRight},
     {swiftName: "bottomPadding", lonaName: PaddingBottom},
     {swiftName: "leadingPadding", lonaName: PaddingLeft},
   ];
+
   let marginParameters = [
     {swiftName: "topMargin", lonaName: MarginTop},
     {swiftName: "trailingMargin", lonaName: MarginRight},
     {swiftName: "bottomMargin", lonaName: MarginBottom},
     {swiftName: "leadingMargin", lonaName: MarginLeft},
   ];
-  let spacingVariableDoc = (layer: Types.layer) => {
-    let variableName = variable =>
-      layer === rootLayer ?
-        variable :
-        SwiftFormat.layerName(layer.name) ++ Format.upperFirst(variable);
-    let marginVariables =
-      layer === rootLayer ?
-        [] :
-        {
-          let createVariable = (marginParameter: directionParameter) =>
-            VariableDeclaration({
-              "modifiers": [AccessLevelModifier(PrivateModifier)],
-              "pattern":
-                IdentifierPattern({
-                  "identifier":
-                    SwiftIdentifier(variableName(marginParameter.swiftName)),
-                  "annotation": Some(TypeName("CGFloat")),
-                }),
-              "init":
-                Some(
-                  LiteralExpression(
-                    FloatingPoint(
-                      Layer.getNumberParameter(
-                        marginParameter.lonaName,
-                        layer,
-                      ),
-                    ),
-                  ),
-                ),
-              "block": None,
-            });
-          marginParameters |> List.map(createVariable);
-        };
-    let paddingVariables =
-      switch (layer.children) {
-      | [] => []
-      | _ =>
-        let createVariable = (paddingParameter: directionParameter) =>
-          VariableDeclaration({
-            "modifiers": [AccessLevelModifier(PrivateModifier)],
-            "pattern":
-              IdentifierPattern({
-                "identifier":
-                  SwiftIdentifier(variableName(paddingParameter.swiftName)),
-                "annotation": Some(TypeName("CGFloat")),
-              }),
-            "init":
-              Some(
-                LiteralExpression(
-                  FloatingPoint(
-                    Layer.getNumberParameter(
-                      paddingParameter.lonaName,
-                      layer,
-                    ),
-                  ),
-                ),
-              ),
-            "block": None,
-          });
-        paddingParameters |> List.map(createVariable);
-      };
-    marginVariables @ paddingVariables;
-  };
-  let initParameterDoc = (parameter: Decode.parameter) =>
-    Parameter({
-      "externalName": None,
-      "localName": parameter.name |> ParameterKey.toString,
-      "annotation":
-        parameter.ltype
-        |> SwiftDocument.typeAnnotationDoc(swiftOptions.framework),
-      "defaultValue": None,
+};
+
+/* Ast builders, agnostic to the kind of data they use */
+module Build = {
+  open SwiftAst;
+
+  let memberExpression = (list: list(string)): node =>
+    switch (list) {
+    | [item] => SwiftIdentifier(item)
+    | _ => MemberExpression(list |> List.map(item => SwiftIdentifier(item)))
+    };
+
+  let functionCall =
+      (
+        name: list(string),
+        arguments: list((option(string), list(string))),
+      )
+      : node =>
+    FunctionCallExpression({
+      "name": memberExpression(name),
+      "arguments":
+        arguments
+        |> List.map(((label, expr)) =>
+             FunctionCallArgument({
+               "name":
+                 switch (label) {
+                 | Some(value) => Some(SwiftIdentifier(value))
+                 | None => None
+                 },
+               "value": memberExpression(expr),
+             })
+           ),
     });
-  let initParameterAssignmentDoc = (parameter: Decode.parameter) =>
-    BinaryExpression({
-      "left":
-        MemberExpression([
-          SwiftIdentifier("self"),
-          SwiftIdentifier(parameter.name |> ParameterKey.toString),
-        ]),
-      "operator": "=",
-      "right": SwiftIdentifier(parameter.name |> ParameterKey.toString),
+
+  let privateVariableDeclaration =
+      (name: string, annotation: option(typeAnnotation), init: option(node)) =>
+    VariableDeclaration({
+      "modifiers": [AccessLevelModifier(PrivateModifier)],
+      "pattern":
+        IdentifierPattern({
+          "identifier": SwiftIdentifier(name),
+          "annotation": annotation,
+        }),
+      "init": init,
+      "block": None,
     });
-  let initializerCoderDoc = () =>
-    /* required init?(coder aDecoder: NSCoder) {
-         fatalError("init(coder:) has not been implemented")
-       } */
+
+  let convenienceInit = (body: list(node)): node =>
+    InitializerDeclaration({
+      "modifiers": [
+        AccessLevelModifier(PublicModifier),
+        ConvenienceModifier,
+      ],
+      "parameters": [],
+      "failable": None,
+      "throws": false,
+      "body": body,
+    });
+};
+
+/* Ast builders, specific to components */
+module Doc = {
+  open SwiftAst;
+
+  /* required init?(coder aDecoder: NSCoder) {
+       fatalError("init(coder:) has not been implemented")
+     } */
+  let coderInitializer = () =>
     InitializerDeclaration({
       "modifiers": [AccessLevelModifier(PublicModifier), RequiredModifier],
       "parameters": [
@@ -396,13 +166,257 @@ let generate =
         }),
       ],
     });
+
+  let pressableVariables = (rootLayer: Types.layer, layer: Types.layer) => [
+    Build.privateVariableDeclaration(
+      SwiftFormat.layerVariableName(rootLayer, layer, "hovered"),
+      None,
+      Some(LiteralExpression(Boolean(false))),
+    ),
+    Build.privateVariableDeclaration(
+      SwiftFormat.layerVariableName(rootLayer, layer, "pressed"),
+      None,
+      Some(LiteralExpression(Boolean(false))),
+    ),
+    Build.privateVariableDeclaration(
+      SwiftFormat.layerVariableName(rootLayer, layer, "onPress"),
+      Some(OptionalType(TypeName("(() -> Void)"))),
+      None,
+    ),
+  ];
+
+  let parameterVariable =
+      (swiftOptions: SwiftOptions.options, parameter: Types.parameter) =>
+    VariableDeclaration({
+      "modifiers": [AccessLevelModifier(PublicModifier)],
+      "pattern":
+        IdentifierPattern({
+          "identifier":
+            SwiftIdentifier(parameter.name |> ParameterKey.toString),
+          "annotation":
+            Some(
+              parameter.ltype
+              |> SwiftDocument.typeAnnotationDoc(swiftOptions.framework),
+            ),
+        }),
+      "init": None,
+      "block":
+        Some(
+          WillSetDidSetBlock({
+            "willSet": None,
+            "didSet": Some([Build.functionCall(["update"], [])]),
+          }),
+        ),
+    });
+
+  let viewVariableInitialValue =
+      (
+        swiftOptions: SwiftOptions.options,
+        assignmentsFromLayerParameters,
+        layer: Types.layer,
+        typeName: string,
+      ) => {
+    let typeName = SwiftIdentifier(typeName);
+    switch (swiftOptions.framework, layer.typeName) {
+    | (UIKit, Types.View)
+    | (UIKit, Image) =>
+      FunctionCallExpression({
+        "name": typeName,
+        "arguments": [
+          FunctionCallArgument({
+            "name": Some(SwiftIdentifier("frame")),
+            "value": SwiftIdentifier(".zero"),
+          }),
+        ],
+      })
+    | (AppKit, Text) =>
+      FunctionCallExpression({
+        "name": typeName,
+        "arguments": [
+          FunctionCallArgument({
+            "name": Some(SwiftIdentifier("labelWithString")),
+            "value": LiteralExpression(String("")),
+          }),
+        ],
+      })
+    | (AppKit, Image) =>
+      let hasBackground =
+        Parameter.isAssigned(
+          assignmentsFromLayerParameters,
+          layer,
+          BackgroundColor,
+        );
+      FunctionCallExpression({
+        "name":
+          hasBackground ?
+            SwiftIdentifier("ImageWithBackgroundColor") : typeName,
+        "arguments": [],
+      });
+    | _ => FunctionCallExpression({"name": typeName, "arguments": []})
+    };
+  };
+
+  let initializerParameter =
+      (swiftOptions: SwiftOptions.options, parameter: Decode.parameter) =>
+    Parameter({
+      "externalName": None,
+      "localName": parameter.name |> ParameterKey.toString,
+      "annotation":
+        parameter.ltype
+        |> SwiftDocument.typeAnnotationDoc(swiftOptions.framework),
+      "defaultValue": None,
+    });
+};
+
+let generate =
+    (
+      config: Config.t,
+      options: Options.options,
+      swiftOptions: SwiftOptions.options,
+      name,
+      colors,
+      textStyles: TextStyle.file,
+      getComponent,
+      json,
+    ) => {
+  let rootLayer = json |> Decode.Component.rootLayer(getComponent);
+  let nonRootLayers = rootLayer |> Layer.flatten |> List.tl;
+  let logic = json |> Decode.Component.logic;
+
+  let pluginContext: Plugin.context = {
+    "target": "swift",
+    "framework": SwiftOptions.frameworkToString(swiftOptions.framework),
+  };
+
+  let pressableLayers =
+    rootLayer
+    |> Layer.flatten
+    |> List.filter(Logic.isLayerParameterAssigned(logic, "onPress"));
+  let needsTracking =
+    swiftOptions.framework == SwiftOptions.AppKit
+    && List.length(pressableLayers) > 0;
+
+  let assignmentsFromLayerParameters =
+    Layer.logicAssignmentsFromLayerParameters(rootLayer);
+  let assignmentsFromLogic =
+    Layer.parameterAssignmentsFromLogic(rootLayer, logic);
+  let parameters = json |> Decode.Component.parameters;
+  open SwiftAst;
+  let priorityName =
+    fun
+    | Constraint.Required => "required"
+    | Low => "defaultLow";
+
+  let viewVariableNode = (layer: Types.layer): node =>
+    Build.privateVariableDeclaration(
+      layer.name |> SwiftFormat.layerName,
+      None,
+      Some(
+        Doc.viewVariableInitialValue(
+          swiftOptions,
+          assignmentsFromLayerParameters,
+          layer,
+          Naming.layerType(
+            config,
+            pluginContext,
+            swiftOptions,
+            name,
+            layer.typeName,
+          ),
+        ),
+      ),
+    );
+  let textStyleVariableDoc = (layer: Types.layer) => {
+    let id =
+      Parameter.isSetInitially(layer, TextStyle) ?
+        Layer.getStringParameter(TextStyle, layer) :
+        textStyles.defaultStyle.id;
+    let value =
+      Parameter.isSetInitially(layer, TextAlign) ?
+        Build.functionCall(
+          ["TextStyles", id, "with"],
+          [
+            (
+              Some("alignment"),
+              ["." ++ Layer.getStringParameter(TextAlign, layer)],
+            ),
+          ],
+        ) :
+        Build.memberExpression(["TextStyles", id]);
+    Build.privateVariableDeclaration(
+      SwiftFormat.layerName(layer.name) ++ "TextStyle",
+      None,
+      Some(value),
+    );
+  };
+  let constraintVariableDoc = variableName =>
+    Build.privateVariableDeclaration(
+      variableName,
+      Some(OptionalType(TypeName("NSLayoutConstraint"))),
+      None,
+    );
+  let spacingVariableDoc = (layer: Types.layer) => {
+    let variableName = variable =>
+      layer === rootLayer ?
+        variable :
+        SwiftFormat.layerName(layer.name) ++ Format.upperFirst(variable);
+    let marginVariables =
+      layer === rootLayer ?
+        [] :
+        {
+          let createVariable = (marginParameter: directionParameter) =>
+            Build.privateVariableDeclaration(
+              variableName(marginParameter.swiftName),
+              Some(TypeName("CGFloat")),
+              Some(
+                LiteralExpression(
+                  FloatingPoint(
+                    Layer.getNumberParameter(marginParameter.lonaName, layer),
+                  ),
+                ),
+              ),
+            );
+          Parameter.marginParameters |> List.map(createVariable);
+        };
+    let paddingVariables =
+      switch (layer.children) {
+      | [] => []
+      | _ =>
+        let createVariable = (paddingParameter: directionParameter) =>
+          Build.privateVariableDeclaration(
+            variableName(paddingParameter.swiftName),
+            Some(TypeName("CGFloat")),
+            Some(
+              LiteralExpression(
+                FloatingPoint(
+                  Layer.getNumberParameter(paddingParameter.lonaName, layer),
+                ),
+              ),
+            ),
+          );
+        Parameter.paddingParameters |> List.map(createVariable);
+      };
+    marginVariables @ paddingVariables;
+  };
+
+  let initParameterAssignmentDoc = (parameter: Decode.parameter) =>
+    BinaryExpression({
+      "left":
+        Build.memberExpression([
+          "self",
+          parameter.name |> ParameterKey.toString,
+        ]),
+      "operator": "=",
+      "right": SwiftIdentifier(parameter.name |> ParameterKey.toString),
+    });
+
   let initializerDoc = () =>
     InitializerDeclaration({
       "modifiers": [AccessLevelModifier(PublicModifier)],
       "parameters":
         parameters
         |> List.filter(param => !Parameter.isFunction(param))
-        |> List.map(initParameterDoc),
+        |> List.map(Doc.initializerParameter(swiftOptions)),
       "failable": None,
       "throws": false,
       "body":
@@ -413,83 +427,56 @@ let generate =
             |> List.filter(param => !Parameter.isFunction(param))
             |> List.map(initParameterAssignmentDoc),
             [
-              MemberExpression([
-                SwiftIdentifier("super"),
-                FunctionCallExpression({
-                  "name": SwiftIdentifier("init"),
-                  "arguments": [
-                    FunctionCallArgument({
-                      "name": Some(SwiftIdentifier("frame")),
-                      "value": SwiftIdentifier(".zero"),
-                    }),
-                  ],
-                }),
-              ]),
+              Build.functionCall(
+                ["super", "init"],
+                [(Some("frame"), [".zero"])],
+              ),
             ],
             [
-              FunctionCallExpression({
-                "name": SwiftIdentifier("setUpViews"),
-                "arguments": [],
-              }),
-              FunctionCallExpression({
-                "name": SwiftIdentifier("setUpConstraints"),
-                "arguments": [],
-              }),
+              Build.functionCall(["setUpViews"], []),
+              Build.functionCall(["setUpConstraints"], []),
             ],
-            [
-              FunctionCallExpression({
-                "name": SwiftIdentifier("update"),
-                "arguments": [],
-              }),
-            ],
+            [Build.functionCall(["update"], [])],
             needsTracking ? [AppkitPressable.addTrackingArea] : [],
           ],
         ),
     });
   let convenienceInitializerDoc = () =>
-    InitializerDeclaration({
-      "modifiers": [
-        AccessLevelModifier(PublicModifier),
-        ConvenienceModifier,
-      ],
-      "parameters": [],
-      "failable": None,
-      "throws": false,
-      "body":
-        SwiftDocument.joinGroups(
-          Empty,
+    Build.convenienceInit(
+      SwiftDocument.joinGroups(
+        Empty,
+        [
           [
-            [
-              MemberExpression([
-                SwiftIdentifier("self"),
-                FunctionCallExpression({
-                  "name": SwiftIdentifier("init"),
-                  "arguments":
-                    parameters
-                    |> List.filter(param => !Parameter.isFunction(param))
-                    |> List.map((param: Decode.parameter) =>
-                         FunctionCallArgument({
-                           "name":
-                             Some(
-                               SwiftIdentifier(
-                                 param.name |> ParameterKey.toString,
-                               ),
+            MemberExpression([
+              SwiftIdentifier("self"),
+              FunctionCallExpression({
+                "name": SwiftIdentifier("init"),
+                "arguments":
+                  parameters
+                  |> List.filter(param => !Parameter.isFunction(param))
+                  |> List.map((param: Decode.parameter) =>
+                       FunctionCallArgument({
+                         "name":
+                           Some(
+                             SwiftIdentifier(
+                               param.name |> ParameterKey.toString,
                              ),
-                           "value":
-                             SwiftDocument.defaultValueForLonaType(
-                               swiftOptions.framework,
-                               colors,
-                               textStyles,
-                               param.ltype,
-                             ),
-                         })
-                       ),
-                }),
-              ]),
-            ],
+                           ),
+                         "value":
+                           SwiftDocument.defaultValueForLonaType(
+                             swiftOptions.framework,
+                             colors,
+                             textStyles,
+                             param.ltype,
+                           ),
+                       })
+                     ),
+              }),
+            ]),
           ],
-        ),
-    });
+        ],
+      ),
+    );
   let memberOrSelfExpression = (firstIdentifier, statements) =>
     switch (firstIdentifier) {
     | "self" => MemberExpression(statements)
@@ -499,23 +486,9 @@ let generate =
     parent === rootLayer ? "self" : parent.name |> SwiftFormat.layerName;
   let layerMemberExpression = (layer: Types.layer, statements) =>
     memberOrSelfExpression(parentNameOrSelf(layer), statements);
-  let defaultValueForParameter =
-    fun
-    | "backgroundColor" =>
-      MemberExpression([
-        SwiftIdentifier("UIColor"),
-        SwiftIdentifier("clear"),
-      ])
-    | "font"
-    | "textStyle" =>
-      MemberExpression([
-        SwiftIdentifier("TextStyles"),
-        SwiftIdentifier(textStyles.defaultStyle.id),
-      ])
-    | _ => LiteralExpression(Integer(0));
   let defineInitialLayerValue = (layer: Types.layer, (name, _)) => {
     let parameters =
-      Layer.LayerMap.find_opt(layer, layerParameterAssignments);
+      Layer.LayerMap.find_opt(layer, assignmentsFromLayerParameters);
     switch (parameters) {
     | None => LineComment(layer.name)
     | Some(parameters) =>
@@ -557,8 +530,14 @@ let generate =
   };
   let containsImageWithBackgroundColor = () => {
     let hasBackgroundColor = (layer: Types.layer) =>
-      Parameter.isAssigned(layerParameterAssignments, layer, BackgroundColor);
-    imageLayers |> List.exists(hasBackgroundColor);
+      Parameter.isAssigned(
+        assignmentsFromLayerParameters,
+        layer,
+        BackgroundColor,
+      );
+    nonRootLayers
+    |> List.filter(Layer.isImageLayer)
+    |> List.exists(hasBackgroundColor);
   };
   let helperClasses =
     switch (swiftOptions.framework) {
@@ -596,7 +575,7 @@ let generate =
         && name != Width
         && name != TextAlign;
       let filterNotAssignedByLogic = (layer: Types.layer, (parameterName, _)) =>
-        switch (Layer.LayerMap.find_opt(layer, assignments)) {
+        switch (Layer.LayerMap.find_opt(layer, assignmentsFromLogic)) {
         | None => true
         | Some(parameters) =>
           switch (ParameterMap.find_opt(parameterName, parameters)) {
@@ -630,7 +609,7 @@ let generate =
             "operator": "=",
             "right":
               Parameter.isUsed(
-                layerParameterAssignments,
+                assignmentsFromLayerParameters,
                 layer,
                 BorderWidth,
               ) ?
@@ -1091,7 +1070,7 @@ let generate =
       "throws": false,
       "body":
         (
-          assignments
+          assignmentsFromLogic
           |> Layer.LayerMap.bindings
           |> List.map(defineInitialLayerValues)
           |> List.concat
@@ -1119,7 +1098,17 @@ let generate =
           [
             ClassDeclaration({
               "name": name,
-              "inherits": [TypeName(Types.View |> getLayerTypeName)],
+              "inherits": [
+                TypeName(
+                  Naming.layerType(
+                    config,
+                    pluginContext,
+                    swiftOptions,
+                    name,
+                    Types.View,
+                  ),
+                ),
+              ],
               "modifier": Some(PublicModifier),
               "isFinal": false,
               "body":
@@ -1132,20 +1121,23 @@ let generate =
                     |> List.filter(param => !Parameter.isFunction(param))
                     |> List.length > 0 ?
                       [convenienceInitializerDoc()] : [],
-                    [initializerCoderDoc()],
+                    [Doc.coderInitializer()],
                     needsTracking ? [AppkitPressable.deinitTrackingArea] : [],
                     List.length(parameters) > 0 ?
                       [LineComment("MARK: Public")] : [],
-                    parameters |> List.map(parameterVariableDoc),
+                    parameters
+                    |> List.map(Doc.parameterVariable(swiftOptions)),
                     [LineComment("MARK: Private")],
                     needsTracking ? [AppkitPressable.trackingAreaVar] : [],
-                    nonRootLayers |> List.map(viewVariableDoc),
-                    textLayers |> List.map(textStyleVariableDoc),
+                    nonRootLayers |> List.map(viewVariableNode),
+                    nonRootLayers
+                    |> List.filter(Layer.isTextLayer)
+                    |> List.map(textStyleVariableDoc),
                     rootLayer
                     |> Layer.flatmap(spacingVariableDoc)
                     |> List.concat,
                     pressableLayers
-                    |> List.map(pressableVariableDoc(rootLayer))
+                    |> List.map(Doc.pressableVariables(rootLayer))
                     |> List.concat,
                     constraints
                     |> List.map(def =>
