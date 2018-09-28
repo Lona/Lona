@@ -71,6 +71,36 @@ module Ast = {
       "block": None,
     });
 
+  let decodingContainer = () =>
+    ConstantDeclaration({
+      "modifiers": [],
+      "pattern":
+        IdentifierPattern({
+          "identifier": SwiftIdentifier("container"),
+          "annotation": None,
+        }),
+      "init":
+        Some(
+          FunctionCallExpression({
+            "name":
+              MemberExpression([
+                SwiftIdentifier("decoder"),
+                SwiftIdentifier("container"),
+              ]),
+            "arguments": [
+              FunctionCallArgument({
+                "name": Some(SwiftIdentifier("keyedBy")),
+                "value":
+                  MemberExpression([
+                    SwiftIdentifier("CodingKeys"),
+                    SwiftIdentifier("self"),
+                  ]),
+              }),
+            ],
+          }),
+        ),
+    });
+
   let nestedUnkeyedEncodingContainer =
       (containerName: string, codingKey: string) =>
     VariableDeclaration({
@@ -107,6 +137,27 @@ module Ast = {
             MemberExpression([
               SwiftIdentifier("container"),
               SwiftIdentifier("encode"),
+            ]),
+          "arguments": [
+            FunctionCallArgument({"name": None, "value": value}),
+            FunctionCallArgument({
+              "name": Some(SwiftIdentifier("forKey")),
+              "value": SwiftIdentifier("." ++ codingKey),
+            }),
+          ],
+        }),
+      "forced": false,
+      "optional": false,
+    });
+
+  let containerDecode = (value: node, codingKey: string) =>
+    TryExpression({
+      "expression":
+        FunctionCallExpression({
+          "name":
+            MemberExpression([
+              SwiftIdentifier("container"),
+              SwiftIdentifier("decode"),
             ]),
           "arguments": [
             FunctionCallArgument({"name": None, "value": value}),
@@ -187,15 +238,38 @@ module Ast = {
         None;
 
     CaseLabel({
-      "patterns": [
-        EnumCasePattern({
-          "typeIdentifier": None,
-          "caseName": caseName,
-          "tuplePattern": parameters,
-        }),
-      ],
+      "patterns": [ExpressionPattern({"value": SwiftIdentifier("type")})],
       "statements":
         [containerEncode(LiteralExpression(String(caseName)), "type")]
+        @ enumCaseDataEncoding(typeCase),
+    });
+  };
+
+  let enumCaseDecoding = (typeCase: TypeSystem.typeCase): SwiftAst.node => {
+    let caseName = typeCase |> TypeSystem.Access.typeCaseName;
+
+    let parameters =
+      TypeSystem.Access.typeCaseParameterCount(typeCase) > 0 ?
+        Some(
+          TuplePattern([
+            ValueBindingPattern({
+              "kind": "let",
+              "pattern":
+                IdentifierPattern({
+                  "identifier": SwiftIdentifier("value"),
+                  "annotation": None,
+                }),
+            }),
+          ]),
+        ) :
+        None;
+
+    CaseLabel({
+      "patterns": [
+        ExpressionPattern({"value": LiteralExpression(String(caseName))}),
+      ],
+      "statements":
+        [containerDecode(LiteralExpression(String(caseName)), "type")]
         @ enumCaseDataEncoding(typeCase),
     });
   };
@@ -212,6 +286,34 @@ module Ast = {
     SwitchStatement({
       "expression": SwiftIdentifier("self"),
       "cases": typeCases |> List.map(enumCaseEncoding),
+    }),
+  ];
+
+  let enumDecoding =
+      (typeCases: list(TypeSystem.typeCase)): list(SwiftAst.node) => [
+    decodingContainer(),
+    ConstantDeclaration({
+      "modifiers": [],
+      "pattern":
+        IdentifierPattern({
+          "identifier": SwiftIdentifier("type"),
+          "annotation": None,
+        }),
+      "init":
+        Some(
+          containerDecode(
+            MemberExpression([
+              SwiftIdentifier("String"),
+              SwiftIdentifier("self"),
+            ]),
+            "type",
+          ),
+        ),
+    }),
+    Empty,
+    SwitchStatement({
+      "expression": SwiftIdentifier("type"),
+      "cases": typeCases |> List.map(enumCaseDecoding),
     }),
   ];
 
@@ -347,7 +449,9 @@ module Build = {
                 Empty,
                 Ast.codingKeys(["type", "data"]),
                 Empty,
-                Ast.decodableInitializer([]),
+                Ast.decodableInitializer(
+                  Ast.enumDecoding(genericType.cases),
+                ),
                 Empty,
                 Ast.encodableFunction(Ast.enumEncoding(genericType.cases)),
               ],
