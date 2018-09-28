@@ -106,18 +106,23 @@ module Ast = {
           }),
         "init":
           Some(
-            FunctionCallExpression({
-              "name":
-                MemberExpression([
-                  SwiftIdentifier(containerName),
-                  SwiftIdentifier("nestedUnkeyedContainer"),
-                ]),
-              "arguments": [
-                FunctionCallArgument({
-                  "name": Some(SwiftIdentifier("forKey")),
-                  "value": SwiftIdentifier("." ++ codingKey),
+            TryExpression({
+              "expression":
+                FunctionCallExpression({
+                  "name":
+                    MemberExpression([
+                      SwiftIdentifier(containerName),
+                      SwiftIdentifier("nestedUnkeyedContainer"),
+                    ]),
+                  "arguments": [
+                    FunctionCallArgument({
+                      "name": Some(SwiftIdentifier("forKey")),
+                      "value": SwiftIdentifier("." ++ codingKey),
+                    }),
+                  ],
                 }),
-              ],
+              "forced": false,
+              "optional": false,
             }),
           ),
         "block": None,
@@ -151,7 +156,7 @@ module Ast = {
             "name":
               MemberExpression([
                 SwiftIdentifier("unkeyedContainer"),
-                SwiftIdentifier("encode"),
+                SwiftIdentifier("decode"),
               ]),
             "arguments": [
               FunctionCallArgument({"name": None, "value": value}),
@@ -166,19 +171,36 @@ module Ast = {
         : list(SwiftAst.node) =>
       switch (typeCase) {
       /* Multiple parameters are encoded as an array */
-      | NormalCase(_, [_, _, ..._] as parameters) =>
-        let encodeParameters =
+      | NormalCase(name, [_, _, ..._] as parameters) =>
+        let decodeParameters =
           parameters
-          |> List.mapi((i, _parameter) =>
-               unkeyedContainerDecode(
-                 MemberExpression([
-                   SwiftIdentifier("value"),
-                   SwiftIdentifier(string_of_int(i)),
-                 ]),
-               )
+          |> List.map((parameter: TypeSystem.normalTypeCaseParameter) =>
+               FunctionCallArgument({
+                 "name": None,
+                 "value":
+                   unkeyedContainerDecode(
+                     MemberExpression([
+                       SwiftIdentifier(
+                         parameter.value
+                         |> Naming.prefixedType(swiftOptions, true),
+                       ),
+                       SwiftIdentifier("self"),
+                     ]),
+                   ),
+               })
              );
         [nestedUnkeyedDecodingContainer("container", "data")]
-        @ encodeParameters;
+        @ [
+          BinaryExpression({
+            "left": SwiftIdentifier("self"),
+            "operator": "=",
+            "right":
+              FunctionCallExpression({
+                "name": SwiftIdentifier("." ++ name),
+                "arguments": decodeParameters,
+              }),
+          }),
+        ];
       /* self = .value(try container.decode(Value.self, forKey: .data)) */
       | NormalCase(name, [parameter]) => [
           BinaryExpression({
