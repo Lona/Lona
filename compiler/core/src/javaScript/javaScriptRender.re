@@ -17,11 +17,17 @@ let renderBinaryOperator = x => {
   s(op);
 };
 
+let smartPath = (path: list(string), pathNode) =>
+  pathNode === List.hd(path) ?
+    s(pathNode) :
+    Js.Re.test(pathNode, [%re "/\W/g"]) ?
+      s("['" ++ pathNode ++ "']") : softline <+> s(".") <+> s(pathNode);
+
 /* Render AST */
 let rec render = ast: Prettier.Doc.t('a) =>
   switch (ast) {
   | Ast.Identifier(path) =>
-    path |> List.map(s) |> join(softline <+> s(".")) |> group
+    path |> List.map(smartPath(path)) |> concat |> group
   | Literal(value) => s(Js.Json.stringify(value.data))
   | StringLiteral(value) =>
     concat([
@@ -178,7 +184,16 @@ let rec render = ast: Prettier.Doc.t('a) =>
     let maybeLine = List.length(body) > 0 ? line : empty;
     let body = body |> List.map(render) |> join(s(",") <+> line);
     group(s("{") <+> indent(maybeLine <+> body) <+> maybeLine <+> s("}"));
-  | Property(o) => group(render(o.key) <+> s(": ") <+> render(o.value))
+  | Property(o) =>
+    switch (o.key) {
+    | Ast.Identifier(path) =>
+      Js.Re.test(List.hd(path), [%re "/\W/g"]) ?
+        group(
+          s("'" ++ List.hd(path) ++ "'") <+> s(": ") <+> render(o.value),
+        ) :
+        group(s(List.hd(path)) <+> s(": ") <+> render(o.value))
+    | _ => group(render(o.key) <+> s(": ") <+> render(o.value))
+    }
   | ExportDefaultDeclaration(value) =>
     s("export default ") <+> render(value) <+> s(";")
   | Program(body) => body |> List.map(render) |> join(hardline)

@@ -252,5 +252,6 @@ export default {
   bluegrey600: "#546e7a",
   bluegrey700: "#455a64",
   bluegrey800: "#37474f",
-  bluegrey900: "#263238"
+  bluegrey900: "#263238",
+  'Dark-GoldenRod': "#b8860b"
 };

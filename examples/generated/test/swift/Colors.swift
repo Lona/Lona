@@ -255,4 +255,5 @@ public enum Colors {
   public static let bluegrey700 = #colorLiteral(red: 0.270588235294, green: 0.352941176471, blue: 0.392156862745, alpha: 1) // #455A64
   public static let bluegrey800 = #colorLiteral(red: 0.21568627451, green: 0.278431372549, blue: 0.309803921569, alpha: 1) // #37474F
   public static let bluegrey900 = #colorLiteral(red: 0.149019607843, green: 0.196078431373, blue: 0.219607843137, alpha: 1) // #263238
+  public static let Dark-GoldenRod = #colorLiteral(red: 0.721568627451, green: 0.525490196078, blue: 0.043137254902, alpha: 1) // #B8860B
 }

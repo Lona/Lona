@@ -72,7 +72,7 @@
           "content" : {
             "type" : "LitExpr",
             "value" : {
-              "data" : "blue200",
+              "data" : "Dark-GoldenRod",
               "type" : "Color"
             }
           },
