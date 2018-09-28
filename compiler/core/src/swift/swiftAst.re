@@ -236,6 +236,7 @@ and node =
         "statements": list(node),
       },
     )
+  | DefaultCaseLabel({. "statements": list(node)})
   | ReturnStatement(option(node))
   | Parameter(
       {

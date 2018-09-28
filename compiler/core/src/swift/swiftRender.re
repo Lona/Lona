@@ -371,6 +371,13 @@ let rec render = ast: Prettier.Doc.t('a) =>
       <+> render(CodeBlock({"statements": o##cases})),
     )
   | CaseLabel(o) =>
+    /* Automatically add break statement if needed, for convenience */
+    let statements =
+      switch (o##statements) {
+      | [_, ..._] => o##statements
+      | [] => [SwiftIdentifier("break")]
+      };
+
     s("case ")
     <+> (
       o##patterns
@@ -378,9 +385,16 @@ let rec render = ast: Prettier.Doc.t('a) =>
       |> join(concat([s(","), line]))
     )
     <+> s(":")
-    <+> indent(
-          Render.prefixAll(hardline, o##statements |> List.map(render)),
-        )
+    <+> indent(Render.prefixAll(hardline, statements |> List.map(render)));
+  | DefaultCaseLabel(o) =>
+    let statements =
+      switch (o##statements) {
+      | [_, ..._] => o##statements
+      | [] => [SwiftIdentifier("break")]
+      };
+
+    s("default:")
+    <+> indent(Render.prefixAll(hardline, statements |> List.map(render)));
   | ReturnStatement(value) =>
     group(s("return ") <+> (value |> Render.renderOptional(render)))
   | FunctionCallArgument(o) =>
