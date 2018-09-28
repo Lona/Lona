@@ -10,16 +10,16 @@ type directionParameter = {
 };
 
 module Parameter = {
-  let isFunctionParameter = (param: Types.parameter) =>
+  let isFunction = (param: Types.parameter) =>
     param.ltype == Types.handlerType;
 
-  let isParameterSetInitially = (layer: Types.layer, parameter) =>
+  let isSetInitially = (layer: Types.layer, parameter) =>
     ParameterMap.mem(parameter, layer.parameters);
 
-  let getParameter = (layer: Types.layer, parameter) =>
+  let get = (layer: Types.layer, parameter) =>
     ParameterMap.find_opt(parameter, layer.parameters);
 
-  let isParameterAssigned = (assignments, layer: Types.layer, parameter) => {
+  let isAssigned = (assignments, layer: Types.layer, parameter) => {
     let assignedParameters = Layer.LayerMap.find_opt(layer, assignments);
     switch (assignedParameters) {
     | Some(parameters) => ParameterMap.mem(parameter, parameters)
@@ -27,9 +27,9 @@ module Parameter = {
     };
   };
 
-  let isParameterUsed = (assignments, layer: Types.layer, parameter) =>
-    isParameterAssigned(assignments, layer, parameter)
-    || isParameterSetInitially(layer, parameter);
+  let isUsed = (assignments, layer: Types.layer, parameter) =>
+    isAssigned(assignments, layer, parameter)
+    || isSetInitially(layer, parameter);
 };
 
 let pressableVariableDoc = (rootLayer: Types.layer, layer: Types.layer) =>
@@ -148,7 +148,7 @@ let generate =
     });
   /* TODO: We don't need to update if onPress is only initialized in setUpViews
      and never assigned in logic */
-  /* (isFunctionParameter(parameter) && !isParameterAssigned(parameter)) ?
+  /* (isFunction(parameter) && !isAssigned(parameter)) ?
      None : */
   let pluginContext: Plugin.context = {
     "target": "swift",
@@ -195,7 +195,7 @@ let generate =
       })
     | (AppKit, Image) =>
       let hasBackground =
-        Parameter.isParameterAssigned(
+        Parameter.isAssigned(
           layerParameterAssignments,
           layer,
           BackgroundColor,
@@ -225,13 +225,13 @@ let generate =
       MemberExpression([
         SwiftIdentifier("TextStyles"),
         SwiftIdentifier(
-          Parameter.isParameterSetInitially(layer, TextStyle) ?
+          Parameter.isSetInitially(layer, TextStyle) ?
             Layer.getStringParameter(TextStyle, layer) :
             textStyles.defaultStyle.id,
         ),
       ]);
     let styleName =
-      Parameter.isParameterSetInitially(layer, TextAlign) ?
+      Parameter.isSetInitially(layer, TextAlign) ?
         MemberExpression([
           styleName,
           FunctionCallExpression({
@@ -401,7 +401,7 @@ let generate =
       "modifiers": [AccessLevelModifier(PublicModifier)],
       "parameters":
         parameters
-        |> List.filter(param => !Parameter.isFunctionParameter(param))
+        |> List.filter(param => !Parameter.isFunction(param))
         |> List.map(initParameterDoc),
       "failable": None,
       "throws": false,
@@ -410,7 +410,7 @@ let generate =
           Empty,
           [
             parameters
-            |> List.filter(param => !Parameter.isFunctionParameter(param))
+            |> List.filter(param => !Parameter.isFunction(param))
             |> List.map(initParameterAssignmentDoc),
             [
               MemberExpression([
@@ -466,9 +466,7 @@ let generate =
                   "name": SwiftIdentifier("init"),
                   "arguments":
                     parameters
-                    |> List.filter(param =>
-                         !Parameter.isFunctionParameter(param)
-                       )
+                    |> List.filter(param => !Parameter.isFunction(param))
                     |> List.map((param: Decode.parameter) =>
                          FunctionCallArgument({
                            "name":
@@ -522,7 +520,7 @@ let generate =
     | None => LineComment(layer.name)
     | Some(parameters) =>
       let assignment = ParameterMap.find_opt(name, parameters);
-      let parameterValue = Parameter.getParameter(layer, name);
+      let parameterValue = Parameter.get(layer, name);
       let logic =
         switch (assignment, layer.typeName, parameterValue) {
         | (Some(assignment), _, _) => assignment
@@ -559,11 +557,7 @@ let generate =
   };
   let containsImageWithBackgroundColor = () => {
     let hasBackgroundColor = (layer: Types.layer) =>
-      Parameter.isParameterAssigned(
-        layerParameterAssignments,
-        layer,
-        BackgroundColor,
-      );
+      Parameter.isAssigned(layerParameterAssignments, layer, BackgroundColor);
     imageLayers |> List.exists(hasBackgroundColor);
   };
   let helperClasses =
@@ -635,7 +629,7 @@ let generate =
               layerMemberExpression(layer, [SwiftIdentifier("borderType")]),
             "operator": "=",
             "right":
-              Parameter.isParameterUsed(
+              Parameter.isUsed(
                 layerParameterAssignments,
                 layer,
                 BorderWidth,
@@ -665,7 +659,7 @@ let generate =
         ]
       | (SwiftOptions.UIKit, Text) =>
         [
-          Parameter.isParameterSetInitially(layer, NumberOfLines) ?
+          Parameter.isSetInitially(layer, NumberOfLines) ?
             [] :
             [
               BinaryExpression({
@@ -1135,9 +1129,7 @@ let generate =
                     [Empty, LineComment("MARK: Lifecycle")],
                     [initializerDoc()],
                     parameters
-                    |> List.filter(param =>
-                         !Parameter.isFunctionParameter(param)
-                       )
+                    |> List.filter(param => !Parameter.isFunction(param))
                     |> List.length > 0 ?
                       [convenienceInitializerDoc()] : [],
                     [initializerCoderDoc()],
