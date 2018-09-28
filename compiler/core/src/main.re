@@ -1,16 +1,16 @@
 open Node;
 
-[@bs.val] [@bs.module "fs-extra"] external ensureDirSync : string => unit = "";
+[@bs.val] [@bs.module "fs-extra"] external ensureDirSync: string => unit = "";
 
 [@bs.val] [@bs.module "fs-extra"]
-external copySync : (string, string) => unit = "";
+external copySync: (string, string) => unit = "";
 
-[@bs.module] external getStdin : unit => Js_promise.t(string) = "get-stdin";
+[@bs.module] external getStdin: unit => Js_promise.t(string) = "get-stdin";
 
 let arguments = Array.to_list(Process.argv);
 
 let positionalArguments =
-  arguments |> List.filter(arg => ! Js.String.startsWith("--", arg));
+  arguments |> List.filter(arg => !Js.String.startsWith("--", arg));
 
 let getArgument = name => {
   let prefix = "--" ++ name ++ "=";
@@ -27,7 +27,7 @@ let options: LonaCompilerCore.Options.options = {
     | Some("airbnb") => Airbnb
     | _ => Standard
     },
-  filterComponents: getArgument("filterComponents")
+  filterComponents: getArgument("filterComponents"),
 };
 
 let swiftOptions: Swift.Options.options = {
@@ -35,7 +35,12 @@ let swiftOptions: Swift.Options.options = {
     switch (getArgument("framework")) {
     | Some("appkit") => Swift.Options.AppKit
     | _ => Swift.Options.UIKit
-    }
+    },
+  typePrefix:
+    switch (getArgument("typePrefix")) {
+    | Some(value) => value
+    | _ => ""
+    },
 };
 
 let javaScriptOptions: JavaScriptOptions.options = {
@@ -44,12 +49,13 @@ let javaScriptOptions: JavaScriptOptions.options = {
     | Some("reactsketchapp") => JavaScriptOptions.ReactSketchapp
     | Some("reactdom") => JavaScriptOptions.ReactDOM
     | _ => JavaScriptOptions.ReactNative
-    }
+    },
 };
 
 let exit = message => {
   Js.log(message);
-  [%bs.raw {|process.exit(1)|}];
+  %bs.raw
+  {|process.exit(1)|};
 };
 
 if (List.length(positionalArguments) < 3) {
@@ -92,7 +98,7 @@ let getTargetExtension =
   | Xml => ".xml";
 
 let formatFilename = (target, filename) =>
-  switch target {
+  switch (target) {
   | Types.Xml
   | Types.JavaScript => Format.camelCase(filename)
   | Types.Swift => Format.upperFirst(Format.camelCase(filename))
@@ -101,19 +107,30 @@ let formatFilename = (target, filename) =>
 let targetExtension = getTargetExtension(target);
 
 let renderColors = (target, colors) =>
-  switch target {
+  switch (target) {
   | Types.Swift => Swift.Color.render(options, swiftOptions, colors)
   | JavaScript => JavaScript.Color.render(colors)
   | Xml => Xml.Color.render(colors)
   };
 
 let renderTextStyles = (target, colors, textStyles) =>
-  switch target {
+  switch (target) {
   | Types.Swift => Swift.TextStyle.render(swiftOptions, colors, textStyles)
   | JavaScript =>
     JavaScriptTextStyle.render(javaScriptOptions, colors, textStyles)
   | _ => ""
   };
+
+let convertTypes = (target, contents) => {
+  let json = contents |> Js.Json.parseExn;
+  switch (target) {
+  | Types.Swift =>
+    json
+    |> TypeSystem.Decode.typesFile
+    |> SwiftTypeSystem.render(swiftOptions)
+  | _ => exit("Can't generate types for target")
+  };
+};
 
 let convertColors = (target, contents) =>
   Color.parseFile(contents) |> renderColors(target);
@@ -170,7 +187,7 @@ let convertComponent = filename => {
   switch (findWorkspaceDirectory(filename)) {
   | None =>
     exit(
-      "Couldn't find workspace directory. Try specifying it as a parameter (TODO)"
+      "Couldn't find workspace directory. Try specifying it as a parameter (TODO)",
     )
   | Some(workspace) =>
     let colorsFilePath = Path.join([|workspace, "colors.json"|]);
@@ -181,7 +198,7 @@ let convertComponent = filename => {
     let textStyles = TextStyle.parseFile(textStylesFile);
     let configInputPath = Path.join([|workspace, "compiler.js"|]);
     let config = Config.loadConfig(configInputPath);
-    switch target {
+    switch (target) {
     | Types.JavaScript =>
       JavaScript.Component.generate(
         javaScriptOptions,
@@ -189,19 +206,19 @@ let convertComponent = filename => {
         Node.Path.relative(
           ~from=Node.Path.dirname(filename),
           ~to_=colorsFilePath,
-          ()
+          (),
         ),
         Node.Path.relative(
           ~from=Node.Path.dirname(filename),
           ~to_=textStylesFilePath,
-          ()
+          (),
         ),
         colors,
         textStyles,
         findComponent(workspace),
         getComponentRelativePath(workspace, name),
         getAssetRelativePath(workspace, name),
-        parsed
+        parsed,
       )
       |> JavaScript.Render.toString
     | Swift =>
@@ -214,7 +231,7 @@ let convertComponent = filename => {
           colors,
           textStyles,
           findComponent(workspace),
-          parsed
+          parsed,
         );
       result |> Swift.Render.toString;
     | _ => exit("Unrecognized target")
@@ -223,19 +240,19 @@ let convertComponent = filename => {
 };
 
 let copyStaticFiles = outputDirectory =>
-  switch target {
+  switch (target) {
   | Types.Swift =>
     let framework =
-      switch swiftOptions.framework {
+      switch (swiftOptions.framework) {
       | AppKit => "appkit"
       | UIKit => "uikit"
       };
     copySync(
       concat(
         [%bs.raw {| __dirname |}],
-        "static/swift/TextStyle." ++ framework ++ ".swift"
+        "static/swift/TextStyle." ++ framework ++ ".swift",
       ),
-      concat(outputDirectory, "TextStyle.swift")
+      concat(outputDirectory, "TextStyle.swift"),
     );
   | _ => ()
   };
@@ -247,7 +264,7 @@ let findContentsAbove = contents => {
     |> Js.Array.findIndex(line =>
          line |> Js.String.includes("LONA: KEEP ABOVE")
        );
-  switch index {
+  switch (index) {
   | (-1) => None
   | _ =>
     Some(
@@ -256,7 +273,7 @@ let findContentsAbove = contents => {
         |> Js.Array.slice(~start=0, ~end_=index + 1)
         |> Js.Array.joinWith("\n")
       )
-      ++ "\n\n"
+      ++ "\n\n",
     )
   };
 };
@@ -268,11 +285,11 @@ let findContentsBelow = contents => {
     |> Js.Array.findIndex(line =>
          line |> Js.String.includes("LONA: KEEP BELOW")
        );
-  switch index {
+  switch (index) {
   | (-1) => None
   | _ =>
     Some(
-      "\n" ++ (lines |> Js.Array.sliceFrom(index) |> Js.Array.joinWith("\n"))
+      "\n" ++ (lines |> Js.Array.sliceFrom(index) |> Js.Array.joinWith("\n")),
     )
   };
 };
@@ -290,7 +307,7 @@ let convertWorkspace = (workspace, output) => {
   let textStylesOutputPath =
     concat(
       toDirectory,
-      formatFilename(target, "TextStyles") ++ targetExtension
+      formatFilename(target, "TextStyles") ++ targetExtension,
     );
   let textStylesFile = Node.Fs.readFileSync(textStylesInputPath, `utf8);
   let textStyles =
@@ -303,7 +320,7 @@ let convertWorkspace = (workspace, output) => {
       let files =
         Array.to_list(files)
         |> List.filter(file =>
-             switch options.filterComponents {
+             switch (options.filterComponents) {
              | Some(value) => Js.Re.test(file, Js.Re.fromString(value))
              | None => true
              }
@@ -314,14 +331,14 @@ let convertWorkspace = (workspace, output) => {
         let toRelativePath =
           concat(
             Path.dirname(fromRelativePath),
-            Path.basename_ext(fromRelativePath, ".component")
+            Path.basename_ext(fromRelativePath, ".component"),
           )
           ++ targetExtension;
         let outputPath = Path.join([|toDirectory, toRelativePath|]);
         Js.log(
           Path.join([|workspace, fromRelativePath|])
           ++ "=>"
-          ++ Path.join([|output, toRelativePath|])
+          ++ Path.join([|output, toRelativePath|]),
         );
         switch (convertComponent(file)) {
         | exception (Json_decode.DecodeError(reason)) =>
@@ -340,17 +357,17 @@ let convertWorkspace = (workspace, output) => {
             switch (Fs.readFileAsUtf8Sync(outputPath)) {
             | existing => (
                 findContentsAbove(existing),
-                findContentsBelow(existing)
+                findContentsBelow(existing),
               )
             | exception _ => (None, None)
             };
           let contents =
-            switch contentsAbove {
+            switch (contentsAbove) {
             | Some(contentsAbove) => contentsAbove ++ contents
             | None => contents
             };
           let contents =
-            switch contentsBelow {
+            switch (contentsBelow) {
             | Some(contentsBelow) => contents ++ contentsBelow
             | None => contents
             };
@@ -358,7 +375,7 @@ let convertWorkspace = (workspace, output) => {
         };
       };
       files |> List.iter(processFile);
-    }
+    },
   );
   Glob.glob(
     concat(fromDirectory, "**/*.png"),
@@ -371,16 +388,16 @@ let convertWorkspace = (workspace, output) => {
         Js.log(
           Path.join([|workspace, fromRelativePath|])
           ++ "=>"
-          ++ Path.join([|output, fromRelativePath|])
+          ++ Path.join([|output, fromRelativePath|]),
         );
         copySync(file, outputPath);
       };
       files |> List.iter(processFile);
-    }
+    },
   );
 };
 
-switch command {
+switch (command) {
 | "workspace" =>
   if (List.length(positionalArguments) < 5) {
     exit("No workspace path given");
@@ -390,7 +407,7 @@ switch command {
   };
   convertWorkspace(
     List.nth(positionalArguments, 4),
-    List.nth(positionalArguments, 5)
+    List.nth(positionalArguments, 5),
   );
 | "component" =>
   if (List.length(positionalArguments) < 5) {
@@ -407,6 +424,14 @@ switch command {
       Node.Fs.readFileSync(List.nth(positionalArguments, 4), `utf8);
     convertColors(target, contents) |> Js.log;
   }
+| "types" =>
+  if (List.length(positionalArguments) < 5) {
+    exit("No filename given");
+  } else {
+    let contents =
+      Node.Fs.readFileSync(List.nth(positionalArguments, 4), `utf8);
+    convertTypes(target, contents) |> Js.log;
+  }
 | "textStyles" =>
   if (List.length(positionalArguments) < 5) {
     let render = content =>
@@ -417,7 +442,7 @@ switch command {
     switch (findWorkspaceDirectory(filename)) {
     | None =>
       exit(
-        "Couldn't find workspace directory. Try specifying it as a parameter (TODO)"
+        "Couldn't find workspace directory. Try specifying it as a parameter (TODO)",
       )
     | Some(workspacePath) =>
       let content = Node.Fs.readFileSync(filename, `utf8);

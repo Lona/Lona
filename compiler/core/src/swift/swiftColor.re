@@ -33,6 +33,7 @@ let render =
         Empty,
         EnumDeclaration({
           "name": "Colors",
+          "isIndirect": false,
           "inherits": [],
           "modifier": Some(PublicModifier),
           "body": colors |> List.map(colorConstantDoc),
@@ -116,6 +117,7 @@ let render =
         DocComment("DLS-defined color values"),
         EnumDeclaration({
           "name": "Colors",
+          "isIndirect": false,
           "inherits": [],
           "modifier": Some(PublicModifier),
           "body": colors |> List.map(colorConstantDoc),

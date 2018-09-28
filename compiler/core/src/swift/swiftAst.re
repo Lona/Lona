@@ -59,6 +59,7 @@ and typeAnnotation =
       },
     )
   | OptionalType(typeAnnotation)
+  | TupleType(list(typeAnnotation))
   | TypeInheritanceList({. "list": list(typeAnnotation)})
 and pattern =
   | WildcardPattern
@@ -76,9 +77,17 @@ and pattern =
         "pattern": pattern,
       },
     )
-  | TuplePattern({. "elements": list(pattern)})
+  | TuplePattern(list(pattern))
   | OptionalPattern({. "value": pattern})
   | ExpressionPattern({. "value": node})
+  | EnumCasePattern(
+      {
+        .
+        "typeIdentifier": option(string),
+        "caseName": string,
+        "tuplePattern": option(pattern),
+      },
+    )
 /* | IsPattern */
 /* | AsPattern */
 and initializerBlock =
@@ -127,13 +136,31 @@ and node =
         "body": list(node),
       },
     )
-  | EnumDeclaration(
+  | StructDeclaration(
       {
         .
         "name": string,
         "inherits": list(typeAnnotation),
         "modifier": option(accessLevelModifier),
         "body": list(node),
+      },
+    )
+  | EnumDeclaration(
+      {
+        .
+        "name": string,
+        "isIndirect": bool,
+        "inherits": list(typeAnnotation),
+        "modifier": option(accessLevelModifier),
+        "body": list(node),
+      },
+    )
+  | TypealiasDeclaration(
+      {
+        .
+        "name": string,
+        "modifier": option(accessLevelModifier),
+        "annotation": typeAnnotation,
       },
     )
   | ExtensionDeclaration(
@@ -195,6 +222,21 @@ and node =
         "block": list(node),
       },
     )
+  | SwitchStatement(
+      {
+        .
+        "expression": node,
+        "cases": list(node),
+      },
+    )
+  | CaseLabel(
+      {
+        .
+        "patterns": list(pattern),
+        "statements": list(node),
+      },
+    )
+  | DefaultCaseLabel({. "statements": list(node)})
   | ReturnStatement(option(node))
   | Parameter(
       {
@@ -223,6 +265,7 @@ and node =
       {
         .
         "name": node,
+        "parameters": option(typeAnnotation),
         "value": option(node),
       },
     )
