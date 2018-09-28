@@ -1,12 +1,6 @@
-module Ast = SwiftAst;
-
-module Document = SwiftDocument;
-
-module Render = SwiftRender;
-
 type constraintDefinition = {
   variableName: string,
-  initialValue: Ast.node,
+  initialValue: SwiftAst.node,
   priority: Constraint.layoutPriority,
 };
 
@@ -15,12 +9,6 @@ type directionParameter = {
   swiftName: string,
 };
 
-/* type parameterAssignmentMode =
-   | Initialized
-   | AlwaysAssigned
-   | ConditionallyAssigned
-   | InitializedAndAlwaysAssigned
-   | InitializedAndConditionallyAssigned; */
 let isFunctionParameter = (param: Types.parameter) =>
   param.ltype == Types.handlerType;
 
@@ -104,7 +92,7 @@ let generate =
     Layer.logicAssignmentsFromLayerParameters(rootLayer);
   let assignments = Layer.parameterAssignmentsFromLogic(rootLayer, logic);
   let parameters = json |> Decode.Component.parameters;
-  open Ast;
+  open SwiftAst;
   let priorityName =
     fun
     | Constraint.Required => "required"
@@ -407,7 +395,7 @@ let generate =
       "failable": None,
       "throws": false,
       "body":
-        Document.joinGroups(
+        SwiftDocument.joinGroups(
           Empty,
           [
             parameters
@@ -457,7 +445,7 @@ let generate =
       "failable": None,
       "throws": false,
       "body":
-        Document.joinGroups(
+        SwiftDocument.joinGroups(
           Empty,
           [
             [
@@ -477,7 +465,7 @@ let generate =
                                ),
                              ),
                            "value":
-                             Document.defaultValueForLonaType(
+                             SwiftDocument.defaultValueForLonaType(
                                swiftOptions.framework,
                                colors,
                                textStyles,
@@ -696,7 +684,7 @@ let generate =
       "result": None,
       "throws": false,
       "body":
-        Document.joinGroups(
+        SwiftDocument.joinGroups(
           Empty,
           [
             Layer.flatmap(resetViewStyling, root) |> List.concat,
@@ -1030,7 +1018,7 @@ let generate =
       "result": None,
       "throws": false,
       "body":
-        Document.joinGroups(
+        SwiftDocument.joinGroups(
           Empty,
           [
             root |> Layer.flatmap(translatesAutoresizingMask),
@@ -1104,7 +1092,7 @@ let generate =
   };
   TopLevelDeclaration({
     "statements":
-      Document.joinGroups(
+      SwiftDocument.joinGroups(
         Empty,
         [
           [
@@ -1120,7 +1108,7 @@ let generate =
               "modifier": Some(PublicModifier),
               "isFinal": false,
               "body":
-                Document.joinGroups(
+                SwiftDocument.joinGroups(
                   Empty,
                   [
                     [Empty, LineComment("MARK: Lifecycle")],
