@@ -83,6 +83,26 @@ module Access = {
     };
 };
 
+module Match = {
+  let nativeTypeName = (name: string, entity: entity): bool =>
+    switch (entity) {
+    | GenericType(_) => false
+    | NativeType(nativeType) => nativeType.name == name
+    };
+
+  let genericTypeCaseNames = (names: list(string), entity: entity): bool =>
+    switch (entity) {
+    | GenericType(genericType) =>
+      List.length(names) == List.length(genericType.cases)
+      && names
+      |> List.for_all(name => {
+           let caseNames = genericType.cases |> List.map(Access.typeCaseName);
+           List.mem(name, caseNames);
+         })
+    | NativeType(_) => false
+    };
+};
+
 module Decode = {
   open Json.Decode;
 

@@ -61,7 +61,7 @@ module Build = {
     let name = typeCase |> TypeSystem.Access.typeCaseName;
     let parameterCount =
       switch (typeCase) {
-      | RecordCase(_, parameters) => 1
+      | RecordCase(_, _) => 1
       | NormalCase(_, parameters) => List.length(parameters)
       };
     let parameters =
