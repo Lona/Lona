@@ -533,7 +533,7 @@ let generate =
   let parameters = json |> Decode.Component.parameters;
   open SwiftAst;
 
-  let viewVariableNode = (layer: Types.layer): node =>
+  let viewVariableDoc = (layer: Types.layer): node =>
     Build.privateVariableDeclaration(
       layer.name |> SwiftFormat.layerName,
       None,
@@ -738,7 +738,7 @@ let generate =
                     |> List.map(Doc.parameterVariable(swiftOptions)),
                     [LineComment("MARK: Private")],
                     needsTracking ? [AppkitPressable.trackingAreaVar] : [],
-                    nonRootLayers |> List.map(viewVariableNode),
+                    nonRootLayers |> List.map(viewVariableDoc),
                     nonRootLayers
                     |> List.filter(Layer.isTextLayer)
                     |> List.map(textStyleVariableDoc),
