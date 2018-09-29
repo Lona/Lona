@@ -751,6 +751,9 @@ let generate =
                     |> List.map(Doc.pressableVariables(rootLayer))
                     |> List.concat,
                     constraints
+                    |> List.filter(
+                         SwiftConstraint.isDynamic(assignmentsFromLogic),
+                       )
                     |> List.map(def =>
                          constraintVariableDoc(
                            SwiftConstraint.formatConstraintVariableName(
@@ -778,6 +781,7 @@ let generate =
                         textStyles,
                         getComponent,
                         assignmentsFromLayerParameters,
+                        assignmentsFromLogic,
                         layerMemberExpression,
                         rootLayer,
                       ),

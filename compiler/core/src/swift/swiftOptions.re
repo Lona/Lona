@@ -11,5 +11,6 @@ let frameworkToString =
 [@bs.deriving jsConverter]
 type options = {
   framework,
+  debugConstraints: bool,
   typePrefix: string,
 };

@@ -135,6 +135,80 @@ let generateWithInitialValue =
     }
   );
 
+type constraintDependency = {
+  layer: Types.layer,
+  key: ParameterKey.t,
+};
+
+let constraintDependencies =
+    (constr: Constraint.t): list(constraintDependency) =>
+  Constraint.(
+    switch (constr) {
+    | Relation(_, CenterX, _, _, CenterX, _, _)
+    | Relation(_, CenterY, _, _, CenterY, _, _) => []
+    | Relation(child, Top, _, layer, Top, _, PrimaryBefore)
+    | Relation(child, Top, _, layer, Top, _, SecondaryBefore) => [
+        {layer, key: PaddingTop},
+        {layer: child, key: MarginTop},
+      ]
+    | Relation(child, Leading, _, layer, Leading, _, PrimaryBefore)
+    | Relation(child, Leading, _, layer, Leading, _, SecondaryBefore) => [
+        {layer, key: PaddingLeft},
+        {layer: child, key: MarginLeft},
+      ]
+    | Relation(child, Bottom, _, layer, Bottom, _, PrimaryAfter)
+    | Relation(child, Bottom, _, layer, Bottom, _, SecondaryAfter) => [
+        {layer, key: PaddingBottom},
+        {layer: child, key: MarginBottom},
+      ]
+    | Relation(child, Trailing, _, layer, Trailing, _, SecondaryAfter)
+    | Relation(child, Trailing, _, layer, Trailing, _, PrimaryAfter) => [
+        {layer, key: PaddingRight},
+        {layer: child, key: MarginRight},
+      ]
+    | Relation(child, Top, _, previousLayer, Bottom, _, PrimaryBetween) => [
+        {layer: previousLayer, key: MarginBottom},
+        {layer: child, key: MarginTop},
+      ]
+    | Relation(child, Leading, _, previousLayer, Trailing, _, PrimaryBetween) => [
+        {layer: previousLayer, key: MarginRight},
+        {layer: child, key: MarginLeft},
+      ]
+    | Relation(child, Width, Leq, layer, Width, _, FitContentSecondary) => [
+        {layer, key: PaddingLeft},
+        {layer: child, key: MarginLeft},
+        {layer, key: PaddingRight},
+        {layer: child, key: MarginRight},
+      ]
+    | Relation(child, Height, Leq, layer, Height, _, FitContentSecondary) => [
+        {layer, key: PaddingTop},
+        {layer: child, key: MarginTop},
+        {layer, key: PaddingBottom},
+        {layer: child, key: MarginBottom},
+      ]
+    | Relation(_, _, _, _, _, _, FlexSibling) => []
+    | Dimension(layer, Height, _, _) => [{layer, key: Height}]
+    | Dimension(layer, Width, _, _) => [{layer, key: Width}]
+    | _ =>
+      Js.log("Unknown constraint types");
+      raise(Not_found);
+    }
+  );
+
+/* Can this constraint be updated in logic? */
+let isDynamic = (assignments, constr: Constraint.t) => {
+  let dependencies = constraintDependencies(constr);
+
+  let isAssigned = dependency =>
+    SwiftComponentParameter.isAssigned(
+      assignments,
+      dependency.layer,
+      dependency.key,
+    );
+
+  dependencies |> List.exists(isAssigned);
+};
+
 let generateConstantFromConstraint =
     (
       swiftOptions: SwiftOptions.options,
@@ -360,6 +434,7 @@ let setUpFunction =
       textStyles,
       getComponent,
       assignmentsFromLayerParameters,
+      assignmentsFromLogic,
       layerMemberExpression,
       root: Types.layer,
     ) => {
@@ -470,8 +545,10 @@ let setUpFunction =
           |> List.filter(def => Constraint.getPriority(def) == Low)
           |> List.map(setConstraintPriority),
           List.length(constraints) > 0 ? [activateConstraints()] : [],
-          constraints |> List.map(assignConstraint),
-          List.length(constraints) > 0 ?
+          constraints
+          |> List.filter(isDynamic(assignmentsFromLogic))
+          |> List.map(assignConstraint),
+          swiftOptions.debugConstraints && List.length(constraints) > 0 ?
             [
               LineComment("For debugging"),
               ...constraints |> List.map(assignConstraintIdentifier),
