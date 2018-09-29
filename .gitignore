@@ -86,3 +86,4 @@ examples/generated/test/LonaViewer/LonaViewer.xcodeproj/project.xcworkspace/xcsh
 examples/LonaViewer/LonaViewer.xcodeproj/project.xcworkspace/contents.xcworkspacedata
 
 .vscode
+node_modules
