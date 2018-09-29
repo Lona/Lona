@@ -29,49 +29,6 @@ public class SecondaryAxis: UIView {
 
   private var textViewTextStyle = TextStyles.body1
 
-  private var topPadding: CGFloat = 24
-  private var trailingPadding: CGFloat = 24
-  private var bottomPadding: CGFloat = 24
-  private var leadingPadding: CGFloat = 24
-  private var fixedViewTopMargin: CGFloat = 0
-  private var fixedViewTrailingMargin: CGFloat = 0
-  private var fixedViewBottomMargin: CGFloat = 24
-  private var fixedViewLeadingMargin: CGFloat = 0
-  private var fitViewTopMargin: CGFloat = 0
-  private var fitViewTrailingMargin: CGFloat = 0
-  private var fitViewBottomMargin: CGFloat = 24
-  private var fitViewLeadingMargin: CGFloat = 0
-  private var fitViewTopPadding: CGFloat = 12
-  private var fitViewTrailingPadding: CGFloat = 12
-  private var fitViewBottomPadding: CGFloat = 12
-  private var fitViewLeadingPadding: CGFloat = 12
-  private var fillViewTopMargin: CGFloat = 0
-  private var fillViewTrailingMargin: CGFloat = 0
-  private var fillViewBottomMargin: CGFloat = 0
-  private var fillViewLeadingMargin: CGFloat = 0
-  private var textViewTopMargin: CGFloat = 0
-  private var textViewTrailingMargin: CGFloat = 0
-  private var textViewBottomMargin: CGFloat = 0
-  private var textViewLeadingMargin: CGFloat = 0
-
-  private var fixedViewTopAnchorConstraint: NSLayoutConstraint?
-  private var fixedViewLeadingAnchorConstraint: NSLayoutConstraint?
-  private var fitViewTopAnchorConstraint: NSLayoutConstraint?
-  private var fitViewLeadingAnchorConstraint: NSLayoutConstraint?
-  private var fitViewTrailingAnchorConstraint: NSLayoutConstraint?
-  private var fillViewBottomAnchorConstraint: NSLayoutConstraint?
-  private var fillViewTopAnchorConstraint: NSLayoutConstraint?
-  private var fillViewLeadingAnchorConstraint: NSLayoutConstraint?
-  private var fillViewTrailingAnchorConstraint: NSLayoutConstraint?
-  private var fixedViewHeightAnchorConstraint: NSLayoutConstraint?
-  private var fixedViewWidthAnchorConstraint: NSLayoutConstraint?
-  private var fitViewHeightAnchorConstraint: NSLayoutConstraint?
-  private var textViewWidthAnchorParentConstraint: NSLayoutConstraint?
-  private var textViewTopAnchorConstraint: NSLayoutConstraint?
-  private var textViewLeadingAnchorConstraint: NSLayoutConstraint?
-  private var textViewTrailingAnchorConstraint: NSLayoutConstraint?
-  private var fillViewHeightAnchorConstraint: NSLayoutConstraint?
-
   private func setUpViews() {
     textView.numberOfLines = 0
 
@@ -93,50 +50,30 @@ public class SecondaryAxis: UIView {
     fillView.translatesAutoresizingMaskIntoConstraints = false
     textView.translatesAutoresizingMaskIntoConstraints = false
 
-    let fixedViewTopAnchorConstraint = fixedView
-      .topAnchor
-      .constraint(equalTo: topAnchor, constant: topPadding + fixedViewTopMargin)
-    let fixedViewLeadingAnchorConstraint = fixedView
-      .leadingAnchor
-      .constraint(equalTo: leadingAnchor, constant: leadingPadding + fixedViewLeadingMargin)
-    let fitViewTopAnchorConstraint = fitView
-      .topAnchor
-      .constraint(equalTo: fixedView.bottomAnchor, constant: fixedViewBottomMargin + fitViewTopMargin)
-    let fitViewLeadingAnchorConstraint = fitView
-      .leadingAnchor
-      .constraint(equalTo: leadingAnchor, constant: leadingPadding + fitViewLeadingMargin)
+    let fixedViewTopAnchorConstraint = fixedView.topAnchor.constraint(equalTo: topAnchor, constant: 24)
+    let fixedViewLeadingAnchorConstraint = fixedView.leadingAnchor.constraint(equalTo: leadingAnchor, constant: 24)
+    let fitViewTopAnchorConstraint = fitView.topAnchor.constraint(equalTo: fixedView.bottomAnchor, constant: 24)
+    let fitViewLeadingAnchorConstraint = fitView.leadingAnchor.constraint(equalTo: leadingAnchor, constant: 24)
     let fitViewTrailingAnchorConstraint = fitView
       .trailingAnchor
-      .constraint(lessThanOrEqualTo: trailingAnchor, constant: -(trailingPadding + fitViewTrailingMargin))
-    let fillViewBottomAnchorConstraint = fillView
-      .bottomAnchor
-      .constraint(equalTo: bottomAnchor, constant: -(bottomPadding + fillViewBottomMargin))
-    let fillViewTopAnchorConstraint = fillView
-      .topAnchor
-      .constraint(equalTo: fitView.bottomAnchor, constant: fitViewBottomMargin + fillViewTopMargin)
-    let fillViewLeadingAnchorConstraint = fillView
-      .leadingAnchor
-      .constraint(equalTo: leadingAnchor, constant: leadingPadding + fillViewLeadingMargin)
-    let fillViewTrailingAnchorConstraint = fillView
-      .trailingAnchor
-      .constraint(equalTo: trailingAnchor, constant: -(trailingPadding + fillViewTrailingMargin))
+      .constraint(lessThanOrEqualTo: trailingAnchor, constant: -24)
+    let fillViewBottomAnchorConstraint = fillView.bottomAnchor.constraint(equalTo: bottomAnchor, constant: -24)
+    let fillViewTopAnchorConstraint = fillView.topAnchor.constraint(equalTo: fitView.bottomAnchor, constant: 24)
+    let fillViewLeadingAnchorConstraint = fillView.leadingAnchor.constraint(equalTo: leadingAnchor, constant: 24)
+    let fillViewTrailingAnchorConstraint = fillView.trailingAnchor.constraint(equalTo: trailingAnchor, constant: -24)
     let fixedViewHeightAnchorConstraint = fixedView.heightAnchor.constraint(equalToConstant: 100)
     let fixedViewWidthAnchorConstraint = fixedView.widthAnchor.constraint(equalToConstant: 100)
     let fitViewHeightAnchorConstraint = fitView.heightAnchor.constraint(equalToConstant: 100)
     let textViewWidthAnchorParentConstraint = textView
       .widthAnchor
-      .constraint(
-        lessThanOrEqualTo: fitView.widthAnchor,
-        constant: -(fitViewLeadingPadding + textViewLeadingMargin + fitViewTrailingPadding + textViewTrailingMargin))
-    let textViewTopAnchorConstraint = textView
-      .topAnchor
-      .constraint(equalTo: fitView.topAnchor, constant: fitViewTopPadding + textViewTopMargin)
+      .constraint(lessThanOrEqualTo: fitView.widthAnchor, constant: -(12 + 12))
+    let textViewTopAnchorConstraint = textView.topAnchor.constraint(equalTo: fitView.topAnchor, constant: 12)
     let textViewLeadingAnchorConstraint = textView
       .leadingAnchor
-      .constraint(equalTo: fitView.leadingAnchor, constant: fitViewLeadingPadding + textViewLeadingMargin)
+      .constraint(equalTo: fitView.leadingAnchor, constant: 12)
     let textViewTrailingAnchorConstraint = textView
       .trailingAnchor
-      .constraint(equalTo: fitView.trailingAnchor, constant: -(fitViewTrailingPadding + textViewTrailingMargin))
+      .constraint(equalTo: fitView.trailingAnchor, constant: -12)
     let fillViewHeightAnchorConstraint = fillView.heightAnchor.constraint(equalToConstant: 100)
 
     textViewWidthAnchorParentConstraint.priority = UILayoutPriority.defaultLow
@@ -160,43 +97,6 @@ public class SecondaryAxis: UIView {
       textViewTrailingAnchorConstraint,
       fillViewHeightAnchorConstraint
     ])
-
-    self.fixedViewTopAnchorConstraint = fixedViewTopAnchorConstraint
-    self.fixedViewLeadingAnchorConstraint = fixedViewLeadingAnchorConstraint
-    self.fitViewTopAnchorConstraint = fitViewTopAnchorConstraint
-    self.fitViewLeadingAnchorConstraint = fitViewLeadingAnchorConstraint
-    self.fitViewTrailingAnchorConstraint = fitViewTrailingAnchorConstraint
-    self.fillViewBottomAnchorConstraint = fillViewBottomAnchorConstraint
-    self.fillViewTopAnchorConstraint = fillViewTopAnchorConstraint
-    self.fillViewLeadingAnchorConstraint = fillViewLeadingAnchorConstraint
-    self.fillViewTrailingAnchorConstraint = fillViewTrailingAnchorConstraint
-    self.fixedViewHeightAnchorConstraint = fixedViewHeightAnchorConstraint
-    self.fixedViewWidthAnchorConstraint = fixedViewWidthAnchorConstraint
-    self.fitViewHeightAnchorConstraint = fitViewHeightAnchorConstraint
-    self.textViewWidthAnchorParentConstraint = textViewWidthAnchorParentConstraint
-    self.textViewTopAnchorConstraint = textViewTopAnchorConstraint
-    self.textViewLeadingAnchorConstraint = textViewLeadingAnchorConstraint
-    self.textViewTrailingAnchorConstraint = textViewTrailingAnchorConstraint
-    self.fillViewHeightAnchorConstraint = fillViewHeightAnchorConstraint
-
-    // For debugging
-    fixedViewTopAnchorConstraint.identifier = "fixedViewTopAnchorConstraint"
-    fixedViewLeadingAnchorConstraint.identifier = "fixedViewLeadingAnchorConstraint"
-    fitViewTopAnchorConstraint.identifier = "fitViewTopAnchorConstraint"
-    fitViewLeadingAnchorConstraint.identifier = "fitViewLeadingAnchorConstraint"
-    fitViewTrailingAnchorConstraint.identifier = "fitViewTrailingAnchorConstraint"
-    fillViewBottomAnchorConstraint.identifier = "fillViewBottomAnchorConstraint"
-    fillViewTopAnchorConstraint.identifier = "fillViewTopAnchorConstraint"
-    fillViewLeadingAnchorConstraint.identifier = "fillViewLeadingAnchorConstraint"
-    fillViewTrailingAnchorConstraint.identifier = "fillViewTrailingAnchorConstraint"
-    fixedViewHeightAnchorConstraint.identifier = "fixedViewHeightAnchorConstraint"
-    fixedViewWidthAnchorConstraint.identifier = "fixedViewWidthAnchorConstraint"
-    fitViewHeightAnchorConstraint.identifier = "fitViewHeightAnchorConstraint"
-    textViewWidthAnchorParentConstraint.identifier = "textViewWidthAnchorParentConstraint"
-    textViewTopAnchorConstraint.identifier = "textViewTopAnchorConstraint"
-    textViewLeadingAnchorConstraint.identifier = "textViewLeadingAnchorConstraint"
-    textViewTrailingAnchorConstraint.identifier = "textViewTrailingAnchorConstraint"
-    fillViewHeightAnchorConstraint.identifier = "fillViewHeightAnchorConstraint"
   }
 
   private func update() {}
