@@ -78,16 +78,16 @@ let generateWithInitialValue =
           SwiftIdentifier(Constraint.anchorToString(dimension)),
           FunctionCallExpression({
             "name": SwiftIdentifier("constraint"),
-            "arguments":
-              switch (constantAst) {
-              | None => []
-              | Some(ast) => [
-                  FunctionCallArgument({
-                    "name": Some(SwiftIdentifier("equalToConstant")),
-                    "value": ast,
-                  }),
-                ]
-              },
+            "arguments": [
+              FunctionCallArgument({
+                "name": Some(SwiftIdentifier("equalToConstant")),
+                "value":
+                  switch (constantAst) {
+                  | None => LiteralExpression(FloatingPoint(0.0))
+                  | Some(ast) => ast
+                  },
+              }),
+            ],
           }),
         ],
       )
