@@ -1,8 +1,3 @@
-/* type directionParameter = {
-     lonaName: ParameterKey.t,
-     swiftName: string,
-   }; */
-
 let isFunction = (param: Types.parameter) => param.ltype == Types.handlerType;
 
 let isSetInitially = (layer: Types.layer, parameter) =>
@@ -23,14 +18,27 @@ let isUsed = (assignments, layer: Types.layer, parameter) =>
   isAssigned(assignments, layer, parameter)
   || isSetInitially(layer, parameter);
 
-/* let paddingParameters = [
+let paddingAndMarginKeys = [
+  ParameterKey.PaddingTop,
+  PaddingRight,
+  PaddingBottom,
+  PaddingLeft,
+  MarginTop,
+  MarginRight,
+  MarginBottom,
+  MarginLeft,
+];
+
+let isPaddingOrMargin = key => List.mem(key, paddingAndMarginKeys);
+
+/* let paddingParameterNameTranslations = [
      {swiftName: "topPadding", lonaName: PaddingTop},
      {swiftName: "trailingPadding", lonaName: PaddingRight},
      {swiftName: "bottomPadding", lonaName: PaddingBottom},
      {swiftName: "leadingPadding", lonaName: PaddingLeft},
    ];
 
-   let marginParameters = [
+   let marginParameterNameTranslations = [
      {swiftName: "topMargin", lonaName: MarginTop},
      {swiftName: "trailingMargin", lonaName: MarginRight},
      {swiftName: "bottomMargin", lonaName: MarginBottom},

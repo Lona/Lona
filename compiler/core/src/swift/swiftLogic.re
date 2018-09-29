@@ -54,7 +54,7 @@ let toSwiftAST =
           |> Js.String.includes("margin")
           || name
           |> Js.String.includes("padding") =>
-      Ast.LineComment("TODO: Margin & padding")
+      Ast.LineComment("TODO: Margin & padding: " ++ name)
     | (_, Ast.SwiftIdentifier(name))
         when name |> Js.String.endsWith("height") =>
       Ast.SwiftIdentifier(

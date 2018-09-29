@@ -447,26 +447,21 @@ module Doc = {
         rootLayer: Types.layer,
         logic,
       ) => {
-    let filterParameters = ((name, _)) =>
-      name != ParameterKey.PaddingTop
-      && name != PaddingRight
-      && name != PaddingBottom
-      && name != PaddingLeft
-      && name != MarginTop
-      && name != MarginRight
-      && name != MarginBottom
-      && name != MarginLeft;
     let conditionallyAssigned = Logic.conditionallyAssignedIdentifiers(logic);
-    let filterConditionallyAssigned = (layer: Types.layer, (name, _)) => {
-      let isAssigned = ((_, value)) =>
-        value == ["layers", layer.name, name |> ParameterKey.toString];
-      conditionallyAssigned |> Logic.IdentifierSet.exists(isAssigned);
-    };
+
+    let isConditionallyAssigned = (layer: Types.layer, (key, _)) =>
+      conditionallyAssigned
+      |> Logic.IdentifierSet.exists(((_, value)) =>
+           value == ["layers", layer.name, key |> ParameterKey.toString]
+         );
+
     let defineInitialLayerValues = ((layer, propertyMap)) =>
       propertyMap
       |> ParameterMap.bindings
-      |> List.filter(filterParameters)
-      |> List.filter(filterConditionallyAssigned(layer))
+      |> List.filter(((key, _)) =>
+           !SwiftComponentParameter.isPaddingOrMargin(key)
+         )
+      |> List.filter(isConditionallyAssigned(layer))
       |> List.map(
            defineInitialLayerValue(
              swiftOptions,
