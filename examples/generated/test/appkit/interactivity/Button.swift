@@ -72,7 +72,7 @@ public class Button: NSBox {
 
     let textViewWidthAnchorParentConstraint = textView
       .widthAnchor
-      .constraint(lessThanOrEqualTo: widthAnchor, constant: -(16 + 16))
+      .constraint(lessThanOrEqualTo: widthAnchor, constant: -32)
     let textViewTopAnchorConstraint = textView.topAnchor.constraint(equalTo: topAnchor, constant: 12)
     let textViewBottomAnchorConstraint = textView.bottomAnchor.constraint(equalTo: bottomAnchor, constant: -12)
     let textViewLeadingAnchorConstraint = textView.leadingAnchor.constraint(equalTo: leadingAnchor, constant: 16)

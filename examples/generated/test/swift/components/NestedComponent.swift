@@ -74,14 +74,12 @@ public class NestedComponent: UIView {
       .constraint(equalTo: trailingAnchor, constant: -10)
     let text1ViewTopAnchorConstraint = text1View
       .topAnchor
-      .constraint(equalTo: fitContentParentSecondaryChildrenView.bottomAnchor)
+      .constraint(equalTo: fitContentParentSecondaryChildrenView.bottomAnchor, constant: 12)
     let text1ViewLeadingAnchorConstraint = text1View.leadingAnchor.constraint(equalTo: leadingAnchor, constant: 10)
     let text1ViewTrailingAnchorConstraint = text1View
       .trailingAnchor
       .constraint(lessThanOrEqualTo: trailingAnchor, constant: -10)
-    let localAssetViewTopAnchorConstraint = localAssetView
-      .topAnchor
-      .constraint(equalTo: text1View.bottomAnchor, constant: 12)
+    let localAssetViewTopAnchorConstraint = localAssetView.topAnchor.constraint(equalTo: text1View.bottomAnchor)
     let localAssetViewLeadingAnchorConstraint = localAssetView
       .leadingAnchor
       .constraint(equalTo: leadingAnchor, constant: 10)

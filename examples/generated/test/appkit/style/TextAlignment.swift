@@ -201,7 +201,7 @@ public class TextAlignment: NSBox {
     let view2ViewTrailingAnchorConstraint = view2View
       .trailingAnchor
       .constraint(lessThanOrEqualTo: view1View.trailingAnchor)
-    let textViewTopAnchorConstraint = textView.topAnchor.constraint(equalTo: view2View.bottomAnchor)
+    let textViewTopAnchorConstraint = textView.topAnchor.constraint(equalTo: view2View.bottomAnchor, constant: 16)
     let textViewLeadingAnchorConstraint = textView.leadingAnchor.constraint(equalTo: view1View.leadingAnchor)
     let textViewCenterXAnchorConstraint = textView.centerXAnchor.constraint(equalTo: view1View.centerXAnchor)
     let textViewTrailingAnchorConstraint = textView.trailingAnchor.constraint(equalTo: view1View.trailingAnchor)
@@ -213,11 +213,11 @@ public class TextAlignment: NSBox {
     let text1ViewTrailingAnchorConstraint = text1View
       .trailingAnchor
       .constraint(lessThanOrEqualTo: view1View.trailingAnchor)
-    let text2ViewTopAnchorConstraint = text2View.topAnchor.constraint(equalTo: text1View.bottomAnchor, constant: 16)
+    let text2ViewTopAnchorConstraint = text2View.topAnchor.constraint(equalTo: text1View.bottomAnchor, constant: 12)
     let text2ViewLeadingAnchorConstraint = text2View.leadingAnchor.constraint(equalTo: view1View.leadingAnchor)
     let text2ViewCenterXAnchorConstraint = text2View.centerXAnchor.constraint(equalTo: view1View.centerXAnchor)
     let text2ViewTrailingAnchorConstraint = text2View.trailingAnchor.constraint(equalTo: view1View.trailingAnchor)
-    let text3ViewTopAnchorConstraint = text3View.topAnchor.constraint(equalTo: text2View.bottomAnchor, constant: 12)
+    let text3ViewTopAnchorConstraint = text3View.topAnchor.constraint(equalTo: text2View.bottomAnchor)
     let text3ViewLeadingAnchorConstraint = text3View.leadingAnchor.constraint(equalTo: view1View.leadingAnchor)
     let text3ViewCenterXAnchorConstraint = text3View.centerXAnchor.constraint(equalTo: view1View.centerXAnchor)
     let text3ViewTrailingAnchorConstraint = text3View.trailingAnchor.constraint(equalTo: view1View.trailingAnchor)
@@ -226,7 +226,7 @@ public class TextAlignment: NSBox {
     let text4ViewCenterXAnchorConstraint = text4View.centerXAnchor.constraint(equalTo: view1View.centerXAnchor)
     let text5ViewWidthAnchorParentConstraint = text5View
       .widthAnchor
-      .constraint(lessThanOrEqualTo: view3View.widthAnchor, constant: -(12 + 12))
+      .constraint(lessThanOrEqualTo: view3View.widthAnchor, constant: -24)
     let text5ViewTopAnchorConstraint = text5View.topAnchor.constraint(equalTo: view3View.topAnchor)
     let text5ViewBottomAnchorConstraint = text5View.bottomAnchor.constraint(equalTo: view3View.bottomAnchor)
     let text5ViewLeadingAnchorConstraint = text5View
@@ -248,7 +248,7 @@ public class TextAlignment: NSBox {
       .constraint(equalTo: view4View.trailingAnchor, constant: -12)
     let text7ViewWidthAnchorParentConstraint = text7View
       .widthAnchor
-      .constraint(lessThanOrEqualTo: view5View.widthAnchor, constant: -(12 + 12))
+      .constraint(lessThanOrEqualTo: view5View.widthAnchor, constant: -24)
     let text7ViewTopAnchorConstraint = text7View.topAnchor.constraint(equalTo: view5View.topAnchor)
     let text7ViewBottomAnchorConstraint = text7View.bottomAnchor.constraint(equalTo: view5View.bottomAnchor)
     let text7ViewLeadingAnchorConstraint = text7View

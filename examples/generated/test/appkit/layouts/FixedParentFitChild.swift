@@ -62,15 +62,17 @@ public class FixedParentFitChild: NSBox {
     let view1ViewTrailingAnchorConstraint = view1View.trailingAnchor.constraint(equalTo: trailingAnchor, constant: -24)
     let view4ViewHeightAnchorParentConstraint = view4View
       .heightAnchor
-      .constraint(lessThanOrEqualTo: view1View.heightAnchor, constant: -(24 + 24))
+      .constraint(lessThanOrEqualTo: view1View.heightAnchor, constant: -48)
     let view5ViewHeightAnchorParentConstraint = view5View
       .heightAnchor
-      .constraint(lessThanOrEqualTo: view1View.heightAnchor, constant: -(24 + 24))
+      .constraint(lessThanOrEqualTo: view1View.heightAnchor, constant: -48)
     let view4ViewLeadingAnchorConstraint = view4View
       .leadingAnchor
       .constraint(equalTo: view1View.leadingAnchor, constant: 24)
     let view4ViewTopAnchorConstraint = view4View.topAnchor.constraint(equalTo: view1View.topAnchor, constant: 24)
-    let view5ViewLeadingAnchorConstraint = view5View.leadingAnchor.constraint(equalTo: view4View.trailingAnchor)
+    let view5ViewLeadingAnchorConstraint = view5View
+      .leadingAnchor
+      .constraint(equalTo: view4View.trailingAnchor, constant: 12)
     let view5ViewTopAnchorConstraint = view5View.topAnchor.constraint(equalTo: view1View.topAnchor, constant: 24)
     let view4ViewHeightAnchorConstraint = view4View.heightAnchor.constraint(equalToConstant: 100)
     let view4ViewWidthAnchorConstraint = view4View.widthAnchor.constraint(equalToConstant: 60)

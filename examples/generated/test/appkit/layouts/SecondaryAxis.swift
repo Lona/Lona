@@ -78,7 +78,7 @@ public class SecondaryAxis: NSBox {
     let fitViewHeightAnchorConstraint = fitView.heightAnchor.constraint(equalToConstant: 100)
     let textViewWidthAnchorParentConstraint = textView
       .widthAnchor
-      .constraint(lessThanOrEqualTo: fitView.widthAnchor, constant: -(12 + 12))
+      .constraint(lessThanOrEqualTo: fitView.widthAnchor, constant: -24)
     let textViewTopAnchorConstraint = textView.topAnchor.constraint(equalTo: fitView.topAnchor, constant: 12)
     let textViewLeadingAnchorConstraint = textView
       .leadingAnchor

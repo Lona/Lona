@@ -86,7 +86,7 @@ public class PrimaryAxis: NSBox {
     let fixedViewWidthAnchorConstraint = fixedView.widthAnchor.constraint(equalToConstant: 100)
     let fitViewWidthAnchorConstraint = fitView.widthAnchor.constraint(equalToConstant: 100)
     let textViewTopAnchorConstraint = textView.topAnchor.constraint(equalTo: fitView.topAnchor)
-    let textViewBottomAnchorConstraint = textView.bottomAnchor.constraint(equalTo: fitView.bottomAnchor, constant: -24)
+    let textViewBottomAnchorConstraint = textView.bottomAnchor.constraint(equalTo: fitView.bottomAnchor)
     let textViewLeadingAnchorConstraint = textView.leadingAnchor.constraint(equalTo: fitView.leadingAnchor)
     let textViewTrailingAnchorConstraint = textView.trailingAnchor.constraint(equalTo: fitView.trailingAnchor)
     let fill1ViewWidthAnchorConstraint = fill1View.widthAnchor.constraint(equalToConstant: 100)

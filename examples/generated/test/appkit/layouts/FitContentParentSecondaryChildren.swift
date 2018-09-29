@@ -58,13 +58,13 @@ public class FitContentParentSecondaryChildren: NSBox {
 
     let view1ViewHeightAnchorParentConstraint = view1View
       .heightAnchor
-      .constraint(lessThanOrEqualTo: heightAnchor, constant: -(24 + 24))
+      .constraint(lessThanOrEqualTo: heightAnchor, constant: -48)
     let view3ViewHeightAnchorParentConstraint = view3View
       .heightAnchor
-      .constraint(lessThanOrEqualTo: heightAnchor, constant: -(24 + 24))
+      .constraint(lessThanOrEqualTo: heightAnchor, constant: -48)
     let view2ViewHeightAnchorParentConstraint = view2View
       .heightAnchor
-      .constraint(lessThanOrEqualTo: heightAnchor, constant: -(24 + 24))
+      .constraint(lessThanOrEqualTo: heightAnchor, constant: -48)
     let view1ViewLeadingAnchorConstraint = view1View.leadingAnchor.constraint(equalTo: leadingAnchor, constant: 24)
     let view1ViewTopAnchorConstraint = view1View.topAnchor.constraint(equalTo: topAnchor, constant: 24)
     let view3ViewLeadingAnchorConstraint = view3View.leadingAnchor.constraint(equalTo: view1View.trailingAnchor)
