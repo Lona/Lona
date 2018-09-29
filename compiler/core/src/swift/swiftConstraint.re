@@ -8,27 +8,67 @@ let priorityName =
 
 let constantExpression =
     (
+      swiftOptions: SwiftOptions.options,
+      colors,
+      textStyles,
+      assignmentsFromLayerParameters,
       rootLayer: Types.layer,
       layer: Types.layer,
-      variable1,
+      variable1: ParameterKey.t,
       parent: Types.layer,
-      variable2,
-    ) => {
-  let variableName = (layer: Types.layer, variable) =>
+      variable2: ParameterKey.t,
+    )
+    : option(SwiftAst.node) => {
+  let variableName = (layer: Types.layer, variable: ParameterKey.t) => {
+    let variableNameString = variable |> ParameterKey.toString;
+
     layer === rootLayer ?
-      variable :
-      SwiftFormat.layerName(layer.name) ++ Format.upperFirst(variable);
-  SwiftAst.(
-    BinaryExpression({
-      "left": SwiftIdentifier(variableName(layer, variable1)),
-      "operator": "+",
-      "right": SwiftIdentifier(variableName(parent, variable2)),
-    })
-  );
+      variableNameString :
+      SwiftFormat.layerName(layer.name)
+      ++ Format.upperFirst(variableNameString);
+  };
+
+  switch (
+    SwiftComponentParameter.get(layer, variable1),
+    SwiftComponentParameter.get(layer, variable2),
+  ) {
+  | (None, None) => None
+  | (Some(a), None)
+  | (None, Some(a)) =>
+    Some(
+      SwiftDocument.lonaValue(swiftOptions.framework, colors, textStyles, a),
+    )
+  | (Some(a), Some(b)) =>
+    Some(
+      SwiftAst.(
+        BinaryExpression({
+          "left":
+            SwiftDocument.lonaValue(
+              swiftOptions.framework,
+              colors,
+              textStyles,
+              a,
+            ),
+          "operator": "+",
+          "right":
+            SwiftDocument.lonaValue(
+              swiftOptions.framework,
+              colors,
+              textStyles,
+              b,
+            ),
+        })
+      ),
+    )
+  };
 };
 
 let generateWithInitialValue =
-    (layerMemberExpression, constr: Constraint.t, node) =>
+    (
+      layerMemberExpression,
+      constr: Constraint.t,
+      constantAst: option(SwiftAst.node),
+    ) =>
   SwiftAst.(
     switch (constr) {
     | Constraint.Dimension((layer: Types.layer), dimension, _, _) =>
@@ -38,12 +78,16 @@ let generateWithInitialValue =
           SwiftIdentifier(Constraint.anchorToString(dimension)),
           FunctionCallExpression({
             "name": SwiftIdentifier("constraint"),
-            "arguments": [
-              FunctionCallArgument({
-                "name": Some(SwiftIdentifier("equalToConstant")),
-                "value": node,
-              }),
-            ],
+            "arguments":
+              switch (constantAst) {
+              | None => []
+              | Some(ast) => [
+                  FunctionCallArgument({
+                    "name": Some(SwiftIdentifier("equalToConstant")),
+                    "value": ast,
+                  }),
+                ]
+              },
           }),
         ],
       )
@@ -62,21 +106,29 @@ let generateWithInitialValue =
           SwiftIdentifier(Constraint.anchorToString(edge1)),
           FunctionCallExpression({
             "name": SwiftIdentifier("constraint"),
-            "arguments": [
-              FunctionCallArgument({
-                "name":
-                  Some(SwiftIdentifier(Constraint.cmpToString(relation))),
-                "value":
-                  layerMemberExpression(
-                    layer2,
-                    [SwiftIdentifier(Constraint.anchorToString(edge2))],
-                  ),
-              }),
-              FunctionCallArgument({
-                "name": Some(SwiftIdentifier("constant")),
-                "value": node,
-              }),
-            ],
+            "arguments":
+              [
+                FunctionCallArgument({
+                  "name":
+                    Some(SwiftIdentifier(Constraint.cmpToString(relation))),
+                  "value":
+                    layerMemberExpression(
+                      layer2,
+                      [SwiftIdentifier(Constraint.anchorToString(edge2))],
+                    ),
+                }),
+              ]
+              @ (
+                switch (constantAst) {
+                | None => []
+                | Some(ast) => [
+                    FunctionCallArgument({
+                      "name": Some(SwiftIdentifier("constant")),
+                      "value": ast,
+                    }),
+                  ]
+                }
+              ),
           }),
         ],
       )
@@ -84,56 +136,79 @@ let generateWithInitialValue =
   );
 
 let generateConstantFromConstraint =
-    (rootLayer: Types.layer, constr: Constraint.t) =>
+    (
+      swiftOptions: SwiftOptions.options,
+      colors,
+      textStyles,
+      assignmentsFromLayerParameters,
+      rootLayer: Types.layer,
+      constr: Constraint.t,
+    )
+    : option(SwiftAst.node) => {
+  let constantExpression =
+    constantExpression(
+      swiftOptions,
+      colors,
+      textStyles,
+      assignmentsFromLayerParameters,
+      rootLayer,
+    );
+
   SwiftAst.(
     Constraint.(
       switch (constr) {
       /* Currently centering doesn't require any constants, since a centered view also
          has a pair of before/after constraints that include the constants */
       | Relation(_, CenterX, _, _, CenterX, _, _)
-      | Relation(_, CenterY, _, _, CenterY, _, _) =>
-        LiteralExpression(FloatingPoint(0.0))
+      | Relation(_, CenterY, _, _, CenterY, _, _) => None
       | Relation(child, Top, _, layer, Top, _, PrimaryBefore)
       | Relation(child, Top, _, layer, Top, _, SecondaryBefore) =>
-        constantExpression(rootLayer, layer, "topPadding", child, "topMargin")
+        constantExpression(
+          layer,
+          ParameterKey.PaddingTop,
+          child,
+          ParameterKey.MarginTop,
+        )
       | Relation(child, Leading, _, layer, Leading, _, PrimaryBefore)
       | Relation(child, Leading, _, layer, Leading, _, SecondaryBefore) =>
         constantExpression(
-          rootLayer,
           layer,
-          "leadingPadding",
+          ParameterKey.PaddingLeft,
           child,
-          "leadingMargin",
+          ParameterKey.MarginLeft,
         )
       | Relation(child, Bottom, _, layer, Bottom, _, PrimaryAfter)
       | Relation(child, Bottom, _, layer, Bottom, _, SecondaryAfter) =>
-        negateNumber(
+        let expression =
           constantExpression(
-            rootLayer,
             layer,
-            "bottomPadding",
+            ParameterKey.PaddingBottom,
             child,
-            "bottomMargin",
-          ),
-        )
+            ParameterKey.MarginBottom,
+          );
+        switch (expression) {
+        | Some(e) => Some(negateNumber(e))
+        | None => None
+        };
       | Relation(child, Trailing, _, layer, Trailing, _, SecondaryAfter)
       | Relation(child, Trailing, _, layer, Trailing, _, PrimaryAfter) =>
-        negateNumber(
+        let expression =
           constantExpression(
-            rootLayer,
             layer,
-            "trailingPadding",
+            ParameterKey.PaddingRight,
             child,
-            "trailingMargin",
-          ),
-        )
+            ParameterKey.MarginRight,
+          );
+        switch (expression) {
+        | Some(e) => Some(negateNumber(e))
+        | None => None
+        };
       | Relation(child, Top, _, previousLayer, Bottom, _, PrimaryBetween) =>
         constantExpression(
-          rootLayer,
           previousLayer,
-          "bottomMargin",
+          ParameterKey.MarginBottom,
           child,
-          "topMargin",
+          ParameterKey.MarginTop,
         )
       | Relation(
           child,
@@ -145,70 +220,82 @@ let generateConstantFromConstraint =
           PrimaryBetween,
         ) =>
         constantExpression(
-          rootLayer,
           previousLayer,
-          "trailingMargin",
+          ParameterKey.MarginRight,
           child,
-          "leadingMargin",
+          ParameterKey.MarginLeft,
         )
       | Relation(child, Width, Leq, layer, Width, _, FitContentSecondary) =>
-        negateNumber(
-          BinaryExpression({
-            "left":
-              constantExpression(
-                rootLayer,
-                layer,
-                "leadingPadding",
-                child,
-                "leadingMargin",
-              ),
-            "operator": "+",
-            "right":
-              constantExpression(
-                rootLayer,
-                layer,
-                "trailingPadding",
-                child,
-                "trailingMargin",
-              ),
-          }),
-        )
+        let leftExpression =
+          constantExpression(
+            layer,
+            ParameterKey.PaddingLeft,
+            child,
+            ParameterKey.MarginLeft,
+          );
+
+        let rightExpression =
+          constantExpression(
+            layer,
+            ParameterKey.PaddingRight,
+            child,
+            ParameterKey.MarginRight,
+          );
+
+        switch (leftExpression, rightExpression) {
+        | (None, None) => None
+        | (Some(a), None)
+        | (None, Some(a)) => Some(negateNumber(a))
+        | (Some(a), Some(b)) =>
+          Some(
+            negateNumber(
+              BinaryExpression({"left": a, "operator": "+", "right": b}),
+            ),
+          )
+        };
       | Relation(child, Height, Leq, layer, Height, _, FitContentSecondary) =>
-        negateNumber(
-          BinaryExpression({
-            "left":
-              constantExpression(
-                rootLayer,
-                layer,
-                "topPadding",
-                child,
-                "topMargin",
-              ),
-            "operator": "+",
-            "right":
-              constantExpression(
-                rootLayer,
-                layer,
-                "bottomPadding",
-                child,
-                "bottomMargin",
-              ),
-          }),
-        )
-      | Relation(_, _, _, _, _, _, FlexSibling) =>
-        LiteralExpression(FloatingPoint(0.0))
+        let leftExpression =
+          constantExpression(
+            layer,
+            ParameterKey.PaddingTop,
+            child,
+            ParameterKey.MarginTop,
+          );
+
+        let rightExpression =
+          constantExpression(
+            layer,
+            ParameterKey.PaddingBottom,
+            child,
+            ParameterKey.MarginBottom,
+          );
+
+        switch (leftExpression, rightExpression) {
+        | (None, None) => None
+        | (Some(a), None)
+        | (None, Some(a)) => Some(negateNumber(a))
+        | (Some(a), Some(b)) =>
+          Some(
+            negateNumber(
+              BinaryExpression({"left": a, "operator": "+", "right": b}),
+            ),
+          )
+        };
+
+      | Relation(_, _, _, _, _, _, FlexSibling) => None
       | Dimension((layer: Types.layer), Height, _, _) =>
         let constant = Layer.getNumberParameter(Height, layer);
-        LiteralExpression(FloatingPoint(constant));
+        Some(LiteralExpression(FloatingPoint(constant)));
       | Dimension((layer: Types.layer), Width, _, _) =>
         let constant = Layer.getNumberParameter(Width, layer);
-        LiteralExpression(FloatingPoint(constant));
+        Some(LiteralExpression(FloatingPoint(constant)));
       | _ =>
         Js.log("Unknown constraint types");
         raise(Not_found);
       }
     )
   );
+};
 
 let formatConstraintVariableName =
     (rootLayer: Types.layer, constr: Constraint.t) => {
@@ -269,7 +356,10 @@ let calculateConstraints = (getComponent, rootLayer: Types.layer) =>
 let setUpFunction =
     (
       swiftOptions: SwiftOptions.options,
+      colors,
+      textStyles,
       getComponent,
+      assignmentsFromLayerParameters,
       layerMemberExpression,
       root: Types.layer,
     ) => {
@@ -285,16 +375,20 @@ let setUpFunction =
       "operator": "=",
       "right": LiteralExpression(Boolean(false)),
     });
-  let getInitialValue = constr =>
-    generateWithInitialValue(
-      layerMemberExpression,
-      constr,
-      generateConstantFromConstraint(root, constr),
-    );
-  let defineConstraint = def =>
+  let defineConstraint = def => {
+    let constant =
+      generateConstantFromConstraint(
+        swiftOptions,
+        colors,
+        textStyles,
+        assignmentsFromLayerParameters,
+        root,
+        def,
+      );
     ConstantDeclaration({
       "modifiers": [],
-      "init": Some(getInitialValue(def)),
+      "init":
+        Some(generateWithInitialValue(layerMemberExpression, def, constant)),
       "pattern":
         IdentifierPattern({
           "identifier":
@@ -302,6 +396,7 @@ let setUpFunction =
           "annotation": None,
         }),
     });
+  };
   let setConstraintPriority = def =>
     BinaryExpression({
       "left":

@@ -1,12 +1,9 @@
+module Parameter = SwiftComponentParameter;
+
 type constraintDefinition = {
   variableName: string,
   initialValue: SwiftAst.node,
   priority: Constraint.layoutPriority,
-};
-
-type directionParameter = {
-  lonaName: ParameterKey.t,
-  swiftName: string,
 };
 
 module Naming = {
@@ -36,43 +33,6 @@ module Naming = {
          componentName,
        );
   };
-};
-
-module Parameter = {
-  let isFunction = (param: Types.parameter) =>
-    param.ltype == Types.handlerType;
-
-  let isSetInitially = (layer: Types.layer, parameter) =>
-    ParameterMap.mem(parameter, layer.parameters);
-
-  let get = (layer: Types.layer, parameter) =>
-    ParameterMap.find_opt(parameter, layer.parameters);
-
-  let isAssigned = (assignments, layer: Types.layer, parameter) => {
-    let assignedParameters = Layer.LayerMap.find_opt(layer, assignments);
-    switch (assignedParameters) {
-    | Some(parameters) => ParameterMap.mem(parameter, parameters)
-    | None => false
-    };
-  };
-
-  let isUsed = (assignments, layer: Types.layer, parameter) =>
-    isAssigned(assignments, layer, parameter)
-    || isSetInitially(layer, parameter);
-
-  let paddingParameters = [
-    {swiftName: "topPadding", lonaName: PaddingTop},
-    {swiftName: "trailingPadding", lonaName: PaddingRight},
-    {swiftName: "bottomPadding", lonaName: PaddingBottom},
-    {swiftName: "leadingPadding", lonaName: PaddingLeft},
-  ];
-
-  let marginParameters = [
-    {swiftName: "topMargin", lonaName: MarginTop},
-    {swiftName: "trailingMargin", lonaName: MarginRight},
-    {swiftName: "bottomMargin", lonaName: MarginBottom},
-    {swiftName: "leadingMargin", lonaName: MarginLeft},
-  ];
 };
 
 /* Ast builders, agnostic to the kind of data they use */
@@ -626,49 +586,6 @@ let generate =
       Some(OptionalType(TypeName("NSLayoutConstraint"))),
       None,
     );
-  let spacingVariableDoc = (layer: Types.layer) => {
-    let variableName = variable =>
-      layer === rootLayer ?
-        variable :
-        SwiftFormat.layerName(layer.name) ++ Format.upperFirst(variable);
-    let marginVariables =
-      layer === rootLayer ?
-        [] :
-        {
-          let createVariable = (marginParameter: directionParameter) =>
-            Build.privateVariableDeclaration(
-              variableName(marginParameter.swiftName),
-              Some(TypeName("CGFloat")),
-              Some(
-                LiteralExpression(
-                  FloatingPoint(
-                    Layer.getNumberParameter(marginParameter.lonaName, layer),
-                  ),
-                ),
-              ),
-            );
-          Parameter.marginParameters |> List.map(createVariable);
-        };
-    let paddingVariables =
-      switch (layer.children) {
-      | [] => []
-      | _ =>
-        let createVariable = (paddingParameter: directionParameter) =>
-          Build.privateVariableDeclaration(
-            variableName(paddingParameter.swiftName),
-            Some(TypeName("CGFloat")),
-            Some(
-              LiteralExpression(
-                FloatingPoint(
-                  Layer.getNumberParameter(paddingParameter.lonaName, layer),
-                ),
-              ),
-            ),
-          );
-        Parameter.paddingParameters |> List.map(createVariable);
-      };
-    marginVariables @ paddingVariables;
-  };
 
   let initParameterAssignmentDoc = (parameter: Decode.parameter) =>
     BinaryExpression({
@@ -830,9 +747,6 @@ let generate =
                     nonRootLayers
                     |> List.filter(Layer.isTextLayer)
                     |> List.map(textStyleVariableDoc),
-                    rootLayer
-                    |> Layer.flatmap(spacingVariableDoc)
-                    |> List.concat,
                     pressableLayers
                     |> List.map(Doc.pressableVariables(rootLayer))
                     |> List.concat,
@@ -860,7 +774,10 @@ let generate =
                     [
                       SwiftConstraint.setUpFunction(
                         swiftOptions,
+                        colors,
+                        textStyles,
                         getComponent,
+                        assignmentsFromLayerParameters,
                         layerMemberExpression,
                         rootLayer,
                       ),
