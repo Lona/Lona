@@ -69,3 +69,6 @@ let parameterDefaultValue = key =>
   };
 
 let defaultValueForParameter = name => parameterDefaultValue(name);
+
+let decodeNumber = (value: Types.lonaValue): float =>
+  value.data |> Json.Decode.float;

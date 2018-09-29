@@ -176,19 +176,58 @@ let constraintDependencies =
       ]
     | Relation(child, Width, Leq, layer, Width, _, FitContentSecondary) => [
         {layer, key: PaddingLeft},
-        {layer: child, key: MarginLeft},
         {layer, key: PaddingRight},
+        {layer: child, key: MarginLeft},
         {layer: child, key: MarginRight},
       ]
     | Relation(child, Height, Leq, layer, Height, _, FitContentSecondary) => [
         {layer, key: PaddingTop},
-        {layer: child, key: MarginTop},
         {layer, key: PaddingBottom},
+        {layer: child, key: MarginTop},
         {layer: child, key: MarginBottom},
       ]
     | Relation(_, _, _, _, _, _, FlexSibling) => []
     | Dimension(layer, Height, _, _) => [{layer, key: Height}]
     | Dimension(layer, Width, _, _) => [{layer, key: Width}]
+    | _ =>
+      Js.log("Unknown constraint types");
+      raise(Not_found);
+    }
+  );
+
+let isValueNegated = (constr: Constraint.t): bool =>
+  Constraint.(
+    switch (constr) {
+    | Relation(_, CenterX, _, _, CenterX, _, _)
+    | Relation(_, CenterY, _, _, CenterY, _, _) => false
+    | Relation(_child, Top, _, _layer, Top, _, PrimaryBefore)
+    | Relation(_child, Top, _, _layer, Top, _, SecondaryBefore) => false
+    | Relation(_child, Leading, _, _layer, Leading, _, PrimaryBefore)
+    | Relation(_child, Leading, _, _layer, Leading, _, SecondaryBefore) =>
+      false
+    | Relation(_child, Bottom, _, _layer, Bottom, _, PrimaryAfter)
+    | Relation(_child, Bottom, _, _layer, Bottom, _, SecondaryAfter) => true
+    | Relation(_child, Trailing, _, _layer, Trailing, _, SecondaryAfter)
+    | Relation(_child, Trailing, _, _layer, Trailing, _, PrimaryAfter) => true
+    | Relation(_child, Top, _, _previousLayer, Bottom, _, PrimaryBetween) =>
+      false
+    | Relation(
+        _child,
+        Leading,
+        _,
+        _previousLayer,
+        Trailing,
+        _,
+        PrimaryBetween,
+      ) =>
+      false
+    | Relation(_child, Width, Leq, _layer, Width, _, FitContentSecondary) =>
+      true
+    | Relation(_child, Height, Leq, _layer, Height, _, FitContentSecondary) =>
+      true
+    | Relation(_, _, _, _, _, _, FlexSibling) => false
+    | Dimension(_layer, Height, _, _) => false
+    | Dimension(_layer, Width, _, _) => false
     | _ =>
       Js.log("Unknown constraint types");
       raise(Not_found);
@@ -209,166 +248,59 @@ let isDynamic = (assignments, constr: Constraint.t) => {
   dependencies |> List.exists(isAssigned);
 };
 
-let generateConstantFromConstraint =
+let generateConstraintConstant =
     (
       swiftOptions: SwiftOptions.options,
       colors,
       textStyles,
-      assignmentsFromLayerParameters,
-      rootLayer: Types.layer,
       constr: Constraint.t,
     )
     : option(SwiftAst.node) => {
-  let constantExpression =
-    constantExpression(
-      swiftOptions,
-      colors,
-      textStyles,
-      assignmentsFromLayerParameters,
-      rootLayer,
-    );
+  let dependencies = constraintDependencies(constr);
+  let direction = isValueNegated(constr) ? (-1.0) : 1.0;
 
-  SwiftAst.(
-    Constraint.(
-      switch (constr) {
-      /* Currently centering doesn't require any constants, since a centered view also
-         has a pair of before/after constraints that include the constants */
-      | Relation(_, CenterX, _, _, CenterX, _, _)
-      | Relation(_, CenterY, _, _, CenterY, _, _) => None
-      | Relation(child, Top, _, layer, Top, _, PrimaryBefore)
-      | Relation(child, Top, _, layer, Top, _, SecondaryBefore) =>
-        constantExpression(
-          layer,
-          ParameterKey.PaddingTop,
-          child,
-          ParameterKey.MarginTop,
-        )
-      | Relation(child, Leading, _, layer, Leading, _, PrimaryBefore)
-      | Relation(child, Leading, _, layer, Leading, _, SecondaryBefore) =>
-        constantExpression(
-          layer,
-          ParameterKey.PaddingLeft,
-          child,
-          ParameterKey.MarginLeft,
-        )
-      | Relation(child, Bottom, _, layer, Bottom, _, PrimaryAfter)
-      | Relation(child, Bottom, _, layer, Bottom, _, SecondaryAfter) =>
-        let expression =
-          constantExpression(
-            layer,
-            ParameterKey.PaddingBottom,
-            child,
-            ParameterKey.MarginBottom,
-          );
-        switch (expression) {
-        | Some(e) => Some(negateNumber(e))
-        | None => None
-        };
-      | Relation(child, Trailing, _, layer, Trailing, _, SecondaryAfter)
-      | Relation(child, Trailing, _, layer, Trailing, _, PrimaryAfter) =>
-        let expression =
-          constantExpression(
-            layer,
-            ParameterKey.PaddingRight,
-            child,
-            ParameterKey.MarginRight,
-          );
-        switch (expression) {
-        | Some(e) => Some(negateNumber(e))
-        | None => None
-        };
-      | Relation(child, Top, _, previousLayer, Bottom, _, PrimaryBetween) =>
-        constantExpression(
-          previousLayer,
-          ParameterKey.MarginBottom,
-          child,
-          ParameterKey.MarginTop,
-        )
-      | Relation(
-          child,
-          Leading,
-          _,
-          previousLayer,
-          Trailing,
-          _,
-          PrimaryBetween,
-        ) =>
-        constantExpression(
-          previousLayer,
-          ParameterKey.MarginRight,
-          child,
-          ParameterKey.MarginLeft,
-        )
-      | Relation(child, Width, Leq, layer, Width, _, FitContentSecondary) =>
-        let leftExpression =
-          constantExpression(
-            layer,
-            ParameterKey.PaddingLeft,
-            child,
-            ParameterKey.MarginLeft,
-          );
+  let lonaValues =
+    dependencies
+    |> List.map((dependency: constraintDependency) =>
+         switch (
+           SwiftComponentParameter.get(dependency.layer, dependency.key)
+         ) {
+         | None => []
+         | Some(value) => [value]
+         }
+       )
+    |> List.concat;
 
-        let rightExpression =
-          constantExpression(
-            layer,
-            ParameterKey.PaddingRight,
-            child,
-            ParameterKey.MarginRight,
-          );
-
-        switch (leftExpression, rightExpression) {
-        | (None, None) => None
-        | (Some(a), None)
-        | (None, Some(a)) => Some(negateNumber(a))
-        | (Some(a), Some(b)) =>
-          Some(
-            negateNumber(
-              BinaryExpression({"left": a, "operator": "+", "right": b}),
-            ),
-          )
-        };
-      | Relation(child, Height, Leq, layer, Height, _, FitContentSecondary) =>
-        let leftExpression =
-          constantExpression(
-            layer,
-            ParameterKey.PaddingTop,
-            child,
-            ParameterKey.MarginTop,
-          );
-
-        let rightExpression =
-          constantExpression(
-            layer,
-            ParameterKey.PaddingBottom,
-            child,
-            ParameterKey.MarginBottom,
-          );
-
-        switch (leftExpression, rightExpression) {
-        | (None, None) => None
-        | (Some(a), None)
-        | (None, Some(a)) => Some(negateNumber(a))
-        | (Some(a), Some(b)) =>
-          Some(
-            negateNumber(
-              BinaryExpression({"left": a, "operator": "+", "right": b}),
-            ),
-          )
-        };
-
-      | Relation(_, _, _, _, _, _, FlexSibling) => None
-      | Dimension((layer: Types.layer), Height, _, _) =>
-        let constant = Layer.getNumberParameter(Height, layer);
-        Some(LiteralExpression(FloatingPoint(constant)));
-      | Dimension((layer: Types.layer), Width, _, _) =>
-        let constant = Layer.getNumberParameter(Width, layer);
-        Some(LiteralExpression(FloatingPoint(constant)));
-      | _ =>
-        Js.log("Unknown constraint types");
-        raise(Not_found);
-      }
-    )
-  );
+  switch (lonaValues) {
+  | [] => None
+  | [value] =>
+    let float = value |> LonaValue.decodeNumber;
+    let float = float *. direction;
+    float == 0.0 ?
+      None :
+      Some(
+        SwiftDocument.lonaValue(
+          swiftOptions.framework,
+          colors,
+          textStyles,
+          LonaValue.number(float),
+        ),
+      );
+  | _ =>
+    let floats = lonaValues |> List.map(LonaValue.decodeNumber);
+    let float = List.fold_left((a, b) => a +. b, 0.0, floats);
+    let float = float *. direction;
+    float == 0.0 ?
+      None :
+      Some(
+        SwiftDocument.lonaValue(
+          swiftOptions.framework,
+          colors,
+          textStyles,
+          LonaValue.number(float),
+        ),
+      );
+  };
 };
 
 let formatConstraintVariableName =
@@ -452,14 +384,7 @@ let setUpFunction =
     });
   let defineConstraint = def => {
     let constant =
-      generateConstantFromConstraint(
-        swiftOptions,
-        colors,
-        textStyles,
-        assignmentsFromLayerParameters,
-        root,
-        def,
-      );
+      generateConstraintConstant(swiftOptions, colors, textStyles, def);
     ConstantDeclaration({
       "modifiers": [],
       "init":
