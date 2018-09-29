@@ -100,6 +100,7 @@ let rec typeAnnotationDoc =
   | Types.Reference(typeName) =>
     switch (typeName) {
     | "Boolean" => TypeName("Bool")
+    | "Number" => TypeName("CGFloat")
     | "URL" =>
       typeAnnotationDoc(framework, Types.Named(typeName, Types.stringType))
     | "Color" =>
