@@ -775,7 +775,6 @@ let generate =
                         colors,
                         textStyles,
                         getComponent,
-                        assignmentsFromLayerParameters,
                         assignmentsFromLogic,
                         layerMemberExpression,
                         rootLayer,

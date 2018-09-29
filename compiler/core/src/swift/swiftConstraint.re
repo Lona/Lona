@@ -6,63 +6,6 @@ let priorityName =
   | Constraint.Required => "required"
   | Low => "defaultLow";
 
-let constantExpression =
-    (
-      swiftOptions: SwiftOptions.options,
-      colors,
-      textStyles,
-      assignmentsFromLayerParameters,
-      rootLayer: Types.layer,
-      layer: Types.layer,
-      variable1: ParameterKey.t,
-      parent: Types.layer,
-      variable2: ParameterKey.t,
-    )
-    : option(SwiftAst.node) => {
-  let variableName = (layer: Types.layer, variable: ParameterKey.t) => {
-    let variableNameString = variable |> ParameterKey.toString;
-
-    layer === rootLayer ?
-      variableNameString :
-      SwiftFormat.layerName(layer.name)
-      ++ Format.upperFirst(variableNameString);
-  };
-
-  switch (
-    SwiftComponentParameter.get(layer, variable1),
-    SwiftComponentParameter.get(layer, variable2),
-  ) {
-  | (None, None) => None
-  | (Some(a), None)
-  | (None, Some(a)) =>
-    Some(
-      SwiftDocument.lonaValue(swiftOptions.framework, colors, textStyles, a),
-    )
-  | (Some(a), Some(b)) =>
-    Some(
-      SwiftAst.(
-        BinaryExpression({
-          "left":
-            SwiftDocument.lonaValue(
-              swiftOptions.framework,
-              colors,
-              textStyles,
-              a,
-            ),
-          "operator": "+",
-          "right":
-            SwiftDocument.lonaValue(
-              swiftOptions.framework,
-              colors,
-              textStyles,
-              b,
-            ),
-        })
-      ),
-    )
-  };
-};
-
 let generateWithInitialValue =
     (
       layerMemberExpression,
@@ -365,7 +308,6 @@ let setUpFunction =
       colors,
       textStyles,
       getComponent,
-      assignmentsFromLayerParameters,
       assignmentsFromLogic,
       layerMemberExpression,
       root: Types.layer,
