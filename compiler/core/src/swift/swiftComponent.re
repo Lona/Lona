@@ -266,6 +266,281 @@ module Doc = {
         |> SwiftDocument.typeAnnotationDoc(swiftOptions.framework),
       "defaultValue": None,
     });
+
+  let defineInitialLayerValue =
+      (
+        swiftOptions: SwiftOptions.options,
+        colors,
+        textStyles: TextStyle.file,
+        getComponent,
+        assignmentsFromLayerParameters,
+        rootLayer: Types.layer,
+        layer: Types.layer,
+        (name, _),
+      ) => {
+    let parameters =
+      Layer.LayerMap.find_opt(layer, assignmentsFromLayerParameters);
+    switch (parameters) {
+    | None => SwiftAst.LineComment(layer.name)
+    | Some(parameters) =>
+      let assignment = ParameterMap.find_opt(name, parameters);
+      let parameterValue = Parameter.get(layer, name);
+      let logic =
+        switch (assignment, layer.typeName, parameterValue) {
+        | (Some(assignment), _, _) => assignment
+        | (None, Component(componentName), _) =>
+          let param =
+            getComponent(componentName)
+            |> Decode.Component.parameters
+            |> List.find((param: Types.parameter) => param.name == name);
+          Logic.assignmentForLayerParameter(
+            layer,
+            name,
+            Logic.defaultValueForType(param.ltype),
+          );
+        | (None, _, Some(value)) =>
+          Logic.assignmentForLayerParameter(layer, name, value)
+        | (None, _, None) =>
+          Logic.defaultAssignmentForLayerParameter(
+            colors,
+            textStyles,
+            layer,
+            name,
+          )
+        };
+      let node =
+        SwiftLogic.toSwiftAST(
+          swiftOptions,
+          colors,
+          textStyles,
+          rootLayer,
+          logic,
+        );
+      StatementListHelper(node);
+    };
+  };
+
+  let setUpViews =
+      (
+        swiftOptions: SwiftOptions.options,
+        colors,
+        textStyles: TextStyle.file,
+        getComponent,
+        assignmentsFromLayerParameters,
+        assignmentsFromLogic,
+        layerMemberExpression,
+        rootLayer: Types.layer,
+      ) => {
+    let setUpDefaultsDoc = () => {
+      let filterParameters = ((name, _)) =>
+        name != ParameterKey.FlexDirection
+        && name != JustifyContent
+        && name != AlignSelf
+        && name != AlignItems
+        && name != Flex
+        && name != PaddingTop
+        && name != PaddingRight
+        && name != PaddingBottom
+        && name != PaddingLeft
+        && name != MarginTop
+        && name != MarginRight
+        && name != MarginBottom
+        && name != MarginLeft
+        /* Handled by initial constraint setup */
+        && name != Height
+        && name != Width
+        && name != TextAlign;
+      let filterNotAssignedByLogic = (layer: Types.layer, (parameterName, _)) =>
+        switch (Layer.LayerMap.find_opt(layer, assignmentsFromLogic)) {
+        | None => true
+        | Some(parameters) =>
+          switch (ParameterMap.find_opt(parameterName, parameters)) {
+          | None => true
+          | Some(_) => false
+          }
+        };
+      let defineInitialLayerValues = (layer: Types.layer) =>
+        layer.parameters
+        |> ParameterMap.bindings
+        |> List.filter(filterParameters)
+        |> List.filter(filterNotAssignedByLogic(layer))
+        |> List.map(((k, v)) =>
+             defineInitialLayerValue(
+               swiftOptions,
+               colors,
+               textStyles,
+               getComponent,
+               assignmentsFromLayerParameters,
+               rootLayer,
+               layer,
+               (k, v),
+             )
+           );
+      rootLayer
+      |> Layer.flatten
+      |> List.map(defineInitialLayerValues)
+      |> List.concat;
+    };
+    let resetViewStyling = (layer: Types.layer) =>
+      switch (swiftOptions.framework, layer.typeName) {
+      | (SwiftOptions.AppKit, View) => [
+          BinaryExpression({
+            "left":
+              layerMemberExpression(layer, [SwiftIdentifier("boxType")]),
+            "operator": "=",
+            "right": SwiftIdentifier(".custom"),
+          }),
+          BinaryExpression({
+            "left":
+              layerMemberExpression(layer, [SwiftIdentifier("borderType")]),
+            "operator": "=",
+            "right":
+              Parameter.isUsed(
+                assignmentsFromLayerParameters,
+                layer,
+                BorderWidth,
+              ) ?
+                SwiftIdentifier(".lineBorder") : SwiftIdentifier(".noBorder"),
+          }),
+          BinaryExpression({
+            "left":
+              layerMemberExpression(
+                layer,
+                [SwiftIdentifier("contentViewMargins")],
+              ),
+            "operator": "=",
+            "right": SwiftIdentifier(".zero"),
+          }),
+        ]
+      | (SwiftOptions.AppKit, Text) => [
+          BinaryExpression({
+            "left":
+              layerMemberExpression(
+                layer,
+                [SwiftIdentifier("lineBreakMode")],
+              ),
+            "operator": "=",
+            "right": SwiftIdentifier(".byWordWrapping"),
+          }),
+        ]
+      | (SwiftOptions.UIKit, Text) =>
+        [
+          Parameter.isSetInitially(layer, NumberOfLines) ?
+            [] :
+            [
+              BinaryExpression({
+                "left":
+                  layerMemberExpression(
+                    layer,
+                    [SwiftIdentifier("numberOfLines")],
+                  ),
+                "operator": "=",
+                "right": LiteralExpression(Integer(0)),
+              }),
+            ],
+        ]
+        |> List.concat
+      | _ => []
+      };
+    let addSubviews = (parent: option(Types.layer), layer: Types.layer) =>
+      switch (parent) {
+      | None => []
+      | Some(parent) => [
+          FunctionCallExpression({
+            "name":
+              layerMemberExpression(
+                parent,
+                [SwiftIdentifier("addSubview")],
+              ),
+            "arguments": [
+              SwiftIdentifier(layer.name |> SwiftFormat.layerName),
+            ],
+          }),
+        ]
+      };
+    FunctionDeclaration({
+      "name": "setUpViews",
+      "modifiers": [AccessLevelModifier(PrivateModifier)],
+      "parameters": [],
+      "result": None,
+      "throws": false,
+      "body":
+        SwiftDocument.joinGroups(
+          Empty,
+          [
+            Layer.flatmap(resetViewStyling, rootLayer) |> List.concat,
+            Layer.flatmapParent(addSubviews, rootLayer) |> List.concat,
+            setUpDefaultsDoc(),
+          ],
+        ),
+    });
+  };
+
+  let update =
+      (
+        swiftOptions: SwiftOptions.options,
+        colors,
+        textStyles: TextStyle.file,
+        getComponent,
+        assignmentsFromLayerParameters,
+        assignmentsFromLogic,
+        rootLayer: Types.layer,
+        logic,
+      ) => {
+    let filterParameters = ((name, _)) =>
+      name != ParameterKey.PaddingTop
+      && name != PaddingRight
+      && name != PaddingBottom
+      && name != PaddingLeft
+      && name != MarginTop
+      && name != MarginRight
+      && name != MarginBottom
+      && name != MarginLeft;
+    let conditionallyAssigned = Logic.conditionallyAssignedIdentifiers(logic);
+    let filterConditionallyAssigned = (layer: Types.layer, (name, _)) => {
+      let isAssigned = ((_, value)) =>
+        value == ["layers", layer.name, name |> ParameterKey.toString];
+      conditionallyAssigned |> Logic.IdentifierSet.exists(isAssigned);
+    };
+    let defineInitialLayerValues = ((layer, propertyMap)) =>
+      propertyMap
+      |> ParameterMap.bindings
+      |> List.filter(filterParameters)
+      |> List.filter(filterConditionallyAssigned(layer))
+      |> List.map(
+           defineInitialLayerValue(
+             swiftOptions,
+             colors,
+             textStyles,
+             getComponent,
+             assignmentsFromLayerParameters,
+             rootLayer,
+             layer,
+           ),
+         );
+
+    FunctionDeclaration({
+      "name": "update",
+      "modifiers": [AccessLevelModifier(PrivateModifier)],
+      "parameters": [],
+      "result": None,
+      "throws": false,
+      "body":
+        (
+          assignmentsFromLogic
+          |> Layer.LayerMap.bindings
+          |> List.map(defineInitialLayerValues)
+          |> List.concat
+        )
+        @ SwiftLogic.toSwiftAST(
+            swiftOptions,
+            colors,
+            textStyles,
+            rootLayer,
+            logic,
+          ),
+    });
+  };
 };
 
 let generate =
@@ -482,48 +757,7 @@ let generate =
     parent === rootLayer ? "self" : parent.name |> SwiftFormat.layerName;
   let layerMemberExpression = (layer: Types.layer, statements) =>
     memberOrSelfExpression(parentNameOrSelf(layer), statements);
-  let defineInitialLayerValue = (layer: Types.layer, (name, _)) => {
-    let parameters =
-      Layer.LayerMap.find_opt(layer, assignmentsFromLayerParameters);
-    switch (parameters) {
-    | None => LineComment(layer.name)
-    | Some(parameters) =>
-      let assignment = ParameterMap.find_opt(name, parameters);
-      let parameterValue = Parameter.get(layer, name);
-      let logic =
-        switch (assignment, layer.typeName, parameterValue) {
-        | (Some(assignment), _, _) => assignment
-        | (None, Component(componentName), _) =>
-          let param =
-            getComponent(componentName)
-            |> Decode.Component.parameters
-            |> List.find((param: Types.parameter) => param.name == name);
-          Logic.assignmentForLayerParameter(
-            layer,
-            name,
-            Logic.defaultValueForType(param.ltype),
-          );
-        | (None, _, Some(value)) =>
-          Logic.assignmentForLayerParameter(layer, name, value)
-        | (None, _, None) =>
-          Logic.defaultAssignmentForLayerParameter(
-            colors,
-            textStyles,
-            layer,
-            name,
-          )
-        };
-      let node =
-        SwiftLogic.toSwiftAST(
-          swiftOptions,
-          colors,
-          textStyles,
-          rootLayer,
-          logic,
-        );
-      StatementListHelper(node);
-    };
-  };
+
   let containsImageWithBackgroundColor = () => {
     let hasBackgroundColor = (layer: Types.layer) =>
       Parameter.isAssigned(
@@ -550,195 +784,13 @@ let generate =
         []
     | SwiftOptions.UIKit => []
     };
-  let setUpViewsDoc = (root: Types.layer) => {
-    let setUpDefaultsDoc = () => {
-      let filterParameters = ((name, _)) =>
-        name != ParameterKey.FlexDirection
-        && name != JustifyContent
-        && name != AlignSelf
-        && name != AlignItems
-        && name != Flex
-        && name != PaddingTop
-        && name != PaddingRight
-        && name != PaddingBottom
-        && name != PaddingLeft
-        && name != MarginTop
-        && name != MarginRight
-        && name != MarginBottom
-        && name != MarginLeft
-        /* Handled by initial constraint setup */
-        && name != Height
-        && name != Width
-        && name != TextAlign;
-      let filterNotAssignedByLogic = (layer: Types.layer, (parameterName, _)) =>
-        switch (Layer.LayerMap.find_opt(layer, assignmentsFromLogic)) {
-        | None => true
-        | Some(parameters) =>
-          switch (ParameterMap.find_opt(parameterName, parameters)) {
-          | None => true
-          | Some(_) => false
-          }
-        };
-      let defineInitialLayerValues = (layer: Types.layer) =>
-        layer.parameters
-        |> ParameterMap.bindings
-        |> List.filter(filterParameters)
-        |> List.filter(filterNotAssignedByLogic(layer))
-        |> List.map(((k, v)) => defineInitialLayerValue(layer, (k, v)));
-      rootLayer
-      |> Layer.flatten
-      |> List.map(defineInitialLayerValues)
-      |> List.concat;
-    };
-    let resetViewStyling = (layer: Types.layer) =>
-      switch (swiftOptions.framework, layer.typeName) {
-      | (SwiftOptions.AppKit, View) => [
-          BinaryExpression({
-            "left":
-              layerMemberExpression(layer, [SwiftIdentifier("boxType")]),
-            "operator": "=",
-            "right": SwiftIdentifier(".custom"),
-          }),
-          BinaryExpression({
-            "left":
-              layerMemberExpression(layer, [SwiftIdentifier("borderType")]),
-            "operator": "=",
-            "right":
-              Parameter.isUsed(
-                assignmentsFromLayerParameters,
-                layer,
-                BorderWidth,
-              ) ?
-                SwiftIdentifier(".lineBorder") : SwiftIdentifier(".noBorder"),
-          }),
-          BinaryExpression({
-            "left":
-              layerMemberExpression(
-                layer,
-                [SwiftIdentifier("contentViewMargins")],
-              ),
-            "operator": "=",
-            "right": SwiftIdentifier(".zero"),
-          }),
-        ]
-      | (SwiftOptions.AppKit, Text) => [
-          BinaryExpression({
-            "left":
-              layerMemberExpression(
-                layer,
-                [SwiftIdentifier("lineBreakMode")],
-              ),
-            "operator": "=",
-            "right": SwiftIdentifier(".byWordWrapping"),
-          }),
-        ]
-      | (SwiftOptions.UIKit, Text) =>
-        [
-          Parameter.isSetInitially(layer, NumberOfLines) ?
-            [] :
-            [
-              BinaryExpression({
-                "left":
-                  layerMemberExpression(
-                    layer,
-                    [SwiftIdentifier("numberOfLines")],
-                  ),
-                "operator": "=",
-                "right": LiteralExpression(Integer(0)),
-              }),
-            ],
-        ]
-        |> List.concat
-      | _ => []
-      };
-    let addSubviews = (parent: option(Types.layer), layer: Types.layer) =>
-      switch (parent) {
-      | None => []
-      | Some(parent) => [
-          FunctionCallExpression({
-            "name":
-              layerMemberExpression(
-                parent,
-                [SwiftIdentifier("addSubview")],
-              ),
-            "arguments": [
-              SwiftIdentifier(layer.name |> SwiftFormat.layerName),
-            ],
-          }),
-        ]
-      };
-    FunctionDeclaration({
-      "name": "setUpViews",
-      "modifiers": [AccessLevelModifier(PrivateModifier)],
-      "parameters": [],
-      "result": None,
-      "throws": false,
-      "body":
-        SwiftDocument.joinGroups(
-          Empty,
-          [
-            Layer.flatmap(resetViewStyling, root) |> List.concat,
-            Layer.flatmapParent(addSubviews, root) |> List.concat,
-            setUpDefaultsDoc(),
-          ],
-        ),
-    });
-  };
 
-  let updateDoc = () => {
-    /* let printStringBinding = ((key, value)) => Js.log2(key, value);
-       let printLayerBinding = ((key: Types.layer, value)) => {
-         Js.log(key.name);
-         StringMap.bindings(value) |> List.iter(printStringBinding)
-       };
-       Layer.LayerMap.bindings(assignments) |> List.iter(printLayerBinding); */
-    /* let cond = Logic.conditionallyAssignedIdentifiers(logic);
-       cond |> Logic.IdentifierSet.elements |> List.iter(((ltype, path)) => Js.log(path)); */
-    let filterParameters = ((name, _)) =>
-      name != ParameterKey.PaddingTop
-      && name != PaddingRight
-      && name != PaddingBottom
-      && name != PaddingLeft
-      && name != MarginTop
-      && name != MarginRight
-      && name != MarginBottom
-      && name != MarginLeft;
-    let conditionallyAssigned = Logic.conditionallyAssignedIdentifiers(logic);
-    let filterConditionallyAssigned = (layer: Types.layer, (name, _)) => {
-      let isAssigned = ((_, value)) =>
-        value == ["layers", layer.name, name |> ParameterKey.toString];
-      conditionallyAssigned |> Logic.IdentifierSet.exists(isAssigned);
-    };
-    let defineInitialLayerValues = ((layer, propertyMap)) =>
-      propertyMap
-      |> ParameterMap.bindings
-      |> List.filter(filterParameters)
-      |> List.filter(filterConditionallyAssigned(layer))
-      |> List.map(defineInitialLayerValue(layer));
-    FunctionDeclaration({
-      "name": "update",
-      "modifiers": [AccessLevelModifier(PrivateModifier)],
-      "parameters": [],
-      "result": None,
-      "throws": false,
-      "body":
-        (
-          assignmentsFromLogic
-          |> Layer.LayerMap.bindings
-          |> List.map(defineInitialLayerValues)
-          |> List.concat
-        )
-        @ SwiftLogic.toSwiftAST(
-            swiftOptions,
-            colors,
-            textStyles,
-            rootLayer,
-            logic,
-          ),
-    });
-  };
   let constraints =
     SwiftConstraint.calculateConstraints(getComponent, rootLayer);
+  let superclass =
+    TypeName(
+      Naming.layerType(config, pluginContext, swiftOptions, name, Types.View),
+    );
   TopLevelDeclaration({
     "statements":
       SwiftDocument.joinGroups(
@@ -753,17 +805,7 @@ let generate =
           [
             ClassDeclaration({
               "name": name,
-              "inherits": [
-                TypeName(
-                  Naming.layerType(
-                    config,
-                    pluginContext,
-                    swiftOptions,
-                    name,
-                    Types.View,
-                  ),
-                ),
-              ],
+              "inherits": [superclass],
               "modifier": Some(PublicModifier),
               "isFinal": false,
               "body":
@@ -803,7 +845,18 @@ let generate =
                            ),
                          )
                        ),
-                    [setUpViewsDoc(rootLayer)],
+                    [
+                      Doc.setUpViews(
+                        swiftOptions,
+                        colors,
+                        textStyles,
+                        getComponent,
+                        assignmentsFromLayerParameters,
+                        assignmentsFromLogic,
+                        layerMemberExpression,
+                        rootLayer,
+                      ),
+                    ],
                     [
                       SwiftConstraint.setUpFunction(
                         swiftOptions,
@@ -812,7 +865,18 @@ let generate =
                         rootLayer,
                       ),
                     ],
-                    [updateDoc()],
+                    [
+                      Doc.update(
+                        swiftOptions,
+                        colors,
+                        textStyles,
+                        getComponent,
+                        assignmentsFromLayerParameters,
+                        assignmentsFromLogic,
+                        rootLayer,
+                        logic,
+                      ),
+                    ],
                     needsTracking ?
                       AppkitPressable.mouseTrackingFunctions(
                         rootLayer,
