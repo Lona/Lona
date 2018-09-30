@@ -36,20 +36,6 @@ public class TextStyleConditional: UIView {
 
   private var textViewTextStyle = TextStyles.headline
 
-  private var topPadding: CGFloat = 0
-  private var trailingPadding: CGFloat = 0
-  private var bottomPadding: CGFloat = 0
-  private var leadingPadding: CGFloat = 0
-  private var textViewTopMargin: CGFloat = 0
-  private var textViewTrailingMargin: CGFloat = 0
-  private var textViewBottomMargin: CGFloat = 0
-  private var textViewLeadingMargin: CGFloat = 0
-
-  private var textViewTopAnchorConstraint: NSLayoutConstraint?
-  private var textViewBottomAnchorConstraint: NSLayoutConstraint?
-  private var textViewLeadingAnchorConstraint: NSLayoutConstraint?
-  private var textViewTrailingAnchorConstraint: NSLayoutConstraint?
-
   private func setUpViews() {
     textView.numberOfLines = 0
 
@@ -62,18 +48,10 @@ public class TextStyleConditional: UIView {
     translatesAutoresizingMaskIntoConstraints = false
     textView.translatesAutoresizingMaskIntoConstraints = false
 
-    let textViewTopAnchorConstraint = textView
-      .topAnchor
-      .constraint(equalTo: topAnchor, constant: topPadding + textViewTopMargin)
-    let textViewBottomAnchorConstraint = textView
-      .bottomAnchor
-      .constraint(equalTo: bottomAnchor, constant: -(bottomPadding + textViewBottomMargin))
-    let textViewLeadingAnchorConstraint = textView
-      .leadingAnchor
-      .constraint(equalTo: leadingAnchor, constant: leadingPadding + textViewLeadingMargin)
-    let textViewTrailingAnchorConstraint = textView
-      .trailingAnchor
-      .constraint(lessThanOrEqualTo: trailingAnchor, constant: -(trailingPadding + textViewTrailingMargin))
+    let textViewTopAnchorConstraint = textView.topAnchor.constraint(equalTo: topAnchor)
+    let textViewBottomAnchorConstraint = textView.bottomAnchor.constraint(equalTo: bottomAnchor)
+    let textViewLeadingAnchorConstraint = textView.leadingAnchor.constraint(equalTo: leadingAnchor)
+    let textViewTrailingAnchorConstraint = textView.trailingAnchor.constraint(lessThanOrEqualTo: trailingAnchor)
 
     NSLayoutConstraint.activate([
       textViewTopAnchorConstraint,
@@ -81,17 +59,6 @@ public class TextStyleConditional: UIView {
       textViewLeadingAnchorConstraint,
       textViewTrailingAnchorConstraint
     ])
-
-    self.textViewTopAnchorConstraint = textViewTopAnchorConstraint
-    self.textViewBottomAnchorConstraint = textViewBottomAnchorConstraint
-    self.textViewLeadingAnchorConstraint = textViewLeadingAnchorConstraint
-    self.textViewTrailingAnchorConstraint = textViewTrailingAnchorConstraint
-
-    // For debugging
-    textViewTopAnchorConstraint.identifier = "textViewTopAnchorConstraint"
-    textViewBottomAnchorConstraint.identifier = "textViewBottomAnchorConstraint"
-    textViewLeadingAnchorConstraint.identifier = "textViewLeadingAnchorConstraint"
-    textViewTrailingAnchorConstraint.identifier = "textViewTrailingAnchorConstraint"
   }
 
   private func update() {

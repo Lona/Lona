@@ -27,6 +27,8 @@ enum Generated: String {
     case textStyleConditionalFalse = "Text Style Conditional - False"
     case textStylesTest = "Text Styles Test"
     case textAlignment = "Text Alignment"
+    case boxModelConditionalSmall = "Box Model Conditional Small"
+    case boxModelConditionalLarge = "Box Model Conditional Large"
 
     static func allValues() -> [Generated] {
         return [
@@ -48,6 +50,8 @@ enum Generated: String {
             textStyleConditionalFalse,
             textStylesTest,
             textAlignment,
+            boxModelConditionalSmall,
+            boxModelConditionalLarge,
         ]
     }
     
@@ -61,7 +65,7 @@ enum Generated: String {
             return NestedButtons()
         case .button:
             var count = 0
-            let button = Button(label: "Tapped \(count)")
+            let button = Button(label: "Tapped \(count)", secondary: false)
             button.onTap = {
                 count += 1
                 button.label = "Tapped \(count)"
@@ -95,6 +99,10 @@ enum Generated: String {
             return TextStylesTest()
         case .textAlignment:
             return TextAlignment()
+        case .boxModelConditionalSmall:
+            return BoxModelConditional(margin: 4, size: 60)
+        case .boxModelConditionalLarge:
+            return BoxModelConditional(margin: 20, size: 120)
         }
     }
 
@@ -114,7 +122,9 @@ enum Generated: String {
              .secondaryAxis,
              .borderWidthColor,
              .textAlignment,
-             .fitContentParentSecondaryChildren:
+             .fitContentParentSecondaryChildren,
+             .boxModelConditionalSmall,
+             .boxModelConditionalLarge:
             return [
                 equal(\.topAnchor, \.safeAreaLayoutGuide.topAnchor),
                 equal(\.leftAnchor),

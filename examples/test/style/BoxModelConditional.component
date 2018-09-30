@@ -1,0 +1,145 @@
+{
+  "devices" : [
+    {
+      "height" : 100,
+      "heightMode" : "At Least",
+      "name" : "iPhone SE",
+      "width" : 320
+    },
+    {
+      "height" : 100,
+      "heightMode" : "At Least",
+      "name" : "iPhone 7",
+      "width" : 375
+    },
+    {
+      "height" : 100,
+      "heightMode" : "At Least",
+      "name" : "iPhone 7+",
+      "width" : 414
+    }
+  ],
+  "examples" : [
+    {
+      "id" : "Default",
+      "name" : "Default",
+      "params" : {
+        "size" : 60
+      }
+    },
+    {
+      "id" : "name",
+      "name" : "name",
+      "params" : {
+        "margin" : 20,
+        "size" : 120
+      }
+    }
+  ],
+  "logic" : [
+    {
+      "assignee" : [
+        "layers",
+        "Inner",
+        "marginTop"
+      ],
+      "content" : [
+        "parameters",
+        "margin"
+      ],
+      "type" : "AssignExpr"
+    },
+    {
+      "assignee" : [
+        "layers",
+        "Inner",
+        "marginRight"
+      ],
+      "content" : [
+        "parameters",
+        "margin"
+      ],
+      "type" : "AssignExpr"
+    },
+    {
+      "assignee" : [
+        "layers",
+        "Inner",
+        "marginBottom"
+      ],
+      "content" : [
+        "parameters",
+        "margin"
+      ],
+      "type" : "AssignExpr"
+    },
+    {
+      "assignee" : [
+        "layers",
+        "Inner",
+        "marginLeft"
+      ],
+      "content" : [
+        "parameters",
+        "margin"
+      ],
+      "type" : "AssignExpr"
+    },
+    {
+      "assignee" : [
+        "layers",
+        "Inner",
+        "height"
+      ],
+      "content" : [
+        "parameters",
+        "size"
+      ],
+      "type" : "AssignExpr"
+    },
+    {
+      "assignee" : [
+        "layers",
+        "Inner",
+        "width"
+      ],
+      "content" : [
+        "parameters",
+        "size"
+      ],
+      "type" : "AssignExpr"
+    }
+  ],
+  "params" : [
+    {
+      "name" : "margin",
+      "type" : "Number"
+    },
+    {
+      "name" : "size",
+      "type" : "Number"
+    }
+  ],
+  "root" : {
+    "children" : [
+      {
+        "id" : "Inner",
+        "params" : {
+          "backgroundColor" : "#D8D8D8",
+          "height" : 60,
+          "width" : 60
+        },
+        "type" : "Lona:View"
+      }
+    ],
+    "id" : "Outer",
+    "params" : {
+      "alignSelf" : "stretch",
+      "paddingBottom" : 4,
+      "paddingLeft" : 4,
+      "paddingRight" : 4,
+      "paddingTop" : 4
+    },
+    "type" : "Lona:View"
+  }
+}

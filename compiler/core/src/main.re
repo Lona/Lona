@@ -36,6 +36,11 @@ let swiftOptions: Swift.Options.options = {
     | Some("appkit") => Swift.Options.AppKit
     | _ => Swift.Options.UIKit
     },
+  debugConstraints:
+    switch (getArgument("debugConstraints")) {
+    | Some(_) => true
+    | _ => false
+    },
   typePrefix:
     switch (getArgument("typePrefix")) {
     | Some(value) => value
