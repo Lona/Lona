@@ -162,6 +162,30 @@ module Match = {
       && List.length(Access.constantCases(entity)) == 1
     | NativeType(_) => false
     };
+
+  let nullary = (entity: entity): bool =>
+    switch (entity) {
+    | GenericType(genericType) =>
+      List.length(genericType.cases) == 1
+      && List.length(Access.constantCases(entity)) == 1
+    | NativeType(_) => false
+    };
+
+  let constant = (entity: entity): bool =>
+    switch (entity) {
+    | GenericType(genericType) =>
+      List.length(genericType.cases)
+      == List.length(Access.constantCases(entity))
+    | NativeType(_) => false
+    };
+
+  let boolean = (entity: entity): bool =>
+    switch (entity) {
+    | GenericType(genericType) =>
+      List.length(genericType.cases) == 2
+      && List.length(Access.constantCases(entity)) == 2
+    | NativeType(_) => false
+    };
 };
 
 module Decode = {

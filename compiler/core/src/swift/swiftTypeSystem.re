@@ -5,6 +5,18 @@ type codingContainer =
   | NestedKeyed
   | NestedUnkeyed;
 
+type typeNameEncoding =
+  | StringEncoding
+  | IntegerEncoding
+  | BooleanEncoding;
+
+let encodedType = (encoding: typeNameEncoding, caseName: string, index: int) =>
+  switch (encoding) {
+  | StringEncoding => SwiftAst.String(caseName)
+  | IntegerEncoding => Integer(index)
+  | BooleanEncoding => Boolean(index == 0 ? false : true)
+  };
+
 module Naming = {
   let prefixedName = (swiftOptions: SwiftOptions.options, name: string) =>
     swiftOptions.typePrefix ++ name;
@@ -163,7 +175,7 @@ module Ast = {
         "block": None,
       });
 
-    let containerDecode = (value: node, codingKey: string) =>
+    let containerDecode = (value: node, codingKey: option(string)) =>
       TryExpression({
         "expression":
           FunctionCallExpression({
@@ -172,13 +184,19 @@ module Ast = {
                 SwiftIdentifier("container"),
                 SwiftIdentifier("decode"),
               ]),
-            "arguments": [
-              FunctionCallArgument({"name": None, "value": value}),
-              FunctionCallArgument({
-                "name": Some(SwiftIdentifier("forKey")),
-                "value": SwiftIdentifier("." ++ codingKey),
-              }),
-            ],
+            "arguments":
+              [FunctionCallArgument({"name": None, "value": value})]
+              @ (
+                switch (codingKey) {
+                | Some(key) => [
+                    FunctionCallArgument({
+                      "name": Some(SwiftIdentifier("forKey")),
+                      "value": SwiftIdentifier("." ++ key),
+                    }),
+                  ]
+                | None => []
+                }
+              ),
           }),
         "forced": false,
         "optional": false,
@@ -256,7 +274,7 @@ module Ast = {
                           ),
                           SwiftIdentifier("self"),
                         ]),
-                        "data",
+                        Some("data"),
                       ),
                   }),
                 ],
@@ -271,7 +289,7 @@ module Ast = {
           }),
         ]
       | RecordCase(_, _) => [
-          containerDecode(SwiftIdentifier("value"), "data"),
+          containerDecode(SwiftIdentifier("value"), Some("data")),
         ]
       };
 
@@ -309,7 +327,7 @@ module Ast = {
                 SwiftIdentifier("String"),
                 SwiftIdentifier("self"),
               ]),
-              "type",
+              Some("type"),
             ),
           ),
       }),
@@ -401,6 +419,106 @@ module Ast = {
         ],
       }),
     ];
+
+    let nullaryDecoding =
+        (swiftOptions: SwiftOptions.options, constantCaseName: string)
+        : list(SwiftAst.node) => [
+      BinaryExpression({
+        "left": SwiftIdentifier("self"),
+        "operator": "=",
+        "right": SwiftIdentifier("." ++ constantCaseName),
+      }),
+    ];
+
+    let constantCaseDecoding =
+        (
+          swiftOptions: SwiftOptions.options,
+          encoding: typeNameEncoding,
+          index: int,
+          typeCase: TypeSystem.typeCase,
+        )
+        : SwiftAst.node => {
+      let caseName = typeCase |> TypeSystem.Access.typeCaseName;
+
+      CaseLabel({
+        "patterns": [
+          ExpressionPattern({
+            "value":
+              LiteralExpression(encodedType(encoding, caseName, index)),
+          }),
+        ],
+        "statements": enumCaseDataDecoding(swiftOptions, typeCase),
+      });
+    };
+
+    let constantDecoding =
+        (
+          swiftOptions: SwiftOptions.options,
+          encoding: typeNameEncoding,
+          typeCases: list(TypeSystem.typeCase),
+        )
+        : list(SwiftAst.node) => [
+      decodingContainer("container", SingleValue),
+      ConstantDeclaration({
+        "modifiers": [],
+        "pattern":
+          IdentifierPattern({
+            "identifier": SwiftIdentifier("type"),
+            "annotation": None,
+          }),
+        "init":
+          Some(
+            containerDecode(
+              MemberExpression([
+                SwiftIdentifier(
+                  switch (encoding) {
+                  | StringEncoding => "String"
+                  | IntegerEncoding => "Int"
+                  | BooleanEncoding => "Bool"
+                  },
+                ),
+                SwiftIdentifier("self"),
+              ]),
+              None,
+            ),
+          ),
+      }),
+      Empty,
+      SwitchStatement({
+        "expression": SwiftIdentifier("type"),
+        "cases":
+          (
+            typeCases
+            |> List.mapi((index, case) =>
+                 constantCaseDecoding(swiftOptions, encoding, index, case)
+               )
+          )
+          @ (
+            switch (encoding) {
+            | BooleanEncoding => []
+            | IntegerEncoding
+            | StringEncoding => [
+                DefaultCaseLabel({
+                  "statements": [
+                    FunctionCallExpression({
+                      "name": SwiftIdentifier("fatalError"),
+                      "arguments": [
+                        FunctionCallArgument({
+                          "name": None,
+                          "value":
+                            SwiftIdentifier(
+                              "\"Failed to decode enum due to invalid case type.\"",
+                            ),
+                        }),
+                      ],
+                    }),
+                  ],
+                }),
+              ]
+            }
+          ),
+      }),
+    ];
   };
 
   module Encoding = {
@@ -488,7 +606,7 @@ module Ast = {
         "block": None,
       });
 
-    let containerEncode = (value: node, codingKey: string) =>
+    let containerEncode = (value: node, codingKey: option(string)) =>
       TryExpression({
         "expression":
           FunctionCallExpression({
@@ -497,13 +615,19 @@ module Ast = {
                 SwiftIdentifier("container"),
                 SwiftIdentifier("encode"),
               ]),
-            "arguments": [
-              FunctionCallArgument({"name": None, "value": value}),
-              FunctionCallArgument({
-                "name": Some(SwiftIdentifier("forKey")),
-                "value": SwiftIdentifier("." ++ codingKey),
-              }),
-            ],
+            "arguments":
+              [FunctionCallArgument({"name": None, "value": value})]
+              @ (
+                switch (codingKey) {
+                | Some(key) => [
+                    FunctionCallArgument({
+                      "name": Some(SwiftIdentifier("forKey")),
+                      "value": SwiftIdentifier("." ++ key),
+                    }),
+                  ]
+                | None => []
+                }
+              ),
           }),
         "forced": false,
         "optional": false,
@@ -545,11 +669,11 @@ module Ast = {
         @ encodeParameters;
       /* A single parameter is encoded automatically */
       | NormalCase(_, [_]) => [
-          containerEncode(SwiftIdentifier("value"), "data"),
+          containerEncode(SwiftIdentifier("value"), Some("data")),
         ]
       | NormalCase(_, []) => []
       | RecordCase(_, _) => [
-          containerEncode(SwiftIdentifier("value"), "data"),
+          containerEncode(SwiftIdentifier("value"), Some("data")),
         ]
       };
 
@@ -584,7 +708,12 @@ module Ast = {
           }),
         ],
         "statements":
-          [containerEncode(LiteralExpression(String(caseName)), "type")]
+          [
+            containerEncode(
+              LiteralExpression(String(caseName)),
+              Some("type"),
+            ),
+          ]
           @ enumCaseDataEncoding(typeCase),
       });
     };
@@ -666,6 +795,65 @@ module Ast = {
             "right": SwiftIdentifier("next"),
           }),
         ],
+      }),
+    ];
+
+    let constantCaseEncoding =
+        (
+          encoding: typeNameEncoding,
+          index: int,
+          typeCase: TypeSystem.typeCase,
+        )
+        : SwiftAst.node => {
+      let caseName = typeCase |> TypeSystem.Access.typeCaseName;
+
+      let parameters =
+        TypeSystem.Access.typeCaseParameterCount(typeCase) > 0 ?
+          Some(
+            TuplePattern([
+              ValueBindingPattern({
+                "kind": "let",
+                "pattern":
+                  IdentifierPattern({
+                    "identifier": SwiftIdentifier("value"),
+                    "annotation": None,
+                  }),
+              }),
+            ]),
+          ) :
+          None;
+
+      CaseLabel({
+        "patterns": [
+          EnumCasePattern({
+            "typeIdentifier": None,
+            "caseName": caseName,
+            "tuplePattern": parameters,
+          }),
+        ],
+        "statements":
+          [
+            containerEncode(
+              LiteralExpression(encodedType(encoding, caseName, index)),
+              None,
+            ),
+          ]
+          @ enumCaseDataEncoding(typeCase),
+      });
+    };
+
+    let constantEncoding =
+        (encoding: typeNameEncoding, typeCases: list(TypeSystem.typeCase))
+        : list(SwiftAst.node) => [
+      encodingContainer("container", SingleValue),
+      Empty,
+      SwitchStatement({
+        "expression": SwiftIdentifier("self"),
+        "cases":
+          typeCases
+          |> List.mapi((index, case) =>
+               constantCaseEncoding(encoding, index, case)
+             ),
       }),
     ];
   };
@@ -789,6 +977,40 @@ module Build = {
       ],
     );
 
+  let nullaryCodable =
+      (swiftOptions: SwiftOptions.options, constantCaseName: string)
+      : list(SwiftAst.node) =>
+    SwiftDocument.join(
+      Empty,
+      [
+        LineComment("MARK: Codable"),
+        Ast.Decoding.decodableInitializer(
+          Ast.Decoding.nullaryDecoding(swiftOptions, constantCaseName),
+        ),
+        Ast.Encoding.encodableFunction([]),
+      ],
+    );
+
+  let constantCodable =
+      (
+        swiftOptions: SwiftOptions.options,
+        encoding: typeNameEncoding,
+        cases: list(TypeSystem.typeCase),
+      )
+      : list(SwiftAst.node) =>
+    SwiftDocument.join(
+      Empty,
+      [
+        LineComment("MARK: Codable"),
+        Ast.Decoding.decodableInitializer(
+          Ast.Decoding.constantDecoding(swiftOptions, encoding, cases),
+        ),
+        Ast.Encoding.encodableFunction(
+          Ast.Encoding.constantEncoding(encoding, cases),
+        ),
+      ],
+    );
+
   let entity =
       (swiftOptions: SwiftOptions.options, entity: TypeSystem.entity)
       : SwiftAst.node =>
@@ -810,7 +1032,7 @@ module Build = {
             };
           let enumCases =
             genericType.cases |> List.map(enumCase(swiftOptions));
-          /* Generate optimized encoding/decoding for linked lists */
+          /* Generate array encoding/decoding for linked lists */
           if (TypeSystem.Match.linkedList(entity)) {
             let constantCase =
               List.hd(TypeSystem.Access.constantCases(entity));
@@ -836,6 +1058,39 @@ module Build = {
                     ),
                     TypeSystem.Access.typeCaseName(constantCase),
                   ),
+            });
+            /* Nullary types don't need encoding/decoding at all */
+          } else if (TypeSystem.Match.nullary(entity)) {
+            let constantCase =
+              List.hd(TypeSystem.Access.constantCases(entity));
+            EnumDeclaration({
+              "name": swiftOptions.typePrefix ++ name,
+              "isIndirect": true,
+              "inherits": [TypeName("Codable")],
+              "modifier": Some(PublicModifier),
+              "body":
+                enumCases
+                @ nullaryCodable(
+                    swiftOptions,
+                    TypeSystem.Access.typeCaseName(constantCase),
+                  ),
+            });
+            /* Types made of constants can be encoded as strings.
+             * If a type has exactly 2 constants, then we use booleans.
+             */
+          } else if (TypeSystem.Match.constant(entity)) {
+            let encoding =
+              List.length(TypeSystem.Access.constantCases(entity)) > 2 ?
+                StringEncoding : BooleanEncoding;
+
+            EnumDeclaration({
+              "name": swiftOptions.typePrefix ++ name,
+              "isIndirect": true,
+              "inherits": [TypeName("Codable")],
+              "modifier": Some(PublicModifier),
+              "body":
+                enumCases
+                @ constantCodable(swiftOptions, encoding, genericType.cases),
             });
           } else {
             EnumDeclaration({
