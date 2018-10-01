@@ -40,18 +40,21 @@ let styles = {
   view1: {
     backgroundColor: colors.blue500,
     display: "flex",
+    flexDirection: "column",
     width: "60px",
     height: "60px"
   },
   view3: {
     backgroundColor: colors.lightblue500,
     display: "flex",
+    flexDirection: "column",
     width: "100px",
     height: "120px"
   },
   view2: {
     backgroundColor: colors.cyan500,
     display: "flex",
+    flexDirection: "column",
     width: "100px",
     height: "180px"
   }

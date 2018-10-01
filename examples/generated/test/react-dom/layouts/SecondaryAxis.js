@@ -35,6 +35,7 @@ let styles = {
   container: {
     alignSelf: "stretch",
     display: "flex",
+    flexDirection: "column",
     paddingTop: "24px",
     paddingRight: "24px",
     paddingBottom: "24px",
@@ -43,6 +44,7 @@ let styles = {
   fixed: {
     backgroundColor: "#D8D8D8",
     display: "flex",
+    flexDirection: "column",
     marginBottom: "24px",
     width: "100px",
     height: "100px"
@@ -50,6 +52,7 @@ let styles = {
   fit: {
     backgroundColor: "#D8D8D8",
     display: "flex",
+    flexDirection: "column",
     marginBottom: "24px",
     paddingTop: "12px",
     paddingRight: "12px",
@@ -57,11 +60,12 @@ let styles = {
     paddingLeft: "12px",
     height: "100px"
   },
-  text: { display: "flex" },
+  text: { display: "flex", flexDirection: "column" },
   fill: {
     alignSelf: "stretch",
     backgroundColor: "#D8D8D8",
     display: "flex",
+    flexDirection: "column",
     height: "100px"
   }
 }

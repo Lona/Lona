@@ -32,6 +32,7 @@ let styles = {
     alignSelf: "stretch",
     backgroundColor: colors.bluegrey100,
     display: "flex",
+    flexDirection: "column",
     paddingTop: "24px",
     paddingRight: "24px",
     paddingBottom: "24px",
@@ -51,12 +52,14 @@ let styles = {
   view4: {
     backgroundColor: colors.red200,
     display: "flex",
+    flexDirection: "column",
     width: "60px",
     height: "100px"
   },
   view5: {
     backgroundColor: colors.deeporange200,
     display: "flex",
+    flexDirection: "column",
     marginLeft: "12px",
     width: "60px",
     height: "60px"

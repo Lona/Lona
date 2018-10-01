@@ -35,6 +35,7 @@ let styles = {
   view: {
     alignSelf: "stretch",
     display: "flex",
+    flexDirection: "column",
     paddingTop: "24px",
     paddingRight: "24px",
     paddingBottom: "24px",
@@ -54,12 +55,14 @@ let styles = {
   view4: {
     backgroundColor: colors.red200,
     display: "flex",
+    flexDirection: "column",
     width: "60px",
     height: "100px"
   },
   view5: {
     backgroundColor: colors.deeporange200,
     display: "flex",
+    flexDirection: "column",
     marginLeft: "12px",
     width: "60px",
     height: "60px"
@@ -68,12 +71,14 @@ let styles = {
     alignSelf: "stretch",
     backgroundColor: colors.indigo100,
     display: "flex",
-    flex: 1
+    flex: 1,
+    flexDirection: "column"
   },
   view3: {
     alignSelf: "stretch",
     backgroundColor: colors.teal100,
     display: "flex",
-    flex: 1
+    flex: 1,
+    flexDirection: "column"
   }
 }

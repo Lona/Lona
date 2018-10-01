@@ -27,6 +27,6 @@ export default class TextStyleConditional extends React.Component {
 };
 
 let styles = {
-  view: { alignSelf: "stretch", display: "flex" },
-  text: { ...textStyles.headline, display: "flex" }
+  view: { alignSelf: "stretch", display: "flex", flexDirection: "column" },
+  text: { ...textStyles.headline, display: "flex", flexDirection: "column" }
 }

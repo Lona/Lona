@@ -24,6 +24,6 @@ export default class Assign extends React.Component {
 };
 
 let styles = {
-  view: { alignSelf: "stretch", display: "flex" },
-  text: { display: "flex" }
+  view: { alignSelf: "stretch", display: "flex", flexDirection: "column" },
+  text: { display: "flex", flexDirection: "column" }
 }

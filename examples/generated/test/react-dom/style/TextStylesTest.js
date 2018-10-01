@@ -61,15 +61,23 @@ export default class TextStylesTest extends React.Component {
 };
 
 let styles = {
-  view: { alignSelf: "stretch", display: "flex" },
-  text: { ...textStyles.display4, display: "flex" },
-  text1: { ...textStyles.display3, display: "flex" },
-  text2: { ...textStyles.display2, display: "flex" },
-  text3: { ...textStyles.display1, display: "flex" },
-  text4: { ...textStyles.headline, display: "flex" },
-  text5: { ...textStyles.subheading2, display: "flex" },
-  text6: { ...textStyles.subheading1, display: "flex" },
-  text7: { ...textStyles.body2, display: "flex" },
-  text8: { ...textStyles.body1, display: "flex" },
-  text9: { ...textStyles.caption, display: "flex" }
+  view: { alignSelf: "stretch", display: "flex", flexDirection: "column" },
+  text: { ...textStyles.display4, display: "flex", flexDirection: "column" },
+  text1: { ...textStyles.display3, display: "flex", flexDirection: "column" },
+  text2: { ...textStyles.display2, display: "flex", flexDirection: "column" },
+  text3: { ...textStyles.display1, display: "flex", flexDirection: "column" },
+  text4: { ...textStyles.headline, display: "flex", flexDirection: "column" },
+  text5: {
+    ...textStyles.subheading2,
+    display: "flex",
+    flexDirection: "column"
+  },
+  text6: {
+    ...textStyles.subheading1,
+    display: "flex",
+    flexDirection: "column"
+  },
+  text7: { ...textStyles.body2, display: "flex", flexDirection: "column" },
+  text8: { ...textStyles.body1, display: "flex", flexDirection: "column" },
+  text9: { ...textStyles.caption, display: "flex", flexDirection: "column" }
 }

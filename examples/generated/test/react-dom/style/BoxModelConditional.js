@@ -45,6 +45,7 @@ let styles = {
   outer: {
     alignSelf: "stretch",
     display: "flex",
+    flexDirection: "column",
     paddingTop: "4px",
     paddingRight: "4px",
     paddingBottom: "4px",
@@ -53,6 +54,7 @@ let styles = {
   inner: {
     backgroundColor: "#D8D8D8",
     display: "flex",
+    flexDirection: "column",
     width: "60px",
     height: "60px"
   }

@@ -75,6 +75,7 @@ let styles = {
     alignSelf: "stretch",
     backgroundColor: colors.grey50,
     display: "flex",
+    flexDirection: "column",
     paddingTop: "24px",
     paddingRight: "24px",
     paddingBottom: "24px",
@@ -83,8 +84,13 @@ let styles = {
   inner: {
     backgroundColor: colors.blue500,
     display: "flex",
+    flexDirection: "column",
     width: "100px",
     height: "100px"
   },
-  innerText: { ...textStyles.headline, display: "flex" }
+  innerText: {
+    ...textStyles.headline,
+    display: "flex",
+    flexDirection: "column"
+  }
 }

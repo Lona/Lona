@@ -37,6 +37,7 @@ let styles = {
   view: {
     alignSelf: "stretch",
     display: "flex",
+    flexDirection: "column",
     paddingTop: "24px",
     paddingRight: "24px",
     paddingBottom: "24px",
@@ -46,6 +47,7 @@ let styles = {
   fixed: {
     backgroundColor: "#D8D8D8",
     display: "flex",
+    flexDirection: "column",
     marginBottom: "24px",
     width: "100px",
     height: "100px"
@@ -53,20 +55,23 @@ let styles = {
   fit: {
     backgroundColor: "#D8D8D8",
     display: "flex",
+    flexDirection: "column",
     marginBottom: "24px",
     width: "100px"
   },
-  text: { display: "flex" },
+  text: { display: "flex", flexDirection: "column" },
   fill1: {
     backgroundColor: colors.cyan500,
     display: "flex",
     flex: 1,
+    flexDirection: "column",
     width: "100px"
   },
   fill2: {
     backgroundColor: colors.blue500,
     display: "flex",
     flex: 1,
+    flexDirection: "column",
     width: "100px"
   }
 }
