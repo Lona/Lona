@@ -149,13 +149,6 @@ class FlippedView: NSView {
     override var isFlipped: Bool { return true }
 }
 
-func ensureLayer(for view: NSView) {
-    if view.layer == nil {
-        view.wantsLayer = true
-        view.layer = CALayer()
-    }
-}
-
 let BORDERS: [(edge: NSRectEdge, key: String)] = [
     (NSRectEdge.minY, key: "borderTopWidth"),
     (NSRectEdge.maxX, key: "borderRightWidth"),
@@ -163,7 +156,7 @@ let BORDERS: [(edge: NSRectEdge, key: String)] = [
     (NSRectEdge.minX, key: "borderLeftWidth")
 ]
 
-let imageCache = LayerContentsCache()
+let imageCache = ImageCache()
 
 func renderBox(configuredLayer: ConfiguredLayer, node: YGNodeRef, options: RenderOptions) -> NSView {
     let layout = node.layout
@@ -187,32 +180,31 @@ func renderBox(configuredLayer: ConfiguredLayer, node: YGNodeRef, options: Rende
         height: layout.height
     )
 
-    let box = CSView(frame: frame, onClick: handleClick)
-
-    box.translatesAutoresizingMaskIntoConstraints = true
+    let box = CSView(frame: frame)
+    box.onClick = handleClick
 
     if layer.text == nil, let color = config.get(attribute: "backgroundColor", for: layer.name).string ?? layer.backgroundColor {
-        box.layer?.backgroundColor = CSColors.parse(css: color, withDefault: NSColor.clear).color.cgColor
+        box.fillColor = CSColors.parse(css: color, withDefault: NSColor.clear).color
     }
 
-    if let id = layer.backgroundGradient, let gradient = CSGradients.gradient(withId: id) {
-        box.layer = gradient.caGradientLayer
-    }
+//    if let id = layer.backgroundGradient, let gradient = CSGradients.gradient(withId: id) {
+//        box.layer = gradient.caGradientLayer
+//    }
 
     if let borderRadius = config.get(attribute: "borderRadius", for: layer.name).number ?? layer.borderRadius {
-        box.layer?.cornerRadius = min(CGFloat(borderRadius), layout.width / 2, layout.height / 2)
+        box.cornerRadius = min(CGFloat(borderRadius), layout.width / 2, layout.height / 2)
     }
 
     let borderColorString = config.get(attribute: "borderColor", for: layer.name).string ?? layer.borderColor
-    var borderColor = borderColorString != nil ? CSColors.parse(css: borderColorString!, withDefault: NSColor.clear).color.cgColor : nil
+    var borderColor = borderColorString != nil ? CSColors.parse(css: borderColorString!, withDefault: NSColor.clear).color : nil
 
     if let width = config.get(attribute: "borderWidth", for: layer.name).number ?? layer.borderWidth, width > 0 {
-        box.layer?.borderWidth = CGFloat(width)
-        borderColor ?= CGColor.clear
+        box.borderWidth = CGFloat(width)
+        borderColor ?= NSColor.clear
     }
 
     if let borderColor = borderColor {
-        box.layer?.borderColor = borderColor
+        box.borderColor = borderColor
     }
 
     if layer.type == .animation {
@@ -256,40 +248,24 @@ func renderBox(configuredLayer: ConfiguredLayer, node: YGNodeRef, options: Rende
 
             scale = ceil(scale)
 
-//            if let desiredScaleFactor = NSApplication.shared().windows.first?.backingScaleFactor {
-//                scale *= desiredScaleFactor
-////                let actualScaleFactor = nsImage?.recommendedLayerContentsScale(desiredScaleFactor) ?? 1
-////                box.layer?.contents = nsImage?.layerContents(forContentsScale: actualScaleFactor)
-////                box.layer?.contentsScale = actualScaleFactor
-//            }
-
-            box.layer?.contentsGravity = kCAGravityResizeAspect
-            box.layer?.contentsScale = scale
-            box.layer?.masksToBounds = true
-
             if let cached = imageCache.contents(for: url, at: scale) {
-                box.layer?.contents = cached
+                box.backgroundImage = cached
             } else {
                 let nsImage = NSImage(contentsOf: url)
                 nsImage?.cacheMode = .always
 
-                if let contents = nsImage?.layerContents(forContentsScale: scale) {
-                    box.layer?.contents = contents
+                if let contents = nsImage {
+                    box.backgroundImage = contents
                     imageCache.add(contents: contents, for: url, at: scale)
                 }
             }
         }
     }
 
-    if config.scope.get(value: "cs:selected").data.stringValue == layer.name {
-        if box.layer == nil {
-            box.wantsLayer = true
-            box.layer = CALayer()
-        }
-
-        box.layer!.borderWidth = 2.0
-        box.layer!.borderColor = #colorLiteral(red: 0.2352941176, green: 0.7215686275, blue: 0.9960784314, alpha: 1).cgColor
-    }
+//    if config.scope.get(value: "cs:selected").data.stringValue == layer.name {
+//        box.layer!.borderWidth = 2.0
+//        box.layer!.borderColor = #colorLiteral(red: 0.2352941176, green: 0.7215686275, blue: 0.9960784314, alpha: 1).cgColor
+//    }
 
 //    Swift.print("layer text", layer.text, paragraph(for: layer).string)
 
@@ -753,13 +729,10 @@ class CanvasView: NSView {
 
         // TODO: On High Sierra, if the canvas has a transparent fill, shadows show up behind each subview's layer.
         // Maybe we don't want shadows anyway though.
-        wantsLayer = true
 
         backgroundView.fillColor = CSColors.parse(css: canvas.backgroundColor, withDefault: NSColor.white).color
 
         if options.renderCanvasShadow {
-//            layer?.backgroundColor = CGColor.white
-
             frame.size.width += 10
             frame.size.height += 10
             backgroundView.frame.origin.x += 5

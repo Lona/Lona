@@ -1,16 +1,17 @@
 //
-//  LayerContentsCache.swift
+//  ImageCache.swift
 //  ComponentStudio
 //
 //  Created by devin_abbott on 9/14/17.
 //  Copyright © 2017 Devin Abbott. All rights reserved.
 //
 
+import AppKit
 import Foundation
 
-class LayerContentsCache {
+class ImageCache {
     var maxEntries: Int
-    var data: [String: Any] = [:]
+    var data: [String: NSImage] = [:]
     var lru: [String] = []
 
     init(maxEntries: Int = 100) {
@@ -38,7 +39,7 @@ class LayerContentsCache {
         lru.insert(entry, at: 0)
     }
 
-    func add(contents: Any, for url: URL, at scale: CGFloat) {
+    func add(contents: NSImage, for url: URL, at scale: CGFloat) {
         let key = getKey(for: url, at: scale)
 
         if data[key] == nil {
@@ -50,7 +51,7 @@ class LayerContentsCache {
         data[key] = contents
     }
 
-    func contents(for url: URL, at scale: CGFloat) -> Any? {
+    func contents(for url: URL, at scale: CGFloat) -> NSImage? {
         let key = getKey(for: url, at: scale)
         return data[key]
     }

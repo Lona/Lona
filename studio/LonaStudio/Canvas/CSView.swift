@@ -9,10 +9,37 @@
 import Foundation
 import AppKit
 
-class CSView: NSView {
-    let onClick: () -> Void
-
+// Handle flipping the coordinate system, since overriding isFlipped on NSBox
+// doesn't seem to do anything.
+private class InnerView: NSImageView {
     override var isFlipped: Bool { return true }
+}
+
+class CSView: NSBox {
+
+    // MARK: Lifecycle
+
+    override init(frame frameRect: NSRect) {
+        innerView = InnerView(frame: NSRect(origin: .zero, size: frameRect.size))
+
+        super.init(frame: frameRect)
+
+        setUpViews()
+    }
+
+    required init?(coder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
+
+    // MARK: Public
+
+    var onClick: (() -> Void)?
+
+    var backgroundImage: NSImage? {
+        didSet {
+            innerView.image = backgroundImage
+        }
+    }
 
     // By default, clicking more than once on the parent will cause all subsequent mouseDown
     // events to be sent to the parent, even if they are in the coordinates of its child.
@@ -23,24 +50,30 @@ class CSView: NSView {
 
         // If we're in the coordinates of this view (`self`)
         if let view = clickedView as? CSView {
-            view.onClick()
-        // If we're outside the coordinates of this view
+            view.onClick?()
+            // If we're outside the coordinates of this view
         } else if clickedView == nil {
             super.mouseDown(with: event)
         }
     }
 
-    override var wantsUpdateLayer: Bool { return true }
-
-    init(frame frameRect: NSRect, onClick: @escaping () -> Void) {
-        self.onClick = onClick
-
-        super.init(frame: frameRect)
-
-        wantsLayer = true
+    override func addSubview(_ view: NSView) {
+        innerView.addSubview(view)
     }
 
-    required init?(coder: NSCoder) {
-        fatalError("init(coder:) has not been implemented")
+    // MARK: Private
+
+    private let innerView: InnerView
+
+    private func setUpViews() {
+        boxType = .custom
+        borderType = .lineBorder
+        borderWidth = 0
+        borderColor = .clear
+        contentViewMargins = .zero
+
+        innerView.imageScaling = .scaleProportionallyUpOrDown
+
+        super.addSubview(innerView)
     }
 }
