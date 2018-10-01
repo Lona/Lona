@@ -28,5 +28,10 @@ export default class If extends React.Component {
 };
 
 let styles = {
-  view: { alignSelf: "stretch", display: "flex", flexDirection: "column" }
+  view: {
+    alignItems: "stretch",
+    alignSelf: "stretch",
+    display: "flex",
+    flexDirection: "column"
+  }
 }

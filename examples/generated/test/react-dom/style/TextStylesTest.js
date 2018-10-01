@@ -61,23 +61,70 @@ export default class TextStylesTest extends React.Component {
 };
 
 let styles = {
-  view: { alignSelf: "stretch", display: "flex", flexDirection: "column" },
-  text: { ...textStyles.display4, display: "flex", flexDirection: "column" },
-  text1: { ...textStyles.display3, display: "flex", flexDirection: "column" },
-  text2: { ...textStyles.display2, display: "flex", flexDirection: "column" },
-  text3: { ...textStyles.display1, display: "flex", flexDirection: "column" },
-  text4: { ...textStyles.headline, display: "flex", flexDirection: "column" },
+  view: {
+    alignItems: "stretch",
+    alignSelf: "stretch",
+    display: "flex",
+    flexDirection: "column"
+  },
+  text: {
+    ...textStyles.display4,
+    alignItems: "stretch",
+    display: "flex",
+    flexDirection: "column"
+  },
+  text1: {
+    ...textStyles.display3,
+    alignItems: "stretch",
+    display: "flex",
+    flexDirection: "column"
+  },
+  text2: {
+    ...textStyles.display2,
+    alignItems: "stretch",
+    display: "flex",
+    flexDirection: "column"
+  },
+  text3: {
+    ...textStyles.display1,
+    alignItems: "stretch",
+    display: "flex",
+    flexDirection: "column"
+  },
+  text4: {
+    ...textStyles.headline,
+    alignItems: "stretch",
+    display: "flex",
+    flexDirection: "column"
+  },
   text5: {
     ...textStyles.subheading2,
+    alignItems: "stretch",
     display: "flex",
     flexDirection: "column"
   },
   text6: {
     ...textStyles.subheading1,
+    alignItems: "stretch",
     display: "flex",
     flexDirection: "column"
   },
-  text7: { ...textStyles.body2, display: "flex", flexDirection: "column" },
-  text8: { ...textStyles.body1, display: "flex", flexDirection: "column" },
-  text9: { ...textStyles.caption, display: "flex", flexDirection: "column" }
+  text7: {
+    ...textStyles.body2,
+    alignItems: "stretch",
+    display: "flex",
+    flexDirection: "column"
+  },
+  text8: {
+    ...textStyles.body1,
+    alignItems: "stretch",
+    display: "flex",
+    flexDirection: "column"
+  },
+  text9: {
+    ...textStyles.caption,
+    alignItems: "stretch",
+    display: "flex",
+    flexDirection: "column"
+  }
 }

@@ -44,6 +44,7 @@ export default class NestedComponent extends React.Component {
 
 let styles = {
   view: {
+    alignItems: "stretch",
     alignSelf: "stretch",
     display: "flex",
     flexDirection: "column",
@@ -54,15 +55,26 @@ let styles = {
   },
   text: {
     ...textStyles.subheading2,
+    alignItems: "stretch",
     display: "flex",
     flexDirection: "column",
     marginBottom: "8px"
   },
   fitContentParentSecondaryChildren: {
+    alignItems: "stretch",
     display: "flex",
     flexDirection: "column"
   },
-  text1: { display: "flex", flexDirection: "column", marginTop: "12px" },
-  localAsset: { display: "flex", flexDirection: "column" },
-  text2: { display: "flex", flexDirection: "column" }
+  text1: {
+    alignItems: "stretch",
+    display: "flex",
+    flexDirection: "column",
+    marginTop: "12px"
+  },
+  localAsset: {
+    alignItems: "stretch",
+    display: "flex",
+    flexDirection: "column"
+  },
+  text2: { alignItems: "stretch", display: "flex", flexDirection: "column" }
 }

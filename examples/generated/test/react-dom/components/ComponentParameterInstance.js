@@ -29,6 +29,15 @@ export default class ComponentParameterInstance extends React.Component {
 };
 
 let styles = {
-  view: { alignSelf: "stretch", display: "flex", flexDirection: "column" },
-  componentParameterTemplate: { display: "flex", flexDirection: "column" }
+  view: {
+    alignItems: "stretch",
+    alignSelf: "stretch",
+    display: "flex",
+    flexDirection: "column"
+  },
+  componentParameterTemplate: {
+    alignItems: "stretch",
+    display: "flex",
+    flexDirection: "column"
+  }
 }

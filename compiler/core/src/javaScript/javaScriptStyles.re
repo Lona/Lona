@@ -66,6 +66,7 @@ let addDefaultStyles =
         empty
         |> add(ParameterKey.Display, LonaValue.string("flex"))
         |> add(ParameterKey.FlexDirection, LonaValue.string("column"))
+        |> add(ParameterKey.AlignItems, LonaValue.string("stretch"))
       )
     | _ => ParameterMap.empty
     },

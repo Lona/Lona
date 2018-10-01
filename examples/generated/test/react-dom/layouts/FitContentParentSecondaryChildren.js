@@ -28,6 +28,7 @@ export default class FitContentParentSecondaryChildren extends React.Component {
 
 let styles = {
   container: {
+    alignItems: "stretch",
     alignSelf: "stretch",
     backgroundColor: colors.bluegrey50,
     display: "flex",
@@ -38,6 +39,7 @@ let styles = {
     paddingLeft: "24px"
   },
   view1: {
+    alignItems: "stretch",
     backgroundColor: colors.blue500,
     display: "flex",
     flexDirection: "column",
@@ -45,6 +47,7 @@ let styles = {
     height: "60px"
   },
   view3: {
+    alignItems: "stretch",
     backgroundColor: colors.lightblue500,
     display: "flex",
     flexDirection: "column",
@@ -52,6 +55,7 @@ let styles = {
     height: "120px"
   },
   view2: {
+    alignItems: "stretch",
     backgroundColor: colors.cyan500,
     display: "flex",
     flexDirection: "column",

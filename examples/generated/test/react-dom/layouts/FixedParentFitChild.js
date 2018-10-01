@@ -29,6 +29,7 @@ export default class FixedParentFitChild extends React.Component {
 
 let styles = {
   view: {
+    alignItems: "stretch",
     alignSelf: "stretch",
     backgroundColor: colors.bluegrey100,
     display: "flex",
@@ -40,6 +41,7 @@ let styles = {
     height: "600px"
   },
   view1: {
+    alignItems: "stretch",
     alignSelf: "stretch",
     backgroundColor: colors.red50,
     display: "flex",
@@ -50,6 +52,7 @@ let styles = {
     paddingLeft: "24px"
   },
   view4: {
+    alignItems: "stretch",
     backgroundColor: colors.red200,
     display: "flex",
     flexDirection: "column",
@@ -57,6 +60,7 @@ let styles = {
     height: "100px"
   },
   view5: {
+    alignItems: "stretch",
     backgroundColor: colors.deeporange200,
     display: "flex",
     flexDirection: "column",

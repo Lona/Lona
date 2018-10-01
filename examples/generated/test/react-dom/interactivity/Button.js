@@ -45,6 +45,7 @@ export default class Button extends React.Component {
 
 let styles = {
   view: {
+    alignItems: "stretch",
     backgroundColor: colors.blue100,
     display: "flex",
     flexDirection: "column",
@@ -53,5 +54,10 @@ let styles = {
     paddingBottom: "12px",
     paddingLeft: "16px"
   },
-  text: { ...textStyles.button, display: "flex", flexDirection: "column" }
+  text: {
+    ...textStyles.button,
+    alignItems: "stretch",
+    display: "flex",
+    flexDirection: "column"
+  }
 }

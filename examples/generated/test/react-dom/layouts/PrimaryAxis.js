@@ -35,6 +35,7 @@ export default class PrimaryAxis extends React.Component {
 
 let styles = {
   view: {
+    alignItems: "stretch",
     alignSelf: "stretch",
     display: "flex",
     flexDirection: "column",
@@ -45,6 +46,7 @@ let styles = {
     height: "500px"
   },
   fixed: {
+    alignItems: "stretch",
     backgroundColor: "#D8D8D8",
     display: "flex",
     flexDirection: "column",
@@ -53,14 +55,16 @@ let styles = {
     height: "100px"
   },
   fit: {
+    alignItems: "stretch",
     backgroundColor: "#D8D8D8",
     display: "flex",
     flexDirection: "column",
     marginBottom: "24px",
     width: "100px"
   },
-  text: { display: "flex", flexDirection: "column" },
+  text: { alignItems: "stretch", display: "flex", flexDirection: "column" },
   fill1: {
+    alignItems: "stretch",
     backgroundColor: colors.cyan500,
     display: "flex",
     flex: 1,
@@ -68,6 +72,7 @@ let styles = {
     width: "100px"
   },
   fill2: {
+    alignItems: "stretch",
     backgroundColor: colors.blue500,
     display: "flex",
     flex: 1,

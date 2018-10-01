@@ -33,6 +33,7 @@ export default class SecondaryAxis extends React.Component {
 
 let styles = {
   container: {
+    alignItems: "stretch",
     alignSelf: "stretch",
     display: "flex",
     flexDirection: "column",
@@ -42,6 +43,7 @@ let styles = {
     paddingLeft: "24px"
   },
   fixed: {
+    alignItems: "stretch",
     backgroundColor: "#D8D8D8",
     display: "flex",
     flexDirection: "column",
@@ -50,6 +52,7 @@ let styles = {
     height: "100px"
   },
   fit: {
+    alignItems: "stretch",
     backgroundColor: "#D8D8D8",
     display: "flex",
     flexDirection: "column",
@@ -60,8 +63,9 @@ let styles = {
     paddingLeft: "12px",
     height: "100px"
   },
-  text: { display: "flex", flexDirection: "column" },
+  text: { alignItems: "stretch", display: "flex", flexDirection: "column" },
   fill: {
+    alignItems: "stretch",
     alignSelf: "stretch",
     backgroundColor: "#D8D8D8",
     display: "flex",
