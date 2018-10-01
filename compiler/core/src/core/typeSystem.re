@@ -186,6 +186,15 @@ module Match = {
       && List.length(Access.constantCases(entity)) == 2
     | NativeType(_) => false
     };
+
+  let optional = (entity: entity): bool =>
+    switch (entity) {
+    | GenericType(genericType) =>
+      List.length(genericType.cases) == 2
+      && List.length(Access.parameterizedCases(entity)) == 1
+      && List.length(Access.constantCases(entity)) == 1
+    | NativeType(_) => false
+    };
 };
 
 module Decode = {

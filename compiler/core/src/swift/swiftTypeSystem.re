@@ -1065,7 +1065,7 @@ module Build = {
               List.hd(TypeSystem.Access.constantCases(entity));
             EnumDeclaration({
               "name": swiftOptions.typePrefix ++ name,
-              "isIndirect": true,
+              "isIndirect": false,
               "inherits": [TypeName("Codable")],
               "modifier": Some(PublicModifier),
               "body":
@@ -1078,24 +1078,32 @@ module Build = {
             /* Types made of constants can be encoded as strings.
              * If a type has exactly 2 constants, then we use booleans.
              */
-          } else if (TypeSystem.Match.constant(entity)) {
-            let encoding =
-              List.length(TypeSystem.Access.constantCases(entity)) > 2 ?
-                StringEncoding : BooleanEncoding;
-
+          } else if (TypeSystem.Match.boolean(entity)) {
             EnumDeclaration({
               "name": swiftOptions.typePrefix ++ name,
-              "isIndirect": true,
+              "isIndirect": false,
               "inherits": [TypeName("Codable")],
               "modifier": Some(PublicModifier),
               "body":
                 enumCases
-                @ constantCodable(swiftOptions, encoding, genericType.cases),
+                @ constantCodable(
+                    swiftOptions,
+                    BooleanEncoding,
+                    genericType.cases,
+                  ),
+            });
+          } else if (TypeSystem.Match.constant(entity)) {
+            EnumDeclaration({
+              "name": swiftOptions.typePrefix ++ name,
+              "isIndirect": false,
+              "inherits": [TypeName("String"), TypeName("Codable")],
+              "modifier": Some(PublicModifier),
+              "body": enumCases,
             });
           } else {
             EnumDeclaration({
               "name": swiftOptions.typePrefix ++ name,
-              "isIndirect": true,
+              "isIndirect": false,
               "inherits": [TypeName("Codable")],
               "modifier": Some(PublicModifier),
               "body":
