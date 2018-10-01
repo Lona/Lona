@@ -60,16 +60,17 @@ let addDefaultStyles =
     layer.parameters
     |> ParameterMap.filter((key, _) => Layer.parameterIsStyle(key));
   ParameterMap.assign(
-    styleParams,
     switch (framework) {
     | JavaScriptOptions.ReactDOM =>
-      ParameterMap.add(
-        ParameterKey.Display,
-        LonaValue.string("flex"),
-        ParameterMap.empty,
+      ParameterMap.(
+        empty
+        |> add(ParameterKey.Display, LonaValue.string("flex"))
+        |> add(ParameterKey.FlexDirection, LonaValue.string("column"))
+        |> add(ParameterKey.AlignItems, LonaValue.string("stretch"))
       )
     | _ => ParameterMap.empty
     },
+    styleParams,
   );
 };
 

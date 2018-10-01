@@ -45,12 +45,19 @@ export default class Button extends React.Component {
 
 let styles = {
   view: {
+    alignItems: "stretch",
     backgroundColor: colors.blue100,
     display: "flex",
+    flexDirection: "column",
     paddingTop: "12px",
     paddingRight: "16px",
     paddingBottom: "12px",
     paddingLeft: "16px"
   },
-  text: { ...textStyles.button, display: "flex" }
+  text: {
+    ...textStyles.button,
+    alignItems: "stretch",
+    display: "flex",
+    flexDirection: "column"
+  }
 }

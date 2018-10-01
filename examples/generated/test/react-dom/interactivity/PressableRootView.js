@@ -72,19 +72,28 @@ export default class PressableRootView extends React.Component {
 
 let styles = {
   outer: {
+    alignItems: "stretch",
     alignSelf: "stretch",
     backgroundColor: colors.grey50,
     display: "flex",
+    flexDirection: "column",
     paddingTop: "24px",
     paddingRight: "24px",
     paddingBottom: "24px",
     paddingLeft: "24px"
   },
   inner: {
+    alignItems: "stretch",
     backgroundColor: colors.blue500,
     display: "flex",
+    flexDirection: "column",
     width: "100px",
     height: "100px"
   },
-  innerText: { ...textStyles.headline, display: "flex" }
+  innerText: {
+    ...textStyles.headline,
+    alignItems: "stretch",
+    display: "flex",
+    flexDirection: "column"
+  }
 }

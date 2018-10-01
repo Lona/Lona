@@ -24,10 +24,17 @@ export default class LocalAsset extends React.Component {
 };
 
 let styles = {
-  view: { alignSelf: "stretch", display: "flex" },
+  view: {
+    alignItems: "stretch",
+    alignSelf: "stretch",
+    display: "flex",
+    flexDirection: "column"
+  },
   image: {
+    alignItems: "stretch",
     backgroundColor: "#D8D8D8",
     display: "flex",
+    flexDirection: "column",
     width: "100px",
     height: "100px"
   }

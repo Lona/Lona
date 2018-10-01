@@ -101,6 +101,7 @@ let styles = {
     alignItems: "flex-start",
     alignSelf: "stretch",
     display: "flex",
+    flexDirection: "column",
     paddingTop: "10px",
     paddingRight: "10px",
     paddingBottom: "10px",
@@ -111,65 +112,129 @@ let styles = {
     alignSelf: "stretch",
     backgroundColor: colors.indigo50,
     display: "flex",
+    flexDirection: "column",
     justifyContent: "center"
   },
-  image: { display: "flex", width: "100px", height: "100px" },
-  view2: { backgroundColor: "#D8D8D8", display: "flex" },
+  image: {
+    alignItems: "stretch",
+    display: "flex",
+    flexDirection: "column",
+    width: "100px",
+    height: "100px"
+  },
+  view2: {
+    alignItems: "stretch",
+    backgroundColor: "#D8D8D8",
+    display: "flex",
+    flexDirection: "column"
+  },
   text: {
     textAlign: "center",
     ...textStyles.display1,
+    alignItems: "stretch",
     alignSelf: "stretch",
     display: "flex",
+    flexDirection: "column",
     marginTop: "16px"
   },
   text1: {
     textAlign: "center",
     ...textStyles.subheading2,
+    alignItems: "stretch",
     display: "flex",
+    flexDirection: "column",
     marginTop: "16px"
   },
-  text2: { alignSelf: "stretch", display: "flex", marginTop: "12px" },
-  text3: { textAlign: "right", alignSelf: "stretch", display: "flex" },
-  text4: { textAlign: "center", display: "flex", width: "80px" },
+  text2: {
+    alignItems: "stretch",
+    alignSelf: "stretch",
+    display: "flex",
+    flexDirection: "column",
+    marginTop: "12px"
+  },
+  text3: {
+    textAlign: "right",
+    alignItems: "stretch",
+    alignSelf: "stretch",
+    display: "flex",
+    flexDirection: "column"
+  },
+  text4: {
+    textAlign: "center",
+    alignItems: "stretch",
+    display: "flex",
+    flexDirection: "column",
+    width: "80px"
+  },
   view3: {
     alignItems: "center",
     backgroundColor: "#D8D8D8",
     display: "flex",
+    flexDirection: "column",
     paddingRight: "12px",
     paddingLeft: "12px"
   },
-  text5: { display: "flex" },
+  text5: { alignItems: "stretch", display: "flex", flexDirection: "column" },
   view4: {
     alignItems: "center",
     backgroundColor: "#D8D8D8",
     display: "flex",
+    flexDirection: "column",
     paddingRight: "12px",
     paddingLeft: "12px",
     width: "400px"
   },
-  text6: { display: "flex" },
+  text6: { alignItems: "stretch", display: "flex", flexDirection: "column" },
   view5: {
+    alignItems: "stretch",
     backgroundColor: "#D8D8D8",
     display: "flex",
+    flexDirection: "column",
     paddingRight: "12px",
     paddingLeft: "12px"
   },
-  text7: { textAlign: "center", display: "flex" },
+  text7: {
+    textAlign: "center",
+    alignItems: "stretch",
+    display: "flex",
+    flexDirection: "column"
+  },
   view6: {
+    alignItems: "stretch",
     backgroundColor: "#D8D8D8",
     display: "flex",
+    flexDirection: "column",
     paddingRight: "12px",
     paddingLeft: "12px",
     width: "400px"
   },
-  text8: { textAlign: "center", alignSelf: "stretch", display: "flex" },
+  text8: {
+    textAlign: "center",
+    alignItems: "stretch",
+    alignSelf: "stretch",
+    display: "flex",
+    flexDirection: "column"
+  },
   rightAlignmentContainer: {
     alignItems: "flex-end",
     alignSelf: "stretch",
     backgroundColor: "#D8D8D8",
-    display: "flex"
+    display: "flex",
+    flexDirection: "column"
   },
-  text9: { display: "flex" },
-  text10: { textAlign: "center", alignSelf: "stretch", display: "flex" },
-  image1: { display: "flex", width: "100px", height: "100px" }
+  text9: { alignItems: "stretch", display: "flex", flexDirection: "column" },
+  text10: {
+    textAlign: "center",
+    alignItems: "stretch",
+    alignSelf: "stretch",
+    display: "flex",
+    flexDirection: "column"
+  },
+  image1: {
+    alignItems: "stretch",
+    display: "flex",
+    flexDirection: "column",
+    width: "100px",
+    height: "100px"
+  }
 }

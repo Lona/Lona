@@ -33,14 +33,22 @@ export default class NestedButtons extends React.Component {
 
 let styles = {
   view: {
+    alignItems: "stretch",
     alignSelf: "stretch",
     display: "flex",
+    flexDirection: "column",
     paddingTop: "24px",
     paddingRight: "24px",
     paddingBottom: "24px",
     paddingLeft: "24px"
   },
-  button: { display: "flex" },
-  view1: { alignSelf: "stretch", display: "flex", height: "8px" },
-  button2: { display: "flex" }
+  button: { alignItems: "stretch", display: "flex", flexDirection: "column" },
+  view1: {
+    alignItems: "stretch",
+    alignSelf: "stretch",
+    display: "flex",
+    flexDirection: "column",
+    height: "8px"
+  },
+  button2: { alignItems: "stretch", display: "flex", flexDirection: "column" }
 }

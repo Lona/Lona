@@ -43,16 +43,20 @@ export default class BoxModelConditional extends React.Component {
 
 let styles = {
   outer: {
+    alignItems: "stretch",
     alignSelf: "stretch",
     display: "flex",
+    flexDirection: "column",
     paddingTop: "4px",
     paddingRight: "4px",
     paddingBottom: "4px",
     paddingLeft: "4px"
   },
   inner: {
+    alignItems: "stretch",
     backgroundColor: "#D8D8D8",
     display: "flex",
+    flexDirection: "column",
     width: "60px",
     height: "60px"
   }

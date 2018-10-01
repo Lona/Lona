@@ -44,16 +44,37 @@ export default class NestedComponent extends React.Component {
 
 let styles = {
   view: {
+    alignItems: "stretch",
     alignSelf: "stretch",
     display: "flex",
+    flexDirection: "column",
     paddingTop: "10px",
     paddingRight: "10px",
     paddingBottom: "10px",
     paddingLeft: "10px"
   },
-  text: { ...textStyles.subheading2, display: "flex", marginBottom: "8px" },
-  fitContentParentSecondaryChildren: { display: "flex" },
-  text1: { display: "flex", marginTop: "12px" },
-  localAsset: { display: "flex" },
-  text2: { display: "flex" }
+  text: {
+    ...textStyles.subheading2,
+    alignItems: "stretch",
+    display: "flex",
+    flexDirection: "column",
+    marginBottom: "8px"
+  },
+  fitContentParentSecondaryChildren: {
+    alignItems: "stretch",
+    display: "flex",
+    flexDirection: "column"
+  },
+  text1: {
+    alignItems: "stretch",
+    display: "flex",
+    flexDirection: "column",
+    marginTop: "12px"
+  },
+  localAsset: {
+    alignItems: "stretch",
+    display: "flex",
+    flexDirection: "column"
+  },
+  text2: { alignItems: "stretch", display: "flex", flexDirection: "column" }
 }

@@ -33,8 +33,10 @@ export default class FixedParentFillAndFitChildren extends React.Component {
 
 let styles = {
   view: {
+    alignItems: "stretch",
     alignSelf: "stretch",
     display: "flex",
+    flexDirection: "column",
     paddingTop: "24px",
     paddingRight: "24px",
     paddingBottom: "24px",
@@ -42,6 +44,7 @@ let styles = {
     height: "600px"
   },
   view1: {
+    alignItems: "stretch",
     alignSelf: "stretch",
     backgroundColor: colors.red50,
     display: "flex",
@@ -52,28 +55,36 @@ let styles = {
     paddingLeft: "24px"
   },
   view4: {
+    alignItems: "stretch",
     backgroundColor: colors.red200,
     display: "flex",
+    flexDirection: "column",
     width: "60px",
     height: "100px"
   },
   view5: {
+    alignItems: "stretch",
     backgroundColor: colors.deeporange200,
     display: "flex",
+    flexDirection: "column",
     marginLeft: "12px",
     width: "60px",
     height: "60px"
   },
   view2: {
+    alignItems: "stretch",
     alignSelf: "stretch",
     backgroundColor: colors.indigo100,
     display: "flex",
-    flex: 1
+    flex: 1,
+    flexDirection: "column"
   },
   view3: {
+    alignItems: "stretch",
     alignSelf: "stretch",
     backgroundColor: colors.teal100,
     display: "flex",
-    flex: 1
+    flex: 1,
+    flexDirection: "column"
   }
 }

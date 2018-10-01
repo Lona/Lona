@@ -20,9 +20,16 @@ export default class BorderWidthColor extends React.Component {
 };
 
 let styles = {
-  view: { alignSelf: "stretch", display: "flex" },
-  view1: {
+  view: {
+    alignItems: "stretch",
+    alignSelf: "stretch",
     display: "flex",
+    flexDirection: "column"
+  },
+  view1: {
+    alignItems: "stretch",
+    display: "flex",
+    flexDirection: "column",
     borderRadius: "10px",
     borderWidth: "20px",
     borderColor: colors.blue300,
