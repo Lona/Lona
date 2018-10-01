@@ -59,31 +59,77 @@ module Access = {
     | NativeType(_) => []
     };
 
+  let typeCaseParameterEntities =
+      (case: typeCase): list(typeCaseParameterEntity) =>
+    switch (case) {
+    | NormalCase(_, parameters) =>
+      parameters
+      |> List.map((parameter: normalTypeCaseParameter) => parameter.value)
+    | RecordCase(_, parameters) =>
+      parameters
+      |> List.map((parameter: recordTypeCaseParameter) => parameter.value)
+    };
+
+  let typeCaseParameterEntityName =
+      (parameterEntity: typeCaseParameterEntity): string =>
+    switch (parameterEntity) {
+    | TypeReference(name, _) => name
+    | GenericReference(name) => name
+    };
+
   let entityGenericParameters = (entity: entity): list(string) =>
     switch (entity) {
     | GenericType(genericType) =>
       genericType.cases
-      |> List.map(case => {
-           let parameterEntities =
-             switch (case) {
-             | NormalCase(_, parameters) =>
-               parameters
-               |> List.map((parameter: normalTypeCaseParameter) =>
-                    parameter.value
-                  )
-             | RecordCase(_, parameters) =>
-               parameters |> List.map(parameter => parameter.value)
-             };
-
-           parameterEntities
+      |> List.map(case =>
+           case
+           |> typeCaseParameterEntities
            |> List.map(parameterEntity =>
                 switch (parameterEntity) {
                 | TypeReference(_) => []
                 | GenericReference(generic) => [generic]
                 }
               )
-           |> List.concat;
-         })
+           |> List.concat
+         )
+      |> List.concat
+    | NativeType(_) => []
+    };
+
+  let parameterizedCases = (entity: entity): list(typeCase) =>
+    switch (entity) {
+    | GenericType(genericType) =>
+      genericType.cases
+      |> List.filter((case: typeCase) => typeCaseParameterCount(case) > 0)
+    | NativeType(_) => []
+    };
+
+  let constantCases = (entity: entity): list(typeCase) =>
+    switch (entity) {
+    | GenericType(genericType) =>
+      genericType.cases
+      |> List.filter((case: typeCase) => typeCaseParameterCount(case) == 0)
+    | NativeType(_) => []
+    };
+
+  let entityRecursiveCases = (entity: entity): list(typeCase) =>
+    switch (entity) {
+    | GenericType(genericType) =>
+      genericType.cases
+      |> List.map(case =>
+           case
+           |> typeCaseParameterEntities
+           |> List.map(parameterEntity =>
+                switch (parameterEntity) {
+                | TypeReference(name, _) when name == genericType.name => [
+                    case,
+                  ]
+                | TypeReference(_) => []
+                | GenericReference(_) => []
+                }
+              )
+           |> List.concat
+         )
       |> List.concat
     | NativeType(_) => []
     };
@@ -105,6 +151,15 @@ module Match = {
            let caseNames = genericType.cases |> List.map(Access.typeCaseName);
            List.mem(name, caseNames);
          })
+    | NativeType(_) => false
+    };
+
+  let linkedList = (entity: entity): bool =>
+    switch (entity) {
+    | GenericType(genericType) =>
+      List.length(genericType.cases) == 2
+      && List.length(Access.entityRecursiveCases(entity)) == 1
+      && List.length(Access.constantCases(entity)) == 1
     | NativeType(_) => false
     };
 };

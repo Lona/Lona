@@ -1,3 +1,10 @@
+type codingContainer =
+  | Keyed
+  | Unkeyed
+  | SingleValue
+  | NestedKeyed
+  | NestedUnkeyed;
+
 module Naming = {
   let prefixedName = (swiftOptions: SwiftOptions.options, name: string) =>
     swiftOptions.typePrefix ++ name;
@@ -35,6 +42,15 @@ module Naming = {
     TypeName(
       prefixedType(swiftOptions, useTypePrefix, typeCaseParameterEntity),
     );
+
+  let codingContainer = (container: codingContainer): string =>
+    switch (container) {
+    | Keyed => "container"
+    | Unkeyed => "unkeyedContainer"
+    | SingleValue => "singleValueContainer"
+    | NestedKeyed => "nestedContainer"
+    | NestedUnkeyed => "nestedUnkeyedContainer"
+    };
 };
 
 module Ast = {
@@ -60,40 +76,59 @@ module Ast = {
         "body": body,
       });
 
-    let decodingContainer = () =>
-      ConstantDeclaration({
-        "modifiers": [],
-        "pattern":
-          IdentifierPattern({
-            "identifier": SwiftIdentifier("container"),
-            "annotation": None,
+    let decodingContainer = (variableName: string, container: codingContainer) => {
+      let pattern =
+        IdentifierPattern({
+          "identifier": SwiftIdentifier(variableName),
+          "annotation": None,
+        });
+      let init =
+        Some(
+          TryExpression({
+            "expression":
+              FunctionCallExpression({
+                "name":
+                  MemberExpression([
+                    SwiftIdentifier("decoder"),
+                    SwiftIdentifier(container |> Naming.codingContainer),
+                  ]),
+                "arguments":
+                  switch (container) {
+                  | Keyed
+                  | NestedKeyed => [
+                      FunctionCallArgument({
+                        "name": Some(SwiftIdentifier("keyedBy")),
+                        "value":
+                          MemberExpression([
+                            SwiftIdentifier("CodingKeys"),
+                            SwiftIdentifier("self"),
+                          ]),
+                      }),
+                    ]
+                  | _ => []
+                  },
+              }),
+            "forced": false,
+            "optional": false,
           }),
-        "init":
-          Some(
-            TryExpression({
-              "expression":
-                FunctionCallExpression({
-                  "name":
-                    MemberExpression([
-                      SwiftIdentifier("decoder"),
-                      SwiftIdentifier("container"),
-                    ]),
-                  "arguments": [
-                    FunctionCallArgument({
-                      "name": Some(SwiftIdentifier("keyedBy")),
-                      "value":
-                        MemberExpression([
-                          SwiftIdentifier("CodingKeys"),
-                          SwiftIdentifier("self"),
-                        ]),
-                    }),
-                  ],
-                }),
-              "forced": false,
-              "optional": false,
-            }),
-          ),
-      });
+        );
+      switch (container) {
+      | Unkeyed
+      | NestedUnkeyed =>
+        VariableDeclaration({
+          "modifiers": [],
+          "pattern": pattern,
+          "init": init,
+          "block": None,
+        })
+      | _ =>
+        ConstantDeclaration({
+          "modifiers": [],
+          "pattern": pattern,
+          "init": init,
+        })
+      };
+    };
 
     let nestedUnkeyedDecodingContainer =
         (containerName: string, codingKey: string) =>
@@ -259,7 +294,7 @@ module Ast = {
           typeCases: list(TypeSystem.typeCase),
         )
         : list(SwiftAst.node) => [
-      decodingContainer(),
+      decodingContainer("container", Keyed),
       ConstantDeclaration({
         "modifiers": [],
         "pattern":
@@ -303,6 +338,69 @@ module Ast = {
           ],
       }),
     ];
+
+    let linkedListDecoding =
+        (
+          swiftOptions: SwiftOptions.options,
+          typeCases: list(TypeSystem.typeCase),
+          recursiveCaseName: string,
+          recursiveTypeName: string,
+          constantCaseName: string,
+        )
+        : list(SwiftAst.node) => [
+      decodingContainer("unkeyedContainer", Unkeyed),
+      Empty,
+      BinaryExpression({
+        "left": SwiftIdentifier("self"),
+        "operator": "=",
+        "right": SwiftIdentifier("." ++ constantCaseName),
+      }),
+      Empty,
+      WhileStatement({
+        "condition":
+          MemberExpression([
+            SwiftIdentifier("!unkeyedContainer"),
+            SwiftIdentifier("isAtEnd"),
+          ]),
+        "block": [
+          ConstantDeclaration({
+            "modifiers": [],
+            "pattern":
+              IdentifierPattern({
+                "identifier": SwiftIdentifier("item"),
+                "annotation": None,
+              }),
+            "init":
+              Some(
+                unkeyedContainerDecode(
+                  MemberExpression([
+                    SwiftIdentifier(recursiveTypeName),
+                    SwiftIdentifier("self"),
+                  ]),
+                ),
+              ),
+          }),
+          BinaryExpression({
+            "left": SwiftIdentifier("self"),
+            "operator": "=",
+            "right":
+              FunctionCallExpression({
+                "name": SwiftIdentifier("." ++ recursiveCaseName),
+                "arguments": [
+                  FunctionCallArgument({
+                    "name": None,
+                    "value": SwiftIdentifier("item"),
+                  }),
+                  FunctionCallArgument({
+                    "name": None,
+                    "value": SwiftIdentifier("self"),
+                  }),
+                ],
+              }),
+          }),
+        ],
+      }),
+    ];
   };
 
   module Encoding = {
@@ -326,12 +424,12 @@ module Ast = {
         "body": body,
       });
 
-    let encodingContainer = () =>
+    let encodingContainer = (variableName: string, container: codingContainer) =>
       VariableDeclaration({
         "modifiers": [],
         "pattern":
           IdentifierPattern({
-            "identifier": SwiftIdentifier("container"),
+            "identifier": SwiftIdentifier(variableName),
             "annotation": None,
           }),
         "init":
@@ -340,18 +438,23 @@ module Ast = {
               "name":
                 MemberExpression([
                   SwiftIdentifier("encoder"),
-                  SwiftIdentifier("container"),
+                  SwiftIdentifier(container |> Naming.codingContainer),
                 ]),
-              "arguments": [
-                FunctionCallArgument({
-                  "name": Some(SwiftIdentifier("keyedBy")),
-                  "value":
-                    MemberExpression([
-                      SwiftIdentifier("CodingKeys"),
-                      SwiftIdentifier("self"),
-                    ]),
-                }),
-              ],
+              "arguments":
+                switch (container) {
+                | Keyed
+                | NestedKeyed => [
+                    FunctionCallArgument({
+                      "name": Some(SwiftIdentifier("keyedBy")),
+                      "value":
+                        MemberExpression([
+                          SwiftIdentifier("CodingKeys"),
+                          SwiftIdentifier("self"),
+                        ]),
+                    }),
+                  ]
+                | _ => []
+                },
             }),
           ),
         "block": None,
@@ -493,11 +596,76 @@ module Ast = {
        */
     let enumEncoding =
         (typeCases: list(TypeSystem.typeCase)): list(SwiftAst.node) => [
-      encodingContainer(),
+      encodingContainer("container", Keyed),
       Empty,
       SwitchStatement({
         "expression": SwiftIdentifier("self"),
         "cases": typeCases |> List.map(enumCaseEncoding),
+      }),
+    ];
+
+    /* public func encode(to encoder: Encoder) throws {
+         var unkeyedContainer = encoder.unkeyedContainer()
+
+         var head = self
+
+         while case let .node(item, next) = head {
+           try unkeyedContainer.encode(item)
+           head = next
+         }
+       }
+       */
+    let linkedListEncoding =
+        (typeCases: list(TypeSystem.typeCase), recursiveCaseName: string)
+        : list(SwiftAst.node) => [
+      encodingContainer("unkeyedContainer", Unkeyed),
+      Empty,
+      VariableDeclaration({
+        "modifiers": [],
+        "pattern":
+          IdentifierPattern({
+            "identifier": SwiftIdentifier("head"),
+            "annotation": None,
+          }),
+        "init": Some(SwiftIdentifier("self")),
+        "block": None,
+      }),
+      Empty,
+      WhileStatement({
+        "condition":
+          CaseCondition({
+            "pattern":
+              ValueBindingPattern({
+                "kind": "let",
+                "pattern":
+                  EnumCasePattern({
+                    "typeIdentifier": None,
+                    "caseName": recursiveCaseName,
+                    "tuplePattern":
+                      Some(
+                        TuplePattern([
+                          IdentifierPattern({
+                            "identifier": SwiftIdentifier("item"),
+                            "annotation": None,
+                          }),
+                          IdentifierPattern({
+                            "identifier": SwiftIdentifier("next"),
+                            "annotation": None,
+                          }),
+                        ]),
+                      ),
+                  }),
+              }),
+            "init": SwiftIdentifier("head"),
+          }),
+        "block": [
+          unkeyedContainerEncode(SwiftIdentifier("item")),
+          BinaryExpression({
+            "left": SwiftIdentifier("head"),
+            "operator": "=",
+            "right": SwiftIdentifier("next"),
+          }),
+        ],
       }),
     ];
   };
@@ -578,6 +746,49 @@ module Build = {
     });
   };
 
+  let enumCodable =
+      (swiftOptions: SwiftOptions.options, cases: list(TypeSystem.typeCase))
+      : list(SwiftAst.node) =>
+    SwiftDocument.join(
+      Empty,
+      [
+        LineComment("MARK: Codable"),
+        Ast.codingKeys(["type", "data"]),
+        Ast.Decoding.decodableInitializer(
+          Ast.Decoding.enumDecoding(swiftOptions, cases),
+        ),
+        Ast.Encoding.encodableFunction(Ast.Encoding.enumEncoding(cases)),
+      ],
+    );
+
+  let linkedListCodable =
+      (
+        swiftOptions: SwiftOptions.options,
+        cases: list(TypeSystem.typeCase),
+        recursiveCaseName: string,
+        recursiveTypeName: string,
+        constantCaseName: string,
+      )
+      : list(SwiftAst.node) =>
+    SwiftDocument.join(
+      Empty,
+      [
+        LineComment("MARK: Codable"),
+        Ast.Decoding.decodableInitializer(
+          Ast.Decoding.linkedListDecoding(
+            swiftOptions,
+            cases,
+            recursiveCaseName,
+            recursiveTypeName,
+            constantCaseName,
+          ),
+        ),
+        Ast.Encoding.encodableFunction(
+          Ast.Encoding.linkedListEncoding(cases, recursiveCaseName),
+        ),
+      ],
+    );
+
   let entity =
       (swiftOptions: SwiftOptions.options, entity: TypeSystem.entity)
       : SwiftAst.node =>
@@ -597,28 +808,45 @@ module Build = {
               genericType.name ++ "<" ++ genericClause ++ ": Codable>"
             | [] => genericType.name
             };
-          EnumDeclaration({
-            "name": swiftOptions.typePrefix ++ name,
-            "isIndirect": true,
-            "inherits": [TypeName("Codable")],
-            "modifier": Some(PublicModifier),
-            "body":
-              (genericType.cases |> List.map(enumCase(swiftOptions)))
-              @ [
-                Empty,
-                LineComment("MARK: Codable"),
-                Empty,
-                Ast.codingKeys(["type", "data"]),
-                Empty,
-                Ast.Decoding.decodableInitializer(
-                  Ast.Decoding.enumDecoding(swiftOptions, genericType.cases),
-                ),
-                Empty,
-                Ast.Encoding.encodableFunction(
-                  Ast.Encoding.enumEncoding(genericType.cases),
-                ),
-              ],
-          });
+          let enumCases =
+            genericType.cases |> List.map(enumCase(swiftOptions));
+          /* Generate optimized encoding/decoding for linked lists */
+          if (TypeSystem.Match.linkedList(entity)) {
+            let constantCase =
+              List.hd(TypeSystem.Access.constantCases(entity));
+            let recursiveCase =
+              List.hd(TypeSystem.Access.entityRecursiveCases(entity));
+            let recursiveType =
+              List.hd(
+                TypeSystem.Access.typeCaseParameterEntities(recursiveCase),
+              );
+            EnumDeclaration({
+              "name": swiftOptions.typePrefix ++ name,
+              "isIndirect": true,
+              "inherits": [TypeName("Codable")],
+              "modifier": Some(PublicModifier),
+              "body":
+                enumCases
+                @ linkedListCodable(
+                    swiftOptions,
+                    genericType.cases,
+                    TypeSystem.Access.typeCaseName(recursiveCase),
+                    TypeSystem.Access.typeCaseParameterEntityName(
+                      recursiveType,
+                    ),
+                    TypeSystem.Access.typeCaseName(constantCase),
+                  ),
+            });
+          } else {
+            EnumDeclaration({
+              "name": swiftOptions.typePrefix ++ name,
+              "isIndirect": true,
+              "inherits": [TypeName("Codable")],
+              "modifier": Some(PublicModifier),
+              "body":
+                enumCases @ enumCodable(swiftOptions, genericType.cases),
+            });
+          };
         }
       | [] => LineComment(genericType.name)
       }

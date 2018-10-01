@@ -222,6 +222,13 @@ and node =
         "block": list(node),
       },
     )
+  | WhileStatement(
+      {
+        .
+        "condition": node,
+        "block": list(node),
+      },
+    )
   | SwitchStatement(
       {
         .
@@ -267,6 +274,21 @@ and node =
         "name": node,
         "parameters": option(typeAnnotation),
         "value": option(node),
+      },
+    )
+  | OptionalBindingCondition(
+      {
+        .
+        "const": bool,
+        "pattern": pattern,
+        "init": node,
+      },
+    )
+  | CaseCondition(
+      {
+        .
+        "pattern": pattern,
+        "init": node,
       },
     )
   | Empty

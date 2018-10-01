@@ -362,6 +362,14 @@ let rec render = ast: Prettier.Doc.t('a) =>
       <+> line
       <+> render(CodeBlock({"statements": o##block})),
     )
+  | WhileStatement(o) =>
+    group(
+      s("while")
+      <+> line
+      <+> render(o##condition)
+      <+> line
+      <+> render(CodeBlock({"statements": o##block})),
+    )
   | SwitchStatement(o) =>
     group(
       s("switch")
@@ -439,6 +447,24 @@ let rec render = ast: Prettier.Doc.t('a) =>
     | Some(value) =>
       group(s("case ") <+> name <+> s(" = ") <+> render(value))
     };
+  | CaseCondition(o) =>
+    group(
+      s("case ")
+      <+> renderPattern(o##pattern)
+      <+> line
+      <+> s("=")
+      <+> line
+      <+> render(o##init),
+    )
+  | OptionalBindingCondition(o) =>
+    let keyword = s(o##const ? "let" : "var");
+    group(
+      keyword
+      <+> s(" ")
+      <+> renderPattern(o##pattern)
+      <+> line
+      <+> render(o##init),
+    );
   | Empty => empty /* This only works if lines are added between statements... */
   | LineComment(v) => s("// " ++ v)
   | DocComment(v) =>
