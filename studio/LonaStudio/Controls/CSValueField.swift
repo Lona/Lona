@@ -140,6 +140,13 @@ class CSValueField {
             field.useYogaLayout = true
             field.value = value.data.stringValue
             field.onChangeData = defaultChangeHandler
+        case .named("Shadow", .string):
+            let field = ShadowStylePickerButton(frame: NSRect(x: 0, y: -2, width: 120, height: 26))
+            view = field
+
+            field.useYogaLayout = true
+            field.value = value.data.stringValue
+            field.onChangeData = defaultChangeHandler
         case .named("URL", .string):
             let button = Button(frame: NSRect(x: 0, y: -2, width: 80, height: 26))
             button.setButtonType(.momentaryPushIn)

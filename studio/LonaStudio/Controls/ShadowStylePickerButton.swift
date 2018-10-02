@@ -70,10 +70,6 @@ extension ShadowStylePickerButton {
     }
 
     fileprivate func setTitle(with shadow: CSShadow) {
-        if shadow.id == CSShadows.unstyledDefaultName {
-            title = "\(shadow.name)"
-            return
-        }
-        title = "\(shadow.name) x: \(shadow.x) y: \(shadow.y) blur: \(shadow.blur)"
+        title = shadow.name
     }
 }
