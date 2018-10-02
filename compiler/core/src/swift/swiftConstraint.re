@@ -194,8 +194,7 @@ let isDynamic = (assignments, constr: Constraint.t) => {
 let generateConstraintConstant =
     (
       swiftOptions: SwiftOptions.options,
-      colors,
-      textStyles,
+      config: Config.t,
       constr: Constraint.t,
     )
     : option(SwiftAst.node) => {
@@ -224,8 +223,7 @@ let generateConstraintConstant =
       Some(
         SwiftDocument.lonaValue(
           swiftOptions.framework,
-          colors,
-          textStyles,
+          config,
           LonaValue.number(float),
         ),
       );
@@ -238,8 +236,7 @@ let generateConstraintConstant =
       Some(
         SwiftDocument.lonaValue(
           swiftOptions.framework,
-          colors,
-          textStyles,
+          config,
           LonaValue.number(float),
         ),
       );
@@ -305,8 +302,7 @@ let calculateConstraints = (getComponent, rootLayer: Types.layer) =>
 let setUpFunction =
     (
       swiftOptions: SwiftOptions.options,
-      colors,
-      textStyles,
+      config: Config.t,
       getComponent,
       assignmentsFromLogic,
       layerMemberExpression,
@@ -325,8 +321,7 @@ let setUpFunction =
       "right": LiteralExpression(Boolean(false)),
     });
   let defineConstraint = def => {
-    let constant =
-      generateConstraintConstant(swiftOptions, colors, textStyles, def);
+    let constant = generateConstraintConstant(swiftOptions, config, def);
     ConstantDeclaration({
       "modifiers": [],
       "init":

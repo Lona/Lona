@@ -5,8 +5,7 @@ module Document = SwiftDocument;
 let toSwiftAST =
     (
       options: SwiftOptions.options,
-      colors,
-      textStyles,
+      config: Config.t,
       rootLayer: Types.layer,
       logicRootNode,
     ) => {
@@ -44,7 +43,7 @@ let toSwiftAST =
       switch (x) {
       | Logic.Identifier(_) => identifierName(x)
       | Literal(value) =>
-        Document.lonaValue(options.framework, colors, textStyles, value)
+        Document.lonaValue(options.framework, config, value)
       };
     /* Here is the only place we should handle Logic -> Swift identifier conversion */
     switch (options.framework, initialValue) {

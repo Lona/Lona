@@ -193,7 +193,7 @@ let convertComponent = filename => {
 
   switch (target) {
   | Types.JavaScript =>
-    JavaScript.Component.generate(
+    JavaScriptComponent.generate(
       javaScriptOptions,
       name,
       Node.Path.relative(
@@ -206,8 +206,7 @@ let convertComponent = filename => {
         ~to_=config.textStylesFile.path,
         (),
       ),
-      config.colorsFile.contents,
-      config.textStylesFile.contents,
+      config,
       findComponent(config.workspacePath),
       getComponentRelativePath(config.workspacePath, name),
       getAssetRelativePath(config.workspacePath, name),
@@ -221,8 +220,6 @@ let convertComponent = filename => {
         options,
         swiftOptions,
         name,
-        config.colorsFile.contents,
-        config.textStylesFile.contents,
         findComponent(config.workspacePath),
         parsed,
       );

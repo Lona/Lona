@@ -173,8 +173,7 @@ module Doc = {
   let defineInitialLayerValue =
       (
         swiftOptions: SwiftOptions.options,
-        colors,
-        textStyles: TextStyle.file,
+        config: Config.t,
         getComponent,
         assignmentsFromLayerParameters,
         rootLayer: Types.layer,
@@ -204,21 +203,10 @@ module Doc = {
         | (None, _, Some(value)) =>
           Logic.assignmentForLayerParameter(layer, name, value)
         | (None, _, None) =>
-          Logic.defaultAssignmentForLayerParameter(
-            colors,
-            textStyles,
-            layer,
-            name,
-          )
+          Logic.defaultAssignmentForLayerParameter(config, layer, name)
         };
       let node =
-        SwiftLogic.toSwiftAST(
-          swiftOptions,
-          colors,
-          textStyles,
-          rootLayer,
-          logic,
-        );
+        SwiftLogic.toSwiftAST(swiftOptions, config, rootLayer, logic);
       StatementListHelper(node);
     };
   };
@@ -226,8 +214,7 @@ module Doc = {
   let setUpViews =
       (
         swiftOptions: SwiftOptions.options,
-        colors,
-        textStyles: TextStyle.file,
+        config: Config.t,
         getComponent,
         assignmentsFromLayerParameters,
         assignmentsFromLogic,
@@ -270,8 +257,7 @@ module Doc = {
         |> List.map(((k, v)) =>
              defineInitialLayerValue(
                swiftOptions,
-               colors,
-               textStyles,
+               config,
                getComponent,
                assignmentsFromLayerParameters,
                rootLayer,
@@ -382,8 +368,7 @@ module Doc = {
   let update =
       (
         swiftOptions: SwiftOptions.options,
-        colors,
-        textStyles: TextStyle.file,
+        config: Config.t,
         getComponent,
         assignmentsFromLayerParameters,
         assignmentsFromLogic,
@@ -408,8 +393,7 @@ module Doc = {
       |> List.map(
            defineInitialLayerValue(
              swiftOptions,
-             colors,
-             textStyles,
+             config,
              getComponent,
              assignmentsFromLayerParameters,
              rootLayer,
@@ -430,13 +414,7 @@ module Doc = {
           |> List.map(defineInitialLayerValues)
           |> List.concat
         )
-        @ SwiftLogic.toSwiftAST(
-            swiftOptions,
-            colors,
-            textStyles,
-            rootLayer,
-            logic,
-          ),
+        @ SwiftLogic.toSwiftAST(swiftOptions, config, rootLayer, logic),
     });
   };
 };
@@ -447,8 +425,6 @@ let generate =
       options: Options.options,
       swiftOptions: SwiftOptions.options,
       name,
-      colors,
-      textStyles: TextStyle.file,
       getComponent,
       json,
     ) => {
@@ -499,7 +475,7 @@ let generate =
     let id =
       Parameter.isSetInitially(layer, TextStyle) ?
         Layer.getStringParameter(TextStyle, layer) :
-        textStyles.defaultStyle.id;
+        config.textStylesFile.contents.defaultStyle.id;
     let value =
       Parameter.isSetInitially(layer, TextAlign) ?
         SwiftAst.Builders.functionCall(
@@ -591,8 +567,7 @@ let generate =
                          "value":
                            SwiftDocument.defaultValueForLonaType(
                              swiftOptions.framework,
-                             colors,
-                             textStyles,
+                             config,
                              param.ltype,
                            ),
                        })
@@ -703,8 +678,7 @@ let generate =
                     [
                       Doc.setUpViews(
                         swiftOptions,
-                        colors,
-                        textStyles,
+                        config,
                         getComponent,
                         assignmentsFromLayerParameters,
                         assignmentsFromLogic,
@@ -715,8 +689,7 @@ let generate =
                     [
                       SwiftConstraint.setUpFunction(
                         swiftOptions,
-                        colors,
-                        textStyles,
+                        config,
                         getComponent,
                         assignmentsFromLogic,
                         layerMemberExpression,
@@ -726,8 +699,7 @@ let generate =
                     [
                       Doc.update(
                         swiftOptions,
-                        colors,
-                        textStyles,
+                        config,
                         getComponent,
                         assignmentsFromLayerParameters,
                         assignmentsFromLogic,

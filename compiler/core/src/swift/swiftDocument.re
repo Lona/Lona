@@ -116,8 +116,7 @@ let rec typeAnnotationDoc =
 let rec lonaValue =
         (
           framework: SwiftOptions.framework,
-          colors,
-          textStyles: TextStyle.file,
+          config: Config.t,
           value: Types.lonaValue,
         ) =>
   switch (value.ltype) {
@@ -131,15 +130,13 @@ let rec lonaValue =
     | "Color" =>
       lonaValue(
         framework,
-        colors,
-        textStyles,
+        config,
         {ltype: Named(typeName, Reference("String")), data: value.data},
       )
     | "URL" =>
       lonaValue(
         framework,
-        colors,
-        textStyles,
+        config,
         {ltype: Named(typeName, Reference("String")), data: value.data},
       )
     | _ => SwiftIdentifier("UnknownReferenceType: " ++ typeName)
@@ -149,7 +146,7 @@ let rec lonaValue =
     switch (alias) {
     | "Color" =>
       let rawValue = value.data |> Json.Decode.string;
-      switch (Color.find(colors, rawValue)) {
+      switch (Color.find(config.colorsFile.contents, rawValue)) {
       | Some(color) =>
         MemberExpression([
           SwiftIdentifier("Colors"),
@@ -181,6 +178,7 @@ let rec lonaValue =
       };
     | "TextStyle" =>
       let rawValue = value.data |> Json.Decode.string;
+      let textStyles = config.textStylesFile.contents;
       switch (TextStyle.find(textStyles.styles, rawValue)) {
       | Some(textStyle) =>
         MemberExpression([
@@ -214,8 +212,7 @@ let rec lonaValue =
 let rec defaultValueForLonaType =
         (
           framework: SwiftOptions.framework,
-          colors,
-          textStyles: TextStyle.file,
+          config: Config.t,
           ltype: Types.lonaType,
         ) =>
   switch (ltype) {
@@ -228,22 +225,19 @@ let rec defaultValueForLonaType =
     | "Color" =>
       defaultValueForLonaType(
         framework,
-        colors,
-        textStyles,
+        config,
         Named(typeName, Reference("String")),
       )
     | "URL" =>
       defaultValueForLonaType(
         framework,
-        colors,
-        textStyles,
+        config,
         Named(typeName, Reference("String")),
       )
     | value when Js.String.endsWith("?", value) =>
       defaultValueForLonaType(
         framework,
-        colors,
-        textStyles,
+        config,
         Reference(Js.String.replace("?", "", value)),
       )
     | _ => LiteralExpression(Nil)
@@ -264,7 +258,7 @@ let rec defaultValueForLonaType =
     | "TextStyle" =>
       MemberExpression([
         SwiftIdentifier("TextStyles"),
-        SwiftIdentifier(textStyles.defaultStyle.id),
+        SwiftIdentifier(config.textStylesFile.contents.defaultStyle.id),
       ])
     | _ => SwiftIdentifier("TypeUnknown" ++ alias)
     }
