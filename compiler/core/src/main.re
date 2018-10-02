@@ -223,7 +223,7 @@ let convertComponent = filename => {
         name,
         config.colorsFile.contents,
         config.textStylesFile.contents,
-        findComponent(workspace),
+        findComponent(config.workspacePath),
         parsed,
       );
     result |> Swift.Render.toString;
