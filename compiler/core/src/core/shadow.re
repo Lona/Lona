@@ -44,16 +44,16 @@ let parseFile = content => {
     blur: field("blur", float, json),
   };
 
-  let styles = parsed |> field("styles", list(parseShadow));
+  let shadows = parsed |> field("shadows", list(parseShadow));
   let defaultStyle =
     switch (parsed |> optional(field("defaultStyleName", string))) {
     | None => emptyStyle
     | Some(id) =>
-      switch (find(styles, id)) {
+      switch (find(shadows, id)) {
       | None => emptyStyle
       | Some(textStyle) => textStyle
       }
     };
 
-  {styles, defaultStyle};
+  {styles: shadows, defaultStyle};
 };

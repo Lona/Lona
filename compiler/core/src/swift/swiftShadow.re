@@ -12,10 +12,7 @@ module Doc = {
      } */
   let convenienceInit = () =>
     InitializerDeclaration({
-      "modifiers": [
-        AccessLevelModifier(PrivateModifier),
-        ConvenienceModifier,
-      ],
+      "modifiers": [ConvenienceModifier],
       "parameters": [
         Parameter({
           "externalName": None,
@@ -40,6 +37,7 @@ module Doc = {
       "throws": false,
       "body": [
         Builders.functionCall(["self", "init"], []),
+        Empty,
         BinaryExpression({
           "left": SwiftIdentifier("shadowColor"),
           "operator": "=",
@@ -102,11 +100,21 @@ module Doc = {
       ],
     });
   };
+
+  let shadowConstant = (colors: list(Color.t), s: Shadow.t): node =>
+    ConstantDeclaration({
+      "modifiers": [AccessLevelModifier(PublicModifier), StaticModifier],
+      "pattern":
+        IdentifierPattern({
+          "identifier": SwiftIdentifier(s.id),
+          "annotation": None,
+        }),
+      "init": Some(shadow(colors, s)),
+    });
 };
 
 let render =
     (
-      options: Options.options,
       swiftOptions: SwiftOptions.options,
       colors: list(Color.t),
       shadowsFile: Shadow.file,
@@ -121,10 +129,16 @@ let render =
           "isIndirect": false,
           "inherits": [],
           "modifier": Some(PublicModifier),
-          "body": shadowsFile.styles |> List.map(Doc.shadow(colors)),
+          "body": shadowsFile.styles |> List.map(Doc.shadowConstant(colors)),
         }),
         Empty,
-        Doc.convenienceInit(),
+        ExtensionDeclaration({
+          "name": "NSShadow",
+          "protocols": [],
+          "where": None,
+          "modifier": Some(PrivateModifier),
+          "body": [Doc.convenienceInit()],
+        }),
       ],
     })
     |> SwiftRender.toString

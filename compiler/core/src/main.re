@@ -126,6 +126,12 @@ let renderTextStyles = (target, colors, textStyles) =>
   | _ => ""
   };
 
+let renderShadows = (target, colors, shadows) =>
+  switch (target) {
+  | Types.Swift => SwiftShadow.render(swiftOptions, colors, shadows)
+  | _ => ""
+  };
+
 let convertTypes = (target, contents) => {
   let json = contents |> Js.Json.parseExn;
   switch (target) {
@@ -145,6 +151,13 @@ let convertTextStyles = (target, workspacePath, content) => {
     Node.Fs.readFileSync(Path.join([|workspacePath, "colors.json"|]), `utf8);
   let colors = Color.parseFile(colorsFile);
   TextStyle.parseFile(content) |> renderTextStyles(target, colors);
+};
+
+let convertShadows = (target, workspacePath, content) => {
+  let colorsFile =
+    Node.Fs.readFileSync(Path.join([|workspacePath, "colors.json"|]), `utf8);
+  let colors = Color.parseFile(colorsFile);
+  Shadow.parseFile(content) |> renderShadows(target, colors);
 };
 
 exception ComponentNotFound(string);
@@ -303,11 +316,13 @@ let convertWorkspace = (workspace, output) => {
   let fromDirectory = Path.resolve(workspace, "");
   let toDirectory = Path.resolve(output, "");
   ensureDirSync(toDirectory);
+
   let colorsInputPath = concat(fromDirectory, "colors.json");
   let colorsOutputPath =
     concat(toDirectory, formatFilename(target, "Colors") ++ targetExtension);
   let colors = Color.parseFile(Node.Fs.readFileSync(colorsInputPath, `utf8));
   Fs.writeFileSync(colorsOutputPath, colors |> renderColors(target), `utf8);
+
   let textStylesInputPath = concat(fromDirectory, "textStyles.json");
   let textStylesOutputPath =
     concat(
@@ -318,6 +333,18 @@ let convertWorkspace = (workspace, output) => {
   let textStyles =
     TextStyle.parseFile(textStylesFile) |> renderTextStyles(target, colors);
   Fs.writeFileSync(textStylesOutputPath, textStyles, `utf8);
+
+  let shadowsInputPath = concat(fromDirectory, "shadows.json");
+  let shadowsOutputPath =
+    concat(
+      toDirectory,
+      formatFilename(target, "Shadows") ++ targetExtension,
+    );
+  let shadowsFile = Node.Fs.readFileSync(shadowsInputPath, `utf8);
+  let shadows =
+    Shadow.parseFile(shadowsFile) |> renderShadows(target, colors);
+  Fs.writeFileSync(shadowsOutputPath, shadows, `utf8);
+
   copyStaticFiles(toDirectory);
   Glob.glob(
     concat(fromDirectory, "**/*.component"),
@@ -428,6 +455,23 @@ switch (command) {
     let contents =
       Node.Fs.readFileSync(List.nth(positionalArguments, 4), `utf8);
     convertColors(target, contents) |> Js.log;
+  }
+| "shadows" =>
+  if (List.length(positionalArguments) < 5) {
+    let render = content =>
+      Js.Promise.resolve(convertColors(target, content) |> Js.log);
+    getStdin() |> Js.Promise.then_(render) |> ignore;
+  } else {
+    let filename = List.nth(positionalArguments, 4);
+    switch (findWorkspaceDirectory(filename)) {
+    | None =>
+      exit(
+        "Couldn't find workspace directory. Try specifying it as a parameter (TODO)",
+      )
+    | Some(workspacePath) =>
+      let content = Node.Fs.readFileSync(filename, `utf8);
+      convertShadows(target, workspacePath, content) |> Js.log;
+    };
   }
 | "types" =>
   if (List.length(positionalArguments) < 5) {
