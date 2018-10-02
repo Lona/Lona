@@ -13,6 +13,10 @@ import AppKit
 // doesn't seem to do anything.
 private class InnerView: NSImageView {
     override var isFlipped: Bool { return true }
+
+    override func mouseDown(with event: NSEvent) {
+        super.mouseDown(with: event)
+    }
 }
 
 class CSView: NSBox {
@@ -33,6 +37,8 @@ class CSView: NSBox {
 
     // MARK: Public
 
+    var layerName: String?
+
     var onClick: (() -> Void)?
 
     var backgroundImage: NSImage? {
@@ -51,7 +57,9 @@ class CSView: NSBox {
         // If we're in the coordinates of this view (`self`)
         if let view = clickedView as? CSView {
             view.onClick?()
-            // If we're outside the coordinates of this view
+        } else if let view = clickedView?.superview?.superview as? CSView {
+            view.onClick?()
+        // If we're outside the coordinates of this view
         } else if clickedView == nil {
             super.mouseDown(with: event)
         }

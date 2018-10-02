@@ -181,6 +181,7 @@ func renderBox(configuredLayer: ConfiguredLayer, node: YGNodeRef, options: Rende
     )
 
     let box = CSView(frame: frame)
+    box.layerName = layer.name
     box.onClick = handleClick
 
     if layer.text == nil, let color = config.get(attribute: "backgroundColor", for: layer.name).string ?? layer.backgroundColor {
@@ -663,6 +664,7 @@ enum RenderOption {
     case assetScale(CGFloat)
     case hideAnimationLayers(Bool)
     case renderCanvasShadow(Bool)
+    case selectedLayerName(String?)
 }
 
 struct RenderOptions {
@@ -670,6 +672,7 @@ struct RenderOptions {
     var assetScale: CGFloat = 1
     var hideAnimationLayers: Bool = false
     var renderCanvasShadow: Bool = false
+    var selectedLayerName: String?
 
     mutating func merge(options: [RenderOption]) {
         options.forEach({ option in
@@ -678,6 +681,7 @@ struct RenderOptions {
             case .assetScale(let value): assetScale = value
             case .hideAnimationLayers(let value): hideAnimationLayers = value
             case .renderCanvasShadow(let value): renderCanvasShadow = value
+            case .selectedLayerName(let value): selectedLayerName = value
             }
         })
     }
@@ -696,6 +700,7 @@ class CanvasView: NSView {
 
     var rootView = NSView()
     var backgroundView = NSBox()
+    var selectionView = NSBox()
 
     init(canvas: Canvas, rootLayer: CSLayer, config: ComponentConfiguration, options list: [RenderOption] = []) {
         self.canvas = canvas
@@ -717,6 +722,7 @@ class CanvasView: NSView {
     func setUpViews() {
         backgroundView.addSubview(rootView)
         addSubview(backgroundView)
+        addSubview(selectionView)
 
         frame = rootView.frame
         backgroundView.frame = rootView.frame
@@ -724,6 +730,13 @@ class CanvasView: NSView {
         backgroundView.borderType = .noBorder
         backgroundView.boxType = .custom
         backgroundView.contentViewMargins = .zero
+
+        selectionView.boxType = .custom
+        selectionView.borderType = .lineBorder
+        selectionView.borderWidth = 1
+        selectionView.borderColor = #colorLiteral(red: 0.2588235438, green: 0.7568627596, blue: 0.9686274529, alpha: 1)
+        selectionView.cornerRadius = 2
+        selectionView.contentViewMargins = .zero
 
         // Shadows & Fills
 
@@ -742,6 +755,19 @@ class CanvasView: NSView {
                 color: NSColor.black.withAlphaComponent(0.5),
                 offset: NSSize(width: 0, height: -1),
                 blur: 2)
+        }
+
+        if let selected = self.firstDescendant(where: { view in
+            guard let csView = view as? CSView, let name = options.selectedLayerName else {
+                return false
+            }
+
+            return csView.layerName == name
+        }) {
+            selectionView.frame = convert(selected.bounds.insetBy(dx: -1, dy: -1), from: selected)
+            selectionView.isHidden = false
+        } else {
+            selectionView.isHidden = true
         }
     }
 

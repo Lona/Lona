@@ -17,9 +17,6 @@ class ComponentConfiguration {
     // For propagating the <Children /> element into a custom component
     var configuredChildren: [ConfiguredLayer]?
 
-    // Allows us to traverse back up the component scope hierarchy
-    var parentComponentLayer: CSLayer?
-
     init() {}
 
     func performLogicBody(nodes: [LogicNode], in scope: CSScope) {

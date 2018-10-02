@@ -28,6 +28,7 @@ class ComponentEditorViewController: NSSplitViewController {
     // MARK: Public
 
     public var component: CSComponent? = nil { didSet { update(withoutModifyingSelection: false) } }
+    public var selectedLayerName: String? = nil { didSet { update(withoutModifyingSelection: true) } }
     public var canvasPanningEnabled: Bool {
         get { return canvasCollectionView.panningEnabled }
         set { canvasCollectionView.panningEnabled = newValue }
@@ -216,8 +217,8 @@ class ComponentEditorViewController: NSSplitViewController {
         let options = CanvasCollectionOptions(
             layout: component.canvasLayoutAxis,
             component: component,
-            selected: nil,
-            onSelectLayer: { _ in }
+            onSelectLayer: { self.onInspectLayer?($0) },
+            selectedLayerName: selectedLayerName
         )
 
         canvasCollectionView.update(options: options)
