@@ -127,7 +127,8 @@ let rec lonaValue =
       LiteralExpression(FloatingPoint(value.data |> Json.Decode.float))
     | "String" => LiteralExpression(String(value.data |> Json.Decode.string))
     | "TextStyle"
-    | "Color" =>
+    | "Color"
+    | "Shadow" =>
       lonaValue(
         framework,
         config,
@@ -191,20 +192,21 @@ let rec lonaValue =
           SwiftIdentifier(textStyles.defaultStyle.id),
         ])
       };
-    /* | "Shadow" =>
-       let rawValue = value.data |> Json.Decode.string;
-       switch (Shadow.find(shadows.styles, rawValue)) {
-       | Some(shadow) =>
-         MemberExpression([
-           SwiftIdentifier("Shadows"),
-           SwiftIdentifier(shadow.id),
-         ])
-       | None =>
-         MemberExpression([
-           SwiftIdentifier("Shadows"),
-           SwiftIdentifier(shadows.defaultStyle.id),
-         ])
-       }; */
+    | "Shadow" =>
+      let rawValue = value.data |> Json.Decode.string;
+      let shadows = config.shadowsFile.contents;
+      switch (Shadow.find(shadows.styles, rawValue)) {
+      | Some(shadow) =>
+        MemberExpression([
+          SwiftIdentifier("Shadows"),
+          SwiftIdentifier(shadow.id),
+        ])
+      | None =>
+        MemberExpression([
+          SwiftIdentifier("Shadows"),
+          SwiftIdentifier(shadows.defaultStyle.id),
+        ])
+      };
     | _ => SwiftIdentifier("UnknownNamedTypeAlias" ++ alias)
     }
   };

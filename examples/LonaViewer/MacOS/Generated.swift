@@ -29,6 +29,7 @@ enum Generated: String {
     case textAlignment = "Text Alignment"
     case boxModelConditionalSmall = "Box Model Conditional Small"
     case boxModelConditionalLarge = "Box Model Conditional Large"
+    case shadowTest = "Shadow Test"
 
     static func allValues() -> [Generated] {
         return [
@@ -52,6 +53,7 @@ enum Generated: String {
             textAlignment,
             boxModelConditionalSmall,
             boxModelConditionalLarge,
+            shadowTest,
         ]
     }
 
@@ -103,6 +105,8 @@ enum Generated: String {
             return BoxModelConditional(margin: 4, size: 60)
         case .boxModelConditionalLarge:
             return BoxModelConditional(margin: 20, size: 120)
+        case .shadowTest:
+            return ShadowsTest()
         }
     }
 
@@ -125,7 +129,8 @@ enum Generated: String {
              .textAlignment,
              .fitContentParentSecondaryChildren,
              .boxModelConditionalSmall,
-             .boxModelConditionalLarge:
+             .boxModelConditionalLarge,
+             .shadowTest:
             return [
                 equal(\.topAnchor),
                 equal(\.leftAnchor),

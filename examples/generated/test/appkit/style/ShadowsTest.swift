@@ -35,7 +35,7 @@ public class ShadowsTest: NSBox {
     addSubview(innerView)
 
     innerView.fillColor = Colors.blue300
-    innerView.shadow = UnknownNamedTypeAliasShadow
+    innerView.shadow = Shadows.elevation2
   }
 
   private func setUpConstraints() {

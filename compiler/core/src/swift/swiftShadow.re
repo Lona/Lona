@@ -77,7 +77,8 @@ module Doc = {
           }),
           FunctionCallArgument({
             "name": Some(SwiftIdentifier("height")),
-            "value": LiteralExpression(FloatingPoint(shadow.y)),
+            /* The coordinate system is flipped vertically */
+            "value": LiteralExpression(FloatingPoint(-. shadow.y)),
           }),
         ],
       });
