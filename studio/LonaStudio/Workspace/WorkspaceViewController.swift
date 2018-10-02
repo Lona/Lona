@@ -407,10 +407,12 @@ class WorkspaceViewController: NSSplitViewController {
             componentEditorViewController.onInspectLayer = { layer in
                 guard let layer = layer else {
                     self.inspectedContent = nil
+                    self.componentEditorViewController.selectedLayerName = nil
                     return
                 }
                 self.inspectedContent = .layer(layer)
                 self.inspectorView.content = .layer(layer)
+                self.componentEditorViewController.selectedLayerName = layer.name
             }
 
             componentEditorViewController.onChangeInspectedLayer = {

@@ -14,8 +14,8 @@ private let CANVAS_IDENTIFIER = "canvas"
 struct CanvasCollectionOptions {
     var layout: RenderSurface.Layout
     var component: CSComponent
-    var selected: String?
     var onSelectLayer: (CSLayer) -> Void
+    var selectedLayerName: String?
 }
 
 class MatrixLayout: NSCollectionViewFlowLayout {
@@ -196,7 +196,15 @@ class CanvasCollectionView: NSView, NSCollectionViewDataSource, NSCollectionView
             canvas: canvas
         )
 
-        let canvasView = CanvasView(canvas: canvas, rootLayer: rootLayer, config: config, options: [.renderCanvasShadow(true)])
+        let canvasView = CanvasView(
+            canvas: canvas,
+            rootLayer: rootLayer,
+            config: config,
+            options: [
+                .renderCanvasShadow(true),
+                .onSelectLayer(options.onSelectLayer),
+                .selectedLayerName(options.selectedLayerName)
+            ])
 
         let canvasContainerView = NSView(frame: canvasView.bounds.insetBy(dx: -CANVAS_INSET, dy: -CANVAS_INSET).offsetBy(dx: CANVAS_INSET, dy: CANVAS_INSET))
         canvasContainerView.addSubview(canvasView)

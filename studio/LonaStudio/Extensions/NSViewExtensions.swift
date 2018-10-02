@@ -250,4 +250,17 @@ public extension NSView {
         return imageData(from: buffer)
     }
 
+    func firstDescendant(where predicate: (NSView) -> Bool) -> NSView? {
+        if predicate(self) {
+            return self
+        }
+
+        for view in subviews {
+            if let first = view.firstDescendant(where: predicate) {
+                return first
+            }
+        }
+
+        return nil
+    }
 }
