@@ -18,7 +18,7 @@ struct CSShadow {
     let blur: CGFloat
 
     var nsShadow: NSShadow {
-        return NSShadow(color: color, offset: CGSize(width: x, height: y), blur: blur)
+        return NSShadow(color: color, offset: CGSize(width: x, height: -y), blur: blur)
     }
 
     func attributeDictionary() -> [NSAttributedStringKey: Any] {

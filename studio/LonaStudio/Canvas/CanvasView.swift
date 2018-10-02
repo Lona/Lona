@@ -89,13 +89,6 @@ func attributedString(for configuredLayer: ConfiguredLayer) -> NSAttributedStrin
     titleParagraphStyle.alignment = NSTextAlignment(configuredLayer.layer.textAlign ?? "left")
     attributeDict[.paragraphStyle] = titleParagraphStyle
 
-    // Shadow
-    if configuredLayer.layer.shadow != nil,
-        let shadow = getLayoutShadow(configuredLayer: configuredLayer) {
-        let shadowAttributeText = shadow.attributeDictionary()
-        attributeDict.merge(with: shadowAttributeText)
-    }
-
     return NSAttributedString(string: text, attributes: attributeDict)
 }
 
@@ -206,6 +199,11 @@ func renderBox(configuredLayer: ConfiguredLayer, node: YGNodeRef, options: Rende
 
     if let borderColor = borderColor {
         box.borderColor = borderColor
+    }
+
+    if configuredLayer.layer.shadow != nil,
+        let shadow = getLayoutShadow(configuredLayer: configuredLayer) {
+        box.shadow = shadow.nsShadow
     }
 
     if layer.type == .animation {

@@ -527,7 +527,6 @@ class CoreComponentInspectorView: NSStackView {
         )
 
         let backgroundSection = renderSection(title: "Shadow", views: [shadowContainer])
-        backgroundSection.isHidden = true
         return backgroundSection
     }
 
@@ -708,7 +707,6 @@ class CoreComponentInspectorView: NSStackView {
         case .builtIn(.text):
             textSection.isHidden = false
             layoutSection.isHidden = true
-            shadowSection.isHidden = false
         case .builtIn(.image):
             imageSection.isHidden = false
         case .builtIn(.animation):

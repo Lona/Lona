@@ -78,6 +78,9 @@ class LonaModule {
             VirtualFile(name: "colors.json", data: CSData.Object([
                 "colors": CSData.Array([])
                 ])),
+            VirtualFile(name: "shadows.json", data: CSData.Object([
+                "shadows": CSData.Array([])
+                ])),
             VirtualFile(name: "textStyles.json", data: CSData.Object([
                 "styles": CSData.Array([])
                 ])),
