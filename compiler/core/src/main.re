@@ -81,19 +81,6 @@ let target =
   | _ => exit("Unrecognized target")
   };
 
-/* Rudimentary workspace detection */
-let rec findWorkspaceDirectory = path => {
-  let exists = Fs.existsSync(Path.join([|path, "colors.json"|]));
-  exists ?
-    Some(path) :
-    (
-      switch (Path.dirname(path)) {
-      | "/" => None
-      | parent => findWorkspaceDirectory(parent)
-      }
-    );
-};
-
 let concat = (base, addition) => Path.join([|base, addition|]);
 
 let getTargetExtension =
@@ -202,58 +189,45 @@ let convertComponent = filename => {
   let contents = Fs.readFileSync(filename, `utf8);
   let parsed = contents |> Js.Json.parseExn;
   let name = Node.Path.basename_ext(filename, ".component");
-  switch (findWorkspaceDirectory(filename)) {
-  | None =>
-    exit(
-      "Couldn't find workspace directory. Try specifying it as a parameter (TODO)",
+  let config = Config.load(filename);
+
+  switch (target) {
+  | Types.JavaScript =>
+    JavaScript.Component.generate(
+      javaScriptOptions,
+      name,
+      Node.Path.relative(
+        ~from=Node.Path.dirname(filename),
+        ~to_=config.colorsFile.path,
+        (),
+      ),
+      Node.Path.relative(
+        ~from=Node.Path.dirname(filename),
+        ~to_=config.textStylesFile.path,
+        (),
+      ),
+      config.colorsFile.contents,
+      config.textStylesFile.contents,
+      findComponent(config.workspacePath),
+      getComponentRelativePath(config.workspacePath, name),
+      getAssetRelativePath(config.workspacePath, name),
+      parsed,
     )
-  | Some(workspace) =>
-    let colorsFilePath = Path.join([|workspace, "colors.json"|]);
-    let colorsFile = Node.Fs.readFileSync(colorsFilePath, `utf8);
-    let colors = Color.parseFile(colorsFile);
-    let textStylesFilePath = Path.join([|workspace, "textStyles.json"|]);
-    let textStylesFile = Node.Fs.readFileSync(textStylesFilePath, `utf8);
-    let textStyles = TextStyle.parseFile(textStylesFile);
-    let configInputPath = Path.join([|workspace, "compiler.js"|]);
-    let config = Config.loadConfig(configInputPath);
-    switch (target) {
-    | Types.JavaScript =>
-      JavaScript.Component.generate(
-        javaScriptOptions,
+    |> JavaScript.Render.toString
+  | Swift =>
+    let result =
+      Swift.Component.generate(
+        config,
+        options,
+        swiftOptions,
         name,
-        Node.Path.relative(
-          ~from=Node.Path.dirname(filename),
-          ~to_=colorsFilePath,
-          (),
-        ),
-        Node.Path.relative(
-          ~from=Node.Path.dirname(filename),
-          ~to_=textStylesFilePath,
-          (),
-        ),
-        colors,
-        textStyles,
+        config.colorsFile.contents,
+        config.textStylesFile.contents,
         findComponent(workspace),
-        getComponentRelativePath(workspace, name),
-        getAssetRelativePath(workspace, name),
         parsed,
-      )
-      |> JavaScript.Render.toString
-    | Swift =>
-      let result =
-        Swift.Component.generate(
-          config,
-          options,
-          swiftOptions,
-          name,
-          colors,
-          textStyles,
-          findComponent(workspace),
-          parsed,
-        );
-      result |> Swift.Render.toString;
-    | _ => exit("Unrecognized target")
-    };
+      );
+    result |> Swift.Render.toString;
+  | _ => exit("Unrecognized target")
   };
 };
 
@@ -463,7 +437,7 @@ switch (command) {
     getStdin() |> Js.Promise.then_(render) |> ignore;
   } else {
     let filename = List.nth(positionalArguments, 4);
-    switch (findWorkspaceDirectory(filename)) {
+    switch (Config.Workspace.find(filename)) {
     | None =>
       exit(
         "Couldn't find workspace directory. Try specifying it as a parameter (TODO)",
@@ -488,7 +462,7 @@ switch (command) {
     getStdin() |> Js.Promise.then_(render) |> ignore;
   } else {
     let filename = List.nth(positionalArguments, 4);
-    switch (findWorkspaceDirectory(filename)) {
+    switch (Config.Workspace.find(filename)) {
     | None =>
       exit(
         "Couldn't find workspace directory. Try specifying it as a parameter (TODO)",
