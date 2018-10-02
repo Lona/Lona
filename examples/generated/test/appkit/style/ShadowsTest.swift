@@ -1,9 +1,9 @@
 import AppKit
 import Foundation
 
-// MARK: - Shadows
+// MARK: - ShadowsTest
 
-public class Shadows: NSBox {
+public class ShadowsTest: NSBox {
 
   // MARK: Lifecycle
 
