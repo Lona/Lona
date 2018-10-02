@@ -1,0 +1,60 @@
+{
+  "devices" : [
+    {
+      "height" : 100,
+      "heightMode" : "At Least",
+      "name" : "iPhone SE",
+      "width" : 320
+    },
+    {
+      "height" : 100,
+      "heightMode" : "At Least",
+      "name" : "iPhone 7",
+      "width" : 375
+    },
+    {
+      "height" : 100,
+      "heightMode" : "At Least",
+      "name" : "iPhone 7+",
+      "width" : 414
+    }
+  ],
+  "examples" : [
+    {
+      "id" : "Default",
+      "name" : "Default",
+      "params" : {
+
+      }
+    }
+  ],
+  "logic" : [
+
+  ],
+  "params" : [
+
+  ],
+  "root" : {
+    "children" : [
+      {
+        "id" : "Inner",
+        "params" : {
+          "backgroundColor" : "blue300",
+          "height" : 60,
+          "shadow" : "elevation2",
+          "width" : 60
+        },
+        "type" : "Lona:View"
+      }
+    ],
+    "id" : "Container",
+    "params" : {
+      "alignItems" : "center",
+      "alignSelf" : "stretch",
+      "justifyContent" : "flex-start",
+      "paddingBottom" : 20,
+      "paddingTop" : 20
+    },
+    "type" : "Lona:View"
+  }
+}

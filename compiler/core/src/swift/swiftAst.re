@@ -304,3 +304,59 @@ and node =
   | CodeBlock({. "statements": list(node)})
   | StatementListHelper(list(node))
   | TopLevelDeclaration({. "statements": list(node)});
+
+/* Ast builders for convenience, agnostic to the kind of data they use */
+module Builders = {
+  let memberExpression = (list: list(string)): node =>
+    switch (list) {
+    | [item] => SwiftIdentifier(item)
+    | _ => MemberExpression(list |> List.map(item => SwiftIdentifier(item)))
+    };
+
+  let functionCall =
+      (
+        name: list(string),
+        arguments: list((option(string), list(string))),
+      )
+      : node =>
+    FunctionCallExpression({
+      "name": memberExpression(name),
+      "arguments":
+        arguments
+        |> List.map(((label, expr)) =>
+             FunctionCallArgument({
+               "name":
+                 switch (label) {
+                 | Some(value) => Some(SwiftIdentifier(value))
+                 | None => None
+                 },
+               "value": memberExpression(expr),
+             })
+           ),
+    });
+
+  let privateVariableDeclaration =
+      (name: string, annotation: option(typeAnnotation), init: option(node)) =>
+    VariableDeclaration({
+      "modifiers": [AccessLevelModifier(PrivateModifier)],
+      "pattern":
+        IdentifierPattern({
+          "identifier": SwiftIdentifier(name),
+          "annotation": annotation,
+        }),
+      "init": init,
+      "block": None,
+    });
+
+  let convenienceInit = (body: list(node)): node =>
+    InitializerDeclaration({
+      "modifiers": [
+        AccessLevelModifier(PublicModifier),
+        ConvenienceModifier,
+      ],
+      "parameters": [],
+      "failable": None,
+      "throws": false,
+      "body": body,
+    });
+};

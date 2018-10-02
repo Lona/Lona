@@ -193,6 +193,20 @@ let rec lonaValue =
           SwiftIdentifier(textStyles.defaultStyle.id),
         ])
       };
+    /* | "Shadow" =>
+       let rawValue = value.data |> Json.Decode.string;
+       switch (Shadow.find(shadows.styles, rawValue)) {
+       | Some(shadow) =>
+         MemberExpression([
+           SwiftIdentifier("Shadows"),
+           SwiftIdentifier(shadow.id),
+         ])
+       | None =>
+         MemberExpression([
+           SwiftIdentifier("Shadows"),
+           SwiftIdentifier(shadows.defaultStyle.id),
+         ])
+       }; */
     | _ => SwiftIdentifier("UnknownNamedTypeAlias" ++ alias)
     }
   };

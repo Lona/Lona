@@ -35,64 +35,6 @@ module Naming = {
   };
 };
 
-/* Ast builders, agnostic to the kind of data they use */
-module Build = {
-  open SwiftAst;
-
-  let memberExpression = (list: list(string)): node =>
-    switch (list) {
-    | [item] => SwiftIdentifier(item)
-    | _ => MemberExpression(list |> List.map(item => SwiftIdentifier(item)))
-    };
-
-  let functionCall =
-      (
-        name: list(string),
-        arguments: list((option(string), list(string))),
-      )
-      : node =>
-    FunctionCallExpression({
-      "name": memberExpression(name),
-      "arguments":
-        arguments
-        |> List.map(((label, expr)) =>
-             FunctionCallArgument({
-               "name":
-                 switch (label) {
-                 | Some(value) => Some(SwiftIdentifier(value))
-                 | None => None
-                 },
-               "value": memberExpression(expr),
-             })
-           ),
-    });
-
-  let privateVariableDeclaration =
-      (name: string, annotation: option(typeAnnotation), init: option(node)) =>
-    VariableDeclaration({
-      "modifiers": [AccessLevelModifier(PrivateModifier)],
-      "pattern":
-        IdentifierPattern({
-          "identifier": SwiftIdentifier(name),
-          "annotation": annotation,
-        }),
-      "init": init,
-      "block": None,
-    });
-
-  let convenienceInit = (body: list(node)): node =>
-    InitializerDeclaration({
-      "modifiers": [
-        AccessLevelModifier(PublicModifier),
-        ConvenienceModifier,
-      ],
-      "parameters": [],
-      "failable": None,
-      "throws": false,
-      "body": body,
-    });
-};
-
 /* Ast builders, specific to components */
 module Doc = {
   open SwiftAst;
@@ -128,17 +70,17 @@ module Doc = {
     });
 
   let pressableVariables = (rootLayer: Types.layer, layer: Types.layer) => [
-    Build.privateVariableDeclaration(
+    SwiftAst.Builders.privateVariableDeclaration(
       SwiftFormat.layerVariableName(rootLayer, layer, "hovered"),
       None,
       Some(LiteralExpression(Boolean(false))),
     ),
-    Build.privateVariableDeclaration(
+    SwiftAst.Builders.privateVariableDeclaration(
       SwiftFormat.layerVariableName(rootLayer, layer, "pressed"),
       None,
       Some(LiteralExpression(Boolean(false))),
     ),
-    Build.privateVariableDeclaration(
+    SwiftAst.Builders.privateVariableDeclaration(
       SwiftFormat.layerVariableName(rootLayer, layer, "onPress"),
       Some(OptionalType(TypeName("(() -> Void)"))),
       None,
@@ -164,7 +106,8 @@ module Doc = {
         Some(
           WillSetDidSetBlock({
             "willSet": None,
-            "didSet": Some([Build.functionCall(["update"], [])]),
+            "didSet":
+              Some([SwiftAst.Builders.functionCall(["update"], [])]),
           }),
         ),
     });
@@ -534,7 +477,7 @@ let generate =
   open SwiftAst;
 
   let viewVariableDoc = (layer: Types.layer): node =>
-    Build.privateVariableDeclaration(
+    SwiftAst.Builders.privateVariableDeclaration(
       layer.name |> SwiftFormat.layerName,
       None,
       Some(
@@ -559,7 +502,7 @@ let generate =
         textStyles.defaultStyle.id;
     let value =
       Parameter.isSetInitially(layer, TextAlign) ?
-        Build.functionCall(
+        SwiftAst.Builders.functionCall(
           ["TextStyles", id, "with"],
           [
             (
@@ -568,15 +511,15 @@ let generate =
             ),
           ],
         ) :
-        Build.memberExpression(["TextStyles", id]);
-    Build.privateVariableDeclaration(
+        SwiftAst.Builders.memberExpression(["TextStyles", id]);
+    SwiftAst.Builders.privateVariableDeclaration(
       SwiftFormat.layerName(layer.name) ++ "TextStyle",
       None,
       Some(value),
     );
   };
   let constraintVariableDoc = variableName =>
-    Build.privateVariableDeclaration(
+    SwiftAst.Builders.privateVariableDeclaration(
       variableName,
       Some(OptionalType(TypeName("NSLayoutConstraint"))),
       None,
@@ -585,7 +528,7 @@ let generate =
   let initParameterAssignmentDoc = (parameter: Decode.parameter) =>
     BinaryExpression({
       "left":
-        Build.memberExpression([
+        SwiftAst.Builders.memberExpression([
           "self",
           parameter.name |> ParameterKey.toString,
         ]),
@@ -610,22 +553,22 @@ let generate =
             |> List.filter(param => !Parameter.isFunction(param))
             |> List.map(initParameterAssignmentDoc),
             [
-              Build.functionCall(
+              SwiftAst.Builders.functionCall(
                 ["super", "init"],
                 [(Some("frame"), [".zero"])],
               ),
             ],
             [
-              Build.functionCall(["setUpViews"], []),
-              Build.functionCall(["setUpConstraints"], []),
+              SwiftAst.Builders.functionCall(["setUpViews"], []),
+              SwiftAst.Builders.functionCall(["setUpConstraints"], []),
             ],
-            [Build.functionCall(["update"], [])],
+            [SwiftAst.Builders.functionCall(["update"], [])],
             needsTracking ? [AppkitPressable.addTrackingArea] : [],
           ],
         ),
     });
   let convenienceInitializerDoc = () =>
-    Build.convenienceInit(
+    SwiftAst.Builders.convenienceInit(
       SwiftDocument.joinGroups(
         Empty,
         [

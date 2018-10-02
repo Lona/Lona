@@ -35,6 +35,7 @@ let parameterType = key =>
   | Width => Types.numberType
   | Height => Types.numberType
   | TextStyle => Types.textStyleType
+  | Shadow => Types.shadowType
   /* Interactivity */
   | Pressed => Types.booleanType
   | Hovered => Types.booleanType
