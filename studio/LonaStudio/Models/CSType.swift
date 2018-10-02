@@ -378,6 +378,7 @@ indirect enum CSType: Equatable, CSDataSerializable, CSDataDeserializable {
             CSValue(type: .string, data: .String("Unit")),
             CSValue(type: .string, data: .String("Color")),
             CSValue(type: .string, data: .String("TextStyle")),
+            CSValue(type: .string, data: .String("Shadow")),
             CSValue(type: .string, data: .String("URL")),
             CSValue(type: .string, data: .String("Function")),
             CSValue(type: .string, data: .String("Component"))
@@ -395,6 +396,7 @@ indirect enum CSType: Equatable, CSDataSerializable, CSDataDeserializable {
             "Variant": CSEmptyVariantType,
             "Unit": CSType.unit,
             "Color": CSColorType,
+            "Shadow": CSShadowType,
             "TextStyle": CSTextStyleType,
             "Comparator": CSComparatorType,
             "URL": CSURLType,
@@ -447,6 +449,7 @@ let CSGenericTypeA = CSType.generic("a'", CSType.any)
 let CSGenericArrayOfTypeA = CSType.array(CSGenericTypeA)
 let CSColorType = CSType.named("Color", .string)
 let CSTextStyleType = CSType.named("TextStyle", .string)
+let CSShadowType = CSType.named("Shadow", .string)
 let CSURLType = CSType.named("URL", .string)
 let CSComponentType = CSType.named("Component", .any)
 let CSHandlerType = CSType.function([], .undefined)
@@ -480,6 +483,9 @@ let CSLayerType = CSType.dictionary([
 
     // Color
     "backgroundColor": (type: CSColorType, access: .write),
+
+    // Shadow
+    "shadow": (type: CSShadowType, access: .write),
 
     // Text
     "text": (type: .string, access: .write),

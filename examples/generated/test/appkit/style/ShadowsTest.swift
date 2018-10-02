@@ -7,7 +7,9 @@ public class ShadowsTest: NSBox {
 
   // MARK: Lifecycle
 
-  public init() {
+  public init(largeShadow: Bool) {
+    self.largeShadow = largeShadow
+
     super.init(frame: .zero)
 
     setUpViews()
@@ -16,9 +18,17 @@ public class ShadowsTest: NSBox {
     update()
   }
 
+  public convenience init() {
+    self.init(largeShadow: false)
+  }
+
   public required init?(coder aDecoder: NSCoder) {
     fatalError("init(coder:) has not been implemented")
   }
+
+  // MARK: Public
+
+  public var largeShadow: Bool { didSet { update() } }
 
   // MARK: Private
 
@@ -35,7 +45,6 @@ public class ShadowsTest: NSBox {
     addSubview(innerView)
 
     innerView.fillColor = Colors.blue300
-    innerView.shadow = Shadows.elevation2
   }
 
   private func setUpConstraints() {
@@ -57,5 +66,10 @@ public class ShadowsTest: NSBox {
     ])
   }
 
-  private func update() {}
+  private func update() {
+    innerView.shadow = Shadows.elevation2
+    if largeShadow {
+      innerView.shadow = Shadows.elevation3
+    }
+  }
 }

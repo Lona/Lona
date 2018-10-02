@@ -15,6 +15,15 @@ struct ConfiguredLayer {
     let layer: CSLayer
     let config: ComponentConfiguration
     let children: [ConfiguredLayer]
+
+    func shadow() -> CSShadow? {
+        let logicValue = config.get(attribute: "shadow", for: layer.name).string
+        let constantValue = layer.shadow
+
+        guard let shadow = logicValue ?? constantValue else { return nil }
+
+        return CSShadows.shadow(with: shadow)
+    }
 }
 
 // Passed as a C pointer to Yoga, since we can't pass a struct
@@ -58,11 +67,6 @@ func getLayerFontName(configuredLayer: ConfiguredLayer) -> String {
 
 func getLayerFont(configuredLayer: ConfiguredLayer) -> TextStyle {
     return CSTypography.getFontBy(id: getLayerFontName(configuredLayer: configuredLayer)).font
-}
-
-func getLayoutShadow(configuredLayer: ConfiguredLayer) -> CSShadow? {
-    guard let shadow = configuredLayer.layer.shadow else { return nil }
-    return CSShadows.shadow(with: shadow)
 }
 
 func numberValue(for configuredLayer: ConfiguredLayer, attributeChain: [String], optionalValues: [Double?] = [], defaultValue: Double = 0) -> Double {
@@ -201,10 +205,7 @@ func renderBox(configuredLayer: ConfiguredLayer, node: YGNodeRef, options: Rende
         box.borderColor = borderColor
     }
 
-    if configuredLayer.layer.shadow != nil,
-        let shadow = getLayoutShadow(configuredLayer: configuredLayer) {
-        box.shadow = shadow.nsShadow
-    }
+    box.shadow = configuredLayer.shadow()?.nsShadow
 
     if layer.type == .animation {
         let animation: String? = config.get(attribute: "animation", for: layer.name).string ?? layer.animation
