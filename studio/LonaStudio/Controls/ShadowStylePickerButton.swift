@@ -20,8 +20,8 @@ class ShadowStylePickerButton: NSButton, CSControl {
     var value: String = CSShadows.defaultShadow.id {
         didSet {
             let shadow = CSShadows.shadow(with: value)
-            setImage(with: shadow)
-            setTitle(with: shadow)
+            setImage(with: shadow ?? CSShadows.defaultShadow)
+            setTitle(with: shadow ?? CSShadows.defaultShadow)
         }
     }
 

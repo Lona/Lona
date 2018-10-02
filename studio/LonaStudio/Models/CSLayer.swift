@@ -665,7 +665,7 @@ class CSLayer: CSDataDeserializable, CSDataSerializable, DataNode, NSCopying {
             "backgroundColor": CSData.String(backgroundColor ?? "transparent"),
 
             // Shadow
-            "shadow": CSData.String(shadow ?? CSShadows.defaultName),
+            "shadow": CSData.String(shadow ?? ""),
 
             // Children
             "children": CSData.Array([])
