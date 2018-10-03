@@ -282,7 +282,6 @@ let layoutParameters = [
   Display,
   Flex,
   FlexDirection,
-  TextStyle,
   JustifyContent,
 ];
 
