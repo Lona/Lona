@@ -423,6 +423,7 @@ let generate =
 
   let styleSheetAST =
     JavaScriptStyles.layerToJavaScriptStyleSheetAST(
+      getComponent,
       options.framework,
       config.colorsFile.contents,
       rootLayer,

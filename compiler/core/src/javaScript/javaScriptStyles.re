@@ -63,34 +63,94 @@ let addDefaultStyles =
     switch (framework) {
     | JavaScriptOptions.ReactDOM =>
       ParameterMap.(
-        empty
-        |> add(ParameterKey.Display, LonaValue.string("flex"))
-        |> add(ParameterKey.FlexDirection, LonaValue.string("column"))
-        |> add(ParameterKey.AlignItems, LonaValue.string("stretch"))
+        empty |> add(ParameterKey.Display, LonaValue.string("flex"))
       )
     | _ => ParameterMap.empty
     },
     styleParams,
   );
 
-/* let normalizeLayoutStyles =
-     (
-       framework: JavaScriptOptions.framework,
-       styleParams: ParameterMap.t(Types.lonaValue),
-     ) =>
-   ParameterMap.assign(
-     switch (framework) {
-     | JavaScriptOptions.ReactDOM =>
-       ParameterMap.(
-         empty
-         |> add(ParameterKey.Display, LonaValue.string("flex"))
-         |> add(ParameterKey.FlexDirection, LonaValue.string("column"))
-         |> add(ParameterKey.AlignItems, LonaValue.string("stretch"))
-       )
-     | _ => ParameterMap.empty
-     },
-     styleParams,
-   ); */
+/* Use framework to determine correct layout parameters */
+let getLayoutParameters =
+    (
+      getComponent: string => Js.Json.t,
+      framework: JavaScriptOptions.framework,
+      parent: option(Types.layer),
+      layer: Types.layer,
+    )
+    : Types.layerParameters => {
+  let layer = Layer.getProxyLayer(getComponent, layer);
+
+  /* Top-level layers will have a different parent direction depending on the framework */
+  let frameworkParentDirection =
+    switch (framework, parent) {
+    | (_, Some(parent)) => Layer.getFlexDirection(parent.parameters)
+    | (JavaScriptOptions.ReactDOM, None) => "row"
+    | (JavaScriptOptions.ReactNative, None)
+    | (JavaScriptOptions.ReactSketchapp, None) => "column"
+    };
+  let sizingRules = Layer.getSizingRules(parent, layer);
+
+  let parameters = ParameterMap.empty;
+
+  let parameters =
+    ParameterMap.(
+      switch (framework, frameworkParentDirection, sizingRules.width) {
+      | (JavaScriptOptions.ReactDOM, "row", Types.Fill) =>
+        parameters |> add(ParameterKey.Flex, LonaValue.string("1 0 0px"))
+      | (JavaScriptOptions.ReactDOM, "row", Types.FitContent) =>
+        parameters |> add(ParameterKey.Flex, LonaValue.string("0 0 auto"))
+      | (JavaScriptOptions.ReactDOM, "column", Types.Fill) =>
+        parameters
+        |> add(ParameterKey.AlignSelf, LonaValue.string("stretch"))
+      | (JavaScriptOptions.ReactDOM, "column", Types.FitContent) =>
+        parameters
+        |> add(ParameterKey.AlignSelf, LonaValue.string("flex-start"))
+      | (JavaScriptOptions.ReactDOM, _, Types.Fixed(value)) =>
+        parameters |> add(ParameterKey.Width, LonaValue.number(value))
+      | _ =>
+        Js.log2("Bad parent direction (width)", frameworkParentDirection);
+        parameters;
+      }
+    );
+
+  let parameters =
+    ParameterMap.(
+      switch (framework, frameworkParentDirection, sizingRules.height) {
+      | (JavaScriptOptions.ReactDOM, "row", Types.Fill) =>
+        parameters
+        |> add(ParameterKey.AlignSelf, LonaValue.string("stretch"))
+      | (JavaScriptOptions.ReactDOM, "row", Types.FitContent) =>
+        parameters
+        |> add(ParameterKey.AlignSelf, LonaValue.string("flex-start"))
+      | (JavaScriptOptions.ReactDOM, "column", Types.Fill) =>
+        parameters |> add(ParameterKey.Flex, LonaValue.string("1 0 0px"))
+      | (JavaScriptOptions.ReactDOM, "column", Types.FitContent) =>
+        parameters |> add(ParameterKey.Flex, LonaValue.string("0 0 auto"))
+      | (JavaScriptOptions.ReactDOM, _, Types.Fixed(value)) =>
+        parameters |> add(ParameterKey.Height, LonaValue.number(value))
+      | _ =>
+        Js.log2("Bad parent direction (width)", frameworkParentDirection);
+        parameters;
+      }
+    );
+
+  let parameters =
+    ParameterMap.(
+      switch (framework, Layer.getFlexDirection(layer.parameters)) {
+      | (JavaScriptOptions.ReactDOM, "column") =>
+        parameters
+        |> add(ParameterKey.FlexDirection, LonaValue.string("column"))
+      | (JavaScriptOptions.ReactNative, "row")
+      | (JavaScriptOptions.ReactSketchapp, "row") =>
+        parameters
+        |> add(ParameterKey.FlexDirection, LonaValue.string("row"))
+      | _ => parameters
+      }
+    );
+
+  parameters;
+};
 
 let getStylePropertyWithUnits =
     (
@@ -114,7 +174,16 @@ let getStylePropertyWithUnits =
   };
 
 let createStyleObjectForLayer =
-    (framework: JavaScriptOptions.framework, colors, layer: Types.layer) =>
+    (
+      getComponent: string => Js.Json.t,
+      framework: JavaScriptOptions.framework,
+      colors,
+      parent: option(Types.layer),
+      layer: Types.layer,
+    ) => {
+  let layoutParameters =
+    getLayoutParameters(getComponent, framework, parent, layer);
+
   JavaScriptAst.(
     Property({
       key: Identifier([JavaScriptFormat.styleVariableName(layer.name)]),
@@ -122,6 +191,12 @@ let createStyleObjectForLayer =
         ObjectLiteral(
           layer.parameters
           |> ParameterMap.filter((key, _) => Layer.parameterIsStyle(key))
+          /* Remove layout parameters stored in the component file */
+          |> ParameterMap.filter((key, _) =>
+               !List.mem(key, Layer.layoutParameters)
+             )
+          /* Add layout parameters appropriate for the framework */
+          |> ParameterMap.assign(_, layoutParameters)
           |> addDefaultStyles(framework)
           |> ParameterMap.bindings
           |> List.map(((key, value)) =>
@@ -130,13 +205,21 @@ let createStyleObjectForLayer =
         ),
     })
   );
+};
 
 let layerToJavaScriptStyleSheetAST =
-    (framework: JavaScriptOptions.framework, colors, layer: Types.layer) => {
+    (
+      getComponent: string => Js.Json.t,
+      framework: JavaScriptOptions.framework,
+      colors,
+      layer: Types.layer,
+    ) => {
   let styleObjects =
     layer
-    |> Layer.flatten
-    |> List.map(createStyleObjectForLayer(framework, colors));
+    |> Layer.flatmapParent(
+         createStyleObjectForLayer(getComponent, framework, colors),
+       );
+
   JavaScriptAst.(
     VariableDeclaration(
       AssignmentExpression({

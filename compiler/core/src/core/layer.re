@@ -276,6 +276,16 @@ let logicAssignmentsFromLayerParameters = layer => {
 
 let parameterIsStyle = key => getParameterCategory(key) == Style;
 
+let layoutParameters = [
+  ParameterKey.AlignItems,
+  AlignSelf,
+  Display,
+  Flex,
+  FlexDirection,
+  TextStyle,
+  JustifyContent,
+];
+
 let splitParamsMap = params =>
   params |> ParameterMap.partition((key, _) => parameterIsStyle(key));
 
