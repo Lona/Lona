@@ -201,15 +201,12 @@ let rec layerToJavaScriptAST =
     |> removeTextParams
     |> Layer.mapBindings(((key, value)) => {
          let key =
-           switch (layer.typeName, key) {
-           | (Types.Image, ParameterKey.Image) => "source"
-           | _ =>
-             switch (framework) {
-             | JavaScriptOptions.ReactDOM =>
-               key |> ReactDomTranslators.variableNames
-             | _ => key |> ParameterKey.toString
-             }
+           switch (framework) {
+           | JavaScriptOptions.ReactDOM =>
+             key |> ReactDomTranslators.variableNames
+           | _ => key |> ReactNativeTranslators.variableNames
            };
+
          let attributeValue =
            switch (value) {
            | Logic.Literal(lonaValue) when lonaValue.ltype == Types.urlType =>
