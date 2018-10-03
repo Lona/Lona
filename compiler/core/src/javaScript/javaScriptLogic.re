@@ -1,13 +1,13 @@
 module Ast = JavaScriptAst;
 
-let logicValueToJavaScriptAST =
-    (colors, textStyles: TextStyle.file, x: Logic.logicValue) =>
+let logicValueToJavaScriptAST = (config: Config.t, x: Logic.logicValue) =>
   switch (x) {
   | Logic.Identifier(_, path) => Ast.Identifier(path)
   | Literal(lonaValue) =>
     switch (lonaValue.ltype) {
     | Reference("Color")
     | Named("Color", _) =>
+      let colors = config.colorsFile.contents;
       let data = lonaValue.data |> Json.Decode.string;
       switch (Color.find(colors, data)) {
       | Some(color) => Ast.Identifier(["colors", color.id])
@@ -15,6 +15,7 @@ let logicValueToJavaScriptAST =
       };
     | Reference("TextStyle")
     | Named("TextStyle", _) =>
+      let textStyles = config.textStylesFile.contents;
       let data = lonaValue.data |> Json.Decode.string;
       switch (TextStyle.find(textStyles.styles, data)) {
       | Some(textStyle) => Ast.Identifier(["textStyles", textStyle.id])
@@ -24,9 +25,8 @@ let logicValueToJavaScriptAST =
     }
   };
 
-let rec toJavaScriptAST = (framework, colors, textStyles, node) => {
-  let logicValueToJavaScriptASTWithColors =
-    logicValueToJavaScriptAST(colors, textStyles);
+let rec toJavaScriptAST = (framework, config, node) => {
+  let logicValueToJavaScriptASTWithColors = logicValueToJavaScriptAST(config);
   let fromCmp = x =>
     switch (x) {
     | Types.Eq => Ast.Eq
@@ -46,12 +46,10 @@ let rec toJavaScriptAST = (framework, colors, textStyles, node) => {
   | IfExists(a, body) =>
     IfStatement({
       test: logicValueToJavaScriptASTWithColors(a),
-      consequent: [toJavaScriptAST(framework, colors, textStyles, body)],
+      consequent: [toJavaScriptAST(framework, config, body)],
     })
   | Block(body) =>
-    Ast.Block(
-      body |> List.map(toJavaScriptAST(framework, colors, textStyles)),
-    )
+    Ast.Block(body |> List.map(toJavaScriptAST(framework, config)))
   | If(a, cmp, b, body) =>
     let condition =
       Ast.BinaryExpression({
@@ -61,7 +59,7 @@ let rec toJavaScriptAST = (framework, colors, textStyles, node) => {
       });
     IfStatement({
       test: condition,
-      consequent: [toJavaScriptAST(framework, colors, textStyles, body)],
+      consequent: [toJavaScriptAST(framework, config, body)],
     });
   | Add(lhs, rhs, value) =>
     let addition =

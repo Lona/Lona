@@ -76,25 +76,23 @@ module StyledComponents = {
 };
 
 let createStyleAttributePropertyAST =
-    (colors, textStyles, key: ParameterKey.t, value: Logic.logicValue) =>
+    (config: Config.t, key: ParameterKey.t, value: Logic.logicValue) =>
   switch (key) {
   | ParameterKey.TextStyle =>
     JavaScriptAst.SpreadElement(
-      JavaScriptLogic.logicValueToJavaScriptAST(colors, textStyles, value),
+      JavaScriptLogic.logicValueToJavaScriptAST(config, value),
     )
   | _ =>
     JavaScriptAst.Property({
       key: Identifier([key |> styleNameKey]),
-      value:
-        JavaScriptLogic.logicValueToJavaScriptAST(colors, textStyles, value),
+      value: JavaScriptLogic.logicValueToJavaScriptAST(config, value),
     })
   };
 
 let createStyleAttributeAST =
     (
       framework: JavaScriptOptions.framework,
-      colors,
-      textStyles,
+      config: Config.t,
       layer: Types.layer,
       styles,
     ) =>
@@ -113,12 +111,7 @@ let createStyleAttributeAST =
               ]),
               ObjectLiteral(
                 Layer.mapBindings(((key, value)) =>
-                  createStyleAttributePropertyAST(
-                    colors,
-                    textStyles,
-                    key,
-                    value,
-                  )
+                  createStyleAttributePropertyAST(config, key, value)
                 ) @@
                 styles,
               ),
@@ -138,12 +131,7 @@ let createStyleAttributeAST =
             ]),
             ObjectLiteral(
               Layer.mapBindings(((key, value)) =>
-                createStyleAttributePropertyAST(
-                  colors,
-                  textStyles,
-                  key,
-                  value,
-                )
+                createStyleAttributePropertyAST(config, key, value)
               ) @@
               styles,
             ),
@@ -155,8 +143,7 @@ let createStyleAttributeAST =
 let rec layerToJavaScriptAST =
         (
           framework: JavaScriptOptions.framework,
-          colors,
-          textStyles,
+          config: Config.t,
           variableMap,
           getAssetPath,
           layer: Types.layer,
@@ -187,13 +174,7 @@ let rec layerToJavaScriptAST =
     switch (framework) {
     /* | JavaScriptOptions.ReactDOM => [] */
     | _ => [
-        createStyleAttributeAST(
-          framework,
-          colors,
-          textStyles,
-          layer,
-          styleVariables,
-        ),
+        createStyleAttributeAST(framework, config, layer, styleVariables),
       ]
     };
   let attributes =
@@ -224,12 +205,7 @@ let rec layerToJavaScriptAST =
                callee: Identifier(["require"]),
                arguments: [Literal(pathValue)],
              });
-           | _ =>
-             JavaScriptLogic.logicValueToJavaScriptAST(
-               colors,
-               textStyles,
-               value,
-             )
+           | _ => JavaScriptLogic.logicValueToJavaScriptAST(config, value)
            };
          JSXAttribute({name: key, value: attributeValue});
        });
@@ -246,23 +222,13 @@ let rec layerToJavaScriptAST =
     switch (layer.typeName, dynamicOrStaticValue(Text)) {
     | (Types.Text, Some(textValue)) => [
         JSXExpressionContainer(
-          JavaScriptLogic.logicValueToJavaScriptAST(
-            colors,
-            textStyles,
-            textValue,
-          ),
+          JavaScriptLogic.logicValueToJavaScriptAST(config, textValue),
         ),
       ]
     | _ =>
       layer.children
       |> List.map(
-           layerToJavaScriptAST(
-             framework,
-             colors,
-             textStyles,
-             variableMap,
-             getAssetPath,
-           ),
+           layerToJavaScriptAST(framework, config, variableMap, getAssetPath),
          )
     };
   JSXElement({
@@ -341,8 +307,7 @@ let importComponents =
 let rootLayerToJavaScriptAST =
     (
       options: JavaScriptOptions.options,
-      colors,
-      textStyles,
+      config: Config.t,
       getAssetPath,
       assignments,
       rootLayer,
@@ -351,8 +316,7 @@ let rootLayerToJavaScriptAST =
     rootLayer
     |> layerToJavaScriptAST(
          options.framework,
-         colors,
-         textStyles,
+         config,
          assignments,
          getAssetPath,
        );
@@ -449,13 +413,7 @@ let generate =
 
   let rootLayerAST =
     rootLayer
-    |> rootLayerToJavaScriptAST(
-         options,
-         config.colorsFile.contents,
-         config.textStylesFile.contents,
-         getAssetPath,
-         assignments,
-       );
+    |> rootLayerToJavaScriptAST(options, config, getAssetPath, assignments);
   let styleSheetAST =
     rootLayer
     |> JavaScriptStyles.layerToJavaScriptStyleSheetAST(
@@ -464,11 +422,7 @@ let generate =
        );
   let logicAST =
     logic
-    |> JavaScriptLogic.toJavaScriptAST(
-         options.framework,
-         config.colorsFile.contents,
-         config.textStylesFile.contents,
-       )
+    |> JavaScriptLogic.toJavaScriptAST(options.framework, config)
     |> Ast.optimize;
   let {absolute, relative} =
     rootLayer |> importComponents(options.framework, getComponentFile);
