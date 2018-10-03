@@ -336,25 +336,9 @@ let rootLayerToJavaScriptAST =
   };
 };
 
-let generate =
-    (
-      options: JavaScriptOptions.options,
-      name,
-      colorsFilePath,
-      textStylesFilePath,
-      config: Config.t,
-      getComponent,
-      getComponentFile,
-      getAssetPath,
-      json,
-    ) => {
-  let rootLayer = json |> Decode.Component.rootLayer(getComponent);
-
-  /* Js.log2("styles", Js.String.make(rootLayer.styles)); */
-
-  let logic = json |> Decode.Component.logic;
+let defineInitialLogicValues =
+    (config: Config.t, getComponent, rootLayer, assignments, logic) => {
   let variableDeclarations = logic |> Logic.buildVariableDeclarations;
-  let assignments = Layer.parameterAssignmentsFromLogic(rootLayer, logic);
   let conditionalAssignments = Logic.conditionallyAssignedIdentifiers(logic);
   let isConditionallyAssigned = (layer: Types.layer, (name, _)) => {
     let isAssigned = ((_, value)) =>
@@ -402,7 +386,24 @@ let generate =
     |> Layer.LayerMap.bindings
     |> List.map(defineInitialLayerValues)
     |> List.concat;
-  let logic = Logic.Block([variableDeclarations] @ newVars @ [logic]);
+  Logic.Block([variableDeclarations] @ newVars @ [logic]);
+};
+
+let generate =
+    (
+      options: JavaScriptOptions.options,
+      componentName,
+      colorsFilePath,
+      textStylesFilePath,
+      config: Config.t,
+      getComponent,
+      getComponentFile,
+      getAssetPath,
+      json,
+    ) => {
+  let rootLayer = json |> Decode.Component.rootLayer(getComponent);
+  let logic = json |> Decode.Component.logic;
+  let assignments = Layer.parameterAssignmentsFromLogic(rootLayer, logic);
 
   let themeAST =
     JavaScriptStyles.StyleSet.layerToThemeAST(
@@ -412,21 +413,30 @@ let generate =
     );
 
   let rootLayerAST =
-    rootLayer
-    |> rootLayerToJavaScriptAST(options, config, getAssetPath, assignments);
+    rootLayerToJavaScriptAST(
+      options,
+      config,
+      getAssetPath,
+      assignments,
+      rootLayer,
+    );
+
   let styleSheetAST =
-    rootLayer
-    |> JavaScriptStyles.layerToJavaScriptStyleSheetAST(
-         options.framework,
-         config.colorsFile.contents,
-       );
+    JavaScriptStyles.layerToJavaScriptStyleSheetAST(
+      options.framework,
+      config.colorsFile.contents,
+      rootLayer,
+    );
+
   let logicAST =
     logic
+    |> defineInitialLogicValues(config, getComponent, rootLayer, assignments)
     |> JavaScriptLogic.toJavaScriptAST(options.framework, config)
     |> Ast.optimize;
+
   let {absolute, relative} =
     rootLayer |> importComponents(options.framework, getComponentFile);
-  let componentName = name;
+
   Ast.(
     Program(
       SwiftDocument.joinGroups(
