@@ -97,7 +97,7 @@ let getLayoutParameters =
     ParameterMap.(
       switch (framework, frameworkParentDirection, sizingRules.width) {
       | (JavaScriptOptions.ReactDOM, "row", Types.Fill) =>
-        parameters |> add(ParameterKey.Flex, LonaValue.string("1 0 0px"))
+        parameters |> add(ParameterKey.Flex, LonaValue.string("1 1 0%"))
       | (JavaScriptOptions.ReactDOM, "row", Types.FitContent) =>
         parameters |> add(ParameterKey.Flex, LonaValue.string("0 0 auto"))
       | (JavaScriptOptions.ReactDOM, "column", Types.Fill) =>
@@ -124,7 +124,7 @@ let getLayoutParameters =
         parameters
         |> add(ParameterKey.AlignSelf, LonaValue.string("flex-start"))
       | (JavaScriptOptions.ReactDOM, "column", Types.Fill) =>
-        parameters |> add(ParameterKey.Flex, LonaValue.string("1 0 0px"))
+        parameters |> add(ParameterKey.Flex, LonaValue.string("1 1 0%"))
       | (JavaScriptOptions.ReactDOM, "column", Types.FitContent) =>
         parameters |> add(ParameterKey.Flex, LonaValue.string("0 0 auto"))
       | (JavaScriptOptions.ReactDOM, _, Types.Fixed(value)) =>
