@@ -105,6 +105,7 @@ let createStyleAttributeAST =
           CallExpression({
             callee: Identifier(["Object", "assign"]),
             arguments: [
+              ObjectLiteral([]),
               Identifier([
                 "styles",
                 JavaScriptFormat.styleVariableName(layer.name),
