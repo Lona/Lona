@@ -47,6 +47,12 @@ let imageTypeName = framework =>
   | SwiftOptions.AppKit => "NSImage"
   };
 
+let sizeTypeName = framework =>
+  switch (framework) {
+  | SwiftOptions.UIKit => "CGSize"
+  | SwiftOptions.AppKit => "NSSize"
+  };
+
 let layoutPriorityTypeDoc = framework =>
   switch (framework) {
   | SwiftOptions.UIKit => SwiftIdentifier("UILayoutPriority")

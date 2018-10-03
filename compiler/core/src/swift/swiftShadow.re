@@ -10,20 +10,22 @@ module Doc = {
          shadowBlurRadius = blur
        }
      } */
-  let convenienceInit = () =>
+  let convenienceInit = (swiftOptions: SwiftOptions.options) =>
     InitializerDeclaration({
       "modifiers": [ConvenienceModifier],
       "parameters": [
         Parameter({
           "externalName": None,
           "localName": "color",
-          "annotation": TypeName("NSColor"),
+          "annotation":
+            TypeName(SwiftDocument.colorTypeName(swiftOptions.framework)),
           "defaultValue": None,
         }),
         Parameter({
           "externalName": None,
           "localName": "offset",
-          "annotation": TypeName("NSSize"),
+          "annotation":
+            TypeName(SwiftDocument.sizeTypeName(swiftOptions.framework)),
           "defaultValue": None,
         }),
         Parameter({
@@ -56,7 +58,13 @@ module Doc = {
       ],
     });
 
-  let shadow = (colors: list(Color.t), shadow: Shadow.t): node => {
+  let shadow =
+      (
+        swiftOptions: SwiftOptions.options,
+        colors: list(Color.t),
+        shadow: Shadow.t,
+      )
+      : node => {
     let color =
       switch (Color.find(colors, shadow.color)) {
       | Some(color) =>
@@ -69,7 +77,10 @@ module Doc = {
 
     let size =
       FunctionCallExpression({
-        "name": SwiftIdentifier("NSSize"),
+        "name":
+          SwiftIdentifier(
+            SwiftDocument.sizeTypeName(swiftOptions.framework),
+          ),
         "arguments": [
           FunctionCallArgument({
             "name": Some(SwiftIdentifier("width")),
@@ -102,7 +113,13 @@ module Doc = {
     });
   };
 
-  let shadowConstant = (colors: list(Color.t), s: Shadow.t): node =>
+  let shadowConstant =
+      (
+        swiftOptions: SwiftOptions.options,
+        colors: list(Color.t),
+        s: Shadow.t,
+      )
+      : node =>
     ConstantDeclaration({
       "modifiers": [AccessLevelModifier(PublicModifier), StaticModifier],
       "pattern":
@@ -110,7 +127,7 @@ module Doc = {
           "identifier": SwiftIdentifier(s.id),
           "annotation": None,
         }),
-      "init": Some(shadow(colors, s)),
+      "init": Some(shadow(swiftOptions, colors, s)),
     });
 };
 
@@ -130,7 +147,9 @@ let render =
           "isIndirect": false,
           "inherits": [],
           "modifier": Some(PublicModifier),
-          "body": shadowsFile.styles |> List.map(Doc.shadowConstant(colors)),
+          "body":
+            shadowsFile.styles
+            |> List.map(Doc.shadowConstant(swiftOptions, colors)),
         }),
         Empty,
         ExtensionDeclaration({
@@ -138,7 +157,7 @@ let render =
           "protocols": [],
           "where": None,
           "modifier": Some(PrivateModifier),
-          "body": [Doc.convenienceInit()],
+          "body": [Doc.convenienceInit(swiftOptions)],
         }),
       ],
     })

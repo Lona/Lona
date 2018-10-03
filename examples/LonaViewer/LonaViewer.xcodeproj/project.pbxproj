@@ -58,6 +58,7 @@
 		6B3916FF2160286D00B20F9E /* BoxModelConditional.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6B3916FE2160286D00B20F9E /* BoxModelConditional.swift */; };
 		6B391702216422D400B20F9E /* Shadows.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6B391701216422D400B20F9E /* Shadows.swift */; };
 		6B391704216423A000B20F9E /* ShadowsTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6B391703216423A000B20F9E /* ShadowsTest.swift */; };
+		6B39170621643C7C00B20F9E /* Shadows.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6B39170521643C7C00B20F9E /* Shadows.swift */; };
 		6BA694032082E4420090CA74 /* NestedComponent.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6BA694022082E4420090CA74 /* NestedComponent.swift */; };
 		6BA69406208439DB0090CA74 /* NestedComponent.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6BA69405208439DB0090CA74 /* NestedComponent.swift */; };
 		6BA6940820843CE70090CA74 /* Button.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6BA6940720843CE70090CA74 /* Button.swift */; };
@@ -123,6 +124,7 @@
 		6B3916FE2160286D00B20F9E /* BoxModelConditional.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = BoxModelConditional.swift; sourceTree = "<group>"; };
 		6B391701216422D400B20F9E /* Shadows.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Shadows.swift; sourceTree = "<group>"; };
 		6B391703216423A000B20F9E /* ShadowsTest.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ShadowsTest.swift; sourceTree = "<group>"; };
+		6B39170521643C7C00B20F9E /* Shadows.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Shadows.swift; sourceTree = "<group>"; };
 		6BA694022082E4420090CA74 /* NestedComponent.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NestedComponent.swift; sourceTree = "<group>"; };
 		6BA69405208439DB0090CA74 /* NestedComponent.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NestedComponent.swift; sourceTree = "<group>"; };
 		6BA6940720843CE70090CA74 /* Button.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Button.swift; sourceTree = "<group>"; };
@@ -280,6 +282,7 @@
 		12BBFDEA206B02AC0041620C /* swift */ = {
 			isa = PBXGroup;
 			children = (
+				6B39170521643C7C00B20F9E /* Shadows.swift */,
 				12BBFDEB206B02AC0041620C /* TextStyles.swift */,
 				301C262520C1C5A700F18F73 /* TextStyle.swift */,
 				6BA69404208439DB0090CA74 /* components */,
@@ -498,6 +501,7 @@
 				30F870BB20864AEE007ADA5B /* Button.swift in Sources */,
 				12BBFE08206B02AC0041620C /* BorderWidthColor.swift in Sources */,
 				1286937B204A1AAA00E5E26F /* AppDelegate.swift in Sources */,
+				6B39170621643C7C00B20F9E /* Shadows.swift in Sources */,
 				12BBFE0C206B02AC0041620C /* FixedParentFillAndFitChildren.swift in Sources */,
 				12BBFE0B206B02AC0041620C /* PressableRootView.swift in Sources */,
 			);
