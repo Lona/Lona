@@ -54,21 +54,40 @@ let getStyleProperty =
   };
 };
 
-let addDefaultStyles =
+let defaultStyles =
     (
       framework: JavaScriptOptions.framework,
-      styleParams: ParameterMap.t(Types.lonaValue),
-    ) =>
-  ParameterMap.assign(
+      config: Config.t,
+      layerType: Types.layerType,
+    ) => {
+  let defaults = ParameterMap.empty;
+
+  let defaults =
     switch (framework) {
     | JavaScriptOptions.ReactDOM =>
       ParameterMap.(
-        empty |> add(ParameterKey.Display, LonaValue.string("flex"))
+        defaults |> add(ParameterKey.Display, LonaValue.string("flex"))
       )
-    | _ => ParameterMap.empty
-    },
-    styleParams,
-  );
+    | _ => defaults
+    };
+
+  let defaults =
+    switch (layerType) {
+    | Types.Text =>
+      ParameterMap.(
+        defaults
+        |> add(
+             ParameterKey.TextStyle,
+             LonaValue.textStyle(
+               config.textStylesFile.contents.defaultStyle.id,
+             ),
+           )
+      )
+    | _ => defaults
+    };
+
+  defaults;
+};
 
 /* Use framework to determine correct layout parameters */
 let getLayoutParameters =
@@ -180,6 +199,7 @@ let getStylePropertyWithUnits =
 
 let createStyleObjectForLayer =
     (
+      config: Config.t,
       getComponent: string => Js.Json.t,
       framework: JavaScriptOptions.framework,
       colors,
@@ -208,7 +228,9 @@ let createStyleObjectForLayer =
           |> ParameterMap.filter((key, _) => !List.mem(key, replacedKeys))
           /* Add layout parameters appropriate for the framework */
           |> ParameterMap.assign(_, layoutParameters)
-          |> addDefaultStyles(framework)
+          |> ParameterMap.assign(
+               defaultStyles(framework, config, layer.typeName),
+             )
           |> ParameterMap.bindings
           |> List.map(((key, value)) =>
                getStylePropertyWithUnits(framework, colors, key, value)
@@ -220,6 +242,7 @@ let createStyleObjectForLayer =
 
 let layerToJavaScriptStyleSheetAST =
     (
+      config: Config.t,
       getComponent: string => Js.Json.t,
       framework: JavaScriptOptions.framework,
       colors,
@@ -228,7 +251,7 @@ let layerToJavaScriptStyleSheetAST =
   let styleObjects =
     layer
     |> Layer.flatmapParent(
-         createStyleObjectForLayer(getComponent, framework, colors),
+         createStyleObjectForLayer(config, getComponent, framework, colors),
        );
 
   JavaScriptAst.(
