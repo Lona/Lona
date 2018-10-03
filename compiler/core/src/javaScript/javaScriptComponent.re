@@ -231,11 +231,29 @@ let rec layerToJavaScriptAST =
            layerToJavaScriptAST(framework, config, variableMap, getAssetPath),
          )
     };
-  JSXElement({
-    tag: getLayerTagString(framework, layer),
-    attributes: styleAttribute @ attributes,
-    content,
-  });
+
+  /* For JS DOM, wrap custom components in a div that can have the correct
+     default layout attributes. */
+  switch (framework, layer.typeName) {
+  | (JavaScriptOptions.ReactDOM, Types.Component(_)) =>
+    JSXElement({
+      tag: "div",
+      attributes: styleAttribute,
+      content: [
+        JSXElement({
+          tag: getLayerTagString(framework, layer),
+          attributes,
+          content,
+        }),
+      ],
+    })
+  | _ =>
+    JSXElement({
+      tag: getLayerTagString(framework, layer),
+      attributes: styleAttribute @ attributes,
+      content,
+    })
+  };
 };
 
 type componentImports = {
