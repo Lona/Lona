@@ -3,7 +3,8 @@ open SwiftAst;
 let join = (sep, nodes) =>
   switch (nodes) {
   | [] => []
-  | _ => nodes |> List.fold_left((acc, node) => acc @ [sep, node], [])
+  | [hd, ...tl] =>
+    tl |> List.fold_left((acc, node) => acc @ [sep, node], [hd])
   };
 
 let joinGroups = (sep, groups) => {

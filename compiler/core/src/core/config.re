@@ -72,7 +72,7 @@ let load = path =>
   switch (Workspace.find(path)) {
   | None =>
     exit(
-      "Couldn't find workspace directory. Try specifying it as a parameter (TODO)",
+      "Couldn't find workspace directory. A workspace must contain a `lona.json` file.",
     )
   | Some(workspacePath) => {
       plugins: Workspace.compilerFile(workspacePath),
