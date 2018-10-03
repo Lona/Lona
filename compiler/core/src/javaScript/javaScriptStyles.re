@@ -54,6 +54,21 @@ let getStyleProperty =
   };
 };
 
+let componentBoundaryStyles = (framework: JavaScriptOptions.framework) =>
+  ParameterMap.(
+    switch (framework) {
+    | JavaScriptOptions.ReactDOM =>
+      empty
+      |> add(ParameterKey.FlexDirection, LonaValue.string("row"))
+      |> add(ParameterKey.AlignItems, LonaValue.string("flex-start"))
+    | ReactNative
+    | ReactSketchapp =>
+      empty
+      |> add(ParameterKey.FlexDirection, LonaValue.string("column"))
+      |> add(ParameterKey.AlignItems, LonaValue.string("stretch"))
+    }
+  );
+
 let defaultStyles =
     (
       framework: JavaScriptOptions.framework,
@@ -63,14 +78,21 @@ let defaultStyles =
   let defaults = ParameterMap.empty;
 
   let defaults =
-    switch (framework) {
-    | JavaScriptOptions.ReactDOM =>
+    switch (framework, layerType) {
+    | (JavaScriptOptions.ReactDOM, Types.Text) =>
       ParameterMap.(
         defaults |> add(ParameterKey.Display, LonaValue.string("flex"))
+      )
+    | (JavaScriptOptions.ReactDOM, _) =>
+      ParameterMap.(
+        defaults
+        |> add(ParameterKey.Display, LonaValue.string("flex"))
+        |> add(ParameterKey.AlignItems, LonaValue.string("flex-start"))
       )
     | _ => defaults
     };
 
+  /* Add default text style */
   let defaults =
     switch (layerType) {
     | Types.Text =>
@@ -98,7 +120,7 @@ let getLayoutParameters =
       layer: Types.layer,
     )
     : Types.layerParameters => {
-  let layer = Layer.getProxyLayer(getComponent, layer);
+  /* let layer = Layer.getProxyLayer(getComponent, layer); */
 
   let flexDirection = Layer.getFlexDirection(layer.parameters);
 
@@ -125,9 +147,7 @@ let getLayoutParameters =
       | (JavaScriptOptions.ReactDOM, "column", Types.Fill) =>
         parameters
         |> add(ParameterKey.AlignSelf, LonaValue.string("stretch"))
-      | (JavaScriptOptions.ReactDOM, "column", Types.FitContent) =>
-        parameters
-        |> add(ParameterKey.AlignSelf, LonaValue.string("flex-start"))
+      | (JavaScriptOptions.ReactDOM, "column", Types.FitContent) => parameters
       | (JavaScriptOptions.ReactDOM, _, Types.Fixed(value)) =>
         parameters |> add(ParameterKey.Width, LonaValue.number(value))
       | _ =>
@@ -143,9 +163,7 @@ let getLayoutParameters =
       | (JavaScriptOptions.ReactDOM, "row", Types.Fill) =>
         parameters
         |> add(ParameterKey.AlignSelf, LonaValue.string("stretch"))
-      | (JavaScriptOptions.ReactDOM, "row", Types.FitContent) =>
-        parameters
-        |> add(ParameterKey.AlignSelf, LonaValue.string("flex-start"))
+      | (JavaScriptOptions.ReactDOM, "row", Types.FitContent) => parameters
       | (JavaScriptOptions.ReactDOM, "column", Types.Fill) =>
         parameters |> add(ParameterKey.Flex, LonaValue.string("1 1 0%"))
       | (JavaScriptOptions.ReactDOM, "column", Types.FitContent) =>
@@ -217,6 +235,13 @@ let createStyleObjectForLayer =
     ParameterKey.FlexDirection,
   ];
 
+  let addComponentBoundaryStyles = base =>
+    switch (layer.typeName) {
+    | Types.Component(_) =>
+      ParameterMap.assign(base, componentBoundaryStyles(framework))
+    | _ => base
+    };
+
   JavaScriptAst.(
     Property({
       key: Identifier([JavaScriptFormat.styleVariableName(layer.name)]),
@@ -231,6 +256,7 @@ let createStyleObjectForLayer =
           |> ParameterMap.assign(
                defaultStyles(framework, config, layer.typeName),
              )
+          |> addComponentBoundaryStyles
           |> ParameterMap.bindings
           |> List.map(((key, value)) =>
                getStylePropertyWithUnits(framework, colors, key, value)
