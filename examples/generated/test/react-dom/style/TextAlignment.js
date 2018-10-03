@@ -37,7 +37,7 @@ export default class TextAlignment extends React.Component {
           <div style={Object.assign(styles.view1, {})}>
             <img
               style={Object.assign(styles.image, {})}
-              source={require("../assets/icon_128x128.png")}
+              src={require("../assets/icon_128x128.png")}
 
             />
             <div style={Object.assign(styles.view2, {})} />
@@ -86,7 +86,7 @@ export default class TextAlignment extends React.Component {
             </span>
             <img
               style={Object.assign(styles.image1, {})}
-              source={require("../assets/icon_128x128.png")}
+              src={require("../assets/icon_128x128.png")}
 
             />
           </div>
