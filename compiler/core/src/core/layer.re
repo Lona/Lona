@@ -323,3 +323,32 @@ let getTypeNames = rootLayer => {
        );
   {builtIn: builtInTypeNames, custom: customTypeNames};
 };
+
+/* For the purposes of layouts, we want to swap the custom component layer
+   with the root layer from the custom component's definition. We should
+   use the parameters of the custom component's root layer, since these
+   determine layout. We should still use the type, name, and children of
+   the custom component layer. */
+let getRootLayerForComponentName =
+    (getComponent: string => Js.Json.t, layer: Types.layer, name): Types.layer => {
+  let component = getComponent(name);
+  let rootLayer = component |> Decode.Component.rootLayer(getComponent);
+  {
+    typeName: layer.typeName,
+    styles: layer.styles,
+    name: layer.name,
+    parameters: rootLayer.parameters,
+    children: layer.children,
+  };
+};
+
+/* Any time we access a layer, we want to use its proxy if it has one.
+   This is how we layout custom components.
+   TODO: When we handle "Children" components, we'll need to find/use
+   a different proxy */
+let getProxyLayer = (getComponent: string => Js.Json.t, layer: Types.layer) =>
+  switch (layer.typeName) {
+  | Types.Component(name) =>
+    getRootLayerForComponentName(getComponent, layer, name)
+  | _ => layer
+  };

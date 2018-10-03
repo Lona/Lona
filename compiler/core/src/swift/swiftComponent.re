@@ -615,8 +615,7 @@ let generate =
     | SwiftOptions.UIKit => []
     };
 
-  let constraints =
-    SwiftConstraint.calculateConstraints(getComponent, rootLayer);
+  let constraints = Constraint.getConstraints(getComponent, rootLayer);
   let superclass =
     TypeName(
       Naming.layerType(config, pluginContext, swiftOptions, name, Types.View),

@@ -278,27 +278,6 @@ let formatConstraintVariableName =
   };
 };
 
-let calculateConstraints = (getComponent, rootLayer: Types.layer) =>
-  Constraint.getConstraints(
-    /* For the purposes of layouts, we want to swap the custom component layer
-       with the root layer from the custom component's definition. We should
-       use the parameters of the custom component's root layer, since these
-       determine layout. We should still use the type, name, and children of
-       the custom component layer. */
-    (layer: Types.layer, name) => {
-      let component = getComponent(name);
-      let rootLayer = component |> Decode.Component.rootLayer(getComponent);
-      {
-        typeName: layer.typeName,
-        styles: layer.styles,
-        name: layer.name,
-        parameters: rootLayer.parameters,
-        children: layer.children,
-      };
-    },
-    rootLayer,
-  );
-
 let setUpFunction =
     (
       swiftOptions: SwiftOptions.options,
@@ -309,7 +288,7 @@ let setUpFunction =
       root: Types.layer,
     ) => {
   open SwiftAst;
-  let constraints = calculateConstraints(getComponent, root);
+  let constraints = Constraint.getConstraints(getComponent, root);
   let translatesAutoresizingMask = (layer: Types.layer) =>
     BinaryExpression({
       "left":

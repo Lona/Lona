@@ -119,18 +119,10 @@ let getRole =
    }; */
 type t = _t;
 
-let getConstraints = (getRootLayerForComponentName, rootLayer: Types.layer) => {
-  /* Any time we access a layer, we want to use its proxy if it has one.
-     This is how we layout custom components.
-     TODO: When we handle "Children" components, we'll need to find a use
-     a different proxy */
-  let getProxyLayer = (layer: Types.layer) =>
-    switch (layer.typeName) {
-    | Types.Component(name) => getRootLayerForComponentName(layer, name)
-    | _ => layer
-    };
+let getConstraints =
+    (getComponent: string => Js.Json.t, rootLayer: Types.layer) => {
   let constrainAxes = (layer: Types.layer) => {
-    let layer = getProxyLayer(layer);
+    let layer = Layer.getProxyLayer(getComponent, layer);
     let direction = Layer.getFlexDirection(layer.parameters);
     let isColumn = direction == "column";
     let primaryBeforeAnchor = isColumn ? Top : Leading;
@@ -150,7 +142,7 @@ let getConstraints = (getRootLayerForComponentName, rootLayer: Types.layer) => {
       isColumn ? sizingRules.width : sizingRules.height;
     let flexChildren =
       layer.children
-      |> List.map(getProxyLayer)
+      |> List.map(Layer.getProxyLayer(getComponent))
       |> List.filter((child: Types.layer) =>
            Layer.getNumberParameter(Flex, child.parameters) === 1.0
          );
@@ -346,7 +338,7 @@ let getConstraints = (getRootLayerForComponentName, rootLayer: Types.layer) => {
       };
     let fitContentSecondaryConstraints =
       layer.children
-      |> List.map(getProxyLayer)
+      |> List.map(Layer.getProxyLayer(getComponent))
       |> List.map(fitContentSecondaryConstraint)
       |> List.concat;
     let heightConstraint =
@@ -379,7 +371,7 @@ let getConstraints = (getRootLayerForComponentName, rootLayer: Types.layer) => {
       @ [fitContentSecondaryConstraints]
       @ (
         layer.children
-        |> List.map(getProxyLayer)
+        |> List.map(Layer.getProxyLayer(getComponent))
         |> List.mapi(addConstraints)
       );
     constraints |> List.concat;
