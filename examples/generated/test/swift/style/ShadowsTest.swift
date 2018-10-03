@@ -60,9 +60,9 @@ public class ShadowsTest: UIView {
   }
 
   private func update() {
-    innerView.shadow = Shadows.elevation2
+    Shadows.elevation2.apply(to: innerView.layer)
     if largeShadow {
-      innerView.shadow = Shadows.elevation3
+      Shadows.elevation3.apply(to: innerView.layer)
     }
   }
 }

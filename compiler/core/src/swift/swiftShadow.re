@@ -75,6 +75,13 @@ module Doc = {
       | None => LiteralExpression(Color(shadow.color))
       };
 
+    /* The coordinate system is flipped vertically on macOS */
+    let direction =
+      switch (swiftOptions.framework) {
+      | SwiftOptions.AppKit => (-1.0)
+      | UIKit => 1.0
+      };
+
     let size =
       FunctionCallExpression({
         "name":
@@ -88,14 +95,16 @@ module Doc = {
           }),
           FunctionCallArgument({
             "name": Some(SwiftIdentifier("height")),
-            /* The coordinate system is flipped vertically */
-            "value": LiteralExpression(FloatingPoint(-. shadow.y)),
+            "value": LiteralExpression(FloatingPoint(direction *. shadow.y)),
           }),
         ],
       });
 
     FunctionCallExpression({
-      "name": SwiftIdentifier("NSShadow"),
+      "name":
+        SwiftIdentifier(
+          SwiftDocument.shadowTypeName(swiftOptions.framework),
+        ),
       "arguments": [
         FunctionCallArgument({
           "name": Some(SwiftIdentifier("color")),
@@ -139,27 +148,36 @@ let render =
     ) =>
   SwiftAst.(
     TopLevelDeclaration({
-      "statements": [
-        SwiftDocument.importFramework(swiftOptions.framework),
-        Empty,
-        EnumDeclaration({
-          "name": "Shadows",
-          "isIndirect": false,
-          "inherits": [],
-          "modifier": Some(PublicModifier),
-          "body":
-            shadowsFile.styles
-            |> List.map(Doc.shadowConstant(swiftOptions, colors)),
-        }),
-        Empty,
-        ExtensionDeclaration({
-          "name": "NSShadow",
-          "protocols": [],
-          "where": None,
-          "modifier": Some(PrivateModifier),
-          "body": [Doc.convenienceInit(swiftOptions)],
-        }),
-      ],
+      "statements":
+        SwiftDocument.join(
+          Empty,
+          [
+            SwiftDocument.importFramework(swiftOptions.framework),
+            EnumDeclaration({
+              "name": "Shadows",
+              "isIndirect": false,
+              "inherits": [],
+              "modifier": Some(PublicModifier),
+              "body":
+                shadowsFile.styles
+                |> List.map(Doc.shadowConstant(swiftOptions, colors)),
+            }),
+          ]
+          @ (
+            switch (swiftOptions.framework) {
+            | SwiftOptions.AppKit => [
+                ExtensionDeclaration({
+                  "name": "NSShadow",
+                  "protocols": [],
+                  "where": None,
+                  "modifier": Some(PrivateModifier),
+                  "body": [Doc.convenienceInit(swiftOptions)],
+                }),
+              ]
+            | UIKit => []
+            }
+          ),
+        ),
     })
     |> SwiftRender.toString
   );

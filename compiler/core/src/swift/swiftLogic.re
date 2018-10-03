@@ -145,6 +145,26 @@ let toSwiftAST =
           "right":
             Ast.MemberExpression(right @ [Ast.SwiftIdentifier("cgColor")]),
         })
+      | (Ast.SwiftIdentifier(name), Ast.MemberExpression(right))
+          when
+            name |> Js.String.endsWith("shadow") && options.framework == UIKit =>
+        Ast.MemberExpression(
+          right
+          @ [
+            Ast.FunctionCallExpression({
+              "name": Ast.SwiftIdentifier("apply"),
+              "arguments": [
+                Ast.FunctionCallArgument({
+                  "name": Some(Ast.SwiftIdentifier("to")),
+                  "value":
+                    Ast.SwiftIdentifier(
+                      name |> Js.String.replace(".shadow", ".layer"),
+                    ),
+                }),
+              ],
+            }),
+          ],
+        )
       | (Ast.SwiftIdentifier(name), other)
           when name |> Js.String.endsWith("visible") =>
         Ast.BinaryExpression({

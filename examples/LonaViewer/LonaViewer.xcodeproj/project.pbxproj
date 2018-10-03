@@ -59,6 +59,8 @@
 		6B391702216422D400B20F9E /* Shadows.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6B391701216422D400B20F9E /* Shadows.swift */; };
 		6B391704216423A000B20F9E /* ShadowsTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6B391703216423A000B20F9E /* ShadowsTest.swift */; };
 		6B39170621643C7C00B20F9E /* Shadows.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6B39170521643C7C00B20F9E /* Shadows.swift */; };
+		6B39170821643EF300B20F9E /* ShadowsTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6B39170721643EF300B20F9E /* ShadowsTest.swift */; };
+		6B39170A2164492600B20F9E /* Shadow.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6B3917092164492600B20F9E /* Shadow.swift */; };
 		6BA694032082E4420090CA74 /* NestedComponent.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6BA694022082E4420090CA74 /* NestedComponent.swift */; };
 		6BA69406208439DB0090CA74 /* NestedComponent.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6BA69405208439DB0090CA74 /* NestedComponent.swift */; };
 		6BA6940820843CE70090CA74 /* Button.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6BA6940720843CE70090CA74 /* Button.swift */; };
@@ -125,6 +127,8 @@
 		6B391701216422D400B20F9E /* Shadows.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Shadows.swift; sourceTree = "<group>"; };
 		6B391703216423A000B20F9E /* ShadowsTest.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ShadowsTest.swift; sourceTree = "<group>"; };
 		6B39170521643C7C00B20F9E /* Shadows.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Shadows.swift; sourceTree = "<group>"; };
+		6B39170721643EF300B20F9E /* ShadowsTest.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ShadowsTest.swift; sourceTree = "<group>"; };
+		6B3917092164492600B20F9E /* Shadow.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Shadow.swift; sourceTree = "<group>"; };
 		6BA694022082E4420090CA74 /* NestedComponent.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NestedComponent.swift; sourceTree = "<group>"; };
 		6BA69405208439DB0090CA74 /* NestedComponent.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NestedComponent.swift; sourceTree = "<group>"; };
 		6BA6940720843CE70090CA74 /* Button.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Button.swift; sourceTree = "<group>"; };
@@ -283,6 +287,7 @@
 			isa = PBXGroup;
 			children = (
 				6B39170521643C7C00B20F9E /* Shadows.swift */,
+				6B3917092164492600B20F9E /* Shadow.swift */,
 				12BBFDEB206B02AC0041620C /* TextStyles.swift */,
 				301C262520C1C5A700F18F73 /* TextStyle.swift */,
 				6BA69404208439DB0090CA74 /* components */,
@@ -323,6 +328,7 @@
 				6BD581DA2082521A0068FBC3 /* TextAlignment.swift */,
 				12BBFDF5206B02AC0041620C /* TextStylesTest.swift */,
 				12BBFDF6206B02AC0041620C /* TextStyleConditional.swift */,
+				6B39170721643EF300B20F9E /* ShadowsTest.swift */,
 			);
 			path = style;
 			sourceTree = "<group>";
@@ -479,9 +485,11 @@
 			buildActionMask = 2147483647;
 			files = (
 				301C262620C1C5A700F18F73 /* TextStyle.swift in Sources */,
+				6B39170821643EF300B20F9E /* ShadowsTest.swift in Sources */,
 				12BBFE02206B02AC0041620C /* TextStyles.swift in Sources */,
 				12BBFE09206B02AC0041620C /* TextStylesTest.swift in Sources */,
 				12BBFE05206B02AC0041620C /* Assign.swift in Sources */,
+				6B39170A2164492600B20F9E /* Shadow.swift in Sources */,
 				12BBFE0F206B02AC0041620C /* FitContentParentSecondaryChildren.swift in Sources */,
 				12BBFE10206B02AC0041620C /* PrimaryAxis.swift in Sources */,
 				128693A7204A1DC200E5E26F /* LayoutExtension.swift in Sources */,

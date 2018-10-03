@@ -236,6 +236,15 @@ let copyStaticFiles = outputDirectory =>
       | AppKit => "appkit"
       | UIKit => "uikit"
       };
+    if (swiftOptions.framework == UIKit) {
+      copySync(
+        concat(
+          [%bs.raw {| __dirname |}],
+          "static/swift/Shadow." ++ framework ++ ".swift",
+        ),
+        concat(outputDirectory, "Shadow.swift"),
+      );
+    };
     copySync(
       concat(
         [%bs.raw {| __dirname |}],

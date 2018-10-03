@@ -53,6 +53,12 @@ let sizeTypeName = framework =>
   | SwiftOptions.AppKit => "NSSize"
   };
 
+let shadowTypeName = framework =>
+  switch (framework) {
+  | SwiftOptions.UIKit => "Shadow"
+  | SwiftOptions.AppKit => "NSShadow"
+  };
+
 let layoutPriorityTypeDoc = framework =>
   switch (framework) {
   | SwiftOptions.UIKit => SwiftIdentifier("UILayoutPriority")
