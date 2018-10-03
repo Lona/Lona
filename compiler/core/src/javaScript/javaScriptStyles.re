@@ -81,6 +81,8 @@ let getLayoutParameters =
     : Types.layerParameters => {
   let layer = Layer.getProxyLayer(getComponent, layer);
 
+  let flexDirection = Layer.getFlexDirection(layer.parameters);
+
   /* Top-level layers will have a different parent direction depending on the framework */
   let frameworkParentDirection =
     switch (framework, parent) {
@@ -93,6 +95,7 @@ let getLayoutParameters =
 
   let parameters = ParameterMap.empty;
 
+  /* Horizontal axis */
   let parameters =
     ParameterMap.(
       switch (framework, frameworkParentDirection, sizingRules.width) {
@@ -114,6 +117,7 @@ let getLayoutParameters =
       }
     );
 
+  /* Vertical axis */
   let parameters =
     ParameterMap.(
       switch (framework, frameworkParentDirection, sizingRules.height) {
@@ -135,9 +139,10 @@ let getLayoutParameters =
       }
     );
 
+  /* Flex direction axis */
   let parameters =
     ParameterMap.(
-      switch (framework, Layer.getFlexDirection(layer.parameters)) {
+      switch (framework, flexDirection) {
       | (JavaScriptOptions.ReactDOM, "column") =>
         parameters
         |> add(ParameterKey.FlexDirection, LonaValue.string("column"))
@@ -184,6 +189,14 @@ let createStyleObjectForLayer =
   let layoutParameters =
     getLayoutParameters(getComponent, framework, parent, layer);
 
+  /* We replace all of these keys with the appropriate dfeaults for the framework */
+  let replacedKeys = [
+    ParameterKey.AlignSelf,
+    ParameterKey.Display,
+    ParameterKey.Flex,
+    ParameterKey.FlexDirection,
+  ];
+
   JavaScriptAst.(
     Property({
       key: Identifier([JavaScriptFormat.styleVariableName(layer.name)]),
@@ -192,9 +205,7 @@ let createStyleObjectForLayer =
           layer.parameters
           |> ParameterMap.filter((key, _) => Layer.parameterIsStyle(key))
           /* Remove layout parameters stored in the component file */
-          |> ParameterMap.filter((key, _) =>
-               !List.mem(key, Layer.layoutParameters)
-             )
+          |> ParameterMap.filter((key, _) => !List.mem(key, replacedKeys))
           /* Add layout parameters appropriate for the framework */
           |> ParameterMap.assign(_, layoutParameters)
           |> addDefaultStyles(framework)
