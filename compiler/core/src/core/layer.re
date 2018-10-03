@@ -52,6 +52,7 @@ let getParameterCategory = (x: ParameterKey.t) =>
   | BorderRadius => Style
   | BorderWidth => Style
   | TextAlign => Style
+  /* | Shadow => Style */
   /* Props */
   | NumberOfLines => Prop
   | Text => Prop
@@ -109,32 +110,32 @@ let flatmapParameters = (f, layer: Types.layer) => {
   List.concat(parameterLists) |> List.map(f(layer));
 };
 
-let getFlexDirection = (layer: Types.layer) =>
-  switch (ParameterMap.find(ParameterKey.FlexDirection, layer.parameters)) {
+let getFlexDirection = (parameters: Types.layerParameters) =>
+  switch (ParameterMap.find(ParameterKey.FlexDirection, parameters)) {
   | value => value.data |> Json.Decode.string
   | exception Not_found => "column"
   };
 
-let getStringParameterOpt = (parameterName, layer: Types.layer) =>
-  switch (ParameterMap.find_opt(parameterName, layer.parameters)) {
+let getStringParameterOpt = (parameterName, parameters: Types.layerParameters) =>
+  switch (ParameterMap.find_opt(parameterName, parameters)) {
   | Some(value) => Some(value.data |> Json.Decode.string)
   | None => None
   };
 
-let getStringParameter = (parameterName, layer: Types.layer) =>
-  switch (getStringParameterOpt(parameterName, layer)) {
+let getStringParameter = (parameterName, parameters: Types.layerParameters) =>
+  switch (getStringParameterOpt(parameterName, parameters)) {
   | Some(value) => value
   | None => ""
   };
 
-let getNumberParameterOpt = (parameterName, layer: Types.layer) =>
-  switch (ParameterMap.find(parameterName, layer.parameters)) {
+let getNumberParameterOpt = (parameterName, parameters: Types.layerParameters) =>
+  switch (ParameterMap.find(parameterName, parameters)) {
   | value => Some(value.data |> Json.Decode.float)
   | exception Not_found => None
   };
 
-let getNumberParameter = (parameterName, layer: Types.layer) =>
-  switch (getNumberParameterOpt(parameterName, layer)) {
+let getNumberParameter = (parameterName, parameters: Types.layerParameters) =>
+  switch (getNumberParameterOpt(parameterName, parameters)) {
   | Some(value) => value
   | None => 0.0
   };
@@ -147,13 +148,13 @@ type dimensionSizingRules = {
 let getSizingRules = (parent: option(Types.layer), layer: Types.layer) => {
   let parentDirection =
     switch (parent) {
-    | Some(parent) => getFlexDirection(parent)
+    | Some(parent) => getFlexDirection(parent.parameters)
     | None => "column"
     };
-  let flex = getNumberParameterOpt(Flex, layer);
-  let width = getNumberParameterOpt(Width, layer);
-  let height = getNumberParameterOpt(Height, layer);
-  let alignSelf = getStringParameterOpt(AlignSelf, layer);
+  let flex = getNumberParameterOpt(Flex, layer.parameters);
+  let width = getNumberParameterOpt(Width, layer.parameters);
+  let height = getNumberParameterOpt(Height, layer.parameters);
+  let alignSelf = getStringParameterOpt(AlignSelf, layer.parameters);
   let widthSizingRule =
     switch (parentDirection, flex, width, alignSelf) {
     | ("row", Some(1.0), _, _) => Types.Fill

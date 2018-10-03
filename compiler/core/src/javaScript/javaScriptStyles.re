@@ -55,10 +55,10 @@ let getStyleProperty =
 };
 
 let addDefaultStyles =
-    (framework: JavaScriptOptions.framework, layer: Types.layer) => {
-  let styleParams =
-    layer.parameters
-    |> ParameterMap.filter((key, _) => Layer.parameterIsStyle(key));
+    (
+      framework: JavaScriptOptions.framework,
+      styleParams: ParameterMap.t(Types.lonaValue),
+    ) =>
   ParameterMap.assign(
     switch (framework) {
     | JavaScriptOptions.ReactDOM =>
@@ -72,7 +72,25 @@ let addDefaultStyles =
     },
     styleParams,
   );
-};
+
+/* let normalizeLayoutStyles =
+     (
+       framework: JavaScriptOptions.framework,
+       styleParams: ParameterMap.t(Types.lonaValue),
+     ) =>
+   ParameterMap.assign(
+     switch (framework) {
+     | JavaScriptOptions.ReactDOM =>
+       ParameterMap.(
+         empty
+         |> add(ParameterKey.Display, LonaValue.string("flex"))
+         |> add(ParameterKey.FlexDirection, LonaValue.string("column"))
+         |> add(ParameterKey.AlignItems, LonaValue.string("stretch"))
+       )
+     | _ => ParameterMap.empty
+     },
+     styleParams,
+   ); */
 
 let getStylePropertyWithUnits =
     (
@@ -102,7 +120,8 @@ let createStyleObjectForLayer =
       key: Identifier([JavaScriptFormat.styleVariableName(layer.name)]),
       value:
         ObjectLiteral(
-          layer
+          layer.parameters
+          |> ParameterMap.filter((key, _) => Layer.parameterIsStyle(key))
           |> addDefaultStyles(framework)
           |> ParameterMap.bindings
           |> List.map(((key, value)) =>

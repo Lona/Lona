@@ -75,11 +75,13 @@ let layerTypeToString = x =>
   | Unknown => "Unknown"
   };
 
+type layerParameters = ParameterMap.t(lonaValue);
+
 type layer = {
   typeName: layerType,
   name: string,
   styles: list(Styles.namedStyles(option(lonaValue))),
-  parameters: ParameterMap.t(lonaValue),
+  parameters: layerParameters,
   children: list(layer),
 };
 
