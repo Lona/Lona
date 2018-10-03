@@ -15,6 +15,15 @@ struct ConfiguredLayer {
     let layer: CSLayer
     let config: ComponentConfiguration
     let children: [ConfiguredLayer]
+
+    func shadow() -> CSShadow? {
+        let logicValue = config.get(attribute: "shadow", for: layer.name).string
+        let constantValue = layer.shadow
+
+        guard let shadow = logicValue ?? constantValue else { return nil }
+
+        return CSShadows.shadow(with: shadow)
+    }
 }
 
 // Passed as a C pointer to Yoga, since we can't pass a struct
@@ -60,11 +69,6 @@ func getLayerFont(configuredLayer: ConfiguredLayer) -> TextStyle {
     return CSTypography.getFontBy(id: getLayerFontName(configuredLayer: configuredLayer)).font
 }
 
-func getLayoutShadow(configuredLayer: ConfiguredLayer) -> CSShadow? {
-    guard let shadow = configuredLayer.layer.shadow else { return nil }
-    return CSShadows.shadow(with: shadow)
-}
-
 func numberValue(for configuredLayer: ConfiguredLayer, attributeChain: [String], optionalValues: [Double?] = [], defaultValue: Double = 0) -> Double {
     for attribute in attributeChain {
         let raw = configuredLayer.config.get(attribute: attribute, for: configuredLayer.layer.name)
@@ -88,13 +92,6 @@ func attributedString(for configuredLayer: ConfiguredLayer) -> NSAttributedStrin
     let titleParagraphStyle = textStyle.paragraphStyle
     titleParagraphStyle.alignment = NSTextAlignment(configuredLayer.layer.textAlign ?? "left")
     attributeDict[.paragraphStyle] = titleParagraphStyle
-
-    // Shadow
-    if configuredLayer.layer.shadow != nil,
-        let shadow = getLayoutShadow(configuredLayer: configuredLayer) {
-        let shadowAttributeText = shadow.attributeDictionary()
-        attributeDict.merge(with: shadowAttributeText)
-    }
 
     return NSAttributedString(string: text, attributes: attributeDict)
 }
@@ -207,6 +204,8 @@ func renderBox(configuredLayer: ConfiguredLayer, node: YGNodeRef, options: Rende
     if let borderColor = borderColor {
         box.borderColor = borderColor
     }
+
+    box.shadow = configuredLayer.shadow()?.nsShadow
 
     if layer.type == .animation {
         let animation: String? = config.get(attribute: "animation", for: layer.name).string ?? layer.animation

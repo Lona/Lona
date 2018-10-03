@@ -81,19 +81,6 @@ let target =
   | _ => exit("Unrecognized target")
   };
 
-/* Rudimentary workspace detection */
-let rec findWorkspaceDirectory = path => {
-  let exists = Fs.existsSync(Path.join([|path, "colors.json"|]));
-  exists ?
-    Some(path) :
-    (
-      switch (Path.dirname(path)) {
-      | "/" => None
-      | parent => findWorkspaceDirectory(parent)
-      }
-    );
-};
-
 let concat = (base, addition) => Path.join([|base, addition|]);
 
 let getTargetExtension =
@@ -126,6 +113,12 @@ let renderTextStyles = (target, colors, textStyles) =>
   | _ => ""
   };
 
+let renderShadows = (target, colors, shadows) =>
+  switch (target) {
+  | Types.Swift => SwiftShadow.render(swiftOptions, colors, shadows)
+  | _ => ""
+  };
+
 let convertTypes = (target, contents) => {
   let json = contents |> Js.Json.parseExn;
   switch (target) {
@@ -145,6 +138,13 @@ let convertTextStyles = (target, workspacePath, content) => {
     Node.Fs.readFileSync(Path.join([|workspacePath, "colors.json"|]), `utf8);
   let colors = Color.parseFile(colorsFile);
   TextStyle.parseFile(content) |> renderTextStyles(target, colors);
+};
+
+let convertShadows = (target, workspacePath, content) => {
+  let colorsFile =
+    Node.Fs.readFileSync(Path.join([|workspacePath, "colors.json"|]), `utf8);
+  let colors = Color.parseFile(colorsFile);
+  Shadow.parseFile(content) |> renderShadows(target, colors);
 };
 
 exception ComponentNotFound(string);
@@ -185,62 +185,45 @@ let getAssetRelativePath = (fromDirectory, sourceComponent, importedPath) => {
     relativePath : "./" ++ relativePath;
 };
 
-let convertComponent = filename => {
+let convertComponent = (config: Config.t, filename: string) => {
   let contents = Fs.readFileSync(filename, `utf8);
   let parsed = contents |> Js.Json.parseExn;
   let name = Node.Path.basename_ext(filename, ".component");
-  switch (findWorkspaceDirectory(filename)) {
-  | None =>
-    exit(
-      "Couldn't find workspace directory. Try specifying it as a parameter (TODO)",
+
+  switch (target) {
+  | Types.JavaScript =>
+    JavaScriptComponent.generate(
+      javaScriptOptions,
+      name,
+      Node.Path.relative(
+        ~from=Node.Path.dirname(filename),
+        ~to_=config.colorsFile.path,
+        (),
+      ),
+      Node.Path.relative(
+        ~from=Node.Path.dirname(filename),
+        ~to_=config.textStylesFile.path,
+        (),
+      ),
+      config,
+      findComponent(config.workspacePath),
+      getComponentRelativePath(config.workspacePath, name),
+      getAssetRelativePath(config.workspacePath, name),
+      parsed,
     )
-  | Some(workspace) =>
-    let colorsFilePath = Path.join([|workspace, "colors.json"|]);
-    let colorsFile = Node.Fs.readFileSync(colorsFilePath, `utf8);
-    let colors = Color.parseFile(colorsFile);
-    let textStylesFilePath = Path.join([|workspace, "textStyles.json"|]);
-    let textStylesFile = Node.Fs.readFileSync(textStylesFilePath, `utf8);
-    let textStyles = TextStyle.parseFile(textStylesFile);
-    let configInputPath = Path.join([|workspace, "compiler.js"|]);
-    let config = Config.loadConfig(configInputPath);
-    switch (target) {
-    | Types.JavaScript =>
-      JavaScript.Component.generate(
-        javaScriptOptions,
+    |> JavaScript.Render.toString
+  | Swift =>
+    let result =
+      Swift.Component.generate(
+        config,
+        options,
+        swiftOptions,
         name,
-        Node.Path.relative(
-          ~from=Node.Path.dirname(filename),
-          ~to_=colorsFilePath,
-          (),
-        ),
-        Node.Path.relative(
-          ~from=Node.Path.dirname(filename),
-          ~to_=textStylesFilePath,
-          (),
-        ),
-        colors,
-        textStyles,
-        findComponent(workspace),
-        getComponentRelativePath(workspace, name),
-        getAssetRelativePath(workspace, name),
+        findComponent(config.workspacePath),
         parsed,
-      )
-      |> JavaScript.Render.toString
-    | Swift =>
-      let result =
-        Swift.Component.generate(
-          config,
-          options,
-          swiftOptions,
-          name,
-          colors,
-          textStyles,
-          findComponent(workspace),
-          parsed,
-        );
-      result |> Swift.Render.toString;
-    | _ => exit("Unrecognized target")
-    };
+      );
+    result |> Swift.Render.toString;
+  | _ => exit("Unrecognized target")
   };
 };
 
@@ -252,6 +235,15 @@ let copyStaticFiles = outputDirectory =>
       | AppKit => "appkit"
       | UIKit => "uikit"
       };
+    if (swiftOptions.framework == UIKit) {
+      copySync(
+        concat(
+          [%bs.raw {| __dirname |}],
+          "static/swift/Shadow." ++ framework ++ ".swift",
+        ),
+        concat(outputDirectory, "Shadow.swift"),
+      );
+    };
     copySync(
       concat(
         [%bs.raw {| __dirname |}],
@@ -300,24 +292,43 @@ let findContentsBelow = contents => {
 };
 
 let convertWorkspace = (workspace, output) => {
+  let config = Config.load(workspace);
+  let colors = config.colorsFile.contents;
+  let textStyles = config.textStylesFile.contents;
+  let shadows = config.shadowsFile.contents;
+
   let fromDirectory = Path.resolve(workspace, "");
   let toDirectory = Path.resolve(output, "");
   ensureDirSync(toDirectory);
-  let colorsInputPath = concat(fromDirectory, "colors.json");
+
   let colorsOutputPath =
     concat(toDirectory, formatFilename(target, "Colors") ++ targetExtension);
-  let colors = Color.parseFile(Node.Fs.readFileSync(colorsInputPath, `utf8));
   Fs.writeFileSync(colorsOutputPath, colors |> renderColors(target), `utf8);
-  let textStylesInputPath = concat(fromDirectory, "textStyles.json");
+
   let textStylesOutputPath =
     concat(
       toDirectory,
       formatFilename(target, "TextStyles") ++ targetExtension,
     );
-  let textStylesFile = Node.Fs.readFileSync(textStylesInputPath, `utf8);
-  let textStyles =
-    TextStyle.parseFile(textStylesFile) |> renderTextStyles(target, colors);
-  Fs.writeFileSync(textStylesOutputPath, textStyles, `utf8);
+  Fs.writeFileSync(
+    textStylesOutputPath,
+    textStyles |> renderTextStyles(target, colors),
+    `utf8,
+  );
+
+  if (target == Types.Swift) {
+    let shadowsOutputPath =
+      concat(
+        toDirectory,
+        formatFilename(target, "Shadows") ++ targetExtension,
+      );
+    Fs.writeFileSync(
+      shadowsOutputPath,
+      shadows |> renderShadows(target, colors),
+      `utf8,
+    );
+  };
+
   copyStaticFiles(toDirectory);
   Glob.glob(
     concat(fromDirectory, "**/*.component"),
@@ -345,7 +356,7 @@ let convertWorkspace = (workspace, output) => {
           ++ "=>"
           ++ Path.join([|output, toRelativePath|]),
         );
-        switch (convertComponent(file)) {
+        switch (convertComponent(config, file)) {
         | exception (Json_decode.DecodeError(reason)) =>
           Js.log("Failed to decode " ++ file);
           Js.log(reason);
@@ -418,7 +429,9 @@ switch (command) {
   if (List.length(positionalArguments) < 5) {
     exit("No filename given");
   };
-  convertComponent(List.nth(positionalArguments, 4)) |> Js.log;
+  let filename = List.nth(positionalArguments, 4);
+  let config = Config.load(filename);
+  convertComponent(config, filename) |> Js.log;
 | "colors" =>
   if (List.length(positionalArguments) < 5) {
     let render = contents =>
@@ -428,6 +441,23 @@ switch (command) {
     let contents =
       Node.Fs.readFileSync(List.nth(positionalArguments, 4), `utf8);
     convertColors(target, contents) |> Js.log;
+  }
+| "shadows" =>
+  if (List.length(positionalArguments) < 5) {
+    let render = content =>
+      Js.Promise.resolve(convertColors(target, content) |> Js.log);
+    getStdin() |> Js.Promise.then_(render) |> ignore;
+  } else {
+    let filename = List.nth(positionalArguments, 4);
+    switch (Config.Workspace.find(filename)) {
+    | None =>
+      exit(
+        "Couldn't find workspace directory. Try specifying it as a parameter (TODO)",
+      )
+    | Some(workspacePath) =>
+      let content = Node.Fs.readFileSync(filename, `utf8);
+      convertShadows(target, workspacePath, content) |> Js.log;
+    };
   }
 | "types" =>
   if (List.length(positionalArguments) < 5) {
@@ -444,7 +474,7 @@ switch (command) {
     getStdin() |> Js.Promise.then_(render) |> ignore;
   } else {
     let filename = List.nth(positionalArguments, 4);
-    switch (findWorkspaceDirectory(filename)) {
+    switch (Config.Workspace.find(filename)) {
     | None =>
       exit(
         "Couldn't find workspace directory. Try specifying it as a parameter (TODO)",

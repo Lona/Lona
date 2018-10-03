@@ -1,0 +1,92 @@
+{
+  "devices" : [
+    {
+      "height" : 100,
+      "heightMode" : "At Least",
+      "name" : "iPhone SE",
+      "width" : 320
+    }
+  ],
+  "examples" : [
+    {
+      "id" : "Default",
+      "name" : "Default",
+      "params" : {
+
+      }
+    },
+    {
+      "id" : "name",
+      "name" : "name",
+      "params" : {
+        "largeShadow" : true
+      }
+    }
+  ],
+  "logic" : [
+    {
+      "body" : [
+        {
+          "assignee" : [
+            "layers",
+            "Inner",
+            "shadow"
+          ],
+          "content" : {
+            "type" : "LitExpr",
+            "value" : {
+              "data" : "elevation3",
+              "type" : "Shadow"
+            }
+          },
+          "type" : "AssignExpr"
+        }
+      ],
+      "condition" : {
+        "left" : [
+          "parameters",
+          "largeShadow"
+        ],
+        "op" : "==",
+        "right" : {
+          "type" : "LitExpr",
+          "value" : {
+            "data" : true,
+            "type" : "Boolean"
+          }
+        },
+        "type" : "BinExpr"
+      },
+      "type" : "IfExpr"
+    }
+  ],
+  "params" : [
+    {
+      "name" : "largeShadow",
+      "type" : "Boolean"
+    }
+  ],
+  "root" : {
+    "children" : [
+      {
+        "id" : "Inner",
+        "params" : {
+          "backgroundColor" : "blue300",
+          "height" : 60,
+          "shadow" : "elevation2",
+          "width" : 60
+        },
+        "type" : "Lona:View"
+      }
+    ],
+    "id" : "Container",
+    "params" : {
+      "alignItems" : "center",
+      "alignSelf" : "stretch",
+      "justifyContent" : "flex-start",
+      "paddingBottom" : 20,
+      "paddingTop" : 20
+    },
+    "type" : "Lona:View"
+  }
+}

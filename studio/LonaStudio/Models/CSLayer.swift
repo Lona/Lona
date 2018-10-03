@@ -609,7 +609,7 @@ class CSLayer: CSDataDeserializable, CSDataSerializable, DataNode, NSCopying {
         case .named("Color", .string):
             return ["backgroundColor"]
         case .string:
-            return ["backgroundColor", "text", "image", "font"].sorted()
+            return ["backgroundColor", "text", "image", "font", "shadow"].sorted()
         case .number:
             return [
                 "width",
@@ -663,6 +663,9 @@ class CSLayer: CSDataDeserializable, CSDataSerializable, DataNode, NSCopying {
 
             // Color
             "backgroundColor": CSData.String(backgroundColor ?? "transparent"),
+
+            // Shadow
+            "shadow": CSData.String(shadow ?? ""),
 
             // Children
             "children": CSData.Array([])

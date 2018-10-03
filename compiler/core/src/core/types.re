@@ -28,6 +28,8 @@ let colorType = Named("Color", stringType);
 
 let textStyleType = Named("TextStyle", stringType);
 
+let shadowType = Named("Shadow", stringType);
+
 let urlType = Named("URL", stringType);
 
 let handlerType = Function([], Reference("Undefined"));

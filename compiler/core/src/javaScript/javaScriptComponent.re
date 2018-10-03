@@ -381,8 +381,7 @@ let generate =
       name,
       colorsFilePath,
       textStylesFilePath,
-      colors,
-      textStyles,
+      config: Config.t,
       getComponent,
       getComponentFile,
       getAssetPath,
@@ -428,12 +427,7 @@ let generate =
       | (None, _, Some(value)) =>
         Logic.assignmentForLayerParameter(layer, name, value)
       | (None, _, None) =>
-        Logic.defaultAssignmentForLayerParameter(
-          colors,
-          textStyles,
-          layer,
-          name,
-        )
+        Logic.defaultAssignmentForLayerParameter(config, layer, name)
       };
     };
   };
@@ -452,7 +446,7 @@ let generate =
   let themeAST =
     JavaScriptStyles.StyleSet.layerToThemeAST(
       options.framework,
-      colors,
+      config.colorsFile.contents,
       rootLayer,
     );
 
@@ -460,8 +454,8 @@ let generate =
     rootLayer
     |> rootLayerToJavaScriptAST(
          options,
-         colors,
-         textStyles,
+         config.colorsFile.contents,
+         config.textStylesFile.contents,
          getAssetPath,
          assignments,
        );
@@ -469,11 +463,15 @@ let generate =
     rootLayer
     |> JavaScriptStyles.layerToJavaScriptStyleSheetAST(
          options.framework,
-         colors,
+         config.colorsFile.contents,
        );
   let logicAST =
     logic
-    |> JavaScriptLogic.toJavaScriptAST(options.framework, colors, textStyles)
+    |> JavaScriptLogic.toJavaScriptAST(
+         options.framework,
+         config.colorsFile.contents,
+         config.textStylesFile.contents,
+       )
     |> Ast.optimize;
   let {absolute, relative} =
     rootLayer |> importComponents(options.framework, getComponentFile);

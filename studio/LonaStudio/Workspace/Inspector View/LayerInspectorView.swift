@@ -133,7 +133,7 @@ class LayerInspectorView: CoreComponentInspectorView {
             case .backgroundGradient: layer.backgroundGradient = value.string
 
             // Shadow
-            case .shadowEnabled: layer.shadow = value.boolValue ? CSShadows.unstyledDefaultName : nil
+            case .shadowEnabled: layer.shadow = value.boolValue ? CSShadows.defaultName : nil
             case .shadow: layer.shadow = value.stringValue
 
             // Text

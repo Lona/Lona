@@ -18,7 +18,7 @@ struct CSShadow {
     let blur: CGFloat
 
     var nsShadow: NSShadow {
-        return NSShadow(color: color, offset: CGSize(width: x, height: y), blur: blur)
+        return NSShadow(color: color, offset: CGSize(width: x, height: -y), blur: blur)
     }
 
     func attributeDictionary() -> [NSAttributedStringKey: Any] {
@@ -58,8 +58,8 @@ class CSShadows: CSPreferencesFile {
         })
     }
 
-    static func shadow(with id: String) -> CSShadow {
-        return shadows.first(where: { $0.id == id }) ?? defaultShadow
+    static func shadow(with id: String) -> CSShadow? {
+        return shadows.first(where: { $0.id == id })
     }
 
     public static var defaultName: String {
@@ -67,8 +67,7 @@ class CSShadows: CSPreferencesFile {
     }
 
     public static var defaultShadow: CSShadow {
-        if let defaultShadowName = defaultShadowName {
-            let shadow = self.shadow(with: defaultShadowName)
+        if let defaultShadowName = defaultShadowName, let shadow = self.shadow(with: defaultShadowName) {
             return shadow
         }
         return unstyledDefaultShadow

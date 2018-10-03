@@ -3,7 +3,8 @@ open SwiftAst;
 let join = (sep, nodes) =>
   switch (nodes) {
   | [] => []
-  | _ => nodes |> List.fold_left((acc, node) => acc @ [sep, node], [])
+  | [hd, ...tl] =>
+    tl |> List.fold_left((acc, node) => acc @ [sep, node], [hd])
   };
 
 let joinGroups = (sep, groups) => {
@@ -45,6 +46,18 @@ let imageTypeName = framework =>
   switch (framework) {
   | SwiftOptions.UIKit => "UIImage"
   | SwiftOptions.AppKit => "NSImage"
+  };
+
+let sizeTypeName = framework =>
+  switch (framework) {
+  | SwiftOptions.UIKit => "CGSize"
+  | SwiftOptions.AppKit => "NSSize"
+  };
+
+let shadowTypeName = framework =>
+  switch (framework) {
+  | SwiftOptions.UIKit => "Shadow"
+  | SwiftOptions.AppKit => "NSShadow"
   };
 
 let layoutPriorityTypeDoc = framework =>
@@ -116,8 +129,7 @@ let rec typeAnnotationDoc =
 let rec lonaValue =
         (
           framework: SwiftOptions.framework,
-          colors,
-          textStyles: TextStyle.file,
+          config: Config.t,
           value: Types.lonaValue,
         ) =>
   switch (value.ltype) {
@@ -128,18 +140,17 @@ let rec lonaValue =
       LiteralExpression(FloatingPoint(value.data |> Json.Decode.float))
     | "String" => LiteralExpression(String(value.data |> Json.Decode.string))
     | "TextStyle"
-    | "Color" =>
+    | "Color"
+    | "Shadow" =>
       lonaValue(
         framework,
-        colors,
-        textStyles,
+        config,
         {ltype: Named(typeName, Reference("String")), data: value.data},
       )
     | "URL" =>
       lonaValue(
         framework,
-        colors,
-        textStyles,
+        config,
         {ltype: Named(typeName, Reference("String")), data: value.data},
       )
     | _ => SwiftIdentifier("UnknownReferenceType: " ++ typeName)
@@ -149,7 +160,7 @@ let rec lonaValue =
     switch (alias) {
     | "Color" =>
       let rawValue = value.data |> Json.Decode.string;
-      switch (Color.find(colors, rawValue)) {
+      switch (Color.find(config.colorsFile.contents, rawValue)) {
       | Some(color) =>
         MemberExpression([
           SwiftIdentifier("Colors"),
@@ -181,6 +192,7 @@ let rec lonaValue =
       };
     | "TextStyle" =>
       let rawValue = value.data |> Json.Decode.string;
+      let textStyles = config.textStylesFile.contents;
       switch (TextStyle.find(textStyles.styles, rawValue)) {
       | Some(textStyle) =>
         MemberExpression([
@@ -193,6 +205,21 @@ let rec lonaValue =
           SwiftIdentifier(textStyles.defaultStyle.id),
         ])
       };
+    | "Shadow" =>
+      let rawValue = value.data |> Json.Decode.string;
+      let shadows = config.shadowsFile.contents;
+      switch (Shadow.find(shadows.styles, rawValue)) {
+      | Some(shadow) =>
+        MemberExpression([
+          SwiftIdentifier("Shadows"),
+          SwiftIdentifier(shadow.id),
+        ])
+      | None =>
+        MemberExpression([
+          SwiftIdentifier("Shadows"),
+          SwiftIdentifier(shadows.defaultStyle.id),
+        ])
+      };
     | _ => SwiftIdentifier("UnknownNamedTypeAlias" ++ alias)
     }
   };
@@ -200,8 +227,7 @@ let rec lonaValue =
 let rec defaultValueForLonaType =
         (
           framework: SwiftOptions.framework,
-          colors,
-          textStyles: TextStyle.file,
+          config: Config.t,
           ltype: Types.lonaType,
         ) =>
   switch (ltype) {
@@ -214,22 +240,19 @@ let rec defaultValueForLonaType =
     | "Color" =>
       defaultValueForLonaType(
         framework,
-        colors,
-        textStyles,
+        config,
         Named(typeName, Reference("String")),
       )
     | "URL" =>
       defaultValueForLonaType(
         framework,
-        colors,
-        textStyles,
+        config,
         Named(typeName, Reference("String")),
       )
     | value when Js.String.endsWith("?", value) =>
       defaultValueForLonaType(
         framework,
-        colors,
-        textStyles,
+        config,
         Reference(Js.String.replace("?", "", value)),
       )
     | _ => LiteralExpression(Nil)
@@ -250,7 +273,7 @@ let rec defaultValueForLonaType =
     | "TextStyle" =>
       MemberExpression([
         SwiftIdentifier("TextStyles"),
-        SwiftIdentifier(textStyles.defaultStyle.id),
+        SwiftIdentifier(config.textStylesFile.contents.defaultStyle.id),
       ])
     | _ => SwiftIdentifier("TypeUnknown" ++ alias)
     }

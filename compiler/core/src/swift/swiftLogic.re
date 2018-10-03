@@ -5,8 +5,7 @@ module Document = SwiftDocument;
 let toSwiftAST =
     (
       options: SwiftOptions.options,
-      colors,
-      textStyles,
+      config: Config.t,
       rootLayer: Types.layer,
       logicRootNode,
     ) => {
@@ -44,7 +43,7 @@ let toSwiftAST =
       switch (x) {
       | Logic.Identifier(_) => identifierName(x)
       | Literal(value) =>
-        Document.lonaValue(options.framework, colors, textStyles, value)
+        Document.lonaValue(options.framework, config, value)
       };
     /* Here is the only place we should handle Logic -> Swift identifier conversion */
     switch (options.framework, initialValue) {
@@ -146,6 +145,26 @@ let toSwiftAST =
           "right":
             Ast.MemberExpression(right @ [Ast.SwiftIdentifier("cgColor")]),
         })
+      | (Ast.SwiftIdentifier(name), Ast.MemberExpression(right))
+          when
+            name |> Js.String.endsWith("shadow") && options.framework == UIKit =>
+        Ast.MemberExpression(
+          right
+          @ [
+            Ast.FunctionCallExpression({
+              "name": Ast.SwiftIdentifier("apply"),
+              "arguments": [
+                Ast.FunctionCallArgument({
+                  "name": Some(Ast.SwiftIdentifier("to")),
+                  "value":
+                    Ast.SwiftIdentifier(
+                      name |> Js.String.replace(".shadow", ".layer"),
+                    ),
+                }),
+              ],
+            }),
+          ],
+        )
       | (Ast.SwiftIdentifier(name), other)
           when name |> Js.String.endsWith("visible") =>
         Ast.BinaryExpression({

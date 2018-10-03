@@ -209,10 +209,10 @@ let defaultValueForType = (lonaType: Types.lonaType) =>
     raise(Not_found);
   };
 
-let defaultValueForLayerParameter =
-    (colors, textStyles: TextStyle.file, layer, parameterName) =>
+let defaultValueForLayerParameter = (config: Config.t, layer, parameterName) =>
   switch (parameterName) {
-  | ParameterKey.TextStyle => LonaValue.textStyle(textStyles.defaultStyle.id)
+  | ParameterKey.TextStyle =>
+    LonaValue.textStyle(config.textStylesFile.contents.defaultStyle.id)
   | ParameterKey.BackgroundColor => LonaValue.color("transparent")
   | _ => LonaValue.defaultValueForParameter(parameterName)
   };
@@ -229,9 +229,8 @@ let assignmentForLayerParameter =
 };
 
 let defaultAssignmentForLayerParameter =
-    (colors, textStyles: TextStyle.file, layer: Types.layer, parameterName) => {
-  let value =
-    defaultValueForLayerParameter(colors, textStyles, layer, parameterName);
+    (config: Config.t, layer: Types.layer, parameterName) => {
+  let value = defaultValueForLayerParameter(config, layer, parameterName);
   assignmentForLayerParameter(layer, parameterName, value);
 };
 

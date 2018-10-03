@@ -30,6 +30,7 @@ type t =
   | BorderRadius
   | BorderWidth
   | BorderColor
+  | Shadow
   | Width
   | Height
   /* Interactivity */
@@ -68,6 +69,7 @@ let fromString = string =>
   | "borderRadius" => BorderRadius
   | "borderWidth" => BorderWidth
   | "borderColor" => BorderColor
+  | "shadow" => Shadow
   | "width" => Width
   | "height" => Height
   /* Interactivity */
@@ -108,6 +110,7 @@ let toString = key =>
   | BorderRadius => "borderRadius"
   | BorderWidth => "borderWidth"
   | BorderColor => "borderColor"
+  | Shadow => "shadow"
   | Width => "width"
   | Height => "height"
   /* Interactivity */

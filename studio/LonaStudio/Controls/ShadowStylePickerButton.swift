@@ -20,8 +20,8 @@ class ShadowStylePickerButton: NSButton, CSControl {
     var value: String = CSShadows.defaultShadow.id {
         didSet {
             let shadow = CSShadows.shadow(with: value)
-            setImage(with: shadow)
-            setTitle(with: shadow)
+            setImage(with: shadow ?? CSShadows.defaultShadow)
+            setTitle(with: shadow ?? CSShadows.defaultShadow)
         }
     }
 
@@ -70,10 +70,6 @@ extension ShadowStylePickerButton {
     }
 
     fileprivate func setTitle(with shadow: CSShadow) {
-        if shadow.id == CSShadows.unstyledDefaultName {
-            title = "\(shadow.name)"
-            return
-        }
-        title = "\(shadow.name) x: \(shadow.x) y: \(shadow.y) blur: \(shadow.blur)"
+        title = shadow.name
     }
 }
