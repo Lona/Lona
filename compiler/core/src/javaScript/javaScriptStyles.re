@@ -89,7 +89,12 @@ let defaultStyles =
         |> add(ParameterKey.Display, LonaValue.string("flex"))
         |> add(ParameterKey.AlignItems, LonaValue.string("flex-start"))
       )
-    | _ => defaults
+    | (JavaScriptOptions.ReactNative, _)
+    | (JavaScriptOptions.ReactSketchapp, _) =>
+      ParameterMap.(
+        defaults
+        |> add(ParameterKey.AlignItems, LonaValue.string("flex-start"))
+      )
     };
 
   /* Add default text style */
@@ -136,19 +141,33 @@ let getLayoutParameters =
 
   let parameters = ParameterMap.empty;
 
+  let flex0Value =
+    switch (framework) {
+    | JavaScriptOptions.ReactDOM => LonaValue.string("0 0 auto")
+    | JavaScriptOptions.ReactNative
+    | JavaScriptOptions.ReactSketchapp => LonaValue.number(0.0)
+    };
+
+  let flex1Value =
+    switch (framework) {
+    | JavaScriptOptions.ReactDOM => LonaValue.string("1 1 0%")
+    | JavaScriptOptions.ReactNative
+    | JavaScriptOptions.ReactSketchapp => LonaValue.number(1.0)
+    };
+
   /* Horizontal axis */
   let parameters =
     ParameterMap.(
-      switch (framework, frameworkParentDirection, sizingRules.width) {
-      | (JavaScriptOptions.ReactDOM, "row", Types.Fill) =>
-        parameters |> add(ParameterKey.Flex, LonaValue.string("1 1 0%"))
-      | (JavaScriptOptions.ReactDOM, "row", Types.FitContent) =>
-        parameters |> add(ParameterKey.Flex, LonaValue.string("0 0 auto"))
-      | (JavaScriptOptions.ReactDOM, "column", Types.Fill) =>
+      switch (frameworkParentDirection, sizingRules.width) {
+      | ("row", Types.Fill) =>
+        parameters |> add(ParameterKey.Flex, flex1Value)
+      | ("row", Types.FitContent) =>
+        parameters |> add(ParameterKey.Flex, flex0Value)
+      | ("column", Types.Fill) =>
         parameters
         |> add(ParameterKey.AlignSelf, LonaValue.string("stretch"))
-      | (JavaScriptOptions.ReactDOM, "column", Types.FitContent) => parameters
-      | (JavaScriptOptions.ReactDOM, _, Types.Fixed(value)) =>
+      | ("column", Types.FitContent) => parameters
+      | (_, Types.Fixed(value)) =>
         parameters |> add(ParameterKey.Width, LonaValue.number(value))
       | _ =>
         Js.log2("Bad parent direction (width)", frameworkParentDirection);
@@ -159,16 +178,16 @@ let getLayoutParameters =
   /* Vertical axis */
   let parameters =
     ParameterMap.(
-      switch (framework, frameworkParentDirection, sizingRules.height) {
-      | (JavaScriptOptions.ReactDOM, "row", Types.Fill) =>
+      switch (frameworkParentDirection, sizingRules.height) {
+      | ("row", Types.Fill) =>
         parameters
         |> add(ParameterKey.AlignSelf, LonaValue.string("stretch"))
-      | (JavaScriptOptions.ReactDOM, "row", Types.FitContent) => parameters
-      | (JavaScriptOptions.ReactDOM, "column", Types.Fill) =>
-        parameters |> add(ParameterKey.Flex, LonaValue.string("1 1 0%"))
-      | (JavaScriptOptions.ReactDOM, "column", Types.FitContent) =>
-        parameters |> add(ParameterKey.Flex, LonaValue.string("0 0 auto"))
-      | (JavaScriptOptions.ReactDOM, _, Types.Fixed(value)) =>
+      | ("row", Types.FitContent) => parameters
+      | ("column", Types.Fill) =>
+        parameters |> add(ParameterKey.Flex, flex1Value)
+      | ("column", Types.FitContent) =>
+        parameters |> add(ParameterKey.Flex, flex0Value)
+      | (_, Types.Fixed(value)) =>
         parameters |> add(ParameterKey.Height, LonaValue.number(value))
       | _ =>
         Js.log2("Bad parent direction (width)", frameworkParentDirection);
