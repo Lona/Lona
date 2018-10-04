@@ -46,15 +46,15 @@ export default class TextStylesTest extends React.Component {
 };
 
 let styles = StyleSheet.create({
-  view: { alignSelf: "stretch" },
-  text: { ...textStyles.display4 },
-  text1: { ...textStyles.display3 },
-  text2: { ...textStyles.display2 },
-  text3: { ...textStyles.display1 },
-  text4: { ...textStyles.headline },
-  text5: { ...textStyles.subheading2 },
-  text6: { ...textStyles.subheading1 },
-  text7: { ...textStyles.body2 },
-  text8: { ...textStyles.body1 },
-  text9: { ...textStyles.caption }
+  view: { alignItems: "flex-start", alignSelf: "stretch", flex: 0 },
+  text: { ...textStyles.display4, alignItems: "flex-start", flex: 0 },
+  text1: { ...textStyles.display3, alignItems: "flex-start", flex: 0 },
+  text2: { ...textStyles.display2, alignItems: "flex-start", flex: 0 },
+  text3: { ...textStyles.display1, alignItems: "flex-start", flex: 0 },
+  text4: { ...textStyles.headline, alignItems: "flex-start", flex: 0 },
+  text5: { ...textStyles.subheading2, alignItems: "flex-start", flex: 0 },
+  text6: { ...textStyles.subheading1, alignItems: "flex-start", flex: 0 },
+  text7: { ...textStyles.body2, alignItems: "flex-start", flex: 0 },
+  text8: { ...textStyles.body1, alignItems: "flex-start", flex: 0 },
+  text9: { ...textStyles.caption, alignItems: "flex-start", flex: 0 }
 })

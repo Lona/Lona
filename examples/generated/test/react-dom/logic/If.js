@@ -17,7 +17,7 @@ export default class If extends React.Component {
     return (
       <ThemeProvider theme={theme}>
         <div
-          style={Object.assign(styles.view, {
+          style={Object.assign({}, styles.view, {
             backgroundColor: View$backgroundColor
           })}
 
@@ -29,9 +29,9 @@ export default class If extends React.Component {
 
 let styles = {
   view: {
-    alignItems: "stretch",
-    alignSelf: "stretch",
+    alignItems: "flex-start",
     display: "flex",
+    flex: "1 1 0%",
     flexDirection: "column"
   }
 }

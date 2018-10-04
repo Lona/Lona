@@ -23,6 +23,10 @@ export default class ComponentParameterInstance extends React.Component {
 };
 
 let styles = StyleSheet.create({
-  view: { alignSelf: "stretch" },
-  componentParameterTemplate: {}
+  view: { alignItems: "flex-start", alignSelf: "stretch", flex: 0 },
+  componentParameterTemplate: {
+    alignItems: "stretch",
+    flex: 0,
+    flexDirection: "column"
+  }
 })

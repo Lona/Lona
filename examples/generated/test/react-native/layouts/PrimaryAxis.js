@@ -25,6 +25,7 @@ export default class PrimaryAxis extends React.Component {
 
 let styles = StyleSheet.create({
   view: {
+    alignItems: "flex-start",
     alignSelf: "stretch",
     paddingTop: 24,
     paddingRight: 24,
@@ -33,13 +34,30 @@ let styles = StyleSheet.create({
     height: 500
   },
   fixed: {
+    alignItems: "flex-start",
     backgroundColor: "#D8D8D8",
     marginBottom: 24,
     width: 100,
     height: 100
   },
-  fit: { backgroundColor: "#D8D8D8", marginBottom: 24, width: 100 },
-  text: {},
-  fill1: { backgroundColor: colors.cyan500, flex: 1, width: 100 },
-  fill2: { backgroundColor: colors.blue500, flex: 1, width: 100 }
+  fit: {
+    alignItems: "flex-start",
+    backgroundColor: "#D8D8D8",
+    flex: 0,
+    marginBottom: 24,
+    width: 100
+  },
+  fill1: {
+    alignItems: "flex-start",
+    backgroundColor: colors.cyan500,
+    flex: 1,
+    width: 100
+  },
+  fill2: {
+    alignItems: "flex-start",
+    backgroundColor: colors.blue500,
+    flex: 1,
+    width: 100
+  },
+  text: { ...textStyles.body1, alignItems: "flex-start", flex: 0 }
 })

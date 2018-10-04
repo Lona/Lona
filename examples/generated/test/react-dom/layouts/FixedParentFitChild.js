@@ -16,10 +16,10 @@ export default class FixedParentFitChild extends React.Component {
     }
     return (
       <ThemeProvider theme={theme}>
-        <div style={Object.assign(styles.view, {})}>
-          <div style={Object.assign(styles.view1, {})}>
-            <div style={Object.assign(styles.view4, {})} />
-            <div style={Object.assign(styles.view5, {})} />
+        <div style={Object.assign({}, styles.view, {})}>
+          <div style={Object.assign({}, styles.view1, {})}>
+            <div style={Object.assign({}, styles.view4, {})} />
+            <div style={Object.assign({}, styles.view5, {})} />
           </div>
         </div>
       </ThemeProvider>
@@ -29,10 +29,10 @@ export default class FixedParentFitChild extends React.Component {
 
 let styles = {
   view: {
-    alignItems: "stretch",
-    alignSelf: "stretch",
+    alignItems: "flex-start",
     backgroundColor: colors.bluegrey100,
     display: "flex",
+    flex: "1 1 0%",
     flexDirection: "column",
     paddingTop: "24px",
     paddingRight: "24px",
@@ -41,18 +41,18 @@ let styles = {
     height: "600px"
   },
   view1: {
-    alignItems: "stretch",
+    alignItems: "flex-start",
     alignSelf: "stretch",
     backgroundColor: colors.red50,
     display: "flex",
-    flexDirection: "row",
+    flex: "0 0 auto",
     paddingTop: "24px",
     paddingRight: "24px",
     paddingBottom: "24px",
     paddingLeft: "24px"
   },
   view4: {
-    alignItems: "stretch",
+    alignItems: "flex-start",
     backgroundColor: colors.red200,
     display: "flex",
     flexDirection: "column",
@@ -60,7 +60,7 @@ let styles = {
     height: "100px"
   },
   view5: {
-    alignItems: "stretch",
+    alignItems: "flex-start",
     backgroundColor: colors.deeporange200,
     display: "flex",
     flexDirection: "column",

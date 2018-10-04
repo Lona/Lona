@@ -16,8 +16,8 @@ export default class TextStyleConditional extends React.Component {
     let theme = { "view": { "normal": {} }, "text": { "normal": {} } }
     return (
       <ThemeProvider theme={theme}>
-        <div style={Object.assign(styles.view, {})}>
-          <span style={Object.assign(styles.text, { ...Text$textStyle })}>
+        <div style={Object.assign({}, styles.view, {})}>
+          <span style={Object.assign({}, styles.text, { ...Text$textStyle })}>
             {"Text goes here"}
           </span>
         </div>
@@ -28,15 +28,15 @@ export default class TextStyleConditional extends React.Component {
 
 let styles = {
   view: {
-    alignItems: "stretch",
-    alignSelf: "stretch",
+    alignItems: "flex-start",
     display: "flex",
+    flex: "1 1 0%",
     flexDirection: "column"
   },
   text: {
     ...textStyles.headline,
-    alignItems: "stretch",
     display: "flex",
+    flex: "0 0 auto",
     flexDirection: "column"
   }
 }

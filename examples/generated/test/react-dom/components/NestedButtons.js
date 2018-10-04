@@ -17,14 +17,14 @@ export default class NestedButtons extends React.Component {
     }
     return (
       <ThemeProvider theme={theme}>
-        <div style={Object.assign(styles.view, {})}>
-          <Button style={Object.assign(styles.button, {})} label={"Button 1"} />
-          <div style={Object.assign(styles.view1, {})} />
-          <Button
-            style={Object.assign(styles.button2, {})}
-            label={"Button 2"}
-
-          />
+        <div style={Object.assign({}, styles.view, {})}>
+          <div style={Object.assign({}, styles.button, {})}>
+            <Button label={"Button 1"} />
+          </div>
+          <div style={Object.assign({}, styles.view1, {})} />
+          <div style={Object.assign({}, styles.button2, {})}>
+            <Button label={"Button 2"} />
+          </div>
         </div>
       </ThemeProvider>
     );
@@ -33,22 +33,32 @@ export default class NestedButtons extends React.Component {
 
 let styles = {
   view: {
-    alignItems: "stretch",
-    alignSelf: "stretch",
+    alignItems: "flex-start",
     display: "flex",
+    flex: "1 1 0%",
     flexDirection: "column",
     paddingTop: "24px",
     paddingRight: "24px",
     paddingBottom: "24px",
     paddingLeft: "24px"
   },
-  button: { alignItems: "stretch", display: "flex", flexDirection: "column" },
+  button: {
+    alignItems: "flex-start",
+    display: "flex",
+    flex: "0 0 auto",
+    flexDirection: "row"
+  },
   view1: {
-    alignItems: "stretch",
+    alignItems: "flex-start",
     alignSelf: "stretch",
     display: "flex",
     flexDirection: "column",
     height: "8px"
   },
-  button2: { alignItems: "stretch", display: "flex", flexDirection: "column" }
+  button2: {
+    alignItems: "flex-start",
+    display: "flex",
+    flex: "0 0 auto",
+    flexDirection: "row"
+  }
 }

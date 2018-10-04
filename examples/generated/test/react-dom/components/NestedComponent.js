@@ -21,19 +21,23 @@ export default class NestedComponent extends React.Component {
     }
     return (
       <ThemeProvider theme={theme}>
-        <div style={Object.assign(styles.view, {})}>
-          <span style={Object.assign(styles.text, {})}>
+        <div style={Object.assign({}, styles.view, {})}>
+          <span style={Object.assign({}, styles.text, {})}>
             {"Example nested component"}
           </span>
-          <FitContentParentSecondaryChildren
-            style={Object.assign(styles.fitContentParentSecondaryChildren, {})}
-
-          />
-          <span style={Object.assign(styles.text1, {})}>
+          <div
+            style={Object.assign({}, styles
+            .fitContentParentSecondaryChildren, {})}
+          >
+            <FitContentParentSecondaryChildren />
+          </div>
+          <span style={Object.assign({}, styles.text1, {})}>
             {"Text below"}
           </span>
-          <LocalAsset style={Object.assign(styles.localAsset, {})} />
-          <span style={Object.assign(styles.text2, {})}>
+          <div style={Object.assign({}, styles.localAsset, {})}>
+            <LocalAsset />
+          </div>
+          <span style={Object.assign({}, styles.text2, {})}>
             {"Very bottom"}
           </span>
         </div>
@@ -44,9 +48,9 @@ export default class NestedComponent extends React.Component {
 
 let styles = {
   view: {
-    alignItems: "stretch",
-    alignSelf: "stretch",
+    alignItems: "flex-start",
     display: "flex",
+    flex: "1 1 0%",
     flexDirection: "column",
     paddingTop: "10px",
     paddingRight: "10px",
@@ -55,26 +59,34 @@ let styles = {
   },
   text: {
     ...textStyles.subheading2,
-    alignItems: "stretch",
     display: "flex",
+    flex: "0 0 auto",
     flexDirection: "column",
     marginBottom: "8px"
   },
   fitContentParentSecondaryChildren: {
-    alignItems: "stretch",
+    alignItems: "flex-start",
     display: "flex",
-    flexDirection: "column"
+    flex: "0 0 auto",
+    flexDirection: "row"
   },
   text1: {
-    alignItems: "stretch",
+    ...textStyles.body1,
     display: "flex",
+    flex: "0 0 auto",
     flexDirection: "column",
     marginTop: "12px"
   },
   localAsset: {
-    alignItems: "stretch",
+    alignItems: "flex-start",
     display: "flex",
-    flexDirection: "column"
+    flex: "0 0 auto",
+    flexDirection: "row"
   },
-  text2: { alignItems: "stretch", display: "flex", flexDirection: "column" }
+  text2: {
+    ...textStyles.body1,
+    display: "flex",
+    flex: "0 0 auto",
+    flexDirection: "column"
+  }
 }

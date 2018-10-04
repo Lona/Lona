@@ -21,13 +21,15 @@ export default class NestedButtons extends React.Component {
 
 let styles = StyleSheet.create({
   view: {
+    alignItems: "flex-start",
     alignSelf: "stretch",
+    flex: 0,
     paddingTop: 24,
     paddingRight: 24,
     paddingBottom: 24,
     paddingLeft: 24
   },
-  button: {},
-  view1: { alignSelf: "stretch", height: 8 },
-  button2: {}
+  button: { alignItems: "stretch", flex: 0, flexDirection: "column" },
+  view1: { alignItems: "flex-start", alignSelf: "stretch", height: 8 },
+  button2: { alignItems: "stretch", flex: 0, flexDirection: "column" }
 })

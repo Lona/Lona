@@ -49,18 +49,18 @@ export default class PressableRootView extends React.Component {
     return (
       <ThemeProvider theme={theme}>
         <div
-          style={Object.assign(styles.outer, {
+          style={Object.assign({}, styles.outer, {
             backgroundColor: Outer$backgroundColor
           })}
           onClick={Outer$onPress}
         >
           <div
-            style={Object.assign(styles.inner, {
+            style={Object.assign({}, styles.inner, {
               backgroundColor: Inner$backgroundColor
             })}
             onClick={Inner$onPress}
           >
-            <span style={Object.assign(styles.innerText, {})}>
+            <span style={Object.assign({}, styles.innerText, {})}>
               {InnerText$text}
             </span>
           </div>
@@ -72,10 +72,10 @@ export default class PressableRootView extends React.Component {
 
 let styles = {
   outer: {
-    alignItems: "stretch",
-    alignSelf: "stretch",
+    alignItems: "flex-start",
     backgroundColor: colors.grey50,
     display: "flex",
+    flex: "1 1 0%",
     flexDirection: "column",
     paddingTop: "24px",
     paddingRight: "24px",
@@ -83,7 +83,7 @@ let styles = {
     paddingLeft: "24px"
   },
   inner: {
-    alignItems: "stretch",
+    alignItems: "flex-start",
     backgroundColor: colors.blue500,
     display: "flex",
     flexDirection: "column",
@@ -92,8 +92,8 @@ let styles = {
   },
   innerText: {
     ...textStyles.headline,
-    alignItems: "stretch",
     display: "flex",
+    flex: "0 0 auto",
     flexDirection: "column"
   }
 }

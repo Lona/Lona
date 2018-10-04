@@ -25,19 +25,23 @@ export default class SecondaryAxis extends React.Component {
 
 let styles = StyleSheet.create({
   container: {
+    alignItems: "flex-start",
     alignSelf: "stretch",
+    flex: 0,
     paddingTop: 24,
     paddingRight: 24,
     paddingBottom: 24,
     paddingLeft: 24
   },
   fixed: {
+    alignItems: "flex-start",
     backgroundColor: "#D8D8D8",
     marginBottom: 24,
     width: 100,
     height: 100
   },
   fit: {
+    alignItems: "flex-start",
     backgroundColor: "#D8D8D8",
     marginBottom: 24,
     paddingTop: 12,
@@ -46,6 +50,11 @@ let styles = StyleSheet.create({
     paddingLeft: 12,
     height: 100
   },
-  text: {},
-  fill: { alignSelf: "stretch", backgroundColor: "#D8D8D8", height: 100 }
+  fill: {
+    alignItems: "flex-start",
+    alignSelf: "stretch",
+    backgroundColor: "#D8D8D8",
+    height: 100
+  },
+  text: { ...TextStyles.get("body1"), alignItems: "flex-start", flex: 0 }
 })

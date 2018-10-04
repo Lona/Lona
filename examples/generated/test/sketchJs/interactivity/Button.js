@@ -41,11 +41,13 @@ export default class Button extends React.Component {
 
 let styles = StyleSheet.create({
   view: {
+    alignItems: "flex-start",
     backgroundColor: colors.blue100,
+    flex: 0,
     paddingTop: 12,
     paddingRight: 16,
     paddingBottom: 12,
     paddingLeft: 16
   },
-  text: { ...TextStyles.get("button") }
+  text: { ...TextStyles.get("button"), alignItems: "flex-start", flex: 0 }
 })

@@ -33,59 +33,59 @@ export default class TextAlignment extends React.Component {
     }
     return (
       <ThemeProvider theme={theme}>
-        <div style={Object.assign(styles.view, {})}>
-          <div style={Object.assign(styles.view1, {})}>
+        <div style={Object.assign({}, styles.view, {})}>
+          <div style={Object.assign({}, styles.view1, {})}>
             <img
-              style={Object.assign(styles.image, {})}
+              style={Object.assign({}, styles.image, {})}
               src={require("../assets/icon_128x128.png")}
 
             />
-            <div style={Object.assign(styles.view2, {})} />
-            <span style={Object.assign(styles.text, {})}>
+            <div style={Object.assign({}, styles.view2, {})} />
+            <span style={Object.assign({}, styles.text, {})}>
               {"Welcome to Lona Studio"}
             </span>
-            <span style={Object.assign(styles.text1, {})}>
+            <span style={Object.assign({}, styles.text1, {})}>
               {"Centered - Width: Fit"}
             </span>
-            <span style={Object.assign(styles.text2, {})}>
+            <span style={Object.assign({}, styles.text2, {})}>
               {"Left aligned - Width: Fill"}
             </span>
-            <span style={Object.assign(styles.text3, {})}>
+            <span style={Object.assign({}, styles.text3, {})}>
               {"Right aligned - Width: Fill"}
             </span>
-            <span style={Object.assign(styles.text4, {})}>
+            <span style={Object.assign({}, styles.text4, {})}>
               {"Centered - Width: 80"}
             </span>
           </div>
-          <div style={Object.assign(styles.view3, {})}>
-            <span style={Object.assign(styles.text5, {})}>
+          <div style={Object.assign({}, styles.view3, {})}>
+            <span style={Object.assign({}, styles.text5, {})}>
               {"Left aligned text, Fit w/ secondary centering"}
             </span>
           </div>
-          <div style={Object.assign(styles.view4, {})}>
-            <span style={Object.assign(styles.text6, {})}>
+          <div style={Object.assign({}, styles.view4, {})}>
+            <span style={Object.assign({}, styles.text6, {})}>
               {"Left aligned text, Fixed w/ secondary centering"}
             </span>
           </div>
-          <div style={Object.assign(styles.view5, {})}>
-            <span style={Object.assign(styles.text7, {})}>
+          <div style={Object.assign({}, styles.view5, {})}>
+            <span style={Object.assign({}, styles.text7, {})}>
               {"Centered text, Fit parent no centering"}
             </span>
           </div>
-          <div style={Object.assign(styles.view6, {})}>
-            <span style={Object.assign(styles.text8, {})}>
+          <div style={Object.assign({}, styles.view6, {})}>
+            <span style={Object.assign({}, styles.text8, {})}>
               {"Centered text, Fixed parent no centering"}
             </span>
           </div>
-          <div style={Object.assign(styles.rightAlignmentContainer, {})}>
-            <span style={Object.assign(styles.text9, {})}>
+          <div style={Object.assign({}, styles.rightAlignmentContainer, {})}>
+            <span style={Object.assign({}, styles.text9, {})}>
               {"Fit Text"}
             </span>
-            <span style={Object.assign(styles.text10, {})}>
+            <span style={Object.assign({}, styles.text10, {})}>
               {"Fill and center aligned text"}
             </span>
             <img
-              style={Object.assign(styles.image1, {})}
+              style={Object.assign({}, styles.image1, {})}
               src={require("../assets/icon_128x128.png")}
 
             />
@@ -99,8 +99,8 @@ export default class TextAlignment extends React.Component {
 let styles = {
   view: {
     alignItems: "flex-start",
-    alignSelf: "stretch",
     display: "flex",
+    flex: "1 1 0%",
     flexDirection: "column",
     paddingTop: "10px",
     paddingRight: "10px",
@@ -112,126 +112,154 @@ let styles = {
     alignSelf: "stretch",
     backgroundColor: colors.indigo50,
     display: "flex",
+    flex: "0 0 auto",
     flexDirection: "column",
     justifyContent: "center"
-  },
-  image: {
-    alignItems: "stretch",
-    display: "flex",
-    flexDirection: "column",
-    width: "100px",
-    height: "100px"
-  },
-  view2: {
-    alignItems: "stretch",
-    backgroundColor: "#D8D8D8",
-    display: "flex",
-    flexDirection: "column"
-  },
-  text: {
-    textAlign: "center",
-    ...textStyles.display1,
-    alignItems: "stretch",
-    alignSelf: "stretch",
-    display: "flex",
-    flexDirection: "column",
-    marginTop: "16px"
-  },
-  text1: {
-    textAlign: "center",
-    ...textStyles.subheading2,
-    alignItems: "stretch",
-    display: "flex",
-    flexDirection: "column",
-    marginTop: "16px"
-  },
-  text2: {
-    alignItems: "stretch",
-    alignSelf: "stretch",
-    display: "flex",
-    flexDirection: "column",
-    marginTop: "12px"
-  },
-  text3: {
-    textAlign: "right",
-    alignItems: "stretch",
-    alignSelf: "stretch",
-    display: "flex",
-    flexDirection: "column"
-  },
-  text4: {
-    textAlign: "center",
-    alignItems: "stretch",
-    display: "flex",
-    flexDirection: "column",
-    width: "80px"
   },
   view3: {
     alignItems: "center",
     backgroundColor: "#D8D8D8",
     display: "flex",
+    flex: "0 0 auto",
     flexDirection: "column",
     paddingRight: "12px",
     paddingLeft: "12px"
   },
-  text5: { alignItems: "stretch", display: "flex", flexDirection: "column" },
   view4: {
     alignItems: "center",
     backgroundColor: "#D8D8D8",
     display: "flex",
+    flex: "0 0 auto",
     flexDirection: "column",
     paddingRight: "12px",
     paddingLeft: "12px",
     width: "400px"
   },
-  text6: { alignItems: "stretch", display: "flex", flexDirection: "column" },
   view5: {
-    alignItems: "stretch",
+    alignItems: "flex-start",
     backgroundColor: "#D8D8D8",
     display: "flex",
+    flex: "0 0 auto",
     flexDirection: "column",
     paddingRight: "12px",
     paddingLeft: "12px"
   },
-  text7: {
-    textAlign: "center",
-    alignItems: "stretch",
-    display: "flex",
-    flexDirection: "column"
-  },
   view6: {
-    alignItems: "stretch",
+    alignItems: "flex-start",
     backgroundColor: "#D8D8D8",
     display: "flex",
+    flex: "0 0 auto",
     flexDirection: "column",
     paddingRight: "12px",
     paddingLeft: "12px",
     width: "400px"
-  },
-  text8: {
-    textAlign: "center",
-    alignItems: "stretch",
-    alignSelf: "stretch",
-    display: "flex",
-    flexDirection: "column"
   },
   rightAlignmentContainer: {
     alignItems: "flex-end",
     alignSelf: "stretch",
     backgroundColor: "#D8D8D8",
     display: "flex",
+    flex: "0 0 auto",
     flexDirection: "column"
   },
-  text9: { alignItems: "stretch", display: "flex", flexDirection: "column" },
-  text10: {
+  image: {
+    alignItems: "flex-start",
+    display: "flex",
+    flexDirection: "column",
+    width: "100px",
+    height: "100px"
+  },
+  view2: {
+    alignItems: "flex-start",
+    backgroundColor: "#D8D8D8",
+    display: "flex",
+    flex: "0 0 auto",
+    flexDirection: "column"
+  },
+  text: {
     textAlign: "center",
-    alignItems: "stretch",
+    ...textStyles.display1,
     alignSelf: "stretch",
     display: "flex",
+    flex: "0 0 auto",
+    flexDirection: "column",
+    marginTop: "16px"
+  },
+  text1: {
+    textAlign: "center",
+    ...textStyles.subheading2,
+    display: "flex",
+    flex: "0 0 auto",
+    flexDirection: "column",
+    marginTop: "16px"
+  },
+  text2: {
+    ...textStyles.body1,
+    alignSelf: "stretch",
+    display: "flex",
+    flex: "0 0 auto",
+    flexDirection: "column",
+    marginTop: "12px"
+  },
+  text3: {
+    textAlign: "right",
+    ...textStyles.body1,
+    alignSelf: "stretch",
+    display: "flex",
+    flex: "0 0 auto",
+    flexDirection: "column"
+  },
+  text4: {
+    textAlign: "center",
+    ...textStyles.body1,
+    display: "flex",
+    flex: "0 0 auto",
+    flexDirection: "column",
+    width: "80px"
+  },
+  text5: {
+    ...textStyles.body1,
+    display: "flex",
+    flex: "0 0 auto",
+    flexDirection: "column"
+  },
+  text6: {
+    ...textStyles.body1,
+    display: "flex",
+    flex: "0 0 auto",
+    flexDirection: "column"
+  },
+  text7: {
+    textAlign: "center",
+    ...textStyles.body1,
+    display: "flex",
+    flex: "0 0 auto",
+    flexDirection: "column"
+  },
+  text8: {
+    textAlign: "center",
+    ...textStyles.body1,
+    alignSelf: "stretch",
+    display: "flex",
+    flex: "0 0 auto",
+    flexDirection: "column"
+  },
+  text9: {
+    ...textStyles.body1,
+    display: "flex",
+    flex: "0 0 auto",
+    flexDirection: "column"
+  },
+  text10: {
+    textAlign: "center",
+    ...textStyles.body1,
+    alignSelf: "stretch",
+    display: "flex",
+    flex: "0 0 auto",
     flexDirection: "column"
   },
   image1: {
-    alignItems: "stretch",
+    alignItems: "flex-start",
     display: "flex",
     flexDirection: "column",
     width: "100px",
