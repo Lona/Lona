@@ -32,7 +32,7 @@ let render =
                data: Js.Json.string(value),
              };
              Property({
-               key: Identifier(["family"]),
+               key: Identifier(["fontFamily"]),
                value: Literal(lonaValue),
              });
            }),
