@@ -49,7 +49,7 @@
     ],
     "id" : "View",
     "params" : {
-
+      "backgroundColor" : "red400"
     },
     "type" : "Lona:View"
   }

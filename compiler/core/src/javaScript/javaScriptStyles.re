@@ -156,7 +156,13 @@ let getLayoutParameters =
   let parameters = ParameterMap.empty;
 
   if (Layer.isComponentLayer(layer)) {
-    let parentUnwrapped: Types.layer = parent |> Js.Option.getExn;
+    let parentUnwrapped =
+      switch (parent) {
+      | Some(unwrapped) => unwrapped
+      | None =>
+        Js.log("Nested custom components cannot currently be top level.");
+        raise(Not_found);
+      };
     let parentLayout = Layer.getLayout(None, parentUnwrapped.parameters);
 
     /* Top-level views should work equally well when rendered by the user and when
@@ -164,45 +170,55 @@ let getLayoutParameters =
        flex styles to get the correct layout (except `display: flex` for React DOM).
        We make a wrapper view for each nested component. We assume the wrapper's child
        is a top-level view that expects its parent to have platform-default layout values.
-       E.g. for React DOM, we make a `div` with `flex-direction: row`, and determine the
-       correct `alignSelf` and `alignItems` to align the nested component correctly */
+       E.g. for React DOM, we make a `div` with `flex-direction: row`, and propagate the
+       child alignment (`align-items` and `justify-content`) from the parent. The wrapper
+       `div` will only be generated if its parent is a `column`, since if the parent is a
+       `row`, the layout will be correct without it. */
     let parameters =
       ParameterMap.(
         LonaValue.(
           switch (framework) {
           | JavaScriptOptions.ReactDOM =>
-            let parameters = parameters |> add(FlexDirection, string("row"));
-
-            let alignSelf =
-              switch (
-                parentLayout.direction,
-                parentLayout.horizontalAlignment,
-              ) {
-              | (Column, Center)
-              | (Column, End) =>
-                parentLayout.horizontalAlignment
-                |> Layout.ToString.childrenAlignment
-              | _ => "stretch"
-              };
-
-            let alignItems =
-              switch (parentLayout.direction, parentLayout.verticalAlignment) {
-              | (Row, Center)
-              | (Row, End) =>
-                parentLayout.verticalAlignment
-                |> Layout.ToString.childrenAlignment
-              | _ => "flex-start"
-              };
-
             parameters
-            |> add(AlignSelf, string(alignSelf))
-            |> add(AlignItems, string(alignItems));
-          /* TODO: ReactNative */
+            |> add(FlexDirection, string("row"))
+            /* Using `1 1 auto` works correctly here while `1 1 0%` doesn't.
+               This can be tested using the NestedComponent example */
+            |> add(Flex, string("1 1 auto"))
+            |> add(AlignSelf, string("stretch"))
+            |> add(
+                 JustifyContent,
+                 string(
+                   parentLayout.horizontalAlignment
+                   |> Layout.ToString.childrenAlignment,
+                 ),
+               )
+            |> add(
+                 AlignItems,
+                 string(
+                   parentLayout.verticalAlignment
+                   |> Layout.ToString.childrenAlignment,
+                 ),
+               )
           | JavaScriptOptions.ReactNative
           | JavaScriptOptions.ReactSketchapp =>
             parameters
-            |> add(FlexDirection, string("column"))
-            |> add(AlignItems, string("stretch"))
+            |> add(FlexDirection, string("row"))
+            |> add(Flex, number(1.0))
+            |> add(AlignSelf, string("stretch"))
+            |> add(
+                 JustifyContent,
+                 string(
+                   parentLayout.horizontalAlignment
+                   |> Layout.ToString.childrenAlignment,
+                 ),
+               )
+            |> add(
+                 AlignItems,
+                 string(
+                   parentLayout.verticalAlignment
+                   |> Layout.ToString.childrenAlignment,
+                 ),
+               )
           }
         )
       );

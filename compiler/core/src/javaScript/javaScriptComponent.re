@@ -146,6 +146,7 @@ let rec layerToJavaScriptAST =
           config: Config.t,
           variableMap,
           getAssetPath,
+          parent: option(Types.layer),
           layer: Types.layer,
         ) => {
   open Ast;
@@ -228,25 +229,41 @@ let rec layerToJavaScriptAST =
     | _ =>
       layer.children
       |> List.map(
-           layerToJavaScriptAST(framework, config, variableMap, getAssetPath),
+           layerToJavaScriptAST(
+             framework,
+             config,
+             variableMap,
+             getAssetPath,
+             Some(layer),
+           ),
          )
     };
 
   /* Wrap custom components in a view that enforces the framework's
      default layout attributes. */
-  switch (layer.typeName) {
-  | Types.Component(_) =>
-    JSXElement({
-      tag: getElementTagString(framework, Types.View),
-      attributes: styleAttribute,
-      content: [
-        JSXElement({
-          tag: getElementTagString(framework, layer.typeName),
-          attributes,
-          content,
-        }),
-      ],
-    })
+  switch (layer.typeName, parent) {
+  | (Types.Component(_), Some(parent)) =>
+    let parentDirection = Layer.getFlexDirection(parent.parameters);
+
+    /* Custom components can't be passed styles, so don't include the style attribute */
+    let customComponent =
+      JSXElement({
+        tag: getElementTagString(framework, layer.typeName),
+        attributes,
+        content,
+      });
+
+    switch (framework, parentDirection) {
+    | (JavaScriptOptions.ReactDOM, "column")
+    | (JavaScriptOptions.ReactNative, "row")
+    | (JavaScriptOptions.ReactSketchapp, "row") =>
+      JSXElement({
+        tag: getElementTagString(framework, Types.View),
+        attributes: styleAttribute,
+        content: [customComponent],
+      })
+    | _ => customComponent
+    };
   | _ =>
     JSXElement({
       tag: getElementTagString(framework, layer.typeName),
@@ -337,6 +354,7 @@ let rootLayerToJavaScriptAST =
          config,
          assignments,
          getAssetPath,
+         None,
        );
 
   switch (options.framework) {

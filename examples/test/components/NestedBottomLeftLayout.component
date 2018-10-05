@@ -37,7 +37,7 @@
         "id" : "View 1",
         "params" : {
           "alignItems" : "flex-end",
-          "backgroundColor" : "blue100",
+          "backgroundColor" : "red100",
           "flexDirection" : "row",
           "height" : 150,
           "justifyContent" : "flex-start",
