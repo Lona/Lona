@@ -3,27 +3,27 @@ import { Text, View, StyleSheet } from "react-native"
 
 import colors from "../colors"
 import textStyles from "../textStyles"
-import FitContentParentSecondaryChildren from
-  "../layouts/FitContentParentSecondaryChildren"
-import LocalAsset from "../images/LocalAsset"
 
-export default class NestedComponent extends React.Component {
+export default class MultipleFlexText extends React.Component {
   render() {
 
 
     return (
       <View style={[ styles.view, {} ]}>
-        <Text style={[ styles.text, {} ]}>
-          {"Example nested component"}
-        </Text>
-        <FitContentParentSecondaryChildren />
-        <Text style={[ styles.text1, {} ]}>
-          {"Text below"}
-        </Text>
-        <LocalAsset />
-        <Text style={[ styles.text2, {} ]}>
-          {"Very bottom"}
-        </Text>
+        <View style={[ styles.view1, {} ]}>
+          <View style={[ styles.view3, {} ]}>
+            <Text style={[ styles.text, {} ]}>
+              {"Some long text (currently LS lays out incorrectly)"}
+            </Text>
+          </View>
+        </View>
+        <View style={[ styles.view2, {} ]}>
+          <View style={[ styles.view4, {} ]}>
+            <Text style={[ styles.text1, {} ]}>
+              {"Short"}
+            </Text>
+          </View>
+        </View>
       </View>
     );
   }
@@ -34,46 +34,51 @@ let styles = StyleSheet.create({
     alignItems: "flex-start",
     alignSelf: "stretch",
     flex: 0,
-    flexDirection: "column",
-    justifyContent: "flex-start",
-    paddingTop: 10,
-    paddingRight: 10,
-    paddingBottom: 10,
-    paddingLeft: 10
+    flexDirection: "row",
+    justifyContent: "flex-start"
   },
-  text: {
-    ...textStyles.subheading2,
+  view1: {
     alignItems: "flex-start",
-    flex: 0,
+    backgroundColor: colors.red50,
+    flex: 1,
     flexDirection: "column",
     justifyContent: "flex-start",
-    marginBottom: 8
+    height: 100
   },
-  fitContentParentSecondaryChildren: {
+  view2: {
+    alignItems: "flex-start",
+    backgroundColor: colors.blue50,
+    flex: 1,
+    flexDirection: "column",
+    justifyContent: "flex-start",
+    height: 100
+  },
+  view3: {
     alignItems: "flex-start",
     alignSelf: "stretch",
     flex: 1,
-    flexDirection: "row",
+    flexDirection: "column",
+    justifyContent: "flex-start"
+  },
+  text: {
+    ...textStyles.body1,
+    alignItems: "flex-start",
+    alignSelf: "stretch",
+    flex: 0,
+    flexDirection: "column",
+    justifyContent: "flex-start"
+  },
+  view4: {
+    alignItems: "flex-start",
+    alignSelf: "stretch",
+    flex: 1,
+    flexDirection: "column",
     justifyContent: "flex-start"
   },
   text1: {
     ...textStyles.body1,
     alignItems: "flex-start",
-    flex: 0,
-    flexDirection: "column",
-    justifyContent: "flex-start",
-    marginTop: 12
-  },
-  localAsset: {
-    alignItems: "flex-start",
     alignSelf: "stretch",
-    flex: 1,
-    flexDirection: "row",
-    justifyContent: "flex-start"
-  },
-  text2: {
-    ...textStyles.body1,
-    alignItems: "flex-start",
     flex: 0,
     flexDirection: "column",
     justifyContent: "flex-start"

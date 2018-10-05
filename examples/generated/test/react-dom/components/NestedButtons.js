@@ -43,7 +43,14 @@ let styles = {
     paddingBottom: "24px",
     paddingLeft: "24px"
   },
-  button: { alignSelf: "stretch", display: "flex", flexDirection: "row" },
+  button: {
+    alignItems: "flex-start",
+    alignSelf: "stretch",
+    display: "flex",
+    flex: "1 1 auto",
+    flexDirection: "row",
+    justifyContent: "flex-start"
+  },
   view1: {
     alignItems: "flex-start",
     alignSelf: "stretch",
@@ -52,5 +59,12 @@ let styles = {
     justifyContent: "flex-start",
     height: "8px"
   },
-  button2: { alignSelf: "stretch", display: "flex", flexDirection: "row" }
+  button2: {
+    alignItems: "flex-start",
+    alignSelf: "stretch",
+    display: "flex",
+    flex: "1 1 auto",
+    flexDirection: "row",
+    justifyContent: "flex-start"
+  }
 }

@@ -23,6 +23,7 @@ export default class LocalAsset extends React.Component {
 let styles = StyleSheet.create({
   view: {
     alignItems: "flex-start",
+    backgroundColor: colors.red400,
     flex: 0,
     flexDirection: "column",
     justifyContent: "flex-start"

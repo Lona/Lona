@@ -44,6 +44,7 @@ public class LocalAsset: NSBox {
 
     addSubview(imageView)
 
+    fillColor = Colors.red400
     imageView.image = #imageLiteral(resourceName: "icon_128x128")
     imageView.fillColor = #colorLiteral(red: 0.847058823529, green: 0.847058823529, blue: 0.847058823529, alpha: 1)
   }

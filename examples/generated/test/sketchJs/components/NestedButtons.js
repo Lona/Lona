@@ -11,13 +11,9 @@ export default class NestedButtons extends React.Component {
 
     return (
       <View style={[ styles.view, {} ]}>
-        <View style={[ styles.button, {} ]}>
-          <Button label={"Button 1"} />
-        </View>
+        <Button label={"Button 1"} />
         <View style={[ styles.view1, {} ]} />
-        <View style={[ styles.button2, {} ]}>
-          <Button label={"Button 2"} />
-        </View>
+        <Button label={"Button 2"} />
       </View>
     );
   }
@@ -35,7 +31,13 @@ let styles = StyleSheet.create({
     paddingBottom: 24,
     paddingLeft: 24
   },
-  button: { alignItems: "stretch", flexDirection: "column" },
+  button: {
+    alignItems: "flex-start",
+    alignSelf: "stretch",
+    flex: 1,
+    flexDirection: "row",
+    justifyContent: "flex-start"
+  },
   view1: {
     alignItems: "flex-start",
     alignSelf: "stretch",
@@ -43,5 +45,11 @@ let styles = StyleSheet.create({
     justifyContent: "flex-start",
     height: 8
   },
-  button2: { alignItems: "stretch", flexDirection: "column" }
+  button2: {
+    alignItems: "flex-start",
+    alignSelf: "stretch",
+    flex: 1,
+    flexDirection: "row",
+    justifyContent: "flex-start"
+  }
 })

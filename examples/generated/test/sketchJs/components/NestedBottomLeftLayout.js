@@ -3,19 +3,19 @@ import { View, StyleSheet, TextStyles } from "@mathieudutour/react-sketchapp"
 
 import colors from "../colors"
 import textStyles from "../textStyles"
-import ComponentParameterTemplate from "./ComponentParameterTemplate"
+import LocalAsset from "../images/LocalAsset"
 
-export default class ComponentParameterInstance extends React.Component {
+export default class NestedBottomLeftLayout extends React.Component {
   render() {
 
 
     return (
       <View style={[ styles.view, {} ]}>
-        <ComponentParameterTemplate
-          subtitleComponent={{"parameters":{"text":"Subtitle","textStyle":"subheading2"},"type":"Lona:Text"}}
-          titleComponent={{"parameters":{"text":"Title","textStyle":"headline"},"type":"Lona:Text"}}
-
-        />
+        <View style={[ styles.view1, {} ]}>
+          <View style={[ styles.localAsset, {} ]}>
+            <LocalAsset />
+          </View>
+        </View>
       </View>
     );
   }
@@ -29,8 +29,16 @@ let styles = StyleSheet.create({
     flexDirection: "column",
     justifyContent: "flex-start"
   },
-  componentParameterTemplate: {
-    alignItems: "flex-start",
+  view1: {
+    alignItems: "flex-end",
+    backgroundColor: colors.red100,
+    flexDirection: "row",
+    justifyContent: "flex-start",
+    width: 150,
+    height: 150
+  },
+  localAsset: {
+    alignItems: "flex-end",
     alignSelf: "stretch",
     flex: 1,
     flexDirection: "row",

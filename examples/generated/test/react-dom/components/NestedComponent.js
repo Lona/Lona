@@ -67,9 +67,12 @@ let styles = {
     marginBottom: "8px"
   },
   fitContentParentSecondaryChildren: {
+    alignItems: "flex-start",
     alignSelf: "stretch",
     display: "flex",
-    flexDirection: "row"
+    flex: "1 1 auto",
+    flexDirection: "row",
+    justifyContent: "flex-start"
   },
   text1: {
     ...textStyles.body1,
@@ -79,7 +82,14 @@ let styles = {
     justifyContent: "flex-start",
     marginTop: "12px"
   },
-  localAsset: { alignSelf: "stretch", display: "flex", flexDirection: "row" },
+  localAsset: {
+    alignItems: "flex-start",
+    alignSelf: "stretch",
+    display: "flex",
+    flex: "1 1 auto",
+    flexDirection: "row",
+    justifyContent: "flex-start"
+  },
   text2: {
     ...textStyles.body1,
     alignItems: "flex-start",

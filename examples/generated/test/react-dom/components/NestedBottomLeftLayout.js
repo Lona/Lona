@@ -3,25 +3,22 @@ import styled, { ThemeProvider } from "styled-components"
 
 import colors from "../colors"
 import textStyles from "../textStyles"
-import ComponentParameterTemplate from "./ComponentParameterTemplate"
+import LocalAsset from "../images/LocalAsset"
 
-export default class ComponentParameterInstance extends React.Component {
+export default class NestedBottomLeftLayout extends React.Component {
   render() {
 
 
     let theme = {
       "view": { "normal": {} },
-      "componentParameterTemplate": { "normal": {} }
+      "view1": { "normal": {} },
+      "localAsset": { "normal": {} }
     }
     return (
       <ThemeProvider theme={theme}>
         <div style={Object.assign({}, styles.view, {})}>
-          <div style={Object.assign({}, styles.componentParameterTemplate, {})}>
-            <ComponentParameterTemplate
-              subtitleComponent={{"parameters":{"text":"Subtitle","textStyle":"subheading2"},"type":"Lona:Text"}}
-              titleComponent={{"parameters":{"text":"Title","textStyle":"headline"},"type":"Lona:Text"}}
-
-            />
+          <div style={Object.assign({}, styles.view1, {})}>
+            <LocalAsset />
           </div>
         </div>
       </ThemeProvider>
@@ -37,8 +34,17 @@ let styles = {
     flexDirection: "column",
     justifyContent: "flex-start"
   },
-  componentParameterTemplate: {
-    alignItems: "flex-start",
+  view1: {
+    alignItems: "flex-end",
+    backgroundColor: colors.red100,
+    display: "flex",
+    flexDirection: "row",
+    justifyContent: "flex-start",
+    width: "150px",
+    height: "150px"
+  },
+  localAsset: {
+    alignItems: "flex-end",
     alignSelf: "stretch",
     display: "flex",
     flex: "1 1 auto",
