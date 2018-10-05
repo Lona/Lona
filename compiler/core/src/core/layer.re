@@ -196,9 +196,15 @@ let getLayout =
   let {width, height} = getSizingRules(parent, parameters);
   let direction = getFlexDirection(parameters) |> Layout.FromString.direction;
   let justifyContent =
-    getJustifyContent(parameters) |> Layout.FromString.childrenAlignment;
+    switch (getStringParameterOpt(ParameterKey.JustifyContent, parameters)) {
+    | Some(value) => value |> Layout.FromString.childrenAlignment
+    | None => Unspecified
+    };
   let alignItems =
-    getAlignItems(parameters) |> Layout.FromString.childrenAlignment;
+    switch (getStringParameterOpt(ParameterKey.AlignItems, parameters)) {
+    | Some(value) => value |> Layout.FromString.childrenAlignment
+    | None => Unspecified
+    };
   let horizontalAlignment =
     switch (direction) {
     | Row => justifyContent

@@ -5,7 +5,8 @@ type direction =
 type childrenAlignment =
   | Start
   | Center
-  | End;
+  | End
+  | Unspecified;
 
 type sizingRule =
   | Fill
@@ -33,7 +34,7 @@ module FromString = {
     | "flex-start" => Start
     | "center" => Center
     | "flex-end" => End
-    | _ => raise(Not_found)
+    | _ => Start
     };
 };
 
@@ -49,5 +50,6 @@ module ToString = {
     | Start => "flex-start"
     | Center => "center"
     | End => "flex-end"
+    | Unspecified => "flex-start"
     };
 };

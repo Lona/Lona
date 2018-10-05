@@ -156,14 +156,19 @@ let getLayoutParameters =
   let parameters = ParameterMap.empty;
 
   if (Layer.isComponentLayer(layer)) {
-    let parentU: Types.layer = parent |> Js.Option.getExn;
-    let parentLayout = Layer.getLayout(None, parentU.parameters);
+    let parentUnwrapped: Types.layer = parent |> Js.Option.getExn;
+    let parentLayout = Layer.getLayout(None, parentUnwrapped.parameters);
 
+    /* Top-level views should work equally well when rendered by the user and when
+       nested within other Lona components. The user should not need to use any special
+       flex styles to get the correct layout (except `display: flex` for React DOM).
+       We make a wrapper view for each nested component. We assume the wrapper's child
+       is a top-level view that expects its parent to have platform-default layout values.
+       E.g. for React DOM, we make a `div` with `flex-direction: row`, and determine the
+       correct `alignSelf` and `alignItems` to align the nested component correctly */
     let parameters =
       ParameterMap.(
         LonaValue.(
-          /* TODO: ReactDOM: Boundary components within a `row` parent may need more layout
-             styles to stretch/fit properly on the vertical axis */
           switch (framework) {
           | JavaScriptOptions.ReactDOM =>
             let parameters = parameters |> add(FlexDirection, string("row"));
@@ -171,17 +176,27 @@ let getLayoutParameters =
             let alignSelf =
               switch (
                 parentLayout.direction,
-                Layer.getStringParameterOpt(AlignItems, parentU.parameters),
-                Layer.getStringParameterOpt(
-                  JustifyContent,
-                  parentU.parameters,
-                ),
+                parentLayout.horizontalAlignment,
               ) {
-              | (Column, Some(alignItems), _) => alignItems
+              | (Column, Center)
+              | (Column, End) =>
+                parentLayout.horizontalAlignment
+                |> Layout.ToString.childrenAlignment
               | _ => "stretch"
               };
 
-            parameters |> add(AlignSelf, string(alignSelf));
+            let alignItems =
+              switch (parentLayout.direction, parentLayout.verticalAlignment) {
+              | (Row, Center)
+              | (Row, End) =>
+                parentLayout.verticalAlignment
+                |> Layout.ToString.childrenAlignment
+              | _ => "flex-start"
+              };
+
+            parameters
+            |> add(AlignSelf, string(alignSelf))
+            |> add(AlignItems, string(alignItems));
           /* TODO: ReactNative */
           | JavaScriptOptions.ReactNative
           | JavaScriptOptions.ReactSketchapp =>
