@@ -24,12 +24,14 @@ let styles = {
     alignItems: "flex-start",
     display: "flex",
     flex: "1 1 0%",
-    flexDirection: "column"
+    flexDirection: "column",
+    justifyContent: "flex-start"
   },
   view1: {
     alignItems: "flex-start",
     display: "flex",
     flexDirection: "column",
+    justifyContent: "flex-start",
     borderRadius: "10px",
     borderWidth: "20px",
     borderColor: colors.blue300,

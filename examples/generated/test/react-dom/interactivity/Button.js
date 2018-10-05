@@ -50,6 +50,7 @@ let styles = {
     display: "flex",
     flex: "0 0 auto",
     flexDirection: "column",
+    justifyContent: "flex-start",
     paddingTop: "12px",
     paddingRight: "16px",
     paddingBottom: "12px",
@@ -57,8 +58,9 @@ let styles = {
   },
   text: {
     ...textStyles.button,
-    display: "flex",
+    alignItems: "flex-start",
     flex: "0 0 auto",
-    flexDirection: "column"
+    flexDirection: "column",
+    justifyContent: "flex-start"
   }
 }

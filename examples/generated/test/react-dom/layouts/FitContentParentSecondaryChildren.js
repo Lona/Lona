@@ -32,6 +32,8 @@ let styles = {
     backgroundColor: colors.bluegrey50,
     display: "flex",
     flex: "1 1 0%",
+    flexDirection: "row",
+    justifyContent: "flex-start",
     paddingTop: "24px",
     paddingRight: "24px",
     paddingBottom: "24px",
@@ -42,6 +44,7 @@ let styles = {
     backgroundColor: colors.blue500,
     display: "flex",
     flexDirection: "column",
+    justifyContent: "flex-start",
     width: "60px",
     height: "60px"
   },
@@ -50,6 +53,7 @@ let styles = {
     backgroundColor: colors.lightblue500,
     display: "flex",
     flexDirection: "column",
+    justifyContent: "flex-start",
     width: "100px",
     height: "120px"
   },
@@ -58,6 +62,7 @@ let styles = {
     backgroundColor: colors.cyan500,
     display: "flex",
     flexDirection: "column",
+    justifyContent: "flex-start",
     width: "100px",
     height: "180px"
   }

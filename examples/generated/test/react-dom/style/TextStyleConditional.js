@@ -31,12 +31,14 @@ let styles = {
     alignItems: "flex-start",
     display: "flex",
     flex: "1 1 0%",
-    flexDirection: "column"
+    flexDirection: "column",
+    justifyContent: "flex-start"
   },
   text: {
     ...textStyles.headline,
-    display: "flex",
+    alignItems: "flex-start",
     flex: "0 0 auto",
-    flexDirection: "column"
+    flexDirection: "column",
+    justifyContent: "flex-start"
   }
 }

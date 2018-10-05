@@ -27,14 +27,16 @@ let styles = {
   view: {
     alignItems: "flex-start",
     display: "flex",
-    flex: "1 1 0%",
-    flexDirection: "column"
+    flex: "0 0 auto",
+    flexDirection: "column",
+    justifyContent: "flex-start"
   },
   image: {
     alignItems: "flex-start",
     backgroundColor: "#D8D8D8",
     display: "flex",
     flexDirection: "column",
+    justifyContent: "flex-start",
     width: "100px",
     height: "100px"
   }

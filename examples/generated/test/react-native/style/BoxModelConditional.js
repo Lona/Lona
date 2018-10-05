@@ -46,6 +46,8 @@ let styles = StyleSheet.create({
     alignItems: "flex-start",
     alignSelf: "stretch",
     flex: 0,
+    flexDirection: "column",
+    justifyContent: "flex-start",
     paddingTop: 4,
     paddingRight: 4,
     paddingBottom: 4,
@@ -54,6 +56,8 @@ let styles = StyleSheet.create({
   inner: {
     alignItems: "flex-start",
     backgroundColor: "#D8D8D8",
+    flexDirection: "column",
+    justifyContent: "flex-start",
     width: 60,
     height: 60
   }

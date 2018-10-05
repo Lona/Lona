@@ -43,10 +43,18 @@ let styles = StyleSheet.create({
     alignItems: "flex-start",
     backgroundColor: colors.blue100,
     flex: 0,
+    flexDirection: "column",
+    justifyContent: "flex-start",
     paddingTop: 12,
     paddingRight: 16,
     paddingBottom: 12,
     paddingLeft: 16
   },
-  text: { ...textStyles.button, alignItems: "flex-start", flex: 0 }
+  text: {
+    ...textStyles.button,
+    alignItems: "flex-start",
+    flex: 0,
+    flexDirection: "column",
+    justifyContent: "flex-start"
+  }
 })

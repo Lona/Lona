@@ -21,6 +21,18 @@ export default class Assign extends React.Component {
 };
 
 let styles = StyleSheet.create({
-  view: { alignItems: "flex-start", alignSelf: "stretch", flex: 0 },
-  text: { ...textStyles.body1, alignItems: "flex-start", flex: 0 }
+  view: {
+    alignItems: "flex-start",
+    alignSelf: "stretch",
+    flex: 0,
+    flexDirection: "column",
+    justifyContent: "flex-start"
+  },
+  text: {
+    ...textStyles.body1,
+    alignItems: "flex-start",
+    flex: 0,
+    flexDirection: "column",
+    justifyContent: "flex-start"
+  }
 })

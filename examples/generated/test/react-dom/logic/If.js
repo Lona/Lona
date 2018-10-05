@@ -32,6 +32,7 @@ let styles = {
     alignItems: "flex-start",
     display: "flex",
     flex: "1 1 0%",
-    flexDirection: "column"
+    flexDirection: "column",
+    justifyContent: "flex-start"
   }
 }

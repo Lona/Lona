@@ -25,6 +25,18 @@ export default class TextStyleConditional extends React.Component {
 };
 
 let styles = StyleSheet.create({
-  view: { alignItems: "flex-start", alignSelf: "stretch", flex: 0 },
-  text: { ...TextStyles.get("headline"), alignItems: "flex-start", flex: 0 }
+  view: {
+    alignItems: "flex-start",
+    alignSelf: "stretch",
+    flex: 0,
+    flexDirection: "column",
+    justifyContent: "flex-start"
+  },
+  text: {
+    ...TextStyles.get("headline"),
+    alignItems: "flex-start",
+    flex: 0,
+    flexDirection: "column",
+    justifyContent: "flex-start"
+  }
 })

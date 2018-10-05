@@ -52,13 +52,17 @@ public class LocalAsset: NSBox {
     translatesAutoresizingMaskIntoConstraints = false
     imageView.translatesAutoresizingMaskIntoConstraints = false
 
+    let imageViewWidthAnchorParentConstraint = imageView.widthAnchor.constraint(lessThanOrEqualTo: widthAnchor)
     let imageViewTopAnchorConstraint = imageView.topAnchor.constraint(equalTo: topAnchor)
     let imageViewBottomAnchorConstraint = imageView.bottomAnchor.constraint(equalTo: bottomAnchor)
     let imageViewLeadingAnchorConstraint = imageView.leadingAnchor.constraint(equalTo: leadingAnchor)
     let imageViewHeightAnchorConstraint = imageView.heightAnchor.constraint(equalToConstant: 100)
     let imageViewWidthAnchorConstraint = imageView.widthAnchor.constraint(equalToConstant: 100)
 
+    imageViewWidthAnchorParentConstraint.priority = NSLayoutConstraint.Priority.defaultLow
+
     NSLayoutConstraint.activate([
+      imageViewWidthAnchorParentConstraint,
       imageViewTopAnchorConstraint,
       imageViewBottomAnchorConstraint,
       imageViewLeadingAnchorConstraint,

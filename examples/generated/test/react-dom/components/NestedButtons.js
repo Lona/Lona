@@ -37,28 +37,20 @@ let styles = {
     display: "flex",
     flex: "1 1 0%",
     flexDirection: "column",
+    justifyContent: "flex-start",
     paddingTop: "24px",
     paddingRight: "24px",
     paddingBottom: "24px",
     paddingLeft: "24px"
   },
-  button: {
-    alignItems: "flex-start",
-    display: "flex",
-    flex: "0 0 auto",
-    flexDirection: "row"
-  },
+  button: { alignSelf: "stretch", display: "flex", flexDirection: "row" },
   view1: {
     alignItems: "flex-start",
     alignSelf: "stretch",
     display: "flex",
     flexDirection: "column",
+    justifyContent: "flex-start",
     height: "8px"
   },
-  button2: {
-    alignItems: "flex-start",
-    display: "flex",
-    flex: "0 0 auto",
-    flexDirection: "row"
-  }
+  button2: { alignSelf: "stretch", display: "flex", flexDirection: "row" }
 }

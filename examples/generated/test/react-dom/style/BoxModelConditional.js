@@ -47,6 +47,7 @@ let styles = {
     display: "flex",
     flex: "1 1 0%",
     flexDirection: "column",
+    justifyContent: "flex-start",
     paddingTop: "4px",
     paddingRight: "4px",
     paddingBottom: "4px",
@@ -57,6 +58,7 @@ let styles = {
     backgroundColor: "#D8D8D8",
     display: "flex",
     flexDirection: "column",
+    justifyContent: "flex-start",
     width: "60px",
     height: "60px"
   }

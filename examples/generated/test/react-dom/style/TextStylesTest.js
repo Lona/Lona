@@ -65,66 +65,77 @@ let styles = {
     alignItems: "flex-start",
     display: "flex",
     flex: "1 1 0%",
-    flexDirection: "column"
+    flexDirection: "column",
+    justifyContent: "flex-start"
   },
   text: {
     ...textStyles.display4,
-    display: "flex",
+    alignItems: "flex-start",
     flex: "0 0 auto",
-    flexDirection: "column"
+    flexDirection: "column",
+    justifyContent: "flex-start"
   },
   text1: {
     ...textStyles.display3,
-    display: "flex",
+    alignItems: "flex-start",
     flex: "0 0 auto",
-    flexDirection: "column"
+    flexDirection: "column",
+    justifyContent: "flex-start"
   },
   text2: {
     ...textStyles.display2,
-    display: "flex",
+    alignItems: "flex-start",
     flex: "0 0 auto",
-    flexDirection: "column"
+    flexDirection: "column",
+    justifyContent: "flex-start"
   },
   text3: {
     ...textStyles.display1,
-    display: "flex",
+    alignItems: "flex-start",
     flex: "0 0 auto",
-    flexDirection: "column"
+    flexDirection: "column",
+    justifyContent: "flex-start"
   },
   text4: {
     ...textStyles.headline,
-    display: "flex",
+    alignItems: "flex-start",
     flex: "0 0 auto",
-    flexDirection: "column"
+    flexDirection: "column",
+    justifyContent: "flex-start"
   },
   text5: {
     ...textStyles.subheading2,
-    display: "flex",
+    alignItems: "flex-start",
     flex: "0 0 auto",
-    flexDirection: "column"
+    flexDirection: "column",
+    justifyContent: "flex-start"
   },
   text6: {
     ...textStyles.subheading1,
-    display: "flex",
+    alignItems: "flex-start",
     flex: "0 0 auto",
-    flexDirection: "column"
+    flexDirection: "column",
+    justifyContent: "flex-start"
   },
   text7: {
     ...textStyles.body2,
-    display: "flex",
+    alignItems: "flex-start",
     flex: "0 0 auto",
-    flexDirection: "column"
+    flexDirection: "column",
+    justifyContent: "flex-start"
   },
   text8: {
     ...textStyles.body1,
-    display: "flex",
+    alignItems: "flex-start",
     flex: "0 0 auto",
-    flexDirection: "column"
+    flexDirection: "column",
+    justifyContent: "flex-start"
   },
   text9: {
     ...textStyles.caption,
-    display: "flex",
+    alignItems: "flex-start",
     flex: "0 0 auto",
-    flexDirection: "column"
+    flexDirection: "column",
+    justifyContent: "flex-start"
   }
 }

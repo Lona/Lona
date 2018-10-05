@@ -515,6 +515,7 @@ class CSLayer: CSDataDeserializable, CSDataSerializable, DataNode, NSCopying {
     }
 
     static let defaultParameterValue: [String: CSData] = [
+        "alignItems": CSData.String("flex-start"),
         "borderRadius": CSData.Number(0),
         "flex": CSData.Number(0),
         "flexDirection": CSData.String("column"),

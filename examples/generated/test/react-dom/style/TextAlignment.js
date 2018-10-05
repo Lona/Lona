@@ -102,6 +102,7 @@ let styles = {
     display: "flex",
     flex: "1 1 0%",
     flexDirection: "column",
+    justifyContent: "flex-start",
     paddingTop: "10px",
     paddingRight: "10px",
     paddingBottom: "10px",
@@ -122,6 +123,7 @@ let styles = {
     display: "flex",
     flex: "0 0 auto",
     flexDirection: "column",
+    justifyContent: "flex-start",
     paddingRight: "12px",
     paddingLeft: "12px"
   },
@@ -131,6 +133,7 @@ let styles = {
     display: "flex",
     flex: "0 0 auto",
     flexDirection: "column",
+    justifyContent: "flex-start",
     paddingRight: "12px",
     paddingLeft: "12px",
     width: "400px"
@@ -141,6 +144,7 @@ let styles = {
     display: "flex",
     flex: "0 0 auto",
     flexDirection: "column",
+    justifyContent: "flex-start",
     paddingRight: "12px",
     paddingLeft: "12px"
   },
@@ -150,6 +154,7 @@ let styles = {
     display: "flex",
     flex: "0 0 auto",
     flexDirection: "column",
+    justifyContent: "flex-start",
     paddingRight: "12px",
     paddingLeft: "12px",
     width: "400px"
@@ -160,12 +165,14 @@ let styles = {
     backgroundColor: "#D8D8D8",
     display: "flex",
     flex: "0 0 auto",
-    flexDirection: "column"
+    flexDirection: "column",
+    justifyContent: "flex-start"
   },
   image: {
     alignItems: "flex-start",
     display: "flex",
     flexDirection: "column",
+    justifyContent: "flex-start",
     width: "100px",
     height: "100px"
   },
@@ -174,94 +181,107 @@ let styles = {
     backgroundColor: "#D8D8D8",
     display: "flex",
     flex: "0 0 auto",
-    flexDirection: "column"
+    flexDirection: "column",
+    justifyContent: "flex-start"
   },
   text: {
     textAlign: "center",
     ...textStyles.display1,
+    alignItems: "flex-start",
     alignSelf: "stretch",
-    display: "flex",
     flex: "0 0 auto",
     flexDirection: "column",
+    justifyContent: "flex-start",
     marginTop: "16px"
   },
   text1: {
     textAlign: "center",
     ...textStyles.subheading2,
-    display: "flex",
+    alignItems: "flex-start",
     flex: "0 0 auto",
     flexDirection: "column",
+    justifyContent: "flex-start",
     marginTop: "16px"
   },
   text2: {
     ...textStyles.body1,
+    alignItems: "flex-start",
     alignSelf: "stretch",
-    display: "flex",
     flex: "0 0 auto",
     flexDirection: "column",
+    justifyContent: "flex-start",
     marginTop: "12px"
   },
   text3: {
     textAlign: "right",
     ...textStyles.body1,
+    alignItems: "flex-start",
     alignSelf: "stretch",
-    display: "flex",
     flex: "0 0 auto",
-    flexDirection: "column"
+    flexDirection: "column",
+    justifyContent: "flex-start"
   },
   text4: {
     textAlign: "center",
     ...textStyles.body1,
-    display: "flex",
+    alignItems: "flex-start",
     flex: "0 0 auto",
     flexDirection: "column",
+    justifyContent: "flex-start",
     width: "80px"
   },
   text5: {
     ...textStyles.body1,
-    display: "flex",
+    alignItems: "flex-start",
     flex: "0 0 auto",
-    flexDirection: "column"
+    flexDirection: "column",
+    justifyContent: "flex-start"
   },
   text6: {
     ...textStyles.body1,
-    display: "flex",
+    alignItems: "flex-start",
     flex: "0 0 auto",
-    flexDirection: "column"
+    flexDirection: "column",
+    justifyContent: "flex-start"
   },
   text7: {
     textAlign: "center",
     ...textStyles.body1,
-    display: "flex",
+    alignItems: "flex-start",
     flex: "0 0 auto",
-    flexDirection: "column"
+    flexDirection: "column",
+    justifyContent: "flex-start"
   },
   text8: {
     textAlign: "center",
     ...textStyles.body1,
+    alignItems: "flex-start",
     alignSelf: "stretch",
-    display: "flex",
     flex: "0 0 auto",
-    flexDirection: "column"
+    flexDirection: "column",
+    justifyContent: "flex-start"
   },
   text9: {
     ...textStyles.body1,
-    display: "flex",
+    alignItems: "flex-start",
     flex: "0 0 auto",
-    flexDirection: "column"
+    flexDirection: "column",
+    justifyContent: "flex-start"
   },
   text10: {
     textAlign: "center",
     ...textStyles.body1,
+    alignItems: "flex-start",
     alignSelf: "stretch",
-    display: "flex",
     flex: "0 0 auto",
-    flexDirection: "column"
+    flexDirection: "column",
+    justifyContent: "flex-start"
   },
   image1: {
     alignItems: "flex-start",
     display: "flex",
     flexDirection: "column",
+    justifyContent: "flex-start",
     width: "100px",
     height: "100px"
   }

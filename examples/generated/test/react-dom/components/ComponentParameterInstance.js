@@ -34,12 +34,12 @@ let styles = {
     alignItems: "flex-start",
     display: "flex",
     flex: "1 1 0%",
-    flexDirection: "column"
+    flexDirection: "column",
+    justifyContent: "flex-start"
   },
   componentParameterTemplate: {
-    alignItems: "flex-start",
+    alignSelf: "stretch",
     display: "flex",
-    flex: "0 0 auto",
     flexDirection: "row"
   }
 }

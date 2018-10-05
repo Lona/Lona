@@ -37,6 +37,7 @@ let styles = {
     display: "flex",
     flex: "1 1 0%",
     flexDirection: "column",
+    justifyContent: "flex-start",
     paddingTop: "24px",
     paddingRight: "24px",
     paddingBottom: "24px",
@@ -49,6 +50,8 @@ let styles = {
     backgroundColor: colors.red50,
     display: "flex",
     flex: "0 0 auto",
+    flexDirection: "row",
+    justifyContent: "flex-start",
     paddingTop: "24px",
     paddingRight: "24px",
     paddingBottom: "24px",
@@ -60,7 +63,8 @@ let styles = {
     backgroundColor: colors.indigo100,
     display: "flex",
     flex: "1 1 0%",
-    flexDirection: "column"
+    flexDirection: "column",
+    justifyContent: "flex-start"
   },
   view3: {
     alignItems: "flex-start",
@@ -68,13 +72,15 @@ let styles = {
     backgroundColor: colors.teal100,
     display: "flex",
     flex: "1 1 0%",
-    flexDirection: "column"
+    flexDirection: "column",
+    justifyContent: "flex-start"
   },
   view4: {
     alignItems: "flex-start",
     backgroundColor: colors.red200,
     display: "flex",
     flexDirection: "column",
+    justifyContent: "flex-start",
     width: "60px",
     height: "100px"
   },
@@ -83,6 +89,7 @@ let styles = {
     backgroundColor: colors.deeporange200,
     display: "flex",
     flexDirection: "column",
+    justifyContent: "flex-start",
     marginLeft: "12px",
     width: "60px",
     height: "60px"

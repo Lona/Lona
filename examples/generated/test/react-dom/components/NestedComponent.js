@@ -52,6 +52,7 @@ let styles = {
     display: "flex",
     flex: "1 1 0%",
     flexDirection: "column",
+    justifyContent: "flex-start",
     paddingTop: "10px",
     paddingRight: "10px",
     paddingBottom: "10px",
@@ -59,34 +60,31 @@ let styles = {
   },
   text: {
     ...textStyles.subheading2,
-    display: "flex",
+    alignItems: "flex-start",
     flex: "0 0 auto",
     flexDirection: "column",
+    justifyContent: "flex-start",
     marginBottom: "8px"
   },
   fitContentParentSecondaryChildren: {
-    alignItems: "flex-start",
+    alignSelf: "stretch",
     display: "flex",
-    flex: "0 0 auto",
     flexDirection: "row"
   },
   text1: {
     ...textStyles.body1,
-    display: "flex",
+    alignItems: "flex-start",
     flex: "0 0 auto",
     flexDirection: "column",
+    justifyContent: "flex-start",
     marginTop: "12px"
   },
-  localAsset: {
-    alignItems: "flex-start",
-    display: "flex",
-    flex: "0 0 auto",
-    flexDirection: "row"
-  },
+  localAsset: { alignSelf: "stretch", display: "flex", flexDirection: "row" },
   text2: {
     ...textStyles.body1,
-    display: "flex",
+    alignItems: "flex-start",
     flex: "0 0 auto",
-    flexDirection: "column"
+    flexDirection: "column",
+    justifyContent: "flex-start"
   }
 }

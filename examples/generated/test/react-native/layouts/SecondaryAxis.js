@@ -27,6 +27,8 @@ let styles = StyleSheet.create({
     alignItems: "flex-start",
     alignSelf: "stretch",
     flex: 0,
+    flexDirection: "column",
+    justifyContent: "flex-start",
     paddingTop: 24,
     paddingRight: 24,
     paddingBottom: 24,
@@ -35,6 +37,8 @@ let styles = StyleSheet.create({
   fixed: {
     alignItems: "flex-start",
     backgroundColor: "#D8D8D8",
+    flexDirection: "column",
+    justifyContent: "flex-start",
     marginBottom: 24,
     width: 100,
     height: 100
@@ -42,6 +46,8 @@ let styles = StyleSheet.create({
   fit: {
     alignItems: "flex-start",
     backgroundColor: "#D8D8D8",
+    flexDirection: "column",
+    justifyContent: "flex-start",
     marginBottom: 24,
     paddingTop: 12,
     paddingRight: 12,
@@ -53,7 +59,15 @@ let styles = StyleSheet.create({
     alignItems: "flex-start",
     alignSelf: "stretch",
     backgroundColor: "#D8D8D8",
+    flexDirection: "column",
+    justifyContent: "flex-start",
     height: 100
   },
-  text: { ...textStyles.body1, alignItems: "flex-start", flex: 0 }
+  text: {
+    ...textStyles.body1,
+    alignItems: "flex-start",
+    flex: 0,
+    flexDirection: "column",
+    justifyContent: "flex-start"
+  }
 })

@@ -11,22 +11,25 @@ export default class ComponentParameterInstance extends React.Component {
 
     return (
       <View style={[ styles.view, {} ]}>
-        <ComponentParameterTemplate
-          style={[ styles.componentParameterTemplate, {} ]}
-          subtitleComponent={{"parameters":{"text":"Subtitle","textStyle":"subheading2"},"type":"Lona:Text"}}
-          titleComponent={{"parameters":{"text":"Title","textStyle":"headline"},"type":"Lona:Text"}}
+        <View style={[ styles.componentParameterTemplate, {} ]}>
+          <ComponentParameterTemplate
+            subtitleComponent={{"parameters":{"text":"Subtitle","textStyle":"subheading2"},"type":"Lona:Text"}}
+            titleComponent={{"parameters":{"text":"Title","textStyle":"headline"},"type":"Lona:Text"}}
 
-        />
+          />
+        </View>
       </View>
     );
   }
 };
 
 let styles = StyleSheet.create({
-  view: { alignItems: "flex-start", alignSelf: "stretch", flex: 0 },
-  componentParameterTemplate: {
-    alignItems: "stretch",
+  view: {
+    alignItems: "flex-start",
+    alignSelf: "stretch",
     flex: 0,
-    flexDirection: "column"
-  }
+    flexDirection: "column",
+    justifyContent: "flex-start"
+  },
+  componentParameterTemplate: { alignItems: "stretch", flexDirection: "column" }
 })
