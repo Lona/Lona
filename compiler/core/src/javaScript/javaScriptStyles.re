@@ -54,21 +54,6 @@ let getStyleProperty =
   };
 };
 
-let componentBoundaryStyles = (framework: JavaScriptOptions.framework) =>
-  ParameterMap.(
-    switch (framework) {
-    | JavaScriptOptions.ReactDOM =>
-      empty
-      |> add(ParameterKey.FlexDirection, LonaValue.string("row"))
-      |> add(ParameterKey.AlignItems, LonaValue.string("flex-start"))
-    | ReactNative
-    | ReactSketchapp =>
-      empty
-      |> add(ParameterKey.FlexDirection, LonaValue.string("column"))
-      |> add(ParameterKey.AlignItems, LonaValue.string("stretch"))
-    }
-  );
-
 let defaultStyles =
     (
       framework: JavaScriptOptions.framework,
@@ -79,22 +64,18 @@ let defaultStyles =
 
   let defaults =
     switch (framework, layerType) {
-    | (JavaScriptOptions.ReactDOM, Types.Text) =>
+    | (JavaScriptOptions.ReactDOM, Types.Text) => defaults
+    | (JavaScriptOptions.ReactDOM, _) =>
       ParameterMap.(
         defaults |> add(ParameterKey.Display, LonaValue.string("flex"))
       )
-    | (JavaScriptOptions.ReactDOM, _) =>
-      ParameterMap.(
-        defaults
-        |> add(ParameterKey.Display, LonaValue.string("flex"))
-        |> add(ParameterKey.AlignItems, LonaValue.string("flex-start"))
-      )
+    /* |> add(ParameterKey.AlignItems, LonaValue.string("flex-start")) */
     | (JavaScriptOptions.ReactNative, _)
-    | (JavaScriptOptions.ReactSketchapp, _) =>
-      ParameterMap.(
-        defaults
-        |> add(ParameterKey.AlignItems, LonaValue.string("flex-start"))
-      )
+    | (JavaScriptOptions.ReactSketchapp, _) => defaults
+    /* ParameterMap.(
+         defaults
+         |> add(ParameterKey.AlignItems, LonaValue.string("flex-start"))
+       ) */
     };
 
   /* Add default text style */
@@ -116,101 +97,175 @@ let defaultStyles =
   defaults;
 };
 
+let flex0Value = framework =>
+  switch (framework) {
+  | JavaScriptOptions.ReactDOM => LonaValue.string("0 0 auto")
+  | JavaScriptOptions.ReactNative
+  | JavaScriptOptions.ReactSketchapp => LonaValue.number(0.0)
+  };
+
+let flex1Value = framework =>
+  switch (framework) {
+  | JavaScriptOptions.ReactDOM => LonaValue.string("1 1 0%")
+  | JavaScriptOptions.ReactNative
+  | JavaScriptOptions.ReactSketchapp => LonaValue.number(1.0)
+  };
+
+let platformDefaultLayout = framework: Layout.t =>
+  switch (framework) {
+  | JavaScriptOptions.ReactDOM => {
+      width: Fill,
+      height: Fill,
+      direction: Row,
+      horizontalAlignment: Start,
+      verticalAlignment: Start,
+    }
+  | JavaScriptOptions.ReactNative
+  | JavaScriptOptions.ReactSketchapp => {
+      width: Fill,
+      height: Fill,
+      direction: Column,
+      horizontalAlignment: Start,
+      verticalAlignment: Start,
+    }
+  };
+
+let platformPrimaryAxis = (framework, layer: option(Types.layer)) =>
+  switch (framework, layer) {
+  | (_, Some(layer)) =>
+    Layer.getFlexDirection(layer.parameters) |> Layout.FromString.direction
+  | (JavaScriptOptions.ReactDOM, None) => Row
+  | (JavaScriptOptions.ReactNative, None)
+  | (JavaScriptOptions.ReactSketchapp, None) => Column
+  };
+
 /* Use framework to determine correct layout parameters */
 let getLayoutParameters =
     (
-      getComponent: string => Js.Json.t,
       framework: JavaScriptOptions.framework,
       parent: option(Types.layer),
       layer: Types.layer,
     )
     : Types.layerParameters => {
-  /* let layer = Layer.getProxyLayer(getComponent, layer); */
+  let layout = Layer.getLayout(parent, layer.parameters);
 
-  let flexDirection = Layer.getFlexDirection(layer.parameters);
-
-  /* Top-level layers will have a different parent direction depending on the framework */
-  let frameworkParentDirection =
-    switch (framework, parent) {
-    | (_, Some(parent)) => Layer.getFlexDirection(parent.parameters)
-    | (JavaScriptOptions.ReactDOM, None) => "row"
-    | (JavaScriptOptions.ReactNative, None)
-    | (JavaScriptOptions.ReactSketchapp, None) => "column"
-    };
-  let sizingRules = Layer.getSizingRules(parent, layer);
+  /* The primary axis is determined by the parent's direction, or the platform
+     if we're at the top level and there is no parent */
+  let primaryAxis = platformPrimaryAxis(framework, parent);
 
   let parameters = ParameterMap.empty;
 
-  let flex0Value =
-    switch (framework) {
-    | JavaScriptOptions.ReactDOM => LonaValue.string("0 0 auto")
-    | JavaScriptOptions.ReactNative
-    | JavaScriptOptions.ReactSketchapp => LonaValue.number(0.0)
-    };
+  if (Layer.isComponentLayer(layer)) {
+    let parentU: Types.layer = parent |> Js.Option.getExn;
+    let parentLayout = Layer.getLayout(None, parentU.parameters);
 
-  let flex1Value =
-    switch (framework) {
-    | JavaScriptOptions.ReactDOM => LonaValue.string("1 1 0%")
-    | JavaScriptOptions.ReactNative
-    | JavaScriptOptions.ReactSketchapp => LonaValue.number(1.0)
-    };
+    let parameters =
+      ParameterMap.(
+        LonaValue.(
+          /* TODO: ReactDOM: Boundary components within a `row` parent may need more layout
+             styles to stretch/fit properly on the vertical axis */
+          switch (framework) {
+          | JavaScriptOptions.ReactDOM =>
+            let parameters = parameters |> add(FlexDirection, string("row"));
 
-  /* Horizontal axis */
-  let parameters =
-    ParameterMap.(
-      switch (frameworkParentDirection, sizingRules.width) {
-      | ("row", Types.Fill) =>
-        parameters |> add(ParameterKey.Flex, flex1Value)
-      | ("row", Types.FitContent) =>
-        parameters |> add(ParameterKey.Flex, flex0Value)
-      | ("column", Types.Fill) =>
-        parameters
-        |> add(ParameterKey.AlignSelf, LonaValue.string("stretch"))
-      | ("column", Types.FitContent) => parameters
-      | (_, Types.Fixed(value)) =>
-        parameters |> add(ParameterKey.Width, LonaValue.number(value))
-      | _ =>
-        Js.log2("Bad parent direction (width)", frameworkParentDirection);
-        parameters;
-      }
-    );
+            let alignSelf =
+              switch (
+                parentLayout.direction,
+                Layer.getStringParameterOpt(AlignItems, parentU.parameters),
+                Layer.getStringParameterOpt(
+                  JustifyContent,
+                  parentU.parameters,
+                ),
+              ) {
+              | (Column, Some(alignItems), _) => alignItems
+              | _ => "stretch"
+              };
 
-  /* Vertical axis */
-  let parameters =
-    ParameterMap.(
-      switch (frameworkParentDirection, sizingRules.height) {
-      | ("row", Types.Fill) =>
-        parameters
-        |> add(ParameterKey.AlignSelf, LonaValue.string("stretch"))
-      | ("row", Types.FitContent) => parameters
-      | ("column", Types.Fill) =>
-        parameters |> add(ParameterKey.Flex, flex1Value)
-      | ("column", Types.FitContent) =>
-        parameters |> add(ParameterKey.Flex, flex0Value)
-      | (_, Types.Fixed(value)) =>
-        parameters |> add(ParameterKey.Height, LonaValue.number(value))
-      | _ =>
-        Js.log2("Bad parent direction (width)", frameworkParentDirection);
-        parameters;
-      }
-    );
+            parameters |> add(AlignSelf, string(alignSelf));
+          /* TODO: ReactNative */
+          | JavaScriptOptions.ReactNative
+          | JavaScriptOptions.ReactSketchapp =>
+            parameters
+            |> add(FlexDirection, string("column"))
+            |> add(AlignItems, string("stretch"))
+          }
+        )
+      );
 
-  /* Flex direction axis */
-  let parameters =
-    ParameterMap.(
-      switch (framework, flexDirection) {
-      | (JavaScriptOptions.ReactDOM, "column") =>
-        parameters
-        |> add(ParameterKey.FlexDirection, LonaValue.string("column"))
-      | (JavaScriptOptions.ReactNative, "row")
-      | (JavaScriptOptions.ReactSketchapp, "row") =>
-        parameters
-        |> add(ParameterKey.FlexDirection, LonaValue.string("row"))
-      | _ => parameters
-      }
-    );
+    parameters;
+  } else {
+    /* Horizontal axis */
+    let parameters =
+      ParameterMap.(
+        switch (primaryAxis, layout.width) {
+        | (Row, Fill) => parameters |> add(Flex, flex1Value(framework))
+        | (Row, FitContent) =>
+          parameters |> add(Flex, flex0Value(framework))
+        | (Column, Fill) =>
+          parameters |> add(AlignSelf, LonaValue.string("stretch"))
+        | (Column, FitContent) => parameters
+        | (_, Fixed(value)) =>
+          parameters |> add(Width, LonaValue.number(value))
+        }
+      );
 
-  parameters;
+    /* Vertical axis */
+    let parameters =
+      ParameterMap.(
+        LonaValue.(
+          switch (primaryAxis, layout.height) {
+          | (Column, Fill) => parameters |> add(Flex, flex1Value(framework))
+          | (Column, FitContent) =>
+            parameters |> add(Flex, flex0Value(framework))
+          | (Row, Fill) => parameters |> add(AlignSelf, string("stretch"))
+          | (Row, FitContent) => parameters
+          | (_, Fixed(value)) => parameters |> add(Height, number(value))
+          }
+        )
+      );
+
+    /* Flex direction axis */
+    let parameters =
+      ParameterMap.(
+        LonaValue.(
+          switch (layout.direction) {
+          | Column => parameters |> add(FlexDirection, string("column"))
+          | Row => parameters |> add(FlexDirection, string("row"))
+          }
+        )
+      );
+
+    let (horizontalAlignmentKey, verticalAlignmentKey) =
+      ParameterKey.(
+        switch (layout.direction) {
+        | Row => (JustifyContent, AlignItems)
+        | Column => (AlignItems, JustifyContent)
+        }
+      );
+
+    /* Children alignment */
+    let parameters =
+      ParameterMap.(
+        LonaValue.(
+          parameters
+          |> add(
+               horizontalAlignmentKey,
+               string(
+                 layout.horizontalAlignment
+                 |> Layout.ToString.childrenAlignment,
+               ),
+             )
+          |> add(
+               verticalAlignmentKey,
+               string(
+                 layout.verticalAlignment |> Layout.ToString.childrenAlignment,
+               ),
+             )
+        )
+      );
+
+    parameters;
+  };
 };
 
 let getStylePropertyWithUnits =
@@ -237,29 +292,22 @@ let getStylePropertyWithUnits =
 let createStyleObjectForLayer =
     (
       config: Config.t,
-      getComponent: string => Js.Json.t,
       framework: JavaScriptOptions.framework,
       colors,
       parent: option(Types.layer),
       layer: Types.layer,
     ) => {
-  let layoutParameters =
-    getLayoutParameters(getComponent, framework, parent, layer);
+  let layoutParameters = getLayoutParameters(framework, parent, layer);
 
   /* We replace all of these keys with the appropriate dfeaults for the framework */
   let replacedKeys = [
+    ParameterKey.AlignItems,
     ParameterKey.AlignSelf,
     ParameterKey.Display,
     ParameterKey.Flex,
     ParameterKey.FlexDirection,
+    ParameterKey.JustifyContent,
   ];
-
-  let addComponentBoundaryStyles = base =>
-    switch (layer.typeName) {
-    | Types.Component(_) =>
-      ParameterMap.assign(base, componentBoundaryStyles(framework))
-    | _ => base
-    };
 
   JavaScriptAst.(
     Property({
@@ -275,7 +323,6 @@ let createStyleObjectForLayer =
           |> ParameterMap.assign(
                defaultStyles(framework, config, layer.typeName),
              )
-          |> addComponentBoundaryStyles
           |> ParameterMap.bindings
           |> List.map(((key, value)) =>
                getStylePropertyWithUnits(framework, colors, key, value)
@@ -288,7 +335,6 @@ let createStyleObjectForLayer =
 let layerToJavaScriptStyleSheetAST =
     (
       config: Config.t,
-      getComponent: string => Js.Json.t,
       framework: JavaScriptOptions.framework,
       colors,
       layer: Types.layer,
@@ -296,7 +342,7 @@ let layerToJavaScriptStyleSheetAST =
   let styleObjects =
     layer
     |> Layer.flatmapParent(
-         createStyleObjectForLayer(config, getComponent, framework, colors),
+         createStyleObjectForLayer(config, framework, colors),
        );
 
   JavaScriptAst.(

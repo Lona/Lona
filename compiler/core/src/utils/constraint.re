@@ -136,7 +136,8 @@ let getConstraints =
     let height = Layer.getNumberParameterOpt(Height, layer.parameters);
     let width = Layer.getNumberParameterOpt(Width, layer.parameters);
     let sizingRules =
-      layer |> Layer.getSizingRules(Layer.findParent(rootLayer, layer));
+      layer.parameters
+      |> Layer.getSizingRules(Layer.findParent(rootLayer, layer));
     let primarySizingRule = isColumn ? sizingRules.height : sizingRules.width;
     let secondarySizingRule =
       isColumn ? sizingRules.width : sizingRules.height;
@@ -147,7 +148,8 @@ let getConstraints =
            Layer.getNumberParameter(Flex, child.parameters) === 1.0
          );
     let addConstraints = (index, child: Types.layer) => {
-      let childSizingRules = child |> Layer.getSizingRules(Some(layer));
+      let childSizingRules =
+        child.parameters |> Layer.getSizingRules(Some(layer));
       let childSecondarySizingRule =
         isColumn ? childSizingRules.width : childSizingRules.height;
       let firstViewConstraints =

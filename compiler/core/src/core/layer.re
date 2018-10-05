@@ -116,6 +116,18 @@ let getFlexDirection = (parameters: Types.layerParameters) =>
   | exception Not_found => "column"
   };
 
+let getAlignItems = (parameters: Types.layerParameters) =>
+  switch (ParameterMap.find(ParameterKey.AlignItems, parameters)) {
+  | value => value.data |> Json.Decode.string
+  | exception Not_found => "flex-start"
+  };
+
+let getJustifyContent = (parameters: Types.layerParameters) =>
+  switch (ParameterMap.find(ParameterKey.JustifyContent, parameters)) {
+  | value => value.data |> Json.Decode.string
+  | exception Not_found => "flex-start"
+  };
+
 let getStringParameterOpt = (parameterName, parameters: Types.layerParameters) =>
   switch (ParameterMap.find_opt(parameterName, parameters)) {
   | Some(value) => Some(value.data |> Json.Decode.string)
@@ -141,44 +153,68 @@ let getNumberParameter = (parameterName, parameters: Types.layerParameters) =>
   };
 
 type dimensionSizingRules = {
-  width: Types.sizingRule,
-  height: Types.sizingRule,
+  width: Layout.sizingRule,
+  height: Layout.sizingRule,
 };
 
-let getSizingRules = (parent: option(Types.layer), layer: Types.layer) => {
+/* Lona save format uses React Native defaults, so the top-level layer has a column parent */
+let getSizingRules =
+    (parent: option(Types.layer), parameters: Types.layerParameters) => {
   let parentDirection =
     switch (parent) {
     | Some(parent) => getFlexDirection(parent.parameters)
     | None => "column"
     };
-  let flex = getNumberParameterOpt(Flex, layer.parameters);
-  let width = getNumberParameterOpt(Width, layer.parameters);
-  let height = getNumberParameterOpt(Height, layer.parameters);
-  let alignSelf = getStringParameterOpt(AlignSelf, layer.parameters);
+  let flex = getNumberParameterOpt(Flex, parameters);
+  let width = getNumberParameterOpt(Width, parameters);
+  let height = getNumberParameterOpt(Height, parameters);
+  let alignSelf = getStringParameterOpt(AlignSelf, parameters);
   let widthSizingRule =
     switch (parentDirection, flex, width, alignSelf) {
-    | ("row", Some(1.0), _, _) => Types.Fill
-    | ("row", _, Some(value), _) => Types.Fixed(value)
-    | ("row", _, _, _) => Types.FitContent
-    | (_, _, _, Some("stretch")) => Types.Fill
-    | (_, _, Some(value), _) => Types.Fixed(value)
-    | (_, _, _, _) => Types.FitContent
+    | ("row", Some(1.0), _, _) => Layout.Fill
+    | ("row", _, Some(value), _) => Layout.Fixed(value)
+    | ("row", _, _, _) => Layout.FitContent
+    | (_, _, _, Some("stretch")) => Layout.Fill
+    | (_, _, Some(value), _) => Layout.Fixed(value)
+    | (_, _, _, _) => Layout.FitContent
     };
   let heightSizingRule =
     switch (parentDirection, flex, height, alignSelf) {
-    | ("row", _, _, Some("stretch")) => Types.Fill
-    | ("row", _, Some(value), _) => Types.Fixed(value)
-    | ("row", _, _, _) => Types.FitContent
-    | (_, Some(1.0), _, _) => Types.Fill
-    | (_, _, Some(value), _) => Types.Fixed(value)
-    | (_, _, _, _) => Types.FitContent
+    | ("row", _, _, Some("stretch")) => Layout.Fill
+    | ("row", _, Some(value), _) => Layout.Fixed(value)
+    | ("row", _, _, _) => Layout.FitContent
+    | (_, Some(1.0), _, _) => Layout.Fill
+    | (_, _, Some(value), _) => Layout.Fixed(value)
+    | (_, _, _, _) => Layout.FitContent
     };
   {width: widthSizingRule, height: heightSizingRule};
 };
 
+let getLayout =
+    (parent: option(Types.layer), parameters: Types.layerParameters)
+    : Layout.t => {
+  let {width, height} = getSizingRules(parent, parameters);
+  let direction = getFlexDirection(parameters) |> Layout.FromString.direction;
+  let justifyContent =
+    getJustifyContent(parameters) |> Layout.FromString.childrenAlignment;
+  let alignItems =
+    getAlignItems(parameters) |> Layout.FromString.childrenAlignment;
+  let horizontalAlignment =
+    switch (direction) {
+    | Row => justifyContent
+    | Column => alignItems
+    };
+  let verticalAlignment =
+    switch (direction) {
+    | Row => alignItems
+    | Column => justifyContent
+    };
+  {direction, width, height, horizontalAlignment, verticalAlignment};
+};
+
 let printSizingRule =
   fun
-  | Types.Fill => "fill"
+  | Layout.Fill => "fill"
   | FitContent => "fitContent"
   | Fixed(value) => "fixed(" ++ string_of_float(value) ++ ")";
 

@@ -8,14 +8,13 @@ let styleNameKey = key =>
   | _ => key |> ParameterKey.toString
   };
 
-let getLayerTagString =
-    (framework: JavaScriptOptions.framework, layer: Types.layer) =>
+let getElementTagString =
+    (framework: JavaScriptOptions.framework, typeName: Types.layerType) =>
   switch (framework) {
-  | JavaScriptOptions.ReactDOM =>
-    ReactDomTranslators.layerTypeTags(layer.typeName)
+  | JavaScriptOptions.ReactDOM => ReactDomTranslators.layerTypeTags(typeName)
   /* | JavaScriptOptions.ReactDOM => JavaScriptFormat.elementName(layer.name) */
   | _ =>
-    switch (layer.typeName) {
+    switch (typeName) {
     | View => "View"
     | Text => "Text"
     | Image => "Image"
@@ -233,16 +232,16 @@ let rec layerToJavaScriptAST =
          )
     };
 
-  /* For JS DOM, wrap custom components in a div that can have the correct
+  /* Wrap custom components in a view that enforces the framework's
      default layout attributes. */
-  switch (framework, layer.typeName) {
-  | (JavaScriptOptions.ReactDOM, Types.Component(_)) =>
+  switch (layer.typeName) {
+  | Types.Component(_) =>
     JSXElement({
-      tag: "div",
+      tag: getElementTagString(framework, Types.View),
       attributes: styleAttribute,
       content: [
         JSXElement({
-          tag: getLayerTagString(framework, layer),
+          tag: getElementTagString(framework, layer.typeName),
           attributes,
           content,
         }),
@@ -250,7 +249,7 @@ let rec layerToJavaScriptAST =
     })
   | _ =>
     JSXElement({
-      tag: getLayerTagString(framework, layer),
+      tag: getElementTagString(framework, layer.typeName),
       attributes: styleAttribute @ attributes,
       content,
     })
@@ -443,7 +442,6 @@ let generate =
   let styleSheetAST =
     JavaScriptStyles.layerToJavaScriptStyleSheetAST(
       config,
-      getComponent,
       options.framework,
       config.colorsFile.contents,
       rootLayer,

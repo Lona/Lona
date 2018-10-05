@@ -84,8 +84,3 @@ type layer = {
   parameters: layerParameters,
   children: list(layer),
 };
-
-type sizingRule =
-  | Fill
-  | FitContent
-  | Fixed(float);
