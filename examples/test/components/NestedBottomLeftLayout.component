@@ -40,7 +40,6 @@
           "backgroundColor" : "red100",
           "flexDirection" : "row",
           "height" : 150,
-          "justifyContent" : "flex-start",
           "width" : 150
         },
         "type" : "Lona:View"
