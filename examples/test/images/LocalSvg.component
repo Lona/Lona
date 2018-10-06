@@ -1,0 +1,44 @@
+{
+  "devices" : [
+    {
+      "height" : 320,
+      "heightMode" : "At Least",
+      "name" : "iPhone SE",
+      "width" : 320
+    }
+  ],
+  "examples" : [
+    {
+      "id" : "Default",
+      "name" : "Default",
+      "params" : {
+
+      }
+    }
+  ],
+  "logic" : [
+
+  ],
+  "params" : [
+
+  ],
+  "root" : {
+    "children" : [
+      {
+        "id" : "Image",
+        "params" : {
+          "height" : 320,
+          "image" : "file:\/\/.\/assets\/caret-next.svg",
+          "width" : 320
+        },
+        "type" : "Lona:Image"
+      }
+    ],
+    "id" : "View",
+    "params" : {
+      "alignSelf" : "stretch",
+      "flex" : 1
+    },
+    "type" : "Lona:View"
+  }
+}

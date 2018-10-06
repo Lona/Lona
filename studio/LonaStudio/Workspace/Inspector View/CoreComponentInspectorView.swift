@@ -165,7 +165,7 @@ class CoreComponentInspectorView: NSStackView {
 
     var backgroundGradientView = TextField(frame: NSRect.zero)
     var textView = TextField(frame: NSRect.zero)
-    var imageView = ImageField(frame: NSRect.zero)
+    var imageView = ImageField()
     var imageURLView = TextField(frame: NSRect.zero)
     var animationViewContainer = NSView(frame: NSRect.zero)
     var animationURLView = TextField(frame: NSRect.zero)
@@ -862,7 +862,7 @@ class CoreComponentInspectorView: NSStackView {
             }
         case .image:
             if let value = self.value[property]?.string {
-                self.imageView.value = value
+                self.imageView.imageSource = value
                 self.imageURLView.value = value
             }
         case .animation:

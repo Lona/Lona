@@ -6,17 +6,110 @@
 //  Copyright © 2017 Devin Abbott. All rights reserved.
 //
 
+import AppKit
 import Foundation
-import Cocoa
+import MacawOSX
 
-class ImageField: NSImageView, CSControl {
+// MARK: - ImageField
+
+public class ImageField: NSBox, CSControl {
+
+    // MARK: Lifecycle
+
+    public init(imageSource: String, onChangeImageSource: StringHandler) {
+        self.imageSource = imageSource
+        self.onChangeImageSource = onChangeImageSource
+
+        super.init(frame: .zero)
+
+        setUpViews()
+        setUpConstraints()
+
+        update()
+    }
+
+    public convenience init() {
+        self.init(imageSource: "", onChangeImageSource: nil)
+    }
+
+    public required init?(coder aDecoder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
+
+    // MARK: Public
+
+    public var imageSource: String { didSet { update() } }
+    public var onChangeImageSource: StringHandler { didSet { update() } }
+
+    // MARK: Private
+
+    private var imageViewer = ImageViewer()
+    private var macawView = MacawView(frame: .zero)
+
+    // Record which svg we're displaying so that we only parse once
+    private var parsedPath: String?
+
+    private func setUpViews() {
+        boxType = .custom
+        borderType = .lineBorder
+        borderWidth = 1
+        borderColor = #colorLiteral(red: 0.6000000238, green: 0.6000000238, blue: 0.6000000238, alpha: 1)
+        contentViewMargins = .zero
+
+        addSubview(imageViewer)
+        addSubview(macawView)
+    }
+
+    private func setUpConstraints() {
+        translatesAutoresizingMaskIntoConstraints = false
+        imageViewer.translatesAutoresizingMaskIntoConstraints = false
+        macawView.translatesAutoresizingMaskIntoConstraints = false
+
+        imageViewer.topAnchor.constraint(equalTo: topAnchor).isActive = true
+        imageViewer.bottomAnchor.constraint(equalTo: bottomAnchor).isActive = true
+        imageViewer.leadingAnchor.constraint(equalTo: leadingAnchor).isActive = true
+        imageViewer.trailingAnchor.constraint(equalTo: trailingAnchor).isActive = true
+
+        macawView.topAnchor.constraint(equalTo: topAnchor).isActive = true
+        macawView.bottomAnchor.constraint(equalTo: bottomAnchor).isActive = true
+        macawView.leadingAnchor.constraint(equalTo: leadingAnchor).isActive = true
+        macawView.trailingAnchor.constraint(equalTo: trailingAnchor).isActive = true
+    }
+
+    private func update() {
+        let isSvg = imageSource.hasSuffix(".svg")
+        imageViewer.isHidden = isSvg
+        macawView.isHidden = !isSvg
+
+        if isSvg {
+            if parsedPath != imageSource {
+                parsedPath = imageSource
+                if
+                    let url = URL(string: imageSource)?.absoluteURLForWorkspaceURL(),
+                    let svg = try? SVGParser.parse(fullPath: url.path) {
+                    macawView.node = svg
+                }
+            }
+        } else {
+            imageViewer.value = imageSource
+            imageViewer.onChange = { source in
+                self.onChangeImageSource?(source)
+                self.onChangeData(CSData.String(source))
+            }
+        }
+    }
+
+    // MARK: CSControl
 
     var data: CSData {
-        get { return CSData.String(value) }
-        set { value = newValue.stringValue }
+        get { return CSData.String(imageSource) }
+        set { imageSource = newValue.stringValue }
     }
 
     var onChangeData: (CSData) -> Void = { _ in }
+}
+
+class ImageViewer: NSImageView {
 
     override func draw(_ dirtyRect: NSRect) {
         super.draw(dirtyRect)
@@ -39,10 +132,6 @@ class ImageField: NSImageView, CSControl {
 
         sizeLabel.topAnchor.constraint(equalTo: topAnchor, constant: 10).isActive = true
         sizeLabel.leftAnchor.constraint(equalTo: leftAnchor, constant: 10).isActive = true
-
-        wantsLayer = true
-        layer?.borderWidth = 1.0
-        layer?.borderColor = #colorLiteral(red: 0.6000000238, green: 0.6000000238, blue: 0.6000000238, alpha: 1).cgColor
 
         registerForDragged()
     }
@@ -94,7 +183,6 @@ class ImageField: NSImageView, CSControl {
 
             droppedFilePath = "file://" + imagePath
             onChange(value)
-            onChangeData(data)
 
             return true
         }

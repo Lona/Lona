@@ -1,3 +1,4 @@
 github "dabbott/FileTree" "master"
 github "dabbott/ControlledComponents" "master"
 github "dabbott/ColorPicker" "master"
+github "Exyte/Macaw" ~> 0.9.2
