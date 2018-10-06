@@ -69,13 +69,8 @@ let defaultStyles =
       ParameterMap.(
         defaults |> add(ParameterKey.Display, LonaValue.string("flex"))
       )
-    /* |> add(ParameterKey.AlignItems, LonaValue.string("flex-start")) */
     | (JavaScriptOptions.ReactNative, _)
     | (JavaScriptOptions.ReactSketchapp, _) => defaults
-    /* ParameterMap.(
-         defaults
-         |> add(ParameterKey.AlignItems, LonaValue.string("flex-start"))
-       ) */
     };
 
   /* Add default text style */
