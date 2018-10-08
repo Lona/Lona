@@ -52,6 +52,7 @@ let getParameterCategory = (x: ParameterKey.t) =>
   | BorderRadius => Style
   | BorderWidth => Style
   | TextAlign => Style
+  /* | Shadow => Style */
   /* Props */
   | NumberOfLines => Prop
   | Text => Prop
@@ -109,75 +110,117 @@ let flatmapParameters = (f, layer: Types.layer) => {
   List.concat(parameterLists) |> List.map(f(layer));
 };
 
-let getFlexDirection = (layer: Types.layer) =>
-  switch (ParameterMap.find(ParameterKey.FlexDirection, layer.parameters)) {
+let getFlexDirection = (parameters: Types.layerParameters) =>
+  switch (ParameterMap.find(ParameterKey.FlexDirection, parameters)) {
   | value => value.data |> Json.Decode.string
   | exception Not_found => "column"
   };
 
-let getStringParameterOpt = (parameterName, layer: Types.layer) =>
-  switch (ParameterMap.find_opt(parameterName, layer.parameters)) {
+let getAlignItems = (parameters: Types.layerParameters) =>
+  switch (ParameterMap.find(ParameterKey.AlignItems, parameters)) {
+  | value => value.data |> Json.Decode.string
+  | exception Not_found => "flex-start"
+  };
+
+let getJustifyContent = (parameters: Types.layerParameters) =>
+  switch (ParameterMap.find(ParameterKey.JustifyContent, parameters)) {
+  | value => value.data |> Json.Decode.string
+  | exception Not_found => "flex-start"
+  };
+
+let getStringParameterOpt = (parameterName, parameters: Types.layerParameters) =>
+  switch (ParameterMap.find_opt(parameterName, parameters)) {
   | Some(value) => Some(value.data |> Json.Decode.string)
   | None => None
   };
 
-let getStringParameter = (parameterName, layer: Types.layer) =>
-  switch (getStringParameterOpt(parameterName, layer)) {
+let getStringParameter = (parameterName, parameters: Types.layerParameters) =>
+  switch (getStringParameterOpt(parameterName, parameters)) {
   | Some(value) => value
   | None => ""
   };
 
-let getNumberParameterOpt = (parameterName, layer: Types.layer) =>
-  switch (ParameterMap.find(parameterName, layer.parameters)) {
+let getNumberParameterOpt = (parameterName, parameters: Types.layerParameters) =>
+  switch (ParameterMap.find(parameterName, parameters)) {
   | value => Some(value.data |> Json.Decode.float)
   | exception Not_found => None
   };
 
-let getNumberParameter = (parameterName, layer: Types.layer) =>
-  switch (getNumberParameterOpt(parameterName, layer)) {
+let getNumberParameter = (parameterName, parameters: Types.layerParameters) =>
+  switch (getNumberParameterOpt(parameterName, parameters)) {
   | Some(value) => value
   | None => 0.0
   };
 
 type dimensionSizingRules = {
-  width: Types.sizingRule,
-  height: Types.sizingRule,
+  width: Layout.sizingRule,
+  height: Layout.sizingRule,
 };
 
-let getSizingRules = (parent: option(Types.layer), layer: Types.layer) => {
+/* Lona save format uses React Native defaults, so the top-level layer has a column parent */
+let getSizingRules =
+    (parent: option(Types.layer), parameters: Types.layerParameters) => {
   let parentDirection =
     switch (parent) {
-    | Some(parent) => getFlexDirection(parent)
+    | Some(parent) => getFlexDirection(parent.parameters)
     | None => "column"
     };
-  let flex = getNumberParameterOpt(Flex, layer);
-  let width = getNumberParameterOpt(Width, layer);
-  let height = getNumberParameterOpt(Height, layer);
-  let alignSelf = getStringParameterOpt(AlignSelf, layer);
+  let flex = getNumberParameterOpt(Flex, parameters);
+  let width = getNumberParameterOpt(Width, parameters);
+  let height = getNumberParameterOpt(Height, parameters);
+  let alignSelf = getStringParameterOpt(AlignSelf, parameters);
   let widthSizingRule =
     switch (parentDirection, flex, width, alignSelf) {
-    | ("row", Some(1.0), _, _) => Types.Fill
-    | ("row", _, Some(value), _) => Types.Fixed(value)
-    | ("row", _, _, _) => Types.FitContent
-    | (_, _, _, Some("stretch")) => Types.Fill
-    | (_, _, Some(value), _) => Types.Fixed(value)
-    | (_, _, _, _) => Types.FitContent
+    | ("row", Some(1.0), _, _) => Layout.Fill
+    | ("row", _, Some(value), _) => Layout.Fixed(value)
+    | ("row", _, _, _) => Layout.FitContent
+    | (_, _, _, Some("stretch")) => Layout.Fill
+    | (_, _, Some(value), _) => Layout.Fixed(value)
+    | (_, _, _, _) => Layout.FitContent
     };
   let heightSizingRule =
     switch (parentDirection, flex, height, alignSelf) {
-    | ("row", _, _, Some("stretch")) => Types.Fill
-    | ("row", _, Some(value), _) => Types.Fixed(value)
-    | ("row", _, _, _) => Types.FitContent
-    | (_, Some(1.0), _, _) => Types.Fill
-    | (_, _, Some(value), _) => Types.Fixed(value)
-    | (_, _, _, _) => Types.FitContent
+    | ("row", _, _, Some("stretch")) => Layout.Fill
+    | ("row", _, Some(value), _) => Layout.Fixed(value)
+    | ("row", _, _, _) => Layout.FitContent
+    | (_, Some(1.0), _, _) => Layout.Fill
+    | (_, _, Some(value), _) => Layout.Fixed(value)
+    | (_, _, _, _) => Layout.FitContent
     };
   {width: widthSizingRule, height: heightSizingRule};
 };
 
+let getLayout =
+    (parent: option(Types.layer), parameters: Types.layerParameters)
+    : Layout.t => {
+  let {width, height} = getSizingRules(parent, parameters);
+  let direction = getFlexDirection(parameters) |> Layout.FromString.direction;
+  let justifyContent =
+    switch (getStringParameterOpt(ParameterKey.JustifyContent, parameters)) {
+    | Some(value) => value |> Layout.FromString.childrenAlignment
+    | None => Unspecified
+    };
+  let alignItems =
+    switch (getStringParameterOpt(ParameterKey.AlignItems, parameters)) {
+    | Some(value) => value |> Layout.FromString.childrenAlignment
+    | None => Unspecified
+    };
+  let horizontalAlignment =
+    switch (direction) {
+    | Row => justifyContent
+    | Column => alignItems
+    };
+  let verticalAlignment =
+    switch (direction) {
+    | Row => alignItems
+    | Column => justifyContent
+    };
+  {direction, width, height, horizontalAlignment, verticalAlignment};
+};
+
 let printSizingRule =
   fun
-  | Types.Fill => "fill"
+  | Layout.Fill => "fill"
   | FitContent => "fitContent"
   | Fixed(value) => "fixed(" ++ string_of_float(value) ++ ")";
 
@@ -322,3 +365,32 @@ let getTypeNames = rootLayer => {
        );
   {builtIn: builtInTypeNames, custom: customTypeNames};
 };
+
+/* For the purposes of layouts, we want to swap the custom component layer
+   with the root layer from the custom component's definition. We should
+   use the parameters of the custom component's root layer, since these
+   determine layout. We should still use the type, name, and children of
+   the custom component layer. */
+let getRootLayerForComponentName =
+    (getComponent: string => Js.Json.t, layer: Types.layer, name): Types.layer => {
+  let component = getComponent(name);
+  let rootLayer = component |> Decode.Component.rootLayer(getComponent);
+  {
+    typeName: layer.typeName,
+    styles: layer.styles,
+    name: layer.name,
+    parameters: rootLayer.parameters,
+    children: layer.children,
+  };
+};
+
+/* Any time we access a layer, we want to use its proxy if it has one.
+   This is how we layout custom components.
+   TODO: When we handle "Children" components, we'll need to find/use
+   a different proxy */
+let getProxyLayer = (getComponent: string => Js.Json.t, layer: Types.layer) =>
+  switch (layer.typeName) {
+  | Types.Component(name) =>
+    getRootLayerForComponentName(getComponent, layer, name)
+  | _ => layer
+  };

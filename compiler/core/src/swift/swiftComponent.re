@@ -474,7 +474,7 @@ let generate =
   let textStyleVariableDoc = (layer: Types.layer) => {
     let id =
       Parameter.isSetInitially(layer, TextStyle) ?
-        Layer.getStringParameter(TextStyle, layer) :
+        Layer.getStringParameter(TextStyle, layer.parameters) :
         config.textStylesFile.contents.defaultStyle.id;
     let value =
       Parameter.isSetInitially(layer, TextAlign) ?
@@ -483,7 +483,7 @@ let generate =
           [
             (
               Some("alignment"),
-              ["." ++ Layer.getStringParameter(TextAlign, layer)],
+              ["." ++ Layer.getStringParameter(TextAlign, layer.parameters)],
             ),
           ],
         ) :
@@ -615,8 +615,7 @@ let generate =
     | SwiftOptions.UIKit => []
     };
 
-  let constraints =
-    SwiftConstraint.calculateConstraints(getComponent, rootLayer);
+  let constraints = Constraint.getConstraints(getComponent, rootLayer);
   let superclass =
     TypeName(
       Naming.layerType(config, pluginContext, swiftOptions, name, Types.View),

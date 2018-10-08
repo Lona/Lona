@@ -26,7 +26,10 @@ export default class PrimaryAxis extends React.Component {
 
 let styles = StyleSheet.create({
   view: {
+    alignItems: "flex-start",
     alignSelf: "stretch",
+    flexDirection: "column",
+    justifyContent: "flex-start",
     paddingTop: 24,
     paddingRight: 24,
     paddingBottom: 24,
@@ -34,13 +37,44 @@ let styles = StyleSheet.create({
     height: 500
   },
   fixed: {
+    alignItems: "flex-start",
     backgroundColor: "#D8D8D8",
+    flexDirection: "column",
+    justifyContent: "flex-start",
     marginBottom: 24,
     width: 100,
     height: 100
   },
-  fit: { backgroundColor: "#D8D8D8", marginBottom: 24, width: 100 },
-  text: {},
-  fill1: { backgroundColor: colors.cyan500, flex: 1, width: 100 },
-  fill2: { backgroundColor: colors.blue500, flex: 1, width: 100 }
+  fit: {
+    alignItems: "flex-start",
+    backgroundColor: "#D8D8D8",
+    flex: 0,
+    flexDirection: "column",
+    justifyContent: "flex-start",
+    marginBottom: 24,
+    width: 100
+  },
+  fill1: {
+    alignItems: "flex-start",
+    backgroundColor: colors.cyan500,
+    flex: 1,
+    flexDirection: "column",
+    justifyContent: "flex-start",
+    width: 100
+  },
+  fill2: {
+    alignItems: "flex-start",
+    backgroundColor: colors.blue500,
+    flex: 1,
+    flexDirection: "column",
+    justifyContent: "flex-start",
+    width: 100
+  },
+  text: {
+    ...TextStyles.get("body1"),
+    alignItems: "flex-start",
+    flex: 0,
+    flexDirection: "column",
+    justifyContent: "flex-start"
+  }
 })

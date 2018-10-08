@@ -11,9 +11,9 @@ export default class LocalAsset extends React.Component {
     let theme = { "view": { "normal": {} }, "image": { "normal": {} } }
     return (
       <ThemeProvider theme={theme}>
-        <div style={Object.assign(styles.view, {})}>
+        <div style={Object.assign({}, styles.view, {})}>
           <img
-            style={Object.assign(styles.image, {})}
+            style={Object.assign({}, styles.image, {})}
             src={require("../assets/icon_128x128.png")}
 
           />
@@ -25,16 +25,19 @@ export default class LocalAsset extends React.Component {
 
 let styles = {
   view: {
-    alignItems: "stretch",
-    alignSelf: "stretch",
+    alignItems: "flex-start",
+    backgroundColor: colors.red400,
     display: "flex",
-    flexDirection: "column"
+    flex: "0 0 auto",
+    flexDirection: "column",
+    justifyContent: "flex-start"
   },
   image: {
-    alignItems: "stretch",
+    alignItems: "flex-start",
     backgroundColor: "#D8D8D8",
     display: "flex",
     flexDirection: "column",
+    justifyContent: "flex-start",
     width: "100px",
     height: "100px"
   }

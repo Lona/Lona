@@ -13,8 +13,8 @@ export default class Assign extends React.Component {
     let theme = { "view": { "normal": {} }, "text": { "normal": {} } }
     return (
       <ThemeProvider theme={theme}>
-        <div style={Object.assign(styles.view, {})}>
-          <span style={Object.assign(styles.text, {})}>
+        <div style={Object.assign({}, styles.view, {})}>
+          <span style={Object.assign({}, styles.text, {})}>
             {Text$text}
           </span>
         </div>
@@ -25,10 +25,17 @@ export default class Assign extends React.Component {
 
 let styles = {
   view: {
-    alignItems: "stretch",
-    alignSelf: "stretch",
+    alignItems: "flex-start",
     display: "flex",
-    flexDirection: "column"
+    flex: "1 1 0%",
+    flexDirection: "column",
+    justifyContent: "flex-start"
   },
-  text: { alignItems: "stretch", display: "flex", flexDirection: "column" }
+  text: {
+    ...textStyles.body1,
+    alignItems: "flex-start",
+    flex: "0 0 auto",
+    flexDirection: "column",
+    justifyContent: "flex-start"
+  }
 }

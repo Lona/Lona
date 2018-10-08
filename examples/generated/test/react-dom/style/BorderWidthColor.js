@@ -11,8 +11,8 @@ export default class BorderWidthColor extends React.Component {
     let theme = { "view": { "normal": {} }, "view1": { "normal": {} } }
     return (
       <ThemeProvider theme={theme}>
-        <div style={Object.assign(styles.view, {})}>
-          <div style={Object.assign(styles.view1, {})} />
+        <div style={Object.assign({}, styles.view, {})}>
+          <div style={Object.assign({}, styles.view1, {})} />
         </div>
       </ThemeProvider>
     );
@@ -21,15 +21,17 @@ export default class BorderWidthColor extends React.Component {
 
 let styles = {
   view: {
-    alignItems: "stretch",
-    alignSelf: "stretch",
+    alignItems: "flex-start",
     display: "flex",
-    flexDirection: "column"
+    flex: "1 1 0%",
+    flexDirection: "column",
+    justifyContent: "flex-start"
   },
   view1: {
-    alignItems: "stretch",
+    alignItems: "flex-start",
     display: "flex",
     flexDirection: "column",
+    justifyContent: "flex-start",
     borderRadius: "10px",
     borderWidth: "20px",
     borderColor: colors.blue300,

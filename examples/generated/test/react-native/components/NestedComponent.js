@@ -16,14 +16,11 @@ export default class NestedComponent extends React.Component {
         <Text style={[ styles.text, {} ]}>
           {"Example nested component"}
         </Text>
-        <FitContentParentSecondaryChildren
-          style={[ styles.fitContentParentSecondaryChildren, {} ]}
-
-        />
+        <FitContentParentSecondaryChildren />
         <Text style={[ styles.text1, {} ]}>
           {"Text below"}
         </Text>
-        <LocalAsset style={[ styles.localAsset, {} ]} />
+        <LocalAsset />
         <Text style={[ styles.text2, {} ]}>
           {"Very bottom"}
         </Text>
@@ -34,15 +31,51 @@ export default class NestedComponent extends React.Component {
 
 let styles = StyleSheet.create({
   view: {
+    alignItems: "flex-start",
     alignSelf: "stretch",
+    flex: 0,
+    flexDirection: "column",
+    justifyContent: "flex-start",
     paddingTop: 10,
     paddingRight: 10,
     paddingBottom: 10,
     paddingLeft: 10
   },
-  text: { ...textStyles.subheading2, marginBottom: 8 },
-  fitContentParentSecondaryChildren: {},
-  text1: { marginTop: 12 },
-  localAsset: {},
-  text2: {}
+  text: {
+    ...textStyles.subheading2,
+    alignItems: "flex-start",
+    flex: 0,
+    flexDirection: "column",
+    justifyContent: "flex-start",
+    marginBottom: 8
+  },
+  fitContentParentSecondaryChildren: {
+    alignItems: "flex-start",
+    alignSelf: "stretch",
+    flex: 1,
+    flexDirection: "row",
+    justifyContent: "flex-start"
+  },
+  text1: {
+    ...textStyles.body1,
+    alignItems: "flex-start",
+    flex: 0,
+    flexDirection: "column",
+    justifyContent: "flex-start",
+    marginTop: 12
+  },
+  localAsset: {
+    alignItems: "flex-start",
+    alignSelf: "stretch",
+    flex: 1,
+    flexDirection: "row",
+    justifyContent: "flex-start"
+  },
+  text2: {
+    ...textStyles.body1,
+    alignItems: "flex-start",
+    flex: 0,
+    flexDirection: "column",
+    justifyContent: "flex-start"
+  }
 })

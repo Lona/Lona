@@ -1,0 +1,54 @@
+{
+  "devices" : [
+    {
+      "height" : 100,
+      "heightMode" : "At Least",
+      "name" : "iPhone SE",
+      "width" : 320
+    }
+  ],
+  "examples" : [
+    {
+      "id" : "Default",
+      "name" : "Default",
+      "params" : {
+
+      }
+    }
+  ],
+  "logic" : [
+
+  ],
+  "params" : [
+
+  ],
+  "root" : {
+    "children" : [
+      {
+        "children" : [
+          {
+            "id" : "LocalAsset",
+            "params" : {
+
+            },
+            "type" : "LocalAsset"
+          }
+        ],
+        "id" : "View 1",
+        "params" : {
+          "alignItems" : "flex-end",
+          "backgroundColor" : "red100",
+          "flexDirection" : "row",
+          "height" : 150,
+          "width" : 150
+        },
+        "type" : "Lona:View"
+      }
+    ],
+    "id" : "View",
+    "params" : {
+      "alignSelf" : "stretch"
+    },
+    "type" : "Lona:View"
+  }
+}

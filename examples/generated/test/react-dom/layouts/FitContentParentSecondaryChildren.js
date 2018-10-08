@@ -16,10 +16,10 @@ export default class FitContentParentSecondaryChildren extends React.Component {
     }
     return (
       <ThemeProvider theme={theme}>
-        <div style={Object.assign(styles.container, {})}>
-          <div style={Object.assign(styles.view1, {})} />
-          <div style={Object.assign(styles.view3, {})} />
-          <div style={Object.assign(styles.view2, {})} />
+        <div style={Object.assign({}, styles.container, {})}>
+          <div style={Object.assign({}, styles.view1, {})} />
+          <div style={Object.assign({}, styles.view3, {})} />
+          <div style={Object.assign({}, styles.view2, {})} />
         </div>
       </ThemeProvider>
     );
@@ -28,37 +28,41 @@ export default class FitContentParentSecondaryChildren extends React.Component {
 
 let styles = {
   container: {
-    alignItems: "stretch",
-    alignSelf: "stretch",
+    alignItems: "flex-start",
     backgroundColor: colors.bluegrey50,
     display: "flex",
+    flex: "1 1 0%",
     flexDirection: "row",
+    justifyContent: "flex-start",
     paddingTop: "24px",
     paddingRight: "24px",
     paddingBottom: "24px",
     paddingLeft: "24px"
   },
   view1: {
-    alignItems: "stretch",
+    alignItems: "flex-start",
     backgroundColor: colors.blue500,
     display: "flex",
     flexDirection: "column",
+    justifyContent: "flex-start",
     width: "60px",
     height: "60px"
   },
   view3: {
-    alignItems: "stretch",
+    alignItems: "flex-start",
     backgroundColor: colors.lightblue500,
     display: "flex",
     flexDirection: "column",
+    justifyContent: "flex-start",
     width: "100px",
     height: "120px"
   },
   view2: {
-    alignItems: "stretch",
+    alignItems: "flex-start",
     backgroundColor: colors.cyan500,
     display: "flex",
     flexDirection: "column",
+    justifyContent: "flex-start",
     width: "100px",
     height: "180px"
   }

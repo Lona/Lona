@@ -195,7 +195,8 @@ let toSwiftAST =
             let layer = Layer.findByName(layerName, rootLayer);
             switch (layer) {
             | Some(layer) =>
-              let param = Layer.getStringParameterOpt(TextAlign, layer);
+              let param =
+                Layer.getStringParameterOpt(TextAlign, layer.parameters);
               switch (param) {
               | None => right
               | Some(_) =>
@@ -210,7 +211,10 @@ let toSwiftAST =
                           "value":
                             SwiftIdentifier(
                               "."
-                              ++ Layer.getStringParameter(TextAlign, layer),
+                              ++ Layer.getStringParameter(
+                                   TextAlign,
+                                   layer.parameters,
+                                 ),
                             ),
                         }),
                       ],

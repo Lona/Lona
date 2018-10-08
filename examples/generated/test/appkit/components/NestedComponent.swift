@@ -88,7 +88,7 @@ public class NestedComponent: NSBox {
       .constraint(equalTo: leadingAnchor, constant: 10)
     let localAssetViewTrailingAnchorConstraint = localAssetView
       .trailingAnchor
-      .constraint(equalTo: trailingAnchor, constant: -10)
+      .constraint(lessThanOrEqualTo: trailingAnchor, constant: -10)
     let text2ViewBottomAnchorConstraint = text2View.bottomAnchor.constraint(equalTo: bottomAnchor, constant: -10)
     let text2ViewTopAnchorConstraint = text2View.topAnchor.constraint(equalTo: localAssetView.bottomAnchor)
     let text2ViewLeadingAnchorConstraint = text2View.leadingAnchor.constraint(equalTo: leadingAnchor, constant: 10)

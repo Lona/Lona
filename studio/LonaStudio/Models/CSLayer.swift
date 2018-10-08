@@ -401,6 +401,8 @@ class CSLayer: CSDataDeserializable, CSDataSerializable, DataNode, NSCopying {
         set {
             let widthSizingRules = children.map({ $0.widthSizingRule })
             let heightSizingRules = children.map({ $0.heightSizingRule })
+            let horizontalAlignment = self.horizontalAlignment
+            let verticalAlignment = self.verticalAlignment
 
             // Actually set the value - this will change what children sizingRule getters return
             parameters["flexDirection"] = newValue?.toData()
@@ -411,6 +413,8 @@ class CSLayer: CSDataDeserializable, CSDataSerializable, DataNode, NSCopying {
             for (i, value) in heightSizingRules.enumerated() {
                 children[i].heightSizingRule = value
             }
+            self.horizontalAlignment = horizontalAlignment
+            self.verticalAlignment = verticalAlignment
         }
     }
     var alignItems: String? {
@@ -515,9 +519,11 @@ class CSLayer: CSDataDeserializable, CSDataSerializable, DataNode, NSCopying {
     }
 
     static let defaultParameterValue: [String: CSData] = [
+        "alignItems": CSData.String("flex-start"),
         "borderRadius": CSData.Number(0),
         "flex": CSData.Number(0),
         "flexDirection": CSData.String("column"),
+        "justifyContent": CSData.String("flex-start"),
         "marginTop": CSData.Number(0),
         "marginRight": CSData.Number(0),
         "marginBottom": CSData.Number(0),

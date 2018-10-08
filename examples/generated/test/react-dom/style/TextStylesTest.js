@@ -23,35 +23,35 @@ export default class TextStylesTest extends React.Component {
     }
     return (
       <ThemeProvider theme={theme}>
-        <div style={Object.assign(styles.view, {})}>
-          <span style={Object.assign(styles.text, {})}>
+        <div style={Object.assign({}, styles.view, {})}>
+          <span style={Object.assign({}, styles.text, {})}>
             {"Text goes here"}
           </span>
-          <span style={Object.assign(styles.text1, {})}>
+          <span style={Object.assign({}, styles.text1, {})}>
             {"Text goes here"}
           </span>
-          <span style={Object.assign(styles.text2, {})}>
+          <span style={Object.assign({}, styles.text2, {})}>
             {"Text goes here"}
           </span>
-          <span style={Object.assign(styles.text3, {})}>
+          <span style={Object.assign({}, styles.text3, {})}>
             {"Text goes here"}
           </span>
-          <span style={Object.assign(styles.text4, {})}>
+          <span style={Object.assign({}, styles.text4, {})}>
             {"Text goes here"}
           </span>
-          <span style={Object.assign(styles.text5, {})}>
+          <span style={Object.assign({}, styles.text5, {})}>
             {"Text goes here"}
           </span>
-          <span style={Object.assign(styles.text6, {})}>
+          <span style={Object.assign({}, styles.text6, {})}>
             {"Text goes here"}
           </span>
-          <span style={Object.assign(styles.text7, {})}>
+          <span style={Object.assign({}, styles.text7, {})}>
             {"Text goes here"}
           </span>
-          <span style={Object.assign(styles.text8, {})}>
+          <span style={Object.assign({}, styles.text8, {})}>
             {"Text goes here"}
           </span>
-          <span style={Object.assign(styles.text9, {})}>
+          <span style={Object.assign({}, styles.text9, {})}>
             {"Text goes here"}
           </span>
         </div>
@@ -62,69 +62,80 @@ export default class TextStylesTest extends React.Component {
 
 let styles = {
   view: {
-    alignItems: "stretch",
-    alignSelf: "stretch",
+    alignItems: "flex-start",
     display: "flex",
-    flexDirection: "column"
+    flex: "1 1 0%",
+    flexDirection: "column",
+    justifyContent: "flex-start"
   },
   text: {
     ...textStyles.display4,
-    alignItems: "stretch",
-    display: "flex",
-    flexDirection: "column"
+    alignItems: "flex-start",
+    flex: "0 0 auto",
+    flexDirection: "column",
+    justifyContent: "flex-start"
   },
   text1: {
     ...textStyles.display3,
-    alignItems: "stretch",
-    display: "flex",
-    flexDirection: "column"
+    alignItems: "flex-start",
+    flex: "0 0 auto",
+    flexDirection: "column",
+    justifyContent: "flex-start"
   },
   text2: {
     ...textStyles.display2,
-    alignItems: "stretch",
-    display: "flex",
-    flexDirection: "column"
+    alignItems: "flex-start",
+    flex: "0 0 auto",
+    flexDirection: "column",
+    justifyContent: "flex-start"
   },
   text3: {
     ...textStyles.display1,
-    alignItems: "stretch",
-    display: "flex",
-    flexDirection: "column"
+    alignItems: "flex-start",
+    flex: "0 0 auto",
+    flexDirection: "column",
+    justifyContent: "flex-start"
   },
   text4: {
     ...textStyles.headline,
-    alignItems: "stretch",
-    display: "flex",
-    flexDirection: "column"
+    alignItems: "flex-start",
+    flex: "0 0 auto",
+    flexDirection: "column",
+    justifyContent: "flex-start"
   },
   text5: {
     ...textStyles.subheading2,
-    alignItems: "stretch",
-    display: "flex",
-    flexDirection: "column"
+    alignItems: "flex-start",
+    flex: "0 0 auto",
+    flexDirection: "column",
+    justifyContent: "flex-start"
   },
   text6: {
     ...textStyles.subheading1,
-    alignItems: "stretch",
-    display: "flex",
-    flexDirection: "column"
+    alignItems: "flex-start",
+    flex: "0 0 auto",
+    flexDirection: "column",
+    justifyContent: "flex-start"
   },
   text7: {
     ...textStyles.body2,
-    alignItems: "stretch",
-    display: "flex",
-    flexDirection: "column"
+    alignItems: "flex-start",
+    flex: "0 0 auto",
+    flexDirection: "column",
+    justifyContent: "flex-start"
   },
   text8: {
     ...textStyles.body1,
-    alignItems: "stretch",
-    display: "flex",
-    flexDirection: "column"
+    alignItems: "flex-start",
+    flex: "0 0 auto",
+    flexDirection: "column",
+    justifyContent: "flex-start"
   },
   text9: {
     ...textStyles.caption,
-    alignItems: "stretch",
-    display: "flex",
-    flexDirection: "column"
+    alignItems: "flex-start",
+    flex: "0 0 auto",
+    flexDirection: "column",
+    justifyContent: "flex-start"
   }
 }

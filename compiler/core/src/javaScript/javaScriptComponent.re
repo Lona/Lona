@@ -8,14 +8,13 @@ let styleNameKey = key =>
   | _ => key |> ParameterKey.toString
   };
 
-let getLayerTagString =
-    (framework: JavaScriptOptions.framework, layer: Types.layer) =>
+let getElementTagString =
+    (framework: JavaScriptOptions.framework, typeName: Types.layerType) =>
   switch (framework) {
-  | JavaScriptOptions.ReactDOM =>
-    ReactDomTranslators.layerTypeTags(layer.typeName)
+  | JavaScriptOptions.ReactDOM => ReactDomTranslators.layerTypeTags(typeName)
   /* | JavaScriptOptions.ReactDOM => JavaScriptFormat.elementName(layer.name) */
   | _ =>
-    switch (layer.typeName) {
+    switch (typeName) {
     | View => "View"
     | Text => "Text"
     | Image => "Image"
@@ -76,25 +75,23 @@ module StyledComponents = {
 };
 
 let createStyleAttributePropertyAST =
-    (colors, textStyles, key: ParameterKey.t, value: Logic.logicValue) =>
+    (config: Config.t, key: ParameterKey.t, value: Logic.logicValue) =>
   switch (key) {
   | ParameterKey.TextStyle =>
     JavaScriptAst.SpreadElement(
-      JavaScriptLogic.logicValueToJavaScriptAST(colors, textStyles, value),
+      JavaScriptLogic.logicValueToJavaScriptAST(config, value),
     )
   | _ =>
     JavaScriptAst.Property({
       key: Identifier([key |> styleNameKey]),
-      value:
-        JavaScriptLogic.logicValueToJavaScriptAST(colors, textStyles, value),
+      value: JavaScriptLogic.logicValueToJavaScriptAST(config, value),
     })
   };
 
 let createStyleAttributeAST =
     (
       framework: JavaScriptOptions.framework,
-      colors,
-      textStyles,
+      config: Config.t,
       layer: Types.layer,
       styles,
     ) =>
@@ -107,18 +104,14 @@ let createStyleAttributeAST =
           CallExpression({
             callee: Identifier(["Object", "assign"]),
             arguments: [
+              ObjectLiteral([]),
               Identifier([
                 "styles",
                 JavaScriptFormat.styleVariableName(layer.name),
               ]),
               ObjectLiteral(
                 Layer.mapBindings(((key, value)) =>
-                  createStyleAttributePropertyAST(
-                    colors,
-                    textStyles,
-                    key,
-                    value,
-                  )
+                  createStyleAttributePropertyAST(config, key, value)
                 ) @@
                 styles,
               ),
@@ -138,12 +131,7 @@ let createStyleAttributeAST =
             ]),
             ObjectLiteral(
               Layer.mapBindings(((key, value)) =>
-                createStyleAttributePropertyAST(
-                  colors,
-                  textStyles,
-                  key,
-                  value,
-                )
+                createStyleAttributePropertyAST(config, key, value)
               ) @@
               styles,
             ),
@@ -155,10 +143,10 @@ let createStyleAttributeAST =
 let rec layerToJavaScriptAST =
         (
           framework: JavaScriptOptions.framework,
-          colors,
-          textStyles,
+          config: Config.t,
           variableMap,
           getAssetPath,
+          parent: option(Types.layer),
           layer: Types.layer,
         ) => {
   open Ast;
@@ -187,13 +175,7 @@ let rec layerToJavaScriptAST =
     switch (framework) {
     /* | JavaScriptOptions.ReactDOM => [] */
     | _ => [
-        createStyleAttributeAST(
-          framework,
-          colors,
-          textStyles,
-          layer,
-          styleVariables,
-        ),
+        createStyleAttributeAST(framework, config, layer, styleVariables),
       ]
     };
   let attributes =
@@ -224,12 +206,7 @@ let rec layerToJavaScriptAST =
                callee: Identifier(["require"]),
                arguments: [Literal(pathValue)],
              });
-           | _ =>
-             JavaScriptLogic.logicValueToJavaScriptAST(
-               colors,
-               textStyles,
-               value,
-             )
+           | _ => JavaScriptLogic.logicValueToJavaScriptAST(config, value)
            };
          JSXAttribute({name: key, value: attributeValue});
        });
@@ -246,11 +223,7 @@ let rec layerToJavaScriptAST =
     switch (layer.typeName, dynamicOrStaticValue(Text)) {
     | (Types.Text, Some(textValue)) => [
         JSXExpressionContainer(
-          JavaScriptLogic.logicValueToJavaScriptAST(
-            colors,
-            textStyles,
-            textValue,
-          ),
+          JavaScriptLogic.logicValueToJavaScriptAST(config, textValue),
         ),
       ]
     | _ =>
@@ -258,18 +231,46 @@ let rec layerToJavaScriptAST =
       |> List.map(
            layerToJavaScriptAST(
              framework,
-             colors,
-             textStyles,
+             config,
              variableMap,
              getAssetPath,
+             Some(layer),
            ),
          )
     };
-  JSXElement({
-    tag: getLayerTagString(framework, layer),
-    attributes: styleAttribute @ attributes,
-    content,
-  });
+
+  /* Wrap custom components in a view that enforces the framework's
+     default layout attributes. */
+  switch (layer.typeName, parent) {
+  | (Types.Component(_), Some(parent)) =>
+    let parentDirection = Layer.getFlexDirection(parent.parameters);
+
+    /* Custom components can't be passed styles, so don't include the style attribute */
+    let customComponent =
+      JSXElement({
+        tag: getElementTagString(framework, layer.typeName),
+        attributes,
+        content,
+      });
+
+    switch (framework, parentDirection) {
+    | (JavaScriptOptions.ReactDOM, "column")
+    | (JavaScriptOptions.ReactNative, "row")
+    | (JavaScriptOptions.ReactSketchapp, "row") =>
+      JSXElement({
+        tag: getElementTagString(framework, Types.View),
+        attributes: styleAttribute,
+        content: [customComponent],
+      })
+    | _ => customComponent
+    };
+  | _ =>
+    JSXElement({
+      tag: getElementTagString(framework, layer.typeName),
+      attributes: styleAttribute @ attributes,
+      content,
+    })
+  };
 };
 
 type componentImports = {
@@ -341,8 +342,7 @@ let importComponents =
 let rootLayerToJavaScriptAST =
     (
       options: JavaScriptOptions.options,
-      colors,
-      textStyles,
+      config: Config.t,
       getAssetPath,
       assignments,
       rootLayer,
@@ -351,10 +351,10 @@ let rootLayerToJavaScriptAST =
     rootLayer
     |> layerToJavaScriptAST(
          options.framework,
-         colors,
-         textStyles,
+         config,
          assignments,
          getAssetPath,
+         None,
        );
 
   switch (options.framework) {
@@ -372,25 +372,9 @@ let rootLayerToJavaScriptAST =
   };
 };
 
-let generate =
-    (
-      options: JavaScriptOptions.options,
-      name,
-      colorsFilePath,
-      textStylesFilePath,
-      config: Config.t,
-      getComponent,
-      getComponentFile,
-      getAssetPath,
-      json,
-    ) => {
-  let rootLayer = json |> Decode.Component.rootLayer(getComponent);
-
-  /* Js.log2("styles", Js.String.make(rootLayer.styles)); */
-
-  let logic = json |> Decode.Component.logic;
+let defineInitialLogicValues =
+    (config: Config.t, getComponent, rootLayer, assignments, logic) => {
   let variableDeclarations = logic |> Logic.buildVariableDeclarations;
-  let assignments = Layer.parameterAssignmentsFromLogic(rootLayer, logic);
   let conditionalAssignments = Logic.conditionallyAssignedIdentifiers(logic);
   let isConditionallyAssigned = (layer: Types.layer, (name, _)) => {
     let isAssigned = ((_, value)) =>
@@ -438,7 +422,24 @@ let generate =
     |> Layer.LayerMap.bindings
     |> List.map(defineInitialLayerValues)
     |> List.concat;
-  let logic = Logic.Block([variableDeclarations] @ newVars @ [logic]);
+  Logic.Block([variableDeclarations] @ newVars @ [logic]);
+};
+
+let generate =
+    (
+      options: JavaScriptOptions.options,
+      componentName,
+      colorsFilePath,
+      textStylesFilePath,
+      config: Config.t,
+      getComponent,
+      getComponentFile,
+      getAssetPath,
+      json,
+    ) => {
+  let rootLayer = json |> Decode.Component.rootLayer(getComponent);
+  let logic = json |> Decode.Component.logic;
+  let assignments = Layer.parameterAssignmentsFromLogic(rootLayer, logic);
 
   let themeAST =
     JavaScriptStyles.StyleSet.layerToThemeAST(
@@ -448,31 +449,31 @@ let generate =
     );
 
   let rootLayerAST =
-    rootLayer
-    |> rootLayerToJavaScriptAST(
-         options,
-         config.colorsFile.contents,
-         config.textStylesFile.contents,
-         getAssetPath,
-         assignments,
-       );
+    rootLayerToJavaScriptAST(
+      options,
+      config,
+      getAssetPath,
+      assignments,
+      rootLayer,
+    );
+
   let styleSheetAST =
-    rootLayer
-    |> JavaScriptStyles.layerToJavaScriptStyleSheetAST(
-         options.framework,
-         config.colorsFile.contents,
-       );
+    JavaScriptStyles.layerToJavaScriptStyleSheetAST(
+      config,
+      options.framework,
+      config.colorsFile.contents,
+      rootLayer,
+    );
+
   let logicAST =
     logic
-    |> JavaScriptLogic.toJavaScriptAST(
-         options.framework,
-         config.colorsFile.contents,
-         config.textStylesFile.contents,
-       )
+    |> defineInitialLogicValues(config, getComponent, rootLayer, assignments)
+    |> JavaScriptLogic.toJavaScriptAST(options.framework, config)
     |> Ast.optimize;
+
   let {absolute, relative} =
     rootLayer |> importComponents(options.framework, getComponentFile);
-  let componentName = name;
+
   Ast.(
     Program(
       SwiftDocument.joinGroups(

@@ -18,15 +18,15 @@ export default class PrimaryAxis extends React.Component {
     }
     return (
       <ThemeProvider theme={theme}>
-        <div style={Object.assign(styles.view, {})}>
-          <div style={Object.assign(styles.fixed, {})} />
-          <div style={Object.assign(styles.fit, {})}>
-            <span style={Object.assign(styles.text, {})}>
+        <div style={Object.assign({}, styles.view, {})}>
+          <div style={Object.assign({}, styles.fixed, {})} />
+          <div style={Object.assign({}, styles.fit, {})}>
+            <span style={Object.assign({}, styles.text, {})}>
               {"Text goes here"}
             </span>
           </div>
-          <div style={Object.assign(styles.fill1, {})} />
-          <div style={Object.assign(styles.fill2, {})} />
+          <div style={Object.assign({}, styles.fill1, {})} />
+          <div style={Object.assign({}, styles.fill2, {})} />
         </div>
       </ThemeProvider>
     );
@@ -35,10 +35,11 @@ export default class PrimaryAxis extends React.Component {
 
 let styles = {
   view: {
-    alignItems: "stretch",
-    alignSelf: "stretch",
+    alignItems: "flex-start",
     display: "flex",
+    flex: "1 1 0%",
     flexDirection: "column",
+    justifyContent: "flex-start",
     paddingTop: "24px",
     paddingRight: "24px",
     paddingBottom: "24px",
@@ -46,37 +47,48 @@ let styles = {
     height: "500px"
   },
   fixed: {
-    alignItems: "stretch",
+    alignItems: "flex-start",
     backgroundColor: "#D8D8D8",
     display: "flex",
     flexDirection: "column",
+    justifyContent: "flex-start",
     marginBottom: "24px",
     width: "100px",
     height: "100px"
   },
   fit: {
-    alignItems: "stretch",
+    alignItems: "flex-start",
     backgroundColor: "#D8D8D8",
     display: "flex",
+    flex: "0 0 auto",
     flexDirection: "column",
+    justifyContent: "flex-start",
     marginBottom: "24px",
     width: "100px"
   },
-  text: { alignItems: "stretch", display: "flex", flexDirection: "column" },
   fill1: {
-    alignItems: "stretch",
+    alignItems: "flex-start",
     backgroundColor: colors.cyan500,
     display: "flex",
-    flex: 1,
+    flex: "1 1 0%",
     flexDirection: "column",
+    justifyContent: "flex-start",
     width: "100px"
   },
   fill2: {
-    alignItems: "stretch",
+    alignItems: "flex-start",
     backgroundColor: colors.blue500,
     display: "flex",
-    flex: 1,
+    flex: "1 1 0%",
     flexDirection: "column",
+    justifyContent: "flex-start",
     width: "100px"
+  },
+  text: {
+    ...textStyles.body1,
+    alignItems: "flex-start",
+    flex: "0 0 auto",
+    flexDirection: "column",
+    justifyContent: "flex-start"
   }
 }

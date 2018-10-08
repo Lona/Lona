@@ -22,4 +22,12 @@ export default class If extends React.Component {
   }
 };
 
-let styles = StyleSheet.create({ view: { alignSelf: "stretch" } })
+let styles = StyleSheet.create({
+  view: {
+    alignItems: "flex-start",
+    alignSelf: "stretch",
+    flex: 0,
+    flexDirection: "column",
+    justifyContent: "flex-start"
+  }
+})

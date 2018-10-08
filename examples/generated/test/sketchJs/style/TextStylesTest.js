@@ -47,15 +47,81 @@ export default class TextStylesTest extends React.Component {
 };
 
 let styles = StyleSheet.create({
-  view: { alignSelf: "stretch" },
-  text: { ...TextStyles.get("display4") },
-  text1: { ...TextStyles.get("display3") },
-  text2: { ...TextStyles.get("display2") },
-  text3: { ...TextStyles.get("display1") },
-  text4: { ...TextStyles.get("headline") },
-  text5: { ...TextStyles.get("subheading2") },
-  text6: { ...TextStyles.get("subheading1") },
-  text7: { ...TextStyles.get("body2") },
-  text8: { ...TextStyles.get("body1") },
-  text9: { ...TextStyles.get("caption") }
+  view: {
+    alignItems: "flex-start",
+    alignSelf: "stretch",
+    flex: 0,
+    flexDirection: "column",
+    justifyContent: "flex-start"
+  },
+  text: {
+    ...TextStyles.get("display4"),
+    alignItems: "flex-start",
+    flex: 0,
+    flexDirection: "column",
+    justifyContent: "flex-start"
+  },
+  text1: {
+    ...TextStyles.get("display3"),
+    alignItems: "flex-start",
+    flex: 0,
+    flexDirection: "column",
+    justifyContent: "flex-start"
+  },
+  text2: {
+    ...TextStyles.get("display2"),
+    alignItems: "flex-start",
+    flex: 0,
+    flexDirection: "column",
+    justifyContent: "flex-start"
+  },
+  text3: {
+    ...TextStyles.get("display1"),
+    alignItems: "flex-start",
+    flex: 0,
+    flexDirection: "column",
+    justifyContent: "flex-start"
+  },
+  text4: {
+    ...TextStyles.get("headline"),
+    alignItems: "flex-start",
+    flex: 0,
+    flexDirection: "column",
+    justifyContent: "flex-start"
+  },
+  text5: {
+    ...TextStyles.get("subheading2"),
+    alignItems: "flex-start",
+    flex: 0,
+    flexDirection: "column",
+    justifyContent: "flex-start"
+  },
+  text6: {
+    ...TextStyles.get("subheading1"),
+    alignItems: "flex-start",
+    flex: 0,
+    flexDirection: "column",
+    justifyContent: "flex-start"
+  },
+  text7: {
+    ...TextStyles.get("body2"),
+    alignItems: "flex-start",
+    flex: 0,
+    flexDirection: "column",
+    justifyContent: "flex-start"
+  },
+  text8: {
+    ...TextStyles.get("body1"),
+    alignItems: "flex-start",
+    flex: 0,
+    flexDirection: "column",
+    justifyContent: "flex-start"
+  },
+  text9: {
+    ...TextStyles.get("caption"),
+    alignItems: "flex-start",
+    flex: 0,
+    flexDirection: "column",
+    justifyContent: "flex-start"
+  }
 })

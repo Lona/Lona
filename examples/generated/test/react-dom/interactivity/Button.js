@@ -29,12 +29,12 @@ export default class Button extends React.Component {
     return (
       <ThemeProvider theme={theme}>
         <div
-          style={Object.assign(styles.view, {
+          style={Object.assign({}, styles.view, {
             backgroundColor: View$backgroundColor
           })}
           onClick={View$onPress}
         >
-          <span style={Object.assign(styles.text, {})}>
+          <span style={Object.assign({}, styles.text, {})}>
             {Text$text}
           </span>
         </div>
@@ -45,10 +45,12 @@ export default class Button extends React.Component {
 
 let styles = {
   view: {
-    alignItems: "stretch",
+    alignItems: "flex-start",
     backgroundColor: colors.blue100,
     display: "flex",
+    flex: "0 0 auto",
     flexDirection: "column",
+    justifyContent: "flex-start",
     paddingTop: "12px",
     paddingRight: "16px",
     paddingBottom: "12px",
@@ -56,8 +58,9 @@ let styles = {
   },
   text: {
     ...textStyles.button,
-    alignItems: "stretch",
-    display: "flex",
-    flexDirection: "column"
+    alignItems: "flex-start",
+    flex: "0 0 auto",
+    flexDirection: "column",
+    justifyContent: "flex-start"
   }
 }

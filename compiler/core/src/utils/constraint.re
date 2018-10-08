@@ -119,19 +119,11 @@ let getRole =
    }; */
 type t = _t;
 
-let getConstraints = (getRootLayerForComponentName, rootLayer: Types.layer) => {
-  /* Any time we access a layer, we want to use its proxy if it has one.
-     This is how we layout custom components.
-     TODO: When we handle "Children" components, we'll need to find a use
-     a different proxy */
-  let getProxyLayer = (layer: Types.layer) =>
-    switch (layer.typeName) {
-    | Types.Component(name) => getRootLayerForComponentName(layer, name)
-    | _ => layer
-    };
+let getConstraints =
+    (getComponent: string => Js.Json.t, rootLayer: Types.layer) => {
   let constrainAxes = (layer: Types.layer) => {
-    let layer = getProxyLayer(layer);
-    let direction = Layer.getFlexDirection(layer);
+    let layer = Layer.getProxyLayer(getComponent, layer);
+    let direction = Layer.getFlexDirection(layer.parameters);
     let isColumn = direction == "column";
     let primaryBeforeAnchor = isColumn ? Top : Leading;
     let primaryAfterAnchor = isColumn ? Bottom : Trailing;
@@ -141,21 +133,23 @@ let getConstraints = (getRootLayerForComponentName, rootLayer: Types.layer) => {
     let secondaryCenterAnchor = isColumn ? CenterX : CenterY;
     let primaryDimensionAnchor = isColumn ? Height : Width;
     let secondaryDimensionAnchor = isColumn ? Width : Height;
-    let height = Layer.getNumberParameterOpt(Height, layer);
-    let width = Layer.getNumberParameterOpt(Width, layer);
+    let height = Layer.getNumberParameterOpt(Height, layer.parameters);
+    let width = Layer.getNumberParameterOpt(Width, layer.parameters);
     let sizingRules =
-      layer |> Layer.getSizingRules(Layer.findParent(rootLayer, layer));
+      layer.parameters
+      |> Layer.getSizingRules(Layer.findParent(rootLayer, layer));
     let primarySizingRule = isColumn ? sizingRules.height : sizingRules.width;
     let secondarySizingRule =
       isColumn ? sizingRules.width : sizingRules.height;
     let flexChildren =
       layer.children
-      |> List.map(getProxyLayer)
+      |> List.map(Layer.getProxyLayer(getComponent))
       |> List.filter((child: Types.layer) =>
-           Layer.getNumberParameter(Flex, child) === 1.0
+           Layer.getNumberParameter(Flex, child.parameters) === 1.0
          );
     let addConstraints = (index, child: Types.layer) => {
-      let childSizingRules = child |> Layer.getSizingRules(Some(layer));
+      let childSizingRules =
+        child.parameters |> Layer.getSizingRules(Some(layer));
       let childSecondarySizingRule =
         isColumn ? childSizingRules.width : childSizingRules.height;
       let firstViewConstraints =
@@ -282,7 +276,7 @@ let getConstraints = (getRootLayerForComponentName, rootLayer: Types.layer) => {
         };
       let secondaryConstraints =
         switch (
-          Layer.getStringParameterOpt(AlignItems, layer),
+          Layer.getStringParameterOpt(AlignItems, layer.parameters),
           childSecondarySizingRule,
         ) {
         /* Fixed children don't need either side of the secondary axis anchored to the parent.
@@ -346,7 +340,7 @@ let getConstraints = (getRootLayerForComponentName, rootLayer: Types.layer) => {
       };
     let fitContentSecondaryConstraints =
       layer.children
-      |> List.map(getProxyLayer)
+      |> List.map(Layer.getProxyLayer(getComponent))
       |> List.map(fitContentSecondaryConstraint)
       |> List.concat;
     let heightConstraint =
@@ -379,7 +373,7 @@ let getConstraints = (getRootLayerForComponentName, rootLayer: Types.layer) => {
       @ [fitContentSecondaryConstraints]
       @ (
         layer.children
-        |> List.map(getProxyLayer)
+        |> List.map(Layer.getProxyLayer(getComponent))
         |> List.mapi(addConstraints)
       );
     constraints |> List.concat;
