@@ -49,6 +49,7 @@ module Workspace = {
 
   let compilerFile = (workspacePath: string): list(Plugin.t) => {
     let path = Path.join([|workspacePath, "compiler.js"|]);
+    let path = Path.resolve(path, "");
     let rawConfig = Compiler.parseConfig(path);
     Array.to_list(rawConfig->Compiler.pluginsGet);
   };
