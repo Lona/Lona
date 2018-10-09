@@ -140,31 +140,76 @@ let createStyleAttributeAST =
     )
   };
 
+/* Wrap custom components in a view that enforces the framework's
+   default layout attributes. */
+let createJSXElement =
+    (
+      framework: JavaScriptOptions.framework,
+      parent: option(Types.layer),
+      layer: Types.layer,
+      attributes: list(JavaScriptAst.node),
+      styleAttribute: list(JavaScriptAst.node),
+      content: list(JavaScriptAst.node),
+    )
+    : JavaScriptAst.node =>
+  switch (layer.typeName, parent) {
+  | (Types.Component(_), Some(parent)) =>
+    let parentDirection = Layer.getFlexDirection(parent.parameters);
+
+    /* Custom components can't be passed styles, so don't include the style attribute */
+    let customComponent =
+      JavaScriptAst.JSXElement({
+        tag: getElementTagString(framework, layer.typeName),
+        attributes,
+        content,
+      });
+
+    switch (framework, parentDirection) {
+    | (JavaScriptOptions.ReactDOM, "column")
+    | (JavaScriptOptions.ReactNative, "row")
+    | (JavaScriptOptions.ReactSketchapp, "row") =>
+      JSXElement({
+        tag: getElementTagString(framework, Types.View),
+        attributes: styleAttribute,
+        content: [customComponent],
+      })
+    | _ => customComponent
+    };
+  | _ =>
+    JSXElement({
+      tag: getElementTagString(framework, layer.typeName),
+      attributes: styleAttribute @ attributes,
+      content,
+    })
+  };
+
 let rec layerToJavaScriptAST =
         (
           framework: JavaScriptOptions.framework,
           config: Config.t,
-          variableMap,
+          assignments,
           getAssetPath,
           parent: option(Types.layer),
           layer: Types.layer,
         ) => {
   open Ast;
-  let nonTextTypeName = (key: ParameterKey.t, _) =>
-    switch (key) {
-    | ParameterKey.Text => false
-    | _ => true
-    };
-  let removeTextParams = params =>
-    params |> ParameterMap.filter(nonTextTypeName);
+  let removeSpecialParams = params =>
+    params
+    |> ParameterMap.filter((key: ParameterKey.t, _) =>
+         switch (key) {
+         | ParameterKey.Text => false
+         | ParameterKey.Visible => false
+         | _ => true
+         }
+       );
   let (_, mainParams) =
     layer.parameters
-    |> removeTextParams
+    |> removeSpecialParams
     |> Layer.parameterMapToLogicValueMap
     |> Layer.splitParamsMap;
   let (styleVariables, mainVariables) =
     (
-      switch (Layer.LayerMap.find_opt(layer, variableMap)) {
+      switch (Layer.LayerMap.find_opt(layer, assignments)) {
       | Some(map) => map
       | None => ParameterMap.empty
       }
@@ -180,7 +225,7 @@ let rec layerToJavaScriptAST =
     };
   let attributes =
     main
-    |> removeTextParams
+    |> removeSpecialParams
     |> Layer.mapBindings(((key, value)) => {
          let key =
            switch (framework) {
@@ -232,44 +277,31 @@ let rec layerToJavaScriptAST =
            layerToJavaScriptAST(
              framework,
              config,
-             variableMap,
+             assignments,
              getAssetPath,
              Some(layer),
            ),
          )
     };
-
-  /* Wrap custom components in a view that enforces the framework's
-     default layout attributes. */
-  switch (layer.typeName, parent) {
-  | (Types.Component(_), Some(parent)) =>
-    let parentDirection = Layer.getFlexDirection(parent.parameters);
-
-    /* Custom components can't be passed styles, so don't include the style attribute */
-    let customComponent =
-      JSXElement({
-        tag: getElementTagString(framework, layer.typeName),
-        attributes,
-        content,
-      });
-
-    switch (framework, parentDirection) {
-    | (JavaScriptOptions.ReactDOM, "column")
-    | (JavaScriptOptions.ReactNative, "row")
-    | (JavaScriptOptions.ReactSketchapp, "row") =>
-      JSXElement({
-        tag: getElementTagString(framework, Types.View),
-        attributes: styleAttribute,
-        content: [customComponent],
-      })
-    | _ => customComponent
-    };
-  | _ =>
-    JSXElement({
-      tag: getElementTagString(framework, layer.typeName),
-      attributes: styleAttribute @ attributes,
+  let element =
+    createJSXElement(
+      framework,
+      parent,
+      layer,
+      attributes,
+      styleAttribute,
       content,
-    })
+    );
+  switch (dynamicOrStaticValue(Visible)) {
+  | Some(value) =>
+    JSXExpressionContainer(
+      BinaryExpression({
+        left: JavaScriptLogic.logicValueToJavaScriptAST(config, value),
+        operator: And,
+        right: element,
+      }),
+    )
+  | None => element
   };
 };
 
