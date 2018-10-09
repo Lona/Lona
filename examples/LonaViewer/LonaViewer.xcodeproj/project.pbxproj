@@ -61,6 +61,8 @@
 		6B39170621643C7C00B20F9E /* Shadows.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6B39170521643C7C00B20F9E /* Shadows.swift */; };
 		6B39170821643EF300B20F9E /* ShadowsTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6B39170721643EF300B20F9E /* ShadowsTest.swift */; };
 		6B39170A2164492600B20F9E /* Shadow.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6B3917092164492600B20F9E /* Shadow.swift */; };
+		6BA5BBCF216D4A7D00F086A7 /* VisibilityTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6BA5BBCE216D4A7D00F086A7 /* VisibilityTest.swift */; };
+		6BA5BBD1216D4B6700F086A7 /* VisibilityTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6BA5BBD0216D4B6700F086A7 /* VisibilityTest.swift */; };
 		6BA694032082E4420090CA74 /* NestedComponent.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6BA694022082E4420090CA74 /* NestedComponent.swift */; };
 		6BA69406208439DB0090CA74 /* NestedComponent.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6BA69405208439DB0090CA74 /* NestedComponent.swift */; };
 		6BA6940820843CE70090CA74 /* Button.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6BA6940720843CE70090CA74 /* Button.swift */; };
@@ -129,6 +131,8 @@
 		6B39170521643C7C00B20F9E /* Shadows.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Shadows.swift; sourceTree = "<group>"; };
 		6B39170721643EF300B20F9E /* ShadowsTest.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ShadowsTest.swift; sourceTree = "<group>"; };
 		6B3917092164492600B20F9E /* Shadow.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Shadow.swift; sourceTree = "<group>"; };
+		6BA5BBCE216D4A7D00F086A7 /* VisibilityTest.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = VisibilityTest.swift; sourceTree = "<group>"; };
+		6BA5BBD0216D4B6700F086A7 /* VisibilityTest.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = VisibilityTest.swift; sourceTree = "<group>"; };
 		6BA694022082E4420090CA74 /* NestedComponent.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NestedComponent.swift; sourceTree = "<group>"; };
 		6BA69405208439DB0090CA74 /* NestedComponent.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NestedComponent.swift; sourceTree = "<group>"; };
 		6BA6940720843CE70090CA74 /* Button.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Button.swift; sourceTree = "<group>"; };
@@ -250,6 +254,7 @@
 				12BBFDCD206B02720041620C /* TextStylesTest.swift */,
 				12BBFDCE206B02720041620C /* TextStyleConditional.swift */,
 				6B391703216423A000B20F9E /* ShadowsTest.swift */,
+				6BA5BBCE216D4A7D00F086A7 /* VisibilityTest.swift */,
 			);
 			path = style;
 			sourceTree = "<group>";
@@ -329,6 +334,7 @@
 				12BBFDF5206B02AC0041620C /* TextStylesTest.swift */,
 				12BBFDF6206B02AC0041620C /* TextStyleConditional.swift */,
 				6B39170721643EF300B20F9E /* ShadowsTest.swift */,
+				6BA5BBD0216D4B6700F086A7 /* VisibilityTest.swift */,
 			);
 			path = style;
 			sourceTree = "<group>";
@@ -487,6 +493,7 @@
 				301C262620C1C5A700F18F73 /* TextStyle.swift in Sources */,
 				6B39170821643EF300B20F9E /* ShadowsTest.swift in Sources */,
 				12BBFE02206B02AC0041620C /* TextStyles.swift in Sources */,
+				6BA5BBD1216D4B6700F086A7 /* VisibilityTest.swift in Sources */,
 				12BBFE09206B02AC0041620C /* TextStylesTest.swift in Sources */,
 				12BBFE05206B02AC0041620C /* Assign.swift in Sources */,
 				6B39170A2164492600B20F9E /* Shadow.swift in Sources */,
@@ -544,6 +551,7 @@
 				12BBFDE7206B02720041620C /* PrimaryAxis.swift in Sources */,
 				6BD581DD208252260068FBC3 /* TextAlignment.swift in Sources */,
 				12869395204A1B4E00E5E26F /* AppDelegate.swift in Sources */,
+				6BA5BBCF216D4A7D00F086A7 /* VisibilityTest.swift in Sources */,
 				6BA6940820843CE70090CA74 /* Button.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
