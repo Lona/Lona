@@ -251,12 +251,7 @@ let formatConstraintVariableName =
     ) => {
   open Constraint;
 
-  let verbose =
-    Sequence.occurrences(
-      a => Constraint.semanticEqual(a, const),
-      Constraint.allConstraints(combinations),
-    )
-    > 1;
+  let verbose = !Constraint.isAlwaysActivated(combinations, const);
 
   let formatAnchorVariableName = (layer: Types.layer, anchor) => {
     let anchorString = Constraint.anchorToString(anchor);
