@@ -244,15 +244,27 @@ let generateConstraintConstant =
 };
 
 let formatConstraintVariableName =
-    (rootLayer: Types.layer, constr: Constraint.t, verbose: bool) => {
+    (
+      combinations: list(Constraint.visibilityCombination),
+      rootLayer: Types.layer,
+      const: Constraint.t,
+    ) => {
   open Constraint;
+
+  let verbose =
+    Sequence.occurrences(
+      a => Constraint.semanticEqual(a, const),
+      Constraint.allConstraints(combinations),
+    )
+    > 1;
+
   let formatAnchorVariableName = (layer: Types.layer, anchor) => {
     let anchorString = Constraint.anchorToString(anchor);
-    layer === rootLayer ?
+    Layer.equal(layer, rootLayer) ?
       anchorString :
       SwiftFormat.layerName(layer.name) ++ Format.upperFirst(anchorString);
   };
-  switch (constr) {
+  switch (const) {
   | Relation(
       (layer1: Types.layer),
       edge1,
@@ -317,28 +329,30 @@ let setUpFunction =
       "operator": "=",
       "right": LiteralExpression(Boolean(false)),
     });
-  let defineConstraint = def => {
-    let constant = generateConstraintConstant(swiftOptions, config, def);
+  let defineConstraint = const => {
+    let constant = generateConstraintConstant(swiftOptions, config, const);
     ConstantDeclaration({
       "modifiers": [],
       "init":
-        Some(generateWithInitialValue(layerMemberExpression, def, constant)),
+        Some(
+          generateWithInitialValue(layerMemberExpression, const, constant),
+        ),
       "pattern":
         IdentifierPattern({
           "identifier":
             SwiftIdentifier(
-              formatConstraintVariableName(rootLayer, def, true),
+              formatConstraintVariableName(combinations, rootLayer, const),
             ),
           "annotation": None,
         }),
     });
   };
-  let setConstraintPriority = def =>
+  let setConstraintPriority = const =>
     BinaryExpression({
       "left":
         MemberExpression([
           SwiftIdentifier(
-            formatConstraintVariableName(rootLayer, def, true),
+            formatConstraintVariableName(combinations, rootLayer, const),
           ),
           SwiftIdentifier("priority"),
         ]),
@@ -346,7 +360,7 @@ let setUpFunction =
       "right":
         MemberExpression([
           SwiftDocument.layoutPriorityTypeDoc(swiftOptions.framework),
-          SwiftIdentifier(priorityName(Constraint.getPriority(def))),
+          SwiftIdentifier(priorityName(Constraint.getPriority(const))),
         ]),
     });
   let activateConstraints = () =>
@@ -363,9 +377,13 @@ let setUpFunction =
             LiteralExpression(
               Array(
                 Constraint.alwaysConstraints(combinations)
-                |> List.map(def =>
+                |> List.map(const =>
                      SwiftIdentifier(
-                       formatConstraintVariableName(rootLayer, def, true),
+                       formatConstraintVariableName(
+                         combinations,
+                         rootLayer,
+                         const,
+                       ),
                      )
                    ),
               ),
@@ -373,32 +391,36 @@ let setUpFunction =
         }),
       ],
     });
-  let assignConstraint = def =>
+  let assignConstraint = const =>
     BinaryExpression({
       "left":
         MemberExpression([
           SwiftIdentifier("self"),
           SwiftIdentifier(
-            formatConstraintVariableName(rootLayer, def, true),
+            formatConstraintVariableName(combinations, rootLayer, const),
           ),
         ]),
       "operator": "=",
       "right":
-        SwiftIdentifier(formatConstraintVariableName(rootLayer, def, true)),
+        SwiftIdentifier(
+          formatConstraintVariableName(combinations, rootLayer, const),
+        ),
     });
-  let assignConstraintIdentifier = def =>
+  let assignConstraintIdentifier = const =>
     BinaryExpression({
       "left":
         MemberExpression([
           SwiftIdentifier(
-            formatConstraintVariableName(rootLayer, def, true),
+            formatConstraintVariableName(combinations, rootLayer, const),
           ),
           SwiftIdentifier("identifier"),
         ]),
       "operator": "=",
       "right":
         LiteralExpression(
-          String(formatConstraintVariableName(rootLayer, def, true)),
+          String(
+            formatConstraintVariableName(combinations, rootLayer, const),
+          ),
         ),
     });
 
@@ -421,7 +443,7 @@ let setUpFunction =
           allConstraints |> List.map(defineConstraint),
           /* Priority */
           allConstraints
-          |> List.filter(def => Constraint.getPriority(def) == Low)
+          |> List.filter(const => Constraint.getPriority(const) == Low)
           |> List.map(setConstraintPriority),
           /* Activation */
           List.length(alwaysConstraints) > 0 ? [activateConstraints()] : [],
@@ -555,9 +577,9 @@ let conditionalConstraintsFunction =
                            |> List.map((const: Constraint.t) =>
                                 SwiftIdentifier(
                                   formatConstraintVariableName(
+                                    combinations,
                                     rootLayer,
                                     const,
-                                    true,
                                   ),
                                 )
                               ),

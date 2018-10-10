@@ -479,6 +479,8 @@ let generate =
       getComponent,
       json,
     ) => {
+  open SwiftAst;
+
   let rootLayer = json |> Decode.Component.rootLayer(getComponent);
   let nonRootLayers = rootLayer |> Layer.flatten |> List.tl;
   let logic = json |> Decode.Component.logic;
@@ -502,11 +504,6 @@ let generate =
     Layer.parameterAssignmentsFromLogic(rootLayer, logic);
   let parameters = json |> Decode.Component.parameters;
 
-  /* let visibilityCombinations =
-     visibilityCombinations |> List.map(combination => {
-
-     }) */
-
   let visibilityCombinations =
     Constraint.visibilityCombinations(
       getComponent,
@@ -516,7 +513,6 @@ let generate =
 
   let conditionalConstraints =
     Constraint.conditionalConstraints(visibilityCombinations);
-  open SwiftAst;
 
   let viewVariableDoc = (layer: Types.layer): node =>
     SwiftAst.Builders.privateVariableDeclaration(
@@ -741,9 +737,9 @@ let generate =
                     |> List.map(const =>
                          constraintVariableDoc(
                            SwiftConstraint.formatConstraintVariableName(
+                             visibilityCombinations,
                              rootLayer,
                              const,
-                             true,
                            ),
                          )
                        ),
