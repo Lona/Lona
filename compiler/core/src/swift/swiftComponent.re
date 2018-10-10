@@ -767,11 +767,8 @@ let generate =
                     List.length(conditionalConstraints) > 0 ?
                       [
                         SwiftConstraint.conditionalConstraintsFunction(
-                          swiftOptions,
-                          config,
                           getComponent,
                           assignmentsFromLogic,
-                          layerMemberExpression,
                           rootLayer,
                         ),
                       ] :

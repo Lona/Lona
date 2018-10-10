@@ -459,34 +459,29 @@ let setUpFunction =
   });
 };
 
-/* private func conditionalConstraints() -> [NSLayoutConstraint] {
+/* Each combination of view visibility must return the layout constraints
+   necessary for the visible views.
+
+   Generate the following:
+
+   private func conditionalConstraints() -> [NSLayoutConstraint] {
      var constraints: [NSLayoutConstraint?] = []
 
      switch (titleView.isHidden) {
-     case true:
+     case (true):
        constraints = [
          bottomViewTopAnchorInnerViewBottomAnchorConstraint
        ]
-     case false:
+     case (false):
        constraints = [
          titleViewTopAnchorInnerViewBottomAnchorConstraint,
-         titleViewLeadingAnchorContainerViewLeadingAnchorConstraint,
-         titleViewTrailingAnchorContainerViewTrailingAnchorConstraint,
-         bottomViewTopAnchorTitleViewBottomAnchorConstraint,
        ]
      }
 
      return constraints.compactMap({ $0 })
    } */
 let conditionalConstraintsFunction =
-    (
-      swiftOptions: SwiftOptions.options,
-      config: Config.t,
-      getComponent,
-      assignmentsFromLogic,
-      layerMemberExpression,
-      rootLayer: Types.layer,
-    ) => {
+    (getComponent, assignmentsFromLogic, rootLayer: Types.layer) => {
   open SwiftAst;
 
   let combinations =

@@ -46,7 +46,6 @@ type visibilityCombination = {
   rootLayer: Types.layer,
   visibleLayers: list(Types.layer),
   constraints: list(t),
-  variableName: string,
 };
 
 let anchorToString =
@@ -459,30 +458,20 @@ let visibilityCombinations =
     : list(visibilityCombination) => {
   let layers = visibilityLayers(assignmentsFromLogic, rootLayer);
 
-  let combinations =
-    Sequence.combinations(layers)
-    |> List.map(visibleLayers => {
-         /* The root must always be visible, so getExn is safe */
-         let rootLayer =
-           rootLayer
-           |> Layer.filter(layer => !List.mem(layer, visibleLayers))
-           |> Js.Option.getExn;
+  Sequence.combinations(layers)
+  |> List.map(visibleLayers => {
+       /* The root must always be visible, so getExn is safe */
+       let rootLayer =
+         rootLayer
+         |> Layer.filter(layer => !List.mem(layer, visibleLayers))
+         |> Js.Option.getExn;
 
-         {
-           rootLayer,
-           visibleLayers,
-           constraints: getConstraints(getComponent, rootLayer),
-           variableName: "",
-         };
-       });
-
-  /* Js.log3(
-       "Combinations",
-       List.length(visibilityLayers),
-       List.length(combinations),
-     ); */
-
-  combinations;
+       {
+         rootLayer,
+         visibleLayers,
+         constraints: getConstraints(getComponent, rootLayer),
+       };
+     });
 };
 
 let isAlwaysActivated =
