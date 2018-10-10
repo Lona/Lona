@@ -1,7 +1,12 @@
+let compare = (a: Types.layer, b: Types.layer): int =>
+  compare(a.name, b.name);
+
+let equal = (a: Types.layer, b: Types.layer): bool => compare(a, b) == 0;
+
 module LayerMap = {
   include Map.Make({
     type t = Types.layer;
-    let compare = (a: t, b: t): int => compare(a.name, b.name);
+    let compare = compare;
   });
   let find_opt = (key, map) =>
     switch (find(key, map)) {
@@ -84,6 +89,15 @@ let find = (f, rootLayer: Types.layer) =>
 
 let findByName = (name, rootLayer: Types.layer) =>
   rootLayer |> find((layer: Types.layer) => layer.name == name);
+
+let rec filter =
+        (f: Types.layer => bool, layer: Types.layer): option(Types.layer) =>
+  if (f(layer)) {
+    let children = layer.children |> List.map(filter(f)) |> Sequence.compact;
+    Some({...layer, children});
+  } else {
+    None;
+  };
 
 let flatmapParent = (f, layer: Types.layer) => {
   let rec inner = (layer: Types.layer) =>

@@ -66,6 +66,16 @@ let rec render = ast: Prettier.Doc.t('a) =>
     |> join(concat([softline, s(".")]))
     |> indent
     |> group
+  | TupleExpression(v) =>
+    s("(")
+    <+> (
+      v
+      |> List.map(render)
+      |> join(concat([s(","), line]))
+      |> indent
+      |> group
+    )
+    <+> s(")")
   | BinaryExpression(o) =>
     group(
       render(o##left)
@@ -555,8 +565,8 @@ and renderTypeAnnotation = (node: SwiftAst.typeAnnotation) =>
         renderTypeAnnotation(o##member),
       ]),
     )
-  | ArrayType(o) =>
-    group(concat([s("["), renderTypeAnnotation(o##element), s("]")]))
+  | ArrayType(value) =>
+    group(concat([s("["), renderTypeAnnotation(value), s("]")]))
   | DictionaryType(o) =>
     group(
       concat([

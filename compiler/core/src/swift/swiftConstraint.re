@@ -244,16 +244,13 @@ let generateConstraintConstant =
 };
 
 let formatConstraintVariableName =
-    (rootLayer: Types.layer, constr: Constraint.t) => {
+    (rootLayer: Types.layer, constr: Constraint.t, verbose: bool) => {
   open Constraint;
-  let formatAnchorVariableName = (layer: Types.layer, anchor, suffix) => {
+  let formatAnchorVariableName = (layer: Types.layer, anchor) => {
     let anchorString = Constraint.anchorToString(anchor);
-    (
-      layer === rootLayer ?
-        anchorString :
-        SwiftFormat.layerName(layer.name) ++ Format.upperFirst(anchorString)
-    )
-    ++ suffix;
+    layer === rootLayer ?
+      anchorString :
+      SwiftFormat.layerName(layer.name) ++ Format.upperFirst(anchorString);
   };
   switch (constr) {
   | Relation(
@@ -270,11 +267,25 @@ let formatConstraintVariableName =
     ++ Format.upperFirst(Constraint.anchorToString(edge1))
     ++ "SiblingConstraint"
   | Relation((layer1: Types.layer), edge1, _, _, _, _, FitContentSecondary) =>
-    formatAnchorVariableName(layer1, edge1, "ParentConstraint")
-  | Relation((layer1: Types.layer), edge1, _, _, _, _, _) =>
-    formatAnchorVariableName(layer1, edge1, "Constraint")
+    formatAnchorVariableName(layer1, edge1) ++ "ParentConstraint"
+  | Relation(
+      (layer1: Types.layer),
+      edge1,
+      _,
+      (layer2: Types.layer),
+      edge2,
+      _,
+      _,
+    ) =>
+    if (verbose) {
+      formatAnchorVariableName(layer1, edge1)
+      ++ Format.upperFirst(formatAnchorVariableName(layer2, edge2))
+      ++ "Constraint";
+    } else {
+      formatAnchorVariableName(layer1, edge1) ++ "Constraint";
+    }
   | Dimension((layer: Types.layer), dimension, _, _) =>
-    formatAnchorVariableName(layer, dimension, "Constraint")
+    formatAnchorVariableName(layer, dimension) ++ "Constraint"
   };
 };
 
@@ -285,10 +296,17 @@ let setUpFunction =
       getComponent,
       assignmentsFromLogic,
       layerMemberExpression,
-      root: Types.layer,
+      rootLayer: Types.layer,
     ) => {
   open SwiftAst;
-  let constraints = Constraint.getConstraints(getComponent, root);
+
+  let combinations =
+    Constraint.visibilityCombinations(
+      getComponent,
+      assignmentsFromLogic,
+      rootLayer,
+    );
+
   let translatesAutoresizingMask = (layer: Types.layer) =>
     BinaryExpression({
       "left":
@@ -308,7 +326,9 @@ let setUpFunction =
       "pattern":
         IdentifierPattern({
           "identifier":
-            SwiftIdentifier(formatConstraintVariableName(root, def)),
+            SwiftIdentifier(
+              formatConstraintVariableName(rootLayer, def, true),
+            ),
           "annotation": None,
         }),
     });
@@ -317,7 +337,9 @@ let setUpFunction =
     BinaryExpression({
       "left":
         MemberExpression([
-          SwiftIdentifier(formatConstraintVariableName(root, def)),
+          SwiftIdentifier(
+            formatConstraintVariableName(rootLayer, def, true),
+          ),
           SwiftIdentifier("priority"),
         ]),
       "operator": "=",
@@ -340,9 +362,11 @@ let setUpFunction =
           "value":
             LiteralExpression(
               Array(
-                constraints
+                Constraint.alwaysConstraints(combinations)
                 |> List.map(def =>
-                     SwiftIdentifier(formatConstraintVariableName(root, def))
+                     SwiftIdentifier(
+                       formatConstraintVariableName(rootLayer, def, true),
+                     )
                    ),
               ),
             ),
@@ -354,22 +378,35 @@ let setUpFunction =
       "left":
         MemberExpression([
           SwiftIdentifier("self"),
-          SwiftIdentifier(formatConstraintVariableName(root, def)),
+          SwiftIdentifier(
+            formatConstraintVariableName(rootLayer, def, true),
+          ),
         ]),
       "operator": "=",
-      "right": SwiftIdentifier(formatConstraintVariableName(root, def)),
+      "right":
+        SwiftIdentifier(formatConstraintVariableName(rootLayer, def, true)),
     });
   let assignConstraintIdentifier = def =>
     BinaryExpression({
       "left":
         MemberExpression([
-          SwiftIdentifier(formatConstraintVariableName(root, def)),
+          SwiftIdentifier(
+            formatConstraintVariableName(rootLayer, def, true),
+          ),
           SwiftIdentifier("identifier"),
         ]),
       "operator": "=",
       "right":
-        LiteralExpression(String(formatConstraintVariableName(root, def))),
+        LiteralExpression(
+          String(formatConstraintVariableName(rootLayer, def, true)),
+        ),
     });
+
+  let allConstraints = Constraint.allConstraints(combinations);
+  let alwaysConstraints = Constraint.alwaysConstraints(combinations);
+  let conditionalConstraints =
+    Constraint.conditionalConstraints(combinations);
+
   FunctionDeclaration({
     "name": "setUpConstraints",
     "modifiers": [AccessLevelModifier(PrivateModifier)],
@@ -380,22 +417,175 @@ let setUpFunction =
       SwiftDocument.joinGroups(
         Empty,
         [
-          root |> Layer.flatmap(translatesAutoresizingMask),
-          constraints |> List.map(defineConstraint),
-          constraints
+          rootLayer |> Layer.flatmap(translatesAutoresizingMask),
+          allConstraints |> List.map(defineConstraint),
+          /* Priority */
+          allConstraints
           |> List.filter(def => Constraint.getPriority(def) == Low)
           |> List.map(setConstraintPriority),
-          List.length(constraints) > 0 ? [activateConstraints()] : [],
-          constraints
+          /* Activation */
+          List.length(alwaysConstraints) > 0 ? [activateConstraints()] : [],
+          /* Assign to member variables */
+          conditionalConstraints |> List.map(assignConstraint),
+          alwaysConstraints
           |> List.filter(isDynamic(assignmentsFromLogic))
           |> List.map(assignConstraint),
-          swiftOptions.debugConstraints && List.length(constraints) > 0 ?
+          /* Debug identifiers */
+          swiftOptions.debugConstraints && List.length(allConstraints) > 0 ?
             [
               LineComment("For debugging"),
-              ...constraints |> List.map(assignConstraintIdentifier),
+              ...allConstraints |> List.map(assignConstraintIdentifier),
             ] :
             [],
         ],
       ),
+  });
+};
+
+/* private func conditionalConstraints() -> [NSLayoutConstraint] {
+     var constraints: [NSLayoutConstraint?] = []
+
+     switch (titleView.isHidden) {
+     case true:
+       constraints = [
+         bottomViewTopAnchorInnerViewBottomAnchorConstraint
+       ]
+     case false:
+       constraints = [
+         titleViewTopAnchorInnerViewBottomAnchorConstraint,
+         titleViewLeadingAnchorContainerViewLeadingAnchorConstraint,
+         titleViewTrailingAnchorContainerViewTrailingAnchorConstraint,
+         bottomViewTopAnchorTitleViewBottomAnchorConstraint,
+       ]
+     }
+
+     return constraints.compactMap({ $0 })
+   } */
+let conditionalConstraintsFunction =
+    (
+      swiftOptions: SwiftOptions.options,
+      config: Config.t,
+      getComponent,
+      assignmentsFromLogic,
+      layerMemberExpression,
+      rootLayer: Types.layer,
+    ) => {
+  open SwiftAst;
+
+  let combinations =
+    Constraint.visibilityCombinations(
+      getComponent,
+      assignmentsFromLogic,
+      rootLayer,
+    );
+
+  let visibilityLayers =
+    Constraint.visibilityLayers(assignmentsFromLogic, rootLayer)
+    |> List.sort(Layer.compare);
+
+  FunctionDeclaration({
+    "name": "conditionalConstraints",
+    "modifiers": [AccessLevelModifier(PrivateModifier)],
+    "parameters": [],
+    "result": Some(ArrayType(TypeName("NSLayoutConstraint"))),
+    "throws": false,
+    "body": [
+      VariableDeclaration({
+        "modifiers": [],
+        "pattern":
+          IdentifierPattern({
+            "identifier": SwiftIdentifier("constraints"),
+            "annotation":
+              Some(
+                ArrayType(OptionalType(TypeName("NSLayoutConstraint"))),
+              ),
+          }),
+        "init": None,
+        "block": None,
+      }),
+      Empty,
+      SwitchStatement({
+        "expression":
+          TupleExpression(
+            visibilityLayers
+            |> List.map((layer: Types.layer) =>
+                 SwiftFormat.layerName(layer.name)
+               )
+            |> List.map(name =>
+                 SwiftAst.Builders.memberExpression([name, "isHidden"])
+               ),
+          ),
+        "cases":
+          combinations
+          |> List.map((combination: Constraint.visibilityCombination) =>
+               CaseLabel({
+                 "patterns": [
+                   TuplePattern(
+                     visibilityLayers
+                     |> List.map((layer: Types.layer) =>
+                          ExpressionPattern({
+                            "value":
+                              LiteralExpression(
+                                Boolean(
+                                  List.exists(
+                                    other => Layer.equal(other, layer),
+                                    combination.visibleLayers,
+                                  ),
+                                ),
+                              ),
+                          })
+                        ),
+                   ),
+                 ],
+                 "statements": [
+                   BinaryExpression({
+                     "left": SwiftIdentifier("constraints"),
+                     "operator": "=",
+                     "right":
+                       LiteralExpression(
+                         Array(
+                           combination.constraints
+                           |> List.filter((const: Constraint.t) =>
+                                !
+                                  Constraint.isAlwaysActivated(
+                                    combinations,
+                                    const,
+                                  )
+                              )
+                           |> List.map((const: Constraint.t) =>
+                                SwiftIdentifier(
+                                  formatConstraintVariableName(
+                                    rootLayer,
+                                    const,
+                                    true,
+                                  ),
+                                )
+                              ),
+                         ),
+                       ),
+                   }),
+                 ],
+               })
+             ),
+      }),
+      Empty,
+      ReturnStatement(
+        Some(
+          FunctionCallExpression({
+            "name":
+              SwiftAst.Builders.memberExpression([
+                "constraints",
+                "compactMap",
+              ]),
+            "arguments": [
+              FunctionCallArgument({
+                "name": None,
+                "value": CodeBlock({"statements": [SwiftIdentifier("$0")]}),
+              }),
+            ],
+          }),
+        ),
+      ),
+    ],
   });
 };

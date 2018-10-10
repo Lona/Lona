@@ -4,7 +4,7 @@ let layerName = layerName => Format.camelCase(layerName) ++ "View";
    layerName(layer.name) ++ upperFirst(variableName); */
 /* TODO: Fix collisions between variables & params e.g. self.onPress and a parameter onPress */
 let layerVariableName = (rootLayer, layer: Types.layer, variableName) =>
-  layer === rootLayer ?
+  layer === rootLayer ? /* TODO: Layer.equal */
     variableName : layerName(layer.name) ++ Format.upperFirst(variableName);
 
 let variableNameFromIdentifier = (rootLayerName, path) =>

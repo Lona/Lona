@@ -50,7 +50,7 @@ and typeAnnotation =
         "member": typeAnnotation,
       },
     )
-  | ArrayType({. "element": typeAnnotation})
+  | ArrayType(typeAnnotation)
   | DictionaryType(
       {
         .
@@ -103,6 +103,7 @@ and node =
   /* | Operator(string) */
   | LiteralExpression(literal)
   | MemberExpression(list(node))
+  | TupleExpression(list(node))
   | BinaryExpression(
       {
         .
