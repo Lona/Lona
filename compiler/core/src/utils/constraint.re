@@ -437,8 +437,6 @@ let dedupe =
     List.exists(other => semanticEqual(other, const), list)
   );
 
-/* TODO: Handle layers with visibility hardcoded */
-/* || Parameter.isSetInitially(layer, Visible) */
 let visibilityLayers =
     (assignmentsFromLogic, rootLayer: Types.layer): list(Types.layer) =>
   rootLayer
@@ -449,6 +447,11 @@ let visibilityLayers =
          layer,
          Visible,
        )
+       /* Layers with visibility hardcoded in theory don't need to be generated
+          at all, and don't need any constraints. However, this would be difficult
+          to determine perfectly, so a simpler solution is to delete the layer from
+          the .component file if it is always hidden. */
+       || SwiftComponentParameter.isSetInitially(layer, Visible)
      );
 
 let visibilityCombinations =
