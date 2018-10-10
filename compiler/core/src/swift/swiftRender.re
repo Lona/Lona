@@ -77,12 +77,23 @@ let rec render = ast: Prettier.Doc.t('a) =>
     )
     <+> s(")")
   | BinaryExpression(o) =>
-    group(
-      render(o##left)
-      <+> s(" ")
-      <+> s(o##operator)
-      <+> indent(line <+> render(o##right)),
-    )
+    switch (o##right) {
+    | LiteralExpression(Array(_)) =>
+      group(
+        render(o##left)
+        <+> s(" ")
+        <+> s(o##operator)
+        <+> s(" ")
+        <+> render(o##right),
+      )
+    | _ =>
+      group(
+        render(o##left)
+        <+> s(" ")
+        <+> s(o##operator)
+        <+> indent(line <+> render(o##right)),
+      )
+    }
   | PrefixExpression(o) =>
     switch (o##expression) {
     | LiteralExpression(_)
@@ -494,7 +505,8 @@ let rec render = ast: Prettier.Doc.t('a) =>
   | CodeBlock(o) =>
     switch (o##statements) {
     | [] => s("{}")
-    /* | [statement] => s("{") <+> line <+> render(statement) <+> line <+> s("}") */
+    | [SwiftIdentifier(_) as statement] =>
+      s("{") <+> line <+> render(statement) <+> line <+> s("}")
     | statements =>
       s("{")
       <+> indent(
