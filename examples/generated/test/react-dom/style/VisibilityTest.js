@@ -13,7 +13,8 @@ export default class VisibilityTest extends React.Component {
     let theme = {
       "container": { "normal": {} },
       "inner": { "normal": {} },
-      "title": { "normal": {} }
+      "title": { "normal": {} },
+      "view": { "normal": {} }
     }
     return (
       <ThemeProvider theme={theme}>
@@ -25,6 +26,7 @@ export default class VisibilityTest extends React.Component {
               {"Enabled"}
             </span>
           }
+          <div style={Object.assign({}, styles.view, {})} />
         </div>
       </ThemeProvider>
     );
@@ -54,5 +56,14 @@ let styles = {
     flex: "0 0 auto",
     flexDirection: "column",
     justifyContent: "flex-start"
+  },
+  view: {
+    alignItems: "flex-start",
+    backgroundColor: colors.blue300,
+    display: "flex",
+    flexDirection: "column",
+    justifyContent: "flex-start",
+    width: "100px",
+    height: "100px"
   }
 }

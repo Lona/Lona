@@ -4,7 +4,7 @@
       "height" : 100,
       "heightMode" : "At Least",
       "name" : "iPhone SE",
-      "width" : 320
+      "width" : 100
     }
   ],
   "examples" : [
@@ -61,6 +61,15 @@
           "text" : "Enabled"
         },
         "type" : "Lona:Text"
+      },
+      {
+        "id" : "View",
+        "params" : {
+          "backgroundColor" : "blue300",
+          "height" : 100,
+          "width" : 100
+        },
+        "type" : "Lona:View"
       }
     ],
     "id" : "Container",

@@ -20,6 +20,7 @@ export default class VisibilityTest extends React.Component {
             {"Enabled"}
           </Text>
         }
+        <View style={[ styles.view, {} ]} />
       </View>
     );
   }
@@ -47,5 +48,13 @@ let styles = StyleSheet.create({
     flex: 0,
     flexDirection: "column",
     justifyContent: "flex-start"
+  },
+  view: {
+    alignItems: "flex-start",
+    backgroundColor: colors.blue300,
+    flexDirection: "column",
+    justifyContent: "flex-start",
+    width: 100,
+    height: 100
   }
 })
