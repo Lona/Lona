@@ -372,6 +372,7 @@ module Doc = {
         getComponent,
         assignmentsFromLayerParameters,
         assignmentsFromLogic,
+        hasConditionalConstraints: bool,
         rootLayer: Types.layer,
         logic,
       ) => {
@@ -401,20 +402,70 @@ module Doc = {
            ),
          );
 
+    let body =
+      (
+        assignmentsFromLogic
+        |> Layer.LayerMap.bindings
+        |> List.map(defineInitialLayerValues)
+        |> List.concat
+      )
+      @ SwiftLogic.toSwiftAST(swiftOptions, config, rootLayer, logic);
+
+    let body =
+      if (hasConditionalConstraints) {
+        SwiftDocument.join(
+          Empty,
+          [
+            FunctionCallExpression({
+              "name":
+                SwiftAst.Builders.memberExpression([
+                  "NSLayoutConstraint",
+                  "deactivate",
+                ]),
+              "arguments": [
+                FunctionCallArgument({
+                  "name": None,
+                  "value":
+                    SwiftAst.Builders.functionCall(
+                      ["conditionalConstraints"],
+                      [],
+                    ),
+                }),
+              ],
+            }),
+          ]
+          @ body
+          @ [
+            FunctionCallExpression({
+              "name":
+                SwiftAst.Builders.memberExpression([
+                  "NSLayoutConstraint",
+                  "activate",
+                ]),
+              "arguments": [
+                FunctionCallArgument({
+                  "name": None,
+                  "value":
+                    SwiftAst.Builders.functionCall(
+                      ["conditionalConstraints"],
+                      [],
+                    ),
+                }),
+              ],
+            }),
+          ],
+        );
+      } else {
+        body;
+      };
+
     FunctionDeclaration({
       "name": "update",
       "modifiers": [AccessLevelModifier(PrivateModifier)],
       "parameters": [],
       "result": None,
       "throws": false,
-      "body":
-        (
-          assignmentsFromLogic
-          |> Layer.LayerMap.bindings
-          |> List.map(defineInitialLayerValues)
-          |> List.concat
-        )
-        @ SwiftLogic.toSwiftAST(swiftOptions, config, rootLayer, logic),
+      "body": body,
     });
   };
 };
@@ -428,6 +479,8 @@ let generate =
       getComponent,
       json,
     ) => {
+  open SwiftAst;
+
   let rootLayer = json |> Decode.Component.rootLayer(getComponent);
   let nonRootLayers = rootLayer |> Layer.flatten |> List.tl;
   let logic = json |> Decode.Component.logic;
@@ -450,7 +503,16 @@ let generate =
   let assignmentsFromLogic =
     Layer.parameterAssignmentsFromLogic(rootLayer, logic);
   let parameters = json |> Decode.Component.parameters;
-  open SwiftAst;
+
+  let visibilityCombinations =
+    Constraint.visibilityCombinations(
+      getComponent,
+      assignmentsFromLogic,
+      rootLayer,
+    );
+
+  let conditionalConstraints =
+    Constraint.conditionalConstraints(visibilityCombinations);
 
   let viewVariableDoc = (layer: Types.layer): node =>
     SwiftAst.Builders.privateVariableDeclaration(
@@ -584,7 +646,8 @@ let generate =
     | _ => MemberExpression([SwiftIdentifier(firstIdentifier)] @ statements)
     };
   let parentNameOrSelf = (parent: Types.layer) =>
-    parent === rootLayer ? "self" : parent.name |> SwiftFormat.layerName;
+    Layer.equal(parent, rootLayer) ?
+      "self" : parent.name |> SwiftFormat.layerName;
   let layerMemberExpression = (layer: Types.layer, statements) =>
     memberOrSelfExpression(parentNameOrSelf(layer), statements);
 
@@ -615,7 +678,6 @@ let generate =
     | SwiftOptions.UIKit => []
     };
 
-  let constraints = Constraint.getConstraints(getComponent, rootLayer);
   let superclass =
     TypeName(
       Naming.layerType(config, pluginContext, swiftOptions, name, Types.View),
@@ -662,15 +724,22 @@ let generate =
                     pressableLayers
                     |> List.map(Doc.pressableVariables(rootLayer))
                     |> List.concat,
-                    constraints
-                    |> List.filter(
-                         SwiftConstraint.isDynamic(assignmentsFromLogic),
-                       )
-                    |> List.map(def =>
+                    Constraint.conditionalConstraints(visibilityCombinations)
+                    @ (
+                      Constraint.alwaysConstraints(visibilityCombinations)
+                      |> List.filter(const =>
+                           SwiftConstraint.isDynamic(
+                             assignmentsFromLogic,
+                             const,
+                           )
+                         )
+                    )
+                    |> List.map(const =>
                          constraintVariableDoc(
                            SwiftConstraint.formatConstraintVariableName(
+                             visibilityCombinations,
                              rootLayer,
-                             def,
+                             const,
                            ),
                          )
                        ),
@@ -695,6 +764,15 @@ let generate =
                         rootLayer,
                       ),
                     ],
+                    List.length(conditionalConstraints) > 0 ?
+                      [
+                        SwiftConstraint.conditionalConstraintsFunction(
+                          getComponent,
+                          assignmentsFromLogic,
+                          rootLayer,
+                        ),
+                      ] :
+                      [],
                     [
                       Doc.update(
                         swiftOptions,
@@ -702,6 +780,7 @@ let generate =
                         getComponent,
                         assignmentsFromLayerParameters,
                         assignmentsFromLogic,
+                        List.length(conditionalConstraints) > 0,
                         rootLayer,
                         logic,
                       ),

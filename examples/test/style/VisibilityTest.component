@@ -1,0 +1,81 @@
+{
+  "devices" : [
+    {
+      "height" : 100,
+      "heightMode" : "At Least",
+      "name" : "iPhone SE",
+      "width" : 100
+    }
+  ],
+  "examples" : [
+    {
+      "id" : "Default",
+      "name" : "Default",
+      "params" : {
+        "enabled" : false
+      }
+    },
+    {
+      "id" : "name",
+      "name" : "name",
+      "params" : {
+        "enabled" : true
+      }
+    }
+  ],
+  "logic" : [
+    {
+      "assignee" : [
+        "layers",
+        "Title",
+        "visible"
+      ],
+      "content" : [
+        "parameters",
+        "enabled"
+      ],
+      "type" : "AssignExpr"
+    }
+  ],
+  "params" : [
+    {
+      "name" : "enabled",
+      "type" : "Boolean"
+    }
+  ],
+  "root" : {
+    "children" : [
+      {
+        "id" : "Inner",
+        "params" : {
+          "backgroundColor" : "green300",
+          "height" : 100,
+          "visible" : false,
+          "width" : 100
+        },
+        "type" : "Lona:View"
+      },
+      {
+        "id" : "Title",
+        "params" : {
+          "text" : "Enabled"
+        },
+        "type" : "Lona:Text"
+      },
+      {
+        "id" : "View",
+        "params" : {
+          "backgroundColor" : "blue300",
+          "height" : 100,
+          "width" : 100
+        },
+        "type" : "Lona:View"
+      }
+    ],
+    "id" : "Container",
+    "params" : {
+      "alignSelf" : "stretch"
+    },
+    "type" : "Lona:View"
+  }
+}

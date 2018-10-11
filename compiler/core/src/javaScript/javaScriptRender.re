@@ -12,6 +12,7 @@ let renderBinaryOperator = x => {
     | Lt => "<"
     | Lte => "<="
     | Plus => "+"
+    | And => "&&"
     | Noop => ""
     };
   s(op);
@@ -43,7 +44,13 @@ let rec render = ast: Prettier.Doc.t('a) =>
       render(o.right),
     ])
   | BinaryExpression(o) =>
-    render(o.left) <+> renderBinaryOperator(o.operator) <+> render(o.right)
+    group(
+      render(o.left)
+      <+> s(" ")
+      <+> renderBinaryOperator(o.operator)
+      <+> line
+      <+> render(o.right),
+    )
   | IfStatement(o) =>
     group(
       s("if")
@@ -174,7 +181,9 @@ let rec render = ast: Prettier.Doc.t('a) =>
       openingTag;
     };
   | JSXExpressionContainer(o) =>
-    group(s("{") <+> softline <+> render(o) <+> softline <+> s("}"))
+    group(
+      s("{") <+> indent(softline <+> render(o)) <+> softline <+> s("}"),
+    )
   | SpreadElement(value) => s("...") <+> render(value)
   | ArrayLiteral(body) =>
     let maybeLine = List.length(body) > 0 ? line : empty;

@@ -7,6 +7,7 @@ type binaryOperator =
   | Lt
   | Lte
   | Plus
+  | And
   | Noop;
 
 type importDeclaration = {
@@ -98,7 +99,7 @@ and node =
   | Unknown;
 
 /* Children are mapped first */
-let rec map = (f, node) =>
+let rec map = (f: node => node, node) =>
   switch (node) {
   | Return(value) => f(Return(value |> map(f)))
   | Literal(_)
@@ -107,7 +108,8 @@ let rec map = (f, node) =>
   | ImportDeclaration(_)
   | ImportSpecifier(_)
   | ImportDefaultSpecifier(_) => f(node)
-  | JSXExpressionContainer(value) => JSXExpressionContainer(f(value))
+  | JSXExpressionContainer(value) =>
+    f(JSXExpressionContainer(value |> map(f)))
   | SpreadElement(value) => SpreadElement(f(value))
   | ClassDeclaration(o) =>
     f(

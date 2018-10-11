@@ -66,13 +66,34 @@ let rec render = ast: Prettier.Doc.t('a) =>
     |> join(concat([softline, s(".")]))
     |> indent
     |> group
-  | BinaryExpression(o) =>
-    group(
-      render(o##left)
-      <+> s(" ")
-      <+> s(o##operator)
-      <+> indent(line <+> render(o##right)),
+  | TupleExpression(v) =>
+    s("(")
+    <+> (
+      v
+      |> List.map(render)
+      |> join(concat([s(","), line]))
+      |> indent
+      |> group
     )
+    <+> s(")")
+  | BinaryExpression(o) =>
+    switch (o##right) {
+    | LiteralExpression(Array(_)) =>
+      group(
+        render(o##left)
+        <+> s(" ")
+        <+> s(o##operator)
+        <+> s(" ")
+        <+> render(o##right),
+      )
+    | _ =>
+      group(
+        render(o##left)
+        <+> s(" ")
+        <+> s(o##operator)
+        <+> indent(line <+> render(o##right)),
+      )
+    }
   | PrefixExpression(o) =>
     switch (o##expression) {
     | LiteralExpression(_)
@@ -484,7 +505,8 @@ let rec render = ast: Prettier.Doc.t('a) =>
   | CodeBlock(o) =>
     switch (o##statements) {
     | [] => s("{}")
-    /* | [statement] => s("{") <+> line <+> render(statement) <+> line <+> s("}") */
+    | [SwiftIdentifier(_) as statement] =>
+      s("{") <+> line <+> render(statement) <+> line <+> s("}")
     | statements =>
       s("{")
       <+> indent(
@@ -555,8 +577,8 @@ and renderTypeAnnotation = (node: SwiftAst.typeAnnotation) =>
         renderTypeAnnotation(o##member),
       ]),
     )
-  | ArrayType(o) =>
-    group(concat([s("["), renderTypeAnnotation(o##element), s("]")]))
+  | ArrayType(value) =>
+    group(concat([s("["), renderTypeAnnotation(value), s("]")]))
   | DictionaryType(o) =>
     group(
       concat([

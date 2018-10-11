@@ -30,7 +30,7 @@ type role =
   | PrimaryDimension
   | SecondaryDimension;
 
-type _t =
+type t =
   | Dimension(Types.layer, anchor, layoutPriority, role)
   | Relation(
       Types.layer,
@@ -41,6 +41,12 @@ type _t =
       layoutPriority,
       role,
     );
+
+type visibilityCombination = {
+  rootLayer: Types.layer,
+  visibleLayers: list(Types.layer),
+  constraints: list(t),
+};
 
 let anchorToString =
   fun
@@ -62,19 +68,48 @@ let anchorFromString =
   | "centerXAnchor" => CenterX
   | "centerYAnchor" => CenterY
   | "widthAnchor" => Width
-  | "heightAnchor" => Height;
+  | "heightAnchor" => Height
+  | _ => raise(Not_found);
 
 let cmpFromString =
   fun
   | "equalTo" => Eq
   | "lessThanOrEqualTo" => Leq
-  | "greaterThanOrEqualTo" => Geq;
+  | "greaterThanOrEqualTo" => Geq
+  | _ => raise(Not_found);
 
 let cmpToString =
   fun
   | Eq => "equalTo"
   | Leq => "lessThanOrEqualTo"
   | Geq => "greaterThanOrEqualTo";
+
+let priorityToString =
+  fun
+  | Low => "low"
+  | Required => "required";
+
+let toString = const =>
+  switch (const) {
+  | Dimension(layer, anchor, priority, _) =>
+    priorityToString(priority)
+    ++ " : "
+    ++ layer.name
+    ++ "."
+    ++ anchorToString(anchor)
+  | Relation(layer1, anchor1, cmp, layer2, anchor2, priority, _) =>
+    priorityToString(priority)
+    ++ " : "
+    ++ layer1.name
+    ++ "."
+    ++ anchorToString(anchor1)
+    ++ " "
+    ++ cmpToString(cmp)
+    ++ " "
+    ++ layer2.name
+    ++ "."
+    ++ anchorToString(anchor2)
+  };
 
 let getPriority =
   fun
@@ -86,38 +121,53 @@ let getRole =
   | Dimension(_, _, _, role) => role
   | Relation(_, _, _, _, _, _, role) => role;
 
-/* module ConstraintMap = {
-     include
-       Map.Make(
-         {
-           type t = _t;
-           let compare = (a: t, b: t) : int =>
-             switch (a, b) {
-             | (
-                 Dimension(layer1, dimension1, _, _),
-                 Dimension(layer2, dimension2, _, _)
-               ) =>
-               compare((layer1.name, dimension1), (layer2.name, dimension2))
-             | (
-                 Relation(layer1a, anchor1a, _, layer1b, anchor1b, _, _),
-                 Relation(layer2a, anchor2a, _, layer2b, anchor2b, _, _)
-               ) =>
-               compare(
-                 (layer1a.name, anchor1a, layer1b.name, anchor1b),
-                 (layer2a.name, anchor2a, layer2b.name, anchor2b)
-               )
-             | (Relation(_), Dimension(_)) => (-1)
-             | (Dimension(_), Relation(_)) => 1
-             };
-         }
-       );
-     let find_opt = (key, map) =>
-       switch (find(key, map)) {
-       | item => Some(item)
-       | exception Not_found => None
-       };
-   }; */
-type t = _t;
+let reverse = (const: t) =>
+  switch (const) {
+  | Dimension(_) => const
+  | Relation(layer1, anchor1, cmp, layer2, anchor2, priority, role) =>
+    let cmp =
+      switch (cmp) {
+      | Leq => Geq
+      | Geq => Leq
+      | Eq => Eq
+      };
+    Relation(layer2, anchor2, cmp, layer1, anchor1, priority, role);
+  };
+
+/* Compare two constraints */
+let strictEqual = (a: t, b: t): bool =>
+  switch (a, b) {
+  | (
+      Dimension(layerA, anchorA, priorityA, _),
+      Dimension(layerB, anchorB, priorityB, _),
+    ) =>
+    Layer.equal(layerA, layerB)
+    && anchorA == anchorB
+    && priorityA == priorityB
+  | (
+      Relation(layer1A, anchor1A, cmpA, layer2A, anchor2A, priorityA, _),
+      Relation(layer1B, anchor1B, cmpB, layer2B, anchor2B, priorityB, _),
+    ) =>
+    Layer.equal(layer1A, layer1B)
+    && anchor1A == anchor1B
+    && cmpA == cmpB
+    && Layer.equal(layer2A, layer2B)
+    && anchor2A == anchor2B
+    && priorityA == priorityB
+  | _ => false
+  };
+
+/* Compare two constraints. Relation order is irrelevant */
+let semanticEqual = (a: t, b: t): bool =>
+  switch (a, b) {
+  | (Dimension(_) as a, Dimension(_) as b) => strictEqual(a, b)
+  | (Relation(_) as a, Relation(_) as b) =>
+    strictEqual(a, b)
+    || strictEqual(reverse(a), b)
+    || strictEqual(a, reverse(b))
+    || strictEqual(reverse(a), reverse(b))
+  | _ => strictEqual(a, b)
+  };
 
 let getConstraints =
     (getComponent: string => Js.Json.t, rootLayer: Types.layer) => {
@@ -127,7 +177,7 @@ let getConstraints =
     let isColumn = direction == "column";
     let primaryBeforeAnchor = isColumn ? Top : Leading;
     let primaryAfterAnchor = isColumn ? Bottom : Trailing;
-    let primaryCenterAnchor = isColumn ? CenterY : CenterX;
+    /* let primaryCenterAnchor = isColumn ? CenterY : CenterX; */
     let secondaryBeforeAnchor = isColumn ? Leading : Top;
     let secondaryAfterAnchor = isColumn ? Trailing : Bottom;
     let secondaryCenterAnchor = isColumn ? CenterX : CenterY;
@@ -380,3 +430,78 @@ let getConstraints =
   };
   rootLayer |> Layer.flatmap(constrainAxes) |> List.concat;
 };
+
+let dedupe =
+  Sequence.dedupe((const, list) =>
+    List.exists(other => semanticEqual(other, const), list)
+  );
+
+let visibilityLayers =
+    (assignmentsFromLogic, rootLayer: Types.layer): list(Types.layer) =>
+  rootLayer
+  |> Layer.flatten
+  |> List.filter((layer: Types.layer) =>
+       SwiftComponentParameter.isAssigned(
+         assignmentsFromLogic,
+         layer,
+         Visible,
+       )
+       /* Layers with visibility hardcoded in theory don't need to be generated
+          at all, and don't need any constraints. However, this would be difficult
+          to determine perfectly, so a simpler solution is to delete the layer from
+          the .component file if it is always hidden. */
+       || SwiftComponentParameter.isSetInitially(layer, Visible)
+     );
+
+let visibilityCombinations =
+    (getComponent, assignmentsFromLogic, rootLayer: Types.layer)
+    : list(visibilityCombination) => {
+  let layers = visibilityLayers(assignmentsFromLogic, rootLayer);
+
+  Sequence.combinations(layers)
+  |> List.map(visibleLayers => {
+       /* The root must always be visible, so getExn is safe */
+       let rootLayer =
+         rootLayer
+         |> Layer.filter(layer => !List.mem(layer, visibleLayers))
+         |> Js.Option.getExn;
+
+       {
+         rootLayer,
+         visibleLayers,
+         constraints: getConstraints(getComponent, rootLayer),
+       };
+     });
+};
+
+let isAlwaysActivated =
+    (visibilityCombinations: list(visibilityCombination), const): bool =>
+  visibilityCombinations
+  |> List.for_all((combination: visibilityCombination) =>
+       List.exists(
+         other => semanticEqual(other, const),
+         combination.constraints,
+       )
+     );
+
+let alwaysConstraints = (combinations: list(visibilityCombination)): list(t) =>
+  combinations
+  |> List.map((combination: visibilityCombination) =>
+       combination.constraints
+     )
+  |> List.concat
+  |> List.filter(isAlwaysActivated(combinations))
+  |> dedupe;
+
+let conditionalConstraints =
+    (combinations: list(visibilityCombination)): list(t) =>
+  combinations
+  |> List.map((combination: visibilityCombination) =>
+       combination.constraints
+     )
+  |> List.concat
+  |> List.filter(const => !isAlwaysActivated(combinations, const))
+  |> dedupe;
+
+let allConstraints = (combinations: list(visibilityCombination)): list(t) =>
+  alwaysConstraints(combinations) @ conditionalConstraints(combinations);
