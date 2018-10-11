@@ -13,6 +13,14 @@ let logicValueToJavaScriptAST = (config: Config.t, x: Logic.logicValue) =>
       | Some(color) => Ast.Identifier(["colors", color.id])
       | None => Literal(lonaValue)
       };
+    | Reference("Shadow")
+    | Named("Shadow", _) =>
+      let shadowStyles = config.shadowsFile.contents;
+      let data = Json.Decode.string(lonaValue.data);
+      switch (Shadow.find(shadowStyles.styles, data)) {
+      | Some(shadowStyle) => Ast.Identifier(["shadows", shadowStyle.id])
+      | None => Literal(lonaValue)
+      };
     | Reference("TextStyle")
     | Named("TextStyle", _) =>
       let textStyles = config.textStylesFile.contents;

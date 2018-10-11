@@ -19,6 +19,26 @@ let getTextStyleProperty =
     )
   );
 
+let getShadowProperty = (framework: JavaScriptOptions.framework, shadowId) =>
+  JavaScriptAst.(
+    SpreadElement(
+      switch (framework) {
+      | JavaScriptOptions.ReactSketchapp =>
+        CallExpression({
+          callee: Identifier(["Shadows", "get"]),
+          arguments: [
+            StringLiteral(shadowId |> JavaScriptFormat.styleVariableName),
+          ],
+        })
+      | _ =>
+        Identifier([
+          "shadows",
+          shadowId |> JavaScriptFormat.styleVariableName,
+        ])
+      },
+    )
+  );
+
 let getStyleProperty =
     (
       framework: JavaScriptOptions.framework,
@@ -36,6 +56,15 @@ let getStyleProperty =
     | Some(textStyleId) => getTextStyleProperty(framework, textStyleId)
     | None =>
       Js.log("TextStyle id must be a string");
+      raise(Not_found);
+    };
+  | Named("Shadow", _)
+  | Reference("Shadow") =>
+    let data = value.data |> Js.Json.decodeString;
+    switch (data) {
+    | Some(shadowId) => getShadowProperty(framework, shadowId)
+    | None =>
+      Js.log("Shadow id must be a string");
       raise(Not_found);
     };
   | Named("Color", _)

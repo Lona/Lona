@@ -2,6 +2,7 @@ import React from "react"
 import { View, StyleSheet, TextStyles } from "@mathieudutour/react-sketchapp"
 
 import colors from "../colors"
+import shadows from "../shadows"
 import textStyles from "../textStyles"
 
 export default class If extends React.Component {

@@ -4,7 +4,11 @@
   "description": "Lona cross-platform code compiler",
   "main": "build/index.js",
   "bin": "./build/index.js",
-  "files": ["build/index.js", "static", "README.md"],
+  "files": [
+    "build/index.js",
+    "static",
+    "README.md"
+  ],
   "scripts": {
     "build": "bsb -make-world",
     "start": "bsb -make-world -w",
@@ -12,20 +16,24 @@
     "bundle": "npm run clean && npm run build && webpack",
     "format": "bsrefmt --parse=re --print=re --in-place src/**/*.re",
     "prepublishOnly": "yarn clean && yarn build && yarn bundle",
-    "snapshotJsDom":
-      "node src/main.bs.js workspace js ../../examples/test ../../examples/generated/test/react-dom --framework=reactdom",
-    "snapshotJsNative":
-      "node src/main.bs.js workspace js ../../examples/test ../../examples/generated/test/react-native --framework=reactnative",
-    "snapshotSketch":
-      "node src/main.bs.js workspace js ../../examples/test ../../examples/generated/test/sketchJs --framework=reactsketchapp",
-    "snapshotSwift":
-      "node src/main.bs.js workspace swift ../../examples/test ../../examples/generated/test/swift",
-    "snapshotAppkit":
-      "node src/main.bs.js workspace swift ../../examples/test ../../examples/generated/test/appkit --framework=appkit",
-    "snapshot":
-      "yarn snapshotSwift && yarn snapshotAppkit && yarn snapshotJsDom && yarn snapshotJsNative && yarn snapshotSketch"
+    "snapshotJsDom": "node src/main.bs.js workspace js ../../examples/test ../../examples/generated/test/react-dom --framework=reactdom",
+    "snapshotJsDom:watch": "nodemon --exec \"yarn snapshotJsDom\"",
+    "snapshotJsNative": "node src/main.bs.js workspace js ../../examples/test ../../examples/generated/test/react-native --framework=reactnative",
+    "snapshotJsNative:watch": "nodemon --exec \"yarn snapshotJsNative\"",
+    "snapshotSketch": "node src/main.bs.js workspace js ../../examples/test ../../examples/generated/test/sketchJs --framework=reactsketchapp",
+    "snapshotSketch:watch": "nodemon --exec \"yarn snapshotSketch\"",
+    "snapshotSwift": "node src/main.bs.js workspace swift ../../examples/test ../../examples/generated/test/swift",
+    "snapshotSwift:watch": "nodemon --exec \"yarn snapshotSwift\"",
+    "snapshotAppkit": "node src/main.bs.js workspace swift ../../examples/test ../../examples/generated/test/appkit --framework=appkit",
+    "snapshotAppkit:watch": "nodemon --exec \"yarn snapshotAppkit\"",
+    "snapshot": "yarn snapshotSwift && yarn snapshotAppkit && yarn snapshotJsDom && yarn snapshotJsNative && yarn snapshotSketch",
+    "snapshot:watch": "nodemon --exec \"yarn snapshot\""
   },
-  "keywords": ["lona", "compiler", "react"],
+  "keywords": [
+    "lona",
+    "compiler",
+    "react"
+  ],
   "author": "Devin Abbott <devinabbott@gmail.com>",
   "license": "MIT",
   "repository": {
@@ -37,8 +45,8 @@
   },
   "homepage": "https://github.com/airbnb/Lona",
   "devDependencies": {
-    "bs-glob": "reasonml-community/bs-glob",
     "@glennsl/bs-json": "*",
+    "bs-glob": "reasonml-community/bs-glob",
     "bs-node": "github:buckletypes/bs-node",
     "bs-platform": "^4.0.5",
     "copy-webpack-plugin": "^4.5.1",
@@ -47,6 +55,7 @@
     "get-stdin": "^5.0.1",
     "lodash.camelcase": "^4.3.0",
     "lodash.upperfirst": "^4.3.1",
+    "nodemon": "^1.18.4",
     "prettier": "dabbott/prettier#28eebd6d150746b91f581e18bef8352e2bae5623",
     "webpack": "^3.10.0"
   },
