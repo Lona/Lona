@@ -81,6 +81,10 @@ let createStyleAttributePropertyAST =
     JavaScriptAst.SpreadElement(
       JavaScriptLogic.logicValueToJavaScriptAST(config, value),
     )
+  | ParameterKey.Shadow =>
+    JavaScriptAst.SpreadElement(
+      JavaScriptLogic.logicValueToJavaScriptAST(config, value),
+    )
   | _ =>
     JavaScriptAst.Property({
       key: Identifier([key |> styleNameKey]),
@@ -462,6 +466,7 @@ let generate =
       options: JavaScriptOptions.options,
       componentName,
       colorsFilePath,
+      shadowsFilePath,
       textStylesFilePath,
       config: Config.t,
       getComponent,
@@ -522,6 +527,10 @@ let generate =
             ImportDeclaration({
               source: colorsFilePath |> Js.String.replace(".json", ""),
               specifiers: [ImportDefaultSpecifier("colors")],
+            }),
+            ImportDeclaration({
+              source: shadowsFilePath |> Js.String.replace(".json", ""),
+              specifiers: [ImportDefaultSpecifier("shadows")],
             }),
             ImportDeclaration({
               source: textStylesFilePath |> Js.String.replace(".json", ""),

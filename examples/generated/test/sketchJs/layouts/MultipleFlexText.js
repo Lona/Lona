@@ -3,6 +3,7 @@ import { Text, View, StyleSheet, TextStyles } from
   "@mathieudutour/react-sketchapp"
 
 import colors from "../colors"
+import shadows from "../shadows"
 import textStyles from "../textStyles"
 
 export default class MultipleFlexText extends React.Component {

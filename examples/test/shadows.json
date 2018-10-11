@@ -20,7 +20,7 @@
     {
       "id": "elevation3",
       "name": "Elevation 3",
-      "color": "rgba(0,0,0,0.5)",
+      "color": "grey900",
       "x": 0,
       "y": 3,
       "blur": 9

@@ -2,6 +2,7 @@ import React from "react"
 import { View, StyleSheet } from "react-native"
 
 import colors from "../colors"
+import shadows from "../shadows"
 import textStyles from "../textStyles"
 import LocalAsset from "../images/LocalAsset"
 

@@ -2,6 +2,7 @@ import React from "react"
 import styled, { ThemeProvider } from "styled-components"
 
 import colors from "../colors"
+import shadows from "../shadows"
 import textStyles from "../textStyles"
 import ComponentParameterTemplate from "./ComponentParameterTemplate"
 

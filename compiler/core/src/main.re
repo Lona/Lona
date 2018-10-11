@@ -116,6 +116,7 @@ let renderTextStyles = (target, colors, textStyles) =>
 let renderShadows = (target, colors, shadows) =>
   switch (target) {
   | Types.Swift => SwiftShadow.render(swiftOptions, colors, shadows)
+  | JavaScript => JavaScriptShadow.render(javaScriptOptions, colors, shadows)
   | _ => ""
   };
 
@@ -198,6 +199,11 @@ let convertComponent = (config: Config.t, filename: string) => {
       Node.Path.relative(
         ~from=Node.Path.dirname(filename),
         ~to_=config.colorsFile.path,
+        (),
+      ),
+      Node.Path.relative(
+        ~from=Node.Path.dirname(filename),
+        ~to_=config.shadowsFile.path,
         (),
       ),
       Node.Path.relative(
@@ -316,7 +322,7 @@ let convertWorkspace = (workspace, output) => {
     `utf8,
   );
 
-  if (target == Types.Swift) {
+  if (target == Types.Swift || target == Types.JavaScript) {
     let shadowsOutputPath =
       concat(
         toDirectory,
