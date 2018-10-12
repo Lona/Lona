@@ -139,7 +139,10 @@ let rec lonaValue =
   | Reference(typeName) =>
     switch (typeName) {
     | name when Js.String.endsWith("?", name) =>
-      lonaValue(framework, config, LonaValue.unwrapOptional(value))
+      switch (LonaValue.decodeOptional(value)) {
+      | Some(innerValue) => lonaValue(framework, config, innerValue)
+      | None => LiteralExpression(Nil)
+      }
     | "Boolean" => LiteralExpression(Boolean(value.data |> Json.Decode.bool))
     | "Number" =>
       LiteralExpression(FloatingPoint(value.data |> Json.Decode.float))

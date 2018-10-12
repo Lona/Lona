@@ -90,12 +90,18 @@ let unwrapOptionalType = (ltype: Types.lonaType): Types.lonaType =>
     raise(Not_found);
   };
 
-let unwrapOptional = (value: Types.lonaValue): Types.lonaValue =>
+let decodeOptional = (value: Types.lonaValue): option(Types.lonaValue) =>
   switch (value.ltype) {
   | Reference(typeName) when Js.String.endsWith("?", typeName) =>
     let unwrappedType = unwrapOptionalType(value.ltype);
-    let unwrappedData = value.data |> Json.Decode.field("data", x => x);
-    {ltype: unwrappedType, data: unwrappedData};
+    let case = value.data |> Json.Decode.field("case", Json.Decode.string);
+    switch (case) {
+    | "Some" =>
+      let unwrappedData = value.data |> Json.Decode.field("data", x => x);
+      Some({ltype: unwrappedType, data: unwrappedData});
+    | "None"
+    | _ => None
+    };
   | _ =>
     Js.log3(
       "Failed to unwrap value -- not an optional value",
