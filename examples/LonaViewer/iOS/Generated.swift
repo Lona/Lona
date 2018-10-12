@@ -114,7 +114,7 @@ enum Generated: String {
         case .visibilityTest:
             return VisibilityTest(enabled: true)
         case .optionals:
-            return Optionals(boolParam: true)
+            return Optionals(boolParam: true, stringParam: "Hello World")
         }
     }
 

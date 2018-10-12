@@ -10,8 +10,11 @@ export default class Optionals extends React.Component {
   render() {
 
     let Label$text
+    let StringParam$text
     let View$backgroundColor
+    let unwrapped
     Label$text = ""
+    StringParam$text = "No string param"
     View$backgroundColor = "transparent"
 
     if (this.props.boolParam == true) {
@@ -25,10 +28,18 @@ export default class Optionals extends React.Component {
     if (this.props.boolParam == null) {
       Label$text = "boolParam is null"
     }
+    if (this.props.stringParam != null) {
+      let unwrapped = this.props.stringParam
+
+      StringParam$text = unwrapped
+    }
     return (
       <View style={[ styles.view, { backgroundColor: View$backgroundColor } ]}>
         <Text style={[ styles.label, {} ]}>
           {Label$text}
+        </Text>
+        <Text style={[ styles.stringParam, {} ]}>
+          {StringParam$text}
         </Text>
       </View>
     );
@@ -44,6 +55,13 @@ let styles = StyleSheet.create({
     justifyContent: "flex-start"
   },
   label: {
+    ...TextStyles.get("body1"),
+    alignItems: "flex-start",
+    flex: 0,
+    flexDirection: "column",
+    justifyContent: "flex-start"
+  },
+  stringParam: {
     ...TextStyles.get("body1"),
     alignItems: "flex-start",
     flex: 0,
