@@ -1,6 +1,7 @@
 [@bs.deriving accessors]
 type binaryOperator =
   | Eq
+  | LooseEq
   | Neq
   | Gt
   | Gte
