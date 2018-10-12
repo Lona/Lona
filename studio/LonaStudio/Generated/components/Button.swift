@@ -37,22 +37,6 @@ public class Button: NSBox {
 
   private var textViewTextStyle = TextStyles.regular
 
-  private var topPadding: CGFloat = 2
-  private var trailingPadding: CGFloat = 10
-  private var bottomPadding: CGFloat = 2
-  private var leadingPadding: CGFloat = 10
-  private var textViewTopMargin: CGFloat = 0
-  private var textViewTrailingMargin: CGFloat = 0
-  private var textViewBottomMargin: CGFloat = 0
-  private var textViewLeadingMargin: CGFloat = 0
-
-  private var textViewWidthAnchorParentConstraint: NSLayoutConstraint?
-  private var textViewTopAnchorConstraint: NSLayoutConstraint?
-  private var textViewBottomAnchorConstraint: NSLayoutConstraint?
-  private var textViewLeadingAnchorConstraint: NSLayoutConstraint?
-  private var textViewCenterXAnchorConstraint: NSLayoutConstraint?
-  private var textViewTrailingAnchorConstraint: NSLayoutConstraint?
-
   private func setUpViews() {
     boxType = .custom
     borderType = .lineBorder
@@ -73,22 +57,12 @@ public class Button: NSBox {
 
     let textViewWidthAnchorParentConstraint = textView
       .widthAnchor
-      .constraint(
-        lessThanOrEqualTo: widthAnchor,
-        constant: -(leadingPadding + textViewLeadingMargin + trailingPadding + textViewTrailingMargin))
-    let textViewTopAnchorConstraint = textView
-      .topAnchor
-      .constraint(equalTo: topAnchor, constant: topPadding + textViewTopMargin)
-    let textViewBottomAnchorConstraint = textView
-      .bottomAnchor
-      .constraint(equalTo: bottomAnchor, constant: -(bottomPadding + textViewBottomMargin))
-    let textViewLeadingAnchorConstraint = textView
-      .leadingAnchor
-      .constraint(equalTo: leadingAnchor, constant: leadingPadding + textViewLeadingMargin)
-    let textViewCenterXAnchorConstraint = textView.centerXAnchor.constraint(equalTo: centerXAnchor, constant: 0)
-    let textViewTrailingAnchorConstraint = textView
-      .trailingAnchor
-      .constraint(equalTo: trailingAnchor, constant: -(trailingPadding + textViewTrailingMargin))
+      .constraint(lessThanOrEqualTo: widthAnchor, constant: -20)
+    let textViewTopAnchorConstraint = textView.topAnchor.constraint(equalTo: topAnchor, constant: 2)
+    let textViewBottomAnchorConstraint = textView.bottomAnchor.constraint(equalTo: bottomAnchor, constant: -2)
+    let textViewLeadingAnchorConstraint = textView.leadingAnchor.constraint(equalTo: leadingAnchor, constant: 10)
+    let textViewCenterXAnchorConstraint = textView.centerXAnchor.constraint(equalTo: centerXAnchor)
+    let textViewTrailingAnchorConstraint = textView.trailingAnchor.constraint(equalTo: trailingAnchor, constant: -10)
 
     textViewWidthAnchorParentConstraint.priority = NSLayoutConstraint.Priority.defaultLow
 
@@ -100,21 +74,6 @@ public class Button: NSBox {
       textViewCenterXAnchorConstraint,
       textViewTrailingAnchorConstraint
     ])
-
-    self.textViewWidthAnchorParentConstraint = textViewWidthAnchorParentConstraint
-    self.textViewTopAnchorConstraint = textViewTopAnchorConstraint
-    self.textViewBottomAnchorConstraint = textViewBottomAnchorConstraint
-    self.textViewLeadingAnchorConstraint = textViewLeadingAnchorConstraint
-    self.textViewCenterXAnchorConstraint = textViewCenterXAnchorConstraint
-    self.textViewTrailingAnchorConstraint = textViewTrailingAnchorConstraint
-
-    // For debugging
-    textViewWidthAnchorParentConstraint.identifier = "textViewWidthAnchorParentConstraint"
-    textViewTopAnchorConstraint.identifier = "textViewTopAnchorConstraint"
-    textViewBottomAnchorConstraint.identifier = "textViewBottomAnchorConstraint"
-    textViewLeadingAnchorConstraint.identifier = "textViewLeadingAnchorConstraint"
-    textViewCenterXAnchorConstraint.identifier = "textViewCenterXAnchorConstraint"
-    textViewTrailingAnchorConstraint.identifier = "textViewTrailingAnchorConstraint"
   }
 
   private func update() {

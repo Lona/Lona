@@ -36,22 +36,6 @@ public class CoreColorWellPicker: NSBox {
 
   private var colorWellPickerView = ColorWellPicker()
 
-  private var topPadding: CGFloat = 0
-  private var trailingPadding: CGFloat = 0
-  private var bottomPadding: CGFloat = 0
-  private var leadingPadding: CGFloat = 0
-  private var colorWellPickerViewTopMargin: CGFloat = 0
-  private var colorWellPickerViewTrailingMargin: CGFloat = 0
-  private var colorWellPickerViewBottomMargin: CGFloat = 0
-  private var colorWellPickerViewLeadingMargin: CGFloat = 0
-
-  private var heightAnchorConstraint: NSLayoutConstraint?
-  private var widthAnchorConstraint: NSLayoutConstraint?
-  private var colorWellPickerViewTopAnchorConstraint: NSLayoutConstraint?
-  private var colorWellPickerViewBottomAnchorConstraint: NSLayoutConstraint?
-  private var colorWellPickerViewLeadingAnchorConstraint: NSLayoutConstraint?
-  private var colorWellPickerViewTrailingAnchorConstraint: NSLayoutConstraint?
-
   private func setUpViews() {
     boxType = .custom
     borderType = .noBorder
@@ -66,18 +50,14 @@ public class CoreColorWellPicker: NSBox {
 
     let heightAnchorConstraint = heightAnchor.constraint(equalToConstant: 22)
     let widthAnchorConstraint = widthAnchor.constraint(equalToConstant: 34)
-    let colorWellPickerViewTopAnchorConstraint = colorWellPickerView
-      .topAnchor
-      .constraint(equalTo: topAnchor, constant: topPadding + colorWellPickerViewTopMargin)
-    let colorWellPickerViewBottomAnchorConstraint = colorWellPickerView
-      .bottomAnchor
-      .constraint(equalTo: bottomAnchor, constant: -(bottomPadding + colorWellPickerViewBottomMargin))
+    let colorWellPickerViewTopAnchorConstraint = colorWellPickerView.topAnchor.constraint(equalTo: topAnchor)
+    let colorWellPickerViewBottomAnchorConstraint = colorWellPickerView.bottomAnchor.constraint(equalTo: bottomAnchor)
     let colorWellPickerViewLeadingAnchorConstraint = colorWellPickerView
       .leadingAnchor
-      .constraint(equalTo: leadingAnchor, constant: leadingPadding + colorWellPickerViewLeadingMargin)
+      .constraint(equalTo: leadingAnchor)
     let colorWellPickerViewTrailingAnchorConstraint = colorWellPickerView
       .trailingAnchor
-      .constraint(equalTo: trailingAnchor, constant: -(trailingPadding + colorWellPickerViewTrailingMargin))
+      .constraint(equalTo: trailingAnchor)
 
     NSLayoutConstraint.activate([
       heightAnchorConstraint,
@@ -87,21 +67,6 @@ public class CoreColorWellPicker: NSBox {
       colorWellPickerViewLeadingAnchorConstraint,
       colorWellPickerViewTrailingAnchorConstraint
     ])
-
-    self.heightAnchorConstraint = heightAnchorConstraint
-    self.widthAnchorConstraint = widthAnchorConstraint
-    self.colorWellPickerViewTopAnchorConstraint = colorWellPickerViewTopAnchorConstraint
-    self.colorWellPickerViewBottomAnchorConstraint = colorWellPickerViewBottomAnchorConstraint
-    self.colorWellPickerViewLeadingAnchorConstraint = colorWellPickerViewLeadingAnchorConstraint
-    self.colorWellPickerViewTrailingAnchorConstraint = colorWellPickerViewTrailingAnchorConstraint
-
-    // For debugging
-    heightAnchorConstraint.identifier = "heightAnchorConstraint"
-    widthAnchorConstraint.identifier = "widthAnchorConstraint"
-    colorWellPickerViewTopAnchorConstraint.identifier = "colorWellPickerViewTopAnchorConstraint"
-    colorWellPickerViewBottomAnchorConstraint.identifier = "colorWellPickerViewBottomAnchorConstraint"
-    colorWellPickerViewLeadingAnchorConstraint.identifier = "colorWellPickerViewLeadingAnchorConstraint"
-    colorWellPickerViewTrailingAnchorConstraint.identifier = "colorWellPickerViewTrailingAnchorConstraint"
   }
 
   private func update() {

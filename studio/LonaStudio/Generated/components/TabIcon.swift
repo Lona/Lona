@@ -48,25 +48,9 @@ public class TabIcon: NSBox {
 
   private var imageView = NSImageView()
 
-  private var topPadding: CGFloat = 17
-  private var trailingPadding: CGFloat = 0
-  private var bottomPadding: CGFloat = 17
-  private var leadingPadding: CGFloat = 0
-  private var imageViewTopMargin: CGFloat = 0
-  private var imageViewTrailingMargin: CGFloat = 0
-  private var imageViewBottomMargin: CGFloat = 0
-  private var imageViewLeadingMargin: CGFloat = 0
-
   private var hovered = false
   private var pressed = false
   private var onPress: (() -> Void)?
-
-  private var heightAnchorConstraint: NSLayoutConstraint?
-  private var widthAnchorConstraint: NSLayoutConstraint?
-  private var imageViewTopAnchorConstraint: NSLayoutConstraint?
-  private var imageViewCenterXAnchorConstraint: NSLayoutConstraint?
-  private var imageViewHeightAnchorConstraint: NSLayoutConstraint?
-  private var imageViewWidthAnchorConstraint: NSLayoutConstraint?
 
   private func setUpViews() {
     boxType = .custom
@@ -82,10 +66,8 @@ public class TabIcon: NSBox {
 
     let heightAnchorConstraint = heightAnchor.constraint(equalToConstant: 60)
     let widthAnchorConstraint = widthAnchor.constraint(equalToConstant: 60)
-    let imageViewTopAnchorConstraint = imageView
-      .topAnchor
-      .constraint(equalTo: topAnchor, constant: topPadding + imageViewTopMargin)
-    let imageViewCenterXAnchorConstraint = imageView.centerXAnchor.constraint(equalTo: centerXAnchor, constant: 0)
+    let imageViewTopAnchorConstraint = imageView.topAnchor.constraint(equalTo: topAnchor, constant: 17)
+    let imageViewCenterXAnchorConstraint = imageView.centerXAnchor.constraint(equalTo: centerXAnchor)
     let imageViewHeightAnchorConstraint = imageView.heightAnchor.constraint(equalToConstant: 26)
     let imageViewWidthAnchorConstraint = imageView.widthAnchor.constraint(equalToConstant: 26)
 
@@ -97,21 +79,6 @@ public class TabIcon: NSBox {
       imageViewHeightAnchorConstraint,
       imageViewWidthAnchorConstraint
     ])
-
-    self.heightAnchorConstraint = heightAnchorConstraint
-    self.widthAnchorConstraint = widthAnchorConstraint
-    self.imageViewTopAnchorConstraint = imageViewTopAnchorConstraint
-    self.imageViewCenterXAnchorConstraint = imageViewCenterXAnchorConstraint
-    self.imageViewHeightAnchorConstraint = imageViewHeightAnchorConstraint
-    self.imageViewWidthAnchorConstraint = imageViewWidthAnchorConstraint
-
-    // For debugging
-    heightAnchorConstraint.identifier = "heightAnchorConstraint"
-    widthAnchorConstraint.identifier = "widthAnchorConstraint"
-    imageViewTopAnchorConstraint.identifier = "imageViewTopAnchorConstraint"
-    imageViewCenterXAnchorConstraint.identifier = "imageViewCenterXAnchorConstraint"
-    imageViewHeightAnchorConstraint.identifier = "imageViewHeightAnchorConstraint"
-    imageViewWidthAnchorConstraint.identifier = "imageViewWidthAnchorConstraint"
   }
 
   private func update() {

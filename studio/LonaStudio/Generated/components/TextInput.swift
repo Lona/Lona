@@ -38,20 +38,6 @@ public class TextInput: NSBox {
 
   private var textViewTextStyle = TextStyles.regular
 
-  private var topPadding: CGFloat = 2
-  private var trailingPadding: CGFloat = 2
-  private var bottomPadding: CGFloat = 2
-  private var leadingPadding: CGFloat = 2
-  private var textViewTopMargin: CGFloat = 0
-  private var textViewTrailingMargin: CGFloat = 0
-  private var textViewBottomMargin: CGFloat = 0
-  private var textViewLeadingMargin: CGFloat = 0
-
-  private var textViewTopAnchorConstraint: NSLayoutConstraint?
-  private var textViewBottomAnchorConstraint: NSLayoutConstraint?
-  private var textViewLeadingAnchorConstraint: NSLayoutConstraint?
-  private var textViewTrailingAnchorConstraint: NSLayoutConstraint?
-
   private func setUpViews() {
     boxType = .custom
     borderType = .lineBorder
@@ -70,18 +56,12 @@ public class TextInput: NSBox {
     translatesAutoresizingMaskIntoConstraints = false
     textView.translatesAutoresizingMaskIntoConstraints = false
 
-    let textViewTopAnchorConstraint = textView
-      .topAnchor
-      .constraint(equalTo: topAnchor, constant: topPadding + textViewTopMargin)
-    let textViewBottomAnchorConstraint = textView
-      .bottomAnchor
-      .constraint(equalTo: bottomAnchor, constant: -(bottomPadding + textViewBottomMargin))
-    let textViewLeadingAnchorConstraint = textView
-      .leadingAnchor
-      .constraint(equalTo: leadingAnchor, constant: leadingPadding + textViewLeadingMargin)
+    let textViewTopAnchorConstraint = textView.topAnchor.constraint(equalTo: topAnchor, constant: 2)
+    let textViewBottomAnchorConstraint = textView.bottomAnchor.constraint(equalTo: bottomAnchor, constant: -2)
+    let textViewLeadingAnchorConstraint = textView.leadingAnchor.constraint(equalTo: leadingAnchor, constant: 2)
     let textViewTrailingAnchorConstraint = textView
       .trailingAnchor
-      .constraint(lessThanOrEqualTo: trailingAnchor, constant: -(trailingPadding + textViewTrailingMargin))
+      .constraint(lessThanOrEqualTo: trailingAnchor, constant: -2)
 
     NSLayoutConstraint.activate([
       textViewTopAnchorConstraint,
@@ -89,17 +69,6 @@ public class TextInput: NSBox {
       textViewLeadingAnchorConstraint,
       textViewTrailingAnchorConstraint
     ])
-
-    self.textViewTopAnchorConstraint = textViewTopAnchorConstraint
-    self.textViewBottomAnchorConstraint = textViewBottomAnchorConstraint
-    self.textViewLeadingAnchorConstraint = textViewLeadingAnchorConstraint
-    self.textViewTrailingAnchorConstraint = textViewTrailingAnchorConstraint
-
-    // For debugging
-    textViewTopAnchorConstraint.identifier = "textViewTopAnchorConstraint"
-    textViewBottomAnchorConstraint.identifier = "textViewBottomAnchorConstraint"
-    textViewLeadingAnchorConstraint.identifier = "textViewLeadingAnchorConstraint"
-    textViewTrailingAnchorConstraint.identifier = "textViewTrailingAnchorConstraint"
   }
 
   private func update() {}

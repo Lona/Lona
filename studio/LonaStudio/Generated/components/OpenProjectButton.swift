@@ -54,82 +54,12 @@ public class OpenProjectButton: NSBox {
 
   private var titleViewTextStyle = TextStyles.regular
 
-  private var topPadding: CGFloat = 0
-  private var trailingPadding: CGFloat = 0
-  private var bottomPadding: CGFloat = 0
-  private var leadingPadding: CGFloat = 0
-  private var topBorderViewTopMargin: CGFloat = 0
-  private var topBorderViewTrailingMargin: CGFloat = 0
-  private var topBorderViewBottomMargin: CGFloat = 0
-  private var topBorderViewLeadingMargin: CGFloat = 0
-  private var innerViewTopMargin: CGFloat = 0
-  private var innerViewTrailingMargin: CGFloat = 0
-  private var innerViewBottomMargin: CGFloat = 0
-  private var innerViewLeadingMargin: CGFloat = 0
-  private var innerViewTopPadding: CGFloat = 0
-  private var innerViewTrailingPadding: CGFloat = 20
-  private var innerViewBottomPadding: CGFloat = 0
-  private var innerViewLeadingPadding: CGFloat = 20
-  private var titleContainerViewTopMargin: CGFloat = 0
-  private var titleContainerViewTrailingMargin: CGFloat = 20
-  private var titleContainerViewBottomMargin: CGFloat = 0
-  private var titleContainerViewLeadingMargin: CGFloat = 0
-  private var titleContainerViewTopPadding: CGFloat = 0
-  private var titleContainerViewTrailingPadding: CGFloat = 0
-  private var titleContainerViewBottomPadding: CGFloat = 0
-  private var titleContainerViewLeadingPadding: CGFloat = 0
-  private var plusContainerViewTopMargin: CGFloat = 0
-  private var plusContainerViewTrailingMargin: CGFloat = 0
-  private var plusContainerViewBottomMargin: CGFloat = 0
-  private var plusContainerViewLeadingMargin: CGFloat = 0
-  private var plusContainerViewTopPadding: CGFloat = 0
-  private var plusContainerViewTrailingPadding: CGFloat = 0
-  private var plusContainerViewBottomPadding: CGFloat = 0
-  private var plusContainerViewLeadingPadding: CGFloat = 0
-  private var titleViewTopMargin: CGFloat = 0
-  private var titleViewTrailingMargin: CGFloat = 0
-  private var titleViewBottomMargin: CGFloat = 0
-  private var titleViewLeadingMargin: CGFloat = 0
-  private var plusViewTopMargin: CGFloat = 0
-  private var plusViewTrailingMargin: CGFloat = 0
-  private var plusViewBottomMargin: CGFloat = 0
-  private var plusViewLeadingMargin: CGFloat = 0
-
   private var titleContainerViewHovered = false
   private var titleContainerViewPressed = false
   private var titleContainerViewOnPress: (() -> Void)?
   private var plusContainerViewHovered = false
   private var plusContainerViewPressed = false
   private var plusContainerViewOnPress: (() -> Void)?
-
-  private var heightAnchorConstraint: NSLayoutConstraint?
-  private var topBorderViewTopAnchorConstraint: NSLayoutConstraint?
-  private var topBorderViewLeadingAnchorConstraint: NSLayoutConstraint?
-  private var topBorderViewTrailingAnchorConstraint: NSLayoutConstraint?
-  private var innerViewBottomAnchorConstraint: NSLayoutConstraint?
-  private var innerViewTopAnchorConstraint: NSLayoutConstraint?
-  private var innerViewLeadingAnchorConstraint: NSLayoutConstraint?
-  private var innerViewTrailingAnchorConstraint: NSLayoutConstraint?
-  private var topBorderViewHeightAnchorConstraint: NSLayoutConstraint?
-  private var titleContainerViewLeadingAnchorConstraint: NSLayoutConstraint?
-  private var titleContainerViewTopAnchorConstraint: NSLayoutConstraint?
-  private var titleContainerViewCenterYAnchorConstraint: NSLayoutConstraint?
-  private var titleContainerViewBottomAnchorConstraint: NSLayoutConstraint?
-  private var plusContainerViewTrailingAnchorConstraint: NSLayoutConstraint?
-  private var plusContainerViewLeadingAnchorConstraint: NSLayoutConstraint?
-  private var plusContainerViewTopAnchorConstraint: NSLayoutConstraint?
-  private var plusContainerViewCenterYAnchorConstraint: NSLayoutConstraint?
-  private var plusContainerViewBottomAnchorConstraint: NSLayoutConstraint?
-  private var titleViewTopAnchorConstraint: NSLayoutConstraint?
-  private var titleViewBottomAnchorConstraint: NSLayoutConstraint?
-  private var titleViewLeadingAnchorConstraint: NSLayoutConstraint?
-  private var titleViewTrailingAnchorConstraint: NSLayoutConstraint?
-  private var plusViewWidthAnchorParentConstraint: NSLayoutConstraint?
-  private var plusViewTopAnchorConstraint: NSLayoutConstraint?
-  private var plusViewBottomAnchorConstraint: NSLayoutConstraint?
-  private var plusViewLeadingAnchorConstraint: NSLayoutConstraint?
-  private var plusViewHeightAnchorConstraint: NSLayoutConstraint?
-  private var plusViewWidthAnchorConstraint: NSLayoutConstraint?
 
   private func setUpViews() {
     boxType = .custom
@@ -170,105 +100,53 @@ public class OpenProjectButton: NSBox {
     plusView.translatesAutoresizingMaskIntoConstraints = false
 
     let heightAnchorConstraint = heightAnchor.constraint(equalToConstant: 48)
-    let topBorderViewTopAnchorConstraint = topBorderView
-      .topAnchor
-      .constraint(equalTo: topAnchor, constant: topPadding + topBorderViewTopMargin)
-    let topBorderViewLeadingAnchorConstraint = topBorderView
-      .leadingAnchor
-      .constraint(equalTo: leadingAnchor, constant: leadingPadding + topBorderViewLeadingMargin)
-    let topBorderViewTrailingAnchorConstraint = topBorderView
-      .trailingAnchor
-      .constraint(equalTo: trailingAnchor, constant: -(trailingPadding + topBorderViewTrailingMargin))
-    let innerViewBottomAnchorConstraint = innerView
-      .bottomAnchor
-      .constraint(equalTo: bottomAnchor, constant: -(bottomPadding + innerViewBottomMargin))
-    let innerViewTopAnchorConstraint = innerView
-      .topAnchor
-      .constraint(equalTo: topBorderView.bottomAnchor, constant: topBorderViewBottomMargin + innerViewTopMargin)
-    let innerViewLeadingAnchorConstraint = innerView
-      .leadingAnchor
-      .constraint(equalTo: leadingAnchor, constant: leadingPadding + innerViewLeadingMargin)
-    let innerViewTrailingAnchorConstraint = innerView
-      .trailingAnchor
-      .constraint(equalTo: trailingAnchor, constant: -(trailingPadding + innerViewTrailingMargin))
+    let topBorderViewTopAnchorConstraint = topBorderView.topAnchor.constraint(equalTo: topAnchor)
+    let topBorderViewLeadingAnchorConstraint = topBorderView.leadingAnchor.constraint(equalTo: leadingAnchor)
+    let topBorderViewTrailingAnchorConstraint = topBorderView.trailingAnchor.constraint(equalTo: trailingAnchor)
+    let innerViewBottomAnchorConstraint = innerView.bottomAnchor.constraint(equalTo: bottomAnchor)
+    let innerViewTopAnchorConstraint = innerView.topAnchor.constraint(equalTo: topBorderView.bottomAnchor)
+    let innerViewLeadingAnchorConstraint = innerView.leadingAnchor.constraint(equalTo: leadingAnchor)
+    let innerViewTrailingAnchorConstraint = innerView.trailingAnchor.constraint(equalTo: trailingAnchor)
     let topBorderViewHeightAnchorConstraint = topBorderView.heightAnchor.constraint(equalToConstant: 1)
     let titleContainerViewLeadingAnchorConstraint = titleContainerView
       .leadingAnchor
-      .constraint(equalTo: innerView.leadingAnchor, constant: innerViewLeadingPadding + titleContainerViewLeadingMargin)
+      .constraint(equalTo: innerView.leadingAnchor, constant: 20)
     let titleContainerViewTopAnchorConstraint = titleContainerView
       .topAnchor
-      .constraint(
-        greaterThanOrEqualTo: innerView.topAnchor,
-        constant: innerViewTopPadding + titleContainerViewTopMargin)
+      .constraint(greaterThanOrEqualTo: innerView.topAnchor)
     let titleContainerViewCenterYAnchorConstraint = titleContainerView
       .centerYAnchor
-      .constraint(equalTo: innerView.centerYAnchor, constant: 0)
+      .constraint(equalTo: innerView.centerYAnchor)
     let titleContainerViewBottomAnchorConstraint = titleContainerView
       .bottomAnchor
-      .constraint(
-        lessThanOrEqualTo: innerView.bottomAnchor,
-        constant: -(innerViewBottomPadding + titleContainerViewBottomMargin))
+      .constraint(lessThanOrEqualTo: innerView.bottomAnchor)
     let plusContainerViewTrailingAnchorConstraint = plusContainerView
       .trailingAnchor
-      .constraint(
-        equalTo: innerView.trailingAnchor,
-        constant: -(innerViewTrailingPadding + plusContainerViewTrailingMargin))
+      .constraint(equalTo: innerView.trailingAnchor, constant: -20)
     let plusContainerViewLeadingAnchorConstraint = plusContainerView
       .leadingAnchor
-      .constraint(
-        equalTo: titleContainerView.trailingAnchor,
-        constant: titleContainerViewTrailingMargin + plusContainerViewLeadingMargin)
+      .constraint(equalTo: titleContainerView.trailingAnchor, constant: 20)
     let plusContainerViewTopAnchorConstraint = plusContainerView
       .topAnchor
-      .constraint(greaterThanOrEqualTo: innerView.topAnchor, constant: innerViewTopPadding + plusContainerViewTopMargin)
+      .constraint(greaterThanOrEqualTo: innerView.topAnchor)
     let plusContainerViewCenterYAnchorConstraint = plusContainerView
       .centerYAnchor
-      .constraint(equalTo: innerView.centerYAnchor, constant: 0)
+      .constraint(equalTo: innerView.centerYAnchor)
     let plusContainerViewBottomAnchorConstraint = plusContainerView
       .bottomAnchor
-      .constraint(
-        lessThanOrEqualTo: innerView.bottomAnchor,
-        constant: -(innerViewBottomPadding + plusContainerViewBottomMargin))
-    let titleViewTopAnchorConstraint = titleView
-      .topAnchor
-      .constraint(equalTo: titleContainerView.topAnchor, constant: titleContainerViewTopPadding + titleViewTopMargin)
-    let titleViewBottomAnchorConstraint = titleView
-      .bottomAnchor
-      .constraint(
-        equalTo: titleContainerView.bottomAnchor,
-        constant: -(titleContainerViewBottomPadding + titleViewBottomMargin))
-    let titleViewLeadingAnchorConstraint = titleView
-      .leadingAnchor
-      .constraint(
-        equalTo: titleContainerView.leadingAnchor,
-        constant: titleContainerViewLeadingPadding + titleViewLeadingMargin)
+      .constraint(lessThanOrEqualTo: innerView.bottomAnchor)
+    let titleViewTopAnchorConstraint = titleView.topAnchor.constraint(equalTo: titleContainerView.topAnchor)
+    let titleViewBottomAnchorConstraint = titleView.bottomAnchor.constraint(equalTo: titleContainerView.bottomAnchor)
+    let titleViewLeadingAnchorConstraint = titleView.leadingAnchor.constraint(equalTo: titleContainerView.leadingAnchor)
     let titleViewTrailingAnchorConstraint = titleView
       .trailingAnchor
-      .constraint(
-        lessThanOrEqualTo: titleContainerView.trailingAnchor,
-        constant: -(titleContainerViewTrailingPadding + titleViewTrailingMargin))
+      .constraint(lessThanOrEqualTo: titleContainerView.trailingAnchor)
     let plusViewWidthAnchorParentConstraint = plusView
       .widthAnchor
-      .constraint(
-        lessThanOrEqualTo: plusContainerView.widthAnchor,
-        constant:
-        -(
-        plusContainerViewLeadingPadding + plusViewLeadingMargin +
-          plusContainerViewTrailingPadding + plusViewTrailingMargin
-        ))
-    let plusViewTopAnchorConstraint = plusView
-      .topAnchor
-      .constraint(equalTo: plusContainerView.topAnchor, constant: plusContainerViewTopPadding + plusViewTopMargin)
-    let plusViewBottomAnchorConstraint = plusView
-      .bottomAnchor
-      .constraint(
-        equalTo: plusContainerView.bottomAnchor,
-        constant: -(plusContainerViewBottomPadding + plusViewBottomMargin))
-    let plusViewLeadingAnchorConstraint = plusView
-      .leadingAnchor
-      .constraint(
-        equalTo: plusContainerView.leadingAnchor,
-        constant: plusContainerViewLeadingPadding + plusViewLeadingMargin)
+      .constraint(lessThanOrEqualTo: plusContainerView.widthAnchor)
+    let plusViewTopAnchorConstraint = plusView.topAnchor.constraint(equalTo: plusContainerView.topAnchor)
+    let plusViewBottomAnchorConstraint = plusView.bottomAnchor.constraint(equalTo: plusContainerView.bottomAnchor)
+    let plusViewLeadingAnchorConstraint = plusView.leadingAnchor.constraint(equalTo: plusContainerView.leadingAnchor)
     let plusViewHeightAnchorConstraint = plusView.heightAnchor.constraint(equalToConstant: 20)
     let plusViewWidthAnchorConstraint = plusView.widthAnchor.constraint(equalToConstant: 20)
 
@@ -304,65 +182,6 @@ public class OpenProjectButton: NSBox {
       plusViewHeightAnchorConstraint,
       plusViewWidthAnchorConstraint
     ])
-
-    self.heightAnchorConstraint = heightAnchorConstraint
-    self.topBorderViewTopAnchorConstraint = topBorderViewTopAnchorConstraint
-    self.topBorderViewLeadingAnchorConstraint = topBorderViewLeadingAnchorConstraint
-    self.topBorderViewTrailingAnchorConstraint = topBorderViewTrailingAnchorConstraint
-    self.innerViewBottomAnchorConstraint = innerViewBottomAnchorConstraint
-    self.innerViewTopAnchorConstraint = innerViewTopAnchorConstraint
-    self.innerViewLeadingAnchorConstraint = innerViewLeadingAnchorConstraint
-    self.innerViewTrailingAnchorConstraint = innerViewTrailingAnchorConstraint
-    self.topBorderViewHeightAnchorConstraint = topBorderViewHeightAnchorConstraint
-    self.titleContainerViewLeadingAnchorConstraint = titleContainerViewLeadingAnchorConstraint
-    self.titleContainerViewTopAnchorConstraint = titleContainerViewTopAnchorConstraint
-    self.titleContainerViewCenterYAnchorConstraint = titleContainerViewCenterYAnchorConstraint
-    self.titleContainerViewBottomAnchorConstraint = titleContainerViewBottomAnchorConstraint
-    self.plusContainerViewTrailingAnchorConstraint = plusContainerViewTrailingAnchorConstraint
-    self.plusContainerViewLeadingAnchorConstraint = plusContainerViewLeadingAnchorConstraint
-    self.plusContainerViewTopAnchorConstraint = plusContainerViewTopAnchorConstraint
-    self.plusContainerViewCenterYAnchorConstraint = plusContainerViewCenterYAnchorConstraint
-    self.plusContainerViewBottomAnchorConstraint = plusContainerViewBottomAnchorConstraint
-    self.titleViewTopAnchorConstraint = titleViewTopAnchorConstraint
-    self.titleViewBottomAnchorConstraint = titleViewBottomAnchorConstraint
-    self.titleViewLeadingAnchorConstraint = titleViewLeadingAnchorConstraint
-    self.titleViewTrailingAnchorConstraint = titleViewTrailingAnchorConstraint
-    self.plusViewWidthAnchorParentConstraint = plusViewWidthAnchorParentConstraint
-    self.plusViewTopAnchorConstraint = plusViewTopAnchorConstraint
-    self.plusViewBottomAnchorConstraint = plusViewBottomAnchorConstraint
-    self.plusViewLeadingAnchorConstraint = plusViewLeadingAnchorConstraint
-    self.plusViewHeightAnchorConstraint = plusViewHeightAnchorConstraint
-    self.plusViewWidthAnchorConstraint = plusViewWidthAnchorConstraint
-
-    // For debugging
-    heightAnchorConstraint.identifier = "heightAnchorConstraint"
-    topBorderViewTopAnchorConstraint.identifier = "topBorderViewTopAnchorConstraint"
-    topBorderViewLeadingAnchorConstraint.identifier = "topBorderViewLeadingAnchorConstraint"
-    topBorderViewTrailingAnchorConstraint.identifier = "topBorderViewTrailingAnchorConstraint"
-    innerViewBottomAnchorConstraint.identifier = "innerViewBottomAnchorConstraint"
-    innerViewTopAnchorConstraint.identifier = "innerViewTopAnchorConstraint"
-    innerViewLeadingAnchorConstraint.identifier = "innerViewLeadingAnchorConstraint"
-    innerViewTrailingAnchorConstraint.identifier = "innerViewTrailingAnchorConstraint"
-    topBorderViewHeightAnchorConstraint.identifier = "topBorderViewHeightAnchorConstraint"
-    titleContainerViewLeadingAnchorConstraint.identifier = "titleContainerViewLeadingAnchorConstraint"
-    titleContainerViewTopAnchorConstraint.identifier = "titleContainerViewTopAnchorConstraint"
-    titleContainerViewCenterYAnchorConstraint.identifier = "titleContainerViewCenterYAnchorConstraint"
-    titleContainerViewBottomAnchorConstraint.identifier = "titleContainerViewBottomAnchorConstraint"
-    plusContainerViewTrailingAnchorConstraint.identifier = "plusContainerViewTrailingAnchorConstraint"
-    plusContainerViewLeadingAnchorConstraint.identifier = "plusContainerViewLeadingAnchorConstraint"
-    plusContainerViewTopAnchorConstraint.identifier = "plusContainerViewTopAnchorConstraint"
-    plusContainerViewCenterYAnchorConstraint.identifier = "plusContainerViewCenterYAnchorConstraint"
-    plusContainerViewBottomAnchorConstraint.identifier = "plusContainerViewBottomAnchorConstraint"
-    titleViewTopAnchorConstraint.identifier = "titleViewTopAnchorConstraint"
-    titleViewBottomAnchorConstraint.identifier = "titleViewBottomAnchorConstraint"
-    titleViewLeadingAnchorConstraint.identifier = "titleViewLeadingAnchorConstraint"
-    titleViewTrailingAnchorConstraint.identifier = "titleViewTrailingAnchorConstraint"
-    plusViewWidthAnchorParentConstraint.identifier = "plusViewWidthAnchorParentConstraint"
-    plusViewTopAnchorConstraint.identifier = "plusViewTopAnchorConstraint"
-    plusViewBottomAnchorConstraint.identifier = "plusViewBottomAnchorConstraint"
-    plusViewLeadingAnchorConstraint.identifier = "plusViewLeadingAnchorConstraint"
-    plusViewHeightAnchorConstraint.identifier = "plusViewHeightAnchorConstraint"
-    plusViewWidthAnchorConstraint.identifier = "plusViewWidthAnchorConstraint"
   }
 
   private func update() {

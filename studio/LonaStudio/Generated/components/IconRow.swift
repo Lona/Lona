@@ -56,52 +56,9 @@ public class IconRow: NSBox {
   private var titleViewTextStyle = TextStyles.largeSemibold
   private var subtitleViewTextStyle = TextStyles.regularMuted
 
-  private var topPadding: CGFloat = 0
-  private var trailingPadding: CGFloat = 0
-  private var bottomPadding: CGFloat = 0
-  private var leadingPadding: CGFloat = 0
-  private var imageViewTopMargin: CGFloat = 8
-  private var imageViewTrailingMargin: CGFloat = 16
-  private var imageViewBottomMargin: CGFloat = 8
-  private var imageViewLeadingMargin: CGFloat = 8
-  private var rowContentViewTopMargin: CGFloat = 0
-  private var rowContentViewTrailingMargin: CGFloat = 0
-  private var rowContentViewBottomMargin: CGFloat = 0
-  private var rowContentViewLeadingMargin: CGFloat = 0
-  private var rowContentViewTopPadding: CGFloat = 8
-  private var rowContentViewTrailingPadding: CGFloat = 0
-  private var rowContentViewBottomPadding: CGFloat = 8
-  private var rowContentViewLeadingPadding: CGFloat = 0
-  private var titleViewTopMargin: CGFloat = 0
-  private var titleViewTrailingMargin: CGFloat = 0
-  private var titleViewBottomMargin: CGFloat = 0
-  private var titleViewLeadingMargin: CGFloat = 0
-  private var subtitleViewTopMargin: CGFloat = 0
-  private var subtitleViewTrailingMargin: CGFloat = 0
-  private var subtitleViewBottomMargin: CGFloat = 0
-  private var subtitleViewLeadingMargin: CGFloat = 0
-
   private var hovered = false
   private var pressed = false
   private var onPress: (() -> Void)?
-
-  private var imageViewHeightAnchorParentConstraint: NSLayoutConstraint?
-  private var rowContentViewHeightAnchorParentConstraint: NSLayoutConstraint?
-  private var imageViewLeadingAnchorConstraint: NSLayoutConstraint?
-  private var imageViewTopAnchorConstraint: NSLayoutConstraint?
-  private var rowContentViewTrailingAnchorConstraint: NSLayoutConstraint?
-  private var rowContentViewLeadingAnchorConstraint: NSLayoutConstraint?
-  private var rowContentViewTopAnchorConstraint: NSLayoutConstraint?
-  private var rowContentViewBottomAnchorConstraint: NSLayoutConstraint?
-  private var imageViewHeightAnchorConstraint: NSLayoutConstraint?
-  private var imageViewWidthAnchorConstraint: NSLayoutConstraint?
-  private var titleViewTopAnchorConstraint: NSLayoutConstraint?
-  private var titleViewLeadingAnchorConstraint: NSLayoutConstraint?
-  private var titleViewTrailingAnchorConstraint: NSLayoutConstraint?
-  private var subtitleViewBottomAnchorConstraint: NSLayoutConstraint?
-  private var subtitleViewTopAnchorConstraint: NSLayoutConstraint?
-  private var subtitleViewLeadingAnchorConstraint: NSLayoutConstraint?
-  private var subtitleViewTrailingAnchorConstraint: NSLayoutConstraint?
 
   private func setUpViews() {
     boxType = .custom
@@ -133,65 +90,33 @@ public class IconRow: NSBox {
 
     let imageViewHeightAnchorParentConstraint = imageView
       .heightAnchor
-      .constraint(
-        lessThanOrEqualTo: heightAnchor,
-        constant: -(topPadding + imageViewTopMargin + bottomPadding + imageViewBottomMargin))
+      .constraint(lessThanOrEqualTo: heightAnchor, constant: -16)
     let rowContentViewHeightAnchorParentConstraint = rowContentView
       .heightAnchor
-      .constraint(
-        lessThanOrEqualTo: heightAnchor,
-        constant: -(topPadding + rowContentViewTopMargin + bottomPadding + rowContentViewBottomMargin))
-    let imageViewLeadingAnchorConstraint = imageView
-      .leadingAnchor
-      .constraint(equalTo: leadingAnchor, constant: leadingPadding + imageViewLeadingMargin)
-    let imageViewTopAnchorConstraint = imageView
-      .topAnchor
-      .constraint(equalTo: topAnchor, constant: topPadding + imageViewTopMargin)
-    let rowContentViewTrailingAnchorConstraint = rowContentView
-      .trailingAnchor
-      .constraint(equalTo: trailingAnchor, constant: -(trailingPadding + rowContentViewTrailingMargin))
+      .constraint(lessThanOrEqualTo: heightAnchor)
+    let imageViewLeadingAnchorConstraint = imageView.leadingAnchor.constraint(equalTo: leadingAnchor, constant: 8)
+    let imageViewTopAnchorConstraint = imageView.topAnchor.constraint(equalTo: topAnchor, constant: 8)
+    let rowContentViewTrailingAnchorConstraint = rowContentView.trailingAnchor.constraint(equalTo: trailingAnchor)
     let rowContentViewLeadingAnchorConstraint = rowContentView
       .leadingAnchor
-      .constraint(equalTo: imageView.trailingAnchor, constant: imageViewTrailingMargin + rowContentViewLeadingMargin)
-    let rowContentViewTopAnchorConstraint = rowContentView
-      .topAnchor
-      .constraint(equalTo: topAnchor, constant: topPadding + rowContentViewTopMargin)
-    let rowContentViewBottomAnchorConstraint = rowContentView
-      .bottomAnchor
-      .constraint(equalTo: bottomAnchor, constant: -(bottomPadding + rowContentViewBottomMargin))
+      .constraint(equalTo: imageView.trailingAnchor, constant: 16)
+    let rowContentViewTopAnchorConstraint = rowContentView.topAnchor.constraint(equalTo: topAnchor)
+    let rowContentViewBottomAnchorConstraint = rowContentView.bottomAnchor.constraint(equalTo: bottomAnchor)
     let imageViewHeightAnchorConstraint = imageView.heightAnchor.constraint(equalToConstant: 30)
     let imageViewWidthAnchorConstraint = imageView.widthAnchor.constraint(equalToConstant: 30)
-    let titleViewTopAnchorConstraint = titleView
-      .topAnchor
-      .constraint(equalTo: rowContentView.topAnchor, constant: rowContentViewTopPadding + titleViewTopMargin)
-    let titleViewLeadingAnchorConstraint = titleView
-      .leadingAnchor
-      .constraint(
-        equalTo: rowContentView.leadingAnchor,
-        constant: rowContentViewLeadingPadding + titleViewLeadingMargin)
-    let titleViewTrailingAnchorConstraint = titleView
-      .trailingAnchor
-      .constraint(
-        equalTo: rowContentView.trailingAnchor,
-        constant: -(rowContentViewTrailingPadding + titleViewTrailingMargin))
+    let titleViewTopAnchorConstraint = titleView.topAnchor.constraint(equalTo: rowContentView.topAnchor, constant: 8)
+    let titleViewLeadingAnchorConstraint = titleView.leadingAnchor.constraint(equalTo: rowContentView.leadingAnchor)
+    let titleViewTrailingAnchorConstraint = titleView.trailingAnchor.constraint(equalTo: rowContentView.trailingAnchor)
     let subtitleViewBottomAnchorConstraint = subtitleView
       .bottomAnchor
-      .constraint(
-        equalTo: rowContentView.bottomAnchor,
-        constant: -(rowContentViewBottomPadding + subtitleViewBottomMargin))
-    let subtitleViewTopAnchorConstraint = subtitleView
-      .topAnchor
-      .constraint(equalTo: titleView.bottomAnchor, constant: titleViewBottomMargin + subtitleViewTopMargin)
+      .constraint(equalTo: rowContentView.bottomAnchor, constant: -8)
+    let subtitleViewTopAnchorConstraint = subtitleView.topAnchor.constraint(equalTo: titleView.bottomAnchor)
     let subtitleViewLeadingAnchorConstraint = subtitleView
       .leadingAnchor
-      .constraint(
-        equalTo: rowContentView.leadingAnchor,
-        constant: rowContentViewLeadingPadding + subtitleViewLeadingMargin)
+      .constraint(equalTo: rowContentView.leadingAnchor)
     let subtitleViewTrailingAnchorConstraint = subtitleView
       .trailingAnchor
-      .constraint(
-        equalTo: rowContentView.trailingAnchor,
-        constant: -(rowContentViewTrailingPadding + subtitleViewTrailingMargin))
+      .constraint(equalTo: rowContentView.trailingAnchor)
 
     imageViewHeightAnchorParentConstraint.priority = NSLayoutConstraint.Priority.defaultLow
     rowContentViewHeightAnchorParentConstraint.priority = NSLayoutConstraint.Priority.defaultLow
@@ -215,43 +140,6 @@ public class IconRow: NSBox {
       subtitleViewLeadingAnchorConstraint,
       subtitleViewTrailingAnchorConstraint
     ])
-
-    self.imageViewHeightAnchorParentConstraint = imageViewHeightAnchorParentConstraint
-    self.rowContentViewHeightAnchorParentConstraint = rowContentViewHeightAnchorParentConstraint
-    self.imageViewLeadingAnchorConstraint = imageViewLeadingAnchorConstraint
-    self.imageViewTopAnchorConstraint = imageViewTopAnchorConstraint
-    self.rowContentViewTrailingAnchorConstraint = rowContentViewTrailingAnchorConstraint
-    self.rowContentViewLeadingAnchorConstraint = rowContentViewLeadingAnchorConstraint
-    self.rowContentViewTopAnchorConstraint = rowContentViewTopAnchorConstraint
-    self.rowContentViewBottomAnchorConstraint = rowContentViewBottomAnchorConstraint
-    self.imageViewHeightAnchorConstraint = imageViewHeightAnchorConstraint
-    self.imageViewWidthAnchorConstraint = imageViewWidthAnchorConstraint
-    self.titleViewTopAnchorConstraint = titleViewTopAnchorConstraint
-    self.titleViewLeadingAnchorConstraint = titleViewLeadingAnchorConstraint
-    self.titleViewTrailingAnchorConstraint = titleViewTrailingAnchorConstraint
-    self.subtitleViewBottomAnchorConstraint = subtitleViewBottomAnchorConstraint
-    self.subtitleViewTopAnchorConstraint = subtitleViewTopAnchorConstraint
-    self.subtitleViewLeadingAnchorConstraint = subtitleViewLeadingAnchorConstraint
-    self.subtitleViewTrailingAnchorConstraint = subtitleViewTrailingAnchorConstraint
-
-    // For debugging
-    imageViewHeightAnchorParentConstraint.identifier = "imageViewHeightAnchorParentConstraint"
-    rowContentViewHeightAnchorParentConstraint.identifier = "rowContentViewHeightAnchorParentConstraint"
-    imageViewLeadingAnchorConstraint.identifier = "imageViewLeadingAnchorConstraint"
-    imageViewTopAnchorConstraint.identifier = "imageViewTopAnchorConstraint"
-    rowContentViewTrailingAnchorConstraint.identifier = "rowContentViewTrailingAnchorConstraint"
-    rowContentViewLeadingAnchorConstraint.identifier = "rowContentViewLeadingAnchorConstraint"
-    rowContentViewTopAnchorConstraint.identifier = "rowContentViewTopAnchorConstraint"
-    rowContentViewBottomAnchorConstraint.identifier = "rowContentViewBottomAnchorConstraint"
-    imageViewHeightAnchorConstraint.identifier = "imageViewHeightAnchorConstraint"
-    imageViewWidthAnchorConstraint.identifier = "imageViewWidthAnchorConstraint"
-    titleViewTopAnchorConstraint.identifier = "titleViewTopAnchorConstraint"
-    titleViewLeadingAnchorConstraint.identifier = "titleViewLeadingAnchorConstraint"
-    titleViewTrailingAnchorConstraint.identifier = "titleViewTrailingAnchorConstraint"
-    subtitleViewBottomAnchorConstraint.identifier = "subtitleViewBottomAnchorConstraint"
-    subtitleViewTopAnchorConstraint.identifier = "subtitleViewTopAnchorConstraint"
-    subtitleViewLeadingAnchorConstraint.identifier = "subtitleViewLeadingAnchorConstraint"
-    subtitleViewTrailingAnchorConstraint.identifier = "subtitleViewTrailingAnchorConstraint"
   }
 
   private func update() {

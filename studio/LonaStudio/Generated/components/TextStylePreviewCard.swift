@@ -51,74 +51,6 @@ public class TextStylePreviewCard: NSBox {
   private var exampleTextViewTextStyle = TextStyles.regular
   private var textStyleSummaryViewTextStyle = TextStyles.regular
 
-  private var topPadding: CGFloat = 0
-  private var trailingPadding: CGFloat = 0
-  private var bottomPadding: CGFloat = 0
-  private var leadingPadding: CGFloat = 0
-  private var previewViewTopMargin: CGFloat = 0
-  private var previewViewTrailingMargin: CGFloat = 0
-  private var previewViewBottomMargin: CGFloat = 0
-  private var previewViewLeadingMargin: CGFloat = 0
-  private var previewViewTopPadding: CGFloat = 16
-  private var previewViewTrailingPadding: CGFloat = 0
-  private var previewViewBottomPadding: CGFloat = 16
-  private var previewViewLeadingPadding: CGFloat = 0
-  private var dividerViewTopMargin: CGFloat = 0
-  private var dividerViewTrailingMargin: CGFloat = 0
-  private var dividerViewBottomMargin: CGFloat = 0
-  private var dividerViewLeadingMargin: CGFloat = 0
-  private var detailsViewTopMargin: CGFloat = 0
-  private var detailsViewTrailingMargin: CGFloat = 0
-  private var detailsViewBottomMargin: CGFloat = 0
-  private var detailsViewLeadingMargin: CGFloat = 0
-  private var detailsViewTopPadding: CGFloat = 16
-  private var detailsViewTrailingPadding: CGFloat = 20
-  private var detailsViewBottomPadding: CGFloat = 16
-  private var detailsViewLeadingPadding: CGFloat = 20
-  private var topLineViewTopMargin: CGFloat = 0
-  private var topLineViewTrailingMargin: CGFloat = 0
-  private var topLineViewBottomMargin: CGFloat = 0
-  private var topLineViewLeadingMargin: CGFloat = 0
-  private var exampleTextViewTopMargin: CGFloat = 0
-  private var exampleTextViewTrailingMargin: CGFloat = 20
-  private var exampleTextViewBottomMargin: CGFloat = 0
-  private var exampleTextViewLeadingMargin: CGFloat = 20
-  private var bottomLineViewTopMargin: CGFloat = 0
-  private var bottomLineViewTrailingMargin: CGFloat = 0
-  private var bottomLineViewBottomMargin: CGFloat = 0
-  private var bottomLineViewLeadingMargin: CGFloat = 0
-  private var textStyleSummaryViewTopMargin: CGFloat = 0
-  private var textStyleSummaryViewTrailingMargin: CGFloat = 0
-  private var textStyleSummaryViewBottomMargin: CGFloat = 0
-  private var textStyleSummaryViewLeadingMargin: CGFloat = 0
-
-  private var previewViewTopAnchorConstraint: NSLayoutConstraint?
-  private var previewViewLeadingAnchorConstraint: NSLayoutConstraint?
-  private var previewViewTrailingAnchorConstraint: NSLayoutConstraint?
-  private var dividerViewTopAnchorConstraint: NSLayoutConstraint?
-  private var dividerViewLeadingAnchorConstraint: NSLayoutConstraint?
-  private var dividerViewTrailingAnchorConstraint: NSLayoutConstraint?
-  private var detailsViewTopAnchorConstraint: NSLayoutConstraint?
-  private var detailsViewLeadingAnchorConstraint: NSLayoutConstraint?
-  private var detailsViewTrailingAnchorConstraint: NSLayoutConstraint?
-  private var topLineViewTopAnchorConstraint: NSLayoutConstraint?
-  private var topLineViewLeadingAnchorConstraint: NSLayoutConstraint?
-  private var topLineViewTrailingAnchorConstraint: NSLayoutConstraint?
-  private var exampleTextViewTopAnchorConstraint: NSLayoutConstraint?
-  private var exampleTextViewLeadingAnchorConstraint: NSLayoutConstraint?
-  private var exampleTextViewTrailingAnchorConstraint: NSLayoutConstraint?
-  private var bottomLineViewBottomAnchorConstraint: NSLayoutConstraint?
-  private var bottomLineViewTopAnchorConstraint: NSLayoutConstraint?
-  private var bottomLineViewLeadingAnchorConstraint: NSLayoutConstraint?
-  private var bottomLineViewTrailingAnchorConstraint: NSLayoutConstraint?
-  private var dividerViewHeightAnchorConstraint: NSLayoutConstraint?
-  private var textStyleSummaryViewTopAnchorConstraint: NSLayoutConstraint?
-  private var textStyleSummaryViewBottomAnchorConstraint: NSLayoutConstraint?
-  private var textStyleSummaryViewLeadingAnchorConstraint: NSLayoutConstraint?
-  private var textStyleSummaryViewTrailingAnchorConstraint: NSLayoutConstraint?
-  private var topLineViewHeightAnchorConstraint: NSLayoutConstraint?
-  private var bottomLineViewHeightAnchorConstraint: NSLayoutConstraint?
-
   private func setUpViews() {
     boxType = .custom
     borderType = .lineBorder
@@ -167,92 +99,48 @@ public class TextStylePreviewCard: NSBox {
     bottomLineView.translatesAutoresizingMaskIntoConstraints = false
     textStyleSummaryView.translatesAutoresizingMaskIntoConstraints = false
 
-    let previewViewTopAnchorConstraint = previewView
-      .topAnchor
-      .constraint(equalTo: topAnchor, constant: topPadding + previewViewTopMargin)
-    let previewViewLeadingAnchorConstraint = previewView
-      .leadingAnchor
-      .constraint(equalTo: leadingAnchor, constant: leadingPadding + previewViewLeadingMargin)
-    let previewViewTrailingAnchorConstraint = previewView
-      .trailingAnchor
-      .constraint(equalTo: trailingAnchor, constant: -(trailingPadding + previewViewTrailingMargin))
-    let dividerViewTopAnchorConstraint = dividerView
-      .topAnchor
-      .constraint(equalTo: previewView.bottomAnchor, constant: previewViewBottomMargin + dividerViewTopMargin)
-    let dividerViewLeadingAnchorConstraint = dividerView
-      .leadingAnchor
-      .constraint(equalTo: leadingAnchor, constant: leadingPadding + dividerViewLeadingMargin)
-    let dividerViewTrailingAnchorConstraint = dividerView
-      .trailingAnchor
-      .constraint(equalTo: trailingAnchor, constant: -(trailingPadding + dividerViewTrailingMargin))
-    let detailsViewTopAnchorConstraint = detailsView
-      .topAnchor
-      .constraint(equalTo: dividerView.bottomAnchor, constant: dividerViewBottomMargin + detailsViewTopMargin)
-    let detailsViewLeadingAnchorConstraint = detailsView
-      .leadingAnchor
-      .constraint(equalTo: leadingAnchor, constant: leadingPadding + detailsViewLeadingMargin)
-    let detailsViewTrailingAnchorConstraint = detailsView
-      .trailingAnchor
-      .constraint(equalTo: trailingAnchor, constant: -(trailingPadding + detailsViewTrailingMargin))
-    let topLineViewTopAnchorConstraint = topLineView
-      .topAnchor
-      .constraint(equalTo: previewView.topAnchor, constant: previewViewTopPadding + topLineViewTopMargin)
-    let topLineViewLeadingAnchorConstraint = topLineView
-      .leadingAnchor
-      .constraint(equalTo: previewView.leadingAnchor, constant: previewViewLeadingPadding + topLineViewLeadingMargin)
-    let topLineViewTrailingAnchorConstraint = topLineView
-      .trailingAnchor
-      .constraint(
-        equalTo: previewView.trailingAnchor,
-        constant: -(previewViewTrailingPadding + topLineViewTrailingMargin))
-    let exampleTextViewTopAnchorConstraint = exampleTextView
-      .topAnchor
-      .constraint(equalTo: topLineView.bottomAnchor, constant: topLineViewBottomMargin + exampleTextViewTopMargin)
+    let previewViewTopAnchorConstraint = previewView.topAnchor.constraint(equalTo: topAnchor)
+    let previewViewLeadingAnchorConstraint = previewView.leadingAnchor.constraint(equalTo: leadingAnchor)
+    let previewViewTrailingAnchorConstraint = previewView.trailingAnchor.constraint(equalTo: trailingAnchor)
+    let dividerViewTopAnchorConstraint = dividerView.topAnchor.constraint(equalTo: previewView.bottomAnchor)
+    let dividerViewLeadingAnchorConstraint = dividerView.leadingAnchor.constraint(equalTo: leadingAnchor)
+    let dividerViewTrailingAnchorConstraint = dividerView.trailingAnchor.constraint(equalTo: trailingAnchor)
+    let detailsViewTopAnchorConstraint = detailsView.topAnchor.constraint(equalTo: dividerView.bottomAnchor)
+    let detailsViewLeadingAnchorConstraint = detailsView.leadingAnchor.constraint(equalTo: leadingAnchor)
+    let detailsViewTrailingAnchorConstraint = detailsView.trailingAnchor.constraint(equalTo: trailingAnchor)
+    let topLineViewTopAnchorConstraint = topLineView.topAnchor.constraint(equalTo: previewView.topAnchor, constant: 16)
+    let topLineViewLeadingAnchorConstraint = topLineView.leadingAnchor.constraint(equalTo: previewView.leadingAnchor)
+    let topLineViewTrailingAnchorConstraint = topLineView.trailingAnchor.constraint(equalTo: previewView.trailingAnchor)
+    let exampleTextViewTopAnchorConstraint = exampleTextView.topAnchor.constraint(equalTo: topLineView.bottomAnchor)
     let exampleTextViewLeadingAnchorConstraint = exampleTextView
       .leadingAnchor
-      .constraint(
-        equalTo: previewView.leadingAnchor,
-        constant: previewViewLeadingPadding + exampleTextViewLeadingMargin)
+      .constraint(equalTo: previewView.leadingAnchor, constant: 20)
     let exampleTextViewTrailingAnchorConstraint = exampleTextView
       .trailingAnchor
-      .constraint(
-        lessThanOrEqualTo: previewView.trailingAnchor,
-        constant: -(previewViewTrailingPadding + exampleTextViewTrailingMargin))
+      .constraint(lessThanOrEqualTo: previewView.trailingAnchor, constant: -20)
     let bottomLineViewBottomAnchorConstraint = bottomLineView
       .bottomAnchor
-      .constraint(equalTo: previewView.bottomAnchor, constant: -(previewViewBottomPadding + bottomLineViewBottomMargin))
-    let bottomLineViewTopAnchorConstraint = bottomLineView
-      .topAnchor
-      .constraint(
-        equalTo: exampleTextView.bottomAnchor,
-        constant: exampleTextViewBottomMargin + bottomLineViewTopMargin)
+      .constraint(equalTo: previewView.bottomAnchor, constant: -16)
+    let bottomLineViewTopAnchorConstraint = bottomLineView.topAnchor.constraint(equalTo: exampleTextView.bottomAnchor)
     let bottomLineViewLeadingAnchorConstraint = bottomLineView
       .leadingAnchor
-      .constraint(equalTo: previewView.leadingAnchor, constant: previewViewLeadingPadding + bottomLineViewLeadingMargin)
+      .constraint(equalTo: previewView.leadingAnchor)
     let bottomLineViewTrailingAnchorConstraint = bottomLineView
       .trailingAnchor
-      .constraint(
-        equalTo: previewView.trailingAnchor,
-        constant: -(previewViewTrailingPadding + bottomLineViewTrailingMargin))
+      .constraint(equalTo: previewView.trailingAnchor)
     let dividerViewHeightAnchorConstraint = dividerView.heightAnchor.constraint(equalToConstant: 1)
     let textStyleSummaryViewTopAnchorConstraint = textStyleSummaryView
       .topAnchor
-      .constraint(equalTo: detailsView.topAnchor, constant: detailsViewTopPadding + textStyleSummaryViewTopMargin)
+      .constraint(equalTo: detailsView.topAnchor, constant: 16)
     let textStyleSummaryViewBottomAnchorConstraint = textStyleSummaryView
       .bottomAnchor
-      .constraint(
-        equalTo: detailsView.bottomAnchor,
-        constant: -(detailsViewBottomPadding + textStyleSummaryViewBottomMargin))
+      .constraint(equalTo: detailsView.bottomAnchor, constant: -16)
     let textStyleSummaryViewLeadingAnchorConstraint = textStyleSummaryView
       .leadingAnchor
-      .constraint(
-        equalTo: detailsView.leadingAnchor,
-        constant: detailsViewLeadingPadding + textStyleSummaryViewLeadingMargin)
+      .constraint(equalTo: detailsView.leadingAnchor, constant: 20)
     let textStyleSummaryViewTrailingAnchorConstraint = textStyleSummaryView
       .trailingAnchor
-      .constraint(
-        lessThanOrEqualTo: detailsView.trailingAnchor,
-        constant: -(detailsViewTrailingPadding + textStyleSummaryViewTrailingMargin))
+      .constraint(lessThanOrEqualTo: detailsView.trailingAnchor, constant: -20)
     let topLineViewHeightAnchorConstraint = topLineView.heightAnchor.constraint(equalToConstant: 1)
     let bottomLineViewHeightAnchorConstraint = bottomLineView.heightAnchor.constraint(equalToConstant: 1)
 
@@ -284,61 +172,6 @@ public class TextStylePreviewCard: NSBox {
       topLineViewHeightAnchorConstraint,
       bottomLineViewHeightAnchorConstraint
     ])
-
-    self.previewViewTopAnchorConstraint = previewViewTopAnchorConstraint
-    self.previewViewLeadingAnchorConstraint = previewViewLeadingAnchorConstraint
-    self.previewViewTrailingAnchorConstraint = previewViewTrailingAnchorConstraint
-    self.dividerViewTopAnchorConstraint = dividerViewTopAnchorConstraint
-    self.dividerViewLeadingAnchorConstraint = dividerViewLeadingAnchorConstraint
-    self.dividerViewTrailingAnchorConstraint = dividerViewTrailingAnchorConstraint
-    self.detailsViewTopAnchorConstraint = detailsViewTopAnchorConstraint
-    self.detailsViewLeadingAnchorConstraint = detailsViewLeadingAnchorConstraint
-    self.detailsViewTrailingAnchorConstraint = detailsViewTrailingAnchorConstraint
-    self.topLineViewTopAnchorConstraint = topLineViewTopAnchorConstraint
-    self.topLineViewLeadingAnchorConstraint = topLineViewLeadingAnchorConstraint
-    self.topLineViewTrailingAnchorConstraint = topLineViewTrailingAnchorConstraint
-    self.exampleTextViewTopAnchorConstraint = exampleTextViewTopAnchorConstraint
-    self.exampleTextViewLeadingAnchorConstraint = exampleTextViewLeadingAnchorConstraint
-    self.exampleTextViewTrailingAnchorConstraint = exampleTextViewTrailingAnchorConstraint
-    self.bottomLineViewBottomAnchorConstraint = bottomLineViewBottomAnchorConstraint
-    self.bottomLineViewTopAnchorConstraint = bottomLineViewTopAnchorConstraint
-    self.bottomLineViewLeadingAnchorConstraint = bottomLineViewLeadingAnchorConstraint
-    self.bottomLineViewTrailingAnchorConstraint = bottomLineViewTrailingAnchorConstraint
-    self.dividerViewHeightAnchorConstraint = dividerViewHeightAnchorConstraint
-    self.textStyleSummaryViewTopAnchorConstraint = textStyleSummaryViewTopAnchorConstraint
-    self.textStyleSummaryViewBottomAnchorConstraint = textStyleSummaryViewBottomAnchorConstraint
-    self.textStyleSummaryViewLeadingAnchorConstraint = textStyleSummaryViewLeadingAnchorConstraint
-    self.textStyleSummaryViewTrailingAnchorConstraint = textStyleSummaryViewTrailingAnchorConstraint
-    self.topLineViewHeightAnchorConstraint = topLineViewHeightAnchorConstraint
-    self.bottomLineViewHeightAnchorConstraint = bottomLineViewHeightAnchorConstraint
-
-    // For debugging
-    previewViewTopAnchorConstraint.identifier = "previewViewTopAnchorConstraint"
-    previewViewLeadingAnchorConstraint.identifier = "previewViewLeadingAnchorConstraint"
-    previewViewTrailingAnchorConstraint.identifier = "previewViewTrailingAnchorConstraint"
-    dividerViewTopAnchorConstraint.identifier = "dividerViewTopAnchorConstraint"
-    dividerViewLeadingAnchorConstraint.identifier = "dividerViewLeadingAnchorConstraint"
-    dividerViewTrailingAnchorConstraint.identifier = "dividerViewTrailingAnchorConstraint"
-    detailsViewTopAnchorConstraint.identifier = "detailsViewTopAnchorConstraint"
-    detailsViewLeadingAnchorConstraint.identifier = "detailsViewLeadingAnchorConstraint"
-    detailsViewTrailingAnchorConstraint.identifier = "detailsViewTrailingAnchorConstraint"
-    topLineViewTopAnchorConstraint.identifier = "topLineViewTopAnchorConstraint"
-    topLineViewLeadingAnchorConstraint.identifier = "topLineViewLeadingAnchorConstraint"
-    topLineViewTrailingAnchorConstraint.identifier = "topLineViewTrailingAnchorConstraint"
-    exampleTextViewTopAnchorConstraint.identifier = "exampleTextViewTopAnchorConstraint"
-    exampleTextViewLeadingAnchorConstraint.identifier = "exampleTextViewLeadingAnchorConstraint"
-    exampleTextViewTrailingAnchorConstraint.identifier = "exampleTextViewTrailingAnchorConstraint"
-    bottomLineViewBottomAnchorConstraint.identifier = "bottomLineViewBottomAnchorConstraint"
-    bottomLineViewTopAnchorConstraint.identifier = "bottomLineViewTopAnchorConstraint"
-    bottomLineViewLeadingAnchorConstraint.identifier = "bottomLineViewLeadingAnchorConstraint"
-    bottomLineViewTrailingAnchorConstraint.identifier = "bottomLineViewTrailingAnchorConstraint"
-    dividerViewHeightAnchorConstraint.identifier = "dividerViewHeightAnchorConstraint"
-    textStyleSummaryViewTopAnchorConstraint.identifier = "textStyleSummaryViewTopAnchorConstraint"
-    textStyleSummaryViewBottomAnchorConstraint.identifier = "textStyleSummaryViewBottomAnchorConstraint"
-    textStyleSummaryViewLeadingAnchorConstraint.identifier = "textStyleSummaryViewLeadingAnchorConstraint"
-    textStyleSummaryViewTrailingAnchorConstraint.identifier = "textStyleSummaryViewTrailingAnchorConstraint"
-    topLineViewHeightAnchorConstraint.identifier = "topLineViewHeightAnchorConstraint"
-    bottomLineViewHeightAnchorConstraint.identifier = "bottomLineViewHeightAnchorConstraint"
   }
 
   private func update() {
