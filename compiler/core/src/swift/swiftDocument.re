@@ -110,6 +110,9 @@ let localImageName = (framework: SwiftOptions.framework, name) => {
 let rec typeAnnotationDoc =
         (framework: SwiftOptions.framework, ltype: Types.lonaType) =>
   switch (ltype) {
+  | Types.Reference(typeName) when Js.String.endsWith("?", typeName) =>
+    let unwrapped = LonaValue.unwrapOptionalType(ltype);
+    OptionalType(typeAnnotationDoc(framework, unwrapped));
   | Types.Reference(typeName) =>
     switch (typeName) {
     | "Boolean" => TypeName("Bool")
@@ -135,6 +138,8 @@ let rec lonaValue =
   switch (value.ltype) {
   | Reference(typeName) =>
     switch (typeName) {
+    | name when Js.String.endsWith("?", name) =>
+      lonaValue(framework, config, LonaValue.unwrapOptional(value))
     | "Boolean" => LiteralExpression(Boolean(value.data |> Json.Decode.bool))
     | "Number" =>
       LiteralExpression(FloatingPoint(value.data |> Json.Decode.float))
@@ -153,7 +158,8 @@ let rec lonaValue =
         config,
         {ltype: Named(typeName, Reference("String")), data: value.data},
       )
-    | _ => SwiftIdentifier("UnknownReferenceType: " ++ typeName)
+    | _ =>
+      SwiftIdentifier("UnknownReferenceType: " ++ typeName);
     }
   | Function(_) => SwiftIdentifier("PLACEHOLDER")
   | Named(alias, subtype) =>

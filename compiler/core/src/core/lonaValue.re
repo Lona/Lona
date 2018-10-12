@@ -72,3 +72,35 @@ let defaultValueForParameter = name => parameterDefaultValue(name);
 
 let decodeNumber = (value: Types.lonaValue): float =>
   value.data |> Json.Decode.float;
+
+let isOptionalType = (ltype: Types.lonaType): bool =>
+  switch (ltype) {
+  | Reference(typeName) when Js.String.endsWith("?", typeName) => true
+  | _ => false
+  };
+
+let unwrapOptionalType = (ltype: Types.lonaType): Types.lonaType =>
+  switch (ltype) {
+  | Reference(typeName) when Js.String.endsWith("?", typeName) =>
+    let unwrappedTypeName =
+      String.sub(typeName, 0, String.length(typeName) - 1);
+    Reference(unwrappedTypeName);
+  | _ =>
+    Js.log2("Failed to unwrap type -- not an optional type", ltype);
+    raise(Not_found);
+  };
+
+let unwrapOptional = (value: Types.lonaValue): Types.lonaValue =>
+  switch (value.ltype) {
+  | Reference(typeName) when Js.String.endsWith("?", typeName) =>
+    let unwrappedType = unwrapOptionalType(value.ltype);
+    let unwrappedData = value.data |> Json.Decode.field("data", x => x);
+    {ltype: unwrappedType, data: unwrappedData};
+  | _ =>
+    Js.log3(
+      "Failed to unwrap value -- not an optional value",
+      value.ltype,
+      value.data,
+    );
+    raise(Not_found);
+  };

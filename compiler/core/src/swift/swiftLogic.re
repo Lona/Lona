@@ -121,7 +121,7 @@ let toSwiftAST =
     | Gte => ">="
     | Lt => "<"
     | Lte => "<="
-    | Unknown => "???"
+    | Unknown => "UnknownCmp"
     };
   let unwrapBlock =
     fun
@@ -328,9 +328,14 @@ let toSwiftAST =
       let right = logicValueToSwiftAST(b);
       let operator = fromCmp(cmp);
       let body = unwrapBlock(body) |> List.map(inner);
+
+      let aIsOptional = LonaValue.isOptionalType(Logic.getValueType(a));
+      let bIsOptional = LonaValue.isOptionalType(Logic.getValueType(b));
+
       switch (left, operator, right) {
       | (Ast.LiteralExpression(Boolean(true)), "==", condition)
-      | (condition, "==", Ast.LiteralExpression(Boolean(true))) =>
+      | (condition, "==", Ast.LiteralExpression(Boolean(true)))
+          when !aIsOptional && !bIsOptional =>
         Ast.IfStatement({"condition": condition, "block": body})
       | _ =>
         Ast.IfStatement({
