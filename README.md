@@ -72,6 +72,7 @@ If you're looking for a sample of the generated code, check out [the test cases]
 ## Core Team
 
 - Created by [@dvnabbott](https://twitter.com/dvnabbott)
+- Lona Compiler development by [@outdooricon](https://github.com/outdooricon)
 
 ### Contributors
 
