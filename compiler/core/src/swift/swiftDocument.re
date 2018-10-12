@@ -136,13 +136,13 @@ let rec lonaValue =
           value: Types.lonaValue,
         ) =>
   switch (value.ltype) {
+  | Reference(typeName) when Js.String.endsWith("?", typeName) =>
+    switch (LonaValue.decodeOptional(value)) {
+    | Some(innerValue) => lonaValue(framework, config, innerValue)
+    | None => LiteralExpression(Nil)
+    }
   | Reference(typeName) =>
     switch (typeName) {
-    | name when Js.String.endsWith("?", name) =>
-      switch (LonaValue.decodeOptional(value)) {
-      | Some(innerValue) => lonaValue(framework, config, innerValue)
-      | None => LiteralExpression(Nil)
-      }
     | "Boolean" => LiteralExpression(Boolean(value.data |> Json.Decode.bool))
     | "Number" =>
       LiteralExpression(FloatingPoint(value.data |> Json.Decode.float))
@@ -161,8 +161,7 @@ let rec lonaValue =
         config,
         {ltype: Named(typeName, Reference("String")), data: value.data},
       )
-    | _ =>
-      SwiftIdentifier("UnknownReferenceType: " ++ typeName);
+    | _ => SwiftIdentifier("UnknownReferenceType: " ++ typeName)
     }
   | Function(_) => SwiftIdentifier("PLACEHOLDER")
   | Named(alias, subtype) =>
@@ -240,6 +239,8 @@ let rec defaultValueForLonaType =
           ltype: Types.lonaType,
         ) =>
   switch (ltype) {
+  | Reference(typeName) when Js.String.endsWith("?", typeName) =>
+    LiteralExpression(Nil)
   | Reference(typeName) =>
     switch (typeName) {
     | "Boolean" => LiteralExpression(Boolean(false))

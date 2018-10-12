@@ -606,40 +606,31 @@ let generate =
         ),
     });
   let convenienceInitializerDoc = () =>
-    SwiftAst.Builders.convenienceInit(
-      SwiftDocument.joinGroups(
-        Empty,
-        [
-          [
-            MemberExpression([
-              SwiftIdentifier("self"),
-              FunctionCallExpression({
-                "name": SwiftIdentifier("init"),
-                "arguments":
-                  parameters
-                  |> List.filter(param => !Parameter.isFunction(param))
-                  |> List.map((param: Decode.parameter) =>
-                       FunctionCallArgument({
-                         "name":
-                           Some(
-                             SwiftIdentifier(
-                               param.name |> ParameterKey.toString,
-                             ),
-                           ),
-                         "value":
-                           SwiftDocument.defaultValueForLonaType(
-                             swiftOptions.framework,
-                             config,
-                             param.ltype,
-                           ),
-                       })
+    SwiftAst.Builders.convenienceInit([
+      MemberExpression([
+        SwiftIdentifier("self"),
+        FunctionCallExpression({
+          "name": SwiftIdentifier("init"),
+          "arguments":
+            parameters
+            |> List.filter(param => !Parameter.isFunction(param))
+            |> List.map((param: Decode.parameter) =>
+                 FunctionCallArgument({
+                   "name":
+                     Some(
+                       SwiftIdentifier(param.name |> ParameterKey.toString),
                      ),
-              }),
-            ]),
-          ],
-        ],
-      ),
-    );
+                   "value":
+                     SwiftDocument.defaultValueForLonaType(
+                       swiftOptions.framework,
+                       config,
+                       param.ltype,
+                     ),
+                 })
+               ),
+        }),
+      ]),
+    ]);
   let memberOrSelfExpression = (firstIdentifier, statements) =>
     switch (firstIdentifier) {
     | "self" => MemberExpression(statements)
