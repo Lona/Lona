@@ -42,27 +42,6 @@ public class RecentProjectItem: NSBox {
   private var projectNameViewTextStyle = TextStyles.regular
   private var projectDirectoryPathViewTextStyle = TextStyles.regularMuted
 
-  private var topPadding: CGFloat = 10
-  private var trailingPadding: CGFloat = 12
-  private var bottomPadding: CGFloat = 8
-  private var leadingPadding: CGFloat = 12
-  private var projectNameViewTopMargin: CGFloat = 0
-  private var projectNameViewTrailingMargin: CGFloat = 0
-  private var projectNameViewBottomMargin: CGFloat = 0
-  private var projectNameViewLeadingMargin: CGFloat = 0
-  private var projectDirectoryPathViewTopMargin: CGFloat = 4
-  private var projectDirectoryPathViewTrailingMargin: CGFloat = 0
-  private var projectDirectoryPathViewBottomMargin: CGFloat = 0
-  private var projectDirectoryPathViewLeadingMargin: CGFloat = 0
-
-  private var heightAnchorConstraint: NSLayoutConstraint?
-  private var projectNameViewTopAnchorConstraint: NSLayoutConstraint?
-  private var projectNameViewLeadingAnchorConstraint: NSLayoutConstraint?
-  private var projectNameViewTrailingAnchorConstraint: NSLayoutConstraint?
-  private var projectDirectoryPathViewTopAnchorConstraint: NSLayoutConstraint?
-  private var projectDirectoryPathViewLeadingAnchorConstraint: NSLayoutConstraint?
-  private var projectDirectoryPathViewTrailingAnchorConstraint: NSLayoutConstraint?
-
   private func setUpViews() {
     boxType = .custom
     borderType = .noBorder
@@ -83,26 +62,22 @@ public class RecentProjectItem: NSBox {
     projectDirectoryPathView.translatesAutoresizingMaskIntoConstraints = false
 
     let heightAnchorConstraint = heightAnchor.constraint(equalToConstant: 54)
-    let projectNameViewTopAnchorConstraint = projectNameView
-      .topAnchor
-      .constraint(equalTo: topAnchor, constant: topPadding + projectNameViewTopMargin)
+    let projectNameViewTopAnchorConstraint = projectNameView.topAnchor.constraint(equalTo: topAnchor, constant: 10)
     let projectNameViewLeadingAnchorConstraint = projectNameView
       .leadingAnchor
-      .constraint(equalTo: leadingAnchor, constant: leadingPadding + projectNameViewLeadingMargin)
+      .constraint(equalTo: leadingAnchor, constant: 12)
     let projectNameViewTrailingAnchorConstraint = projectNameView
       .trailingAnchor
-      .constraint(equalTo: trailingAnchor, constant: -(trailingPadding + projectNameViewTrailingMargin))
+      .constraint(equalTo: trailingAnchor, constant: -12)
     let projectDirectoryPathViewTopAnchorConstraint = projectDirectoryPathView
       .topAnchor
-      .constraint(
-        equalTo: projectNameView.bottomAnchor,
-        constant: projectNameViewBottomMargin + projectDirectoryPathViewTopMargin)
+      .constraint(equalTo: projectNameView.bottomAnchor, constant: 4)
     let projectDirectoryPathViewLeadingAnchorConstraint = projectDirectoryPathView
       .leadingAnchor
-      .constraint(equalTo: leadingAnchor, constant: leadingPadding + projectDirectoryPathViewLeadingMargin)
+      .constraint(equalTo: leadingAnchor, constant: 12)
     let projectDirectoryPathViewTrailingAnchorConstraint = projectDirectoryPathView
       .trailingAnchor
-      .constraint(equalTo: trailingAnchor, constant: -(trailingPadding + projectDirectoryPathViewTrailingMargin))
+      .constraint(equalTo: trailingAnchor, constant: -12)
 
     NSLayoutConstraint.activate([
       heightAnchorConstraint,
@@ -113,23 +88,6 @@ public class RecentProjectItem: NSBox {
       projectDirectoryPathViewLeadingAnchorConstraint,
       projectDirectoryPathViewTrailingAnchorConstraint
     ])
-
-    self.heightAnchorConstraint = heightAnchorConstraint
-    self.projectNameViewTopAnchorConstraint = projectNameViewTopAnchorConstraint
-    self.projectNameViewLeadingAnchorConstraint = projectNameViewLeadingAnchorConstraint
-    self.projectNameViewTrailingAnchorConstraint = projectNameViewTrailingAnchorConstraint
-    self.projectDirectoryPathViewTopAnchorConstraint = projectDirectoryPathViewTopAnchorConstraint
-    self.projectDirectoryPathViewLeadingAnchorConstraint = projectDirectoryPathViewLeadingAnchorConstraint
-    self.projectDirectoryPathViewTrailingAnchorConstraint = projectDirectoryPathViewTrailingAnchorConstraint
-
-    // For debugging
-    heightAnchorConstraint.identifier = "heightAnchorConstraint"
-    projectNameViewTopAnchorConstraint.identifier = "projectNameViewTopAnchorConstraint"
-    projectNameViewLeadingAnchorConstraint.identifier = "projectNameViewLeadingAnchorConstraint"
-    projectNameViewTrailingAnchorConstraint.identifier = "projectNameViewTrailingAnchorConstraint"
-    projectDirectoryPathViewTopAnchorConstraint.identifier = "projectDirectoryPathViewTopAnchorConstraint"
-    projectDirectoryPathViewLeadingAnchorConstraint.identifier = "projectDirectoryPathViewLeadingAnchorConstraint"
-    projectDirectoryPathViewTrailingAnchorConstraint.identifier = "projectDirectoryPathViewTrailingAnchorConstraint"
   }
 
   private func update() {

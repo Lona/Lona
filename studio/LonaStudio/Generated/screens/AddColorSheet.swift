@@ -80,57 +80,6 @@ public class AddColorSheet: NSBox {
   private var footerSpacerView = NSBox()
   private var doneButtonView = Button()
 
-  private var topPadding: CGFloat = 0
-  private var trailingPadding: CGFloat = 20
-  private var bottomPadding: CGFloat = 0
-  private var leadingPadding: CGFloat = 20
-  private var colorInspectorViewTopMargin: CGFloat = 0
-  private var colorInspectorViewTrailingMargin: CGFloat = 0
-  private var colorInspectorViewBottomMargin: CGFloat = 0
-  private var colorInspectorViewLeadingMargin: CGFloat = 0
-  private var footerViewTopMargin: CGFloat = 40
-  private var footerViewTrailingMargin: CGFloat = 0
-  private var footerViewBottomMargin: CGFloat = 20
-  private var footerViewLeadingMargin: CGFloat = 0
-  private var footerViewTopPadding: CGFloat = 0
-  private var footerViewTrailingPadding: CGFloat = 0
-  private var footerViewBottomPadding: CGFloat = 0
-  private var footerViewLeadingPadding: CGFloat = 0
-  private var cancelButtonViewTopMargin: CGFloat = 0
-  private var cancelButtonViewTrailingMargin: CGFloat = 0
-  private var cancelButtonViewBottomMargin: CGFloat = 0
-  private var cancelButtonViewLeadingMargin: CGFloat = 0
-  private var footerSpacerViewTopMargin: CGFloat = 0
-  private var footerSpacerViewTrailingMargin: CGFloat = 0
-  private var footerSpacerViewBottomMargin: CGFloat = 0
-  private var footerSpacerViewLeadingMargin: CGFloat = 0
-  private var doneButtonViewTopMargin: CGFloat = 0
-  private var doneButtonViewTrailingMargin: CGFloat = 0
-  private var doneButtonViewBottomMargin: CGFloat = 0
-  private var doneButtonViewLeadingMargin: CGFloat = 0
-
-  private var widthAnchorConstraint: NSLayoutConstraint?
-  private var colorInspectorViewTopAnchorConstraint: NSLayoutConstraint?
-  private var colorInspectorViewLeadingAnchorConstraint: NSLayoutConstraint?
-  private var colorInspectorViewTrailingAnchorConstraint: NSLayoutConstraint?
-  private var footerViewBottomAnchorConstraint: NSLayoutConstraint?
-  private var footerViewTopAnchorConstraint: NSLayoutConstraint?
-  private var footerViewLeadingAnchorConstraint: NSLayoutConstraint?
-  private var footerViewTrailingAnchorConstraint: NSLayoutConstraint?
-  private var cancelButtonViewHeightAnchorParentConstraint: NSLayoutConstraint?
-  private var footerSpacerViewHeightAnchorParentConstraint: NSLayoutConstraint?
-  private var doneButtonViewHeightAnchorParentConstraint: NSLayoutConstraint?
-  private var cancelButtonViewLeadingAnchorConstraint: NSLayoutConstraint?
-  private var cancelButtonViewTopAnchorConstraint: NSLayoutConstraint?
-  private var cancelButtonViewBottomAnchorConstraint: NSLayoutConstraint?
-  private var footerSpacerViewLeadingAnchorConstraint: NSLayoutConstraint?
-  private var footerSpacerViewBottomAnchorConstraint: NSLayoutConstraint?
-  private var doneButtonViewTrailingAnchorConstraint: NSLayoutConstraint?
-  private var doneButtonViewLeadingAnchorConstraint: NSLayoutConstraint?
-  private var doneButtonViewTopAnchorConstraint: NSLayoutConstraint?
-  private var doneButtonViewBottomAnchorConstraint: NSLayoutConstraint?
-  private var footerSpacerViewHeightAnchorConstraint: NSLayoutConstraint?
-
   private func setUpViews() {
     boxType = .custom
     borderType = .noBorder
@@ -163,80 +112,51 @@ public class AddColorSheet: NSBox {
     doneButtonView.translatesAutoresizingMaskIntoConstraints = false
 
     let widthAnchorConstraint = widthAnchor.constraint(equalToConstant: 480)
-    let colorInspectorViewTopAnchorConstraint = colorInspectorView
-      .topAnchor
-      .constraint(equalTo: topAnchor, constant: topPadding + colorInspectorViewTopMargin)
+    let colorInspectorViewTopAnchorConstraint = colorInspectorView.topAnchor.constraint(equalTo: topAnchor)
     let colorInspectorViewLeadingAnchorConstraint = colorInspectorView
       .leadingAnchor
-      .constraint(equalTo: leadingAnchor, constant: leadingPadding + colorInspectorViewLeadingMargin)
+      .constraint(equalTo: leadingAnchor, constant: 20)
     let colorInspectorViewTrailingAnchorConstraint = colorInspectorView
       .trailingAnchor
-      .constraint(equalTo: trailingAnchor, constant: -(trailingPadding + colorInspectorViewTrailingMargin))
-    let footerViewBottomAnchorConstraint = footerView
-      .bottomAnchor
-      .constraint(equalTo: bottomAnchor, constant: -(bottomPadding + footerViewBottomMargin))
+      .constraint(equalTo: trailingAnchor, constant: -20)
+    let footerViewBottomAnchorConstraint = footerView.bottomAnchor.constraint(equalTo: bottomAnchor, constant: -20)
     let footerViewTopAnchorConstraint = footerView
       .topAnchor
-      .constraint(
-        equalTo: colorInspectorView.bottomAnchor,
-        constant: colorInspectorViewBottomMargin + footerViewTopMargin)
-    let footerViewLeadingAnchorConstraint = footerView
-      .leadingAnchor
-      .constraint(equalTo: leadingAnchor, constant: leadingPadding + footerViewLeadingMargin)
+      .constraint(equalTo: colorInspectorView.bottomAnchor, constant: 40)
+    let footerViewLeadingAnchorConstraint = footerView.leadingAnchor.constraint(equalTo: leadingAnchor, constant: 20)
     let footerViewTrailingAnchorConstraint = footerView
       .trailingAnchor
-      .constraint(equalTo: trailingAnchor, constant: -(trailingPadding + footerViewTrailingMargin))
+      .constraint(equalTo: trailingAnchor, constant: -20)
     let cancelButtonViewHeightAnchorParentConstraint = cancelButtonView
       .heightAnchor
-      .constraint(
-        lessThanOrEqualTo: footerView.heightAnchor,
-        constant:
-        -(footerViewTopPadding + cancelButtonViewTopMargin + footerViewBottomPadding + cancelButtonViewBottomMargin))
+      .constraint(lessThanOrEqualTo: footerView.heightAnchor)
     let footerSpacerViewHeightAnchorParentConstraint = footerSpacerView
       .heightAnchor
-      .constraint(
-        lessThanOrEqualTo: footerView.heightAnchor,
-        constant:
-        -(footerViewTopPadding + footerSpacerViewTopMargin + footerViewBottomPadding + footerSpacerViewBottomMargin))
+      .constraint(lessThanOrEqualTo: footerView.heightAnchor)
     let doneButtonViewHeightAnchorParentConstraint = doneButtonView
       .heightAnchor
-      .constraint(
-        lessThanOrEqualTo: footerView.heightAnchor,
-        constant:
-        -(footerViewTopPadding + doneButtonViewTopMargin + footerViewBottomPadding + doneButtonViewBottomMargin))
+      .constraint(lessThanOrEqualTo: footerView.heightAnchor)
     let cancelButtonViewLeadingAnchorConstraint = cancelButtonView
       .leadingAnchor
-      .constraint(equalTo: footerView.leadingAnchor, constant: footerViewLeadingPadding + cancelButtonViewLeadingMargin)
-    let cancelButtonViewTopAnchorConstraint = cancelButtonView
-      .topAnchor
-      .constraint(equalTo: footerView.topAnchor, constant: footerViewTopPadding + cancelButtonViewTopMargin)
+      .constraint(equalTo: footerView.leadingAnchor)
+    let cancelButtonViewTopAnchorConstraint = cancelButtonView.topAnchor.constraint(equalTo: footerView.topAnchor)
     let cancelButtonViewBottomAnchorConstraint = cancelButtonView
       .bottomAnchor
-      .constraint(equalTo: footerView.bottomAnchor, constant: -(footerViewBottomPadding + cancelButtonViewBottomMargin))
+      .constraint(equalTo: footerView.bottomAnchor)
     let footerSpacerViewLeadingAnchorConstraint = footerSpacerView
       .leadingAnchor
-      .constraint(
-        equalTo: cancelButtonView.trailingAnchor,
-        constant: cancelButtonViewTrailingMargin + footerSpacerViewLeadingMargin)
+      .constraint(equalTo: cancelButtonView.trailingAnchor)
     let footerSpacerViewBottomAnchorConstraint = footerSpacerView
       .bottomAnchor
-      .constraint(equalTo: footerView.bottomAnchor, constant: -(footerViewBottomPadding + footerSpacerViewBottomMargin))
+      .constraint(equalTo: footerView.bottomAnchor)
     let doneButtonViewTrailingAnchorConstraint = doneButtonView
       .trailingAnchor
-      .constraint(
-        equalTo: footerView.trailingAnchor,
-        constant: -(footerViewTrailingPadding + doneButtonViewTrailingMargin))
+      .constraint(equalTo: footerView.trailingAnchor)
     let doneButtonViewLeadingAnchorConstraint = doneButtonView
       .leadingAnchor
-      .constraint(
-        equalTo: footerSpacerView.trailingAnchor,
-        constant: footerSpacerViewTrailingMargin + doneButtonViewLeadingMargin)
-    let doneButtonViewTopAnchorConstraint = doneButtonView
-      .topAnchor
-      .constraint(equalTo: footerView.topAnchor, constant: footerViewTopPadding + doneButtonViewTopMargin)
-    let doneButtonViewBottomAnchorConstraint = doneButtonView
-      .bottomAnchor
-      .constraint(equalTo: footerView.bottomAnchor, constant: -(footerViewBottomPadding + doneButtonViewBottomMargin))
+      .constraint(equalTo: footerSpacerView.trailingAnchor)
+    let doneButtonViewTopAnchorConstraint = doneButtonView.topAnchor.constraint(equalTo: footerView.topAnchor)
+    let doneButtonViewBottomAnchorConstraint = doneButtonView.bottomAnchor.constraint(equalTo: footerView.bottomAnchor)
     let footerSpacerViewHeightAnchorConstraint = footerSpacerView.heightAnchor.constraint(equalToConstant: 0)
 
     cancelButtonViewHeightAnchorParentConstraint.priority = NSLayoutConstraint.Priority.defaultLow
@@ -266,51 +186,6 @@ public class AddColorSheet: NSBox {
       doneButtonViewBottomAnchorConstraint,
       footerSpacerViewHeightAnchorConstraint
     ])
-
-    self.widthAnchorConstraint = widthAnchorConstraint
-    self.colorInspectorViewTopAnchorConstraint = colorInspectorViewTopAnchorConstraint
-    self.colorInspectorViewLeadingAnchorConstraint = colorInspectorViewLeadingAnchorConstraint
-    self.colorInspectorViewTrailingAnchorConstraint = colorInspectorViewTrailingAnchorConstraint
-    self.footerViewBottomAnchorConstraint = footerViewBottomAnchorConstraint
-    self.footerViewTopAnchorConstraint = footerViewTopAnchorConstraint
-    self.footerViewLeadingAnchorConstraint = footerViewLeadingAnchorConstraint
-    self.footerViewTrailingAnchorConstraint = footerViewTrailingAnchorConstraint
-    self.cancelButtonViewHeightAnchorParentConstraint = cancelButtonViewHeightAnchorParentConstraint
-    self.footerSpacerViewHeightAnchorParentConstraint = footerSpacerViewHeightAnchorParentConstraint
-    self.doneButtonViewHeightAnchorParentConstraint = doneButtonViewHeightAnchorParentConstraint
-    self.cancelButtonViewLeadingAnchorConstraint = cancelButtonViewLeadingAnchorConstraint
-    self.cancelButtonViewTopAnchorConstraint = cancelButtonViewTopAnchorConstraint
-    self.cancelButtonViewBottomAnchorConstraint = cancelButtonViewBottomAnchorConstraint
-    self.footerSpacerViewLeadingAnchorConstraint = footerSpacerViewLeadingAnchorConstraint
-    self.footerSpacerViewBottomAnchorConstraint = footerSpacerViewBottomAnchorConstraint
-    self.doneButtonViewTrailingAnchorConstraint = doneButtonViewTrailingAnchorConstraint
-    self.doneButtonViewLeadingAnchorConstraint = doneButtonViewLeadingAnchorConstraint
-    self.doneButtonViewTopAnchorConstraint = doneButtonViewTopAnchorConstraint
-    self.doneButtonViewBottomAnchorConstraint = doneButtonViewBottomAnchorConstraint
-    self.footerSpacerViewHeightAnchorConstraint = footerSpacerViewHeightAnchorConstraint
-
-    // For debugging
-    widthAnchorConstraint.identifier = "widthAnchorConstraint"
-    colorInspectorViewTopAnchorConstraint.identifier = "colorInspectorViewTopAnchorConstraint"
-    colorInspectorViewLeadingAnchorConstraint.identifier = "colorInspectorViewLeadingAnchorConstraint"
-    colorInspectorViewTrailingAnchorConstraint.identifier = "colorInspectorViewTrailingAnchorConstraint"
-    footerViewBottomAnchorConstraint.identifier = "footerViewBottomAnchorConstraint"
-    footerViewTopAnchorConstraint.identifier = "footerViewTopAnchorConstraint"
-    footerViewLeadingAnchorConstraint.identifier = "footerViewLeadingAnchorConstraint"
-    footerViewTrailingAnchorConstraint.identifier = "footerViewTrailingAnchorConstraint"
-    cancelButtonViewHeightAnchorParentConstraint.identifier = "cancelButtonViewHeightAnchorParentConstraint"
-    footerSpacerViewHeightAnchorParentConstraint.identifier = "footerSpacerViewHeightAnchorParentConstraint"
-    doneButtonViewHeightAnchorParentConstraint.identifier = "doneButtonViewHeightAnchorParentConstraint"
-    cancelButtonViewLeadingAnchorConstraint.identifier = "cancelButtonViewLeadingAnchorConstraint"
-    cancelButtonViewTopAnchorConstraint.identifier = "cancelButtonViewTopAnchorConstraint"
-    cancelButtonViewBottomAnchorConstraint.identifier = "cancelButtonViewBottomAnchorConstraint"
-    footerSpacerViewLeadingAnchorConstraint.identifier = "footerSpacerViewLeadingAnchorConstraint"
-    footerSpacerViewBottomAnchorConstraint.identifier = "footerSpacerViewBottomAnchorConstraint"
-    doneButtonViewTrailingAnchorConstraint.identifier = "doneButtonViewTrailingAnchorConstraint"
-    doneButtonViewLeadingAnchorConstraint.identifier = "doneButtonViewLeadingAnchorConstraint"
-    doneButtonViewTopAnchorConstraint.identifier = "doneButtonViewTopAnchorConstraint"
-    doneButtonViewBottomAnchorConstraint.identifier = "doneButtonViewBottomAnchorConstraint"
-    footerSpacerViewHeightAnchorConstraint.identifier = "footerSpacerViewHeightAnchorConstraint"
   }
 
   private func update() {

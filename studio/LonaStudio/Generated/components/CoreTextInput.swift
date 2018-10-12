@@ -36,20 +36,6 @@ public class CoreTextInput: NSBox {
 
   private var textInputView = TextInput()
 
-  private var topPadding: CGFloat = 0
-  private var trailingPadding: CGFloat = 0
-  private var bottomPadding: CGFloat = 0
-  private var leadingPadding: CGFloat = 0
-  private var textInputViewTopMargin: CGFloat = 0
-  private var textInputViewTrailingMargin: CGFloat = 0
-  private var textInputViewBottomMargin: CGFloat = 0
-  private var textInputViewLeadingMargin: CGFloat = 0
-
-  private var heightAnchorConstraint: NSLayoutConstraint?
-  private var textInputViewTopAnchorConstraint: NSLayoutConstraint?
-  private var textInputViewLeadingAnchorConstraint: NSLayoutConstraint?
-  private var textInputViewTrailingAnchorConstraint: NSLayoutConstraint?
-
   private func setUpViews() {
     boxType = .custom
     borderType = .noBorder
@@ -63,15 +49,9 @@ public class CoreTextInput: NSBox {
     textInputView.translatesAutoresizingMaskIntoConstraints = false
 
     let heightAnchorConstraint = heightAnchor.constraint(equalToConstant: 21)
-    let textInputViewTopAnchorConstraint = textInputView
-      .topAnchor
-      .constraint(equalTo: topAnchor, constant: topPadding + textInputViewTopMargin)
-    let textInputViewLeadingAnchorConstraint = textInputView
-      .leadingAnchor
-      .constraint(equalTo: leadingAnchor, constant: leadingPadding + textInputViewLeadingMargin)
-    let textInputViewTrailingAnchorConstraint = textInputView
-      .trailingAnchor
-      .constraint(equalTo: trailingAnchor, constant: -(trailingPadding + textInputViewTrailingMargin))
+    let textInputViewTopAnchorConstraint = textInputView.topAnchor.constraint(equalTo: topAnchor)
+    let textInputViewLeadingAnchorConstraint = textInputView.leadingAnchor.constraint(equalTo: leadingAnchor)
+    let textInputViewTrailingAnchorConstraint = textInputView.trailingAnchor.constraint(equalTo: trailingAnchor)
 
     NSLayoutConstraint.activate([
       heightAnchorConstraint,
@@ -79,17 +59,6 @@ public class CoreTextInput: NSBox {
       textInputViewLeadingAnchorConstraint,
       textInputViewTrailingAnchorConstraint
     ])
-
-    self.heightAnchorConstraint = heightAnchorConstraint
-    self.textInputViewTopAnchorConstraint = textInputViewTopAnchorConstraint
-    self.textInputViewLeadingAnchorConstraint = textInputViewLeadingAnchorConstraint
-    self.textInputViewTrailingAnchorConstraint = textInputViewTrailingAnchorConstraint
-
-    // For debugging
-    heightAnchorConstraint.identifier = "heightAnchorConstraint"
-    textInputViewTopAnchorConstraint.identifier = "textInputViewTopAnchorConstraint"
-    textInputViewLeadingAnchorConstraint.identifier = "textInputViewLeadingAnchorConstraint"
-    textInputViewTrailingAnchorConstraint.identifier = "textInputViewTrailingAnchorConstraint"
   }
 
   private func update() {
