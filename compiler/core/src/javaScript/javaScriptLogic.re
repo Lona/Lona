@@ -83,6 +83,21 @@ let rec toJavaScriptAST = (framework, config, node) => {
       test: condition,
       consequent: [toJavaScriptAST(framework, config, body)],
     });
+  | IfLet(a, b, body) =>
+    let condition =
+      Ast.BinaryExpression({
+        left: logicValueToJavaScriptASTWithConfig(b),
+        operator: Ast.LooseNeq,
+        right:
+          logicValueToJavaScriptASTWithConfig(Literal(LonaValue.null())),
+      });
+    IfStatement({
+      test: condition,
+      consequent: [
+        toJavaScriptAST(framework, config, Logic.LetEqual(a, b)),
+        toJavaScriptAST(framework, config, body),
+      ],
+    });
   | Add(lhs, rhs, value) =>
     let addition =
       Ast.BinaryExpression({

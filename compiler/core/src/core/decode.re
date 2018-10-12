@@ -314,15 +314,10 @@ let rec logicNode = json => {
         | VariableDeclarationExpression(decl) =>
           let id = decl##identifier |> identifierFromExpr;
           let content = decl##content |> logicValueFromExpr;
-          Logic.IfExists(
+          Logic.IfLet(
+            Logic.Identifier(undefinedType, [id]),
             content,
-            Logic.Block([
-              Logic.LetEqual(
-                Logic.Identifier(undefinedType, [id]),
-                content,
-              ),
-              ...body,
-            ]),
+            Logic.Block(body),
           );
         | BinaryExpression(bin) =>
           let left = bin##left |> logicValueFromExpr;

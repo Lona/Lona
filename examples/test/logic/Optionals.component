@@ -12,14 +12,16 @@
       "id" : "Default",
       "name" : "Default",
       "params" : {
-        "boolParam" : null
+        "boolParam" : null,
+        "stringParam" : null
       }
     },
     {
       "id" : "name",
       "name" : "name",
       "params" : {
-        "boolParam" : true
+        "boolParam" : true,
+        "stringParam" : "String param value"
       }
     }
   ],
@@ -167,12 +169,40 @@
         "type" : "BinExpr"
       },
       "type" : "IfExpr"
+    },
+    {
+      "body" : [
+        {
+          "assignee" : [
+            "layers",
+            "StringParam",
+            "text"
+          ],
+          "content" : [
+            "unwrapped"
+          ],
+          "type" : "AssignExpr"
+        }
+      ],
+      "condition" : {
+        "content" : [
+          "parameters",
+          "stringParam"
+        ],
+        "id" : "unwrapped",
+        "type" : "VarDeclExpr"
+      },
+      "type" : "IfExpr"
     }
   ],
   "params" : [
     {
       "name" : "boolParam",
       "type" : "Boolean?"
+    },
+    {
+      "name" : "stringParam",
+      "type" : "String?"
     }
   ],
   "root" : {
@@ -181,6 +211,13 @@
         "id" : "Label",
         "params" : {
           "text" : ""
+        },
+        "type" : "Lona:Text"
+      },
+      {
+        "id" : "StringParam",
+        "params" : {
+          "text" : "No string param"
         },
         "type" : "Lona:Text"
       }

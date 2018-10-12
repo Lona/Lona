@@ -348,6 +348,23 @@ let toSwiftAST =
           "block": body,
         })
       };
+    | IfLet(a, b, body) =>
+      let left = logicValueToSwiftAST(a);
+      let right = logicValueToSwiftAST(b);
+      let body = unwrapBlock(body) |> List.map(inner);
+
+      Ast.(
+        IfStatement({
+          "condition":
+            OptionalBindingCondition({
+              "const": true,
+              "pattern":
+                IdentifierPattern({"identifier": left, "annotation": None}),
+              "init": right,
+            }),
+          "block": body,
+        })
+      );
     | Add(lhs, rhs, value) =>
       BinaryExpression({
         "left": logicValueToSwiftAST(value),

@@ -3,6 +3,7 @@ type binaryOperator =
   | Eq
   | LooseEq
   | Neq
+  | LooseNeq
   | Gt
   | Gte
   | Lt

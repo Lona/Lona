@@ -8,6 +8,7 @@ let renderBinaryOperator = x => {
     | Ast.Eq => "==="
     | LooseEq => "=="
     | Neq => "!=="
+    | LooseNeq => "!="
     | Gt => ">"
     | Gte => ">="
     | Lt => "<"
