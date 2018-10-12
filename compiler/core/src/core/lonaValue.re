@@ -73,15 +73,18 @@ let defaultValueForParameter = name => parameterDefaultValue(name);
 let decodeNumber = (value: Types.lonaValue): float =>
   value.data |> Json.Decode.float;
 
+let isOptionalTypeName = (typeName: string): bool =>
+  Js.String.endsWith("?", typeName);
+
 let isOptionalType = (ltype: Types.lonaType): bool =>
   switch (ltype) {
-  | Reference(typeName) when Js.String.endsWith("?", typeName) => true
+  | Reference(typeName) when isOptionalTypeName(typeName) => true
   | _ => false
   };
 
 let unwrapOptionalType = (ltype: Types.lonaType): Types.lonaType =>
   switch (ltype) {
-  | Reference(typeName) when Js.String.endsWith("?", typeName) =>
+  | Reference(typeName) when isOptionalTypeName(typeName) =>
     let unwrappedTypeName =
       String.sub(typeName, 0, String.length(typeName) - 1);
     Reference(unwrappedTypeName);
@@ -92,7 +95,7 @@ let unwrapOptionalType = (ltype: Types.lonaType): Types.lonaType =>
 
 let decodeOptional = (value: Types.lonaValue): option(Types.lonaValue) =>
   switch (value.ltype) {
-  | Reference(typeName) when Js.String.endsWith("?", typeName) =>
+  | Reference(typeName) when isOptionalTypeName(typeName) =>
     let unwrappedType = unwrapOptionalType(value.ltype);
     let case = value.data |> Json.Decode.field("case", Json.Decode.string);
     switch (case) {
