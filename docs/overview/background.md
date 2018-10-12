@@ -8,16 +8,16 @@ This design system was defined in Sketch. Design files required manual translati
 
 We need a tool for dealing with the layouts, constraints, and states of a real application:
 
-* Layout reflow for multiple screen sizes
-* Variable-length text
-* Error states
-* Lists of different kinds and quantities of items: 0, 1, 2, 10…
-* Min and max width/height
-* Max lines of text
-* Pressed/unpressed state
-* Themes (inverse, compact)
+- Layout reflow for multiple screen sizes
+- Variable-length text
+- Error states
+- Lists of different kinds and quantities of items: 0, 1, 2, 10…
+- Min and max width/height
+- Max lines of text
+- Pressed/unpressed state
+- Themes (inverse, compact)
 
-Since many decisions must be made that can't be recorded in design files, the individual engineer on each platform often makes a judgement call, resulting in subtle inconsistencies.
+Since many decisions must be made that can't be recorded in design files, the individual engineer on each platform often makes a judgement call, resulting in subtle inconsistencies and undocumented decisions.
 
 ### The Solution
 
