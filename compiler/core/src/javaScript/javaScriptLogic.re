@@ -94,8 +94,10 @@ let rec toJavaScriptAST = (framework, config, node) => {
     IfStatement({
       test: condition,
       consequent: [
-        toJavaScriptAST(framework, config, Logic.LetEqual(a, b)),
-        toJavaScriptAST(framework, config, body),
+        Ast.Block([
+          toJavaScriptAST(framework, config, Logic.LetEqual(a, b)),
+          toJavaScriptAST(framework, config, body),
+        ]),
       ],
     });
   | Add(lhs, rhs, value) =>
