@@ -63,6 +63,8 @@
 		6B39170A2164492600B20F9E /* Shadow.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6B3917092164492600B20F9E /* Shadow.swift */; };
 		6BA5BBCF216D4A7D00F086A7 /* VisibilityTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6BA5BBCE216D4A7D00F086A7 /* VisibilityTest.swift */; };
 		6BA5BBD1216D4B6700F086A7 /* VisibilityTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6BA5BBD0216D4B6700F086A7 /* VisibilityTest.swift */; };
+		6BA5BBD3217017AC00F086A7 /* Optionals.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6BA5BBD2217017AC00F086A7 /* Optionals.swift */; };
+		6BA5BBD5217021A000F086A7 /* Optionals.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6BA5BBD4217021A000F086A7 /* Optionals.swift */; };
 		6BA694032082E4420090CA74 /* NestedComponent.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6BA694022082E4420090CA74 /* NestedComponent.swift */; };
 		6BA69406208439DB0090CA74 /* NestedComponent.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6BA69405208439DB0090CA74 /* NestedComponent.swift */; };
 		6BA6940820843CE70090CA74 /* Button.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6BA6940720843CE70090CA74 /* Button.swift */; };
@@ -133,6 +135,8 @@
 		6B3917092164492600B20F9E /* Shadow.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Shadow.swift; sourceTree = "<group>"; };
 		6BA5BBCE216D4A7D00F086A7 /* VisibilityTest.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = VisibilityTest.swift; sourceTree = "<group>"; };
 		6BA5BBD0216D4B6700F086A7 /* VisibilityTest.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = VisibilityTest.swift; sourceTree = "<group>"; };
+		6BA5BBD2217017AC00F086A7 /* Optionals.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Optionals.swift; sourceTree = "<group>"; };
+		6BA5BBD4217021A000F086A7 /* Optionals.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Optionals.swift; sourceTree = "<group>"; };
 		6BA694022082E4420090CA74 /* NestedComponent.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NestedComponent.swift; sourceTree = "<group>"; };
 		6BA69405208439DB0090CA74 /* NestedComponent.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NestedComponent.swift; sourceTree = "<group>"; };
 		6BA6940720843CE70090CA74 /* Button.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Button.swift; sourceTree = "<group>"; };
@@ -241,6 +245,7 @@
 			children = (
 				12BBFDC9206B02720041620C /* Assign.swift */,
 				12BBFDCA206B02720041620C /* If.swift */,
+				6BA5BBD2217017AC00F086A7 /* Optionals.swift */,
 			);
 			path = logic;
 			sourceTree = "<group>";
@@ -321,6 +326,7 @@
 			children = (
 				12BBFDF0206B02AC0041620C /* Assign.swift */,
 				12BBFDF1206B02AC0041620C /* If.swift */,
+				6BA5BBD4217021A000F086A7 /* Optionals.swift */,
 			);
 			path = logic;
 			sourceTree = "<group>";
@@ -505,6 +511,7 @@
 				1296255E204B2DC20057CDFF /* DetailVC.swift in Sources */,
 				6BA69406208439DB0090CA74 /* NestedComponent.swift in Sources */,
 				12BBFE0E206B02AC0041620C /* SecondaryAxis.swift in Sources */,
+				6BA5BBD5217021A000F086A7 /* Optionals.swift in Sources */,
 				12BBFE11206B02AC0041620C /* Colors.swift in Sources */,
 				30F870B920864A88007ADA5B /* NestedButtons.swift in Sources */,
 				12BBFE0D206B02AC0041620C /* FixedParentFitChild.swift in Sources */,
@@ -545,6 +552,7 @@
 				12BBFDE3206B02720041620C /* FixedParentFillAndFitChildren.swift in Sources */,
 				12BBFDDD206B02720041620C /* Assign.swift in Sources */,
 				12BBFDE6206B02720041620C /* FitContentParentSecondaryChildren.swift in Sources */,
+				6BA5BBD3217017AC00F086A7 /* Optionals.swift in Sources */,
 				12BBFDE1206B02720041620C /* TextStyleConditional.swift in Sources */,
 				12BBFCF0206A8BCD0041620C /* Generated.swift in Sources */,
 				6BA694032082E4420090CA74 /* NestedComponent.swift in Sources */,
