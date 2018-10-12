@@ -31,6 +31,7 @@ enum Generated: String {
     case boxModelConditionalLarge = "Box Model Conditional Large"
     case shadowsTest = "Shadow Test"
     case visibilityTest = "Visibility Test"
+    case optionals = "Optionals"
 
     static func allValues() -> [Generated] {
         return [
@@ -55,7 +56,8 @@ enum Generated: String {
             boxModelConditionalSmall,
             boxModelConditionalLarge,
             shadowsTest,
-            visibilityTest
+            visibilityTest,
+            optionals
         ]
     }
     
@@ -111,6 +113,8 @@ enum Generated: String {
             return ShadowsTest()
         case .visibilityTest:
             return VisibilityTest(enabled: true)
+        case .optionals:
+            return Optionals(boolParam: true, stringParam: "Hello World")
         }
     }
 
@@ -134,7 +138,8 @@ enum Generated: String {
              .boxModelConditionalSmall,
              .boxModelConditionalLarge,
              .shadowsTest,
-             .visibilityTest:
+             .visibilityTest,
+             .optionals:
             return [
                 equal(\.topAnchor, \.safeAreaLayoutGuide.topAnchor),
                 equal(\.leftAnchor),

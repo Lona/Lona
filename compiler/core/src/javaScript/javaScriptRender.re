@@ -6,7 +6,9 @@ let renderBinaryOperator = x => {
   let op =
     switch (x) {
     | Ast.Eq => "==="
+    | LooseEq => "=="
     | Neq => "!=="
+    | LooseNeq => "!="
     | Gt => ">"
     | Gte => ">="
     | Lt => "<"

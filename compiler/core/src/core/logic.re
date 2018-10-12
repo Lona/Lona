@@ -9,6 +9,7 @@ type logicNode =
   | Add(logicValue, logicValue, logicValue)
   | Let(logicValue)
   | LetEqual(logicValue, logicValue)
+  | IfLet(logicValue, logicValue, logicNode)
   | Block(list(logicNode))
   | None;
 
@@ -51,6 +52,7 @@ module LogicTree =
       | Block(body) => body
       | Let(_) => []
       | LetEqual(_, _) => []
+      | IfLet(_, _, value) => [value]
       | None => []
       };
     let restore = (node, contents) => {
@@ -63,6 +65,7 @@ module LogicTree =
       | Block(_) => Block(contents)
       | Let(_) => node
       | LetEqual(_, _) => node
+      | IfLet(a, b, _) => IfLet(a, b, at(0))
       | None => node
       };
     };
@@ -177,6 +180,8 @@ let rec replaceIdentifiersNamed = (oldName, newName, node) => {
   | Add(a, b, c) => Add(replace(a), replace(b), replace(c))
   | Let(a) => Let(replace(a))
   | LetEqual(a, b) => LetEqual(replace(a), replace(b))
+  | IfLet(a, b, body) =>
+    IfLet(replace(a), replace(b), body |> replaceChild)
   | Block(body) => Block(body |> List.map(replaceChild))
   | None => node
   };

@@ -110,6 +110,9 @@ let localImageName = (framework: SwiftOptions.framework, name) => {
 let rec typeAnnotationDoc =
         (framework: SwiftOptions.framework, ltype: Types.lonaType) =>
   switch (ltype) {
+  | Types.Reference(typeName) when LonaValue.isOptionalTypeName(typeName) =>
+    let unwrapped = LonaValue.unwrapOptionalType(ltype);
+    OptionalType(typeAnnotationDoc(framework, unwrapped));
   | Types.Reference(typeName) =>
     switch (typeName) {
     | "Boolean" => TypeName("Bool")
@@ -133,6 +136,11 @@ let rec lonaValue =
           value: Types.lonaValue,
         ) =>
   switch (value.ltype) {
+  | Reference(typeName) when LonaValue.isOptionalTypeName(typeName) =>
+    switch (LonaValue.decodeOptional(value)) {
+    | Some(innerValue) => lonaValue(framework, config, innerValue)
+    | None => LiteralExpression(Nil)
+    }
   | Reference(typeName) =>
     switch (typeName) {
     | "Boolean" => LiteralExpression(Boolean(value.data |> Json.Decode.bool))
@@ -231,6 +239,8 @@ let rec defaultValueForLonaType =
           ltype: Types.lonaType,
         ) =>
   switch (ltype) {
+  | Reference(typeName) when LonaValue.isOptionalTypeName(typeName) =>
+    LiteralExpression(Nil)
   | Reference(typeName) =>
     switch (typeName) {
     | "Boolean" => LiteralExpression(Boolean(false))
@@ -248,12 +258,6 @@ let rec defaultValueForLonaType =
         framework,
         config,
         Named(typeName, Reference("String")),
-      )
-    | value when Js.String.endsWith("?", value) =>
-      defaultValueForLonaType(
-        framework,
-        config,
-        Reference(Js.String.replace("?", "", value)),
       )
     | _ => LiteralExpression(Nil)
     }

@@ -1,0 +1,231 @@
+{
+  "devices" : [
+    {
+      "height" : 100,
+      "heightMode" : "At Least",
+      "name" : "iPhone SE",
+      "width" : 320
+    }
+  ],
+  "examples" : [
+    {
+      "id" : "Default",
+      "name" : "Default",
+      "params" : {
+        "boolParam" : null,
+        "stringParam" : null
+      }
+    },
+    {
+      "id" : "name",
+      "name" : "name",
+      "params" : {
+        "boolParam" : true,
+        "stringParam" : "String param value"
+      }
+    }
+  ],
+  "logic" : [
+    {
+      "body" : [
+        {
+          "assignee" : [
+            "layers",
+            "Label",
+            "text"
+          ],
+          "content" : {
+            "type" : "LitExpr",
+            "value" : {
+              "data" : "boolParam is true",
+              "type" : "String"
+            }
+          },
+          "type" : "AssignExpr"
+        },
+        {
+          "assignee" : [
+            "layers",
+            "View",
+            "backgroundColor"
+          ],
+          "content" : {
+            "type" : "LitExpr",
+            "value" : {
+              "data" : "green200",
+              "type" : "Color"
+            }
+          },
+          "type" : "AssignExpr"
+        }
+      ],
+      "condition" : {
+        "left" : [
+          "parameters",
+          "boolParam"
+        ],
+        "op" : "==",
+        "right" : {
+          "type" : "LitExpr",
+          "value" : {
+            "data" : {
+              "case" : "Some",
+              "data" : true
+            },
+            "type" : "Boolean?"
+          }
+        },
+        "type" : "BinExpr"
+      },
+      "type" : "IfExpr"
+    },
+    {
+      "body" : [
+        {
+          "assignee" : [
+            "layers",
+            "Label",
+            "text"
+          ],
+          "content" : {
+            "type" : "LitExpr",
+            "value" : {
+              "data" : "boolParam is false",
+              "type" : "String"
+            }
+          },
+          "type" : "AssignExpr"
+        },
+        {
+          "assignee" : [
+            "layers",
+            "View",
+            "backgroundColor"
+          ],
+          "content" : {
+            "type" : "LitExpr",
+            "value" : {
+              "data" : "red200",
+              "type" : "Color"
+            }
+          },
+          "type" : "AssignExpr"
+        }
+      ],
+      "condition" : {
+        "left" : [
+          "parameters",
+          "boolParam"
+        ],
+        "op" : "==",
+        "right" : {
+          "type" : "LitExpr",
+          "value" : {
+            "data" : {
+              "case" : "Some",
+              "data" : false
+            },
+            "type" : "Boolean?"
+          }
+        },
+        "type" : "BinExpr"
+      },
+      "type" : "IfExpr"
+    },
+    {
+      "body" : [
+        {
+          "assignee" : [
+            "layers",
+            "Label",
+            "text"
+          ],
+          "content" : {
+            "type" : "LitExpr",
+            "value" : {
+              "data" : "boolParam is null",
+              "type" : "String"
+            }
+          },
+          "type" : "AssignExpr"
+        }
+      ],
+      "condition" : {
+        "left" : [
+          "parameters",
+          "boolParam"
+        ],
+        "op" : "==",
+        "right" : {
+          "type" : "LitExpr",
+          "value" : {
+            "data" : {
+              "case" : "None",
+              "data" : null
+            },
+            "type" : "Boolean?"
+          }
+        },
+        "type" : "BinExpr"
+      },
+      "type" : "IfExpr"
+    },
+    {
+      "body" : [
+        {
+          "assignee" : [
+            "layers",
+            "StringParam",
+            "text"
+          ],
+          "content" : [
+            "unwrapped"
+          ],
+          "type" : "AssignExpr"
+        }
+      ],
+      "condition" : {
+        "content" : [
+          "parameters",
+          "stringParam"
+        ],
+        "id" : "unwrapped",
+        "type" : "VarDeclExpr"
+      },
+      "type" : "IfExpr"
+    }
+  ],
+  "params" : [
+    {
+      "name" : "boolParam",
+      "type" : "Boolean?"
+    },
+    {
+      "name" : "stringParam",
+      "type" : "String?"
+    }
+  ],
+  "root" : {
+    "children" : [
+      {
+        "id" : "Label",
+        "params" : {
+          "text" : ""
+        },
+        "type" : "Lona:Text"
+      },
+      {
+        "id" : "StringParam",
+        "params" : {
+          "text" : "No string param"
+        },
+        "type" : "Lona:Text"
+      }
+    ],
+    "id" : "View",
+    "params" : {
+      "alignSelf" : "stretch"
+    },
+    "type" : "Lona:View"
+  }
+}

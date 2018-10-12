@@ -484,6 +484,8 @@ let rec render = ast: Prettier.Doc.t('a) =>
       <+> s(" ")
       <+> renderPattern(o##pattern)
       <+> line
+      <+> s("=")
+      <+> line
       <+> render(o##init),
     );
   | Empty => empty /* This only works if lines are added between statements... */

@@ -295,7 +295,7 @@ let rec logicNode = json => {
   let rec logicValueFromExpr = expr =>
     switch (expr) {
     | LonaLogic.MemberExpression(items) =>
-      let ltype = Reference("???");
+      let ltype = Reference("UnknownReferenceType");
       let path = items |> List.map(identifierFromExpr);
       Logic.Identifier(ltype, path);
     | LonaLogic.LiteralExpression(value) => Logic.Literal(value)
@@ -314,15 +314,10 @@ let rec logicNode = json => {
         | VariableDeclarationExpression(decl) =>
           let id = decl##identifier |> identifierFromExpr;
           let content = decl##content |> logicValueFromExpr;
-          Logic.IfExists(
+          Logic.IfLet(
+            Logic.Identifier(undefinedType, [id]),
             content,
-            Logic.Block([
-              Logic.LetEqual(
-                Logic.Identifier(undefinedType, [id]),
-                content,
-              ),
-              ...body,
-            ]),
+            Logic.Block(body),
           );
         | BinaryExpression(bin) =>
           let left = bin##left |> logicValueFromExpr;
