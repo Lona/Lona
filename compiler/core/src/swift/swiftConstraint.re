@@ -91,21 +91,25 @@ let constraintDependencies =
     | Relation(_, CenterY, _, _, CenterY, _, _) => []
     | Relation(child, Top, _, layer, Top, _, PrimaryBefore)
     | Relation(child, Top, _, layer, Top, _, SecondaryBefore) => [
+        {layer, key: BorderWidth},
         {layer, key: PaddingTop},
         {layer: child, key: MarginTop},
       ]
     | Relation(child, Leading, _, layer, Leading, _, PrimaryBefore)
     | Relation(child, Leading, _, layer, Leading, _, SecondaryBefore) => [
+        {layer, key: BorderWidth},
         {layer, key: PaddingLeft},
         {layer: child, key: MarginLeft},
       ]
     | Relation(child, Bottom, _, layer, Bottom, _, PrimaryAfter)
     | Relation(child, Bottom, _, layer, Bottom, _, SecondaryAfter) => [
+        {layer, key: BorderWidth},
         {layer, key: PaddingBottom},
         {layer: child, key: MarginBottom},
       ]
     | Relation(child, Trailing, _, layer, Trailing, _, SecondaryAfter)
     | Relation(child, Trailing, _, layer, Trailing, _, PrimaryAfter) => [
+        {layer, key: BorderWidth},
         {layer, key: PaddingRight},
         {layer: child, key: MarginRight},
       ]
@@ -118,12 +122,16 @@ let constraintDependencies =
         {layer: child, key: MarginLeft},
       ]
     | Relation(child, Width, Leq, layer, Width, _, FitContentSecondary) => [
+        {layer, key: BorderWidth},
+        {layer, key: BorderWidth},
         {layer, key: PaddingLeft},
         {layer, key: PaddingRight},
         {layer: child, key: MarginLeft},
         {layer: child, key: MarginRight},
       ]
     | Relation(child, Height, Leq, layer, Height, _, FitContentSecondary) => [
+        {layer, key: BorderWidth},
+        {layer, key: BorderWidth},
         {layer, key: PaddingTop},
         {layer, key: PaddingBottom},
         {layer: child, key: MarginTop},
