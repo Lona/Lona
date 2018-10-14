@@ -96,7 +96,7 @@ enum Generated: String {
         case .ifDisabled:
             return If(enabled: false)
         case .borderWidthColor:
-            return BorderWidthColor()
+            return BorderWidthColor(alternativeStyle: true)
         case .textStyleConditionalTrue:
             return TextStyleConditional(large: true)
         case .textStyleConditionalFalse:

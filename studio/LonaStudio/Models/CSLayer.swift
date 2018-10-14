@@ -521,6 +521,7 @@ class CSLayer: CSDataDeserializable, CSDataSerializable, DataNode, NSCopying {
     static let defaultParameterValue: [String: CSData] = [
         "alignItems": CSData.String("flex-start"),
         "borderRadius": CSData.Number(0),
+        "borderWidth": CSData.Number(0),
         "flex": CSData.Number(0),
         "flexDirection": CSData.String("column"),
         "justifyContent": CSData.String("flex-start"),
@@ -620,6 +621,7 @@ class CSLayer: CSDataDeserializable, CSDataSerializable, DataNode, NSCopying {
             return [
                 "width",
                 "height",
+                "borderWidth", "borderRadius",
                 "padding", "paddingVertical", "paddingHorizontal", "paddingLeft", "paddingTop", "paddingRight", "paddingBottom",
                 "margin", "marginVertical", "marginHorizontal", "marginLeft", "marginTop", "marginRight", "marginBottom"
             ].sorted()
@@ -669,6 +671,11 @@ class CSLayer: CSDataDeserializable, CSDataSerializable, DataNode, NSCopying {
 
             // Color
             "backgroundColor": CSData.String(backgroundColor ?? "transparent"),
+
+            // Border
+            "borderWidth": CSData.Number(borderWidth ?? 0),
+            "borderRadius": CSData.Number(borderRadius ?? 0),
+            "borderColor": CSData.String(borderColor ?? "transparent"),
 
             // Shadow
             "shadow": CSData.String(shadow ?? ""),

@@ -7,7 +7,9 @@ public class BorderWidthColor: UIView {
 
   // MARK: Lifecycle
 
-  public init() {
+  public init(alternativeStyle: Bool) {
+    self.alternativeStyle = alternativeStyle
+
     super.init(frame: .zero)
 
     setUpViews()
@@ -16,40 +18,53 @@ public class BorderWidthColor: UIView {
     update()
   }
 
+  public convenience init() {
+    self.init(alternativeStyle: false)
+  }
+
   public required init?(coder aDecoder: NSCoder) {
     fatalError("init(coder:) has not been implemented")
   }
 
+  // MARK: Public
+
+  public var alternativeStyle: Bool { didSet { update() } }
+
   // MARK: Private
 
-  private var view1View = UIView(frame: .zero)
+  private var innerView = UIView(frame: .zero)
 
   private func setUpViews() {
-    addSubview(view1View)
-
-    view1View.layer.cornerRadius = 10
-    view1View.layer.borderWidth = 20
-    view1View.layer.borderColor = Colors.blue300.cgColor
+    addSubview(innerView)
   }
 
   private func setUpConstraints() {
     translatesAutoresizingMaskIntoConstraints = false
-    view1View.translatesAutoresizingMaskIntoConstraints = false
+    innerView.translatesAutoresizingMaskIntoConstraints = false
 
-    let view1ViewTopAnchorConstraint = view1View.topAnchor.constraint(equalTo: topAnchor)
-    let view1ViewBottomAnchorConstraint = view1View.bottomAnchor.constraint(equalTo: bottomAnchor)
-    let view1ViewLeadingAnchorConstraint = view1View.leadingAnchor.constraint(equalTo: leadingAnchor)
-    let view1ViewHeightAnchorConstraint = view1View.heightAnchor.constraint(equalToConstant: 100)
-    let view1ViewWidthAnchorConstraint = view1View.widthAnchor.constraint(equalToConstant: 100)
+    let innerViewTopAnchorConstraint = innerView.topAnchor.constraint(equalTo: topAnchor)
+    let innerViewBottomAnchorConstraint = innerView.bottomAnchor.constraint(equalTo: bottomAnchor)
+    let innerViewLeadingAnchorConstraint = innerView.leadingAnchor.constraint(equalTo: leadingAnchor)
+    let innerViewHeightAnchorConstraint = innerView.heightAnchor.constraint(equalToConstant: 100)
+    let innerViewWidthAnchorConstraint = innerView.widthAnchor.constraint(equalToConstant: 100)
 
     NSLayoutConstraint.activate([
-      view1ViewTopAnchorConstraint,
-      view1ViewBottomAnchorConstraint,
-      view1ViewLeadingAnchorConstraint,
-      view1ViewHeightAnchorConstraint,
-      view1ViewWidthAnchorConstraint
+      innerViewTopAnchorConstraint,
+      innerViewBottomAnchorConstraint,
+      innerViewLeadingAnchorConstraint,
+      innerViewHeightAnchorConstraint,
+      innerViewWidthAnchorConstraint
     ])
   }
 
-  private func update() {}
+  private func update() {
+    innerView.layer.cornerRadius = 10
+    innerView.layer.borderWidth = 20
+    innerView.layer.borderColor = Colors.blue300.cgColor
+    if alternativeStyle {
+      innerView.layer.borderColor = Colors.reda400.cgColor
+      innerView.layer.borderWidth = 4
+      innerView.layer.cornerRadius = 20
+    }
+  }
 }

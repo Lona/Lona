@@ -481,6 +481,11 @@ let CSLayerType = CSType.dictionary([
     "paddingBottom": (type: .number, access: .write),
     "paddingLeft": (type: .number, access: .write),
 
+    // Border
+    "borderWidth": (type: .number, access: .write),
+    "borderColor": (type: CSColorType, access: .write),
+    "borderRadius": (type: .number, access: .write),
+
     // Color
     "backgroundColor": (type: CSColorType, access: .write),
 
