@@ -9,6 +9,7 @@
   ],
   "examples" : [
     {
+      "id" : "Default",
       "name" : "Default",
       "params" : {
 
@@ -49,18 +50,6 @@
       "content" : [
         "parameters",
         "onOpenProject"
-      ],
-      "type" : "AssignExpr"
-    },
-    {
-      "assignee" : [
-        "layers",
-        "ExampleButton",
-        "onClick"
-      ],
-      "content" : [
-        "parameters",
-        "onOpenExample"
       ],
       "type" : "AssignExpr"
     },
@@ -140,8 +129,8 @@
               "alignItems" : "center",
               "alignSelf" : "stretch",
               "flex" : 1,
-              "paddingBottom" : 60,
-              "paddingTop" : 60
+              "paddingBottom" : 80,
+              "paddingTop" : 80
             },
             "type" : "Lona:View"
           },
@@ -158,23 +147,6 @@
               },
               {
                 "id" : "Spacer",
-                "params" : {
-                  "alignSelf" : "stretch",
-                  "height" : 4
-                },
-                "type" : "Lona:View"
-              },
-              {
-                "id" : "ExampleButton",
-                "params" : {
-                  "icon" : "file:\/\/.\/assets\/icon-material-design-example@2x.png",
-                  "subtitleText" : "Explore the material design example workspace",
-                  "titleText" : "Open an example workspace"
-                },
-                "type" : "IconRow"
-              },
-              {
-                "id" : "Spacer2",
                 "params" : {
                   "alignSelf" : "stretch",
                   "height" : 4

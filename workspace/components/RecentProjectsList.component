@@ -21,6 +21,7 @@
   ],
   "examples" : [
     {
+      "id" : "Default",
       "name" : "Default",
       "params" : {
 
@@ -34,10 +35,29 @@
 
   ],
   "root" : {
+    "children" : [
+      {
+        "id" : "RecentProjectItem",
+        "params" : {
+          "projectDirectoryPath" : "~\/Projects\/ExampleWorkspace",
+          "projectName" : "ExampleWorkspace",
+          "selected" : false
+        },
+        "type" : "RecentProjectItem"
+      },
+      {
+        "id" : "RecentProjectItem2",
+        "params" : {
+          "projectDirectoryPath" : "~\/Projects\/TestWorkspace",
+          "projectName" : "Test",
+          "selected" : false
+        },
+        "type" : "RecentProjectItem"
+      }
+    ],
     "id" : "View",
     "params" : {
       "alignSelf" : "stretch",
-      "backgroundColor" : "pink50",
       "flex" : 1
     },
     "type" : "Lona:View"
