@@ -99,15 +99,21 @@ public class TextStylePreviewCard: NSBox {
     bottomLineView.translatesAutoresizingMaskIntoConstraints = false
     textStyleSummaryView.translatesAutoresizingMaskIntoConstraints = false
 
-    let previewViewTopAnchorConstraint = previewView.topAnchor.constraint(equalTo: topAnchor)
-    let previewViewLeadingAnchorConstraint = previewView.leadingAnchor.constraint(equalTo: leadingAnchor)
-    let previewViewTrailingAnchorConstraint = previewView.trailingAnchor.constraint(equalTo: trailingAnchor)
+    let previewViewTopAnchorConstraint = previewView.topAnchor.constraint(equalTo: topAnchor, constant: 1)
+    let previewViewLeadingAnchorConstraint = previewView.leadingAnchor.constraint(equalTo: leadingAnchor, constant: 1)
+    let previewViewTrailingAnchorConstraint = previewView
+      .trailingAnchor
+      .constraint(equalTo: trailingAnchor, constant: -1)
     let dividerViewTopAnchorConstraint = dividerView.topAnchor.constraint(equalTo: previewView.bottomAnchor)
-    let dividerViewLeadingAnchorConstraint = dividerView.leadingAnchor.constraint(equalTo: leadingAnchor)
-    let dividerViewTrailingAnchorConstraint = dividerView.trailingAnchor.constraint(equalTo: trailingAnchor)
+    let dividerViewLeadingAnchorConstraint = dividerView.leadingAnchor.constraint(equalTo: leadingAnchor, constant: 1)
+    let dividerViewTrailingAnchorConstraint = dividerView
+      .trailingAnchor
+      .constraint(equalTo: trailingAnchor, constant: -1)
     let detailsViewTopAnchorConstraint = detailsView.topAnchor.constraint(equalTo: dividerView.bottomAnchor)
-    let detailsViewLeadingAnchorConstraint = detailsView.leadingAnchor.constraint(equalTo: leadingAnchor)
-    let detailsViewTrailingAnchorConstraint = detailsView.trailingAnchor.constraint(equalTo: trailingAnchor)
+    let detailsViewLeadingAnchorConstraint = detailsView.leadingAnchor.constraint(equalTo: leadingAnchor, constant: 1)
+    let detailsViewTrailingAnchorConstraint = detailsView
+      .trailingAnchor
+      .constraint(equalTo: trailingAnchor, constant: -1)
     let topLineViewTopAnchorConstraint = topLineView.topAnchor.constraint(equalTo: previewView.topAnchor, constant: 16)
     let topLineViewLeadingAnchorConstraint = topLineView.leadingAnchor.constraint(equalTo: previewView.leadingAnchor)
     let topLineViewTrailingAnchorConstraint = topLineView.trailingAnchor.constraint(equalTo: previewView.trailingAnchor)

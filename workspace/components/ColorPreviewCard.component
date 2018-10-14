@@ -71,43 +71,13 @@
           "assignee" : [
             "layers",
             "Container",
-            "backgroundColor"
+            "borderColor"
           ],
           "content" : {
             "type" : "LitExpr",
             "value" : {
               "data" : "lightblue600",
               "type" : "Color"
-            }
-          },
-          "type" : "AssignExpr"
-        },
-        {
-          "assignee" : [
-            "layers",
-            "ColorName",
-            "textStyle"
-          ],
-          "content" : {
-            "type" : "LitExpr",
-            "value" : {
-              "data" : "regularInverse",
-              "type" : "TextStyle"
-            }
-          },
-          "type" : "AssignExpr"
-        },
-        {
-          "assignee" : [
-            "layers",
-            "ColorCode",
-            "textStyle"
-          ],
-          "content" : {
-            "type" : "LitExpr",
-            "value" : {
-              "data" : "monospacedMicroInverse",
-              "type" : "TextStyle"
             }
           },
           "type" : "AssignExpr"
@@ -159,11 +129,7 @@
           "borderColor" : "darkTransparentOutline",
           "borderRadius" : 3,
           "borderWidth" : 1,
-          "flex" : 1,
-          "paddingBottom" : 10,
-          "paddingLeft" : 10,
-          "paddingRight" : 10,
-          "paddingTop" : 10
+          "flex" : 1
         },
         "type" : "Lona:View"
       },
@@ -203,7 +169,7 @@
       "alignSelf" : "stretch",
       "backgroundColor" : "white",
       "borderRadius" : 4,
-      "borderWidth" : 0,
+      "borderWidth" : 1,
       "flex" : 1,
       "paddingBottom" : 4,
       "paddingLeft" : 4,

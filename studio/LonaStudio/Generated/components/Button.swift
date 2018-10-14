@@ -57,12 +57,12 @@ public class Button: NSBox {
 
     let textViewWidthAnchorParentConstraint = textView
       .widthAnchor
-      .constraint(lessThanOrEqualTo: widthAnchor, constant: -20)
-    let textViewTopAnchorConstraint = textView.topAnchor.constraint(equalTo: topAnchor, constant: 2)
-    let textViewBottomAnchorConstraint = textView.bottomAnchor.constraint(equalTo: bottomAnchor, constant: -2)
-    let textViewLeadingAnchorConstraint = textView.leadingAnchor.constraint(equalTo: leadingAnchor, constant: 10)
+      .constraint(lessThanOrEqualTo: widthAnchor, constant: -22)
+    let textViewTopAnchorConstraint = textView.topAnchor.constraint(equalTo: topAnchor, constant: 3)
+    let textViewBottomAnchorConstraint = textView.bottomAnchor.constraint(equalTo: bottomAnchor, constant: -3)
+    let textViewLeadingAnchorConstraint = textView.leadingAnchor.constraint(equalTo: leadingAnchor, constant: 11)
     let textViewCenterXAnchorConstraint = textView.centerXAnchor.constraint(equalTo: centerXAnchor)
-    let textViewTrailingAnchorConstraint = textView.trailingAnchor.constraint(equalTo: trailingAnchor, constant: -10)
+    let textViewTrailingAnchorConstraint = textView.trailingAnchor.constraint(equalTo: trailingAnchor, constant: -11)
 
     textViewWidthAnchorParentConstraint.priority = NSLayoutConstraint.Priority.defaultLow
 

@@ -6,7 +6,7 @@ public enum Shadows {
   public static let elevation3 = NSShadow(color: Colors.grey900, offset: NSSize(width: 0, height: -3), blur: 9)
 }
 
-private extension NSShadow {
+extension NSShadow {
   convenience init(color: NSColor, offset: NSSize, blur: CGFloat) {
     self.init()
 

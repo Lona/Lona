@@ -64,12 +64,17 @@ public class ColorPreviewCard: NSBox {
     detailsView.addSubview(colorNameView)
     detailsView.addSubview(colorCodeView)
 
+    fillColor = Colors.white
     cornerRadius = 4
-    borderWidth = 0
+    borderWidth = 1
     previewView.cornerRadius = 3
     previewView.borderWidth = 1
     previewView.borderColor = Colors.darkTransparentOutline
+    colorNameViewTextStyle = TextStyles.regular
+    colorNameView.attributedStringValue = colorNameViewTextStyle.apply(to: colorNameView.attributedStringValue)
     colorNameView.maximumNumberOfLines = 2
+    colorCodeViewTextStyle = TextStyles.monospacedMicro
+    colorCodeView.attributedStringValue = colorCodeViewTextStyle.apply(to: colorCodeView.attributedStringValue)
     colorCodeView.maximumNumberOfLines = 2
   }
 
@@ -80,19 +85,19 @@ public class ColorPreviewCard: NSBox {
     colorNameView.translatesAutoresizingMaskIntoConstraints = false
     colorCodeView.translatesAutoresizingMaskIntoConstraints = false
 
-    let previewViewTopAnchorConstraint = previewView.topAnchor.constraint(equalTo: topAnchor, constant: 4)
-    let previewViewLeadingAnchorConstraint = previewView.leadingAnchor.constraint(equalTo: leadingAnchor, constant: 4)
+    let previewViewTopAnchorConstraint = previewView.topAnchor.constraint(equalTo: topAnchor, constant: 5)
+    let previewViewLeadingAnchorConstraint = previewView.leadingAnchor.constraint(equalTo: leadingAnchor, constant: 5)
     let previewViewTrailingAnchorConstraint = previewView
       .trailingAnchor
-      .constraint(equalTo: trailingAnchor, constant: -4)
-    let detailsViewBottomAnchorConstraint = detailsView.bottomAnchor.constraint(equalTo: bottomAnchor, constant: -4)
+      .constraint(equalTo: trailingAnchor, constant: -5)
+    let detailsViewBottomAnchorConstraint = detailsView.bottomAnchor.constraint(equalTo: bottomAnchor, constant: -5)
     let detailsViewTopAnchorConstraint = detailsView
       .topAnchor
       .constraint(equalTo: previewView.bottomAnchor, constant: 5)
-    let detailsViewLeadingAnchorConstraint = detailsView.leadingAnchor.constraint(equalTo: leadingAnchor, constant: 4)
+    let detailsViewLeadingAnchorConstraint = detailsView.leadingAnchor.constraint(equalTo: leadingAnchor, constant: 5)
     let detailsViewTrailingAnchorConstraint = detailsView
       .trailingAnchor
-      .constraint(equalTo: trailingAnchor, constant: -4)
+      .constraint(equalTo: trailingAnchor, constant: -5)
     let colorNameViewTopAnchorConstraint = colorNameView.topAnchor.constraint(equalTo: detailsView.topAnchor)
     let colorNameViewLeadingAnchorConstraint = colorNameView
       .leadingAnchor
@@ -130,20 +135,12 @@ public class ColorPreviewCard: NSBox {
   }
 
   private func update() {
-    colorCodeViewTextStyle = TextStyles.monospacedMicro
-    colorCodeView.attributedStringValue = colorCodeViewTextStyle.apply(to: colorCodeView.attributedStringValue)
-    colorNameViewTextStyle = TextStyles.regular
-    colorNameView.attributedStringValue = colorNameViewTextStyle.apply(to: colorNameView.attributedStringValue)
-    fillColor = Colors.white
+    borderColor = #colorLiteral(red: 0, green: 0, blue: 0, alpha: 0)
     colorNameView.attributedStringValue = colorNameViewTextStyle.apply(to: colorName)
     colorCodeView.attributedStringValue = colorCodeViewTextStyle.apply(to: colorCode)
     previewView.fillColor = color
     if selected {
-      fillColor = Colors.lightblue600
-      colorNameViewTextStyle = TextStyles.regularInverse
-      colorNameView.attributedStringValue = colorNameViewTextStyle.apply(to: colorNameView.attributedStringValue)
-      colorCodeViewTextStyle = TextStyles.monospacedMicroInverse
-      colorCodeView.attributedStringValue = colorCodeViewTextStyle.apply(to: colorCodeView.attributedStringValue)
+      borderColor = Colors.lightblue600
     }
   }
 }
