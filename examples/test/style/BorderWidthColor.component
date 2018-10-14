@@ -5,38 +5,101 @@
       "heightMode" : "At Least",
       "name" : "iPhone SE",
       "width" : 320
-    },
-    {
-      "height" : 100,
-      "heightMode" : "At Least",
-      "name" : "iPhone 7",
-      "width" : 375
-    },
-    {
-      "height" : 100,
-      "heightMode" : "At Least",
-      "name" : "iPhone 7+",
-      "width" : 414
     }
   ],
   "examples" : [
     {
+      "id" : "Default",
       "name" : "Default",
       "params" : {
 
       }
+    },
+    {
+      "id" : "name",
+      "name" : "name",
+      "params" : {
+        "alternativeStyle" : true
+      }
     }
   ],
   "logic" : [
-
+    {
+      "body" : [
+        {
+          "assignee" : [
+            "layers",
+            "Inner",
+            "borderColor"
+          ],
+          "content" : {
+            "type" : "LitExpr",
+            "value" : {
+              "data" : "reda400",
+              "type" : "Color"
+            }
+          },
+          "type" : "AssignExpr"
+        },
+        {
+          "assignee" : [
+            "layers",
+            "Inner",
+            "borderWidth"
+          ],
+          "content" : {
+            "type" : "LitExpr",
+            "value" : {
+              "data" : 4,
+              "type" : "Number"
+            }
+          },
+          "type" : "AssignExpr"
+        },
+        {
+          "assignee" : [
+            "layers",
+            "Inner",
+            "borderRadius"
+          ],
+          "content" : {
+            "type" : "LitExpr",
+            "value" : {
+              "data" : 20,
+              "type" : "Number"
+            }
+          },
+          "type" : "AssignExpr"
+        }
+      ],
+      "condition" : {
+        "left" : [
+          "parameters",
+          "alternativeStyle"
+        ],
+        "op" : "==",
+        "right" : {
+          "type" : "LitExpr",
+          "value" : {
+            "data" : true,
+            "type" : "Boolean"
+          }
+        },
+        "type" : "BinExpr"
+      },
+      "type" : "IfExpr"
+    }
   ],
   "params" : [
-
+    {
+      "name" : "alternativeStyle",
+      "type" : "Boolean"
+    }
   ],
   "root" : {
     "children" : [
       {
-        "id" : "View 1",
+        "id" : "Inner",
         "params" : {
           "borderColor" : "blue300",
           "borderRadius" : 10,

@@ -8,12 +8,30 @@ import textStyles from "../textStyles"
 export default class BorderWidthColor extends React.Component {
   render() {
 
+    let Inner$borderColor
+    let Inner$borderRadius
+    let Inner$borderWidth
+    Inner$borderRadius = 10
+    Inner$borderWidth = 20
+    Inner$borderColor = colors.blue300
 
-    let theme = { "view": { "normal": {} }, "view1": { "normal": {} } }
+    if (this.props.alternativeStyle) {
+      Inner$borderColor = colors.reda400
+      Inner$borderWidth = 4
+      Inner$borderRadius = 20
+    }
+    let theme = { "view": { "normal": {} }, "inner": { "normal": {} } }
     return (
       <ThemeProvider theme={theme}>
         <div style={Object.assign({}, styles.view, {})}>
-          <div style={Object.assign({}, styles.view1, {})} />
+          <div
+            style={Object.assign({}, styles.inner, {
+              borderRadius: Inner$borderRadius,
+              borderWidth: Inner$borderWidth,
+              borderColor: Inner$borderColor
+            })}
+
+          />
         </div>
       </ThemeProvider>
     );
@@ -28,7 +46,7 @@ let styles = {
     flexDirection: "column",
     justifyContent: "flex-start"
   },
-  view1: {
+  inner: {
     alignItems: "flex-start",
     display: "flex",
     flexDirection: "column",

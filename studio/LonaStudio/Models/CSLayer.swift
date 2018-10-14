@@ -521,6 +521,7 @@ class CSLayer: CSDataDeserializable, CSDataSerializable, DataNode, NSCopying {
     static let defaultParameterValue: [String: CSData] = [
         "alignItems": CSData.String("flex-start"),
         "borderRadius": CSData.Number(0),
+        "borderWidth": CSData.Number(0),
         "flex": CSData.Number(0),
         "flexDirection": CSData.String("column"),
         "justifyContent": CSData.String("flex-start"),
@@ -606,30 +607,6 @@ class CSLayer: CSDataDeserializable, CSDataSerializable, DataNode, NSCopying {
         insertChild(child, at: children.count)
     }
 
-    func attributesNames(for type: CSType) -> [String] {
-        if let _self = self as? CSComponentLayer {
-            return _self.component.parameters.filter({ $0.type == type }).map({ $0.name })
-        }
-
-        switch type {
-        case .named("Color", .string):
-            return ["backgroundColor"]
-        case .string:
-            return ["backgroundColor", "text", "image", "font", "shadow"].sorted()
-        case .number:
-            return [
-                "width",
-                "height",
-                "padding", "paddingVertical", "paddingHorizontal", "paddingLeft", "paddingTop", "paddingRight", "paddingBottom",
-                "margin", "marginVertical", "marginHorizontal", "marginLeft", "marginTop", "marginRight", "marginBottom"
-            ].sorted()
-        case .bool:
-            return ["visible"]
-        default:
-            return []
-        }
-    }
-
     func visibleChildren(for config: ComponentConfiguration) -> [CSLayer] {
         let dynamicChildren: [CSLayer] = config.get(attribute: "children", for: name).arrayValue.map({ childData in
             let layer = CSLayer.deserialize(childData)
@@ -669,6 +646,11 @@ class CSLayer: CSDataDeserializable, CSDataSerializable, DataNode, NSCopying {
 
             // Color
             "backgroundColor": CSData.String(backgroundColor ?? "transparent"),
+
+            // Border
+            "borderWidth": CSData.Number(borderWidth ?? 0),
+            "borderRadius": CSData.Number(borderRadius ?? 0),
+            "borderColor": CSData.String(borderColor ?? "transparent"),
 
             // Shadow
             "shadow": CSData.String(shadow ?? ""),
