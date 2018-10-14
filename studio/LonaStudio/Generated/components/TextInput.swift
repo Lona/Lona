@@ -56,12 +56,12 @@ public class TextInput: NSBox {
     translatesAutoresizingMaskIntoConstraints = false
     textView.translatesAutoresizingMaskIntoConstraints = false
 
-    let textViewTopAnchorConstraint = textView.topAnchor.constraint(equalTo: topAnchor, constant: 2)
-    let textViewBottomAnchorConstraint = textView.bottomAnchor.constraint(equalTo: bottomAnchor, constant: -2)
-    let textViewLeadingAnchorConstraint = textView.leadingAnchor.constraint(equalTo: leadingAnchor, constant: 2)
+    let textViewTopAnchorConstraint = textView.topAnchor.constraint(equalTo: topAnchor, constant: 3)
+    let textViewBottomAnchorConstraint = textView.bottomAnchor.constraint(equalTo: bottomAnchor, constant: -3)
+    let textViewLeadingAnchorConstraint = textView.leadingAnchor.constraint(equalTo: leadingAnchor, constant: 3)
     let textViewTrailingAnchorConstraint = textView
       .trailingAnchor
-      .constraint(lessThanOrEqualTo: trailingAnchor, constant: -2)
+      .constraint(lessThanOrEqualTo: trailingAnchor, constant: -3)
 
     NSLayoutConstraint.activate([
       textViewTopAnchorConstraint,
