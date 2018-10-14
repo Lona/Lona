@@ -170,7 +170,7 @@ let render =
                   "name": "NSShadow",
                   "protocols": [],
                   "where": None,
-                  "modifier": Some(PrivateModifier),
+                  "modifier": None,
                   "body": [Doc.convenienceInit(swiftOptions)],
                 }),
               ]
