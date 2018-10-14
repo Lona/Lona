@@ -9,6 +9,7 @@
   ],
   "examples" : [
     {
+      "id" : "Default",
       "name" : "Default",
       "params" : {
         "titleText" : "Open another project..."
@@ -102,6 +103,15 @@
             "type" : "Lona:View"
           },
           {
+            "id" : "Divider",
+            "params" : {
+              "alignSelf" : "stretch",
+              "backgroundColor" : "grey200",
+              "width" : 1
+            },
+            "type" : "Lona:View"
+          },
+          {
             "children" : [
               {
                 "id" : "Plus",
@@ -115,7 +125,8 @@
             ],
             "id" : "PlusContainer",
             "params" : {
-
+              "marginLeft" : 16,
+              "marginRight" : 4
             },
             "type" : "Lona:View"
           }
@@ -126,8 +137,8 @@
           "alignSelf" : "stretch",
           "flex" : 1,
           "flexDirection" : "row",
-          "paddingLeft" : 20,
-          "paddingRight" : 20
+          "paddingLeft" : 12,
+          "paddingRight" : 12
         },
         "type" : "Lona:View"
       }

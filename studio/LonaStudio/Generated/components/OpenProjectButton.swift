@@ -49,6 +49,7 @@ public class OpenProjectButton: NSBox {
   private var innerView = NSBox()
   private var titleContainerView = NSBox()
   private var titleView = NSTextField(labelWithString: "")
+  private var dividerView = NSBox()
   private var plusContainerView = NSBox()
   private var plusView = NSImageView()
 
@@ -74,6 +75,9 @@ public class OpenProjectButton: NSBox {
     titleContainerView.boxType = .custom
     titleContainerView.borderType = .noBorder
     titleContainerView.contentViewMargins = .zero
+    dividerView.boxType = .custom
+    dividerView.borderType = .noBorder
+    dividerView.contentViewMargins = .zero
     plusContainerView.boxType = .custom
     plusContainerView.borderType = .noBorder
     plusContainerView.contentViewMargins = .zero
@@ -82,11 +86,13 @@ public class OpenProjectButton: NSBox {
     addSubview(topBorderView)
     addSubview(innerView)
     innerView.addSubview(titleContainerView)
+    innerView.addSubview(dividerView)
     innerView.addSubview(plusContainerView)
     titleContainerView.addSubview(titleView)
     plusContainerView.addSubview(plusView)
 
     topBorderView.fillColor = Colors.grey200
+    dividerView.fillColor = Colors.grey200
     plusView.image = #imageLiteral(resourceName: "icon-plus")
   }
 
@@ -95,6 +101,7 @@ public class OpenProjectButton: NSBox {
     topBorderView.translatesAutoresizingMaskIntoConstraints = false
     innerView.translatesAutoresizingMaskIntoConstraints = false
     titleContainerView.translatesAutoresizingMaskIntoConstraints = false
+    dividerView.translatesAutoresizingMaskIntoConstraints = false
     plusContainerView.translatesAutoresizingMaskIntoConstraints = false
     titleView.translatesAutoresizingMaskIntoConstraints = false
     plusView.translatesAutoresizingMaskIntoConstraints = false
@@ -110,7 +117,7 @@ public class OpenProjectButton: NSBox {
     let topBorderViewHeightAnchorConstraint = topBorderView.heightAnchor.constraint(equalToConstant: 1)
     let titleContainerViewLeadingAnchorConstraint = titleContainerView
       .leadingAnchor
-      .constraint(equalTo: innerView.leadingAnchor, constant: 20)
+      .constraint(equalTo: innerView.leadingAnchor, constant: 12)
     let titleContainerViewTopAnchorConstraint = titleContainerView
       .topAnchor
       .constraint(greaterThanOrEqualTo: innerView.topAnchor)
@@ -120,12 +127,18 @@ public class OpenProjectButton: NSBox {
     let titleContainerViewBottomAnchorConstraint = titleContainerView
       .bottomAnchor
       .constraint(lessThanOrEqualTo: innerView.bottomAnchor)
-    let plusContainerViewTrailingAnchorConstraint = plusContainerView
-      .trailingAnchor
-      .constraint(equalTo: innerView.trailingAnchor, constant: -20)
-    let plusContainerViewLeadingAnchorConstraint = plusContainerView
+    let dividerViewLeadingAnchorConstraint = dividerView
       .leadingAnchor
       .constraint(equalTo: titleContainerView.trailingAnchor, constant: 20)
+    let dividerViewTopAnchorConstraint = dividerView.topAnchor.constraint(equalTo: innerView.topAnchor)
+    let dividerViewCenterYAnchorConstraint = dividerView.centerYAnchor.constraint(equalTo: innerView.centerYAnchor)
+    let dividerViewBottomAnchorConstraint = dividerView.bottomAnchor.constraint(equalTo: innerView.bottomAnchor)
+    let plusContainerViewTrailingAnchorConstraint = plusContainerView
+      .trailingAnchor
+      .constraint(equalTo: innerView.trailingAnchor, constant: -16)
+    let plusContainerViewLeadingAnchorConstraint = plusContainerView
+      .leadingAnchor
+      .constraint(equalTo: dividerView.trailingAnchor, constant: 16)
     let plusContainerViewTopAnchorConstraint = plusContainerView
       .topAnchor
       .constraint(greaterThanOrEqualTo: innerView.topAnchor)
@@ -141,6 +154,7 @@ public class OpenProjectButton: NSBox {
     let titleViewTrailingAnchorConstraint = titleView
       .trailingAnchor
       .constraint(lessThanOrEqualTo: titleContainerView.trailingAnchor)
+    let dividerViewWidthAnchorConstraint = dividerView.widthAnchor.constraint(equalToConstant: 1)
     let plusViewWidthAnchorParentConstraint = plusView
       .widthAnchor
       .constraint(lessThanOrEqualTo: plusContainerView.widthAnchor)
@@ -166,6 +180,10 @@ public class OpenProjectButton: NSBox {
       titleContainerViewTopAnchorConstraint,
       titleContainerViewCenterYAnchorConstraint,
       titleContainerViewBottomAnchorConstraint,
+      dividerViewLeadingAnchorConstraint,
+      dividerViewTopAnchorConstraint,
+      dividerViewCenterYAnchorConstraint,
+      dividerViewBottomAnchorConstraint,
       plusContainerViewTrailingAnchorConstraint,
       plusContainerViewLeadingAnchorConstraint,
       plusContainerViewTopAnchorConstraint,
@@ -175,6 +193,7 @@ public class OpenProjectButton: NSBox {
       titleViewBottomAnchorConstraint,
       titleViewLeadingAnchorConstraint,
       titleViewTrailingAnchorConstraint,
+      dividerViewWidthAnchorConstraint,
       plusViewWidthAnchorParentConstraint,
       plusViewTopAnchorConstraint,
       plusViewBottomAnchorConstraint,

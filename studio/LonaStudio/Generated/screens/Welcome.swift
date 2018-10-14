@@ -37,8 +37,6 @@ public class Welcome: NSBox {
   private var rowsView = NSBox()
   private var newButtonView = IconRow()
   private var spacerView = NSBox()
-  private var exampleButtonView = IconRow()
-  private var spacer2View = NSBox()
   private var documentationButtonView = IconRow()
   private var dividerView = NSBox()
   private var projectsView = NSBox()
@@ -72,9 +70,6 @@ public class Welcome: NSBox {
     spacerView.boxType = .custom
     spacerView.borderType = .noBorder
     spacerView.contentViewMargins = .zero
-    spacer2View.boxType = .custom
-    spacer2View.borderType = .noBorder
-    spacer2View.contentViewMargins = .zero
 
     addSubview(splashView)
     addSubview(dividerView)
@@ -86,8 +81,6 @@ public class Welcome: NSBox {
     bannerView.addSubview(versionView)
     rowsView.addSubview(newButtonView)
     rowsView.addSubview(spacerView)
-    rowsView.addSubview(exampleButtonView)
-    rowsView.addSubview(spacer2View)
     rowsView.addSubview(documentationButtonView)
     projectsView.addSubview(recentProjectsListView)
     projectsView.addSubview(openProjectButtonView)
@@ -102,9 +95,6 @@ public class Welcome: NSBox {
     newButtonView.icon = #imageLiteral(resourceName: "icon-blank-document")
     newButtonView.subtitleText = "Set up a new design system"
     newButtonView.titleText = "Create a new Lona workspace"
-    exampleButtonView.icon = #imageLiteral(resourceName: "icon-material-design-example")
-    exampleButtonView.subtitleText = "Explore the material design example workspace"
-    exampleButtonView.titleText = "Open an example workspace"
     documentationButtonView.icon = #imageLiteral(resourceName: "icon-documentation")
     documentationButtonView.subtitleText = "Check out the documentation to learn how Lona works"
     documentationButtonView.titleText = "Explore documentation"
@@ -125,8 +115,6 @@ public class Welcome: NSBox {
     versionView.translatesAutoresizingMaskIntoConstraints = false
     newButtonView.translatesAutoresizingMaskIntoConstraints = false
     spacerView.translatesAutoresizingMaskIntoConstraints = false
-    exampleButtonView.translatesAutoresizingMaskIntoConstraints = false
-    spacer2View.translatesAutoresizingMaskIntoConstraints = false
     documentationButtonView.translatesAutoresizingMaskIntoConstraints = false
     recentProjectsListView.translatesAutoresizingMaskIntoConstraints = false
     openProjectButtonView.translatesAutoresizingMaskIntoConstraints = false
@@ -173,7 +161,7 @@ public class Welcome: NSBox {
     let openProjectButtonViewTrailingAnchorConstraint = openProjectButtonView
       .trailingAnchor
       .constraint(equalTo: projectsView.trailingAnchor)
-    let imageViewTopAnchorConstraint = imageView.topAnchor.constraint(equalTo: bannerView.topAnchor, constant: 60)
+    let imageViewTopAnchorConstraint = imageView.topAnchor.constraint(equalTo: bannerView.topAnchor, constant: 80)
     let imageViewCenterXAnchorConstraint = imageView.centerXAnchor.constraint(equalTo: bannerView.centerXAnchor)
     let titleViewTopAnchorConstraint = titleView.topAnchor.constraint(equalTo: imageView.bottomAnchor)
     let titleViewLeadingAnchorConstraint = titleView
@@ -205,26 +193,12 @@ public class Welcome: NSBox {
     let spacerViewTrailingAnchorConstraint = spacerView
       .trailingAnchor
       .constraint(equalTo: rowsView.trailingAnchor, constant: -24)
-    let exampleButtonViewTopAnchorConstraint = exampleButtonView.topAnchor.constraint(equalTo: spacerView.bottomAnchor)
-    let exampleButtonViewLeadingAnchorConstraint = exampleButtonView
-      .leadingAnchor
-      .constraint(equalTo: rowsView.leadingAnchor, constant: 24)
-    let exampleButtonViewTrailingAnchorConstraint = exampleButtonView
-      .trailingAnchor
-      .constraint(equalTo: rowsView.trailingAnchor, constant: -24)
-    let spacer2ViewTopAnchorConstraint = spacer2View.topAnchor.constraint(equalTo: exampleButtonView.bottomAnchor)
-    let spacer2ViewLeadingAnchorConstraint = spacer2View
-      .leadingAnchor
-      .constraint(equalTo: rowsView.leadingAnchor, constant: 24)
-    let spacer2ViewTrailingAnchorConstraint = spacer2View
-      .trailingAnchor
-      .constraint(equalTo: rowsView.trailingAnchor, constant: -24)
     let documentationButtonViewBottomAnchorConstraint = documentationButtonView
       .bottomAnchor
       .constraint(equalTo: rowsView.bottomAnchor)
     let documentationButtonViewTopAnchorConstraint = documentationButtonView
       .topAnchor
-      .constraint(equalTo: spacer2View.bottomAnchor)
+      .constraint(equalTo: spacerView.bottomAnchor)
     let documentationButtonViewLeadingAnchorConstraint = documentationButtonView
       .leadingAnchor
       .constraint(equalTo: rowsView.leadingAnchor, constant: 24)
@@ -234,7 +208,6 @@ public class Welcome: NSBox {
     let imageViewHeightAnchorConstraint = imageView.heightAnchor.constraint(equalToConstant: 128)
     let imageViewWidthAnchorConstraint = imageView.widthAnchor.constraint(equalToConstant: 128)
     let spacerViewHeightAnchorConstraint = spacerView.heightAnchor.constraint(equalToConstant: 4)
-    let spacer2ViewHeightAnchorConstraint = spacer2View.heightAnchor.constraint(equalToConstant: 4)
     let openProjectButtonViewHeightAnchorConstraint = openProjectButtonView.heightAnchor.constraint(equalToConstant: 48)
 
     NSLayoutConstraint.activate([
@@ -280,12 +253,6 @@ public class Welcome: NSBox {
       spacerViewTopAnchorConstraint,
       spacerViewLeadingAnchorConstraint,
       spacerViewTrailingAnchorConstraint,
-      exampleButtonViewTopAnchorConstraint,
-      exampleButtonViewLeadingAnchorConstraint,
-      exampleButtonViewTrailingAnchorConstraint,
-      spacer2ViewTopAnchorConstraint,
-      spacer2ViewLeadingAnchorConstraint,
-      spacer2ViewTrailingAnchorConstraint,
       documentationButtonViewBottomAnchorConstraint,
       documentationButtonViewTopAnchorConstraint,
       documentationButtonViewLeadingAnchorConstraint,
@@ -293,7 +260,6 @@ public class Welcome: NSBox {
       imageViewHeightAnchorConstraint,
       imageViewWidthAnchorConstraint,
       spacerViewHeightAnchorConstraint,
-      spacer2ViewHeightAnchorConstraint,
       openProjectButtonViewHeightAnchorConstraint
     ])
   }
@@ -302,7 +268,6 @@ public class Welcome: NSBox {
     newButtonView.onClick = onCreateProject
     openProjectButtonView.onPressPlus = onCreateProject
     openProjectButtonView.onPressTitle = onOpenProject
-    exampleButtonView.onClick = onOpenExample
     documentationButtonView.onClick = onOpenDocumentation
   }
 }
