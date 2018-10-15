@@ -111,11 +111,13 @@ class WorkspaceViewController: NSSplitViewController {
 
     private var inspectedContent: InspectorView.Content?
 
-    private lazy var fileTree: FileTree = {
-        return FileTree(rootPath: LonaModule.current.url.path)
+    private lazy var fileNavigator: FileNavigator = {
+        let navigator = FileNavigator(rootPath: LonaModule.current.url.path)
+        navigator.titleText = LonaModule.current.url.lastPathComponent
+        return navigator
     }()
-    private lazy var fileTreeViewController: NSViewController = {
-        return NSViewController(view: fileTree)
+    private lazy var fileNavigatorViewController: NSViewController = {
+        return NSViewController(view: fileNavigator)
     }()
 
     private lazy var editorViewController = EditorViewController()
@@ -206,13 +208,13 @@ class WorkspaceViewController: NSSplitViewController {
         splitView.autosaveName = NSSplitView.AutosaveName(rawValue: splitViewResorationIdentifier)
         splitView.identifier = NSUserInterfaceItemIdentifier(rawValue: splitViewResorationIdentifier)
 
-        fileTree.defaultFont = NSFont.systemFont(ofSize: NSFont.systemFontSize(for: .small))
-        fileTree.displayNameForFile = { path in
+        fileNavigator.defaultFont = NSFont.systemFont(ofSize: NSFont.systemFontSize(for: .small))
+        fileNavigator.displayNameForFile = { path in
             let url = URL(fileURLWithPath: path)
             return url.pathExtension == "component" ? url.deletingPathExtension().lastPathComponent : url.lastPathComponent
         }
 
-        fileTree.imageForFile = { path, size in
+        fileNavigator.imageForFile = { path, size in
             let url = URL(fileURLWithPath: path)
 
             func defaultImage(for path: String) -> NSImage {
@@ -248,7 +250,7 @@ class WorkspaceViewController: NSSplitViewController {
             }
         }
 
-        fileTree.onAction = { path in
+        fileNavigator.onAction = { path in
             guard let document = self.document else {
                 let url = URL(fileURLWithPath: path)
 
@@ -363,7 +365,7 @@ class WorkspaceViewController: NSSplitViewController {
         }
     }
 
-    private lazy var contentListItem = NSSplitViewItem(contentListWithViewController: fileTreeViewController)
+    private lazy var contentListItem = NSSplitViewItem(contentListWithViewController: fileNavigatorViewController)
     private lazy var mainItem = NSSplitViewItem(viewController: editorViewController)
     private lazy var codeItem = NSSplitViewItem(viewController: codeEditorViewController)
     private lazy var sidebarItem = NSSplitViewItem(viewController: inspectorViewController)
