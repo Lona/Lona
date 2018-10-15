@@ -145,12 +145,15 @@ class CanvasCollectionView: NSView, NSCollectionViewDataSource, NSCollectionView
 
         let component = options.component
         let canvas = computedCanvases[canvasIndex]
-        let caseEntry = options.component.computedCases(for: canvas)[caseIndex]
+        let computedCases = options.component.computedCases(for: canvas)
+
+        guard caseIndex < computedCases.count else { return NSSize.zero }
+
         let rootLayer = component.rootLayer
 
         let config = ComponentConfiguration(
             component: component,
-            arguments: caseEntry.value.objectValue,
+            arguments: computedCases[caseIndex].value.objectValue,
             canvas: canvas
         )
 
