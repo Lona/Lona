@@ -12,7 +12,16 @@
       "id" : "Default",
       "name" : "Default",
       "params" : {
-        "fileIcon" : "file:\/\/\/Users\/devinabbott\/Projects\/Lona\/workspace\/assets\/LonaIcon_32x32@2x.png"
+        "fileIcon" : "file:\/\/\/Users\/devinabbott\/Projects\/Lona\/workspace\/assets\/LonaIcon_32x32@2x.png",
+        "titleText" : "Lona"
+      }
+    },
+    {
+      "id" : "Default",
+      "name" : "Default",
+      "params" : {
+        "fileIcon" : "https:\/\/is5-ssl.mzstatic.com\/image\/thumb\/Purple128\/v4\/e0\/ba\/c3\/e0bac365-b419-1c64-bf6d-a8b845d69535\/source\/512x512bb.jpg",
+        "titleText" : "Doordash"
       }
     }
   ],
@@ -75,9 +84,9 @@
           {
             "id" : "Image",
             "params" : {
-              "height" : 24,
+              "height" : 20,
               "marginRight" : 6,
-              "width" : 24
+              "width" : 20
             },
             "type" : "Lona:Image"
           },

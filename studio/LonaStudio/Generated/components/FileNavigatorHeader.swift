@@ -91,8 +91,8 @@ public class FileNavigatorHeader: NSBox {
     let titleViewCenterYAnchorConstraint = titleView.centerYAnchor.constraint(equalTo: innerView.centerYAnchor)
     let titleViewBottomAnchorConstraint = titleView.bottomAnchor.constraint(lessThanOrEqualTo: innerView.bottomAnchor)
     let dividerViewHeightAnchorConstraint = dividerView.heightAnchor.constraint(equalToConstant: 1)
-    let imageViewHeightAnchorConstraint = imageView.heightAnchor.constraint(equalToConstant: 24)
-    let imageViewWidthAnchorConstraint = imageView.widthAnchor.constraint(equalToConstant: 24)
+    let imageViewHeightAnchorConstraint = imageView.heightAnchor.constraint(equalToConstant: 20)
+    let imageViewWidthAnchorConstraint = imageView.widthAnchor.constraint(equalToConstant: 20)
 
     NSLayoutConstraint.activate([
       heightAnchorConstraint,
