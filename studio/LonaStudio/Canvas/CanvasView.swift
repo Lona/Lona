@@ -196,8 +196,10 @@ func renderBox(configuredLayer: ConfiguredLayer, node: YGNodeRef, options: Rende
     let borderColorString = config.get(attribute: "borderColor", for: layer.name).string ?? layer.borderColor
     var borderColor = borderColorString != nil ? CSColors.parse(css: borderColorString!, withDefault: NSColor.clear).color : nil
 
-    if let width = config.get(attribute: "borderWidth", for: layer.name).number ?? layer.borderWidth, width > 0 {
-        box.borderWidth = CGFloat(width)
+    let borderWidth = config.get(attribute: "borderWidth", for: layer.name).number ?? layer.borderWidth
+
+    if let borderWidth = borderWidth, borderWidth > 0 {
+        box.borderWidth = CGFloat(borderWidth)
         borderColor ?= NSColor.clear
     }
 
@@ -300,6 +302,15 @@ func renderBox(configuredLayer: ConfiguredLayer, node: YGNodeRef, options: Rende
     } else {
         for (index, sub) in configuredLayer.children.enumerated() {
             let child = renderBox(configuredLayer: sub, node: YGNodeGetChild(node, UInt32(index)), options: options)
+
+            // Children within an NSBox have coordinates starting from inside the border of the NSBox.
+            // Our Yoga layout has every child positioned, already taking border width into account.
+            // We need to offset the child by the border width so that we don't count the border width twice:
+            // once for the NSBox and once in the Yoga layout.
+            if let borderWidth = borderWidth, borderWidth > 0 {
+                child.frame.origin.x -= CGFloat(borderWidth)
+                child.frame.origin.y += CGFloat(borderWidth)
+            }
 
             box.addSubview(child)
         }
