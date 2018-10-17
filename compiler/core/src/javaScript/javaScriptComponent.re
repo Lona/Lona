@@ -247,20 +247,27 @@ let rec layerToJavaScriptAST =
          let attributeValue =
            switch (value) {
            | Logic.Literal(lonaValue) when lonaValue.ltype == Types.urlType =>
-             let path =
-               switch (lonaValue.data |> Js.Json.decodeString) {
-               | Some(url) =>
-                 getAssetPath(url |> Js.String.replace("file://", ""))
-               | None => ""
+             switch (lonaValue.data |> Js.Json.decodeString) {
+             | Some(url) when Js.String.startsWith("file://", url) =>
+               let path =
+                 getAssetPath(url |> Js.String.replace("file://", ""));
+               let pathValue: Types.lonaValue = {
+                 ltype: Types.urlType,
+                 data: Js.Json.string(path),
                };
-             let pathValue: Types.lonaValue = {
-               ltype: Types.urlType,
-               data: Js.Json.string(path),
-             };
-             CallExpression({
-               callee: Identifier(["require"]),
-               arguments: [Literal(pathValue)],
-             });
+               CallExpression({
+                 callee: Identifier(["require"]),
+                 arguments: [Literal(pathValue)],
+               });
+             | Some(url) =>
+               Literal(
+                 {ltype: Types.urlType, data: Js.Json.string(url)}: Types.lonaValue,
+               )
+             | None =>
+               Literal(
+                 {ltype: Types.urlType, data: Js.Json.string("")}: Types.lonaValue,
+               )
+             }
            | _ => JavaScriptLogic.logicValueToJavaScriptAST(config, value)
            };
          JSXAttribute({name: key, value: attributeValue});
