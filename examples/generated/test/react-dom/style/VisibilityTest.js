@@ -1,5 +1,4 @@
 import React from "react"
-import styled, { ThemeProvider } from "styled-components"
 
 import colors from "../colors"
 import shadows from "../shadows"
@@ -11,25 +10,17 @@ export default class VisibilityTest extends React.Component {
     let Title$visible
 
     Title$visible = this.props.enabled
-    let theme = {
-      "container": { "normal": {} },
-      "inner": { "normal": {} },
-      "title": { "normal": {} },
-      "view": { "normal": {} }
-    }
     return (
-      <ThemeProvider theme={theme}>
-        <div style={Object.assign({}, styles.container, {})}>
-          {false && <div style={Object.assign({}, styles.inner, {})} />}
-          {
-            Title$visible &&
-            <span style={Object.assign({}, styles.title, {})}>
-              {"Enabled"}
-            </span>
-          }
-          <div style={Object.assign({}, styles.view, {})} />
-        </div>
-      </ThemeProvider>
+      <div style={Object.assign({}, styles.container, {})}>
+        {false && <div style={Object.assign({}, styles.inner, {})} />}
+        {
+          Title$visible &&
+          <span style={Object.assign({}, styles.title, {})}>
+            {"Enabled"}
+          </span>
+        }
+        <div style={Object.assign({}, styles.view, {})} />
+      </div>
     );
   }
 };

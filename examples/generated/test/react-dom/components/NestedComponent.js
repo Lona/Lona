@@ -1,5 +1,4 @@
 import React from "react"
-import styled, { ThemeProvider } from "styled-components"
 
 import colors from "../colors"
 import shadows from "../shadows"
@@ -12,37 +11,26 @@ export default class NestedComponent extends React.Component {
   render() {
 
 
-    let theme = {
-      "view": { "normal": {} },
-      "text": { "normal": {} },
-      "fitContentParentSecondaryChildren": { "normal": {} },
-      "text1": { "normal": {} },
-      "localAsset": { "normal": {} },
-      "text2": { "normal": {} }
-    }
     return (
-      <ThemeProvider theme={theme}>
-        <div style={Object.assign({}, styles.view, {})}>
-          <span style={Object.assign({}, styles.text, {})}>
-            {"Example nested component"}
-          </span>
-          <div
-            style={Object.assign({}, styles
-            .fitContentParentSecondaryChildren, {})}
-          >
-            <FitContentParentSecondaryChildren />
-          </div>
-          <span style={Object.assign({}, styles.text1, {})}>
-            {"Text below"}
-          </span>
-          <div style={Object.assign({}, styles.localAsset, {})}>
-            <LocalAsset />
-          </div>
-          <span style={Object.assign({}, styles.text2, {})}>
-            {"Very bottom"}
-          </span>
+      <div style={Object.assign({}, styles.view, {})}>
+        <span style={Object.assign({}, styles.text, {})}>
+          {"Example nested component"}
+        </span>
+        <div
+          style={Object.assign({}, styles.fitContentParentSecondaryChildren, {})}
+        >
+          <FitContentParentSecondaryChildren />
         </div>
-      </ThemeProvider>
+        <span style={Object.assign({}, styles.text1, {})}>
+          {"Text below"}
+        </span>
+        <div style={Object.assign({}, styles.localAsset, {})}>
+          <LocalAsset />
+        </div>
+        <span style={Object.assign({}, styles.text2, {})}>
+          {"Very bottom"}
+        </span>
+      </div>
     );
   }
 };

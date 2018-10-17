@@ -1,5 +1,4 @@
 import React from "react"
-import styled, { ThemeProvider } from "styled-components"
 
 import colors from "../colors"
 import shadows from "../shadows"
@@ -21,23 +20,20 @@ export default class BoxModelConditional extends React.Component {
     Inner$marginLeft = this.props.margin
     Inner$height = this.props.size
     Inner$width = this.props.size
-    let theme = { "outer": { "normal": {} }, "inner": { "normal": {} } }
     return (
-      <ThemeProvider theme={theme}>
-        <div style={Object.assign({}, styles.outer, {})}>
-          <div
-            style={Object.assign({}, styles.inner, {
-              marginTop: Inner$marginTop,
-              marginRight: Inner$marginRight,
-              marginBottom: Inner$marginBottom,
-              marginLeft: Inner$marginLeft,
-              width: Inner$width,
-              height: Inner$height
-            })}
+      <div style={Object.assign({}, styles.outer, {})}>
+        <div
+          style={Object.assign({}, styles.inner, {
+            marginTop: Inner$marginTop,
+            marginRight: Inner$marginRight,
+            marginBottom: Inner$marginBottom,
+            marginLeft: Inner$marginLeft,
+            width: Inner$width,
+            height: Inner$height
+          })}
 
-          />
-        </div>
-      </ThemeProvider>
+        />
+      </div>
     );
   }
 };

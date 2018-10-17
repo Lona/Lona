@@ -1,5 +1,4 @@
 import React from "react"
-import styled, { ThemeProvider } from "styled-components"
 
 import colors from "../colors"
 import shadows from "../shadows"
@@ -32,26 +31,19 @@ export default class Optionals extends React.Component {
 
       StringParam$text = unwrapped
     }
-    let theme = {
-      "view": { "normal": {} },
-      "label": { "normal": {} },
-      "stringParam": { "normal": {} }
-    }
     return (
-      <ThemeProvider theme={theme}>
-        <div
-          style={Object.assign({}, styles.view, {
-            backgroundColor: View$backgroundColor
-          })}
-        >
-          <span style={Object.assign({}, styles.label, {})}>
-            {Label$text}
-          </span>
-          <span style={Object.assign({}, styles.stringParam, {})}>
-            {StringParam$text}
-          </span>
-        </div>
-      </ThemeProvider>
+      <div
+        style={Object.assign({}, styles.view, {
+          backgroundColor: View$backgroundColor
+        })}
+      >
+        <span style={Object.assign({}, styles.label, {})}>
+          {Label$text}
+        </span>
+        <span style={Object.assign({}, styles.stringParam, {})}>
+          {StringParam$text}
+        </span>
+      </div>
     );
   }
 };

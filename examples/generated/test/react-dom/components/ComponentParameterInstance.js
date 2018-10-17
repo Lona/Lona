@@ -1,5 +1,4 @@
 import React from "react"
-import styled, { ThemeProvider } from "styled-components"
 
 import colors from "../colors"
 import shadows from "../shadows"
@@ -10,22 +9,16 @@ export default class ComponentParameterInstance extends React.Component {
   render() {
 
 
-    let theme = {
-      "view": { "normal": {} },
-      "componentParameterTemplate": { "normal": {} }
-    }
     return (
-      <ThemeProvider theme={theme}>
-        <div style={Object.assign({}, styles.view, {})}>
-          <div style={Object.assign({}, styles.componentParameterTemplate, {})}>
-            <ComponentParameterTemplate
-              subtitleComponent={{"parameters":{"text":"Subtitle","textStyle":"subheading2"},"type":"Lona:Text"}}
-              titleComponent={{"parameters":{"text":"Title","textStyle":"headline"},"type":"Lona:Text"}}
+      <div style={Object.assign({}, styles.view, {})}>
+        <div style={Object.assign({}, styles.componentParameterTemplate, {})}>
+          <ComponentParameterTemplate
+            subtitleComponent={{"parameters":{"text":"Subtitle","textStyle":"subheading2"},"type":"Lona:Text"}}
+            titleComponent={{"parameters":{"text":"Title","textStyle":"headline"},"type":"Lona:Text"}}
 
-            />
-          </div>
+          />
         </div>
-      </ThemeProvider>
+      </div>
     );
   }
 };

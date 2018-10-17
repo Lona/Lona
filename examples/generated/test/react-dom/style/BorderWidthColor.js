@@ -1,5 +1,4 @@
 import React from "react"
-import styled, { ThemeProvider } from "styled-components"
 
 import colors from "../colors"
 import shadows from "../shadows"
@@ -20,20 +19,17 @@ export default class BorderWidthColor extends React.Component {
       Inner$borderWidth = 4
       Inner$borderRadius = 20
     }
-    let theme = { "view": { "normal": {} }, "inner": { "normal": {} } }
     return (
-      <ThemeProvider theme={theme}>
-        <div style={Object.assign({}, styles.view, {})}>
-          <div
-            style={Object.assign({}, styles.inner, {
-              borderRadius: Inner$borderRadius,
-              borderWidth: Inner$borderWidth,
-              borderColor: Inner$borderColor
-            })}
+      <div style={Object.assign({}, styles.view, {})}>
+        <div
+          style={Object.assign({}, styles.inner, {
+            borderRadius: Inner$borderRadius,
+            borderWidth: Inner$borderWidth,
+            borderColor: Inner$borderColor
+          })}
 
-          />
-        </div>
-      </ThemeProvider>
+        />
+      </div>
     );
   }
 };

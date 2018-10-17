@@ -1,5 +1,4 @@
 import React from "react"
-import styled, { ThemeProvider } from "styled-components"
 
 import colors from "../colors"
 import shadows from "../shadows"
@@ -10,24 +9,16 @@ export default class NestedButtons extends React.Component {
   render() {
 
 
-    let theme = {
-      "view": { "normal": {} },
-      "button": { "normal": {} },
-      "view1": { "normal": {} },
-      "button2": { "normal": {} }
-    }
     return (
-      <ThemeProvider theme={theme}>
-        <div style={Object.assign({}, styles.view, {})}>
-          <div style={Object.assign({}, styles.button, {})}>
-            <Button label={"Button 1"} />
-          </div>
-          <div style={Object.assign({}, styles.view1, {})} />
-          <div style={Object.assign({}, styles.button2, {})}>
-            <Button label={"Button 2"} />
-          </div>
+      <div style={Object.assign({}, styles.view, {})}>
+        <div style={Object.assign({}, styles.button, {})}>
+          <Button label={"Button 1"} />
         </div>
-      </ThemeProvider>
+        <div style={Object.assign({}, styles.view1, {})} />
+        <div style={Object.assign({}, styles.button2, {})}>
+          <Button label={"Button 2"} />
+        </div>
+      </div>
     );
   }
 };
