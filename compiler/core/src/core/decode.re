@@ -187,7 +187,8 @@ module Layer = {
                |> field("params", list(Parameters.parameter))
                |> List.find((param: parameter) => param.name == key);
              switch (param) {
-             | _ => {ltype: param.ltype, data: value}
+             | _ =>
+               LonaValue.expandDecodedValue({ltype: param.ltype, data: value})
              | exception _ =>
                Js.log2("Unknown built-in parameter when deserializing:", key);
                raise(UnknownParameter(ParameterKey.toString(key)));
@@ -258,10 +259,12 @@ let rec decodeExpr = json => {
         "right": json |> field("right", decodeExpr),
       })
     | "LitExpr" =>
-      LiteralExpression({
-        ltype: json |> at(["value", "type"], Types.lonaType),
-        data: json |> at(["value", "data"], json => json),
-      })
+      LiteralExpression(
+        LonaValue.expandDecodedValue({
+          ltype: json |> at(["value", "type"], Types.lonaType),
+          data: json |> at(["value", "data"], json => json),
+        }),
+      )
     | _ => raise(UnknownExprType(exprType))
     };
   };

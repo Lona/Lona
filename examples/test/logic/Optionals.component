@@ -68,10 +68,7 @@
         "right" : {
           "type" : "LitExpr",
           "value" : {
-            "data" : {
-              "case" : "Some",
-              "data" : true
-            },
+            "data" : true,
             "type" : "Boolean?"
           }
         },
@@ -121,10 +118,7 @@
         "right" : {
           "type" : "LitExpr",
           "value" : {
-            "data" : {
-              "case" : "Some",
-              "data" : false
-            },
+            "data" : false,
             "type" : "Boolean?"
           }
         },
@@ -159,10 +153,7 @@
         "right" : {
           "type" : "LitExpr",
           "value" : {
-            "data" : {
-              "case" : "None",
-              "data" : null
-            },
+            "data" : null,
             "type" : "Boolean?"
           }
         },
