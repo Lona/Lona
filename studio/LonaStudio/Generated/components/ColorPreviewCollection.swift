@@ -72,13 +72,10 @@ public class ColorPreviewCollection: NSBox {
     view1View.addSubview(colorPreviewCardView)
     view2View.addSubview(colorPreviewCard2View)
 
-    fillColor = Colors.pink50
-    view1View.fillColor = #colorLiteral(red: 0.847058823529, green: 0.847058823529, blue: 0.847058823529, alpha: 1)
     colorPreviewCardView.color = Colors.red500
     colorPreviewCardView.colorCode = "#ff0000"
     colorPreviewCardView.colorName = "Red"
-    colorPreviewCardView.selected = false
-    view2View.fillColor = #colorLiteral(red: 0.847058823529, green: 0.847058823529, blue: 0.847058823529, alpha: 1)
+    colorPreviewCardView.selected = true
     colorPreviewCard2View.color = Colors.black
     colorPreviewCard2View.colorCode = "Text"
     colorPreviewCard2View.colorName = "Text"
@@ -99,8 +96,8 @@ public class ColorPreviewCollection: NSBox {
     let spacer1ViewTopAnchorConstraint = spacer1View.topAnchor.constraint(equalTo: topAnchor, constant: 36)
     let view2ViewLeadingAnchorConstraint = view2View.leadingAnchor.constraint(equalTo: spacer1View.trailingAnchor)
     let view2ViewTopAnchorConstraint = view2View.topAnchor.constraint(equalTo: topAnchor, constant: 36)
-    let view1ViewHeightAnchorConstraint = view1View.heightAnchor.constraint(equalToConstant: 140)
-    let view1ViewWidthAnchorConstraint = view1View.widthAnchor.constraint(equalToConstant: 120)
+    let view1ViewHeightAnchorConstraint = view1View.heightAnchor.constraint(equalToConstant: 130)
+    let view1ViewWidthAnchorConstraint = view1View.widthAnchor.constraint(equalToConstant: 90)
     let colorPreviewCardViewTopAnchorConstraint = colorPreviewCardView
       .topAnchor
       .constraint(equalTo: view1View.topAnchor)
@@ -115,8 +112,8 @@ public class ColorPreviewCollection: NSBox {
       .constraint(equalTo: view1View.trailingAnchor)
     let spacer1ViewHeightAnchorConstraint = spacer1View.heightAnchor.constraint(equalToConstant: 0)
     let spacer1ViewWidthAnchorConstraint = spacer1View.widthAnchor.constraint(equalToConstant: 20)
-    let view2ViewHeightAnchorConstraint = view2View.heightAnchor.constraint(equalToConstant: 140)
-    let view2ViewWidthAnchorConstraint = view2View.widthAnchor.constraint(equalToConstant: 120)
+    let view2ViewHeightAnchorConstraint = view2View.heightAnchor.constraint(equalToConstant: 130)
+    let view2ViewWidthAnchorConstraint = view2View.widthAnchor.constraint(equalToConstant: 90)
     let colorPreviewCard2ViewTopAnchorConstraint = colorPreviewCard2View
       .topAnchor
       .constraint(equalTo: view2View.topAnchor)

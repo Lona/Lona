@@ -15,11 +15,18 @@ final class InspectorView: NSBox {
     enum Content {
         case layer(CSLayer)
         case color(CSColor)
+        case textStyle(CSTextStyle)
 
         init?(_ color: CSColor?) {
             guard let color = color else { return nil }
 
             self = .color(color)
+        }
+
+        init?(_ textStyle: CSTextStyle?) {
+            guard let textStyle = textStyle else { return nil }
+
+            self = .textStyle(textStyle)
         }
     }
 
@@ -185,6 +192,9 @@ final class InspectorView: NSBox {
                 inspectorView.topAnchor.constraint(equalTo: flippedView.topAnchor).isActive = true
                 inspectorView.bottomAnchor.constraint(equalTo: flippedView.bottomAnchor).isActive = true
             }
+
+        case .textStyle:
+            inspectorView.removeFromSuperview()
         }
     }
 }

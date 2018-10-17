@@ -51,16 +51,15 @@
               "color" : "red500",
               "colorCode" : "#ff0000",
               "colorName" : "Red",
-              "selected" : false
+              "selected" : true
             },
             "type" : "ColorPreviewCard"
           }
         ],
         "id" : "View 1",
         "params" : {
-          "backgroundColor" : "#D8D8D8",
-          "height" : 140,
-          "width" : 120
+          "height" : 130,
+          "width" : 90
         },
         "type" : "Lona:View"
       },
@@ -87,9 +86,8 @@
         ],
         "id" : "View 2",
         "params" : {
-          "backgroundColor" : "#D8D8D8",
-          "height" : 140,
-          "width" : 120
+          "height" : 130,
+          "width" : 90
         },
         "type" : "Lona:View"
       }
@@ -97,7 +95,6 @@
     "id" : "View",
     "params" : {
       "alignSelf" : "stretch",
-      "backgroundColor" : "pink50",
       "flex" : 1,
       "flexDirection" : "row",
       "paddingBottom" : 36,

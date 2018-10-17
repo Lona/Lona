@@ -9,6 +9,7 @@
   ],
   "examples" : [
     {
+      "id" : "Default",
       "name" : "Default",
       "params" : {
 
@@ -19,25 +20,76 @@
 
   ],
   "params" : [
-
+    {
+      "name" : "onSelectTextStyle",
+      "type" : "TextStyleHandler"
+    },
+    {
+      "name" : "onDeleteTextStyle",
+      "type" : "TextStyleHandler"
+    },
+    {
+      "name" : "textStyles",
+      "type" : "TextStyleList"
+    },
+    {
+      "name" : "onClickAddTextStyle",
+      "type" : {
+        "name" : "Function"
+      }
+    },
+    {
+      "name" : "onMoveTextStyle",
+      "type" : "ItemMoveHandler"
+    }
   ],
   "root" : {
     "children" : [
       {
         "children" : [
           {
-            "id" : "Title",
+            "children" : [
+              {
+                "id" : "Title",
+                "params" : {
+                  "font" : "title",
+                  "text" : "Text Styles"
+                },
+                "type" : "Lona:Text"
+              },
+              {
+                "id" : "Spacer",
+                "params" : {
+                  "flex" : 1,
+                  "height" : 24
+                },
+                "type" : "Lona:View"
+              },
+              {
+                "children" : [
+                  {
+                    "id" : "Button",
+                    "params" : {
+                      "titleText" : "Add Text Style"
+                    },
+                    "type" : "Button"
+                  }
+                ],
+                "id" : "FixedHeightFix",
+                "params" : {
+                  "visible" : false
+                },
+                "type" : "Lona:View"
+              }
+            ],
+            "id" : "Header",
             "params" : {
-              "font" : "title",
-              "text" : "Text Styles"
-            },
-            "type" : "Lona:Text"
-          },
-          {
-            "id" : "Spacer",
-            "params" : {
+              "alignItems" : "center",
               "alignSelf" : "stretch",
-              "height" : 24
+              "flexDirection" : "row",
+              "height" : 38,
+              "paddingLeft" : 64,
+              "paddingRight" : 64
             },
             "type" : "Lona:View"
           },
@@ -61,10 +113,8 @@
     "params" : {
       "alignItems" : "center",
       "alignSelf" : "stretch",
+      "backgroundColor" : "white",
       "flex" : 1,
-      "paddingBottom" : 48,
-      "paddingLeft" : 64,
-      "paddingRight" : 64,
       "paddingTop" : 48
     },
     "type" : "Lona:View"

@@ -57,8 +57,12 @@ class TextStylePreviewCollectionView: NSView {
         wantsLayer = true
 
         let flowLayout = NSCollectionViewFlowLayout()
-        flowLayout.minimumLineSpacing = 24
-        flowLayout.minimumInteritemSpacing = 24
+
+        // Items have a built-in padding of 4
+        flowLayout.sectionInset = NSEdgeInsets(top: 36, left: 64 - 4, bottom: 36, right: 64 - 4)
+
+        flowLayout.minimumLineSpacing = 12
+        flowLayout.minimumInteritemSpacing = 12
 
         collectionView.collectionViewLayout = flowLayout
         collectionView.delegate = self
@@ -130,7 +134,7 @@ extension TextStylePreviewCollectionView: NSCollectionViewDelegateFlowLayout {
 
         return NSSize(
             width: 260,
-            height: (textStyle.font.lineHeight ?? textStyle.font.nsFont.capHeight) + 81)
+            height: (textStyle.font.lineHeight ?? textStyle.font.nsFont.capHeight) + 30)
     }
 }
 

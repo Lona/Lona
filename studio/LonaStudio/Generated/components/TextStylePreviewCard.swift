@@ -41,9 +41,7 @@ public class TextStylePreviewCard: NSBox {
   // MARK: Private
 
   private var previewView = NSBox()
-  private var topLineView = NSBox()
   private var exampleTextView = NSTextField(labelWithString: "")
-  private var bottomLineView = NSBox()
   private var dividerView = NSBox()
   private var detailsView = NSBox()
   private var textStyleSummaryView = NSTextField(labelWithString: "")
@@ -64,29 +62,19 @@ public class TextStylePreviewCard: NSBox {
     detailsView.boxType = .custom
     detailsView.borderType = .noBorder
     detailsView.contentViewMargins = .zero
-    topLineView.boxType = .custom
-    topLineView.borderType = .noBorder
-    topLineView.contentViewMargins = .zero
     exampleTextView.lineBreakMode = .byWordWrapping
-    bottomLineView.boxType = .custom
-    bottomLineView.borderType = .noBorder
-    bottomLineView.contentViewMargins = .zero
     textStyleSummaryView.lineBreakMode = .byWordWrapping
 
     addSubview(previewView)
     addSubview(dividerView)
     addSubview(detailsView)
-    previewView.addSubview(topLineView)
     previewView.addSubview(exampleTextView)
-    previewView.addSubview(bottomLineView)
     detailsView.addSubview(textStyleSummaryView)
 
     fillColor = Colors.white
     cornerRadius = 4
     borderWidth = 1
-    borderColor = Colors.grey300
     exampleTextView.maximumNumberOfLines = 1
-    dividerView.fillColor = Colors.grey300
   }
 
   private func setUpConstraints() {
@@ -94,61 +82,50 @@ public class TextStylePreviewCard: NSBox {
     previewView.translatesAutoresizingMaskIntoConstraints = false
     dividerView.translatesAutoresizingMaskIntoConstraints = false
     detailsView.translatesAutoresizingMaskIntoConstraints = false
-    topLineView.translatesAutoresizingMaskIntoConstraints = false
     exampleTextView.translatesAutoresizingMaskIntoConstraints = false
-    bottomLineView.translatesAutoresizingMaskIntoConstraints = false
     textStyleSummaryView.translatesAutoresizingMaskIntoConstraints = false
 
-    let previewViewTopAnchorConstraint = previewView.topAnchor.constraint(equalTo: topAnchor, constant: 1)
-    let previewViewLeadingAnchorConstraint = previewView.leadingAnchor.constraint(equalTo: leadingAnchor, constant: 1)
+    let previewViewTopAnchorConstraint = previewView.topAnchor.constraint(equalTo: topAnchor, constant: 5)
+    let previewViewLeadingAnchorConstraint = previewView.leadingAnchor.constraint(equalTo: leadingAnchor, constant: 5)
     let previewViewTrailingAnchorConstraint = previewView
       .trailingAnchor
-      .constraint(equalTo: trailingAnchor, constant: -1)
+      .constraint(equalTo: trailingAnchor, constant: -5)
     let dividerViewTopAnchorConstraint = dividerView.topAnchor.constraint(equalTo: previewView.bottomAnchor)
-    let dividerViewLeadingAnchorConstraint = dividerView.leadingAnchor.constraint(equalTo: leadingAnchor, constant: 1)
+    let dividerViewLeadingAnchorConstraint = dividerView.leadingAnchor.constraint(equalTo: leadingAnchor, constant: 5)
     let dividerViewTrailingAnchorConstraint = dividerView
       .trailingAnchor
-      .constraint(equalTo: trailingAnchor, constant: -1)
-    let detailsViewTopAnchorConstraint = detailsView.topAnchor.constraint(equalTo: dividerView.bottomAnchor)
-    let detailsViewLeadingAnchorConstraint = detailsView.leadingAnchor.constraint(equalTo: leadingAnchor, constant: 1)
+      .constraint(equalTo: trailingAnchor, constant: -5)
+    let detailsViewTopAnchorConstraint = detailsView
+      .topAnchor
+      .constraint(equalTo: dividerView.bottomAnchor, constant: 5)
+    let detailsViewLeadingAnchorConstraint = detailsView.leadingAnchor.constraint(equalTo: leadingAnchor, constant: 5)
     let detailsViewTrailingAnchorConstraint = detailsView
       .trailingAnchor
-      .constraint(equalTo: trailingAnchor, constant: -1)
-    let topLineViewTopAnchorConstraint = topLineView.topAnchor.constraint(equalTo: previewView.topAnchor, constant: 16)
-    let topLineViewLeadingAnchorConstraint = topLineView.leadingAnchor.constraint(equalTo: previewView.leadingAnchor)
-    let topLineViewTrailingAnchorConstraint = topLineView.trailingAnchor.constraint(equalTo: previewView.trailingAnchor)
-    let exampleTextViewTopAnchorConstraint = exampleTextView.topAnchor.constraint(equalTo: topLineView.bottomAnchor)
+      .constraint(equalTo: trailingAnchor, constant: -5)
+    let exampleTextViewTopAnchorConstraint = exampleTextView.topAnchor.constraint(equalTo: previewView.topAnchor)
+    let exampleTextViewBottomAnchorConstraint = exampleTextView
+      .bottomAnchor
+      .constraint(equalTo: previewView.bottomAnchor)
     let exampleTextViewLeadingAnchorConstraint = exampleTextView
       .leadingAnchor
-      .constraint(equalTo: previewView.leadingAnchor, constant: 20)
+      .constraint(equalTo: previewView.leadingAnchor, constant: 2)
     let exampleTextViewTrailingAnchorConstraint = exampleTextView
       .trailingAnchor
-      .constraint(lessThanOrEqualTo: previewView.trailingAnchor, constant: -20)
-    let bottomLineViewBottomAnchorConstraint = bottomLineView
-      .bottomAnchor
-      .constraint(equalTo: previewView.bottomAnchor, constant: -16)
-    let bottomLineViewTopAnchorConstraint = bottomLineView.topAnchor.constraint(equalTo: exampleTextView.bottomAnchor)
-    let bottomLineViewLeadingAnchorConstraint = bottomLineView
-      .leadingAnchor
-      .constraint(equalTo: previewView.leadingAnchor)
-    let bottomLineViewTrailingAnchorConstraint = bottomLineView
-      .trailingAnchor
-      .constraint(equalTo: previewView.trailingAnchor)
+      .constraint(lessThanOrEqualTo: previewView.trailingAnchor, constant: -2)
     let dividerViewHeightAnchorConstraint = dividerView.heightAnchor.constraint(equalToConstant: 1)
     let textStyleSummaryViewTopAnchorConstraint = textStyleSummaryView
       .topAnchor
-      .constraint(equalTo: detailsView.topAnchor, constant: 16)
+      .constraint(equalTo: detailsView.topAnchor)
     let textStyleSummaryViewBottomAnchorConstraint = textStyleSummaryView
       .bottomAnchor
-      .constraint(equalTo: detailsView.bottomAnchor, constant: -16)
+      .constraint(equalTo: detailsView.bottomAnchor)
     let textStyleSummaryViewLeadingAnchorConstraint = textStyleSummaryView
       .leadingAnchor
-      .constraint(equalTo: detailsView.leadingAnchor, constant: 20)
+      .constraint(equalTo: detailsView.leadingAnchor)
     let textStyleSummaryViewTrailingAnchorConstraint = textStyleSummaryView
       .trailingAnchor
-      .constraint(lessThanOrEqualTo: detailsView.trailingAnchor, constant: -20)
-    let topLineViewHeightAnchorConstraint = topLineView.heightAnchor.constraint(equalToConstant: 1)
-    let bottomLineViewHeightAnchorConstraint = bottomLineView.heightAnchor.constraint(equalToConstant: 1)
+      .constraint(lessThanOrEqualTo: detailsView.trailingAnchor)
+    let textStyleSummaryViewHeightAnchorConstraint = textStyleSummaryView.heightAnchor.constraint(equalToConstant: 18)
 
     NSLayoutConstraint.activate([
       previewViewTopAnchorConstraint,
@@ -160,54 +137,31 @@ public class TextStylePreviewCard: NSBox {
       detailsViewTopAnchorConstraint,
       detailsViewLeadingAnchorConstraint,
       detailsViewTrailingAnchorConstraint,
-      topLineViewTopAnchorConstraint,
-      topLineViewLeadingAnchorConstraint,
-      topLineViewTrailingAnchorConstraint,
       exampleTextViewTopAnchorConstraint,
+      exampleTextViewBottomAnchorConstraint,
       exampleTextViewLeadingAnchorConstraint,
       exampleTextViewTrailingAnchorConstraint,
-      bottomLineViewBottomAnchorConstraint,
-      bottomLineViewTopAnchorConstraint,
-      bottomLineViewLeadingAnchorConstraint,
-      bottomLineViewTrailingAnchorConstraint,
       dividerViewHeightAnchorConstraint,
       textStyleSummaryViewTopAnchorConstraint,
       textStyleSummaryViewBottomAnchorConstraint,
       textStyleSummaryViewLeadingAnchorConstraint,
       textStyleSummaryViewTrailingAnchorConstraint,
-      topLineViewHeightAnchorConstraint,
-      bottomLineViewHeightAnchorConstraint
+      textStyleSummaryViewHeightAnchorConstraint
     ])
   }
 
   private func update() {
-    bottomLineView.fillColor = Colors.white
-    detailsView.fillColor = #colorLiteral(red: 0, green: 0, blue: 0, alpha: 0)
-    previewView.fillColor = Colors.white
-    textStyleSummaryViewTextStyle = TextStyles.regular
-    textStyleSummaryView.attributedStringValue =
-      textStyleSummaryViewTextStyle.apply(to: textStyleSummaryView.attributedStringValue)
-    topLineView.fillColor = Colors.white
+    borderColor = #colorLiteral(red: 0, green: 0, blue: 0, alpha: 0)
+    previewView.fillColor = Colors.grey100
     exampleTextView.attributedStringValue = exampleTextViewTextStyle.apply(to: example)
     textStyleSummaryView.attributedStringValue = textStyleSummaryViewTextStyle.apply(to: textStyleSummary)
     exampleTextViewTextStyle = textStyle
     exampleTextView.attributedStringValue = exampleTextViewTextStyle.apply(to: exampleTextView.attributedStringValue)
     if inverse {
       previewView.fillColor = Colors.grey900
-      topLineView.fillColor = Colors.grey900
-      bottomLineView.fillColor = Colors.grey900
     }
     if selected {
-      detailsView.fillColor = Colors.lightblue600
-      topLineView.fillColor = Colors.grey200
-      bottomLineView.fillColor = Colors.grey200
-      textStyleSummaryViewTextStyle = TextStyles.regularInverse
-      textStyleSummaryView.attributedStringValue =
-        textStyleSummaryViewTextStyle.apply(to: textStyleSummaryView.attributedStringValue)
-      if inverse {
-        topLineView.fillColor = Colors.grey700
-        bottomLineView.fillColor = Colors.grey700
-      }
+      borderColor = Colors.lightblue600
     }
   }
 }

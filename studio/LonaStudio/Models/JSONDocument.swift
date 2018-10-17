@@ -10,8 +10,14 @@ import AppKit
 import Foundation
 
 class JSONDocument: NSDocument {
+    struct TextStylesFile {
+        var styles: [CSTextStyle]
+        var defaultStyleName: String?
+    }
+
     enum Content {
         case colors([CSColor])
+        case textStyles(TextStylesFile)
     }
 
     override init() {
@@ -56,6 +62,24 @@ class JSONDocument: NSDocument {
             } catch {
                 throw NSError(domain: NSOSStatusErrorDomain, code: unimpErr, userInfo: nil)
             }
+        case .textStyles(let textStylesFile):
+            do {
+                var data = CSData.Object([
+                    "styles": CSData.Array(textStylesFile.styles.map({ $0.toData() }))
+                    ])
+
+                if let defaultStyleName = textStylesFile.defaultStyleName {
+                    data["defaultStyleName"] = defaultStyleName.toData()
+                }
+
+                if let data = data.toData() {
+                    return data
+                } else {
+                    throw NSError(domain: NSOSStatusErrorDomain, code: unimpErr, userInfo: nil)
+                }
+            } catch {
+                throw NSError(domain: NSOSStatusErrorDomain, code: unimpErr, userInfo: nil)
+            }
         }
     }
 
@@ -75,6 +99,11 @@ class JSONDocument: NSDocument {
             switch name {
             case "colors":
                 content = Content.colors(CSColors.parse(csData))
+            case "textStyles":
+                let textStyleFile = TextStylesFile(
+                    styles: CSTypography.parse(csData),
+                    defaultStyleName: CSTypography.parseDefaultName(csData))
+                content = Content.textStyles(textStyleFile)
             default:
                 content = nil
             }

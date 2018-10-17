@@ -11,8 +11,11 @@ import ControlledComponents
 import class ColorPicker.ColorWellPicker
 
 public typealias ColorList = [CSColor]?
-
 public typealias ColorHandler = ((CSColor?) -> Void)?
+
+public typealias TextStyleList = [CSTextStyle]?
+public typealias TextStyleHandler = ((CSTextStyle?) -> Void)?
+
 public typealias StringHandler = ((String) -> Void)?
 public typealias ColorPickerColor = Color?
 public typealias ColorPickerHandler = ((Color) -> Void)?
