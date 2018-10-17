@@ -517,11 +517,103 @@ class WorkspaceViewController: NSSplitViewController {
 
         super.keyUp(with: event)
     }
+
+    // Documents
+
+    private func createAndShowNewDocument(in windowController: NSWindowController) {
+        let newDocument = ComponentDocument()
+        newDocument.component = CSComponent.makeDefaultComponent()
+
+        NSDocumentController.shared.addDocument(newDocument)
+        newDocument.addWindowController(windowController)
+        windowController.document = newDocument
+
+        self.document = newDocument
+
+        // Set this after updating the document (which calls update)
+        // TODO: There shouldn't need to be an implicit ordering. Maybe we call update() manually.
+        self.inspectedContent = nil
+    }
+
+    private func close(document: NSDocument) -> Bool {
+        if document.isDocumentEdited {
+            let name = document.fileURL?.lastPathComponent ?? "Untitled"
+            guard let result = Alert(
+                items: [
+                    DocumentAction.cancel,
+                    DocumentAction.discardChanges,
+                    DocumentAction.saveChanges],
+                messageText: "Save changes to \(name)",
+                informativeText: "The document \(name) has unsaved changes. Save them now?").run()
+                else { return false }
+            switch result {
+            case .saveChanges:
+                var saveURL: URL
+
+                if let url = document.fileURL {
+                    saveURL = url
+                } else {
+                    let dialog = NSSavePanel()
+
+                    dialog.title                   = "Save .component file"
+                    dialog.showsResizeIndicator    = true
+                    dialog.showsHiddenFiles        = false
+                    dialog.canCreateDirectories    = true
+                    dialog.allowedFileTypes        = ["component"]
+
+                    // User canceled the save. Don't swap out the document.
+                    if dialog.runModal() != NSApplication.ModalResponse.OK {
+                        return false
+                    }
+
+                    guard let url = dialog.url else { return false }
+
+                    saveURL = url
+                }
+
+                document.save(to: saveURL, ofType: document.fileType ?? "DocumentType", for: NSDocument.SaveOperationType.saveOperation, completionHandler: { error in
+                    // TODO: We should not close the document if it fails to save
+                    Swift.print("Failed to save", saveURL, error as Any)
+                })
+
+                LonaPlugins.current.trigger(eventType: .onSaveComponent)
+            case .cancel:
+                return false
+            case .discardChanges:
+                break
+            }
+        }
+
+        NSDocumentController.shared.removeDocument(document)
+
+        if let windowController = document.windowControllers.first {
+            windowController.document = nil
+            document.removeWindowController(windowController)
+        }
+
+        self.document = nil
+
+        // Set this after updating the document (which calls update)
+        // TODO: There shouldn't need to be an implicit ordering. Maybe we call update() manually.
+        self.inspectedContent = nil
+
+        return true
+    }
 }
 
 // MARK: - IBActions
 
 extension WorkspaceViewController {
+    @IBAction func newDocument(_ sender: AnyObject) {
+        if let document = self.document {
+            guard close(document: document) else { return }
+        }
+
+        guard let windowController = self.view.window?.windowController else { return }
+
+        createAndShowNewDocument(in: windowController)
+    }
+
     @IBAction func zoomToActualSize(_ sender: AnyObject) {
         componentEditorViewController.zoomToActualSize()
     }

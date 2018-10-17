@@ -188,6 +188,8 @@ class CanvasCollectionView: NSView, NSCollectionViewDataSource, NSCollectionView
         let canvasIndex = indexPath[options.layout == .caseXcanvasY ? 0 : 1]
         let caseIndex = indexPath[options.layout == .caseXcanvasY ? 1 : 0]
 
+        guard caseIndex < computedCases.count, canvasIndex < computedCanvases.count else { return item }
+
         let component = options.component
         let canvas = computedCanvases[canvasIndex]
         let caseEntry = options.component.computedCases(for: canvas)[caseIndex]
