@@ -126,7 +126,8 @@ let decodeCollapsedOptional =
 
 /* Optional values are stored in 2 formats, depending on where they appear
    in the save file. Eventually these should be unified. One format is more compact,
-   using special cases of types to store less data.
+   using special cases of types to store less data. In this function, we convert
+   the compact format into the verbose format.
 
    E.g. in the more verbose format, Optional is specified as an object, { case, data }.
    In the compact format, we treat "null" data as the case "None" and just store

@@ -260,11 +260,10 @@ let rec decodeExpr = json => {
       })
     | "LitExpr" =>
       LiteralExpression(
-        {
+        LonaValue.expandDecodedValue({
           ltype: json |> at(["value", "type"], Types.lonaType),
           data: json |> at(["value", "data"], json => json),
-        }
-        |> LonaValue.expandDecodedValue,
+        }),
       )
     | _ => raise(UnknownExprType(exprType))
     };
