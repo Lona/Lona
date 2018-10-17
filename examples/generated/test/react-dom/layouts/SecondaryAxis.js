@@ -9,14 +9,14 @@ export default class SecondaryAxis extends React.Component {
 
 
     return (
-      <div style={Object.assign({}, styles.container, {})}>
-        <div style={Object.assign({}, styles.fixed, {})} />
-        <div style={Object.assign({}, styles.fit, {})}>
-          <span style={Object.assign({}, styles.text, {})}>
+      <div style={styles.container}>
+        <div style={styles.fixed} />
+        <div style={styles.fit}>
+          <span style={styles.text}>
             {"Text goes here"}
           </span>
         </div>
-        <div style={Object.assign({}, styles.fill, {})} />
+        <div style={styles.fill} />
       </div>
     );
   }

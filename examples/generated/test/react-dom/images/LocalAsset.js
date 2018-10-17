@@ -9,12 +9,8 @@ export default class LocalAsset extends React.Component {
 
 
     return (
-      <div style={Object.assign({}, styles.view, {})}>
-        <img
-          style={Object.assign({}, styles.image, {})}
-          src={require("../assets/icon_128x128.png")}
-
-        />
+      <div style={styles.view}>
+        <img style={styles.image} src={require("../assets/icon_128x128.png")} />
       </div>
     );
   }

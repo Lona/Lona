@@ -11,9 +11,9 @@ export default class NestedBottomLeftLayout extends React.Component {
 
 
     return (
-      <View style={[ styles.view, {} ]}>
-        <View style={[ styles.view1, {} ]}>
-          <View style={[ styles.localAsset, {} ]}>
+      <View style={styles.view}>
+        <View style={styles.view1}>
+          <View style={styles.localAsset}>
             <LocalAsset />
           </View>
         </View>

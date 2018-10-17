@@ -11,8 +11,8 @@ export default class Assign extends React.Component {
 
     Text$text = this.props.text
     return (
-      <div style={Object.assign({}, styles.view, {})}>
-        <span style={Object.assign({}, styles.text, {})}>
+      <div style={styles.view}>
+        <span style={styles.text}>
           {Text$text}
         </span>
       </div>

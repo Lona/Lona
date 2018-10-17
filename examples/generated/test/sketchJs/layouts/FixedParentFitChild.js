@@ -10,10 +10,10 @@ export default class FixedParentFitChild extends React.Component {
 
 
     return (
-      <View style={[ styles.view, {} ]}>
-        <View style={[ styles.view1, {} ]}>
-          <View style={[ styles.view4, {} ]} />
-          <View style={[ styles.view5, {} ]} />
+      <View style={styles.view}>
+        <View style={styles.view1}>
+          <View style={styles.view4} />
+          <View style={styles.view5} />
         </View>
       </View>
     );

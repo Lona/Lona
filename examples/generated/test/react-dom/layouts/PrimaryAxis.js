@@ -9,15 +9,15 @@ export default class PrimaryAxis extends React.Component {
 
 
     return (
-      <div style={Object.assign({}, styles.view, {})}>
-        <div style={Object.assign({}, styles.fixed, {})} />
-        <div style={Object.assign({}, styles.fit, {})}>
-          <span style={Object.assign({}, styles.text, {})}>
+      <div style={styles.view}>
+        <div style={styles.fixed} />
+        <div style={styles.fit}>
+          <span style={styles.text}>
             {"Text goes here"}
           </span>
         </div>
-        <div style={Object.assign({}, styles.fill1, {})} />
-        <div style={Object.assign({}, styles.fill2, {})} />
+        <div style={styles.fill1} />
+        <div style={styles.fill2} />
       </div>
     );
   }

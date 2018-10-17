@@ -11,59 +11,59 @@ export default class TextAlignment extends React.Component {
 
 
     return (
-      <View style={[ styles.view, {} ]}>
-        <View style={[ styles.view1, {} ]}>
+      <View style={styles.view}>
+        <View style={styles.view1}>
           <Image
-            style={[ styles.image, {} ]}
+            style={styles.image}
             source={require("../assets/icon_128x128.png")}
 
           />
-          <View style={[ styles.view2, {} ]} />
-          <Text style={[ styles.text, {} ]}>
+          <View style={styles.view2} />
+          <Text style={styles.text}>
             {"Welcome to Lona Studio"}
           </Text>
-          <Text style={[ styles.text1, {} ]}>
+          <Text style={styles.text1}>
             {"Centered - Width: Fit"}
           </Text>
-          <Text style={[ styles.text2, {} ]}>
+          <Text style={styles.text2}>
             {"Left aligned - Width: Fill"}
           </Text>
-          <Text style={[ styles.text3, {} ]}>
+          <Text style={styles.text3}>
             {"Right aligned - Width: Fill"}
           </Text>
-          <Text style={[ styles.text4, {} ]}>
+          <Text style={styles.text4}>
             {"Centered - Width: 80"}
           </Text>
         </View>
-        <View style={[ styles.view3, {} ]}>
-          <Text style={[ styles.text5, {} ]}>
+        <View style={styles.view3}>
+          <Text style={styles.text5}>
             {"Left aligned text, Fit w/ secondary centering"}
           </Text>
         </View>
-        <View style={[ styles.view4, {} ]}>
-          <Text style={[ styles.text6, {} ]}>
+        <View style={styles.view4}>
+          <Text style={styles.text6}>
             {"Left aligned text, Fixed w/ secondary centering"}
           </Text>
         </View>
-        <View style={[ styles.view5, {} ]}>
-          <Text style={[ styles.text7, {} ]}>
+        <View style={styles.view5}>
+          <Text style={styles.text7}>
             {"Centered text, Fit parent no centering"}
           </Text>
         </View>
-        <View style={[ styles.view6, {} ]}>
-          <Text style={[ styles.text8, {} ]}>
+        <View style={styles.view6}>
+          <Text style={styles.text8}>
             {"Centered text, Fixed parent no centering"}
           </Text>
         </View>
-        <View style={[ styles.rightAlignmentContainer, {} ]}>
-          <Text style={[ styles.text9, {} ]}>
+        <View style={styles.rightAlignmentContainer}>
+          <Text style={styles.text9}>
             {"Fit Text"}
           </Text>
-          <Text style={[ styles.text10, {} ]}>
+          <Text style={styles.text10}>
             {"Fill and center aligned text"}
           </Text>
           <Image
-            style={[ styles.image1, {} ]}
+            style={styles.image1}
             source={require("../assets/icon_128x128.png")}
 
           />

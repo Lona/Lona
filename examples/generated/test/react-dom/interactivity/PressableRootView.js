@@ -54,7 +54,7 @@ export default class PressableRootView extends React.Component {
           })}
           onClick={Inner$onPress}
         >
-          <span style={Object.assign({}, styles.innerText, {})}>
+          <span style={styles.innerText}>
             {InnerText$text}
           </span>
         </div>

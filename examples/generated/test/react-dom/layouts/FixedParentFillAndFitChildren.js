@@ -9,13 +9,13 @@ export default class FixedParentFillAndFitChildren extends React.Component {
 
 
     return (
-      <div style={Object.assign({}, styles.view, {})}>
-        <div style={Object.assign({}, styles.view1, {})}>
-          <div style={Object.assign({}, styles.view4, {})} />
-          <div style={Object.assign({}, styles.view5, {})} />
+      <div style={styles.view}>
+        <div style={styles.view1}>
+          <div style={styles.view4} />
+          <div style={styles.view5} />
         </div>
-        <div style={Object.assign({}, styles.view2, {})} />
-        <div style={Object.assign({}, styles.view3, {})} />
+        <div style={styles.view2} />
+        <div style={styles.view3} />
       </div>
     );
   }

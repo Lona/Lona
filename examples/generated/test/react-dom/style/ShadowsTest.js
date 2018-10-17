@@ -14,7 +14,7 @@ export default class ShadowsTest extends React.Component {
       Inner$shadow = shadows.elevation3
     }
     return (
-      <div style={Object.assign({}, styles.container, {})}>
+      <div style={styles.container}>
         <div style={Object.assign({}, styles.inner, { ...Inner$shadow })} />
       </div>
     );

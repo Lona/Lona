@@ -9,35 +9,35 @@ export default class TextStylesTest extends React.Component {
 
 
     return (
-      <div style={Object.assign({}, styles.view, {})}>
-        <span style={Object.assign({}, styles.text, {})}>
+      <div style={styles.view}>
+        <span style={styles.text}>
           {"Text goes here"}
         </span>
-        <span style={Object.assign({}, styles.text1, {})}>
+        <span style={styles.text1}>
           {"Text goes here"}
         </span>
-        <span style={Object.assign({}, styles.text2, {})}>
+        <span style={styles.text2}>
           {"Text goes here"}
         </span>
-        <span style={Object.assign({}, styles.text3, {})}>
+        <span style={styles.text3}>
           {"Text goes here"}
         </span>
-        <span style={Object.assign({}, styles.text4, {})}>
+        <span style={styles.text4}>
           {"Text goes here"}
         </span>
-        <span style={Object.assign({}, styles.text5, {})}>
+        <span style={styles.text5}>
           {"Text goes here"}
         </span>
-        <span style={Object.assign({}, styles.text6, {})}>
+        <span style={styles.text6}>
           {"Text goes here"}
         </span>
-        <span style={Object.assign({}, styles.text7, {})}>
+        <span style={styles.text7}>
           {"Text goes here"}
         </span>
-        <span style={Object.assign({}, styles.text8, {})}>
+        <span style={styles.text8}>
           {"Text goes here"}
         </span>
-        <span style={Object.assign({}, styles.text9, {})}>
+        <span style={styles.text9}>
           {"Text goes here"}
         </span>
       </div>

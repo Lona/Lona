@@ -9,59 +9,59 @@ export default class TextAlignment extends React.Component {
 
 
     return (
-      <div style={Object.assign({}, styles.view, {})}>
-        <div style={Object.assign({}, styles.view1, {})}>
+      <div style={styles.view}>
+        <div style={styles.view1}>
           <img
-            style={Object.assign({}, styles.image, {})}
+            style={styles.image}
             src={require("../assets/icon_128x128.png")}
 
           />
-          <div style={Object.assign({}, styles.view2, {})} />
-          <span style={Object.assign({}, styles.text, {})}>
+          <div style={styles.view2} />
+          <span style={styles.text}>
             {"Welcome to Lona Studio"}
           </span>
-          <span style={Object.assign({}, styles.text1, {})}>
+          <span style={styles.text1}>
             {"Centered - Width: Fit"}
           </span>
-          <span style={Object.assign({}, styles.text2, {})}>
+          <span style={styles.text2}>
             {"Left aligned - Width: Fill"}
           </span>
-          <span style={Object.assign({}, styles.text3, {})}>
+          <span style={styles.text3}>
             {"Right aligned - Width: Fill"}
           </span>
-          <span style={Object.assign({}, styles.text4, {})}>
+          <span style={styles.text4}>
             {"Centered - Width: 80"}
           </span>
         </div>
-        <div style={Object.assign({}, styles.view3, {})}>
-          <span style={Object.assign({}, styles.text5, {})}>
+        <div style={styles.view3}>
+          <span style={styles.text5}>
             {"Left aligned text, Fit w/ secondary centering"}
           </span>
         </div>
-        <div style={Object.assign({}, styles.view4, {})}>
-          <span style={Object.assign({}, styles.text6, {})}>
+        <div style={styles.view4}>
+          <span style={styles.text6}>
             {"Left aligned text, Fixed w/ secondary centering"}
           </span>
         </div>
-        <div style={Object.assign({}, styles.view5, {})}>
-          <span style={Object.assign({}, styles.text7, {})}>
+        <div style={styles.view5}>
+          <span style={styles.text7}>
             {"Centered text, Fit parent no centering"}
           </span>
         </div>
-        <div style={Object.assign({}, styles.view6, {})}>
-          <span style={Object.assign({}, styles.text8, {})}>
+        <div style={styles.view6}>
+          <span style={styles.text8}>
             {"Centered text, Fixed parent no centering"}
           </span>
         </div>
-        <div style={Object.assign({}, styles.rightAlignmentContainer, {})}>
-          <span style={Object.assign({}, styles.text9, {})}>
+        <div style={styles.rightAlignmentContainer}>
+          <span style={styles.text9}>
             {"Fit Text"}
           </span>
-          <span style={Object.assign({}, styles.text10, {})}>
+          <span style={styles.text10}>
             {"Fill and center aligned text"}
           </span>
           <img
-            style={Object.assign({}, styles.image1, {})}
+            style={styles.image1}
             src={require("../assets/icon_128x128.png")}
 
           />

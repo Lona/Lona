@@ -10,91 +10,91 @@ export default class NestedLayout extends React.Component {
 
 
     return (
-      <div style={Object.assign({}, styles.view, {})}>
-        <div style={Object.assign({}, styles.topRow, {})}>
-          <div style={Object.assign({}, styles.column1, {})}>
-            <div style={Object.assign({}, styles.view1, {})}>
-              <div style={Object.assign({}, styles.localAsset, {})}>
+      <div style={styles.view}>
+        <div style={styles.topRow}>
+          <div style={styles.column1}>
+            <div style={styles.view1}>
+              <div style={styles.localAsset}>
                 <LocalAsset />
               </div>
             </div>
-            <div style={Object.assign({}, styles.view2, {})}>
-              <div style={Object.assign({}, styles.localAsset2, {})}>
+            <div style={styles.view2}>
+              <div style={styles.localAsset2}>
                 <LocalAsset />
               </div>
             </div>
-            <div style={Object.assign({}, styles.view3, {})}>
-              <div style={Object.assign({}, styles.localAsset3, {})}>
-                <LocalAsset />
-              </div>
-            </div>
-          </div>
-          <div style={Object.assign({}, styles.column2, {})}>
-            <div style={Object.assign({}, styles.view4, {})}>
-              <div style={Object.assign({}, styles.localAsset4, {})}>
-                <LocalAsset />
-              </div>
-            </div>
-            <div style={Object.assign({}, styles.view5, {})}>
-              <div style={Object.assign({}, styles.localAsset5, {})}>
-                <LocalAsset />
-              </div>
-            </div>
-            <div style={Object.assign({}, styles.view6, {})}>
-              <div style={Object.assign({}, styles.localAsset6, {})}>
+            <div style={styles.view3}>
+              <div style={styles.localAsset3}>
                 <LocalAsset />
               </div>
             </div>
           </div>
-          <div style={Object.assign({}, styles.column3, {})}>
-            <div style={Object.assign({}, styles.view7, {})}>
-              <div style={Object.assign({}, styles.localAsset7, {})}>
+          <div style={styles.column2}>
+            <div style={styles.view4}>
+              <div style={styles.localAsset4}>
                 <LocalAsset />
               </div>
             </div>
-            <div style={Object.assign({}, styles.view8, {})}>
-              <div style={Object.assign({}, styles.localAsset8, {})}>
+            <div style={styles.view5}>
+              <div style={styles.localAsset5}>
                 <LocalAsset />
               </div>
             </div>
-            <div style={Object.assign({}, styles.view9, {})}>
-              <div style={Object.assign({}, styles.localAsset9, {})}>
+            <div style={styles.view6}>
+              <div style={styles.localAsset6}>
+                <LocalAsset />
+              </div>
+            </div>
+          </div>
+          <div style={styles.column3}>
+            <div style={styles.view7}>
+              <div style={styles.localAsset7}>
+                <LocalAsset />
+              </div>
+            </div>
+            <div style={styles.view8}>
+              <div style={styles.localAsset8}>
+                <LocalAsset />
+              </div>
+            </div>
+            <div style={styles.view9}>
+              <div style={styles.localAsset9}>
                 <LocalAsset />
               </div>
             </div>
           </div>
         </div>
-        <div style={Object.assign({}, styles.bottomRow, {})}>
-          <div style={Object.assign({}, styles.column4, {})}>
-            <div style={Object.assign({}, styles.view10, {})}>
+        <div style={styles.bottomRow}>
+          <div style={styles.column4}>
+            <div style={styles.view10}>
               <LocalAsset />
             </div>
-            <div style={Object.assign({}, styles.view11, {})}>
+            <div style={styles.view11}>
               <LocalAsset />
             </div>
-            <div style={Object.assign({}, styles.view12, {})}>
-              <LocalAsset />
-            </div>
-          </div>
-          <div style={Object.assign({}, styles.column5, {})}>
-            <div style={Object.assign({}, styles.view13, {})}>
-              <LocalAsset />
-            </div>
-            <div style={Object.assign({}, styles.view14, {})}>
-              <LocalAsset />
-            </div>
-            <div style={Object.assign({}, styles.view15, {})}>
+            <div style={styles.view12}>
               <LocalAsset />
             </div>
           </div>
-          <div style={Object.assign({}, styles.column6, {})}>
-            <div style={Object.assign({}, styles.view16, {})}>
+          <div style={styles.column5}>
+            <div style={styles.view13}>
               <LocalAsset />
             </div>
-            <div style={Object.assign({}, styles.view17, {})}>
+            <div style={styles.view14}>
               <LocalAsset />
             </div>
-            <div style={Object.assign({}, styles.view18, {})}>
+            <div style={styles.view15}>
+              <LocalAsset />
+            </div>
+          </div>
+          <div style={styles.column6}>
+            <div style={styles.view16}>
+              <LocalAsset />
+            </div>
+            <div style={styles.view17}>
+              <LocalAsset />
+            </div>
+            <div style={styles.view18}>
               <LocalAsset />
             </div>
           </div>

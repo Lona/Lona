@@ -10,8 +10,8 @@ export default class NestedBottomLeftLayout extends React.Component {
 
 
     return (
-      <div style={Object.assign({}, styles.view, {})}>
-        <div style={Object.assign({}, styles.view1, {})}>
+      <div style={styles.view}>
+        <div style={styles.view1}>
           <LocalAsset />
         </div>
       </div>

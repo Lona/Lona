@@ -9,10 +9,10 @@ export default class FitContentParentSecondaryChildren extends React.Component {
 
 
     return (
-      <div style={Object.assign({}, styles.container, {})}>
-        <div style={Object.assign({}, styles.view1, {})} />
-        <div style={Object.assign({}, styles.view3, {})} />
-        <div style={Object.assign({}, styles.view2, {})} />
+      <div style={styles.container}>
+        <div style={styles.view1} />
+        <div style={styles.view3} />
+        <div style={styles.view2} />
       </div>
     );
   }

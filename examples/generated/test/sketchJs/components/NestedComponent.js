@@ -14,16 +14,16 @@ export default class NestedComponent extends React.Component {
 
 
     return (
-      <View style={[ styles.view, {} ]}>
-        <Text style={[ styles.text, {} ]}>
+      <View style={styles.view}>
+        <Text style={styles.text}>
           {"Example nested component"}
         </Text>
         <FitContentParentSecondaryChildren />
-        <Text style={[ styles.text1, {} ]}>
+        <Text style={styles.text1}>
           {"Text below"}
         </Text>
         <LocalAsset />
-        <Text style={[ styles.text2, {} ]}>
+        <Text style={styles.text2}>
           {"Very bottom"}
         </Text>
       </View>

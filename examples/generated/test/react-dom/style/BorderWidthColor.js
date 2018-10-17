@@ -20,7 +20,7 @@ export default class BorderWidthColor extends React.Component {
       Inner$borderRadius = 20
     }
     return (
-      <div style={Object.assign({}, styles.view, {})}>
+      <div style={styles.view}>
         <div
           style={Object.assign({}, styles.inner, {
             borderRadius: Inner$borderRadius,

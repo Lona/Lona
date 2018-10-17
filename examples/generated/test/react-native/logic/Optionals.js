@@ -34,10 +34,10 @@ export default class Optionals extends React.Component {
     }
     return (
       <View style={[ styles.view, { backgroundColor: View$backgroundColor } ]}>
-        <Text style={[ styles.label, {} ]}>
+        <Text style={styles.label}>
           {Label$text}
         </Text>
-        <Text style={[ styles.stringParam, {} ]}>
+        <Text style={styles.stringParam}>
           {StringParam$text}
         </Text>
       </View>
