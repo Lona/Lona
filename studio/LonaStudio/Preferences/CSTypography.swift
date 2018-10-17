@@ -39,7 +39,7 @@ private func fontWeightName(fontWeight: NSFont.Weight) -> String {
     }
 }
 
-struct CSTextStyle {
+public struct CSTextStyle {
     let id: String
     let name: String
     let fontName: String?
@@ -194,6 +194,10 @@ class CSTypography: CSPreferencesFile {
                 color: font["color"] != nil ? CSColors.parse(css: font["color"]?.string ?? "black", withDefault: NSColor.black).color : nil,
                 extends: font["extends"]?.string)
         })
+    }
+
+    static func parseDefaultName(_ data: CSData) -> String? {
+        return data["defaultStyleName"]?.string
     }
 
     private static func getOptionalFontBy(id: String) -> CSTextStyle? {

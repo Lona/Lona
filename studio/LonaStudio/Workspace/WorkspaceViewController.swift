@@ -161,6 +161,45 @@ class WorkspaceViewController: NSSplitViewController {
         return controller
     }()
 
+    private lazy var textStyleEditorViewController: TextStyleEditorViewController = {
+        let controller = TextStyleEditorViewController()
+
+        controller.onInspectTextStyle = { textStyle in
+            self.inspectedContent = InspectorView.Content(textStyle)
+            self.update()
+        }
+
+        controller.onChangeTextStyles = { actionName, newTextStyles, selectedTextStyle in
+            guard
+                let document = self.document as? JSONDocument,
+                let content = document.content,
+                case let .textStyles(oldFile) = content else { return }
+
+            let oldInspectedContent = self.inspectedContent
+            let newInspectedContent = InspectorView.Content(selectedTextStyle)
+
+            UndoManager.shared.run(
+                name: actionName,
+                execute: {[unowned self] in
+                    var newFile = oldFile
+                    newFile.styles = newTextStyles
+                    document.content = .textStyles(newFile)
+                    self.inspectedContent = newInspectedContent
+                    self.inspectorView.content = newInspectedContent
+                    controller.textStyles = newFile.styles
+                },
+                undo: {[unowned self] in
+                    document.content = .textStyles(oldFile)
+                    self.inspectedContent = oldInspectedContent
+                    self.inspectorView.content = oldInspectedContent
+                    controller.textStyles = oldFile.styles
+                }
+            )
+        }
+
+        return controller
+    }()
+
     private lazy var inspectorView = InspectorView()
     private lazy var inspectorViewController: NSViewController = {
         return NSViewController(view: inspectorView)
@@ -429,6 +468,10 @@ class WorkspaceViewController: NSSplitViewController {
                 editorViewController.contentView = colorEditorViewController.view
 
                 colorEditorViewController.colors = colors
+            } else if let content = document.content, case .textStyles(let file) = content {
+                editorViewController.contentView = textStyleEditorViewController.view
+
+                textStyleEditorViewController.textStyles = file.styles
             } else {
                 editorViewController.contentView = nil
                 return

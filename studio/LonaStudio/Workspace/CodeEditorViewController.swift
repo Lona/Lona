@@ -84,6 +84,26 @@ class CodeEditorViewController: NSViewController {
                 }, onFailure: { code, message in
                     Swift.print("Failed", code, message as Any)
                 })
+
+            } else if let content = document.content, case .textStyles = content {
+                guard let compilerPath = CSUserPreferences.compilerURL?.path else { return }
+                guard let data = try? document.data(ofType: "JSONDocument") else { return }
+
+                LonaNode.run(
+                    arguments: [compilerPath, "textStyles", fileExtension],
+                    inputData: data,
+                    onSuccess: { result in
+                        guard let result = result else { return }
+                        DispatchQueue.main.async {
+                            // There's a race condition here where the document may have changed
+                            // by the time this completes, and the text will be set for the wrong document.
+                            // Make sure we're looking at the same document before setting the text
+                            guard document == self.document else { return }
+                            self.contentView.textValue = result
+                        }
+                }, onFailure: { code, message in
+                    Swift.print("Failed", code, message as Any)
+                })
             } else {
                 contentView.titleText = ""
                 contentView.subtitleText = ""
