@@ -1,5 +1,4 @@
 import React from "react"
-import styled, { ThemeProvider } from "styled-components"
 
 import colors from "../colors"
 import shadows from "../shadows"
@@ -10,15 +9,12 @@ export default class NestedOptionals extends React.Component {
   render() {
 
 
-    let theme = { "view": { "normal": {} }, "optionals": { "normal": {} } }
     return (
-      <ThemeProvider theme={theme}>
-        <div style={Object.assign({}, styles.view, {})}>
-          <div style={Object.assign({}, styles.optionals, {})}>
-            <Optionals boolParam={null} stringParam={"Text"} />
-          </div>
+      <div style={Object.assign({}, styles.view, {})}>
+        <div style={Object.assign({}, styles.optionals, {})}>
+          <Optionals boolParam={null} stringParam={"Text"} />
         </div>
-      </ThemeProvider>
+      </div>
     );
   }
 };

@@ -321,15 +321,15 @@ let importComponents =
   {
     absolute:
       switch (framework) {
-      | JavaScriptOptions.ReactDOM => [
-          Ast.ImportDeclaration({
-            source: "styled-components",
-            specifiers: [
-              ImportDefaultSpecifier("styled"),
-              ImportSpecifier({imported: "ThemeProvider", local: None}),
-            ],
-          }),
-        ]
+      | JavaScriptOptions.ReactDOM =>
+        /* Ast.ImportDeclaration({
+             source: "styled-components",
+             specifiers: [
+               ImportDefaultSpecifier("styled"),
+               ImportSpecifier({imported: "ThemeProvider", local: None}),
+             ],
+           }), */
+        []
       | _ => [
           Ast.ImportDeclaration({
             source:
@@ -394,16 +394,16 @@ let rootLayerToJavaScriptAST =
        );
 
   switch (options.framework) {
-  | ReactDOM =>
-    JavaScriptAst.(
-      JSXElement({
-        tag: "ThemeProvider",
-        attributes: [
-          JSXAttribute({name: "theme", value: Identifier(["theme"])}),
-        ],
-        content: [astRootLayer],
-      })
-    )
+  /* | ReactDOM =>
+     JavaScriptAst.(
+       JSXElement({
+         tag: "ThemeProvider",
+         attributes: [
+           JSXAttribute({name: "theme", value: Identifier(["theme"])}),
+         ],
+         content: [astRootLayer],
+       })
+     ) */
   | _ => astRootLayer
   };
 };
@@ -554,7 +554,7 @@ let generate =
                           [logicAST]
                           @ (
                             switch (options.framework) {
-                            | JavaScriptOptions.ReactDOM => [themeAST]
+                            /* | JavaScriptOptions.ReactDOM => [themeAST] */
                             | _ => []
                             }
                           )

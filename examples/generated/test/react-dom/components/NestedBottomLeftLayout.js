@@ -1,5 +1,4 @@
 import React from "react"
-import styled, { ThemeProvider } from "styled-components"
 
 import colors from "../colors"
 import shadows from "../shadows"
@@ -10,19 +9,12 @@ export default class NestedBottomLeftLayout extends React.Component {
   render() {
 
 
-    let theme = {
-      "view": { "normal": {} },
-      "view1": { "normal": {} },
-      "localAsset": { "normal": {} }
-    }
     return (
-      <ThemeProvider theme={theme}>
-        <div style={Object.assign({}, styles.view, {})}>
-          <div style={Object.assign({}, styles.view1, {})}>
-            <LocalAsset />
-          </div>
+      <div style={Object.assign({}, styles.view, {})}>
+        <div style={Object.assign({}, styles.view1, {})}>
+          <LocalAsset />
         </div>
-      </ThemeProvider>
+      </div>
     );
   }
 };

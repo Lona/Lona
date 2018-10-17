@@ -1,5 +1,4 @@
 import React from "react"
-import styled, { ThemeProvider } from "styled-components"
 
 import colors from "../colors"
 import shadows from "../shadows"
@@ -14,13 +13,10 @@ export default class ShadowsTest extends React.Component {
     if (this.props.largeShadow) {
       Inner$shadow = shadows.elevation3
     }
-    let theme = { "container": { "normal": {} }, "inner": { "normal": {} } }
     return (
-      <ThemeProvider theme={theme}>
-        <div style={Object.assign({}, styles.container, {})}>
-          <div style={Object.assign({}, styles.inner, { ...Inner$shadow })} />
-        </div>
-      </ThemeProvider>
+      <div style={Object.assign({}, styles.container, {})}>
+        <div style={Object.assign({}, styles.inner, { ...Inner$shadow })} />
+      </div>
     );
   }
 };

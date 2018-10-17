@@ -1,5 +1,4 @@
 import React from "react"
-import styled, { ThemeProvider } from "styled-components"
 
 import colors from "../colors"
 import shadows from "../shadows"
@@ -9,34 +8,23 @@ export default class MultipleFlexText extends React.Component {
   render() {
 
 
-    let theme = {
-      "view": { "normal": {} },
-      "view1": { "normal": {} },
-      "view3": { "normal": {} },
-      "text": { "normal": {} },
-      "view2": { "normal": {} },
-      "view4": { "normal": {} },
-      "text1": { "normal": {} }
-    }
     return (
-      <ThemeProvider theme={theme}>
-        <div style={Object.assign({}, styles.view, {})}>
-          <div style={Object.assign({}, styles.view1, {})}>
-            <div style={Object.assign({}, styles.view3, {})}>
-              <span style={Object.assign({}, styles.text, {})}>
-                {"Some long text (currently LS lays out incorrectly)"}
-              </span>
-            </div>
-          </div>
-          <div style={Object.assign({}, styles.view2, {})}>
-            <div style={Object.assign({}, styles.view4, {})}>
-              <span style={Object.assign({}, styles.text1, {})}>
-                {"Short"}
-              </span>
-            </div>
+      <div style={Object.assign({}, styles.view, {})}>
+        <div style={Object.assign({}, styles.view1, {})}>
+          <div style={Object.assign({}, styles.view3, {})}>
+            <span style={Object.assign({}, styles.text, {})}>
+              {"Some long text (currently LS lays out incorrectly)"}
+            </span>
           </div>
         </div>
-      </ThemeProvider>
+        <div style={Object.assign({}, styles.view2, {})}>
+          <div style={Object.assign({}, styles.view4, {})}>
+            <span style={Object.assign({}, styles.text1, {})}>
+              {"Short"}
+            </span>
+          </div>
+        </div>
+      </div>
     );
   }
 };
