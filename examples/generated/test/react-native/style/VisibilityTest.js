@@ -12,15 +12,10 @@ export default class VisibilityTest extends React.Component {
 
     Title$visible = this.props.enabled
     return (
-      <View style={[ styles.container, {} ]}>
-        {false && <View style={[ styles.inner, {} ]} />}
-        {
-          Title$visible &&
-          <Text style={[ styles.title, {} ]}>
-            {"Enabled"}
-          </Text>
-        }
-        <View style={[ styles.view, {} ]} />
+      <View style={styles.container}>
+        {false && <View style={styles.inner} />}
+        {Title$visible && <Text style={styles.title}> {"Enabled"} </Text>}
+        <View style={styles.view} />
       </View>
     );
   }

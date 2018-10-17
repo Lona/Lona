@@ -11,90 +11,90 @@ export default class NestedLayout extends React.Component {
 
 
     return (
-      <View style={[ styles.view, {} ]}>
-        <View style={[ styles.topRow, {} ]}>
-          <View style={[ styles.column1, {} ]}>
-            <View style={[ styles.view1, {} ]}>
+      <View style={styles.view}>
+        <View style={styles.topRow}>
+          <View style={styles.column1}>
+            <View style={styles.view1}>
               <LocalAsset />
             </View>
-            <View style={[ styles.view2, {} ]}>
+            <View style={styles.view2}>
               <LocalAsset />
             </View>
-            <View style={[ styles.view3, {} ]}>
-              <LocalAsset />
-            </View>
-          </View>
-          <View style={[ styles.column2, {} ]}>
-            <View style={[ styles.view4, {} ]}>
-              <LocalAsset />
-            </View>
-            <View style={[ styles.view5, {} ]}>
-              <LocalAsset />
-            </View>
-            <View style={[ styles.view6, {} ]}>
+            <View style={styles.view3}>
               <LocalAsset />
             </View>
           </View>
-          <View style={[ styles.column3, {} ]}>
-            <View style={[ styles.view7, {} ]}>
+          <View style={styles.column2}>
+            <View style={styles.view4}>
               <LocalAsset />
             </View>
-            <View style={[ styles.view8, {} ]}>
+            <View style={styles.view5}>
               <LocalAsset />
             </View>
-            <View style={[ styles.view9, {} ]}>
+            <View style={styles.view6}>
+              <LocalAsset />
+            </View>
+          </View>
+          <View style={styles.column3}>
+            <View style={styles.view7}>
+              <LocalAsset />
+            </View>
+            <View style={styles.view8}>
+              <LocalAsset />
+            </View>
+            <View style={styles.view9}>
               <LocalAsset />
             </View>
           </View>
         </View>
-        <View style={[ styles.bottomRow, {} ]}>
-          <View style={[ styles.column4, {} ]}>
-            <View style={[ styles.view10, {} ]}>
-              <View style={[ styles.localAsset10, {} ]}>
+        <View style={styles.bottomRow}>
+          <View style={styles.column4}>
+            <View style={styles.view10}>
+              <View style={styles.localAsset10}>
                 <LocalAsset />
               </View>
             </View>
-            <View style={[ styles.view11, {} ]}>
-              <View style={[ styles.localAsset11, {} ]}>
+            <View style={styles.view11}>
+              <View style={styles.localAsset11}>
                 <LocalAsset />
               </View>
             </View>
-            <View style={[ styles.view12, {} ]}>
-              <View style={[ styles.localAsset12, {} ]}>
-                <LocalAsset />
-              </View>
-            </View>
-          </View>
-          <View style={[ styles.column5, {} ]}>
-            <View style={[ styles.view13, {} ]}>
-              <View style={[ styles.localAsset13, {} ]}>
-                <LocalAsset />
-              </View>
-            </View>
-            <View style={[ styles.view14, {} ]}>
-              <View style={[ styles.localAsset14, {} ]}>
-                <LocalAsset />
-              </View>
-            </View>
-            <View style={[ styles.view15, {} ]}>
-              <View style={[ styles.localAsset15, {} ]}>
+            <View style={styles.view12}>
+              <View style={styles.localAsset12}>
                 <LocalAsset />
               </View>
             </View>
           </View>
-          <View style={[ styles.column6, {} ]}>
-            <View style={[ styles.view16, {} ]}>
-              <View style={[ styles.localAsset16, {} ]}>
+          <View style={styles.column5}>
+            <View style={styles.view13}>
+              <View style={styles.localAsset13}>
                 <LocalAsset />
               </View>
             </View>
-            <View style={[ styles.view17, {} ]}>
-              <View style={[ styles.localAsset17, {} ]}>
+            <View style={styles.view14}>
+              <View style={styles.localAsset14}>
                 <LocalAsset />
               </View>
             </View>
-            <View style={[ styles.view18, {} ]}>
-              <View style={[ styles.localAsset18, {} ]}>
+            <View style={styles.view15}>
+              <View style={styles.localAsset15}>
+                <LocalAsset />
+              </View>
+            </View>
+          </View>
+          <View style={styles.column6}>
+            <View style={styles.view16}>
+              <View style={styles.localAsset16}>
+                <LocalAsset />
+              </View>
+            </View>
+            <View style={styles.view17}>
+              <View style={styles.localAsset17}>
+                <LocalAsset />
+              </View>
+            </View>
+            <View style={styles.view18}>
+              <View style={styles.localAsset18}>
                 <LocalAsset />
               </View>
             </View>

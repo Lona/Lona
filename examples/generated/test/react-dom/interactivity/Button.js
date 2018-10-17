@@ -32,7 +32,7 @@ export default class Button extends React.Component {
         })}
         onClick={View$onPress}
       >
-        <span style={Object.assign({}, styles.text, {})}>
+        <span style={styles.text}>
           {Text$text}
         </span>
       </div>

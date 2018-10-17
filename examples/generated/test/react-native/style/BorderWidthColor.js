@@ -21,7 +21,7 @@ export default class BorderWidthColor extends React.Component {
       Inner$borderRadius = 20
     }
     return (
-      <View style={[ styles.view, {} ]}>
+      <View style={styles.view}>
         <View
           style={[
             styles.inner,

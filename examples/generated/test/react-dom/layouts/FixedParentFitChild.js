@@ -9,10 +9,10 @@ export default class FixedParentFitChild extends React.Component {
 
 
     return (
-      <div style={Object.assign({}, styles.view, {})}>
-        <div style={Object.assign({}, styles.view1, {})}>
-          <div style={Object.assign({}, styles.view4, {})} />
-          <div style={Object.assign({}, styles.view5, {})} />
+      <div style={styles.view}>
+        <div style={styles.view1}>
+          <div style={styles.view4} />
+          <div style={styles.view5} />
         </div>
       </div>
     );

@@ -22,7 +22,7 @@ export default class BoxModelConditional extends React.Component {
     Inner$height = this.props.size
     Inner$width = this.props.size
     return (
-      <View style={[ styles.outer, {} ]}>
+      <View style={styles.outer}>
         <View
           style={[
             styles.inner,

@@ -15,7 +15,7 @@ export default class ShadowsTest extends React.Component {
       Inner$shadow = shadows.elevation3
     }
     return (
-      <View style={[ styles.container, {} ]}>
+      <View style={styles.container}>
         <View style={[ styles.inner, { ...Inner$shadow } ]} />
       </View>
     );

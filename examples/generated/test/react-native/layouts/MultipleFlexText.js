@@ -10,17 +10,17 @@ export default class MultipleFlexText extends React.Component {
 
 
     return (
-      <View style={[ styles.view, {} ]}>
-        <View style={[ styles.view1, {} ]}>
-          <View style={[ styles.view3, {} ]}>
-            <Text style={[ styles.text, {} ]}>
+      <View style={styles.view}>
+        <View style={styles.view1}>
+          <View style={styles.view3}>
+            <Text style={styles.text}>
               {"Some long text (currently LS lays out incorrectly)"}
             </Text>
           </View>
         </View>
-        <View style={[ styles.view2, {} ]}>
-          <View style={[ styles.view4, {} ]}>
-            <Text style={[ styles.text1, {} ]}>
+        <View style={styles.view2}>
+          <View style={styles.view4}>
+            <Text style={styles.text1}>
               {"Short"}
             </Text>
           </View>

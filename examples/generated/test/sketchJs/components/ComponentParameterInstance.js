@@ -11,7 +11,7 @@ export default class ComponentParameterInstance extends React.Component {
 
 
     return (
-      <View style={[ styles.view, {} ]}>
+      <View style={styles.view}>
         <ComponentParameterTemplate
           subtitleComponent={{"parameters":{"text":"Subtitle","textStyle":"subheading2"},"type":"Lona:Text"}}
           titleComponent={{"parameters":{"text":"Title","textStyle":"headline"},"type":"Lona:Text"}}

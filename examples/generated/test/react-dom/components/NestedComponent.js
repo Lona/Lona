@@ -12,22 +12,20 @@ export default class NestedComponent extends React.Component {
 
 
     return (
-      <div style={Object.assign({}, styles.view, {})}>
-        <span style={Object.assign({}, styles.text, {})}>
+      <div style={styles.view}>
+        <span style={styles.text}>
           {"Example nested component"}
         </span>
-        <div
-          style={Object.assign({}, styles.fitContentParentSecondaryChildren, {})}
-        >
+        <div style={styles.fitContentParentSecondaryChildren}>
           <FitContentParentSecondaryChildren />
         </div>
-        <span style={Object.assign({}, styles.text1, {})}>
+        <span style={styles.text1}>
           {"Text below"}
         </span>
-        <div style={Object.assign({}, styles.localAsset, {})}>
+        <div style={styles.localAsset}>
           <LocalAsset />
         </div>
-        <span style={Object.assign({}, styles.text2, {})}>
+        <span style={styles.text2}>
           {"Very bottom"}
         </span>
       </div>

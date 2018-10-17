@@ -10,35 +10,35 @@ export default class TextStylesTest extends React.Component {
 
 
     return (
-      <View style={[ styles.view, {} ]}>
-        <Text style={[ styles.text, {} ]}>
+      <View style={styles.view}>
+        <Text style={styles.text}>
           {"Text goes here"}
         </Text>
-        <Text style={[ styles.text1, {} ]}>
+        <Text style={styles.text1}>
           {"Text goes here"}
         </Text>
-        <Text style={[ styles.text2, {} ]}>
+        <Text style={styles.text2}>
           {"Text goes here"}
         </Text>
-        <Text style={[ styles.text3, {} ]}>
+        <Text style={styles.text3}>
           {"Text goes here"}
         </Text>
-        <Text style={[ styles.text4, {} ]}>
+        <Text style={styles.text4}>
           {"Text goes here"}
         </Text>
-        <Text style={[ styles.text5, {} ]}>
+        <Text style={styles.text5}>
           {"Text goes here"}
         </Text>
-        <Text style={[ styles.text6, {} ]}>
+        <Text style={styles.text6}>
           {"Text goes here"}
         </Text>
-        <Text style={[ styles.text7, {} ]}>
+        <Text style={styles.text7}>
           {"Text goes here"}
         </Text>
-        <Text style={[ styles.text8, {} ]}>
+        <Text style={styles.text8}>
           {"Text goes here"}
         </Text>
-        <Text style={[ styles.text9, {} ]}>
+        <Text style={styles.text9}>
           {"Text goes here"}
         </Text>
       </View>

@@ -97,30 +97,42 @@ let createStyleAttributeAST =
       framework: JavaScriptOptions.framework,
       config: Config.t,
       layer: Types.layer,
-      styles,
-    ) =>
+      styles: ParameterMap.t(Logic.logicValue),
+    ) => {
+  let dynamicStyles =
+    if (styles |> ParameterMap.is_empty) {
+      None;
+    } else {
+      Some(
+        Ast.ObjectLiteral(
+          styles
+          |> Layer.mapBindings(((key, value)) =>
+               createStyleAttributePropertyAST(config, key, value)
+             ),
+        ),
+      );
+    };
+
+  let staticStyles =
+    Ast.Identifier([
+      "styles",
+      JavaScriptFormat.styleVariableName(layer.name),
+    ]);
+
   switch (framework) {
   | JavaScriptOptions.ReactDOM =>
     Ast.(
       JSXAttribute({
         name: "style",
         value:
-          CallExpression({
-            callee: Identifier(["Object", "assign"]),
-            arguments: [
-              ObjectLiteral([]),
-              Identifier([
-                "styles",
-                JavaScriptFormat.styleVariableName(layer.name),
-              ]),
-              ObjectLiteral(
-                Layer.mapBindings(((key, value)) =>
-                  createStyleAttributePropertyAST(config, key, value)
-                ) @@
-                styles,
-              ),
-            ],
-          }),
+          switch (dynamicStyles) {
+          | None => staticStyles
+          | Some(dynamicStyles) =>
+            CallExpression({
+              callee: Identifier(["Object", "assign"]),
+              arguments: [ObjectLiteral([]), staticStyles, dynamicStyles],
+            })
+          },
       })
     )
   | _ =>
@@ -128,21 +140,15 @@ let createStyleAttributeAST =
       JSXAttribute({
         name: "style",
         value:
-          ArrayLiteral([
-            Identifier([
-              "styles",
-              JavaScriptFormat.styleVariableName(layer.name),
-            ]),
-            ObjectLiteral(
-              Layer.mapBindings(((key, value)) =>
-                createStyleAttributePropertyAST(config, key, value)
-              ) @@
-              styles,
-            ),
-          ]),
+          switch (dynamicStyles) {
+          | None => staticStyles
+          | Some(dynamicStyles) =>
+            ArrayLiteral([staticStyles, dynamicStyles])
+          },
       })
     )
   };
+};
 
 /* Wrap custom components in a view that enforces the framework's
    default layout attributes. */

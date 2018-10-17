@@ -10,8 +10,8 @@ export default class ComponentParameterInstance extends React.Component {
 
 
     return (
-      <div style={Object.assign({}, styles.view, {})}>
-        <div style={Object.assign({}, styles.componentParameterTemplate, {})}>
+      <div style={styles.view}>
+        <div style={styles.componentParameterTemplate}>
           <ComponentParameterTemplate
             subtitleComponent={{"parameters":{"text":"Subtitle","textStyle":"subheading2"},"type":"Lona:Text"}}
             titleComponent={{"parameters":{"text":"Title","textStyle":"headline"},"type":"Lona:Text"}}

@@ -15,7 +15,7 @@ export default class TextStyleConditional extends React.Component {
       Text$textStyle = textStyles.display2
     }
     return (
-      <View style={[ styles.view, {} ]}>
+      <View style={styles.view}>
         <Text style={[ styles.text, { ...Text$textStyle } ]}>
           {"Text goes here"}
         </Text>

@@ -37,10 +37,10 @@ export default class Optionals extends React.Component {
           backgroundColor: View$backgroundColor
         })}
       >
-        <span style={Object.assign({}, styles.label, {})}>
+        <span style={styles.label}>
           {Label$text}
         </span>
-        <span style={Object.assign({}, styles.stringParam, {})}>
+        <span style={styles.stringParam}>
           {StringParam$text}
         </span>
       </div>

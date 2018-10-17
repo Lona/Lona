@@ -11,7 +11,7 @@ export default class NestedOptionals extends React.Component {
 
 
     return (
-      <View style={[ styles.view, {} ]}>
+      <View style={styles.view}>
         <Optionals boolParam={null} stringParam={"Text"} />
       </View>
     );

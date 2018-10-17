@@ -9,17 +9,17 @@ export default class MultipleFlexText extends React.Component {
 
 
     return (
-      <div style={Object.assign({}, styles.view, {})}>
-        <div style={Object.assign({}, styles.view1, {})}>
-          <div style={Object.assign({}, styles.view3, {})}>
-            <span style={Object.assign({}, styles.text, {})}>
+      <div style={styles.view}>
+        <div style={styles.view1}>
+          <div style={styles.view3}>
+            <span style={styles.text}>
               {"Some long text (currently LS lays out incorrectly)"}
             </span>
           </div>
         </div>
-        <div style={Object.assign({}, styles.view2, {})}>
-          <div style={Object.assign({}, styles.view4, {})}>
-            <span style={Object.assign({}, styles.text1, {})}>
+        <div style={styles.view2}>
+          <div style={styles.view4}>
+            <span style={styles.text1}>
               {"Short"}
             </span>
           </div>

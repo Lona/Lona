@@ -21,7 +21,7 @@ export default class BoxModelConditional extends React.Component {
     Inner$height = this.props.size
     Inner$width = this.props.size
     return (
-      <div style={Object.assign({}, styles.outer, {})}>
+      <div style={styles.outer}>
         <div
           style={Object.assign({}, styles.inner, {
             marginTop: Inner$marginTop,

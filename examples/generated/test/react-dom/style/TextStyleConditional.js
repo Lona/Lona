@@ -14,7 +14,7 @@ export default class TextStyleConditional extends React.Component {
       Text$textStyle = textStyles.display2
     }
     return (
-      <div style={Object.assign({}, styles.view, {})}>
+      <div style={styles.view}>
         <span style={Object.assign({}, styles.text, { ...Text$textStyle })}>
           {"Text goes here"}
         </span>
