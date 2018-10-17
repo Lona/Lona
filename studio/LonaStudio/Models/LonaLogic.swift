@@ -168,7 +168,7 @@ indirect enum LonaExpression: CSDataSerializable, CSDataDeserializable {
                     right: LonaExpression(data.get(key: BinaryExpressionNode.Keys.right.rawValue)))
                 self = .binaryExpression(content)
             case .literalExpression:
-                self = .literalExpression(CSValue(data.get(key: "value")))
+                self = .literalExpression(CSValue(data.get(key: "value"), expand: true))
             }
         } else {
             self = .placeholderExpression
@@ -200,7 +200,7 @@ indirect enum LonaExpression: CSDataSerializable, CSDataDeserializable {
         case .literalExpression(let value):
             return CSData.Object([
                 "type": ExpressionType.literalExpression.toData(),
-                "value": value.toData()])
+                "value": value.toData(compact: true)])
         case .placeholderExpression:
             return CSData.Null
         }

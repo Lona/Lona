@@ -13,8 +13,16 @@ struct CSValue: Equatable, CSDataSerializable, CSDataDeserializable {
     var data: CSData
 
     init(_ data: CSData) {
+        self.init(data, expand: true)
+    }
+
+    init(_ data: CSData, expand: Bool) {
         self.type = CSType(data.get(key: "type"))
         self.data = data.get(key: "data")
+
+        if expand {
+            self.data = CSValue.expand(type: self.type, data: self.data)
+        }
     }
 
     init(type: CSType, data: CSData) {
@@ -115,10 +123,16 @@ struct CSValue: Equatable, CSDataSerializable, CSDataDeserializable {
     }
 
     func toData() -> CSData {
+        return self.toData(compact: false)
+    }
+
+    func toData(compact: Bool) -> CSData {
+        let data = compact ? CSValue.compact(type: type, data: self.data) : self.data
+
         return CSData.Object([
             "type": type.toData(),
             "data": data
-        ])
+            ])
     }
 
     func get(key: String) -> CSValue {

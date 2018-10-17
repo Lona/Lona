@@ -113,3 +113,40 @@ let decodeOptional = (value: Types.lonaValue): option(Types.lonaValue) =>
     );
     raise(Not_found);
   };
+
+let decodeCollapsedOptional =
+    (value: Types.lonaValue): option(Types.lonaValue) =>
+  value.data
+  |> Json.Decode.either(Json.Decode.nullAs(None), unwrappedData =>
+       (
+         Some({ltype: value.ltype, data: unwrappedData}):
+           option(Types.lonaValue)
+       )
+     );
+
+/* Optional values are stored in 2 formats, depending on where they appear
+   in the save file. Eventually these should be unified. One format is more compact,
+   using special cases of types to store less data.
+
+   E.g. in the more verbose format, Optional is specified as an object, { case, data }.
+   In the compact format, we treat "null" data as the case "None" and just store
+   the data field (not wrapped in an object). */
+let expandDecodedValue = (value: Types.lonaValue): Types.lonaValue =>
+  switch (
+    /* Test if the type is optional and the data is not an object */
+    value.ltype |> isOptionalType,
+    value.data |> Json.Decode.optional(Json.Decode.dict(x => x)),
+  ) {
+  | (true, None) =>
+    let caseName =
+      switch (value |> decodeCollapsedOptional) {
+      | Some(_) => "Some"
+      | None => "None"
+      };
+
+    let obj = Js.Dict.empty();
+    Js.Dict.set(obj, "case", Js.Json.string(caseName));
+    Js.Dict.set(obj, "data", value.data);
+    {ltype: value.ltype, data: Js.Json.object_(obj)};
+  | _ => value
+  };

@@ -7,7 +7,7 @@ let rec logicValueToJavaScriptAST = (config: Config.t, x: Logic.logicValue) =>
     switch (LonaValue.decodeOptional(lonaValue)) {
     | Some(value) => logicValueToJavaScriptAST(config, Literal(value))
     | None => Literal(LonaValue.null())
-    }
+    };
   | Literal(lonaValue) =>
     switch (lonaValue.ltype) {
     | Reference("Color")
