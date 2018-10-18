@@ -63,7 +63,7 @@ module Workspace = {
       |> Array.map(file => {
            let relativePath = Path.join([|workspacePath, file|]);
            let data = Node.Fs.readFileSync(relativePath, `utf8);
-           Svg.parse(data)
+           Svg.decode(data)
            |> then_(node => resolve({path: relativePath, contents: node}));
          })
       |> all

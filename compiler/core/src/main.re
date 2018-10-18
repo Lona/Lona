@@ -69,16 +69,20 @@ if (List.length(positionalArguments) < 3) {
 
 let command = List.nth(positionalArguments, 2);
 
-if (List.length(positionalArguments) < 4) {
+if (command != "convertSvg" && List.length(positionalArguments) < 4) {
   exit("No target given");
 };
 
 let target =
-  switch (List.nth(positionalArguments, 3)) {
-  | "js" => Types.JavaScript
-  | "swift" => Types.Swift
-  | "xml" => Types.Xml
-  | _ => exit("Unrecognized target")
+  if (command != "convertSvg") {
+    switch (List.nth(positionalArguments, 3)) {
+    | "js" => Types.JavaScript
+    | "swift" => Types.Swift
+    | "xml" => Types.Xml
+    | _ => exit("Unrecognized target")
+    };
+  } else {
+    Types.JavaScript;
   };
 
 let concat = (base, addition) => Path.join([|base, addition|]);
@@ -511,5 +515,20 @@ switch (command) {
       convertTextStyles(target, workspacePath, content) |> Js.log;
     };
   }
+| "convertSvg" =>
+  let contents =
+    if (List.length(positionalArguments) < 4) {
+      getStdin();
+    } else {
+      Js.Promise.resolve(
+        Node.Fs.readFileSync(List.nth(positionalArguments, 4), `utf8),
+      );
+    };
+  Js.Promise.(
+    contents
+    |> then_(Svg.parse)
+    |> then_(parsed => parsed |> Js.Json.stringify |> Js.log |> resolve)
+    |> ignore
+  );
 | _ => Js.log2("Invalid command", command)
 };

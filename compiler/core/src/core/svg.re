@@ -172,7 +172,9 @@ module ToString = {
 [@bs.module]
 external parseRaw: string => Js.Promise.t(Js.Json.t) = "../utils/convertSvg";
 
-let parse = (data: string): Js.Promise.t(node) =>
+let parse = data => parseRaw(data);
+
+let decode = (data: string): Js.Promise.t(node) =>
   Js.Promise.(
     parseRaw(data)
     |> then_(json => {
