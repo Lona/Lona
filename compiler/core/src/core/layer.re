@@ -346,6 +346,9 @@ let isTextLayer = (layer: Types.layer) => layer.typeName == Types.Text;
 
 let isImageLayer = (layer: Types.layer) => layer.typeName == Types.Image;
 
+let isVectorGraphicLayer = (layer: Types.layer) =>
+  layer.typeName == Types.VectorGraphic;
+
 let isComponentLayer = (layer: Types.layer) =>
   switch (layer.typeName) {
   | Component(_) => true

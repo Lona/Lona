@@ -51,6 +51,7 @@ class CSLayer: CSDataDeserializable, CSDataSerializable, DataNode, NSCopying {
         case view = "View"
         case text = "Text"
         case image = "Image"
+        case vectorGraphic = "VectorGraphic"
         case animation = "Animation"
         case children = "Children"
     }
@@ -92,6 +93,7 @@ class CSLayer: CSDataDeserializable, CSDataSerializable, DataNode, NSCopying {
         static let view = LayerType.builtIn(.view)
         static let text = LayerType.builtIn(.text)
         static let image = LayerType.builtIn(.image)
+        static let vectorGraphic = LayerType.builtIn(.vectorGraphic)
         static let animation = LayerType.builtIn(.animation)
         static let children = LayerType.builtIn(.children)
 

@@ -13,16 +13,23 @@ module Naming = {
         pluginContext: Plugin.context,
         swiftOptions: SwiftOptions.options,
         componentName: string,
-        layerType,
+        layer: Types.layer,
       ) => {
     let typeName =
-      switch (swiftOptions.framework, layerType) {
+      switch (swiftOptions.framework, layer.typeName) {
       | (UIKit, Types.View) => "UIView"
       | (UIKit, Text) => "UILabel"
       | (UIKit, Image) => "UIImageView"
       | (AppKit, Types.View) => "NSBox"
       | (AppKit, Text) => "NSTextField"
       | (AppKit, Image) => "NSImageView"
+      | (_, VectorGraphic) =>
+        switch (Parameter.get(layer, ParameterKey.Image)) {
+        | None => "MissingVectorImage"
+        | Some(value) =>
+          let assetUrl = value |> LonaValue.decodeUrl;
+          SwiftFormat.vectorClassName(assetUrl);
+        }
       | (_, Component(name)) => name
       | _ => "TypeUnknown"
       };
@@ -252,6 +259,9 @@ module Doc = {
       let defineInitialLayerValues = (layer: Types.layer) =>
         layer.parameters
         |> ParameterMap.bindings
+        |> List.filter(((k, _)) =>
+             !(Layer.isVectorGraphicLayer(layer) && k == ParameterKey.Image)
+           )
         |> List.filter(filterParameters)
         |> List.filter(filterNotAssignedByLogic(layer))
         |> List.map(((k, v)) =>
@@ -325,6 +335,23 @@ module Doc = {
                   ),
                 "operator": "=",
                 "right": LiteralExpression(Integer(0)),
+              }),
+            ],
+        ]
+        |> List.concat
+      | (SwiftOptions.UIKit, VectorGraphic) =>
+        [
+          Parameter.isSetInitially(layer, BackgroundColor) ?
+            [] :
+            [
+              BinaryExpression({
+                "left":
+                  layerMemberExpression(
+                    layer,
+                    [SwiftIdentifier("isOpaque")],
+                  ),
+                "operator": "=",
+                "right": LiteralExpression(Boolean(false)),
               }),
             ],
         ]
@@ -523,13 +550,7 @@ let generate =
           swiftOptions,
           assignmentsFromLayerParameters,
           layer,
-          Naming.layerType(
-            config,
-            pluginContext,
-            swiftOptions,
-            name,
-            layer.typeName,
-          ),
+          Naming.layerType(config, pluginContext, swiftOptions, name, layer),
         ),
       ),
     );
@@ -642,6 +663,13 @@ let generate =
   let layerMemberExpression = (layer: Types.layer, statements) =>
     memberOrSelfExpression(parentNameOrSelf(layer), statements);
 
+  let vectorGraphicAssets =
+    nonRootLayers
+    |> List.filter(Layer.isVectorGraphicLayer)
+    |> List.map(layer => Parameter.get(layer, ParameterKey.Image))
+    |> Sequence.compact
+    |> List.map(LonaValue.decodeUrl);
+
   let containsImageWithBackgroundColor = () => {
     let hasBackgroundColor = (layer: Types.layer) =>
       Parameter.isAssigned(
@@ -653,25 +681,47 @@ let generate =
     |> List.filter(Layer.isImageLayer)
     |> List.exists(hasBackgroundColor);
   };
+
   let helperClasses =
-    switch (swiftOptions.framework) {
-    | SwiftOptions.AppKit =>
-      containsImageWithBackgroundColor() ?
-        [
-          [LineComment("MARK: - " ++ "ImageWithBackgroundColor"), Empty],
-          SwiftHelperClass.generateImageWithBackgroundColor(
-            options,
-            swiftOptions,
-          ),
-        ]
-        |> List.concat :
-        []
-    | SwiftOptions.UIKit => []
-    };
+    [
+      switch (swiftOptions.framework) {
+      | SwiftOptions.AppKit =>
+        containsImageWithBackgroundColor() ?
+          [
+            [LineComment("MARK: - " ++ "ImageWithBackgroundColor"), Empty],
+            SwiftHelperClass.generateImageWithBackgroundColor(
+              options,
+              swiftOptions,
+            ),
+          ]
+          |> List.concat :
+          []
+      | SwiftOptions.UIKit => []
+      },
+      switch (vectorGraphicAssets) {
+      | [] => []
+      | _ =>
+        vectorGraphicAssets
+        |> List.map(
+             SwiftHelperClass.generateVectorGraphic(
+               config,
+               options,
+               swiftOptions,
+             ),
+           )
+        |> List.concat
+      },
+    ]
+    |> List.concat;
 
   let superclass =
     TypeName(
-      Naming.layerType(config, pluginContext, swiftOptions, name, Types.View),
+      Plugin.applyTransformTypePlugins(
+        config.plugins,
+        pluginContext,
+        name,
+        swiftOptions.framework == UIKit ? "UIView" : "NSBox",
+      ),
     );
   TopLevelDeclaration({
     "statements":

@@ -84,3 +84,68 @@ let generateImageWithBackgroundColor =
     }),
     Empty,
   ];
+
+let generateVectorGraphic =
+    (
+      config: Config.t,
+      options: Options.options,
+      swiftOptions: SwiftOptions.options,
+      assetUrl: string,
+    ) => {
+  let svg = Config.Find.svg(config, assetUrl);
+
+  SwiftAst.[
+    ClassDeclaration({
+      "name": SwiftFormat.vectorClassName(assetUrl),
+      "inherits": [
+        TypeName(swiftOptions.framework == UIKit ? "UIView" : "NSView"),
+      ],
+      "modifier": Some(PrivateModifier),
+      "isFinal": false,
+      "body":
+        [
+          swiftOptions.framework == SwiftOptions.AppKit ?
+            [
+              VariableDeclaration({
+                "modifiers": [OverrideModifier],
+                "pattern":
+                  IdentifierPattern({
+                    "identifier": SwiftIdentifier("isFlipped"),
+                    "annotation": Some(TypeName("Bool")),
+                  }),
+                "init": None,
+                "block":
+                  Some(
+                    GetterBlock([
+                      ReturnStatement(
+                        Some(LiteralExpression(Boolean(true))),
+                      ),
+                    ]),
+                  ),
+              }),
+            ] :
+            [],
+          [
+            FunctionDeclaration({
+              "name": "draw",
+              "modifiers": [OverrideModifier],
+              "parameters": [
+                Parameter({
+                  "annotation": TypeName("CGRect"),
+                  "externalName": Some("_"),
+                  "localName": "dirtyRect",
+                  "defaultValue": None,
+                }),
+              ],
+              "body":
+                [SwiftSvg.convertNode(swiftOptions, svg)] |> List.concat,
+              "result": None,
+              "throws": false,
+            }),
+          ],
+        ]
+        |> SwiftDocument.joinGroups(Empty),
+    }),
+    Empty,
+  ];
+};

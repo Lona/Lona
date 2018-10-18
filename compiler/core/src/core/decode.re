@@ -162,6 +162,7 @@ module Layer = {
     | "Lona:View" => View
     | "Lona:Text" => Text
     | "Lona:Image" => Image
+    | "Lona:VectorGraphic" => VectorGraphic
     | "Lona:Animation" => Animation
     | "Lona:Children" => Children
     | value => Component(value)

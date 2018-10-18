@@ -707,7 +707,7 @@ class CoreComponentInspectorView: NSStackView {
         case .builtIn(.text):
             textSection.isHidden = false
             layoutSection.isHidden = true
-        case .builtIn(.image):
+        case .builtIn(.image), .builtIn(.vectorGraphic):
             imageSection.isHidden = false
         case .builtIn(.animation):
             animationSection.isHidden = false

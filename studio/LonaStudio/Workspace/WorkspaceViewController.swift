@@ -795,6 +795,20 @@ extension WorkspaceViewController {
         componentEditorViewController.addLayer(newLayer)
     }
 
+    func addVectorGraphic() {
+        guard let component = component else { return }
+
+        let name = component.getNewLayerName(startingWith: "VectorGraphic")
+
+        let newLayer = CSLayer(name: name, type: .vectorGraphic, parameters: [
+            "width": 100.toData(),
+            "height": 100.toData(),
+            "backgroundColor": "#D8D8D8".toData()
+            ])
+
+        componentEditorViewController.addLayer(newLayer)
+    }
+
     func addAnimation() {
         guard let component = component else { return }
 

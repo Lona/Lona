@@ -91,6 +91,7 @@ and pattern =
 /* | IsPattern */
 /* | AsPattern */
 and initializerBlock =
+  | GetterBlock(list(node))
   | WillSetDidSetBlock(
       {
         .
