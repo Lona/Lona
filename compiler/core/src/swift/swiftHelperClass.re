@@ -106,10 +106,8 @@ let generateVectorGraphic =
       "body":
         [
           vectorAssignments
-          |> List.map((vectorAssignment: Layer.vectorAssignment) =>
-               SwiftAst.Builders.publicVariableDeclaration(
-                 SwiftFormat.vectorVariableName(vectorAssignment),
-                 None,
+          |> List.map((vectorAssignment: Layer.vectorAssignment) => {
+               let initialValue =
                  switch (
                    Svg.find(svg, vectorAssignment.elementName),
                    vectorAssignment.paramKey,
@@ -126,9 +124,47 @@ let generateVectorGraphic =
                    }
                  | (Some(_), _) => None
                  | (None, _) => None
-                 },
-               )
-             ),
+                 };
+
+               VariableDeclaration({
+                 "modifiers": [AccessLevelModifier(PublicModifier)],
+                 "pattern":
+                   IdentifierPattern({
+                     "identifier":
+                       SwiftIdentifier(
+                         SwiftFormat.vectorVariableName(vectorAssignment),
+                       ),
+                     "annotation": None,
+                   }),
+                 "init": initialValue,
+                 "block":
+                   switch (initialValue) {
+                   | None => None
+                   | Some(_) =>
+                     Some(
+                       WillSetDidSetBlock({
+                         "willSet": None,
+                         "didSet":
+                           Some([
+                             switch (swiftOptions.framework) {
+                             | UIKit =>
+                               SwiftAst.Builders.functionCall(
+                                 ["setNeedsDisplay"],
+                                 [],
+                               )
+                             | AppKit =>
+                               BinaryExpression({
+                                 "left": SwiftIdentifier("needsDisplay"),
+                                 "operator": "=",
+                                 "right": LiteralExpression(Boolean(true)),
+                               })
+                             },
+                           ]),
+                       }),
+                     )
+                   },
+               });
+             }),
           swiftOptions.framework == SwiftOptions.AppKit ?
             [
               VariableDeclaration({
