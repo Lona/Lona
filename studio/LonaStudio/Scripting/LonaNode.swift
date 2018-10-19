@@ -13,15 +13,43 @@ enum LonaNode {
 
     // MARK: Public
 
+    static func runSync(
+        arguments: [String],
+        inputData: Data? = nil,
+        currentDirectoryPath: String? = nil) throws -> Data {
+
+        var output: Data?
+        var failureMessage: String?
+
+        run(
+            arguments: arguments,
+            inputData: inputData,
+            currentDirectoryPath: currentDirectoryPath,
+            sync: true,
+            onSuccess: { data in
+                output = data
+            }, onFailure: { code, error in
+                failureMessage = "Error \(code): \(error ?? "")"
+            }
+        )
+
+        if let output = output {
+            return output
+        } else {
+            throw failureMessage ?? "Node error"
+        }
+    }
+
     static func run(
         arguments: [String],
         inputData: Data? = nil,
         currentDirectoryPath: String? = nil,
+        sync: Bool = false,
         onSuccess: ((Data) -> Void)? = nil,
         onFailure: ((Int, String?) -> Void)? = nil) {
         guard let nodePath = LonaNode.binaryPath else { return }
 
-        DispatchQueue.global().async {
+        func run() {
             let task = Process()
 
             var env = ProcessInfo.processInfo.environment
@@ -60,6 +88,14 @@ enum LonaNode {
             let data = handle.readDataToEndOfFile()
 
             onSuccess?(data)
+        }
+
+        if sync {
+            run()
+        } else {
+            DispatchQueue.global().async {
+                run()
+            }
         }
     }
 

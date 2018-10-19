@@ -688,6 +688,15 @@ class CSLayer: CSDataDeserializable, CSDataSerializable, DataNode, NSCopying {
             valueType = valueType.merge(key: "images", type: assetMap.type, access: .write)
         }
 
+        // VectorGraphic
+        if type == .vectorGraphic,
+            let image = image,
+            let url = URL(string: image)?.absoluteURLForWorkspaceURL(),
+            let svg = SVG.decodeSync(contentsOf: url) {
+            data["vector"] = SVG.paramsData(node: svg)
+            valueType = valueType.merge(key: "vector", type: SVG.paramsType(node: svg), access: .write)
+        }
+
         return CSValue(type: valueType, data: data)
     }
 

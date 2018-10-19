@@ -318,7 +318,7 @@ function convertChildren(children, parentElementPath, context) {
   return children.reduce((acc, child, index) => {
     const converted = convertNode(
       child,
-      [...parentElementPath, index.toString()],
+      [...parentElementPath, child.name + index.toString()],
       context
     );
 

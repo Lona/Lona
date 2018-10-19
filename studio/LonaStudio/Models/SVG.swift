@@ -230,7 +230,7 @@ extension NSBezierPath {
 }
 
 extension SVG.Node {
-    func image(size: CGSize) -> NSImage? {
+    func image(size: CGSize, dynamicValues: CSData = CSData.Null) -> NSImage? {
         guard case .svg(let svg) = self else { return nil }
 
         let viewBox = svg.params.viewBox?.cgRect ?? CGRect(origin: .zero, size: size)
@@ -273,11 +273,18 @@ extension SVG.Node {
                 data.children.forEach(draw)
             case .path(let data):
                 let path = buildPath(from: data.params.commands)
-                if let fill = data.params.style.fill, let color = NSColor.parse(css: fill) {
+
+                let dynamicParams = dynamicValues[node.elementName]
+                let dynamicFill = dynamicParams?["fill"]?.string
+                let dynamicStroke = dynamicParams?["stroke"]?.string
+
+                if let fill = dynamicFill ?? data.params.style.fill {
+                    let color = CSColors.parse(css: fill).color
                     color.setFill()
                     path.fill()
                 }
-                if let stroke = data.params.style.stroke, let color = NSColor.parse(css: stroke) {
+                if let stroke = dynamicStroke ?? data.params.style.stroke {
+                    let color = CSColors.parse(css: stroke).color
                     color.setStroke()
                     path.lineWidth = data.params.style.strokeWidth * scale
                     path.lineCapStyle = data.params.style.strokeLineCap
@@ -296,14 +303,117 @@ extension SVG.Node {
             return true
         })
     }
+
+    func paramsType() -> CSType {
+        switch self {
+        case .svg:
+            return CSType.unit
+        case .path:
+            return CSType.dictionary([
+                "fill": (type: CSColorType, access: .write),
+                "stroke": (type: CSColorType, access: .write)
+                ])
+        }
+    }
+
+    func paramsData() -> CSData {
+        switch self {
+        case .svg:
+            return CSData.Null
+        case .path(let path):
+            let fill = path.params.style.fill ?? "transparent"
+            let stroke = path.params.style.stroke ?? "transparent"
+
+            return CSData.Object([
+                "fill": CSData.String(fill),
+                "stroke": CSData.String(stroke)
+                ])
+        }
+    }
+
+    func paramsValue() -> CSValue {
+        return CSValue(type: paramsType(), data: paramsData())
+    }
+
+    func elementPath() -> [String] {
+        switch self {
+        case .svg(let svg):
+            return svg.elementPath
+        case .path(let path):
+            return path.elementPath
+        }
+    }
+
+    var elementName: String {
+        return elementPath().joined(separator: "_")
+    }
 }
 
 let svgCache = LRUCache<String, SVG.Node>()
 
 extension SVG {
-    public static func render(contentsOf url: URL, size: CGSize, successHandler: @escaping (NSImage) -> Void) {
-        guard size != .zero else { return }
+    static func forEach(node: SVG.Node, _ f: (SVG.Node) -> Void) {
+        f(node)
 
+        switch node {
+        case .svg(let svg):
+            svg.children.forEach { forEach(node: $0, f) }
+        case .path:
+            break
+        }
+    }
+
+    static func paramsType(node rootNode: SVG.Node) -> CSType {
+        var rootType = CSType.dictionary([:])
+
+        forEach(node: rootNode, { node in
+            rootType = rootType.merge(key: node.elementName, type: node.paramsType(), access: .write)
+        })
+
+        return rootType
+    }
+
+    static func paramsData(node rootNode: SVG.Node) -> CSData {
+        var rootData = CSData.Object([:])
+
+        forEach(node: rootNode, { node in
+            rootData.set(keyPath: [node.elementName], to: node.paramsData())
+        })
+
+        return rootData
+    }
+
+    public static func decodeSync(contentsOf url: URL) -> SVG.Node? {
+        guard let compilerPath = CSUserPreferences.compilerURL?.path else { return nil }
+
+        guard let contents = try? Data(contentsOf: url) else {
+            Swift.print("Failed to read svg file at", url)
+            return nil
+        }
+
+        if let svg = svgCache.item(for: url.absoluteString) {
+            return svg
+        }
+
+        guard let data = try? LonaNode.runSync(
+            arguments: [compilerPath, "convertSvg"],
+            inputData: contents)
+        else {
+            Swift.print("Failed to convert svg", url)
+            return nil
+        }
+
+        guard let svg = try? JSONDecoder().decode(SVG.Node.self, from: data) else {
+            Swift.print("Failed to decode svg", url)
+            return nil
+        }
+
+        svgCache.add(item: svg, for: url.absoluteString)
+
+        return svgCache.item(for: url.absoluteString)
+    }
+
+    public static func decode(contentsOf url: URL, successHandler: @escaping (SVG.Node) -> Void) {
         guard let compilerPath = CSUserPreferences.compilerURL?.path else { return }
 
         guard let contents = try? Data(contentsOf: url) else {
@@ -312,8 +422,7 @@ extension SVG {
         }
 
         if let svg = svgCache.item(for: url.absoluteString) {
-            guard let image = svg.image(size: size) else { return }
-            successHandler(image)
+            successHandler(svg)
             return
         }
 
@@ -324,17 +433,31 @@ extension SVG {
                 do {
                     let svg = try JSONDecoder().decode(SVG.Node.self, from: data)
 
-                    svgCache.add(item: svg, for: url.absoluteString)
-
                     DispatchQueue.main.async {
-                        guard let image = svg.image(size: size) else { return }
-                        successHandler(image)
+                        svgCache.add(item: svg, for: url.absoluteString)
+                        successHandler(svg)
                     }
                 } catch let e {
                     Swift.print("Failed to load svg", e)
                 }
         }, onFailure: { code, message in
             Swift.print("Failed", code, message as Any)
+        })
+    }
+
+    static func render(
+        contentsOf url: URL,
+        dynamicValues: CSData = CSData.Null,
+        size: CGSize,
+        successHandler: @escaping (NSImage) -> Void) {
+
+        guard size != .zero else { return }
+
+        decode(contentsOf: url, successHandler: { svg in
+            DispatchQueue.main.async {
+                guard let image = svg.image(size: size, dynamicValues: dynamicValues) else { return }
+                successHandler(image)
+            }
         })
     }
 }
