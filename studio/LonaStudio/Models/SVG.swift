@@ -298,23 +298,33 @@ extension SVG.Node {
     }
 }
 
+let svgCache = LRUCache<String, SVG.Node>()
+
 extension SVG {
     public static func render(contentsOf url: URL, size: CGSize, successHandler: @escaping (NSImage) -> Void) {
         guard size != .zero else { return }
 
         guard let compilerPath = CSUserPreferences.compilerURL?.path else { return }
 
+        guard let contents = try? Data(contentsOf: url) else {
+            Swift.print("Failed to read svg file at", url)
+            return
+        }
+
+        if let svg = svgCache.item(for: url.absoluteString) {
+            guard let image = svg.image(size: size) else { return }
+            successHandler(image)
+            return
+        }
+
         LonaNode.run(
-            arguments: [compilerPath, "convertSvg", url.path],
-            inputData: nil,
-            onSuccess: { result in
-                guard let result = result else { return }
-
-                // TODO: No need to convert back and forth from data. Compiler should return data.
-                guard let data = result.data(using: .utf8) else { return }
-
+            arguments: [compilerPath, "convertSvg"],
+            inputData: contents,
+            onSuccess: { data in
                 do {
                     let svg = try JSONDecoder().decode(SVG.Node.self, from: data)
+
+                    svgCache.add(item: svg, for: url.absoluteString)
 
                     DispatchQueue.main.async {
                         guard let image = svg.image(size: size) else { return }

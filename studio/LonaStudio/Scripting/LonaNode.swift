@@ -17,7 +17,7 @@ enum LonaNode {
         arguments: [String],
         inputData: Data? = nil,
         currentDirectoryPath: String? = nil,
-        onSuccess: ((String?) -> Void)? = nil,
+        onSuccess: ((Data) -> Void)? = nil,
         onFailure: ((Int, String?) -> Void)? = nil) {
         guard let nodePath = LonaNode.binaryPath else { return }
 
@@ -58,9 +58,8 @@ enum LonaNode {
 
             let handle = stdout.fileHandleForReading
             let data = handle.readDataToEndOfFile()
-            let out = NSString(data: data, encoding: String.Encoding.utf8.rawValue)
 
-            onSuccess?(out as String?)
+            onSuccess?(data)
         }
     }
 

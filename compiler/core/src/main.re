@@ -517,7 +517,7 @@ switch (command) {
   }
 | "convertSvg" =>
   let contents =
-    if (List.length(positionalArguments) < 3) {
+    if (List.length(positionalArguments) < 4) {
       getStdin();
     } else {
       Js.Promise.resolve(

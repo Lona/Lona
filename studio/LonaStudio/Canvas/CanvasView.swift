@@ -153,7 +153,7 @@ let BORDERS: [(edge: NSRectEdge, key: String)] = [
     (NSRectEdge.minX, key: "borderLeftWidth")
 ]
 
-let imageCache = ImageCache()
+let imageCache = ImageCache<NSImage>()
 
 func renderBox(configuredLayer: ConfiguredLayer, node: YGNodeRef, options: RenderOptions) -> NSView {
     let layout = node.layout
