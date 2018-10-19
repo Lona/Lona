@@ -663,12 +663,8 @@ let generate =
   let layerMemberExpression = (layer: Types.layer, statements) =>
     memberOrSelfExpression(parentNameOrSelf(layer), statements);
 
-  let vectorGraphicAssets =
-    nonRootLayers
-    |> List.filter(Layer.isVectorGraphicLayer)
-    |> List.map(layer => Parameter.get(layer, ParameterKey.Image))
-    |> Sequence.compact
-    |> List.map(LonaValue.decodeUrl);
+  let vectorGraphicLayers =
+    nonRootLayers |> List.filter(Layer.isVectorGraphicLayer);
 
   let containsImageWithBackgroundColor = () => {
     let hasBackgroundColor = (layer: Types.layer) =>
@@ -698,17 +694,33 @@ let generate =
           []
       | SwiftOptions.UIKit => []
       },
-      switch (vectorGraphicAssets) {
+      switch (vectorGraphicLayers) {
       | [] => []
       | _ =>
-        vectorGraphicAssets
-        |> List.map(
+        vectorGraphicLayers
+        |> List.map(layer => {
+             let assetUrl =
+               switch (Parameter.get(layer, ParameterKey.Image)) {
+               | None =>
+                 Js.log(
+                   "Error: VectorGraphic "
+                   ++ layer.name
+                   ++ " is missing the `image` parameter.",
+                 );
+                 raise(Not_found);
+               | Some(value) => value |> LonaValue.decodeUrl
+               };
+
+             let vectorAssignments = Layer.vectorAssignments(layer, logic);
+
              SwiftHelperClass.generateVectorGraphic(
                config,
                options,
                swiftOptions,
-             ),
-           )
+               vectorAssignments,
+               assetUrl,
+             );
+           })
         |> List.concat
       },
     ]

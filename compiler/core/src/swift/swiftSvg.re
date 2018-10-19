@@ -21,7 +21,7 @@ let lineCapValue = (framework, value) => {
 let formatElementPath = (items: list(string)): string =>
   switch (items) {
   | [] => "root"
-  | _ => Format.joinWith("_", items)
+  | _ => Svg.elementName(items)
   };
 
 let scaleValue = (float: float): SwiftAst.node =>
@@ -33,13 +33,45 @@ let scaleValue = (float: float): SwiftAst.node =>
     })
   );
 
-/* swiftOptions: SwiftOptions.options,  */
-let setStyle = (style: Svg.style): list(SwiftAst.node) =>
+let hasDynamicParam =
+    (
+      vectorAssignments: list(Layer.vectorAssignment),
+      variableName: string,
+      paramKey: Layer.vectorParamKey,
+    )
+    : bool =>
+  vectorAssignments
+  |> Sequence.firstWhere((vectorAssignment: Layer.vectorAssignment) =>
+       vectorAssignment.elementName == variableName
+       && vectorAssignment.paramKey == paramKey
+     )
+  != None;
+
+let setStyle =
+    (
+      vectorAssignments: list(Layer.vectorAssignment),
+      variableName: string,
+      style: Svg.style,
+    )
+    : list(SwiftAst.node) => {
+  let hasDynamicFill = hasDynamicParam(vectorAssignments, variableName, Fill);
+  let hasDynamicStroke =
+    hasDynamicParam(vectorAssignments, variableName, Stroke);
+
   SwiftAst.(
     [
-      switch (style.fill) {
-      | None => []
-      | Some(fill) => [
+      switch (hasDynamicFill, style.fill) {
+      | (true, _) => [
+          SwiftAst.FunctionCallExpression({
+            "name":
+              MemberExpression([
+                SwiftIdentifier(variableName ++ "Fill"),
+                SwiftIdentifier("setFill"),
+              ]),
+            "arguments": [],
+          }),
+        ]
+      | (false, Some(fill)) => [
           SwiftAst.FunctionCallExpression({
             "name":
               MemberExpression([
@@ -49,10 +81,20 @@ let setStyle = (style: Svg.style): list(SwiftAst.node) =>
             "arguments": [],
           }),
         ]
+      | (false, None) => []
       },
-      switch (style.stroke) {
-      | None => []
-      | Some(stroke) => [
+      switch (hasDynamicStroke, style.stroke) {
+      | (true, _) => [
+          SwiftAst.FunctionCallExpression({
+            "name":
+              MemberExpression([
+                SwiftIdentifier(variableName ++ "Stroke"),
+                SwiftIdentifier("setStroke"),
+              ]),
+            "arguments": [],
+          }),
+        ]
+      | (false, Some(stroke)) => [
           SwiftAst.FunctionCallExpression({
             "name":
               MemberExpression([
@@ -62,14 +104,17 @@ let setStyle = (style: Svg.style): list(SwiftAst.node) =>
             "arguments": [],
           }),
         ]
+      | (false, None) => []
       },
     ]
     |> List.concat
   );
+};
 
 let paintStyle =
     (
       swiftOptions: SwiftOptions.options,
+      _vectorAssignments: list(Layer.vectorAssignment),
       variableName: string,
       style: Svg.style,
     )
@@ -285,11 +330,16 @@ let convertPathCommand =
   );
 
 let rec convertNode =
-        (swiftOptions: SwiftOptions.options, node: Svg.node)
+        (
+          swiftOptions: SwiftOptions.options,
+          vectorAssignments: list(Layer.vectorAssignment),
+          node: Svg.node,
+        )
         : list(SwiftAst.node) =>
   SwiftAst.(
     switch (node) {
-    | Circle(_, params) =>
+    | Circle(elementPath, params) =>
+      let variableName = formatElementPath(elementPath);
       [
         [
           ConstantDeclaration({
@@ -333,12 +383,13 @@ let rec convertNode =
               ),
           }),
         ],
-        params.style |> setStyle,
-        params.style |> paintStyle(swiftOptions, "circle"),
+        params.style |> setStyle(vectorAssignments, variableName),
+        params.style
+        |> paintStyle(swiftOptions, vectorAssignments, variableName),
       ]
-      |> List.concat
+      |> List.concat;
     | Path(elementPath, params) =>
-      let variableName = "path" ++ formatElementPath(elementPath);
+      let variableName = formatElementPath(elementPath);
       [
         [
           ConstantDeclaration({
@@ -363,8 +414,9 @@ let rec convertNode =
         ],
         params.commands
         |> List.map(convertPathCommand(swiftOptions, variableName)),
-        params.style |> setStyle,
-        params.style |> paintStyle(swiftOptions, variableName),
+        params.style |> setStyle(vectorAssignments, variableName),
+        params.style
+        |> paintStyle(swiftOptions, vectorAssignments, variableName),
       ]
       |> List.concat;
     | Svg(_, params, children) =>
@@ -508,7 +560,9 @@ let rec convertNode =
             ],
           }),
         ],
-        children |> List.map(convertNode(swiftOptions)) |> List.concat,
+        children
+        |> List.map(convertNode(swiftOptions, vectorAssignments))
+        |> List.concat,
       ]
       |> List.concat
     }

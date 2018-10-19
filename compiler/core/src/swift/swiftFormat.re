@@ -39,3 +39,12 @@ let vectorClassName = (assetUrl: string): string => {
   let formattedName = Format.safeVariableName(baseName) |> Format.upperFirst;
   formattedName ++ "Vector";
 };
+
+let vectorParamName = (paramKey: Layer.vectorParamKey): string =>
+  switch (paramKey) {
+  | Fill => "Fill"
+  | Stroke => "Stroke"
+  };
+
+let vectorVariableName = (vectorAssignment: Layer.vectorAssignment): string =>
+  vectorAssignment.elementName ++ vectorParamName(vectorAssignment.paramKey);

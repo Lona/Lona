@@ -265,6 +265,37 @@ let getPadding = getInsets("padding");
 
 let getMargin = getInsets("margin");
 
+type vectorParamKey =
+  | Fill
+  | Stroke;
+
+type vectorAssignment = {
+  elementName: string,
+  paramKey: vectorParamKey,
+};
+
+let vectorAssignments =
+    (layer: Types.layer, node: Logic.logicNode): list(vectorAssignment) =>
+  Logic.assignedIdentifiers(node)
+  |> Logic.IdentifierSet.elements
+  |> List.map(((_, id)) =>
+       switch (id) {
+       | ["layers", layerName, "vector", elementName, paramKey]
+           when layerName == layer.name =>
+         let paramKey =
+           switch (paramKey) {
+           | "fill" => Fill
+           | "stroke" => Stroke
+           | _ =>
+             Js.log("Invalid vector param key");
+             raise(Not_found);
+           };
+         Some({elementName, paramKey});
+       | _ => None
+       }
+     )
+  |> Sequence.compact;
+
 let parameterAssignmentsFromLogic = (layer, node) => {
   let identifiers = Logic.assignedIdentifiers(node);
   let updateAssignments = (layerName, propertyName, logicValue, acc) =>

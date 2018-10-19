@@ -195,3 +195,32 @@ let decode = (data: string): Js.Promise.t(node) =>
          };
        })
   );
+
+let elementName = (elementPath: list(string)): string =>
+  Format.joinWith("_", elementPath);
+
+let find = (rootNode: node, name: string): option(node) => {
+  let matchesPath = (node, elementPath) =>
+    if (elementName(elementPath) == name) {
+      Some(node);
+    } else {
+      None;
+    };
+
+  let rec inner = node =>
+    switch (node) {
+    | Svg(elementPath, _, children) =>
+      switch (matchesPath(node, elementPath)) {
+      | Some(match) => Some(match)
+      | None =>
+        switch (children |> List.map(inner) |> Sequence.compact) {
+        | [] => None
+        | [child, ..._] => Some(child)
+        }
+      }
+    | Path(elementPath, _)
+    | Circle(elementPath, _) => matchesPath(node, elementPath)
+    };
+
+  inner(rootNode);
+};

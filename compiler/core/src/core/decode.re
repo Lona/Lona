@@ -13,6 +13,9 @@ let parameterType = key =>
   | NumberOfLines => Types.numberType
   | BackgroundColor => Types.colorType
   | Image => Types.urlType
+  | Vector =>
+    Js.log("Decoding vector type... does this work?");
+    Types.urlType;
   /* Styles */
   | AlignItems => Types.stringType
   | AlignSelf => Types.stringType

@@ -16,6 +16,13 @@ let toSwiftAST =
       | "parameters" => Ast.SwiftIdentifier(List.hd(tail))
       | "layers" =>
         switch (tail) {
+        | [layerName, "vector", elementName, paramName] =>
+          Ast.SwiftIdentifier(
+            SwiftFormat.layerName(layerName)
+            ++ "."
+            ++ elementName
+            ++ Format.upperFirst(paramName),
+          )
         | [second, ...tail] when second == rootLayer.name =>
           Ast.SwiftIdentifier(
             List.tl(tail)

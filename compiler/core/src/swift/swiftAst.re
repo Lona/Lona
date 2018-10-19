@@ -350,6 +350,19 @@ module Builders = {
       "block": None,
     });
 
+  let publicVariableDeclaration =
+      (name: string, annotation: option(typeAnnotation), init: option(node)) =>
+    VariableDeclaration({
+      "modifiers": [AccessLevelModifier(PublicModifier)],
+      "pattern":
+        IdentifierPattern({
+          "identifier": SwiftIdentifier(name),
+          "annotation": annotation,
+        }),
+      "init": init,
+      "block": None,
+    });
+
   let convenienceInit = (body: list(node)): node =>
     InitializerDeclaration({
       "modifiers": [

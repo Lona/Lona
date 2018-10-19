@@ -90,6 +90,7 @@ let generateVectorGraphic =
       config: Config.t,
       options: Options.options,
       swiftOptions: SwiftOptions.options,
+      vectorAssignments: list(Layer.vectorAssignment),
       assetUrl: string,
     ) => {
   let svg = Config.Find.svg(config, assetUrl);
@@ -104,6 +105,30 @@ let generateVectorGraphic =
       "isFinal": false,
       "body":
         [
+          vectorAssignments
+          |> List.map((vectorAssignment: Layer.vectorAssignment) =>
+               SwiftAst.Builders.publicVariableDeclaration(
+                 SwiftFormat.vectorVariableName(vectorAssignment),
+                 None,
+                 switch (
+                   Svg.find(svg, vectorAssignment.elementName),
+                   vectorAssignment.paramKey,
+                 ) {
+                 | (Some(Path(_, params)), Fill) =>
+                   switch (params.style.fill) {
+                   | Some(fill) => Some(LiteralExpression(Color(fill)))
+                   | None => Some(LiteralExpression(Color("transparent")))
+                   }
+                 | (Some(Path(_, params)), Stroke) =>
+                   switch (params.style.stroke) {
+                   | Some(stroke) => Some(LiteralExpression(Color(stroke)))
+                   | None => Some(LiteralExpression(Color("transparent")))
+                   }
+                 | (Some(_), _) => None
+                 | (None, _) => None
+                 },
+               )
+             ),
           swiftOptions.framework == SwiftOptions.AppKit ?
             [
               VariableDeclaration({
@@ -138,7 +163,8 @@ let generateVectorGraphic =
                 }),
               ],
               "body":
-                [SwiftSvg.convertNode(swiftOptions, svg)] |> List.concat,
+                [SwiftSvg.convertNode(swiftOptions, vectorAssignments, svg)]
+                |> List.concat,
               "result": None,
               "throws": false,
             }),
