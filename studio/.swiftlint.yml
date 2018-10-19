@@ -11,6 +11,8 @@ disabled_rules:
   - large_tuple
   - shorthand_operator
   - todo
+  - nesting
+  - syntactic_sugar
 
 included:
   - LonaStudio

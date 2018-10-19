@@ -163,6 +163,8 @@
 		6B0F5B8C21389620007DBBB2 /* LayerListHeader.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6B0F5B8B21389620007DBBB2 /* LayerListHeader.swift */; };
 		6B0F5B8E2138970C007DBBB2 /* LayerList.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6B0F5B8D2138970C007DBBB2 /* LayerList.swift */; };
 		6B0F5B9021389A8B007DBBB2 /* NSSplitView+DividerColor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6B0F5B8F21389A8B007DBBB2 /* NSSplitView+DividerColor.swift */; };
+		6B1086F7217955120024AE56 /* SVG.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6B1086F6217955120024AE56 /* SVG.swift */; };
+		6B1086F9217967BD0024AE56 /* CGSize+Crop.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6B1086F8217967BC0024AE56 /* CGSize+Crop.swift */; };
 		6B2DC1AB21361C4700679668 /* ColorPicker.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 6B2DC1A921361C4700679668 /* ColorPicker.framework */; };
 		6B2DC1AC21361C4700679668 /* ColorPicker.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 6B2DC1A921361C4700679668 /* ColorPicker.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		6B2DC1AD21361C4700679668 /* Colors.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 6B2DC1AA21361C4700679668 /* Colors.framework */; };
@@ -407,6 +409,8 @@
 		6B0F5B8B21389620007DBBB2 /* LayerListHeader.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LayerListHeader.swift; sourceTree = "<group>"; };
 		6B0F5B8D2138970C007DBBB2 /* LayerList.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LayerList.swift; sourceTree = "<group>"; };
 		6B0F5B8F21389A8B007DBBB2 /* NSSplitView+DividerColor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "NSSplitView+DividerColor.swift"; sourceTree = "<group>"; };
+		6B1086F6217955120024AE56 /* SVG.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SVG.swift; sourceTree = "<group>"; };
+		6B1086F8217967BC0024AE56 /* CGSize+Crop.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "CGSize+Crop.swift"; sourceTree = "<group>"; };
 		6B2DC1A921361C4700679668 /* ColorPicker.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = ColorPicker.framework; path = Carthage/Build/Mac/ColorPicker.framework; sourceTree = "<group>"; };
 		6B2DC1AA21361C4700679668 /* Colors.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Colors.framework; path = Carthage/Build/Mac/Colors.framework; sourceTree = "<group>"; };
 		6B2DC1B121362E8400679668 /* CoreColorPicker.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CoreColorPicker.swift; sourceTree = "<group>"; };
@@ -712,6 +716,7 @@
 				300302791EDCDBA00085E140 /* LogicNode.swift */,
 				305ED1BC20548CA7000D07C3 /* LonaLogic.swift */,
 				6BA6E89C2131CD09009CD33C /* JSONDocument.swift */,
+				6B1086F6217955120024AE56 /* SVG.swift */,
 			);
 			path = Models;
 			sourceTree = "<group>";
@@ -739,6 +744,7 @@
 		30F870BC20865858007ADA5B /* Generated */ = {
 			isa = PBXGroup;
 			children = (
+				6B1086F8217967BC0024AE56 /* CGSize+Crop.swift */,
 				301C262320C1C3B500F18F73 /* TextStyle.swift */,
 				30F870BD20865858007ADA5B /* TextStyles.swift */,
 				30F870BF20865858007ADA5B /* screens */,
@@ -1223,6 +1229,7 @@
 				300302781EDCDA440085E140 /* LogicListEditorView.swift in Sources */,
 				30C203DD20BF5910007C3FE0 /* TextStyleBrowser.swift in Sources */,
 				6BA5BBD92174F2A500F086A7 /* FileNavigator.swift in Sources */,
+				6B1086F7217955120024AE56 /* SVG.swift in Sources */,
 				309777721F2BA78E004C8975 /* CSData.swift in Sources */,
 				6BABAFE72139C341002B8C8F /* WorkspaceToolbar.swift in Sources */,
 				BA0D85E41FD5AC2000D817C3 /* NSViewHoverExtensions.swift in Sources */,
@@ -1313,6 +1320,7 @@
 				6BA5BBDB2174FA2100F086A7 /* FileNavigatorHeader.swift in Sources */,
 				307718E81F35241A003A597B /* CSControl.swift in Sources */,
 				6B58868B2134D9E800CCA69F /* ColorInspector.swift in Sources */,
+				6B1086F9217967BD0024AE56 /* CGSize+Crop.swift in Sources */,
 				303BDE6D1F76E61300B4CE5A /* VideoUtils.swift in Sources */,
 				305A19521F4638F800EA033C /* NSStackViewExtensions.swift in Sources */,
 				6B0A29E6212736F900A96B0F /* Alert.swift in Sources */,

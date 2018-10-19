@@ -517,11 +517,11 @@ switch (command) {
   }
 | "convertSvg" =>
   let contents =
-    if (List.length(positionalArguments) < 4) {
+    if (List.length(positionalArguments) < 3) {
       getStdin();
     } else {
       Js.Promise.resolve(
-        Node.Fs.readFileSync(List.nth(positionalArguments, 4), `utf8),
+        Node.Fs.readFileSync(List.nth(positionalArguments, 3), `utf8),
       );
     };
   Js.Promise.(

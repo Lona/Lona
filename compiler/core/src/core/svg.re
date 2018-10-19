@@ -95,19 +95,25 @@ module Decode = {
   let pathCommand = (json: Js.Json.t): pathCommand => {
     let type_ = json |> field("type", string);
     switch (type_) {
-    | "line" => Line(json |> field("to", point))
-    | "move" => Move(json |> field("to", point))
+    | "line" =>
+      let data = json |> field("data", x => x);
+      Line(data |> field("to", point));
+    | "move" =>
+      let data = json |> field("data", x => x);
+      Move(data |> field("to", point));
     | "quadCurve" =>
+      let data = json |> field("data", x => x);
       QuadCurve(
-        json |> field("to", point),
-        json |> field("controlPoint", point),
-      )
+        data |> field("to", point),
+        data |> field("controlPoint", point),
+      );
     | "cubicCurve" =>
+      let data = json |> field("data", x => x);
       CubicCurve(
-        json |> field("to", point),
-        json |> field("controlPoint1", point),
-        json |> field("controlPoint2", point),
-      )
+        data |> field("to", point),
+        data |> field("controlPoint1", point),
+        data |> field("controlPoint2", point),
+      );
     | "close" => Close
     | _ =>
       raise(Error("Failed to decode svg path command of type: " ++ type_))
@@ -134,17 +140,17 @@ module Decode = {
 
   let rec node = (json: Js.Json.t): node => {
     let type_ = json |> field("type", string);
-    let elementPath = json |> field("elementPath", list(string));
-    /* Js.log2("JSON", json); */
+    let data = json |> field("data", x => x);
+    let elementPath = data |> field("elementPath", list(string));
     switch (type_) {
     | "svg" =>
       Svg(
         elementPath,
-        json |> field("params", svgParams),
-        json |> field("children", list(node)),
+        data |> field("params", svgParams),
+        data |> field("children", list(node)),
       )
-    | "path" => Path(elementPath, json |> field("params", pathParams))
-    | "circle" => Circle(elementPath, json |> field("params", circleParams))
+    | "path" => Path(elementPath, data |> field("params", pathParams))
+    | "circle" => Circle(elementPath, data |> field("params", circleParams))
     | _ => raise(Error("Failed to decode svg node of type: " ++ type_))
     };
   };

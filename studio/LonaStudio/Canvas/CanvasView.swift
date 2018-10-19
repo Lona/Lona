@@ -262,6 +262,23 @@ func renderBox(configuredLayer: ConfiguredLayer, node: YGNodeRef, options: Rende
                 }
             }
         }
+    } else if layer.type == .vectorGraphic {
+        let imageValue: String? = config.get(attribute: "image", for: layer.name).string ?? layer.image
+
+        if let imageValue = imageValue, let url = URL(string: imageValue)?.absoluteURLForWorkspaceURL() {
+            // TODO: A better cache key? This one will give false positives
+            let scale: CGFloat = layout.width * layout.height
+
+            if let cached = imageCache.contents(for: url, at: scale) {
+                box.backgroundImage = cached
+            } else {
+                SVG.render(contentsOf: url, size: CGSize(width: layout.width, height: layout.height), successHandler: { image in
+                    image.cacheMode = .always
+                    box.backgroundImage = image
+                    imageCache.add(contents: image, for: url, at: scale)
+                })
+            }
+        }
     }
 
 //    if config.scope.get(value: "cs:selected").data.stringValue == layer.name {

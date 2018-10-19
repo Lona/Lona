@@ -55,10 +55,19 @@ class ImageField: NSImageView, CSControl {
         get { return droppedFilePath ?? "" }
         set {
             if let url = URL(string: newValue)?.absoluteURLForWorkspaceURL() {
-                image = NSImage(contentsOf: url)
+                if url.pathExtension == "svg" {
+                    // Delay so that bounds are calculated
+                    DispatchQueue.main.async {
+                        SVG.render(contentsOf: url, size: self.bounds.size, successHandler: { image in
+                            self.image = image
+                        })
+                    }
+                } else {
+                    image = NSImage(contentsOf: url)
 
-                if let image = image {
-                    sizeLabel.value = "\(image.size.width) × \(image.size.height)"
+                    if let image = image {
+                        sizeLabel.value = "\(image.size.width) × \(image.size.height)"
+                    }
                 }
 
                 droppedFilePath = url.absoluteString

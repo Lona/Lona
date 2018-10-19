@@ -63,39 +63,49 @@ const Builders = {
 
   circle: (style, center, radius) => ({
     type: "circle",
-    params: {
-      center,
-      radius,
-      style
+    data: {
+      params: {
+        center,
+        radius,
+        style
+      }
     }
   }),
   path: (style, commands) => ({
     type: "path",
-    params: {
-      commands,
-      style
+    data: {
+      params: {
+        commands,
+        style
+      }
     }
   }),
   svg: viewBox => ({
     type: "svg",
-    params: {
-      ...(viewBox && { viewBox })
+    data: {
+      params: {
+        ...(viewBox && { viewBox })
+      }
     }
   }),
 
   Path: {
-    move: to => ({ type: "move", to }),
-    line: to => ({ type: "line", to }),
+    move: to => ({ type: "move", data: { to } }),
+    line: to => ({ type: "line", data: { to } }),
     quadCurve: (to, controlPoint) => ({
       type: "quadCurve",
-      to,
-      controlPoint
+      data: {
+        to,
+        controlPoint
+      }
     }),
     cubicCurve: (to, controlPoint1, controlPoint2) => ({
       type: "cubicCurve",
-      to,
-      controlPoint1,
-      controlPoint2
+      data: {
+        to,
+        controlPoint1,
+        controlPoint2
+      }
     }),
     close: () => ({ type: "close" })
   }
@@ -179,7 +189,7 @@ function numberValue(value, defaultValue = 0) {
 function convertChild(child, index, context) {
   const { type, name, attributes, children } = child;
 
-  console.log("child", name);
+  // console.log("child", name);
 
   switch (name) {
     case "title":
@@ -315,7 +325,7 @@ function convertChildren(children, parentElementPath, context) {
     if (!converted) return acc;
 
     if (converted.type === "group") {
-      return [...acc, ...converted.children];
+      return [...acc, ...converted.data.children];
     }
 
     return [...acc, converted];
@@ -329,17 +339,19 @@ function convertNode(node, elementPath = [], context = {}) {
 
   if (!converted) return null;
 
-  return Object.assign(
-    { elementPath },
-    converted,
-    children && {
-      children: convertChildren(
-        children,
-        elementPath,
-        converted.context || context
-      )
+  return Object.assign({}, converted, {
+    data: {
+      ...converted.data,
+      elementPath,
+      ...(children && {
+        children: convertChildren(
+          children,
+          elementPath,
+          converted.context || context
+        )
+      })
     }
-  );
+  });
 }
 
 function convert(data) {
