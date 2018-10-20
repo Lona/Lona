@@ -155,6 +155,8 @@ let BORDERS: [(edge: NSRectEdge, key: String)] = [
 
 let imageCache = ImageCache<NSImage>()
 
+let svgRenderCache = LRUCache<String, NSImage>()
+
 func renderBox(configuredLayer: ConfiguredLayer, node: YGNodeRef, options: RenderOptions) -> NSView {
     let layout = node.layout
     let config = configuredLayer.config
@@ -269,18 +271,17 @@ func renderBox(configuredLayer: ConfiguredLayer, node: YGNodeRef, options: Rende
 
             let dynamicValues = config.get(attribute: "vector", for: layer.name)
 
-            // TODO: A better cache key? This one will give false positives
-//            let scale: CGFloat = layout.width * layout.height
-//
-//            if let cached = imageCache.contents(for: url, at: scale) {
-//                box.backgroundImage = cached
-//            } else {
+            let cacheKey = "\(imageValue)*w\(layout.width)*h\(layout.height)*\(dynamicValues.toData()?.utf8String() ?? "")"
+
+            if let cached = svgRenderCache.item(for: cacheKey) {
+                box.backgroundImage = cached
+            } else {
                 SVG.render(contentsOf: url, dynamicValues: dynamicValues, size: CGSize(width: layout.width, height: layout.height), successHandler: { image in
                     image.cacheMode = .always
                     box.backgroundImage = image
-//                    imageCache.add(contents: image, for: url, at: scale)
+                    svgRenderCache.add(item: image, for: cacheKey)
                 })
-//            }
+            }
         }
     }
 
