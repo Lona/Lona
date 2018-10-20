@@ -24,12 +24,8 @@ module Naming = {
       | (AppKit, Text) => "NSTextField"
       | (AppKit, Image) => "NSImageView"
       | (_, VectorGraphic) =>
-        switch (Parameter.get(layer, ParameterKey.Image)) {
-        | None => "MissingVectorImage"
-        | Some(value) =>
-          let assetUrl = value |> LonaValue.decodeUrl;
-          SwiftFormat.vectorClassName(assetUrl);
-        }
+        SwiftComponentParameter.getVectorAssetUrl(layer)
+        |> Format.vectorClassName
       | (_, Component(name)) => name
       | _ => "TypeUnknown"
       };
@@ -699,18 +695,6 @@ let generate =
       | _ =>
         vectorGraphicLayers
         |> List.map(layer => {
-             let assetUrl =
-               switch (Parameter.get(layer, ParameterKey.Image)) {
-               | None =>
-                 Js.log(
-                   "Error: VectorGraphic "
-                   ++ layer.name
-                   ++ " is missing the `image` parameter.",
-                 );
-                 raise(Not_found);
-               | Some(value) => value |> LonaValue.decodeUrl
-               };
-
              let vectorAssignments = Layer.vectorAssignments(layer, logic);
 
              SwiftHelperClass.generateVectorGraphic(
@@ -718,7 +702,7 @@ let generate =
                options,
                swiftOptions,
                vectorAssignments,
-               assetUrl,
+               SwiftComponentParameter.getVectorAssetUrl(layer),
              );
            })
         |> List.concat

@@ -12,17 +12,25 @@ let getElementTagString =
     (framework: JavaScriptOptions.framework, typeName: Types.layerType) =>
   switch (framework) {
   | JavaScriptOptions.ReactDOM => ReactDomTranslators.layerTypeTags(typeName)
-  /* | JavaScriptOptions.ReactDOM => JavaScriptFormat.elementName(layer.name) */
   | _ =>
     switch (typeName) {
     | View => "View"
     | Text => "Text"
     | Image => "Image"
+    | VectorGraphic => "VectorGraphic"
     | Animation => "Animation"
     | Children => "Children"
     | Component(value) => value
     | _ => "Unknown"
     }
+  };
+
+let getElementOrVectorTagString =
+    (framework: JavaScriptOptions.framework, layer: Types.layer) =>
+  switch (layer.typeName) {
+  | VectorGraphic =>
+    SwiftComponentParameter.getVectorAssetUrl(layer) |> Format.vectorClassName
+  | _ => getElementTagString(framework, layer.typeName)
   };
 
 module StyledComponents = {
@@ -187,7 +195,7 @@ let createJSXElement =
     };
   | _ =>
     JSXElement({
-      tag: getElementTagString(framework, layer.typeName),
+      tag: getElementOrVectorTagString(framework, layer),
       attributes: styleAttribute @ attributes,
       content,
     })
@@ -209,6 +217,7 @@ let rec layerToJavaScriptAST =
          switch (key) {
          | ParameterKey.Text => false
          | ParameterKey.Visible => false
+         | ParameterKey.Image when layer.typeName == VectorGraphic => false
          | _ => true
          }
        );
@@ -551,6 +560,19 @@ let generate =
             }),
           ]
           @ relative,
+          rootLayer
+          |> Layer.flatten
+          |> List.filter(Layer.isVectorGraphicLayer)
+          |> List.map(layer => {
+               let vectorAssignments = Layer.vectorAssignments(layer, logic);
+
+               JavaScriptSvg.generateVectorGraphic(
+                 config,
+                 options,
+                 vectorAssignments,
+                 SwiftComponentParameter.getVectorAssetUrl(layer),
+               );
+             }),
           [
             ExportDefaultDeclaration(
               ClassDeclaration({

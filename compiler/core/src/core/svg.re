@@ -183,17 +183,14 @@ let parse = data => parseRaw(data);
 let decode = (data: string): Js.Promise.t(node) =>
   Js.Promise.(
     parseRaw(data)
-    |> then_(json => {
-         Js.log("DECODE");
+    |> then_(json =>
          switch (Decode.node(json)) {
-         | result =>
-           Js.log("OK");
-           resolve(result);
+         | result => resolve(result)
          | exception e =>
-           Js.log2("ERROR", e);
+           Js.log2("SVG decoding error", e);
            reject(e);
-         };
-       })
+         }
+       )
   );
 
 let elementName = (elementPath: list(string)): string =>

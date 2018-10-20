@@ -97,7 +97,7 @@ let generateVectorGraphic =
 
   SwiftAst.[
     ClassDeclaration({
-      "name": SwiftFormat.vectorClassName(assetUrl),
+      "name": Format.vectorClassName(assetUrl),
       "inherits": [
         TypeName(swiftOptions.framework == UIKit ? "UIView" : "NSView"),
       ],

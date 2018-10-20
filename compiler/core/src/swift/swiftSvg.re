@@ -33,20 +33,6 @@ let scaleValue = (float: float): SwiftAst.node =>
     })
   );
 
-let hasDynamicParam =
-    (
-      vectorAssignments: list(Layer.vectorAssignment),
-      variableName: string,
-      paramKey: Layer.vectorParamKey,
-    )
-    : bool =>
-  vectorAssignments
-  |> Sequence.firstWhere((vectorAssignment: Layer.vectorAssignment) =>
-       vectorAssignment.elementName == variableName
-       && vectorAssignment.paramKey == paramKey
-     )
-  != None;
-
 let setStyle =
     (
       vectorAssignments: list(Layer.vectorAssignment),
@@ -54,9 +40,10 @@ let setStyle =
       style: Svg.style,
     )
     : list(SwiftAst.node) => {
-  let hasDynamicFill = hasDynamicParam(vectorAssignments, variableName, Fill);
+  let hasDynamicFill =
+    Layer.hasDynamicVectorParam(vectorAssignments, variableName, Fill);
   let hasDynamicStroke =
-    hasDynamicParam(vectorAssignments, variableName, Stroke);
+    Layer.hasDynamicVectorParam(vectorAssignments, variableName, Stroke);
 
   SwiftAst.(
     [

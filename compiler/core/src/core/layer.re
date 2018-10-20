@@ -20,6 +20,7 @@ let isPrimitiveTypeName = (typeName: Types.layerType) =>
   | Types.View
   | Types.Text
   | Types.Image
+  | Types.VectorGraphic
   | Types.Animation => true
   | Types.Children
   | Types.Component(_)
@@ -273,6 +274,20 @@ type vectorAssignment = {
   elementName: string,
   paramKey: vectorParamKey,
 };
+
+let hasDynamicVectorParam =
+    (
+      vectorAssignments: list(vectorAssignment),
+      variableName: string,
+      paramKey: vectorParamKey,
+    )
+    : bool =>
+  vectorAssignments
+  |> Sequence.firstWhere((vectorAssignment: vectorAssignment) =>
+       vectorAssignment.elementName == variableName
+       && vectorAssignment.paramKey == paramKey
+     )
+  != None;
 
 let vectorAssignments =
     (layer: Types.layer, node: Logic.logicNode): list(vectorAssignment) =>
