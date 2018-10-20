@@ -1,3 +1,16 @@
+let tagName = (jsOptions: JavaScriptOptions.options, node: Svg.node) =>
+  switch (jsOptions.framework, node) {
+  | (JavaScriptOptions.ReactDOM, Svg(_)) => "svg"
+  | (JavaScriptOptions.ReactNative, Svg(_))
+  | (JavaScriptOptions.ReactSketchapp, Svg(_)) => "Svg"
+  | (JavaScriptOptions.ReactDOM, Path(_)) => "path"
+  | (JavaScriptOptions.ReactNative, Path(_))
+  | (JavaScriptOptions.ReactSketchapp, Path(_)) => "Svg.Path"
+  | (JavaScriptOptions.ReactDOM, Circle(_)) => "circle"
+  | (JavaScriptOptions.ReactNative, Circle(_))
+  | (JavaScriptOptions.ReactSketchapp, Circle(_)) => "Svg.Circle"
+  };
+
 let stringPoint = (point: Svg.point): string =>
   [point.x, point.y]
   |> List.map(Format.floatToString)
@@ -126,7 +139,7 @@ let rec convertNode =
     switch (node) {
     | Svg(_, params, children) =>
       JSXElement({
-        tag: "svg",
+        tag: tagName(jsOptions, node),
         attributes:
           [
             [
@@ -163,7 +176,7 @@ let rec convertNode =
       let variableName = Svg.elementName(elementPath);
 
       JSXElement({
-        tag: "path",
+        tag: tagName(jsOptions, node),
         attributes:
           [
             [

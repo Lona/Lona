@@ -70,7 +70,7 @@ private class ToggleVector: NSView {
   }
 }
 
-private class Toggle_verticalVector: NSView {
+private class ToggleVerticalVector: NSView {
   override var isFlipped: Bool {
     return true
   }
@@ -139,7 +139,7 @@ private class Toggle_verticalVector: NSView {
   }
 }
 
-private class Check_circleVector: NSView {
+private class CheckCircleVector: NSView {
   override var isFlipped: Bool {
     return true
   }
@@ -210,8 +210,8 @@ public class VectorAsset: NSBox {
   // MARK: Private
 
   private var vectorGraphic1View = ToggleVector()
-  private var vectorGraphic2View = Toggle_verticalVector()
-  private var vectorGraphic3View = Check_circleVector()
+  private var vectorGraphic2View = ToggleVerticalVector()
+  private var vectorGraphic3View = CheckCircleVector()
 
   private func setUpViews() {
     boxType = .custom

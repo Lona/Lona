@@ -362,6 +362,9 @@ let importComponents =
     (framework: JavaScriptOptions.framework, getComponentFile, rootLayer) => {
   let {builtIn, custom}: Layer.availableTypeNames =
     rootLayer |> Layer.getTypeNames;
+  let importsSvg = List.mem(Types.VectorGraphic, builtIn);
+  let builtIn =
+    builtIn |> List.filter(typeName => typeName != Types.VectorGraphic);
   {
     absolute:
       switch (framework) {
@@ -374,7 +377,21 @@ let importComponents =
              ],
            }), */
         []
-      | _ => [
+      | _ =>
+        (
+          switch (framework, importsSvg) {
+          | (JavaScriptOptions.ReactNative, true) => [
+              Ast.ImportDeclaration({
+                source: "react-native-svg",
+                specifiers: [
+                  Ast.ImportDefaultSpecifier("Svg"),
+                ],
+              }),
+            ]
+          | _ => []
+          }
+        )
+        @ [
           Ast.ImportDeclaration({
             source:
               switch (framework) {
@@ -399,6 +416,14 @@ let importComponents =
                       imported: "TextStyles",
                       local: None,
                     }),
+                  ]
+                | _ => []
+                }
+              )
+              @ (
+                switch (framework, importsSvg) {
+                | (JavaScriptOptions.ReactSketchapp, true) => [
+                    Ast.ImportSpecifier({imported: "Svg", local: None}),
                   ]
                 | _ => []
                 }

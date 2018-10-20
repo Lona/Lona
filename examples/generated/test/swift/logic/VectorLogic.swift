@@ -1,7 +1,7 @@
 import UIKit
 import Foundation
 
-private class Check_circleVector: UIView {
+private class CheckCircleVector: UIView {
   public var g0_circle0Fill = #colorLiteral(red: 0, green: 0.756862745098, blue: 0.129411764706, alpha: 1) { didSet { setNeedsDisplay() } }
   public var g0_polyline1Stroke = #colorLiteral(red: 1, green: 1, blue: 1, alpha: 1) { didSet { setNeedsDisplay() } }
 
@@ -80,7 +80,7 @@ public class VectorLogic: UIView {
 
   // MARK: Private
 
-  private var checkView = Check_circleVector()
+  private var checkView = CheckCircleVector()
 
   private func setUpViews() {
     checkView.isOpaque = false

@@ -66,7 +66,7 @@ private class ToggleVector: UIView {
   }
 }
 
-private class Toggle_verticalVector: UIView {
+private class ToggleVerticalVector: UIView {
   override func draw(_ dirtyRect: CGRect) {
     let viewBox = CGRect(origin: CGPoint(x: 0, y: 0), size: CGSize(width: 24, height: 48))
     let croppedRect = viewBox.size.crop(within: bounds.size)
@@ -131,7 +131,7 @@ private class Toggle_verticalVector: UIView {
   }
 }
 
-private class Check_circleVector: UIView {
+private class CheckCircleVector: UIView {
   override func draw(_ dirtyRect: CGRect) {
     let viewBox = CGRect(origin: CGPoint(x: 0, y: 0), size: CGSize(width: 24, height: 24))
     let croppedRect = viewBox.size.crop(within: bounds.size)
@@ -198,8 +198,8 @@ public class VectorAsset: UIView {
   // MARK: Private
 
   private var vectorGraphic1View = ToggleVector()
-  private var vectorGraphic2View = Toggle_verticalVector()
-  private var vectorGraphic3View = Check_circleVector()
+  private var vectorGraphic2View = ToggleVerticalVector()
+  private var vectorGraphic3View = CheckCircleVector()
 
   private func setUpViews() {
     vectorGraphic1View.isOpaque = false
