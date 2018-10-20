@@ -58,6 +58,7 @@
         "id" : "VectorGraphic 3",
         "params" : {
           "alignSelf" : "stretch",
+          "backgroundColor" : "green50",
           "height" : 100,
           "image" : "file:\/\/.\/assets\/check-circle.svg"
         },

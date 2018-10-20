@@ -103,6 +103,7 @@ let styles = StyleSheet.create({
   vectorGraphic3: {
     alignItems: "flex-start",
     alignSelf: "stretch",
+    backgroundColor: colors.green50,
     flexDirection: "column",
     justifyContent: "flex-start",
     height: 100

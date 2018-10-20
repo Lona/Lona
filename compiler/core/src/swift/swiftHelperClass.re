@@ -99,7 +99,7 @@ let generateVectorGraphic =
     ClassDeclaration({
       "name": Format.vectorClassName(assetUrl),
       "inherits": [
-        TypeName(swiftOptions.framework == UIKit ? "UIView" : "NSView"),
+        TypeName(swiftOptions.framework == UIKit ? "UIView" : "NSBox"),
       ],
       "modifier": Some(PrivateModifier),
       "isFinal": false,
@@ -199,7 +199,18 @@ let generateVectorGraphic =
                 }),
               ],
               "body":
-                [SwiftSvg.convertNode(swiftOptions, vectorAssignments, svg)]
+                [
+                  swiftOptions.framework == SwiftOptions.AppKit ?
+                    [
+                      SwiftAst.Builders.functionCall(
+                        ["super", "draw"],
+                        [(None, ["dirtyRect"])],
+                      ),
+                      Empty,
+                    ] :
+                    [],
+                  SwiftSvg.convertNode(swiftOptions, vectorAssignments, svg),
+                ]
                 |> List.concat,
               "result": None,
               "throws": false,

@@ -103,6 +103,7 @@ let styles = {
   vectorGraphic3: {
     alignItems: "flex-start",
     alignSelf: "stretch",
+    backgroundColor: colors.green50,
     display: "flex",
     flexDirection: "column",
     justifyContent: "flex-start",

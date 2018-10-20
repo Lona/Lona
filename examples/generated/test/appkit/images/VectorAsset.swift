@@ -1,12 +1,14 @@
 import AppKit
 import Foundation
 
-private class ToggleVector: NSView {
+private class ToggleVector: NSBox {
   override var isFlipped: Bool {
     return true
   }
 
   override func draw(_ dirtyRect: CGRect) {
+    super.draw(dirtyRect)
+
     let viewBox = CGRect(origin: CGPoint(x: 0, y: 0), size: CGSize(width: 48, height: 24))
     let croppedRect = viewBox.size.crop(within: bounds.size)
     let scale = croppedRect.width / viewBox.width
@@ -70,12 +72,14 @@ private class ToggleVector: NSView {
   }
 }
 
-private class ToggleVerticalVector: NSView {
+private class ToggleVerticalVector: NSBox {
   override var isFlipped: Bool {
     return true
   }
 
   override func draw(_ dirtyRect: CGRect) {
+    super.draw(dirtyRect)
+
     let viewBox = CGRect(origin: CGPoint(x: 0, y: 0), size: CGSize(width: 24, height: 48))
     let croppedRect = viewBox.size.crop(within: bounds.size)
     let scale = croppedRect.width / viewBox.width
@@ -139,12 +143,14 @@ private class ToggleVerticalVector: NSView {
   }
 }
 
-private class CheckCircleVector: NSView {
+private class CheckCircleVector: NSBox {
   override var isFlipped: Bool {
     return true
   }
 
   override func draw(_ dirtyRect: CGRect) {
+    super.draw(dirtyRect)
+
     let viewBox = CGRect(origin: CGPoint(x: 0, y: 0), size: CGSize(width: 24, height: 24))
     let croppedRect = viewBox.size.crop(within: bounds.size)
     let scale = croppedRect.width / viewBox.width
@@ -217,10 +223,21 @@ public class VectorAsset: NSBox {
     boxType = .custom
     borderType = .noBorder
     contentViewMargins = .zero
+    vectorGraphic1View.boxType = .custom
+    vectorGraphic1View.borderType = .noBorder
+    vectorGraphic1View.contentViewMargins = .zero
+    vectorGraphic2View.boxType = .custom
+    vectorGraphic2View.borderType = .noBorder
+    vectorGraphic2View.contentViewMargins = .zero
+    vectorGraphic3View.boxType = .custom
+    vectorGraphic3View.borderType = .noBorder
+    vectorGraphic3View.contentViewMargins = .zero
 
     addSubview(vectorGraphic1View)
     addSubview(vectorGraphic2View)
     addSubview(vectorGraphic3View)
+
+    vectorGraphic3View.fillColor = Colors.green50
   }
 
   private func setUpConstraints() {

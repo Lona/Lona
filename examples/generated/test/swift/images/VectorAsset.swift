@@ -204,11 +204,12 @@ public class VectorAsset: UIView {
   private func setUpViews() {
     vectorGraphic1View.isOpaque = false
     vectorGraphic2View.isOpaque = false
-    vectorGraphic3View.isOpaque = false
 
     addSubview(vectorGraphic1View)
     addSubview(vectorGraphic2View)
     addSubview(vectorGraphic3View)
+
+    vectorGraphic3View.backgroundColor = Colors.green50
   }
 
   private func setUpConstraints() {

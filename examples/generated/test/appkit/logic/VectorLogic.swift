@@ -1,7 +1,7 @@
 import AppKit
 import Foundation
 
-private class CheckCircleVector: NSView {
+private class CheckCircleVector: NSBox {
   public var g0_circle0Fill = #colorLiteral(red: 0, green: 0.756862745098, blue: 0.129411764706, alpha: 1) { didSet { needsDisplay = true } }
   public var g0_polyline1Stroke = #colorLiteral(red: 1, green: 1, blue: 1, alpha: 1) { didSet { needsDisplay = true } }
 
@@ -10,6 +10,8 @@ private class CheckCircleVector: NSView {
   }
 
   override func draw(_ dirtyRect: CGRect) {
+    super.draw(dirtyRect)
+
     let viewBox = CGRect(origin: CGPoint(x: 0, y: 0), size: CGSize(width: 24, height: 24))
     let croppedRect = viewBox.size.crop(within: bounds.size)
     let scale = croppedRect.width / viewBox.width
@@ -90,6 +92,9 @@ public class VectorLogic: NSBox {
     boxType = .custom
     borderType = .noBorder
     contentViewMargins = .zero
+    checkView.boxType = .custom
+    checkView.borderType = .noBorder
+    checkView.contentViewMargins = .zero
 
     addSubview(checkView)
   }

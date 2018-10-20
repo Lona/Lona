@@ -278,7 +278,8 @@ module Doc = {
     };
     let resetViewStyling = (layer: Types.layer) =>
       switch (swiftOptions.framework, layer.typeName) {
-      | (SwiftOptions.AppKit, View) => [
+      | (SwiftOptions.AppKit, View)
+      | (SwiftOptions.AppKit, VectorGraphic) => [
           BinaryExpression({
             "left":
               layerMemberExpression(layer, [SwiftIdentifier("boxType")]),
