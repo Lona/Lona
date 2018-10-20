@@ -205,6 +205,7 @@ let rec layerToJavaScriptAST =
         (
           framework: JavaScriptOptions.framework,
           config: Config.t,
+          logic,
           assignments,
           getAssetPath,
           parent: option(Types.layer),
@@ -281,6 +282,26 @@ let rec layerToJavaScriptAST =
            };
          JSXAttribute({name: key, value: attributeValue});
        });
+  let vectorAssignments = Layer.vectorAssignments(layer, logic);
+  let attributes =
+    [
+      vectorAssignments
+      |> List.map((vectorAssignment: Layer.vectorAssignment) =>
+           JSXAttribute({
+             name:
+               vectorAssignment.elementName
+               ++ (
+                 vectorAssignment.paramKey
+                 |> Layer.vectorParamKeyToString
+                 |> Format.upperFirst
+               ),
+             value: Identifier(vectorAssignment.originalIdentifierPath),
+           })
+         ),
+      attributes,
+    ]
+    |> List.concat;
+
   let dynamicOrStaticValue = key =>
     switch (
       main |> ParameterMap.find_opt(key),
@@ -303,6 +324,7 @@ let rec layerToJavaScriptAST =
            layerToJavaScriptAST(
              framework,
              config,
+             logic,
              assignments,
              getAssetPath,
              Some(layer),
@@ -402,6 +424,7 @@ let rootLayerToJavaScriptAST =
       options: JavaScriptOptions.options,
       config: Config.t,
       getAssetPath,
+      logic,
       assignments,
       rootLayer,
     ) => {
@@ -410,6 +433,7 @@ let rootLayerToJavaScriptAST =
     |> layerToJavaScriptAST(
          options.framework,
          config,
+         logic,
          assignments,
          getAssetPath,
          None,
@@ -512,6 +536,7 @@ let generate =
       options,
       config,
       getAssetPath,
+      logic,
       assignments,
       rootLayer,
     );

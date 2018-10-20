@@ -39,7 +39,12 @@ export default class VectorLogic extends React.Component {
     }
     return (
       <div style={styles.view}>
-        <CheckCircleVector style={styles.check} />
+        <CheckCircleVector
+          style={styles.check}
+          g0_circle0={Check$vector$g0_circle0$fill}
+          g0_polyline1={Check$vector$g0_polyline1$stroke}
+
+        />
       </div>
     );
   }

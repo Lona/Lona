@@ -34,13 +34,13 @@ let styleAttributes =
 
   let strokeWidth =
     JavaScriptAst.JSXAttribute({
-      name: "stroke-width",
+      name: "strokeWidth",
       value: StringLiteral(style.strokeWidth |> Format.floatToString),
     });
 
   let strokeLineCap =
     JavaScriptAst.JSXAttribute({
-      name: "stroke-linecap",
+      name: "strokeLinecap",
       value: StringLiteral(style.strokeLineCap |> Svg.ToString.strokeLineCap),
     });
 

@@ -270,9 +270,16 @@ type vectorParamKey =
   | Fill
   | Stroke;
 
+let vectorParamKeyToString = paramKey =>
+  switch (paramKey) {
+  | Fill => "fill"
+  | Stroke => "stroke"
+  };
+
 type vectorAssignment = {
   elementName: string,
   paramKey: vectorParamKey,
+  originalIdentifierPath: list(string),
 };
 
 let hasDynamicVectorParam =
@@ -305,7 +312,7 @@ let vectorAssignments =
              Js.log("Invalid vector param key");
              raise(Not_found);
            };
-         Some({elementName, paramKey});
+         Some({elementName, paramKey, originalIdentifierPath: id});
        | _ => None
        }
      )
