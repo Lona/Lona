@@ -261,6 +261,19 @@ enum CSData: Equatable, CustomDebugStringConvertible {
     }
 
     func toData() -> Data? {
+        switch self {
+        case .Null:
+            return "null".data(using: .utf8)
+        case .String(let value):
+            return ("\"\(value.replacingOccurrences(of: "\"", with: "\\\""))\"").data(using: .utf8)
+        case .Number(let value):
+            return "\(value)".data(using: .utf8)
+        case .Bool(let value):
+            return "\(value)".data(using: .utf8)
+        case .Array, .Object:
+            break
+        }
+
         let options: JSONSerialization.WritingOptions
 
         if #available(OSX 10.13, *) {
@@ -283,7 +296,8 @@ enum CSData: Equatable, CustomDebugStringConvertible {
     }
 
     static func from(data: Data) -> CSData? {
-        guard let json = try? JSONSerialization.jsonObject(with: data) else { return nil }
+        guard let json = try? JSONSerialization.jsonObject(
+            with: data, options: [JSONSerialization.ReadingOptions.allowFragments]) else { return nil }
         return from(json: json)
     }
 
