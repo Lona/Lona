@@ -34,11 +34,8 @@ let variableNameFromIdentifier = (rootLayerName, path) =>
   | _ => "BadIdentifierName"
   };
 
-let vectorParamName = (paramKey: Layer.vectorParamKey): string =>
-  switch (paramKey) {
-  | Fill => "Fill"
-  | Stroke => "Stroke"
-  };
-
 let vectorVariableName = (vectorAssignment: Layer.vectorAssignment): string =>
-  vectorAssignment.elementName ++ vectorParamName(vectorAssignment.paramKey);
+  vectorAssignment.elementName
+  ++ Format.upperFirst(
+       Layer.vectorParamKeyToString(vectorAssignment.paramKey),
+     );

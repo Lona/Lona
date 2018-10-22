@@ -11,7 +11,6 @@ type t =
   | NumberOfLines
   /* Image */
   | Image
-  | Vector
   /* Styles */
   | AlignItems
   | AlignSelf
@@ -51,7 +50,6 @@ let fromString = string =>
   | "numberOfLines" => NumberOfLines
   /* Image */
   | "image" => Image
-  | "vector" => Vector
   /* Styles */
   | "alignItems" => AlignItems
   | "alignSelf" => AlignSelf
@@ -93,7 +91,6 @@ let toString = key =>
   | NumberOfLines => "numberOfLines"
   /* Image */
   | Image => "image"
-  | Vector => "vector"
   /* Styles */
   | AlignItems => "alignItems"
   | AlignSelf => "alignSelf"

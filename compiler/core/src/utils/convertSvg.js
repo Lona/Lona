@@ -152,7 +152,7 @@ function convertPathCommand(segment, index, x, y) {
       );
     }
     default:
-      console.log("not used", segment);
+      console.log("Path segment not used:", segment);
       return null;
   }
 }
@@ -186,10 +186,11 @@ function numberValue(value, defaultValue = 0) {
   return value;
 }
 
+// Convert all svg nodes into a simplified JSON structure.
+// Currently, all drawing nodes (rect, circle, polyline) are converted
+// to <path> nodes for simpler rendering.
 function convertChild(child, index, context) {
   const { type, name, attributes, children } = child;
-
-  // console.log("child", name);
 
   switch (name) {
     case "title":
@@ -212,8 +213,6 @@ function convertChild(child, index, context) {
         ["stroke-linecap"]: strokeLineCap
       } = { ...context, ...attributes };
 
-      // console.log("context", context, "attr", attributes);
-
       return Builders.path(
         Builders.style(
           fill,
@@ -224,7 +223,6 @@ function convertChild(child, index, context) {
         convertPath(d)
       );
     }
-    // Convert polylines to paths
     case "polyline": {
       const { points: rawPoints } = attributes;
 
@@ -251,13 +249,6 @@ function convertChild(child, index, context) {
     }
     case "circle": {
       const { cx: rawCx, cy: rawCy, r: rawR } = attributes;
-      // const { fill, stroke } = { ...context, ...attributes };
-
-      // return Builders.circle(
-      //   Builders.style(fill, stroke),
-      //   Builders.point(parseFloat(cx), parseFloat(cy)),
-      //   parseFloat(r)
-      // );
 
       let [cx, cy, r] = [rawCx, rawCy, rawR].map(numberValue);
 
@@ -314,6 +305,8 @@ function convertChild(child, index, context) {
   }
 }
 
+// Convert all children, filtering out groups and the "element path", which
+// is ultimately used as the variable name, to each node
 function convertChildren(children, parentElementPath, context) {
   return children.reduce((acc, child, index) => {
     const converted = convertNode(
@@ -356,30 +349,8 @@ function convertNode(node, elementPath = [], context = {}) {
 
 function convert(data) {
   return svgson(data).then(parsed => {
-    // console.log(parsed);
-
-    const result = convertNode(parsed);
-    // console.log(JSON.stringify(result, null, 2));
-
-    return result;
+    return convertNode(parsed);
   });
 }
-
-// const svgdata = `<?xml version="1.0" encoding="UTF-8"?>
-// <svg width="24px" height="24px" viewBox="0 0 24 24" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
-//     <!-- Generator: Sketch 52.2 (67145) - http://www.bohemiancoding.com/sketch -->
-//     <title>Checkmark</title>
-//     <desc>Created with Sketch.</desc>
-//     <g id="Checkmark" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
-//         <circle id="Oval" fill="#00C121" cx="12" cy="12" r="12"></circle>
-//         <polyline id="Path" stroke="#FFFFFF" stroke-width="2" stroke-linecap="round" points="6.5 12.6 9.75 15.85 17.25 8.35"></polyline>
-//     </g>
-// </svg>`;
-// const svgdata = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><path d="M504 256c0 136.967-111.033 248-248 248S8 392.967 8 256 119.033 8 256 8s248 111.033 248 248zM227.314 387.314l184-184c6.248-6.248 6.248-16.379 0-22.627l-22.627-22.627c-6.248-6.249-16.379-6.249-22.628 0L216 308.118l-70.059-70.059c-6.248-6.248-16.379-6.248-22.628 0l-22.627 22.627c-6.248 6.248-6.248 16.379 0 22.627l104 104c6.249 6.249 16.379 6.249 22.628.001z"/></svg>`;
-
-// convert(svgdata).then(x => {
-//   const result = JSON.stringify(x, null, 2);
-//   console.log(result);
-// });
 
 module.exports = convert;

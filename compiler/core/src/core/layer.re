@@ -276,6 +276,15 @@ let vectorParamKeyToString = paramKey =>
   | Stroke => "stroke"
   };
 
+let vectorParamKeyFromString = (key: string): vectorParamKey =>
+  switch (key) {
+  | "fill" => Fill
+  | "stroke" => Stroke
+  | _ =>
+    Js.log("Invalid vector param key");
+    raise(Not_found);
+  };
+
 type vectorAssignment = {
   elementName: string,
   paramKey: vectorParamKey,
@@ -304,14 +313,7 @@ let vectorAssignments =
        switch (id) {
        | ["layers", layerName, "vector", elementName, paramKey]
            when layerName == layer.name =>
-         let paramKey =
-           switch (paramKey) {
-           | "fill" => Fill
-           | "stroke" => Stroke
-           | _ =>
-             Js.log("Invalid vector param key");
-             raise(Not_found);
-           };
+         let paramKey = paramKey |> vectorParamKeyFromString;
          Some({elementName, paramKey, originalIdentifierPath: id});
        | _ => None
        }
