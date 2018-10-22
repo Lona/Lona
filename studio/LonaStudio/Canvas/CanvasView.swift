@@ -275,12 +275,14 @@ func renderBox(configuredLayer: ConfiguredLayer, node: YGNodeRef, options: Rende
 
             if let cached = svgRenderCache.item(for: cacheKey) {
                 box.backgroundImage = cached
-            } else {
-                SVG.render(contentsOf: url, dynamicValues: dynamicValues, size: CGSize(width: layout.width, height: layout.height), successHandler: { image in
-                    image.cacheMode = .always
-                    box.backgroundImage = image
-                    svgRenderCache.add(item: image, for: cacheKey)
-                })
+            } else if let image = SVG.renderSync(
+                contentsOf: url,
+                dynamicValues: dynamicValues,
+                size: CGSize(width: layout.width, height: layout.height)) {
+
+                image.cacheMode = .always
+                box.backgroundImage = image
+                svgRenderCache.add(item: image, for: cacheKey)
             }
         }
     }

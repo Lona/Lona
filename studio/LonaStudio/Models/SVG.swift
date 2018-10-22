@@ -460,4 +460,18 @@ extension SVG {
             }
         })
     }
+
+    static func renderSync(
+        contentsOf url: URL,
+        dynamicValues: CSData = CSData.Null,
+        size: CGSize) -> NSImage? {
+
+        guard size != .zero else { return nil }
+
+        guard let svg = decodeSync(contentsOf: url) else { return nil }
+
+        guard let image = svg.image(size: size, dynamicValues: dynamicValues) else { return nil }
+
+        return image
+    }
 }
