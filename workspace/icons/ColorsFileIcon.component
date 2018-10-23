@@ -38,7 +38,7 @@
             "layers",
             "VectorGraphic",
             "vector",
-            "g2_g0_path0",
+            "outline",
             "stroke"
           ],
           "content" : {
@@ -55,7 +55,7 @@
             "layers",
             "VectorGraphic",
             "vector",
-            "g2_g0_path0",
+            "outline",
             "fill"
           ],
           "content" : {
@@ -72,7 +72,7 @@
             "layers",
             "VectorGraphic",
             "vector",
-            "g2_g0_path2",
+            "fold",
             "stroke"
           ],
           "content" : {
@@ -89,7 +89,7 @@
             "layers",
             "VectorGraphic",
             "vector",
-            "g2_g0_path2",
+            "fold",
             "fill"
           ],
           "content" : {
@@ -106,7 +106,7 @@
             "layers",
             "VectorGraphic",
             "vector",
-            "g2_rect1",
+            "box1",
             "stroke"
           ],
           "content" : {
@@ -123,7 +123,7 @@
             "layers",
             "VectorGraphic",
             "vector",
-            "g2_rect2",
+            "box2",
             "stroke"
           ],
           "content" : {
@@ -140,7 +140,7 @@
             "layers",
             "VectorGraphic",
             "vector",
-            "g2_rect3",
+            "box3",
             "stroke"
           ],
           "content" : {
@@ -157,7 +157,7 @@
             "layers",
             "VectorGraphic",
             "vector",
-            "g2_rect4",
+            "box4",
             "stroke"
           ],
           "content" : {
@@ -174,7 +174,7 @@
             "layers",
             "VectorGraphic",
             "vector",
-            "g2_rect1",
+            "box1",
             "fill"
           ],
           "content" : {
@@ -191,7 +191,7 @@
             "layers",
             "VectorGraphic",
             "vector",
-            "g2_rect2",
+            "box2",
             "fill"
           ],
           "content" : {
@@ -208,7 +208,7 @@
             "layers",
             "VectorGraphic",
             "vector",
-            "g2_rect3",
+            "box3",
             "fill"
           ],
           "content" : {
@@ -225,7 +225,7 @@
             "layers",
             "VectorGraphic",
             "vector",
-            "g2_rect4",
+            "box4",
             "fill"
           ],
           "content" : {

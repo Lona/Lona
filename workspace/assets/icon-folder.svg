@@ -4,11 +4,9 @@
     <title>icon-folder</title>
     <desc>Created with Sketch.</desc>
     <g id="icon-folder" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
-        <g id="Group-5-Copy-2" transform="translate(1.000000, 4.000000)">
-            <path d="M0.5,15.5 L0.5,1.5 C0.5,0.94771525 0.94771525,0.5 1.5,0.5 L6.08578644,0.5 C6.35100293,0.5 6.60535684,0.60535684 6.79289322,0.792893219 L8.20710678,2.20710678 C8.39464316,2.39464316 8.64899707,2.5 8.91421356,2.5 L19.5,2.5 C20.0522847,2.5 20.5,2.94771525 20.5,3.5 L20.5,15.5 C20.5,16.0522847 20.0522847,16.5 19.5,16.5 L1.5,16.5 C0.94771525,16.5 0.5,16.0522847 0.5,15.5 Z" id="Path" stroke="#8C8C8C" fill="#EEEEEE"></path>
-            <rect id="Rectangle" fill="#CDCDCD" x="1" y="5" width="19" height="11"></rect>
-            <path d="M1.5,15.5 L19.5,15.5" id="Line-3" stroke-opacity="0.2" stroke="#FFFFFF" stroke-linecap="square"></path>
-            <path d="M1.5,4.5 L19.5,4.5" id="Line-2" stroke="#8C8C8C" stroke-linecap="square"></path>
-        </g>
+        <path d="M1.5,19.5 L1.5,5.5 C1.5,4.94771525 1.94771525,4.5 2.5,4.5 L7.08578644,4.5 C7.35100293,4.5 7.60535684,4.60535684 7.79289322,4.79289322 L9.20710678,6.20710678 C9.39464316,6.39464316 9.64899707,6.5 9.91421356,6.5 L20.5,6.5 C21.0522847,6.5 21.5,6.94771525 21.5,7.5 L21.5,19.5 C21.5,20.0522847 21.0522847,20.5 20.5,20.5 L2.5,20.5 C1.94771525,20.5 1.5,20.0522847 1.5,19.5 Z" id="outline" stroke="#8C8C8C" fill="#EEEEEE"></path>
+        <rect id="contents" fill="#CDCDCD" x="2" y="9" width="19" height="11"></rect>
+        <path d="M2.5,19.5 L20.5,19.5" id="highlight" stroke-opacity="0.2" stroke="#FFFFFF" stroke-linecap="square"></path>
+        <path d="M2.5,8.5 L20.5,8.5" id="divider" stroke="#8C8C8C" stroke-linecap="square"></path>
     </g>
 </svg>

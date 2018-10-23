@@ -4,14 +4,12 @@
     <title>icon-text-file</title>
     <desc>Created with Sketch.</desc>
     <g id="icon-text-file" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
-        <g id="Group-5" transform="translate(4.000000, 2.000000)">
-            <path d="M1.5,0.5 L8.67157288,0.5 C9.20200585,0.5 9.71071368,0.710713681 10.0857864,1.08578644 L13.9142136,4.91421356 C14.2892863,5.28928632 14.5,5.79799415 14.5,6.32842712 L14.5,18.5 C14.5,19.0522847 14.0522847,19.5 13.5,19.5 L1.5,19.5 C0.94771525,19.5 0.5,19.0522847 0.5,18.5 L0.5,1.5 C0.5,0.94771525 0.94771525,0.5 1.5,0.5 Z" id="Rectangle" stroke="#8C8C8C" fill="#D8D8D8"></path>
-            <path d="M1.5,18.5 L13.5,18.5" id="Line-3-Copy" stroke-opacity="0.2" stroke="#FFFFFF" stroke-linecap="square"></path>
-            <path d="M13.0857864,6.5 L9.5,6.5 C8.94771525,6.5 8.5,6.05228475 8.5,5.5 L8.5,1.91421356 C8.5,1.36192881 8.94771525,0.914213562 9.5,0.914213562 C9.76521649,0.914213562 10.0195704,1.0195704 10.2071068,1.20710678 L13.7928932,4.79289322 C14.1834175,5.18341751 14.1834175,5.81658249 13.7928932,6.20710678 C13.6053568,6.39464316 13.3510029,6.5 13.0857864,6.5 Z" id="Rectangle" stroke="#8C8C8C" fill="#EEEEEE"></path>
-        </g>
-        <path d="M7.5,11.5 L15.5,11.5" id="Line-7" stroke="#979797" stroke-linecap="square"></path>
-        <path d="M7.5,13.5 L15.5,13.5" id="Line-7-Copy" stroke="#979797" stroke-linecap="square"></path>
-        <path d="M7.5,15.5 L15.5,15.5" id="Line-7-Copy-2" stroke="#979797" stroke-linecap="square"></path>
-        <path d="M7.5,17.5 L15.5,17.5" id="Line-7-Copy-3" stroke="#979797" stroke-linecap="square"></path>
+        <path d="M5.5,2.5 L12.6715729,2.5 C13.2020059,2.5 13.7107137,2.71071368 14.0857864,3.08578644 L17.9142136,6.91421356 C18.2892863,7.28928632 18.5,7.79799415 18.5,8.32842712 L18.5,20.5 C18.5,21.0522847 18.0522847,21.5 17.5,21.5 L5.5,21.5 C4.94771525,21.5 4.5,21.0522847 4.5,20.5 L4.5,3.5 C4.5,2.94771525 4.94771525,2.5 5.5,2.5 Z" id="outline" stroke="#8C8C8C" fill="#D8D8D8"></path>
+        <path d="M5.5,20.5 L17.5,20.5" id="highlight" stroke-opacity="0.2" stroke="#FFFFFF" stroke-linecap="square"></path>
+        <path d="M17.0857864,8.5 L13.5,8.5 C12.9477153,8.5 12.5,8.05228475 12.5,7.5 L12.5,3.91421356 C12.5,3.36192881 12.9477153,2.91421356 13.5,2.91421356 C13.7652165,2.91421356 14.0195704,3.0195704 14.2071068,3.20710678 L17.7928932,6.79289322 C18.1834175,7.18341751 18.1834175,7.81658249 17.7928932,8.20710678 C17.6053568,8.39464316 17.3510029,8.5 17.0857864,8.5 Z" id="fold" stroke="#8C8C8C" fill="#EEEEEE"></path>
+        <path d="M7.5,11.5 L15.5,11.5" id="line1" stroke="#979797" stroke-linecap="square"></path>
+        <path d="M7.5,13.5 L15.5,13.5" id="line2" stroke="#979797" stroke-linecap="square"></path>
+        <path d="M7.5,15.5 L15.5,15.5" id="line3" stroke="#979797" stroke-linecap="square"></path>
+        <path d="M7.5,17.5 L15.5,17.5" id="line4" stroke="#979797" stroke-linecap="square"></path>
     </g>
 </svg>

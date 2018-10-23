@@ -15,60 +15,60 @@ private class ToggleVector: NSBox {
     func transform(point: CGPoint) -> CGPoint {
       return CGPoint(x: point.x * scale + croppedRect.minX, y: point.y * scale + croppedRect.minY)
     }
-    let g0_rect0 = NSBezierPath()
-    g0_rect0.move(to: transform(point: CGPoint(x: 12, y: 0.5)))
-    g0_rect0.line(to: transform(point: CGPoint(x: 36, y: 0.5)))
-    g0_rect0.curve(
+    let rectangle = NSBezierPath()
+    rectangle.move(to: transform(point: CGPoint(x: 12, y: 0.5)))
+    rectangle.line(to: transform(point: CGPoint(x: 36, y: 0.5)))
+    rectangle.curve(
       to: transform(point: CGPoint(x: 47.5, y: 12)),
       controlPoint1: transform(point: CGPoint(x: 42.3512746231, y: 0.5)),
       controlPoint2: transform(point: CGPoint(x: 47.5, y: 5.64872537694)))
-    g0_rect0.line(to: transform(point: CGPoint(x: 47.5, y: 12)))
-    g0_rect0.curve(
+    rectangle.line(to: transform(point: CGPoint(x: 47.5, y: 12)))
+    rectangle.curve(
       to: transform(point: CGPoint(x: 36, y: 23.5)),
       controlPoint1: transform(point: CGPoint(x: 47.5, y: 18.3512746231)),
       controlPoint2: transform(point: CGPoint(x: 42.3512746231, y: 23.5)))
-    g0_rect0.line(to: transform(point: CGPoint(x: 12, y: 23.5)))
-    g0_rect0.curve(
+    rectangle.line(to: transform(point: CGPoint(x: 12, y: 23.5)))
+    rectangle.curve(
       to: transform(point: CGPoint(x: 0.5, y: 12)),
       controlPoint1: transform(point: CGPoint(x: 5.64872537694, y: 23.5)),
       controlPoint2: transform(point: CGPoint(x: 0.5, y: 18.3512746231)))
-    g0_rect0.line(to: transform(point: CGPoint(x: 0.5, y: 12)))
-    g0_rect0.curve(
+    rectangle.line(to: transform(point: CGPoint(x: 0.5, y: 12)))
+    rectangle.curve(
       to: transform(point: CGPoint(x: 12, y: 0.5)),
       controlPoint1: transform(point: CGPoint(x: 0.5, y: 5.64872537694)),
       controlPoint2: transform(point: CGPoint(x: 5.64872537694, y: 0.5)))
-    g0_rect0.close()
+    rectangle.close()
     #colorLiteral(red: 0, green: 0.756862745098, blue: 0.129411764706, alpha: 1).setFill()
     #colorLiteral(red: 0, green: 0.556862745098, blue: 0.0941176470588, alpha: 1).setStroke()
-    g0_rect0.fill()
-    g0_rect0.lineWidth = 1 * scale
-    g0_rect0.lineCapStyle = .buttLineCapStyle
-    g0_rect0.stroke()
-    let g0_circle1 = NSBezierPath()
-    g0_circle1.move(to: transform(point: CGPoint(x: 12, y: 2)))
-    g0_circle1.line(to: transform(point: CGPoint(x: 12, y: 2)))
-    g0_circle1.curve(
+    rectangle.fill()
+    rectangle.lineWidth = 1 * scale
+    rectangle.lineCapStyle = .buttLineCapStyle
+    rectangle.stroke()
+    let oval = NSBezierPath()
+    oval.move(to: transform(point: CGPoint(x: 12, y: 2)))
+    oval.line(to: transform(point: CGPoint(x: 12, y: 2)))
+    oval.curve(
       to: transform(point: CGPoint(x: 22, y: 12)),
       controlPoint1: transform(point: CGPoint(x: 17.5228474983, y: 2)),
       controlPoint2: transform(point: CGPoint(x: 22, y: 6.47715250169)))
-    g0_circle1.line(to: transform(point: CGPoint(x: 22, y: 12)))
-    g0_circle1.curve(
+    oval.line(to: transform(point: CGPoint(x: 22, y: 12)))
+    oval.curve(
       to: transform(point: CGPoint(x: 12, y: 22)),
       controlPoint1: transform(point: CGPoint(x: 22, y: 17.5228474983)),
       controlPoint2: transform(point: CGPoint(x: 17.5228474983, y: 22)))
-    g0_circle1.line(to: transform(point: CGPoint(x: 12, y: 22)))
-    g0_circle1.curve(
+    oval.line(to: transform(point: CGPoint(x: 12, y: 22)))
+    oval.curve(
       to: transform(point: CGPoint(x: 2, y: 12)),
       controlPoint1: transform(point: CGPoint(x: 6.47715250169, y: 22)),
       controlPoint2: transform(point: CGPoint(x: 2, y: 17.5228474983)))
-    g0_circle1.line(to: transform(point: CGPoint(x: 2, y: 12)))
-    g0_circle1.curve(
+    oval.line(to: transform(point: CGPoint(x: 2, y: 12)))
+    oval.curve(
       to: transform(point: CGPoint(x: 12, y: 2)),
       controlPoint1: transform(point: CGPoint(x: 2, y: 6.47715250169)),
       controlPoint2: transform(point: CGPoint(x: 6.47715250169, y: 2)))
-    g0_circle1.close()
+    oval.close()
     #colorLiteral(red: 1, green: 1, blue: 1, alpha: 1).setFill()
-    g0_circle1.fill()
+    oval.fill()
   }
 }
 
@@ -86,60 +86,60 @@ private class ToggleVerticalVector: NSBox {
     func transform(point: CGPoint) -> CGPoint {
       return CGPoint(x: point.x * scale + croppedRect.minX, y: point.y * scale + croppedRect.minY)
     }
-    let g2_rect0 = NSBezierPath()
-    g2_rect0.move(to: transform(point: CGPoint(x: 12, y: 0.5)))
-    g2_rect0.line(to: transform(point: CGPoint(x: 12, y: 0.5)))
-    g2_rect0.curve(
+    let rectangle = NSBezierPath()
+    rectangle.move(to: transform(point: CGPoint(x: 12, y: 0.5)))
+    rectangle.line(to: transform(point: CGPoint(x: 12, y: 0.5)))
+    rectangle.curve(
       to: transform(point: CGPoint(x: 23.5, y: 12)),
       controlPoint1: transform(point: CGPoint(x: 18.3512746231, y: 0.5)),
       controlPoint2: transform(point: CGPoint(x: 23.5, y: 5.64872537694)))
-    g2_rect0.line(to: transform(point: CGPoint(x: 23.5, y: 36)))
-    g2_rect0.curve(
+    rectangle.line(to: transform(point: CGPoint(x: 23.5, y: 36)))
+    rectangle.curve(
       to: transform(point: CGPoint(x: 12, y: 47.5)),
       controlPoint1: transform(point: CGPoint(x: 23.5, y: 42.3512746231)),
       controlPoint2: transform(point: CGPoint(x: 18.3512746231, y: 47.5)))
-    g2_rect0.line(to: transform(point: CGPoint(x: 12, y: 47.5)))
-    g2_rect0.curve(
+    rectangle.line(to: transform(point: CGPoint(x: 12, y: 47.5)))
+    rectangle.curve(
       to: transform(point: CGPoint(x: 0.5, y: 36)),
       controlPoint1: transform(point: CGPoint(x: 5.64872537694, y: 47.5)),
       controlPoint2: transform(point: CGPoint(x: 0.5, y: 42.3512746231)))
-    g2_rect0.line(to: transform(point: CGPoint(x: 0.5, y: 12)))
-    g2_rect0.curve(
+    rectangle.line(to: transform(point: CGPoint(x: 0.5, y: 12)))
+    rectangle.curve(
       to: transform(point: CGPoint(x: 12, y: 0.5)),
       controlPoint1: transform(point: CGPoint(x: 0.5, y: 5.64872537694)),
       controlPoint2: transform(point: CGPoint(x: 5.64872537694, y: 0.5)))
-    g2_rect0.close()
+    rectangle.close()
     #colorLiteral(red: 0.549019607843, green: 0.862745098039, blue: 1, alpha: 1).setFill()
     #colorLiteral(red: 0.309803921569, green: 0.670588235294, blue: 1, alpha: 1).setStroke()
-    g2_rect0.fill()
-    g2_rect0.lineWidth = 1 * scale
-    g2_rect0.lineCapStyle = .buttLineCapStyle
-    g2_rect0.stroke()
-    let g2_circle1 = NSBezierPath()
-    g2_circle1.move(to: transform(point: CGPoint(x: 12, y: 2)))
-    g2_circle1.line(to: transform(point: CGPoint(x: 12, y: 2)))
-    g2_circle1.curve(
+    rectangle.fill()
+    rectangle.lineWidth = 1 * scale
+    rectangle.lineCapStyle = .buttLineCapStyle
+    rectangle.stroke()
+    let oval = NSBezierPath()
+    oval.move(to: transform(point: CGPoint(x: 12, y: 2)))
+    oval.line(to: transform(point: CGPoint(x: 12, y: 2)))
+    oval.curve(
       to: transform(point: CGPoint(x: 22, y: 12)),
       controlPoint1: transform(point: CGPoint(x: 17.5228474983, y: 2)),
       controlPoint2: transform(point: CGPoint(x: 22, y: 6.47715250169)))
-    g2_circle1.line(to: transform(point: CGPoint(x: 22, y: 12)))
-    g2_circle1.curve(
+    oval.line(to: transform(point: CGPoint(x: 22, y: 12)))
+    oval.curve(
       to: transform(point: CGPoint(x: 12, y: 22)),
       controlPoint1: transform(point: CGPoint(x: 22, y: 17.5228474983)),
       controlPoint2: transform(point: CGPoint(x: 17.5228474983, y: 22)))
-    g2_circle1.line(to: transform(point: CGPoint(x: 12, y: 22)))
-    g2_circle1.curve(
+    oval.line(to: transform(point: CGPoint(x: 12, y: 22)))
+    oval.curve(
       to: transform(point: CGPoint(x: 2, y: 12)),
       controlPoint1: transform(point: CGPoint(x: 6.47715250169, y: 22)),
       controlPoint2: transform(point: CGPoint(x: 2, y: 17.5228474983)))
-    g2_circle1.line(to: transform(point: CGPoint(x: 2, y: 12)))
-    g2_circle1.curve(
+    oval.line(to: transform(point: CGPoint(x: 2, y: 12)))
+    oval.curve(
       to: transform(point: CGPoint(x: 12, y: 2)),
       controlPoint1: transform(point: CGPoint(x: 2, y: 6.47715250169)),
       controlPoint2: transform(point: CGPoint(x: 6.47715250169, y: 2)))
-    g2_circle1.close()
+    oval.close()
     #colorLiteral(red: 1, green: 1, blue: 1, alpha: 1).setFill()
-    g2_circle1.fill()
+    oval.fill()
   }
 }
 
@@ -157,39 +157,39 @@ private class CheckCircleVector: NSBox {
     func transform(point: CGPoint) -> CGPoint {
       return CGPoint(x: point.x * scale + croppedRect.minX, y: point.y * scale + croppedRect.minY)
     }
-    let g0_circle0 = NSBezierPath()
-    g0_circle0.move(to: transform(point: CGPoint(x: 12, y: 0)))
-    g0_circle0.line(to: transform(point: CGPoint(x: 12, y: 0)))
-    g0_circle0.curve(
+    let oval = NSBezierPath()
+    oval.move(to: transform(point: CGPoint(x: 12, y: 0)))
+    oval.line(to: transform(point: CGPoint(x: 12, y: 0)))
+    oval.curve(
       to: transform(point: CGPoint(x: 24, y: 12)),
       controlPoint1: transform(point: CGPoint(x: 18.627416998, y: 0)),
       controlPoint2: transform(point: CGPoint(x: 24, y: 5.37258300203)))
-    g0_circle0.line(to: transform(point: CGPoint(x: 24, y: 12)))
-    g0_circle0.curve(
+    oval.line(to: transform(point: CGPoint(x: 24, y: 12)))
+    oval.curve(
       to: transform(point: CGPoint(x: 12, y: 24)),
       controlPoint1: transform(point: CGPoint(x: 24, y: 18.627416998)),
       controlPoint2: transform(point: CGPoint(x: 18.627416998, y: 24)))
-    g0_circle0.line(to: transform(point: CGPoint(x: 12, y: 24)))
-    g0_circle0.curve(
+    oval.line(to: transform(point: CGPoint(x: 12, y: 24)))
+    oval.curve(
       to: transform(point: CGPoint(x: 0, y: 12)),
       controlPoint1: transform(point: CGPoint(x: 5.37258300203, y: 24)),
       controlPoint2: transform(point: CGPoint(x: 0, y: 18.627416998)))
-    g0_circle0.line(to: transform(point: CGPoint(x: 0, y: 12)))
-    g0_circle0.curve(
+    oval.line(to: transform(point: CGPoint(x: 0, y: 12)))
+    oval.curve(
       to: transform(point: CGPoint(x: 12, y: 0)),
       controlPoint1: transform(point: CGPoint(x: 0, y: 5.37258300203)),
       controlPoint2: transform(point: CGPoint(x: 5.37258300203, y: 0)))
-    g0_circle0.close()
+    oval.close()
     #colorLiteral(red: 0, green: 0.756862745098, blue: 0.129411764706, alpha: 1).setFill()
-    g0_circle0.fill()
-    let g0_polyline1 = NSBezierPath()
-    g0_polyline1.move(to: transform(point: CGPoint(x: 6.5, y: 12.6)))
-    g0_polyline1.line(to: transform(point: CGPoint(x: 9.75, y: 15.85)))
-    g0_polyline1.line(to: transform(point: CGPoint(x: 17.25, y: 8.35)))
+    oval.fill()
+    let path = NSBezierPath()
+    path.move(to: transform(point: CGPoint(x: 6.5, y: 12.6)))
+    path.line(to: transform(point: CGPoint(x: 9.75, y: 15.85)))
+    path.line(to: transform(point: CGPoint(x: 17.25, y: 8.35)))
     #colorLiteral(red: 1, green: 1, blue: 1, alpha: 1).setStroke()
-    g0_polyline1.lineWidth = 2 * scale
-    g0_polyline1.lineCapStyle = .roundLineCapStyle
-    g0_polyline1.stroke()
+    path.lineWidth = 2 * scale
+    path.lineCapStyle = .roundLineCapStyle
+    path.stroke()
   }
 }
 

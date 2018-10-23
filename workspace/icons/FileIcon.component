@@ -38,7 +38,7 @@
             "layers",
             "VectorGraphic",
             "vector",
-            "g2_g0_path0",
+            "outline",
             "stroke"
           ],
           "content" : {
@@ -55,7 +55,7 @@
             "layers",
             "VectorGraphic",
             "vector",
-            "g2_path1",
+            "line1",
             "stroke"
           ],
           "content" : {
@@ -72,7 +72,7 @@
             "layers",
             "VectorGraphic",
             "vector",
-            "g2_path2",
+            "line2",
             "stroke"
           ],
           "content" : {
@@ -89,7 +89,7 @@
             "layers",
             "VectorGraphic",
             "vector",
-            "g2_path3",
+            "line3",
             "stroke"
           ],
           "content" : {
@@ -106,7 +106,7 @@
             "layers",
             "VectorGraphic",
             "vector",
-            "g2_path4",
+            "line4",
             "stroke"
           ],
           "content" : {
@@ -123,7 +123,7 @@
             "layers",
             "VectorGraphic",
             "vector",
-            "g2_g0_path0",
+            "outline",
             "fill"
           ],
           "content" : {
@@ -140,7 +140,7 @@
             "layers",
             "VectorGraphic",
             "vector",
-            "g2_g0_path2",
+            "fold",
             "fill"
           ],
           "content" : {
@@ -157,7 +157,7 @@
             "layers",
             "VectorGraphic",
             "vector",
-            "g2_g0_path2",
+            "fold",
             "stroke"
           ],
           "content" : {

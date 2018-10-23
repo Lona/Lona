@@ -25,41 +25,21 @@
   ],
   "logic" : [
     {
-      "body" : [
-        {
-          "assignee" : [
-            "layers",
-            "Check",
-            "vector",
-            "g0_circle0",
-            "fill"
-          ],
-          "content" : {
-            "type" : "LitExpr",
-            "value" : {
-              "data" : "grey300",
-              "type" : "Color"
-            }
-          },
-          "type" : "AssignExpr"
-        }
+      "assignee" : [
+        "layers",
+        "Check",
+        "vector",
+        "oval",
+        "fill"
       ],
-      "condition" : {
-        "left" : [
-          "parameters",
-          "active"
-        ],
-        "op" : "==",
-        "right" : {
-          "type" : "LitExpr",
-          "value" : {
-            "data" : false,
-            "type" : "Boolean"
-          }
-        },
-        "type" : "BinExpr"
+      "content" : {
+        "type" : "LitExpr",
+        "value" : {
+          "data" : "grey300",
+          "type" : "Color"
+        }
       },
-      "type" : "IfExpr"
+      "type" : "AssignExpr"
     },
     {
       "body" : [
@@ -68,7 +48,7 @@
             "layers",
             "Check",
             "vector",
-            "g0_circle0",
+            "oval",
             "fill"
           ],
           "content" : {
@@ -85,7 +65,7 @@
             "layers",
             "Check",
             "vector",
-            "g0_polyline1",
+            "path",
             "stroke"
           ],
           "content" : {

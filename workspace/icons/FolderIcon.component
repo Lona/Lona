@@ -41,7 +41,7 @@
             "layers",
             "VectorGraphic",
             "vector",
-            "g2_g0_rect1",
+            "contents",
             "fill"
           ],
           "content" : {
@@ -58,7 +58,7 @@
             "layers",
             "VectorGraphic",
             "vector",
-            "g2_g0_path0",
+            "outline",
             "stroke"
           ],
           "content" : {
@@ -75,7 +75,7 @@
             "layers",
             "VectorGraphic",
             "vector",
-            "g2_g0_path0",
+            "outline",
             "fill"
           ],
           "content" : {
@@ -92,7 +92,7 @@
             "layers",
             "VectorGraphic",
             "vector",
-            "g2_g0_path2",
+            "highlight",
             "stroke"
           ],
           "content" : {
@@ -109,7 +109,7 @@
             "layers",
             "VectorGraphic",
             "vector",
-            "g2_g0_path3",
+            "divider",
             "stroke"
           ],
           "content" : {

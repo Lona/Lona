@@ -2,6 +2,8 @@ const svgson = require("svgson-next").default;
 const svgpath = require("svgpath");
 const transformParser = require("svg-transform-parser").parse;
 const parseCSSColor = require("csscolorparser").parseCSSColor;
+const camelCase = require("lodash.camelcase");
+const upperFirst = require("lodash.upperfirst");
 
 const BEZIER_CIRCLE_CONTROL = 0.552284749831;
 
@@ -334,11 +336,11 @@ function convertChild(child, index, context) {
 // is ultimately used as the variable name, to each node
 function convertChildren(children, parentElementPath, context) {
   return children.reduce((acc, child, index) => {
-    const converted = convertNode(
-      child,
-      [...parentElementPath, child.name + index.toString()],
-      context
-    );
+    const name =
+      (child.attributes && upperFirst(camelCase(child.attributes.id))) ||
+      child.name + index.toString();
+
+    const converted = convertNode(child, [...parentElementPath, name], context);
 
     if (!converted) return acc;
 
@@ -372,9 +374,47 @@ function convertNode(node, elementPath = [], context = {}) {
   });
 }
 
+// Any node with a unique ID can be referenced in logic by that id.
+// If an ID isn't unique, then we use the full element path.
+function simplifyNames(node) {
+  function flatten(node, acc = []) {
+    acc.push(node);
+
+    if (node.data.children) {
+      node.data.children.forEach(child => flatten(child, acc));
+    }
+
+    return acc;
+  }
+
+  const nodes = flatten(node);
+
+  const names = nodes
+    .filter(node => node.data.elementPath && node.data.elementPath.length > 0)
+    .map(node =>
+      camelCase(node.data.elementPath[node.data.elementPath.length - 1])
+    );
+
+  nodes
+    .filter(node => node.data.elementPath && node.data.elementPath.length > 0)
+    .forEach(node => {
+      const name = camelCase(
+        node.data.elementPath[node.data.elementPath.length - 1]
+      );
+
+      if (names.filter(x => x === name).length == 1) {
+        node.data.elementPath = [name];
+      }
+    });
+
+  return node;
+}
+
 function convert(data) {
   return svgson(data).then(parsed => {
-    return convertNode(parsed);
+    let node = convertNode(parsed);
+    node = simplifyNames(node);
+    return node;
   });
 }
 
