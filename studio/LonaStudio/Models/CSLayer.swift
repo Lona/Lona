@@ -116,17 +116,6 @@ class CSLayer: CSDataDeserializable, CSDataSerializable, DataNode, NSCopying {
     var parameters: [String: CSData] = [:]
     var metadata: [String: CSData] = [:]
 
-    var backingElementClass: String? {
-        get { return metadata["backingElementClass"]?.string }
-        set {
-            if let newValue = newValue {
-                metadata["backingElementClass"] = newValue.toData()
-            } else {
-                metadata.removeValue(forKey: "backingElementClass")
-            }
-        }
-    }
-
     func removeParameter(_ key: String) {
         parameters.removeValue(forKey: key)
     }

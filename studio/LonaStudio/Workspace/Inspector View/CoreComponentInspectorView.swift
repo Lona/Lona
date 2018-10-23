@@ -179,10 +179,14 @@ class CoreComponentInspectorView: NSStackView {
         valueToTitle: ["cover": "Aspect Fill", "contain": "Aspect Fit", "stretch": "Stretch Fill"]
     )
 
-    var backingElementView = CSValueField(
+    var backingElement = CSValueField(
         value: CSValue(
             type: PlatformSpecificString,
             data: CSData.Object([:])))
+    var backingRow = NSStackView(
+        views: [NSTextField(labelWithStringCompat: "Backing Element")],
+        orientation: .horizontal,
+        stretched: true)
 
     var width: CGFloat = 280
     var labelX: CGFloat = 10
@@ -539,14 +543,6 @@ class CoreComponentInspectorView: NSStackView {
     }
 
     func renderMetadataSection() -> DisclosureContentRow {
-        let backingRow = NSStackView(
-            views: [
-                NSTextField(labelWithStringCompat: "Backing Element"),
-                backingElementView.view
-            ],
-            orientation: .horizontal,
-            stretched: true)
-
         let backgroundSection = renderSection(title: "Metadata", views: [backingRow])
         return backgroundSection
     }
@@ -794,11 +790,27 @@ class CoreComponentInspectorView: NSStackView {
             // Animation
 //            (animationView, .animation),
             (animationURLView, .animation),
-            (animationSpeedView, .animationSpeed),
-
-            // Metadata
-            (backingElementView, .backingElementClass)
+            (animationSpeedView, .animationSpeed)
         ]
+
+        // CSValueField needs to be recreated on change since it doesn't support updating
+        // TODO: When we switch to controlled components, we won't need to do this
+        if let value = properties[.backingElementClass] {
+            func setup(value: CSData) {
+                backingElement.view.removeFromSuperview()
+                backingElement = CSValueField(
+                    value: CSValue(
+                        type: PlatformSpecificString,
+                        data: value))
+                backingRow.addArrangedSubview(backingElement.view, stretched: true)
+                backingElement.onChangeData = { data in
+                    self.handlePropertyChange(for: .backingElementClass, value: data)
+                    setup(value: data)
+                }
+            }
+
+            setup(value: value)
+        }
 
         fields.forEach({ (control, property) in
             var control = control

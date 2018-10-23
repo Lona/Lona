@@ -77,7 +77,7 @@ class LayerInspectorView: CoreComponentInspectorView {
             CoreComponentInspectorView.Property.animationSpeed: CSData.Number(layer.animationSpeed ?? 1),
 
             // Metadata
-            CoreComponentInspectorView.Property.backingElementClass: CSData.Object([:])
+            CoreComponentInspectorView.Property.backingElementClass: layer.metadata["backingElementClass"] ?? CSData.Object([:])
         ]
 
         super.init(frame: NSRect.zero, layerType: layer.type, properties: properties)
