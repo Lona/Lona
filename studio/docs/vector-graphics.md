@@ -18,7 +18,7 @@ You'll also currently need to have _built the Lona compiler_. In Lona Studio pre
 
 ### How it works
 
-Lona Studio analyzes your SVG file and lets you assign parameters to individual path parameters, e.g. the stroke and fill of a specific path. Assigning to path parameters is currently only possible in Lona Logic. You can find the path parameters under `layers -> MyVectorGraphic -> vector`.
+Lona Studio analyzes your SVG file and lets you override individual element parameters, e.g. the stroke and fill of a specific path. Assigning to element parameters is currently only possible in Lona Logic. You can find the element parameters under `layers -> MyVectorGraphic -> vector`. Overriding parameters is optional. Lona will default to the parameters in the SVG file.
 
 The Lona compiler then converts each `VectorGraphic` layer into an appropriate format for the platform. The conversion is as follows:
 
@@ -28,6 +28,22 @@ The Lona compiler then converts each `VectorGraphic` layer into an appropriate f
 - iOS: CoreGraphics drawing commands
 - AppKit: CoreGraphics drawing commands
 
+### Recommendations
+
+#### SVG element naming
+
+It's best to name your SVG elements before using them in Lona Studio. Lona references specific elements by their `id` attribute if one exists. Using an `id` will allow you to change the underlying SVG file more easily without requiring any changes in Lona Studio.
+
+Design tools like Sketch should automatically assign the `id` based on layer name when you export to SVG. For example:
+
+![Vector layer name](https://i.imgur.com/roErAHO.png)
+
+This will allow you to assign `layers -> MyVectorGraphic -> vector -> contents -> fill` to change the `fill` color of the `contents` layer.
+
+With no `id` available, Lona falls back to the element's "path", e.g. group1.rect0, to uniquely identify the element.
+
+> If you change the `id` of an element referenced by Logic, the Lona Compiler will _fail or generate incorrect code_ unless you also update the corresponding Logic statements.
+
 ### Limitations
 
-Because the Lona compiler converts SVG files into a different format _at compile time_, every `VectorGraphic` layer _must_ reference a single SVG file -- you can't have a `VectorGraphic` layer that accepts an SVG as a parameter, and you can't have a `VectorGraphic` layer with no underlying SVG file.
+Because the Lona compiler converts SVG files into a different format _at compile time_, every `VectorGraphic` layer _must_ reference a single SVG file -- you can't have a `VectorGraphic` layer that accepts an SVG as a parameter, and you can't have a `VectorGraphic` layer without an underlying SVG file.
