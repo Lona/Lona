@@ -275,11 +275,6 @@ class CanvasCollectionView: NSView, NSCollectionViewDataSource, NSCollectionView
         translatesAutoresizingMaskIntoConstraints = false
         wantsLayer = true
 
-        let visualEffectView = NSVisualEffectView(frame: NSRect.zero)
-        visualEffectView.material = .light
-        visualEffectView.blendingMode = .behindWindow
-        visualEffectView.state = .active
-
         let collectionView = NSCollectionView(frame: NSRect.zero)
         collectionView.collectionViewLayout = MatrixLayout(delegate: self)
         collectionView.delegate = self
@@ -300,8 +295,7 @@ class CanvasCollectionView: NSView, NSCollectionViewDataSource, NSCollectionView
 
         self.scrollView = scrollView
 
-        addSubviewStretched(subview: visualEffectView)
-        visualEffectView.addSubviewStretched(subview: scrollView)
+        addSubviewStretched(subview: scrollView)
 
         collectionView.register(CanvasItemViewController.self, forItemWithIdentifier: NSUserInterfaceItemIdentifier(rawValue: CANVAS_IDENTIFIER))
     }

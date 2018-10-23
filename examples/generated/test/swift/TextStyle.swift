@@ -8,7 +8,7 @@ public class TextStyle {
   public let size: CGFloat
   public let lineHeight: CGFloat?
   public let kerning: Double
-  public let color: UIColor
+  public let color: UIColor?
   public let alignment: NSTextAlignment
 
   public init(
@@ -18,7 +18,7 @@ public class TextStyle {
     size: CGFloat = UIFont.systemFontSize,
     lineHeight: CGFloat? = nil,
     kerning: Double = 0,
-    color: UIColor = UIColor.black,
+    color: UIColor? = nil,
     alignment: NSTextAlignment = .left) {
     self.family = family
     self.name = name
@@ -84,12 +84,17 @@ public class TextStyle {
   }()
 
   public lazy var attributeDictionary: [NSAttributedStringKey: Any] = {
-    return [
+    var attributes: [NSAttributedStringKey: Any] = [
       .font: uiFont,
-      .foregroundColor: color,
       .kern: kerning,
       .paragraphStyle: paragraphStyle
     ]
+
+    if let color = color {
+      attributes[.foregroundColor] = color
+    }
+
+    return attributes
   }()
 
   public func apply(to string: String) -> NSAttributedString {
