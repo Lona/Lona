@@ -61,6 +61,7 @@
   },
   "dependencies": {
     "memfs": "^2.8.0",
+    "svg-transform-parser": "^0.0.1",
     "svgpath": "^2.2.1",
     "svgson-next": "^4.1.6"
   }

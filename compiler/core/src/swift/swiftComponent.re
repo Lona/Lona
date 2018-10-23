@@ -483,6 +483,83 @@ module Doc = {
         body;
       };
 
+    let initializeVectorLayers =
+      Layer.flatten(rootLayer)
+      |> List.filter(Layer.isVectorGraphicLayer)
+      |> List.map((layer: Types.layer) => {
+           let layerName = SwiftFormat.layerName(layer.name);
+           let vectorAssignments = Layer.vectorAssignments(layer, logic);
+           let svg =
+             Config.Find.svg(
+               config,
+               SwiftComponentParameter.getVectorAssetUrl(layer),
+             );
+
+           vectorAssignments
+           |> List.map((vectorAssignment: Layer.vectorAssignment) => {
+                let initialValue =
+                  switch (
+                    Svg.find(svg, vectorAssignment.elementName),
+                    vectorAssignment.paramKey,
+                  ) {
+                  | (Some(Path(_, params)), Fill) =>
+                    switch (params.style.fill) {
+                    | Some(fill) => Some(LiteralExpression(Color(fill)))
+                    | None => Some(LiteralExpression(Color("transparent")))
+                    }
+                  | (Some(Path(_, params)), Stroke) =>
+                    switch (params.style.stroke) {
+                    | Some(stroke) =>
+                      Some(LiteralExpression(Color(stroke)))
+                    | None => Some(LiteralExpression(Color("transparent")))
+                    }
+                  | (Some(_), _) => None
+                  | (None, _) => None
+                  };
+
+                switch (initialValue) {
+                | None => Empty /* Shouldn't happen */
+                | Some(initialValue) =>
+                  BinaryExpression({
+                    "left":
+                      SwiftAst.Builders.memberExpression([
+                        layerName,
+                        SwiftFormat.vectorVariableName(vectorAssignment),
+                      ]),
+                    "operator": "=",
+                    "right": initialValue,
+                  })
+                };
+              });
+         })
+      |> List.concat;
+
+    let displayVectorLayers =
+      Layer.flatten(rootLayer)
+      |> List.filter(Layer.isVectorGraphicLayer)
+      |> List.map((layer: Types.layer) => {
+           let layerName = SwiftFormat.layerName(layer.name);
+           switch (swiftOptions.framework) {
+           | UIKit =>
+             SwiftAst.Builders.functionCall(
+               [layerName, "setNeedsDisplay"],
+               [],
+             )
+           | AppKit =>
+             BinaryExpression({
+               "left":
+                 SwiftAst.Builders.memberExpression([
+                   layerName,
+                   "needsDisplay",
+                 ]),
+               "operator": "=",
+               "right": LiteralExpression(Boolean(true)),
+             })
+           };
+         });
+
+    let body = initializeVectorLayers @ body @ displayVectorLayers;
+
     FunctionDeclaration({
       "name": "update",
       "modifiers": [AccessLevelModifier(PrivateModifier)],

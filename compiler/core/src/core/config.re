@@ -61,10 +61,9 @@ module Workspace = {
     Js.Promise.(
       Glob.sync(Path.join([|workspacePath, "**/*.svg"|]))
       |> Array.map(file => {
-           let relativePath = Path.join([|workspacePath, file|]);
-           let data = Node.Fs.readFileSync(relativePath, `utf8);
+           let data = Node.Fs.readFileSync(file, `utf8);
            Svg.decode(data)
-           |> then_(node => resolve({path: relativePath, contents: node}));
+           |> then_(node => resolve({path: file, contents: node}));
          })
       |> all
       |> then_(array => resolve(Array.to_list(array)))

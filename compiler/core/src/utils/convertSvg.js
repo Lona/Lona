@@ -1,5 +1,7 @@
 const svgson = require("svgson-next").default;
 const svgpath = require("svgpath");
+const transformParser = require("svg-transform-parser").parse;
+const parseCSSColor = require("csscolorparser").parseCSSColor;
 
 const BEZIER_CIRCLE_CONTROL = 0.552284749831;
 
@@ -51,12 +53,21 @@ const Path = {
   }
 };
 
+function applyOpacity(color, opacity) {
+  const [r, g, b, a] = parseCSSColor(color);
+
+  if (opacity >= 1) return color;
+
+  return `rgba(${r},${g},${b},${a * opacity})`;
+}
+
 const Builders = {
   point: (x, y) => ({ x, y }),
   rect: (x, y, width, height) => ({ x, y, width, height }),
-  style: (fill, stroke, strokeWidth, strokeLineCap) => ({
+  style: (fill, stroke, strokeWidth, strokeLineCap, strokeOpacity) => ({
     ...(fill !== "none" && { fill: fill || "black" }),
-    ...(stroke && stroke !== "none" && { stroke }),
+    ...(stroke &&
+      stroke !== "none" && { stroke: applyOpacity(stroke, strokeOpacity) }),
     strokeWidth: strokeWidth != null ? strokeWidth : 1,
     strokeLineCap: strokeLineCap || "butt"
   }),
@@ -157,12 +168,16 @@ function convertPathCommand(segment, index, x, y) {
   }
 }
 
-function convertPath(string) {
+function convertPath(string, transform) {
   const parsed = svgpath(string);
 
   parsed.unarc();
   parsed.unshort();
   parsed.abs();
+
+  if (transform) {
+    parsed.transform(transform);
+  }
 
   const drawCommands = [];
 
@@ -209,6 +224,7 @@ function convertChild(child, index, context) {
       const {
         fill,
         stroke,
+        ["stroke-opacity"]: strokeOpacity,
         ["stroke-width"]: strokeWidth,
         ["stroke-linecap"]: strokeLineCap
       } = { ...context, ...attributes };
@@ -218,9 +234,10 @@ function convertChild(child, index, context) {
           fill,
           stroke,
           strokeWidth != null ? parseFloat(strokeWidth) : undefined,
-          strokeLineCap
+          strokeLineCap,
+          numberValue(strokeOpacity, 1)
         ),
-        convertPath(d)
+        convertPath(d, context.transform)
       );
     }
     case "polyline": {
@@ -250,7 +267,9 @@ function convertChild(child, index, context) {
     case "circle": {
       const { cx: rawCx, cy: rawCy, r: rawR } = attributes;
 
-      let [cx, cy, r] = [rawCx, rawCy, rawR].map(numberValue);
+      let [cx, cy, r] = [rawCx, rawCy, rawR].map(value =>
+        numberValue(value, 0)
+      );
 
       const path = Path.generateRect(cx - r, cy - r, r * 2, r * 2, r, r);
 
@@ -277,7 +296,7 @@ function convertChild(child, index, context) {
         rawHeight,
         rawRx,
         rawRy
-      ].map(numberValue);
+      ].map(value => numberValue(value, 0));
 
       if ("ry" in attributes && !("rx" in attributes)) {
         rx = ry;
@@ -294,9 +313,15 @@ function convertChild(child, index, context) {
       );
     }
     case "g": {
+      let { transform } = attributes;
+
+      if (transform && context.transform) {
+        transform = context.transform + " " + transform;
+      }
+
       return {
         type: "group",
-        context: attributes
+        context: { ...context, ...attributes }
       };
     }
     default:
