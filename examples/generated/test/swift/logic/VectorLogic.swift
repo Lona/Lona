@@ -2,8 +2,8 @@ import UIKit
 import Foundation
 
 private class CheckCircleVector: UIView {
-  public var g0_circle0Fill = #colorLiteral(red: 0, green: 0.756862745098, blue: 0.129411764706, alpha: 1) { didSet { setNeedsDisplay() } }
-  public var g0_polyline1Stroke = #colorLiteral(red: 1, green: 1, blue: 1, alpha: 1) { didSet { setNeedsDisplay() } }
+  public var g0_circle0Fill = #colorLiteral(red: 0, green: 0.756862745098, blue: 0.129411764706, alpha: 1)
+  public var g0_polyline1Stroke = #colorLiteral(red: 1, green: 1, blue: 1, alpha: 1)
 
   override func draw(_ dirtyRect: CGRect) {
     let viewBox = CGRect(origin: CGPoint(x: 0, y: 0), size: CGSize(width: 24, height: 24))
@@ -108,6 +108,8 @@ public class VectorLogic: UIView {
   }
 
   private func update() {
+    checkView.g0_circle0Fill = #colorLiteral(red: 0, green: 0.756862745098, blue: 0.129411764706, alpha: 1)
+    checkView.g0_polyline1Stroke = #colorLiteral(red: 1, green: 1, blue: 1, alpha: 1)
     if active == false {
       checkView.g0_circle0Fill = Colors.grey300
     }
@@ -115,5 +117,6 @@ public class VectorLogic: UIView {
       checkView.g0_circle0Fill = Colors.green400
       checkView.g0_polyline1Stroke = Colors.green100
     }
+    checkView.setNeedsDisplay()
   }
 }

@@ -287,5 +287,9 @@ public class VectorAsset: NSBox {
     ])
   }
 
-  private func update() {}
+  private func update() {
+    vectorGraphic1View.needsDisplay = true
+    vectorGraphic2View.needsDisplay = true
+    vectorGraphic3View.needsDisplay = true
+  }
 }

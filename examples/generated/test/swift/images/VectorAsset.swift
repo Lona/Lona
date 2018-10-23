@@ -259,5 +259,9 @@ public class VectorAsset: UIView {
     ])
   }
 
-  private func update() {}
+  private func update() {
+    vectorGraphic1View.setNeedsDisplay()
+    vectorGraphic2View.setNeedsDisplay()
+    vectorGraphic3View.setNeedsDisplay()
+  }
 }

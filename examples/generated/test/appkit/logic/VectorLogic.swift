@@ -2,8 +2,8 @@ import AppKit
 import Foundation
 
 private class CheckCircleVector: NSBox {
-  public var g0_circle0Fill = #colorLiteral(red: 0, green: 0.756862745098, blue: 0.129411764706, alpha: 1) { didSet { needsDisplay = true } }
-  public var g0_polyline1Stroke = #colorLiteral(red: 1, green: 1, blue: 1, alpha: 1) { didSet { needsDisplay = true } }
+  public var g0_circle0Fill = #colorLiteral(red: 0, green: 0.756862745098, blue: 0.129411764706, alpha: 1)
+  public var g0_polyline1Stroke = #colorLiteral(red: 1, green: 1, blue: 1, alpha: 1)
 
   override var isFlipped: Bool {
     return true
@@ -119,6 +119,8 @@ public class VectorLogic: NSBox {
   }
 
   private func update() {
+    checkView.g0_circle0Fill = #colorLiteral(red: 0, green: 0.756862745098, blue: 0.129411764706, alpha: 1)
+    checkView.g0_polyline1Stroke = #colorLiteral(red: 1, green: 1, blue: 1, alpha: 1)
     if active == false {
       checkView.g0_circle0Fill = Colors.grey300
     }
@@ -126,5 +128,6 @@ public class VectorLogic: NSBox {
       checkView.g0_circle0Fill = Colors.green400
       checkView.g0_polyline1Stroke = Colors.green100
     }
+    checkView.needsDisplay = true
   }
 }
