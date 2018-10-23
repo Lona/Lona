@@ -79,10 +79,23 @@ let layerTypeToString = x =>
 
 type layerParameters = ParameterMap.t(lonaValue);
 
+type platformSpecificValue('a) = {
+  iOS: 'a,
+  macOS: 'a,
+  reactDom: 'a,
+  reactNative: 'a,
+  reactSketchapp: 'a,
+};
+
+type layerMetadata = {
+  backingElementClass: platformSpecificValue(option(string)),
+};
+
 type layer = {
   typeName: layerType,
   name: string,
   styles: list(Styles.namedStyles(option(lonaValue))),
   parameters: layerParameters,
   children: list(layer),
+  metadata: layerMetadata,
 };

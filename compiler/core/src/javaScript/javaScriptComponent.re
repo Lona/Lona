@@ -2,6 +2,14 @@ module Ast = JavaScriptAst;
 
 module Render = JavaScriptRender;
 
+let frameworkSpecificValue =
+    (framework, container: Types.platformSpecificValue('a)) =>
+  switch (framework) {
+  | JavaScriptOptions.ReactDOM => container.reactDom
+  | JavaScriptOptions.ReactNative => container.reactNative
+  | JavaScriptOptions.ReactSketchapp => container.reactSketchapp
+  };
+
 let styleNameKey = key =>
   switch (key) {
   | ParameterKey.TextStyle => "font"
@@ -26,12 +34,16 @@ let getElementTagString =
   };
 
 let getElementOrVectorTagString =
-    (framework: JavaScriptOptions.framework, layer: Types.layer) =>
-  switch (layer.typeName) {
-  | VectorGraphic =>
+    (framework: JavaScriptOptions.framework, layer: Types.layer) => {
+  let override =
+    frameworkSpecificValue(framework, layer.metadata.backingElementClass);
+  switch (override, layer.typeName) {
+  | (Some(value), _) => value
+  | (None, VectorGraphic) =>
     SwiftComponentParameter.getVectorAssetUrl(layer) |> Format.vectorClassName
   | _ => getElementTagString(framework, layer.typeName)
   };
+};
 
 module StyledComponents = {
   let createStyleSetObjectProperties = viewVariableName =>
@@ -383,9 +395,7 @@ let importComponents =
           | (JavaScriptOptions.ReactNative, true) => [
               Ast.ImportDeclaration({
                 source: "react-native-svg",
-                specifiers: [
-                  Ast.ImportDefaultSpecifier("Svg"),
-                ],
+                specifiers: [Ast.ImportDefaultSpecifier("Svg")],
               }),
             ]
           | _ => []

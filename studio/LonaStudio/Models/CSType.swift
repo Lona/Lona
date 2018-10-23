@@ -509,3 +509,11 @@ let CSLayerType = CSType.dictionary([
     // Children
     "children": (type: .array(.any), access: .write)
 ])
+
+let PlatformSpecificString = CSType.dictionary([
+    "ios": (type: .string, access: .write),
+    "macos": (type: .string, access: .write),
+    "reactdom": (type: .string, access: .write),
+    "reactnative": (type: .string, access: .write),
+    "reactsketchapp": (type: .string, access: .write)
+    ])

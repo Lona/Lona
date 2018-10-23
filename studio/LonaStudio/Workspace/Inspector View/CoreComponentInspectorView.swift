@@ -70,6 +70,9 @@ class CoreComponentInspectorView: NSStackView {
         // Animation
         case animation
         case animationSpeed
+
+        // Metadata
+        case backingElementClass
     }
 
     var value: Properties = [:]
@@ -175,6 +178,11 @@ class CoreComponentInspectorView: NSStackView {
         values: ["cover", "contain", "stretch"],
         valueToTitle: ["cover": "Aspect Fill", "contain": "Aspect Fit", "stretch": "Stretch Fill"]
     )
+
+    var backingElementView = CSValueField(
+        value: CSValue(
+            type: PlatformSpecificString,
+            data: CSData.Object([:])))
 
     var width: CGFloat = 280
     var labelX: CGFloat = 10
@@ -530,6 +538,19 @@ class CoreComponentInspectorView: NSStackView {
         return backgroundSection
     }
 
+    func renderMetadataSection() -> DisclosureContentRow {
+        let backingRow = NSStackView(
+            views: [
+                NSTextField(labelWithStringCompat: "Backing Element"),
+                backingElementView.view
+            ],
+            orientation: .horizontal,
+            stretched: true)
+
+        let backgroundSection = renderSection(title: "Metadata", views: [backingRow])
+        return backgroundSection
+    }
+
     func renderTextSection() -> DisclosureContentRow {
         textView.usesSingleLineMode = false
 
@@ -670,7 +691,8 @@ class CoreComponentInspectorView: NSStackView {
             renderBackgroundSection(),
             shadowSection!,
             imageSection!,
-            animationSection!
+            animationSection!,
+            renderMetadataSection()
         ]
 
         for section in sections {
@@ -772,7 +794,10 @@ class CoreComponentInspectorView: NSStackView {
             // Animation
 //            (animationView, .animation),
             (animationURLView, .animation),
-            (animationSpeedView, .animationSpeed)
+            (animationSpeedView, .animationSpeed),
+
+            // Metadata
+            (backingElementView, .backingElementClass)
         ]
 
         fields.forEach({ (control, property) in

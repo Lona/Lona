@@ -74,7 +74,10 @@ class LayerInspectorView: CoreComponentInspectorView {
 
             // Animation
             CoreComponentInspectorView.Property.animation: CSData.String(layer.animation ?? ""),
-            CoreComponentInspectorView.Property.animationSpeed: CSData.Number(layer.animationSpeed ?? 1)
+            CoreComponentInspectorView.Property.animationSpeed: CSData.Number(layer.animationSpeed ?? 1),
+
+            // Metadata
+            CoreComponentInspectorView.Property.backingElementClass: CSData.Object([:])
         ]
 
         super.init(frame: NSRect.zero, layerType: layer.type, properties: properties)
@@ -149,6 +152,9 @@ class LayerInspectorView: CoreComponentInspectorView {
             // Animation
             case .animation: layer.animation = value.stringValue
             case .animationSpeed: layer.animationSpeed = value.numberValue
+
+            // Metadata
+            case .backingElementClass: layer.metadata["backingElementClass"] = CSData.Object(value.objectValue)
             }
 
             self.onChangeInspector(changeType)

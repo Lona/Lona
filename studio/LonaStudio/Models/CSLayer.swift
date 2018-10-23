@@ -114,6 +114,18 @@ class CSLayer: CSDataDeserializable, CSDataSerializable, DataNode, NSCopying {
     var children: [CSLayer] = []
     var parent: CSLayer?
     var parameters: [String: CSData] = [:]
+    var metadata: [String: CSData] = [:]
+
+    var backingElementClass: String? {
+        get { return metadata["backingElementClass"]?.string }
+        set {
+            if let newValue = newValue {
+                metadata["backingElementClass"] = newValue.toData()
+            } else {
+                metadata.removeValue(forKey: "backingElementClass")
+            }
+        }
+    }
 
     func removeParameter(_ key: String) {
         parameters.removeValue(forKey: key)
@@ -498,6 +510,7 @@ class CSLayer: CSDataDeserializable, CSDataSerializable, DataNode, NSCopying {
         name = json.get(key: "id").string ?? json.get(key: "name").stringValue
         type = LayerType(json.get(key: "type"))
         parameters = decode(parameters: json.get(key: "params").object ?? json.get(key: "parameters").objectValue)
+        metadata = json.get(key: "metadata").objectValue
         children = json.get(key: "children").arrayValue.map({ CSLayer.deserialize($0) }).compactMap({ $0 })
         children.forEach({ $0.parent = self })
     }
@@ -568,6 +581,10 @@ class CSLayer: CSDataDeserializable, CSDataSerializable, DataNode, NSCopying {
 
         if !children.isEmpty {
             data["children"] = children.toData()
+        }
+
+        if !metadata.isEmpty {
+            data["metadata"] = CSData.Object(metadata)
         }
 
         return data
