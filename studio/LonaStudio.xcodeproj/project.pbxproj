@@ -208,6 +208,8 @@
 		6BD9664B217E825C0012F173 /* FolderIcon.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6BD9664A217E825C0012F173 /* FolderIcon.swift */; };
 		6BD9664D217E8FCF0012F173 /* FileIcon.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6BD9664C217E8FCF0012F173 /* FileIcon.swift */; };
 		6BD9664F217E9D980012F173 /* ColorsFileIcon.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6BD9664E217E9D980012F173 /* ColorsFileIcon.swift */; };
+		6BD96652217FB0DB0012F173 /* default-workspace-thumbnail.png in Resources */ = {isa = PBXBuildFile; fileRef = 6BD96650217FB0DA0012F173 /* default-workspace-thumbnail.png */; };
+		6BD96653217FB0DB0012F173 /* default-workspace-thumbnail@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 6BD96651217FB0DB0012F173 /* default-workspace-thumbnail@2x.png */; };
 		6BDF4D2E20A67272006E99C4 /* BrowserToolbar.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6BDF4D2D20A67272006E99C4 /* BrowserToolbar.swift */; };
 		76AB58E053220594F098A3C5 /* Pods_LonaStudioTests.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = EDA2F7370DB15639E08B399A /* Pods_LonaStudioTests.framework */; };
 		783A74CD337C61784E60C467 /* Pods_LonaStudio.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 7949560983378CFD6EC6FFD5 /* Pods_LonaStudio.framework */; };
@@ -454,6 +456,8 @@
 		6BD9664A217E825C0012F173 /* FolderIcon.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = FolderIcon.swift; sourceTree = "<group>"; };
 		6BD9664C217E8FCF0012F173 /* FileIcon.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = FileIcon.swift; sourceTree = "<group>"; };
 		6BD9664E217E9D980012F173 /* ColorsFileIcon.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ColorsFileIcon.swift; sourceTree = "<group>"; };
+		6BD96650217FB0DA0012F173 /* default-workspace-thumbnail.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "default-workspace-thumbnail.png"; sourceTree = "<group>"; };
+		6BD96651217FB0DB0012F173 /* default-workspace-thumbnail@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "default-workspace-thumbnail@2x.png"; sourceTree = "<group>"; };
 		6BDF4D2D20A67272006E99C4 /* BrowserToolbar.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BrowserToolbar.swift; sourceTree = "<group>"; };
 		7949560983378CFD6EC6FFD5 /* Pods_LonaStudio.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_LonaStudio.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		834F922A5808C8E689B2FD19 /* Pods-LonaStudioTests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-LonaStudioTests.debug.xcconfig"; path = "Pods/Target Support Files/Pods-LonaStudioTests/Pods-LonaStudioTests.debug.xcconfig"; sourceTree = "<group>"; };
@@ -804,6 +808,8 @@
 		30F870C420865858007ADA5B /* assets */ = {
 			isa = PBXGroup;
 			children = (
+				6BD96650217FB0DA0012F173 /* default-workspace-thumbnail.png */,
+				6BD96651217FB0DB0012F173 /* default-workspace-thumbnail@2x.png */,
 				303C3FE920A396BA008E1541 /* icon-plus.png */,
 				303C3FEA20A396BB008E1541 /* icon-plus@2x.png */,
 				307D44112097DDAB004B57F5 /* icon-tab-docs.png */,
@@ -1068,6 +1074,7 @@
 				30F870E520865859007ADA5B /* LonaIcon_256x256@2x.png in Resources */,
 				30F870DB20865859007ADA5B /* icon-blank-document.png in Resources */,
 				30F870E220865859007ADA5B /* icon-documentation@2x.png in Resources */,
+				6BD96653217FB0DB0012F173 /* default-workspace-thumbnail@2x.png in Resources */,
 				6B0AEFC11EBF74D800F35BBF /* Main.storyboard in Resources */,
 				30F870DC20865859007ADA5B /* icon-blank-document@2x.png in Resources */,
 				30F870E320865859007ADA5B /* LonaIcon_16x16.png in Resources */,
@@ -1076,6 +1083,7 @@
 				30DDEE8C1F4795A3001D41AB /* index.js in Resources */,
 				307D44172097DDAB004B57F5 /* icon-tab-layers@2x.png in Resources */,
 				303C3FEC20A396BB008E1541 /* icon-plus@2x.png in Resources */,
+				6BD96652217FB0DB0012F173 /* default-workspace-thumbnail.png in Resources */,
 				6BABAFE52139C0EE002B8C8F /* Toolbar.xcassets in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
