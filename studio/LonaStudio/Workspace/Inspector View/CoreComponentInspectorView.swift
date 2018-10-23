@@ -70,6 +70,9 @@ class CoreComponentInspectorView: NSStackView {
         // Animation
         case animation
         case animationSpeed
+
+        // Metadata
+        case backingElementClass
     }
 
     var value: Properties = [:]
@@ -175,6 +178,15 @@ class CoreComponentInspectorView: NSStackView {
         values: ["cover", "contain", "stretch"],
         valueToTitle: ["cover": "Aspect Fill", "contain": "Aspect Fit", "stretch": "Stretch Fill"]
     )
+
+    var backingElement = CSValueField(
+        value: CSValue(
+            type: PlatformSpecificString,
+            data: CSData.Object([:])))
+    var backingRow = NSStackView(
+        views: [NSTextField(labelWithStringCompat: "Backing Element")],
+        orientation: .horizontal,
+        stretched: true)
 
     var width: CGFloat = 280
     var labelX: CGFloat = 10
@@ -530,6 +542,11 @@ class CoreComponentInspectorView: NSStackView {
         return backgroundSection
     }
 
+    func renderMetadataSection() -> DisclosureContentRow {
+        let backgroundSection = renderSection(title: "Metadata", views: [backingRow])
+        return backgroundSection
+    }
+
     func renderTextSection() -> DisclosureContentRow {
         textView.usesSingleLineMode = false
 
@@ -670,7 +687,8 @@ class CoreComponentInspectorView: NSStackView {
             renderBackgroundSection(),
             shadowSection!,
             imageSection!,
-            animationSection!
+            animationSection!,
+            renderMetadataSection()
         ]
 
         for section in sections {
@@ -774,6 +792,25 @@ class CoreComponentInspectorView: NSStackView {
             (animationURLView, .animation),
             (animationSpeedView, .animationSpeed)
         ]
+
+        // CSValueField needs to be recreated on change since it doesn't support updating
+        // TODO: When we switch to controlled components, we won't need to do this
+        if let value = properties[.backingElementClass] {
+            func setup(value: CSData) {
+                backingElement.view.removeFromSuperview()
+                backingElement = CSValueField(
+                    value: CSValue(
+                        type: PlatformSpecificString,
+                        data: value))
+                backingRow.addArrangedSubview(backingElement.view, stretched: true)
+                backingElement.onChangeData = { data in
+                    self.handlePropertyChange(for: .backingElementClass, value: data)
+                    setup(value: data)
+                }
+            }
+
+            setup(value: value)
+        }
 
         fields.forEach({ (control, property) in
             var control = control

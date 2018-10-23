@@ -9,7 +9,7 @@
 import Foundation
 import AppKit
 
-class CSValueField {
+class CSValueField: CSControl {
     enum Options {
         case isBordered
         case drawsBackground

@@ -453,6 +453,7 @@ let getRootLayerForComponentName =
     name: layer.name,
     parameters: rootLayer.parameters,
     children: layer.children,
+    metadata: layer.metadata,
   };
 };
 

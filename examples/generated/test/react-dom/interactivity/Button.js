@@ -26,7 +26,7 @@ export default class Button extends React.Component {
       View$backgroundColor = colors.lightblue100
     }
     return (
-      <div
+      <button
         style={Object.assign({}, styles.view, {
           backgroundColor: View$backgroundColor
         })}
@@ -35,7 +35,7 @@ export default class Button extends React.Component {
         <span style={styles.text}>
           {Text$text}
         </span>
-      </div>
+      </button>
     );
   }
 };
