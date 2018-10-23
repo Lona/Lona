@@ -338,8 +338,8 @@ bs-glob@reasonml-community/bs-glob:
   resolved "https://codeload.github.com/buckletypes/bs-node/tar.gz/20ef6d2d7c00e923aba33b0629ca5623a4460712"
 
 bs-platform@^4.0.5:
-  version "4.0.5"
-  resolved "https://registry.yarnpkg.com/bs-platform/-/bs-platform-4.0.5.tgz#d4fd9bbdd11765af5b75110a5655065ece05eed6"
+  version "4.0.6"
+  resolved "https://registry.yarnpkg.com/bs-platform/-/bs-platform-4.0.6.tgz#e7f156c77ad3efafb0c0291b41dcf1b06f93c192"
 
 buffer-from@^1.0.0:
   version "1.1.1"
@@ -500,6 +500,14 @@ class-utils@^0.3.5:
     define-property "^0.2.5"
     isobject "^3.0.0"
     static-extend "^0.1.1"
+
+clean-deep@3.0.2:
+  version "3.0.2"
+  resolved "https://registry.yarnpkg.com/clean-deep/-/clean-deep-3.0.2.tgz#1b7096822f289cc491ca6d85af5c028cbb22fc23"
+  dependencies:
+    lodash.isempty "^4.4.0"
+    lodash.isplainobject "^4.0.6"
+    lodash.transform "^4.6.0"
 
 cli-boxes@^1.0.0:
   version "1.0.0"
@@ -753,6 +761,13 @@ deep-extend@^0.6.0:
   version "0.6.0"
   resolved "https://registry.yarnpkg.com/deep-extend/-/deep-extend-0.6.0.tgz#c4fa7c95404a17a9c3e8ca7e1537312b736330ac"
 
+deep-rename-keys@^0.2.1:
+  version "0.2.1"
+  resolved "https://registry.yarnpkg.com/deep-rename-keys/-/deep-rename-keys-0.2.1.tgz#ede78537d7a66a2be61517e2af956d7f58a3f1d8"
+  dependencies:
+    kind-of "^3.0.2"
+    rename-keys "^1.1.2"
+
 define-property@^0.2.5:
   version "0.2.5"
   resolved "https://registry.yarnpkg.com/define-property/-/define-property-0.2.5.tgz#c35b1ef918ec3c990f9a5bc57be04aacec5c8116"
@@ -1001,6 +1016,10 @@ event-stream@~3.3.0:
     split "^1.0.1"
     stream-combiner "^0.2.2"
     through "^2.3.8"
+
+eventemitter3@^2.0.0:
+  version "2.0.3"
+  resolved "https://registry.yarnpkg.com/eventemitter3/-/eventemitter3-2.0.3.tgz#b5e1079b59fb5e1ba2771c0a993be060a58c99ba"
 
 events@^1.0.0:
   version "1.1.1"
@@ -1813,6 +1832,18 @@ lodash.debounce@^4.0.8:
   version "4.0.8"
   resolved "https://registry.yarnpkg.com/lodash.debounce/-/lodash.debounce-4.0.8.tgz#82d79bff30a67c4005ffd5e2515300ad9ca4d7af"
 
+lodash.isempty@^4.4.0:
+  version "4.4.0"
+  resolved "http://registry.npmjs.org/lodash.isempty/-/lodash.isempty-4.4.0.tgz#6f86cbedd8be4ec987be9aaf33c9684db1b31e7e"
+
+lodash.isplainobject@^4.0.6:
+  version "4.0.6"
+  resolved "https://registry.yarnpkg.com/lodash.isplainobject/-/lodash.isplainobject-4.0.6.tgz#7c526a52d89b45c45cc690b88163be0497f550cb"
+
+lodash.transform@^4.6.0:
+  version "4.6.0"
+  resolved "https://registry.yarnpkg.com/lodash.transform/-/lodash.transform-4.6.0.tgz#12306422f63324aed8483d3f38332b5f670547a0"
+
 lodash.unescape@4.0.1:
   version "4.0.1"
   resolved "https://registry.yarnpkg.com/lodash.unescape/-/lodash.unescape-4.0.1.tgz#bf2249886ce514cda112fae9218cdc065211fc9c"
@@ -2187,6 +2218,13 @@ object.pick@^1.3.0:
   resolved "https://registry.yarnpkg.com/object.pick/-/object.pick-1.3.0.tgz#87a10ac4c1694bd2e1cbf53591a66141fb5dd747"
   dependencies:
     isobject "^3.0.1"
+
+omit-deep@0.3.0:
+  version "0.3.0"
+  resolved "https://registry.yarnpkg.com/omit-deep/-/omit-deep-0.3.0.tgz#21c8af3499bcadd29651a232cbcacbc52445ebec"
+  dependencies:
+    is-plain-object "^2.0.1"
+    unset-value "^0.1.1"
 
 once@^1.3.0, once@^1.3.1, once@^1.4.0:
   version "1.4.0"
@@ -2705,6 +2743,10 @@ remove-trailing-separator@^1.0.1:
   version "1.1.0"
   resolved "https://registry.yarnpkg.com/remove-trailing-separator/-/remove-trailing-separator-1.1.0.tgz#c24bce2a283adad5bc3f58e0d48249b92379d8ef"
 
+rename-keys@^1.1.2:
+  version "1.2.0"
+  resolved "https://registry.yarnpkg.com/rename-keys/-/rename-keys-1.2.0.tgz#be602fb0b750476b513ebe85ba4465d03254f0a3"
+
 repeat-element@^1.1.2:
   version "1.1.3"
   resolved "https://registry.yarnpkg.com/repeat-element/-/repeat-element-1.1.3.tgz#782e0d825c0c5a3bb39731f84efee6b742e6b1ce"
@@ -3077,6 +3119,24 @@ supports-color@^5.2.0, supports-color@^5.3.0, supports-color@^5.4.0:
   dependencies:
     has-flag "^3.0.0"
 
+svg-transform-parser@^0.0.1:
+  version "0.0.1"
+  resolved "https://registry.yarnpkg.com/svg-transform-parser/-/svg-transform-parser-0.0.1.tgz#2a15a3d1ab30b449dc49f8cdce1640c4def52d1d"
+
+svgpath@^2.2.1:
+  version "2.2.1"
+  resolved "https://registry.yarnpkg.com/svgpath/-/svgpath-2.2.1.tgz#0834bb67c89a76472b2bd06cc101fa7b517b222c"
+
+svgson-next@^4.1.6:
+  version "4.1.6"
+  resolved "https://registry.yarnpkg.com/svgson-next/-/svgson-next-4.1.6.tgz#2729674e14e43ddf4c550fecccf1837bcacd8055"
+  dependencies:
+    clean-deep "3.0.2"
+    deep-rename-keys "^0.2.1"
+    omit-deep "0.3.0"
+    xml-printer "1.1.3"
+    xml-reader "2.4.3"
+
 tapable@^0.2.7:
   version "0.2.8"
   resolved "https://registry.yarnpkg.com/tapable/-/tapable-0.2.8.tgz#99372a5c999bf2df160afc0d74bed4f47948cd22"
@@ -3301,6 +3361,13 @@ universalify@^0.1.0:
   version "0.1.2"
   resolved "https://registry.yarnpkg.com/universalify/-/universalify-0.1.2.tgz#b646f69be3942dabcecc9d6639c80dc105efaa66"
 
+unset-value@^0.1.1:
+  version "0.1.2"
+  resolved "https://registry.yarnpkg.com/unset-value/-/unset-value-0.1.2.tgz#506810b867f27c2a5a6e9b04833631f6de58d310"
+  dependencies:
+    has-value "^0.3.1"
+    isobject "^3.0.0"
+
 unset-value@^1.0.0:
   version "1.0.0"
   resolved "https://registry.yarnpkg.com/unset-value/-/unset-value-1.0.0.tgz#8376873f7d2335179ffb1e6fc3a8ed0dfc8ab559"
@@ -3512,6 +3579,23 @@ x-is-string@^0.1.0:
 xdg-basedir@^3.0.0:
   version "3.0.0"
   resolved "https://registry.yarnpkg.com/xdg-basedir/-/xdg-basedir-3.0.0.tgz#496b2cc109eca8dbacfe2dc72b603c17c5870ad4"
+
+xml-lexer@^0.2.2:
+  version "0.2.2"
+  resolved "https://registry.yarnpkg.com/xml-lexer/-/xml-lexer-0.2.2.tgz#518193a4aa334d58fc7d248b549079b89907e046"
+  dependencies:
+    eventemitter3 "^2.0.0"
+
+xml-printer@1.1.3:
+  version "1.1.3"
+  resolved "https://registry.yarnpkg.com/xml-printer/-/xml-printer-1.1.3.tgz#f87e5a08b6b89b8e1ab89f9649bb90d4f9684b78"
+
+xml-reader@2.4.3:
+  version "2.4.3"
+  resolved "https://registry.yarnpkg.com/xml-reader/-/xml-reader-2.4.3.tgz#9f810caf7c425a5aafb848b1c45103c9e71d7530"
+  dependencies:
+    eventemitter3 "^2.0.0"
+    xml-lexer "^0.2.2"
 
 xtend@^4.0.0, xtend@^4.0.1, xtend@~4.0.1:
   version "4.0.1"

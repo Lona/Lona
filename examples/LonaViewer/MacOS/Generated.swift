@@ -10,6 +10,9 @@ import AppKit
 
 enum Generated: String {
     case localAsset = "Local Asset"
+    case vectorAsset = "Vector Asset"
+    case vectorLogicActive = "Vector Logic - Active"
+    case vectorLogicInactive = "Vector Logic - Inactive"
     case nestedComponent = "Nested Component"
     case nestedButtons = "Nested Buttons"
     case button = "Button"
@@ -36,6 +39,9 @@ enum Generated: String {
     static func allValues() -> [Generated] {
         return [
             localAsset,
+            vectorAsset,
+            vectorLogicActive,
+            vectorLogicInactive,
             nestedComponent,
             nestedButtons,
             button,
@@ -115,6 +121,12 @@ enum Generated: String {
             return VisibilityTest(enabled: true)
         case .optionals:
           return Optionals(boolParam: true, stringParam: "Hello World")
+        case .vectorAsset:
+          return VectorAsset()
+        case .vectorLogicActive:
+          return VectorLogic(active: true)
+        case .vectorLogicInactive:
+            return VectorLogic(active: false)
         }
     }
 
@@ -140,7 +152,10 @@ enum Generated: String {
              .boxModelConditionalLarge,
              .shadowsTest,
              .visibilityTest,
-             .optionals:
+             .optionals,
+             .vectorAsset,
+             .vectorLogicActive,
+             .vectorLogicInactive:
             return [
                 equal(\.topAnchor),
                 equal(\.leftAnchor),

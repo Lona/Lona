@@ -1,0 +1,6 @@
+<svg width="24px" height="24px" viewBox="0 0 24 24" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <g id="Checkmark" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+        <circle id="Oval" fill="#00C121" cx="12" cy="12" r="12"></circle>
+        <polyline id="Path" stroke="#FFFFFF" stroke-width="2" stroke-linecap="round" points="6.5 12.6 9.75 15.85 17.25 8.35"></polyline>
+    </g>
+</svg>

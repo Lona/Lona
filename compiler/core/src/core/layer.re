@@ -20,6 +20,7 @@ let isPrimitiveTypeName = (typeName: Types.layerType) =>
   | Types.View
   | Types.Text
   | Types.Image
+  | Types.VectorGraphic
   | Types.Animation => true
   | Types.Children
   | Types.Component(_)
@@ -265,6 +266,60 @@ let getPadding = getInsets("padding");
 
 let getMargin = getInsets("margin");
 
+type vectorParamKey =
+  | Fill
+  | Stroke;
+
+let vectorParamKeyToString = paramKey =>
+  switch (paramKey) {
+  | Fill => "fill"
+  | Stroke => "stroke"
+  };
+
+let vectorParamKeyFromString = (key: string): vectorParamKey =>
+  switch (key) {
+  | "fill" => Fill
+  | "stroke" => Stroke
+  | _ =>
+    Js.log("Invalid vector param key");
+    raise(Not_found);
+  };
+
+type vectorAssignment = {
+  elementName: string,
+  paramKey: vectorParamKey,
+  originalIdentifierPath: list(string),
+};
+
+let hasDynamicVectorParam =
+    (
+      vectorAssignments: list(vectorAssignment),
+      variableName: string,
+      paramKey: vectorParamKey,
+    )
+    : bool =>
+  vectorAssignments
+  |> Sequence.firstWhere((vectorAssignment: vectorAssignment) =>
+       vectorAssignment.elementName == variableName
+       && vectorAssignment.paramKey == paramKey
+     )
+  != None;
+
+let vectorAssignments =
+    (layer: Types.layer, node: Logic.logicNode): list(vectorAssignment) =>
+  Logic.assignedIdentifiers(node)
+  |> Logic.IdentifierSet.elements
+  |> List.map(((_, id)) =>
+       switch (id) {
+       | ["layers", layerName, "vector", elementName, paramKey]
+           when layerName == layer.name =>
+         let paramKey = paramKey |> vectorParamKeyFromString;
+         Some({elementName, paramKey, originalIdentifierPath: id});
+       | _ => None
+       }
+     )
+  |> Sequence.compact;
+
 let parameterAssignmentsFromLogic = (layer, node) => {
   let identifiers = Logic.assignedIdentifiers(node);
   let updateAssignments = (layerName, propertyName, logicValue, acc) =>
@@ -345,6 +400,9 @@ let isViewLayer = (layer: Types.layer) => layer.typeName == Types.View;
 let isTextLayer = (layer: Types.layer) => layer.typeName == Types.Text;
 
 let isImageLayer = (layer: Types.layer) => layer.typeName == Types.Image;
+
+let isVectorGraphicLayer = (layer: Types.layer) =>
+  layer.typeName == Types.VectorGraphic;
 
 let isComponentLayer = (layer: Types.layer) =>
   switch (layer.typeName) {

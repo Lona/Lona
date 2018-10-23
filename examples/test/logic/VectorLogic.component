@@ -1,0 +1,123 @@
+{
+  "devices" : [
+    {
+      "height" : 100,
+      "heightMode" : "At Least",
+      "name" : "iPhone SE",
+      "width" : 320
+    }
+  ],
+  "examples" : [
+    {
+      "id" : "inactive",
+      "name" : "inactive",
+      "params" : {
+        "active" : false
+      }
+    },
+    {
+      "id" : "active",
+      "name" : "active",
+      "params" : {
+        "active" : true
+      }
+    }
+  ],
+  "logic" : [
+    {
+      "assignee" : [
+        "layers",
+        "Check",
+        "vector",
+        "oval",
+        "fill"
+      ],
+      "content" : {
+        "type" : "LitExpr",
+        "value" : {
+          "data" : "grey300",
+          "type" : "Color"
+        }
+      },
+      "type" : "AssignExpr"
+    },
+    {
+      "body" : [
+        {
+          "assignee" : [
+            "layers",
+            "Check",
+            "vector",
+            "oval",
+            "fill"
+          ],
+          "content" : {
+            "type" : "LitExpr",
+            "value" : {
+              "data" : "green400",
+              "type" : "Color"
+            }
+          },
+          "type" : "AssignExpr"
+        },
+        {
+          "assignee" : [
+            "layers",
+            "Check",
+            "vector",
+            "path",
+            "stroke"
+          ],
+          "content" : {
+            "type" : "LitExpr",
+            "value" : {
+              "data" : "green100",
+              "type" : "Color"
+            }
+          },
+          "type" : "AssignExpr"
+        }
+      ],
+      "condition" : {
+        "left" : [
+          "parameters",
+          "active"
+        ],
+        "op" : "==",
+        "right" : {
+          "type" : "LitExpr",
+          "value" : {
+            "data" : true,
+            "type" : "Boolean"
+          }
+        },
+        "type" : "BinExpr"
+      },
+      "type" : "IfExpr"
+    }
+  ],
+  "params" : [
+    {
+      "name" : "active",
+      "type" : "Boolean"
+    }
+  ],
+  "root" : {
+    "children" : [
+      {
+        "id" : "Check",
+        "params" : {
+          "height" : 100,
+          "image" : "file:\/\/.\/assets\/check-circle.svg",
+          "width" : 100
+        },
+        "type" : "Lona:VectorGraphic"
+      }
+    ],
+    "id" : "View",
+    "params" : {
+      "alignSelf" : "stretch"
+    },
+    "type" : "Lona:View"
+  }
+}

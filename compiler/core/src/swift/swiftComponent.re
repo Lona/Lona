@@ -13,16 +13,19 @@ module Naming = {
         pluginContext: Plugin.context,
         swiftOptions: SwiftOptions.options,
         componentName: string,
-        layerType,
+        layer: Types.layer,
       ) => {
     let typeName =
-      switch (swiftOptions.framework, layerType) {
+      switch (swiftOptions.framework, layer.typeName) {
       | (UIKit, Types.View) => "UIView"
       | (UIKit, Text) => "UILabel"
       | (UIKit, Image) => "UIImageView"
       | (AppKit, Types.View) => "NSBox"
       | (AppKit, Text) => "NSTextField"
       | (AppKit, Image) => "NSImageView"
+      | (_, VectorGraphic) =>
+        SwiftComponentParameter.getVectorAssetUrl(layer)
+        |> Format.vectorClassName
       | (_, Component(name)) => name
       | _ => "TypeUnknown"
       };
@@ -252,6 +255,9 @@ module Doc = {
       let defineInitialLayerValues = (layer: Types.layer) =>
         layer.parameters
         |> ParameterMap.bindings
+        |> List.filter(((k, _)) =>
+             !(Layer.isVectorGraphicLayer(layer) && k == ParameterKey.Image)
+           )
         |> List.filter(filterParameters)
         |> List.filter(filterNotAssignedByLogic(layer))
         |> List.map(((k, v)) =>
@@ -272,7 +278,8 @@ module Doc = {
     };
     let resetViewStyling = (layer: Types.layer) =>
       switch (swiftOptions.framework, layer.typeName) {
-      | (SwiftOptions.AppKit, View) => [
+      | (SwiftOptions.AppKit, View)
+      | (SwiftOptions.AppKit, VectorGraphic) => [
           BinaryExpression({
             "left":
               layerMemberExpression(layer, [SwiftIdentifier("boxType")]),
@@ -325,6 +332,23 @@ module Doc = {
                   ),
                 "operator": "=",
                 "right": LiteralExpression(Integer(0)),
+              }),
+            ],
+        ]
+        |> List.concat
+      | (SwiftOptions.UIKit, VectorGraphic) =>
+        [
+          Parameter.isSetInitially(layer, BackgroundColor) ?
+            [] :
+            [
+              BinaryExpression({
+                "left":
+                  layerMemberExpression(
+                    layer,
+                    [SwiftIdentifier("isOpaque")],
+                  ),
+                "operator": "=",
+                "right": LiteralExpression(Boolean(false)),
               }),
             ],
         ]
@@ -459,6 +483,83 @@ module Doc = {
         body;
       };
 
+    let initializeVectorLayers =
+      Layer.flatten(rootLayer)
+      |> List.filter(Layer.isVectorGraphicLayer)
+      |> List.map((layer: Types.layer) => {
+           let layerName = SwiftFormat.layerName(layer.name);
+           let vectorAssignments = Layer.vectorAssignments(layer, logic);
+           let svg =
+             Config.Find.svg(
+               config,
+               SwiftComponentParameter.getVectorAssetUrl(layer),
+             );
+
+           vectorAssignments
+           |> List.map((vectorAssignment: Layer.vectorAssignment) => {
+                let initialValue =
+                  switch (
+                    Svg.find(svg, vectorAssignment.elementName),
+                    vectorAssignment.paramKey,
+                  ) {
+                  | (Some(Path(_, params)), Fill) =>
+                    switch (params.style.fill) {
+                    | Some(fill) => Some(LiteralExpression(Color(fill)))
+                    | None => Some(LiteralExpression(Color("transparent")))
+                    }
+                  | (Some(Path(_, params)), Stroke) =>
+                    switch (params.style.stroke) {
+                    | Some(stroke) =>
+                      Some(LiteralExpression(Color(stroke)))
+                    | None => Some(LiteralExpression(Color("transparent")))
+                    }
+                  | (Some(_), _) => None
+                  | (None, _) => None
+                  };
+
+                switch (initialValue) {
+                | None => Empty /* Shouldn't happen */
+                | Some(initialValue) =>
+                  BinaryExpression({
+                    "left":
+                      SwiftAst.Builders.memberExpression([
+                        layerName,
+                        SwiftFormat.vectorVariableName(vectorAssignment),
+                      ]),
+                    "operator": "=",
+                    "right": initialValue,
+                  })
+                };
+              });
+         })
+      |> List.concat;
+
+    let displayVectorLayers =
+      Layer.flatten(rootLayer)
+      |> List.filter(Layer.isVectorGraphicLayer)
+      |> List.map((layer: Types.layer) => {
+           let layerName = SwiftFormat.layerName(layer.name);
+           switch (swiftOptions.framework) {
+           | UIKit =>
+             SwiftAst.Builders.functionCall(
+               [layerName, "setNeedsDisplay"],
+               [],
+             )
+           | AppKit =>
+             BinaryExpression({
+               "left":
+                 SwiftAst.Builders.memberExpression([
+                   layerName,
+                   "needsDisplay",
+                 ]),
+               "operator": "=",
+               "right": LiteralExpression(Boolean(true)),
+             })
+           };
+         });
+
+    let body = initializeVectorLayers @ body @ displayVectorLayers;
+
     FunctionDeclaration({
       "name": "update",
       "modifiers": [AccessLevelModifier(PrivateModifier)],
@@ -523,13 +624,7 @@ let generate =
           swiftOptions,
           assignmentsFromLayerParameters,
           layer,
-          Naming.layerType(
-            config,
-            pluginContext,
-            swiftOptions,
-            name,
-            layer.typeName,
-          ),
+          Naming.layerType(config, pluginContext, swiftOptions, name, layer),
         ),
       ),
     );
@@ -642,6 +737,9 @@ let generate =
   let layerMemberExpression = (layer: Types.layer, statements) =>
     memberOrSelfExpression(parentNameOrSelf(layer), statements);
 
+  let vectorGraphicLayers =
+    nonRootLayers |> List.filter(Layer.isVectorGraphicLayer);
+
   let containsImageWithBackgroundColor = () => {
     let hasBackgroundColor = (layer: Types.layer) =>
       Parameter.isAssigned(
@@ -653,25 +751,51 @@ let generate =
     |> List.filter(Layer.isImageLayer)
     |> List.exists(hasBackgroundColor);
   };
+
   let helperClasses =
-    switch (swiftOptions.framework) {
-    | SwiftOptions.AppKit =>
-      containsImageWithBackgroundColor() ?
-        [
-          [LineComment("MARK: - " ++ "ImageWithBackgroundColor"), Empty],
-          SwiftHelperClass.generateImageWithBackgroundColor(
-            options,
-            swiftOptions,
-          ),
-        ]
-        |> List.concat :
-        []
-    | SwiftOptions.UIKit => []
-    };
+    [
+      switch (swiftOptions.framework) {
+      | SwiftOptions.AppKit =>
+        containsImageWithBackgroundColor() ?
+          [
+            [LineComment("MARK: - " ++ "ImageWithBackgroundColor"), Empty],
+            SwiftHelperClass.generateImageWithBackgroundColor(
+              options,
+              swiftOptions,
+            ),
+          ]
+          |> List.concat :
+          []
+      | SwiftOptions.UIKit => []
+      },
+      switch (vectorGraphicLayers) {
+      | [] => []
+      | _ =>
+        vectorGraphicLayers
+        |> List.map(layer => {
+             let vectorAssignments = Layer.vectorAssignments(layer, logic);
+
+             SwiftHelperClass.generateVectorGraphic(
+               config,
+               options,
+               swiftOptions,
+               vectorAssignments,
+               SwiftComponentParameter.getVectorAssetUrl(layer),
+             );
+           })
+        |> List.concat
+      },
+    ]
+    |> List.concat;
 
   let superclass =
     TypeName(
-      Naming.layerType(config, pluginContext, swiftOptions, name, Types.View),
+      Plugin.applyTransformTypePlugins(
+        config.plugins,
+        pluginContext,
+        name,
+        swiftOptions.framework == UIKit ? "UIView" : "NSBox",
+      ),
     );
   TopLevelDeclaration({
     "statements":

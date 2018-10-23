@@ -26,6 +26,24 @@
     },
     {
       "comment" : "",
+      "id" : "selectedIcon",
+      "name" : "Selected Icon",
+      "value" : "rgba(255,255,255,0.35)"
+    },
+    {
+      "comment" : "",
+      "id" : "selectedIconStroke",
+      "name" : "Selected Icon Stroke",
+      "value" : "rgba(255,255,255,0.8)"
+    },
+    {
+      "comment" : "",
+      "id" : "transparent",
+      "name" : "Transparent",
+      "value" : "rgba(0,0,0,0.0)"
+    },
+    {
+      "comment" : "",
       "id" : "red50",
       "name" : "Red 50",
       "value" : "#ffebee"

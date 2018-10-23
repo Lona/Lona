@@ -51,6 +51,7 @@ class CSLayer: CSDataDeserializable, CSDataSerializable, DataNode, NSCopying {
         case view = "View"
         case text = "Text"
         case image = "Image"
+        case vectorGraphic = "VectorGraphic"
         case animation = "Animation"
         case children = "Children"
     }
@@ -92,6 +93,7 @@ class CSLayer: CSDataDeserializable, CSDataSerializable, DataNode, NSCopying {
         static let view = LayerType.builtIn(.view)
         static let text = LayerType.builtIn(.text)
         static let image = LayerType.builtIn(.image)
+        static let vectorGraphic = LayerType.builtIn(.vectorGraphic)
         static let animation = LayerType.builtIn(.animation)
         static let children = LayerType.builtIn(.children)
 
@@ -684,6 +686,15 @@ class CSLayer: CSDataDeserializable, CSDataSerializable, DataNode, NSCopying {
             let assetMap = AnimationUtils.assetMapValue(from: animationData)
             data["images"] = assetMap.data
             valueType = valueType.merge(key: "images", type: assetMap.type, access: .write)
+        }
+
+        // VectorGraphic
+        if type == .vectorGraphic,
+            let image = image,
+            let url = URL(string: image)?.absoluteURLForWorkspaceURL(),
+            let svg = SVG.decodeSync(contentsOf: url) {
+            data["vector"] = SVG.paramsData(node: svg)
+            valueType = valueType.merge(key: "vector", type: SVG.paramsType(node: svg), access: .write)
         }
 
         return CSValue(type: valueType, data: data)

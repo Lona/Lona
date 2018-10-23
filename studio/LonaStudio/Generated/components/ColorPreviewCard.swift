@@ -64,7 +64,6 @@ public class ColorPreviewCard: NSBox {
     detailsView.addSubview(colorNameView)
     detailsView.addSubview(colorCodeView)
 
-    fillColor = Colors.white
     cornerRadius = 4
     borderWidth = 1
     previewView.cornerRadius = 3
@@ -135,7 +134,7 @@ public class ColorPreviewCard: NSBox {
   }
 
   private func update() {
-    borderColor = #colorLiteral(red: 0, green: 0, blue: 0, alpha: 0)
+    borderColor = Colors.transparent
     colorNameView.attributedStringValue = colorNameViewTextStyle.apply(to: colorName)
     colorCodeView.attributedStringValue = colorCodeViewTextStyle.apply(to: colorCode)
     previewView.fillColor = color

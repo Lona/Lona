@@ -59,6 +59,7 @@ type layerType =
   | View
   | Text
   | Image
+  | VectorGraphic
   | Animation
   | Children
   | Component(string)
@@ -69,6 +70,7 @@ let layerTypeToString = x =>
   | View => "View"
   | Text => "Text"
   | Image => "Image"
+  | VectorGraphic => "VectorGraphic"
   | Animation => "Animation"
   | Children => "Children"
   | Component(value) => value

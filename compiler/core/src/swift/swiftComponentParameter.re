@@ -31,6 +31,18 @@ let paddingAndMarginKeys = [
 
 let isPaddingOrMargin = key => List.mem(key, paddingAndMarginKeys);
 
+let getVectorAssetUrl = (layer: Types.layer) =>
+  switch (get(layer, ParameterKey.Image)) {
+  | None =>
+    Js.log(
+      "Error: VectorGraphic "
+      ++ layer.name
+      ++ " is missing the `image` parameter.",
+    );
+    raise(Not_found);
+  | Some(value) => value |> LonaValue.decodeUrl
+  };
+
 /* let paddingParameterNameTranslations = [
      {swiftName: "topPadding", lonaName: PaddingTop},
      {swiftName: "trailingPadding", lonaName: PaddingRight},

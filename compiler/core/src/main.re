@@ -69,16 +69,20 @@ if (List.length(positionalArguments) < 3) {
 
 let command = List.nth(positionalArguments, 2);
 
-if (List.length(positionalArguments) < 4) {
+if (command != "convertSvg" && List.length(positionalArguments) < 4) {
   exit("No target given");
 };
 
 let target =
-  switch (List.nth(positionalArguments, 3)) {
-  | "js" => Types.JavaScript
-  | "swift" => Types.Swift
-  | "xml" => Types.Xml
-  | _ => exit("Unrecognized target")
+  if (command != "convertSvg") {
+    switch (List.nth(positionalArguments, 3)) {
+    | "js" => Types.JavaScript
+    | "swift" => Types.Swift
+    | "xml" => Types.Xml
+    | _ => exit("Unrecognized target")
+    };
+  } else {
+    Types.JavaScript;
   };
 
 let concat = (base, addition) => Path.join([|base, addition|]);
@@ -257,6 +261,13 @@ let copyStaticFiles = outputDirectory =>
       ),
       concat(outputDirectory, "TextStyle.swift"),
     );
+    copySync(
+      concat(
+        [%bs.raw {| __dirname |}],
+        "static/swift/CGSize+Crop." ++ framework ++ ".swift",
+      ),
+      concat(outputDirectory, "CGSize+Crop.swift"),
+    );
   | _ => ()
   };
 
@@ -297,127 +308,136 @@ let findContentsBelow = contents => {
   };
 };
 
-let convertWorkspace = (workspace, output) => {
-  let config = Config.load(workspace);
-  let colors = config.colorsFile.contents;
-  let textStyles = config.textStylesFile.contents;
-  let shadows = config.shadowsFile.contents;
+let convertWorkspace = (workspace, output) =>
+  Config.load(workspace)
+  |> Js.Promise.then_((config: Config.t) => {
+       let colors = config.colorsFile.contents;
+       let textStyles = config.textStylesFile.contents;
+       let shadows = config.shadowsFile.contents;
 
-  let fromDirectory = Path.resolve(workspace, "");
-  let toDirectory = Path.resolve(output, "");
-  ensureDirSync(toDirectory);
+       let fromDirectory = Path.resolve(workspace, "");
+       let toDirectory = Path.resolve(output, "");
+       ensureDirSync(toDirectory);
 
-  let colorsOutputPath =
-    concat(toDirectory, formatFilename(target, "Colors") ++ targetExtension);
-  Fs.writeFileSync(colorsOutputPath, colors |> renderColors(target), `utf8);
+       let colorsOutputPath =
+         concat(
+           toDirectory,
+           formatFilename(target, "Colors") ++ targetExtension,
+         );
+       Fs.writeFileSync(
+         colorsOutputPath,
+         colors |> renderColors(target),
+         `utf8,
+       );
 
-  let textStylesOutputPath =
-    concat(
-      toDirectory,
-      formatFilename(target, "TextStyles") ++ targetExtension,
-    );
-  Fs.writeFileSync(
-    textStylesOutputPath,
-    textStyles |> renderTextStyles(target, colors),
-    `utf8,
-  );
+       let textStylesOutputPath =
+         concat(
+           toDirectory,
+           formatFilename(target, "TextStyles") ++ targetExtension,
+         );
+       Fs.writeFileSync(
+         textStylesOutputPath,
+         textStyles |> renderTextStyles(target, colors),
+         `utf8,
+       );
 
-  if (target == Types.Swift || target == Types.JavaScript) {
-    let shadowsOutputPath =
-      concat(
-        toDirectory,
-        formatFilename(target, "Shadows") ++ targetExtension,
-      );
-    Fs.writeFileSync(
-      shadowsOutputPath,
-      shadows |> renderShadows(target, colors),
-      `utf8,
-    );
-  };
-
-  copyStaticFiles(toDirectory);
-  Glob.glob(
-    concat(fromDirectory, "**/*.component"),
-    (_, files) => {
-      let files =
-        Array.to_list(files)
-        |> List.filter(file =>
-             switch (options.filterComponents) {
-             | Some(value) => Js.Re.test(file, Js.Re.fromString(value))
-             | None => true
-             }
+       if (target == Types.Swift || target == Types.JavaScript) {
+         let shadowsOutputPath =
+           concat(
+             toDirectory,
+             formatFilename(target, "Shadows") ++ targetExtension,
            );
-      let processFile = file => {
-        let fromRelativePath =
-          Path.relative(~from=fromDirectory, ~to_=file, ());
-        let toRelativePath =
-          concat(
-            Path.dirname(fromRelativePath),
-            Path.basename_ext(fromRelativePath, ".component"),
-          )
-          ++ targetExtension;
-        let outputPath = Path.join([|toDirectory, toRelativePath|]);
-        Js.log(
-          Path.join([|workspace, fromRelativePath|])
-          ++ "=>"
-          ++ Path.join([|output, toRelativePath|]),
-        );
-        switch (convertComponent(config, file)) {
-        | exception (Json_decode.DecodeError(reason)) =>
-          Js.log("Failed to decode " ++ file);
-          Js.log(reason);
-        | exception (Decode.UnknownParameter(name)) =>
-          Js.log("Unknown parameter: " ++ name)
-        | exception (Decode.UnknownExprType(name)) =>
-          Js.log("Unknown expr name: " ++ name)
-        | exception e =>
-          Js.log("Unknown error");
-          Js.log(e);
-        | contents =>
-          ensureDirSync(Path.dirname(outputPath));
-          let (contentsAbove, contentsBelow) =
-            switch (Fs.readFileAsUtf8Sync(outputPath)) {
-            | existing => (
-                findContentsAbove(existing),
-                findContentsBelow(existing),
-              )
-            | exception _ => (None, None)
-            };
-          let contents =
-            switch (contentsAbove) {
-            | Some(contentsAbove) => contentsAbove ++ contents
-            | None => contents
-            };
-          let contents =
-            switch (contentsBelow) {
-            | Some(contentsBelow) => contents ++ contentsBelow
-            | None => contents
-            };
-          Fs.writeFileSync(outputPath, contents, `utf8);
-        };
-      };
-      files |> List.iter(processFile);
-    },
-  );
-  Glob.glob(
-    concat(fromDirectory, "**/*.png"),
-    (_, files) => {
-      let files = Array.to_list(files);
-      let processFile = file => {
-        let fromRelativePath =
-          Path.relative(~from=fromDirectory, ~to_=file, ());
-        let outputPath = Path.join([|toDirectory, fromRelativePath|]);
-        Js.log(
-          Path.join([|workspace, fromRelativePath|])
-          ++ "=>"
-          ++ Path.join([|output, fromRelativePath|]),
-        );
-        copySync(file, outputPath);
-      };
-      files |> List.iter(processFile);
-    },
-  );
-};
+         Fs.writeFileSync(
+           shadowsOutputPath,
+           shadows |> renderShadows(target, colors),
+           `utf8,
+         );
+       };
+
+       copyStaticFiles(toDirectory);
+       Glob.glob(
+         concat(fromDirectory, "**/*.component"),
+         (_, files) => {
+           let files =
+             Array.to_list(files)
+             |> List.filter(file =>
+                  switch (options.filterComponents) {
+                  | Some(value) => Js.Re.test(file, Js.Re.fromString(value))
+                  | None => true
+                  }
+                );
+           let processFile = file => {
+             let fromRelativePath =
+               Path.relative(~from=fromDirectory, ~to_=file, ());
+             let toRelativePath =
+               concat(
+                 Path.dirname(fromRelativePath),
+                 Path.basename_ext(fromRelativePath, ".component"),
+               )
+               ++ targetExtension;
+             let outputPath = Path.join([|toDirectory, toRelativePath|]);
+             Js.log(
+               Path.join([|workspace, fromRelativePath|])
+               ++ "=>"
+               ++ Path.join([|output, toRelativePath|]),
+             );
+             switch (convertComponent(config, file)) {
+             | exception (Json_decode.DecodeError(reason)) =>
+               Js.log("Failed to decode " ++ file);
+               Js.log(reason);
+             | exception (Decode.UnknownParameter(name)) =>
+               Js.log("Unknown parameter: " ++ name)
+             | exception (Decode.UnknownExprType(name)) =>
+               Js.log("Unknown expr name: " ++ name)
+             | exception e =>
+               Js.log("Unknown error");
+               Js.log(e);
+             | contents =>
+               ensureDirSync(Path.dirname(outputPath));
+               let (contentsAbove, contentsBelow) =
+                 switch (Fs.readFileAsUtf8Sync(outputPath)) {
+                 | existing => (
+                     findContentsAbove(existing),
+                     findContentsBelow(existing),
+                   )
+                 | exception _ => (None, None)
+                 };
+               let contents =
+                 switch (contentsAbove) {
+                 | Some(contentsAbove) => contentsAbove ++ contents
+                 | None => contents
+                 };
+               let contents =
+                 switch (contentsBelow) {
+                 | Some(contentsBelow) => contents ++ contentsBelow
+                 | None => contents
+                 };
+               Fs.writeFileSync(outputPath, contents, `utf8);
+             };
+           };
+           files |> List.iter(processFile);
+         },
+       );
+       Glob.glob(
+         concat(fromDirectory, "**/*.png"),
+         (_, files) => {
+           let files = Array.to_list(files);
+           let processFile = file => {
+             let fromRelativePath =
+               Path.relative(~from=fromDirectory, ~to_=file, ());
+             let outputPath = Path.join([|toDirectory, fromRelativePath|]);
+             Js.log(
+               Path.join([|workspace, fromRelativePath|])
+               ++ "=>"
+               ++ Path.join([|output, fromRelativePath|]),
+             );
+             copySync(file, outputPath);
+           };
+           files |> List.iter(processFile);
+         },
+       );
+       Js.Promise.resolve();
+     });
 
 switch (command) {
 | "workspace" =>
@@ -430,14 +450,19 @@ switch (command) {
   convertWorkspace(
     List.nth(positionalArguments, 4),
     List.nth(positionalArguments, 5),
-  );
+  )
+  |> ignore;
 | "component" =>
   if (List.length(positionalArguments) < 5) {
     exit("No filename given");
   };
   let filename = List.nth(positionalArguments, 4);
-  let config = Config.load(filename);
-  convertComponent(config, filename) |> Js.log;
+  Config.load(filename)
+  |> Js.Promise.then_(config => {
+       convertComponent(config, filename) |> Js.log;
+       Js.Promise.resolve();
+     })
+  |> ignore;
 | "colors" =>
   if (List.length(positionalArguments) < 5) {
     let render = contents =>
@@ -490,5 +515,20 @@ switch (command) {
       convertTextStyles(target, workspacePath, content) |> Js.log;
     };
   }
+| "convertSvg" =>
+  let contents =
+    if (List.length(positionalArguments) < 4) {
+      getStdin();
+    } else {
+      Js.Promise.resolve(
+        Node.Fs.readFileSync(List.nth(positionalArguments, 3), `utf8),
+      );
+    };
+  Js.Promise.(
+    contents
+    |> then_(Svg.parse)
+    |> then_(parsed => parsed |> Js.Json.stringify |> Js.log |> resolve)
+    |> ignore
+  );
 | _ => Js.log2("Invalid command", command)
 };

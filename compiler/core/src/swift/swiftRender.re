@@ -639,6 +639,7 @@ and renderPattern = node =>
   }
 and renderInitializerBlock = (node: SwiftAst.initializerBlock) =>
   switch (node) {
+  | GetterBlock(list) => render(CodeBlock({"statements": list}))
   | WillSetDidSetBlock(o) =>
     /* Special case single-statement willSet/didSet and render them in a single line
        since they are common in our generated code and are easier to read than multiline */

@@ -12,17 +12,25 @@ let getElementTagString =
     (framework: JavaScriptOptions.framework, typeName: Types.layerType) =>
   switch (framework) {
   | JavaScriptOptions.ReactDOM => ReactDomTranslators.layerTypeTags(typeName)
-  /* | JavaScriptOptions.ReactDOM => JavaScriptFormat.elementName(layer.name) */
   | _ =>
     switch (typeName) {
     | View => "View"
     | Text => "Text"
     | Image => "Image"
+    | VectorGraphic => "VectorGraphic"
     | Animation => "Animation"
     | Children => "Children"
     | Component(value) => value
     | _ => "Unknown"
     }
+  };
+
+let getElementOrVectorTagString =
+    (framework: JavaScriptOptions.framework, layer: Types.layer) =>
+  switch (layer.typeName) {
+  | VectorGraphic =>
+    SwiftComponentParameter.getVectorAssetUrl(layer) |> Format.vectorClassName
+  | _ => getElementTagString(framework, layer.typeName)
   };
 
 module StyledComponents = {
@@ -187,7 +195,7 @@ let createJSXElement =
     };
   | _ =>
     JSXElement({
-      tag: getElementTagString(framework, layer.typeName),
+      tag: getElementOrVectorTagString(framework, layer),
       attributes: styleAttribute @ attributes,
       content,
     })
@@ -197,6 +205,7 @@ let rec layerToJavaScriptAST =
         (
           framework: JavaScriptOptions.framework,
           config: Config.t,
+          logic,
           assignments,
           getAssetPath,
           parent: option(Types.layer),
@@ -209,6 +218,7 @@ let rec layerToJavaScriptAST =
          switch (key) {
          | ParameterKey.Text => false
          | ParameterKey.Visible => false
+         | ParameterKey.Image when layer.typeName == VectorGraphic => false
          | _ => true
          }
        );
@@ -272,6 +282,26 @@ let rec layerToJavaScriptAST =
            };
          JSXAttribute({name: key, value: attributeValue});
        });
+  let vectorAssignments = Layer.vectorAssignments(layer, logic);
+  let attributes =
+    [
+      vectorAssignments
+      |> List.map((vectorAssignment: Layer.vectorAssignment) =>
+           JSXAttribute({
+             name:
+               vectorAssignment.elementName
+               ++ (
+                 vectorAssignment.paramKey
+                 |> Layer.vectorParamKeyToString
+                 |> Format.upperFirst
+               ),
+             value: Identifier(vectorAssignment.originalIdentifierPath),
+           })
+         ),
+      attributes,
+    ]
+    |> List.concat;
+
   let dynamicOrStaticValue = key =>
     switch (
       main |> ParameterMap.find_opt(key),
@@ -294,6 +324,7 @@ let rec layerToJavaScriptAST =
            layerToJavaScriptAST(
              framework,
              config,
+             logic,
              assignments,
              getAssetPath,
              Some(layer),
@@ -331,6 +362,9 @@ let importComponents =
     (framework: JavaScriptOptions.framework, getComponentFile, rootLayer) => {
   let {builtIn, custom}: Layer.availableTypeNames =
     rootLayer |> Layer.getTypeNames;
+  let importsSvg = List.mem(Types.VectorGraphic, builtIn);
+  let builtIn =
+    builtIn |> List.filter(typeName => typeName != Types.VectorGraphic);
   {
     absolute:
       switch (framework) {
@@ -343,7 +377,21 @@ let importComponents =
              ],
            }), */
         []
-      | _ => [
+      | _ =>
+        (
+          switch (framework, importsSvg) {
+          | (JavaScriptOptions.ReactNative, true) => [
+              Ast.ImportDeclaration({
+                source: "react-native-svg",
+                specifiers: [
+                  Ast.ImportDefaultSpecifier("Svg"),
+                ],
+              }),
+            ]
+          | _ => []
+          }
+        )
+        @ [
           Ast.ImportDeclaration({
             source:
               switch (framework) {
@@ -371,6 +419,14 @@ let importComponents =
                   ]
                 | _ => []
                 }
+              )
+              @ (
+                switch (framework, importsSvg) {
+                | (JavaScriptOptions.ReactSketchapp, true) => [
+                    Ast.ImportSpecifier({imported: "Svg", local: None}),
+                  ]
+                | _ => []
+                }
               ),
           }),
         ]
@@ -393,6 +449,7 @@ let rootLayerToJavaScriptAST =
       options: JavaScriptOptions.options,
       config: Config.t,
       getAssetPath,
+      logic,
       assignments,
       rootLayer,
     ) => {
@@ -401,6 +458,7 @@ let rootLayerToJavaScriptAST =
     |> layerToJavaScriptAST(
          options.framework,
          config,
+         logic,
          assignments,
          getAssetPath,
          None,
@@ -503,6 +561,7 @@ let generate =
       options,
       config,
       getAssetPath,
+      logic,
       assignments,
       rootLayer,
     );
@@ -551,6 +610,19 @@ let generate =
             }),
           ]
           @ relative,
+          rootLayer
+          |> Layer.flatten
+          |> List.filter(Layer.isVectorGraphicLayer)
+          |> List.map(layer => {
+               let vectorAssignments = Layer.vectorAssignments(layer, logic);
+
+               JavaScriptSvg.generateVectorGraphic(
+                 config,
+                 options,
+                 vectorAssignments,
+                 SwiftComponentParameter.getVectorAssetUrl(layer),
+               );
+             }),
           [
             ExportDefaultDeclaration(
               ClassDeclaration({

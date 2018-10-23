@@ -82,7 +82,7 @@ public class TabIcon: NSBox {
   }
 
   private func update() {
-    fillColor = #colorLiteral(red: 0, green: 0, blue: 0, alpha: 0)
+    fillColor = Colors.transparent
     imageView.image = icon
     onPress = onClick
     if selected {

@@ -1,0 +1,6 @@
+<svg width="48px" height="24px" viewBox="0 0 48 24" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <g id="toggle" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+        <rect id="Rectangle" stroke="#008E18" fill="#00C121" x="0.5" y="0.5" width="47" height="23" rx="11.5"></rect>
+        <circle id="Oval" fill="#FFFFFF" cx="12" cy="12" r="10"></circle>
+    </g>
+</svg>

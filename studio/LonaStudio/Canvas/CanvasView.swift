@@ -153,7 +153,9 @@ let BORDERS: [(edge: NSRectEdge, key: String)] = [
     (NSRectEdge.minX, key: "borderLeftWidth")
 ]
 
-let imageCache = ImageCache()
+let imageCache = ImageCache<NSImage>()
+
+let svgRenderCache = LRUCache<String, NSImage>()
 
 func renderBox(configuredLayer: ConfiguredLayer, node: YGNodeRef, options: RenderOptions) -> NSView {
     let layout = node.layout
@@ -260,6 +262,27 @@ func renderBox(configuredLayer: ConfiguredLayer, node: YGNodeRef, options: Rende
                     box.backgroundImage = contents
                     imageCache.add(contents: contents, for: url, at: scale)
                 }
+            }
+        }
+    } else if layer.type == .vectorGraphic {
+        let imageValue: String? = config.get(attribute: "image", for: layer.name).string ?? layer.image
+
+        if let imageValue = imageValue, let url = URL(string: imageValue)?.absoluteURLForWorkspaceURL() {
+
+            let dynamicValues = config.get(attribute: "vector", for: layer.name)
+
+            let cacheKey = "\(imageValue)*w\(layout.width)*h\(layout.height)*\(dynamicValues.toData()?.utf8String() ?? "")"
+
+            if let cached = svgRenderCache.item(for: cacheKey) {
+                box.backgroundImage = cached
+            } else if let image = SVG.renderSync(
+                contentsOf: url,
+                dynamicValues: dynamicValues,
+                size: CGSize(width: layout.width, height: layout.height)) {
+
+                image.cacheMode = .always
+                box.backgroundImage = image
+                svgRenderCache.add(item: image, for: cacheKey)
             }
         }
     }

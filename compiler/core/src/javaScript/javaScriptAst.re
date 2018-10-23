@@ -10,6 +10,7 @@ type binaryOperator =
   | Lte
   | Plus
   | And
+  | Or
   | Noop;
 
 type importDeclaration = {

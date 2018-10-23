@@ -25,6 +25,7 @@ enum ComponentMenu {
             CSLayer.BuiltInLayerType.view,
             CSLayer.BuiltInLayerType.text,
             CSLayer.BuiltInLayerType.image,
+            CSLayer.BuiltInLayerType.vectorGraphic,
             CSLayer.BuiltInLayerType.animation,
             CSLayer.BuiltInLayerType.children]
 
@@ -41,6 +42,8 @@ enum ComponentMenu {
                     viewController.addText()
                 case .image:
                     viewController.addImage()
+                case .vectorGraphic:
+                    viewController.addVectorGraphic()
                 case .animation:
                     viewController.addAnimation()
                 case .children:

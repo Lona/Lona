@@ -1,3 +1,15 @@
+let first = (items: list('a)): option('a) =>
+  switch (items) {
+  | [] => None
+  | [a, ..._] => Some(a)
+  };
+
+let firstWhere = (f: 'a => bool, items: list('a)): option('a) =>
+  switch (List.filter(f, items)) {
+  | [] => None
+  | [a, ..._] => Some(a)
+  };
+
 let rec compact = (items: list(option('a))): list('a) =>
   switch (items) {
   | [Some(x), ...xs] => [x] @ compact(xs)

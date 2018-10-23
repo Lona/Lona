@@ -48,6 +48,12 @@ let imageTypeName = framework =>
   | SwiftOptions.AppKit => "NSImage"
   };
 
+let bezierPathTypeName = framework =>
+  switch (framework) {
+  | SwiftOptions.UIKit => "UIBezierPath"
+  | SwiftOptions.AppKit => "NSBezierPath"
+  };
+
 let sizeTypeName = framework =>
   switch (framework) {
   | SwiftOptions.UIKit => "CGSize"

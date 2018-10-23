@@ -72,8 +72,8 @@ class CodeEditorViewController: NSViewController {
                 LonaNode.run(
                     arguments: [compilerPath, "colors", fileExtension],
                     inputData: data,
-                    onSuccess: { result in
-                        guard let result = result else { return }
+                    onSuccess: { output in
+                        guard let result = output.utf8String() else { return }
                         DispatchQueue.main.async {
                             // There's a race condition here where the document may have changed
                             // by the time this completes, and the text will be set for the wrong document.
@@ -92,8 +92,8 @@ class CodeEditorViewController: NSViewController {
                 LonaNode.run(
                     arguments: [compilerPath, "textStyles", fileExtension],
                     inputData: data,
-                    onSuccess: { result in
-                        guard let result = result else { return }
+                    onSuccess: { output in
+                        guard let result = output.utf8String() else { return }
                         DispatchQueue.main.async {
                             // There's a race condition here where the document may have changed
                             // by the time this completes, and the text will be set for the wrong document.

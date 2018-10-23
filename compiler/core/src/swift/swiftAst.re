@@ -91,6 +91,7 @@ and pattern =
 /* | IsPattern */
 /* | AsPattern */
 and initializerBlock =
+  | GetterBlock(list(node))
   | WillSetDidSetBlock(
       {
         .
@@ -340,6 +341,19 @@ module Builders = {
       (name: string, annotation: option(typeAnnotation), init: option(node)) =>
     VariableDeclaration({
       "modifiers": [AccessLevelModifier(PrivateModifier)],
+      "pattern":
+        IdentifierPattern({
+          "identifier": SwiftIdentifier(name),
+          "annotation": annotation,
+        }),
+      "init": init,
+      "block": None,
+    });
+
+  let publicVariableDeclaration =
+      (name: string, annotation: option(typeAnnotation), init: option(node)) =>
+    VariableDeclaration({
+      "modifiers": [AccessLevelModifier(PublicModifier)],
       "pattern":
         IdentifierPattern({
           "identifier": SwiftIdentifier(name),

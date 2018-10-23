@@ -73,6 +73,9 @@ let defaultValueForParameter = name => parameterDefaultValue(name);
 let decodeNumber = (value: Types.lonaValue): float =>
   value.data |> Json.Decode.float;
 
+let decodeUrl = (value: Types.lonaValue): string =>
+  value.data |> Json.Decode.string;
+
 let isOptionalTypeName = (typeName: string): bool =>
   Js.String.endsWith("?", typeName);
 

@@ -15,6 +15,7 @@ let renderBinaryOperator = x => {
     | Lte => "<="
     | Plus => "+"
     | And => "&&"
+    | Or => "||"
     | Noop => ""
     };
   s(op);
@@ -141,7 +142,9 @@ let rec render = ast: Prettier.Doc.t('a) =>
       <+> s(")")
     | _ =>
       group(s("(") <+> parameterList <+> s(") =>") <+> line <+> s("{"))
-      <+> indent(join(hardline, o.body |> List.map(render)))
+      <+> (
+        o.body |> List.map(render) |> Render.prefixAll(hardline) |> indent
+      )
       <+> hardline
       <+> s("}")
     };
