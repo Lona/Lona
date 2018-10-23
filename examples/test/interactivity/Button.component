@@ -197,6 +197,11 @@
       }
     ],
     "id" : "View",
+    "metadata" : {
+      "backingElementClass" : {
+        "reactdom" : "button"
+      }
+    },
     "params" : {
       "backgroundColor" : "blue100",
       "paddingBottom" : 12,
