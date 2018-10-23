@@ -167,7 +167,6 @@
     "id" : "Container",
     "params" : {
       "alignSelf" : "stretch",
-      "backgroundColor" : "white",
       "borderRadius" : 4,
       "borderWidth" : 1,
       "flex" : 1,

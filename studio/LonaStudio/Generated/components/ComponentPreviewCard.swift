@@ -149,7 +149,7 @@ public class ComponentPreviewCard: NSBox {
     componentNameViewTextStyle = TextStyles.large
     componentNameView.attributedStringValue =
       componentNameViewTextStyle.apply(to: componentNameView.attributedStringValue)
-    detailsView.fillColor = #colorLiteral(red: 0, green: 0, blue: 0, alpha: 0)
+    detailsView.fillColor = Colors.transparent
     dividerView.fillColor = Colors.grey300
     previewView.fillColor = Colors.grey100
     componentNameView.attributedStringValue = componentNameViewTextStyle.apply(to: componentName)

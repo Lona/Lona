@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="24px" height="24px" viewBox="0 0 24 24" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <!-- Generator: Sketch 52.2 (67145) - http://www.bohemiancoding.com/sketch -->
+    <title>icon-folder</title>
+    <desc>Created with Sketch.</desc>
+    <g id="icon-folder" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+        <g id="Group-5-Copy-2" transform="translate(1.000000, 4.000000)">
+            <path d="M0.5,15.5 L0.5,1.5 C0.5,0.94771525 0.94771525,0.5 1.5,0.5 L6.08578644,0.5 C6.35100293,0.5 6.60535684,0.60535684 6.79289322,0.792893219 L8.20710678,2.20710678 C8.39464316,2.39464316 8.64899707,2.5 8.91421356,2.5 L19.5,2.5 C20.0522847,2.5 20.5,2.94771525 20.5,3.5 L20.5,15.5 C20.5,16.0522847 20.0522847,16.5 19.5,16.5 L1.5,16.5 C0.94771525,16.5 0.5,16.0522847 0.5,15.5 Z" id="Path" stroke="#8C8C8C" fill="#EEEEEE"></path>
+            <rect id="Rectangle" fill="#CDCDCD" x="1" y="5" width="19" height="11"></rect>
+            <path d="M1.5,15.5 L19.5,15.5" id="Line-3" stroke-opacity="0.2" stroke="#FFFFFF" stroke-linecap="square"></path>
+            <path d="M1.5,4.5 L19.5,4.5" id="Line-2" stroke="#8C8C8C" stroke-linecap="square"></path>
+        </g>
+    </g>
+</svg>

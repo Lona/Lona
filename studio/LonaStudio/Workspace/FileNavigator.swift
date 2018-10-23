@@ -10,6 +10,23 @@ import AppKit
 import FileTree
 import Foundation
 
+private class FileTreeCellView: NSTableCellView {
+    public var onChangeBackgroundStyle: ((NSView.BackgroundStyle) -> Void)?
+
+    override var backgroundStyle: NSView.BackgroundStyle {
+        didSet { onChangeBackgroundStyle?(backgroundStyle) }
+    }
+}
+
+private func isDirectory(path: String) -> Bool {
+    var isDir: ObjCBool = false
+    if FileManager.default.fileExists(atPath: path, isDirectory: &isDir) {
+        return isDir.boolValue
+    } else {
+        return false
+    }
+}
+
 class FileNavigator: NSBox {
 
     // MARK: - Lifecycle
@@ -82,6 +99,7 @@ class FileNavigator: NSBox {
         contentViewMargins = .zero
 
         fileTree.showRootFile = false
+        fileTree.rowViewForFile = { path in self.rowViewForFile(atPath: path) }
 
         headerView.fileIcon = NSImage(byReferencing: CSWorkspacePreferences.workspaceIconURL)
         headerView.dividerColor = NSSplitView.defaultDividerColor
@@ -107,4 +125,71 @@ class FileNavigator: NSBox {
     }
 
     private func update() {}
+
+    private func rowViewForFile(atPath path: String) -> NSView {
+        let thumbnailSize = fileTree.defaultThumbnailSize
+        let thumbnailMargin = fileTree.defaultThumbnailMargin
+        let name = displayNameForFile?(path) ?? URL(fileURLWithPath: path).lastPathComponent
+
+        let view = FileTreeCellView()
+
+        let textView = NSTextField(labelWithString: name)
+        let iconView: NSView
+
+        if isDirectory(path: path) {
+            iconView = FolderIcon()
+        } else if path.hasSuffix("colors.json") {
+            iconView = ColorsFileIcon()
+        } else if path.hasSuffix(".component") {
+            let imageView = NSImageView(image: imageForFile?(path, thumbnailSize) ?? NSImage())
+            imageView.imageScaling = .scaleProportionallyUpOrDown
+            iconView = imageView
+        } else {
+            iconView = FileIcon()
+        }
+
+        view.addSubview(textView)
+        view.addSubview(iconView)
+
+        iconView.translatesAutoresizingMaskIntoConstraints = false
+        iconView.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: thumbnailMargin).isActive = true
+        iconView.centerYAnchor.constraint(equalTo: view.centerYAnchor).isActive = true
+        iconView.widthAnchor.constraint(equalToConstant: thumbnailSize.width).isActive = true
+        iconView.heightAnchor.constraint(equalToConstant: thumbnailSize.height).isActive = true
+
+        textView.translatesAutoresizingMaskIntoConstraints = false
+        textView.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: thumbnailMargin * 2 + thumbnailSize.width).isActive = true
+        textView.trailingAnchor.constraint(equalTo: view.trailingAnchor).isActive = true
+        textView.centerYAnchor.constraint(equalTo: view.centerYAnchor).isActive = true
+        textView.font = defaultFont
+        textView.maximumNumberOfLines = 1
+        textView.lineBreakMode = .byTruncatingMiddle
+
+        view.onChangeBackgroundStyle = { style in
+            switch style {
+            case .light:
+                if let iconView = iconView as? FolderIcon {
+                    iconView.selected = false
+                } else if let iconView = iconView as? ColorsFileIcon {
+                    iconView.selected = false
+                } else if let iconView = iconView as? FileIcon {
+                    iconView.selected = false
+                }
+                textView.textColor = .black
+            case .dark:
+                if let iconView = iconView as? FolderIcon {
+                    iconView.selected = true
+                } else if let iconView = iconView as? ColorsFileIcon {
+                    iconView.selected = true
+                } else if let iconView = iconView as? FileIcon {
+                    iconView.selected = true
+                }
+                textView.textColor = .white
+            default:
+                break
+            }
+        }
+
+        return view
+    }
 }

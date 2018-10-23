@@ -99,7 +99,7 @@ class LayerThumbnail {
                     return cached
                 } else {
                     let color = CSTypography.getFontBy(id: font).font.color
-                    let image = template.tinted(color: color)
+                    let image = template.tinted(color: color ?? .black)
                     cache.setObject(image, forKey: cacheKey)
                     return image
                 }

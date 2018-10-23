@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="24px" height="24px" viewBox="0 0 24 24" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <!-- Generator: Sketch 52.2 (67145) - http://www.bohemiancoding.com/sketch -->
+    <title>icon-colors-file</title>
+    <desc>Created with Sketch.</desc>
+    <g id="icon-colors-file" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+        <g id="Group-5" transform="translate(4.000000, 2.000000)">
+            <path d="M1.5,0.5 L8.67157288,0.5 C9.20200585,0.5 9.71071368,0.710713681 10.0857864,1.08578644 L13.9142136,4.91421356 C14.2892863,5.28928632 14.5,5.79799415 14.5,6.32842712 L14.5,18.5 C14.5,19.0522847 14.0522847,19.5 13.5,19.5 L1.5,19.5 C0.94771525,19.5 0.5,19.0522847 0.5,18.5 L0.5,1.5 C0.5,0.94771525 0.94771525,0.5 1.5,0.5 Z" id="Rectangle" stroke="#8C8C8C" fill="#D8D8D8"></path>
+            <path d="M1.5,18.5 L13.5,18.5" id="Line-3-Copy" stroke-opacity="0.2" stroke="#FFFFFF" stroke-linecap="square"></path>
+            <path d="M13.0857864,6.5 L9.5,6.5 C8.94771525,6.5 8.5,6.05228475 8.5,5.5 L8.5,1.91421356 C8.5,1.36192881 8.94771525,0.914213562 9.5,0.914213562 C9.76521649,0.914213562 10.0195704,1.0195704 10.2071068,1.20710678 L13.7928932,4.79289322 C14.1834175,5.18341751 14.1834175,5.81658249 13.7928932,6.20710678 C13.6053568,6.39464316 13.3510029,6.5 13.0857864,6.5 Z" id="Rectangle" stroke="#8C8C8C" fill="#EEEEEE"></path>
+        </g>
+        <rect id="Rectangle" stroke="#8C8C8C" fill="#EEEEEE" x="7.5" y="10.5" width="3" height="3" rx="1"></rect>
+        <rect id="Rectangle-Copy-2" stroke="#8C8C8C" fill="#EEEEEE" x="12.5" y="10.5" width="3" height="3" rx="1"></rect>
+        <rect id="Rectangle-Copy-3" stroke="#8C8C8C" fill="#EEEEEE" x="12.5" y="15.5" width="3" height="3" rx="1"></rect>
+        <rect id="Rectangle-Copy" stroke="#8C8C8C" fill="#EEEEEE" x="7.5" y="15.5" width="3" height="3" rx="1"></rect>
+    </g>
+</svg>

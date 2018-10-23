@@ -151,7 +151,7 @@ public class TextStylePreviewCard: NSBox {
   }
 
   private func update() {
-    borderColor = #colorLiteral(red: 0, green: 0, blue: 0, alpha: 0)
+    borderColor = Colors.transparent
     previewView.fillColor = Colors.grey100
     exampleTextView.attributedStringValue = exampleTextViewTextStyle.apply(to: example)
     textStyleSummaryView.attributedStringValue = textStyleSummaryViewTextStyle.apply(to: textStyleSummary)

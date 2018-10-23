@@ -143,7 +143,7 @@ public class IconRow: NSBox {
   }
 
   private func update() {
-    fillColor = #colorLiteral(red: 0, green: 0, blue: 0, alpha: 0)
+    fillColor = Colors.transparent
     onPress = onClick
     titleView.attributedStringValue = titleViewTextStyle.apply(to: titleText)
     subtitleView.attributedStringValue = subtitleViewTextStyle.apply(to: subtitleText)
