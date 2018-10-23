@@ -14,7 +14,7 @@ You'll also currently need to have _built the Lona compiler_. In Lona Studio pre
 
 > The preferences screen is slightly buggy, so you may need to choose the `Some` dropdown twice.
 
-![Compiler path](https://i.imgur.com/a0RnVwp.png)
+![Compiler path](https://i.imgur.com/4SydQUL.png)
 
 ### How it works
 
