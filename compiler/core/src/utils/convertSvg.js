@@ -12,6 +12,23 @@ const Path = {
     return (1 - t) * v0 + t * v1;
   },
 
+  fromPoints: pointsString => {
+    const points = pointsString.split(" ").reduce((acc, item, index) => {
+      if (index % 2 === 0) {
+        return [...acc, { x: item }];
+      } else {
+        acc[acc.length - 1].y = item;
+        return acc;
+      }
+    }, []);
+
+    let path = points
+      .map((point, index) => `${index === 0 ? "M" : "L"}${point.x} ${point.y}`)
+      .join("");
+
+    return path;
+  },
+
   circularCurveXFirst: (from, to) => {
     const control = BEZIER_CIRCLE_CONTROL;
     const control1 = `${Path.lerp(from.x, to.x, control)} ${from.y}`;
@@ -203,6 +220,10 @@ function numberValue(value, defaultValue = 0) {
   return value;
 }
 
+function joinTransforms(...transforms) {
+  return transforms.filter(x => !!x).join(" ");
+}
+
 // Convert all svg nodes into a simplified JSON structure.
 // Currently, all drawing nodes (rect, circle, polyline) are converted
 // to <path> nodes for simpler rendering.
@@ -239,26 +260,24 @@ function convertChild(child, index, context) {
           strokeLineCap,
           numberValue(strokeOpacity, 1)
         ),
-        convertPath(d, context.transform)
+        convertPath(d, joinTransforms(context.transform, attributes.transform))
       );
     }
     case "polyline": {
-      const { points: rawPoints } = attributes;
+      const { points } = attributes;
 
-      const points = rawPoints.split(" ").reduce((acc, item, index) => {
-        if (index % 2 === 0) {
-          return [...acc, { x: item }];
-        } else {
-          acc[acc.length - 1].y = item;
-          return acc;
-        }
-      }, []);
+      const path = Path.fromPoints(points);
 
-      let path = points
-        .map(
-          (point, index) => `${index === 0 ? "M" : "L"}${point.x} ${point.y}`
-        )
-        .join("");
+      return convertChild(
+        { name: "path", attributes: { d: path, ...attributes } },
+        index,
+        context
+      );
+    }
+    case "polygon": {
+      const { points } = attributes;
+
+      const path = Path.fromPoints(points) + "Z";
 
       return convertChild(
         { name: "path", attributes: { d: path, ...attributes } },
@@ -315,15 +334,11 @@ function convertChild(child, index, context) {
       );
     }
     case "g": {
-      let { transform } = attributes;
-
-      if (transform && context.transform) {
-        transform = context.transform + " " + transform;
-      }
+      const transform = joinTransforms(context.transform, attributes.transform);
 
       return {
         type: "group",
-        context: { ...context, ...attributes }
+        context: { ...context, ...attributes, transform }
       };
     }
     default:
