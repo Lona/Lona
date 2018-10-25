@@ -116,6 +116,20 @@ class CSLayer: CSDataDeserializable, CSDataSerializable, DataNode, NSCopying {
     var parameters: [String: CSData] = [:]
     var metadata: [String: CSData] = [:]
 
+    var descendantLayers: [CSLayer] {
+        var result = [CSLayer]()
+
+        func apply(layer: CSLayer) {
+            result.append(layer)
+
+            layer.children.forEach({ apply(layer: $0) })
+        }
+
+        apply(layer: self)
+
+        return result
+    }
+
     func removeParameter(_ key: String) {
         parameters.removeValue(forKey: key)
     }
