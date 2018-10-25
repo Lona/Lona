@@ -141,37 +141,39 @@ class CSComponent: DataNode, NSCopying {
     }
 
     var layers: [CSLayer] {
-        var result = [CSLayer]()
-
-        func apply(layer: CSLayer) {
-            result.append(layer)
-
-            layer.children.forEach({ apply(layer: $0) })
-        }
-
-        apply(layer: rootLayer)
-
-        return result
+        return rootLayer.descendantLayers
     }
 
-    func getNewLayerName(startingWith prefix: String) -> String {
-        let existing: Int = layers.reduce(0) { (result, layer) in
-            let matches = layer.name.capturedGroups(withRegex: "\(prefix).*(\\d+)")
+    func getNewLayerName(basedOn originalName: String, ignoring existingNames: [String] = []) -> String {
 
-            if matches.isEmpty { return result }
+        let names = layers.map({ $0.name }) + existingNames
 
-            let number = Int(matches[0].value) ?? 0
-
-            return max(number, result)
+        // Try to use the original name
+        if !names.contains(originalName) {
+            return originalName
         }
 
-        if existing == 0 && layers.index(where: { $0.name == prefix }) == nil {
-            return prefix
+        let baseNameGroups = originalName.capturedGroups(withRegex: "^(.*?) ?\\d*$")
+
+        guard let baseName = baseNameGroups.first?.value else {
+            return originalName + " copy"
         }
 
-        let next: String = String(existing + 1)
+        // Try to use the basename without any suffix
+        if !names.contains(baseName) {
+            return baseName
+        }
 
-        return "\(prefix) \(next)"
+        var index = 0
+        var name = baseName
+
+        // Add integer suffixes until we get something unique
+        while names.contains(name) {
+            index += 1
+            name = "\(baseName) \(index)"
+        }
+
+        return name
     }
 
     func toData() -> CSData? {

@@ -226,8 +226,14 @@ extension LayerListOutlineView {
     fileprivate func duplicate(layer: CSLayer) -> CSLayer {
         let copy = layer.copy() as! CSLayer
 
-        if copy is CSComponentLayer {
-            copy.name += " copy"
+        if let component = component {
+            var existingNames: [String] = []
+
+            copy.descendantLayers.forEach { child in
+                let name = component.getNewLayerName(basedOn: child.name, ignoring: existingNames)
+                existingNames.append(name)
+                child.name = name
+            }
         }
 
         add(layer: copy, to: layer)

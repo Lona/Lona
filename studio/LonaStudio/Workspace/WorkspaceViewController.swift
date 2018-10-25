@@ -100,6 +100,9 @@ class WorkspaceViewController: NSSplitViewController {
 
     // Called from the ComponentMenu
     public func addLayer(_ layer: CSLayer) {
+        if let component = component {
+            layer.name = component.getNewLayerName(basedOn: layer.name)
+        }
         componentEditorViewController.addLayer(layer)
     }
 
@@ -802,7 +805,7 @@ extension WorkspaceViewController {
                 let newLayer = CSComponentLayer.make(from: url)
 
                 // Add number suffix if needed
-                newLayer.name = component.getNewLayerName(startingWith: newLayer.name)
+                newLayer.name = component.getNewLayerName(basedOn: newLayer.name)
 
                 componentEditorViewController.addLayer(newLayer)
             }
@@ -825,7 +828,7 @@ extension WorkspaceViewController {
     func addImage() {
         guard let component = component else { return }
 
-        let name = component.getNewLayerName(startingWith: "Image")
+        let name = component.getNewLayerName(basedOn: "Image")
 
         let newLayer = CSLayer(name: name, type: .image, parameters: [
             "width": 100.toData(),
@@ -839,7 +842,7 @@ extension WorkspaceViewController {
     func addVectorGraphic() {
         guard let component = component else { return }
 
-        let name = component.getNewLayerName(startingWith: "VectorGraphic")
+        let name = component.getNewLayerName(basedOn: "VectorGraphic")
 
         let newLayer = CSLayer(name: name, type: .vectorGraphic, parameters: [
             "width": 100.toData(),
@@ -853,7 +856,7 @@ extension WorkspaceViewController {
     func addAnimation() {
         guard let component = component else { return }
 
-        let name = component.getNewLayerName(startingWith: "Animation")
+        let name = component.getNewLayerName(basedOn: "Animation")
 
         let newLayer = CSLayer(name: name, type: .animation, parameters: [
             "width": 100.toData(),
@@ -867,7 +870,7 @@ extension WorkspaceViewController {
     func addView() {
         guard let component = component else { return }
 
-        let name = component.getNewLayerName(startingWith: "View")
+        let name = component.getNewLayerName(basedOn: "View")
 
         let newLayer = CSLayer(name: name, type: .view, parameters: [
             "width": 100.toData(),
@@ -881,7 +884,7 @@ extension WorkspaceViewController {
     func addText() {
         guard let component = component else { return }
 
-        let name = component.getNewLayerName(startingWith: "Text")
+        let name = component.getNewLayerName(basedOn: "Text")
 
         let newLayer = CSLayer(name: name, type: .text, parameters: [
             "text": "Text goes here".toData(),
