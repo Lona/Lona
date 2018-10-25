@@ -22,10 +22,10 @@ let renderReactDom = (colors: list(Color.t), shadowsFile: Shadow.file) => {
               right: Identifier(["colors", color.id]),
             }),
           operator: Plus,
-          right: Literal(LonaValue.string(");")),
+          right: Literal(LonaValue.string(")")),
         })
       | None =>
-        Literal(LonaValue.string(dropShadowString ++ shadow.color ++ ");"))
+        Literal(LonaValue.string(dropShadowString ++ shadow.color ++ ")"))
       };
 
     Property({
