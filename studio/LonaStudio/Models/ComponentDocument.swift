@@ -21,7 +21,15 @@ class ComponentDocument: NSDocument {
         return true
     }
 
+    private var isDuplicating = false
+
+    // Returning nil disables autosaving.
+    // However, duplicate doesn't work correctly if we return nil. Workaround this by returning
+    // the correct documentType if we know we're duplicating.
     override var autosavingFileType: String? {
+        if isDuplicating {
+            return "DocumentType"
+        }
         return nil
     }
 
@@ -47,6 +55,13 @@ class ComponentDocument: NSDocument {
         }
 
         WorkspaceWindowController.create(andAttachTo: self)
+    }
+
+    override func duplicate() throws -> NSDocument {
+        isDuplicating = true
+        defer { isDuplicating = false }
+
+        return try super.duplicate()
     }
 
     override func writeSafely(to url: URL, ofType typeName: String, for saveOperation: NSDocument.SaveOperationType) throws {
