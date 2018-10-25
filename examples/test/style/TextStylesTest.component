@@ -21,6 +21,7 @@
   ],
   "examples" : [
     {
+      "id" : "Default",
       "name" : "Default",
       "params" : {
 
@@ -68,28 +69,58 @@
         "type" : "Lona:Text"
       },
       {
-        "id" : "Text 4",
+        "children" : [
+          {
+            "id" : "Text 4",
+            "params" : {
+              "font" : "headline",
+              "text" : "Text goes here"
+            },
+            "type" : "Lona:Text"
+          }
+        ],
+        "id" : "View 3",
         "params" : {
-          "font" : "headline",
-          "text" : "Text goes here"
+          "alignSelf" : "stretch",
+          "backgroundColor" : "green50"
         },
-        "type" : "Lona:Text"
+        "type" : "Lona:View"
       },
       {
-        "id" : "Text 5",
+        "children" : [
+          {
+            "id" : "Text 5",
+            "params" : {
+              "font" : "subheading2",
+              "text" : "Text goes here"
+            },
+            "type" : "Lona:Text"
+          }
+        ],
+        "id" : "View 1",
         "params" : {
-          "font" : "subheading2",
-          "text" : "Text goes here"
+          "alignSelf" : "stretch",
+          "backgroundColor" : "green100"
         },
-        "type" : "Lona:Text"
+        "type" : "Lona:View"
       },
       {
-        "id" : "Text 6",
+        "children" : [
+          {
+            "id" : "Text 6",
+            "params" : {
+              "font" : "subheading1",
+              "text" : "Text goes here and wraps around when it reaches the end of the text field."
+            },
+            "type" : "Lona:Text"
+          }
+        ],
+        "id" : "View 2",
         "params" : {
-          "font" : "subheading1",
-          "text" : "Text goes here"
+          "alignSelf" : "stretch",
+          "backgroundColor" : "green200"
         },
-        "type" : "Lona:Text"
+        "type" : "Lona:View"
       },
       {
         "id" : "Text 7",
