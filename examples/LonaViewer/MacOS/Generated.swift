@@ -13,6 +13,7 @@ enum Generated: String {
     case vectorAsset = "Vector Asset"
     case vectorLogicActive = "Vector Logic - Active"
     case vectorLogicInactive = "Vector Logic - Inactive"
+    case repeatedVector = "Repeated Vector"
     case nestedComponent = "Nested Component"
     case nestedButtons = "Nested Buttons"
     case button = "Button"
@@ -42,6 +43,7 @@ enum Generated: String {
             vectorAsset,
             vectorLogicActive,
             vectorLogicInactive,
+            repeatedVector,
             nestedComponent,
             nestedButtons,
             button,
@@ -127,6 +129,8 @@ enum Generated: String {
           return VectorLogic(active: true)
         case .vectorLogicInactive:
             return VectorLogic(active: false)
+        case .repeatedVector:
+            return RepeatedVector(active: true)
         }
     }
 
@@ -155,7 +159,8 @@ enum Generated: String {
              .optionals,
              .vectorAsset,
              .vectorLogicActive,
-             .vectorLogicInactive:
+             .vectorLogicInactive,
+             .repeatedVector:
             return [
                 equal(\.topAnchor),
                 equal(\.leftAnchor),
