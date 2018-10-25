@@ -58,6 +58,10 @@ class FileNavigator: NSBox {
 
     // MARK: - Public
 
+    public func reloadData() {
+        fileTree.reloadData()
+    }
+
     public var rootPath: String
 
     public var titleText: String {

@@ -657,6 +657,15 @@ extension WorkspaceViewController {
         createAndShowNewDocument(in: windowController)
     }
 
+    @objc func document(_ doc: NSDocument?, didSave: Bool, contextInfo: UnsafeMutableRawPointer?) {
+        update()
+        fileNavigator.reloadData()
+    }
+
+    @IBAction func saveDocument(_ sender: AnyObject) {
+        document?.save(withDelegate: self, didSave: #selector(document(_:didSave:contextInfo:)), contextInfo: nil)
+    }
+
     @IBAction func zoomToActualSize(_ sender: AnyObject) {
         componentEditorViewController.zoomToActualSize()
     }
