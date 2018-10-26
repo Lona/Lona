@@ -43,6 +43,33 @@ let getVectorAssetUrl = (layer: Types.layer) =>
   | Some(value) => value |> LonaValue.decodeUrl
   };
 
+let allVectorAssets = (rootLayer: Types.layer): list(string) =>
+  rootLayer
+  |> Layer.vectorGraphicLayers
+  |> List.map(getVectorAssetUrl)
+  |> Sequence.dedupe((item, list) => List.mem(item, list));
+
+let allVectorAssignments =
+    (rootLayer: Types.layer, logic: Logic.logicNode, asset: string)
+    : list(Layer.vectorAssignment) => {
+  let layerContainingAsset =
+    rootLayer
+    |> Layer.vectorGraphicLayers
+    |> List.filter(layer => asset == getVectorAssetUrl(layer));
+
+  layerContainingAsset
+  |> List.map(layer => Layer.vectorAssignments(layer, logic))
+  |> List.concat
+  |> Sequence.dedupe((item: Layer.vectorAssignment, list) =>
+       List.exists(
+         (other: Layer.vectorAssignment) =>
+           item.elementName == other.elementName
+           && item.paramKey == other.paramKey,
+         list,
+       )
+     );
+};
+
 /* let paddingParameterNameTranslations = [
      {swiftName: "topPadding", lonaName: PaddingTop},
      {swiftName: "trailingPadding", lonaName: PaddingRight},
