@@ -593,14 +593,6 @@ let generate =
   let {absolute, relative} =
     rootLayer |> importComponents(options.framework, getComponentFile);
 
-  let vectorGraphicLayers =
-    rootLayer |> Layer.flatten |> List.filter(Layer.isVectorGraphicLayer);
-
-  let vectorAssets =
-    vectorGraphicLayers
-    |> List.map(layer => SwiftComponentParameter.getVectorAssetUrl(layer))
-    |> Sequence.dedupe((item, list) => List.mem(item, list));
-
   Ast.(
     Program(
       SwiftDocument.joinGroups(
@@ -628,32 +620,20 @@ let generate =
             }),
           ]
           @ relative,
-          vectorAssets
-          |> List.map(asset => {
-               let layers =
-                 vectorGraphicLayers
-                 |> List.filter(layer =>
-                      asset
-                      == SwiftComponentParameter.getVectorAssetUrl(layer)
-                    );
-               let vectorAssignments =
-                 layers
-                 |> List.map(layer => Layer.vectorAssignments(layer, logic))
-                 |> List.concat
-                 |> Sequence.dedupe((item: Layer.vectorAssignment, list) =>
-                      List.exists(
-                        (other: Layer.vectorAssignment) =>
-                          item.paramKey == other.paramKey,
-                        list,
-                      )
-                    );
+          rootLayer
+          |> SwiftComponentParameter.allVectorAssets
+          |> List.map(asset =>
                JavaScriptSvg.generateVectorGraphic(
                  config,
                  options,
-                 vectorAssignments,
+                 SwiftComponentParameter.allVectorAssignments(
+                   rootLayer,
+                   logic,
+                   asset,
+                 ),
                  asset,
-               );
-             }),
+               )
+             ),
           [
             ExportDefaultDeclaration(
               ClassDeclaration({

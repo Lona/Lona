@@ -74,6 +74,15 @@ let getParameterCategory = (x: ParameterKey.t) =>
   | Visible => Meta
   };
 
+let isViewLayer = (layer: Types.layer) => layer.typeName == Types.View;
+
+let isTextLayer = (layer: Types.layer) => layer.typeName == Types.Text;
+
+let isImageLayer = (layer: Types.layer) => layer.typeName == Types.Image;
+
+let isVectorGraphicLayer = (layer: Types.layer) =>
+  layer.typeName == Types.VectorGraphic;
+
 let flatten = (layer: Types.layer) => {
   let rec inner = (acc, layer: Types.layer) => {
     let children = layer.children;
@@ -320,6 +329,9 @@ let vectorAssignments =
      )
   |> Sequence.compact;
 
+let vectorGraphicLayers = (layer: Types.layer): list(Types.layer) =>
+  layer |> flatten |> List.filter(isVectorGraphicLayer);
+
 let parameterAssignmentsFromLogic = (layer, node) => {
   let identifiers = Logic.assignedIdentifiers(node);
   let updateAssignments = (layerName, propertyName, logicValue, acc) =>
@@ -394,15 +406,6 @@ let parameterMapToLogicValueMap = params =>
   ParameterMap.map(item => Logic.Literal(item), params);
 
 let mapBindings = (f, map) => map |> ParameterMap.bindings |> List.map(f);
-
-let isViewLayer = (layer: Types.layer) => layer.typeName == Types.View;
-
-let isTextLayer = (layer: Types.layer) => layer.typeName == Types.Text;
-
-let isImageLayer = (layer: Types.layer) => layer.typeName == Types.Image;
-
-let isVectorGraphicLayer = (layer: Types.layer) =>
-  layer.typeName == Types.VectorGraphic;
 
 let isComponentLayer = (layer: Types.layer) =>
   switch (layer.typeName) {

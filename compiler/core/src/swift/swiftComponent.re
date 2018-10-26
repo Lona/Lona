@@ -737,14 +737,6 @@ let generate =
   let layerMemberExpression = (layer: Types.layer, statements) =>
     memberOrSelfExpression(parentNameOrSelf(layer), statements);
 
-  let vectorGraphicLayers =
-    nonRootLayers |> List.filter(Layer.isVectorGraphicLayer);
-
-  let vectorAssets =
-    vectorGraphicLayers
-    |> List.map(layer => SwiftComponentParameter.getVectorAssetUrl(layer))
-    |> Sequence.dedupe((item, list) => List.mem(item, list));
-
   let containsImageWithBackgroundColor = () => {
     let hasBackgroundColor = (layer: Types.layer) =>
       Parameter.isAssigned(
@@ -773,32 +765,21 @@ let generate =
           []
       | SwiftOptions.UIKit => []
       },
-      vectorAssets
-      |> List.map(asset => {
-           let layers =
-             vectorGraphicLayers
-             |> List.filter(layer =>
-                  asset == SwiftComponentParameter.getVectorAssetUrl(layer)
-                );
-           let vectorAssignments =
-             layers
-             |> List.map(layer => Layer.vectorAssignments(layer, logic))
-             |> List.concat
-             |> Sequence.dedupe((item: Layer.vectorAssignment, list) =>
-                  List.exists(
-                    (other: Layer.vectorAssignment) =>
-                      item.paramKey == other.paramKey,
-                    list,
-                  )
-                );
+      rootLayer
+      |> SwiftComponentParameter.allVectorAssets
+      |> List.map(asset =>
            SwiftHelperClass.generateVectorGraphic(
              config,
              options,
              swiftOptions,
-             vectorAssignments,
+             SwiftComponentParameter.allVectorAssignments(
+               rootLayer,
+               logic,
+               asset,
+             ),
              asset,
-           );
-         })
+           )
+         )
       |> List.concat,
     ]
     |> List.concat;
