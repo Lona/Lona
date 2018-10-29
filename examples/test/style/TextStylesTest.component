@@ -37,14 +37,6 @@
   "root" : {
     "children" : [
       {
-        "id" : "Text",
-        "params" : {
-          "font" : "display4",
-          "text" : "Text goes here"
-        },
-        "type" : "Lona:Text"
-      },
-      {
         "id" : "Text 1",
         "params" : {
           "font" : "display3",

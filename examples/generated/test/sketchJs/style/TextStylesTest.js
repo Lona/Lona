@@ -12,9 +12,6 @@ export default class TextStylesTest extends React.Component {
 
     return (
       <View style={styles.view}>
-        <Text style={styles.text}>
-          {"Text goes here"}
-        </Text>
         <Text style={styles.text1}>
           {"Text goes here"}
         </Text>
@@ -24,15 +21,23 @@ export default class TextStylesTest extends React.Component {
         <Text style={styles.text3}>
           {"Text goes here"}
         </Text>
-        <Text style={styles.text4}>
-          {"Text goes here"}
-        </Text>
-        <Text style={styles.text5}>
-          {"Text goes here"}
-        </Text>
-        <Text style={styles.text6}>
-          {"Text goes here"}
-        </Text>
+        <View style={styles.view3}>
+          <Text style={styles.text4}>
+            {"Text goes here"}
+          </Text>
+        </View>
+        <View style={styles.view1}>
+          <Text style={styles.text5}>
+            {"Text goes here"}
+          </Text>
+        </View>
+        <View style={styles.view2}>
+          <Text style={styles.text6}>
+            {
+              "Text goes here and wraps around when it reaches the end of the text field."
+            }
+          </Text>
+        </View>
         <Text style={styles.text7}>
           {"Text goes here"}
         </Text>
@@ -51,13 +56,6 @@ let styles = StyleSheet.create({
   view: {
     alignItems: "flex-start",
     alignSelf: "stretch",
-    flex: 0,
-    flexDirection: "column",
-    justifyContent: "flex-start"
-  },
-  text: {
-    ...TextStyles.get("display4"),
-    alignItems: "flex-start",
     flex: 0,
     flexDirection: "column",
     justifyContent: "flex-start"
@@ -83,23 +81,26 @@ let styles = StyleSheet.create({
     flexDirection: "column",
     justifyContent: "flex-start"
   },
-  text4: {
-    ...TextStyles.get("headline"),
+  view3: {
     alignItems: "flex-start",
+    alignSelf: "stretch",
+    backgroundColor: colors.green50,
     flex: 0,
     flexDirection: "column",
     justifyContent: "flex-start"
   },
-  text5: {
-    ...TextStyles.get("subheading2"),
+  view1: {
     alignItems: "flex-start",
+    alignSelf: "stretch",
+    backgroundColor: colors.green100,
     flex: 0,
     flexDirection: "column",
     justifyContent: "flex-start"
   },
-  text6: {
-    ...TextStyles.get("subheading1"),
+  view2: {
     alignItems: "flex-start",
+    alignSelf: "stretch",
+    backgroundColor: colors.green200,
     flex: 0,
     flexDirection: "column",
     justifyContent: "flex-start"
@@ -120,6 +121,27 @@ let styles = StyleSheet.create({
   },
   text9: {
     ...TextStyles.get("caption"),
+    alignItems: "flex-start",
+    flex: 0,
+    flexDirection: "column",
+    justifyContent: "flex-start"
+  },
+  text4: {
+    ...TextStyles.get("headline"),
+    alignItems: "flex-start",
+    flex: 0,
+    flexDirection: "column",
+    justifyContent: "flex-start"
+  },
+  text5: {
+    ...TextStyles.get("subheading2"),
+    alignItems: "flex-start",
+    flex: 0,
+    flexDirection: "column",
+    justifyContent: "flex-start"
+  },
+  text6: {
+    ...TextStyles.get("subheading1"),
     alignItems: "flex-start",
     flex: 0,
     flexDirection: "column",

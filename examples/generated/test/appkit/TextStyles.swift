@@ -29,19 +29,19 @@ class TextStyles {
     family: "Arial",
     weight: NSFont.Weight.regular,
     size: 24,
-    lineHeight: 32,
+    lineHeight: 80,
     color: Colors.grey900)
   public static let subheading2 = TextStyle(
     family: "Arial",
     weight: NSFont.Weight.regular,
     size: 16,
-    lineHeight: 28,
+    lineHeight: 80,
     color: Colors.grey900)
   public static let subheading1 = TextStyle(
     family: "Arial",
     weight: NSFont.Weight.regular,
     size: 16,
-    lineHeight: 24,
+    lineHeight: 120,
     color: Colors.grey900)
   public static let body2 = TextStyle(
     family: "Arial",

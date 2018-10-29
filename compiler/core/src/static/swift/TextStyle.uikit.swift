@@ -91,7 +91,7 @@ public class TextStyle {
     ]
 
     if let lineHeight = lineHeight {
-      attributes[.baselineOffset] = (lineHeight - size) / 4
+      attributes[.baselineOffset] = (lineHeight - uiFont.ascender + uiFont.descender) / 4
     }
 
     if let color = color {

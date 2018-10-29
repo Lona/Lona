@@ -159,7 +159,8 @@ enum Generated: String {
              .vectorAsset,
              .vectorLogicActive,
              .vectorLogicInactive,
-             .repeatedVector:
+             .repeatedVector,
+             .textStylesTest:
             return [
                 equal(\.topAnchor, \.safeAreaLayoutGuide.topAnchor),
                 equal(\.leftAnchor),
