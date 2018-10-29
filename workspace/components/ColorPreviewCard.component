@@ -26,6 +26,16 @@
         "colorName" : "Red 600",
         "selected" : true
       }
+    },
+    {
+      "id" : "Default",
+      "name" : "Default",
+      "params" : {
+        "color" : "red600",
+        "colorCode" : "rgba(255,255,255,0.123)",
+        "colorName" : "Red 600",
+        "selected" : true
+      }
     }
   ],
   "logic" : [
@@ -140,7 +150,6 @@
             "params" : {
               "alignSelf" : "stretch",
               "font" : "regular",
-              "height" : 18,
               "numberOfLines" : 2,
               "text" : "Component"
             },

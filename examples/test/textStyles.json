@@ -43,7 +43,7 @@
       "fontFamily": "Arial",
       "fontWeight": "400",
       "fontSize": 24,
-      "lineHeight": 32,
+      "lineHeight": 80,
       "color": "grey900"
     },
     {
@@ -52,7 +52,7 @@
       "fontFamily": "Arial",
       "fontWeight": "400",
       "fontSize": 16,
-      "lineHeight": 28,
+      "lineHeight": 80,
       "color": "grey900"
     },
     {
@@ -61,7 +61,7 @@
       "fontFamily": "Arial",
       "fontWeight": "400",
       "fontSize": 16,
-      "lineHeight": 24,
+      "lineHeight": 120,
       "color": "grey900"
     },
     {
@@ -81,7 +81,7 @@
       "fontSize": 14,
       "lineHeight": 20,
       "color": "grey900"
-    },    
+    },
     {
       "id": "caption",
       "name": "Caption",

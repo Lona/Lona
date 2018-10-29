@@ -22,18 +22,19 @@ public class TextStylesTest: UIView {
 
   // MARK: Private
 
-  private var textView = UILabel()
   private var text1View = UILabel()
   private var text2View = UILabel()
   private var text3View = UILabel()
+  private var view3View = UIView(frame: .zero)
   private var text4View = UILabel()
+  private var view1View = UIView(frame: .zero)
   private var text5View = UILabel()
+  private var view2View = UIView(frame: .zero)
   private var text6View = UILabel()
   private var text7View = UILabel()
   private var text8View = UILabel()
   private var text9View = UILabel()
 
-  private var textViewTextStyle = TextStyles.display4
   private var text1ViewTextStyle = TextStyles.display3
   private var text2ViewTextStyle = TextStyles.display2
   private var text3ViewTextStyle = TextStyles.display1
@@ -45,31 +46,29 @@ public class TextStylesTest: UIView {
   private var text9ViewTextStyle = TextStyles.caption
 
   private func setUpViews() {
-    textView.numberOfLines = 0
     text1View.numberOfLines = 0
     text2View.numberOfLines = 0
     text3View.numberOfLines = 0
-    text4View.numberOfLines = 0
-    text5View.numberOfLines = 0
-    text6View.numberOfLines = 0
     text7View.numberOfLines = 0
     text8View.numberOfLines = 0
     text9View.numberOfLines = 0
+    text4View.numberOfLines = 0
+    text5View.numberOfLines = 0
+    text6View.numberOfLines = 0
 
-    addSubview(textView)
     addSubview(text1View)
     addSubview(text2View)
     addSubview(text3View)
-    addSubview(text4View)
-    addSubview(text5View)
-    addSubview(text6View)
+    addSubview(view3View)
+    addSubview(view1View)
+    addSubview(view2View)
     addSubview(text7View)
     addSubview(text8View)
     addSubview(text9View)
+    view3View.addSubview(text4View)
+    view1View.addSubview(text5View)
+    view2View.addSubview(text6View)
 
-    textView.attributedText = textViewTextStyle.apply(to: "Text goes here")
-    textViewTextStyle = TextStyles.display4
-    textView.attributedText = textViewTextStyle.apply(to: textView.attributedText ?? NSAttributedString())
     text1View.attributedText = text1ViewTextStyle.apply(to: "Text goes here")
     text1ViewTextStyle = TextStyles.display3
     text1View.attributedText = text1ViewTextStyle.apply(to: text1View.attributedText ?? NSAttributedString())
@@ -79,13 +78,17 @@ public class TextStylesTest: UIView {
     text3View.attributedText = text3ViewTextStyle.apply(to: "Text goes here")
     text3ViewTextStyle = TextStyles.display1
     text3View.attributedText = text3ViewTextStyle.apply(to: text3View.attributedText ?? NSAttributedString())
+    view3View.backgroundColor = Colors.green50
     text4View.attributedText = text4ViewTextStyle.apply(to: "Text goes here")
     text4ViewTextStyle = TextStyles.headline
     text4View.attributedText = text4ViewTextStyle.apply(to: text4View.attributedText ?? NSAttributedString())
+    view1View.backgroundColor = Colors.green100
     text5View.attributedText = text5ViewTextStyle.apply(to: "Text goes here")
     text5ViewTextStyle = TextStyles.subheading2
     text5View.attributedText = text5ViewTextStyle.apply(to: text5View.attributedText ?? NSAttributedString())
-    text6View.attributedText = text6ViewTextStyle.apply(to: "Text goes here")
+    view2View.backgroundColor = Colors.green200
+    text6View.attributedText =
+      text6ViewTextStyle.apply(to: "Text goes here and wraps around when it reaches the end of the text field.")
     text6ViewTextStyle = TextStyles.subheading1
     text6View.attributedText = text6ViewTextStyle.apply(to: text6View.attributedText ?? NSAttributedString())
     text7View.attributedText = text7ViewTextStyle.apply(to: "Text goes here")
@@ -101,21 +104,20 @@ public class TextStylesTest: UIView {
 
   private func setUpConstraints() {
     translatesAutoresizingMaskIntoConstraints = false
-    textView.translatesAutoresizingMaskIntoConstraints = false
     text1View.translatesAutoresizingMaskIntoConstraints = false
     text2View.translatesAutoresizingMaskIntoConstraints = false
     text3View.translatesAutoresizingMaskIntoConstraints = false
-    text4View.translatesAutoresizingMaskIntoConstraints = false
-    text5View.translatesAutoresizingMaskIntoConstraints = false
-    text6View.translatesAutoresizingMaskIntoConstraints = false
+    view3View.translatesAutoresizingMaskIntoConstraints = false
+    view1View.translatesAutoresizingMaskIntoConstraints = false
+    view2View.translatesAutoresizingMaskIntoConstraints = false
     text7View.translatesAutoresizingMaskIntoConstraints = false
     text8View.translatesAutoresizingMaskIntoConstraints = false
     text9View.translatesAutoresizingMaskIntoConstraints = false
+    text4View.translatesAutoresizingMaskIntoConstraints = false
+    text5View.translatesAutoresizingMaskIntoConstraints = false
+    text6View.translatesAutoresizingMaskIntoConstraints = false
 
-    let textViewTopAnchorConstraint = textView.topAnchor.constraint(equalTo: topAnchor)
-    let textViewLeadingAnchorConstraint = textView.leadingAnchor.constraint(equalTo: leadingAnchor)
-    let textViewTrailingAnchorConstraint = textView.trailingAnchor.constraint(lessThanOrEqualTo: trailingAnchor)
-    let text1ViewTopAnchorConstraint = text1View.topAnchor.constraint(equalTo: textView.bottomAnchor)
+    let text1ViewTopAnchorConstraint = text1View.topAnchor.constraint(equalTo: topAnchor)
     let text1ViewLeadingAnchorConstraint = text1View.leadingAnchor.constraint(equalTo: leadingAnchor)
     let text1ViewTrailingAnchorConstraint = text1View.trailingAnchor.constraint(lessThanOrEqualTo: trailingAnchor)
     let text2ViewTopAnchorConstraint = text2View.topAnchor.constraint(equalTo: text1View.bottomAnchor)
@@ -124,16 +126,16 @@ public class TextStylesTest: UIView {
     let text3ViewTopAnchorConstraint = text3View.topAnchor.constraint(equalTo: text2View.bottomAnchor)
     let text3ViewLeadingAnchorConstraint = text3View.leadingAnchor.constraint(equalTo: leadingAnchor)
     let text3ViewTrailingAnchorConstraint = text3View.trailingAnchor.constraint(lessThanOrEqualTo: trailingAnchor)
-    let text4ViewTopAnchorConstraint = text4View.topAnchor.constraint(equalTo: text3View.bottomAnchor)
-    let text4ViewLeadingAnchorConstraint = text4View.leadingAnchor.constraint(equalTo: leadingAnchor)
-    let text4ViewTrailingAnchorConstraint = text4View.trailingAnchor.constraint(lessThanOrEqualTo: trailingAnchor)
-    let text5ViewTopAnchorConstraint = text5View.topAnchor.constraint(equalTo: text4View.bottomAnchor)
-    let text5ViewLeadingAnchorConstraint = text5View.leadingAnchor.constraint(equalTo: leadingAnchor)
-    let text5ViewTrailingAnchorConstraint = text5View.trailingAnchor.constraint(lessThanOrEqualTo: trailingAnchor)
-    let text6ViewTopAnchorConstraint = text6View.topAnchor.constraint(equalTo: text5View.bottomAnchor)
-    let text6ViewLeadingAnchorConstraint = text6View.leadingAnchor.constraint(equalTo: leadingAnchor)
-    let text6ViewTrailingAnchorConstraint = text6View.trailingAnchor.constraint(lessThanOrEqualTo: trailingAnchor)
-    let text7ViewTopAnchorConstraint = text7View.topAnchor.constraint(equalTo: text6View.bottomAnchor)
+    let view3ViewTopAnchorConstraint = view3View.topAnchor.constraint(equalTo: text3View.bottomAnchor)
+    let view3ViewLeadingAnchorConstraint = view3View.leadingAnchor.constraint(equalTo: leadingAnchor)
+    let view3ViewTrailingAnchorConstraint = view3View.trailingAnchor.constraint(equalTo: trailingAnchor)
+    let view1ViewTopAnchorConstraint = view1View.topAnchor.constraint(equalTo: view3View.bottomAnchor)
+    let view1ViewLeadingAnchorConstraint = view1View.leadingAnchor.constraint(equalTo: leadingAnchor)
+    let view1ViewTrailingAnchorConstraint = view1View.trailingAnchor.constraint(equalTo: trailingAnchor)
+    let view2ViewTopAnchorConstraint = view2View.topAnchor.constraint(equalTo: view1View.bottomAnchor)
+    let view2ViewLeadingAnchorConstraint = view2View.leadingAnchor.constraint(equalTo: leadingAnchor)
+    let view2ViewTrailingAnchorConstraint = view2View.trailingAnchor.constraint(equalTo: trailingAnchor)
+    let text7ViewTopAnchorConstraint = text7View.topAnchor.constraint(equalTo: view2View.bottomAnchor)
     let text7ViewLeadingAnchorConstraint = text7View.leadingAnchor.constraint(equalTo: leadingAnchor)
     let text7ViewTrailingAnchorConstraint = text7View.trailingAnchor.constraint(lessThanOrEqualTo: trailingAnchor)
     let text8ViewTopAnchorConstraint = text8View.topAnchor.constraint(equalTo: text7View.bottomAnchor)
@@ -143,11 +145,26 @@ public class TextStylesTest: UIView {
     let text9ViewTopAnchorConstraint = text9View.topAnchor.constraint(equalTo: text8View.bottomAnchor)
     let text9ViewLeadingAnchorConstraint = text9View.leadingAnchor.constraint(equalTo: leadingAnchor)
     let text9ViewTrailingAnchorConstraint = text9View.trailingAnchor.constraint(lessThanOrEqualTo: trailingAnchor)
+    let text4ViewTopAnchorConstraint = text4View.topAnchor.constraint(equalTo: view3View.topAnchor)
+    let text4ViewBottomAnchorConstraint = text4View.bottomAnchor.constraint(equalTo: view3View.bottomAnchor)
+    let text4ViewLeadingAnchorConstraint = text4View.leadingAnchor.constraint(equalTo: view3View.leadingAnchor)
+    let text4ViewTrailingAnchorConstraint = text4View
+      .trailingAnchor
+      .constraint(lessThanOrEqualTo: view3View.trailingAnchor)
+    let text5ViewTopAnchorConstraint = text5View.topAnchor.constraint(equalTo: view1View.topAnchor)
+    let text5ViewBottomAnchorConstraint = text5View.bottomAnchor.constraint(equalTo: view1View.bottomAnchor)
+    let text5ViewLeadingAnchorConstraint = text5View.leadingAnchor.constraint(equalTo: view1View.leadingAnchor)
+    let text5ViewTrailingAnchorConstraint = text5View
+      .trailingAnchor
+      .constraint(lessThanOrEqualTo: view1View.trailingAnchor)
+    let text6ViewTopAnchorConstraint = text6View.topAnchor.constraint(equalTo: view2View.topAnchor)
+    let text6ViewBottomAnchorConstraint = text6View.bottomAnchor.constraint(equalTo: view2View.bottomAnchor)
+    let text6ViewLeadingAnchorConstraint = text6View.leadingAnchor.constraint(equalTo: view2View.leadingAnchor)
+    let text6ViewTrailingAnchorConstraint = text6View
+      .trailingAnchor
+      .constraint(lessThanOrEqualTo: view2View.trailingAnchor)
 
     NSLayoutConstraint.activate([
-      textViewTopAnchorConstraint,
-      textViewLeadingAnchorConstraint,
-      textViewTrailingAnchorConstraint,
       text1ViewTopAnchorConstraint,
       text1ViewLeadingAnchorConstraint,
       text1ViewTrailingAnchorConstraint,
@@ -157,15 +174,15 @@ public class TextStylesTest: UIView {
       text3ViewTopAnchorConstraint,
       text3ViewLeadingAnchorConstraint,
       text3ViewTrailingAnchorConstraint,
-      text4ViewTopAnchorConstraint,
-      text4ViewLeadingAnchorConstraint,
-      text4ViewTrailingAnchorConstraint,
-      text5ViewTopAnchorConstraint,
-      text5ViewLeadingAnchorConstraint,
-      text5ViewTrailingAnchorConstraint,
-      text6ViewTopAnchorConstraint,
-      text6ViewLeadingAnchorConstraint,
-      text6ViewTrailingAnchorConstraint,
+      view3ViewTopAnchorConstraint,
+      view3ViewLeadingAnchorConstraint,
+      view3ViewTrailingAnchorConstraint,
+      view1ViewTopAnchorConstraint,
+      view1ViewLeadingAnchorConstraint,
+      view1ViewTrailingAnchorConstraint,
+      view2ViewTopAnchorConstraint,
+      view2ViewLeadingAnchorConstraint,
+      view2ViewTrailingAnchorConstraint,
       text7ViewTopAnchorConstraint,
       text7ViewLeadingAnchorConstraint,
       text7ViewTrailingAnchorConstraint,
@@ -175,7 +192,19 @@ public class TextStylesTest: UIView {
       text9ViewBottomAnchorConstraint,
       text9ViewTopAnchorConstraint,
       text9ViewLeadingAnchorConstraint,
-      text9ViewTrailingAnchorConstraint
+      text9ViewTrailingAnchorConstraint,
+      text4ViewTopAnchorConstraint,
+      text4ViewBottomAnchorConstraint,
+      text4ViewLeadingAnchorConstraint,
+      text4ViewTrailingAnchorConstraint,
+      text5ViewTopAnchorConstraint,
+      text5ViewBottomAnchorConstraint,
+      text5ViewLeadingAnchorConstraint,
+      text5ViewTrailingAnchorConstraint,
+      text6ViewTopAnchorConstraint,
+      text6ViewBottomAnchorConstraint,
+      text6ViewLeadingAnchorConstraint,
+      text6ViewTrailingAnchorConstraint
     ])
   }
 

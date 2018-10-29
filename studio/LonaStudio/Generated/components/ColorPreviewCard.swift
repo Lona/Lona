@@ -112,7 +112,6 @@ public class ColorPreviewCard: NSBox {
     let colorCodeViewTrailingAnchorConstraint = colorCodeView
       .trailingAnchor
       .constraint(lessThanOrEqualTo: detailsView.trailingAnchor)
-    let colorNameViewHeightAnchorConstraint = colorNameView.heightAnchor.constraint(equalToConstant: 18)
 
     NSLayoutConstraint.activate([
       previewViewTopAnchorConstraint,
@@ -128,8 +127,7 @@ public class ColorPreviewCard: NSBox {
       colorCodeViewBottomAnchorConstraint,
       colorCodeViewTopAnchorConstraint,
       colorCodeViewLeadingAnchorConstraint,
-      colorCodeViewTrailingAnchorConstraint,
-      colorNameViewHeightAnchorConstraint
+      colorCodeViewTrailingAnchorConstraint
     ])
   }
 

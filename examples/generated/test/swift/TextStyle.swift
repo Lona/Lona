@@ -90,6 +90,10 @@ public class TextStyle {
       .paragraphStyle: paragraphStyle
     ]
 
+    if let lineHeight = lineHeight {
+      attributes[.baselineOffset] = (lineHeight - uiFont.ascender + uiFont.descender) / 4
+    }
+
     if let color = color {
       attributes[.foregroundColor] = color
     }

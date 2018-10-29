@@ -58,17 +58,6 @@ func getLayerText(configuredLayer: ConfiguredLayer) -> String {
         for: layer.name).string ?? layer.text ?? ""
 }
 
-func getLayerFontName(configuredLayer: ConfiguredLayer) -> String {
-    let layer = configuredLayer.layer
-    return configuredLayer.config.get(
-        attribute: "textStyle",
-        for: layer.name).string ?? layer.font ?? "regular"
-}
-
-func getLayerFont(configuredLayer: ConfiguredLayer) -> TextStyle {
-    return CSTypography.getFontBy(id: getLayerFontName(configuredLayer: configuredLayer)).font
-}
-
 func numberValue(for configuredLayer: ConfiguredLayer, attributeChain: [String], optionalValues: [Double?] = [], defaultValue: Double = 0) -> Double {
     for attribute in attributeChain {
         let raw = configuredLayer.config.get(attribute: attribute, for: configuredLayer.layer.name)
@@ -85,7 +74,13 @@ func numberValue(for configuredLayer: ConfiguredLayer, attributeChain: [String],
 
 func attributedString(for configuredLayer: ConfiguredLayer) -> NSAttributedString {
     let text = getLayerText(configuredLayer: configuredLayer)
-    let textStyle = getLayerFont(configuredLayer: configuredLayer)
+
+    let textStyleId = configuredLayer.config.get(
+        attribute: "textStyle",
+        for: configuredLayer.layer.name).string ?? configuredLayer.layer.font ?? "regular"
+
+    let textStyle = CSTypography.getFontBy(id: textStyleId).font
+
     var attributeDict = textStyle.attributeDictionary
 
     // Alignment
@@ -307,9 +302,9 @@ func renderBox(configuredLayer: ConfiguredLayer, node: YGNodeRef, options: Rende
             let width = YGNodeLayoutGetWidth(node)
             let height = YGNodeLayoutGetHeight(node)
 //            print("Style width", YGNodeStyleGetWidth(textNode).value)
-            let textLayer = renderTextLayer(configuredLayer: configuredLayer, width: width, height: height)
 
 //            Swift.print("Render text", width, height)
+            let textLayer = renderTextLayer(configuredLayer: configuredLayer, width: width, height: height)
 
             box.frame = NSRect(
                 x: CGFloat(YGNodeLayoutGetLeft(node)),

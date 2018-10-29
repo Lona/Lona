@@ -33,21 +33,21 @@ export default {
     fontFamily: "Arial",
     fontWeight: "400",
     fontSize: 24,
-    lineHeight: 32,
+    lineHeight: 80,
     color: colors.grey900
   },
   subheading2: {
     fontFamily: "Arial",
     fontWeight: "400",
     fontSize: 16,
-    lineHeight: 28,
+    lineHeight: 80,
     color: colors.grey900
   },
   subheading1: {
     fontFamily: "Arial",
     fontWeight: "400",
     fontSize: 16,
-    lineHeight: 24,
+    lineHeight: 120,
     color: colors.grey900
   },
   body2: {
