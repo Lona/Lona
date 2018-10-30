@@ -319,6 +319,30 @@ let getLayoutParameters =
         )
       );
 
+    /* Images inherit width and height */
+    let parameters =
+      ParameterMap.(
+        if (framework == ReactDOM && layer.typeName == Image) {
+          let parameters =
+            switch (layout.width) {
+            | Fixed(_) => parameters
+            | Fill
+            | FitContent =>
+              parameters |> add(MaxWidth, LonaValue.string("100%"))
+            };
+          let parameters =
+            switch (layout.height) {
+            | Fixed(_) => parameters
+            | Fill
+            | FitContent =>
+              parameters |> add(MaxHeight, LonaValue.string("100%"))
+            };
+          parameters;
+        } else {
+          parameters;
+        }
+      );
+
     parameters;
   };
 };

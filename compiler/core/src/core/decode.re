@@ -74,7 +74,17 @@ module Types = {
         };
       Function(arguments, returnType);
     };
-    let referenceType = json => json |> string |> (x => Reference(x));
+    let referenceType = json =>
+      json
+      |> string
+      |> (
+        x =>
+          switch (x) {
+          | "URL" => Types.urlType
+          | "Color" => Types.colorType
+          | _ => Reference(x)
+          }
+      );
     let otherType = json => {
       let name = field("name", string, json);
       switch (name) {
