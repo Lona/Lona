@@ -77,6 +77,16 @@ final class CustomComponentInspectorView: NSStackView {
                 CSValueField.Options.usesYogaLayout: usesYogaLayout
                 ])
             valueField.onChangeData = {[unowned self] data in
+                var data = data
+
+                if case .named("URL", .string) = value.type, let url = URL(string: data.stringValue) {
+                    if let relativePath = url.path.pathRelativeTo(basePath: CSUserPreferences.workspaceURL.path) {
+                        data = ("file://" + relativePath).toData()
+                    } else {
+                        data = url.absoluteString.toData()
+                    }
+                }
+
                 self.onChangeData(data, parameter)
             }
             valueField.view.translatesAutoresizingMaskIntoConstraints = false

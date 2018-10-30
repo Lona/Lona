@@ -260,10 +260,14 @@ let rec layerToJavaScriptAST =
     |> removeSpecialParams
     |> Layer.mapBindings(((key, value)) => {
          let key =
-           switch (framework) {
-           | JavaScriptOptions.ReactDOM =>
-             key |> ReactDomTranslators.variableNames
-           | _ => key |> ReactNativeTranslators.variableNames
+           if (Layer.isPrimitiveTypeName(layer.typeName)) {
+             switch (framework) {
+             | JavaScriptOptions.ReactDOM =>
+               key |> ReactDomTranslators.variableNames
+             | _ => key |> ReactNativeTranslators.variableNames
+             };
+           } else {
+             key |> ParameterKey.toString;
            };
 
          let attributeValue =

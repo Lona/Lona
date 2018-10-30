@@ -32,7 +32,9 @@ type t =
   | BorderColor
   | Shadow
   | Width
+  | MaxWidth
   | Height
+  | MaxHeight
   /* Interactivity */
   | Pressed
   | Hovered
@@ -71,7 +73,9 @@ let fromString = string =>
   | "borderColor" => BorderColor
   | "shadow" => Shadow
   | "width" => Width
+  | "maxWidth" => Width
   | "height" => Height
+  | "maxHeight" => Height
   /* Interactivity */
   | "pressed" => Pressed
   | "hovered" => Hovered
@@ -112,7 +116,9 @@ let toString = key =>
   | BorderColor => "borderColor"
   | Shadow => "shadow"
   | Width => "width"
+  | MaxWidth => "maxWidth"
   | Height => "height"
+  | MaxHeight => "maxHeight"
   /* Interactivity */
   | Pressed => "pressed"
   | Hovered => "hovered"

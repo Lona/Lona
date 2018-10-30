@@ -52,7 +52,9 @@ let getParameterCategory = (x: ParameterKey.t) =>
   | PaddingBottom => Style
   | PaddingLeft => Style
   | Width => Style
+  | MaxWidth => Style
   | Height => Style
+  | MaxHeight => Style
   | BackgroundColor => Style
   | BorderColor => Style
   | BorderRadius => Style
