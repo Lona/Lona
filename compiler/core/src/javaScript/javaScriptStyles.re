@@ -319,7 +319,8 @@ let getLayoutParameters =
         )
       );
 
-    /* Images inherit width and height */
+    /* Images should not expand outside their parent, even if their natural size
+       exceeds the size of their parent. */
     let parameters =
       ParameterMap.(
         if (framework == ReactDOM && layer.typeName == Image) {
