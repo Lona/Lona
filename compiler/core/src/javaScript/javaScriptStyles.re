@@ -369,6 +369,44 @@ let getStylePropertyWithUnits =
   | (_, _) => getStyleProperty(framework, key, colors, value)
   };
 
+let handleNumberOfLines =
+    (framework: JavaScriptOptions.framework, config: Config.t, parameters) =>
+  switch (
+    framework,
+    ParameterMap.find_opt(ParameterKey.NumberOfLines, parameters),
+  ) {
+  | (JavaScriptOptions.ReactDOM, Some(lineCount)) =>
+    open Monads;
+    let lineHeight =
+      switch (
+        ParameterMap.find_opt(ParameterKey.TextStyle, parameters)
+        >>= (
+          (item: Types.lonaValue) =>
+            TextStyle.find(
+              config.textStylesFile.contents.styles,
+              item.data |> Json.Decode.string,
+            )
+        )
+        >>= ((textStyle: TextStyle.t) => textStyle.lineHeight)
+      ) {
+      | Some(lineHeight) => lineHeight
+      | None => 0.0
+      };
+
+    parameters
+    |> ParameterMap.remove(ParameterKey.NumberOfLines)
+    |> ParameterMap.add(
+         ParameterKey.Display,
+         LonaValue.string("inline-block"),
+       )
+    |> ParameterMap.add(ParameterKey.Overflow, LonaValue.string("hidden"))
+    |> ParameterMap.add(
+         ParameterKey.MaxHeight,
+         LonaValue.number(Json.Decode.float(lineCount.data) *. lineHeight),
+       );
+  | (_, _) => parameters
+  };
+
 let createStyleObjectForLayer =
     (
       config: Config.t,
@@ -383,7 +421,6 @@ let createStyleObjectForLayer =
   let replacedKeys = [
     ParameterKey.AlignItems,
     ParameterKey.AlignSelf,
-    ParameterKey.Display,
     ParameterKey.Flex,
     ParameterKey.FlexDirection,
     ParameterKey.JustifyContent,
@@ -395,6 +432,7 @@ let createStyleObjectForLayer =
       value:
         ObjectLiteral(
           layer.parameters
+          |> handleNumberOfLines(framework, config)
           |> ParameterMap.filter((key, _) => Layer.parameterIsStyle(key))
           /* Remove layout parameters stored in the component file */
           |> ParameterMap.filter((key, _) => !List.mem(key, replacedKeys))

@@ -56,7 +56,6 @@ public class TextAlignment: UIView {
   private var text10ViewTextStyle = TextStyles.body1.with(alignment: .center)
 
   private func setUpViews() {
-    textView.numberOfLines = 0
     text1View.numberOfLines = 0
     text2View.numberOfLines = 0
     text3View.numberOfLines = 0
@@ -95,6 +94,7 @@ public class TextAlignment: UIView {
     textView.attributedText = textViewTextStyle.apply(to: "Welcome to Lona Studio")
     textViewTextStyle = TextStyles.display1.with(alignment: .center)
     textView.attributedText = textViewTextStyle.apply(to: textView.attributedText ?? NSAttributedString())
+    textView.numberOfLines = 2
     text1View.attributedText = text1ViewTextStyle.apply(to: "Centered - Width: Fit")
     text1ViewTextStyle = TextStyles.subheading2.with(alignment: .center)
     text1View.attributedText = text1ViewTextStyle.apply(to: text1View.attributedText ?? NSAttributedString())

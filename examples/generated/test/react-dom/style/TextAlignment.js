@@ -164,10 +164,13 @@ let styles = {
     ...textStyles.display1,
     alignItems: "flex-start",
     alignSelf: "stretch",
+    display: "inline-block",
     flex: "0 0 auto",
     flexDirection: "column",
     justifyContent: "flex-start",
-    marginTop: "16px"
+    marginTop: "16px",
+    overflow: "hidden",
+    maxHeight: "80px"
   },
   text1: {
     textAlign: "center",

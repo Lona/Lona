@@ -45,7 +45,8 @@
               "alignSelf" : "stretch",
               "text" : "Welcome to Lona Studio",
               "textAlign" : "center",
-              "font" : "display1"
+              "font" : "display1",
+              "numberOfLines" : 2
             }
           },
           {

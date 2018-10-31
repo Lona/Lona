@@ -227,11 +227,13 @@ let rec layerToJavaScriptAST =
   let removeSpecialParams = params =>
     params
     |> ParameterMap.filter((key: ParameterKey.t, _) =>
-         switch (key) {
-         | ParameterKey.Text => false
-         | ParameterKey.Visible => false
-         | ParameterKey.Image when layer.typeName == VectorGraphic => false
-         | _ => true
+         switch (key, framework) {
+         | (ParameterKey.NumberOfLines, JavaScriptOptions.ReactDOM) => false
+         | (ParameterKey.Text, _) => false
+         | (ParameterKey.Visible, _) => false
+         | (ParameterKey.Image, _) when layer.typeName == VectorGraphic =>
+           false
+         | (_, _) => true
          }
        );
   let (_, mainParams) =

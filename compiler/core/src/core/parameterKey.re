@@ -23,6 +23,7 @@ type t =
   | MarginRight
   | MarginBottom
   | MarginLeft
+  | Overflow
   | PaddingTop
   | PaddingRight
   | PaddingBottom
@@ -64,6 +65,7 @@ let fromString = string =>
   | "marginRight" => MarginRight
   | "marginBottom" => MarginBottom
   | "marginLeft" => MarginLeft
+  | "overflow" => Overflow
   | "paddingTop" => PaddingTop
   | "paddingRight" => PaddingRight
   | "paddingBottom" => PaddingBottom
@@ -107,6 +109,7 @@ let toString = key =>
   | MarginRight => "marginRight"
   | MarginBottom => "marginBottom"
   | MarginLeft => "marginLeft"
+  | Overflow => "overflow"
   | PaddingTop => "paddingTop"
   | PaddingRight => "paddingRight"
   | PaddingBottom => "paddingBottom"
