@@ -376,7 +376,7 @@ let handleNumberOfLines =
     ParameterMap.find_opt(ParameterKey.NumberOfLines, parameters),
   ) {
   | (JavaScriptOptions.ReactDOM, Some(lineCount)) =>
-    open Monads;
+    open Monad;
     let lineHeight =
       switch (
         ParameterMap.find_opt(ParameterKey.TextStyle, parameters)

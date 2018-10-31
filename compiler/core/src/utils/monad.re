@@ -4,4 +4,4 @@ let bindOption = (f: 'a => option('b), value: option('a)): option('b) =>
   | Some(a) => f(a)
   };
 
-let (>>=) = (x, y) => x |> (y |> bindOption);
+let (>>=) = (x, y) => bindOption(y, x);
