@@ -61,6 +61,7 @@ let styles = {
   text1: {
     ...textStyles.display3,
     alignItems: "flex-start",
+    display: "block",
     flex: "0 0 auto",
     flexDirection: "column",
     justifyContent: "flex-start"
@@ -68,6 +69,7 @@ let styles = {
   text2: {
     ...textStyles.display2,
     alignItems: "flex-start",
+    display: "block",
     flex: "0 0 auto",
     flexDirection: "column",
     justifyContent: "flex-start"
@@ -75,6 +77,7 @@ let styles = {
   text3: {
     ...textStyles.display1,
     alignItems: "flex-start",
+    display: "block",
     flex: "0 0 auto",
     flexDirection: "column",
     justifyContent: "flex-start"
@@ -109,6 +112,7 @@ let styles = {
   text7: {
     ...textStyles.body2,
     alignItems: "flex-start",
+    display: "block",
     flex: "0 0 auto",
     flexDirection: "column",
     justifyContent: "flex-start"
@@ -116,6 +120,7 @@ let styles = {
   text8: {
     ...textStyles.body1,
     alignItems: "flex-start",
+    display: "block",
     flex: "0 0 auto",
     flexDirection: "column",
     justifyContent: "flex-start"
@@ -123,6 +128,7 @@ let styles = {
   text9: {
     ...textStyles.caption,
     alignItems: "flex-start",
+    display: "block",
     flex: "0 0 auto",
     flexDirection: "column",
     justifyContent: "flex-start"
@@ -130,6 +136,7 @@ let styles = {
   text4: {
     ...textStyles.headline,
     alignItems: "flex-start",
+    display: "block",
     flex: "0 0 auto",
     flexDirection: "column",
     justifyContent: "flex-start"
@@ -137,6 +144,7 @@ let styles = {
   text5: {
     ...textStyles.subheading2,
     alignItems: "flex-start",
+    display: "block",
     flex: "0 0 auto",
     flexDirection: "column",
     justifyContent: "flex-start"
@@ -144,6 +152,7 @@ let styles = {
   text6: {
     ...textStyles.subheading1,
     alignItems: "flex-start",
+    display: "block",
     flex: "0 0 auto",
     flexDirection: "column",
     justifyContent: "flex-start"

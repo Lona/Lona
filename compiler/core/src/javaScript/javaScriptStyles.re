@@ -93,7 +93,10 @@ let defaultStyles =
 
   let defaults =
     switch (framework, layerType) {
-    | (JavaScriptOptions.ReactDOM, Types.Text) => defaults
+    | (JavaScriptOptions.ReactDOM, Types.Text) =>
+      ParameterMap.(
+        defaults |> add(ParameterKey.Display, LonaValue.string("block"))
+      )
     | (JavaScriptOptions.ReactDOM, _) =>
       ParameterMap.(
         defaults |> add(ParameterKey.Display, LonaValue.string("flex"))
@@ -395,10 +398,6 @@ let handleNumberOfLines =
 
     parameters
     |> ParameterMap.remove(ParameterKey.NumberOfLines)
-    |> ParameterMap.add(
-         ParameterKey.Display,
-         LonaValue.string("inline-block"),
-       )
     |> ParameterMap.add(ParameterKey.Overflow, LonaValue.string("hidden"))
     |> ParameterMap.add(
          ParameterKey.MaxHeight,

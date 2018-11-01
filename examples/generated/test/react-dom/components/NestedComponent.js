@@ -48,6 +48,7 @@ let styles = {
   text: {
     ...textStyles.subheading2,
     alignItems: "flex-start",
+    display: "block",
     flex: "0 0 auto",
     flexDirection: "column",
     justifyContent: "flex-start",
@@ -64,6 +65,7 @@ let styles = {
   text1: {
     ...textStyles.body1,
     alignItems: "flex-start",
+    display: "block",
     flex: "0 0 auto",
     flexDirection: "column",
     justifyContent: "flex-start",
@@ -80,6 +82,7 @@ let styles = {
   text2: {
     ...textStyles.body1,
     alignItems: "flex-start",
+    display: "block",
     flex: "0 0 auto",
     flexDirection: "column",
     justifyContent: "flex-start"

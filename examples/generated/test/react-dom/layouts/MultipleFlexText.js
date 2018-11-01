@@ -67,6 +67,7 @@ let styles = {
     ...textStyles.body1,
     alignItems: "flex-start",
     alignSelf: "stretch",
+    display: "block",
     flex: "0 0 auto",
     flexDirection: "column",
     justifyContent: "flex-start"
@@ -83,6 +84,7 @@ let styles = {
     ...textStyles.body1,
     alignItems: "flex-start",
     alignSelf: "stretch",
+    display: "block",
     flex: "0 0 auto",
     flexDirection: "column",
     justifyContent: "flex-start"

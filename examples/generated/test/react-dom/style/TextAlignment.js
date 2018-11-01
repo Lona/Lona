@@ -164,7 +164,7 @@ let styles = {
     ...textStyles.display1,
     alignItems: "flex-start",
     alignSelf: "stretch",
-    display: "inline-block",
+    display: "block",
     flex: "0 0 auto",
     flexDirection: "column",
     justifyContent: "flex-start",
@@ -176,6 +176,7 @@ let styles = {
     textAlign: "center",
     ...textStyles.subheading2,
     alignItems: "flex-start",
+    display: "block",
     flex: "0 0 auto",
     flexDirection: "column",
     justifyContent: "flex-start",
@@ -185,6 +186,7 @@ let styles = {
     ...textStyles.body1,
     alignItems: "flex-start",
     alignSelf: "stretch",
+    display: "block",
     flex: "0 0 auto",
     flexDirection: "column",
     justifyContent: "flex-start",
@@ -195,6 +197,7 @@ let styles = {
     ...textStyles.body1,
     alignItems: "flex-start",
     alignSelf: "stretch",
+    display: "block",
     flex: "0 0 auto",
     flexDirection: "column",
     justifyContent: "flex-start"
@@ -203,6 +206,7 @@ let styles = {
     textAlign: "center",
     ...textStyles.body1,
     alignItems: "flex-start",
+    display: "block",
     flex: "0 0 auto",
     flexDirection: "column",
     justifyContent: "flex-start",
@@ -211,6 +215,7 @@ let styles = {
   text5: {
     ...textStyles.body1,
     alignItems: "flex-start",
+    display: "block",
     flex: "0 0 auto",
     flexDirection: "column",
     justifyContent: "flex-start"
@@ -218,6 +223,7 @@ let styles = {
   text6: {
     ...textStyles.body1,
     alignItems: "flex-start",
+    display: "block",
     flex: "0 0 auto",
     flexDirection: "column",
     justifyContent: "flex-start"
@@ -226,6 +232,7 @@ let styles = {
     textAlign: "center",
     ...textStyles.body1,
     alignItems: "flex-start",
+    display: "block",
     flex: "0 0 auto",
     flexDirection: "column",
     justifyContent: "flex-start"
@@ -235,6 +242,7 @@ let styles = {
     ...textStyles.body1,
     alignItems: "flex-start",
     alignSelf: "stretch",
+    display: "block",
     flex: "0 0 auto",
     flexDirection: "column",
     justifyContent: "flex-start"
@@ -242,6 +250,7 @@ let styles = {
   text9: {
     ...textStyles.body1,
     alignItems: "flex-start",
+    display: "block",
     flex: "0 0 auto",
     flexDirection: "column",
     justifyContent: "flex-start"
@@ -251,6 +260,7 @@ let styles = {
     ...textStyles.body1,
     alignItems: "flex-start",
     alignSelf: "stretch",
+    display: "block",
     flex: "0 0 auto",
     flexDirection: "column",
     justifyContent: "flex-start"
