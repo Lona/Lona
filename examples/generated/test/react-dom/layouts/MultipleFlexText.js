@@ -64,9 +64,11 @@ let styles = {
     justifyContent: "flex-start"
   },
   text: {
+    textAlign: "left",
     ...textStyles.body1,
     alignItems: "flex-start",
     alignSelf: "stretch",
+    display: "block",
     flex: "0 0 auto",
     flexDirection: "column",
     justifyContent: "flex-start"
@@ -80,9 +82,11 @@ let styles = {
     justifyContent: "flex-start"
   },
   text1: {
+    textAlign: "left",
     ...textStyles.body1,
     alignItems: "flex-start",
     alignSelf: "stretch",
+    display: "block",
     flex: "0 0 auto",
     flexDirection: "column",
     justifyContent: "flex-start"

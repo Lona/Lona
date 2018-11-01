@@ -8,6 +8,8 @@ let isUnitNumberParameter = key =>
   | ParameterKey.MarginTop => true
   | ParameterKey.MarginRight => true
   | ParameterKey.MarginBottom => true
+  | ParameterKey.MaxHeight => true
+  | ParameterKey.MaxWidth => true
   | ParameterKey.MarginLeft => true
   | ParameterKey.PaddingTop => true
   | ParameterKey.PaddingRight => true

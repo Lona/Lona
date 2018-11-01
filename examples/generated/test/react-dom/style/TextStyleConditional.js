@@ -32,8 +32,10 @@ let styles = {
     justifyContent: "flex-start"
   },
   text: {
+    textAlign: "left",
     ...textStyles.headline,
     alignItems: "flex-start",
+    display: "block",
     flex: "0 0 auto",
     flexDirection: "column",
     justifyContent: "flex-start"

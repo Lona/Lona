@@ -119,6 +119,7 @@ public class TextAlignment: NSBox {
     textView.attributedStringValue = textViewTextStyle.apply(to: "Welcome to Lona Studio")
     textViewTextStyle = TextStyles.display1.with(alignment: .center)
     textView.attributedStringValue = textViewTextStyle.apply(to: textView.attributedStringValue)
+    textView.maximumNumberOfLines = 2
     text1View.attributedStringValue = text1ViewTextStyle.apply(to: "Centered - Width: Fit")
     text1ViewTextStyle = TextStyles.subheading2.with(alignment: .center)
     text1View.attributedStringValue = text1ViewTextStyle.apply(to: text1View.attributedStringValue)

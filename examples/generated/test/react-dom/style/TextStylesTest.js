@@ -59,22 +59,28 @@ let styles = {
     justifyContent: "flex-start"
   },
   text1: {
+    textAlign: "left",
     ...textStyles.display3,
     alignItems: "flex-start",
+    display: "block",
     flex: "0 0 auto",
     flexDirection: "column",
     justifyContent: "flex-start"
   },
   text2: {
+    textAlign: "left",
     ...textStyles.display2,
     alignItems: "flex-start",
+    display: "block",
     flex: "0 0 auto",
     flexDirection: "column",
     justifyContent: "flex-start"
   },
   text3: {
+    textAlign: "left",
     ...textStyles.display1,
     alignItems: "flex-start",
+    display: "block",
     flex: "0 0 auto",
     flexDirection: "column",
     justifyContent: "flex-start"
@@ -107,43 +113,55 @@ let styles = {
     justifyContent: "flex-start"
   },
   text7: {
+    textAlign: "left",
     ...textStyles.body2,
     alignItems: "flex-start",
+    display: "block",
     flex: "0 0 auto",
     flexDirection: "column",
     justifyContent: "flex-start"
   },
   text8: {
+    textAlign: "left",
     ...textStyles.body1,
     alignItems: "flex-start",
+    display: "block",
     flex: "0 0 auto",
     flexDirection: "column",
     justifyContent: "flex-start"
   },
   text9: {
+    textAlign: "left",
     ...textStyles.caption,
     alignItems: "flex-start",
+    display: "block",
     flex: "0 0 auto",
     flexDirection: "column",
     justifyContent: "flex-start"
   },
   text4: {
+    textAlign: "left",
     ...textStyles.headline,
     alignItems: "flex-start",
+    display: "block",
     flex: "0 0 auto",
     flexDirection: "column",
     justifyContent: "flex-start"
   },
   text5: {
+    textAlign: "left",
     ...textStyles.subheading2,
     alignItems: "flex-start",
+    display: "block",
     flex: "0 0 auto",
     flexDirection: "column",
     justifyContent: "flex-start"
   },
   text6: {
+    textAlign: "left",
     ...textStyles.subheading1,
     alignItems: "flex-start",
+    display: "block",
     flex: "0 0 auto",
     flexDirection: "column",
     justifyContent: "flex-start"

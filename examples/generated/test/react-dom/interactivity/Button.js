@@ -54,8 +54,10 @@ let styles = {
     paddingLeft: "16px"
   },
   text: {
+    textAlign: "left",
     ...textStyles.button,
     alignItems: "flex-start",
+    display: "block",
     flex: "0 0 auto",
     flexDirection: "column",
     justifyContent: "flex-start"

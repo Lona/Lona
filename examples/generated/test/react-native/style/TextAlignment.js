@@ -18,7 +18,7 @@ export default class TextAlignment extends React.Component {
 
           />
           <View style={styles.view2} />
-          <Text style={styles.text}>
+          <Text style={styles.text} numberOfLines={2}>
             {"Welcome to Lona Studio"}
           </Text>
           <Text style={styles.text1}>

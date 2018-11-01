@@ -47,6 +47,7 @@ let getParameterCategory = (x: ParameterKey.t) =>
   | MarginRight => Style
   | MarginBottom => Style
   | MarginLeft => Style
+  | Overflow => Style
   | PaddingTop => Style
   | PaddingRight => Style
   | PaddingBottom => Style
