@@ -86,6 +86,7 @@ let styles = {
     height: "100px"
   },
   innerText: {
+    textAlign: "left",
     ...textStyles.headline,
     alignItems: "flex-start",
     display: "block",

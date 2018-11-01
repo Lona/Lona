@@ -57,6 +57,7 @@ let styles = {
     justifyContent: "flex-start"
   },
   label: {
+    textAlign: "left",
     ...textStyles.body1,
     alignItems: "flex-start",
     display: "block",
@@ -65,6 +66,7 @@ let styles = {
     justifyContent: "flex-start"
   },
   stringParam: {
+    textAlign: "left",
     ...textStyles.body1,
     alignItems: "flex-start",
     display: "block",

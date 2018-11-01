@@ -75,6 +75,7 @@ let styles = {
     width: "100px"
   },
   text: {
+    textAlign: "left",
     ...textStyles.body1,
     alignItems: "flex-start",
     display: "block",

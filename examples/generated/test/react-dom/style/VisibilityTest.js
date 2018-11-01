@@ -38,6 +38,7 @@ let styles = {
     height: "100px"
   },
   title: {
+    textAlign: "left",
     ...textStyles.body1,
     alignItems: "flex-start",
     display: "block",

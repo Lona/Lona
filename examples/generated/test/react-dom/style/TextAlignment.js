@@ -183,6 +183,7 @@ let styles = {
     marginTop: "16px"
   },
   text2: {
+    textAlign: "left",
     ...textStyles.body1,
     alignItems: "flex-start",
     alignSelf: "stretch",
@@ -213,6 +214,7 @@ let styles = {
     width: "80px"
   },
   text5: {
+    textAlign: "left",
     ...textStyles.body1,
     alignItems: "flex-start",
     display: "block",
@@ -221,6 +223,7 @@ let styles = {
     justifyContent: "flex-start"
   },
   text6: {
+    textAlign: "left",
     ...textStyles.body1,
     alignItems: "flex-start",
     display: "block",
@@ -248,6 +251,7 @@ let styles = {
     justifyContent: "flex-start"
   },
   text9: {
+    textAlign: "left",
     ...textStyles.body1,
     alignItems: "flex-start",
     display: "block",

@@ -46,6 +46,7 @@ let styles = {
     paddingLeft: "10px"
   },
   text: {
+    textAlign: "left",
     ...textStyles.subheading2,
     alignItems: "flex-start",
     display: "block",
@@ -63,6 +64,7 @@ let styles = {
     justifyContent: "flex-start"
   },
   text1: {
+    textAlign: "left",
     ...textStyles.body1,
     alignItems: "flex-start",
     display: "block",
@@ -80,6 +82,7 @@ let styles = {
     justifyContent: "flex-start"
   },
   text2: {
+    textAlign: "left",
     ...textStyles.body1,
     alignItems: "flex-start",
     display: "block",

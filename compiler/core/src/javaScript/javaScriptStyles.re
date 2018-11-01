@@ -95,7 +95,9 @@ let defaultStyles =
     switch (framework, layerType) {
     | (JavaScriptOptions.ReactDOM, Types.Text) =>
       ParameterMap.(
-        defaults |> add(ParameterKey.Display, LonaValue.string("block"))
+        defaults
+        |> add(ParameterKey.Display, LonaValue.string("block"))
+        |> add(ParameterKey.TextAlign, LonaValue.string("left"))
       )
     | (JavaScriptOptions.ReactDOM, _) =>
       ParameterMap.(

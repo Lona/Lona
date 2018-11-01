@@ -29,6 +29,7 @@ let styles = {
     justifyContent: "flex-start"
   },
   text: {
+    textAlign: "left",
     ...textStyles.body1,
     alignItems: "flex-start",
     display: "block",
