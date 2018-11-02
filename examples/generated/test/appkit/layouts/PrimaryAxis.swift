@@ -24,7 +24,7 @@ public class PrimaryAxis: NSBox {
 
   private var fixedView = NSBox()
   private var fitView = NSBox()
-  private var textView = NSTextField(labelWithString: "")
+  private var textView = LNATextField(labelWithString: "")
   private var fill1View = NSBox()
   private var fill2View = NSBox()
 

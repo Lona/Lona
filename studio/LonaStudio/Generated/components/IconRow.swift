@@ -50,8 +50,8 @@ public class IconRow: NSBox {
 
   private var imageView = NSImageView()
   private var rowContentView = NSBox()
-  private var titleView = NSTextField(labelWithString: "")
-  private var subtitleView = NSTextField(labelWithString: "")
+  private var titleView = LNATextField(labelWithString: "")
+  private var subtitleView = LNATextField(labelWithString: "")
 
   private var titleViewTextStyle = TextStyles.largeSemibold
   private var subtitleViewTextStyle = TextStyles.regularMuted

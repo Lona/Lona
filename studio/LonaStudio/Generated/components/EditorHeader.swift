@@ -40,8 +40,8 @@ public class EditorHeader: NSBox {
 
   private var innerView = NSBox()
   private var imageView = NSImageView()
-  private var titleView = NSTextField(labelWithString: "")
-  private var subtitleView = NSTextField(labelWithString: "")
+  private var titleView = LNATextField(labelWithString: "")
+  private var subtitleView = LNATextField(labelWithString: "")
   private var dividerView = NSBox()
 
   private var titleViewTextStyle = TextStyles.regular

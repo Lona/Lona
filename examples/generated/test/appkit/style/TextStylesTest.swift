@@ -22,18 +22,18 @@ public class TextStylesTest: NSBox {
 
   // MARK: Private
 
-  private var text1View = NSTextField(labelWithString: "")
-  private var text2View = NSTextField(labelWithString: "")
-  private var text3View = NSTextField(labelWithString: "")
+  private var text1View = LNATextField(labelWithString: "")
+  private var text2View = LNATextField(labelWithString: "")
+  private var text3View = LNATextField(labelWithString: "")
   private var view3View = NSBox()
-  private var text4View = NSTextField(labelWithString: "")
+  private var text4View = LNATextField(labelWithString: "")
   private var view1View = NSBox()
-  private var text5View = NSTextField(labelWithString: "")
+  private var text5View = LNATextField(labelWithString: "")
   private var view2View = NSBox()
-  private var text6View = NSTextField(labelWithString: "")
-  private var text7View = NSTextField(labelWithString: "")
-  private var text8View = NSTextField(labelWithString: "")
-  private var text9View = NSTextField(labelWithString: "")
+  private var text6View = LNATextField(labelWithString: "")
+  private var text7View = LNATextField(labelWithString: "")
+  private var text8View = LNATextField(labelWithString: "")
+  private var text9View = LNATextField(labelWithString: "")
 
   private var text1ViewTextStyle = TextStyles.display3
   private var text2ViewTextStyle = TextStyles.display2

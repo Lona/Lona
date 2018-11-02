@@ -24,10 +24,10 @@ public class MultipleFlexText: NSBox {
 
   private var view1View = NSBox()
   private var view3View = NSBox()
-  private var textView = NSTextField(labelWithString: "")
+  private var textView = LNATextField(labelWithString: "")
   private var view2View = NSBox()
   private var view4View = NSBox()
-  private var text1View = NSTextField(labelWithString: "")
+  private var text1View = LNATextField(labelWithString: "")
 
   private var textViewTextStyle = TextStyles.body1
   private var text1ViewTextStyle = TextStyles.body1

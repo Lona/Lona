@@ -22,11 +22,11 @@ public class NestedComponent: NSBox {
 
   // MARK: Private
 
-  private var textView = NSTextField(labelWithString: "")
+  private var textView = LNATextField(labelWithString: "")
   private var fitContentParentSecondaryChildrenView = FitContentParentSecondaryChildren()
-  private var text1View = NSTextField(labelWithString: "")
+  private var text1View = LNATextField(labelWithString: "")
   private var localAssetView = LocalAsset()
-  private var text2View = NSTextField(labelWithString: "")
+  private var text2View = LNATextField(labelWithString: "")
 
   private var textViewTextStyle = TextStyles.subheading2
   private var text1ViewTextStyle = TextStyles.body1

@@ -66,6 +66,7 @@
 		6B39170621643C7C00B20F9E /* Shadows.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6B39170521643C7C00B20F9E /* Shadows.swift */; };
 		6B39170821643EF300B20F9E /* ShadowsTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6B39170721643EF300B20F9E /* ShadowsTest.swift */; };
 		6B39170A2164492600B20F9E /* Shadow.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6B3917092164492600B20F9E /* Shadow.swift */; };
+		6B6D4423218BCF150016262C /* LNATextField.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6B6D4422218BCF150016262C /* LNATextField.swift */; };
 		6BA5BBCF216D4A7D00F086A7 /* VisibilityTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6BA5BBCE216D4A7D00F086A7 /* VisibilityTest.swift */; };
 		6BA5BBD1216D4B6700F086A7 /* VisibilityTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6BA5BBD0216D4B6700F086A7 /* VisibilityTest.swift */; };
 		6BA5BBD3217017AC00F086A7 /* Optionals.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6BA5BBD2217017AC00F086A7 /* Optionals.swift */; };
@@ -146,6 +147,7 @@
 		6B39170521643C7C00B20F9E /* Shadows.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Shadows.swift; sourceTree = "<group>"; };
 		6B39170721643EF300B20F9E /* ShadowsTest.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ShadowsTest.swift; sourceTree = "<group>"; };
 		6B3917092164492600B20F9E /* Shadow.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Shadow.swift; sourceTree = "<group>"; };
+		6B6D4422218BCF150016262C /* LNATextField.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = LNATextField.swift; sourceTree = "<group>"; };
 		6BA5BBCE216D4A7D00F086A7 /* VisibilityTest.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = VisibilityTest.swift; sourceTree = "<group>"; };
 		6BA5BBD0216D4B6700F086A7 /* VisibilityTest.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = VisibilityTest.swift; sourceTree = "<group>"; };
 		6BA5BBD2217017AC00F086A7 /* Optionals.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Optionals.swift; sourceTree = "<group>"; };
@@ -232,6 +234,7 @@
 		12BBFDC3206B02720041620C /* appkit */ = {
 			isa = PBXGroup;
 			children = (
+				6B6D4422218BCF150016262C /* LNATextField.swift */,
 				6B1086F221793EC30024AE56 /* CGSize+Crop.swift */,
 				6B391701216422D400B20F9E /* Shadows.swift */,
 				12BBFDC4206B02720041620C /* TextStyles.swift */,
@@ -565,6 +568,7 @@
 				6B1086F321793EC30024AE56 /* CGSize+Crop.swift in Sources */,
 				6B391704216423A000B20F9E /* ShadowsTest.swift in Sources */,
 				6B391702216422D400B20F9E /* Shadows.swift in Sources */,
+				6B6D4423218BCF150016262C /* LNATextField.swift in Sources */,
 				12BBFDE8206B02720041620C /* Colors.swift in Sources */,
 				12BBFDDF206B02720041620C /* BorderWidthColor.swift in Sources */,
 				12BBFDE2206B02720041620C /* PressableRootView.swift in Sources */,

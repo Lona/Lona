@@ -190,6 +190,7 @@
 		6B5D4D2D213E1CB0004F8AC3 /* EditorHeader.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6B5D4D2C213E1CB0004F8AC3 /* EditorHeader.swift */; };
 		6B5D4DA1213F05AF004F8AC3 /* CodeEditor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6B5D4DA0213F05AF004F8AC3 /* CodeEditor.swift */; };
 		6B6017D01EBF9EFA001E02C1 /* LayerListOutlineView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6B6017CF1EBF9EFA001E02C1 /* LayerListOutlineView.swift */; };
+		6B6D441D218B6BBE0016262C /* LNATextField.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6B6D441C218B6BBE0016262C /* LNATextField.swift */; };
 		6BA5BBD72173A7F600F086A7 /* Shadows.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6BA5BBD62173A7F600F086A7 /* Shadows.swift */; };
 		6BA5BBD92174F2A500F086A7 /* FileNavigator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6BA5BBD82174F2A500F086A7 /* FileNavigator.swift */; };
 		6BA5BBDB2174FA2100F086A7 /* FileNavigatorHeader.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6BA5BBDA2174FA2100F086A7 /* FileNavigatorHeader.swift */; };
@@ -440,6 +441,7 @@
 		6B5D4D2C213E1CB0004F8AC3 /* EditorHeader.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = EditorHeader.swift; sourceTree = "<group>"; };
 		6B5D4DA0213F05AF004F8AC3 /* CodeEditor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CodeEditor.swift; sourceTree = "<group>"; };
 		6B6017CF1EBF9EFA001E02C1 /* LayerListOutlineView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = LayerListOutlineView.swift; sourceTree = "<group>"; };
+		6B6D441C218B6BBE0016262C /* LNATextField.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LNATextField.swift; sourceTree = "<group>"; };
 		6BA5BBD62173A7F600F086A7 /* Shadows.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Shadows.swift; sourceTree = "<group>"; };
 		6BA5BBD82174F2A500F086A7 /* FileNavigator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FileNavigator.swift; sourceTree = "<group>"; };
 		6BA5BBDA2174FA2100F086A7 /* FileNavigatorHeader.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = FileNavigatorHeader.swift; sourceTree = "<group>"; };
@@ -761,14 +763,15 @@
 			isa = PBXGroup;
 			children = (
 				6B1086F8217967BC0024AE56 /* CGSize+Crop.swift */,
+				30F870C320865858007ADA5B /* Colors.swift */,
+				6B6D441C218B6BBE0016262C /* LNATextField.swift */,
+				6BA5BBD62173A7F600F086A7 /* Shadows.swift */,
 				301C262320C1C3B500F18F73 /* TextStyle.swift */,
 				30F870BD20865858007ADA5B /* TextStyles.swift */,
+				30F870C420865858007ADA5B /* assets */,
+				30F870C120865858007ADA5B /* components */,
 				6BD96649217E825C0012F173 /* icons */,
 				30F870BF20865858007ADA5B /* screens */,
-				30F870C120865858007ADA5B /* components */,
-				30F870C320865858007ADA5B /* Colors.swift */,
-				6BA5BBD62173A7F600F086A7 /* Shadows.swift */,
-				30F870C420865858007ADA5B /* assets */,
 			);
 			name = Generated;
 			path = LonaStudio/Generated;
@@ -1311,6 +1314,7 @@
 				30CE47811ED73FC800BBF716 /* TextField.swift in Sources */,
 				6BA6E89D2131CD09009CD33C /* JSONDocument.swift in Sources */,
 				6B0F5B8821386CAE007DBBB2 /* AddColorSheet.swift in Sources */,
+				6B6D441D218B6BBE0016262C /* LNATextField.swift in Sources */,
 				30B5B19F1EC29D84002068CE /* NumberField.swift in Sources */,
 				30B5B1A71EC3BF4F002068CE /* ColorPickerButton.swift in Sources */,
 				BACCB42B1FEFA26E00B58E32 /* ShadowStyleRowView.swift in Sources */,

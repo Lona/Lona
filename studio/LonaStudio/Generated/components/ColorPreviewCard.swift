@@ -40,8 +40,8 @@ public class ColorPreviewCard: NSBox {
 
   private var previewView = NSBox()
   private var detailsView = NSBox()
-  private var colorNameView = NSTextField(labelWithString: "")
-  private var colorCodeView = NSTextField(labelWithString: "")
+  private var colorNameView = LNATextField(labelWithString: "")
+  private var colorCodeView = LNATextField(labelWithString: "")
 
   private var colorNameViewTextStyle = TextStyles.regular
   private var colorCodeViewTextStyle = TextStyles.monospacedMicro

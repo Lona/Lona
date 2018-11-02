@@ -46,7 +46,7 @@ public class ColorBrowser: NSBox {
 
   private var innerView = NSBox()
   private var headerView = NSBox()
-  private var titleView = NSTextField(labelWithString: "")
+  private var titleView = LNATextField(labelWithString: "")
   private var spacerView = NSBox()
   private var fixedHeightFixButtonContainerView = NSBox()
   private var addColorButtonView = Button()

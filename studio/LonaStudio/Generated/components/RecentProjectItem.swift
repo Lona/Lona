@@ -36,8 +36,8 @@ public class RecentProjectItem: NSBox {
 
   // MARK: Private
 
-  private var projectNameView = NSTextField(labelWithString: "")
-  private var projectDirectoryPathView = NSTextField(labelWithString: "")
+  private var projectNameView = LNATextField(labelWithString: "")
+  private var projectDirectoryPathView = LNATextField(labelWithString: "")
 
   private var projectNameViewTextStyle = TextStyles.regular
   private var projectDirectoryPathViewTextStyle = TextStyles.regularMuted

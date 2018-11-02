@@ -32,7 +32,7 @@ public class Assign: NSBox {
 
   // MARK: Private
 
-  private var textView = NSTextField(labelWithString: "")
+  private var textView = LNATextField(labelWithString: "")
 
   private var textViewTextStyle = TextStyles.body1
 

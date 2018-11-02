@@ -38,7 +38,7 @@ public class ComponentPreviewCard: NSBox {
   private var componentPreviewView = ComponentPreview()
   private var dividerView = NSBox()
   private var detailsView = NSBox()
-  private var componentNameView = NSTextField(labelWithString: "")
+  private var componentNameView = LNATextField(labelWithString: "")
 
   private var componentNameViewTextStyle = TextStyles.large
 

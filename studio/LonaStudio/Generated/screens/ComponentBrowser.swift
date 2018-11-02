@@ -23,7 +23,7 @@ public class ComponentBrowser: NSBox {
   // MARK: Private
 
   private var innerView = NSBox()
-  private var titleView = NSTextField(labelWithString: "")
+  private var titleView = LNATextField(labelWithString: "")
   private var spacerView = NSBox()
   private var componentPreviewCollectionView = ComponentPreviewCollection()
 

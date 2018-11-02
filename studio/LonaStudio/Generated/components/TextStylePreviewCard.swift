@@ -41,10 +41,10 @@ public class TextStylePreviewCard: NSBox {
   // MARK: Private
 
   private var previewView = NSBox()
-  private var exampleTextView = NSTextField(labelWithString: "")
+  private var exampleTextView = LNATextField(labelWithString: "")
   private var dividerView = NSBox()
   private var detailsView = NSBox()
-  private var textStyleSummaryView = NSTextField(labelWithString: "")
+  private var textStyleSummaryView = LNATextField(labelWithString: "")
 
   private var exampleTextViewTextStyle = TextStyles.regular
   private var textStyleSummaryViewTextStyle = TextStyles.regular

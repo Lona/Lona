@@ -245,14 +245,23 @@ let copyStaticFiles = outputDirectory =>
       | AppKit => "appkit"
       | UIKit => "uikit"
       };
-    if (swiftOptions.framework == UIKit) {
+    switch (swiftOptions.framework) {
+    | UIKit =>
       copySync(
         concat(
           [%bs.raw {| __dirname |}],
           "static/swift/Shadow." ++ framework ++ ".swift",
         ),
         concat(outputDirectory, "Shadow.swift"),
-      );
+      )
+    | AppKit =>
+      copySync(
+        concat(
+          [%bs.raw {| __dirname |}],
+          "static/swift/LNATextField." ++ framework ++ ".swift",
+        ),
+        concat(outputDirectory, "LNATextField.swift"),
+      )
     };
     copySync(
       concat(

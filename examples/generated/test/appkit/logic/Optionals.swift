@@ -34,8 +34,8 @@ public class Optionals: NSBox {
 
   // MARK: Private
 
-  private var labelView = NSTextField(labelWithString: "")
-  private var stringParamView = NSTextField(labelWithString: "")
+  private var labelView = LNATextField(labelWithString: "")
+  private var stringParamView = LNATextField(labelWithString: "")
 
   private var labelViewTextStyle = TextStyles.body1
   private var stringParamViewTextStyle = TextStyles.body1
