@@ -39,7 +39,7 @@ public class PressableRootView: NSBox {
     owner: self)
 
   private var innerView = NSBox()
-  private var innerTextView = NSTextField(labelWithString: "")
+  private var innerTextView = LNATextField(labelWithString: "")
 
   private var innerTextViewTextStyle = TextStyles.headline
 

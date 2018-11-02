@@ -48,7 +48,7 @@ public class OpenProjectButton: NSBox {
   private var topBorderView = NSBox()
   private var innerView = NSBox()
   private var titleContainerView = NSBox()
-  private var titleView = NSTextField(labelWithString: "")
+  private var titleView = LNATextField(labelWithString: "")
   private var dividerView = NSBox()
   private var plusContainerView = NSBox()
   private var plusView = NSImageView()

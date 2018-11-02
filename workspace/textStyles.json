@@ -6,14 +6,12 @@
       "name": "Title",
       "fontWeight": "600",
       "fontSize": 32,
-      "lineHeight": 38,
       "color": "black"
     },
     {
       "id": "versionInfo",
       "name": "Version Info",
       "fontSize": 20,
-      "lineHeight": 24,
       "color": "#828282"
     },
     {
@@ -21,77 +19,66 @@
       "name": "Large Semibold",
       "fontWeight": "500",
       "fontSize": 15,
-      "lineHeight": 17,
       "color": "black"
     },
     {
       "id": "large",
       "name": "Large",
       "fontSize": 15,
-      "lineHeight": 17,
       "color": "black"
     },
     {
       "id": "regular",
       "name": "Regular",
       "fontSize": 13,
-      "lineHeight": 15,
       "color": "black"
     },
     {
       "id": "small",
       "name": "Small",
       "fontSize": 11,
-      "lineHeight": 13,
       "color": "black"
     },
     {
       "id": "regularMuted",
       "name": "Regular Muted",
       "fontSize": 13,
-      "lineHeight": 15,
       "color": "#828282"
     },
     {
       "id": "smallMuted",
       "name": "Small Muted",
       "fontSize": 11,
-      "lineHeight": 13,
       "color": "#828282"
     },
     {
       "id": "regularDisabled",
       "name": "Regular Disabled",
       "fontSize": 13,
-      "lineHeight": 15,
       "color": "#AAAAAA"
     },
     {
       "id": "smallDisabled",
       "name": "Small Disabled",
       "fontSize": 11,
-      "lineHeight": 13,
       "color": "#AAAAAA"
     },
     {
       "id": "largeInverse",
       "name": "Large Inverse",
       "fontSize": 15,
-      "lineHeight": 17,
       "color": "white"
     },
     {
       "id": "regularInverse",
       "name": "Regular Inverse",
       "fontSize": 13,
-      "lineHeight": 15,
       "color": "white"
     },
     {
       "id": "smallInverse",
       "name": "Small Inverse",
       "fontSize": 11,
-      "lineHeight": 13,
       "color": "white"
     },
     {
@@ -100,7 +87,6 @@
       "fontFamily": "Menlo",
       "fontSize": 10,
       "fontWeight": "bold",
-      "lineHeight": 12,
       "color": "rgba(0,0,0,0.85)"
     },
     {
@@ -109,7 +95,6 @@
       "fontFamily": "Menlo",
       "fontSize": 10,
       "fontWeight": "bold",
-      "lineHeight": 12,
       "color": "rgba(255,255,255,0.85)"
     },
     {
@@ -117,7 +102,6 @@
       "name": "Section Title",
       "fontSize": 12,
       "fontWeight": "500",
-      "lineHeight": 15,
       "color": "#545454"
     }
   ]

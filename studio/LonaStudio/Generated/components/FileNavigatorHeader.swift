@@ -38,7 +38,7 @@ public class FileNavigatorHeader: NSBox {
 
   private var innerView = NSBox()
   private var imageView = NSImageView()
-  private var titleView = NSTextField(labelWithString: "")
+  private var titleView = LNATextField(labelWithString: "")
   private var dividerView = NSBox()
 
   private var titleViewTextStyle = TextStyles.regular

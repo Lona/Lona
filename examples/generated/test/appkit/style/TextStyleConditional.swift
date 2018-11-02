@@ -32,7 +32,7 @@ public class TextStyleConditional: NSBox {
 
   // MARK: Private
 
-  private var textView = NSTextField(labelWithString: "")
+  private var textView = LNATextField(labelWithString: "")
 
   private var textViewTextStyle = TextStyles.headline
 

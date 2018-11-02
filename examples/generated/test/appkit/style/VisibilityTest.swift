@@ -33,7 +33,7 @@ public class VisibilityTest: NSBox {
   // MARK: Private
 
   private var innerView = NSBox()
-  private var titleView = NSTextField(labelWithString: "")
+  private var titleView = LNATextField(labelWithString: "")
   private var viewView = NSBox()
 
   private var titleViewTextStyle = TextStyles.body1

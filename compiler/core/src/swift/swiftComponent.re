@@ -21,7 +21,7 @@ module Naming = {
       | (UIKit, Text) => "UILabel"
       | (UIKit, Image) => "UIImageView"
       | (AppKit, Types.View) => "NSBox"
-      | (AppKit, Text) => "NSTextField"
+      | (AppKit, Text) => "LNATextField"
       | (AppKit, Image) => "NSImageView"
       | (_, VectorGraphic) =>
         SwiftComponentParameter.getVectorAssetUrl(layer)

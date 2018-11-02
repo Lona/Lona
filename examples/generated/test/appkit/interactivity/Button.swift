@@ -46,7 +46,7 @@ public class Button: NSBox {
     options: [.mouseEnteredAndExited, .activeAlways, .mouseMoved, .inVisibleRect],
     owner: self)
 
-  private var textView = NSTextField(labelWithString: "")
+  private var textView = LNATextField(labelWithString: "")
 
   private var textViewTextStyle = TextStyles.button
 

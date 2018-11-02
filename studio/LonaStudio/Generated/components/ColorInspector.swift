@@ -76,20 +76,20 @@ public class ColorInspector: NSBox {
 
   // MARK: Private
 
-  private var titleView = NSTextField(labelWithString: "")
-  private var nameLabelView = NSTextField(labelWithString: "")
+  private var titleView = LNATextField(labelWithString: "")
+  private var nameLabelView = LNATextField(labelWithString: "")
   private var nameInputView = TextInput()
   private var spacer1View = NSBox()
-  private var idLabelView = NSTextField(labelWithString: "")
+  private var idLabelView = LNATextField(labelWithString: "")
   private var idInputView = CoreTextInput()
   private var spacer2View = NSBox()
-  private var valueLabelView = NSTextField(labelWithString: "")
+  private var valueLabelView = LNATextField(labelWithString: "")
   private var fitWidthFixValueContainerView = NSBox()
   private var coreColorWellPickerView = CoreColorWellPicker()
   private var smallSpacer1View = NSBox()
   private var valueInputView = TextInput()
   private var spacer3View = NSBox()
-  private var descriptionLabelView = NSTextField(labelWithString: "")
+  private var descriptionLabelView = LNATextField(labelWithString: "")
   private var descriptionInputView = TextInput()
 
   private var titleViewTextStyle = TextStyles.large
