@@ -16,32 +16,9 @@ import Foundation
 // for NSTextField; it should only be used for non-editable labels. Whenever we drop support
 // for pre-10.14 we can remove this and use NSTextField directly instead.
 public class LNATextField: NSTextField {
-  public init() {
-    super.init(frame: .zero)
-
-    self.cell = LNATextFieldCell()
-  }
-
-  public convenience init(labelWithAttributedString attributedString: NSAttributedString) {
-    self.init()
-
-    self.isBordered = false
-    self.drawsBackground = false
-    self.isBezeled = false
-    self.bezelStyle = .squareBezel
-    self.isEnabled = true
-    self.isEditable = false
-    self.isSelectable = false
-
-    self.attributedStringValue = attributedString
-  }
-
-  public convenience init(labelWithString string: String) {
-    self.init(labelWithAttributedString: NSAttributedString(string: string))
-  }
-
-  required init?(coder: NSCoder) {
-    fatalError("init(coder:) has not been implemented")
+  override open class var cellClass: AnyClass? {
+    get { return LNATextFieldCell.self }
+    set {}
   }
 
   // Determine the baseline offset from the attributed string value. We store it as a member variable,
@@ -57,7 +34,7 @@ public class LNATextField: NSTextField {
     }
   }
 
-  var baselineOffset: CGFloat?
+  fileprivate var baselineOffset: CGFloat?
 }
 
 private class LNATextFieldCell: NSTextFieldCell {
