@@ -266,7 +266,7 @@ let createJSXElement =
     | _ => customComponent
     };
   | _ =>
-    if (layer.typeName == Types.Image && framework == ReactDOM) {
+    if (layer.typeName == Types.Image) {
       let layout = Layer.getLayout(parent, layer.parameters);
 
       /* Images without fixed dimensions are absolute positioned within a wrapper */

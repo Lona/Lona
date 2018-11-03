@@ -63,6 +63,7 @@ let getParameterCategory = (x: ParameterKey.t) =>
   | TextAlign => Style
   | Shadow => Style
   | ResizeMode => Style
+  | Position => Style
   /* Props */
   | NumberOfLines => Prop
   | Text => Prop

@@ -87,8 +87,8 @@ let getStyleProperty =
     };
   | _ =>
     let value =
-      switch (key) {
-      | ParameterKey.ResizeMode =>
+      switch (framework, key) {
+      | (ReactDOM, ParameterKey.ResizeMode) =>
         LonaValue.string(
           ReactDomTranslators.resizeMode(value.data |> Json.Decode.string),
         )
@@ -108,10 +108,6 @@ let defaultStyles =
 
   let defaults =
     switch (framework, layerType) {
-    | (_, Types.Image) =>
-      ParameterMap.(
-        defaults |> add(ParameterKey.ResizeMode, LonaValue.string("cover"))
-      )
     | (JavaScriptOptions.ReactDOM, Types.Text) =>
       ParameterMap.(
         defaults
@@ -415,6 +411,33 @@ let handleNumberOfLines =
   | (_, _) => parameters
   };
 
+let handleResizeMode =
+    (
+      _framework: JavaScriptOptions.framework,
+      _config: Config.t,
+      parent: option(Types.layer),
+      layer: Types.layer,
+      parameters,
+    ) => {
+  let layout = Layer.getLayout(parent, layer.parameters);
+
+  /* Images without fixed dimensions are absolute positioned within a wrapper.
+     We need to remove the resizeMode style from the wrapper. It will be added
+     to the image itself elsewhere. */
+  switch (layer.typeName, layout.width, layout.height) {
+  | (Image, Fixed(_), Fixed(_)) =>
+    switch (ParameterMap.find_opt(ParameterKey.ResizeMode, parameters)) {
+    | Some(_) => parameters
+    | None =>
+      parameters
+      |> ParameterMap.add(ParameterKey.ResizeMode, LonaValue.string("cover"))
+    }
+  | (Image, _, _) =>
+    parameters |> ParameterMap.remove(ParameterKey.ResizeMode)
+  | _ => parameters
+  };
+};
+
 let createStyleObjectForLayer =
     (
       config: Config.t,
@@ -425,7 +448,7 @@ let createStyleObjectForLayer =
     ) => {
   let layoutParameters = getLayoutParameters(framework, parent, layer);
 
-  /* We replace all of these keys with the appropriate dfeaults for the framework */
+  /* We replace all of these keys with the appropriate defaults for the framework */
   let replacedKeys = [
     ParameterKey.AlignItems,
     ParameterKey.AlignSelf,
@@ -449,6 +472,7 @@ let createStyleObjectForLayer =
           |> ParameterMap.assign(
                defaultStyles(framework, config, layer.typeName),
              )
+          |> handleResizeMode(framework, config, parent, layer)
           |> ParameterMap.bindings
           |> List.map(((key, value)) =>
                getStylePropertyWithUnits(framework, colors, key, value)
