@@ -248,12 +248,14 @@ func renderBox(configuredLayer: ConfiguredLayer, node: YGNodeRef, options: Rende
             scale = ceil(scale)
 
             if let cached = imageCache.contents(for: url, at: scale) {
+                box.croppingMode = layer.resizeMode?.croppingMode() ?? .scaleAspectFill
                 box.backgroundImage = cached
             } else {
                 let nsImage = NSImage(contentsOf: url)
                 nsImage?.cacheMode = .always
 
                 if let contents = nsImage {
+                    box.croppingMode = layer.resizeMode?.croppingMode() ?? .scaleAspectFill
                     box.backgroundImage = contents
                     imageCache.add(contents: contents, for: url, at: scale)
                 }

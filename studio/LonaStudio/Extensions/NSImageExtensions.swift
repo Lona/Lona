@@ -25,4 +25,21 @@ extension NSImage {
 
         return image
     }
+
+  func crop(
+      within destination: CGSize,
+      usingCroppingMode croppingMode: CGSize.CroppingMode = .scaleAspectFit
+      ) -> NSImage {
+        let scaledImage = NSImage(size: destination)
+
+        guard destination.width > 0 && destination.height > 0 else { return scaledImage }
+
+        scaledImage.lockFocus()
+
+        draw(in: size.crop(within: destination, usingCroppingMode: croppingMode))
+
+        scaledImage.unlockFocus()
+
+        return scaledImage
+    }
 }

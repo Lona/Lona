@@ -41,9 +41,11 @@ class CSView: NSBox {
 
     var onClick: (() -> Void)?
 
+    var croppingMode = CGSize.CroppingMode.scaleAspectFill
+
     var backgroundImage: NSImage? {
         didSet {
-            innerView.image = backgroundImage
+            innerView.image = backgroundImage?.crop(within: bounds.size, usingCroppingMode: croppingMode)
         }
     }
 

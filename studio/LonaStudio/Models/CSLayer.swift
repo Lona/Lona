@@ -33,6 +33,14 @@ enum ResizeMode: String {
         case .stretch: return .scaleToFill
         }
     }
+
+    func croppingMode() -> CGSize.CroppingMode {
+        switch self {
+        case .cover: return .scaleAspectFill
+        case .contain: return .scaleAspectFit
+        case .stretch: return .scaleToFill
+        }
+    }
 }
 
 enum PositionType: String {
@@ -552,6 +560,7 @@ class CSLayer: CSDataDeserializable, CSDataSerializable, DataNode, NSCopying {
         "paddingRight": CSData.Number(0),
         "paddingBottom": CSData.Number(0),
         "paddingLeft": CSData.Number(0),
+        "resizeMode": CSData.String("cover"),
         "textAlign": CSData.String("left"),
         "visible": CSData.Bool(true)
     ]

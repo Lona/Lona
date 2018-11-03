@@ -62,6 +62,7 @@ let parameterDefaultValue = key =>
   | ParameterKey.BorderColor => color("transparent")
   | ParameterKey.Width => number(0.)
   | ParameterKey.Height => number(0.)
+  | ParameterKey.ResizeMode => string("cover")
   /* Interactivity */
   | ParameterKey.Pressed => boolean(false)
   | ParameterKey.Hovered => boolean(false)

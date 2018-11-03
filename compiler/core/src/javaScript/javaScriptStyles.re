@@ -47,7 +47,13 @@ let getStyleProperty =
       value: Types.lonaValue,
     ) => {
   let keyIdentifier =
-    JavaScriptAst.Identifier([key |> ParameterKey.toString]);
+    JavaScriptAst.Identifier([
+      switch (framework) {
+      | ReactDOM => key |> ReactDomTranslators.styleVariableNames
+      | ReactNative
+      | ReactSketchapp => key |> ParameterKey.toString
+      },
+    ]);
   switch (value.ltype) {
   | Named("TextStyle", _)
   | Reference("TextStyle") =>
@@ -79,7 +85,16 @@ let getStyleProperty =
     | None =>
       JavaScriptAst.Property({key: keyIdentifier, value: Literal(value)})
     };
-  | _ => JavaScriptAst.Property({key: keyIdentifier, value: Literal(value)})
+  | _ =>
+    let value =
+      switch (key) {
+      | ParameterKey.ResizeMode =>
+        LonaValue.string(
+          ReactDomTranslators.resizeMode(value.data |> Json.Decode.string),
+        )
+      | _ => value
+      };
+    JavaScriptAst.Property({key: keyIdentifier, value: Literal(value)});
   };
 };
 
@@ -324,26 +339,14 @@ let getLayoutParameters =
         )
       );
 
-    /* Images should not expand outside their parent, even if their natural size
-       exceeds the size of their parent. */
+    /* Always add relative positioning to images. Sometimes images will be wrapped
+       in a div and absolute-positioned within. */
     let parameters =
       ParameterMap.(
         if (framework == ReactDOM && layer.typeName == Image) {
-          let parameters =
-            switch (layout.width) {
-            | Fixed(_) => parameters
-            | Fill
-            | FitContent =>
-              parameters |> add(MaxWidth, LonaValue.string("100%"))
-            };
-          let parameters =
-            switch (layout.height) {
-            | Fixed(_) => parameters
-            | Fill
-            | FitContent =>
-              parameters |> add(MaxHeight, LonaValue.string("100%"))
-            };
-          parameters;
+          parameters
+          |> add(Position, LonaValue.string("relative"))
+          |> add(Overflow, LonaValue.string("hidden"));
         } else {
           parameters;
         }

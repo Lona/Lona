@@ -10,6 +10,18 @@ import Foundation
 import Cocoa
 import Lottie
 
+private let DIMENSION_SIZING_VALUES = ["Fixed", "Expand", "Shrink"]
+private let DIMENSION_SIZING_VALUE_TO_TITLE = [
+    "Fixed": "Fixed",
+    "Expand": "Fill",
+    "Shrink": "Fit Content"
+]
+private let DIMENSION_SIZING_IMAGE_VALUES = ["Fixed", "Expand"]
+private let DIMENSION_SIZING_IMAGE_VALUE_TO_TITLE = [
+    "Fixed": "Fixed",
+    "Expand": "Fill"
+]
+
 class CoreComponentInspectorView: NSStackView {
 
     typealias Properties = [Property: CSData]
@@ -112,20 +124,20 @@ class CoreComponentInspectorView: NSStackView {
 
     var widthSizingRuleView = PopupField(
         frame: NSRect.zero,
-        values: ["Fixed", "Expand", "Shrink"],
-        valueToTitle: ["Fixed": "Fixed", "Expand": "Fill", "Shrink": "Fit Content"]
+        values: DIMENSION_SIZING_VALUES,
+        valueToTitle: DIMENSION_SIZING_VALUE_TO_TITLE
     )
     var heightSizingRuleView = PopupField(
         frame: NSRect.zero,
-        values: ["Fixed", "Expand", "Shrink"],
-        valueToTitle: ["Fixed": "Fixed", "Expand": "Fill", "Shrink": "Fit Content"]
+        values: DIMENSION_SIZING_VALUES,
+        valueToTitle: DIMENSION_SIZING_VALUE_TO_TITLE
     )
     var widthView = NumberField(frame: NSRect.zero)
     var heightView = NumberField(frame: NSRect.zero)
     var itemSpacingRuleView = PopupField(
         frame: NSRect.zero,
         values: ["Shrink", "Fixed", "Expand"],
-        valueToTitle: ["Fixed": "Fixed (experimental)", "Expand": "Distribute", "Shrink": "None"]
+        valueToTitle: ["Fixed": "Fixed (experimental)", "Expand": "Distribute (experimental)", "Shrink": "None"]
     )
     var itemSpacingView = NumberField(frame: NSRect.zero)
     var aspectRatioView = NumberField(frame: NSRect.zero)
@@ -173,10 +185,15 @@ class CoreComponentInspectorView: NSStackView {
     var animationViewContainer = NSView(frame: NSRect.zero)
     var animationURLView = TextField(frame: NSRect.zero)
     var animationSpeedView = NumberField(frame: NSRect.zero)
-    var resizeModeView = PopupField(
+    var animationResizeModeView = PopupField(
         frame: NSRect.zero,
         values: ["cover", "contain", "stretch"],
         valueToTitle: ["cover": "Aspect Fill", "contain": "Aspect Fit", "stretch": "Stretch Fill"]
+    )
+    var imageResizeModeView = PopupField(
+        frame: NSRect.zero,
+        values: ["cover", "contain", "stretch"],
+        valueToTitle: ["cover": "Aspect-preserving Fill", "contain": "Aspect-preserving Fit", "stretch": "Stretch Fill"]
     )
 
     var backingElement = CSValueField(
@@ -605,6 +622,8 @@ class CoreComponentInspectorView: NSStackView {
         let imageSection = renderSection(title: "Image", views: [
             NSTextField(labelWithStringCompat: "URL"),
             urlContainer,
+            NSTextField(labelWithStringCompat: "Scaling"),
+            imageResizeModeView,
             NSTextField(labelWithStringCompat: "Asset"),
             imageView
         ])
@@ -659,7 +678,7 @@ class CoreComponentInspectorView: NSStackView {
             NSTextField(labelWithStringCompat: "Asset"),
             animationViewContainer,
             NSTextField(labelWithStringCompat: "Scale Mode"),
-            resizeModeView,
+            animationResizeModeView,
             NSTextField(labelWithStringCompat: "Animation Speed"),
             animationSpeedView
             ])
@@ -733,6 +752,19 @@ class CoreComponentInspectorView: NSStackView {
             break
         }
 
+        switch layerType {
+        case .builtIn(.image), .builtIn(.vectorGraphic):
+            let values = DIMENSION_SIZING_IMAGE_VALUES
+            let valueToTitle = DIMENSION_SIZING_IMAGE_VALUE_TO_TITLE
+            widthSizingRuleView.set(values: values, valueToTitle: valueToTitle)
+            heightSizingRuleView.set(values: values, valueToTitle: valueToTitle)
+        default:
+            let values = DIMENSION_SIZING_VALUES
+            let valueToTitle = DIMENSION_SIZING_VALUE_TO_TITLE
+            widthSizingRuleView.set(values: values, valueToTitle: valueToTitle)
+            heightSizingRuleView.set(values: values, valueToTitle: valueToTitle)
+        }
+
         let fields: [(control: CSControl, property: Property)] = [
             // Layout
             (directionView, .direction),
@@ -785,12 +817,13 @@ class CoreComponentInspectorView: NSStackView {
             // Image
             (imageView, .image),
             (imageURLView, .image),
-            (resizeModeView, .resizeMode),
+            (imageResizeModeView, .resizeMode),
 
             // Animation
 //            (animationView, .animation),
             (animationURLView, .animation),
-            (animationSpeedView, .animationSpeed)
+            (animationSpeedView, .animationSpeed),
+            (animationResizeModeView, .resizeMode)
         ]
 
         // CSValueField needs to be recreated on change since it doesn't support updating

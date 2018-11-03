@@ -85,6 +85,39 @@ let generateImageWithBackgroundColor =
     Empty,
   ];
 
+/* private class BackgroundImageView: UIImageView {
+       override var intrinsicContentSize: CGSize {
+           return .zero
+       }
+   } */
+let generateBackgroundImage =
+    (options: Options.options, swiftOptions: SwiftOptions.options) =>
+  SwiftAst.[
+    ClassDeclaration({
+      "name": "BackgroundImageView",
+      "inherits": [TypeName("UIImageView")],
+      "modifier": Some(PrivateModifier),
+      "isFinal": false,
+      "body": [
+        VariableDeclaration({
+          "modifiers": [OverrideModifier],
+          "pattern":
+            IdentifierPattern({
+              "identifier": SwiftIdentifier("intrinsicContentSize"),
+              "annotation": Some(TypeName("CGSize")),
+            }),
+          "init": None,
+          "block":
+            Some(
+              GetterBlock([
+                ReturnStatement(Some(SwiftIdentifier(".zero"))),
+              ]),
+            ),
+        }),
+      ],
+    }),
+  ];
+
 let generateVectorGraphic =
     (
       config: Config.t,

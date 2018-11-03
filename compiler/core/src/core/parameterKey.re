@@ -36,6 +36,8 @@ type t =
   | MaxWidth
   | Height
   | MaxHeight
+  | ResizeMode
+  | Position
   /* Interactivity */
   | Pressed
   | Hovered
@@ -78,6 +80,8 @@ let fromString = string =>
   | "maxWidth" => Width
   | "height" => Height
   | "maxHeight" => Height
+  | "resizeMode" => ResizeMode
+  | "position" => Position
   /* Interactivity */
   | "pressed" => Pressed
   | "hovered" => Hovered
@@ -122,6 +126,8 @@ let toString = key =>
   | MaxWidth => "maxWidth"
   | Height => "height"
   | MaxHeight => "maxHeight"
+  | ResizeMode => "resizeMode"
+  | Position => "position"
   /* Interactivity */
   | Pressed => "pressed"
   | Hovered => "hovered"

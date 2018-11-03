@@ -206,11 +206,60 @@ let createJSXElement =
     | _ => customComponent
     };
   | _ =>
-    JSXElement({
-      tag: getElementOrVectorTagString(framework, layer),
-      attributes: styleAttribute @ attributes,
-      content,
-    })
+    if (layer.typeName == Types.Image && framework == ReactDOM) {
+      let layout = Layer.getLayout(parent, layer.parameters);
+      switch (layout.height, layout.width) {
+      | (Fixed(_), Fixed(_)) =>
+        JSXElement({
+          tag: getElementOrVectorTagString(framework, layer),
+          attributes: styleAttribute @ attributes,
+          content,
+        })
+      | _ =>
+        JSXElement({
+          tag: getElementTagString(framework, Types.View),
+          attributes: styleAttribute,
+          content: [
+            JSXElement({
+              tag: getElementOrVectorTagString(framework, layer),
+              attributes:
+                [
+                  JavaScriptAst.JSXAttribute({
+                    name: "style",
+                    value:
+                      ObjectLiteral([
+                        Property({
+                          key: Identifier(["position"]),
+                          value: Literal(LonaValue.string("absolute")),
+                        }),
+                        Property({
+                          key: Identifier(["width"]),
+                          value: Literal(LonaValue.string("100%")),
+                        }),
+                        Property({
+                          key: Identifier(["height"]),
+                          value: Literal(LonaValue.string("100%")),
+                        }),
+                        Property({
+                          key: Identifier(["objectFit"]),
+                          value: Literal(LonaValue.string("cover")),
+                        }),
+                      ]),
+                  }),
+                ]
+                @ attributes,
+              content,
+            }),
+          ],
+        })
+      };
+    } else {
+      JSXElement({
+        tag: getElementOrVectorTagString(framework, layer),
+        attributes: styleAttribute @ attributes,
+        content,
+      });
+    }
   };
 
 let rec layerToJavaScriptAST =
