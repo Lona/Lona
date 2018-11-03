@@ -1,6 +1,14 @@
 import UIKit
 import Foundation
 
+// MARK: - BackgroundImageView
+
+private class BackgroundImageView: UIImageView {
+  override var intrinsicContentSize: CGSize {
+    return .zero
+  }
+}
+
 // MARK: - TextAlignment
 
 public class TextAlignment: UIView {
@@ -23,7 +31,7 @@ public class TextAlignment: UIView {
   // MARK: Private
 
   private var view1View = UIView(frame: .zero)
-  private var imageView = UIImageView(frame: .zero)
+  private var imageView = BackgroundImageView(frame: .zero)
   private var view2View = UIView(frame: .zero)
   private var textView = UILabel()
   private var text1View = UILabel()
@@ -41,7 +49,7 @@ public class TextAlignment: UIView {
   private var rightAlignmentContainerView = UIView(frame: .zero)
   private var text9View = UILabel()
   private var text10View = UILabel()
-  private var image1View = UIImageView(frame: .zero)
+  private var image1View = BackgroundImageView(frame: .zero)
 
   private var textViewTextStyle = TextStyles.display1.with(alignment: .center)
   private var text1ViewTextStyle = TextStyles.subheading2.with(alignment: .center)
@@ -56,6 +64,8 @@ public class TextAlignment: UIView {
   private var text10ViewTextStyle = TextStyles.body1.with(alignment: .center)
 
   private func setUpViews() {
+    imageView.contentMode = .scaleAspectFill
+    imageView.layer.masksToBounds = true
     text1View.numberOfLines = 0
     text2View.numberOfLines = 0
     text3View.numberOfLines = 0
@@ -66,6 +76,8 @@ public class TextAlignment: UIView {
     text8View.numberOfLines = 0
     text9View.numberOfLines = 0
     text10View.numberOfLines = 0
+    image1View.contentMode = .scaleAspectFill
+    image1View.layer.masksToBounds = true
 
     addSubview(view1View)
     addSubview(view3View)

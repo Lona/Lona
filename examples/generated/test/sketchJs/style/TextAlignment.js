@@ -144,7 +144,8 @@ let styles = StyleSheet.create({
     flexDirection: "column",
     justifyContent: "flex-start",
     width: 100,
-    height: 100
+    height: 100,
+    resizeMode: "cover"
   },
   view2: {
     alignItems: "flex-start",
@@ -251,6 +252,7 @@ let styles = StyleSheet.create({
     flexDirection: "column",
     justifyContent: "flex-start",
     width: 100,
-    height: 100
+    height: 100,
+    resizeMode: "cover"
   }
 })

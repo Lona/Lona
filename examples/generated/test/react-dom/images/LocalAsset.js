@@ -28,10 +28,12 @@ let styles = {
   image: {
     alignItems: "flex-start",
     backgroundColor: "#D8D8D8",
-    display: "flex",
     flexDirection: "column",
     justifyContent: "flex-start",
+    overflow: "hidden",
     width: "100px",
-    height: "100px"
+    height: "100px",
+    objectFit: "cover",
+    position: "relative"
   }
 }

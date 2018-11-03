@@ -1,6 +1,14 @@
 import UIKit
 import Foundation
 
+// MARK: - BackgroundImageView
+
+private class BackgroundImageView: UIImageView {
+  override var intrinsicContentSize: CGSize {
+    return .zero
+  }
+}
+
 // MARK: - LocalAsset
 
 public class LocalAsset: UIView {
@@ -22,9 +30,12 @@ public class LocalAsset: UIView {
 
   // MARK: Private
 
-  private var imageView = UIImageView(frame: .zero)
+  private var imageView = BackgroundImageView(frame: .zero)
 
   private func setUpViews() {
+    imageView.contentMode = .scaleAspectFill
+    imageView.layer.masksToBounds = true
+
     addSubview(imageView)
 
     backgroundColor = Colors.red400

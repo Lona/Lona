@@ -64,6 +64,25 @@
           "resizeMode" : "stretch"
         },
         "type" : "Lona:Image"
+      },
+      {
+        "id" : "FixedAspectFill",
+        "params" : {
+          "height" : 100,
+          "image" : "file:\/\/.\/assets\/icon_128x128.png",
+          "width" : 200
+        },
+        "type" : "Lona:Image"
+      },
+      {
+        "id" : "FixedStretch",
+        "params" : {
+          "height" : 100,
+          "image" : "file:\/\/.\/assets\/icon_128x128.png",
+          "resizeMode" : "stretch",
+          "width" : 200
+        },
+        "type" : "Lona:Image"
       }
     ],
     "id" : "View",

@@ -145,11 +145,13 @@ let styles = {
   },
   image: {
     alignItems: "flex-start",
-    display: "flex",
     flexDirection: "column",
     justifyContent: "flex-start",
+    overflow: "hidden",
     width: "100px",
-    height: "100px"
+    height: "100px",
+    objectFit: "cover",
+    position: "relative"
   },
   view2: {
     alignItems: "flex-start",
@@ -271,10 +273,12 @@ let styles = {
   },
   image1: {
     alignItems: "flex-start",
-    display: "flex",
     flexDirection: "column",
     justifyContent: "flex-start",
+    overflow: "hidden",
     width: "100px",
-    height: "100px"
+    height: "100px",
+    objectFit: "cover",
+    position: "relative"
   }
 }

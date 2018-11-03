@@ -108,6 +108,10 @@ let defaultStyles =
 
   let defaults =
     switch (framework, layerType) {
+    | (_, Types.Image) =>
+      ParameterMap.(
+        defaults |> add(ParameterKey.ResizeMode, LonaValue.string("cover"))
+      )
     | (JavaScriptOptions.ReactDOM, Types.Text) =>
       ParameterMap.(
         defaults

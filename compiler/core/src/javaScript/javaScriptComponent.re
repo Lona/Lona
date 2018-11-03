@@ -10,9 +10,11 @@ let frameworkSpecificValue =
   | JavaScriptOptions.ReactSketchapp => container.reactSketchapp
   };
 
-let styleNameKey = key =>
-  switch (key) {
-  | ParameterKey.TextStyle => "font"
+let styleNameKey =
+    (framework: JavaScriptOptions.framework, key: ParameterKey.t) =>
+  switch (framework, key) {
+  | (_, ParameterKey.TextStyle) => "font"
+  | (ReactDOM, ParameterKey.ResizeMode) => "objectFit"
   | _ => key |> ParameterKey.toString
   };
 
@@ -95,7 +97,12 @@ module StyledComponents = {
 };
 
 let createStyleAttributePropertyAST =
-    (config: Config.t, key: ParameterKey.t, value: Logic.logicValue) =>
+    (
+      framework: JavaScriptOptions.framework,
+      config: Config.t,
+      key: ParameterKey.t,
+      value: Logic.logicValue,
+    ) =>
   switch (key) {
   | ParameterKey.TextStyle =>
     JavaScriptAst.SpreadElement(
@@ -107,7 +114,7 @@ let createStyleAttributePropertyAST =
     )
   | _ =>
     JavaScriptAst.Property({
-      key: Identifier([key |> styleNameKey]),
+      key: Identifier([key |> styleNameKey(framework)]),
       value: JavaScriptLogic.logicValueToJavaScriptAST(config, value),
     })
   };
@@ -127,7 +134,7 @@ let createStyleAttributeAST =
         Ast.ObjectLiteral(
           styles
           |> Layer.mapBindings(((key, value)) =>
-               createStyleAttributePropertyAST(config, key, value)
+               createStyleAttributePropertyAST(framework, config, key, value)
              ),
         ),
       );
@@ -170,10 +177,63 @@ let createStyleAttributeAST =
   };
 };
 
+let createWrappedImageElement =
+    (
+      config,
+      framework: JavaScriptOptions.framework,
+      layer: Types.layer,
+      styleAttribute,
+      jsxAttributes,
+      jsxChildren,
+    ) => {
+  let resizeMode =
+    switch (Layer.getStringParameterOpt(ResizeMode, layer.parameters)) {
+    | Some(value) => value
+    | None => "cover"
+    };
+
+  let imageStyleParameterMap =
+    ParameterMap.(
+      empty
+      |> add(Position, LonaValue.string("absolute"))
+      |> add(Width, LonaValue.string("100%"))
+      |> add(Height, LonaValue.string("100%"))
+      |> add(ResizeMode, LonaValue.string(resizeMode))
+    )
+    |> Layer.parameterMapToLogicValueMap;
+
+  let imageStyleAttribute =
+    Ast.JSXAttribute({
+      name: "style",
+      value:
+        Ast.ObjectLiteral(
+          imageStyleParameterMap
+          |> Layer.mapBindings(((key, value)) =>
+               createStyleAttributePropertyAST(framework, config, key, value)
+             ),
+        ),
+    });
+
+  JavaScriptAst.(
+    JSXElement({
+      tag: getElementTagString(framework, Types.View),
+      attributes: styleAttribute,
+      content: [
+        JSXElement({
+          tag: getElementOrVectorTagString(framework, layer),
+          attributes: [imageStyleAttribute] @ jsxAttributes,
+          content: jsxChildren,
+        }),
+      ],
+    })
+  );
+};
+
 /* Wrap custom components in a view that enforces the framework's
    default layout attributes. */
 let createJSXElement =
     (
+      config: Config.t,
       framework: JavaScriptOptions.framework,
       parent: option(Types.layer),
       layer: Types.layer,
@@ -208,6 +268,8 @@ let createJSXElement =
   | _ =>
     if (layer.typeName == Types.Image && framework == ReactDOM) {
       let layout = Layer.getLayout(parent, layer.parameters);
+
+      /* Images without fixed dimensions are absolute positioned within a wrapper */
       switch (layout.height, layout.width) {
       | (Fixed(_), Fixed(_)) =>
         JSXElement({
@@ -216,42 +278,14 @@ let createJSXElement =
           content,
         })
       | _ =>
-        JSXElement({
-          tag: getElementTagString(framework, Types.View),
-          attributes: styleAttribute,
-          content: [
-            JSXElement({
-              tag: getElementOrVectorTagString(framework, layer),
-              attributes:
-                [
-                  JavaScriptAst.JSXAttribute({
-                    name: "style",
-                    value:
-                      ObjectLiteral([
-                        Property({
-                          key: Identifier(["position"]),
-                          value: Literal(LonaValue.string("absolute")),
-                        }),
-                        Property({
-                          key: Identifier(["width"]),
-                          value: Literal(LonaValue.string("100%")),
-                        }),
-                        Property({
-                          key: Identifier(["height"]),
-                          value: Literal(LonaValue.string("100%")),
-                        }),
-                        Property({
-                          key: Identifier(["objectFit"]),
-                          value: Literal(LonaValue.string("cover")),
-                        }),
-                      ]),
-                  }),
-                ]
-                @ attributes,
-              content,
-            }),
-          ],
-        })
+        createWrappedImageElement(
+          config,
+          framework,
+          layer,
+          styleAttribute,
+          attributes,
+          content,
+        )
       };
     } else {
       JSXElement({
@@ -400,6 +434,7 @@ let rec layerToJavaScriptAST =
     };
   let element =
     createJSXElement(
+      config,
       framework,
       parent,
       layer,
