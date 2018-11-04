@@ -270,6 +270,10 @@ func renderBox(configuredLayer: ConfiguredLayer, node: YGNodeRef, options: Rende
 
             let cacheKey = "\(imageValue)*w\(layout.width)*h\(layout.height)*\(dynamicValues.toData()?.utf8String() ?? "")"
 
+            // We draw the svg into an image that has the exact same dimensions as the view,
+            // so we can scale the image to fill the view without it stretching.
+            box.resizingMode = .scaleToFill
+
             if let cached = svgRenderCache.item(for: cacheKey) {
                 box.backgroundImage = cached
             } else if let image = SVG.renderSync(
