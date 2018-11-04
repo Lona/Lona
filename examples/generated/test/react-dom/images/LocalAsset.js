@@ -36,5 +36,11 @@ let styles = {
     height: "100px",
     objectFit: "cover",
     position: "relative"
+  },
+  imageResizeModeCover: {
+    width: "100%",
+    height: "100%",
+    objectFit: "cover",
+    position: "absolute"
   }
 }

@@ -10,14 +10,6 @@ let frameworkSpecificValue =
   | JavaScriptOptions.ReactSketchapp => container.reactSketchapp
   };
 
-let styleNameKey =
-    (framework: JavaScriptOptions.framework, key: ParameterKey.t) =>
-  switch (framework, key) {
-  | (_, ParameterKey.TextStyle) => "font"
-  | (ReactDOM, ParameterKey.ResizeMode) => "objectFit"
-  | _ => key |> ParameterKey.toString
-  };
-
 let getElementTagString =
     (framework: JavaScriptOptions.framework, typeName: Types.layerType) =>
   switch (framework) {
@@ -96,29 +88,6 @@ module StyledComponents = {
     layer |> Layer.flatten |> List.map(createStyledComponentAST);
 };
 
-let createStyleAttributePropertyAST =
-    (
-      framework: JavaScriptOptions.framework,
-      config: Config.t,
-      key: ParameterKey.t,
-      value: Logic.logicValue,
-    ) =>
-  switch (key) {
-  | ParameterKey.TextStyle =>
-    JavaScriptAst.SpreadElement(
-      JavaScriptLogic.logicValueToJavaScriptAST(config, value),
-    )
-  | ParameterKey.Shadow =>
-    JavaScriptAst.SpreadElement(
-      JavaScriptLogic.logicValueToJavaScriptAST(config, value),
-    )
-  | _ =>
-    JavaScriptAst.Property({
-      key: Identifier([key |> styleNameKey(framework)]),
-      value: JavaScriptLogic.logicValueToJavaScriptAST(config, value),
-    })
-  };
-
 let createStyleAttributeAST =
     (
       framework: JavaScriptOptions.framework,
@@ -134,7 +103,12 @@ let createStyleAttributeAST =
         Ast.ObjectLiteral(
           styles
           |> Layer.mapBindings(((key, value)) =>
-               createStyleAttributePropertyAST(framework, config, key, value)
+               JavaScriptStyles.createStyleAttributePropertyAST(
+                 framework,
+                 config,
+                 key,
+                 value,
+               )
              ),
         ),
       );
@@ -179,7 +153,7 @@ let createStyleAttributeAST =
 
 let createWrappedImageElement =
     (
-      config,
+      _config,
       framework: JavaScriptOptions.framework,
       layer: Types.layer,
       styleAttribute,
@@ -192,26 +166,11 @@ let createWrappedImageElement =
     | None => "cover"
     };
 
-  let imageStyleParameterMap =
-    ParameterMap.(
-      empty
-      |> add(Position, LonaValue.string("absolute"))
-      |> add(Width, LonaValue.string("100%"))
-      |> add(Height, LonaValue.string("100%"))
-      |> add(ResizeMode, LonaValue.string(resizeMode))
-    )
-    |> Layer.parameterMapToLogicValueMap;
-
   let imageStyleAttribute =
     Ast.JSXAttribute({
       name: "style",
       value:
-        Ast.ObjectLiteral(
-          imageStyleParameterMap
-          |> Layer.mapBindings(((key, value)) =>
-               createStyleAttributePropertyAST(framework, config, key, value)
-             ),
-        ),
+        Identifier(["styles", JavaScriptFormat.imageResizeModeHelperName(resizeMode)]),
     });
 
   JavaScriptAst.(

@@ -12,36 +12,21 @@ export default class ImageCropping extends React.Component {
       <div style={styles.view}>
         <div style={styles.aspectFit}>
           <img
-            style={{
-              width: "100%",
-              height: "100%",
-              objectFit: "contain",
-              position: "absolute"
-            }}
+            style={styles.imageResizeModeContain}
             src={require("../assets/icon_128x128.png")}
 
           />
         </div>
         <div style={styles.aspectFill}>
           <img
-            style={{
-              width: "100%",
-              height: "100%",
-              objectFit: "cover",
-              position: "absolute"
-            }}
+            style={styles.imageResizeModeCover}
             src={require("../assets/icon_128x128.png")}
 
           />
         </div>
         <div style={styles.stretchFill}>
           <img
-            style={{
-              width: "100%",
-              height: "100%",
-              objectFit: "stretch",
-              position: "absolute"
-            }}
+            style={styles.imageResizeModeStretch}
             src={require("../assets/icon_128x128.png")}
 
           />
@@ -120,5 +105,23 @@ let styles = {
     height: "100px",
     objectFit: "fill",
     position: "relative"
+  },
+  imageResizeModeContain: {
+    width: "100%",
+    height: "100%",
+    objectFit: "contain",
+    position: "absolute"
+  },
+  imageResizeModeCover: {
+    width: "100%",
+    height: "100%",
+    objectFit: "cover",
+    position: "absolute"
+  },
+  imageResizeModeStretch: {
+    width: "100%",
+    height: "100%",
+    objectFit: "stretch",
+    position: "absolute"
   }
 }

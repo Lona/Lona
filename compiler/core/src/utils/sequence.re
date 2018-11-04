@@ -87,5 +87,8 @@ let cons_uniq = (f, list, item) =>
 let dedupe = (f: ('a, list('a)) => bool, list: list('a)): list('a) =>
   List.rev(List.fold_left(cons_uniq(f), [], list));
 
+let dedupeMem = (list: list('a)): list('a) =>
+  dedupe((item, list) => List.mem(item, list), list);
+
 let occurrences = (f: 'a => bool, list: list('a)): int =>
   List.fold_right((item, acc) => f(item) ? acc + 1 : acc, list, 0);

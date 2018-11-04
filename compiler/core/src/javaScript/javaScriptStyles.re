@@ -1,3 +1,11 @@
+let styleNameKey =
+    (framework: JavaScriptOptions.framework, key: ParameterKey.t) =>
+  switch (framework, key) {
+  | (_, ParameterKey.TextStyle) => "font"
+  | (ReactDOM, ParameterKey.ResizeMode) => "objectFit"
+  | _ => key |> ParameterKey.toString
+  };
+
 let getTextStyleProperty =
     (framework: JavaScriptOptions.framework, textStyleId) =>
   JavaScriptAst.(
@@ -482,18 +490,95 @@ let createStyleObjectForLayer =
   );
 };
 
+let createStyleAttributePropertyAST =
+    (
+      framework: JavaScriptOptions.framework,
+      config: Config.t,
+      key: ParameterKey.t,
+      value: Logic.logicValue,
+    ) =>
+  switch (key) {
+  | ParameterKey.TextStyle =>
+    JavaScriptAst.SpreadElement(
+      JavaScriptLogic.logicValueToJavaScriptAST(config, value),
+    )
+  | ParameterKey.Shadow =>
+    JavaScriptAst.SpreadElement(
+      JavaScriptLogic.logicValueToJavaScriptAST(config, value),
+    )
+  | _ =>
+    JavaScriptAst.Property({
+      key: Identifier([key |> styleNameKey(framework)]),
+      value: JavaScriptLogic.logicValueToJavaScriptAST(config, value),
+    })
+  };
+
+let imageResizingStyles =
+    (
+      config: Config.t,
+      framework: JavaScriptOptions.framework,
+      rootLayer: Types.layer,
+    ) => {
+  let commonParameterMap =
+    ParameterMap.(
+      empty
+      |> add(Position, LonaValue.string("absolute"))
+      |> add(Width, LonaValue.string("100%"))
+      |> add(Height, LonaValue.string("100%"))
+    );
+
+  rootLayer
+  |> Layer.flatten
+  |> List.filter(Layer.isImageLayer)
+  |> List.map((layer: Types.layer) =>
+       switch (Layer.getStringParameterOpt(ResizeMode, layer.parameters)) {
+       | Some(value) => value
+       | None => "cover"
+       }
+     )
+  |> Sequence.dedupeMem
+  |> List.map(resizeMode =>
+       JavaScriptAst.(
+         Property({
+           key:
+             Identifier([
+               JavaScriptFormat.imageResizeModeHelperName(resizeMode),
+             ]),
+           value:
+             ObjectLiteral(
+               ParameterMap.(
+                 commonParameterMap
+                 |> add(ResizeMode, LonaValue.string(resizeMode))
+               )
+               |> Layer.parameterMapToLogicValueMap
+               |> Layer.mapBindings(((key, value)) =>
+                    createStyleAttributePropertyAST(
+                      framework,
+                      config,
+                      key,
+                      value,
+                    )
+                  ),
+             ),
+         })
+       )
+     );
+};
+
 let layerToJavaScriptStyleSheetAST =
     (
       config: Config.t,
       framework: JavaScriptOptions.framework,
       colors,
-      layer: Types.layer,
+      rootLayer: Types.layer,
     ) => {
   let styleObjects =
-    layer
+    rootLayer
     |> Layer.flatmapParent(
          createStyleObjectForLayer(config, framework, colors),
        );
+
+  let helperStyles = imageResizingStyles(config, framework, rootLayer);
 
   JavaScriptAst.(
     VariableDeclaration(
@@ -501,11 +586,12 @@ let layerToJavaScriptStyleSheetAST =
         left: Identifier(["styles"]),
         right:
           switch (framework) {
-          | JavaScriptOptions.ReactDOM => ObjectLiteral(styleObjects)
+          | JavaScriptOptions.ReactDOM =>
+            ObjectLiteral(styleObjects @ helperStyles)
           | _ =>
             CallExpression({
               callee: Identifier(["StyleSheet", "create"]),
-              arguments: [ObjectLiteral(styleObjects)],
+              arguments: [ObjectLiteral(styleObjects @ helperStyles)],
             })
           },
       }),
