@@ -26,10 +26,10 @@ extension NSImage {
         return image
     }
 
-  func crop(
-      within destination: CGSize,
-      usingCroppingMode croppingMode: CGSize.CroppingMode = .scaleAspectFit
-      ) -> NSImage {
+    func crop(
+        within destination: CGSize,
+        usingCroppingMode croppingMode: CGSize.CroppingMode = .scaleAspectFit
+        ) -> NSImage {
         let scaledImage = NSImage(size: destination)
 
         guard destination.width > 0 && destination.height > 0 else { return scaledImage }

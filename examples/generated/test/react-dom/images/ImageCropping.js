@@ -72,35 +72,36 @@ let styles = {
   aspectFit: {
     alignItems: "flex-start",
     alignSelf: "stretch",
+    display: "flex",
     flexDirection: "column",
     justifyContent: "flex-start",
     overflow: "hidden",
     height: "100px",
-    objectFit: "contain",
     position: "relative"
   },
   aspectFill: {
     alignItems: "flex-start",
     alignSelf: "stretch",
+    display: "flex",
     flexDirection: "column",
     justifyContent: "flex-start",
     overflow: "hidden",
     height: "100px",
-    objectFit: "cover",
     position: "relative"
   },
   stretchFill: {
     alignItems: "flex-start",
     alignSelf: "stretch",
+    display: "flex",
     flexDirection: "column",
     justifyContent: "flex-start",
     overflow: "hidden",
     height: "100px",
-    objectFit: "fill",
     position: "relative"
   },
   fixedAspectFill: {
     alignItems: "flex-start",
+    display: "flex",
     flexDirection: "column",
     justifyContent: "flex-start",
     overflow: "hidden",
@@ -111,6 +112,7 @@ let styles = {
   },
   fixedStretch: {
     alignItems: "flex-start",
+    display: "flex",
     flexDirection: "column",
     justifyContent: "flex-start",
     overflow: "hidden",

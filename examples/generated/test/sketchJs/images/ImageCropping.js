@@ -12,21 +12,42 @@ export default class ImageCropping extends React.Component {
 
     return (
       <View style={styles.view}>
-        <Image
-          style={styles.aspectFit}
-          source={require("../assets/icon_128x128.png")}
+        <View style={styles.aspectFit}>
+          <Image
+            style={{
+              width: "100%",
+              height: "100%",
+              resizeMode: "contain",
+              position: "absolute"
+            }}
+            source={require("../assets/icon_128x128.png")}
 
-        />
-        <Image
-          style={styles.aspectFill}
-          source={require("../assets/icon_128x128.png")}
+          />
+        </View>
+        <View style={styles.aspectFill}>
+          <Image
+            style={{
+              width: "100%",
+              height: "100%",
+              resizeMode: "cover",
+              position: "absolute"
+            }}
+            source={require("../assets/icon_128x128.png")}
 
-        />
-        <Image
-          style={styles.stretchFill}
-          source={require("../assets/icon_128x128.png")}
+          />
+        </View>
+        <View style={styles.stretchFill}>
+          <Image
+            style={{
+              width: "100%",
+              height: "100%",
+              resizeMode: "stretch",
+              position: "absolute"
+            }}
+            source={require("../assets/icon_128x128.png")}
 
-        />
+          />
+        </View>
         <Image
           style={styles.fixedAspectFill}
           source={require("../assets/icon_128x128.png")}
@@ -55,24 +76,21 @@ let styles = StyleSheet.create({
     alignSelf: "stretch",
     flexDirection: "column",
     justifyContent: "flex-start",
-    height: 100,
-    resizeMode: "contain"
+    height: 100
   },
   aspectFill: {
     alignItems: "flex-start",
     alignSelf: "stretch",
     flexDirection: "column",
     justifyContent: "flex-start",
-    height: 100,
-    resizeMode: "cover"
+    height: 100
   },
   stretchFill: {
     alignItems: "flex-start",
     alignSelf: "stretch",
     flexDirection: "column",
     justifyContent: "flex-start",
-    height: 100,
-    resizeMode: "fill"
+    height: 100
   },
   fixedAspectFill: {
     alignItems: "flex-start",
@@ -88,6 +106,6 @@ let styles = StyleSheet.create({
     justifyContent: "flex-start",
     width: 200,
     height: 100,
-    resizeMode: "fill"
+    resizeMode: "stretch"
   }
 })

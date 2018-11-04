@@ -145,6 +145,7 @@ let styles = {
   },
   image: {
     alignItems: "flex-start",
+    display: "flex",
     flexDirection: "column",
     justifyContent: "flex-start",
     overflow: "hidden",
@@ -273,6 +274,7 @@ let styles = {
   },
   image1: {
     alignItems: "flex-start",
+    display: "flex",
     flexDirection: "column",
     justifyContent: "flex-start",
     overflow: "hidden",
