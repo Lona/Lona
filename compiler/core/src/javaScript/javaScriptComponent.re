@@ -170,7 +170,10 @@ let createWrappedImageElement =
     Ast.JSXAttribute({
       name: "style",
       value:
-        Identifier(["styles", JavaScriptFormat.imageResizeModeHelperName(resizeMode)]),
+        Identifier([
+          "styles",
+          JavaScriptFormat.imageResizeModeHelperName(resizeMode),
+        ]),
     });
 
   JavaScriptAst.(
@@ -358,6 +361,25 @@ let rec layerToJavaScriptAST =
              value: Identifier(vectorAssignment.originalIdentifierPath),
            })
          ),
+      switch (
+        layer.typeName,
+        Layer.getStringParameterOpt(ResizeMode, layer.parameters),
+      ) {
+      | (VectorGraphic, Some(resizeMode)) => [
+          JSXAttribute({
+            name: "preserveAspectRatio",
+            value:
+              StringLiteral(
+                switch (resizeMode) {
+                | "contain" => "xMidYMid meet"
+                | "cover"
+                | _ => "xMidYMid slice"
+                },
+              ),
+          }),
+        ]
+      | _ => []
+      },
       attributes,
     ]
     |> List.concat;

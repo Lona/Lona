@@ -6,11 +6,19 @@ private class ToggleVector: NSBox {
     return true
   }
 
+  var resizingMode = CGSize.ResizingMode.scaleAspectFill {
+    didSet {
+      if resizingMode != oldValue {
+        needsDisplay = true
+      }
+    }
+  }
+
   override func draw(_ dirtyRect: CGRect) {
     super.draw(dirtyRect)
 
     let viewBox = CGRect(origin: CGPoint(x: 0, y: 0), size: CGSize(width: 48, height: 24))
-    let croppedRect = viewBox.size.resized(within: bounds.size)
+    let croppedRect = viewBox.size.resized(within: bounds.size, usingResizingMode: resizingMode)
     let scale = croppedRect.width / viewBox.width
     func transform(point: CGPoint) -> CGPoint {
       return CGPoint(x: point.x * scale + croppedRect.minX, y: point.y * scale + croppedRect.minY)
@@ -77,11 +85,19 @@ private class ToggleVerticalVector: NSBox {
     return true
   }
 
+  var resizingMode = CGSize.ResizingMode.scaleAspectFill {
+    didSet {
+      if resizingMode != oldValue {
+        needsDisplay = true
+      }
+    }
+  }
+
   override func draw(_ dirtyRect: CGRect) {
     super.draw(dirtyRect)
 
     let viewBox = CGRect(origin: CGPoint(x: 0, y: 0), size: CGSize(width: 24, height: 48))
-    let croppedRect = viewBox.size.resized(within: bounds.size)
+    let croppedRect = viewBox.size.resized(within: bounds.size, usingResizingMode: resizingMode)
     let scale = croppedRect.width / viewBox.width
     func transform(point: CGPoint) -> CGPoint {
       return CGPoint(x: point.x * scale + croppedRect.minX, y: point.y * scale + croppedRect.minY)
@@ -148,11 +164,19 @@ private class CheckCircleVector: NSBox {
     return true
   }
 
+  var resizingMode = CGSize.ResizingMode.scaleAspectFill {
+    didSet {
+      if resizingMode != oldValue {
+        needsDisplay = true
+      }
+    }
+  }
+
   override func draw(_ dirtyRect: CGRect) {
     super.draw(dirtyRect)
 
     let viewBox = CGRect(origin: CGPoint(x: 0, y: 0), size: CGSize(width: 24, height: 24))
-    let croppedRect = viewBox.size.resized(within: bounds.size)
+    let croppedRect = viewBox.size.resized(within: bounds.size, usingResizingMode: resizingMode)
     let scale = croppedRect.width / viewBox.width
     func transform(point: CGPoint) -> CGPoint {
       return CGPoint(x: point.x * scale + croppedRect.minX, y: point.y * scale + croppedRect.minY)
@@ -237,6 +261,8 @@ public class VectorAsset: NSBox {
     addSubview(vectorGraphic2View)
     addSubview(vectorGraphic3View)
 
+    vectorGraphic1View.resizingMode = .scaleAspectFit
+    vectorGraphic2View.resizingMode = .scaleAspectFit
     vectorGraphic3View.fillColor = Colors.green50
   }
 
@@ -268,7 +294,7 @@ public class VectorAsset: NSBox {
       .constraint(equalTo: trailingAnchor)
     let vectorGraphic1ViewHeightAnchorConstraint = vectorGraphic1View.heightAnchor.constraint(equalToConstant: 100)
     let vectorGraphic2ViewHeightAnchorConstraint = vectorGraphic2View.heightAnchor.constraint(equalToConstant: 100)
-    let vectorGraphic3ViewHeightAnchorConstraint = vectorGraphic3View.heightAnchor.constraint(equalToConstant: 100)
+    let vectorGraphic3ViewHeightAnchorConstraint = vectorGraphic3View.heightAnchor.constraint(equalToConstant: 200)
 
     NSLayoutConstraint.activate([
       vectorGraphic1ViewTopAnchorConstraint,

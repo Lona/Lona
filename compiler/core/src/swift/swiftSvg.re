@@ -449,6 +449,11 @@ let rec convertNode =
                           SwiftIdentifier("size"),
                         ]),
                     }),
+                    FunctionCallArgument({
+                      "name": Some(SwiftIdentifier("usingResizingMode")),
+                      "value":
+                        MemberExpression([SwiftIdentifier("resizingMode")]),
+                    }),
                   ],
                 }),
               ),

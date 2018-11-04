@@ -46,6 +46,13 @@ let toSwiftAST =
     | _ => SwiftIdentifier("BadIdentifier")
     };
   let logicValueToSwiftAST = x => {
+    let layer =
+      switch (x) {
+      | Logic.Identifier(_, ["layers", layerName, ..._]) =>
+        Layer.findByName(layerName, rootLayer)
+      | Logic.Identifier(_) => None
+      | Literal(_) => None
+      };
     let initialValue =
       switch (x) {
       | Logic.Identifier(_) => identifierName(x)
@@ -93,9 +100,16 @@ let toSwiftAST =
       )
     | (UIKit, Ast.SwiftIdentifier(name))
         when name |> Js.String.endsWith(".resizeMode") || name == "resizeMode" =>
-      Ast.SwiftIdentifier(
-        name |> Js.String.replace("resizeMode", "contentMode"),
-      )
+      switch (layer) {
+      | Some((layer: Types.layer)) when layer.typeName == Types.VectorGraphic =>
+        Ast.SwiftIdentifier(
+          name |> Js.String.replace("resizeMode", "resizingMode"),
+        )
+      | _ =>
+        Ast.SwiftIdentifier(
+          name |> Js.String.replace("resizeMode", "contentMode"),
+        )
+      }
     | (UIKit, Ast.SwiftIdentifier(name))
         when
           name |> Js.String.endsWith(".borderWidth") || name == "borderWidth" =>
@@ -171,8 +185,7 @@ let toSwiftAST =
             |> Js.String.endsWith("contentMode")
             && options.framework == UIKit
             || name
-            |> Js.String.endsWith("resizingMode")
-            && options.framework == AppKit =>
+            |> Js.String.endsWith("resizingMode") =>
         Ast.BinaryExpression({
           "left": left,
           "operator": "=",

@@ -641,12 +641,19 @@ and renderInitializerBlock = (node: SwiftAst.initializerBlock) =>
   switch (node) {
   | GetterBlock(list) => render(CodeBlock({"statements": list}))
   | WillSetDidSetBlock(o) =>
-    /* Special case single-statement willSet/didSet and render them in a single line
+    /* Special case some single-statement willSet/didSet and render them in a single line
        since they are common in our generated code and are easier to read than multiline */
-    let renderStatements = statements =>
+    let isSingleLine = statements =>
       switch (statements) {
-      | [only] => s("{ ") <+> render(only) <+> s(" }")
-      | _ => render(CodeBlock({"statements": statements}))
+      | [SwiftAst.IfStatement(_)] => false
+      | [_a] => true
+      | _ => false
+      };
+    let renderStatements = statements =>
+      if (isSingleLine(statements)) {
+        s("{ ") <+> (statements |> List.map(render) |> concat) <+> s(" }");
+      } else {
+        render(CodeBlock({"statements": statements}));
       };
     let willSet =
       o##willSet
@@ -660,8 +667,14 @@ and renderInitializerBlock = (node: SwiftAst.initializerBlock) =>
          );
     switch (o##willSet, o##didSet) {
     | (None, None) => empty
-    | (None, Some(_)) => group(join(line, [s("{"), didSet, s("}")]))
-    | (Some(_), None) => group(join(line, [s("{"), willSet, s("}")]))
+    | (None, Some(statements)) when isSingleLine(statements) =>
+      group(join(line, [s("{"), indent(didSet), s("}")]))
+    | (None, Some(_)) =>
+      s("{") <+> indent(hardline <+> didSet) <+> hardline <+> s("}")
+    | (Some(statements), None) when isSingleLine(statements) =>
+      group(join(line, [s("{"), willSet, s("}")]))
+    | (Some(_), None) =>
+      s("{") <+> indent(hardline <+> willSet) <+> hardline <+> s("}")
     /* | (None, Some(_)) => s("{") <+> indent(hardline <+> didSet) <+> hardline <+> s("}")
        | (Some(_), None) => s("{") <+> indent(hardline <+> willSet) <+> hardline <+> s("}") */
     | (Some(_), Some(_)) =>

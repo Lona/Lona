@@ -230,11 +230,16 @@ extension NSBezierPath {
 }
 
 extension SVG.Node {
-    func image(size: CGSize, dynamicValues: CSData = CSData.Null) -> NSImage? {
+    func image(
+        size: CGSize,
+        resizingMode: CGSize.ResizingMode = .scaleAspectFit,
+        dynamicValues: CSData = CSData.Null
+        ) -> NSImage? {
+
         guard case .svg(let svg) = self else { return nil }
 
         let viewBox = svg.params.viewBox?.cgRect ?? CGRect(origin: .zero, size: size)
-        let croppedRect = viewBox.size.resized(within: size)
+        let croppedRect = viewBox.size.resized(within: size, usingResizingMode: resizingMode)
         let scale = croppedRect.width / viewBox.width
 
         func transform(point: CGPoint) -> CGPoint {
@@ -449,13 +454,17 @@ extension SVG {
         contentsOf url: URL,
         dynamicValues: CSData = CSData.Null,
         size: CGSize,
+        resizingMode: CGSize.ResizingMode,
         successHandler: @escaping (NSImage) -> Void) {
 
         guard size != .zero else { return }
 
         decode(contentsOf: url, successHandler: { svg in
             DispatchQueue.main.async {
-                guard let image = svg.image(size: size, dynamicValues: dynamicValues) else { return }
+                guard let image = svg.image(
+                    size: size,
+                    resizingMode: resizingMode,
+                    dynamicValues: dynamicValues) else { return }
                 successHandler(image)
             }
         })
@@ -464,13 +473,17 @@ extension SVG {
     static func renderSync(
         contentsOf url: URL,
         dynamicValues: CSData = CSData.Null,
-        size: CGSize) -> NSImage? {
+        size: CGSize,
+        resizingMode: CGSize.ResizingMode) -> NSImage? {
 
         guard size != .zero else { return nil }
 
         guard let svg = decodeSync(contentsOf: url) else { return nil }
 
-        guard let image = svg.image(size: size, dynamicValues: dynamicValues) else { return nil }
+        guard let image = svg.image(
+            size: size,
+            resizingMode: resizingMode,
+            dynamicValues: dynamicValues) else { return nil }
 
         return image
     }

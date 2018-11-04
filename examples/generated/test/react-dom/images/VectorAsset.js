@@ -6,7 +6,11 @@ import textStyles from "../textStyles"
 
 let ToggleVector = (props) => {
   return (
-    <svg style={props.style} viewBox={"0 0 48 24"}>
+    <svg
+      style={props.style}
+      preserveAspectRatio={props.preserveAspectRatio || "xMidYMid slice"}
+      viewBox={"0 0 48 24"}
+    >
       <path
         d={"M12,0.5L36,0.5C42.3512746231,0.5 47.5,5.64872537694 47.5,12L47.5,12C47.5,18.3512746231 42.3512746231,23.5 36,23.5L12,23.5C5.64872537694,23.5 0.5,18.3512746231 0.5,12L0.5,12C0.5,5.64872537694 5.64872537694,0.5 12,0.5Z"}
         fill={"#00C121"}
@@ -25,7 +29,11 @@ let ToggleVector = (props) => {
 }
 let ToggleVerticalVector = (props) => {
   return (
-    <svg style={props.style} viewBox={"0 0 24 48"}>
+    <svg
+      style={props.style}
+      preserveAspectRatio={props.preserveAspectRatio || "xMidYMid slice"}
+      viewBox={"0 0 24 48"}
+    >
       <path
         d={"M12,0.5L12,0.5C18.3512746231,0.5 23.5,5.64872537694 23.5,12L23.5,36C23.5,42.3512746231 18.3512746231,47.5 12,47.5L12,47.5C5.64872537694,47.5 0.5,42.3512746231 0.5,36L0.5,12C0.5,5.64872537694 5.64872537694,0.5 12,0.5Z"}
         fill={"#8CDCFF"}
@@ -44,7 +52,11 @@ let ToggleVerticalVector = (props) => {
 }
 let CheckCircleVector = (props) => {
   return (
-    <svg style={props.style} viewBox={"0 0 24 24"}>
+    <svg
+      style={props.style}
+      preserveAspectRatio={props.preserveAspectRatio || "xMidYMid slice"}
+      viewBox={"0 0 24 24"}
+    >
       <path
         d={"M12,0L12,0C18.627416998,0 24,5.37258300203 24,12L24,12C24,18.627416998 18.627416998,24 12,24L12,24C5.37258300203,24 0,18.627416998 0,12L0,12C0,5.37258300203 5.37258300203,0 12,0Z"}
         fill={"#00C121"}
@@ -68,8 +80,16 @@ export default class VectorAsset extends React.Component {
 
     return (
       <div style={styles.view}>
-        <ToggleVector style={styles.vectorGraphic1} />
-        <ToggleVerticalVector style={styles.vectorGraphic2} />
+        <ToggleVector
+          style={styles.vectorGraphic1}
+          preserveAspectRatio={"xMidYMid meet"}
+
+        />
+        <ToggleVerticalVector
+          style={styles.vectorGraphic2}
+          preserveAspectRatio={"xMidYMid meet"}
+
+        />
         <CheckCircleVector style={styles.vectorGraphic3} />
       </div>
     );
@@ -90,7 +110,8 @@ let styles = {
     display: "flex",
     flexDirection: "column",
     justifyContent: "flex-start",
-    height: "100px"
+    height: "100px",
+    objectFit: "contain"
   },
   vectorGraphic2: {
     alignItems: "flex-start",
@@ -98,7 +119,8 @@ let styles = {
     display: "flex",
     flexDirection: "column",
     justifyContent: "flex-start",
-    height: "100px"
+    height: "100px",
+    objectFit: "contain"
   },
   vectorGraphic3: {
     alignItems: "flex-start",
@@ -107,6 +129,6 @@ let styles = {
     display: "flex",
     flexDirection: "column",
     justifyContent: "flex-start",
-    height: "100px"
+    height: "200px"
   }
 }

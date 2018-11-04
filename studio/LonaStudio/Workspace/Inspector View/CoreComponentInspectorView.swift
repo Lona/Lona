@@ -22,6 +22,18 @@ private let DIMENSION_SIZING_IMAGE_VALUE_TO_TITLE = [
     "Expand": "Fill"
 ]
 
+private let RESIZE_MODE_VALUES = ["cover", "contain", "stretch"]
+private let RESIZE_MODE_VALUE_TO_TITLE = [
+    "cover": "Aspect-preserving Fill",
+    "contain": "Aspect-preserving Fit",
+    "stretch": "Stretch Fill"
+]
+private let RESIZE_MODE_VECTOR_VALUES = ["cover", "contain"]
+private let RESIZE_MODE_VECTOR_VALUE_TO_TITLE = [
+    "cover": "Aspect-preserving Fill",
+    "contain": "Aspect-preserving Fit"
+]
+
 class CoreComponentInspectorView: NSStackView {
 
     typealias Properties = [Property: CSData]
@@ -763,6 +775,19 @@ class CoreComponentInspectorView: NSStackView {
             let valueToTitle = DIMENSION_SIZING_VALUE_TO_TITLE
             widthSizingRuleView.set(values: values, valueToTitle: valueToTitle)
             heightSizingRuleView.set(values: values, valueToTitle: valueToTitle)
+        }
+
+        switch layerType {
+        case .builtIn(.image):
+            let values = RESIZE_MODE_VALUES
+            let valueToTitle = RESIZE_MODE_VALUE_TO_TITLE
+            imageResizeModeView.set(values: values, valueToTitle: valueToTitle)
+        case .builtIn(.vectorGraphic):
+            let values = RESIZE_MODE_VECTOR_VALUES
+            let valueToTitle = RESIZE_MODE_VECTOR_VALUE_TO_TITLE
+            imageResizeModeView.set(values: values, valueToTitle: valueToTitle)
+        default:
+            break
         }
 
         let fields: [(control: CSControl, property: Property)] = [

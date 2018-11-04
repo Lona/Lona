@@ -109,6 +109,7 @@
         "params" : {
           "height" : 100,
           "image" : "file:\/\/.\/assets\/check-circle.svg",
+          "resizeMode" : "contain",
           "width" : 100
         },
         "type" : "Lona:VectorGraphic"

@@ -195,6 +195,59 @@ let generateVectorGraphic =
             ] :
             [],
           [
+            VariableDeclaration({
+              "modifiers": [],
+              "pattern":
+                IdentifierPattern({
+                  "identifier": SwiftIdentifier("resizingMode"),
+                  "annotation": None,
+                }),
+              "init":
+                Some(
+                  SwiftAst.Builders.memberExpression([
+                    "CGSize",
+                    "ResizingMode",
+                    "scaleAspectFill",
+                  ]),
+                ),
+              "block":
+                Some(
+                  WillSetDidSetBlock({
+                    "willSet": None,
+                    "didSet":
+                      Some([
+                        IfStatement({
+                          "condition":
+                            BinaryExpression({
+                              "left": SwiftIdentifier("resizingMode"),
+                              "operator": "!=",
+                              "right": SwiftIdentifier("oldValue"),
+                            }),
+                          "block": [
+                            switch (swiftOptions.framework) {
+                            | UIKit =>
+                              SwiftAst.Builders.functionCall(
+                                ["setNeedsDisplay"],
+                                [],
+                              )
+                            | AppKit =>
+                              BinaryExpression({
+                                "left":
+                                  SwiftAst.Builders.memberExpression([
+                                    "needsDisplay",
+                                  ]),
+                                "operator": "=",
+                                "right": LiteralExpression(Boolean(true)),
+                              })
+                            },
+                          ],
+                        }),
+                      ]),
+                  }),
+                ),
+            }),
+          ],
+          [
             FunctionDeclaration({
               "name": "draw",
               "modifiers": [OverrideModifier],

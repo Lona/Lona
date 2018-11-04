@@ -5,9 +5,17 @@ private class CheckCircleVector: UIView {
   public var ovalFill = #colorLiteral(red: 0, green: 0.756862745098, blue: 0.129411764706, alpha: 1)
   public var pathStroke = #colorLiteral(red: 1, green: 1, blue: 1, alpha: 1)
 
+  var resizingMode = CGSize.ResizingMode.scaleAspectFill {
+    didSet {
+      if resizingMode != oldValue {
+        setNeedsDisplay()
+      }
+    }
+  }
+
   override func draw(_ dirtyRect: CGRect) {
     let viewBox = CGRect(origin: CGPoint(x: 0, y: 0), size: CGSize(width: 24, height: 24))
-    let croppedRect = viewBox.size.resized(within: bounds.size)
+    let croppedRect = viewBox.size.resized(within: bounds.size, usingResizingMode: resizingMode)
     let scale = croppedRect.width / viewBox.width
     func transform(point: CGPoint) -> CGPoint {
       return CGPoint(x: point.x * scale + croppedRect.minX, y: point.y * scale + croppedRect.minY)
@@ -86,6 +94,8 @@ public class VectorLogic: UIView {
     checkView.isOpaque = false
 
     addSubview(checkView)
+
+    checkView.resizingMode = .scaleAspectFit
   }
 
   private func setUpConstraints() {
