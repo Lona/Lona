@@ -6,7 +6,11 @@ import textStyles from "../textStyles"
 
 let CheckCircleVector = (props) => {
   return (
-    <svg style={props.style} viewBox={"0 0 24 24"}>
+    <svg
+      style={props.style}
+      preserveAspectRatio={props.preserveAspectRatio || "xMidYMid slice"}
+      viewBox={"0 0 24 24"}
+    >
       <path
         d={"M12,0L12,0C18.627416998,0 24,5.37258300203 24,12L24,12C24,18.627416998 18.627416998,24 12,24L12,24C5.37258300203,24 0,18.627416998 0,12L0,12C0,5.37258300203 5.37258300203,0 12,0Z"}
         fill={props.ovalFill || "#00C121"}
@@ -40,11 +44,13 @@ export default class RepeatedVector extends React.Component {
         <CheckCircleVector
           style={styles.check}
           ovalFill={Check$vector$oval$fill}
+          preserveAspectRatio={"xMidYMid meet"}
 
         />
         <CheckCircleVector
           style={styles.anotherCheck}
           pathStroke={AnotherCheck$vector$path$stroke}
+          preserveAspectRatio={"xMidYMid meet"}
 
         />
       </div>
@@ -66,7 +72,8 @@ let styles = {
     flexDirection: "column",
     justifyContent: "flex-start",
     width: "100px",
-    height: "100px"
+    height: "100px",
+    objectFit: "contain"
   },
   anotherCheck: {
     alignItems: "flex-start",
@@ -74,6 +81,7 @@ let styles = {
     flexDirection: "column",
     justifyContent: "flex-start",
     width: "100px",
-    height: "100px"
+    height: "100px",
+    objectFit: "contain"
   }
 }

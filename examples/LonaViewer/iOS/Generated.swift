@@ -13,6 +13,7 @@ enum Generated: String {
     case vectorAsset = "Vector Asset"
     case vectorLogicActive = "Vector Logic - Active"
     case vectorLogicInactive = "Vector Logic - Inactive"
+    case imageCropping = "Image Cropping"
     case repeatedVector = "Repeated Vector"
     case nestedComponent = "Nested Component"
     case nestedButtons = "Nested Buttons"
@@ -44,6 +45,7 @@ enum Generated: String {
             vectorLogicActive,
             vectorLogicInactive,
             repeatedVector,
+            imageCropping,
             nestedComponent,
             nestedButtons,
             button,
@@ -131,6 +133,8 @@ enum Generated: String {
             return VectorLogic(active: false)
         case .repeatedVector:
             return RepeatedVector(active: true)
+        case .imageCropping:
+            return ImageCropping()
         }
     }
 
@@ -160,7 +164,8 @@ enum Generated: String {
              .vectorLogicActive,
              .vectorLogicInactive,
              .repeatedVector,
-             .textStylesTest:
+             .textStylesTest,
+             .imageCropping:
             return [
                 equal(\.topAnchor, \.safeAreaLayoutGuide.topAnchor),
                 equal(\.leftAnchor),

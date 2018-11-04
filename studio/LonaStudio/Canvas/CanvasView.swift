@@ -248,12 +248,14 @@ func renderBox(configuredLayer: ConfiguredLayer, node: YGNodeRef, options: Rende
             scale = ceil(scale)
 
             if let cached = imageCache.contents(for: url, at: scale) {
+                box.resizingMode = layer.resizeMode?.resizingMode() ?? .scaleAspectFill
                 box.backgroundImage = cached
             } else {
                 let nsImage = NSImage(contentsOf: url)
                 nsImage?.cacheMode = .always
 
                 if let contents = nsImage {
+                    box.resizingMode = layer.resizeMode?.resizingMode() ?? .scaleAspectFill
                     box.backgroundImage = contents
                     imageCache.add(contents: contents, for: url, at: scale)
                 }
@@ -261,19 +263,25 @@ func renderBox(configuredLayer: ConfiguredLayer, node: YGNodeRef, options: Rende
         }
     } else if layer.type == .vectorGraphic {
         let imageValue: String? = config.get(attribute: "image", for: layer.name).string ?? layer.image
+        let resizingMode = layer.resizeMode?.resizingMode() ?? .scaleAspectFill
 
         if let imageValue = imageValue, let url = URL(string: imageValue)?.absoluteURLForWorkspaceURL() {
 
             let dynamicValues = config.get(attribute: "vector", for: layer.name)
 
-            let cacheKey = "\(imageValue)*w\(layout.width)*h\(layout.height)*\(dynamicValues.toData()?.utf8String() ?? "")"
+            let cacheKey = "\(imageValue)*w\(layout.width)*h\(layout.height)*r\(resizingMode.hashValue)\(dynamicValues.toData()?.utf8String() ?? "")"
+
+            // We draw the svg into an image that has the exact same dimensions as the view,
+            // so we can scale the image to fill the view without it stretching.
+            box.resizingMode = .scaleToFill
 
             if let cached = svgRenderCache.item(for: cacheKey) {
                 box.backgroundImage = cached
             } else if let image = SVG.renderSync(
                 contentsOf: url,
                 dynamicValues: dynamicValues,
-                size: CGSize(width: layout.width, height: layout.height)) {
+                size: CGSize(width: layout.width, height: layout.height),
+                resizingMode: resizingMode) {
 
                 image.cacheMode = .always
                 box.backgroundImage = image

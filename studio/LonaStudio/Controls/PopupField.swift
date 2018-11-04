@@ -27,6 +27,16 @@ class PopupField: NSPopUpButton, CSControl {
         target = self
     }
 
+    func set(values: [String], valueToTitle: [String: String]) {
+        removeAllItems()
+
+        let titles = values.map({ valueToTitle[$0] }).compactMap({ $0 })
+        addItems(withTitles: titles)
+
+        self.values = values
+        self.titles = titles
+    }
+
     override init(frame buttonFrame: NSRect, pullsDown flag: Bool) {
         super.init(frame: buttonFrame, pullsDown: flag)
         setup()
@@ -46,11 +56,7 @@ class PopupField: NSPopUpButton, CSControl {
         super.init(frame: frameRect)
         setup()
 
-        let titles = values.map({ valueToTitle[$0] }).compactMap({ $0 })
-        addItems(withTitles: titles)
-
-        self.values = values
-        self.titles = titles
+        set(values: values, valueToTitle: valueToTitle)
     }
 
     convenience init(frame frameRect: NSRect, values: [String], initialValue: String?) {
@@ -73,13 +79,17 @@ class PopupField: NSPopUpButton, CSControl {
     }
 
     func valueFor(title: String) -> String? {
-        guard let index = titles?.index(of: title) else { return nil }
-        return values?[index]
+        guard let index = titles?.index(of: title),
+            let values = values,
+            values.count > index else { return nil }
+        return values[index]
     }
 
     func titleFor(value: String) -> String? {
-        guard let index = values?.index(of: value) else { return nil }
-        return titles?[index]
+        guard let index = values?.index(of: value),
+            let titles = titles,
+            titles.count > index else { return nil }
+        return titles[index]
     }
 
     @objc func handleChange() {

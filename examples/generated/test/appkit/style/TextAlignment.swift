@@ -23,7 +23,7 @@ public class TextAlignment: NSBox {
   // MARK: Private
 
   private var view1View = NSBox()
-  private var imageView = NSImageView()
+  private var imageView = LNAImageView()
   private var view2View = NSBox()
   private var textView = LNATextField(labelWithString: "")
   private var text1View = LNATextField(labelWithString: "")
@@ -41,7 +41,7 @@ public class TextAlignment: NSBox {
   private var rightAlignmentContainerView = NSBox()
   private var text9View = LNATextField(labelWithString: "")
   private var text10View = LNATextField(labelWithString: "")
-  private var image1View = NSImageView()
+  private var image1View = LNAImageView()
 
   private var textViewTextStyle = TextStyles.display1.with(alignment: .center)
   private var text1ViewTextStyle = TextStyles.subheading2.with(alignment: .center)

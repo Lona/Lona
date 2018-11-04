@@ -1,3 +1,11 @@
+let styleNameKey =
+    (framework: JavaScriptOptions.framework, key: ParameterKey.t) =>
+  switch (framework, key) {
+  | (_, ParameterKey.TextStyle) => "font"
+  | (ReactDOM, ParameterKey.ResizeMode) => "objectFit"
+  | _ => key |> ParameterKey.toString
+  };
+
 let getTextStyleProperty =
     (framework: JavaScriptOptions.framework, textStyleId) =>
   JavaScriptAst.(
@@ -47,7 +55,13 @@ let getStyleProperty =
       value: Types.lonaValue,
     ) => {
   let keyIdentifier =
-    JavaScriptAst.Identifier([key |> ParameterKey.toString]);
+    JavaScriptAst.Identifier([
+      switch (framework) {
+      | ReactDOM => key |> ReactDomTranslators.styleVariableNames
+      | ReactNative
+      | ReactSketchapp => key |> ParameterKey.toString
+      },
+    ]);
   switch (value.ltype) {
   | Named("TextStyle", _)
   | Reference("TextStyle") =>
@@ -79,7 +93,16 @@ let getStyleProperty =
     | None =>
       JavaScriptAst.Property({key: keyIdentifier, value: Literal(value)})
     };
-  | _ => JavaScriptAst.Property({key: keyIdentifier, value: Literal(value)})
+  | _ =>
+    let value =
+      switch (framework, key) {
+      | (ReactDOM, ParameterKey.ResizeMode) =>
+        LonaValue.string(
+          ReactDomTranslators.resizeMode(value.data |> Json.Decode.string),
+        )
+      | _ => value
+      };
+    JavaScriptAst.Property({key: keyIdentifier, value: Literal(value)});
   };
 };
 
@@ -324,26 +347,14 @@ let getLayoutParameters =
         )
       );
 
-    /* Images should not expand outside their parent, even if their natural size
-       exceeds the size of their parent. */
+    /* Always add relative positioning to images. Sometimes images will be wrapped
+       in a div and absolute-positioned within. */
     let parameters =
       ParameterMap.(
         if (framework == ReactDOM && layer.typeName == Image) {
-          let parameters =
-            switch (layout.width) {
-            | Fixed(_) => parameters
-            | Fill
-            | FitContent =>
-              parameters |> add(MaxWidth, LonaValue.string("100%"))
-            };
-          let parameters =
-            switch (layout.height) {
-            | Fixed(_) => parameters
-            | Fill
-            | FitContent =>
-              parameters |> add(MaxHeight, LonaValue.string("100%"))
-            };
-          parameters;
+          parameters
+          |> add(Position, LonaValue.string("relative"))
+          |> add(Overflow, LonaValue.string("hidden"));
         } else {
           parameters;
         }
@@ -408,6 +419,33 @@ let handleNumberOfLines =
   | (_, _) => parameters
   };
 
+let handleResizeMode =
+    (
+      _framework: JavaScriptOptions.framework,
+      _config: Config.t,
+      parent: option(Types.layer),
+      layer: Types.layer,
+      parameters,
+    ) => {
+  let layout = Layer.getLayout(parent, layer.parameters);
+
+  /* Images without fixed dimensions are absolute positioned within a wrapper.
+     We need to remove the resizeMode style from the wrapper. It will be added
+     to the image itself elsewhere. */
+  switch (layer.typeName, layout.width, layout.height) {
+  | (Image, Fixed(_), Fixed(_)) =>
+    switch (ParameterMap.find_opt(ParameterKey.ResizeMode, parameters)) {
+    | Some(_) => parameters
+    | None =>
+      parameters
+      |> ParameterMap.add(ParameterKey.ResizeMode, LonaValue.string("cover"))
+    }
+  | (Image, _, _) =>
+    parameters |> ParameterMap.remove(ParameterKey.ResizeMode)
+  | _ => parameters
+  };
+};
+
 let createStyleObjectForLayer =
     (
       config: Config.t,
@@ -418,7 +456,7 @@ let createStyleObjectForLayer =
     ) => {
   let layoutParameters = getLayoutParameters(framework, parent, layer);
 
-  /* We replace all of these keys with the appropriate dfeaults for the framework */
+  /* We replace all of these keys with the appropriate defaults for the framework */
   let replacedKeys = [
     ParameterKey.AlignItems,
     ParameterKey.AlignSelf,
@@ -442,6 +480,7 @@ let createStyleObjectForLayer =
           |> ParameterMap.assign(
                defaultStyles(framework, config, layer.typeName),
              )
+          |> handleResizeMode(framework, config, parent, layer)
           |> ParameterMap.bindings
           |> List.map(((key, value)) =>
                getStylePropertyWithUnits(framework, colors, key, value)
@@ -451,18 +490,95 @@ let createStyleObjectForLayer =
   );
 };
 
+let createStyleAttributePropertyAST =
+    (
+      framework: JavaScriptOptions.framework,
+      config: Config.t,
+      key: ParameterKey.t,
+      value: Logic.logicValue,
+    ) =>
+  switch (key) {
+  | ParameterKey.TextStyle =>
+    JavaScriptAst.SpreadElement(
+      JavaScriptLogic.logicValueToJavaScriptAST(config, value),
+    )
+  | ParameterKey.Shadow =>
+    JavaScriptAst.SpreadElement(
+      JavaScriptLogic.logicValueToJavaScriptAST(config, value),
+    )
+  | _ =>
+    JavaScriptAst.Property({
+      key: Identifier([key |> styleNameKey(framework)]),
+      value: JavaScriptLogic.logicValueToJavaScriptAST(config, value),
+    })
+  };
+
+let imageResizingStyles =
+    (
+      config: Config.t,
+      framework: JavaScriptOptions.framework,
+      rootLayer: Types.layer,
+    ) => {
+  let commonParameterMap =
+    ParameterMap.(
+      empty
+      |> add(Position, LonaValue.string("absolute"))
+      |> add(Width, LonaValue.string("100%"))
+      |> add(Height, LonaValue.string("100%"))
+    );
+
+  rootLayer
+  |> Layer.flatten
+  |> List.filter(Layer.isImageLayer)
+  |> List.map((layer: Types.layer) =>
+       switch (Layer.getStringParameterOpt(ResizeMode, layer.parameters)) {
+       | Some(value) => value
+       | None => "cover"
+       }
+     )
+  |> Sequence.dedupeMem
+  |> List.map(resizeMode =>
+       JavaScriptAst.(
+         Property({
+           key:
+             Identifier([
+               JavaScriptFormat.imageResizeModeHelperName(resizeMode),
+             ]),
+           value:
+             ObjectLiteral(
+               ParameterMap.(
+                 commonParameterMap
+                 |> add(ResizeMode, LonaValue.string(resizeMode))
+               )
+               |> Layer.parameterMapToLogicValueMap
+               |> Layer.mapBindings(((key, value)) =>
+                    createStyleAttributePropertyAST(
+                      framework,
+                      config,
+                      key,
+                      value,
+                    )
+                  ),
+             ),
+         })
+       )
+     );
+};
+
 let layerToJavaScriptStyleSheetAST =
     (
       config: Config.t,
       framework: JavaScriptOptions.framework,
       colors,
-      layer: Types.layer,
+      rootLayer: Types.layer,
     ) => {
   let styleObjects =
-    layer
+    rootLayer
     |> Layer.flatmapParent(
          createStyleObjectForLayer(config, framework, colors),
        );
+
+  let helperStyles = imageResizingStyles(config, framework, rootLayer);
 
   JavaScriptAst.(
     VariableDeclaration(
@@ -470,11 +586,12 @@ let layerToJavaScriptStyleSheetAST =
         left: Identifier(["styles"]),
         right:
           switch (framework) {
-          | JavaScriptOptions.ReactDOM => ObjectLiteral(styleObjects)
+          | JavaScriptOptions.ReactDOM =>
+            ObjectLiteral(styleObjects @ helperStyles)
           | _ =>
             CallExpression({
               callee: Identifier(["StyleSheet", "create"]),
-              arguments: [ObjectLiteral(styleObjects)],
+              arguments: [ObjectLiteral(styleObjects @ helperStyles)],
             })
           },
       }),

@@ -33,9 +33,14 @@ let parameterType = key =>
   | BorderWidth => Types.numberType
   | BorderColor => Types.colorType
   | Width => Types.numberType
+  | MaxWidth => Types.stringType
   | Height => Types.numberType
+  | MaxHeight => Types.stringType
   | TextStyle => Types.textStyleType
   | Shadow => Types.shadowType
+  | ResizeMode => Types.stringType
+  | Position => Types.stringType
+  | Overflow => Types.stringType
   /* Interactivity */
   | Pressed => Types.booleanType
   | Hovered => Types.booleanType

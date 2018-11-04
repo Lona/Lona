@@ -41,7 +41,8 @@
         "params" : {
           "alignSelf" : "stretch",
           "height" : 100,
-          "image" : "file:\/\/.\/assets\/toggle.svg"
+          "image" : "file:\/\/.\/assets\/toggle.svg",
+          "resizeMode" : "contain"
         },
         "type" : "Lona:VectorGraphic"
       },
@@ -50,7 +51,8 @@
         "params" : {
           "alignSelf" : "stretch",
           "height" : 100,
-          "image" : "file:\/\/.\/assets\/toggle-vertical.svg"
+          "image" : "file:\/\/.\/assets\/toggle-vertical.svg",
+          "resizeMode" : "contain"
         },
         "type" : "Lona:VectorGraphic"
       },
@@ -59,7 +61,7 @@
         "params" : {
           "alignSelf" : "stretch",
           "backgroundColor" : "green50",
-          "height" : 100,
+          "height" : 200,
           "image" : "file:\/\/.\/assets\/check-circle.svg"
         },
         "type" : "Lona:VectorGraphic"

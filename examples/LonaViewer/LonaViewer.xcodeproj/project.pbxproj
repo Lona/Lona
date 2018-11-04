@@ -55,8 +55,6 @@
 		30F870B920864A88007ADA5B /* NestedButtons.swift in Sources */ = {isa = PBXBuildFile; fileRef = 30F870B820864A88007ADA5B /* NestedButtons.swift */; };
 		30F870BB20864AEE007ADA5B /* Button.swift in Sources */ = {isa = PBXBuildFile; fileRef = 30F870BA20864AEE007ADA5B /* Button.swift */; };
 		6B1086EF21780A890024AE56 /* VectorAsset.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6B1086EE21780A890024AE56 /* VectorAsset.swift */; };
-		6B1086F121781B220024AE56 /* CGSize+Crop.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6B1086F021781B220024AE56 /* CGSize+Crop.swift */; };
-		6B1086F321793EC30024AE56 /* CGSize+Crop.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6B1086F221793EC30024AE56 /* CGSize+Crop.swift */; };
 		6B1086F521793F5C0024AE56 /* VectorAsset.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6B1086F421793F5C0024AE56 /* VectorAsset.swift */; };
 		6B1086FF217A700B0024AE56 /* VectorLogic.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6B1086FE217A700A0024AE56 /* VectorLogic.swift */; };
 		6B3916FD21601C5900B20F9E /* BoxModelConditional.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6B3916FC21601C5900B20F9E /* BoxModelConditional.swift */; };
@@ -67,6 +65,12 @@
 		6B39170821643EF300B20F9E /* ShadowsTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6B39170721643EF300B20F9E /* ShadowsTest.swift */; };
 		6B39170A2164492600B20F9E /* Shadow.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6B3917092164492600B20F9E /* Shadow.swift */; };
 		6B6D4423218BCF150016262C /* LNATextField.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6B6D4422218BCF150016262C /* LNATextField.swift */; };
+		6B6D4425218E31EF0016262C /* ImageCropping.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6B6D4424218E31EF0016262C /* ImageCropping.swift */; };
+		6B6D4429218F565C0016262C /* CGSize+Resizing.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6B6D4428218F565C0016262C /* CGSize+Resizing.swift */; };
+		6B6D442B218F566B0016262C /* CGSize+Resizing.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6B6D442A218F566B0016262C /* CGSize+Resizing.swift */; };
+		6B6D442D218F56B60016262C /* ImageCropping.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6B6D442C218F56B60016262C /* ImageCropping.swift */; };
+		6B6D442F218F5D430016262C /* NSImage+Resizing.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6B6D442E218F5D430016262C /* NSImage+Resizing.swift */; };
+		6B6D4431218F67840016262C /* LNAImageView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6B6D4430218F67840016262C /* LNAImageView.swift */; };
 		6BA5BBCF216D4A7D00F086A7 /* VisibilityTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6BA5BBCE216D4A7D00F086A7 /* VisibilityTest.swift */; };
 		6BA5BBD1216D4B6700F086A7 /* VisibilityTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6BA5BBD0216D4B6700F086A7 /* VisibilityTest.swift */; };
 		6BA5BBD3217017AC00F086A7 /* Optionals.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6BA5BBD2217017AC00F086A7 /* Optionals.swift */; };
@@ -136,8 +140,6 @@
 		30F870B820864A88007ADA5B /* NestedButtons.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NestedButtons.swift; sourceTree = "<group>"; };
 		30F870BA20864AEE007ADA5B /* Button.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Button.swift; sourceTree = "<group>"; };
 		6B1086EE21780A890024AE56 /* VectorAsset.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = VectorAsset.swift; sourceTree = "<group>"; };
-		6B1086F021781B220024AE56 /* CGSize+Crop.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "CGSize+Crop.swift"; sourceTree = "<group>"; };
-		6B1086F221793EC30024AE56 /* CGSize+Crop.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "CGSize+Crop.swift"; sourceTree = "<group>"; };
 		6B1086F421793F5C0024AE56 /* VectorAsset.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = VectorAsset.swift; sourceTree = "<group>"; };
 		6B1086FE217A700A0024AE56 /* VectorLogic.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = VectorLogic.swift; sourceTree = "<group>"; };
 		6B3916FC21601C5900B20F9E /* BoxModelConditional.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = BoxModelConditional.swift; sourceTree = "<group>"; };
@@ -148,6 +150,12 @@
 		6B39170721643EF300B20F9E /* ShadowsTest.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ShadowsTest.swift; sourceTree = "<group>"; };
 		6B3917092164492600B20F9E /* Shadow.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Shadow.swift; sourceTree = "<group>"; };
 		6B6D4422218BCF150016262C /* LNATextField.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = LNATextField.swift; sourceTree = "<group>"; };
+		6B6D4424218E31EF0016262C /* ImageCropping.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ImageCropping.swift; sourceTree = "<group>"; };
+		6B6D4428218F565C0016262C /* CGSize+Resizing.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "CGSize+Resizing.swift"; sourceTree = "<group>"; };
+		6B6D442A218F566B0016262C /* CGSize+Resizing.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "CGSize+Resizing.swift"; sourceTree = "<group>"; };
+		6B6D442C218F56B60016262C /* ImageCropping.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ImageCropping.swift; sourceTree = "<group>"; };
+		6B6D442E218F5D430016262C /* NSImage+Resizing.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "NSImage+Resizing.swift"; sourceTree = "<group>"; };
+		6B6D4430218F67840016262C /* LNAImageView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LNAImageView.swift; sourceTree = "<group>"; };
 		6BA5BBCE216D4A7D00F086A7 /* VisibilityTest.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = VisibilityTest.swift; sourceTree = "<group>"; };
 		6BA5BBD0216D4B6700F086A7 /* VisibilityTest.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = VisibilityTest.swift; sourceTree = "<group>"; };
 		6BA5BBD2217017AC00F086A7 /* Optionals.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Optionals.swift; sourceTree = "<group>"; };
@@ -218,15 +226,15 @@
 		12869393204A1B4E00E5E26F /* MacOS */ = {
 			isa = PBXGroup;
 			children = (
-				12BBFE13206B03FB0041620C /* LayoutExtension.swift */,
-				12BBFDC3206B02720041620C /* appkit */,
+				1286939E204A1B4E00E5E26F /* MacOS.entitlements */,
+				1286939D204A1B4E00E5E26F /* Info.plist */,
 				12869394204A1B4E00E5E26F /* AppDelegate.swift */,
 				12BBFCEF206A8BCD0041620C /* Generated.swift */,
+				12BBFE13206B03FB0041620C /* LayoutExtension.swift */,
 				12869396204A1B4E00E5E26F /* ViewSelectionVc.swift */,
 				12869398204A1B4E00E5E26F /* Assets.xcassets */,
+				12BBFDC3206B02720041620C /* appkit */,
 				1286939A204A1B4E00E5E26F /* Main.storyboard */,
-				1286939D204A1B4E00E5E26F /* Info.plist */,
-				1286939E204A1B4E00E5E26F /* MacOS.entitlements */,
 			);
 			path = MacOS;
 			sourceTree = "<group>";
@@ -234,19 +242,21 @@
 		12BBFDC3206B02720041620C /* appkit */ = {
 			isa = PBXGroup;
 			children = (
+				6B6D442A218F566B0016262C /* CGSize+Resizing.swift */,
+				12BBFDD7206B02720041620C /* Colors.swift */,
+				6B6D4430218F67840016262C /* LNAImageView.swift */,
 				6B6D4422218BCF150016262C /* LNATextField.swift */,
-				6B1086F221793EC30024AE56 /* CGSize+Crop.swift */,
+				6B6D442E218F5D430016262C /* NSImage+Resizing.swift */,
 				6B391701216422D400B20F9E /* Shadows.swift */,
-				12BBFDC4206B02720041620C /* TextStyles.swift */,
 				301C262720C1C5BF00F18F73 /* TextStyle.swift */,
+				12BBFDC4206B02720041620C /* TextStyles.swift */,
+				12BBFDD8206B02720041620C /* assets */,
 				6BA694012082E4420090CA74 /* components */,
 				12BBFDC6206B02720041620C /* images */,
-				12BBFDC8206B02720041620C /* logic */,
-				12BBFDCB206B02720041620C /* style */,
 				12BBFDCF206B02720041620C /* interactivity */,
 				12BBFDD1206B02720041620C /* layouts */,
-				12BBFDD7206B02720041620C /* Colors.swift */,
-				12BBFDD8206B02720041620C /* assets */,
+				12BBFDC8206B02720041620C /* logic */,
+				12BBFDCB206B02720041620C /* style */,
 			);
 			name = appkit;
 			path = ../../generated/test/appkit;
@@ -255,6 +265,7 @@
 		12BBFDC6206B02720041620C /* images */ = {
 			isa = PBXGroup;
 			children = (
+				6B6D442C218F56B60016262C /* ImageCropping.swift */,
 				12BBFDC7206B02720041620C /* LocalAsset.swift */,
 				6B1086F421793F5C0024AE56 /* VectorAsset.swift */,
 			);
@@ -319,7 +330,7 @@
 		12BBFDEA206B02AC0041620C /* swift */ = {
 			isa = PBXGroup;
 			children = (
-				6B1086F021781B220024AE56 /* CGSize+Crop.swift */,
+				6B6D4428218F565C0016262C /* CGSize+Resizing.swift */,
 				6B39170521643C7C00B20F9E /* Shadows.swift */,
 				6B3917092164492600B20F9E /* Shadow.swift */,
 				12BBFDEB206B02AC0041620C /* TextStyles.swift */,
@@ -340,6 +351,7 @@
 		12BBFDED206B02AC0041620C /* images */ = {
 			isa = PBXGroup;
 			children = (
+				6B6D4424218E31EF0016262C /* ImageCropping.swift */,
 				12BBFDEE206B02AC0041620C /* LocalAsset.swift */,
 				6B1086EE21780A890024AE56 /* VectorAsset.swift */,
 			);
@@ -531,6 +543,7 @@
 				12BBFE05206B02AC0041620C /* Assign.swift in Sources */,
 				6B39170A2164492600B20F9E /* Shadow.swift in Sources */,
 				12BBFE0F206B02AC0041620C /* FitContentParentSecondaryChildren.swift in Sources */,
+				6B6D4425218E31EF0016262C /* ImageCropping.swift in Sources */,
 				12BBFE10206B02AC0041620C /* PrimaryAxis.swift in Sources */,
 				128693A7204A1DC200E5E26F /* LayoutExtension.swift in Sources */,
 				6B3916FD21601C5900B20F9E /* BoxModelConditional.swift in Sources */,
@@ -553,8 +566,8 @@
 				1286937B204A1AAA00E5E26F /* AppDelegate.swift in Sources */,
 				6B39170621643C7C00B20F9E /* Shadows.swift in Sources */,
 				12BBFE0C206B02AC0041620C /* FixedParentFillAndFitChildren.swift in Sources */,
+				6B6D4429218F565C0016262C /* CGSize+Resizing.swift in Sources */,
 				12BBFE0B206B02AC0041620C /* PressableRootView.swift in Sources */,
-				6B1086F121781B220024AE56 /* CGSize+Crop.swift in Sources */,
 				6B1086FF217A700B0024AE56 /* VectorLogic.swift in Sources */,
 				6B1086EF21780A890024AE56 /* VectorAsset.swift in Sources */,
 			);
@@ -565,11 +578,12 @@
 			buildActionMask = 2147483647;
 			files = (
 				12BBFDDC206B02720041620C /* LocalAsset.swift in Sources */,
-				6B1086F321793EC30024AE56 /* CGSize+Crop.swift in Sources */,
 				6B391704216423A000B20F9E /* ShadowsTest.swift in Sources */,
+				6B6D4431218F67840016262C /* LNAImageView.swift in Sources */,
 				6B391702216422D400B20F9E /* Shadows.swift in Sources */,
 				6B6D4423218BCF150016262C /* LNATextField.swift in Sources */,
 				12BBFDE8206B02720041620C /* Colors.swift in Sources */,
+				6B6D442D218F56B60016262C /* ImageCropping.swift in Sources */,
 				12BBFDDF206B02720041620C /* BorderWidthColor.swift in Sources */,
 				12BBFDE2206B02720041620C /* PressableRootView.swift in Sources */,
 				301C262820C1C5BF00F18F73 /* TextStyle.swift in Sources */,
@@ -583,12 +597,14 @@
 				6B3916FF2160286D00B20F9E /* BoxModelConditional.swift in Sources */,
 				12869397204A1B4E00E5E26F /* ViewSelectionVc.swift in Sources */,
 				12BBFDE4206B02720041620C /* FixedParentFitChild.swift in Sources */,
+				6B6D442F218F5D430016262C /* NSImage+Resizing.swift in Sources */,
 				6BA6940A208441120090CA74 /* NestedButtons.swift in Sources */,
 				6B1086F521793F5C0024AE56 /* VectorAsset.swift in Sources */,
 				12BBFDE3206B02720041620C /* FixedParentFillAndFitChildren.swift in Sources */,
 				12BBFDDD206B02720041620C /* Assign.swift in Sources */,
 				12BBFDE6206B02720041620C /* FitContentParentSecondaryChildren.swift in Sources */,
 				6BA5BBD3217017AC00F086A7 /* Optionals.swift in Sources */,
+				6B6D442B218F566B0016262C /* CGSize+Resizing.swift in Sources */,
 				12BBFDE1206B02720041620C /* TextStyleConditional.swift in Sources */,
 				12BBFCF0206A8BCD0041620C /* Generated.swift in Sources */,
 				6BA694032082E4420090CA74 /* NestedComponent.swift in Sources */,

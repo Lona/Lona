@@ -89,6 +89,16 @@ let labelAttributedTextValue = framework =>
   | SwiftOptions.AppKit => labelAttributedTextName(framework)
   };
 
+let resizeModeValue = value =>
+  switch (value) {
+  | "cover" => "scaleAspectFill"
+  | "contain" => "scaleAspectFit"
+  | "stretch" => "scaleToFill"
+  | _ =>
+    Js.log("Invalid resizeMode");
+    raise(Not_found);
+  };
+
 let localImageName = (framework: SwiftOptions.framework, name) => {
   let imageName =
     LiteralExpression(

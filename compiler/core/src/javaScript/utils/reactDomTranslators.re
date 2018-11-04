@@ -39,3 +39,19 @@ let variableNames = variable =>
   | ParameterKey.OnPress => "onClick"
   | _ => variable |> ParameterKey.toString
   };
+
+let styleVariableNames = variable =>
+  switch (variable) {
+  | ParameterKey.ResizeMode => "objectFit"
+  | _ => variable |> ParameterKey.toString
+  };
+
+let resizeMode = value =>
+  switch (value) {
+  | "stretch" => "fill"
+  | "cover" => "cover"
+  | "contain" => "contain"
+  | _ =>
+    Js.log("Invalid resizeMode");
+    raise(Not_found);
+  };

@@ -31,7 +31,7 @@ public class Welcome: NSBox {
 
   private var splashView = NSBox()
   private var bannerView = NSBox()
-  private var imageView = NSImageView()
+  private var imageView = LNAImageView()
   private var titleView = LNATextField(labelWithString: "")
   private var versionView = LNATextField(labelWithString: "")
   private var rowsView = NSBox()

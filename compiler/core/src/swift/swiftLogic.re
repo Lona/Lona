@@ -46,6 +46,13 @@ let toSwiftAST =
     | _ => SwiftIdentifier("BadIdentifier")
     };
   let logicValueToSwiftAST = x => {
+    let layer =
+      switch (x) {
+      | Logic.Identifier(_, ["layers", layerName, ..._]) =>
+        Layer.findByName(layerName, rootLayer)
+      | Logic.Identifier(_) => None
+      | Literal(_) => None
+      };
     let initialValue =
       switch (x) {
       | Logic.Identifier(_) => identifierName(x)
@@ -92,6 +99,18 @@ let toSwiftAST =
         name |> Js.String.replace("borderRadius", "layer.cornerRadius"),
       )
     | (UIKit, Ast.SwiftIdentifier(name))
+        when name |> Js.String.endsWith(".resizeMode") || name == "resizeMode" =>
+      switch (layer) {
+      | Some((layer: Types.layer)) when layer.typeName == Types.VectorGraphic =>
+        Ast.SwiftIdentifier(
+          name |> Js.String.replace("resizeMode", "resizingMode"),
+        )
+      | _ =>
+        Ast.SwiftIdentifier(
+          name |> Js.String.replace("resizeMode", "contentMode"),
+        )
+      }
+    | (UIKit, Ast.SwiftIdentifier(name))
         when
           name |> Js.String.endsWith(".borderWidth") || name == "borderWidth" =>
       Ast.SwiftIdentifier(
@@ -106,6 +125,11 @@ let toSwiftAST =
           || name == "borderRadius" =>
       Ast.SwiftIdentifier(
         name |> Js.String.replace("borderRadius", "cornerRadius"),
+      )
+    | (AppKit, Ast.SwiftIdentifier(name))
+        when name |> Js.String.endsWith(".resizeMode") || name == "resizeMode" =>
+      Ast.SwiftIdentifier(
+        name |> Js.String.replace("resizeMode", "resizingMode"),
       )
     | (AppKit, Ast.SwiftIdentifier(name))
         when name |> Js.String.endsWith("backgroundColor") =>
@@ -151,6 +175,22 @@ let toSwiftAST =
           "operator": "=",
           "right":
             Ast.MemberExpression(right @ [Ast.SwiftIdentifier("cgColor")]),
+        })
+      | (
+          Ast.SwiftIdentifier(name) as left,
+          Ast.LiteralExpression(String(value)),
+        )
+          when
+            name
+            |> Js.String.endsWith("contentMode")
+            && options.framework == UIKit
+            || name
+            |> Js.String.endsWith("resizingMode") =>
+        Ast.BinaryExpression({
+          "left": left,
+          "operator": "=",
+          "right":
+            Ast.SwiftIdentifier("." ++ SwiftDocument.resizeModeValue(value)),
         })
       | (Ast.SwiftIdentifier(name), Ast.MemberExpression(right))
           when

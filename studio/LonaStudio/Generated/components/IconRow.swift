@@ -48,7 +48,7 @@ public class IconRow: NSBox {
     options: [.mouseEnteredAndExited, .activeAlways, .mouseMoved, .inVisibleRect],
     owner: self)
 
-  private var imageView = NSImageView()
+  private var imageView = LNAImageView()
   private var rowContentView = NSBox()
   private var titleView = LNATextField(labelWithString: "")
   private var subtitleView = LNATextField(labelWithString: "")

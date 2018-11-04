@@ -438,7 +438,7 @@ let rec convertNode =
                     MemberExpression([
                       SwiftIdentifier("viewBox"),
                       SwiftIdentifier("size"),
-                      SwiftIdentifier("crop"),
+                      SwiftIdentifier("resized"),
                     ]),
                   "arguments": [
                     FunctionCallArgument({
@@ -448,6 +448,11 @@ let rec convertNode =
                           SwiftIdentifier("bounds"),
                           SwiftIdentifier("size"),
                         ]),
+                    }),
+                    FunctionCallArgument({
+                      "name": Some(SwiftIdentifier("usingResizingMode")),
+                      "value":
+                        MemberExpression([SwiftIdentifier("resizingMode")]),
                     }),
                   ],
                 }),

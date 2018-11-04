@@ -164,7 +164,6 @@
 		6B0F5B8E2138970C007DBBB2 /* LayerList.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6B0F5B8D2138970C007DBBB2 /* LayerList.swift */; };
 		6B0F5B9021389A8B007DBBB2 /* NSSplitView+DividerColor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6B0F5B8F21389A8B007DBBB2 /* NSSplitView+DividerColor.swift */; };
 		6B1086F7217955120024AE56 /* SVG.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6B1086F6217955120024AE56 /* SVG.swift */; };
-		6B1086F9217967BD0024AE56 /* CGSize+Crop.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6B1086F8217967BC0024AE56 /* CGSize+Crop.swift */; };
 		6B1086FB217A34340024AE56 /* Data+String.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6B1086FA217A34340024AE56 /* Data+String.swift */; };
 		6B1086FD217A38110024AE56 /* LRUCache.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6B1086FC217A38110024AE56 /* LRUCache.swift */; };
 		6B2DC1AB21361C4700679668 /* ColorPicker.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 6B2DC1A921361C4700679668 /* ColorPicker.framework */; };
@@ -191,6 +190,9 @@
 		6B5D4DA1213F05AF004F8AC3 /* CodeEditor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6B5D4DA0213F05AF004F8AC3 /* CodeEditor.swift */; };
 		6B6017D01EBF9EFA001E02C1 /* LayerListOutlineView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6B6017CF1EBF9EFA001E02C1 /* LayerListOutlineView.swift */; };
 		6B6D441D218B6BBE0016262C /* LNATextField.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6B6D441C218B6BBE0016262C /* LNATextField.swift */; };
+		6B6D4427218F55B50016262C /* CGSize+Resizing.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6B6D4426218F55B50016262C /* CGSize+Resizing.swift */; };
+		6B6D4434218F6B070016262C /* NSImage+Resizing.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6B6D4432218F6B070016262C /* NSImage+Resizing.swift */; };
+		6B6D4435218F6B070016262C /* LNAImageView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6B6D4433218F6B070016262C /* LNAImageView.swift */; };
 		6BA5BBD72173A7F600F086A7 /* Shadows.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6BA5BBD62173A7F600F086A7 /* Shadows.swift */; };
 		6BA5BBD92174F2A500F086A7 /* FileNavigator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6BA5BBD82174F2A500F086A7 /* FileNavigator.swift */; };
 		6BA5BBDB2174FA2100F086A7 /* FileNavigatorHeader.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6BA5BBDA2174FA2100F086A7 /* FileNavigatorHeader.swift */; };
@@ -418,7 +420,6 @@
 		6B0F5B8D2138970C007DBBB2 /* LayerList.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LayerList.swift; sourceTree = "<group>"; };
 		6B0F5B8F21389A8B007DBBB2 /* NSSplitView+DividerColor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "NSSplitView+DividerColor.swift"; sourceTree = "<group>"; };
 		6B1086F6217955120024AE56 /* SVG.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SVG.swift; sourceTree = "<group>"; };
-		6B1086F8217967BC0024AE56 /* CGSize+Crop.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "CGSize+Crop.swift"; sourceTree = "<group>"; };
 		6B1086FA217A34340024AE56 /* Data+String.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Data+String.swift"; sourceTree = "<group>"; };
 		6B1086FC217A38110024AE56 /* LRUCache.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LRUCache.swift; sourceTree = "<group>"; };
 		6B2DC1A921361C4700679668 /* ColorPicker.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = ColorPicker.framework; path = Carthage/Build/Mac/ColorPicker.framework; sourceTree = "<group>"; };
@@ -442,6 +443,9 @@
 		6B5D4DA0213F05AF004F8AC3 /* CodeEditor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CodeEditor.swift; sourceTree = "<group>"; };
 		6B6017CF1EBF9EFA001E02C1 /* LayerListOutlineView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = LayerListOutlineView.swift; sourceTree = "<group>"; };
 		6B6D441C218B6BBE0016262C /* LNATextField.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LNATextField.swift; sourceTree = "<group>"; };
+		6B6D4426218F55B50016262C /* CGSize+Resizing.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "CGSize+Resizing.swift"; sourceTree = "<group>"; };
+		6B6D4432218F6B070016262C /* NSImage+Resizing.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "NSImage+Resizing.swift"; sourceTree = "<group>"; };
+		6B6D4433218F6B070016262C /* LNAImageView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = LNAImageView.swift; sourceTree = "<group>"; };
 		6BA5BBD62173A7F600F086A7 /* Shadows.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Shadows.swift; sourceTree = "<group>"; };
 		6BA5BBD82174F2A500F086A7 /* FileNavigator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FileNavigator.swift; sourceTree = "<group>"; };
 		6BA5BBDA2174FA2100F086A7 /* FileNavigatorHeader.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = FileNavigatorHeader.swift; sourceTree = "<group>"; };
@@ -762,9 +766,11 @@
 		30F870BC20865858007ADA5B /* Generated */ = {
 			isa = PBXGroup;
 			children = (
-				6B1086F8217967BC0024AE56 /* CGSize+Crop.swift */,
+				6B6D4426218F55B50016262C /* CGSize+Resizing.swift */,
 				30F870C320865858007ADA5B /* Colors.swift */,
+				6B6D4433218F6B070016262C /* LNAImageView.swift */,
 				6B6D441C218B6BBE0016262C /* LNATextField.swift */,
+				6B6D4432218F6B070016262C /* NSImage+Resizing.swift */,
 				6BA5BBD62173A7F600F086A7 /* Shadows.swift */,
 				301C262320C1C3B500F18F73 /* TextStyle.swift */,
 				30F870BD20865858007ADA5B /* TextStyles.swift */,
@@ -1359,10 +1365,10 @@
 				6BA5BBDB2174FA2100F086A7 /* FileNavigatorHeader.swift in Sources */,
 				307718E81F35241A003A597B /* CSControl.swift in Sources */,
 				6B58868B2134D9E800CCA69F /* ColorInspector.swift in Sources */,
-				6B1086F9217967BD0024AE56 /* CGSize+Crop.swift in Sources */,
 				303BDE6D1F76E61300B4CE5A /* VideoUtils.swift in Sources */,
 				305A19521F4638F800EA033C /* NSStackViewExtensions.swift in Sources */,
 				6B0A29E6212736F900A96B0F /* Alert.swift in Sources */,
+				6B6D4435218F6B070016262C /* LNAImageView.swift in Sources */,
 				303C3FEE20A396C3008E1541 /* OpenProjectButton.swift in Sources */,
 				30DE880D1FBA22FB00D62A50 /* ComponentEditorButton.swift in Sources */,
 				6BA6E89921307D65009CD33C /* WorkspaceWindowController.swift in Sources */,
@@ -1383,6 +1389,7 @@
 				307718F21F365BCD003A597B /* CSValue.swift in Sources */,
 				6B3CFB1C213B236500599E5B /* CodeEditorViewController.swift in Sources */,
 				307718EA1F355D31003A597B /* LayerInspectorView.swift in Sources */,
+				6B6D4434218F6B070016262C /* NSImage+Resizing.swift in Sources */,
 				30CE47CD1ED776FA00BBF716 /* TextStylePickerButton.swift in Sources */,
 				30C203DF20BF5955007C3FE0 /* TextStylePreviewCollection.swift in Sources */,
 				6B1086FD217A38110024AE56 /* LRUCache.swift in Sources */,
@@ -1398,6 +1405,7 @@
 				6B0F5B8E2138970C007DBBB2 /* LayerList.swift in Sources */,
 				30CE47CF1ED77C0200BBF716 /* TextStyleRowView.swift in Sources */,
 				30A3F13E1F300294004C7631 /* NSColorExtensions.swift in Sources */,
+				6B6D4427218F55B50016262C /* CGSize+Resizing.swift in Sources */,
 				307D440F2097DC17004B57F5 /* WorkspaceVerticalTabs.swift in Sources */,
 				6B39E6F5212DEF120012DA4C /* WorkspaceViewController.swift in Sources */,
 				6B2DC1B221362E8400679668 /* CoreColorPicker.swift in Sources */,

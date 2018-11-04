@@ -21,6 +21,7 @@
   ],
   "examples" : [
     {
+      "id" : "Headline_only",
       "name" : "Headline only",
       "params" : {
         "headline" : "Headline Only",
@@ -28,6 +29,7 @@
       }
     },
     {
+      "id" : "All_content",
       "name" : "All content",
       "params" : {
         "body" : "Located two hours south of Sydney in the Souther Highlands of New South Wales, this destination is truly one you won't want to miss.",
@@ -113,8 +115,11 @@
     {
       "defaultValue" : {
         "data" : {
-          "data" : null,
-          "tag" : "None"
+          "case" : "Some",
+          "data" : {
+            "data" : null,
+            "tag" : "None"
+          }
         },
         "type" : "String?"
       },
@@ -129,7 +134,7 @@
         "params" : {
           "alignSelf" : "stretch",
           "aspectRatio" : 2,
-          "backgroundColor" : "#D8D8D8",
+          "flex" : 1,
           "image" : ""
         },
         "type" : "Lona:Image"

@@ -58,7 +58,7 @@ class ImageField: NSImageView, CSControl {
                 if url.pathExtension == "svg" {
                     // Delay so that bounds are calculated
                     DispatchQueue.main.async {
-                        SVG.render(contentsOf: url, size: self.bounds.size, successHandler: { image in
+                        SVG.render(contentsOf: url, size: self.bounds.size, resizingMode: .scaleAspectFit, successHandler: { image in
                             self.image = image
                         })
                     }

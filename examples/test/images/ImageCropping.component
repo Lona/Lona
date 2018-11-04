@@ -1,0 +1,94 @@
+{
+  "devices" : [
+    {
+      "height" : 100,
+      "heightMode" : "At Least",
+      "name" : "iPhone SE",
+      "width" : 320
+    },
+    {
+      "height" : 100,
+      "heightMode" : "At Least",
+      "name" : "iPhone 7",
+      "width" : 375
+    },
+    {
+      "height" : 100,
+      "heightMode" : "At Least",
+      "name" : "iPhone 7+",
+      "width" : 414
+    }
+  ],
+  "examples" : [
+    {
+      "id" : "Default",
+      "name" : "Default",
+      "params" : {
+
+      }
+    }
+  ],
+  "logic" : [
+
+  ],
+  "params" : [
+
+  ],
+  "root" : {
+    "children" : [
+      {
+        "id" : "AspectFit",
+        "params" : {
+          "alignSelf" : "stretch",
+          "height" : 100,
+          "image" : "file:\/\/.\/assets\/icon_128x128.png",
+          "resizeMode" : "contain"
+        },
+        "type" : "Lona:Image"
+      },
+      {
+        "id" : "AspectFill",
+        "params" : {
+          "alignSelf" : "stretch",
+          "height" : 100,
+          "image" : "file:\/\/.\/assets\/icon_128x128.png"
+        },
+        "type" : "Lona:Image"
+      },
+      {
+        "id" : "StretchFill",
+        "params" : {
+          "alignSelf" : "stretch",
+          "height" : 100,
+          "image" : "file:\/\/.\/assets\/icon_128x128.png",
+          "resizeMode" : "stretch"
+        },
+        "type" : "Lona:Image"
+      },
+      {
+        "id" : "FixedAspectFill",
+        "params" : {
+          "height" : 100,
+          "image" : "file:\/\/.\/assets\/icon_128x128.png",
+          "width" : 200
+        },
+        "type" : "Lona:Image"
+      },
+      {
+        "id" : "FixedStretch",
+        "params" : {
+          "height" : 100,
+          "image" : "file:\/\/.\/assets\/icon_128x128.png",
+          "resizeMode" : "stretch",
+          "width" : 200
+        },
+        "type" : "Lona:Image"
+      }
+    ],
+    "id" : "View",
+    "params" : {
+      "alignSelf" : "stretch"
+    },
+    "type" : "Lona:View"
+  }
+}

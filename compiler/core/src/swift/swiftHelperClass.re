@@ -1,4 +1,4 @@
-/* private class ImageWithBackgroundColor: NSImageView {
+/* private class ImageWithBackgroundColor: LNAImageView {
      var fillColor: NSColor = NSColor.clear
 
      override func draw(_ dirtyRect: NSRect) {
@@ -12,7 +12,7 @@ let generateImageWithBackgroundColor =
   SwiftAst.[
     ClassDeclaration({
       "name": "ImageWithBackgroundColor",
-      "inherits": [TypeName("NSImageView")],
+      "inherits": [TypeName("LNAImageView")],
       "modifier": Some(PrivateModifier),
       "isFinal": false,
       "body": [
@@ -83,6 +83,39 @@ let generateImageWithBackgroundColor =
       ],
     }),
     Empty,
+  ];
+
+/* private class BackgroundImageView: UIImageView {
+       override var intrinsicContentSize: CGSize {
+           return .zero
+       }
+   } */
+let generateBackgroundImage =
+    (options: Options.options, swiftOptions: SwiftOptions.options) =>
+  SwiftAst.[
+    ClassDeclaration({
+      "name": "BackgroundImageView",
+      "inherits": [TypeName("UIImageView")],
+      "modifier": Some(PrivateModifier),
+      "isFinal": false,
+      "body": [
+        VariableDeclaration({
+          "modifiers": [OverrideModifier],
+          "pattern":
+            IdentifierPattern({
+              "identifier": SwiftIdentifier("intrinsicContentSize"),
+              "annotation": Some(TypeName("CGSize")),
+            }),
+          "init": None,
+          "block":
+            Some(
+              GetterBlock([
+                ReturnStatement(Some(SwiftIdentifier(".zero"))),
+              ]),
+            ),
+        }),
+      ],
+    }),
   ];
 
 let generateVectorGraphic =
@@ -161,6 +194,59 @@ let generateVectorGraphic =
               }),
             ] :
             [],
+          [
+            VariableDeclaration({
+              "modifiers": [],
+              "pattern":
+                IdentifierPattern({
+                  "identifier": SwiftIdentifier("resizingMode"),
+                  "annotation": None,
+                }),
+              "init":
+                Some(
+                  SwiftAst.Builders.memberExpression([
+                    "CGSize",
+                    "ResizingMode",
+                    "scaleAspectFill",
+                  ]),
+                ),
+              "block":
+                Some(
+                  WillSetDidSetBlock({
+                    "willSet": None,
+                    "didSet":
+                      Some([
+                        IfStatement({
+                          "condition":
+                            BinaryExpression({
+                              "left": SwiftIdentifier("resizingMode"),
+                              "operator": "!=",
+                              "right": SwiftIdentifier("oldValue"),
+                            }),
+                          "block": [
+                            switch (swiftOptions.framework) {
+                            | UIKit =>
+                              SwiftAst.Builders.functionCall(
+                                ["setNeedsDisplay"],
+                                [],
+                              )
+                            | AppKit =>
+                              BinaryExpression({
+                                "left":
+                                  SwiftAst.Builders.memberExpression([
+                                    "needsDisplay",
+                                  ]),
+                                "operator": "=",
+                                "right": LiteralExpression(Boolean(true)),
+                              })
+                            },
+                          ],
+                        }),
+                      ]),
+                  }),
+                ),
+            }),
+          ],
           [
             FunctionDeclaration({
               "name": "draw",

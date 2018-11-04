@@ -261,7 +261,21 @@ let copyStaticFiles = outputDirectory =>
           "static/swift/LNATextField." ++ framework ++ ".swift",
         ),
         concat(outputDirectory, "LNATextField.swift"),
-      )
+      );
+      copySync(
+        concat(
+          [%bs.raw {| __dirname |}],
+          "static/swift/LNAImageView." ++ framework ++ ".swift",
+        ),
+        concat(outputDirectory, "LNAImageView.swift"),
+      );
+      copySync(
+        concat(
+          [%bs.raw {| __dirname |}],
+          "static/swift/NSImage+Resizing." ++ framework ++ ".swift",
+        ),
+        concat(outputDirectory, "NSImage+Resizing.swift"),
+      );
     };
     copySync(
       concat(
@@ -273,9 +287,9 @@ let copyStaticFiles = outputDirectory =>
     copySync(
       concat(
         [%bs.raw {| __dirname |}],
-        "static/swift/CGSize+Crop." ++ framework ++ ".swift",
+        "static/swift/CGSize+Resizing." ++ framework ++ ".swift",
       ),
-      concat(outputDirectory, "CGSize+Crop.swift"),
+      concat(outputDirectory, "CGSize+Resizing.swift"),
     );
   | _ => ()
   };

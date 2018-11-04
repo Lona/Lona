@@ -847,7 +847,8 @@ extension WorkspaceViewController {
         let newLayer = CSLayer(name: name, type: .vectorGraphic, parameters: [
             "width": 100.toData(),
             "height": 100.toData(),
-            "backgroundColor": "#D8D8D8".toData()
+            "backgroundColor": "#D8D8D8".toData(),
+            "resizeMode": "contain".toData()
             ])
 
         componentEditorViewController.addLayer(newLayer)

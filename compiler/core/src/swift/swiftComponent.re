@@ -19,10 +19,10 @@ module Naming = {
       switch (swiftOptions.framework, layer.typeName) {
       | (UIKit, Types.View) => "UIView"
       | (UIKit, Text) => "UILabel"
-      | (UIKit, Image) => "UIImageView"
+      | (UIKit, Image) => "BackgroundImageView"
       | (AppKit, Types.View) => "NSBox"
       | (AppKit, Text) => "LNATextField"
-      | (AppKit, Image) => "NSImageView"
+      | (AppKit, Image) => "LNAImageView"
       | (_, VectorGraphic) =>
         SwiftComponentParameter.getVectorAssetUrl(layer)
         |> Format.vectorClassName
@@ -334,6 +334,40 @@ module Doc = {
                 "right": LiteralExpression(Integer(0)),
               }),
             ],
+        ]
+        |> List.concat
+      | (SwiftOptions.UIKit, Image) =>
+        [
+          Parameter.isSetInitially(layer, ResizeMode) ?
+            [] :
+            [
+              BinaryExpression({
+                "left":
+                  layerMemberExpression(
+                    layer,
+                    [SwiftIdentifier("contentMode")],
+                  ),
+                "operator": "=",
+                "right":
+                  SwiftIdentifier(
+                    "." ++ SwiftDocument.resizeModeValue("cover"),
+                  ),
+              }),
+            ],
+          [
+            BinaryExpression({
+              "left":
+                layerMemberExpression(
+                  layer,
+                  [
+                    SwiftIdentifier("layer"),
+                    SwiftIdentifier("masksToBounds"),
+                  ],
+                ),
+              "operator": "=",
+              "right": LiteralExpression(Boolean(true)),
+            }),
+          ],
         ]
         |> List.concat
       | (SwiftOptions.UIKit, VectorGraphic) =>
@@ -763,7 +797,14 @@ let generate =
           ]
           |> List.concat :
           []
-      | SwiftOptions.UIKit => []
+      | SwiftOptions.UIKit =>
+        rootLayer |> Layer.flatten |> List.exists(Layer.isImageLayer) ?
+          [
+            [LineComment("MARK: - " ++ "BackgroundImageView"), Empty],
+            SwiftHelperClass.generateBackgroundImage(options, swiftOptions),
+          ]
+          |> List.concat :
+          []
       },
       rootLayer
       |> SwiftComponentParameter.allVectorAssets

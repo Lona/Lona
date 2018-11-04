@@ -39,7 +39,7 @@ public class EditorHeader: NSBox {
   // MARK: Private
 
   private var innerView = NSBox()
-  private var imageView = NSImageView()
+  private var imageView = LNAImageView()
   private var titleView = LNATextField(labelWithString: "")
   private var subtitleView = LNATextField(labelWithString: "")
   private var dividerView = NSBox()

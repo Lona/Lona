@@ -147,6 +147,15 @@ let rec convertNode =
                 name: "style",
                 value: Identifier(["props", "style"]),
               }),
+              JSXAttribute({
+                name: "preserveAspectRatio",
+                value:
+                  BinaryExpression({
+                    left: Identifier(["props", "preserveAspectRatio"]),
+                    operator: Or,
+                    right: StringLiteral("xMidYMid slice"),
+                  }),
+              }),
             ],
             switch (params.viewBox) {
             | Some(viewBox) => [

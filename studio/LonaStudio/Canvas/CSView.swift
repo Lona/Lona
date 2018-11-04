@@ -11,7 +11,7 @@ import AppKit
 
 // Handle flipping the coordinate system, since overriding isFlipped on NSBox
 // doesn't seem to do anything.
-private class InnerView: NSImageView {
+private class InnerView: LNAImageView {
     override var isFlipped: Bool { return true }
 
     override func mouseDown(with event: NSEvent) {
@@ -41,10 +41,14 @@ class CSView: NSBox {
 
     var onClick: (() -> Void)?
 
+    var resizingMode: CGSize.ResizingMode {
+        get { return innerView.resizingMode }
+        set { innerView.resizingMode = newValue }
+    }
+
     var backgroundImage: NSImage? {
-        didSet {
-            innerView.image = backgroundImage
-        }
+        get { return innerView.image }
+        set { innerView.image = newValue }
     }
 
     // By default, clicking more than once on the parent will cause all subsequent mouseDown

@@ -10,12 +10,6 @@ let frameworkSpecificValue =
   | JavaScriptOptions.ReactSketchapp => container.reactSketchapp
   };
 
-let styleNameKey = key =>
-  switch (key) {
-  | ParameterKey.TextStyle => "font"
-  | _ => key |> ParameterKey.toString
-  };
-
 let getElementTagString =
     (framework: JavaScriptOptions.framework, typeName: Types.layerType) =>
   switch (framework) {
@@ -94,24 +88,6 @@ module StyledComponents = {
     layer |> Layer.flatten |> List.map(createStyledComponentAST);
 };
 
-let createStyleAttributePropertyAST =
-    (config: Config.t, key: ParameterKey.t, value: Logic.logicValue) =>
-  switch (key) {
-  | ParameterKey.TextStyle =>
-    JavaScriptAst.SpreadElement(
-      JavaScriptLogic.logicValueToJavaScriptAST(config, value),
-    )
-  | ParameterKey.Shadow =>
-    JavaScriptAst.SpreadElement(
-      JavaScriptLogic.logicValueToJavaScriptAST(config, value),
-    )
-  | _ =>
-    JavaScriptAst.Property({
-      key: Identifier([key |> styleNameKey]),
-      value: JavaScriptLogic.logicValueToJavaScriptAST(config, value),
-    })
-  };
-
 let createStyleAttributeAST =
     (
       framework: JavaScriptOptions.framework,
@@ -127,7 +103,12 @@ let createStyleAttributeAST =
         Ast.ObjectLiteral(
           styles
           |> Layer.mapBindings(((key, value)) =>
-               createStyleAttributePropertyAST(config, key, value)
+               JavaScriptStyles.createStyleAttributePropertyAST(
+                 framework,
+                 config,
+                 key,
+                 value,
+               )
              ),
         ),
       );
@@ -170,10 +151,51 @@ let createStyleAttributeAST =
   };
 };
 
+let createWrappedImageElement =
+    (
+      _config,
+      framework: JavaScriptOptions.framework,
+      layer: Types.layer,
+      styleAttribute,
+      jsxAttributes,
+      jsxChildren,
+    ) => {
+  let resizeMode =
+    switch (Layer.getStringParameterOpt(ResizeMode, layer.parameters)) {
+    | Some(value) => value
+    | None => "cover"
+    };
+
+  let imageStyleAttribute =
+    Ast.JSXAttribute({
+      name: "style",
+      value:
+        Identifier([
+          "styles",
+          JavaScriptFormat.imageResizeModeHelperName(resizeMode),
+        ]),
+    });
+
+  JavaScriptAst.(
+    JSXElement({
+      tag: getElementTagString(framework, Types.View),
+      attributes: styleAttribute,
+      content: [
+        JSXElement({
+          tag: getElementOrVectorTagString(framework, layer),
+          attributes: [imageStyleAttribute] @ jsxAttributes,
+          content: jsxChildren,
+        }),
+      ],
+    })
+  );
+};
+
 /* Wrap custom components in a view that enforces the framework's
    default layout attributes. */
 let createJSXElement =
     (
+      config: Config.t,
       framework: JavaScriptOptions.framework,
       parent: option(Types.layer),
       layer: Types.layer,
@@ -206,11 +228,34 @@ let createJSXElement =
     | _ => customComponent
     };
   | _ =>
-    JSXElement({
-      tag: getElementOrVectorTagString(framework, layer),
-      attributes: styleAttribute @ attributes,
-      content,
-    })
+    if (layer.typeName == Types.Image) {
+      let layout = Layer.getLayout(parent, layer.parameters);
+
+      /* Images without fixed dimensions are absolute positioned within a wrapper */
+      switch (layout.height, layout.width) {
+      | (Fixed(_), Fixed(_)) =>
+        JSXElement({
+          tag: getElementOrVectorTagString(framework, layer),
+          attributes: styleAttribute @ attributes,
+          content,
+        })
+      | _ =>
+        createWrappedImageElement(
+          config,
+          framework,
+          layer,
+          styleAttribute,
+          attributes,
+          content,
+        )
+      };
+    } else {
+      JSXElement({
+        tag: getElementOrVectorTagString(framework, layer),
+        attributes: styleAttribute @ attributes,
+        content,
+      });
+    }
   };
 
 let rec layerToJavaScriptAST =
@@ -316,6 +361,25 @@ let rec layerToJavaScriptAST =
              value: Identifier(vectorAssignment.originalIdentifierPath),
            })
          ),
+      switch (
+        layer.typeName,
+        Layer.getStringParameterOpt(ResizeMode, layer.parameters),
+      ) {
+      | (VectorGraphic, Some(resizeMode)) => [
+          JSXAttribute({
+            name: "preserveAspectRatio",
+            value:
+              StringLiteral(
+                switch (resizeMode) {
+                | "contain" => "xMidYMid meet"
+                | "cover"
+                | _ => "xMidYMid slice"
+                },
+              ),
+          }),
+        ]
+      | _ => []
+      },
       attributes,
     ]
     |> List.concat;
@@ -351,6 +415,7 @@ let rec layerToJavaScriptAST =
     };
   let element =
     createJSXElement(
+      config,
       framework,
       parent,
       layer,
