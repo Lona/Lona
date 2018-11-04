@@ -113,6 +113,11 @@ let toSwiftAST =
         name |> Js.String.replace("borderRadius", "cornerRadius"),
       )
     | (AppKit, Ast.SwiftIdentifier(name))
+        when name |> Js.String.endsWith(".resizeMode") || name == "resizeMode" =>
+      Ast.SwiftIdentifier(
+        name |> Js.String.replace("resizeMode", "resizingMode"),
+      )
+    | (AppKit, Ast.SwiftIdentifier(name))
         when name |> Js.String.endsWith("backgroundColor") =>
       Ast.SwiftIdentifier(
         name |> Js.String.replace("backgroundColor", "fillColor"),
@@ -164,14 +169,15 @@ let toSwiftAST =
           when
             name
             |> Js.String.endsWith("contentMode")
-            && options.framework == UIKit =>
+            && options.framework == UIKit
+            || name
+            |> Js.String.endsWith("resizingMode")
+            && options.framework == AppKit =>
         Ast.BinaryExpression({
           "left": left,
           "operator": "=",
           "right":
-            Ast.SwiftIdentifier(
-              "." ++ SwiftDocument.resizeModeValue(options.framework, value),
-            ),
+            Ast.SwiftIdentifier("." ++ SwiftDocument.resizeModeValue(value)),
         })
       | (Ast.SwiftIdentifier(name), Ast.MemberExpression(right))
           when

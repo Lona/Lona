@@ -4,7 +4,7 @@ import Foundation
 private class ToggleVector: UIView {
   override func draw(_ dirtyRect: CGRect) {
     let viewBox = CGRect(origin: CGPoint(x: 0, y: 0), size: CGSize(width: 48, height: 24))
-    let croppedRect = viewBox.size.crop(within: bounds.size)
+    let croppedRect = viewBox.size.resized(within: bounds.size)
     let scale = croppedRect.width / viewBox.width
     func transform(point: CGPoint) -> CGPoint {
       return CGPoint(x: point.x * scale + croppedRect.minX, y: point.y * scale + croppedRect.minY)
@@ -69,7 +69,7 @@ private class ToggleVector: UIView {
 private class ToggleVerticalVector: UIView {
   override func draw(_ dirtyRect: CGRect) {
     let viewBox = CGRect(origin: CGPoint(x: 0, y: 0), size: CGSize(width: 24, height: 48))
-    let croppedRect = viewBox.size.crop(within: bounds.size)
+    let croppedRect = viewBox.size.resized(within: bounds.size)
     let scale = croppedRect.width / viewBox.width
     func transform(point: CGPoint) -> CGPoint {
       return CGPoint(x: point.x * scale + croppedRect.minX, y: point.y * scale + croppedRect.minY)
@@ -134,7 +134,7 @@ private class ToggleVerticalVector: UIView {
 private class CheckCircleVector: UIView {
   override func draw(_ dirtyRect: CGRect) {
     let viewBox = CGRect(origin: CGPoint(x: 0, y: 0), size: CGSize(width: 24, height: 24))
-    let croppedRect = viewBox.size.crop(within: bounds.size)
+    let croppedRect = viewBox.size.resized(within: bounds.size)
     let scale = croppedRect.width / viewBox.width
     func transform(point: CGPoint) -> CGPoint {
       return CGPoint(x: point.x * scale + croppedRect.minX, y: point.y * scale + croppedRect.minY)

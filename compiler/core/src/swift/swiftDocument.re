@@ -89,18 +89,14 @@ let labelAttributedTextValue = framework =>
   | SwiftOptions.AppKit => labelAttributedTextName(framework)
   };
 
-let resizeModeValue = (framework, value) =>
-  switch (framework) {
-  | SwiftOptions.UIKit =>
-    switch (value) {
-    | "cover" => "scaleAspectFill"
-    | "contain" => "scaleAspectFit"
-    | "stretch" => "scaleToFill"
-    | _ =>
-      Js.log("Invalid resizeMode");
-      raise(Not_found);
-    }
-  | SwiftOptions.AppKit => value
+let resizeModeValue = value =>
+  switch (value) {
+  | "cover" => "scaleAspectFill"
+  | "contain" => "scaleAspectFit"
+  | "stretch" => "scaleToFill"
+  | _ =>
+    Js.log("Invalid resizeMode");
+    raise(Not_found);
   };
 
 let localImageName = (framework: SwiftOptions.framework, name) => {

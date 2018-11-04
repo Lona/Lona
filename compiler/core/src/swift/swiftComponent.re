@@ -22,7 +22,7 @@ module Naming = {
       | (UIKit, Image) => "BackgroundImageView"
       | (AppKit, Types.View) => "NSBox"
       | (AppKit, Text) => "LNATextField"
-      | (AppKit, Image) => "NSImageView"
+      | (AppKit, Image) => "LNAImageView"
       | (_, VectorGraphic) =>
         SwiftComponentParameter.getVectorAssetUrl(layer)
         |> Format.vectorClassName
@@ -350,11 +350,7 @@ module Doc = {
                 "operator": "=",
                 "right":
                   SwiftIdentifier(
-                    "."
-                    ++ SwiftDocument.resizeModeValue(
-                         swiftOptions.framework,
-                         "cover",
-                       ),
+                    "." ++ SwiftDocument.resizeModeValue("cover"),
                   ),
               }),
             ],

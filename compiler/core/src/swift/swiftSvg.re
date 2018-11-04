@@ -438,7 +438,7 @@ let rec convertNode =
                     MemberExpression([
                       SwiftIdentifier("viewBox"),
                       SwiftIdentifier("size"),
-                      SwiftIdentifier("crop"),
+                      SwiftIdentifier("resized"),
                     ]),
                   "arguments": [
                     FunctionCallArgument({

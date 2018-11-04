@@ -22,11 +22,11 @@ public class ImageCropping: NSBox {
 
   // MARK: Private
 
-  private var aspectFitView = NSImageView()
-  private var aspectFillView = NSImageView()
-  private var stretchFillView = NSImageView()
-  private var fixedAspectFillView = NSImageView()
-  private var fixedStretchView = NSImageView()
+  private var aspectFitView = LNAImageView()
+  private var aspectFillView = LNAImageView()
+  private var stretchFillView = LNAImageView()
+  private var fixedAspectFillView = LNAImageView()
+  private var fixedStretchView = LNAImageView()
 
   private func setUpViews() {
     boxType = .custom
@@ -40,13 +40,13 @@ public class ImageCropping: NSBox {
     addSubview(fixedStretchView)
 
     aspectFitView.image = #imageLiteral(resourceName: "icon_128x128")
-    aspectFitView.resizeMode = "contain"
+    aspectFitView.resizingMode = .scaleAspectFit
     aspectFillView.image = #imageLiteral(resourceName: "icon_128x128")
     stretchFillView.image = #imageLiteral(resourceName: "icon_128x128")
-    stretchFillView.resizeMode = "stretch"
+    stretchFillView.resizingMode = .scaleToFill
     fixedAspectFillView.image = #imageLiteral(resourceName: "icon_128x128")
     fixedStretchView.image = #imageLiteral(resourceName: "icon_128x128")
-    fixedStretchView.resizeMode = "stretch"
+    fixedStretchView.resizingMode = .scaleToFill
   }
 
   private func setUpConstraints() {

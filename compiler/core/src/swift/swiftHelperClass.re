@@ -1,4 +1,4 @@
-/* private class ImageWithBackgroundColor: NSImageView {
+/* private class ImageWithBackgroundColor: LNAImageView {
      var fillColor: NSColor = NSColor.clear
 
      override func draw(_ dirtyRect: NSRect) {
@@ -12,7 +12,7 @@ let generateImageWithBackgroundColor =
   SwiftAst.[
     ClassDeclaration({
       "name": "ImageWithBackgroundColor",
-      "inherits": [TypeName("NSImageView")],
+      "inherits": [TypeName("LNAImageView")],
       "modifier": Some(PrivateModifier),
       "isFinal": false,
       "body": [

@@ -46,7 +46,7 @@ public class TabIcon: NSBox {
     options: [.mouseEnteredAndExited, .activeAlways, .mouseMoved, .inVisibleRect],
     owner: self)
 
-  private var imageView = NSImageView()
+  private var imageView = LNAImageView()
 
   private var hovered = false
   private var pressed = false

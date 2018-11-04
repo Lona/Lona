@@ -34,7 +34,7 @@ enum ResizeMode: String {
         }
     }
 
-    func croppingMode() -> CGSize.CroppingMode {
+    func resizingMode() -> CGSize.ResizingMode {
         switch self {
         case .cover: return .scaleAspectFill
         case .contain: return .scaleAspectFit

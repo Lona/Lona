@@ -234,7 +234,7 @@ extension SVG.Node {
         guard case .svg(let svg) = self else { return nil }
 
         let viewBox = svg.params.viewBox?.cgRect ?? CGRect(origin: .zero, size: size)
-        let croppedRect = viewBox.size.crop(within: size)
+        let croppedRect = viewBox.size.resized(within: size)
         let scale = croppedRect.width / viewBox.width
 
         func transform(point: CGPoint) -> CGPoint {

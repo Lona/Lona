@@ -3,7 +3,7 @@ import Foundation
 
 // MARK: - ImageWithBackgroundColor
 
-private class ImageWithBackgroundColor: NSImageView {
+private class ImageWithBackgroundColor: LNAImageView {
   var fillColor = NSColor.clear
 
   override func draw(_ dirtyRect: NSRect) {

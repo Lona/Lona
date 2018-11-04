@@ -1,15 +1,15 @@
-import AppKit
+import UIKit
 
 extension CGSize {
-  enum CroppingMode {
+  enum ResizingMode {
     case scaleToFill
     case scaleAspectFill
     case scaleAspectFit
   }
 
-  func crop(
+  func resized(
     within destination: CGSize,
-    usingCroppingMode croppingMode: CroppingMode = .scaleAspectFit
+    usingResizingMode resizingMode: ResizingMode = .scaleAspectFit
     ) -> CGRect {
 
     let source = self
@@ -20,7 +20,7 @@ extension CGSize {
 
     let sourceIsWiderThanDestination = sourceAspectRatio < destinationAspectRatio
 
-    switch croppingMode {
+    switch resizingMode {
     case .scaleAspectFit:
       if sourceIsWiderThanDestination {
         newSize.height = destination.width * sourceAspectRatio
