@@ -12,11 +12,19 @@ private class IconFolderVector: NSBox {
     return true
   }
 
+  var resizingMode = CGSize.ResizingMode.scaleAspectFill {
+    didSet {
+      if resizingMode != oldValue {
+        needsDisplay = true
+      }
+    }
+  }
+
   override func draw(_ dirtyRect: CGRect) {
     super.draw(dirtyRect)
 
     let viewBox = CGRect(origin: CGPoint(x: 0, y: 0), size: CGSize(width: 24, height: 24))
-    let croppedRect = viewBox.size.resized(within: bounds.size)
+    let croppedRect = viewBox.size.resized(within: bounds.size, usingResizingMode: resizingMode)
     let scale = croppedRect.width / viewBox.width
     func transform(point: CGPoint) -> CGPoint {
       return CGPoint(x: point.x * scale + croppedRect.minX, y: point.y * scale + croppedRect.minY)
