@@ -23,6 +23,8 @@ enum Generated: String {
     case fixedParentFillAndFitChildren = "Fixed Parent Fill and Fit Children"
     case fixedParentFitChild = "Fixed Parent Fit Child"
     case primaryAxis = "Primary Axis"
+    case primaryAxisFillSiblings = "Primary Fill Siblings"
+    case primaryAxisFillNestedSiblings = "Primary Fill Nested Siblings"
     case secondaryAxis = "Secondary Axis"
     case assign = "Assign"
     case ifEnabled = "If - Enabled"
@@ -54,6 +56,8 @@ enum Generated: String {
             fixedParentFillAndFitChildren,
             fixedParentFitChild,
             primaryAxis,
+            primaryAxisFillSiblings,
+            primaryAxisFillNestedSiblings,
             secondaryAxis,
             assign,
             ifEnabled,
@@ -135,6 +139,10 @@ enum Generated: String {
             return RepeatedVector(active: true)
         case .imageCropping:
             return ImageCropping()
+        case .primaryAxisFillSiblings:
+            return PrimaryAxisFillSiblings()
+        case .primaryAxisFillNestedSiblings:
+            return PrimaryAxisFillNestedSiblings()
         }
     }
 
@@ -151,6 +159,8 @@ enum Generated: String {
              .fixedParentFillAndFitChildren,
              .fixedParentFitChild,
              .primaryAxis,
+             .primaryAxisFillSiblings,
+             .primaryAxisFillNestedSiblings,
              .secondaryAxis,
              .borderWidthColor,
              .textAlignment,

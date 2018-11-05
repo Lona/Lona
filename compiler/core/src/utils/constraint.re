@@ -171,8 +171,12 @@ let semanticEqual = (a: t, b: t): bool =>
 
 let getConstraints =
     (getComponent: string => Js.Json.t, rootLayer: Types.layer) => {
-  let constrainAxes = (layer: Types.layer) => {
-    let layer = Layer.getProxyLayer(getComponent, layer);
+  let constrainAxes = (originalLayer: Types.layer) => {
+    let isComponentLayer = Layer.isComponentLayer(originalLayer);
+    let layer = Layer.getProxyLayer(getComponent, originalLayer);
+    let children =
+      originalLayer.children |> List.map(Layer.getProxyLayer(getComponent));
+
     let direction = Layer.getFlexDirection(layer.parameters);
     let isColumn = direction == "column";
     let primaryBeforeAnchor = isColumn ? Top : Leading;
@@ -187,16 +191,27 @@ let getConstraints =
     let width = Layer.getNumberParameterOpt(Width, layer.parameters);
     let sizingRules =
       layer.parameters
-      |> Layer.getSizingRules(Layer.findParent(rootLayer, layer));
+      |> Layer.getSizingRules(
+           isComponentLayer ? None : Layer.findParent(rootLayer, layer),
+         );
     let primarySizingRule = isColumn ? sizingRules.height : sizingRules.width;
     let secondarySizingRule =
       isColumn ? sizingRules.width : sizingRules.height;
-    let flexChildren =
-      layer.children
-      |> List.map(Layer.getProxyLayer(getComponent))
-      |> List.filter((child: Types.layer) =>
-           Layer.getNumberParameter(Flex, child.parameters) === 1.0
-         );
+
+    let fillChildren =
+      children
+      |> List.filter((child: Types.layer) => {
+           let proxyChild = Layer.getProxyLayer(getComponent, child);
+           let childSizingRules =
+             proxyChild.parameters
+             |> Layer.getSizingRules(
+                  Layer.isComponentLayer(child) ? None : Some(layer),
+                );
+           let primarySizingRule =
+             isColumn ? childSizingRules.height : childSizingRules.width;
+           primarySizingRule == Layout.Fill;
+         });
+
     let addConstraints = (index, child: Types.layer) => {
       let childSizingRules =
         child.parameters |> Layer.getSizingRules(Some(layer));
@@ -219,11 +234,11 @@ let getConstraints =
         };
       let lastViewConstraints =
         switch (index) {
-        | x when x == List.length(layer.children) - 1 =>
-          /* If the parent view has a fixed dimension, we don't need to add a constraint...
-             unless any child has "flex: 1", in which case we do still need the constraint. */
+        | x when x == List.length(children) - 1 =>
+          /* If the parent view has a Fixed dimension, we don't need to add a constraint...
+             unless any child has a Fill dimension, in which case we do still need the constraint. */
           let needsPrimaryAfterConstraint =
-            switch (primarySizingRule, List.length(flexChildren)) {
+            switch (primarySizingRule, List.length(fillChildren)) {
             | (Fill, count) when count == 0 => false
             | (Fixed(_), count) when count == 0 => false
             | (_, _) => true
@@ -247,7 +262,7 @@ let getConstraints =
         switch (index) {
         | 0 => []
         | _ =>
-          let previousLayer = List.nth(layer.children, index - 1);
+          let previousLayer = List.nth(children, index - 1);
           [
             Relation(
               child,
@@ -352,9 +367,9 @@ let getConstraints =
       @ middleViewConstraints
       @ secondaryConstraints;
     };
-    /* Children with "flex: 1" should all have equal dimensions along the primary axis */
-    let flexChildrenConstraints =
-      switch (flexChildren) {
+    /* Children set to Fill should all have equal dimensions along the primary axis */
+    let fillChildrenConstraints =
+      switch (fillChildren) {
       | [first, ...rest] when List.length(rest) > 0 =>
         let sameAnchor = primaryDimensionAnchor;
         let sameAnchorConstraint = (anchor, layer) =>
@@ -389,10 +404,7 @@ let getConstraints =
       | _ => []
       };
     let fitContentSecondaryConstraints =
-      layer.children
-      |> List.map(Layer.getProxyLayer(getComponent))
-      |> List.map(fitContentSecondaryConstraint)
-      |> List.concat;
+      children |> List.map(fitContentSecondaryConstraint) |> List.concat;
     let heightConstraint =
       switch (height) {
       | Some(_) => [
@@ -419,13 +431,9 @@ let getConstraints =
       };
     let constraints =
       [heightConstraint, widthConstraint]
-      @ [flexChildrenConstraints]
+      @ [fillChildrenConstraints]
       @ [fitContentSecondaryConstraints]
-      @ (
-        layer.children
-        |> List.map(Layer.getProxyLayer(getComponent))
-        |> List.mapi(addConstraints)
-      );
+      @ (children |> List.mapi(addConstraints));
     constraints |> List.concat;
   };
   rootLayer |> Layer.flatmap(constrainAxes) |> List.concat;

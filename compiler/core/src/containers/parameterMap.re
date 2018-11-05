@@ -29,3 +29,11 @@ let assign = (base, extender) =>
     base,
     extender,
   );
+
+let toString = parameterMap =>
+  parameterMap
+  |> bindings
+  |> List.map(((key, value)) =>
+       (key |> ParameterKey.toString) ++ ": " ++ Js.String.make(value)
+     )
+  |> Format.joinWith("\n");
