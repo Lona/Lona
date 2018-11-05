@@ -29,9 +29,9 @@ extension CGSize {
       }
     case .scaleAspectFill:
       if sourceIsWiderThanDestination {
-        newSize.width = destination.height * sourceAspectRatio
+        newSize.width = destination.height / sourceAspectRatio
       } else {
-        newSize.height = destination.width / sourceAspectRatio
+        newSize.height = destination.width * sourceAspectRatio
       }
     case .scaleToFill:
       break
