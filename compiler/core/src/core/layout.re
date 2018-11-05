@@ -52,4 +52,11 @@ module ToString = {
     | End => "flex-end"
     | Unspecified => "flex-start"
     };
+
+  let sizingRule = (value: sizingRule) =>
+    switch (value) {
+    | Fill => "fill"
+    | FitContent => "fitContent"
+    | Fixed(number) => "fixed(" ++ string_of_float(number) ++ ")"
+    };
 };

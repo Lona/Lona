@@ -110,7 +110,17 @@ let generateBackgroundImage =
           "block":
             Some(
               GetterBlock([
-                ReturnStatement(Some(SwiftIdentifier(".zero"))),
+                ReturnStatement(
+                  Some(
+                    SwiftAst.Builders.functionCall(
+                      ["CGSize"],
+                      [
+                        (Some("width"), ["UIViewNoIntrinsicMetric"]),
+                        (Some("height"), ["UIViewNoIntrinsicMetric"]),
+                      ],
+                    ),
+                  ),
+                ),
               ]),
             ),
         }),

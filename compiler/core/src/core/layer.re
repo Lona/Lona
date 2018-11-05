@@ -451,7 +451,7 @@ let getTypeNames = rootLayer => {
    use the parameters of the custom component's root layer, since these
    determine layout. We should still use the type, name, and children of
    the custom component layer. */
-let getRootLayerForComponentName =
+let getProxyLayerForComponentName =
     (getComponent: string => Js.Json.t, layer: Types.layer, name): Types.layer => {
   let component = getComponent(name);
   let rootLayer = component |> Decode.Component.rootLayer(getComponent);
@@ -472,6 +472,6 @@ let getRootLayerForComponentName =
 let getProxyLayer = (getComponent: string => Js.Json.t, layer: Types.layer) =>
   switch (layer.typeName) {
   | Types.Component(name) =>
-    getRootLayerForComponentName(getComponent, layer, name)
+    getProxyLayerForComponentName(getComponent, layer, name)
   | _ => layer
   };

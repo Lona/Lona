@@ -1,0 +1,145 @@
+{
+  "devices" : [
+    {
+      "height" : 100,
+      "heightMode" : "At Least",
+      "name" : "iPhone SE",
+      "width" : 320
+    },
+    {
+      "height" : 100,
+      "heightMode" : "At Least",
+      "name" : "iPhone 7",
+      "width" : 375
+    },
+    {
+      "height" : 100,
+      "heightMode" : "At Least",
+      "name" : "iPhone 7+",
+      "width" : 414
+    }
+  ],
+  "examples" : [
+    {
+      "id" : "Default",
+      "name" : "Default",
+      "params" : {
+
+      }
+    }
+  ],
+  "logic" : [
+
+  ],
+  "params" : [
+
+  ],
+  "root" : {
+    "children" : [
+      {
+        "children" : [
+          {
+            "children" : [
+              {
+                "id" : "Image",
+                "params" : {
+                  "alignSelf" : "stretch",
+                  "backgroundColor" : "teal200",
+                  "height" : 100,
+                  "image" : "file:\/\/.\/assets\/icon_128x128.png"
+                },
+                "type" : "Lona:Image"
+              },
+              {
+                "id" : "Title",
+                "params" : {
+                  "alignSelf" : "stretch",
+                  "font" : "body2",
+                  "text" : "Title"
+                },
+                "type" : "Lona:Text"
+              },
+              {
+                "id" : "Subtitle",
+                "params" : {
+                  "alignSelf" : "stretch",
+                  "font" : "body1",
+                  "text" : "Subtitle"
+                },
+                "type" : "Lona:Text"
+              }
+            ],
+            "id" : "LeftCard",
+            "params" : {
+              "flex" : 1
+            },
+            "type" : "Lona:View"
+          },
+          {
+            "id" : "Spacer",
+            "params" : {
+              "backgroundColor" : "#D8D8D8",
+              "height" : 0,
+              "width" : 8
+            },
+            "type" : "Lona:View"
+          },
+          {
+            "children" : [
+              {
+                "id" : "Image 1",
+                "params" : {
+                  "alignSelf" : "stretch",
+                  "backgroundColor" : "teal200",
+                  "height" : 100,
+                  "image" : "file:\/\/.\/assets\/icon_128x128.png"
+                },
+                "type" : "Lona:Image"
+              },
+              {
+                "id" : "Title 1",
+                "params" : {
+                  "alignSelf" : "stretch",
+                  "font" : "body2",
+                  "text" : "Title"
+                },
+                "type" : "Lona:Text"
+              },
+              {
+                "id" : "Subtitle 1",
+                "params" : {
+                  "alignSelf" : "stretch",
+                  "font" : "body1",
+                  "text" : "Subtitle"
+                },
+                "type" : "Lona:Text"
+              }
+            ],
+            "id" : "RightCard",
+            "params" : {
+              "flex" : 1
+            },
+            "type" : "Lona:View"
+          }
+        ],
+        "id" : "Horizontal",
+        "params" : {
+          "alignSelf" : "stretch",
+          "backgroundColor" : "teal100",
+          "flexDirection" : "row"
+        },
+        "type" : "Lona:View"
+      }
+    ],
+    "id" : "Container",
+    "params" : {
+      "alignSelf" : "stretch",
+      "backgroundColor" : "teal50",
+      "paddingBottom" : 10,
+      "paddingLeft" : 10,
+      "paddingRight" : 10,
+      "paddingTop" : 10
+    },
+    "type" : "Lona:View"
+  }
+}
