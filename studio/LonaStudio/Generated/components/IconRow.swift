@@ -75,6 +75,7 @@ public class IconRow: NSBox {
     rowContentView.addSubview(titleView)
     rowContentView.addSubview(subtitleView)
 
+    imageView.resizingMode = .scaleAspectFit
     titleViewTextStyle = TextStyles.largeSemibold
     titleView.attributedStringValue = titleViewTextStyle.apply(to: titleView.attributedStringValue)
     subtitleViewTextStyle = TextStyles.regularMuted
@@ -95,12 +96,13 @@ public class IconRow: NSBox {
       .heightAnchor
       .constraint(lessThanOrEqualTo: heightAnchor)
     let imageViewLeadingAnchorConstraint = imageView.leadingAnchor.constraint(equalTo: leadingAnchor, constant: 8)
-    let imageViewTopAnchorConstraint = imageView.topAnchor.constraint(equalTo: topAnchor, constant: 8)
+    let imageViewCenterYAnchorConstraint = imageView.centerYAnchor.constraint(equalTo: centerYAnchor)
     let rowContentViewTrailingAnchorConstraint = rowContentView.trailingAnchor.constraint(equalTo: trailingAnchor)
     let rowContentViewLeadingAnchorConstraint = rowContentView
       .leadingAnchor
       .constraint(equalTo: imageView.trailingAnchor, constant: 16)
     let rowContentViewTopAnchorConstraint = rowContentView.topAnchor.constraint(equalTo: topAnchor)
+    let rowContentViewCenterYAnchorConstraint = rowContentView.centerYAnchor.constraint(equalTo: centerYAnchor)
     let rowContentViewBottomAnchorConstraint = rowContentView.bottomAnchor.constraint(equalTo: bottomAnchor)
     let imageViewHeightAnchorConstraint = imageView.heightAnchor.constraint(equalToConstant: 30)
     let imageViewWidthAnchorConstraint = imageView.widthAnchor.constraint(equalToConstant: 30)
@@ -125,10 +127,11 @@ public class IconRow: NSBox {
       imageViewHeightAnchorParentConstraint,
       rowContentViewHeightAnchorParentConstraint,
       imageViewLeadingAnchorConstraint,
-      imageViewTopAnchorConstraint,
+      imageViewCenterYAnchorConstraint,
       rowContentViewTrailingAnchorConstraint,
       rowContentViewLeadingAnchorConstraint,
       rowContentViewTopAnchorConstraint,
+      rowContentViewCenterYAnchorConstraint,
       rowContentViewBottomAnchorConstraint,
       imageViewHeightAnchorConstraint,
       imageViewWidthAnchorConstraint,
