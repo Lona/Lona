@@ -21,12 +21,14 @@
   ],
   "examples" : [
     {
+      "id" : "Default",
       "name" : "Default",
       "params" : {
 
       }
     },
     {
+      "id" : "name",
       "name" : "name",
       "params" : {
         "icon" : "file:\/\/.\/assets\/icon-documentation@2x.png"
@@ -150,6 +152,7 @@
           "marginLeft" : 8,
           "marginRight" : 16,
           "marginTop" : 8,
+          "resizeMode" : "contain",
           "width" : 30
         },
         "type" : "Lona:Image"
@@ -186,6 +189,7 @@
     ],
     "id" : "Container",
     "params" : {
+      "alignItems" : "center",
       "alignSelf" : "stretch",
       "flexDirection" : "row"
     },
