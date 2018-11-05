@@ -3,7 +3,7 @@ import AppKit
 // An image view that supports image resizing modes
 public class LNAImageView: NSImageView {
   override public var intrinsicContentSize: CGSize {
-    return .zero
+    return CGSize(width: NSView.noIntrinsicMetric, height: NSView.noIntrinsicMetric)
   }
 
   private var originalImage: NSImage?
