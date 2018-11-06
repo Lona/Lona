@@ -63,6 +63,11 @@ public class TextStyle {
 
   public lazy var uiFontDescriptor: UIFontDescriptor = {
     var attributes: [UIFontDescriptor.AttributeName: Any] = [:]
+    var family = self.family
+
+    if family == nil && name == nil {
+      family = UIFont.systemFont(ofSize: UIFont.systemFontSize).familyName
+    }
 
     if let family = family {
       attributes[UIFontDescriptor.AttributeName.family] = family
