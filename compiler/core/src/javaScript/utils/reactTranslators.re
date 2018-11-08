@@ -23,7 +23,7 @@ let convertUnitlessAstNode =
     switch (value) {
     | Ast.Identifier(path) =>
       Ast.BinaryExpression({
-        left: Ast.Identifier(path),
+        left: value,
         operator: Ast.Plus,
         right: Ast.StringLiteral(ReactDomTranslators.styleUnit),
       })
