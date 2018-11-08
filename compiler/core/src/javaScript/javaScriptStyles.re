@@ -497,16 +497,25 @@ let createStyleAttributePropertyAST =
       key: ParameterKey.t,
       value: Logic.logicValue,
     ) =>
-  switch (key) {
-  | ParameterKey.TextStyle =>
+  switch (key, ReactTranslators.isUnitNumberParameter(framework, key)) {
+  | (ParameterKey.TextStyle, _) =>
     JavaScriptAst.SpreadElement(
       JavaScriptLogic.logicValueToJavaScriptAST(config, value),
     )
-  | ParameterKey.Shadow =>
+  | (ParameterKey.Shadow, _) =>
     JavaScriptAst.SpreadElement(
       JavaScriptLogic.logicValueToJavaScriptAST(config, value),
     )
-  | _ =>
+  | (_, true) =>
+    JavaScriptAst.Property({
+      key: Identifier([key |> styleNameKey(framework)]),
+      value:
+        ReactTranslators.convertUnitlessAstNode(
+          framework,
+          JavaScriptLogic.logicValueToJavaScriptAST(config, value),
+        ),
+    })
+  | (_, false) =>
     JavaScriptAst.Property({
       key: Identifier([key |> styleNameKey(framework)]),
       value: JavaScriptLogic.logicValueToJavaScriptAST(config, value),

@@ -308,11 +308,7 @@ let rec layerToJavaScriptAST =
     |> Layer.mapBindings(((key, value)) => {
          let key =
            if (Layer.isPrimitiveTypeName(layer.typeName)) {
-             switch (framework) {
-             | JavaScriptOptions.ReactDOM =>
-               key |> ReactDomTranslators.variableNames
-             | _ => key |> ReactNativeTranslators.variableNames
-             };
+             ReactTranslators.variableNames(framework, key);
            } else {
              key |> ParameterKey.toString;
            };
