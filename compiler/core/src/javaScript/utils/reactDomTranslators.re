@@ -1,7 +1,13 @@
 let styleUnit = "px";
 
-let convertUnitlessStyle = value =>
-  string_of_int(value |> Json.Decode.int) ++ styleUnit;
+let convertUnitlessStyle = (value: Js.Json.t) =>
+  switch (value |> Js.Json.classify) {
+  | Js.Json.JSONString(string) => string
+  | Js.Json.JSONNumber(float) => Format.floatToString(float) ++ "px"
+  | _ =>
+    Js.log("Invalid unitless value");
+    raise(Not_found);
+  };
 
 let isUnitNumberParameter = key =>
   switch (key) {

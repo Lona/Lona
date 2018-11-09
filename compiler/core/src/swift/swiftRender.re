@@ -1,12 +1,6 @@
 open Prettier.Doc.Builders;
 
-let renderFloat = value => {
-  let string = string_of_float(value);
-  let cleaned =
-    string |> Js.String.endsWith(".") ?
-      string |> Js.String.slice(~from=0, ~to_=-1) : string;
-  s(cleaned);
-};
+let renderFloat = value => s(Format.floatToString(value));
 
 let reservedWords = ["true", "false"];
 
