@@ -24,12 +24,12 @@ export default class BoxModelConditional extends React.Component {
       <div style={styles.outer}>
         <div
           style={Object.assign({}, styles.inner, {
-            marginTop: Inner$marginTop,
-            marginRight: Inner$marginRight,
-            marginBottom: Inner$marginBottom,
-            marginLeft: Inner$marginLeft,
-            width: Inner$width,
-            height: Inner$height
+            marginTop: Inner$marginTop + "px",
+            marginRight: Inner$marginRight + "px",
+            marginBottom: Inner$marginBottom + "px",
+            marginLeft: Inner$marginLeft + "px",
+            width: Inner$width + "px",
+            height: Inner$height + "px"
           })}
 
         />
