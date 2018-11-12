@@ -1,108 +1,110 @@
-let styleNameKey =
-    (framework: JavaScriptOptions.framework, key: ParameterKey.t) =>
-  switch (framework, key) {
-  | (_, ParameterKey.TextStyle) => "font"
-  | (ReactDOM, ParameterKey.ResizeMode) => "objectFit"
-  | _ => key |> ParameterKey.toString
-  };
-
-let getTextStyleProperty =
-    (framework: JavaScriptOptions.framework, textStyleId) =>
-  JavaScriptAst.(
-    SpreadElement(
-      switch (framework) {
-      | JavaScriptOptions.ReactSketchapp =>
-        CallExpression({
-          callee: Identifier(["TextStyles", "get"]),
-          arguments: [
-            StringLiteral(textStyleId |> JavaScriptFormat.styleVariableName),
-          ],
-        })
-      | _ =>
-        Identifier([
-          "textStyles",
-          textStyleId |> JavaScriptFormat.styleVariableName,
-        ])
-      },
-    )
-  );
-
-let getShadowProperty = (framework: JavaScriptOptions.framework, shadowId) =>
-  JavaScriptAst.(
-    SpreadElement(
-      switch (framework) {
-      | JavaScriptOptions.ReactSketchapp =>
-        CallExpression({
-          callee: Identifier(["Shadows", "get"]),
-          arguments: [
-            StringLiteral(shadowId |> JavaScriptFormat.styleVariableName),
-          ],
-        })
-      | _ =>
-        Identifier([
-          "shadows",
-          shadowId |> JavaScriptFormat.styleVariableName,
-        ])
-      },
-    )
-  );
-
-let getStyleProperty =
-    (
-      framework: JavaScriptOptions.framework,
-      key,
-      colors,
-      value: Types.lonaValue,
-    ) => {
-  let keyIdentifier =
-    JavaScriptAst.Identifier([
-      switch (framework) {
-      | ReactDOM => key |> ReactDomTranslators.styleVariableNames
-      | ReactNative
-      | ReactSketchapp => key |> ParameterKey.toString
-      },
-    ]);
-  switch (value.ltype) {
-  | Named("TextStyle", _)
-  | Reference("TextStyle") =>
-    let data = value.data |> Js.Json.decodeString;
-    switch (data) {
-    | Some(textStyleId) => getTextStyleProperty(framework, textStyleId)
-    | None =>
-      Js.log("TextStyle id must be a string");
-      raise(Not_found);
+module Property = {
+  let keyName = (framework: JavaScriptOptions.framework, key: ParameterKey.t) =>
+    switch (framework, key) {
+    | (_, ParameterKey.TextStyle) => "font"
+    | (ReactDOM, ParameterKey.ResizeMode) => "objectFit"
+    | _ => key |> ParameterKey.toString
     };
-  | Named("Shadow", _)
-  | Reference("Shadow") =>
-    let data = value.data |> Js.Json.decodeString;
-    switch (data) {
-    | Some(shadowId) => getShadowProperty(framework, shadowId)
-    | None =>
-      Js.log("Shadow id must be a string");
-      raise(Not_found);
-    };
-  | Named("Color", _)
-  | Reference("Color") =>
-    let data = value.data |> Json.Decode.string;
-    switch (Color.find(colors, data)) {
-    | Some(color) =>
-      JavaScriptAst.Property({
-        key: keyIdentifier,
-        value: JavaScriptAst.Identifier(["colors", color.id]),
-      })
-    | None =>
-      JavaScriptAst.Property({key: keyIdentifier, value: Literal(value)})
-    };
-  | _ =>
-    let value =
-      switch (framework, key) {
-      | (ReactDOM, ParameterKey.ResizeMode) =>
-        LonaValue.string(
-          ReactDomTranslators.resizeMode(value.data |> Json.Decode.string),
-        )
-      | _ => value
+
+  let textStyle = (framework: JavaScriptOptions.framework, textStyleId) =>
+    JavaScriptAst.(
+      SpreadElement(
+        switch (framework) {
+        | JavaScriptOptions.ReactSketchapp =>
+          CallExpression({
+            callee: Identifier(["TextStyles", "get"]),
+            arguments: [
+              StringLiteral(
+                textStyleId |> JavaScriptFormat.styleVariableName,
+              ),
+            ],
+          })
+        | _ =>
+          Identifier([
+            "textStyles",
+            textStyleId |> JavaScriptFormat.styleVariableName,
+          ])
+        },
+      )
+    );
+
+  let shadow = (framework: JavaScriptOptions.framework, shadowId) =>
+    JavaScriptAst.(
+      SpreadElement(
+        switch (framework) {
+        | JavaScriptOptions.ReactSketchapp =>
+          CallExpression({
+            callee: Identifier(["Shadows", "get"]),
+            arguments: [
+              StringLiteral(shadowId |> JavaScriptFormat.styleVariableName),
+            ],
+          })
+        | _ =>
+          Identifier([
+            "shadows",
+            shadowId |> JavaScriptFormat.styleVariableName,
+          ])
+        },
+      )
+    );
+
+  let forValue =
+      (
+        framework: JavaScriptOptions.framework,
+        key,
+        colors,
+        value: Types.lonaValue,
+      ) => {
+    let keyIdentifier =
+      JavaScriptAst.Identifier([
+        switch (framework) {
+        | ReactDOM => key |> ReactDomTranslators.styleVariableNames
+        | ReactNative
+        | ReactSketchapp => key |> ParameterKey.toString
+        },
+      ]);
+    switch (value.ltype) {
+    | Named("TextStyle", _)
+    | Reference("TextStyle") =>
+      let data = value.data |> Js.Json.decodeString;
+      switch (data) {
+      | Some(textStyleId) => textStyle(framework, textStyleId)
+      | None =>
+        Js.log("TextStyle id must be a string");
+        raise(Not_found);
       };
-    JavaScriptAst.Property({key: keyIdentifier, value: Literal(value)});
+    | Named("Shadow", _)
+    | Reference("Shadow") =>
+      let data = value.data |> Js.Json.decodeString;
+      switch (data) {
+      | Some(shadowId) => shadow(framework, shadowId)
+      | None =>
+        Js.log("Shadow id must be a string");
+        raise(Not_found);
+      };
+    | Named("Color", _)
+    | Reference("Color") =>
+      let data = value.data |> Json.Decode.string;
+      switch (Color.find(colors, data)) {
+      | Some(color) =>
+        JavaScriptAst.Property({
+          key: keyIdentifier,
+          value: JavaScriptAst.Identifier(["colors", color.id]),
+        })
+      | None =>
+        JavaScriptAst.Property({key: keyIdentifier, value: Literal(value)})
+      };
+    | _ =>
+      let value =
+        switch (framework, key) {
+        | (ReactDOM, ParameterKey.ResizeMode) =>
+          LonaValue.string(
+            ReactDomTranslators.resizeMode(value.data |> Json.Decode.string),
+          )
+        | _ => value
+        };
+      JavaScriptAst.Property({key: keyIdentifier, value: Literal(value)});
+    };
   };
 };
 
@@ -111,7 +113,8 @@ let defaultStyles =
       framework: JavaScriptOptions.framework,
       config: Config.t,
       layerType: Types.layerType,
-    ) => {
+    )
+    : ParameterMap.t(Types.lonaValue) => {
   let defaults = ParameterMap.empty;
 
   let defaults =
@@ -382,7 +385,7 @@ let getStylePropertyWithUnits =
           ),
         ),
     })
-  | (_, _) => getStyleProperty(framework, key, colors, value)
+  | (_, _) => Property.forValue(framework, key, colors, value)
   };
 
 let handleNumberOfLines =
@@ -459,12 +462,12 @@ let createStyleAttributePropertyAST =
   | (ParameterKey.Shadow, _) => JavaScriptAst.SpreadElement(astValue)
   | (_, true) =>
     JavaScriptAst.Property({
-      key: Identifier([key |> styleNameKey(framework)]),
+      key: Identifier([key |> Property.keyName(framework)]),
       value: ReactTranslators.convertUnitlessAstNode(framework, astValue),
     })
   | (_, false) =>
     JavaScriptAst.Property({
-      key: Identifier([key |> styleNameKey(framework)]),
+      key: Identifier([key |> Property.keyName(framework)]),
       value: astValue,
     })
   };
