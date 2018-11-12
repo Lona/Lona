@@ -4,5 +4,12 @@ type framework =
   | ReactNative
   | ReactSketchapp;
 
+type styleFramework =
+  | None
+  | StyledComponents;
+
 [@bs.deriving jsConverter]
-type options = {framework};
+type options = {
+  framework,
+  styleFramework,
+};

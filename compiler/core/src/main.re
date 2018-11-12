@@ -55,6 +55,11 @@ let javaScriptOptions: JavaScriptOptions.options = {
     | Some("reactdom") => JavaScriptOptions.ReactDOM
     | _ => JavaScriptOptions.ReactNative
     },
+  styleFramework:
+    switch (getArgument("styleFramework")) {
+    | Some("styledcomponents") => JavaScriptOptions.StyledComponents
+    | _ => JavaScriptOptions.None
+    },
 };
 
 let exit = message => {

@@ -260,7 +260,7 @@ let createJSXElement =
 
 let rec layerToJavaScriptAST =
         (
-          framework: JavaScriptOptions.framework,
+          options: JavaScriptOptions.options,
           config: Config.t,
           logic,
           assignments,
@@ -268,6 +268,7 @@ let rec layerToJavaScriptAST =
           parent: option(Types.layer),
           layer: Types.layer,
         ) => {
+  let framework = options.framework;
   open Ast;
   let removeSpecialParams = params =>
     params
@@ -400,7 +401,7 @@ let rec layerToJavaScriptAST =
       layer.children
       |> List.map(
            layerToJavaScriptAST(
-             framework,
+             options,
              config,
              logic,
              assignments,
@@ -438,7 +439,8 @@ type componentImports = {
 };
 
 let importComponents =
-    (framework: JavaScriptOptions.framework, getComponentFile, rootLayer) => {
+    (options: JavaScriptOptions.options, getComponentFile, rootLayer) => {
+  let framework = options.framework;
   let {builtIn, custom}: Layer.availableTypeNames =
     rootLayer |> Layer.getTypeNames;
   let importsSvg = List.mem(Types.VectorGraphic, builtIn);
@@ -446,68 +448,69 @@ let importComponents =
     builtIn |> List.filter(typeName => typeName != Types.VectorGraphic);
   {
     absolute:
-      switch (framework) {
-      | JavaScriptOptions.ReactDOM =>
-        /* Ast.ImportDeclaration({
-             source: "styled-components",
-             specifiers: [
-               ImportDefaultSpecifier("styled"),
-               ImportSpecifier({imported: "ThemeProvider", local: None}),
-             ],
-           }), */
-        []
-      | _ =>
-        (
-          switch (framework, importsSvg) {
-          | (JavaScriptOptions.ReactNative, true) => [
-              Ast.ImportDeclaration({
-                source: "react-native-svg",
-                specifiers: [Ast.ImportDefaultSpecifier("Svg")],
-              }),
-            ]
-          | _ => []
-          }
-        )
-        @ [
-          Ast.ImportDeclaration({
-            source:
-              switch (framework) {
-              | JavaScriptOptions.ReactSketchapp => "@mathieudutour/react-sketchapp"
-              | _ => "react-native"
-              },
-            specifiers:
-              (
-                List.map(typeName =>
-                  Ast.ImportSpecifier({
-                    imported: Types.layerTypeToString(typeName),
-                    local: None,
-                  })
-                ) @@
-                builtIn
-              )
-              @ [Ast.ImportSpecifier({imported: "StyleSheet", local: None})]
-              @ (
+      (
+        switch (framework) {
+        | JavaScriptOptions.ReactDOM => []
+        | _ =>
+          (
+            switch (framework, importsSvg) {
+            | (JavaScriptOptions.ReactNative, true) => [
+                Ast.ImportDeclaration({
+                  source: "react-native-svg",
+                  specifiers: [Ast.ImportDefaultSpecifier("Svg")],
+                }),
+              ]
+            | _ => []
+            }
+          )
+          @ [
+            Ast.ImportDeclaration({
+              source:
                 switch (framework) {
-                | JavaScriptOptions.ReactSketchapp => [
+                | JavaScriptOptions.ReactSketchapp => "@mathieudutour/react-sketchapp"
+                | _ => "react-native"
+                },
+              specifiers:
+                (
+                  List.map(typeName =>
                     Ast.ImportSpecifier({
-                      imported: "TextStyles",
+                      imported: Types.layerTypeToString(typeName),
                       local: None,
-                    }),
-                  ]
-                | _ => []
-                }
-              )
-              @ (
-                switch (framework, importsSvg) {
-                | (JavaScriptOptions.ReactSketchapp, true) => [
-                    Ast.ImportSpecifier({imported: "Svg", local: None}),
-                  ]
-                | _ => []
-                }
-              ),
-          }),
-        ]
-      },
+                    })
+                  ) @@
+                  builtIn
+                )
+                @ [
+                  Ast.ImportSpecifier({imported: "StyleSheet", local: None}),
+                ]
+                @ (
+                  switch (framework) {
+                  | JavaScriptOptions.ReactSketchapp => [
+                      Ast.ImportSpecifier({
+                        imported: "TextStyles",
+                        local: None,
+                      }),
+                    ]
+                  | _ => []
+                  }
+                )
+                @ (
+                  switch (framework, importsSvg) {
+                  | (JavaScriptOptions.ReactSketchapp, true) => [
+                      Ast.ImportSpecifier({imported: "Svg", local: None}),
+                    ]
+                  | _ => []
+                  }
+                ),
+            }),
+          ]
+        }
+      )
+      @ (
+        switch (options.styleFramework) {
+        | _ => []
+        }
+      ),
     relative:
       List.map(componentName =>
         Ast.ImportDeclaration({
@@ -533,7 +536,7 @@ let rootLayerToJavaScriptAST =
   let astRootLayer =
     rootLayer
     |> layerToJavaScriptAST(
-         options.framework,
+         options,
          config,
          logic,
          assignments,
@@ -644,7 +647,7 @@ let generate =
     );
 
   let styleSheetAST =
-    JavaScriptStyles.layerToJavaScriptStyleSheetAST(
+    JavaScriptStyles.StyleSheet.create(
       config,
       options.framework,
       config.colorsFile.contents,
@@ -658,7 +661,7 @@ let generate =
     |> Ast.optimize;
 
   let {absolute, relative} =
-    rootLayer |> importComponents(options.framework, getComponentFile);
+    rootLayer |> importComponents(options, getComponentFile);
 
   Ast.(
     Program(
@@ -728,8 +731,8 @@ let generate =
               }),
             ),
           ],
-          switch (options.framework) {
-          /* | JavaScriptOptions.ReactDOM =>
+          switch (options.styleFramework) {
+          /* | JavaScriptOptions.StyledComponents =>
              StyledComponents.createdAllStyledComponentsAST(rootLayer) */
           | _ => [styleSheetAST]
           },

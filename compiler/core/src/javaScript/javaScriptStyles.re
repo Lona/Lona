@@ -446,50 +446,6 @@ let handleResizeMode =
   };
 };
 
-let createStyleObjectForLayer =
-    (
-      config: Config.t,
-      framework: JavaScriptOptions.framework,
-      colors,
-      parent: option(Types.layer),
-      layer: Types.layer,
-    ) => {
-  let layoutParameters = getLayoutParameters(framework, parent, layer);
-
-  /* We replace all of these keys with the appropriate defaults for the framework */
-  let replacedKeys = [
-    ParameterKey.AlignItems,
-    ParameterKey.AlignSelf,
-    ParameterKey.Flex,
-    ParameterKey.FlexDirection,
-    ParameterKey.JustifyContent,
-  ];
-
-  JavaScriptAst.(
-    Property({
-      key: Identifier([JavaScriptFormat.styleVariableName(layer.name)]),
-      value:
-        ObjectLiteral(
-          layer.parameters
-          |> handleNumberOfLines(framework, config)
-          |> ParameterMap.filter((key, _) => Layer.parameterIsStyle(key))
-          /* Remove layout parameters stored in the component file */
-          |> ParameterMap.filter((key, _) => !List.mem(key, replacedKeys))
-          /* Add layout parameters appropriate for the framework */
-          |> ParameterMap.assign(_, layoutParameters)
-          |> ParameterMap.assign(
-               defaultStyles(framework, config, layer.typeName),
-             )
-          |> handleResizeMode(framework, config, parent, layer)
-          |> ParameterMap.bindings
-          |> List.map(((key, value)) =>
-               getStylePropertyWithUnits(framework, colors, key, value)
-             ),
-        ),
-    })
-  );
-};
-
 let createStyleAttributePropertyAST =
     (
       framework: JavaScriptOptions.framework,
@@ -522,13 +478,50 @@ let createStyleAttributePropertyAST =
     })
   };
 
-let imageResizingStyles =
-    (
-      config: Config.t,
-      framework: JavaScriptOptions.framework,
-      rootLayer: Types.layer,
-    ) => {
-  let commonParameterMap =
+module Object = {
+  /* We replace all of these keys with the appropriate defaults for the framework */
+  let replacedLayoutKeys = [
+    ParameterKey.AlignItems,
+    ParameterKey.AlignSelf,
+    ParameterKey.Flex,
+    ParameterKey.FlexDirection,
+    ParameterKey.JustifyContent,
+  ];
+
+  let forLayer =
+      (
+        config: Config.t,
+        framework: JavaScriptOptions.framework,
+        colors,
+        parent: option(Types.layer),
+        layer: Types.layer,
+      ) => {
+    let layoutParameters = getLayoutParameters(framework, parent, layer);
+
+    JavaScriptAst.(
+      ObjectLiteral(
+        layer.parameters
+        |> handleNumberOfLines(framework, config)
+        |> ParameterMap.filter((key, _) => Layer.parameterIsStyle(key))
+        /* Remove layout parameters stored in the component file */
+        |> ParameterMap.filter((key, _) =>
+             !List.mem(key, replacedLayoutKeys)
+           )
+        /* Add layout parameters appropriate for the framework */
+        |> ParameterMap.assign(_, layoutParameters)
+        |> ParameterMap.assign(
+             defaultStyles(framework, config, layer.typeName),
+           )
+        |> handleResizeMode(framework, config, parent, layer)
+        |> ParameterMap.bindings
+        |> List.map(((key, value)) =>
+             getStylePropertyWithUnits(framework, colors, key, value)
+           ),
+      )
+    );
+  };
+
+  let commonImageParameterMap =
     ParameterMap.(
       empty
       |> add(Position, LonaValue.string("absolute"))
@@ -536,76 +529,99 @@ let imageResizingStyles =
       |> add(Height, LonaValue.string("100%"))
     );
 
-  rootLayer
-  |> Layer.flatten
-  |> List.filter(Layer.isImageLayer)
-  |> List.map((layer: Types.layer) =>
-       switch (Layer.getStringParameterOpt(ResizeMode, layer.parameters)) {
-       | Some(value) => value
-       | None => "cover"
-       }
-     )
-  |> Sequence.dedupeMem
-  |> List.map(resizeMode =>
-       JavaScriptAst.(
-         Property({
-           key:
-             Identifier([
-               JavaScriptFormat.imageResizeModeHelperName(resizeMode),
-             ]),
-           value:
-             ObjectLiteral(
-               ParameterMap.(
-                 commonParameterMap
-                 |> add(ResizeMode, LonaValue.string(resizeMode))
-               )
-               |> Layer.parameterMapToLogicValueMap
-               |> Layer.mapBindings(((key, value)) =>
-                    createStyleAttributePropertyAST(
-                      framework,
-                      config,
-                      key,
-                      value,
-                    )
-                  ),
-             ),
-         })
-       )
-     );
+  let imageResizing =
+      (
+        config: Config.t,
+        framework: JavaScriptOptions.framework,
+        resizeMode: string,
+      ) =>
+    JavaScriptAst.ObjectLiteral(
+      ParameterMap.(
+        commonImageParameterMap
+        |> add(ResizeMode, LonaValue.string(resizeMode))
+      )
+      |> Layer.parameterMapToLogicValueMap
+      |> Layer.mapBindings(((key, value)) =>
+           createStyleAttributePropertyAST(framework, config, key, value)
+         ),
+    );
 };
 
-let layerToJavaScriptStyleSheetAST =
-    (
-      config: Config.t,
-      framework: JavaScriptOptions.framework,
-      colors,
-      rootLayer: Types.layer,
-    ) => {
-  let styleObjects =
-    rootLayer
-    |> Layer.flatmapParent(
-         createStyleObjectForLayer(config, framework, colors),
-       );
+module NamedStyle = {
+  open JavaScriptAst;
 
-  let helperStyles = imageResizingStyles(config, framework, rootLayer);
+  let forLayer =
+      (
+        config: Config.t,
+        framework: JavaScriptOptions.framework,
+        colors,
+        parent: option(Types.layer),
+        layer: Types.layer,
+      ) =>
+    Property({
+      key: Identifier([JavaScriptFormat.styleVariableName(layer.name)]),
+      value: Object.forLayer(config, framework, colors, parent, layer),
+    });
 
-  JavaScriptAst.(
-    VariableDeclaration(
-      AssignmentExpression({
-        left: Identifier(["styles"]),
-        right:
-          switch (framework) {
-          | JavaScriptOptions.ReactDOM =>
-            ObjectLiteral(styleObjects @ helperStyles)
-          | _ =>
-            CallExpression({
-              callee: Identifier(["StyleSheet", "create"]),
-              arguments: [ObjectLiteral(styleObjects @ helperStyles)],
-            })
-          },
-      }),
-    )
-  );
+  let imageResizing =
+      (
+        config: Config.t,
+        framework: JavaScriptOptions.framework,
+        resizeMode: string,
+      )
+      : node =>
+    Property({
+      key:
+        Identifier([JavaScriptFormat.imageResizeModeHelperName(resizeMode)]),
+      value: Object.imageResizing(config, framework, resizeMode),
+    });
+};
+
+module StyleSheet = {
+  let create =
+      (
+        config: Config.t,
+        framework: JavaScriptOptions.framework,
+        colors,
+        rootLayer: Types.layer,
+      ) => {
+    let styleObjects =
+      rootLayer
+      |> Layer.flatmapParent(NamedStyle.forLayer(config, framework, colors));
+
+    let imageResizingStyles =
+      rootLayer
+      |> Layer.flatten
+      |> List.filter(Layer.isImageLayer)
+      |> List.map((layer: Types.layer) =>
+           switch (Layer.getStringParameterOpt(ResizeMode, layer.parameters)) {
+           | Some(value) => value
+           | None => "cover"
+           }
+         )
+      |> Sequence.dedupeMem
+      |> List.map(NamedStyle.imageResizing(config, framework));
+
+    JavaScriptAst.(
+      VariableDeclaration(
+        AssignmentExpression({
+          left: Identifier(["styles"]),
+          right:
+            switch (framework) {
+            | JavaScriptOptions.ReactDOM =>
+              ObjectLiteral(styleObjects @ imageResizingStyles)
+            | _ =>
+              CallExpression({
+                callee: Identifier(["StyleSheet", "create"]),
+                arguments: [
+                  ObjectLiteral(styleObjects @ imageResizingStyles),
+                ],
+              })
+            },
+        }),
+      )
+    );
+  };
 };
 
 module StyleSet = {
