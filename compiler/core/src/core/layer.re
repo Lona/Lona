@@ -337,6 +337,18 @@ let vectorAssignments =
 let vectorGraphicLayers = (layer: Types.layer): list(Types.layer) =>
   layer |> flatten |> List.filter(isVectorGraphicLayer);
 
+let imageResizingModes = (rootLayer: Types.layer) =>
+  rootLayer
+  |> flatten
+  |> List.filter(isImageLayer)
+  |> List.map((layer: Types.layer) =>
+       switch (getStringParameterOpt(ResizeMode, layer.parameters)) {
+       | Some(value) => value
+       | None => "cover"
+       }
+     )
+  |> Sequence.dedupeMem;
+
 let parameterAssignmentsFromLogic = (layer, node) => {
   let identifiers = Logic.assignedIdentifiers(node);
   let updateAssignments = (layerName, propertyName, logicValue, acc) =>

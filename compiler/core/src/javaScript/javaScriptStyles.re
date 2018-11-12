@@ -452,31 +452,23 @@ let createStyleAttributePropertyAST =
       config: Config.t,
       key: ParameterKey.t,
       value: Logic.logicValue,
-    ) =>
+    ) => {
+  let astValue = JavaScriptLogic.logicValueToJavaScriptAST(config, value);
   switch (key, ReactTranslators.isUnitNumberParameter(framework, key)) {
-  | (ParameterKey.TextStyle, _) =>
-    JavaScriptAst.SpreadElement(
-      JavaScriptLogic.logicValueToJavaScriptAST(config, value),
-    )
-  | (ParameterKey.Shadow, _) =>
-    JavaScriptAst.SpreadElement(
-      JavaScriptLogic.logicValueToJavaScriptAST(config, value),
-    )
+  | (ParameterKey.TextStyle, _) => JavaScriptAst.SpreadElement(astValue)
+  | (ParameterKey.Shadow, _) => JavaScriptAst.SpreadElement(astValue)
   | (_, true) =>
     JavaScriptAst.Property({
       key: Identifier([key |> styleNameKey(framework)]),
-      value:
-        ReactTranslators.convertUnitlessAstNode(
-          framework,
-          JavaScriptLogic.logicValueToJavaScriptAST(config, value),
-        ),
+      value: ReactTranslators.convertUnitlessAstNode(framework, astValue),
     })
   | (_, false) =>
     JavaScriptAst.Property({
       key: Identifier([key |> styleNameKey(framework)]),
-      value: JavaScriptLogic.logicValueToJavaScriptAST(config, value),
+      value: astValue,
     })
   };
+};
 
 module Object = {
   /* We replace all of these keys with the appropriate defaults for the framework */
@@ -591,16 +583,10 @@ module StyleSheet = {
 
     let imageResizingStyles =
       rootLayer
-      |> Layer.flatten
-      |> List.filter(Layer.isImageLayer)
-      |> List.map((layer: Types.layer) =>
-           switch (Layer.getStringParameterOpt(ResizeMode, layer.parameters)) {
-           | Some(value) => value
-           | None => "cover"
-           }
-         )
-      |> Sequence.dedupeMem
+      |> Layer.imageResizingModes
       |> List.map(NamedStyle.imageResizing(config, framework));
+
+    let namedStyles = [styleObjects, imageResizingStyles] |> List.concat;
 
     JavaScriptAst.(
       VariableDeclaration(
@@ -608,14 +594,11 @@ module StyleSheet = {
           left: Identifier(["styles"]),
           right:
             switch (framework) {
-            | JavaScriptOptions.ReactDOM =>
-              ObjectLiteral(styleObjects @ imageResizingStyles)
+            | JavaScriptOptions.ReactDOM => ObjectLiteral(namedStyles)
             | _ =>
               CallExpression({
                 callee: Identifier(["StyleSheet", "create"]),
-                arguments: [
-                  ObjectLiteral(styleObjects @ imageResizingStyles),
-                ],
+                arguments: [ObjectLiteral(namedStyles)],
               })
             },
         }),
