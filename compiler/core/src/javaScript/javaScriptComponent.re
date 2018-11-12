@@ -61,6 +61,7 @@ module StyledComponents = {
     );
 
   let createStyledComponentAST = (layer: Types.layer) =>
+    /* let styleObject = JavaScriptStyles.Object.forLayer(layer); */
     JavaScriptAst.(
       VariableDeclaration(
         AssignmentExpression({
@@ -84,8 +85,8 @@ module StyledComponents = {
       )
     );
 
-  let createdAllStyledComponentsAST = (layer: Types.layer) =>
-    layer |> Layer.flatten |> List.map(createStyledComponentAST);
+  let createdAllStyledComponentsAST = (rootLayer: Types.layer) =>
+    rootLayer |> Layer.flatten |> List.map(createStyledComponentAST);
 };
 
 let createStyleAttributeAST =
@@ -631,8 +632,8 @@ let generate =
 
   let themeAST =
     JavaScriptStyles.StyleSet.layerToThemeAST(
+      config,
       options.framework,
-      config.colorsFile.contents,
       rootLayer,
     );
 
@@ -647,12 +648,7 @@ let generate =
     );
 
   let styleSheetAST =
-    JavaScriptStyles.StyleSheet.create(
-      config,
-      options.framework,
-      config.colorsFile.contents,
-      rootLayer,
-    );
+    JavaScriptStyles.StyleSheet.create(config, options.framework, rootLayer);
 
   let logicAST =
     logic

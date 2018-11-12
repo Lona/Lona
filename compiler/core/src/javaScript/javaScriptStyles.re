@@ -50,9 +50,9 @@ module Property = {
 
   let forValue =
       (
+        config: Config.t,
         framework: JavaScriptOptions.framework,
         key,
-        colors,
         value: Types.lonaValue,
       ) => {
     let keyIdentifier =
@@ -85,7 +85,7 @@ module Property = {
     | Named("Color", _)
     | Reference("Color") =>
       let data = value.data |> Json.Decode.string;
-      switch (Color.find(colors, data)) {
+      switch (Color.find(config.colorsFile.contents, data)) {
       | Some(color) =>
         JavaScriptAst.Property({
           key: keyIdentifier,
@@ -369,8 +369,8 @@ let getLayoutParameters =
 
 let getStylePropertyWithUnits =
     (
+      config: Config.t,
       framework: JavaScriptOptions.framework,
-      colors,
       key,
       value: Types.lonaValue,
     ) =>
@@ -385,7 +385,7 @@ let getStylePropertyWithUnits =
           ),
         ),
     })
-  | (_, _) => Property.forValue(framework, key, colors, value)
+  | (_, _) => Property.forValue(config, framework, key, value)
   };
 
 let handleNumberOfLines =
@@ -487,7 +487,6 @@ module Object = {
       (
         config: Config.t,
         framework: JavaScriptOptions.framework,
-        colors,
         parent: option(Types.layer),
         layer: Types.layer,
       ) => {
@@ -510,7 +509,7 @@ module Object = {
         |> handleResizeMode(framework, config, parent, layer)
         |> ParameterMap.bindings
         |> List.map(((key, value)) =>
-             getStylePropertyWithUnits(framework, colors, key, value)
+             getStylePropertyWithUnits(config, framework, key, value)
            ),
       )
     );
@@ -549,13 +548,12 @@ module NamedStyle = {
       (
         config: Config.t,
         framework: JavaScriptOptions.framework,
-        colors,
         parent: option(Types.layer),
         layer: Types.layer,
       ) =>
     Property({
       key: Identifier([JavaScriptFormat.styleVariableName(layer.name)]),
-      value: Object.forLayer(config, framework, colors, parent, layer),
+      value: Object.forLayer(config, framework, parent, layer),
     });
 
   let imageResizing =
@@ -577,12 +575,11 @@ module StyleSheet = {
       (
         config: Config.t,
         framework: JavaScriptOptions.framework,
-        colors,
         rootLayer: Types.layer,
       ) => {
     let styleObjects =
       rootLayer
-      |> Layer.flatmapParent(NamedStyle.forLayer(config, framework, colors));
+      |> Layer.flatmapParent(NamedStyle.forLayer(config, framework));
 
     let imageResizingStyles =
       rootLayer
@@ -685,7 +682,12 @@ module StyleSet = {
       )
     );
 
-  let layerToThemeAST = (framework, colors, layer: Types.layer) => {
+  let layerToThemeAST =
+      (
+        config: Config.t,
+        framework: JavaScriptOptions.framework,
+        layer: Types.layer,
+      ) => {
     let layerObjectsAst =
       layer
       |> Layer.flatten
@@ -698,8 +700,8 @@ module StyleSet = {
                   createNameStyleSetAST(
                     styleSet.name,
                     createViewLayerStylesAST(
+                      config,
                       framework,
-                      colors,
                       styleSet.styles,
                     ),
                   )
