@@ -131,7 +131,8 @@ module StyledComponents = {
           left:
             Identifier([
               switch (layer.typeName) {
-              | Component(name) => JavaScriptFormat.wrapperElementName(name)
+              | Component(name) =>
+                JavaScriptFormat.wrapperElementName(name, layer.name)
               | _ => JavaScriptFormat.elementName(layer.name)
               },
             ]),
@@ -336,7 +337,7 @@ let createJSXElement =
     | (JavaScriptOptions.ReactSketchapp, "row") =>
       if (options.styleFramework == StyledComponents) {
         JSXElement({
-          tag: JavaScriptFormat.wrapperElementName(name),
+          tag: JavaScriptFormat.wrapperElementName(name, layer.name),
           attributes: styleAttribute,
           content: [customComponent],
         });
