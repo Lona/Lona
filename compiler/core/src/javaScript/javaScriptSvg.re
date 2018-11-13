@@ -141,9 +141,10 @@ let rec convertNode =
     | Svg(_, params, children) =>
       JSXElement({
         tag:
-          switch (svgElementName) {
-          | Some(name) => name |> Format.safeVariableName |> Format.upperFirst
-          | None => tagName(jsOptions, node)
+          switch (jsOptions.styleFramework, svgElementName) {
+          | (StyledComponents, Some(name)) =>
+            name |> Format.safeVariableName |> Format.upperFirst
+          | _ => tagName(jsOptions, node)
           },
         attributes:
           [
