@@ -78,13 +78,22 @@ module StyledComponents = {
     JavaScriptAst.(
       VariableDeclaration(
         AssignmentExpression({
-          left: Identifier([JavaScriptFormat.elementName(layer.name)]),
+          left:
+            Identifier([
+              switch (layer.typeName) {
+              | Component(name) => JavaScriptFormat.wrapperElementName(name)
+              | _ => JavaScriptFormat.elementName(layer.name)
+              },
+            ]),
           right:
             CallExpression({
               callee:
                 Identifier([
                   "styled",
-                  layer.typeName |> ReactDomTranslators.layerTypeTags,
+                  switch (layer.typeName) {
+                  | Component(_) => ReactDomTranslators.layerTypeTags(View)
+                  | _ => layer.typeName |> ReactDomTranslators.layerTypeTags
+                  },
                 ]),
               arguments: [
                 createPropsFunction(
@@ -231,7 +240,7 @@ let createJSXElement =
     : JavaScriptAst.node => {
   let framework = options.framework;
   switch (layer.typeName, parent) {
-  | (Types.Component(_), Some(parent)) =>
+  | (Types.Component(name), Some(parent)) =>
     let parentDirection = Layer.getFlexDirection(parent.parameters);
 
     /* Custom components can't be passed styles, so don't include the style attribute */
@@ -246,11 +255,19 @@ let createJSXElement =
     | (JavaScriptOptions.ReactDOM, "column")
     | (JavaScriptOptions.ReactNative, "row")
     | (JavaScriptOptions.ReactSketchapp, "row") =>
-      JSXElement({
-        tag: getElementTagStringForLayerType(options, Types.View),
-        attributes: styleAttribute,
-        content: [customComponent],
-      })
+      if (options.styleFramework == StyledComponents) {
+        JSXElement({
+          tag: JavaScriptFormat.wrapperElementName(name),
+          attributes: styleAttribute,
+          content: [customComponent],
+        });
+      } else {
+        JSXElement({
+          tag: getElementTagStringForLayerType(options, Types.View),
+          attributes: styleAttribute,
+          content: [customComponent],
+        });
+      }
     | _ => customComponent
     };
   | _ =>
