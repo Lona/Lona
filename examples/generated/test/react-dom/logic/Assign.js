@@ -1,4 +1,5 @@
 import React from "react"
+import styled from "styled-components"
 
 import colors from "../colors"
 import shadows from "../shadows"
@@ -10,31 +11,24 @@ export default class Assign extends React.Component {
     let Text$text
 
     Text$text = this.props.text
-    return (
-      <div style={styles.view}>
-        <span style={styles.text}>
-          {Text$text}
-        </span>
-      </div>
-    );
+    return <View> <Text> {Text$text} </Text> </View>;
   }
 };
 
-let styles = {
-  view: {
-    alignItems: "flex-start",
-    display: "flex",
-    flex: "1 1 0%",
-    flexDirection: "column",
-    justifyContent: "flex-start"
-  },
-  text: {
-    textAlign: "left",
-    ...textStyles.body1,
-    alignItems: "flex-start",
-    display: "block",
-    flex: "0 0 auto",
-    flexDirection: "column",
-    justifyContent: "flex-start"
-  }
-}
+let View = styled.div({
+  alignItems: "flex-start",
+  display: "flex",
+  flex: "1 1 0%",
+  flexDirection: "column",
+  justifyContent: "flex-start"
+})
+
+let Text = styled.span({
+  textAlign: "left",
+  ...textStyles.body1,
+  alignItems: "flex-start",
+  display: "block",
+  flex: "0 0 auto",
+  flexDirection: "column",
+  justifyContent: "flex-start"
+})

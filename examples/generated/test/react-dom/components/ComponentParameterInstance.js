@@ -1,4 +1,5 @@
 import React from "react"
+import styled from "styled-components"
 
 import colors from "../colors"
 import shadows from "../shadows"
@@ -10,33 +11,32 @@ export default class ComponentParameterInstance extends React.Component {
 
 
     return (
-      <div style={styles.view}>
-        <div style={styles.componentParameterTemplate}>
+      <View>
+        <ComponentParameterTemplateComponentParameterTemplateWrapper>
           <ComponentParameterTemplate
             subtitleComponent={{"parameters":{"text":"Subtitle","textStyle":"subheading2"},"type":"Lona:Text"}}
             titleComponent={{"parameters":{"text":"Title","textStyle":"headline"},"type":"Lona:Text"}}
 
           />
-        </div>
-      </div>
+        </ComponentParameterTemplateComponentParameterTemplateWrapper>
+      </View>
     );
   }
 };
 
-let styles = {
-  view: {
-    alignItems: "flex-start",
-    display: "flex",
-    flex: "1 1 0%",
-    flexDirection: "column",
-    justifyContent: "flex-start"
-  },
-  componentParameterTemplate: {
-    alignItems: "flex-start",
-    alignSelf: "stretch",
-    display: "flex",
-    flex: "1 1 auto",
-    flexDirection: "row",
-    justifyContent: "flex-start"
-  }
-}
+let View = styled.div({
+  alignItems: "flex-start",
+  display: "flex",
+  flex: "1 1 0%",
+  flexDirection: "column",
+  justifyContent: "flex-start"
+})
+
+let ComponentParameterTemplateComponentParameterTemplateWrapper = styled.div({
+  alignItems: "flex-start",
+  alignSelf: "stretch",
+  display: "flex",
+  flex: "1 1 auto",
+  flexDirection: "row",
+  justifyContent: "flex-start"
+})

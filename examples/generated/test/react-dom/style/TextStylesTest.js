@@ -1,4 +1,5 @@
 import React from "react"
+import styled from "styled-components"
 
 import colors from "../colors"
 import shadows from "../shadows"
@@ -9,161 +10,171 @@ export default class TextStylesTest extends React.Component {
 
 
     return (
-      <div style={styles.view}>
-        <span style={styles.text1}>
+      <View>
+        <Text1>
           {"Text goes here"}
-        </span>
-        <span style={styles.text2}>
+        </Text1>
+        <Text2>
           {"Text goes here"}
-        </span>
-        <span style={styles.text3}>
+        </Text2>
+        <Text3>
           {"Text goes here"}
-        </span>
-        <div style={styles.view3}>
-          <span style={styles.text4}>
+        </Text3>
+        <View3>
+          <Text4>
             {"Text goes here"}
-          </span>
-        </div>
-        <div style={styles.view1}>
-          <span style={styles.text5}>
+          </Text4>
+        </View3>
+        <View1>
+          <Text5>
             {"Text goes here"}
-          </span>
-        </div>
-        <div style={styles.view2}>
-          <span style={styles.text6}>
+          </Text5>
+        </View1>
+        <View2>
+          <Text6>
             {
               "Text goes here and wraps around when it reaches the end of the text field."
             }
-          </span>
-        </div>
-        <span style={styles.text7}>
+          </Text6>
+        </View2>
+        <Text7>
           {"Text goes here"}
-        </span>
-        <span style={styles.text8}>
+        </Text7>
+        <Text8>
           {"Text goes here"}
-        </span>
-        <span style={styles.text9}>
+        </Text8>
+        <Text9>
           {"Text goes here"}
-        </span>
-      </div>
+        </Text9>
+      </View>
     );
   }
 };
 
-let styles = {
-  view: {
-    alignItems: "flex-start",
-    display: "flex",
-    flex: "1 1 0%",
-    flexDirection: "column",
-    justifyContent: "flex-start"
-  },
-  text1: {
-    textAlign: "left",
-    ...textStyles.display3,
-    alignItems: "flex-start",
-    display: "block",
-    flex: "0 0 auto",
-    flexDirection: "column",
-    justifyContent: "flex-start"
-  },
-  text2: {
-    textAlign: "left",
-    ...textStyles.display2,
-    alignItems: "flex-start",
-    display: "block",
-    flex: "0 0 auto",
-    flexDirection: "column",
-    justifyContent: "flex-start"
-  },
-  text3: {
-    textAlign: "left",
-    ...textStyles.display1,
-    alignItems: "flex-start",
-    display: "block",
-    flex: "0 0 auto",
-    flexDirection: "column",
-    justifyContent: "flex-start"
-  },
-  view3: {
-    alignItems: "flex-start",
-    alignSelf: "stretch",
-    backgroundColor: colors.green50,
-    display: "flex",
-    flex: "0 0 auto",
-    flexDirection: "column",
-    justifyContent: "flex-start"
-  },
-  view1: {
-    alignItems: "flex-start",
-    alignSelf: "stretch",
-    backgroundColor: colors.green100,
-    display: "flex",
-    flex: "0 0 auto",
-    flexDirection: "column",
-    justifyContent: "flex-start"
-  },
-  view2: {
-    alignItems: "flex-start",
-    alignSelf: "stretch",
-    backgroundColor: colors.green200,
-    display: "flex",
-    flex: "0 0 auto",
-    flexDirection: "column",
-    justifyContent: "flex-start"
-  },
-  text7: {
-    textAlign: "left",
-    ...textStyles.body2,
-    alignItems: "flex-start",
-    display: "block",
-    flex: "0 0 auto",
-    flexDirection: "column",
-    justifyContent: "flex-start"
-  },
-  text8: {
-    textAlign: "left",
-    ...textStyles.body1,
-    alignItems: "flex-start",
-    display: "block",
-    flex: "0 0 auto",
-    flexDirection: "column",
-    justifyContent: "flex-start"
-  },
-  text9: {
-    textAlign: "left",
-    ...textStyles.caption,
-    alignItems: "flex-start",
-    display: "block",
-    flex: "0 0 auto",
-    flexDirection: "column",
-    justifyContent: "flex-start"
-  },
-  text4: {
-    textAlign: "left",
-    ...textStyles.headline,
-    alignItems: "flex-start",
-    display: "block",
-    flex: "0 0 auto",
-    flexDirection: "column",
-    justifyContent: "flex-start"
-  },
-  text5: {
-    textAlign: "left",
-    ...textStyles.subheading2,
-    alignItems: "flex-start",
-    display: "block",
-    flex: "0 0 auto",
-    flexDirection: "column",
-    justifyContent: "flex-start"
-  },
-  text6: {
-    textAlign: "left",
-    ...textStyles.subheading1,
-    alignItems: "flex-start",
-    display: "block",
-    flex: "0 0 auto",
-    flexDirection: "column",
-    justifyContent: "flex-start"
-  }
-}
+let View = styled.div({
+  alignItems: "flex-start",
+  display: "flex",
+  flex: "1 1 0%",
+  flexDirection: "column",
+  justifyContent: "flex-start"
+})
+
+let Text1 = styled.span({
+  textAlign: "left",
+  ...textStyles.display3,
+  alignItems: "flex-start",
+  display: "block",
+  flex: "0 0 auto",
+  flexDirection: "column",
+  justifyContent: "flex-start"
+})
+
+let Text2 = styled.span({
+  textAlign: "left",
+  ...textStyles.display2,
+  alignItems: "flex-start",
+  display: "block",
+  flex: "0 0 auto",
+  flexDirection: "column",
+  justifyContent: "flex-start"
+})
+
+let Text3 = styled.span({
+  textAlign: "left",
+  ...textStyles.display1,
+  alignItems: "flex-start",
+  display: "block",
+  flex: "0 0 auto",
+  flexDirection: "column",
+  justifyContent: "flex-start"
+})
+
+let View3 = styled.div({
+  alignItems: "flex-start",
+  alignSelf: "stretch",
+  backgroundColor: colors.green50,
+  display: "flex",
+  flex: "0 0 auto",
+  flexDirection: "column",
+  justifyContent: "flex-start"
+})
+
+let Text4 = styled.span({
+  textAlign: "left",
+  ...textStyles.headline,
+  alignItems: "flex-start",
+  display: "block",
+  flex: "0 0 auto",
+  flexDirection: "column",
+  justifyContent: "flex-start"
+})
+
+let View1 = styled.div({
+  alignItems: "flex-start",
+  alignSelf: "stretch",
+  backgroundColor: colors.green100,
+  display: "flex",
+  flex: "0 0 auto",
+  flexDirection: "column",
+  justifyContent: "flex-start"
+})
+
+let Text5 = styled.span({
+  textAlign: "left",
+  ...textStyles.subheading2,
+  alignItems: "flex-start",
+  display: "block",
+  flex: "0 0 auto",
+  flexDirection: "column",
+  justifyContent: "flex-start"
+})
+
+let View2 = styled.div({
+  alignItems: "flex-start",
+  alignSelf: "stretch",
+  backgroundColor: colors.green200,
+  display: "flex",
+  flex: "0 0 auto",
+  flexDirection: "column",
+  justifyContent: "flex-start"
+})
+
+let Text6 = styled.span({
+  textAlign: "left",
+  ...textStyles.subheading1,
+  alignItems: "flex-start",
+  display: "block",
+  flex: "0 0 auto",
+  flexDirection: "column",
+  justifyContent: "flex-start"
+})
+
+let Text7 = styled.span({
+  textAlign: "left",
+  ...textStyles.body2,
+  alignItems: "flex-start",
+  display: "block",
+  flex: "0 0 auto",
+  flexDirection: "column",
+  justifyContent: "flex-start"
+})
+
+let Text8 = styled.span({
+  textAlign: "left",
+  ...textStyles.body1,
+  alignItems: "flex-start",
+  display: "block",
+  flex: "0 0 auto",
+  flexDirection: "column",
+  justifyContent: "flex-start"
+})
+
+let Text9 = styled.span({
+  textAlign: "left",
+  ...textStyles.caption,
+  alignItems: "flex-start",
+  display: "block",
+  flex: "0 0 auto",
+  flexDirection: "column",
+  justifyContent: "flex-start"
+})

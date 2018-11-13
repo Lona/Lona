@@ -1,4 +1,5 @@
 import React from "react"
+import styled from "styled-components"
 
 import colors from "../colors"
 import shadows from "../shadows"
@@ -9,86 +10,90 @@ export default class MultipleFlexText extends React.Component {
 
 
     return (
-      <div style={styles.view}>
-        <div style={styles.view1}>
-          <div style={styles.view3}>
-            <span style={styles.text}>
+      <View>
+        <View1>
+          <View3>
+            <Text>
               {"Some long text (currently LS lays out incorrectly)"}
-            </span>
-          </div>
-        </div>
-        <div style={styles.view2}>
-          <div style={styles.view4}>
-            <span style={styles.text1}>
+            </Text>
+          </View3>
+        </View1>
+        <View2>
+          <View4>
+            <Text1>
               {"Short"}
-            </span>
-          </div>
-        </div>
-      </div>
+            </Text1>
+          </View4>
+        </View2>
+      </View>
     );
   }
 };
 
-let styles = {
-  view: {
-    alignItems: "flex-start",
-    display: "flex",
-    flex: "1 1 0%",
-    flexDirection: "row",
-    justifyContent: "flex-start"
-  },
-  view1: {
-    alignItems: "flex-start",
-    backgroundColor: colors.red50,
-    display: "flex",
-    flex: "1 1 0%",
-    flexDirection: "column",
-    justifyContent: "flex-start",
-    height: "100px"
-  },
-  view2: {
-    alignItems: "flex-start",
-    backgroundColor: colors.blue50,
-    display: "flex",
-    flex: "1 1 0%",
-    flexDirection: "column",
-    justifyContent: "flex-start",
-    height: "100px"
-  },
-  view3: {
-    alignItems: "flex-start",
-    alignSelf: "stretch",
-    display: "flex",
-    flex: "1 1 0%",
-    flexDirection: "column",
-    justifyContent: "flex-start"
-  },
-  text: {
-    textAlign: "left",
-    ...textStyles.body1,
-    alignItems: "flex-start",
-    alignSelf: "stretch",
-    display: "block",
-    flex: "0 0 auto",
-    flexDirection: "column",
-    justifyContent: "flex-start"
-  },
-  view4: {
-    alignItems: "flex-start",
-    alignSelf: "stretch",
-    display: "flex",
-    flex: "1 1 0%",
-    flexDirection: "column",
-    justifyContent: "flex-start"
-  },
-  text1: {
-    textAlign: "left",
-    ...textStyles.body1,
-    alignItems: "flex-start",
-    alignSelf: "stretch",
-    display: "block",
-    flex: "0 0 auto",
-    flexDirection: "column",
-    justifyContent: "flex-start"
-  }
-}
+let View = styled.div({
+  alignItems: "flex-start",
+  display: "flex",
+  flex: "1 1 0%",
+  flexDirection: "row",
+  justifyContent: "flex-start"
+})
+
+let View1 = styled.div({
+  alignItems: "flex-start",
+  backgroundColor: colors.red50,
+  display: "flex",
+  flex: "1 1 0%",
+  flexDirection: "column",
+  justifyContent: "flex-start",
+  height: "100px"
+})
+
+let View3 = styled.div({
+  alignItems: "flex-start",
+  alignSelf: "stretch",
+  display: "flex",
+  flex: "1 1 0%",
+  flexDirection: "column",
+  justifyContent: "flex-start"
+})
+
+let Text = styled.span({
+  textAlign: "left",
+  ...textStyles.body1,
+  alignItems: "flex-start",
+  alignSelf: "stretch",
+  display: "block",
+  flex: "0 0 auto",
+  flexDirection: "column",
+  justifyContent: "flex-start"
+})
+
+let View2 = styled.div({
+  alignItems: "flex-start",
+  backgroundColor: colors.blue50,
+  display: "flex",
+  flex: "1 1 0%",
+  flexDirection: "column",
+  justifyContent: "flex-start",
+  height: "100px"
+})
+
+let View4 = styled.div({
+  alignItems: "flex-start",
+  alignSelf: "stretch",
+  display: "flex",
+  flex: "1 1 0%",
+  flexDirection: "column",
+  justifyContent: "flex-start"
+})
+
+let Text1 = styled.span({
+  textAlign: "left",
+  ...textStyles.body1,
+  alignItems: "flex-start",
+  alignSelf: "stretch",
+  display: "block",
+  flex: "0 0 auto",
+  flexDirection: "column",
+  justifyContent: "flex-start"
+})

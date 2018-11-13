@@ -1,4 +1,5 @@
 import React from "react"
+import styled from "styled-components"
 
 import colors from "../colors"
 import shadows from "../shadows"
@@ -32,46 +33,42 @@ export default class Optionals extends React.Component {
       StringParam$text = unwrapped
     }
     return (
-      <div
-        style={Object.assign({}, styles.view, {
-          backgroundColor: View$backgroundColor
-        })}
-      >
-        <span style={styles.label}>
+      <View style={{ backgroundColor: View$backgroundColor }}>
+        <Label>
           {Label$text}
-        </span>
-        <span style={styles.stringParam}>
+        </Label>
+        <StringParam>
           {StringParam$text}
-        </span>
-      </div>
+        </StringParam>
+      </View>
     );
   }
 };
 
-let styles = {
-  view: {
-    alignItems: "flex-start",
-    display: "flex",
-    flex: "1 1 0%",
-    flexDirection: "column",
-    justifyContent: "flex-start"
-  },
-  label: {
-    textAlign: "left",
-    ...textStyles.body1,
-    alignItems: "flex-start",
-    display: "block",
-    flex: "0 0 auto",
-    flexDirection: "column",
-    justifyContent: "flex-start"
-  },
-  stringParam: {
-    textAlign: "left",
-    ...textStyles.body1,
-    alignItems: "flex-start",
-    display: "block",
-    flex: "0 0 auto",
-    flexDirection: "column",
-    justifyContent: "flex-start"
-  }
-}
+let View = styled.div({
+  alignItems: "flex-start",
+  display: "flex",
+  flex: "1 1 0%",
+  flexDirection: "column",
+  justifyContent: "flex-start"
+})
+
+let Label = styled.span({
+  textAlign: "left",
+  ...textStyles.body1,
+  alignItems: "flex-start",
+  display: "block",
+  flex: "0 0 auto",
+  flexDirection: "column",
+  justifyContent: "flex-start"
+})
+
+let StringParam = styled.span({
+  textAlign: "left",
+  ...textStyles.body1,
+  alignItems: "flex-start",
+  display: "block",
+  flex: "0 0 auto",
+  flexDirection: "column",
+  justifyContent: "flex-start"
+})

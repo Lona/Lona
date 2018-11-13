@@ -1,4 +1,5 @@
 import React from "react"
+import styled from "styled-components"
 
 import colors from "../colors"
 import shadows from "../shadows"
@@ -13,23 +14,14 @@ export default class If extends React.Component {
     if (this.props.enabled) {
       View$backgroundColor = colors.red500
     }
-    return (
-      <div
-        style={Object.assign({}, styles.view, {
-          backgroundColor: View$backgroundColor
-        })}
-
-      />
-    );
+    return <View style={{ backgroundColor: View$backgroundColor }} />;
   }
 };
 
-let styles = {
-  view: {
-    alignItems: "flex-start",
-    display: "flex",
-    flex: "1 1 0%",
-    flexDirection: "column",
-    justifyContent: "flex-start"
-  }
-}
+let View = styled.div({
+  alignItems: "flex-start",
+  display: "flex",
+  flex: "1 1 0%",
+  flexDirection: "column",
+  justifyContent: "flex-start"
+})

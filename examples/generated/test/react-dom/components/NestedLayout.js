@@ -1,4 +1,5 @@
 import React from "react"
+import styled from "styled-components"
 
 import colors from "../colors"
 import shadows from "../shadows"
@@ -10,462 +11,504 @@ export default class NestedLayout extends React.Component {
 
 
     return (
-      <div style={styles.view}>
-        <div style={styles.topRow}>
-          <div style={styles.column1}>
-            <div style={styles.view1}>
-              <div style={styles.localAsset}>
+      <View>
+        <TopRow>
+          <Column1>
+            <View1>
+              <LocalAssetLocalAssetWrapper>
                 <LocalAsset />
-              </div>
-            </div>
-            <div style={styles.view2}>
-              <div style={styles.localAsset2}>
+              </LocalAssetLocalAssetWrapper>
+            </View1>
+            <View2>
+              <LocalAssetLocalAsset2Wrapper>
                 <LocalAsset />
-              </div>
-            </div>
-            <div style={styles.view3}>
-              <div style={styles.localAsset3}>
+              </LocalAssetLocalAsset2Wrapper>
+            </View2>
+            <View3>
+              <LocalAssetLocalAsset3Wrapper>
                 <LocalAsset />
-              </div>
-            </div>
-          </div>
-          <div style={styles.column2}>
-            <div style={styles.view4}>
-              <div style={styles.localAsset4}>
+              </LocalAssetLocalAsset3Wrapper>
+            </View3>
+          </Column1>
+          <Column2>
+            <View4>
+              <LocalAssetLocalAsset4Wrapper>
                 <LocalAsset />
-              </div>
-            </div>
-            <div style={styles.view5}>
-              <div style={styles.localAsset5}>
+              </LocalAssetLocalAsset4Wrapper>
+            </View4>
+            <View5>
+              <LocalAssetLocalAsset5Wrapper>
                 <LocalAsset />
-              </div>
-            </div>
-            <div style={styles.view6}>
-              <div style={styles.localAsset6}>
+              </LocalAssetLocalAsset5Wrapper>
+            </View5>
+            <View6>
+              <LocalAssetLocalAsset6Wrapper>
                 <LocalAsset />
-              </div>
-            </div>
-          </div>
-          <div style={styles.column3}>
-            <div style={styles.view7}>
-              <div style={styles.localAsset7}>
+              </LocalAssetLocalAsset6Wrapper>
+            </View6>
+          </Column2>
+          <Column3>
+            <View7>
+              <LocalAssetLocalAsset7Wrapper>
                 <LocalAsset />
-              </div>
-            </div>
-            <div style={styles.view8}>
-              <div style={styles.localAsset8}>
+              </LocalAssetLocalAsset7Wrapper>
+            </View7>
+            <View8>
+              <LocalAssetLocalAsset8Wrapper>
                 <LocalAsset />
-              </div>
-            </div>
-            <div style={styles.view9}>
-              <div style={styles.localAsset9}>
+              </LocalAssetLocalAsset8Wrapper>
+            </View8>
+            <View9>
+              <LocalAssetLocalAsset9Wrapper>
                 <LocalAsset />
-              </div>
-            </div>
-          </div>
-        </div>
-        <div style={styles.bottomRow}>
-          <div style={styles.column4}>
-            <div style={styles.view10}>
+              </LocalAssetLocalAsset9Wrapper>
+            </View9>
+          </Column3>
+        </TopRow>
+        <BottomRow>
+          <Column4>
+            <View10>
               <LocalAsset />
-            </div>
-            <div style={styles.view11}>
+            </View10>
+            <View11>
               <LocalAsset />
-            </div>
-            <div style={styles.view12}>
+            </View11>
+            <View12>
               <LocalAsset />
-            </div>
-          </div>
-          <div style={styles.column5}>
-            <div style={styles.view13}>
+            </View12>
+          </Column4>
+          <Column5>
+            <View13>
               <LocalAsset />
-            </div>
-            <div style={styles.view14}>
+            </View13>
+            <View14>
               <LocalAsset />
-            </div>
-            <div style={styles.view15}>
+            </View14>
+            <View15>
               <LocalAsset />
-            </div>
-          </div>
-          <div style={styles.column6}>
-            <div style={styles.view16}>
+            </View15>
+          </Column5>
+          <Column6>
+            <View16>
               <LocalAsset />
-            </div>
-            <div style={styles.view17}>
+            </View16>
+            <View17>
               <LocalAsset />
-            </div>
-            <div style={styles.view18}>
+            </View17>
+            <View18>
               <LocalAsset />
-            </div>
-          </div>
-        </div>
-      </div>
+            </View18>
+          </Column6>
+        </BottomRow>
+      </View>
     );
   }
 };
 
-let styles = {
-  view: {
-    alignItems: "flex-start",
-    display: "flex",
-    flex: "1 1 0%",
-    flexDirection: "column",
-    justifyContent: "flex-start"
-  },
-  topRow: {
-    alignItems: "flex-start",
-    display: "flex",
-    flex: "0 0 auto",
-    flexDirection: "row",
-    justifyContent: "flex-start"
-  },
-  bottomRow: {
-    alignItems: "flex-start",
-    display: "flex",
-    flex: "0 0 auto",
-    flexDirection: "row",
-    justifyContent: "flex-start"
-  },
-  column1: {
-    alignItems: "flex-start",
-    display: "flex",
-    flexDirection: "column",
-    justifyContent: "flex-start",
-    width: "150px"
-  },
-  column2: {
-    alignItems: "flex-start",
-    display: "flex",
-    flexDirection: "column",
-    justifyContent: "flex-start",
-    width: "150px"
-  },
-  column3: {
-    alignItems: "flex-start",
-    display: "flex",
-    flexDirection: "column",
-    justifyContent: "flex-start",
-    width: "150px"
-  },
-  view1: {
-    alignItems: "flex-start",
-    backgroundColor: colors.grey50,
-    display: "flex",
-    flexDirection: "column",
-    justifyContent: "flex-start",
-    width: "150px",
-    height: "150px"
-  },
-  view2: {
-    alignItems: "flex-start",
-    backgroundColor: "transparent",
-    display: "flex",
-    flexDirection: "column",
-    justifyContent: "center",
-    width: "150px",
-    height: "150px"
-  },
-  view3: {
-    alignItems: "flex-start",
-    backgroundColor: colors.grey50,
-    display: "flex",
-    flexDirection: "column",
-    justifyContent: "flex-end",
-    width: "150px",
-    height: "150px"
-  },
-  localAsset: {
-    alignItems: "flex-start",
-    alignSelf: "stretch",
-    display: "flex",
-    flex: "1 1 auto",
-    flexDirection: "row",
-    justifyContent: "flex-start"
-  },
-  localAsset2: {
-    alignItems: "center",
-    alignSelf: "stretch",
-    display: "flex",
-    flex: "1 1 auto",
-    flexDirection: "row",
-    justifyContent: "flex-start"
-  },
-  localAsset3: {
-    alignItems: "flex-end",
-    alignSelf: "stretch",
-    display: "flex",
-    flex: "1 1 auto",
-    flexDirection: "row",
-    justifyContent: "flex-start"
-  },
-  view4: {
-    alignItems: "center",
-    display: "flex",
-    flexDirection: "column",
-    justifyContent: "flex-start",
-    width: "150px",
-    height: "150px"
-  },
-  view5: {
-    alignItems: "center",
-    backgroundColor: colors.grey50,
-    display: "flex",
-    flexDirection: "column",
-    justifyContent: "center",
-    width: "150px",
-    height: "150px"
-  },
-  view6: {
-    alignItems: "center",
-    display: "flex",
-    flexDirection: "column",
-    justifyContent: "flex-end",
-    width: "150px",
-    height: "150px"
-  },
-  localAsset4: {
-    alignItems: "flex-start",
-    alignSelf: "stretch",
-    display: "flex",
-    flex: "1 1 auto",
-    flexDirection: "row",
-    justifyContent: "center"
-  },
-  localAsset5: {
-    alignItems: "center",
-    alignSelf: "stretch",
-    display: "flex",
-    flex: "1 1 auto",
-    flexDirection: "row",
-    justifyContent: "center"
-  },
-  localAsset6: {
-    alignItems: "flex-end",
-    alignSelf: "stretch",
-    display: "flex",
-    flex: "1 1 auto",
-    flexDirection: "row",
-    justifyContent: "center"
-  },
-  view7: {
-    alignItems: "flex-end",
-    backgroundColor: colors.grey50,
-    display: "flex",
-    flexDirection: "column",
-    justifyContent: "flex-start",
-    width: "150px",
-    height: "150px"
-  },
-  view8: {
-    alignItems: "flex-end",
-    display: "flex",
-    flexDirection: "column",
-    justifyContent: "center",
-    width: "150px",
-    height: "150px"
-  },
-  view9: {
-    alignItems: "flex-end",
-    backgroundColor: colors.grey50,
-    display: "flex",
-    flexDirection: "column",
-    justifyContent: "flex-end",
-    width: "150px",
-    height: "150px"
-  },
-  localAsset7: {
-    alignItems: "flex-start",
-    alignSelf: "stretch",
-    display: "flex",
-    flex: "1 1 auto",
-    flexDirection: "row",
-    justifyContent: "flex-end"
-  },
-  localAsset8: {
-    alignItems: "center",
-    alignSelf: "stretch",
-    display: "flex",
-    flex: "1 1 auto",
-    flexDirection: "row",
-    justifyContent: "flex-end"
-  },
-  localAsset9: {
-    alignItems: "flex-end",
-    alignSelf: "stretch",
-    display: "flex",
-    flex: "1 1 auto",
-    flexDirection: "row",
-    justifyContent: "flex-end"
-  },
-  column4: {
-    alignItems: "flex-start",
-    display: "flex",
-    flexDirection: "column",
-    justifyContent: "flex-start",
-    width: "150px"
-  },
-  column5: {
-    alignItems: "flex-start",
-    display: "flex",
-    flexDirection: "column",
-    justifyContent: "flex-start",
-    width: "150px"
-  },
-  column6: {
-    alignItems: "flex-start",
-    display: "flex",
-    flexDirection: "column",
-    justifyContent: "flex-start",
-    width: "150px"
-  },
-  view10: {
-    alignItems: "flex-start",
-    backgroundColor: colors.grey50,
-    display: "flex",
-    flexDirection: "row",
-    justifyContent: "flex-start",
-    width: "150px",
-    height: "150px"
-  },
-  view11: {
-    alignItems: "center",
-    backgroundColor: "transparent",
-    display: "flex",
-    flexDirection: "row",
-    justifyContent: "flex-start",
-    width: "150px",
-    height: "150px"
-  },
-  view12: {
-    alignItems: "flex-end",
-    backgroundColor: colors.grey50,
-    display: "flex",
-    flexDirection: "row",
-    justifyContent: "flex-start",
-    width: "150px",
-    height: "150px"
-  },
-  localAsset10: {
-    alignItems: "flex-start",
-    alignSelf: "stretch",
-    display: "flex",
-    flex: "1 1 auto",
-    flexDirection: "row",
-    justifyContent: "flex-start"
-  },
-  localAsset11: {
-    alignItems: "center",
-    alignSelf: "stretch",
-    display: "flex",
-    flex: "1 1 auto",
-    flexDirection: "row",
-    justifyContent: "flex-start"
-  },
-  localAsset12: {
-    alignItems: "flex-end",
-    alignSelf: "stretch",
-    display: "flex",
-    flex: "1 1 auto",
-    flexDirection: "row",
-    justifyContent: "flex-start"
-  },
-  view13: {
-    alignItems: "flex-start",
-    display: "flex",
-    flexDirection: "row",
-    justifyContent: "center",
-    width: "150px",
-    height: "150px"
-  },
-  view14: {
-    alignItems: "center",
-    backgroundColor: colors.grey50,
-    display: "flex",
-    flexDirection: "row",
-    justifyContent: "center",
-    width: "150px",
-    height: "150px"
-  },
-  view15: {
-    alignItems: "flex-end",
-    display: "flex",
-    flexDirection: "row",
-    justifyContent: "center",
-    width: "150px",
-    height: "150px"
-  },
-  localAsset13: {
-    alignItems: "flex-start",
-    alignSelf: "stretch",
-    display: "flex",
-    flex: "1 1 auto",
-    flexDirection: "row",
-    justifyContent: "center"
-  },
-  localAsset14: {
-    alignItems: "center",
-    alignSelf: "stretch",
-    display: "flex",
-    flex: "1 1 auto",
-    flexDirection: "row",
-    justifyContent: "center"
-  },
-  localAsset15: {
-    alignItems: "flex-end",
-    alignSelf: "stretch",
-    display: "flex",
-    flex: "1 1 auto",
-    flexDirection: "row",
-    justifyContent: "center"
-  },
-  view16: {
-    alignItems: "flex-start",
-    backgroundColor: colors.grey50,
-    display: "flex",
-    flexDirection: "row",
-    justifyContent: "flex-end",
-    width: "150px",
-    height: "150px"
-  },
-  view17: {
-    alignItems: "center",
-    display: "flex",
-    flexDirection: "row",
-    justifyContent: "flex-end",
-    width: "150px",
-    height: "150px"
-  },
-  view18: {
-    alignItems: "flex-end",
-    backgroundColor: colors.grey50,
-    display: "flex",
-    flexDirection: "row",
-    justifyContent: "flex-end",
-    width: "150px",
-    height: "150px"
-  },
-  localAsset16: {
-    alignItems: "flex-start",
-    alignSelf: "stretch",
-    display: "flex",
-    flex: "1 1 auto",
-    flexDirection: "row",
-    justifyContent: "flex-end"
-  },
-  localAsset17: {
-    alignItems: "center",
-    alignSelf: "stretch",
-    display: "flex",
-    flex: "1 1 auto",
-    flexDirection: "row",
-    justifyContent: "flex-end"
-  },
-  localAsset18: {
-    alignItems: "flex-end",
-    alignSelf: "stretch",
-    display: "flex",
-    flex: "1 1 auto",
-    flexDirection: "row",
-    justifyContent: "flex-end"
-  }
-}
+let View = styled.div({
+  alignItems: "flex-start",
+  display: "flex",
+  flex: "1 1 0%",
+  flexDirection: "column",
+  justifyContent: "flex-start"
+})
+
+let TopRow = styled.div({
+  alignItems: "flex-start",
+  display: "flex",
+  flex: "0 0 auto",
+  flexDirection: "row",
+  justifyContent: "flex-start"
+})
+
+let Column1 = styled.div({
+  alignItems: "flex-start",
+  display: "flex",
+  flexDirection: "column",
+  justifyContent: "flex-start",
+  width: "150px"
+})
+
+let View1 = styled.div({
+  alignItems: "flex-start",
+  backgroundColor: colors.grey50,
+  display: "flex",
+  flexDirection: "column",
+  justifyContent: "flex-start",
+  width: "150px",
+  height: "150px"
+})
+
+let LocalAssetLocalAssetWrapper = styled.div({
+  alignItems: "flex-start",
+  alignSelf: "stretch",
+  display: "flex",
+  flex: "1 1 auto",
+  flexDirection: "row",
+  justifyContent: "flex-start"
+})
+
+let View2 = styled.div({
+  alignItems: "flex-start",
+  backgroundColor: "transparent",
+  display: "flex",
+  flexDirection: "column",
+  justifyContent: "center",
+  width: "150px",
+  height: "150px"
+})
+
+let LocalAssetLocalAsset2Wrapper = styled.div({
+  alignItems: "center",
+  alignSelf: "stretch",
+  display: "flex",
+  flex: "1 1 auto",
+  flexDirection: "row",
+  justifyContent: "flex-start"
+})
+
+let View3 = styled.div({
+  alignItems: "flex-start",
+  backgroundColor: colors.grey50,
+  display: "flex",
+  flexDirection: "column",
+  justifyContent: "flex-end",
+  width: "150px",
+  height: "150px"
+})
+
+let LocalAssetLocalAsset3Wrapper = styled.div({
+  alignItems: "flex-end",
+  alignSelf: "stretch",
+  display: "flex",
+  flex: "1 1 auto",
+  flexDirection: "row",
+  justifyContent: "flex-start"
+})
+
+let Column2 = styled.div({
+  alignItems: "flex-start",
+  display: "flex",
+  flexDirection: "column",
+  justifyContent: "flex-start",
+  width: "150px"
+})
+
+let View4 = styled.div({
+  alignItems: "center",
+  display: "flex",
+  flexDirection: "column",
+  justifyContent: "flex-start",
+  width: "150px",
+  height: "150px"
+})
+
+let LocalAssetLocalAsset4Wrapper = styled.div({
+  alignItems: "flex-start",
+  alignSelf: "stretch",
+  display: "flex",
+  flex: "1 1 auto",
+  flexDirection: "row",
+  justifyContent: "center"
+})
+
+let View5 = styled.div({
+  alignItems: "center",
+  backgroundColor: colors.grey50,
+  display: "flex",
+  flexDirection: "column",
+  justifyContent: "center",
+  width: "150px",
+  height: "150px"
+})
+
+let LocalAssetLocalAsset5Wrapper = styled.div({
+  alignItems: "center",
+  alignSelf: "stretch",
+  display: "flex",
+  flex: "1 1 auto",
+  flexDirection: "row",
+  justifyContent: "center"
+})
+
+let View6 = styled.div({
+  alignItems: "center",
+  display: "flex",
+  flexDirection: "column",
+  justifyContent: "flex-end",
+  width: "150px",
+  height: "150px"
+})
+
+let LocalAssetLocalAsset6Wrapper = styled.div({
+  alignItems: "flex-end",
+  alignSelf: "stretch",
+  display: "flex",
+  flex: "1 1 auto",
+  flexDirection: "row",
+  justifyContent: "center"
+})
+
+let Column3 = styled.div({
+  alignItems: "flex-start",
+  display: "flex",
+  flexDirection: "column",
+  justifyContent: "flex-start",
+  width: "150px"
+})
+
+let View7 = styled.div({
+  alignItems: "flex-end",
+  backgroundColor: colors.grey50,
+  display: "flex",
+  flexDirection: "column",
+  justifyContent: "flex-start",
+  width: "150px",
+  height: "150px"
+})
+
+let LocalAssetLocalAsset7Wrapper = styled.div({
+  alignItems: "flex-start",
+  alignSelf: "stretch",
+  display: "flex",
+  flex: "1 1 auto",
+  flexDirection: "row",
+  justifyContent: "flex-end"
+})
+
+let View8 = styled.div({
+  alignItems: "flex-end",
+  display: "flex",
+  flexDirection: "column",
+  justifyContent: "center",
+  width: "150px",
+  height: "150px"
+})
+
+let LocalAssetLocalAsset8Wrapper = styled.div({
+  alignItems: "center",
+  alignSelf: "stretch",
+  display: "flex",
+  flex: "1 1 auto",
+  flexDirection: "row",
+  justifyContent: "flex-end"
+})
+
+let View9 = styled.div({
+  alignItems: "flex-end",
+  backgroundColor: colors.grey50,
+  display: "flex",
+  flexDirection: "column",
+  justifyContent: "flex-end",
+  width: "150px",
+  height: "150px"
+})
+
+let LocalAssetLocalAsset9Wrapper = styled.div({
+  alignItems: "flex-end",
+  alignSelf: "stretch",
+  display: "flex",
+  flex: "1 1 auto",
+  flexDirection: "row",
+  justifyContent: "flex-end"
+})
+
+let BottomRow = styled.div({
+  alignItems: "flex-start",
+  display: "flex",
+  flex: "0 0 auto",
+  flexDirection: "row",
+  justifyContent: "flex-start"
+})
+
+let Column4 = styled.div({
+  alignItems: "flex-start",
+  display: "flex",
+  flexDirection: "column",
+  justifyContent: "flex-start",
+  width: "150px"
+})
+
+let View10 = styled.div({
+  alignItems: "flex-start",
+  backgroundColor: colors.grey50,
+  display: "flex",
+  flexDirection: "row",
+  justifyContent: "flex-start",
+  width: "150px",
+  height: "150px"
+})
+
+let LocalAssetLocalAsset10Wrapper = styled.div({
+  alignItems: "flex-start",
+  alignSelf: "stretch",
+  display: "flex",
+  flex: "1 1 auto",
+  flexDirection: "row",
+  justifyContent: "flex-start"
+})
+
+let View11 = styled.div({
+  alignItems: "center",
+  backgroundColor: "transparent",
+  display: "flex",
+  flexDirection: "row",
+  justifyContent: "flex-start",
+  width: "150px",
+  height: "150px"
+})
+
+let LocalAssetLocalAsset11Wrapper = styled.div({
+  alignItems: "center",
+  alignSelf: "stretch",
+  display: "flex",
+  flex: "1 1 auto",
+  flexDirection: "row",
+  justifyContent: "flex-start"
+})
+
+let View12 = styled.div({
+  alignItems: "flex-end",
+  backgroundColor: colors.grey50,
+  display: "flex",
+  flexDirection: "row",
+  justifyContent: "flex-start",
+  width: "150px",
+  height: "150px"
+})
+
+let LocalAssetLocalAsset12Wrapper = styled.div({
+  alignItems: "flex-end",
+  alignSelf: "stretch",
+  display: "flex",
+  flex: "1 1 auto",
+  flexDirection: "row",
+  justifyContent: "flex-start"
+})
+
+let Column5 = styled.div({
+  alignItems: "flex-start",
+  display: "flex",
+  flexDirection: "column",
+  justifyContent: "flex-start",
+  width: "150px"
+})
+
+let View13 = styled.div({
+  alignItems: "flex-start",
+  display: "flex",
+  flexDirection: "row",
+  justifyContent: "center",
+  width: "150px",
+  height: "150px"
+})
+
+let LocalAssetLocalAsset13Wrapper = styled.div({
+  alignItems: "flex-start",
+  alignSelf: "stretch",
+  display: "flex",
+  flex: "1 1 auto",
+  flexDirection: "row",
+  justifyContent: "center"
+})
+
+let View14 = styled.div({
+  alignItems: "center",
+  backgroundColor: colors.grey50,
+  display: "flex",
+  flexDirection: "row",
+  justifyContent: "center",
+  width: "150px",
+  height: "150px"
+})
+
+let LocalAssetLocalAsset14Wrapper = styled.div({
+  alignItems: "center",
+  alignSelf: "stretch",
+  display: "flex",
+  flex: "1 1 auto",
+  flexDirection: "row",
+  justifyContent: "center"
+})
+
+let View15 = styled.div({
+  alignItems: "flex-end",
+  display: "flex",
+  flexDirection: "row",
+  justifyContent: "center",
+  width: "150px",
+  height: "150px"
+})
+
+let LocalAssetLocalAsset15Wrapper = styled.div({
+  alignItems: "flex-end",
+  alignSelf: "stretch",
+  display: "flex",
+  flex: "1 1 auto",
+  flexDirection: "row",
+  justifyContent: "center"
+})
+
+let Column6 = styled.div({
+  alignItems: "flex-start",
+  display: "flex",
+  flexDirection: "column",
+  justifyContent: "flex-start",
+  width: "150px"
+})
+
+let View16 = styled.div({
+  alignItems: "flex-start",
+  backgroundColor: colors.grey50,
+  display: "flex",
+  flexDirection: "row",
+  justifyContent: "flex-end",
+  width: "150px",
+  height: "150px"
+})
+
+let LocalAssetLocalAsset16Wrapper = styled.div({
+  alignItems: "flex-start",
+  alignSelf: "stretch",
+  display: "flex",
+  flex: "1 1 auto",
+  flexDirection: "row",
+  justifyContent: "flex-end"
+})
+
+let View17 = styled.div({
+  alignItems: "center",
+  display: "flex",
+  flexDirection: "row",
+  justifyContent: "flex-end",
+  width: "150px",
+  height: "150px"
+})
+
+let LocalAssetLocalAsset17Wrapper = styled.div({
+  alignItems: "center",
+  alignSelf: "stretch",
+  display: "flex",
+  flex: "1 1 auto",
+  flexDirection: "row",
+  justifyContent: "flex-end"
+})
+
+let View18 = styled.div({
+  alignItems: "flex-end",
+  backgroundColor: colors.grey50,
+  display: "flex",
+  flexDirection: "row",
+  justifyContent: "flex-end",
+  width: "150px",
+  height: "150px"
+})
+
+let LocalAssetLocalAsset18Wrapper = styled.div({
+  alignItems: "flex-end",
+  alignSelf: "stretch",
+  display: "flex",
+  flex: "1 1 auto",
+  flexDirection: "row",
+  justifyContent: "flex-end"
+})

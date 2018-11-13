@@ -1,4 +1,5 @@
 import React from "react"
+import styled from "styled-components"
 
 import colors from "../colors"
 import shadows from "../shadows"
@@ -27,39 +28,36 @@ export default class Button extends React.Component {
     }
     return (
       <button
-        style={Object.assign({}, styles.view, {
-          backgroundColor: View$backgroundColor
-        })}
+        style={{ backgroundColor: View$backgroundColor }}
         onClick={View$onPress}
       >
-        <span style={styles.text}>
+        <Text>
           {Text$text}
-        </span>
+        </Text>
       </button>
     );
   }
 };
 
-let styles = {
-  view: {
-    alignItems: "flex-start",
-    backgroundColor: colors.blue100,
-    display: "flex",
-    flex: "0 0 auto",
-    flexDirection: "column",
-    justifyContent: "flex-start",
-    paddingTop: "12px",
-    paddingRight: "16px",
-    paddingBottom: "12px",
-    paddingLeft: "16px"
-  },
-  text: {
-    textAlign: "left",
-    ...textStyles.button,
-    alignItems: "flex-start",
-    display: "block",
-    flex: "0 0 auto",
-    flexDirection: "column",
-    justifyContent: "flex-start"
-  }
-}
+let View = styled.div({
+  alignItems: "flex-start",
+  backgroundColor: colors.blue100,
+  display: "flex",
+  flex: "0 0 auto",
+  flexDirection: "column",
+  justifyContent: "flex-start",
+  paddingTop: "12px",
+  paddingRight: "16px",
+  paddingBottom: "12px",
+  paddingLeft: "16px"
+})
+
+let Text = styled.span({
+  textAlign: "left",
+  ...textStyles.button,
+  alignItems: "flex-start",
+  display: "block",
+  flex: "0 0 auto",
+  flexDirection: "column",
+  justifyContent: "flex-start"
+})

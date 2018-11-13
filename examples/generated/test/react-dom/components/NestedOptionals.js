@@ -1,4 +1,5 @@
 import React from "react"
+import styled from "styled-components"
 
 import colors from "../colors"
 import shadows from "../shadows"
@@ -10,29 +11,28 @@ export default class NestedOptionals extends React.Component {
 
 
     return (
-      <div style={styles.view}>
-        <div style={styles.optionals}>
+      <View>
+        <OptionalsOptionalsWrapper>
           <Optionals boolParam={null} stringParam={"Text"} />
-        </div>
-      </div>
+        </OptionalsOptionalsWrapper>
+      </View>
     );
   }
 };
 
-let styles = {
-  view: {
-    alignItems: "flex-start",
-    display: "flex",
-    flex: "1 1 0%",
-    flexDirection: "column",
-    justifyContent: "flex-start"
-  },
-  optionals: {
-    alignItems: "flex-start",
-    alignSelf: "stretch",
-    display: "flex",
-    flex: "1 1 auto",
-    flexDirection: "row",
-    justifyContent: "flex-start"
-  }
-}
+let View = styled.div({
+  alignItems: "flex-start",
+  display: "flex",
+  flex: "1 1 0%",
+  flexDirection: "column",
+  justifyContent: "flex-start"
+})
+
+let OptionalsOptionalsWrapper = styled.div({
+  alignItems: "flex-start",
+  alignSelf: "stretch",
+  display: "flex",
+  flex: "1 1 auto",
+  flexDirection: "row",
+  justifyContent: "flex-start"
+})

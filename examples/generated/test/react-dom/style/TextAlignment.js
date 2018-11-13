@@ -1,4 +1,5 @@
 import React from "react"
+import styled from "styled-components"
 
 import colors from "../colors"
 import shadows from "../shadows"
@@ -9,284 +10,295 @@ export default class TextAlignment extends React.Component {
 
 
     return (
-      <div style={styles.view}>
-        <div style={styles.view1}>
-          <img
-            style={styles.image}
-            src={require("../assets/icon_128x128.png")}
-
-          />
-          <div style={styles.view2} />
-          <span style={styles.text}>
+      <View>
+        <View1>
+          <Image src={require("../assets/icon_128x128.png")} />
+          <View2 />
+          <Text>
             {"Welcome to Lona Studio"}
-          </span>
-          <span style={styles.text1}>
+          </Text>
+          <Text1>
             {"Centered - Width: Fit"}
-          </span>
-          <span style={styles.text2}>
+          </Text1>
+          <Text2>
             {"Left aligned - Width: Fill"}
-          </span>
-          <span style={styles.text3}>
+          </Text2>
+          <Text3>
             {"Right aligned - Width: Fill"}
-          </span>
-          <span style={styles.text4}>
+          </Text3>
+          <Text4>
             {"Centered - Width: 80"}
-          </span>
-        </div>
-        <div style={styles.view3}>
-          <span style={styles.text5}>
+          </Text4>
+        </View1>
+        <View3>
+          <Text5>
             {"Left aligned text, Fit w/ secondary centering"}
-          </span>
-        </div>
-        <div style={styles.view4}>
-          <span style={styles.text6}>
+          </Text5>
+        </View3>
+        <View4>
+          <Text6>
             {"Left aligned text, Fixed w/ secondary centering"}
-          </span>
-        </div>
-        <div style={styles.view5}>
-          <span style={styles.text7}>
+          </Text6>
+        </View4>
+        <View5>
+          <Text7>
             {"Centered text, Fit parent no centering"}
-          </span>
-        </div>
-        <div style={styles.view6}>
-          <span style={styles.text8}>
+          </Text7>
+        </View5>
+        <View6>
+          <Text8>
             {"Centered text, Fixed parent no centering"}
-          </span>
-        </div>
-        <div style={styles.rightAlignmentContainer}>
-          <span style={styles.text9}>
+          </Text8>
+        </View6>
+        <RightAlignmentContainer>
+          <Text9>
             {"Fit Text"}
-          </span>
-          <span style={styles.text10}>
+          </Text9>
+          <Text10>
             {"Fill and center aligned text"}
-          </span>
-          <img
-            style={styles.image1}
-            src={require("../assets/icon_128x128.png")}
-
-          />
-        </div>
-      </div>
+          </Text10>
+          <Image1 src={require("../assets/icon_128x128.png")} />
+        </RightAlignmentContainer>
+      </View>
     );
   }
 };
 
-let styles = {
-  view: {
-    alignItems: "flex-start",
-    display: "flex",
-    flex: "1 1 0%",
-    flexDirection: "column",
-    justifyContent: "flex-start",
-    paddingTop: "10px",
-    paddingRight: "10px",
-    paddingBottom: "10px",
-    paddingLeft: "10px"
-  },
-  view1: {
-    alignItems: "center",
-    alignSelf: "stretch",
-    backgroundColor: colors.indigo50,
-    display: "flex",
-    flex: "0 0 auto",
-    flexDirection: "column",
-    justifyContent: "center"
-  },
-  view3: {
-    alignItems: "center",
-    backgroundColor: "#D8D8D8",
-    display: "flex",
-    flex: "0 0 auto",
-    flexDirection: "column",
-    justifyContent: "flex-start",
-    paddingRight: "12px",
-    paddingLeft: "12px"
-  },
-  view4: {
-    alignItems: "center",
-    backgroundColor: "#D8D8D8",
-    display: "flex",
-    flex: "0 0 auto",
-    flexDirection: "column",
-    justifyContent: "flex-start",
-    paddingRight: "12px",
-    paddingLeft: "12px",
-    width: "400px"
-  },
-  view5: {
-    alignItems: "flex-start",
-    backgroundColor: "#D8D8D8",
-    display: "flex",
-    flex: "0 0 auto",
-    flexDirection: "column",
-    justifyContent: "flex-start",
-    paddingRight: "12px",
-    paddingLeft: "12px"
-  },
-  view6: {
-    alignItems: "flex-start",
-    backgroundColor: "#D8D8D8",
-    display: "flex",
-    flex: "0 0 auto",
-    flexDirection: "column",
-    justifyContent: "flex-start",
-    paddingRight: "12px",
-    paddingLeft: "12px",
-    width: "400px"
-  },
-  rightAlignmentContainer: {
-    alignItems: "flex-end",
-    alignSelf: "stretch",
-    backgroundColor: "#D8D8D8",
-    display: "flex",
-    flex: "0 0 auto",
-    flexDirection: "column",
-    justifyContent: "flex-start"
-  },
-  image: {
-    alignItems: "flex-start",
-    display: "flex",
-    flexDirection: "column",
-    justifyContent: "flex-start",
-    overflow: "hidden",
-    width: "100px",
-    height: "100px",
-    objectFit: "cover",
-    position: "relative"
-  },
-  view2: {
-    alignItems: "flex-start",
-    backgroundColor: "#D8D8D8",
-    display: "flex",
-    flex: "0 0 auto",
-    flexDirection: "column",
-    justifyContent: "flex-start"
-  },
-  text: {
-    textAlign: "center",
-    ...textStyles.display1,
-    alignItems: "flex-start",
-    alignSelf: "stretch",
-    display: "block",
-    flex: "0 0 auto",
-    flexDirection: "column",
-    justifyContent: "flex-start",
-    marginTop: "16px",
-    overflow: "hidden",
-    maxHeight: "80px"
-  },
-  text1: {
-    textAlign: "center",
-    ...textStyles.subheading2,
-    alignItems: "flex-start",
-    display: "block",
-    flex: "0 0 auto",
-    flexDirection: "column",
-    justifyContent: "flex-start",
-    marginTop: "16px"
-  },
-  text2: {
-    textAlign: "left",
-    ...textStyles.body1,
-    alignItems: "flex-start",
-    alignSelf: "stretch",
-    display: "block",
-    flex: "0 0 auto",
-    flexDirection: "column",
-    justifyContent: "flex-start",
-    marginTop: "12px"
-  },
-  text3: {
-    textAlign: "right",
-    ...textStyles.body1,
-    alignItems: "flex-start",
-    alignSelf: "stretch",
-    display: "block",
-    flex: "0 0 auto",
-    flexDirection: "column",
-    justifyContent: "flex-start"
-  },
-  text4: {
-    textAlign: "center",
-    ...textStyles.body1,
-    alignItems: "flex-start",
-    display: "block",
-    flex: "0 0 auto",
-    flexDirection: "column",
-    justifyContent: "flex-start",
-    width: "80px"
-  },
-  text5: {
-    textAlign: "left",
-    ...textStyles.body1,
-    alignItems: "flex-start",
-    display: "block",
-    flex: "0 0 auto",
-    flexDirection: "column",
-    justifyContent: "flex-start"
-  },
-  text6: {
-    textAlign: "left",
-    ...textStyles.body1,
-    alignItems: "flex-start",
-    display: "block",
-    flex: "0 0 auto",
-    flexDirection: "column",
-    justifyContent: "flex-start"
-  },
-  text7: {
-    textAlign: "center",
-    ...textStyles.body1,
-    alignItems: "flex-start",
-    display: "block",
-    flex: "0 0 auto",
-    flexDirection: "column",
-    justifyContent: "flex-start"
-  },
-  text8: {
-    textAlign: "center",
-    ...textStyles.body1,
-    alignItems: "flex-start",
-    alignSelf: "stretch",
-    display: "block",
-    flex: "0 0 auto",
-    flexDirection: "column",
-    justifyContent: "flex-start"
-  },
-  text9: {
-    textAlign: "left",
-    ...textStyles.body1,
-    alignItems: "flex-start",
-    display: "block",
-    flex: "0 0 auto",
-    flexDirection: "column",
-    justifyContent: "flex-start"
-  },
-  text10: {
-    textAlign: "center",
-    ...textStyles.body1,
-    alignItems: "flex-start",
-    alignSelf: "stretch",
-    display: "block",
-    flex: "0 0 auto",
-    flexDirection: "column",
-    justifyContent: "flex-start"
-  },
-  image1: {
-    alignItems: "flex-start",
-    display: "flex",
-    flexDirection: "column",
-    justifyContent: "flex-start",
-    overflow: "hidden",
-    width: "100px",
-    height: "100px",
-    objectFit: "cover",
-    position: "relative"
-  },
-  imageResizeModeCover: {
-    width: "100%",
-    height: "100%",
-    objectFit: "cover",
-    position: "absolute"
-  }
-}
+let ImageResizeModeCover = styled.img({
+  width: "100%",
+  height: "100%",
+  objectFit: "cover",
+  position: "absolute"
+})
+
+let View = styled.div({
+  alignItems: "flex-start",
+  display: "flex",
+  flex: "1 1 0%",
+  flexDirection: "column",
+  justifyContent: "flex-start",
+  paddingTop: "10px",
+  paddingRight: "10px",
+  paddingBottom: "10px",
+  paddingLeft: "10px"
+})
+
+let View1 = styled.div({
+  alignItems: "center",
+  alignSelf: "stretch",
+  backgroundColor: colors.indigo50,
+  display: "flex",
+  flex: "0 0 auto",
+  flexDirection: "column",
+  justifyContent: "center"
+})
+
+let Image = styled.img({
+  alignItems: "flex-start",
+  display: "flex",
+  flexDirection: "column",
+  justifyContent: "flex-start",
+  overflow: "hidden",
+  width: "100px",
+  height: "100px",
+  objectFit: "cover",
+  position: "relative"
+})
+
+let View2 = styled.div({
+  alignItems: "flex-start",
+  backgroundColor: "#D8D8D8",
+  display: "flex",
+  flex: "0 0 auto",
+  flexDirection: "column",
+  justifyContent: "flex-start"
+})
+
+let Text = styled.span({
+  textAlign: "center",
+  ...textStyles.display1,
+  alignItems: "flex-start",
+  alignSelf: "stretch",
+  display: "block",
+  flex: "0 0 auto",
+  flexDirection: "column",
+  justifyContent: "flex-start",
+  marginTop: "16px",
+  overflow: "hidden",
+  maxHeight: "80px"
+})
+
+let Text1 = styled.span({
+  textAlign: "center",
+  ...textStyles.subheading2,
+  alignItems: "flex-start",
+  display: "block",
+  flex: "0 0 auto",
+  flexDirection: "column",
+  justifyContent: "flex-start",
+  marginTop: "16px"
+})
+
+let Text2 = styled.span({
+  textAlign: "left",
+  ...textStyles.body1,
+  alignItems: "flex-start",
+  alignSelf: "stretch",
+  display: "block",
+  flex: "0 0 auto",
+  flexDirection: "column",
+  justifyContent: "flex-start",
+  marginTop: "12px"
+})
+
+let Text3 = styled.span({
+  textAlign: "right",
+  ...textStyles.body1,
+  alignItems: "flex-start",
+  alignSelf: "stretch",
+  display: "block",
+  flex: "0 0 auto",
+  flexDirection: "column",
+  justifyContent: "flex-start"
+})
+
+let Text4 = styled.span({
+  textAlign: "center",
+  ...textStyles.body1,
+  alignItems: "flex-start",
+  display: "block",
+  flex: "0 0 auto",
+  flexDirection: "column",
+  justifyContent: "flex-start",
+  width: "80px"
+})
+
+let View3 = styled.div({
+  alignItems: "center",
+  backgroundColor: "#D8D8D8",
+  display: "flex",
+  flex: "0 0 auto",
+  flexDirection: "column",
+  justifyContent: "flex-start",
+  paddingRight: "12px",
+  paddingLeft: "12px"
+})
+
+let Text5 = styled.span({
+  textAlign: "left",
+  ...textStyles.body1,
+  alignItems: "flex-start",
+  display: "block",
+  flex: "0 0 auto",
+  flexDirection: "column",
+  justifyContent: "flex-start"
+})
+
+let View4 = styled.div({
+  alignItems: "center",
+  backgroundColor: "#D8D8D8",
+  display: "flex",
+  flex: "0 0 auto",
+  flexDirection: "column",
+  justifyContent: "flex-start",
+  paddingRight: "12px",
+  paddingLeft: "12px",
+  width: "400px"
+})
+
+let Text6 = styled.span({
+  textAlign: "left",
+  ...textStyles.body1,
+  alignItems: "flex-start",
+  display: "block",
+  flex: "0 0 auto",
+  flexDirection: "column",
+  justifyContent: "flex-start"
+})
+
+let View5 = styled.div({
+  alignItems: "flex-start",
+  backgroundColor: "#D8D8D8",
+  display: "flex",
+  flex: "0 0 auto",
+  flexDirection: "column",
+  justifyContent: "flex-start",
+  paddingRight: "12px",
+  paddingLeft: "12px"
+})
+
+let Text7 = styled.span({
+  textAlign: "center",
+  ...textStyles.body1,
+  alignItems: "flex-start",
+  display: "block",
+  flex: "0 0 auto",
+  flexDirection: "column",
+  justifyContent: "flex-start"
+})
+
+let View6 = styled.div({
+  alignItems: "flex-start",
+  backgroundColor: "#D8D8D8",
+  display: "flex",
+  flex: "0 0 auto",
+  flexDirection: "column",
+  justifyContent: "flex-start",
+  paddingRight: "12px",
+  paddingLeft: "12px",
+  width: "400px"
+})
+
+let Text8 = styled.span({
+  textAlign: "center",
+  ...textStyles.body1,
+  alignItems: "flex-start",
+  alignSelf: "stretch",
+  display: "block",
+  flex: "0 0 auto",
+  flexDirection: "column",
+  justifyContent: "flex-start"
+})
+
+let RightAlignmentContainer = styled.div({
+  alignItems: "flex-end",
+  alignSelf: "stretch",
+  backgroundColor: "#D8D8D8",
+  display: "flex",
+  flex: "0 0 auto",
+  flexDirection: "column",
+  justifyContent: "flex-start"
+})
+
+let Text9 = styled.span({
+  textAlign: "left",
+  ...textStyles.body1,
+  alignItems: "flex-start",
+  display: "block",
+  flex: "0 0 auto",
+  flexDirection: "column",
+  justifyContent: "flex-start"
+})
+
+let Text10 = styled.span({
+  textAlign: "center",
+  ...textStyles.body1,
+  alignItems: "flex-start",
+  alignSelf: "stretch",
+  display: "block",
+  flex: "0 0 auto",
+  flexDirection: "column",
+  justifyContent: "flex-start"
+})
+
+let Image1 = styled.img({
+  alignItems: "flex-start",
+  display: "flex",
+  flexDirection: "column",
+  justifyContent: "flex-start",
+  overflow: "hidden",
+  width: "100px",
+  height: "100px",
+  objectFit: "cover",
+  position: "relative"
+})

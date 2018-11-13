@@ -6,7 +6,7 @@ import colors from "../colors"
 import shadows from "../shadows"
 import textStyles from "../textStyles"
 
-let ToggleVector = (props) => {
+let VectorGraphic1ToggleVector = (props) => {
   return (
     <Svg
       style={props.style}
@@ -29,7 +29,7 @@ let ToggleVector = (props) => {
     </Svg>
   );
 }
-let ToggleVerticalVector = (props) => {
+let VectorGraphic2ToggleVerticalVector = (props) => {
   return (
     <Svg
       style={props.style}
@@ -52,7 +52,7 @@ let ToggleVerticalVector = (props) => {
     </Svg>
   );
 }
-let CheckCircleVector = (props) => {
+let VectorGraphic3CheckCircleVector = (props) => {
   return (
     <Svg
       style={props.style}
@@ -82,17 +82,17 @@ export default class VectorAsset extends React.Component {
 
     return (
       <View style={styles.view}>
-        <ToggleVector
+        <VectorGraphic1ToggleVector
           style={styles.vectorGraphic1}
           preserveAspectRatio={"xMidYMid meet"}
 
         />
-        <ToggleVerticalVector
+        <VectorGraphic2ToggleVerticalVector
           style={styles.vectorGraphic2}
           preserveAspectRatio={"xMidYMid meet"}
 
         />
-        <CheckCircleVector style={styles.vectorGraphic3} />
+        <VectorGraphic3CheckCircleVector style={styles.vectorGraphic3} />
       </View>
     );
   }

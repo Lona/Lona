@@ -1,4 +1,5 @@
 import React from "react"
+import styled from "styled-components"
 
 import colors from "../colors"
 import shadows from "../shadows"
@@ -9,68 +10,66 @@ export default class FillWidthFitHeightCard extends React.Component {
 
 
     return (
-      <div style={styles.view}>
-        <div style={styles.image}>
-          <img
-            style={styles.imageResizeModeCover}
-            src={require("../assets/icon_128x128.png")}
-
-          />
-        </div>
-        <span style={styles.text1}>
+      <View>
+        <Image>
+          <ImageResizeModeCover src={require("../assets/icon_128x128.png")} />
+        </Image>
+        <Text1>
           {"Title"}
-        </span>
-        <span style={styles.text}>
+        </Text1>
+        <Text>
           {"Subtitle"}
-        </span>
-      </div>
+        </Text>
+      </View>
     );
   }
 };
 
-let styles = {
-  view: {
-    alignItems: "flex-start",
-    display: "flex",
-    flex: "1 1 0%",
-    flexDirection: "column",
-    justifyContent: "flex-start"
-  },
-  image: {
-    alignItems: "flex-start",
-    alignSelf: "stretch",
-    backgroundColor: colors.blue200,
-    display: "flex",
-    flexDirection: "column",
-    justifyContent: "flex-start",
-    overflow: "hidden",
-    height: "100px",
-    position: "relative"
-  },
-  text1: {
-    textAlign: "left",
-    ...textStyles.body2,
-    alignItems: "flex-start",
-    alignSelf: "stretch",
-    display: "block",
-    flex: "0 0 auto",
-    flexDirection: "column",
-    justifyContent: "flex-start"
-  },
-  text: {
-    textAlign: "left",
-    ...textStyles.body1,
-    alignItems: "flex-start",
-    alignSelf: "stretch",
-    display: "block",
-    flex: "0 0 auto",
-    flexDirection: "column",
-    justifyContent: "flex-start"
-  },
-  imageResizeModeCover: {
-    width: "100%",
-    height: "100%",
-    objectFit: "cover",
-    position: "absolute"
-  }
-}
+let ImageResizeModeCover = styled.img({
+  width: "100%",
+  height: "100%",
+  objectFit: "cover",
+  position: "absolute"
+})
+
+let View = styled.div({
+  alignItems: "flex-start",
+  display: "flex",
+  flex: "1 1 0%",
+  flexDirection: "column",
+  justifyContent: "flex-start"
+})
+
+let Image = styled.div({
+  alignItems: "flex-start",
+  alignSelf: "stretch",
+  backgroundColor: colors.blue200,
+  display: "flex",
+  flexDirection: "column",
+  justifyContent: "flex-start",
+  overflow: "hidden",
+  height: "100px",
+  position: "relative"
+})
+
+let Text1 = styled.span({
+  textAlign: "left",
+  ...textStyles.body2,
+  alignItems: "flex-start",
+  alignSelf: "stretch",
+  display: "block",
+  flex: "0 0 auto",
+  flexDirection: "column",
+  justifyContent: "flex-start"
+})
+
+let Text = styled.span({
+  textAlign: "left",
+  ...textStyles.body1,
+  alignItems: "flex-start",
+  alignSelf: "stretch",
+  display: "block",
+  flex: "0 0 auto",
+  flexDirection: "column",
+  justifyContent: "flex-start"
+})
