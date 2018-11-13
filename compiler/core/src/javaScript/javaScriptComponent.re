@@ -102,6 +102,25 @@ let imageNeedsWrapper = (parent: option(Types.layer), layer: Types.layer) =>
     false;
   };
 
+let customComponentNeedsWrapper =
+    (
+      options: JavaScriptOptions.options,
+      parent: option(Types.layer),
+      layer: Types.layer,
+    ) =>
+  switch (layer.typeName, parent) {
+  | (Types.Component(_), Some(parent)) =>
+    let parentDirection = Layer.getFlexDirection(parent.parameters);
+
+    switch (options.framework, parentDirection) {
+    | (JavaScriptOptions.ReactDOM, "column")
+    | (JavaScriptOptions.ReactNative, "row")
+    | (JavaScriptOptions.ReactSketchapp, "row") => true
+    | _ => false
+    };
+  | _ => false
+  };
+
 let getInitialProps = (options: JavaScriptOptions.options, layer: Types.layer) =>
   layer.parameters
   |> removeSpecialProps(options, layer.typeName)
@@ -228,6 +247,16 @@ module StyledComponents = {
     let layerComponents =
       rootLayer
       |> Layer.flatten
+      /* Custom components don't need a styled-component generated unless they require
+         a custom wrapper. All other layers need a styled-component */
+      |> List.filter((layer: Types.layer) =>
+           !Layer.isComponentLayer(layer)
+           || customComponentNeedsWrapper(
+                options,
+                Layer.findParent(rootLayer, layer),
+                layer,
+              )
+         )
       |> List.map(
            layerStyledComponentAST(config, options, assignments, rootLayer),
          );
@@ -401,10 +430,7 @@ let createJSXElement =
         content,
       });
 
-    switch (framework, parentDirection) {
-    | (JavaScriptOptions.ReactDOM, "column")
-    | (JavaScriptOptions.ReactNative, "row")
-    | (JavaScriptOptions.ReactSketchapp, "row") =>
+    if (customComponentNeedsWrapper(options, Some(parent), layer)) {
       if (options.styleFramework == StyledComponents) {
         JSXElement({
           tag: JavaScriptFormat.wrapperElementName(name, layer.name),
@@ -417,8 +443,9 @@ let createJSXElement =
           attributes: styleAttribute,
           content: [customComponent],
         });
-      }
-    | _ => customComponent
+      };
+    } else {
+      customComponent;
     };
   | _ =>
     if (imageNeedsWrapper(parent, layer)) {

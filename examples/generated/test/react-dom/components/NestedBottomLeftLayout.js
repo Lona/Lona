@@ -31,12 +31,3 @@ let View1 = styled.div({
   width: "150px",
   height: "150px"
 })
-
-let LocalAssetLocalAssetWrapper = styled.div({
-  alignItems: "flex-end",
-  alignSelf: "stretch",
-  display: "flex",
-  flex: "1 1 auto",
-  flexDirection: "row",
-  justifyContent: "flex-start"
-})

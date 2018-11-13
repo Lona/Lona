@@ -45,15 +45,6 @@ let Horizontal = styled.div({
   justifyContent: "flex-start"
 })
 
-let FillWidthFitHeightCardLeftCardWrapper = styled.div({
-  alignItems: "flex-start",
-  alignSelf: "stretch",
-  display: "flex",
-  flex: "1 1 auto",
-  flexDirection: "row",
-  justifyContent: "flex-start"
-})
-
 let Spacer = styled.div({
   alignItems: "flex-start",
   display: "flex",
@@ -61,13 +52,4 @@ let Spacer = styled.div({
   justifyContent: "flex-start",
   width: "8px",
   height: "0px"
-})
-
-let FillWidthFitHeightCardRightCardWrapper = styled.div({
-  alignItems: "flex-start",
-  alignSelf: "stretch",
-  display: "flex",
-  flex: "1 1 auto",
-  flexDirection: "row",
-  justifyContent: "flex-start"
 })

@@ -339,15 +339,6 @@ let View10 = styled.div({
   height: "150px"
 })
 
-let LocalAssetLocalAsset10Wrapper = styled.div({
-  alignItems: "flex-start",
-  alignSelf: "stretch",
-  display: "flex",
-  flex: "1 1 auto",
-  flexDirection: "row",
-  justifyContent: "flex-start"
-})
-
 let View11 = styled.div({
   alignItems: "center",
   backgroundColor: "transparent",
@@ -358,15 +349,6 @@ let View11 = styled.div({
   height: "150px"
 })
 
-let LocalAssetLocalAsset11Wrapper = styled.div({
-  alignItems: "center",
-  alignSelf: "stretch",
-  display: "flex",
-  flex: "1 1 auto",
-  flexDirection: "row",
-  justifyContent: "flex-start"
-})
-
 let View12 = styled.div({
   alignItems: "flex-end",
   backgroundColor: colors.grey50,
@@ -375,15 +357,6 @@ let View12 = styled.div({
   justifyContent: "flex-start",
   width: "150px",
   height: "150px"
-})
-
-let LocalAssetLocalAsset12Wrapper = styled.div({
-  alignItems: "flex-end",
-  alignSelf: "stretch",
-  display: "flex",
-  flex: "1 1 auto",
-  flexDirection: "row",
-  justifyContent: "flex-start"
 })
 
 let Column5 = styled.div({
@@ -403,15 +376,6 @@ let View13 = styled.div({
   height: "150px"
 })
 
-let LocalAssetLocalAsset13Wrapper = styled.div({
-  alignItems: "flex-start",
-  alignSelf: "stretch",
-  display: "flex",
-  flex: "1 1 auto",
-  flexDirection: "row",
-  justifyContent: "center"
-})
-
 let View14 = styled.div({
   alignItems: "center",
   backgroundColor: colors.grey50,
@@ -422,15 +386,6 @@ let View14 = styled.div({
   height: "150px"
 })
 
-let LocalAssetLocalAsset14Wrapper = styled.div({
-  alignItems: "center",
-  alignSelf: "stretch",
-  display: "flex",
-  flex: "1 1 auto",
-  flexDirection: "row",
-  justifyContent: "center"
-})
-
 let View15 = styled.div({
   alignItems: "flex-end",
   display: "flex",
@@ -438,15 +393,6 @@ let View15 = styled.div({
   justifyContent: "center",
   width: "150px",
   height: "150px"
-})
-
-let LocalAssetLocalAsset15Wrapper = styled.div({
-  alignItems: "flex-end",
-  alignSelf: "stretch",
-  display: "flex",
-  flex: "1 1 auto",
-  flexDirection: "row",
-  justifyContent: "center"
 })
 
 let Column6 = styled.div({
@@ -467,15 +413,6 @@ let View16 = styled.div({
   height: "150px"
 })
 
-let LocalAssetLocalAsset16Wrapper = styled.div({
-  alignItems: "flex-start",
-  alignSelf: "stretch",
-  display: "flex",
-  flex: "1 1 auto",
-  flexDirection: "row",
-  justifyContent: "flex-end"
-})
-
 let View17 = styled.div({
   alignItems: "center",
   display: "flex",
@@ -483,15 +420,6 @@ let View17 = styled.div({
   justifyContent: "flex-end",
   width: "150px",
   height: "150px"
-})
-
-let LocalAssetLocalAsset17Wrapper = styled.div({
-  alignItems: "center",
-  alignSelf: "stretch",
-  display: "flex",
-  flex: "1 1 auto",
-  flexDirection: "row",
-  justifyContent: "flex-end"
 })
 
 let View18 = styled.div({
@@ -502,13 +430,4 @@ let View18 = styled.div({
   justifyContent: "flex-end",
   width: "150px",
   height: "150px"
-})
-
-let LocalAssetLocalAsset18Wrapper = styled.div({
-  alignItems: "flex-end",
-  alignSelf: "stretch",
-  display: "flex",
-  flex: "1 1 auto",
-  flexDirection: "row",
-  justifyContent: "flex-end"
 })
