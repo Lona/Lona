@@ -89,6 +89,19 @@ let removeSpecialProps =
        }
      );
 
+let imageNeedsWrapper = (parent: option(Types.layer), layer: Types.layer) =>
+  if (layer.typeName == Types.Image) {
+    let layout = Layer.getLayout(parent, layer.parameters);
+
+    /* Images without fixed dimensions are absolute positioned within a wrapper */
+    switch (layout.height, layout.width) {
+    | (Fixed(_), Fixed(_)) => false
+    | _ => true
+    };
+  } else {
+    false;
+  };
+
 let getInitialProps = (options: JavaScriptOptions.options, layer: Types.layer) =>
   layer.parameters
   |> removeSpecialProps(options, layer.typeName)
@@ -116,15 +129,14 @@ module StyledComponents = {
       })
     );
 
-  let createStyledComponentAST =
+  let layerStyledComponentAST =
       (
         config: Config.t,
         options: JavaScriptOptions.options,
-        assignments,
+        _assignments,
         rootLayer: Types.layer,
         layer: Types.layer,
-      ) => {
-    let styleVariables = getStyleVariables(assignments, layer);
+      ) =>
     JavaScriptAst.(
       VariableDeclaration(
         AssignmentExpression({
@@ -143,33 +155,64 @@ module StyledComponents = {
                   "styled",
                   switch (layer.typeName) {
                   | Component(_) => ReactDomTranslators.layerTypeTags(View)
-                  | _ => layer.typeName |> ReactDomTranslators.layerTypeTags
+                  | _ =>
+                    let needsWrapper =
+                      imageNeedsWrapper(
+                        Layer.findParent(rootLayer, layer),
+                        layer,
+                      );
+                    if (needsWrapper) {
+                      ReactDomTranslators.layerTypeTags(Types.View);
+                    } else {
+                      layer.typeName |> ReactDomTranslators.layerTypeTags;
+                    };
                   },
                 ]),
               arguments: [
-                /* if (styleVariables |> ParameterMap.is_empty) { */
                 JavaScriptStyles.Object.forLayer(
                   config,
                   options.framework,
                   Layer.findParent(rootLayer, layer),
                   layer,
                 ),
-                /* } else {
-                     createPropsFunction(
-                       JavaScriptStyles.Object.forLayer(
-                         config,
-                         options.framework,
-                         Layer.findParent(rootLayer, layer),
-                         layer,
-                       ),
-                     );
-                   }, */
               ],
             }),
         }),
       )
     );
-  };
+
+  let imageResizingStyledComponentAst =
+      (
+        config: Config.t,
+        options: JavaScriptOptions.options,
+        resizeMode: string,
+      ) =>
+    JavaScriptAst.(
+      VariableDeclaration(
+        AssignmentExpression({
+          left:
+            Identifier([
+              JavaScriptFormat.imageResizeModeHelperName(resizeMode)
+              |> Format.upperFirst,
+            ]),
+          right:
+            CallExpression({
+              callee:
+                Identifier([
+                  "styled",
+                  getElementTagStringForLayerType(options, Types.Image),
+                ]),
+              arguments: [
+                JavaScriptStyles.Object.imageResizing(
+                  config,
+                  options.framework,
+                  resizeMode,
+                ),
+              ],
+            }),
+        }),
+      )
+    );
 
   let createdAllStyledComponentsAST =
       (
@@ -177,13 +220,21 @@ module StyledComponents = {
         options: JavaScriptOptions.options,
         assignments,
         rootLayer: Types.layer,
-      ) =>
-    rootLayer
-    |> Layer.flatten
-    |> List.map(
-         createStyledComponentAST(config, options, assignments, rootLayer),
-       )
+      ) => {
+    let imageResizingComponents =
+      rootLayer
+      |> Layer.imageResizingModes
+      |> List.map(imageResizingStyledComponentAst(config, options));
+    let layerComponents =
+      rootLayer
+      |> Layer.flatten
+      |> List.map(
+           layerStyledComponentAST(config, options, assignments, rootLayer),
+         );
+    [imageResizingComponents, layerComponents]
+    |> List.concat
     |> SwiftDocument.join(JavaScriptAst.Empty);
+  };
 };
 
 let createDynamicStyleObjectAst =
@@ -259,23 +310,42 @@ let createWrappedImageElement =
     };
 
   let imageStyleAttribute =
-    Ast.JSXAttribute({
-      name: "style",
-      value:
-        Identifier([
-          "styles",
-          JavaScriptFormat.imageResizeModeHelperName(resizeMode),
-        ]),
-    });
+    switch (options.styleFramework) {
+    | StyledComponents => []
+    | None => [
+        Ast.JSXAttribute({
+          name: "style",
+          value:
+            Identifier([
+              "styles",
+              JavaScriptFormat.imageResizeModeHelperName(resizeMode),
+            ]),
+        }),
+      ]
+    };
+
+  let wrapperTagName =
+    switch (options.styleFramework) {
+    | StyledComponents => JavaScriptFormat.elementName(layer.name)
+    | None => getElementTagStringForLayerType(options, Types.View)
+    };
+
+  let elementTagName =
+    switch (options.styleFramework) {
+    | StyledComponents =>
+      JavaScriptFormat.imageResizeModeHelperName(resizeMode)
+      |> Format.upperFirst
+    | None => getElementTagString(options, layer)
+    };
 
   JavaScriptAst.(
     JSXElement({
-      tag: getElementTagStringForLayerType(options, Types.View),
+      tag: wrapperTagName,
       attributes: styleAttribute,
       content: [
         JSXElement({
-          tag: getElementTagString(options, layer),
-          attributes: [imageStyleAttribute] @ jsxAttributes,
+          tag: elementTagName,
+          attributes: imageStyleAttribute @ jsxAttributes,
           content: jsxChildren,
         }),
       ],
@@ -351,27 +421,15 @@ let createJSXElement =
     | _ => customComponent
     };
   | _ =>
-    if (layer.typeName == Types.Image) {
-      let layout = Layer.getLayout(parent, layer.parameters);
-
-      /* Images without fixed dimensions are absolute positioned within a wrapper */
-      switch (layout.height, layout.width) {
-      | (Fixed(_), Fixed(_)) =>
-        JSXElement({
-          tag: getElementTagString(options, layer),
-          attributes: styleAttribute @ attributes,
-          content,
-        })
-      | _ =>
-        createWrappedImageElement(
-          config,
-          options,
-          layer,
-          styleAttribute,
-          attributes,
-          content,
-        )
-      };
+    if (imageNeedsWrapper(parent, layer)) {
+      createWrappedImageElement(
+        config,
+        options,
+        layer,
+        styleAttribute,
+        attributes,
+        content,
+      );
     } else {
       JSXElement({
         tag: getElementTagString(options, layer),
