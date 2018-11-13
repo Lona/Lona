@@ -47,6 +47,51 @@ let getElementTagString =
   };
 };
 
+let getStyleVariables =
+    (
+      assignments: Layer.LayerMap.t(ParameterMap.t(Logic.logicValue)),
+      layer: Types.layer,
+    ) =>
+  switch (Layer.LayerMap.find_opt(layer, assignments)) {
+  | Some(map) =>
+    map |> ParameterMap.filter((key, _) => Layer.parameterIsStyle(key))
+  | None => ParameterMap.empty
+  };
+
+let getPropVariables =
+    (
+      assignments: Layer.LayerMap.t(ParameterMap.t(Logic.logicValue)),
+      layer: Types.layer,
+    ) =>
+  switch (Layer.LayerMap.find_opt(layer, assignments)) {
+  | Some(map) =>
+    map |> ParameterMap.filter((key, _) => !Layer.parameterIsStyle(key))
+  | None => ParameterMap.empty
+  };
+
+let removeSpecialProps =
+    (
+      options: JavaScriptOptions.options,
+      layerType: Types.layerType,
+      parameters: ParameterMap.t('a),
+    ) =>
+  parameters
+  |> ParameterMap.filter((key: ParameterKey.t, _) =>
+       switch (key, options.framework) {
+       | (ParameterKey.NumberOfLines, JavaScriptOptions.ReactDOM) => false
+       | (ParameterKey.Text, _) => false
+       | (ParameterKey.Visible, _) => false
+       | (ParameterKey.Image, _) when layerType == VectorGraphic => false
+       | (_, _) => true
+       }
+     );
+
+let getInitialProps = (options: JavaScriptOptions.options, layer: Types.layer) =>
+  layer.parameters
+  |> removeSpecialProps(options, layer.typeName)
+  |> Layer.parameterMapToLogicValueMap
+  |> ParameterMap.filter((key, _) => !Layer.parameterIsStyle(key));
+
 module StyledComponents = {
   /* let createStyleSetObjectProperties = viewVariableName =>
      JavaScriptAst.[
@@ -72,9 +117,11 @@ module StyledComponents = {
       (
         config: Config.t,
         options: JavaScriptOptions.options,
+        assignments,
         rootLayer: Types.layer,
         layer: Types.layer,
-      ) =>
+      ) => {
+    let styleVariables = getStyleVariables(assignments, layer);
     JavaScriptAst.(
       VariableDeclaration(
         AssignmentExpression({
@@ -96,57 +143,77 @@ module StyledComponents = {
                   },
                 ]),
               arguments: [
-                createPropsFunction(
-                  JavaScriptStyles.Object.forLayer(
-                    config,
-                    options.framework,
-                    Layer.findParent(rootLayer, layer),
-                    layer,
-                  ),
+                /* if (styleVariables |> ParameterMap.is_empty) { */
+                JavaScriptStyles.Object.forLayer(
+                  config,
+                  options.framework,
+                  Layer.findParent(rootLayer, layer),
+                  layer,
                 ),
+                /* } else {
+                     createPropsFunction(
+                       JavaScriptStyles.Object.forLayer(
+                         config,
+                         options.framework,
+                         Layer.findParent(rootLayer, layer),
+                         layer,
+                       ),
+                     );
+                   }, */
               ],
             }),
         }),
       )
     );
+  };
 
   let createdAllStyledComponentsAST =
       (
         config: Config.t,
         options: JavaScriptOptions.options,
+        assignments,
         rootLayer: Types.layer,
       ) =>
     rootLayer
     |> Layer.flatten
-    |> List.map(createStyledComponentAST(config, options, rootLayer))
+    |> List.map(
+         createStyledComponentAST(config, options, assignments, rootLayer),
+       )
     |> SwiftDocument.join(JavaScriptAst.Empty);
 };
 
-let createStyleAttributeAST =
+let createDynamicStyleObjectAst =
+    (
+      config: Config.t,
+      framework: JavaScriptOptions.framework,
+      styles: ParameterMap.t(Logic.logicValue),
+    ) =>
+  if (styles |> ParameterMap.is_empty) {
+    None;
+  } else {
+    Some(
+      Ast.ObjectLiteral(
+        styles
+        |> Layer.mapBindings(((key, value)) =>
+             JavaScriptStyles.createStyleAttributePropertyAST(
+               framework,
+               config,
+               key,
+               value,
+             )
+           ),
+      ),
+    );
+  };
+
+let createStyleObjectAst =
     (
       framework: JavaScriptOptions.framework,
       config: Config.t,
       layer: Types.layer,
       styles: ParameterMap.t(Logic.logicValue),
     ) => {
-  let dynamicStyles =
-    if (styles |> ParameterMap.is_empty) {
-      None;
-    } else {
-      Some(
-        Ast.ObjectLiteral(
-          styles
-          |> Layer.mapBindings(((key, value)) =>
-               JavaScriptStyles.createStyleAttributePropertyAST(
-                 framework,
-                 config,
-                 key,
-                 value,
-               )
-             ),
-        ),
-      );
-    };
+  let dynamicStyles = createDynamicStyleObjectAst(config, framework, styles);
 
   let staticStyles =
     Ast.Identifier([
@@ -156,32 +223,19 @@ let createStyleAttributeAST =
 
   switch (framework) {
   | JavaScriptOptions.ReactDOM =>
-    Ast.(
-      JSXAttribute({
-        name: "style",
-        value:
-          switch (dynamicStyles) {
-          | None => staticStyles
-          | Some(dynamicStyles) =>
-            CallExpression({
-              callee: Identifier(["Object", "assign"]),
-              arguments: [ObjectLiteral([]), staticStyles, dynamicStyles],
-            })
-          },
+    switch (dynamicStyles) {
+    | None => staticStyles
+    | Some(dynamicStyles) =>
+      CallExpression({
+        callee: Identifier(["Object", "assign"]),
+        arguments: [ObjectLiteral([]), staticStyles, dynamicStyles],
       })
-    )
+    }
   | _ =>
-    Ast.(
-      JSXAttribute({
-        name: "style",
-        value:
-          switch (dynamicStyles) {
-          | None => staticStyles
-          | Some(dynamicStyles) =>
-            ArrayLiteral([staticStyles, dynamicStyles])
-          },
-      })
-    )
+    switch (dynamicStyles) {
+    | None => staticStyles
+    | Some(dynamicStyles) => ArrayLiteral([staticStyles, dynamicStyles])
+    }
   };
 };
 
@@ -234,11 +288,33 @@ let createJSXElement =
       parent: option(Types.layer),
       layer: Types.layer,
       attributes: list(JavaScriptAst.node),
-      styleAttribute: list(JavaScriptAst.node),
+      styleVariables: ParameterMap.t(Logic.logicValue),
       content: list(JavaScriptAst.node),
     )
     : JavaScriptAst.node => {
   let framework = options.framework;
+
+  let styleAttribute =
+    switch (options.styleFramework) {
+    | StyledComponents =>
+      let dynamicStylesObject =
+        createDynamicStyleObjectAst(config, framework, styleVariables);
+
+      switch (dynamicStylesObject) {
+      | Some(styles) => [
+          JavaScriptAst.JSXAttribute({name: "style", value: styles}),
+        ]
+      | None => []
+      };
+    | _ => [
+        JavaScriptAst.JSXAttribute({
+          name: "style",
+          value:
+            createStyleObjectAst(framework, config, layer, styleVariables),
+        }),
+      ]
+    };
+
   switch (layer.typeName, parent) {
   | (Types.Component(name), Some(parent)) =>
     let parentDirection = Layer.getFlexDirection(parent.parameters);
@@ -312,48 +388,20 @@ let rec layerToJavaScriptAST =
           parent: option(Types.layer),
           layer: Types.layer,
         ) => {
-  let framework = options.framework;
   open Ast;
-  let removeSpecialParams = params =>
-    params
-    |> ParameterMap.filter((key: ParameterKey.t, _) =>
-         switch (key, framework) {
-         | (ParameterKey.NumberOfLines, JavaScriptOptions.ReactDOM) => false
-         | (ParameterKey.Text, _) => false
-         | (ParameterKey.Visible, _) => false
-         | (ParameterKey.Image, _) when layer.typeName == VectorGraphic =>
-           false
-         | (_, _) => true
-         }
-       );
-  let (_, mainParams) =
-    layer.parameters
-    |> removeSpecialParams
-    |> Layer.parameterMapToLogicValueMap
-    |> Layer.splitParamsMap;
-  let (styleVariables, mainVariables) =
-    (
-      switch (Layer.LayerMap.find_opt(layer, assignments)) {
-      | Some(map) => map
-      | None => ParameterMap.empty
-      }
-    )
-    |> Layer.splitParamsMap;
-  let main = ParameterMap.assign(mainParams, mainVariables);
-  let styleAttribute =
-    switch (framework) {
-    | JavaScriptOptions.ReactDOM => []
-    | _ => [
-        createStyleAttributeAST(framework, config, layer, styleVariables),
-      ]
-    };
+
+  let initialProps = getInitialProps(options, layer);
+  let styleVariables = getStyleVariables(assignments, layer);
+  let propVariables = getPropVariables(assignments, layer);
+
+  let main = ParameterMap.assign(initialProps, propVariables);
   let attributes =
     main
-    |> removeSpecialParams
+    |> removeSpecialProps(options, layer.typeName)
     |> Layer.mapBindings(((key, value)) => {
          let key =
            if (Layer.isPrimitiveTypeName(layer.typeName)) {
-             ReactTranslators.variableNames(framework, key);
+             ReactTranslators.variableNames(options.framework, key);
            } else {
              key |> ParameterKey.toString;
            };
@@ -461,7 +509,7 @@ let rec layerToJavaScriptAST =
       parent,
       layer,
       attributes,
-      styleAttribute,
+      styleVariables,
       content,
     );
   switch (dynamicOrStaticValue(Visible)) {
@@ -784,6 +832,7 @@ let generate =
             StyledComponents.createdAllStyledComponentsAST(
               config,
               options,
+              assignments,
               rootLayer,
             )
           | _ => [styleSheetAST]
