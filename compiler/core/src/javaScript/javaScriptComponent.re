@@ -38,7 +38,10 @@ let getElementTagString =
   switch (override, layer.typeName) {
   | (Some(value), _) => value
   | (None, VectorGraphic) =>
-    SwiftComponentParameter.getVectorAssetUrl(layer) |> Format.vectorClassName
+    Format.vectorClassName(
+      SwiftComponentParameter.getVectorAssetUrl(layer),
+      Some(layer.name),
+    )
   | _ =>
     switch (options.styleFramework) {
     | StyledComponents => JavaScriptFormat.elementName(layer.name)
@@ -787,8 +790,9 @@ let generate =
           ]
           @ relative,
           rootLayer
-          |> SwiftComponentParameter.allVectorAssets
-          |> List.map(asset =>
+          |> Layer.vectorGraphicLayers
+          |> List.map((layer: Types.layer) => {
+               let asset = SwiftComponentParameter.getVectorAssetUrl(layer);
                JavaScriptSvg.generateVectorGraphic(
                  config,
                  options,
@@ -798,8 +802,9 @@ let generate =
                    asset,
                  ),
                  asset,
-               )
-             ),
+                 Some(layer.name),
+               );
+             }),
           [
             ExportDefaultDeclaration(
               ClassDeclaration({

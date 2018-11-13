@@ -24,8 +24,10 @@ module Naming = {
       | (AppKit, Text) => "LNATextField"
       | (AppKit, Image) => "LNAImageView"
       | (_, VectorGraphic) =>
-        SwiftComponentParameter.getVectorAssetUrl(layer)
-        |> Format.vectorClassName
+        Format.vectorClassName(
+          SwiftComponentParameter.getVectorAssetUrl(layer),
+          None,
+        )
       | (_, Component(name)) => name
       | _ => "TypeUnknown"
       };
