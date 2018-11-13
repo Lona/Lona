@@ -1,4 +1,5 @@
 import React from "react"
+import styled from "styled-components"
 
 import colors from "../colors"
 import shadows from "../shadows"
@@ -20,37 +21,36 @@ export default class BorderWidthColor extends React.Component {
       Inner$borderRadius = 20
     }
     return (
-      <div style={styles.view}>
-        <div
-          style={Object.assign({}, styles.inner, {
+      <View>
+        <Inner
+          style={{
             borderRadius: Inner$borderRadius + "px",
             borderWidth: Inner$borderWidth + "px",
             borderColor: Inner$borderColor
-          })}
+          }}
 
         />
-      </div>
+      </View>
     );
   }
 };
 
-let styles = {
-  view: {
-    alignItems: "flex-start",
-    display: "flex",
-    flex: "1 1 0%",
-    flexDirection: "column",
-    justifyContent: "flex-start"
-  },
-  inner: {
-    alignItems: "flex-start",
-    display: "flex",
-    flexDirection: "column",
-    justifyContent: "flex-start",
-    borderRadius: "10px",
-    borderWidth: "20px",
-    borderColor: colors.blue300,
-    width: "100px",
-    height: "100px"
-  }
-}
+let View = styled.div({
+  alignItems: "flex-start",
+  display: "flex",
+  flex: "1 1 0%",
+  flexDirection: "column",
+  justifyContent: "flex-start"
+})
+
+let Inner = styled.div({
+  alignItems: "flex-start",
+  display: "flex",
+  flexDirection: "column",
+  justifyContent: "flex-start",
+  borderRadius: "10px",
+  borderWidth: "20px",
+  borderColor: colors.blue300,
+  width: "100px",
+  height: "100px"
+})

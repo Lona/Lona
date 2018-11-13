@@ -1,4 +1,5 @@
 import React from "react"
+import styled from "styled-components"
 
 import colors from "../colors"
 import shadows from "../shadows"
@@ -42,56 +43,52 @@ export default class PressableRootView extends React.Component {
       }
     }
     return (
-      <div
-        style={Object.assign({}, styles.outer, {
-          backgroundColor: Outer$backgroundColor
-        })}
+      <Outer
+        style={{ backgroundColor: Outer$backgroundColor }}
         onClick={Outer$onPress}
       >
-        <div
-          style={Object.assign({}, styles.inner, {
-            backgroundColor: Inner$backgroundColor
-          })}
+        <Inner
+          style={{ backgroundColor: Inner$backgroundColor }}
           onClick={Inner$onPress}
         >
-          <span style={styles.innerText}>
+          <InnerText>
             {InnerText$text}
-          </span>
-        </div>
-      </div>
+          </InnerText>
+        </Inner>
+      </Outer>
     );
   }
 };
 
-let styles = {
-  outer: {
-    alignItems: "flex-start",
-    backgroundColor: colors.grey50,
-    display: "flex",
-    flex: "1 1 0%",
-    flexDirection: "column",
-    justifyContent: "flex-start",
-    paddingTop: "24px",
-    paddingRight: "24px",
-    paddingBottom: "24px",
-    paddingLeft: "24px"
-  },
-  inner: {
-    alignItems: "flex-start",
-    backgroundColor: colors.blue500,
-    display: "flex",
-    flexDirection: "column",
-    justifyContent: "flex-start",
-    width: "100px",
-    height: "100px"
-  },
-  innerText: {
-    textAlign: "left",
-    ...textStyles.headline,
-    alignItems: "flex-start",
-    display: "block",
-    flex: "0 0 auto",
-    flexDirection: "column",
-    justifyContent: "flex-start"
-  }
-}
+let Outer = styled.div({
+  alignItems: "flex-start",
+  backgroundColor: colors.grey50,
+  display: "flex",
+  flex: "1 1 0%",
+  flexDirection: "column",
+  justifyContent: "flex-start",
+  paddingTop: "24px",
+  paddingRight: "24px",
+  paddingBottom: "24px",
+  paddingLeft: "24px"
+})
+
+let Inner = styled.div({
+  alignItems: "flex-start",
+  backgroundColor: colors.blue500,
+  display: "flex",
+  flexDirection: "column",
+  justifyContent: "flex-start",
+  width: "100px",
+  height: "100px"
+})
+
+let InnerText = styled.span({
+  textAlign: "left",
+  ...textStyles.headline,
+  alignItems: "flex-start",
+  display: "block",
+  flex: "0 0 auto",
+  flexDirection: "column",
+  justifyContent: "flex-start"
+})

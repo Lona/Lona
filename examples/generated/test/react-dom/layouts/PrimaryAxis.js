@@ -1,4 +1,5 @@
 import React from "react"
+import styled from "styled-components"
 
 import colors from "../colors"
 import shadows from "../shadows"
@@ -9,78 +10,81 @@ export default class PrimaryAxis extends React.Component {
 
 
     return (
-      <div style={styles.view}>
-        <div style={styles.fixed} />
-        <div style={styles.fit}>
-          <span style={styles.text}>
+      <View>
+        <Fixed />
+        <Fit>
+          <Text>
             {"Text goes here"}
-          </span>
-        </div>
-        <div style={styles.fill1} />
-        <div style={styles.fill2} />
-      </div>
+          </Text>
+        </Fit>
+        <Fill1 />
+        <Fill2 />
+      </View>
     );
   }
 };
 
-let styles = {
-  view: {
-    alignItems: "flex-start",
-    display: "flex",
-    flex: "1 1 0%",
-    flexDirection: "column",
-    justifyContent: "flex-start",
-    paddingTop: "24px",
-    paddingRight: "24px",
-    paddingBottom: "24px",
-    paddingLeft: "24px",
-    height: "500px"
-  },
-  fixed: {
-    alignItems: "flex-start",
-    backgroundColor: "#D8D8D8",
-    display: "flex",
-    flexDirection: "column",
-    justifyContent: "flex-start",
-    marginBottom: "24px",
-    width: "100px",
-    height: "100px"
-  },
-  fit: {
-    alignItems: "flex-start",
-    backgroundColor: "#D8D8D8",
-    display: "flex",
-    flex: "0 0 auto",
-    flexDirection: "column",
-    justifyContent: "flex-start",
-    marginBottom: "24px",
-    width: "100px"
-  },
-  fill1: {
-    alignItems: "flex-start",
-    backgroundColor: colors.cyan500,
-    display: "flex",
-    flex: "1 1 0%",
-    flexDirection: "column",
-    justifyContent: "flex-start",
-    width: "100px"
-  },
-  fill2: {
-    alignItems: "flex-start",
-    backgroundColor: colors.blue500,
-    display: "flex",
-    flex: "1 1 0%",
-    flexDirection: "column",
-    justifyContent: "flex-start",
-    width: "100px"
-  },
-  text: {
-    textAlign: "left",
-    ...textStyles.body1,
-    alignItems: "flex-start",
-    display: "block",
-    flex: "0 0 auto",
-    flexDirection: "column",
-    justifyContent: "flex-start"
-  }
-}
+let View = styled.div({
+  alignItems: "flex-start",
+  display: "flex",
+  flex: "1 1 0%",
+  flexDirection: "column",
+  justifyContent: "flex-start",
+  paddingTop: "24px",
+  paddingRight: "24px",
+  paddingBottom: "24px",
+  paddingLeft: "24px",
+  height: "500px"
+})
+
+let Fixed = styled.div({
+  alignItems: "flex-start",
+  backgroundColor: "#D8D8D8",
+  display: "flex",
+  flexDirection: "column",
+  justifyContent: "flex-start",
+  marginBottom: "24px",
+  width: "100px",
+  height: "100px"
+})
+
+let Fit = styled.div({
+  alignItems: "flex-start",
+  backgroundColor: "#D8D8D8",
+  display: "flex",
+  flex: "0 0 auto",
+  flexDirection: "column",
+  justifyContent: "flex-start",
+  marginBottom: "24px",
+  width: "100px"
+})
+
+let Text = styled.span({
+  textAlign: "left",
+  ...textStyles.body1,
+  alignItems: "flex-start",
+  display: "block",
+  flex: "0 0 auto",
+  flexDirection: "column",
+  justifyContent: "flex-start"
+})
+
+let Fill1 = styled.div({
+  alignItems: "flex-start",
+  backgroundColor: colors.cyan500,
+  display: "flex",
+  flex: "1 1 0%",
+  flexDirection: "column",
+  justifyContent: "flex-start",
+  width: "100px"
+})
+
+let Fill2 = styled.div({
+  alignItems: "flex-start",
+  backgroundColor: colors.blue500,
+  display: "flex",
+  flex: "1 1 0%",
+  flexDirection: "column",
+  justifyContent: "flex-start",
+  width: "100px"
+})

@@ -33,10 +33,11 @@ let layerTypeTags = layerType =>
   | Types.View => "div"
   | Types.Text => "span"
   | Types.Image => "img"
+  | Types.VectorGraphic => "svg"
   | Types.Animation => "Animation"
   | Types.Children => "Children"
   | Types.Component(value) => value
-  | _ => "Unknown"
+  | _ => "UnknownLayerTypeTag"
   };
 
 let variableNames = variable =>

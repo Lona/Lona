@@ -1,4 +1,5 @@
 import React from "react"
+import styled from "styled-components"
 
 import colors from "../colors"
 import shadows from "../shadows"
@@ -9,39 +10,24 @@ export default class NestedBottomLeftLayout extends React.Component {
   render() {
 
 
-    return (
-      <div style={styles.view}>
-        <div style={styles.view1}>
-          <LocalAsset />
-        </div>
-      </div>
-    );
+    return <View> <View1> <LocalAsset /> </View1> </View>;
   }
 };
 
-let styles = {
-  view: {
-    alignItems: "flex-start",
-    display: "flex",
-    flex: "1 1 0%",
-    flexDirection: "column",
-    justifyContent: "flex-start"
-  },
-  view1: {
-    alignItems: "flex-end",
-    backgroundColor: colors.red100,
-    display: "flex",
-    flexDirection: "row",
-    justifyContent: "flex-start",
-    width: "150px",
-    height: "150px"
-  },
-  localAsset: {
-    alignItems: "flex-end",
-    alignSelf: "stretch",
-    display: "flex",
-    flex: "1 1 auto",
-    flexDirection: "row",
-    justifyContent: "flex-start"
-  }
-}
+let View = styled.div({
+  alignItems: "flex-start",
+  display: "flex",
+  flex: "1 1 0%",
+  flexDirection: "column",
+  justifyContent: "flex-start"
+})
+
+let View1 = styled.div({
+  alignItems: "flex-end",
+  backgroundColor: colors.red100,
+  display: "flex",
+  flexDirection: "row",
+  justifyContent: "flex-start",
+  width: "150px",
+  height: "150px"
+})

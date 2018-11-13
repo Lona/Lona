@@ -132,6 +132,7 @@ let rec convertNode =
         (
           jsOptions: JavaScriptOptions.options,
           vectorAssignments: list(Layer.vectorAssignment),
+          svgElementName: option(string),
           node: Svg.node,
         )
         : JavaScriptAst.node =>
@@ -139,7 +140,12 @@ let rec convertNode =
     switch (node) {
     | Svg(_, params, children) =>
       JSXElement({
-        tag: tagName(jsOptions, node),
+        tag:
+          switch (jsOptions.styleFramework, svgElementName) {
+          | (StyledComponents, Some(name)) =>
+            name |> Format.safeVariableName |> Format.upperFirst
+          | _ => tagName(jsOptions, node)
+          },
         attributes:
           [
             [
@@ -179,7 +185,10 @@ let rec convertNode =
           ]
           |> List.concat,
         content:
-          children |> List.map(convertNode(jsOptions, vectorAssignments)),
+          children
+          |> List.map(
+               convertNode(jsOptions, vectorAssignments, svgElementName),
+             ),
       })
     | Path(elementPath, params) =>
       let variableName = Svg.elementName(elementPath);
@@ -214,18 +223,28 @@ let generateVectorGraphic =
       jsOptions: JavaScriptOptions.options,
       vectorAssignments: list(Layer.vectorAssignment),
       assetUrl: string,
+      svgElementName: option(string),
     ) => {
   let svg = Config.Find.svg(config, assetUrl);
 
   JavaScriptAst.(
     VariableDeclaration(
       AssignmentExpression({
-        left: Identifier([Format.vectorClassName(assetUrl)]),
+        left: Identifier([Format.vectorClassName(assetUrl, svgElementName)]),
         right:
           ArrowFunctionExpression({
             id: None,
             params: ["props"],
-            body: [Return(convertNode(jsOptions, vectorAssignments, svg))],
+            body: [
+              Return(
+                convertNode(
+                  jsOptions,
+                  vectorAssignments,
+                  svgElementName,
+                  svg,
+                ),
+              ),
+            ],
           }),
       }),
     )

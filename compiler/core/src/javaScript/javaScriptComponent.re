@@ -10,10 +10,10 @@ let frameworkSpecificValue =
   | JavaScriptOptions.ReactSketchapp => container.reactSketchapp
   };
 
-let getElementTagString =
-    (framework: JavaScriptOptions.framework, typeName: Types.layerType) =>
-  switch (framework) {
-  | JavaScriptOptions.ReactDOM => ReactDomTranslators.layerTypeTags(typeName)
+let getElementTagStringForLayerType =
+    (options: JavaScriptOptions.options, typeName: Types.layerType) =>
+  switch (options.framework) {
+  | ReactDOM => ReactDomTranslators.layerTypeTags(typeName)
   | _ =>
     switch (typeName) {
     | View => "View"
@@ -27,56 +27,172 @@ let getElementTagString =
     }
   };
 
-let getElementOrVectorTagString =
-    (framework: JavaScriptOptions.framework, layer: Types.layer) => {
+let getElementTagString =
+    (options: JavaScriptOptions.options, layer: Types.layer) => {
   let override =
-    frameworkSpecificValue(framework, layer.metadata.backingElementClass);
+    frameworkSpecificValue(
+      options.framework,
+      layer.metadata.backingElementClass,
+    );
+
   switch (override, layer.typeName) {
   | (Some(value), _) => value
   | (None, VectorGraphic) =>
-    SwiftComponentParameter.getVectorAssetUrl(layer) |> Format.vectorClassName
-  | _ => getElementTagString(framework, layer.typeName)
+    Format.vectorClassName(
+      SwiftComponentParameter.getVectorAssetUrl(layer),
+      Some(layer.name),
+    )
+  | _ =>
+    switch (options.styleFramework) {
+    | StyledComponents => JavaScriptFormat.elementName(layer.name)
+    | None => getElementTagStringForLayerType(options, layer.typeName)
+    }
   };
 };
 
-module StyledComponents = {
-  let createStyleSetObjectProperties = viewVariableName =>
-    JavaScriptAst.[
-      SpreadElement(
-        Identifier(["props", "theme", viewVariableName, "normal"]),
-      ),
-      Property({
-        key: StringLiteral(":hover"),
-        value: Identifier(["props", "theme", viewVariableName, "hovered"]),
-      }),
-    ];
+let getStyleVariables =
+    (
+      assignments: Layer.LayerMap.t(ParameterMap.t(Logic.logicValue)),
+      layer: Types.layer,
+    ) =>
+  switch (Layer.LayerMap.find_opt(layer, assignments)) {
+  | Some(map) =>
+    map |> ParameterMap.filter((key, _) => Layer.parameterIsStyle(key))
+  | None => ParameterMap.empty
+  };
 
-  let createDynamicStyles = contents =>
+let getPropVariables =
+    (
+      assignments: Layer.LayerMap.t(ParameterMap.t(Logic.logicValue)),
+      layer: Types.layer,
+    ) =>
+  switch (Layer.LayerMap.find_opt(layer, assignments)) {
+  | Some(map) =>
+    map |> ParameterMap.filter((key, _) => !Layer.parameterIsStyle(key))
+  | None => ParameterMap.empty
+  };
+
+let removeSpecialProps =
+    (
+      options: JavaScriptOptions.options,
+      layerType: Types.layerType,
+      parameters: ParameterMap.t('a),
+    ) =>
+  parameters
+  |> ParameterMap.filter((key: ParameterKey.t, _) =>
+       switch (key, options.framework) {
+       | (ParameterKey.NumberOfLines, JavaScriptOptions.ReactDOM) => false
+       | (ParameterKey.Text, _) => false
+       | (ParameterKey.Visible, _) => false
+       | (ParameterKey.Image, _) when layerType == VectorGraphic => false
+       | (_, _) => true
+       }
+     );
+
+let imageNeedsWrapper = (parent: option(Types.layer), layer: Types.layer) =>
+  if (layer.typeName == Types.Image) {
+    let layout = Layer.getLayout(parent, layer.parameters);
+
+    /* Images without fixed dimensions are absolute positioned within a wrapper */
+    switch (layout.height, layout.width) {
+    | (Fixed(_), Fixed(_)) => false
+    | _ => true
+    };
+  } else {
+    false;
+  };
+
+let customComponentNeedsWrapper =
+    (
+      options: JavaScriptOptions.options,
+      parent: option(Types.layer),
+      layer: Types.layer,
+    ) =>
+  switch (layer.typeName, parent) {
+  | (Types.Component(_), Some(parent)) =>
+    let parentDirection = Layer.getFlexDirection(parent.parameters);
+
+    switch (options.framework, parentDirection) {
+    | (JavaScriptOptions.ReactDOM, "column")
+    | (JavaScriptOptions.ReactNative, "row")
+    | (JavaScriptOptions.ReactSketchapp, "row") => true
+    | _ => false
+    };
+  | _ => false
+  };
+
+let getInitialProps = (options: JavaScriptOptions.options, layer: Types.layer) =>
+  layer.parameters
+  |> removeSpecialProps(options, layer.typeName)
+  |> Layer.parameterMapToLogicValueMap
+  |> ParameterMap.filter((key, _) => !Layer.parameterIsStyle(key));
+
+module StyledComponents = {
+  /* let createStyleSetObjectProperties = viewVariableName =>
+     JavaScriptAst.[
+       SpreadElement(
+         Identifier(["props", "theme", viewVariableName, "normal"]),
+       ),
+       Property({
+         key: StringLiteral(":hover"),
+         value: Identifier(["props", "theme", viewVariableName, "hovered"]),
+       }),
+     ]; */
+
+  let createPropsFunction = contents =>
     JavaScriptAst.(
       ArrowFunctionExpression({
         id: None,
         params: ["props"],
-        body: [Return(ObjectLiteral(contents))],
+        body: [Return(contents)],
       })
     );
 
-  let createStyledComponentAST = (layer: Types.layer) =>
+  let layerStyledComponentAST =
+      (
+        config: Config.t,
+        options: JavaScriptOptions.options,
+        _assignments,
+        rootLayer: Types.layer,
+        layer: Types.layer,
+      ) =>
     JavaScriptAst.(
       VariableDeclaration(
         AssignmentExpression({
-          left: Identifier([JavaScriptFormat.elementName(layer.name)]),
+          left:
+            Identifier([
+              switch (layer.typeName) {
+              | Component(name) =>
+                JavaScriptFormat.wrapperElementName(name, layer.name)
+              | _ => JavaScriptFormat.elementName(layer.name)
+              },
+            ]),
           right:
             CallExpression({
               callee:
                 Identifier([
                   "styled",
-                  layer.typeName |> ReactDomTranslators.layerTypeTags,
+                  switch (layer.typeName) {
+                  | Component(_) => ReactDomTranslators.layerTypeTags(View)
+                  | _ =>
+                    let needsWrapper =
+                      imageNeedsWrapper(
+                        Layer.findParent(rootLayer, layer),
+                        layer,
+                      );
+                    if (needsWrapper) {
+                      ReactDomTranslators.layerTypeTags(Types.View);
+                    } else {
+                      layer.typeName |> ReactDomTranslators.layerTypeTags;
+                    };
+                  },
                 ]),
               arguments: [
-                createDynamicStyles(
-                  createStyleSetObjectProperties(
-                    layer.name |> JavaScriptFormat.styleVariableName,
-                  ),
+                JavaScriptStyles.Object.forLayer(
+                  config,
+                  options.framework,
+                  Layer.findParent(rootLayer, layer),
+                  layer,
                 ),
               ],
             }),
@@ -84,35 +200,104 @@ module StyledComponents = {
       )
     );
 
-  let createdAllStyledComponentsAST = (layer: Types.layer) =>
-    layer |> Layer.flatten |> List.map(createStyledComponentAST);
+  let imageResizingStyledComponentAst =
+      (
+        config: Config.t,
+        options: JavaScriptOptions.options,
+        resizeMode: string,
+      ) =>
+    JavaScriptAst.(
+      VariableDeclaration(
+        AssignmentExpression({
+          left:
+            Identifier([
+              JavaScriptFormat.imageResizeModeHelperName(resizeMode)
+              |> Format.upperFirst,
+            ]),
+          right:
+            CallExpression({
+              callee:
+                Identifier([
+                  "styled",
+                  getElementTagStringForLayerType(options, Types.Image),
+                ]),
+              arguments: [
+                JavaScriptStyles.Object.imageResizing(
+                  config,
+                  options.framework,
+                  resizeMode,
+                ),
+              ],
+            }),
+        }),
+      )
+    );
+
+  let createdAllStyledComponentsAST =
+      (
+        config: Config.t,
+        options: JavaScriptOptions.options,
+        assignments,
+        rootLayer: Types.layer,
+      ) => {
+    let imageResizingComponents =
+      rootLayer
+      |> Layer.imageResizingModes
+      |> List.map(imageResizingStyledComponentAst(config, options));
+    let layerComponents =
+      rootLayer
+      |> Layer.flatten
+      /* Custom components don't need a styled-component generated unless they require
+         a custom wrapper. All other layers need a styled-component */
+      |> List.filter((layer: Types.layer) =>
+           !Layer.isComponentLayer(layer)
+           || customComponentNeedsWrapper(
+                options,
+                Layer.findParent(rootLayer, layer),
+                layer,
+              )
+         )
+      |> List.map(
+           layerStyledComponentAST(config, options, assignments, rootLayer),
+         );
+    [imageResizingComponents, layerComponents]
+    |> List.concat
+    |> SwiftDocument.join(JavaScriptAst.Empty);
+  };
 };
 
-let createStyleAttributeAST =
+let createDynamicStyleObjectAst =
+    (
+      config: Config.t,
+      framework: JavaScriptOptions.framework,
+      styles: ParameterMap.t(Logic.logicValue),
+    ) =>
+  if (styles |> ParameterMap.is_empty) {
+    None;
+  } else {
+    Some(
+      Ast.ObjectLiteral(
+        styles
+        |> Layer.mapBindings(((key, value)) =>
+             JavaScriptStyles.createStyleAttributePropertyAST(
+               framework,
+               config,
+               key,
+               value,
+             )
+           ),
+      ),
+    );
+  };
+
+let createStyleObjectAst =
     (
       framework: JavaScriptOptions.framework,
       config: Config.t,
       layer: Types.layer,
       styles: ParameterMap.t(Logic.logicValue),
     ) => {
-  let dynamicStyles =
-    if (styles |> ParameterMap.is_empty) {
-      None;
-    } else {
-      Some(
-        Ast.ObjectLiteral(
-          styles
-          |> Layer.mapBindings(((key, value)) =>
-               JavaScriptStyles.createStyleAttributePropertyAST(
-                 framework,
-                 config,
-                 key,
-                 value,
-               )
-             ),
-        ),
-      );
-    };
+  let dynamicStyles = createDynamicStyleObjectAst(config, framework, styles);
 
   let staticStyles =
     Ast.Identifier([
@@ -122,39 +307,26 @@ let createStyleAttributeAST =
 
   switch (framework) {
   | JavaScriptOptions.ReactDOM =>
-    Ast.(
-      JSXAttribute({
-        name: "style",
-        value:
-          switch (dynamicStyles) {
-          | None => staticStyles
-          | Some(dynamicStyles) =>
-            CallExpression({
-              callee: Identifier(["Object", "assign"]),
-              arguments: [ObjectLiteral([]), staticStyles, dynamicStyles],
-            })
-          },
+    switch (dynamicStyles) {
+    | None => staticStyles
+    | Some(dynamicStyles) =>
+      CallExpression({
+        callee: Identifier(["Object", "assign"]),
+        arguments: [ObjectLiteral([]), staticStyles, dynamicStyles],
       })
-    )
+    }
   | _ =>
-    Ast.(
-      JSXAttribute({
-        name: "style",
-        value:
-          switch (dynamicStyles) {
-          | None => staticStyles
-          | Some(dynamicStyles) =>
-            ArrayLiteral([staticStyles, dynamicStyles])
-          },
-      })
-    )
+    switch (dynamicStyles) {
+    | None => staticStyles
+    | Some(dynamicStyles) => ArrayLiteral([staticStyles, dynamicStyles])
+    }
   };
 };
 
 let createWrappedImageElement =
     (
       _config,
-      framework: JavaScriptOptions.framework,
+      options: JavaScriptOptions.options,
       layer: Types.layer,
       styleAttribute,
       jsxAttributes,
@@ -167,23 +339,42 @@ let createWrappedImageElement =
     };
 
   let imageStyleAttribute =
-    Ast.JSXAttribute({
-      name: "style",
-      value:
-        Identifier([
-          "styles",
-          JavaScriptFormat.imageResizeModeHelperName(resizeMode),
-        ]),
-    });
+    switch (options.styleFramework) {
+    | StyledComponents => []
+    | None => [
+        Ast.JSXAttribute({
+          name: "style",
+          value:
+            Identifier([
+              "styles",
+              JavaScriptFormat.imageResizeModeHelperName(resizeMode),
+            ]),
+        }),
+      ]
+    };
+
+  let wrapperTagName =
+    switch (options.styleFramework) {
+    | StyledComponents => JavaScriptFormat.elementName(layer.name)
+    | None => getElementTagStringForLayerType(options, Types.View)
+    };
+
+  let elementTagName =
+    switch (options.styleFramework) {
+    | StyledComponents =>
+      JavaScriptFormat.imageResizeModeHelperName(resizeMode)
+      |> Format.upperFirst
+    | None => getElementTagString(options, layer)
+    };
 
   JavaScriptAst.(
     JSXElement({
-      tag: getElementTagString(framework, Types.View),
+      tag: wrapperTagName,
       attributes: styleAttribute,
       content: [
         JSXElement({
-          tag: getElementOrVectorTagString(framework, layer),
-          attributes: [imageStyleAttribute] @ jsxAttributes,
+          tag: elementTagName,
+          attributes: imageStyleAttribute @ jsxAttributes,
           content: jsxChildren,
         }),
       ],
@@ -196,71 +387,89 @@ let createWrappedImageElement =
 let createJSXElement =
     (
       config: Config.t,
-      framework: JavaScriptOptions.framework,
+      options: JavaScriptOptions.options,
       parent: option(Types.layer),
       layer: Types.layer,
       attributes: list(JavaScriptAst.node),
-      styleAttribute: list(JavaScriptAst.node),
+      styleVariables: ParameterMap.t(Logic.logicValue),
       content: list(JavaScriptAst.node),
     )
-    : JavaScriptAst.node =>
+    : JavaScriptAst.node => {
+  let framework = options.framework;
+
+  let styleAttribute =
+    switch (options.styleFramework) {
+    | StyledComponents =>
+      let dynamicStylesObject =
+        createDynamicStyleObjectAst(config, framework, styleVariables);
+
+      switch (dynamicStylesObject) {
+      | Some(styles) => [
+          JavaScriptAst.JSXAttribute({name: "style", value: styles}),
+        ]
+      | None => []
+      };
+    | _ => [
+        JavaScriptAst.JSXAttribute({
+          name: "style",
+          value:
+            createStyleObjectAst(framework, config, layer, styleVariables),
+        }),
+      ]
+    };
+
   switch (layer.typeName, parent) {
-  | (Types.Component(_), Some(parent)) =>
+  | (Types.Component(name), Some(parent)) =>
     let parentDirection = Layer.getFlexDirection(parent.parameters);
 
     /* Custom components can't be passed styles, so don't include the style attribute */
     let customComponent =
       JavaScriptAst.JSXElement({
-        tag: getElementTagString(framework, layer.typeName),
+        tag: getElementTagStringForLayerType(options, layer.typeName),
         attributes,
         content,
       });
 
-    switch (framework, parentDirection) {
-    | (JavaScriptOptions.ReactDOM, "column")
-    | (JavaScriptOptions.ReactNative, "row")
-    | (JavaScriptOptions.ReactSketchapp, "row") =>
-      JSXElement({
-        tag: getElementTagString(framework, Types.View),
-        attributes: styleAttribute,
-        content: [customComponent],
-      })
-    | _ => customComponent
-    };
-  | _ =>
-    if (layer.typeName == Types.Image) {
-      let layout = Layer.getLayout(parent, layer.parameters);
-
-      /* Images without fixed dimensions are absolute positioned within a wrapper */
-      switch (layout.height, layout.width) {
-      | (Fixed(_), Fixed(_)) =>
+    if (customComponentNeedsWrapper(options, Some(parent), layer)) {
+      if (options.styleFramework == StyledComponents) {
         JSXElement({
-          tag: getElementOrVectorTagString(framework, layer),
-          attributes: styleAttribute @ attributes,
-          content,
-        })
-      | _ =>
-        createWrappedImageElement(
-          config,
-          framework,
-          layer,
-          styleAttribute,
-          attributes,
-          content,
-        )
+          tag: JavaScriptFormat.wrapperElementName(name, layer.name),
+          attributes: styleAttribute,
+          content: [customComponent],
+        });
+      } else {
+        JSXElement({
+          tag: getElementTagStringForLayerType(options, Types.View),
+          attributes: styleAttribute,
+          content: [customComponent],
+        });
       };
     } else {
+      customComponent;
+    };
+  | _ =>
+    if (imageNeedsWrapper(parent, layer)) {
+      createWrappedImageElement(
+        config,
+        options,
+        layer,
+        styleAttribute,
+        attributes,
+        content,
+      );
+    } else {
       JSXElement({
-        tag: getElementOrVectorTagString(framework, layer),
+        tag: getElementTagString(options, layer),
         attributes: styleAttribute @ attributes,
         content,
       });
     }
   };
+};
 
 let rec layerToJavaScriptAST =
         (
-          framework: JavaScriptOptions.framework,
+          options: JavaScriptOptions.options,
           config: Config.t,
           logic,
           assignments,
@@ -269,46 +478,19 @@ let rec layerToJavaScriptAST =
           layer: Types.layer,
         ) => {
   open Ast;
-  let removeSpecialParams = params =>
-    params
-    |> ParameterMap.filter((key: ParameterKey.t, _) =>
-         switch (key, framework) {
-         | (ParameterKey.NumberOfLines, JavaScriptOptions.ReactDOM) => false
-         | (ParameterKey.Text, _) => false
-         | (ParameterKey.Visible, _) => false
-         | (ParameterKey.Image, _) when layer.typeName == VectorGraphic =>
-           false
-         | (_, _) => true
-         }
-       );
-  let (_, mainParams) =
-    layer.parameters
-    |> removeSpecialParams
-    |> Layer.parameterMapToLogicValueMap
-    |> Layer.splitParamsMap;
-  let (styleVariables, mainVariables) =
-    (
-      switch (Layer.LayerMap.find_opt(layer, assignments)) {
-      | Some(map) => map
-      | None => ParameterMap.empty
-      }
-    )
-    |> Layer.splitParamsMap;
-  let main = ParameterMap.assign(mainParams, mainVariables);
-  let styleAttribute =
-    switch (framework) {
-    /* | JavaScriptOptions.ReactDOM => [] */
-    | _ => [
-        createStyleAttributeAST(framework, config, layer, styleVariables),
-      ]
-    };
+
+  let initialProps = getInitialProps(options, layer);
+  let styleVariables = getStyleVariables(assignments, layer);
+  let propVariables = getPropVariables(assignments, layer);
+
+  let main = ParameterMap.assign(initialProps, propVariables);
   let attributes =
     main
-    |> removeSpecialParams
+    |> removeSpecialProps(options, layer.typeName)
     |> Layer.mapBindings(((key, value)) => {
          let key =
            if (Layer.isPrimitiveTypeName(layer.typeName)) {
-             ReactTranslators.variableNames(framework, key);
+             ReactTranslators.variableNames(options.framework, key);
            } else {
              key |> ParameterKey.toString;
            };
@@ -400,7 +582,7 @@ let rec layerToJavaScriptAST =
       layer.children
       |> List.map(
            layerToJavaScriptAST(
-             framework,
+             options,
              config,
              logic,
              assignments,
@@ -412,11 +594,11 @@ let rec layerToJavaScriptAST =
   let element =
     createJSXElement(
       config,
-      framework,
+      options,
       parent,
       layer,
       attributes,
-      styleAttribute,
+      styleVariables,
       content,
     );
   switch (dynamicOrStaticValue(Visible)) {
@@ -438,7 +620,8 @@ type componentImports = {
 };
 
 let importComponents =
-    (framework: JavaScriptOptions.framework, getComponentFile, rootLayer) => {
+    (options: JavaScriptOptions.options, getComponentFile, rootLayer) => {
+  let framework = options.framework;
   let {builtIn, custom}: Layer.availableTypeNames =
     rootLayer |> Layer.getTypeNames;
   let importsSvg = List.mem(Types.VectorGraphic, builtIn);
@@ -446,68 +629,78 @@ let importComponents =
     builtIn |> List.filter(typeName => typeName != Types.VectorGraphic);
   {
     absolute:
-      switch (framework) {
-      | JavaScriptOptions.ReactDOM =>
-        /* Ast.ImportDeclaration({
-             source: "styled-components",
-             specifiers: [
-               ImportDefaultSpecifier("styled"),
-               ImportSpecifier({imported: "ThemeProvider", local: None}),
-             ],
-           }), */
-        []
-      | _ =>
-        (
-          switch (framework, importsSvg) {
-          | (JavaScriptOptions.ReactNative, true) => [
-              Ast.ImportDeclaration({
-                source: "react-native-svg",
-                specifiers: [Ast.ImportDefaultSpecifier("Svg")],
-              }),
-            ]
-          | _ => []
-          }
-        )
-        @ [
-          Ast.ImportDeclaration({
-            source:
-              switch (framework) {
-              | JavaScriptOptions.ReactSketchapp => "@mathieudutour/react-sketchapp"
-              | _ => "react-native"
-              },
-            specifiers:
-              (
-                List.map(typeName =>
-                  Ast.ImportSpecifier({
-                    imported: Types.layerTypeToString(typeName),
-                    local: None,
-                  })
-                ) @@
-                builtIn
-              )
-              @ [Ast.ImportSpecifier({imported: "StyleSheet", local: None})]
-              @ (
+      (
+        switch (framework) {
+        | JavaScriptOptions.ReactDOM => []
+        | _ =>
+          (
+            switch (framework, importsSvg) {
+            | (JavaScriptOptions.ReactNative, true) => [
+                Ast.ImportDeclaration({
+                  source: "react-native-svg",
+                  specifiers: [Ast.ImportDefaultSpecifier("Svg")],
+                }),
+              ]
+            | _ => []
+            }
+          )
+          @ [
+            Ast.ImportDeclaration({
+              source:
                 switch (framework) {
-                | JavaScriptOptions.ReactSketchapp => [
+                | JavaScriptOptions.ReactSketchapp => "@mathieudutour/react-sketchapp"
+                | _ => "react-native"
+                },
+              specifiers:
+                (
+                  List.map(typeName =>
                     Ast.ImportSpecifier({
-                      imported: "TextStyles",
+                      imported: Types.layerTypeToString(typeName),
                       local: None,
-                    }),
-                  ]
-                | _ => []
-                }
-              )
-              @ (
-                switch (framework, importsSvg) {
-                | (JavaScriptOptions.ReactSketchapp, true) => [
-                    Ast.ImportSpecifier({imported: "Svg", local: None}),
-                  ]
-                | _ => []
-                }
-              ),
-          }),
-        ]
-      },
+                    })
+                  ) @@
+                  builtIn
+                )
+                @ [
+                  Ast.ImportSpecifier({imported: "StyleSheet", local: None}),
+                ]
+                @ (
+                  switch (framework) {
+                  | JavaScriptOptions.ReactSketchapp => [
+                      Ast.ImportSpecifier({
+                        imported: "TextStyles",
+                        local: None,
+                      }),
+                    ]
+                  | _ => []
+                  }
+                )
+                @ (
+                  switch (framework, importsSvg) {
+                  | (JavaScriptOptions.ReactSketchapp, true) => [
+                      Ast.ImportSpecifier({imported: "Svg", local: None}),
+                    ]
+                  | _ => []
+                  }
+                ),
+            }),
+          ]
+        }
+      )
+      @ (
+        switch (options.styleFramework) {
+        | JavaScriptOptions.StyledComponents => [
+            Ast.ImportDeclaration({
+              source: "styled-components",
+              specifiers: [
+                ImportDefaultSpecifier("styled"),
+                /* ImportSpecifier({imported: "ThemeProvider", local: None}), */
+              ],
+            }),
+          ]
+        | None => []
+        }
+      ),
     relative:
       List.map(componentName =>
         Ast.ImportDeclaration({
@@ -533,7 +726,7 @@ let rootLayerToJavaScriptAST =
   let astRootLayer =
     rootLayer
     |> layerToJavaScriptAST(
-         options.framework,
+         options,
          config,
          logic,
          assignments,
@@ -628,8 +821,8 @@ let generate =
 
   let themeAST =
     JavaScriptStyles.StyleSet.layerToThemeAST(
+      config,
       options.framework,
-      config.colorsFile.contents,
       rootLayer,
     );
 
@@ -644,12 +837,7 @@ let generate =
     );
 
   let styleSheetAST =
-    JavaScriptStyles.layerToJavaScriptStyleSheetAST(
-      config,
-      options.framework,
-      config.colorsFile.contents,
-      rootLayer,
-    );
+    JavaScriptStyles.StyleSheet.create(config, options.framework, rootLayer);
 
   let logicAST =
     logic
@@ -658,7 +846,7 @@ let generate =
     |> Ast.optimize;
 
   let {absolute, relative} =
-    rootLayer |> importComponents(options.framework, getComponentFile);
+    rootLayer |> importComponents(options, getComponentFile);
 
   Ast.(
     Program(
@@ -688,8 +876,9 @@ let generate =
           ]
           @ relative,
           rootLayer
-          |> SwiftComponentParameter.allVectorAssets
-          |> List.map(asset =>
+          |> Layer.vectorGraphicLayers
+          |> List.map((layer: Types.layer) => {
+               let asset = SwiftComponentParameter.getVectorAssetUrl(layer);
                JavaScriptSvg.generateVectorGraphic(
                  config,
                  options,
@@ -699,8 +888,9 @@ let generate =
                    asset,
                  ),
                  asset,
-               )
-             ),
+                 Some(layer.name),
+               );
+             }),
           [
             ExportDefaultDeclaration(
               ClassDeclaration({
@@ -728,9 +918,14 @@ let generate =
               }),
             ),
           ],
-          switch (options.framework) {
-          /* | JavaScriptOptions.ReactDOM =>
-             StyledComponents.createdAllStyledComponentsAST(rootLayer) */
+          switch (options.styleFramework) {
+          | JavaScriptOptions.StyledComponents =>
+            StyledComponents.createdAllStyledComponentsAST(
+              config,
+              options,
+              assignments,
+              rootLayer,
+            )
           | _ => [styleSheetAST]
           },
         ],

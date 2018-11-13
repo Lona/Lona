@@ -1,4 +1,5 @@
 import React from "react"
+import styled from "styled-components"
 
 import colors from "../colors"
 import shadows from "../shadows"
@@ -21,42 +22,41 @@ export default class BoxModelConditional extends React.Component {
     Inner$height = this.props.size
     Inner$width = this.props.size
     return (
-      <div style={styles.outer}>
-        <div
-          style={Object.assign({}, styles.inner, {
+      <Outer>
+        <Inner
+          style={{
             marginTop: Inner$marginTop + "px",
             marginRight: Inner$marginRight + "px",
             marginBottom: Inner$marginBottom + "px",
             marginLeft: Inner$marginLeft + "px",
             width: Inner$width + "px",
             height: Inner$height + "px"
-          })}
+          }}
 
         />
-      </div>
+      </Outer>
     );
   }
 };
 
-let styles = {
-  outer: {
-    alignItems: "flex-start",
-    display: "flex",
-    flex: "1 1 0%",
-    flexDirection: "column",
-    justifyContent: "flex-start",
-    paddingTop: "4px",
-    paddingRight: "4px",
-    paddingBottom: "4px",
-    paddingLeft: "4px"
-  },
-  inner: {
-    alignItems: "flex-start",
-    backgroundColor: "#D8D8D8",
-    display: "flex",
-    flexDirection: "column",
-    justifyContent: "flex-start",
-    width: "60px",
-    height: "60px"
-  }
-}
+let Outer = styled.div({
+  alignItems: "flex-start",
+  display: "flex",
+  flex: "1 1 0%",
+  flexDirection: "column",
+  justifyContent: "flex-start",
+  paddingTop: "4px",
+  paddingRight: "4px",
+  paddingBottom: "4px",
+  paddingLeft: "4px"
+})
+
+let Inner = styled.div({
+  alignItems: "flex-start",
+  backgroundColor: "#D8D8D8",
+  display: "flex",
+  flexDirection: "column",
+  justifyContent: "flex-start",
+  width: "60px",
+  height: "60px"
+})

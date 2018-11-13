@@ -1,12 +1,13 @@
 import React from "react"
+import styled from "styled-components"
 
 import colors from "../colors"
 import shadows from "../shadows"
 import textStyles from "../textStyles"
 
-let CheckCircleVector = (props) => {
+let CheckCheckCircleVector = (props) => {
   return (
-    <svg
+    <Check
       style={props.style}
       preserveAspectRatio={props.preserveAspectRatio || "xMidYMid slice"}
       viewBox={"0 0 24 24"}
@@ -24,7 +25,7 @@ let CheckCircleVector = (props) => {
         strokeLinecap={"round"}
 
       />
-    </svg>
+    </Check>
   );
 }
 
@@ -40,34 +41,32 @@ export default class VectorLogic extends React.Component {
       Check$vector$path$stroke = colors.green100
     }
     return (
-      <div style={styles.view}>
-        <CheckCircleVector
-          style={styles.check}
+      <View>
+        <CheckCheckCircleVector
           ovalFill={Check$vector$oval$fill}
           pathStroke={Check$vector$path$stroke}
           preserveAspectRatio={"xMidYMid meet"}
 
         />
-      </div>
+      </View>
     );
   }
 };
 
-let styles = {
-  view: {
-    alignItems: "flex-start",
-    display: "flex",
-    flex: "1 1 0%",
-    flexDirection: "column",
-    justifyContent: "flex-start"
-  },
-  check: {
-    alignItems: "flex-start",
-    display: "flex",
-    flexDirection: "column",
-    justifyContent: "flex-start",
-    width: "100px",
-    height: "100px",
-    objectFit: "contain"
-  }
-}
+let View = styled.div({
+  alignItems: "flex-start",
+  display: "flex",
+  flex: "1 1 0%",
+  flexDirection: "column",
+  justifyContent: "flex-start"
+})
+
+let Check = styled.svg({
+  alignItems: "flex-start",
+  display: "flex",
+  flexDirection: "column",
+  justifyContent: "flex-start",
+  width: "100px",
+  height: "100px",
+  objectFit: "contain"
+})

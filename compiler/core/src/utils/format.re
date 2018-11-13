@@ -20,8 +20,17 @@ let floatToString = (float: float): string => {
     string |> Js.String.slice(~from=0, ~to_=-1) : string;
 };
 
-let vectorClassName = (assetUrl: string): string => {
+let vectorClassName = (assetUrl: string, elementName: option(string)): string => {
   let baseName = Node.Path.basename_ext(assetUrl, ".svg");
-  let formattedName = camelCase(baseName) |> upperFirst;
+  let formattedName =
+    (
+      switch (elementName) {
+      | Some(elementName) =>
+        camelCase(safeVariableName(elementName))
+        ++ upperFirst(camelCase(baseName))
+      | None => camelCase(baseName)
+      }
+    )
+    |> upperFirst;
   formattedName ++ "Vector";
 };

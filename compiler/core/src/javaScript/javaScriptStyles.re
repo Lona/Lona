@@ -1,108 +1,110 @@
-let styleNameKey =
-    (framework: JavaScriptOptions.framework, key: ParameterKey.t) =>
-  switch (framework, key) {
-  | (_, ParameterKey.TextStyle) => "font"
-  | (ReactDOM, ParameterKey.ResizeMode) => "objectFit"
-  | _ => key |> ParameterKey.toString
-  };
-
-let getTextStyleProperty =
-    (framework: JavaScriptOptions.framework, textStyleId) =>
-  JavaScriptAst.(
-    SpreadElement(
-      switch (framework) {
-      | JavaScriptOptions.ReactSketchapp =>
-        CallExpression({
-          callee: Identifier(["TextStyles", "get"]),
-          arguments: [
-            StringLiteral(textStyleId |> JavaScriptFormat.styleVariableName),
-          ],
-        })
-      | _ =>
-        Identifier([
-          "textStyles",
-          textStyleId |> JavaScriptFormat.styleVariableName,
-        ])
-      },
-    )
-  );
-
-let getShadowProperty = (framework: JavaScriptOptions.framework, shadowId) =>
-  JavaScriptAst.(
-    SpreadElement(
-      switch (framework) {
-      | JavaScriptOptions.ReactSketchapp =>
-        CallExpression({
-          callee: Identifier(["Shadows", "get"]),
-          arguments: [
-            StringLiteral(shadowId |> JavaScriptFormat.styleVariableName),
-          ],
-        })
-      | _ =>
-        Identifier([
-          "shadows",
-          shadowId |> JavaScriptFormat.styleVariableName,
-        ])
-      },
-    )
-  );
-
-let getStyleProperty =
-    (
-      framework: JavaScriptOptions.framework,
-      key,
-      colors,
-      value: Types.lonaValue,
-    ) => {
-  let keyIdentifier =
-    JavaScriptAst.Identifier([
-      switch (framework) {
-      | ReactDOM => key |> ReactDomTranslators.styleVariableNames
-      | ReactNative
-      | ReactSketchapp => key |> ParameterKey.toString
-      },
-    ]);
-  switch (value.ltype) {
-  | Named("TextStyle", _)
-  | Reference("TextStyle") =>
-    let data = value.data |> Js.Json.decodeString;
-    switch (data) {
-    | Some(textStyleId) => getTextStyleProperty(framework, textStyleId)
-    | None =>
-      Js.log("TextStyle id must be a string");
-      raise(Not_found);
+module Property = {
+  let keyName = (framework: JavaScriptOptions.framework, key: ParameterKey.t) =>
+    switch (framework, key) {
+    | (_, ParameterKey.TextStyle) => "font"
+    | (ReactDOM, ParameterKey.ResizeMode) => "objectFit"
+    | _ => key |> ParameterKey.toString
     };
-  | Named("Shadow", _)
-  | Reference("Shadow") =>
-    let data = value.data |> Js.Json.decodeString;
-    switch (data) {
-    | Some(shadowId) => getShadowProperty(framework, shadowId)
-    | None =>
-      Js.log("Shadow id must be a string");
-      raise(Not_found);
-    };
-  | Named("Color", _)
-  | Reference("Color") =>
-    let data = value.data |> Json.Decode.string;
-    switch (Color.find(colors, data)) {
-    | Some(color) =>
-      JavaScriptAst.Property({
-        key: keyIdentifier,
-        value: JavaScriptAst.Identifier(["colors", color.id]),
-      })
-    | None =>
-      JavaScriptAst.Property({key: keyIdentifier, value: Literal(value)})
-    };
-  | _ =>
-    let value =
-      switch (framework, key) {
-      | (ReactDOM, ParameterKey.ResizeMode) =>
-        LonaValue.string(
-          ReactDomTranslators.resizeMode(value.data |> Json.Decode.string),
-        )
-      | _ => value
+
+  let textStyle = (framework: JavaScriptOptions.framework, textStyleId) =>
+    JavaScriptAst.(
+      SpreadElement(
+        switch (framework) {
+        | JavaScriptOptions.ReactSketchapp =>
+          CallExpression({
+            callee: Identifier(["TextStyles", "get"]),
+            arguments: [
+              StringLiteral(
+                textStyleId |> JavaScriptFormat.styleVariableName,
+              ),
+            ],
+          })
+        | _ =>
+          Identifier([
+            "textStyles",
+            textStyleId |> JavaScriptFormat.styleVariableName,
+          ])
+        },
+      )
+    );
+
+  let shadow = (framework: JavaScriptOptions.framework, shadowId) =>
+    JavaScriptAst.(
+      SpreadElement(
+        switch (framework) {
+        | JavaScriptOptions.ReactSketchapp =>
+          CallExpression({
+            callee: Identifier(["Shadows", "get"]),
+            arguments: [
+              StringLiteral(shadowId |> JavaScriptFormat.styleVariableName),
+            ],
+          })
+        | _ =>
+          Identifier([
+            "shadows",
+            shadowId |> JavaScriptFormat.styleVariableName,
+          ])
+        },
+      )
+    );
+
+  let forValue =
+      (
+        config: Config.t,
+        framework: JavaScriptOptions.framework,
+        key,
+        value: Types.lonaValue,
+      ) => {
+    let keyIdentifier =
+      JavaScriptAst.Identifier([
+        switch (framework) {
+        | ReactDOM => key |> ReactDomTranslators.styleVariableNames
+        | ReactNative
+        | ReactSketchapp => key |> ParameterKey.toString
+        },
+      ]);
+    switch (value.ltype) {
+    | Named("TextStyle", _)
+    | Reference("TextStyle") =>
+      let data = value.data |> Js.Json.decodeString;
+      switch (data) {
+      | Some(textStyleId) => textStyle(framework, textStyleId)
+      | None =>
+        Js.log("TextStyle id must be a string");
+        raise(Not_found);
       };
-    JavaScriptAst.Property({key: keyIdentifier, value: Literal(value)});
+    | Named("Shadow", _)
+    | Reference("Shadow") =>
+      let data = value.data |> Js.Json.decodeString;
+      switch (data) {
+      | Some(shadowId) => shadow(framework, shadowId)
+      | None =>
+        Js.log("Shadow id must be a string");
+        raise(Not_found);
+      };
+    | Named("Color", _)
+    | Reference("Color") =>
+      let data = value.data |> Json.Decode.string;
+      switch (Color.find(config.colorsFile.contents, data)) {
+      | Some(color) =>
+        JavaScriptAst.Property({
+          key: keyIdentifier,
+          value: JavaScriptAst.Identifier(["colors", color.id]),
+        })
+      | None =>
+        JavaScriptAst.Property({key: keyIdentifier, value: Literal(value)})
+      };
+    | _ =>
+      let value =
+        switch (framework, key) {
+        | (ReactDOM, ParameterKey.ResizeMode) =>
+          LonaValue.string(
+            ReactDomTranslators.resizeMode(value.data |> Json.Decode.string),
+          )
+        | _ => value
+        };
+      JavaScriptAst.Property({key: keyIdentifier, value: Literal(value)});
+    };
   };
 };
 
@@ -111,7 +113,8 @@ let defaultStyles =
       framework: JavaScriptOptions.framework,
       config: Config.t,
       layerType: Types.layerType,
-    ) => {
+    )
+    : ParameterMap.t(Types.lonaValue) => {
   let defaults = ParameterMap.empty;
 
   let defaults =
@@ -366,8 +369,8 @@ let getLayoutParameters =
 
 let getStylePropertyWithUnits =
     (
+      config: Config.t,
       framework: JavaScriptOptions.framework,
-      colors,
       key,
       value: Types.lonaValue,
     ) =>
@@ -382,7 +385,7 @@ let getStylePropertyWithUnits =
           ),
         ),
     })
-  | (_, _) => getStyleProperty(framework, key, colors, value)
+  | (_, _) => Property.forValue(config, framework, key, value)
   };
 
 let handleNumberOfLines =
@@ -446,18 +449,33 @@ let handleResizeMode =
   };
 };
 
-let createStyleObjectForLayer =
+let createStyleAttributePropertyAST =
     (
-      config: Config.t,
       framework: JavaScriptOptions.framework,
-      colors,
-      parent: option(Types.layer),
-      layer: Types.layer,
+      config: Config.t,
+      key: ParameterKey.t,
+      value: Logic.logicValue,
     ) => {
-  let layoutParameters = getLayoutParameters(framework, parent, layer);
+  let astValue = JavaScriptLogic.logicValueToJavaScriptAST(config, value);
+  switch (key, ReactTranslators.isUnitNumberParameter(framework, key)) {
+  | (ParameterKey.TextStyle, _) => JavaScriptAst.SpreadElement(astValue)
+  | (ParameterKey.Shadow, _) => JavaScriptAst.SpreadElement(astValue)
+  | (_, true) =>
+    JavaScriptAst.Property({
+      key: Identifier([key |> Property.keyName(framework)]),
+      value: ReactTranslators.convertUnitlessAstNode(framework, astValue),
+    })
+  | (_, false) =>
+    JavaScriptAst.Property({
+      key: Identifier([key |> Property.keyName(framework)]),
+      value: astValue,
+    })
+  };
+};
 
+module Object = {
   /* We replace all of these keys with the appropriate defaults for the framework */
-  let replacedKeys = [
+  let replacedLayoutKeys = [
     ParameterKey.AlignItems,
     ParameterKey.AlignSelf,
     ParameterKey.Flex,
@@ -465,70 +483,39 @@ let createStyleObjectForLayer =
     ParameterKey.JustifyContent,
   ];
 
-  JavaScriptAst.(
-    Property({
-      key: Identifier([JavaScriptFormat.styleVariableName(layer.name)]),
-      value:
-        ObjectLiteral(
-          layer.parameters
-          |> handleNumberOfLines(framework, config)
-          |> ParameterMap.filter((key, _) => Layer.parameterIsStyle(key))
-          /* Remove layout parameters stored in the component file */
-          |> ParameterMap.filter((key, _) => !List.mem(key, replacedKeys))
-          /* Add layout parameters appropriate for the framework */
-          |> ParameterMap.assign(_, layoutParameters)
-          |> ParameterMap.assign(
-               defaultStyles(framework, config, layer.typeName),
-             )
-          |> handleResizeMode(framework, config, parent, layer)
-          |> ParameterMap.bindings
-          |> List.map(((key, value)) =>
-               getStylePropertyWithUnits(framework, colors, key, value)
-             ),
-        ),
-    })
-  );
-};
+  let forLayer =
+      (
+        config: Config.t,
+        framework: JavaScriptOptions.framework,
+        parent: option(Types.layer),
+        layer: Types.layer,
+      ) => {
+    let layoutParameters = getLayoutParameters(framework, parent, layer);
 
-let createStyleAttributePropertyAST =
-    (
-      framework: JavaScriptOptions.framework,
-      config: Config.t,
-      key: ParameterKey.t,
-      value: Logic.logicValue,
-    ) =>
-  switch (key, ReactTranslators.isUnitNumberParameter(framework, key)) {
-  | (ParameterKey.TextStyle, _) =>
-    JavaScriptAst.SpreadElement(
-      JavaScriptLogic.logicValueToJavaScriptAST(config, value),
-    )
-  | (ParameterKey.Shadow, _) =>
-    JavaScriptAst.SpreadElement(
-      JavaScriptLogic.logicValueToJavaScriptAST(config, value),
-    )
-  | (_, true) =>
-    JavaScriptAst.Property({
-      key: Identifier([key |> styleNameKey(framework)]),
-      value:
-        ReactTranslators.convertUnitlessAstNode(
-          framework,
-          JavaScriptLogic.logicValueToJavaScriptAST(config, value),
-        ),
-    })
-  | (_, false) =>
-    JavaScriptAst.Property({
-      key: Identifier([key |> styleNameKey(framework)]),
-      value: JavaScriptLogic.logicValueToJavaScriptAST(config, value),
-    })
+    JavaScriptAst.(
+      ObjectLiteral(
+        layer.parameters
+        |> handleNumberOfLines(framework, config)
+        |> ParameterMap.filter((key, _) => Layer.parameterIsStyle(key))
+        /* Remove layout parameters stored in the component file */
+        |> ParameterMap.filter((key, _) =>
+             !List.mem(key, replacedLayoutKeys)
+           )
+        /* Add layout parameters appropriate for the framework */
+        |> ParameterMap.assign(_, layoutParameters)
+        |> ParameterMap.assign(
+             defaultStyles(framework, config, layer.typeName),
+           )
+        |> handleResizeMode(framework, config, parent, layer)
+        |> ParameterMap.bindings
+        |> List.map(((key, value)) =>
+             getStylePropertyWithUnits(config, framework, key, value)
+           ),
+      )
+    );
   };
 
-let imageResizingStyles =
-    (
-      config: Config.t,
-      framework: JavaScriptOptions.framework,
-      rootLayer: Types.layer,
-    ) => {
-  let commonParameterMap =
+  let commonImageParameterMap =
     ParameterMap.(
       empty
       |> add(Position, LonaValue.string("absolute"))
@@ -536,76 +523,88 @@ let imageResizingStyles =
       |> add(Height, LonaValue.string("100%"))
     );
 
-  rootLayer
-  |> Layer.flatten
-  |> List.filter(Layer.isImageLayer)
-  |> List.map((layer: Types.layer) =>
-       switch (Layer.getStringParameterOpt(ResizeMode, layer.parameters)) {
-       | Some(value) => value
-       | None => "cover"
-       }
-     )
-  |> Sequence.dedupeMem
-  |> List.map(resizeMode =>
-       JavaScriptAst.(
-         Property({
-           key:
-             Identifier([
-               JavaScriptFormat.imageResizeModeHelperName(resizeMode),
-             ]),
-           value:
-             ObjectLiteral(
-               ParameterMap.(
-                 commonParameterMap
-                 |> add(ResizeMode, LonaValue.string(resizeMode))
-               )
-               |> Layer.parameterMapToLogicValueMap
-               |> Layer.mapBindings(((key, value)) =>
-                    createStyleAttributePropertyAST(
-                      framework,
-                      config,
-                      key,
-                      value,
-                    )
-                  ),
-             ),
-         })
-       )
-     );
+  let imageResizing =
+      (
+        config: Config.t,
+        framework: JavaScriptOptions.framework,
+        resizeMode: string,
+      ) =>
+    JavaScriptAst.ObjectLiteral(
+      ParameterMap.(
+        commonImageParameterMap
+        |> add(ResizeMode, LonaValue.string(resizeMode))
+      )
+      |> Layer.parameterMapToLogicValueMap
+      |> Layer.mapBindings(((key, value)) =>
+           createStyleAttributePropertyAST(framework, config, key, value)
+         ),
+    );
 };
 
-let layerToJavaScriptStyleSheetAST =
-    (
-      config: Config.t,
-      framework: JavaScriptOptions.framework,
-      colors,
-      rootLayer: Types.layer,
-    ) => {
-  let styleObjects =
-    rootLayer
-    |> Layer.flatmapParent(
-         createStyleObjectForLayer(config, framework, colors),
-       );
+module NamedStyle = {
+  open JavaScriptAst;
 
-  let helperStyles = imageResizingStyles(config, framework, rootLayer);
+  let forLayer =
+      (
+        config: Config.t,
+        framework: JavaScriptOptions.framework,
+        parent: option(Types.layer),
+        layer: Types.layer,
+      ) =>
+    Property({
+      key: Identifier([JavaScriptFormat.styleVariableName(layer.name)]),
+      value: Object.forLayer(config, framework, parent, layer),
+    });
 
-  JavaScriptAst.(
-    VariableDeclaration(
-      AssignmentExpression({
-        left: Identifier(["styles"]),
-        right:
-          switch (framework) {
-          | JavaScriptOptions.ReactDOM =>
-            ObjectLiteral(styleObjects @ helperStyles)
-          | _ =>
-            CallExpression({
-              callee: Identifier(["StyleSheet", "create"]),
-              arguments: [ObjectLiteral(styleObjects @ helperStyles)],
-            })
-          },
-      }),
-    )
-  );
+  let imageResizing =
+      (
+        config: Config.t,
+        framework: JavaScriptOptions.framework,
+        resizeMode: string,
+      )
+      : node =>
+    Property({
+      key:
+        Identifier([JavaScriptFormat.imageResizeModeHelperName(resizeMode)]),
+      value: Object.imageResizing(config, framework, resizeMode),
+    });
+};
+
+module StyleSheet = {
+  let create =
+      (
+        config: Config.t,
+        framework: JavaScriptOptions.framework,
+        rootLayer: Types.layer,
+      ) => {
+    let styleObjects =
+      rootLayer
+      |> Layer.flatmapParent(NamedStyle.forLayer(config, framework));
+
+    let imageResizingStyles =
+      rootLayer
+      |> Layer.imageResizingModes
+      |> List.map(NamedStyle.imageResizing(config, framework));
+
+    let namedStyles = [styleObjects, imageResizingStyles] |> List.concat;
+
+    JavaScriptAst.(
+      VariableDeclaration(
+        AssignmentExpression({
+          left: Identifier(["styles"]),
+          right:
+            switch (framework) {
+            | JavaScriptOptions.ReactDOM => ObjectLiteral(namedStyles)
+            | _ =>
+              CallExpression({
+                callee: Identifier(["StyleSheet", "create"]),
+                arguments: [ObjectLiteral(namedStyles)],
+              })
+            },
+        }),
+      )
+    );
+  };
 };
 
 module StyleSet = {
@@ -683,7 +682,12 @@ module StyleSet = {
       )
     );
 
-  let layerToThemeAST = (framework, colors, layer: Types.layer) => {
+  let layerToThemeAST =
+      (
+        config: Config.t,
+        framework: JavaScriptOptions.framework,
+        layer: Types.layer,
+      ) => {
     let layerObjectsAst =
       layer
       |> Layer.flatten
@@ -696,8 +700,8 @@ module StyleSet = {
                   createNameStyleSetAST(
                     styleSet.name,
                     createViewLayerStylesAST(
+                      config,
                       framework,
-                      colors,
                       styleSet.styles,
                     ),
                   )

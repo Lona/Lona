@@ -6,7 +6,7 @@ import colors from "../colors"
 import shadows from "../shadows"
 import textStyles from "../textStyles"
 
-let CheckCircleVector = (props) => {
+let CheckCheckCircleVector = (props) => {
   return (
     <Svg
       style={props.style}
@@ -43,7 +43,7 @@ export default class VectorLogic extends React.Component {
     }
     return (
       <View style={styles.view}>
-        <CheckCircleVector
+        <CheckCheckCircleVector
           style={styles.check}
           ovalFill={Check$vector$oval$fill}
           pathStroke={Check$vector$path$stroke}

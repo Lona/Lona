@@ -1,12 +1,13 @@
 import React from "react"
+import styled from "styled-components"
 
 import colors from "../colors"
 import shadows from "../shadows"
 import textStyles from "../textStyles"
 
-let ToggleVector = (props) => {
+let VectorGraphic1ToggleVector = (props) => {
   return (
-    <svg
+    <VectorGraphic1
       style={props.style}
       preserveAspectRatio={props.preserveAspectRatio || "xMidYMid slice"}
       viewBox={"0 0 48 24"}
@@ -24,12 +25,12 @@ let ToggleVector = (props) => {
         fill={"#FFFFFF"}
 
       />
-    </svg>
+    </VectorGraphic1>
   );
 }
-let ToggleVerticalVector = (props) => {
+let VectorGraphic2ToggleVerticalVector = (props) => {
   return (
-    <svg
+    <VectorGraphic2
       style={props.style}
       preserveAspectRatio={props.preserveAspectRatio || "xMidYMid slice"}
       viewBox={"0 0 24 48"}
@@ -47,12 +48,12 @@ let ToggleVerticalVector = (props) => {
         fill={"#FFFFFF"}
 
       />
-    </svg>
+    </VectorGraphic2>
   );
 }
-let CheckCircleVector = (props) => {
+let VectorGraphic3CheckCircleVector = (props) => {
   return (
-    <svg
+    <VectorGraphic3
       style={props.style}
       preserveAspectRatio={props.preserveAspectRatio || "xMidYMid slice"}
       viewBox={"0 0 24 24"}
@@ -70,7 +71,7 @@ let CheckCircleVector = (props) => {
         strokeLinecap={"round"}
 
       />
-    </svg>
+    </VectorGraphic3>
   );
 }
 
@@ -79,56 +80,52 @@ export default class VectorAsset extends React.Component {
 
 
     return (
-      <div style={styles.view}>
-        <ToggleVector
-          style={styles.vectorGraphic1}
+      <View>
+        <VectorGraphic1ToggleVector preserveAspectRatio={"xMidYMid meet"} />
+        <VectorGraphic2ToggleVerticalVector
           preserveAspectRatio={"xMidYMid meet"}
 
         />
-        <ToggleVerticalVector
-          style={styles.vectorGraphic2}
-          preserveAspectRatio={"xMidYMid meet"}
-
-        />
-        <CheckCircleVector style={styles.vectorGraphic3} />
-      </div>
+        <VectorGraphic3CheckCircleVector />
+      </View>
     );
   }
 };
 
-let styles = {
-  view: {
-    alignItems: "flex-start",
-    display: "flex",
-    flex: "1 1 0%",
-    flexDirection: "column",
-    justifyContent: "flex-start"
-  },
-  vectorGraphic1: {
-    alignItems: "flex-start",
-    alignSelf: "stretch",
-    display: "flex",
-    flexDirection: "column",
-    justifyContent: "flex-start",
-    height: "100px",
-    objectFit: "contain"
-  },
-  vectorGraphic2: {
-    alignItems: "flex-start",
-    alignSelf: "stretch",
-    display: "flex",
-    flexDirection: "column",
-    justifyContent: "flex-start",
-    height: "100px",
-    objectFit: "contain"
-  },
-  vectorGraphic3: {
-    alignItems: "flex-start",
-    alignSelf: "stretch",
-    backgroundColor: colors.green50,
-    display: "flex",
-    flexDirection: "column",
-    justifyContent: "flex-start",
-    height: "200px"
-  }
-}
+let View = styled.div({
+  alignItems: "flex-start",
+  display: "flex",
+  flex: "1 1 0%",
+  flexDirection: "column",
+  justifyContent: "flex-start"
+})
+
+let VectorGraphic1 = styled.svg({
+  alignItems: "flex-start",
+  alignSelf: "stretch",
+  display: "flex",
+  flexDirection: "column",
+  justifyContent: "flex-start",
+  height: "100px",
+  objectFit: "contain"
+})
+
+let VectorGraphic2 = styled.svg({
+  alignItems: "flex-start",
+  alignSelf: "stretch",
+  display: "flex",
+  flexDirection: "column",
+  justifyContent: "flex-start",
+  height: "100px",
+  objectFit: "contain"
+})
+
+let VectorGraphic3 = styled.svg({
+  alignItems: "flex-start",
+  alignSelf: "stretch",
+  backgroundColor: colors.green50,
+  display: "flex",
+  flexDirection: "column",
+  justifyContent: "flex-start",
+  height: "200px"
+})

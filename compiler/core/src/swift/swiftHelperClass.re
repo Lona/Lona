@@ -140,7 +140,7 @@ let generateVectorGraphic =
 
   SwiftAst.[
     ClassDeclaration({
-      "name": Format.vectorClassName(assetUrl),
+      "name": Format.vectorClassName(assetUrl, None),
       "inherits": [
         TypeName(swiftOptions.framework == UIKit ? "UIView" : "NSBox"),
       ],

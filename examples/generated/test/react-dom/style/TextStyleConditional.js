@@ -1,4 +1,5 @@
 import React from "react"
+import styled from "styled-components"
 
 import colors from "../colors"
 import shadows from "../shadows"
@@ -14,30 +15,29 @@ export default class TextStyleConditional extends React.Component {
       Text$textStyle = textStyles.display2
     }
     return (
-      <div style={styles.view}>
-        <span style={Object.assign({}, styles.text, { ...Text$textStyle })}>
+      <View>
+        <Text style={{ ...Text$textStyle }}>
           {"Text goes here"}
-        </span>
-      </div>
+        </Text>
+      </View>
     );
   }
 };
 
-let styles = {
-  view: {
-    alignItems: "flex-start",
-    display: "flex",
-    flex: "1 1 0%",
-    flexDirection: "column",
-    justifyContent: "flex-start"
-  },
-  text: {
-    textAlign: "left",
-    ...textStyles.headline,
-    alignItems: "flex-start",
-    display: "block",
-    flex: "0 0 auto",
-    flexDirection: "column",
-    justifyContent: "flex-start"
-  }
-}
+let View = styled.div({
+  alignItems: "flex-start",
+  display: "flex",
+  flex: "1 1 0%",
+  flexDirection: "column",
+  justifyContent: "flex-start"
+})
+
+let Text = styled.span({
+  textAlign: "left",
+  ...textStyles.headline,
+  alignItems: "flex-start",
+  display: "block",
+  flex: "0 0 auto",
+  flexDirection: "column",
+  justifyContent: "flex-start"
+})

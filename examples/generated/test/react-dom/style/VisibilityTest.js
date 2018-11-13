@@ -1,4 +1,5 @@
 import React from "react"
+import styled from "styled-components"
 
 import colors from "../colors"
 import shadows from "../shadows"
@@ -11,48 +12,49 @@ export default class VisibilityTest extends React.Component {
 
     Title$visible = this.props.enabled
     return (
-      <div style={styles.container}>
-        {false && <div style={styles.inner} />}
-        {Title$visible && <span style={styles.title}> {"Enabled"} </span>}
-        <div style={styles.view} />
-      </div>
+      <Container>
+        {false && <Inner />}
+        {Title$visible && <Title> {"Enabled"} </Title>}
+        <View />
+      </Container>
     );
   }
 };
 
-let styles = {
-  container: {
-    alignItems: "flex-start",
-    display: "flex",
-    flex: "1 1 0%",
-    flexDirection: "column",
-    justifyContent: "flex-start"
-  },
-  inner: {
-    alignItems: "flex-start",
-    backgroundColor: colors.green300,
-    display: "flex",
-    flexDirection: "column",
-    justifyContent: "flex-start",
-    width: "100px",
-    height: "100px"
-  },
-  title: {
-    textAlign: "left",
-    ...textStyles.body1,
-    alignItems: "flex-start",
-    display: "block",
-    flex: "0 0 auto",
-    flexDirection: "column",
-    justifyContent: "flex-start"
-  },
-  view: {
-    alignItems: "flex-start",
-    backgroundColor: colors.blue300,
-    display: "flex",
-    flexDirection: "column",
-    justifyContent: "flex-start",
-    width: "100px",
-    height: "100px"
-  }
-}
+let Container = styled.div({
+  alignItems: "flex-start",
+  display: "flex",
+  flex: "1 1 0%",
+  flexDirection: "column",
+  justifyContent: "flex-start"
+})
+
+let Inner = styled.div({
+  alignItems: "flex-start",
+  backgroundColor: colors.green300,
+  display: "flex",
+  flexDirection: "column",
+  justifyContent: "flex-start",
+  width: "100px",
+  height: "100px"
+})
+
+let Title = styled.span({
+  textAlign: "left",
+  ...textStyles.body1,
+  alignItems: "flex-start",
+  display: "block",
+  flex: "0 0 auto",
+  flexDirection: "column",
+  justifyContent: "flex-start"
+})
+
+let View = styled.div({
+  alignItems: "flex-start",
+  backgroundColor: colors.blue300,
+  display: "flex",
+  flexDirection: "column",
+  justifyContent: "flex-start",
+  width: "100px",
+  height: "100px"
+})
