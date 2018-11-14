@@ -35,17 +35,18 @@ let getElementTagString =
       layer.metadata.backingElementClass,
     );
 
-  switch (override, layer.typeName) {
-  | (Some(value), _) => value
-  | (None, VectorGraphic) =>
+  switch (layer.typeName) {
+  | VectorGraphic =>
     Format.vectorClassName(
       SwiftComponentParameter.getVectorAssetUrl(layer),
       Some(layer.name),
     )
   | _ =>
-    switch (options.styleFramework) {
-    | StyledComponents => JavaScriptFormat.elementName(layer.name)
-    | None => getElementTagStringForLayerType(options, layer.typeName)
+    switch (options.styleFramework, override) {
+    | (StyledComponents, _) => JavaScriptFormat.elementName(layer.name)
+    | (None, Some(value)) => value
+    | (None, None) =>
+      getElementTagStringForLayerType(options, layer.typeName)
     }
   };
 };
@@ -175,15 +176,24 @@ module StyledComponents = {
                   switch (layer.typeName) {
                   | Component(_) => ReactDomTranslators.layerTypeTags(View)
                   | _ =>
+                    let override =
+                      frameworkSpecificValue(
+                        options.framework,
+                        layer.metadata.backingElementClass,
+                      );
                     let needsWrapper =
                       imageNeedsWrapper(
                         Layer.findParent(rootLayer, layer),
                         layer,
                       );
-                    if (needsWrapper) {
-                      ReactDomTranslators.layerTypeTags(Types.View);
-                    } else {
-                      layer.typeName |> ReactDomTranslators.layerTypeTags;
+                    switch (override) {
+                    | Some(value) => value
+                    | None =>
+                      if (needsWrapper) {
+                        ReactDomTranslators.layerTypeTags(Types.View);
+                      } else {
+                        ReactDomTranslators.layerTypeTags(layer.typeName);
+                      }
                     };
                   },
                 ]),

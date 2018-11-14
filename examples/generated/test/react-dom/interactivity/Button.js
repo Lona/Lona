@@ -27,19 +27,19 @@ export default class Button extends React.Component {
       View$backgroundColor = colors.lightblue100
     }
     return (
-      <button
+      <View
         style={{ backgroundColor: View$backgroundColor }}
         onClick={View$onPress}
       >
         <Text>
           {Text$text}
         </Text>
-      </button>
+      </View>
     );
   }
 };
 
-let View = styled.div({
+let View = styled.button({
   alignItems: "flex-start",
   backgroundColor: colors.blue100,
   display: "flex",
