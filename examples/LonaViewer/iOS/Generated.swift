@@ -148,12 +148,13 @@ enum Generated: String {
 
     var constraints: [Constraint] {
         switch self {
-        case .localAsset, .pressableRootView:
+        case .localAsset:
             return [
                 equal(\.topAnchor, \.safeAreaLayoutGuide.topAnchor),
                 equal(\.leftAnchor),
             ]
         case .button,
+             .pressableRootView,
              .nestedComponent,
              .nestedButtons,
              .fixedParentFillAndFitChildren,

@@ -484,6 +484,7 @@ let rec convertNode =
           }),
           FunctionDeclaration({
             "name": "transform",
+            "attributes": [],
             "modifiers": [],
             "parameters": [
               Parameter({

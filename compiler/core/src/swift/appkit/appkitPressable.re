@@ -10,7 +10,7 @@ let trackingAreaVar =
     "pattern":
       IdentifierPattern({
         "identifier": SwiftIdentifier("trackingArea"),
-        "annotation": None
+        "annotation": None,
       }),
     "init":
       Some(
@@ -22,8 +22,8 @@ let trackingAreaVar =
               "value":
                 MemberExpression([
                   SwiftIdentifier("self"),
-                  SwiftIdentifier("frame")
-                ])
+                  SwiftIdentifier("frame"),
+                ]),
             }),
             FunctionCallArgument({
               "name": Some(SwiftIdentifier("options")),
@@ -33,18 +33,18 @@ let trackingAreaVar =
                     SwiftIdentifier(".mouseEnteredAndExited"),
                     SwiftIdentifier(".activeAlways"),
                     SwiftIdentifier(".mouseMoved"),
-                    SwiftIdentifier(".inVisibleRect")
-                  ])
-                )
+                    SwiftIdentifier(".inVisibleRect"),
+                  ]),
+                ),
             }),
             FunctionCallArgument({
               "name": Some(SwiftIdentifier("owner")),
-              "value": SwiftIdentifier("self")
-            })
-          ]
-        })
+              "value": SwiftIdentifier("self"),
+            }),
+          ],
+        }),
       ),
-    "block": None
+    "block": None,
   });
 
 /* addTrackingArea(trackingArea) */
@@ -54,9 +54,9 @@ let addTrackingArea =
     "arguments": [
       FunctionCallArgument({
         "name": None,
-        "value": SwiftIdentifier("trackingArea")
-      })
-    ]
+        "value": SwiftIdentifier("trackingArea"),
+      }),
+    ],
   });
 
 /* deinit {
@@ -69,10 +69,10 @@ let deinitTrackingArea =
       "arguments": [
         FunctionCallArgument({
           "name": None,
-          "value": SwiftIdentifier("trackingArea")
-        })
-      ]
-    })
+          "value": SwiftIdentifier("trackingArea"),
+        }),
+      ],
+    }),
   ]);
 
 let mouseTrackingFunctions = (rootLayer, pressableLayers: list(Types.layer)) => {
@@ -90,7 +90,7 @@ let mouseTrackingFunctions = (rootLayer, pressableLayers: list(Types.layer)) => 
                 SwiftDocument.layerMemberExpression(
                   rootLayer,
                   layer,
-                  [SwiftIdentifier("convert")]
+                  [SwiftIdentifier("convert")],
                 ),
               "arguments": [
                 FunctionCallArgument({
@@ -98,18 +98,18 @@ let mouseTrackingFunctions = (rootLayer, pressableLayers: list(Types.layer)) => 
                   "value":
                     MemberExpression([
                       SwiftIdentifier("event"),
-                      SwiftIdentifier("locationInWindow")
-                    ])
+                      SwiftIdentifier("locationInWindow"),
+                    ]),
                 }),
                 FunctionCallArgument({
                   "name": Some(SwiftIdentifier("from")),
-                  "value": LiteralExpression(Nil)
-                })
-              ]
-            })
-          ]
-        })
-      ]
+                  "value": LiteralExpression(Nil),
+                }),
+              ],
+            }),
+          ],
+        }),
+      ],
     );
   let containsPointVariable = (variableName, layer: Types.layer) =>
     ConstantDeclaration({
@@ -119,10 +119,10 @@ let mouseTrackingFunctions = (rootLayer, pressableLayers: list(Types.layer)) => 
         IdentifierPattern({
           "identifier":
             SwiftIdentifier(
-              SwiftFormat.layerVariableName(rootLayer, layer, variableName)
+              SwiftFormat.layerVariableName(rootLayer, layer, variableName),
             ),
-          "annotation": None
-        })
+          "annotation": None,
+        }),
     });
   let wasClicked = (layer: Types.layer) =>
     ConstantDeclaration({
@@ -131,9 +131,9 @@ let mouseTrackingFunctions = (rootLayer, pressableLayers: list(Types.layer)) => 
         IdentifierPattern({
           "identifier":
             SwiftIdentifier(
-              SwiftFormat.layerVariableName(rootLayer, layer, "clicked")
+              SwiftFormat.layerVariableName(rootLayer, layer, "clicked"),
             ),
-          "annotation": None
+          "annotation": None,
         }),
       "init":
         Some(
@@ -141,12 +141,12 @@ let mouseTrackingFunctions = (rootLayer, pressableLayers: list(Types.layer)) => 
             "&&",
             [
               SwiftIdentifier(
-                SwiftFormat.layerVariableName(rootLayer, layer, "pressed")
+                SwiftFormat.layerVariableName(rootLayer, layer, "pressed"),
               ),
-              containsPoint(layer)
-            ]
-          )
-        )
+              containsPoint(layer),
+            ],
+          ),
+        ),
     });
   let ifChanged = variableName => {
     let layerVariableName = layer =>
@@ -161,11 +161,11 @@ let mouseTrackingFunctions = (rootLayer, pressableLayers: list(Types.layer)) => 
             "right":
               MemberExpression([
                 SwiftIdentifier("self"),
-                SwiftIdentifier(layerVariableName(layer))
-              ])
+                SwiftIdentifier(layerVariableName(layer)),
+              ]),
           })
         ) @@
-        pressableLayers
+        pressableLayers,
       );
     let assignments =
       List.map(layer =>
@@ -173,10 +173,10 @@ let mouseTrackingFunctions = (rootLayer, pressableLayers: list(Types.layer)) => 
           "left":
             MemberExpression([
               SwiftIdentifier("self"),
-              SwiftIdentifier(layerVariableName(layer))
+              SwiftIdentifier(layerVariableName(layer)),
             ]),
           "operator": "=",
-          "right": SwiftIdentifier(layerVariableName(layer))
+          "right": SwiftIdentifier(layerVariableName(layer)),
         })
       ) @@
       pressableLayers;
@@ -190,11 +190,11 @@ let mouseTrackingFunctions = (rootLayer, pressableLayers: list(Types.layer)) => 
             [
               FunctionCallExpression({
                 "name": SwiftIdentifier("update"),
-                "arguments": []
-              })
-            ]
-          ]
-        )
+                "arguments": [],
+              }),
+            ],
+          ],
+        ),
     });
   };
   let ifTrueSetFalse = variableName => {
@@ -203,10 +203,10 @@ let mouseTrackingFunctions = (rootLayer, pressableLayers: list(Types.layer)) => 
         "||",
         List.map(layer =>
           SwiftIdentifier(
-            SwiftFormat.layerVariableName(rootLayer, layer, variableName)
+            SwiftFormat.layerVariableName(rootLayer, layer, variableName),
           )
         ) @@
-        pressableLayers
+        pressableLayers,
       );
     let assignments =
       List.map(layer =>
@@ -214,11 +214,11 @@ let mouseTrackingFunctions = (rootLayer, pressableLayers: list(Types.layer)) => 
           "left":
             MemberExpression([
               SwiftIdentifier(
-                SwiftFormat.layerVariableName(rootLayer, layer, variableName)
-              )
+                SwiftFormat.layerVariableName(rootLayer, layer, variableName),
+              ),
             ]),
           "operator": "=",
-          "right": LiteralExpression(Boolean(false))
+          "right": LiteralExpression(Boolean(false)),
         })
       ) @@
       pressableLayers;
@@ -232,62 +232,64 @@ let mouseTrackingFunctions = (rootLayer, pressableLayers: list(Types.layer)) => 
             [
               FunctionCallExpression({
                 "name": SwiftIdentifier("update"),
-                "arguments": []
-              })
-            ]
-          ]
-        )
+                "arguments": [],
+              }),
+            ],
+          ],
+        ),
     });
   };
   let invokePressHandler = (layer: Types.layer) =>
     IfStatement({
       "condition":
         SwiftIdentifier(
-          SwiftFormat.layerVariableName(rootLayer, layer, "clicked")
+          SwiftFormat.layerVariableName(rootLayer, layer, "clicked"),
         ),
       "block": [
         FunctionCallExpression({
           "name":
             SwiftIdentifier(
-              SwiftFormat.layerVariableName(rootLayer, layer, "onPress?")
+              SwiftFormat.layerVariableName(rootLayer, layer, "onPress?"),
             ),
-          "arguments": []
-        })
-      ]
+          "arguments": [],
+        }),
+      ],
     });
   let eventHandler = (name, body) =>
     FunctionDeclaration({
       "name": name,
+      "attributes": [],
       "modifiers": [AccessLevelModifier(PublicModifier), OverrideModifier],
       "parameters": [
         Parameter({
           "externalName": Some("with"),
           "localName": "event",
           "defaultValue": None,
-          "annotation": TypeName("NSEvent")
-        })
+          "annotation": TypeName("NSEvent"),
+        }),
       ],
       "throws": false,
       "result": None,
-      "body": body
+      "body": body,
     });
   let updateHoverState =
     FunctionDeclaration({
       "name": "updateHoverState",
+      "attributes": [],
       "modifiers": [AccessLevelModifier(PrivateModifier)],
       "parameters": [
         Parameter({
           "externalName": Some("with"),
           "localName": "event",
           "defaultValue": None,
-          "annotation": TypeName("NSEvent")
-        })
+          "annotation": TypeName("NSEvent"),
+        }),
       ],
       "throws": false,
       "result": None,
       "body":
         (pressableLayers |> List.map(containsPointVariable("hovered")))
-        @ [ifChanged("hovered")]
+        @ [ifChanged("hovered")],
     });
   let invokeUpdateHoverState =
     FunctionCallExpression({
@@ -295,9 +297,9 @@ let mouseTrackingFunctions = (rootLayer, pressableLayers: list(Types.layer)) => 
       "arguments": [
         FunctionCallArgument({
           "name": Some(SwiftIdentifier("with")),
-          "value": SwiftIdentifier("event")
-        })
-      ]
+          "value": SwiftIdentifier("event"),
+        }),
+      ],
     });
   let mouseEntered = eventHandler("mouseEntered", [invokeUpdateHoverState]);
   let mouseMoved = eventHandler("mouseMoved", [invokeUpdateHoverState]);
@@ -307,7 +309,7 @@ let mouseTrackingFunctions = (rootLayer, pressableLayers: list(Types.layer)) => 
     eventHandler(
       "mouseDown",
       (pressableLayers |> List.map(containsPointVariable("pressed")))
-      @ [ifChanged("pressed")]
+      @ [ifChanged("pressed")],
     );
   let mouseUp =
     eventHandler(
@@ -316,7 +318,7 @@ let mouseTrackingFunctions = (rootLayer, pressableLayers: list(Types.layer)) => 
       @ [Empty]
       @ [ifTrueSetFalse("pressed")]
       @ [Empty]
-      @ (pressableLayers |> List.map(invokePressHandler))
+      @ (pressableLayers |> List.map(invokePressHandler)),
     );
   [
     updateHoverState,
@@ -331,6 +333,6 @@ let mouseTrackingFunctions = (rootLayer, pressableLayers: list(Types.layer)) => 
     Empty,
     mouseDown,
     Empty,
-    mouseUp
+    mouseUp,
   ];
 };

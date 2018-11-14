@@ -434,6 +434,7 @@ let setUpFunction =
 
   FunctionDeclaration({
     "name": "setUpConstraints",
+    "attributes": [],
     "modifiers": [AccessLevelModifier(PrivateModifier)],
     "parameters": [],
     "result": None,
@@ -505,6 +506,7 @@ let conditionalConstraintsFunction =
 
   FunctionDeclaration({
     "name": "conditionalConstraints",
+    "attributes": [],
     "modifiers": [AccessLevelModifier(PrivateModifier)],
     "parameters": [],
     "result": Some(ArrayType(TypeName("NSLayoutConstraint"))),

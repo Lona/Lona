@@ -37,6 +37,7 @@ let generateImageWithBackgroundColor =
         Empty,
         FunctionDeclaration({
           "name": "draw",
+          "attributes": [],
           "modifiers": [OverrideModifier],
           "parameters": [
             Parameter({
@@ -260,6 +261,7 @@ let generateVectorGraphic =
           [
             FunctionDeclaration({
               "name": "draw",
+              "attributes": [],
               "modifiers": [OverrideModifier],
               "parameters": [
                 Parameter({

@@ -11,6 +11,8 @@ type mutationModifier =
   | MutatingModifier
   | NonmutatingModifier;
 
+type attribute = string;
+
 [@bs.deriving accessors]
 type declarationModifier =
   | ClassModifier
@@ -209,6 +211,7 @@ and node =
       {
         .
         "name": string,
+        "attributes": list(attribute),
         "modifiers": list(declarationModifier),
         "parameters": list(node),
         "result": option(typeAnnotation),

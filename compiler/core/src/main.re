@@ -249,7 +249,7 @@ let copyStaticFiles = outputDirectory =>
       ["TextStyle", "CGSize+Resizing"]
       @ (
         switch (swiftOptions.framework) {
-        | UIKit => ["Shadow"]
+        | UIKit => ["LonaControlView", "Shadow"]
         | AppKit => ["LNATextField", "LNAImageView", "NSImage+Resizing"]
         }
       );

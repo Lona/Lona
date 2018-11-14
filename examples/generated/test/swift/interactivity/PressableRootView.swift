@@ -3,7 +3,7 @@ import Foundation
 
 // MARK: - PressableRootView
 
-public class PressableRootView: UIView {
+public class PressableRootView: LonaControlView {
 
   // MARK: Lifecycle
 
@@ -27,16 +27,12 @@ public class PressableRootView: UIView {
 
   // MARK: Private
 
-  private var innerView = UIView(frame: .zero)
+  private var innerView = LonaControlView(frame: .zero)
   private var innerTextView = UILabel()
 
   private var innerTextViewTextStyle = TextStyles.headline
 
-  private var hovered = false
-  private var pressed = false
   private var onPress: (() -> Void)?
-  private var innerViewHovered = false
-  private var innerViewPressed = false
   private var innerViewOnPress: (() -> Void)?
 
   private func setUpViews() {
@@ -48,6 +44,11 @@ public class PressableRootView: UIView {
     innerTextViewTextStyle = TextStyles.headline
     innerTextView.attributedText =
       innerTextViewTextStyle.apply(to: innerTextView.attributedText ?? NSAttributedString())
+
+    addTarget(self, action: #selector(handleTapOuterView), for: .touchUpInside)
+    onHighlight = update
+    innerView.addTarget(self, action: #selector(handleTapInnerView), for: .touchUpInside)
+    innerView.onHighlight = update
   }
 
   private func setUpConstraints() {
@@ -84,24 +85,31 @@ public class PressableRootView: UIView {
     backgroundColor = Colors.grey50
     onPress = onPressOuter
     innerViewOnPress = onPressInner
-    if hovered {
+    if false {
       backgroundColor = Colors.grey100
     }
-    if pressed {
+    if isHighlighted {
       backgroundColor = Colors.grey300
     }
-    if innerViewHovered {
+    if false {
       innerView.backgroundColor = Colors.blue300
       innerTextView.attributedText = innerTextViewTextStyle.apply(to: "Hovered")
     }
-    if innerViewPressed {
+    if innerView.isHighlighted {
       innerView.backgroundColor = Colors.blue800
       innerTextView.attributedText = innerTextViewTextStyle.apply(to: "Pressed")
     }
-    if innerViewHovered {
-      if innerViewPressed {
+    if false {
+      if innerView.isHighlighted {
         innerTextView.attributedText = innerTextViewTextStyle.apply(to: "Hovered & Pressed")
       }
     }
+  }
+
+  @objc private func handleTapOuterView() {
+    onPress?()
+  }
+  @objc private func handleTapInnerView() {
+    innerViewOnPress?()
   }
 }

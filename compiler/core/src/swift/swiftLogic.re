@@ -82,12 +82,6 @@ let toSwiftAST =
     | (_, Ast.SwiftIdentifier(name))
         when name |> Js.String.endsWith("onPress") =>
       Ast.SwiftIdentifier(name |> Js.String.replace(".onPress", "OnPress"))
-    | (_, Ast.SwiftIdentifier(name))
-        when name |> Js.String.endsWith("hovered") =>
-      Ast.SwiftIdentifier(name |> Js.String.replace(".hovered", "Hovered"))
-    | (_, Ast.SwiftIdentifier(name))
-        when name |> Js.String.endsWith("pressed") =>
-      Ast.SwiftIdentifier(name |> Js.String.replace(".pressed", "Pressed"))
     /* -- UIKit -- */
     /* TODO: Make sure "borderRadius" without the "." doesn't match intermediate variables */
     | (UIKit, Ast.SwiftIdentifier(name))
@@ -116,6 +110,14 @@ let toSwiftAST =
       Ast.SwiftIdentifier(
         name |> Js.String.replace("borderWidth", "layer.borderWidth"),
       )
+    | (UIKit, Ast.SwiftIdentifier(name))
+        when name |> Js.String.endsWith("hovered") =>
+      Ast.SwiftIdentifier("false")
+    | (UIKit, Ast.SwiftIdentifier(name))
+        when name |> Js.String.endsWith("pressed") =>
+      Ast.SwiftIdentifier(
+        name |> Js.String.replace("pressed", "isHighlighted"),
+      )
     /* -- AppKit -- */
     /* TODO: Make sure "borderRadius" without the "." doesn't match intermediate variables */
     | (AppKit, Ast.SwiftIdentifier(name))
@@ -141,6 +143,12 @@ let toSwiftAST =
       Ast.SwiftIdentifier(
         name |> Js.String.replace("numberOfLines", "maximumNumberOfLines"),
       )
+    | (AppKit, Ast.SwiftIdentifier(name))
+        when name |> Js.String.endsWith("hovered") =>
+      Ast.SwiftIdentifier(name |> Js.String.replace(".hovered", "Hovered"))
+    | (AppKit, Ast.SwiftIdentifier(name))
+        when name |> Js.String.endsWith("pressed") =>
+      Ast.SwiftIdentifier(name |> Js.String.replace(".pressed", "Pressed"))
     | _ => initialValue
     };
   };
