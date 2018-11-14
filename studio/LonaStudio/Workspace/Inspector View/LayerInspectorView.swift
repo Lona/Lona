@@ -54,7 +54,7 @@ class LayerInspectorView: CoreComponentInspectorView {
             CoreComponentInspectorView.Property.borderWidth: CSData.Number(layer.borderWidth ?? 0),
 
             // Contents
-            CoreComponentInspectorView.Property.opacity: CSData.Number(100 * (layer.opacity ?? 1)),
+            CoreComponentInspectorView.Property.opacity: CSData.Number(layer.opacity ?? 1),
             CoreComponentInspectorView.Property.backgroundColor: CSData.String(layer.backgroundColor ?? "transparent"),
             CoreComponentInspectorView.Property.backgroundColorEnabled: CSData.Bool(layer.backgroundColor != nil),
             CoreComponentInspectorView.Property.backgroundGradient: CSData.String(layer.backgroundGradient ?? ""),
@@ -132,7 +132,7 @@ class LayerInspectorView: CoreComponentInspectorView {
             case .borderWidth: layer.borderWidth = value.numberValue
 
             // Content
-            case .opacity: layer.opacity = max(min(value.numberValue / 100, 1), 0)
+            case .opacity: layer.opacity = max(min(value.numberValue, 1), 0)
             case .backgroundColor: layer.backgroundColor = value.stringValue
             case .backgroundColorEnabled: layer.backgroundColor = value.boolValue ? "transparent" : nil
             case .backgroundGradient: layer.backgroundGradient = value.string
