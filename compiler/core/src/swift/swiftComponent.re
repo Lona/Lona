@@ -100,7 +100,7 @@ module Doc = {
 
   let tapVariables = (rootLayer: Types.layer, layer: Types.layer) => [
     SwiftAst.Builders.privateVariableDeclaration(
-      SwiftFormat.layerName(layer.name) ++ "OnTap",
+      SwiftFormat.tapHandler(layer.name),
       Some(OptionalType(TypeName("(() -> Void)"))),
       None,
     ),
@@ -118,7 +118,7 @@ module Doc = {
     },
   ];
 
-  let tapHandler = (rootLayer: Types.layer, layer: Types.layer) => [
+  let tapHandler = (layer: Types.layer) => [
     FunctionDeclaration({
       "name":
         "handleTap" ++ Format.upperFirst(SwiftFormat.layerName(layer.name)),
@@ -129,7 +129,7 @@ module Doc = {
       "throws": false,
       "body": [
         SwiftAst.Builders.functionCall(
-          [SwiftFormat.layerName(layer.name) ++ "OnTap?"],
+          [SwiftFormat.tapHandler(layer.name) ++ "?"],
           [],
         ),
       ],
@@ -1064,7 +1064,7 @@ let generate =
                       rootLayer
                       |> Layer.flatten
                       |> List.filter(Layer.isInteractive(logic))
-                      |> List.map(Doc.tapHandler(rootLayer))
+                      |> List.map(Doc.tapHandler)
                       |> List.concat :
                       [],
                   ],

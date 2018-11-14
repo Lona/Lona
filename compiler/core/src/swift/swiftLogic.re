@@ -119,7 +119,7 @@ let toSwiftAST =
         when name |> Js.String.endsWith("onPress") =>
       switch (layer) {
       | Some(layer) =>
-        Ast.SwiftIdentifier(SwiftFormat.layerName(layer.name) ++ "OnTap")
+        Ast.SwiftIdentifier(SwiftFormat.tapHandler(layer.name))
       | None => Ast.SwiftIdentifier("Unknown interactive layer")
       }
     /* -- AppKit -- */

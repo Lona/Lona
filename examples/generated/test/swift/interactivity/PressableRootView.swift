@@ -32,8 +32,8 @@ public class PressableRootView: LonaControlView {
 
   private var innerTextViewTextStyle = TextStyles.headline
 
-  private var outerViewOnTap: (() -> Void)?
-  private var innerViewOnTap: (() -> Void)?
+  private var onTapOuterView: (() -> Void)?
+  private var onTapInnerView: (() -> Void)?
 
   private func setUpViews() {
     innerTextView.numberOfLines = 0
@@ -83,8 +83,8 @@ public class PressableRootView: LonaControlView {
     innerView.backgroundColor = Colors.blue500
     innerTextView.attributedText = innerTextViewTextStyle.apply(to: "")
     backgroundColor = Colors.grey50
-    outerViewOnTap = onPressOuter
-    innerViewOnTap = onPressInner
+    onTapOuterView = onPressOuter
+    onTapInnerView = onPressInner
 
     if isHighlighted {
       backgroundColor = Colors.grey300
@@ -98,9 +98,9 @@ public class PressableRootView: LonaControlView {
   }
 
   @objc private func handleTapOuterView() {
-    outerViewOnTap?()
+    onTapOuterView?()
   }
   @objc private func handleTapInnerView() {
-    innerViewOnTap?()
+    onTapInnerView?()
   }
 }
