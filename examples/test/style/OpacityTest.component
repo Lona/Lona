@@ -1,0 +1,111 @@
+{
+  "devices" : [
+    {
+      "height" : 100,
+      "heightMode" : "At Least",
+      "name" : "iPhone SE",
+      "width" : 320
+    }
+  ],
+  "examples" : [
+    {
+      "id" : "Default",
+      "name" : "Default",
+      "params" : {
+        "selected" : false
+      }
+    },
+    {
+      "id" : "name",
+      "name" : "name",
+      "params" : {
+        "selected" : true
+      }
+    }
+  ],
+  "logic" : [
+    {
+      "body" : [
+        {
+          "assignee" : [
+            "layers",
+            "View",
+            "opacity"
+          ],
+          "content" : {
+            "type" : "LitExpr",
+            "value" : {
+              "data" : 0.69999999999999996,
+              "type" : "Number"
+            }
+          },
+          "type" : "AssignExpr"
+        }
+      ],
+      "condition" : {
+        "left" : [
+          "parameters",
+          "selected"
+        ],
+        "op" : "==",
+        "right" : {
+          "type" : "LitExpr",
+          "value" : {
+            "data" : true,
+            "type" : "Boolean"
+          }
+        },
+        "type" : "BinExpr"
+      },
+      "type" : "IfExpr"
+    }
+  ],
+  "params" : [
+    {
+      "name" : "selected",
+      "type" : "Boolean"
+    }
+  ],
+  "root" : {
+    "children" : [
+      {
+        "children" : [
+          {
+            "id" : "Text",
+            "params" : {
+              "opacity" : 0.80000000000000004,
+              "text" : "Text goes here"
+            },
+            "type" : "Lona:Text"
+          },
+          {
+            "id" : "Image",
+            "params" : {
+              "height" : 60,
+              "image" : "file:\/\/.\/assets\/icon_128x128.png",
+              "opacity" : 0.5,
+              "width" : 90
+            },
+            "type" : "Lona:Image"
+          }
+        ],
+        "id" : "View 1",
+        "params" : {
+          "backgroundColor" : "red900",
+          "height" : 100,
+          "opacity" : 0.80000000000000004,
+          "width" : 100
+        },
+        "type" : "Lona:View"
+      }
+    ],
+    "id" : "View",
+    "params" : {
+      "alignSelf" : "stretch",
+      "backgroundColor" : "blue500",
+      "borderColor" : "pink300",
+      "borderWidth" : 10
+    },
+    "type" : "Lona:View"
+  }
+}

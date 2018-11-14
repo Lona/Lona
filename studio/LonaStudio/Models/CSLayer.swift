@@ -379,6 +379,10 @@ class CSLayer: CSDataDeserializable, CSDataSerializable, DataNode, NSCopying {
         get { return parameters["aspectRatio"]?.number }
         set { parameters["aspectRatio"] = newValue?.toData() }
     }
+    var opacity: Double? {
+        get { return parameters["opacity"]?.number }
+        set { parameters["opacity"] = newValue?.toData() }
+    }
 
     // Border
     var borderRadius: Double? {
@@ -556,6 +560,7 @@ class CSLayer: CSDataDeserializable, CSDataSerializable, DataNode, NSCopying {
         "marginRight": CSData.Number(0),
         "marginBottom": CSData.Number(0),
         "marginLeft": CSData.Number(0),
+        "opacity": CSData.Number(1),
         "paddingTop": CSData.Number(0),
         "paddingRight": CSData.Number(0),
         "paddingBottom": CSData.Number(0),
@@ -676,7 +681,8 @@ class CSLayer: CSDataDeserializable, CSDataSerializable, DataNode, NSCopying {
             "paddingBottom": CSData.Number(paddingBottom ?? 0),
             "paddingLeft": CSData.Number(paddingLeft ?? 0),
 
-            // Color
+            // Content
+            "opacity": CSData.Number(opacity ?? 1),
             "backgroundColor": CSData.String(backgroundColor ?? "transparent"),
 
             // Border

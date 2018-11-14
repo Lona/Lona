@@ -6,20 +6,24 @@
 //  Copyright © 2017 Devin Abbott. All rights reserved.
 //
 
-import Foundation
 import AppKit
 
 // Handle flipping the coordinate system, since overriding isFlipped on NSBox
 // doesn't seem to do anything.
-private class InnerView: LNAImageView {
+private class InnerView: LNAImageView, CSRendering {
     override var isFlipped: Bool { return true }
 
     override func mouseDown(with event: NSEvent) {
         super.mouseDown(with: event)
     }
+
+    override var alphaValue: CGFloat {
+        get { return multipliedAlpha }
+        set {}
+    }
 }
 
-class CSView: NSBox {
+class CSView: NSBox, CSRendering {
 
     // MARK: Lifecycle
 
@@ -50,6 +54,60 @@ class CSView: NSBox {
         get { return innerView.image }
         set { innerView.image = newValue }
     }
+
+    override var fillColor: NSColor {
+        get {
+            if multipliedFillColor.alphaComponent <= 0 { return .clear }
+            return multipliedAlpha <= 0
+                ? .clear
+                : multipliedFillColor.withAlphaComponent(multipliedFillColor.alphaComponent * multipliedAlpha)
+        }
+        set {}
+    }
+
+    override var borderColor: NSColor {
+        get {
+            if multipliedBorderColor.alphaComponent <= 0 { return .clear }
+            return multipliedAlpha <= 0
+                ? .clear
+                : multipliedBorderColor.withAlphaComponent(multipliedBorderColor.alphaComponent * multipliedAlpha)
+        }
+        set {}
+    }
+
+    var multipliedBorderColor: NSColor = .clear
+    var multipliedFillColor: NSColor = .clear
+
+    var opacity: CGFloat = 1
+
+    override var isOpaque: Bool {
+        return false
+    }
+
+//    private var _drawingToImage = false
+//
+//    override func draw(_ dirtyRect: NSRect) {
+//        if _drawingToImage || opacity >= 1 {
+//            super.draw(dirtyRect)
+//            return
+//        }
+//
+//        drawToImage()
+//    }
+//
+//    private func drawToImage() {
+//        _drawingToImage = true
+//
+//        let rep = bitmapImageRepForCachingDisplay(in: bounds)!
+//        cacheDisplay(in: bounds, to: rep)
+//
+//        let img = NSImage(size: bounds.size)
+//        img.addRepresentation(rep)
+//
+//        img.draw(at: bounds.origin, from: bounds, operation: .copy, fraction: opacity)
+//
+//        _drawingToImage = false
+//    }
 
     // By default, clicking more than once on the parent will cause all subsequent mouseDown
     // events to be sent to the parent, even if they are in the coordinates of its child.

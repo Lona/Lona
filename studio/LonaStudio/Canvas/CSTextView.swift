@@ -9,8 +9,15 @@
 import Foundation
 import AppKit
 
-class CSTextView: NSTextView {
+class CSTextView: NSTextView, CSRendering {
     override func hitTest(_ point: NSPoint) -> NSView? {
         return nil
+    }
+
+    override var alphaValue: CGFloat {
+        get {
+            return multipliedAlpha
+        }
+        set {}
     }
 }

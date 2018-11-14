@@ -39,6 +39,7 @@ let parameterDefaultValue = key =>
   | ParameterKey.Visible => boolean(true)
   | ParameterKey.NumberOfLines => number(0.)
   | ParameterKey.BackgroundColor => color("transparent")
+  | ParameterKey.Opacity => number(1.)
   | ParameterKey.Image => url("")
   /* Styles */
   | ParameterKey.AlignItems => string("stretch")

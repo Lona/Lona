@@ -486,7 +486,8 @@ let CSLayerType = CSType.dictionary([
     "borderColor": (type: CSColorType, access: .write),
     "borderRadius": (type: .number, access: .write),
 
-    // Color
+    // Content
+    "opacity": (type: .number, access: .write),
     "backgroundColor": (type: CSColorType, access: .write),
 
     // Shadow
