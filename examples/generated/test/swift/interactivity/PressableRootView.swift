@@ -85,25 +85,16 @@ public class PressableRootView: LonaControlView {
     backgroundColor = Colors.grey50
     onPress = onPressOuter
     innerViewOnPress = onPressInner
-    if false {
-      backgroundColor = Colors.grey100
-    }
+
     if isHighlighted {
       backgroundColor = Colors.grey300
     }
-    if false {
-      innerView.backgroundColor = Colors.blue300
-      innerTextView.attributedText = innerTextViewTextStyle.apply(to: "Hovered")
-    }
+
     if innerView.isHighlighted {
       innerView.backgroundColor = Colors.blue800
       innerTextView.attributedText = innerTextViewTextStyle.apply(to: "Pressed")
     }
-    if false {
-      if innerView.isHighlighted {
-        innerTextView.attributedText = innerTextViewTextStyle.apply(to: "Hovered & Pressed")
-      }
-    }
+
   }
 
   @objc private func handleTapOuterView() {

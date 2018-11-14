@@ -80,9 +80,7 @@ public class Button: LonaControlView {
     backgroundColor = Colors.blue100
     textView.attributedText = textViewTextStyle.apply(to: label)
     onPress = onTap
-    if false {
-      backgroundColor = Colors.blue200
-    }
+
     if isHighlighted {
       backgroundColor = Colors.blue50
     }

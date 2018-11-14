@@ -112,7 +112,7 @@ let toSwiftAST =
       )
     | (UIKit, Ast.SwiftIdentifier(name))
         when name |> Js.String.endsWith("hovered") =>
-      Ast.SwiftIdentifier("false")
+      Ast.LiteralExpression(Boolean(false))
     | (UIKit, Ast.SwiftIdentifier(name))
         when name |> Js.String.endsWith("pressed") =>
       Ast.SwiftIdentifier(
@@ -388,6 +388,26 @@ let toSwiftAST =
       let bIsOptional = LonaValue.isOptionalType(Logic.getValueType(b));
 
       switch (left, operator, right) {
+      | (
+          Ast.LiteralExpression(Boolean(boolA)),
+          "==",
+          Ast.LiteralExpression(Boolean(boolB)),
+        ) =>
+        if (boolA == boolB) {
+          Ast.StatementListHelper(body);
+        } else {
+          Empty;
+        }
+      | (
+          Ast.LiteralExpression(Boolean(boolA)),
+          "!=",
+          Ast.LiteralExpression(Boolean(boolB)),
+        ) =>
+        if (boolA != boolB) {
+          Ast.StatementListHelper(body);
+        } else {
+          Empty;
+        }
       | (Ast.LiteralExpression(Boolean(true)), "==", condition)
       | (condition, "==", Ast.LiteralExpression(Boolean(true)))
           when !aIsOptional && !bIsOptional =>
