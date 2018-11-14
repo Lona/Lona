@@ -100,6 +100,7 @@ public class PressableRootView: LonaControlView {
   @objc private func handleTapOuterView() {
     onTapOuterView?()
   }
+
   @objc private func handleTapInnerView() {
     onTapInnerView?()
   }

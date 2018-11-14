@@ -1065,7 +1065,7 @@ let generate =
                       |> Layer.flatten
                       |> List.filter(Layer.isInteractive(logic))
                       |> List.map(Doc.tapHandler)
-                      |> List.concat :
+                      |> SwiftDocument.joinGroups(Empty) :
                       [],
                   ],
                 ),
