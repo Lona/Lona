@@ -72,7 +72,8 @@ class CoreComponentInspectorView: NSStackView {
         case borderColorEnabled
         case borderWidth
 
-        // Color
+        // Contents
+        case opacity
         case backgroundColor
         case backgroundColorEnabled
         case backgroundGradient
@@ -164,6 +165,7 @@ class CoreComponentInspectorView: NSStackView {
     var bottomView = NumberField(frame: NSRect.zero)
     var leftView = NumberField(frame: NSRect.zero)
 
+    var opacityView = NumberField(frame: NSRect.zero)
     var backgroundColorButton = ColorPickerButton(frame: NSRect.zero)
     var backgroundColorEnabledView = CheckboxField(frame: NSRect.zero)
     var borderColorButton = ColorPickerButton(frame: NSRect.zero)
@@ -547,10 +549,18 @@ class CoreComponentInspectorView: NSStackView {
             stretched: true
         )
 
-        let backgroundSection = renderSection(title: "Background", views: [
+        let backgroundSection = renderSection(title: "Opacity & Background", views: [
+            NSTextField(labelWithStringCompat: "Opacity"),
+            opacityView,
+            NSTextField(labelWithStringCompat: "Background Color"),
             backgroundColorContainer,
+            NSTextField(labelWithStringCompat: "Gradient"),
             backgroundGradientView
         ])
+
+        [opacityView, backgroundColorContainer, backgroundGradientView].forEach {
+            backgroundSection.addContentSpacing(of: 14, after: $0)
+        }
 
         return backgroundSection
     }
@@ -824,7 +834,8 @@ class CoreComponentInspectorView: NSStackView {
             (borderColorEnabledView, .borderColorEnabled),
             (borderWidthView, .borderWidth),
 
-            // Color
+            // Contents
+            (opacityView, .opacity),
             (backgroundColorButton, .backgroundColor),
             (backgroundColorEnabledView, .backgroundColorEnabled),
             (backgroundGradientView, .backgroundGradient),

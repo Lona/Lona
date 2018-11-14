@@ -12,6 +12,7 @@ let parameterType = key =>
   | Visible => Types.booleanType
   | NumberOfLines => Types.numberType
   | BackgroundColor => Types.colorType
+  | Opacity => Types.numberType
   | Image => Types.urlType
   /* Styles */
   | AlignItems => Types.stringType

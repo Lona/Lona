@@ -58,6 +58,8 @@
 		6B1086F521793F5C0024AE56 /* VectorAsset.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6B1086F421793F5C0024AE56 /* VectorAsset.swift */; };
 		6B1086FF217A700B0024AE56 /* VectorLogic.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6B1086FE217A700A0024AE56 /* VectorLogic.swift */; };
 		6B291337219B94CB00A1DDB4 /* LonaControlView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6B291336219B94CB00A1DDB4 /* LonaControlView.swift */; };
+		6B29133B219CB84200A1DDB4 /* OpacityTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6B29133A219CB84200A1DDB4 /* OpacityTest.swift */; };
+		6B29133D219CBC7A00A1DDB4 /* OpacityTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6B29133C219CBC7A00A1DDB4 /* OpacityTest.swift */; };
 		6B3916FD21601C5900B20F9E /* BoxModelConditional.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6B3916FC21601C5900B20F9E /* BoxModelConditional.swift */; };
 		6B3916FF2160286D00B20F9E /* BoxModelConditional.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6B3916FE2160286D00B20F9E /* BoxModelConditional.swift */; };
 		6B391702216422D400B20F9E /* Shadows.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6B391701216422D400B20F9E /* Shadows.swift */; };
@@ -150,6 +152,8 @@
 		6B1086F421793F5C0024AE56 /* VectorAsset.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = VectorAsset.swift; sourceTree = "<group>"; };
 		6B1086FE217A700A0024AE56 /* VectorLogic.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = VectorLogic.swift; sourceTree = "<group>"; };
 		6B291336219B94CB00A1DDB4 /* LonaControlView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = LonaControlView.swift; sourceTree = "<group>"; };
+		6B29133A219CB84200A1DDB4 /* OpacityTest.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = OpacityTest.swift; sourceTree = "<group>"; };
+		6B29133C219CBC7A00A1DDB4 /* OpacityTest.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = OpacityTest.swift; sourceTree = "<group>"; };
 		6B3916FC21601C5900B20F9E /* BoxModelConditional.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = BoxModelConditional.swift; sourceTree = "<group>"; };
 		6B3916FE2160286D00B20F9E /* BoxModelConditional.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = BoxModelConditional.swift; sourceTree = "<group>"; };
 		6B391701216422D400B20F9E /* Shadows.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Shadows.swift; sourceTree = "<group>"; };
@@ -303,10 +307,11 @@
 			children = (
 				12BBFDCC206B02720041620C /* BorderWidthColor.swift */,
 				6B3916FE2160286D00B20F9E /* BoxModelConditional.swift */,
-				6BD581DC208252250068FBC3 /* TextAlignment.swift */,
-				12BBFDCD206B02720041620C /* TextStylesTest.swift */,
-				12BBFDCE206B02720041620C /* TextStyleConditional.swift */,
+				6B29133C219CBC7A00A1DDB4 /* OpacityTest.swift */,
 				6B391703216423A000B20F9E /* ShadowsTest.swift */,
+				6BD581DC208252250068FBC3 /* TextAlignment.swift */,
+				12BBFDCE206B02720041620C /* TextStyleConditional.swift */,
+				12BBFDCD206B02720041620C /* TextStylesTest.swift */,
 				6BA5BBCE216D4A7D00F086A7 /* VisibilityTest.swift */,
 			);
 			path = style;
@@ -396,6 +401,7 @@
 				6BD581DA2082521A0068FBC3 /* TextAlignment.swift */,
 				12BBFDF5206B02AC0041620C /* TextStylesTest.swift */,
 				12BBFDF6206B02AC0041620C /* TextStyleConditional.swift */,
+				6B29133A219CB84200A1DDB4 /* OpacityTest.swift */,
 				6B39170721643EF300B20F9E /* ShadowsTest.swift */,
 				6BA5BBD0216D4B6700F086A7 /* VisibilityTest.swift */,
 			);
@@ -577,6 +583,7 @@
 				6BA69406208439DB0090CA74 /* NestedComponent.swift in Sources */,
 				12BBFE0E206B02AC0041620C /* SecondaryAxis.swift in Sources */,
 				6BA5BBD5217021A000F086A7 /* Optionals.swift in Sources */,
+				6B29133B219CB84200A1DDB4 /* OpacityTest.swift in Sources */,
 				12BBFE11206B02AC0041620C /* Colors.swift in Sources */,
 				30F870B920864A88007ADA5B /* NestedButtons.swift in Sources */,
 				12BBFE0D206B02AC0041620C /* FixedParentFitChild.swift in Sources */,
@@ -623,6 +630,7 @@
 				12BBFE14206B03FB0041620C /* LayoutExtension.swift in Sources */,
 				6B3916FF2160286D00B20F9E /* BoxModelConditional.swift in Sources */,
 				12869397204A1B4E00E5E26F /* ViewSelectionVc.swift in Sources */,
+				6B29133D219CBC7A00A1DDB4 /* OpacityTest.swift in Sources */,
 				12BBFDE4206B02720041620C /* FixedParentFitChild.swift in Sources */,
 				6B6D442F218F5D430016262C /* NSImage+Resizing.swift in Sources */,
 				6BA6940A208441120090CA74 /* NestedButtons.swift in Sources */,

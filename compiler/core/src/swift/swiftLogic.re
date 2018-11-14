@@ -90,6 +90,9 @@ let toSwiftAST =
         name |> Js.String.replace("borderRadius", "layer.cornerRadius"),
       )
     | (UIKit, Ast.SwiftIdentifier(name))
+        when name |> Js.String.endsWith(".opacity") || name == "opacity" =>
+      Ast.SwiftIdentifier(name |> Js.String.replace("opacity", "alpha"))
+    | (UIKit, Ast.SwiftIdentifier(name))
         when name |> Js.String.endsWith(".resizeMode") || name == "resizeMode" =>
       switch (layer) {
       | Some((layer: Types.layer)) when layer.typeName == Types.VectorGraphic =>
@@ -132,6 +135,9 @@ let toSwiftAST =
       Ast.SwiftIdentifier(
         name |> Js.String.replace("borderRadius", "cornerRadius"),
       )
+    | (AppKit, Ast.SwiftIdentifier(name))
+        when name |> Js.String.endsWith(".opacity") || name == "opacity" =>
+      Ast.SwiftIdentifier(name |> Js.String.replace("opacity", "alphaValue"))
     | (AppKit, Ast.SwiftIdentifier(name))
         when name |> Js.String.endsWith(".resizeMode") || name == "resizeMode" =>
       Ast.SwiftIdentifier(

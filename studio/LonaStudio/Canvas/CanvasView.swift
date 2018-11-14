@@ -179,8 +179,11 @@ func renderBox(configuredLayer: ConfiguredLayer, node: YGNodeRef, options: Rende
     box.onClick = handleClick
 
     if layer.text == nil, let color = config.get(attribute: "backgroundColor", for: layer.name).string ?? layer.backgroundColor {
-        box.fillColor = CSColors.parse(css: color, withDefault: NSColor.clear).color
+        box.multipliedFillColor = CSColors.parse(css: color, withDefault: NSColor.clear).color
     }
+
+    let opacity = config.get(attribute: "opacity", for: layer.name).number ?? layer.opacity ?? 1
+    box.opacity = CGFloat(opacity)
 
 //    if let id = layer.backgroundGradient, let gradient = CSGradients.gradient(withId: id) {
 //        box.layer = gradient.caGradientLayer
@@ -201,7 +204,7 @@ func renderBox(configuredLayer: ConfiguredLayer, node: YGNodeRef, options: Rende
     }
 
     if let borderColor = borderColor {
-        box.borderColor = borderColor
+        box.multipliedBorderColor = borderColor
     }
 
     box.shadow = configuredLayer.shadow()?.nsShadow

@@ -37,6 +37,7 @@ enum Generated: String {
     case boxModelConditionalSmall = "Box Model Conditional Small"
     case boxModelConditionalLarge = "Box Model Conditional Large"
     case shadowsTest = "Shadow Test"
+    case opacityTest = "Opacity Test"
     case visibilityTest = "Visibility Test"
     case optionals = "Optionals"
 
@@ -70,6 +71,7 @@ enum Generated: String {
             boxModelConditionalSmall,
             boxModelConditionalLarge,
             shadowsTest,
+            opacityTest,
             visibilityTest,
             optionals,
         ]
@@ -125,6 +127,8 @@ enum Generated: String {
             return BoxModelConditional(margin: 20, size: 120)
         case .shadowsTest:
             return ShadowsTest()
+        case .opacityTest:
+            return OpacityTest(selected: true)
         case .visibilityTest:
             return VisibilityTest(enabled: true)
         case .optionals:
@@ -170,6 +174,7 @@ enum Generated: String {
              .boxModelConditionalSmall,
              .boxModelConditionalLarge,
              .shadowsTest,
+             .opacityTest,
              .visibilityTest,
              .optionals,
              .vectorAsset,
