@@ -100,7 +100,7 @@ module Doc = {
 
   let tapVariables = (rootLayer: Types.layer, layer: Types.layer) => [
     SwiftAst.Builders.privateVariableDeclaration(
-      SwiftFormat.layerVariableName(rootLayer, layer, "onPress") /* onTap */,
+      SwiftFormat.layerName(layer.name) ++ "OnTap",
       Some(OptionalType(TypeName("(() -> Void)"))),
       None,
     ),
@@ -129,9 +129,7 @@ module Doc = {
       "throws": false,
       "body": [
         SwiftAst.Builders.functionCall(
-          [
-            SwiftFormat.layerVariableName(rootLayer, layer, "onPress?") /* onTap */,
-          ],
+          [SwiftFormat.layerName(layer.name) ++ "OnTap?"],
           [],
         ),
       ],

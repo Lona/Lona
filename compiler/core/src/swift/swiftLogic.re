@@ -79,9 +79,6 @@ let toSwiftAST =
       Ast.SwiftIdentifier(
         name |> Js.String.replace(".width", "WidthAnchorConstraint?.constant"),
       )
-    | (_, Ast.SwiftIdentifier(name))
-        when name |> Js.String.endsWith("onPress") =>
-      Ast.SwiftIdentifier(name |> Js.String.replace(".onPress", "OnPress"))
     /* -- UIKit -- */
     /* TODO: Make sure "borderRadius" without the "." doesn't match intermediate variables */
     | (UIKit, Ast.SwiftIdentifier(name))
@@ -118,6 +115,13 @@ let toSwiftAST =
       Ast.SwiftIdentifier(
         name |> Js.String.replace("pressed", "isHighlighted"),
       )
+    | (UIKit, Ast.SwiftIdentifier(name))
+        when name |> Js.String.endsWith("onPress") =>
+      switch (layer) {
+      | Some(layer) =>
+        Ast.SwiftIdentifier(SwiftFormat.layerName(layer.name) ++ "OnTap")
+      | None => Ast.SwiftIdentifier("Unknown interactive layer")
+      }
     /* -- AppKit -- */
     /* TODO: Make sure "borderRadius" without the "." doesn't match intermediate variables */
     | (AppKit, Ast.SwiftIdentifier(name))
@@ -149,6 +153,9 @@ let toSwiftAST =
     | (AppKit, Ast.SwiftIdentifier(name))
         when name |> Js.String.endsWith("pressed") =>
       Ast.SwiftIdentifier(name |> Js.String.replace(".pressed", "Pressed"))
+    | (AppKit, Ast.SwiftIdentifier(name))
+        when name |> Js.String.endsWith("onPress") =>
+      Ast.SwiftIdentifier(name |> Js.String.replace(".onPress", "OnPress"))
     | _ => initialValue
     };
   };

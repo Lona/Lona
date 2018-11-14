@@ -39,7 +39,7 @@ public class Button: LonaControlView {
 
   private var textViewTextStyle = TextStyles.button
 
-  private var onPress: (() -> Void)?
+  private var viewViewOnTap: (() -> Void)?
 
   private func setUpViews() {
     textView.numberOfLines = 0
@@ -79,7 +79,7 @@ public class Button: LonaControlView {
   private func update() {
     backgroundColor = Colors.blue100
     textView.attributedText = textViewTextStyle.apply(to: label)
-    onPress = onTap
+    viewViewOnTap = onTap
 
     if isHighlighted {
       backgroundColor = Colors.blue50
@@ -90,6 +90,6 @@ public class Button: LonaControlView {
   }
 
   @objc private func handleTapViewView() {
-    onPress?()
+    viewViewOnTap?()
   }
 }
