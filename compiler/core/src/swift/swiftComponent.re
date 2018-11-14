@@ -153,6 +153,43 @@ module Doc = {
       "init": None,
       "block":
         Some(
+          GetterSetterBlock({
+            "get": [
+              ReturnStatement(
+                Some(
+                  SwiftAst.Builders.memberExpression([
+                    "parameters",
+                    parameter.name |> ParameterKey.toString,
+                  ]),
+                ),
+              ),
+            ],
+            "set": [
+              BinaryExpression({
+                "left":
+                  SwiftAst.Builders.memberExpression([
+                    "parameters",
+                    parameter.name |> ParameterKey.toString,
+                  ]),
+                "operator": "=",
+                "right": SwiftIdentifier("newValue"),
+              }),
+            ],
+          }),
+        ),
+    });
+
+  let parametersModelVariable = () =>
+    VariableDeclaration({
+      "modifiers": [AccessLevelModifier(PublicModifier)],
+      "pattern":
+        IdentifierPattern({
+          "identifier": SwiftIdentifier("parameters"),
+          "annotation": Some(TypeName("Parameters")),
+        }),
+      "init": None,
+      "block":
+        Some(
           WillSetDidSetBlock({
             "willSet": None,
             "didSet":
@@ -699,6 +736,126 @@ module Doc = {
       "body": body,
     });
   };
+
+  let initParameterAssignment = (parameter: Decode.parameter) =>
+    BinaryExpression({
+      "left":
+        SwiftAst.Builders.memberExpression([
+          "self",
+          parameter.name |> ParameterKey.toString,
+        ]),
+      "operator": "=",
+      "right": SwiftIdentifier(parameter.name |> ParameterKey.toString),
+    });
+
+  let initIndividualParameters = (_config, swiftOptions, parameters) =>
+    InitializerDeclaration({
+      "modifiers": [
+        AccessLevelModifier(PublicModifier),
+        ConvenienceModifier,
+      ],
+      "parameters":
+        parameters
+        |> List.filter(param => !Parameter.isFunction(param))
+        |> List.map(initializerParameter(swiftOptions)),
+      "failable": None,
+      "throws": false,
+      "body": [
+        MemberExpression([
+          SwiftIdentifier("self"),
+          FunctionCallExpression({
+            "name": SwiftIdentifier("init"),
+            "arguments": [
+              FunctionCallArgument({
+                "name": None,
+                "value":
+                  FunctionCallExpression({
+                    "name": SwiftIdentifier("Parameters"),
+                    "arguments":
+                      parameters
+                      |> List.filter(param => !Parameter.isFunction(param))
+                      |> List.map((param: Decode.parameter) =>
+                           FunctionCallArgument({
+                             "name":
+                               Some(
+                                 SwiftIdentifier(
+                                   param.name |> ParameterKey.toString,
+                                 ),
+                               ),
+                             "value":
+                               SwiftIdentifier(
+                                 param.name |> ParameterKey.toString,
+                               ),
+                           })
+                         ),
+                  }),
+              }),
+            ],
+          }),
+        ]),
+      ],
+    });
+
+  let init = (_config, _swiftOptions, parameters, needsTracking) =>
+    InitializerDeclaration({
+      "modifiers": [AccessLevelModifier(PublicModifier)],
+      "parameters": [
+        Parameter({
+          "externalName": Some("_"),
+          "localName": "parameters",
+          "defaultValue": None,
+          "annotation": TypeName("Parameters"),
+        }),
+      ],
+      "failable": None,
+      "throws": false,
+      "body":
+        SwiftDocument.joinGroups(
+          Empty,
+          [
+            [
+              SwiftAst.BinaryExpression({
+                "left":
+                  SwiftAst.Builders.memberExpression(["self", "parameters"]),
+                "operator": "=",
+                "right": SwiftIdentifier("parameters"),
+              }),
+            ],
+            [
+              SwiftAst.Builders.functionCall(
+                ["super", "init"],
+                [(Some("frame"), [".zero"])],
+              ),
+            ],
+            [
+              SwiftAst.Builders.functionCall(["setUpViews"], []),
+              SwiftAst.Builders.functionCall(["setUpConstraints"], []),
+            ],
+            [SwiftAst.Builders.functionCall(["update"], [])],
+            needsTracking ? [AppkitPressable.addTrackingArea] : [],
+          ],
+        ),
+    });
+
+  let convenienceInit = () =>
+    SwiftAst.Builders.convenienceInit([
+      MemberExpression([
+        SwiftIdentifier("self"),
+        FunctionCallExpression({
+          "name": SwiftIdentifier("init"),
+          "arguments": [
+            FunctionCallArgument({
+              "name": None,
+              "value":
+                FunctionCallExpression({
+                  "name": SwiftIdentifier("Parameters"),
+                  "arguments": [],
+                }),
+            }),
+          ],
+        }),
+      ]),
+    ]);
 };
 
 let generate =
@@ -795,74 +952,6 @@ let generate =
       None,
     );
 
-  let initParameterAssignmentDoc = (parameter: Decode.parameter) =>
-    BinaryExpression({
-      "left":
-        SwiftAst.Builders.memberExpression([
-          "self",
-          parameter.name |> ParameterKey.toString,
-        ]),
-      "operator": "=",
-      "right": SwiftIdentifier(parameter.name |> ParameterKey.toString),
-    });
-
-  let initializerDoc = () =>
-    InitializerDeclaration({
-      "modifiers": [AccessLevelModifier(PublicModifier)],
-      "parameters":
-        parameters
-        |> List.filter(param => !Parameter.isFunction(param))
-        |> List.map(Doc.initializerParameter(swiftOptions)),
-      "failable": None,
-      "throws": false,
-      "body":
-        SwiftDocument.joinGroups(
-          Empty,
-          [
-            parameters
-            |> List.filter(param => !Parameter.isFunction(param))
-            |> List.map(initParameterAssignmentDoc),
-            [
-              SwiftAst.Builders.functionCall(
-                ["super", "init"],
-                [(Some("frame"), [".zero"])],
-              ),
-            ],
-            [
-              SwiftAst.Builders.functionCall(["setUpViews"], []),
-              SwiftAst.Builders.functionCall(["setUpConstraints"], []),
-            ],
-            [SwiftAst.Builders.functionCall(["update"], [])],
-            needsTracking ? [AppkitPressable.addTrackingArea] : [],
-          ],
-        ),
-    });
-  let convenienceInitializerDoc = () =>
-    SwiftAst.Builders.convenienceInit([
-      MemberExpression([
-        SwiftIdentifier("self"),
-        FunctionCallExpression({
-          "name": SwiftIdentifier("init"),
-          "arguments":
-            parameters
-            |> List.filter(param => !Parameter.isFunction(param))
-            |> List.map((param: Decode.parameter) =>
-                 FunctionCallArgument({
-                   "name":
-                     Some(
-                       SwiftIdentifier(param.name |> ParameterKey.toString),
-                     ),
-                   "value":
-                     SwiftDocument.defaultValueForLonaType(
-                       swiftOptions.framework,
-                       config,
-                       param.ltype,
-                     ),
-                 })
-               ),
-        }),
-      ]),
-    ]);
   let memberOrSelfExpression = (firstIdentifier, statements) =>
     switch (firstIdentifier) {
     | "self" => MemberExpression(statements)
@@ -966,17 +1055,32 @@ let generate =
                   Empty,
                   [
                     [Empty, LineComment("MARK: Lifecycle")],
-                    [initializerDoc()],
+                    [
+                      Doc.init(
+                        config,
+                        swiftOptions,
+                        parameters,
+                        needsTracking,
+                      ),
+                    ],
+                    [
+                      Doc.initIndividualParameters(
+                        config,
+                        swiftOptions,
+                        parameters,
+                      ),
+                    ],
                     parameters
                     |> List.filter(param => !Parameter.isFunction(param))
                     |> List.length > 0 ?
-                      [convenienceInitializerDoc()] : [],
+                      [Doc.convenienceInit()] : [],
                     [Doc.coderInitializer()],
                     needsTracking ? [AppkitPressable.deinitTrackingArea] : [],
-                    List.length(parameters) > 0 ?
-                      [LineComment("MARK: Public")] : [],
+                    [LineComment("MARK: Public")],
                     parameters
-                    |> List.map(Doc.parameterVariable(swiftOptions)),
+                    |> List.map(Doc.parameterVariable(swiftOptions))
+                    |> SwiftDocument.join(Empty),
+                    [Doc.parametersModelVariable()],
                     [LineComment("MARK: Private")],
                     needsTracking ? [AppkitPressable.trackingAreaVar] : [],
                     nonRootLayers |> List.map(viewVariableDoc),
@@ -1071,6 +1175,12 @@ let generate =
                 ),
             }),
           ],
+          SwiftViewModel.parametersExtension(
+            config,
+            swiftOptions,
+            name,
+            parameters,
+          ),
         ],
       ),
   });

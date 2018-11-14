@@ -94,6 +94,13 @@ and pattern =
 /* | AsPattern */
 and initializerBlock =
   | GetterBlock(list(node))
+  | GetterSetterBlock(
+      {
+        .
+        "get": list(node),
+        "set": list(node),
+      },
+    )
   | WillSetDidSetBlock(
       {
         .

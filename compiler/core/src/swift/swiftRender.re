@@ -638,6 +638,30 @@ and renderPattern = node =>
 and renderInitializerBlock = (node: SwiftAst.initializerBlock) =>
   switch (node) {
   | GetterBlock(list) => render(CodeBlock({"statements": list}))
+  | GetterSetterBlock(o) =>
+    let isSingleLine = statements =>
+      switch (statements) {
+      | [SwiftAst.IfStatement(_)] => false
+      | [_a] => true
+      | _ => false
+      };
+    let renderStatements = statements =>
+      if (isSingleLine(statements)) {
+        s("{ ") <+> (statements |> List.map(render) |> concat) <+> s(" }");
+      } else {
+        render(CodeBlock({"statements": statements}));
+      };
+    s("{")
+    <+> indent(
+          hardline
+          <+> s("get ")
+          <+> renderStatements(o##get)
+          <+> hardline
+          <+> s("set ")
+          <+> renderStatements(o##set),
+        )
+    <+> hardline
+    <+> s("}");
   | WillSetDidSetBlock(o) =>
     /* Special case some single-statement willSet/didSet and render them in a single line
        since they are common in our generated code and are easier to read than multiline */
