@@ -242,7 +242,17 @@ module StyledComponents = {
       ) => {
     let imageResizingComponents =
       rootLayer
-      |> Layer.imageResizingModes
+      |> Layer.flatten
+      |> List.filter(layer =>
+           imageNeedsWrapper(Layer.findParent(rootLayer, layer), layer)
+         )
+      |> List.map((layer: Types.layer) =>
+           switch (Layer.getStringParameterOpt(ResizeMode, layer.parameters)) {
+           | Some(value) => value
+           | None => "cover"
+           }
+         )
+      |> Sequence.dedupeMem
       |> List.map(imageResizingStyledComponentAst(config, options));
     let layerComponents =
       rootLayer

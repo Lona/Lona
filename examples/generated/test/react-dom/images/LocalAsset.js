@@ -13,13 +13,6 @@ export default class LocalAsset extends React.Component {
   }
 };
 
-let ImageResizeModeCover = styled.img({
-  width: "100%",
-  height: "100%",
-  objectFit: "cover",
-  position: "absolute"
-})
-
 let View = styled.div({
   alignItems: "flex-start",
   backgroundColor: colors.red400,
