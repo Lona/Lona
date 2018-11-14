@@ -3,7 +3,7 @@ import Foundation
 
 // MARK: - Button
 
-public class Button: UIView {
+public class Button: LonaControlView {
 
   // MARK: Lifecycle
 
@@ -39,9 +39,7 @@ public class Button: UIView {
 
   private var textViewTextStyle = TextStyles.button
 
-  private var hovered = false
-  private var pressed = false
-  private var onPress: (() -> Void)?
+  private var onTapViewView: (() -> Void)?
 
   private func setUpViews() {
     textView.numberOfLines = 0
@@ -50,6 +48,9 @@ public class Button: UIView {
 
     textViewTextStyle = TextStyles.button
     textView.attributedText = textViewTextStyle.apply(to: textView.attributedText ?? NSAttributedString())
+
+    addTarget(self, action: #selector(handleTapViewView), for: .touchUpInside)
+    onHighlight = update
   }
 
   private func setUpConstraints() {
@@ -78,15 +79,17 @@ public class Button: UIView {
   private func update() {
     backgroundColor = Colors.blue100
     textView.attributedText = textViewTextStyle.apply(to: label)
-    onPress = onTap
-    if hovered {
-      backgroundColor = Colors.blue200
-    }
-    if pressed {
+    onTapViewView = onTap
+
+    if isHighlighted {
       backgroundColor = Colors.blue50
     }
     if secondary {
       backgroundColor = Colors.lightblue100
     }
+  }
+
+  @objc private func handleTapViewView() {
+    onTapViewView?()
   }
 }

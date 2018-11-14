@@ -414,6 +414,13 @@ let logicAssignmentsFromLayerParameters = layer => {
   layerMap^;
 };
 
+let isInteractive = (logic: Logic.logicNode, layer: Types.layer) =>
+  [ParameterKey.OnPress, ParameterKey.Hovered, ParameterKey.Pressed]
+  |> List.map(ParameterKey.toString)
+  |> List.exists(variableName =>
+       Logic.isLayerParameterAssigned(logic, variableName, layer)
+     );
+
 let parameterIsStyle = key => getParameterCategory(key) == Style;
 
 let splitParamsMap = params =>

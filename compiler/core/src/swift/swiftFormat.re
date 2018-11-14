@@ -39,3 +39,6 @@ let vectorVariableName = (vectorAssignment: Layer.vectorAssignment): string =>
   ++ Format.upperFirst(
        Layer.vectorParamKeyToString(vectorAssignment.paramKey),
      );
+
+let tapHandler = (name: string): string =>
+  "onTap" ++ Format.upperFirst(layerName(name));

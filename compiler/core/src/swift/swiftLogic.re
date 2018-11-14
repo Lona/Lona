@@ -79,15 +79,6 @@ let toSwiftAST =
       Ast.SwiftIdentifier(
         name |> Js.String.replace(".width", "WidthAnchorConstraint?.constant"),
       )
-    | (_, Ast.SwiftIdentifier(name))
-        when name |> Js.String.endsWith("onPress") =>
-      Ast.SwiftIdentifier(name |> Js.String.replace(".onPress", "OnPress"))
-    | (_, Ast.SwiftIdentifier(name))
-        when name |> Js.String.endsWith("hovered") =>
-      Ast.SwiftIdentifier(name |> Js.String.replace(".hovered", "Hovered"))
-    | (_, Ast.SwiftIdentifier(name))
-        when name |> Js.String.endsWith("pressed") =>
-      Ast.SwiftIdentifier(name |> Js.String.replace(".pressed", "Pressed"))
     /* -- UIKit -- */
     /* TODO: Make sure "borderRadius" without the "." doesn't match intermediate variables */
     | (UIKit, Ast.SwiftIdentifier(name))
@@ -116,6 +107,21 @@ let toSwiftAST =
       Ast.SwiftIdentifier(
         name |> Js.String.replace("borderWidth", "layer.borderWidth"),
       )
+    | (UIKit, Ast.SwiftIdentifier(name))
+        when name |> Js.String.endsWith("hovered") =>
+      Ast.LiteralExpression(Boolean(false))
+    | (UIKit, Ast.SwiftIdentifier(name))
+        when name |> Js.String.endsWith("pressed") =>
+      Ast.SwiftIdentifier(
+        name |> Js.String.replace("pressed", "isHighlighted"),
+      )
+    | (UIKit, Ast.SwiftIdentifier(name))
+        when name |> Js.String.endsWith("onPress") =>
+      switch (layer) {
+      | Some(layer) =>
+        Ast.SwiftIdentifier(SwiftFormat.tapHandler(layer.name))
+      | None => Ast.SwiftIdentifier("Unknown interactive layer")
+      }
     /* -- AppKit -- */
     /* TODO: Make sure "borderRadius" without the "." doesn't match intermediate variables */
     | (AppKit, Ast.SwiftIdentifier(name))
@@ -141,6 +147,15 @@ let toSwiftAST =
       Ast.SwiftIdentifier(
         name |> Js.String.replace("numberOfLines", "maximumNumberOfLines"),
       )
+    | (AppKit, Ast.SwiftIdentifier(name))
+        when name |> Js.String.endsWith("hovered") =>
+      Ast.SwiftIdentifier(name |> Js.String.replace(".hovered", "Hovered"))
+    | (AppKit, Ast.SwiftIdentifier(name))
+        when name |> Js.String.endsWith("pressed") =>
+      Ast.SwiftIdentifier(name |> Js.String.replace(".pressed", "Pressed"))
+    | (AppKit, Ast.SwiftIdentifier(name))
+        when name |> Js.String.endsWith("onPress") =>
+      Ast.SwiftIdentifier(name |> Js.String.replace(".onPress", "OnPress"))
     | _ => initialValue
     };
   };
@@ -380,6 +395,26 @@ let toSwiftAST =
       let bIsOptional = LonaValue.isOptionalType(Logic.getValueType(b));
 
       switch (left, operator, right) {
+      | (
+          Ast.LiteralExpression(Boolean(boolA)),
+          "==",
+          Ast.LiteralExpression(Boolean(boolB)),
+        ) =>
+        if (boolA == boolB) {
+          Ast.StatementListHelper(body);
+        } else {
+          Empty;
+        }
+      | (
+          Ast.LiteralExpression(Boolean(boolA)),
+          "!=",
+          Ast.LiteralExpression(Boolean(boolB)),
+        ) =>
+        if (boolA != boolB) {
+          Ast.StatementListHelper(body);
+        } else {
+          Empty;
+        }
       | (Ast.LiteralExpression(Boolean(true)), "==", condition)
       | (condition, "==", Ast.LiteralExpression(Boolean(true)))
           when !aIsOptional && !bIsOptional =>

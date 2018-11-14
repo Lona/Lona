@@ -528,6 +528,7 @@ module Ast = {
     let encodableFunction = (body: list(SwiftAst.node)) =>
       FunctionDeclaration({
         "name": "encode",
+        "attributes": [],
         "modifiers": [AccessLevelModifier(PublicModifier)],
         "parameters": [
           Parameter({

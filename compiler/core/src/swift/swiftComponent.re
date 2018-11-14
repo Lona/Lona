@@ -12,12 +12,18 @@ module Naming = {
         config: Config.t,
         pluginContext: Plugin.context,
         swiftOptions: SwiftOptions.options,
+        logic: Logic.logicNode,
         componentName: string,
         layer: Types.layer,
       ) => {
     let typeName =
       switch (swiftOptions.framework, layer.typeName) {
-      | (UIKit, Types.View) => "UIView"
+      | (UIKit, Types.View) =>
+        if (Layer.isInteractive(logic, layer)) {
+          "LonaControlView";
+        } else {
+          "UIView";
+        }
       | (UIKit, Text) => "UILabel"
       | (UIKit, Image) => "BackgroundImageView"
       | (AppKit, Types.View) => "NSBox"
@@ -90,6 +96,44 @@ module Doc = {
       Some(OptionalType(TypeName("(() -> Void)"))),
       None,
     ),
+  ];
+
+  let tapVariables = (rootLayer: Types.layer, layer: Types.layer) => [
+    SwiftAst.Builders.privateVariableDeclaration(
+      SwiftFormat.tapHandler(layer.name),
+      Some(OptionalType(TypeName("(() -> Void)"))),
+      None,
+    ),
+  ];
+
+  let interactiveVariables =
+      (
+        framework: SwiftOptions.framework,
+        rootLayer: Types.layer,
+        layer: Types.layer,
+      ) => [
+    switch (framework) {
+    | UIKit => tapVariables(rootLayer, layer)
+    | AppKit => pressableVariables(rootLayer, layer)
+    },
+  ];
+
+  let tapHandler = (layer: Types.layer) => [
+    FunctionDeclaration({
+      "name":
+        "handleTap" ++ Format.upperFirst(SwiftFormat.layerName(layer.name)),
+      "attributes": ["@objc"],
+      "modifiers": [AccessLevelModifier(PrivateModifier)],
+      "parameters": [],
+      "result": None,
+      "throws": false,
+      "body": [
+        SwiftAst.Builders.functionCall(
+          [SwiftFormat.tapHandler(layer.name) ++ "?"],
+          [],
+        ),
+      ],
+    }),
   ];
 
   let parameterVariable =
@@ -221,6 +265,7 @@ module Doc = {
         swiftOptions: SwiftOptions.options,
         config: Config.t,
         getComponent,
+        logic,
         assignmentsFromLayerParameters,
         assignmentsFromLogic,
         layerMemberExpression,
@@ -407,8 +452,47 @@ module Doc = {
           }),
         ]
       };
+    let addInteractionHandlers = (layer: Types.layer) => [
+      FunctionCallExpression({
+        "name":
+          layerMemberExpression(layer, [SwiftIdentifier("addTarget")]),
+        "arguments": [
+          FunctionCallArgument({
+            "name": None,
+            "value": SwiftIdentifier("self"),
+          }),
+          FunctionCallArgument({
+            "name": Some(SwiftIdentifier("action")),
+            "value":
+              SwiftAst.Builders.functionCall(
+                ["#selector"],
+                [
+                  (
+                    None,
+                    [
+                      "handleTap"
+                      ++ Format.upperFirst(SwiftFormat.layerName(layer.name)),
+                    ],
+                  ),
+                ],
+              ),
+          }),
+          FunctionCallArgument({
+            "name": Some(SwiftIdentifier("for")),
+            "value": SwiftIdentifier(".touchUpInside"),
+          }),
+        ],
+      }),
+      BinaryExpression({
+        "left":
+          layerMemberExpression(layer, [SwiftIdentifier("onHighlight")]),
+        "operator": "=",
+        "right": SwiftIdentifier("update"),
+      }),
+    ];
     FunctionDeclaration({
       "name": "setUpViews",
+      "attributes": [],
       "modifiers": [AccessLevelModifier(PrivateModifier)],
       "parameters": [],
       "result": None,
@@ -420,6 +504,15 @@ module Doc = {
             Layer.flatmap(resetViewStyling, rootLayer) |> List.concat,
             Layer.flatmapParent(addSubviews, rootLayer) |> List.concat,
             setUpDefaultsDoc(),
+            switch (swiftOptions.framework) {
+            | UIKit =>
+              rootLayer
+              |> Layer.flatten
+              |> List.filter(Layer.isInteractive(logic))
+              |> List.map(addInteractionHandlers)
+              |> List.concat
+            | AppKit => []
+            },
           ],
         ),
     });
@@ -598,6 +691,7 @@ module Doc = {
 
     FunctionDeclaration({
       "name": "update",
+      "attributes": [],
       "modifiers": [AccessLevelModifier(PrivateModifier)],
       "parameters": [],
       "result": None,
@@ -660,7 +754,14 @@ let generate =
           swiftOptions,
           assignmentsFromLayerParameters,
           layer,
-          Naming.layerType(config, pluginContext, swiftOptions, name, layer),
+          Naming.layerType(
+            config,
+            pluginContext,
+            swiftOptions,
+            logic,
+            name,
+            layer,
+          ),
         ),
       ),
     );
@@ -833,7 +934,14 @@ let generate =
         config.plugins,
         pluginContext,
         name,
-        swiftOptions.framework == UIKit ? "UIView" : "NSBox",
+        switch (
+          swiftOptions.framework,
+          Layer.isInteractive(logic, rootLayer),
+        ) {
+        | (UIKit, true) => "LonaControlView"
+        | (UIKit, false) => "UIView"
+        | (AppKit, _) => "NSBox"
+        },
       ),
     );
   TopLevelDeclaration({
@@ -876,7 +984,13 @@ let generate =
                     |> List.filter(Layer.isTextLayer)
                     |> List.map(textStyleVariableDoc),
                     pressableLayers
-                    |> List.map(Doc.pressableVariables(rootLayer))
+                    |> List.map(
+                         Doc.interactiveVariables(
+                           swiftOptions.framework,
+                           rootLayer,
+                         ),
+                       )
+                    |> List.concat
                     |> List.concat,
                     Constraint.conditionalConstraints(visibilityCombinations)
                     @ (
@@ -902,6 +1016,7 @@ let generate =
                         swiftOptions,
                         config,
                         getComponent,
+                        logic,
                         assignmentsFromLayerParameters,
                         assignmentsFromLogic,
                         layerMemberExpression,
@@ -944,6 +1059,13 @@ let generate =
                         rootLayer,
                         pressableLayers,
                       ) :
+                      [],
+                    swiftOptions.framework == UIKit ?
+                      rootLayer
+                      |> Layer.flatten
+                      |> List.filter(Layer.isInteractive(logic))
+                      |> List.map(Doc.tapHandler)
+                      |> SwiftDocument.joinGroups(Empty) :
                       [],
                   ],
                 ),

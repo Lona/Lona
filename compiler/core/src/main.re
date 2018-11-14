@@ -245,57 +245,31 @@ let convertComponent = (config: Config.t, filename: string) => {
 let copyStaticFiles = outputDirectory =>
   switch (target) {
   | Types.Swift =>
-    let framework =
+    let staticFiles =
+      ["TextStyle", "CGSize+Resizing"]
+      @ (
+        switch (swiftOptions.framework) {
+        | UIKit => ["LonaControlView", "Shadow"]
+        | AppKit => ["LNATextField", "LNAImageView", "NSImage+Resizing"]
+        }
+      );
+
+    let frameworkExtension =
       switch (swiftOptions.framework) {
       | AppKit => "appkit"
       | UIKit => "uikit"
       };
-    switch (swiftOptions.framework) {
-    | UIKit =>
-      copySync(
-        concat(
-          [%bs.raw {| __dirname |}],
-          "static/swift/Shadow." ++ framework ++ ".swift",
-        ),
-        concat(outputDirectory, "Shadow.swift"),
-      )
-    | AppKit =>
-      copySync(
-        concat(
-          [%bs.raw {| __dirname |}],
-          "static/swift/LNATextField." ++ framework ++ ".swift",
-        ),
-        concat(outputDirectory, "LNATextField.swift"),
-      );
-      copySync(
-        concat(
-          [%bs.raw {| __dirname |}],
-          "static/swift/LNAImageView." ++ framework ++ ".swift",
-        ),
-        concat(outputDirectory, "LNAImageView.swift"),
-      );
-      copySync(
-        concat(
-          [%bs.raw {| __dirname |}],
-          "static/swift/NSImage+Resizing." ++ framework ++ ".swift",
-        ),
-        concat(outputDirectory, "NSImage+Resizing.swift"),
-      );
-    };
-    copySync(
-      concat(
-        [%bs.raw {| __dirname |}],
-        "static/swift/TextStyle." ++ framework ++ ".swift",
-      ),
-      concat(outputDirectory, "TextStyle.swift"),
-    );
-    copySync(
-      concat(
-        [%bs.raw {| __dirname |}],
-        "static/swift/CGSize+Resizing." ++ framework ++ ".swift",
-      ),
-      concat(outputDirectory, "CGSize+Resizing.swift"),
-    );
+
+    staticFiles
+    |> List.iter(file =>
+         copySync(
+           concat(
+             [%bs.raw {| __dirname |}],
+             "static/swift/" ++ file ++ "." ++ frameworkExtension ++ ".swift",
+           ),
+           concat(outputDirectory, file ++ ".swift"),
+         )
+       );
   | _ => ()
   };
 

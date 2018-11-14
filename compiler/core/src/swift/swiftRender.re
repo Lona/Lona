@@ -346,6 +346,10 @@ let rec render = ast: Prettier.Doc.t('a) =>
       concat([
         group(
           concat([
+            o##attributes
+            |> List.map(s)
+            |> List.map(x => x <+> s(" "))
+            |> concat,
             o##modifiers
             |> List.map(renderDeclarationModifier)
             |> join(s(" ")),

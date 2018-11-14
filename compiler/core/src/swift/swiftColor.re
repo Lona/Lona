@@ -70,6 +70,7 @@ let render =
     let colorFuncDoc = () =>
       FunctionDeclaration({
         "name": "color",
+        "attributes": [],
         "modifiers": [],
         "parameters": [
           Parameter({
