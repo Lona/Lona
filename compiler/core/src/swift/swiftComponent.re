@@ -1181,6 +1181,12 @@ let generate =
             name,
             parameters,
           ),
+          SwiftViewModel.viewModelExtension(
+            config,
+            swiftOptions,
+            name,
+            parameters,
+          ),
         ],
       ),
   });

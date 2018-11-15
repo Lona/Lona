@@ -4,6 +4,7 @@ type file('a) = {
 };
 
 type t = {
+  componentNames: list(string),
   plugins: list(Plugin.t),
   colorsFile: file(list(Color.t)),
   textStylesFile: file(TextStyle.file),
@@ -69,6 +70,13 @@ module Workspace = {
       |> then_(array => resolve(Array.to_list(array)))
     );
 
+  let componentNames = (workspacePath: string): list(string) => {
+    let searchPath = "**/*.component";
+    Glob.sync(Path.join([|workspacePath, searchPath|]))
+    |> Array.to_list
+    |> List.map(file => Node.Path.basename_ext(file, ".component"));
+  };
+
   let compilerFile = (workspacePath: string): list(Plugin.t) => {
     let path = Path.join([|workspacePath, "compiler.js"|]);
     let path = Path.resolve(path, "");
@@ -109,6 +117,7 @@ let load = path: Js.Promise.t(t) =>
       Workspace.svgFiles(workspacePath)
       |> then_(svgFiles =>
            resolve({
+             componentNames: Workspace.componentNames(workspacePath),
              plugins: Workspace.compilerFile(workspacePath),
              colorsFile: Workspace.colorsFile(workspacePath),
              textStylesFile: Workspace.textStylesFile(workspacePath),

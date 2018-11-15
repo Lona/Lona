@@ -466,6 +466,12 @@ let rec render = ast: Prettier.Doc.t('a) =>
     | Some(value) =>
       group(s("case ") <+> name <+> s(" = ") <+> render(value))
     };
+  | ConditionList(v) =>
+    v
+    |> List.map(render)
+    |> join(concat([s(","), line]))
+    |> indent
+    |> group
   | CaseCondition(o) =>
     group(
       s("case ")
@@ -707,16 +713,12 @@ and renderInitializerBlock = (node: SwiftAst.initializerBlock) =>
     };
   };
 
+let printerOptions = {"printWidth": 120, "tabWidth": 2, "useTabs": false};
+
 let toString = ast =>
   ast
   |> render
   |> (
-    doc => {
-      let printerOptions = {
-        "printWidth": 120,
-        "tabWidth": 2,
-        "useTabs": false,
-      };
-      Prettier.Doc.Printer.printDocToString(doc, printerOptions)##formatted;
-    }
+    doc =>
+      Prettier.Doc.Printer.printDocToString(doc, printerOptions)##formatted
   );

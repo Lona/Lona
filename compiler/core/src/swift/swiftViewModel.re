@@ -121,7 +121,7 @@ let initParameter =
     })
   );
 
-let initParameterAssignmentDoc = (param: Types.parameter) =>
+let initParameterAssignment = (param: Types.parameter) =>
   SwiftAst.(
     BinaryExpression({
       "left":
@@ -143,7 +143,7 @@ let init =
       "parameters": parameters |> List.map(initParameter(swiftOptions)),
       "failable": None,
       "throws": false,
-      "body": parameters |> List.map(initParameterAssignmentDoc),
+      "body": parameters |> List.map(initParameterAssignment),
     })
   );
 
@@ -190,6 +190,104 @@ let convenienceInit =
     })
   );
 
+module Model = {
+  open SwiftAst;
+
+  let init = () =>
+    InitializerDeclaration({
+      "modifiers": [AccessLevelModifier(PublicModifier)],
+      "parameters": [
+        Parameter({
+          "externalName": Some("_"),
+          "localName": "parameters",
+          "defaultValue": None,
+          "annotation": TypeName("Parameters"),
+        }),
+      ],
+      "failable": None,
+      "throws": false,
+      "body": [
+        SwiftAst.BinaryExpression({
+          "left": SwiftAst.Builders.memberExpression(["self", "parameters"]),
+          "operator": "=",
+          "right": SwiftIdentifier("parameters"),
+        }),
+      ],
+    });
+
+  let initWithIndividualParameters =
+      (swiftOptions: SwiftOptions.options, parameters: list(Types.parameter))
+      : SwiftAst.node =>
+    InitializerDeclaration({
+      "modifiers": [AccessLevelModifier(PublicModifier)],
+      "parameters": parameters |> List.map(initParameter(swiftOptions)),
+      "failable": None,
+      "throws": false,
+      "body": [
+        MemberExpression([
+          SwiftIdentifier("self"),
+          FunctionCallExpression({
+            "name": SwiftIdentifier("init"),
+            "arguments": [
+              FunctionCallArgument({
+                "name": None,
+                "value":
+                  FunctionCallExpression({
+                    "name": SwiftIdentifier("Parameters"),
+                    "arguments":
+                      parameters
+                      |> List.map((param: Decode.parameter) =>
+                           FunctionCallArgument({
+                             "name":
+                               Some(
+                                 SwiftIdentifier(
+                                   param.name |> ParameterKey.toString,
+                                 ),
+                               ),
+                             "value":
+                               SwiftIdentifier(
+                                 param.name |> ParameterKey.toString,
+                               ),
+                           })
+                         ),
+                  }),
+              }),
+            ],
+          }),
+        ]),
+      ],
+    });
+
+  let parametersVariable = () =>
+    VariableDeclaration({
+      "modifiers": [AccessLevelModifier(PublicModifier)],
+      "pattern":
+        IdentifierPattern({
+          "identifier": SwiftIdentifier("parameters"),
+          "annotation": Some(TypeName("Parameters")),
+        }),
+      "init": None,
+      "block": None,
+    });
+
+  let typeVariable = name =>
+    VariableDeclaration({
+      "modifiers": [AccessLevelModifier(PublicModifier)],
+      "pattern":
+        IdentifierPattern({
+          "identifier": SwiftIdentifier("type"),
+          "annotation": Some(TypeName("String")),
+        }),
+      "init": None,
+      "block":
+        Some(
+          GetterBlock([
+            ReturnStatement(Some(LiteralExpression(String(name)))),
+          ]),
+        ),
+    });
+};
+
 let parametersStruct =
     (
       config: Config.t,
@@ -227,6 +325,43 @@ let parametersStruct =
   );
 };
 
+let viewModelStruct =
+    (
+      config: Config.t,
+      swiftOptions: SwiftOptions.options,
+      parameters: list(Types.parameter),
+      className: string,
+    )
+    : SwiftAst.node => {
+  let parameters = sortedParameters(parameters);
+
+  SwiftAst.(
+    StructDeclaration({
+      "name": "Model",
+      "inherits": [TypeName("LonaViewModel"), TypeName("Equatable")],
+      "modifier": Some(PublicModifier),
+      "body":
+        [
+          [Model.parametersVariable(), Model.typeVariable(className)],
+          [Model.init()],
+          [Model.initWithIndividualParameters(swiftOptions, parameters)],
+          List.length(
+            parameters
+            |> List.filter(param =>
+                 !(
+                   SwiftComponentParameter.isFunction(param)
+                   || LonaValue.isOptionalType(param.ltype)
+                 )
+               ),
+          )
+          > 0 ?
+            [convenienceInit(config, swiftOptions, parameters)] : [],
+        ]
+        |> SwiftDocument.joinGroups(Empty),
+    })
+  );
+};
+
 let parametersExtension =
     (
       config: Config.t,
@@ -236,7 +371,7 @@ let parametersExtension =
     )
     : list(SwiftAst.node) =>
   SwiftAst.[
-    LineComment("MARK: - " ++ "Parameters"),
+    LineComment("MARK: - Parameters"),
     Empty,
     ExtensionDeclaration({
       "name": className,
@@ -244,5 +379,29 @@ let parametersExtension =
       "where": None,
       "modifier": None,
       "body": [parametersStruct(config, swiftOptions, parameters)],
+    }),
+  ];
+
+/* struct RestaurantCardModel: LonaViewModel {
+     var type: String { return "RestaurantCard" }
+     var parameters: RestaurantCard.Parameters
+   } */
+let viewModelExtension =
+    (
+      config: Config.t,
+      swiftOptions: SwiftOptions.options,
+      className: string,
+      parameters: list(Types.parameter),
+    )
+    : list(SwiftAst.node) =>
+  SwiftAst.[
+    LineComment("MARK: - Model"),
+    Empty,
+    ExtensionDeclaration({
+      "name": className,
+      "protocols": [],
+      "where": None,
+      "modifier": None,
+      "body": [viewModelStruct(config, swiftOptions, parameters, className)],
     }),
   ];

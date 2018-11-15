@@ -288,6 +288,7 @@ and node =
         "value": option(node),
       },
     )
+  | ConditionList(list(node))
   | OptionalBindingCondition(
       {
         .

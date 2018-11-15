@@ -357,69 +357,87 @@ let convertWorkspace = (workspace, output) =>
        };
 
        copyStaticFiles(toDirectory);
-       Glob.glob(
-         concat(fromDirectory, "**/*.component"),
-         (_, files) => {
-           let files =
-             Array.to_list(files)
-             |> List.filter(file =>
-                  switch (options.filterComponents) {
-                  | Some(value) => Js.Re.test(file, Js.Re.fromString(value))
-                  | None => true
-                  }
-                );
-           let processFile = file => {
-             let fromRelativePath =
-               Path.relative(~from=fromDirectory, ~to_=file, ());
-             let toRelativePath =
-               concat(
-                 Path.dirname(fromRelativePath),
-                 Path.basename_ext(fromRelativePath, ".component"),
-               )
-               ++ targetExtension;
-             let outputPath = Path.join([|toDirectory, toRelativePath|]);
-             Js.log(
-               Path.join([|workspace, fromRelativePath|])
-               ++ "=>"
-               ++ Path.join([|output, toRelativePath|]),
-             );
-             switch (convertComponent(config, file)) {
-             | exception (Json_decode.DecodeError(reason)) =>
-               Js.log("Failed to decode " ++ file);
-               Js.log(reason);
-             | exception (Decode.UnknownParameter(name)) =>
-               Js.log("Unknown parameter: " ++ name)
-             | exception (Decode.UnknownExprType(name)) =>
-               Js.log("Unknown expr name: " ++ name)
-             | exception e =>
-               Js.log("Unknown error");
-               Js.log(e);
-             | contents =>
-               ensureDirSync(Path.dirname(outputPath));
-               let (contentsAbove, contentsBelow) =
-                 switch (Fs.readFileAsUtf8Sync(outputPath)) {
-                 | existing => (
-                     findContentsAbove(existing),
-                     findContentsBelow(existing),
-                   )
-                 | exception _ => (None, None)
-                 };
-               let contents =
-                 switch (contentsAbove) {
-                 | Some(contentsAbove) => contentsAbove ++ contents
-                 | None => contents
-                 };
-               let contents =
-                 switch (contentsBelow) {
-                 | Some(contentsBelow) => contents ++ contentsBelow
-                 | None => contents
-                 };
-               Fs.writeFileSync(outputPath, contents, `utf8);
-             };
-           };
-           files |> List.iter(processFile);
-         },
-       );
+
+       let successfulComponentNames =
+         Glob.sync(concat(fromDirectory, "**/*.component"))
+         |> Array.to_list
+         |> List.filter(file =>
+              switch (options.filterComponents) {
+              | Some(value) => Js.Re.test(file, Js.Re.fromString(value))
+              | None => true
+              }
+            )
+         |> List.map(file => {
+              let fromRelativePath =
+                Path.relative(~from=fromDirectory, ~to_=file, ());
+              let toRelativePath =
+                concat(
+                  Path.dirname(fromRelativePath),
+                  Path.basename_ext(fromRelativePath, ".component"),
+                )
+                ++ targetExtension;
+              let outputPath = Path.join([|toDirectory, toRelativePath|]);
+              Js.log(
+                Path.join([|workspace, fromRelativePath|])
+                ++ "=>"
+                ++ Path.join([|output, toRelativePath|]),
+              );
+              switch (convertComponent(config, file)) {
+              | exception (Json_decode.DecodeError(reason)) =>
+                Js.log("Failed to decode " ++ file);
+                Js.log(reason);
+                None;
+              | exception (Decode.UnknownParameter(name)) =>
+                Js.log("Unknown parameter: " ++ name);
+                None;
+              | exception (Decode.UnknownExprType(name)) =>
+                Js.log("Unknown expr name: " ++ name);
+                None;
+              | exception e =>
+                Js.log("Unknown error");
+                Js.log(e);
+                None;
+              | contents =>
+                ensureDirSync(Path.dirname(outputPath));
+                let (contentsAbove, contentsBelow) =
+                  switch (Fs.readFileAsUtf8Sync(outputPath)) {
+                  | existing => (
+                      findContentsAbove(existing),
+                      findContentsBelow(existing),
+                    )
+                  | exception _ => (None, None)
+                  };
+                let contents =
+                  switch (contentsAbove) {
+                  | Some(contentsAbove) => contentsAbove ++ contents
+                  | None => contents
+                  };
+                let contents =
+                  switch (contentsBelow) {
+                  | Some(contentsBelow) => contents ++ contentsBelow
+                  | None => contents
+                  };
+                Fs.writeFileSync(outputPath, contents, `utf8);
+
+                Some(Path.basename_ext(fromRelativePath, ".component"));
+              };
+            })
+         |> Sequence.compact;
+
+       if (target == Types.Swift && swiftOptions.framework == UIKit) {
+         Fs.writeFileSync(
+           concat(toDirectory, "LonaCollectionView.swift"),
+           SwiftCollectionView.generate(
+             config,
+             options,
+             swiftOptions,
+             findComponent(config.workspacePath),
+             successfulComponentNames,
+           ),
+           `utf8,
+         );
+       };
+
        Glob.glob(
          concat(fromDirectory, "**/*.png"),
          (_, files) => {
