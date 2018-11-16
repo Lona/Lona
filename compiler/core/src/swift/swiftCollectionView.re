@@ -6,12 +6,6 @@ let template =
     ) => {j|
 import UIKit
 
-// MARK: - LonaViewModel
-
-public protocol LonaViewModel {
-  var type: String { get }
-}
-
 // MARK: - LonaCollectionViewCell
 
 public class LonaCollectionViewCell<T: UIView>: UICollectionViewCell {

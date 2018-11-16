@@ -246,7 +246,7 @@ let copyStaticFiles = outputDirectory =>
   switch (target) {
   | Types.Swift =>
     let staticFiles =
-      ["TextStyle", "CGSize+Resizing"]
+      ["TextStyle", "CGSize+Resizing", "LonaViewModel"]
       @ (
         switch (swiftOptions.framework) {
         | UIKit => ["LonaControlView", "Shadow"]
