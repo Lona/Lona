@@ -136,7 +136,14 @@ public class LonaCollectionView: UICollectionView, UICollectionViewDataSource, U
 
   // MARK: Data Source
 
-  var items: [LonaViewModel] = []
+  var items: [LonaViewModel] = [] {
+    didSet {
+      let previousOffset = contentOffset
+      reloadData()
+      layoutIfNeeded()
+      contentOffset = previousOffset
+    }
+  }
 
   public func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
     return items.count
