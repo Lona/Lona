@@ -98,6 +98,77 @@ module Doc = {
     ),
   ];
 
+  let nestedInteractiveHitTest = (rootLayer: Types.layer) => [
+    VariableDeclaration({
+      "modifiers": [AccessLevelModifier(PublicModifier)],
+      "pattern":
+        IdentifierPattern({
+          "identifier": SwiftIdentifier("isRootControlTrackingEnabled"),
+          "annotation": None,
+        }),
+      "init": Some(LiteralExpression(Boolean(true))),
+      "block": None,
+    }),
+    Empty,
+    FunctionDeclaration({
+      "name": "hitTest",
+      "attributes": [],
+      "modifiers": [OverrideModifier, AccessLevelModifier(PublicModifier)],
+      "parameters": [
+        Parameter({
+          "externalName": Some("_"),
+          "localName": "point",
+          "annotation": TypeName("CGPoint"),
+          "defaultValue": None,
+        }),
+        Parameter({
+          "externalName": Some("with"),
+          "localName": "event",
+          "annotation": TypeName("UIEvent?"),
+          "defaultValue": None,
+        }),
+      ],
+      "result": Some(TypeName("UIView?")),
+      "throws": false,
+      "body": [
+        ConstantDeclaration({
+          "modifiers": [],
+          "init":
+            Some(
+              Builders.functionCall(
+                ["super", "hitTest"],
+                [(None, ["point"]), (Some("with"), ["event"])],
+              ),
+            ),
+          "pattern":
+            IdentifierPattern({
+              "identifier": SwiftIdentifier("result"),
+              "annotation": None,
+            }),
+        }),
+        IfStatement({
+          "condition":
+            BinaryExpression({
+              "left":
+                BinaryExpression({
+                  "left": SwiftIdentifier("result"),
+                  "operator": "==",
+                  "right": SwiftIdentifier("self"),
+                }),
+              "operator": "&&",
+              "right":
+                PrefixExpression({
+                  operator: "!",
+                  expression: SwiftIdentifier("isRootControlTrackingEnabled"),
+                }),
+            }),
+          "block": [ReturnStatement(Some(LiteralExpression(Nil)))],
+        }),
+        ReturnStatement(Some(SwiftIdentifier("result"))),
+      ],
+    }),
+  ];
+
   let tapVariables = (rootLayer: Types.layer, layer: Types.layer) => [
     SwiftAst.Builders.privateVariableDeclaration(
       SwiftFormat.tapHandler(layer.name),
@@ -1171,6 +1242,13 @@ let generate =
                       |> List.map(Doc.tapHandler)
                       |> SwiftDocument.joinGroups(Empty) :
                       [],
+                    swiftOptions.framework == UIKit
+                    && Layer.isInteractive(logic, rootLayer)
+                    && rootLayer
+                    |> Layer.flatten
+                    |> List.filter(Layer.isInteractive(logic))
+                    |> List.length > 1 ?
+                      Doc.nestedInteractiveHitTest(rootLayer) : [],
                   ],
                 ),
             }),

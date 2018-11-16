@@ -116,7 +116,7 @@ let toSwiftAST =
     | (UIKit, Ast.SwiftIdentifier(name))
         when name |> Js.String.endsWith("pressed") =>
       Ast.SwiftIdentifier(
-        name |> Js.String.replace("pressed", "isHighlighted"),
+        name |> Js.String.replace("pressed", "showsHighlight"),
       )
     | (UIKit, Ast.SwiftIdentifier(name))
         when name |> Js.String.endsWith("onPress") =>

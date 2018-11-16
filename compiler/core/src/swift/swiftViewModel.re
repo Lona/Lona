@@ -382,10 +382,6 @@ let parametersExtension =
     }),
   ];
 
-/* struct RestaurantCardModel: LonaViewModel {
-     var type: String { return "RestaurantCard" }
-     var parameters: RestaurantCard.Parameters
-   } */
 let viewModelExtension =
     (
       config: Config.t,

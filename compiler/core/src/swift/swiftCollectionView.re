@@ -1,4 +1,9 @@
-let template = (cellRegistration: string, cellConfiguration: string) => {j|
+let template =
+    (
+      cellRegistration: string,
+      cellConfiguration: string,
+      cellSelection: string,
+    ) => {j|
 import UIKit
 
 // MARK: - LonaViewModel
@@ -105,7 +110,7 @@ public class LonaCollectionViewListLayout: UICollectionViewFlowLayout {
 
 // MARK: - LonaCollectionView
 
-public class LonaCollectionView: UICollectionView, UICollectionViewDataSource {
+public class LonaCollectionView: UICollectionView, UICollectionViewDataSource, UICollectionViewDelegate {
 
   public init(
     items: [LonaViewModel] = [],
@@ -119,6 +124,7 @@ public class LonaCollectionView: UICollectionView, UICollectionViewDataSource {
     alwaysBounceVertical = true
     backgroundColor = .clear
 
+    delegate = self
     dataSource = self$cellRegistration
   }
 
@@ -152,6 +158,23 @@ public class LonaCollectionView: UICollectionView, UICollectionViewDataSource {
     }
 
     return cell
+  }
+
+
+  // MARK: - Delegate
+
+  public var onSelectItem: ((LonaViewModel) -> Void)?
+
+  public func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
+    let item = items[indexPath.row]
+    let cell = cellForItem(at: indexPath)
+
+    switch (item.type) {$cellSelection
+    default:
+      break
+    }
+
+    onSelectItem?(item)
   }
 }
 |j};
@@ -207,7 +230,36 @@ module Ast = {
         ),
     });
 
-  let cellClass = (componentName: string) =>
+  let cellIsHighlighted = (): node =>
+    VariableDeclaration({
+      "modifiers": [AccessLevelModifier(PublicModifier), OverrideModifier],
+      "pattern":
+        IdentifierPattern({
+          "identifier": SwiftIdentifier("isHighlighted"),
+          "annotation": Some(TypeName("Bool")),
+        }),
+      "init": None,
+      "block":
+        Some(
+          WillSetDidSetBlock({
+            "willSet": None,
+            "didSet":
+              Some([
+                BinaryExpression({
+                  "left":
+                    SwiftAst.Builders.memberExpression([
+                      "view",
+                      "isControlPressed",
+                    ]),
+                  "operator": "=",
+                  "right": SwiftIdentifier("isHighlighted"),
+                }),
+              ]),
+          }),
+        ),
+    });
+
+  let cellClass = (isInteractive: bool, componentName: string) =>
     ClassDeclaration({
       "name": componentName ++ "Cell",
       "inherits": [
@@ -215,10 +267,13 @@ module Ast = {
       ],
       "modifier": Some(PublicModifier),
       "isFinal": false,
-      "body": [
-        cellParametersVariable(componentName),
-        cellIdentifierStaticVariable(componentName),
-      ],
+      "body":
+        [
+          [cellParametersVariable(componentName)],
+          isInteractive ? [cellIsHighlighted()] : [],
+          [cellIdentifierStaticVariable(componentName)],
+        ]
+        |> List.concat,
     });
 
   let registerCell = (componentName: string): node => {
@@ -233,7 +288,7 @@ module Ast = {
     );
   };
 
-  let configureCell = (componentName: string): node => {
+  let configureCell = (isInteractive: bool, componentName: string): node => {
     let cellName = componentName ++ "Cell";
 
     CaseLabel({
@@ -276,12 +331,68 @@ module Ast = {
                   }),
               }),
             ]),
+          "block":
+            [
+              BinaryExpression({
+                "left": Builders.memberExpression(["cell", "parameters"]),
+                "operator": "=",
+                "right": Builders.memberExpression(["item", "parameters"]),
+              }),
+            ]
+            @ (
+              isInteractive ?
+                [
+                  BinaryExpression({
+                    "left":
+                      Builders.memberExpression([
+                        "cell",
+                        "view",
+                        "isRootControlTrackingEnabled",
+                      ]),
+                    "operator": "=",
+                    "right": LiteralExpression(Boolean(false)),
+                  }),
+                ] :
+                []
+            ),
+        }),
+      ],
+    });
+  };
+
+  let cellSelection = (componentName: string): node => {
+    let cellName = componentName ++ "Cell";
+
+    CaseLabel({
+      "patterns": [
+        ExpressionPattern({
+          "value": Builders.memberExpression([cellName, "identifier"]),
+        }),
+      ],
+      "statements": [
+        IfStatement({
+          "condition":
+            ConditionList([
+              OptionalBindingCondition({
+                "const": true,
+                "pattern":
+                  IdentifierPattern({
+                    "identifier": SwiftIdentifier("cell"),
+                    "annotation": None,
+                  }),
+                "init":
+                  BinaryExpression({
+                    "left": SwiftIdentifier("cell"),
+                    "operator": "as?",
+                    "right": SwiftIdentifier(cellName),
+                  }),
+              }),
+            ]),
           "block": [
-            BinaryExpression({
-              "left": Builders.memberExpression(["cell", "parameters"]),
-              "operator": "=",
-              "right": Builders.memberExpression(["item", "parameters"]),
-            }),
+            Builders.functionCall(
+              ["cell", "view", "sendActions"],
+              [(Some("for"), [".touchUpInside"])],
+            ),
           ],
         }),
       ],
@@ -292,12 +403,29 @@ module Ast = {
     TopLevelDeclaration({"statements": nodes}) |> SwiftRender.toString;
 };
 
+let isInteractive =
+    (getComponent: string => Js.Json.t, componentName: string): bool => {
+  let component = getComponent(componentName);
+  let rootLayer = Decode.Component.rootLayer(getComponent, component);
+  let logic = Decode.Component.logic(component);
+  Layer.isInteractive(logic, rootLayer);
+};
+
+let interactiveLayers =
+    (getComponent: string => Js.Json.t, componentName: string)
+    : list(Types.layer) => {
+  let component = getComponent(componentName);
+  let rootLayer = Decode.Component.rootLayer(getComponent, component);
+  let logic = Decode.Component.logic(component);
+  rootLayer |> Layer.flatten |> List.filter(Layer.isInteractive(logic));
+};
+
 let generate =
     (
       config: Config.t,
       options: Options.options,
       swiftOptions: SwiftOptions.options,
-      getComponent,
+      getComponent: string => Js.Json.t,
       componentNames: list(string),
     ) => {
   let cellRegistration =
@@ -310,7 +438,27 @@ let generate =
 
   let cellConfiguration =
     if (List.length(componentNames) > 0) {
-      let code = componentNames |> List.map(Ast.configureCell) |> Ast.print;
+      let code =
+        componentNames
+        |> List.map(name =>
+             Ast.configureCell(
+               List.length(interactiveLayers(getComponent, name)) > 1,
+               name,
+             )
+           )
+        |> Ast.print;
+      "\n" ++ (code |> Js.String.trim |> Format.indent(4));
+    } else {
+      "";
+    };
+
+  let cellSelection =
+    if (List.length(componentNames) > 0) {
+      let code =
+        componentNames
+        |> List.filter(isInteractive(getComponent))
+        |> List.map(Ast.cellSelection)
+        |> Ast.print;
       "\n" ++ (code |> Js.String.trim |> Format.indent(4));
     } else {
       "";
@@ -318,13 +466,18 @@ let generate =
 
   let cellClasses =
     componentNames
-    |> List.map(Ast.cellClass)
+    |> List.map(name =>
+         Ast.cellClass(isInteractive(getComponent, name), name)
+       )
     |> SwiftDocument.join(SwiftAst.Empty)
     |> Ast.print
     |> Js.String.trim;
 
   Format.joinWith(
     "\n\n",
-    [template(cellRegistration, cellConfiguration), cellClasses],
+    [
+      template(cellRegistration, cellConfiguration, cellSelection),
+      cellClasses,
+    ],
   );
 };
