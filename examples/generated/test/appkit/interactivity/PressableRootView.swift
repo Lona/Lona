@@ -7,7 +7,9 @@ public class PressableRootView: NSBox {
 
   // MARK: Lifecycle
 
-  public init() {
+  public init(_ parameters: Parameters) {
+    self.parameters = parameters
+
     super.init(frame: .zero)
 
     setUpViews()
@@ -16,6 +18,10 @@ public class PressableRootView: NSBox {
     update()
 
     addTrackingArea(trackingArea)
+  }
+
+  public convenience init() {
+    self.init(Parameters())
   }
 
   public required init?(coder aDecoder: NSCoder) {
@@ -28,8 +34,17 @@ public class PressableRootView: NSBox {
 
   // MARK: Public
 
-  public var onPressOuter: (() -> Void)? { didSet { update() } }
-  public var onPressInner: (() -> Void)? { didSet { update() } }
+  public var onPressOuter: (() -> Void)? {
+    get { return parameters.onPressOuter }
+    set { parameters.onPressOuter = newValue }
+  }
+
+  public var onPressInner: (() -> Void)? {
+    get { return parameters.onPressInner }
+    set { parameters.onPressInner = newValue }
+  }
+
+  public var parameters: Parameters { didSet { update() } }
 
   // MARK: Private
 
@@ -176,6 +191,43 @@ public class PressableRootView: NSBox {
     }
     if innerViewClicked {
       innerViewOnPress?()
+    }
+  }
+}
+
+// MARK: - Parameters
+
+extension PressableRootView {
+  public struct Parameters: Equatable {
+    public var onPressOuter: (() -> Void)?
+    public var onPressInner: (() -> Void)?
+
+    public init(onPressOuter: (() -> Void)? = nil, onPressInner: (() -> Void)? = nil) {
+      self.onPressOuter = onPressOuter
+      self.onPressInner = onPressInner
+    }
+
+    public static func ==(lhs: Parameters, rhs: Parameters) -> Bool {
+      return true
+    }
+  }
+}
+
+// MARK: - Model
+
+extension PressableRootView {
+  public struct Model: LonaViewModel, Equatable {
+    public var parameters: Parameters
+    public var type: String {
+      return "PressableRootView"
+    }
+
+    public init(_ parameters: Parameters) {
+      self.parameters = parameters
+    }
+
+    public init(onPressOuter: (() -> Void)? = nil, onPressInner: (() -> Void)? = nil) {
+      self.init(Parameters(onPressOuter: onPressOuter, onPressInner: onPressInner))
     }
   }
 }

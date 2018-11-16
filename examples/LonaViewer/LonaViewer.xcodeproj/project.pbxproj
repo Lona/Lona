@@ -60,6 +60,13 @@
 		6B291337219B94CB00A1DDB4 /* LonaControlView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6B291336219B94CB00A1DDB4 /* LonaControlView.swift */; };
 		6B29133B219CB84200A1DDB4 /* OpacityTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6B29133A219CB84200A1DDB4 /* OpacityTest.swift */; };
 		6B29133D219CBC7A00A1DDB4 /* OpacityTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6B29133C219CBC7A00A1DDB4 /* OpacityTest.swift */; };
+		6B291341219D138200A1DDB4 /* LonaCollectionView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6B291340219D138200A1DDB4 /* LonaCollectionView.swift */; };
+		6B291344219E188400A1DDB4 /* NestedBottomLeftLayout.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6B291342219E188400A1DDB4 /* NestedBottomLeftLayout.swift */; };
+		6B291345219E188400A1DDB4 /* NestedOptionals.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6B291343219E188400A1DDB4 /* NestedOptionals.swift */; };
+		6B291347219E189A00A1DDB4 /* NestedLayout.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6B291346219E189900A1DDB4 /* NestedLayout.swift */; };
+		6B291349219E18A300A1DDB4 /* MultipleFlexText.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6B291348219E18A300A1DDB4 /* MultipleFlexText.swift */; };
+		6B29134D219E504E00A1DDB4 /* LonaViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6B29134C219E504E00A1DDB4 /* LonaViewModel.swift */; };
+		6B29134F219E505E00A1DDB4 /* LonaViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6B29134E219E505E00A1DDB4 /* LonaViewModel.swift */; };
 		6B3916FD21601C5900B20F9E /* BoxModelConditional.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6B3916FC21601C5900B20F9E /* BoxModelConditional.swift */; };
 		6B3916FF2160286D00B20F9E /* BoxModelConditional.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6B3916FE2160286D00B20F9E /* BoxModelConditional.swift */; };
 		6B391702216422D400B20F9E /* Shadows.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6B391701216422D400B20F9E /* Shadows.swift */; };
@@ -154,6 +161,13 @@
 		6B291336219B94CB00A1DDB4 /* LonaControlView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = LonaControlView.swift; sourceTree = "<group>"; };
 		6B29133A219CB84200A1DDB4 /* OpacityTest.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = OpacityTest.swift; sourceTree = "<group>"; };
 		6B29133C219CBC7A00A1DDB4 /* OpacityTest.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = OpacityTest.swift; sourceTree = "<group>"; };
+		6B291340219D138200A1DDB4 /* LonaCollectionView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = LonaCollectionView.swift; sourceTree = "<group>"; };
+		6B291342219E188400A1DDB4 /* NestedBottomLeftLayout.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NestedBottomLeftLayout.swift; sourceTree = "<group>"; };
+		6B291343219E188400A1DDB4 /* NestedOptionals.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NestedOptionals.swift; sourceTree = "<group>"; };
+		6B291346219E189900A1DDB4 /* NestedLayout.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NestedLayout.swift; sourceTree = "<group>"; };
+		6B291348219E18A300A1DDB4 /* MultipleFlexText.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MultipleFlexText.swift; sourceTree = "<group>"; };
+		6B29134C219E504E00A1DDB4 /* LonaViewModel.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = LonaViewModel.swift; sourceTree = "<group>"; };
+		6B29134E219E505E00A1DDB4 /* LonaViewModel.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = LonaViewModel.swift; sourceTree = "<group>"; };
 		6B3916FC21601C5900B20F9E /* BoxModelConditional.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = BoxModelConditional.swift; sourceTree = "<group>"; };
 		6B3916FE2160286D00B20F9E /* BoxModelConditional.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = BoxModelConditional.swift; sourceTree = "<group>"; };
 		6B391701216422D400B20F9E /* Shadows.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Shadows.swift; sourceTree = "<group>"; };
@@ -264,6 +278,7 @@
 				12BBFDD7206B02720041620C /* Colors.swift */,
 				6B6D4430218F67840016262C /* LNAImageView.swift */,
 				6B6D4422218BCF150016262C /* LNATextField.swift */,
+				6B29134E219E505E00A1DDB4 /* LonaViewModel.swift */,
 				6B6D442E218F5D430016262C /* NSImage+Resizing.swift */,
 				6B391701216422D400B20F9E /* Shadows.swift */,
 				301C262720C1C5BF00F18F73 /* TextStyle.swift */,
@@ -354,7 +369,9 @@
 			children = (
 				6B6D4428218F565C0016262C /* CGSize+Resizing.swift */,
 				12BBFDFF206B02AC0041620C /* Colors.swift */,
+				6B291340219D138200A1DDB4 /* LonaCollectionView.swift */,
 				6B291336219B94CB00A1DDB4 /* LonaControlView.swift */,
+				6B29134C219E504E00A1DDB4 /* LonaViewModel.swift */,
 				6B3917092164492600B20F9E /* Shadow.swift */,
 				6B39170521643C7C00B20F9E /* Shadows.swift */,
 				301C262520C1C5A700F18F73 /* TextStyle.swift */,
@@ -421,13 +438,14 @@
 			isa = PBXGroup;
 			children = (
 				6B6D44382190C9C10016262C /* FillWidthFitHeightCard.swift */,
+				12BBFDFD206B02AC0041620C /* FitContentParentSecondaryChildren.swift */,
 				12BBFDFA206B02AC0041620C /* FixedParentFillAndFitChildren.swift */,
 				12BBFDFB206B02AC0041620C /* FixedParentFitChild.swift */,
-				12BBFDFC206B02AC0041620C /* SecondaryAxis.swift */,
-				12BBFDFD206B02AC0041620C /* FitContentParentSecondaryChildren.swift */,
+				6B291348219E18A300A1DDB4 /* MultipleFlexText.swift */,
 				12BBFDFE206B02AC0041620C /* PrimaryAxis.swift */,
-				6B6D44362190B76A0016262C /* PrimaryAxisFillSiblings.swift */,
 				6B6D443A2190D9860016262C /* PrimaryAxisFillNestedSiblings.swift */,
+				6B6D44362190B76A0016262C /* PrimaryAxisFillSiblings.swift */,
+				12BBFDFC206B02AC0041620C /* SecondaryAxis.swift */,
 			);
 			path = layouts;
 			sourceTree = "<group>";
@@ -452,8 +470,11 @@
 		6BA69404208439DB0090CA74 /* components */ = {
 			isa = PBXGroup;
 			children = (
+				6B291342219E188400A1DDB4 /* NestedBottomLeftLayout.swift */,
 				30F870B820864A88007ADA5B /* NestedButtons.swift */,
 				6BA69405208439DB0090CA74 /* NestedComponent.swift */,
+				6B291346219E189900A1DDB4 /* NestedLayout.swift */,
+				6B291343219E188400A1DDB4 /* NestedOptionals.swift */,
 			);
 			path = components;
 			sourceTree = "<group>";
@@ -565,11 +586,13 @@
 				301C262620C1C5A700F18F73 /* TextStyle.swift in Sources */,
 				6B291337219B94CB00A1DDB4 /* LonaControlView.swift in Sources */,
 				6B39170821643EF300B20F9E /* ShadowsTest.swift in Sources */,
+				6B291341219D138200A1DDB4 /* LonaCollectionView.swift in Sources */,
 				12BBFE02206B02AC0041620C /* TextStyles.swift in Sources */,
 				6BA5BBD1216D4B6700F086A7 /* VisibilityTest.swift in Sources */,
 				6B6D44392190C9C10016262C /* FillWidthFitHeightCard.swift in Sources */,
 				12BBFE09206B02AC0041620C /* TextStylesTest.swift in Sources */,
 				12BBFE05206B02AC0041620C /* Assign.swift in Sources */,
+				6B291345219E188400A1DDB4 /* NestedOptionals.swift in Sources */,
 				6B39170A2164492600B20F9E /* Shadow.swift in Sources */,
 				12BBFE0F206B02AC0041620C /* FitContentParentSecondaryChildren.swift in Sources */,
 				6B6D4425218E31EF0016262C /* ImageCropping.swift in Sources */,
@@ -584,8 +607,10 @@
 				12BBFE0E206B02AC0041620C /* SecondaryAxis.swift in Sources */,
 				6BA5BBD5217021A000F086A7 /* Optionals.swift in Sources */,
 				6B29133B219CB84200A1DDB4 /* OpacityTest.swift in Sources */,
+				6B29134D219E504E00A1DDB4 /* LonaViewModel.swift in Sources */,
 				12BBFE11206B02AC0041620C /* Colors.swift in Sources */,
 				30F870B920864A88007ADA5B /* NestedButtons.swift in Sources */,
+				6B291347219E189A00A1DDB4 /* NestedLayout.swift in Sources */,
 				12BBFE0D206B02AC0041620C /* FixedParentFitChild.swift in Sources */,
 				12962560204C70280057CDFF /* Generated.swift in Sources */,
 				1286937D204A1AAA00E5E26F /* ViewSelectionVC.swift in Sources */,
@@ -595,6 +620,8 @@
 				30F870BB20864AEE007ADA5B /* Button.swift in Sources */,
 				12BBFE08206B02AC0041620C /* BorderWidthColor.swift in Sources */,
 				6B6D443B2190D9860016262C /* PrimaryAxisFillNestedSiblings.swift in Sources */,
+				6B291344219E188400A1DDB4 /* NestedBottomLeftLayout.swift in Sources */,
+				6B291349219E18A300A1DDB4 /* MultipleFlexText.swift in Sources */,
 				1286937B204A1AAA00E5E26F /* AppDelegate.swift in Sources */,
 				6B39170621643C7C00B20F9E /* Shadows.swift in Sources */,
 				12BBFE0C206B02AC0041620C /* FixedParentFillAndFitChildren.swift in Sources */,
@@ -629,6 +656,7 @@
 				6BFE720D21821CF100F8BEA0 /* VectorLogic.swift in Sources */,
 				12BBFE14206B03FB0041620C /* LayoutExtension.swift in Sources */,
 				6B3916FF2160286D00B20F9E /* BoxModelConditional.swift in Sources */,
+				6B29134F219E505E00A1DDB4 /* LonaViewModel.swift in Sources */,
 				12869397204A1B4E00E5E26F /* ViewSelectionVc.swift in Sources */,
 				6B29133D219CBC7A00A1DDB4 /* OpacityTest.swift in Sources */,
 				12BBFDE4206B02720041620C /* FixedParentFitChild.swift in Sources */,

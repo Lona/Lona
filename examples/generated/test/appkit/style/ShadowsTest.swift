@@ -7,8 +7,8 @@ public class ShadowsTest: NSBox {
 
   // MARK: Lifecycle
 
-  public init(largeShadow: Bool) {
-    self.largeShadow = largeShadow
+  public init(_ parameters: Parameters) {
+    self.parameters = parameters
 
     super.init(frame: .zero)
 
@@ -18,8 +18,12 @@ public class ShadowsTest: NSBox {
     update()
   }
 
+  public convenience init(largeShadow: Bool) {
+    self.init(Parameters(largeShadow: largeShadow))
+  }
+
   public convenience init() {
-    self.init(largeShadow: false)
+    self.init(Parameters())
   }
 
   public required init?(coder aDecoder: NSCoder) {
@@ -28,7 +32,12 @@ public class ShadowsTest: NSBox {
 
   // MARK: Public
 
-  public var largeShadow: Bool { didSet { update() } }
+  public var largeShadow: Bool {
+    get { return parameters.largeShadow }
+    set { parameters.largeShadow = newValue }
+  }
+
+  public var parameters: Parameters { didSet { update() } }
 
   // MARK: Private
 
@@ -70,6 +79,49 @@ public class ShadowsTest: NSBox {
     innerView.shadow = Shadows.elevation2
     if largeShadow {
       innerView.shadow = Shadows.elevation3
+    }
+  }
+}
+
+// MARK: - Parameters
+
+extension ShadowsTest {
+  public struct Parameters: Equatable {
+    public var largeShadow: Bool
+
+    public init(largeShadow: Bool) {
+      self.largeShadow = largeShadow
+    }
+
+    public init() {
+      self.init(largeShadow: false)
+    }
+
+    public static func ==(lhs: Parameters, rhs: Parameters) -> Bool {
+      return lhs.largeShadow == rhs.largeShadow
+    }
+  }
+}
+
+// MARK: - Model
+
+extension ShadowsTest {
+  public struct Model: LonaViewModel, Equatable {
+    public var parameters: Parameters
+    public var type: String {
+      return "ShadowsTest"
+    }
+
+    public init(_ parameters: Parameters) {
+      self.parameters = parameters
+    }
+
+    public init(largeShadow: Bool) {
+      self.init(Parameters(largeShadow: largeShadow))
+    }
+
+    public init() {
+      self.init(largeShadow: false)
     }
   }
 }

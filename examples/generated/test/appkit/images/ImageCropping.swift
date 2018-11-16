@@ -7,7 +7,9 @@ public class ImageCropping: NSBox {
 
   // MARK: Lifecycle
 
-  public init() {
+  public init(_ parameters: Parameters) {
+    self.parameters = parameters
+
     super.init(frame: .zero)
 
     setUpViews()
@@ -16,9 +18,17 @@ public class ImageCropping: NSBox {
     update()
   }
 
+  public convenience init() {
+    self.init(Parameters())
+  }
+
   public required init?(coder aDecoder: NSCoder) {
     fatalError("init(coder:) has not been implemented")
   }
+
+  // MARK: Public
+
+  public var parameters: Parameters { didSet { update() } }
 
   // MARK: Private
 
@@ -111,4 +121,31 @@ public class ImageCropping: NSBox {
   }
 
   private func update() {}
+}
+
+// MARK: - Parameters
+
+extension ImageCropping {
+  public struct Parameters: Equatable {
+    public init() {}
+  }
+}
+
+// MARK: - Model
+
+extension ImageCropping {
+  public struct Model: LonaViewModel, Equatable {
+    public var parameters: Parameters
+    public var type: String {
+      return "ImageCropping"
+    }
+
+    public init(_ parameters: Parameters) {
+      self.parameters = parameters
+    }
+
+    public init() {
+      self.init(Parameters())
+    }
+  }
 }

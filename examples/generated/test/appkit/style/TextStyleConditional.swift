@@ -7,8 +7,8 @@ public class TextStyleConditional: NSBox {
 
   // MARK: Lifecycle
 
-  public init(large: Bool) {
-    self.large = large
+  public init(_ parameters: Parameters) {
+    self.parameters = parameters
 
     super.init(frame: .zero)
 
@@ -18,8 +18,12 @@ public class TextStyleConditional: NSBox {
     update()
   }
 
+  public convenience init(large: Bool) {
+    self.init(Parameters(large: large))
+  }
+
   public convenience init() {
-    self.init(large: false)
+    self.init(Parameters())
   }
 
   public required init?(coder aDecoder: NSCoder) {
@@ -28,7 +32,12 @@ public class TextStyleConditional: NSBox {
 
   // MARK: Public
 
-  public var large: Bool { didSet { update() } }
+  public var large: Bool {
+    get { return parameters.large }
+    set { parameters.large = newValue }
+  }
+
+  public var parameters: Parameters { didSet { update() } }
 
   // MARK: Private
 
@@ -70,6 +79,49 @@ public class TextStyleConditional: NSBox {
     if large {
       textViewTextStyle = TextStyles.display2
       textView.attributedStringValue = textViewTextStyle.apply(to: textView.attributedStringValue)
+    }
+  }
+}
+
+// MARK: - Parameters
+
+extension TextStyleConditional {
+  public struct Parameters: Equatable {
+    public var large: Bool
+
+    public init(large: Bool) {
+      self.large = large
+    }
+
+    public init() {
+      self.init(large: false)
+    }
+
+    public static func ==(lhs: Parameters, rhs: Parameters) -> Bool {
+      return lhs.large == rhs.large
+    }
+  }
+}
+
+// MARK: - Model
+
+extension TextStyleConditional {
+  public struct Model: LonaViewModel, Equatable {
+    public var parameters: Parameters
+    public var type: String {
+      return "TextStyleConditional"
+    }
+
+    public init(_ parameters: Parameters) {
+      self.parameters = parameters
+    }
+
+    public init(large: Bool) {
+      self.init(Parameters(large: large))
+    }
+
+    public init() {
+      self.init(large: false)
     }
   }
 }

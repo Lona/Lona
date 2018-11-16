@@ -63,8 +63,8 @@ public class RepeatedVector: UIView {
 
   // MARK: Lifecycle
 
-  public init(active: Bool) {
-    self.active = active
+  public init(_ parameters: Parameters) {
+    self.parameters = parameters
 
     super.init(frame: .zero)
 
@@ -74,8 +74,12 @@ public class RepeatedVector: UIView {
     update()
   }
 
+  public convenience init(active: Bool) {
+    self.init(Parameters(active: active))
+  }
+
   public convenience init() {
-    self.init(active: false)
+    self.init(Parameters())
   }
 
   public required init?(coder aDecoder: NSCoder) {
@@ -84,7 +88,12 @@ public class RepeatedVector: UIView {
 
   // MARK: Public
 
-  public var active: Bool { didSet { update() } }
+  public var active: Bool {
+    get { return parameters.active }
+    set { parameters.active = newValue }
+  }
+
+  public var parameters: Parameters { didSet { update() } }
 
   // MARK: Private
 
@@ -149,5 +158,48 @@ public class RepeatedVector: UIView {
     anotherCheckView.pathStroke = Colors.green800
     checkView.setNeedsDisplay()
     anotherCheckView.setNeedsDisplay()
+  }
+}
+
+// MARK: - Parameters
+
+extension RepeatedVector {
+  public struct Parameters: Equatable {
+    public var active: Bool
+
+    public init(active: Bool) {
+      self.active = active
+    }
+
+    public init() {
+      self.init(active: false)
+    }
+
+    public static func ==(lhs: Parameters, rhs: Parameters) -> Bool {
+      return lhs.active == rhs.active
+    }
+  }
+}
+
+// MARK: - Model
+
+extension RepeatedVector {
+  public struct Model: LonaViewModel, Equatable {
+    public var parameters: Parameters
+    public var type: String {
+      return "RepeatedVector"
+    }
+
+    public init(_ parameters: Parameters) {
+      self.parameters = parameters
+    }
+
+    public init(active: Bool) {
+      self.init(Parameters(active: active))
+    }
+
+    public init() {
+      self.init(active: false)
+    }
   }
 }

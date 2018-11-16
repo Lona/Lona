@@ -7,7 +7,9 @@ public class NestedComponent: UIView {
 
   // MARK: Lifecycle
 
-  public init() {
+  public init(_ parameters: Parameters) {
+    self.parameters = parameters
+
     super.init(frame: .zero)
 
     setUpViews()
@@ -16,9 +18,17 @@ public class NestedComponent: UIView {
     update()
   }
 
+  public convenience init() {
+    self.init(Parameters())
+  }
+
   public required init?(coder aDecoder: NSCoder) {
     fatalError("init(coder:) has not been implemented")
   }
+
+  // MARK: Public
+
+  public var parameters: Parameters { didSet { update() } }
 
   // MARK: Private
 
@@ -114,4 +124,31 @@ public class NestedComponent: UIView {
   }
 
   private func update() {}
+}
+
+// MARK: - Parameters
+
+extension NestedComponent {
+  public struct Parameters: Equatable {
+    public init() {}
+  }
+}
+
+// MARK: - Model
+
+extension NestedComponent {
+  public struct Model: LonaViewModel, Equatable {
+    public var parameters: Parameters
+    public var type: String {
+      return "NestedComponent"
+    }
+
+    public init(_ parameters: Parameters) {
+      self.parameters = parameters
+    }
+
+    public init() {
+      self.init(Parameters())
+    }
+  }
 }

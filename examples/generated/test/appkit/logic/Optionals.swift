@@ -7,9 +7,8 @@ public class Optionals: NSBox {
 
   // MARK: Lifecycle
 
-  public init(boolParam: Bool?, stringParam: String?) {
-    self.boolParam = boolParam
-    self.stringParam = stringParam
+  public init(_ parameters: Parameters) {
+    self.parameters = parameters
 
     super.init(frame: .zero)
 
@@ -19,8 +18,12 @@ public class Optionals: NSBox {
     update()
   }
 
+  public convenience init(boolParam: Bool?, stringParam: String?) {
+    self.init(Parameters(boolParam: boolParam, stringParam: stringParam))
+  }
+
   public convenience init() {
-    self.init(boolParam: nil, stringParam: nil)
+    self.init(Parameters())
   }
 
   public required init?(coder aDecoder: NSCoder) {
@@ -29,8 +32,17 @@ public class Optionals: NSBox {
 
   // MARK: Public
 
-  public var boolParam: Bool? { didSet { update() } }
-  public var stringParam: String? { didSet { update() } }
+  public var boolParam: Bool? {
+    get { return parameters.boolParam }
+    set { parameters.boolParam = newValue }
+  }
+
+  public var stringParam: String? {
+    get { return parameters.stringParam }
+    set { parameters.stringParam = newValue }
+  }
+
+  public var parameters: Parameters { didSet { update() } }
 
   // MARK: Private
 
@@ -94,6 +106,43 @@ public class Optionals: NSBox {
     }
     if let unwrapped = stringParam {
       stringParamView.attributedStringValue = stringParamViewTextStyle.apply(to: unwrapped)
+    }
+  }
+}
+
+// MARK: - Parameters
+
+extension Optionals {
+  public struct Parameters: Equatable {
+    public var boolParam: Bool?
+    public var stringParam: String?
+
+    public init(boolParam: Bool? = nil, stringParam: String? = nil) {
+      self.boolParam = boolParam
+      self.stringParam = stringParam
+    }
+
+    public static func ==(lhs: Parameters, rhs: Parameters) -> Bool {
+      return lhs.boolParam == rhs.boolParam && lhs.stringParam == rhs.stringParam
+    }
+  }
+}
+
+// MARK: - Model
+
+extension Optionals {
+  public struct Model: LonaViewModel, Equatable {
+    public var parameters: Parameters
+    public var type: String {
+      return "Optionals"
+    }
+
+    public init(_ parameters: Parameters) {
+      self.parameters = parameters
+    }
+
+    public init(boolParam: Bool? = nil, stringParam: String? = nil) {
+      self.init(Parameters(boolParam: boolParam, stringParam: stringParam))
     }
   }
 }

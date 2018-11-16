@@ -7,7 +7,9 @@ public class PressableRootView: LonaControlView {
 
   // MARK: Lifecycle
 
-  public init() {
+  public init(_ parameters: Parameters) {
+    self.parameters = parameters
+
     super.init(frame: .zero)
 
     setUpViews()
@@ -16,14 +18,27 @@ public class PressableRootView: LonaControlView {
     update()
   }
 
+  public convenience init() {
+    self.init(Parameters())
+  }
+
   public required init?(coder aDecoder: NSCoder) {
     fatalError("init(coder:) has not been implemented")
   }
 
   // MARK: Public
 
-  public var onPressOuter: (() -> Void)? { didSet { update() } }
-  public var onPressInner: (() -> Void)? { didSet { update() } }
+  public var onPressOuter: (() -> Void)? {
+    get { return parameters.onPressOuter }
+    set { parameters.onPressOuter = newValue }
+  }
+
+  public var onPressInner: (() -> Void)? {
+    get { return parameters.onPressInner }
+    set { parameters.onPressInner = newValue }
+  }
+
+  public var parameters: Parameters { didSet { update() } }
 
   // MARK: Private
 
@@ -86,11 +101,11 @@ public class PressableRootView: LonaControlView {
     onTapOuterView = onPressOuter
     onTapInnerView = onPressInner
 
-    if isHighlighted {
+    if showsHighlight {
       backgroundColor = Colors.grey300
     }
 
-    if innerView.isHighlighted {
+    if innerView.showsHighlight {
       innerView.backgroundColor = Colors.blue800
       innerTextView.attributedText = innerTextViewTextStyle.apply(to: "Pressed")
     }
@@ -103,5 +118,52 @@ public class PressableRootView: LonaControlView {
 
   @objc private func handleTapInnerView() {
     onTapInnerView?()
+  }
+
+  public var isRootControlTrackingEnabled = true
+
+  override public func hitTest(_ point: CGPoint, with event: UIEvent?) -> UIView? {
+    let result = super.hitTest(point, with: event)
+    if result == self && !isRootControlTrackingEnabled {
+      return nil
+    }
+    return result
+  }
+}
+
+// MARK: - Parameters
+
+extension PressableRootView {
+  public struct Parameters: Equatable {
+    public var onPressOuter: (() -> Void)?
+    public var onPressInner: (() -> Void)?
+
+    public init(onPressOuter: (() -> Void)? = nil, onPressInner: (() -> Void)? = nil) {
+      self.onPressOuter = onPressOuter
+      self.onPressInner = onPressInner
+    }
+
+    public static func ==(lhs: Parameters, rhs: Parameters) -> Bool {
+      return true
+    }
+  }
+}
+
+// MARK: - Model
+
+extension PressableRootView {
+  public struct Model: LonaViewModel, Equatable {
+    public var parameters: Parameters
+    public var type: String {
+      return "PressableRootView"
+    }
+
+    public init(_ parameters: Parameters) {
+      self.parameters = parameters
+    }
+
+    public init(onPressOuter: (() -> Void)? = nil, onPressInner: (() -> Void)? = nil) {
+      self.init(Parameters(onPressOuter: onPressOuter, onPressInner: onPressInner))
+    }
   }
 }

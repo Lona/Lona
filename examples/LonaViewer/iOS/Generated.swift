@@ -9,6 +9,7 @@
 import UIKit
 
 enum Generated: String {
+    case collectionTest = "Collection Test"
     case localAsset = "Local Asset"
     case vectorAsset = "Vector Asset"
     case vectorLogicActive = "Vector Logic - Active"
@@ -43,6 +44,7 @@ enum Generated: String {
 
     static func allValues() -> [Generated] {
         return [
+            collectionTest,
             localAsset,
             vectorAsset,
             vectorLogicActive,
@@ -79,6 +81,21 @@ enum Generated: String {
     
     var view: UIView {
         switch self {
+        case .collectionTest:
+            let collectionView = LonaCollectionView(
+                items: [
+                    NestedButtons.Model(),
+                    NestedButtons.Model(),
+                    PressableRootView.Model(
+                        onPressOuter: { Swift.print("Pressed outer") },
+                        onPressInner: { Swift.print("Pressed inner") }
+                    ),
+                    PrimaryAxisFillNestedSiblings.Model()
+                ])
+            collectionView.onSelectItem = { item in
+                Swift.print("Selected item", item)
+            }
+            return collectionView
         case .localAsset:
             return LocalAsset()
         case .nestedComponent:

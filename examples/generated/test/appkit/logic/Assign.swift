@@ -7,8 +7,8 @@ public class Assign: NSBox {
 
   // MARK: Lifecycle
 
-  public init(text: String) {
-    self.text = text
+  public init(_ parameters: Parameters) {
+    self.parameters = parameters
 
     super.init(frame: .zero)
 
@@ -18,8 +18,12 @@ public class Assign: NSBox {
     update()
   }
 
+  public convenience init(text: String) {
+    self.init(Parameters(text: text))
+  }
+
   public convenience init() {
-    self.init(text: "")
+    self.init(Parameters())
   }
 
   public required init?(coder aDecoder: NSCoder) {
@@ -28,7 +32,12 @@ public class Assign: NSBox {
 
   // MARK: Public
 
-  public var text: String { didSet { update() } }
+  public var text: String {
+    get { return parameters.text }
+    set { parameters.text = newValue }
+  }
+
+  public var parameters: Parameters { didSet { update() } }
 
   // MARK: Private
 
@@ -64,5 +73,48 @@ public class Assign: NSBox {
 
   private func update() {
     textView.attributedStringValue = textViewTextStyle.apply(to: text)
+  }
+}
+
+// MARK: - Parameters
+
+extension Assign {
+  public struct Parameters: Equatable {
+    public var text: String
+
+    public init(text: String) {
+      self.text = text
+    }
+
+    public init() {
+      self.init(text: "")
+    }
+
+    public static func ==(lhs: Parameters, rhs: Parameters) -> Bool {
+      return lhs.text == rhs.text
+    }
+  }
+}
+
+// MARK: - Model
+
+extension Assign {
+  public struct Model: LonaViewModel, Equatable {
+    public var parameters: Parameters
+    public var type: String {
+      return "Assign"
+    }
+
+    public init(_ parameters: Parameters) {
+      self.parameters = parameters
+    }
+
+    public init(text: String) {
+      self.init(Parameters(text: text))
+    }
+
+    public init() {
+      self.init(text: "")
+    }
   }
 }
