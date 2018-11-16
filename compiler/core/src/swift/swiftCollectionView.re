@@ -288,7 +288,13 @@ module Ast = {
     );
   };
 
-  let configureCell = (isInteractive: bool, componentName: string): node => {
+  let configureCell =
+      (
+        isInteractive: bool,
+        containsNestedInteractives: bool,
+        componentName: string,
+      )
+      : node => {
     let cellName = componentName ++ "Cell";
 
     CaseLabel({
@@ -347,7 +353,8 @@ module Ast = {
                       Builders.memberExpression([
                         "cell",
                         "view",
-                        "isRootControlTrackingEnabled",
+                        containsNestedInteractives ?
+                          "isRootControlTrackingEnabled" : "isEnabled",
                       ]),
                     "operator": "=",
                     "right": LiteralExpression(Boolean(false)),
@@ -442,6 +449,7 @@ let generate =
         componentNames
         |> List.map(name =>
              Ast.configureCell(
+               isInteractive(getComponent, name),
                List.length(interactiveLayers(getComponent, name)) > 1,
                name,
              )
