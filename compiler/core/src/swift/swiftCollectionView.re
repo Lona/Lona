@@ -27,14 +27,29 @@ public class LonaCollectionViewCell<T: UIView>: UICollectionViewCell {
 
   public var view: T = T()
 
+  public var scrollDirection = UICollectionView.ScrollDirection.vertical
+
   override public func preferredLayoutAttributesFitting(_ layoutAttributes: UICollectionViewLayoutAttributes) -> UICollectionViewLayoutAttributes {
     layoutIfNeeded()
-    let layoutAttributes = super.preferredLayoutAttributesFitting(layoutAttributes)
-    layoutAttributes.bounds.size = systemLayoutSizeFitting(
-      UILayoutFittingCompressedSize,
-      withHorizontalFittingPriority: .required,
-      verticalFittingPriority: .defaultLow)
-    return layoutAttributes
+
+    let preferredLayoutAttributes =
+      super.preferredLayoutAttributesFitting(layoutAttributes)
+    preferredLayoutAttributes.bounds = layoutAttributes.bounds
+
+    switch scrollDirection {
+    case .vertical:
+      preferredLayoutAttributes.bounds.size.height = systemLayoutSizeFitting(
+        UILayoutFittingCompressedSize,
+        withHorizontalFittingPriority: .required,
+        verticalFittingPriority: .defaultLow).height
+    case .horizontal:
+      preferredLayoutAttributes.bounds.size.width = systemLayoutSizeFitting(
+        UILayoutFittingCompressedSize,
+        withHorizontalFittingPriority: .defaultLow,
+        verticalFittingPriority: .required).width
+    }
+
+    return preferredLayoutAttributes
   }
 
   // MARK: Private
@@ -45,6 +60,8 @@ public class LonaCollectionViewCell<T: UIView>: UICollectionViewCell {
 
   private func setUpConstraints() {
     contentView.translatesAutoresizingMaskIntoConstraints = false
+    contentView.topAnchor.constraint(equalTo: topAnchor).isActive = true
+    contentView.leadingAnchor.constraint(equalTo: leadingAnchor).isActive = true
 
     let width = contentView.widthAnchor.constraint(equalTo: widthAnchor)
     width.priority = .required - 1
@@ -82,15 +99,25 @@ public class LonaCollectionViewListLayout: UICollectionViewFlowLayout {
   override public func layoutAttributesForItem(at indexPath: IndexPath) -> UICollectionViewLayoutAttributes? {
     guard let layoutAttributes = super.layoutAttributesForItem(at: indexPath),
       let collectionView = collectionView else { return nil }
-    layoutAttributes.bounds.size.width =
-      collectionView.safeAreaLayoutGuide.layoutFrame.width - sectionInset.left - sectionInset.right
+
+    switch scrollDirection {
+    case .vertical:
+      layoutAttributes.bounds.size.width =
+        collectionView.safeAreaLayoutGuide.layoutFrame.width -
+        sectionInset.left - sectionInset.right -
+        collectionView.adjustedContentInset.left - collectionView.adjustedContentInset.right
+    case .horizontal:
+      layoutAttributes.bounds.size.height =
+        collectionView.safeAreaLayoutGuide.layoutFrame.height -
+        sectionInset.top - sectionInset.bottom -
+        collectionView.adjustedContentInset.top - collectionView.adjustedContentInset.bottom
+    }
 
     return layoutAttributes
   }
 
   override public func layoutAttributesForElements(in rect: CGRect) -> [UICollectionViewLayoutAttributes]? {
     guard let superLayoutAttributes = super.layoutAttributesForElements(in: rect) else { return nil }
-    guard scrollDirection == .vertical else { return superLayoutAttributes }
 
     let computedAttributes = superLayoutAttributes.compactMap { layoutAttribute in
       return layoutAttribute.representedElementCategory == .cell
@@ -104,46 +131,79 @@ public class LonaCollectionViewListLayout: UICollectionViewFlowLayout {
 
 // MARK: - LonaCollectionView
 
-public class LonaCollectionView: UICollectionView, UICollectionViewDataSource, UICollectionViewDelegate {
+public class LonaCollectionView: UICollectionView,
+  UICollectionViewDataSource,
+  UICollectionViewDelegate,
+  UICollectionViewDelegateFlowLayout {
 
-  public init(
-    items: [LonaViewModel] = [],
-    collectionViewLayout layout: UICollectionViewLayout = LonaCollectionViewListLayout()) {
+  // MARK: Lifecycle
 
-    super.init(frame: .zero, collectionViewLayout: layout)
+  private override init(frame: CGRect, collectionViewLayout layout: UICollectionViewLayout) {
+    parameters = Parameters()
 
-    self.items = items
+    super.init(frame: frame, collectionViewLayout: LonaCollectionViewListLayout())
 
-    contentInsetAdjustmentBehavior = .always
-    alwaysBounceVertical = true
+    contentInsetAdjustmentBehavior = .automatic
     backgroundColor = .clear
 
     delegate = self
-    dataSource = self$cellRegistration
+    dataSource = self
+
+    register(LonaNestedCollectionViewCell.self, forCellWithReuseIdentifier: LonaNestedCollectionViewCell.identifier)
+    $cellRegistration
+  }
+
+  public convenience init(
+    _ parameters: Parameters = Parameters(),
+    collectionViewLayout layout: UICollectionViewLayout = LonaCollectionViewListLayout()) {
+    self.init(frame: .zero, collectionViewLayout: layout)
+
+    let oldParameters = self.parameters
+    self.parameters = parameters
+
+    parametersDidChange(oldValue: oldParameters)
+  }
+
+  public convenience init(
+    items: [LonaViewModel] = [],
+    scrollDirection: UICollectionView.ScrollDirection = .vertical,
+    padding: UIEdgeInsets = .zero,
+    itemSpacing: CGFloat = 0,
+    fixedSize: CGFloat? = nil,
+    collectionViewLayout layout: UICollectionViewLayout = LonaCollectionViewListLayout()) {
+    self.init(
+      Parameters(
+        items: items,
+        scrollDirection: scrollDirection,
+        padding: padding,
+        itemSpacing: itemSpacing,
+        fixedSize: fixedSize),
+      collectionViewLayout: layout)
   }
 
   required init?(coder aDecoder: NSCoder) {
     fatalError("init(coder:) has not been implemented")
   }
 
-  override public func touchesShouldCancel(in view: UIView) -> Bool {
-    if view is LonaControl {
-      return true
-    }
+  // MARK: Public
 
-    return super.touchesShouldCancel(in: view)
+  public var parameters: Parameters {
+    didSet {
+      parametersDidChange(oldValue: oldValue)
+    }
+  }
+
+  public var items: [LonaViewModel] {
+    get { return parameters.items }
+    set { parameters.items = newValue }
+  }
+
+  public var scrollDirection: UICollectionView.ScrollDirection {
+    get { return parameters.scrollDirection }
+    set { parameters.scrollDirection = newValue }
   }
 
   // MARK: Data Source
-
-  var items: [LonaViewModel] = [] {
-    didSet {
-      let previousOffset = contentOffset
-      reloadData()
-      layoutIfNeeded()
-      contentOffset = previousOffset
-    }
-  }
 
   public func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
     return items.count
@@ -152,8 +212,15 @@ public class LonaCollectionView: UICollectionView, UICollectionViewDataSource, U
   public func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
     let item = items[indexPath.row]
     let cell = collectionView.dequeueReusableCell(withReuseIdentifier: item.type, for: indexPath)
+    let scrollDirection = self.scrollDirection
 
-    switch (item.type) {$cellConfiguration
+    switch (item.type) {
+    case LonaNestedCollectionViewCell.identifier:
+      if let cell = cell as? LonaNestedCollectionViewCell, let item = item as? LonaCollectionView.Model {
+        cell.parameters = item.parameters
+        cell.scrollDirection = scrollDirection
+        cell.view.onSelectItem = onSelectItem
+      }$cellConfiguration
     default:
       break
     }
@@ -161,8 +228,7 @@ public class LonaCollectionView: UICollectionView, UICollectionViewDataSource, U
     return cell
   }
 
-
-  // MARK: - Delegate
+  // MARK: Delegate
 
   public var onSelectItem: ((LonaViewModel) -> Void)?
 
@@ -177,8 +243,159 @@ public class LonaCollectionView: UICollectionView, UICollectionViewDataSource, U
 
     onSelectItem?(item)
   }
+
+  // MARK: Layout
+
+  public func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
+    switch scrollDirection {
+    case .horizontal:
+      return CGSize(width: 50, height: collectionView.safeAreaLayoutGuide.layoutFrame.height)
+    case .vertical:
+      return CGSize(width: collectionView.safeAreaLayoutGuide.layoutFrame.width, height: 50)
+    }
+  }
+
+  // MARK: Scrolling
+
+  override public func touchesShouldCancel(in view: UIView) -> Bool {
+    if view is LonaControl {
+      return true
+    }
+
+    return super.touchesShouldCancel(in: view)
+  }
+
+  // MARK: Private
+
+  private func updateAlwaysBounce(for scrollDirection: ScrollDirection) {
+    alwaysBounceVertical = scrollDirection == .vertical
+    alwaysBounceHorizontal = scrollDirection == .horizontal
+  }
+
+  private func parametersDidChange(oldValue: Parameters) {
+    updateAlwaysBounce(for: parameters.scrollDirection)
+    contentInset = parameters.padding
+
+    switch parameters.scrollDirection {
+    case .horizontal:
+      showsHorizontalScrollIndicator = false
+    case .vertical:
+      showsHorizontalScrollIndicator = true
+    }
+    if let layout = collectionViewLayout as? UICollectionViewFlowLayout {
+      layout.minimumLineSpacing = parameters.itemSpacing
+      layout.scrollDirection = parameters.scrollDirection
+      layout.invalidateLayout()
+    }
+
+    reloadData()
+    layoutIfNeeded()
+
+    contentOffset = CGPoint(
+      x: contentOffset.x - parameters.padding.left + oldValue.padding.left,
+      y: contentOffset.y - parameters.padding.top + oldValue.padding.top)
+  }
 }
-|j};
+
+
+// MARK: - Parameters
+
+extension LonaCollectionView {
+  public struct Parameters {
+    public var items: [LonaViewModel]
+    public var scrollDirection: UICollectionView.ScrollDirection
+    public var padding: UIEdgeInsets
+    public var itemSpacing: CGFloat
+    public var fixedSize: CGFloat?
+
+    public init(
+      items: [LonaViewModel],
+      scrollDirection: UICollectionView.ScrollDirection,
+      padding: UIEdgeInsets,
+      itemSpacing: CGFloat,
+      fixedSize: CGFloat? = nil)
+    {
+      self.items = items
+      self.scrollDirection = scrollDirection
+      self.padding = padding
+      self.itemSpacing = itemSpacing
+      self.fixedSize = fixedSize
+    }
+
+    public init() {
+      self.init(items: [], scrollDirection: .vertical, padding: .zero, itemSpacing: 0)
+    }
+  }
+}
+
+// MARK: - Model
+
+extension LonaCollectionView {
+  public struct Model: LonaViewModel {
+    public var parameters: Parameters
+    public var type: String {
+      return "LonaCollectionView"
+    }
+
+    public init(_ parameters: Parameters) {
+      self.parameters = parameters
+    }
+
+    public init(
+      items: [LonaViewModel],
+      scrollDirection: UICollectionView.ScrollDirection,
+      padding: UIEdgeInsets = .zero,
+      itemSpacing: CGFloat = 0,
+      fixedSize: CGFloat? = nil)
+    {
+      self.init(
+        Parameters(
+          items: items,
+          scrollDirection: scrollDirection,
+          padding: padding,
+          itemSpacing: itemSpacing,
+          fixedSize: fixedSize))
+    }
+
+    public init() {
+      self.init(items: [], scrollDirection: .vertical)
+    }
+  }
+}
+
+// MARK: - Cell Classes
+
+public class LonaNestedCollectionViewCell: LonaCollectionViewCell<LonaCollectionView> {
+  public var parameters: LonaCollectionView.Parameters {
+    get { return view.parameters }
+    set { view.parameters = newValue }
+  }
+  public static var identifier: String {
+    return "LonaCollectionView"
+  }
+  override public func preferredLayoutAttributesFitting(_ layoutAttributes: UICollectionViewLayoutAttributes) -> UICollectionViewLayoutAttributes {
+    let preferredLayoutAttributes = super.preferredLayoutAttributesFitting(layoutAttributes)
+
+    if let fixedSize = parameters.fixedSize {
+      switch scrollDirection {
+      case .vertical:
+        preferredLayoutAttributes.bounds.size.height = fixedSize
+      case .horizontal:
+        preferredLayoutAttributes.bounds.size.width = fixedSize
+      }
+    }
+
+    return preferredLayoutAttributes
+  }
+
+  public override func layoutSubviews() {
+    super.layoutSubviews()
+
+    if (contentView.bounds != view.bounds) {
+      view.collectionViewLayout.invalidateLayout()
+    }
+  }
+}|j};
 
 module Ast = {
   open SwiftAst;
@@ -345,6 +562,12 @@ module Ast = {
                 "operator": "=",
                 "right": Builders.memberExpression(["item", "parameters"]),
               }),
+              BinaryExpression({
+                "left":
+                  Builders.memberExpression(["cell", "scrollDirection"]),
+                "operator": "=",
+                "right": SwiftIdentifier("scrollDirection"),
+              }),
             ]
             @ (
               isInteractive ?
@@ -438,8 +661,14 @@ let generate =
     ) => {
   let cellRegistration =
     if (List.length(componentNames) > 0) {
-      let code = componentNames |> List.map(Ast.registerCell) |> Ast.print;
-      "\n\n" ++ (code |> Js.String.trim |> Format.indent(4));
+      "\n"
+      ++ (
+        componentNames
+        |> List.map(Ast.registerCell)
+        |> Ast.print
+        |> Js.String.trim
+        |> Format.indent(4)
+      );
     } else {
       "";
     };

@@ -85,12 +85,25 @@ enum Generated: String {
             let collectionView = LonaCollectionView(
                 items: [
                     NestedButtons.Model(),
+                    LonaCollectionView.Model(
+                      items: [
+                        LocalAsset.Model(),
+                        LocalAsset.Model(),
+                        LocalAsset.Model(),
+                        LocalAsset.Model(),
+                        LocalAsset.Model(),
+                        LocalAsset.Model(),
+                        LocalAsset.Model(),
+                        LocalAsset.Model(),
+                      ],
+                      scrollDirection: .horizontal,
+                      fixedSize: 100),
                     NestedButtons.Model(),
                     PressableRootView.Model(
                         onPressOuter: { Swift.print("Pressed outer") },
                         onPressInner: { Swift.print("Pressed inner") }
                     ),
-                    PrimaryAxisFillNestedSiblings.Model()
+                    PrimaryAxisFillNestedSiblings.Model(),
                 ])
             collectionView.onSelectItem = { item in
                 Swift.print("Selected item", item)

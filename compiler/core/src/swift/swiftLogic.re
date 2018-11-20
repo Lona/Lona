@@ -69,15 +69,24 @@ let toSwiftAST =
           |> Js.String.includes("padding") =>
       Ast.LineComment("TODO: Margin & padding: " ++ name)
     | (_, Ast.SwiftIdentifier(name))
-        when name |> Js.String.endsWith("height") =>
+        when name |> Js.String.endsWith(".height") =>
       Ast.SwiftIdentifier(
         name
         |> Js.String.replace(".height", "HeightAnchorConstraint?.constant"),
       )
+    | (_, Ast.SwiftIdentifier(name)) when name == "height" =>
+      Ast.SwiftIdentifier(
+        name
+        |> Js.String.replace("height", "heightAnchorConstraint?.constant"),
+      )
     | (_, Ast.SwiftIdentifier(name))
-        when name |> Js.String.endsWith("width") =>
+        when name |> Js.String.endsWith(".width") =>
       Ast.SwiftIdentifier(
         name |> Js.String.replace(".width", "WidthAnchorConstraint?.constant"),
+      )
+    | (_, Ast.SwiftIdentifier(name)) when name == "width" =>
+      Ast.SwiftIdentifier(
+        name |> Js.String.replace("width", "widthAnchorConstraint?.constant"),
       )
     /* -- UIKit -- */
     /* TODO: Make sure "borderRadius" without the "." doesn't match intermediate variables */
