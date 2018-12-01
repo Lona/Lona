@@ -7,6 +7,7 @@ type compilerTarget =
 type lonaType =
   | Reference(string)
   | Named(string, lonaType)
+  | Variant(list(string))
   | Function(
       list({
         .

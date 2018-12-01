@@ -316,6 +316,7 @@ let convertWorkspace = (workspace, output) =>
        let colors = config.colorsFile.contents;
        let textStyles = config.textStylesFile.contents;
        let shadows = config.shadowsFile.contents;
+       let userTypes = config.userTypesFile.contents;
 
        let fromDirectory = Path.resolve(workspace, "");
        let toDirectory = Path.resolve(output, "");
@@ -354,6 +355,23 @@ let convertWorkspace = (workspace, output) =>
            shadows |> renderShadows(target, colors),
            `utf8,
          );
+       };
+
+       if (target == Types.Swift) {
+         let userTypesOutputPath =
+           concat(
+             toDirectory,
+             formatFilename(target, "Types") ++ targetExtension,
+           );
+         let typeSystemFile =
+           userTypes |> UserTypes.TypeSystem.toTypeSystemFile;
+         if (typeSystemFile.types != []) {
+           Fs.writeFileSync(
+             userTypesOutputPath,
+             typeSystemFile |> SwiftTypeSystem.render(swiftOptions),
+             `utf8,
+           );
+         };
        };
 
        copyStaticFiles(toDirectory);

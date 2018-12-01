@@ -192,7 +192,8 @@ let toSwiftAST =
     switch (logicRootNode) {
     | Logic.Assign(a, b) =>
       switch (logicValueToSwiftAST(b), logicValueToSwiftAST(a)) {
-      | (Ast.SwiftIdentifier(name), Ast.MemberExpression(right))
+      | (Ast.SwiftIdentifier(name), Ast.LiteralExpression(_) as right)
+      | (Ast.SwiftIdentifier(name), Ast.MemberExpression(_) as right)
           when
             (
               name == "borderColor"
@@ -206,7 +207,7 @@ let toSwiftAST =
           "left": Ast.SwiftIdentifier(newName),
           "operator": "=",
           "right":
-            Ast.MemberExpression(right @ [Ast.SwiftIdentifier("cgColor")]),
+            Ast.MemberExpression([right, Ast.SwiftIdentifier("cgColor")]),
         });
       | (
           Ast.SwiftIdentifier(name) as left,

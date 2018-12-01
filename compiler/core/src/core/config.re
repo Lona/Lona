@@ -9,6 +9,7 @@ type t = {
   colorsFile: file(list(Color.t)),
   textStylesFile: file(TextStyle.file),
   shadowsFile: file(Shadow.file),
+  userTypesFile: file(UserTypes.file),
   svgFiles: list(file(Svg.node)),
   workspacePath: string,
 };
@@ -54,6 +55,16 @@ module Workspace = {
     let path = Path.join([|workspacePath, "shadows.json"|]);
     let data = Node.Fs.readFileSync(path, `utf8);
     let contents = Shadow.parseFile(data);
+    {path, contents};
+  };
+
+  let userTypesFile = (workspacePath: string): file(UserTypes.file) => {
+    let path = Path.join([|workspacePath, "types.json"|]);
+    let contents =
+      switch (Node.Fs.readFileSync(path, `utf8)) {
+      | data => UserTypes.parseFile(data)
+      | exception _ => {types: []}
+      };
     {path, contents};
   };
 
@@ -122,6 +133,7 @@ let load = path: Js.Promise.t(t) =>
              colorsFile: Workspace.colorsFile(workspacePath),
              textStylesFile: Workspace.textStylesFile(workspacePath),
              shadowsFile: Workspace.shadowsFile(workspacePath),
+             userTypesFile: Workspace.userTypesFile(workspacePath),
              svgFiles,
              workspacePath,
            })
