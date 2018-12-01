@@ -194,18 +194,20 @@ let toSwiftAST =
       switch (logicValueToSwiftAST(b), logicValueToSwiftAST(a)) {
       | (Ast.SwiftIdentifier(name), Ast.MemberExpression(right))
           when
-            name
-            |> Js.String.endsWith("borderColor")
+            (
+              name == "borderColor"
+              || name
+              |> Js.String.endsWith(".borderColor")
+            )
             && options.framework == UIKit =>
+        let newName =
+          name |> Js.String.replace("borderColor", "layer.borderColor");
         Ast.BinaryExpression({
-          "left":
-            Ast.SwiftIdentifier(
-              name |> Js.String.replace("borderColor", "layer.borderColor"),
-            ),
+          "left": Ast.SwiftIdentifier(newName),
           "operator": "=",
           "right":
             Ast.MemberExpression(right @ [Ast.SwiftIdentifier("cgColor")]),
-        })
+        });
       | (
           Ast.SwiftIdentifier(name) as left,
           Ast.LiteralExpression(String(value)),
