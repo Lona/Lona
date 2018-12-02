@@ -41,15 +41,29 @@ public class Optionals: NSBox {
 
   public var boolParam: Bool? {
     get { return parameters.boolParam }
-    set { parameters.boolParam = newValue }
+    set {
+      if parameters.boolParam != newValue {
+        parameters.boolParam = newValue
+      }
+    }
   }
 
   public var stringParam: String? {
     get { return parameters.stringParam }
-    set { parameters.stringParam = newValue }
+    set {
+      if parameters.stringParam != newValue {
+        parameters.stringParam = newValue
+      }
+    }
   }
 
-  public var parameters: Parameters { didSet { update() } }
+  public var parameters: Parameters {
+    didSet {
+      if parameters != oldValue {
+        update()
+      }
+    }
+  }
 
   // MARK: Private
 

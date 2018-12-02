@@ -49,7 +49,11 @@ public class Button: NSBox {
 
   public var label: String {
     get { return parameters.label }
-    set { parameters.label = newValue }
+    set {
+      if parameters.label != newValue {
+        parameters.label = newValue
+      }
+    }
   }
 
   public var onTap: (() -> Void)? {
@@ -59,10 +63,20 @@ public class Button: NSBox {
 
   public var secondary: Bool {
     get { return parameters.secondary }
-    set { parameters.secondary = newValue }
+    set {
+      if parameters.secondary != newValue {
+        parameters.secondary = newValue
+      }
+    }
   }
 
-  public var parameters: Parameters { didSet { update() } }
+  public var parameters: Parameters {
+    didSet {
+      if parameters != oldValue {
+        update()
+      }
+    }
+  }
 
   // MARK: Private
 

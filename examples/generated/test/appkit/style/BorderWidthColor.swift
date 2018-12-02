@@ -41,10 +41,20 @@ public class BorderWidthColor: NSBox {
 
   public var alternativeStyle: Bool {
     get { return parameters.alternativeStyle }
-    set { parameters.alternativeStyle = newValue }
+    set {
+      if parameters.alternativeStyle != newValue {
+        parameters.alternativeStyle = newValue
+      }
+    }
   }
 
-  public var parameters: Parameters { didSet { update() } }
+  public var parameters: Parameters {
+    didSet {
+      if parameters != oldValue {
+        update()
+      }
+    }
+  }
 
   // MARK: Private
 

@@ -103,10 +103,20 @@ public class VectorLogic: NSBox {
 
   public var active: Bool {
     get { return parameters.active }
-    set { parameters.active = newValue }
+    set {
+      if parameters.active != newValue {
+        parameters.active = newValue
+      }
+    }
   }
 
-  public var parameters: Parameters { didSet { update() } }
+  public var parameters: Parameters {
+    didSet {
+      if parameters != oldValue {
+        update()
+      }
+    }
+  }
 
   // MARK: Private
 

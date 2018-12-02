@@ -41,10 +41,20 @@ public class If: NSBox {
 
   public var enabled: Bool {
     get { return parameters.enabled }
-    set { parameters.enabled = newValue }
+    set {
+      if parameters.enabled != newValue {
+        parameters.enabled = newValue
+      }
+    }
   }
 
-  public var parameters: Parameters { didSet { update() } }
+  public var parameters: Parameters {
+    didSet {
+      if parameters != oldValue {
+        update()
+      }
+    }
+  }
 
   // MARK: Private
 

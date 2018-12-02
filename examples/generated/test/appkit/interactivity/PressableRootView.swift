@@ -53,7 +53,13 @@ public class PressableRootView: NSBox {
     set { parameters.onPressInner = newValue }
   }
 
-  public var parameters: Parameters { didSet { update() } }
+  public var parameters: Parameters {
+    didSet {
+      if parameters != oldValue {
+        update()
+      }
+    }
+  }
 
   // MARK: Private
 
@@ -65,7 +71,7 @@ public class PressableRootView: NSBox {
   private var innerView = NSBox()
   private var innerTextView = LNATextField(labelWithString: "")
 
-  private var innerTextViewTextStyle = TextStyles.headline
+  private var innerTextViewTextStyle = TextStyles.body1
 
   private var hovered = false
   private var pressed = false
@@ -86,7 +92,7 @@ public class PressableRootView: NSBox {
     addSubview(innerView)
     innerView.addSubview(innerTextView)
 
-    innerTextViewTextStyle = TextStyles.headline
+    innerTextViewTextStyle = TextStyles.body1
     innerTextView.attributedStringValue = innerTextViewTextStyle.apply(to: innerTextView.attributedStringValue)
   }
 

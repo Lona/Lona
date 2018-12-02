@@ -82,7 +82,7 @@ let styles = StyleSheet.create({
     height: 100
   },
   innerText: {
-    ...textStyles.headline,
+    ...textStyles.body1,
     alignItems: "flex-start",
     flex: 0,
     flexDirection: "column",

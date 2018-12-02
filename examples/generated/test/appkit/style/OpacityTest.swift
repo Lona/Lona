@@ -41,10 +41,20 @@ public class OpacityTest: NSBox {
 
   public var selected: Bool {
     get { return parameters.selected }
-    set { parameters.selected = newValue }
+    set {
+      if parameters.selected != newValue {
+        parameters.selected = newValue
+      }
+    }
   }
 
-  public var parameters: Parameters { didSet { update() } }
+  public var parameters: Parameters {
+    didSet {
+      if parameters != oldValue {
+        update()
+      }
+    }
+  }
 
   // MARK: Private
 

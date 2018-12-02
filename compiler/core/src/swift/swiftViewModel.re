@@ -5,8 +5,7 @@
 
 let equatableParameters =
     (parameters: list(Types.parameter)): list(Types.parameter) =>
-  parameters
-  |> List.filter(param => !SwiftComponentParameter.isFunction(param));
+  parameters |> List.filter(SwiftComponentParameter.isEquatable);
 
 let sortedParameters =
     (parameters: list(Types.parameter)): list(Types.parameter) =>

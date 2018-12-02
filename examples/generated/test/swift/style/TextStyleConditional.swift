@@ -41,10 +41,20 @@ public class TextStyleConditional: UIView {
 
   public var large: Bool {
     get { return parameters.large }
-    set { parameters.large = newValue }
+    set {
+      if parameters.large != newValue {
+        parameters.large = newValue
+      }
+    }
   }
 
-  public var parameters: Parameters { didSet { update() } }
+  public var parameters: Parameters {
+    didSet {
+      if parameters != oldValue {
+        update()
+      }
+    }
+  }
 
   // MARK: Private
 

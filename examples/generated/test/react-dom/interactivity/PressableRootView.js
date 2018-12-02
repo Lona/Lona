@@ -85,7 +85,7 @@ let Inner = styled.div({
 
 let InnerText = styled.span({
   textAlign: "left",
-  ...textStyles.headline,
+  ...textStyles.body1,
   alignItems: "flex-start",
   display: "block",
   flex: "0 0 auto",

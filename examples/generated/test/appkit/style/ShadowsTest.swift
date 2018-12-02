@@ -41,10 +41,20 @@ public class ShadowsTest: NSBox {
 
   public var largeShadow: Bool {
     get { return parameters.largeShadow }
-    set { parameters.largeShadow = newValue }
+    set {
+      if parameters.largeShadow != newValue {
+        parameters.largeShadow = newValue
+      }
+    }
   }
 
-  public var parameters: Parameters { didSet { update() } }
+  public var parameters: Parameters {
+    didSet {
+      if parameters != oldValue {
+        update()
+      }
+    }
+  }
 
   // MARK: Private
 

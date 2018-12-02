@@ -41,15 +41,29 @@ public class BoxModelConditional: NSBox {
 
   public var margin: CGFloat {
     get { return parameters.margin }
-    set { parameters.margin = newValue }
+    set {
+      if parameters.margin != newValue {
+        parameters.margin = newValue
+      }
+    }
   }
 
   public var size: CGFloat {
     get { return parameters.size }
-    set { parameters.size = newValue }
+    set {
+      if parameters.size != newValue {
+        parameters.size = newValue
+      }
+    }
   }
 
-  public var parameters: Parameters { didSet { update() } }
+  public var parameters: Parameters {
+    didSet {
+      if parameters != oldValue {
+        update()
+      }
+    }
+  }
 
   // MARK: Private
 

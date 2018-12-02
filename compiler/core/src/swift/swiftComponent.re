@@ -205,7 +205,44 @@ module Doc = {
     });
 
   let parameterVariable =
-      (swiftOptions: SwiftOptions.options, parameter: Types.parameter) =>
+      (swiftOptions: SwiftOptions.options, parameter: Types.parameter) => {
+    let setter =
+      if (Parameter.isEquatable(parameter)) {
+        IfStatement({
+          "condition":
+            BinaryExpression({
+              "left":
+                SwiftAst.Builders.memberExpression([
+                  "parameters",
+                  parameter.name |> ParameterKey.toString,
+                ]),
+              "operator": "!=",
+              "right": SwiftIdentifier("newValue"),
+            }),
+          "block": [
+            BinaryExpression({
+              "left":
+                SwiftAst.Builders.memberExpression([
+                  "parameters",
+                  parameter.name |> ParameterKey.toString,
+                ]),
+              "operator": "=",
+              "right": SwiftIdentifier("newValue"),
+            }),
+          ],
+        });
+      } else {
+        BinaryExpression({
+          "left":
+            SwiftAst.Builders.memberExpression([
+              "parameters",
+              parameter.name |> ParameterKey.toString,
+            ]),
+          "operator": "=",
+          "right": SwiftIdentifier("newValue"),
+        });
+      };
+
     VariableDeclaration({
       "modifiers": [AccessLevelModifier(PublicModifier)],
       "pattern":
@@ -232,20 +269,11 @@ module Doc = {
                 ),
               ),
             ],
-            "set": [
-              BinaryExpression({
-                "left":
-                  SwiftAst.Builders.memberExpression([
-                    "parameters",
-                    parameter.name |> ParameterKey.toString,
-                  ]),
-                "operator": "=",
-                "right": SwiftIdentifier("newValue"),
-              }),
-            ],
+            "set": [setter],
           }),
         ),
     });
+  };
 
   let parametersModelVariable = () =>
     VariableDeclaration({
@@ -261,7 +289,17 @@ module Doc = {
           WillSetDidSetBlock({
             "willSet": None,
             "didSet":
-              Some([SwiftAst.Builders.functionCall(["update"], [])]),
+              Some([
+                IfStatement({
+                  "condition":
+                    BinaryExpression({
+                      "left": SwiftIdentifier("parameters"),
+                      "operator": "!=",
+                      "right": SwiftIdentifier("oldValue"),
+                    }),
+                  "block": [SwiftAst.Builders.functionCall(["update"], [])],
+                }),
+              ]),
           }),
         ),
     });

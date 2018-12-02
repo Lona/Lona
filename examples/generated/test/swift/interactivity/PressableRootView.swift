@@ -45,14 +45,20 @@ public class PressableRootView: LonaControlView {
     set { parameters.onPressInner = newValue }
   }
 
-  public var parameters: Parameters { didSet { update() } }
+  public var parameters: Parameters {
+    didSet {
+      if parameters != oldValue {
+        update()
+      }
+    }
+  }
 
   // MARK: Private
 
   private var innerView = LonaControlView(frame: .zero)
   private var innerTextView = UILabel()
 
-  private var innerTextViewTextStyle = TextStyles.headline
+  private var innerTextViewTextStyle = TextStyles.body1
 
   private var onTapOuterView: (() -> Void)?
   private var onTapInnerView: (() -> Void)?
@@ -64,7 +70,7 @@ public class PressableRootView: LonaControlView {
     addSubview(innerView)
     innerView.addSubview(innerTextView)
 
-    innerTextViewTextStyle = TextStyles.headline
+    innerTextViewTextStyle = TextStyles.body1
     innerTextView.attributedText =
       innerTextViewTextStyle.apply(to: innerTextView.attributedText ?? NSAttributedString())
 

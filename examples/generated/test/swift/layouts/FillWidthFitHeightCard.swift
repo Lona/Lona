@@ -43,7 +43,13 @@ public class FillWidthFitHeightCard: UIView {
 
   // MARK: Public
 
-  public var parameters: Parameters { didSet { update() } }
+  public var parameters: Parameters {
+    didSet {
+      if parameters != oldValue {
+        update()
+      }
+    }
+  }
 
   // MARK: Private
 

@@ -31,6 +31,8 @@ let paddingAndMarginKeys = [
 
 let isPaddingOrMargin = key => List.mem(key, paddingAndMarginKeys);
 
+let isEquatable = (param: Types.parameter): bool => !isFunction(param);
+
 let getVectorAssetUrl = (layer: Types.layer) =>
   switch (get(layer, ParameterKey.Image)) {
   | None =>

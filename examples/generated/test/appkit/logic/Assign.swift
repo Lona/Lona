@@ -41,10 +41,20 @@ public class Assign: NSBox {
 
   public var text: String {
     get { return parameters.text }
-    set { parameters.text = newValue }
+    set {
+      if parameters.text != newValue {
+        parameters.text = newValue
+      }
+    }
   }
 
-  public var parameters: Parameters { didSet { update() } }
+  public var parameters: Parameters {
+    didSet {
+      if parameters != oldValue {
+        update()
+      }
+    }
+  }
 
   // MARK: Private
 
