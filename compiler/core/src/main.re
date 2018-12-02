@@ -41,6 +41,11 @@ let swiftOptions: Swift.Options.options = {
     | Some(_) => true
     | _ => false
     },
+  generateCollectionView:
+    switch (getArgument("generateCollectionView")) {
+    | Some(_) => true
+    | _ => false
+    },
   typePrefix:
     switch (getArgument("typePrefix")) {
     | Some(value) => value
@@ -442,7 +447,9 @@ let convertWorkspace = (workspace, output) =>
             })
          |> Sequence.compact;
 
-       if (target == Types.Swift && swiftOptions.framework == UIKit) {
+       if (target == Types.Swift
+           && swiftOptions.framework == UIKit
+           && swiftOptions.generateCollectionView) {
          Fs.writeFileSync(
            concat(toDirectory, "LonaCollectionView.swift"),
            SwiftCollectionView.generate(
