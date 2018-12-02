@@ -103,7 +103,7 @@ public class Button: LonaControlView {
   private func update() {
     backgroundColor = Colors.blue100
     textView.attributedText = textViewTextStyle.apply(to: label)
-    onTapViewView = onTap
+    onTapViewView = handleOnTap
 
     if showsHighlight {
       backgroundColor = Colors.blue50
@@ -111,6 +111,10 @@ public class Button: LonaControlView {
     if secondary {
       backgroundColor = Colors.lightblue100
     }
+  }
+
+  private func handleOnTap() {
+    onTap?()
   }
 
   @objc private func handleTapViewView() {

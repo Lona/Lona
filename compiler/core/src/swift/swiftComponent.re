@@ -180,6 +180,30 @@ module Doc = {
     }),
   ];
 
+  /* We proxy function parameters so that we don't have to call update() when they change.
+
+     We currently don't allow comparing functions for equality -- the Swift language doesn't
+     support this. We could allow checking if an optional function is currently nil or not,
+     but right now we don't. We would need to detect if that's ever done within logic and
+     disable this proxy function optimization for the component.
+     */
+  let functionParameterProxy = (parameter: Types.parameter) =>
+    FunctionDeclaration({
+      "name":
+        "handle" ++ Format.upperFirst(parameter.name |> ParameterKey.toString),
+      "attributes": [],
+      "modifiers": [AccessLevelModifier(PrivateModifier)],
+      "parameters": [],
+      "result": None,
+      "throws": false,
+      "body": [
+        SwiftAst.Builders.functionCall(
+          [(parameter.name |> ParameterKey.toString) ++ "?"],
+          [],
+        ),
+      ],
+    });
+
   let parameterVariable =
       (swiftOptions: SwiftOptions.options, parameter: Types.parameter) =>
     VariableDeclaration({
@@ -305,6 +329,7 @@ module Doc = {
         swiftOptions: SwiftOptions.options,
         config: Config.t,
         getComponent,
+        componentParameters,
         assignmentsFromLayerParameters,
         rootLayer: Types.layer,
         layer: Types.layer,
@@ -336,7 +361,13 @@ module Doc = {
           Logic.defaultAssignmentForLayerParameter(config, layer, name)
         };
       let node =
-        SwiftLogic.toSwiftAST(swiftOptions, config, rootLayer, logic);
+        SwiftLogic.toSwiftAST(
+          swiftOptions,
+          config,
+          componentParameters,
+          rootLayer,
+          logic,
+        );
       StatementListHelper(node);
     };
   };
@@ -346,6 +377,7 @@ module Doc = {
         swiftOptions: SwiftOptions.options,
         config: Config.t,
         getComponent,
+        componentParameters,
         logic,
         assignmentsFromLayerParameters,
         assignmentsFromLogic,
@@ -393,6 +425,7 @@ module Doc = {
                swiftOptions,
                config,
                getComponent,
+               componentParameters,
                assignmentsFromLayerParameters,
                rootLayer,
                layer,
@@ -637,6 +670,7 @@ module Doc = {
         swiftOptions: SwiftOptions.options,
         config: Config.t,
         getComponent,
+        componentParameters,
         assignmentsFromLayerParameters,
         assignmentsFromLogic,
         hasConditionalConstraints: bool,
@@ -663,6 +697,7 @@ module Doc = {
              swiftOptions,
              config,
              getComponent,
+             componentParameters,
              assignmentsFromLayerParameters,
              rootLayer,
              layer,
@@ -676,7 +711,13 @@ module Doc = {
         |> List.map(defineInitialLayerValues)
         |> List.concat
       )
-      @ SwiftLogic.toSwiftAST(swiftOptions, config, rootLayer, logic);
+      @ SwiftLogic.toSwiftAST(
+          swiftOptions,
+          config,
+          componentParameters,
+          rootLayer,
+          logic,
+        );
 
     let body =
       if (hasConditionalConstraints) {
@@ -1321,6 +1362,7 @@ let generate =
                         swiftOptions,
                         config,
                         getComponent,
+                        parameters,
                         logic,
                         assignmentsFromLayerParameters,
                         assignmentsFromLogic,
@@ -1352,6 +1394,7 @@ let generate =
                         swiftOptions,
                         config,
                         getComponent,
+                        parameters,
                         assignmentsFromLayerParameters,
                         assignmentsFromLogic,
                         List.length(conditionalConstraints) > 0,
@@ -1359,6 +1402,10 @@ let generate =
                         logic,
                       ),
                     ],
+                    parameters
+                    |> List.filter(Parameter.isFunction)
+                    |> List.map(Doc.functionParameterProxy)
+                    |> SwiftDocument.join(Empty),
                     needsTracking ?
                       AppkitPressable.mouseTrackingFunctions(
                         rootLayer,

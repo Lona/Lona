@@ -117,7 +117,7 @@ public class Button: NSBox {
   private func update() {
     fillColor = Colors.blue100
     textView.attributedStringValue = textViewTextStyle.apply(to: label)
-    onPress = onTap
+    onPress = handleOnTap
     if hovered {
       fillColor = Colors.blue200
     }
@@ -127,6 +127,10 @@ public class Button: NSBox {
     if secondary {
       fillColor = Colors.lightblue100
     }
+  }
+
+  private func handleOnTap() {
+    onTap?()
   }
 
   private func updateHoverState(with event: NSEvent) {

@@ -122,8 +122,8 @@ public class PressableRootView: NSBox {
     innerView.fillColor = Colors.blue500
     innerTextView.attributedStringValue = innerTextViewTextStyle.apply(to: "")
     fillColor = Colors.grey50
-    onPress = onPressOuter
-    innerViewOnPress = onPressInner
+    onPress = handleOnPressOuter
+    innerViewOnPress = handleOnPressInner
     if hovered {
       fillColor = Colors.grey100
     }
@@ -143,6 +143,14 @@ public class PressableRootView: NSBox {
         innerTextView.attributedStringValue = innerTextViewTextStyle.apply(to: "Hovered & Pressed")
       }
     }
+  }
+
+  private func handleOnPressOuter() {
+    onPressOuter?()
+  }
+
+  private func handleOnPressInner() {
+    onPressInner?()
   }
 
   private func updateHoverState(with event: NSEvent) {

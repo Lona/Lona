@@ -6,6 +6,7 @@ let toSwiftAST =
     (
       options: SwiftOptions.options,
       config: Config.t,
+      componentParameters: list(Types.parameter),
       rootLayer: Types.layer,
       logicRootNode,
     ) => {
@@ -13,7 +14,18 @@ let toSwiftAST =
     switch (node) {
     | Logic.Identifier(_, [head, ...tail]) =>
       switch (head) {
-      | "parameters" => Ast.SwiftIdentifier(List.hd(tail))
+      | "parameters" =>
+        let parameterName = List.hd(tail);
+        let parameter =
+          componentParameters
+          |> List.find((parameter: Types.parameter) =>
+               parameter.name == ParameterKey.fromString(parameterName)
+             );
+        switch (parameter.ltype) {
+        | Function(_) =>
+          Ast.SwiftIdentifier("handle" ++ Format.upperFirst(parameterName))
+        | _ => Ast.SwiftIdentifier(List.hd(tail))
+        };
       | "layers" =>
         switch (tail) {
         | [layerName, "vector", elementName, paramName] =>
