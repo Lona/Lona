@@ -70,6 +70,12 @@ public class BoxModelConditional: UIView {
     let innerViewHeightAnchorConstraint = innerView.heightAnchor.constraint(equalToConstant: 60)
     let innerViewWidthAnchorConstraint = innerView.widthAnchor.constraint(equalToConstant: 60)
 
+    self.innerViewTopAnchorConstraint = innerViewTopAnchorConstraint
+    self.innerViewBottomAnchorConstraint = innerViewBottomAnchorConstraint
+    self.innerViewLeadingAnchorConstraint = innerViewLeadingAnchorConstraint
+    self.innerViewHeightAnchorConstraint = innerViewHeightAnchorConstraint
+    self.innerViewWidthAnchorConstraint = innerViewWidthAnchorConstraint
+
     NSLayoutConstraint.activate([
       innerViewTopAnchorConstraint,
       innerViewBottomAnchorConstraint,
@@ -77,12 +83,6 @@ public class BoxModelConditional: UIView {
       innerViewHeightAnchorConstraint,
       innerViewWidthAnchorConstraint
     ])
-
-    self.innerViewTopAnchorConstraint = innerViewTopAnchorConstraint
-    self.innerViewBottomAnchorConstraint = innerViewBottomAnchorConstraint
-    self.innerViewLeadingAnchorConstraint = innerViewLeadingAnchorConstraint
-    self.innerViewHeightAnchorConstraint = innerViewHeightAnchorConstraint
-    self.innerViewWidthAnchorConstraint = innerViewWidthAnchorConstraint
   }
 
   private func update() {

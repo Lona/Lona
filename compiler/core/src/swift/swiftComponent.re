@@ -674,47 +674,123 @@ module Doc = {
 
     let body =
       if (hasConditionalConstraints) {
-        SwiftDocument.join(
+        let visibilityLayers =
+          Constraint.visibilityLayers(assignmentsFromLogic, rootLayer)
+          |> List.sort(Layer.compare);
+
+        let initialViewVisibility =
+          visibilityLayers
+          |> List.map((layer: Types.layer) =>
+               ConstantDeclaration({
+                 "modifiers": [],
+                 "init":
+                   Some(
+                     Builders.memberExpression([
+                       SwiftFormat.layerName(layer.name),
+                       "isHidden",
+                     ]),
+                   ),
+                 "pattern":
+                   IdentifierPattern({
+                     "identifier":
+                       SwiftIdentifier(
+                         SwiftFormat.layerName(layer.name) ++ "IsHidden",
+                       ),
+                     "annotation": None,
+                   }),
+               })
+             );
+
+        let compareViewVisibility =
+          SwiftDocument.binaryExpressionList(
+            "||",
+            visibilityLayers
+            |> List.map((layer: Types.layer) =>
+                 BinaryExpression({
+                   "left":
+                     Builders.memberExpression([
+                       SwiftFormat.layerName(layer.name),
+                       "isHidden",
+                     ]),
+                   "operator": "!=",
+                   "right":
+                     SwiftIdentifier(
+                       SwiftFormat.layerName(layer.name) ++ "IsHidden",
+                     ),
+                 })
+               ),
+          );
+
+        let deactivateConstraints =
+          FunctionCallExpression({
+            "name":
+              SwiftAst.Builders.memberExpression([
+                "NSLayoutConstraint",
+                "deactivate",
+              ]),
+            "arguments": [
+              FunctionCallExpression({
+                "name": SwiftIdentifier("conditionalConstraints"),
+                "arguments":
+                  visibilityLayers
+                  |> List.map((layer: Types.layer) =>
+                       FunctionCallArgument({
+                         "name":
+                           Some(
+                             SwiftIdentifier(
+                               SwiftFormat.layerName(layer.name) ++ "IsHidden",
+                             ),
+                           ),
+                         "value":
+                           SwiftIdentifier(
+                             SwiftFormat.layerName(layer.name) ++ "IsHidden",
+                           ),
+                       })
+                     ),
+              }),
+            ],
+          });
+
+        let activateConstraints =
+          FunctionCallExpression({
+            "name":
+              SwiftAst.Builders.memberExpression([
+                "NSLayoutConstraint",
+                "activate",
+              ]),
+            "arguments": [
+              FunctionCallExpression({
+                "name": SwiftIdentifier("conditionalConstraints"),
+                "arguments":
+                  visibilityLayers
+                  |> List.map((layer: Types.layer) =>
+                       FunctionCallArgument({
+                         "name":
+                           Some(
+                             SwiftIdentifier(
+                               SwiftFormat.layerName(layer.name) ++ "IsHidden",
+                             ),
+                           ),
+                         "value":
+                           Builders.memberExpression([
+                             SwiftFormat.layerName(layer.name),
+                             "isHidden",
+                           ]),
+                       })
+                     ),
+              }),
+            ],
+          });
+
+        let updateVisibility =
+          IfStatement({
+            "condition": compareViewVisibility,
+            "block": [deactivateConstraints, activateConstraints],
+          });
+
+        SwiftDocument.joinGroups(
           Empty,
-          [
-            FunctionCallExpression({
-              "name":
-                SwiftAst.Builders.memberExpression([
-                  "NSLayoutConstraint",
-                  "deactivate",
-                ]),
-              "arguments": [
-                FunctionCallArgument({
-                  "name": None,
-                  "value":
-                    SwiftAst.Builders.functionCall(
-                      ["conditionalConstraints"],
-                      [],
-                    ),
-                }),
-              ],
-            }),
-          ]
-          @ body
-          @ [
-            FunctionCallExpression({
-              "name":
-                SwiftAst.Builders.memberExpression([
-                  "NSLayoutConstraint",
-                  "activate",
-                ]),
-              "arguments": [
-                FunctionCallArgument({
-                  "name": None,
-                  "value":
-                    SwiftAst.Builders.functionCall(
-                      ["conditionalConstraints"],
-                      [],
-                    ),
-                }),
-              ],
-            }),
-          ],
+          [initialViewVisibility, body, [updateVisibility]],
         );
       } else {
         body;

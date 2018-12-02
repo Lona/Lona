@@ -322,6 +322,10 @@ let setUpFunction =
       rootLayer,
     );
 
+  let visibilityLayers =
+    Constraint.visibilityLayers(assignmentsFromLogic, rootLayer)
+    |> List.sort(Layer.compare);
+
   let translatesAutoresizingMask = (layer: Types.layer) =>
     BinaryExpression({
       "left":
@@ -366,7 +370,39 @@ let setUpFunction =
           SwiftIdentifier(priorityName(Constraint.getPriority(const))),
         ]),
     });
-  let activateConstraints = () =>
+  let initialConditionalConstraints =
+    FunctionCallExpression({
+      "name": SwiftIdentifier("conditionalConstraints"),
+      "arguments":
+        visibilityLayers
+        |> List.map((layer: Types.layer) =>
+             FunctionCallArgument({
+               "name":
+                 Some(
+                   SwiftIdentifier(
+                     SwiftFormat.layerName(layer.name) ++ "IsHidden",
+                   ),
+                 ),
+               "value":
+                 Builders.memberExpression([
+                   SwiftFormat.layerName(layer.name),
+                   "isHidden",
+                 ]),
+             })
+           ),
+    });
+  let activateConstraints = () => {
+    let activated =
+      LiteralExpression(
+        Array(
+          Constraint.alwaysConstraints(combinations)
+          |> List.map(const =>
+               SwiftIdentifier(
+                 formatConstraintVariableName(combinations, rootLayer, const),
+               )
+             ),
+        ),
+      );
     FunctionCallExpression({
       "name":
         MemberExpression([
@@ -377,23 +413,19 @@ let setUpFunction =
         FunctionCallArgument({
           "name": None,
           "value":
-            LiteralExpression(
-              Array(
-                Constraint.alwaysConstraints(combinations)
-                |> List.map(const =>
-                     SwiftIdentifier(
-                       formatConstraintVariableName(
-                         combinations,
-                         rootLayer,
-                         const,
-                       ),
-                     )
-                   ),
-              ),
-            ),
+            if (visibilityLayers == []) {
+              activated;
+            } else {
+              BinaryExpression({
+                "left": activated,
+                "operator": "+",
+                "right": initialConditionalConstraints,
+              });
+            },
         }),
       ],
     });
+  };
   let assignConstraint = const =>
     BinaryExpression({
       "left":
@@ -449,13 +481,13 @@ let setUpFunction =
           allConstraints
           |> List.filter(const => Constraint.getPriority(const) == Low)
           |> List.map(setConstraintPriority),
-          /* Activation */
-          List.length(alwaysConstraints) > 0 ? [activateConstraints()] : [],
           /* Assign to member variables */
           conditionalConstraints |> List.map(assignConstraint),
           alwaysConstraints
           |> List.filter(isDynamic(assignmentsFromLogic))
           |> List.map(assignConstraint),
+          /* Activation */
+          List.length(alwaysConstraints) > 0 ? [activateConstraints()] : [],
           /* Debug identifiers */
           swiftOptions.debugConstraints && List.length(allConstraints) > 0 ?
             [
@@ -473,10 +505,10 @@ let setUpFunction =
 
    Generate the following:
 
-   private func conditionalConstraints() -> [NSLayoutConstraint] {
+   private func conditionalConstraints(titleViewIsHidden: Bool) -> [NSLayoutConstraint] {
      var constraints: [NSLayoutConstraint?] = []
 
-     switch (titleView.isHidden) {
+     switch (titleViewIsHidden) {
      case (true):
        constraints = [
          bottomViewTopAnchorInnerViewBottomAnchorConstraint
@@ -508,7 +540,16 @@ let conditionalConstraintsFunction =
     "name": "conditionalConstraints",
     "attributes": [],
     "modifiers": [AccessLevelModifier(PrivateModifier)],
-    "parameters": [],
+    "parameters":
+      visibilityLayers
+      |> List.map((layer: Types.layer) =>
+           Parameter({
+             "externalName": None,
+             "localName": SwiftFormat.layerName(layer.name) ++ "IsHidden",
+             "defaultValue": None,
+             "annotation": TypeName("Bool"),
+           })
+         ),
     "result": Some(ArrayType(TypeName("NSLayoutConstraint"))),
     "throws": false,
     "body": [
@@ -531,10 +572,9 @@ let conditionalConstraintsFunction =
           TupleExpression(
             visibilityLayers
             |> List.map((layer: Types.layer) =>
-                 SwiftFormat.layerName(layer.name)
-               )
-            |> List.map(name =>
-                 SwiftAst.Builders.memberExpression([name, "isHidden"])
+                 SwiftIdentifier(
+                   SwiftFormat.layerName(layer.name) ++ "IsHidden",
+                 )
                ),
           ),
         "cases":

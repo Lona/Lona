@@ -102,13 +102,6 @@ public class VisibilityTest: UIView {
       .topAnchor
       .constraint(equalTo: innerView.bottomAnchor)
 
-    NSLayoutConstraint.activate([
-      viewViewBottomAnchorConstraint,
-      viewViewLeadingAnchorConstraint,
-      viewViewHeightAnchorConstraint,
-      viewViewWidthAnchorConstraint
-    ])
-
     self.viewViewTopAnchorTopAnchorConstraint = viewViewTopAnchorTopAnchorConstraint
     self.innerViewTopAnchorTopAnchorConstraint = innerViewTopAnchorTopAnchorConstraint
     self.innerViewLeadingAnchorLeadingAnchorConstraint = innerViewLeadingAnchorLeadingAnchorConstraint
@@ -120,12 +113,21 @@ public class VisibilityTest: UIView {
     self.titleViewTrailingAnchorTrailingAnchorConstraint = titleViewTrailingAnchorTrailingAnchorConstraint
     self.viewViewTopAnchorTitleViewBottomAnchorConstraint = viewViewTopAnchorTitleViewBottomAnchorConstraint
     self.titleViewTopAnchorInnerViewBottomAnchorConstraint = titleViewTopAnchorInnerViewBottomAnchorConstraint
+
+    NSLayoutConstraint.activate(
+      [
+        viewViewBottomAnchorConstraint,
+        viewViewLeadingAnchorConstraint,
+        viewViewHeightAnchorConstraint,
+        viewViewWidthAnchorConstraint
+      ] +
+        conditionalConstraints(innerViewIsHidden: innerView.isHidden, titleViewIsHidden: titleView.isHidden))
   }
 
-  private func conditionalConstraints() -> [NSLayoutConstraint] {
+  private func conditionalConstraints(innerViewIsHidden: Bool, titleViewIsHidden: Bool) -> [NSLayoutConstraint] {
     var constraints: [NSLayoutConstraint?]
 
-    switch (innerView.isHidden, titleView.isHidden) {
+    switch (innerViewIsHidden, titleViewIsHidden) {
       case (true, true):
         constraints = [viewViewTopAnchorTopAnchorConstraint]
       case (false, true):
@@ -160,11 +162,17 @@ public class VisibilityTest: UIView {
   }
 
   private func update() {
-    NSLayoutConstraint.deactivate(conditionalConstraints())
+    let innerViewIsHidden = innerView.isHidden
+    let titleViewIsHidden = titleView.isHidden
 
     titleView.isHidden = !enabled
 
-    NSLayoutConstraint.activate(conditionalConstraints())
+    if innerView.isHidden != innerViewIsHidden || titleView.isHidden != titleViewIsHidden {
+      NSLayoutConstraint.deactivate(
+        conditionalConstraints(innerViewIsHidden: innerViewIsHidden, titleViewIsHidden: titleViewIsHidden))
+      NSLayoutConstraint.activate(
+        conditionalConstraints(innerViewIsHidden: innerView.isHidden, titleViewIsHidden: titleView.isHidden))
+    }
   }
 }
 
