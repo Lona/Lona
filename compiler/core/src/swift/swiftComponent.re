@@ -53,36 +53,6 @@ module Naming = {
 module Doc = {
   open SwiftAst;
 
-  /* required init?(coder aDecoder: NSCoder) {
-       fatalError("init(coder:) has not been implemented")
-     } */
-  let coderInitializer = () =>
-    InitializerDeclaration({
-      "modifiers": [AccessLevelModifier(PublicModifier), RequiredModifier],
-      "parameters": [
-        Parameter({
-          "externalName": Some("coder"),
-          "localName": "aDecoder",
-          "annotation": TypeName("NSCoder"),
-          "defaultValue": None,
-        }),
-      ],
-      "failable": Some("?"),
-      "throws": false,
-      "body": [
-        FunctionCallExpression({
-          "name": SwiftIdentifier("fatalError"),
-          "arguments": [
-            FunctionCallArgument({
-              "name": None,
-              "value":
-                SwiftIdentifier("\"init(coder:) has not been implemented\""),
-            }),
-          ],
-        }),
-      ],
-    });
-
   let pressableVariables = (rootLayer: Types.layer, layer: Types.layer) => [
     SwiftAst.Builders.privateVariableDeclaration(
       SwiftFormat.layerVariableName(rootLayer, layer, "hovered"),
@@ -1020,6 +990,47 @@ module Doc = {
         ),
     });
 
+  let coderInitializer = needsTracking =>
+    InitializerDeclaration({
+      "modifiers": [AccessLevelModifier(PublicModifier), RequiredModifier],
+      "parameters": [
+        Parameter({
+          "externalName": Some("coder"),
+          "localName": "aDecoder",
+          "annotation": TypeName("NSCoder"),
+          "defaultValue": None,
+        }),
+      ],
+      "failable": Some("?"),
+      "throws": false,
+      "body":
+        SwiftDocument.joinGroups(
+          Empty,
+          [
+            [
+              SwiftAst.BinaryExpression({
+                "left":
+                  SwiftAst.Builders.memberExpression(["self", "parameters"]),
+                "operator": "=",
+                "right": SwiftAst.Builders.functionCall(["Parameters"], []),
+              }),
+            ],
+            [
+              SwiftAst.Builders.functionCall(
+                ["super", "init"],
+                [(Some("coder"), ["aDecoder"])],
+              ),
+            ],
+            [
+              SwiftAst.Builders.functionCall(["setUpViews"], []),
+              SwiftAst.Builders.functionCall(["setUpConstraints"], []),
+            ],
+            [SwiftAst.Builders.functionCall(["update"], [])],
+            needsTracking ? [AppkitPressable.addTrackingArea] : [],
+          ],
+        ),
+    });
+
   let convenienceInit = () =>
     SwiftAst.Builders.convenienceInit([
       MemberExpression([
@@ -1264,7 +1275,7 @@ let generate =
                     |> List.filter(param => !Parameter.isFunction(param))
                     |> List.length > 0 ?
                       [Doc.convenienceInit()] : [],
-                    [Doc.coderInitializer()],
+                    [Doc.coderInitializer(needsTracking)],
                     needsTracking ? [AppkitPressable.deinitTrackingArea] : [],
                     [LineComment("MARK: Public")],
                     parameters

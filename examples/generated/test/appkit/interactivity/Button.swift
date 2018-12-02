@@ -29,7 +29,16 @@ public class Button: NSBox {
   }
 
   public required init?(coder aDecoder: NSCoder) {
-    fatalError("init(coder:) has not been implemented")
+    self.parameters = Parameters()
+
+    super.init(coder: aDecoder)
+
+    setUpViews()
+    setUpConstraints()
+
+    update()
+
+    addTrackingArea(trackingArea)
   }
 
   deinit {
