@@ -100,6 +100,7 @@ public class VectorLogic: UIView {
   private var checkView = CheckCircleVector()
 
   private func setUpViews() {
+    checkView.isUserInteractionEnabled = false
     checkView.isOpaque = false
 
     addSubview(checkView)

@@ -60,6 +60,7 @@ public class VisibilityTest: UIView {
   private var titleViewTopAnchorInnerViewBottomAnchorConstraint: NSLayoutConstraint?
 
   private func setUpViews() {
+    titleView.isUserInteractionEnabled = false
     titleView.numberOfLines = 0
 
     addSubview(innerView)

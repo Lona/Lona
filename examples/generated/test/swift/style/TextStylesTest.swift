@@ -56,14 +56,23 @@ public class TextStylesTest: UIView {
   private var text9ViewTextStyle = TextStyles.caption
 
   private func setUpViews() {
+    text1View.isUserInteractionEnabled = false
     text1View.numberOfLines = 0
+    text2View.isUserInteractionEnabled = false
     text2View.numberOfLines = 0
+    text3View.isUserInteractionEnabled = false
     text3View.numberOfLines = 0
+    text7View.isUserInteractionEnabled = false
     text7View.numberOfLines = 0
+    text8View.isUserInteractionEnabled = false
     text8View.numberOfLines = 0
+    text9View.isUserInteractionEnabled = false
     text9View.numberOfLines = 0
+    text4View.isUserInteractionEnabled = false
     text4View.numberOfLines = 0
+    text5View.isUserInteractionEnabled = false
     text5View.numberOfLines = 0
+    text6View.isUserInteractionEnabled = false
     text6View.numberOfLines = 0
 
     addSubview(text1View)

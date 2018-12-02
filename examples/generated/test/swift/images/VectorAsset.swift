@@ -236,8 +236,11 @@ public class VectorAsset: UIView {
   private var vectorGraphic3View = CheckCircleVector()
 
   private func setUpViews() {
+    vectorGraphic1View.isUserInteractionEnabled = false
     vectorGraphic1View.isOpaque = false
+    vectorGraphic2View.isUserInteractionEnabled = false
     vectorGraphic2View.isOpaque = false
+    vectorGraphic3View.isUserInteractionEnabled = false
 
     addSubview(vectorGraphic1View)
     addSubview(vectorGraphic2View)

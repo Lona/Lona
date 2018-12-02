@@ -381,6 +381,18 @@ let rec render = ast: Prettier.Doc.t('a) =>
       <+> line
       <+> render(CodeBlock({"statements": o##block})),
     )
+  | ForInStatement(o) =>
+    group(
+      s("for")
+      <+> line
+      <+> renderPattern(o##item)
+      <+> line
+      <+> s("in")
+      <+> line
+      <+> render(o##collection)
+      <+> line
+      <+> render(CodeBlock({"statements": o##block})),
+    )
   | WhileStatement(o) =>
     group(
       s("while")

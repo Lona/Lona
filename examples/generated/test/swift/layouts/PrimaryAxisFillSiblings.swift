@@ -57,13 +57,19 @@ public class PrimaryAxisFillSiblings: UIView {
   private var subtitle1ViewTextStyle = TextStyles.body1
 
   private func setUpViews() {
+    imageView.isUserInteractionEnabled = false
     imageView.contentMode = .scaleAspectFill
     imageView.layer.masksToBounds = true
+    titleView.isUserInteractionEnabled = false
     titleView.numberOfLines = 0
+    subtitleView.isUserInteractionEnabled = false
     subtitleView.numberOfLines = 0
+    image1View.isUserInteractionEnabled = false
     image1View.contentMode = .scaleAspectFill
     image1View.layer.masksToBounds = true
+    title1View.isUserInteractionEnabled = false
     title1View.numberOfLines = 0
+    subtitle1View.isUserInteractionEnabled = false
     subtitle1View.numberOfLines = 0
 
     addSubview(horizontalView)

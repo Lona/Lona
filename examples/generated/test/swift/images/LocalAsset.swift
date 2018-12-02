@@ -43,6 +43,7 @@ public class LocalAsset: UIView {
   private var imageView = BackgroundImageView(frame: .zero)
 
   private func setUpViews() {
+    imageView.isUserInteractionEnabled = false
     imageView.contentMode = .scaleAspectFill
     imageView.layer.masksToBounds = true
 

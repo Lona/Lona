@@ -47,12 +47,17 @@ public class ImageCropping: UIView {
   private var fixedStretchView = BackgroundImageView(frame: .zero)
 
   private func setUpViews() {
+    aspectFitView.isUserInteractionEnabled = false
     aspectFitView.layer.masksToBounds = true
+    aspectFillView.isUserInteractionEnabled = false
     aspectFillView.contentMode = .scaleAspectFill
     aspectFillView.layer.masksToBounds = true
+    stretchFillView.isUserInteractionEnabled = false
     stretchFillView.layer.masksToBounds = true
+    fixedAspectFillView.isUserInteractionEnabled = false
     fixedAspectFillView.contentMode = .scaleAspectFill
     fixedAspectFillView.layer.masksToBounds = true
+    fixedStretchView.isUserInteractionEnabled = false
     fixedStretchView.layer.masksToBounds = true
 
     addSubview(aspectFitView)

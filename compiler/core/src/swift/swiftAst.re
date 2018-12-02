@@ -241,6 +241,14 @@ and node =
         "block": list(node),
       },
     )
+  | ForInStatement(
+      {
+        .
+        "item": pattern,
+        "collection": node,
+        "block": list(node),
+      },
+    )
   | SwitchStatement(
       {
         .

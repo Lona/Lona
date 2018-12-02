@@ -43,8 +43,11 @@ public class NestedComponent: UIView {
   private var text2ViewTextStyle = TextStyles.body1
 
   private func setUpViews() {
+    textView.isUserInteractionEnabled = false
     textView.numberOfLines = 0
+    text1View.isUserInteractionEnabled = false
     text1View.numberOfLines = 0
+    text2View.isUserInteractionEnabled = false
     text2View.numberOfLines = 0
 
     addSubview(textView)

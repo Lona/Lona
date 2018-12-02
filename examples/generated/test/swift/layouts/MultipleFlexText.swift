@@ -43,7 +43,9 @@ public class MultipleFlexText: UIView {
   private var text1ViewTextStyle = TextStyles.body1
 
   private func setUpViews() {
+    textView.isUserInteractionEnabled = false
     textView.numberOfLines = 0
+    text1View.isUserInteractionEnabled = false
     text1View.numberOfLines = 0
 
     addSubview(view1View)

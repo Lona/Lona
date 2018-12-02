@@ -56,7 +56,9 @@ public class OpacityTest: UIView {
   private var textViewTextStyle = TextStyles.body1
 
   private func setUpViews() {
+    textView.isUserInteractionEnabled = false
     textView.numberOfLines = 0
+    imageView.isUserInteractionEnabled = false
     imageView.contentMode = .scaleAspectFill
     imageView.layer.masksToBounds = true
 

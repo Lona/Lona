@@ -51,6 +51,7 @@ public class PressableRootView: LonaControlView {
   private var onTapInnerView: (() -> Void)?
 
   private func setUpViews() {
+    innerTextView.isUserInteractionEnabled = false
     innerTextView.numberOfLines = 0
 
     addSubview(innerView)

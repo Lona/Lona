@@ -48,9 +48,12 @@ public class FillWidthFitHeightCard: UIView {
   private var textViewTextStyle = TextStyles.body1
 
   private func setUpViews() {
+    imageView.isUserInteractionEnabled = false
     imageView.contentMode = .scaleAspectFill
     imageView.layer.masksToBounds = true
+    text1View.isUserInteractionEnabled = false
     text1View.numberOfLines = 0
+    textView.isUserInteractionEnabled = false
     textView.numberOfLines = 0
 
     addSubview(imageView)

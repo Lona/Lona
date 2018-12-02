@@ -58,6 +58,7 @@ public class Button: LonaControlView {
   private var onTapViewView: (() -> Void)?
 
   private func setUpViews() {
+    textView.isUserInteractionEnabled = false
     textView.numberOfLines = 0
 
     addSubview(textView)

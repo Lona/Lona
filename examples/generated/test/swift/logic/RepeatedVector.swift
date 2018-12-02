@@ -101,7 +101,9 @@ public class RepeatedVector: UIView {
   private var anotherCheckView = CheckCircleVector()
 
   private func setUpViews() {
+    checkView.isUserInteractionEnabled = false
     checkView.isOpaque = false
+    anotherCheckView.isUserInteractionEnabled = false
     anotherCheckView.isOpaque = false
 
     addSubview(checkView)

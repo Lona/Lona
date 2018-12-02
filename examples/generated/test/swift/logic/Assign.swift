@@ -46,6 +46,7 @@ public class Assign: UIView {
   private var textViewTextStyle = TextStyles.body1
 
   private func setUpViews() {
+    textView.isUserInteractionEnabled = false
     textView.numberOfLines = 0
 
     addSubview(textView)

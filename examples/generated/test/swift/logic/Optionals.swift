@@ -53,7 +53,9 @@ public class Optionals: UIView {
   private var stringParamViewTextStyle = TextStyles.body1
 
   private func setUpViews() {
+    labelView.isUserInteractionEnabled = false
     labelView.numberOfLines = 0
+    stringParamView.isUserInteractionEnabled = false
     stringParamView.numberOfLines = 0
 
     addSubview(labelView)

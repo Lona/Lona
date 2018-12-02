@@ -422,6 +422,23 @@ let isInteractive = (logic: Logic.logicNode, layer: Types.layer) =>
        Logic.isLayerParameterAssigned(logic, variableName, layer)
      );
 
+let containsNoninteractiveDescendants =
+    (logic: Logic.logicNode, rootLayer: Types.layer) => {
+  let layers = flatten(rootLayer);
+
+  let interactiveLayers = layers |> List.filter(isInteractive(logic));
+
+  let noninteractiveViews =
+    layers
+    |> List.filter((layer: Types.layer) =>
+         layer != rootLayer
+         && layer.typeName == View
+         && !isInteractive(logic, layer)
+       );
+
+  interactiveLayers != [] && noninteractiveViews != [];
+};
+
 let parameterIsStyle = key => getParameterCategory(key) == Style;
 
 let splitParamsMap = params =>

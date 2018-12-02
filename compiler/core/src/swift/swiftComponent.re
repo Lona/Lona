@@ -14,6 +14,7 @@ module Naming = {
         swiftOptions: SwiftOptions.options,
         logic: Logic.logicNode,
         componentName: string,
+        useEventIgnoringLayer: bool,
         layer: Types.layer,
       ) => {
     let typeName =
@@ -21,6 +22,8 @@ module Naming = {
       | (UIKit, Types.View) =>
         if (Layer.isInteractive(logic, layer)) {
           "LonaControlView";
+        } else if (useEventIgnoringLayer) {
+          "EventIgnoringView";
         } else {
           "UIView";
         }
@@ -476,6 +479,17 @@ module Doc = {
         ]
       | (SwiftOptions.UIKit, Text) =>
         [
+          [
+            BinaryExpression({
+              "left":
+                layerMemberExpression(
+                  layer,
+                  [SwiftIdentifier("isUserInteractionEnabled")],
+                ),
+              "operator": "=",
+              "right": LiteralExpression(Boolean(false)),
+            }),
+          ],
           Parameter.isSetInitially(layer, NumberOfLines) ?
             [] :
             [
@@ -493,6 +507,17 @@ module Doc = {
         |> List.concat
       | (SwiftOptions.UIKit, Image) =>
         [
+          [
+            BinaryExpression({
+              "left":
+                layerMemberExpression(
+                  layer,
+                  [SwiftIdentifier("isUserInteractionEnabled")],
+                ),
+              "operator": "=",
+              "right": LiteralExpression(Boolean(false)),
+            }),
+          ],
           Parameter.isSetInitially(layer, ResizeMode) ?
             [] :
             [
@@ -527,6 +552,17 @@ module Doc = {
         |> List.concat
       | (SwiftOptions.UIKit, VectorGraphic) =>
         [
+          [
+            BinaryExpression({
+              "left":
+                layerMemberExpression(
+                  layer,
+                  [SwiftIdentifier("isUserInteractionEnabled")],
+                ),
+              "operator": "=",
+              "right": LiteralExpression(Boolean(false)),
+            }),
+          ],
           Parameter.isSetInitially(layer, BackgroundColor) ?
             [] :
             [
@@ -1032,6 +1068,8 @@ let generate =
   let needsTracking =
     swiftOptions.framework == SwiftOptions.AppKit
     && List.length(pressableLayers) > 0;
+  let containsNoninteractiveDescendants =
+    Layer.containsNoninteractiveDescendants(logic, rootLayer);
 
   let assignmentsFromLayerParameters =
     Layer.logicAssignmentsFromLayerParameters(rootLayer);
@@ -1064,6 +1102,7 @@ let generate =
             swiftOptions,
             logic,
             name,
+            containsNoninteractiveDescendants,
             layer,
           ),
         ),
@@ -1145,6 +1184,10 @@ let generate =
           |> List.concat :
           []
       },
+      swiftOptions.framework == UIKit && containsNoninteractiveDescendants ?
+        [LineComment("MARK: - " ++ "EventIgnoringView"), Empty]
+        @ SwiftHelperClass.eventIgnoringView(options, swiftOptions) :
+        [],
       rootLayer
       |> SwiftComponentParameter.allVectorAssets
       |> List.map(asset =>
@@ -1162,7 +1205,7 @@ let generate =
          )
       |> List.concat,
     ]
-    |> List.concat;
+    |> SwiftDocument.joinGroups(Empty);
 
   let superclass =
     TypeName(
