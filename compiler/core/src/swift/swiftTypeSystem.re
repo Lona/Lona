@@ -17,6 +17,11 @@ let encodedType = (encoding: typeNameEncoding, caseName: string, index: int) =>
   | BooleanEncoding => Boolean(index == 0 ? false : true)
   };
 
+type convertedEntity = {
+  name: option(string),
+  node: SwiftAst.node,
+};
+
 module Naming = {
   let prefixedName = (swiftOptions: SwiftOptions.options, name: string) =>
     swiftOptions.typePrefix ++ name;
@@ -1014,13 +1019,16 @@ module Build = {
 
   let entity =
       (swiftOptions: SwiftOptions.options, entity: TypeSystem.entity)
-      : SwiftAst.node =>
+      : convertedEntity =>
     switch (entity) {
     | GenericType(genericType) =>
       switch (genericType.cases) {
       | [head, ...tail] =>
         switch (head, tail) {
-        | (RecordCase(_), []) => LineComment("Single-case record")
+        | (RecordCase(_), []) => {
+            name: None,
+            node: LineComment("Single-case record"),
+          }
         | _ =>
           let genericParameters =
             TypeSystem.Access.entityGenericParameters(entity);
@@ -1043,105 +1051,143 @@ module Build = {
               List.hd(
                 TypeSystem.Access.typeCaseParameterEntities(recursiveCase),
               );
-            EnumDeclaration({
-              "name": swiftOptions.typePrefix ++ name,
-              "isIndirect": true,
-              "inherits": [TypeName("Codable")],
-              "modifier": Some(PublicModifier),
-              "body":
-                enumCases
-                @ linkedListCodable(
-                    swiftOptions,
-                    genericType.cases,
-                    TypeSystem.Access.typeCaseName(recursiveCase),
-                    TypeSystem.Access.typeCaseParameterEntityName(
-                      recursiveType,
-                    ),
-                    TypeSystem.Access.typeCaseName(constantCase),
-                  ),
-            });
+            {
+              name: Some(swiftOptions.typePrefix ++ name),
+              node:
+                EnumDeclaration({
+                  "name": swiftOptions.typePrefix ++ name,
+                  "isIndirect": true,
+                  "inherits": [TypeName("Codable")],
+                  "modifier": Some(PublicModifier),
+                  "body":
+                    enumCases
+                    @ linkedListCodable(
+                        swiftOptions,
+                        genericType.cases,
+                        TypeSystem.Access.typeCaseName(recursiveCase),
+                        TypeSystem.Access.typeCaseParameterEntityName(
+                          recursiveType,
+                        ),
+                        TypeSystem.Access.typeCaseName(constantCase),
+                      ),
+                }),
+            };
             /* Nullary types don't need encoding/decoding at all */
           } else if (TypeSystem.Match.nullary(entity)) {
             let constantCase =
               List.hd(TypeSystem.Access.constantCases(entity));
-            EnumDeclaration({
-              "name": swiftOptions.typePrefix ++ name,
-              "isIndirect": false,
-              "inherits": [TypeName("Codable")],
-              "modifier": Some(PublicModifier),
-              "body":
-                enumCases
-                @ nullaryCodable(
-                    swiftOptions,
-                    TypeSystem.Access.typeCaseName(constantCase),
-                  ),
-            });
+            {
+              name: Some(swiftOptions.typePrefix ++ name),
+              node:
+                EnumDeclaration({
+                  "name": swiftOptions.typePrefix ++ name,
+                  "isIndirect": false,
+                  "inherits": [TypeName("Codable")],
+                  "modifier": Some(PublicModifier),
+                  "body":
+                    enumCases
+                    @ nullaryCodable(
+                        swiftOptions,
+                        TypeSystem.Access.typeCaseName(constantCase),
+                      ),
+                }),
+            };
             /* Types made of constants can be encoded as strings.
              * If a type has exactly 2 constants, then we use booleans.
              */
           } else if (TypeSystem.Match.boolean(entity)) {
-            EnumDeclaration({
-              "name": swiftOptions.typePrefix ++ name,
-              "isIndirect": false,
-              "inherits": [TypeName("Codable")],
-              "modifier": Some(PublicModifier),
-              "body":
-                enumCases
-                @ constantCodable(
-                    swiftOptions,
-                    BooleanEncoding,
-                    genericType.cases,
-                  ),
-            });
+            {
+              name: Some(swiftOptions.typePrefix ++ name),
+              node:
+                EnumDeclaration({
+                  "name": swiftOptions.typePrefix ++ name,
+                  "isIndirect": false,
+                  "inherits": [TypeName("Codable")],
+                  "modifier": Some(PublicModifier),
+                  "body":
+                    enumCases
+                    @ constantCodable(
+                        swiftOptions,
+                        BooleanEncoding,
+                        genericType.cases,
+                      ),
+                }),
+            };
           } else if (TypeSystem.Match.constant(entity)) {
-            EnumDeclaration({
-              "name": swiftOptions.typePrefix ++ name,
-              "isIndirect": false,
-              "inherits": [TypeName("String"), TypeName("Codable")],
-              "modifier": Some(PublicModifier),
-              "body": enumCases,
-            });
+            {
+              name: Some(swiftOptions.typePrefix ++ name),
+              node:
+                EnumDeclaration({
+                  "name": swiftOptions.typePrefix ++ name,
+                  "isIndirect": false,
+                  "inherits": [TypeName("String"), TypeName("Codable")],
+                  "modifier": Some(PublicModifier),
+                  "body": enumCases,
+                }),
+            };
           } else {
-            EnumDeclaration({
-              "name": swiftOptions.typePrefix ++ name,
-              "isIndirect": false,
-              "inherits": [TypeName("Codable")],
-              "modifier": Some(PublicModifier),
-              "body":
-                enumCases @ enumCodable(swiftOptions, genericType.cases),
-            });
+            {
+              name: Some(swiftOptions.typePrefix ++ name),
+              node:
+                EnumDeclaration({
+                  "name": swiftOptions.typePrefix ++ name,
+                  "isIndirect": false,
+                  "inherits": [TypeName("Codable")],
+                  "modifier": Some(PublicModifier),
+                  "body":
+                    enumCases @ enumCodable(swiftOptions, genericType.cases),
+                }),
+            };
           };
         }
-      | [] => LineComment(genericType.name)
+      | [] => {name: None, node: LineComment(genericType.name)}
       }
-    | NativeType(nativeType) =>
-      TypealiasDeclaration({
-        "name": Naming.prefixedName(swiftOptions, nativeType.name),
-        "modifier": Some(PublicModifier),
-        "annotation": TypeName(nativeType.name),
-      })
+    | NativeType(nativeType) => {
+        name: Some(Naming.prefixedName(swiftOptions, nativeType.name)),
+        node:
+          TypealiasDeclaration({
+            "name": Naming.prefixedName(swiftOptions, nativeType.name),
+            "modifier": Some(PublicModifier),
+            "annotation": TypeName(nativeType.name),
+          }),
+      }
     };
 };
 
+type convertedType = {
+  name: string,
+  contents: string,
+};
+
 let render =
-    (swiftOptions: SwiftOptions.options, file: TypeSystem.typesFile): string => {
+    (swiftOptions: SwiftOptions.options, file: TypeSystem.typesFile)
+    : list(convertedType) => {
   let records =
     file.types |> List.map(TypeSystem.Access.entityRecords) |> List.concat;
   let structs =
     records
     |> List.map(((name: string, parameters)) =>
-         Build.record(swiftOptions, name, parameters)
+         {
+           name,
+           contents:
+             Build.record(swiftOptions, name, parameters)
+             |> SwiftRender.toString,
+         }
        );
+  let entities =
+    file.types
+    |> List.map(Build.entity(swiftOptions))
+    |> List.map((convertedEntity: convertedEntity) =>
+         switch (convertedEntity.name) {
+         | Some(name) =>
+           Some({
+             name,
+             contents: convertedEntity.node |> SwiftRender.toString,
+           })
+         | None => None
+         }
+       )
+    |> Sequence.compact;
 
-  let ast =
-    SwiftAst.(
-      TopLevelDeclaration({
-        "statements":
-          SwiftDocument.join(
-            Empty,
-            structs @ (file.types |> List.map(Build.entity(swiftOptions))),
-          ),
-      })
-    );
-  SwiftRender.toString(ast);
+  structs @ entities;
 };

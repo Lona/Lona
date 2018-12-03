@@ -1,8 +1,3 @@
-/* switch (parameter.ltype) {
-   | Function(_) => false
-   | _ => true
-   }; */
-
 let equatableParameters =
     (parameters: list(Types.parameter)): list(Types.parameter) =>
   parameters |> List.filter(SwiftComponentParameter.isEquatable);

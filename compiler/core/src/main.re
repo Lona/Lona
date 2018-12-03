@@ -134,6 +134,7 @@ let renderShadows = (target, colors, shadows) =>
   | _ => ""
   };
 
+/* TODO: Update this. SwiftTypeSystem.render now returns a different format */
 let convertTypes = (target, contents) => {
   let json = contents |> Js.Json.parseExn;
   switch (target) {
@@ -363,20 +364,18 @@ let convertWorkspace = (workspace, output) =>
        };
 
        if (target == Types.Swift) {
-         let userTypesOutputPath =
-           concat(
-             toDirectory,
-             formatFilename(target, "Types") ++ targetExtension,
-           );
-         let typeSystemFile =
-           userTypes |> UserTypes.TypeSystem.toTypeSystemFile;
-         if (typeSystemFile.types != []) {
-           Fs.writeFileSync(
-             userTypesOutputPath,
-             typeSystemFile |> SwiftTypeSystem.render(swiftOptions),
-             `utf8,
-           );
-         };
+         userTypes
+         |> UserTypes.TypeSystem.toTypeSystemFile
+         |> SwiftTypeSystem.render(swiftOptions)
+         |> List.iter((convertedType: SwiftTypeSystem.convertedType) => {
+              let outputPath =
+                concat(
+                  toDirectory,
+                  formatFilename(target, convertedType.name)
+                  ++ targetExtension,
+                );
+              Fs.writeFileSync(outputPath, convertedType.contents, `utf8);
+            });
        };
 
        copyStaticFiles(toDirectory);
