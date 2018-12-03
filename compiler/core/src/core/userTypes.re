@@ -11,6 +11,10 @@ module Decode = {
       let ltype = field("of", lonaType, json);
       Named(named, ltype);
     };
+    let arrayType = json: Types.lonaType => {
+      let ltype = field("of", lonaType, json);
+      Array(ltype);
+    };
     let variantType = json: Types.lonaType => {
       let cases =
         switch (json |> optional(field("cases", list(string)))) {
@@ -56,7 +60,10 @@ module Decode = {
       | "Named" => namedType(json)
       | "Variant" => variantType(json)
       | "Function" => functionType(json)
-      | _ => raise(UnknownType(name))
+      | "Array" => arrayType(json)
+      | _ =>
+        Js.log("Unknown custom lona type: " ++ name);
+        raise(UnknownType(name));
       };
     };
     json |> oneOf([referenceType, otherType]);

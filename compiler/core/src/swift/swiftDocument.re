@@ -298,6 +298,7 @@ let rec defaultValueForLonaType =
       | None => LiteralExpression(Nil)
       };
     }
+  | Array(_) => LiteralExpression(Array([]))
   | Variant(cases) => SwiftIdentifier("." ++ List.nth(cases, 0))
   | Function(_) => SwiftIdentifier("PLACEHOLDER")
   | Named(alias, _) =>
