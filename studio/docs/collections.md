@@ -16,7 +16,7 @@ If the root layer of a component has a tap callback parameter, you may use eithe
 public func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath)
 ```
 
-To use the delegate method however, you'll need to disable the component by setting `isEnabled` to `false`. The reference implementation calls the tap callback from within this delegate method, for convenience.
+To use the delegate method however, you'll need to disable the component by setting `isEnabled` to `false` (`LonaControlView` is a subclass of `UIControl`). The reference implementation calls the tap callback from within this delegate method, for convenience.
 
 ### Highlight states
 
@@ -43,7 +43,7 @@ then Lona generates the component slightly differently in order to work better i
 
 ### Scrolling
 
-To improve the fluidity of scrolling, add this to the `UICollectionView` subclass to prevent :
+To improve the fluidity of scrolling, add this to the `UICollectionView` subclass:
 
 ```swift
 override public func touchesShouldCancel(in view: UIView) -> Bool {
@@ -54,6 +54,8 @@ override public func touchesShouldCancel(in view: UIView) -> Bool {
   return super.touchesShouldCancel(in: view)
 }
 ```
+
+This prevents interactive Lona-generated components from stopping scrolling.
 
 ### Future work
 
