@@ -110,9 +110,15 @@ extension NestedButtons {
 
 extension NestedButtons {
   public struct Model: LonaViewModel, Equatable {
+    public var id: String?
     public var parameters: Parameters
     public var type: String {
       return "NestedButtons"
+    }
+
+    public init(id: String? = nil, parameters: Parameters) {
+      self.id = id
+      self.parameters = parameters
     }
 
     public init(_ parameters: Parameters) {

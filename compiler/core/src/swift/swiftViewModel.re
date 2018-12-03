@@ -133,27 +133,27 @@ let initParameterAssignment = (param: Types.parameter) =>
     })
   );
 
-let init =
-    (swiftOptions: SwiftOptions.options, parameters: list(Types.parameter))
-    : SwiftAst.node =>
-  SwiftAst.(
+module Parameters = {
+  open SwiftAst;
+
+  let init =
+      (swiftOptions: SwiftOptions.options, parameters: list(Types.parameter))
+      : SwiftAst.node =>
     InitializerDeclaration({
       "modifiers": [AccessLevelModifier(PublicModifier)],
       "parameters": parameters |> List.map(initParameter(swiftOptions)),
       "failable": None,
       "throws": false,
       "body": parameters |> List.map(initParameterAssignment),
-    })
-  );
+    });
 
-let convenienceInit =
-    (
-      config: Config.t,
-      swiftOptions: SwiftOptions.options,
-      parameters: list(Types.parameter),
-    )
-    : SwiftAst.node =>
-  SwiftAst.(
+  let convenienceInit =
+      (
+        config: Config.t,
+        swiftOptions: SwiftOptions.options,
+        parameters: list(Types.parameter),
+      )
+      : SwiftAst.node =>
     InitializerDeclaration({
       "modifiers": [AccessLevelModifier(PublicModifier)],
       "parameters": [],
@@ -186,8 +186,8 @@ let convenienceInit =
           }),
         ]),
       ],
-    })
-  );
+    });
+};
 
 module Model = {
   open SwiftAst;
@@ -206,6 +206,39 @@ module Model = {
       "failable": None,
       "throws": false,
       "body": [
+        SwiftAst.BinaryExpression({
+          "left": SwiftAst.Builders.memberExpression(["self", "parameters"]),
+          "operator": "=",
+          "right": SwiftIdentifier("parameters"),
+        }),
+      ],
+    });
+
+  let initIdParameters = () =>
+    InitializerDeclaration({
+      "modifiers": [AccessLevelModifier(PublicModifier)],
+      "parameters": [
+        Parameter({
+          "externalName": None,
+          "localName": "id",
+          "defaultValue": Some(LiteralExpression(Nil)),
+          "annotation": TypeName("String?"),
+        }),
+        Parameter({
+          "externalName": None,
+          "localName": "parameters",
+          "defaultValue": None,
+          "annotation": TypeName("Parameters"),
+        }),
+      ],
+      "failable": None,
+      "throws": false,
+      "body": [
+        SwiftAst.BinaryExpression({
+          "left": SwiftAst.Builders.memberExpression(["self", "id"]),
+          "operator": "=",
+          "right": SwiftIdentifier("id"),
+        }),
         SwiftAst.BinaryExpression({
           "left": SwiftAst.Builders.memberExpression(["self", "parameters"]),
           "operator": "=",
@@ -257,6 +290,47 @@ module Model = {
       ],
     });
 
+  let convenienceInit =
+      (
+        config: Config.t,
+        swiftOptions: SwiftOptions.options,
+        parameters: list(Types.parameter),
+      )
+      : SwiftAst.node =>
+    InitializerDeclaration({
+      "modifiers": [AccessLevelModifier(PublicModifier)],
+      "parameters": [],
+      "failable": None,
+      "throws": false,
+      "body": [
+        MemberExpression([
+          SwiftIdentifier("self"),
+          FunctionCallExpression({
+            "name": SwiftIdentifier("init"),
+            "arguments":
+              parameters
+              |> List.filter(param =>
+                   !SwiftComponentParameter.isFunction(param)
+                 )
+              |> List.map((param: Decode.parameter) =>
+                   FunctionCallArgument({
+                     "name":
+                       Some(
+                         SwiftIdentifier(param.name |> ParameterKey.toString),
+                       ),
+                     "value":
+                       SwiftDocument.defaultValueForLonaType(
+                         swiftOptions.framework,
+                         config,
+                         param.ltype,
+                       ),
+                   })
+                 ),
+          }),
+        ]),
+      ],
+    });
+
   let parametersVariable = () =>
     VariableDeclaration({
       "modifiers": [AccessLevelModifier(PublicModifier)],
@@ -264,6 +338,18 @@ module Model = {
         IdentifierPattern({
           "identifier": SwiftIdentifier("parameters"),
           "annotation": Some(TypeName("Parameters")),
+        }),
+      "init": None,
+      "block": None,
+    });
+
+  let idVariable = () =>
+    VariableDeclaration({
+      "modifiers": [AccessLevelModifier(PublicModifier)],
+      "pattern":
+        IdentifierPattern({
+          "identifier": SwiftIdentifier("id"),
+          "annotation": Some(TypeName("String?")),
         }),
       "init": None,
       "block": None,
@@ -304,7 +390,7 @@ let parametersStruct =
       "body":
         [
           parameters |> List.map(memberVariableDeclaration(swiftOptions)),
-          [init(swiftOptions, parameters)],
+          [Parameters.init(swiftOptions, parameters)],
           List.length(
             parameters
             |> List.filter(param =>
@@ -315,7 +401,8 @@ let parametersStruct =
                ),
           )
           > 0 ?
-            [convenienceInit(config, swiftOptions, parameters)] : [],
+            [Parameters.convenienceInit(config, swiftOptions, parameters)] :
+            [],
           List.length(parameters) > 0 ?
             [equatableFunction(swiftOptions, parameters)] : [],
         ]
@@ -341,7 +428,12 @@ let viewModelStruct =
       "modifier": Some(PublicModifier),
       "body":
         [
-          [Model.parametersVariable(), Model.typeVariable(className)],
+          [
+            Model.idVariable(),
+            Model.parametersVariable(),
+            Model.typeVariable(className),
+          ],
+          [Model.initIdParameters()],
           [Model.init()],
           [Model.initWithIndividualParameters(swiftOptions, parameters)],
           List.length(
@@ -354,7 +446,7 @@ let viewModelStruct =
                ),
           )
           > 0 ?
-            [convenienceInit(config, swiftOptions, parameters)] : [],
+            [Model.convenienceInit(config, swiftOptions, parameters)] : [],
         ]
         |> SwiftDocument.joinGroups(Empty),
     })

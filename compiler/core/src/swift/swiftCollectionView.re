@@ -230,7 +230,7 @@ public class LonaCollectionView: UICollectionView,
 
   // MARK: Delegate
 
-  public var onSelectItem: ((LonaViewModel) -> Void)?
+  public var onSelectItem: ((Int) -> Void)?
 
   public func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
     let item = items[indexPath.row]
@@ -241,7 +241,7 @@ public class LonaCollectionView: UICollectionView,
       break
     }
 
-    onSelectItem?(item)
+    onSelectItem?(indexPath.item)
   }
 
   // MARK: Layout
@@ -332,9 +332,15 @@ extension LonaCollectionView {
 
 extension LonaCollectionView {
   public struct Model: LonaViewModel {
+    public var id: String?
     public var parameters: Parameters
     public var type: String {
       return "LonaCollectionView"
+    }
+
+    public init(id: String?, parameters: Parameters) {
+      self.id = id
+      self.parameters = parameters
     }
 
     public init(_ parameters: Parameters) {
