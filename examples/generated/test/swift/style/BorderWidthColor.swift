@@ -7,8 +7,8 @@ public class BorderWidthColor: UIView {
 
   // MARK: Lifecycle
 
-  public init(alternativeStyle: Bool) {
-    self.alternativeStyle = alternativeStyle
+  public init(_ parameters: Parameters) {
+    self.parameters = parameters
 
     super.init(frame: .zero)
 
@@ -18,17 +18,43 @@ public class BorderWidthColor: UIView {
     update()
   }
 
+  public convenience init(alternativeStyle: Bool) {
+    self.init(Parameters(alternativeStyle: alternativeStyle))
+  }
+
   public convenience init() {
-    self.init(alternativeStyle: false)
+    self.init(Parameters())
   }
 
   public required init?(coder aDecoder: NSCoder) {
-    fatalError("init(coder:) has not been implemented")
+    self.parameters = Parameters()
+
+    super.init(coder: aDecoder)
+
+    setUpViews()
+    setUpConstraints()
+
+    update()
   }
 
   // MARK: Public
 
-  public var alternativeStyle: Bool { didSet { update() } }
+  public var alternativeStyle: Bool {
+    get { return parameters.alternativeStyle }
+    set {
+      if parameters.alternativeStyle != newValue {
+        parameters.alternativeStyle = newValue
+      }
+    }
+  }
+
+  public var parameters: Parameters {
+    didSet {
+      if parameters != oldValue {
+        update()
+      }
+    }
+  }
 
   // MARK: Private
 
@@ -65,6 +91,55 @@ public class BorderWidthColor: UIView {
       innerView.layer.borderColor = Colors.reda400.cgColor
       innerView.layer.borderWidth = 4
       innerView.layer.cornerRadius = 20
+    }
+  }
+}
+
+// MARK: - Parameters
+
+extension BorderWidthColor {
+  public struct Parameters: Equatable {
+    public var alternativeStyle: Bool
+
+    public init(alternativeStyle: Bool) {
+      self.alternativeStyle = alternativeStyle
+    }
+
+    public init() {
+      self.init(alternativeStyle: false)
+    }
+
+    public static func ==(lhs: Parameters, rhs: Parameters) -> Bool {
+      return lhs.alternativeStyle == rhs.alternativeStyle
+    }
+  }
+}
+
+// MARK: - Model
+
+extension BorderWidthColor {
+  public struct Model: LonaViewModel, Equatable {
+    public var id: String?
+    public var parameters: Parameters
+    public var type: String {
+      return "BorderWidthColor"
+    }
+
+    public init(id: String? = nil, parameters: Parameters) {
+      self.id = id
+      self.parameters = parameters
+    }
+
+    public init(_ parameters: Parameters) {
+      self.parameters = parameters
+    }
+
+    public init(alternativeStyle: Bool) {
+      self.init(Parameters(alternativeStyle: alternativeStyle))
+    }
+
+    public init() {
+      self.init(alternativeStyle: false)
     }
   }
 }

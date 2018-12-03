@@ -21,6 +21,7 @@
   ],
   "examples" : [
     {
+      "id" : "Default",
       "name" : "Default",
       "params" : {
 
@@ -305,7 +306,7 @@
           {
             "id" : "InnerText",
             "params" : {
-              "font" : "headline",
+              "font" : "body1",
               "text" : ""
             },
             "type" : "Lona:Text"

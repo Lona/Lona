@@ -7,8 +7,8 @@ public class ShadowsTest: UIView {
 
   // MARK: Lifecycle
 
-  public init(largeShadow: Bool) {
-    self.largeShadow = largeShadow
+  public init(_ parameters: Parameters) {
+    self.parameters = parameters
 
     super.init(frame: .zero)
 
@@ -18,17 +18,43 @@ public class ShadowsTest: UIView {
     update()
   }
 
+  public convenience init(largeShadow: Bool) {
+    self.init(Parameters(largeShadow: largeShadow))
+  }
+
   public convenience init() {
-    self.init(largeShadow: false)
+    self.init(Parameters())
   }
 
   public required init?(coder aDecoder: NSCoder) {
-    fatalError("init(coder:) has not been implemented")
+    self.parameters = Parameters()
+
+    super.init(coder: aDecoder)
+
+    setUpViews()
+    setUpConstraints()
+
+    update()
   }
 
   // MARK: Public
 
-  public var largeShadow: Bool { didSet { update() } }
+  public var largeShadow: Bool {
+    get { return parameters.largeShadow }
+    set {
+      if parameters.largeShadow != newValue {
+        parameters.largeShadow = newValue
+      }
+    }
+  }
+
+  public var parameters: Parameters {
+    didSet {
+      if parameters != oldValue {
+        update()
+      }
+    }
+  }
 
   // MARK: Private
 
@@ -63,6 +89,55 @@ public class ShadowsTest: UIView {
     Shadows.elevation2.apply(to: innerView.layer)
     if largeShadow {
       Shadows.elevation3.apply(to: innerView.layer)
+    }
+  }
+}
+
+// MARK: - Parameters
+
+extension ShadowsTest {
+  public struct Parameters: Equatable {
+    public var largeShadow: Bool
+
+    public init(largeShadow: Bool) {
+      self.largeShadow = largeShadow
+    }
+
+    public init() {
+      self.init(largeShadow: false)
+    }
+
+    public static func ==(lhs: Parameters, rhs: Parameters) -> Bool {
+      return lhs.largeShadow == rhs.largeShadow
+    }
+  }
+}
+
+// MARK: - Model
+
+extension ShadowsTest {
+  public struct Model: LonaViewModel, Equatable {
+    public var id: String?
+    public var parameters: Parameters
+    public var type: String {
+      return "ShadowsTest"
+    }
+
+    public init(id: String? = nil, parameters: Parameters) {
+      self.id = id
+      self.parameters = parameters
+    }
+
+    public init(_ parameters: Parameters) {
+      self.parameters = parameters
+    }
+
+    public init(largeShadow: Bool) {
+      self.init(Parameters(largeShadow: largeShadow))
+    }
+
+    public init() {
+      self.init(largeShadow: false)
     }
   }
 }

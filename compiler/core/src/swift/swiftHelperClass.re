@@ -129,6 +129,104 @@ let generateBackgroundImage =
     }),
   ];
 
+/* private class EventIgnoringView: UIView {
+     override func point(inside point: CGPoint, with event: UIEvent?) -> Bool {
+       for view in subviews {
+         if view.point(inside: convert(point, to: view), with: event) {
+           return true
+         }
+       }
+       return false
+     }
+   } */
+let eventIgnoringView =
+    (options: Options.options, swiftOptions: SwiftOptions.options) =>
+  SwiftAst.[
+    ClassDeclaration({
+      "name": "EventIgnoringView",
+      "inherits": [TypeName("UIView")],
+      "modifier": Some(PrivateModifier),
+      "isFinal": false,
+      "body": [
+        FunctionDeclaration({
+          "name": "point",
+          "attributes": [],
+          "modifiers": [OverrideModifier],
+          "parameters": [
+            Parameter({
+              "annotation": TypeName("CGPoint"),
+              "externalName": Some("inside"),
+              "localName": "point",
+              "defaultValue": None,
+            }),
+            Parameter({
+              "annotation": TypeName("UIEvent?"),
+              "externalName": Some("with"),
+              "localName": "event",
+              "defaultValue": None,
+            }),
+          ],
+          "body": [
+            ForInStatement({
+              "item":
+                IdentifierPattern({
+                  "identifier": SwiftIdentifier("view"),
+                  "annotation": None,
+                }),
+              "collection": SwiftIdentifier("subviews"),
+              "block": [
+                IfStatement({
+                  "condition":
+                    BinaryExpression({
+                      "left":
+                        Builders.memberExpression([
+                          "view",
+                          "isUserInteractionEnabled",
+                        ]),
+                      "operator": "&&",
+                      "right":
+                        FunctionCallExpression({
+                          "name":
+                            MemberExpression([
+                              SwiftIdentifier("view"),
+                              SwiftIdentifier("point"),
+                            ]),
+                          "arguments": [
+                            FunctionCallArgument({
+                              "name": Some(SwiftIdentifier("inside")),
+                              "value":
+                                Builders.functionCall(
+                                  ["convert"],
+                                  [
+                                    (None, ["point"]),
+                                    (Some("to"), ["view"]),
+                                  ],
+                                ),
+                            }),
+                            FunctionCallArgument({
+                              "name": Some(SwiftIdentifier("with")),
+                              "value": SwiftIdentifier("event"),
+                            }),
+                          ],
+                        }),
+                    }),
+                  "block": [
+                    ReturnStatement(
+                      Some(LiteralExpression(Boolean(true))),
+                    ),
+                  ],
+                }),
+              ],
+            }),
+            ReturnStatement(Some(LiteralExpression(Boolean(false)))),
+          ],
+          "result": Some(TypeName("Bool")),
+          "throws": false,
+        }),
+      ],
+    }),
+  ];
+
 let generateVectorGraphic =
     (
       config: Config.t,

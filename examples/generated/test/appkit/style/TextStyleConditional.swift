@@ -7,8 +7,8 @@ public class TextStyleConditional: NSBox {
 
   // MARK: Lifecycle
 
-  public init(large: Bool) {
-    self.large = large
+  public init(_ parameters: Parameters) {
+    self.parameters = parameters
 
     super.init(frame: .zero)
 
@@ -18,17 +18,43 @@ public class TextStyleConditional: NSBox {
     update()
   }
 
+  public convenience init(large: Bool) {
+    self.init(Parameters(large: large))
+  }
+
   public convenience init() {
-    self.init(large: false)
+    self.init(Parameters())
   }
 
   public required init?(coder aDecoder: NSCoder) {
-    fatalError("init(coder:) has not been implemented")
+    self.parameters = Parameters()
+
+    super.init(coder: aDecoder)
+
+    setUpViews()
+    setUpConstraints()
+
+    update()
   }
 
   // MARK: Public
 
-  public var large: Bool { didSet { update() } }
+  public var large: Bool {
+    get { return parameters.large }
+    set {
+      if parameters.large != newValue {
+        parameters.large = newValue
+      }
+    }
+  }
+
+  public var parameters: Parameters {
+    didSet {
+      if parameters != oldValue {
+        update()
+      }
+    }
+  }
 
   // MARK: Private
 
@@ -70,6 +96,55 @@ public class TextStyleConditional: NSBox {
     if large {
       textViewTextStyle = TextStyles.display2
       textView.attributedStringValue = textViewTextStyle.apply(to: textView.attributedStringValue)
+    }
+  }
+}
+
+// MARK: - Parameters
+
+extension TextStyleConditional {
+  public struct Parameters: Equatable {
+    public var large: Bool
+
+    public init(large: Bool) {
+      self.large = large
+    }
+
+    public init() {
+      self.init(large: false)
+    }
+
+    public static func ==(lhs: Parameters, rhs: Parameters) -> Bool {
+      return lhs.large == rhs.large
+    }
+  }
+}
+
+// MARK: - Model
+
+extension TextStyleConditional {
+  public struct Model: LonaViewModel, Equatable {
+    public var id: String?
+    public var parameters: Parameters
+    public var type: String {
+      return "TextStyleConditional"
+    }
+
+    public init(id: String? = nil, parameters: Parameters) {
+      self.id = id
+      self.parameters = parameters
+    }
+
+    public init(_ parameters: Parameters) {
+      self.parameters = parameters
+    }
+
+    public init(large: Bool) {
+      self.init(Parameters(large: large))
+    }
+
+    public init() {
+      self.init(large: false)
     }
   }
 }

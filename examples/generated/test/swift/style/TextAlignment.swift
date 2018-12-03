@@ -15,7 +15,9 @@ public class TextAlignment: UIView {
 
   // MARK: Lifecycle
 
-  public init() {
+  public init(_ parameters: Parameters) {
+    self.parameters = parameters
+
     super.init(frame: .zero)
 
     setUpViews()
@@ -24,8 +26,29 @@ public class TextAlignment: UIView {
     update()
   }
 
+  public convenience init() {
+    self.init(Parameters())
+  }
+
   public required init?(coder aDecoder: NSCoder) {
-    fatalError("init(coder:) has not been implemented")
+    self.parameters = Parameters()
+
+    super.init(coder: aDecoder)
+
+    setUpViews()
+    setUpConstraints()
+
+    update()
+  }
+
+  // MARK: Public
+
+  public var parameters: Parameters {
+    didSet {
+      if parameters != oldValue {
+        update()
+      }
+    }
   }
 
   // MARK: Private
@@ -64,18 +87,31 @@ public class TextAlignment: UIView {
   private var text10ViewTextStyle = TextStyles.body1.with(alignment: .center)
 
   private func setUpViews() {
+    imageView.isUserInteractionEnabled = false
     imageView.contentMode = .scaleAspectFill
     imageView.layer.masksToBounds = true
+    textView.isUserInteractionEnabled = false
+    text1View.isUserInteractionEnabled = false
     text1View.numberOfLines = 0
+    text2View.isUserInteractionEnabled = false
     text2View.numberOfLines = 0
+    text3View.isUserInteractionEnabled = false
     text3View.numberOfLines = 0
+    text4View.isUserInteractionEnabled = false
     text4View.numberOfLines = 0
+    text5View.isUserInteractionEnabled = false
     text5View.numberOfLines = 0
+    text6View.isUserInteractionEnabled = false
     text6View.numberOfLines = 0
+    text7View.isUserInteractionEnabled = false
     text7View.numberOfLines = 0
+    text8View.isUserInteractionEnabled = false
     text8View.numberOfLines = 0
+    text9View.isUserInteractionEnabled = false
     text9View.numberOfLines = 0
+    text10View.isUserInteractionEnabled = false
     text10View.numberOfLines = 0
+    image1View.isUserInteractionEnabled = false
     image1View.contentMode = .scaleAspectFill
     image1View.layer.masksToBounds = true
 
@@ -367,4 +403,37 @@ public class TextAlignment: UIView {
   }
 
   private func update() {}
+}
+
+// MARK: - Parameters
+
+extension TextAlignment {
+  public struct Parameters: Equatable {
+    public init() {}
+  }
+}
+
+// MARK: - Model
+
+extension TextAlignment {
+  public struct Model: LonaViewModel, Equatable {
+    public var id: String?
+    public var parameters: Parameters
+    public var type: String {
+      return "TextAlignment"
+    }
+
+    public init(id: String? = nil, parameters: Parameters) {
+      self.id = id
+      self.parameters = parameters
+    }
+
+    public init(_ parameters: Parameters) {
+      self.parameters = parameters
+    }
+
+    public init() {
+      self.init(Parameters())
+    }
+  }
 }

@@ -7,8 +7,8 @@ public class VisibilityTest: UIView {
 
   // MARK: Lifecycle
 
-  public init(enabled: Bool) {
-    self.enabled = enabled
+  public init(_ parameters: Parameters) {
+    self.parameters = parameters
 
     super.init(frame: .zero)
 
@@ -18,17 +18,43 @@ public class VisibilityTest: UIView {
     update()
   }
 
+  public convenience init(enabled: Bool) {
+    self.init(Parameters(enabled: enabled))
+  }
+
   public convenience init() {
-    self.init(enabled: false)
+    self.init(Parameters())
   }
 
   public required init?(coder aDecoder: NSCoder) {
-    fatalError("init(coder:) has not been implemented")
+    self.parameters = Parameters()
+
+    super.init(coder: aDecoder)
+
+    setUpViews()
+    setUpConstraints()
+
+    update()
   }
 
   // MARK: Public
 
-  public var enabled: Bool { didSet { update() } }
+  public var enabled: Bool {
+    get { return parameters.enabled }
+    set {
+      if parameters.enabled != newValue {
+        parameters.enabled = newValue
+      }
+    }
+  }
+
+  public var parameters: Parameters {
+    didSet {
+      if parameters != oldValue {
+        update()
+      }
+    }
+  }
 
   // MARK: Private
 
@@ -51,6 +77,7 @@ public class VisibilityTest: UIView {
   private var titleViewTopAnchorInnerViewBottomAnchorConstraint: NSLayoutConstraint?
 
   private func setUpViews() {
+    titleView.isUserInteractionEnabled = false
     titleView.numberOfLines = 0
 
     addSubview(innerView)
@@ -93,13 +120,6 @@ public class VisibilityTest: UIView {
       .topAnchor
       .constraint(equalTo: innerView.bottomAnchor)
 
-    NSLayoutConstraint.activate([
-      viewViewBottomAnchorConstraint,
-      viewViewLeadingAnchorConstraint,
-      viewViewHeightAnchorConstraint,
-      viewViewWidthAnchorConstraint
-    ])
-
     self.viewViewTopAnchorTopAnchorConstraint = viewViewTopAnchorTopAnchorConstraint
     self.innerViewTopAnchorTopAnchorConstraint = innerViewTopAnchorTopAnchorConstraint
     self.innerViewLeadingAnchorLeadingAnchorConstraint = innerViewLeadingAnchorLeadingAnchorConstraint
@@ -111,12 +131,21 @@ public class VisibilityTest: UIView {
     self.titleViewTrailingAnchorTrailingAnchorConstraint = titleViewTrailingAnchorTrailingAnchorConstraint
     self.viewViewTopAnchorTitleViewBottomAnchorConstraint = viewViewTopAnchorTitleViewBottomAnchorConstraint
     self.titleViewTopAnchorInnerViewBottomAnchorConstraint = titleViewTopAnchorInnerViewBottomAnchorConstraint
+
+    NSLayoutConstraint.activate(
+      [
+        viewViewBottomAnchorConstraint,
+        viewViewLeadingAnchorConstraint,
+        viewViewHeightAnchorConstraint,
+        viewViewWidthAnchorConstraint
+      ] +
+        conditionalConstraints(innerViewIsHidden: innerView.isHidden, titleViewIsHidden: titleView.isHidden))
   }
 
-  private func conditionalConstraints() -> [NSLayoutConstraint] {
+  private func conditionalConstraints(innerViewIsHidden: Bool, titleViewIsHidden: Bool) -> [NSLayoutConstraint] {
     var constraints: [NSLayoutConstraint?]
 
-    switch (innerView.isHidden, titleView.isHidden) {
+    switch (innerViewIsHidden, titleViewIsHidden) {
       case (true, true):
         constraints = [viewViewTopAnchorTopAnchorConstraint]
       case (false, true):
@@ -151,10 +180,65 @@ public class VisibilityTest: UIView {
   }
 
   private func update() {
-    NSLayoutConstraint.deactivate(conditionalConstraints())
+    let innerViewIsHidden = innerView.isHidden
+    let titleViewIsHidden = titleView.isHidden
 
     titleView.isHidden = !enabled
 
-    NSLayoutConstraint.activate(conditionalConstraints())
+    if innerView.isHidden != innerViewIsHidden || titleView.isHidden != titleViewIsHidden {
+      NSLayoutConstraint.deactivate(
+        conditionalConstraints(innerViewIsHidden: innerViewIsHidden, titleViewIsHidden: titleViewIsHidden))
+      NSLayoutConstraint.activate(
+        conditionalConstraints(innerViewIsHidden: innerView.isHidden, titleViewIsHidden: titleView.isHidden))
+    }
+  }
+}
+
+// MARK: - Parameters
+
+extension VisibilityTest {
+  public struct Parameters: Equatable {
+    public var enabled: Bool
+
+    public init(enabled: Bool) {
+      self.enabled = enabled
+    }
+
+    public init() {
+      self.init(enabled: false)
+    }
+
+    public static func ==(lhs: Parameters, rhs: Parameters) -> Bool {
+      return lhs.enabled == rhs.enabled
+    }
+  }
+}
+
+// MARK: - Model
+
+extension VisibilityTest {
+  public struct Model: LonaViewModel, Equatable {
+    public var id: String?
+    public var parameters: Parameters
+    public var type: String {
+      return "VisibilityTest"
+    }
+
+    public init(id: String? = nil, parameters: Parameters) {
+      self.id = id
+      self.parameters = parameters
+    }
+
+    public init(_ parameters: Parameters) {
+      self.parameters = parameters
+    }
+
+    public init(enabled: Bool) {
+      self.init(Parameters(enabled: enabled))
+    }
+
+    public init() {
+      self.init(enabled: false)
+    }
   }
 }

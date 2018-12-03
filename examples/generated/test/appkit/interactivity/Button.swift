@@ -7,9 +7,8 @@ public class Button: NSBox {
 
   // MARK: Lifecycle
 
-  public init(label: String, secondary: Bool) {
-    self.label = label
-    self.secondary = secondary
+  public init(_ parameters: Parameters) {
+    self.parameters = parameters
 
     super.init(frame: .zero)
 
@@ -21,12 +20,25 @@ public class Button: NSBox {
     addTrackingArea(trackingArea)
   }
 
+  public convenience init(label: String, secondary: Bool) {
+    self.init(Parameters(label: label, secondary: secondary))
+  }
+
   public convenience init() {
-    self.init(label: "", secondary: false)
+    self.init(Parameters())
   }
 
   public required init?(coder aDecoder: NSCoder) {
-    fatalError("init(coder:) has not been implemented")
+    self.parameters = Parameters()
+
+    super.init(coder: aDecoder)
+
+    setUpViews()
+    setUpConstraints()
+
+    update()
+
+    addTrackingArea(trackingArea)
   }
 
   deinit {
@@ -35,9 +47,36 @@ public class Button: NSBox {
 
   // MARK: Public
 
-  public var label: String { didSet { update() } }
-  public var onTap: (() -> Void)? { didSet { update() } }
-  public var secondary: Bool { didSet { update() } }
+  public var label: String {
+    get { return parameters.label }
+    set {
+      if parameters.label != newValue {
+        parameters.label = newValue
+      }
+    }
+  }
+
+  public var onTap: (() -> Void)? {
+    get { return parameters.onTap }
+    set { parameters.onTap = newValue }
+  }
+
+  public var secondary: Bool {
+    get { return parameters.secondary }
+    set {
+      if parameters.secondary != newValue {
+        parameters.secondary = newValue
+      }
+    }
+  }
+
+  public var parameters: Parameters {
+    didSet {
+      if parameters != oldValue {
+        update()
+      }
+    }
+  }
 
   // MARK: Private
 
@@ -92,7 +131,7 @@ public class Button: NSBox {
   private func update() {
     fillColor = Colors.blue100
     textView.attributedStringValue = textViewTextStyle.apply(to: label)
-    onPress = onTap
+    onPress = handleOnTap
     if hovered {
       fillColor = Colors.blue200
     }
@@ -102,6 +141,10 @@ public class Button: NSBox {
     if secondary {
       fillColor = Colors.lightblue100
     }
+  }
+
+  private func handleOnTap() {
+    onTap?()
   }
 
   private func updateHoverState(with event: NSEvent) {
@@ -149,6 +192,59 @@ public class Button: NSBox {
 
     if clicked {
       onPress?()
+    }
+  }
+}
+
+// MARK: - Parameters
+
+extension Button {
+  public struct Parameters: Equatable {
+    public var label: String
+    public var secondary: Bool
+    public var onTap: (() -> Void)?
+
+    public init(label: String, secondary: Bool, onTap: (() -> Void)? = nil) {
+      self.label = label
+      self.secondary = secondary
+      self.onTap = onTap
+    }
+
+    public init() {
+      self.init(label: "", secondary: false)
+    }
+
+    public static func ==(lhs: Parameters, rhs: Parameters) -> Bool {
+      return lhs.label == rhs.label && lhs.secondary == rhs.secondary
+    }
+  }
+}
+
+// MARK: - Model
+
+extension Button {
+  public struct Model: LonaViewModel, Equatable {
+    public var id: String?
+    public var parameters: Parameters
+    public var type: String {
+      return "Button"
+    }
+
+    public init(id: String? = nil, parameters: Parameters) {
+      self.id = id
+      self.parameters = parameters
+    }
+
+    public init(_ parameters: Parameters) {
+      self.parameters = parameters
+    }
+
+    public init(label: String, secondary: Bool, onTap: (() -> Void)? = nil) {
+      self.init(Parameters(label: label, secondary: secondary, onTap: onTap))
+    }
+
+    public init() {
+      self.init(label: "", secondary: false)
     }
   }
 }

@@ -7,7 +7,9 @@ public class TextStylesTest: NSBox {
 
   // MARK: Lifecycle
 
-  public init() {
+  public init(_ parameters: Parameters) {
+    self.parameters = parameters
+
     super.init(frame: .zero)
 
     setUpViews()
@@ -16,8 +18,29 @@ public class TextStylesTest: NSBox {
     update()
   }
 
+  public convenience init() {
+    self.init(Parameters())
+  }
+
   public required init?(coder aDecoder: NSCoder) {
-    fatalError("init(coder:) has not been implemented")
+    self.parameters = Parameters()
+
+    super.init(coder: aDecoder)
+
+    setUpViews()
+    setUpConstraints()
+
+    update()
+  }
+
+  // MARK: Public
+
+  public var parameters: Parameters {
+    didSet {
+      if parameters != oldValue {
+        update()
+      }
+    }
   }
 
   // MARK: Private
@@ -221,4 +244,37 @@ public class TextStylesTest: NSBox {
   }
 
   private func update() {}
+}
+
+// MARK: - Parameters
+
+extension TextStylesTest {
+  public struct Parameters: Equatable {
+    public init() {}
+  }
+}
+
+// MARK: - Model
+
+extension TextStylesTest {
+  public struct Model: LonaViewModel, Equatable {
+    public var id: String?
+    public var parameters: Parameters
+    public var type: String {
+      return "TextStylesTest"
+    }
+
+    public init(id: String? = nil, parameters: Parameters) {
+      self.id = id
+      self.parameters = parameters
+    }
+
+    public init(_ parameters: Parameters) {
+      self.parameters = parameters
+    }
+
+    public init() {
+      self.init(Parameters())
+    }
+  }
 }

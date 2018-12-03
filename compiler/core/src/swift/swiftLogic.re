@@ -6,6 +6,7 @@ let toSwiftAST =
     (
       options: SwiftOptions.options,
       config: Config.t,
+      componentParameters: list(Types.parameter),
       rootLayer: Types.layer,
       logicRootNode,
     ) => {
@@ -13,7 +14,18 @@ let toSwiftAST =
     switch (node) {
     | Logic.Identifier(_, [head, ...tail]) =>
       switch (head) {
-      | "parameters" => Ast.SwiftIdentifier(List.hd(tail))
+      | "parameters" =>
+        let parameterName = List.hd(tail);
+        let parameter =
+          componentParameters
+          |> List.find((parameter: Types.parameter) =>
+               parameter.name == ParameterKey.fromString(parameterName)
+             );
+        switch (parameter.ltype) {
+        | Function(_) =>
+          Ast.SwiftIdentifier("handle" ++ Format.upperFirst(parameterName))
+        | _ => Ast.SwiftIdentifier(List.hd(tail))
+        };
       | "layers" =>
         switch (tail) {
         | [layerName, "vector", elementName, paramName] =>
@@ -69,15 +81,24 @@ let toSwiftAST =
           |> Js.String.includes("padding") =>
       Ast.LineComment("TODO: Margin & padding: " ++ name)
     | (_, Ast.SwiftIdentifier(name))
-        when name |> Js.String.endsWith("height") =>
+        when name |> Js.String.endsWith(".height") =>
       Ast.SwiftIdentifier(
         name
         |> Js.String.replace(".height", "HeightAnchorConstraint?.constant"),
       )
+    | (_, Ast.SwiftIdentifier(name)) when name == "height" =>
+      Ast.SwiftIdentifier(
+        name
+        |> Js.String.replace("height", "heightAnchorConstraint?.constant"),
+      )
     | (_, Ast.SwiftIdentifier(name))
-        when name |> Js.String.endsWith("width") =>
+        when name |> Js.String.endsWith(".width") =>
       Ast.SwiftIdentifier(
         name |> Js.String.replace(".width", "WidthAnchorConstraint?.constant"),
+      )
+    | (_, Ast.SwiftIdentifier(name)) when name == "width" =>
+      Ast.SwiftIdentifier(
+        name |> Js.String.replace("width", "widthAnchorConstraint?.constant"),
       )
     /* -- UIKit -- */
     /* TODO: Make sure "borderRadius" without the "." doesn't match intermediate variables */
@@ -116,7 +137,7 @@ let toSwiftAST =
     | (UIKit, Ast.SwiftIdentifier(name))
         when name |> Js.String.endsWith("pressed") =>
       Ast.SwiftIdentifier(
-        name |> Js.String.replace("pressed", "isHighlighted"),
+        name |> Js.String.replace("pressed", "showsHighlight"),
       )
     | (UIKit, Ast.SwiftIdentifier(name))
         when name |> Js.String.endsWith("onPress") =>
@@ -183,20 +204,23 @@ let toSwiftAST =
     switch (logicRootNode) {
     | Logic.Assign(a, b) =>
       switch (logicValueToSwiftAST(b), logicValueToSwiftAST(a)) {
-      | (Ast.SwiftIdentifier(name), Ast.MemberExpression(right))
+      | (Ast.SwiftIdentifier(name), Ast.LiteralExpression(_) as right)
+      | (Ast.SwiftIdentifier(name), Ast.MemberExpression(_) as right)
           when
-            name
-            |> Js.String.endsWith("borderColor")
+            (
+              name == "borderColor"
+              || name
+              |> Js.String.endsWith(".borderColor")
+            )
             && options.framework == UIKit =>
+        let newName =
+          name |> Js.String.replace("borderColor", "layer.borderColor");
         Ast.BinaryExpression({
-          "left":
-            Ast.SwiftIdentifier(
-              name |> Js.String.replace("borderColor", "layer.borderColor"),
-            ),
+          "left": Ast.SwiftIdentifier(newName),
           "operator": "=",
           "right":
-            Ast.MemberExpression(right @ [Ast.SwiftIdentifier("cgColor")]),
-        })
+            Ast.MemberExpression([right, Ast.SwiftIdentifier("cgColor")]),
+        });
       | (
           Ast.SwiftIdentifier(name) as left,
           Ast.LiteralExpression(String(value)),

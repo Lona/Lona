@@ -4,8 +4,6 @@ open Json.Decode;
 
 exception UnknownParameter(string);
 
-exception UnknownType(string);
-
 let parameterType = key =>
   switch (key) {
   | ParameterKey.Text => Types.stringType
@@ -52,56 +50,6 @@ let parameterType = key =>
     Js.log2("Unknown built-in parameter when deserializing:", name);
     raise(UnknownParameter(name));
   };
-
-module Types = {
-  let rec lonaType = json => {
-    let namedType = json => {
-      let named = field("alias", string, json);
-      let ltype = field("of", lonaType, json);
-      Named(named, ltype);
-    };
-    let functionType = json => {
-      let argumentType = json => {
-        "label": field("label", string, json),
-        "type": field("type", lonaType, json),
-      };
-      let arguments =
-        switch (json |> optional(field("arguments", list(argumentType)))) {
-        | Some(decoded) => decoded
-        | None => []
-        };
-      let returnType =
-        switch (
-          json
-          |> optional(field("arguments", field("returnType", lonaType)))
-        ) {
-        | Some(decoded) => decoded
-        | None => Types.undefinedType
-        };
-      Function(arguments, returnType);
-    };
-    let referenceType = json =>
-      json
-      |> string
-      |> (
-        x =>
-          switch (x) {
-          | "URL" => Types.urlType
-          | "Color" => Types.colorType
-          | _ => Reference(x)
-          }
-      );
-    let otherType = json => {
-      let name = field("name", string, json);
-      switch (name) {
-      | "Named" => namedType(json)
-      | "Function" => functionType(json)
-      | _ => raise(UnknownType(name))
-      };
-    };
-    json |> oneOf([referenceType, otherType]);
-  };
-};
 
 module Styles = {
   let optionalLonaValue = (name, ltype, json) =>
@@ -167,7 +115,7 @@ module Parameters = {
   let parameterKey = json => json |> string |> ParameterKey.fromString;
   let parameter = json => {
     name: json |> field("name", parameterKey),
-    ltype: json |> field("type", Types.lonaType),
+    ltype: json |> field("type", UserTypes.Decode.lonaType),
     defaultValue: json |> optional(field("defaultValue", x => x)),
   };
 };
@@ -310,7 +258,7 @@ let rec decodeExpr = json => {
     | "LitExpr" =>
       LiteralExpression(
         LonaValue.expandDecodedValue({
-          ltype: json |> at(["value", "type"], Types.lonaType),
+          ltype: json |> at(["value", "type"], UserTypes.Decode.lonaType),
           data: json |> at(["value", "data"], json => json),
         }),
       )

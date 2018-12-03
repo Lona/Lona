@@ -7,9 +7,8 @@ public class BoxModelConditional: NSBox {
 
   // MARK: Lifecycle
 
-  public init(margin: CGFloat, size: CGFloat) {
-    self.margin = margin
-    self.size = size
+  public init(_ parameters: Parameters) {
+    self.parameters = parameters
 
     super.init(frame: .zero)
 
@@ -19,18 +18,52 @@ public class BoxModelConditional: NSBox {
     update()
   }
 
+  public convenience init(margin: CGFloat, size: CGFloat) {
+    self.init(Parameters(margin: margin, size: size))
+  }
+
   public convenience init() {
-    self.init(margin: 0, size: 0)
+    self.init(Parameters())
   }
 
   public required init?(coder aDecoder: NSCoder) {
-    fatalError("init(coder:) has not been implemented")
+    self.parameters = Parameters()
+
+    super.init(coder: aDecoder)
+
+    setUpViews()
+    setUpConstraints()
+
+    update()
   }
 
   // MARK: Public
 
-  public var margin: CGFloat { didSet { update() } }
-  public var size: CGFloat { didSet { update() } }
+  public var margin: CGFloat {
+    get { return parameters.margin }
+    set {
+      if parameters.margin != newValue {
+        parameters.margin = newValue
+      }
+    }
+  }
+
+  public var size: CGFloat {
+    get { return parameters.size }
+    set {
+      if parameters.size != newValue {
+        parameters.size = newValue
+      }
+    }
+  }
+
+  public var parameters: Parameters {
+    didSet {
+      if parameters != oldValue {
+        update()
+      }
+    }
+  }
 
   // MARK: Private
 
@@ -65,6 +98,12 @@ public class BoxModelConditional: NSBox {
     let innerViewHeightAnchorConstraint = innerView.heightAnchor.constraint(equalToConstant: 60)
     let innerViewWidthAnchorConstraint = innerView.widthAnchor.constraint(equalToConstant: 60)
 
+    self.innerViewTopAnchorConstraint = innerViewTopAnchorConstraint
+    self.innerViewBottomAnchorConstraint = innerViewBottomAnchorConstraint
+    self.innerViewLeadingAnchorConstraint = innerViewLeadingAnchorConstraint
+    self.innerViewHeightAnchorConstraint = innerViewHeightAnchorConstraint
+    self.innerViewWidthAnchorConstraint = innerViewWidthAnchorConstraint
+
     NSLayoutConstraint.activate([
       innerViewTopAnchorConstraint,
       innerViewBottomAnchorConstraint,
@@ -72,12 +111,6 @@ public class BoxModelConditional: NSBox {
       innerViewHeightAnchorConstraint,
       innerViewWidthAnchorConstraint
     ])
-
-    self.innerViewTopAnchorConstraint = innerViewTopAnchorConstraint
-    self.innerViewBottomAnchorConstraint = innerViewBottomAnchorConstraint
-    self.innerViewLeadingAnchorConstraint = innerViewLeadingAnchorConstraint
-    self.innerViewHeightAnchorConstraint = innerViewHeightAnchorConstraint
-    self.innerViewWidthAnchorConstraint = innerViewWidthAnchorConstraint
   }
 
   private func update() {
@@ -87,5 +120,56 @@ public class BoxModelConditional: NSBox {
     // TODO: Margin & padding: innerView.marginLeft = // TODO: Margin & padding: margin
     innerViewHeightAnchorConstraint?.constant = size
     innerViewWidthAnchorConstraint?.constant = size
+  }
+}
+
+// MARK: - Parameters
+
+extension BoxModelConditional {
+  public struct Parameters: Equatable {
+    public var margin: CGFloat
+    public var size: CGFloat
+
+    public init(margin: CGFloat, size: CGFloat) {
+      self.margin = margin
+      self.size = size
+    }
+
+    public init() {
+      self.init(margin: 0, size: 0)
+    }
+
+    public static func ==(lhs: Parameters, rhs: Parameters) -> Bool {
+      return lhs.margin == rhs.margin && lhs.size == rhs.size
+    }
+  }
+}
+
+// MARK: - Model
+
+extension BoxModelConditional {
+  public struct Model: LonaViewModel, Equatable {
+    public var id: String?
+    public var parameters: Parameters
+    public var type: String {
+      return "BoxModelConditional"
+    }
+
+    public init(id: String? = nil, parameters: Parameters) {
+      self.id = id
+      self.parameters = parameters
+    }
+
+    public init(_ parameters: Parameters) {
+      self.parameters = parameters
+    }
+
+    public init(margin: CGFloat, size: CGFloat) {
+      self.init(Parameters(margin: margin, size: size))
+    }
+
+    public init() {
+      self.init(margin: 0, size: 0)
+    }
   }
 }

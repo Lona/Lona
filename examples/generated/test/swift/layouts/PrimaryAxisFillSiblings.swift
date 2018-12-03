@@ -15,7 +15,9 @@ public class PrimaryAxisFillSiblings: UIView {
 
   // MARK: Lifecycle
 
-  public init() {
+  public init(_ parameters: Parameters) {
+    self.parameters = parameters
+
     super.init(frame: .zero)
 
     setUpViews()
@@ -24,8 +26,29 @@ public class PrimaryAxisFillSiblings: UIView {
     update()
   }
 
+  public convenience init() {
+    self.init(Parameters())
+  }
+
   public required init?(coder aDecoder: NSCoder) {
-    fatalError("init(coder:) has not been implemented")
+    self.parameters = Parameters()
+
+    super.init(coder: aDecoder)
+
+    setUpViews()
+    setUpConstraints()
+
+    update()
+  }
+
+  // MARK: Public
+
+  public var parameters: Parameters {
+    didSet {
+      if parameters != oldValue {
+        update()
+      }
+    }
   }
 
   // MARK: Private
@@ -47,13 +70,19 @@ public class PrimaryAxisFillSiblings: UIView {
   private var subtitle1ViewTextStyle = TextStyles.body1
 
   private func setUpViews() {
+    imageView.isUserInteractionEnabled = false
     imageView.contentMode = .scaleAspectFill
     imageView.layer.masksToBounds = true
+    titleView.isUserInteractionEnabled = false
     titleView.numberOfLines = 0
+    subtitleView.isUserInteractionEnabled = false
     subtitleView.numberOfLines = 0
+    image1View.isUserInteractionEnabled = false
     image1View.contentMode = .scaleAspectFill
     image1View.layer.masksToBounds = true
+    title1View.isUserInteractionEnabled = false
     title1View.numberOfLines = 0
+    subtitle1View.isUserInteractionEnabled = false
     subtitle1View.numberOfLines = 0
 
     addSubview(horizontalView)
@@ -222,4 +251,37 @@ public class PrimaryAxisFillSiblings: UIView {
   }
 
   private func update() {}
+}
+
+// MARK: - Parameters
+
+extension PrimaryAxisFillSiblings {
+  public struct Parameters: Equatable {
+    public init() {}
+  }
+}
+
+// MARK: - Model
+
+extension PrimaryAxisFillSiblings {
+  public struct Model: LonaViewModel, Equatable {
+    public var id: String?
+    public var parameters: Parameters
+    public var type: String {
+      return "PrimaryAxisFillSiblings"
+    }
+
+    public init(id: String? = nil, parameters: Parameters) {
+      self.id = id
+      self.parameters = parameters
+    }
+
+    public init(_ parameters: Parameters) {
+      self.parameters = parameters
+    }
+
+    public init() {
+      self.init(Parameters())
+    }
+  }
 }

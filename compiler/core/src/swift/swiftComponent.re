@@ -14,6 +14,7 @@ module Naming = {
         swiftOptions: SwiftOptions.options,
         logic: Logic.logicNode,
         componentName: string,
+        useEventIgnoringLayer: bool,
         layer: Types.layer,
       ) => {
     let typeName =
@@ -21,6 +22,8 @@ module Naming = {
       | (UIKit, Types.View) =>
         if (Layer.isInteractive(logic, layer)) {
           "LonaControlView";
+        } else if (useEventIgnoringLayer) {
+          "EventIgnoringView";
         } else {
           "UIView";
         }
@@ -50,36 +53,6 @@ module Naming = {
 module Doc = {
   open SwiftAst;
 
-  /* required init?(coder aDecoder: NSCoder) {
-       fatalError("init(coder:) has not been implemented")
-     } */
-  let coderInitializer = () =>
-    InitializerDeclaration({
-      "modifiers": [AccessLevelModifier(PublicModifier), RequiredModifier],
-      "parameters": [
-        Parameter({
-          "externalName": Some("coder"),
-          "localName": "aDecoder",
-          "annotation": TypeName("NSCoder"),
-          "defaultValue": None,
-        }),
-      ],
-      "failable": Some("?"),
-      "throws": false,
-      "body": [
-        FunctionCallExpression({
-          "name": SwiftIdentifier("fatalError"),
-          "arguments": [
-            FunctionCallArgument({
-              "name": None,
-              "value":
-                SwiftIdentifier("\"init(coder:) has not been implemented\""),
-            }),
-          ],
-        }),
-      ],
-    });
-
   let pressableVariables = (rootLayer: Types.layer, layer: Types.layer) => [
     SwiftAst.Builders.privateVariableDeclaration(
       SwiftFormat.layerVariableName(rootLayer, layer, "hovered"),
@@ -96,6 +69,77 @@ module Doc = {
       Some(OptionalType(TypeName("(() -> Void)"))),
       None,
     ),
+  ];
+
+  let nestedInteractiveHitTest = (rootLayer: Types.layer) => [
+    VariableDeclaration({
+      "modifiers": [AccessLevelModifier(PublicModifier)],
+      "pattern":
+        IdentifierPattern({
+          "identifier": SwiftIdentifier("isRootControlTrackingEnabled"),
+          "annotation": None,
+        }),
+      "init": Some(LiteralExpression(Boolean(true))),
+      "block": None,
+    }),
+    Empty,
+    FunctionDeclaration({
+      "name": "hitTest",
+      "attributes": [],
+      "modifiers": [OverrideModifier, AccessLevelModifier(PublicModifier)],
+      "parameters": [
+        Parameter({
+          "externalName": Some("_"),
+          "localName": "point",
+          "annotation": TypeName("CGPoint"),
+          "defaultValue": None,
+        }),
+        Parameter({
+          "externalName": Some("with"),
+          "localName": "event",
+          "annotation": TypeName("UIEvent?"),
+          "defaultValue": None,
+        }),
+      ],
+      "result": Some(TypeName("UIView?")),
+      "throws": false,
+      "body": [
+        ConstantDeclaration({
+          "modifiers": [],
+          "init":
+            Some(
+              Builders.functionCall(
+                ["super", "hitTest"],
+                [(None, ["point"]), (Some("with"), ["event"])],
+              ),
+            ),
+          "pattern":
+            IdentifierPattern({
+              "identifier": SwiftIdentifier("result"),
+              "annotation": None,
+            }),
+        }),
+        IfStatement({
+          "condition":
+            BinaryExpression({
+              "left":
+                BinaryExpression({
+                  "left": SwiftIdentifier("result"),
+                  "operator": "==",
+                  "right": SwiftIdentifier("self"),
+                }),
+              "operator": "&&",
+              "right":
+                PrefixExpression({
+                  operator: "!",
+                  expression: SwiftIdentifier("isRootControlTrackingEnabled"),
+                }),
+            }),
+          "block": [ReturnStatement(Some(LiteralExpression(Nil)))],
+        }),
+        ReturnStatement(Some(SwiftIdentifier("result"))),
+      ],
+    }),
   ];
 
   let tapVariables = (rootLayer: Types.layer, layer: Types.layer) => [
@@ -136,8 +180,69 @@ module Doc = {
     }),
   ];
 
+  /* We proxy function parameters so that we don't have to call update() when they change.
+
+     We currently don't allow comparing functions for equality -- the Swift language doesn't
+     support this. We could allow checking if an optional function is currently nil or not,
+     but right now we don't. We would need to detect if that's ever done within logic and
+     disable this proxy function optimization for the component.
+     */
+  let functionParameterProxy = (parameter: Types.parameter) =>
+    FunctionDeclaration({
+      "name":
+        "handle" ++ Format.upperFirst(parameter.name |> ParameterKey.toString),
+      "attributes": [],
+      "modifiers": [AccessLevelModifier(PrivateModifier)],
+      "parameters": [],
+      "result": None,
+      "throws": false,
+      "body": [
+        SwiftAst.Builders.functionCall(
+          [(parameter.name |> ParameterKey.toString) ++ "?"],
+          [],
+        ),
+      ],
+    });
+
   let parameterVariable =
-      (swiftOptions: SwiftOptions.options, parameter: Types.parameter) =>
+      (swiftOptions: SwiftOptions.options, parameter: Types.parameter) => {
+    let setter =
+      if (Parameter.isEquatable(parameter)) {
+        IfStatement({
+          "condition":
+            BinaryExpression({
+              "left":
+                SwiftAst.Builders.memberExpression([
+                  "parameters",
+                  parameter.name |> ParameterKey.toString,
+                ]),
+              "operator": "!=",
+              "right": SwiftIdentifier("newValue"),
+            }),
+          "block": [
+            BinaryExpression({
+              "left":
+                SwiftAst.Builders.memberExpression([
+                  "parameters",
+                  parameter.name |> ParameterKey.toString,
+                ]),
+              "operator": "=",
+              "right": SwiftIdentifier("newValue"),
+            }),
+          ],
+        });
+      } else {
+        BinaryExpression({
+          "left":
+            SwiftAst.Builders.memberExpression([
+              "parameters",
+              parameter.name |> ParameterKey.toString,
+            ]),
+          "operator": "=",
+          "right": SwiftIdentifier("newValue"),
+        });
+      };
+
     VariableDeclaration({
       "modifiers": [AccessLevelModifier(PublicModifier)],
       "pattern":
@@ -153,10 +258,48 @@ module Doc = {
       "init": None,
       "block":
         Some(
+          GetterSetterBlock({
+            "get": [
+              ReturnStatement(
+                Some(
+                  SwiftAst.Builders.memberExpression([
+                    "parameters",
+                    parameter.name |> ParameterKey.toString,
+                  ]),
+                ),
+              ),
+            ],
+            "set": [setter],
+          }),
+        ),
+    });
+  };
+
+  let parametersModelVariable = () =>
+    VariableDeclaration({
+      "modifiers": [AccessLevelModifier(PublicModifier)],
+      "pattern":
+        IdentifierPattern({
+          "identifier": SwiftIdentifier("parameters"),
+          "annotation": Some(TypeName("Parameters")),
+        }),
+      "init": None,
+      "block":
+        Some(
           WillSetDidSetBlock({
             "willSet": None,
             "didSet":
-              Some([SwiftAst.Builders.functionCall(["update"], [])]),
+              Some([
+                IfStatement({
+                  "condition":
+                    BinaryExpression({
+                      "left": SwiftIdentifier("parameters"),
+                      "operator": "!=",
+                      "right": SwiftIdentifier("oldValue"),
+                    }),
+                  "block": [SwiftAst.Builders.functionCall(["update"], [])],
+                }),
+              ]),
           }),
         ),
     });
@@ -224,6 +367,7 @@ module Doc = {
         swiftOptions: SwiftOptions.options,
         config: Config.t,
         getComponent,
+        componentParameters,
         assignmentsFromLayerParameters,
         rootLayer: Types.layer,
         layer: Types.layer,
@@ -255,7 +399,13 @@ module Doc = {
           Logic.defaultAssignmentForLayerParameter(config, layer, name)
         };
       let node =
-        SwiftLogic.toSwiftAST(swiftOptions, config, rootLayer, logic);
+        SwiftLogic.toSwiftAST(
+          swiftOptions,
+          config,
+          componentParameters,
+          rootLayer,
+          logic,
+        );
       StatementListHelper(node);
     };
   };
@@ -265,6 +415,7 @@ module Doc = {
         swiftOptions: SwiftOptions.options,
         config: Config.t,
         getComponent,
+        componentParameters,
         logic,
         assignmentsFromLayerParameters,
         assignmentsFromLogic,
@@ -312,6 +463,7 @@ module Doc = {
                swiftOptions,
                config,
                getComponent,
+               componentParameters,
                assignmentsFromLayerParameters,
                rootLayer,
                layer,
@@ -368,6 +520,17 @@ module Doc = {
         ]
       | (SwiftOptions.UIKit, Text) =>
         [
+          [
+            BinaryExpression({
+              "left":
+                layerMemberExpression(
+                  layer,
+                  [SwiftIdentifier("isUserInteractionEnabled")],
+                ),
+              "operator": "=",
+              "right": LiteralExpression(Boolean(false)),
+            }),
+          ],
           Parameter.isSetInitially(layer, NumberOfLines) ?
             [] :
             [
@@ -385,6 +548,17 @@ module Doc = {
         |> List.concat
       | (SwiftOptions.UIKit, Image) =>
         [
+          [
+            BinaryExpression({
+              "left":
+                layerMemberExpression(
+                  layer,
+                  [SwiftIdentifier("isUserInteractionEnabled")],
+                ),
+              "operator": "=",
+              "right": LiteralExpression(Boolean(false)),
+            }),
+          ],
           Parameter.isSetInitially(layer, ResizeMode) ?
             [] :
             [
@@ -419,6 +593,17 @@ module Doc = {
         |> List.concat
       | (SwiftOptions.UIKit, VectorGraphic) =>
         [
+          [
+            BinaryExpression({
+              "left":
+                layerMemberExpression(
+                  layer,
+                  [SwiftIdentifier("isUserInteractionEnabled")],
+                ),
+              "operator": "=",
+              "right": LiteralExpression(Boolean(false)),
+            }),
+          ],
           Parameter.isSetInitially(layer, BackgroundColor) ?
             [] :
             [
@@ -523,6 +708,7 @@ module Doc = {
         swiftOptions: SwiftOptions.options,
         config: Config.t,
         getComponent,
+        componentParameters,
         assignmentsFromLayerParameters,
         assignmentsFromLogic,
         hasConditionalConstraints: bool,
@@ -549,6 +735,7 @@ module Doc = {
              swiftOptions,
              config,
              getComponent,
+             componentParameters,
              assignmentsFromLayerParameters,
              rootLayer,
              layer,
@@ -562,51 +749,133 @@ module Doc = {
         |> List.map(defineInitialLayerValues)
         |> List.concat
       )
-      @ SwiftLogic.toSwiftAST(swiftOptions, config, rootLayer, logic);
+      @ SwiftLogic.toSwiftAST(
+          swiftOptions,
+          config,
+          componentParameters,
+          rootLayer,
+          logic,
+        );
 
     let body =
       if (hasConditionalConstraints) {
-        SwiftDocument.join(
+        let visibilityLayers =
+          Constraint.visibilityLayers(assignmentsFromLogic, rootLayer)
+          |> List.sort(Layer.compare);
+
+        let initialViewVisibility =
+          visibilityLayers
+          |> List.map((layer: Types.layer) =>
+               ConstantDeclaration({
+                 "modifiers": [],
+                 "init":
+                   Some(
+                     Builders.memberExpression([
+                       SwiftFormat.layerName(layer.name),
+                       "isHidden",
+                     ]),
+                   ),
+                 "pattern":
+                   IdentifierPattern({
+                     "identifier":
+                       SwiftIdentifier(
+                         SwiftFormat.layerName(layer.name) ++ "IsHidden",
+                       ),
+                     "annotation": None,
+                   }),
+               })
+             );
+
+        let compareViewVisibility =
+          SwiftDocument.binaryExpressionList(
+            "||",
+            visibilityLayers
+            |> List.map((layer: Types.layer) =>
+                 BinaryExpression({
+                   "left":
+                     Builders.memberExpression([
+                       SwiftFormat.layerName(layer.name),
+                       "isHidden",
+                     ]),
+                   "operator": "!=",
+                   "right":
+                     SwiftIdentifier(
+                       SwiftFormat.layerName(layer.name) ++ "IsHidden",
+                     ),
+                 })
+               ),
+          );
+
+        let deactivateConstraints =
+          FunctionCallExpression({
+            "name":
+              SwiftAst.Builders.memberExpression([
+                "NSLayoutConstraint",
+                "deactivate",
+              ]),
+            "arguments": [
+              FunctionCallExpression({
+                "name": SwiftIdentifier("conditionalConstraints"),
+                "arguments":
+                  visibilityLayers
+                  |> List.map((layer: Types.layer) =>
+                       FunctionCallArgument({
+                         "name":
+                           Some(
+                             SwiftIdentifier(
+                               SwiftFormat.layerName(layer.name) ++ "IsHidden",
+                             ),
+                           ),
+                         "value":
+                           SwiftIdentifier(
+                             SwiftFormat.layerName(layer.name) ++ "IsHidden",
+                           ),
+                       })
+                     ),
+              }),
+            ],
+          });
+
+        let activateConstraints =
+          FunctionCallExpression({
+            "name":
+              SwiftAst.Builders.memberExpression([
+                "NSLayoutConstraint",
+                "activate",
+              ]),
+            "arguments": [
+              FunctionCallExpression({
+                "name": SwiftIdentifier("conditionalConstraints"),
+                "arguments":
+                  visibilityLayers
+                  |> List.map((layer: Types.layer) =>
+                       FunctionCallArgument({
+                         "name":
+                           Some(
+                             SwiftIdentifier(
+                               SwiftFormat.layerName(layer.name) ++ "IsHidden",
+                             ),
+                           ),
+                         "value":
+                           Builders.memberExpression([
+                             SwiftFormat.layerName(layer.name),
+                             "isHidden",
+                           ]),
+                       })
+                     ),
+              }),
+            ],
+          });
+
+        let updateVisibility =
+          IfStatement({
+            "condition": compareViewVisibility,
+            "block": [deactivateConstraints, activateConstraints],
+          });
+
+        SwiftDocument.joinGroups(
           Empty,
-          [
-            FunctionCallExpression({
-              "name":
-                SwiftAst.Builders.memberExpression([
-                  "NSLayoutConstraint",
-                  "deactivate",
-                ]),
-              "arguments": [
-                FunctionCallArgument({
-                  "name": None,
-                  "value":
-                    SwiftAst.Builders.functionCall(
-                      ["conditionalConstraints"],
-                      [],
-                    ),
-                }),
-              ],
-            }),
-          ]
-          @ body
-          @ [
-            FunctionCallExpression({
-              "name":
-                SwiftAst.Builders.memberExpression([
-                  "NSLayoutConstraint",
-                  "activate",
-                ]),
-              "arguments": [
-                FunctionCallArgument({
-                  "name": None,
-                  "value":
-                    SwiftAst.Builders.functionCall(
-                      ["conditionalConstraints"],
-                      [],
-                    ),
-                }),
-              ],
-            }),
-          ],
+          [initialViewVisibility, body, [updateVisibility]],
         );
       } else {
         body;
@@ -699,6 +968,167 @@ module Doc = {
       "body": body,
     });
   };
+
+  let initParameterAssignment = (parameter: Decode.parameter) =>
+    BinaryExpression({
+      "left":
+        SwiftAst.Builders.memberExpression([
+          "self",
+          parameter.name |> ParameterKey.toString,
+        ]),
+      "operator": "=",
+      "right": SwiftIdentifier(parameter.name |> ParameterKey.toString),
+    });
+
+  let initIndividualParameters = (_config, swiftOptions, parameters) =>
+    InitializerDeclaration({
+      "modifiers": [
+        AccessLevelModifier(PublicModifier),
+        ConvenienceModifier,
+      ],
+      "parameters":
+        parameters
+        |> List.filter(param => !Parameter.isFunction(param))
+        |> List.map(initializerParameter(swiftOptions)),
+      "failable": None,
+      "throws": false,
+      "body": [
+        MemberExpression([
+          SwiftIdentifier("self"),
+          FunctionCallExpression({
+            "name": SwiftIdentifier("init"),
+            "arguments": [
+              FunctionCallArgument({
+                "name": None,
+                "value":
+                  FunctionCallExpression({
+                    "name": SwiftIdentifier("Parameters"),
+                    "arguments":
+                      parameters
+                      |> List.filter(param => !Parameter.isFunction(param))
+                      |> List.map((param: Decode.parameter) =>
+                           FunctionCallArgument({
+                             "name":
+                               Some(
+                                 SwiftIdentifier(
+                                   param.name |> ParameterKey.toString,
+                                 ),
+                               ),
+                             "value":
+                               SwiftIdentifier(
+                                 param.name |> ParameterKey.toString,
+                               ),
+                           })
+                         ),
+                  }),
+              }),
+            ],
+          }),
+        ]),
+      ],
+    });
+
+  let init = (_config, _swiftOptions, parameters, needsTracking) =>
+    InitializerDeclaration({
+      "modifiers": [AccessLevelModifier(PublicModifier)],
+      "parameters": [
+        Parameter({
+          "externalName": Some("_"),
+          "localName": "parameters",
+          "defaultValue": None,
+          "annotation": TypeName("Parameters"),
+        }),
+      ],
+      "failable": None,
+      "throws": false,
+      "body":
+        SwiftDocument.joinGroups(
+          Empty,
+          [
+            [
+              SwiftAst.BinaryExpression({
+                "left":
+                  SwiftAst.Builders.memberExpression(["self", "parameters"]),
+                "operator": "=",
+                "right": SwiftIdentifier("parameters"),
+              }),
+            ],
+            [
+              SwiftAst.Builders.functionCall(
+                ["super", "init"],
+                [(Some("frame"), [".zero"])],
+              ),
+            ],
+            [
+              SwiftAst.Builders.functionCall(["setUpViews"], []),
+              SwiftAst.Builders.functionCall(["setUpConstraints"], []),
+            ],
+            [SwiftAst.Builders.functionCall(["update"], [])],
+            needsTracking ? [AppkitPressable.addTrackingArea] : [],
+          ],
+        ),
+    });
+
+  let coderInitializer = needsTracking =>
+    InitializerDeclaration({
+      "modifiers": [AccessLevelModifier(PublicModifier), RequiredModifier],
+      "parameters": [
+        Parameter({
+          "externalName": Some("coder"),
+          "localName": "aDecoder",
+          "annotation": TypeName("NSCoder"),
+          "defaultValue": None,
+        }),
+      ],
+      "failable": Some("?"),
+      "throws": false,
+      "body":
+        SwiftDocument.joinGroups(
+          Empty,
+          [
+            [
+              SwiftAst.BinaryExpression({
+                "left":
+                  SwiftAst.Builders.memberExpression(["self", "parameters"]),
+                "operator": "=",
+                "right": SwiftAst.Builders.functionCall(["Parameters"], []),
+              }),
+            ],
+            [
+              SwiftAst.Builders.functionCall(
+                ["super", "init"],
+                [(Some("coder"), ["aDecoder"])],
+              ),
+            ],
+            [
+              SwiftAst.Builders.functionCall(["setUpViews"], []),
+              SwiftAst.Builders.functionCall(["setUpConstraints"], []),
+            ],
+            [SwiftAst.Builders.functionCall(["update"], [])],
+            needsTracking ? [AppkitPressable.addTrackingArea] : [],
+          ],
+        ),
+    });
+
+  let convenienceInit = () =>
+    SwiftAst.Builders.convenienceInit([
+      MemberExpression([
+        SwiftIdentifier("self"),
+        FunctionCallExpression({
+          "name": SwiftIdentifier("init"),
+          "arguments": [
+            FunctionCallArgument({
+              "name": None,
+              "value":
+                FunctionCallExpression({
+                  "name": SwiftIdentifier("Parameters"),
+                  "arguments": [],
+                }),
+            }),
+          ],
+        }),
+      ]),
+    ]);
 };
 
 let generate =
@@ -728,6 +1158,8 @@ let generate =
   let needsTracking =
     swiftOptions.framework == SwiftOptions.AppKit
     && List.length(pressableLayers) > 0;
+  let containsNoninteractiveDescendants =
+    Layer.containsNoninteractiveDescendants(logic, rootLayer);
 
   let assignmentsFromLayerParameters =
     Layer.logicAssignmentsFromLayerParameters(rootLayer);
@@ -760,6 +1192,7 @@ let generate =
             swiftOptions,
             logic,
             name,
+            containsNoninteractiveDescendants,
             layer,
           ),
         ),
@@ -795,74 +1228,6 @@ let generate =
       None,
     );
 
-  let initParameterAssignmentDoc = (parameter: Decode.parameter) =>
-    BinaryExpression({
-      "left":
-        SwiftAst.Builders.memberExpression([
-          "self",
-          parameter.name |> ParameterKey.toString,
-        ]),
-      "operator": "=",
-      "right": SwiftIdentifier(parameter.name |> ParameterKey.toString),
-    });
-
-  let initializerDoc = () =>
-    InitializerDeclaration({
-      "modifiers": [AccessLevelModifier(PublicModifier)],
-      "parameters":
-        parameters
-        |> List.filter(param => !Parameter.isFunction(param))
-        |> List.map(Doc.initializerParameter(swiftOptions)),
-      "failable": None,
-      "throws": false,
-      "body":
-        SwiftDocument.joinGroups(
-          Empty,
-          [
-            parameters
-            |> List.filter(param => !Parameter.isFunction(param))
-            |> List.map(initParameterAssignmentDoc),
-            [
-              SwiftAst.Builders.functionCall(
-                ["super", "init"],
-                [(Some("frame"), [".zero"])],
-              ),
-            ],
-            [
-              SwiftAst.Builders.functionCall(["setUpViews"], []),
-              SwiftAst.Builders.functionCall(["setUpConstraints"], []),
-            ],
-            [SwiftAst.Builders.functionCall(["update"], [])],
-            needsTracking ? [AppkitPressable.addTrackingArea] : [],
-          ],
-        ),
-    });
-  let convenienceInitializerDoc = () =>
-    SwiftAst.Builders.convenienceInit([
-      MemberExpression([
-        SwiftIdentifier("self"),
-        FunctionCallExpression({
-          "name": SwiftIdentifier("init"),
-          "arguments":
-            parameters
-            |> List.filter(param => !Parameter.isFunction(param))
-            |> List.map((param: Decode.parameter) =>
-                 FunctionCallArgument({
-                   "name":
-                     Some(
-                       SwiftIdentifier(param.name |> ParameterKey.toString),
-                     ),
-                   "value":
-                     SwiftDocument.defaultValueForLonaType(
-                       swiftOptions.framework,
-                       config,
-                       param.ltype,
-                     ),
-                 })
-               ),
-        }),
-      ]),
-    ]);
   let memberOrSelfExpression = (firstIdentifier, statements) =>
     switch (firstIdentifier) {
     | "self" => MemberExpression(statements)
@@ -909,6 +1274,10 @@ let generate =
           |> List.concat :
           []
       },
+      swiftOptions.framework == UIKit && containsNoninteractiveDescendants ?
+        [LineComment("MARK: - " ++ "EventIgnoringView"), Empty]
+        @ SwiftHelperClass.eventIgnoringView(options, swiftOptions) :
+        [],
       rootLayer
       |> SwiftComponentParameter.allVectorAssets
       |> List.map(asset =>
@@ -926,7 +1295,7 @@ let generate =
          )
       |> List.concat,
     ]
-    |> List.concat;
+    |> SwiftDocument.joinGroups(Empty);
 
   let superclass =
     TypeName(
@@ -966,17 +1335,32 @@ let generate =
                   Empty,
                   [
                     [Empty, LineComment("MARK: Lifecycle")],
-                    [initializerDoc()],
+                    [
+                      Doc.init(
+                        config,
+                        swiftOptions,
+                        parameters,
+                        needsTracking,
+                      ),
+                    ],
+                    [
+                      Doc.initIndividualParameters(
+                        config,
+                        swiftOptions,
+                        parameters,
+                      ),
+                    ],
                     parameters
                     |> List.filter(param => !Parameter.isFunction(param))
                     |> List.length > 0 ?
-                      [convenienceInitializerDoc()] : [],
-                    [Doc.coderInitializer()],
+                      [Doc.convenienceInit()] : [],
+                    [Doc.coderInitializer(needsTracking)],
                     needsTracking ? [AppkitPressable.deinitTrackingArea] : [],
-                    List.length(parameters) > 0 ?
-                      [LineComment("MARK: Public")] : [],
+                    [LineComment("MARK: Public")],
                     parameters
-                    |> List.map(Doc.parameterVariable(swiftOptions)),
+                    |> List.map(Doc.parameterVariable(swiftOptions))
+                    |> SwiftDocument.join(Empty),
+                    [Doc.parametersModelVariable()],
                     [LineComment("MARK: Private")],
                     needsTracking ? [AppkitPressable.trackingAreaVar] : [],
                     nonRootLayers |> List.map(viewVariableDoc),
@@ -1016,6 +1400,7 @@ let generate =
                         swiftOptions,
                         config,
                         getComponent,
+                        parameters,
                         logic,
                         assignmentsFromLayerParameters,
                         assignmentsFromLogic,
@@ -1047,6 +1432,7 @@ let generate =
                         swiftOptions,
                         config,
                         getComponent,
+                        parameters,
                         assignmentsFromLayerParameters,
                         assignmentsFromLogic,
                         List.length(conditionalConstraints) > 0,
@@ -1054,6 +1440,10 @@ let generate =
                         logic,
                       ),
                     ],
+                    parameters
+                    |> List.filter(Parameter.isFunction)
+                    |> List.map(Doc.functionParameterProxy)
+                    |> SwiftDocument.join(Empty),
                     needsTracking ?
                       AppkitPressable.mouseTrackingFunctions(
                         rootLayer,
@@ -1067,10 +1457,29 @@ let generate =
                       |> List.map(Doc.tapHandler)
                       |> SwiftDocument.joinGroups(Empty) :
                       [],
+                    swiftOptions.framework == UIKit
+                    && Layer.isInteractive(logic, rootLayer)
+                    && rootLayer
+                    |> Layer.flatten
+                    |> List.filter(Layer.isInteractive(logic))
+                    |> List.length > 1 ?
+                      Doc.nestedInteractiveHitTest(rootLayer) : [],
                   ],
                 ),
             }),
           ],
+          SwiftViewModel.parametersExtension(
+            config,
+            swiftOptions,
+            name,
+            parameters,
+          ),
+          SwiftViewModel.viewModelExtension(
+            config,
+            swiftOptions,
+            name,
+            parameters,
+          ),
         ],
       ),
   });

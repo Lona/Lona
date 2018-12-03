@@ -177,8 +177,21 @@ let rec lonaValue =
         config,
         {ltype: Named(typeName, Reference("String")), data: value.data},
       )
-    | _ => SwiftIdentifier("UnknownReferenceType: " ++ typeName)
+    | _ =>
+      let match =
+        UserTypes.find(config.userTypesFile.contents.types, typeName);
+      switch (match) {
+      | Some(Named(_, referencedType)) =>
+        lonaValue(
+          framework,
+          config,
+          {ltype: referencedType, data: value.data},
+        )
+      | Some(_) => SwiftIdentifier("UnknownNamedReferenceType: " ++ typeName)
+      | None => SwiftIdentifier("UnknownReferenceType: " ++ typeName)
+      };
     }
+  | Variant(_) => SwiftIdentifier("." ++ (value.data |> Json.Decode.string))
   | Function(_) => SwiftIdentifier("PLACEHOLDER")
   | Named(alias, subtype) =>
     switch (alias) {
@@ -275,8 +288,18 @@ let rec defaultValueForLonaType =
         config,
         Named(typeName, Reference("String")),
       )
-    | _ => LiteralExpression(Nil)
+    | _ =>
+      let match =
+        UserTypes.find(config.userTypesFile.contents.types, typeName);
+      switch (match) {
+      | Some(Named(_, referencedType)) =>
+        defaultValueForLonaType(framework, config, referencedType)
+      | Some(_) => LiteralExpression(Nil)
+      | None => LiteralExpression(Nil)
+      };
     }
+  | Array(_) => LiteralExpression(Array([]))
+  | Variant(cases) => SwiftIdentifier("." ++ List.nth(cases, 0))
   | Function(_) => SwiftIdentifier("PLACEHOLDER")
   | Named(alias, _) =>
     switch (alias) {

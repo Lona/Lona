@@ -397,28 +397,29 @@ let handleNumberOfLines =
   | (JavaScriptOptions.ReactDOM, Some(lineCount)) =>
     open Monad;
     let lineHeight =
-      switch (
-        ParameterMap.find_opt(ParameterKey.TextStyle, parameters)
-        >>= (
-          (item: Types.lonaValue) =>
-            TextStyle.find(
-              config.textStylesFile.contents.styles,
-              item.data |> Json.Decode.string,
-            )
-        )
-        >>= ((textStyle: TextStyle.t) => textStyle.lineHeight)
-      ) {
-      | Some(lineHeight) => lineHeight
-      | None => 0.0
-      };
+      ParameterMap.find_opt(ParameterKey.TextStyle, parameters)
+      >>= (
+        (item: Types.lonaValue) =>
+          TextStyle.find(
+            config.textStylesFile.contents.styles,
+            item.data |> Json.Decode.string,
+          )
+      )
+      >>= ((textStyle: TextStyle.t) => textStyle.lineHeight);
 
-    parameters
-    |> ParameterMap.remove(ParameterKey.NumberOfLines)
-    |> ParameterMap.add(ParameterKey.Overflow, LonaValue.string("hidden"))
-    |> ParameterMap.add(
-         ParameterKey.MaxHeight,
-         LonaValue.number(Json.Decode.float(lineCount.data) *. lineHeight),
-       );
+    let parameters =
+      parameters |> ParameterMap.remove(ParameterKey.NumberOfLines);
+
+    switch (lineHeight) {
+    | Some(lineHeight) =>
+      parameters
+      |> ParameterMap.add(ParameterKey.Overflow, LonaValue.string("hidden"))
+      |> ParameterMap.add(
+           ParameterKey.MaxHeight,
+           LonaValue.number(Json.Decode.float(lineCount.data) *. lineHeight),
+         )
+    | None => parameters
+    };
   | (_, _) => parameters
   };
 

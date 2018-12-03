@@ -94,6 +94,13 @@ and pattern =
 /* | AsPattern */
 and initializerBlock =
   | GetterBlock(list(node))
+  | GetterSetterBlock(
+      {
+        .
+        "get": list(node),
+        "set": list(node),
+      },
+    )
   | WillSetDidSetBlock(
       {
         .
@@ -234,6 +241,14 @@ and node =
         "block": list(node),
       },
     )
+  | ForInStatement(
+      {
+        .
+        "item": pattern,
+        "collection": node,
+        "block": list(node),
+      },
+    )
   | SwitchStatement(
       {
         .
@@ -281,6 +296,7 @@ and node =
         "value": option(node),
       },
     )
+  | ConditionList(list(node))
   | OptionalBindingCondition(
       {
         .

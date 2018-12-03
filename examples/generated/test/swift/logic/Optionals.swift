@@ -7,9 +7,8 @@ public class Optionals: UIView {
 
   // MARK: Lifecycle
 
-  public init(boolParam: Bool?, stringParam: String?) {
-    self.boolParam = boolParam
-    self.stringParam = stringParam
+  public init(_ parameters: Parameters) {
+    self.parameters = parameters
 
     super.init(frame: .zero)
 
@@ -19,18 +18,52 @@ public class Optionals: UIView {
     update()
   }
 
+  public convenience init(boolParam: Bool?, stringParam: String?) {
+    self.init(Parameters(boolParam: boolParam, stringParam: stringParam))
+  }
+
   public convenience init() {
-    self.init(boolParam: nil, stringParam: nil)
+    self.init(Parameters())
   }
 
   public required init?(coder aDecoder: NSCoder) {
-    fatalError("init(coder:) has not been implemented")
+    self.parameters = Parameters()
+
+    super.init(coder: aDecoder)
+
+    setUpViews()
+    setUpConstraints()
+
+    update()
   }
 
   // MARK: Public
 
-  public var boolParam: Bool? { didSet { update() } }
-  public var stringParam: String? { didSet { update() } }
+  public var boolParam: Bool? {
+    get { return parameters.boolParam }
+    set {
+      if parameters.boolParam != newValue {
+        parameters.boolParam = newValue
+      }
+    }
+  }
+
+  public var stringParam: String? {
+    get { return parameters.stringParam }
+    set {
+      if parameters.stringParam != newValue {
+        parameters.stringParam = newValue
+      }
+    }
+  }
+
+  public var parameters: Parameters {
+    didSet {
+      if parameters != oldValue {
+        update()
+      }
+    }
+  }
 
   // MARK: Private
 
@@ -41,7 +74,9 @@ public class Optionals: UIView {
   private var stringParamViewTextStyle = TextStyles.body1
 
   private func setUpViews() {
+    labelView.isUserInteractionEnabled = false
     labelView.numberOfLines = 0
+    stringParamView.isUserInteractionEnabled = false
     stringParamView.numberOfLines = 0
 
     addSubview(labelView)
@@ -91,6 +126,49 @@ public class Optionals: UIView {
     }
     if let unwrapped = stringParam {
       stringParamView.attributedText = stringParamViewTextStyle.apply(to: unwrapped)
+    }
+  }
+}
+
+// MARK: - Parameters
+
+extension Optionals {
+  public struct Parameters: Equatable {
+    public var boolParam: Bool?
+    public var stringParam: String?
+
+    public init(boolParam: Bool? = nil, stringParam: String? = nil) {
+      self.boolParam = boolParam
+      self.stringParam = stringParam
+    }
+
+    public static func ==(lhs: Parameters, rhs: Parameters) -> Bool {
+      return lhs.boolParam == rhs.boolParam && lhs.stringParam == rhs.stringParam
+    }
+  }
+}
+
+// MARK: - Model
+
+extension Optionals {
+  public struct Model: LonaViewModel, Equatable {
+    public var id: String?
+    public var parameters: Parameters
+    public var type: String {
+      return "Optionals"
+    }
+
+    public init(id: String? = nil, parameters: Parameters) {
+      self.id = id
+      self.parameters = parameters
+    }
+
+    public init(_ parameters: Parameters) {
+      self.parameters = parameters
+    }
+
+    public init(boolParam: Bool? = nil, stringParam: String? = nil) {
+      self.init(Parameters(boolParam: boolParam, stringParam: stringParam))
     }
   }
 }

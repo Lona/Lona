@@ -7,7 +7,9 @@ public class NestedComponent: UIView {
 
   // MARK: Lifecycle
 
-  public init() {
+  public init(_ parameters: Parameters) {
+    self.parameters = parameters
+
     super.init(frame: .zero)
 
     setUpViews()
@@ -16,8 +18,29 @@ public class NestedComponent: UIView {
     update()
   }
 
+  public convenience init() {
+    self.init(Parameters())
+  }
+
   public required init?(coder aDecoder: NSCoder) {
-    fatalError("init(coder:) has not been implemented")
+    self.parameters = Parameters()
+
+    super.init(coder: aDecoder)
+
+    setUpViews()
+    setUpConstraints()
+
+    update()
+  }
+
+  // MARK: Public
+
+  public var parameters: Parameters {
+    didSet {
+      if parameters != oldValue {
+        update()
+      }
+    }
   }
 
   // MARK: Private
@@ -33,8 +56,11 @@ public class NestedComponent: UIView {
   private var text2ViewTextStyle = TextStyles.body1
 
   private func setUpViews() {
+    textView.isUserInteractionEnabled = false
     textView.numberOfLines = 0
+    text1View.isUserInteractionEnabled = false
     text1View.numberOfLines = 0
+    text2View.isUserInteractionEnabled = false
     text2View.numberOfLines = 0
 
     addSubview(textView)
@@ -114,4 +140,37 @@ public class NestedComponent: UIView {
   }
 
   private func update() {}
+}
+
+// MARK: - Parameters
+
+extension NestedComponent {
+  public struct Parameters: Equatable {
+    public init() {}
+  }
+}
+
+// MARK: - Model
+
+extension NestedComponent {
+  public struct Model: LonaViewModel, Equatable {
+    public var id: String?
+    public var parameters: Parameters
+    public var type: String {
+      return "NestedComponent"
+    }
+
+    public init(id: String? = nil, parameters: Parameters) {
+      self.id = id
+      self.parameters = parameters
+    }
+
+    public init(_ parameters: Parameters) {
+      self.parameters = parameters
+    }
+
+    public init() {
+      self.init(Parameters())
+    }
+  }
 }

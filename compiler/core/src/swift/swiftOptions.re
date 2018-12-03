@@ -13,4 +13,5 @@ type options = {
   framework,
   debugConstraints: bool,
   typePrefix: string,
+  generateCollectionView: bool,
 };

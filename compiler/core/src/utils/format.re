@@ -34,3 +34,10 @@ let vectorClassName = (assetUrl: string, elementName: option(string)): string =>
     |> upperFirst;
   formattedName ++ "Vector";
 };
+
+let indent = (spacesCount: int, string: string) =>
+  string
+  |> Js.String.split("\n")
+  |> Array.to_list
+  |> List.map(line => Js.String.repeat(spacesCount, " ") ++ line)
+  |> joinWith("\n");

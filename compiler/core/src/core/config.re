@@ -4,10 +4,12 @@ type file('a) = {
 };
 
 type t = {
+  componentNames: list(string),
   plugins: list(Plugin.t),
   colorsFile: file(list(Color.t)),
   textStylesFile: file(TextStyle.file),
   shadowsFile: file(Shadow.file),
+  userTypesFile: file(UserTypes.file),
   svgFiles: list(file(Svg.node)),
   workspacePath: string,
 };
@@ -56,6 +58,16 @@ module Workspace = {
     {path, contents};
   };
 
+  let userTypesFile = (workspacePath: string): file(UserTypes.file) => {
+    let path = Path.join([|workspacePath, "types.json"|]);
+    let contents =
+      switch (Node.Fs.readFileSync(path, `utf8)) {
+      | data => UserTypes.parseFile(data)
+      | exception _ => {types: []}
+      };
+    {path, contents};
+  };
+
   let svgFiles =
       (workspacePath: string): Js.Promise.t(list(file(Svg.node))) =>
     Js.Promise.(
@@ -68,6 +80,13 @@ module Workspace = {
       |> all
       |> then_(array => resolve(Array.to_list(array)))
     );
+
+  let componentNames = (workspacePath: string): list(string) => {
+    let searchPath = "**/*.component";
+    Glob.sync(Path.join([|workspacePath, searchPath|]))
+    |> Array.to_list
+    |> List.map(file => Node.Path.basename_ext(file, ".component"));
+  };
 
   let compilerFile = (workspacePath: string): list(Plugin.t) => {
     let path = Path.join([|workspacePath, "compiler.js"|]);
@@ -109,10 +128,12 @@ let load = path: Js.Promise.t(t) =>
       Workspace.svgFiles(workspacePath)
       |> then_(svgFiles =>
            resolve({
+             componentNames: Workspace.componentNames(workspacePath),
              plugins: Workspace.compilerFile(workspacePath),
              colorsFile: Workspace.colorsFile(workspacePath),
              textStylesFile: Workspace.textStylesFile(workspacePath),
              shadowsFile: Workspace.shadowsFile(workspacePath),
+             userTypesFile: Workspace.userTypesFile(workspacePath),
              svgFiles,
              workspacePath,
            })

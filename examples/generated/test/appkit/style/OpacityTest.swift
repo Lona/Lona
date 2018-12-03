@@ -7,8 +7,8 @@ public class OpacityTest: NSBox {
 
   // MARK: Lifecycle
 
-  public init(selected: Bool) {
-    self.selected = selected
+  public init(_ parameters: Parameters) {
+    self.parameters = parameters
 
     super.init(frame: .zero)
 
@@ -18,17 +18,43 @@ public class OpacityTest: NSBox {
     update()
   }
 
+  public convenience init(selected: Bool) {
+    self.init(Parameters(selected: selected))
+  }
+
   public convenience init() {
-    self.init(selected: false)
+    self.init(Parameters())
   }
 
   public required init?(coder aDecoder: NSCoder) {
-    fatalError("init(coder:) has not been implemented")
+    self.parameters = Parameters()
+
+    super.init(coder: aDecoder)
+
+    setUpViews()
+    setUpConstraints()
+
+    update()
   }
 
   // MARK: Public
 
-  public var selected: Bool { didSet { update() } }
+  public var selected: Bool {
+    get { return parameters.selected }
+    set {
+      if parameters.selected != newValue {
+        parameters.selected = newValue
+      }
+    }
+  }
+
+  public var parameters: Parameters {
+    didSet {
+      if parameters != oldValue {
+        update()
+      }
+    }
+  }
 
   // MARK: Private
 
@@ -101,6 +127,55 @@ public class OpacityTest: NSBox {
     alphaValue = 1
     if selected {
       alphaValue = 0.7
+    }
+  }
+}
+
+// MARK: - Parameters
+
+extension OpacityTest {
+  public struct Parameters: Equatable {
+    public var selected: Bool
+
+    public init(selected: Bool) {
+      self.selected = selected
+    }
+
+    public init() {
+      self.init(selected: false)
+    }
+
+    public static func ==(lhs: Parameters, rhs: Parameters) -> Bool {
+      return lhs.selected == rhs.selected
+    }
+  }
+}
+
+// MARK: - Model
+
+extension OpacityTest {
+  public struct Model: LonaViewModel, Equatable {
+    public var id: String?
+    public var parameters: Parameters
+    public var type: String {
+      return "OpacityTest"
+    }
+
+    public init(id: String? = nil, parameters: Parameters) {
+      self.id = id
+      self.parameters = parameters
+    }
+
+    public init(_ parameters: Parameters) {
+      self.parameters = parameters
+    }
+
+    public init(selected: Bool) {
+      self.init(Parameters(selected: selected))
+    }
+
+    public init() {
+      self.init(selected: false)
     }
   }
 }

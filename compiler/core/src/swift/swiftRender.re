@@ -381,6 +381,18 @@ let rec render = ast: Prettier.Doc.t('a) =>
       <+> line
       <+> render(CodeBlock({"statements": o##block})),
     )
+  | ForInStatement(o) =>
+    group(
+      s("for")
+      <+> line
+      <+> renderPattern(o##item)
+      <+> line
+      <+> s("in")
+      <+> line
+      <+> render(o##collection)
+      <+> line
+      <+> render(CodeBlock({"statements": o##block})),
+    )
   | WhileStatement(o) =>
     group(
       s("while")
@@ -466,6 +478,12 @@ let rec render = ast: Prettier.Doc.t('a) =>
     | Some(value) =>
       group(s("case ") <+> name <+> s(" = ") <+> render(value))
     };
+  | ConditionList(v) =>
+    v
+    |> List.map(render)
+    |> join(concat([s(","), line]))
+    |> indent
+    |> group
   | CaseCondition(o) =>
     group(
       s("case ")
@@ -638,6 +656,30 @@ and renderPattern = node =>
 and renderInitializerBlock = (node: SwiftAst.initializerBlock) =>
   switch (node) {
   | GetterBlock(list) => render(CodeBlock({"statements": list}))
+  | GetterSetterBlock(o) =>
+    let isSingleLine = statements =>
+      switch (statements) {
+      | [SwiftAst.IfStatement(_)] => false
+      | [_a] => true
+      | _ => false
+      };
+    let renderStatements = statements =>
+      if (isSingleLine(statements)) {
+        s("{ ") <+> (statements |> List.map(render) |> concat) <+> s(" }");
+      } else {
+        render(CodeBlock({"statements": statements}));
+      };
+    s("{")
+    <+> indent(
+          hardline
+          <+> s("get ")
+          <+> renderStatements(o##get)
+          <+> hardline
+          <+> s("set ")
+          <+> renderStatements(o##set),
+        )
+    <+> hardline
+    <+> s("}");
   | WillSetDidSetBlock(o) =>
     /* Special case some single-statement willSet/didSet and render them in a single line
        since they are common in our generated code and are easier to read than multiline */
@@ -683,16 +725,12 @@ and renderInitializerBlock = (node: SwiftAst.initializerBlock) =>
     };
   };
 
+let printerOptions = {"printWidth": 120, "tabWidth": 2, "useTabs": false};
+
 let toString = ast =>
   ast
   |> render
   |> (
-    doc => {
-      let printerOptions = {
-        "printWidth": 120,
-        "tabWidth": 2,
-        "useTabs": false,
-      };
-      Prettier.Doc.Printer.printDocToString(doc, printerOptions)##formatted;
-    }
+    doc =>
+      Prettier.Doc.Printer.printDocToString(doc, printerOptions)##formatted
   );

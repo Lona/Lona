@@ -22,7 +22,7 @@
       "node src/main.bs.js workspace js ../../examples/test ../../examples/generated/test/sketchJs --framework=reactsketchapp",
     "snapshotSketch:watch": "nodemon --exec \"yarn snapshotSketch\"",
     "snapshotSwift":
-      "node src/main.bs.js workspace swift ../../examples/test ../../examples/generated/test/swift",
+      "node src/main.bs.js workspace swift ../../examples/test ../../examples/generated/test/swift --generateCollectionView=1",
     "snapshotSwift:watch": "nodemon --exec \"yarn snapshotSwift\"",
     "snapshotAppkit":
       "node src/main.bs.js workspace swift ../../examples/test ../../examples/generated/test/appkit --framework=appkit",
