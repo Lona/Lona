@@ -53,6 +53,39 @@ module Naming = {
 module Doc = {
   open SwiftAst;
 
+  let fileLocalType =
+      (
+        swiftOptions: SwiftOptions.options,
+        componentName: string,
+        param: Types.parameter,
+      )
+      : option(list(node)) =>
+    Monad.(
+      param.ltype
+      |> UserTypes.TypeSystem.toTypeSystem
+      >>= (
+        entity => {
+          let convertedEntity =
+            SwiftTypeSystem.Build.entity(swiftOptions, entity);
+          switch (convertedEntity.name) {
+          | Some(name) =>
+            Some([
+              LineComment("MARK: - " ++ name),
+              Empty,
+              ExtensionDeclaration({
+                "name": componentName,
+                "protocols": [],
+                "where": None,
+                "modifier": None,
+                "body": [convertedEntity.node],
+              }),
+            ])
+          | None => None
+          };
+        }
+      )
+    );
+
   let pressableVariables = (rootLayer: Types.layer, layer: Types.layer) => [
     SwiftAst.Builders.privateVariableDeclaration(
       SwiftFormat.layerVariableName(rootLayer, layer, "hovered"),
@@ -1480,6 +1513,10 @@ let generate =
             name,
             parameters,
           ),
+          parameters
+          |> List.map(Doc.fileLocalType(swiftOptions, name))
+          |> Sequence.compact
+          |> SwiftDocument.joinGroups(Empty),
         ],
       ),
   });

@@ -1,0 +1,111 @@
+{
+  "devices" : [
+    {
+      "height" : 0,
+      "heightMode" : "At Least",
+      "name" : "iPhone SE",
+      "width" : 320
+    }
+  ],
+  "examples" : [
+    {
+      "id" : "standard",
+      "name" : "standard",
+      "params" : {
+        "type" : null
+      }
+    },
+    {
+      "id" : "error",
+      "name" : "error",
+      "params" : {
+        "type" : "error"
+      }
+    }
+  ],
+  "logic" : [
+    {
+      "body" : [
+        {
+          "assignee" : [
+            "layers",
+            "View",
+            "backgroundColor"
+          ],
+          "content" : {
+            "type" : "LitExpr",
+            "value" : {
+              "data" : "red100",
+              "type" : "Color"
+            }
+          },
+          "type" : "AssignExpr"
+        }
+      ],
+      "condition" : {
+        "left" : [
+          "parameters",
+          "type"
+        ],
+        "op" : "==",
+        "right" : {
+          "type" : "LitExpr",
+          "value" : {
+            "data" : "error",
+            "type" : {
+              "alias" : "ItemType",
+              "name" : "Named",
+              "of" : {
+                "cases" : [
+                  "standard",
+                  "error"
+                ],
+                "name" : "Enum"
+              }
+            }
+          }
+        },
+        "type" : "BinExpr"
+      },
+      "type" : "IfExpr"
+    }
+  ],
+  "params" : [
+    {
+      "name" : "type",
+      "type" : {
+        "alias" : "ItemType",
+        "name" : "Named",
+        "of" : {
+          "cases" : [
+            "standard",
+            "error"
+          ],
+          "name" : "Enum"
+        }
+      }
+    }
+  ],
+  "root" : {
+    "children" : [
+      {
+        "id" : "Text",
+        "params" : {
+          "alignSelf" : "stretch",
+          "text" : "Text"
+        },
+        "type" : "Lona:Text"
+      }
+    ],
+    "id" : "View",
+    "params" : {
+      "alignSelf" : "stretch",
+      "backgroundColor" : "blue100",
+      "paddingBottom" : 4,
+      "paddingLeft" : 8,
+      "paddingRight" : 8,
+      "paddingTop" : 4
+    },
+    "type" : "Lona:View"
+  }
+}

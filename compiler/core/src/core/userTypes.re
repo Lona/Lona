@@ -58,6 +58,7 @@ module Decode = {
       let name = field("name", string, json);
       switch (name) {
       | "Named" => namedType(json)
+      | "Enum"
       | "Variant" => variantType(json)
       | "Function" => functionType(json)
       | "Array" => arrayType(json)
