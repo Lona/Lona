@@ -45,9 +45,9 @@
   },
   "homepage": "https://github.com/airbnb/Lona",
   "devDependencies": {
-    "@glennsl/bs-json": "*",
+    "@glennsl/bs-json": "^3.0.0",
     "bs-glob": "reasonml-community/bs-glob",
-    "bs-node": "github:buckletypes/bs-node",
+    "bs-node": "reasonml-community/bs-node",
     "bs-platform": "^4.0.7",
     "copy-webpack-plugin": "^4.5.1",
     "csscolorparser": "^1.0.3",

@@ -10,7 +10,7 @@
     esutils "^2.0.2"
     js-tokens "^3.0.0"
 
-"@glennsl/bs-json@*":
+"@glennsl/bs-json@^3.0.0":
   version "3.0.0"
   resolved "https://registry.yarnpkg.com/@glennsl/bs-json/-/bs-json-3.0.0.tgz#b4e1cf6612270a8dd7287a8a71ebe17e8f0fb683"
 
@@ -333,9 +333,9 @@ bs-glob@reasonml-community/bs-glob:
   dependencies:
     glob "^7.1.2"
 
-"bs-node@github:buckletypes/bs-node":
+bs-node@reasonml-community/bs-node:
   version "0.0.1"
-  resolved "https://codeload.github.com/buckletypes/bs-node/tar.gz/20ef6d2d7c00e923aba33b0629ca5623a4460712"
+  resolved "https://codeload.github.com/reasonml-community/bs-node/tar.gz/20ef6d2d7c00e923aba33b0629ca5623a4460712"
 
 bs-platform@^4.0.7:
   version "4.0.7"
