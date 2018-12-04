@@ -55,7 +55,7 @@
     "get-stdin": "^5.0.1",
     "lodash.camelcase": "^4.3.0",
     "lodash.upperfirst": "^4.3.1",
-    "nodemon": "^1.18.4",
+    "nodemon": "^1.18.7",
     "prettier": "dabbott/prettier#28eebd6d150746b91f581e18bef8352e2bae5623",
     "webpack": "^3.10.0"
   },
