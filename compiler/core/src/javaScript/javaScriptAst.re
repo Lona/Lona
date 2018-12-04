@@ -95,6 +95,7 @@ and node =
   | ObjectLiteral(list(node))
   | Property(property)
   | ExportDefaultDeclaration(node)
+  | ExportNamedDeclaration(node)
   | Block(list(node))
   | Program(list(node))
   | LineEndComment(lineEndComment)
@@ -186,6 +187,8 @@ let rec map = (f: node => node, node) =>
     f(Property({key: o.key |> map(f), value: o.value |> map(f)}))
   | ExportDefaultDeclaration(value) =>
     f(ExportDefaultDeclaration(value |> map(f)))
+  | ExportNamedDeclaration(value) =>
+    f(ExportNamedDeclaration(value |> map(f)))
   | Block(body) => f(Block(body |> List.map(map(f))))
   | Program(body) => f(Program(body |> List.map(map(f))))
   | LineEndComment(o) =>
