@@ -97,6 +97,7 @@
 		6BA6940A208441120090CA74 /* NestedButtons.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6BA69409208441120090CA74 /* NestedButtons.swift */; };
 		6BD581DB2082521A0068FBC3 /* TextAlignment.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6BD581DA2082521A0068FBC3 /* TextAlignment.swift */; };
 		6BD581DD208252260068FBC3 /* TextAlignment.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6BD581DC208252250068FBC3 /* TextAlignment.swift */; };
+		6BE89BBA21B6114600F35AC3 /* InlineVariantTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6BE89BB921B6114600F35AC3 /* InlineVariantTest.swift */; };
 		6BFE720B21821A7300F8BEA0 /* RepeatedVector.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6BFE720A21821A7300F8BEA0 /* RepeatedVector.swift */; };
 		6BFE720D21821CF100F8BEA0 /* VectorLogic.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6BFE720C21821CF100F8BEA0 /* VectorLogic.swift */; };
 		6BFE720F21821CFF00F8BEA0 /* RepeatedVector.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6BFE720E21821CFE00F8BEA0 /* RepeatedVector.swift */; };
@@ -198,6 +199,7 @@
 		6BA69409208441120090CA74 /* NestedButtons.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NestedButtons.swift; sourceTree = "<group>"; };
 		6BD581DA2082521A0068FBC3 /* TextAlignment.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TextAlignment.swift; sourceTree = "<group>"; };
 		6BD581DC208252250068FBC3 /* TextAlignment.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TextAlignment.swift; sourceTree = "<group>"; };
+		6BE89BB921B6114600F35AC3 /* InlineVariantTest.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = InlineVariantTest.swift; sourceTree = "<group>"; };
 		6BFE720A21821A7300F8BEA0 /* RepeatedVector.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RepeatedVector.swift; sourceTree = "<group>"; };
 		6BFE720C21821CF100F8BEA0 /* VectorLogic.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = VectorLogic.swift; sourceTree = "<group>"; };
 		6BFE720E21821CFE00F8BEA0 /* RepeatedVector.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RepeatedVector.swift; sourceTree = "<group>"; };
@@ -415,6 +417,7 @@
 			children = (
 				12BBFDF4206B02AC0041620C /* BorderWidthColor.swift */,
 				6B3916FC21601C5900B20F9E /* BoxModelConditional.swift */,
+				6BE89BB921B6114600F35AC3 /* InlineVariantTest.swift */,
 				6BD581DA2082521A0068FBC3 /* TextAlignment.swift */,
 				12BBFDF5206B02AC0041620C /* TextStylesTest.swift */,
 				12BBFDF6206B02AC0041620C /* TextStyleConditional.swift */,
@@ -605,6 +608,7 @@
 				6B6D44372190B76B0016262C /* PrimaryAxisFillSiblings.swift in Sources */,
 				6BA69406208439DB0090CA74 /* NestedComponent.swift in Sources */,
 				12BBFE0E206B02AC0041620C /* SecondaryAxis.swift in Sources */,
+				6BE89BBA21B6114600F35AC3 /* InlineVariantTest.swift in Sources */,
 				6BA5BBD5217021A000F086A7 /* Optionals.swift in Sources */,
 				6B29133B219CB84200A1DDB4 /* OpacityTest.swift in Sources */,
 				6B29134D219E504E00A1DDB4 /* LonaViewModel.swift in Sources */,

@@ -1061,6 +1061,7 @@ module Build = {
                   "modifier": Some(PublicModifier),
                   "body":
                     enumCases
+                    @ [Empty]
                     @ linkedListCodable(
                         swiftOptions,
                         genericType.cases,
@@ -1086,6 +1087,7 @@ module Build = {
                   "modifier": Some(PublicModifier),
                   "body":
                     enumCases
+                    @ [Empty]
                     @ nullaryCodable(
                         swiftOptions,
                         TypeSystem.Access.typeCaseName(constantCase),
@@ -1106,6 +1108,7 @@ module Build = {
                   "modifier": Some(PublicModifier),
                   "body":
                     enumCases
+                    @ [Empty]
                     @ constantCodable(
                         swiftOptions,
                         BooleanEncoding,
@@ -1135,7 +1138,9 @@ module Build = {
                   "inherits": [TypeName("Codable")],
                   "modifier": Some(PublicModifier),
                   "body":
-                    enumCases @ enumCodable(swiftOptions, genericType.cases),
+                    enumCases
+                    @ [Empty]
+                    @ enumCodable(swiftOptions, genericType.cases),
                 }),
             };
           };

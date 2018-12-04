@@ -41,6 +41,7 @@ enum Generated: String {
     case opacityTest = "Opacity Test"
     case visibilityTest = "Visibility Test"
     case optionals = "Optionals"
+    case inlineVariantTest = "Inline Variant Test"
 
     static func allValues() -> [Generated] {
         return [
@@ -75,7 +76,8 @@ enum Generated: String {
             shadowsTest,
             opacityTest,
             optionals,
-            visibilityTest
+            visibilityTest,
+            inlineVariantTest
         ]
     }
     
@@ -177,6 +179,8 @@ enum Generated: String {
             return PrimaryAxisFillSiblings()
         case .primaryAxisFillNestedSiblings:
             return PrimaryAxisFillNestedSiblings()
+        case .inlineVariantTest:
+            return InlineVariantTest(type: .error)
         }
     }
 
@@ -211,7 +215,8 @@ enum Generated: String {
              .vectorLogicInactive,
              .repeatedVector,
              .textStylesTest,
-             .imageCropping:
+             .imageCropping,
+             .inlineVariantTest:
             return [
                 equal(\.topAnchor, \.safeAreaLayoutGuide.topAnchor),
                 equal(\.leftAnchor),

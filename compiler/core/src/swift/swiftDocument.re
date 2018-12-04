@@ -143,6 +143,8 @@ let rec typeAnnotationDoc =
   | Named("Color", _) => TypeName(colorTypeName(framework))
   | Named(name, _) => TypeName(name)
   | Function(_, _) => TypeName("(() -> Void)?")
+  | Array(_) => TypeName("ARRAY PLACEHOLDER")
+  | Variant(_) => TypeName("VARIANT PLACEHOLDER")
   };
 
 let rec lonaValue =
@@ -192,6 +194,7 @@ let rec lonaValue =
       };
     }
   | Variant(_) => SwiftIdentifier("." ++ (value.data |> Json.Decode.string))
+  | Array(_) => SwiftIdentifier("PLACEHOLDER")
   | Function(_) => SwiftIdentifier("PLACEHOLDER")
   | Named(alias, subtype) =>
     switch (alias) {
@@ -257,7 +260,7 @@ let rec lonaValue =
           SwiftIdentifier(shadows.defaultStyle.id),
         ])
       };
-    | _ => SwiftIdentifier("UnknownNamedTypeAlias" ++ alias)
+    | _ => lonaValue(framework, config, {ltype: subtype, data: value.data})
     }
   };
 
@@ -301,7 +304,7 @@ let rec defaultValueForLonaType =
   | Array(_) => LiteralExpression(Array([]))
   | Variant(cases) => SwiftIdentifier("." ++ List.nth(cases, 0))
   | Function(_) => SwiftIdentifier("PLACEHOLDER")
-  | Named(alias, _) =>
+  | Named(alias, subtype) =>
     switch (alias) {
     | "Color" =>
       MemberExpression([
@@ -318,7 +321,7 @@ let rec defaultValueForLonaType =
         SwiftIdentifier("TextStyles"),
         SwiftIdentifier(config.textStylesFile.contents.defaultStyle.id),
       ])
-    | _ => SwiftIdentifier("TypeUnknown" ++ alias)
+    | _ => defaultValueForLonaType(framework, config, subtype)
     }
   };
 

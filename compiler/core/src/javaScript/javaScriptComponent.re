@@ -822,6 +822,34 @@ let defineInitialLogicValues =
   Logic.Block([variableDeclarations] @ newVars @ [logic]);
 };
 
+let generateEnumType = (param: Types.parameter) =>
+  switch (param.ltype) {
+  | Named(typeName, Variant(cases)) =>
+    Some(
+      JavaScriptAst.(
+        ExportNamedDeclaration(
+          VariableDeclaration(
+            AssignmentExpression({
+              left: Identifier([JavaScriptFormat.enumName(typeName)]),
+              right:
+                ObjectLiteral(
+                  cases
+                  |> List.map(case =>
+                       JavaScriptAst.Property({
+                         key:
+                           Identifier([JavaScriptFormat.enumCaseName(case)]),
+                         value: StringLiteral(case),
+                       })
+                     ),
+                ),
+            }),
+          ),
+        )
+      ),
+    )
+  | _ => None
+  };
+
 let generate =
     (
       options: JavaScriptOptions.options,
@@ -837,6 +865,7 @@ let generate =
     ) => {
   let rootLayer = json |> Decode.Component.rootLayer(getComponent);
   let logic = json |> Decode.Component.logic;
+  let parameters = json |> Decode.Component.parameters;
   let assignments = Layer.parameterAssignmentsFromLogic(rootLayer, logic);
 
   let themeAST =
@@ -845,6 +874,12 @@ let generate =
       options.framework,
       rootLayer,
     );
+
+  let enumTypes =
+    parameters
+    |> List.map(generateEnumType)
+    |> Sequence.compact
+    |> SwiftDocument.join(Ast.Empty);
 
   let rootLayerAST =
     rootLayerToJavaScriptAST(
@@ -911,6 +946,7 @@ let generate =
                  Some(layer.name),
                );
              }),
+          enumTypes,
           [
             ExportDefaultDeclaration(
               ClassDeclaration({

@@ -210,6 +210,8 @@ let rec render = ast: Prettier.Doc.t('a) =>
     }
   | ExportDefaultDeclaration(value) =>
     s("export default ") <+> render(value) <+> s(";")
+  | ExportNamedDeclaration(value) =>
+    s("export ") <+> render(value) <+> s(";")
   | Program(body) => body |> List.map(render) |> join(hardline)
   | Block(body) => body |> List.map(render) |> Render.prefixAll(hardline)
   | LineEndComment(o) =>

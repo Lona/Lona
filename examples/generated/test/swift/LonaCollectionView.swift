@@ -178,6 +178,7 @@ public class LonaCollectionView: UICollectionView,
     register(VectorLogicCell.self, forCellWithReuseIdentifier: VectorLogicCell.identifier)
     register(BorderWidthColorCell.self, forCellWithReuseIdentifier: BorderWidthColorCell.identifier)
     register(BoxModelConditionalCell.self, forCellWithReuseIdentifier: BoxModelConditionalCell.identifier)
+    register(InlineVariantTestCell.self, forCellWithReuseIdentifier: InlineVariantTestCell.identifier)
     register(OpacityTestCell.self, forCellWithReuseIdentifier: OpacityTestCell.identifier)
     register(ShadowsTestCell.self, forCellWithReuseIdentifier: ShadowsTestCell.identifier)
     register(TextAlignmentCell.self, forCellWithReuseIdentifier: TextAlignmentCell.identifier)
@@ -385,6 +386,11 @@ public class LonaCollectionView: UICollectionView,
       }
     case BoxModelConditionalCell.identifier:
       if let cell = cell as? BoxModelConditionalCell, let item = item as? BoxModelConditional.Model {
+        cell.parameters = item.parameters
+        cell.scrollDirection = scrollDirection
+      }
+    case InlineVariantTestCell.identifier:
+      if let cell = cell as? InlineVariantTestCell, let item = item as? InlineVariantTest.Model {
         cell.parameters = item.parameters
         cell.scrollDirection = scrollDirection
       }
@@ -867,6 +873,16 @@ public class BoxModelConditionalCell: LonaCollectionViewCell<BoxModelConditional
   }
   public static var identifier: String {
     return "BoxModelConditional"
+  }
+}
+
+public class InlineVariantTestCell: LonaCollectionViewCell<InlineVariantTest> {
+  public var parameters: InlineVariantTest.Parameters {
+    get { return view.parameters }
+    set { view.parameters = newValue }
+  }
+  public static var identifier: String {
+    return "InlineVariantTest"
   }
 }
 
