@@ -1,14 +1,16 @@
 let equatableParameters =
-    (parameters: list(Types.parameter)): list(Types.parameter) =>
-  parameters |> List.filter(SwiftComponentParameter.isEquatable);
+    (config: Config.t, parameters: list(Types.parameter))
+    : list(Types.parameter) =>
+  parameters |> List.filter(SwiftComponentParameter.isEquatable(config));
 
 let sortedParameters =
-    (parameters: list(Types.parameter)): list(Types.parameter) =>
+    (config: Config.t, parameters: list(Types.parameter))
+    : list(Types.parameter) =>
   parameters
   |> List.sort((a, b) =>
        switch (
-         SwiftComponentParameter.isFunction(a),
-         SwiftComponentParameter.isFunction(b),
+         SwiftComponentParameter.isFunction(config, a),
+         SwiftComponentParameter.isFunction(config, b),
        ) {
        | (true, false) => 1
        | (false, false)
@@ -18,7 +20,11 @@ let sortedParameters =
      );
 
 let equatableFunction =
-    (_swiftOptions: SwiftOptions.options, parameters: list(Types.parameter))
+    (
+      config: Config.t,
+      _swiftOptions: SwiftOptions.options,
+      parameters: list(Types.parameter),
+    )
     : SwiftAst.node =>
   SwiftAst.(
     FunctionDeclaration({
@@ -44,7 +50,7 @@ let equatableFunction =
       "body": [
         ReturnStatement(
           Some(
-            switch (equatableParameters(parameters)) {
+            switch (equatableParameters(config, parameters)) {
             | [] => LiteralExpression(Boolean(true))
             | parameters =>
               SwiftDocument.binaryExpressionList(
@@ -98,7 +104,11 @@ let memberVariableDeclaration =
   );
 
 let initParameter =
-    (swiftOptions: SwiftOptions.options, param: Types.parameter) =>
+    (
+      config: Config.t,
+      swiftOptions: SwiftOptions.options,
+      param: Types.parameter,
+    ) =>
   SwiftAst.(
     Parameter({
       "externalName": None,
@@ -106,7 +116,7 @@ let initParameter =
       "annotation":
         param.ltype |> SwiftDocument.typeAnnotationDoc(swiftOptions.framework),
       "defaultValue":
-        if (SwiftComponentParameter.isFunction(param)
+        if (SwiftComponentParameter.isFunction(config, param)
             || LonaValue.isOptionalType(param.ltype)) {
           Some(LiteralExpression(Nil));
         } else {
@@ -132,11 +142,16 @@ module Parameters = {
   open SwiftAst;
 
   let init =
-      (swiftOptions: SwiftOptions.options, parameters: list(Types.parameter))
+      (
+        config: Config.t,
+        swiftOptions: SwiftOptions.options,
+        parameters: list(Types.parameter),
+      )
       : SwiftAst.node =>
     InitializerDeclaration({
       "modifiers": [AccessLevelModifier(PublicModifier)],
-      "parameters": parameters |> List.map(initParameter(swiftOptions)),
+      "parameters":
+        parameters |> List.map(initParameter(config, swiftOptions)),
       "failable": None,
       "throws": false,
       "body": parameters |> List.map(initParameterAssignment),
@@ -162,7 +177,7 @@ module Parameters = {
             "arguments":
               parameters
               |> List.filter(param =>
-                   !SwiftComponentParameter.isFunction(param)
+                   !SwiftComponentParameter.isFunction(config, param)
                  )
               |> List.map((param: Decode.parameter) =>
                    FunctionCallArgument({
@@ -243,11 +258,16 @@ module Model = {
     });
 
   let initWithIndividualParameters =
-      (swiftOptions: SwiftOptions.options, parameters: list(Types.parameter))
+      (
+        config: Config.t,
+        swiftOptions: SwiftOptions.options,
+        parameters: list(Types.parameter),
+      )
       : SwiftAst.node =>
     InitializerDeclaration({
       "modifiers": [AccessLevelModifier(PublicModifier)],
-      "parameters": parameters |> List.map(initParameter(swiftOptions)),
+      "parameters":
+        parameters |> List.map(initParameter(config, swiftOptions)),
       "failable": None,
       "throws": false,
       "body": [
@@ -305,7 +325,7 @@ module Model = {
             "arguments":
               parameters
               |> List.filter(param =>
-                   !SwiftComponentParameter.isFunction(param)
+                   !SwiftComponentParameter.isFunction(config, param)
                  )
               |> List.map((param: Decode.parameter) =>
                    FunctionCallArgument({
@@ -375,7 +395,7 @@ let parametersStruct =
       parameters: list(Types.parameter),
     )
     : SwiftAst.node => {
-  let parameters = sortedParameters(parameters);
+  let parameters = sortedParameters(config, parameters);
 
   SwiftAst.(
     StructDeclaration({
@@ -385,12 +405,12 @@ let parametersStruct =
       "body":
         [
           parameters |> List.map(memberVariableDeclaration(swiftOptions)),
-          [Parameters.init(swiftOptions, parameters)],
+          [Parameters.init(config, swiftOptions, parameters)],
           List.length(
             parameters
             |> List.filter(param =>
                  !(
-                   SwiftComponentParameter.isFunction(param)
+                   SwiftComponentParameter.isFunction(config, param)
                    || LonaValue.isOptionalType(param.ltype)
                  )
                ),
@@ -399,7 +419,7 @@ let parametersStruct =
             [Parameters.convenienceInit(config, swiftOptions, parameters)] :
             [],
           List.length(parameters) > 0 ?
-            [equatableFunction(swiftOptions, parameters)] : [],
+            [equatableFunction(config, swiftOptions, parameters)] : [],
         ]
         |> SwiftDocument.joinGroups(Empty),
     })
@@ -414,7 +434,7 @@ let viewModelStruct =
       className: string,
     )
     : SwiftAst.node => {
-  let parameters = sortedParameters(parameters);
+  let parameters = sortedParameters(config, parameters);
 
   SwiftAst.(
     StructDeclaration({
@@ -430,12 +450,18 @@ let viewModelStruct =
           ],
           [Model.initIdParameters()],
           [Model.init()],
-          [Model.initWithIndividualParameters(swiftOptions, parameters)],
+          [
+            Model.initWithIndividualParameters(
+              config,
+              swiftOptions,
+              parameters,
+            ),
+          ],
           List.length(
             parameters
             |> List.filter(param =>
                  !(
-                   SwiftComponentParameter.isFunction(param)
+                   SwiftComponentParameter.isFunction(config, param)
                    || LonaValue.isOptionalType(param.ltype)
                  )
                ),

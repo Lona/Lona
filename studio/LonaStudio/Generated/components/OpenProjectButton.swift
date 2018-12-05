@@ -7,8 +7,8 @@ public class OpenProjectButton: NSBox {
 
   // MARK: Lifecycle
 
-  public init(titleText: String) {
-    self.titleText = titleText
+  public init(_ parameters: Parameters) {
+    self.parameters = parameters
 
     super.init(frame: .zero)
 
@@ -20,12 +20,25 @@ public class OpenProjectButton: NSBox {
     addTrackingArea(trackingArea)
   }
 
+  public convenience init(titleText: String) {
+    self.init(Parameters(titleText: titleText))
+  }
+
   public convenience init() {
-    self.init(titleText: "")
+    self.init(Parameters())
   }
 
   public required init?(coder aDecoder: NSCoder) {
-    fatalError("init(coder:) has not been implemented")
+    self.parameters = Parameters()
+
+    super.init(coder: aDecoder)
+
+    setUpViews()
+    setUpConstraints()
+
+    update()
+
+    addTrackingArea(trackingArea)
   }
 
   deinit {
@@ -34,9 +47,32 @@ public class OpenProjectButton: NSBox {
 
   // MARK: Public
 
-  public var titleText: String { didSet { update() } }
-  public var onPressTitle: (() -> Void)? { didSet { update() } }
-  public var onPressPlus: (() -> Void)? { didSet { update() } }
+  public var titleText: String {
+    get { return parameters.titleText }
+    set {
+      if parameters.titleText != newValue {
+        parameters.titleText = newValue
+      }
+    }
+  }
+
+  public var onPressTitle: (() -> Void)? {
+    get { return parameters.onPressTitle }
+    set { parameters.onPressTitle = newValue }
+  }
+
+  public var onPressPlus: (() -> Void)? {
+    get { return parameters.onPressPlus }
+    set { parameters.onPressPlus = newValue }
+  }
+
+  public var parameters: Parameters {
+    didSet {
+      if parameters != oldValue {
+        update()
+      }
+    }
+  }
 
   // MARK: Private
 
@@ -205,8 +241,16 @@ public class OpenProjectButton: NSBox {
 
   private func update() {
     titleView.attributedStringValue = titleViewTextStyle.apply(to: titleText)
-    titleContainerViewOnPress = onPressTitle
-    plusContainerViewOnPress = onPressPlus
+    titleContainerViewOnPress = handleOnPressTitle
+    plusContainerViewOnPress = handleOnPressPlus
+  }
+
+  private func handleOnPressTitle() {
+    onPressTitle?()
+  }
+
+  private func handleOnPressPlus() {
+    onPressPlus?()
   }
 
   private func updateHoverState(with event: NSEvent) {
@@ -279,6 +323,59 @@ public class OpenProjectButton: NSBox {
     }
     if plusContainerViewClicked {
       plusContainerViewOnPress?()
+    }
+  }
+}
+
+// MARK: - Parameters
+
+extension OpenProjectButton {
+  public struct Parameters: Equatable {
+    public var titleText: String
+    public var onPressTitle: (() -> Void)?
+    public var onPressPlus: (() -> Void)?
+
+    public init(titleText: String, onPressTitle: (() -> Void)? = nil, onPressPlus: (() -> Void)? = nil) {
+      self.titleText = titleText
+      self.onPressTitle = onPressTitle
+      self.onPressPlus = onPressPlus
+    }
+
+    public init() {
+      self.init(titleText: "")
+    }
+
+    public static func ==(lhs: Parameters, rhs: Parameters) -> Bool {
+      return lhs.titleText == rhs.titleText
+    }
+  }
+}
+
+// MARK: - Model
+
+extension OpenProjectButton {
+  public struct Model: LonaViewModel, Equatable {
+    public var id: String?
+    public var parameters: Parameters
+    public var type: String {
+      return "OpenProjectButton"
+    }
+
+    public init(id: String? = nil, parameters: Parameters) {
+      self.id = id
+      self.parameters = parameters
+    }
+
+    public init(_ parameters: Parameters) {
+      self.parameters = parameters
+    }
+
+    public init(titleText: String, onPressTitle: (() -> Void)? = nil, onPressPlus: (() -> Void)? = nil) {
+      self.init(Parameters(titleText: titleText, onPressTitle: onPressTitle, onPressPlus: onPressPlus))
+    }
+
+    public init() {
+      self.init(titleText: "")
     }
   }
 }

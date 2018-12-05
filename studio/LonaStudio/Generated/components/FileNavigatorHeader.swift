@@ -7,10 +7,8 @@ public class FileNavigatorHeader: NSBox {
 
   // MARK: Lifecycle
 
-  public init(titleText: String, dividerColor: NSColor, fileIcon: NSImage) {
-    self.titleText = titleText
-    self.dividerColor = dividerColor
-    self.fileIcon = fileIcon
+  public init(_ parameters: Parameters) {
+    self.parameters = parameters
 
     super.init(frame: .zero)
 
@@ -20,19 +18,61 @@ public class FileNavigatorHeader: NSBox {
     update()
   }
 
+  public convenience init(titleText: String, dividerColor: NSColor, fileIcon: NSImage) {
+    self.init(Parameters(titleText: titleText, dividerColor: dividerColor, fileIcon: fileIcon))
+  }
+
   public convenience init() {
-    self.init(titleText: "", dividerColor: NSColor.clear, fileIcon: NSImage())
+    self.init(Parameters())
   }
 
   public required init?(coder aDecoder: NSCoder) {
-    fatalError("init(coder:) has not been implemented")
+    self.parameters = Parameters()
+
+    super.init(coder: aDecoder)
+
+    setUpViews()
+    setUpConstraints()
+
+    update()
   }
 
   // MARK: Public
 
-  public var titleText: String { didSet { update() } }
-  public var dividerColor: NSColor { didSet { update() } }
-  public var fileIcon: NSImage { didSet { update() } }
+  public var titleText: String {
+    get { return parameters.titleText }
+    set {
+      if parameters.titleText != newValue {
+        parameters.titleText = newValue
+      }
+    }
+  }
+
+  public var dividerColor: NSColor {
+    get { return parameters.dividerColor }
+    set {
+      if parameters.dividerColor != newValue {
+        parameters.dividerColor = newValue
+      }
+    }
+  }
+
+  public var fileIcon: NSImage {
+    get { return parameters.fileIcon }
+    set {
+      if parameters.fileIcon != newValue {
+        parameters.fileIcon = newValue
+      }
+    }
+  }
+
+  public var parameters: Parameters {
+    didSet {
+      if parameters != oldValue {
+        update()
+      }
+    }
+  }
 
   // MARK: Private
 
@@ -119,5 +159,58 @@ public class FileNavigatorHeader: NSBox {
     dividerView.fillColor = dividerColor
     titleView.attributedStringValue = titleViewTextStyle.apply(to: titleText)
     imageView.image = fileIcon
+  }
+}
+
+// MARK: - Parameters
+
+extension FileNavigatorHeader {
+  public struct Parameters: Equatable {
+    public var titleText: String
+    public var dividerColor: NSColor
+    public var fileIcon: NSImage
+
+    public init(titleText: String, dividerColor: NSColor, fileIcon: NSImage) {
+      self.titleText = titleText
+      self.dividerColor = dividerColor
+      self.fileIcon = fileIcon
+    }
+
+    public init() {
+      self.init(titleText: "", dividerColor: NSColor.clear, fileIcon: NSImage())
+    }
+
+    public static func ==(lhs: Parameters, rhs: Parameters) -> Bool {
+      return lhs.titleText == rhs.titleText && lhs.dividerColor == rhs.dividerColor && lhs.fileIcon == rhs.fileIcon
+    }
+  }
+}
+
+// MARK: - Model
+
+extension FileNavigatorHeader {
+  public struct Model: LonaViewModel, Equatable {
+    public var id: String?
+    public var parameters: Parameters
+    public var type: String {
+      return "FileNavigatorHeader"
+    }
+
+    public init(id: String? = nil, parameters: Parameters) {
+      self.id = id
+      self.parameters = parameters
+    }
+
+    public init(_ parameters: Parameters) {
+      self.parameters = parameters
+    }
+
+    public init(titleText: String, dividerColor: NSColor, fileIcon: NSImage) {
+      self.init(Parameters(titleText: titleText, dividerColor: dividerColor, fileIcon: fileIcon))
+    }
+
+    public init() {
+      self.init(titleText: "", dividerColor: NSColor.clear, fileIcon: NSImage())
+    }
   }
 }

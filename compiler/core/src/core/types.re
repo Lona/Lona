@@ -3,20 +3,17 @@ type compilerTarget =
   | Swift
   | Xml;
 
+type lonaFunctionParameter = {
+  label: string,
+  ltype: lonaType,
+}
 [@bs.deriving accessors]
-type lonaType =
+and lonaType =
   | Reference(string)
   | Named(string, lonaType)
   | Array(lonaType)
   | Variant(list(string))
-  | Function(
-      list({
-        .
-        "label": string,
-        "type": lonaType,
-      }),
-      lonaType,
-    );
+  | Function(list(lonaFunctionParameter), lonaType);
 
 let undefinedType = Reference("Undefined");
 
@@ -101,3 +98,29 @@ type layer = {
   children: list(layer),
   metadata: layerMetadata,
 };
+
+let rec toString = (ltype: lonaType): string =>
+  switch (ltype) {
+  | Named(_, subtype) => "Named(" ++ toString(subtype) ++ ")"
+  | Variant(cases) => "Variant(" ++ (cases |> Format.joinWith(", ")) ++ ")"
+  | Array(subtype) => "Array(" ++ toString(subtype) ++ ")"
+  | Function(params, returnType) =>
+    "Function("
+    ++ (
+      params
+      |> List.map((param: lonaFunctionParameter) =>
+           param.label ++ ": " ++ toString(param.ltype)
+         )
+      |> Format.joinWith(", ")
+    )
+    ++ ") -> "
+    ++ toString(returnType)
+  | Reference(name) => "Reference(" ++ name ++ ")"
+  };
+
+let rec isFunction = (ltype: lonaType): bool =>
+  switch (ltype) {
+  | Named(_, subtype) => isFunction(subtype)
+  | Function(_) => true
+  | _ => false
+  };

@@ -7,9 +7,8 @@ public class ColorPicker: NSBox {
 
   // MARK: Lifecycle
 
-  public init(colorValue: ColorPickerColor, onChangeColorValue: ColorPickerHandler) {
-    self.colorValue = colorValue
-    self.onChangeColorValue = onChangeColorValue
+  public init(_ parameters: Parameters) {
+    self.parameters = parameters
 
     super.init(frame: .zero)
 
@@ -19,18 +18,48 @@ public class ColorPicker: NSBox {
     update()
   }
 
+  public convenience init(colorValue: ColorPickerColor) {
+    self.init(Parameters(colorValue: colorValue))
+  }
+
   public convenience init() {
-    self.init(colorValue: nil, onChangeColorValue: nil)
+    self.init(Parameters())
   }
 
   public required init?(coder aDecoder: NSCoder) {
-    fatalError("init(coder:) has not been implemented")
+    self.parameters = Parameters()
+
+    super.init(coder: aDecoder)
+
+    setUpViews()
+    setUpConstraints()
+
+    update()
   }
 
   // MARK: Public
 
-  public var colorValue: ColorPickerColor { didSet { update() } }
-  public var onChangeColorValue: ColorPickerHandler { didSet { update() } }
+  public var colorValue: ColorPickerColor {
+    get { return parameters.colorValue }
+    set {
+      if parameters.colorValue != newValue {
+        parameters.colorValue = newValue
+      }
+    }
+  }
+
+  public var onChangeColorValue: ColorPickerHandler {
+    get { return parameters.onChangeColorValue }
+    set { parameters.onChangeColorValue = newValue }
+  }
+
+  public var parameters: Parameters {
+    didSet {
+      if parameters != oldValue {
+        update()
+      }
+    }
+  }
 
   // MARK: Private
 
@@ -47,4 +76,59 @@ public class ColorPicker: NSBox {
   }
 
   private func update() {}
+
+  private func handleOnChangeColorValue(_ arg0: SwiftColor) {
+    onChangeColorValue?(arg0)
+  }
+}
+
+// MARK: - Parameters
+
+extension ColorPicker {
+  public struct Parameters: Equatable {
+    public var colorValue: ColorPickerColor
+    public var onChangeColorValue: ColorPickerHandler
+
+    public init(colorValue: ColorPickerColor, onChangeColorValue: ColorPickerHandler = nil) {
+      self.colorValue = colorValue
+      self.onChangeColorValue = onChangeColorValue
+    }
+
+    public init() {
+      self.init(colorValue: nil)
+    }
+
+    public static func ==(lhs: Parameters, rhs: Parameters) -> Bool {
+      return lhs.colorValue == rhs.colorValue
+    }
+  }
+}
+
+// MARK: - Model
+
+extension ColorPicker {
+  public struct Model: LonaViewModel, Equatable {
+    public var id: String?
+    public var parameters: Parameters
+    public var type: String {
+      return "ColorPicker"
+    }
+
+    public init(id: String? = nil, parameters: Parameters) {
+      self.id = id
+      self.parameters = parameters
+    }
+
+    public init(_ parameters: Parameters) {
+      self.parameters = parameters
+    }
+
+    public init(colorValue: ColorPickerColor, onChangeColorValue: ColorPickerHandler = nil) {
+      self.init(Parameters(colorValue: colorValue, onChangeColorValue: onChangeColorValue))
+    }
+
+    public init() {
+      self.init(colorValue: nil)
+    }
+  }
 }

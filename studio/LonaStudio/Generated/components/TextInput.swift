@@ -7,9 +7,8 @@ public class TextInput: NSBox {
 
   // MARK: Lifecycle
 
-  public init(textValue: String, onChangeTextValue: StringHandler) {
-    self.textValue = textValue
-    self.onChangeTextValue = onChangeTextValue
+  public init(_ parameters: Parameters) {
+    self.parameters = parameters
 
     super.init(frame: .zero)
 
@@ -19,18 +18,48 @@ public class TextInput: NSBox {
     update()
   }
 
+  public convenience init(textValue: String) {
+    self.init(Parameters(textValue: textValue))
+  }
+
   public convenience init() {
-    self.init(textValue: "", onChangeTextValue: nil)
+    self.init(Parameters())
   }
 
   public required init?(coder aDecoder: NSCoder) {
-    fatalError("init(coder:) has not been implemented")
+    self.parameters = Parameters()
+
+    super.init(coder: aDecoder)
+
+    setUpViews()
+    setUpConstraints()
+
+    update()
   }
 
   // MARK: Public
 
-  public var textValue: String { didSet { update() } }
-  public var onChangeTextValue: StringHandler { didSet { update() } }
+  public var textValue: String {
+    get { return parameters.textValue }
+    set {
+      if parameters.textValue != newValue {
+        parameters.textValue = newValue
+      }
+    }
+  }
+
+  public var onChangeTextValue: StringHandler {
+    get { return parameters.onChangeTextValue }
+    set { parameters.onChangeTextValue = newValue }
+  }
+
+  public var parameters: Parameters {
+    didSet {
+      if parameters != oldValue {
+        update()
+      }
+    }
+  }
 
   // MARK: Private
 
@@ -72,4 +101,59 @@ public class TextInput: NSBox {
   }
 
   private func update() {}
+
+  private func handleOnChangeTextValue(_ arg0: String) {
+    onChangeTextValue?(arg0)
+  }
+}
+
+// MARK: - Parameters
+
+extension TextInput {
+  public struct Parameters: Equatable {
+    public var textValue: String
+    public var onChangeTextValue: StringHandler
+
+    public init(textValue: String, onChangeTextValue: StringHandler = nil) {
+      self.textValue = textValue
+      self.onChangeTextValue = onChangeTextValue
+    }
+
+    public init() {
+      self.init(textValue: "")
+    }
+
+    public static func ==(lhs: Parameters, rhs: Parameters) -> Bool {
+      return lhs.textValue == rhs.textValue
+    }
+  }
+}
+
+// MARK: - Model
+
+extension TextInput {
+  public struct Model: LonaViewModel, Equatable {
+    public var id: String?
+    public var parameters: Parameters
+    public var type: String {
+      return "TextInput"
+    }
+
+    public init(id: String? = nil, parameters: Parameters) {
+      self.id = id
+      self.parameters = parameters
+    }
+
+    public init(_ parameters: Parameters) {
+      self.parameters = parameters
+    }
+
+    public init(textValue: String, onChangeTextValue: StringHandler = nil) {
+      self.init(Parameters(textValue: textValue, onChangeTextValue: onChangeTextValue))
+    }
+
+    public init() {
+      self.init(textValue: "")
+    }
+  }
 }

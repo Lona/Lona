@@ -25,3 +25,9 @@ public typealias ItemMoveHandler = ((Int, Int) -> Void)?
 public typealias TextInput = ControlledComponents.TextInput
 public typealias Button = ControlledComponents.Button
 public typealias ColorWellPicker = ColorPicker.ColorWellPicker
+
+// The name "Color" is overloaded. There's the built-in Lona "Color", and there's
+// also the "Color" from the "dylan/colors" (import Colors) library. Use a typealias
+// to disambiguate.
+public typealias SwiftColor = Color
+extension Color: Equatable {}

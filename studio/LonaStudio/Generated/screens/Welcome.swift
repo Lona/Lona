@@ -7,7 +7,9 @@ public class Welcome: NSBox {
 
   // MARK: Lifecycle
 
-  public init() {
+  public init(_ parameters: Parameters) {
+    self.parameters = parameters
+
     super.init(frame: .zero)
 
     setUpViews()
@@ -16,16 +18,50 @@ public class Welcome: NSBox {
     update()
   }
 
+  public convenience init() {
+    self.init(Parameters())
+  }
+
   public required init?(coder aDecoder: NSCoder) {
-    fatalError("init(coder:) has not been implemented")
+    self.parameters = Parameters()
+
+    super.init(coder: aDecoder)
+
+    setUpViews()
+    setUpConstraints()
+
+    update()
   }
 
   // MARK: Public
 
-  public var onCreateProject: (() -> Void)? { didSet { update() } }
-  public var onOpenProject: (() -> Void)? { didSet { update() } }
-  public var onOpenExample: (() -> Void)? { didSet { update() } }
-  public var onOpenDocumentation: (() -> Void)? { didSet { update() } }
+  public var onCreateProject: (() -> Void)? {
+    get { return parameters.onCreateProject }
+    set { parameters.onCreateProject = newValue }
+  }
+
+  public var onOpenProject: (() -> Void)? {
+    get { return parameters.onOpenProject }
+    set { parameters.onOpenProject = newValue }
+  }
+
+  public var onOpenExample: (() -> Void)? {
+    get { return parameters.onOpenExample }
+    set { parameters.onOpenExample = newValue }
+  }
+
+  public var onOpenDocumentation: (() -> Void)? {
+    get { return parameters.onOpenDocumentation }
+    set { parameters.onOpenDocumentation = newValue }
+  }
+
+  public var parameters: Parameters {
+    didSet {
+      if parameters != oldValue {
+        update()
+      }
+    }
+  }
 
   // MARK: Private
 
@@ -265,9 +301,88 @@ public class Welcome: NSBox {
   }
 
   private func update() {
-    newButtonView.onClick = onCreateProject
-    openProjectButtonView.onPressPlus = onCreateProject
-    openProjectButtonView.onPressTitle = onOpenProject
-    documentationButtonView.onClick = onOpenDocumentation
+    newButtonView.onClick = handleOnCreateProject
+    openProjectButtonView.onPressPlus = handleOnCreateProject
+    openProjectButtonView.onPressTitle = handleOnOpenProject
+    documentationButtonView.onClick = handleOnOpenDocumentation
+  }
+
+  private func handleOnCreateProject() {
+    onCreateProject?()
+  }
+
+  private func handleOnOpenProject() {
+    onOpenProject?()
+  }
+
+  private func handleOnOpenExample() {
+    onOpenExample?()
+  }
+
+  private func handleOnOpenDocumentation() {
+    onOpenDocumentation?()
+  }
+}
+
+// MARK: - Parameters
+
+extension Welcome {
+  public struct Parameters: Equatable {
+    public var onCreateProject: (() -> Void)?
+    public var onOpenProject: (() -> Void)?
+    public var onOpenExample: (() -> Void)?
+    public var onOpenDocumentation: (() -> Void)?
+
+    public init(
+      onCreateProject: (() -> Void)? = nil,
+      onOpenProject: (() -> Void)? = nil,
+      onOpenExample: (() -> Void)? = nil,
+      onOpenDocumentation: (() -> Void)? = nil)
+    {
+      self.onCreateProject = onCreateProject
+      self.onOpenProject = onOpenProject
+      self.onOpenExample = onOpenExample
+      self.onOpenDocumentation = onOpenDocumentation
+    }
+
+    public static func ==(lhs: Parameters, rhs: Parameters) -> Bool {
+      return true
+    }
+  }
+}
+
+// MARK: - Model
+
+extension Welcome {
+  public struct Model: LonaViewModel, Equatable {
+    public var id: String?
+    public var parameters: Parameters
+    public var type: String {
+      return "Welcome"
+    }
+
+    public init(id: String? = nil, parameters: Parameters) {
+      self.id = id
+      self.parameters = parameters
+    }
+
+    public init(_ parameters: Parameters) {
+      self.parameters = parameters
+    }
+
+    public init(
+      onCreateProject: (() -> Void)? = nil,
+      onOpenProject: (() -> Void)? = nil,
+      onOpenExample: (() -> Void)? = nil,
+      onOpenDocumentation: (() -> Void)? = nil)
+    {
+      self
+        .init(
+          Parameters(
+            onCreateProject: onCreateProject,
+            onOpenProject: onOpenProject,
+            onOpenExample: onOpenExample,
+            onOpenDocumentation: onOpenDocumentation))
+    }
   }
 }

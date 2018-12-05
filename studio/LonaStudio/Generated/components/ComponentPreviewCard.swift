@@ -7,9 +7,8 @@ public class ComponentPreviewCard: NSBox {
 
   // MARK: Lifecycle
 
-  public init(componentName: String, selected: Bool) {
-    self.componentName = componentName
-    self.selected = selected
+  public init(_ parameters: Parameters) {
+    self.parameters = parameters
 
     super.init(frame: .zero)
 
@@ -19,18 +18,52 @@ public class ComponentPreviewCard: NSBox {
     update()
   }
 
+  public convenience init(componentName: String, selected: Bool) {
+    self.init(Parameters(componentName: componentName, selected: selected))
+  }
+
   public convenience init() {
-    self.init(componentName: "", selected: false)
+    self.init(Parameters())
   }
 
   public required init?(coder aDecoder: NSCoder) {
-    fatalError("init(coder:) has not been implemented")
+    self.parameters = Parameters()
+
+    super.init(coder: aDecoder)
+
+    setUpViews()
+    setUpConstraints()
+
+    update()
   }
 
   // MARK: Public
 
-  public var componentName: String { didSet { update() } }
-  public var selected: Bool { didSet { update() } }
+  public var componentName: String {
+    get { return parameters.componentName }
+    set {
+      if parameters.componentName != newValue {
+        parameters.componentName = newValue
+      }
+    }
+  }
+
+  public var selected: Bool {
+    get { return parameters.selected }
+    set {
+      if parameters.selected != newValue {
+        parameters.selected = newValue
+      }
+    }
+  }
+
+  public var parameters: Parameters {
+    didSet {
+      if parameters != oldValue {
+        update()
+      }
+    }
+  }
 
   // MARK: Private
 
@@ -161,6 +194,57 @@ public class ComponentPreviewCard: NSBox {
       componentNameViewTextStyle = TextStyles.largeInverse
       componentNameView.attributedStringValue =
         componentNameViewTextStyle.apply(to: componentNameView.attributedStringValue)
+    }
+  }
+}
+
+// MARK: - Parameters
+
+extension ComponentPreviewCard {
+  public struct Parameters: Equatable {
+    public var componentName: String
+    public var selected: Bool
+
+    public init(componentName: String, selected: Bool) {
+      self.componentName = componentName
+      self.selected = selected
+    }
+
+    public init() {
+      self.init(componentName: "", selected: false)
+    }
+
+    public static func ==(lhs: Parameters, rhs: Parameters) -> Bool {
+      return lhs.componentName == rhs.componentName && lhs.selected == rhs.selected
+    }
+  }
+}
+
+// MARK: - Model
+
+extension ComponentPreviewCard {
+  public struct Model: LonaViewModel, Equatable {
+    public var id: String?
+    public var parameters: Parameters
+    public var type: String {
+      return "ComponentPreviewCard"
+    }
+
+    public init(id: String? = nil, parameters: Parameters) {
+      self.id = id
+      self.parameters = parameters
+    }
+
+    public init(_ parameters: Parameters) {
+      self.parameters = parameters
+    }
+
+    public init(componentName: String, selected: Bool) {
+      self.init(Parameters(componentName: componentName, selected: selected))
+    }
+
+    public init() {
+      self.init(componentName: "", selected: false)
     }
   }
 }

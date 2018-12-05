@@ -126,3 +126,19 @@ public class TextStyle {
       range: range)
   }
 }
+
+// MARK: - Equatable
+
+extension TextStyle: Equatable {
+  public static func == (lhs: TextStyle, rhs: TextStyle) -> Bool {
+    return (
+      lhs.family == rhs.family &&
+      lhs.name == rhs.name &&
+      lhs.weight == rhs.weight &&
+      lhs.size == rhs.size &&
+      lhs.lineHeight == rhs.lineHeight &&
+      lhs.kerning == rhs.kerning &&
+      lhs.color == rhs.color &&
+      lhs.alignment == rhs.alignment)
+  }
+}

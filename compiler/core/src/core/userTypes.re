@@ -24,20 +24,17 @@ module Decode = {
       Variant(cases);
     };
     let functionType = json: Types.lonaType => {
-      let argumentType = json => {
-        "label": field("label", string, json),
-        "type": field("type", lonaType, json),
+      let argumentType = json: Types.lonaFunctionParameter => {
+        label: field("label", string, json),
+        ltype: field("type", lonaType, json),
       };
       let arguments =
-        switch (json |> optional(field("arguments", list(argumentType)))) {
+        switch (json |> optional(field("parameters", list(argumentType)))) {
         | Some(decoded) => decoded
         | None => []
         };
       let returnType =
-        switch (
-          json
-          |> optional(field("arguments", field("returnType", lonaType)))
-        ) {
+        switch (json |> optional(field("returnType", lonaType))) {
         | Some(decoded) => decoded
         | None => Types.undefinedType
         };
@@ -107,4 +104,19 @@ let find = (types: list(Types.lonaType), name: string) =>
   ) {
   | lonaType => Some(lonaType)
   | exception Not_found => None
+  };
+
+let resolveType = (types: list(Types.lonaType), typeName: string) => {
+  let match = find(types, typeName);
+  switch (match) {
+  | Some(Named(_, referencedType)) => Some(referencedType)
+  | Some(_) => None
+  | None => None
+  };
+};
+
+let rec unwrapNamedType = (ltype: Types.lonaType): Types.lonaType =>
+  switch (ltype) {
+  | Named(_, referencedType) => unwrapNamedType(referencedType)
+  | _ => ltype
   };

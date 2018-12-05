@@ -220,27 +220,70 @@ module Doc = {
      but right now we don't. We would need to detect if that's ever done within logic and
      disable this proxy function optimization for the component.
      */
-  let functionParameterProxy = (parameter: Types.parameter) =>
+  let functionParameterProxy =
+      (
+        config: Config.t,
+        swiftOptions: SwiftOptions.options,
+        parameter: Types.parameter,
+      ) => {
+    let functionType =
+      UserTypes.unwrapNamedType(
+        Config.Type.resolve(config, parameter.ltype),
+      );
+    let functionParameters =
+      switch (functionType) {
+      | Function(functionParams, _) =>
+        functionParams
+        |> List.mapi((index, functionParam: Types.lonaFunctionParameter) =>
+             Parameter({
+               "externalName": Some(functionParam.label),
+               "localName": "arg" ++ string_of_int(index),
+               "annotation":
+                 functionParam.ltype
+                 |> SwiftDocument.typeAnnotationDoc(swiftOptions.framework),
+               "defaultValue": None,
+             })
+           )
+      | _ => []
+      };
+    let functionCallArguments =
+      switch (functionType) {
+      | Function(functionParams, _) =>
+        functionParams
+        |> List.mapi((index, _) =>
+             FunctionCallArgument({
+               "name": None,
+               "value": SwiftIdentifier("arg" ++ string_of_int(index)),
+             })
+           )
+      | _ => []
+      };
     FunctionDeclaration({
       "name":
         "handle" ++ Format.upperFirst(parameter.name |> ParameterKey.toString),
       "attributes": [],
       "modifiers": [AccessLevelModifier(PrivateModifier)],
-      "parameters": [],
+      "parameters": functionParameters,
       "result": None,
       "throws": false,
       "body": [
-        SwiftAst.Builders.functionCall(
-          [(parameter.name |> ParameterKey.toString) ++ "?"],
-          [],
-        ),
+        FunctionCallExpression({
+          "name":
+            SwiftIdentifier((parameter.name |> ParameterKey.toString) ++ "?"),
+          "arguments": functionCallArguments,
+        }),
       ],
     });
+  };
 
   let parameterVariable =
-      (swiftOptions: SwiftOptions.options, parameter: Types.parameter) => {
+      (
+        config: Config.t,
+        swiftOptions: SwiftOptions.options,
+        parameter: Types.parameter,
+      ) => {
     let setter =
-      if (Parameter.isEquatable(parameter)) {
+      if (Parameter.isEquatable(config, parameter)) {
         IfStatement({
           "condition":
             BinaryExpression({
@@ -1013,7 +1056,7 @@ module Doc = {
       "right": SwiftIdentifier(parameter.name |> ParameterKey.toString),
     });
 
-  let initIndividualParameters = (_config, swiftOptions, parameters) =>
+  let initIndividualParameters = (config, swiftOptions, parameters) =>
     InitializerDeclaration({
       "modifiers": [
         AccessLevelModifier(PublicModifier),
@@ -1021,7 +1064,7 @@ module Doc = {
       ],
       "parameters":
         parameters
-        |> List.filter(param => !Parameter.isFunction(param))
+        |> List.filter(param => !Parameter.isFunction(config, param))
         |> List.map(initializerParameter(swiftOptions)),
       "failable": None,
       "throws": false,
@@ -1038,7 +1081,9 @@ module Doc = {
                     "name": SwiftIdentifier("Parameters"),
                     "arguments":
                       parameters
-                      |> List.filter(param => !Parameter.isFunction(param))
+                      |> List.filter(param =>
+                           !Parameter.isFunction(config, param)
+                         )
                       |> List.map((param: Decode.parameter) =>
                            FunctionCallArgument({
                              "name":
@@ -1384,14 +1429,16 @@ let generate =
                       ),
                     ],
                     parameters
-                    |> List.filter(param => !Parameter.isFunction(param))
+                    |> List.filter(param =>
+                         !Parameter.isFunction(config, param)
+                       )
                     |> List.length > 0 ?
                       [Doc.convenienceInit()] : [],
                     [Doc.coderInitializer(needsTracking)],
                     needsTracking ? [AppkitPressable.deinitTrackingArea] : [],
                     [LineComment("MARK: Public")],
                     parameters
-                    |> List.map(Doc.parameterVariable(swiftOptions))
+                    |> List.map(Doc.parameterVariable(config, swiftOptions))
                     |> SwiftDocument.join(Empty),
                     [Doc.parametersModelVariable()],
                     [LineComment("MARK: Private")],
@@ -1474,8 +1521,10 @@ let generate =
                       ),
                     ],
                     parameters
-                    |> List.filter(Parameter.isFunction)
-                    |> List.map(Doc.functionParameterProxy)
+                    |> List.filter(Parameter.isFunction(config))
+                    |> List.map(
+                         Doc.functionParameterProxy(config, swiftOptions),
+                       )
                     |> SwiftDocument.join(Empty),
                     needsTracking ?
                       AppkitPressable.mouseTrackingFunctions(

@@ -39,7 +39,7 @@ private func fontWeightName(fontWeight: NSFont.Weight) -> String {
     }
 }
 
-public struct CSTextStyle {
+public struct CSTextStyle: Equatable {
     let id: String
     let name: String
     let fontName: String?

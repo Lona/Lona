@@ -1,4 +1,5 @@
-let isFunction = (param: Types.parameter) => param.ltype == Types.handlerType;
+let isFunction = (config: Config.t, param: Types.parameter) =>
+  Types.isFunction(Config.Type.resolve(config, param.ltype));
 
 let isSetInitially = (layer: Types.layer, parameter) =>
   ParameterMap.mem(parameter, layer.parameters);
@@ -31,7 +32,8 @@ let paddingAndMarginKeys = [
 
 let isPaddingOrMargin = key => List.mem(key, paddingAndMarginKeys);
 
-let isEquatable = (param: Types.parameter): bool => !isFunction(param);
+let isEquatable = (config: Config.t, param: Types.parameter): bool =>
+  !isFunction(config, param);
 
 let getVectorAssetUrl = (layer: Types.layer) =>
   switch (get(layer, ParameterKey.Image)) {

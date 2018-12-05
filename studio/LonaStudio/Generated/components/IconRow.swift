@@ -7,10 +7,8 @@ public class IconRow: NSBox {
 
   // MARK: Lifecycle
 
-  public init(titleText: String, subtitleText: String, icon: NSImage) {
-    self.titleText = titleText
-    self.subtitleText = subtitleText
-    self.icon = icon
+  public init(_ parameters: Parameters) {
+    self.parameters = parameters
 
     super.init(frame: .zero)
 
@@ -22,12 +20,25 @@ public class IconRow: NSBox {
     addTrackingArea(trackingArea)
   }
 
+  public convenience init(titleText: String, subtitleText: String, icon: NSImage) {
+    self.init(Parameters(titleText: titleText, subtitleText: subtitleText, icon: icon))
+  }
+
   public convenience init() {
-    self.init(titleText: "", subtitleText: "", icon: NSImage())
+    self.init(Parameters())
   }
 
   public required init?(coder aDecoder: NSCoder) {
-    fatalError("init(coder:) has not been implemented")
+    self.parameters = Parameters()
+
+    super.init(coder: aDecoder)
+
+    setUpViews()
+    setUpConstraints()
+
+    update()
+
+    addTrackingArea(trackingArea)
   }
 
   deinit {
@@ -36,10 +47,45 @@ public class IconRow: NSBox {
 
   // MARK: Public
 
-  public var titleText: String { didSet { update() } }
-  public var subtitleText: String { didSet { update() } }
-  public var icon: NSImage { didSet { update() } }
-  public var onClick: (() -> Void)? { didSet { update() } }
+  public var titleText: String {
+    get { return parameters.titleText }
+    set {
+      if parameters.titleText != newValue {
+        parameters.titleText = newValue
+      }
+    }
+  }
+
+  public var subtitleText: String {
+    get { return parameters.subtitleText }
+    set {
+      if parameters.subtitleText != newValue {
+        parameters.subtitleText = newValue
+      }
+    }
+  }
+
+  public var icon: NSImage {
+    get { return parameters.icon }
+    set {
+      if parameters.icon != newValue {
+        parameters.icon = newValue
+      }
+    }
+  }
+
+  public var onClick: (() -> Void)? {
+    get { return parameters.onClick }
+    set { parameters.onClick = newValue }
+  }
+
+  public var parameters: Parameters {
+    didSet {
+      if parameters != oldValue {
+        update()
+      }
+    }
+  }
 
   // MARK: Private
 
@@ -147,13 +193,17 @@ public class IconRow: NSBox {
 
   private func update() {
     fillColor = Colors.transparent
-    onPress = onClick
+    onPress = handleOnClick
     titleView.attributedStringValue = titleViewTextStyle.apply(to: titleText)
     subtitleView.attributedStringValue = subtitleViewTextStyle.apply(to: subtitleText)
     imageView.image = icon
     if pressed {
       fillColor = Colors.pink50
     }
+  }
+
+  private func handleOnClick() {
+    onClick?()
   }
 
   private func updateHoverState(with event: NSEvent) {
@@ -201,6 +251,61 @@ public class IconRow: NSBox {
 
     if clicked {
       onPress?()
+    }
+  }
+}
+
+// MARK: - Parameters
+
+extension IconRow {
+  public struct Parameters: Equatable {
+    public var titleText: String
+    public var subtitleText: String
+    public var icon: NSImage
+    public var onClick: (() -> Void)?
+
+    public init(titleText: String, subtitleText: String, icon: NSImage, onClick: (() -> Void)? = nil) {
+      self.titleText = titleText
+      self.subtitleText = subtitleText
+      self.icon = icon
+      self.onClick = onClick
+    }
+
+    public init() {
+      self.init(titleText: "", subtitleText: "", icon: NSImage())
+    }
+
+    public static func ==(lhs: Parameters, rhs: Parameters) -> Bool {
+      return lhs.titleText == rhs.titleText && lhs.subtitleText == rhs.subtitleText && lhs.icon == rhs.icon
+    }
+  }
+}
+
+// MARK: - Model
+
+extension IconRow {
+  public struct Model: LonaViewModel, Equatable {
+    public var id: String?
+    public var parameters: Parameters
+    public var type: String {
+      return "IconRow"
+    }
+
+    public init(id: String? = nil, parameters: Parameters) {
+      self.id = id
+      self.parameters = parameters
+    }
+
+    public init(_ parameters: Parameters) {
+      self.parameters = parameters
+    }
+
+    public init(titleText: String, subtitleText: String, icon: NSImage, onClick: (() -> Void)? = nil) {
+      self.init(Parameters(titleText: titleText, subtitleText: subtitleText, icon: icon, onClick: onClick))
+    }
+
+    public init() {
+      self.init(titleText: "", subtitleText: "", icon: NSImage())
     }
   }
 }

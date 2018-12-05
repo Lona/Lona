@@ -7,8 +7,8 @@ public class WorkspaceVerticalTabs: NSBox {
 
   // MARK: Lifecycle
 
-  public init(selectedValue: String) {
-    self.selectedValue = selectedValue
+  public init(_ parameters: Parameters) {
+    self.parameters = parameters
 
     super.init(frame: .zero)
 
@@ -18,19 +18,53 @@ public class WorkspaceVerticalTabs: NSBox {
     update()
   }
 
+  public convenience init(selectedValue: String) {
+    self.init(Parameters(selectedValue: selectedValue))
+  }
+
   public convenience init() {
-    self.init(selectedValue: "")
+    self.init(Parameters())
   }
 
   public required init?(coder aDecoder: NSCoder) {
-    fatalError("init(coder:) has not been implemented")
+    self.parameters = Parameters()
+
+    super.init(coder: aDecoder)
+
+    setUpViews()
+    setUpConstraints()
+
+    update()
   }
 
   // MARK: Public
 
-  public var onClickLayers: (() -> Void)? { didSet { update() } }
-  public var onClickDocumentation: (() -> Void)? { didSet { update() } }
-  public var selectedValue: String { didSet { update() } }
+  public var onClickLayers: (() -> Void)? {
+    get { return parameters.onClickLayers }
+    set { parameters.onClickLayers = newValue }
+  }
+
+  public var onClickDocumentation: (() -> Void)? {
+    get { return parameters.onClickDocumentation }
+    set { parameters.onClickDocumentation = newValue }
+  }
+
+  public var selectedValue: String {
+    get { return parameters.selectedValue }
+    set {
+      if parameters.selectedValue != newValue {
+        parameters.selectedValue = newValue
+      }
+    }
+  }
+
+  public var parameters: Parameters {
+    didSet {
+      if parameters != oldValue {
+        update()
+      }
+    }
+  }
 
   // MARK: Private
 
@@ -117,13 +151,79 @@ public class WorkspaceVerticalTabs: NSBox {
   private func update() {
     tabIconDocumentationView.selected = false
     tabIconLayersView.selected = false
-    tabIconLayersView.onClick = onClickLayers
-    tabIconDocumentationView.onClick = onClickDocumentation
+    tabIconLayersView.onClick = handleOnClickLayers
+    tabIconDocumentationView.onClick = handleOnClickDocumentation
     if selectedValue == "layers" {
       tabIconLayersView.selected = true
     }
     if selectedValue == "documentation" {
       tabIconDocumentationView.selected = true
+    }
+  }
+
+  private func handleOnClickLayers() {
+    onClickLayers?()
+  }
+
+  private func handleOnClickDocumentation() {
+    onClickDocumentation?()
+  }
+}
+
+// MARK: - Parameters
+
+extension WorkspaceVerticalTabs {
+  public struct Parameters: Equatable {
+    public var selectedValue: String
+    public var onClickLayers: (() -> Void)?
+    public var onClickDocumentation: (() -> Void)?
+
+    public init(selectedValue: String, onClickLayers: (() -> Void)? = nil, onClickDocumentation: (() -> Void)? = nil) {
+      self.selectedValue = selectedValue
+      self.onClickLayers = onClickLayers
+      self.onClickDocumentation = onClickDocumentation
+    }
+
+    public init() {
+      self.init(selectedValue: "")
+    }
+
+    public static func ==(lhs: Parameters, rhs: Parameters) -> Bool {
+      return lhs.selectedValue == rhs.selectedValue
+    }
+  }
+}
+
+// MARK: - Model
+
+extension WorkspaceVerticalTabs {
+  public struct Model: LonaViewModel, Equatable {
+    public var id: String?
+    public var parameters: Parameters
+    public var type: String {
+      return "WorkspaceVerticalTabs"
+    }
+
+    public init(id: String? = nil, parameters: Parameters) {
+      self.id = id
+      self.parameters = parameters
+    }
+
+    public init(_ parameters: Parameters) {
+      self.parameters = parameters
+    }
+
+    public init(selectedValue: String, onClickLayers: (() -> Void)? = nil, onClickDocumentation: (() -> Void)? = nil) {
+      self
+        .init(
+          Parameters(
+            selectedValue: selectedValue,
+            onClickLayers: onClickLayers,
+            onClickDocumentation: onClickDocumentation))
+    }
+
+    public init() {
+      self.init(selectedValue: "")
     }
   }
 }
