@@ -7,28 +7,8 @@ public class AddColorSheet: NSBox {
 
   // MARK: Lifecycle
 
-  public init(
-    nameText: String,
-    idText: String,
-    valueText: String,
-    descriptionText: String,
-    colorValue: ColorPickerColor,
-    onChangeNameText: StringHandler,
-    onChangeIdText: StringHandler,
-    onChangeValueText: StringHandler,
-    onChangeDescriptionText: StringHandler,
-    onChangeColorValue: ColorPickerHandler)
-  {
-    self.nameText = nameText
-    self.idText = idText
-    self.valueText = valueText
-    self.descriptionText = descriptionText
-    self.colorValue = colorValue
-    self.onChangeNameText = onChangeNameText
-    self.onChangeIdText = onChangeIdText
-    self.onChangeValueText = onChangeValueText
-    self.onChangeDescriptionText = onChangeDescriptionText
-    self.onChangeColorValue = onChangeColorValue
+  public init(_ parameters: Parameters) {
+    self.parameters = parameters
 
     super.init(frame: .zero)
 
@@ -38,39 +18,127 @@ public class AddColorSheet: NSBox {
     update()
   }
 
-  public convenience init() {
+  public convenience init(
+    nameText: String,
+    idText: String,
+    valueText: String,
+    descriptionText: String,
+    colorValue: ColorPickerColor)
+  {
     self
       .init(
-        nameText: "",
-        idText: "",
-        valueText: "",
-        descriptionText: "",
-        colorValue: nil,
-        onChangeNameText: nil,
-        onChangeIdText: nil,
-        onChangeValueText: nil,
-        onChangeDescriptionText: nil,
-        onChangeColorValue: nil)
+        Parameters(
+          nameText: nameText,
+          idText: idText,
+          valueText: valueText,
+          descriptionText: descriptionText,
+          colorValue: colorValue))
+  }
+
+  public convenience init() {
+    self.init(Parameters())
   }
 
   public required init?(coder aDecoder: NSCoder) {
-    fatalError("init(coder:) has not been implemented")
+    self.parameters = Parameters()
+
+    super.init(coder: aDecoder)
+
+    setUpViews()
+    setUpConstraints()
+
+    update()
   }
 
   // MARK: Public
 
-  public var onSubmit: (() -> Void)? { didSet { update() } }
-  public var onCancel: (() -> Void)? { didSet { update() } }
-  public var nameText: String { didSet { update() } }
-  public var idText: String { didSet { update() } }
-  public var valueText: String { didSet { update() } }
-  public var descriptionText: String { didSet { update() } }
-  public var colorValue: ColorPickerColor { didSet { update() } }
-  public var onChangeNameText: StringHandler { didSet { update() } }
-  public var onChangeIdText: StringHandler { didSet { update() } }
-  public var onChangeValueText: StringHandler { didSet { update() } }
-  public var onChangeDescriptionText: StringHandler { didSet { update() } }
-  public var onChangeColorValue: ColorPickerHandler { didSet { update() } }
+  public var onSubmit: (() -> Void)? {
+    get { return parameters.onSubmit }
+    set { parameters.onSubmit = newValue }
+  }
+
+  public var onCancel: (() -> Void)? {
+    get { return parameters.onCancel }
+    set { parameters.onCancel = newValue }
+  }
+
+  public var nameText: String {
+    get { return parameters.nameText }
+    set {
+      if parameters.nameText != newValue {
+        parameters.nameText = newValue
+      }
+    }
+  }
+
+  public var idText: String {
+    get { return parameters.idText }
+    set {
+      if parameters.idText != newValue {
+        parameters.idText = newValue
+      }
+    }
+  }
+
+  public var valueText: String {
+    get { return parameters.valueText }
+    set {
+      if parameters.valueText != newValue {
+        parameters.valueText = newValue
+      }
+    }
+  }
+
+  public var descriptionText: String {
+    get { return parameters.descriptionText }
+    set {
+      if parameters.descriptionText != newValue {
+        parameters.descriptionText = newValue
+      }
+    }
+  }
+
+  public var colorValue: ColorPickerColor {
+    get { return parameters.colorValue }
+    set {
+      if parameters.colorValue != newValue {
+        parameters.colorValue = newValue
+      }
+    }
+  }
+
+  public var onChangeNameText: StringHandler {
+    get { return parameters.onChangeNameText }
+    set { parameters.onChangeNameText = newValue }
+  }
+
+  public var onChangeIdText: StringHandler {
+    get { return parameters.onChangeIdText }
+    set { parameters.onChangeIdText = newValue }
+  }
+
+  public var onChangeValueText: StringHandler {
+    get { return parameters.onChangeValueText }
+    set { parameters.onChangeValueText = newValue }
+  }
+
+  public var onChangeDescriptionText: StringHandler {
+    get { return parameters.onChangeDescriptionText }
+    set { parameters.onChangeDescriptionText = newValue }
+  }
+
+  public var onChangeColorValue: ColorPickerHandler {
+    get { return parameters.onChangeColorValue }
+    set { parameters.onChangeColorValue = newValue }
+  }
+
+  public var parameters: Parameters {
+    didSet {
+      if parameters != oldValue {
+        update()
+      }
+    }
+  }
 
   // MARK: Private
 
@@ -189,8 +257,8 @@ public class AddColorSheet: NSBox {
   }
 
   private func update() {
-    doneButtonView.onClick = onSubmit
-    cancelButtonView.onClick = onCancel
+    doneButtonView.onClick = handleOnSubmit
+    cancelButtonView.onClick = handleOnCancel
     colorInspectorView.idText = idText
     colorInspectorView.nameText = nameText
     colorInspectorView.valueText = valueText
@@ -201,5 +269,147 @@ public class AddColorSheet: NSBox {
     colorInspectorView.onChangeValueText = onChangeValueText
     colorInspectorView.onChangeDescriptionText = onChangeDescriptionText
     colorInspectorView.onChangeColorValue = onChangeColorValue
+  }
+
+  private func handleOnSubmit() {
+    onSubmit?()
+  }
+
+  private func handleOnCancel() {
+    onCancel?()
+  }
+
+  private func handleOnChangeNameText(_ arg0: String) {
+    onChangeNameText?(arg0)
+  }
+
+  private func handleOnChangeIdText(_ arg0: String) {
+    onChangeIdText?(arg0)
+  }
+
+  private func handleOnChangeValueText(_ arg0: String) {
+    onChangeValueText?(arg0)
+  }
+
+  private func handleOnChangeDescriptionText(_ arg0: String) {
+    onChangeDescriptionText?(arg0)
+  }
+
+  private func handleOnChangeColorValue(_ arg0: SwiftColor) {
+    onChangeColorValue?(arg0)
+  }
+}
+
+// MARK: - Parameters
+
+extension AddColorSheet {
+  public struct Parameters: Equatable {
+    public var nameText: String
+    public var idText: String
+    public var valueText: String
+    public var descriptionText: String
+    public var colorValue: ColorPickerColor
+    public var onSubmit: (() -> Void)?
+    public var onCancel: (() -> Void)?
+    public var onChangeNameText: StringHandler
+    public var onChangeIdText: StringHandler
+    public var onChangeValueText: StringHandler
+    public var onChangeDescriptionText: StringHandler
+    public var onChangeColorValue: ColorPickerHandler
+
+    public init(
+      nameText: String,
+      idText: String,
+      valueText: String,
+      descriptionText: String,
+      colorValue: ColorPickerColor,
+      onSubmit: (() -> Void)? = nil,
+      onCancel: (() -> Void)? = nil,
+      onChangeNameText: StringHandler = nil,
+      onChangeIdText: StringHandler = nil,
+      onChangeValueText: StringHandler = nil,
+      onChangeDescriptionText: StringHandler = nil,
+      onChangeColorValue: ColorPickerHandler = nil)
+    {
+      self.nameText = nameText
+      self.idText = idText
+      self.valueText = valueText
+      self.descriptionText = descriptionText
+      self.colorValue = colorValue
+      self.onSubmit = onSubmit
+      self.onCancel = onCancel
+      self.onChangeNameText = onChangeNameText
+      self.onChangeIdText = onChangeIdText
+      self.onChangeValueText = onChangeValueText
+      self.onChangeDescriptionText = onChangeDescriptionText
+      self.onChangeColorValue = onChangeColorValue
+    }
+
+    public init() {
+      self.init(nameText: "", idText: "", valueText: "", descriptionText: "", colorValue: nil)
+    }
+
+    public static func ==(lhs: Parameters, rhs: Parameters) -> Bool {
+      return lhs.nameText == rhs.nameText &&
+        lhs.idText == rhs.idText &&
+          lhs.valueText == rhs.valueText &&
+            lhs.descriptionText == rhs.descriptionText && lhs.colorValue == rhs.colorValue
+    }
+  }
+}
+
+// MARK: - Model
+
+extension AddColorSheet {
+  public struct Model: LonaViewModel, Equatable {
+    public var id: String?
+    public var parameters: Parameters
+    public var type: String {
+      return "AddColorSheet"
+    }
+
+    public init(id: String? = nil, parameters: Parameters) {
+      self.id = id
+      self.parameters = parameters
+    }
+
+    public init(_ parameters: Parameters) {
+      self.parameters = parameters
+    }
+
+    public init(
+      nameText: String,
+      idText: String,
+      valueText: String,
+      descriptionText: String,
+      colorValue: ColorPickerColor,
+      onSubmit: (() -> Void)? = nil,
+      onCancel: (() -> Void)? = nil,
+      onChangeNameText: StringHandler = nil,
+      onChangeIdText: StringHandler = nil,
+      onChangeValueText: StringHandler = nil,
+      onChangeDescriptionText: StringHandler = nil,
+      onChangeColorValue: ColorPickerHandler = nil)
+    {
+      self
+        .init(
+          Parameters(
+            nameText: nameText,
+            idText: idText,
+            valueText: valueText,
+            descriptionText: descriptionText,
+            colorValue: colorValue,
+            onSubmit: onSubmit,
+            onCancel: onCancel,
+            onChangeNameText: onChangeNameText,
+            onChangeIdText: onChangeIdText,
+            onChangeValueText: onChangeValueText,
+            onChangeDescriptionText: onChangeDescriptionText,
+            onChangeColorValue: onChangeColorValue))
+    }
+
+    public init() {
+      self.init(nameText: "", idText: "", valueText: "", descriptionText: "", colorValue: nil)
+    }
   }
 }

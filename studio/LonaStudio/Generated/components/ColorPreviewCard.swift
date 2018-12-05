@@ -7,11 +7,8 @@ public class ColorPreviewCard: NSBox {
 
   // MARK: Lifecycle
 
-  public init(colorName: String, colorCode: String, color: NSColor, selected: Bool) {
-    self.colorName = colorName
-    self.colorCode = colorCode
-    self.color = color
-    self.selected = selected
+  public init(_ parameters: Parameters) {
+    self.parameters = parameters
 
     super.init(frame: .zero)
 
@@ -21,20 +18,70 @@ public class ColorPreviewCard: NSBox {
     update()
   }
 
+  public convenience init(colorName: String, colorCode: String, color: NSColor, selected: Bool) {
+    self.init(Parameters(colorName: colorName, colorCode: colorCode, color: color, selected: selected))
+  }
+
   public convenience init() {
-    self.init(colorName: "", colorCode: "", color: NSColor.clear, selected: false)
+    self.init(Parameters())
   }
 
   public required init?(coder aDecoder: NSCoder) {
-    fatalError("init(coder:) has not been implemented")
+    self.parameters = Parameters()
+
+    super.init(coder: aDecoder)
+
+    setUpViews()
+    setUpConstraints()
+
+    update()
   }
 
   // MARK: Public
 
-  public var colorName: String { didSet { update() } }
-  public var colorCode: String { didSet { update() } }
-  public var color: NSColor { didSet { update() } }
-  public var selected: Bool { didSet { update() } }
+  public var colorName: String {
+    get { return parameters.colorName }
+    set {
+      if parameters.colorName != newValue {
+        parameters.colorName = newValue
+      }
+    }
+  }
+
+  public var colorCode: String {
+    get { return parameters.colorCode }
+    set {
+      if parameters.colorCode != newValue {
+        parameters.colorCode = newValue
+      }
+    }
+  }
+
+  public var color: NSColor {
+    get { return parameters.color }
+    set {
+      if parameters.color != newValue {
+        parameters.color = newValue
+      }
+    }
+  }
+
+  public var selected: Bool {
+    get { return parameters.selected }
+    set {
+      if parameters.selected != newValue {
+        parameters.selected = newValue
+      }
+    }
+  }
+
+  public var parameters: Parameters {
+    didSet {
+      if parameters != oldValue {
+        update()
+      }
+    }
+  }
 
   // MARK: Private
 
@@ -138,6 +185,62 @@ public class ColorPreviewCard: NSBox {
     previewView.fillColor = color
     if selected {
       borderColor = Colors.lightblue600
+    }
+  }
+}
+
+// MARK: - Parameters
+
+extension ColorPreviewCard {
+  public struct Parameters: Equatable {
+    public var colorName: String
+    public var colorCode: String
+    public var color: NSColor
+    public var selected: Bool
+
+    public init(colorName: String, colorCode: String, color: NSColor, selected: Bool) {
+      self.colorName = colorName
+      self.colorCode = colorCode
+      self.color = color
+      self.selected = selected
+    }
+
+    public init() {
+      self.init(colorName: "", colorCode: "", color: NSColor.clear, selected: false)
+    }
+
+    public static func ==(lhs: Parameters, rhs: Parameters) -> Bool {
+      return lhs.colorName == rhs.colorName &&
+        lhs.colorCode == rhs.colorCode && lhs.color == rhs.color && lhs.selected == rhs.selected
+    }
+  }
+}
+
+// MARK: - Model
+
+extension ColorPreviewCard {
+  public struct Model: LonaViewModel, Equatable {
+    public var id: String?
+    public var parameters: Parameters
+    public var type: String {
+      return "ColorPreviewCard"
+    }
+
+    public init(id: String? = nil, parameters: Parameters) {
+      self.id = id
+      self.parameters = parameters
+    }
+
+    public init(_ parameters: Parameters) {
+      self.parameters = parameters
+    }
+
+    public init(colorName: String, colorCode: String, color: NSColor, selected: Bool) {
+      self.init(Parameters(colorName: colorName, colorCode: colorCode, color: color, selected: selected))
+    }
+
+    public init() {
+      self.init(colorName: "", colorCode: "", color: NSColor.clear, selected: false)
     }
   }
 }

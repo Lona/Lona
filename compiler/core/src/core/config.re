@@ -109,6 +109,21 @@ module Find = {
     let file = config.svgFiles |> List.find(item => item.path == path);
     file.contents;
   };
+
+  let referenceType = (config: t, typeName: string) =>
+    UserTypes.resolveType(config.userTypesFile.contents.types, typeName);
+};
+
+module Type = {
+  let resolve = (config: t, ltype: Types.lonaType) =>
+    switch (ltype) {
+    | Types.Reference(typeName) =>
+      switch (Find.referenceType(config, typeName)) {
+      | Some(match) => match
+      | None => ltype
+      }
+    | _ => ltype
+    };
 };
 
 let exit = message => {

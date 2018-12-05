@@ -7,30 +7,8 @@ public class ColorInspector: NSBox {
 
   // MARK: Lifecycle
 
-  public init(
-    titleText: String,
-    idText: String,
-    nameText: String,
-    valueText: String,
-    descriptionText: String,
-    onChangeIdText: StringHandler,
-    onChangeNameText: StringHandler,
-    onChangeValueText: StringHandler,
-    onChangeDescriptionText: StringHandler,
-    colorValue: ColorPickerColor,
-    onChangeColorValue: ColorPickerHandler)
-  {
-    self.titleText = titleText
-    self.idText = idText
-    self.nameText = nameText
-    self.valueText = valueText
-    self.descriptionText = descriptionText
-    self.onChangeIdText = onChangeIdText
-    self.onChangeNameText = onChangeNameText
-    self.onChangeValueText = onChangeValueText
-    self.onChangeDescriptionText = onChangeDescriptionText
-    self.colorValue = colorValue
-    self.onChangeColorValue = onChangeColorValue
+  public init(_ parameters: Parameters) {
+    self.parameters = parameters
 
     super.init(frame: .zero)
 
@@ -40,39 +18,128 @@ public class ColorInspector: NSBox {
     update()
   }
 
-  public convenience init() {
+  public convenience init(
+    titleText: String,
+    idText: String,
+    nameText: String,
+    valueText: String,
+    descriptionText: String,
+    colorValue: ColorPickerColor)
+  {
     self
       .init(
-        titleText: "",
-        idText: "",
-        nameText: "",
-        valueText: "",
-        descriptionText: "",
-        onChangeIdText: nil,
-        onChangeNameText: nil,
-        onChangeValueText: nil,
-        onChangeDescriptionText: nil,
-        colorValue: nil,
-        onChangeColorValue: nil)
+        Parameters(
+          titleText: titleText,
+          idText: idText,
+          nameText: nameText,
+          valueText: valueText,
+          descriptionText: descriptionText,
+          colorValue: colorValue))
+  }
+
+  public convenience init() {
+    self.init(Parameters())
   }
 
   public required init?(coder aDecoder: NSCoder) {
-    fatalError("init(coder:) has not been implemented")
+    self.parameters = Parameters()
+
+    super.init(coder: aDecoder)
+
+    setUpViews()
+    setUpConstraints()
+
+    update()
   }
 
   // MARK: Public
 
-  public var titleText: String { didSet { update() } }
-  public var idText: String { didSet { update() } }
-  public var nameText: String { didSet { update() } }
-  public var valueText: String { didSet { update() } }
-  public var descriptionText: String { didSet { update() } }
-  public var onChangeIdText: StringHandler { didSet { update() } }
-  public var onChangeNameText: StringHandler { didSet { update() } }
-  public var onChangeValueText: StringHandler { didSet { update() } }
-  public var onChangeDescriptionText: StringHandler { didSet { update() } }
-  public var colorValue: ColorPickerColor { didSet { update() } }
-  public var onChangeColorValue: ColorPickerHandler { didSet { update() } }
+  public var titleText: String {
+    get { return parameters.titleText }
+    set {
+      if parameters.titleText != newValue {
+        parameters.titleText = newValue
+      }
+    }
+  }
+
+  public var idText: String {
+    get { return parameters.idText }
+    set {
+      if parameters.idText != newValue {
+        parameters.idText = newValue
+      }
+    }
+  }
+
+  public var nameText: String {
+    get { return parameters.nameText }
+    set {
+      if parameters.nameText != newValue {
+        parameters.nameText = newValue
+      }
+    }
+  }
+
+  public var valueText: String {
+    get { return parameters.valueText }
+    set {
+      if parameters.valueText != newValue {
+        parameters.valueText = newValue
+      }
+    }
+  }
+
+  public var descriptionText: String {
+    get { return parameters.descriptionText }
+    set {
+      if parameters.descriptionText != newValue {
+        parameters.descriptionText = newValue
+      }
+    }
+  }
+
+  public var onChangeIdText: StringHandler {
+    get { return parameters.onChangeIdText }
+    set { parameters.onChangeIdText = newValue }
+  }
+
+  public var onChangeNameText: StringHandler {
+    get { return parameters.onChangeNameText }
+    set { parameters.onChangeNameText = newValue }
+  }
+
+  public var onChangeValueText: StringHandler {
+    get { return parameters.onChangeValueText }
+    set { parameters.onChangeValueText = newValue }
+  }
+
+  public var onChangeDescriptionText: StringHandler {
+    get { return parameters.onChangeDescriptionText }
+    set { parameters.onChangeDescriptionText = newValue }
+  }
+
+  public var colorValue: ColorPickerColor {
+    get { return parameters.colorValue }
+    set {
+      if parameters.colorValue != newValue {
+        parameters.colorValue = newValue
+      }
+    }
+  }
+
+  public var onChangeColorValue: ColorPickerHandler {
+    get { return parameters.onChangeColorValue }
+    set { parameters.onChangeColorValue = newValue }
+  }
+
+  public var parameters: Parameters {
+    didSet {
+      if parameters != oldValue {
+        update()
+      }
+    }
+  }
 
   // MARK: Private
 
@@ -362,5 +429,135 @@ public class ColorInspector: NSBox {
     descriptionInputView.onChangeTextValue = onChangeDescriptionText
     coreColorWellPickerView.colorValue = colorValue
     coreColorWellPickerView.onChangeColorValue = onChangeColorValue
+  }
+
+  private func handleOnChangeIdText(_ arg0: String) {
+    onChangeIdText?(arg0)
+  }
+
+  private func handleOnChangeNameText(_ arg0: String) {
+    onChangeNameText?(arg0)
+  }
+
+  private func handleOnChangeValueText(_ arg0: String) {
+    onChangeValueText?(arg0)
+  }
+
+  private func handleOnChangeDescriptionText(_ arg0: String) {
+    onChangeDescriptionText?(arg0)
+  }
+
+  private func handleOnChangeColorValue(_ arg0: SwiftColor) {
+    onChangeColorValue?(arg0)
+  }
+}
+
+// MARK: - Parameters
+
+extension ColorInspector {
+  public struct Parameters: Equatable {
+    public var titleText: String
+    public var idText: String
+    public var nameText: String
+    public var valueText: String
+    public var descriptionText: String
+    public var colorValue: ColorPickerColor
+    public var onChangeIdText: StringHandler
+    public var onChangeNameText: StringHandler
+    public var onChangeValueText: StringHandler
+    public var onChangeDescriptionText: StringHandler
+    public var onChangeColorValue: ColorPickerHandler
+
+    public init(
+      titleText: String,
+      idText: String,
+      nameText: String,
+      valueText: String,
+      descriptionText: String,
+      colorValue: ColorPickerColor,
+      onChangeIdText: StringHandler = nil,
+      onChangeNameText: StringHandler = nil,
+      onChangeValueText: StringHandler = nil,
+      onChangeDescriptionText: StringHandler = nil,
+      onChangeColorValue: ColorPickerHandler = nil)
+    {
+      self.titleText = titleText
+      self.idText = idText
+      self.nameText = nameText
+      self.valueText = valueText
+      self.descriptionText = descriptionText
+      self.colorValue = colorValue
+      self.onChangeIdText = onChangeIdText
+      self.onChangeNameText = onChangeNameText
+      self.onChangeValueText = onChangeValueText
+      self.onChangeDescriptionText = onChangeDescriptionText
+      self.onChangeColorValue = onChangeColorValue
+    }
+
+    public init() {
+      self.init(titleText: "", idText: "", nameText: "", valueText: "", descriptionText: "", colorValue: nil)
+    }
+
+    public static func ==(lhs: Parameters, rhs: Parameters) -> Bool {
+      return lhs.titleText == rhs.titleText &&
+        lhs.idText == rhs.idText &&
+          lhs.nameText == rhs.nameText &&
+            lhs.valueText == rhs.valueText &&
+              lhs.descriptionText == rhs.descriptionText && lhs.colorValue == rhs.colorValue
+    }
+  }
+}
+
+// MARK: - Model
+
+extension ColorInspector {
+  public struct Model: LonaViewModel, Equatable {
+    public var id: String?
+    public var parameters: Parameters
+    public var type: String {
+      return "ColorInspector"
+    }
+
+    public init(id: String? = nil, parameters: Parameters) {
+      self.id = id
+      self.parameters = parameters
+    }
+
+    public init(_ parameters: Parameters) {
+      self.parameters = parameters
+    }
+
+    public init(
+      titleText: String,
+      idText: String,
+      nameText: String,
+      valueText: String,
+      descriptionText: String,
+      colorValue: ColorPickerColor,
+      onChangeIdText: StringHandler = nil,
+      onChangeNameText: StringHandler = nil,
+      onChangeValueText: StringHandler = nil,
+      onChangeDescriptionText: StringHandler = nil,
+      onChangeColorValue: ColorPickerHandler = nil)
+    {
+      self
+        .init(
+          Parameters(
+            titleText: titleText,
+            idText: idText,
+            nameText: nameText,
+            valueText: valueText,
+            descriptionText: descriptionText,
+            colorValue: colorValue,
+            onChangeIdText: onChangeIdText,
+            onChangeNameText: onChangeNameText,
+            onChangeValueText: onChangeValueText,
+            onChangeDescriptionText: onChangeDescriptionText,
+            onChangeColorValue: onChangeColorValue))
+    }
+
+    public init() {
+      self.init(titleText: "", idText: "", nameText: "", valueText: "", descriptionText: "", colorValue: nil)
+    }
   }
 }

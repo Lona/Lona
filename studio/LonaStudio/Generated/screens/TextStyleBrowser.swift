@@ -7,16 +7,8 @@ public class TextStyleBrowser: NSBox {
 
   // MARK: Lifecycle
 
-  public init(
-    onSelectTextStyle: TextStyleHandler,
-    onDeleteTextStyle: TextStyleHandler,
-    textStyles: TextStyleList,
-    onMoveTextStyle: ItemMoveHandler)
-  {
-    self.onSelectTextStyle = onSelectTextStyle
-    self.onDeleteTextStyle = onDeleteTextStyle
-    self.textStyles = textStyles
-    self.onMoveTextStyle = onMoveTextStyle
+  public init(_ parameters: Parameters) {
+    self.parameters = parameters
 
     super.init(frame: .zero)
 
@@ -26,21 +18,63 @@ public class TextStyleBrowser: NSBox {
     update()
   }
 
+  public convenience init(textStyles: TextStyleList) {
+    self.init(Parameters(textStyles: textStyles))
+  }
+
   public convenience init() {
-    self.init(onSelectTextStyle: nil, onDeleteTextStyle: nil, textStyles: nil, onMoveTextStyle: nil)
+    self.init(Parameters())
   }
 
   public required init?(coder aDecoder: NSCoder) {
-    fatalError("init(coder:) has not been implemented")
+    self.parameters = Parameters()
+
+    super.init(coder: aDecoder)
+
+    setUpViews()
+    setUpConstraints()
+
+    update()
   }
 
   // MARK: Public
 
-  public var onSelectTextStyle: TextStyleHandler { didSet { update() } }
-  public var onDeleteTextStyle: TextStyleHandler { didSet { update() } }
-  public var textStyles: TextStyleList { didSet { update() } }
-  public var onClickAddTextStyle: (() -> Void)? { didSet { update() } }
-  public var onMoveTextStyle: ItemMoveHandler { didSet { update() } }
+  public var onSelectTextStyle: TextStyleHandler {
+    get { return parameters.onSelectTextStyle }
+    set { parameters.onSelectTextStyle = newValue }
+  }
+
+  public var onDeleteTextStyle: TextStyleHandler {
+    get { return parameters.onDeleteTextStyle }
+    set { parameters.onDeleteTextStyle = newValue }
+  }
+
+  public var textStyles: TextStyleList {
+    get { return parameters.textStyles }
+    set {
+      if parameters.textStyles != newValue {
+        parameters.textStyles = newValue
+      }
+    }
+  }
+
+  public var onClickAddTextStyle: (() -> Void)? {
+    get { return parameters.onClickAddTextStyle }
+    set { parameters.onClickAddTextStyle = newValue }
+  }
+
+  public var onMoveTextStyle: ItemMoveHandler {
+    get { return parameters.onMoveTextStyle }
+    set { parameters.onMoveTextStyle = newValue }
+  }
+
+  public var parameters: Parameters {
+    didSet {
+      if parameters != oldValue {
+        update()
+      }
+    }
+  }
 
   // MARK: Private
 
@@ -176,29 +210,6 @@ public class TextStyleBrowser: NSBox {
 
     buttonViewWidthAnchorParentConstraint.priority = NSLayoutConstraint.Priority.defaultLow
 
-    NSLayoutConstraint.activate([
-      innerViewTopAnchorConstraint,
-      innerViewBottomAnchorConstraint,
-      innerViewLeadingAnchorConstraint,
-      innerViewCenterXAnchorConstraint,
-      innerViewTrailingAnchorConstraint,
-      headerViewTopAnchorConstraint,
-      headerViewLeadingAnchorConstraint,
-      headerViewTrailingAnchorConstraint,
-      textStylePreviewCollectionViewBottomAnchorConstraint,
-      textStylePreviewCollectionViewTopAnchorConstraint,
-      textStylePreviewCollectionViewLeadingAnchorConstraint,
-      textStylePreviewCollectionViewTrailingAnchorConstraint,
-      headerViewHeightAnchorConstraint,
-      titleViewLeadingAnchorConstraint,
-      titleViewTopAnchorConstraint,
-      titleViewCenterYAnchorConstraint,
-      titleViewBottomAnchorConstraint,
-      spacerViewLeadingAnchorConstraint,
-      spacerViewCenterYAnchorConstraint,
-      spacerViewHeightAnchorConstraint
-    ])
-
     self.spacerViewTrailingAnchorHeaderViewTrailingAnchorConstraint =
       spacerViewTrailingAnchorHeaderViewTrailingAnchorConstraint
     self.fixedHeightFixViewTrailingAnchorHeaderViewTrailingAnchorConstraint =
@@ -220,12 +231,37 @@ public class TextStyleBrowser: NSBox {
       buttonViewLeadingAnchorFixedHeightFixViewLeadingAnchorConstraint
     self.buttonViewTrailingAnchorFixedHeightFixViewTrailingAnchorConstraint =
       buttonViewTrailingAnchorFixedHeightFixViewTrailingAnchorConstraint
+
+    NSLayoutConstraint.activate(
+      [
+        innerViewTopAnchorConstraint,
+        innerViewBottomAnchorConstraint,
+        innerViewLeadingAnchorConstraint,
+        innerViewCenterXAnchorConstraint,
+        innerViewTrailingAnchorConstraint,
+        headerViewTopAnchorConstraint,
+        headerViewLeadingAnchorConstraint,
+        headerViewTrailingAnchorConstraint,
+        textStylePreviewCollectionViewBottomAnchorConstraint,
+        textStylePreviewCollectionViewTopAnchorConstraint,
+        textStylePreviewCollectionViewLeadingAnchorConstraint,
+        textStylePreviewCollectionViewTrailingAnchorConstraint,
+        headerViewHeightAnchorConstraint,
+        titleViewLeadingAnchorConstraint,
+        titleViewTopAnchorConstraint,
+        titleViewCenterYAnchorConstraint,
+        titleViewBottomAnchorConstraint,
+        spacerViewLeadingAnchorConstraint,
+        spacerViewCenterYAnchorConstraint,
+        spacerViewHeightAnchorConstraint
+      ] +
+        conditionalConstraints(fixedHeightFixViewIsHidden: fixedHeightFixView.isHidden))
   }
 
-  private func conditionalConstraints() -> [NSLayoutConstraint] {
+  private func conditionalConstraints(fixedHeightFixViewIsHidden: Bool) -> [NSLayoutConstraint] {
     var constraints: [NSLayoutConstraint?]
 
-    switch (fixedHeightFixView.isHidden) {
+    switch (fixedHeightFixViewIsHidden) {
       case (true):
         constraints = [spacerViewTrailingAnchorHeaderViewTrailingAnchorConstraint]
       case (false):
@@ -247,8 +283,103 @@ public class TextStyleBrowser: NSBox {
   }
 
   private func update() {
-    NSLayoutConstraint.deactivate(conditionalConstraints())
+    let fixedHeightFixViewIsHidden = fixedHeightFixView.isHidden
 
-    NSLayoutConstraint.activate(conditionalConstraints())
+    if fixedHeightFixView.isHidden != fixedHeightFixViewIsHidden {
+      NSLayoutConstraint.deactivate(conditionalConstraints(fixedHeightFixViewIsHidden: fixedHeightFixViewIsHidden))
+      NSLayoutConstraint.activate(conditionalConstraints(fixedHeightFixViewIsHidden: fixedHeightFixView.isHidden))
+    }
+  }
+
+  private func handleOnSelectTextStyle(_ arg0: CSTextStyle) {
+    onSelectTextStyle?(arg0)
+  }
+
+  private func handleOnDeleteTextStyle(_ arg0: CSTextStyle) {
+    onDeleteTextStyle?(arg0)
+  }
+
+  private func handleOnClickAddTextStyle() {
+    onClickAddTextStyle?()
+  }
+
+  private func handleOnMoveTextStyle(_ arg0: Int, _ arg1: Int) {
+    onMoveTextStyle?(arg0, arg1)
+  }
+}
+
+// MARK: - Parameters
+
+extension TextStyleBrowser {
+  public struct Parameters: Equatable {
+    public var textStyles: TextStyleList
+    public var onSelectTextStyle: TextStyleHandler
+    public var onDeleteTextStyle: TextStyleHandler
+    public var onClickAddTextStyle: (() -> Void)?
+    public var onMoveTextStyle: ItemMoveHandler
+
+    public init(
+      textStyles: TextStyleList,
+      onSelectTextStyle: TextStyleHandler = nil,
+      onDeleteTextStyle: TextStyleHandler = nil,
+      onClickAddTextStyle: (() -> Void)? = nil,
+      onMoveTextStyle: ItemMoveHandler = nil)
+    {
+      self.textStyles = textStyles
+      self.onSelectTextStyle = onSelectTextStyle
+      self.onDeleteTextStyle = onDeleteTextStyle
+      self.onClickAddTextStyle = onClickAddTextStyle
+      self.onMoveTextStyle = onMoveTextStyle
+    }
+
+    public init() {
+      self.init(textStyles: [])
+    }
+
+    public static func ==(lhs: Parameters, rhs: Parameters) -> Bool {
+      return lhs.textStyles == rhs.textStyles
+    }
+  }
+}
+
+// MARK: - Model
+
+extension TextStyleBrowser {
+  public struct Model: LonaViewModel, Equatable {
+    public var id: String?
+    public var parameters: Parameters
+    public var type: String {
+      return "TextStyleBrowser"
+    }
+
+    public init(id: String? = nil, parameters: Parameters) {
+      self.id = id
+      self.parameters = parameters
+    }
+
+    public init(_ parameters: Parameters) {
+      self.parameters = parameters
+    }
+
+    public init(
+      textStyles: TextStyleList,
+      onSelectTextStyle: TextStyleHandler = nil,
+      onDeleteTextStyle: TextStyleHandler = nil,
+      onClickAddTextStyle: (() -> Void)? = nil,
+      onMoveTextStyle: ItemMoveHandler = nil)
+    {
+      self
+        .init(
+          Parameters(
+            textStyles: textStyles,
+            onSelectTextStyle: onSelectTextStyle,
+            onDeleteTextStyle: onDeleteTextStyle,
+            onClickAddTextStyle: onClickAddTextStyle,
+            onMoveTextStyle: onMoveTextStyle))
+    }
+
+    public init() {
+      self.init(textStyles: [])
+    }
   }
 }

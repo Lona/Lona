@@ -215,6 +215,7 @@
 		6BD96652217FB0DB0012F173 /* default-workspace-thumbnail.png in Resources */ = {isa = PBXBuildFile; fileRef = 6BD96650217FB0DA0012F173 /* default-workspace-thumbnail.png */; };
 		6BD96653217FB0DB0012F173 /* default-workspace-thumbnail@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 6BD96651217FB0DB0012F173 /* default-workspace-thumbnail@2x.png */; };
 		6BDF4D2E20A67272006E99C4 /* BrowserToolbar.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6BDF4D2D20A67272006E99C4 /* BrowserToolbar.swift */; };
+		6BE89BBC21B7452800F35AC3 /* LonaViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6BE89BBB21B7452800F35AC3 /* LonaViewModel.swift */; };
 		76AB58E053220594F098A3C5 /* Pods_LonaStudioTests.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = EDA2F7370DB15639E08B399A /* Pods_LonaStudioTests.framework */; };
 		783A74CD337C61784E60C467 /* Pods_LonaStudio.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 7949560983378CFD6EC6FFD5 /* Pods_LonaStudio.framework */; };
 		BA0D85E41FD5AC2000D817C3 /* NSViewHoverExtensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = BA0D85E31FD5AC2000D817C3 /* NSViewHoverExtensions.swift */; };
@@ -467,6 +468,7 @@
 		6BD96650217FB0DA0012F173 /* default-workspace-thumbnail.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "default-workspace-thumbnail.png"; sourceTree = "<group>"; };
 		6BD96651217FB0DB0012F173 /* default-workspace-thumbnail@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "default-workspace-thumbnail@2x.png"; sourceTree = "<group>"; };
 		6BDF4D2D20A67272006E99C4 /* BrowserToolbar.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BrowserToolbar.swift; sourceTree = "<group>"; };
+		6BE89BBB21B7452800F35AC3 /* LonaViewModel.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = LonaViewModel.swift; sourceTree = "<group>"; };
 		7949560983378CFD6EC6FFD5 /* Pods_LonaStudio.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_LonaStudio.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		834F922A5808C8E689B2FD19 /* Pods-LonaStudioTests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-LonaStudioTests.debug.xcconfig"; path = "Pods/Target Support Files/Pods-LonaStudioTests/Pods-LonaStudioTests.debug.xcconfig"; sourceTree = "<group>"; };
 		918CC9C994C57DEF6340692F /* Pods-LonaStudioTests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-LonaStudioTests.release.xcconfig"; path = "Pods/Target Support Files/Pods-LonaStudioTests/Pods-LonaStudioTests.release.xcconfig"; sourceTree = "<group>"; };
@@ -773,6 +775,7 @@
 				30F870C320865858007ADA5B /* Colors.swift */,
 				6B6D4433218F6B070016262C /* LNAImageView.swift */,
 				6B6D441C218B6BBE0016262C /* LNATextField.swift */,
+				6BE89BBB21B7452800F35AC3 /* LonaViewModel.swift */,
 				6B6D4432218F6B070016262C /* NSImage+Resizing.swift */,
 				6BA5BBD62173A7F600F086A7 /* Shadows.swift */,
 				301C262320C1C3B500F18F73 /* TextStyle.swift */,
@@ -1253,6 +1256,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				30902A281F7B208A00B938BE /* CanvasCollectionView.swift in Sources */,
+				6BE89BBC21B7452800F35AC3 /* LonaViewModel.swift in Sources */,
 				6BA5BBD72173A7F600F086A7 /* Shadows.swift in Sources */,
 				6B4DFCED20A77C650048BB43 /* FileUtils.swift in Sources */,
 				305029C320643EC7002D9EE1 /* ComponentMenu.swift in Sources */,

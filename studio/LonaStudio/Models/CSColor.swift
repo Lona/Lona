@@ -9,7 +9,7 @@
 import Foundation
 import AppKit
 
-public struct CSColor: CSDataSerializable {
+public struct CSColor: Equatable, CSDataSerializable {
     var id: String
     var name: String
     var value: String

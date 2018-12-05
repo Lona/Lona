@@ -7,8 +7,8 @@ public class Button: NSBox {
 
   // MARK: Lifecycle
 
-  public init(titleText: String) {
-    self.titleText = titleText
+  public init(_ parameters: Parameters) {
+    self.parameters = parameters
 
     super.init(frame: .zero)
 
@@ -18,18 +18,48 @@ public class Button: NSBox {
     update()
   }
 
+  public convenience init(titleText: String) {
+    self.init(Parameters(titleText: titleText))
+  }
+
   public convenience init() {
-    self.init(titleText: "")
+    self.init(Parameters())
   }
 
   public required init?(coder aDecoder: NSCoder) {
-    fatalError("init(coder:) has not been implemented")
+    self.parameters = Parameters()
+
+    super.init(coder: aDecoder)
+
+    setUpViews()
+    setUpConstraints()
+
+    update()
   }
 
   // MARK: Public
 
-  public var titleText: String { didSet { update() } }
-  public var onClick: (() -> Void)? { didSet { update() } }
+  public var titleText: String {
+    get { return parameters.titleText }
+    set {
+      if parameters.titleText != newValue {
+        parameters.titleText = newValue
+      }
+    }
+  }
+
+  public var onClick: (() -> Void)? {
+    get { return parameters.onClick }
+    set { parameters.onClick = newValue }
+  }
+
+  public var parameters: Parameters {
+    didSet {
+      if parameters != oldValue {
+        update()
+      }
+    }
+  }
 
   // MARK: Private
 
@@ -78,5 +108,60 @@ public class Button: NSBox {
 
   private func update() {
     textView.attributedStringValue = textViewTextStyle.apply(to: titleText)
+  }
+
+  private func handleOnClick() {
+    onClick?()
+  }
+}
+
+// MARK: - Parameters
+
+extension Button {
+  public struct Parameters: Equatable {
+    public var titleText: String
+    public var onClick: (() -> Void)?
+
+    public init(titleText: String, onClick: (() -> Void)? = nil) {
+      self.titleText = titleText
+      self.onClick = onClick
+    }
+
+    public init() {
+      self.init(titleText: "")
+    }
+
+    public static func ==(lhs: Parameters, rhs: Parameters) -> Bool {
+      return lhs.titleText == rhs.titleText
+    }
+  }
+}
+
+// MARK: - Model
+
+extension Button {
+  public struct Model: LonaViewModel, Equatable {
+    public var id: String?
+    public var parameters: Parameters
+    public var type: String {
+      return "Button"
+    }
+
+    public init(id: String? = nil, parameters: Parameters) {
+      self.id = id
+      self.parameters = parameters
+    }
+
+    public init(_ parameters: Parameters) {
+      self.parameters = parameters
+    }
+
+    public init(titleText: String, onClick: (() -> Void)? = nil) {
+      self.init(Parameters(titleText: titleText, onClick: onClick))
+    }
+
+    public init() {
+      self.init(titleText: "")
+    }
   }
 }

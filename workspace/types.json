@@ -2,6 +2,11 @@
   "types": [
     {
       "name": "Named",
+      "alias": "ColorPickerColor",
+      "of": "SwiftColor"
+    },
+    {
+      "name": "Named",
       "alias": "ColorHandler",
       "of": {
         "name": "Function",
@@ -63,15 +68,10 @@
         "parameters": [
           {
             "label": "_",
-            "type": "Color"
+            "type": "SwiftColor"
           }
         ]
       }
-    },
-    {
-      "name": "Named",
-      "alias": "ColorPickerColor",
-      "of": "Color"
     },
     {
       "name": "Named",
@@ -81,11 +81,11 @@
         "parameters": [
           {
             "label": "_",
-            "type": "Number"
+            "type": "Int"
           },
           {
             "label": "_",
-            "type": "Number"
+            "type": "Int"
           }
         ]
       }

@@ -7,16 +7,8 @@ public class ColorBrowser: NSBox {
 
   // MARK: Lifecycle
 
-  public init(
-    onSelectColor: ColorHandler,
-    onDeleteColor: ColorHandler,
-    colors: ColorList,
-    onMoveColor: ItemMoveHandler)
-  {
-    self.onSelectColor = onSelectColor
-    self.onDeleteColor = onDeleteColor
-    self.colors = colors
-    self.onMoveColor = onMoveColor
+  public init(_ parameters: Parameters) {
+    self.parameters = parameters
 
     super.init(frame: .zero)
 
@@ -26,21 +18,63 @@ public class ColorBrowser: NSBox {
     update()
   }
 
+  public convenience init(colors: ColorList) {
+    self.init(Parameters(colors: colors))
+  }
+
   public convenience init() {
-    self.init(onSelectColor: nil, onDeleteColor: nil, colors: nil, onMoveColor: nil)
+    self.init(Parameters())
   }
 
   public required init?(coder aDecoder: NSCoder) {
-    fatalError("init(coder:) has not been implemented")
+    self.parameters = Parameters()
+
+    super.init(coder: aDecoder)
+
+    setUpViews()
+    setUpConstraints()
+
+    update()
   }
 
   // MARK: Public
 
-  public var onSelectColor: ColorHandler { didSet { update() } }
-  public var onDeleteColor: ColorHandler { didSet { update() } }
-  public var colors: ColorList { didSet { update() } }
-  public var onClickAddColor: (() -> Void)? { didSet { update() } }
-  public var onMoveColor: ItemMoveHandler { didSet { update() } }
+  public var onSelectColor: ColorHandler {
+    get { return parameters.onSelectColor }
+    set { parameters.onSelectColor = newValue }
+  }
+
+  public var onDeleteColor: ColorHandler {
+    get { return parameters.onDeleteColor }
+    set { parameters.onDeleteColor = newValue }
+  }
+
+  public var colors: ColorList {
+    get { return parameters.colors }
+    set {
+      if parameters.colors != newValue {
+        parameters.colors = newValue
+      }
+    }
+  }
+
+  public var onClickAddColor: (() -> Void)? {
+    get { return parameters.onClickAddColor }
+    set { parameters.onClickAddColor = newValue }
+  }
+
+  public var onMoveColor: ItemMoveHandler {
+    get { return parameters.onMoveColor }
+    set { parameters.onMoveColor = newValue }
+  }
+
+  public var parameters: Parameters {
+    didSet {
+      if parameters != oldValue {
+        update()
+      }
+    }
+  }
 
   // MARK: Private
 
@@ -198,7 +232,99 @@ public class ColorBrowser: NSBox {
     colorPreviewCollectionView.onSelectColor = onSelectColor
     colorPreviewCollectionView.onDeleteColor = onDeleteColor
     colorPreviewCollectionView.colors = colors
-    addColorButtonView.onClick = onClickAddColor
+    addColorButtonView.onClick = handleOnClickAddColor
     colorPreviewCollectionView.onMoveColor = onMoveColor
+  }
+
+  private func handleOnSelectColor(_ arg0: CSColor) {
+    onSelectColor?(arg0)
+  }
+
+  private func handleOnDeleteColor(_ arg0: CSColor) {
+    onDeleteColor?(arg0)
+  }
+
+  private func handleOnClickAddColor() {
+    onClickAddColor?()
+  }
+
+  private func handleOnMoveColor(_ arg0: Int, _ arg1: Int) {
+    onMoveColor?(arg0, arg1)
+  }
+}
+
+// MARK: - Parameters
+
+extension ColorBrowser {
+  public struct Parameters: Equatable {
+    public var colors: ColorList
+    public var onSelectColor: ColorHandler
+    public var onDeleteColor: ColorHandler
+    public var onClickAddColor: (() -> Void)?
+    public var onMoveColor: ItemMoveHandler
+
+    public init(
+      colors: ColorList,
+      onSelectColor: ColorHandler = nil,
+      onDeleteColor: ColorHandler = nil,
+      onClickAddColor: (() -> Void)? = nil,
+      onMoveColor: ItemMoveHandler = nil)
+    {
+      self.colors = colors
+      self.onSelectColor = onSelectColor
+      self.onDeleteColor = onDeleteColor
+      self.onClickAddColor = onClickAddColor
+      self.onMoveColor = onMoveColor
+    }
+
+    public init() {
+      self.init(colors: [])
+    }
+
+    public static func ==(lhs: Parameters, rhs: Parameters) -> Bool {
+      return lhs.colors == rhs.colors
+    }
+  }
+}
+
+// MARK: - Model
+
+extension ColorBrowser {
+  public struct Model: LonaViewModel, Equatable {
+    public var id: String?
+    public var parameters: Parameters
+    public var type: String {
+      return "ColorBrowser"
+    }
+
+    public init(id: String? = nil, parameters: Parameters) {
+      self.id = id
+      self.parameters = parameters
+    }
+
+    public init(_ parameters: Parameters) {
+      self.parameters = parameters
+    }
+
+    public init(
+      colors: ColorList,
+      onSelectColor: ColorHandler = nil,
+      onDeleteColor: ColorHandler = nil,
+      onClickAddColor: (() -> Void)? = nil,
+      onMoveColor: ItemMoveHandler = nil)
+    {
+      self
+        .init(
+          Parameters(
+            colors: colors,
+            onSelectColor: onSelectColor,
+            onDeleteColor: onDeleteColor,
+            onClickAddColor: onClickAddColor,
+            onMoveColor: onMoveColor))
+    }
+
+    public init() {
+      self.init(colors: [])
+    }
   }
 }

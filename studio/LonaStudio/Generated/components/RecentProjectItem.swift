@@ -7,10 +7,8 @@ public class RecentProjectItem: NSBox {
 
   // MARK: Lifecycle
 
-  public init(projectName: String, projectDirectoryPath: String, selected: Bool) {
-    self.projectName = projectName
-    self.projectDirectoryPath = projectDirectoryPath
-    self.selected = selected
+  public init(_ parameters: Parameters) {
+    self.parameters = parameters
 
     super.init(frame: .zero)
 
@@ -20,19 +18,61 @@ public class RecentProjectItem: NSBox {
     update()
   }
 
+  public convenience init(projectName: String, projectDirectoryPath: String, selected: Bool) {
+    self.init(Parameters(projectName: projectName, projectDirectoryPath: projectDirectoryPath, selected: selected))
+  }
+
   public convenience init() {
-    self.init(projectName: "", projectDirectoryPath: "", selected: false)
+    self.init(Parameters())
   }
 
   public required init?(coder aDecoder: NSCoder) {
-    fatalError("init(coder:) has not been implemented")
+    self.parameters = Parameters()
+
+    super.init(coder: aDecoder)
+
+    setUpViews()
+    setUpConstraints()
+
+    update()
   }
 
   // MARK: Public
 
-  public var projectName: String { didSet { update() } }
-  public var projectDirectoryPath: String { didSet { update() } }
-  public var selected: Bool { didSet { update() } }
+  public var projectName: String {
+    get { return parameters.projectName }
+    set {
+      if parameters.projectName != newValue {
+        parameters.projectName = newValue
+      }
+    }
+  }
+
+  public var projectDirectoryPath: String {
+    get { return parameters.projectDirectoryPath }
+    set {
+      if parameters.projectDirectoryPath != newValue {
+        parameters.projectDirectoryPath = newValue
+      }
+    }
+  }
+
+  public var selected: Bool {
+    get { return parameters.selected }
+    set {
+      if parameters.selected != newValue {
+        parameters.selected = newValue
+      }
+    }
+  }
+
+  public var parameters: Parameters {
+    didSet {
+      if parameters != oldValue {
+        update()
+      }
+    }
+  }
 
   // MARK: Private
 
@@ -104,6 +144,60 @@ public class RecentProjectItem: NSBox {
       projectDirectoryPathViewTextStyle = TextStyles.regularInverse
       projectDirectoryPathView.attributedStringValue =
         projectDirectoryPathViewTextStyle.apply(to: projectDirectoryPathView.attributedStringValue)
+    }
+  }
+}
+
+// MARK: - Parameters
+
+extension RecentProjectItem {
+  public struct Parameters: Equatable {
+    public var projectName: String
+    public var projectDirectoryPath: String
+    public var selected: Bool
+
+    public init(projectName: String, projectDirectoryPath: String, selected: Bool) {
+      self.projectName = projectName
+      self.projectDirectoryPath = projectDirectoryPath
+      self.selected = selected
+    }
+
+    public init() {
+      self.init(projectName: "", projectDirectoryPath: "", selected: false)
+    }
+
+    public static func ==(lhs: Parameters, rhs: Parameters) -> Bool {
+      return lhs.projectName == rhs.projectName &&
+        lhs.projectDirectoryPath == rhs.projectDirectoryPath && lhs.selected == rhs.selected
+    }
+  }
+}
+
+// MARK: - Model
+
+extension RecentProjectItem {
+  public struct Model: LonaViewModel, Equatable {
+    public var id: String?
+    public var parameters: Parameters
+    public var type: String {
+      return "RecentProjectItem"
+    }
+
+    public init(id: String? = nil, parameters: Parameters) {
+      self.id = id
+      self.parameters = parameters
+    }
+
+    public init(_ parameters: Parameters) {
+      self.parameters = parameters
+    }
+
+    public init(projectName: String, projectDirectoryPath: String, selected: Bool) {
+      self.init(Parameters(projectName: projectName, projectDirectoryPath: projectDirectoryPath, selected: selected))
+    }
+
+    public init() {
+      self.init(projectName: "", projectDirectoryPath: "", selected: false)
     }
   }
 }
