@@ -112,9 +112,18 @@ let CANVAS_INSET: CGFloat = 10
 
 class CanvasCollectionView: NSView, NSCollectionViewDataSource, NSCollectionViewDelegate, NSCollectionViewDelegateFlowLayout {
 
-    var options: CanvasCollectionOptions?
+    var options: CanvasCollectionOptions? {
+        didSet {
+            if options?.component !== oldValue?.component {
+                itemCache = [:]
+            }
+        }
+    }
+
     var computedCases: [CSCaseEntry] = []
     var computedCanvases: [Canvas] = []
+
+    private var itemCache: [IndexPath: CanvasItemViewController] = [:]
 
     func update(options: CanvasCollectionOptions) {
         computedCases = options.component.computedCases(for: nil)
@@ -160,7 +169,10 @@ class CanvasCollectionView: NSView, NSCollectionViewDataSource, NSCollectionView
         let configuredRootLayer = CanvasView.configureRoot(layer: rootLayer, with: config)
         guard let layout = layoutRoot(canvas: canvas, configuredRootLayer: configuredRootLayer, config: config) else { return NSSize.zero }
 
-        let size = NSSize(width: CGFloat(canvas.width) + CANVAS_INSET * 2, height: layout.height + CANVAS_INSET * 2)
+//        let size = NSSize(width: CGFloat(canvas.width) + CANVAS_INSET * 2, height: layout.height + CANVAS_INSET * 2)
+        let size = NSSize(width: CGFloat(canvas.width), height: layout.height)
+
+        Swift.print("Measure", indexPath, size)
 
         layout.rootNode.free(recursive: true)
 
@@ -178,12 +190,25 @@ class CanvasCollectionView: NSView, NSCollectionViewDataSource, NSCollectionView
         return size
     }
 
+    func dequeueItem(indexPath: IndexPath) -> CanvasItemViewController {
+        if let item = itemCache[indexPath] {
+            return item
+        }
+
+//        let item = CanvasItemViewController(view: NSView())
+        let item = CanvasItemViewController(nibName: nil, bundle: nil)
+
+        itemCache[indexPath] = item
+
+        return item
+    }
+
     func collectionView(_ collectionView: NSCollectionView, itemForRepresentedObjectAt indexPath: IndexPath) -> NSCollectionViewItem {
-        let item = collectionView.makeItem(withIdentifier: NSUserInterfaceItemIdentifier(rawValue: CANVAS_IDENTIFIER), for: indexPath) as! CanvasItemViewController
+        let item = dequeueItem(indexPath: indexPath)
+
+//        let item = collectionView.makeItem(withIdentifier: NSUserInterfaceItemIdentifier(rawValue: CANVAS_IDENTIFIER), for: indexPath) as! CanvasItemViewController
 
         guard let options = options else { return item }
-
-        item.view.subviews.forEach({ $0.removeFromSuperview() })
 
         let canvasIndex = indexPath[options.layout == .caseXcanvasY ? 0 : 1]
         let caseIndex = indexPath[options.layout == .caseXcanvasY ? 1 : 0]
@@ -201,28 +226,24 @@ class CanvasCollectionView: NSView, NSCollectionViewDataSource, NSCollectionView
             canvas: canvas
         )
 
-        let canvasView = CanvasView(
+        let parameters = CanvasView.Parameters(
             canvas: canvas,
             rootLayer: rootLayer,
             config: config,
-            options: [
+            options: RenderOptions([
                 .renderCanvasShadow(true),
                 .onSelectLayer(options.onSelectLayer),
                 .selectedLayerName(options.selectedLayerName)
-            ])
+                ]))
 
-        let canvasContainerView = NSView(frame: canvasView.bounds.insetBy(dx: -CANVAS_INSET, dy: -CANVAS_INSET).offsetBy(dx: CANVAS_INSET, dy: CANVAS_INSET))
-        canvasContainerView.addSubview(canvasView)
-
-        canvasView.frame = canvasView.frame.offsetBy(dx: CANVAS_INSET, dy: CANVAS_INSET)
-
-        item.view.addSubview(canvasContainerView)
+        item.indexPath = indexPath
+        item.parameters = parameters
 
         return item
     }
 
     func collectionView(_ collectionView: NSCollectionView, layout collectionViewLayout: NSCollectionViewLayout, insetForSectionAt section: Int) -> NSEdgeInsets {
-        return NSEdgeInsets(top: 20, left: 20, bottom: 20, right: 20)
+        return NSEdgeInsets(top: 0, left: 0, bottom: 0, right: 0)
     }
 
     func collectionView(_ collectionView: NSCollectionView, layout collectionViewLayout: NSCollectionViewLayout, minimumInteritemSpacingForSectionAt section: Int) -> CGFloat {
@@ -241,33 +262,33 @@ class CanvasCollectionView: NSView, NSCollectionViewDataSource, NSCollectionView
     // it's better than nothing. Hopefully we can figure out a better fix. If not, revisit
     // the scrollbar calculations.
     class CollectionScrollView: NSScrollView {
-        override func tile() {
-            super.tile()
-
-            if  let collectionView = documentView as? NSCollectionView,
-                let size = collectionView.collectionViewLayout?.collectionViewContentSize {
-                // The collection view should still fill the available space if it's smaller
-                let maxSize = NSSize(width: max(size.width, frame.width), height: max(size.height, frame.height))
-
-                collectionView.setFrameSize(maxSize)
-
-                if  let horizontalScroller = self.horizontalScroller,
-                    NSScroller.preferredScrollerStyle == NSScroller.Style.legacy {
-                    horizontalScroller.isHidden = size.width < frame.width
-
-                    var verticalScrollerSize: CGFloat = 0
-                    if let verticalScroller = self.verticalScroller {
-                        verticalScrollerSize = verticalScroller.isHidden ? 0 : verticalScroller.frame.width
-                    }
-
-                    horizontalScroller.setFrameSize(NSSize(width: frame.width - verticalScrollerSize, height: frame.height))
-                    horizontalScroller.setFrameOrigin(NSPoint(x: 0, y: 0))
-
-                    horizontalScroller.knobProportion = frame.width / size.width
-                    horizontalScroller.floatValue = Float(documentVisibleRect.origin.x / (size.width - frame.width))
-                }
-            }
-        }
+//        override func tile() {
+//            super.tile()
+//
+//            if  let collectionView = documentView as? NSCollectionView,
+//                let size = collectionView.collectionViewLayout?.collectionViewContentSize {
+//                // The collection view should still fill the available space if it's smaller
+//                let maxSize = NSSize(width: max(size.width, frame.width), height: max(size.height, frame.height))
+//
+//                collectionView.setFrameSize(maxSize)
+//
+//                if  let horizontalScroller = self.horizontalScroller,
+//                    NSScroller.preferredScrollerStyle == NSScroller.Style.legacy {
+//                    horizontalScroller.isHidden = size.width < frame.width
+//
+//                    var verticalScrollerSize: CGFloat = 0
+//                    if let verticalScroller = self.verticalScroller {
+//                        verticalScrollerSize = verticalScroller.isHidden ? 0 : verticalScroller.frame.width
+//                    }
+//
+//                    horizontalScroller.setFrameSize(NSSize(width: frame.width - verticalScrollerSize, height: frame.height))
+//                    horizontalScroller.setFrameOrigin(NSPoint(x: 0, y: 0))
+//
+//                    horizontalScroller.knobProportion = frame.width / size.width
+//                    horizontalScroller.floatValue = Float(documentVisibleRect.origin.x / (size.width - frame.width))
+//                }
+//            }
+//        }
     }
 
     override init(frame frameRect: NSRect) {
@@ -356,6 +377,45 @@ class CanvasCollectionView: NSView, NSCollectionViewDataSource, NSCollectionView
 
 class CanvasItemViewController: NSCollectionViewItem {
     override func loadView() {
-        view = NSView()
+        let view = NSBox(frame: .zero)
+
+        view.boxType = .custom
+        view.contentViewMargins = .zero
+        view.borderType = .noBorder
+        view.fillColor = .blue
+
+        self.view = view
+    }
+
+    private var canvasContainerView = NSView(frame: .zero)
+
+    private var canvasView: CanvasView?
+
+    var indexPath: IndexPath? {
+        didSet {
+            Swift.print("updating item", oldValue, "=>", indexPath)
+        }
+    }
+
+    var parameters: CanvasView.Parameters? {
+        didSet {
+            if let canvasView = canvasView, let parameters = parameters {
+                canvasView.parameters = parameters
+                Swift.print("mount", canvasView.frame, view.frame)
+            } else if let parameters = parameters {
+                let canvasView = CanvasView(parameters)
+                self.canvasView = canvasView
+
+                view.addSubview(canvasView)
+                Swift.print("update", canvasView.frame)
+//                canvasView.isHidden = true
+//                view.addSubview(canvasContainerView)
+            }
+
+//            canvasContainerView.frame = canvasView.bounds.insetBy(dx: -CANVAS_INSET, dy: -CANVAS_INSET).offsetBy(dx: CANVAS_INSET, dy: CANVAS_INSET)
+//            canvasContainerView.addSubview(canvasView)
+//
+//            canvasView.frame = canvasView.frame.offsetBy(dx: CANVAS_INSET, dy: CANVAS_INSET)
+        }
     }
 }
