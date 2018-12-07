@@ -126,6 +126,7 @@ class CanvasCollectionView: NSView, NSCollectionViewDataSource, NSCollectionView
     private var itemCache: [IndexPath: CanvasItemViewController] = [:]
 
     func update(options: CanvasCollectionOptions) {
+        Swift.print("Updating")
         computedCases = options.component.computedCases(for: nil)
         computedCanvases = options.component.computedCanvases()
         self.options = options
@@ -173,6 +174,8 @@ class CanvasCollectionView: NSView, NSCollectionViewDataSource, NSCollectionView
 
         layout.rootNode.free(recursive: true)
 
+//        Swift.print("Size", size)
+
         return size
     }
 
@@ -182,7 +185,7 @@ class CanvasCollectionView: NSView, NSCollectionViewDataSource, NSCollectionView
 
         let size = measureCanvas(sizeForItemAt: indexPath)
 
-//        Swift.print("measured with size", size, "at", indexPath)
+        Swift.print("measured with size", size, "at", indexPath)
 
         return size
     }
@@ -400,8 +403,13 @@ class CanvasItemViewController: NSCollectionViewItem {
                 canvasView.parameters = parameters
 //                Swift.print(canvasView.frame, view.frame)
 
+                view.frame.size = canvasView.bounds.insetBy(dx: -CANVAS_INSET, dy: -CANVAS_INSET).size
+
                 canvasContainerView.frame = canvasView.bounds.insetBy(dx: -CANVAS_INSET, dy: -CANVAS_INSET).offsetBy(dx: CANVAS_INSET, dy: CANVAS_INSET)
                 canvasView.frame = canvasView.frame.offsetBy(dx: CANVAS_INSET, dy: CANVAS_INSET)
+
+//                view.needsLayout = true
+//                view.needsDisplay = true
             } else if let parameters = parameters {
                 let canvasView = CanvasView(parameters)
                 self.canvasView = canvasView
@@ -410,6 +418,8 @@ class CanvasItemViewController: NSCollectionViewItem {
 //                Swift.print("update", canvasView.frame)
 //                canvasView.isHidden = true
                 canvasContainerView.addSubview(canvasView)
+
+                view.frame.size = canvasView.bounds.insetBy(dx: -CANVAS_INSET, dy: -CANVAS_INSET).size
 
                 canvasContainerView.frame = canvasView.bounds.insetBy(dx: -CANVAS_INSET, dy: -CANVAS_INSET).offsetBy(dx: CANVAS_INSET, dy: CANVAS_INSET)
                 canvasView.frame = canvasView.frame.offsetBy(dx: CANVAS_INSET, dy: CANVAS_INSET)

@@ -63,3 +63,9 @@ extension CSParameter {
         return CSType.dictionary(parametersSchema)
     }
 }
+
+extension CSParameter: Equatable {
+    static func == (lhs: CSParameter, rhs: CSParameter) -> Bool {
+        return lhs.name == rhs.name && lhs.type == rhs.type && lhs.defaultValue == rhs.defaultValue
+    }
+}

@@ -211,3 +211,9 @@ class LogicNode: DataNodeParent, DataNodeCopying {
 
     func set(variable name: String, to value: CSValue) {}
 }
+
+extension LogicNode: Equatable {
+    static func == (lhs: LogicNode, rhs: LogicNode) -> Bool {
+        return lhs.nodes == rhs.nodes && lhs.invocation == rhs.invocation
+    }
+}

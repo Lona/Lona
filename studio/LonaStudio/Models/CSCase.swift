@@ -34,9 +34,15 @@ final class CSCaseEntry {
     }
 }
 
+extension CSCaseEntry: Equatable {
+    static func == (lhs: CSCaseEntry, rhs: CSCaseEntry) -> Bool {
+        return lhs.name == rhs.name && lhs.value == rhs.value && lhs.visible == rhs.visible
+    }
+}
+
 final class CSCase: DataNodeCopying {
 
-    enum CaseType {
+    enum CaseType: Equatable {
         case entry(CSCaseEntry)
         case importedList(URL)
 
@@ -144,5 +150,11 @@ final class CSCase: DataNodeCopying {
 
     static var defaultCase: CSCase {
         return CSCase(name: "Default")
+    }
+}
+
+extension CSCase: Equatable {
+    static func == (lhs: CSCase, rhs: CSCase) -> Bool {
+        return lhs.caseType == rhs.caseType
     }
 }

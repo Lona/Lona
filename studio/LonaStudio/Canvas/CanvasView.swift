@@ -613,10 +613,10 @@ class CanvasView: NSView {
         backgroundView.frame = renderable.node.frame
 
         if options.renderCanvasShadow {
-            frame.size.width += 10
-            frame.size.height += 10
-            backgroundView.frame.origin.x += 5
-            backgroundView.frame.origin.y += 5
+            frame.size.width += CanvasView.margin * 2
+            frame.size.height += CanvasView.margin * 2
+            backgroundView.frame.origin.x += CanvasView.margin
+            backgroundView.frame.origin.y += CanvasView.margin
         }
 
         if let selected = self.firstDescendant(where: { view in
@@ -634,6 +634,8 @@ class CanvasView: NSView {
 
         previous = renderable
     }
+
+    static var margin: CGFloat = 20
 }
 
 // MARK: Static configuration
