@@ -169,10 +169,7 @@ class CanvasCollectionView: NSView, NSCollectionViewDataSource, NSCollectionView
         let configuredRootLayer = CanvasView.configureRoot(layer: rootLayer, with: config)
         guard let layout = layoutRoot(canvas: canvas, configuredRootLayer: configuredRootLayer, config: config) else { return NSSize.zero }
 
-//        let size = NSSize(width: CGFloat(canvas.width) + CANVAS_INSET * 2, height: layout.height + CANVAS_INSET * 2)
-        let size = NSSize(width: CGFloat(canvas.width), height: layout.height)
-
-        Swift.print("Measure", indexPath, size)
+        let size = NSSize(width: CGFloat(canvas.width) + CANVAS_INSET * 2, height: layout.height + CANVAS_INSET * 2)
 
         layout.rootNode.free(recursive: true)
 
@@ -243,7 +240,7 @@ class CanvasCollectionView: NSView, NSCollectionViewDataSource, NSCollectionView
     }
 
     func collectionView(_ collectionView: NSCollectionView, layout collectionViewLayout: NSCollectionViewLayout, insetForSectionAt section: Int) -> NSEdgeInsets {
-        return NSEdgeInsets(top: 0, left: 0, bottom: 0, right: 0)
+        return NSEdgeInsets(top: 20, left: 20, bottom: 20, right: 20)
     }
 
     func collectionView(_ collectionView: NSCollectionView, layout collectionViewLayout: NSCollectionViewLayout, minimumInteritemSpacingForSectionAt section: Int) -> CGFloat {
@@ -382,7 +379,7 @@ class CanvasItemViewController: NSCollectionViewItem {
         view.boxType = .custom
         view.contentViewMargins = .zero
         view.borderType = .noBorder
-        view.fillColor = .blue
+        view.fillColor = NSColor.blue.withAlphaComponent(0.2)
 
         self.view = view
     }
@@ -401,21 +398,22 @@ class CanvasItemViewController: NSCollectionViewItem {
         didSet {
             if let canvasView = canvasView, let parameters = parameters {
                 canvasView.parameters = parameters
-                Swift.print("mount", canvasView.frame, view.frame)
+//                Swift.print(canvasView.frame, view.frame)
+
+                canvasContainerView.frame = canvasView.bounds.insetBy(dx: -CANVAS_INSET, dy: -CANVAS_INSET).offsetBy(dx: CANVAS_INSET, dy: CANVAS_INSET)
+                canvasView.frame = canvasView.frame.offsetBy(dx: CANVAS_INSET, dy: CANVAS_INSET)
             } else if let parameters = parameters {
                 let canvasView = CanvasView(parameters)
                 self.canvasView = canvasView
 
-                view.addSubview(canvasView)
-                Swift.print("update", canvasView.frame)
+                view.addSubview(canvasContainerView)
+//                Swift.print("update", canvasView.frame)
 //                canvasView.isHidden = true
-//                view.addSubview(canvasContainerView)
-            }
+                canvasContainerView.addSubview(canvasView)
 
-//            canvasContainerView.frame = canvasView.bounds.insetBy(dx: -CANVAS_INSET, dy: -CANVAS_INSET).offsetBy(dx: CANVAS_INSET, dy: CANVAS_INSET)
-//            canvasContainerView.addSubview(canvasView)
-//
-//            canvasView.frame = canvasView.frame.offsetBy(dx: CANVAS_INSET, dy: CANVAS_INSET)
+                canvasContainerView.frame = canvasView.bounds.insetBy(dx: -CANVAS_INSET, dy: -CANVAS_INSET).offsetBy(dx: CANVAS_INSET, dy: CANVAS_INSET)
+                canvasView.frame = canvasView.frame.offsetBy(dx: CANVAS_INSET, dy: CANVAS_INSET)
+            }
         }
     }
 }

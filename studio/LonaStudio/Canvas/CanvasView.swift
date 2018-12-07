@@ -612,12 +612,12 @@ class CanvasView: NSView {
         canvasView.frame = renderable.node.frame
         backgroundView.frame = renderable.node.frame
 
-//        if options.renderCanvasShadow {
-//            frame.size.width += 10
-//            frame.size.height += 10
-//            backgroundView.frame.origin.x += 5
-//            backgroundView.frame.origin.y += 5
-//        }
+        if options.renderCanvasShadow {
+            frame.size.width += 10
+            frame.size.height += 10
+            backgroundView.frame.origin.x += 5
+            backgroundView.frame.origin.y += 5
+        }
 
         if let selected = self.firstDescendant(where: { view in
             guard let csView = view as? CSView, let name = options.selectedLayerName else {

@@ -205,7 +205,7 @@ class WorkspaceViewController: NSSplitViewController {
 
     private lazy var inspectorView = InspectorView()
     private lazy var inspectorViewController: NSViewController = {
-        return NSViewController(view: NSView())
+        return NSViewController(view: inspectorView)
     }()
 
     // A document's window controllers are deallocated if there are no associated documents.
