@@ -80,11 +80,6 @@ public class CanvasSurface: NSBox {
         outlineView.dataSource = outlineView
         outlineView.delegate = outlineView
 
-        //        outlineView.target = self
-        //        outlineView.action = #selector(handleAction(_:))
-
-//        outlineView.reloadData()
-
         scrollView.hasVerticalScroller = true
         scrollView.hasHorizontalScroller = true
         scrollView.drawsBackground = false
@@ -106,16 +101,16 @@ public class CanvasSurface: NSBox {
         trailingAnchor.constraint(equalTo: scrollView.trailingAnchor).isActive = true
     }
 
-    func update() {
-//        outlineView.reloadData()
-    }
-
     private var previousComponentSerialized: CSData?
 
     var parameters: Parameters? {
         didSet {
-            if parameters?.component.toData() != previousComponentSerialized || parameters?.selectedLayerName != oldValue?.selectedLayerName {
-                previousComponentSerialized = parameters?.component.toData()
+            let componentSerialized = parameters?.component.toData()
+
+            if componentSerialized != previousComponentSerialized ||
+                parameters?.selectedLayerName != oldValue?.selectedLayerName {
+
+                previousComponentSerialized = componentSerialized
 
                 outlineView.canvases = parameters?.component.computedCanvases() ?? []
                 outlineView.cases = parameters?.component.computedCases(for: nil) ?? []
@@ -124,9 +119,6 @@ public class CanvasSurface: NSBox {
 
                 outlineView.reloadData()
                 outlineView.header.update()
-
-
-                Swift.print("Reload data")
             }
         }
     }
@@ -134,6 +126,57 @@ public class CanvasSurface: NSBox {
     public var onChange: ([Entity]) -> Void {
         get { return outlineView.onChange }
         set { outlineView.onChange = newValue }
+    }
+
+    // MARK: Panning & Zooming
+
+    var dragOffset: NSPoint?
+    var panningEnabled: Bool = false
+    var currentlyPanning: Bool = false
+
+    override public func mouseDown(with event: NSEvent) {
+        dragOffset = event.locationInWindow
+    }
+
+    override public func mouseUp(with event: NSEvent) {
+        dragOffset = nil
+        currentlyPanning = false
+    }
+
+    override public func mouseDragged(with event: NSEvent) {
+        if !currentlyPanning && !panningEnabled { return }
+
+        guard let dragOffset = dragOffset else { return }
+
+        currentlyPanning = true
+
+        let delta = (event.locationInWindow - dragOffset) / scrollView.magnification
+        let flippedY = NSPoint(x: delta.x, y: -delta.y)
+        outlineView.scroll(scrollView.documentVisibleRect.origin - flippedY)
+
+        self.dragOffset = event.locationInWindow
+    }
+
+    override public func hitTest(_ point: NSPoint) -> NSView? {
+        if currentlyPanning || panningEnabled {
+            return self
+        }
+
+        return super.hitTest(point)
+    }
+
+    private static let magnificationFactor: CGFloat = 1.25
+
+    public func zoom(to zoomLevel: CGFloat) {
+        scrollView.magnification = zoomLevel
+    }
+
+    public func zoomIn() {
+        scrollView.magnification *= CanvasSurface.magnificationFactor
+    }
+
+    public func zoomOut() {
+        scrollView.magnification /= CanvasSurface.magnificationFactor
     }
 }
 

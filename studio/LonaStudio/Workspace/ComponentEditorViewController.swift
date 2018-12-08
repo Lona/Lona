@@ -30,11 +30,10 @@ class ComponentEditorViewController: NSSplitViewController {
     public var component: CSComponent? = nil { didSet { update(withoutModifyingSelection: false) } }
     public var selectedLayerName: String? = nil { didSet { update(withoutModifyingSelection: true) } }
 
-    public var canvasPanningEnabled: Bool = false
-//    public var canvasPanningEnabled: Bool {
-//        get { return canvasCollectionView.panningEnabled }
-//        set { canvasCollectionView.panningEnabled = newValue }
-//    }
+    public var canvasPanningEnabled: Bool {
+        get { return canvasCollectionView.panningEnabled }
+        set { canvasCollectionView.panningEnabled = newValue }
+    }
 
     public var onInspectLayer: ((CSLayer?) -> Void)?
     public var onChangeInspectedLayer: (() -> Void)?
@@ -48,15 +47,15 @@ class ComponentEditorViewController: NSSplitViewController {
     }
 
     func zoomToActualSize() {
-//        canvasCollectionView.zoom(to: 1)
+        canvasCollectionView.zoom(to: 1)
     }
 
     func zoomIn() {
-//        canvasCollectionView.zoomIn()
+        canvasCollectionView.zoomIn()
     }
 
     func zoomOut() {
-//        canvasCollectionView.zoomOut()
+        canvasCollectionView.zoomOut()
     }
 
     // MARK: Private
