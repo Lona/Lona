@@ -226,7 +226,7 @@ private class CanvasTableView: NSTableView, NSTableViewDataSource, NSTableViewDe
         setup()
     }
 
-    fileprivate let header = TypeListHeaderView(frame: NSRect(x: 0, y: 0, width: 0, height: 42))
+    fileprivate let header = CanvasTableHeaderView(frame: NSRect(x: 0, y: 0, width: 0, height: 42))
 
     override var frame: NSRect {
         didSet {
@@ -271,9 +271,12 @@ private class CanvasTableView: NSTableView, NSTableViewDataSource, NSTableViewDe
 
     override func viewWillDraw() {
         super.viewWillDraw()
-        (headerView as? TypeListHeaderView)?.update()
+
+        header.update()
     }
 
+    // TODO: It seems like in some cases (animation?) updating the header in tile() is helpful.
+    // When do/don't we want this?
 //    override func tile() {
 //        super.tile()
 //        (headerView as? TypeListHeaderView)?.update()

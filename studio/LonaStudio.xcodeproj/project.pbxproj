@@ -85,7 +85,6 @@
 		307D4422209B75C0004B57F5 /* LonaWebView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 307D4421209B75C0004B57F5 /* LonaWebView.swift */; };
 		3080AD401FBCE21600B485DC /* CSShadows.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3080AD3F1FBCE21600B485DC /* CSShadows.swift */; };
 		3084164D1EDB2A5B00A1CA6D /* Button+Init.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3084164C1EDB2A5B00A1CA6D /* Button+Init.swift */; };
-		30902A281F7B208A00B938BE /* CanvasCollectionView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 30902A271F7B208A00B938BE /* CanvasCollectionView.swift */; };
 		3090D78D1F01B050009277E7 /* CSParameter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3090D78C1F01B050009277E7 /* CSParameter.swift */; };
 		3090D7931F01B2EF009277E7 /* CSLayer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3090D7921F01B2EF009277E7 /* CSLayer.swift */; };
 		3090D7D31F032305009277E7 /* CSComponentLayer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3090D7D21F032305009277E7 /* CSComponentLayer.swift */; };
@@ -344,7 +343,6 @@
 		307D4421209B75C0004B57F5 /* LonaWebView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LonaWebView.swift; sourceTree = "<group>"; };
 		3080AD3F1FBCE21600B485DC /* CSShadows.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CSShadows.swift; sourceTree = "<group>"; };
 		3084164C1EDB2A5B00A1CA6D /* Button+Init.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "Button+Init.swift"; sourceTree = "<group>"; };
-		30902A271F7B208A00B938BE /* CanvasCollectionView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CanvasCollectionView.swift; sourceTree = "<group>"; };
 		3090D78C1F01B050009277E7 /* CSParameter.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CSParameter.swift; sourceTree = "<group>"; };
 		3090D7921F01B2EF009277E7 /* CSLayer.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CSLayer.swift; sourceTree = "<group>"; };
 		3090D7D21F032305009277E7 /* CSComponentLayer.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CSComponentLayer.swift; sourceTree = "<group>"; };
@@ -634,7 +632,6 @@
 		306DA4ED1F33E19F002772DC /* Canvas */ = {
 			isa = PBXGroup;
 			children = (
-				30902A271F7B208A00B938BE /* CanvasCollectionView.swift */,
 				6B4203E221BAD71800D59317 /* CanvasTableHeaderView.swift */,
 				6B4203E021BAD56500D59317 /* CanvasTableView.swift */,
 				301493A61EC0F415005BC573 /* CanvasView.swift */,
@@ -1267,7 +1264,6 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				30902A281F7B208A00B938BE /* CanvasCollectionView.swift in Sources */,
 				6BE89BBC21B7452800F35AC3 /* LonaViewModel.swift in Sources */,
 				6BA5BBD72173A7F600F086A7 /* Shadows.swift in Sources */,
 				6B4DFCED20A77C650048BB43 /* FileUtils.swift in Sources */,
