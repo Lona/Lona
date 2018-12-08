@@ -76,13 +76,6 @@ class FlippedView: NSView {
     override var isFlipped: Bool { return true }
 }
 
-let BORDERS: [(edge: NSRectEdge, key: String)] = [
-    (NSRectEdge.minY, key: "borderTopWidth"),
-    (NSRectEdge.maxX, key: "borderRightWidth"),
-    (NSRectEdge.maxY, key: "borderBottomWidth"),
-    (NSRectEdge.minX, key: "borderLeftWidth")
-]
-
 let imageCache = ImageCache<NSImage>()
 
 let svgRenderCache = LRUCache<String, NSImage>()
