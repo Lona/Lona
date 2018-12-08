@@ -35,216 +35,6 @@ func measureFunc(node: YGNodeRef?, width: Float, widthMode: YGMeasureMode, heigh
 typealias SketchFileReference = (id: String, data: String)
 typealias SketchFileReferenceMap = [String: SketchFileReference]
 
-func renderBoxJSON(configuredLayer: ConfiguredLayer, node: YGNodeRef, references: inout SketchFileReferenceMap) -> CSData {
-    return CSData.Null
-}
-
-func setFlexExpand(for layer: CSLayer, node: YGNodeRef) {
-    var node = node
-
-    node.flexShrink = 1
-    node.flexGrow = 1
-
-    if layer.type == .text {
-        node.flexBasis = .value(0)
-    } else {
-        node.flexBasis = .auto
-    }
-}
-
-func layoutLayer(configuredLayer: ConfiguredLayer, parentLayoutDirection: YGFlexDirection) -> YGNodeRef {
-    var node = YGNodeRef.create()
-
-    let layer = configuredLayer.layer
-    if let value = layer.top { node.top = CGFloat(value) }
-    if let value = layer.right { node.right = CGFloat(value) }
-    if let value = layer.bottom { node.bottom = CGFloat(value) }
-    if let value = layer.left { node.left = CGFloat(value) }
-    node.position = layer.position == .absolute ? YGPositionType.absolute : YGPositionType.relative
-
-    let flexDirection = layer.flexDirection == "row" ? YGFlexDirection.row : YGFlexDirection.column
-    node.flexDirection = flexDirection
-
-    switch layer.heightSizingRule {
-    case .Fixed:
-        node.height = CGFloat(configuredLayer.numberValue(paramName: "height") ?? layer.height ?? 0)
-
-        if parentLayoutDirection == .column {
-            node.flex = 0
-        }
-    case .Expand:
-        if parentLayoutDirection == .column {
-            setFlexExpand(for: layer, node: node)
-        } else {
-            YGNodeStyleSetAlignSelf(node, .stretch)
-        }
-    case .Shrink:
-        if parentLayoutDirection == .column {
-            node.flex = 0
-        }
-    }
-
-    switch layer.widthSizingRule {
-    case .Fixed:
-        node.width = CGFloat(configuredLayer.numberValue(paramName: "width") ?? layer.width ?? 0)
-
-        if parentLayoutDirection == .row {
-            node.flex = 0
-        }
-    case .Expand:
-        if parentLayoutDirection == .row {
-            setFlexExpand(for: layer, node: node)
-        } else {
-            YGNodeStyleSetAlignSelf(node, .stretch)
-        }
-    case .Shrink:
-        if parentLayoutDirection == .row {
-            node.flex = 0
-        }
-    }
-
-    switch layer.horizontalAlignment {
-    case "flex-start":
-        if flexDirection == .column {
-            node.alignItems = .flexStart
-        } else {
-            node.justifyContent = .flexStart
-        }
-    case "center":
-        if flexDirection == .column {
-            node.alignItems = .center
-        } else {
-            node.justifyContent = .center
-        }
-    case "flex-end":
-        if flexDirection == .column {
-            node.alignItems = .flexEnd
-        } else {
-            node.justifyContent = .flexEnd
-        }
-    default:
-        break
-    }
-
-    switch layer.verticalAlignment {
-    case "flex-start":
-        if flexDirection == .row {
-            node.alignItems = .flexStart
-        } else {
-            node.justifyContent = .flexStart
-        }
-    case "center":
-        if flexDirection == .row {
-            node.alignItems = .center
-        } else {
-            node.justifyContent = .center
-        }
-    case "flex-end":
-        if flexDirection == .row {
-            node.alignItems = .flexEnd
-        } else {
-            node.justifyContent = .flexEnd
-        }
-    default:
-        break
-    }
-
-    if layer.itemSpacingRule == .Expand {
-        node.justifyContent = .spaceBetween
-    }
-
-    node.paddingTop = CGFloat(configuredLayer.numberValue(paramName: "paddingTop") ?? layer.paddingTop ?? 0)
-    node.paddingBottom = CGFloat(configuredLayer.numberValue(paramName: "paddingBottom") ?? layer.paddingBottom ?? 0)
-    node.paddingLeft = CGFloat(configuredLayer.numberValue(paramName: "paddingLeft") ?? layer.paddingLeft ?? 0)
-    node.paddingRight = CGFloat(configuredLayer.numberValue(paramName: "paddingRight") ?? layer.paddingRight ?? 0)
-    node.marginTop = CGFloat(configuredLayer.numberValue(paramName: "marginTop") ?? layer.marginTop ?? 0)
-    node.marginBottom = CGFloat(configuredLayer.numberValue(paramName: "marginBottom") ?? layer.marginBottom ?? 0)
-    node.marginLeft = CGFloat(configuredLayer.numberValue(paramName: "marginLeft") ?? layer.marginLeft ?? 0)
-    node.marginRight = CGFloat(configuredLayer.numberValue(paramName: "marginRight") ?? layer.marginRight ?? 0)
-    node.borderTop = CGFloat(configuredLayer.numberValue(paramName: "borderTopWidth") ?? layer.borderWidth ?? 0)
-    node.borderBottom = CGFloat(configuredLayer.numberValue(paramName: "borderBottomWidth") ?? layer.borderWidth ?? 0)
-    node.borderLeft = CGFloat(configuredLayer.numberValue(paramName: "borderLeftWidth") ?? layer.borderWidth ?? 0)
-    node.borderRight = CGFloat(configuredLayer.numberValue(paramName: "borderRightWidth") ?? layer.borderWidth ?? 0)
-
-    if let aspectRatio = layer.aspectRatio, aspectRatio > 0 {
-        YGNodeStyleSetAspectRatio(node, Float(aspectRatio))
-    }
-
-    // Non-text layer
-    if layer.type == .text {
-        let ref = ConfiguredLayerRef(ref: configuredLayer)
-        YGNodeSetContext(node, UnsafeMutableRawPointer(Unmanaged.passRetained(ref).toOpaque()))
-        YGNodeSetMeasureFunc(node, measureFunc(node:width:widthMode:height:heightMode:))
-    } else {
-        for (index, sub) in configuredLayer.children.enumerated() {
-            var child = layoutLayer(configuredLayer: sub, parentLayoutDirection: flexDirection)
-
-            if layer.itemSpacingRule == .Fixed {
-                let itemSpacing = CGFloat(configuredLayer.numberValue(paramName: "itemSpacing") ?? layer.itemSpacing ?? 0)
-                if node.flexDirection == .row && index != 0 {
-                    child.marginLeft += itemSpacing
-                } else if node.flexDirection == .column && index != 0 {
-                    child.marginTop += itemSpacing
-                }
-            }
-
-            node.insert(child: child, at: index)
-        }
-    }
-
-    YGNodeStyleSetOverflow(node, .hidden)
-
-    return node
-}
-
-let LARGE_CANVAS_SIZE: Double = 10000
-
-func layoutRoot(canvas: Canvas, configuredRootLayer: ConfiguredLayer, config: ComponentConfiguration) -> (layoutNode: YGNodeRef, rootNode: YGNodeRef, height: CGFloat)? {
-    guard let rootNode = YGNodeNew() else { return nil }
-
-    let rootLayer = configuredRootLayer.layer
-
-    let useExactHeight = canvas.heightMode == "Exactly"
-
-    // If "At Least", use a very large canvas size to allow the node to expand.
-    // We'll then measure the node to determine the canvas height.
-    let canvasHeight = useExactHeight ? canvas.height : LARGE_CANVAS_SIZE
-
-    // Build layout hierarchy
-    var child = layoutLayer(configuredLayer: configuredRootLayer, parentLayoutDirection: .column)
-
-    // Use an extra child which can have a height greater than the root layer, allowing the root to expand
-    guard var wrapper = YGNodeNew() else { return nil }
-    wrapper.width = CGFloat(canvas.width)
-
-    if useExactHeight {
-        wrapper.height = CGFloat(canvas.height)
-    } else {
-        let verticalMargins = child.marginTop + child.marginBottom
-        let minHeight = CGFloat(canvas.height) - verticalMargins
-
-        wrapper.minHeight = minHeight
-
-        if rootLayer.heightSizingRule == .Shrink {
-            // Force a min height so that children set to "Expand" will fill the canvas vertically.
-            // The only downside is that this can be misleading - the top level element won't behave
-            // quite the same when used within another component
-            child.minHeight = minHeight
-        }
-    }
-
-    wrapper.insert(child: child, at: 0)
-    rootNode.insert(child: wrapper, at: 0)
-
-    // Calculate the layout
-    rootNode.calculateLayout(width: CGFloat(canvas.width), height: CGFloat(canvasHeight))
-
-    // Create the canvas based on the calculated height of the layout
-    let calculatedHeight = useExactHeight ? CGFloat(canvas.height) : wrapper.layout.height
-
-    return (child, rootNode, calculatedHeight)
-}
-
 enum RenderOption {
     case onSelectLayer((CSLayer) -> Void)
     case assetScale(CGFloat)
@@ -347,7 +137,7 @@ class CanvasView: FlippedView {
     private func render() -> RenderableElement? {
         let configuredRootLayer = CanvasView.configureRoot(layer: rootLayer, with: config)
 
-        guard let layout = layoutRoot(
+        guard let layout = CanvasView.layoutRoot(
             canvas: canvas,
             configuredRootLayer: configuredRootLayer,
             config: config)
@@ -402,7 +192,7 @@ class CanvasView: FlippedView {
     static var margin: CGFloat = 20
 }
 
-// MARK: Static configuration
+// MARK: - Static configuration
 
 extension CanvasView {
 
@@ -452,6 +242,218 @@ extension CanvasView {
         }
     }
 }
+
+// MARK: - Layout
+
+extension CanvasView {
+    static func setFlexExpand(for layer: CSLayer, node: YGNodeRef) {
+        var node = node
+
+        node.flexShrink = 1
+        node.flexGrow = 1
+
+        if layer.type == .text {
+            node.flexBasis = .value(0)
+        } else {
+            node.flexBasis = .auto
+        }
+    }
+
+    static func layoutLayer(configuredLayer: ConfiguredLayer, parentLayoutDirection: YGFlexDirection) -> YGNodeRef {
+        var node = YGNodeRef.create()
+
+        let layer = configuredLayer.layer
+        if let value = layer.top { node.top = CGFloat(value) }
+        if let value = layer.right { node.right = CGFloat(value) }
+        if let value = layer.bottom { node.bottom = CGFloat(value) }
+        if let value = layer.left { node.left = CGFloat(value) }
+        node.position = layer.position == .absolute ? YGPositionType.absolute : YGPositionType.relative
+
+        let flexDirection = layer.flexDirection == "row" ? YGFlexDirection.row : YGFlexDirection.column
+        node.flexDirection = flexDirection
+
+        switch layer.heightSizingRule {
+        case .Fixed:
+            node.height = CGFloat(configuredLayer.numberValue(paramName: "height") ?? layer.height ?? 0)
+
+            if parentLayoutDirection == .column {
+                node.flex = 0
+            }
+        case .Expand:
+            if parentLayoutDirection == .column {
+                setFlexExpand(for: layer, node: node)
+            } else {
+                YGNodeStyleSetAlignSelf(node, .stretch)
+            }
+        case .Shrink:
+            if parentLayoutDirection == .column {
+                node.flex = 0
+            }
+        }
+
+        switch layer.widthSizingRule {
+        case .Fixed:
+            node.width = CGFloat(configuredLayer.numberValue(paramName: "width") ?? layer.width ?? 0)
+
+            if parentLayoutDirection == .row {
+                node.flex = 0
+            }
+        case .Expand:
+            if parentLayoutDirection == .row {
+                setFlexExpand(for: layer, node: node)
+            } else {
+                YGNodeStyleSetAlignSelf(node, .stretch)
+            }
+        case .Shrink:
+            if parentLayoutDirection == .row {
+                node.flex = 0
+            }
+        }
+
+        switch layer.horizontalAlignment {
+        case "flex-start":
+            if flexDirection == .column {
+                node.alignItems = .flexStart
+            } else {
+                node.justifyContent = .flexStart
+            }
+        case "center":
+            if flexDirection == .column {
+                node.alignItems = .center
+            } else {
+                node.justifyContent = .center
+            }
+        case "flex-end":
+            if flexDirection == .column {
+                node.alignItems = .flexEnd
+            } else {
+                node.justifyContent = .flexEnd
+            }
+        default:
+            break
+        }
+
+        switch layer.verticalAlignment {
+        case "flex-start":
+            if flexDirection == .row {
+                node.alignItems = .flexStart
+            } else {
+                node.justifyContent = .flexStart
+            }
+        case "center":
+            if flexDirection == .row {
+                node.alignItems = .center
+            } else {
+                node.justifyContent = .center
+            }
+        case "flex-end":
+            if flexDirection == .row {
+                node.alignItems = .flexEnd
+            } else {
+                node.justifyContent = .flexEnd
+            }
+        default:
+            break
+        }
+
+        if layer.itemSpacingRule == .Expand {
+            node.justifyContent = .spaceBetween
+        }
+
+        node.paddingTop = CGFloat(configuredLayer.numberValue(paramName: "paddingTop") ?? layer.paddingTop ?? 0)
+        node.paddingBottom = CGFloat(configuredLayer.numberValue(paramName: "paddingBottom") ?? layer.paddingBottom ?? 0)
+        node.paddingLeft = CGFloat(configuredLayer.numberValue(paramName: "paddingLeft") ?? layer.paddingLeft ?? 0)
+        node.paddingRight = CGFloat(configuredLayer.numberValue(paramName: "paddingRight") ?? layer.paddingRight ?? 0)
+        node.marginTop = CGFloat(configuredLayer.numberValue(paramName: "marginTop") ?? layer.marginTop ?? 0)
+        node.marginBottom = CGFloat(configuredLayer.numberValue(paramName: "marginBottom") ?? layer.marginBottom ?? 0)
+        node.marginLeft = CGFloat(configuredLayer.numberValue(paramName: "marginLeft") ?? layer.marginLeft ?? 0)
+        node.marginRight = CGFloat(configuredLayer.numberValue(paramName: "marginRight") ?? layer.marginRight ?? 0)
+        node.borderTop = CGFloat(configuredLayer.numberValue(paramName: "borderTopWidth") ?? layer.borderWidth ?? 0)
+        node.borderBottom = CGFloat(configuredLayer.numberValue(paramName: "borderBottomWidth") ?? layer.borderWidth ?? 0)
+        node.borderLeft = CGFloat(configuredLayer.numberValue(paramName: "borderLeftWidth") ?? layer.borderWidth ?? 0)
+        node.borderRight = CGFloat(configuredLayer.numberValue(paramName: "borderRightWidth") ?? layer.borderWidth ?? 0)
+
+        if let aspectRatio = layer.aspectRatio, aspectRatio > 0 {
+            YGNodeStyleSetAspectRatio(node, Float(aspectRatio))
+        }
+
+        // Non-text layer
+        if layer.type == .text {
+            let ref = ConfiguredLayerRef(ref: configuredLayer)
+            YGNodeSetContext(node, UnsafeMutableRawPointer(Unmanaged.passRetained(ref).toOpaque()))
+            YGNodeSetMeasureFunc(node, measureFunc(node:width:widthMode:height:heightMode:))
+        } else {
+            for (index, sub) in configuredLayer.children.enumerated() {
+                var child = layoutLayer(configuredLayer: sub, parentLayoutDirection: flexDirection)
+
+                if layer.itemSpacingRule == .Fixed {
+                    let itemSpacing = CGFloat(configuredLayer.numberValue(paramName: "itemSpacing") ?? layer.itemSpacing ?? 0)
+                    if node.flexDirection == .row && index != 0 {
+                        child.marginLeft += itemSpacing
+                    } else if node.flexDirection == .column && index != 0 {
+                        child.marginTop += itemSpacing
+                    }
+                }
+
+                node.insert(child: child, at: index)
+            }
+        }
+
+        YGNodeStyleSetOverflow(node, .hidden)
+
+        return node
+    }
+
+    static let LARGE_CANVAS_SIZE: Double = 10000
+
+    static func layoutRoot(canvas: Canvas, configuredRootLayer: ConfiguredLayer, config: ComponentConfiguration) -> (layoutNode: YGNodeRef, rootNode: YGNodeRef, height: CGFloat)? {
+        guard let rootNode = YGNodeNew() else { return nil }
+
+        let rootLayer = configuredRootLayer.layer
+
+        let useExactHeight = canvas.heightMode == "Exactly"
+
+        // If "At Least", use a very large canvas size to allow the node to expand.
+        // We'll then measure the node to determine the canvas height.
+        let canvasHeight = useExactHeight ? canvas.height : LARGE_CANVAS_SIZE
+
+        // Build layout hierarchy
+        var child = layoutLayer(configuredLayer: configuredRootLayer, parentLayoutDirection: .column)
+
+        // Use an extra child which can have a height greater than the root layer, allowing the root to expand
+        guard var wrapper = YGNodeNew() else { return nil }
+        wrapper.width = CGFloat(canvas.width)
+
+        if useExactHeight {
+            wrapper.height = CGFloat(canvas.height)
+        } else {
+            let verticalMargins = child.marginTop + child.marginBottom
+            let minHeight = CGFloat(canvas.height) - verticalMargins
+
+            wrapper.minHeight = minHeight
+
+            if rootLayer.heightSizingRule == .Shrink {
+                // Force a min height so that children set to "Expand" will fill the canvas vertically.
+                // The only downside is that this can be misleading - the top level element won't behave
+                // quite the same when used within another component
+                child.minHeight = minHeight
+            }
+        }
+
+        wrapper.insert(child: child, at: 0)
+        rootNode.insert(child: wrapper, at: 0)
+
+        // Calculate the layout
+        rootNode.calculateLayout(width: CGFloat(canvas.width), height: CGFloat(canvasHeight))
+
+        // Create the canvas based on the calculated height of the layout
+        let calculatedHeight = useExactHeight ? CGFloat(canvas.height) : wrapper.layout.height
+
+        return (child, rootNode, calculatedHeight)
+    }
+}
+
+// MARK: - Parameters
 
 extension CanvasView {
     struct Parameters {

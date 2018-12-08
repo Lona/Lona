@@ -192,7 +192,7 @@ class CanvasTableView: NSTableView, NSTableViewDataSource, NSTableViewDelegate {
             canvas: canvas)
 
         let configuredRootLayer = CanvasView.configureRoot(layer: rootLayer, with: config)
-        guard let layout = layoutRoot(canvas: canvas, configuredRootLayer: configuredRootLayer, config: config) else { return NSSize.zero }
+        guard let layout = CanvasView.layoutRoot(canvas: canvas, configuredRootLayer: configuredRootLayer, config: config) else { return NSSize.zero }
 
         layout.rootNode.free(recursive: true)
 
