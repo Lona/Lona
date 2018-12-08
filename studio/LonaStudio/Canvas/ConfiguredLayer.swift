@@ -186,10 +186,10 @@ struct ConfiguredLayer {
 
             // We draw the svg into an image that has the exact same dimensions as the view,
             // so we can scale the image to fill the view without it stretching.
-            let resizingMode = CGSize.ResizingMode.scaleToFill
+            let containerResizingMode = CGSize.ResizingMode.scaleToFill
 
             if let cached = svgRenderCache.item(for: cacheKey) {
-                return RenderableImageAttributes(image: cached, resizingMode: resizingMode)
+                return RenderableImageAttributes(image: cached, resizingMode: containerResizingMode)
             } else if let image = SVG.renderSync(
                 contentsOf: url,
                 dynamicValues: dynamicValues,
@@ -200,7 +200,7 @@ struct ConfiguredLayer {
 
                 svgRenderCache.add(item: image, for: cacheKey)
 
-                return RenderableImageAttributes(image: image, resizingMode: resizingMode)
+                return RenderableImageAttributes(image: image, resizingMode: containerResizingMode)
             }
         }
 
