@@ -737,56 +737,6 @@ extension WorkspaceViewController {
         RenderSurface.renderToVideos(component: component, directory: url)
     }
 
-    @IBAction func exportToSketch(_ sender: AnyObject) {
-        guard let component = component, let outputFile = requestSketchFileSaveURL() else { return }
-
-        let mainBundle = Bundle.main
-
-        guard let pathToNode = mainBundle.path(forResource: "node", ofType: "") else { return }
-
-        let dirname = URL(fileURLWithPath: pathToNode).deletingLastPathComponent()
-        let componentToSketch = dirname
-            .appendingPathComponent("Modules", isDirectory: true)
-            .appendingPathComponent("component-to-sketch", isDirectory: true)
-
-        let output = RenderSurface.renderToJSON(layout: component.canvasLayoutAxis, component: component, selected: nil)
-        guard let data = output.toData() else { return }
-
-        guard #available(OSX 10.12, *) else { return }
-
-        DispatchQueue.global().async {
-            let task = Process()
-
-            // Set the task parameters
-            task.launchPath = pathToNode
-            task.arguments = [
-                componentToSketch.appendingPathComponent("index.js").path,
-                outputFile.path
-            ]
-            task.currentDirectoryPath = componentToSketch.path
-
-            let stdin = Pipe()
-            let stdout = Pipe()
-
-            task.standardInput = stdin
-            task.standardOutput = stdout
-
-            // Launch the task
-            task.launch()
-
-            stdin.fileHandleForWriting.write(data)
-            stdin.fileHandleForWriting.closeFile()
-
-            task.waitUntilExit()
-
-            let handle = stdout.fileHandleForReading
-            let data = handle.readDataToEndOfFile()
-            let out = NSString(data: data, encoding: String.Encoding.utf8.rawValue)
-
-            Swift.print("result", out ?? "stdout empty")
-        }
-    }
-
     @IBAction func addComponent(_ sender: AnyObject) {
         guard let component = component else { return }
 

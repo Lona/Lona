@@ -245,22 +245,6 @@ func layoutRoot(canvas: Canvas, configuredRootLayer: ConfiguredLayer, config: Co
     return (child, rootNode, calculatedHeight)
 }
 
-func renderRootToJSON(canvas: Canvas, rootLayer: CSLayer, config: ComponentConfiguration, references: inout SketchFileReferenceMap) -> (layer: CSData, height: Double) {
-    let configuredRootLayer = CanvasView.configureRoot(layer: rootLayer, with: config)
-
-    guard let layout = layoutRoot(
-        canvas: canvas,
-        configuredRootLayer:
-        configuredRootLayer, config: config)
-    else { return (CSData.Null, 0) }
-
-    let rootLayer = renderBoxJSON(configuredLayer: configuredRootLayer, node: layout.layoutNode, references: &references)
-
-    layout.rootNode.free(recursive: true)
-
-    return (rootLayer, Double(layout.height))
-}
-
 enum RenderOption {
     case onSelectLayer((CSLayer) -> Void)
     case assetScale(CGFloat)
