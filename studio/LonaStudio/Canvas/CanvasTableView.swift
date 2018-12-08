@@ -154,8 +154,8 @@ private class CanvasTableView: NSTableView, NSTableViewDataSource, NSTableViewDe
         columnAutoresizingStyle = .noColumnAutoresizing
         backgroundColor = NSColor.white.withAlphaComponent(0.5)
 
-        gridColor = NSColor.black.withAlphaComponent(0.1)
-        gridStyleMask = .solidHorizontalGridLineMask
+        gridColor = NSColor.black.withAlphaComponent(0.08)
+        gridStyleMask = [.solidHorizontalGridLineMask, .solidVerticalGridLineMask]
         intercellSpacing = NSSize(width: 1, height: 1)
 
         header.tableView = self
