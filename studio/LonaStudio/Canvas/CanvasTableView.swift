@@ -62,8 +62,6 @@ public class CanvasSurface: NSBox {
     private func sharedInit() {
         setUpViews()
         setUpConstraints()
-
-        update()
     }
 
     // MARK: Private
