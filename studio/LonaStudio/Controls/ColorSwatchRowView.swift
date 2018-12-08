@@ -25,11 +25,11 @@ final class ColorSwatchRowView: NSStackView, Hoverable, PickerRowViewType {
     let subtitleView: NSTextField
 
     init(color: CSColor, selected: Bool) {
-        let title = NSTextField(labelWithStringCompat: color.name)
+        let title = NSTextField(labelWithString: color.name)
         title.font = NSFont.systemFont(ofSize: 12)
         titleView = title
 
-        let subtitle = NSTextField(labelWithStringCompat: color.value)
+        let subtitle = NSTextField(labelWithString: color.value)
         subtitle.font = NSFont.systemFont(ofSize: 10)
         subtitleView = subtitle
 

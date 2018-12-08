@@ -99,11 +99,11 @@ class CSStatementView: NSTableCellView {
                 view: { declaration in
                     let function = CSFunction.getFunction(declaredAs: declaration)
 
-                    let titleText = NSTextField(labelWithStringCompat: function.name)
+                    let titleText = NSTextField(labelWithString: function.name)
                     let titleFont = NSFont.boldSystemFont(ofSize: 13)
                     titleText.font = titleFont
 
-                    let subtitleText = NSTextField(labelWithStringCompat: function.description)
+                    let subtitleText = NSTextField(labelWithString: function.description)
                     let subtitleFont = NSFont.systemFont(ofSize: 10)
                     subtitleText.font = subtitleFont
 

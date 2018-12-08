@@ -106,7 +106,7 @@ class DisclosureContentRow: NSStackView {
             self.toggleViewState(animated: true)
         })
 
-        let headerTitle = NSTextField(labelWithStringCompat: title)
+        let headerTitle = NSTextField(labelWithString: title)
         headerTitle.translatesAutoresizingMaskIntoConstraints = false
         headerTitle.font = NSFont.boldSystemFont(ofSize: 12)
         headerTitle.textColor = NSColor.parse(css: "#545454")

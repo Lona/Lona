@@ -89,12 +89,7 @@ class PathSettingRow: SettingRow {
     init(title: String, value: String, onChange: ((CSData) -> Void)? = nil) {
         super.init(onChange: onChange)
 
-        let titleView: NSTextField
-        if #available(OSX 10.12, *) {
-            titleView = NSTextField(labelWithString: title)
-        } else {
-            titleView = NSTextField()
-        }
+        let titleView = NSTextField(labelWithString: title)
         titleView.translatesAutoresizingMaskIntoConstraints = false
 
         let textField = TextField(frame: NSRect.zero)
