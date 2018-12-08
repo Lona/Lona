@@ -122,30 +122,6 @@ struct RenderableTextAttributes: Equatable {
 
         return textView
     }
-
-    static func fromConfiguredLayer(_ configuredLayer: ConfiguredLayer) -> RenderableTextAttributes {
-        let text = getLayerText(configuredLayer: configuredLayer)
-
-        let textStyleId = configuredLayer.config.get(
-            attribute: "textStyle",
-            for: configuredLayer.layer.name).string ?? configuredLayer.layer.font ?? "regular"
-
-        let textStyle = CSTypography.getFontBy(id: textStyleId).font
-
-        let textAlignment = NSTextAlignment(configuredLayer.layer.textAlign ?? "left")
-
-        var maximumNumberOfLines = 0
-
-        if let numberOfLines = configuredLayer.layer.numberOfLines, numberOfLines > -1 {
-            maximumNumberOfLines = numberOfLines
-        }
-
-        return RenderableTextAttributes(
-            text: text,
-            textStyle: textStyle,
-            textAlignment: textAlignment,
-            numberOfLines: maximumNumberOfLines)
-    }
 }
 
 struct RenderableImageAttributes: Equatable {
