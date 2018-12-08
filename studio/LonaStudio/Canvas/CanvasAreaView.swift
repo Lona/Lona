@@ -9,7 +9,7 @@
 import AppKit
 import Foundation
 
-public class CanvasSurface: NSBox {
+public class CanvasAreaView: NSBox {
 
     // MARK: Lifecycle
 
@@ -133,15 +133,15 @@ public class CanvasSurface: NSBox {
     }
 
     public func zoomIn() {
-        scrollView.magnification *= CanvasSurface.magnificationFactor
+        scrollView.magnification *= CanvasAreaView.magnificationFactor
     }
 
     public func zoomOut() {
-        scrollView.magnification /= CanvasSurface.magnificationFactor
+        scrollView.magnification /= CanvasAreaView.magnificationFactor
     }
 }
 
-extension CanvasSurface {
+extension CanvasAreaView {
     struct Parameters {
         var component: CSComponent
         var onSelectLayer: (CSLayer) -> Void

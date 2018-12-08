@@ -31,8 +31,8 @@ class ComponentEditorViewController: NSSplitViewController {
     public var selectedLayerName: String? = nil { didSet { update(withoutModifyingSelection: true) } }
 
     public var canvasPanningEnabled: Bool {
-        get { return canvasCollectionView.panningEnabled }
-        set { canvasCollectionView.panningEnabled = newValue }
+        get { return canvasAreaView.panningEnabled }
+        set { canvasAreaView.panningEnabled = newValue }
     }
 
     public var onInspectLayer: ((CSLayer?) -> Void)?
@@ -47,15 +47,15 @@ class ComponentEditorViewController: NSSplitViewController {
     }
 
     func zoomToActualSize() {
-        canvasCollectionView.zoom(to: 1)
+        canvasAreaView.zoom(to: 1)
     }
 
     func zoomIn() {
-        canvasCollectionView.zoomIn()
+        canvasAreaView.zoomIn()
     }
 
     func zoomOut() {
-        canvasCollectionView.zoomOut()
+        canvasAreaView.zoomOut()
     }
 
     // MARK: Private
@@ -65,9 +65,9 @@ class ComponentEditorViewController: NSSplitViewController {
         return NSViewController(view: utilitiesView)
     }()
 
-    private lazy var canvasCollectionView = CanvasSurface()
-    private lazy var canvasCollectionViewController: NSViewController = {
-        return NSViewController(view: canvasCollectionView)
+    private lazy var canvasAreaView = CanvasAreaView()
+    private lazy var canvasAreaViewController: NSViewController = {
+        return NSViewController(view: canvasAreaView)
     }()
 
     private lazy var layerList = LayerList()
@@ -90,7 +90,7 @@ class ComponentEditorViewController: NSSplitViewController {
         //        leftItem.minimumThickness = 120
         vc.addSplitViewItem(leftItem)
 
-        let mainItem = NSSplitViewItem(viewController: canvasCollectionViewController)
+        let mainItem = NSSplitViewItem(viewController: canvasAreaViewController)
         mainItem.minimumThickness = 300
         vc.addSplitViewItem(mainItem)
 
@@ -216,7 +216,7 @@ class ComponentEditorViewController: NSSplitViewController {
     private func updateCanvasCollectionView() {
         guard let component = component else { return }
 
-        canvasCollectionView.parameters = CanvasSurface.Parameters(
+        canvasAreaView.parameters = CanvasAreaView.Parameters(
             component: component,
             onSelectLayer: { self.onInspectLayer?($0) },
             selectedLayerName: selectedLayerName)

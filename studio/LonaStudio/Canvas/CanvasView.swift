@@ -75,7 +75,7 @@ func numberValue(for configuredLayer: ConfiguredLayer, attributeChain: [String],
 func measureFunc(node: YGNodeRef?, width: Float, widthMode: YGMeasureMode, height: Float, heightMode: YGMeasureMode) -> YGSize {
     let configuredLayerRef = Unmanaged<ConfiguredLayerRef>.fromOpaque(YGNodeGetContext(node)!).takeUnretainedValue()
 
-    let renderableText = RenderableView.RenderableText.fromConfiguredLayer(configuredLayerRef.ref)
+    let renderableText = TextAttributes.fromConfiguredLayer(configuredLayerRef.ref)
 
     let measured = measureText(
         string: renderableText.makeAttributedString(),
@@ -104,12 +104,12 @@ let imageCache = ImageCache<NSImage>()
 
 let svgRenderCache = LRUCache<String, NSImage>()
 
-func renderBox(configuredLayer: ConfiguredLayer, node: YGNodeRef, options: RenderOptions) -> Renderable {
+func renderBox(configuredLayer: ConfiguredLayer, node: YGNodeRef, options: RenderOptions) -> RenderableElement {
     let layout = node.layout
     let config = configuredLayer.config
     let layer = configuredLayer.layer
 
-    var renderableView = RenderableView()
+    var renderableView = ViewAttributes()
 
     renderableView.layerName = layer.name
     renderableView.frame = NSRect(x: layout.left, y: layout.top, width: layout.width, height: layout.height)
@@ -186,15 +186,13 @@ func renderBox(configuredLayer: ConfiguredLayer, node: YGNodeRef, options: Rende
             let resizingMode = layer.resizeMode?.resizingMode() ?? .scaleAspectFill
 
             if let cached = imageCache.contents(for: url, at: scale) {
-                renderableView.type = .image(
-                    RenderableView.RenderableImage.init(image: cached, resizingMode: resizingMode))
+                renderableView.type = .image(ImageAttributes(image: cached, resizingMode: resizingMode))
             } else {
                 let nsImage = NSImage(contentsOf: url)
                 nsImage?.cacheMode = .always
 
                 if let contents = nsImage {
-                    renderableView.type = .image(
-                        RenderableView.RenderableImage.init(image: contents, resizingMode: resizingMode))
+                    renderableView.type = .image(ImageAttributes(image: contents, resizingMode: resizingMode))
 
                     imageCache.add(contents: contents, for: url, at: scale)
                 }
@@ -215,8 +213,7 @@ func renderBox(configuredLayer: ConfiguredLayer, node: YGNodeRef, options: Rende
             let resizingMode = CGSize.ResizingMode.scaleToFill
 
             if let cached = svgRenderCache.item(for: cacheKey) {
-                renderableView.type = .image(
-                    RenderableView.RenderableImage.init(image: cached, resizingMode: resizingMode))
+                renderableView.type = .image(ImageAttributes(image: cached, resizingMode: resizingMode))
             } else if let image = SVG.renderSync(
                 contentsOf: url,
                 dynamicValues: dynamicValues,
@@ -225,8 +222,7 @@ func renderBox(configuredLayer: ConfiguredLayer, node: YGNodeRef, options: Rende
 
                 image.cacheMode = .always
 
-                renderableView.type = .image(
-                    RenderableView.RenderableImage.init(image: image, resizingMode: resizingMode))
+                renderableView.type = .image(ImageAttributes(image: image, resizingMode: resizingMode))
 
                 svgRenderCache.add(item: image, for: cacheKey)
             }
@@ -234,16 +230,26 @@ func renderBox(configuredLayer: ConfiguredLayer, node: YGNodeRef, options: Rende
     }
 
     if layer.type == .text {
-        renderableView.type = .text(
-            RenderableView.RenderableText.fromConfiguredLayer(configuredLayer))
+        renderableView.type = .text(TextAttributes.fromConfiguredLayer(configuredLayer))
 
-        return Renderable(node: renderableView, children: [])
+        return RenderableElement(node: renderableView, children: [])
     } else {
-        let children = configuredLayer.children.enumerated().map { index, sub in
-            return renderBox(configuredLayer: sub, node: YGNodeGetChild(node, UInt32(index)), options: options)
+        let children: [RenderableElement] = configuredLayer.children.enumerated().map { index, sub in
+            var childRenderable = renderBox(configuredLayer: sub, node: YGNodeGetChild(node, UInt32(index)), options: options)
+
+            // Children within an NSBox have coordinates starting from inside the border of the NSBox.
+            // Our Yoga layout has every child positioned, already taking border width into account.
+            // We need to offset the child by the border width so that we don't count the border width twice:
+            // once for the NSBox and once in the Yoga layout.
+            if let borderWidth = borderWidth, borderWidth > 0 {
+                childRenderable.node.frame.origin.x -= CGFloat(borderWidth)
+                childRenderable.node.frame.origin.y += CGFloat(borderWidth)
+            }
+
+            return childRenderable
         }
 
-        return Renderable(node: renderableView, children: children)
+        return RenderableElement(node: renderableView, children: children)
     }
 }
 
@@ -575,9 +581,9 @@ class CanvasView: FlippedView {
 
     // MARK: Render
 
-    private var previous: Renderable?
+    private var previous: RenderableElement?
 
-    private func render() -> Renderable? {
+    private func render() -> RenderableElement? {
         let configuredRootLayer = CanvasView.configureRoot(layer: rootLayer, with: config)
 
         guard let layout = layoutRoot(
