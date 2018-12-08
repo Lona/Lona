@@ -218,7 +218,9 @@ class ComponentEditorViewController: NSSplitViewController {
         guard let component = component else { return }
 
         canvasCollectionView.parameters = CanvasSurface.Parameters(
-            component: component, onSelectLayer: { self.onInspectLayer?($0) }, selectedLayerName: selectedLayerName)
+            component: component,
+            onSelectLayer: { self.onInspectLayer?($0) },
+            selectedLayerName: selectedLayerName)
 
 //        let options = CanvasCollectionOptions(
 //            layout: component.canvasLayoutAxis,

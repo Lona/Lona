@@ -177,6 +177,7 @@
 		6B3CFB1C213B236500599E5B /* CodeEditorViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6B3CFB1B213B236500599E5B /* CodeEditorViewController.swift */; };
 		6B4203E121BAD56500D59317 /* CanvasTableView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6B4203E021BAD56500D59317 /* CanvasTableView.swift */; };
 		6B4203E321BAD71800D59317 /* CanvasTableHeaderView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6B4203E221BAD71800D59317 /* CanvasTableHeaderView.swift */; };
+		6B4203E521BB117B00D59317 /* CanvasTableHeaderItem.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6B4203E421BB117B00D59317 /* CanvasTableHeaderItem.swift */; };
 		6B4DFCE720A7581E0048BB43 /* ColorBrowser.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6B4DFCE620A7581E0048BB43 /* ColorBrowser.swift */; };
 		6B4DFCE920A75B320048BB43 /* ColorPreviewCollection.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6B4DFCE820A75B320048BB43 /* ColorPreviewCollection.swift */; };
 		6B4DFCEB20A75B900048BB43 /* ColorPreviewCard.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6B4DFCEA20A75B900048BB43 /* ColorPreviewCard.swift */; };
@@ -436,6 +437,7 @@
 		6B3CFB1B213B236500599E5B /* CodeEditorViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CodeEditorViewController.swift; sourceTree = "<group>"; };
 		6B4203E021BAD56500D59317 /* CanvasTableView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CanvasTableView.swift; sourceTree = "<group>"; };
 		6B4203E221BAD71800D59317 /* CanvasTableHeaderView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CanvasTableHeaderView.swift; sourceTree = "<group>"; };
+		6B4203E421BB117B00D59317 /* CanvasTableHeaderItem.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CanvasTableHeaderItem.swift; sourceTree = "<group>"; };
 		6B4DFCE620A7581E0048BB43 /* ColorBrowser.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ColorBrowser.swift; sourceTree = "<group>"; };
 		6B4DFCE820A75B320048BB43 /* ColorPreviewCollection.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ColorPreviewCollection.swift; sourceTree = "<group>"; };
 		6B4DFCEA20A75B900048BB43 /* ColorPreviewCard.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ColorPreviewCard.swift; sourceTree = "<group>"; };
@@ -813,6 +815,7 @@
 		30F870C120865858007ADA5B /* components */ = {
 			isa = PBXGroup;
 			children = (
+				6B4203E421BB117B00D59317 /* CanvasTableHeaderItem.swift */,
 				6B5886892134D9E800CCA69F /* ColorInspector.swift */,
 				6B4DFCEA20A75B900048BB43 /* ColorPreviewCard.swift */,
 				303C3FF620A4EFC6008E1541 /* ComponentPreviewCard.swift */,
@@ -1410,6 +1413,7 @@
 				6B3CFB1C213B236500599E5B /* CodeEditorViewController.swift in Sources */,
 				307718EA1F355D31003A597B /* LayerInspectorView.swift in Sources */,
 				6B6D4434218F6B070016262C /* NSImage+Resizing.swift in Sources */,
+				6B4203E521BB117B00D59317 /* CanvasTableHeaderItem.swift in Sources */,
 				30CE47CD1ED776FA00BBF716 /* TextStylePickerButton.swift in Sources */,
 				30C203DF20BF5955007C3FE0 /* TextStylePreviewCollection.swift in Sources */,
 				6B1086FD217A38110024AE56 /* LRUCache.swift in Sources */,

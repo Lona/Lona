@@ -118,7 +118,7 @@ class TypeListHeaderView: NSTableHeaderView {
         bottomDividerView.borderType = .lineBorder
         bottomDividerView.contentViewMargins = .zero
         bottomDividerView.borderWidth = 0
-        bottomDividerView.fillColor = NSColor.init(calibratedRed: 0, green: 0, blue: 0, alpha: 0.15)
+        bottomDividerView.fillColor = NSSplitView.defaultDividerColor
 
         addSubview(bottomDividerView)
     }
@@ -139,10 +139,9 @@ class TypeListHeaderView: NSTableHeaderView {
             segmentViews.forEach { $0.removeFromSuperview() }
 
             tableView.tableColumns.enumerated().forEach { index, column in
-                let rect = headerRect(ofColumn: index)
-                let view = TypeListHeaderCellView(frame: rect)
-                view.fillColor = .white
-                view.titleText = column.title
+                let view = CanvasTableHeaderItem(titleText: column.title, dividerColor: NSSplitView.defaultDividerColor)
+                view.frame = headerRect(ofColumn: index)
+                view.translatesAutoresizingMaskIntoConstraints = true
 
 //                if index == 0 {
 //                    view.onPressPlus = { self.onPressPlus?() }
@@ -154,10 +153,7 @@ class TypeListHeaderView: NSTableHeaderView {
         }
 
         tableView.tableColumns.enumerated().forEach { index, column in
-            var rect = headerRect(ofColumn: index)
-            // Avoid the divider
-            rect.size.height = rect.size.height - 1
-            segmentViews[index].frame = rect
+            segmentViews[index].frame = headerRect(ofColumn: index)
         }
     }
 }

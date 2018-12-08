@@ -123,6 +123,8 @@ public class CanvasSurface: NSBox {
                 outlineView.selectedLayerName = parameters?.selectedLayerName
 
                 outlineView.reloadData()
+                outlineView.header.update()
+
 
                 Swift.print("Reload data")
             }
@@ -183,7 +185,7 @@ private class CanvasTableView: NSTableView, NSTableViewDataSource, NSTableViewDe
         setup()
     }
 
-    private let header = TypeListHeaderView(frame: NSRect(x: 0, y: 0, width: 0, height: 42))
+    fileprivate let header = TypeListHeaderView(frame: NSRect(x: 0, y: 0, width: 0, height: 42))
 
     override var frame: NSRect {
         didSet {
