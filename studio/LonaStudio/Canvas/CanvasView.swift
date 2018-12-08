@@ -75,7 +75,7 @@ func numberValue(for configuredLayer: ConfiguredLayer, attributeChain: [String],
 func measureFunc(node: YGNodeRef?, width: Float, widthMode: YGMeasureMode, height: Float, heightMode: YGMeasureMode) -> YGSize {
     let configuredLayerRef = Unmanaged<ConfiguredLayerRef>.fromOpaque(YGNodeGetContext(node)!).takeUnretainedValue()
 
-    let renderableText = TextAttributes.fromConfiguredLayer(configuredLayerRef.ref)
+    let renderableText = RenderableTextAttributes.fromConfiguredLayer(configuredLayerRef.ref)
 
     let measured = measureText(
         string: renderableText.makeAttributedString(),
@@ -109,7 +109,7 @@ func renderBox(configuredLayer: ConfiguredLayer, node: YGNodeRef, options: Rende
     let config = configuredLayer.config
     let layer = configuredLayer.layer
 
-    var renderableView = ViewAttributes()
+    var renderableView = RenderableViewAttributes()
 
     renderableView.layerName = layer.name
     renderableView.frame = NSRect(x: layout.left, y: layout.top, width: layout.width, height: layout.height)
@@ -141,34 +141,28 @@ func renderBox(configuredLayer: ConfiguredLayer, node: YGNodeRef, options: Rende
 
     renderableView.shadow = configuredLayer.shadow()?.nsShadow
 
-//    if layer.type == .animation {
-//        let animation: String? = config.get(attribute: "animation", for: layer.name).string ?? layer.animation
-//
-//        if  let animation = animation,
-//            let url = URL(string: animation),
-//            let json = AnimationUtils.decode(contentsOf: url) {
-//            let assetMap = config
-//                .get(attribute: "images", for: layer.name)
-//                .objectValue
-//                .filterValues(f: { $0.string != nil && URL(string: $0.stringValue) != nil })
-//                .mapValues({ URL(string: $0.stringValue)! })
-//            AnimationUtils.updateAssets(in: json, withFile: url, assetMap: assetMap)
-//            let animationView = LOTAnimationView(json: json as! [AnyHashable: Any])
-//            animationView.data = json
-//            animationView.animationSpeed = CGFloat(layer.animationSpeed ?? 1)
-//            animationView.contentMode = layer.resizeMode?.lotViewContentMode() ?? .scaleAspectFill
-//            animationView.frame = frame
-//
-//            box.addSubview(animationView)
-//
-//            if options.hideAnimationLayers {
-//                animationView.isHidden = true
-//            } else {
-//                animationView.play()
-//            }
-//        }
-//    } else
-    if layer.type == .image {
+    if layer.type == .animation {
+        let animation: String? = config.get(attribute: "animation", for: layer.name).string ?? layer.animation
+
+        if  let animation = animation,
+            let url = URL(string: animation),
+            let json = AnimationUtils.decode(contentsOf: url) {
+            let assetMap = config
+                .get(attribute: "images", for: layer.name)
+                .objectValue
+                .filterValues(f: { $0.string != nil && URL(string: $0.stringValue) != nil })
+                .mapValues({ URL(string: $0.stringValue)! })
+            AnimationUtils.updateAssets(in: json, withFile: url, assetMap: assetMap)
+
+            let attributes = RenderableAnimationAttributes(
+                data: json,
+                isHidden: options.hideAnimationLayers,
+                animationSpeed: CGFloat(layer.animationSpeed ?? 1),
+                contentMode: layer.resizeMode?.lotViewContentMode() ?? .scaleAspectFill)
+
+            renderableView.type = .animation(attributes)
+        }
+    } else if layer.type == .image {
         let image: String? = config.get(attribute: "image", for: layer.name).string ?? layer.image
 
         if let image = image, let url = URL(string: image)?.absoluteURLForWorkspaceURL() {
@@ -186,13 +180,13 @@ func renderBox(configuredLayer: ConfiguredLayer, node: YGNodeRef, options: Rende
             let resizingMode = layer.resizeMode?.resizingMode() ?? .scaleAspectFill
 
             if let cached = imageCache.contents(for: url, at: scale) {
-                renderableView.type = .image(ImageAttributes(image: cached, resizingMode: resizingMode))
+                renderableView.type = .image(RenderableImageAttributes(image: cached, resizingMode: resizingMode))
             } else {
                 let nsImage = NSImage(contentsOf: url)
                 nsImage?.cacheMode = .always
 
                 if let contents = nsImage {
-                    renderableView.type = .image(ImageAttributes(image: contents, resizingMode: resizingMode))
+                    renderableView.type = .image(RenderableImageAttributes(image: contents, resizingMode: resizingMode))
 
                     imageCache.add(contents: contents, for: url, at: scale)
                 }
@@ -213,7 +207,7 @@ func renderBox(configuredLayer: ConfiguredLayer, node: YGNodeRef, options: Rende
             let resizingMode = CGSize.ResizingMode.scaleToFill
 
             if let cached = svgRenderCache.item(for: cacheKey) {
-                renderableView.type = .image(ImageAttributes(image: cached, resizingMode: resizingMode))
+                renderableView.type = .image(RenderableImageAttributes(image: cached, resizingMode: resizingMode))
             } else if let image = SVG.renderSync(
                 contentsOf: url,
                 dynamicValues: dynamicValues,
@@ -222,7 +216,7 @@ func renderBox(configuredLayer: ConfiguredLayer, node: YGNodeRef, options: Rende
 
                 image.cacheMode = .always
 
-                renderableView.type = .image(ImageAttributes(image: image, resizingMode: resizingMode))
+                renderableView.type = .image(RenderableImageAttributes(image: image, resizingMode: resizingMode))
 
                 svgRenderCache.add(item: image, for: cacheKey)
             }
@@ -230,9 +224,9 @@ func renderBox(configuredLayer: ConfiguredLayer, node: YGNodeRef, options: Rende
     }
 
     if layer.type == .text {
-        renderableView.type = .text(TextAttributes.fromConfiguredLayer(configuredLayer))
+        renderableView.type = .text(RenderableTextAttributes.fromConfiguredLayer(configuredLayer))
 
-        return RenderableElement(node: renderableView, children: [])
+        return RenderableElement(attributes: renderableView, children: [])
     } else {
         let children: [RenderableElement] = configuredLayer.children.enumerated().map { index, sub in
             var childRenderable = renderBox(configuredLayer: sub, node: YGNodeGetChild(node, UInt32(index)), options: options)
@@ -242,14 +236,14 @@ func renderBox(configuredLayer: ConfiguredLayer, node: YGNodeRef, options: Rende
             // We need to offset the child by the border width so that we don't count the border width twice:
             // once for the NSBox and once in the Yoga layout.
             if let borderWidth = borderWidth, borderWidth > 0 {
-                childRenderable.node.frame.origin.x -= CGFloat(borderWidth)
-                childRenderable.node.frame.origin.y += CGFloat(borderWidth)
+                childRenderable.attributes.frame.origin.x -= CGFloat(borderWidth)
+                childRenderable.attributes.frame.origin.y += CGFloat(borderWidth)
             }
 
             return childRenderable
         }
 
-        return RenderableElement(node: renderableView, children: children)
+        return RenderableElement(attributes: renderableView, children: children)
     }
 }
 
@@ -612,9 +606,9 @@ class CanvasView: FlippedView {
             canvasView.addSubview(viewHierarchy)
         }
 
-        frame = renderable.node.frame
-        canvasView.frame = renderable.node.frame
-        backgroundView.frame = renderable.node.frame
+        frame = renderable.attributes.frame
+        canvasView.frame = renderable.attributes.frame
+        backgroundView.frame = renderable.attributes.frame
 
         if options.renderCanvasShadow {
             frame.size.width += CanvasView.margin * 2

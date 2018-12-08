@@ -7,16 +7,17 @@
 //
 
 import AppKit
+import Lottie
 
 enum RenderableType: Equatable {
     case view
-    case text(TextAttributes)
-    case image(ImageAttributes)
-    //        case animation
-    case vector(ImageAttributes)
+    case text(RenderableTextAttributes)
+    case image(RenderableImageAttributes)
+    case animation(RenderableAnimationAttributes)
+    case vector(RenderableImageAttributes)
 }
 
-struct ViewAttributes: Equatable {
+struct RenderableViewAttributes: Equatable {
     init() {
         layerName = ""
         frame = .zero
@@ -57,7 +58,9 @@ struct ViewAttributes: Equatable {
         view.multipliedBorderColor = multipliedBorderColor
         view.shadow = shadow
 
-        view.getInnerSubviews().filter { $0 is CSTextView }.forEach { $0.removeFromSuperview() }
+        view.getInnerSubviews()
+            .filter { ($0 is CSTextView) || ($0 is LOTAnimationView) }
+            .forEach { $0.removeFromSuperview() }
 
         switch type {
         case .view:
@@ -70,11 +73,24 @@ struct ViewAttributes: Equatable {
         case .image(let params), .vector(let params):
             view.backgroundImage = params.image
             view.resizingMode = params.resizingMode
+        case .animation(let attributes):
+            let animationView = LOTAnimationView(json: attributes.data as! [AnyHashable: Any])
+            animationView.animationSpeed = attributes.animationSpeed
+            animationView.contentMode = attributes.contentMode
+            animationView.frame = frame
+
+            view.addInnerSubview(animationView)
+
+            if attributes.isHidden {
+                animationView.isHidden = true
+            } else {
+                animationView.play()
+            }
         }
     }
 }
 
-struct TextAttributes: Equatable {
+struct RenderableTextAttributes: Equatable {
     var text: String
     var textStyle: TextStyle
     var textAlignment: NSTextAlignment
@@ -107,7 +123,7 @@ struct TextAttributes: Equatable {
         return textView
     }
 
-    static func fromConfiguredLayer(_ configuredLayer: ConfiguredLayer) -> TextAttributes {
+    static func fromConfiguredLayer(_ configuredLayer: ConfiguredLayer) -> RenderableTextAttributes {
         let text = getLayerText(configuredLayer: configuredLayer)
 
         let textStyleId = configuredLayer.config.get(
@@ -124,7 +140,7 @@ struct TextAttributes: Equatable {
             maximumNumberOfLines = numberOfLines
         }
 
-        return TextAttributes(
+        return RenderableTextAttributes(
             text: text,
             textStyle: textStyle,
             textAlignment: textAlignment,
@@ -132,17 +148,24 @@ struct TextAttributes: Equatable {
     }
 }
 
-struct ImageAttributes: Equatable {
+struct RenderableImageAttributes: Equatable {
     var image: NSImage
     var resizingMode: CGSize.ResizingMode
 }
 
+struct RenderableAnimationAttributes: Equatable {
+    var data: NSMutableDictionary
+    var isHidden: Bool
+    var animationSpeed: CGFloat
+    var contentMode: LOTViewContentMode
+}
+
 struct RenderableElement {
-    var node: ViewAttributes
+    var attributes: RenderableViewAttributes
     var children: [RenderableElement]
 
     func makeViewHierarchy() -> CSView {
-        let view = node.makeView()
+        let view = attributes.makeView()
 
         children.forEach { child in
             let childView = child.makeViewHierarchy()
@@ -156,8 +179,8 @@ struct RenderableElement {
     func updateViewHierarchy(_ view: NSView, previous: RenderableElement) {
         guard let view = view as? CSView else { return }
 
-        if node != previous.node {
-            node.configureView(view)
+        if attributes != previous.attributes {
+            attributes.configureView(view)
         }
 
         let subviews = view.getInnerSubviews().map { $0 as? CSView }.compactMap { $0 }
