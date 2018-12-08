@@ -510,7 +510,7 @@ struct RenderOptions {
     }
 }
 
-class CanvasView: NSView {
+class CanvasView: FlippedView {
     var parameters: Parameters {
         didSet {
             update()
@@ -600,10 +600,8 @@ class CanvasView: NSView {
         guard let renderable = render() else { return }
 
         if let previous = previous {
-//            Swift.print("Updating")
             renderable.updateViewHierarchy(canvasView.subviews[0], previous: previous)
         } else {
-//            Swift.print("Mounting")
             let viewHierarchy = renderable.makeViewHierarchy()
             canvasView.addSubview(viewHierarchy)
         }
