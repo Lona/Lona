@@ -21,6 +21,7 @@
   ],
   "examples" : [
     {
+      "id" : "Default",
       "name" : "Default",
       "params" : {
 
@@ -56,8 +57,8 @@
       {
         "id" : "ListItem2",
         "params" : {
-          "image" : "https:\/\/pbs.twimg.com\/profile_images\/522867498337570818\/p9wlS3Q8_normal.jpeg",
-          "primaryText" : "Ryan Gonzalez",
+          "image" : "",
+          "primaryText" : "Kathryn Gonzalez",
           "secondaryText" : "Design Technologist @ DoorDash"
         },
         "type" : "ListItem"
