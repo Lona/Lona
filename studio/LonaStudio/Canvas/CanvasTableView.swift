@@ -9,189 +9,11 @@
 import AppKit
 import Foundation
 
-protocol Selectable {
-    var isSelected: Bool { get set }
-}
-
-private extension NSTableColumn {
-    convenience init(
-        title: String,
-        resizingMask: ResizingOptions = .autoresizingMask,
-        width: CGFloat? = nil,
-        minWidth: CGFloat? = nil,
-        maxWidth: CGFloat? = nil) {
-        self.init(identifier: NSUserInterfaceItemIdentifier(rawValue: title))
-        self.title = title
-        self.resizingMask = resizingMask
-
-        if let width = width {
-            self.width = width
-        }
-
-        if let minWidth = minWidth {
-            self.minWidth = minWidth
-        }
-
-        if let maxWidth = maxWidth {
-            self.maxWidth = maxWidth
-        }
-    }
-}
-
-public typealias Entity = String
-public typealias TypeListItem = String
-
-public class CanvasSurface: NSBox {
-
-    // MARK: Lifecycle
-
-    init(_ parameters: Parameters? = nil) {
-        self.parameters = parameters
-
-        super.init(frame: .zero)
-
-        sharedInit()
-    }
-
-    public required init?(coder aDecoder: NSCoder) {
-        super.init(coder: aDecoder)
-
-        sharedInit()
-    }
-
-    private func sharedInit() {
-        setUpViews()
-        setUpConstraints()
-    }
-
-    // MARK: Private
-
-    private var scrollView = NSScrollView(frame: .zero)
-    private var outlineView = CanvasTableView()
-
-    func setUpViews() {
-        boxType = .custom
-        borderType = .lineBorder
-        contentViewMargins = .zero
-        borderWidth = 0
-
-        outlineView.dataSource = outlineView
-        outlineView.delegate = outlineView
-
-        scrollView.hasVerticalScroller = true
-        scrollView.hasHorizontalScroller = true
-        scrollView.drawsBackground = false
-        scrollView.addSubview(outlineView)
-        scrollView.documentView = outlineView
-
-        outlineView.sizeToFit()
-
-        addSubview(scrollView)
-    }
-
-    func setUpConstraints() {
-        translatesAutoresizingMaskIntoConstraints = false
-        scrollView.translatesAutoresizingMaskIntoConstraints = false
-
-        topAnchor.constraint(equalTo: scrollView.topAnchor).isActive = true
-        bottomAnchor.constraint(equalTo: scrollView.bottomAnchor).isActive = true
-        leadingAnchor.constraint(equalTo: scrollView.leadingAnchor).isActive = true
-        trailingAnchor.constraint(equalTo: scrollView.trailingAnchor).isActive = true
-    }
-
-    private var previousComponentSerialized: CSData?
-
-    var parameters: Parameters? {
-        didSet {
-            let componentSerialized = parameters?.component.toData()
-
-            if componentSerialized != previousComponentSerialized ||
-                parameters?.selectedLayerName != oldValue?.selectedLayerName {
-
-                previousComponentSerialized = componentSerialized
-
-                outlineView.canvases = parameters?.component.computedCanvases() ?? []
-                outlineView.cases = parameters?.component.computedCases(for: nil) ?? []
-                outlineView.component = parameters?.component
-                outlineView.selectedLayerName = parameters?.selectedLayerName
-
-                outlineView.reloadData()
-                outlineView.header.update()
-            }
-        }
-    }
-
-    public var onChange: ([Entity]) -> Void {
-        get { return outlineView.onChange }
-        set { outlineView.onChange = newValue }
-    }
-
-    // MARK: Panning & Zooming
-
-    var dragOffset: NSPoint?
-    var panningEnabled: Bool = false
-    var currentlyPanning: Bool = false
-
-    override public func mouseDown(with event: NSEvent) {
-        dragOffset = event.locationInWindow
-    }
-
-    override public func mouseUp(with event: NSEvent) {
-        dragOffset = nil
-        currentlyPanning = false
-    }
-
-    override public func mouseDragged(with event: NSEvent) {
-        if !currentlyPanning && !panningEnabled { return }
-
-        guard let dragOffset = dragOffset else { return }
-
-        currentlyPanning = true
-
-        let delta = (event.locationInWindow - dragOffset) / scrollView.magnification
-        let flippedY = NSPoint(x: delta.x, y: -delta.y)
-        outlineView.scroll(scrollView.documentVisibleRect.origin - flippedY)
-
-        self.dragOffset = event.locationInWindow
-    }
-
-    override public func hitTest(_ point: NSPoint) -> NSView? {
-        if currentlyPanning || panningEnabled {
-            return self
-        }
-
-        return super.hitTest(point)
-    }
-
-    private static let magnificationFactor: CGFloat = 1.25
-
-    public func zoom(to zoomLevel: CGFloat) {
-        scrollView.magnification = zoomLevel
-    }
-
-    public func zoomIn() {
-        scrollView.magnification *= CanvasSurface.magnificationFactor
-    }
-
-    public func zoomOut() {
-        scrollView.magnification /= CanvasSurface.magnificationFactor
-    }
-}
-
-extension CanvasSurface {
-    struct Parameters {
-        var component: CSComponent
-        var onSelectLayer: (CSLayer) -> Void
-        var selectedLayerName: String?
-    }
-}
-
-private class CanvasTableView: NSTableView, NSTableViewDataSource, NSTableViewDelegate {
+class CanvasTableView: NSTableView, NSTableViewDataSource, NSTableViewDelegate {
 
     override func drawGrid(inClipRect clipRect: NSRect) { }
 
     func setup() {
-
         columnAutoresizingStyle = .noColumnAutoresizing
         backgroundColor = NSColor.white.withAlphaComponent(0.5)
 
@@ -200,15 +22,9 @@ private class CanvasTableView: NSTableView, NSTableViewDataSource, NSTableViewDe
         intercellSpacing = NSSize(width: 1, height: 1)
 
         header.tableView = self
-        header.onPressPlus = {
-//            var copy = self.list
-//            copy.append(Entity.genericType(GenericType.init(name: "", cases: [])))
-//            self.onChange(copy)
-        }
-        header.update()
 
         focusRingType = .none
-        rowSizeStyle = .medium
+        rowSizeStyle = .custom
         headerView = header
 
         doubleAction = #selector(doubleClick(sender:))
@@ -231,9 +47,10 @@ private class CanvasTableView: NSTableView, NSTableViewDataSource, NSTableViewDe
     override var frame: NSRect {
         didSet {
             header.frame.size.width = frame.width
-
         }
     }
+
+    // MARK: Public
 
     var canvases: [Canvas] = [] {
         didSet {
@@ -259,8 +76,6 @@ private class CanvasTableView: NSTableView, NSTableViewDataSource, NSTableViewDe
 
     var component: CSComponent?
 
-    var onChange: ([Entity]) -> Void = {_ in }
-
     @objc fileprivate func doubleClick(sender: AnyObject) {
         if clickedColumn == -1 { return }
 
@@ -269,10 +84,14 @@ private class CanvasTableView: NSTableView, NSTableViewDataSource, NSTableViewDe
         }
     }
 
+    func updateHeader() {
+        header.update()
+    }
+
     override func viewWillDraw() {
         super.viewWillDraw()
 
-        header.update()
+        updateHeader()
     }
 
     // TODO: It seems like in some cases (animation?) updating the header in tile() is helpful.
@@ -281,6 +100,8 @@ private class CanvasTableView: NSTableView, NSTableViewDataSource, NSTableViewDe
 //        super.tile()
 //        (headerView as? TypeListHeaderView)?.update()
 //    }
+
+    // MARK: Data Source
 
     func numberOfRows(in tableView: NSTableView) -> Int {
         return cases.count
@@ -293,6 +114,8 @@ private class CanvasTableView: NSTableView, NSTableViewDataSource, NSTableViewDe
 
         return max(40, heights.max() ?? 0)
     }
+
+    // MARK: Delegate
 
     func tableView(_ tableView: NSTableView, viewFor tableColumn: NSTableColumn?, row: Int) -> NSView? {
         guard
@@ -330,7 +153,9 @@ private class CanvasTableView: NSTableView, NSTableViewDataSource, NSTableViewDe
         return getCachedCanvasViewAt(row: caseIndex, column: canvasIndex, parameters: parameters)
     }
 
-    var canvasViewCache: [IndexPath: CanvasView] = [:]
+    // MARK: Private
+
+    private var canvasViewCache: [IndexPath: CanvasView] = [:]
 
     private func getCachedCanvasViewAt(row: Int, column: Int, parameters: CanvasView.Parameters) -> CanvasView {
         let indexPath = IndexPath(item: row, section: column)
@@ -354,9 +179,6 @@ private class CanvasTableView: NSTableView, NSTableViewDataSource, NSTableViewDe
         let canvasIndex = column
         let caseIndex = row
 
-//        let canvasIndex = indexPath[options.layout == .caseXcanvasY ? 0 : 1]
-//        let caseIndex = indexPath[options.layout == .caseXcanvasY ? 1 : 0]
-
         guard caseIndex < cases.count && canvasIndex < canvases.count else { return .zero }
 
         let canvas = canvases[canvasIndex]
@@ -372,16 +194,10 @@ private class CanvasTableView: NSTableView, NSTableViewDataSource, NSTableViewDe
         let configuredRootLayer = CanvasView.configureRoot(layer: rootLayer, with: config)
         guard let layout = layoutRoot(canvas: canvas, configuredRootLayer: configuredRootLayer, config: config) else { return NSSize.zero }
 
-//        let size = NSSize(width: CGFloat(canvas.width) + CANVAS_INSET * 2, height: layout.height + CANVAS_INSET * 2)
-
         layout.rootNode.free(recursive: true)
 
-        //        Swift.print("Size", size)
-
-        let size = NSSize(
+        return NSSize(
             width: CGFloat(canvas.width) + CanvasView.margin * 2,
             height: layout.height + CanvasView.margin * 2)
-
-        return size
     }
 }

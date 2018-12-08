@@ -26,10 +26,6 @@ class CanvasTableHeaderView: NSTableHeaderView {
         fatalError("init(coder:) has not been implemented")
     }
 
-    // MARK: Public
-
-    var onPressPlus: (() -> Void)? { didSet { update() } }
-
     // MARK: Private
 
     var segmentViews: [NSView] = []

@@ -177,6 +177,8 @@
 		6B4203E121BAD56500D59317 /* CanvasTableView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6B4203E021BAD56500D59317 /* CanvasTableView.swift */; };
 		6B4203E321BAD71800D59317 /* CanvasTableHeaderView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6B4203E221BAD71800D59317 /* CanvasTableHeaderView.swift */; };
 		6B4203E521BB117B00D59317 /* CanvasTableHeaderItem.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6B4203E421BB117B00D59317 /* CanvasTableHeaderItem.swift */; };
+		6B4203E721BC495B00D59317 /* NSTableColumn+Init.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6B4203E621BC495B00D59317 /* NSTableColumn+Init.swift */; };
+		6B4203E921BC49C700D59317 /* CanvasAreaView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6B4203E821BC49C700D59317 /* CanvasAreaView.swift */; };
 		6B4DFCE720A7581E0048BB43 /* ColorBrowser.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6B4DFCE620A7581E0048BB43 /* ColorBrowser.swift */; };
 		6B4DFCE920A75B320048BB43 /* ColorPreviewCollection.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6B4DFCE820A75B320048BB43 /* ColorPreviewCollection.swift */; };
 		6B4DFCEB20A75B900048BB43 /* ColorPreviewCard.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6B4DFCEA20A75B900048BB43 /* ColorPreviewCard.swift */; };
@@ -436,6 +438,8 @@
 		6B4203E021BAD56500D59317 /* CanvasTableView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CanvasTableView.swift; sourceTree = "<group>"; };
 		6B4203E221BAD71800D59317 /* CanvasTableHeaderView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CanvasTableHeaderView.swift; sourceTree = "<group>"; };
 		6B4203E421BB117B00D59317 /* CanvasTableHeaderItem.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CanvasTableHeaderItem.swift; sourceTree = "<group>"; };
+		6B4203E621BC495B00D59317 /* NSTableColumn+Init.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "NSTableColumn+Init.swift"; sourceTree = "<group>"; };
+		6B4203E821BC49C700D59317 /* CanvasAreaView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CanvasAreaView.swift; sourceTree = "<group>"; };
 		6B4DFCE620A7581E0048BB43 /* ColorBrowser.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ColorBrowser.swift; sourceTree = "<group>"; };
 		6B4DFCE820A75B320048BB43 /* ColorPreviewCollection.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ColorPreviewCollection.swift; sourceTree = "<group>"; };
 		6B4DFCEA20A75B900048BB43 /* ColorPreviewCard.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ColorPreviewCard.swift; sourceTree = "<group>"; };
@@ -632,6 +636,7 @@
 		306DA4ED1F33E19F002772DC /* Canvas */ = {
 			isa = PBXGroup;
 			children = (
+				6B4203E821BC49C700D59317 /* CanvasAreaView.swift */,
 				6B4203E221BAD71800D59317 /* CanvasTableHeaderView.swift */,
 				6B4203E021BAD56500D59317 /* CanvasTableView.swift */,
 				301493A61EC0F415005BC573 /* CanvasView.swift */,
@@ -716,6 +721,7 @@
 				30DE88081FBA18A600D62A50 /* NSPopoverExtensions.swift */,
 				6B0F5B8F21389A8B007DBBB2 /* NSSplitView+DividerColor.swift */,
 				305A19511F4638F800EA033C /* NSStackViewExtensions.swift */,
+				6B4203E621BC495B00D59317 /* NSTableColumn+Init.swift */,
 				6BD581D820824AF60068FBC3 /* NSTextAlignmentExtensions.swift */,
 				305A19571F463BD300EA033C /* NSTextFieldExtensions.swift */,
 				30DE880A1FBA194F00D62A50 /* NSViewControllerExtensions.swift */,
@@ -1311,6 +1317,7 @@
 				303C3FF520A4E3C1008E1541 /* ComponentPreviewCollection.swift in Sources */,
 				3090D7D31F032305009277E7 /* CSComponentLayer.swift in Sources */,
 				6B1086FB217A34340024AE56 /* Data+String.swift in Sources */,
+				6B4203E921BC49C700D59317 /* CanvasAreaView.swift in Sources */,
 				30F7C9521ED4AE23009D27DF /* CoreComponentInspectorView.swift in Sources */,
 				30335A0C1F5B2F8B006E507B /* CaseList.swift in Sources */,
 				3056275C1FBA07C800026796 /* DictionaryEditor.swift in Sources */,
@@ -1353,6 +1360,7 @@
 				305A19581F463BD300EA033C /* NSTextFieldExtensions.swift in Sources */,
 				6B4203E321BAD71800D59317 /* CanvasTableHeaderView.swift in Sources */,
 				3069E09C1F324C550005E9A8 /* CSWorkspacePreferences.swift in Sources */,
+				6B4203E721BC495B00D59317 /* NSTableColumn+Init.swift in Sources */,
 				303C3FF020A3A05D008E1541 /* RecentProjectsList.swift in Sources */,
 				307D4422209B75C0004B57F5 /* LonaWebView.swift in Sources */,
 				6B5D4D2D213E1CB0004F8AC3 /* EditorHeader.swift in Sources */,
