@@ -130,7 +130,7 @@ class ParameterListView: NSOutlineView, NSOutlineViewDataSource, NSOutlineViewDe
                 let fieldsValue = CSValue(type: recordFieldsType, data: CSData.Array(fieldsData))
 
                 components.append(.value("typedef", fieldsValue, []))
-            case .variant(let cases) where !parameter.type.isOptional():
+            case .named(let typeName, .variant(let cases)) where !parameter.type.isOptional():
                 let variantCaseType = CSType.dictionary([
                     "case": (CSType.string, .write),
                     "type": (CSType.parameterType(), .write)
@@ -146,6 +146,7 @@ class ParameterListView: NSOutlineView, NSOutlineViewDataSource, NSOutlineViewDe
                 })
                 let fieldsValue = CSValue(type: variantCasesType, data: CSData.Array(casesData))
 
+                components.append(.value("typealias", CSValue(type: .string, data: CSData.String(typeName)), []))
                 components.append(.value("typedef", fieldsValue, []))
             default:
                 break
@@ -173,7 +174,14 @@ class ParameterListView: NSOutlineView, NSOutlineViewDataSource, NSOutlineViewDe
                 case "name":
                     parameter.name = value.data.stringValue
                 case "type":
-                    let newBaseType = CSType.from(string: value.data.stringValue)
+                    var newBaseType = CSType.from(string: value.data.stringValue)
+
+                    switch value.data.stringValue {
+                    case "Variant":
+                        newBaseType = CSType.named("NewType", newBaseType)
+                    default:
+                        break
+                    }
 
                     parameter.type = parameter.type.isOptional() ? newBaseType.makeOptional() : newBaseType
 
@@ -183,6 +191,17 @@ class ParameterListView: NSOutlineView, NSOutlineViewDataSource, NSOutlineViewDe
 
                     // TODO: Cast all cases to their new type (?)
 //                    parameter.examples = parameter.examples.map({ $0.cast(to: parameter.type) })
+                case "typealias":
+                    switch parameter.type {
+                    case .named(_, let innerType):
+                        parameter.type = CSType.named(value.data.stringValue, innerType)
+                    default:
+                        break
+                    }
+
+                    if parameter.hasDefaultValue {
+                        parameter.defaultValue = parameter.defaultValue.cast(to: parameter.type)
+                    }
                 case "typedef":
                     switch parameter.type {
                     case .dictionary:
@@ -194,7 +213,7 @@ class ParameterListView: NSOutlineView, NSOutlineViewDataSource, NSOutlineViewDe
                         })
 
                         parameter.type = CSType.dictionary(schema)
-                    case .variant:
+                    case .named(let typeName, .variant):
                         let cases: [(String, CSType)] = value.data.arrayValue.map({ field in
                             let tag = field.get(key: "case").stringValue
                             let type = CSType.from(string: field.get(key: "type").stringValue)
@@ -202,7 +221,7 @@ class ParameterListView: NSOutlineView, NSOutlineViewDataSource, NSOutlineViewDe
                             return (tag, type: optional ? type.makeOptional() : type)
                         })
 
-                        parameter.type = CSType.variant(cases)
+                        parameter.type = CSType.named(typeName, CSType.variant(cases))
                     default:
                         break
                     }
