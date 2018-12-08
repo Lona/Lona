@@ -27,11 +27,11 @@ class CSComponent: DataNode, NSCopying {
         return name ?? "Component"
     }
 
-    var canvasLayoutAxis: RenderSurface.Layout {
+    var canvasLayoutAxis: StaticCanvasRenderer.Layout {
         get {
             return config.get(key: "deviceLayout").stringValue == "yx"
-                ? RenderSurface.Layout.caseXcanvasY
-                : RenderSurface.Layout.canvasXcaseY
+                ? StaticCanvasRenderer.Layout.caseXcanvasY
+                : StaticCanvasRenderer.Layout.canvasXcaseY
         }
         set {
             switch newValue {

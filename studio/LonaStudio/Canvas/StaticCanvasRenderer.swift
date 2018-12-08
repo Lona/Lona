@@ -19,8 +19,7 @@ struct RenderDescriptor {
 typealias ExampleDictionary = [String: CSData]
 typealias TaggedCanvas = (view: CanvasView, tags: RenderDescriptor, canvas: Canvas)
 
-class RenderSurface: NSView {
-
+enum StaticCanvasRenderer {
     enum Layout {
         case canvasXcaseY
         case caseXcanvasY
@@ -29,7 +28,7 @@ class RenderSurface: NSView {
     static let xMargin: CGFloat = 100.0
     static let yMargin: CGFloat = 100.0
 
-    static func renderCanvasStack(
+    static func renderCanvasList(
         component: CSComponent,
         canvas: Canvas,
         options: [RenderOption] = []
@@ -64,17 +63,13 @@ class RenderSurface: NSView {
     }
 
     func renderTag(title: String) -> NSView {
-        if #available(OSX 10.12, *) {
-            let label = NSButton(title: title, target: nil, action: nil)
-            label.bezelStyle = NSButton.BezelStyle.inline
-            label.frame.size.height = 16
-            label.frame.size.width = label.frame.size.width - 14
-            label.wantsLayer = true
-            label.layer?.opacity = 0.6
-            return label
-        } else {
-            return NSView()
-        }
+        let label = NSButton(title: title, target: nil, action: nil)
+        label.bezelStyle = NSButton.BezelStyle.inline
+        label.frame.size.height = 16
+        label.frame.size.width = label.frame.size.width - 14
+        label.wantsLayer = true
+        label.layer?.opacity = 0.6
+        return label
     }
 
     func renderTagList(with titles: [String]) -> NSView {
@@ -104,14 +99,6 @@ class RenderSurface: NSView {
         return tagListView
     }
 
-    func addCanvasToDocument(_ taggedCanvas: TaggedCanvas) {
-        let (view, descriptor, _) = taggedCanvas
-        let tags: [String] = [descriptor.canvasName, descriptor.caseName]
-
-        documentView.addSubview(view)
-        documentView.addSubview(renderTagList(with: tags, for: view))
-    }
-
     static func renderCurrentModuleToImages(savedTo directory: URL) {
         LonaModule.current.componentFiles()
             .forEach({ componentFile in
@@ -136,7 +123,7 @@ class RenderSurface: NSView {
         options: [RenderOption] = []) {
 
         component.computedCanvases().forEach({ canvas in
-            let stack = renderCanvasStack(component: component, canvas: canvas, options: options)
+            let stack = renderCanvasList(component: component, canvas: canvas, options: options)
 
             for taggedCanvas in stack {
                 let (view, descriptor, _) = taggedCanvas
@@ -156,7 +143,7 @@ class RenderSurface: NSView {
 
     static func renderToAnimations(component: CSComponent, directory: URL) {
         component.computedCanvases().forEach({ canvas in
-            let stack = renderCanvasStack(component: component, canvas: canvas, options: [
+            let stack = renderCanvasList(component: component, canvas: canvas, options: [
                 RenderOption.hideAnimationLayers(true)
                 ])
 
@@ -176,16 +163,13 @@ class RenderSurface: NSView {
 
                     try? jsonString?.write(to: url)
                 }
-
-//                let imageURL = directory.appendingPathComponent(tags.joined(separator: "_")).appendingPathExtension("png")
-//                try? view.dataRepresentation(scaledBy: CGFloat(canvas.exportScale))?.write(to: imageURL)
             }
         })
     }
 
     static func renderToVideos(component: CSComponent, directory: URL) {
         component.computedCanvases().forEach({ canvas in
-            let stack = renderCanvasStack(component: component, canvas: canvas)
+            let stack = renderCanvasList(component: component, canvas: canvas)
 
             for taggedCanvas in stack {
                 let (view, descriptor, _) = taggedCanvas
@@ -197,109 +181,5 @@ class RenderSurface: NSView {
                 VideoUtils.writeVideo(capturing: view, scaledBy: CGFloat(canvas.exportScale), atFPS: 24, to: url)
             }
         })
-    }
-
-//    func update(layout: Layout, component: CSComponent, selected: String?, onSelectLayer: @escaping (CSLayer) -> Void) {
-//        clear()
-//
-//        let matrix = component.canvas.map({ canvas in
-//            return renderCanvasStack(component: component, canvas: canvas, selected: selected, onSelectLayer: onSelectLayer)
-//        })
-//        
-//        switch layout {
-//        case .canvasXcaseY:
-//            var yOffset = yMargin
-//            var xOffset = xMargin
-//            var maxY: CGFloat = 0.0
-//
-//            var maxHeights: [CGFloat] = []
-//            for (_, stack) in matrix.enumerated() {
-//                for (y, taggedCanvas) in stack.enumerated() {
-//                    if maxHeights.count <= y { maxHeights.append(0) }
-//                    maxHeights[y] = max(maxHeights[y], taggedCanvas.view.frame.size.height)
-//                }
-//            }
-//
-//            for stack in matrix {
-//                var maxWidth: CGFloat = 0.0
-//                yOffset = yMargin
-//
-//                for (index, taggedCanvas) in stack.enumerated() {
-//                    taggedCanvas.view.frame.origin = CGPoint(x: xOffset, y: yOffset)
-//
-//                    yOffset += maxHeights[index] + yMargin
-//                    maxWidth = max(taggedCanvas.view.frame.size.width, maxWidth)
-//
-//                    addCanvasToDocument(taggedCanvas)
-//                }
-//
-//                xOffset += maxWidth + xMargin
-//                maxY = max(yOffset, maxY)
-//            }
-//
-//            documentView.frame = NSRect(x: 0, y: 0, width: xOffset, height: maxY)
-//        case .caseXcanvasY:
-//            var yOffset = yMargin
-//            var xOffset = xMargin
-//            var maxX: CGFloat = 0.0
-//
-//            var maxWidths: [CGFloat] = []
-//            for (_, stack) in matrix.enumerated() {
-//                for (x, taggedCanvas) in stack.enumerated() {
-//                    if maxWidths.count <= x { maxWidths.append(0) }
-//                    maxWidths[x] = max(maxWidths[x], taggedCanvas.view.frame.size.width)
-//                }
-//            }
-//
-//            for stack in matrix {
-//                var maxHeight: CGFloat = 0.0
-//                xOffset = xMargin
-//
-//                for (x, taggedCanvas) in stack.enumerated() {
-//
-//                    taggedCanvas.view.frame.origin = CGPoint(x: xOffset, y: yOffset)
-//
-//                    xOffset += maxWidths[x] + xMargin
-//                    maxHeight = max(taggedCanvas.view.frame.size.height, maxHeight)
-//
-//                    addCanvasToDocument(taggedCanvas)
-//                }
-//
-//                yOffset += maxHeight + yMargin
-//                maxX = max(xOffset, maxX)
-//            }
-//
-//            documentView.frame = NSRect(x: 0, y: 0, width: maxX, height: yOffset)
-//        }
-//
-//
-//    }
-//
-
-    func clear() {
-        documentView.subviews.forEach({ $0.removeFromSuperview() })
-    }
-
-    private var scrollView: NSScrollView
-    private var documentView: NSView
-
-    init() {
-        documentView = FlippedView()
-
-        scrollView = NSScrollView()
-        scrollView.documentView = documentView
-        scrollView.verticalScrollElasticity = .allowed
-        scrollView.horizontalScrollElasticity = .allowed
-        scrollView.allowsMagnification = true
-
-        super.init(frame: NSRect.zero)
-
-        wantsLayer = true
-
-        addSubviewStretched(subview: scrollView)
-    }
-
-    required init?(coder: NSCoder) {
-        fatalError("init(coder:) has not been implemented")
     }
 }

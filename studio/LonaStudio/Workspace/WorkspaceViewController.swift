@@ -716,25 +716,25 @@ extension WorkspaceViewController {
     @IBAction func exportToAnimation(_ sender: AnyObject) {
         guard let component = component, let url = getDirectory() else { return }
 
-        RenderSurface.renderToAnimations(component: component, directory: url)
+        StaticCanvasRenderer.renderToAnimations(component: component, directory: url)
     }
 
     @IBAction func exportCurrentModuleToImages(_ sender: AnyObject) {
         guard let url = getDirectory() else { return }
 
-        RenderSurface.renderCurrentModuleToImages(savedTo: url)
+        StaticCanvasRenderer.renderCurrentModuleToImages(savedTo: url)
     }
 
     @IBAction func exportToImages(_ sender: AnyObject) {
         guard let component = component, let url = getDirectory() else { return }
 
-        RenderSurface.renderToImages(component: component, directory: url)
+        StaticCanvasRenderer.renderToImages(component: component, directory: url)
     }
 
     @IBAction func exportToVideo(_ sender: AnyObject) {
         guard let component = component, let url = getDirectory() else { return }
 
-        RenderSurface.renderToVideos(component: component, directory: url)
+        StaticCanvasRenderer.renderToVideos(component: component, directory: url)
     }
 
     @IBAction func addComponent(_ sender: AnyObject) {

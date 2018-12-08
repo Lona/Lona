@@ -99,7 +99,7 @@ class UtilitiesView: NSBox {
         set { canvasListView.canvasList = newValue }
     }
 
-    public var canvasLayout: RenderSurface.Layout {
+    public var canvasLayout: StaticCanvasRenderer.Layout {
         get { return canvasListView.canvasLayout }
         set { canvasListView.canvasLayout = newValue }
     }
@@ -109,7 +109,7 @@ class UtilitiesView: NSBox {
         set { canvasListView.onChange = newValue }
     }
 
-    public var onChangeCanvasLayout: ((RenderSurface.Layout) -> Void) {
+    public var onChangeCanvasLayout: ((StaticCanvasRenderer.Layout) -> Void) {
         get { return canvasListView.onChangeLayout ?? { _ in } }
         set { canvasListView.onChangeLayout = newValue }
     }
@@ -124,7 +124,7 @@ class UtilitiesView: NSBox {
             parameterList = component?.parameters ?? []
             caseList = component?.cases ?? []
             canvasList = component?.canvas ?? []
-            canvasLayout = component?.canvasLayoutAxis ?? RenderSurface.Layout.canvasXcaseY
+            canvasLayout = component?.canvasLayoutAxis ?? StaticCanvasRenderer.Layout.canvasXcaseY
             metadata = component?.metadata ?? .Null
         }
     }
