@@ -84,7 +84,7 @@ class CSStatementView: NSTableCellView {
 
             let font = NSFont.systemFont(ofSize: NSFont.systemFontSize)
             let attributedString = NSAttributedString(string: string, attributes: [NSAttributedStringKey.font: font])
-            field.frame.size = measureText(string: attributedString, width: 1000)
+            field.frame.size = attributedString.measure(width: 1000)
             //                name.frame.size.width += 10
             field.useYogaLayout = true
 
@@ -159,7 +159,7 @@ class CSStatementView: NSTableCellView {
             }
 
             let attributedString = NSAttributedString(string: keyPath.joined(separator: " → "), attributes: editableFontAttributes)
-            let size = measureText(string: attributedString, width: 1000)
+            let size = attributedString.measure(width: 1000)
 
             control.frame.size = size
             control.frame.size.width += 24

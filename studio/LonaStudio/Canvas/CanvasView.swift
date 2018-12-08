@@ -35,22 +35,6 @@ class ConfiguredLayerRef {
     }
 }
 
-func measureText(string: NSAttributedString, width: CGFloat, maxNumberOfLines: Int = -1) -> NSSize {
-    let textStorage = NSTextStorage(attributedString: string)
-    let textContainer = NSTextContainer(containerSize: NSSize(width: width, height: CGFloat.greatestFiniteMagnitude))
-    if maxNumberOfLines > -1 {
-        textContainer.maximumNumberOfLines = maxNumberOfLines
-    }
-    textContainer.lineBreakMode = .byTruncatingTail
-    textContainer.lineFragmentPadding = 0.0
-    let layoutManager = NSLayoutManager()
-    layoutManager.addTextContainer(textContainer)
-    textStorage.addLayoutManager(layoutManager)
-    layoutManager.glyphRange(for: textContainer)
-    let newSize = layoutManager.usedRect(for: textContainer)
-    return newSize.size
-}
-
 func getLayerText(configuredLayer: ConfiguredLayer) -> String {
     let layer = configuredLayer.layer
     return configuredLayer.config.get(
@@ -77,8 +61,7 @@ func measureFunc(node: YGNodeRef?, width: Float, widthMode: YGMeasureMode, heigh
 
     let renderableText = RenderableTextAttributes.fromConfiguredLayer(configuredLayerRef.ref)
 
-    let measured = measureText(
-        string: renderableText.makeAttributedString(),
+    let measured = renderableText.makeAttributedString().measure(
         width: CGFloat(width),
         maxNumberOfLines: renderableText.numberOfLines)
 
