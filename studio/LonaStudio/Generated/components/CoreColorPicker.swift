@@ -98,7 +98,7 @@ public class CoreColorPicker: NSBox {
 
   private func update() {
     colorPickerView.colorValue = colorValue
-    colorPickerView.onChangeColorValue = onChangeColorValue
+    colorPickerView.onChangeColorValue = handleOnChangeColorValue
   }
 
   private func handleOnChangeColorValue(_ arg0: SwiftColor) {

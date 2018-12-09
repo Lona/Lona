@@ -264,11 +264,11 @@ public class AddColorSheet: NSBox {
     colorInspectorView.valueText = valueText
     colorInspectorView.descriptionText = descriptionText
     colorInspectorView.colorValue = colorValue
-    colorInspectorView.onChangeIdText = onChangeIdText
-    colorInspectorView.onChangeNameText = onChangeNameText
-    colorInspectorView.onChangeValueText = onChangeValueText
-    colorInspectorView.onChangeDescriptionText = onChangeDescriptionText
-    colorInspectorView.onChangeColorValue = onChangeColorValue
+    colorInspectorView.onChangeIdText = handleOnChangeIdText
+    colorInspectorView.onChangeNameText = handleOnChangeNameText
+    colorInspectorView.onChangeValueText = handleOnChangeValueText
+    colorInspectorView.onChangeDescriptionText = handleOnChangeDescriptionText
+    colorInspectorView.onChangeColorValue = handleOnChangeColorValue
   }
 
   private func handleOnSubmit() {

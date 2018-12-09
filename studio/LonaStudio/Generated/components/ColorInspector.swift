@@ -423,12 +423,12 @@ public class ColorInspector: NSBox {
     nameInputView.textValue = nameText
     valueInputView.textValue = valueText
     descriptionInputView.textValue = descriptionText
-    idInputView.onChangeTextValue = onChangeIdText
-    nameInputView.onChangeTextValue = onChangeNameText
-    valueInputView.onChangeTextValue = onChangeValueText
-    descriptionInputView.onChangeTextValue = onChangeDescriptionText
+    idInputView.onChangeTextValue = handleOnChangeIdText
+    nameInputView.onChangeTextValue = handleOnChangeNameText
+    valueInputView.onChangeTextValue = handleOnChangeValueText
+    descriptionInputView.onChangeTextValue = handleOnChangeDescriptionText
     coreColorWellPickerView.colorValue = colorValue
-    coreColorWellPickerView.onChangeColorValue = onChangeColorValue
+    coreColorWellPickerView.onChangeColorValue = handleOnChangeColorValue
   }
 
   private func handleOnChangeIdText(_ arg0: String) {

@@ -229,18 +229,18 @@ public class ColorBrowser: NSBox {
   }
 
   private func update() {
-    colorPreviewCollectionView.onSelectColor = onSelectColor
-    colorPreviewCollectionView.onDeleteColor = onDeleteColor
+    colorPreviewCollectionView.onSelectColor = handleOnSelectColor
+    colorPreviewCollectionView.onDeleteColor = handleOnDeleteColor
     colorPreviewCollectionView.colors = colors
     addColorButtonView.onClick = handleOnClickAddColor
-    colorPreviewCollectionView.onMoveColor = onMoveColor
+    colorPreviewCollectionView.onMoveColor = handleOnMoveColor
   }
 
-  private func handleOnSelectColor(_ arg0: CSColor) {
+  private func handleOnSelectColor(_ arg0: CSColor?) {
     onSelectColor?(arg0)
   }
 
-  private func handleOnDeleteColor(_ arg0: CSColor) {
+  private func handleOnDeleteColor(_ arg0: CSColor?) {
     onDeleteColor?(arg0)
   }
 
