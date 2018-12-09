@@ -112,7 +112,7 @@
       "alignItems" : "center",
       "alignSelf" : "stretch",
       "backgroundColor" : "white",
-      "height" : 42
+      "height" : 38
     },
     "type" : "Lona:View"
   }

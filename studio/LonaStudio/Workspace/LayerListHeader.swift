@@ -56,13 +56,13 @@ public class LayerListHeader: NSBox {
         button.translatesAutoresizingMaskIntoConstraints = false
         titleView.translatesAutoresizingMaskIntoConstraints = false
 
+        heightAnchor.constraint(equalToConstant: 37).isActive = true
+
         titleView.centerYAnchor.constraint(equalTo: centerYAnchor).isActive = true
-        titleView.leadingAnchor.constraint(equalTo: leadingAnchor, constant: 10).isActive = true
+        titleView.leadingAnchor.constraint(equalTo: leadingAnchor, constant: 8).isActive = true
 
         button.centerYAnchor.constraint(equalTo: centerYAnchor).isActive = true
-        button.topAnchor.constraint(equalTo: topAnchor, constant: 10).isActive = true
-        button.bottomAnchor.constraint(equalTo: bottomAnchor, constant: -10).isActive = true
-        button.trailingAnchor.constraint(equalTo: trailingAnchor, constant: -10).isActive = true
+        button.trailingAnchor.constraint(equalTo: trailingAnchor, constant: -8).isActive = true
     }
 
     private func update() {}

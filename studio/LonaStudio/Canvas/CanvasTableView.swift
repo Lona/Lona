@@ -51,7 +51,7 @@ class CanvasTableView: NSTableView, NSTableViewDataSource, NSTableViewDelegate {
         setup()
     }
 
-    fileprivate let header = CanvasTableHeaderView(frame: NSRect(x: 0, y: 0, width: 0, height: 42))
+    fileprivate let header = CanvasTableHeaderView(frame: NSRect(x: 0, y: 0, width: 0, height: 38))
 
     override var frame: NSRect {
         didSet {

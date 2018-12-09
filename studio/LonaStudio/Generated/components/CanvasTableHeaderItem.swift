@@ -106,7 +106,7 @@ public class CanvasTableHeaderItem: NSBox {
     titleView.translatesAutoresizingMaskIntoConstraints = false
     vDividerView.translatesAutoresizingMaskIntoConstraints = false
 
-    let heightAnchorConstraint = heightAnchor.constraint(equalToConstant: 42)
+    let heightAnchorConstraint = heightAnchor.constraint(equalToConstant: 38)
     let innerViewTopAnchorConstraint = innerView.topAnchor.constraint(equalTo: topAnchor)
     let innerViewLeadingAnchorConstraint = innerView.leadingAnchor.constraint(equalTo: leadingAnchor)
     let innerViewCenterXAnchorConstraint = innerView.centerXAnchor.constraint(equalTo: centerXAnchor)
