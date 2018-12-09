@@ -140,6 +140,19 @@ struct RenderableElement {
     var attributes: RenderableViewAttributes
     var children: [RenderableElement]
 
+    func needsFullRender(previous: RenderableElement) -> Bool {
+        if attributes.borderWidth != previous.attributes.borderWidth {
+            return true
+        }
+
+        return children.enumerated().first(where: {
+            if $0.offset < previous.children.count {
+                return $0.element.needsFullRender(previous: previous.children[$0.offset])
+            }
+            return false
+        }) != nil
+    }
+
     func makeViewHierarchy() -> CSView {
         let view = attributes.makeView()
 

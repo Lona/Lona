@@ -52,8 +52,6 @@ public class CanvasAreaView: NSBox {
         scrollView.addSubview(outlineView)
         scrollView.documentView = outlineView
 
-        outlineView.sizeToFit()
-
         addSubview(scrollView)
     }
 
@@ -83,8 +81,8 @@ public class CanvasAreaView: NSBox {
                 outlineView.component = parameters?.component
                 outlineView.selectedLayerName = parameters?.selectedLayerName
 
-                outlineView.reloadData()
                 outlineView.updateHeader()
+                outlineView.reloadData()
             }
         }
     }

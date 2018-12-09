@@ -74,9 +74,9 @@ class CanvasView: FlippedView {
         }
     }
 
-    var canvas: Canvas { return parameters.canvas }
-    var rootLayer: CSLayer { return parameters.rootLayer }
-    var config: ComponentConfiguration { return parameters.config }
+    var canvas: Canvas? { return parameters.canvas }
+    var rootLayer: CSLayer? { return parameters.rootLayer }
+    var config: ComponentConfiguration? { return parameters.config }
     var options: RenderOptions { return parameters.options }
 
     private let backgroundView = NSBox()
@@ -117,9 +117,6 @@ class CanvasView: FlippedView {
         selectionView.cornerRadius = 2
         selectionView.contentViewMargins = .zero
 
-        // TODO: Update on canvas change
-        backgroundView.fillColor = CSColors.parse(css: canvas.backgroundColor, withDefault: NSColor.white).color
-
         // TODO: On High Sierra, if the canvas has a transparent fill,
         // shadows show up behind each subview's layer.
         if options.renderCanvasShadow {
@@ -135,6 +132,8 @@ class CanvasView: FlippedView {
     private var previous: RenderableElement?
 
     private func render() -> RenderableElement? {
+        guard let rootLayer = rootLayer, let config = config, let canvas = canvas else { return nil }
+
         let configuredRootLayer = CanvasView.configureRoot(layer: rootLayer, with: config)
 
         guard let layout = CanvasView.layoutRoot(
@@ -155,16 +154,21 @@ class CanvasView: FlippedView {
     func update() {
         guard let renderable = render() else { return }
 
-        if let previous = previous {
+        if let previous = previous, !renderable.needsFullRender(previous: previous) {
             renderable.updateViewHierarchy(canvasView.subviews[0], previous: previous)
         } else {
-            let viewHierarchy = renderable.makeViewHierarchy()
-            canvasView.addSubview(viewHierarchy)
+            canvasView.subviews.forEach { $0.removeFromSuperview() }
+            canvasView.addSubview(renderable.makeViewHierarchy())
         }
 
         frame = renderable.attributes.frame
         canvasView.frame = renderable.attributes.frame
         backgroundView.frame = renderable.attributes.frame
+
+        let newBackgroundColor = CSColors.parse(css: canvas?.backgroundColor ?? "white", withDefault: NSColor.white).color
+        if backgroundView.fillColor != newBackgroundColor {
+            backgroundView.fillColor = newBackgroundColor
+        }
 
         if options.renderCanvasShadow {
             frame.size.width += CanvasView.margin * 2
@@ -180,10 +184,18 @@ class CanvasView: FlippedView {
 
             return csView.layerName == name
         }) {
-            selectionView.frame = convert(selected.bounds.insetBy(dx: -1, dy: -1), from: selected)
-            selectionView.isHidden = false
+            let newFrame = convert(selected.bounds.insetBy(dx: -1, dy: -1), from: selected)
+            if selectionView.frame != newFrame {
+                selectionView.frame = newFrame
+            }
+
+            if selectionView.isHidden {
+                selectionView.isHidden = false
+            }
         } else {
-            selectionView.isHidden = true
+            if !selectionView.isHidden {
+                selectionView.isHidden = true
+            }
         }
 
         previous = renderable
@@ -364,14 +376,16 @@ extension CanvasView {
         node.paddingBottom = CGFloat(configuredLayer.numberValue(paramName: "paddingBottom") ?? layer.paddingBottom ?? 0)
         node.paddingLeft = CGFloat(configuredLayer.numberValue(paramName: "paddingLeft") ?? layer.paddingLeft ?? 0)
         node.paddingRight = CGFloat(configuredLayer.numberValue(paramName: "paddingRight") ?? layer.paddingRight ?? 0)
+
         node.marginTop = CGFloat(configuredLayer.numberValue(paramName: "marginTop") ?? layer.marginTop ?? 0)
         node.marginBottom = CGFloat(configuredLayer.numberValue(paramName: "marginBottom") ?? layer.marginBottom ?? 0)
         node.marginLeft = CGFloat(configuredLayer.numberValue(paramName: "marginLeft") ?? layer.marginLeft ?? 0)
         node.marginRight = CGFloat(configuredLayer.numberValue(paramName: "marginRight") ?? layer.marginRight ?? 0)
-        node.borderTop = CGFloat(configuredLayer.numberValue(paramName: "borderTopWidth") ?? layer.borderWidth ?? 0)
-        node.borderBottom = CGFloat(configuredLayer.numberValue(paramName: "borderBottomWidth") ?? layer.borderWidth ?? 0)
-        node.borderLeft = CGFloat(configuredLayer.numberValue(paramName: "borderLeftWidth") ?? layer.borderWidth ?? 0)
-        node.borderRight = CGFloat(configuredLayer.numberValue(paramName: "borderRightWidth") ?? layer.borderWidth ?? 0)
+
+        node.borderTop = CGFloat(configuredLayer.numberValue(paramName: "borderWidth") ?? layer.borderWidth ?? 0)
+        node.borderBottom = CGFloat(configuredLayer.numberValue(paramName: "borderWidth") ?? layer.borderWidth ?? 0)
+        node.borderLeft = CGFloat(configuredLayer.numberValue(paramName: "borderWidth") ?? layer.borderWidth ?? 0)
+        node.borderRight = CGFloat(configuredLayer.numberValue(paramName: "borderWidth") ?? layer.borderWidth ?? 0)
 
         if let aspectRatio = layer.aspectRatio, aspectRatio > 0 {
             YGNodeStyleSetAspectRatio(node, Float(aspectRatio))
@@ -457,9 +471,9 @@ extension CanvasView {
 
 extension CanvasView {
     struct Parameters {
-        var canvas: Canvas
-        var rootLayer: CSLayer
-        var config: ComponentConfiguration
+        var canvas: Canvas?
+        var rootLayer: CSLayer?
+        var config: ComponentConfiguration?
         var options: RenderOptions
     }
 }

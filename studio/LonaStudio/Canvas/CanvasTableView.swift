@@ -27,6 +27,15 @@ class CanvasTableView: NSTableView, NSTableViewDataSource, NSTableViewDelegate {
         rowSizeStyle = .custom
         headerView = header
 
+        // A hack to let us reuse the same cell view every render:
+        //
+        // Normally NSTableView doesn't give us control over which view gets reused.
+        // Reusing the view in the same row/column is much more efficient in our case,
+        // since this means nothing really needs to rerender. By telling the table view
+        // that we're using static content, it won't attempt to reuse our views, so
+        // we can do it manually.
+        usesStaticContents = true
+
         doubleAction = #selector(doubleClick(sender:))
 
         self.reloadData()
@@ -52,23 +61,7 @@ class CanvasTableView: NSTableView, NSTableViewDataSource, NSTableViewDelegate {
 
     // MARK: Public
 
-    var canvases: [Canvas] = [] {
-        didSet {
-            tableColumns.forEach { column in
-                removeTableColumn(column)
-            }
-
-            let columns: [NSTableColumn] = canvases.map { canvas in
-                return NSTableColumn(title: canvas.name, width: CGFloat(canvas.width) + CanvasView.margin * 2)
-            }
-
-            columns.forEach { column in
-                addTableColumn(column)
-
-                column.headerCell = EmptyHeaderCell(textCell: column.title)
-            }
-        }
-    }
+    var canvases: [Canvas] = []
 
     var selectedLayerName: String?
 
@@ -84,14 +77,35 @@ class CanvasTableView: NSTableView, NSTableViewDataSource, NSTableViewDelegate {
         }
     }
 
+    // Call this after changing canvases to update the labels
     func updateHeader() {
+        let columns: [NSTableColumn] = canvases.map { canvas in
+            return NSTableColumn(title: canvas.name, width: CGFloat(canvas.width) + CanvasView.margin * 2)
+        }
+
+        if columns.count == tableColumns.count && zip(columns, tableColumns).allSatisfy({ a, b in
+            return a.title == b.title && a.width == b.width
+        }) {
+            return
+        }
+
+        tableColumns.forEach { column in
+            removeTableColumn(column)
+        }
+
+        columns.forEach { column in
+            addTableColumn(column)
+
+            column.headerCell = EmptyHeaderCell(textCell: column.title)
+        }
+
         header.update()
     }
 
     override func viewWillDraw() {
         super.viewWillDraw()
 
-        updateHeader()
+        header.update()
     }
 
     // TODO: It seems like in some cases (animation?) updating the header in tile() is helpful.
@@ -146,7 +160,6 @@ class CanvasTableView: NSTableView, NSTableViewDataSource, NSTableViewDelegate {
             config: config,
             options: RenderOptions([
                 .renderCanvasShadow(true),
-//                .onSelectLayer(options.onSelectLayer),
                 .selectedLayerName(selectedLayerName)
                 ]))
 
