@@ -220,14 +220,5 @@ class ComponentEditorViewController: NSSplitViewController {
             component: component,
             onSelectLayer: { self.onInspectLayer?($0) },
             selectedLayerName: selectedLayerName)
-
-//        let options = CanvasCollectionOptions(
-//            layout: component.canvasLayoutAxis,
-//            component: component,
-//            onSelectLayer: { self.onInspectLayer?($0) },
-//            selectedLayerName: selectedLayerName
-//        )
-
-//        canvasCollectionView.update(options: options)
     }
 }

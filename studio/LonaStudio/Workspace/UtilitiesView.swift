@@ -69,19 +69,9 @@ class UtilitiesView: NSBox {
         set { caseListView.onChange = newValue }
     }
 
-    public var metadata: CSData {
-        get { return metadataEditorView.data }
-        set { metadataEditorView.data = newValue }
-    }
-
     public var onChangeMetadata: ((CSData) -> Void) {
         get { return metadataEditorView.onChangeData }
         set { metadataEditorView.onChangeData = newValue }
-    }
-
-    public var canvasLayout: StaticCanvasRenderer.Layout {
-        get { return canvasListView.canvasLayout }
-        set { canvasListView.canvasLayout = newValue }
     }
 
     public var onChangeCanvasList: (([Canvas]) -> Void) {
@@ -100,6 +90,8 @@ class UtilitiesView: NSBox {
         }
     }
 
+    // TODO: This is likely no longer needed, since update() is called when we switch
+    // between tabs. But we'll need to test thoroughly after we remove it.
     public func reloadData() {
         logicListView.editor?.reloadData()
 
@@ -159,7 +151,7 @@ class UtilitiesView: NSBox {
         case .parameters:
             parameterListEditorView.parameterList = component?.parameters ?? []
         case .details:
-            metadata = component?.metadata ?? .Null
+            metadataEditorView.data = component?.metadata ?? .Null
         }
     }
 }
