@@ -92,7 +92,7 @@ final class CustomComponentInspectorView: NSStackView {
             valueField.view.translatesAutoresizingMaskIntoConstraints = false
 
             let stackView = NSStackView(views: [
-                NSTextField(labelWithStringCompat: parameter.name)
+                NSTextField(labelWithString: parameter.name)
                 ], orientation: .vertical)
             stackView.alignment = .left
             stackView.addArrangedSubview(valueField.view, stretched: !(valueField.view is CheckboxField))

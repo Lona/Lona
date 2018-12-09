@@ -25,7 +25,6 @@ let CSEmptyCanvasValue = CSValue(type: CSCanvasType, data: .Object([
 ]))
 
 class Canvas: CSDataSerializable, CSDataDeserializable, NSCopying {
-
     var visible: Bool = true
     var name: String = "Canvas"
     var width: Double = 375
@@ -110,5 +109,18 @@ class Canvas: CSDataSerializable, CSDataDeserializable, NSCopying {
         let copyData = toData()
         let copy = Canvas.init(copyData)
         return copy
+    }
+}
+
+extension Canvas: Equatable {
+    static func == (lhs: Canvas, rhs: Canvas) -> Bool {
+        return (lhs.visible == rhs.visible &&
+            lhs.name == rhs.name &&
+            lhs.width == rhs.width &&
+            lhs.height == rhs.height &&
+            lhs.heightMode == rhs.heightMode &&
+            lhs.backgroundColor == rhs.backgroundColor &&
+            lhs.exportScale == rhs.exportScale &&
+            lhs.parameters == rhs.parameters)
     }
 }

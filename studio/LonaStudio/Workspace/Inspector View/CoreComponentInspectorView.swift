@@ -215,7 +215,7 @@ class CoreComponentInspectorView: NSStackView {
             type: PlatformSpecificString,
             data: CSData.Object([:])))
     var backingRow = NSStackView(
-        views: [NSTextField(labelWithStringCompat: "Backing Element")],
+        views: [NSTextField(labelWithString: "Backing Element")],
         orientation: .horizontal,
         stretched: true)
 
@@ -322,15 +322,15 @@ class CoreComponentInspectorView: NSStackView {
         alignmentContainer.spacing = 20
 
         let spacingContainer = NSStackView(views: [
-            NSTextField(labelWithStringCompat: "Child Spacing"),
+            NSTextField(labelWithString: "Child Spacing"),
             itemSpacingRuleView,
             itemSpacingView
             ], orientation: .vertical, stretched: true)
 
         let layoutSection = renderSection(title: "Layout", views: [
-            NSTextField(labelWithStringCompat: "Direction"),
+            NSTextField(labelWithString: "Direction"),
             directionView,
-            NSTextField(labelWithStringCompat: "Children Alignment"),
+            NSTextField(labelWithString: "Children Alignment"),
             alignmentContainer,
             spacingContainer
         ])
@@ -342,13 +342,13 @@ class CoreComponentInspectorView: NSStackView {
 
     func renderDimensionsSection() -> DisclosureContentRow {
         let dimensionsLeft = NSStackView(views: [
-            NSTextField(labelWithStringCompat: "Width"),
+            NSTextField(labelWithString: "Width"),
             widthSizingRuleView,
             widthView
         ], orientation: .vertical, stretched: true)
 
         let dimensionsRight = NSStackView(views: [
-            NSTextField(labelWithStringCompat: "Height"),
+            NSTextField(labelWithString: "Height"),
             heightSizingRuleView,
             heightView
         ], orientation: .vertical, stretched: true)
@@ -364,7 +364,7 @@ class CoreComponentInspectorView: NSStackView {
 
         let dimensionsSection = renderSection(title: "Dimensions", views: [
             dimensionsContainer,
-            NSTextField(labelWithStringCompat: "Aspect Ratio"),
+            NSTextField(labelWithString: "Aspect Ratio"),
             aspectRatioView
         ])
         dimensionsSection.addContentSpacing(of: 14, after: dimensionsContainer)
@@ -379,22 +379,22 @@ class CoreComponentInspectorView: NSStackView {
         bottomView.nextKeyView = leftView
 
         let top = NSStackView(views: [
-            NSTextField(labelWithStringCompat: "Top"),
+            NSTextField(labelWithString: "Top"),
             topView
             ], orientation: .vertical, stretched: true)
 
         let right = NSStackView(views: [
-            NSTextField(labelWithStringCompat: "Right"),
+            NSTextField(labelWithString: "Right"),
             rightView
             ], orientation: .vertical, stretched: true)
 
         let bottom = NSStackView(views: [
-            NSTextField(labelWithStringCompat: "Bottom"),
+            NSTextField(labelWithString: "Bottom"),
             bottomView
             ], orientation: .vertical, stretched: true)
 
         let left = NSStackView(views: [
-            NSTextField(labelWithStringCompat: "Left"),
+            NSTextField(labelWithString: "Left"),
             leftView
             ], orientation: .vertical, stretched: true)
 
@@ -407,7 +407,7 @@ class CoreComponentInspectorView: NSStackView {
         positionContainer.spacing = 20
 
         let dimensionsSection = renderSection(title: "Position", views: [
-            NSTextField(labelWithStringCompat: "Coordinate System"),
+            NSTextField(labelWithString: "Coordinate System"),
             positionView,
             positionContainer
             ])
@@ -420,12 +420,12 @@ class CoreComponentInspectorView: NSStackView {
         borderRadiusView.nextKeyView = borderWidthView
 
         let width = NSStackView(views: [
-            NSTextField(labelWithStringCompat: "Width"),
+            NSTextField(labelWithString: "Width"),
             borderWidthView
             ], orientation: .vertical, stretched: true)
 
         let radius = NSStackView(views: [
-            NSTextField(labelWithStringCompat: "Radius"),
+            NSTextField(labelWithString: "Radius"),
             borderRadiusView
             ], orientation: .vertical, stretched: true)
 
@@ -449,7 +449,7 @@ class CoreComponentInspectorView: NSStackView {
         )
 
         let borderSection = renderSection(title: "Border", views: [
-            NSTextField(labelWithStringCompat: "Color"),
+            NSTextField(labelWithString: "Color"),
             borderColorContainer,
             borderContainer
             ])
@@ -461,7 +461,7 @@ class CoreComponentInspectorView: NSStackView {
     func renderSpacingSection() -> DisclosureContentRow {
 
         func add(label string: String, to view: NSView) {
-            let label = NSTextField(labelWithStringCompat: string)
+            let label = NSTextField(labelWithString: string)
             label.translatesAutoresizingMaskIntoConstraints = false
             label.font = NSFont.systemFont(ofSize: 9)
 
@@ -550,11 +550,11 @@ class CoreComponentInspectorView: NSStackView {
         )
 
         let backgroundSection = renderSection(title: "Opacity & Background", views: [
-            NSTextField(labelWithStringCompat: "Opacity"),
+            NSTextField(labelWithString: "Opacity"),
             opacityView,
-            NSTextField(labelWithStringCompat: "Background Color"),
+            NSTextField(labelWithString: "Background Color"),
             backgroundColorContainer,
-            NSTextField(labelWithStringCompat: "Gradient"),
+            NSTextField(labelWithString: "Gradient"),
             backgroundGradientView
         ])
 
@@ -590,13 +590,13 @@ class CoreComponentInspectorView: NSStackView {
         textView.usesSingleLineMode = false
 
         let textSection = renderSection(title: "Text", views: [
-            NSTextField(labelWithStringCompat: "Value"),
+            NSTextField(labelWithString: "Value"),
             textView,
-            NSTextField(labelWithStringCompat: "Style"),
+            NSTextField(labelWithString: "Style"),
             textStyleView,
-            NSTextField(labelWithStringCompat: "Alignment"),
+            NSTextField(labelWithString: "Alignment"),
             textAlignView,
-            NSTextField(labelWithStringCompat: "Max Lines"),
+            NSTextField(labelWithString: "Max Lines"),
             numberOfLinesView
         ])
 
@@ -642,11 +642,11 @@ class CoreComponentInspectorView: NSStackView {
         ], orientation: .horizontal)
 
         let imageSection = renderSection(title: "Image", views: [
-            NSTextField(labelWithStringCompat: "URL"),
+            NSTextField(labelWithString: "URL"),
             urlContainer,
-            NSTextField(labelWithStringCompat: "Scaling"),
+            NSTextField(labelWithString: "Scaling"),
             imageResizeModeView,
-            NSTextField(labelWithStringCompat: "Asset"),
+            NSTextField(labelWithString: "Asset"),
             imageView
         ])
 
@@ -695,13 +695,13 @@ class CoreComponentInspectorView: NSStackView {
             ], orientation: .horizontal)
 
         let animationSection = renderSection(title: "Animation", views: [
-            NSTextField(labelWithStringCompat: "URL"),
+            NSTextField(labelWithString: "URL"),
             urlContainer,
-            NSTextField(labelWithStringCompat: "Asset"),
+            NSTextField(labelWithString: "Asset"),
             animationViewContainer,
-            NSTextField(labelWithStringCompat: "Scale Mode"),
+            NSTextField(labelWithString: "Scale Mode"),
             animationResizeModeView,
-            NSTextField(labelWithStringCompat: "Animation Speed"),
+            NSTextField(labelWithString: "Animation Speed"),
             animationSpeedView
             ])
 

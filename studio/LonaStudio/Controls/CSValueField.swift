@@ -70,7 +70,7 @@ class CSValueField: CSControl {
 
             field.attributedStringValue = text
 
-            field.frame.size = measureText(string: text, width: 1000)
+            field.frame.size = text.measure(width: 1000)
             field.frame.size.width = max(field.frame.size.width, 30)
             field.frame.size.width += 4
 
@@ -97,7 +97,7 @@ class CSValueField: CSControl {
 
             field.attributedStringValue = text
 
-            field.frame.size = measureText(string: text, width: 1000)
+            field.frame.size = text.measure(width: 1000)
             field.frame.size.width = max(field.frame.size.width, 30)
             field.frame.size.width += 4
 
@@ -280,7 +280,7 @@ class CSValueField: CSControl {
             view = type
 
             let attributedString = styled(string: value.data.stringValue, usesLinkStyle: usesLinkStyle)
-            let size = measureText(string: attributedString, width: 1000)
+            let size = attributedString.measure(width: 1000)
 
             type.frame.size = size
             type.frame.size.width += 24
@@ -323,7 +323,7 @@ class CSValueField: CSControl {
             let text = NSAttributedString(string: "null", attributes: disabledFontAttributes)
             field.attributedStringValue = text
 
-            field.frame.size = measureText(string: text, width: 1000)
+            field.frame.size = text.measure(width: 1000)
             field.frame.size.width += 4
             field.useYogaLayout = true
             field.ygNode?.marginLeft = 2

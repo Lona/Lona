@@ -38,7 +38,7 @@ class MetadataEditorView: NSStackView, CSControl {
         descriptionField.onChangeData = createChangeHandler(descriptionKey)
 
         let descriptionRow = NSStackView(views: [
-            NSTextField(labelWithStringCompat: "Description"),
+            NSTextField(labelWithString: "Description"),
             descriptionField.view
             ], orientation: .horizontal, stretched: true)
 
@@ -52,7 +52,7 @@ class MetadataEditorView: NSStackView, CSControl {
         tagsField.onChangeData = createChangeHandler(tagsKey)
 
         let tagsRow = NSStackView(views: [
-            NSTextField(labelWithStringCompat: "Tags"),
+            NSTextField(labelWithString: "Tags"),
             tagsField.view
             ], orientation: .horizontal, stretched: true)
 

@@ -9,7 +9,7 @@
 import Foundation
 
 struct CSFunction {
-    struct Invocation: CSDataSerializable, CSDataDeserializable {
+    struct Invocation: CSDataSerializable, CSDataDeserializable, Equatable {
         var name: String = CSFunction.noneFunction.declaration
         var arguments: NamedArguments = [:]
 
@@ -99,7 +99,7 @@ struct CSFunction {
         }
     }
 
-    enum Argument: CSDataSerializable, CSDataDeserializable {
+    enum Argument: CSDataSerializable, CSDataDeserializable, Equatable {
         init(_ data: CSData) {
             switch data.get(key: "type").stringValue {
             case "value":

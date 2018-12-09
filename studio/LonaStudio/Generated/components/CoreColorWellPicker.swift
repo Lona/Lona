@@ -100,7 +100,7 @@ public class CoreColorWellPicker: NSBox {
 
   private func update() {
     colorWellPickerView.colorValue = colorValue
-    colorWellPickerView.onChangeColorValue = onChangeColorValue
+    colorWellPickerView.onChangeColorValue = handleOnChangeColorValue
   }
 
   private func handleOnChangeColorValue(_ arg0: SwiftColor) {

@@ -41,6 +41,12 @@ class CSView: NSBox, CSRendering {
 
     // MARK: Public
 
+    override var frame: NSRect {
+        didSet {
+            innerView.frame = NSRect(origin: .zero, size: frame.size)
+        }
+    }
+
     var layerName: String?
 
     var onClick: (() -> Void)?
@@ -55,59 +61,35 @@ class CSView: NSBox, CSRendering {
         set { innerView.image = newValue }
     }
 
-    override var fillColor: NSColor {
-        get {
-            if multipliedFillColor.alphaComponent <= 0 { return .clear }
-            return multipliedAlpha <= 0
-                ? .clear
-                : multipliedFillColor.withAlphaComponent(multipliedFillColor.alphaComponent * multipliedAlpha)
+    var multipliedBorderColor: NSColor = .clear {
+        didSet {
+            if multipliedBorderColor != oldValue {
+                updateBorderColor()
+            }
         }
-        set {}
     }
 
-    override var borderColor: NSColor {
-        get {
-            if multipliedBorderColor.alphaComponent <= 0 { return .clear }
-            return multipliedAlpha <= 0
-                ? .clear
-                : multipliedBorderColor.withAlphaComponent(multipliedBorderColor.alphaComponent * multipliedAlpha)
+    var multipliedFillColor: NSColor = .clear {
+        didSet {
+            if multipliedFillColor != oldValue {
+                updateFillColor()
+            }
         }
-        set {}
     }
 
-    var multipliedBorderColor: NSColor = .clear
-    var multipliedFillColor: NSColor = .clear
-
-    var opacity: CGFloat = 1
+    var opacity: CGFloat = 1 {
+        didSet {
+            if opacity != oldValue {
+                updateFillColor()
+                updateBorderColor()
+                needsDisplay = true
+            }
+        }
+    }
 
     override var isOpaque: Bool {
         return false
     }
-
-//    private var _drawingToImage = false
-//
-//    override func draw(_ dirtyRect: NSRect) {
-//        if _drawingToImage || opacity >= 1 {
-//            super.draw(dirtyRect)
-//            return
-//        }
-//
-//        drawToImage()
-//    }
-//
-//    private func drawToImage() {
-//        _drawingToImage = true
-//
-//        let rep = bitmapImageRepForCachingDisplay(in: bounds)!
-//        cacheDisplay(in: bounds, to: rep)
-//
-//        let img = NSImage(size: bounds.size)
-//        img.addRepresentation(rep)
-//
-//        img.draw(at: bounds.origin, from: bounds, operation: .copy, fraction: opacity)
-//
-//        _drawingToImage = false
-//    }
 
     // By default, clicking more than once on the parent will cause all subsequent mouseDown
     // events to be sent to the parent, even if they are in the coordinates of its child.
@@ -131,6 +113,14 @@ class CSView: NSBox, CSRendering {
         innerView.addSubview(view)
     }
 
+    func addInnerSubview(_ view: NSView) {
+        innerView.addSubview(view)
+    }
+
+    func getInnerSubviews() -> [NSView] {
+        return innerView.subviews
+    }
+
     // MARK: Private
 
     private let innerView: InnerView
@@ -145,5 +135,25 @@ class CSView: NSBox, CSRendering {
         innerView.imageScaling = .scaleProportionallyUpOrDown
 
         super.addSubview(innerView)
+    }
+
+    private func updateBorderColor() {
+        if multipliedBorderColor.alphaComponent <= 0 {
+            borderColor = .clear
+        } else {
+            borderColor = multipliedAlpha <= 0
+                ? .clear
+                : multipliedBorderColor.withAlphaComponent(multipliedBorderColor.alphaComponent * multipliedAlpha)
+        }
+    }
+
+    private func updateFillColor() {
+        if multipliedFillColor.alphaComponent <= 0 {
+            fillColor = .clear
+        } else {
+            fillColor = multipliedAlpha <= 0
+                ? .clear
+                : multipliedFillColor.withAlphaComponent(multipliedFillColor.alphaComponent * multipliedAlpha)
+        }
     }
 }

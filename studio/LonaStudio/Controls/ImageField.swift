@@ -28,7 +28,7 @@ class ImageField: NSImageView, CSControl {
         registerForDragged()
     }
 
-    let sizeLabel = TextField(labelWithStringCompat: "")
+    let sizeLabel = TextField(labelWithString: "")
 
     override init(frame frameRect: NSRect) {
         super.init(frame: frameRect)

@@ -576,13 +576,13 @@ extension LayerListOutlineView: NSOutlineViewDelegate, NSOutlineViewDataSource {
             if shouldRenderOnSelectionChange {
                 self.onSelectLayer?(item)
             }
+        } else {
+            if shouldRenderOnSelectionChange {
+                self.onSelectLayer?(nil)
+            }
         }
 
         previousRow = selectedRow
-
-        if shouldRenderOnSelectionChange {
-            self.onSelectLayer?(selectedLayer)
-        }
     }
 
     fileprivate func makeChangeWithoutRendering(f: () -> Void) {

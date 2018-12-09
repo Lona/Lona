@@ -54,19 +54,9 @@ class UtilitiesView: NSBox {
         }
     }
 
-    public var parameterList: [CSParameter] {
-        get { return parameterListEditorView.parameterList }
-        set { parameterListEditorView.parameterList = newValue }
-    }
-
     public var onChangeParameterList: (([CSParameter]) -> Void) {
         get { return parameterListEditorView.onChange }
         set { parameterListEditorView.onChange = newValue }
-    }
-
-    public var logicList: [LogicNode] {
-        get { return logicListView.list }
-        set { logicListView.list = newValue }
     }
 
     public var onChangeLogicList: (([LogicNode]) -> Void) {
@@ -74,19 +64,9 @@ class UtilitiesView: NSBox {
         set { logicListView.onChange = newValue }
     }
 
-    public var caseList: [CSCase] {
-        get { return caseListView.list }
-        set { caseListView.list = newValue }
-    }
-
     public var onChangeCaseList: (([CSCase]) -> Void) {
         get { return caseListView.onChange }
         set { caseListView.onChange = newValue }
-    }
-
-    public var metadata: CSData {
-        get { return metadataEditorView.data }
-        set { metadataEditorView.data = newValue }
     }
 
     public var onChangeMetadata: ((CSData) -> Void) {
@@ -94,41 +74,24 @@ class UtilitiesView: NSBox {
         set { metadataEditorView.onChangeData = newValue }
     }
 
-    public var canvasList: [Canvas] {
-        get { return canvasListView.canvasList }
-        set { canvasListView.canvasList = newValue }
-    }
-
-    public var canvasLayout: RenderSurface.Layout {
-        get { return canvasListView.canvasLayout }
-        set { canvasListView.canvasLayout = newValue }
-    }
-
     public var onChangeCanvasList: (([Canvas]) -> Void) {
         get { return canvasListView.onChange }
         set { canvasListView.onChange = newValue }
     }
 
-    public var onChangeCanvasLayout: ((RenderSurface.Layout) -> Void) {
+    public var onChangeCanvasLayout: ((StaticCanvasRenderer.Layout) -> Void) {
         get { return canvasListView.onChangeLayout ?? { _ in } }
         set { canvasListView.onChangeLayout = newValue }
     }
 
     public var component: CSComponent? {
         didSet {
-            logicListView.component = component
-            caseListView.component = component
-            canvasListView.editorView.component = component
-
-            logicList = component?.logic ?? []
-            parameterList = component?.parameters ?? []
-            caseList = component?.cases ?? []
-            canvasList = component?.canvas ?? []
-            canvasLayout = component?.canvasLayoutAxis ?? RenderSurface.Layout.canvasXcaseY
-            metadata = component?.metadata ?? .Null
+            update()
         }
     }
 
+    // TODO: This is likely no longer needed, since update() is called when we switch
+    // between tabs. But we'll need to test thoroughly after we remove it.
     public func reloadData() {
         logicListView.editor?.reloadData()
 
@@ -162,17 +125,33 @@ class UtilitiesView: NSBox {
             guard let view = view else { continue }
 
             if tab == currentTab {
-                self.addSubviewStretched(subview: view)
+                if view.superview != self {
+                    self.addSubviewStretched(subview: view)
+                }
             } else {
-                view.removeFromSuperview()
+                if view.superview == self {
+                    view.removeFromSuperview()
+                }
             }
         }
 
         switch currentTab {
         case .logic:
+            logicListView.component = component
+            logicListView.list = component?.logic ?? []
             logicListView.editor?.reloadData()
-        default:
-            break
+        case .examples:
+            caseListView.component = component
+            caseListView.list = component?.cases ?? []
+            caseListView.editor?.reloadData()
+        case .devices:
+            canvasListView.editorView.component = component
+            canvasListView.canvasList = component?.canvas ?? []
+            canvasListView.canvasLayout = component?.canvasLayoutAxis ?? StaticCanvasRenderer.Layout.canvasXcaseY
+        case .parameters:
+            parameterListEditorView.parameterList = component?.parameters ?? []
+        case .details:
+            metadataEditorView.data = component?.metadata ?? .Null
         }
     }
 }

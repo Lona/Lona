@@ -92,7 +92,7 @@ public class CoreTextInput: NSBox {
 
   private func update() {
     textInputView.textValue = textValue
-    textInputView.onChangeTextValue = onChangeTextValue
+    textInputView.onChangeTextValue = handleOnChangeTextValue
   }
 
   private func handleOnChangeTextValue(_ arg0: String) {

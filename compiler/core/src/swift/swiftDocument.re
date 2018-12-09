@@ -227,8 +227,8 @@ let rec lonaValue =
                ]
              }); */
       } else {
-        Js.log2("Image not handled", rawValue);
-        SwiftIdentifier("RemoteOrAbsoluteImageNotHandled");
+        Js.log2("WARNING: Image not handled", rawValue);
+        Builders.functionCall([imageTypeName(framework)], []);
       };
     | "TextStyle" =>
       let rawValue = value.data |> Json.Decode.string;

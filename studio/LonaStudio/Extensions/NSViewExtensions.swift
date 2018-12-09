@@ -264,3 +264,9 @@ public extension NSView {
         return nil
     }
 }
+
+public extension NSView {
+    var subtreeDescription: String {
+        return value(forKey: "_subtreeDescription") as! String
+    }
+}

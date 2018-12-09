@@ -27,11 +27,11 @@ class CSComponent: DataNode, NSCopying {
         return name ?? "Component"
     }
 
-    var canvasLayoutAxis: RenderSurface.Layout {
+    var canvasLayoutAxis: StaticCanvasRenderer.Layout {
         get {
             return config.get(key: "deviceLayout").stringValue == "yx"
-                ? RenderSurface.Layout.caseXcanvasY
-                : RenderSurface.Layout.canvasXcaseY
+                ? StaticCanvasRenderer.Layout.caseXcanvasY
+                : StaticCanvasRenderer.Layout.canvasXcaseY
         }
         set {
             switch newValue {
@@ -129,7 +129,10 @@ class CSComponent: DataNode, NSCopying {
     }
 
     func copy(with zone: NSZone? = nil) -> Any {
-        return CSComponent(name: name, canvas: canvas, rootLayer: rootLayer, parameters: parameters, cases: cases, logic: logic, config: config, metadata: metadata)
+        let serialized = toData()
+        let copy = CSComponent(serialized!)
+
+        return copy as Any
     }
 
     func child(at index: Int) -> Any {
@@ -245,5 +248,18 @@ class CSComponent: DataNode, NSCopying {
 
     static func componentName(from url: URL) -> String {
         return url.deletingPathExtension().lastPathComponent
+    }
+}
+
+extension CSComponent: Equatable {
+    static func == (lhs: CSComponent, rhs: CSComponent) -> Bool {
+        return (lhs.name == rhs.name &&
+            lhs.canvas == rhs.canvas &&
+            lhs.rootLayer == rhs.rootLayer &&
+            lhs.parameters == rhs.parameters &&
+            lhs.cases == rhs.cases &&
+            lhs.logic == rhs.logic &&
+            lhs.config == rhs.config &&
+            lhs.metadata == rhs.metadata)
     }
 }

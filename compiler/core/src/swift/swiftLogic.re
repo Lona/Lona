@@ -21,10 +21,10 @@ let toSwiftAST =
           |> List.find((parameter: Types.parameter) =>
                parameter.name == ParameterKey.fromString(parameterName)
              );
-        switch (parameter.ltype) {
-        | Function(_) =>
-          Ast.SwiftIdentifier("handle" ++ Format.upperFirst(parameterName))
-        | _ => Ast.SwiftIdentifier(List.hd(tail))
+        if (SwiftComponentParameter.isFunction(config, parameter)) {
+          Ast.SwiftIdentifier("handle" ++ Format.upperFirst(parameterName));
+        } else {
+          Ast.SwiftIdentifier(List.hd(tail));
         };
       | "layers" =>
         switch (tail) {

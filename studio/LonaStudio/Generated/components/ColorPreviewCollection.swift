@@ -185,15 +185,15 @@ public class ColorPreviewCollection: NSBox {
 
   private func update() {}
 
-  private func handleOnSelectColor(_ arg0: CSColor) {
+  private func handleOnSelectColor(_ arg0: CSColor?) {
     onSelectColor?(arg0)
   }
 
-  private func handleOnChangeColor(_ arg0: CSColor) {
+  private func handleOnChangeColor(_ arg0: CSColor?) {
     onChangeColor?(arg0)
   }
 
-  private func handleOnDeleteColor(_ arg0: CSColor) {
+  private func handleOnDeleteColor(_ arg0: CSColor?) {
     onDeleteColor?(arg0)
   }
 

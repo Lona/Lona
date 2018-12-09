@@ -11,7 +11,7 @@ import Cocoa
 
 class CanvasListView: NSView {
 
-    var onChangeLayout: ((RenderSurface.Layout) -> Void)?
+    var onChangeLayout: ((StaticCanvasRenderer.Layout) -> Void)?
 
     var editorView: CanvasListEditor
 
@@ -55,7 +55,7 @@ class CanvasListView: NSView {
 
     private let popupField: PopupField
 
-    var canvasLayout: RenderSurface.Layout {
+    var canvasLayout: StaticCanvasRenderer.Layout {
         get { return popupField.value == "yx" ? .caseXcanvasY : .canvasXcaseY }
         set { popupField.value = newValue == .caseXcanvasY ? "yx" : "xy" }
     }
@@ -106,7 +106,7 @@ class CanvasListView: NSView {
         }
 
         popupField.onChange = { value in
-            self.onChangeLayout?(value == "xy" ? RenderSurface.Layout.canvasXcaseY : RenderSurface.Layout.caseXcanvasY)
+            self.onChangeLayout?(value == "xy" ? StaticCanvasRenderer.Layout.canvasXcaseY : StaticCanvasRenderer.Layout.caseXcanvasY)
         }
         popupField.controlSize = .small
         popupField.font = NSFont.systemFont(ofSize: NSFont.systemFontSize(for: .small))

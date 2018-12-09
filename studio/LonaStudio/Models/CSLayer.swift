@@ -54,7 +54,6 @@ extension CSData {
 }
 
 class CSLayer: CSDataDeserializable, CSDataSerializable, DataNode, NSCopying {
-
     enum BuiltInLayerType: String {
         case view = "View"
         case text = "Text"
@@ -64,7 +63,7 @@ class CSLayer: CSDataDeserializable, CSDataSerializable, DataNode, NSCopying {
         case children = "Children"
     }
 
-    enum LayerType {
+    enum LayerType: Equatable {
         case builtIn(BuiltInLayerType)
         case custom(String)
 
@@ -750,5 +749,15 @@ class CSLayer: CSDataDeserializable, CSDataSerializable, DataNode, NSCopying {
         ])
 
         return CSValue(type: type, data: data)
+    }
+}
+
+extension CSLayer: Equatable {
+    static func == (lhs: CSLayer, rhs: CSLayer) -> Bool {
+        return (lhs.name == rhs.name &&
+            lhs.type == rhs.type &&
+            lhs.children == rhs.children &&
+            lhs.parameters == rhs.parameters &&
+            lhs.metadata == rhs.metadata)
     }
 }

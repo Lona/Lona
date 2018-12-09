@@ -13,7 +13,7 @@
         "parameters": [
           {
             "label": "_",
-            "type": "CSColor"
+            "type": "CSColor?"
           }
         ]
       }
