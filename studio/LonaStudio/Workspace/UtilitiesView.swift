@@ -54,29 +54,14 @@ class UtilitiesView: NSBox {
         }
     }
 
-    public var parameterList: [CSParameter] {
-        get { return parameterListEditorView.parameterList }
-        set { parameterListEditorView.parameterList = newValue }
-    }
-
     public var onChangeParameterList: (([CSParameter]) -> Void) {
         get { return parameterListEditorView.onChange }
         set { parameterListEditorView.onChange = newValue }
     }
 
-    public var logicList: [LogicNode] {
-        get { return logicListView.list }
-        set { logicListView.list = newValue }
-    }
-
     public var onChangeLogicList: (([LogicNode]) -> Void) {
         get { return logicListView.onChange }
         set { logicListView.onChange = newValue }
-    }
-
-    public var caseList: [CSCase] {
-        get { return caseListView.list }
-        set { caseListView.list = newValue }
     }
 
     public var onChangeCaseList: (([CSCase]) -> Void) {
@@ -92,11 +77,6 @@ class UtilitiesView: NSBox {
     public var onChangeMetadata: ((CSData) -> Void) {
         get { return metadataEditorView.onChangeData }
         set { metadataEditorView.onChangeData = newValue }
-    }
-
-    public var canvasList: [Canvas] {
-        get { return canvasListView.canvasList }
-        set { canvasListView.canvasList = newValue }
     }
 
     public var canvasLayout: StaticCanvasRenderer.Layout {
@@ -116,16 +96,7 @@ class UtilitiesView: NSBox {
 
     public var component: CSComponent? {
         didSet {
-            logicListView.component = component
-            caseListView.component = component
-            canvasListView.editorView.component = component
-
-            logicList = component?.logic ?? []
-            parameterList = component?.parameters ?? []
-            caseList = component?.cases ?? []
-            canvasList = component?.canvas ?? []
-            canvasLayout = component?.canvasLayoutAxis ?? StaticCanvasRenderer.Layout.canvasXcaseY
-            metadata = component?.metadata ?? .Null
+            update()
         }
     }
 
@@ -162,17 +133,33 @@ class UtilitiesView: NSBox {
             guard let view = view else { continue }
 
             if tab == currentTab {
-                self.addSubviewStretched(subview: view)
+                if view.superview != self {
+                    self.addSubviewStretched(subview: view)
+                }
             } else {
-                view.removeFromSuperview()
+                if view.superview == self {
+                    view.removeFromSuperview()
+                }
             }
         }
 
         switch currentTab {
         case .logic:
+            logicListView.component = component
+            logicListView.list = component?.logic ?? []
             logicListView.editor?.reloadData()
-        default:
-            break
+        case .examples:
+            caseListView.component = component
+            caseListView.list = component?.cases ?? []
+            caseListView.editor?.reloadData()
+        case .devices:
+            canvasListView.editorView.component = component
+            canvasListView.canvasList = component?.canvas ?? []
+            canvasListView.canvasLayout = component?.canvasLayoutAxis ?? StaticCanvasRenderer.Layout.canvasXcaseY
+        case .parameters:
+            parameterListEditorView.parameterList = component?.parameters ?? []
+        case .details:
+            metadata = component?.metadata ?? .Null
         }
     }
 }
