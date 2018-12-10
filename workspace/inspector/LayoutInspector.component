@@ -1,0 +1,722 @@
+{
+  "devices" : [
+    {
+      "height" : 0,
+      "heightMode" : "At Least",
+      "name" : "Sidebar",
+      "width" : 280
+    }
+  ],
+  "examples" : [
+    {
+      "id" : "Collapsed",
+      "name" : "Collapsed",
+      "params" : {
+        "isExpanded" : false
+      }
+    },
+    {
+      "id" : "Expanded",
+      "name" : "Expanded",
+      "params" : {
+        "isExpanded" : true
+      }
+    }
+  ],
+  "logic" : [
+    {
+      "body" : [
+        {
+          "assignee" : [
+            "layers",
+            "DirectionDropdown",
+            "selectedIndex"
+          ],
+          "content" : {
+            "type" : "LitExpr",
+            "value" : {
+              "data" : 0,
+              "type" : "WholeNumber"
+            }
+          },
+          "type" : "AssignExpr"
+        }
+      ],
+      "condition" : {
+        "left" : [
+          "parameters",
+          "direction"
+        ],
+        "op" : "==",
+        "right" : {
+          "type" : "LitExpr",
+          "value" : {
+            "data" : "horizontal",
+            "type" : {
+              "alias" : "Direction",
+              "name" : "Named",
+              "of" : {
+                "cases" : [
+                  "horizontal",
+                  "vertical"
+                ],
+                "name" : "Enum"
+              }
+            }
+          }
+        },
+        "type" : "BinExpr"
+      },
+      "type" : "IfExpr"
+    },
+    {
+      "body" : [
+        {
+          "assignee" : [
+            "layers",
+            "DirectionDropdown",
+            "selectedIndex"
+          ],
+          "content" : {
+            "type" : "LitExpr",
+            "value" : {
+              "data" : 1,
+              "type" : "WholeNumber"
+            }
+          },
+          "type" : "AssignExpr"
+        }
+      ],
+      "condition" : {
+        "left" : [
+          "parameters",
+          "direction"
+        ],
+        "op" : "==",
+        "right" : {
+          "type" : "LitExpr",
+          "value" : {
+            "data" : "vertical",
+            "type" : {
+              "alias" : "Direction",
+              "name" : "Named",
+              "of" : {
+                "cases" : [
+                  "horizontal",
+                  "vertical"
+                ],
+                "name" : "Enum"
+              }
+            }
+          }
+        },
+        "type" : "BinExpr"
+      },
+      "type" : "IfExpr"
+    },
+    {
+      "body" : [
+        {
+          "assignee" : [
+            "layers",
+            "HorizontalAlignment",
+            "selectedIndex"
+          ],
+          "content" : {
+            "type" : "LitExpr",
+            "value" : {
+              "data" : 0,
+              "type" : "WholeNumber"
+            }
+          },
+          "type" : "AssignExpr"
+        }
+      ],
+      "condition" : {
+        "left" : [
+          "parameters",
+          "horizontalAlignment"
+        ],
+        "op" : "==",
+        "right" : {
+          "type" : "LitExpr",
+          "value" : {
+            "data" : "left",
+            "type" : {
+              "alias" : "HorizontalAlignment",
+              "name" : "Named",
+              "of" : {
+                "cases" : [
+                  "left",
+                  "center",
+                  "right"
+                ],
+                "name" : "Enum"
+              }
+            }
+          }
+        },
+        "type" : "BinExpr"
+      },
+      "type" : "IfExpr"
+    },
+    {
+      "body" : [
+        {
+          "assignee" : [
+            "layers",
+            "HorizontalAlignment",
+            "selectedIndex"
+          ],
+          "content" : {
+            "type" : "LitExpr",
+            "value" : {
+              "data" : 1,
+              "type" : "WholeNumber"
+            }
+          },
+          "type" : "AssignExpr"
+        }
+      ],
+      "condition" : {
+        "left" : [
+          "parameters",
+          "horizontalAlignment"
+        ],
+        "op" : "==",
+        "right" : {
+          "type" : "LitExpr",
+          "value" : {
+            "data" : "center",
+            "type" : {
+              "alias" : "HorizontalAlignment",
+              "name" : "Named",
+              "of" : {
+                "cases" : [
+                  "left",
+                  "center",
+                  "right"
+                ],
+                "name" : "Enum"
+              }
+            }
+          }
+        },
+        "type" : "BinExpr"
+      },
+      "type" : "IfExpr"
+    },
+    {
+      "body" : [
+        {
+          "assignee" : [
+            "layers",
+            "HorizontalAlignment",
+            "selectedIndex"
+          ],
+          "content" : {
+            "type" : "LitExpr",
+            "value" : {
+              "data" : 2,
+              "type" : "WholeNumber"
+            }
+          },
+          "type" : "AssignExpr"
+        }
+      ],
+      "condition" : {
+        "left" : [
+          "parameters",
+          "horizontalAlignment"
+        ],
+        "op" : "==",
+        "right" : {
+          "type" : "LitExpr",
+          "value" : {
+            "data" : "right",
+            "type" : {
+              "alias" : "HorizontalAlignment",
+              "name" : "Named",
+              "of" : {
+                "cases" : [
+                  "left",
+                  "center",
+                  "right"
+                ],
+                "name" : "Enum"
+              }
+            }
+          }
+        },
+        "type" : "BinExpr"
+      },
+      "type" : "IfExpr"
+    },
+    {
+      "body" : [
+        {
+          "assignee" : [
+            "layers",
+            "VerticalAlignment",
+            "selectedIndex"
+          ],
+          "content" : {
+            "type" : "LitExpr",
+            "value" : {
+              "data" : 0,
+              "type" : "WholeNumber"
+            }
+          },
+          "type" : "AssignExpr"
+        }
+      ],
+      "condition" : {
+        "left" : [
+          "parameters",
+          "verticalAlignment"
+        ],
+        "op" : "==",
+        "right" : {
+          "type" : "LitExpr",
+          "value" : {
+            "data" : "top",
+            "type" : {
+              "alias" : "VerticalAlignment",
+              "name" : "Named",
+              "of" : {
+                "cases" : [
+                  "top",
+                  "middle",
+                  "bottom"
+                ],
+                "name" : "Enum"
+              }
+            }
+          }
+        },
+        "type" : "BinExpr"
+      },
+      "type" : "IfExpr"
+    },
+    {
+      "body" : [
+        {
+          "assignee" : [
+            "layers",
+            "VerticalAlignment",
+            "selectedIndex"
+          ],
+          "content" : {
+            "type" : "LitExpr",
+            "value" : {
+              "data" : 1,
+              "type" : "WholeNumber"
+            }
+          },
+          "type" : "AssignExpr"
+        }
+      ],
+      "condition" : {
+        "left" : [
+          "parameters",
+          "verticalAlignment"
+        ],
+        "op" : "==",
+        "right" : {
+          "type" : "LitExpr",
+          "value" : {
+            "data" : "middle",
+            "type" : {
+              "alias" : "VerticalAlignment",
+              "name" : "Named",
+              "of" : {
+                "cases" : [
+                  "top",
+                  "middle",
+                  "bottom"
+                ],
+                "name" : "Enum"
+              }
+            }
+          }
+        },
+        "type" : "BinExpr"
+      },
+      "type" : "IfExpr"
+    },
+    {
+      "body" : [
+        {
+          "assignee" : [
+            "layers",
+            "VerticalAlignment",
+            "selectedIndex"
+          ],
+          "content" : {
+            "type" : "LitExpr",
+            "value" : {
+              "data" : 2,
+              "type" : "WholeNumber"
+            }
+          },
+          "type" : "AssignExpr"
+        }
+      ],
+      "condition" : {
+        "left" : [
+          "parameters",
+          "verticalAlignment"
+        ],
+        "op" : "==",
+        "right" : {
+          "type" : "LitExpr",
+          "value" : {
+            "data" : "bottom",
+            "type" : {
+              "alias" : "VerticalAlignment",
+              "name" : "Named",
+              "of" : {
+                "cases" : [
+                  "top",
+                  "middle",
+                  "bottom"
+                ],
+                "name" : "Enum"
+              }
+            }
+          }
+        },
+        "type" : "BinExpr"
+      },
+      "type" : "IfExpr"
+    },
+    {
+      "assignee" : [
+        "layers",
+        "DirectionDropdown",
+        "onChangeIndex"
+      ],
+      "content" : [
+        "parameters",
+        "onChangeDirectionIndex"
+      ],
+      "type" : "AssignExpr"
+    },
+    {
+      "assignee" : [
+        "layers",
+        "HorizontalAlignment",
+        "onChangeIndex"
+      ],
+      "content" : [
+        "parameters",
+        "onChangeHorizontalAlignmentIndex"
+      ],
+      "type" : "AssignExpr"
+    },
+    {
+      "assignee" : [
+        "layers",
+        "VerticalAlignment",
+        "onChangeIndex"
+      ],
+      "content" : [
+        "parameters",
+        "onChangeVerticalAlignmentIndex"
+      ],
+      "type" : "AssignExpr"
+    },
+    {
+      "assignee" : [
+        "layers",
+        "ContentContainer",
+        "visible"
+      ],
+      "content" : [
+        "parameters",
+        "isExpanded"
+      ],
+      "type" : "AssignExpr"
+    },
+    {
+      "assignee" : [
+        "layers",
+        "HeaderContainer",
+        "onPress"
+      ],
+      "content" : [
+        "parameters",
+        "onClickHeader"
+      ],
+      "type" : "AssignExpr"
+    },
+    {
+      "body" : [
+        {
+          "assignee" : [
+            "layers",
+            "DisclosureArrow",
+            "text"
+          ],
+          "content" : {
+            "type" : "LitExpr",
+            "value" : {
+              "data" : "▼",
+              "type" : "String"
+            }
+          },
+          "type" : "AssignExpr"
+        }
+      ],
+      "condition" : {
+        "left" : [
+          "parameters",
+          "isExpanded"
+        ],
+        "op" : "==",
+        "right" : {
+          "type" : "LitExpr",
+          "value" : {
+            "data" : true,
+            "type" : "Boolean"
+          }
+        },
+        "type" : "BinExpr"
+      },
+      "type" : "IfExpr"
+    }
+  ],
+  "params" : [
+    {
+      "name" : "direction",
+      "type" : {
+        "alias" : "Direction",
+        "name" : "Named",
+        "of" : {
+          "cases" : [
+            "horizontal",
+            "vertical"
+          ],
+          "name" : "Enum"
+        }
+      }
+    },
+    {
+      "name" : "onChangeDirectionIndex",
+      "type" : {
+        "name" : "Function",
+        "parameters" : [
+          {
+            "label" : "_",
+            "type" : "WholeNumber"
+          }
+        ]
+      }
+    },
+    {
+      "name" : "horizontalAlignment",
+      "type" : {
+        "alias" : "HorizontalAlignment",
+        "name" : "Named",
+        "of" : {
+          "cases" : [
+            "left",
+            "center",
+            "right"
+          ],
+          "name" : "Enum"
+        }
+      }
+    },
+    {
+      "name" : "onChangeHorizontalAlignmentIndex",
+      "type" : {
+        "name" : "Function",
+        "parameters" : [
+          {
+            "label" : "_",
+            "type" : "WholeNumber"
+          }
+        ]
+      }
+    },
+    {
+      "name" : "verticalAlignment",
+      "type" : {
+        "alias" : "VerticalAlignment",
+        "name" : "Named",
+        "of" : {
+          "cases" : [
+            "top",
+            "middle",
+            "bottom"
+          ],
+          "name" : "Enum"
+        }
+      }
+    },
+    {
+      "name" : "onChangeVerticalAlignmentIndex",
+      "type" : {
+        "name" : "Function",
+        "parameters" : [
+          {
+            "label" : "_",
+            "type" : "WholeNumber"
+          }
+        ]
+      }
+    },
+    {
+      "name" : "isExpanded",
+      "type" : "Boolean"
+    },
+    {
+      "name" : "onClickHeader",
+      "type" : {
+        "name" : "Function"
+      }
+    }
+  ],
+  "root" : {
+    "children" : [
+      {
+        "children" : [
+          {
+            "id" : "DisclosureArrow",
+            "params" : {
+              "font" : "sectionTitle",
+              "marginRight" : 4,
+              "opacity" : 0.69999999999999996,
+              "text" : "▶"
+            },
+            "type" : "Lona:Text"
+          },
+          {
+            "children" : [
+              {
+                "id" : "Header",
+                "params" : {
+                  "alignSelf" : "stretch",
+                  "font" : "sectionTitle",
+                  "text" : "Layout"
+                },
+                "type" : "Lona:Text"
+              }
+            ],
+            "id" : "LayoutWrapper",
+            "params" : {
+              "flex" : 1
+            },
+            "type" : "Lona:View"
+          }
+        ],
+        "id" : "HeaderContainer",
+        "params" : {
+          "alignSelf" : "stretch",
+          "flexDirection" : "row",
+          "marginBottom" : 16
+        },
+        "type" : "Lona:View"
+      },
+      {
+        "children" : [
+          {
+            "id" : "DirectionLabel",
+            "params" : {
+              "alignSelf" : "stretch",
+              "font" : "regular",
+              "marginBottom" : 8,
+              "text" : "Direction"
+            },
+            "type" : "Lona:Text"
+          },
+          {
+            "id" : "DirectionDropdown",
+            "params" : {
+              "selectedIndex" : 0,
+              "values" : [
+                "Horizontal",
+                "Vertical"
+              ]
+            },
+            "type" : "ControlledDropdown"
+          },
+          {
+            "id" : "AlignmentLabel",
+            "params" : {
+              "marginTop" : 16,
+              "text" : "Children Alignment"
+            },
+            "type" : "Lona:Text"
+          },
+          {
+            "children" : [
+              {
+                "id" : "HorizontalAlignment",
+                "params" : {
+                  "selectedIndex" : 0,
+                  "values" : [
+                    "Left",
+                    "Center",
+                    "Right"
+                  ]
+                },
+                "type" : "ControlledDropdown"
+              },
+              {
+                "id" : "HSpacer",
+                "params" : {
+                  "height" : 0,
+                  "width" : 20
+                },
+                "type" : "Lona:View"
+              },
+              {
+                "id" : "VerticalAlignment",
+                "params" : {
+                  "selectedIndex" : 0,
+                  "values" : [
+                    "Top",
+                    "Middle",
+                    "Bottom"
+                  ]
+                },
+                "type" : "ControlledDropdown"
+              }
+            ],
+            "id" : "AlignmentContainer",
+            "params" : {
+              "alignSelf" : "stretch",
+              "flexDirection" : "row",
+              "marginTop" : 8
+            },
+            "type" : "Lona:View"
+          }
+        ],
+        "id" : "ContentContainer",
+        "params" : {
+          "alignSelf" : "stretch",
+          "paddingBottom" : 16,
+          "visible" : false
+        },
+        "type" : "Lona:View"
+      },
+      {
+        "id" : "HDivider",
+        "params" : {
+          "alignSelf" : "stretch",
+          "backgroundColor" : "#D8D8D8",
+          "height" : 1
+        },
+        "type" : "Lona:View"
+      }
+    ],
+    "id" : "Container",
+    "params" : {
+      "alignSelf" : "stretch",
+      "paddingTop" : 16
+    },
+    "type" : "Lona:View"
+  }
+}

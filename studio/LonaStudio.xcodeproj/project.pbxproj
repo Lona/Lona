@@ -202,6 +202,7 @@
 		6B6D4427218F55B50016262C /* CGSize+Resizing.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6B6D4426218F55B50016262C /* CGSize+Resizing.swift */; };
 		6B6D4434218F6B070016262C /* NSImage+Resizing.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6B6D4432218F6B070016262C /* NSImage+Resizing.swift */; };
 		6B6D4435218F6B070016262C /* LNAImageView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6B6D4433218F6B070016262C /* LNAImageView.swift */; };
+		6B8D7DA021BED32E0087A3F7 /* LayoutInspector.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6B8D7D9D21BED32E0087A3F7 /* LayoutInspector.swift */; };
 		6BA5BBD72173A7F600F086A7 /* Shadows.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6BA5BBD62173A7F600F086A7 /* Shadows.swift */; };
 		6BA5BBD92174F2A500F086A7 /* FileNavigator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6BA5BBD82174F2A500F086A7 /* FileNavigator.swift */; };
 		6BA5BBDB2174FA2100F086A7 /* FileNavigatorHeader.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6BA5BBDA2174FA2100F086A7 /* FileNavigatorHeader.swift */; };
@@ -465,6 +466,7 @@
 		6B6D4426218F55B50016262C /* CGSize+Resizing.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "CGSize+Resizing.swift"; sourceTree = "<group>"; };
 		6B6D4432218F6B070016262C /* NSImage+Resizing.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "NSImage+Resizing.swift"; sourceTree = "<group>"; };
 		6B6D4433218F6B070016262C /* LNAImageView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = LNAImageView.swift; sourceTree = "<group>"; };
+		6B8D7D9D21BED32E0087A3F7 /* LayoutInspector.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = LayoutInspector.swift; sourceTree = "<group>"; };
 		6BA5BBD62173A7F600F086A7 /* Shadows.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Shadows.swift; sourceTree = "<group>"; };
 		6BA5BBD82174F2A500F086A7 /* FileNavigator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FileNavigator.swift; sourceTree = "<group>"; };
 		6BA5BBDA2174FA2100F086A7 /* FileNavigatorHeader.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = FileNavigatorHeader.swift; sourceTree = "<group>"; };
@@ -806,6 +808,7 @@
 				30F870C420865858007ADA5B /* assets */,
 				30F870C120865858007ADA5B /* components */,
 				6BD96649217E825C0012F173 /* icons */,
+				6B8D7D9C21BED32E0087A3F7 /* inspector */,
 				30F870BF20865858007ADA5B /* screens */,
 			);
 			name = Generated;
@@ -950,6 +953,14 @@
 				3030311F1F34E7200078086F /* Workspace */,
 			);
 			path = LonaStudio;
+			sourceTree = "<group>";
+		};
+		6B8D7D9C21BED32E0087A3F7 /* inspector */ = {
+			isa = PBXGroup;
+			children = (
+				6B8D7D9D21BED32E0087A3F7 /* LayoutInspector.swift */,
+			);
+			path = inspector;
 			sourceTree = "<group>";
 		};
 		6BD96649217E825C0012F173 /* icons */ = {
@@ -1356,6 +1367,7 @@
 				6B0F5B8821386CAE007DBBB2 /* AddColorSheet.swift in Sources */,
 				6B6D441D218B6BBE0016262C /* LNATextField.swift in Sources */,
 				30B5B19F1EC29D84002068CE /* NumberField.swift in Sources */,
+				6B8D7DA021BED32E0087A3F7 /* LayoutInspector.swift in Sources */,
 				30B5B1A71EC3BF4F002068CE /* ColorPickerButton.swift in Sources */,
 				BACCB42B1FEFA26E00B58E32 /* ShadowStyleRowView.swift in Sources */,
 				306D2FF01F847DCB00907B4E /* NSImageExtensions.swift in Sources */,

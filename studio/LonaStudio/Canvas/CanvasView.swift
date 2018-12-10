@@ -394,7 +394,7 @@ extension CanvasView {
             YGNodeSetMeasureFunc(node, measureFunc(node:width:widthMode:height:heightMode:))
         } else {
             for (index, sub) in configuredLayer.children.enumerated() {
-                var child = layoutLayer(configuredLayer: sub, parentLayoutDirection: flexDirection)
+                let child = layoutLayer(configuredLayer: sub, parentLayoutDirection: flexDirection)
 
                 node.insert(child: child, at: index)
             }

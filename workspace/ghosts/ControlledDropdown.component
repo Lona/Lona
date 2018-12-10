@@ -54,7 +54,7 @@
           "marginLeft" : 4,
           "marginRight" : 4,
           "marginTop" : 4,
-          "text" : "Text goes here"
+          "text" : "Value"
         },
         "type" : "Lona:Text"
       },
@@ -70,6 +70,7 @@
     ],
     "id" : "View",
     "params" : {
+      "alignSelf" : "stretch",
       "backgroundColor" : "headerBackground",
       "borderRadius" : 4,
       "flexDirection" : "row"

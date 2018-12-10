@@ -83,7 +83,7 @@ class CSValueField: CSControl {
             }
 
             view = field
-        case .number:
+        case .number, .wholeNumber:
             let field = NumberField(frame: NSRect(x: 0, y: 0, width: 80, height: 16))
 
             field.isBordered = isBordered

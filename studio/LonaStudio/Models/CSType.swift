@@ -289,6 +289,7 @@ indirect enum CSType: Equatable, CSDataSerializable, CSDataDeserializable {
 
     static func from(string: String) -> CSType {
         if let builtin = builtInTypes[string] { return builtin }
+        if let type = LonaModule.current.type(named: string) { return type }
         if let type = userType(named: string) { return type }
 
         switch string {
@@ -310,6 +311,7 @@ indirect enum CSType: Equatable, CSDataSerializable, CSDataDeserializable {
         case (.null, .null): return true
         case (.bool, .bool): return true
         case (.number, .number): return true
+        case (.wholeNumber, .wholeNumber): return true
         case (.string, .string): return true
         case (.array(let l), .array(let r)): return l == r
         case (.dictionary(let l), .dictionary(let r)):
@@ -390,7 +392,9 @@ indirect enum CSType: Equatable, CSDataSerializable, CSDataDeserializable {
             CSValue(type: .string, data: .String("URL")),
             CSValue(type: .string, data: .String("Function")),
             CSValue(type: .string, data: .String("Component"))
-            ] + CSUserTypes.types.map({ CSValue(type: .string, data: $0.toString().toData()) })
+            ] +
+            LonaModule.current.types.map({ CSValue(type: .string, data: $0.toString().toData()) }) +
+            CSUserTypes.types.map({ CSValue(type: .string, data: $0.toString().toData()) })
 
         return CSType.enumeration(values)
     }

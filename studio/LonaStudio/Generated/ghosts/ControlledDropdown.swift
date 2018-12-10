@@ -91,7 +91,7 @@ public class ControlledDropdown: NSBox {
 
     fillColor = Colors.headerBackground
     cornerRadius = 4
-    textView.attributedStringValue = textViewTextStyle.apply(to: "Text goes here")
+    textView.attributedStringValue = textViewTextStyle.apply(to: "Value")
     arrowsView.fillColor = Colors.bluea400
   }
 

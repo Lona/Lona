@@ -111,31 +111,12 @@ class CoreComponentInspectorView: NSStackView {
 
     override var isFlipped: Bool { return true }
 
-    var layoutSection: DisclosureContentRow!
     var textSection: DisclosureContentRow!
     var imageSection: DisclosureContentRow!
     var animationSection: DisclosureContentRow!
     var shadowSection: DisclosureContentRow!
 
-    var directionView = ControlledDropdown(values: ["Horizontal", "Vertical"], selectedIndex: 0)
-    var horizontalAlignmentView = ControlledDropdown(values: ["Left", "Center", "Right"], selectedIndex: 0)
-    var verticalAlignmentView = ControlledDropdown(values: ["Top", "Middle", "Bottom"], selectedIndex: 0)
-
-//    var directionView = PopupField(
-//        frame: NSRect.zero,
-//        values: ["row", "column"],
-//        valueToTitle: ["row": "Horizontal", "column": "Vertical"]
-//    )
-//    var horizontalAlignmentView = PopupField(
-//        frame: NSRect.zero,
-//        values: ["flex-start", "center", "flex-end"],
-//        valueToTitle: ["flex-start": "Left", "center": "Center", "flex-end": "Right"]
-//    )
-//    var verticalAlignmentView = PopupField(
-//        frame: NSRect.zero,
-//        values: ["flex-start", "center", "flex-end"],
-//        valueToTitle: ["flex-start": "Top", "center": "Middle", "flex-end": "Bottom"]
-//    )
+    var layoutInspector = LayoutInspector()
 
     var widthSizingRuleView = PopupField(
         frame: NSRect.zero,
@@ -310,22 +291,6 @@ class CoreComponentInspectorView: NSStackView {
         section.contentEdgeInsets = NSEdgeInsets(top: 0, left: 0, bottom: 15, right: 0)
 
         return section
-    }
-
-    func renderLayoutSection() -> DisclosureContentRow {
-        let alignmentContainer = NSStackView(views: [horizontalAlignmentView, verticalAlignmentView], orientation: .horizontal, stretched: true)
-        alignmentContainer.distribution = .fillEqually
-        alignmentContainer.spacing = 20
-
-        let layoutSection = renderSection(title: "Layout", views: [
-            NSTextField(labelWithString: "Direction"),
-            directionView,
-            NSTextField(labelWithString: "Children Alignment"),
-            alignmentContainer
-        ])
-        layoutSection.addContentSpacing(of: 14, after: directionView)
-
-        return layoutSection
     }
 
     func renderDimensionsSection() -> DisclosureContentRow {
@@ -700,14 +665,13 @@ class CoreComponentInspectorView: NSStackView {
 
     func render(properties: Properties) {
 
-        layoutSection = renderLayoutSection()
         textSection = renderTextSection()
         imageSection = renderImageSection()
         animationSection = renderAnimationSection()
         shadowSection = renderShadowSection()
 
         let sections = [
-            layoutSection!,
+            layoutInspector,
             textSection!,
             renderDimensionsSection(),
             renderPositionSection(),
@@ -753,7 +717,7 @@ class CoreComponentInspectorView: NSStackView {
         switch layerType {
         case .builtIn(.text):
             textSection.isHidden = false
-            layoutSection.isHidden = true
+            layoutInspector.isHidden = true
         case .builtIn(.image), .builtIn(.vectorGraphic):
             imageSection.isHidden = false
         case .builtIn(.animation):
@@ -790,9 +754,6 @@ class CoreComponentInspectorView: NSStackView {
 
         let fields: [(control: CSControl, property: Property)] = [
             // Layout
-//            (directionView, .direction),
-//            (horizontalAlignmentView, .horizontalAlignment),
-//            (verticalAlignmentView, .verticalAlignment),
             (heightSizingRuleView, .heightSizingRule),
             (widthSizingRuleView, .widthSizingRule),
 
@@ -929,17 +890,24 @@ class CoreComponentInspectorView: NSStackView {
             )
         }
 
-        directionView.onChangeIndex = { index in
+        layoutInspector.isExpanded = UserDefaults.standard.bool(forKey: "layoutInspectorExpanded")
+        layoutInspector.onClickHeader = { [unowned self] in
+            let newValue = !self.layoutInspector.isExpanded
+            self.layoutInspector.isExpanded = newValue
+            UserDefaults.standard.set(newValue, forKey: "layoutInspectorExpanded")
+        }
+
+        layoutInspector.onChangeDirectionIndex = { index in
             let newValue = (index == 1 ? "column" : "row").toData()
             change(property: Property.direction, to: newValue)
         }
 
-        horizontalAlignmentView.onChangeIndex = { index in
+        layoutInspector.onChangeHorizontalAlignmentIndex = { index in
             let newValue = self.alignmentValue(for: index).toData()
             change(property: Property.horizontalAlignment, to: newValue)
         }
 
-        verticalAlignmentView.onChangeIndex = { index in
+        layoutInspector.onChangeVerticalAlignmentIndex = { index in
             let newValue = self.alignmentValue(for: index).toData()
             change(property: Property.verticalAlignment, to: newValue)
         }
@@ -958,29 +926,34 @@ class CoreComponentInspectorView: NSStackView {
         }
     }
 
-    private func alignmentIndex(for value: CSData) -> Int {
-        switch value.stringValue {
-        case "flex-start":
-            return 0
-        case "center":
-            return 1
-        case "flex-end":
-            return 2
-        default:
-            return -1
-        }
-    }
-
     private func update(property: Property, value: CSData?) {
         guard let value = value else { return }
 
         switch property {
         case .direction:
-            directionView.selectedIndex = value.stringValue == "column" ? 1 : 0
+            layoutInspector.direction = value.stringValue == "column" ? .vertical : .horizontal
         case .horizontalAlignment:
-            horizontalAlignmentView.selectedIndex = alignmentIndex(for: value)
+            switch value.stringValue {
+            case "flex-start":
+                layoutInspector.horizontalAlignment = .left
+            case "center":
+                layoutInspector.horizontalAlignment = .center
+            case "flex-end":
+                layoutInspector.horizontalAlignment = .right
+            default:
+                Swift.print("WARNING: Invalid horizontalAlignment")
+            }
         case .verticalAlignment:
-            verticalAlignmentView.selectedIndex = alignmentIndex(for: value)
+            switch value.stringValue {
+            case "flex-start":
+                layoutInspector.verticalAlignment = .top
+            case "center":
+                layoutInspector.verticalAlignment = .middle
+            case "flex-end":
+                layoutInspector.verticalAlignment = .bottom
+            default:
+                Swift.print("WARNING: Invalid verticalAlignment")
+            }
         default:
             break
         }

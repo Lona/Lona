@@ -100,7 +100,7 @@ class LayerInspectorView: CoreComponentInspectorView {
             case .heightSizingRule:
                 layer.heightSizingRule = DimensionSizingRule.fromString(rawValue: value.stringValue)
                 changeType = .full
-            
+
             // Box Model
             case .position: layer.position = PositionType(rawValue: value.stringValue)
             case .top: layer.top = value.numberValue

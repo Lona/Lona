@@ -208,7 +208,15 @@ let rec lonaValue =
       };
     }
   | Variant(_) => SwiftIdentifier("." ++ (value.data |> Json.Decode.string))
-  | Array(_) => SwiftIdentifier("PLACEHOLDER")
+  | Array(elementType) =>
+    let elements =
+      value.data
+      |> Json.Decode.array(x => x)
+      |> Array.to_list
+      |> List.map(json =>
+           lonaValue(framework, config, {ltype: elementType, data: json})
+         );
+    LiteralExpression(Array(elements));
   | Function(_) => SwiftIdentifier("PLACEHOLDER")
   | Named(alias, subtype) =>
     switch (alias) {
