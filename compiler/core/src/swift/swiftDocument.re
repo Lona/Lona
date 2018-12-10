@@ -143,7 +143,8 @@ let rec typeAnnotationDoc =
   | Named("Color", _) => TypeName(colorTypeName(framework))
   | Named(name, _) => TypeName(name)
   | Function(_, _) => TypeName("(() -> Void)?")
-  | Array(_) => TypeName("ARRAY PLACEHOLDER")
+  | Array(elementType) =>
+    ArrayType(typeAnnotationDoc(framework, elementType))
   | Variant(_) => TypeName("VARIANT PLACEHOLDER")
   };
 

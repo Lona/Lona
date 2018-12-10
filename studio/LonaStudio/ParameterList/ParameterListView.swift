@@ -112,6 +112,10 @@ class ParameterListView: NSOutlineView, NSOutlineViewDataSource, NSOutlineViewDe
             ]
 
             switch parameter.type {
+            case .array(let elementType):
+                let fieldsValue = CSValue(type: CSType.parameterType(), data: .String(elementType.toString()))
+
+                components.append(.value("typedef", fieldsValue, []))
             case .dictionary(let schema):
                 let recordFieldType = CSType.dictionary([
                     "key": (CSType.string, .write),
@@ -204,6 +208,10 @@ class ParameterListView: NSOutlineView, NSOutlineViewDataSource, NSOutlineViewDe
                     }
                 case "typedef":
                     switch parameter.type {
+                    case .array:
+                        let elementType = CSType.from(string: value.data.stringValue)
+
+                        parameter.type = CSType.array(elementType)
                     case .dictionary:
                         let schema: CSType.Schema = value.data.arrayValue.key({ field in
                             let key = field.get(key: "key").stringValue

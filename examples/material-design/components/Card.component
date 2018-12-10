@@ -24,6 +24,7 @@
       "id" : "Headline_only",
       "name" : "Headline only",
       "params" : {
+        "body" : null,
         "headline" : "Headline Only",
         "image" : "https:\/\/picsum.photos\/600\/600?image=20"
       }

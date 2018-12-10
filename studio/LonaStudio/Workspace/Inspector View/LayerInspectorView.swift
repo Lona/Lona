@@ -26,8 +26,6 @@ class LayerInspectorView: CoreComponentInspectorView {
             CoreComponentInspectorView.Property.verticalAlignment: CSData.String(layer.verticalAlignment),
             CoreComponentInspectorView.Property.widthSizingRule: CSData.String(layer.widthSizingRule.toString()),
             CoreComponentInspectorView.Property.heightSizingRule: CSData.String(layer.heightSizingRule.toString()),
-            CoreComponentInspectorView.Property.itemSpacing: CSData.Number(layer.itemSpacing ?? 0),
-            CoreComponentInspectorView.Property.itemSpacingRule: CSData.String(layer.itemSpacingRule.toString()),
 
             // Box Model
             CoreComponentInspectorView.Property.position: CSData.String(layer.position?.rawValue ?? "relative"),
@@ -102,11 +100,7 @@ class LayerInspectorView: CoreComponentInspectorView {
             case .heightSizingRule:
                 layer.heightSizingRule = DimensionSizingRule.fromString(rawValue: value.stringValue)
                 changeType = .full
-            case .itemSpacingRule:
-                layer.itemSpacingRule = DimensionSizingRule.fromString(rawValue: value.stringValue)
-                changeType = .full
-            case .itemSpacing: layer.itemSpacing = value.numberValue
-
+            
             // Box Model
             case .position: layer.position = PositionType(rawValue: value.stringValue)
             case .top: layer.top = value.numberValue

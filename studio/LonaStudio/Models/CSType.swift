@@ -156,6 +156,7 @@ indirect enum CSType: Equatable, CSDataSerializable, CSDataDeserializable {
         case .bool: return "Boolean"
         case .number: return "Number"
         case .string: return "String"
+        case .array: return "Array"
         case .dictionary: return "Record"
         case .variant: return "Variant"
         case .function: return "Function"
@@ -373,6 +374,7 @@ indirect enum CSType: Equatable, CSDataSerializable, CSDataDeserializable {
             CSValue(type: .string, data: .String("Boolean")),
             CSValue(type: .string, data: .String("Number")),
             CSValue(type: .string, data: .String("String")),
+            CSValue(type: .string, data: .String("Array")),
             CSValue(type: .string, data: .String("Record")),
             CSValue(type: .string, data: .String("Variant")),
             CSValue(type: .string, data: .String("Unit")),
@@ -392,6 +394,7 @@ indirect enum CSType: Equatable, CSDataSerializable, CSDataDeserializable {
             "Boolean": CSType.bool,
             "Number": CSType.number,
             "String": CSType.string,
+            "Array": CSType.array(.unit),
             "Record": CSEmptyRecordType,
             "Variant": CSEmptyVariantType,
             "Unit": CSType.unit,

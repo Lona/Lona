@@ -1,0 +1,71 @@
+{
+  "devices" : [
+    {
+      "height" : 0,
+      "heightMode" : "At Least",
+      "name" : "iPhone SE",
+      "width" : 320
+    }
+  ],
+  "examples" : [
+    {
+      "id" : "Default",
+      "name" : "Default",
+      "params" : {
+
+      }
+    }
+  ],
+  "logic" : [
+
+  ],
+  "params" : [
+    {
+      "name" : "values",
+      "type" : {
+        "name" : "Array",
+        "of" : "String"
+      }
+    },
+    {
+      "name" : "selectedIndex",
+      "type" : "Number"
+    },
+    {
+      "name" : "onChangeIndex",
+      "type" : "String"
+    }
+  ],
+  "root" : {
+    "children" : [
+      {
+        "id" : "Text",
+        "params" : {
+          "flex" : 1,
+          "marginBottom" : 4,
+          "marginLeft" : 4,
+          "marginRight" : 4,
+          "marginTop" : 4,
+          "text" : "Text goes here"
+        },
+        "type" : "Lona:Text"
+      },
+      {
+        "id" : "Arrows",
+        "params" : {
+          "alignSelf" : "stretch",
+          "backgroundColor" : "bluea400",
+          "width" : 16
+        },
+        "type" : "Lona:View"
+      }
+    ],
+    "id" : "View",
+    "params" : {
+      "backgroundColor" : "headerBackground",
+      "borderRadius" : 4,
+      "flexDirection" : "row"
+    },
+    "type" : "Lona:View"
+  }
+}
