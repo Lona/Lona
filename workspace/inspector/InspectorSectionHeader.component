@@ -1,0 +1,143 @@
+{
+  "devices" : [
+    {
+      "height" : 0,
+      "heightMode" : "At Least",
+      "name" : "Sidebar",
+      "width" : 280
+    }
+  ],
+  "examples" : [
+    {
+      "id" : "Default",
+      "name" : "Default",
+      "params" : {
+        "isExpanded" : false
+      }
+    },
+    {
+      "id" : "Default",
+      "name" : "Default",
+      "params" : {
+        "isExpanded" : true
+      }
+    }
+  ],
+  "logic" : [
+    {
+      "assignee" : [
+        "layers",
+        "HeaderContainer",
+        "onPress"
+      ],
+      "content" : [
+        "parameters",
+        "onClick"
+      ],
+      "type" : "AssignExpr"
+    },
+    {
+      "assignee" : [
+        "layers",
+        "Header",
+        "text"
+      ],
+      "content" : [
+        "parameters",
+        "titleText"
+      ],
+      "type" : "AssignExpr"
+    },
+    {
+      "body" : [
+        {
+          "assignee" : [
+            "layers",
+            "DisclosureArrow",
+            "text"
+          ],
+          "content" : {
+            "type" : "LitExpr",
+            "value" : {
+              "data" : "▼",
+              "type" : "String"
+            }
+          },
+          "type" : "AssignExpr"
+        }
+      ],
+      "condition" : {
+        "left" : [
+          "parameters",
+          "isExpanded"
+        ],
+        "op" : "==",
+        "right" : {
+          "type" : "LitExpr",
+          "value" : {
+            "data" : true,
+            "type" : "Boolean"
+          }
+        },
+        "type" : "BinExpr"
+      },
+      "type" : "IfExpr"
+    }
+  ],
+  "params" : [
+    {
+      "name" : "titleText",
+      "type" : "String"
+    },
+    {
+      "name" : "isExpanded",
+      "type" : "Boolean"
+    },
+    {
+      "name" : "onClick",
+      "type" : {
+        "name" : "Function"
+      }
+    }
+  ],
+  "root" : {
+    "children" : [
+      {
+        "id" : "DisclosureArrow",
+        "params" : {
+          "font" : "sectionTitle",
+          "marginRight" : 4,
+          "opacity" : 0.69999999999999996,
+          "text" : "▶"
+        },
+        "type" : "Lona:Text"
+      },
+      {
+        "children" : [
+          {
+            "id" : "Header",
+            "params" : {
+              "alignSelf" : "stretch",
+              "font" : "sectionTitle",
+              "text" : "Layout"
+            },
+            "type" : "Lona:Text"
+          }
+        ],
+        "id" : "LayoutWrapper",
+        "params" : {
+          "flex" : 1
+        },
+        "type" : "Lona:View"
+      }
+    ],
+    "id" : "HeaderContainer",
+    "params" : {
+      "alignSelf" : "stretch",
+      "flexDirection" : "row",
+      "paddingBottom" : 16,
+      "paddingTop" : 16
+    },
+    "type" : "Lona:View"
+  }
+}

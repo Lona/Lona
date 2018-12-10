@@ -441,49 +441,26 @@
     {
       "assignee" : [
         "layers",
-        "HeaderContainer",
-        "onPress"
+        "InspectorSectionHeader",
+        "isExpanded"
+      ],
+      "content" : [
+        "parameters",
+        "isExpanded"
+      ],
+      "type" : "AssignExpr"
+    },
+    {
+      "assignee" : [
+        "layers",
+        "InspectorSectionHeader",
+        "onClick"
       ],
       "content" : [
         "parameters",
         "onClickHeader"
       ],
       "type" : "AssignExpr"
-    },
-    {
-      "body" : [
-        {
-          "assignee" : [
-            "layers",
-            "DisclosureArrow",
-            "text"
-          ],
-          "content" : {
-            "type" : "LitExpr",
-            "value" : {
-              "data" : "▼",
-              "type" : "String"
-            }
-          },
-          "type" : "AssignExpr"
-        }
-      ],
-      "condition" : {
-        "left" : [
-          "parameters",
-          "isExpanded"
-        ],
-        "op" : "==",
-        "right" : {
-          "type" : "LitExpr",
-          "value" : {
-            "data" : true,
-            "type" : "Boolean"
-          }
-        },
-        "type" : "BinExpr"
-      },
-      "type" : "IfExpr"
     }
   ],
   "params" : [
@@ -581,43 +558,11 @@
   "root" : {
     "children" : [
       {
-        "children" : [
-          {
-            "id" : "DisclosureArrow",
-            "params" : {
-              "font" : "sectionTitle",
-              "marginRight" : 4,
-              "opacity" : 0.69999999999999996,
-              "text" : "▶"
-            },
-            "type" : "Lona:Text"
-          },
-          {
-            "children" : [
-              {
-                "id" : "Header",
-                "params" : {
-                  "alignSelf" : "stretch",
-                  "font" : "sectionTitle",
-                  "text" : "Layout"
-                },
-                "type" : "Lona:Text"
-              }
-            ],
-            "id" : "LayoutWrapper",
-            "params" : {
-              "flex" : 1
-            },
-            "type" : "Lona:View"
-          }
-        ],
-        "id" : "HeaderContainer",
+        "id" : "InspectorSectionHeader",
         "params" : {
-          "alignSelf" : "stretch",
-          "flexDirection" : "row",
-          "marginBottom" : 16
+          "titleText" : "Layout"
         },
-        "type" : "Lona:View"
+        "type" : "InspectorSectionHeader"
       },
       {
         "children" : [
@@ -714,8 +659,7 @@
     ],
     "id" : "Container",
     "params" : {
-      "alignSelf" : "stretch",
-      "paddingTop" : 16
+      "alignSelf" : "stretch"
     },
     "type" : "Lona:View"
   }

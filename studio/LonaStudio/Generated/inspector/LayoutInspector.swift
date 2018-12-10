@@ -16,8 +16,6 @@ public class LayoutInspector: NSBox {
     setUpConstraints()
 
     update()
-
-    addTrackingArea(trackingArea)
   }
 
   public convenience init(
@@ -48,12 +46,6 @@ public class LayoutInspector: NSBox {
     setUpConstraints()
 
     update()
-
-    addTrackingArea(trackingArea)
-  }
-
-  deinit {
-    removeTrackingArea(trackingArea)
   }
 
   // MARK: Public
@@ -124,15 +116,7 @@ public class LayoutInspector: NSBox {
 
   // MARK: Private
 
-  private lazy var trackingArea = NSTrackingArea(
-    rect: self.frame,
-    options: [.mouseEnteredAndExited, .activeAlways, .mouseMoved, .inVisibleRect],
-    owner: self)
-
-  private var headerContainerView = NSBox()
-  private var disclosureArrowView = LNATextField(labelWithString: "")
-  private var layoutWrapperView = NSBox()
-  private var headerView = LNATextField(labelWithString: "")
+  private var inspectorSectionHeaderView = InspectorSectionHeader()
   private var contentContainerView = NSBox()
   private var directionLabelView = LNATextField(labelWithString: "")
   private var directionDropdownView = ControlledDropdown()
@@ -143,17 +127,11 @@ public class LayoutInspector: NSBox {
   private var verticalAlignmentView = ControlledDropdown()
   private var hDividerView = NSBox()
 
-  private var disclosureArrowViewTextStyle = TextStyles.sectionTitle
-  private var headerViewTextStyle = TextStyles.sectionTitle
   private var directionLabelViewTextStyle = TextStyles.regular
   private var alignmentLabelViewTextStyle = TextStyles.regular
 
-  private var headerContainerViewHovered = false
-  private var headerContainerViewPressed = false
-  private var headerContainerViewOnPress: (() -> Void)?
-
-  private var hDividerViewTopAnchorHeaderContainerViewBottomAnchorConstraint: NSLayoutConstraint?
-  private var contentContainerViewTopAnchorHeaderContainerViewBottomAnchorConstraint: NSLayoutConstraint?
+  private var hDividerViewTopAnchorInspectorSectionHeaderViewBottomAnchorConstraint: NSLayoutConstraint?
+  private var contentContainerViewTopAnchorInspectorSectionHeaderViewBottomAnchorConstraint: NSLayoutConstraint?
   private var contentContainerViewLeadingAnchorLeadingAnchorConstraint: NSLayoutConstraint?
   private var contentContainerViewTrailingAnchorTrailingAnchorConstraint: NSLayoutConstraint?
   private var hDividerViewTopAnchorContentContainerViewBottomAnchorConstraint: NSLayoutConstraint?
@@ -190,20 +168,12 @@ public class LayoutInspector: NSBox {
     boxType = .custom
     borderType = .noBorder
     contentViewMargins = .zero
-    headerContainerView.boxType = .custom
-    headerContainerView.borderType = .noBorder
-    headerContainerView.contentViewMargins = .zero
     contentContainerView.boxType = .custom
     contentContainerView.borderType = .noBorder
     contentContainerView.contentViewMargins = .zero
     hDividerView.boxType = .custom
     hDividerView.borderType = .noBorder
     hDividerView.contentViewMargins = .zero
-    disclosureArrowView.lineBreakMode = .byWordWrapping
-    layoutWrapperView.boxType = .custom
-    layoutWrapperView.borderType = .noBorder
-    layoutWrapperView.contentViewMargins = .zero
-    headerView.lineBreakMode = .byWordWrapping
     directionLabelView.lineBreakMode = .byWordWrapping
     alignmentLabelView.lineBreakMode = .byWordWrapping
     alignmentContainerView.boxType = .custom
@@ -213,12 +183,9 @@ public class LayoutInspector: NSBox {
     hSpacerView.borderType = .noBorder
     hSpacerView.contentViewMargins = .zero
 
-    addSubview(headerContainerView)
+    addSubview(inspectorSectionHeaderView)
     addSubview(contentContainerView)
     addSubview(hDividerView)
-    headerContainerView.addSubview(disclosureArrowView)
-    headerContainerView.addSubview(layoutWrapperView)
-    layoutWrapperView.addSubview(headerView)
     contentContainerView.addSubview(directionLabelView)
     contentContainerView.addSubview(directionDropdownView)
     contentContainerView.addSubview(alignmentLabelView)
@@ -227,13 +194,7 @@ public class LayoutInspector: NSBox {
     alignmentContainerView.addSubview(hSpacerView)
     alignmentContainerView.addSubview(verticalAlignmentView)
 
-    disclosureArrowViewTextStyle = TextStyles.sectionTitle
-    disclosureArrowView.attributedStringValue =
-      disclosureArrowViewTextStyle.apply(to: disclosureArrowView.attributedStringValue)
-    disclosureArrowView.alphaValue = 0.7
-    headerView.attributedStringValue = headerViewTextStyle.apply(to: "Layout")
-    headerViewTextStyle = TextStyles.sectionTitle
-    headerView.attributedStringValue = headerViewTextStyle.apply(to: headerView.attributedStringValue)
+    inspectorSectionHeaderView.titleText = "Layout"
     directionLabelView.attributedStringValue = directionLabelViewTextStyle.apply(to: "Direction")
     directionLabelViewTextStyle = TextStyles.regular
     directionLabelView.attributedStringValue =
@@ -247,12 +208,9 @@ public class LayoutInspector: NSBox {
 
   private func setUpConstraints() {
     translatesAutoresizingMaskIntoConstraints = false
-    headerContainerView.translatesAutoresizingMaskIntoConstraints = false
+    inspectorSectionHeaderView.translatesAutoresizingMaskIntoConstraints = false
     contentContainerView.translatesAutoresizingMaskIntoConstraints = false
     hDividerView.translatesAutoresizingMaskIntoConstraints = false
-    disclosureArrowView.translatesAutoresizingMaskIntoConstraints = false
-    layoutWrapperView.translatesAutoresizingMaskIntoConstraints = false
-    headerView.translatesAutoresizingMaskIntoConstraints = false
     directionLabelView.translatesAutoresizingMaskIntoConstraints = false
     directionDropdownView.translatesAutoresizingMaskIntoConstraints = false
     alignmentLabelView.translatesAutoresizingMaskIntoConstraints = false
@@ -261,60 +219,25 @@ public class LayoutInspector: NSBox {
     hSpacerView.translatesAutoresizingMaskIntoConstraints = false
     verticalAlignmentView.translatesAutoresizingMaskIntoConstraints = false
 
-    let headerContainerViewTopAnchorConstraint = headerContainerView
+    let inspectorSectionHeaderViewTopAnchorConstraint = inspectorSectionHeaderView
       .topAnchor
-      .constraint(equalTo: topAnchor, constant: 16)
-    let headerContainerViewLeadingAnchorConstraint = headerContainerView
+      .constraint(equalTo: topAnchor)
+    let inspectorSectionHeaderViewLeadingAnchorConstraint = inspectorSectionHeaderView
       .leadingAnchor
       .constraint(equalTo: leadingAnchor)
-    let headerContainerViewTrailingAnchorConstraint = headerContainerView
+    let inspectorSectionHeaderViewTrailingAnchorConstraint = inspectorSectionHeaderView
       .trailingAnchor
       .constraint(equalTo: trailingAnchor)
     let hDividerViewBottomAnchorConstraint = hDividerView.bottomAnchor.constraint(equalTo: bottomAnchor)
     let hDividerViewLeadingAnchorConstraint = hDividerView.leadingAnchor.constraint(equalTo: leadingAnchor)
     let hDividerViewTrailingAnchorConstraint = hDividerView.trailingAnchor.constraint(equalTo: trailingAnchor)
-    let disclosureArrowViewHeightAnchorParentConstraint = disclosureArrowView
-      .heightAnchor
-      .constraint(lessThanOrEqualTo: headerContainerView.heightAnchor)
-    let layoutWrapperViewHeightAnchorParentConstraint = layoutWrapperView
-      .heightAnchor
-      .constraint(lessThanOrEqualTo: headerContainerView.heightAnchor)
-    let disclosureArrowViewLeadingAnchorConstraint = disclosureArrowView
-      .leadingAnchor
-      .constraint(equalTo: headerContainerView.leadingAnchor)
-    let disclosureArrowViewTopAnchorConstraint = disclosureArrowView
-      .topAnchor
-      .constraint(equalTo: headerContainerView.topAnchor)
-    let disclosureArrowViewBottomAnchorConstraint = disclosureArrowView
-      .bottomAnchor
-      .constraint(equalTo: headerContainerView.bottomAnchor)
-    let layoutWrapperViewTrailingAnchorConstraint = layoutWrapperView
-      .trailingAnchor
-      .constraint(equalTo: headerContainerView.trailingAnchor)
-    let layoutWrapperViewLeadingAnchorConstraint = layoutWrapperView
-      .leadingAnchor
-      .constraint(equalTo: disclosureArrowView.trailingAnchor, constant: 4)
-    let layoutWrapperViewTopAnchorConstraint = layoutWrapperView
-      .topAnchor
-      .constraint(equalTo: headerContainerView.topAnchor)
-    let layoutWrapperViewBottomAnchorConstraint = layoutWrapperView
-      .bottomAnchor
-      .constraint(equalTo: headerContainerView.bottomAnchor)
     let hDividerViewHeightAnchorConstraint = hDividerView.heightAnchor.constraint(equalToConstant: 1)
-    let headerViewTopAnchorConstraint = headerView.topAnchor.constraint(equalTo: layoutWrapperView.topAnchor)
-    let headerViewBottomAnchorConstraint = headerView.bottomAnchor.constraint(equalTo: layoutWrapperView.bottomAnchor)
-    let headerViewLeadingAnchorConstraint = headerView
-      .leadingAnchor
-      .constraint(equalTo: layoutWrapperView.leadingAnchor)
-    let headerViewTrailingAnchorConstraint = headerView
-      .trailingAnchor
-      .constraint(equalTo: layoutWrapperView.trailingAnchor)
-    let hDividerViewTopAnchorHeaderContainerViewBottomAnchorConstraint = hDividerView
+    let hDividerViewTopAnchorInspectorSectionHeaderViewBottomAnchorConstraint = hDividerView
       .topAnchor
-      .constraint(equalTo: headerContainerView.bottomAnchor, constant: 16)
-    let contentContainerViewTopAnchorHeaderContainerViewBottomAnchorConstraint = contentContainerView
+      .constraint(equalTo: inspectorSectionHeaderView.bottomAnchor)
+    let contentContainerViewTopAnchorInspectorSectionHeaderViewBottomAnchorConstraint = contentContainerView
       .topAnchor
-      .constraint(equalTo: headerContainerView.bottomAnchor, constant: 16)
+      .constraint(equalTo: inspectorSectionHeaderView.bottomAnchor)
     let contentContainerViewLeadingAnchorLeadingAnchorConstraint = contentContainerView
       .leadingAnchor
       .constraint(equalTo: leadingAnchor)
@@ -405,16 +328,14 @@ public class LayoutInspector: NSBox {
     let hSpacerViewHeightAnchorConstraint = hSpacerView.heightAnchor.constraint(equalToConstant: 0)
     let hSpacerViewWidthAnchorConstraint = hSpacerView.widthAnchor.constraint(equalToConstant: 20)
 
-    disclosureArrowViewHeightAnchorParentConstraint.priority = NSLayoutConstraint.Priority.defaultLow
-    layoutWrapperViewHeightAnchorParentConstraint.priority = NSLayoutConstraint.Priority.defaultLow
     horizontalAlignmentViewHeightAnchorParentConstraint.priority = NSLayoutConstraint.Priority.defaultLow
     hSpacerViewHeightAnchorParentConstraint.priority = NSLayoutConstraint.Priority.defaultLow
     verticalAlignmentViewHeightAnchorParentConstraint.priority = NSLayoutConstraint.Priority.defaultLow
 
-    self.hDividerViewTopAnchorHeaderContainerViewBottomAnchorConstraint =
-      hDividerViewTopAnchorHeaderContainerViewBottomAnchorConstraint
-    self.contentContainerViewTopAnchorHeaderContainerViewBottomAnchorConstraint =
-      contentContainerViewTopAnchorHeaderContainerViewBottomAnchorConstraint
+    self.hDividerViewTopAnchorInspectorSectionHeaderViewBottomAnchorConstraint =
+      hDividerViewTopAnchorInspectorSectionHeaderViewBottomAnchorConstraint
+    self.contentContainerViewTopAnchorInspectorSectionHeaderViewBottomAnchorConstraint =
+      contentContainerViewTopAnchorInspectorSectionHeaderViewBottomAnchorConstraint
     self.contentContainerViewLeadingAnchorLeadingAnchorConstraint =
       contentContainerViewLeadingAnchorLeadingAnchorConstraint
     self.contentContainerViewTrailingAnchorTrailingAnchorConstraint =
@@ -475,26 +396,13 @@ public class LayoutInspector: NSBox {
 
     NSLayoutConstraint.activate(
       [
-        headerContainerViewTopAnchorConstraint,
-        headerContainerViewLeadingAnchorConstraint,
-        headerContainerViewTrailingAnchorConstraint,
+        inspectorSectionHeaderViewTopAnchorConstraint,
+        inspectorSectionHeaderViewLeadingAnchorConstraint,
+        inspectorSectionHeaderViewTrailingAnchorConstraint,
         hDividerViewBottomAnchorConstraint,
         hDividerViewLeadingAnchorConstraint,
         hDividerViewTrailingAnchorConstraint,
-        disclosureArrowViewHeightAnchorParentConstraint,
-        layoutWrapperViewHeightAnchorParentConstraint,
-        disclosureArrowViewLeadingAnchorConstraint,
-        disclosureArrowViewTopAnchorConstraint,
-        disclosureArrowViewBottomAnchorConstraint,
-        layoutWrapperViewTrailingAnchorConstraint,
-        layoutWrapperViewLeadingAnchorConstraint,
-        layoutWrapperViewTopAnchorConstraint,
-        layoutWrapperViewBottomAnchorConstraint,
-        hDividerViewHeightAnchorConstraint,
-        headerViewTopAnchorConstraint,
-        headerViewBottomAnchorConstraint,
-        headerViewLeadingAnchorConstraint,
-        headerViewTrailingAnchorConstraint
+        hDividerViewHeightAnchorConstraint
       ] +
         conditionalConstraints(contentContainerViewIsHidden: contentContainerView.isHidden))
   }
@@ -504,10 +412,10 @@ public class LayoutInspector: NSBox {
 
     switch (contentContainerViewIsHidden) {
       case (true):
-        constraints = [hDividerViewTopAnchorHeaderContainerViewBottomAnchorConstraint]
+        constraints = [hDividerViewTopAnchorInspectorSectionHeaderViewBottomAnchorConstraint]
       case (false):
         constraints = [
-          contentContainerViewTopAnchorHeaderContainerViewBottomAnchorConstraint,
+          contentContainerViewTopAnchorInspectorSectionHeaderViewBottomAnchorConstraint,
           contentContainerViewLeadingAnchorLeadingAnchorConstraint,
           contentContainerViewTrailingAnchorTrailingAnchorConstraint,
           hDividerViewTopAnchorContentContainerViewBottomAnchorConstraint,
@@ -549,7 +457,6 @@ public class LayoutInspector: NSBox {
     let contentContainerViewIsHidden = contentContainerView.isHidden
 
     directionDropdownView.selectedIndex = 0
-    disclosureArrowView.attributedStringValue = disclosureArrowViewTextStyle.apply(to: "▶")
     horizontalAlignmentView.selectedIndex = 0
     verticalAlignmentView.selectedIndex = 0
     if direction == .horizontal {
@@ -580,10 +487,8 @@ public class LayoutInspector: NSBox {
     horizontalAlignmentView.onChangeIndex = handleOnChangeHorizontalAlignmentIndex
     verticalAlignmentView.onChangeIndex = handleOnChangeVerticalAlignmentIndex
     contentContainerView.isHidden = !isExpanded
-    headerContainerViewOnPress = handleOnClickHeader
-    if isExpanded {
-      disclosureArrowView.attributedStringValue = disclosureArrowViewTextStyle.apply(to: "▼")
-    }
+    inspectorSectionHeaderView.isExpanded = isExpanded
+    inspectorSectionHeaderView.onClick = handleOnClickHeader
 
     if contentContainerView.isHidden != contentContainerViewIsHidden {
       NSLayoutConstraint.deactivate(conditionalConstraints(contentContainerViewIsHidden: contentContainerViewIsHidden))
@@ -605,59 +510,6 @@ public class LayoutInspector: NSBox {
 
   private func handleOnClickHeader() {
     onClickHeader?()
-  }
-
-  private func updateHoverState(with event: NSEvent) {
-    let headerContainerViewHovered = headerContainerView
-      .bounds
-      .contains(headerContainerView.convert(event.locationInWindow, from: nil))
-    if headerContainerViewHovered != self.headerContainerViewHovered {
-      self.headerContainerViewHovered = headerContainerViewHovered
-
-      update()
-    }
-  }
-
-  public override func mouseEntered(with event: NSEvent) {
-    updateHoverState(with: event)
-  }
-
-  public override func mouseMoved(with event: NSEvent) {
-    updateHoverState(with: event)
-  }
-
-  public override func mouseDragged(with event: NSEvent) {
-    updateHoverState(with: event)
-  }
-
-  public override func mouseExited(with event: NSEvent) {
-    updateHoverState(with: event)
-  }
-
-  public override func mouseDown(with event: NSEvent) {
-    let headerContainerViewPressed = headerContainerView
-      .bounds
-      .contains(headerContainerView.convert(event.locationInWindow, from: nil))
-    if headerContainerViewPressed != self.headerContainerViewPressed {
-      self.headerContainerViewPressed = headerContainerViewPressed
-
-      update()
-    }
-  }
-
-  public override func mouseUp(with event: NSEvent) {
-    let headerContainerViewClicked = headerContainerViewPressed &&
-      headerContainerView.bounds.contains(headerContainerView.convert(event.locationInWindow, from: nil))
-
-    if headerContainerViewPressed {
-      headerContainerViewPressed = false
-
-      update()
-    }
-
-    if headerContainerViewClicked {
-      headerContainerViewOnPress?()
-    }
   }
 }
 
