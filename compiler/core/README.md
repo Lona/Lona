@@ -59,12 +59,14 @@ In the case of `swift`, the options are:
 
 Check out the scripts section of the `package.json` to see some examples. There is a `snapshot` command for each compiler target.
 
+> The following examples assume you've built the development version. If you're using the `npm` version, replace `node src/main.bs.js` with `lonac`.
+
 ### Generate colors
 
 This will output the generated colors code to `stdout`. You may also pass the `colors.json` file through `stdin` instead of as a parameter, if you prefer.
 
 ```bash
-lonac colors [target] [path-to-colors.json]
+node src/main.bs.js colors [target] [path-to-colors.json]
 ```
 
 ### Generate component
@@ -72,7 +74,7 @@ lonac colors [target] [path-to-colors.json]
 The will output the generated component code to `stdout`.
 
 ```
-lonac component [target] [path-to-component.component]
+node src/main.bs.js component [target] [path-to-component.component]
 ```
 
 ### Generate workspace
@@ -80,5 +82,5 @@ lonac component [target] [path-to-component.component]
 This will generate the colors, text styles, and all components, writing them to `output-directory` in the same structure as the input workspace directory.
 
 ```
-lonac workspace [target] [path-to-workspace] [output-directory]
+node src/main.bs.js workspace [target] [path-to-workspace] [output-directory]
 ```
