@@ -29,11 +29,19 @@
     },
     {
       "name" : "selectedIndex",
-      "type" : "Number"
+      "type" : "WholeNumber"
     },
     {
       "name" : "onChangeIndex",
-      "type" : "String"
+      "type" : {
+        "name" : "Function",
+        "parameters" : [
+          {
+            "label" : "_",
+            "type" : "WholeNumber"
+          }
+        ]
+      }
     }
   ],
   "root" : {

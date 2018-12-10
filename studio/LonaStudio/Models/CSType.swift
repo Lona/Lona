@@ -20,6 +20,7 @@ indirect enum CSType: Equatable, CSDataSerializable, CSDataDeserializable {
     case null
     case bool
     case number
+    case wholeNumber
     case string
     case array(CSType)
     case dictionary(Schema)
@@ -44,6 +45,7 @@ indirect enum CSType: Equatable, CSDataSerializable, CSDataDeserializable {
             switch string {
             case "Null": self = .null
             case "Number": self = .number
+            case "WholeNumber": self = .wholeNumber
             case "Boolean": self = .bool
             case "String": self = .string
             case "Unit": self = .unit
@@ -155,6 +157,7 @@ indirect enum CSType: Equatable, CSDataSerializable, CSDataDeserializable {
         case .unit: return "Unit"
         case .bool: return "Boolean"
         case .number: return "Number"
+        case .wholeNumber: return "WholeNumber"
         case .string: return "String"
         case .array: return "Array"
         case .dictionary: return "Record"
@@ -188,6 +191,7 @@ indirect enum CSType: Equatable, CSDataSerializable, CSDataDeserializable {
         case .unit: return "Unit".toData()
         case .bool: return .String("Boolean")
         case .number: return .String("Number")
+        case .wholeNumber: return .String("WholeNumber")
         case .string: return .String("String")
         case .array(let innerType):
             return .Object([
@@ -290,6 +294,7 @@ indirect enum CSType: Equatable, CSDataSerializable, CSDataDeserializable {
         switch string {
         case "Boolean": return .bool
         case "Number": return .number
+        case "WholeNumber": return .wholeNumber
         case "String": return .string
         case "Function": return CSHandlerType
         default: return .any
@@ -373,6 +378,7 @@ indirect enum CSType: Equatable, CSDataSerializable, CSDataDeserializable {
         let values: [CSValue] = [
             CSValue(type: .string, data: .String("Boolean")),
             CSValue(type: .string, data: .String("Number")),
+            CSValue(type: .string, data: .String("WholeNumber")),
             CSValue(type: .string, data: .String("String")),
             CSValue(type: .string, data: .String("Array")),
             CSValue(type: .string, data: .String("Record")),
@@ -393,6 +399,7 @@ indirect enum CSType: Equatable, CSDataSerializable, CSDataDeserializable {
         var data: [String: CSType] = [
             "Boolean": CSType.bool,
             "Number": CSType.number,
+            "WholeNumber": CSType.wholeNumber,
             "String": CSType.string,
             "Array": CSType.array(.unit),
             "Record": CSEmptyRecordType,

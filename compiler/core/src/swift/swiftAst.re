@@ -62,6 +62,13 @@ and typeAnnotation =
     )
   | OptionalType(typeAnnotation)
   | TupleType(list(typeAnnotation))
+  | FunctionType(
+      {
+        .
+        "arguments": list(typeAnnotation),
+        "returnType": option(typeAnnotation),
+      },
+    )
   | TypeInheritanceList({. "list": list(typeAnnotation)})
 and pattern =
   | WildcardPattern

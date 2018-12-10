@@ -18,8 +18,8 @@ public class ControlledDropdown: NSBox {
     update()
   }
 
-  public convenience init(selectedIndex: CGFloat, values: [String]) {
-    self.init(Parameters(selectedIndex: selectedIndex, values: values))
+  public convenience init(values: [String], selectedIndex: Int) {
+    self.init(Parameters(values: values, selectedIndex: selectedIndex))
   }
 
   public convenience init() {
@@ -39,7 +39,16 @@ public class ControlledDropdown: NSBox {
 
   // MARK: Public
 
-  public var selectedIndex: CGFloat {
+  public var values: [String] {
+    get { return parameters.values }
+    set {
+      if parameters.values != newValue {
+        parameters.values = newValue
+      }
+    }
+  }
+
+  public var selectedIndex: Int {
     get { return parameters.selectedIndex }
     set {
       if parameters.selectedIndex != newValue {
@@ -48,13 +57,9 @@ public class ControlledDropdown: NSBox {
     }
   }
 
-  public var values: [String] {
-    get { return parameters.values }
-    set {
-      if parameters.values != newValue {
-        parameters.values = newValue
-      }
-    }
+  public var onChangeIndex: ((Int) -> Void)? {
+    get { return parameters.onChangeIndex }
+    set { parameters.onChangeIndex = newValue }
   }
 
   public var parameters: Parameters {
@@ -128,26 +133,32 @@ public class ControlledDropdown: NSBox {
   }
 
   private func update() {}
+
+  private func handleOnChangeIndex(_ arg0: Int) {
+    onChangeIndex?(arg0)
+  }
 }
 
 // MARK: - Parameters
 
 extension ControlledDropdown {
   public struct Parameters: Equatable {
-    public var selectedIndex: CGFloat
     public var values: [String]
+    public var selectedIndex: Int
+    public var onChangeIndex: ((Int) -> Void)?
 
-    public init(selectedIndex: CGFloat, values: [String]) {
-      self.selectedIndex = selectedIndex
+    public init(values: [String], selectedIndex: Int, onChangeIndex: ((Int) -> Void)? = nil) {
       self.values = values
+      self.selectedIndex = selectedIndex
+      self.onChangeIndex = onChangeIndex
     }
 
     public init() {
-      self.init(selectedIndex: 0, values: [])
+      self.init(values: [], selectedIndex: 0)
     }
 
     public static func ==(lhs: Parameters, rhs: Parameters) -> Bool {
-      return lhs.selectedIndex == rhs.selectedIndex && lhs.values == rhs.values
+      return lhs.values == rhs.values && lhs.selectedIndex == rhs.selectedIndex
     }
   }
 }
@@ -171,12 +182,12 @@ extension ControlledDropdown {
       self.parameters = parameters
     }
 
-    public init(selectedIndex: CGFloat, values: [String]) {
-      self.init(Parameters(selectedIndex: selectedIndex, values: values))
+    public init(values: [String], selectedIndex: Int, onChangeIndex: ((Int) -> Void)? = nil) {
+      self.init(Parameters(values: values, selectedIndex: selectedIndex, onChangeIndex: onChangeIndex))
     }
 
     public init() {
-      self.init(selectedIndex: 0, values: [])
+      self.init(values: [], selectedIndex: 0)
     }
   }
 }

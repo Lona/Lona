@@ -133,6 +133,7 @@ let rec typeAnnotationDoc =
     switch (typeName) {
     | "Boolean" => TypeName("Bool")
     | "Number" => TypeName("CGFloat")
+    | "WholeNumber" => TypeName("Int")
     | "URL" =>
       typeAnnotationDoc(framework, Types.Named(typeName, Types.stringType))
     | "Color" =>
@@ -142,7 +143,17 @@ let rec typeAnnotationDoc =
   | Named("URL", _) => TypeName(imageTypeName(framework))
   | Named("Color", _) => TypeName(colorTypeName(framework))
   | Named(name, _) => TypeName(name)
-  | Function(_, _) => TypeName("(() -> Void)?")
+  | Function(arguments, _) =>
+    OptionalType(
+      FunctionType({
+        "arguments":
+          arguments
+          |> List.map((arg: Types.lonaFunctionParameter) =>
+               typeAnnotationDoc(framework, arg.ltype)
+             ),
+        "returnType": None,
+      }),
+    )
   | Array(elementType) =>
     ArrayType(typeAnnotationDoc(framework, elementType))
   | Variant(_) => TypeName("VARIANT PLACEHOLDER")
@@ -165,6 +176,8 @@ let rec lonaValue =
     | "Boolean" => LiteralExpression(Boolean(value.data |> Json.Decode.bool))
     | "Number" =>
       LiteralExpression(FloatingPoint(value.data |> Json.Decode.float))
+    | "WholeNumber" =>
+      LiteralExpression(Integer(value.data |> Json.Decode.int))
     | "String" => LiteralExpression(String(value.data |> Json.Decode.string))
     | "TextStyle"
     | "Color"
@@ -278,6 +291,7 @@ let rec defaultValueForLonaType =
     switch (typeName) {
     | "Boolean" => LiteralExpression(Boolean(false))
     | "Number" => LiteralExpression(FloatingPoint(0.))
+    | "WholeNumber" => LiteralExpression(Integer(0))
     | "String" => LiteralExpression(String(""))
     | "TextStyle"
     | "Color" =>

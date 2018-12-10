@@ -111,6 +111,7 @@ struct CSValue: Equatable, CSDataSerializable, CSDataDeserializable {
         switch type {
         case .bool: return CSValue(type: type, data: .Bool(false))
         case .number: return CSValue(type: type, data: .Number(0))
+        case .wholeNumber: return CSValue(type: type, data: .Number(0))
         case .string: return CSValue(type: type, data: .String(""))
         case .named("Color", .string): return CSValue(type: type, data: .String("black"))
         case .named:
@@ -160,6 +161,7 @@ struct CSValue: Equatable, CSDataSerializable, CSDataDeserializable {
         switch type {
         case .bool: return CSValue(type: type, data: .Bool(false))
         case .number: return CSValue(type: type, data: .Number(0))
+        case .wholeNumber: return CSValue(type: type, data: .Number(0))
         case .string: return CSValue(type: type, data: .String("Text"))
         case .named("Color", .string): return CSValue(type: type, data: .String("black"))
         case .array: return CSValue(type: type, data: .Array([]))
@@ -182,6 +184,7 @@ struct CSValue: Equatable, CSDataSerializable, CSDataDeserializable {
         switch type {
         case .bool: return CSValue(type: type, data: .Bool(false))
         case .number: return CSValue(type: type, data: .Number(0))
+        case .wholeNumber: return CSValue(type: type, data: .Number(0))
         case .string: return CSValue(type: type, data: .String(""))
         case .named("Color", .string): return CSValue(type: type, data: .String("transparent"))
         case .array: return CSValue(type: type, data: .Array([]))

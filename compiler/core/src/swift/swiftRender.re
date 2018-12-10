@@ -612,6 +612,24 @@ and renderTypeAnnotation = (node: SwiftAst.typeAnnotation) =>
     s("(")
     <+> group(o |> List.map(renderTypeAnnotation) |> join(s(", ")))
     <+> s(")")
+  | FunctionType(o) =>
+    let arguments =
+      group(
+        o##arguments |> List.map(renderTypeAnnotation) |> join(s(", ")),
+      );
+    group(
+      s("(")
+      <+> s("(")
+      <+> arguments
+      <+> s(") -> ")
+      <+> (
+        switch (o##returnType) {
+        | None => s("Void")
+        | Some(returnType) => renderTypeAnnotation(returnType)
+        }
+      )
+      <+> s(")"),
+    );
   | TypeInheritanceList(o) =>
     group(o##list |> List.map(renderTypeAnnotation) |> join(s(", ")))
   }
