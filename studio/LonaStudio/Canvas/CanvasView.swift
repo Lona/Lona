@@ -368,10 +368,6 @@ extension CanvasView {
             break
         }
 
-        if layer.itemSpacingRule == .Expand {
-            node.justifyContent = .spaceBetween
-        }
-
         node.paddingTop = CGFloat(configuredLayer.numberValue(paramName: "paddingTop") ?? layer.paddingTop ?? 0)
         node.paddingBottom = CGFloat(configuredLayer.numberValue(paramName: "paddingBottom") ?? layer.paddingBottom ?? 0)
         node.paddingLeft = CGFloat(configuredLayer.numberValue(paramName: "paddingLeft") ?? layer.paddingLeft ?? 0)
@@ -398,16 +394,7 @@ extension CanvasView {
             YGNodeSetMeasureFunc(node, measureFunc(node:width:widthMode:height:heightMode:))
         } else {
             for (index, sub) in configuredLayer.children.enumerated() {
-                var child = layoutLayer(configuredLayer: sub, parentLayoutDirection: flexDirection)
-
-                if layer.itemSpacingRule == .Fixed {
-                    let itemSpacing = CGFloat(configuredLayer.numberValue(paramName: "itemSpacing") ?? layer.itemSpacing ?? 0)
-                    if node.flexDirection == .row && index != 0 {
-                        child.marginLeft += itemSpacing
-                    } else if node.flexDirection == .column && index != 0 {
-                        child.marginTop += itemSpacing
-                    }
-                }
+                let child = layoutLayer(configuredLayer: sub, parentLayoutDirection: flexDirection)
 
                 node.insert(child: child, at: index)
             }

@@ -20,6 +20,7 @@ indirect enum CSType: Equatable, CSDataSerializable, CSDataDeserializable {
     case null
     case bool
     case number
+    case wholeNumber
     case string
     case array(CSType)
     case dictionary(Schema)
@@ -44,6 +45,7 @@ indirect enum CSType: Equatable, CSDataSerializable, CSDataDeserializable {
             switch string {
             case "Null": self = .null
             case "Number": self = .number
+            case "WholeNumber": self = .wholeNumber
             case "Boolean": self = .bool
             case "String": self = .string
             case "Unit": self = .unit
@@ -155,7 +157,9 @@ indirect enum CSType: Equatable, CSDataSerializable, CSDataDeserializable {
         case .unit: return "Unit"
         case .bool: return "Boolean"
         case .number: return "Number"
+        case .wholeNumber: return "WholeNumber"
         case .string: return "String"
+        case .array: return "Array"
         case .dictionary: return "Record"
         case .variant: return "Variant"
         case .function: return "Function"
@@ -187,6 +191,7 @@ indirect enum CSType: Equatable, CSDataSerializable, CSDataDeserializable {
         case .unit: return "Unit".toData()
         case .bool: return .String("Boolean")
         case .number: return .String("Number")
+        case .wholeNumber: return .String("WholeNumber")
         case .string: return .String("String")
         case .array(let innerType):
             return .Object([
@@ -284,11 +289,13 @@ indirect enum CSType: Equatable, CSDataSerializable, CSDataDeserializable {
 
     static func from(string: String) -> CSType {
         if let builtin = builtInTypes[string] { return builtin }
+        if let type = LonaModule.current.type(named: string) { return type }
         if let type = userType(named: string) { return type }
 
         switch string {
         case "Boolean": return .bool
         case "Number": return .number
+        case "WholeNumber": return .wholeNumber
         case "String": return .string
         case "Function": return CSHandlerType
         default: return .any
@@ -304,6 +311,7 @@ indirect enum CSType: Equatable, CSDataSerializable, CSDataDeserializable {
         case (.null, .null): return true
         case (.bool, .bool): return true
         case (.number, .number): return true
+        case (.wholeNumber, .wholeNumber): return true
         case (.string, .string): return true
         case (.array(let l), .array(let r)): return l == r
         case (.dictionary(let l), .dictionary(let r)):
@@ -372,7 +380,9 @@ indirect enum CSType: Equatable, CSDataSerializable, CSDataDeserializable {
         let values: [CSValue] = [
             CSValue(type: .string, data: .String("Boolean")),
             CSValue(type: .string, data: .String("Number")),
+            CSValue(type: .string, data: .String("WholeNumber")),
             CSValue(type: .string, data: .String("String")),
+            CSValue(type: .string, data: .String("Array")),
             CSValue(type: .string, data: .String("Record")),
             CSValue(type: .string, data: .String("Variant")),
             CSValue(type: .string, data: .String("Unit")),
@@ -382,7 +392,9 @@ indirect enum CSType: Equatable, CSDataSerializable, CSDataDeserializable {
             CSValue(type: .string, data: .String("URL")),
             CSValue(type: .string, data: .String("Function")),
             CSValue(type: .string, data: .String("Component"))
-            ] + CSUserTypes.types.map({ CSValue(type: .string, data: $0.toString().toData()) })
+            ] +
+            LonaModule.current.types.map({ CSValue(type: .string, data: $0.toString().toData()) }) +
+            CSUserTypes.types.map({ CSValue(type: .string, data: $0.toString().toData()) })
 
         return CSType.enumeration(values)
     }
@@ -391,7 +403,9 @@ indirect enum CSType: Equatable, CSDataSerializable, CSDataDeserializable {
         var data: [String: CSType] = [
             "Boolean": CSType.bool,
             "Number": CSType.number,
+            "WholeNumber": CSType.wholeNumber,
             "String": CSType.string,
+            "Array": CSType.array(.unit),
             "Record": CSEmptyRecordType,
             "Variant": CSEmptyVariantType,
             "Unit": CSType.unit,

@@ -133,6 +133,7 @@ let rec typeAnnotationDoc =
     switch (typeName) {
     | "Boolean" => TypeName("Bool")
     | "Number" => TypeName("CGFloat")
+    | "WholeNumber" => TypeName("Int")
     | "URL" =>
       typeAnnotationDoc(framework, Types.Named(typeName, Types.stringType))
     | "Color" =>
@@ -142,8 +143,19 @@ let rec typeAnnotationDoc =
   | Named("URL", _) => TypeName(imageTypeName(framework))
   | Named("Color", _) => TypeName(colorTypeName(framework))
   | Named(name, _) => TypeName(name)
-  | Function(_, _) => TypeName("(() -> Void)?")
-  | Array(_) => TypeName("ARRAY PLACEHOLDER")
+  | Function(arguments, _) =>
+    OptionalType(
+      FunctionType({
+        "arguments":
+          arguments
+          |> List.map((arg: Types.lonaFunctionParameter) =>
+               typeAnnotationDoc(framework, arg.ltype)
+             ),
+        "returnType": None,
+      }),
+    )
+  | Array(elementType) =>
+    ArrayType(typeAnnotationDoc(framework, elementType))
   | Variant(_) => TypeName("VARIANT PLACEHOLDER")
   };
 
@@ -164,6 +176,8 @@ let rec lonaValue =
     | "Boolean" => LiteralExpression(Boolean(value.data |> Json.Decode.bool))
     | "Number" =>
       LiteralExpression(FloatingPoint(value.data |> Json.Decode.float))
+    | "WholeNumber" =>
+      LiteralExpression(Integer(value.data |> Json.Decode.int))
     | "String" => LiteralExpression(String(value.data |> Json.Decode.string))
     | "TextStyle"
     | "Color"
@@ -194,7 +208,15 @@ let rec lonaValue =
       };
     }
   | Variant(_) => SwiftIdentifier("." ++ (value.data |> Json.Decode.string))
-  | Array(_) => SwiftIdentifier("PLACEHOLDER")
+  | Array(elementType) =>
+    let elements =
+      value.data
+      |> Json.Decode.array(x => x)
+      |> Array.to_list
+      |> List.map(json =>
+           lonaValue(framework, config, {ltype: elementType, data: json})
+         );
+    LiteralExpression(Array(elements));
   | Function(_) => SwiftIdentifier("PLACEHOLDER")
   | Named(alias, subtype) =>
     switch (alias) {
@@ -277,6 +299,7 @@ let rec defaultValueForLonaType =
     switch (typeName) {
     | "Boolean" => LiteralExpression(Boolean(false))
     | "Number" => LiteralExpression(FloatingPoint(0.))
+    | "WholeNumber" => LiteralExpression(Integer(0))
     | "String" => LiteralExpression(String(""))
     | "TextStyle"
     | "Color" =>

@@ -112,6 +112,10 @@ class ParameterListView: NSOutlineView, NSOutlineViewDataSource, NSOutlineViewDe
             ]
 
             switch parameter.type {
+            case .array(let elementType):
+                let fieldsValue = CSValue(type: CSType.parameterType(), data: .String(elementType.toString()))
+
+                components.append(.value("typedef", fieldsValue, []))
             case .dictionary(let schema):
                 let recordFieldType = CSType.dictionary([
                     "key": (CSType.string, .write),
@@ -125,6 +129,24 @@ class ParameterListView: NSOutlineView, NSOutlineViewDataSource, NSOutlineViewDe
                         "key": key.toData(),
                         "type": (value.type.unwrapOptional() ?? value.type).toString().toData(),
                         "optional": value.type.isOptional().toData()
+                        ])
+                })
+                let fieldsValue = CSValue(type: recordFieldsType, data: CSData.Array(fieldsData))
+
+                components.append(.value("typedef", fieldsValue, []))
+            case .function(let args, _):
+                let recordFieldType = CSType.dictionary([
+                    "label": (CSType.string, .write),
+                    "type": (CSType.parameterType(), .write),
+                    "optional": (CSType.bool, .write)
+                    ])
+                let recordFieldsType = CSType.array(recordFieldType)
+                let fieldsData: [CSData] = args.enumerated().map({ arg in
+                    let (key, value) = arg.element
+                    return CSData.Object([
+                        "label": key.toData(),
+                        "type": value.toString().toData(),
+                        "optional": value.isOptional().toData()
                         ])
                 })
                 let fieldsValue = CSValue(type: recordFieldsType, data: CSData.Array(fieldsData))
@@ -204,6 +226,10 @@ class ParameterListView: NSOutlineView, NSOutlineViewDataSource, NSOutlineViewDe
                     }
                 case "typedef":
                     switch parameter.type {
+                    case .array:
+                        let elementType = CSType.from(string: value.data.stringValue)
+
+                        parameter.type = CSType.array(elementType)
                     case .dictionary:
                         let schema: CSType.Schema = value.data.arrayValue.key({ field in
                             let key = field.get(key: "key").stringValue
@@ -213,6 +239,15 @@ class ParameterListView: NSOutlineView, NSOutlineViewDataSource, NSOutlineViewDe
                         })
 
                         parameter.type = CSType.dictionary(schema)
+                    case .function(_, let returnType):
+                        let schema: [(String, CSType)] = value.data.arrayValue.map({ field in
+                            let label = field.get(key: "label").stringValue
+                            let type = CSType.from(string: field.get(key: "type").stringValue)
+                            let optional = field.get(key: "optional").boolValue
+                            return (label, optional ? type.makeOptional() : type)
+                        })
+
+                        parameter.type = .function(schema, returnType)
                     case .named(let typeName, .variant):
                         let cases: [(String, CSType)] = value.data.arrayValue.map({ field in
                             let tag = field.get(key: "case").stringValue

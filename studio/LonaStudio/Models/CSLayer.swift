@@ -259,35 +259,6 @@ class CSLayer: CSDataDeserializable, CSDataSerializable, DataNode, NSCopying {
         }
     }
 
-    var itemSpacingRule: DimensionSizingRule {
-        get {
-            if itemSpacing != nil {
-                return DimensionSizingRule.Fixed
-            }
-
-            if justifyContent == "space-between" {
-                return DimensionSizingRule.Expand
-            }
-
-            return DimensionSizingRule.Shrink
-        }
-        set {
-            switch newValue {
-            case .Fixed:
-                itemSpacing = 0
-                if justifyContent == "space-between" {
-                    justifyContent = "flex-start"
-                }
-            case .Shrink:
-                removeParameter("itemSpacing")
-                justifyContent = "flex-start"
-            case .Expand:
-                removeParameter("itemSpacing")
-                justifyContent = "space-between"
-            }
-        }
-    }
-
     var resizeMode: ResizeMode? {
         get { return ResizeMode(rawValue: parameters["resizeMode"]?.string ?? "") }
         set { parameters["resizeMode"] = newValue?.rawValue.toData() }
@@ -329,10 +300,6 @@ class CSLayer: CSDataDeserializable, CSDataSerializable, DataNode, NSCopying {
     var flex: Double? {
         get { return parameters["flex"]?.number }
         set { parameters["flex"] = newValue?.toData() }
-    }
-    var itemSpacing: Double? {
-        get { return parameters["itemSpacing"]?.number }
-        set { parameters["itemSpacing"] = newValue?.toData() }
     }
     var width: Double? {
         get { return parameters["width"]?.number }
@@ -461,10 +428,6 @@ class CSLayer: CSDataDeserializable, CSDataSerializable, DataNode, NSCopying {
     var horizontalAlignment: String {
         get {
             if flexDirection == "row" {
-                if itemSpacingRule == .Expand {
-                    return "flex-start"
-                }
-
                 return justifyContent ?? "flex-start"
             } else {
                 return alignItems ?? "flex-start"
@@ -484,10 +447,6 @@ class CSLayer: CSDataDeserializable, CSDataSerializable, DataNode, NSCopying {
             if flexDirection == "row" {
                 return alignItems ?? "flex-start"
             } else {
-                if itemSpacingRule == .Expand {
-                    return "flex-start"
-                }
-
                 return justifyContent ?? "flex-start"
             }
         }

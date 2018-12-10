@@ -41,7 +41,46 @@ class LonaModule {
         return CSComponent(url: componentFile.url)
     }
 
+    var types: [CSType] {
+        if let types = LonaModule.cachedTypes[url] { return types }
+
+        let files = componentFiles().sorted { a, b in a.name < b.name }
+
+        let components = files.map { component(url: $0.url) }.compactMap { $0 }
+
+        let types: [[CSType]] = components.map { component in
+            let types: [CSType?] = component.parameters.map { param in
+                switch param.type {
+                case .named(let name, .variant(let contents)):
+                    return .named((component.name ?? "") + "." + name, .variant(contents))
+                default:
+                    return nil
+                }
+            }
+
+            return types.compactMap { $0 }
+        }
+
+        let flat = Array(types.joined())
+
+        LonaModule.cachedTypes[url] = flat
+
+        return flat
+    }
+
+    func type(named typeName: String) -> CSType? {
+        for type in types {
+            if case CSType.named(let name, _) = type, name == typeName {
+                return type
+            }
+        }
+
+        return nil
+    }
+
     // MARK: - STATIC
+
+    private static var cachedTypes: [URL: [CSType]] = [:]
 
     static var current: LonaModule {
         return LonaModule(url: CSUserPreferences.workspaceURL)
