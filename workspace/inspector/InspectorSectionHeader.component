@@ -106,7 +106,7 @@
         "id" : "DisclosureArrow",
         "params" : {
           "font" : "sectionTitle",
-          "marginRight" : 4,
+          "marginRight" : 10,
           "opacity" : 0.69999999999999996,
           "text" : "▶"
         },

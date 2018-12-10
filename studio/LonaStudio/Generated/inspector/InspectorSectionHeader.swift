@@ -142,7 +142,7 @@ public class InspectorSectionHeader: NSBox {
     let layoutWrapperViewTrailingAnchorConstraint = layoutWrapperView.trailingAnchor.constraint(equalTo: trailingAnchor)
     let layoutWrapperViewLeadingAnchorConstraint = layoutWrapperView
       .leadingAnchor
-      .constraint(equalTo: disclosureArrowView.trailingAnchor, constant: 4)
+      .constraint(equalTo: disclosureArrowView.trailingAnchor, constant: 10)
     let layoutWrapperViewTopAnchorConstraint = layoutWrapperView.topAnchor.constraint(equalTo: topAnchor, constant: 16)
     let layoutWrapperViewBottomAnchorConstraint = layoutWrapperView
       .bottomAnchor
