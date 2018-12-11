@@ -6,46 +6,58 @@ type constraintDefinition = {
   priority: Constraint.layoutPriority,
 };
 
+let frameworkSpecificValue =
+    (framework, container: Types.platformSpecificValue('a)) =>
+  switch (framework) {
+  | SwiftOptions.UIKit => container.iOS
+  | SwiftOptions.AppKit => container.macOS
+  };
+
 module Naming = {
   let layerType =
       (
         config: Config.t,
-        pluginContext: Plugin.context,
         swiftOptions: SwiftOptions.options,
         logic: Logic.logicNode,
         componentName: string,
         useEventIgnoringLayer: bool,
         layer: Types.layer,
       ) => {
+    let override =
+      frameworkSpecificValue(
+        swiftOptions.framework,
+        layer.metadata.backingElementClass,
+      );
+
     let typeName =
-      switch (swiftOptions.framework, layer.typeName) {
-      | (UIKit, Types.View) =>
-        if (Layer.isInteractive(logic, layer)) {
-          "LonaControlView";
-        } else if (useEventIgnoringLayer) {
-          "EventIgnoringView";
-        } else {
-          "UIView";
+      switch (override) {
+      | Some(value) => value
+      | None =>
+        switch (swiftOptions.framework, layer.typeName) {
+        | (UIKit, Types.View) =>
+          if (Layer.isInteractive(logic, layer)) {
+            "LonaControlView";
+          } else if (useEventIgnoringLayer) {
+            "EventIgnoringView";
+          } else {
+            "UIView";
+          }
+        | (UIKit, Text) => "UILabel"
+        | (UIKit, Image) => "BackgroundImageView"
+        | (AppKit, Types.View) => "NSBox"
+        | (AppKit, Text) => "LNATextField"
+        | (AppKit, Image) => "LNAImageView"
+        | (_, VectorGraphic) =>
+          Format.vectorClassName(
+            SwiftComponentParameter.getVectorAssetUrl(layer),
+            None,
+          )
+        | (_, Component(name)) => name
+        | _ => "TypeUnknown"
         }
-      | (UIKit, Text) => "UILabel"
-      | (UIKit, Image) => "BackgroundImageView"
-      | (AppKit, Types.View) => "NSBox"
-      | (AppKit, Text) => "LNATextField"
-      | (AppKit, Image) => "LNAImageView"
-      | (_, VectorGraphic) =>
-        Format.vectorClassName(
-          SwiftComponentParameter.getVectorAssetUrl(layer),
-          None,
-        )
-      | (_, Component(name)) => name
-      | _ => "TypeUnknown"
       };
-    typeName
-    |> Plugin.applyTransformTypePlugins(
-         config.plugins,
-         pluginContext,
-         componentName,
-       );
+
+    typeName |> SwiftPlugin.applyTransformType(config, Some(componentName));
   };
 };
 
@@ -240,7 +252,7 @@ module Doc = {
                "localName": "arg" ++ string_of_int(index),
                "annotation":
                  functionParam.ltype
-                 |> SwiftDocument.typeAnnotationDoc(swiftOptions.framework),
+                 |> SwiftDocument.typeAnnotationDoc(config),
                "defaultValue": None,
              })
            )
@@ -326,10 +338,7 @@ module Doc = {
           "identifier":
             SwiftIdentifier(parameter.name |> ParameterKey.toString),
           "annotation":
-            Some(
-              parameter.ltype
-              |> SwiftDocument.typeAnnotationDoc(swiftOptions.framework),
-            ),
+            Some(parameter.ltype |> SwiftDocument.typeAnnotationDoc(config)),
         }),
       "init": None,
       "block":
@@ -427,14 +436,12 @@ module Doc = {
     };
   };
 
-  let initializerParameter =
-      (swiftOptions: SwiftOptions.options, parameter: Decode.parameter) =>
+  let initializerParameter = (config: Config.t, parameter: Decode.parameter) =>
     Parameter({
       "externalName": None,
       "localName": parameter.name |> ParameterKey.toString,
       "annotation":
-        parameter.ltype
-        |> SwiftDocument.typeAnnotationDoc(swiftOptions.framework),
+        parameter.ltype |> SwiftDocument.typeAnnotationDoc(config),
       "defaultValue": None,
     });
 
@@ -1056,7 +1063,7 @@ module Doc = {
       "right": SwiftIdentifier(parameter.name |> ParameterKey.toString),
     });
 
-  let initIndividualParameters = (config, swiftOptions, parameters) =>
+  let initIndividualParameters = (config, parameters) =>
     InitializerDeclaration({
       "modifiers": [
         AccessLevelModifier(PublicModifier),
@@ -1065,7 +1072,7 @@ module Doc = {
       "parameters":
         parameters
         |> List.filter(param => !Parameter.isFunction(config, param))
-        |> List.map(initializerParameter(swiftOptions)),
+        |> List.map(initializerParameter(config)),
       "failable": None,
       "throws": false,
       "body": [
@@ -1224,11 +1231,6 @@ let generate =
   let nonRootLayers = rootLayer |> Layer.flatten |> List.tl;
   let logic = json |> Decode.Component.logic;
 
-  let pluginContext: Plugin.context = {
-    "target": "swift",
-    "framework": SwiftOptions.frameworkToString(swiftOptions.framework),
-  };
-
   let pressableLayers =
     rootLayer
     |> Layer.flatten
@@ -1266,7 +1268,6 @@ let generate =
           layer,
           Naming.layerType(
             config,
-            pluginContext,
             swiftOptions,
             logic,
             name,
@@ -1377,10 +1378,9 @@ let generate =
 
   let superclass =
     TypeName(
-      Plugin.applyTransformTypePlugins(
-        config.plugins,
-        pluginContext,
-        name,
+      SwiftPlugin.applyTransformType(
+        config,
+        Some(name),
         switch (
           swiftOptions.framework,
           Layer.isInteractive(logic, rootLayer),
@@ -1421,13 +1421,7 @@ let generate =
                         needsTracking,
                       ),
                     ],
-                    [
-                      Doc.initIndividualParameters(
-                        config,
-                        swiftOptions,
-                        parameters,
-                      ),
-                    ],
+                    [Doc.initIndividualParameters(config, parameters)],
                     parameters
                     |> List.filter(param =>
                          !Parameter.isFunction(config, param)
@@ -1550,12 +1544,7 @@ let generate =
                 ),
             }),
           ],
-          SwiftViewModel.parametersExtension(
-            config,
-            swiftOptions,
-            name,
-            parameters,
-          ),
+          SwiftViewModel.parametersExtension(config, name, parameters),
           SwiftViewModel.viewModelExtension(
             config,
             swiftOptions,

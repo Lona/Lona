@@ -7,4 +7,6 @@ type preset =
 type options = {
   preset,
   filterComponents: option(string),
+  swift: SwiftOptions.options,
+  javaScript: JavaScriptOptions.options,
 };

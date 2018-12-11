@@ -12,6 +12,7 @@ type t = {
   userTypesFile: file(UserTypes.file),
   svgFiles: list(file(Svg.node)),
   workspacePath: string,
+  options: Options.options,
 };
 
 module Compiler = {
@@ -132,7 +133,7 @@ let exit = message => {
   {|process.exit(1)|};
 };
 
-let load = path: Js.Promise.t(t) =>
+let load = (options: Options.options, path): Js.Promise.t(t) =>
   switch (Workspace.find(path)) {
   | None =>
     exit(
@@ -143,6 +144,7 @@ let load = path: Js.Promise.t(t) =>
       Workspace.svgFiles(workspacePath)
       |> then_(svgFiles =>
            resolve({
+             options,
              componentNames: Workspace.componentNames(workspacePath),
              plugins: Workspace.compilerFile(workspacePath),
              colorsFile: Workspace.colorsFile(workspacePath),

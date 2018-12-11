@@ -20,12 +20,7 @@ let sortedParameters =
      );
 
 let equatableFunction =
-    (
-      config: Config.t,
-      _swiftOptions: SwiftOptions.options,
-      parameters: list(Types.parameter),
-    )
-    : SwiftAst.node =>
+    (config: Config.t, parameters: list(Types.parameter)): SwiftAst.node =>
   SwiftAst.(
     FunctionDeclaration({
       "name": "==",
@@ -84,8 +79,7 @@ let equatableFunction =
   );
 
 let memberVariableDeclaration =
-    (swiftOptions: SwiftOptions.options, param: Types.parameter)
-    : SwiftAst.node =>
+    (config: Config.t, param: Types.parameter): SwiftAst.node =>
   SwiftAst.(
     VariableDeclaration({
       "modifiers": [AccessLevelModifier(PublicModifier)],
@@ -93,28 +87,19 @@ let memberVariableDeclaration =
         IdentifierPattern({
           "identifier": SwiftIdentifier(ParameterKey.toString(param.name)),
           "annotation":
-            Some(
-              param.ltype
-              |> SwiftDocument.typeAnnotationDoc(swiftOptions.framework),
-            ),
+            Some(param.ltype |> SwiftDocument.typeAnnotationDoc(config)),
         }),
       "init": None,
       "block": None,
     })
   );
 
-let initParameter =
-    (
-      config: Config.t,
-      swiftOptions: SwiftOptions.options,
-      param: Types.parameter,
-    ) =>
+let initParameter = (config: Config.t, param: Types.parameter) =>
   SwiftAst.(
     Parameter({
       "externalName": None,
       "localName": param.name |> ParameterKey.toString,
-      "annotation":
-        param.ltype |> SwiftDocument.typeAnnotationDoc(swiftOptions.framework),
+      "annotation": param.ltype |> SwiftDocument.typeAnnotationDoc(config),
       "defaultValue":
         if (SwiftComponentParameter.isFunction(config, param)
             || LonaValue.isOptionalType(param.ltype)) {
@@ -142,28 +127,17 @@ module Parameters = {
   open SwiftAst;
 
   let init =
-      (
-        config: Config.t,
-        swiftOptions: SwiftOptions.options,
-        parameters: list(Types.parameter),
-      )
-      : SwiftAst.node =>
+      (config: Config.t, parameters: list(Types.parameter)): SwiftAst.node =>
     InitializerDeclaration({
       "modifiers": [AccessLevelModifier(PublicModifier)],
-      "parameters":
-        parameters |> List.map(initParameter(config, swiftOptions)),
+      "parameters": parameters |> List.map(initParameter(config)),
       "failable": None,
       "throws": false,
       "body": parameters |> List.map(initParameterAssignment),
     });
 
   let convenienceInit =
-      (
-        config: Config.t,
-        swiftOptions: SwiftOptions.options,
-        parameters: list(Types.parameter),
-      )
-      : SwiftAst.node =>
+      (config: Config.t, parameters: list(Types.parameter)): SwiftAst.node =>
     InitializerDeclaration({
       "modifiers": [AccessLevelModifier(PublicModifier)],
       "parameters": [],
@@ -187,7 +161,6 @@ module Parameters = {
                        ),
                      "value":
                        SwiftDocument.defaultValueForLonaType(
-                         swiftOptions.framework,
                          config,
                          param.ltype,
                        ),
@@ -258,16 +231,10 @@ module Model = {
     });
 
   let initWithIndividualParameters =
-      (
-        config: Config.t,
-        swiftOptions: SwiftOptions.options,
-        parameters: list(Types.parameter),
-      )
-      : SwiftAst.node =>
+      (config: Config.t, parameters: list(Types.parameter)): SwiftAst.node =>
     InitializerDeclaration({
       "modifiers": [AccessLevelModifier(PublicModifier)],
-      "parameters":
-        parameters |> List.map(initParameter(config, swiftOptions)),
+      "parameters": parameters |> List.map(initParameter(config)),
       "failable": None,
       "throws": false,
       "body": [
@@ -335,7 +302,6 @@ module Model = {
                        ),
                      "value":
                        SwiftDocument.defaultValueForLonaType(
-                         swiftOptions.framework,
                          config,
                          param.ltype,
                        ),
@@ -389,12 +355,7 @@ module Model = {
 };
 
 let parametersStruct =
-    (
-      config: Config.t,
-      swiftOptions: SwiftOptions.options,
-      parameters: list(Types.parameter),
-    )
-    : SwiftAst.node => {
+    (config: Config.t, parameters: list(Types.parameter)): SwiftAst.node => {
   let parameters = sortedParameters(config, parameters);
 
   SwiftAst.(
@@ -404,8 +365,8 @@ let parametersStruct =
       "modifier": Some(PublicModifier),
       "body":
         [
-          parameters |> List.map(memberVariableDeclaration(swiftOptions)),
-          [Parameters.init(config, swiftOptions, parameters)],
+          parameters |> List.map(memberVariableDeclaration(config)),
+          [Parameters.init(config, parameters)],
           List.length(
             parameters
             |> List.filter(param =>
@@ -416,10 +377,9 @@ let parametersStruct =
                ),
           )
           > 0 ?
-            [Parameters.convenienceInit(config, swiftOptions, parameters)] :
-            [],
+            [Parameters.convenienceInit(config, parameters)] : [],
           List.length(parameters) > 0 ?
-            [equatableFunction(config, swiftOptions, parameters)] : [],
+            [equatableFunction(config, parameters)] : [],
         ]
         |> SwiftDocument.joinGroups(Empty),
     })
@@ -450,13 +410,7 @@ let viewModelStruct =
           ],
           [Model.initIdParameters()],
           [Model.init()],
-          [
-            Model.initWithIndividualParameters(
-              config,
-              swiftOptions,
-              parameters,
-            ),
-          ],
+          [Model.initWithIndividualParameters(config, parameters)],
           List.length(
             parameters
             |> List.filter(param =>
@@ -477,7 +431,6 @@ let viewModelStruct =
 let parametersExtension =
     (
       config: Config.t,
-      swiftOptions: SwiftOptions.options,
       className: string,
       parameters: list(Types.parameter),
     )
@@ -490,7 +443,7 @@ let parametersExtension =
       "protocols": [],
       "where": None,
       "modifier": None,
-      "body": [parametersStruct(config, swiftOptions, parameters)],
+      "body": [parametersStruct(config, parameters)],
     }),
   ];
 

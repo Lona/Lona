@@ -21,15 +21,6 @@ let getArgument = name => {
   };
 };
 
-let options: LonaCompilerCore.Options.options = {
-  preset:
-    switch (getArgument("preset")) {
-    | Some("airbnb") => Airbnb
-    | _ => Standard
-    },
-  filterComponents: getArgument("filterComponents"),
-};
-
 let swiftOptions: Swift.Options.options = {
   framework:
     switch (getArgument("framework")) {
@@ -65,6 +56,17 @@ let javaScriptOptions: JavaScriptOptions.options = {
     | Some("styledcomponents") => JavaScriptOptions.StyledComponents
     | _ => JavaScriptOptions.None
     },
+};
+
+let options: LonaCompilerCore.Options.options = {
+  preset:
+    switch (getArgument("preset")) {
+    | Some("airbnb") => Airbnb
+    | _ => Standard
+    },
+  filterComponents: getArgument("filterComponents"),
+  swift: swiftOptions,
+  javaScript: javaScriptOptions,
 };
 
 let exit = message => {
@@ -317,7 +319,7 @@ let findContentsBelow = contents => {
 };
 
 let convertWorkspace = (workspace, output) =>
-  Config.load(workspace)
+  Config.load(options, workspace)
   |> Js.Promise.then_((config: Config.t) => {
        let colors = config.colorsFile.contents;
        let textStyles = config.textStylesFile.contents;
@@ -501,7 +503,7 @@ switch (command) {
     exit("No filename given");
   };
   let filename = List.nth(positionalArguments, 4);
-  Config.load(filename)
+  Config.load(options, filename)
   |> Js.Promise.then_(config => {
        convertComponent(config, filename) |> Js.log;
        Js.Promise.resolve();
