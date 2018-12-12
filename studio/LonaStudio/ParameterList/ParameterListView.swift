@@ -99,12 +99,12 @@ class ParameterListView: NSOutlineView, NSOutlineViewDataSource, NSOutlineViewDe
                 .text("Parameter"),
                 .value("name", CSValue(type: .string, data: CSData.String(parameter.name)), []),
                 .text("of type"),
-                .value("type", CSValue(type: CSType.parameterType(), data: .String(parameter.type.toString())), [])
+                .value("type", CSUnitValue.wrap(in: CSType.parameterType(), tagged: parameter.type.toString()), [])
             ]
 
             switch parameter.type {
             case .array(let elementType):
-                let fieldsValue = CSValue(type: CSType.parameterType(), data: .String(elementType.toString()))
+                let fieldsValue = CSUnitValue.wrap(in: CSType.parameterType(), tagged: elementType.toString())
 
                 components.append(.value("typedef", fieldsValue, []))
             case .dictionary(let schema):
@@ -118,7 +118,9 @@ class ParameterListView: NSOutlineView, NSOutlineViewDataSource, NSOutlineViewDe
                     let (key, value) = arg.element
                     return CSData.Object([
                         "key": key.toData(),
-                        "type": (value.type.unwrapOptional() ?? value.type).toString().toData(),
+                        "type": CSUnitValue.wrap(
+                            in: CSType.parameterType(),
+                            tagged: (value.type.unwrapOptional() ?? value.type).toString()).data,
                         "optional": value.type.isOptional().toData()
                         ])
                 })
@@ -136,7 +138,9 @@ class ParameterListView: NSOutlineView, NSOutlineViewDataSource, NSOutlineViewDe
                     let (key, value) = arg.element
                     return CSData.Object([
                         "label": key.toData(),
-                        "type": value.toString().toData(),
+                        "type": CSUnitValue.wrap(
+                            in: CSType.parameterType(),
+                            tagged: (value.unwrapOptional() ?? value).toString()).data,
                         "optional": value.isOptional().toData()
                         ])
                 })
@@ -153,7 +157,9 @@ class ParameterListView: NSOutlineView, NSOutlineViewDataSource, NSOutlineViewDe
                     let (key, value) = arg
                     return CSData.Object([
                         "case": key.toData(),
-                        "type": (value.unwrapOptional() ?? value).toString().toData(),
+                        "type": CSUnitValue.wrap(
+                            in: CSType.parameterType(),
+                            tagged: (value.unwrapOptional() ?? value).toString()).data,
                         "optional": value.isOptional().toData()
                         ])
                 })
@@ -197,10 +203,10 @@ class ParameterListView: NSOutlineView, NSOutlineViewDataSource, NSOutlineViewDe
                 case "name":
                     parameter.name = value.data.stringValue
                 case "type":
-                    var newBaseType = CSType.from(string: value.data.stringValue)
+                    var newBaseType = CSType.from(string: value.tag())
 
-                    switch value.data.stringValue {
-                    case "Variant":
+                    switch newBaseType {
+                    case .variant:
                         newBaseType = CSType.named("NewType", newBaseType)
                     default:
                         break
@@ -217,6 +223,11 @@ class ParameterListView: NSOutlineView, NSOutlineViewDataSource, NSOutlineViewDe
                 case "typealias":
                     switch parameter.type {
                     case .named(_, let innerType):
+                        // TODO: This adds a new type, but the type won't be added to CSType.parameterType(),
+                        // which is loaded at launch. Since the type isn't in the list of types, it won't appear
+                        // in the dropdown. If the file were saved, we could reload the list of types. However,
+                        // this restriction isn't required for anything else, so it's not a great option.
+                        // We could consider adding the type to the list of module types manually.
                         parameter.type = CSType.named(value.data.stringValue, innerType)
                     default:
                         break
@@ -228,13 +239,14 @@ class ParameterListView: NSOutlineView, NSOutlineViewDataSource, NSOutlineViewDe
                 case "typedef":
                     switch parameter.type {
                     case .array:
-                        let elementType = CSType.from(string: value.data.stringValue)
+                        let elementType = CSType.from(string: value.tag())
 
                         parameter.type = CSType.array(elementType)
                     case .dictionary:
                         let schema: CSType.Schema = value.data.arrayValue.key({ field in
                             let key = field.get(key: "key").stringValue
-                            let type = CSType.from(string: field.get(key: "type").stringValue)
+                            let type = CSType.from(
+                                string: CSValue(type: CSType.parameterType(), data: field.get(key: "type")).tag())
                             let optional = field.get(key: "optional").boolValue
                             return (key: key, value: (type: optional ? type.makeOptional() : type, access: .write))
                         })
@@ -243,7 +255,8 @@ class ParameterListView: NSOutlineView, NSOutlineViewDataSource, NSOutlineViewDe
                     case .function(_, let returnType):
                         let schema: [(String, CSType)] = value.data.arrayValue.map({ field in
                             let label = field.get(key: "label").stringValue
-                            let type = CSType.from(string: field.get(key: "type").stringValue)
+                            let type = CSType.from(
+                                string: CSValue(type: CSType.parameterType(), data: field.get(key: "type")).tag())
                             let optional = field.get(key: "optional").boolValue
                             return (label, optional ? type.makeOptional() : type)
                         })
@@ -252,7 +265,8 @@ class ParameterListView: NSOutlineView, NSOutlineViewDataSource, NSOutlineViewDe
                     case .named(let typeName, .variant):
                         let cases: [(String, CSType)] = value.data.arrayValue.map({ field in
                             let tag = field.get(key: "case").stringValue
-                            let type = CSType.from(string: field.get(key: "type").stringValue)
+                            let type = CSType.from(
+                                string: CSValue(type: CSType.parameterType(), data: field.get(key: "type")).tag())
                             let optional = field.get(key: "optional").boolValue
                             return (tag, type: optional ? type.makeOptional() : type)
                         })

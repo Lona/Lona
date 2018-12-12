@@ -80,8 +80,6 @@ class ArrayEditorButton: NSButton, CSControl, NSPopoverDelegate {
     }
 
     func showPopover() {
-        Swift.print("Show", self.value)
-
         let frame = NSRect(x: 0, y: 0, width: 250, height: 400)
 
         editor = ListEditor<ArrayItem>(frame: frame, options: [

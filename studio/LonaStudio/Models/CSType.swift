@@ -380,27 +380,27 @@ indirect enum CSType: Equatable, CSDataSerializable, CSDataDeserializable {
     }
 
     static func parameterType() -> CSType {
-        // TODO caching
-        let values: [CSValue] = [
-            CSValue(type: .string, data: .String("Boolean")),
-            CSValue(type: .string, data: .String("Number")),
-            CSValue(type: .string, data: .String("WholeNumber")),
-            CSValue(type: .string, data: .String("String")),
-            CSValue(type: .string, data: .String("Array")),
-            CSValue(type: .string, data: .String("Record")),
-            CSValue(type: .string, data: .String("Variant")),
-            CSValue(type: .string, data: .String("Unit")),
-            CSValue(type: .string, data: .String("Color")),
-            CSValue(type: .string, data: .String("TextStyle")),
-            CSValue(type: .string, data: .String("Shadow")),
-            CSValue(type: .string, data: .String("URL")),
-            CSValue(type: .string, data: .String("Function")),
-            CSValue(type: .string, data: .String("Component"))
+        // TODO caching?
+        let values: [String] = [
+            "Boolean",
+            "Number",
+            "WholeNumber",
+            "String",
+            "Array",
+            "Record",
+            "Variant",
+            "Unit",
+            "Color",
+            "TextStyle",
+            "Shadow",
+            "URL",
+            "Function",
+            "Component"
             ] +
-            LonaModule.current.types.map({ CSValue(type: .string, data: $0.toString().toData()) }) +
-            CSUserTypes.types.map({ CSValue(type: .string, data: $0.toString().toData()) })
+            LonaModule.current.types.map({ $0.toString() }) +
+            CSUserTypes.types.map({ $0.toString() })
 
-        return CSType.enumeration(values)
+        return CSType.variant(tags: values)
     }
 
     static var builtInTypes: [String: CSType] = {
