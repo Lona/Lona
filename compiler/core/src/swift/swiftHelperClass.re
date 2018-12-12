@@ -7,8 +7,7 @@
          super.draw(dirtyRect)
      }
    } */
-let generateImageWithBackgroundColor =
-    (options: Options.options, swiftOptions: SwiftOptions.options) =>
+let generateImageWithBackgroundColor = (config: Config.t) =>
   SwiftAst.[
     ClassDeclaration({
       "name": "ImageWithBackgroundColor",
@@ -26,9 +25,7 @@ let generateImageWithBackgroundColor =
           "init":
             Some(
               MemberExpression([
-                SwiftIdentifier(
-                  SwiftDocument.colorTypeName(swiftOptions.framework),
-                ),
+                SwiftIdentifier(SwiftDocument.colorTypeName(config)),
                 SwiftIdentifier("clear"),
               ]),
             ),
@@ -380,7 +377,7 @@ let generateVectorGraphic =
                       Empty,
                     ] :
                     [],
-                  SwiftSvg.convertNode(swiftOptions, vectorAssignments, svg),
+                  SwiftSvg.convertNode(config, vectorAssignments, svg),
                 ]
                 |> List.concat,
               "result": None,

@@ -1,7 +1,7 @@
 open SwiftAst;
 
-let render =
-    (options: Options.options, swiftOptions: SwiftOptions.options, colors) => {
+let render = (config: Config.t) => {
+  let colors = config.colorsFile.contents;
   let doc = () => {
     let colorConstantDoc = (color: Color.t) =>
       LineEndComment({
@@ -29,7 +29,7 @@ let render =
       });
     TopLevelDeclaration({
       "statements": [
-        SwiftDocument.importFramework(swiftOptions.framework),
+        SwiftDocument.importFramework(config),
         Empty,
         EnumDeclaration({
           "name": "Colors",
@@ -80,8 +80,7 @@ let render =
             "defaultValue": None,
           }),
           Parameter({
-            "annotation":
-              TypeName(SwiftDocument.colorTypeName(swiftOptions.framework)),
+            "annotation": TypeName(SwiftDocument.colorTypeName(config)),
             "externalName": None,
             "localName": "preview",
             "defaultValue": None,
@@ -91,10 +90,7 @@ let render =
           ReturnStatement(
             Some(
               FunctionCallExpression({
-                "name":
-                  SwiftIdentifier(
-                    SwiftDocument.colorTypeName(swiftOptions.framework),
-                  ),
+                "name": SwiftIdentifier(SwiftDocument.colorTypeName(config)),
                 "arguments": [
                   FunctionCallArgument({
                     "name": Some(SwiftIdentifier("hex")),
@@ -105,15 +101,12 @@ let render =
             ),
           ),
         ],
-        "result":
-          Some(
-            TypeName(SwiftDocument.colorTypeName(swiftOptions.framework)),
-          ),
+        "result": Some(TypeName(SwiftDocument.colorTypeName(config))),
         "throws": false,
       });
     TopLevelDeclaration({
       "statements": [
-        SwiftDocument.importFramework(swiftOptions.framework),
+        SwiftDocument.importFramework(config),
         Empty,
         DocComment("DLS-defined color values"),
         EnumDeclaration({
@@ -131,5 +124,5 @@ let render =
       ],
     });
   };
-  SwiftRender.toString(options.preset == Airbnb ? airbnbDoc() : doc());
+  SwiftRender.toString(config.options.preset == Airbnb ? airbnbDoc() : doc());
 };

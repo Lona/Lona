@@ -24,20 +24,20 @@ let nameWithoutExtension = path => {
 let nameWithoutPixelDensitySuffix = path =>
   Js.String.replaceByRe([%re "/@\\d+x$/g"], "", path);
 
-let importFramework = framework =>
-  switch (framework) {
+let importFramework = (config: Config.t) =>
+  switch (config.options.swift.framework) {
   | SwiftOptions.UIKit => ImportDeclaration("UIKit")
   | SwiftOptions.AppKit => ImportDeclaration("AppKit")
   };
 
-let colorTypeName = framework =>
-  switch (framework) {
+let colorTypeName = (config: Config.t) =>
+  switch (config.options.swift.framework) {
   | SwiftOptions.UIKit => "UIColor"
   | SwiftOptions.AppKit => "NSColor"
   };
 
-let fontTypeName = framework =>
-  switch (framework) {
+let fontTypeName = (config: Config.t) =>
+  switch (config.options.swift.framework) {
   | SwiftOptions.UIKit => "UIFont"
   | SwiftOptions.AppKit => "NSFont"
   };
@@ -51,20 +51,20 @@ let imageTypeName = (config: Config.t) =>
   )
   |> SwiftPlugin.applyTransformType(config, None);
 
-let bezierPathTypeName = framework =>
-  switch (framework) {
+let bezierPathTypeName = (config: Config.t) =>
+  switch (config.options.swift.framework) {
   | SwiftOptions.UIKit => "UIBezierPath"
   | SwiftOptions.AppKit => "NSBezierPath"
   };
 
-let sizeTypeName = framework =>
-  switch (framework) {
+let sizeTypeName = (config: Config.t) =>
+  switch (config.options.swift.framework) {
   | SwiftOptions.UIKit => "CGSize"
   | SwiftOptions.AppKit => "NSSize"
   };
 
-let shadowTypeName = framework =>
-  switch (framework) {
+let shadowTypeName = (config: Config.t) =>
+  switch (config.options.swift.framework) {
   | SwiftOptions.UIKit => "Shadow"
   | SwiftOptions.AppKit => "NSShadow"
   };
@@ -144,7 +144,7 @@ let rec typeAnnotationDoc = (config: Config.t, ltype: Types.lonaType) => {
     | _ => TypeName(typeName)
     }
   | Named("URL", _) => TypeName(imageTypeName(config))
-  | Named("Color", _) => TypeName(colorTypeName(framework))
+  | Named("Color", _) => TypeName(colorTypeName(config))
   | Named(name, _) => TypeName(name)
   | Function(arguments, _) =>
     OptionalType(
@@ -313,7 +313,7 @@ let rec defaultValueForLonaType = (config: Config.t, ltype: Types.lonaType) => {
     switch (alias) {
     | "Color" =>
       MemberExpression([
-        SwiftIdentifier(colorTypeName(framework)),
+        SwiftIdentifier(colorTypeName(config)),
         SwiftIdentifier("clear"),
       ])
     | "URL" =>

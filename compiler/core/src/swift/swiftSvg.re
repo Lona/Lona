@@ -1,18 +1,18 @@
-let lineToFunctionName = framework =>
-  switch (framework) {
+let lineToFunctionName = (config: Config.t) =>
+  switch (config.options.swift.framework) {
   | SwiftOptions.UIKit => "addLine"
   | SwiftOptions.AppKit => "line"
   };
 
-let curveToFunctionName = framework =>
-  switch (framework) {
+let curveToFunctionName = (config: Config.t) =>
+  switch (config.options.swift.framework) {
   | SwiftOptions.UIKit => "addCurve"
   | SwiftOptions.AppKit => "curve"
   };
 
-let lineCapValue = (framework, value) => {
+let lineCapValue = (config: Config.t, value) => {
   let value = Svg.ToString.strokeLineCap(value);
-  switch (framework) {
+  switch (config.options.swift.framework) {
   | SwiftOptions.UIKit => value
   | SwiftOptions.AppKit => value ++ "LineCapStyle"
   };
@@ -100,7 +100,7 @@ let setStyle =
 
 let paintStyle =
     (
-      swiftOptions: SwiftOptions.options,
+      config: Config.t,
       _vectorAssignments: list(Layer.vectorAssignment),
       variableName: string,
       style: Svg.style,
@@ -142,10 +142,7 @@ let paintStyle =
             "operator": "=",
             "right":
               SwiftIdentifier(
-                "."
-                ++ (
-                  style.strokeLineCap |> lineCapValue(swiftOptions.framework)
-                ),
+                "." ++ (style.strokeLineCap |> lineCapValue(config)),
               ),
           }),
           SwiftAst.FunctionCallExpression({
@@ -240,11 +237,7 @@ let convertRect = (rect: Svg.rect): SwiftAst.node =>
   );
 
 let convertPathCommand =
-    (
-      swiftOptions: SwiftOptions.options,
-      variableName: string,
-      command: Svg.pathCommand,
-    )
+    (config: Config.t, variableName: string, command: Svg.pathCommand)
     : SwiftAst.node =>
   SwiftAst.(
     switch (command) {
@@ -263,7 +256,7 @@ let convertPathCommand =
         "name":
           Builders.memberExpression([
             variableName,
-            lineToFunctionName(swiftOptions.framework),
+            lineToFunctionName(config),
           ]),
         "arguments": [
           FunctionCallArgument({
@@ -291,7 +284,7 @@ let convertPathCommand =
         "name":
           Builders.memberExpression([
             variableName,
-            curveToFunctionName(swiftOptions.framework),
+            curveToFunctionName(config),
           ]),
         "arguments": [
           FunctionCallArgument({
@@ -318,7 +311,7 @@ let convertPathCommand =
 
 let rec convertNode =
         (
-          swiftOptions: SwiftOptions.options,
+          config: Config.t,
           vectorAssignments: list(Layer.vectorAssignment),
           node: Svg.node,
         )
@@ -341,8 +334,7 @@ let rec convertNode =
                 FunctionCallExpression({
                   "name":
                     SwiftIdentifier(
-                      swiftOptions.framework
-                      |> SwiftDocument.bezierPathTypeName,
+                      config |> SwiftDocument.bezierPathTypeName,
                     ),
                   "arguments": [
                     FunctionCallArgument({
@@ -371,8 +363,7 @@ let rec convertNode =
           }),
         ],
         params.style |> setStyle(vectorAssignments, variableName),
-        params.style
-        |> paintStyle(swiftOptions, vectorAssignments, variableName),
+        params.style |> paintStyle(config, vectorAssignments, variableName),
       ]
       |> List.concat;
     | Path(elementPath, params) =>
@@ -391,19 +382,16 @@ let rec convertNode =
                 FunctionCallExpression({
                   "name":
                     SwiftIdentifier(
-                      swiftOptions.framework
-                      |> SwiftDocument.bezierPathTypeName,
+                      config |> SwiftDocument.bezierPathTypeName,
                     ),
                   "arguments": [],
                 }),
               ),
           }),
         ],
-        params.commands
-        |> List.map(convertPathCommand(swiftOptions, variableName)),
+        params.commands |> List.map(convertPathCommand(config, variableName)),
         params.style |> setStyle(vectorAssignments, variableName),
-        params.style
-        |> paintStyle(swiftOptions, vectorAssignments, variableName),
+        params.style |> paintStyle(config, vectorAssignments, variableName),
       ]
       |> List.concat;
     | Svg(_, params, children) =>
@@ -554,7 +542,7 @@ let rec convertNode =
           }),
         ],
         children
-        |> List.map(convertNode(swiftOptions, vectorAssignments))
+        |> List.map(convertNode(config, vectorAssignments))
         |> List.concat,
       ]
       |> List.concat

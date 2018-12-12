@@ -1337,10 +1337,7 @@ let generate =
         containsImageWithBackgroundColor() ?
           [
             [LineComment("MARK: - " ++ "ImageWithBackgroundColor"), Empty],
-            SwiftHelperClass.generateImageWithBackgroundColor(
-              options,
-              swiftOptions,
-            ),
+            SwiftHelperClass.generateImageWithBackgroundColor(config),
           ]
           |> List.concat :
           []
@@ -1397,7 +1394,7 @@ let generate =
         Empty,
         [
           [
-            SwiftDocument.importFramework(swiftOptions.framework),
+            SwiftDocument.importFramework(config),
             ImportDeclaration("Foundation"),
           ],
           helperClasses,

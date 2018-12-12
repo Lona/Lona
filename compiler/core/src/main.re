@@ -114,25 +114,34 @@ let formatFilename = (target, filename) =>
 
 let targetExtension = getTargetExtension(target);
 
-let renderColors = (target, colors) =>
+let renderColors = (target, config: Config.t) =>
   switch (target) {
-  | Types.Swift => Swift.Color.render(options, swiftOptions, colors)
-  | JavaScript => JavaScript.Color.render(colors)
-  | Xml => Xml.Color.render(colors)
+  | Types.Swift => Swift.Color.render(config)
+  | JavaScript => JavaScript.Color.render(config.colorsFile.contents)
+  | Xml => Xml.Color.render(config.colorsFile.contents)
   };
 
-let renderTextStyles = (target, colors, textStyles) =>
+let renderTextStyles = (target, config: Config.t) =>
   switch (target) {
-  | Types.Swift => Swift.TextStyle.render(swiftOptions, colors, textStyles)
+  | Types.Swift => Swift.TextStyle.render(config)
   | JavaScript =>
-    JavaScriptTextStyle.render(javaScriptOptions, colors, textStyles)
+    JavaScriptTextStyle.render(
+      config.options.javaScript,
+      config.colorsFile.contents,
+      config.textStylesFile.contents,
+    )
   | _ => ""
   };
 
-let renderShadows = (target, colors, shadows) =>
+let renderShadows = (target, config: Config.t) =>
   switch (target) {
-  | Types.Swift => SwiftShadow.render(swiftOptions, colors, shadows)
-  | JavaScript => JavaScriptShadow.render(javaScriptOptions, colors, shadows)
+  | Types.Swift => SwiftShadow.render(config)
+  | JavaScript =>
+    JavaScriptShadow.render(
+      config.options.javaScript,
+      config.colorsFile.contents,
+      config.shadowsFile.contents,
+    )
   | _ => ""
   };
 
@@ -148,22 +157,14 @@ let convertTypes = (target, contents) => {
   };
 };
 
-let convertColors = (target, contents) =>
-  Color.parseFile(contents) |> renderColors(target);
+let convertColors = (target, config: Config.t) =>
+  renderColors(target, config);
 
-let convertTextStyles = (target, workspacePath, content) => {
-  let colorsFile =
-    Node.Fs.readFileSync(Path.join([|workspacePath, "colors.json"|]), `utf8);
-  let colors = Color.parseFile(colorsFile);
-  TextStyle.parseFile(content) |> renderTextStyles(target, colors);
-};
+let convertTextStyles = (target, config: Config.t) =>
+  renderTextStyles(target, config);
 
-let convertShadows = (target, workspacePath, content) => {
-  let colorsFile =
-    Node.Fs.readFileSync(Path.join([|workspacePath, "colors.json"|]), `utf8);
-  let colors = Color.parseFile(colorsFile);
-  Shadow.parseFile(content) |> renderShadows(target, colors);
-};
+let convertShadows = (target, config: Config.t) =>
+  renderShadows(target, config);
 
 exception ComponentNotFound(string);
 
@@ -337,7 +338,7 @@ let convertWorkspace = (workspace, output) =>
          );
        Fs.writeFileSync(
          colorsOutputPath,
-         colors |> renderColors(target),
+         renderColors(target, config),
          `utf8,
        );
 
@@ -348,7 +349,7 @@ let convertWorkspace = (workspace, output) =>
          );
        Fs.writeFileSync(
          textStylesOutputPath,
-         textStyles |> renderTextStyles(target, colors),
+         renderTextStyles(target, config),
          `utf8,
        );
 
@@ -360,7 +361,7 @@ let convertWorkspace = (workspace, output) =>
            );
          Fs.writeFileSync(
            shadowsOutputPath,
-           shadows |> renderShadows(target, colors),
+           renderShadows(target, config),
            `utf8,
          );
        };
@@ -510,32 +511,63 @@ switch (command) {
      })
   |> ignore;
 | "colors" =>
-  if (List.length(positionalArguments) < 5) {
-    let render = contents =>
-      Js.Promise.resolve(convertColors(target, contents) |> Js.log);
-    getStdin() |> Js.Promise.then_(render) |> ignore;
-  } else {
-    let contents =
-      Node.Fs.readFileSync(List.nth(positionalArguments, 4), `utf8);
-    convertColors(target, contents) |> Js.log;
-  }
+  let initialWorkspaceSearchPath =
+    List.length(positionalArguments) < 5 ?
+      Process.cwd() : List.nth(positionalArguments, 4);
+
+  Config.load(options, initialWorkspaceSearchPath)
+  |> Js.Promise.then_((config: Config.t) =>
+       if (List.length(positionalArguments) < 5) {
+         getStdin()
+         |> Js.Promise.then_(contents => {
+              let config = {
+                ...config,
+                colorsFile: {
+                  path: "__stdin__",
+                  contents: Color.parseFile(contents),
+                },
+              };
+
+              convertColors(target, config) |> Js.log;
+
+              Js.Promise.resolve();
+            });
+       } else {
+         convertColors(target, config) |> Js.log;
+
+         Js.Promise.resolve();
+       }
+     )
+  |> ignore;
 | "shadows" =>
-  if (List.length(positionalArguments) < 5) {
-    let render = content =>
-      Js.Promise.resolve(convertColors(target, content) |> Js.log);
-    getStdin() |> Js.Promise.then_(render) |> ignore;
-  } else {
-    let filename = List.nth(positionalArguments, 4);
-    switch (Config.Workspace.find(filename)) {
-    | None =>
-      exit(
-        "Couldn't find workspace directory. Try specifying it as a parameter (TODO)",
-      )
-    | Some(workspacePath) =>
-      let content = Node.Fs.readFileSync(filename, `utf8);
-      convertShadows(target, workspacePath, content) |> Js.log;
-    };
-  }
+  let initialWorkspaceSearchPath =
+    List.length(positionalArguments) < 5 ?
+      Process.cwd() : List.nth(positionalArguments, 4);
+
+  Config.load(options, initialWorkspaceSearchPath)
+  |> Js.Promise.then_((config: Config.t) =>
+       if (List.length(positionalArguments) < 5) {
+         getStdin()
+         |> Js.Promise.then_(contents => {
+              let config = {
+                ...config,
+                shadowsFile: {
+                  path: "__stdin__",
+                  contents: Shadow.parseFile(contents),
+                },
+              };
+
+              convertShadows(target, config) |> Js.log;
+
+              Js.Promise.resolve();
+            });
+       } else {
+         convertShadows(target, config) |> Js.log;
+
+         Js.Promise.resolve();
+       }
+     )
+  |> ignore;
 | "types" =>
   if (List.length(positionalArguments) < 5) {
     exit("No filename given");
@@ -545,22 +577,34 @@ switch (command) {
     convertTypes(target, contents) |> Js.log;
   }
 | "textStyles" =>
-  if (List.length(positionalArguments) < 5) {
-    let render = content =>
-      Js.Promise.resolve(convertColors(target, content) |> Js.log);
-    getStdin() |> Js.Promise.then_(render) |> ignore;
-  } else {
-    let filename = List.nth(positionalArguments, 4);
-    switch (Config.Workspace.find(filename)) {
-    | None =>
-      exit(
-        "Couldn't find workspace directory. Try specifying it as a parameter (TODO)",
-      )
-    | Some(workspacePath) =>
-      let content = Node.Fs.readFileSync(filename, `utf8);
-      convertTextStyles(target, workspacePath, content) |> Js.log;
-    };
-  }
+  let initialWorkspaceSearchPath =
+    List.length(positionalArguments) < 5 ?
+      Process.cwd() : List.nth(positionalArguments, 4);
+
+  Config.load(options, initialWorkspaceSearchPath)
+  |> Js.Promise.then_((config: Config.t) =>
+       if (List.length(positionalArguments) < 5) {
+         getStdin()
+         |> Js.Promise.then_(contents => {
+              let config = {
+                ...config,
+                textStylesFile: {
+                  path: "__stdin__",
+                  contents: TextStyle.parseFile(contents),
+                },
+              };
+
+              convertTextStyles(target, config) |> Js.log;
+
+              Js.Promise.resolve();
+            });
+       } else {
+         convertTextStyles(target, config) |> Js.log;
+
+         Js.Promise.resolve();
+       }
+     )
+  |> ignore;
 | "convertSvg" =>
   let contents =
     if (List.length(positionalArguments) < 4) {

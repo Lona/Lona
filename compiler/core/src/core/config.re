@@ -137,7 +137,9 @@ let load = (options: Options.options, path): Js.Promise.t(t) =>
   switch (Workspace.find(path)) {
   | None =>
     exit(
-      "Couldn't find workspace directory. A workspace must contain a `lona.json` file.",
+      "Couldn't find workspace directory starting from '"
+      ++ path
+      ++ "'. A workspace must contain a `lona.json` file.",
     )
   | Some(workspacePath) =>
     Js.Promise.(
