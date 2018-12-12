@@ -259,7 +259,7 @@ extension CSValue {
         }
 
         guard cases.contains(where: { item in item.0 == tag && item.1 == self.type }) else {
-            Swift.print("Could not find tag", tag, "and type", self.type, "in variant type", variant)
+            Swift.print("wrap(in variant): Could not find tag", tag, "and type", self.type, "in variant type", variant)
             return CSUndefinedValue
         }
 
@@ -277,7 +277,7 @@ extension CSValue {
 
         let tag = self.data.get(key: "case").stringValue
         guard let match = cases.first(where: { item in item.0 == tag }) else {
-            Swift.print("Could not find tag", tag, "in variant type of value", self)
+            Swift.print("unwrapVariant(): Could not find tag", tag, "in variant type of value", self)
             return nil
         }
 

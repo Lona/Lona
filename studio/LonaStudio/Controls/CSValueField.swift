@@ -55,6 +55,31 @@ class CSValueField: CSControl {
             self.onChangeData(self.data)
         }
 
+        func renderDropdown(tags: [String], initialTag: String) -> PopupField {
+            let type = PopupField(
+                frame: NSRect(x: 0, y: 0, width: 70, height: 26),
+                values: tags,
+                initialValue: initialTag)
+
+            let attributedString = styled(string: initialTag, usesLinkStyle: usesLinkStyle)
+            let size = attributedString.measure(width: 1000)
+
+            type.frame.size = size
+            type.frame.size.width += 24
+            type.useYogaLayout = true
+            type.ygNode?.marginLeft = -7
+            type.ygNode?.marginBottom = -1
+            type.isBordered = isBordered
+
+            for item in type.menu!.items {
+                let desc = String(describing: item.title)
+                let text = styled(string: desc, usesLinkStyle: usesLinkStyle)
+                item.attributedTitle = text
+            }
+
+            return type
+        }
+
         switch value.type {
         case .string:
             let field = TextField(frame: NSRect(x: 0, y: 0, width: 80, height: 16))
@@ -212,11 +237,9 @@ class CSValueField: CSControl {
             let tags = cases.map({ value in value.0 })
             let currentTag = tags.contains(value.tag()) ? value.tag() : tags[0]
 
-            let tagValues = tags.map({ tag in CSValue(type: .string, data: .String(tag)) })
-            let tagPickerValue = CSValue(type: CSType.enumeration(tagValues), data: .String(currentTag))
-            let tagField = CSValueField(value: tagPickerValue, options: options)
-            tagField.onChangeData = { data in
-                defaultChangeHandler(value.with(tag: data.stringValue).data)
+            let tagField = renderDropdown(tags: tags, initialTag: currentTag)
+            tagField.onChange = { tag in
+                defaultChangeHandler(value.with(tag: tag).data)
             }
 
             let valueField: CSValueField
@@ -245,22 +268,22 @@ class CSValueField: CSControl {
                 field.ygNode?.flexDirection = .row
                 field.ygNode?.alignItems = .center
 
-                tagField.view.useYogaLayout = true
+                tagField.useYogaLayout = true
                 valueField.view.useYogaLayout = true
 
-                field.addSubview(tagField.view)
+                field.addSubview(tagField)
                 field.addSubview(valueField.view)
 
                 view = field
             } else {
                 let field = NSStackView(views: [
-                    tagField.view,
+                    tagField,
                     valueField.view
                     ], orientation: .horizontal)
 
                 field.heightAnchor.constraint(equalToConstant: 30).isActive = true
 
-                tagField.view.translatesAutoresizingMaskIntoConstraints = false
+                tagField.translatesAutoresizingMaskIntoConstraints = false
                 valueField.view.translatesAutoresizingMaskIntoConstraints = false
                 field.translatesAutoresizingMaskIntoConstraints = false
 

@@ -174,7 +174,12 @@ class ParameterListView: NSOutlineView, NSOutlineViewDataSource, NSOutlineViewDe
                         : CSUnitValue.wrap(in: requiredType, tagged: "required"),
                     []),
                 .text("with"),
-                .value("hasDefaultValue", CSValue(type: defaultValueType, data: parameter.hasDefaultValue ? .String("default") : .String("no default")), [])
+                .value(
+                    "hasDefaultValue",
+                    parameter.hasDefaultValue
+                        ? CSUnitValue.wrap(in: defaultValueType, tagged: "default")
+                        : CSUnitValue.wrap(in: defaultValueType, tagged: "no default"),
+                    [])
                 ])
 
             if parameter.hasDefaultValue {
@@ -275,7 +280,7 @@ class ParameterListView: NSOutlineView, NSOutlineViewDataSource, NSOutlineViewDe
                         parameter.defaultValue = parameter.defaultValue.cast(to: parameter.type)
                     }
                 case "hasDefaultValue":
-                    if value.data.stringValue == "no default" {
+                    if value.tag() == "no default" {
                         parameter.defaultValue = CSUndefinedValue
                     } else {
                         parameter.defaultValue = parameter.defaultValue.cast(to: parameter.type)
