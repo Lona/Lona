@@ -68,8 +68,7 @@ let toSwiftAST =
     let initialValue =
       switch (x) {
       | Logic.Identifier(_) => identifierName(x)
-      | Literal(value) =>
-        Document.lonaValue(options.framework, config, value)
+      | Literal(value) => Document.lonaValue(config, value)
       };
     /* Here is the only place we should handle Logic -> Swift identifier conversion */
     switch (options.framework, initialValue) {
@@ -497,9 +496,7 @@ let toSwiftAST =
             Ast.IdentifierPattern({
               "identifier": identifier |> logicValueToSwiftAST,
               "annotation":
-                Some(
-                  ltype |> SwiftDocument.typeAnnotationDoc(options.framework),
-                ),
+                Some(ltype |> SwiftDocument.typeAnnotationDoc(config)),
             }),
           "init": (None: option(Ast.node)),
           "block": (None: option(Ast.initializerBlock)),

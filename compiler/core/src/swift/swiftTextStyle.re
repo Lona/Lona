@@ -9,8 +9,7 @@ open SwiftAst;
    public static let bold: UIFont.Weight
    public static let heavy: UIFont.Weight
    public static let black: UIFont.Weight */
-let render =
-    (options: SwiftOptions.options, colors, textStyles: TextStyle.file) => {
+let render = (config: Config.t) => {
   let unwrapOptional = (f, a) =>
     switch (a) {
     | Some(value) => [f(value)]
@@ -30,7 +29,8 @@ let render =
     | _ => "regular";
   let argumentsDoc = (textStyle: TextStyle.t) =>
     {
-      let lookup = f => TextStyle.lookup(textStyles.styles, textStyle, f);
+      let lookup = f =>
+        TextStyle.lookup(config.textStylesFile.contents.styles, textStyle, f);
       [
         lookup(style => style.fontFamily)
         |> unwrapOptional(value =>
@@ -52,9 +52,7 @@ let render =
                "name": Some(SwiftIdentifier("weight")),
                "value":
                  MemberExpression([
-                   SwiftIdentifier(
-                     SwiftDocument.fontTypeName(options.framework),
-                   ),
+                   SwiftIdentifier(SwiftDocument.fontTypeName(config)),
                    SwiftIdentifier("Weight"),
                    SwiftIdentifier(convertFontWeight(value)),
                  ]),
@@ -84,7 +82,7 @@ let render =
         lookup(style => style.color)
         |> unwrapOptional(value => {
              let value =
-               switch (Color.find(colors, value)) {
+               switch (Color.find(config.colorsFile.contents, value)) {
                | Some(color) =>
                  MemberExpression([
                    SwiftIdentifier("Colors"),
@@ -118,14 +116,16 @@ let render =
     });
   /* Print a generic default style if none is defined in `textStyles.json` */
   let defaultStyleDoc = (textStyle: TextStyle.t) =>
-    switch (TextStyle.find(textStyles.styles, textStyle.id)) {
+    switch (
+      TextStyle.find(config.textStylesFile.contents.styles, textStyle.id)
+    ) {
     | None => [textStyleConstantDoc(textStyle)]
     | Some(_) => []
     };
   let doc =
     TopLevelDeclaration({
       "statements": [
-        SwiftDocument.importFramework(options.framework),
+        SwiftDocument.importFramework(config),
         Empty,
         ClassDeclaration({
           "name": "TextStyles",
@@ -133,8 +133,11 @@ let render =
           "modifier": None,
           "isFinal": false,
           "body":
-            (textStyles.styles |> List.map(textStyleConstantDoc))
-            @ (textStyles.defaultStyle |> defaultStyleDoc),
+            (
+              config.textStylesFile.contents.styles
+              |> List.map(textStyleConstantDoc)
+            )
+            @ (config.textStylesFile.contents.defaultStyle |> defaultStyleDoc),
         }),
       ],
     });

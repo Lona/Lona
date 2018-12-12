@@ -10,22 +10,20 @@ module Doc = {
          shadowBlurRadius = blur
        }
      } */
-  let convenienceInit = (swiftOptions: SwiftOptions.options) =>
+  let convenienceInit = (config: Config.t) =>
     InitializerDeclaration({
       "modifiers": [ConvenienceModifier],
       "parameters": [
         Parameter({
           "externalName": None,
           "localName": "color",
-          "annotation":
-            TypeName(SwiftDocument.colorTypeName(swiftOptions.framework)),
+          "annotation": TypeName(SwiftDocument.colorTypeName(config)),
           "defaultValue": None,
         }),
         Parameter({
           "externalName": None,
           "localName": "offset",
-          "annotation":
-            TypeName(SwiftDocument.sizeTypeName(swiftOptions.framework)),
+          "annotation": TypeName(SwiftDocument.sizeTypeName(config)),
           "defaultValue": None,
         }),
         Parameter({
@@ -59,12 +57,7 @@ module Doc = {
     });
 
   let shadow =
-      (
-        swiftOptions: SwiftOptions.options,
-        colors: list(Color.t),
-        shadow: Shadow.t,
-      )
-      : node => {
+      (config: Config.t, colors: list(Color.t), shadow: Shadow.t): node => {
     let color =
       switch (Color.find(colors, shadow.color)) {
       | Some(color) =>
@@ -77,17 +70,14 @@ module Doc = {
 
     /* The coordinate system is flipped vertically on macOS */
     let direction =
-      switch (swiftOptions.framework) {
+      switch (config.options.swift.framework) {
       | SwiftOptions.AppKit => (-1.0)
       | UIKit => 1.0
       };
 
     let size =
       FunctionCallExpression({
-        "name":
-          SwiftIdentifier(
-            SwiftDocument.sizeTypeName(swiftOptions.framework),
-          ),
+        "name": SwiftIdentifier(SwiftDocument.sizeTypeName(config)),
         "arguments": [
           FunctionCallArgument({
             "name": Some(SwiftIdentifier("width")),
@@ -101,10 +91,7 @@ module Doc = {
       });
 
     FunctionCallExpression({
-      "name":
-        SwiftIdentifier(
-          SwiftDocument.shadowTypeName(swiftOptions.framework),
-        ),
+      "name": SwiftIdentifier(SwiftDocument.shadowTypeName(config)),
       "arguments": [
         FunctionCallArgument({
           "name": Some(SwiftIdentifier("color")),
@@ -123,12 +110,7 @@ module Doc = {
   };
 
   let shadowConstant =
-      (
-        swiftOptions: SwiftOptions.options,
-        colors: list(Color.t),
-        s: Shadow.t,
-      )
-      : node =>
+      (config: Config.t, colors: list(Color.t), s: Shadow.t): node =>
     ConstantDeclaration({
       "modifiers": [AccessLevelModifier(PublicModifier), StaticModifier],
       "pattern":
@@ -136,42 +118,39 @@ module Doc = {
           "identifier": SwiftIdentifier(s.id),
           "annotation": None,
         }),
-      "init": Some(shadow(swiftOptions, colors, s)),
+      "init": Some(shadow(config, colors, s)),
     });
 };
 
-let render =
-    (
-      swiftOptions: SwiftOptions.options,
-      colors: list(Color.t),
-      shadowsFile: Shadow.file,
-    ) =>
+let render = (config: Config.t) =>
   SwiftAst.(
     TopLevelDeclaration({
       "statements":
         SwiftDocument.join(
           Empty,
           [
-            SwiftDocument.importFramework(swiftOptions.framework),
+            SwiftDocument.importFramework(config),
             EnumDeclaration({
               "name": "Shadows",
               "isIndirect": false,
               "inherits": [],
               "modifier": Some(PublicModifier),
               "body":
-                shadowsFile.styles
-                |> List.map(Doc.shadowConstant(swiftOptions, colors)),
+                config.shadowsFile.contents.styles
+                |> List.map(
+                     Doc.shadowConstant(config, config.colorsFile.contents),
+                   ),
             }),
           ]
           @ (
-            switch (swiftOptions.framework) {
+            switch (config.options.swift.framework) {
             | SwiftOptions.AppKit => [
                 ExtensionDeclaration({
                   "name": "NSShadow",
                   "protocols": [],
                   "where": None,
                   "modifier": None,
-                  "body": [Doc.convenienceInit(swiftOptions)],
+                  "body": [Doc.convenienceInit(config)],
                 }),
               ]
             | UIKit => []

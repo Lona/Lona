@@ -24,44 +24,47 @@ let nameWithoutExtension = path => {
 let nameWithoutPixelDensitySuffix = path =>
   Js.String.replaceByRe([%re "/@\\d+x$/g"], "", path);
 
-let importFramework = framework =>
-  switch (framework) {
+let importFramework = (config: Config.t) =>
+  switch (config.options.swift.framework) {
   | SwiftOptions.UIKit => ImportDeclaration("UIKit")
   | SwiftOptions.AppKit => ImportDeclaration("AppKit")
   };
 
-let colorTypeName = framework =>
-  switch (framework) {
+let colorTypeName = (config: Config.t) =>
+  switch (config.options.swift.framework) {
   | SwiftOptions.UIKit => "UIColor"
   | SwiftOptions.AppKit => "NSColor"
   };
 
-let fontTypeName = framework =>
-  switch (framework) {
+let fontTypeName = (config: Config.t) =>
+  switch (config.options.swift.framework) {
   | SwiftOptions.UIKit => "UIFont"
   | SwiftOptions.AppKit => "NSFont"
   };
 
-let imageTypeName = framework =>
-  switch (framework) {
-  | SwiftOptions.UIKit => "UIImage"
-  | SwiftOptions.AppKit => "NSImage"
-  };
+let imageTypeName = (config: Config.t) =>
+  (
+    switch (config.options.swift.framework) {
+    | SwiftOptions.UIKit => "UIImage"
+    | SwiftOptions.AppKit => "NSImage"
+    }
+  )
+  |> SwiftPlugin.applyTransformType(config, None);
 
-let bezierPathTypeName = framework =>
-  switch (framework) {
+let bezierPathTypeName = (config: Config.t) =>
+  switch (config.options.swift.framework) {
   | SwiftOptions.UIKit => "UIBezierPath"
   | SwiftOptions.AppKit => "NSBezierPath"
   };
 
-let sizeTypeName = framework =>
-  switch (framework) {
+let sizeTypeName = (config: Config.t) =>
+  switch (config.options.swift.framework) {
   | SwiftOptions.UIKit => "CGSize"
   | SwiftOptions.AppKit => "NSSize"
   };
 
-let shadowTypeName = framework =>
-  switch (framework) {
+let shadowTypeName = (config: Config.t) =>
+  switch (config.options.swift.framework) {
   | SwiftOptions.UIKit => "Shadow"
   | SwiftOptions.AppKit => "NSShadow"
   };
@@ -123,25 +126,25 @@ let localImageName = (framework: SwiftOptions.framework, name) => {
   };
 };
 
-let rec typeAnnotationDoc =
-        (framework: SwiftOptions.framework, ltype: Types.lonaType) =>
+let rec typeAnnotationDoc = (config: Config.t, ltype: Types.lonaType) => {
+  let framework = config.options.swift.framework;
   switch (ltype) {
   | Types.Reference(typeName) when LonaValue.isOptionalTypeName(typeName) =>
     let unwrapped = LonaValue.unwrapOptionalType(ltype);
-    OptionalType(typeAnnotationDoc(framework, unwrapped));
+    OptionalType(typeAnnotationDoc(config, unwrapped));
   | Types.Reference(typeName) =>
     switch (typeName) {
     | "Boolean" => TypeName("Bool")
     | "Number" => TypeName("CGFloat")
     | "WholeNumber" => TypeName("Int")
     | "URL" =>
-      typeAnnotationDoc(framework, Types.Named(typeName, Types.stringType))
+      typeAnnotationDoc(config, Types.Named(typeName, Types.stringType))
     | "Color" =>
-      typeAnnotationDoc(framework, Types.Named(typeName, Types.stringType))
+      typeAnnotationDoc(config, Types.Named(typeName, Types.stringType))
     | _ => TypeName(typeName)
     }
-  | Named("URL", _) => TypeName(imageTypeName(framework))
-  | Named("Color", _) => TypeName(colorTypeName(framework))
+  | Named("URL", _) => TypeName(imageTypeName(config))
+  | Named("Color", _) => TypeName(colorTypeName(config))
   | Named(name, _) => TypeName(name)
   | Function(arguments, _) =>
     OptionalType(
@@ -149,26 +152,22 @@ let rec typeAnnotationDoc =
         "arguments":
           arguments
           |> List.map((arg: Types.lonaFunctionParameter) =>
-               typeAnnotationDoc(framework, arg.ltype)
+               typeAnnotationDoc(config, arg.ltype)
              ),
         "returnType": None,
       }),
     )
-  | Array(elementType) =>
-    ArrayType(typeAnnotationDoc(framework, elementType))
+  | Array(elementType) => ArrayType(typeAnnotationDoc(config, elementType))
   | Variant(_) => TypeName("VARIANT PLACEHOLDER")
   };
+};
 
-let rec lonaValue =
-        (
-          framework: SwiftOptions.framework,
-          config: Config.t,
-          value: Types.lonaValue,
-        ) =>
+let rec lonaValue = (config: Config.t, value: Types.lonaValue) => {
+  let framework = config.options.swift.framework;
   switch (value.ltype) {
   | Reference(typeName) when LonaValue.isOptionalTypeName(typeName) =>
     switch (LonaValue.decodeOptional(value)) {
-    | Some(innerValue) => lonaValue(framework, config, innerValue)
+    | Some(innerValue) => lonaValue(config, innerValue)
     | None => LiteralExpression(Nil)
     }
   | Reference(typeName) =>
@@ -183,13 +182,11 @@ let rec lonaValue =
     | "Color"
     | "Shadow" =>
       lonaValue(
-        framework,
         config,
         {ltype: Named(typeName, Reference("String")), data: value.data},
       )
     | "URL" =>
       lonaValue(
-        framework,
         config,
         {ltype: Named(typeName, Reference("String")), data: value.data},
       )
@@ -198,11 +195,7 @@ let rec lonaValue =
         UserTypes.find(config.userTypesFile.contents.types, typeName);
       switch (match) {
       | Some(Named(_, referencedType)) =>
-        lonaValue(
-          framework,
-          config,
-          {ltype: referencedType, data: value.data},
-        )
+        lonaValue(config, {ltype: referencedType, data: value.data})
       | Some(_) => SwiftIdentifier("UnknownNamedReferenceType: " ++ typeName)
       | None => SwiftIdentifier("UnknownReferenceType: " ++ typeName)
       };
@@ -214,7 +207,7 @@ let rec lonaValue =
       |> Json.Decode.array(x => x)
       |> Array.to_list
       |> List.map(json =>
-           lonaValue(framework, config, {ltype: elementType, data: json})
+           lonaValue(config, {ltype: elementType, data: json})
          );
     LiteralExpression(Array(elements));
   | Function(_) => SwiftIdentifier("PLACEHOLDER")
@@ -250,7 +243,7 @@ let rec lonaValue =
              }); */
       } else {
         Js.log2("WARNING: Image not handled", rawValue);
-        Builders.functionCall([imageTypeName(framework)], []);
+        Builders.functionCall([imageTypeName(config)], []);
       };
     | "TextStyle" =>
       let rawValue = value.data |> Json.Decode.string;
@@ -282,16 +275,13 @@ let rec lonaValue =
           SwiftIdentifier(shadows.defaultStyle.id),
         ])
       };
-    | _ => lonaValue(framework, config, {ltype: subtype, data: value.data})
+    | _ => lonaValue(config, {ltype: subtype, data: value.data})
     }
   };
+};
 
-let rec defaultValueForLonaType =
-        (
-          framework: SwiftOptions.framework,
-          config: Config.t,
-          ltype: Types.lonaType,
-        ) =>
+let rec defaultValueForLonaType = (config: Config.t, ltype: Types.lonaType) => {
+  let framework = config.options.swift.framework;
   switch (ltype) {
   | Reference(typeName) when LonaValue.isOptionalTypeName(typeName) =>
     LiteralExpression(Nil)
@@ -303,23 +293,15 @@ let rec defaultValueForLonaType =
     | "String" => LiteralExpression(String(""))
     | "TextStyle"
     | "Color" =>
-      defaultValueForLonaType(
-        framework,
-        config,
-        Named(typeName, Reference("String")),
-      )
+      defaultValueForLonaType(config, Named(typeName, Reference("String")))
     | "URL" =>
-      defaultValueForLonaType(
-        framework,
-        config,
-        Named(typeName, Reference("String")),
-      )
+      defaultValueForLonaType(config, Named(typeName, Reference("String")))
     | _ =>
       let match =
         UserTypes.find(config.userTypesFile.contents.types, typeName);
       switch (match) {
       | Some(Named(_, referencedType)) =>
-        defaultValueForLonaType(framework, config, referencedType)
+        defaultValueForLonaType(config, referencedType)
       | Some(_) => LiteralExpression(Nil)
       | None => LiteralExpression(Nil)
       };
@@ -331,12 +313,12 @@ let rec defaultValueForLonaType =
     switch (alias) {
     | "Color" =>
       MemberExpression([
-        SwiftIdentifier(colorTypeName(framework)),
+        SwiftIdentifier(colorTypeName(config)),
         SwiftIdentifier("clear"),
       ])
     | "URL" =>
       FunctionCallExpression({
-        "name": SwiftIdentifier(imageTypeName(framework)),
+        "name": SwiftIdentifier(imageTypeName(config)),
         "arguments": [],
       })
     | "TextStyle" =>
@@ -344,9 +326,10 @@ let rec defaultValueForLonaType =
         SwiftIdentifier("TextStyles"),
         SwiftIdentifier(config.textStylesFile.contents.defaultStyle.id),
       ])
-    | _ => defaultValueForLonaType(framework, config, subtype)
+    | _ => defaultValueForLonaType(config, subtype)
     }
   };
+};
 
 let memberOrSelfExpression = (first, statements) =>
   switch (first) {

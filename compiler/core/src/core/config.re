@@ -12,6 +12,7 @@ type t = {
   userTypesFile: file(UserTypes.file),
   svgFiles: list(file(Svg.node)),
   workspacePath: string,
+  options: Options.options,
 };
 
 module Compiler = {
@@ -132,17 +133,20 @@ let exit = message => {
   {|process.exit(1)|};
 };
 
-let load = path: Js.Promise.t(t) =>
+let load = (options: Options.options, path): Js.Promise.t(t) =>
   switch (Workspace.find(path)) {
   | None =>
     exit(
-      "Couldn't find workspace directory. A workspace must contain a `lona.json` file.",
+      "Couldn't find workspace directory starting from '"
+      ++ path
+      ++ "'. A workspace must contain a `lona.json` file.",
     )
   | Some(workspacePath) =>
     Js.Promise.(
       Workspace.svgFiles(workspacePath)
       |> then_(svgFiles =>
            resolve({
+             options,
              componentNames: Workspace.componentNames(workspacePath),
              plugins: Workspace.compilerFile(workspacePath),
              colorsFile: Workspace.colorsFile(workspacePath),

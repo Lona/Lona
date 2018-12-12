@@ -227,27 +227,13 @@ let generateConstraintConstant =
     let float = value |> LonaValue.decodeNumber;
     let float = float *. direction;
     float == 0.0 ?
-      None :
-      Some(
-        SwiftDocument.lonaValue(
-          swiftOptions.framework,
-          config,
-          LonaValue.number(float),
-        ),
-      );
+      None : Some(SwiftDocument.lonaValue(config, LonaValue.number(float)));
   | _ =>
     let floats = lonaValues |> List.map(LonaValue.decodeNumber);
     let float = List.fold_left((a, b) => a +. b, 0.0, floats);
     let float = float *. direction;
     float == 0.0 ?
-      None :
-      Some(
-        SwiftDocument.lonaValue(
-          swiftOptions.framework,
-          config,
-          LonaValue.number(float),
-        ),
-      );
+      None : Some(SwiftDocument.lonaValue(config, LonaValue.number(float)));
   };
 };
 

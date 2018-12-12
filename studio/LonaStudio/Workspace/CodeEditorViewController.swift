@@ -72,6 +72,7 @@ class CodeEditorViewController: NSViewController {
                 LonaNode.run(
                     arguments: [compilerPath, "colors", fileExtension],
                     inputData: data,
+                    currentDirectoryPath: CSUserPreferences.workspaceURL.path,
                     onSuccess: { output in
                         guard let result = output.utf8String() else { return }
                         DispatchQueue.main.async {
@@ -92,6 +93,7 @@ class CodeEditorViewController: NSViewController {
                 LonaNode.run(
                     arguments: [compilerPath, "textStyles", fileExtension],
                     inputData: data,
+                    currentDirectoryPath: CSUserPreferences.workspaceURL.path,
                     onSuccess: { output in
                         guard let result = output.utf8String() else { return }
                         DispatchQueue.main.async {
