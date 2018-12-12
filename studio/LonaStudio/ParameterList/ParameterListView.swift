@@ -87,14 +87,14 @@ class ParameterListView: NSOutlineView, NSOutlineViewDataSource, NSOutlineViewDe
         return self.outlineView(outlineView, numberOfChildrenOfItem: item) > 0
     }
 
-    func outlineView(_ outlineView: NSOutlineView, viewFor tableColumn: NSTableColumn?, item: Any) -> NSView? {
+    private let defaultValueType = CSType.variant(tags: ["no default", "default"])
 
+    private let requiredType = CSType.variant(tags: ["required", "optional"])
+
+    func outlineView(_ outlineView: NSOutlineView, viewFor tableColumn: NSTableColumn?, item: Any) -> NSView? {
         let frame = NSRect(x: 0, y: 0, width: 2000, height: 26)
 
         if let parameter = item as? CSParameter {
-            let defaultValueType = CSType.variant(tags: ["no default", "default"])
-            let requiredType = CSType.variant(tags: ["required", "optional"])
-
             var components: [CSStatementView.Component] = [
                 .text("Parameter"),
                 .value("name", CSValue(type: .string, data: CSData.String(parameter.name)), []),
