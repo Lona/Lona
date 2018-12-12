@@ -92,17 +92,8 @@ class ParameterListView: NSOutlineView, NSOutlineViewDataSource, NSOutlineViewDe
         let frame = NSRect(x: 0, y: 0, width: 2000, height: 26)
 
         if let parameter = item as? CSParameter {
-//            Swift.print("param", parameter.name, parameter.type.toString(), parameter.type)
-
-            let defaultValueType = CSType.enumeration([
-                CSValue(type: .string, data: .String("no default")),
-                CSValue(type: .string, data: .String("default"))
-            ])
-
-            let requiredType = CSType.enumeration([
-                CSValue(type: .string, data: .String("required")),
-                CSValue(type: .string, data: .String("optional"))
-                ])
+            let defaultValueType = CSType.variant(tags: ["no default", "default"])
+            let requiredType = CSType.variant(tags: ["required", "optional"])
 
             var components: [CSStatementView.Component] = [
                 .text("Parameter"),
@@ -176,7 +167,12 @@ class ParameterListView: NSOutlineView, NSOutlineViewDataSource, NSOutlineViewDe
 
             components.append(contentsOf: [
                 .text("that is"),
-                .value("required", CSValue(type: requiredType, data: parameter.type.isOptional() ? .String("optional") : .String("required")), []),
+                .value(
+                    "required",
+                    parameter.type.isOptional()
+                        ? CSUnitValue.wrap(in: requiredType, tagged: "optional")
+                        : CSUnitValue.wrap(in: requiredType, tagged: "required"),
+                    []),
                 .text("with"),
                 .value("hasDefaultValue", CSValue(type: defaultValueType, data: parameter.hasDefaultValue ? .String("default") : .String("no default")), [])
                 ])
@@ -265,7 +261,7 @@ class ParameterListView: NSOutlineView, NSOutlineViewDataSource, NSOutlineViewDe
                         parameter.defaultValue = parameter.defaultValue.cast(to: parameter.type)
                     }
                 case "required":
-                    if value.data.stringValue == "required" {
+                    if value.tag() == "required" {
                         if let unwrappedType = parameter.type.unwrapOptional() {
                             parameter.type = unwrappedType
                         }

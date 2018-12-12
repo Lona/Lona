@@ -277,6 +277,10 @@ indirect enum CSType: Equatable, CSDataSerializable, CSDataDeserializable {
         }
     }
 
+    static func variant(tags: [String]) -> CSType {
+        return .variant(tags.map { ($0, .unit) })
+    }
+
     static func userType(named typeName: String) -> CSType? {
         for userType in CSUserTypes.types {
             if case CSType.named(let name, _) = userType, name == typeName {
@@ -454,7 +458,13 @@ extension CSType {
     }
 
     func isOptional() -> Bool {
-        return unwrapOptional() != nil
+        guard case CSType.variant(let cases) = self else { return false }
+        guard cases.count == 2 else { return false }
+
+        let (firstName, _) = cases[0]
+        let (secondName, secondType) = cases[1]
+
+        return firstName == "Some" && secondName == "None" && secondType == .unit
     }
 }
 

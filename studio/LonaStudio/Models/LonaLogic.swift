@@ -8,8 +8,6 @@
 
 import Foundation
 
-protocol TestingHello {}
-
 private let comparatorMapping: [String: LonaOperator] = [
     "equal to": .eq,
     "not equal to": .neq,
