@@ -52,7 +52,7 @@ class CSStatementView: NSTableCellView {
             rightButton.bezelStyle = .inline
             rightButton.image = NSImage.init(named: NSImage.Name.addTemplate)!
             rightButton.imageScaling = .scaleProportionallyDown
-            rightButton.onPress = {  self.onAddChild() }
+            rightButton.onPress = { [unowned self] in self.onAddChild() }
 
             self.addSubview(rightButton)
 
@@ -128,7 +128,7 @@ class CSStatementView: NSTableCellView {
         case .value(let name, let value, let keyPath):
             let control = CSValueField(value: value)
 
-            control.onChangeData = { data in
+            control.onChangeData = { [unowned self] data in
                 self.handleChange(component: component, componentName: name, value: CSValue(type: value.type, data: data), keyPath: keyPath)
             }
 
@@ -142,7 +142,7 @@ class CSStatementView: NSTableCellView {
             dictionary[CSFunction.Argument.customValue] = CSData.Null
             let control = MultilevelPopupField(frame: frame, data: dictionary, initialValue: keyPath)
 
-            control.onChangeData = { keyPath in
+            control.onChangeData = { [unowned self] keyPath in
                 let path = keyPath.arrayValue.map({ $0.stringValue })
 
                 if path[0] == CSFunction.Argument.customValue {

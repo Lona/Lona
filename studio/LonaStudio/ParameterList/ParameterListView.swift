@@ -198,7 +198,7 @@ class ParameterListView: NSOutlineView, NSOutlineViewDataSource, NSOutlineViewDe
                 components: components
             )
 
-            cell.onChangeValue = { name, value, _ in
+            cell.onChangeValue = { [unowned self] name, value, _ in
                 switch name {
                 case "name":
                     parameter.name = value.data.stringValue
