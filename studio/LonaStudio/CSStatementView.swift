@@ -185,6 +185,24 @@ class CSStatementView: NSTableCellView {
         }
     }
 
+    static func automaticallySetNextArguments(for invocation: CSFunction.Invocation) -> CSFunction.Invocation {
+        let function = CSFunction.getFunction(declaredAs: invocation.name)
+
+        var updated = invocation
+
+        outer: for parameter in function.parameters where invocation.arguments[parameter.name] == nil {
+            switch parameter.type {
+            case .declaration, .variable:
+                break outer
+            case .keyword(let type):
+                let value = CSValue.defaultValue(for: type)
+                updated.arguments[parameter.name] = CSFunction.Argument.value(value)
+            }
+        }
+
+        return updated
+    }
+
     static func view(for invocation: CSFunction.Invocation, in scope: CSScope) -> CSStatementView {
         var components: [CSStatementView.Component] = []
 

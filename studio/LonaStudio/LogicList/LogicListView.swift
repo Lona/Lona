@@ -99,6 +99,8 @@ class LogicListView {
                         } else {
                             item.invocation.arguments[name] = CSFunction.Argument.identifier(value.type, keyPath)
                         }
+
+                        item.invocation = CSStatementView.automaticallySetNextArguments(for: item.invocation)
                     }
 
                     editor.reloadData()
