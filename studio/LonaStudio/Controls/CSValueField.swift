@@ -48,7 +48,7 @@ class CSValueField: CSControl {
         let submitOnChange = options[Options.submitOnChange] ?? false
         let usesLinkStyle = options[Options.usesLinkStyle] ?? true
 
-        let defaultChangeHandler: (CSData) -> Void = { data in
+        let defaultChangeHandler: (CSData) -> Void = { [unowned self] data in
             self.value = CSValue(type: value.type, data: data)
             self.onChangeData(self.data)
         }

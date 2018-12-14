@@ -116,7 +116,7 @@ class CSStatementView: NSTableCellView {
 
                     return view
             },
-                onChange: { declaration in
+                onChange: { [unowned self] declaration in
                     self.handleChange(component: component, componentName: name, value: CSValue(type: CSType.string, data: CSData.String(declaration)), keyPath: [])
             },
                 frame: NSRect(x: 0, y: 0, width: 70, height: 26)
@@ -135,8 +135,6 @@ class CSStatementView: NSTableCellView {
             return control.view
         case .identifier(let name, let scope, let type, let access, let keyPath):
             let frame = NSRect(x: 0, y: 0, width: 70, height: 26)
-//                var dictionary = scope.dictionary(access: access)
-//            Swift.print("Dictionary", name, type, access, keyPath)
             var dictionary = scope.data(typed: type, accessed: access)
             dictionary[CSFunction.Argument.noneValue] = CSData.Null
             dictionary[CSFunction.Argument.customValue] = CSData.Null
