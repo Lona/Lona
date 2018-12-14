@@ -83,22 +83,20 @@ indirect enum CSType: Equatable, CSDataSerializable, CSDataDeserializable {
                         self = .dictionary(schema)
                     }
                 case "Enumeration":
+                    var parameters: [(String, CSType)] = []
                     if let values = object["of"]?.array {
-                        var parameters: [(String, CSType)] = []
-                        if let values = object["of"]?.array {
-                            parameters = values
-                                .map({ CSValue($0) })
-                                .map({ (arg) in
-                                    switch arg.type {
-                                    case .string:
-                                        return (arg.data.stringValue, .unit)
-                                    default:
-                                        return ("", .unit)
-                                    }
-                                })
-                        }
-                        self = .variant(parameters)
+                        parameters = values
+                            .map({ CSValue($0) })
+                            .map({ (arg) in
+                                switch arg.type {
+                                case .string:
+                                    return (arg.data.stringValue, .unit)
+                                default:
+                                    return ("", .unit)
+                                }
+                            })
                     }
+                    self = .variant(parameters)
                 case "Function":
                     var parameters: [(String, CSType)] = []
                     var returnType: CSType = .undefined
