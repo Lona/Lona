@@ -62,19 +62,12 @@ final class CustomComponentInspectorView: NSStackView {
             }
 
             let value = CSValue(type: parameter.type, data: componentLayer.parameters[parameter.name] ?? defaultData)
-            var usesYogaLayout = true
-            if case .named("URL", .string) = value.type {
-                usesYogaLayout = false
-            } else if case .variant(_) = value.type.unwrappedNamedType() {
-                usesYogaLayout = false
-            }
 
             let valueField = CSValueField(value: value, options: [
                 CSValueField.Options.isBordered: true,
                 CSValueField.Options.drawsBackground: true,
                 CSValueField.Options.submitOnChange: false,
-                CSValueField.Options.usesLinkStyle: false,
-                CSValueField.Options.usesYogaLayout: usesYogaLayout
+                CSValueField.Options.usesLinkStyle: false
                 ])
             valueField.onChangeData = {[unowned self] data in
                 var data = data

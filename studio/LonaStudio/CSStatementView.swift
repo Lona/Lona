@@ -61,17 +61,13 @@ class CSStatementView: NSTableCellView {
         }
     }
 
-//    func buildControl(for component: Component) -> CSValueField {
-//
-//    }
-
     func setup(components: [Component]) {
-        for component in components {
-            render(component: component)
+        components.map { render(component: $0) }.forEach { view in
+            stackView.addArrangedSubview(view)
         }
     }
 
-    func render(component: Component) {
+    func render(component: Component) -> NSView {
         switch component {
         case .text(let string):
             let field = TextField(frame: NSRect(x: 0, y: 0, width: 80, height: 16))
@@ -86,9 +82,8 @@ class CSStatementView: NSTableCellView {
             let attributedString = NSAttributedString(string: string, attributes: [NSAttributedStringKey.font: font])
             field.frame.size = attributedString.measure(width: 1000)
             //                name.frame.size.width += 10
-            field.useYogaLayout = true
 
-            addSubview(field)
+            return field
         case .function(let name, let value):
             let values = CSFunction.registeredFunctionDeclarations
 
@@ -127,10 +122,9 @@ class CSStatementView: NSTableCellView {
                 frame: NSRect(x: 0, y: 0, width: 70, height: 26)
             )
 
-            control.useYogaLayout = true
             control.isBordered = false
 
-            addSubview(control)
+            return control
         case .value(let name, let value, let keyPath):
             let control = CSValueField(value: value)
 
@@ -138,7 +132,7 @@ class CSStatementView: NSTableCellView {
                 self.handleChange(component: component, componentName: name, value: CSValue(type: value.type, data: data), keyPath: keyPath)
             }
 
-            addSubview(control.view)
+            return control.view
         case .identifier(let name, let scope, let type, let access, let keyPath):
             let frame = NSRect(x: 0, y: 0, width: 70, height: 26)
 //                var dictionary = scope.dictionary(access: access)
@@ -163,9 +157,6 @@ class CSStatementView: NSTableCellView {
 
             control.frame.size = size
             control.frame.size.width += 24
-            control.useYogaLayout = true
-            control.ygNode?.marginLeft = -7
-            control.ygNode?.marginBottom = -1
             control.isBordered = false
 
             func styleItems(for menu: NSMenu) {
@@ -181,7 +172,8 @@ class CSStatementView: NSTableCellView {
             }
 
             styleItems(for: control.menu!)
-            addSubview(control)
+
+            return control
         }
     }
 
@@ -274,21 +266,35 @@ class CSStatementView: NSTableCellView {
         return statementView
     }
 
+    private var stackView = NSStackView()
+
     init(frame frameRect: NSRect, components: [Component]) {
         super.init(frame: frameRect)
 
-        self.useYogaLayout = true
-        self.ygNode?.flexDirection = .row
-        self.ygNode?.alignItems = .center
-        self.ygNode?.paddingLeft = 4
-
         setup(components: components)
 
-        layoutWithYoga()
+        setUpViews()
+        setUpConstraints()
     }
 
     required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
+    }
+
+    func setUpViews() {
+        stackView.orientation = .horizontal
+        stackView.distribution = .fill
+        stackView.spacing = 0
+
+        addSubview(stackView)
+    }
+
+    func setUpConstraints() {
+        stackView.translatesAutoresizingMaskIntoConstraints = false
+
+        stackView.leadingAnchor.constraint(equalTo: leadingAnchor).isActive = true
+        stackView.topAnchor.constraint(equalTo: topAnchor).isActive = true
+        stackView.bottomAnchor.constraint(equalTo: bottomAnchor).isActive = true
     }
 
     // Respond to clicks within text fields only, because other clicks will be duplicates of events passed to mouseDown

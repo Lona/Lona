@@ -26,8 +26,7 @@ class MetadataEditorView: NSStackView, CSControl {
             CSValueField.Options.isBordered: true,
             CSValueField.Options.drawsBackground: true,
             CSValueField.Options.submitOnChange: false,
-            CSValueField.Options.usesLinkStyle: false,
-            CSValueField.Options.usesYogaLayout: false
+            CSValueField.Options.usesLinkStyle: false
             ]
 
         // Description

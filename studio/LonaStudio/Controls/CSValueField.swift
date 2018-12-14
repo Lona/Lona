@@ -14,7 +14,6 @@ class CSValueField: CSControl {
         case isBordered
         case drawsBackground
         case usesLinkStyle
-        case usesYogaLayout
 
         // For instant feedback when typing
         case submitOnChange
@@ -48,7 +47,6 @@ class CSValueField: CSControl {
         let drawsBackground = options[Options.drawsBackground] ?? false
         let submitOnChange = options[Options.submitOnChange] ?? false
         let usesLinkStyle = options[Options.usesLinkStyle] ?? true
-        let usesYogaLayout = options[Options.usesYogaLayout] ?? true
 
         let defaultChangeHandler: (CSData) -> Void = { data in
             self.value = CSValue(type: value.type, data: data)
@@ -66,9 +64,6 @@ class CSValueField: CSControl {
 
             type.frame.size = size
             type.frame.size.width += 24
-            type.useYogaLayout = true
-            type.ygNode?.marginLeft = -7
-            type.ygNode?.marginBottom = -1
             type.isBordered = isBordered
 
             for item in type.menu!.items {
@@ -99,7 +94,9 @@ class CSValueField: CSControl {
             field.frame.size.width = max(field.frame.size.width, 30)
             field.frame.size.width += 4
 
-            field.useYogaLayout = true
+            let widthConstraint = field.widthAnchor.constraint(equalToConstant: field.frame.size.width)
+            widthConstraint.priority = .defaultHigh
+            widthConstraint.isActive = true
 
             if submitOnChange {
                 field.onChangeData = defaultChangeHandler
@@ -126,7 +123,9 @@ class CSValueField: CSControl {
             field.frame.size.width = max(field.frame.size.width, 30)
             field.frame.size.width += 4
 
-            field.useYogaLayout = true
+            let widthConstraint = field.widthAnchor.constraint(equalToConstant: field.frame.size.width)
+            widthConstraint.priority = .defaultHigh
+            widthConstraint.isActive = true
 
             if submitOnChange {
                 field.onChangeData = defaultChangeHandler
@@ -139,7 +138,6 @@ class CSValueField: CSControl {
             let field = CheckboxField(frame: NSRect(x: 0, y: 0, width: 20, height: 20))
             view = field
 
-            field.useYogaLayout = true
             field.value = value.data.boolValue
             field.onChangeData = defaultChangeHandler
             field.imagePosition = .imageOnly
@@ -149,27 +147,23 @@ class CSValueField: CSControl {
             view = field
 
             field.frame = NSRect(x: 0, y: -2, width: 120, height: 26)
-            field.useYogaLayout = true
 
         case .named("Color", .string):
             let field = ColorPickerButton(frame: NSRect(x: 0, y: -2, width: 120, height: 26))
             view = field
 
-            field.useYogaLayout = true
             field.value = value.data.stringValue
             field.onChangeData = defaultChangeHandler
         case .named("TextStyle", .string):
             let field = TextStylePickerButton(frame: NSRect(x: 0, y: -2, width: 120, height: 26))
             view = field
 
-            field.useYogaLayout = true
             field.value = value.data.stringValue
             field.onChangeData = defaultChangeHandler
         case .named("Shadow", .string):
             let field = ShadowStylePickerButton(frame: NSRect(x: 0, y: -2, width: 120, height: 26))
             view = field
 
-            field.useYogaLayout = true
             field.value = value.data.stringValue
             field.onChangeData = defaultChangeHandler
         case .named("URL", .string):
@@ -198,36 +192,18 @@ class CSValueField: CSControl {
             let stringField = CSValueField(value: value.unwrappedNamedType(), options: options)
             stringField.onChangeData = defaultChangeHandler
 
-            if usesYogaLayout {
-                let field = NSView(frame: NSRect(x: 0, y: 0, width: 220, height: 26))
+            let field = NSStackView(views: [
+                stringField.view,
+                button
+                ], orientation: .horizontal)
 
-                field.useYogaLayout = true
-                field.ygNode?.flexDirection = .row
-                field.ygNode?.alignItems = .center
+//            field.heightAnchor.constraint(equalToConstant: 30).isActive = true
 
-                button.useYogaLayout = true
+            field.translatesAutoresizingMaskIntoConstraints = false
+            button.translatesAutoresizingMaskIntoConstraints = false
+            stringField.view.translatesAutoresizingMaskIntoConstraints = false
 
-                stringField.view.frame.size.width = 140
-                stringField.view.useYogaLayout = true
-
-                field.addSubview(stringField.view)
-                field.addSubview(button)
-
-                view = field
-            } else {
-                let field = NSStackView(views: [
-                    stringField.view,
-                    button
-                    ], orientation: .horizontal)
-
-                field.heightAnchor.constraint(equalToConstant: 30).isActive = true
-
-                field.translatesAutoresizingMaskIntoConstraints = false
-                button.translatesAutoresizingMaskIntoConstraints = false
-                stringField.view.translatesAutoresizingMaskIntoConstraints = false
-
-                view = field
-            }
+            view = field
         case .variant(let cases):
             if cases.isEmpty {
                 Swift.print("Empty variant for value", value)
@@ -261,34 +237,18 @@ class CSValueField: CSControl {
                 valueField = CSValueField(value: CSUndefinedValue, options: options)
             }
 
-            if usesYogaLayout {
-                let field = NSView(frame: NSRect(x: 0, y: 0, width: 160, height: 126))
+            let field = NSStackView(views: [
+                tagField,
+                valueField.view
+                ], orientation: .horizontal)
 
-                field.useYogaLayout = true
-                field.ygNode?.flexDirection = .row
-                field.ygNode?.alignItems = .center
+//            field.heightAnchor.constraint(equalToConstant: 30).isActive = true
 
-                tagField.useYogaLayout = true
-                valueField.view.useYogaLayout = true
+            tagField.translatesAutoresizingMaskIntoConstraints = false
+            valueField.view.translatesAutoresizingMaskIntoConstraints = false
+            field.translatesAutoresizingMaskIntoConstraints = false
 
-                field.addSubview(tagField)
-                field.addSubview(valueField.view)
-
-                view = field
-            } else {
-                let field = NSStackView(views: [
-                    tagField,
-                    valueField.view
-                    ], orientation: .horizontal)
-
-                field.heightAnchor.constraint(equalToConstant: 30).isActive = true
-
-                tagField.translatesAutoresizingMaskIntoConstraints = false
-                valueField.view.translatesAutoresizingMaskIntoConstraints = false
-                field.translatesAutoresizingMaskIntoConstraints = false
-
-                view = field
-            }
+            view = field
 
         // Generic fallthrough for user types
         case .named(_, let type):
@@ -303,12 +263,10 @@ class CSValueField: CSControl {
             view = field
 
             field.frame = NSRect(x: 0, y: -2, width: 120, height: 26)
-            field.useYogaLayout = true
         case .array:
             let field = ArrayEditorButton(frame: NSRect(x: 0, y: -2, width: 120, height: 26))
             view = field
 
-            field.useYogaLayout = true
             field.value = value
             field.onChangeData = defaultChangeHandler
         case .null:
@@ -325,10 +283,12 @@ class CSValueField: CSControl {
 
             field.frame.size = text.measure(width: 1000)
             field.frame.size.width += 4
-            field.useYogaLayout = true
-            field.ygNode?.marginLeft = 2
+
+            let widthConstraint = field.widthAnchor.constraint(equalToConstant: field.frame.size.width)
+            widthConstraint.priority = .defaultHigh
+            widthConstraint.isActive = true
         default:
-            view.useYogaLayout = true
+            break
         }
     }
 }

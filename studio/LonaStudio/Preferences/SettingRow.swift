@@ -49,8 +49,7 @@ class ValueSettingRow: SettingRow {
             CSValueField.Options.isBordered: true,
             CSValueField.Options.drawsBackground: true,
             CSValueField.Options.submitOnChange: false,
-            CSValueField.Options.usesLinkStyle: false,
-            CSValueField.Options.usesYogaLayout: false
+            CSValueField.Options.usesLinkStyle: false
             ])
         valueField.view.translatesAutoresizingMaskIntoConstraints = false
         valueField.onChangeData = { value in self.onChange?(value) }
