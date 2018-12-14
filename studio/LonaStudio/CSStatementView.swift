@@ -213,8 +213,6 @@ class CSStatementView: NSTableCellView {
 
         let function = CSFunction.getFunction(declaredAs: invocation.name)
         outer: for parameter in function.parameters {
-            Swift.print("Finding param", parameter.name)
-
             if let label = parameter.label {
                 components.append(.text(label))
             }
@@ -229,7 +227,6 @@ class CSStatementView: NSTableCellView {
                     components.append(.identifier(parameter.name, scope, type, access, keyPath))
                 case .keyword(type: let type):
                     let value = CSValue.defaultValue(for: type)
-//                    let value = CSValue(type: type, data: .Null)
                     components.append(.value(parameter.name, value, CSFunction.Argument.customValueKeyPath))
                 }
             }
@@ -247,11 +244,9 @@ class CSStatementView: NSTableCellView {
                 case .value(let value):
                     switch parameter.type {
                     case .declaration:
-                        Swift.print("decl", parameter.name)
                         components.append(.value(parameter.name, value, []))
                     // TODO Use this instead of custom key path stuff?
                     case .variable(type: _, access: _):
-                        Swift.print("var", parameter.name)
                         let typeValue = CSUnitValue.wrap(in: CSType.parameterType(), tagged: value.type.toString())
                         needsInput(CSFunction.Argument.customKeyPath)
 
@@ -264,7 +259,6 @@ class CSStatementView: NSTableCellView {
                             components.append(.value(parameter.name, value, CSFunction.Argument.customValueKeyPath))
                         }
                     case .keyword(type: _):
-                        Swift.print("kwd", parameter.name)
                         components.append(.value(parameter.name, value, CSFunction.Argument.customValueKeyPath))
                     }
                 }
