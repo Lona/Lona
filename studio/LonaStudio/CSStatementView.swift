@@ -195,6 +195,8 @@ class CSStatementView: NSTableCellView {
 
         let function = CSFunction.getFunction(declaredAs: invocation.name)
         outer: for parameter in function.parameters {
+            Swift.print("Finding param", parameter.name)
+
             if let label = parameter.label {
                 components.append(.text(label))
             }
@@ -208,7 +210,8 @@ class CSStatementView: NSTableCellView {
                     let type = invocation.concreteTypeForArgument(named: parameter.name, in: scope) ?? variableType
                     components.append(.identifier(parameter.name, scope, type, access, keyPath))
                 case .keyword(type: let type):
-                    let value = CSValue(type: type, data: .Null)
+                    let value = CSValue.defaultValue(for: type)
+//                    let value = CSValue(type: type, data: .Null)
                     components.append(.value(parameter.name, value, CSFunction.Argument.customValueKeyPath))
                 }
             }
@@ -226,10 +229,12 @@ class CSStatementView: NSTableCellView {
                 case .value(let value):
                     switch parameter.type {
                     case .declaration:
+                        Swift.print("decl", parameter.name)
                         components.append(.value(parameter.name, value, []))
                     // TODO Use this instead of custom key path stuff?
                     case .variable(type: _, access: _):
-                        let typeValue = CSValue(type: CSType.parameterType(), data: .String(value.type.toString()))
+                        Swift.print("var", parameter.name)
+                        let typeValue = CSUnitValue.wrap(in: CSType.parameterType(), tagged: value.type.toString())
                         needsInput(CSFunction.Argument.customKeyPath)
 
                         // If we know the concrete type for a custom variable, cast to that automatically
@@ -241,6 +246,7 @@ class CSStatementView: NSTableCellView {
                             components.append(.value(parameter.name, value, CSFunction.Argument.customValueKeyPath))
                         }
                     case .keyword(type: _):
+                        Swift.print("kwd", parameter.name)
                         components.append(.value(parameter.name, value, CSFunction.Argument.customValueKeyPath))
                     }
                 }

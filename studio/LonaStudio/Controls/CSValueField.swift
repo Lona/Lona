@@ -297,29 +297,6 @@ class CSValueField: CSControl {
             control.onChangeData = defaultChangeHandler
 
             view = control.view
-        case .enumeration(let options):
-            let optionValues = options.map({ $0.data.stringValue })
-            let type = PopupField(frame: NSRect(x: 0, y: 0, width: 70, height: 26), values: optionValues, initialValue: value.data.string)
-            view = type
-
-            let attributedString = styled(string: value.data.stringValue, usesLinkStyle: usesLinkStyle)
-            let size = attributedString.measure(width: 1000)
-
-            type.frame.size = size
-            type.frame.size.width += 24
-            type.useYogaLayout = true
-            type.ygNode?.marginLeft = -7
-            type.ygNode?.marginBottom = -1
-            type.isBordered = isBordered
-            type.value = value.data.stringValue
-
-            for item in type.menu!.items {
-                let desc = String(describing: item.title)
-                let text = styled(string: desc, usesLinkStyle: usesLinkStyle)
-                item.attributedTitle = text
-            }
-
-            type.onChangeData = defaultChangeHandler
         case .dictionary:
             let field = DictionaryEditorButton(value: value, onChangeData: defaultChangeHandler)
 

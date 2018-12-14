@@ -93,7 +93,7 @@ class LogicListView {
                             item.invocation.arguments[name] = CSFunction.Argument.value(value)
                         } else if keyPath == CSFunction.Argument.customTypeKeyPath {
                             let argument = item.invocation.arguments[name] ?? CSFunction.Argument.value(CSUndefinedValue)
-                            let newType = CSType.from(string: value.data.stringValue)
+                            let newType = CSType.from(string: value.tag())
                             let newValue = argument.resolve(in: scope).cast(to: newType)
                             item.invocation.arguments[name] = CSFunction.Argument.value(newValue)
                         } else {

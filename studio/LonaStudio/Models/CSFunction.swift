@@ -50,7 +50,7 @@ struct CSFunction {
         func concreteTypeForArgument(named argumentName: String, in scope: CSScope) -> CSType? {
             let function = CSFunction.getFunction(declaredAs: self.name)
 
-//            Swift.print("concrete type for", argumentName)
+            Swift.print("concrete type for", argumentName)
 
             guard let matchingParameter = function.parameters.first(where: { $0.name == argumentName }) else { return nil }
 
@@ -278,7 +278,10 @@ let CSIfFunction = CSFunction(
 
         switch cmp.type {
         case CSComparatorType:
-            switch cmp.data.stringValue {
+            Swift.print(cmp.data)
+            let cmpValue = CSValue(type: CSComparatorType, data: cmp.data)
+
+            switch cmpValue.tag() {
             case "equal to":
                 return lhs.data == rhs.data ? .stepInto : .stepOver
             case "not equal to":

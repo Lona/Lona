@@ -24,7 +24,6 @@ indirect enum CSType: Equatable, CSDataSerializable, CSDataDeserializable {
     case string
     case array(CSType)
     case dictionary(Schema)
-    case enumeration([CSValue])
     case function([(String, CSType)], CSType)
     case variant([(String, CSType)])
 
@@ -85,7 +84,20 @@ indirect enum CSType: Equatable, CSDataSerializable, CSDataDeserializable {
                     }
                 case "Enumeration":
                     if let values = object["of"]?.array {
-                        self = .enumeration(values.map({ CSValue($0) }))
+                        var parameters: [(String, CSType)] = []
+                        if let values = object["of"]?.array {
+                            parameters = values
+                                .map({ CSValue($0) })
+                                .map({ (arg) in
+                                    switch arg.type {
+                                    case .string:
+                                        return (arg.data.stringValue, .unit)
+                                    default:
+                                        return ("", .unit)
+                                    }
+                                })
+                        }
+                        self = .variant(parameters)
                     }
                 case "Function":
                     var parameters: [(String, CSType)] = []
@@ -222,18 +234,6 @@ indirect enum CSType: Equatable, CSDataSerializable, CSDataDeserializable {
           }
 
           return data
-        case .enumeration(let values):
-            if let match = CSType.builtInTypes.enumerated().first(where: { (arg) -> Bool in
-                let (_, item) = arg
-                return item.value == self
-            }) {
-                return .String(match.element.key)
-            }
-
-            return CSData.Object([
-                "name": "Enumeration".toData(),
-                "of": CSData.Array(values.map({ $0.toData() }))
-            ])
         case .function(let parameters, let returnType):
             var data: CSData = .Object([
                 "name": "Function".toData()
@@ -321,16 +321,6 @@ indirect enum CSType: Equatable, CSDataSerializable, CSDataDeserializable {
         case (.dictionary(let l), .dictionary(let r)):
             // TODO does this work?
             return NSDictionary(dictionary: l).isEqual(to: r)
-        case (.enumeration(let l), .enumeration(let r)):
-            if l.count != r.count {
-                return false
-            }
-
-            for pair in zip(l, r) where pair.0 != pair.1 {
-                return false
-            }
-
-            return true
         case (.function(let lParams, let lReturnType), .function(let rParams, let rReturnType)):
             if lParams.count != rParams.count {
                 return false
@@ -480,13 +470,13 @@ let CSHandlerType = CSType.function([], .undefined)
 let CSEmptyRecordType = CSType.dictionary([:])
 let CSEmptyVariantType = CSType.variant([])
 
-let CSComparatorType = CSType.enumeration([
-    CSValue(type: .string, data: .String("equal to")),
-    CSValue(type: .string, data: .String("not equal to")),
-    CSValue(type: .string, data: .String("greater than")),
-    CSValue(type: .string, data: .String("greater than or equal to")),
-    CSValue(type: .string, data: .String("less than")),
-    CSValue(type: .string, data: .String("less than or equal to"))
+let CSComparatorType = CSType.variant(tags: [
+    "equal to",
+    "not equal to",
+    "greater than",
+    "greater than or equal to",
+    "less than",
+    "less than or equal to"
 ])
 
 let CSLayerType = CSType.dictionary([
