@@ -45,11 +45,11 @@ class CoreComponentInspectorView: NSStackView {
         case verticalAlignment
 
         // Box Model
-        case position
-        case top
-        case right
-        case bottom
-        case left
+//        case position
+//        case top
+//        case right
+//        case bottom
+//        case left
         case width
         case height
         case marginTop
@@ -117,15 +117,15 @@ class CoreComponentInspectorView: NSStackView {
     var layoutInspector = LayoutInspector()
     var dimensionsInspector = DimensionsInspector()
 
-    var positionView = PopupField(
-        frame: NSRect.zero,
-        values: ["relative", "absolute"],
-        valueToTitle: ["relative": "Self", "absolute": "Parent"]
-    )
-    var topView = NumberField(frame: NSRect.zero)
-    var rightView = NumberField(frame: NSRect.zero)
-    var bottomView = NumberField(frame: NSRect.zero)
-    var leftView = NumberField(frame: NSRect.zero)
+//    var positionView = PopupField(
+//        frame: NSRect.zero,
+//        values: ["relative", "absolute"],
+//        valueToTitle: ["relative": "Self", "absolute": "Parent"]
+//    )
+//    var topView = NumberField(frame: NSRect.zero)
+//    var rightView = NumberField(frame: NSRect.zero)
+//    var bottomView = NumberField(frame: NSRect.zero)
+//    var leftView = NumberField(frame: NSRect.zero)
 
     var opacityView = NumberField(frame: NSRect.zero)
     var backgroundColorButton = ColorPickerButton(frame: NSRect.zero)
@@ -278,49 +278,49 @@ class CoreComponentInspectorView: NSStackView {
         return section
     }
 
-    func renderPositionSection() -> DisclosureContentRow {
-
-        topView.nextKeyView = rightView
-        rightView.nextKeyView = bottomView
-        bottomView.nextKeyView = leftView
-
-        let top = NSStackView(views: [
-            NSTextField(labelWithString: "Top"),
-            topView
-            ], orientation: .vertical, stretched: true)
-
-        let right = NSStackView(views: [
-            NSTextField(labelWithString: "Right"),
-            rightView
-            ], orientation: .vertical, stretched: true)
-
-        let bottom = NSStackView(views: [
-            NSTextField(labelWithString: "Bottom"),
-            bottomView
-            ], orientation: .vertical, stretched: true)
-
-        let left = NSStackView(views: [
-            NSTextField(labelWithString: "Left"),
-            leftView
-            ], orientation: .vertical, stretched: true)
-
-        let positionContainer = NSStackView(
-            views: [top, right, bottom, left],
-            orientation: .horizontal,
-            stretched: true
-        )
-        positionContainer.distribution = .fillEqually
-        positionContainer.spacing = 20
-
-        let dimensionsSection = renderSection(title: "Position", views: [
-            NSTextField(labelWithString: "Coordinate System"),
-            positionView,
-            positionContainer
-            ])
-        dimensionsSection.addContentSpacing(of: 14, after: positionView)
-
-        return dimensionsSection
-    }
+//    func renderPositionSection() -> DisclosureContentRow {
+//
+//        topView.nextKeyView = rightView
+//        rightView.nextKeyView = bottomView
+//        bottomView.nextKeyView = leftView
+//
+//        let top = NSStackView(views: [
+//            NSTextField(labelWithString: "Top"),
+//            topView
+//            ], orientation: .vertical, stretched: true)
+//
+//        let right = NSStackView(views: [
+//            NSTextField(labelWithString: "Right"),
+//            rightView
+//            ], orientation: .vertical, stretched: true)
+//
+//        let bottom = NSStackView(views: [
+//            NSTextField(labelWithString: "Bottom"),
+//            bottomView
+//            ], orientation: .vertical, stretched: true)
+//
+//        let left = NSStackView(views: [
+//            NSTextField(labelWithString: "Left"),
+//            leftView
+//            ], orientation: .vertical, stretched: true)
+//
+//        let positionContainer = NSStackView(
+//            views: [top, right, bottom, left],
+//            orientation: .horizontal,
+//            stretched: true
+//        )
+//        positionContainer.distribution = .fillEqually
+//        positionContainer.spacing = 20
+//
+//        let dimensionsSection = renderSection(title: "Position", views: [
+//            NSTextField(labelWithString: "Coordinate System"),
+//            positionView,
+//            positionContainer
+//            ])
+//        dimensionsSection.addContentSpacing(of: 14, after: positionView)
+//
+//        return dimensionsSection
+//    }
 
     func renderBorderSection() -> DisclosureContentRow {
         borderRadiusView.nextKeyView = borderWidthView
@@ -627,7 +627,7 @@ class CoreComponentInspectorView: NSStackView {
             layoutInspector,
             textSection!,
             dimensionsInspector,
-            renderPositionSection(),
+//            renderPositionSection(),
             renderSpacingSection(),
             renderBorderSection(),
             renderBackgroundSection(),
@@ -704,11 +704,11 @@ class CoreComponentInspectorView: NSStackView {
 
         let fields: [(control: CSControl, property: Property)] = [
             // Box Model
-            (positionView, .position),
-            (topView, .top),
-            (rightView, .right),
-            (bottomView, .bottom),
-            (leftView, .left),
+//            (positionView, .position),
+//            (topView, .top),
+//            (rightView, .right),
+//            (bottomView, .bottom),
+//            (leftView, .left),
             (marginTopView, .marginTop),
             (marginRightView, .marginRight),
             (marginBottomView, .marginBottom),

@@ -26,11 +26,11 @@ class LayerInspectorView: CoreComponentInspectorView {
             CoreComponentInspectorView.Property.verticalAlignment: CSData.String(layer.verticalAlignment),
 
             // Box Model
-            CoreComponentInspectorView.Property.position: CSData.String(layer.position?.rawValue ?? "relative"),
-            CoreComponentInspectorView.Property.top: CSData.Number(layer.top ?? 0),
-            CoreComponentInspectorView.Property.right: CSData.Number(layer.right ?? 0),
-            CoreComponentInspectorView.Property.bottom: CSData.Number(layer.bottom ?? 0),
-            CoreComponentInspectorView.Property.left: CSData.Number(layer.left ?? 0),
+//            CoreComponentInspectorView.Property.position: CSData.String(layer.position?.rawValue ?? "relative"),
+//            CoreComponentInspectorView.Property.top: CSData.Number(layer.top ?? 0),
+//            CoreComponentInspectorView.Property.right: CSData.Number(layer.right ?? 0),
+//            CoreComponentInspectorView.Property.bottom: CSData.Number(layer.bottom ?? 0),
+//            CoreComponentInspectorView.Property.left: CSData.Number(layer.left ?? 0),
             CoreComponentInspectorView.Property.width: CSData.Object([
                 "case": CSData.String(layer.widthSizingRule.toString()),
                 "data": CSData.Number(layer.width ?? 0)
@@ -93,11 +93,11 @@ class LayerInspectorView: CoreComponentInspectorView {
             case .verticalAlignment: layer.verticalAlignment = value.stringValue
 
             // Box Model
-            case .position: layer.position = PositionType(rawValue: value.stringValue)
-            case .top: layer.top = value.numberValue
-            case .right: layer.right = value.numberValue
-            case .bottom: layer.bottom = value.numberValue
-            case .left: layer.left = value.numberValue
+//            case .position: layer.position = PositionType(rawValue: value.stringValue)
+//            case .top: layer.top = value.numberValue
+//            case .right: layer.right = value.numberValue
+//            case .bottom: layer.bottom = value.numberValue
+//            case .left: layer.left = value.numberValue
             case .width:
                 let tag = DimensionSizingRule.fromString(rawValue: value.get(key: "case").stringValue)
                 // Order seems to matter here. Setting widthSizingRule before width doesn't work.
