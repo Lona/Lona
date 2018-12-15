@@ -1,0 +1,65 @@
+{
+  "devices" : [
+    {
+      "height" : 21,
+      "heightMode" : "At Least",
+      "name" : "iPhone 7",
+      "width" : 375
+    }
+  ],
+  "examples" : [
+    {
+      "id" : "Default",
+      "name" : "Default",
+      "params" : {
+
+      }
+    }
+  ],
+  "logic" : [
+
+  ],
+  "params" : [
+    {
+      "name" : "numberValue",
+      "type" : "Number"
+    },
+    {
+      "name" : "onChangeNumberValue",
+      "type" : {
+        "name" : "Function",
+        "parameters" : [
+          {
+            "label" : "_",
+            "type" : "Number"
+          }
+        ]
+      }
+    }
+  ],
+  "root" : {
+    "children" : [
+      {
+        "id" : "Text",
+        "params" : {
+          "text" : "Input text"
+        },
+        "type" : "Lona:Text"
+      }
+    ],
+    "id" : "View",
+    "params" : {
+      "alignSelf" : "stretch",
+      "backgroundColor" : "white",
+      "borderColor" : "grey400",
+      "borderWidth" : 1,
+      "flex" : 1,
+      "justifyContent" : "center",
+      "paddingBottom" : 2,
+      "paddingLeft" : 2,
+      "paddingRight" : 2,
+      "paddingTop" : 2
+    },
+    "type" : "Lona:View"
+  }
+}

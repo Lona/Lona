@@ -24,8 +24,6 @@ class LayerInspectorView: CoreComponentInspectorView {
             CoreComponentInspectorView.Property.direction: CSData.String(layer.flexDirection ?? "column"),
             CoreComponentInspectorView.Property.horizontalAlignment: CSData.String(layer.horizontalAlignment),
             CoreComponentInspectorView.Property.verticalAlignment: CSData.String(layer.verticalAlignment),
-            CoreComponentInspectorView.Property.widthSizingRule: CSData.String(layer.widthSizingRule.toString()),
-            CoreComponentInspectorView.Property.heightSizingRule: CSData.String(layer.heightSizingRule.toString()),
 
             // Box Model
             CoreComponentInspectorView.Property.position: CSData.String(layer.position?.rawValue ?? "relative"),
@@ -33,8 +31,14 @@ class LayerInspectorView: CoreComponentInspectorView {
             CoreComponentInspectorView.Property.right: CSData.Number(layer.right ?? 0),
             CoreComponentInspectorView.Property.bottom: CSData.Number(layer.bottom ?? 0),
             CoreComponentInspectorView.Property.left: CSData.Number(layer.left ?? 0),
-            CoreComponentInspectorView.Property.width: CSData.Number(layer.width ?? 0),
-            CoreComponentInspectorView.Property.height: CSData.Number(layer.height ?? 0),
+            CoreComponentInspectorView.Property.width: CSData.Object([
+                "case": CSData.String(layer.widthSizingRule.toString()),
+                "data": CSData.Number(layer.width ?? 0)
+                ]),
+            CoreComponentInspectorView.Property.height: CSData.Object([
+                "case": CSData.String(layer.heightSizingRule.toString()),
+                "data": CSData.Number(layer.height ?? 0)
+                ]),
             CoreComponentInspectorView.Property.marginTop: CSData.Number(layer.marginTop ?? 0),
             CoreComponentInspectorView.Property.marginRight: CSData.Number(layer.marginRight ?? 0),
             CoreComponentInspectorView.Property.marginBottom: CSData.Number(layer.marginBottom ?? 0),
@@ -94,21 +98,22 @@ class LayerInspectorView: CoreComponentInspectorView {
             case .verticalAlignment:
                 layer.verticalAlignment = value.stringValue
                 changeType = .full
-            case .widthSizingRule:
-                layer.widthSizingRule = DimensionSizingRule.fromString(rawValue: value.stringValue)
-                changeType = .full
-            case .heightSizingRule:
-                layer.heightSizingRule = DimensionSizingRule.fromString(rawValue: value.stringValue)
-                changeType = .full
-
             // Box Model
             case .position: layer.position = PositionType(rawValue: value.stringValue)
             case .top: layer.top = value.numberValue
             case .right: layer.right = value.numberValue
             case .bottom: layer.bottom = value.numberValue
             case .left: layer.left = value.numberValue
-            case .width: layer.width = value.numberValue
-            case .height: layer.height = value.numberValue
+            case .width:
+                let tag = DimensionSizingRule.fromString(rawValue: value.get(key: "case").stringValue)
+                // Order seems to matter here. Setting widthSizingRule before width doesn't work.
+                layer.width = tag == .Fixed ? value.get(key: "data").numberValue : 0
+                layer.widthSizingRule = tag
+            case .height:
+                let tag = DimensionSizingRule.fromString(rawValue: value.get(key: "case").stringValue)
+                // Order seems to matter here. Setting heightSizingRule before height doesn't work.
+                layer.height = tag == .Fixed ? value.get(key: "data").numberValue : 0
+                layer.heightSizingRule = tag
             case .marginTop: layer.marginTop = value.numberValue
             case .marginRight: layer.marginRight = value.numberValue
             case .marginBottom: layer.marginBottom = value.numberValue

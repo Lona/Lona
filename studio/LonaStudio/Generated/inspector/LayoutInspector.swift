@@ -609,7 +609,7 @@ extension LayoutInspector {
 // MARK: - Direction
 
 extension LayoutInspector {
-  public enum Direction: Codable {
+  public enum Direction: Codable, Equatable {
     case horizontal
     case vertical
 
@@ -643,7 +643,7 @@ extension LayoutInspector {
 // MARK: - HorizontalAlignment
 
 extension LayoutInspector {
-  public enum HorizontalAlignment: String, Codable {
+  public enum HorizontalAlignment: String, Codable, Equatable {
     case left
     case center
     case right
@@ -653,7 +653,7 @@ extension LayoutInspector {
 // MARK: - VerticalAlignment
 
 extension LayoutInspector {
-  public enum VerticalAlignment: String, Codable {
+  public enum VerticalAlignment: String, Codable, Equatable {
     case top
     case middle
     case bottom

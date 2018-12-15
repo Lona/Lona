@@ -202,7 +202,13 @@ let rec lonaValue = (config: Config.t, value: Types.lonaValue) => {
     }
   | Variant(_) =>
     SwiftIdentifier(
-      "." ++ (value.data |> Json.Decode.field("case", Json.Decode.string)),
+      "."
+      ++ (
+        value.data
+        |> Json.Decode.(
+             oneOf([Json.Decode.string, field("case", Json.Decode.string)])
+           )
+      ),
     )
   | Array(elementType) =>
     let elements =

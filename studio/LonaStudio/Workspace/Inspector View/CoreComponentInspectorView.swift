@@ -43,8 +43,6 @@ class CoreComponentInspectorView: NSStackView {
         case direction
         case horizontalAlignment
         case verticalAlignment
-        case heightSizingRule
-        case widthSizingRule
 
         // Box Model
         case position
@@ -117,20 +115,7 @@ class CoreComponentInspectorView: NSStackView {
     var shadowSection: DisclosureContentRow!
 
     var layoutInspector = LayoutInspector()
-
-    var widthSizingRuleView = PopupField(
-        frame: NSRect.zero,
-        values: DIMENSION_SIZING_VALUES,
-        valueToTitle: DIMENSION_SIZING_VALUE_TO_TITLE
-    )
-    var heightSizingRuleView = PopupField(
-        frame: NSRect.zero,
-        values: DIMENSION_SIZING_VALUES,
-        valueToTitle: DIMENSION_SIZING_VALUE_TO_TITLE
-    )
-    var widthView = NumberField(frame: NSRect.zero)
-    var heightView = NumberField(frame: NSRect.zero)
-    var aspectRatioView = NumberField(frame: NSRect.zero)
+    var dimensionsInspector = DimensionsInspector()
 
     var positionView = PopupField(
         frame: NSRect.zero,
@@ -291,38 +276,6 @@ class CoreComponentInspectorView: NSStackView {
         section.contentEdgeInsets = NSEdgeInsets(top: 0, left: 0, bottom: 15, right: 0)
 
         return section
-    }
-
-    func renderDimensionsSection() -> DisclosureContentRow {
-        let dimensionsLeft = NSStackView(views: [
-            NSTextField(labelWithString: "Width"),
-            widthSizingRuleView,
-            widthView
-        ], orientation: .vertical, stretched: true)
-
-        let dimensionsRight = NSStackView(views: [
-            NSTextField(labelWithString: "Height"),
-            heightSizingRuleView,
-            heightView
-        ], orientation: .vertical, stretched: true)
-
-        let dimensionsContainer = NSStackView(views: [
-            dimensionsLeft,
-            dimensionsRight
-        ], orientation: .horizontal, stretched: true)
-        dimensionsContainer.distribution = .fillEqually
-        dimensionsContainer.spacing = 20
-
-        aspectRatioView = NumberField(frame: NSRect.zero)
-
-        let dimensionsSection = renderSection(title: "Dimensions", views: [
-            dimensionsContainer,
-            NSTextField(labelWithString: "Aspect Ratio"),
-            aspectRatioView
-        ])
-        dimensionsSection.addContentSpacing(of: 14, after: dimensionsContainer)
-
-        return dimensionsSection
     }
 
     func renderPositionSection() -> DisclosureContentRow {
@@ -673,7 +626,7 @@ class CoreComponentInspectorView: NSStackView {
         let sections = [
             layoutInspector,
             textSection!,
-            renderDimensionsSection(),
+            dimensionsInspector,
             renderPositionSection(),
             renderSpacingSection(),
             renderBorderSection(),
@@ -691,9 +644,6 @@ class CoreComponentInspectorView: NSStackView {
 
     func setup(properties: Properties) {
         render(properties: properties)
-
-        widthView.nextKeyView = heightView
-        heightView.nextKeyView = marginTopView
 
         marginTopView.nextKeyView = marginRightView
         marginRightView.nextKeyView = marginBottomView
@@ -726,18 +676,18 @@ class CoreComponentInspectorView: NSStackView {
             break
         }
 
-        switch layerType {
-        case .builtIn(.image), .builtIn(.vectorGraphic):
-            let values = DIMENSION_SIZING_IMAGE_VALUES
-            let valueToTitle = DIMENSION_SIZING_IMAGE_VALUE_TO_TITLE
-            widthSizingRuleView.set(values: values, valueToTitle: valueToTitle)
-            heightSizingRuleView.set(values: values, valueToTitle: valueToTitle)
-        default:
-            let values = DIMENSION_SIZING_VALUES
-            let valueToTitle = DIMENSION_SIZING_VALUE_TO_TITLE
-            widthSizingRuleView.set(values: values, valueToTitle: valueToTitle)
-            heightSizingRuleView.set(values: values, valueToTitle: valueToTitle)
-        }
+//        switch layerType {
+//        case .builtIn(.image), .builtIn(.vectorGraphic):
+//            let values = DIMENSION_SIZING_IMAGE_VALUES
+//            let valueToTitle = DIMENSION_SIZING_IMAGE_VALUE_TO_TITLE
+//            widthSizingRuleView.set(values: values, valueToTitle: valueToTitle)
+//            heightSizingRuleView.set(values: values, valueToTitle: valueToTitle)
+//        default:
+//            let values = DIMENSION_SIZING_VALUES
+//            let valueToTitle = DIMENSION_SIZING_VALUE_TO_TITLE
+//            widthSizingRuleView.set(values: values, valueToTitle: valueToTitle)
+//            heightSizingRuleView.set(values: values, valueToTitle: valueToTitle)
+//        }
 
         switch layerType {
         case .builtIn(.image):
@@ -753,18 +703,12 @@ class CoreComponentInspectorView: NSStackView {
         }
 
         let fields: [(control: CSControl, property: Property)] = [
-            // Layout
-            (heightSizingRuleView, .heightSizingRule),
-            (widthSizingRuleView, .widthSizingRule),
-
             // Box Model
             (positionView, .position),
             (topView, .top),
             (rightView, .right),
             (bottomView, .bottom),
             (leftView, .left),
-            (widthView, .width),
-            (heightView, .height),
             (marginTopView, .marginTop),
             (marginRightView, .marginRight),
             (marginBottomView, .marginBottom),
@@ -773,7 +717,6 @@ class CoreComponentInspectorView: NSStackView {
             (paddingRightView, .paddingRight),
             (paddingBottomView, .paddingBottom),
             (paddingLeftView, .paddingLeft),
-            (aspectRatioView, .aspectRatio),
 
             // Border
             (borderRadiusView, .borderRadius),
@@ -858,8 +801,6 @@ class CoreComponentInspectorView: NSStackView {
         })
 
         let updateList: [Property] = [
-            .heightSizingRule,
-            .widthSizingRule,
             .backgroundColorEnabled,
             .animation
         ]
@@ -881,7 +822,7 @@ class CoreComponentInspectorView: NSStackView {
 
             UndoManager.shared.run(
                 name: property.rawValue,
-                execute: {[unowned self] in
+                execute: { [unowned self] in
                     self.handlePropertyChange(for: property, value: newValue)
                 },
                 undo: { [unowned self] in
@@ -902,14 +843,76 @@ class CoreComponentInspectorView: NSStackView {
             change(property: Property.direction, to: newValue)
         }
 
-        layoutInspector.onChangeHorizontalAlignmentIndex = { index in
+        layoutInspector.onChangeHorizontalAlignmentIndex = { [unowned self] index in
             let newValue = self.alignmentValue(for: index).toData()
             change(property: Property.horizontalAlignment, to: newValue)
         }
 
-        layoutInspector.onChangeVerticalAlignmentIndex = { index in
+        layoutInspector.onChangeVerticalAlignmentIndex = { [unowned self] index in
             let newValue = self.alignmentValue(for: index).toData()
             change(property: Property.verticalAlignment, to: newValue)
+        }
+
+        // Dimensions
+
+        dimensionsInspector.isExpanded = UserDefaults.standard.bool(forKey: "dimensionsInspectorExpanded")
+        dimensionsInspector.onClickHeader = { [unowned self] in
+            let newValue = !self.dimensionsInspector.isExpanded
+            self.dimensionsInspector.isExpanded = newValue
+            UserDefaults.standard.set(newValue, forKey: "dimensionsInspectorExpanded")
+        }
+
+        dimensionsInspector.onChangeWidthTypeIndex = { [unowned self] index in
+            let property = Property.width
+            let oldValue = self.value[property] ?? properties[property]!
+
+            let newValue = oldValue.merge(
+                CSData.Object(["case": self.dimensionTypeValue(for: index).toData()]))
+            change(property: property, to: newValue)
+        }
+
+        dimensionsInspector.onChangeWidthValue = { [unowned self] widthValue in
+            let property = Property.width
+            let oldValue = self.value[property] ?? properties[property]!
+
+            let newValue = oldValue.merge(
+                CSData.Object(["data": widthValue.toData()]))
+            change(property: property, to: newValue)
+        }
+
+        dimensionsInspector.onChangeHeightTypeIndex = { [unowned self] index in
+            let property = Property.height
+            let oldValue = self.value[property] ?? properties[property]!
+
+            let newValue = oldValue.merge(
+                CSData.Object(["case": self.dimensionTypeValue(for: index).toData()]))
+            change(property: property, to: newValue)
+        }
+
+        dimensionsInspector.onChangeHeightValue = { [unowned self] heightValue in
+            let property = Property.height
+            let oldValue = self.value[property] ?? properties[property]!
+
+            let newValue = oldValue.merge(
+                CSData.Object(["data": heightValue.toData()]))
+            change(property: property, to: newValue)
+        }
+
+        dimensionsInspector.onChangeAspectRatioValue = { aspectRatio in
+            change(property: Property.aspectRatio, to: aspectRatio.toData())
+        }
+    }
+
+    private func dimensionTypeValue(for index: Int) -> String {
+        switch index {
+        case 0:
+            return "Shrink"
+        case 1:
+            return "Expand"
+        case 2:
+            return "Fixed"
+        default:
+            return ""
         }
     }
 
@@ -930,6 +933,32 @@ class CoreComponentInspectorView: NSStackView {
         guard let value = value else { return }
 
         switch property {
+        case .width:
+            switch value.get(key: "case").stringValue {
+            case "Shrink":
+                dimensionsInspector.widthType = .fitContent
+            case "Expand":
+                dimensionsInspector.widthType = .fill
+            case "Fixed":
+                let numberValue = CGFloat(value.get(key: "data").numberValue)
+                dimensionsInspector.widthValue = numberValue
+                dimensionsInspector.widthType = .fixed(numberValue)
+            default:
+                fatalError("WARNING: Invalid width")
+            }
+        case .height:
+            switch value.get(key: "case").stringValue {
+            case "Shrink":
+                dimensionsInspector.heightType = .fitContent
+            case "Expand":
+                dimensionsInspector.heightType = .fill
+            case "Fixed":
+                let numberValue = CGFloat(value.get(key: "data").numberValue)
+                dimensionsInspector.heightValue = numberValue
+                dimensionsInspector.heightType = .fixed(numberValue)
+            default:
+                fatalError("WARNING: Invalid height")
+            }
         case .direction:
             layoutInspector.direction = value.stringValue == "column" ? .vertical : .horizontal
         case .horizontalAlignment:
@@ -954,6 +983,8 @@ class CoreComponentInspectorView: NSStackView {
             default:
                 Swift.print("WARNING: Invalid verticalAlignment")
             }
+        case .aspectRatio:
+            dimensionsInspector.aspectRatioValue = CGFloat(value.numberValue)
         default:
             break
         }
@@ -962,7 +993,10 @@ class CoreComponentInspectorView: NSStackView {
     let controlledProperties: [Property] = [
         Property.direction,
         Property.horizontalAlignment,
-        Property.verticalAlignment
+        Property.verticalAlignment,
+        Property.width,
+        Property.height,
+        Property.aspectRatio
     ]
 
     func updateInternalState(for property: Property) {
@@ -971,20 +1005,6 @@ class CoreComponentInspectorView: NSStackView {
         }
 
         switch property {
-        case .heightSizingRule:
-            if let value = self.value[property]?.string {
-                self.heightView.isHidden = value != "Fixed"
-                if value != "Fixed" {
-                    self.heightView.value = 0
-                }
-            }
-        case .widthSizingRule:
-            if let value = self.value[property]?.string {
-                self.widthView.isHidden = value != "Fixed"
-                if value != "Fixed" {
-                    self.widthView.value = 0
-                }
-            }
         case .backgroundColor:
             self.backgroundColorEnabledView.value = true
         case .backgroundColorEnabled:
