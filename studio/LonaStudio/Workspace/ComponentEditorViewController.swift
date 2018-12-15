@@ -38,6 +38,10 @@ class ComponentEditorViewController: NSSplitViewController {
     public var onInspectLayer: ((CSLayer?) -> Void)?
     public var onChangeInspectedLayer: (() -> Void)?
 
+    public func updateCanvas() {
+        updateCanvasCollectionView()
+    }
+
     public func reloadLayerListWithoutModifyingSelection() {
         update(withoutModifyingSelection: true)
     }

@@ -464,7 +464,12 @@ class WorkspaceViewController: NSSplitViewController {
             }
 
             inspectorView.onChangeContent = { layer, changeType in
-                self.componentEditorViewController.reloadLayerListWithoutModifyingSelection()
+                switch changeType {
+                case .canvas:
+                    self.componentEditorViewController.updateCanvas()
+                case .full:
+                    self.componentEditorViewController.reloadLayerListWithoutModifyingSelection()
+                }
             }
         } else if let document = document as? JSONDocument {
             if let content = document.content, case .colors(let colors) = content {

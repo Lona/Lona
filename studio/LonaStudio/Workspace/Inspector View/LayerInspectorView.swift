@@ -86,18 +86,12 @@ class LayerInspectorView: CoreComponentInspectorView {
         super.init(frame: NSRect.zero, layerType: layer.type, properties: properties)
 
         self.onChangeProperty = { property, value in
-            var changeType: ChangeType = .canvas
-
             switch property {
-
             // Layout
             case .direction: layer.flexDirection = value.stringValue
-            case .horizontalAlignment:
-                layer.horizontalAlignment = value.stringValue
-                changeType = .full
-            case .verticalAlignment:
-                layer.verticalAlignment = value.stringValue
-                changeType = .full
+            case .horizontalAlignment: layer.horizontalAlignment = value.stringValue
+            case .verticalAlignment: layer.verticalAlignment = value.stringValue
+
             // Box Model
             case .position: layer.position = PositionType(rawValue: value.stringValue)
             case .top: layer.top = value.numberValue
@@ -158,7 +152,7 @@ class LayerInspectorView: CoreComponentInspectorView {
             case .backingElementClass: layer.metadata["backingElementClass"] = CSData.Object(value.objectValue)
             }
 
-            self.onChangeInspector(changeType)
+            self.onChangeInspector(ChangeType.canvas)
         }
     }
 
