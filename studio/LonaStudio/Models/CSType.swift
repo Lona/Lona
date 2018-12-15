@@ -24,7 +24,6 @@ indirect enum CSType: Equatable, CSDataSerializable, CSDataDeserializable {
     case string
     case array(CSType)
     case dictionary(Schema)
-    case enumeration([CSValue])
     case function([(String, CSType)], CSType)
     case variant([(String, CSType)])
 
@@ -84,9 +83,20 @@ indirect enum CSType: Equatable, CSDataSerializable, CSDataDeserializable {
                         self = .dictionary(schema)
                     }
                 case "Enumeration":
+                    var parameters: [(String, CSType)] = []
                     if let values = object["of"]?.array {
-                        self = .enumeration(values.map({ CSValue($0) }))
+                        parameters = values
+                            .map({ CSValue($0) })
+                            .map({ (arg) in
+                                switch arg.type {
+                                case .string:
+                                    return (arg.data.stringValue, .unit)
+                                default:
+                                    return ("", .unit)
+                                }
+                            })
                     }
+                    self = .variant(parameters)
                 case "Function":
                     var parameters: [(String, CSType)] = []
                     var returnType: CSType = .undefined
@@ -222,18 +232,6 @@ indirect enum CSType: Equatable, CSDataSerializable, CSDataDeserializable {
           }
 
           return data
-        case .enumeration(let values):
-            if let match = CSType.builtInTypes.enumerated().first(where: { (arg) -> Bool in
-                let (_, item) = arg
-                return item.value == self
-            }) {
-                return .String(match.element.key)
-            }
-
-            return CSData.Object([
-                "name": "Enumeration".toData(),
-                "of": CSData.Array(values.map({ $0.toData() }))
-            ])
         case .function(let parameters, let returnType):
             var data: CSData = .Object([
                 "name": "Function".toData()
@@ -277,6 +275,10 @@ indirect enum CSType: Equatable, CSDataSerializable, CSDataDeserializable {
         }
     }
 
+    static func variant(tags: [String]) -> CSType {
+        return .variant(tags.map { ($0, .unit) })
+    }
+
     static func userType(named typeName: String) -> CSType? {
         for userType in CSUserTypes.types {
             if case CSType.named(let name, _) = userType, name == typeName {
@@ -317,16 +319,6 @@ indirect enum CSType: Equatable, CSDataSerializable, CSDataDeserializable {
         case (.dictionary(let l), .dictionary(let r)):
             // TODO does this work?
             return NSDictionary(dictionary: l).isEqual(to: r)
-        case (.enumeration(let l), .enumeration(let r)):
-            if l.count != r.count {
-                return false
-            }
-
-            for pair in zip(l, r) where pair.0 != pair.1 {
-                return false
-            }
-
-            return true
         case (.function(let lParams, let lReturnType), .function(let rParams, let rReturnType)):
             if lParams.count != rParams.count {
                 return false
@@ -376,27 +368,27 @@ indirect enum CSType: Equatable, CSDataSerializable, CSDataDeserializable {
     }
 
     static func parameterType() -> CSType {
-        // TODO caching
-        let values: [CSValue] = [
-            CSValue(type: .string, data: .String("Boolean")),
-            CSValue(type: .string, data: .String("Number")),
-            CSValue(type: .string, data: .String("WholeNumber")),
-            CSValue(type: .string, data: .String("String")),
-            CSValue(type: .string, data: .String("Array")),
-            CSValue(type: .string, data: .String("Record")),
-            CSValue(type: .string, data: .String("Variant")),
-            CSValue(type: .string, data: .String("Unit")),
-            CSValue(type: .string, data: .String("Color")),
-            CSValue(type: .string, data: .String("TextStyle")),
-            CSValue(type: .string, data: .String("Shadow")),
-            CSValue(type: .string, data: .String("URL")),
-            CSValue(type: .string, data: .String("Function")),
-            CSValue(type: .string, data: .String("Component"))
+        // TODO caching?
+        let values: [String] = [
+            "Boolean",
+            "Number",
+            "WholeNumber",
+            "String",
+            "Array",
+            "Record",
+            "Variant",
+            "Unit",
+            "Color",
+            "TextStyle",
+            "Shadow",
+            "URL",
+            "Function",
+            "Component"
             ] +
-            LonaModule.current.types.map({ CSValue(type: .string, data: $0.toString().toData()) }) +
-            CSUserTypes.types.map({ CSValue(type: .string, data: $0.toString().toData()) })
+            LonaModule.current.types.map({ $0.toString() }) +
+            CSUserTypes.types.map({ $0.toString() })
 
-        return CSType.enumeration(values)
+        return CSType.variant(tags: values)
     }
 
     static var builtInTypes: [String: CSType] = {
@@ -454,7 +446,13 @@ extension CSType {
     }
 
     func isOptional() -> Bool {
-        return unwrapOptional() != nil
+        guard case CSType.variant(let cases) = self else { return false }
+        guard cases.count == 2 else { return false }
+
+        let (firstName, _) = cases[0]
+        let (secondName, secondType) = cases[1]
+
+        return firstName == "Some" && secondName == "None" && secondType == .unit
     }
 }
 
@@ -470,13 +468,13 @@ let CSHandlerType = CSType.function([], .undefined)
 let CSEmptyRecordType = CSType.dictionary([:])
 let CSEmptyVariantType = CSType.variant([])
 
-let CSComparatorType = CSType.enumeration([
-    CSValue(type: .string, data: .String("equal to")),
-    CSValue(type: .string, data: .String("not equal to")),
-    CSValue(type: .string, data: .String("greater than")),
-    CSValue(type: .string, data: .String("greater than or equal to")),
-    CSValue(type: .string, data: .String("less than")),
-    CSValue(type: .string, data: .String("less than or equal to"))
+let CSComparatorType = CSType.variant(tags: [
+    "equal to",
+    "not equal to",
+    "greater than",
+    "greater than or equal to",
+    "less than",
+    "less than or equal to"
 ])
 
 let CSLayerType = CSType.dictionary([

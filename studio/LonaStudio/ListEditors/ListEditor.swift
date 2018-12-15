@@ -62,12 +62,7 @@ class ListView<Element: DataNode>: NSOutlineView, NSOutlineViewDataSource, NSOut
 
     var component: CSComponent?
 
-    var list: [Element] = [Element]() {
-        didSet {
-            self.reloadData()
-            onChange(list)
-        }
-    }
+    var list: [Element] = []
 
     var onChange: ([Element]) -> Void = {_ in }
 
@@ -438,14 +433,14 @@ class ListEditor<Element>: NSView where Element: DataNode {
 
         // Event handlers
 
-        minusButton.onPress = {
+        minusButton.onPress = { [unowned self] in
             guard let item = self.listView.selectedItem as? Element else { return }
             options.onRemoveElement(item)
         }
 
         plusButton.onPress = options.onAddElement
 
-        listView.onChange = { value in
+        listView.onChange = { [unowned self] value in
             self.onChange(value)
         }
     }

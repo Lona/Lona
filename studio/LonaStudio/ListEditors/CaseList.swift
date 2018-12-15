@@ -60,16 +60,15 @@ class CaseList {
                     return CSStatementView(frame: NSRect.zero, components: [])
                 }
 
-                let caseTypeEnum = CSType.enumeration([
-                    CSValue(type: CSType.string, data: CSData.String("Case")),
-                    CSValue(type: CSType.string, data: CSData.String("Import list"))
-                ])
-                let caseTypeData = CSData.String(item.caseType.typeName == "entry" ? "Case" : "Import list")
+                let caseTypeVariant = CSType.variant(tags: ["Case", "Import list"])
+                let caseTypeValue = CSUnitValue.wrap(
+                    in: caseTypeVariant,
+                    tagged: item.caseType.typeName == "entry" ? "Case" : "Import list")
 
                 switch item.caseType {
                 case .entry(let entry):
                     let components: [CSStatementView.Component] = [
-                        .value("type", CSValue(type: caseTypeEnum, data: caseTypeData), []),
+                        .value("type", caseTypeValue, []),
                         .value("name", CSValue(type: .string, data: CSData.String(entry.name)), []),
                         .text("with parameters"),
                         .value("data", CSValue(type: component.parametersType(), data: entry.value), []),
@@ -103,7 +102,7 @@ class CaseList {
                     return cell
                 case .importedList(url: let url):
                     let components: [CSStatementView.Component] = [
-                        .value("type", CSValue(type: caseTypeEnum, data: caseTypeData), []),
+                        .value("type", caseTypeValue, []),
                         .text("from"),
                         .value("url", CSValue(type: CSURLType, data: CSData.String(url.absoluteString)), [])
                     ]

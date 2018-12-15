@@ -1,15 +1,4 @@
 //
-//  listEditor.swift
-//  ComponentStudio
-//
-//  Created by devin_abbott on 5/26/17.
-//  Copyright © 2017 Devin Abbott. All rights reserved.
-//
-
-import Foundation
-import Cocoa
-
-//
 //  CaseList.swift
 //  ComponentStudio
 //
@@ -17,7 +6,6 @@ import Cocoa
 //  Copyright © 2017 Devin Abbott. All rights reserved.
 //
 
-import Foundation
 import AppKit
 
 class LogicListView {
@@ -65,24 +53,24 @@ class LogicListView {
         editor = ListEditor<LogicNode>(frame: frameRect, options: [
             ListEditor.Option.backgroundColor(NSColor.white),
             ListEditor.Option.drawsTopBorder(true),
-            ListEditor.Option.onAddElement({ self.editor?.add(element: LogicNode()) }),
-            ListEditor.Option.onContextMenu({ item -> [NSMenuItem] in
+            ListEditor.Option.onAddElement({ [unowned self] in self.editor?.add(element: LogicNode()) }),
+            ListEditor.Option.onContextMenu({ [unowned self] item -> [NSMenuItem] in
                 return [
                     NSMenuItem(title: "Duplicate", onClick: { self.editor?.duplicate(element: item) })
                 ]
             }),
-            ListEditor.Option.onRemoveElement({ item in
+            ListEditor.Option.onRemoveElement({ [unowned self] item in
                 self.editor?.remove(element: item)
             }),
-            ListEditor.Option.viewFor({ item -> NSView in
-                guard let component = self.component, let editor = self.editor else {
+            ListEditor.Option.viewFor({ [unowned self] item -> NSView in
+                guard let component = self.component else {
                     return CSStatementView(frame: NSRect.zero, components: [])
                 }
 
                 let scope = self.scope(for: item, component: component)
                 let cell = CSStatementView.view(for: item.invocation, in: scope)
 
-                cell.onChangeValue = { name, value, keyPath in
+                cell.onChangeValue = { [unowned self] name, value, keyPath in
                     if name == "functionName" {
                         let function: CSFunction = CSFunction.getFunction(declaredAs: value.data.stringValue)
                         item.invocation.name = function.declaration
@@ -93,19 +81,20 @@ class LogicListView {
                             item.invocation.arguments[name] = CSFunction.Argument.value(value)
                         } else if keyPath == CSFunction.Argument.customTypeKeyPath {
                             let argument = item.invocation.arguments[name] ?? CSFunction.Argument.value(CSUndefinedValue)
-                            let newType = CSType.from(string: value.data.stringValue)
+                            let newType = CSType.from(string: value.tag())
                             let newValue = argument.resolve(in: scope).cast(to: newType)
                             item.invocation.arguments[name] = CSFunction.Argument.value(newValue)
                         } else {
                             item.invocation.arguments[name] = CSFunction.Argument.identifier(value.type, keyPath)
                         }
+
+                        item.invocation = CSStatementView.automaticallySetNextArguments(for: item.invocation)
                     }
 
-                    editor.reloadData()
                     self.onChange(self.list)
                 }
 
-                cell.onAddChild = {  self.editor?.add(element: LogicNode(), to: item) }
+                cell.onAddChild = { [unowned self] in self.editor?.add(element: LogicNode(), to: item) }
 
                 return cell
             })

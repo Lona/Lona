@@ -102,7 +102,12 @@ class DictionaryEditor: NSView, CSControl {
 
                 let components: [CSStatementView.Component] = [
                     .text("Set"),
-                    .value("name", CSValue(type: self.remainingKeysEnum(from: self.value, ensuringOption: item.name), data: CSData.String(item.name)), []),
+                    .value(
+                        "name",
+                        CSUnitValue.wrap(
+                            in: self.remainingKeysEnum(from: self.value, ensuringOption: item.name),
+                            tagged: item.name),
+                        []),
                     .text("to"),
                     .value("value", CSValue(type: item.value.type, data: item.value.data), [])
                     ]
@@ -115,7 +120,7 @@ class DictionaryEditor: NSView, CSControl {
                 cell.onChangeValue = { name, value, _ in
                     switch name {
                     case "name":
-                        item.name = value.data.stringValue
+                        item.name = value.tag()
 
                         if let type = self.typeFor(key: item.name) {
                             item.value = item.value.cast(to: type)
@@ -176,11 +181,9 @@ class DictionaryEditor: NSView, CSControl {
     }
 
     func remainingKeysEnum(from dictionary: CSValue, ensuringOption currentKey: String? = nil) -> CSType {
-        let values: [CSValue] = remainingKeys(from: dictionary, ensuringOption: currentKey).map({ key in
-            return CSValue(type: CSType.string, data: CSData.String(key))
-        })
+        let values: [String] = remainingKeys(from: dictionary, ensuringOption: currentKey).map({ $0 })
 
-        return CSType.enumeration(values)
+        return CSType.variant(tags: values)
     }
 
     static func listValue(from dictionary: CSValue) -> [DictionaryItem] {

@@ -107,6 +107,9 @@ class CanvasListEditor: NSOutlineView, NSOutlineViewDataSource, NSOutlineViewDel
         return self.outlineView(outlineView, numberOfChildrenOfItem: item) > 0
     }
 
+    // Retain value fields
+    private var valueFieldMap: [String: CSValueField] = [:]
+
     func outlineView(_ outlineView: NSOutlineView, viewFor tableColumn: NSTableColumn?, item: Any) -> NSView? {
         let canvas = item as! Canvas
         let cellView = NSTableCellView()
@@ -114,6 +117,7 @@ class CanvasListEditor: NSOutlineView, NSOutlineViewDataSource, NSOutlineViewDel
         // Old value
         let oldCanvas = canvas.copy() as! Canvas
         let index = self.canvasList.index(where: { $0 === canvas })!
+        let hashKey = tableColumn!.identifier.rawValue + index.description
         let undoFunc = {
             self.canvasList[index] = oldCanvas
             self.onChange(self.canvasList)
@@ -126,6 +130,7 @@ class CanvasListEditor: NSOutlineView, NSOutlineViewDataSource, NSOutlineViewDel
                     canvas.visible = value.boolValue
                 }, undo: undoFunc)
             }
+            valueFieldMap[hashKey] = field
             return field.view
         case "Name":
             let field = TextField()
@@ -203,7 +208,7 @@ class CanvasListEditor: NSOutlineView, NSOutlineViewDataSource, NSOutlineViewDel
                     canvas.backgroundColor = value.stringValue
                 }, undo: undoFunc)
             }
-
+            valueFieldMap[hashKey] = field
             return field.view
         case "Parameters":
             guard let component = component else { break }
@@ -214,6 +219,7 @@ class CanvasListEditor: NSOutlineView, NSOutlineViewDataSource, NSOutlineViewDel
                     canvas.parameters = value
                 }, undo: undoFunc)
             }
+            valueFieldMap[hashKey] = field
             return field.view
         default:
             break

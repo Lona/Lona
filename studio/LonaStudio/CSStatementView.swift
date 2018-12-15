@@ -35,6 +35,9 @@ class CSStatementView: NSTableCellView {
     var onChangeValue: (String, CSValue, [String]) -> Void = { _, _, _  in }
     var onAddChild: () -> Void = {  }
 
+    // We need to retain the value fields. Without this, only the view of the value field is retained.
+    var controls: [CSValueField] = []
+
     func handleChange(component: Component, componentName: String, value: CSValue, keyPath: [String]) {
 //        if keyPath == ["custom", "type"] {
 //
@@ -52,7 +55,7 @@ class CSStatementView: NSTableCellView {
             rightButton.bezelStyle = .inline
             rightButton.image = NSImage.init(named: NSImage.Name.addTemplate)!
             rightButton.imageScaling = .scaleProportionallyDown
-            rightButton.onPress = {  self.onAddChild() }
+            rightButton.onPress = { [unowned self] in self.onAddChild() }
 
             self.addSubview(rightButton)
 
@@ -61,17 +64,13 @@ class CSStatementView: NSTableCellView {
         }
     }
 
-//    func buildControl(for component: Component) -> CSValueField {
-//
-//    }
-
     func setup(components: [Component]) {
-        for component in components {
-            render(component: component)
+        components.map { render(component: $0) }.forEach { view in
+            stackView.addArrangedSubview(view)
         }
     }
 
-    func render(component: Component) {
+    func render(component: Component) -> NSView {
         switch component {
         case .text(let string):
             let field = TextField(frame: NSRect(x: 0, y: 0, width: 80, height: 16))
@@ -86,9 +85,8 @@ class CSStatementView: NSTableCellView {
             let attributedString = NSAttributedString(string: string, attributes: [NSAttributedStringKey.font: font])
             field.frame.size = attributedString.measure(width: 1000)
             //                name.frame.size.width += 10
-            field.useYogaLayout = true
 
-            addSubview(field)
+            return field
         case .function(let name, let value):
             let values = CSFunction.registeredFunctionDeclarations
 
@@ -121,34 +119,37 @@ class CSStatementView: NSTableCellView {
 
                     return view
             },
-                onChange: { declaration in
+                onChange: { [unowned self] declaration in
                     self.handleChange(component: component, componentName: name, value: CSValue(type: CSType.string, data: CSData.String(declaration)), keyPath: [])
             },
                 frame: NSRect(x: 0, y: 0, width: 70, height: 26)
             )
 
-            control.useYogaLayout = true
             control.isBordered = false
 
-            addSubview(control)
+            return control
         case .value(let name, let value, let keyPath):
+            if value.type == .undefined {
+                return NSView()
+            }
+
             let control = CSValueField(value: value)
 
-            control.onChangeData = { data in
+            control.onChangeData = { [unowned self] data in
                 self.handleChange(component: component, componentName: name, value: CSValue(type: value.type, data: data), keyPath: keyPath)
             }
 
-            addSubview(control.view)
+            controls.append(control)
+
+            return control.view
         case .identifier(let name, let scope, let type, let access, let keyPath):
             let frame = NSRect(x: 0, y: 0, width: 70, height: 26)
-//                var dictionary = scope.dictionary(access: access)
-//            Swift.print("Dictionary", name, type, access, keyPath)
             var dictionary = scope.data(typed: type, accessed: access)
             dictionary[CSFunction.Argument.noneValue] = CSData.Null
             dictionary[CSFunction.Argument.customValue] = CSData.Null
             let control = MultilevelPopupField(frame: frame, data: dictionary, initialValue: keyPath)
 
-            control.onChangeData = { keyPath in
+            control.onChangeData = { [unowned self] keyPath in
                 let path = keyPath.arrayValue.map({ $0.stringValue })
 
                 if path[0] == CSFunction.Argument.customValue {
@@ -163,9 +164,6 @@ class CSStatementView: NSTableCellView {
 
             control.frame.size = size
             control.frame.size.width += 24
-            control.useYogaLayout = true
-            control.ygNode?.marginLeft = -7
-            control.ygNode?.marginBottom = -1
             control.isBordered = false
 
             func styleItems(for menu: NSMenu) {
@@ -181,8 +179,27 @@ class CSStatementView: NSTableCellView {
             }
 
             styleItems(for: control.menu!)
-            addSubview(control)
+
+            return control
         }
+    }
+
+    static func automaticallySetNextArguments(for invocation: CSFunction.Invocation) -> CSFunction.Invocation {
+        let function = CSFunction.getFunction(declaredAs: invocation.name)
+
+        var updated = invocation
+
+        outer: for parameter in function.parameters where invocation.arguments[parameter.name] == nil {
+            switch parameter.type {
+            case .declaration, .variable:
+                break outer
+            case .keyword(let type):
+                let value = CSValue.defaultValue(for: type)
+                updated.arguments[parameter.name] = CSFunction.Argument.value(value)
+            }
+        }
+
+        return updated
     }
 
     static func view(for invocation: CSFunction.Invocation, in scope: CSScope) -> CSStatementView {
@@ -208,7 +225,7 @@ class CSStatementView: NSTableCellView {
                     let type = invocation.concreteTypeForArgument(named: parameter.name, in: scope) ?? variableType
                     components.append(.identifier(parameter.name, scope, type, access, keyPath))
                 case .keyword(type: let type):
-                    let value = CSValue(type: type, data: .Null)
+                    let value = CSValue.defaultValue(for: type)
                     components.append(.value(parameter.name, value, CSFunction.Argument.customValueKeyPath))
                 }
             }
@@ -229,7 +246,7 @@ class CSStatementView: NSTableCellView {
                         components.append(.value(parameter.name, value, []))
                     // TODO Use this instead of custom key path stuff?
                     case .variable(type: _, access: _):
-                        let typeValue = CSValue(type: CSType.parameterType(), data: .String(value.type.toString()))
+                        let typeValue = CSUnitValue.wrap(in: CSType.parameterType(), tagged: value.type.toString())
                         needsInput(CSFunction.Argument.customKeyPath)
 
                         // If we know the concrete type for a custom variable, cast to that automatically
@@ -256,21 +273,35 @@ class CSStatementView: NSTableCellView {
         return statementView
     }
 
+    private var stackView = NSStackView()
+
     init(frame frameRect: NSRect, components: [Component]) {
         super.init(frame: frameRect)
 
-        self.useYogaLayout = true
-        self.ygNode?.flexDirection = .row
-        self.ygNode?.alignItems = .center
-        self.ygNode?.paddingLeft = 4
-
         setup(components: components)
 
-        layoutWithYoga()
+        setUpViews()
+        setUpConstraints()
     }
 
     required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
+    }
+
+    func setUpViews() {
+        stackView.orientation = .horizontal
+        stackView.distribution = .fill
+        stackView.spacing = 0
+
+        addSubview(stackView)
+    }
+
+    func setUpConstraints() {
+        stackView.translatesAutoresizingMaskIntoConstraints = false
+
+        stackView.leadingAnchor.constraint(equalTo: leadingAnchor).isActive = true
+        stackView.topAnchor.constraint(equalTo: topAnchor).isActive = true
+        stackView.bottomAnchor.constraint(equalTo: bottomAnchor).isActive = true
     }
 
     // Respond to clicks within text fields only, because other clicks will be duplicates of events passed to mouseDown

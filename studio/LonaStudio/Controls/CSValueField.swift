@@ -14,7 +14,6 @@ class CSValueField: CSControl {
         case isBordered
         case drawsBackground
         case usesLinkStyle
-        case usesYogaLayout
 
         // For instant feedback when typing
         case submitOnChange
@@ -31,6 +30,8 @@ class CSValueField: CSControl {
 
     var view: NSView = NSView()
 
+    var subfield: CSValueField?
+
     func styled(string: String, usesLinkStyle: Bool) -> NSAttributedString {
         if usesLinkStyle {
             return NSAttributedString(string: string, attributes: editableFontAttributes)
@@ -40,6 +41,8 @@ class CSValueField: CSControl {
     }
 
     init(value: CSValue, options: [Options: Bool] = [:]) {
+        self.value = value
+
         setup(value: value, options: options)
     }
 
@@ -48,11 +51,37 @@ class CSValueField: CSControl {
         let drawsBackground = options[Options.drawsBackground] ?? false
         let submitOnChange = options[Options.submitOnChange] ?? false
         let usesLinkStyle = options[Options.usesLinkStyle] ?? true
-        let usesYogaLayout = options[Options.usesYogaLayout] ?? true
 
-        let defaultChangeHandler: (CSData) -> Void = { data in
-            self.value = CSValue(type: value.type, data: data)
-            self.onChangeData(self.data)
+        let defaultChangeHandler: (CSData) -> Void = { [weak self] data in
+            guard let field = self else {
+                Swift.print("Cannot call defaultChangeHandler() - self has been deallocated")
+                return
+            }
+
+            field.value = CSValue(type: value.type, data: data)
+            field.onChangeData(field.data)
+        }
+
+        func renderDropdown(tags: [String], initialTag: String) -> PopupField {
+            let type = PopupField(
+                frame: NSRect(x: 0, y: 0, width: 70, height: 26),
+                values: tags,
+                initialValue: initialTag)
+
+            let attributedString = styled(string: initialTag, usesLinkStyle: usesLinkStyle)
+            let size = attributedString.measure(width: 1000)
+
+            type.frame.size = size
+            type.frame.size.width += 24
+            type.isBordered = isBordered
+
+            for item in type.menu!.items {
+                let desc = String(describing: item.title)
+                let text = styled(string: desc, usesLinkStyle: usesLinkStyle)
+                item.attributedTitle = text
+            }
+
+            return type
         }
 
         switch value.type {
@@ -74,7 +103,9 @@ class CSValueField: CSControl {
             field.frame.size.width = max(field.frame.size.width, 30)
             field.frame.size.width += 4
 
-            field.useYogaLayout = true
+            let widthConstraint = field.widthAnchor.constraint(equalToConstant: field.frame.size.width)
+            widthConstraint.priority = .defaultHigh
+            widthConstraint.isActive = true
 
             if submitOnChange {
                 field.onChangeData = defaultChangeHandler
@@ -101,7 +132,9 @@ class CSValueField: CSControl {
             field.frame.size.width = max(field.frame.size.width, 30)
             field.frame.size.width += 4
 
-            field.useYogaLayout = true
+            let widthConstraint = field.widthAnchor.constraint(equalToConstant: field.frame.size.width)
+            widthConstraint.priority = .defaultHigh
+            widthConstraint.isActive = true
 
             if submitOnChange {
                 field.onChangeData = defaultChangeHandler
@@ -114,7 +147,6 @@ class CSValueField: CSControl {
             let field = CheckboxField(frame: NSRect(x: 0, y: 0, width: 20, height: 20))
             view = field
 
-            field.useYogaLayout = true
             field.value = value.data.boolValue
             field.onChangeData = defaultChangeHandler
             field.imagePosition = .imageOnly
@@ -124,27 +156,23 @@ class CSValueField: CSControl {
             view = field
 
             field.frame = NSRect(x: 0, y: -2, width: 120, height: 26)
-            field.useYogaLayout = true
 
         case .named("Color", .string):
             let field = ColorPickerButton(frame: NSRect(x: 0, y: -2, width: 120, height: 26))
             view = field
 
-            field.useYogaLayout = true
             field.value = value.data.stringValue
             field.onChangeData = defaultChangeHandler
         case .named("TextStyle", .string):
             let field = TextStylePickerButton(frame: NSRect(x: 0, y: -2, width: 120, height: 26))
             view = field
 
-            field.useYogaLayout = true
             field.value = value.data.stringValue
             field.onChangeData = defaultChangeHandler
         case .named("Shadow", .string):
             let field = ShadowStylePickerButton(frame: NSRect(x: 0, y: -2, width: 120, height: 26))
             view = field
 
-            field.useYogaLayout = true
             field.value = value.data.stringValue
             field.onChangeData = defaultChangeHandler
         case .named("URL", .string):
@@ -173,36 +201,20 @@ class CSValueField: CSControl {
             let stringField = CSValueField(value: value.unwrappedNamedType(), options: options)
             stringField.onChangeData = defaultChangeHandler
 
-            if usesYogaLayout {
-                let field = NSView(frame: NSRect(x: 0, y: 0, width: 220, height: 26))
+            subfield = stringField
 
-                field.useYogaLayout = true
-                field.ygNode?.flexDirection = .row
-                field.ygNode?.alignItems = .center
+            let field = NSStackView(views: [
+                stringField.view,
+                button
+                ], orientation: .horizontal)
 
-                button.useYogaLayout = true
+//            field.heightAnchor.constraint(equalToConstant: 30).isActive = true
 
-                stringField.view.frame.size.width = 140
-                stringField.view.useYogaLayout = true
+            field.translatesAutoresizingMaskIntoConstraints = false
+            button.translatesAutoresizingMaskIntoConstraints = false
+            stringField.view.translatesAutoresizingMaskIntoConstraints = false
 
-                field.addSubview(stringField.view)
-                field.addSubview(button)
-
-                view = field
-            } else {
-                let field = NSStackView(views: [
-                    stringField.view,
-                    button
-                    ], orientation: .horizontal)
-
-                field.heightAnchor.constraint(equalToConstant: 30).isActive = true
-
-                field.translatesAutoresizingMaskIntoConstraints = false
-                button.translatesAutoresizingMaskIntoConstraints = false
-                stringField.view.translatesAutoresizingMaskIntoConstraints = false
-
-                view = field
-            }
+            view = field
         case .variant(let cases):
             if cases.isEmpty {
                 Swift.print("Empty variant for value", value)
@@ -212,25 +224,25 @@ class CSValueField: CSControl {
             let tags = cases.map({ value in value.0 })
             let currentTag = tags.contains(value.tag()) ? value.tag() : tags[0]
 
-            let tagValues = tags.map({ tag in CSValue(type: .string, data: .String(tag)) })
-            let tagPickerValue = CSValue(type: CSType.enumeration(tagValues), data: .String(currentTag))
-            let tagField = CSValueField(value: tagPickerValue, options: options)
-            tagField.onChangeData = { data in
-                defaultChangeHandler(value.with(tag: data.stringValue).data)
+            let tagField = renderDropdown(tags: tags, initialTag: currentTag)
+            tagField.onChange = { tag in
+                defaultChangeHandler(value.with(tag: tag).data)
             }
 
-            let valueField: CSValueField
+            var valueField: CSValueField? = nil
 
             // If we have a valid variant case
             if let unwrapped = value.unwrapVariant() {
-                valueField = CSValueField(value: unwrapped, options: options)
-                valueField.onChangeData = { newData in
-                    defaultChangeHandler(value.with(data: newData).data)
+                if unwrapped.type != .unit {
+                    valueField = CSValueField(value: unwrapped, options: options)
+                    valueField?.onChangeData = { newData in
+                        defaultChangeHandler(value.with(data: newData).data)
+                    }
                 }
             // If we don't have a valid variant case, we the default value of the first possible case
             } else if let currentType = cases.first(where: { item in item.0 == currentTag })?.1 {
                 valueField = CSValueField(value: CSValue.defaultValue(for: currentType), options: options)
-                valueField.onChangeData = { newData in
+                valueField?.onChangeData = { newData in
                     defaultChangeHandler(
                         CSValue(type: currentType, data: newData).wrap(in: value.type, tagged: currentTag).data)
                 }
@@ -238,77 +250,41 @@ class CSValueField: CSControl {
                 valueField = CSValueField(value: CSUndefinedValue, options: options)
             }
 
-            if usesYogaLayout {
-                let field = NSView(frame: NSRect(x: 0, y: 0, width: 160, height: 126))
+            subfield = valueField
 
-                field.useYogaLayout = true
-                field.ygNode?.flexDirection = .row
-                field.ygNode?.alignItems = .center
+            let stackedViews: [NSView] = [tagField, valueField?.view].compactMap { $0 }
+            let field = NSStackView(views: stackedViews, orientation: .horizontal)
 
-                tagField.view.useYogaLayout = true
-                valueField.view.useYogaLayout = true
+//            field.heightAnchor.constraint(equalToConstant: 30).isActive = true
 
-                field.addSubview(tagField.view)
-                field.addSubview(valueField.view)
+            tagField.translatesAutoresizingMaskIntoConstraints = false
+            valueField?.view.translatesAutoresizingMaskIntoConstraints = false
+            field.translatesAutoresizingMaskIntoConstraints = false
 
-                view = field
-            } else {
-                let field = NSStackView(views: [
-                    tagField.view,
-                    valueField.view
-                    ], orientation: .horizontal)
-
-                field.heightAnchor.constraint(equalToConstant: 30).isActive = true
-
-                tagField.view.translatesAutoresizingMaskIntoConstraints = false
-                valueField.view.translatesAutoresizingMaskIntoConstraints = false
-                field.translatesAutoresizingMaskIntoConstraints = false
-
-                view = field
-            }
+            view = field
 
         // Generic fallthrough for user types
         case .named(_, let type):
-            let control = CSValueField(value: CSValue(type: type, data: value.data), options: options)
+            let innerValue = CSValue(type: type, data: value.data)
 
-            control.onChangeData = defaultChangeHandler
+            setup(value: innerValue, options: options)
 
-            view = control.view
-        case .enumeration(let options):
-            let optionValues = options.map({ $0.data.stringValue })
-            let type = PopupField(frame: NSRect(x: 0, y: 0, width: 70, height: 26), values: optionValues, initialValue: value.data.string)
-            view = type
-
-            let attributedString = styled(string: value.data.stringValue, usesLinkStyle: usesLinkStyle)
-            let size = attributedString.measure(width: 1000)
-
-            type.frame.size = size
-            type.frame.size.width += 24
-            type.useYogaLayout = true
-            type.ygNode?.marginLeft = -7
-            type.ygNode?.marginBottom = -1
-            type.isBordered = isBordered
-            type.value = value.data.stringValue
-
-            for item in type.menu!.items {
-                let desc = String(describing: item.title)
-                let text = styled(string: desc, usesLinkStyle: usesLinkStyle)
-                item.attributedTitle = text
+            if var view = view as? CSControl {
+                view.onChangeData = { [unowned self] data in
+                    self.value = CSValue(type: value.type, data: data)
+                    self.onChangeData(self.data)
+                }
             }
-
-            type.onChangeData = defaultChangeHandler
         case .dictionary:
             let field = DictionaryEditorButton(value: value, onChangeData: defaultChangeHandler)
 
             view = field
 
             field.frame = NSRect(x: 0, y: -2, width: 120, height: 26)
-            field.useYogaLayout = true
         case .array:
             let field = ArrayEditorButton(frame: NSRect(x: 0, y: -2, width: 120, height: 26))
             view = field
 
-            field.useYogaLayout = true
             field.value = value
             field.onChangeData = defaultChangeHandler
         case .null:
@@ -325,10 +301,12 @@ class CSValueField: CSControl {
 
             field.frame.size = text.measure(width: 1000)
             field.frame.size.width += 4
-            field.useYogaLayout = true
-            field.ygNode?.marginLeft = 2
+
+            let widthConstraint = field.widthAnchor.constraint(equalToConstant: field.frame.size.width)
+            widthConstraint.priority = .defaultHigh
+            widthConstraint.isActive = true
         default:
-            view.useYogaLayout = true
+            break
         }
     }
 }

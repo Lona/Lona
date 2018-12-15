@@ -8,8 +8,6 @@
 
 import Foundation
 
-protocol TestingHello {}
-
 private let comparatorMapping: [String: LonaOperator] = [
     "equal to": .eq,
     "not equal to": .neq,
@@ -37,7 +35,7 @@ enum LonaOperator: String {
 
     func comparator() -> CSValue {
         guard let result = comparatorMapping.first(where: { $0.value == self }) else { return CSUndefinedValue }
-        return CSValue(type: CSComparatorType, data: result.key.toData())
+        return CSUnitValue.wrap(in: CSComparatorType, tagged: result.key)
     }
 }
 
