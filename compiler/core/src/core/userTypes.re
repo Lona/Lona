@@ -15,9 +15,18 @@ module Decode = {
       let ltype = field("of", lonaType, json);
       Array(ltype);
     };
+
     let variantType = json: Types.lonaType => {
+      let variantCase = json: Types.lonaVariantCase =>
+        switch (json |> optional(string)) {
+        | Some(tag) => {tag, ltype: Types.unitType}
+        | None => {
+            tag: field("case", string, json),
+            ltype: field("type", lonaType, json),
+          }
+        };
       let cases =
-        switch (json |> optional(field("cases", list(string)))) {
+        switch (json |> optional(field("cases", list(variantCase)))) {
         | Some(decoded) => decoded
         | None => []
         };
@@ -81,7 +90,26 @@ module TypeSystem = {
       Some(
         TypeSystem.GenericType({
           name,
-          cases: cases |> List.map(case => TypeSystem.NormalCase(case, [])),
+          cases:
+            cases
+            |> List.map((case: Types.lonaVariantCase) =>
+                 TypeSystem.NormalCase(
+                   case.tag,
+                   switch (case.ltype) {
+                   | Reference("Unit") => []
+                   | Reference(name) =>
+                     let name =
+                       switch (name) {
+                       | "Number" => "CGFloat"
+                       | "WholeNumber" => "Int"
+                       | _ => name
+                       };
+
+                     [{value: TypeSystem.TypeReference(name, [])}];
+                   | _ => []
+                   },
+                 )
+               ),
         }),
       )
     | _ => None

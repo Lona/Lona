@@ -200,7 +200,10 @@ let rec lonaValue = (config: Config.t, value: Types.lonaValue) => {
       | None => SwiftIdentifier("UnknownReferenceType: " ++ typeName)
       };
     }
-  | Variant(_) => SwiftIdentifier("." ++ (value.data |> Json.Decode.string))
+  | Variant(_) =>
+    SwiftIdentifier(
+      "." ++ (value.data |> Json.Decode.field("case", Json.Decode.string)),
+    )
   | Array(elementType) =>
     let elements =
       value.data
@@ -307,7 +310,7 @@ let rec defaultValueForLonaType = (config: Config.t, ltype: Types.lonaType) => {
       };
     }
   | Array(_) => LiteralExpression(Array([]))
-  | Variant(cases) => SwiftIdentifier("." ++ List.nth(cases, 0))
+  | Variant(cases) => SwiftIdentifier("." ++ List.nth(cases, 0).tag)
   | Function(_) => SwiftIdentifier("PLACEHOLDER")
   | Named(alias, subtype) =>
     switch (alias) {

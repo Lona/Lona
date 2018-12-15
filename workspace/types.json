@@ -1,6 +1,18 @@
 {
   "types": [
     {
+      "alias": "DimensionType",
+      "name": "Named",
+      "of": {
+        "cases": [
+          { "case": "fitContent", "type": "Unit" },
+          { "case": "fill", "type": "Unit" },
+          { "case": "fixed", "type": "Number" }
+        ],
+        "name": "Enum"
+      }
+    },
+    {
       "name": "Named",
       "alias": "ColorPickerColor",
       "of": "SwiftColor"

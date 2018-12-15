@@ -834,11 +834,11 @@ let generateEnumType = (param: Types.parameter) =>
               right:
                 ObjectLiteral(
                   cases
-                  |> List.map(case =>
+                  |> List.map((case: Types.lonaVariantCase) =>
                        JavaScriptAst.Property({
                          key:
-                           Identifier([JavaScriptFormat.enumCaseName(case)]),
-                         value: StringLiteral(case),
+                           Identifier([JavaScriptFormat.enumCaseName(case.tag)]),
+                         value: StringLiteral(case.tag),
                        })
                      ),
                 ),

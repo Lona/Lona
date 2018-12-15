@@ -214,6 +214,8 @@
 		6BA6E89B213080CE009CD33C /* ComponentEditorViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6BA6E89A213080CE009CD33C /* ComponentEditorViewController.swift */; };
 		6BA6E89D2131CD09009CD33C /* JSONDocument.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6BA6E89C2131CD09009CD33C /* JSONDocument.swift */; };
 		6BA6E89F21324207009CD33C /* ForeignTypes.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6BA6E89E21324207009CD33C /* ForeignTypes.swift */; };
+		6BA775C921C59E2A0033C03C /* DimensionsInspector.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6BA775C821C59E2A0033C03C /* DimensionsInspector.swift */; };
+		6BA775CB21C59E330033C03C /* DimensionType.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6BA775CA21C59E330033C03C /* DimensionType.swift */; };
 		6BABAFE52139C0EE002B8C8F /* Toolbar.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 6BABAFE42139C0EE002B8C8F /* Toolbar.xcassets */; };
 		6BABAFE72139C341002B8C8F /* WorkspaceToolbar.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6BABAFE62139C341002B8C8F /* WorkspaceToolbar.swift */; };
 		6BBE0F6A212B26C900CEE8C1 /* FileTree.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 6BBE0F69212B26C900CEE8C1 /* FileTree.framework */; };
@@ -478,6 +480,8 @@
 		6BA6E89A213080CE009CD33C /* ComponentEditorViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ComponentEditorViewController.swift; sourceTree = "<group>"; };
 		6BA6E89C2131CD09009CD33C /* JSONDocument.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = JSONDocument.swift; sourceTree = "<group>"; };
 		6BA6E89E21324207009CD33C /* ForeignTypes.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ForeignTypes.swift; sourceTree = "<group>"; };
+		6BA775C821C59E2A0033C03C /* DimensionsInspector.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DimensionsInspector.swift; sourceTree = "<group>"; };
+		6BA775CA21C59E330033C03C /* DimensionType.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DimensionType.swift; sourceTree = "<group>"; };
 		6BABAFE42139C0EE002B8C8F /* Toolbar.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Toolbar.xcassets; sourceTree = "<group>"; };
 		6BABAFE62139C341002B8C8F /* WorkspaceToolbar.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WorkspaceToolbar.swift; sourceTree = "<group>"; };
 		6BBE0F69212B26C900CEE8C1 /* FileTree.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = FileTree.framework; path = Carthage/Build/Mac/FileTree.framework; sourceTree = "<group>"; };
@@ -800,6 +804,7 @@
 			children = (
 				6B6D4426218F55B50016262C /* CGSize+Resizing.swift */,
 				30F870C320865858007ADA5B /* Colors.swift */,
+				6BA775CA21C59E330033C03C /* DimensionType.swift */,
 				6B6D4433218F6B070016262C /* LNAImageView.swift */,
 				6B6D441C218B6BBE0016262C /* LNATextField.swift */,
 				6BE89BBB21B7452800F35AC3 /* LonaViewModel.swift */,
@@ -960,6 +965,7 @@
 		6B8D7D9C21BED32E0087A3F7 /* inspector */ = {
 			isa = PBXGroup;
 			children = (
+				6BA775C821C59E2A0033C03C /* DimensionsInspector.swift */,
 				6B8D7DA221BF04B60087A3F7 /* InspectorSectionHeader.swift */,
 				6B8D7D9D21BED32E0087A3F7 /* LayoutInspector.swift */,
 			);
@@ -1368,6 +1374,7 @@
 				30EFC9581EF369DC0087711D /* ImageField.swift in Sources */,
 				30CE47811ED73FC800BBF716 /* TextField.swift in Sources */,
 				6BA6E89D2131CD09009CD33C /* JSONDocument.swift in Sources */,
+				6BA775CB21C59E330033C03C /* DimensionType.swift in Sources */,
 				6B0F5B8821386CAE007DBBB2 /* AddColorSheet.swift in Sources */,
 				6B6D441D218B6BBE0016262C /* LNATextField.swift in Sources */,
 				30B5B19F1EC29D84002068CE /* NumberField.swift in Sources */,
@@ -1381,6 +1388,7 @@
 				30EFC9561EF1AA0B0087711D /* StringExtensions.swift in Sources */,
 				309777741F2BB75B004C8975 /* CSUserPreferences.swift in Sources */,
 				3094DFE31F68D19C00E5C7F0 /* CALayerExtensions.swift in Sources */,
+				6BA775C921C59E2A0033C03C /* DimensionsInspector.swift in Sources */,
 				301433781F5B525100525DB1 /* ListEditor.swift in Sources */,
 				BA3001761FDB97260003E7D2 /* ShadowStylePickerButton.swift in Sources */,
 				6B4203E321BAD71800D59317 /* CanvasTableHeaderView.swift in Sources */,
