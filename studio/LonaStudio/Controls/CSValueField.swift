@@ -30,6 +30,8 @@ class CSValueField: CSControl {
 
     var view: NSView = NSView()
 
+    var subfield: CSValueField?
+
     func styled(string: String, usesLinkStyle: Bool) -> NSAttributedString {
         if usesLinkStyle {
             return NSAttributedString(string: string, attributes: editableFontAttributes)
@@ -50,9 +52,14 @@ class CSValueField: CSControl {
         let submitOnChange = options[Options.submitOnChange] ?? false
         let usesLinkStyle = options[Options.usesLinkStyle] ?? true
 
-        let defaultChangeHandler: (CSData) -> Void = { [unowned self] data in
-            self.value = CSValue(type: value.type, data: data)
-            self.onChangeData(self.data)
+        let defaultChangeHandler: (CSData) -> Void = { [weak self] data in
+            guard let field = self else {
+                Swift.print("Cannot call defaultChangeHandler() - self has been deallocated")
+                return
+            }
+
+            field.value = CSValue(type: value.type, data: data)
+            field.onChangeData(field.data)
         }
 
         func renderDropdown(tags: [String], initialTag: String) -> PopupField {
@@ -194,6 +201,8 @@ class CSValueField: CSControl {
             let stringField = CSValueField(value: value.unwrappedNamedType(), options: options)
             stringField.onChangeData = defaultChangeHandler
 
+            subfield = stringField
+
             let field = NSStackView(views: [
                 stringField.view,
                 button
@@ -240,6 +249,8 @@ class CSValueField: CSControl {
             } else {
                 valueField = CSValueField(value: CSUndefinedValue, options: options)
             }
+
+            subfield = valueField
 
             let stackedViews: [NSView] = [tagField, valueField?.view].compactMap { $0 }
             let field = NSStackView(views: stackedViews, orientation: .horizontal)

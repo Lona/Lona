@@ -30,6 +30,7 @@ final class CustomComponentInspectorView: NSStackView {
     // MARK: - Public
 
     func reload() {
+        valueFields = []
         subviews.forEach({ subview in subview.removeFromSuperview() })
 
         setupViews()
@@ -37,9 +38,13 @@ final class CustomComponentInspectorView: NSStackView {
 
     // MARK: - Private
 
+    // We need to retain the value fields. Without this, only the view of the value field is retained.
+    private var valueFields: [CSValueField] = []
+
     private func setupViews() {
         let views = setupValueFields()
-        let parametersSection = DisclosureContentRow(title: "Parameters", views: views.map({ $0.view }), stretched: true)
+        valueFields = views.map { $0.field }
+        let parametersSection = DisclosureContentRow(title: "Parameters", views: views.map { $0.view }, stretched: true)
         parametersSection.contentSpacing = 8
         parametersSection.contentEdgeInsets = NSEdgeInsets(top: 0, left: 0, bottom: 15, right: 0)
 
@@ -50,8 +55,8 @@ final class CustomComponentInspectorView: NSStackView {
         translatesAutoresizingMaskIntoConstraints = false
     }
 
-    private func setupValueFields() -> [(view: NSView, keyView: NSView)] {
-        let views: [(view: NSView, keyView: NSView)] = componentLayer.component.parameters.map({ parameter in
+    private func setupValueFields() -> [(view: NSView, field: CSValueField)] {
+        let views: [(view: NSView, field: CSValueField)] = componentLayer.component.parameters.map({ parameter in
             let defaultData: CSData
             if parameter.type.unwrappedNamedType().isOptional() {
                 defaultData = CSUnitValue.wrap(in: parameter.type, tagged: "None").data
@@ -83,18 +88,19 @@ final class CustomComponentInspectorView: NSStackView {
                 self.onChangeData(data, parameter)
             }
             valueField.view.translatesAutoresizingMaskIntoConstraints = false
+            valueFields.append(valueField)
 
             let stackView = NSStackView(views: [
                 NSTextField(labelWithString: parameter.name)
                 ], orientation: .vertical)
             stackView.alignment = .left
             stackView.addArrangedSubview(valueField.view, stretched: !(valueField.view is CheckboxField))
-            return (view: stackView, keyView: valueField.view)
+            return (view: stackView, field: valueField)
         })
 
         for (index, view) in views.enumerated() {
             if index == views.count - 1 { continue }
-            view.keyView.nextKeyView = views[index + 1].keyView
+            view.field.view.nextKeyView = views[index + 1].field.view
         }
         return views
     }

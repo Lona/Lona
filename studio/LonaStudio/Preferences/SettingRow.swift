@@ -39,6 +39,8 @@ class SettingRow: NSStackView {
 }
 
 class ValueSettingRow: SettingRow {
+    private var valueField: CSValueField?
+
     init(title: String, value: CSValue, onChange: ((CSData) -> Void)? = nil) {
         super.init(onChange: onChange)
 
@@ -53,6 +55,7 @@ class ValueSettingRow: SettingRow {
             ])
         valueField.view.translatesAutoresizingMaskIntoConstraints = false
         valueField.onChangeData = { value in self.onChange?(value) }
+        self.valueField = valueField
 
         addArrangedSubview(titleView)
         addArrangedSubview(valueField.view)

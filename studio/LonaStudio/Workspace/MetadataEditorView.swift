@@ -14,6 +14,9 @@ class MetadataEditorView: NSStackView, CSControl {
     var data: CSData { didSet { update() } }
     var onChangeData: CSControl.Handler
 
+    // We need to retain the value fields. Without this, only the view of the value field is retained.
+    var valueFields: [CSValueField] = []
+
     func render() {
         let createChangeHandler: (String) -> ((CSData) -> Void) = { key in
             return { value in
@@ -56,6 +59,8 @@ class MetadataEditorView: NSStackView, CSControl {
             ], orientation: .horizontal, stretched: true)
 
         addArrangedSubview(tagsRow)
+
+        valueFields = [descriptionField, tagsField]
     }
 
     init(data: CSData, onChangeData: @escaping CSControl.Handler) {
