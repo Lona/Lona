@@ -63,7 +63,7 @@ class LogicListView {
                 self.editor?.remove(element: item)
             }),
             ListEditor.Option.viewFor({ [unowned self] item -> NSView in
-                guard let component = self.component, let editor = self.editor else {
+                guard let component = self.component else {
                     return CSStatementView(frame: NSRect.zero, components: [])
                 }
 
