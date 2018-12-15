@@ -26,14 +26,6 @@ class UtilitiesView: NSBox {
 
         super.init(frame: .zero)
 
-        self.tabMap = [
-            .details: metadataEditorView,
-            .devices: canvasListView,
-            .parameters: parameterListEditorView,
-            .examples: caseListView.editor,
-            .logic: logicListView.editor
-        ]
-
         setUpViews()
         setUpConstraints()
 
@@ -54,34 +46,19 @@ class UtilitiesView: NSBox {
         }
     }
 
-    public var onChangeParameterList: (([CSParameter]) -> Void) {
-        get { return parameterListEditorView.onChange }
-        set { parameterListEditorView.onChange = newValue }
-    }
+    public var onChangeParameterList: (([CSParameter]) -> Void)?
 
-    public var onChangeLogicList: (([LogicNode]) -> Void) {
-        get { return logicListView.onChange }
-        set { logicListView.onChange = newValue }
-    }
+    public var onChangeLogicList: (([LogicNode]) -> Void)?
 
-    public var onChangeCaseList: (([CSCase]) -> Void) {
-        get { return caseListView.onChange }
-        set { caseListView.onChange = newValue }
-    }
+    public var onChangeCaseList: (([CSCase]) -> Void)?
 
-    public var onChangeMetadata: ((CSData) -> Void) {
-        get { return metadataEditorView.onChangeData }
-        set { metadataEditorView.onChangeData = newValue }
-    }
+    public var onChangeMetadata: ((CSData) -> Void)?
 
-    public var onChangeCanvasList: (([Canvas]) -> Void) {
-        get { return canvasListView.onChange }
-        set { canvasListView.onChange = newValue }
-    }
+    public var onChangeCanvasList: (([Canvas]) -> Void)?
 
     public var onChangeCanvasLayout: ((StaticCanvasRenderer.Layout) -> Void) {
-        get { return canvasListView.onChangeLayout ?? { _ in } }
-        set { canvasListView.onChangeLayout = newValue }
+        get { return canvasListView?.onChangeLayout ?? { _ in } }
+        set { canvasListView?.onChangeLayout = newValue }
     }
 
     public var component: CSComponent? {
@@ -93,22 +70,20 @@ class UtilitiesView: NSBox {
     // TODO: This is likely no longer needed, since update() is called when we switch
     // between tabs. But we'll need to test thoroughly after we remove it.
     public func reloadData() {
-        logicListView.editor?.reloadData()
+        logicListView?.editor?.reloadData()
 
         // We need to update this when any parameters change at least. For now,
         // update all editors at once for simplicity... optimize if necessary later.
-        caseListView.editor?.reloadData()
+        caseListView?.editor?.reloadData()
     }
 
     // MARK: Private
 
-    private var canvasListView = CanvasListView(frame: .zero)
-    private var logicListView = LogicListView(frame: .zero)
-    private var parameterListEditorView = ParameterListEditorView(frame: .zero)
-    private var caseListView = CaseList(frame: .zero)
-    private var metadataEditorView = MetadataEditorView()
-
-    private var tabMap: [Tab: NSView?] = [:]
+    private var canvasListView: CanvasListView?
+    private var logicListView: LogicListView?
+    private var parameterListEditorView: ParameterListEditorView?
+    private var caseListView: CaseList?
+    private var metadataEditorView: MetadataEditorView?
 
     private func setUpViews() {
         boxType = .custom
@@ -121,6 +96,58 @@ class UtilitiesView: NSBox {
     }
 
     private func update() {
+        switch currentTab {
+        case .logic:
+            if logicListView == nil {
+                logicListView = LogicListView(frame: .zero)
+                logicListView?.onChange = { [unowned self] list in self.onChangeLogicList?(list) }
+            }
+
+            logicListView?.component = component
+            logicListView?.list = component?.logic ?? []
+            logicListView?.editor?.reloadData()
+        case .examples:
+            if caseListView == nil {
+                caseListView = CaseList(frame: .zero)
+                caseListView?.onChange = { [unowned self] list in self.onChangeCaseList?(list) }
+            }
+
+            caseListView?.component = component
+            caseListView?.list = component?.cases ?? []
+            caseListView?.editor?.reloadData()
+        case .devices:
+            if canvasListView == nil {
+                canvasListView = CanvasListView(frame: .zero)
+                canvasListView?.onChange = { [unowned self] list in self.onChangeCanvasList?(list) }
+            }
+
+            canvasListView?.editorView.component = component
+            canvasListView?.canvasList = component?.canvas ?? []
+            canvasListView?.canvasLayout = component?.canvasLayoutAxis ?? StaticCanvasRenderer.Layout.canvasXcaseY
+        case .parameters:
+            if parameterListEditorView == nil {
+                parameterListEditorView = ParameterListEditorView(frame: .zero)
+                parameterListEditorView?.onChange = { [unowned self] list in self.onChangeParameterList?(list) }
+            }
+
+            parameterListEditorView?.parameterList = component?.parameters ?? []
+        case .details:
+            if metadataEditorView == nil {
+                metadataEditorView = MetadataEditorView()
+                metadataEditorView?.onChangeData = { [unowned self] data in self.onChangeMetadata?(data) }
+            }
+
+            metadataEditorView?.data = component?.metadata ?? .Null
+        }
+
+        let tabMap: [Tab: NSView?] = [
+            .details: metadataEditorView,
+            .devices: canvasListView,
+            .parameters: parameterListEditorView,
+            .examples: caseListView?.editor,
+            .logic: logicListView?.editor
+        ]
+
         for (tab, view) in tabMap {
             guard let view = view else { continue }
 
@@ -133,25 +160,6 @@ class UtilitiesView: NSBox {
                     view.removeFromSuperview()
                 }
             }
-        }
-
-        switch currentTab {
-        case .logic:
-            logicListView.component = component
-            logicListView.list = component?.logic ?? []
-            logicListView.editor?.reloadData()
-        case .examples:
-            caseListView.component = component
-            caseListView.list = component?.cases ?? []
-            caseListView.editor?.reloadData()
-        case .devices:
-            canvasListView.editorView.component = component
-            canvasListView.canvasList = component?.canvas ?? []
-            canvasListView.canvasLayout = component?.canvasLayoutAxis ?? StaticCanvasRenderer.Layout.canvasXcaseY
-        case .parameters:
-            parameterListEditorView.parameterList = component?.parameters ?? []
-        case .details:
-            metadataEditorView.data = component?.metadata ?? .Null
         }
     }
 }
