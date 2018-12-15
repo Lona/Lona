@@ -91,7 +91,6 @@ class LogicListView {
                         item.invocation = CSStatementView.automaticallySetNextArguments(for: item.invocation)
                     }
 
-                    editor.reloadData()
                     self.onChange(self.list)
                 }
 

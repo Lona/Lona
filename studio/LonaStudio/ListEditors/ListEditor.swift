@@ -62,11 +62,7 @@ class ListView<Element: DataNode>: NSOutlineView, NSOutlineViewDataSource, NSOut
 
     var component: CSComponent?
 
-    var list: [Element] = [Element]() {
-        didSet {
-            self.reloadData()
-            onChange(list)
-        }
+    var list: [Element] = []
     }
 
     var onChange: ([Element]) -> Void = {_ in }

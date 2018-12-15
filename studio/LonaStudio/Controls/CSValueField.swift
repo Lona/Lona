@@ -39,6 +39,8 @@ class CSValueField: CSControl {
     }
 
     init(value: CSValue, options: [Options: Bool] = [:]) {
+        self.value = value
+
         setup(value: value, options: options)
     }
 
@@ -218,18 +220,20 @@ class CSValueField: CSControl {
                 defaultChangeHandler(value.with(tag: tag).data)
             }
 
-            let valueField: CSValueField
+            var valueField: CSValueField? = nil
 
             // If we have a valid variant case
             if let unwrapped = value.unwrapVariant() {
-                valueField = CSValueField(value: unwrapped, options: options)
-                valueField.onChangeData = { newData in
-                    defaultChangeHandler(value.with(data: newData).data)
+                if unwrapped.type != .unit {
+                    valueField = CSValueField(value: unwrapped, options: options)
+                    valueField?.onChangeData = { newData in
+                        defaultChangeHandler(value.with(data: newData).data)
+                    }
                 }
             // If we don't have a valid variant case, we the default value of the first possible case
             } else if let currentType = cases.first(where: { item in item.0 == currentTag })?.1 {
                 valueField = CSValueField(value: CSValue.defaultValue(for: currentType), options: options)
-                valueField.onChangeData = { newData in
+                valueField?.onChangeData = { newData in
                     defaultChangeHandler(
                         CSValue(type: currentType, data: newData).wrap(in: value.type, tagged: currentTag).data)
                 }
@@ -237,26 +241,29 @@ class CSValueField: CSControl {
                 valueField = CSValueField(value: CSUndefinedValue, options: options)
             }
 
-            let field = NSStackView(views: [
-                tagField,
-                valueField.view
-                ], orientation: .horizontal)
+            let stackedViews: [NSView] = [tagField, valueField?.view].compactMap { $0 }
+            let field = NSStackView(views: stackedViews, orientation: .horizontal)
 
 //            field.heightAnchor.constraint(equalToConstant: 30).isActive = true
 
             tagField.translatesAutoresizingMaskIntoConstraints = false
-            valueField.view.translatesAutoresizingMaskIntoConstraints = false
+            valueField?.view.translatesAutoresizingMaskIntoConstraints = false
             field.translatesAutoresizingMaskIntoConstraints = false
 
             view = field
 
         // Generic fallthrough for user types
         case .named(_, let type):
-            let control = CSValueField(value: CSValue(type: type, data: value.data), options: options)
+            let innerValue = CSValue(type: type, data: value.data)
 
-            control.onChangeData = defaultChangeHandler
+            setup(value: innerValue, options: options)
 
-            view = control.view
+            if var view = view as? CSControl {
+                view.onChangeData = { [unowned self] data in
+                    self.value = CSValue(type: value.type, data: data)
+                    self.onChangeData(self.data)
+                }
+            }
         case .dictionary:
             let field = DictionaryEditorButton(value: value, onChangeData: defaultChangeHandler)
 

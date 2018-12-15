@@ -35,6 +35,9 @@ class CSStatementView: NSTableCellView {
     var onChangeValue: (String, CSValue, [String]) -> Void = { _, _, _  in }
     var onAddChild: () -> Void = {  }
 
+    // We need to retain the value fields. Without this, only the view of the value field is retained.
+    var controls: [CSValueField] = []
+
     func handleChange(component: Component, componentName: String, value: CSValue, keyPath: [String]) {
 //        if keyPath == ["custom", "type"] {
 //
@@ -126,11 +129,17 @@ class CSStatementView: NSTableCellView {
 
             return control
         case .value(let name, let value, let keyPath):
+            if value.type == .undefined {
+                return NSView()
+            }
+
             let control = CSValueField(value: value)
 
             control.onChangeData = { [unowned self] data in
                 self.handleChange(component: component, componentName: name, value: CSValue(type: value.type, data: data), keyPath: keyPath)
             }
+
+            controls.append(control)
 
             return control.view
         case .identifier(let name, let scope, let type, let access, let keyPath):

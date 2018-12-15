@@ -168,6 +168,8 @@ class ComponentEditorViewController: NSSplitViewController {
 
         utilitiesView.onChangeLogicList = { value in
             self.component?.logic = value
+
+            self.utilitiesView.reloadData()
             self.updateLayerList(withoutModifyingSelection: true)
             self.updateCanvasCollectionView()
         }
