@@ -568,7 +568,6 @@ class CoreComponentInspectorView: NSStackView {
             let newProperties = CoreComponentInspectorView.properties(from: csLayer)
 
             if oldValue.type != csLayer.type || properties != newProperties {
-                Swift.print("Updating", oldValue.type, oldValue.name, csLayer.type, csLayer.name)
                 properties = newProperties
                 update()
             }
