@@ -98,7 +98,7 @@ class CoreComponentInspectorView: NSStackView {
 
     func handlePropertyChange(for property: Property, value: CSData) {
         self.value[property] = value
-        updateInternalState(for: property)
+
         onChangeProperty(property, value)
         onChange(self.value)
 
@@ -789,22 +789,9 @@ class CoreComponentInspectorView: NSStackView {
             }
         })
 
-        let updateList: [Property] = [
-            .backgroundColor,
-            .backgroundColorEnabled,
-            .borderColor,
-            .borderColorEnabled,
-            .shadow,
-            .shadowEnabled,
-            .image,
-            .animation
-        ]
-
         if let value = properties[.animation] {
             self.value[.animation] = value
         }
-
-        updateList.forEach({ self.updateInternalState(for: $0) })
 
         // Controlled Properties
 
@@ -898,6 +885,15 @@ class CoreComponentInspectorView: NSStackView {
         }
     }
 
+    let controlledProperties: [Property] = [
+        Property.direction,
+        Property.horizontalAlignment,
+        Property.verticalAlignment,
+        Property.width,
+        Property.height,
+        Property.aspectRatio
+    ]
+
     private func dimensionTypeValue(for index: Int) -> String {
         switch index {
         case 0:
@@ -982,58 +978,6 @@ class CoreComponentInspectorView: NSStackView {
             dimensionsInspector.aspectRatioValue = CGFloat(value.numberValue)
         default:
             break
-        }
-    }
-
-    let controlledProperties: [Property] = [
-        Property.direction,
-        Property.horizontalAlignment,
-        Property.verticalAlignment,
-        Property.width,
-        Property.height,
-        Property.aspectRatio
-    ]
-
-    func updateInternalState(for property: Property) {
-        controlledProperties.forEach {
-            self.update(property: $0, value: self.value[$0])
-        }
-
-        switch property {
-        case .backgroundColor:
-            self.backgroundColorEnabledView.value = true
-        case .backgroundColorEnabled:
-            if self.value[property]?.bool == false {
-                self.backgroundColorButton.value = "transparent"
-            }
-        case .borderColor:
-            self.borderColorEnabledView.value = true
-        case .borderColorEnabled:
-            if self.value[property]?.bool == false {
-                self.borderColorButton.value = "transparent"
-            }
-        case .shadow:
-            self.shadowEnabledView.value = true
-        case .shadowEnabled:
-            if self.value[property]?.bool == false {
-                self.shadowButton.value = CSShadows.defaultName
-            }
-        case .image:
-            if let value = self.value[property]?.string {
-                self.imageView.value = value
-                self.imageURLView.value = value
-            } else {
-                self.imageView.value = ""
-                self.imageURLView.value = ""
-            }
-        case .animation:
-            self.animationViewContainer.subviews.forEach({ $0.removeFromSuperview() })
-
-            if let value = self.value[property]?.string, let url = URL(string: value) {
-                addAnimationViewToContainer(for: url)
-                self.animationURLView.value = value
-            }
-        default: break
         }
     }
 
