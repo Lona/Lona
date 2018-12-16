@@ -72,6 +72,9 @@ class ImageField: NSImageView, CSControl {
 
                 droppedFilePath = url.absoluteString
             } else {
+                image = nil
+                sizeLabel.value = ""
+
                 droppedFilePath = newValue
             }
         }

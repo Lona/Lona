@@ -133,7 +133,7 @@ final class InspectorView: NSBox {
                     layerInspector.onChangeLayer = {[unowned self] csLayer in
                         self.onChangeContent?(.layer(csLayer), .canvas)
                     }
-                    
+
                     inspectorView = layerInspector
                 }
             }

@@ -561,9 +561,7 @@ class CoreComponentInspectorView: NSStackView {
         return animationSection
     }
 
-    convenience init(layer: CSLayer) {
-        self.init(frame: .zero, layer: layer)
-    }
+    private var properties: [Property: CSData] = [:]
 
     public var csLayer: CSLayer {
         didSet {
@@ -577,7 +575,11 @@ class CoreComponentInspectorView: NSStackView {
         }
     }
 
-    private var properties: [Property: CSData] = [:]
+    // MARK: Lifecycle
+
+    convenience init(layer: CSLayer) {
+        self.init(frame: .zero, layer: layer)
+    }
 
     init(frame frameRect: NSRect, layer: CSLayer) {
         csLayer = layer
@@ -590,6 +592,13 @@ class CoreComponentInspectorView: NSStackView {
 
         update()
     }
+
+
+    required init?(coder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
+
+    // MARK: Private
 
     func setUpViews() {
         orientation = .vertical
@@ -781,7 +790,13 @@ class CoreComponentInspectorView: NSStackView {
         })
 
         let updateList: [Property] = [
+            .backgroundColor,
             .backgroundColorEnabled,
+            .borderColor,
+            .borderColorEnabled,
+            .shadow,
+            .shadowEnabled,
+            .image,
             .animation
         ]
 
@@ -1007,6 +1022,9 @@ class CoreComponentInspectorView: NSStackView {
             if let value = self.value[property]?.string {
                 self.imageView.value = value
                 self.imageURLView.value = value
+            } else {
+                self.imageView.value = ""
+                self.imageURLView.value = ""
             }
         case .animation:
             self.animationViewContainer.subviews.forEach({ $0.removeFromSuperview() })
@@ -1017,10 +1035,6 @@ class CoreComponentInspectorView: NSStackView {
             }
         default: break
         }
-    }
-
-    required init?(coder: NSCoder) {
-        fatalError("init(coder:) has not been implemented")
     }
 
     static func properties(from layer: CSLayer) -> [Property: CSData] {
