@@ -463,10 +463,11 @@ class WorkspaceViewController: NSSplitViewController {
                 self.inspectorView.content = self.inspectedContent
             }
 
-            inspectorView.onChangeContent = { layer, changeType in
+            inspectorView.onChangeContent = { content, changeType in
                 switch changeType {
                 case .canvas:
                     self.componentEditorViewController.updateCanvas()
+                    self.inspectorView.content = content
                 case .full:
                     self.componentEditorViewController.reloadLayerListWithoutModifyingSelection()
                 }

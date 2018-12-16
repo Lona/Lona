@@ -63,7 +63,6 @@
 		306DA4F41F34E416002772DC /* DataNode.swift in Sources */ = {isa = PBXBuildFile; fileRef = 306DA4F31F34E416002772DC /* DataNode.swift */; };
 		306DA4F61F34E42F002772DC /* DimensionSizingRule.swift in Sources */ = {isa = PBXBuildFile; fileRef = 306DA4F51F34E42F002772DC /* DimensionSizingRule.swift */; };
 		307718E81F35241A003A597B /* CSControl.swift in Sources */ = {isa = PBXBuildFile; fileRef = 307718E71F35241A003A597B /* CSControl.swift */; };
-		307718EA1F355D31003A597B /* LayerInspectorView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 307718E91F355D31003A597B /* LayerInspectorView.swift */; };
 		307718EC1F361925003A597B /* CSColor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 307718EB1F361925003A597B /* CSColor.swift */; };
 		307718F01F365BA3003A597B /* CSType.swift in Sources */ = {isa = PBXBuildFile; fileRef = 307718EF1F365BA3003A597B /* CSType.swift */; };
 		307718F21F365BCD003A597B /* CSValue.swift in Sources */ = {isa = PBXBuildFile; fileRef = 307718F11F365BCD003A597B /* CSValue.swift */; };
@@ -330,7 +329,6 @@
 		306DA4F31F34E416002772DC /* DataNode.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DataNode.swift; sourceTree = "<group>"; };
 		306DA4F51F34E42F002772DC /* DimensionSizingRule.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DimensionSizingRule.swift; sourceTree = "<group>"; };
 		307718E71F35241A003A597B /* CSControl.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CSControl.swift; sourceTree = "<group>"; };
-		307718E91F355D31003A597B /* LayerInspectorView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LayerInspectorView.swift; sourceTree = "<group>"; };
 		307718EB1F361925003A597B /* CSColor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CSColor.swift; sourceTree = "<group>"; };
 		307718EF1F365BA3003A597B /* CSType.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CSType.swift; sourceTree = "<group>"; };
 		307718F11F365BCD003A597B /* CSValue.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CSValue.swift; sourceTree = "<group>"; };
@@ -1015,7 +1013,6 @@
 				BAC24A8F203578190005B16F /* CustomComponentInspectorView.swift */,
 				30F7C9511ED4AE23009D27DF /* CoreComponentInspectorView.swift */,
 				BA547E5D203A9B1700136FC0 /* InspectorView.swift */,
-				307718E91F355D31003A597B /* LayerInspectorView.swift */,
 			);
 			path = "Inspector View";
 			sourceTree = "<group>";
@@ -1451,7 +1448,6 @@
 				307718F81F37AAFE003A597B /* CSScope.swift in Sources */,
 				307718F21F365BCD003A597B /* CSValue.swift in Sources */,
 				6B3CFB1C213B236500599E5B /* CodeEditorViewController.swift in Sources */,
-				307718EA1F355D31003A597B /* LayerInspectorView.swift in Sources */,
 				6B6D4434218F6B070016262C /* NSImage+Resizing.swift in Sources */,
 				6B4203E521BB117B00D59317 /* CanvasTableHeaderItem.swift in Sources */,
 				30CE47CD1ED776FA00BBF716 /* TextStylePickerButton.swift in Sources */,
