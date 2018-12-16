@@ -77,7 +77,12 @@ class AppDelegate: NSObject, NSApplicationDelegate {
 
     @IBAction func showComponentBrowser(_ sender: AnyObject) {
         let windowController = WorkspaceWindowController.create()
-        windowController.showWindow(self)
+
+        // Throws an exception related to _NSDetectedLayoutRecursion without async here.
+        // With async, it becomes a warning.
+        DispatchQueue.main.async {
+            windowController.showWindow(self)
+        }
     }
 
     var welcomeWindow: NSWindow?
