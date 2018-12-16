@@ -32,7 +32,48 @@
   "logic" : [
     {
       "body" : [
-
+        {
+          "assignee" : [
+            "layers",
+            "WidthDropdown",
+            "values"
+          ],
+          "content" : {
+            "type" : "LitExpr",
+            "value" : {
+              "data" : [
+                "Fixed",
+                "Fill"
+              ],
+              "type" : {
+                "name" : "Array",
+                "of" : "String"
+              }
+            }
+          },
+          "type" : "AssignExpr"
+        },
+        {
+          "assignee" : [
+            "layers",
+            "HeightDropdown",
+            "values"
+          ],
+          "content" : {
+            "type" : "LitExpr",
+            "value" : {
+              "data" : [
+                "Fixed",
+                "Fill"
+              ],
+              "type" : {
+                "name" : "Array",
+                "of" : "String"
+              }
+            }
+          },
+          "type" : "AssignExpr"
+        }
       ],
       "condition" : {
         "left" : [
@@ -43,7 +84,7 @@
         "right" : {
           "type" : "LitExpr",
           "value" : {
-            "data" : true,
+            "data" : false,
             "type" : "Boolean"
           }
         },
@@ -146,7 +187,7 @@
           "content" : {
             "type" : "LitExpr",
             "value" : {
-              "data" : 0,
+              "data" : 2,
               "type" : "WholeNumber"
             }
           },
@@ -252,7 +293,7 @@
           "content" : {
             "type" : "LitExpr",
             "value" : {
-              "data" : 0,
+              "data" : 2,
               "type" : "WholeNumber"
             }
           },
@@ -802,11 +843,11 @@
                   {
                     "id" : "WidthDropdown",
                     "params" : {
-                      "selectedIndex" : 2,
+                      "selectedIndex" : 0,
                       "values" : [
-                        "Fit Content",
+                        "Fixed",
                         "Fill",
-                        "Fixed"
+                        "Fit Content"
                       ]
                     },
                     "type" : "ControlledDropdown"
@@ -859,11 +900,11 @@
                   {
                     "id" : "HeightDropdown",
                     "params" : {
-                      "selectedIndex" : 2,
+                      "selectedIndex" : 0,
                       "values" : [
-                        "Fit Content",
+                        "Fixed",
                         "Fill",
-                        "Fixed"
+                        "Fit Content"
                       ]
                     },
                     "type" : "ControlledDropdown"

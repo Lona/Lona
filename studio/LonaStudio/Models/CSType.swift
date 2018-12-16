@@ -174,7 +174,7 @@ indirect enum CSType: Equatable, CSDataSerializable, CSDataDeserializable {
         case .variant: return "Variant"
         case .function: return "Function"
         case .named(let name, _): return name
-        default: return "Any"
+        default: return "Unit"
         }
     }
 
@@ -389,6 +389,10 @@ indirect enum CSType: Equatable, CSDataSerializable, CSDataDeserializable {
             CSUserTypes.types.map({ $0.toString() })
 
         return CSType.variant(tags: values)
+    }
+
+    static func namedParameterType() -> CSType {
+        return .named("LonaParameter", parameterType())
     }
 
     static var builtInTypes: [String: CSType] = {

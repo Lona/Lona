@@ -292,11 +292,9 @@ public class DimensionsInspector: NSBox {
     widthLabelView.attributedStringValue = widthLabelViewTextStyle.apply(to: "Width")
     widthLabelViewTextStyle = TextStyles.regular
     widthLabelView.attributedStringValue = widthLabelViewTextStyle.apply(to: widthLabelView.attributedStringValue)
-    widthDropdownView.values = ["Fit Content", "Fill", "Fixed"]
     widthInputContainerView.fillColor = #colorLiteral(red: 0.847058823529, green: 0.847058823529, blue: 0.847058823529, alpha: 1)
     hSpacer2View.fillColor = #colorLiteral(red: 0.847058823529, green: 0.847058823529, blue: 0.847058823529, alpha: 1)
     heightLabelView.attributedStringValue = heightLabelViewTextStyle.apply(to: "Height")
-    heightDropdownView.values = ["Fit Content", "Fill", "Fixed"]
     heightInputContainerView.fillColor = #colorLiteral(red: 0.847058823529, green: 0.847058823529, blue: 0.847058823529, alpha: 1)
     aspectRatioLabelView.attributedStringValue = aspectRatioLabelViewTextStyle.apply(to: "Aspect Ratio")
     hDividerView.fillColor = #colorLiteral(red: 0.847058823529, green: 0.847058823529, blue: 0.847058823529, alpha: 1)
@@ -853,12 +851,17 @@ public class DimensionsInspector: NSBox {
     let widthInputContainerViewIsHidden = widthInputContainerView.isHidden
 
     heightContainerViewHeightAnchorConstraint?.constant = 80
-    heightDropdownView.selectedIndex = 2
+    heightDropdownView.selectedIndex = 0
+    heightDropdownView.values = ["Fixed", "Fill", "Fit Content"]
     heightInputContainerView.isHidden = !true
     widthContainerViewHeightAnchorConstraint?.constant = 80
-    widthDropdownView.selectedIndex = 2
+    widthDropdownView.selectedIndex = 0
+    widthDropdownView.values = ["Fixed", "Fill", "Fit Content"]
     widthInputContainerView.isHidden = !true
-    if allowsFitContent {}
+    if allowsFitContent == false {
+      widthDropdownView.values = ["Fixed", "Fill"]
+      heightDropdownView.values = ["Fixed", "Fill"]
+    }
     contentContainerView.isHidden = !isExpanded
     inspectorSectionHeaderView.isExpanded = isExpanded
     inspectorSectionHeaderView.onClick = handleOnClickHeader
@@ -867,7 +870,7 @@ public class DimensionsInspector: NSBox {
     widthDropdownView.onChangeIndex = handleOnChangeWidthTypeIndex
     heightDropdownView.onChangeIndex = handleOnChangeHeightTypeIndex
     if widthType == .fitContent {
-      widthDropdownView.selectedIndex = 0
+      widthDropdownView.selectedIndex = 2
       widthInputContainerView.isHidden = !false
     }
     if widthType == .fill {
@@ -875,7 +878,7 @@ public class DimensionsInspector: NSBox {
       widthInputContainerView.isHidden = !false
     }
     if heightType == .fitContent {
-      heightDropdownView.selectedIndex = 0
+      heightDropdownView.selectedIndex = 2
       heightInputContainerView.isHidden = !false
     }
     if heightType == .fill {

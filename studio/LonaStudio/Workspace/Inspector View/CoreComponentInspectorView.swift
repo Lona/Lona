@@ -593,7 +593,6 @@ class CoreComponentInspectorView: NSStackView {
         update()
     }
 
-
     required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
@@ -669,19 +668,6 @@ class CoreComponentInspectorView: NSStackView {
         default:
             break
         }
-
-//        switch layerType {
-//        case .builtIn(.image), .builtIn(.vectorGraphic):
-//            let values = DIMENSION_SIZING_IMAGE_VALUES
-//            let valueToTitle = DIMENSION_SIZING_IMAGE_VALUE_TO_TITLE
-//            widthSizingRuleView.set(values: values, valueToTitle: valueToTitle)
-//            heightSizingRuleView.set(values: values, valueToTitle: valueToTitle)
-//        default:
-//            let values = DIMENSION_SIZING_VALUES
-//            let valueToTitle = DIMENSION_SIZING_VALUE_TO_TITLE
-//            widthSizingRuleView.set(values: values, valueToTitle: valueToTitle)
-//            heightSizingRuleView.set(values: values, valueToTitle: valueToTitle)
-//        }
 
         switch layerType {
         case .builtIn(.image):
@@ -844,6 +830,13 @@ class CoreComponentInspectorView: NSStackView {
             UserDefaults.standard.set(newValue, forKey: "dimensionsInspectorExpanded")
         }
 
+        switch layerType {
+        case .builtIn(.image), .builtIn(.vectorGraphic):
+            dimensionsInspector.allowsFitContent = false
+        default:
+            dimensionsInspector.allowsFitContent = true
+        }
+
         dimensionsInspector.onChangeWidthTypeIndex = { [unowned self] index in
             let property = Property.width
             let oldValue = self.value[property] ?? properties[property]!
@@ -896,11 +889,11 @@ class CoreComponentInspectorView: NSStackView {
 
     private func dimensionTypeValue(for index: Int) -> String {
         switch index {
-        case 0:
+        case 2:
             return "Shrink"
         case 1:
             return "Expand"
-        case 2:
+        case 0:
             return "Fixed"
         default:
             return ""

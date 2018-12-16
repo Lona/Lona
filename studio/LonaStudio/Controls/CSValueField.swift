@@ -30,7 +30,7 @@ class CSValueField: CSControl {
 
     var view: NSView = NSView()
 
-    var subfield: CSValueField?
+    var subfields: [CSValueField] = []
 
     func styled(string: String, usesLinkStyle: Bool) -> NSAttributedString {
         if usesLinkStyle {
@@ -150,6 +150,76 @@ class CSValueField: CSControl {
             field.value = value.data.boolValue
             field.onChangeData = defaultChangeHandler
             field.imagePosition = .imageOnly
+        case .named("LonaParameter", _):
+            let inputType = CSType(value.data)
+            let typeName = CSUnitValue.wrap(in: CSType.parameterType(), tagged: inputType.toString())
+            let typeField = CSValueField(value: typeName, options: options)
+
+            subfields.append(typeField)
+
+            typeField.onChangeData = { data in
+                let type = CSType.from(string: CSValue(type: CSType.parameterType(), data: data).tag())
+                defaultChangeHandler(type.toData())
+            }
+
+            let stackView = NSStackView(views: [typeField.view], orientation: .horizontal)
+
+            typeField.view.translatesAutoresizingMaskIntoConstraints = false
+            stackView.translatesAutoresizingMaskIntoConstraints = false
+
+            view = stackView
+
+            switch inputType {
+            case .array(let elementType):
+                let elementValue = CSValue(type: CSType.namedParameterType(), data: elementType.toData())
+                let elementField = CSValueField(value: elementValue, options: options)
+
+                subfields.append(elementField)
+                stackView.addArrangedSubview(elementField.view)
+
+                elementField.onChangeData = { data in
+                    let newElementType = CSType(data)
+
+                    if elementType == newElementType { return }
+
+                    defaultChangeHandler(CSType.array(newElementType).toData())
+                }
+            case .dictionary(let schema):
+                let recordFieldType = CSType.dictionary([
+                    "key": (CSType.string, .write),
+                    "type": (CSType.namedParameterType(), .write),
+                    "optional": (CSType.bool, .write)
+                    ])
+                let recordFieldsType = CSType.array(recordFieldType)
+                let fieldsData: [CSData] = schema.enumerated().map({ arg in
+                    let (key, value) = arg.element
+                    return CSData.Object([
+                        "key": key.toData(),
+                        "type": (value.type.isOptional() ? value.type.unwrapOptional()! : value.type).toData(),
+                        "optional": value.type.isOptional().toData()
+                        ])
+                })
+                let fieldsValue = CSValue(type: recordFieldsType, data: CSData.Array(fieldsData))
+                let fieldsField = CSValueField(value: fieldsValue, options: options)
+
+                subfields.append(fieldsField)
+                stackView.addArrangedSubview(fieldsField.view)
+
+                fieldsField.onChangeData = { data in
+                    let newSchema: CSType.Schema = data.arrayValue.key({ field in
+                        let key = field.get(key: "key").stringValue
+                        let type = CSType(field.get(key: "type"))
+                        let optional = field.get(key: "optional").boolValue
+                        return (key: key, value: (type: optional ? type.makeOptional() : type, access: .write))
+                    })
+
+                    // TODO: Don't call this if the new schema hasn't changed
+                    defaultChangeHandler(CSType.dictionary(newSchema).toData())
+                }
+            default:
+                break
+            }
+
         case .named("Component", _):
             let field = ComponentEditorButton(value: value, onChangeData: defaultChangeHandler)
 
@@ -201,7 +271,7 @@ class CSValueField: CSControl {
             let stringField = CSValueField(value: value.unwrappedNamedType(), options: options)
             stringField.onChangeData = defaultChangeHandler
 
-            subfield = stringField
+            subfields.append(stringField)
 
             let field = NSStackView(views: [
                 stringField.view,
@@ -250,7 +320,9 @@ class CSValueField: CSControl {
                 valueField = CSValueField(value: CSUndefinedValue, options: options)
             }
 
-            subfield = valueField
+            if let valueField = valueField {
+                subfields.append(valueField)
+            }
 
             let stackedViews: [NSView] = [tagField, valueField?.view].compactMap { $0 }
             let field = NSStackView(views: stackedViews, orientation: .horizontal)
