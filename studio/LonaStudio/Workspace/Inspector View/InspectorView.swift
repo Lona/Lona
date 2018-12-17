@@ -12,6 +12,11 @@ import ColorPicker
 
 final class InspectorView: NSBox {
 
+    enum ChangeType {
+        case canvas
+        case full
+    }
+
     enum Content {
         case layer(CSLayer)
         case color(CSColor)
@@ -47,7 +52,7 @@ final class InspectorView: NSBox {
 
     var content: Content? { didSet { update() } }
 
-    var onChangeContent: ((Content, LayerInspectorView.ChangeType) -> Void)?
+    var onChangeContent: ((Content, InspectorView.ChangeType) -> Void)?
 
     // MARK: Private
 
@@ -103,23 +108,34 @@ final class InspectorView: NSBox {
 
         switch content {
         case .layer(let content):
-            inspectorView.removeFromSuperview()
-
             if case CSLayer.LayerType.custom = content.type, let componentLayer = content as? CSComponentLayer {
+                inspectorView.removeFromSuperview()
+
                 let componentInspectorView = CustomComponentInspectorView(componentLayer: componentLayer)
                 componentInspectorView.onChangeData = {[unowned self] (data, parameter) in
                     componentLayer.parameters[parameter.name] = data
 
-                    self.onChangeContent?(.layer(componentLayer), LayerInspectorView.ChangeType.full)
+                    self.onChangeContent?(.layer(componentLayer), InspectorView.ChangeType.full)
                     componentInspectorView.reload()
                 }
                 inspectorView = componentInspectorView
             } else {
-                let layerInspector = LayerInspectorView(layer: content)
-                layerInspector.onChangeInspector = {[unowned self] changeType in
-                    self.onChangeContent?(.layer(content), changeType)
+                if let layerInspector = flippedView.subviews.first as? CoreComponentInspectorView {
+                    layerInspector.csLayer = content
+                    layerInspector.onChangeLayer = {[unowned self] csLayer in
+                        self.onChangeContent?(.layer(csLayer), .canvas)
+                    }
+
+                } else {
+                    inspectorView.removeFromSuperview()
+
+                    let layerInspector = CoreComponentInspectorView(layer: content)
+                    layerInspector.onChangeLayer = {[unowned self] csLayer in
+                        self.onChangeContent?(.layer(csLayer), .canvas)
+                    }
+
+                    inspectorView = layerInspector
                 }
-                inspectorView = layerInspector
             }
 
             flippedView.addSubview(inspectorView)

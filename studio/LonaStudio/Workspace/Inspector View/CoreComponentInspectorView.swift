@@ -43,15 +43,8 @@ class CoreComponentInspectorView: NSStackView {
         case direction
         case horizontalAlignment
         case verticalAlignment
-        case heightSizingRule
-        case widthSizingRule
 
         // Box Model
-        case position
-        case top
-        case right
-        case bottom
-        case left
         case width
         case height
         case marginTop
@@ -101,12 +94,16 @@ class CoreComponentInspectorView: NSStackView {
     var value: Properties = [:]
     var onChange: (Properties) -> Void = {_ in}
     var onChangeProperty: (Property, CSData) -> Void = {_, _  in}
+    var onChangeLayer: (CSLayer) -> Void = {_ in}
 
     func handlePropertyChange(for property: Property, value: CSData) {
         self.value[property] = value
-        updateInternalState(for: property)
+
         onChangeProperty(property, value)
         onChange(self.value)
+
+        CoreComponentInspectorView.update(layer: csLayer, property: property, to: value)
+        onChangeLayer(csLayer)
     }
 
     override var isFlipped: Bool { return true }
@@ -117,30 +114,7 @@ class CoreComponentInspectorView: NSStackView {
     var shadowSection: DisclosureContentRow!
 
     var layoutInspector = LayoutInspector()
-
-    var widthSizingRuleView = PopupField(
-        frame: NSRect.zero,
-        values: DIMENSION_SIZING_VALUES,
-        valueToTitle: DIMENSION_SIZING_VALUE_TO_TITLE
-    )
-    var heightSizingRuleView = PopupField(
-        frame: NSRect.zero,
-        values: DIMENSION_SIZING_VALUES,
-        valueToTitle: DIMENSION_SIZING_VALUE_TO_TITLE
-    )
-    var widthView = NumberField(frame: NSRect.zero)
-    var heightView = NumberField(frame: NSRect.zero)
-    var aspectRatioView = NumberField(frame: NSRect.zero)
-
-    var positionView = PopupField(
-        frame: NSRect.zero,
-        values: ["relative", "absolute"],
-        valueToTitle: ["relative": "Self", "absolute": "Parent"]
-    )
-    var topView = NumberField(frame: NSRect.zero)
-    var rightView = NumberField(frame: NSRect.zero)
-    var bottomView = NumberField(frame: NSRect.zero)
-    var leftView = NumberField(frame: NSRect.zero)
+    var dimensionsInspector = DimensionsInspector()
 
     var opacityView = NumberField(frame: NSRect.zero)
     var backgroundColorButton = ColorPickerButton(frame: NSRect.zero)
@@ -291,82 +265,6 @@ class CoreComponentInspectorView: NSStackView {
         section.contentEdgeInsets = NSEdgeInsets(top: 0, left: 0, bottom: 15, right: 0)
 
         return section
-    }
-
-    func renderDimensionsSection() -> DisclosureContentRow {
-        let dimensionsLeft = NSStackView(views: [
-            NSTextField(labelWithString: "Width"),
-            widthSizingRuleView,
-            widthView
-        ], orientation: .vertical, stretched: true)
-
-        let dimensionsRight = NSStackView(views: [
-            NSTextField(labelWithString: "Height"),
-            heightSizingRuleView,
-            heightView
-        ], orientation: .vertical, stretched: true)
-
-        let dimensionsContainer = NSStackView(views: [
-            dimensionsLeft,
-            dimensionsRight
-        ], orientation: .horizontal, stretched: true)
-        dimensionsContainer.distribution = .fillEqually
-        dimensionsContainer.spacing = 20
-
-        aspectRatioView = NumberField(frame: NSRect.zero)
-
-        let dimensionsSection = renderSection(title: "Dimensions", views: [
-            dimensionsContainer,
-            NSTextField(labelWithString: "Aspect Ratio"),
-            aspectRatioView
-        ])
-        dimensionsSection.addContentSpacing(of: 14, after: dimensionsContainer)
-
-        return dimensionsSection
-    }
-
-    func renderPositionSection() -> DisclosureContentRow {
-
-        topView.nextKeyView = rightView
-        rightView.nextKeyView = bottomView
-        bottomView.nextKeyView = leftView
-
-        let top = NSStackView(views: [
-            NSTextField(labelWithString: "Top"),
-            topView
-            ], orientation: .vertical, stretched: true)
-
-        let right = NSStackView(views: [
-            NSTextField(labelWithString: "Right"),
-            rightView
-            ], orientation: .vertical, stretched: true)
-
-        let bottom = NSStackView(views: [
-            NSTextField(labelWithString: "Bottom"),
-            bottomView
-            ], orientation: .vertical, stretched: true)
-
-        let left = NSStackView(views: [
-            NSTextField(labelWithString: "Left"),
-            leftView
-            ], orientation: .vertical, stretched: true)
-
-        let positionContainer = NSStackView(
-            views: [top, right, bottom, left],
-            orientation: .horizontal,
-            stretched: true
-        )
-        positionContainer.distribution = .fillEqually
-        positionContainer.spacing = 20
-
-        let dimensionsSection = renderSection(title: "Position", views: [
-            NSTextField(labelWithString: "Coordinate System"),
-            positionView,
-            positionContainer
-            ])
-        dimensionsSection.addContentSpacing(of: 14, after: positionView)
-
-        return dimensionsSection
     }
 
     func renderBorderSection() -> DisclosureContentRow {
@@ -663,7 +561,56 @@ class CoreComponentInspectorView: NSStackView {
         return animationSection
     }
 
-    func render(properties: Properties) {
+    private var properties: [Property: CSData] = [:]
+
+    public var csLayer: CSLayer {
+        didSet {
+            let newProperties = CoreComponentInspectorView.properties(from: csLayer)
+
+            if oldValue.type != csLayer.type || properties != newProperties {
+                properties = newProperties
+                update()
+            }
+        }
+    }
+
+    // MARK: Lifecycle
+
+    convenience init(layer: CSLayer) {
+        self.init(frame: .zero, layer: layer)
+    }
+
+    init(frame frameRect: NSRect, layer: CSLayer) {
+        csLayer = layer
+        properties = CoreComponentInspectorView.properties(from: layer)
+
+        super.init(frame: frameRect)
+
+        setUpViews()
+        setUpConstraints()
+
+        update()
+    }
+
+    required init?(coder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
+
+    // MARK: Private
+
+    func setUpViews() {
+        orientation = .vertical
+        alignment = .left
+        spacing = 0
+
+        marginTopView.nextKeyView = marginRightView
+        marginRightView.nextKeyView = marginBottomView
+        marginBottomView.nextKeyView = marginLeftView
+        marginLeftView.nextKeyView = paddingTopView
+
+        paddingTopView.nextKeyView = paddingRightView
+        paddingRightView.nextKeyView = paddingBottomView
+        paddingBottomView.nextKeyView = paddingLeftView
 
         textSection = renderTextSection()
         imageSection = renderImageSection()
@@ -673,8 +620,7 @@ class CoreComponentInspectorView: NSStackView {
         let sections = [
             layoutInspector,
             textSection!,
-            renderDimensionsSection(),
-            renderPositionSection(),
+            dimensionsInspector,
             renderSpacingSection(),
             renderBorderSection(),
             renderBackgroundSection(),
@@ -689,54 +635,37 @@ class CoreComponentInspectorView: NSStackView {
         }
     }
 
-    func setup(properties: Properties) {
-        render(properties: properties)
-
-        widthView.nextKeyView = heightView
-        heightView.nextKeyView = marginTopView
-
-        marginTopView.nextKeyView = marginRightView
-        marginRightView.nextKeyView = marginBottomView
-        marginBottomView.nextKeyView = marginLeftView
-        marginLeftView.nextKeyView = paddingTopView
-
-        paddingTopView.nextKeyView = paddingRightView
-        paddingRightView.nextKeyView = paddingBottomView
-        paddingBottomView.nextKeyView = paddingLeftView
+    func setUpConstraints() {
+        translatesAutoresizingMaskIntoConstraints = false
     }
 
-    init(frame frameRect: NSRect, layerType: CSLayer.LayerType, properties: Properties) {
-        super.init(frame: frameRect)
-        translatesAutoresizingMaskIntoConstraints = false
-        orientation = .vertical
-        alignment = .left
-        spacing = 0
-
-        setup(properties: properties)
+    func update() {
+        let layerType = csLayer.type
+        let properties = self.properties
 
         switch layerType {
+        case .builtIn(.view):
+            layoutInspector.isHidden = false
+            textSection.isHidden = true
+            imageSection.isHidden = true
+            animationSection.isHidden = true
         case .builtIn(.text):
-            textSection.isHidden = false
             layoutInspector.isHidden = true
+            textSection.isHidden = false
+            imageSection.isHidden = true
+            animationSection.isHidden = true
         case .builtIn(.image), .builtIn(.vectorGraphic):
+            layoutInspector.isHidden = true
+            textSection.isHidden = true
             imageSection.isHidden = false
+            animationSection.isHidden = true
         case .builtIn(.animation):
+            layoutInspector.isHidden = true
+            textSection.isHidden = true
+            imageSection.isHidden = true
             animationSection.isHidden = false
         default:
             break
-        }
-
-        switch layerType {
-        case .builtIn(.image), .builtIn(.vectorGraphic):
-            let values = DIMENSION_SIZING_IMAGE_VALUES
-            let valueToTitle = DIMENSION_SIZING_IMAGE_VALUE_TO_TITLE
-            widthSizingRuleView.set(values: values, valueToTitle: valueToTitle)
-            heightSizingRuleView.set(values: values, valueToTitle: valueToTitle)
-        default:
-            let values = DIMENSION_SIZING_VALUES
-            let valueToTitle = DIMENSION_SIZING_VALUE_TO_TITLE
-            widthSizingRuleView.set(values: values, valueToTitle: valueToTitle)
-            heightSizingRuleView.set(values: values, valueToTitle: valueToTitle)
         }
 
         switch layerType {
@@ -753,18 +682,7 @@ class CoreComponentInspectorView: NSStackView {
         }
 
         let fields: [(control: CSControl, property: Property)] = [
-            // Layout
-            (heightSizingRuleView, .heightSizingRule),
-            (widthSizingRuleView, .widthSizingRule),
-
             // Box Model
-            (positionView, .position),
-            (topView, .top),
-            (rightView, .right),
-            (bottomView, .bottom),
-            (leftView, .left),
-            (widthView, .width),
-            (heightView, .height),
             (marginTopView, .marginTop),
             (marginRightView, .marginRight),
             (marginBottomView, .marginBottom),
@@ -773,7 +691,6 @@ class CoreComponentInspectorView: NSStackView {
             (paddingRightView, .paddingRight),
             (paddingBottomView, .paddingBottom),
             (paddingLeftView, .paddingLeft),
-            (aspectRatioView, .aspectRatio),
 
             // Border
             (borderRadiusView, .borderRadius),
@@ -857,18 +774,9 @@ class CoreComponentInspectorView: NSStackView {
             }
         })
 
-        let updateList: [Property] = [
-            .heightSizingRule,
-            .widthSizingRule,
-            .backgroundColorEnabled,
-            .animation
-        ]
-
         if let value = properties[.animation] {
             self.value[.animation] = value
         }
-
-        updateList.forEach({ self.updateInternalState(for: $0) })
 
         // Controlled Properties
 
@@ -881,7 +789,7 @@ class CoreComponentInspectorView: NSStackView {
 
             UndoManager.shared.run(
                 name: property.rawValue,
-                execute: {[unowned self] in
+                execute: { [unowned self] in
                     self.handlePropertyChange(for: property, value: newValue)
                 },
                 undo: { [unowned self] in
@@ -902,14 +810,92 @@ class CoreComponentInspectorView: NSStackView {
             change(property: Property.direction, to: newValue)
         }
 
-        layoutInspector.onChangeHorizontalAlignmentIndex = { index in
+        layoutInspector.onChangeHorizontalAlignmentIndex = { [unowned self] index in
             let newValue = self.alignmentValue(for: index).toData()
             change(property: Property.horizontalAlignment, to: newValue)
         }
 
-        layoutInspector.onChangeVerticalAlignmentIndex = { index in
+        layoutInspector.onChangeVerticalAlignmentIndex = { [unowned self] index in
             let newValue = self.alignmentValue(for: index).toData()
             change(property: Property.verticalAlignment, to: newValue)
+        }
+
+        // Dimensions
+
+        dimensionsInspector.isExpanded = UserDefaults.standard.bool(forKey: "dimensionsInspectorExpanded")
+        dimensionsInspector.onClickHeader = { [unowned self] in
+            let newValue = !self.dimensionsInspector.isExpanded
+            self.dimensionsInspector.isExpanded = newValue
+            UserDefaults.standard.set(newValue, forKey: "dimensionsInspectorExpanded")
+        }
+
+        switch layerType {
+        case .builtIn(.image), .builtIn(.vectorGraphic):
+            dimensionsInspector.allowsFitContent = false
+        default:
+            dimensionsInspector.allowsFitContent = true
+        }
+
+        dimensionsInspector.onChangeWidthTypeIndex = { [unowned self] index in
+            let property = Property.width
+            let oldValue = self.value[property] ?? properties[property]!
+
+            let newValue = oldValue.merge(
+                CSData.Object(["case": self.dimensionTypeValue(for: index).toData()]))
+            change(property: property, to: newValue)
+        }
+
+        dimensionsInspector.onChangeWidthValue = { [unowned self] widthValue in
+            let property = Property.width
+            let oldValue = self.value[property] ?? properties[property]!
+
+            let newValue = oldValue.merge(
+                CSData.Object(["data": widthValue.toData()]))
+            change(property: property, to: newValue)
+        }
+
+        dimensionsInspector.onChangeHeightTypeIndex = { [unowned self] index in
+            let property = Property.height
+            let oldValue = self.value[property] ?? properties[property]!
+
+            let newValue = oldValue.merge(
+                CSData.Object(["case": self.dimensionTypeValue(for: index).toData()]))
+            change(property: property, to: newValue)
+        }
+
+        dimensionsInspector.onChangeHeightValue = { [unowned self] heightValue in
+            let property = Property.height
+            let oldValue = self.value[property] ?? properties[property]!
+
+            let newValue = oldValue.merge(
+                CSData.Object(["data": heightValue.toData()]))
+            change(property: property, to: newValue)
+        }
+
+        dimensionsInspector.onChangeAspectRatioValue = { aspectRatio in
+            change(property: Property.aspectRatio, to: aspectRatio.toData())
+        }
+    }
+
+    let controlledProperties: [Property] = [
+        Property.direction,
+        Property.horizontalAlignment,
+        Property.verticalAlignment,
+        Property.width,
+        Property.height,
+        Property.aspectRatio
+    ]
+
+    private func dimensionTypeValue(for index: Int) -> String {
+        switch index {
+        case 2:
+            return "Shrink"
+        case 1:
+            return "Expand"
+        case 0:
+            return "Fixed"
+        default:
+            return ""
         }
     }
 
@@ -930,6 +916,32 @@ class CoreComponentInspectorView: NSStackView {
         guard let value = value else { return }
 
         switch property {
+        case .width:
+            switch value.get(key: "case").stringValue {
+            case "Shrink":
+                dimensionsInspector.widthType = .fitContent
+            case "Expand":
+                dimensionsInspector.widthType = .fill
+            case "Fixed":
+                let numberValue = CGFloat(value.get(key: "data").numberValue)
+                dimensionsInspector.widthValue = numberValue
+                dimensionsInspector.widthType = .fixed(numberValue)
+            default:
+                fatalError("WARNING: Invalid width")
+            }
+        case .height:
+            switch value.get(key: "case").stringValue {
+            case "Shrink":
+                dimensionsInspector.heightType = .fitContent
+            case "Expand":
+                dimensionsInspector.heightType = .fill
+            case "Fixed":
+                let numberValue = CGFloat(value.get(key: "data").numberValue)
+                dimensionsInspector.heightValue = numberValue
+                dimensionsInspector.heightType = .fixed(numberValue)
+            default:
+                fatalError("WARNING: Invalid height")
+            }
         case .direction:
             layoutInspector.direction = value.stringValue == "column" ? .vertical : .horizontal
         case .horizontalAlignment:
@@ -954,72 +966,135 @@ class CoreComponentInspectorView: NSStackView {
             default:
                 Swift.print("WARNING: Invalid verticalAlignment")
             }
+        case .aspectRatio:
+            dimensionsInspector.aspectRatioValue = CGFloat(value.numberValue)
         default:
             break
         }
     }
 
-    let controlledProperties: [Property] = [
-        Property.direction,
-        Property.horizontalAlignment,
-        Property.verticalAlignment
-    ]
+    static func properties(from layer: CSLayer) -> [Property: CSData] {
+        return [
+            // Layout
+            CoreComponentInspectorView.Property.direction: CSData.String(layer.flexDirection ?? "column"),
+            CoreComponentInspectorView.Property.horizontalAlignment: CSData.String(layer.horizontalAlignment),
+            CoreComponentInspectorView.Property.verticalAlignment: CSData.String(layer.verticalAlignment),
 
-    func updateInternalState(for property: Property) {
-        controlledProperties.forEach {
-            self.update(property: $0, value: self.value[$0])
-        }
+            // Box Model
+            CoreComponentInspectorView.Property.width: CSData.Object([
+                "case": CSData.String(layer.widthSizingRule.toString()),
+                "data": CSData.Number(layer.width ?? 0)
+                ]),
+            CoreComponentInspectorView.Property.height: CSData.Object([
+                "case": CSData.String(layer.heightSizingRule.toString()),
+                "data": CSData.Number(layer.height ?? 0)
+                ]),
+            CoreComponentInspectorView.Property.marginTop: CSData.Number(layer.marginTop ?? 0),
+            CoreComponentInspectorView.Property.marginRight: CSData.Number(layer.marginRight ?? 0),
+            CoreComponentInspectorView.Property.marginBottom: CSData.Number(layer.marginBottom ?? 0),
+            CoreComponentInspectorView.Property.marginLeft: CSData.Number(layer.marginLeft ?? 0),
+            CoreComponentInspectorView.Property.paddingTop: CSData.Number(layer.paddingTop ?? 0),
+            CoreComponentInspectorView.Property.paddingRight: CSData.Number(layer.paddingRight ?? 0),
+            CoreComponentInspectorView.Property.paddingBottom: CSData.Number(layer.paddingBottom ?? 0),
+            CoreComponentInspectorView.Property.paddingLeft: CSData.Number(layer.paddingLeft ?? 0),
+            CoreComponentInspectorView.Property.aspectRatio: CSData.Number(layer.aspectRatio ?? 0),
 
-        switch property {
-        case .heightSizingRule:
-            if let value = self.value[property]?.string {
-                self.heightView.isHidden = value != "Fixed"
-                if value != "Fixed" {
-                    self.heightView.value = 0
-                }
-            }
-        case .widthSizingRule:
-            if let value = self.value[property]?.string {
-                self.widthView.isHidden = value != "Fixed"
-                if value != "Fixed" {
-                    self.widthView.value = 0
-                }
-            }
-        case .backgroundColor:
-            self.backgroundColorEnabledView.value = true
-        case .backgroundColorEnabled:
-            if self.value[property]?.bool == false {
-                self.backgroundColorButton.value = "transparent"
-            }
-        case .borderColor:
-            self.borderColorEnabledView.value = true
-        case .borderColorEnabled:
-            if self.value[property]?.bool == false {
-                self.borderColorButton.value = "transparent"
-            }
-        case .shadow:
-            self.shadowEnabledView.value = true
-        case .shadowEnabled:
-            if self.value[property]?.bool == false {
-                self.shadowButton.value = CSShadows.defaultName
-            }
-        case .image:
-            if let value = self.value[property]?.string {
-                self.imageView.value = value
-                self.imageURLView.value = value
-            }
-        case .animation:
-            self.animationViewContainer.subviews.forEach({ $0.removeFromSuperview() })
+            // Border
+            CoreComponentInspectorView.Property.borderRadius: CSData.Number(layer.borderRadius ?? 0),
+            CoreComponentInspectorView.Property.borderColor: CSData.String(layer.borderColor ?? "transparent"),
+            CoreComponentInspectorView.Property.borderColorEnabled: CSData.Bool(layer.borderColor != nil),
+            CoreComponentInspectorView.Property.borderWidth: CSData.Number(layer.borderWidth ?? 0),
 
-            if let value = self.value[property]?.string, let url = URL(string: value) {
-                addAnimationViewToContainer(for: url)
-                self.animationURLView.value = value
-            }
-        default: break
-        }
+            // Contents
+            CoreComponentInspectorView.Property.opacity: CSData.Number(layer.opacity ?? 1),
+            CoreComponentInspectorView.Property.backgroundColor: CSData.String(layer.backgroundColor ?? "transparent"),
+            CoreComponentInspectorView.Property.backgroundColorEnabled: CSData.Bool(layer.backgroundColor != nil),
+            CoreComponentInspectorView.Property.backgroundGradient: CSData.String(layer.backgroundGradient ?? ""),
+
+            // Shadow
+            CoreComponentInspectorView.Property.shadow: CSData.String(layer.shadow ?? "default"),
+            CoreComponentInspectorView.Property.shadowEnabled: CSData.Bool(layer.shadow != nil),
+
+            // Text
+            CoreComponentInspectorView.Property.text: CSData.String(layer.text ?? ""),
+            CoreComponentInspectorView.Property.textStyle: CSData.String(layer.font ?? CSTypography.defaultName),
+            CoreComponentInspectorView.Property.textAlign: CSData.String(layer.textAlign ?? "left"),
+            CoreComponentInspectorView.Property.numberOfLines: CSData.Number(Double(layer.numberOfLines ?? -1)),
+
+            // Image
+            CoreComponentInspectorView.Property.image: CSData.String(layer.image ?? ""),
+            CoreComponentInspectorView.Property.resizeMode: CSData.String(layer.resizeMode?.rawValue ?? "cover"),
+
+            // Animation
+            CoreComponentInspectorView.Property.animation: CSData.String(layer.animation ?? ""),
+            CoreComponentInspectorView.Property.animationSpeed: CSData.Number(layer.animationSpeed ?? 1),
+
+            // Metadata
+            CoreComponentInspectorView.Property.backingElementClass: layer.metadata["backingElementClass"] ?? CSData.Object([:])
+        ]
     }
 
-    required init?(coder: NSCoder) {
-        fatalError("init(coder:) has not been implemented")
+    static func update(layer: CSLayer, property: Property, to value: CSData) {
+        switch property {
+
+        // Layout
+        case .direction: layer.flexDirection = value.stringValue
+        case .horizontalAlignment: layer.horizontalAlignment = value.stringValue
+        case .verticalAlignment: layer.verticalAlignment = value.stringValue
+
+        // Box Model
+        case .width:
+            let tag = DimensionSizingRule.fromString(rawValue: value.get(key: "case").stringValue)
+            // Order seems to matter here. Setting widthSizingRule before width doesn't work.
+            layer.width = tag == .Fixed ? value.get(key: "data").numberValue : 0
+            layer.widthSizingRule = tag
+        case .height:
+            let tag = DimensionSizingRule.fromString(rawValue: value.get(key: "case").stringValue)
+            // Order seems to matter here. Setting heightSizingRule before height doesn't work.
+            layer.height = tag == .Fixed ? value.get(key: "data").numberValue : 0
+            layer.heightSizingRule = tag
+        case .marginTop: layer.marginTop = value.numberValue
+        case .marginRight: layer.marginRight = value.numberValue
+        case .marginBottom: layer.marginBottom = value.numberValue
+        case .marginLeft: layer.marginLeft = value.numberValue
+        case .paddingTop: layer.paddingTop = value.numberValue
+        case .paddingRight: layer.paddingRight = value.numberValue
+        case .paddingBottom: layer.paddingBottom = value.numberValue
+        case .paddingLeft: layer.paddingLeft = value.numberValue
+        case .aspectRatio: layer.aspectRatio = value.numberValue
+
+        // Border
+        case .borderRadius: layer.borderRadius = value.numberValue
+        case .borderColor: layer.borderColor = value.stringValue
+        case .borderColorEnabled: layer.borderColor = value.boolValue ? "transparent" : nil
+        case .borderWidth: layer.borderWidth = value.numberValue
+
+        // Content
+        case .opacity: layer.opacity = max(min(value.numberValue, 1), 0)
+        case .backgroundColor: layer.backgroundColor = value.stringValue
+        case .backgroundColorEnabled: layer.backgroundColor = value.boolValue ? "transparent" : nil
+        case .backgroundGradient: layer.backgroundGradient = value.string
+
+        // Shadow
+        case .shadowEnabled: layer.shadow = value.boolValue ? CSShadows.defaultName : nil
+        case .shadow: layer.shadow = value.stringValue
+
+        // Text
+        case .text: layer.text = value.stringValue
+        case .numberOfLines: layer.numberOfLines = Int(value.numberValue)
+        case .textStyle: layer.font = value.stringValue
+        case .textAlign: layer.textAlign = value.stringValue
+
+        // Image
+        case .image: layer.image = value.stringValue
+        case .resizeMode: layer.resizeMode = ResizeMode(rawValue: value.stringValue)
+
+        // Animation
+        case .animation: layer.animation = value.stringValue
+        case .animationSpeed: layer.animationSpeed = value.numberValue
+
+        // Metadata
+        case .backingElementClass: layer.metadata["backingElementClass"] = CSData.Object(value.objectValue)
+        }
     }
 }

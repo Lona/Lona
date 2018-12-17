@@ -894,7 +894,7 @@ module Build = {
       : SwiftAst.node =>
     StructDeclaration({
       "name": name |> Format.upperFirst |> Naming.prefixedName(swiftOptions),
-      "inherits": [TypeName("Codable")],
+      "inherits": [TypeName("Codable"), TypeName("Equatable")],
       "modifier": Some(PublicModifier),
       "body":
         parameters
@@ -1057,7 +1057,7 @@ module Build = {
                 EnumDeclaration({
                   "name": swiftOptions.typePrefix ++ name,
                   "isIndirect": true,
-                  "inherits": [TypeName("Codable")],
+                  "inherits": [TypeName("Codable"), TypeName("Equatable")],
                   "modifier": Some(PublicModifier),
                   "body":
                     enumCases
@@ -1083,7 +1083,7 @@ module Build = {
                 EnumDeclaration({
                   "name": swiftOptions.typePrefix ++ name,
                   "isIndirect": false,
-                  "inherits": [TypeName("Codable")],
+                  "inherits": [TypeName("Codable"), TypeName("Equatable")],
                   "modifier": Some(PublicModifier),
                   "body":
                     enumCases
@@ -1104,7 +1104,7 @@ module Build = {
                 EnumDeclaration({
                   "name": swiftOptions.typePrefix ++ name,
                   "isIndirect": false,
-                  "inherits": [TypeName("Codable")],
+                  "inherits": [TypeName("Codable"), TypeName("Equatable")],
                   "modifier": Some(PublicModifier),
                   "body":
                     enumCases
@@ -1123,7 +1123,7 @@ module Build = {
                 EnumDeclaration({
                   "name": swiftOptions.typePrefix ++ name,
                   "isIndirect": false,
-                  "inherits": [TypeName("String"), TypeName("Codable")],
+                  "inherits": [TypeName("String"), TypeName("Codable"), TypeName("Equatable")],
                   "modifier": Some(PublicModifier),
                   "body": enumCases,
                 }),
@@ -1135,7 +1135,7 @@ module Build = {
                 EnumDeclaration({
                   "name": swiftOptions.typePrefix ++ name,
                   "isIndirect": false,
-                  "inherits": [TypeName("Codable")],
+                  "inherits": [TypeName("Codable"), TypeName("Equatable")],
                   "modifier": Some(PublicModifier),
                   "body":
                     enumCases

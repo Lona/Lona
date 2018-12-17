@@ -1,0 +1,987 @@
+{
+  "devices" : [
+    {
+      "height" : 0,
+      "heightMode" : "At Least",
+      "name" : "Sidebar",
+      "params" : {
+        "direction" : {
+          "case" : "vertical",
+          "data" : null
+        }
+      },
+      "width" : 280
+    }
+  ],
+  "examples" : [
+    {
+      "id" : "Collapsed",
+      "name" : "Collapsed",
+      "params" : {
+        "isExpanded" : false
+      }
+    },
+    {
+      "id" : "Expanded",
+      "name" : "Expanded",
+      "params" : {
+        "isExpanded" : true
+      }
+    }
+  ],
+  "logic" : [
+    {
+      "body" : [
+        {
+          "assignee" : [
+            "layers",
+            "WidthDropdown",
+            "values"
+          ],
+          "content" : {
+            "type" : "LitExpr",
+            "value" : {
+              "data" : [
+                "Fixed",
+                "Fill"
+              ],
+              "type" : {
+                "name" : "Array",
+                "of" : "String"
+              }
+            }
+          },
+          "type" : "AssignExpr"
+        },
+        {
+          "assignee" : [
+            "layers",
+            "HeightDropdown",
+            "values"
+          ],
+          "content" : {
+            "type" : "LitExpr",
+            "value" : {
+              "data" : [
+                "Fixed",
+                "Fill"
+              ],
+              "type" : {
+                "name" : "Array",
+                "of" : "String"
+              }
+            }
+          },
+          "type" : "AssignExpr"
+        }
+      ],
+      "condition" : {
+        "left" : [
+          "parameters",
+          "allowsFitContent"
+        ],
+        "op" : "==",
+        "right" : {
+          "type" : "LitExpr",
+          "value" : {
+            "data" : false,
+            "type" : "Boolean"
+          }
+        },
+        "type" : "BinExpr"
+      },
+      "type" : "IfExpr"
+    },
+    {
+      "assignee" : [
+        "layers",
+        "ContentContainer",
+        "visible"
+      ],
+      "content" : [
+        "parameters",
+        "isExpanded"
+      ],
+      "type" : "AssignExpr"
+    },
+    {
+      "assignee" : [
+        "layers",
+        "InspectorSectionHeader",
+        "isExpanded"
+      ],
+      "content" : [
+        "parameters",
+        "isExpanded"
+      ],
+      "type" : "AssignExpr"
+    },
+    {
+      "assignee" : [
+        "layers",
+        "InspectorSectionHeader",
+        "onClick"
+      ],
+      "content" : [
+        "parameters",
+        "onClickHeader"
+      ],
+      "type" : "AssignExpr"
+    },
+    {
+      "assignee" : [
+        "layers",
+        "WidthDropdown",
+        "onChangeIndex"
+      ],
+      "content" : [
+        "parameters",
+        "onChangeWidthTypeIndex"
+      ],
+      "type" : "AssignExpr"
+    },
+    {
+      "assignee" : [
+        "layers",
+        "WidthDropdown",
+        "onChangeIndex"
+      ],
+      "content" : [
+        "parameters",
+        "onChangeWidthTypeIndex"
+      ],
+      "type" : "AssignExpr"
+    },
+    {
+      "assignee" : [
+        "layers",
+        "WidthDropdown",
+        "onChangeIndex"
+      ],
+      "content" : [
+        "parameters",
+        "onChangeWidthTypeIndex"
+      ],
+      "type" : "AssignExpr"
+    },
+    {
+      "assignee" : [
+        "layers",
+        "HeightDropdown",
+        "onChangeIndex"
+      ],
+      "content" : [
+        "parameters",
+        "onChangeHeightTypeIndex"
+      ],
+      "type" : "AssignExpr"
+    },
+    {
+      "body" : [
+        {
+          "assignee" : [
+            "layers",
+            "WidthDropdown",
+            "selectedIndex"
+          ],
+          "content" : {
+            "type" : "LitExpr",
+            "value" : {
+              "data" : 2,
+              "type" : "WholeNumber"
+            }
+          },
+          "type" : "AssignExpr"
+        },
+        {
+          "assignee" : [
+            "layers",
+            "WidthInputContainer",
+            "visible"
+          ],
+          "content" : {
+            "type" : "LitExpr",
+            "value" : {
+              "data" : false,
+              "type" : "Boolean"
+            }
+          },
+          "type" : "AssignExpr"
+        }
+      ],
+      "condition" : {
+        "left" : [
+          "parameters",
+          "widthType"
+        ],
+        "op" : "==",
+        "right" : {
+          "type" : "LitExpr",
+          "value" : {
+            "data" : {
+              "case" : "fitContent",
+              "data" : null
+            },
+            "type" : "DimensionType"
+          }
+        },
+        "type" : "BinExpr"
+      },
+      "type" : "IfExpr"
+    },
+    {
+      "body" : [
+        {
+          "assignee" : [
+            "layers",
+            "WidthDropdown",
+            "selectedIndex"
+          ],
+          "content" : {
+            "type" : "LitExpr",
+            "value" : {
+              "data" : 1,
+              "type" : "WholeNumber"
+            }
+          },
+          "type" : "AssignExpr"
+        },
+        {
+          "assignee" : [
+            "layers",
+            "WidthInputContainer",
+            "visible"
+          ],
+          "content" : {
+            "type" : "LitExpr",
+            "value" : {
+              "data" : false,
+              "type" : "Boolean"
+            }
+          },
+          "type" : "AssignExpr"
+        }
+      ],
+      "condition" : {
+        "left" : [
+          "parameters",
+          "widthType"
+        ],
+        "op" : "==",
+        "right" : {
+          "type" : "LitExpr",
+          "value" : {
+            "data" : {
+              "case" : "fill",
+              "data" : null
+            },
+            "type" : "DimensionType"
+          }
+        },
+        "type" : "BinExpr"
+      },
+      "type" : "IfExpr"
+    },
+    {
+      "body" : [
+        {
+          "assignee" : [
+            "layers",
+            "HeightDropdown",
+            "selectedIndex"
+          ],
+          "content" : {
+            "type" : "LitExpr",
+            "value" : {
+              "data" : 2,
+              "type" : "WholeNumber"
+            }
+          },
+          "type" : "AssignExpr"
+        },
+        {
+          "assignee" : [
+            "layers",
+            "HeightInputContainer",
+            "visible"
+          ],
+          "content" : {
+            "type" : "LitExpr",
+            "value" : {
+              "data" : false,
+              "type" : "Boolean"
+            }
+          },
+          "type" : "AssignExpr"
+        }
+      ],
+      "condition" : {
+        "left" : [
+          "parameters",
+          "heightType"
+        ],
+        "op" : "==",
+        "right" : {
+          "type" : "LitExpr",
+          "value" : {
+            "data" : {
+              "case" : "fitContent",
+              "data" : null
+            },
+            "type" : "DimensionType"
+          }
+        },
+        "type" : "BinExpr"
+      },
+      "type" : "IfExpr"
+    },
+    {
+      "body" : [
+        {
+          "assignee" : [
+            "layers",
+            "HeightDropdown",
+            "selectedIndex"
+          ],
+          "content" : {
+            "type" : "LitExpr",
+            "value" : {
+              "data" : 1,
+              "type" : "WholeNumber"
+            }
+          },
+          "type" : "AssignExpr"
+        },
+        {
+          "assignee" : [
+            "layers",
+            "HeightInputContainer",
+            "visible"
+          ],
+          "content" : {
+            "type" : "LitExpr",
+            "value" : {
+              "data" : false,
+              "type" : "Boolean"
+            }
+          },
+          "type" : "AssignExpr"
+        }
+      ],
+      "condition" : {
+        "left" : [
+          "parameters",
+          "heightType"
+        ],
+        "op" : "==",
+        "right" : {
+          "type" : "LitExpr",
+          "value" : {
+            "data" : {
+              "case" : "fill",
+              "data" : null
+            },
+            "type" : "DimensionType"
+          }
+        },
+        "type" : "BinExpr"
+      },
+      "type" : "IfExpr"
+    },
+    {
+      "assignee" : [
+        "layers",
+        "WidthInput",
+        "numberValue"
+      ],
+      "content" : [
+        "parameters",
+        "widthValue"
+      ],
+      "type" : "AssignExpr"
+    },
+    {
+      "assignee" : [
+        "layers",
+        "WidthInput",
+        "onChangeNumberValue"
+      ],
+      "content" : [
+        "parameters",
+        "onChangeWidthValue"
+      ],
+      "type" : "AssignExpr"
+    },
+    {
+      "assignee" : [
+        "layers",
+        "HeightInput",
+        "numberValue"
+      ],
+      "content" : [
+        "parameters",
+        "heightValue"
+      ],
+      "type" : "AssignExpr"
+    },
+    {
+      "assignee" : [
+        "layers",
+        "HeightInput",
+        "onChangeNumberValue"
+      ],
+      "content" : [
+        "parameters",
+        "onChangeHeightValue"
+      ],
+      "type" : "AssignExpr"
+    },
+    {
+      "assignee" : [
+        "layers",
+        "AspectRatioInput",
+        "numberValue"
+      ],
+      "content" : [
+        "parameters",
+        "aspectRatioValue"
+      ],
+      "type" : "AssignExpr"
+    },
+    {
+      "assignee" : [
+        "layers",
+        "AspectRatioInput",
+        "onChangeNumberValue"
+      ],
+      "content" : [
+        "parameters",
+        "onChangeAspectRatioValue"
+      ],
+      "type" : "AssignExpr"
+    },
+    {
+      "body" : [
+        {
+          "body" : [
+            {
+              "assignee" : [
+                "layers",
+                "WidthContainer",
+                "height"
+              ],
+              "content" : {
+                "type" : "LitExpr",
+                "value" : {
+                  "data" : 50,
+                  "type" : "Number"
+                }
+              },
+              "type" : "AssignExpr"
+            },
+            {
+              "assignee" : [
+                "layers",
+                "HeightContainer",
+                "height"
+              ],
+              "content" : {
+                "type" : "LitExpr",
+                "value" : {
+                  "data" : 50,
+                  "type" : "Number"
+                }
+              },
+              "type" : "AssignExpr"
+            }
+          ],
+          "condition" : {
+            "left" : [
+              "parameters",
+              "heightType"
+            ],
+            "op" : "==",
+            "right" : {
+              "type" : "LitExpr",
+              "value" : {
+                "data" : {
+                  "case" : "fitContent",
+                  "data" : null
+                },
+                "type" : "DimensionType"
+              }
+            },
+            "type" : "BinExpr"
+          },
+          "type" : "IfExpr"
+        },
+        {
+          "body" : [
+            {
+              "assignee" : [
+                "layers",
+                "WidthContainer",
+                "height"
+              ],
+              "content" : {
+                "type" : "LitExpr",
+                "value" : {
+                  "data" : 50,
+                  "type" : "Number"
+                }
+              },
+              "type" : "AssignExpr"
+            },
+            {
+              "assignee" : [
+                "layers",
+                "HeightContainer",
+                "height"
+              ],
+              "content" : {
+                "type" : "LitExpr",
+                "value" : {
+                  "data" : 50,
+                  "type" : "Number"
+                }
+              },
+              "type" : "AssignExpr"
+            }
+          ],
+          "condition" : {
+            "left" : [
+              "parameters",
+              "heightType"
+            ],
+            "op" : "==",
+            "right" : {
+              "type" : "LitExpr",
+              "value" : {
+                "data" : {
+                  "case" : "fill",
+                  "data" : null
+                },
+                "type" : "DimensionType"
+              }
+            },
+            "type" : "BinExpr"
+          },
+          "type" : "IfExpr"
+        }
+      ],
+      "condition" : {
+        "left" : [
+          "parameters",
+          "widthType"
+        ],
+        "op" : "==",
+        "right" : {
+          "type" : "LitExpr",
+          "value" : {
+            "data" : {
+              "case" : "fitContent",
+              "data" : null
+            },
+            "type" : "DimensionType"
+          }
+        },
+        "type" : "BinExpr"
+      },
+      "type" : "IfExpr"
+    },
+    {
+      "body" : [
+        {
+          "body" : [
+            {
+              "assignee" : [
+                "layers",
+                "WidthContainer",
+                "height"
+              ],
+              "content" : {
+                "type" : "LitExpr",
+                "value" : {
+                  "data" : 50,
+                  "type" : "Number"
+                }
+              },
+              "type" : "AssignExpr"
+            },
+            {
+              "assignee" : [
+                "layers",
+                "HeightContainer",
+                "height"
+              ],
+              "content" : {
+                "type" : "LitExpr",
+                "value" : {
+                  "data" : 50,
+                  "type" : "Number"
+                }
+              },
+              "type" : "AssignExpr"
+            }
+          ],
+          "condition" : {
+            "left" : [
+              "parameters",
+              "heightType"
+            ],
+            "op" : "==",
+            "right" : {
+              "type" : "LitExpr",
+              "value" : {
+                "data" : {
+                  "case" : "fitContent",
+                  "data" : null
+                },
+                "type" : "DimensionType"
+              }
+            },
+            "type" : "BinExpr"
+          },
+          "type" : "IfExpr"
+        },
+        {
+          "body" : [
+            {
+              "assignee" : [
+                "layers",
+                "WidthContainer",
+                "height"
+              ],
+              "content" : {
+                "type" : "LitExpr",
+                "value" : {
+                  "data" : 50,
+                  "type" : "Number"
+                }
+              },
+              "type" : "AssignExpr"
+            },
+            {
+              "assignee" : [
+                "layers",
+                "HeightContainer",
+                "height"
+              ],
+              "content" : {
+                "type" : "LitExpr",
+                "value" : {
+                  "data" : 50,
+                  "type" : "Number"
+                }
+              },
+              "type" : "AssignExpr"
+            }
+          ],
+          "condition" : {
+            "left" : [
+              "parameters",
+              "heightType"
+            ],
+            "op" : "==",
+            "right" : {
+              "type" : "LitExpr",
+              "value" : {
+                "data" : {
+                  "case" : "fill",
+                  "data" : null
+                },
+                "type" : "DimensionType"
+              }
+            },
+            "type" : "BinExpr"
+          },
+          "type" : "IfExpr"
+        }
+      ],
+      "condition" : {
+        "left" : [
+          "parameters",
+          "widthType"
+        ],
+        "op" : "==",
+        "right" : {
+          "type" : "LitExpr",
+          "value" : {
+            "data" : {
+              "case" : "fill",
+              "data" : null
+            },
+            "type" : "DimensionType"
+          }
+        },
+        "type" : "BinExpr"
+      },
+      "type" : "IfExpr"
+    }
+  ],
+  "params" : [
+    {
+      "name" : "isExpanded",
+      "type" : "Boolean"
+    },
+    {
+      "name" : "onClickHeader",
+      "type" : {
+        "name" : "Function"
+      }
+    },
+    {
+      "name" : "widthType",
+      "type" : "DimensionType"
+    },
+    {
+      "name" : "widthValue",
+      "type" : "Number"
+    },
+    {
+      "name" : "heightType",
+      "type" : "DimensionType"
+    },
+    {
+      "name" : "heightValue",
+      "type" : "Number"
+    },
+    {
+      "name" : "onChangeWidthTypeIndex",
+      "type" : {
+        "name" : "Function",
+        "parameters" : [
+          {
+            "label" : "_",
+            "type" : "WholeNumber"
+          }
+        ]
+      }
+    },
+    {
+      "name" : "onChangeHeightTypeIndex",
+      "type" : {
+        "name" : "Function",
+        "parameters" : [
+          {
+            "label" : "_",
+            "type" : "WholeNumber"
+          }
+        ]
+      }
+    },
+    {
+      "name" : "onChangeWidthValue",
+      "type" : {
+        "name" : "Function",
+        "parameters" : [
+          {
+            "label" : "_",
+            "type" : "Number"
+          }
+        ]
+      }
+    },
+    {
+      "name" : "onChangeHeightValue",
+      "type" : {
+        "name" : "Function",
+        "parameters" : [
+          {
+            "label" : "_",
+            "type" : "Number"
+          }
+        ]
+      }
+    },
+    {
+      "name" : "allowsFitContent",
+      "type" : "Boolean"
+    },
+    {
+      "name" : "aspectRatioValue",
+      "type" : "Number"
+    },
+    {
+      "name" : "onChangeAspectRatioValue",
+      "type" : {
+        "name" : "Function",
+        "parameters" : [
+          {
+            "label" : "_",
+            "type" : "Number"
+          }
+        ]
+      }
+    }
+  ],
+  "root" : {
+    "children" : [
+      {
+        "id" : "InspectorSectionHeader",
+        "params" : {
+          "titleText" : "Dimensions"
+        },
+        "type" : "InspectorSectionHeader"
+      },
+      {
+        "children" : [
+          {
+            "children" : [
+              {
+                "children" : [
+                  {
+                    "id" : "WidthLabel",
+                    "params" : {
+                      "alignSelf" : "stretch",
+                      "font" : "regular",
+                      "marginBottom" : 8,
+                      "text" : "Width"
+                    },
+                    "type" : "Lona:Text"
+                  },
+                  {
+                    "id" : "WidthDropdown",
+                    "params" : {
+                      "selectedIndex" : 0,
+                      "values" : [
+                        "Fixed",
+                        "Fill",
+                        "Fit Content"
+                      ]
+                    },
+                    "type" : "ControlledDropdown"
+                  },
+                  {
+                    "children" : [
+                      {
+                        "id" : "WidthInput",
+                        "params" : {
+                          "numberValue" : 0
+                        },
+                        "type" : "NumberInput"
+                      }
+                    ],
+                    "id" : "WidthInputContainer",
+                    "params" : {
+                      "alignSelf" : "stretch",
+                      "backgroundColor" : "#D8D8D8",
+                      "marginTop" : 8
+                    },
+                    "type" : "Lona:View"
+                  }
+                ],
+                "id" : "WidthContainer",
+                "params" : {
+                  "flex" : 1,
+                  "height" : 80
+                },
+                "type" : "Lona:View"
+              },
+              {
+                "id" : "HSpacer2",
+                "params" : {
+                  "backgroundColor" : "#D8D8D8",
+                  "height" : 0,
+                  "width" : 20
+                },
+                "type" : "Lona:View"
+              },
+              {
+                "children" : [
+                  {
+                    "id" : "HeightLabel",
+                    "params" : {
+                      "marginBottom" : 8,
+                      "text" : "Height"
+                    },
+                    "type" : "Lona:Text"
+                  },
+                  {
+                    "id" : "HeightDropdown",
+                    "params" : {
+                      "selectedIndex" : 0,
+                      "values" : [
+                        "Fixed",
+                        "Fill",
+                        "Fit Content"
+                      ]
+                    },
+                    "type" : "ControlledDropdown"
+                  },
+                  {
+                    "children" : [
+                      {
+                        "id" : "HeightInput",
+                        "params" : {
+                          "numberValue" : 0
+                        },
+                        "type" : "NumberInput"
+                      }
+                    ],
+                    "id" : "HeightInputContainer",
+                    "params" : {
+                      "alignSelf" : "stretch",
+                      "backgroundColor" : "#D8D8D8",
+                      "marginTop" : 8
+                    },
+                    "type" : "Lona:View"
+                  }
+                ],
+                "id" : "HeightContainer",
+                "params" : {
+                  "flex" : 1,
+                  "height" : 80
+                },
+                "type" : "Lona:View"
+              }
+            ],
+            "id" : "DimensionsContainer",
+            "params" : {
+              "alignSelf" : "stretch",
+              "flexDirection" : "row"
+            },
+            "type" : "Lona:View"
+          },
+          {
+            "id" : "AspectRatioLabel",
+            "params" : {
+              "marginBottom" : 8,
+              "marginTop" : 16,
+              "text" : "Aspect Ratio"
+            },
+            "type" : "Lona:Text"
+          },
+          {
+            "id" : "AspectRatioInput",
+            "params" : {
+              "numberValue" : 0
+            },
+            "type" : "NumberInput"
+          }
+        ],
+        "id" : "ContentContainer",
+        "params" : {
+          "alignSelf" : "stretch",
+          "paddingBottom" : 16,
+          "visible" : false
+        },
+        "type" : "Lona:View"
+      },
+      {
+        "id" : "HDivider",
+        "params" : {
+          "alignSelf" : "stretch",
+          "backgroundColor" : "#D8D8D8",
+          "height" : 1
+        },
+        "type" : "Lona:View"
+      }
+    ],
+    "id" : "Container",
+    "params" : {
+      "alignSelf" : "stretch"
+    },
+    "type" : "Lona:View"
+  }
+}

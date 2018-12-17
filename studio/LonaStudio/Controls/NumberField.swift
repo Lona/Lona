@@ -22,10 +22,7 @@ class NumberField: NSTextField, NSTextFieldDelegate, NSControlTextEditingDelegat
 
     var value: Double {
         get { return Double(stringValue) ?? 0.0 }
-        set {
-            stringValue = String(newValue)
-            onChange(value)
-        }
+        set { stringValue = String(newValue) }
     }
 
     var onChange: (Double) -> Void = {_ in }

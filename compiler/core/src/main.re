@@ -371,13 +371,22 @@ let convertWorkspace = (workspace, output) =>
          |> UserTypes.TypeSystem.toTypeSystemFile
          |> SwiftTypeSystem.render(swiftOptions)
          |> List.iter((convertedType: SwiftTypeSystem.convertedType) => {
+              let importStatement =
+                switch (swiftOptions.framework) {
+                | AppKit => "import AppKit\n\n"
+                | UIKit => "import UIKit\n\n"
+                };
               let outputPath =
                 concat(
                   toDirectory,
                   formatFilename(target, convertedType.name)
                   ++ targetExtension,
                 );
-              Fs.writeFileSync(outputPath, convertedType.contents, `utf8);
+              Fs.writeFileSync(
+                outputPath,
+                importStatement ++ convertedType.contents,
+                `utf8,
+              );
             });
        };
 

@@ -7,13 +7,19 @@ type lonaFunctionParameter = {
   label: string,
   ltype: lonaType,
 }
+and lonaVariantCase = {
+  tag: string,
+  ltype: lonaType,
+}
 [@bs.deriving accessors]
 and lonaType =
   | Reference(string)
   | Named(string, lonaType)
   | Array(lonaType)
-  | Variant(list(string))
+  | Variant(list(lonaVariantCase))
   | Function(list(lonaFunctionParameter), lonaType);
+
+let unitType = Reference("Unit");
 
 let undefinedType = Reference("Undefined");
 
@@ -102,7 +108,10 @@ type layer = {
 let rec toString = (ltype: lonaType): string =>
   switch (ltype) {
   | Named(_, subtype) => "Named(" ++ toString(subtype) ++ ")"
-  | Variant(cases) => "Variant(" ++ (cases |> Format.joinWith(", ")) ++ ")"
+  | Variant(cases) =>
+    "Variant("
+    ++ (cases |> List.map(case => case.tag) |> Format.joinWith(", "))
+    ++ ")"
   | Array(subtype) => "Array(" ++ toString(subtype) ++ ")"
   | Function(params, returnType) =>
     "Function("

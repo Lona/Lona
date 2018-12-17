@@ -31,3 +31,24 @@ public typealias ColorWellPicker = ColorPicker.ColorWellPicker
 // to disambiguate.
 public typealias SwiftColor = Color
 extension Color: Equatable {}
+
+typealias NumberInput = NumberField
+extension NumberInput {
+    var numberValue: CGFloat {
+        get { return CGFloat(value) }
+        set { value = Double(newValue) }
+    }
+
+    var onChangeNumberValue: ((CGFloat) -> Void)? {
+        get {
+            return { [unowned self] value in
+                self.onChange(Double(value))
+            }
+        }
+        set {
+            onChange = { value in
+                newValue?(CGFloat(value))
+            }
+        }
+    }
+}
