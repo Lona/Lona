@@ -27,7 +27,7 @@ Component metadata for documentation, indexing, and other miscellaneous purposes
 |Attribute|Type|Required|Description|
 |---|---|---|---|
 |`tags`|`string[]`|No|An array of tags for categorizing/indexing the component|
-|`name`|`string`|No|A description of the component, for documentation purposes. This field can contain markdown.|
+|`description`|`string`|No|A description of the component, for documentation purposes. This field can contain markdown.|
 
 ### Sample
 
