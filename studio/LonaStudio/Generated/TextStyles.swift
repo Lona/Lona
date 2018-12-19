@@ -17,4 +17,5 @@ class TextStyles {
   public static let monospacedMicro = TextStyle(family: "Menlo", weight: NSFont.Weight.bold, size: 10, color: #colorLiteral(red: 0, green: 0, blue: 0, alpha: 0.85))
   public static let monospacedMicroInverse = TextStyle(family: "Menlo", weight: NSFont.Weight.bold, size: 10, color: #colorLiteral(red: 1, green: 1, blue: 1, alpha: 0.85))
   public static let sectionTitle = TextStyle(weight: NSFont.Weight.medium, size: 12, color: #colorLiteral(red: 0.329411764706, green: 0.329411764706, blue: 0.329411764706, alpha: 1))
+  public static let sectionTitleInverse = TextStyle(weight: NSFont.Weight.semibold, size: 12, color: Colors.white)
 }

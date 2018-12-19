@@ -37,6 +37,7 @@ class ComponentEditorViewController: NSSplitViewController {
 
     public var onInspectLayer: ((CSLayer?) -> Void)?
     public var onChangeInspectedLayer: (() -> Void)?
+    public var onChangeInspectedCanvas: ((Int) -> Void)?
 
     public func updateCanvas() {
         updateCanvasCollectionView()
@@ -105,6 +106,10 @@ class ComponentEditorViewController: NSSplitViewController {
         setUpUtilities()
 
         layerList.fillColor = .white
+
+        canvasAreaView.onSelectCanvasHeaderItem = { [unowned self] index in
+            self.onChangeInspectedCanvas?(index)
+        }
 
         let tabs = SegmentedControlField(
             frame: NSRect(x: 0, y: 0, width: 500, height: 24),

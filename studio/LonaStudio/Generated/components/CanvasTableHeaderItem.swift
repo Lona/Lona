@@ -16,10 +16,12 @@ public class CanvasTableHeaderItem: NSBox {
     setUpConstraints()
 
     update()
+
+    addTrackingArea(trackingArea)
   }
 
-  public convenience init(titleText: String, dividerColor: NSColor) {
-    self.init(Parameters(titleText: titleText, dividerColor: dividerColor))
+  public convenience init(titleText: String, dividerColor: NSColor, selected: Bool) {
+    self.init(Parameters(titleText: titleText, dividerColor: dividerColor, selected: selected))
   }
 
   public convenience init() {
@@ -35,6 +37,12 @@ public class CanvasTableHeaderItem: NSBox {
     setUpConstraints()
 
     update()
+
+    addTrackingArea(trackingArea)
+  }
+
+  deinit {
+    removeTrackingArea(trackingArea)
   }
 
   // MARK: Public
@@ -57,6 +65,20 @@ public class CanvasTableHeaderItem: NSBox {
     }
   }
 
+  public var onClick: (() -> Void)? {
+    get { return parameters.onClick }
+    set { parameters.onClick = newValue }
+  }
+
+  public var selected: Bool {
+    get { return parameters.selected }
+    set {
+      if parameters.selected != newValue {
+        parameters.selected = newValue
+      }
+    }
+  }
+
   public var parameters: Parameters {
     didSet {
       if parameters != oldValue {
@@ -67,12 +89,21 @@ public class CanvasTableHeaderItem: NSBox {
 
   // MARK: Private
 
+  private lazy var trackingArea = NSTrackingArea(
+    rect: self.frame,
+    options: [.mouseEnteredAndExited, .activeAlways, .mouseMoved, .inVisibleRect],
+    owner: self)
+
   private var innerView = NSBox()
   private var titleView = LNATextField(labelWithString: "")
   private var vDividerView = NSBox()
   private var hDividerView = NSBox()
 
   private var titleViewTextStyle = TextStyles.sectionTitle.with(alignment: .center)
+
+  private var hovered = false
+  private var pressed = false
+  private var onPress: (() -> Void)?
 
   private func setUpViews() {
     boxType = .custom
@@ -93,10 +124,6 @@ public class CanvasTableHeaderItem: NSBox {
     addSubview(hDividerView)
     innerView.addSubview(titleView)
     innerView.addSubview(vDividerView)
-
-    fillColor = Colors.white
-    titleViewTextStyle = TextStyles.sectionTitle.with(alignment: .center)
-    titleView.attributedStringValue = titleViewTextStyle.apply(to: titleView.attributedStringValue)
   }
 
   private func setUpConstraints() {
@@ -154,9 +181,73 @@ public class CanvasTableHeaderItem: NSBox {
   }
 
   private func update() {
+    fillColor = Colors.white
+    titleViewTextStyle = TextStyles.sectionTitle.with(alignment: .center)
+    titleView.attributedStringValue = titleViewTextStyle.apply(to: titleView.attributedStringValue)
     hDividerView.fillColor = dividerColor
     vDividerView.fillColor = dividerColor
     titleView.attributedStringValue = titleViewTextStyle.apply(to: titleText)
+    onPress = handleOnClick
+    if pressed {
+      fillColor = Colors.headerBackground
+    }
+    if selected {
+      fillColor = Colors.blue600
+      titleViewTextStyle = TextStyles.sectionTitleInverse.with(alignment: .center)
+      titleView.attributedStringValue = titleViewTextStyle.apply(to: titleView.attributedStringValue)
+    }
+  }
+
+  private func handleOnClick() {
+    onClick?()
+  }
+
+  private func updateHoverState(with event: NSEvent) {
+    let hovered = bounds.contains(convert(event.locationInWindow, from: nil))
+    if hovered != self.hovered {
+      self.hovered = hovered
+
+      update()
+    }
+  }
+
+  public override func mouseEntered(with event: NSEvent) {
+    updateHoverState(with: event)
+  }
+
+  public override func mouseMoved(with event: NSEvent) {
+    updateHoverState(with: event)
+  }
+
+  public override func mouseDragged(with event: NSEvent) {
+    updateHoverState(with: event)
+  }
+
+  public override func mouseExited(with event: NSEvent) {
+    updateHoverState(with: event)
+  }
+
+  public override func mouseDown(with event: NSEvent) {
+    let pressed = bounds.contains(convert(event.locationInWindow, from: nil))
+    if pressed != self.pressed {
+      self.pressed = pressed
+
+      update()
+    }
+  }
+
+  public override func mouseUp(with event: NSEvent) {
+    let clicked = pressed && bounds.contains(convert(event.locationInWindow, from: nil))
+
+    if pressed {
+      pressed = false
+
+      update()
+    }
+
+    if clicked {
+      onPress?()
+    }
   }
 }
 
@@ -166,18 +257,22 @@ extension CanvasTableHeaderItem {
   public struct Parameters: Equatable {
     public var titleText: String
     public var dividerColor: NSColor
+    public var selected: Bool
+    public var onClick: (() -> Void)?
 
-    public init(titleText: String, dividerColor: NSColor) {
+    public init(titleText: String, dividerColor: NSColor, selected: Bool, onClick: (() -> Void)? = nil) {
       self.titleText = titleText
       self.dividerColor = dividerColor
+      self.selected = selected
+      self.onClick = onClick
     }
 
     public init() {
-      self.init(titleText: "", dividerColor: NSColor.clear)
+      self.init(titleText: "", dividerColor: NSColor.clear, selected: false)
     }
 
     public static func ==(lhs: Parameters, rhs: Parameters) -> Bool {
-      return lhs.titleText == rhs.titleText && lhs.dividerColor == rhs.dividerColor
+      return lhs.titleText == rhs.titleText && lhs.dividerColor == rhs.dividerColor && lhs.selected == rhs.selected
     }
   }
 }
@@ -201,12 +296,12 @@ extension CanvasTableHeaderItem {
       self.parameters = parameters
     }
 
-    public init(titleText: String, dividerColor: NSColor) {
-      self.init(Parameters(titleText: titleText, dividerColor: dividerColor))
+    public init(titleText: String, dividerColor: NSColor, selected: Bool, onClick: (() -> Void)? = nil) {
+      self.init(Parameters(titleText: titleText, dividerColor: dividerColor, selected: selected, onClick: onClick))
     }
 
     public init() {
-      self.init(titleText: "", dividerColor: NSColor.clear)
+      self.init(titleText: "", dividerColor: NSColor.clear, selected: false)
     }
   }
 }

@@ -26,6 +26,10 @@ class CanvasTableHeaderView: NSTableHeaderView {
         fatalError("init(coder:) has not been implemented")
     }
 
+    // MARK: Public
+
+    var onClickItem: ((Int) -> Void)?
+
     // MARK: Private
 
     var segmentViews: [NSView] = []
@@ -58,7 +62,8 @@ class CanvasTableHeaderView: NSTableHeaderView {
             segmentViews.forEach { $0.removeFromSuperview() }
 
             tableView.tableColumns.enumerated().forEach { index, column in
-                let view = CanvasTableHeaderItem(titleText: column.title, dividerColor: NSSplitView.defaultDividerColor)
+                let view = CanvasTableHeaderItem(titleText: column.title, dividerColor: NSSplitView.defaultDividerColor, selected: false)
+                view.onClick = { [unowned self] in self.onClickItem?(index) }
                 view.frame = headerRect(ofColumn: index)
                 view.translatesAutoresizingMaskIntoConstraints = true
 

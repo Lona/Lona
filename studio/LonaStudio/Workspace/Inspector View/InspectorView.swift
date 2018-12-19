@@ -21,6 +21,7 @@ final class InspectorView: NSBox {
         case layer(CSLayer)
         case color(CSColor)
         case textStyle(CSTextStyle)
+        case canvas(Canvas)
 
         init?(_ color: CSColor?) {
             guard let color = color else { return nil }
@@ -32,6 +33,10 @@ final class InspectorView: NSBox {
             guard let textStyle = textStyle else { return nil }
 
             self = .textStyle(textStyle)
+        }
+
+        init?(_ canvas: Canvas) {
+            self = .canvas(canvas)
         }
     }
 
@@ -211,6 +216,17 @@ final class InspectorView: NSBox {
 
         case .textStyle:
             inspectorView.removeFromSuperview()
+        case .canvas:
+            inspectorView.removeFromSuperview()
+
+            inspectorView = CanvasInspector()
+
+            flippedView.addSubview(inspectorView)
+
+            inspectorView.widthAnchor.constraint(equalTo: flippedView.widthAnchor).isActive = true
+            inspectorView.heightAnchor.constraint(equalTo: flippedView.heightAnchor).isActive = true
+            inspectorView.topAnchor.constraint(equalTo: flippedView.topAnchor).isActive = true
+            inspectorView.bottomAnchor.constraint(equalTo: flippedView.bottomAnchor).isActive = true
         }
     }
 }

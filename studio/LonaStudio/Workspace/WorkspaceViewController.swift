@@ -124,7 +124,21 @@ class WorkspaceViewController: NSSplitViewController {
     }()
 
     private lazy var editorViewController = EditorViewController()
-    private lazy var componentEditorViewController = ComponentEditorViewController()
+    private lazy var componentEditorViewController: ComponentEditorViewController = {
+        let controller = ComponentEditorViewController()
+
+        controller.onChangeInspectedCanvas = { [unowned self] index in
+            guard let component = self.component else { return }
+
+            let canvas = component.canvas[index]
+
+            self.inspectedContent = .canvas(canvas)
+            self.update()
+        }
+
+        return controller
+    }()
+
     private lazy var codeEditorViewController = CodeEditorViewController()
 
     private lazy var colorEditorViewController: ColorEditorViewController = {

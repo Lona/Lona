@@ -14,6 +14,13 @@
       "params" : {
 
       }
+    },
+    {
+      "id" : "Selected",
+      "name" : "Selected",
+      "params" : {
+        "selected" : true
+      }
     }
   ],
   "logic" : [
@@ -52,6 +59,104 @@
         "titleText"
       ],
       "type" : "AssignExpr"
+    },
+    {
+      "assignee" : [
+        "layers",
+        "Container",
+        "onPress"
+      ],
+      "content" : [
+        "parameters",
+        "onClick"
+      ],
+      "type" : "AssignExpr"
+    },
+    {
+      "body" : [
+        {
+          "assignee" : [
+            "layers",
+            "Container",
+            "backgroundColor"
+          ],
+          "content" : {
+            "type" : "LitExpr",
+            "value" : {
+              "data" : "headerBackground",
+              "type" : "Color"
+            }
+          },
+          "type" : "AssignExpr"
+        }
+      ],
+      "condition" : {
+        "left" : [
+          "layers",
+          "Container",
+          "pressed"
+        ],
+        "op" : "==",
+        "right" : {
+          "type" : "LitExpr",
+          "value" : {
+            "data" : true,
+            "type" : "Boolean"
+          }
+        },
+        "type" : "BinExpr"
+      },
+      "type" : "IfExpr"
+    },
+    {
+      "body" : [
+        {
+          "assignee" : [
+            "layers",
+            "Container",
+            "backgroundColor"
+          ],
+          "content" : {
+            "type" : "LitExpr",
+            "value" : {
+              "data" : "blue600",
+              "type" : "Color"
+            }
+          },
+          "type" : "AssignExpr"
+        },
+        {
+          "assignee" : [
+            "layers",
+            "Title",
+            "textStyle"
+          ],
+          "content" : {
+            "type" : "LitExpr",
+            "value" : {
+              "data" : "sectionTitleInverse",
+              "type" : "TextStyle"
+            }
+          },
+          "type" : "AssignExpr"
+        }
+      ],
+      "condition" : {
+        "left" : [
+          "parameters",
+          "selected"
+        ],
+        "op" : "==",
+        "right" : {
+          "type" : "LitExpr",
+          "value" : {
+            "data" : true,
+            "type" : "Boolean"
+          }
+        },
+        "type" : "BinExpr"
+      },
+      "type" : "IfExpr"
     }
   ],
   "params" : [
@@ -62,6 +167,16 @@
     {
       "name" : "dividerColor",
       "type" : "Color"
+    },
+    {
+      "name" : "onClick",
+      "type" : {
+        "name" : "Function"
+      }
+    },
+    {
+      "name" : "selected",
+      "type" : "Boolean"
     }
   ],
   "root" : {

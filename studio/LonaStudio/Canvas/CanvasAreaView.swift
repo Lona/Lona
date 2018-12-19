@@ -32,6 +32,10 @@ public class CanvasAreaView: NSBox {
         setUpConstraints()
     }
 
+    // MARK: Public
+
+    public var onSelectCanvasHeaderItem: ((Int) -> Void)?
+
     // MARK: Private
 
     private var scrollView = NSScrollView(frame: .zero)
@@ -45,6 +49,9 @@ public class CanvasAreaView: NSBox {
 
         outlineView.dataSource = outlineView
         outlineView.delegate = outlineView
+        outlineView.onClickHeaderItem = { [unowned self] index in
+            self.onSelectCanvasHeaderItem?(index)
+        }
 
         scrollView.hasVerticalScroller = true
         scrollView.hasHorizontalScroller = true

@@ -1,0 +1,244 @@
+{
+  "devices" : [
+    {
+      "height" : 0,
+      "heightMode" : "At Least",
+      "name" : "iPhone SE",
+      "width" : 320
+    },
+    {
+      "height" : 0,
+      "heightMode" : "At Least",
+      "name" : "iPhone 7",
+      "width" : 375
+    },
+    {
+      "height" : 0,
+      "heightMode" : "At Least",
+      "name" : "iPhone 7+",
+      "width" : 414
+    }
+  ],
+  "examples" : [
+    {
+      "id" : "Default",
+      "name" : "Default",
+      "params" : {
+
+      }
+    }
+  ],
+  "logic" : [
+
+  ],
+  "params" : [
+
+  ],
+  "root" : {
+    "children" : [
+      {
+        "children" : [
+          {
+            "id" : "PresetLabel",
+            "params" : {
+              "marginRight" : 20,
+              "text" : "Preset",
+              "width" : 80
+            },
+            "type" : "Lona:Text"
+          },
+          {
+            "id" : "PresetDropdown",
+            "params" : {
+              "selectedIndex" : 0,
+              "values" : [
+                "Component (Flexible-height)",
+                "Screen (Fixed-height)"
+              ]
+            },
+            "type" : "ControlledDropdown"
+          }
+        ],
+        "id" : "PresetRow",
+        "params" : {
+          "alignItems" : "center",
+          "alignSelf" : "stretch",
+          "flexDirection" : "row",
+          "marginTop" : 16
+        },
+        "type" : "Lona:View"
+      },
+      {
+        "children" : [
+          {
+            "id" : "DeviceLabel",
+            "params" : {
+              "marginRight" : 20,
+              "marginTop" : 4,
+              "text" : "Device",
+              "width" : 80
+            },
+            "type" : "Lona:Text"
+          },
+          {
+            "children" : [
+              {
+                "id" : "DeviceDropdown",
+                "params" : {
+                  "selectedIndex" : 0,
+                  "values" : [
+
+                  ]
+                },
+                "type" : "ControlledDropdown"
+              },
+              {
+                "children" : [
+                  {
+                    "children" : [
+                      {
+                        "id" : "WidthLabel",
+                        "params" : {
+                          "alignSelf" : "stretch",
+                          "marginBottom" : 8,
+                          "text" : "Width"
+                        },
+                        "type" : "Lona:Text"
+                      },
+                      {
+                        "id" : "WidthInput",
+                        "params" : {
+                          "numberValue" : 0
+                        },
+                        "type" : "NumberInput"
+                      }
+                    ],
+                    "id" : "WidthContainer",
+                    "params" : {
+                      "flex" : 1
+                    },
+                    "type" : "Lona:View"
+                  },
+                  {
+                    "id" : "HSpacer",
+                    "params" : {
+                      "height" : 0,
+                      "width" : 20
+                    },
+                    "type" : "Lona:View"
+                  },
+                  {
+                    "children" : [
+                      {
+                        "id" : "HeightLabel",
+                        "params" : {
+                          "alignSelf" : "stretch",
+                          "marginBottom" : 8,
+                          "text" : "Height"
+                        },
+                        "type" : "Lona:Text"
+                      },
+                      {
+                        "id" : "HeightInput",
+                        "params" : {
+                          "numberValue" : 0
+                        },
+                        "type" : "NumberInput"
+                      }
+                    ],
+                    "id" : "HeightContainer",
+                    "params" : {
+                      "flex" : 1
+                    },
+                    "type" : "Lona:View"
+                  }
+                ],
+                "id" : "CustomDimensionsContainer",
+                "params" : {
+                  "alignSelf" : "stretch",
+                  "flexDirection" : "row",
+                  "marginTop" : 16
+                },
+                "type" : "Lona:View"
+              }
+            ],
+            "id" : "DeviceValueContainer",
+            "params" : {
+              "flex" : 1
+            },
+            "type" : "Lona:View"
+          }
+        ],
+        "id" : "DeviceRow",
+        "params" : {
+          "alignSelf" : "stretch",
+          "flexDirection" : "row",
+          "marginTop" : 16
+        },
+        "type" : "Lona:View"
+      },
+      {
+        "children" : [
+          {
+            "id" : "NameLabel",
+            "params" : {
+              "marginRight" : 20,
+              "text" : "Name",
+              "width" : 80
+            },
+            "type" : "Lona:Text"
+          },
+          {
+            "id" : "NameInput",
+            "params" : {
+              "textValue" : "Text"
+            },
+            "type" : "TextInput"
+          }
+        ],
+        "id" : "NameRow",
+        "params" : {
+          "alignItems" : "center",
+          "alignSelf" : "stretch",
+          "flexDirection" : "row",
+          "marginTop" : 16
+        },
+        "type" : "Lona:View"
+      },
+      {
+        "children" : [
+          {
+            "id" : "BackgroundColorLabel",
+            "params" : {
+              "marginRight" : 20,
+              "text" : "Background",
+              "width" : 80
+            },
+            "type" : "Lona:Text"
+          },
+          {
+            "id" : "BackgroundColorInput",
+            "params" : {
+              "textValue" : "Text"
+            },
+            "type" : "TextInput"
+          }
+        ],
+        "id" : "BackgroundColorRow",
+        "params" : {
+          "alignItems" : "center",
+          "alignSelf" : "stretch",
+          "flexDirection" : "row",
+          "marginBottom" : 16,
+          "marginTop" : 16
+        },
+        "type" : "Lona:View"
+      }
+    ],
+    "id" : "Container",
+    "params" : {
+      "alignSelf" : "stretch"
+    },
+    "type" : "Lona:View"
+  }
+}

@@ -27,6 +27,8 @@ class CanvasTableView: NSTableView, NSTableViewDataSource, NSTableViewDelegate {
         rowSizeStyle = .custom
         headerView = header
 
+        header.onClickItem = handleClickHeaderItem
+
         // A hack to let us reuse the same cell view every render:
         //
         // Normally NSTableView doesn't give us control over which view gets reused.
@@ -68,6 +70,12 @@ class CanvasTableView: NSTableView, NSTableViewDataSource, NSTableViewDelegate {
     var cases: [CSCaseEntry] = []
 
     var component: CSComponent?
+
+    var onClickHeaderItem: ((Int) -> Void)?
+
+    private func handleClickHeaderItem(_ index: Int) {
+        onClickHeaderItem?(index)
+    }
 
     @objc fileprivate func doubleClick(sender: AnyObject) {
         if clickedColumn == -1 { return }
