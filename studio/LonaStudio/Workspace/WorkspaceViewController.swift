@@ -132,8 +132,10 @@ class WorkspaceViewController: NSSplitViewController {
 
             let canvas = component.canvas[index]
 
+            controller.selectedLayerName = nil
+            controller.selectedCanvasHeaderItem = index
             self.inspectedContent = .canvas(canvas)
-            self.update()
+            self.inspectorView.content = .canvas(canvas)
         }
 
         return controller
@@ -470,6 +472,7 @@ class WorkspaceViewController: NSSplitViewController {
                 }
                 self.inspectedContent = .layer(layer)
                 self.inspectorView.content = .layer(layer)
+                self.componentEditorViewController.selectedCanvasHeaderItem = nil
                 self.componentEditorViewController.selectedLayerName = layer.name
             }
 

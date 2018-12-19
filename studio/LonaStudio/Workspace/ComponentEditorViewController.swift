@@ -29,6 +29,10 @@ class ComponentEditorViewController: NSSplitViewController {
 
     public var component: CSComponent? = nil { didSet { update(withoutModifyingSelection: false) } }
     public var selectedLayerName: String? = nil { didSet { update(withoutModifyingSelection: true) } }
+    public var selectedCanvasHeaderItem: Int? {
+        get { return canvasAreaView.selectedHeaderItem }
+        set { canvasAreaView.selectedHeaderItem = newValue }
+    }
 
     public var canvasPanningEnabled: Bool {
         get { return canvasAreaView.panningEnabled }

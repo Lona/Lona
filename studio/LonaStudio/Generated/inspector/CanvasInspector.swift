@@ -18,6 +18,27 @@ public class CanvasInspector: NSBox {
     update()
   }
 
+  public convenience init(
+    showsDimensionInputs: Bool,
+    heightMode: CanvasHeight,
+    devicePreset: String,
+    canvasHeight: CGFloat,
+    canvasWidth: CGFloat,
+    canvasName: String?,
+    backgroundColorId: String)
+  {
+    self
+      .init(
+        Parameters(
+          showsDimensionInputs: showsDimensionInputs,
+          heightMode: heightMode,
+          devicePreset: devicePreset,
+          canvasHeight: canvasHeight,
+          canvasWidth: canvasWidth,
+          canvasName: canvasName,
+          backgroundColorId: backgroundColorId))
+  }
+
   public convenience init() {
     self.init(Parameters())
   }
@@ -35,6 +56,69 @@ public class CanvasInspector: NSBox {
 
   // MARK: Public
 
+  public var showsDimensionInputs: Bool {
+    get { return parameters.showsDimensionInputs }
+    set {
+      if parameters.showsDimensionInputs != newValue {
+        parameters.showsDimensionInputs = newValue
+      }
+    }
+  }
+
+  public var heightMode: CanvasHeight {
+    get { return parameters.heightMode }
+    set {
+      if parameters.heightMode != newValue {
+        parameters.heightMode = newValue
+      }
+    }
+  }
+
+  public var devicePreset: String {
+    get { return parameters.devicePreset }
+    set {
+      if parameters.devicePreset != newValue {
+        parameters.devicePreset = newValue
+      }
+    }
+  }
+
+  public var canvasHeight: CGFloat {
+    get { return parameters.canvasHeight }
+    set {
+      if parameters.canvasHeight != newValue {
+        parameters.canvasHeight = newValue
+      }
+    }
+  }
+
+  public var canvasWidth: CGFloat {
+    get { return parameters.canvasWidth }
+    set {
+      if parameters.canvasWidth != newValue {
+        parameters.canvasWidth = newValue
+      }
+    }
+  }
+
+  public var canvasName: String? {
+    get { return parameters.canvasName }
+    set {
+      if parameters.canvasName != newValue {
+        parameters.canvasName = newValue
+      }
+    }
+  }
+
+  public var backgroundColorId: String {
+    get { return parameters.backgroundColorId }
+    set {
+      if parameters.backgroundColorId != newValue {
+        parameters.backgroundColorId = newValue
+      }
+    }
+  }
+
   public var parameters: Parameters {
     didSet {
       if parameters != oldValue {
@@ -45,9 +129,9 @@ public class CanvasInspector: NSBox {
 
   // MARK: Private
 
-  private var presetRowView = NSBox()
-  private var presetLabelView = LNATextField(labelWithString: "")
-  private var presetDropdownView = ControlledDropdown()
+  private var layoutRowView = NSBox()
+  private var layoutLabelView = LNATextField(labelWithString: "")
+  private var layoutDropdownView = ControlledDropdown()
   private var deviceRowView = NSBox()
   private var deviceLabelView = LNATextField(labelWithString: "")
   private var deviceValueContainerView = NSBox()
@@ -67,20 +151,55 @@ public class CanvasInspector: NSBox {
   private var backgroundColorLabelView = LNATextField(labelWithString: "")
   private var backgroundColorInputView = TextInput()
 
-  private var presetLabelViewTextStyle = TextStyles.regular
+  private var layoutLabelViewTextStyle = TextStyles.regular
   private var deviceLabelViewTextStyle = TextStyles.regular
   private var widthLabelViewTextStyle = TextStyles.regular
   private var heightLabelViewTextStyle = TextStyles.regular
   private var nameLabelViewTextStyle = TextStyles.regular
   private var backgroundColorLabelViewTextStyle = TextStyles.regular
 
+  private var deviceDropdownViewBottomAnchorDeviceValueContainerViewBottomAnchorConstraint: NSLayoutConstraint?
+  private var customDimensionsContainerViewBottomAnchorDeviceValueContainerViewBottomAnchorConstraint: NSLayoutConstraint?
+  private var customDimensionsContainerViewTopAnchorDeviceDropdownViewBottomAnchorConstraint: NSLayoutConstraint?
+  private var customDimensionsContainerViewLeadingAnchorDeviceValueContainerViewLeadingAnchorConstraint: NSLayoutConstraint?
+  private var customDimensionsContainerViewTrailingAnchorDeviceValueContainerViewTrailingAnchorConstraint: NSLayoutConstraint?
+  private var widthContainerViewHeightContainerViewWidthAnchorSiblingConstraint: NSLayoutConstraint?
+  private var widthContainerViewHeightAnchorParentConstraint: NSLayoutConstraint?
+  private var hSpacerViewHeightAnchorParentConstraint: NSLayoutConstraint?
+  private var heightContainerViewHeightAnchorParentConstraint: NSLayoutConstraint?
+  private var widthContainerViewLeadingAnchorCustomDimensionsContainerViewLeadingAnchorConstraint: NSLayoutConstraint?
+  private var widthContainerViewTopAnchorCustomDimensionsContainerViewTopAnchorConstraint: NSLayoutConstraint?
+  private var widthContainerViewBottomAnchorCustomDimensionsContainerViewBottomAnchorConstraint: NSLayoutConstraint?
+  private var hSpacerViewLeadingAnchorWidthContainerViewTrailingAnchorConstraint: NSLayoutConstraint?
+  private var hSpacerViewTopAnchorCustomDimensionsContainerViewTopAnchorConstraint: NSLayoutConstraint?
+  private var heightContainerViewTrailingAnchorCustomDimensionsContainerViewTrailingAnchorConstraint: NSLayoutConstraint?
+  private var heightContainerViewLeadingAnchorHSpacerViewTrailingAnchorConstraint: NSLayoutConstraint?
+  private var heightContainerViewTopAnchorCustomDimensionsContainerViewTopAnchorConstraint: NSLayoutConstraint?
+  private var heightContainerViewBottomAnchorCustomDimensionsContainerViewBottomAnchorConstraint: NSLayoutConstraint?
+  private var widthLabelViewTopAnchorWidthContainerViewTopAnchorConstraint: NSLayoutConstraint?
+  private var widthLabelViewLeadingAnchorWidthContainerViewLeadingAnchorConstraint: NSLayoutConstraint?
+  private var widthLabelViewTrailingAnchorWidthContainerViewTrailingAnchorConstraint: NSLayoutConstraint?
+  private var widthInputViewBottomAnchorWidthContainerViewBottomAnchorConstraint: NSLayoutConstraint?
+  private var widthInputViewTopAnchorWidthLabelViewBottomAnchorConstraint: NSLayoutConstraint?
+  private var widthInputViewLeadingAnchorWidthContainerViewLeadingAnchorConstraint: NSLayoutConstraint?
+  private var widthInputViewTrailingAnchorWidthContainerViewTrailingAnchorConstraint: NSLayoutConstraint?
+  private var hSpacerViewHeightAnchorConstraint: NSLayoutConstraint?
+  private var hSpacerViewWidthAnchorConstraint: NSLayoutConstraint?
+  private var heightLabelViewTopAnchorHeightContainerViewTopAnchorConstraint: NSLayoutConstraint?
+  private var heightLabelViewLeadingAnchorHeightContainerViewLeadingAnchorConstraint: NSLayoutConstraint?
+  private var heightLabelViewTrailingAnchorHeightContainerViewTrailingAnchorConstraint: NSLayoutConstraint?
+  private var heightInputViewBottomAnchorHeightContainerViewBottomAnchorConstraint: NSLayoutConstraint?
+  private var heightInputViewTopAnchorHeightLabelViewBottomAnchorConstraint: NSLayoutConstraint?
+  private var heightInputViewLeadingAnchorHeightContainerViewLeadingAnchorConstraint: NSLayoutConstraint?
+  private var heightInputViewTrailingAnchorHeightContainerViewTrailingAnchorConstraint: NSLayoutConstraint?
+
   private func setUpViews() {
     boxType = .custom
     borderType = .noBorder
     contentViewMargins = .zero
-    presetRowView.boxType = .custom
-    presetRowView.borderType = .noBorder
-    presetRowView.contentViewMargins = .zero
+    layoutRowView.boxType = .custom
+    layoutRowView.borderType = .noBorder
+    layoutRowView.contentViewMargins = .zero
     deviceRowView.boxType = .custom
     deviceRowView.borderType = .noBorder
     deviceRowView.contentViewMargins = .zero
@@ -90,7 +209,7 @@ public class CanvasInspector: NSBox {
     backgroundColorRowView.boxType = .custom
     backgroundColorRowView.borderType = .noBorder
     backgroundColorRowView.contentViewMargins = .zero
-    presetLabelView.lineBreakMode = .byWordWrapping
+    layoutLabelView.lineBreakMode = .byWordWrapping
     deviceLabelView.lineBreakMode = .byWordWrapping
     deviceValueContainerView.boxType = .custom
     deviceValueContainerView.borderType = .noBorder
@@ -112,12 +231,12 @@ public class CanvasInspector: NSBox {
     nameLabelView.lineBreakMode = .byWordWrapping
     backgroundColorLabelView.lineBreakMode = .byWordWrapping
 
-    addSubview(presetRowView)
+    addSubview(layoutRowView)
     addSubview(deviceRowView)
     addSubview(nameRowView)
     addSubview(backgroundColorRowView)
-    presetRowView.addSubview(presetLabelView)
-    presetRowView.addSubview(presetDropdownView)
+    layoutRowView.addSubview(layoutLabelView)
+    layoutRowView.addSubview(layoutDropdownView)
     deviceRowView.addSubview(deviceLabelView)
     deviceRowView.addSubview(deviceValueContainerView)
     deviceValueContainerView.addSubview(deviceDropdownView)
@@ -134,30 +253,27 @@ public class CanvasInspector: NSBox {
     backgroundColorRowView.addSubview(backgroundColorLabelView)
     backgroundColorRowView.addSubview(backgroundColorInputView)
 
-    presetLabelView.attributedStringValue = presetLabelViewTextStyle.apply(to: "Preset")
-    presetDropdownView.selectedIndex = 0
-    presetDropdownView.values = ["Component (Flexible-height)", "Screen (Fixed-height)"]
+    layoutLabelView.attributedStringValue = layoutLabelViewTextStyle.apply(to: "Layout")
+    layoutDropdownView.selectedIndex = 0
+    layoutDropdownView.values = ["Component (Flexible-height)", "Screen (Fixed-height)"]
     deviceLabelView.attributedStringValue = deviceLabelViewTextStyle.apply(to: "Device")
     deviceDropdownView.selectedIndex = 0
-    deviceDropdownView.values = []
+    deviceDropdownView.values = ["iPhone SE"]
     widthLabelView.attributedStringValue = widthLabelViewTextStyle.apply(to: "Width")
-    widthInputView.numberValue = 0
     heightLabelView.attributedStringValue = heightLabelViewTextStyle.apply(to: "Height")
-    heightInputView.numberValue = 0
     nameLabelView.attributedStringValue = nameLabelViewTextStyle.apply(to: "Name")
     nameInputView.textValue = "Text"
     backgroundColorLabelView.attributedStringValue = backgroundColorLabelViewTextStyle.apply(to: "Background")
-    backgroundColorInputView.textValue = "Text"
   }
 
   private func setUpConstraints() {
     translatesAutoresizingMaskIntoConstraints = false
-    presetRowView.translatesAutoresizingMaskIntoConstraints = false
+    layoutRowView.translatesAutoresizingMaskIntoConstraints = false
     deviceRowView.translatesAutoresizingMaskIntoConstraints = false
     nameRowView.translatesAutoresizingMaskIntoConstraints = false
     backgroundColorRowView.translatesAutoresizingMaskIntoConstraints = false
-    presetLabelView.translatesAutoresizingMaskIntoConstraints = false
-    presetDropdownView.translatesAutoresizingMaskIntoConstraints = false
+    layoutLabelView.translatesAutoresizingMaskIntoConstraints = false
+    layoutDropdownView.translatesAutoresizingMaskIntoConstraints = false
     deviceLabelView.translatesAutoresizingMaskIntoConstraints = false
     deviceValueContainerView.translatesAutoresizingMaskIntoConstraints = false
     deviceDropdownView.translatesAutoresizingMaskIntoConstraints = false
@@ -174,12 +290,12 @@ public class CanvasInspector: NSBox {
     backgroundColorLabelView.translatesAutoresizingMaskIntoConstraints = false
     backgroundColorInputView.translatesAutoresizingMaskIntoConstraints = false
 
-    let presetRowViewTopAnchorConstraint = presetRowView.topAnchor.constraint(equalTo: topAnchor, constant: 16)
-    let presetRowViewLeadingAnchorConstraint = presetRowView.leadingAnchor.constraint(equalTo: leadingAnchor)
-    let presetRowViewTrailingAnchorConstraint = presetRowView.trailingAnchor.constraint(equalTo: trailingAnchor)
+    let layoutRowViewTopAnchorConstraint = layoutRowView.topAnchor.constraint(equalTo: topAnchor, constant: 16)
+    let layoutRowViewLeadingAnchorConstraint = layoutRowView.leadingAnchor.constraint(equalTo: leadingAnchor)
+    let layoutRowViewTrailingAnchorConstraint = layoutRowView.trailingAnchor.constraint(equalTo: trailingAnchor)
     let deviceRowViewTopAnchorConstraint = deviceRowView
       .topAnchor
-      .constraint(equalTo: presetRowView.bottomAnchor, constant: 16)
+      .constraint(equalTo: layoutRowView.bottomAnchor, constant: 16)
     let deviceRowViewLeadingAnchorConstraint = deviceRowView.leadingAnchor.constraint(equalTo: leadingAnchor)
     let deviceRowViewTrailingAnchorConstraint = deviceRowView.trailingAnchor.constraint(equalTo: trailingAnchor)
     let nameRowViewTopAnchorConstraint = nameRowView
@@ -199,40 +315,40 @@ public class CanvasInspector: NSBox {
     let backgroundColorRowViewTrailingAnchorConstraint = backgroundColorRowView
       .trailingAnchor
       .constraint(equalTo: trailingAnchor)
-    let presetLabelViewHeightAnchorParentConstraint = presetLabelView
+    let layoutLabelViewHeightAnchorParentConstraint = layoutLabelView
       .heightAnchor
-      .constraint(lessThanOrEqualTo: presetRowView.heightAnchor)
-    let presetDropdownViewHeightAnchorParentConstraint = presetDropdownView
+      .constraint(lessThanOrEqualTo: layoutRowView.heightAnchor)
+    let layoutDropdownViewHeightAnchorParentConstraint = layoutDropdownView
       .heightAnchor
-      .constraint(lessThanOrEqualTo: presetRowView.heightAnchor)
-    let presetLabelViewLeadingAnchorConstraint = presetLabelView
+      .constraint(lessThanOrEqualTo: layoutRowView.heightAnchor)
+    let layoutLabelViewLeadingAnchorConstraint = layoutLabelView
       .leadingAnchor
-      .constraint(equalTo: presetRowView.leadingAnchor)
-    let presetLabelViewTopAnchorConstraint = presetLabelView.topAnchor.constraint(equalTo: presetRowView.topAnchor)
-    let presetLabelViewCenterYAnchorConstraint = presetLabelView
+      .constraint(equalTo: layoutRowView.leadingAnchor)
+    let layoutLabelViewTopAnchorConstraint = layoutLabelView.topAnchor.constraint(equalTo: layoutRowView.topAnchor)
+    let layoutLabelViewCenterYAnchorConstraint = layoutLabelView
       .centerYAnchor
-      .constraint(equalTo: presetRowView.centerYAnchor)
-    let presetLabelViewBottomAnchorConstraint = presetLabelView
+      .constraint(equalTo: layoutRowView.centerYAnchor)
+    let layoutLabelViewBottomAnchorConstraint = layoutLabelView
       .bottomAnchor
-      .constraint(equalTo: presetRowView.bottomAnchor)
-    let presetDropdownViewTrailingAnchorConstraint = presetDropdownView
+      .constraint(equalTo: layoutRowView.bottomAnchor)
+    let layoutDropdownViewTrailingAnchorConstraint = layoutDropdownView
       .trailingAnchor
-      .constraint(equalTo: presetRowView.trailingAnchor)
-    let presetDropdownViewLeadingAnchorConstraint = presetDropdownView
+      .constraint(equalTo: layoutRowView.trailingAnchor)
+    let layoutDropdownViewLeadingAnchorConstraint = layoutDropdownView
       .leadingAnchor
-      .constraint(equalTo: presetLabelView.trailingAnchor, constant: 20)
-    let presetDropdownViewTopAnchorConstraint = presetDropdownView
+      .constraint(equalTo: layoutLabelView.trailingAnchor, constant: 20)
+    let layoutDropdownViewTopAnchorConstraint = layoutDropdownView
       .topAnchor
-      .constraint(equalTo: presetRowView.topAnchor)
-    let presetDropdownViewCenterYAnchorConstraint = presetDropdownView
+      .constraint(equalTo: layoutRowView.topAnchor)
+    let layoutDropdownViewCenterYAnchorConstraint = layoutDropdownView
       .centerYAnchor
-      .constraint(equalTo: presetRowView.centerYAnchor)
-    let presetDropdownViewBottomAnchorConstraint = presetDropdownView
+      .constraint(equalTo: layoutRowView.centerYAnchor)
+    let layoutDropdownViewBottomAnchorConstraint = layoutDropdownView
       .bottomAnchor
-      .constraint(equalTo: presetRowView.bottomAnchor)
+      .constraint(equalTo: layoutRowView.bottomAnchor)
     let deviceLabelViewHeightAnchorParentConstraint = deviceLabelView
       .heightAnchor
-      .constraint(lessThanOrEqualTo: deviceRowView.heightAnchor, constant: -4)
+      .constraint(lessThanOrEqualTo: deviceRowView.heightAnchor, constant: -2)
     let deviceValueContainerViewHeightAnchorParentConstraint = deviceValueContainerView
       .heightAnchor
       .constraint(lessThanOrEqualTo: deviceRowView.heightAnchor)
@@ -241,7 +357,7 @@ public class CanvasInspector: NSBox {
       .constraint(equalTo: deviceRowView.leadingAnchor)
     let deviceLabelViewTopAnchorConstraint = deviceLabelView
       .topAnchor
-      .constraint(equalTo: deviceRowView.topAnchor, constant: 4)
+      .constraint(equalTo: deviceRowView.topAnchor, constant: 2)
     let deviceLabelViewBottomAnchorConstraint = deviceLabelView
       .bottomAnchor
       .constraint(equalTo: deviceRowView.bottomAnchor)
@@ -315,7 +431,7 @@ public class CanvasInspector: NSBox {
     let backgroundColorInputViewBottomAnchorConstraint = backgroundColorInputView
       .bottomAnchor
       .constraint(equalTo: backgroundColorRowView.bottomAnchor)
-    let presetLabelViewWidthAnchorConstraint = presetLabelView.widthAnchor.constraint(equalToConstant: 80)
+    let layoutLabelViewWidthAnchorConstraint = layoutLabelView.widthAnchor.constraint(equalToConstant: 80)
     let deviceLabelViewWidthAnchorConstraint = deviceLabelView.widthAnchor.constraint(equalToConstant: 80)
     let deviceDropdownViewTopAnchorConstraint = deviceDropdownView
       .topAnchor
@@ -326,16 +442,23 @@ public class CanvasInspector: NSBox {
     let deviceDropdownViewTrailingAnchorConstraint = deviceDropdownView
       .trailingAnchor
       .constraint(equalTo: deviceValueContainerView.trailingAnchor)
-    let customDimensionsContainerViewBottomAnchorConstraint = customDimensionsContainerView
+    let nameLabelViewWidthAnchorConstraint = nameLabelView.widthAnchor.constraint(equalToConstant: 80)
+    let backgroundColorLabelViewWidthAnchorConstraint = backgroundColorLabelView
+      .widthAnchor
+      .constraint(equalToConstant: 80)
+    let deviceDropdownViewBottomAnchorDeviceValueContainerViewBottomAnchorConstraint = deviceDropdownView
       .bottomAnchor
       .constraint(equalTo: deviceValueContainerView.bottomAnchor)
-    let customDimensionsContainerViewTopAnchorConstraint = customDimensionsContainerView
+    let customDimensionsContainerViewBottomAnchorDeviceValueContainerViewBottomAnchorConstraint = customDimensionsContainerView
+      .bottomAnchor
+      .constraint(equalTo: deviceValueContainerView.bottomAnchor)
+    let customDimensionsContainerViewTopAnchorDeviceDropdownViewBottomAnchorConstraint = customDimensionsContainerView
       .topAnchor
       .constraint(equalTo: deviceDropdownView.bottomAnchor, constant: 16)
-    let customDimensionsContainerViewLeadingAnchorConstraint = customDimensionsContainerView
+    let customDimensionsContainerViewLeadingAnchorDeviceValueContainerViewLeadingAnchorConstraint = customDimensionsContainerView
       .leadingAnchor
       .constraint(equalTo: deviceValueContainerView.leadingAnchor)
-    let customDimensionsContainerViewTrailingAnchorConstraint = customDimensionsContainerView
+    let customDimensionsContainerViewTrailingAnchorDeviceValueContainerViewTrailingAnchorConstraint = customDimensionsContainerView
       .trailingAnchor
       .constraint(equalTo: deviceValueContainerView.trailingAnchor)
     let widthContainerViewHeightContainerViewWidthAnchorSiblingConstraint = widthContainerView
@@ -350,82 +473,80 @@ public class CanvasInspector: NSBox {
     let heightContainerViewHeightAnchorParentConstraint = heightContainerView
       .heightAnchor
       .constraint(lessThanOrEqualTo: customDimensionsContainerView.heightAnchor)
-    let widthContainerViewLeadingAnchorConstraint = widthContainerView
+    let widthContainerViewLeadingAnchorCustomDimensionsContainerViewLeadingAnchorConstraint = widthContainerView
       .leadingAnchor
       .constraint(equalTo: customDimensionsContainerView.leadingAnchor)
-    let widthContainerViewTopAnchorConstraint = widthContainerView
+    let widthContainerViewTopAnchorCustomDimensionsContainerViewTopAnchorConstraint = widthContainerView
       .topAnchor
       .constraint(equalTo: customDimensionsContainerView.topAnchor)
-    let widthContainerViewBottomAnchorConstraint = widthContainerView
+    let widthContainerViewBottomAnchorCustomDimensionsContainerViewBottomAnchorConstraint = widthContainerView
       .bottomAnchor
       .constraint(equalTo: customDimensionsContainerView.bottomAnchor)
-    let hSpacerViewLeadingAnchorConstraint = hSpacerView
+    let hSpacerViewLeadingAnchorWidthContainerViewTrailingAnchorConstraint = hSpacerView
       .leadingAnchor
       .constraint(equalTo: widthContainerView.trailingAnchor)
-    let hSpacerViewTopAnchorConstraint = hSpacerView
+    let hSpacerViewTopAnchorCustomDimensionsContainerViewTopAnchorConstraint = hSpacerView
       .topAnchor
       .constraint(equalTo: customDimensionsContainerView.topAnchor)
-    let heightContainerViewTrailingAnchorConstraint = heightContainerView
+    let heightContainerViewTrailingAnchorCustomDimensionsContainerViewTrailingAnchorConstraint = heightContainerView
       .trailingAnchor
       .constraint(equalTo: customDimensionsContainerView.trailingAnchor)
-    let heightContainerViewLeadingAnchorConstraint = heightContainerView
+    let heightContainerViewLeadingAnchorHSpacerViewTrailingAnchorConstraint = heightContainerView
       .leadingAnchor
       .constraint(equalTo: hSpacerView.trailingAnchor)
-    let heightContainerViewTopAnchorConstraint = heightContainerView
+    let heightContainerViewTopAnchorCustomDimensionsContainerViewTopAnchorConstraint = heightContainerView
       .topAnchor
       .constraint(equalTo: customDimensionsContainerView.topAnchor)
-    let heightContainerViewBottomAnchorConstraint = heightContainerView
+    let heightContainerViewBottomAnchorCustomDimensionsContainerViewBottomAnchorConstraint = heightContainerView
       .bottomAnchor
       .constraint(equalTo: customDimensionsContainerView.bottomAnchor)
-    let widthLabelViewTopAnchorConstraint = widthLabelView.topAnchor.constraint(equalTo: widthContainerView.topAnchor)
-    let widthLabelViewLeadingAnchorConstraint = widthLabelView
+    let widthLabelViewTopAnchorWidthContainerViewTopAnchorConstraint = widthLabelView
+      .topAnchor
+      .constraint(equalTo: widthContainerView.topAnchor)
+    let widthLabelViewLeadingAnchorWidthContainerViewLeadingAnchorConstraint = widthLabelView
       .leadingAnchor
       .constraint(equalTo: widthContainerView.leadingAnchor)
-    let widthLabelViewTrailingAnchorConstraint = widthLabelView
+    let widthLabelViewTrailingAnchorWidthContainerViewTrailingAnchorConstraint = widthLabelView
       .trailingAnchor
       .constraint(equalTo: widthContainerView.trailingAnchor)
-    let widthInputViewBottomAnchorConstraint = widthInputView
+    let widthInputViewBottomAnchorWidthContainerViewBottomAnchorConstraint = widthInputView
       .bottomAnchor
       .constraint(equalTo: widthContainerView.bottomAnchor)
-    let widthInputViewTopAnchorConstraint = widthInputView
+    let widthInputViewTopAnchorWidthLabelViewBottomAnchorConstraint = widthInputView
       .topAnchor
       .constraint(equalTo: widthLabelView.bottomAnchor, constant: 8)
-    let widthInputViewLeadingAnchorConstraint = widthInputView
+    let widthInputViewLeadingAnchorWidthContainerViewLeadingAnchorConstraint = widthInputView
       .leadingAnchor
       .constraint(equalTo: widthContainerView.leadingAnchor)
-    let widthInputViewTrailingAnchorConstraint = widthInputView
+    let widthInputViewTrailingAnchorWidthContainerViewTrailingAnchorConstraint = widthInputView
       .trailingAnchor
       .constraint(equalTo: widthContainerView.trailingAnchor)
     let hSpacerViewHeightAnchorConstraint = hSpacerView.heightAnchor.constraint(equalToConstant: 0)
     let hSpacerViewWidthAnchorConstraint = hSpacerView.widthAnchor.constraint(equalToConstant: 20)
-    let heightLabelViewTopAnchorConstraint = heightLabelView
+    let heightLabelViewTopAnchorHeightContainerViewTopAnchorConstraint = heightLabelView
       .topAnchor
       .constraint(equalTo: heightContainerView.topAnchor)
-    let heightLabelViewLeadingAnchorConstraint = heightLabelView
+    let heightLabelViewLeadingAnchorHeightContainerViewLeadingAnchorConstraint = heightLabelView
       .leadingAnchor
       .constraint(equalTo: heightContainerView.leadingAnchor)
-    let heightLabelViewTrailingAnchorConstraint = heightLabelView
+    let heightLabelViewTrailingAnchorHeightContainerViewTrailingAnchorConstraint = heightLabelView
       .trailingAnchor
       .constraint(equalTo: heightContainerView.trailingAnchor)
-    let heightInputViewBottomAnchorConstraint = heightInputView
+    let heightInputViewBottomAnchorHeightContainerViewBottomAnchorConstraint = heightInputView
       .bottomAnchor
       .constraint(equalTo: heightContainerView.bottomAnchor)
-    let heightInputViewTopAnchorConstraint = heightInputView
+    let heightInputViewTopAnchorHeightLabelViewBottomAnchorConstraint = heightInputView
       .topAnchor
       .constraint(equalTo: heightLabelView.bottomAnchor, constant: 8)
-    let heightInputViewLeadingAnchorConstraint = heightInputView
+    let heightInputViewLeadingAnchorHeightContainerViewLeadingAnchorConstraint = heightInputView
       .leadingAnchor
       .constraint(equalTo: heightContainerView.leadingAnchor)
-    let heightInputViewTrailingAnchorConstraint = heightInputView
+    let heightInputViewTrailingAnchorHeightContainerViewTrailingAnchorConstraint = heightInputView
       .trailingAnchor
       .constraint(equalTo: heightContainerView.trailingAnchor)
-    let nameLabelViewWidthAnchorConstraint = nameLabelView.widthAnchor.constraint(equalToConstant: 80)
-    let backgroundColorLabelViewWidthAnchorConstraint = backgroundColorLabelView
-      .widthAnchor
-      .constraint(equalToConstant: 80)
 
-    presetLabelViewHeightAnchorParentConstraint.priority = NSLayoutConstraint.Priority.defaultLow
-    presetDropdownViewHeightAnchorParentConstraint.priority = NSLayoutConstraint.Priority.defaultLow
+    layoutLabelViewHeightAnchorParentConstraint.priority = NSLayoutConstraint.Priority.defaultLow
+    layoutDropdownViewHeightAnchorParentConstraint.priority = NSLayoutConstraint.Priority.defaultLow
     deviceLabelViewHeightAnchorParentConstraint.priority = NSLayoutConstraint.Priority.defaultLow
     deviceValueContainerViewHeightAnchorParentConstraint.priority = NSLayoutConstraint.Priority.defaultLow
     nameLabelViewHeightAnchorParentConstraint.priority = NSLayoutConstraint.Priority.defaultLow
@@ -436,113 +557,252 @@ public class CanvasInspector: NSBox {
     hSpacerViewHeightAnchorParentConstraint.priority = NSLayoutConstraint.Priority.defaultLow
     heightContainerViewHeightAnchorParentConstraint.priority = NSLayoutConstraint.Priority.defaultLow
 
-    NSLayoutConstraint.activate([
-      presetRowViewTopAnchorConstraint,
-      presetRowViewLeadingAnchorConstraint,
-      presetRowViewTrailingAnchorConstraint,
-      deviceRowViewTopAnchorConstraint,
-      deviceRowViewLeadingAnchorConstraint,
-      deviceRowViewTrailingAnchorConstraint,
-      nameRowViewTopAnchorConstraint,
-      nameRowViewLeadingAnchorConstraint,
-      nameRowViewTrailingAnchorConstraint,
-      backgroundColorRowViewBottomAnchorConstraint,
-      backgroundColorRowViewTopAnchorConstraint,
-      backgroundColorRowViewLeadingAnchorConstraint,
-      backgroundColorRowViewTrailingAnchorConstraint,
-      presetLabelViewHeightAnchorParentConstraint,
-      presetDropdownViewHeightAnchorParentConstraint,
-      presetLabelViewLeadingAnchorConstraint,
-      presetLabelViewTopAnchorConstraint,
-      presetLabelViewCenterYAnchorConstraint,
-      presetLabelViewBottomAnchorConstraint,
-      presetDropdownViewTrailingAnchorConstraint,
-      presetDropdownViewLeadingAnchorConstraint,
-      presetDropdownViewTopAnchorConstraint,
-      presetDropdownViewCenterYAnchorConstraint,
-      presetDropdownViewBottomAnchorConstraint,
-      deviceLabelViewHeightAnchorParentConstraint,
-      deviceValueContainerViewHeightAnchorParentConstraint,
-      deviceLabelViewLeadingAnchorConstraint,
-      deviceLabelViewTopAnchorConstraint,
-      deviceLabelViewBottomAnchorConstraint,
-      deviceValueContainerViewTrailingAnchorConstraint,
-      deviceValueContainerViewLeadingAnchorConstraint,
-      deviceValueContainerViewTopAnchorConstraint,
-      deviceValueContainerViewBottomAnchorConstraint,
-      nameLabelViewHeightAnchorParentConstraint,
-      nameInputViewHeightAnchorParentConstraint,
-      nameLabelViewLeadingAnchorConstraint,
-      nameLabelViewTopAnchorConstraint,
-      nameLabelViewCenterYAnchorConstraint,
-      nameLabelViewBottomAnchorConstraint,
-      nameInputViewTrailingAnchorConstraint,
-      nameInputViewLeadingAnchorConstraint,
-      nameInputViewTopAnchorConstraint,
-      nameInputViewCenterYAnchorConstraint,
-      nameInputViewBottomAnchorConstraint,
-      backgroundColorLabelViewHeightAnchorParentConstraint,
-      backgroundColorInputViewHeightAnchorParentConstraint,
-      backgroundColorLabelViewLeadingAnchorConstraint,
-      backgroundColorLabelViewTopAnchorConstraint,
-      backgroundColorLabelViewCenterYAnchorConstraint,
-      backgroundColorLabelViewBottomAnchorConstraint,
-      backgroundColorInputViewTrailingAnchorConstraint,
-      backgroundColorInputViewLeadingAnchorConstraint,
-      backgroundColorInputViewTopAnchorConstraint,
-      backgroundColorInputViewCenterYAnchorConstraint,
-      backgroundColorInputViewBottomAnchorConstraint,
-      presetLabelViewWidthAnchorConstraint,
-      deviceLabelViewWidthAnchorConstraint,
-      deviceDropdownViewTopAnchorConstraint,
-      deviceDropdownViewLeadingAnchorConstraint,
-      deviceDropdownViewTrailingAnchorConstraint,
-      customDimensionsContainerViewBottomAnchorConstraint,
-      customDimensionsContainerViewTopAnchorConstraint,
-      customDimensionsContainerViewLeadingAnchorConstraint,
-      customDimensionsContainerViewTrailingAnchorConstraint,
-      widthContainerViewHeightContainerViewWidthAnchorSiblingConstraint,
-      widthContainerViewHeightAnchorParentConstraint,
-      hSpacerViewHeightAnchorParentConstraint,
-      heightContainerViewHeightAnchorParentConstraint,
-      widthContainerViewLeadingAnchorConstraint,
-      widthContainerViewTopAnchorConstraint,
-      widthContainerViewBottomAnchorConstraint,
-      hSpacerViewLeadingAnchorConstraint,
-      hSpacerViewTopAnchorConstraint,
-      heightContainerViewTrailingAnchorConstraint,
-      heightContainerViewLeadingAnchorConstraint,
-      heightContainerViewTopAnchorConstraint,
-      heightContainerViewBottomAnchorConstraint,
-      widthLabelViewTopAnchorConstraint,
-      widthLabelViewLeadingAnchorConstraint,
-      widthLabelViewTrailingAnchorConstraint,
-      widthInputViewBottomAnchorConstraint,
-      widthInputViewTopAnchorConstraint,
-      widthInputViewLeadingAnchorConstraint,
-      widthInputViewTrailingAnchorConstraint,
-      hSpacerViewHeightAnchorConstraint,
-      hSpacerViewWidthAnchorConstraint,
-      heightLabelViewTopAnchorConstraint,
-      heightLabelViewLeadingAnchorConstraint,
-      heightLabelViewTrailingAnchorConstraint,
-      heightInputViewBottomAnchorConstraint,
-      heightInputViewTopAnchorConstraint,
-      heightInputViewLeadingAnchorConstraint,
-      heightInputViewTrailingAnchorConstraint,
-      nameLabelViewWidthAnchorConstraint,
-      backgroundColorLabelViewWidthAnchorConstraint
-    ])
+    self.deviceDropdownViewBottomAnchorDeviceValueContainerViewBottomAnchorConstraint =
+      deviceDropdownViewBottomAnchorDeviceValueContainerViewBottomAnchorConstraint
+    self.customDimensionsContainerViewBottomAnchorDeviceValueContainerViewBottomAnchorConstraint =
+      customDimensionsContainerViewBottomAnchorDeviceValueContainerViewBottomAnchorConstraint
+    self.customDimensionsContainerViewTopAnchorDeviceDropdownViewBottomAnchorConstraint =
+      customDimensionsContainerViewTopAnchorDeviceDropdownViewBottomAnchorConstraint
+    self.customDimensionsContainerViewLeadingAnchorDeviceValueContainerViewLeadingAnchorConstraint =
+      customDimensionsContainerViewLeadingAnchorDeviceValueContainerViewLeadingAnchorConstraint
+    self.customDimensionsContainerViewTrailingAnchorDeviceValueContainerViewTrailingAnchorConstraint =
+      customDimensionsContainerViewTrailingAnchorDeviceValueContainerViewTrailingAnchorConstraint
+    self.widthContainerViewHeightContainerViewWidthAnchorSiblingConstraint =
+      widthContainerViewHeightContainerViewWidthAnchorSiblingConstraint
+    self.widthContainerViewHeightAnchorParentConstraint = widthContainerViewHeightAnchorParentConstraint
+    self.hSpacerViewHeightAnchorParentConstraint = hSpacerViewHeightAnchorParentConstraint
+    self.heightContainerViewHeightAnchorParentConstraint = heightContainerViewHeightAnchorParentConstraint
+    self.widthContainerViewLeadingAnchorCustomDimensionsContainerViewLeadingAnchorConstraint =
+      widthContainerViewLeadingAnchorCustomDimensionsContainerViewLeadingAnchorConstraint
+    self.widthContainerViewTopAnchorCustomDimensionsContainerViewTopAnchorConstraint =
+      widthContainerViewTopAnchorCustomDimensionsContainerViewTopAnchorConstraint
+    self.widthContainerViewBottomAnchorCustomDimensionsContainerViewBottomAnchorConstraint =
+      widthContainerViewBottomAnchorCustomDimensionsContainerViewBottomAnchorConstraint
+    self.hSpacerViewLeadingAnchorWidthContainerViewTrailingAnchorConstraint =
+      hSpacerViewLeadingAnchorWidthContainerViewTrailingAnchorConstraint
+    self.hSpacerViewTopAnchorCustomDimensionsContainerViewTopAnchorConstraint =
+      hSpacerViewTopAnchorCustomDimensionsContainerViewTopAnchorConstraint
+    self.heightContainerViewTrailingAnchorCustomDimensionsContainerViewTrailingAnchorConstraint =
+      heightContainerViewTrailingAnchorCustomDimensionsContainerViewTrailingAnchorConstraint
+    self.heightContainerViewLeadingAnchorHSpacerViewTrailingAnchorConstraint =
+      heightContainerViewLeadingAnchorHSpacerViewTrailingAnchorConstraint
+    self.heightContainerViewTopAnchorCustomDimensionsContainerViewTopAnchorConstraint =
+      heightContainerViewTopAnchorCustomDimensionsContainerViewTopAnchorConstraint
+    self.heightContainerViewBottomAnchorCustomDimensionsContainerViewBottomAnchorConstraint =
+      heightContainerViewBottomAnchorCustomDimensionsContainerViewBottomAnchorConstraint
+    self.widthLabelViewTopAnchorWidthContainerViewTopAnchorConstraint =
+      widthLabelViewTopAnchorWidthContainerViewTopAnchorConstraint
+    self.widthLabelViewLeadingAnchorWidthContainerViewLeadingAnchorConstraint =
+      widthLabelViewLeadingAnchorWidthContainerViewLeadingAnchorConstraint
+    self.widthLabelViewTrailingAnchorWidthContainerViewTrailingAnchorConstraint =
+      widthLabelViewTrailingAnchorWidthContainerViewTrailingAnchorConstraint
+    self.widthInputViewBottomAnchorWidthContainerViewBottomAnchorConstraint =
+      widthInputViewBottomAnchorWidthContainerViewBottomAnchorConstraint
+    self.widthInputViewTopAnchorWidthLabelViewBottomAnchorConstraint =
+      widthInputViewTopAnchorWidthLabelViewBottomAnchorConstraint
+    self.widthInputViewLeadingAnchorWidthContainerViewLeadingAnchorConstraint =
+      widthInputViewLeadingAnchorWidthContainerViewLeadingAnchorConstraint
+    self.widthInputViewTrailingAnchorWidthContainerViewTrailingAnchorConstraint =
+      widthInputViewTrailingAnchorWidthContainerViewTrailingAnchorConstraint
+    self.hSpacerViewHeightAnchorConstraint = hSpacerViewHeightAnchorConstraint
+    self.hSpacerViewWidthAnchorConstraint = hSpacerViewWidthAnchorConstraint
+    self.heightLabelViewTopAnchorHeightContainerViewTopAnchorConstraint =
+      heightLabelViewTopAnchorHeightContainerViewTopAnchorConstraint
+    self.heightLabelViewLeadingAnchorHeightContainerViewLeadingAnchorConstraint =
+      heightLabelViewLeadingAnchorHeightContainerViewLeadingAnchorConstraint
+    self.heightLabelViewTrailingAnchorHeightContainerViewTrailingAnchorConstraint =
+      heightLabelViewTrailingAnchorHeightContainerViewTrailingAnchorConstraint
+    self.heightInputViewBottomAnchorHeightContainerViewBottomAnchorConstraint =
+      heightInputViewBottomAnchorHeightContainerViewBottomAnchorConstraint
+    self.heightInputViewTopAnchorHeightLabelViewBottomAnchorConstraint =
+      heightInputViewTopAnchorHeightLabelViewBottomAnchorConstraint
+    self.heightInputViewLeadingAnchorHeightContainerViewLeadingAnchorConstraint =
+      heightInputViewLeadingAnchorHeightContainerViewLeadingAnchorConstraint
+    self.heightInputViewTrailingAnchorHeightContainerViewTrailingAnchorConstraint =
+      heightInputViewTrailingAnchorHeightContainerViewTrailingAnchorConstraint
+
+    NSLayoutConstraint.activate(
+      [
+        layoutRowViewTopAnchorConstraint,
+        layoutRowViewLeadingAnchorConstraint,
+        layoutRowViewTrailingAnchorConstraint,
+        deviceRowViewTopAnchorConstraint,
+        deviceRowViewLeadingAnchorConstraint,
+        deviceRowViewTrailingAnchorConstraint,
+        nameRowViewTopAnchorConstraint,
+        nameRowViewLeadingAnchorConstraint,
+        nameRowViewTrailingAnchorConstraint,
+        backgroundColorRowViewBottomAnchorConstraint,
+        backgroundColorRowViewTopAnchorConstraint,
+        backgroundColorRowViewLeadingAnchorConstraint,
+        backgroundColorRowViewTrailingAnchorConstraint,
+        layoutLabelViewHeightAnchorParentConstraint,
+        layoutDropdownViewHeightAnchorParentConstraint,
+        layoutLabelViewLeadingAnchorConstraint,
+        layoutLabelViewTopAnchorConstraint,
+        layoutLabelViewCenterYAnchorConstraint,
+        layoutLabelViewBottomAnchorConstraint,
+        layoutDropdownViewTrailingAnchorConstraint,
+        layoutDropdownViewLeadingAnchorConstraint,
+        layoutDropdownViewTopAnchorConstraint,
+        layoutDropdownViewCenterYAnchorConstraint,
+        layoutDropdownViewBottomAnchorConstraint,
+        deviceLabelViewHeightAnchorParentConstraint,
+        deviceValueContainerViewHeightAnchorParentConstraint,
+        deviceLabelViewLeadingAnchorConstraint,
+        deviceLabelViewTopAnchorConstraint,
+        deviceLabelViewBottomAnchorConstraint,
+        deviceValueContainerViewTrailingAnchorConstraint,
+        deviceValueContainerViewLeadingAnchorConstraint,
+        deviceValueContainerViewTopAnchorConstraint,
+        deviceValueContainerViewBottomAnchorConstraint,
+        nameLabelViewHeightAnchorParentConstraint,
+        nameInputViewHeightAnchorParentConstraint,
+        nameLabelViewLeadingAnchorConstraint,
+        nameLabelViewTopAnchorConstraint,
+        nameLabelViewCenterYAnchorConstraint,
+        nameLabelViewBottomAnchorConstraint,
+        nameInputViewTrailingAnchorConstraint,
+        nameInputViewLeadingAnchorConstraint,
+        nameInputViewTopAnchorConstraint,
+        nameInputViewCenterYAnchorConstraint,
+        nameInputViewBottomAnchorConstraint,
+        backgroundColorLabelViewHeightAnchorParentConstraint,
+        backgroundColorInputViewHeightAnchorParentConstraint,
+        backgroundColorLabelViewLeadingAnchorConstraint,
+        backgroundColorLabelViewTopAnchorConstraint,
+        backgroundColorLabelViewCenterYAnchorConstraint,
+        backgroundColorLabelViewBottomAnchorConstraint,
+        backgroundColorInputViewTrailingAnchorConstraint,
+        backgroundColorInputViewLeadingAnchorConstraint,
+        backgroundColorInputViewTopAnchorConstraint,
+        backgroundColorInputViewCenterYAnchorConstraint,
+        backgroundColorInputViewBottomAnchorConstraint,
+        layoutLabelViewWidthAnchorConstraint,
+        deviceLabelViewWidthAnchorConstraint,
+        deviceDropdownViewTopAnchorConstraint,
+        deviceDropdownViewLeadingAnchorConstraint,
+        deviceDropdownViewTrailingAnchorConstraint,
+        nameLabelViewWidthAnchorConstraint,
+        backgroundColorLabelViewWidthAnchorConstraint
+      ] +
+        conditionalConstraints(customDimensionsContainerViewIsHidden: customDimensionsContainerView.isHidden))
   }
 
-  private func update() {}
+  private func conditionalConstraints(customDimensionsContainerViewIsHidden: Bool) -> [NSLayoutConstraint] {
+    var constraints: [NSLayoutConstraint?]
+
+    switch (customDimensionsContainerViewIsHidden) {
+      case (true):
+        constraints = [deviceDropdownViewBottomAnchorDeviceValueContainerViewBottomAnchorConstraint]
+      case (false):
+        constraints = [
+          customDimensionsContainerViewBottomAnchorDeviceValueContainerViewBottomAnchorConstraint,
+          customDimensionsContainerViewTopAnchorDeviceDropdownViewBottomAnchorConstraint,
+          customDimensionsContainerViewLeadingAnchorDeviceValueContainerViewLeadingAnchorConstraint,
+          customDimensionsContainerViewTrailingAnchorDeviceValueContainerViewTrailingAnchorConstraint,
+          widthContainerViewHeightContainerViewWidthAnchorSiblingConstraint,
+          widthContainerViewHeightAnchorParentConstraint,
+          hSpacerViewHeightAnchorParentConstraint,
+          heightContainerViewHeightAnchorParentConstraint,
+          widthContainerViewLeadingAnchorCustomDimensionsContainerViewLeadingAnchorConstraint,
+          widthContainerViewTopAnchorCustomDimensionsContainerViewTopAnchorConstraint,
+          widthContainerViewBottomAnchorCustomDimensionsContainerViewBottomAnchorConstraint,
+          hSpacerViewLeadingAnchorWidthContainerViewTrailingAnchorConstraint,
+          hSpacerViewTopAnchorCustomDimensionsContainerViewTopAnchorConstraint,
+          heightContainerViewTrailingAnchorCustomDimensionsContainerViewTrailingAnchorConstraint,
+          heightContainerViewLeadingAnchorHSpacerViewTrailingAnchorConstraint,
+          heightContainerViewTopAnchorCustomDimensionsContainerViewTopAnchorConstraint,
+          heightContainerViewBottomAnchorCustomDimensionsContainerViewBottomAnchorConstraint,
+          widthLabelViewTopAnchorWidthContainerViewTopAnchorConstraint,
+          widthLabelViewLeadingAnchorWidthContainerViewLeadingAnchorConstraint,
+          widthLabelViewTrailingAnchorWidthContainerViewTrailingAnchorConstraint,
+          widthInputViewBottomAnchorWidthContainerViewBottomAnchorConstraint,
+          widthInputViewTopAnchorWidthLabelViewBottomAnchorConstraint,
+          widthInputViewLeadingAnchorWidthContainerViewLeadingAnchorConstraint,
+          widthInputViewTrailingAnchorWidthContainerViewTrailingAnchorConstraint,
+          hSpacerViewHeightAnchorConstraint,
+          hSpacerViewWidthAnchorConstraint,
+          heightLabelViewTopAnchorHeightContainerViewTopAnchorConstraint,
+          heightLabelViewLeadingAnchorHeightContainerViewLeadingAnchorConstraint,
+          heightLabelViewTrailingAnchorHeightContainerViewTrailingAnchorConstraint,
+          heightInputViewBottomAnchorHeightContainerViewBottomAnchorConstraint,
+          heightInputViewTopAnchorHeightLabelViewBottomAnchorConstraint,
+          heightInputViewLeadingAnchorHeightContainerViewLeadingAnchorConstraint,
+          heightInputViewTrailingAnchorHeightContainerViewTrailingAnchorConstraint
+        ]
+    }
+
+    return constraints.compactMap({ $0 })
+  }
+
+  private func update() {
+    let customDimensionsContainerViewIsHidden = customDimensionsContainerView.isHidden
+
+    customDimensionsContainerView.isHidden = !showsDimensionInputs
+    widthInputView.numberValue = canvasWidth
+    heightInputView.numberValue = canvasHeight
+    backgroundColorInputView.textValue = backgroundColorId
+
+    if customDimensionsContainerView.isHidden != customDimensionsContainerViewIsHidden {
+      NSLayoutConstraint.deactivate(
+        conditionalConstraints(customDimensionsContainerViewIsHidden: customDimensionsContainerViewIsHidden))
+      NSLayoutConstraint.activate(
+        conditionalConstraints(customDimensionsContainerViewIsHidden: customDimensionsContainerView.isHidden))
+    }
+  }
 }
 
 // MARK: - Parameters
 
 extension CanvasInspector {
   public struct Parameters: Equatable {
-    public init() {}
+    public var showsDimensionInputs: Bool
+    public var heightMode: CanvasHeight
+    public var devicePreset: String
+    public var canvasHeight: CGFloat
+    public var canvasWidth: CGFloat
+    public var canvasName: String?
+    public var backgroundColorId: String
+
+    public init(
+      showsDimensionInputs: Bool,
+      heightMode: CanvasHeight,
+      devicePreset: String,
+      canvasHeight: CGFloat,
+      canvasWidth: CGFloat,
+      canvasName: String? = nil,
+      backgroundColorId: String)
+    {
+      self.showsDimensionInputs = showsDimensionInputs
+      self.heightMode = heightMode
+      self.devicePreset = devicePreset
+      self.canvasHeight = canvasHeight
+      self.canvasWidth = canvasWidth
+      self.canvasName = canvasName
+      self.backgroundColorId = backgroundColorId
+    }
+
+    public init() {
+      self
+        .init(
+          showsDimensionInputs: false,
+          heightMode: .flexibleHeight,
+          devicePreset: "",
+          canvasHeight: 0,
+          canvasWidth: 0,
+          canvasName: nil,
+          backgroundColorId: "")
+    }
+
+    public static func ==(lhs: Parameters, rhs: Parameters) -> Bool {
+      return lhs.showsDimensionInputs == rhs.showsDimensionInputs &&
+        lhs.heightMode == rhs.heightMode &&
+          lhs.devicePreset == rhs.devicePreset &&
+            lhs.canvasHeight == rhs.canvasHeight &&
+              lhs.canvasWidth == rhs.canvasWidth &&
+                lhs.canvasName == rhs.canvasName && lhs.backgroundColorId == rhs.backgroundColorId
+    }
   }
 }
 
@@ -565,8 +825,71 @@ extension CanvasInspector {
       self.parameters = parameters
     }
 
+    public init(
+      showsDimensionInputs: Bool,
+      heightMode: CanvasHeight,
+      devicePreset: String,
+      canvasHeight: CGFloat,
+      canvasWidth: CGFloat,
+      canvasName: String? = nil,
+      backgroundColorId: String)
+    {
+      self
+        .init(
+          Parameters(
+            showsDimensionInputs: showsDimensionInputs,
+            heightMode: heightMode,
+            devicePreset: devicePreset,
+            canvasHeight: canvasHeight,
+            canvasWidth: canvasWidth,
+            canvasName: canvasName,
+            backgroundColorId: backgroundColorId))
+    }
+
     public init() {
-      self.init(Parameters())
+      self
+        .init(
+          showsDimensionInputs: false,
+          heightMode: .flexibleHeight,
+          devicePreset: "",
+          canvasHeight: 0,
+          canvasWidth: 0,
+          canvasName: nil,
+          backgroundColorId: "")
+    }
+  }
+}
+
+// MARK: - CanvasHeight
+
+extension CanvasInspector {
+  public enum CanvasHeight: Codable, Equatable {
+    case flexibleHeight
+    case fixedHeight
+
+    // MARK: Codable
+
+    public init(from decoder: Decoder) throws {
+      let container = try decoder.singleValueContainer()
+      let type = try container.decode(Bool.self)
+
+      switch type {
+        case false:
+          self = .flexibleHeight
+        case true:
+          self = .fixedHeight
+      }
+    }
+
+    public func encode(to encoder: Encoder) throws {
+      var container = encoder.singleValueContainer()
+
+      switch self {
+        case .flexibleHeight:
+          try container.encode(false)
+        case .fixedHeight:
+          try container.encode(true)
+      }
     }
   }
 }

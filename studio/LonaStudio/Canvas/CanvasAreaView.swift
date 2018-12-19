@@ -36,6 +36,11 @@ public class CanvasAreaView: NSBox {
 
     public var onSelectCanvasHeaderItem: ((Int) -> Void)?
 
+    public var selectedHeaderItem: Int? {
+        get { return outlineView.selectedHeaderItem }
+        set { outlineView.selectedHeaderItem = newValue }
+    }
+
     // MARK: Private
 
     private var scrollView = NSScrollView(frame: .zero)

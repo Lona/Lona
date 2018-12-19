@@ -30,6 +30,14 @@ class CanvasTableHeaderView: NSTableHeaderView {
 
     var onClickItem: ((Int) -> Void)?
 
+    var selectedItem: Int? {
+        didSet {
+            if oldValue != selectedItem {
+                update()
+            }
+        }
+    }
+
     // MARK: Private
 
     var segmentViews: [NSView] = []
@@ -62,7 +70,7 @@ class CanvasTableHeaderView: NSTableHeaderView {
             segmentViews.forEach { $0.removeFromSuperview() }
 
             tableView.tableColumns.enumerated().forEach { index, column in
-                let view = CanvasTableHeaderItem(titleText: column.title, dividerColor: NSSplitView.defaultDividerColor, selected: false)
+                let view = CanvasTableHeaderItem(titleText: column.title, dividerColor: NSSplitView.defaultDividerColor, selected: index == selectedItem)
                 view.onClick = { [unowned self] in self.onClickItem?(index) }
                 view.frame = headerRect(ofColumn: index)
                 view.translatesAutoresizingMaskIntoConstraints = true
@@ -75,6 +83,7 @@ class CanvasTableHeaderView: NSTableHeaderView {
         tableView.tableColumns.enumerated().forEach { index, column in
             if let segmentView = segmentViews[index] as? CanvasTableHeaderItem {
                 segmentView.titleText = column.title
+                segmentView.selected = index == selectedItem
             }
 
             segmentViews[index].frame = headerRect(ofColumn: index)

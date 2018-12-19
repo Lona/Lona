@@ -43,6 +43,12 @@
       "value" : "rgba(0,0,0,0.0)"
     },
     {
+      "comment" : "MacOS system selection color",
+      "id" : "systemSelection",
+      "name" : "SystemSelection",
+      "value" : "rgb(4,99,225)"
+    },
+    {
       "comment" : "",
       "id" : "red50",
       "name" : "Red 50",

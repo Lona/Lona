@@ -216,17 +216,27 @@ final class InspectorView: NSBox {
 
         case .textStyle:
             inspectorView.removeFromSuperview()
-        case .canvas:
+        case .canvas(let canvas):
             inspectorView.removeFromSuperview()
 
-            inspectorView = CanvasInspector()
+            let canvasInspector = CanvasInspector()
+
+            canvasInspector.showsDimensionInputs = true
+            canvasInspector.canvasHeight = CGFloat(canvas.height)
+            canvasInspector.canvasWidth = CGFloat(canvas.width)
+            canvasInspector.heightMode = canvas.heightMode == "At Least" ? .flexibleHeight : .fixedHeight
+            canvasInspector.canvasName = canvas.name
+
+            inspectorView = canvasInspector
 
             flippedView.addSubview(inspectorView)
 
-            inspectorView.widthAnchor.constraint(equalTo: flippedView.widthAnchor).isActive = true
-            inspectorView.heightAnchor.constraint(equalTo: flippedView.heightAnchor).isActive = true
+            inspectorView.leadingAnchor.constraint(equalTo: flippedView.leadingAnchor).isActive = true
+            inspectorView.trailingAnchor.constraint(equalTo: flippedView.trailingAnchor).isActive = true
             inspectorView.topAnchor.constraint(equalTo: flippedView.topAnchor).isActive = true
             inspectorView.bottomAnchor.constraint(equalTo: flippedView.bottomAnchor).isActive = true
+
+
         }
     }
 }

@@ -82,6 +82,8 @@ public class ControlledDropdown: NSPopUpButton {
     private func setup() {
         action = #selector(handleChange)
         target = self
+
+        heightAnchor.constraint(equalToConstant: 22).isActive = true
     }
 
     @objc func handleChange() {

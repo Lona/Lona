@@ -192,7 +192,9 @@ public class CanvasTableHeaderItem: NSBox {
       fillColor = Colors.headerBackground
     }
     if selected {
-      fillColor = Colors.blue600
+      fillColor = Colors.systemSelection
+      hDividerView.fillColor = Colors.systemSelection
+      vDividerView.fillColor = Colors.systemSelection
       titleViewTextStyle = TextStyles.sectionTitleInverse.with(alignment: .center)
       titleView.attributedStringValue = titleViewTextStyle.apply(to: titleView.attributedStringValue)
     }

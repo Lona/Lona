@@ -119,7 +119,37 @@
           "content" : {
             "type" : "LitExpr",
             "value" : {
-              "data" : "blue600",
+              "data" : "systemSelection",
+              "type" : "Color"
+            }
+          },
+          "type" : "AssignExpr"
+        },
+        {
+          "assignee" : [
+            "layers",
+            "HDivider",
+            "backgroundColor"
+          ],
+          "content" : {
+            "type" : "LitExpr",
+            "value" : {
+              "data" : "systemSelection",
+              "type" : "Color"
+            }
+          },
+          "type" : "AssignExpr"
+        },
+        {
+          "assignee" : [
+            "layers",
+            "VDivider",
+            "backgroundColor"
+          ],
+          "content" : {
+            "type" : "LitExpr",
+            "value" : {
+              "data" : "systemSelection",
               "type" : "Color"
             }
           },

@@ -73,6 +73,11 @@ class CanvasTableView: NSTableView, NSTableViewDataSource, NSTableViewDelegate {
 
     var onClickHeaderItem: ((Int) -> Void)?
 
+    var selectedHeaderItem: Int? {
+        get { return header.selectedItem }
+        set { header.selectedItem = newValue }
+    }
+
     private func handleClickHeaderItem(_ index: Int) {
         onClickHeaderItem?(index)
     }

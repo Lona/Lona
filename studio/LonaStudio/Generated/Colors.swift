@@ -8,6 +8,7 @@ public enum Colors {
   public static let selectedIcon = #colorLiteral(red: 1, green: 1, blue: 1, alpha: 0.35) // RGBA(255,255,255,0.35) -
   public static let selectedIconStroke = #colorLiteral(red: 1, green: 1, blue: 1, alpha: 0.8) // RGBA(255,255,255,0.8) -
   public static let transparent = #colorLiteral(red: 0, green: 0, blue: 0, alpha: 0) // RGBA(0,0,0,0.0) -
+  public static let systemSelection = #colorLiteral(red: 0.0156862745098, green: 0.388235294118, blue: 0.882352941176, alpha: 1) // RGB(4,99,225) - MacOS system selection color
   public static let red50 = #colorLiteral(red: 1, green: 0.921568627451, blue: 0.933333333333, alpha: 1) // #FFEBEE -
   public static let red100 = #colorLiteral(red: 1, green: 0.803921568627, blue: 0.823529411765, alpha: 1) // #FFCDD2 -
   public static let red200 = #colorLiteral(red: 0.937254901961, green: 0.603921568627, blue: 0.603921568627, alpha: 1) // #EF9A9A -

@@ -1,18 +1,21 @@
 {
   "devices" : [
     {
+      "backgroundColor" : "grey200",
       "height" : 0,
       "heightMode" : "At Least",
       "name" : "iPhone SE",
       "width" : 320
     },
     {
+      "backgroundColor" : "grey200",
       "height" : 0,
       "heightMode" : "At Least",
       "name" : "iPhone 7",
       "width" : 375
     },
     {
+      "backgroundColor" : "grey200",
       "height" : 0,
       "heightMode" : "At Least",
       "name" : "iPhone 7+",
@@ -29,26 +32,190 @@
     }
   ],
   "logic" : [
-
+    {
+      "assignee" : [
+        "layers",
+        "CustomDimensionsContainer",
+        "visible"
+      ],
+      "content" : [
+        "parameters",
+        "showsDimensionInputs"
+      ],
+      "type" : "AssignExpr"
+    },
+    {
+      "assignee" : [
+        "layers",
+        "WidthInput",
+        "numberValue"
+      ],
+      "content" : [
+        "parameters",
+        "canvasWidth"
+      ],
+      "type" : "AssignExpr"
+    },
+    {
+      "assignee" : [
+        "layers",
+        "HeightInput",
+        "numberValue"
+      ],
+      "content" : [
+        "parameters",
+        "canvasHeight"
+      ],
+      "type" : "AssignExpr"
+    },
+    {
+      "assignee" : [
+        "layers",
+        "BackgroundColorInput",
+        "textValue"
+      ],
+      "content" : [
+        "parameters",
+        "backgroundColorId"
+      ],
+      "type" : "AssignExpr"
+    },
+    {
+      "body" : [
+        {
+          "assignee" : [
+            "layers",
+            "LayoutDropdown",
+            "selectedIndex"
+          ],
+          "content" : {
+            "type" : "LitExpr",
+            "value" : {
+              "data" : 0,
+              "type" : "WholeNumber"
+            }
+          },
+          "type" : "AssignExpr"
+        }
+      ],
+      "condition" : {
+        "left" : [
+          "parameters",
+          "heightMode"
+        ],
+        "op" : "==",
+        "right" : {
+          "type" : "LitExpr",
+          "value" : {
+            "data" : 20,
+            "type" : "Number"
+          }
+        },
+        "type" : "BinExpr"
+      },
+      "type" : "IfExpr"
+    },
+    {
+      "body" : [
+        {
+          "assignee" : [
+            "layers",
+            "LayoutDropdown",
+            "selectedIndex"
+          ],
+          "content" : {
+            "type" : "LitExpr",
+            "value" : {
+              "data" : 1,
+              "type" : "WholeNumber"
+            }
+          },
+          "type" : "AssignExpr"
+        }
+      ],
+      "condition" : {
+        "left" : [
+          "parameters",
+          "heightMode"
+        ],
+        "op" : "==",
+        "right" : {
+          "type" : "LitExpr",
+          "value" : {
+            "data" : "fixedHeight",
+            "type" : {
+              "alias" : "CanvasHeight",
+              "name" : "Named",
+              "of" : {
+                "cases" : [
+                  "flexibleHeight",
+                  "fixedHeight"
+                ],
+                "name" : "Enum"
+              }
+            }
+          }
+        },
+        "type" : "BinExpr"
+      },
+      "type" : "IfExpr"
+    }
   ],
   "params" : [
-
+    {
+      "name" : "showsDimensionInputs",
+      "type" : "Boolean"
+    },
+    {
+      "name" : "heightMode",
+      "type" : {
+        "alias" : "CanvasHeight",
+        "name" : "Named",
+        "of" : {
+          "cases" : [
+            "flexibleHeight",
+            "fixedHeight"
+          ],
+          "name" : "Enum"
+        }
+      }
+    },
+    {
+      "name" : "devicePreset",
+      "type" : "String"
+    },
+    {
+      "name" : "canvasHeight",
+      "type" : "Number"
+    },
+    {
+      "name" : "canvasWidth",
+      "type" : "Number"
+    },
+    {
+      "name" : "canvasName",
+      "type" : "String?"
+    },
+    {
+      "name" : "backgroundColorId",
+      "type" : "String"
+    }
   ],
   "root" : {
     "children" : [
       {
         "children" : [
           {
-            "id" : "PresetLabel",
+            "id" : "LayoutLabel",
             "params" : {
               "marginRight" : 20,
-              "text" : "Preset",
+              "text" : "Layout",
               "width" : 80
             },
             "type" : "Lona:Text"
           },
           {
-            "id" : "PresetDropdown",
+            "id" : "LayoutDropdown",
             "params" : {
               "selectedIndex" : 0,
               "values" : [
@@ -59,7 +226,7 @@
             "type" : "ControlledDropdown"
           }
         ],
-        "id" : "PresetRow",
+        "id" : "LayoutRow",
         "params" : {
           "alignItems" : "center",
           "alignSelf" : "stretch",
@@ -74,7 +241,7 @@
             "id" : "DeviceLabel",
             "params" : {
               "marginRight" : 20,
-              "marginTop" : 4,
+              "marginTop" : 2,
               "text" : "Device",
               "width" : 80
             },
@@ -87,7 +254,7 @@
                 "params" : {
                   "selectedIndex" : 0,
                   "values" : [
-
+                    "iPhone SE"
                   ]
                 },
                 "type" : "ControlledDropdown"
