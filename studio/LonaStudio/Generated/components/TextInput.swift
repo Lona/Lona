@@ -18,8 +18,8 @@ public class TextInput: NSBox {
     update()
   }
 
-  public convenience init(textValue: String) {
-    self.init(Parameters(textValue: textValue))
+  public convenience init(textValue: String, placeholderString: String?) {
+    self.init(Parameters(textValue: textValue, placeholderString: placeholderString))
   }
 
   public convenience init() {
@@ -51,6 +51,15 @@ public class TextInput: NSBox {
   public var onChangeTextValue: StringHandler {
     get { return parameters.onChangeTextValue }
     set { parameters.onChangeTextValue = newValue }
+  }
+
+  public var placeholderString: String? {
+    get { return parameters.placeholderString }
+    set {
+      if parameters.placeholderString != newValue {
+        parameters.placeholderString = newValue
+      }
+    }
   }
 
   public var parameters: Parameters {
@@ -112,19 +121,21 @@ public class TextInput: NSBox {
 extension TextInput {
   public struct Parameters: Equatable {
     public var textValue: String
+    public var placeholderString: String?
     public var onChangeTextValue: StringHandler
 
-    public init(textValue: String, onChangeTextValue: StringHandler = nil) {
+    public init(textValue: String, placeholderString: String? = nil, onChangeTextValue: StringHandler = nil) {
       self.textValue = textValue
+      self.placeholderString = placeholderString
       self.onChangeTextValue = onChangeTextValue
     }
 
     public init() {
-      self.init(textValue: "")
+      self.init(textValue: "", placeholderString: nil)
     }
 
     public static func ==(lhs: Parameters, rhs: Parameters) -> Bool {
-      return lhs.textValue == rhs.textValue
+      return lhs.textValue == rhs.textValue && lhs.placeholderString == rhs.placeholderString
     }
   }
 }
@@ -148,12 +159,14 @@ extension TextInput {
       self.parameters = parameters
     }
 
-    public init(textValue: String, onChangeTextValue: StringHandler = nil) {
-      self.init(Parameters(textValue: textValue, onChangeTextValue: onChangeTextValue))
+    public init(textValue: String, placeholderString: String? = nil, onChangeTextValue: StringHandler = nil) {
+      self
+        .init(
+          Parameters(textValue: textValue, placeholderString: placeholderString, onChangeTextValue: onChangeTextValue))
     }
 
     public init() {
-      self.init(textValue: "")
+      self.init(textValue: "", placeholderString: nil)
     }
   }
 }

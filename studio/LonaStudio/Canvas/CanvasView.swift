@@ -423,13 +423,13 @@ extension CanvasView {
 
         // Use an extra child which can have a height greater than the root layer, allowing the root to expand
         guard var wrapper = YGNodeNew() else { return nil }
-        wrapper.width = CGFloat(canvas.width)
+        wrapper.width = CGFloat(canvas.computedWidth)
 
         if useExactHeight {
-            wrapper.height = CGFloat(canvas.height)
+            wrapper.height = CGFloat(canvas.computedHeight)
         } else {
             let verticalMargins = child.marginTop + child.marginBottom
-            let minHeight = CGFloat(canvas.height) - verticalMargins
+            let minHeight = CGFloat(canvas.computedHeight) - verticalMargins
 
             wrapper.minHeight = minHeight
 
@@ -448,7 +448,7 @@ extension CanvasView {
         rootNode.calculateLayout(width: CGFloat(canvas.width), height: CGFloat(canvasHeight))
 
         // Create the canvas based on the calculated height of the layout
-        let calculatedHeight = useExactHeight ? CGFloat(canvas.height) : wrapper.layout.height
+        let calculatedHeight = useExactHeight ? CGFloat(canvas.computedHeight) : wrapper.layout.height
 
         return (child, rootNode, calculatedHeight)
     }

@@ -20,22 +20,28 @@ public class CanvasInspector: NSBox {
 
   public convenience init(
     showsDimensionInputs: Bool,
+    availableDevices: [String],
+    deviceIndex: Int,
     heightMode: CanvasHeight,
     devicePreset: String,
     canvasHeight: CGFloat,
     canvasWidth: CGFloat,
     canvasName: String?,
+    canvasNamePlaceholder: String,
     backgroundColorId: String)
   {
     self
       .init(
         Parameters(
           showsDimensionInputs: showsDimensionInputs,
+          availableDevices: availableDevices,
+          deviceIndex: deviceIndex,
           heightMode: heightMode,
           devicePreset: devicePreset,
           canvasHeight: canvasHeight,
           canvasWidth: canvasWidth,
           canvasName: canvasName,
+          canvasNamePlaceholder: canvasNamePlaceholder,
           backgroundColorId: backgroundColorId))
   }
 
@@ -63,6 +69,29 @@ public class CanvasInspector: NSBox {
         parameters.showsDimensionInputs = newValue
       }
     }
+  }
+
+  public var availableDevices: [String] {
+    get { return parameters.availableDevices }
+    set {
+      if parameters.availableDevices != newValue {
+        parameters.availableDevices = newValue
+      }
+    }
+  }
+
+  public var deviceIndex: Int {
+    get { return parameters.deviceIndex }
+    set {
+      if parameters.deviceIndex != newValue {
+        parameters.deviceIndex = newValue
+      }
+    }
+  }
+
+  public var onChangeDeviceIndex: ((Int) -> Void)? {
+    get { return parameters.onChangeDeviceIndex }
+    set { parameters.onChangeDeviceIndex = newValue }
   }
 
   public var heightMode: CanvasHeight {
@@ -110,6 +139,15 @@ public class CanvasInspector: NSBox {
     }
   }
 
+  public var canvasNamePlaceholder: String {
+    get { return parameters.canvasNamePlaceholder }
+    set {
+      if parameters.canvasNamePlaceholder != newValue {
+        parameters.canvasNamePlaceholder = newValue
+      }
+    }
+  }
+
   public var backgroundColorId: String {
     get { return parameters.backgroundColorId }
     set {
@@ -117,6 +155,21 @@ public class CanvasInspector: NSBox {
         parameters.backgroundColorId = newValue
       }
     }
+  }
+
+  public var onChangeCanvasName: StringHandler {
+    get { return parameters.onChangeCanvasName }
+    set { parameters.onChangeCanvasName = newValue }
+  }
+
+  public var onChangeCanvasWidth: ((CGFloat) -> Void)? {
+    get { return parameters.onChangeCanvasWidth }
+    set { parameters.onChangeCanvasWidth = newValue }
+  }
+
+  public var onChangeCanvasHeight: ((CGFloat) -> Void)? {
+    get { return parameters.onChangeCanvasHeight }
+    set { parameters.onChangeCanvasHeight = newValue }
   }
 
   public var parameters: Parameters {
@@ -254,15 +307,11 @@ public class CanvasInspector: NSBox {
     backgroundColorRowView.addSubview(backgroundColorInputView)
 
     layoutLabelView.attributedStringValue = layoutLabelViewTextStyle.apply(to: "Layout")
-    layoutDropdownView.selectedIndex = 0
-    layoutDropdownView.values = ["Component (Flexible-height)", "Screen (Fixed-height)"]
+    layoutDropdownView.values = ["Flexible-height", "Fixed-height"]
     deviceLabelView.attributedStringValue = deviceLabelViewTextStyle.apply(to: "Device")
-    deviceDropdownView.selectedIndex = 0
-    deviceDropdownView.values = ["iPhone SE"]
     widthLabelView.attributedStringValue = widthLabelViewTextStyle.apply(to: "Width")
     heightLabelView.attributedStringValue = heightLabelViewTextStyle.apply(to: "Height")
     nameLabelView.attributedStringValue = nameLabelViewTextStyle.apply(to: "Name")
-    nameInputView.textValue = "Text"
     backgroundColorLabelView.attributedStringValue = backgroundColorLabelViewTextStyle.apply(to: "Background")
   }
 
@@ -739,10 +788,28 @@ public class CanvasInspector: NSBox {
   private func update() {
     let customDimensionsContainerViewIsHidden = customDimensionsContainerView.isHidden
 
+    layoutDropdownView.selectedIndex = 0
+    nameInputView.textValue = ""
     customDimensionsContainerView.isHidden = !showsDimensionInputs
+    deviceDropdownView.values = availableDevices
+    deviceDropdownView.selectedIndex = deviceIndex
+    deviceDropdownView.onChangeIndex = handleOnChangeDeviceIndex
     widthInputView.numberValue = canvasWidth
     heightInputView.numberValue = canvasHeight
     backgroundColorInputView.textValue = backgroundColorId
+    nameInputView.placeholderString = canvasNamePlaceholder
+    if heightMode == .flexibleHeight {
+      layoutDropdownView.selectedIndex = 0
+    }
+    if heightMode == .fixedHeight {
+      layoutDropdownView.selectedIndex = 1
+    }
+    if let canvasName = canvasName {
+      nameInputView.textValue = canvasName
+    }
+    nameInputView.onChangeTextValue = handleOnChangeCanvasName
+    heightInputView.onChangeNumberValue = handleOnChangeCanvasHeight
+    widthInputView.onChangeNumberValue = handleOnChangeCanvasWidth
 
     if customDimensionsContainerView.isHidden != customDimensionsContainerViewIsHidden {
       NSLayoutConstraint.deactivate(
@@ -751,6 +818,22 @@ public class CanvasInspector: NSBox {
         conditionalConstraints(customDimensionsContainerViewIsHidden: customDimensionsContainerView.isHidden))
     }
   }
+
+  private func handleOnChangeDeviceIndex(_ arg0: Int) {
+    onChangeDeviceIndex?(arg0)
+  }
+
+  private func handleOnChangeCanvasName(_ arg0: String) {
+    onChangeCanvasName?(arg0)
+  }
+
+  private func handleOnChangeCanvasWidth(_ arg0: CGFloat) {
+    onChangeCanvasWidth?(arg0)
+  }
+
+  private func handleOnChangeCanvasHeight(_ arg0: CGFloat) {
+    onChangeCanvasHeight?(arg0)
+  }
 }
 
 // MARK: - Parameters
@@ -758,50 +841,78 @@ public class CanvasInspector: NSBox {
 extension CanvasInspector {
   public struct Parameters: Equatable {
     public var showsDimensionInputs: Bool
+    public var availableDevices: [String]
+    public var deviceIndex: Int
     public var heightMode: CanvasHeight
     public var devicePreset: String
     public var canvasHeight: CGFloat
     public var canvasWidth: CGFloat
     public var canvasName: String?
+    public var canvasNamePlaceholder: String
     public var backgroundColorId: String
+    public var onChangeDeviceIndex: ((Int) -> Void)?
+    public var onChangeCanvasName: StringHandler
+    public var onChangeCanvasWidth: ((CGFloat) -> Void)?
+    public var onChangeCanvasHeight: ((CGFloat) -> Void)?
 
     public init(
       showsDimensionInputs: Bool,
+      availableDevices: [String],
+      deviceIndex: Int,
       heightMode: CanvasHeight,
       devicePreset: String,
       canvasHeight: CGFloat,
       canvasWidth: CGFloat,
       canvasName: String? = nil,
-      backgroundColorId: String)
+      canvasNamePlaceholder: String,
+      backgroundColorId: String,
+      onChangeDeviceIndex: ((Int) -> Void)? = nil,
+      onChangeCanvasName: StringHandler = nil,
+      onChangeCanvasWidth: ((CGFloat) -> Void)? = nil,
+      onChangeCanvasHeight: ((CGFloat) -> Void)? = nil)
     {
       self.showsDimensionInputs = showsDimensionInputs
+      self.availableDevices = availableDevices
+      self.deviceIndex = deviceIndex
       self.heightMode = heightMode
       self.devicePreset = devicePreset
       self.canvasHeight = canvasHeight
       self.canvasWidth = canvasWidth
       self.canvasName = canvasName
+      self.canvasNamePlaceholder = canvasNamePlaceholder
       self.backgroundColorId = backgroundColorId
+      self.onChangeDeviceIndex = onChangeDeviceIndex
+      self.onChangeCanvasName = onChangeCanvasName
+      self.onChangeCanvasWidth = onChangeCanvasWidth
+      self.onChangeCanvasHeight = onChangeCanvasHeight
     }
 
     public init() {
       self
         .init(
           showsDimensionInputs: false,
+          availableDevices: [],
+          deviceIndex: 0,
           heightMode: .flexibleHeight,
           devicePreset: "",
           canvasHeight: 0,
           canvasWidth: 0,
           canvasName: nil,
+          canvasNamePlaceholder: "",
           backgroundColorId: "")
     }
 
     public static func ==(lhs: Parameters, rhs: Parameters) -> Bool {
       return lhs.showsDimensionInputs == rhs.showsDimensionInputs &&
-        lhs.heightMode == rhs.heightMode &&
-          lhs.devicePreset == rhs.devicePreset &&
-            lhs.canvasHeight == rhs.canvasHeight &&
-              lhs.canvasWidth == rhs.canvasWidth &&
-                lhs.canvasName == rhs.canvasName && lhs.backgroundColorId == rhs.backgroundColorId
+        lhs.availableDevices == rhs.availableDevices &&
+          lhs.deviceIndex == rhs.deviceIndex &&
+            lhs.heightMode == rhs.heightMode &&
+              lhs.devicePreset == rhs.devicePreset &&
+                lhs.canvasHeight == rhs.canvasHeight &&
+                  lhs.canvasWidth == rhs.canvasWidth &&
+                    lhs.canvasName == rhs.canvasName &&
+                      lhs.canvasNamePlaceholder == rhs.canvasNamePlaceholder &&
+                        lhs.backgroundColorId == rhs.backgroundColorId
     }
   }
 }
@@ -827,34 +938,51 @@ extension CanvasInspector {
 
     public init(
       showsDimensionInputs: Bool,
+      availableDevices: [String],
+      deviceIndex: Int,
       heightMode: CanvasHeight,
       devicePreset: String,
       canvasHeight: CGFloat,
       canvasWidth: CGFloat,
       canvasName: String? = nil,
-      backgroundColorId: String)
+      canvasNamePlaceholder: String,
+      backgroundColorId: String,
+      onChangeDeviceIndex: ((Int) -> Void)? = nil,
+      onChangeCanvasName: StringHandler = nil,
+      onChangeCanvasWidth: ((CGFloat) -> Void)? = nil,
+      onChangeCanvasHeight: ((CGFloat) -> Void)? = nil)
     {
       self
         .init(
           Parameters(
             showsDimensionInputs: showsDimensionInputs,
+            availableDevices: availableDevices,
+            deviceIndex: deviceIndex,
             heightMode: heightMode,
             devicePreset: devicePreset,
             canvasHeight: canvasHeight,
             canvasWidth: canvasWidth,
             canvasName: canvasName,
-            backgroundColorId: backgroundColorId))
+            canvasNamePlaceholder: canvasNamePlaceholder,
+            backgroundColorId: backgroundColorId,
+            onChangeDeviceIndex: onChangeDeviceIndex,
+            onChangeCanvasName: onChangeCanvasName,
+            onChangeCanvasWidth: onChangeCanvasWidth,
+            onChangeCanvasHeight: onChangeCanvasHeight))
     }
 
     public init() {
       self
         .init(
           showsDimensionInputs: false,
+          availableDevices: [],
+          deviceIndex: 0,
           heightMode: .flexibleHeight,
           devicePreset: "",
           canvasHeight: 0,
           canvasWidth: 0,
           canvasName: nil,
+          canvasNamePlaceholder: "",
           backgroundColorId: "")
     }
   }

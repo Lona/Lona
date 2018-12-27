@@ -2,24 +2,18 @@
   "devices" : [
     {
       "backgroundColor" : "grey200",
-      "height" : 0,
-      "heightMode" : "At Least",
-      "name" : "iPhone SE",
-      "width" : 320
+      "deviceId" : "iPhone SE",
+      "heightMode" : "At Least"
     },
     {
       "backgroundColor" : "grey200",
-      "height" : 0,
-      "heightMode" : "At Least",
-      "name" : "iPhone 7",
-      "width" : 375
+      "deviceId" : "iPhone 8",
+      "heightMode" : "At Least"
     },
     {
       "backgroundColor" : "grey200",
-      "height" : 0,
-      "heightMode" : "At Least",
-      "name" : "iPhone 7+",
-      "width" : 414
+      "deviceId" : "iPhone XS",
+      "heightMode" : "At Least"
     }
   ],
   "examples" : [
@@ -41,6 +35,42 @@
       "content" : [
         "parameters",
         "showsDimensionInputs"
+      ],
+      "type" : "AssignExpr"
+    },
+    {
+      "assignee" : [
+        "layers",
+        "DeviceDropdown",
+        "values"
+      ],
+      "content" : [
+        "parameters",
+        "availableDevices"
+      ],
+      "type" : "AssignExpr"
+    },
+    {
+      "assignee" : [
+        "layers",
+        "DeviceDropdown",
+        "selectedIndex"
+      ],
+      "content" : [
+        "parameters",
+        "deviceIndex"
+      ],
+      "type" : "AssignExpr"
+    },
+    {
+      "assignee" : [
+        "layers",
+        "DeviceDropdown",
+        "onChangeIndex"
+      ],
+      "content" : [
+        "parameters",
+        "onChangeDeviceIndex"
       ],
       "type" : "AssignExpr"
     },
@@ -81,6 +111,18 @@
       "type" : "AssignExpr"
     },
     {
+      "assignee" : [
+        "layers",
+        "NameInput",
+        "placeholderString"
+      ],
+      "content" : [
+        "parameters",
+        "canvasNamePlaceholder"
+      ],
+      "type" : "AssignExpr"
+    },
+    {
       "body" : [
         {
           "assignee" : [
@@ -107,8 +149,18 @@
         "right" : {
           "type" : "LitExpr",
           "value" : {
-            "data" : 20,
-            "type" : "Number"
+            "data" : "flexibleHeight",
+            "type" : {
+              "alias" : "CanvasHeight",
+              "name" : "Named",
+              "of" : {
+                "cases" : [
+                  "flexibleHeight",
+                  "fixedHeight"
+                ],
+                "name" : "Enum"
+              }
+            }
           }
         },
         "type" : "BinExpr"
@@ -159,12 +211,95 @@
         "type" : "BinExpr"
       },
       "type" : "IfExpr"
+    },
+    {
+      "body" : [
+        {
+          "assignee" : [
+            "layers",
+            "NameInput",
+            "textValue"
+          ],
+          "content" : [
+            "canvasName"
+          ],
+          "type" : "AssignExpr"
+        }
+      ],
+      "condition" : {
+        "content" : [
+          "parameters",
+          "canvasName"
+        ],
+        "id" : "canvasName",
+        "type" : "VarDeclExpr"
+      },
+      "type" : "IfExpr"
+    },
+    {
+      "assignee" : [
+        "layers",
+        "NameInput",
+        "onChangeTextValue"
+      ],
+      "content" : [
+        "parameters",
+        "onChangeCanvasName"
+      ],
+      "type" : "AssignExpr"
+    },
+    {
+      "assignee" : [
+        "layers",
+        "HeightInput",
+        "onChangeNumberValue"
+      ],
+      "content" : [
+        "parameters",
+        "onChangeCanvasHeight"
+      ],
+      "type" : "AssignExpr"
+    },
+    {
+      "assignee" : [
+        "layers",
+        "WidthInput",
+        "onChangeNumberValue"
+      ],
+      "content" : [
+        "parameters",
+        "onChangeCanvasWidth"
+      ],
+      "type" : "AssignExpr"
     }
   ],
   "params" : [
     {
       "name" : "showsDimensionInputs",
       "type" : "Boolean"
+    },
+    {
+      "name" : "availableDevices",
+      "type" : {
+        "name" : "Array",
+        "of" : "String"
+      }
+    },
+    {
+      "name" : "deviceIndex",
+      "type" : "WholeNumber"
+    },
+    {
+      "name" : "onChangeDeviceIndex",
+      "type" : {
+        "name" : "Function",
+        "parameters" : [
+          {
+            "label" : "_",
+            "type" : "WholeNumber"
+          }
+        ]
+      }
     },
     {
       "name" : "heightMode",
@@ -197,8 +332,40 @@
       "type" : "String?"
     },
     {
+      "name" : "canvasNamePlaceholder",
+      "type" : "String"
+    },
+    {
       "name" : "backgroundColorId",
       "type" : "String"
+    },
+    {
+      "name" : "onChangeCanvasName",
+      "type" : "StringHandler"
+    },
+    {
+      "name" : "onChangeCanvasWidth",
+      "type" : {
+        "name" : "Function",
+        "parameters" : [
+          {
+            "label" : "_",
+            "type" : "Number"
+          }
+        ]
+      }
+    },
+    {
+      "name" : "onChangeCanvasHeight",
+      "type" : {
+        "name" : "Function",
+        "parameters" : [
+          {
+            "label" : "_",
+            "type" : "Number"
+          }
+        ]
+      }
     }
   ],
   "root" : {
@@ -219,8 +386,8 @@
             "params" : {
               "selectedIndex" : 0,
               "values" : [
-                "Component (Flexible-height)",
-                "Screen (Fixed-height)"
+                "Flexible-height",
+                "Fixed-height"
               ]
             },
             "type" : "ControlledDropdown"
@@ -254,7 +421,25 @@
                 "params" : {
                   "selectedIndex" : 0,
                   "values" : [
-                    "iPhone SE"
+                    "Custom",
+                    "iPhone 8",
+                    "iPhone 8 Plus",
+                    "iPhone SE",
+                    "iPhone XS",
+                    "iPhone XR",
+                    "iPhone XS Max",
+                    "iPad",
+                    "iPad Pro 10.5\"",
+                    "iPad Pro 11\"",
+                    "iPad Pro 12.9\"",
+                    "Pixel 2",
+                    "Pixel 2 XL",
+                    "Galaxy S8",
+                    "Nexus 7",
+                    "Nexus 9",
+                    "Nexus 10",
+                    "Desktop",
+                    "Desktop HD"
                   ]
                 },
                 "type" : "ControlledDropdown"
@@ -358,7 +543,8 @@
           {
             "id" : "NameInput",
             "params" : {
-              "textValue" : "Text"
+              "placeholderString" : "Custom name",
+              "textValue" : ""
             },
             "type" : "TextInput"
           }

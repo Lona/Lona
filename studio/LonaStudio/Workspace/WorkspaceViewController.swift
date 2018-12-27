@@ -480,7 +480,16 @@ class WorkspaceViewController: NSSplitViewController {
                 self.inspectorView.content = self.inspectedContent
             }
 
-            inspectorView.onChangeContent = { content, changeType in
+            inspectorView.onChangeContent = { [unowned self] content, changeType in
+                switch content {
+                case .canvas(let canvas):
+                    guard let index = self.componentEditorViewController.selectedCanvasHeaderItem else { break }
+                    self.component?.canvas[index] = canvas
+                    self.componentEditorViewController.updateCanvas()
+                default:
+                    break
+                }
+
                 switch changeType {
                 case .canvas:
                     self.componentEditorViewController.updateCanvas()
