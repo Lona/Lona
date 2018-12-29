@@ -84,7 +84,7 @@ class LogicNode: DataNodeParent, DataNodeCopying {
             if let arg = argument(from: decl.content) {
                 invocation.arguments["value"] = arg
             }
-            invocation.name = "if let(variable, equal value)"
+            invocation.name = "let(variable, equal value)"
 
             node.invocation = invocation
         case .ifExpression(let content):
