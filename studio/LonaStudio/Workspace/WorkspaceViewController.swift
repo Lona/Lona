@@ -149,6 +149,25 @@ class WorkspaceViewController: NSSplitViewController {
             self.inspectorView.content = nil
         }
 
+        controller.onAddCanvas = { [unowned self] in
+            guard let component = self.component else { return }
+
+            let canvas: Canvas
+
+            if let last = component.canvas.last {
+                canvas = last.copy() as! Canvas
+            } else {
+                canvas = Canvas.createDefaultCanvas()
+            }
+
+            component.canvas.append(canvas)
+
+            controller.selectedLayerName = nil
+            controller.selectedCanvasHeaderItem = component.canvas.count - 1
+            self.inspectedContent = .canvas(canvas)
+            self.inspectorView.content = .canvas(canvas)
+        }
+
         return controller
     }()
 

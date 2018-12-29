@@ -43,6 +43,7 @@ class ComponentEditorViewController: NSSplitViewController {
     public var onChangeInspectedLayer: (() -> Void)?
     public var onChangeInspectedCanvas: ((Int) -> Void)?
     public var onDeleteCanvas: ((Int) -> Void)?
+    public var onAddCanvas: (() -> Void)?
 
     public func updateCanvas() {
         updateCanvasCollectionView()
@@ -118,6 +119,10 @@ class ComponentEditorViewController: NSSplitViewController {
 
         canvasAreaView.onDeleteCanvasHeaderItem = { [unowned self] index in
             self.onDeleteCanvas?(index)
+        }
+
+        canvasAreaView.onAddCanvas = { [unowned self] in
+            self.onAddCanvas?()
         }
 
         let tabs = SegmentedControlField(

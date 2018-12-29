@@ -32,6 +32,8 @@ class CanvasTableHeaderView: NSTableHeaderView {
 
     var onDeleteItem: ((Int) -> Void)?
 
+    var onClickPlus: (() -> Void)?
+
     var selectedItem: Int? {
         didSet {
             if oldValue != selectedItem {
@@ -82,16 +84,28 @@ class CanvasTableHeaderView: NSTableHeaderView {
             segmentViews.forEach { $0.removeFromSuperview() }
 
             tableView.tableColumns.enumerated().forEach { index, column in
-                let view = CanvasTableHeaderItem(titleText: column.title, dividerColor: NSSplitView.defaultDividerColor, selected: index == selectedItem)
-                view.onClick = { [unowned self] in
-                    self.window?.makeFirstResponder(self)
-                    self.onClickItem?(index)
-                }
-                view.frame = headerRect(ofColumn: index)
-                view.translatesAutoresizingMaskIntoConstraints = true
+                if index == tableView.tableColumns.count - 1 {
+                    let view = CanvasTableHeaderExtra(dividerColor: NSSplitView.defaultDividerColor)
+                    view.onClickPlus = { [unowned self] in
+                        self.onClickPlus?()
+                    }
+                    view.frame = headerRect(ofColumn: index)
+                    view.translatesAutoresizingMaskIntoConstraints = true
 
-                addSubview(view)
-                segmentViews.append(view)
+                    addSubview(view)
+                    segmentViews.append(view)
+                } else {
+                    let view = CanvasTableHeaderItem(titleText: column.title, dividerColor: NSSplitView.defaultDividerColor, selected: index == selectedItem)
+                    view.onClick = { [unowned self] in
+                        self.window?.makeFirstResponder(self)
+                        self.onClickItem?(index)
+                    }
+                    view.frame = headerRect(ofColumn: index)
+                    view.translatesAutoresizingMaskIntoConstraints = true
+
+                    addSubview(view)
+                    segmentViews.append(view)
+                }
             }
         }
 

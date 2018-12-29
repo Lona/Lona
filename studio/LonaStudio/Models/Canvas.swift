@@ -124,6 +124,45 @@ class Canvas: CSDataSerializable, CSDataDeserializable, NSCopying {
         self.parameters = parameters
     }
 
+    required init(
+        device: Device,
+        name: String = "",
+        heightMode: String = "At Least",
+        exportScale: Double = 1,
+        backgroundColor: String = "white") {
+        self.device = device
+        self.name = name
+        self.heightMode = heightMode
+        self.exportScale = exportScale
+        self.backgroundColor = backgroundColor
+
+        switch device {
+        case .custom:
+            break
+        case .preset(let preset):
+            width = Double(preset.width)
+
+            if heightMode == "At Least" {
+                height = 1
+            } else {
+                height = Double(preset.height)
+            }
+        }
+    }
+
+    static func createDefaultCanvas() -> Canvas {
+        return Canvas(device: .preset(Canvas.devicePresets[0]))
+    }
+
+    static func createDefaultCanvasList() -> [Canvas] {
+        let ios = Canvas.devicePresets.first(where: { $0.name == "iPhone SE" })!
+        let android = Canvas.devicePresets.first(where: { $0.name == "Pixel 2" })!
+        return [
+            Canvas(device: .preset(ios)),
+            Canvas(device: .preset(android))
+        ]
+    }
+
     func toData() -> CSData {
         var data = CSData.Object([
             "heightMode": heightMode.toData()
@@ -195,9 +234,9 @@ extension Canvas {
     }
 
     static let devicePresets: [DevicePreset] = [
+        DevicePreset(name: "iPhone SE", width: 320, height: 568),
         DevicePreset(name: "iPhone 8", width: 375, height: 667),
         DevicePreset(name: "iPhone 8 Plus", width: 414, height: 736),
-        DevicePreset(name: "iPhone SE", width: 320, height: 568),
         DevicePreset(name: "iPhone XS", width: 375, height: 812),
         DevicePreset(name: "iPhone XR", width: 414, height: 896),
         DevicePreset(name: "iPhone XS Max", width: 414, height: 896),

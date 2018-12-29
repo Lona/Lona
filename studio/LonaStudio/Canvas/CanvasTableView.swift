@@ -29,6 +29,7 @@ class CanvasTableView: NSTableView, NSTableViewDataSource, NSTableViewDelegate {
 
         header.onClickItem = handleClickHeaderItem
         header.onDeleteItem = handleDeleteHeaderItem
+        header.onClickPlus = handleClickHeaderPlus
 
         // A hack to let us reuse the same cell view every render:
         //
@@ -76,6 +77,8 @@ class CanvasTableView: NSTableView, NSTableViewDataSource, NSTableViewDelegate {
 
     var onDeleteHeaderItem: ((Int) -> Void)?
 
+    var onClickHeaderPlus: (() -> Void)?
+
     var selectedHeaderItem: Int? {
         get { return header.selectedItem }
         set { header.selectedItem = newValue }
@@ -89,6 +92,10 @@ class CanvasTableView: NSTableView, NSTableViewDataSource, NSTableViewDelegate {
         onDeleteHeaderItem?(index)
     }
 
+    private func handleClickHeaderPlus() {
+        onClickHeaderPlus?()
+    }
+
     @objc fileprivate func doubleClick(sender: AnyObject) {
         if clickedColumn == -1 { return }
 
@@ -97,11 +104,13 @@ class CanvasTableView: NSTableView, NSTableViewDataSource, NSTableViewDelegate {
         }
     }
 
+    let extraColumn = NSTableColumn(title: "Add Canvas", width: 42)
+
     // Call this after changing canvases to update the labels
     func updateHeader() {
         let columns: [NSTableColumn] = canvases.map { canvas in
             return NSTableColumn(title: canvas.computedName, width: CGFloat(canvas.width) + CanvasView.margin * 2)
-        }
+        } + [extraColumn]
 
         if columns.count == tableColumns.count && zip(columns, tableColumns).allSatisfy({ a, b in
             return a.title == b.title && a.width == b.width
