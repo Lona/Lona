@@ -88,13 +88,19 @@ class Canvas: CSDataSerializable, CSDataDeserializable, NSCopying {
     required init(_ data: CSData) {
         visible = data.get(key: "visible").bool ?? true
         name = data.get(key: "name").stringValue
+        heightMode = data.get(key: "heightMode").stringValue
 
         if let deviceId = data.get(key: "deviceId").string,
             let devicePreset = Canvas.devicePresets.first(where: { $0.name == deviceId }) {
             device = .preset(devicePreset)
 
             width = Double(devicePreset.width)
-            height = Double(devicePreset.height)
+
+            if heightMode == "At Least" {
+                height = 1
+            } else {
+                height = Double(devicePreset.height)
+            }
         } else {
             device = .custom
 
@@ -102,7 +108,6 @@ class Canvas: CSDataSerializable, CSDataDeserializable, NSCopying {
             height = data.get(key: "height").numberValue
         }
 
-        heightMode = data.get(key: "heightMode").stringValue
         exportScale = data.get(key: "exportScale").number ?? 1
         backgroundColor = data.get(key: "backgroundColor").string ?? "white"
         parameters = data["params"] ?? data["parameters"] ?? CSData.Object([:])
