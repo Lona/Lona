@@ -270,17 +270,61 @@ final class InspectorView: NSBox {
                 self.onChangeContent?(.canvas(newCanvas), .canvas)
             }
 
+            canvasInspector.onChangeHeightModeIndex = { index in
+                let newCanvas = canvas.copy() as! Canvas
+
+                if index == 0 {
+                    newCanvas.heightMode = "At Least"
+
+                    switch canvas.device {
+                    case .custom:
+                        break
+                    case .preset:
+                        newCanvas.height = 1
+                    }
+                } else {
+                    newCanvas.heightMode = "Exactly"
+
+                    switch canvas.device {
+                    case .custom:
+                        break
+                    case .preset(let device):
+                        newCanvas.height = Double(device.height)
+                    }
+                }
+
+                self.onChangeContent?(.canvas(newCanvas), .canvas)
+            }
+
             canvasInspector.onChangeDeviceIndex = { index in
                 let newCanvas = canvas.copy() as! Canvas
 
                 if index == 0 {
                     newCanvas.device = .custom
+
+                    switch canvas.device {
+                    case .custom:
+                        break
+                    case .preset(let device):
+                        newCanvas.width = Double(device.width)
+
+                        if canvas.heightMode == "At Least" {
+                            newCanvas.height = 1
+                        } else {
+                            newCanvas.height = Double(device.height)
+                        }
+                    }
                 } else {
                     // Subtract one from the index, since we added "Custom" to the array of names
                     let preset = Canvas.devicePresets[index - 1]
                     newCanvas.device = .preset(preset)
                     newCanvas.width = Double(preset.width)
-                    newCanvas.height = Double(preset.height)
+
+                    if canvas.heightMode == "At Least" {
+                        newCanvas.height = 1
+                    } else {
+                        newCanvas.height = Double(preset.height)
+                    }
                 }
 
                 self.onChangeContent?(.canvas(newCanvas), .canvas)

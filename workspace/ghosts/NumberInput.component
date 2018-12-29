@@ -35,6 +35,10 @@
           }
         ]
       }
+    },
+    {
+      "name" : "disabled",
+      "type" : "Boolean"
     }
   ],
   "root" : {

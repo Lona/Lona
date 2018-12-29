@@ -427,6 +427,7 @@ extension CanvasView {
 
         if useExactHeight {
             wrapper.height = CGFloat(canvas.computedHeight)
+            child.height = CGFloat(canvas.computedHeight)
         } else {
             let verticalMargins = child.marginTop + child.marginBottom
             let minHeight = CGFloat(canvas.computedHeight) - verticalMargins

@@ -29,8 +29,20 @@
     {
       "assignee" : [
         "layers",
-        "CustomDimensionsContainer",
-        "visible"
+        "HeightInput",
+        "disabled"
+      ],
+      "content" : [
+        "parameters",
+        "showsDimensionInputs"
+      ],
+      "type" : "AssignExpr"
+    },
+    {
+      "assignee" : [
+        "layers",
+        "WidthInput",
+        "disabled"
       ],
       "content" : [
         "parameters",
@@ -71,6 +83,18 @@
       "content" : [
         "parameters",
         "onChangeDeviceIndex"
+      ],
+      "type" : "AssignExpr"
+    },
+    {
+      "assignee" : [
+        "layers",
+        "LayoutDropdown",
+        "onChangeIndex"
+      ],
+      "content" : [
+        "parameters",
+        "onChangeHeightModeIndex"
       ],
       "type" : "AssignExpr"
     },
@@ -135,6 +159,21 @@
             "value" : {
               "data" : 0,
               "type" : "WholeNumber"
+            }
+          },
+          "type" : "AssignExpr"
+        },
+        {
+          "assignee" : [
+            "layers",
+            "HeightLabel",
+            "text"
+          ],
+          "content" : {
+            "type" : "LitExpr",
+            "value" : {
+              "data" : "Min Height",
+              "type" : "String"
             }
           },
           "type" : "AssignExpr"
@@ -386,6 +425,18 @@
           }
         ]
       }
+    },
+    {
+      "name" : "onChangeHeightModeIndex",
+      "type" : {
+        "name" : "Function",
+        "parameters" : [
+          {
+            "label" : "_",
+            "type" : "WholeNumber"
+          }
+        ]
+      }
     }
   ],
   "root" : {
@@ -495,7 +546,7 @@
                     "id" : "HSpacer",
                     "params" : {
                       "height" : 0,
-                      "width" : 20
+                      "width" : 8
                     },
                     "type" : "Lona:View"
                   },

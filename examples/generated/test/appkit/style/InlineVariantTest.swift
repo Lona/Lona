@@ -150,7 +150,7 @@ extension InlineVariantTest {
 // MARK: - ItemType
 
 extension InlineVariantTest {
-  public enum ItemType: Codable {
+  public enum ItemType: Codable, Equatable {
     case standard
     case error
 

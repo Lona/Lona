@@ -49,6 +49,15 @@ class TextInput: ControlledComponents.TextInput {
 
 typealias NumberInput = NumberField
 extension NumberInput {
+    var disabled: Bool {
+        get { return isEnabled }
+        set {
+            if isEnabled != newValue {
+                isEnabled = newValue
+            }
+        }
+    }
+
     var numberValue: CGFloat {
         get { return CGFloat(value) }
         set { value = Double(newValue) }
