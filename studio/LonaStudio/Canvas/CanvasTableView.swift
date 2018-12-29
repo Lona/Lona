@@ -93,7 +93,7 @@ class CanvasTableView: NSTableView, NSTableViewDataSource, NSTableViewDelegate {
     // Call this after changing canvases to update the labels
     func updateHeader() {
         let columns: [NSTableColumn] = canvases.map { canvas in
-            return NSTableColumn(title: canvas.name, width: CGFloat(canvas.width) + CanvasView.margin * 2)
+            return NSTableColumn(title: canvas.computedName, width: CGFloat(canvas.width) + CanvasView.margin * 2)
         }
 
         if columns.count == tableColumns.count && zip(columns, tableColumns).allSatisfy({ a, b in

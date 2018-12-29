@@ -11,7 +11,6 @@ import Foundation
 let CSCanvasType = CSType.dictionary([
     "height": (type: CSType.number, access: .read),
     "width": (type: CSType.number, access: .read),
-    "aspectRatio": (type: CSType.number, access: .read),
     "index": (type: CSType.number, access: .read),
     "name": (type: CSType.number, access: .read)
 ])
@@ -19,7 +18,6 @@ let CSCanvasType = CSType.dictionary([
 let CSEmptyCanvasValue = CSValue(type: CSCanvasType, data: .Object([
     "height": CSData.Null,
     "width": CSData.Null,
-    "aspectRatio": CSData.Null,
     "index": CSData.Null,
     "name": CSData.Null
 ]))
@@ -34,6 +32,19 @@ class Canvas: CSDataSerializable, CSDataDeserializable, NSCopying {
     var exportScale: Double = 1
     var parameters: CSData = CSData.Object([:])
     var device: Device = .custom
+
+    var computedName: String {
+        switch device {
+        case .preset(let devicePreset):
+            if !name.isEmpty && name != devicePreset.name {
+                return name
+            } else {
+                return devicePreset.name
+            }
+        case .custom:
+            return name
+        }
+    }
 
     var computedHeight: CGFloat {
         switch device {
@@ -62,14 +73,8 @@ class Canvas: CSDataSerializable, CSDataDeserializable, NSCopying {
         return name
     }
 
-//    var aspectRatio: Double {
-//        return width / height
-//    }
-
     func value() -> CSValue {
-        var data = toData()
-//        data.set(keyPath: ["aspectRatio"], to: aspectRatio.toData())
-        return CSValue(type: CSCanvasType, data: data)
+        return CSValue(type: CSCanvasType, data: toData())
     }
 
     func dimensionsString() -> String {
@@ -139,7 +144,7 @@ class Canvas: CSDataSerializable, CSDataDeserializable, NSCopying {
         case .preset(let devicePreset):
             data["deviceId"] = devicePreset.name.toData()
 
-            if name != devicePreset.name {
+            if !name.isEmpty && name != devicePreset.name {
                 data["name"] = name.toData()
             }
         case .custom:

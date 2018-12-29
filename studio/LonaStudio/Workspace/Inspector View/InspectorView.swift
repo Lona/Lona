@@ -237,14 +237,13 @@ final class InspectorView: NSBox {
             switch canvas.device {
             case .custom:
                 canvasInspector.deviceIndex = 0
+                canvasInspector.canvasNamePlaceholder = "Custom name"
                 canvasInspector.canvasName = canvas.name
             case .preset(let device):
                 canvasInspector.deviceIndex = devicePresets.firstIndex(of: device.name) ?? 0
                 canvasInspector.canvasNamePlaceholder = device.name
                 canvasInspector.canvasName = canvas.name == device.name ? nil : canvas.name
             }
-
-            Swift.print("Set canvasInspector name", canvasInspector.canvasName)
 
             canvasInspector.onChangeCanvasName = { name in
                 let newCanvas = canvas.copy() as! Canvas
