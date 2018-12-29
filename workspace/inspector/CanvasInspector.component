@@ -213,12 +213,21 @@
       "type" : "IfExpr"
     },
     {
+      "content" : {
+        "type" : "LitExpr",
+        "value" : {
+          "data" : "",
+          "type" : "String"
+        }
+      },
+      "id" : "intermediateCanvasName",
+      "type" : "VarDeclExpr"
+    },
+    {
       "body" : [
         {
           "assignee" : [
-            "layers",
-            "NameInput",
-            "textValue"
+            "intermediateCanvasName"
           ],
           "content" : [
             "canvasName"
@@ -235,6 +244,17 @@
         "type" : "VarDeclExpr"
       },
       "type" : "IfExpr"
+    },
+    {
+      "assignee" : [
+        "layers",
+        "NameInput",
+        "textValue"
+      ],
+      "content" : [
+        "intermediateCanvasName"
+      ],
+      "type" : "AssignExpr"
     },
     {
       "assignee" : [

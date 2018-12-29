@@ -789,7 +789,6 @@ public class CanvasInspector: NSBox {
     let customDimensionsContainerViewIsHidden = customDimensionsContainerView.isHidden
 
     layoutDropdownView.selectedIndex = 0
-    nameInputView.textValue = ""
     customDimensionsContainerView.isHidden = !showsDimensionInputs
     deviceDropdownView.values = availableDevices
     deviceDropdownView.selectedIndex = deviceIndex
@@ -804,9 +803,11 @@ public class CanvasInspector: NSBox {
     if heightMode == .fixedHeight {
       layoutDropdownView.selectedIndex = 1
     }
+    var intermediateCanvasName = ""
     if let canvasName = canvasName {
-      nameInputView.textValue = canvasName
+      intermediateCanvasName = canvasName
     }
+    nameInputView.textValue = intermediateCanvasName
     nameInputView.onChangeTextValue = handleOnChangeCanvasName
     heightInputView.onChangeNumberValue = handleOnChangeCanvasHeight
     widthInputView.onChangeNumberValue = handleOnChangeCanvasWidth
