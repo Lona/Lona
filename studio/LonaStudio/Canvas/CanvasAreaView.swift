@@ -36,6 +36,8 @@ public class CanvasAreaView: NSBox {
 
     public var onSelectCanvasHeaderItem: ((Int) -> Void)?
 
+    public var onDeleteCanvasHeaderItem: ((Int) -> Void)?
+
     public var selectedHeaderItem: Int? {
         get { return outlineView.selectedHeaderItem }
         set { outlineView.selectedHeaderItem = newValue }
@@ -56,6 +58,9 @@ public class CanvasAreaView: NSBox {
         outlineView.delegate = outlineView
         outlineView.onClickHeaderItem = { [unowned self] index in
             self.onSelectCanvasHeaderItem?(index)
+        }
+        outlineView.onDeleteHeaderItem = { [unowned self] index in
+            self.onDeleteCanvasHeaderItem?(index)
         }
 
         scrollView.hasVerticalScroller = true

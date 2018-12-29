@@ -138,6 +138,17 @@ class WorkspaceViewController: NSSplitViewController {
             self.inspectorView.content = .canvas(canvas)
         }
 
+        controller.onDeleteCanvas = { [unowned self] index in
+            guard let component = self.component else { return }
+
+            component.canvas.remove(at: index)
+
+            controller.selectedLayerName = nil
+            controller.selectedCanvasHeaderItem = nil
+            self.inspectedContent = nil
+            self.inspectorView.content = nil
+        }
+
         return controller
     }()
 

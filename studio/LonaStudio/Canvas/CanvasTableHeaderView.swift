@@ -30,6 +30,8 @@ class CanvasTableHeaderView: NSTableHeaderView {
 
     var onClickItem: ((Int) -> Void)?
 
+    var onDeleteItem: ((Int) -> Void)?
+
     var selectedItem: Int? {
         didSet {
             if oldValue != selectedItem {
@@ -63,6 +65,16 @@ class CanvasTableHeaderView: NSTableHeaderView {
         bottomDividerView.trailingAnchor.constraint(equalTo: trailingAnchor).isActive = true
     }
 
+    override func keyDown(with event: NSEvent) {
+        guard let selectedItem = selectedItem else { return }
+
+        let characters = event.charactersIgnoringModifiers!
+
+        if characters == String(Character(UnicodeScalar(NSDeleteCharacter)!)) {
+            onDeleteItem?(selectedItem)
+        }
+    }
+
     func update() {
         guard let tableView = tableView else { return }
 
@@ -71,7 +83,10 @@ class CanvasTableHeaderView: NSTableHeaderView {
 
             tableView.tableColumns.enumerated().forEach { index, column in
                 let view = CanvasTableHeaderItem(titleText: column.title, dividerColor: NSSplitView.defaultDividerColor, selected: index == selectedItem)
-                view.onClick = { [unowned self] in self.onClickItem?(index) }
+                view.onClick = { [unowned self] in
+                    self.window?.makeFirstResponder(self)
+                    self.onClickItem?(index)
+                }
                 view.frame = headerRect(ofColumn: index)
                 view.translatesAutoresizingMaskIntoConstraints = true
 
