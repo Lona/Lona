@@ -270,6 +270,12 @@ final class InspectorView: NSBox {
                 self.onChangeContent?(.canvas(newCanvas), .canvas)
             }
 
+            canvasInspector.onChangeBackgroundColorId = { value in
+                let newCanvas = canvas.copy() as! Canvas
+                newCanvas.backgroundColor = value
+                self.onChangeContent?(.canvas(newCanvas), .canvas)
+            }
+
             canvasInspector.onChangeHeightModeIndex = { index in
                 let newCanvas = canvas.copy() as! Canvas
 

@@ -2,18 +2,10 @@
   "devices" : [
     {
       "backgroundColor" : "grey200",
-      "deviceId" : "iPhone SE",
-      "heightMode" : "At Least"
-    },
-    {
-      "backgroundColor" : "grey200",
-      "deviceId" : "iPhone 8",
-      "heightMode" : "At Least"
-    },
-    {
-      "backgroundColor" : "grey200",
-      "deviceId" : "iPhone XS",
-      "heightMode" : "At Least"
+      "height" : 1,
+      "heightMode" : "At Least",
+      "name" : "Inspector",
+      "width" : 320
     }
   ],
   "examples" : [
@@ -131,6 +123,18 @@
       "content" : [
         "parameters",
         "backgroundColorId"
+      ],
+      "type" : "AssignExpr"
+    },
+    {
+      "assignee" : [
+        "layers",
+        "BackgroundColorInput",
+        "onChangeTextValue"
+      ],
+      "content" : [
+        "parameters",
+        "onChangeBackgroundColorId"
       ],
       "type" : "AssignExpr"
     },
@@ -437,6 +441,10 @@
           }
         ]
       }
+    },
+    {
+      "name" : "onChangeBackgroundColorId",
+      "type" : "StringHandler"
     }
   ],
   "root" : {

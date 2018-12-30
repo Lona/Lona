@@ -177,6 +177,11 @@ public class CanvasInspector: NSBox {
     set { parameters.onChangeHeightModeIndex = newValue }
   }
 
+  public var onChangeBackgroundColorId: StringHandler {
+    get { return parameters.onChangeBackgroundColorId }
+    set { parameters.onChangeBackgroundColorId = newValue }
+  }
+
   public var parameters: Parameters {
     didSet {
       if parameters != oldValue {
@@ -681,6 +686,7 @@ public class CanvasInspector: NSBox {
     widthInputView.numberValue = canvasWidth
     heightInputView.numberValue = canvasHeight
     backgroundColorInputView.textValue = backgroundColorId
+    backgroundColorInputView.onChangeTextValue = handleOnChangeBackgroundColorId
     nameInputView.placeholderString = canvasNamePlaceholder
     if heightMode == .flexibleHeight {
       layoutDropdownView.selectedIndex = 0
@@ -718,6 +724,10 @@ public class CanvasInspector: NSBox {
   private func handleOnChangeHeightModeIndex(_ arg0: Int) {
     onChangeHeightModeIndex?(arg0)
   }
+
+  private func handleOnChangeBackgroundColorId(_ arg0: String) {
+    onChangeBackgroundColorId?(arg0)
+  }
 }
 
 // MARK: - Parameters
@@ -739,6 +749,7 @@ extension CanvasInspector {
     public var onChangeCanvasWidth: ((CGFloat) -> Void)?
     public var onChangeCanvasHeight: ((CGFloat) -> Void)?
     public var onChangeHeightModeIndex: ((Int) -> Void)?
+    public var onChangeBackgroundColorId: StringHandler
 
     public init(
       showsDimensionInputs: Bool,
@@ -755,7 +766,8 @@ extension CanvasInspector {
       onChangeCanvasName: StringHandler = nil,
       onChangeCanvasWidth: ((CGFloat) -> Void)? = nil,
       onChangeCanvasHeight: ((CGFloat) -> Void)? = nil,
-      onChangeHeightModeIndex: ((Int) -> Void)? = nil)
+      onChangeHeightModeIndex: ((Int) -> Void)? = nil,
+      onChangeBackgroundColorId: StringHandler = nil)
     {
       self.showsDimensionInputs = showsDimensionInputs
       self.availableDevices = availableDevices
@@ -772,6 +784,7 @@ extension CanvasInspector {
       self.onChangeCanvasWidth = onChangeCanvasWidth
       self.onChangeCanvasHeight = onChangeCanvasHeight
       self.onChangeHeightModeIndex = onChangeHeightModeIndex
+      self.onChangeBackgroundColorId = onChangeBackgroundColorId
     }
 
     public init() {
@@ -838,7 +851,8 @@ extension CanvasInspector {
       onChangeCanvasName: StringHandler = nil,
       onChangeCanvasWidth: ((CGFloat) -> Void)? = nil,
       onChangeCanvasHeight: ((CGFloat) -> Void)? = nil,
-      onChangeHeightModeIndex: ((Int) -> Void)? = nil)
+      onChangeHeightModeIndex: ((Int) -> Void)? = nil,
+      onChangeBackgroundColorId: StringHandler = nil)
     {
       self
         .init(
@@ -857,7 +871,8 @@ extension CanvasInspector {
             onChangeCanvasName: onChangeCanvasName,
             onChangeCanvasWidth: onChangeCanvasWidth,
             onChangeCanvasHeight: onChangeCanvasHeight,
-            onChangeHeightModeIndex: onChangeHeightModeIndex))
+            onChangeHeightModeIndex: onChangeHeightModeIndex,
+            onChangeBackgroundColorId: onChangeBackgroundColorId))
     }
 
     public init() {
