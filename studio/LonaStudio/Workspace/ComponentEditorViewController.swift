@@ -131,9 +131,8 @@ class ComponentEditorViewController: NSSplitViewController {
         }
 
         let tabs = SegmentedControlField(
-            frame: NSRect(x: 0, y: 0, width: 500, height: 24),
+            frame: NSRect(x: 0, y: 0, width: 400, height: 24),
             values: [
-                UtilitiesView.Tab.devices.rawValue,
                 UtilitiesView.Tab.parameters.rawValue,
                 UtilitiesView.Tab.logic.rawValue,
                 UtilitiesView.Tab.examples.rawValue,
@@ -146,7 +145,7 @@ class ComponentEditorViewController: NSSplitViewController {
             guard let tab = UtilitiesView.Tab(rawValue: value) else { return }
             self.utilitiesView.currentTab = tab
         }
-        tabs.value = UtilitiesView.Tab.devices.rawValue
+        tabs.value = UtilitiesView.Tab.parameters.rawValue
 
         let splitView = SectionSplitter()
         splitView.addSubviewToDivider(tabs)

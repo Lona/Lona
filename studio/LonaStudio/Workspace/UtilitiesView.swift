@@ -12,16 +12,15 @@ import AppKit
 class UtilitiesView: NSBox {
 
     enum Tab: String {
-        case details = "Details"
-        case devices = "Devices"
         case parameters = "Parameters"
-        case examples = "Examples"
         case logic = "Logic"
+        case examples = "Examples"
+        case details = "Details"
     }
 
     // MARK: Lifecycle
 
-    public init(currentTab: Tab = .devices) {
+    public init(currentTab: Tab = .parameters) {
         self.currentTab = currentTab
 
         super.init(frame: .zero)
@@ -115,15 +114,6 @@ class UtilitiesView: NSBox {
             caseListView?.component = component
             caseListView?.list = component?.cases ?? []
             caseListView?.editor?.reloadData()
-        case .devices:
-            if canvasListView == nil {
-                canvasListView = CanvasListView(frame: .zero)
-                canvasListView?.onChange = { [unowned self] list in self.onChangeCanvasList?(list) }
-            }
-
-            canvasListView?.editorView.component = component
-            canvasListView?.canvasList = component?.canvas ?? []
-            canvasListView?.canvasLayout = component?.canvasLayoutAxis ?? StaticCanvasRenderer.Layout.canvasXcaseY
         case .parameters:
             if parameterListEditorView == nil {
                 parameterListEditorView = ParameterListEditorView(frame: .zero)
@@ -142,7 +132,6 @@ class UtilitiesView: NSBox {
 
         let tabMap: [Tab: NSView?] = [
             .details: metadataEditorView,
-            .devices: canvasListView,
             .parameters: parameterListEditorView,
             .examples: caseListView?.editor,
             .logic: logicListView?.editor
