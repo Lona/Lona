@@ -69,10 +69,6 @@ class Canvas: CSDataSerializable, CSDataDeserializable, NSCopying {
         }
     }
 
-    var label: String {
-        return name
-    }
-
     func value() -> CSValue {
         return CSValue(type: CSCanvasType, data: toData())
     }

@@ -282,7 +282,7 @@ public class CanvasInspector: NSBox {
     backgroundColorRowView.addSubview(backgroundColorInputView)
 
     layoutLabelView.attributedStringValue = layoutLabelViewTextStyle.apply(to: "Layout")
-    layoutDropdownView.values = ["Flexible-height", "Fixed-height"]
+    layoutDropdownView.values = ["Flexible-height", "Fixed-size"]
     deviceLabelView.attributedStringValue = deviceLabelViewTextStyle.apply(to: "Device")
     widthLabelView.attributedStringValue = widthLabelViewTextStyle.apply(to: "Width")
     nameLabelView.attributedStringValue = nameLabelViewTextStyle.apply(to: "Name")

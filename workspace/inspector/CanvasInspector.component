@@ -466,7 +466,7 @@
               "selectedIndex" : 0,
               "values" : [
                 "Flexible-height",
-                "Fixed-height"
+                "Fixed-size"
               ]
             },
             "type" : "ControlledDropdown"
