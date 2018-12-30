@@ -20,8 +20,19 @@ public class CanvasTableHeaderItem: NSBox {
     addTrackingArea(trackingArea)
   }
 
-  public convenience init(titleText: String, dividerColor: NSColor, selected: Bool) {
-    self.init(Parameters(titleText: titleText, dividerColor: dividerColor, selected: selected))
+  public convenience init(
+    titleText: String,
+    dividerColor: NSColor,
+    selected: Bool,
+    dropTargetIndicator: DropTargetIndicator)
+  {
+    self
+      .init(
+        Parameters(
+          titleText: titleText,
+          dividerColor: dividerColor,
+          selected: selected,
+          dropTargetIndicator: dropTargetIndicator))
   }
 
   public convenience init() {
@@ -79,6 +90,15 @@ public class CanvasTableHeaderItem: NSBox {
     }
   }
 
+  public var dropTargetIndicator: DropTargetIndicator {
+    get { return parameters.dropTargetIndicator }
+    set {
+      if parameters.dropTargetIndicator != newValue {
+        parameters.dropTargetIndicator = newValue
+      }
+    }
+  }
+
   public var parameters: Parameters {
     didSet {
       if parameters != oldValue {
@@ -95,6 +115,7 @@ public class CanvasTableHeaderItem: NSBox {
     owner: self)
 
   private var innerView = NSBox()
+  private var vDividerLeftView = NSBox()
   private var titleView = LNATextField(labelWithString: "")
   private var vDividerView = NSBox()
   private var hDividerView = NSBox()
@@ -115,6 +136,9 @@ public class CanvasTableHeaderItem: NSBox {
     hDividerView.boxType = .custom
     hDividerView.borderType = .noBorder
     hDividerView.contentViewMargins = .zero
+    vDividerLeftView.boxType = .custom
+    vDividerLeftView.borderType = .noBorder
+    vDividerLeftView.contentViewMargins = .zero
     titleView.lineBreakMode = .byWordWrapping
     vDividerView.boxType = .custom
     vDividerView.borderType = .noBorder
@@ -122,6 +146,7 @@ public class CanvasTableHeaderItem: NSBox {
 
     addSubview(innerView)
     addSubview(hDividerView)
+    innerView.addSubview(vDividerLeftView)
     innerView.addSubview(titleView)
     innerView.addSubview(vDividerView)
   }
@@ -130,6 +155,7 @@ public class CanvasTableHeaderItem: NSBox {
     translatesAutoresizingMaskIntoConstraints = false
     innerView.translatesAutoresizingMaskIntoConstraints = false
     hDividerView.translatesAutoresizingMaskIntoConstraints = false
+    vDividerLeftView.translatesAutoresizingMaskIntoConstraints = false
     titleView.translatesAutoresizingMaskIntoConstraints = false
     vDividerView.translatesAutoresizingMaskIntoConstraints = false
 
@@ -143,7 +169,17 @@ public class CanvasTableHeaderItem: NSBox {
     let hDividerViewLeadingAnchorConstraint = hDividerView.leadingAnchor.constraint(equalTo: leadingAnchor)
     let hDividerViewCenterXAnchorConstraint = hDividerView.centerXAnchor.constraint(equalTo: centerXAnchor)
     let hDividerViewTrailingAnchorConstraint = hDividerView.trailingAnchor.constraint(equalTo: trailingAnchor)
-    let titleViewLeadingAnchorConstraint = titleView.leadingAnchor.constraint(equalTo: innerView.leadingAnchor)
+    let vDividerLeftViewLeadingAnchorConstraint = vDividerLeftView
+      .leadingAnchor
+      .constraint(equalTo: innerView.leadingAnchor)
+    let vDividerLeftViewTopAnchorConstraint = vDividerLeftView.topAnchor.constraint(equalTo: innerView.topAnchor)
+    let vDividerLeftViewCenterYAnchorConstraint = vDividerLeftView
+      .centerYAnchor
+      .constraint(equalTo: innerView.centerYAnchor)
+    let vDividerLeftViewBottomAnchorConstraint = vDividerLeftView
+      .bottomAnchor
+      .constraint(equalTo: innerView.bottomAnchor)
+    let titleViewLeadingAnchorConstraint = titleView.leadingAnchor.constraint(equalTo: vDividerLeftView.trailingAnchor)
     let titleViewTopAnchorConstraint = titleView.topAnchor.constraint(greaterThanOrEqualTo: innerView.topAnchor)
     let titleViewCenterYAnchorConstraint = titleView.centerYAnchor.constraint(equalTo: innerView.centerYAnchor)
     let titleViewBottomAnchorConstraint = titleView.bottomAnchor.constraint(lessThanOrEqualTo: innerView.bottomAnchor)
@@ -153,6 +189,7 @@ public class CanvasTableHeaderItem: NSBox {
     let vDividerViewCenterYAnchorConstraint = vDividerView.centerYAnchor.constraint(equalTo: innerView.centerYAnchor)
     let vDividerViewBottomAnchorConstraint = vDividerView.bottomAnchor.constraint(equalTo: innerView.bottomAnchor)
     let hDividerViewHeightAnchorConstraint = hDividerView.heightAnchor.constraint(equalToConstant: 1)
+    let vDividerLeftViewWidthAnchorConstraint = vDividerLeftView.widthAnchor.constraint(equalToConstant: 1)
     let vDividerViewWidthAnchorConstraint = vDividerView.widthAnchor.constraint(equalToConstant: 1)
 
     NSLayoutConstraint.activate([
@@ -166,6 +203,10 @@ public class CanvasTableHeaderItem: NSBox {
       hDividerViewLeadingAnchorConstraint,
       hDividerViewCenterXAnchorConstraint,
       hDividerViewTrailingAnchorConstraint,
+      vDividerLeftViewLeadingAnchorConstraint,
+      vDividerLeftViewTopAnchorConstraint,
+      vDividerLeftViewCenterYAnchorConstraint,
+      vDividerLeftViewBottomAnchorConstraint,
       titleViewLeadingAnchorConstraint,
       titleViewTopAnchorConstraint,
       titleViewCenterYAnchorConstraint,
@@ -176,6 +217,7 @@ public class CanvasTableHeaderItem: NSBox {
       vDividerViewCenterYAnchorConstraint,
       vDividerViewBottomAnchorConstraint,
       hDividerViewHeightAnchorConstraint,
+      vDividerLeftViewWidthAnchorConstraint,
       vDividerViewWidthAnchorConstraint
     ])
   }
@@ -184,19 +226,28 @@ public class CanvasTableHeaderItem: NSBox {
     fillColor = Colors.white
     titleViewTextStyle = TextStyles.sectionTitle.with(alignment: .center)
     titleView.attributedStringValue = titleViewTextStyle.apply(to: titleView.attributedStringValue)
+    vDividerLeftView.fillColor = Colors.white
     hDividerView.fillColor = dividerColor
     vDividerView.fillColor = dividerColor
     titleView.attributedStringValue = titleViewTextStyle.apply(to: titleText)
     onPress = handleOnClick
     if pressed {
       fillColor = Colors.headerBackground
+      vDividerLeftView.fillColor = Colors.headerBackground
     }
     if selected {
       fillColor = Colors.systemSelection
       hDividerView.fillColor = Colors.systemSelection
       vDividerView.fillColor = Colors.systemSelection
+      vDividerLeftView.fillColor = Colors.systemSelection
       titleViewTextStyle = TextStyles.sectionTitleInverse.with(alignment: .center)
       titleView.attributedStringValue = titleViewTextStyle.apply(to: titleView.attributedStringValue)
+    }
+    if dropTargetIndicator == .left {
+      vDividerLeftView.fillColor = Colors.blue400
+    }
+    if dropTargetIndicator == .right {
+      vDividerView.fillColor = Colors.blue400
     }
   }
 
@@ -260,21 +311,31 @@ extension CanvasTableHeaderItem {
     public var titleText: String
     public var dividerColor: NSColor
     public var selected: Bool
+    public var dropTargetIndicator: DropTargetIndicator
     public var onClick: (() -> Void)?
 
-    public init(titleText: String, dividerColor: NSColor, selected: Bool, onClick: (() -> Void)? = nil) {
+    public init(
+      titleText: String,
+      dividerColor: NSColor,
+      selected: Bool,
+      dropTargetIndicator: DropTargetIndicator,
+      onClick: (() -> Void)? = nil)
+    {
       self.titleText = titleText
       self.dividerColor = dividerColor
       self.selected = selected
+      self.dropTargetIndicator = dropTargetIndicator
       self.onClick = onClick
     }
 
     public init() {
-      self.init(titleText: "", dividerColor: NSColor.clear, selected: false)
+      self.init(titleText: "", dividerColor: NSColor.clear, selected: false, dropTargetIndicator: .none)
     }
 
     public static func ==(lhs: Parameters, rhs: Parameters) -> Bool {
-      return lhs.titleText == rhs.titleText && lhs.dividerColor == rhs.dividerColor && lhs.selected == rhs.selected
+      return lhs.titleText == rhs.titleText &&
+        lhs.dividerColor == rhs.dividerColor &&
+          lhs.selected == rhs.selected && lhs.dropTargetIndicator == rhs.dropTargetIndicator
     }
   }
 }
@@ -298,12 +359,35 @@ extension CanvasTableHeaderItem {
       self.parameters = parameters
     }
 
-    public init(titleText: String, dividerColor: NSColor, selected: Bool, onClick: (() -> Void)? = nil) {
-      self.init(Parameters(titleText: titleText, dividerColor: dividerColor, selected: selected, onClick: onClick))
+    public init(
+      titleText: String,
+      dividerColor: NSColor,
+      selected: Bool,
+      dropTargetIndicator: DropTargetIndicator,
+      onClick: (() -> Void)? = nil)
+    {
+      self
+        .init(
+          Parameters(
+            titleText: titleText,
+            dividerColor: dividerColor,
+            selected: selected,
+            dropTargetIndicator: dropTargetIndicator,
+            onClick: onClick))
     }
 
     public init() {
-      self.init(titleText: "", dividerColor: NSColor.clear, selected: false)
+      self.init(titleText: "", dividerColor: NSColor.clear, selected: false, dropTargetIndicator: .none)
     }
+  }
+}
+
+// MARK: - DropTargetIndicator
+
+extension CanvasTableHeaderItem {
+  public enum DropTargetIndicator: String, Codable, Equatable {
+    case none
+    case left
+    case right
   }
 }

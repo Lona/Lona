@@ -77,6 +77,8 @@ class CanvasTableHeaderView: NSTableHeaderView {
 
     // MARK: Private
 
+    private var proposedDropIndex: Int?
+
     var segmentViews: [NSView] = []
 
     let bottomDividerView = NSBox(frame: .zero)
@@ -115,6 +117,7 @@ class CanvasTableHeaderView: NSTableHeaderView {
 
         if segmentViews.count != tableView.tableColumns.count {
             segmentViews.forEach { $0.removeFromSuperview() }
+            segmentViews = []
 
             tableView.tableColumns.enumerated().forEach { index, column in
                 if index == tableView.tableColumns.count - 1 {
@@ -128,7 +131,11 @@ class CanvasTableHeaderView: NSTableHeaderView {
                     addSubview(view)
                     segmentViews.append(view)
                 } else {
-                    let view = DraggableCanvasTableHeaderItem(titleText: column.title, dividerColor: NSSplitView.defaultDividerColor, selected: index == selectedItem)
+                    let view = DraggableCanvasTableHeaderItem(
+                        titleText: column.title,
+                        dividerColor: NSSplitView.defaultDividerColor,
+                        selected: index == selectedItem,
+                        dropTargetIndicator: .none)
                     view.onClick = { [unowned self] in
                         self.window?.makeFirstResponder(self)
                         self.onClickItem?(index)
@@ -152,42 +159,80 @@ class CanvasTableHeaderView: NSTableHeaderView {
         }
     }
 
+    func updateDropTarget() {
+        guard let tableView = tableView else { return }
+
+        tableView.tableColumns.enumerated().forEach { index, column in
+            if let segmentView = segmentViews[index] as? CanvasTableHeaderItem {
+                if proposedDropIndex == index {
+                    segmentView.dropTargetIndicator = .left
+                } else {
+                    segmentView.dropTargetIndicator = .none
+                }
+            }
+        }
+    }
+
     // MARK: Dragging
 
+    private func determineProposedDropIndex(_ sender: NSDraggingInfo) -> Int? {
+        guard let tableView = tableView else { return nil }
+
+        let point = convert(sender.draggingLocation(), from: nil)
+
+        for i in 0..<tableView.numberOfColumns - 1 {
+            let rect = headerRect(ofColumn: i)
+
+            if point.x >= rect.minX && point.x < rect.maxX {
+                return i
+            }
+        }
+
+        let lastIndex = tableView.numberOfColumns - 2
+
+        return lastIndex
+    }
+
+    override func draggingExited(_ sender: NSDraggingInfo?) {
+        proposedDropIndex = nil
+
+        updateDropTarget()
+    }
+
+    override func draggingUpdated(_ sender: NSDraggingInfo) -> NSDragOperation {
+        proposedDropIndex = determineProposedDropIndex(sender)
+
+        updateDropTarget()
+
+        return NSDragOperation.move
+    }
+
     override func draggingEntered(_ sender: NSDraggingInfo) -> NSDragOperation {
+        proposedDropIndex = determineProposedDropIndex(sender)
+
+        updateDropTarget()
+
         return NSDragOperation.move
     }
 
     override func performDragOperation(_ sender: NSDraggingInfo) -> Bool {
-        guard let tableView = tableView else { return false }
-
         let pasteboard = sender.draggingPasteboard()
 
-        let point = convert(sender.draggingLocation(), from: nil)
+        guard
+            let value = pasteboard.string(forType: NSPasteboard.PasteboardType.string),
+            let sourceIndex = Int(value),
+            let targetIndex = determineProposedDropIndex(sender)
+            else { return false }
 
-        if let value = pasteboard.string(forType: NSPasteboard.PasteboardType.string),
-            let index = Int(value) {
+        proposedDropIndex = nil
 
-            for i in 0..<tableView.numberOfColumns - 1 {
-                let rect = headerRect(ofColumn: i)
+        updateDropTarget()
 
-                if point.x >= rect.minX && point.x < rect.maxX {
-                    if index != i {
-                        onMoveItem?(index, i)
-                    }
-                    break
-                }
-            }
-
-            let lastIndex = tableView.numberOfColumns - 2
-            if index != lastIndex {
-                onMoveItem?(index, lastIndex)
-            }
-
-            return true
+        if sourceIndex != targetIndex {
+            onMoveItem?(sourceIndex, targetIndex)
         }
 
-        return false
+        return true
     }
 }
 

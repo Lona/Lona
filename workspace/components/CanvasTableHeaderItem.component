@@ -3,7 +3,7 @@
     {
       "height" : 0,
       "heightMode" : "At Least",
-      "name" : "iPhone SE",
+      "name" : "Header Column",
       "width" : 320
     }
   ],
@@ -88,6 +88,21 @@
             }
           },
           "type" : "AssignExpr"
+        },
+        {
+          "assignee" : [
+            "layers",
+            "VDividerLeft",
+            "backgroundColor"
+          ],
+          "content" : {
+            "type" : "LitExpr",
+            "value" : {
+              "data" : "headerBackground",
+              "type" : "Color"
+            }
+          },
+          "type" : "AssignExpr"
         }
       ],
       "condition" : {
@@ -158,6 +173,21 @@
         {
           "assignee" : [
             "layers",
+            "VDividerLeft",
+            "backgroundColor"
+          ],
+          "content" : {
+            "type" : "LitExpr",
+            "value" : {
+              "data" : "systemSelection",
+              "type" : "Color"
+            }
+          },
+          "type" : "AssignExpr"
+        },
+        {
+          "assignee" : [
+            "layers",
             "Title",
             "textStyle"
           ],
@@ -187,6 +217,98 @@
         "type" : "BinExpr"
       },
       "type" : "IfExpr"
+    },
+    {
+      "body" : [
+        {
+          "assignee" : [
+            "layers",
+            "VDividerLeft",
+            "backgroundColor"
+          ],
+          "content" : {
+            "type" : "LitExpr",
+            "value" : {
+              "data" : "blue400",
+              "type" : "Color"
+            }
+          },
+          "type" : "AssignExpr"
+        }
+      ],
+      "condition" : {
+        "left" : [
+          "parameters",
+          "dropTargetIndicator"
+        ],
+        "op" : "==",
+        "right" : {
+          "type" : "LitExpr",
+          "value" : {
+            "data" : "left",
+            "type" : {
+              "alias" : "DropTargetIndicator",
+              "name" : "Named",
+              "of" : {
+                "cases" : [
+                  "none",
+                  "left",
+                  "right"
+                ],
+                "name" : "Enum"
+              }
+            }
+          }
+        },
+        "type" : "BinExpr"
+      },
+      "type" : "IfExpr"
+    },
+    {
+      "body" : [
+        {
+          "assignee" : [
+            "layers",
+            "VDivider",
+            "backgroundColor"
+          ],
+          "content" : {
+            "type" : "LitExpr",
+            "value" : {
+              "data" : "blue400",
+              "type" : "Color"
+            }
+          },
+          "type" : "AssignExpr"
+        }
+      ],
+      "condition" : {
+        "left" : [
+          "parameters",
+          "dropTargetIndicator"
+        ],
+        "op" : "==",
+        "right" : {
+          "type" : "LitExpr",
+          "value" : {
+            "data" : "right",
+            "type" : {
+              "alias" : "DropTargetIndicator",
+              "name" : "Named",
+              "of" : {
+                "cases" : [
+                  "none",
+                  "left",
+                  "right"
+                ],
+                "name" : "Enum"
+              }
+            }
+          }
+        },
+        "type" : "BinExpr"
+      },
+      "type" : "IfExpr"
     }
   ],
   "params" : [
@@ -207,12 +329,36 @@
     {
       "name" : "selected",
       "type" : "Boolean"
+    },
+    {
+      "name" : "dropTargetIndicator",
+      "type" : {
+        "alias" : "DropTargetIndicator",
+        "name" : "Named",
+        "of" : {
+          "cases" : [
+            "none",
+            "left",
+            "right"
+          ],
+          "name" : "Enum"
+        }
+      }
     }
   ],
   "root" : {
     "children" : [
       {
         "children" : [
+          {
+            "id" : "VDividerLeft",
+            "params" : {
+              "alignSelf" : "stretch",
+              "backgroundColor" : "white",
+              "width" : 1
+            },
+            "type" : "Lona:View"
+          },
           {
             "id" : "Title",
             "params" : {
