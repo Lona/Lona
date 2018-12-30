@@ -1,22 +1,16 @@
 {
   "devices" : [
     {
-      "height" : 100,
-      "heightMode" : "At Least",
-      "name" : "iPhone SE",
-      "width" : 320
+      "deviceId" : "iPhone SE",
+      "heightMode" : "At Least"
     },
     {
-      "height" : 100,
-      "heightMode" : "At Least",
-      "name" : "iPhone 7",
-      "width" : 375
+      "deviceId" : "iPhone 8",
+      "heightMode" : "At Least"
     },
     {
-      "height" : 100,
-      "heightMode" : "At Least",
-      "name" : "iPhone 7+",
-      "width" : 414
+      "deviceId" : "iPhone XS Max",
+      "heightMode" : "At Least"
     }
   ],
   "examples" : [

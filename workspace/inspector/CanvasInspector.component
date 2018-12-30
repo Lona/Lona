@@ -1,0 +1,676 @@
+{
+  "devices" : [
+    {
+      "backgroundColor" : "grey200",
+      "height" : 1,
+      "heightMode" : "At Least",
+      "name" : "Inspector",
+      "width" : 320
+    }
+  ],
+  "examples" : [
+    {
+      "id" : "Default",
+      "name" : "Default",
+      "params" : {
+
+      }
+    }
+  ],
+  "logic" : [
+    {
+      "assignee" : [
+        "layers",
+        "HeightInput",
+        "disabled"
+      ],
+      "content" : [
+        "parameters",
+        "showsDimensionInputs"
+      ],
+      "type" : "AssignExpr"
+    },
+    {
+      "assignee" : [
+        "layers",
+        "WidthInput",
+        "disabled"
+      ],
+      "content" : [
+        "parameters",
+        "showsDimensionInputs"
+      ],
+      "type" : "AssignExpr"
+    },
+    {
+      "assignee" : [
+        "layers",
+        "DeviceDropdown",
+        "values"
+      ],
+      "content" : [
+        "parameters",
+        "availableDevices"
+      ],
+      "type" : "AssignExpr"
+    },
+    {
+      "assignee" : [
+        "layers",
+        "DeviceDropdown",
+        "selectedIndex"
+      ],
+      "content" : [
+        "parameters",
+        "deviceIndex"
+      ],
+      "type" : "AssignExpr"
+    },
+    {
+      "assignee" : [
+        "layers",
+        "DeviceDropdown",
+        "onChangeIndex"
+      ],
+      "content" : [
+        "parameters",
+        "onChangeDeviceIndex"
+      ],
+      "type" : "AssignExpr"
+    },
+    {
+      "assignee" : [
+        "layers",
+        "LayoutDropdown",
+        "onChangeIndex"
+      ],
+      "content" : [
+        "parameters",
+        "onChangeHeightModeIndex"
+      ],
+      "type" : "AssignExpr"
+    },
+    {
+      "assignee" : [
+        "layers",
+        "WidthInput",
+        "numberValue"
+      ],
+      "content" : [
+        "parameters",
+        "canvasWidth"
+      ],
+      "type" : "AssignExpr"
+    },
+    {
+      "assignee" : [
+        "layers",
+        "HeightInput",
+        "numberValue"
+      ],
+      "content" : [
+        "parameters",
+        "canvasHeight"
+      ],
+      "type" : "AssignExpr"
+    },
+    {
+      "assignee" : [
+        "layers",
+        "BackgroundColorInput",
+        "textValue"
+      ],
+      "content" : [
+        "parameters",
+        "backgroundColorId"
+      ],
+      "type" : "AssignExpr"
+    },
+    {
+      "assignee" : [
+        "layers",
+        "BackgroundColorInput",
+        "onChangeTextValue"
+      ],
+      "content" : [
+        "parameters",
+        "onChangeBackgroundColorId"
+      ],
+      "type" : "AssignExpr"
+    },
+    {
+      "assignee" : [
+        "layers",
+        "NameInput",
+        "placeholderString"
+      ],
+      "content" : [
+        "parameters",
+        "canvasNamePlaceholder"
+      ],
+      "type" : "AssignExpr"
+    },
+    {
+      "body" : [
+        {
+          "assignee" : [
+            "layers",
+            "LayoutDropdown",
+            "selectedIndex"
+          ],
+          "content" : {
+            "type" : "LitExpr",
+            "value" : {
+              "data" : 0,
+              "type" : "WholeNumber"
+            }
+          },
+          "type" : "AssignExpr"
+        },
+        {
+          "assignee" : [
+            "layers",
+            "HeightLabel",
+            "text"
+          ],
+          "content" : {
+            "type" : "LitExpr",
+            "value" : {
+              "data" : "Min Height",
+              "type" : "String"
+            }
+          },
+          "type" : "AssignExpr"
+        }
+      ],
+      "condition" : {
+        "left" : [
+          "parameters",
+          "heightMode"
+        ],
+        "op" : "==",
+        "right" : {
+          "type" : "LitExpr",
+          "value" : {
+            "data" : "flexibleHeight",
+            "type" : {
+              "alias" : "CanvasHeight",
+              "name" : "Named",
+              "of" : {
+                "cases" : [
+                  "flexibleHeight",
+                  "fixedHeight"
+                ],
+                "name" : "Enum"
+              }
+            }
+          }
+        },
+        "type" : "BinExpr"
+      },
+      "type" : "IfExpr"
+    },
+    {
+      "body" : [
+        {
+          "assignee" : [
+            "layers",
+            "LayoutDropdown",
+            "selectedIndex"
+          ],
+          "content" : {
+            "type" : "LitExpr",
+            "value" : {
+              "data" : 1,
+              "type" : "WholeNumber"
+            }
+          },
+          "type" : "AssignExpr"
+        }
+      ],
+      "condition" : {
+        "left" : [
+          "parameters",
+          "heightMode"
+        ],
+        "op" : "==",
+        "right" : {
+          "type" : "LitExpr",
+          "value" : {
+            "data" : "fixedHeight",
+            "type" : {
+              "alias" : "CanvasHeight",
+              "name" : "Named",
+              "of" : {
+                "cases" : [
+                  "flexibleHeight",
+                  "fixedHeight"
+                ],
+                "name" : "Enum"
+              }
+            }
+          }
+        },
+        "type" : "BinExpr"
+      },
+      "type" : "IfExpr"
+    },
+    {
+      "content" : {
+        "type" : "LitExpr",
+        "value" : {
+          "data" : "",
+          "type" : "String"
+        }
+      },
+      "id" : "intermediateCanvasName",
+      "type" : "VarDeclExpr"
+    },
+    {
+      "body" : [
+        {
+          "assignee" : [
+            "intermediateCanvasName"
+          ],
+          "content" : [
+            "canvasName"
+          ],
+          "type" : "AssignExpr"
+        }
+      ],
+      "condition" : {
+        "content" : [
+          "parameters",
+          "canvasName"
+        ],
+        "id" : "canvasName",
+        "type" : "VarDeclExpr"
+      },
+      "type" : "IfExpr"
+    },
+    {
+      "assignee" : [
+        "layers",
+        "NameInput",
+        "textValue"
+      ],
+      "content" : [
+        "intermediateCanvasName"
+      ],
+      "type" : "AssignExpr"
+    },
+    {
+      "assignee" : [
+        "layers",
+        "NameInput",
+        "onChangeTextValue"
+      ],
+      "content" : [
+        "parameters",
+        "onChangeCanvasName"
+      ],
+      "type" : "AssignExpr"
+    },
+    {
+      "assignee" : [
+        "layers",
+        "HeightInput",
+        "onChangeNumberValue"
+      ],
+      "content" : [
+        "parameters",
+        "onChangeCanvasHeight"
+      ],
+      "type" : "AssignExpr"
+    },
+    {
+      "assignee" : [
+        "layers",
+        "WidthInput",
+        "onChangeNumberValue"
+      ],
+      "content" : [
+        "parameters",
+        "onChangeCanvasWidth"
+      ],
+      "type" : "AssignExpr"
+    }
+  ],
+  "params" : [
+    {
+      "name" : "showsDimensionInputs",
+      "type" : "Boolean"
+    },
+    {
+      "name" : "availableDevices",
+      "type" : {
+        "name" : "Array",
+        "of" : "String"
+      }
+    },
+    {
+      "name" : "deviceIndex",
+      "type" : "WholeNumber"
+    },
+    {
+      "name" : "onChangeDeviceIndex",
+      "type" : {
+        "name" : "Function",
+        "parameters" : [
+          {
+            "label" : "_",
+            "type" : "WholeNumber"
+          }
+        ]
+      }
+    },
+    {
+      "name" : "heightMode",
+      "type" : {
+        "alias" : "CanvasHeight",
+        "name" : "Named",
+        "of" : {
+          "cases" : [
+            "flexibleHeight",
+            "fixedHeight"
+          ],
+          "name" : "Enum"
+        }
+      }
+    },
+    {
+      "name" : "devicePreset",
+      "type" : "String"
+    },
+    {
+      "name" : "canvasHeight",
+      "type" : "Number"
+    },
+    {
+      "name" : "canvasWidth",
+      "type" : "Number"
+    },
+    {
+      "name" : "canvasName",
+      "type" : "String?"
+    },
+    {
+      "name" : "canvasNamePlaceholder",
+      "type" : "String"
+    },
+    {
+      "name" : "backgroundColorId",
+      "type" : "String"
+    },
+    {
+      "name" : "onChangeCanvasName",
+      "type" : "StringHandler"
+    },
+    {
+      "name" : "onChangeCanvasWidth",
+      "type" : {
+        "name" : "Function",
+        "parameters" : [
+          {
+            "label" : "_",
+            "type" : "Number"
+          }
+        ]
+      }
+    },
+    {
+      "name" : "onChangeCanvasHeight",
+      "type" : {
+        "name" : "Function",
+        "parameters" : [
+          {
+            "label" : "_",
+            "type" : "Number"
+          }
+        ]
+      }
+    },
+    {
+      "name" : "onChangeHeightModeIndex",
+      "type" : {
+        "name" : "Function",
+        "parameters" : [
+          {
+            "label" : "_",
+            "type" : "WholeNumber"
+          }
+        ]
+      }
+    },
+    {
+      "name" : "onChangeBackgroundColorId",
+      "type" : "StringHandler"
+    }
+  ],
+  "root" : {
+    "children" : [
+      {
+        "children" : [
+          {
+            "id" : "LayoutLabel",
+            "params" : {
+              "marginRight" : 20,
+              "text" : "Layout",
+              "width" : 80
+            },
+            "type" : "Lona:Text"
+          },
+          {
+            "id" : "LayoutDropdown",
+            "params" : {
+              "selectedIndex" : 0,
+              "values" : [
+                "Flexible-height",
+                "Fixed-size"
+              ]
+            },
+            "type" : "ControlledDropdown"
+          }
+        ],
+        "id" : "LayoutRow",
+        "params" : {
+          "alignItems" : "center",
+          "alignSelf" : "stretch",
+          "flexDirection" : "row",
+          "marginTop" : 16
+        },
+        "type" : "Lona:View"
+      },
+      {
+        "children" : [
+          {
+            "id" : "DeviceLabel",
+            "params" : {
+              "marginRight" : 20,
+              "marginTop" : 2,
+              "text" : "Device",
+              "width" : 80
+            },
+            "type" : "Lona:Text"
+          },
+          {
+            "children" : [
+              {
+                "id" : "DeviceDropdown",
+                "params" : {
+                  "selectedIndex" : 0,
+                  "values" : [
+                    "Custom",
+                    "iPhone 8",
+                    "iPhone 8 Plus",
+                    "iPhone SE",
+                    "iPhone XS",
+                    "iPhone XR",
+                    "iPhone XS Max",
+                    "iPad",
+                    "iPad Pro 10.5\"",
+                    "iPad Pro 11\"",
+                    "iPad Pro 12.9\"",
+                    "Pixel 2",
+                    "Pixel 2 XL",
+                    "Galaxy S8",
+                    "Nexus 7",
+                    "Nexus 9",
+                    "Nexus 10",
+                    "Desktop",
+                    "Desktop HD"
+                  ]
+                },
+                "type" : "ControlledDropdown"
+              },
+              {
+                "children" : [
+                  {
+                    "children" : [
+                      {
+                        "id" : "WidthLabel",
+                        "params" : {
+                          "alignSelf" : "stretch",
+                          "marginBottom" : 8,
+                          "text" : "Width"
+                        },
+                        "type" : "Lona:Text"
+                      },
+                      {
+                        "id" : "WidthInput",
+                        "params" : {
+                          "numberValue" : 0
+                        },
+                        "type" : "NumberInput"
+                      }
+                    ],
+                    "id" : "WidthContainer",
+                    "params" : {
+                      "flex" : 1
+                    },
+                    "type" : "Lona:View"
+                  },
+                  {
+                    "id" : "HSpacer",
+                    "params" : {
+                      "height" : 0,
+                      "width" : 8
+                    },
+                    "type" : "Lona:View"
+                  },
+                  {
+                    "children" : [
+                      {
+                        "id" : "HeightLabel",
+                        "params" : {
+                          "alignSelf" : "stretch",
+                          "marginBottom" : 8,
+                          "text" : "Height"
+                        },
+                        "type" : "Lona:Text"
+                      },
+                      {
+                        "id" : "HeightInput",
+                        "params" : {
+                          "numberValue" : 0
+                        },
+                        "type" : "NumberInput"
+                      }
+                    ],
+                    "id" : "HeightContainer",
+                    "params" : {
+                      "flex" : 1
+                    },
+                    "type" : "Lona:View"
+                  }
+                ],
+                "id" : "CustomDimensionsContainer",
+                "params" : {
+                  "alignSelf" : "stretch",
+                  "flexDirection" : "row",
+                  "marginTop" : 16
+                },
+                "type" : "Lona:View"
+              }
+            ],
+            "id" : "DeviceValueContainer",
+            "params" : {
+              "flex" : 1
+            },
+            "type" : "Lona:View"
+          }
+        ],
+        "id" : "DeviceRow",
+        "params" : {
+          "alignSelf" : "stretch",
+          "flexDirection" : "row",
+          "marginTop" : 16
+        },
+        "type" : "Lona:View"
+      },
+      {
+        "children" : [
+          {
+            "id" : "NameLabel",
+            "params" : {
+              "marginRight" : 20,
+              "text" : "Name",
+              "width" : 80
+            },
+            "type" : "Lona:Text"
+          },
+          {
+            "id" : "NameInput",
+            "params" : {
+              "placeholderString" : "Custom name",
+              "textValue" : ""
+            },
+            "type" : "TextInput"
+          }
+        ],
+        "id" : "NameRow",
+        "params" : {
+          "alignItems" : "center",
+          "alignSelf" : "stretch",
+          "flexDirection" : "row",
+          "marginTop" : 16
+        },
+        "type" : "Lona:View"
+      },
+      {
+        "children" : [
+          {
+            "id" : "BackgroundColorLabel",
+            "params" : {
+              "marginRight" : 20,
+              "text" : "Background",
+              "width" : 80
+            },
+            "type" : "Lona:Text"
+          },
+          {
+            "id" : "BackgroundColorInput",
+            "params" : {
+              "textValue" : "Text"
+            },
+            "type" : "TextInput"
+          }
+        ],
+        "id" : "BackgroundColorRow",
+        "params" : {
+          "alignItems" : "center",
+          "alignSelf" : "stretch",
+          "flexDirection" : "row",
+          "marginBottom" : 16,
+          "marginTop" : 16
+        },
+        "type" : "Lona:View"
+      }
+    ],
+    "id" : "Container",
+    "params" : {
+      "alignSelf" : "stretch"
+    },
+    "type" : "Lona:View"
+  }
+}

@@ -124,7 +124,70 @@ class WorkspaceViewController: NSSplitViewController {
     }()
 
     private lazy var editorViewController = EditorViewController()
-    private lazy var componentEditorViewController = ComponentEditorViewController()
+    private lazy var componentEditorViewController: ComponentEditorViewController = {
+        let controller = ComponentEditorViewController()
+
+        controller.onChangeInspectedCanvas = { [unowned self] index in
+            guard let component = self.component else { return }
+
+            let canvas = component.canvas[index]
+
+            controller.selectedLayerName = nil
+            controller.selectedCanvasHeaderItem = index
+            self.inspectedContent = .canvas(canvas)
+            self.inspectorView.content = .canvas(canvas)
+        }
+
+        controller.onDeleteCanvas = { [unowned self] index in
+            guard let component = self.component else { return }
+
+            component.canvas.remove(at: index)
+
+            controller.selectedLayerName = nil
+            controller.selectedCanvasHeaderItem = nil
+            self.inspectedContent = nil
+            self.inspectorView.content = nil
+        }
+
+        controller.onAddCanvas = { [unowned self] in
+            guard let component = self.component else { return }
+
+            let canvas: Canvas
+
+            if let last = component.canvas.last {
+                canvas = last.copy() as! Canvas
+            } else {
+                canvas = Canvas.createDefaultCanvas()
+            }
+
+            component.canvas.append(canvas)
+
+            controller.selectedLayerName = nil
+            controller.selectedCanvasHeaderItem = component.canvas.count - 1
+            self.inspectedContent = .canvas(canvas)
+            self.inspectorView.content = .canvas(canvas)
+        }
+
+        controller.onMoveCanvas = { [unowned self] index, newIndex in
+            guard let component = self.component else { return }
+
+            component.canvas.swapAt(index, newIndex)
+
+            controller.selectedLayerName = nil
+
+            // If there was a canvas selected previous, re-select it at its new index
+            if controller.selectedCanvasHeaderItem == index {
+                let canvas = component.canvas[newIndex]
+
+                controller.selectedCanvasHeaderItem = newIndex
+                self.inspectedContent = .canvas(canvas)
+                self.inspectorView.content = .canvas(canvas)
+            }
+        }
+
+        return controller
+    }()
+
     private lazy var codeEditorViewController = CodeEditorViewController()
 
     private lazy var colorEditorViewController: ColorEditorViewController = {
@@ -456,6 +519,7 @@ class WorkspaceViewController: NSSplitViewController {
                 }
                 self.inspectedContent = .layer(layer)
                 self.inspectorView.content = .layer(layer)
+                self.componentEditorViewController.selectedCanvasHeaderItem = nil
                 self.componentEditorViewController.selectedLayerName = layer.name
             }
 
@@ -463,7 +527,16 @@ class WorkspaceViewController: NSSplitViewController {
                 self.inspectorView.content = self.inspectedContent
             }
 
-            inspectorView.onChangeContent = { content, changeType in
+            inspectorView.onChangeContent = { [unowned self] content, changeType in
+                switch content {
+                case .canvas(let canvas):
+                    guard let index = self.componentEditorViewController.selectedCanvasHeaderItem else { break }
+                    self.component?.canvas[index] = canvas
+                    self.componentEditorViewController.updateCanvas()
+                default:
+                    break
+                }
+
                 switch changeType {
                 case .canvas:
                     self.componentEditorViewController.updateCanvas()

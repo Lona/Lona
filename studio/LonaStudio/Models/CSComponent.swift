@@ -230,11 +230,7 @@ class CSComponent: DataNode, NSCopying {
     static func makeDefaultComponent() -> CSComponent {
         return CSComponent(
             name: "Component",
-            canvas: [
-                Canvas(visible: true, name: "iPhone SE", width: 320, height: 100, heightMode: "At Least", exportScale: 1, backgroundColor: "white"),
-                Canvas(visible: true, name: "iPhone 7", width: 375, height: 100, heightMode: "At Least", exportScale: 1, backgroundColor: "white"),
-                Canvas(visible: true, name: "iPhone 7+", width: 414, height: 100, heightMode: "At Least", exportScale: 1, backgroundColor: "white")
-                ],
+            canvas: Canvas.createDefaultCanvasList(),
             rootLayer: CSLayer(name: "View", type: .view, parameters: [
                 "alignSelf": "stretch".toData()
                 ]),

@@ -9,12 +9,17 @@
 import Foundation
 import Cocoa
 
-private func imageData(from pixelBuffer: CVPixelBuffer) -> Data? {
+private func image(from pixelBuffer: CVPixelBuffer) -> NSImage {
     let imageRep = NSCIImageRep(ciImage: CIImage(cvPixelBuffer: pixelBuffer, options: nil))
     let image = NSImage(size: imageRep.size)
     image.addRepresentation(imageRep)
+    return image
+}
 
-    guard let bitmapData = image.tiffRepresentation else {
+private func imageData(from pixelBuffer: CVPixelBuffer) -> Data? {
+    let nsImage = image(from: pixelBuffer)
+
+    guard let bitmapData = nsImage.tiffRepresentation else {
         Swift.print("Failed to convert to tiff")
         return nil
     }
@@ -243,6 +248,11 @@ public extension NSView {
         NSGraphicsContext.restoreGraphicsState()
 
         return pixelBuffer
+    }
+
+    func imageRepresentation(scaledBy scale: CGFloat = 1) -> NSImage? {
+        guard let buffer = pixelBuffer(scaledBy: scale) else { return nil }
+        return image(from: buffer)
     }
 
     func dataRepresentation(scaledBy scale: CGFloat = 1) -> Data? {

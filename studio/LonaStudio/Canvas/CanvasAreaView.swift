@@ -32,6 +32,21 @@ public class CanvasAreaView: NSBox {
         setUpConstraints()
     }
 
+    // MARK: Public
+
+    public var onSelectCanvasHeaderItem: ((Int) -> Void)?
+
+    public var onDeleteCanvasHeaderItem: ((Int) -> Void)?
+
+    public var onAddCanvas: (() -> Void)?
+
+    public var onMoveCanvasHeaderItem: ((Int, Int) -> Void)?
+
+    public var selectedHeaderItem: Int? {
+        get { return outlineView.selectedHeaderItem }
+        set { outlineView.selectedHeaderItem = newValue }
+    }
+
     // MARK: Private
 
     private var scrollView = NSScrollView(frame: .zero)
@@ -45,6 +60,18 @@ public class CanvasAreaView: NSBox {
 
         outlineView.dataSource = outlineView
         outlineView.delegate = outlineView
+        outlineView.onClickHeaderItem = { [unowned self] index in
+            self.onSelectCanvasHeaderItem?(index)
+        }
+        outlineView.onDeleteHeaderItem = { [unowned self] index in
+            self.onDeleteCanvasHeaderItem?(index)
+        }
+        outlineView.onClickHeaderPlus = { [unowned self] in
+            self.onAddCanvas?()
+        }
+        outlineView.onMoveHeaderItem = { [unowned self] index, newIndex in
+            self.onMoveCanvasHeaderItem?(index, newIndex)
+        }
 
         scrollView.hasVerticalScroller = true
         scrollView.hasHorizontalScroller = true

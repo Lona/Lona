@@ -103,6 +103,13 @@
       "fontSize": 12,
       "fontWeight": "500",
       "color": "#545454"
+    },
+    {
+      "id": "sectionTitleInverse",
+      "name": "Section Title Inverse",
+      "fontSize": 12,
+      "fontWeight": "600",
+      "color": "white"
     }
   ]
 }

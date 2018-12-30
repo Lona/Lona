@@ -3,7 +3,7 @@
     {
       "height" : 0,
       "heightMode" : "At Least",
-      "name" : "iPhone SE",
+      "name" : "Header Column",
       "width" : 320
     }
   ],
@@ -13,6 +13,13 @@
       "name" : "Default",
       "params" : {
 
+      }
+    },
+    {
+      "id" : "Selected",
+      "name" : "Selected",
+      "params" : {
+        "selected" : true
       }
     }
   ],
@@ -52,6 +59,256 @@
         "titleText"
       ],
       "type" : "AssignExpr"
+    },
+    {
+      "assignee" : [
+        "layers",
+        "Container",
+        "onPress"
+      ],
+      "content" : [
+        "parameters",
+        "onClick"
+      ],
+      "type" : "AssignExpr"
+    },
+    {
+      "body" : [
+        {
+          "assignee" : [
+            "layers",
+            "Container",
+            "backgroundColor"
+          ],
+          "content" : {
+            "type" : "LitExpr",
+            "value" : {
+              "data" : "headerBackground",
+              "type" : "Color"
+            }
+          },
+          "type" : "AssignExpr"
+        },
+        {
+          "assignee" : [
+            "layers",
+            "VDividerLeft",
+            "backgroundColor"
+          ],
+          "content" : {
+            "type" : "LitExpr",
+            "value" : {
+              "data" : "headerBackground",
+              "type" : "Color"
+            }
+          },
+          "type" : "AssignExpr"
+        }
+      ],
+      "condition" : {
+        "left" : [
+          "layers",
+          "Container",
+          "pressed"
+        ],
+        "op" : "==",
+        "right" : {
+          "type" : "LitExpr",
+          "value" : {
+            "data" : true,
+            "type" : "Boolean"
+          }
+        },
+        "type" : "BinExpr"
+      },
+      "type" : "IfExpr"
+    },
+    {
+      "body" : [
+        {
+          "assignee" : [
+            "layers",
+            "Container",
+            "backgroundColor"
+          ],
+          "content" : {
+            "type" : "LitExpr",
+            "value" : {
+              "data" : "systemSelection",
+              "type" : "Color"
+            }
+          },
+          "type" : "AssignExpr"
+        },
+        {
+          "assignee" : [
+            "layers",
+            "HDivider",
+            "backgroundColor"
+          ],
+          "content" : {
+            "type" : "LitExpr",
+            "value" : {
+              "data" : "systemSelection",
+              "type" : "Color"
+            }
+          },
+          "type" : "AssignExpr"
+        },
+        {
+          "assignee" : [
+            "layers",
+            "VDivider",
+            "backgroundColor"
+          ],
+          "content" : {
+            "type" : "LitExpr",
+            "value" : {
+              "data" : "systemSelection",
+              "type" : "Color"
+            }
+          },
+          "type" : "AssignExpr"
+        },
+        {
+          "assignee" : [
+            "layers",
+            "VDividerLeft",
+            "backgroundColor"
+          ],
+          "content" : {
+            "type" : "LitExpr",
+            "value" : {
+              "data" : "systemSelection",
+              "type" : "Color"
+            }
+          },
+          "type" : "AssignExpr"
+        },
+        {
+          "assignee" : [
+            "layers",
+            "Title",
+            "textStyle"
+          ],
+          "content" : {
+            "type" : "LitExpr",
+            "value" : {
+              "data" : "sectionTitleInverse",
+              "type" : "TextStyle"
+            }
+          },
+          "type" : "AssignExpr"
+        }
+      ],
+      "condition" : {
+        "left" : [
+          "parameters",
+          "selected"
+        ],
+        "op" : "==",
+        "right" : {
+          "type" : "LitExpr",
+          "value" : {
+            "data" : true,
+            "type" : "Boolean"
+          }
+        },
+        "type" : "BinExpr"
+      },
+      "type" : "IfExpr"
+    },
+    {
+      "body" : [
+        {
+          "assignee" : [
+            "layers",
+            "VDividerLeft",
+            "backgroundColor"
+          ],
+          "content" : {
+            "type" : "LitExpr",
+            "value" : {
+              "data" : "blue400",
+              "type" : "Color"
+            }
+          },
+          "type" : "AssignExpr"
+        }
+      ],
+      "condition" : {
+        "left" : [
+          "parameters",
+          "dropTargetIndicator"
+        ],
+        "op" : "==",
+        "right" : {
+          "type" : "LitExpr",
+          "value" : {
+            "data" : "left",
+            "type" : {
+              "alias" : "DropTargetIndicator",
+              "name" : "Named",
+              "of" : {
+                "cases" : [
+                  "none",
+                  "left",
+                  "right"
+                ],
+                "name" : "Enum"
+              }
+            }
+          }
+        },
+        "type" : "BinExpr"
+      },
+      "type" : "IfExpr"
+    },
+    {
+      "body" : [
+        {
+          "assignee" : [
+            "layers",
+            "VDivider",
+            "backgroundColor"
+          ],
+          "content" : {
+            "type" : "LitExpr",
+            "value" : {
+              "data" : "blue400",
+              "type" : "Color"
+            }
+          },
+          "type" : "AssignExpr"
+        }
+      ],
+      "condition" : {
+        "left" : [
+          "parameters",
+          "dropTargetIndicator"
+        ],
+        "op" : "==",
+        "right" : {
+          "type" : "LitExpr",
+          "value" : {
+            "data" : "right",
+            "type" : {
+              "alias" : "DropTargetIndicator",
+              "name" : "Named",
+              "of" : {
+                "cases" : [
+                  "none",
+                  "left",
+                  "right"
+                ],
+                "name" : "Enum"
+              }
+            }
+          }
+        },
+        "type" : "BinExpr"
+      },
+      "type" : "IfExpr"
     }
   ],
   "params" : [
@@ -62,12 +319,46 @@
     {
       "name" : "dividerColor",
       "type" : "Color"
+    },
+    {
+      "name" : "onClick",
+      "type" : {
+        "name" : "Function"
+      }
+    },
+    {
+      "name" : "selected",
+      "type" : "Boolean"
+    },
+    {
+      "name" : "dropTargetIndicator",
+      "type" : {
+        "alias" : "DropTargetIndicator",
+        "name" : "Named",
+        "of" : {
+          "cases" : [
+            "none",
+            "left",
+            "right"
+          ],
+          "name" : "Enum"
+        }
+      }
     }
   ],
   "root" : {
     "children" : [
       {
         "children" : [
+          {
+            "id" : "VDividerLeft",
+            "params" : {
+              "alignSelf" : "stretch",
+              "backgroundColor" : "white",
+              "width" : 1
+            },
+            "type" : "Lona:View"
+          },
           {
             "id" : "Title",
             "params" : {

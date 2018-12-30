@@ -308,6 +308,10 @@ let rec logicNode = json => {
         let content = o##content |> logicValueFromExpr;
         let assignee = o##assignee |> logicValueFromExpr;
         Logic.Assign(content, assignee);
+      | VariableDeclarationExpression(o) =>
+        let id = o##identifier |> identifierFromExpr;
+        let content = o##content |> logicValueFromExpr;
+        Logic.LetEqual(Logic.Identifier(undefinedType, [id]), content);
       | IfExpression(o) =>
         let body = o##body |> List.map(fromExpr);
         switch (o##condition) {

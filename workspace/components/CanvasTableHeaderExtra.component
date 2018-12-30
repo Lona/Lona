@@ -1,0 +1,145 @@
+{
+  "devices" : [
+    {
+      "height" : 0,
+      "heightMode" : "At Least",
+      "name" : "Header Column",
+      "width" : 42
+    }
+  ],
+  "examples" : [
+    {
+      "id" : "Default",
+      "name" : "Default",
+      "params" : {
+
+      }
+    },
+    {
+      "id" : "Selected",
+      "name" : "Selected",
+      "params" : {
+        "selected" : true
+      }
+    }
+  ],
+  "logic" : [
+    {
+      "assignee" : [
+        "layers",
+        "HDivider",
+        "backgroundColor"
+      ],
+      "content" : [
+        "parameters",
+        "dividerColor"
+      ],
+      "type" : "AssignExpr"
+    },
+    {
+      "assignee" : [
+        "layers",
+        "Button",
+        "onPress"
+      ],
+      "content" : [
+        "parameters",
+        "onClickPlus"
+      ],
+      "type" : "AssignExpr"
+    },
+    {
+      "body" : [
+        {
+          "assignee" : [
+            "layers",
+            "Button",
+            "backgroundColor"
+          ],
+          "content" : {
+            "type" : "LitExpr",
+            "value" : {
+              "data" : "headerBackground",
+              "type" : "Color"
+            }
+          },
+          "type" : "AssignExpr"
+        }
+      ],
+      "condition" : {
+        "left" : [
+          "layers",
+          "Button",
+          "pressed"
+        ],
+        "op" : "==",
+        "right" : {
+          "type" : "LitExpr",
+          "value" : {
+            "data" : true,
+            "type" : "Boolean"
+          }
+        },
+        "type" : "BinExpr"
+      },
+      "type" : "IfExpr"
+    }
+  ],
+  "params" : [
+    {
+      "name" : "dividerColor",
+      "type" : "Color"
+    },
+    {
+      "name" : "onClickPlus",
+      "type" : {
+        "name" : "Function"
+      }
+    }
+  ],
+  "root" : {
+    "children" : [
+      {
+        "children" : [
+          {
+            "id" : "Title",
+            "params" : {
+              "font" : "large",
+              "text" : "+",
+              "textAlign" : "center"
+            },
+            "type" : "Lona:Text"
+          }
+        ],
+        "id" : "Button",
+        "params" : {
+          "alignItems" : "center",
+          "backgroundColor" : "grey200",
+          "borderRadius" : 11,
+          "height" : 22,
+          "marginBottom" : 8,
+          "marginTop" : 7,
+          "width" : 22
+        },
+        "type" : "Lona:View"
+      },
+      {
+        "id" : "HDivider",
+        "params" : {
+          "alignSelf" : "stretch",
+          "backgroundColor" : "#D8D8D8",
+          "height" : 1
+        },
+        "type" : "Lona:View"
+      }
+    ],
+    "id" : "Container",
+    "params" : {
+      "alignItems" : "center",
+      "alignSelf" : "stretch",
+      "backgroundColor" : "white",
+      "height" : 38
+    },
+    "type" : "Lona:View"
+  }
+}

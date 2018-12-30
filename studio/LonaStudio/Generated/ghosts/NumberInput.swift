@@ -18,8 +18,8 @@ public class NumberInput: NSBox {
     update()
   }
 
-  public convenience init(numberValue: CGFloat) {
-    self.init(Parameters(numberValue: numberValue))
+  public convenience init(numberValue: CGFloat, disabled: Bool) {
+    self.init(Parameters(numberValue: numberValue, disabled: disabled))
   }
 
   public convenience init() {
@@ -51,6 +51,15 @@ public class NumberInput: NSBox {
   public var onChangeNumberValue: ((CGFloat) -> Void)? {
     get { return parameters.onChangeNumberValue }
     set { parameters.onChangeNumberValue = newValue }
+  }
+
+  public var disabled: Bool {
+    get { return parameters.disabled }
+    set {
+      if parameters.disabled != newValue {
+        parameters.disabled = newValue
+      }
+    }
   }
 
   public var parameters: Parameters {
@@ -110,19 +119,21 @@ public class NumberInput: NSBox {
 extension NumberInput {
   public struct Parameters: Equatable {
     public var numberValue: CGFloat
+    public var disabled: Bool
     public var onChangeNumberValue: ((CGFloat) -> Void)?
 
-    public init(numberValue: CGFloat, onChangeNumberValue: ((CGFloat) -> Void)? = nil) {
+    public init(numberValue: CGFloat, disabled: Bool, onChangeNumberValue: ((CGFloat) -> Void)? = nil) {
       self.numberValue = numberValue
+      self.disabled = disabled
       self.onChangeNumberValue = onChangeNumberValue
     }
 
     public init() {
-      self.init(numberValue: 0)
+      self.init(numberValue: 0, disabled: false)
     }
 
     public static func ==(lhs: Parameters, rhs: Parameters) -> Bool {
-      return lhs.numberValue == rhs.numberValue
+      return lhs.numberValue == rhs.numberValue && lhs.disabled == rhs.disabled
     }
   }
 }
@@ -146,12 +157,12 @@ extension NumberInput {
       self.parameters = parameters
     }
 
-    public init(numberValue: CGFloat, onChangeNumberValue: ((CGFloat) -> Void)? = nil) {
-      self.init(Parameters(numberValue: numberValue, onChangeNumberValue: onChangeNumberValue))
+    public init(numberValue: CGFloat, disabled: Bool, onChangeNumberValue: ((CGFloat) -> Void)? = nil) {
+      self.init(Parameters(numberValue: numberValue, disabled: disabled, onChangeNumberValue: onChangeNumberValue))
     }
 
     public init() {
-      self.init(numberValue: 0)
+      self.init(numberValue: 0, disabled: false)
     }
   }
 }

@@ -27,6 +27,11 @@ class CanvasTableView: NSTableView, NSTableViewDataSource, NSTableViewDelegate {
         rowSizeStyle = .custom
         headerView = header
 
+        header.onClickItem = handleClickHeaderItem
+        header.onDeleteItem = handleDeleteHeaderItem
+        header.onClickPlus = handleClickHeaderPlus
+        header.onMoveItem = handleMoveHeaderItem
+
         // A hack to let us reuse the same cell view every render:
         //
         // Normally NSTableView doesn't give us control over which view gets reused.
@@ -69,6 +74,35 @@ class CanvasTableView: NSTableView, NSTableViewDataSource, NSTableViewDelegate {
 
     var component: CSComponent?
 
+    var onClickHeaderItem: ((Int) -> Void)?
+
+    var onDeleteHeaderItem: ((Int) -> Void)?
+
+    var onClickHeaderPlus: (() -> Void)?
+
+    var onMoveHeaderItem: ((Int, Int) -> Void)?
+
+    var selectedHeaderItem: Int? {
+        get { return header.selectedItem }
+        set { header.selectedItem = newValue }
+    }
+
+    private func handleClickHeaderItem(_ index: Int) {
+        onClickHeaderItem?(index)
+    }
+
+    private func handleDeleteHeaderItem(_ index: Int) {
+        onDeleteHeaderItem?(index)
+    }
+
+    private func handleClickHeaderPlus() {
+        onClickHeaderPlus?()
+    }
+
+    private func handleMoveHeaderItem(_ index: Int, _ newIndex: Int) {
+        onMoveHeaderItem?(index, newIndex)
+    }
+
     @objc fileprivate func doubleClick(sender: AnyObject) {
         if clickedColumn == -1 { return }
 
@@ -77,11 +111,13 @@ class CanvasTableView: NSTableView, NSTableViewDataSource, NSTableViewDelegate {
         }
     }
 
+    let extraColumn = NSTableColumn(title: "Add Canvas", width: 42)
+
     // Call this after changing canvases to update the labels
     func updateHeader() {
         let columns: [NSTableColumn] = canvases.map { canvas in
-            return NSTableColumn(title: canvas.name, width: CGFloat(canvas.width) + CanvasView.margin * 2)
-        }
+            return NSTableColumn(title: canvas.computedName, width: CGFloat(canvas.width) + CanvasView.margin * 2)
+        } + [extraColumn]
 
         if columns.count == tableColumns.count && zip(columns, tableColumns).allSatisfy({ a, b in
             return a.title == b.title && a.width == b.width

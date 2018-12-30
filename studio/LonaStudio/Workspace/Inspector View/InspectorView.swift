@@ -21,6 +21,7 @@ final class InspectorView: NSBox {
         case layer(CSLayer)
         case color(CSColor)
         case textStyle(CSTextStyle)
+        case canvas(Canvas)
 
         init?(_ color: CSColor?) {
             guard let color = color else { return nil }
@@ -32,6 +33,10 @@ final class InspectorView: NSBox {
             guard let textStyle = textStyle else { return nil }
 
             self = .textStyle(textStyle)
+        }
+
+        init?(_ canvas: Canvas) {
+            self = .canvas(canvas)
         }
     }
 
@@ -211,6 +216,134 @@ final class InspectorView: NSBox {
 
         case .textStyle:
             inspectorView.removeFromSuperview()
+        case .canvas(let canvas):
+            let alreadyShowing = inspectorView is CanvasInspector
+
+            if !alreadyShowing {
+                inspectorView.removeFromSuperview()
+            }
+
+            let canvasInspector = (inspectorView as? CanvasInspector) ?? CanvasInspector()
+
+            let devicePresets = ["Custom"] + Canvas.devicePresets.map { $0.name }
+
+            canvasInspector.showsDimensionInputs = canvas.device == .custom
+            canvasInspector.canvasHeight = CGFloat(canvas.height)
+            canvasInspector.canvasWidth = CGFloat(canvas.width)
+            canvasInspector.heightMode = canvas.heightMode == "At Least" ? .flexibleHeight : .fixedHeight
+            canvasInspector.backgroundColorId = canvas.backgroundColor
+            canvasInspector.availableDevices = devicePresets
+
+            switch canvas.device {
+            case .custom:
+                canvasInspector.deviceIndex = 0
+                canvasInspector.canvasNamePlaceholder = "Custom name"
+                canvasInspector.canvasName = canvas.name
+            case .preset(let device):
+                canvasInspector.deviceIndex = devicePresets.firstIndex(of: device.name) ?? 0
+                canvasInspector.canvasNamePlaceholder = device.name
+                canvasInspector.canvasName = canvas.name == device.name ? nil : canvas.name
+            }
+
+            canvasInspector.onChangeCanvasName = { name in
+                let newCanvas = canvas.copy() as! Canvas
+
+                switch canvas.device {
+                case .custom:
+                    newCanvas.name = name
+                case .preset(let device):
+                    newCanvas.name = name == "" ? device.name : name
+                }
+
+                self.onChangeContent?(.canvas(newCanvas), .canvas)
+            }
+
+            canvasInspector.onChangeCanvasWidth = { value in
+                let newCanvas = canvas.copy() as! Canvas
+                newCanvas.width = Double(value)
+                self.onChangeContent?(.canvas(newCanvas), .canvas)
+            }
+
+            canvasInspector.onChangeCanvasHeight = { value in
+                let newCanvas = canvas.copy() as! Canvas
+                newCanvas.height = Double(value)
+                self.onChangeContent?(.canvas(newCanvas), .canvas)
+            }
+
+            canvasInspector.onChangeBackgroundColorId = { value in
+                let newCanvas = canvas.copy() as! Canvas
+                newCanvas.backgroundColor = value
+                self.onChangeContent?(.canvas(newCanvas), .canvas)
+            }
+
+            canvasInspector.onChangeHeightModeIndex = { index in
+                let newCanvas = canvas.copy() as! Canvas
+
+                if index == 0 {
+                    newCanvas.heightMode = "At Least"
+
+                    switch canvas.device {
+                    case .custom:
+                        break
+                    case .preset:
+                        newCanvas.height = 1
+                    }
+                } else {
+                    newCanvas.heightMode = "Exactly"
+
+                    switch canvas.device {
+                    case .custom:
+                        break
+                    case .preset(let device):
+                        newCanvas.height = Double(device.height)
+                    }
+                }
+
+                self.onChangeContent?(.canvas(newCanvas), .canvas)
+            }
+
+            canvasInspector.onChangeDeviceIndex = { index in
+                let newCanvas = canvas.copy() as! Canvas
+
+                if index == 0 {
+                    newCanvas.device = .custom
+
+                    switch canvas.device {
+                    case .custom:
+                        break
+                    case .preset(let device):
+                        newCanvas.width = Double(device.width)
+
+                        if canvas.heightMode == "At Least" {
+                            newCanvas.height = 1
+                        } else {
+                            newCanvas.height = Double(device.height)
+                        }
+                    }
+                } else {
+                    // Subtract one from the index, since we added "Custom" to the array of names
+                    let preset = Canvas.devicePresets[index - 1]
+                    newCanvas.device = .preset(preset)
+                    newCanvas.width = Double(preset.width)
+
+                    if canvas.heightMode == "At Least" {
+                        newCanvas.height = 1
+                    } else {
+                        newCanvas.height = Double(preset.height)
+                    }
+                }
+
+                self.onChangeContent?(.canvas(newCanvas), .canvas)
+            }
+
+            inspectorView = canvasInspector
+
+            flippedView.addSubview(inspectorView)
+
+            inspectorView.leadingAnchor.constraint(equalTo: flippedView.leadingAnchor).isActive = true
+            inspectorView.trailingAnchor.constraint(equalTo: flippedView.trailingAnchor).isActive = true
+            inspectorView.topAnchor.constraint(equalTo: flippedView.topAnchor).isActive = true
+            inspectorView.bottomAnchor.constraint(equalTo: flippedView.bottomAnchor).isActive = true
         }
     }
 }

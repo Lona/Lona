@@ -11,7 +11,6 @@ import Foundation
 let CSCanvasType = CSType.dictionary([
     "height": (type: CSType.number, access: .read),
     "width": (type: CSType.number, access: .read),
-    "aspectRatio": (type: CSType.number, access: .read),
     "index": (type: CSType.number, access: .read),
     "name": (type: CSType.number, access: .read)
 ])
@@ -19,7 +18,6 @@ let CSCanvasType = CSType.dictionary([
 let CSEmptyCanvasValue = CSValue(type: CSCanvasType, data: .Object([
     "height": CSData.Null,
     "width": CSData.Null,
-    "aspectRatio": CSData.Null,
     "index": CSData.Null,
     "name": CSData.Null
 ]))
@@ -33,19 +31,46 @@ class Canvas: CSDataSerializable, CSDataDeserializable, NSCopying {
     var backgroundColor: String = "white"
     var exportScale: Double = 1
     var parameters: CSData = CSData.Object([:])
+    var device: Device = .custom
 
-    var label: String {
-        return name
+    var computedName: String {
+        switch device {
+        case .preset(let devicePreset):
+            if !name.isEmpty && name != devicePreset.name {
+                return name
+            } else {
+                return devicePreset.name
+            }
+        case .custom:
+            return name
+        }
     }
 
-    var aspectRatio: Double {
-        return width / height
+    var computedHeight: CGFloat {
+        switch device {
+        case .custom:
+            return CGFloat(height)
+        case .preset(let devicePreset):
+            switch heightMode {
+            case "At Least":
+                return 1
+            default:
+                return devicePreset.height
+            }
+        }
+    }
+
+    var computedWidth: CGFloat {
+        switch device {
+        case .custom:
+            return CGFloat(width)
+        case .preset(let devicePreset):
+            return devicePreset.width
+        }
     }
 
     func value() -> CSValue {
-        var data = toData()
-        data.set(keyPath: ["aspectRatio"], to: aspectRatio.toData())
-        return CSValue(type: CSCanvasType, data: data)
+        return CSValue(type: CSCanvasType, data: toData())
     }
 
     func dimensionsString() -> String {
@@ -59,9 +84,26 @@ class Canvas: CSDataSerializable, CSDataDeserializable, NSCopying {
     required init(_ data: CSData) {
         visible = data.get(key: "visible").bool ?? true
         name = data.get(key: "name").stringValue
-        width = data.get(key: "width").numberValue
-        height = data.get(key: "height").numberValue
         heightMode = data.get(key: "heightMode").stringValue
+
+        if let deviceId = data.get(key: "deviceId").string,
+            let devicePreset = Canvas.devicePresets.first(where: { $0.name == deviceId }) {
+            device = .preset(devicePreset)
+
+            width = Double(devicePreset.width)
+
+            if heightMode == "At Least" {
+                height = 1
+            } else {
+                height = Double(devicePreset.height)
+            }
+        } else {
+            device = .custom
+
+            width = data.get(key: "width").numberValue
+            height = data.get(key: "height").numberValue
+        }
+
         exportScale = data.get(key: "exportScale").number ?? 1
         backgroundColor = data.get(key: "backgroundColor").string ?? "white"
         parameters = data["params"] ?? data["parameters"] ?? CSData.Object([:])
@@ -78,11 +120,47 @@ class Canvas: CSDataSerializable, CSDataDeserializable, NSCopying {
         self.parameters = parameters
     }
 
+    required init(
+        device: Device,
+        name: String = "",
+        heightMode: String = "At Least",
+        exportScale: Double = 1,
+        backgroundColor: String = "white") {
+        self.device = device
+        self.name = name
+        self.heightMode = heightMode
+        self.exportScale = exportScale
+        self.backgroundColor = backgroundColor
+
+        switch device {
+        case .custom:
+            break
+        case .preset(let preset):
+            width = Double(preset.width)
+
+            if heightMode == "At Least" {
+                height = 1
+            } else {
+                height = Double(preset.height)
+            }
+        }
+    }
+
+    static func createDefaultCanvas() -> Canvas {
+        return Canvas(device: .preset(Canvas.devicePresets[0]))
+    }
+
+    static func createDefaultCanvasList() -> [Canvas] {
+        let ios = Canvas.devicePresets.first(where: { $0.name == "iPhone SE" })!
+        let android = Canvas.devicePresets.first(where: { $0.name == "Pixel 2" })!
+        return [
+            Canvas(device: .preset(ios)),
+            Canvas(device: .preset(android))
+        ]
+    }
+
     func toData() -> CSData {
         var data = CSData.Object([
-            "name": name.toData(),
-            "width": width.toData(),
-            "height": height.toData(),
             "heightMode": heightMode.toData()
         ])
 
@@ -100,6 +178,19 @@ class Canvas: CSDataSerializable, CSDataDeserializable, NSCopying {
 
         if !parameters.objectValue.isEmpty {
             data["params"] = parameters
+        }
+
+        switch device {
+        case .preset(let devicePreset):
+            data["deviceId"] = devicePreset.name.toData()
+
+            if !name.isEmpty && name != devicePreset.name {
+                data["name"] = name.toData()
+            }
+        case .custom:
+            data["width"] = width.toData()
+            data["height"] = height.toData()
+            data["name"] = name.toData()
         }
 
         return data
@@ -121,6 +212,41 @@ extension Canvas: Equatable {
             lhs.heightMode == rhs.heightMode &&
             lhs.backgroundColor == rhs.backgroundColor &&
             lhs.exportScale == rhs.exportScale &&
-            lhs.parameters == rhs.parameters)
+            lhs.parameters == rhs.parameters &&
+            lhs.device == rhs.device)
     }
+}
+
+extension Canvas {
+    enum Device: Equatable {
+        case custom
+        case preset(DevicePreset)
+    }
+
+    struct DevicePreset: Equatable {
+        let name: String
+        let width: CGFloat
+        let height: CGFloat
+    }
+
+    static let devicePresets: [DevicePreset] = [
+        DevicePreset(name: "iPhone SE", width: 320, height: 568),
+        DevicePreset(name: "iPhone 8", width: 375, height: 667),
+        DevicePreset(name: "iPhone 8 Plus", width: 414, height: 736),
+        DevicePreset(name: "iPhone XS", width: 375, height: 812),
+        DevicePreset(name: "iPhone XR", width: 414, height: 896),
+        DevicePreset(name: "iPhone XS Max", width: 414, height: 896),
+        DevicePreset(name: "iPad", width: 768, height: 1024),
+        DevicePreset(name: "iPad Pro 10.5\"", width: 834, height: 1112),
+        DevicePreset(name: "iPad Pro 11\"", width: 834, height: 1194),
+        DevicePreset(name: "iPad Pro 12.9\"", width: 1024, height: 1366),
+        DevicePreset(name: "Pixel 2", width: 412, height: 732),
+        DevicePreset(name: "Pixel 2 XL", width: 360, height: 720),
+        DevicePreset(name: "Galaxy S8", width: 360, height: 740),
+        DevicePreset(name: "Nexus 7", width: 600, height: 960),
+        DevicePreset(name: "Nexus 9", width: 768, height: 1024),
+        DevicePreset(name: "Nexus 10", width: 800, height: 1280),
+        DevicePreset(name: "Desktop", width: 1024, height: 1024),
+        DevicePreset(name: "Desktop HD", width: 1440, height: 1024)
+    ]
 }
