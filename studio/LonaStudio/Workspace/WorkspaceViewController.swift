@@ -168,6 +168,23 @@ class WorkspaceViewController: NSSplitViewController {
             self.inspectorView.content = .canvas(canvas)
         }
 
+        controller.onMoveCanvas = { [unowned self] index, newIndex in
+            guard let component = self.component else { return }
+
+            component.canvas.swapAt(index, newIndex)
+
+            controller.selectedLayerName = nil
+
+            // If there was a canvas selected previous, re-select it at its new index
+            if controller.selectedCanvasHeaderItem == index {
+                let canvas = component.canvas[newIndex]
+
+                controller.selectedCanvasHeaderItem = newIndex
+                self.inspectedContent = .canvas(canvas)
+                self.inspectorView.content = .canvas(canvas)
+            }
+        }
+
         return controller
     }()
 

@@ -9,6 +9,35 @@
 import AppKit
 import Foundation
 
+private let CANVAS_PASTEBOARD_TYPE = NSPasteboard.PasteboardType("lona.canvas")
+
+// MARK: - DraggableCanvasTableHeaderItem
+
+private class DraggableCanvasTableHeaderItem: CanvasTableHeaderItem {
+    override func mouseDragged(with event: NSEvent) {
+        guard let dragPreview = imageRepresentation(),
+            let headerItemViews = superview?.subviews.filter({ $0 is DraggableCanvasTableHeaderItem }),
+            let index = headerItemViews.firstIndex(of: self) else { return }
+
+        let pasteboardItem = NSPasteboardItem()
+        pasteboardItem.setString(index.description, forType: .string)
+
+        let draggingItem = NSDraggingItem(pasteboardWriter: pasteboardItem)
+
+        draggingItem.setDraggingFrame(self.bounds, contents: dragPreview)
+
+        beginDraggingSession(with: [draggingItem], event: event, source: self)
+    }
+}
+
+extension DraggableCanvasTableHeaderItem: NSDraggingSource {
+    func draggingSession(_ session: NSDraggingSession, sourceOperationMaskFor context: NSDraggingContext) -> NSDragOperation {
+        return NSDragOperation.move
+    }
+}
+
+// MARK: - CanvasTableHeaderView
+
 class CanvasTableHeaderView: NSTableHeaderView {
 
     // MARK: Lifecycle
@@ -20,6 +49,8 @@ class CanvasTableHeaderView: NSTableHeaderView {
         setUpConstraints()
 
         update()
+
+        registerForDraggedTypes([NSPasteboard.PasteboardType.string])
     }
 
     required init?(coder decoder: NSCoder) {
@@ -33,6 +64,8 @@ class CanvasTableHeaderView: NSTableHeaderView {
     var onDeleteItem: ((Int) -> Void)?
 
     var onClickPlus: (() -> Void)?
+
+    var onMoveItem: ((Int, Int) -> Void)?
 
     var selectedItem: Int? {
         didSet {
@@ -95,7 +128,7 @@ class CanvasTableHeaderView: NSTableHeaderView {
                     addSubview(view)
                     segmentViews.append(view)
                 } else {
-                    let view = CanvasTableHeaderItem(titleText: column.title, dividerColor: NSSplitView.defaultDividerColor, selected: index == selectedItem)
+                    let view = DraggableCanvasTableHeaderItem(titleText: column.title, dividerColor: NSSplitView.defaultDividerColor, selected: index == selectedItem)
                     view.onClick = { [unowned self] in
                         self.window?.makeFirstResponder(self)
                         self.onClickItem?(index)
@@ -117,6 +150,44 @@ class CanvasTableHeaderView: NSTableHeaderView {
 
             segmentViews[index].frame = headerRect(ofColumn: index)
         }
+    }
+
+    // MARK: Dragging
+
+    override func draggingEntered(_ sender: NSDraggingInfo) -> NSDragOperation {
+        return NSDragOperation.move
+    }
+
+    override func performDragOperation(_ sender: NSDraggingInfo) -> Bool {
+        guard let tableView = tableView else { return false }
+
+        let pasteboard = sender.draggingPasteboard()
+
+        let point = convert(sender.draggingLocation(), from: nil)
+
+        if let value = pasteboard.string(forType: NSPasteboard.PasteboardType.string),
+            let index = Int(value) {
+
+            for i in 0..<tableView.numberOfColumns - 1 {
+                let rect = headerRect(ofColumn: i)
+
+                if point.x >= rect.minX && point.x < rect.maxX {
+                    if index != i {
+                        onMoveItem?(index, i)
+                    }
+                    break
+                }
+            }
+
+            let lastIndex = tableView.numberOfColumns - 2
+            if index != lastIndex {
+                onMoveItem?(index, lastIndex)
+            }
+
+            return true
+        }
+
+        return false
     }
 }
 

@@ -40,6 +40,8 @@ public class CanvasAreaView: NSBox {
 
     public var onAddCanvas: (() -> Void)?
 
+    public var onMoveCanvasHeaderItem: ((Int, Int) -> Void)?
+
     public var selectedHeaderItem: Int? {
         get { return outlineView.selectedHeaderItem }
         set { outlineView.selectedHeaderItem = newValue }
@@ -66,6 +68,9 @@ public class CanvasAreaView: NSBox {
         }
         outlineView.onClickHeaderPlus = { [unowned self] in
             self.onAddCanvas?()
+        }
+        outlineView.onMoveHeaderItem = { [unowned self] index, newIndex in
+            self.onMoveCanvasHeaderItem?(index, newIndex)
         }
 
         scrollView.hasVerticalScroller = true

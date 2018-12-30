@@ -30,6 +30,7 @@ class CanvasTableView: NSTableView, NSTableViewDataSource, NSTableViewDelegate {
         header.onClickItem = handleClickHeaderItem
         header.onDeleteItem = handleDeleteHeaderItem
         header.onClickPlus = handleClickHeaderPlus
+        header.onMoveItem = handleMoveHeaderItem
 
         // A hack to let us reuse the same cell view every render:
         //
@@ -79,6 +80,8 @@ class CanvasTableView: NSTableView, NSTableViewDataSource, NSTableViewDelegate {
 
     var onClickHeaderPlus: (() -> Void)?
 
+    var onMoveHeaderItem: ((Int, Int) -> Void)?
+
     var selectedHeaderItem: Int? {
         get { return header.selectedItem }
         set { header.selectedItem = newValue }
@@ -94,6 +97,10 @@ class CanvasTableView: NSTableView, NSTableViewDataSource, NSTableViewDelegate {
 
     private func handleClickHeaderPlus() {
         onClickHeaderPlus?()
+    }
+
+    private func handleMoveHeaderItem(_ index: Int, _ newIndex: Int) {
+        onMoveHeaderItem?(index, newIndex)
     }
 
     @objc fileprivate func doubleClick(sender: AnyObject) {
