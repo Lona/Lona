@@ -46,6 +46,19 @@ extension Colors {
         }
     }()
 
+    public static let contentBackground: NSColor = {
+        if #available(OSX 10.14, *) {
+            switch NSApp.effectiveAppearance.bestMatch(from: [.aqua, .darkAqua]) {
+            case .some(.darkAqua):
+                return NSColor.controlBackgroundColor
+            default:
+                return NSColor.white
+            }
+        } else {
+            return NSColor.white
+        }
+    }()
+
     public static let dividerSubtle: NSColor = {
         if #available(OSX 10.13, *) {
             return NSColor(named: NSColor.Name("dividerSubtleColor"))!

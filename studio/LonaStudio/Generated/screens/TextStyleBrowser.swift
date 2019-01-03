@@ -126,7 +126,7 @@ public class TextStyleBrowser: NSBox {
     headerView.addSubview(fixedHeightFixView)
     fixedHeightFixView.addSubview(buttonView)
 
-    fillColor = Colors.white
+    fillColor = Colors.contentBackground
     titleView.attributedStringValue = titleViewTextStyle.apply(to: "Text Styles")
     titleViewTextStyle = TextStyles.title
     titleView.attributedStringValue = titleViewTextStyle.apply(to: titleView.attributedStringValue)

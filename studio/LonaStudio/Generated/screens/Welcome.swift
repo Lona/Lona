@@ -79,7 +79,7 @@ public class Welcome: NSBox {
   private var recentProjectsListView = RecentProjectsList()
   private var openProjectButtonView = OpenProjectButton()
 
-  private var titleViewTextStyle = TextStyles.title
+  private var titleViewTextStyle = TextStyles.titleBlack
   private var versionViewTextStyle = TextStyles.versionInfo
 
   private func setUpViews() {
@@ -123,7 +123,7 @@ public class Welcome: NSBox {
 
     imageView.image = #imageLiteral(resourceName: "LonaIcon_128x128")
     titleView.attributedStringValue = titleViewTextStyle.apply(to: "Welcome to Lona")
-    titleViewTextStyle = TextStyles.title
+    titleViewTextStyle = TextStyles.titleBlack
     titleView.attributedStringValue = titleViewTextStyle.apply(to: titleView.attributedStringValue)
     versionView.attributedStringValue = versionViewTextStyle.apply(to: "Developer Preview")
     versionViewTextStyle = TextStyles.versionInfo

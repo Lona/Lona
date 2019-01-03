@@ -98,7 +98,7 @@
           "content" : {
             "type" : "LitExpr",
             "value" : {
-              "data" : "grey900",
+              "data" : "grey800",
               "type" : "Color"
             }
           },
@@ -232,7 +232,6 @@
     "id" : "Container",
     "params" : {
       "alignSelf" : "stretch",
-      "backgroundColor" : "white",
       "borderRadius" : 4,
       "borderWidth" : 1,
       "flex" : 1,

@@ -138,7 +138,6 @@ public class TextStylePreviewCard: NSBox {
     previewView.addSubview(exampleTextView)
     detailsView.addSubview(textStyleSummaryView)
 
-    fillColor = Colors.white
     cornerRadius = 4
     borderWidth = 1
     exampleTextView.maximumNumberOfLines = 1
@@ -225,7 +224,7 @@ public class TextStylePreviewCard: NSBox {
     exampleTextViewTextStyle = textStyle
     exampleTextView.attributedStringValue = exampleTextViewTextStyle.apply(to: exampleTextView.attributedStringValue)
     if inverse {
-      previewView.fillColor = Colors.grey900
+      previewView.fillColor = Colors.grey800
     }
     if selected {
       borderColor = Colors.lightblue600

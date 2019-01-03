@@ -169,7 +169,19 @@ class FileNavigator: NSBox {
         textView.maximumNumberOfLines = 1
         textView.lineBreakMode = .byTruncatingMiddle
 
+        if view.isDarkMode {
+            if let iconView = iconView as? FolderIcon {
+                iconView.selected = true
+            } else if let iconView = iconView as? ColorsFileIcon {
+                iconView.selected = true
+            } else if let iconView = iconView as? FileIcon {
+                iconView.selected = true
+            }
+        }
+
         view.onChangeBackgroundStyle = { style in
+            if view.isDarkMode { return }
+
             switch style {
             case .light:
                 if let iconView = iconView as? FolderIcon {

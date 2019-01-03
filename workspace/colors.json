@@ -52,6 +52,17 @@
       }
     },
     {
+      "comment": "",
+      "id": "contentBackground",
+      "name": "Content Background",
+      "value": "white",
+      "metadata": {
+        "shouldGenerateCode": {
+          "macos": false
+        }
+      }
+    },
+    {
       "id": "labelText",
       "name": "Label Text",
       "value": "#545454",

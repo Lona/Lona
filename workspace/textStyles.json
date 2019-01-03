@@ -6,6 +6,12 @@
       "name": "Title",
       "fontWeight": "600",
       "fontSize": 32,
+      "color": "textColor"
+    },
+    {
+      "id": "titleBlack",
+      "name": "Title Black",
+      "extends": "title",
       "color": "black"
     },
     {
@@ -87,15 +93,7 @@
       "fontFamily": "Menlo",
       "fontSize": 10,
       "fontWeight": "bold",
-      "color": "rgba(0,0,0,0.85)"
-    },
-    {
-      "id": "monospacedMicroInverse",
-      "name": "Monospaced Micro Inverse",
-      "fontFamily": "Menlo",
-      "fontSize": 10,
-      "fontWeight": "bold",
-      "color": "rgba(255,255,255,0.85)"
+      "color": "labelText"
     },
     {
       "id": "sectionTitle",

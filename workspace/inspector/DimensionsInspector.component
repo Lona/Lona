@@ -865,7 +865,6 @@
                     "id" : "WidthInputContainer",
                     "params" : {
                       "alignSelf" : "stretch",
-                      "backgroundColor" : "#D8D8D8",
                       "marginTop" : 8
                     },
                     "type" : "Lona:View"
@@ -922,7 +921,6 @@
                     "id" : "HeightInputContainer",
                     "params" : {
                       "alignSelf" : "stretch",
-                      "backgroundColor" : "#D8D8D8",
                       "marginTop" : 8
                     },
                     "type" : "Lona:View"
