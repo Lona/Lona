@@ -141,9 +141,7 @@ class UtilitiesView: NSBox {
             guard let view = view else { continue }
 
             if tab == currentTab {
-                if view.superview != self {
-                    self.addSubviewStretched(subview: view)
-                }
+                self.addSubviewStretched(subview: view)
             } else {
                 view.removeFromSuperview()
             }
