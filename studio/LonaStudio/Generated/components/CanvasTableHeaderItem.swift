@@ -223,10 +223,10 @@ public class CanvasTableHeaderItem: NSBox {
   }
 
   private func update() {
-    fillColor = Colors.white
+    fillColor = Colors.contentHeaderBackground
     titleViewTextStyle = TextStyles.sectionTitle.with(alignment: .center)
     titleView.attributedStringValue = titleViewTextStyle.apply(to: titleView.attributedStringValue)
-    vDividerLeftView.fillColor = Colors.white
+    vDividerLeftView.fillColor = Colors.contentHeaderBackground
     hDividerView.fillColor = dividerColor
     vDividerView.fillColor = dividerColor
     titleView.attributedStringValue = titleViewTextStyle.apply(to: titleText)

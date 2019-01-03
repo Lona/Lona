@@ -351,7 +351,8 @@ class ListEditor<Element>: NSView where Element: DataNode {
     func renderToolbar() -> NSView {
         let toolbar = NSView()
         toolbar.translatesAutoresizingMaskIntoConstraints = false
-        toolbar.addBorderView(to: .top)
+        toolbar.backgroundFill = NSColor.controlBackgroundColor.cgColor
+        toolbar.addBorderView(to: .top, color: NSSplitView.defaultDividerColor.cgColor)
 
         return toolbar
     }
@@ -397,7 +398,6 @@ class ListEditor<Element>: NSView where Element: DataNode {
         // Create views
 
         let toolbar = renderToolbar()
-        toolbar.backgroundFill = options.backgroundColor.cgColor
 
         let scrollView = renderScrollView()
         let plusButton = renderPlusButton()
@@ -409,7 +409,7 @@ class ListEditor<Element>: NSView where Element: DataNode {
         addSubview(scrollView)
 
         if options.drawsTopBorder {
-            addBorderView(to: .top)
+            addBorderView(to: .top, color: NSSplitView.defaultDividerColor.cgColor)
         }
 
         // Constraints

@@ -97,6 +97,24 @@ let target =
     Types.JavaScript;
   };
 
+let platformId =
+  switch (target) {
+  | Types.JavaScript =>
+    switch (javaScriptOptions.framework) {
+    | JavaScriptOptions.ReactDOM => Types.ReactDOM
+    | JavaScriptOptions.ReactNative => Types.ReactNative
+    | JavaScriptOptions.ReactSketchapp => Types.ReactSketchapp
+    }
+  | Types.Swift =>
+    switch (swiftOptions.framework) {
+    | SwiftOptions.UIKit => Types.IOS
+    | SwiftOptions.AppKit => Types.MacOS
+    }
+  | Types.Xml =>
+    /* TODO: Replace when we add android */
+    Types.IOS
+  };
+
 let concat = (base, addition) => Path.join([|base, addition|]);
 
 let getTargetExtension =
@@ -320,7 +338,7 @@ let findContentsBelow = contents => {
 };
 
 let convertWorkspace = (workspace, output) =>
-  Config.load(options, workspace)
+  Config.load(platformId, options, workspace)
   |> Js.Promise.then_((config: Config.t) => {
        let colors = config.colorsFile.contents;
        let textStyles = config.textStylesFile.contents;
@@ -513,7 +531,7 @@ switch (command) {
     exit("No filename given");
   };
   let filename = List.nth(positionalArguments, 4);
-  Config.load(options, filename)
+  Config.load(platformId, options, filename)
   |> Js.Promise.then_(config => {
        convertComponent(config, filename) |> Js.log;
        Js.Promise.resolve();
@@ -524,7 +542,7 @@ switch (command) {
     List.length(positionalArguments) < 5 ?
       Process.cwd() : List.nth(positionalArguments, 4);
 
-  Config.load(options, initialWorkspaceSearchPath)
+  Config.load(platformId, options, initialWorkspaceSearchPath)
   |> Js.Promise.then_((config: Config.t) =>
        if (List.length(positionalArguments) < 5) {
          getStdin()
@@ -553,7 +571,7 @@ switch (command) {
     List.length(positionalArguments) < 5 ?
       Process.cwd() : List.nth(positionalArguments, 4);
 
-  Config.load(options, initialWorkspaceSearchPath)
+  Config.load(platformId, options, initialWorkspaceSearchPath)
   |> Js.Promise.then_((config: Config.t) =>
        if (List.length(positionalArguments) < 5) {
          getStdin()
@@ -590,7 +608,7 @@ switch (command) {
     List.length(positionalArguments) < 5 ?
       Process.cwd() : List.nth(positionalArguments, 4);
 
-  Config.load(options, initialWorkspaceSearchPath)
+  Config.load(platformId, options, initialWorkspaceSearchPath)
   |> Js.Promise.then_((config: Config.t) =>
        if (List.length(positionalArguments) < 5) {
          getStdin()

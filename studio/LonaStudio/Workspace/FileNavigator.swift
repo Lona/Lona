@@ -179,7 +179,7 @@ class FileNavigator: NSBox {
                 } else if let iconView = iconView as? FileIcon {
                     iconView.selected = false
                 }
-                textView.textColor = .black
+                textView.textColor = NSColor.controlTextColor
             case .dark:
                 if let iconView = iconView as? FolderIcon {
                     iconView.selected = true

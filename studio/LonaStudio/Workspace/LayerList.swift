@@ -59,6 +59,7 @@ public class LayerList: NSBox {
         boxType = .custom
         borderType = .noBorder
         contentViewMargins = .zero
+        fillColor = .red
 
         dividerView.boxType = .custom
         dividerView.borderType = .noBorder
@@ -72,6 +73,7 @@ public class LayerList: NSBox {
         scrollView.drawsBackground = false
         scrollView.addSubview(outlineView)
         scrollView.documentView = outlineView
+        scrollView.backgroundColor = .clear
 
         outlineView.sizeToFit()
 

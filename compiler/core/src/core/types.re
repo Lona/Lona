@@ -84,6 +84,13 @@ let layerTypeToString = x =>
 
 type layerParameters = ParameterMap.t(lonaValue);
 
+type platformId =
+  | IOS
+  | MacOS
+  | ReactDOM
+  | ReactNative
+  | ReactSketchapp;
+
 type platformSpecificValue('a) = {
   iOS: 'a,
   macOS: 'a,

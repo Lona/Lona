@@ -23,7 +23,7 @@ class SectionSplitter: NSSplitView {
 
     override func drawDivider(in rect: NSRect) {
         lockFocus()
-        #colorLiteral(red: 0.9486700892, green: 0.9493889213, blue: 0.9487814307, alpha: 1).set()
+        NSSplitView.defaultDividerColor.set()
         rect.fill()
         unlockFocus()
 
@@ -78,7 +78,7 @@ class SectionSplitter: NSSplitView {
 
         border.wantsLayer = true
         border.layer = CALayer()
-        border.layer?.backgroundColor = #colorLiteral(red: 0.8379167914, green: 0.8385563493, blue: 0.8380157948, alpha: 1).cgColor
+        border.layer?.backgroundColor = NSSplitView.defaultDividerColor.cgColor
 
         view.addSubview(border)
 

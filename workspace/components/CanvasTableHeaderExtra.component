@@ -114,10 +114,11 @@
         "id" : "Button",
         "params" : {
           "alignItems" : "center",
-          "backgroundColor" : "grey200",
+          "backgroundColor" : "headerBackground",
           "borderRadius" : 11,
           "height" : 22,
           "marginBottom" : 8,
+          "marginLeft" : 10,
           "marginTop" : 7,
           "width" : 22
         },
@@ -135,9 +136,8 @@
     ],
     "id" : "Container",
     "params" : {
-      "alignItems" : "center",
       "alignSelf" : "stretch",
-      "backgroundColor" : "white",
+      "backgroundColor" : "contentHeaderBackground",
       "height" : 38
     },
     "type" : "Lona:View"

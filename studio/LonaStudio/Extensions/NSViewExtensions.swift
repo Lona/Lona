@@ -280,3 +280,17 @@ public extension NSView {
         return value(forKey: "_subtreeDescription") as! String
     }
 }
+
+public extension NSView {
+    var isDarkMode: Bool {
+        if #available(OSX 10.14, *) {
+            switch self.effectiveAppearance.bestMatch(from: [.aqua, .darkAqua]) {
+            case .some(.darkAqua):
+                return true
+            default:
+                return false
+            }
+        }
+        return false
+    }
+}

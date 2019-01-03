@@ -651,7 +651,7 @@
         "id" : "HDivider",
         "params" : {
           "alignSelf" : "stretch",
-          "backgroundColor" : "#D8D8D8",
+          "backgroundColor" : "dividerSubtle",
           "height" : 1
         },
         "type" : "Lona:View"

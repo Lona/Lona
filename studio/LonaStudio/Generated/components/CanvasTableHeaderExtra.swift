@@ -102,7 +102,7 @@ public class CanvasTableHeaderExtra: NSBox {
     addSubview(hDividerView)
     buttonView.addSubview(titleView)
 
-    fillColor = Colors.white
+    fillColor = Colors.contentHeaderBackground
     buttonView.cornerRadius = 11
     titleView.attributedStringValue = titleViewTextStyle.apply(to: "+")
     titleViewTextStyle = TextStyles.large.with(alignment: .center)
@@ -117,12 +117,11 @@ public class CanvasTableHeaderExtra: NSBox {
 
     let heightAnchorConstraint = heightAnchor.constraint(equalToConstant: 38)
     let buttonViewTopAnchorConstraint = buttonView.topAnchor.constraint(equalTo: topAnchor, constant: 7)
-    let buttonViewCenterXAnchorConstraint = buttonView.centerXAnchor.constraint(equalTo: centerXAnchor)
+    let buttonViewLeadingAnchorConstraint = buttonView.leadingAnchor.constraint(equalTo: leadingAnchor, constant: 10)
     let hDividerViewTopAnchorConstraint = hDividerView
       .topAnchor
       .constraint(equalTo: buttonView.bottomAnchor, constant: 8)
     let hDividerViewLeadingAnchorConstraint = hDividerView.leadingAnchor.constraint(equalTo: leadingAnchor)
-    let hDividerViewCenterXAnchorConstraint = hDividerView.centerXAnchor.constraint(equalTo: centerXAnchor)
     let hDividerViewTrailingAnchorConstraint = hDividerView.trailingAnchor.constraint(equalTo: trailingAnchor)
     let buttonViewHeightAnchorConstraint = buttonView.heightAnchor.constraint(equalToConstant: 22)
     let buttonViewWidthAnchorConstraint = buttonView.widthAnchor.constraint(equalToConstant: 22)
@@ -135,10 +134,9 @@ public class CanvasTableHeaderExtra: NSBox {
     NSLayoutConstraint.activate([
       heightAnchorConstraint,
       buttonViewTopAnchorConstraint,
-      buttonViewCenterXAnchorConstraint,
+      buttonViewLeadingAnchorConstraint,
       hDividerViewTopAnchorConstraint,
       hDividerViewLeadingAnchorConstraint,
-      hDividerViewCenterXAnchorConstraint,
       hDividerViewTrailingAnchorConstraint,
       buttonViewHeightAnchorConstraint,
       buttonViewWidthAnchorConstraint,
@@ -151,7 +149,7 @@ public class CanvasTableHeaderExtra: NSBox {
   }
 
   private func update() {
-    buttonView.fillColor = Colors.grey200
+    buttonView.fillColor = Colors.headerBackground
     hDividerView.fillColor = dividerColor
     buttonViewOnPress = handleOnClickPlus
     if buttonViewPressed {

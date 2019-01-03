@@ -354,7 +354,7 @@
             "id" : "VDividerLeft",
             "params" : {
               "alignSelf" : "stretch",
-              "backgroundColor" : "white",
+              "backgroundColor" : "contentHeaderBackground",
               "width" : 1
             },
             "type" : "Lona:View"
@@ -402,7 +402,7 @@
     "params" : {
       "alignItems" : "center",
       "alignSelf" : "stretch",
-      "backgroundColor" : "white",
+      "backgroundColor" : "contentHeaderBackground",
       "height" : 38
     },
     "type" : "Lona:View"

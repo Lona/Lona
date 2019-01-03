@@ -25,19 +25,19 @@
       "id": "large",
       "name": "Large",
       "fontSize": 15,
-      "color": "black"
+      "color": "textColor"
     },
     {
       "id": "regular",
       "name": "Regular",
       "fontSize": 13,
-      "color": "black"
+      "color": "textColor"
     },
     {
       "id": "small",
       "name": "Small",
       "fontSize": 11,
-      "color": "black"
+      "color": "textColor"
     },
     {
       "id": "regularMuted",
@@ -102,7 +102,7 @@
       "name": "Section Title",
       "fontSize": 12,
       "fontWeight": "500",
-      "color": "#545454"
+      "color": "labelText"
     },
     {
       "id": "sectionTitleInverse",
