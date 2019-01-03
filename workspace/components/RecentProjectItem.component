@@ -22,6 +22,7 @@
   ],
   "examples" : [
     {
+      "id" : "Default",
       "name" : "Default",
       "params" : {
 
@@ -124,7 +125,7 @@
         "id" : "ProjectName",
         "params" : {
           "alignSelf" : "stretch",
-          "font" : "regular",
+          "font" : "regularBlack",
           "numberOfLines" : 1,
           "text" : "Airbnb"
         },

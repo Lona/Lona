@@ -84,8 +84,6 @@ class CanvasTableHeaderView: NSTableHeaderView {
     let bottomDividerView = NSBox(frame: .zero)
 
     func setUpViews() {
-
-
         bottomDividerView.boxType = .custom
         bottomDividerView.borderType = .lineBorder
         bottomDividerView.contentViewMargins = .zero

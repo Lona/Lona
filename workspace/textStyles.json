@@ -40,6 +40,12 @@
       "color": "textColor"
     },
     {
+      "id": "regularBlack",
+      "name": "Regular Black",
+      "fontSize": 13,
+      "color": "black"
+    },
+    {
       "id": "small",
       "name": "Small",
       "fontSize": 11,

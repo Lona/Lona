@@ -7,6 +7,7 @@ class TextStyles {
   public static let largeSemibold = TextStyle(weight: NSFont.Weight.medium, size: 15, color: Colors.black)
   public static let large = TextStyle(size: 15, color: Colors.textColor)
   public static let regular = TextStyle(size: 13, color: Colors.textColor)
+  public static let regularBlack = TextStyle(size: 13, color: Colors.black)
   public static let small = TextStyle(size: 11, color: Colors.textColor)
   public static let regularMuted = TextStyle(size: 13, color: #colorLiteral(red: 0.509803921569, green: 0.509803921569, blue: 0.509803921569, alpha: 1))
   public static let smallMuted = TextStyle(size: 11, color: #colorLiteral(red: 0.509803921569, green: 0.509803921569, blue: 0.509803921569, alpha: 1))
