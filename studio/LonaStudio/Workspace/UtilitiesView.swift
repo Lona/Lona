@@ -145,9 +145,7 @@ class UtilitiesView: NSBox {
                     self.addSubviewStretched(subview: view)
                 }
             } else {
-                if view.superview == self {
-                    view.removeFromSuperview()
-                }
+                view.removeFromSuperview()
             }
         }
     }
