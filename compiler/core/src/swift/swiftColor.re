@@ -36,7 +36,16 @@ let render = (config: Config.t) => {
           "isIndirect": false,
           "inherits": [],
           "modifier": Some(PublicModifier),
-          "body": colors |> List.map(colorConstantDoc),
+          "body":
+            colors
+            |> List.filter((color: Color.t) =>
+                 Config.Find.platformSpecificValue(
+                   config,
+                   color.shouldGenerateCode,
+                 )
+                 != false
+               )
+            |> List.map(colorConstantDoc),
         }),
       ],
     });

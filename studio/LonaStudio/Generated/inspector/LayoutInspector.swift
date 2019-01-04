@@ -203,7 +203,7 @@ public class LayoutInspector: NSBox {
     alignmentLabelView.attributedStringValue = alignmentLabelViewTextStyle.apply(to: "Children Alignment")
     horizontalAlignmentView.values = ["Left", "Center", "Right"]
     verticalAlignmentView.values = ["Top", "Middle", "Bottom"]
-    hDividerView.fillColor = #colorLiteral(red: 0.847058823529, green: 0.847058823529, blue: 0.847058823529, alpha: 1)
+    hDividerView.fillColor = Colors.dividerSubtle
   }
 
   private func setUpConstraints() {

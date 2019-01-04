@@ -1,1576 +1,1634 @@
 {
-  "colors" : [
+  "colors": [
+    {
+      "comment": "",
+      "id": "white",
+      "name": "White",
+      "value": "white"
+    },
+    {
+      "comment": "",
+      "id": "black",
+      "name": "Black",
+      "value": "black"
+    },
+    {
+      "comment": "",
+      "id": "textColor",
+      "name": "textColor",
+      "value": "black",
+      "metadata": {
+        "shouldGenerateCode": {
+          "macos": false
+        }
+      }
+    },
+    {
+      "comment": "",
+      "id": "darkTransparentOutline",
+      "name": "Dark Transparent Outline",
+      "value": "rgba(0,0,0,0.1)"
+    },
+    {
+      "comment": "Should be rgba(216,216,216,0.25) on white",
+      "id": "headerBackground",
+      "name": "Header Background",
+      "value": "#F5F5F5",
+      "metadata": {
+        "shouldGenerateCode": {
+          "macos": false
+        }
+      }
+    },
     {
-      "comment" : "",
-      "id" : "white",
-      "name" : "White",
-      "value" : "white"
+      "comment": "",
+      "id": "contentHeaderBackground",
+      "name": "Content Header Background",
+      "value": "white",
+      "metadata": {
+        "shouldGenerateCode": {
+          "macos": false
+        }
+      }
     },
     {
-      "comment" : "",
-      "id" : "black",
-      "name" : "Black",
-      "value" : "black"
+      "comment": "",
+      "id": "contentBackground",
+      "name": "Content Background",
+      "value": "white",
+      "metadata": {
+        "shouldGenerateCode": {
+          "macos": false
+        }
+      }
     },
     {
-      "comment" : "",
-      "id" : "darkTransparentOutline",
-      "name" : "Dark Transparent Outline",
-      "value" : "rgba(0,0,0,0.1)"
+      "id": "labelText",
+      "name": "Label Text",
+      "value": "#545454",
+      "metadata": {
+        "shouldGenerateCode": {
+          "macos": false
+        }
+      }
     },
     {
-      "comment" : "Should be rgba(216,216,216,0.25) on white",
-      "id" : "headerBackground",
-      "name" : "Header Background",
-      "value" : "#F5F5F5"
+      "id": "dividerSubtle",
+      "name": "Subtle Divider",
+      "value": "rgba(0,0,0,0.05)",
+      "metadata": {
+        "shouldGenerateCode": {
+          "macos": false
+        }
+      }
     },
     {
-      "comment" : "",
-      "id" : "selectedIcon",
-      "name" : "Selected Icon",
-      "value" : "rgba(255,255,255,0.35)"
+      "comment": "",
+      "id": "selectedIcon",
+      "name": "Selected Icon",
+      "value": "rgba(255,255,255,0.35)"
     },
     {
-      "comment" : "",
-      "id" : "selectedIconStroke",
-      "name" : "Selected Icon Stroke",
-      "value" : "rgba(255,255,255,0.8)"
+      "comment": "",
+      "id": "selectedIconStroke",
+      "name": "Selected Icon Stroke",
+      "value": "rgba(255,255,255,0.8)"
     },
     {
-      "comment" : "",
-      "id" : "transparent",
-      "name" : "Transparent",
-      "value" : "rgba(0,0,0,0.0)"
+      "comment": "",
+      "id": "transparent",
+      "name": "Transparent",
+      "value": "rgba(0,0,0,0.0)"
     },
     {
-      "comment" : "MacOS system selection color",
-      "id" : "systemSelection",
-      "name" : "SystemSelection",
-      "value" : "rgb(4,99,225)"
+      "comment": "MacOS system selection color",
+      "id": "systemSelection",
+      "name": "SystemSelection",
+      "value": "rgb(4,99,225)"
     },
     {
-      "comment" : "",
-      "id" : "red50",
-      "name" : "Red 50",
-      "value" : "#ffebee"
+      "comment": "",
+      "id": "red50",
+      "name": "Red 50",
+      "value": "#ffebee"
     },
     {
-      "comment" : "",
-      "id" : "red100",
-      "name" : "Red 100",
-      "value" : "#ffcdd2"
+      "comment": "",
+      "id": "red100",
+      "name": "Red 100",
+      "value": "#ffcdd2"
     },
     {
-      "comment" : "",
-      "id" : "red200",
-      "name" : "Red 200",
-      "value" : "#ef9a9a"
+      "comment": "",
+      "id": "red200",
+      "name": "Red 200",
+      "value": "#ef9a9a"
     },
     {
-      "comment" : "",
-      "id" : "red300",
-      "name" : "Red 300",
-      "value" : "#e57373"
+      "comment": "",
+      "id": "red300",
+      "name": "Red 300",
+      "value": "#e57373"
     },
     {
-      "comment" : "",
-      "id" : "red400",
-      "name" : "Red 400",
-      "value" : "#ef5350"
+      "comment": "",
+      "id": "red400",
+      "name": "Red 400",
+      "value": "#ef5350"
     },
     {
-      "comment" : "",
-      "id" : "red500",
-      "name" : "Red 500",
-      "value" : "#f44336"
+      "comment": "",
+      "id": "red500",
+      "name": "Red 500",
+      "value": "#f44336"
     },
     {
-      "comment" : "",
-      "id" : "red600",
-      "name" : "Red 600",
-      "value" : "#e53935"
+      "comment": "",
+      "id": "red600",
+      "name": "Red 600",
+      "value": "#e53935"
     },
     {
-      "comment" : "",
-      "id" : "red700",
-      "name" : "Red 700",
-      "value" : "#d32f2f"
+      "comment": "",
+      "id": "red700",
+      "name": "Red 700",
+      "value": "#d32f2f"
     },
     {
-      "comment" : "",
-      "id" : "red800",
-      "name" : "Red 800",
-      "value" : "#c62828"
+      "comment": "",
+      "id": "red800",
+      "name": "Red 800",
+      "value": "#c62828"
     },
     {
-      "comment" : "",
-      "id" : "red900",
-      "name" : "Red 900",
-      "value" : "#b71c1c"
+      "comment": "",
+      "id": "red900",
+      "name": "Red 900",
+      "value": "#b71c1c"
     },
     {
-      "comment" : "",
-      "id" : "reda100",
-      "name" : "Red a100",
-      "value" : "#ff8a80"
+      "comment": "",
+      "id": "reda100",
+      "name": "Red a100",
+      "value": "#ff8a80"
     },
     {
-      "comment" : "",
-      "id" : "reda200",
-      "name" : "Red a200",
-      "value" : "#ff5252"
+      "comment": "",
+      "id": "reda200",
+      "name": "Red a200",
+      "value": "#ff5252"
     },
     {
-      "comment" : "",
-      "id" : "reda400",
-      "name" : "Red a400",
-      "value" : "#ff1744"
+      "comment": "",
+      "id": "reda400",
+      "name": "Red a400",
+      "value": "#ff1744"
     },
     {
-      "comment" : "",
-      "id" : "reda700",
-      "name" : "Red a700",
-      "value" : "#d50000"
+      "comment": "",
+      "id": "reda700",
+      "name": "Red a700",
+      "value": "#d50000"
     },
     {
-      "comment" : "",
-      "id" : "pink50",
-      "name" : "Pink 50",
-      "value" : "#fce4ec"
+      "comment": "",
+      "id": "pink50",
+      "name": "Pink 50",
+      "value": "#fce4ec"
     },
     {
-      "comment" : "",
-      "id" : "pink100",
-      "name" : "Pink 100",
-      "value" : "#f8bbd0"
+      "comment": "",
+      "id": "pink100",
+      "name": "Pink 100",
+      "value": "#f8bbd0"
     },
     {
-      "comment" : "",
-      "id" : "pink200",
-      "name" : "Pink 200",
-      "value" : "#f48fb1"
+      "comment": "",
+      "id": "pink200",
+      "name": "Pink 200",
+      "value": "#f48fb1"
     },
     {
-      "comment" : "",
-      "id" : "pink300",
-      "name" : "Pink 300",
-      "value" : "#f06292"
+      "comment": "",
+      "id": "pink300",
+      "name": "Pink 300",
+      "value": "#f06292"
     },
     {
-      "comment" : "",
-      "id" : "pink400",
-      "name" : "Pink 400",
-      "value" : "#ec407a"
+      "comment": "",
+      "id": "pink400",
+      "name": "Pink 400",
+      "value": "#ec407a"
     },
     {
-      "comment" : "",
-      "id" : "pink500",
-      "name" : "Pink 500",
-      "value" : "#e91e63"
+      "comment": "",
+      "id": "pink500",
+      "name": "Pink 500",
+      "value": "#e91e63"
     },
     {
-      "comment" : "",
-      "id" : "pink600",
-      "name" : "Pink 600",
-      "value" : "#d81b60"
+      "comment": "",
+      "id": "pink600",
+      "name": "Pink 600",
+      "value": "#d81b60"
     },
     {
-      "comment" : "",
-      "id" : "pink700",
-      "name" : "Pink 700",
-      "value" : "#c2185b"
+      "comment": "",
+      "id": "pink700",
+      "name": "Pink 700",
+      "value": "#c2185b"
     },
     {
-      "comment" : "",
-      "id" : "pink800",
-      "name" : "Pink 800",
-      "value" : "#ad1457"
+      "comment": "",
+      "id": "pink800",
+      "name": "Pink 800",
+      "value": "#ad1457"
     },
     {
-      "comment" : "",
-      "id" : "pink900",
-      "name" : "Pink 900",
-      "value" : "#880e4f"
+      "comment": "",
+      "id": "pink900",
+      "name": "Pink 900",
+      "value": "#880e4f"
     },
     {
-      "comment" : "",
-      "id" : "pinka100",
-      "name" : "Pink a100",
-      "value" : "#ff80ab"
+      "comment": "",
+      "id": "pinka100",
+      "name": "Pink a100",
+      "value": "#ff80ab"
     },
     {
-      "comment" : "",
-      "id" : "pinka200",
-      "name" : "Pink a200",
-      "value" : "#ff4081"
+      "comment": "",
+      "id": "pinka200",
+      "name": "Pink a200",
+      "value": "#ff4081"
     },
     {
-      "comment" : "",
-      "id" : "pinka400",
-      "name" : "Pink a400",
-      "value" : "#f50057"
+      "comment": "",
+      "id": "pinka400",
+      "name": "Pink a400",
+      "value": "#f50057"
     },
     {
-      "comment" : "",
-      "id" : "pinka700",
-      "name" : "Pink a700",
-      "value" : "#c51162"
+      "comment": "",
+      "id": "pinka700",
+      "name": "Pink a700",
+      "value": "#c51162"
     },
     {
-      "comment" : "",
-      "id" : "purple50",
-      "name" : "Purple 50",
-      "value" : "#f3e5f5"
+      "comment": "",
+      "id": "purple50",
+      "name": "Purple 50",
+      "value": "#f3e5f5"
     },
     {
-      "comment" : "",
-      "id" : "purple100",
-      "name" : "Purple 100",
-      "value" : "#e1bee7"
+      "comment": "",
+      "id": "purple100",
+      "name": "Purple 100",
+      "value": "#e1bee7"
     },
     {
-      "comment" : "",
-      "id" : "purple200",
-      "name" : "Purple 200",
-      "value" : "#ce93d8"
+      "comment": "",
+      "id": "purple200",
+      "name": "Purple 200",
+      "value": "#ce93d8"
     },
     {
-      "comment" : "",
-      "id" : "purple300",
-      "name" : "Purple 300",
-      "value" : "#ba68c8"
+      "comment": "",
+      "id": "purple300",
+      "name": "Purple 300",
+      "value": "#ba68c8"
     },
     {
-      "comment" : "",
-      "id" : "purple400",
-      "name" : "Purple 400",
-      "value" : "#ab47bc"
+      "comment": "",
+      "id": "purple400",
+      "name": "Purple 400",
+      "value": "#ab47bc"
     },
     {
-      "comment" : "",
-      "id" : "purple500",
-      "name" : "Purple 500",
-      "value" : "#9c27b0"
+      "comment": "",
+      "id": "purple500",
+      "name": "Purple 500",
+      "value": "#9c27b0"
     },
     {
-      "comment" : "",
-      "id" : "purple600",
-      "name" : "Purple 600",
-      "value" : "#8e24aa"
+      "comment": "",
+      "id": "purple600",
+      "name": "Purple 600",
+      "value": "#8e24aa"
     },
     {
-      "comment" : "",
-      "id" : "purple700",
-      "name" : "Purple 700",
-      "value" : "#7b1fa2"
+      "comment": "",
+      "id": "purple700",
+      "name": "Purple 700",
+      "value": "#7b1fa2"
     },
     {
-      "comment" : "",
-      "id" : "purple800",
-      "name" : "Purple 800",
-      "value" : "#6a1b9a"
+      "comment": "",
+      "id": "purple800",
+      "name": "Purple 800",
+      "value": "#6a1b9a"
     },
     {
-      "comment" : "",
-      "id" : "purple900",
-      "name" : "Purple 900",
-      "value" : "#4a148c"
+      "comment": "",
+      "id": "purple900",
+      "name": "Purple 900",
+      "value": "#4a148c"
     },
     {
-      "comment" : "",
-      "id" : "purplea100",
-      "name" : "Purple a100",
-      "value" : "#ea80fc"
+      "comment": "",
+      "id": "purplea100",
+      "name": "Purple a100",
+      "value": "#ea80fc"
     },
     {
-      "comment" : "",
-      "id" : "purplea200",
-      "name" : "Purple a200",
-      "value" : "#e040fb"
+      "comment": "",
+      "id": "purplea200",
+      "name": "Purple a200",
+      "value": "#e040fb"
     },
     {
-      "comment" : "",
-      "id" : "purplea400",
-      "name" : "Purple a400",
-      "value" : "#d500f9"
+      "comment": "",
+      "id": "purplea400",
+      "name": "Purple a400",
+      "value": "#d500f9"
     },
     {
-      "comment" : "",
-      "id" : "purplea700",
-      "name" : "Purple a700",
-      "value" : "#aa00ff"
+      "comment": "",
+      "id": "purplea700",
+      "name": "Purple a700",
+      "value": "#aa00ff"
     },
     {
-      "comment" : "",
-      "id" : "deeppurple50",
-      "name" : "Deeppurple 50",
-      "value" : "#ede7f6"
+      "comment": "",
+      "id": "deeppurple50",
+      "name": "Deeppurple 50",
+      "value": "#ede7f6"
     },
     {
-      "comment" : "",
-      "id" : "deeppurple100",
-      "name" : "Deeppurple 100",
-      "value" : "#d1c4e9"
+      "comment": "",
+      "id": "deeppurple100",
+      "name": "Deeppurple 100",
+      "value": "#d1c4e9"
     },
     {
-      "comment" : "",
-      "id" : "deeppurple200",
-      "name" : "Deeppurple 200",
-      "value" : "#b39ddb"
+      "comment": "",
+      "id": "deeppurple200",
+      "name": "Deeppurple 200",
+      "value": "#b39ddb"
     },
     {
-      "comment" : "",
-      "id" : "deeppurple300",
-      "name" : "Deeppurple 300",
-      "value" : "#9575cd"
+      "comment": "",
+      "id": "deeppurple300",
+      "name": "Deeppurple 300",
+      "value": "#9575cd"
     },
     {
-      "comment" : "",
-      "id" : "deeppurple400",
-      "name" : "Deeppurple 400",
-      "value" : "#7e57c2"
+      "comment": "",
+      "id": "deeppurple400",
+      "name": "Deeppurple 400",
+      "value": "#7e57c2"
     },
     {
-      "comment" : "",
-      "id" : "deeppurple500",
-      "name" : "Deeppurple 500",
-      "value" : "#673ab7"
+      "comment": "",
+      "id": "deeppurple500",
+      "name": "Deeppurple 500",
+      "value": "#673ab7"
     },
     {
-      "comment" : "",
-      "id" : "deeppurple600",
-      "name" : "Deeppurple 600",
-      "value" : "#5e35b1"
+      "comment": "",
+      "id": "deeppurple600",
+      "name": "Deeppurple 600",
+      "value": "#5e35b1"
     },
     {
-      "comment" : "",
-      "id" : "deeppurple700",
-      "name" : "Deeppurple 700",
-      "value" : "#512da8"
+      "comment": "",
+      "id": "deeppurple700",
+      "name": "Deeppurple 700",
+      "value": "#512da8"
     },
     {
-      "comment" : "",
-      "id" : "deeppurple800",
-      "name" : "Deeppurple 800",
-      "value" : "#4527a0"
+      "comment": "",
+      "id": "deeppurple800",
+      "name": "Deeppurple 800",
+      "value": "#4527a0"
     },
     {
-      "comment" : "",
-      "id" : "deeppurple900",
-      "name" : "Deeppurple 900",
-      "value" : "#311b92"
+      "comment": "",
+      "id": "deeppurple900",
+      "name": "Deeppurple 900",
+      "value": "#311b92"
     },
     {
-      "comment" : "",
-      "id" : "deeppurplea100",
-      "name" : "Deeppurple a100",
-      "value" : "#b388ff"
+      "comment": "",
+      "id": "deeppurplea100",
+      "name": "Deeppurple a100",
+      "value": "#b388ff"
     },
     {
-      "comment" : "",
-      "id" : "deeppurplea200",
-      "name" : "Deeppurple a200",
-      "value" : "#7c4dff"
+      "comment": "",
+      "id": "deeppurplea200",
+      "name": "Deeppurple a200",
+      "value": "#7c4dff"
     },
     {
-      "comment" : "",
-      "id" : "deeppurplea400",
-      "name" : "Deeppurple a400",
-      "value" : "#651fff"
+      "comment": "",
+      "id": "deeppurplea400",
+      "name": "Deeppurple a400",
+      "value": "#651fff"
     },
     {
-      "comment" : "",
-      "id" : "deeppurplea700",
-      "name" : "Deeppurple a700",
-      "value" : "#6200ea"
+      "comment": "",
+      "id": "deeppurplea700",
+      "name": "Deeppurple a700",
+      "value": "#6200ea"
     },
     {
-      "comment" : "",
-      "id" : "indigo50",
-      "name" : "Indigo 50",
-      "value" : "#e8eaf6"
+      "comment": "",
+      "id": "indigo50",
+      "name": "Indigo 50",
+      "value": "#e8eaf6"
     },
     {
-      "comment" : "",
-      "id" : "indigo100",
-      "name" : "Indigo 100",
-      "value" : "#c5cae9"
+      "comment": "",
+      "id": "indigo100",
+      "name": "Indigo 100",
+      "value": "#c5cae9"
     },
     {
-      "comment" : "",
-      "id" : "indigo200",
-      "name" : "Indigo 200",
-      "value" : "#9fa8da"
+      "comment": "",
+      "id": "indigo200",
+      "name": "Indigo 200",
+      "value": "#9fa8da"
     },
     {
-      "comment" : "",
-      "id" : "indigo300",
-      "name" : "Indigo 300",
-      "value" : "#7986cb"
+      "comment": "",
+      "id": "indigo300",
+      "name": "Indigo 300",
+      "value": "#7986cb"
     },
     {
-      "comment" : "",
-      "id" : "indigo400",
-      "name" : "Indigo 400",
-      "value" : "#5c6bc0"
+      "comment": "",
+      "id": "indigo400",
+      "name": "Indigo 400",
+      "value": "#5c6bc0"
     },
     {
-      "comment" : "",
-      "id" : "indigo500",
-      "name" : "Indigo 500",
-      "value" : "#3f51b5"
+      "comment": "",
+      "id": "indigo500",
+      "name": "Indigo 500",
+      "value": "#3f51b5"
     },
     {
-      "comment" : "",
-      "id" : "indigo600",
-      "name" : "Indigo 600",
-      "value" : "#3949ab"
+      "comment": "",
+      "id": "indigo600",
+      "name": "Indigo 600",
+      "value": "#3949ab"
     },
     {
-      "comment" : "",
-      "id" : "indigo700",
-      "name" : "Indigo 700",
-      "value" : "#303f9f"
+      "comment": "",
+      "id": "indigo700",
+      "name": "Indigo 700",
+      "value": "#303f9f"
     },
     {
-      "comment" : "",
-      "id" : "indigo800",
-      "name" : "Indigo 800",
-      "value" : "#283593"
+      "comment": "",
+      "id": "indigo800",
+      "name": "Indigo 800",
+      "value": "#283593"
     },
     {
-      "comment" : "",
-      "id" : "indigo900",
-      "name" : "Indigo 900",
-      "value" : "#1a237e"
+      "comment": "",
+      "id": "indigo900",
+      "name": "Indigo 900",
+      "value": "#1a237e"
     },
     {
-      "comment" : "",
-      "id" : "indigoa100",
-      "name" : "Indigo a100",
-      "value" : "#8c9eff"
+      "comment": "",
+      "id": "indigoa100",
+      "name": "Indigo a100",
+      "value": "#8c9eff"
     },
     {
-      "comment" : "",
-      "id" : "indigoa200",
-      "name" : "Indigo a200",
-      "value" : "#536dfe"
+      "comment": "",
+      "id": "indigoa200",
+      "name": "Indigo a200",
+      "value": "#536dfe"
     },
     {
-      "comment" : "",
-      "id" : "indigoa400",
-      "name" : "Indigo a400",
-      "value" : "#3d5afe"
+      "comment": "",
+      "id": "indigoa400",
+      "name": "Indigo a400",
+      "value": "#3d5afe"
     },
     {
-      "comment" : "",
-      "id" : "indigoa700",
-      "name" : "Indigo a700",
-      "value" : "#304ffe"
+      "comment": "",
+      "id": "indigoa700",
+      "name": "Indigo a700",
+      "value": "#304ffe"
     },
     {
-      "comment" : "",
-      "id" : "blue50",
-      "name" : "Blue 50",
-      "value" : "#e3f2fd"
+      "comment": "",
+      "id": "blue50",
+      "name": "Blue 50",
+      "value": "#e3f2fd"
     },
     {
-      "comment" : "",
-      "id" : "blue100",
-      "name" : "Blue 100",
-      "value" : "#bbdefb"
+      "comment": "",
+      "id": "blue100",
+      "name": "Blue 100",
+      "value": "#bbdefb"
     },
     {
-      "comment" : "",
-      "id" : "blue200",
-      "name" : "Blue 200",
-      "value" : "#90caf9"
+      "comment": "",
+      "id": "blue200",
+      "name": "Blue 200",
+      "value": "#90caf9"
     },
     {
-      "comment" : "",
-      "id" : "blue300",
-      "name" : "Blue 300",
-      "value" : "#64b5f6"
+      "comment": "",
+      "id": "blue300",
+      "name": "Blue 300",
+      "value": "#64b5f6"
     },
     {
-      "comment" : "",
-      "id" : "blue400",
-      "name" : "Blue 400",
-      "value" : "#42a5f5"
+      "comment": "",
+      "id": "blue400",
+      "name": "Blue 400",
+      "value": "#42a5f5"
     },
     {
-      "comment" : "",
-      "id" : "blue500",
-      "name" : "Blue 500",
-      "value" : "#2196f3"
+      "comment": "",
+      "id": "blue500",
+      "name": "Blue 500",
+      "value": "#2196f3"
     },
     {
-      "comment" : "",
-      "id" : "blue600",
-      "name" : "Blue 600",
-      "value" : "#1e88e5"
+      "comment": "",
+      "id": "blue600",
+      "name": "Blue 600",
+      "value": "#1e88e5"
     },
     {
-      "comment" : "",
-      "id" : "blue700",
-      "name" : "Blue 700",
-      "value" : "#1976d2"
+      "comment": "",
+      "id": "blue700",
+      "name": "Blue 700",
+      "value": "#1976d2"
     },
     {
-      "comment" : "",
-      "id" : "blue800",
-      "name" : "Blue 800",
-      "value" : "#1565c0"
+      "comment": "",
+      "id": "blue800",
+      "name": "Blue 800",
+      "value": "#1565c0"
     },
     {
-      "comment" : "",
-      "id" : "blue900",
-      "name" : "Blue 900",
-      "value" : "#0d47a1"
+      "comment": "",
+      "id": "blue900",
+      "name": "Blue 900",
+      "value": "#0d47a1"
     },
     {
-      "comment" : "",
-      "id" : "bluea100",
-      "name" : "Blue a100",
-      "value" : "#82b1ff"
+      "comment": "",
+      "id": "bluea100",
+      "name": "Blue a100",
+      "value": "#82b1ff"
     },
     {
-      "comment" : "",
-      "id" : "bluea200",
-      "name" : "Blue a200",
-      "value" : "#448aff"
+      "comment": "",
+      "id": "bluea200",
+      "name": "Blue a200",
+      "value": "#448aff"
     },
     {
-      "comment" : "",
-      "id" : "bluea400",
-      "name" : "Blue a400",
-      "value" : "#2979ff"
+      "comment": "",
+      "id": "bluea400",
+      "name": "Blue a400",
+      "value": "#2979ff"
     },
     {
-      "comment" : "",
-      "id" : "bluea700",
-      "name" : "Blue a700",
-      "value" : "#2962ff"
+      "comment": "",
+      "id": "bluea700",
+      "name": "Blue a700",
+      "value": "#2962ff"
     },
     {
-      "comment" : "",
-      "id" : "lightblue50",
-      "name" : "Lightblue 50",
-      "value" : "#e1f5fe"
+      "comment": "",
+      "id": "lightblue50",
+      "name": "Lightblue 50",
+      "value": "#e1f5fe"
     },
     {
-      "comment" : "",
-      "id" : "lightblue100",
-      "name" : "Lightblue 100",
-      "value" : "#b3e5fc"
+      "comment": "",
+      "id": "lightblue100",
+      "name": "Lightblue 100",
+      "value": "#b3e5fc"
     },
     {
-      "comment" : "",
-      "id" : "lightblue200",
-      "name" : "Lightblue 200",
-      "value" : "#81d4fa"
+      "comment": "",
+      "id": "lightblue200",
+      "name": "Lightblue 200",
+      "value": "#81d4fa"
     },
     {
-      "comment" : "",
-      "id" : "lightblue300",
-      "name" : "Lightblue 300",
-      "value" : "#4fc3f7"
+      "comment": "",
+      "id": "lightblue300",
+      "name": "Lightblue 300",
+      "value": "#4fc3f7"
     },
     {
-      "comment" : "",
-      "id" : "lightblue400",
-      "name" : "Lightblue 400",
-      "value" : "#29b6f6"
+      "comment": "",
+      "id": "lightblue400",
+      "name": "Lightblue 400",
+      "value": "#29b6f6"
     },
     {
-      "comment" : "",
-      "id" : "lightblue500",
-      "name" : "Lightblue 500",
-      "value" : "#03a9f4"
+      "comment": "",
+      "id": "lightblue500",
+      "name": "Lightblue 500",
+      "value": "#03a9f4"
     },
     {
-      "comment" : "",
-      "id" : "lightblue600",
-      "name" : "Lightblue 600",
-      "value" : "#039be5"
+      "comment": "",
+      "id": "lightblue600",
+      "name": "Lightblue 600",
+      "value": "#039be5"
     },
     {
-      "comment" : "",
-      "id" : "lightblue700",
-      "name" : "Lightblue 700",
-      "value" : "#0288d1"
+      "comment": "",
+      "id": "lightblue700",
+      "name": "Lightblue 700",
+      "value": "#0288d1"
     },
     {
-      "comment" : "",
-      "id" : "lightblue800",
-      "name" : "Lightblue 800",
-      "value" : "#0277bd"
+      "comment": "",
+      "id": "lightblue800",
+      "name": "Lightblue 800",
+      "value": "#0277bd"
     },
     {
-      "comment" : "",
-      "id" : "lightblue900",
-      "name" : "Lightblue 900",
-      "value" : "#01579b"
+      "comment": "",
+      "id": "lightblue900",
+      "name": "Lightblue 900",
+      "value": "#01579b"
     },
     {
-      "comment" : "",
-      "id" : "lightbluea100",
-      "name" : "Lightblue a100",
-      "value" : "#80d8ff"
+      "comment": "",
+      "id": "lightbluea100",
+      "name": "Lightblue a100",
+      "value": "#80d8ff"
     },
     {
-      "comment" : "",
-      "id" : "lightbluea200",
-      "name" : "Lightblue a200",
-      "value" : "#40c4ff"
+      "comment": "",
+      "id": "lightbluea200",
+      "name": "Lightblue a200",
+      "value": "#40c4ff"
     },
     {
-      "comment" : "",
-      "id" : "lightbluea400",
-      "name" : "Lightblue a400",
-      "value" : "#00b0ff"
+      "comment": "",
+      "id": "lightbluea400",
+      "name": "Lightblue a400",
+      "value": "#00b0ff"
     },
     {
-      "comment" : "",
-      "id" : "lightbluea700",
-      "name" : "Lightblue a700",
-      "value" : "#0091ea"
+      "comment": "",
+      "id": "lightbluea700",
+      "name": "Lightblue a700",
+      "value": "#0091ea"
     },
     {
-      "comment" : "",
-      "id" : "cyan50",
-      "name" : "Cyan 50",
-      "value" : "#e0f7fa"
+      "comment": "",
+      "id": "cyan50",
+      "name": "Cyan 50",
+      "value": "#e0f7fa"
     },
     {
-      "comment" : "",
-      "id" : "cyan100",
-      "name" : "Cyan 100",
-      "value" : "#b2ebf2"
+      "comment": "",
+      "id": "cyan100",
+      "name": "Cyan 100",
+      "value": "#b2ebf2"
     },
     {
-      "comment" : "",
-      "id" : "cyan200",
-      "name" : "Cyan 200",
-      "value" : "#80deea"
+      "comment": "",
+      "id": "cyan200",
+      "name": "Cyan 200",
+      "value": "#80deea"
     },
     {
-      "comment" : "",
-      "id" : "cyan300",
-      "name" : "Cyan 300",
-      "value" : "#4dd0e1"
+      "comment": "",
+      "id": "cyan300",
+      "name": "Cyan 300",
+      "value": "#4dd0e1"
     },
     {
-      "comment" : "",
-      "id" : "cyan400",
-      "name" : "Cyan 400",
-      "value" : "#26c6da"
+      "comment": "",
+      "id": "cyan400",
+      "name": "Cyan 400",
+      "value": "#26c6da"
     },
     {
-      "comment" : "",
-      "id" : "cyan500",
-      "name" : "Cyan 500",
-      "value" : "#00bcd4"
+      "comment": "",
+      "id": "cyan500",
+      "name": "Cyan 500",
+      "value": "#00bcd4"
     },
     {
-      "comment" : "",
-      "id" : "cyan600",
-      "name" : "Cyan 600",
-      "value" : "#00acc1"
+      "comment": "",
+      "id": "cyan600",
+      "name": "Cyan 600",
+      "value": "#00acc1"
     },
     {
-      "comment" : "",
-      "id" : "cyan700",
-      "name" : "Cyan 700",
-      "value" : "#0097a7"
+      "comment": "",
+      "id": "cyan700",
+      "name": "Cyan 700",
+      "value": "#0097a7"
     },
     {
-      "comment" : "",
-      "id" : "cyan800",
-      "name" : "Cyan 800",
-      "value" : "#00838f"
+      "comment": "",
+      "id": "cyan800",
+      "name": "Cyan 800",
+      "value": "#00838f"
     },
     {
-      "comment" : "",
-      "id" : "cyan900",
-      "name" : "Cyan 900",
-      "value" : "#006064"
+      "comment": "",
+      "id": "cyan900",
+      "name": "Cyan 900",
+      "value": "#006064"
     },
     {
-      "comment" : "",
-      "id" : "cyana100",
-      "name" : "Cyan a100",
-      "value" : "#84ffff"
+      "comment": "",
+      "id": "cyana100",
+      "name": "Cyan a100",
+      "value": "#84ffff"
     },
     {
-      "comment" : "",
-      "id" : "cyana200",
-      "name" : "Cyan a200",
-      "value" : "#18ffff"
+      "comment": "",
+      "id": "cyana200",
+      "name": "Cyan a200",
+      "value": "#18ffff"
     },
     {
-      "comment" : "",
-      "id" : "cyana400",
-      "name" : "Cyan a400",
-      "value" : "#00e5ff"
+      "comment": "",
+      "id": "cyana400",
+      "name": "Cyan a400",
+      "value": "#00e5ff"
     },
     {
-      "comment" : "",
-      "id" : "cyana700",
-      "name" : "Cyan a700",
-      "value" : "#00b8d4"
+      "comment": "",
+      "id": "cyana700",
+      "name": "Cyan a700",
+      "value": "#00b8d4"
     },
     {
-      "comment" : "",
-      "id" : "teal50",
-      "name" : "Teal 50",
-      "value" : "#e0f2f1"
+      "comment": "",
+      "id": "teal50",
+      "name": "Teal 50",
+      "value": "#e0f2f1"
     },
     {
-      "comment" : "",
-      "id" : "teal100",
-      "name" : "Teal 100",
-      "value" : "#b2dfdb"
+      "comment": "",
+      "id": "teal100",
+      "name": "Teal 100",
+      "value": "#b2dfdb"
     },
     {
-      "comment" : "",
-      "id" : "teal200",
-      "name" : "Teal 200",
-      "value" : "#80cbc4"
+      "comment": "",
+      "id": "teal200",
+      "name": "Teal 200",
+      "value": "#80cbc4"
     },
     {
-      "comment" : "",
-      "id" : "teal300",
-      "name" : "Teal 300",
-      "value" : "#4db6ac"
+      "comment": "",
+      "id": "teal300",
+      "name": "Teal 300",
+      "value": "#4db6ac"
     },
     {
-      "comment" : "",
-      "id" : "teal400",
-      "name" : "Teal 400",
-      "value" : "#26a69a"
+      "comment": "",
+      "id": "teal400",
+      "name": "Teal 400",
+      "value": "#26a69a"
     },
     {
-      "comment" : "",
-      "id" : "teal500",
-      "name" : "Teal 500",
-      "value" : "#009688"
+      "comment": "",
+      "id": "teal500",
+      "name": "Teal 500",
+      "value": "#009688"
     },
     {
-      "comment" : "",
-      "id" : "teal600",
-      "name" : "Teal 600",
-      "value" : "#00897b"
+      "comment": "",
+      "id": "teal600",
+      "name": "Teal 600",
+      "value": "#00897b"
     },
     {
-      "comment" : "",
-      "id" : "teal700",
-      "name" : "Teal 700",
-      "value" : "#00796b"
+      "comment": "",
+      "id": "teal700",
+      "name": "Teal 700",
+      "value": "#00796b"
     },
     {
-      "comment" : "",
-      "id" : "teal800",
-      "name" : "Teal 800",
-      "value" : "#00695c"
+      "comment": "",
+      "id": "teal800",
+      "name": "Teal 800",
+      "value": "#00695c"
     },
     {
-      "comment" : "",
-      "id" : "teal900",
-      "name" : "Teal 900",
-      "value" : "#004d40"
+      "comment": "",
+      "id": "teal900",
+      "name": "Teal 900",
+      "value": "#004d40"
     },
     {
-      "comment" : "",
-      "id" : "teala100",
-      "name" : "Teal a100",
-      "value" : "#a7ffeb"
+      "comment": "",
+      "id": "teala100",
+      "name": "Teal a100",
+      "value": "#a7ffeb"
     },
     {
-      "comment" : "",
-      "id" : "teala200",
-      "name" : "Teal a200",
-      "value" : "#64ffda"
+      "comment": "",
+      "id": "teala200",
+      "name": "Teal a200",
+      "value": "#64ffda"
     },
     {
-      "comment" : "",
-      "id" : "teala400",
-      "name" : "Teal a400",
-      "value" : "#1de9b6"
+      "comment": "",
+      "id": "teala400",
+      "name": "Teal a400",
+      "value": "#1de9b6"
     },
     {
-      "comment" : "",
-      "id" : "teala700",
-      "name" : "Teal a700",
-      "value" : "#00bfa5"
+      "comment": "",
+      "id": "teala700",
+      "name": "Teal a700",
+      "value": "#00bfa5"
     },
     {
-      "comment" : "",
-      "id" : "green50",
-      "name" : "Green 50",
-      "value" : "#e8f5e9"
+      "comment": "",
+      "id": "green50",
+      "name": "Green 50",
+      "value": "#e8f5e9"
     },
     {
-      "comment" : "",
-      "id" : "green100",
-      "name" : "Green 100",
-      "value" : "#c8e6c9"
+      "comment": "",
+      "id": "green100",
+      "name": "Green 100",
+      "value": "#c8e6c9"
     },
     {
-      "comment" : "",
-      "id" : "green200",
-      "name" : "Green 200",
-      "value" : "#a5d6a7"
+      "comment": "",
+      "id": "green200",
+      "name": "Green 200",
+      "value": "#a5d6a7"
     },
     {
-      "comment" : "",
-      "id" : "green300",
-      "name" : "Green 300",
-      "value" : "#81c784"
+      "comment": "",
+      "id": "green300",
+      "name": "Green 300",
+      "value": "#81c784"
     },
     {
-      "comment" : "",
-      "id" : "green400",
-      "name" : "Green 400",
-      "value" : "#66bb6a"
+      "comment": "",
+      "id": "green400",
+      "name": "Green 400",
+      "value": "#66bb6a"
     },
     {
-      "comment" : "",
-      "id" : "green500",
-      "name" : "Green 500",
-      "value" : "#4caf50"
+      "comment": "",
+      "id": "green500",
+      "name": "Green 500",
+      "value": "#4caf50"
     },
     {
-      "comment" : "",
-      "id" : "green600",
-      "name" : "Green 600",
-      "value" : "#43a047"
+      "comment": "",
+      "id": "green600",
+      "name": "Green 600",
+      "value": "#43a047"
     },
     {
-      "comment" : "",
-      "id" : "green700",
-      "name" : "Green 700",
-      "value" : "#388e3c"
+      "comment": "",
+      "id": "green700",
+      "name": "Green 700",
+      "value": "#388e3c"
     },
     {
-      "comment" : "",
-      "id" : "green800",
-      "name" : "Green 800",
-      "value" : "#2e7d32"
+      "comment": "",
+      "id": "green800",
+      "name": "Green 800",
+      "value": "#2e7d32"
     },
     {
-      "comment" : "",
-      "id" : "green900",
-      "name" : "Green 900",
-      "value" : "#1b5e20"
+      "comment": "",
+      "id": "green900",
+      "name": "Green 900",
+      "value": "#1b5e20"
     },
     {
-      "comment" : "",
-      "id" : "greena100",
-      "name" : "Green a100",
-      "value" : "#b9f6ca"
+      "comment": "",
+      "id": "greena100",
+      "name": "Green a100",
+      "value": "#b9f6ca"
     },
     {
-      "comment" : "",
-      "id" : "greena200",
-      "name" : "Green a200",
-      "value" : "#69f0ae"
+      "comment": "",
+      "id": "greena200",
+      "name": "Green a200",
+      "value": "#69f0ae"
     },
     {
-      "comment" : "",
-      "id" : "greena400",
-      "name" : "Green a400",
-      "value" : "#00e676"
+      "comment": "",
+      "id": "greena400",
+      "name": "Green a400",
+      "value": "#00e676"
     },
     {
-      "comment" : "",
-      "id" : "greena700",
-      "name" : "Green a700",
-      "value" : "#00c853"
+      "comment": "",
+      "id": "greena700",
+      "name": "Green a700",
+      "value": "#00c853"
     },
     {
-      "comment" : "",
-      "id" : "lightgreen50",
-      "name" : "Lightgreen 50",
-      "value" : "#f1f8e9"
+      "comment": "",
+      "id": "lightgreen50",
+      "name": "Lightgreen 50",
+      "value": "#f1f8e9"
     },
     {
-      "comment" : "",
-      "id" : "lightgreen100",
-      "name" : "Lightgreen 100",
-      "value" : "#dcedc8"
+      "comment": "",
+      "id": "lightgreen100",
+      "name": "Lightgreen 100",
+      "value": "#dcedc8"
     },
     {
-      "comment" : "",
-      "id" : "lightgreen200",
-      "name" : "Lightgreen 200",
-      "value" : "#c5e1a5"
+      "comment": "",
+      "id": "lightgreen200",
+      "name": "Lightgreen 200",
+      "value": "#c5e1a5"
     },
     {
-      "comment" : "",
-      "id" : "lightgreen300",
-      "name" : "Lightgreen 300",
-      "value" : "#aed581"
+      "comment": "",
+      "id": "lightgreen300",
+      "name": "Lightgreen 300",
+      "value": "#aed581"
     },
     {
-      "comment" : "",
-      "id" : "lightgreen400",
-      "name" : "Lightgreen 400",
-      "value" : "#9ccc65"
+      "comment": "",
+      "id": "lightgreen400",
+      "name": "Lightgreen 400",
+      "value": "#9ccc65"
     },
     {
-      "comment" : "",
-      "id" : "lightgreen500",
-      "name" : "Lightgreen 500",
-      "value" : "#8bc34a"
+      "comment": "",
+      "id": "lightgreen500",
+      "name": "Lightgreen 500",
+      "value": "#8bc34a"
     },
     {
-      "comment" : "",
-      "id" : "lightgreen600",
-      "name" : "Lightgreen 600",
-      "value" : "#7cb342"
+      "comment": "",
+      "id": "lightgreen600",
+      "name": "Lightgreen 600",
+      "value": "#7cb342"
     },
     {
-      "comment" : "",
-      "id" : "lightgreen700",
-      "name" : "Lightgreen 700",
-      "value" : "#689f38"
+      "comment": "",
+      "id": "lightgreen700",
+      "name": "Lightgreen 700",
+      "value": "#689f38"
     },
     {
-      "comment" : "",
-      "id" : "lightgreen800",
-      "name" : "Lightgreen 800",
-      "value" : "#558b2f"
+      "comment": "",
+      "id": "lightgreen800",
+      "name": "Lightgreen 800",
+      "value": "#558b2f"
     },
     {
-      "comment" : "",
-      "id" : "lightgreen900",
-      "name" : "Lightgreen 900",
-      "value" : "#33691e"
+      "comment": "",
+      "id": "lightgreen900",
+      "name": "Lightgreen 900",
+      "value": "#33691e"
     },
     {
-      "comment" : "",
-      "id" : "lightgreena100",
-      "name" : "Lightgreen a100",
-      "value" : "#ccff90"
+      "comment": "",
+      "id": "lightgreena100",
+      "name": "Lightgreen a100",
+      "value": "#ccff90"
     },
     {
-      "comment" : "",
-      "id" : "lightgreena200",
-      "name" : "Lightgreen a200",
-      "value" : "#b2ff59"
+      "comment": "",
+      "id": "lightgreena200",
+      "name": "Lightgreen a200",
+      "value": "#b2ff59"
     },
     {
-      "comment" : "",
-      "id" : "lightgreena400",
-      "name" : "Lightgreen a400",
-      "value" : "#76ff03"
+      "comment": "",
+      "id": "lightgreena400",
+      "name": "Lightgreen a400",
+      "value": "#76ff03"
     },
     {
-      "comment" : "",
-      "id" : "lightgreena700",
-      "name" : "Lightgreen a700",
-      "value" : "#64dd17"
+      "comment": "",
+      "id": "lightgreena700",
+      "name": "Lightgreen a700",
+      "value": "#64dd17"
     },
     {
-      "comment" : "",
-      "id" : "lime50",
-      "name" : "Lime 50",
-      "value" : "#f9fbe7"
+      "comment": "",
+      "id": "lime50",
+      "name": "Lime 50",
+      "value": "#f9fbe7"
     },
     {
-      "comment" : "",
-      "id" : "lime100",
-      "name" : "Lime 100",
-      "value" : "#f0f4c3"
+      "comment": "",
+      "id": "lime100",
+      "name": "Lime 100",
+      "value": "#f0f4c3"
     },
     {
-      "comment" : "",
-      "id" : "lime200",
-      "name" : "Lime 200",
-      "value" : "#e6ee9c"
+      "comment": "",
+      "id": "lime200",
+      "name": "Lime 200",
+      "value": "#e6ee9c"
     },
     {
-      "comment" : "",
-      "id" : "lime300",
-      "name" : "Lime 300",
-      "value" : "#dce775"
+      "comment": "",
+      "id": "lime300",
+      "name": "Lime 300",
+      "value": "#dce775"
     },
     {
-      "comment" : "",
-      "id" : "lime400",
-      "name" : "Lime 400",
-      "value" : "#d4e157"
+      "comment": "",
+      "id": "lime400",
+      "name": "Lime 400",
+      "value": "#d4e157"
     },
     {
-      "comment" : "",
-      "id" : "lime500",
-      "name" : "Lime 500",
-      "value" : "#cddc39"
+      "comment": "",
+      "id": "lime500",
+      "name": "Lime 500",
+      "value": "#cddc39"
     },
     {
-      "comment" : "",
-      "id" : "lime600",
-      "name" : "Lime 600",
-      "value" : "#c0ca33"
+      "comment": "",
+      "id": "lime600",
+      "name": "Lime 600",
+      "value": "#c0ca33"
     },
     {
-      "comment" : "",
-      "id" : "lime700",
-      "name" : "Lime 700",
-      "value" : "#afb42b"
+      "comment": "",
+      "id": "lime700",
+      "name": "Lime 700",
+      "value": "#afb42b"
     },
     {
-      "comment" : "",
-      "id" : "lime800",
-      "name" : "Lime 800",
-      "value" : "#9e9d24"
+      "comment": "",
+      "id": "lime800",
+      "name": "Lime 800",
+      "value": "#9e9d24"
     },
     {
-      "comment" : "",
-      "id" : "lime900",
-      "name" : "Lime 900",
-      "value" : "#827717"
+      "comment": "",
+      "id": "lime900",
+      "name": "Lime 900",
+      "value": "#827717"
     },
     {
-      "comment" : "",
-      "id" : "limea100",
-      "name" : "Lime a100",
-      "value" : "#f4ff81"
+      "comment": "",
+      "id": "limea100",
+      "name": "Lime a100",
+      "value": "#f4ff81"
     },
     {
-      "comment" : "",
-      "id" : "limea200",
-      "name" : "Lime a200",
-      "value" : "#eeff41"
+      "comment": "",
+      "id": "limea200",
+      "name": "Lime a200",
+      "value": "#eeff41"
     },
     {
-      "comment" : "",
-      "id" : "limea400",
-      "name" : "Lime a400",
-      "value" : "#c6ff00"
+      "comment": "",
+      "id": "limea400",
+      "name": "Lime a400",
+      "value": "#c6ff00"
     },
     {
-      "comment" : "",
-      "id" : "limea700",
-      "name" : "Lime a700",
-      "value" : "#aeea00"
+      "comment": "",
+      "id": "limea700",
+      "name": "Lime a700",
+      "value": "#aeea00"
     },
     {
-      "comment" : "",
-      "id" : "yellow50",
-      "name" : "Yellow 50",
-      "value" : "#fffde7"
+      "comment": "",
+      "id": "yellow50",
+      "name": "Yellow 50",
+      "value": "#fffde7"
     },
     {
-      "comment" : "",
-      "id" : "yellow100",
-      "name" : "Yellow 100",
-      "value" : "#fff9c4"
+      "comment": "",
+      "id": "yellow100",
+      "name": "Yellow 100",
+      "value": "#fff9c4"
     },
     {
-      "comment" : "",
-      "id" : "yellow200",
-      "name" : "Yellow 200",
-      "value" : "#fff59d"
+      "comment": "",
+      "id": "yellow200",
+      "name": "Yellow 200",
+      "value": "#fff59d"
     },
     {
-      "comment" : "",
-      "id" : "yellow300",
-      "name" : "Yellow 300",
-      "value" : "#fff176"
+      "comment": "",
+      "id": "yellow300",
+      "name": "Yellow 300",
+      "value": "#fff176"
     },
     {
-      "comment" : "",
-      "id" : "yellow400",
-      "name" : "Yellow 400",
-      "value" : "#ffee58"
+      "comment": "",
+      "id": "yellow400",
+      "name": "Yellow 400",
+      "value": "#ffee58"
     },
     {
-      "comment" : "",
-      "id" : "yellow500",
-      "name" : "Yellow 500",
-      "value" : "#ffeb3b"
+      "comment": "",
+      "id": "yellow500",
+      "name": "Yellow 500",
+      "value": "#ffeb3b"
     },
     {
-      "comment" : "",
-      "id" : "yellow600",
-      "name" : "Yellow 600",
-      "value" : "#fdd835"
+      "comment": "",
+      "id": "yellow600",
+      "name": "Yellow 600",
+      "value": "#fdd835"
     },
     {
-      "comment" : "",
-      "id" : "yellow700",
-      "name" : "Yellow 700",
-      "value" : "#fbc02d"
+      "comment": "",
+      "id": "yellow700",
+      "name": "Yellow 700",
+      "value": "#fbc02d"
     },
     {
-      "comment" : "",
-      "id" : "yellow800",
-      "name" : "Yellow 800",
-      "value" : "#f9a825"
+      "comment": "",
+      "id": "yellow800",
+      "name": "Yellow 800",
+      "value": "#f9a825"
     },
     {
-      "comment" : "",
-      "id" : "yellow900",
-      "name" : "Yellow 900",
-      "value" : "#f57f17"
+      "comment": "",
+      "id": "yellow900",
+      "name": "Yellow 900",
+      "value": "#f57f17"
     },
     {
-      "comment" : "",
-      "id" : "yellowa100",
-      "name" : "Yellow a100",
-      "value" : "#ffff8d"
+      "comment": "",
+      "id": "yellowa100",
+      "name": "Yellow a100",
+      "value": "#ffff8d"
     },
     {
-      "comment" : "",
-      "id" : "yellowa200",
-      "name" : "Yellow a200",
-      "value" : "#ffff00"
+      "comment": "",
+      "id": "yellowa200",
+      "name": "Yellow a200",
+      "value": "#ffff00"
     },
     {
-      "comment" : "",
-      "id" : "yellowa400",
-      "name" : "Yellow a400",
-      "value" : "#ffea00"
+      "comment": "",
+      "id": "yellowa400",
+      "name": "Yellow a400",
+      "value": "#ffea00"
     },
     {
-      "comment" : "",
-      "id" : "yellowa700",
-      "name" : "Yellow a700",
-      "value" : "#ffd600"
+      "comment": "",
+      "id": "yellowa700",
+      "name": "Yellow a700",
+      "value": "#ffd600"
     },
     {
-      "comment" : "",
-      "id" : "amber50",
-      "name" : "Amber 50",
-      "value" : "#fff8e1"
+      "comment": "",
+      "id": "amber50",
+      "name": "Amber 50",
+      "value": "#fff8e1"
     },
     {
-      "comment" : "",
-      "id" : "amber100",
-      "name" : "Amber 100",
-      "value" : "#ffecb3"
+      "comment": "",
+      "id": "amber100",
+      "name": "Amber 100",
+      "value": "#ffecb3"
     },
     {
-      "comment" : "",
-      "id" : "amber200",
-      "name" : "Amber 200",
-      "value" : "#ffe082"
+      "comment": "",
+      "id": "amber200",
+      "name": "Amber 200",
+      "value": "#ffe082"
     },
     {
-      "comment" : "",
-      "id" : "amber300",
-      "name" : "Amber 300",
-      "value" : "#ffd54f"
+      "comment": "",
+      "id": "amber300",
+      "name": "Amber 300",
+      "value": "#ffd54f"
     },
     {
-      "comment" : "",
-      "id" : "amber400",
-      "name" : "Amber 400",
-      "value" : "#ffca28"
+      "comment": "",
+      "id": "amber400",
+      "name": "Amber 400",
+      "value": "#ffca28"
     },
     {
-      "comment" : "",
-      "id" : "amber500",
-      "name" : "Amber 500",
-      "value" : "#ffc107"
+      "comment": "",
+      "id": "amber500",
+      "name": "Amber 500",
+      "value": "#ffc107"
     },
     {
-      "comment" : "",
-      "id" : "amber600",
-      "name" : "Amber 600",
-      "value" : "#ffb300"
+      "comment": "",
+      "id": "amber600",
+      "name": "Amber 600",
+      "value": "#ffb300"
     },
     {
-      "comment" : "",
-      "id" : "amber700",
-      "name" : "Amber 700",
-      "value" : "#ffa000"
+      "comment": "",
+      "id": "amber700",
+      "name": "Amber 700",
+      "value": "#ffa000"
     },
     {
-      "comment" : "",
-      "id" : "amber800",
-      "name" : "Amber 800",
-      "value" : "#ff8f00"
+      "comment": "",
+      "id": "amber800",
+      "name": "Amber 800",
+      "value": "#ff8f00"
     },
     {
-      "comment" : "",
-      "id" : "amber900",
-      "name" : "Amber 900",
-      "value" : "#ff6f00"
+      "comment": "",
+      "id": "amber900",
+      "name": "Amber 900",
+      "value": "#ff6f00"
     },
     {
-      "comment" : "",
-      "id" : "ambera100",
-      "name" : "Amber a100",
-      "value" : "#ffe57f"
+      "comment": "",
+      "id": "ambera100",
+      "name": "Amber a100",
+      "value": "#ffe57f"
     },
     {
-      "comment" : "",
-      "id" : "ambera200",
-      "name" : "Amber a200",
-      "value" : "#ffd740"
+      "comment": "",
+      "id": "ambera200",
+      "name": "Amber a200",
+      "value": "#ffd740"
     },
     {
-      "comment" : "",
-      "id" : "ambera400",
-      "name" : "Amber a400",
-      "value" : "#ffc400"
+      "comment": "",
+      "id": "ambera400",
+      "name": "Amber a400",
+      "value": "#ffc400"
     },
     {
-      "comment" : "",
-      "id" : "ambera700",
-      "name" : "Amber a700",
-      "value" : "#ffab00"
+      "comment": "",
+      "id": "ambera700",
+      "name": "Amber a700",
+      "value": "#ffab00"
     },
     {
-      "comment" : "",
-      "id" : "orange50",
-      "name" : "Orange 50",
-      "value" : "#fff3e0"
+      "comment": "",
+      "id": "orange50",
+      "name": "Orange 50",
+      "value": "#fff3e0"
     },
     {
-      "comment" : "",
-      "id" : "orange100",
-      "name" : "Orange 100",
-      "value" : "#ffe0b2"
+      "comment": "",
+      "id": "orange100",
+      "name": "Orange 100",
+      "value": "#ffe0b2"
     },
     {
-      "comment" : "",
-      "id" : "orange200",
-      "name" : "Orange 200",
-      "value" : "#ffcc80"
+      "comment": "",
+      "id": "orange200",
+      "name": "Orange 200",
+      "value": "#ffcc80"
     },
     {
-      "comment" : "",
-      "id" : "orange300",
-      "name" : "Orange 300",
-      "value" : "#ffb74d"
+      "comment": "",
+      "id": "orange300",
+      "name": "Orange 300",
+      "value": "#ffb74d"
     },
     {
-      "comment" : "",
-      "id" : "orange400",
-      "name" : "Orange 400",
-      "value" : "#ffa726"
+      "comment": "",
+      "id": "orange400",
+      "name": "Orange 400",
+      "value": "#ffa726"
     },
     {
-      "comment" : "",
-      "id" : "orange500",
-      "name" : "Orange 500",
-      "value" : "#ff9800"
+      "comment": "",
+      "id": "orange500",
+      "name": "Orange 500",
+      "value": "#ff9800"
     },
     {
-      "comment" : "",
-      "id" : "orange600",
-      "name" : "Orange 600",
-      "value" : "#fb8c00"
+      "comment": "",
+      "id": "orange600",
+      "name": "Orange 600",
+      "value": "#fb8c00"
     },
     {
-      "comment" : "",
-      "id" : "orange700",
-      "name" : "Orange 700",
-      "value" : "#f57c00"
+      "comment": "",
+      "id": "orange700",
+      "name": "Orange 700",
+      "value": "#f57c00"
     },
     {
-      "comment" : "",
-      "id" : "orange800",
-      "name" : "Orange 800",
-      "value" : "#ef6c00"
+      "comment": "",
+      "id": "orange800",
+      "name": "Orange 800",
+      "value": "#ef6c00"
     },
     {
-      "comment" : "",
-      "id" : "orange900",
-      "name" : "Orange 900",
-      "value" : "#e65100"
+      "comment": "",
+      "id": "orange900",
+      "name": "Orange 900",
+      "value": "#e65100"
     },
     {
-      "comment" : "",
-      "id" : "orangea100",
-      "name" : "Orange a100",
-      "value" : "#ffd180"
+      "comment": "",
+      "id": "orangea100",
+      "name": "Orange a100",
+      "value": "#ffd180"
     },
     {
-      "comment" : "",
-      "id" : "orangea200",
-      "name" : "Orange a200",
-      "value" : "#ffab40"
+      "comment": "",
+      "id": "orangea200",
+      "name": "Orange a200",
+      "value": "#ffab40"
     },
     {
-      "comment" : "",
-      "id" : "orangea400",
-      "name" : "Orange a400",
-      "value" : "#ff9100"
+      "comment": "",
+      "id": "orangea400",
+      "name": "Orange a400",
+      "value": "#ff9100"
     },
     {
-      "comment" : "",
-      "id" : "orangea700",
-      "name" : "Orange a700",
-      "value" : "#ff6d00"
+      "comment": "",
+      "id": "orangea700",
+      "name": "Orange a700",
+      "value": "#ff6d00"
     },
     {
-      "comment" : "",
-      "id" : "deeporange50",
-      "name" : "Deeporange 50",
-      "value" : "#fbe9e7"
+      "comment": "",
+      "id": "deeporange50",
+      "name": "Deeporange 50",
+      "value": "#fbe9e7"
     },
     {
-      "comment" : "",
-      "id" : "deeporange100",
-      "name" : "Deeporange 100",
-      "value" : "#ffccbc"
+      "comment": "",
+      "id": "deeporange100",
+      "name": "Deeporange 100",
+      "value": "#ffccbc"
     },
     {
-      "comment" : "",
-      "id" : "deeporange200",
-      "name" : "Deeporange 200",
-      "value" : "#ffab91"
+      "comment": "",
+      "id": "deeporange200",
+      "name": "Deeporange 200",
+      "value": "#ffab91"
     },
     {
-      "comment" : "",
-      "id" : "deeporange300",
-      "name" : "Deeporange 300",
-      "value" : "#ff8a65"
+      "comment": "",
+      "id": "deeporange300",
+      "name": "Deeporange 300",
+      "value": "#ff8a65"
     },
     {
-      "comment" : "",
-      "id" : "deeporange400",
-      "name" : "Deeporange 400",
-      "value" : "#ff7043"
+      "comment": "",
+      "id": "deeporange400",
+      "name": "Deeporange 400",
+      "value": "#ff7043"
     },
     {
-      "comment" : "",
-      "id" : "deeporange500",
-      "name" : "Deeporange 500",
-      "value" : "#ff5722"
+      "comment": "",
+      "id": "deeporange500",
+      "name": "Deeporange 500",
+      "value": "#ff5722"
     },
     {
-      "comment" : "",
-      "id" : "deeporange600",
-      "name" : "Deeporange 600",
-      "value" : "#f4511e"
+      "comment": "",
+      "id": "deeporange600",
+      "name": "Deeporange 600",
+      "value": "#f4511e"
     },
     {
-      "comment" : "",
-      "id" : "deeporange700",
-      "name" : "Deeporange 700",
-      "value" : "#e64a19"
+      "comment": "",
+      "id": "deeporange700",
+      "name": "Deeporange 700",
+      "value": "#e64a19"
     },
     {
-      "comment" : "",
-      "id" : "deeporange800",
-      "name" : "Deeporange 800",
-      "value" : "#d84315"
+      "comment": "",
+      "id": "deeporange800",
+      "name": "Deeporange 800",
+      "value": "#d84315"
     },
     {
-      "comment" : "",
-      "id" : "deeporange900",
-      "name" : "Deeporange 900",
-      "value" : "#bf360c"
+      "comment": "",
+      "id": "deeporange900",
+      "name": "Deeporange 900",
+      "value": "#bf360c"
     },
     {
-      "comment" : "",
-      "id" : "deeporangea100",
-      "name" : "Deeporange a100",
-      "value" : "#ff9e80"
+      "comment": "",
+      "id": "deeporangea100",
+      "name": "Deeporange a100",
+      "value": "#ff9e80"
     },
     {
-      "comment" : "",
-      "id" : "deeporangea200",
-      "name" : "Deeporange a200",
-      "value" : "#ff6e40"
+      "comment": "",
+      "id": "deeporangea200",
+      "name": "Deeporange a200",
+      "value": "#ff6e40"
     },
     {
-      "comment" : "",
-      "id" : "deeporangea400",
-      "name" : "Deeporange a400",
-      "value" : "#ff3d00"
+      "comment": "",
+      "id": "deeporangea400",
+      "name": "Deeporange a400",
+      "value": "#ff3d00"
     },
     {
-      "comment" : "",
-      "id" : "deeporangea700",
-      "name" : "Deeporange a700",
-      "value" : "#dd2c00"
+      "comment": "",
+      "id": "deeporangea700",
+      "name": "Deeporange a700",
+      "value": "#dd2c00"
     },
     {
-      "comment" : "",
-      "id" : "brown50",
-      "name" : "Brown 50",
-      "value" : "#efebe9"
+      "comment": "",
+      "id": "brown50",
+      "name": "Brown 50",
+      "value": "#efebe9"
     },
     {
-      "comment" : "",
-      "id" : "brown100",
-      "name" : "Brown 100",
-      "value" : "#d7ccc8"
+      "comment": "",
+      "id": "brown100",
+      "name": "Brown 100",
+      "value": "#d7ccc8"
     },
     {
-      "comment" : "",
-      "id" : "brown200",
-      "name" : "Brown 200",
-      "value" : "#bcaaa4"
+      "comment": "",
+      "id": "brown200",
+      "name": "Brown 200",
+      "value": "#bcaaa4"
     },
     {
-      "comment" : "",
-      "id" : "brown300",
-      "name" : "Brown 300",
-      "value" : "#a1887f"
+      "comment": "",
+      "id": "brown300",
+      "name": "Brown 300",
+      "value": "#a1887f"
     },
     {
-      "comment" : "",
-      "id" : "brown400",
-      "name" : "Brown 400",
-      "value" : "#8d6e63"
+      "comment": "",
+      "id": "brown400",
+      "name": "Brown 400",
+      "value": "#8d6e63"
     },
     {
-      "comment" : "",
-      "id" : "brown500",
-      "name" : "Brown 500",
-      "value" : "#795548"
+      "comment": "",
+      "id": "brown500",
+      "name": "Brown 500",
+      "value": "#795548"
     },
     {
-      "comment" : "",
-      "id" : "brown600",
-      "name" : "Brown 600",
-      "value" : "#6d4c41"
+      "comment": "",
+      "id": "brown600",
+      "name": "Brown 600",
+      "value": "#6d4c41"
     },
     {
-      "comment" : "",
-      "id" : "brown700",
-      "name" : "Brown 700",
-      "value" : "#5d4037"
+      "comment": "",
+      "id": "brown700",
+      "name": "Brown 700",
+      "value": "#5d4037"
     },
     {
-      "comment" : "",
-      "id" : "brown800",
-      "name" : "Brown 800",
-      "value" : "#4e342e"
+      "comment": "",
+      "id": "brown800",
+      "name": "Brown 800",
+      "value": "#4e342e"
     },
     {
-      "comment" : "",
-      "id" : "brown900",
-      "name" : "Brown 900",
-      "value" : "#3e2723"
+      "comment": "",
+      "id": "brown900",
+      "name": "Brown 900",
+      "value": "#3e2723"
     },
     {
-      "comment" : "",
-      "id" : "grey50",
-      "name" : "Grey 50",
-      "value" : "#fafafa"
+      "comment": "",
+      "id": "grey50",
+      "name": "Grey 50",
+      "value": "#fafafa"
     },
     {
-      "comment" : "",
-      "id" : "grey100",
-      "name" : "Grey 100",
-      "value" : "#f5f5f5"
+      "comment": "",
+      "id": "grey100",
+      "name": "Grey 100",
+      "value": "#f5f5f5"
     },
     {
-      "comment" : "",
-      "id" : "grey200",
-      "name" : "Grey 200",
-      "value" : "#eeeeee"
+      "comment": "",
+      "id": "grey200",
+      "name": "Grey 200",
+      "value": "#eeeeee"
     },
     {
-      "comment" : "",
-      "id" : "grey300",
-      "name" : "Grey 300",
-      "value" : "#e0e0e0"
+      "comment": "",
+      "id": "grey300",
+      "name": "Grey 300",
+      "value": "#e0e0e0"
     },
     {
-      "comment" : "",
-      "id" : "grey400",
-      "name" : "Grey 400",
-      "value" : "#bdbdbd"
+      "comment": "",
+      "id": "grey400",
+      "name": "Grey 400",
+      "value": "#bdbdbd"
     },
     {
-      "comment" : "",
-      "id" : "grey500",
-      "name" : "Grey 500",
-      "value" : "#9e9e9e"
+      "comment": "",
+      "id": "grey500",
+      "name": "Grey 500",
+      "value": "#9e9e9e"
     },
     {
-      "comment" : "",
-      "id" : "grey600",
-      "name" : "Grey 600",
-      "value" : "#757575"
+      "comment": "",
+      "id": "grey600",
+      "name": "Grey 600",
+      "value": "#757575"
     },
     {
-      "comment" : "",
-      "id" : "grey700",
-      "name" : "Grey 700",
-      "value" : "#616161"
+      "comment": "",
+      "id": "grey700",
+      "name": "Grey 700",
+      "value": "#616161"
     },
     {
-      "comment" : "",
-      "id" : "grey800",
-      "name" : "Grey 800",
-      "value" : "#424242"
+      "comment": "",
+      "id": "grey800",
+      "name": "Grey 800",
+      "value": "#424242"
     },
     {
-      "comment" : "",
-      "id" : "grey900",
-      "name" : "Grey 900",
-      "value" : "#212121"
+      "comment": "",
+      "id": "grey900",
+      "name": "Grey 900",
+      "value": "#212121"
     },
     {
-      "comment" : "",
-      "id" : "bluegrey50",
-      "name" : "Bluegrey 50",
-      "value" : "#eceff1"
+      "comment": "",
+      "id": "bluegrey50",
+      "name": "Bluegrey 50",
+      "value": "#eceff1"
     },
     {
-      "comment" : "",
-      "id" : "bluegrey100",
-      "name" : "Bluegrey 100",
-      "value" : "#cfd8dc"
+      "comment": "",
+      "id": "bluegrey100",
+      "name": "Bluegrey 100",
+      "value": "#cfd8dc"
     },
     {
-      "comment" : "",
-      "id" : "bluegrey200",
-      "name" : "Bluegrey 200",
-      "value" : "#b0bec5"
+      "comment": "",
+      "id": "bluegrey200",
+      "name": "Bluegrey 200",
+      "value": "#b0bec5"
     },
     {
-      "comment" : "",
-      "id" : "bluegrey300",
-      "name" : "Bluegrey 300",
-      "value" : "#90a4ae"
+      "comment": "",
+      "id": "bluegrey300",
+      "name": "Bluegrey 300",
+      "value": "#90a4ae"
     },
     {
-      "comment" : "",
-      "id" : "bluegrey400",
-      "name" : "Bluegrey 400",
-      "value" : "#78909c"
+      "comment": "",
+      "id": "bluegrey400",
+      "name": "Bluegrey 400",
+      "value": "#78909c"
     },
     {
-      "comment" : "",
-      "id" : "bluegrey500",
-      "name" : "Bluegrey 500",
-      "value" : "#607d8b"
+      "comment": "",
+      "id": "bluegrey500",
+      "name": "Bluegrey 500",
+      "value": "#607d8b"
     },
     {
-      "comment" : "",
-      "id" : "bluegrey600",
-      "name" : "Bluegrey 600",
-      "value" : "#546e7a"
+      "comment": "",
+      "id": "bluegrey600",
+      "name": "Bluegrey 600",
+      "value": "#546e7a"
     },
     {
-      "comment" : "",
-      "id" : "bluegrey700",
-      "name" : "Bluegrey 700",
-      "value" : "#455a64"
+      "comment": "",
+      "id": "bluegrey700",
+      "name": "Bluegrey 700",
+      "value": "#455a64"
     },
     {
-      "comment" : "",
-      "id" : "bluegrey800",
-      "name" : "Bluegrey 800",
-      "value" : "#37474f"
+      "comment": "",
+      "id": "bluegrey800",
+      "name": "Bluegrey 800",
+      "value": "#37474f"
     },
     {
-      "comment" : "",
-      "id" : "bluegrey900",
-      "name" : "Bluegrey 900",
-      "value" : "#263238"
+      "comment": "",
+      "id": "bluegrey900",
+      "name": "Bluegrey 900",
+      "value": "#263238"
     }
   ]
 }

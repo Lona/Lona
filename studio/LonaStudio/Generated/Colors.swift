@@ -4,7 +4,6 @@ public enum Colors {
   public static let white = #colorLiteral(red: 1, green: 1, blue: 1, alpha: 1) // WHITE -
   public static let black = #colorLiteral(red: 0, green: 0, blue: 0, alpha: 1) // BLACK -
   public static let darkTransparentOutline = #colorLiteral(red: 0, green: 0, blue: 0, alpha: 0.1) // RGBA(0,0,0,0.1) -
-  public static let headerBackground = #colorLiteral(red: 0.960784313725, green: 0.960784313725, blue: 0.960784313725, alpha: 1) // #F5F5F5 - Should be rgba(216,216,216,0.25) on white
   public static let selectedIcon = #colorLiteral(red: 1, green: 1, blue: 1, alpha: 0.35) // RGBA(255,255,255,0.35) -
   public static let selectedIconStroke = #colorLiteral(red: 1, green: 1, blue: 1, alpha: 0.8) // RGBA(255,255,255,0.8) -
   public static let transparent = #colorLiteral(red: 0, green: 0, blue: 0, alpha: 0) // RGBA(0,0,0,0.0) -

@@ -112,7 +112,7 @@ class ComponentEditorViewController: NSSplitViewController {
     private func setUpViews() {
         setUpUtilities()
 
-        layerList.fillColor = .white
+        layerList.fillColor = layerList.isDarkMode ? NSColor.controlBackgroundColor : .white
 
         canvasAreaView.onSelectCanvasHeaderItem = { [unowned self] index in
             self.onChangeInspectedCanvas?(index)

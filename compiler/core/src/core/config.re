@@ -13,6 +13,7 @@ type t = {
   svgFiles: list(file(Svg.node)),
   workspacePath: string,
   options: Options.options,
+  platformId: Types.platformId,
 };
 
 module Compiler = {
@@ -113,6 +114,16 @@ module Find = {
 
   let referenceType = (config: t, typeName: string) =>
     UserTypes.resolveType(config.userTypesFile.contents.types, typeName);
+
+  let platformSpecificValue = (config: t, value: Types.platformSpecificValue('a)): 'a => {
+    switch (config.platformId) {
+    | Types.ReactDOM => value.reactDom
+    | Types.ReactNative => value.reactNative
+    | Types.ReactSketchapp => value.reactSketchapp
+    | Types.IOS => value.iOS
+    | Types.MacOS => value.macOS
+    }
+  }
 };
 
 module Type = {
@@ -133,7 +144,9 @@ let exit = message => {
   {|process.exit(1)|};
 };
 
-let load = (options: Options.options, path): Js.Promise.t(t) =>
+let load =
+    (platformId: Types.platformId, options: Options.options, path)
+    : Js.Promise.t(t) =>
   switch (Workspace.find(path)) {
   | None =>
     exit(
@@ -147,6 +160,7 @@ let load = (options: Options.options, path): Js.Promise.t(t) =>
       |> then_(svgFiles =>
            resolve({
              options,
+             platformId,
              componentNames: Workspace.componentNames(workspacePath),
              plugins: Workspace.compilerFile(workspacePath),
              colorsFile: Workspace.colorsFile(workspacePath),

@@ -106,14 +106,12 @@ class DisclosureContentRow: NSStackView {
             self.toggleViewState(animated: true)
         })
 
-        let headerTitle = NSTextField(labelWithString: title)
+        let headerTitle = NSTextField(labelWithAttributedString: TextStyles.sectionTitle.apply(to: title))
         headerTitle.translatesAutoresizingMaskIntoConstraints = false
-        headerTitle.font = NSFont.boldSystemFont(ofSize: 12)
-        headerTitle.textColor = NSColor.parse(css: "#545454")
 
         let bottomDivider = NSView()
         bottomDivider.translatesAutoresizingMaskIntoConstraints = false
-        bottomDivider.backgroundFill = NSColor.parse(css: "rgb(221,221,221)")!.cgColor
+        bottomDivider.backgroundFill = Colors.dividerSubtle.cgColor
 
         // Adding subviews
         disclosureHeader.addArrangedSubview(disclosureArrow)

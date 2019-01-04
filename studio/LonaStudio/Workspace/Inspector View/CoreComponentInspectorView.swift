@@ -336,9 +336,9 @@ class CoreComponentInspectorView: NSStackView {
         let inner = NSView()
         inner.heightAnchor.constraint(equalToConstant: 30).isActive = true
         inner.wantsLayer = true
-        inner.layer?.backgroundColor = NSColor.parse(css: "rgb(225,225,225)")!.cgColor
+        inner.layer?.backgroundColor = Colors.headerBackground.cgColor
         inner.layer?.borderWidth = 1
-        inner.layer?.borderColor = NSColor.parse(css: "rgb(201,201,201)")!.cgColor
+        inner.layer?.borderColor = Colors.dividerSubtle.cgColor
         inner.layer?.cornerRadius = 3
 
         let paddingRow = NSStackView(views: [
@@ -357,9 +357,9 @@ class CoreComponentInspectorView: NSStackView {
         ], orientation: .vertical)
         padding.spacing = 6
         padding.wantsLayer = true
-        padding.layer?.backgroundColor = NSColor.parse(css: "rgb(238,238,238)")!.cgColor
+        padding.layer?.backgroundColor = NSColor.windowBackgroundColor.cgColor
         padding.layer?.borderWidth = 1
-        padding.layer?.borderColor = NSColor.parse(css: "rgb(209,209,209)")!.cgColor
+        padding.layer?.borderColor = NSColor.controlBackgroundColor.cgColor
         padding.layer?.cornerRadius = 3
         padding.edgeInsets = NSEdgeInsets(top: 10, left: 0, bottom: 10, right: 0)
 

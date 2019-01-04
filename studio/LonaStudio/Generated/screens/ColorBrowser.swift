@@ -114,7 +114,7 @@ public class ColorBrowser: NSBox {
     headerView.addSubview(fixedHeightFixButtonContainerView)
     fixedHeightFixButtonContainerView.addSubview(addColorButtonView)
 
-    fillColor = Colors.white
+    fillColor = Colors.contentBackground
     titleView.attributedStringValue = titleViewTextStyle.apply(to: "Colors")
     titleViewTextStyle = TextStyles.title
     titleView.attributedStringValue = titleViewTextStyle.apply(to: titleView.attributedStringValue)

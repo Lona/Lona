@@ -292,12 +292,10 @@ public class DimensionsInspector: NSBox {
     widthLabelView.attributedStringValue = widthLabelViewTextStyle.apply(to: "Width")
     widthLabelViewTextStyle = TextStyles.regular
     widthLabelView.attributedStringValue = widthLabelViewTextStyle.apply(to: widthLabelView.attributedStringValue)
-    widthInputContainerView.fillColor = #colorLiteral(red: 0.847058823529, green: 0.847058823529, blue: 0.847058823529, alpha: 1)
     hSpacer2View.fillColor = #colorLiteral(red: 0.847058823529, green: 0.847058823529, blue: 0.847058823529, alpha: 1)
     heightLabelView.attributedStringValue = heightLabelViewTextStyle.apply(to: "Height")
-    heightInputContainerView.fillColor = #colorLiteral(red: 0.847058823529, green: 0.847058823529, blue: 0.847058823529, alpha: 1)
     aspectRatioLabelView.attributedStringValue = aspectRatioLabelViewTextStyle.apply(to: "Aspect Ratio")
-    hDividerView.fillColor = #colorLiteral(red: 0.847058823529, green: 0.847058823529, blue: 0.847058823529, alpha: 1)
+    hDividerView.fillColor = Colors.dividerSubtle
   }
 
   private func setUpConstraints() {

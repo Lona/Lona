@@ -113,7 +113,7 @@
     "params" : {
       "alignItems" : "center",
       "alignSelf" : "stretch",
-      "backgroundColor" : "white",
+      "backgroundColor" : "contentBackground",
       "flex" : 1,
       "paddingTop" : 48
     },

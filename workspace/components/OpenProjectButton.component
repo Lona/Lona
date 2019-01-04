@@ -90,6 +90,7 @@
               {
                 "id" : "Title",
                 "params" : {
+                  "font" : "regularBlack",
                   "text" : "Text goes here"
                 },
                 "type" : "Lona:Text"

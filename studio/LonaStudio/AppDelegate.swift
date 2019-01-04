@@ -14,9 +14,9 @@ import MASPreferences
 class AppDelegate: NSObject, NSApplicationDelegate {
 
     func applicationWillFinishLaunching(_ notification: Notification) {
-        if #available(OSX 10.14, *) {
-            NSApp.appearance = NSAppearance(named: .aqua)
-        }
+//        if #available(OSX 10.14, *) {
+//            NSApp.appearance = NSAppearance(named: .aqua)
+//        }
         #if DEBUG
         #else
             PFMoveToApplicationsFolderIfNecessary()

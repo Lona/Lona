@@ -110,7 +110,7 @@
               {
                 "id" : "Title",
                 "params" : {
-                  "font" : "title",
+                  "font" : "titleBlack",
                   "text" : "Welcome to Lona"
                 },
                 "type" : "Lona:Text"

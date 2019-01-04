@@ -26,8 +26,8 @@ class ParameterListEditorView: NSView {
     func renderToolbar() -> NSView {
         let toolbar = NSView()
         toolbar.translatesAutoresizingMaskIntoConstraints = false
-        toolbar.backgroundFill = CGColor.white
-        toolbar.addBorderView(to: .top)
+        toolbar.backgroundFill = NSColor.controlBackgroundColor.cgColor
+        toolbar.addBorderView(to: .top, color: NSSplitView.defaultDividerColor.cgColor)
 
         return toolbar
     }
@@ -63,7 +63,7 @@ class ParameterListEditorView: NSView {
         toolbar.addSubview(plusButton)
         addSubview(toolbar)
         addSubview(scrollView)
-        addBorderView(to: .top)
+        addBorderView(to: .top, color: NSSplitView.defaultDividerColor.cgColor)
 
         // Constraints
 

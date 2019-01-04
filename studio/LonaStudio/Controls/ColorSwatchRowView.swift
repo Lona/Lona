@@ -27,10 +27,12 @@ final class ColorSwatchRowView: NSStackView, Hoverable, PickerRowViewType {
     init(color: CSColor, selected: Bool) {
         let title = NSTextField(labelWithString: color.name)
         title.font = NSFont.systemFont(ofSize: 12)
+        title.textColor = Colors.textColor
         titleView = title
 
         let subtitle = NSTextField(labelWithString: color.value)
         subtitle.font = NSFont.systemFont(ofSize: 10)
+        subtitle.textColor = Colors.textColor
         subtitleView = subtitle
 
         super.init(frame: NSRect.zero)
@@ -74,8 +76,8 @@ final class ColorSwatchRowView: NSStackView, Hoverable, PickerRowViewType {
             subtitleView.textColor = NSColor.parse(css: "rgba(255,255,255,0.5)")!
             layer?.backgroundColor = NSColor.selectedMenuItemColor.cgColor
         } else {
-            titleView.textColor = NSColor.black
-            subtitleView.textColor = NSColor.parse(css: "rgba(0,0,0,0.5)")!
+            titleView.textColor = Colors.textColor
+            subtitleView.textColor = Colors.textColor
             layer?.backgroundColor = NSColor.clear.cgColor
         }
     }

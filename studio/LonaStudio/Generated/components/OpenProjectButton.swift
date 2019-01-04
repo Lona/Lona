@@ -89,7 +89,7 @@ public class OpenProjectButton: NSBox {
   private var plusContainerView = NSBox()
   private var plusView = LNAImageView()
 
-  private var titleViewTextStyle = TextStyles.regular
+  private var titleViewTextStyle = TextStyles.regularBlack
 
   private var titleContainerViewHovered = false
   private var titleContainerViewPressed = false
@@ -128,6 +128,8 @@ public class OpenProjectButton: NSBox {
     plusContainerView.addSubview(plusView)
 
     topBorderView.fillColor = Colors.grey200
+    titleViewTextStyle = TextStyles.regularBlack
+    titleView.attributedStringValue = titleViewTextStyle.apply(to: titleView.attributedStringValue)
     dividerView.fillColor = Colors.grey200
     plusView.image = #imageLiteral(resourceName: "icon-plus")
   }

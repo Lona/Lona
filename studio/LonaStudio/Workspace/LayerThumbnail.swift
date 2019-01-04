@@ -9,7 +9,6 @@
 import Foundation
 import AppKit
 
-private let layerOutlineColor = NSColor.black.withAlphaComponent(0.5)
 private let layerDirectionColor1 = NSColor.parse(css: "rgba(124,124,124,0.8)")!
 private let layerDirectionColor2 = NSColor.parse(css: "rgba(124,124,124,0.65)")!
 private let layerDirectionColor3 = NSColor.parse(css: "rgba(124,124,124,0.5)")!
@@ -32,6 +31,7 @@ class LayerThumbnail {
     static func image(for layer: CSLayer) -> NSImage? {
         let scale = NSApplication.shared.windows.first?.backingScaleFactor ?? 1
         let size = 16 * scale
+        let layerOutlineColor = Colors.textColor.withAlphaComponent(0.5)
 
         switch layer.type {
         case .builtIn(.view):

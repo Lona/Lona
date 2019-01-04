@@ -68,16 +68,16 @@ final class ShadowStyleRowView: NSStackView, Hoverable, PickerRowViewType {
     func onHover(_ hover: Bool) {
         if hover {
             startHover { [weak self] in
-                guard let strongSelf = `self` else { return }
+                guard let strongSelf = self else { return }
                 strongSelf.titleView.textColor = NSColor.white
                 strongSelf.subtitleView.textColor = NSColor.white
                 strongSelf.backgroundFill = NSColor.parse(css: "#0169D9")!.cgColor
             }
         } else {
             stopHover { [weak self] in
-                guard let strongSelf = `self` else { return }
-                strongSelf.titleView.textColor = NSColor.black
-                strongSelf.subtitleView.textColor = NSColor.black
+                guard let strongSelf = self else { return }
+                strongSelf.titleView.textColor = Colors.textColor
+                strongSelf.subtitleView.textColor = Colors.textColor
                 strongSelf.backgroundFill = NSColor.clear.cgColor
             }
         }
