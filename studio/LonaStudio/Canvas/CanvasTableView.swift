@@ -13,11 +13,22 @@ class CanvasTableView: NSTableView, NSTableViewDataSource, NSTableViewDelegate {
 
     override func drawGrid(inClipRect clipRect: NSRect) { }
 
+    var canvasAreaBackgroundColor: NSColor {
+        return CSUserPreferences.canvasAreaBackgroundColor ??
+            (isDarkMode
+                ? (NSColor.controlBackgroundColor.blended(withFraction: 0.2, of: NSColor.black) ?? NSColor.controlBackgroundColor)
+                : NSColor.white.withAlphaComponent(0.5))
+    }
+
+    var subscriptionHandle: LonaPlugins.SubscriptionHandle?
+
     func setup() {
         columnAutoresizingStyle = .noColumnAutoresizing
-        backgroundColor = isDarkMode
-            ? (NSColor.controlBackgroundColor.blended(withFraction: 0.2, of: NSColor.black) ?? NSColor.controlBackgroundColor)
-            : NSColor.white.withAlphaComponent(0.5)
+        backgroundColor = canvasAreaBackgroundColor
+
+        self.subscriptionHandle = LonaPlugins.current.register(eventTypes: [.onChangeTheme], handler: { [unowned self] in
+            self.backgroundColor = self.canvasAreaBackgroundColor
+        })
 
         gridColor = isDarkMode ? NSColor.black.withAlphaComponent(0.4) : NSColor.black.withAlphaComponent(0.08)
         gridStyleMask = [.solidHorizontalGridLineMask, .solidVerticalGridLineMask]
@@ -46,6 +57,10 @@ class CanvasTableView: NSTableView, NSTableViewDataSource, NSTableViewDelegate {
         doubleAction = #selector(doubleClick(sender:))
 
         self.reloadData()
+    }
+
+    deinit {
+        subscriptionHandle?()
     }
 
     override init(frame frameRect: NSRect) {
