@@ -72,11 +72,23 @@ class WorkspacePreferencesViewController: NSViewController, MASPreferencesViewCo
                 self.render()
         })
 
+        let canvasAreaBackgroundColorRow = ValueSettingRow(
+            title: "Canvas Area Background Color",
+            value: CSUserPreferences.canvasAreaBackgroundColorValue, onChange: { value in
+                CSUserPreferences.canvasAreaBackgroundColorValue = CSValue(type: .string, data: value)
+                CSUserPreferences.save()
+
+                LonaPlugins.current.trigger(eventType: .onChangeTheme)
+
+                self.render()
+        })
+
         let views = [
             workspaceIconRow,
             compilerPathRow,
             colorsPathRow,
-            textStylesPathRow
+            textStylesPathRow,
+            canvasAreaBackgroundColorRow
         ]
 
         views.forEach({ stackView.addArrangedSubview($0) })

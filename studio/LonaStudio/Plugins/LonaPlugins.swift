@@ -14,6 +14,7 @@ enum LonaPluginActivationEvent: String, Decodable {
     case onSaveColors = "onSave:colors"
     case onSaveTextStyles = "onSave:textStyles"
     case onReloadWorkspace = "onReload:workspace"
+    case onChangeTheme = "onChange:theme"
 }
 
 struct LonaPluginConfig: Decodable {
@@ -22,6 +23,8 @@ struct LonaPluginConfig: Decodable {
 }
 
 class LonaPlugins {
+    typealias SubscriptionHandle = () -> Void
+
     class Handler {
         var callback: () -> Void
 
@@ -89,7 +92,7 @@ class LonaPlugins {
         })
     }
 
-    func register(eventType: LonaPluginActivationEvent, handler callback: @escaping () -> Void) -> (() -> Void) {
+    func register(eventType: LonaPluginActivationEvent, handler callback: @escaping () -> Void) -> SubscriptionHandle {
         let handler = Handler(callback: callback)
 
         var handlerList = LonaPlugins.handlers[eventType] ?? []
@@ -102,7 +105,7 @@ class LonaPlugins {
         }
     }
 
-    func register(eventTypes: [LonaPluginActivationEvent], handler callback: @escaping () -> Void) -> (() -> Void) {
+    func register(eventTypes: [LonaPluginActivationEvent], handler callback: @escaping () -> Void) -> SubscriptionHandle {
         let subscriptions = eventTypes.map({ register(eventType: $0, handler: callback) })
         return {
             subscriptions.forEach({ sub in sub() })
