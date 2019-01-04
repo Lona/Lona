@@ -15,9 +15,11 @@ class CanvasTableView: NSTableView, NSTableViewDataSource, NSTableViewDelegate {
 
     func setup() {
         columnAutoresizingStyle = .noColumnAutoresizing
-        backgroundColor = isDarkMode ? NSColor.white.withAlphaComponent(0.1) : NSColor.white.withAlphaComponent(0.5)
+        backgroundColor = isDarkMode
+            ? (NSColor.controlBackgroundColor.blended(withFraction: 0.2, of: NSColor.black) ?? NSColor.controlBackgroundColor)
+            : NSColor.white.withAlphaComponent(0.5)
 
-        gridColor = isDarkMode ? NSColor.white.withAlphaComponent(0.08) : NSColor.black.withAlphaComponent(0.08)
+        gridColor = isDarkMode ? NSColor.black.withAlphaComponent(0.4) : NSColor.black.withAlphaComponent(0.08)
         gridStyleMask = [.solidHorizontalGridLineMask, .solidVerticalGridLineMask]
         intercellSpacing = NSSize(width: 1, height: 1)
 
