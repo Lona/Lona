@@ -8,15 +8,17 @@
   },
   "dependencies": {
     "commander": "^2.11.0",
-    "jszip": "^3.1.4",
+    "nodobjc": "^2.1.0",
     "react": "^15.6.1",
-    "react-sketchapp": "git://github.com/dabbott/react-sketchapp.git#c62a5a0f06be65bab86243073aa3e7deb26902da",
-    "react-test-renderer": "^15.6.1"
+    "react-sketchapp": "^3.0.0-beta.0",
+    "react-test-renderer": "^15.6.1",
+    "sketch-file": "^0.1.4"
   },
   "author": "",
   "license": "ISC",
   "devDependencies": {
     "eslint-config-airbnb-base": "^11.3.2",
-    "eslint-plugin-import": "^2.7.0"
+    "eslint-plugin-import": "^2.7.0",
+    "pkg": "^4.3.4"
   }
 }

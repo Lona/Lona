@@ -668,7 +668,7 @@ let importComponents =
             Ast.ImportDeclaration({
               source:
                 switch (framework) {
-                | JavaScriptOptions.ReactSketchapp => "@mathieudutour/react-sketchapp"
+                | JavaScriptOptions.ReactSketchapp => "react-sketchapp"
                 | _ => "react-native"
                 },
               specifiers:
