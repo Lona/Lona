@@ -142,6 +142,8 @@ class FileNavigator: NSBox {
 
         if isDirectory(path: path) {
             iconView = FolderIcon()
+        } else if path.hasSuffix("lona.json") {
+            iconView = LonaFileIcon()
         } else if path.hasSuffix("colors.json") {
             iconView = ColorsFileIcon()
         } else if path.hasSuffix(".component") {
@@ -172,6 +174,8 @@ class FileNavigator: NSBox {
         if view.isDarkMode {
             if let iconView = iconView as? FolderIcon {
                 iconView.selected = true
+            } else if let iconView = iconView as? LonaFileIcon {
+                iconView.selected = true
             } else if let iconView = iconView as? ColorsFileIcon {
                 iconView.selected = true
             } else if let iconView = iconView as? FileIcon {
@@ -186,6 +190,8 @@ class FileNavigator: NSBox {
             case .light:
                 if let iconView = iconView as? FolderIcon {
                     iconView.selected = false
+                } else if let iconView = iconView as? LonaFileIcon {
+                    iconView.selected = false
                 } else if let iconView = iconView as? ColorsFileIcon {
                     iconView.selected = false
                 } else if let iconView = iconView as? FileIcon {
@@ -194,6 +200,8 @@ class FileNavigator: NSBox {
                 textView.textColor = NSColor.controlTextColor
             case .dark:
                 if let iconView = iconView as? FolderIcon {
+                    iconView.selected = true
+                } else if let iconView = iconView as? LonaFileIcon {
                     iconView.selected = true
                 } else if let iconView = iconView as? ColorsFileIcon {
                     iconView.selected = true
