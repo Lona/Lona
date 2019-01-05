@@ -116,6 +116,15 @@ class JSONDocument: NSDocument {
 
         super.save(to: url, ofType: typeName, for: saveOperation, completionHandler: completionHandler)
 
-        LonaPlugins.current.trigger(eventType: .onSaveColors)
+        guard let content = content else {
+            return
+        }
+
+        switch content {
+        case .colors:
+            LonaPlugins.current.trigger(eventType: .onSaveColors)
+        case .textStyles:
+            LonaPlugins.current.trigger(eventType: .onSaveTextStyles)
+        }
     }
 }
