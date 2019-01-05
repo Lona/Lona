@@ -38,6 +38,23 @@
 			<key>NSDocumentClass</key>
 			<string>$(PRODUCT_MODULE_NAME).JSONDocument</string>
 		</dict>
+		<dict>
+			<key>CFBundleTypeExtensions</key>
+			<array>
+				<string>png</string>
+        <string>jpeg</string>
+        <string>pdf</string>
+        <string>eps</string>
+        <string>bmp</string>
+        <string>gif</string>
+			</array>
+			<key>CFBundleTypeName</key>
+			<string>Image</string>
+			<key>CFBundleTypeRole</key>
+			<string>Viewer</string>
+			<key>NSDocumentClass</key>
+			<string>$(PRODUCT_MODULE_NAME).ImageDocument</string>
+		</dict>
 	</array>
 	<key>CFBundleExecutable</key>
 	<string>$(EXECUTABLE_NAME)</string>

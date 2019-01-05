@@ -19,6 +19,11 @@
     },
     {
       "name": "Named",
+      "alias": "ImageDataOrNil",
+      "of": "NSImage?"
+    },
+    {
+      "name": "Named",
       "alias": "ColorHandler",
       "of": {
         "name": "Function",

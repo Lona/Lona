@@ -1,0 +1,129 @@
+{
+  "devices" : [
+    {
+      "height" : 640,
+      "heightMode" : "At Least",
+      "name" : "MacBook",
+      "width" : 1040
+    }
+  ],
+  "examples" : [
+    {
+      "id" : "Default",
+      "name" : "Default",
+      "params" : {
+
+      }
+    }
+  ],
+  "logic" : [
+    {
+      "assignee" : [
+        "layers",
+        "Image",
+        "image"
+      ],
+      "content" : [
+        "parameters",
+        "imageData"
+      ],
+      "type" : "AssignExpr"
+    },
+    {
+      "assignee" : [
+        "layers",
+        "Dimensions",
+        "text"
+      ],
+      "content" : [
+        "parameters",
+        "dimensions"
+      ],
+      "type" : "AssignExpr"
+    }
+  ],
+  "params" : [
+    {
+      "name" : "imageData",
+      "type" : "ImageDataOrNil"
+    },
+    {
+      "name" : "dimensions",
+      "type" : "String"
+    }
+  ],
+  "root" : {
+    "children" : [
+      {
+        "children" : [
+          {
+            "children" : [
+              {
+                "id" : "Title",
+                "params" : {
+                  "font" : "title",
+                  "text" : "Image"
+                },
+                "type" : "Lona:Text"
+              }
+            ],
+            "id" : "Header",
+            "params" : {
+              "alignItems" : "center",
+              "alignSelf" : "stretch",
+              "flexDirection" : "row",
+              "height" : 38,
+              "paddingLeft" : 64,
+              "paddingRight" : 64
+            },
+            "type" : "Lona:View"
+          },
+          {
+            "id" : "Image",
+            "metadata" : {
+              "backingElementClass" : {
+                "macos" : "NSImageView"
+              }
+            },
+            "params" : {
+              "alignSelf" : "stretch",
+              "flex" : 1,
+              "marginBottom" : 20,
+              "marginLeft" : 20,
+              "marginRight" : 20,
+              "marginTop" : 20
+            },
+            "type" : "Lona:View"
+          },
+          {
+            "id" : "Dimensions",
+            "params" : {
+              "alignSelf" : "stretch",
+              "font" : "smallMuted",
+              "marginBottom" : 10,
+              "marginTop" : 7,
+              "text" : "width px * height px",
+              "textAlign" : "center"
+            },
+            "type" : "Lona:Text"
+          }
+        ],
+        "id" : "Inner",
+        "params" : {
+          "alignSelf" : "stretch",
+          "flex" : 1
+        },
+        "type" : "Lona:View"
+      }
+    ],
+    "id" : "Container",
+    "params" : {
+      "alignItems" : "center",
+      "alignSelf" : "stretch",
+      "backgroundColor" : "contentBackground",
+      "flex" : 1,
+      "paddingTop" : 48
+    },
+    "type" : "Lona:View"
+  }
+}
