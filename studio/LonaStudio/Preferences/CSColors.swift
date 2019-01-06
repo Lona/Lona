@@ -31,6 +31,6 @@ class CSColors: CSPreferencesFile {
         let match = CSColors.colors.first(where: { $0.id.uppercased() == string.uppercased() })
         let value = NSColor.parse(css: string) == nil ? defaultColor.rgbaString : string
 
-        return match ?? CSColor(id: "custom", name: "Custom color", value: value, comment: "")
+        return match ?? CSColor(id: "custom", name: "Custom color", value: value, comment: "", metadata: CSData.Object([:]))
     }
 }
