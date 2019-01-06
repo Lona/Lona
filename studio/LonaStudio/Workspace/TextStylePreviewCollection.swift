@@ -290,16 +290,8 @@ public class TextStylePreviewCollection: NSBox {
 
         collectionView.items = CSTypography.styles
 
-//        _ = LonaPlugins.current.register(eventTypes: [.onSaveTextStyles, .onReloadWorkspace], handler: {
-//            self.collectionView.items = CSTypography.styles
-//            self.collectionView.reloadData()
-//        })
-
         collectionView.onMoveTextStyle = { sourceIndex, targetIndex in
             self.onMoveTextStyle?(sourceIndex, targetIndex)
-//            CSTypography.move(from: sourceIndex, to: targetIndex)
-//            self.collectionView.items = CSTypography.styles
-//            self.collectionView.moveItem(from: sourceIndex, to: targetIndex)
         }
 
         collectionView.onDeleteTextStyle = { textStyle in
@@ -311,27 +303,6 @@ public class TextStylePreviewCollection: NSBox {
             self.selectedTextStyleId = textStyle?.id
             self.onSelectTextStyle?(textStyle)
         }
-
-        // TODO: This callback should propagate up to the root. Currently Lona doesn't
-        // generate callbacks with params, so we'll handle it here for now.
-//        collectionView.onClickTextStyle = { textStyle in
-//            guard let csTextStyle = CSTypography.styles.first(where: { $0.id == textStyle }) else { return }
-//            guard let index = CSTypography.styles.index(where: { $0.id == textStyle }) else { return }
-//
-//            let editor = DictionaryEditor(
-//                value: csTextStyle.toValue(),
-//                onChange: { updated in
-//                    CSTypography.update(textStyle: updated.data, at: index)
-//            },
-//                layout: CSConstraint.size(width: 300, height: 200)
-//            )
-//
-//            let viewController = NSViewController(view: editor)
-//            let popover = NSPopover(contentViewController: viewController, delegate: self)
-//
-//            guard let cardView = self.collectionView.cardView(at: index) else { return }
-//            popover.show(relativeTo: NSRect.zero, of: cardView, preferredEdge: .maxY)
-//        }
 
         addSubview(collectionView)
     }
@@ -351,7 +322,6 @@ public class TextStylePreviewCollection: NSBox {
 
         if let index = textStyles?.index(where: { $0.id == selectedTextStyleId }) {
             collectionView.collectionView.selectionIndexPaths = [IndexPath(item: index, section: 0)]
-            //            collectionView.collectionView.selectItems(at: [IndexPath(item: index, section: 0)], scrollPosition: NSCollectionView.ScrollPosition)
         }
     }
 }
