@@ -5,7 +5,7 @@ class NSMenuItemView: NSView {
     var handleChange: () -> Void
     var selected: Bool = false {
         didSet {
-            let color = selected ? NSColor.selectedMenuItemTextColor : NSColor.black
+            let color = selected ? NSColor.selectedMenuItemTextColor : Colors.textColor
             let backgroundColor = selected ? NSColor.selectedMenuItemColor : NSColor.clear
 
             colorizeText(view: self, color: color, backgroundColor: backgroundColor)
