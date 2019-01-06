@@ -231,7 +231,7 @@ class CSValueField: CSControl {
             let field = ColorPickerButton(frame: NSRect(x: 0, y: -2, width: 120, height: 26))
             view = field
 
-            field.value = value.data.stringValue
+            field.textValue = value.data.stringValue
             field.onChangeData = defaultChangeHandler
         case .named("TextStyle", .string):
             let field = TextStylePickerButton(frame: NSRect(x: 0, y: -2, width: 120, height: 26))
