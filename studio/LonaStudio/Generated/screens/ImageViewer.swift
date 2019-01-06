@@ -18,7 +18,7 @@ public class ImageViewer: NSBox {
     update()
   }
 
-  public convenience init(imageData: ImageDataOrNil, dimensions: String) {
+  public convenience init(imageData: NSImage?, dimensions: String) {
     self.init(Parameters(imageData: imageData, dimensions: dimensions))
   }
 
@@ -39,7 +39,7 @@ public class ImageViewer: NSBox {
 
   // MARK: Public
 
-  public var imageData: ImageDataOrNil {
+  public var imageData: NSImage? {
     get { return parameters.imageData }
     set {
       if parameters.imageData != newValue {
@@ -70,7 +70,7 @@ public class ImageViewer: NSBox {
   private var innerView = NSBox()
   private var headerView = NSBox()
   private var titleView = LNATextField(labelWithString: "")
-  private var imageView = NSImageView()
+  private var imageView = ImagePreview()
   private var dimensionsView = LNATextField(labelWithString: "")
 
   private var titleViewTextStyle = TextStyles.title
@@ -86,9 +86,6 @@ public class ImageViewer: NSBox {
     headerView.boxType = .custom
     headerView.borderType = .noBorder
     headerView.contentViewMargins = .zero
-//    imageView.boxType = .custom
-//    imageView.borderType = .noBorder
-//    imageView.contentViewMargins = .zero
     dimensionsView.lineBreakMode = .byWordWrapping
     titleView.lineBreakMode = .byWordWrapping
 
@@ -102,6 +99,7 @@ public class ImageViewer: NSBox {
     titleView.attributedStringValue = titleViewTextStyle.apply(to: "Image")
     titleViewTextStyle = TextStyles.title
     titleView.attributedStringValue = titleViewTextStyle.apply(to: titleView.attributedStringValue)
+    imageView.resizingMode = .scaleAspectFit
     dimensionsViewTextStyle = TextStyles.smallMuted.with(alignment: .center)
     dimensionsView.attributedStringValue = dimensionsViewTextStyle.apply(to: dimensionsView.attributedStringValue)
   }
@@ -174,8 +172,8 @@ public class ImageViewer: NSBox {
   }
 
   private func update() {
-    imageView.image = imageData
     dimensionsView.attributedStringValue = dimensionsViewTextStyle.apply(to: dimensions)
+    imageView.image = imageData
   }
 }
 
@@ -183,10 +181,10 @@ public class ImageViewer: NSBox {
 
 extension ImageViewer {
   public struct Parameters: Equatable {
-    public var imageData: ImageDataOrNil
+    public var imageData: NSImage?
     public var dimensions: String
 
-    public init(imageData: ImageDataOrNil, dimensions: String) {
+    public init(imageData: NSImage? = nil, dimensions: String) {
       self.imageData = imageData
       self.dimensions = dimensions
     }
@@ -220,7 +218,7 @@ extension ImageViewer {
       self.parameters = parameters
     }
 
-    public init(imageData: ImageDataOrNil, dimensions: String) {
+    public init(imageData: NSImage? = nil, dimensions: String) {
       self.init(Parameters(imageData: imageData, dimensions: dimensions))
     }
 
