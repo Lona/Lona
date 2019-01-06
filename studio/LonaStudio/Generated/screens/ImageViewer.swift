@@ -18,8 +18,8 @@ public class ImageViewer: NSBox {
     update()
   }
 
-  public convenience init(imageData: ImageDataOrNil, dimensions: String) {
-    self.init(Parameters(imageData: imageData, dimensions: dimensions))
+  public convenience init(image: NSImage?, dimensions: String) {
+    self.init(Parameters(image: image, dimensions: dimensions))
   }
 
   public convenience init() {
@@ -39,11 +39,11 @@ public class ImageViewer: NSBox {
 
   // MARK: Public
 
-  public var imageData: ImageDataOrNil {
-    get { return parameters.imageData }
+  public var image: NSImage? {
+    get { return parameters.image }
     set {
-      if parameters.imageData != newValue {
-        parameters.imageData = newValue
+      if parameters.image != newValue {
+        parameters.image = newValue
       }
     }
   }
@@ -70,7 +70,7 @@ public class ImageViewer: NSBox {
   private var innerView = NSBox()
   private var headerView = NSBox()
   private var titleView = LNATextField(labelWithString: "")
-  private var imageView = NSImageView()
+  private var imageView = ImagePreview()
   private var dimensionsView = LNATextField(labelWithString: "")
 
   private var titleViewTextStyle = TextStyles.title
@@ -86,9 +86,9 @@ public class ImageViewer: NSBox {
     headerView.boxType = .custom
     headerView.borderType = .noBorder
     headerView.contentViewMargins = .zero
-//    imageView.boxType = .custom
-//    imageView.borderType = .noBorder
-//    imageView.contentViewMargins = .zero
+    imageView.boxType = .custom
+    imageView.borderType = .noBorder
+    imageView.contentViewMargins = .zero
     dimensionsView.lineBreakMode = .byWordWrapping
     titleView.lineBreakMode = .byWordWrapping
 
@@ -102,6 +102,7 @@ public class ImageViewer: NSBox {
     titleView.attributedStringValue = titleViewTextStyle.apply(to: "Image")
     titleViewTextStyle = TextStyles.title
     titleView.attributedStringValue = titleViewTextStyle.apply(to: titleView.attributedStringValue)
+    imageView.resizingMode = .scaleAspectFit
     dimensionsViewTextStyle = TextStyles.smallMuted.with(alignment: .center)
     dimensionsView.attributedStringValue = dimensionsViewTextStyle.apply(to: dimensionsView.attributedStringValue)
   }
@@ -174,7 +175,7 @@ public class ImageViewer: NSBox {
   }
 
   private func update() {
-    imageView.image = imageData
+    imageView.image = image
     dimensionsView.attributedStringValue = dimensionsViewTextStyle.apply(to: dimensions)
   }
 }
@@ -183,20 +184,20 @@ public class ImageViewer: NSBox {
 
 extension ImageViewer {
   public struct Parameters: Equatable {
-    public var imageData: ImageDataOrNil
+    public var image: NSImage?
     public var dimensions: String
 
-    public init(imageData: ImageDataOrNil, dimensions: String) {
-      self.imageData = imageData
+    public init(image: NSImage? = nil, dimensions: String) {
+      self.image = image
       self.dimensions = dimensions
     }
 
     public init() {
-      self.init(imageData: nil, dimensions: "")
+      self.init(image: nil, dimensions: "")
     }
 
     public static func ==(lhs: Parameters, rhs: Parameters) -> Bool {
-      return lhs.imageData == rhs.imageData && lhs.dimensions == rhs.dimensions
+      return lhs.image == rhs.image && lhs.dimensions == rhs.dimensions
     }
   }
 }
@@ -220,12 +221,12 @@ extension ImageViewer {
       self.parameters = parameters
     }
 
-    public init(imageData: ImageDataOrNil, dimensions: String) {
-      self.init(Parameters(imageData: imageData, dimensions: dimensions))
+    public init(image: NSImage? = nil, dimensions: String) {
+      self.init(Parameters(image: image, dimensions: dimensions))
     }
 
     public init() {
-      self.init(imageData: nil, dimensions: "")
+      self.init(image: nil, dimensions: "")
     }
   }
 }

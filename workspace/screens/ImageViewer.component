@@ -25,7 +25,7 @@
       ],
       "content" : [
         "parameters",
-        "imageData"
+        "image"
       ],
       "type" : "AssignExpr"
     },
@@ -44,8 +44,8 @@
   ],
   "params" : [
     {
-      "name" : "imageData",
-      "type" : "ImageDataOrNil"
+      "name" : "image",
+      "type" : "URL?"
     },
     {
       "name" : "dimensions",
@@ -82,16 +82,18 @@
             "id" : "Image",
             "metadata" : {
               "backingElementClass" : {
-                "macos" : "NSImageView"
+                "macos" : "ImagePreview"
               }
             },
             "params" : {
               "alignSelf" : "stretch",
               "flex" : 1,
+              "image" : "",
               "marginBottom" : 20,
               "marginLeft" : 20,
               "marginRight" : 20,
-              "marginTop" : 20
+              "marginTop" : 20,
+              "resizeMode" : "contain"
             },
             "type" : "Lona:View"
           },
