@@ -265,6 +265,12 @@ final class InspectorView: NSBox {
                 self.onChangeContent?(.textStyle(updated), .canvas)
             }
 
+            editor.onChangeFontWeightText = { value in
+                var updated = textStyle
+                updated.fontWeight = value
+                self.onChangeContent?(.textStyle(updated), .canvas)
+            }
+
             editor.onChangeColorValue = { value in
                 var updated = textStyle
                 updated.color = value
