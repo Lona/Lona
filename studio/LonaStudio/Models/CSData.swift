@@ -322,6 +322,9 @@ enum CSData: Equatable, CustomDebugStringConvertible {
     }
 
     static func from(fileAtPath path: String) -> CSData? {
+        if FileUtils.fileExists(atPath: path) != .file {
+            return nil
+        }
         if let contents = try? Data(contentsOf: URL(fileURLWithPath: path)) {
             return CSData.from(data: contents)
         } else {

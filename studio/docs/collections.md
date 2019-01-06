@@ -61,4 +61,4 @@ This prevents interactive Lona-generated components from stopping scrolling.
 
 Please let me know if you have any feedback or suggestions on how to make things simpler or more consistent. I found it challenging to have interactive components work well both within collections and when used standalone.
 
-There are a lot of little edge cases to consider to acheive an optimal UX, and I'm still figuring out the best way to work with collection views. So far, the reference implementation works well for the common cases of firing tap callbacks and showing highlight states.
+There are a lot of little edge cases to consider to achieve an optimal UX, and I'm still figuring out the best way to work with collection views. So far, the reference implementation works well for the common cases of firing tap callbacks and showing highlight states.

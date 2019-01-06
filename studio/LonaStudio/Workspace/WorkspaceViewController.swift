@@ -266,6 +266,8 @@ class WorkspaceViewController: NSSplitViewController {
         return controller
     }()
 
+    private lazy var imageViewController = ImageViewController()
+
     private lazy var inspectorView = InspectorView()
     private lazy var inspectorViewController: NSViewController = {
         return NSViewController(view: inspectorView)
@@ -357,6 +359,10 @@ class WorkspaceViewController: NSSplitViewController {
 
         fileNavigator.onAction = { path in
             guard let document = self.document else {
+                if FileUtils.fileExists(atPath: path) != .file {
+                    return
+                }
+
                 let url = URL(fileURLWithPath: path)
 
                 NSDocumentController.shared.openDocument(withContentsOf: url, display: false, completionHandler: { newDocument, documentWasAlreadyOpen, error in
@@ -596,6 +602,15 @@ class WorkspaceViewController: NSSplitViewController {
                 default:
                     break
                 }
+            }
+        } else if let document = document as? ImageDocument {
+            if let content = document.content {
+                editorViewController.contentView = imageViewController.view
+
+                imageViewController.image = content
+            } else {
+                editorViewController.contentView = nil
+                return
             }
         }
     }

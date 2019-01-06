@@ -85,6 +85,11 @@ class ListView<Element: DataNode>: NSOutlineView, NSOutlineViewDataSource, NSOut
 
     func outlineView(_ outlineView: NSOutlineView, child index: Int, ofItem item: Any?) -> Any {
         if item == nil {
+            if list.count < index - 1 {
+                // Should never get here
+                Swift.print("Wrong index")
+                return 0
+            }
             return list[index]
         }
 
