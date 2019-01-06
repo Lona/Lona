@@ -24,26 +24,6 @@ private class DoubleClickableColorPreviewCard: ColorPreviewCard {
     }
 }
 
-class KeyHandlingCollectionView: NSCollectionView {
-    public var onDeleteItem: ((Int) -> Void)?
-    public var onCopy: ((Int) -> Void)?
-
-    @IBAction func copy(_ sender: AnyObject) {
-        guard let item = selectionIndexPaths.first?.item else { return }
-
-        onCopy?(item)
-    }
-
-    override func keyDown(with event: NSEvent) {
-        guard let characters = event.charactersIgnoringModifiers,
-            let item = selectionIndexPaths.first?.item else { return }
-
-        if characters == String(Character(UnicodeScalar(NSDeleteCharacter)!)) {
-            onDeleteItem?(item)
-        }
-    }
-}
-
 class ColorPreviewCollectionView: NSView {
 
     // MARK: - Lifecycle
@@ -70,7 +50,7 @@ class ColorPreviewCollectionView: NSView {
 
     // MARK: - Private
 
-    public let collectionView = KeyHandlingCollectionView(frame: .zero)
+    fileprivate let collectionView = KeyHandlingCollectionView(frame: .zero)
     private let scrollView = NSScrollView()
 
     private func setUpViews() {
