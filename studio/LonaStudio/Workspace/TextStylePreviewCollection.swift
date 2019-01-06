@@ -106,11 +106,6 @@ class TextStylePreviewCollectionView: NSView {
 // MARK: - Imperative API
 
 extension TextStylePreviewCollectionView {
-//    func cardView(at index: Int) -> DoubleClickableTextStylePreviewCard? {
-//        guard let item = collectionView.item(at: index) as? TextStylePreviewItemViewController else { return nil }
-//        return item.view as? DoubleClickableTextStylePreviewCard
-//    }
-
     func reloadData() {
         collectionView.reloadData()
     }
@@ -225,9 +220,6 @@ extension TextStylePreviewCollectionView: NSCollectionViewDataSource {
             textStylePreviewCard.textStyleSummary = textStyle.summary
             textStylePreviewCard.textStyle = textStyle.font
             textStylePreviewCard.inverse = textStyle.getCSColor().color.isLightColor
-//            textStylePreviewCard.onDoubleClick = {
-//                self.onSelectTextStyle?(textStyle)
-//            }
         }
 
         return item

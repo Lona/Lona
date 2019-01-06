@@ -111,10 +111,6 @@ class ColorPreviewCollectionView: NSView {
 // MARK: - Imperative API
 
 extension ColorPreviewCollectionView {
-//    func cardView(at index: Int) -> ColorPreviewCard? {
-//        guard let item = collectionView.item(at: index) as? ColorPreviewItemViewController else { return nil }
-//        return item.view as? ColorPreviewCard
-//    }
 
     func reloadData() {
         collectionView.reloadData()
@@ -214,9 +210,6 @@ extension ColorPreviewCollectionView: NSCollectionViewDataSource {
             componentPreviewCard.colorName = csColor.name
             componentPreviewCard.colorCode = csColor.value
             componentPreviewCard.color = csColor.color
-//            componentPreviewCard.onDoubleClick = {
-//                self.onSelectColor?(csColor)
-//            }
         }
 
         return item
@@ -282,18 +275,10 @@ public class ColorPreviewCollection: NSBox {
         borderType = .noBorder
         contentViewMargins = .zero
 
-//        _ = LonaPlugins.current.register(eventTypes: [.onSaveColors, .onReloadWorkspace], handler: {
-//            self.collectionView.items = CSColors.colors
-//            self.collectionView.reloadData()
-//        })
-//
         collectionView.onMoveColor = { sourceIndex, targetIndex in
             self.onMoveColor?(sourceIndex, targetIndex)
-//            CSColors.moveColor(from: sourceIndex, to: targetIndex)
-//            self.collectionView.items = CSColors.colors
-//            self.collectionView.moveItem(from: sourceIndex, to: targetIndex)
         }
-//
+
         collectionView.onDeleteColor = { color in
             self.selectedColorId = nil
             self.onDeleteColor?(color)
@@ -322,7 +307,6 @@ public class ColorPreviewCollection: NSBox {
 
         if let index = colors?.index(where: { $0.id == selectedColorId }) {
             collectionView.collectionView.selectionIndexPaths = [IndexPath(item: index, section: 0)]
-//            collectionView.collectionView.selectItems(at: [IndexPath(item: index, section: 0)], scrollPosition: NSCollectionView.ScrollPosition)
         }
     }
 }
