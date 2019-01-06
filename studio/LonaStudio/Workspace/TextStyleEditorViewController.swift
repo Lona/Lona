@@ -97,6 +97,11 @@ class TextStyleEditorViewController: NSViewController {
                 self.addTextStyleSheet.fontFamilyText = value
             }
 
+            self.addTextStyleSheet.onChangeFontWeightText = { value in
+                textStyle.fontWeight = value
+                self.addTextStyleSheet.fontWeightText = value
+            }
+
             self.addTextStyleSheet.onChangeColorValue = { value in
                 textStyle.color = value
                 self.addTextStyleSheet.colorValue = value
