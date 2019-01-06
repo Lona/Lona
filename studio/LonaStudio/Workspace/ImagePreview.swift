@@ -12,15 +12,15 @@ public class ImagePreview: NSImageView {
     override public var intrinsicContentSize: CGSize {
         return CGSize(width: NSView.noIntrinsicMetric, height: NSView.noIntrinsicMetric)
     }
-    
+
     private var originalImage: NSImage?
-    
+
     override public var image: NSImage? {
         didSet {
             originalImage = image
         }
     }
-    
+
     var resizingMode = CGSize.ResizingMode.scaleAspectFill {
         didSet {
             if resizingMode != oldValue {
@@ -28,7 +28,7 @@ public class ImagePreview: NSImageView {
             }
         }
     }
-    
+
     // Use draw instead of viewWillDraw to ensure this is called after layout changes
     public override func draw(_ dirtyRect: NSRect) {
         if let image = image, let originalImage = originalImage {
@@ -40,7 +40,7 @@ public class ImagePreview: NSImageView {
                 super.image = originalImage.resized(within: bounds.size, usingCroppingMode: resizingMode)
             }
         }
-        
+
         super.draw(dirtyRect)
     }
 }
