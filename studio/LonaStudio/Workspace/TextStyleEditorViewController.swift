@@ -36,7 +36,7 @@ class TextStyleEditorViewController: NSViewController {
     public var textStyles: [CSTextStyle] = [] { didSet { update() } }
     public var onInspectTextStyle: ((CSTextStyle?) -> Void)?
 
-    // Change colors and specify the selection simultaneously
+    // Change text styles and specify the selection simultaneously
     public var onChangeTextStyles: ((String, [CSTextStyle], CSTextStyle?) -> Void)?
 
     // MARK: Private
@@ -46,17 +46,17 @@ class TextStyleEditorViewController: NSViewController {
     private func setUpViews() {
         self.view = textStyleBrowser
 
-        textStyleBrowser.onSelectTextStyle = { color in
-            self.onInspectTextStyle?(color)
+        textStyleBrowser.onSelectTextStyle = { textStyle in
+            self.onInspectTextStyle?(textStyle)
         }
 
         textStyleBrowser.onClickAddTextStyle = {}
 
-        textStyleBrowser.onDeleteTextStyle = { color in
-            guard let color = color else { return }
+        textStyleBrowser.onDeleteTextStyle = { textStyle in
+            guard let textStyle = textStyle else { return }
 
             let updated = self.textStyles.filter { element in
-                return color.id != element.id
+                return textStyle.id != element.id
             }
 
             self.onChangeTextStyles?("Delete Text Style", updated, nil)

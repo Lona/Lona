@@ -17,7 +17,54 @@
     }
   ],
   "logic" : [
-
+    {
+      "assignee" : [
+        "layers",
+        "TextStylePreviewCollection",
+        "onSelectTextStyle"
+      ],
+      "content" : [
+        "parameters",
+        "onSelectTextStyle"
+      ],
+      "type" : "AssignExpr"
+    },
+    {
+      "assignee" : [
+        "layers",
+        "TextStylePreviewCollection",
+        "onDeleteTextStyle"
+      ],
+      "content" : [
+        "parameters",
+        "onDeleteTextStyle"
+      ],
+      "type" : "AssignExpr"
+    },
+    {
+      "assignee" : [
+        "layers",
+        "TextStylePreviewCollection",
+        "onMoveTextStyle"
+      ],
+      "content" : [
+        "parameters",
+        "onMoveTextStyle"
+      ],
+      "type" : "AssignExpr"
+    },
+    {
+      "assignee" : [
+        "layers",
+        "TextStylePreviewCollection",
+        "textStyles"
+      ],
+      "content" : [
+        "parameters",
+        "textStyles"
+      ],
+      "type" : "AssignExpr"
+    }
   ],
   "params" : [
     {
