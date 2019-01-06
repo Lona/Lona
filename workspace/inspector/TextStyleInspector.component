@@ -530,7 +530,7 @@
           "alignSelf" : "stretch",
           "font" : "small",
           "marginBottom" : 4,
-          "text" : "LineHeight"
+          "text" : "LINE HEIGHT"
         },
         "type" : "Lona:Text"
       },
@@ -556,7 +556,7 @@
           "alignSelf" : "stretch",
           "font" : "small",
           "marginBottom" : 4,
-          "text" : "Letter Spacing"
+          "text" : "LETTER SPACING"
         },
         "type" : "Lona:Text"
       },

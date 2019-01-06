@@ -370,12 +370,12 @@ public class TextStyleInspector: NSBox {
     fontSizeLabelView.attributedStringValue =
       fontSizeLabelViewTextStyle.apply(to: fontSizeLabelView.attributedStringValue)
     spacer6View.fillColor = #colorLiteral(red: 0.847058823529, green: 0.847058823529, blue: 0.847058823529, alpha: 1)
-    lineHeightLabelView.attributedStringValue = lineHeightLabelViewTextStyle.apply(to: "LineHeight")
+    lineHeightLabelView.attributedStringValue = lineHeightLabelViewTextStyle.apply(to: "LINE HEIGHT")
     lineHeightLabelViewTextStyle = TextStyles.small
     lineHeightLabelView.attributedStringValue =
       lineHeightLabelViewTextStyle.apply(to: lineHeightLabelView.attributedStringValue)
     spacer7View.fillColor = #colorLiteral(red: 0.847058823529, green: 0.847058823529, blue: 0.847058823529, alpha: 1)
-    letterSpacingLabelView.attributedStringValue = letterSpacingLabelViewTextStyle.apply(to: "Letter Spacing")
+    letterSpacingLabelView.attributedStringValue = letterSpacingLabelViewTextStyle.apply(to: "LETTER SPACING")
     letterSpacingLabelViewTextStyle = TextStyles.small
     letterSpacingLabelView.attributedStringValue =
       letterSpacingLabelViewTextStyle.apply(to: letterSpacingLabelView.attributedStringValue)
