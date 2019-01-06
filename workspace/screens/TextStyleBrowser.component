@@ -64,6 +64,18 @@
         "textStyles"
       ],
       "type" : "AssignExpr"
+    },
+    {
+      "assignee" : [
+        "layers",
+        "AddTextStyleButton",
+        "onClick"
+      ],
+      "content" : [
+        "parameters",
+        "onClickAddTextStyle"
+      ],
+      "type" : "AssignExpr"
     }
   ],
   "params" : [
@@ -108,23 +120,23 @@
                 "id" : "Spacer",
                 "params" : {
                   "flex" : 1,
-                  "height" : 24
+                  "height" : 0
                 },
                 "type" : "Lona:View"
               },
               {
                 "children" : [
                   {
-                    "id" : "Button",
+                    "id" : "AddTextStyleButton",
                     "params" : {
                       "titleText" : "Add Text Style"
                     },
                     "type" : "Button"
                   }
                 ],
-                "id" : "FixedHeightFix",
+                "id" : "FixedHeightFix_ButtonContainer",
                 "params" : {
-                  "visible" : false
+
                 },
                 "type" : "Lona:View"
               }

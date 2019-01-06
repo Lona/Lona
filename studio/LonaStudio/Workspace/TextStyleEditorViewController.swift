@@ -42,6 +42,10 @@ class TextStyleEditorViewController: NSViewController {
     // MARK: Private
 
     private let textStyleBrowser = TextStyleBrowser()
+    private lazy var addTextStyleSheet = AddTextStyleSheet()
+    private lazy var addTextStyleViewController: NSViewController = {
+        return NSViewController(view: addTextStyleSheet)
+    }()
 
     private func setUpViews() {
         self.view = textStyleBrowser
@@ -50,7 +54,84 @@ class TextStyleEditorViewController: NSViewController {
             self.onInspectTextStyle?(textStyle)
         }
 
-        textStyleBrowser.onClickAddTextStyle = {}
+        textStyleBrowser.onClickAddTextStyle = {
+            var textStyle = CSTextStyle(id: "", name: "", fontName: nil, fontFamily: nil, fontWeight: nil, fontSize: nil, lineHeight: nil, letterSpacing: nil, color: nil, comment: nil)
+            var pristineIdText: Bool = true
+
+            self.addTextStyleSheet.idText = textStyle.id
+            self.addTextStyleSheet.nameText = textStyle.name
+            self.addTextStyleSheet.descriptionText = textStyle.comment ?? ""
+
+            self.addTextStyleSheet.onChangeNameText = { value in
+                textStyle.name = value
+                self.addTextStyleSheet.nameText = value
+
+                if pristineIdText {
+                    let invalidCharacters = CharacterSet.init(charactersIn: " \"\\/?<>:+*%|")
+                    let lowerFirst = value.count > 0 ? value.prefix(1).lowercased() + value.dropFirst() : value
+                    let idText = lowerFirst.components(separatedBy: invalidCharacters).joined(separator: "")
+                    textStyle.id = idText
+                    self.addTextStyleSheet.idText = idText
+                }
+            }
+
+            self.addTextStyleSheet.onChangeIdText = { value in
+                textStyle.id = value
+                self.addTextStyleSheet.idText = value
+
+                pristineIdText = false
+            }
+
+            self.addTextStyleSheet.onChangeDescriptionText = { value in
+                textStyle.comment = value
+                self.addTextStyleSheet.descriptionText = value
+            }
+
+            self.addTextStyleSheet.onChangeFontNameText = { value in
+                textStyle.fontName = value
+                self.addTextStyleSheet.fontNameText = value
+            }
+
+            self.addTextStyleSheet.onChangeFontFamilyText = { value in
+                textStyle.fontFamily = value
+                self.addTextStyleSheet.fontFamilyText = value
+            }
+
+            self.addTextStyleSheet.onChangeColorValue = { value in
+                textStyle.color = value
+                self.addTextStyleSheet.colorValue = value
+            }
+
+            self.addTextStyleSheet.onChangeFontSizeNumber = { value in
+                textStyle.fontSize = Double(value)
+                self.addTextStyleSheet.fontSizeNumber = value
+            }
+
+            self.addTextStyleSheet.onChangeLineHeightNumber = { value in
+                textStyle.lineHeight = Double(value)
+                self.addTextStyleSheet.lineHeightNumber = value
+            }
+
+            self.addTextStyleSheet.onChangeLetterSpacingNumber = { value in
+                textStyle.letterSpacing = Double(value)
+                self.addTextStyleSheet.letterSpacingNumber = value
+            }
+
+            self.addTextStyleSheet.onSubmit = {
+                self.dismissViewController(self.addTextStyleViewController)
+
+                var updated = self.textStyles
+                updated.append(textStyle)
+
+                self.onChangeTextStyles?("Add Text Style", updated, textStyle)
+            }
+
+            self.addTextStyleSheet.onCancel = {
+                self.dismissViewController(self.addTextStyleViewController)
+            }
+
+            self.presentViewControllerAsSheet(self.addTextStyleViewController)
+        }
 
         textStyleBrowser.onDeleteTextStyle = { textStyle in
             guard let textStyle = textStyle else { return }
