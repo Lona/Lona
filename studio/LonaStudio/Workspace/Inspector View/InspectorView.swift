@@ -271,6 +271,24 @@ final class InspectorView: NSBox {
                 self.onChangeContent?(.textStyle(updated), .canvas)
             }
 
+            editor.onChangeFontSizeNumber = { value in
+                var updated = textStyle
+                updated.fontSize = Double(value)
+                self.onChangeContent?(.textStyle(updated), .canvas)
+            }
+
+            editor.onChangeLineHeightNumber = { value in
+                var updated = textStyle
+                updated.lineHeight = Double(value)
+                self.onChangeContent?(.textStyle(updated), .canvas)
+            }
+
+            editor.onChangeLetterSpacingNumber = { value in
+                var updated = textStyle
+                updated.letterSpacing = Double(value)
+                self.onChangeContent?(.textStyle(updated), .canvas)
+            }
+
             if !alreadyShowingTextStyleInspector {
                 inspectorView = editor
 
