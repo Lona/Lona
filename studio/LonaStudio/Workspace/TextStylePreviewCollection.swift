@@ -106,6 +106,7 @@ class TextStylePreviewCollectionView: NSView {
 // MARK: - Imperative API
 
 extension TextStylePreviewCollectionView {
+
     func reloadData() {
         collectionView.reloadData()
     }
