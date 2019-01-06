@@ -65,49 +65,4 @@ class CSTypography: CSPreferencesFile {
     }
 
     public static let unstyledDefaultFont = CSTextStyle(id: unstyledDefaultName, name: "Default")
-
-    static func save(list: CSData) {
-        data.set(keyPath: ["styles"], to: list)
-        data = data.removingKeysForNullValues()
-
-        save()
-
-        LonaPlugins.current.trigger(eventType: .onSaveTextStyles)
-    }
-
-    static func delete(at index: Int) {
-        guard var list = data["styles"]?.array else { return }
-
-        list.remove(at: index)
-
-        save(list: CSData.Array(list))
-    }
-
-    static func move(from sourceIndex: Int, to targetIndex: Int) {
-        guard var list = data["styles"]?.array else { return }
-
-        let item = list[sourceIndex]
-
-        list.remove(at: sourceIndex)
-
-        if sourceIndex < targetIndex {
-            list.insert(item, at: targetIndex - 1)
-        } else {
-            list.insert(item, at: targetIndex)
-        }
-
-        save(list: CSData.Array(list))
-    }
-
-    static func update(textStyle textStyleData: CSData, at index: Int) {
-        guard let list = data["styles"] else { return }
-
-        let updated = list.arrayValue.enumerated().map({ offset, element in
-            return index == offset
-                ? CSValue.compact(type: CSTextStyle.csType, data: textStyleData)
-                : element
-        })
-
-        save(list: CSData.Array(updated))
-    }
 }
