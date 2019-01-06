@@ -168,7 +168,7 @@ public class AddColorSheet: NSBox {
     colorInspectorView.titleText = "New Color"
     cancelButtonView.titleText = "Cancel"
     footerSpacerView.fillColor = #colorLiteral(red: 0.847058823529, green: 0.847058823529, blue: 0.847058823529, alpha: 1)
-    doneButtonView.titleText = "Done"
+    doneButtonView.titleText = "Add Color"
   }
 
   private func setUpConstraints() {

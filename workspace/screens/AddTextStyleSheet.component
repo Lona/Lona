@@ -416,7 +416,7 @@
           {
             "id" : "DoneButton",
             "params" : {
-              "titleText" : "Done"
+              "titleText" : "Add Text Style"
             },
             "type" : "Button"
           }
