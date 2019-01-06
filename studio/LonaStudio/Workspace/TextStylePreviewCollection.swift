@@ -44,13 +44,13 @@ class TextStylePreviewCollectionView: NSView {
     // MARK: - Public
 
     public var items: [CSTextStyle] = [] { didSet { update() } }
-    public var onClickTextStyle: ((String) -> Void)? { didSet { update(withoutReloading: true) } }
-    public var onMoveItem: ((Int, Int) -> Void)? { didSet { update(withoutReloading: true) } }
-    public var onDeleteItem: ((Int) -> Void)? { didSet { update(withoutReloading: true) } }
+    public var onSelectTextStyle: TextStyleHandler { didSet { update(withoutReloading: true) } }
+    public var onMoveTextStyle: ItemMoveHandler { didSet { update(withoutReloading: true) } }
+    public var onDeleteTextStyle: TextStyleHandler { didSet { update(withoutReloading: true) } }
 
     // MARK: - Private
 
-    private let collectionView = KeyHandlingCollectionView(frame: .zero)
+    fileprivate let collectionView = KeyHandlingCollectionView(frame: .zero)
     private let scrollView = NSScrollView()
 
     private func setUpViews() {
@@ -97,17 +97,19 @@ class TextStylePreviewCollectionView: NSView {
             collectionView.reloadData()
         }
 
-        collectionView.onDeleteItem = onDeleteItem
+        collectionView.onDeleteItem = { index in
+            self.onDeleteTextStyle?(self.items[index])
+        }
     }
 }
 
 // MARK: - Imperative API
 
 extension TextStylePreviewCollectionView {
-    func cardView(at index: Int) -> DoubleClickableTextStylePreviewCard? {
-        guard let item = collectionView.item(at: index) as? TextStylePreviewItemViewController else { return nil }
-        return item.view as? DoubleClickableTextStylePreviewCard
-    }
+//    func cardView(at index: Int) -> DoubleClickableTextStylePreviewCard? {
+//        guard let item = collectionView.item(at: index) as? TextStylePreviewItemViewController else { return nil }
+//        return item.view as? DoubleClickableTextStylePreviewCard
+//    }
 
     func reloadData() {
         collectionView.reloadData()
@@ -190,9 +192,22 @@ extension TextStylePreviewCollectionView: NSCollectionViewDelegate {
                 return false
         }
 
-        onMoveItem?(Int(sourceIndexPath), indexPath.item)
+        onMoveTextStyle?(Int(sourceIndexPath), indexPath.item)
 
         return true
+    }
+
+    func collectionView(_ collectionView: NSCollectionView, didSelectItemsAt indexPaths: Set<IndexPath>) {
+        guard let indexPath = indexPaths.first else {
+            self.onSelectTextStyle?(nil)
+            return
+        }
+
+        self.onSelectTextStyle?(items[indexPath.item])
+    }
+
+    func collectionView(_ collectionView: NSCollectionView, didDeselectItemsAt indexPaths: Set<IndexPath>) {
+        self.onSelectTextStyle?(nil)
     }
 }
 
@@ -209,10 +224,10 @@ extension TextStylePreviewCollectionView: NSCollectionViewDataSource {
             textStylePreviewCard.example = textStyle.name
             textStylePreviewCard.textStyleSummary = textStyle.summary
             textStylePreviewCard.textStyle = textStyle.font
-            textStylePreviewCard.inverse = textStyle.color?.isLightColor ?? false
-            textStylePreviewCard.onDoubleClick = {
-                self.onClickTextStyle?(textStyle.id)
-            }
+            textStylePreviewCard.inverse = textStyle.getCSColor().color.isLightColor
+//            textStylePreviewCard.onDoubleClick = {
+//                self.onSelectTextStyle?(textStyle)
+//            }
         }
 
         return item
@@ -256,10 +271,15 @@ public class TextStylePreviewCollection: NSBox {
     }
 
     // MARK: Public
-
-    public var onClickTextStyle: ((String) -> Void)?
+    public var textStyles: [CSTextStyle]? = [] { didSet { update() } }
+    public var onClickTextStyle: ((CSTextStyle) -> Void)?
+    public var onSelectTextStyle: TextStyleHandler
+    public var onMoveTextStyle: ItemMoveHandler
+    public var onDeleteTextStyle: TextStyleHandler
 
     // MARK: Private
+
+    private var selectedTextStyleId: String?
 
     private let collectionView = TextStylePreviewCollectionView(frame: .zero)
 
@@ -270,43 +290,48 @@ public class TextStylePreviewCollection: NSBox {
 
         collectionView.items = CSTypography.styles
 
-        _ = LonaPlugins.current.register(eventTypes: [.onSaveTextStyles, .onReloadWorkspace], handler: {
-            self.collectionView.items = CSTypography.styles
-            self.collectionView.reloadData()
-        })
+//        _ = LonaPlugins.current.register(eventTypes: [.onSaveTextStyles, .onReloadWorkspace], handler: {
+//            self.collectionView.items = CSTypography.styles
+//            self.collectionView.reloadData()
+//        })
 
-        collectionView.onMoveItem = { sourceIndex, targetIndex in
-            CSTypography.move(from: sourceIndex, to: targetIndex)
-            self.collectionView.items = CSTypography.styles
-            self.collectionView.moveItem(from: sourceIndex, to: targetIndex)
+        collectionView.onMoveTextStyle = { sourceIndex, targetIndex in
+            self.onMoveTextStyle?(sourceIndex, targetIndex)
+//            CSTypography.move(from: sourceIndex, to: targetIndex)
+//            self.collectionView.items = CSTypography.styles
+//            self.collectionView.moveItem(from: sourceIndex, to: targetIndex)
         }
 
-        collectionView.onDeleteItem = { index in
-            CSTypography.delete(at: index)
-            self.collectionView.items = CSTypography.styles
-            self.collectionView.deleteItem(at: index)
+        collectionView.onDeleteTextStyle = { textStyle in
+            self.selectedTextStyleId = nil
+            self.onDeleteTextStyle?(textStyle)
+        }
+
+        collectionView.onSelectTextStyle = { textStyle in
+            self.selectedTextStyleId = textStyle?.id
+            self.onSelectTextStyle?(textStyle)
         }
 
         // TODO: This callback should propagate up to the root. Currently Lona doesn't
         // generate callbacks with params, so we'll handle it here for now.
-        collectionView.onClickTextStyle = { textStyle in
-            guard let csTextStyle = CSTypography.styles.first(where: { $0.id == textStyle }) else { return }
-            guard let index = CSTypography.styles.index(where: { $0.id == textStyle }) else { return }
-
-            let editor = DictionaryEditor(
-                value: csTextStyle.toValue(),
-                onChange: { updated in
-                    CSTypography.update(textStyle: updated.data, at: index)
-            },
-                layout: CSConstraint.size(width: 300, height: 200)
-            )
-
-            let viewController = NSViewController(view: editor)
-            let popover = NSPopover(contentViewController: viewController, delegate: self)
-
-            guard let cardView = self.collectionView.cardView(at: index) else { return }
-            popover.show(relativeTo: NSRect.zero, of: cardView, preferredEdge: .maxY)
-        }
+//        collectionView.onClickTextStyle = { textStyle in
+//            guard let csTextStyle = CSTypography.styles.first(where: { $0.id == textStyle }) else { return }
+//            guard let index = CSTypography.styles.index(where: { $0.id == textStyle }) else { return }
+//
+//            let editor = DictionaryEditor(
+//                value: csTextStyle.toValue(),
+//                onChange: { updated in
+//                    CSTypography.update(textStyle: updated.data, at: index)
+//            },
+//                layout: CSConstraint.size(width: 300, height: 200)
+//            )
+//
+//            let viewController = NSViewController(view: editor)
+//            let popover = NSPopover(contentViewController: viewController, delegate: self)
+//
+//            guard let cardView = self.collectionView.cardView(at: index) else { return }
+//            popover.show(relativeTo: NSRect.zero, of: cardView, preferredEdge: .maxY)
+//        }
 
         addSubview(collectionView)
     }
@@ -321,7 +346,14 @@ public class TextStylePreviewCollection: NSBox {
         bottomAnchor.constraint(equalTo: collectionView.bottomAnchor).isActive = true
     }
 
-    private func update() {}
+    private func update(withoutReloading: Bool = false) {
+        collectionView.items = textStyles ?? []
+
+        if let index = textStyles?.index(where: { $0.id == selectedTextStyleId }) {
+            collectionView.collectionView.selectionIndexPaths = [IndexPath(item: index, section: 0)]
+            //            collectionView.collectionView.selectItems(at: [IndexPath(item: index, section: 0)], scrollPosition: NSCollectionView.ScrollPosition)
+        }
+    }
 }
 
 extension TextStylePreviewCollection: NSPopoverDelegate {

@@ -161,7 +161,7 @@ final class InspectorView: NSBox {
             editor.nameText = color.name
             editor.titleText = color.name
             editor.valueText = color.value
-            editor.descriptionText = color.comment
+            editor.descriptionText = color.comment ?? ""
 
             let cssColor = parseCSSColor(color.value) ?? CSSColor(0, 0, 0, 0)
             var colorValue = Color(redInt: cssColor.r, greenInt: cssColor.g, blueInt: cssColor.b)
@@ -199,7 +199,7 @@ final class InspectorView: NSBox {
 
             editor.onChangeDescriptionText = { value in
                 var updated = color
-                updated.comment = value
+                updated.comment = value.isEmpty ? nil : value
                 self.onChangeContent?(.color(updated), .canvas)
             }
 
@@ -214,8 +214,73 @@ final class InspectorView: NSBox {
                 inspectorView.bottomAnchor.constraint(equalTo: flippedView.bottomAnchor).isActive = true
             }
 
-        case .textStyle:
-            inspectorView.removeFromSuperview()
+        case .textStyle(let textStyle):
+            let alreadyShowingTextStyleInspector = inspectorView is TextStyleInspector
+
+            if !alreadyShowingTextStyleInspector {
+                inspectorView.removeFromSuperview()
+            }
+
+            let editor = (inspectorView as? TextStyleInspector) ?? TextStyleInspector()
+
+            editor.idText = textStyle.id
+            editor.nameText = textStyle.name
+            editor.titleText = textStyle.name
+            editor.descriptionText = textStyle.comment ?? ""
+            editor.fontFamilyText = textStyle.fontFamily ?? ""
+            editor.fontNameText = textStyle.fontName ?? ""
+            editor.fontWeightText = textStyle.fontWeight ?? ""
+            editor.fontSizeNumber = CGFloat(textStyle.fontSize ?? -1)
+            editor.lineHeightNumber = CGFloat(textStyle.lineHeight ?? -1)
+            editor.letterSpacingNumber = CGFloat(textStyle.letterSpacing ?? -1)
+            editor.colorValue = textStyle.color ?? ""
+
+            editor.onChangeIdText = { value in
+                var updated = textStyle
+                updated.id = value
+                self.onChangeContent?(.textStyle(updated), .canvas)
+            }
+
+            editor.onChangeNameText = { value in
+                var updated = textStyle
+                updated.name = value
+                self.onChangeContent?(.textStyle(updated), .canvas)
+            }
+
+            editor.onChangeDescriptionText = { value in
+                var updated = textStyle
+                updated.comment = value
+                self.onChangeContent?(.textStyle(updated), .canvas)
+            }
+
+            editor.onChangeFontNameText = { value in
+                var updated = textStyle
+                updated.fontName = value
+                self.onChangeContent?(.textStyle(updated), .canvas)
+            }
+
+            editor.onChangeFontFamilyText = { value in
+                var updated = textStyle
+                updated.fontFamily = value
+                self.onChangeContent?(.textStyle(updated), .canvas)
+            }
+
+            editor.onChangeColorValue = { value in
+                var updated = textStyle
+                updated.color = value
+                self.onChangeContent?(.textStyle(updated), .canvas)
+            }
+
+            if !alreadyShowingTextStyleInspector {
+                inspectorView = editor
+
+                flippedView.addSubview(inspectorView)
+
+                inspectorView.widthAnchor.constraint(equalTo: flippedView.widthAnchor).isActive = true
+                inspectorView.heightAnchor.constraint(equalTo: flippedView.heightAnchor).isActive = true
+                inspectorView.topAnchor.constraint(equalTo: flippedView.topAnchor).isActive = true
+                inspectorView.bottomAnchor.constraint(equalTo: flippedView.bottomAnchor).isActive = true
+            }
         case .canvas(let canvas):
             let alreadyShowing = inspectorView is CanvasInspector
 

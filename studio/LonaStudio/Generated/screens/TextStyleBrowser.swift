@@ -285,17 +285,22 @@ public class TextStyleBrowser: NSBox {
   private func update() {
     let fixedHeightFixViewIsHidden = fixedHeightFixView.isHidden
 
+    textStylePreviewCollectionView.onSelectTextStyle = handleOnSelectTextStyle
+    textStylePreviewCollectionView.onDeleteTextStyle = handleOnDeleteTextStyle
+    textStylePreviewCollectionView.onMoveTextStyle = handleOnMoveTextStyle
+    textStylePreviewCollectionView.textStyles = textStyles
+
     if fixedHeightFixView.isHidden != fixedHeightFixViewIsHidden {
       NSLayoutConstraint.deactivate(conditionalConstraints(fixedHeightFixViewIsHidden: fixedHeightFixViewIsHidden))
       NSLayoutConstraint.activate(conditionalConstraints(fixedHeightFixViewIsHidden: fixedHeightFixView.isHidden))
     }
   }
 
-  private func handleOnSelectTextStyle(_ arg0: CSTextStyle) {
+  private func handleOnSelectTextStyle(_ arg0: CSTextStyle?) {
     onSelectTextStyle?(arg0)
   }
 
-  private func handleOnDeleteTextStyle(_ arg0: CSTextStyle) {
+  private func handleOnDeleteTextStyle(_ arg0: CSTextStyle?) {
     onDeleteTextStyle?(arg0)
   }
 

@@ -571,9 +571,9 @@ class WorkspaceViewController: NSSplitViewController {
                 }
 
                 guard let oldContent = self.inspectedContent else { return }
-                guard let colors = document.content else { return }
+                guard let content = document.content else { return }
 
-                switch (oldContent, newContent, colors) {
+                switch (oldContent, newContent, content) {
                 case (.color(let oldColor), .color(let newColor), .colors(let colors)):
 
                     // Perform update using indexes in case the id was changed
@@ -597,6 +597,34 @@ class WorkspaceViewController: NSSplitViewController {
                             self.inspectedContent = .color(oldColor)
                             self.inspectorView.content = .color(oldColor)
                             self.colorEditorViewController.colors = colors
+                        }
+                    )
+                case (.textStyle(let oldTextStyle), .textStyle(let newTextStyle), .textStyles(let textStyles)):
+
+                    // Perform update using indexes in case the id was changed
+                    guard let index = textStyles.styles.index(where: { $0.id == oldTextStyle.id }) else { return }
+
+                    let updated = JSONDocument.TextStylesFile(
+                        styles: textStyles.styles.enumerated().map { offset, element in
+                            return index == offset ? newTextStyle : element
+                        },
+                        defaultStyleName: textStyles.defaultStyleName
+                    )
+
+                    // TODO: Improve this. It may be conflicting with the textfield's built-in undo
+                    UndoManager.shared.run(
+                        name: "Edit Text Style",
+                        execute: {[unowned self] in
+                            document.content = .textStyles(updated)
+                            self.inspectedContent = .textStyle(newTextStyle)
+                            self.inspectorView.content = .textStyle(newTextStyle)
+                            self.textStyleEditorViewController.textStyles = updated.styles
+                        },
+                        undo: {[unowned self] in
+                            document.content = .textStyles(textStyles)
+                            self.inspectedContent = .textStyle(oldTextStyle)
+                            self.inspectorView.content = .textStyle(oldTextStyle)
+                            self.textStyleEditorViewController.textStyles = textStyles.styles
                         }
                     )
                 default:
