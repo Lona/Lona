@@ -38,7 +38,7 @@
         "parameters": [
           {
             "label": "_",
-            "type": "CSTextStyle"
+            "type": "CSTextStyle?"
           }
         ]
       }
@@ -52,6 +52,19 @@
           {
             "label": "_",
             "type": "String"
+          }
+        ]
+      }
+    },
+    {
+      "name": "Named",
+      "alias": "NumberHandler",
+      "of": {
+        "name": "Function",
+        "parameters": [
+          {
+            "label": "_",
+            "type": "Number"
           }
         ]
       }

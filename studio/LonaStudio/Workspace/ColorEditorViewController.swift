@@ -56,14 +56,14 @@ class ColorEditorViewController: NSViewController {
         }
 
         colorBrowser.onClickAddColor = {
-            var color = CSColor(id: "", name: "", value: "black", comment: "")
+            var color = CSColor(id: "", name: "", value: "black", comment: "", metadata: CSData.Object([:]))
             var pristineIdText: Bool = true
 
             self.addColorSheet.idText = color.id
             self.addColorSheet.nameText = color.name
             self.addColorSheet.valueText = color.value
             self.addColorSheet.colorValue = Color(cssString: color.value)
-            self.addColorSheet.descriptionText = color.comment
+            self.addColorSheet.descriptionText = color.comment ?? ""
 
             self.addColorSheet.onChangeNameText = { value in
                 color.name = value

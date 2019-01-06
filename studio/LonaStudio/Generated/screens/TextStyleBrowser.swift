@@ -82,23 +82,11 @@ public class TextStyleBrowser: NSBox {
   private var headerView = NSBox()
   private var titleView = LNATextField(labelWithString: "")
   private var spacerView = NSBox()
-  private var fixedHeightFixView = NSBox()
-  private var buttonView = Button()
+  private var fixedHeightFixButtonContainerView = NSBox()
+  private var addTextStyleButtonView = Button()
   private var textStylePreviewCollectionView = TextStylePreviewCollection()
 
   private var titleViewTextStyle = TextStyles.title
-
-  private var spacerViewTrailingAnchorHeaderViewTrailingAnchorConstraint: NSLayoutConstraint?
-  private var fixedHeightFixViewTrailingAnchorHeaderViewTrailingAnchorConstraint: NSLayoutConstraint?
-  private var fixedHeightFixViewLeadingAnchorSpacerViewTrailingAnchorConstraint: NSLayoutConstraint?
-  private var fixedHeightFixViewTopAnchorHeaderViewTopAnchorConstraint: NSLayoutConstraint?
-  private var fixedHeightFixViewCenterYAnchorHeaderViewCenterYAnchorConstraint: NSLayoutConstraint?
-  private var fixedHeightFixViewBottomAnchorHeaderViewBottomAnchorConstraint: NSLayoutConstraint?
-  private var buttonViewWidthAnchorParentConstraint: NSLayoutConstraint?
-  private var buttonViewTopAnchorFixedHeightFixViewTopAnchorConstraint: NSLayoutConstraint?
-  private var buttonViewBottomAnchorFixedHeightFixViewBottomAnchorConstraint: NSLayoutConstraint?
-  private var buttonViewLeadingAnchorFixedHeightFixViewLeadingAnchorConstraint: NSLayoutConstraint?
-  private var buttonViewTrailingAnchorFixedHeightFixViewTrailingAnchorConstraint: NSLayoutConstraint?
 
   private func setUpViews() {
     boxType = .custom
@@ -114,24 +102,23 @@ public class TextStyleBrowser: NSBox {
     spacerView.boxType = .custom
     spacerView.borderType = .noBorder
     spacerView.contentViewMargins = .zero
-    fixedHeightFixView.boxType = .custom
-    fixedHeightFixView.borderType = .noBorder
-    fixedHeightFixView.contentViewMargins = .zero
+    fixedHeightFixButtonContainerView.boxType = .custom
+    fixedHeightFixButtonContainerView.borderType = .noBorder
+    fixedHeightFixButtonContainerView.contentViewMargins = .zero
 
     addSubview(innerView)
     innerView.addSubview(headerView)
     innerView.addSubview(textStylePreviewCollectionView)
     headerView.addSubview(titleView)
     headerView.addSubview(spacerView)
-    headerView.addSubview(fixedHeightFixView)
-    fixedHeightFixView.addSubview(buttonView)
+    headerView.addSubview(fixedHeightFixButtonContainerView)
+    fixedHeightFixButtonContainerView.addSubview(addTextStyleButtonView)
 
     fillColor = Colors.contentBackground
     titleView.attributedStringValue = titleViewTextStyle.apply(to: "Text Styles")
     titleViewTextStyle = TextStyles.title
     titleView.attributedStringValue = titleViewTextStyle.apply(to: titleView.attributedStringValue)
-    fixedHeightFixView.isHidden = !false
-    buttonView.titleText = "Add Text Style"
+    addTextStyleButtonView.titleText = "Add Text Style"
   }
 
   private func setUpConstraints() {
@@ -141,8 +128,8 @@ public class TextStyleBrowser: NSBox {
     textStylePreviewCollectionView.translatesAutoresizingMaskIntoConstraints = false
     titleView.translatesAutoresizingMaskIntoConstraints = false
     spacerView.translatesAutoresizingMaskIntoConstraints = false
-    fixedHeightFixView.translatesAutoresizingMaskIntoConstraints = false
-    buttonView.translatesAutoresizingMaskIntoConstraints = false
+    fixedHeightFixButtonContainerView.translatesAutoresizingMaskIntoConstraints = false
+    addTextStyleButtonView.translatesAutoresizingMaskIntoConstraints = false
 
     let innerViewTopAnchorConstraint = innerView.topAnchor.constraint(equalTo: topAnchor, constant: 48)
     let innerViewBottomAnchorConstraint = innerView.bottomAnchor.constraint(equalTo: bottomAnchor)
@@ -173,129 +160,87 @@ public class TextStyleBrowser: NSBox {
     let titleViewBottomAnchorConstraint = titleView.bottomAnchor.constraint(equalTo: headerView.bottomAnchor)
     let spacerViewLeadingAnchorConstraint = spacerView.leadingAnchor.constraint(equalTo: titleView.trailingAnchor)
     let spacerViewCenterYAnchorConstraint = spacerView.centerYAnchor.constraint(equalTo: headerView.centerYAnchor)
-    let spacerViewHeightAnchorConstraint = spacerView.heightAnchor.constraint(equalToConstant: 24)
-    let spacerViewTrailingAnchorHeaderViewTrailingAnchorConstraint = spacerView
+    let fixedHeightFixButtonContainerViewTrailingAnchorConstraint = fixedHeightFixButtonContainerView
       .trailingAnchor
       .constraint(equalTo: headerView.trailingAnchor, constant: -64)
-    let fixedHeightFixViewTrailingAnchorHeaderViewTrailingAnchorConstraint = fixedHeightFixView
-      .trailingAnchor
-      .constraint(equalTo: headerView.trailingAnchor, constant: -64)
-    let fixedHeightFixViewLeadingAnchorSpacerViewTrailingAnchorConstraint = fixedHeightFixView
+    let fixedHeightFixButtonContainerViewLeadingAnchorConstraint = fixedHeightFixButtonContainerView
       .leadingAnchor
       .constraint(equalTo: spacerView.trailingAnchor)
-    let fixedHeightFixViewTopAnchorHeaderViewTopAnchorConstraint = fixedHeightFixView
+    let fixedHeightFixButtonContainerViewTopAnchorConstraint = fixedHeightFixButtonContainerView
       .topAnchor
       .constraint(equalTo: headerView.topAnchor)
-    let fixedHeightFixViewCenterYAnchorHeaderViewCenterYAnchorConstraint = fixedHeightFixView
+    let fixedHeightFixButtonContainerViewCenterYAnchorConstraint = fixedHeightFixButtonContainerView
       .centerYAnchor
       .constraint(equalTo: headerView.centerYAnchor)
-    let fixedHeightFixViewBottomAnchorHeaderViewBottomAnchorConstraint = fixedHeightFixView
+    let fixedHeightFixButtonContainerViewBottomAnchorConstraint = fixedHeightFixButtonContainerView
       .bottomAnchor
       .constraint(equalTo: headerView.bottomAnchor)
-    let buttonViewWidthAnchorParentConstraint = buttonView
+    let spacerViewHeightAnchorConstraint = spacerView.heightAnchor.constraint(equalToConstant: 0)
+    let addTextStyleButtonViewWidthAnchorParentConstraint = addTextStyleButtonView
       .widthAnchor
-      .constraint(lessThanOrEqualTo: fixedHeightFixView.widthAnchor)
-    let buttonViewTopAnchorFixedHeightFixViewTopAnchorConstraint = buttonView
+      .constraint(lessThanOrEqualTo: fixedHeightFixButtonContainerView.widthAnchor)
+    let addTextStyleButtonViewTopAnchorConstraint = addTextStyleButtonView
       .topAnchor
-      .constraint(equalTo: fixedHeightFixView.topAnchor)
-    let buttonViewBottomAnchorFixedHeightFixViewBottomAnchorConstraint = buttonView
+      .constraint(equalTo: fixedHeightFixButtonContainerView.topAnchor)
+    let addTextStyleButtonViewBottomAnchorConstraint = addTextStyleButtonView
       .bottomAnchor
-      .constraint(equalTo: fixedHeightFixView.bottomAnchor)
-    let buttonViewLeadingAnchorFixedHeightFixViewLeadingAnchorConstraint = buttonView
+      .constraint(equalTo: fixedHeightFixButtonContainerView.bottomAnchor)
+    let addTextStyleButtonViewLeadingAnchorConstraint = addTextStyleButtonView
       .leadingAnchor
-      .constraint(equalTo: fixedHeightFixView.leadingAnchor)
-    let buttonViewTrailingAnchorFixedHeightFixViewTrailingAnchorConstraint = buttonView
+      .constraint(equalTo: fixedHeightFixButtonContainerView.leadingAnchor)
+    let addTextStyleButtonViewTrailingAnchorConstraint = addTextStyleButtonView
       .trailingAnchor
-      .constraint(equalTo: fixedHeightFixView.trailingAnchor)
+      .constraint(equalTo: fixedHeightFixButtonContainerView.trailingAnchor)
 
-    buttonViewWidthAnchorParentConstraint.priority = NSLayoutConstraint.Priority.defaultLow
+    addTextStyleButtonViewWidthAnchorParentConstraint.priority = NSLayoutConstraint.Priority.defaultLow
 
-    self.spacerViewTrailingAnchorHeaderViewTrailingAnchorConstraint =
-      spacerViewTrailingAnchorHeaderViewTrailingAnchorConstraint
-    self.fixedHeightFixViewTrailingAnchorHeaderViewTrailingAnchorConstraint =
-      fixedHeightFixViewTrailingAnchorHeaderViewTrailingAnchorConstraint
-    self.fixedHeightFixViewLeadingAnchorSpacerViewTrailingAnchorConstraint =
-      fixedHeightFixViewLeadingAnchorSpacerViewTrailingAnchorConstraint
-    self.fixedHeightFixViewTopAnchorHeaderViewTopAnchorConstraint =
-      fixedHeightFixViewTopAnchorHeaderViewTopAnchorConstraint
-    self.fixedHeightFixViewCenterYAnchorHeaderViewCenterYAnchorConstraint =
-      fixedHeightFixViewCenterYAnchorHeaderViewCenterYAnchorConstraint
-    self.fixedHeightFixViewBottomAnchorHeaderViewBottomAnchorConstraint =
-      fixedHeightFixViewBottomAnchorHeaderViewBottomAnchorConstraint
-    self.buttonViewWidthAnchorParentConstraint = buttonViewWidthAnchorParentConstraint
-    self.buttonViewTopAnchorFixedHeightFixViewTopAnchorConstraint =
-      buttonViewTopAnchorFixedHeightFixViewTopAnchorConstraint
-    self.buttonViewBottomAnchorFixedHeightFixViewBottomAnchorConstraint =
-      buttonViewBottomAnchorFixedHeightFixViewBottomAnchorConstraint
-    self.buttonViewLeadingAnchorFixedHeightFixViewLeadingAnchorConstraint =
-      buttonViewLeadingAnchorFixedHeightFixViewLeadingAnchorConstraint
-    self.buttonViewTrailingAnchorFixedHeightFixViewTrailingAnchorConstraint =
-      buttonViewTrailingAnchorFixedHeightFixViewTrailingAnchorConstraint
-
-    NSLayoutConstraint.activate(
-      [
-        innerViewTopAnchorConstraint,
-        innerViewBottomAnchorConstraint,
-        innerViewLeadingAnchorConstraint,
-        innerViewCenterXAnchorConstraint,
-        innerViewTrailingAnchorConstraint,
-        headerViewTopAnchorConstraint,
-        headerViewLeadingAnchorConstraint,
-        headerViewTrailingAnchorConstraint,
-        textStylePreviewCollectionViewBottomAnchorConstraint,
-        textStylePreviewCollectionViewTopAnchorConstraint,
-        textStylePreviewCollectionViewLeadingAnchorConstraint,
-        textStylePreviewCollectionViewTrailingAnchorConstraint,
-        headerViewHeightAnchorConstraint,
-        titleViewLeadingAnchorConstraint,
-        titleViewTopAnchorConstraint,
-        titleViewCenterYAnchorConstraint,
-        titleViewBottomAnchorConstraint,
-        spacerViewLeadingAnchorConstraint,
-        spacerViewCenterYAnchorConstraint,
-        spacerViewHeightAnchorConstraint
-      ] +
-        conditionalConstraints(fixedHeightFixViewIsHidden: fixedHeightFixView.isHidden))
-  }
-
-  private func conditionalConstraints(fixedHeightFixViewIsHidden: Bool) -> [NSLayoutConstraint] {
-    var constraints: [NSLayoutConstraint?]
-
-    switch (fixedHeightFixViewIsHidden) {
-      case (true):
-        constraints = [spacerViewTrailingAnchorHeaderViewTrailingAnchorConstraint]
-      case (false):
-        constraints = [
-          fixedHeightFixViewTrailingAnchorHeaderViewTrailingAnchorConstraint,
-          fixedHeightFixViewLeadingAnchorSpacerViewTrailingAnchorConstraint,
-          fixedHeightFixViewTopAnchorHeaderViewTopAnchorConstraint,
-          fixedHeightFixViewCenterYAnchorHeaderViewCenterYAnchorConstraint,
-          fixedHeightFixViewBottomAnchorHeaderViewBottomAnchorConstraint,
-          buttonViewWidthAnchorParentConstraint,
-          buttonViewTopAnchorFixedHeightFixViewTopAnchorConstraint,
-          buttonViewBottomAnchorFixedHeightFixViewBottomAnchorConstraint,
-          buttonViewLeadingAnchorFixedHeightFixViewLeadingAnchorConstraint,
-          buttonViewTrailingAnchorFixedHeightFixViewTrailingAnchorConstraint
-        ]
-    }
-
-    return constraints.compactMap({ $0 })
+    NSLayoutConstraint.activate([
+      innerViewTopAnchorConstraint,
+      innerViewBottomAnchorConstraint,
+      innerViewLeadingAnchorConstraint,
+      innerViewCenterXAnchorConstraint,
+      innerViewTrailingAnchorConstraint,
+      headerViewTopAnchorConstraint,
+      headerViewLeadingAnchorConstraint,
+      headerViewTrailingAnchorConstraint,
+      textStylePreviewCollectionViewBottomAnchorConstraint,
+      textStylePreviewCollectionViewTopAnchorConstraint,
+      textStylePreviewCollectionViewLeadingAnchorConstraint,
+      textStylePreviewCollectionViewTrailingAnchorConstraint,
+      headerViewHeightAnchorConstraint,
+      titleViewLeadingAnchorConstraint,
+      titleViewTopAnchorConstraint,
+      titleViewCenterYAnchorConstraint,
+      titleViewBottomAnchorConstraint,
+      spacerViewLeadingAnchorConstraint,
+      spacerViewCenterYAnchorConstraint,
+      fixedHeightFixButtonContainerViewTrailingAnchorConstraint,
+      fixedHeightFixButtonContainerViewLeadingAnchorConstraint,
+      fixedHeightFixButtonContainerViewTopAnchorConstraint,
+      fixedHeightFixButtonContainerViewCenterYAnchorConstraint,
+      fixedHeightFixButtonContainerViewBottomAnchorConstraint,
+      spacerViewHeightAnchorConstraint,
+      addTextStyleButtonViewWidthAnchorParentConstraint,
+      addTextStyleButtonViewTopAnchorConstraint,
+      addTextStyleButtonViewBottomAnchorConstraint,
+      addTextStyleButtonViewLeadingAnchorConstraint,
+      addTextStyleButtonViewTrailingAnchorConstraint
+    ])
   }
 
   private func update() {
-    let fixedHeightFixViewIsHidden = fixedHeightFixView.isHidden
-
-    if fixedHeightFixView.isHidden != fixedHeightFixViewIsHidden {
-      NSLayoutConstraint.deactivate(conditionalConstraints(fixedHeightFixViewIsHidden: fixedHeightFixViewIsHidden))
-      NSLayoutConstraint.activate(conditionalConstraints(fixedHeightFixViewIsHidden: fixedHeightFixView.isHidden))
-    }
+    textStylePreviewCollectionView.onSelectTextStyle = handleOnSelectTextStyle
+    textStylePreviewCollectionView.onDeleteTextStyle = handleOnDeleteTextStyle
+    textStylePreviewCollectionView.onMoveTextStyle = handleOnMoveTextStyle
+    textStylePreviewCollectionView.textStyles = textStyles
+    addTextStyleButtonView.onClick = handleOnClickAddTextStyle
   }
 
-  private func handleOnSelectTextStyle(_ arg0: CSTextStyle) {
+  private func handleOnSelectTextStyle(_ arg0: CSTextStyle?) {
     onSelectTextStyle?(arg0)
   }
 
-  private func handleOnDeleteTextStyle(_ arg0: CSTextStyle) {
+  private func handleOnDeleteTextStyle(_ arg0: CSTextStyle?) {
     onDeleteTextStyle?(arg0)
   }
 

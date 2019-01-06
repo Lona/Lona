@@ -13,7 +13,8 @@ public struct CSColor: Equatable, CSDataSerializable {
     var id: String
     var name: String
     var value: String
-    var comment: String
+    var comment: String?
+    var metadata: CSData
     var color: NSColor {
         return NSColor.parse(css: value) ?? NSColor.black
     }
@@ -23,12 +24,21 @@ public struct CSColor: Equatable, CSDataSerializable {
     }
 
     func toData() -> CSData {
-        return CSData.Object([
+        var data = CSData.Object([
             "id": id.toData(),
             "name": name.toData(),
-            "value": value.toData(),
-            "comment": comment.toData()
+            "value": value.toData()
             ])
+
+        if let comment = comment, comment != "" {
+            data["comment"] = comment.toData()
+        }
+
+        if !metadata.objectValue.isEmpty {
+            data["metadata"] = metadata
+        }
+
+        return data
     }
 
     func toValue() -> CSValue {
@@ -40,7 +50,8 @@ public struct CSColor: Equatable, CSDataSerializable {
             "id": (CSType.string, CSAccess.write),
             "name": (CSType.string, CSAccess.write),
             "value": (CSType.string, CSAccess.write),
-            "comment": (CSType.string, CSAccess.write)
+            "comment": (CSType.string.makeOptional(), CSAccess.write),
+            "metadata": (CSType.any.makeOptional(), CSAccess.write)
             ])
     }
 
@@ -48,9 +59,10 @@ public struct CSColor: Equatable, CSDataSerializable {
         let id = data["id"]?.string ?? ""
         let name = data["name"]?.string ?? "No name"
         let value = data["value"]?.string ?? "#000000"
-        let comment = data["comment"]?.string ?? ""
+        let comment = data["comment"]?.string
+        let metadata = data["metadata"] ?? CSData.Object([:])
 
-        return CSColor(id: id, name: name, value: value, comment: comment)
+        return CSColor(id: id, name: name, value: value, comment: comment, metadata: metadata)
     }
 }
 

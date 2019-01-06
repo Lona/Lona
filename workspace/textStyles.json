@@ -1,119 +1,119 @@
 {
-  "defaultStyleName": "regular",
-  "styles": [
+  "defaultStyleName" : "regular",
+  "styles" : [
     {
-      "id": "title",
-      "name": "Title",
-      "fontWeight": "600",
-      "fontSize": 32,
-      "color": "textColor"
+      "color" : "textColor",
+      "fontSize" : 32,
+      "fontWeight" : "600",
+      "id" : "title",
+      "name" : "Title"
     },
     {
-      "id": "titleBlack",
-      "name": "Title Black",
-      "extends": "title",
-      "color": "black"
+      "color" : "black",
+      "extends" : "title",
+      "id" : "titleBlack",
+      "name" : "Title Black"
     },
     {
-      "id": "versionInfo",
-      "name": "Version Info",
-      "fontSize": 20,
-      "color": "#828282"
+      "color" : "#828282",
+      "fontSize" : 20,
+      "id" : "versionInfo",
+      "name" : "Version Info"
     },
     {
-      "id": "largeSemibold",
-      "name": "Large Semibold",
-      "fontWeight": "500",
-      "fontSize": 15,
-      "color": "black"
+      "color" : "black",
+      "fontSize" : 15,
+      "fontWeight" : "500",
+      "id" : "largeSemibold",
+      "name" : "Large Semibold"
     },
     {
-      "id": "large",
-      "name": "Large",
-      "fontSize": 15,
-      "color": "textColor"
+      "color" : "textColor",
+      "fontSize" : 15,
+      "id" : "large",
+      "name" : "Large"
     },
     {
-      "id": "regular",
-      "name": "Regular",
-      "fontSize": 13,
-      "color": "textColor"
+      "color" : "textColor",
+      "fontSize" : 13,
+      "id" : "regular",
+      "name" : "Regular"
     },
     {
-      "id": "regularBlack",
-      "name": "Regular Black",
-      "fontSize": 13,
-      "color": "black"
+      "color" : "black",
+      "fontSize" : 13,
+      "id" : "regularBlack",
+      "name" : "Regular Black"
     },
     {
-      "id": "small",
-      "name": "Small",
-      "fontSize": 11,
-      "color": "textColor"
+      "color" : "textColor",
+      "fontSize" : 11,
+      "id" : "small",
+      "name" : "Small"
     },
     {
-      "id": "regularMuted",
-      "name": "Regular Muted",
-      "fontSize": 13,
-      "color": "#828282"
+      "color" : "#828282",
+      "fontSize" : 13,
+      "id" : "regularMuted",
+      "name" : "Regular Muted"
     },
     {
-      "id": "smallMuted",
-      "name": "Small Muted",
-      "fontSize": 11,
-      "color": "#828282"
+      "color" : "#828282",
+      "fontSize" : 11,
+      "id" : "smallMuted",
+      "name" : "Small Muted"
     },
     {
-      "id": "regularDisabled",
-      "name": "Regular Disabled",
-      "fontSize": 13,
-      "color": "#AAAAAA"
+      "color" : "#AAAAAA",
+      "fontSize" : 13,
+      "id" : "regularDisabled",
+      "name" : "Regular Disabled"
     },
     {
-      "id": "smallDisabled",
-      "name": "Small Disabled",
-      "fontSize": 11,
-      "color": "#AAAAAA"
+      "color" : "#AAAAAA",
+      "fontSize" : 11,
+      "id" : "smallDisabled",
+      "name" : "Small Disabled"
     },
     {
-      "id": "largeInverse",
-      "name": "Large Inverse",
-      "fontSize": 15,
-      "color": "white"
+      "color" : "white",
+      "fontSize" : 15,
+      "id" : "largeInverse",
+      "name" : "Large Inverse"
     },
     {
-      "id": "regularInverse",
-      "name": "Regular Inverse",
-      "fontSize": 13,
-      "color": "white"
+      "color" : "white",
+      "fontSize" : 13,
+      "id" : "regularInverse",
+      "name" : "Regular Inverse"
     },
     {
-      "id": "smallInverse",
-      "name": "Small Inverse",
-      "fontSize": 11,
-      "color": "white"
+      "color" : "white",
+      "fontSize" : 11,
+      "id" : "smallInverse",
+      "name" : "Small Inverse"
     },
     {
-      "id": "monospacedMicro",
-      "name": "Monospaced Micro",
-      "fontFamily": "Menlo",
-      "fontSize": 10,
-      "fontWeight": "bold",
-      "color": "labelText"
+      "color" : "labelText",
+      "fontFamily" : "Menlo",
+      "fontSize" : 10,
+      "fontWeight" : "bold",
+      "id" : "monospacedMicro",
+      "name" : "Monospaced Micro"
     },
     {
-      "id": "sectionTitle",
-      "name": "Section Title",
-      "fontSize": 12,
-      "fontWeight": "500",
-      "color": "labelText"
+      "color" : "labelText",
+      "fontSize" : 12,
+      "fontWeight" : "500",
+      "id" : "sectionTitle",
+      "name" : "Section Title"
     },
     {
-      "id": "sectionTitleInverse",
-      "name": "Section Title Inverse",
-      "fontSize": 12,
-      "fontWeight": "600",
-      "color": "white"
+      "color" : "white",
+      "fontSize" : 12,
+      "fontWeight" : "600",
+      "id" : "sectionTitleInverse",
+      "name" : "Section Title Inverse"
     }
   ]
 }
