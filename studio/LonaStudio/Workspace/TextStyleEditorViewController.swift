@@ -61,6 +61,13 @@ class TextStyleEditorViewController: NSViewController {
             self.addTextStyleSheet.idText = textStyle.id
             self.addTextStyleSheet.nameText = textStyle.name
             self.addTextStyleSheet.descriptionText = textStyle.comment ?? ""
+            self.addTextStyleSheet.fontNameText = textStyle.fontName ?? ""
+            self.addTextStyleSheet.fontFamilyText = textStyle.fontFamily ?? ""
+            self.addTextStyleSheet.fontWeightText = textStyle.fontWeight ?? ""
+            self.addTextStyleSheet.colorValue = textStyle.color ?? ""
+            self.addTextStyleSheet.fontSizeNumber = CGFloat(textStyle.fontSize ?? -1)
+            self.addTextStyleSheet.lineHeightNumber = CGFloat(textStyle.lineHeight ?? -1)
+            self.addTextStyleSheet.letterSpacingNumber = CGFloat(textStyle.letterSpacing ?? -1)
 
             self.addTextStyleSheet.onChangeNameText = { value in
                 textStyle.name = value
