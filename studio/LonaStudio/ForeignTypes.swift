@@ -17,6 +17,7 @@ public typealias TextStyleList = [CSTextStyle]?
 public typealias TextStyleHandler = ((CSTextStyle?) -> Void)?
 
 public typealias StringHandler = ((String) -> Void)?
+public typealias NumberHandler = ((CGFloat) -> Void)?
 public typealias ColorPickerColor = Color?
 public typealias ColorPickerHandler = ((Color) -> Void)?
 public typealias ItemMoveHandler = ((Int, Int) -> Void)?

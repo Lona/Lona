@@ -48,7 +48,7 @@ public class NumberInput: NSBox {
     }
   }
 
-  public var onChangeNumberValue: ((CGFloat) -> Void)? {
+  public var onChangeNumberValue: NumberHandler {
     get { return parameters.onChangeNumberValue }
     set { parameters.onChangeNumberValue = newValue }
   }
@@ -120,9 +120,9 @@ extension NumberInput {
   public struct Parameters: Equatable {
     public var numberValue: CGFloat
     public var disabled: Bool
-    public var onChangeNumberValue: ((CGFloat) -> Void)?
+    public var onChangeNumberValue: NumberHandler
 
-    public init(numberValue: CGFloat, disabled: Bool, onChangeNumberValue: ((CGFloat) -> Void)? = nil) {
+    public init(numberValue: CGFloat, disabled: Bool, onChangeNumberValue: NumberHandler = nil) {
       self.numberValue = numberValue
       self.disabled = disabled
       self.onChangeNumberValue = onChangeNumberValue
@@ -157,7 +157,7 @@ extension NumberInput {
       self.parameters = parameters
     }
 
-    public init(numberValue: CGFloat, disabled: Bool, onChangeNumberValue: ((CGFloat) -> Void)? = nil) {
+    public init(numberValue: CGFloat, disabled: Bool, onChangeNumberValue: NumberHandler = nil) {
       self.init(Parameters(numberValue: numberValue, disabled: disabled, onChangeNumberValue: onChangeNumberValue))
     }
 
