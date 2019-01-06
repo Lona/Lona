@@ -26,15 +26,7 @@
     },
     {
       "name" : "onChangeNumberValue",
-      "type" : {
-        "name" : "Function",
-        "parameters" : [
-          {
-            "label" : "_",
-            "type" : "Number"
-          }
-        ]
-      }
+      "type" : "NumberHandler"
     },
     {
       "name" : "disabled",
