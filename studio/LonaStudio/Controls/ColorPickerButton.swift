@@ -26,23 +26,23 @@ func createCircularImage(size: Double, color: NSColor) -> NSImage {
 class ColorPickerButton: NSButton, CSControl {
 
     var data: CSData {
-        get { return CSData.String(value) }
-        set { value = newValue.stringValue }
+        get { return CSData.String(textValue) }
+        set { textValue = newValue.stringValue }
     }
 
     var onChangeData: (CSData) -> Void = { _ in }
 
-    var value: String = "#FFFFFF" {
+    var textValue: String = "#FFFFFF" {
         didSet {
             setImage()
-            title = CSColors.parse(css: value).name
+            title = CSColors.parse(css: textValue).name
         }
     }
 
-    var onChange: (String) -> Void = {_ in}
+    var onChangeTextValue: (String) -> Void = {_ in}
 
     func setImage() {
-        image = createCircularImage(size: 10, color: CSColors.parse(css: value).color)
+        image = createCircularImage(size: 10, color: CSColors.parse(css: textValue).color)
     }
 
     func setup() {
@@ -70,8 +70,8 @@ class ColorPickerButton: NSButton, CSControl {
         let picker = ColorPickerView(selected: data.stringValue) {[weak self] (color) in
             guard let strongSelf = self else { return }
             strongSelf.title = color.name
-            strongSelf.value = color.resolvedValue
-            strongSelf.onChange(strongSelf.value)
+            strongSelf.textValue = color.resolvedValue
+            strongSelf.onChangeTextValue(strongSelf.textValue)
             strongSelf.onChangeData(strongSelf.data)
         }
         picker.popover.show(relativeTo: NSRect.zero, of: self, preferredEdge: .maxY)
