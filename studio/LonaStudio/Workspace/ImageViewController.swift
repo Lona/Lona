@@ -51,10 +51,10 @@ class ImageViewController: NSViewController {
 
     private func update() {
         if let image = image {
-            contentView.imageData = image
+            contentView.image = image
             contentView.dimensions = "\(image.size.width)px * \(image.size.height)px"
         } else {
-            contentView.imageData = nil
+            contentView.image = nil
             contentView.dimensions = ""
         }
     }

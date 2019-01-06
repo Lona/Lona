@@ -86,9 +86,6 @@ public class ImageViewer: NSBox {
     headerView.boxType = .custom
     headerView.borderType = .noBorder
     headerView.contentViewMargins = .zero
-    imageView.boxType = .custom
-    imageView.borderType = .noBorder
-    imageView.contentViewMargins = .zero
     dimensionsView.lineBreakMode = .byWordWrapping
     titleView.lineBreakMode = .byWordWrapping
 

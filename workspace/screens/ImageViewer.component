@@ -95,7 +95,7 @@
               "marginTop" : 20,
               "resizeMode" : "contain"
             },
-            "type" : "Lona:View"
+            "type" : "Lona:Image"
           },
           {
             "id" : "Dimensions",
