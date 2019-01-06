@@ -273,6 +273,8 @@ class WorkspaceViewController: NSSplitViewController {
         return NSViewController(view: inspectorView)
     }()
 
+    private lazy var directoryViewController = DirectoryViewController()
+
     // A document's window controllers are deallocated if there are no associated documents.
     // This ViewController can contain a reference.
     private var windowController: NSWindowController?
@@ -358,12 +360,30 @@ class WorkspaceViewController: NSSplitViewController {
         }
 
         fileNavigator.onAction = { path in
-            guard let document = self.document else {
-                if FileUtils.fileExists(atPath: path) != .file {
+            guard let previousDocument = self.document else {
+                if FileUtils.fileExists(atPath: path) == .none {
                     return
                 }
 
                 let url = URL(fileURLWithPath: path)
+
+                if FileUtils.fileExists(atPath: path) == .directory {
+                    guard let newDocument = try? DirectoryDocument(contentsOf: url, ofType: "Directory Document") else {
+                        Swift.print("Failed to open", url)
+                        return
+                    }
+
+                    guard let windowController = self.view.window?.windowController else { return }
+
+                    newDocument.addWindowController(windowController)
+                    windowController.document = newDocument
+                    self.document = newDocument
+
+                    // Set this after updating the document (which calls update)
+                    // TODO: There shouldn't need to be an implicit ordering. Maybe we call update() manually.
+                    self.inspectedContent = nil
+                    return
+                }
 
                 NSDocumentController.shared.openDocument(withContentsOf: url, display: false, completionHandler: { newDocument, documentWasAlreadyOpen, error in
 
@@ -391,10 +411,10 @@ class WorkspaceViewController: NSSplitViewController {
                 return
             }
 
-            if document.fileURL?.path == path { return }
+            if previousDocument.fileURL?.path == path { return }
 
-            if document.isDocumentEdited {
-                let name = document.fileURL?.lastPathComponent ?? "Untitled"
+            if previousDocument.isDocumentEdited {
+                let name = previousDocument.fileURL?.lastPathComponent ?? "Untitled"
                 guard let result = Alert(
                     items: [
                         DocumentAction.cancel,
@@ -407,7 +427,7 @@ class WorkspaceViewController: NSSplitViewController {
                 case .saveChanges:
                     var saveURL: URL
 
-                    if let url = document.fileURL {
+                    if let url = previousDocument.fileURL {
                         saveURL = url
                     } else {
                         let dialog = NSSavePanel()
@@ -428,7 +448,7 @@ class WorkspaceViewController: NSSplitViewController {
                         saveURL = url
                     }
 
-                    document.save(to: saveURL, ofType: document.fileType ?? "DocumentType", for: NSDocument.SaveOperationType.saveOperation, completionHandler: { error in
+                    previousDocument.save(to: saveURL, ofType: previousDocument.fileType ?? "DocumentType", for: NSDocument.SaveOperationType.saveOperation, completionHandler: { error in
                         // TODO: We should not close the document if it fails to save
                         Swift.print("Failed to save", saveURL, error as Any)
                     })
@@ -441,16 +461,44 @@ class WorkspaceViewController: NSSplitViewController {
                 }
             }
 
+            if FileUtils.fileExists(atPath: path) == .none {
+                return
+            }
+
             let url = URL(fileURLWithPath: path)
+
+            if FileUtils.fileExists(atPath: path) == .directory {
+                guard let newDocument = try? DirectoryDocument(contentsOf: url, ofType: "Directory Document") else {
+                    Swift.print("Failed to open", url)
+                    NSDocumentController.shared.removeDocument(previousDocument)
+                    let windowController = previousDocument.windowControllers[0]
+                    windowController.document = nil
+                    previousDocument.removeWindowController(windowController)
+                    self.document = nil
+                    self.inspectedContent = nil
+                    return
+                }
+
+                guard let windowController = self.view.window?.windowController else { return }
+
+                newDocument.addWindowController(windowController)
+                windowController.document = newDocument
+                self.document = newDocument
+
+                // Set this after updating the document (which calls update)
+                // TODO: There shouldn't need to be an implicit ordering. Maybe we call update() manually.
+                self.inspectedContent = nil
+                return
+            }
 
             NSDocumentController.shared.openDocument(withContentsOf: url, display: false, completionHandler: { newDocument, documentWasAlreadyOpen, error in
 
                 guard let newDocument = newDocument else {
                     Swift.print("Failed to open", url, error as Any)
-                    NSDocumentController.shared.removeDocument(document)
-                    let windowController = document.windowControllers[0]
+                    NSDocumentController.shared.removeDocument(previousDocument)
+                    let windowController = previousDocument.windowControllers[0]
                     windowController.document = nil
-                    document.removeWindowController(windowController)
+                    previousDocument.removeWindowController(windowController)
                     self.document = nil
                     self.inspectedContent = nil
 
@@ -462,9 +510,9 @@ class WorkspaceViewController: NSSplitViewController {
                     return
                 }
 
-                NSDocumentController.shared.removeDocument(document)
+                NSDocumentController.shared.removeDocument(previousDocument)
 
-                let windowController = document.windowControllers[0]
+                let windowController = previousDocument.windowControllers[0]
                 newDocument.addWindowController(windowController)
                 windowController.document = newDocument
                 self.document = newDocument
@@ -608,6 +656,17 @@ class WorkspaceViewController: NSSplitViewController {
                 editorViewController.contentView = imageViewController.view
 
                 imageViewController.image = content
+            } else {
+                editorViewController.contentView = nil
+                return
+            }
+        } else if let document = document as? DirectoryDocument {
+            if let content = document.content {
+                editorViewController.contentView = directoryViewController.view
+
+                directoryViewController.componentNames = content.componentNames
+                directoryViewController.readme = content.readme
+                directoryViewController.folderName = content.folderName
             } else {
                 editorViewController.contentView = nil
                 return

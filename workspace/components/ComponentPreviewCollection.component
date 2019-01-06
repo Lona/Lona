@@ -31,7 +31,22 @@
 
   ],
   "params" : [
+    {
+      "defaultValue" : {
+        "data" : [
 
+        ],
+        "type" : {
+          "name" : "Array",
+          "of" : "String"
+        }
+      },
+      "name" : "componentNames",
+      "type" : {
+        "name" : "Array",
+        "of" : "String"
+      }
+    }
   ],
   "root" : {
     "id" : "View",

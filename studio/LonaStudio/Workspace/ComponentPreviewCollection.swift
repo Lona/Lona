@@ -170,7 +170,7 @@ public class ComponentPreviewCollection: NSBox {
 
     // MARK: Public
 
-    public var onClickComponent: ((URL) -> Void)?
+    public var componentNames: [String] = [] { didSet { update() } }
 
     // MARK: Private
 
@@ -180,19 +180,6 @@ public class ComponentPreviewCollection: NSBox {
         boxType = .custom
         borderType = .noBorder
         contentViewMargins = .zero
-
-        collectionView.items = LonaModule.current.componentFiles().sorted(by: { a, b in
-            return a.name < b.name
-        })
-
-        let updateHandler: () -> Void = {
-            self.collectionView.items = LonaModule.current.componentFiles().sorted(by: { a, b in
-                return a.name < b.name
-            })
-            self.collectionView.reloadData()
-        }
-
-        _ = LonaPlugins.current.register(eventTypes: [.onSaveColors, .onSaveComponent, .onReloadWorkspace], handler: updateHandler)
 
         collectionView.onCopy = { index in
             let item = self.collectionView.items[index]
@@ -241,6 +228,8 @@ public class ComponentPreviewCollection: NSBox {
         }
 
         addSubview(collectionView)
+
+        update()
     }
 
     private func setUpConstraints() {
@@ -253,5 +242,16 @@ public class ComponentPreviewCollection: NSBox {
         bottomAnchor.constraint(equalTo: collectionView.bottomAnchor).isActive = true
     }
 
-    private func update() {}
+    private func update() {
+        var components: [LonaModule.ComponentFile] = []
+
+        componentNames.enumerated().forEach {offset, name in
+            let component = LonaModule.current.componentFile(named: name)
+
+            if let component = component {
+                components.append(component)
+            }
+        }
+        collectionView.items = components
+    }
 }

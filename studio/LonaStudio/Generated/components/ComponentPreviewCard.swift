@@ -73,7 +73,7 @@ public class ComponentPreviewCard: NSBox {
   private var detailsView = NSBox()
   private var componentNameView = LNATextField(labelWithString: "")
 
-  private var componentNameViewTextStyle = TextStyles.large
+  private var componentNameViewTextStyle = TextStyles.regular
 
   private func setUpViews() {
     boxType = .custom
@@ -96,7 +96,7 @@ public class ComponentPreviewCard: NSBox {
     previewView.addSubview(componentPreviewView)
     detailsView.addSubview(componentNameView)
 
-    fillColor = Colors.white
+    fillColor = Colors.headerBackground
     cornerRadius = 4
     borderWidth = 1
     borderColor = Colors.grey300
@@ -179,7 +179,7 @@ public class ComponentPreviewCard: NSBox {
   }
 
   private func update() {
-    componentNameViewTextStyle = TextStyles.large
+    componentNameViewTextStyle = TextStyles.regular
     componentNameView.attributedStringValue =
       componentNameViewTextStyle.apply(to: componentNameView.attributedStringValue)
     detailsView.fillColor = Colors.transparent

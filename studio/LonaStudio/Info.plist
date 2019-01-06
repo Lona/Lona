@@ -15,12 +15,10 @@
 			</array>
 			<key>CFBundleTypeIconFile</key>
 			<string></string>
+			<key>LSHandlerRank</key>
+			<string>Owner</string>
 			<key>CFBundleTypeName</key>
 			<string>DocumentType</string>
-			<key>CFBundleTypeOSTypes</key>
-			<array>
-				<string>????</string>
-			</array>
 			<key>CFBundleTypeRole</key>
 			<string>Editor</string>
 			<key>NSDocumentClass</key>
@@ -35,6 +33,8 @@
 			<string>JSON</string>
 			<key>CFBundleTypeRole</key>
 			<string>Editor</string>
+			<key>LSHandlerRank</key>
+			<string>Alternate</string>
 			<key>NSDocumentClass</key>
 			<string>$(PRODUCT_MODULE_NAME).JSONDocument</string>
 		</dict>
@@ -42,16 +42,18 @@
 			<key>CFBundleTypeExtensions</key>
 			<array>
 				<string>png</string>
-        <string>jpeg</string>
-        <string>pdf</string>
-        <string>eps</string>
-        <string>bmp</string>
-        <string>gif</string>
+				<string>jpeg</string>
+				<string>pdf</string>
+				<string>eps</string>
+				<string>bmp</string>
+				<string>gif</string>
 			</array>
 			<key>CFBundleTypeName</key>
 			<string>Image</string>
 			<key>CFBundleTypeRole</key>
 			<string>Viewer</string>
+			<key>LSHandlerRank</key>
+			<string>Alternate</string>
 			<key>NSDocumentClass</key>
 			<string>$(PRODUCT_MODULE_NAME).ImageDocument</string>
 		</dict>
