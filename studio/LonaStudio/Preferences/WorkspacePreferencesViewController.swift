@@ -27,12 +27,22 @@ class WorkspacePreferencesViewController: NSViewController, MASPreferencesViewCo
         }
     }
 
+    // Ensure that callbacks don't fire when removing from superview
+    private var loaded = false
+
     func render() {
+        loaded = false
+
+        CSUserPreferences.reload()
+        CSWorkspacePreferences.reload()
+
         stackView.arrangedSubviews.forEach({ $0.removeFromSuperview() })
 
         let workspaceNameRow = ValueSettingRow(
             title: "Workspace Name",
-            value: CSWorkspacePreferences.workspaceNameValue, onChange: { value in
+            value: CSWorkspacePreferences.workspaceNameValue, onChange: { [unowned self] value in
+                if !self.loaded { return }
+
                 CSWorkspacePreferences.workspaceNameValue = CSValue(type: CSType.string, data: value)
                 CSWorkspacePreferences.save()
 
@@ -43,7 +53,9 @@ class WorkspacePreferencesViewController: NSViewController, MASPreferencesViewCo
 
         let workspaceIconRow = ValueSettingRow(
             title: "Workspace Icon",
-            value: CSWorkspacePreferences.workspaceIconPathValue, onChange: { value in
+            value: CSWorkspacePreferences.workspaceIconPathValue, onChange: { [unowned self] value in
+                if !self.loaded { return }
+
                 CSWorkspacePreferences.workspaceIconPathValue = CSValue(type: CSWorkspacePreferences.optionalURLType, data: value)
                 CSWorkspacePreferences.save()
 
@@ -54,7 +66,9 @@ class WorkspacePreferencesViewController: NSViewController, MASPreferencesViewCo
 
         let compilerPathRow = ValueSettingRow(
             title: "Custom Compiler Path",
-            value: CSUserPreferences.compilerPathValue, onChange: { value in
+            value: CSUserPreferences.compilerPathValue, onChange: { [unowned self] value in
+                if !self.loaded { return }
+
                 CSUserPreferences.compilerPathValue = CSValue(type: CSUserPreferences.optionalURLType, data: value)
                 CSUserPreferences.save()
 
@@ -63,7 +77,9 @@ class WorkspacePreferencesViewController: NSViewController, MASPreferencesViewCo
 
         let colorsPathRow = ValueSettingRow(
             title: "Custom Colors Path",
-            value: CSWorkspacePreferences.colorsFilePathValue, onChange: { value in
+            value: CSWorkspacePreferences.colorsFilePathValue, onChange: { [unowned self] value in
+                if !self.loaded { return }
+
                 CSWorkspacePreferences.colorsFilePathValue = CSValue(type: CSWorkspacePreferences.optionalURLType, data: value)
                 CSWorkspacePreferences.save()
 
@@ -74,7 +90,9 @@ class WorkspacePreferencesViewController: NSViewController, MASPreferencesViewCo
 
         let textStylesPathRow = ValueSettingRow(
             title: "Custom Text Styles Path",
-            value: CSWorkspacePreferences.textStylesFilePathValue, onChange: { value in
+            value: CSWorkspacePreferences.textStylesFilePathValue, onChange: { [unowned self] value in
+                if !self.loaded { return }
+
                 CSWorkspacePreferences.textStylesFilePathValue = CSValue(type: CSWorkspacePreferences.optionalURLType, data: value)
                 CSWorkspacePreferences.save()
 
@@ -85,7 +103,9 @@ class WorkspacePreferencesViewController: NSViewController, MASPreferencesViewCo
 
         let canvasAreaBackgroundColorRow = ValueSettingRow(
             title: "Canvas Area Background Color",
-            value: CSUserPreferences.canvasAreaBackgroundColorValue, onChange: { value in
+            value: CSUserPreferences.canvasAreaBackgroundColorValue, onChange: { [unowned self] value in
+                if !self.loaded { return }
+
                 CSUserPreferences.canvasAreaBackgroundColorValue = CSValue(type: .string, data: value)
                 CSUserPreferences.save()
 
@@ -104,15 +124,14 @@ class WorkspacePreferencesViewController: NSViewController, MASPreferencesViewCo
         ]
 
         views.forEach({ stackView.addArrangedSubview($0) })
+
+        loaded = true
     }
 
     var stackView = NSStackView()
 
     override func viewDidLoad() {
         super.viewDidLoad()
-
-        CSUserPreferences.reload()
-        CSWorkspacePreferences.reload()
 
         view = NSView(frame: NSRect(x: 0, y: 0, width: 600, height: 0))
         view.translatesAutoresizingMaskIntoConstraints = false
