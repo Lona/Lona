@@ -69,7 +69,10 @@ class RecentProjectsTableCellView: NSTableCellView {
     }
 
     private func update() {
-        recentProjectView.projectName = project.lastPathComponent
+        let projectName = CSData.from(fileAtPath: project.appendingPathComponent("lona.json").path)?
+            .get(key: "workspaceName").string ?? project.lastPathComponent
+
+        recentProjectView.projectName = projectName
         recentProjectView.projectDirectoryPath = project.deletingLastPathComponent().path
         recentProjectView.selected = selected
     }
