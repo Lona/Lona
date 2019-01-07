@@ -1,0 +1,635 @@
+{
+  "devices" : [
+    {
+      "backgroundColor" : "grey200",
+      "height" : 0,
+      "heightMode" : "At Least",
+      "name" : "iPhone SE",
+      "width" : 320
+    }
+  ],
+  "examples" : [
+    {
+      "id" : "Default",
+      "name" : "Default",
+      "params" : {
+
+      }
+    }
+  ],
+  "logic" : [
+    {
+      "assignee" : [
+        "layers",
+        "Title",
+        "text"
+      ],
+      "content" : [
+        "parameters",
+        "titleText"
+      ],
+      "type" : "AssignExpr"
+    },
+    {
+      "assignee" : [
+        "layers",
+        "IdInput",
+        "textValue"
+      ],
+      "content" : [
+        "parameters",
+        "idText"
+      ],
+      "type" : "AssignExpr"
+    },
+    {
+      "assignee" : [
+        "layers",
+        "NameInput",
+        "textValue"
+      ],
+      "content" : [
+        "parameters",
+        "nameText"
+      ],
+      "type" : "AssignExpr"
+    },
+    {
+      "assignee" : [
+        "layers",
+        "FontNameInput",
+        "textValue"
+      ],
+      "content" : [
+        "parameters",
+        "fontNameText"
+      ],
+      "type" : "AssignExpr"
+    },
+    {
+      "assignee" : [
+        "layers",
+        "FontFamilyInput",
+        "textValue"
+      ],
+      "content" : [
+        "parameters",
+        "fontFamilyText"
+      ],
+      "type" : "AssignExpr"
+    },
+    {
+      "assignee" : [
+        "layers",
+        "FontWeightInput",
+        "textValue"
+      ],
+      "content" : [
+        "parameters",
+        "fontWeightText"
+      ],
+      "type" : "AssignExpr"
+    },
+    {
+      "assignee" : [
+        "layers",
+        "FontSizeInput",
+        "numberValue"
+      ],
+      "content" : [
+        "parameters",
+        "fontSizeNumber"
+      ],
+      "type" : "AssignExpr"
+    },
+    {
+      "assignee" : [
+        "layers",
+        "LineHeightInput",
+        "numberValue"
+      ],
+      "content" : [
+        "parameters",
+        "lineHeightNumber"
+      ],
+      "type" : "AssignExpr"
+    },
+    {
+      "assignee" : [
+        "layers",
+        "LetterSpacingInput",
+        "numberValue"
+      ],
+      "content" : [
+        "parameters",
+        "letterSpacingNumber"
+      ],
+      "type" : "AssignExpr"
+    },
+    {
+      "assignee" : [
+        "layers",
+        "ColorInput",
+        "textValue"
+      ],
+      "content" : [
+        "parameters",
+        "colorValue"
+      ],
+      "type" : "AssignExpr"
+    },
+    {
+      "assignee" : [
+        "layers",
+        "DescriptionInput",
+        "textValue"
+      ],
+      "content" : [
+        "parameters",
+        "descriptionText"
+      ],
+      "type" : "AssignExpr"
+    },
+    {
+      "assignee" : [
+        "layers",
+        "IdInput",
+        "onChangeTextValue"
+      ],
+      "content" : [
+        "parameters",
+        "onChangeIdText"
+      ],
+      "type" : "AssignExpr"
+    },
+    {
+      "assignee" : [
+        "layers",
+        "NameInput",
+        "onChangeTextValue"
+      ],
+      "content" : [
+        "parameters",
+        "onChangeNameText"
+      ],
+      "type" : "AssignExpr"
+    },
+    {
+      "assignee" : [
+        "layers",
+        "FontNameInput",
+        "onChangeTextValue"
+      ],
+      "content" : [
+        "parameters",
+        "onChangeFontNameText"
+      ],
+      "type" : "AssignExpr"
+    },
+    {
+      "assignee" : [
+        "layers",
+        "FontFamilyInput",
+        "onChangeTextValue"
+      ],
+      "content" : [
+        "parameters",
+        "onChangeFontFamilyText"
+      ],
+      "type" : "AssignExpr"
+    },
+    {
+      "assignee" : [
+        "layers",
+        "FontWeightInput",
+        "onChangeTextValue"
+      ],
+      "content" : [
+        "parameters",
+        "onChangeFontWeightText"
+      ],
+      "type" : "AssignExpr"
+    },
+    {
+      "assignee" : [
+        "layers",
+        "FontSizeInput",
+        "onChangeNumberValue"
+      ],
+      "content" : [
+        "parameters",
+        "onChangeFontSizeNumber"
+      ],
+      "type" : "AssignExpr"
+    },
+    {
+      "assignee" : [
+        "layers",
+        "LineHeightInput",
+        "onChangeNumberValue"
+      ],
+      "content" : [
+        "parameters",
+        "onChangeLineHeightNumber"
+      ],
+      "type" : "AssignExpr"
+    },
+    {
+      "assignee" : [
+        "layers",
+        "LetterSpacingInput",
+        "onChangeNumberValue"
+      ],
+      "content" : [
+        "parameters",
+        "onChangeLetterSpacingNumber"
+      ],
+      "type" : "AssignExpr"
+    },
+    {
+      "assignee" : [
+        "layers",
+        "ColorInput",
+        "onChangeTextValue"
+      ],
+      "content" : [
+        "parameters",
+        "onChangeColorValue"
+      ],
+      "type" : "AssignExpr"
+    },
+    {
+      "assignee" : [
+        "layers",
+        "DescriptionInput",
+        "onChangeTextValue"
+      ],
+      "content" : [
+        "parameters",
+        "onChangeDescriptionText"
+      ],
+      "type" : "AssignExpr"
+    }
+  ],
+  "params" : [
+    {
+      "name" : "titleText",
+      "type" : "String"
+    },
+    {
+      "name" : "idText",
+      "type" : "String"
+    },
+    {
+      "name" : "nameText",
+      "type" : "String"
+    },
+    {
+      "name" : "fontNameText",
+      "type" : "String"
+    },
+    {
+      "name" : "fontFamilyText",
+      "type" : "String"
+    },
+    {
+      "name" : "fontWeightText",
+      "type" : "String"
+    },
+    {
+      "name" : "fontSizeNumber",
+      "type" : "Number"
+    },
+    {
+      "name" : "lineHeightNumber",
+      "type" : "Number"
+    },
+    {
+      "name" : "letterSpacingNumber",
+      "type" : "Number"
+    },
+    {
+      "name" : "colorValue",
+      "type" : "String"
+    },
+    {
+      "name" : "descriptionText",
+      "type" : "String"
+    },
+    {
+      "name" : "onChangeIdText",
+      "type" : "StringHandler"
+    },
+    {
+      "name" : "onChangeNameText",
+      "type" : "StringHandler"
+    },
+    {
+      "name" : "onChangeFontNameText",
+      "type" : "StringHandler"
+    },
+    {
+      "name" : "onChangeFontFamilyText",
+      "type" : "StringHandler"
+    },
+    {
+      "name" : "onChangeFontWeightText",
+      "type" : "StringHandler"
+    },
+    {
+      "name" : "onChangeFontSizeNumber",
+      "type" : "NumberHandler"
+    },
+    {
+      "name" : "onChangeLineHeightNumber",
+      "type" : "NumberHandler"
+    },
+    {
+      "name" : "onChangeLetterSpacingNumber",
+      "type" : "NumberHandler"
+    },
+    {
+      "name" : "onChangeColorValue",
+      "type" : "StringHandler"
+    },
+    {
+      "name" : "onChangeDescriptionText",
+      "type" : "StringHandler"
+    }
+  ],
+  "root" : {
+    "children" : [
+      {
+        "id" : "Title",
+        "params" : {
+          "font" : "large",
+          "marginBottom" : 20,
+          "text" : "Title"
+        },
+        "type" : "Lona:Text"
+      },
+      {
+        "id" : "NameLabel",
+        "params" : {
+          "alignSelf" : "stretch",
+          "font" : "small",
+          "marginBottom" : 4,
+          "text" : "NAME"
+        },
+        "type" : "Lona:Text"
+      },
+      {
+        "id" : "NameInput",
+        "params" : {
+          "textValue" : "Text"
+        },
+        "type" : "TextInput"
+      },
+      {
+        "id" : "Spacer1",
+        "params" : {
+          "backgroundColor" : "#D8D8D8",
+          "height" : 20,
+          "width" : 0
+        },
+        "type" : "Lona:View"
+      },
+      {
+        "id" : "IdLabel",
+        "params" : {
+          "alignSelf" : "stretch",
+          "font" : "small",
+          "marginBottom" : 4,
+          "text" : "ID"
+        },
+        "type" : "Lona:Text"
+      },
+      {
+        "id" : "IdInput",
+        "params" : {
+          "textValue" : "Text"
+        },
+        "type" : "TextInput"
+      },
+      {
+        "id" : "Spacer2",
+        "params" : {
+          "backgroundColor" : "#D8D8D8",
+          "height" : 20,
+          "width" : 0
+        },
+        "type" : "Lona:View"
+      },
+      {
+        "id" : "FontNameLabel",
+        "params" : {
+          "alignSelf" : "stretch",
+          "font" : "small",
+          "marginBottom" : 4,
+          "text" : "FONT NAME"
+        },
+        "type" : "Lona:Text"
+      },
+      {
+        "id" : "FontNameInput",
+        "params" : {
+          "textValue" : "Text"
+        },
+        "type" : "TextInput"
+      },
+      {
+        "id" : "Spacer3",
+        "params" : {
+          "backgroundColor" : "#D8D8D8",
+          "height" : 20,
+          "width" : 0
+        },
+        "type" : "Lona:View"
+      },
+      {
+        "id" : "FontFamilyLabel",
+        "params" : {
+          "alignSelf" : "stretch",
+          "font" : "small",
+          "marginBottom" : 4,
+          "text" : "FONT FAMILY"
+        },
+        "type" : "Lona:Text"
+      },
+      {
+        "id" : "FontFamilyInput",
+        "params" : {
+          "textValue" : "Text"
+        },
+        "type" : "TextInput"
+      },
+      {
+        "id" : "Spacer4",
+        "params" : {
+          "backgroundColor" : "#D8D8D8",
+          "height" : 20,
+          "width" : 0
+        },
+        "type" : "Lona:View"
+      },
+      {
+        "id" : "FontWeightLabel",
+        "params" : {
+          "alignSelf" : "stretch",
+          "font" : "small",
+          "marginBottom" : 4,
+          "text" : "FONT WEIGHT"
+        },
+        "type" : "Lona:Text"
+      },
+      {
+        "id" : "FontWeightInput",
+        "params" : {
+          "textValue" : "Text"
+        },
+        "type" : "TextInput"
+      },
+      {
+        "id" : "Spacer5",
+        "params" : {
+          "backgroundColor" : "#D8D8D8",
+          "height" : 20,
+          "width" : 0
+        },
+        "type" : "Lona:View"
+      },
+      {
+        "id" : "FontSizeLabel",
+        "params" : {
+          "alignSelf" : "stretch",
+          "font" : "small",
+          "marginBottom" : 4,
+          "text" : "FONT SIZE"
+        },
+        "type" : "Lona:Text"
+      },
+      {
+        "id" : "FontSizeInput",
+        "params" : {
+
+        },
+        "type" : "NumberInput"
+      },
+      {
+        "id" : "Spacer6",
+        "params" : {
+          "backgroundColor" : "#D8D8D8",
+          "height" : 20,
+          "width" : 0
+        },
+        "type" : "Lona:View"
+      },
+      {
+        "id" : "LineHeightLabel",
+        "params" : {
+          "alignSelf" : "stretch",
+          "font" : "small",
+          "marginBottom" : 4,
+          "text" : "LINE HEIGHT"
+        },
+        "type" : "Lona:Text"
+      },
+      {
+        "id" : "LineHeightInput",
+        "params" : {
+
+        },
+        "type" : "NumberInput"
+      },
+      {
+        "id" : "Spacer7",
+        "params" : {
+          "backgroundColor" : "#D8D8D8",
+          "height" : 20,
+          "width" : 0
+        },
+        "type" : "Lona:View"
+      },
+      {
+        "id" : "LetterSpacingLabel",
+        "params" : {
+          "alignSelf" : "stretch",
+          "font" : "small",
+          "marginBottom" : 4,
+          "text" : "LETTER SPACING"
+        },
+        "type" : "Lona:Text"
+      },
+      {
+        "id" : "LetterSpacingInput",
+        "params" : {
+
+        },
+        "type" : "NumberInput"
+      },
+      {
+        "id" : "Spacer8",
+        "params" : {
+          "backgroundColor" : "#D8D8D8",
+          "height" : 20,
+          "width" : 0
+        },
+        "type" : "Lona:View"
+      },
+      {
+        "id" : "ColorLabel",
+        "params" : {
+          "alignSelf" : "stretch",
+          "font" : "small",
+          "marginBottom" : 4,
+          "text" : "COLOR"
+        },
+        "type" : "Lona:Text"
+      },
+      {
+        "id" : "ColorInput",
+        "metadata" : {
+          "backingElementClass" : {
+            "macos" : "ColorPickerButton"
+          }
+        },
+        "params" : {
+
+        },
+        "type" : "TextInput"
+      },
+      {
+        "id" : "Spacer9",
+        "params" : {
+          "backgroundColor" : "#D8D8D8",
+          "height" : 20,
+          "width" : 0
+        },
+        "type" : "Lona:View"
+      },
+      {
+        "id" : "DescriptionLabel",
+        "params" : {
+          "alignSelf" : "stretch",
+          "font" : "small",
+          "marginBottom" : 4,
+          "text" : "DESCRIPTION"
+        },
+        "type" : "Lona:Text"
+      },
+      {
+        "id" : "DescriptionInput",
+        "params" : {
+          "textValue" : "Text"
+        },
+        "type" : "TextInput"
+      }
+    ],
+    "id" : "View",
+    "params" : {
+      "alignSelf" : "stretch",
+      "paddingTop" : 20
+    },
+    "type" : "Lona:View"
+  }
+}

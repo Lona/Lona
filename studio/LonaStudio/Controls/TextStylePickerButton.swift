@@ -4,19 +4,19 @@ import Cocoa
 final class TextStylePickerButton: NSButton, CSControl {
 
     var data: CSData {
-        get { return CSData.String(value) }
-        set { value = newValue.stringValue }
+        get { return CSData.String(textValue) }
+        set { textValue = newValue.stringValue }
     }
 
     var onChangeData: (CSData) -> Void = { _ in }
 
-    var value: String = CSTypography.defaultFont.id {
+    var textValue: String = CSTypography.defaultFont.id {
         didSet {
-            setButtonTitle(value: value)
+            setButtonTitle(value: textValue)
         }
     }
 
-    var onChange: (String) -> Void = {_ in}
+    var onChangeTextValue: (String) -> Void = {_ in}
 
     func setup() {
         action = #selector(handleClick)
@@ -27,7 +27,7 @@ final class TextStylePickerButton: NSButton, CSControl {
         alignment = .left
         bezelStyle = .rounded
 
-        setButtonTitle(value: value)
+        setButtonTitle(value: textValue)
     }
 
     func setButtonTitle(value: String) {
@@ -47,8 +47,8 @@ final class TextStylePickerButton: NSButton, CSControl {
     func showPopover() {
         let picker = TextStylePickerView(selected: data.stringValue) {[weak self] (item) in
             guard let strongSelf = self else { return }
-            strongSelf.value = item.id
-            strongSelf.onChange(strongSelf.value)
+            strongSelf.textValue = item.id
+            strongSelf.onChangeTextValue(strongSelf.textValue)
             strongSelf.onChangeData(strongSelf.data)
         }
         picker.popover.show(relativeTo: NSRect.zero, of: self, preferredEdge: .maxY)
@@ -59,6 +59,6 @@ final class TextStylePickerButton: NSButton, CSControl {
     }
 
     private func smallSizeAttributeText(with csFont: TextStyle) -> NSAttributedString {
-        return csFont.with(size: 14).apply(to: value)
+        return csFont.with(size: 14).apply(to: textValue)
     }
 }

@@ -92,15 +92,15 @@ public class TextStylePreviewCollection: NSBox {
 
   private func update() {}
 
-  private func handleOnSelectTextStyle(_ arg0: CSTextStyle) {
+  private func handleOnSelectTextStyle(_ arg0: CSTextStyle?) {
     onSelectTextStyle?(arg0)
   }
 
-  private func handleOnChangeTextStyle(_ arg0: CSTextStyle) {
+  private func handleOnChangeTextStyle(_ arg0: CSTextStyle?) {
     onChangeTextStyle?(arg0)
   }
 
-  private func handleOnDeleteTextStyle(_ arg0: CSTextStyle) {
+  private func handleOnDeleteTextStyle(_ arg0: CSTextStyle?) {
     onDeleteTextStyle?(arg0)
   }
 

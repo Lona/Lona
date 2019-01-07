@@ -250,7 +250,7 @@
           {
             "id" : "DoneButton",
             "params" : {
-              "titleText" : "Done"
+              "titleText" : "Add Color"
             },
             "type" : "Button"
           }
