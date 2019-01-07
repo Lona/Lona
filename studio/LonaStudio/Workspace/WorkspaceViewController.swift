@@ -645,7 +645,7 @@ class WorkspaceViewController: NSSplitViewController {
 
     // Subscriptions
 
-    var subscriptions: [() -> Void] = []
+    var subscriptions: [LonaPlugins.SubscriptionHandle] = []
 
     override func viewWillAppear() {
         subscriptions.append(LonaPlugins.current.register(eventType: .onReloadWorkspace) {
@@ -657,6 +657,10 @@ class WorkspaceViewController: NSSplitViewController {
                 })
 
             self.update()
+        })
+
+        subscriptions.append(LonaPlugins.current.register(eventType: .onReloadWorkspace) { [unowned self] in
+            self.fileNavigator.titleText = CSWorkspacePreferences.workspaceName
         })
     }
 
