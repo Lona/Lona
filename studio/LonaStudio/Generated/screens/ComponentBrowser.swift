@@ -78,13 +78,9 @@ public class ComponentBrowser: NSBox {
 
   private var innerView = NSBox()
   private var titleView = LNATextField(labelWithString: "")
-  private var spacerView = NSBox()
-  private var textView = LNATextField(labelWithString: "")
-  private var spacer2View = NSBox()
   private var componentPreviewCollectionView = ComponentPreviewCollection()
 
   private var titleViewTextStyle = TextStyles.title
-  private var textViewTextStyle = TextStyles.regular
 
   private func setUpViews() {
     boxType = .custom
@@ -94,21 +90,12 @@ public class ComponentBrowser: NSBox {
     innerView.borderType = .noBorder
     innerView.contentViewMargins = .zero
     titleView.lineBreakMode = .byWordWrapping
-    spacerView.boxType = .custom
-    spacerView.borderType = .noBorder
-    spacerView.contentViewMargins = .zero
-    textView.lineBreakMode = .byWordWrapping
-    spacer2View.boxType = .custom
-    spacer2View.borderType = .noBorder
-    spacer2View.contentViewMargins = .zero
 
     addSubview(innerView)
     innerView.addSubview(titleView)
-    innerView.addSubview(spacerView)
-    innerView.addSubview(textView)
-    innerView.addSubview(spacer2View)
     innerView.addSubview(componentPreviewCollectionView)
 
+    fillColor = Colors.contentBackground
     titleViewTextStyle = TextStyles.title
     titleView.attributedStringValue = titleViewTextStyle.apply(to: titleView.attributedStringValue)
   }
@@ -117,9 +104,6 @@ public class ComponentBrowser: NSBox {
     translatesAutoresizingMaskIntoConstraints = false
     innerView.translatesAutoresizingMaskIntoConstraints = false
     titleView.translatesAutoresizingMaskIntoConstraints = false
-    spacerView.translatesAutoresizingMaskIntoConstraints = false
-    textView.translatesAutoresizingMaskIntoConstraints = false
-    spacer2View.translatesAutoresizingMaskIntoConstraints = false
     componentPreviewCollectionView.translatesAutoresizingMaskIntoConstraints = false
 
     let innerViewTopAnchorConstraint = innerView.topAnchor.constraint(equalTo: topAnchor, constant: 48)
@@ -133,42 +117,19 @@ public class ComponentBrowser: NSBox {
       .constraint(equalTo: innerView.leadingAnchor, constant: 64)
     let titleViewTrailingAnchorConstraint = titleView
       .trailingAnchor
-      .constraint(lessThanOrEqualTo: innerView.trailingAnchor, constant: -64)
-    let spacerViewTopAnchorConstraint = spacerView.topAnchor.constraint(equalTo: titleView.bottomAnchor)
-    let spacerViewLeadingAnchorConstraint = spacerView
-      .leadingAnchor
-      .constraint(equalTo: innerView.leadingAnchor, constant: 64)
-    let spacerViewTrailingAnchorConstraint = spacerView
-      .trailingAnchor
-      .constraint(equalTo: innerView.trailingAnchor, constant: -64)
-    let textViewTopAnchorConstraint = textView.topAnchor.constraint(equalTo: spacerView.bottomAnchor)
-    let textViewLeadingAnchorConstraint = textView
-      .leadingAnchor
-      .constraint(equalTo: innerView.leadingAnchor, constant: 64)
-    let textViewTrailingAnchorConstraint = textView
-      .trailingAnchor
-      .constraint(equalTo: innerView.trailingAnchor, constant: -64)
-    let spacer2ViewTopAnchorConstraint = spacer2View.topAnchor.constraint(equalTo: textView.bottomAnchor)
-    let spacer2ViewLeadingAnchorConstraint = spacer2View
-      .leadingAnchor
-      .constraint(equalTo: innerView.leadingAnchor, constant: 64)
-    let spacer2ViewTrailingAnchorConstraint = spacer2View
-      .trailingAnchor
-      .constraint(equalTo: innerView.trailingAnchor, constant: -64)
+      .constraint(lessThanOrEqualTo: innerView.trailingAnchor)
     let componentPreviewCollectionViewBottomAnchorConstraint = componentPreviewCollectionView
       .bottomAnchor
       .constraint(equalTo: innerView.bottomAnchor)
     let componentPreviewCollectionViewTopAnchorConstraint = componentPreviewCollectionView
       .topAnchor
-      .constraint(equalTo: spacer2View.bottomAnchor)
+      .constraint(equalTo: titleView.bottomAnchor)
     let componentPreviewCollectionViewLeadingAnchorConstraint = componentPreviewCollectionView
       .leadingAnchor
-      .constraint(equalTo: innerView.leadingAnchor, constant: 64)
+      .constraint(equalTo: innerView.leadingAnchor)
     let componentPreviewCollectionViewTrailingAnchorConstraint = componentPreviewCollectionView
       .trailingAnchor
-      .constraint(equalTo: innerView.trailingAnchor, constant: -64)
-    let spacerViewHeightAnchorConstraint = spacerView.heightAnchor.constraint(equalToConstant: 24)
-    let spacer2ViewHeightAnchorConstraint = spacer2View.heightAnchor.constraint(equalToConstant: 24)
+      .constraint(equalTo: innerView.trailingAnchor)
 
     NSLayoutConstraint.activate([
       innerViewTopAnchorConstraint,
@@ -179,26 +140,15 @@ public class ComponentBrowser: NSBox {
       titleViewTopAnchorConstraint,
       titleViewLeadingAnchorConstraint,
       titleViewTrailingAnchorConstraint,
-      spacerViewTopAnchorConstraint,
-      spacerViewLeadingAnchorConstraint,
-      spacerViewTrailingAnchorConstraint,
-      textViewTopAnchorConstraint,
-      textViewLeadingAnchorConstraint,
-      textViewTrailingAnchorConstraint,
-      spacer2ViewTopAnchorConstraint,
-      spacer2ViewLeadingAnchorConstraint,
-      spacer2ViewTrailingAnchorConstraint,
       componentPreviewCollectionViewBottomAnchorConstraint,
       componentPreviewCollectionViewTopAnchorConstraint,
       componentPreviewCollectionViewLeadingAnchorConstraint,
-      componentPreviewCollectionViewTrailingAnchorConstraint,
-      spacerViewHeightAnchorConstraint,
-      spacer2ViewHeightAnchorConstraint
+      componentPreviewCollectionViewTrailingAnchorConstraint
     ])
   }
 
   private func update() {
-    textView.attributedStringValue = textViewTextStyle.apply(to: readme)
+    componentPreviewCollectionView.prefix = readme
     componentPreviewCollectionView.componentNames = componentNames
     titleView.attributedStringValue = titleViewTextStyle.apply(to: folderName)
   }

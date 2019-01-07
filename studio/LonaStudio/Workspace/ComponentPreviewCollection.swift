@@ -10,18 +10,7 @@ import AppKit
 import Foundation
 
 private let ITEM_IDENTIFIER = NSUserInterfaceItemIdentifier(rawValue: "component")
-
-private class DoubleClickableComponentPreviewCard: ComponentPreviewCard {
-    var onDoubleClick: (() -> Void)?
-
-    override func mouseDown(with event: NSEvent) {
-        if event.clickCount == 2 {
-            onDoubleClick?()
-        } else {
-            super.mouseDown(with: event)
-        }
-    }
-}
+private let README_ITEM_IDENTIFIER = NSUserInterfaceItemIdentifier(rawValue: "readme")
 
 class ComponentPreviewCollectionView: NSView {
 
@@ -42,22 +31,28 @@ class ComponentPreviewCollectionView: NSView {
 
     // MARK: - Public
 
-    public var items: [LonaModule.ComponentFile] = [] { didSet { update() } }
-    public var onClickComponent: ((URL) -> Void)? { didSet { update(withoutReloading: true) } }
-    public var onCopy: ((Int) -> Void)? { didSet { update(withoutReloading: true) } }
+    public var prefix: String = "" { didSet { if oldValue != prefix { update(withoutReloading: true) } } }
+    public var items: [LonaModule.ComponentFile] = [] { didSet { update(withoutPrefixChange: true) } }
+    public var onSelectComponent: ((URL) -> Void)? { didSet { update(withoutReloading: true, withoutPrefixChange: true) } }
 
     // MARK: - Private
 
-    private let collectionView = KeyHandlingCollectionView(frame: .zero)
+    private let collectionView = NSCollectionView(frame: .zero)
     private let scrollView = NSScrollView()
+    private var renderedPrefix: NSMutableAttributedString = NSMutableAttributedString(string: "")
 
     private func setUpViews() {
         wantsLayer = true
 
         let flowLayout = NSCollectionViewFlowLayout()
+
+        // Items have a built-in padding of 4
+        flowLayout.sectionInset = NSEdgeInsets(top: 36, left: 64 - 4, bottom: 36, right: 64 - 4)
+
         flowLayout.minimumLineSpacing = 24
         flowLayout.minimumInteritemSpacing = 12
         flowLayout.itemSize = NSSize(width: 260, height: 240)
+        flowLayout.headerReferenceSize = NSSize(width: self.bounds.width - 64 - 64, height: 400)
 
         collectionView.collectionViewLayout = flowLayout
         collectionView.delegate = self
@@ -66,6 +61,10 @@ class ComponentPreviewCollectionView: NSView {
         collectionView.register(
             ComponentPreviewItemViewController.self,
             forItemWithIdentifier: ITEM_IDENTIFIER)
+        collectionView.register(
+            ReadmePreview.self,
+            forSupplementaryViewOfKind: .sectionHeader,
+            withIdentifier: README_ITEM_IDENTIFIER)
         collectionView.isSelectable = true
 
         scrollView.verticalScrollElasticity = .allowed
@@ -85,12 +84,10 @@ class ComponentPreviewCollectionView: NSView {
         scrollView.translatesAutoresizingMaskIntoConstraints = false
     }
 
-    private func update(withoutReloading: Bool = false) {
+    private func update(withoutReloading: Bool = false, withoutPrefixChange: Bool = false) {
         if !withoutReloading {
             collectionView.reloadData()
         }
-
-        collectionView.onCopy = onCopy
     }
 }
 
@@ -110,6 +107,13 @@ extension ComponentPreviewCollectionView: NSCollectionViewDelegate {
     func collectionView(_ collectionView: NSCollectionView, numberOfItemsInSection section: Int) -> Int {
         return items.count
     }
+
+    func collectionView(_ collectionView: NSCollectionView, didSelectItemsAt indexPaths: Set<IndexPath>) {
+        guard let indexPath = indexPaths.first else {
+            return
+        }
+        self.onSelectComponent?(items[indexPath.item].url)
+    }
 }
 
 // MARK: - NSCollectionViewDataSource
@@ -120,15 +124,181 @@ extension ComponentPreviewCollectionView: NSCollectionViewDataSource {
             withIdentifier: ITEM_IDENTIFIER,
             for: indexPath) as! ComponentPreviewItemViewController
 
-        if let componentPreviewCard = item.view as? DoubleClickableComponentPreviewCard {
+        if let componentPreviewCard = item.view as? ComponentPreviewCard {
             let componentFile = items[indexPath.item]
             componentPreviewCard.componentName = componentFile.name
-            componentPreviewCard.onDoubleClick = {
-                self.onClickComponent?(componentFile.url)
-            }
         }
 
         return item
+    }
+
+    private func onReadmeHeightChanged(_ height: CGFloat) {
+        if let flowLayout = collectionView.collectionViewLayout as? NSCollectionViewFlowLayout {
+            if prefix == "" {
+                flowLayout.headerReferenceSize = NSSize(
+                    width: 0,
+                    height: 0)
+            } else {
+                flowLayout.headerReferenceSize = NSSize(
+                    width: self.bounds.width - 64 - 64,
+                    height: height)
+            }
+        }
+    }
+
+    func collectionView(_ collectionView: NSCollectionView, viewForSupplementaryElementOfKind kind: NSCollectionView.SupplementaryElementKind, at indexPath: IndexPath) -> NSView {
+        if kind == .sectionHeader && indexPath.item == 0 {
+            let item = collectionView.makeSupplementaryView(ofKind: kind, withIdentifier: README_ITEM_IDENTIFIER, for: indexPath) as! ReadmePreview
+
+            item.onReadmeHeightChanged = onReadmeHeightChanged
+            item.readme = prefix
+
+            return item
+        }
+        return NSView()
+    }
+}
+
+// MARK: - ReadmePreview
+
+class ReadmePreview: NSBox {
+    public struct Parameters: Equatable {
+        public var readme: String
+
+        public init(readme: String) {
+            self.readme = readme
+        }
+
+        public init() {
+            self.init(readme: "")
+        }
+
+        public static func == (lhs: Parameters, rhs: Parameters) -> Bool {
+            return lhs.readme == rhs.readme
+        }
+    }
+
+    // MARK: Lifecycle
+
+    public init(_ parameters: Parameters) {
+        self.parameters = parameters
+
+        super.init(frame: .zero)
+
+        setUpViews()
+        setUpConstraints()
+
+        update()
+    }
+
+    public convenience init(readme: String) {
+        self.init(Parameters(readme: readme))
+    }
+
+    public convenience init() {
+        self.init(Parameters())
+    }
+
+    public override convenience init(frame: NSRect) {
+        self.init(Parameters())
+    }
+
+    public required init?(coder aDecoder: NSCoder) {
+        self.parameters = Parameters()
+
+        super.init(coder: aDecoder)
+
+        setUpViews()
+        setUpConstraints()
+
+        update()
+    }
+
+    // MARK: Public
+
+    public var readme: String {
+        get { return parameters.readme }
+        set {
+            if parameters.readme != newValue {
+                parameters.readme = newValue
+            }
+        }
+    }
+
+    public var parameters: Parameters {
+        didSet {
+            if parameters != oldValue {
+                update()
+            }
+        }
+    }
+
+    public var scrollViewHeight: CGFloat = 0
+    public var onReadmeHeightChanged: ((CGFloat) -> Void)?
+
+    // MARK: Private
+
+    private var markdownEditorView = LonaWebView()
+    private var markdownEditorLoaded = false { didSet { update() } }
+
+    private func setUpViews() {
+        boxType = .custom
+        borderType = .noBorder
+        contentViewMargins = .zero
+
+        markdownEditorView.delegateScroll(onHeightChanged: {height in
+            self.onReadmeHeightChanged?(height)
+        })
+
+        let app = Bundle.main.resourceURL!.appendingPathComponent("Web")
+        let url = app.appendingPathComponent("markdown-editor.html")
+        markdownEditorView.loadLocalApp(main: url, directory: app)
+        markdownEditorView.onMessage = { data in
+            guard let messageType = data.get(key: "type").string else { return }
+
+            switch messageType {
+            case "ready":
+                self.markdownEditorLoaded = true
+            default:
+                break
+            }
+        }
+
+        addSubview(markdownEditorView)
+    }
+
+    private func setUpConstraints() {
+        translatesAutoresizingMaskIntoConstraints = false
+        markdownEditorView.translatesAutoresizingMaskIntoConstraints = false
+
+        let textViewTopAnchorConstraint = markdownEditorView.topAnchor.constraint(equalTo: topAnchor, constant: 32)
+        let textViewBottomAnchorConstraint = markdownEditorView.bottomAnchor.constraint(equalTo: bottomAnchor)
+        let textViewLeadingAnchorConstraint = markdownEditorView.leadingAnchor.constraint(equalTo: leadingAnchor, constant: 32)
+        let textViewTrailingAnchorConstraint = markdownEditorView.trailingAnchor.constraint(equalTo: trailingAnchor, constant: -32)
+
+        NSLayoutConstraint.activate([
+            textViewTopAnchorConstraint,
+            textViewBottomAnchorConstraint,
+            textViewLeadingAnchorConstraint,
+            textViewTrailingAnchorConstraint
+            ])
+    }
+
+    private func update() {
+        let payload1 = CSData.Object([
+            "type": "setEditable".toData(),
+            "payload": false.toData()
+            ])
+        if let json = payload1.jsonString() {
+            markdownEditorView.evaluateJavaScript("window.update(\(json))", completionHandler: nil)
+        }
+        let payload2 = CSData.Object([
+            "type": "setDescription".toData(),
+            "payload": readme.toData()
+            ])
+        if let json2 = payload2.jsonString() {
+            markdownEditorView.evaluateJavaScript("window.update(\(json2))", completionHandler: nil)
+        }
     }
 }
 
@@ -136,15 +306,15 @@ extension ComponentPreviewCollectionView: NSCollectionViewDataSource {
 
 class ComponentPreviewItemViewController: NSCollectionViewItem {
     override func loadView() {
-        view = DoubleClickableComponentPreviewCard()
+        view = ComponentPreviewCard()
     }
 
     override var isSelected: Bool {
         get {
-            return (view as? DoubleClickableComponentPreviewCard)?.selected ?? false
+            return (view as? ComponentPreviewCard)?.selected ?? false
         }
         set {
-            (view as? DoubleClickableComponentPreviewCard)?.selected = newValue
+            (view as? ComponentPreviewCard)?.selected = newValue
         }
     }
 }
@@ -170,6 +340,7 @@ public class ComponentPreviewCollection: NSBox {
 
     // MARK: Public
 
+    public var prefix: String = "" { didSet { update() } }
     public var componentNames: [String] = [] { didSet { update() } }
 
     // MARK: Private
@@ -181,37 +352,9 @@ public class ComponentPreviewCollection: NSBox {
         borderType = .noBorder
         contentViewMargins = .zero
 
-        collectionView.onCopy = { index in
-            let item = self.collectionView.items[index]
-
-            guard let component = LonaModule.current.component(named: item.name),
-                let canvas = component.computedCanvases().first,
-                let caseItem = component.computedCases(for: canvas).first
-                else { return }
-
-            let config = ComponentConfiguration(
-                component: component,
-                arguments: caseItem.value.objectValue,
-                canvas: canvas
-            )
-
-            let canvasView = CanvasView(
-                canvas: canvas,
-                rootLayer: component.rootLayer,
-                config: config,
-                options: [RenderOption.assetScale(1)]
-            )
-
-            NSPasteboard.general.clearContents()
-
-            if let data = canvasView.dataRepresentation(scaledBy: 1), let image = NSImage(data: data) {
-                NSPasteboard.general.writeObjects([image])
-            }
-        }
-
         // TODO: This callback should propagate up to the root. Currently Lona doesn't
         // generate callbacks with params, so we'll handle it here for now.
-        collectionView.onClickComponent = { url in
+        collectionView.onSelectComponent = { url in
             let documentController = NSDocumentController.shared
 
             documentController.openDocument(withContentsOf: url, display: true) { (_, documentWasAlreadyOpen, error) in
@@ -253,5 +396,6 @@ public class ComponentPreviewCollection: NSBox {
             }
         }
         collectionView.items = components
+        collectionView.prefix = prefix
     }
 }

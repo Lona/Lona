@@ -20,8 +20,8 @@
     {
       "assignee" : [
         "layers",
-        "Text",
-        "text"
+        "ComponentPreviewCollection",
+        "prefix"
       ],
       "content" : [
         "parameters",
@@ -88,33 +88,10 @@
             "id" : "Title",
             "params" : {
               "font" : "title",
+              "marginLeft" : 64,
               "text" : "Folder"
             },
             "type" : "Lona:Text"
-          },
-          {
-            "id" : "Spacer",
-            "params" : {
-              "alignSelf" : "stretch",
-              "height" : 24
-            },
-            "type" : "Lona:View"
-          },
-          {
-            "id" : "Text",
-            "params" : {
-              "alignSelf" : "stretch",
-              "text" : "Readme goes here"
-            },
-            "type" : "Lona:Text"
-          },
-          {
-            "id" : "Spacer 2",
-            "params" : {
-              "alignSelf" : "stretch",
-              "height" : 24
-            },
-            "type" : "Lona:View"
           },
           {
             "id" : "ComponentPreviewCollection",
@@ -127,9 +104,7 @@
         "id" : "Inner",
         "params" : {
           "alignSelf" : "stretch",
-          "flex" : 1,
-          "paddingLeft" : 64,
-          "paddingRight" : 64
+          "flex" : 1
         },
         "type" : "Lona:View"
       }
@@ -138,6 +113,7 @@
     "params" : {
       "alignItems" : "center",
       "alignSelf" : "stretch",
+      "backgroundColor" : "contentBackground",
       "paddingTop" : 48
     },
     "type" : "Lona:View"

@@ -505,7 +505,7 @@ class WorkspaceViewController: NSSplitViewController {
                     return
                 }
 
-                if documentWasAlreadyOpen {
+                if documentWasAlreadyOpen && previousDocument.className == newDocument.className {
                     newDocument.showWindows()
                     return
                 }

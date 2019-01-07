@@ -18,8 +18,8 @@ public class ComponentPreviewCollection: NSBox {
     update()
   }
 
-  public convenience init(componentNames: [String]) {
-    self.init(Parameters(componentNames: componentNames))
+  public convenience init(prefix: String, componentNames: [String]) {
+    self.init(Parameters(prefix: prefix, componentNames: componentNames))
   }
 
   public convenience init() {
@@ -38,6 +38,15 @@ public class ComponentPreviewCollection: NSBox {
   }
 
   // MARK: Public
+
+  public var prefix: String {
+    get { return parameters.prefix }
+    set {
+      if parameters.prefix != newValue {
+        parameters.prefix = newValue
+      }
+    }
+  }
 
   public var componentNames: [String] {
     get { return parameters.componentNames }
@@ -77,18 +86,20 @@ public class ComponentPreviewCollection: NSBox {
 
 extension ComponentPreviewCollection {
   public struct Parameters: Equatable {
+    public var prefix: String
     public var componentNames: [String]
 
-    public init(componentNames: [String]) {
+    public init(prefix: String, componentNames: [String]) {
+      self.prefix = prefix
       self.componentNames = componentNames
     }
 
     public init() {
-      self.init(componentNames: [])
+      self.init(prefix: "", componentNames: [])
     }
 
     public static func ==(lhs: Parameters, rhs: Parameters) -> Bool {
-      return lhs.componentNames == rhs.componentNames
+      return lhs.prefix == rhs.prefix && lhs.componentNames == rhs.componentNames
     }
   }
 }
@@ -112,12 +123,12 @@ extension ComponentPreviewCollection {
       self.parameters = parameters
     }
 
-    public init(componentNames: [String]) {
-      self.init(Parameters(componentNames: componentNames))
+    public init(prefix: String, componentNames: [String]) {
+      self.init(Parameters(prefix: prefix, componentNames: componentNames))
     }
 
     public init() {
-      self.init(componentNames: [])
+      self.init(prefix: "", componentNames: [])
     }
   }
 }
