@@ -50,7 +50,7 @@ const styles = {
   },
   editor: {
     position: 'absolute',
-    height: '100%',
+    height: 'auto',
     width: '100%',
   },
 };

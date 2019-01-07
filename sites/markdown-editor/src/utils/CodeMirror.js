@@ -46,6 +46,7 @@ export const options = {
   extraKeys: {
     Tab: 'indentMore',
   },
+  viewportMargin: Infinity
 };
 
 export const requireAddons = () => {

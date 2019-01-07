@@ -12,14 +12,19 @@ function sendNotification(notification) {
   }
 }
 
-let initialValue = '';
+let initialValue = 'oiawhdoahw';
+let initialEditableValue = true;
 let onChangeValue = () => {};
+let onChangeEditableValue = () => {};
 
 window.update = ({ type, payload }) => {
   switch (type) {
     case 'setDescription':
       initialValue = payload;
-      onChangeValue(payload);
+      return onChangeValue(payload);
+    case 'setEditable':
+      initialEditableValue = payload;
+      return onChangeEditableValue(payload);
     default:
       break;
   }
@@ -33,12 +38,16 @@ class App extends React.Component {
 
     this.state = {
       value: initialValue,
+      editable: initialEditableValue
     };
 
     this.handleChange = this.handleChange.bind(this);
 
-    onChangeValue = code => {
-      this.setState({ value: code });
+    onChangeValue = value => {
+      this.setState({ value });
+    };
+    onChangeEditableValue = editable => {
+      this.setState({ editable });
     };
   }
 
@@ -49,20 +58,22 @@ class App extends React.Component {
 
   render() {
     const { styles, css } = this.props;
-    const { value } = this.state;
+    const { value, editable } = this.state;
 
     const markdownCss = { ...css(styles.column) };
     markdownCss.className += ' markdown-body';
 
     return (
       <div {...css(styles.row)}>
-        <ReactMarkdown {...markdownCss} source={value} />
-        <Editor
-          value={value}
-          filename={'README.md'}
-          onChange={this.handleChange}
-          errorLineNumber={false}
-        />
+        <ReactMarkdown {...markdownCss} source={value} escapeHtml={false} />
+        {editable
+          ? <Editor
+              value={value}
+              filename={'README.md'}
+              onChange={this.handleChange}
+              errorLineNumber={false}
+            />
+          : null}
       </div>
     );
   }
@@ -79,8 +90,9 @@ export default withStyles(() => ({
     alignItems: 'stretch',
     minWidth: 0,
     minHeight: 0,
-    overflow: 'hidden',
+    // overflow: 'hidden',
     position: 'relative',
+    color: typeof THEME !== 'undefined' ? THEME.text : undefined
   },
   row: {
     flex: '1',
@@ -89,7 +101,7 @@ export default withStyles(() => ({
     alignItems: 'stretch',
     minWidth: 0,
     minHeight: 0,
-    overflow: 'hidden',
+    // overflow: 'hidden',
     position: 'relative',
   },
 }))(App);
