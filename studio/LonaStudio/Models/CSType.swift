@@ -460,6 +460,26 @@ extension CSType {
     }
 }
 
+// MARK: - Platform-specific types
+
+extension CSType {
+    init(platformSpecificTypeWithContentType contentType: CSType) {
+        self = .dictionary([
+            "ios": (type: contentType, access: .write),
+            "macos": (type: contentType, access: .write),
+            "reactdom": (type: contentType, access: .write),
+            "reactnative": (type: contentType, access: .write),
+            "reactsketchapp": (type: contentType, access: .write)
+            ])
+    }
+
+    static let accessLevel = CSType.variant(tags: ["private", "internal", "public"])
+    static let platformSpecificString = CSType(platformSpecificTypeWithContentType: CSType.string)
+    static let platformSpecificAccessLevel = CSType(platformSpecificTypeWithContentType: CSType.accessLevel)
+}
+
+// MARK: - Predefined types
+
 let CSAnyType = CSType.any
 let CSGenericTypeA = CSType.generic("a'", CSType.any)
 let CSGenericArrayOfTypeA = CSType.array(CSGenericTypeA)
@@ -526,11 +546,3 @@ let CSLayerType = CSType.dictionary([
     // Children
     "children": (type: .array(.any), access: .write)
 ])
-
-let PlatformSpecificString = CSType.dictionary([
-    "ios": (type: .string, access: .write),
-    "macos": (type: .string, access: .write),
-    "reactdom": (type: .string, access: .write),
-    "reactnative": (type: .string, access: .write),
-    "reactsketchapp": (type: .string, access: .write)
-    ])
