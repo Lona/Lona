@@ -30,6 +30,17 @@ class WorkspacePreferencesViewController: NSViewController, MASPreferencesViewCo
     func render() {
         stackView.arrangedSubviews.forEach({ $0.removeFromSuperview() })
 
+        let workspaceNameRow = ValueSettingRow(
+            title: "Workspace Name",
+            value: CSWorkspacePreferences.workspaceNameValue, onChange: { value in
+                CSWorkspacePreferences.workspaceNameValue = CSValue(type: CSType.string, data: value)
+                CSWorkspacePreferences.save()
+
+                LonaPlugins.current.trigger(eventType: .onReloadWorkspace)
+
+                self.render()
+        })
+
         let workspaceIconRow = ValueSettingRow(
             title: "Workspace Icon",
             value: CSWorkspacePreferences.workspaceIconPathValue, onChange: { value in
@@ -84,6 +95,7 @@ class WorkspacePreferencesViewController: NSViewController, MASPreferencesViewCo
         })
 
         let views = [
+            workspaceNameRow,
             workspaceIconRow,
             compilerPathRow,
             colorsPathRow,

@@ -116,7 +116,7 @@ class WorkspaceViewController: NSSplitViewController {
 
     private lazy var fileNavigator: FileNavigator = {
         let navigator = FileNavigator(rootPath: LonaModule.current.url.path)
-        navigator.titleText = LonaModule.current.url.lastPathComponent
+        navigator.titleText = CSWorkspacePreferences.workspaceName
         return navigator
     }()
     private lazy var fileNavigatorViewController: NSViewController = {
