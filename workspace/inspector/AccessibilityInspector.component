@@ -16,6 +16,14 @@
       }
     },
     {
+      "id" : "Element",
+      "name" : "Element",
+      "params" : {
+        "accessibilityTypeIndex" : 2,
+        "isExpanded" : true
+      }
+    },
+    {
       "id" : "Expanded",
       "name" : "Expanded",
       "params" : {
@@ -59,6 +67,65 @@
         "onClickHeader"
       ],
       "type" : "AssignExpr"
+    },
+    {
+      "body" : [
+        {
+          "assignee" : [
+            "layers",
+            "ElementContainer",
+            "visible"
+          ],
+          "content" : {
+            "type" : "LitExpr",
+            "value" : {
+              "data" : true,
+              "type" : "Boolean"
+            }
+          },
+          "type" : "AssignExpr"
+        }
+      ],
+      "condition" : {
+        "left" : [
+          "parameters",
+          "accessibilityTypeIndex"
+        ],
+        "op" : "==",
+        "right" : {
+          "type" : "LitExpr",
+          "value" : {
+            "data" : 2,
+            "type" : "WholeNumber"
+          }
+        },
+        "type" : "BinExpr"
+      },
+      "type" : "IfExpr"
+    },
+    {
+      "assignee" : [
+        "layers",
+        "TypeDropdown",
+        "selectedIndex"
+      ],
+      "content" : [
+        "parameters",
+        "accessibilityTypeIndex"
+      ],
+      "type" : "AssignExpr"
+    },
+    {
+      "assignee" : [
+        "layers",
+        "TypeDropdown",
+        "onChangeIndex"
+      ],
+      "content" : [
+        "parameters",
+        "onChangeAccessibilityTypeIndex"
+      ],
+      "type" : "AssignExpr"
     }
   ],
   "params" : [
@@ -70,6 +137,29 @@
       "name" : "onClickHeader",
       "type" : {
         "name" : "Function"
+      }
+    },
+    {
+      "name" : "accessibilityTypeIndex",
+      "type" : "WholeNumber"
+    },
+    {
+      "name" : "onChangeAccessibilityTypeIndex",
+      "type" : {
+        "name" : "Function",
+        "parameters" : [
+          {
+            "label" : "_",
+            "type" : "WholeNumber"
+          }
+        ]
+      }
+    },
+    {
+      "name" : "accessibilityElements",
+      "type" : {
+        "name" : "Array",
+        "of" : "String"
       }
     }
   ],
@@ -125,11 +215,79 @@
                   "textValue" : ""
                 },
                 "type" : "TextInput"
+              },
+              {
+                "id" : "HintLabel",
+                "params" : {
+                  "marginBottom" : 8,
+                  "marginTop" : 16,
+                  "text" : "Hint"
+                },
+                "type" : "Lona:Text"
+              },
+              {
+                "id" : "HintTextInput",
+                "params" : {
+                  "placeholderString" : "Hint",
+                  "textValue" : ""
+                },
+                "type" : "TextInput"
+              },
+              {
+                "id" : "RoleLabel",
+                "params" : {
+                  "marginBottom" : 8,
+                  "marginTop" : 16,
+                  "text" : "Role"
+                },
+                "type" : "Lona:Text"
+              },
+              {
+                "id" : "RoleDropdown",
+                "params" : {
+                  "selectedIndex" : 0,
+                  "values" : [
+                    "None",
+                    "Button",
+                    "Link",
+                    "Search",
+                    "Image",
+                    "Keyboard Key",
+                    "Text",
+                    "Adjustable",
+                    "Header",
+                    "Summary"
+                  ]
+                },
+                "type" : "ControlledDropdown"
+              },
+              {
+                "id" : "StatesLabel",
+                "params" : {
+                  "marginBottom" : 8,
+                  "marginTop" : 16,
+                  "text" : "States"
+                },
+                "type" : "Lona:Text"
+              },
+              {
+                "id" : "StatesDropdown",
+                "params" : {
+                  "selectedIndex" : 0,
+                  "values" : [
+                    "None",
+                    "Selected",
+                    "Disabled",
+                    "Selected and Disabled"
+                  ]
+                },
+                "type" : "ControlledDropdown"
               }
             ],
             "id" : "ElementContainer",
             "params" : {
-              "alignSelf" : "stretch"
+              "alignSelf" : "stretch",
+              "visible" : false
             },
             "type" : "Lona:View"
           }
