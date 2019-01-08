@@ -87,6 +87,10 @@ class CoreComponentInspectorView: NSStackView {
         case animation
         case animationSpeed
 
+        // Accessibility
+//        case accessibilityType
+//        case accessibilityLabel
+
         // Metadata
         case accessLevel
         case backingElementClass
@@ -913,7 +917,6 @@ class CoreComponentInspectorView: NSStackView {
             self.accessibilityInspector.isExpanded = newValue
             UserDefaults.standard.set(newValue, forKey: "accessibilityInspectorExpanded")
         }
-
     }
 
     let controlledProperties: [Property] = [
