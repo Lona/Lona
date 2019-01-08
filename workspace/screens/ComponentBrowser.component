@@ -44,6 +44,18 @@
     {
       "assignee" : [
         "layers",
+        "ComponentPreviewCollection",
+        "onSelectComponent"
+      ],
+      "content" : [
+        "parameters",
+        "onSelectComponent"
+      ],
+      "type" : "AssignExpr"
+    },
+    {
+      "assignee" : [
+        "layers",
         "Title",
         "text"
       ],
@@ -78,6 +90,18 @@
     {
       "name" : "folderName",
       "type" : "String"
+    },
+    {
+      "name" : "onSelectComponent",
+      "type" : {
+        "name": "Function",
+        "parameters": [
+          {
+            "label": "_",
+            "type": "String"
+          }
+        ]
+      }
     }
   ],
   "root" : {

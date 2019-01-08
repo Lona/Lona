@@ -12,6 +12,18 @@ import Foundation
 private let ITEM_IDENTIFIER = NSUserInterfaceItemIdentifier(rawValue: "component")
 private let README_ITEM_IDENTIFIER = NSUserInterfaceItemIdentifier(rawValue: "readme")
 
+private class DoubleClickableComponentPreviewCard: ComponentPreviewCard {
+    var onDoubleClick: (() -> Void)?
+
+    override func mouseDown(with event: NSEvent) {
+        if event.clickCount == 2 {
+            onDoubleClick?()
+        } else {
+            super.mouseDown(with: event)
+        }
+    }
+}
+
 class ComponentPreviewCollectionView: NSView {
 
     // MARK: - Lifecycle
@@ -33,7 +45,7 @@ class ComponentPreviewCollectionView: NSView {
 
     public var readme: String = "" { didSet { if oldValue != readme { update(withoutReloading: true) } } }
     public var items: [LonaModule.ComponentFile] = [] { didSet { update(withoutPrefixChange: true) } }
-    public var onSelectComponent: ((URL) -> Void)? { didSet { update(withoutReloading: true, withoutPrefixChange: true) } }
+    public var onSelectItem: ((String) -> Void)? { didSet { update(withoutReloading: true, withoutPrefixChange: true) } }
 
     // MARK: - Private
 
@@ -107,13 +119,6 @@ extension ComponentPreviewCollectionView: NSCollectionViewDelegate {
     func collectionView(_ collectionView: NSCollectionView, numberOfItemsInSection section: Int) -> Int {
         return items.count
     }
-
-    func collectionView(_ collectionView: NSCollectionView, didSelectItemsAt indexPaths: Set<IndexPath>) {
-        guard let indexPath = indexPaths.first else {
-            return
-        }
-        self.onSelectComponent?(items[indexPath.item].url)
-    }
 }
 
 // MARK: - NSCollectionViewDataSource
@@ -124,9 +129,12 @@ extension ComponentPreviewCollectionView: NSCollectionViewDataSource {
             withIdentifier: ITEM_IDENTIFIER,
             for: indexPath) as! ComponentPreviewItemViewController
 
-        if let componentPreviewCard = item.view as? ComponentPreviewCard {
+        if let componentPreviewCard = item.view as? DoubleClickableComponentPreviewCard {
             let componentFile = items[indexPath.item]
             componentPreviewCard.componentName = componentFile.name
+            componentPreviewCard.onDoubleClick = {
+                self.onSelectItem?(componentFile.url.path)
+            }
         }
 
         return item
@@ -280,15 +288,15 @@ class ReadmePreview: NSBox {
 
 class ComponentPreviewItemViewController: NSCollectionViewItem {
     override func loadView() {
-        view = ComponentPreviewCard()
+        view = DoubleClickableComponentPreviewCard()
     }
 
     override var isSelected: Bool {
         get {
-            return (view as? ComponentPreviewCard)?.selected ?? false
+            return (view as? DoubleClickableComponentPreviewCard)?.selected ?? false
         }
         set {
-            (view as? ComponentPreviewCard)?.selected = newValue
+            (view as? DoubleClickableComponentPreviewCard)?.selected = newValue
         }
     }
 }
@@ -316,6 +324,7 @@ public class ComponentPreviewCollection: NSBox {
 
     public var readme: String = "" { didSet { update() } }
     public var componentNames: [String] = [] { didSet { update() } }
+    public var onSelectComponent: ((String) -> Void)? { didSet { update() } }
 
     // MARK: Private
 
@@ -325,24 +334,6 @@ public class ComponentPreviewCollection: NSBox {
         boxType = .custom
         borderType = .noBorder
         contentViewMargins = .zero
-
-        // TODO: This callback should propagate up to the root. Currently Lona doesn't
-        // generate callbacks with params, so we'll handle it here for now.
-        collectionView.onSelectComponent = { url in
-            let documentController = NSDocumentController.shared
-
-            documentController.openDocument(withContentsOf: url, display: true) { (_, documentWasAlreadyOpen, error) in
-                if error != nil {
-                    Swift.print("An error occurred")
-                } else {
-                    if documentWasAlreadyOpen {
-                        Swift.print("documentWasAlreadyOpen: true")
-                    } else {
-                        Swift.print("documentWasAlreadyOpen: false")
-                    }
-                }
-            }
-        }
 
         addSubview(collectionView)
 
@@ -371,5 +362,6 @@ public class ComponentPreviewCollection: NSBox {
         }
         collectionView.items = components
         collectionView.readme = readme
+        collectionView.onSelectItem = onSelectComponent
     }
 }

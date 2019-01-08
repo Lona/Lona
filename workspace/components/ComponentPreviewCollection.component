@@ -50,6 +50,18 @@
         "name" : "Array",
         "of" : "String"
       }
+    },
+    {
+      "name" : "onSelectComponent",
+      "type" : {
+        "name": "Function",
+        "parameters": [
+          {
+            "label": "_",
+            "type": "String"
+          }
+        ]
+      }
     }
   ],
   "root" : {

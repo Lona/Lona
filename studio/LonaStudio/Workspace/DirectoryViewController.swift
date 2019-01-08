@@ -38,6 +38,7 @@ class DirectoryViewController: NSViewController {
     public var folderName: String? { didSet { update() } }
     public var componentNames: [String] = [] { didSet { update() } }
     public var readme: String? { didSet { update() } }
+    public var onSelectComponent: ((String) -> Void)? { didSet { update() } }
 
     // MARK: Private
 
@@ -55,5 +56,6 @@ class DirectoryViewController: NSViewController {
         contentView.readme = readme ?? ""
         contentView.folderName = folderName ?? "Folder"
         contentView.componentNames = componentNames
+        contentView.onSelectComponent = onSelectComponent
     }
 }

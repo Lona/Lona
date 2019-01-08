@@ -57,6 +57,11 @@ public class ComponentPreviewCollection: NSBox {
     }
   }
 
+  public var onSelectComponent: ((String) -> Void)? {
+    get { return parameters.onSelectComponent }
+    set { parameters.onSelectComponent = newValue }
+  }
+
   public var parameters: Parameters {
     didSet {
       if parameters != oldValue {
@@ -80,6 +85,10 @@ public class ComponentPreviewCollection: NSBox {
   }
 
   private func update() {}
+
+  private func handleOnSelectComponent(_ arg0: String) {
+    onSelectComponent?(arg0)
+  }
 }
 
 // MARK: - Parameters
@@ -88,10 +97,12 @@ extension ComponentPreviewCollection {
   public struct Parameters: Equatable {
     public var readme: String
     public var componentNames: [String]
+    public var onSelectComponent: ((String) -> Void)?
 
-    public init(readme: String, componentNames: [String]) {
+    public init(readme: String, componentNames: [String], onSelectComponent: ((String) -> Void)? = nil) {
       self.readme = readme
       self.componentNames = componentNames
+      self.onSelectComponent = onSelectComponent
     }
 
     public init() {
@@ -123,8 +134,8 @@ extension ComponentPreviewCollection {
       self.parameters = parameters
     }
 
-    public init(readme: String, componentNames: [String]) {
-      self.init(Parameters(readme: readme, componentNames: componentNames))
+    public init(readme: String, componentNames: [String], onSelectComponent: ((String) -> Void)? = nil) {
+      self.init(Parameters(readme: readme, componentNames: componentNames, onSelectComponent: onSelectComponent))
     }
 
     public init() {

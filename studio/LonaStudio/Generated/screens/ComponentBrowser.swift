@@ -66,6 +66,11 @@ public class ComponentBrowser: NSBox {
     }
   }
 
+  public var onSelectComponent: ((String) -> Void)? {
+    get { return parameters.onSelectComponent }
+    set { parameters.onSelectComponent = newValue }
+  }
+
   public var parameters: Parameters {
     didSet {
       if parameters != oldValue {
@@ -150,7 +155,12 @@ public class ComponentBrowser: NSBox {
   private func update() {
     componentPreviewCollectionView.readme = readme
     componentPreviewCollectionView.componentNames = componentNames
+    componentPreviewCollectionView.onSelectComponent = handleOnSelectComponent
     titleView.attributedStringValue = titleViewTextStyle.apply(to: folderName)
+  }
+
+  private func handleOnSelectComponent(_ arg0: String) {
+    onSelectComponent?(arg0)
   }
 }
 
@@ -161,11 +171,18 @@ extension ComponentBrowser {
     public var readme: String
     public var componentNames: [String]
     public var folderName: String
+    public var onSelectComponent: ((String) -> Void)?
 
-    public init(readme: String, componentNames: [String], folderName: String) {
+    public init(
+      readme: String,
+      componentNames: [String],
+      folderName: String,
+      onSelectComponent: ((String) -> Void)? = nil)
+    {
       self.readme = readme
       self.componentNames = componentNames
       self.folderName = folderName
+      self.onSelectComponent = onSelectComponent
     }
 
     public init() {
@@ -197,8 +214,19 @@ extension ComponentBrowser {
       self.parameters = parameters
     }
 
-    public init(readme: String, componentNames: [String], folderName: String) {
-      self.init(Parameters(readme: readme, componentNames: componentNames, folderName: folderName))
+    public init(
+      readme: String,
+      componentNames: [String],
+      folderName: String,
+      onSelectComponent: ((String) -> Void)? = nil)
+    {
+      self
+        .init(
+          Parameters(
+            readme: readme,
+            componentNames: componentNames,
+            folderName: folderName,
+            onSelectComponent: onSelectComponent))
     }
 
     public init() {
