@@ -189,6 +189,11 @@
     "children" : [
       {
         "id" : "Text",
+        "metadata" : {
+          "accessLevel" : {
+            "ios" : "public"
+          }
+        },
         "params" : {
           "font" : "button",
           "text" : "Text goes here"

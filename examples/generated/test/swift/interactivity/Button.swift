@@ -72,7 +72,7 @@ public class Button: LonaControlView {
 
   // MARK: Private
 
-  private var textView = UILabel()
+  public var textView = UILabel()
 
   private var textViewTextStyle = TextStyles.button
 

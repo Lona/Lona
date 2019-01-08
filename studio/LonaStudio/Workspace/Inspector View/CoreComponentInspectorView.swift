@@ -88,6 +88,7 @@ class CoreComponentInspectorView: NSStackView {
         case animationSpeed
 
         // Metadata
+        case accessLevel
         case backingElementClass
     }
 
@@ -161,9 +162,18 @@ class CoreComponentInspectorView: NSStackView {
         valueToTitle: ["cover": "Aspect-preserving Fill", "contain": "Aspect-preserving Fit", "stretch": "Stretch Fill"]
     )
 
+    var accessLevelElement = CSValueField(
+        value: CSValue(
+            type: CSType.platformSpecificAccessLevel,
+            data: CSData.Object([:])))
+    var accessLevelRow = NSStackView(
+        views: [NSTextField(labelWithString: "Access Level")],
+        orientation: .horizontal,
+        stretched: true)
+
     var backingElement = CSValueField(
         value: CSValue(
-            type: PlatformSpecificString,
+            type: CSType.platformSpecificString,
             data: CSData.Object([:])))
     var backingRow = NSStackView(
         views: [NSTextField(labelWithString: "Backing Element")],
@@ -433,8 +443,11 @@ class CoreComponentInspectorView: NSStackView {
     }
 
     func renderMetadataSection() -> DisclosureContentRow {
-        let backgroundSection = renderSection(title: "Metadata", views: [backingRow])
-        return backgroundSection
+        let metadataSection = renderSection(title: "Metadata", views: [accessLevelRow, backingRow])
+        [accessLevelRow].forEach {
+            metadataSection.addContentSpacing(of: 14, after: $0)
+        }
+        return metadataSection
     }
 
     func renderTextSection() -> DisclosureContentRow {
@@ -733,11 +746,27 @@ class CoreComponentInspectorView: NSStackView {
                 backingElement.view.removeFromSuperview()
                 backingElement = CSValueField(
                     value: CSValue(
-                        type: PlatformSpecificString,
+                        type: CSType.platformSpecificString,
                         data: value))
                 backingRow.addArrangedSubview(backingElement.view, stretched: true)
                 backingElement.onChangeData = { data in
                     self.handlePropertyChange(for: .backingElementClass, value: data)
+                    setup(value: data)
+                }
+            }
+
+            setup(value: value)
+        }
+        if let value = properties[.accessLevel] {
+            func setup(value: CSData) {
+                accessLevelElement.view.removeFromSuperview()
+                accessLevelElement = CSValueField(
+                    value: CSValue(
+                        type: CSType.platformSpecificAccessLevel,
+                        data: value))
+                accessLevelRow.addArrangedSubview(accessLevelElement.view, stretched: true)
+                accessLevelElement.onChangeData = { data in
+                    self.handlePropertyChange(for: .accessLevel, value: data)
                     setup(value: data)
                 }
             }
@@ -1030,6 +1059,8 @@ class CoreComponentInspectorView: NSStackView {
             CoreComponentInspectorView.Property.animationSpeed: CSData.Number(layer.animationSpeed ?? 1),
 
             // Metadata
+            CoreComponentInspectorView.Property.accessLevel: CSValue.expand(
+                type: CSType.platformSpecificAccessLevel, data: layer.metadata["accessLevel"] ?? CSData.Object([:])),
             CoreComponentInspectorView.Property.backingElementClass: layer.metadata["backingElementClass"] ?? CSData.Object([:])
         ]
     }
@@ -1094,6 +1125,8 @@ class CoreComponentInspectorView: NSStackView {
         case .animationSpeed: layer.animationSpeed = value.numberValue
 
         // Metadata
+        case .accessLevel: layer.metadata["accessLevel"] = CSValue.compact(
+            type: CSType.platformSpecificAccessLevel, data: CSData.Object(value.objectValue))
         case .backingElementClass: layer.metadata["backingElementClass"] = CSData.Object(value.objectValue)
         }
     }

@@ -1257,26 +1257,45 @@ let generate =
   let conditionalConstraints =
     Constraint.conditionalConstraints(visibilityCombinations);
 
-  let viewVariableDoc = (layer: Types.layer): node =>
-    SwiftAst.Builders.privateVariableDeclaration(
-      layer.name |> SwiftFormat.layerName,
-      None,
-      Some(
-        Doc.viewVariableInitialValue(
-          swiftOptions,
-          assignmentsFromLayerParameters,
-          layer,
-          Naming.layerType(
-            config,
+  let viewVariableDoc = (layer: Types.layer): node => {
+    let modifiers =
+      switch (
+        frameworkSpecificValue(
+          swiftOptions.framework,
+          layer.metadata.accessLevel,
+        )
+      ) {
+      | Types.Public => [AccessLevelModifier(PublicModifier)]
+      | Types.Private => [AccessLevelModifier(PrivateModifier)]
+      | Types.Internal => []
+      };
+    VariableDeclaration({
+      "modifiers": modifiers,
+      "pattern":
+        IdentifierPattern({
+          "identifier": SwiftIdentifier(layer.name |> SwiftFormat.layerName),
+          "annotation": None,
+        }),
+      "init":
+        Some(
+          Doc.viewVariableInitialValue(
             swiftOptions,
-            logic,
-            name,
-            containsNoninteractiveDescendants,
+            assignmentsFromLayerParameters,
             layer,
+            Naming.layerType(
+              config,
+              swiftOptions,
+              logic,
+              name,
+              containsNoninteractiveDescendants,
+              layer,
+            ),
           ),
         ),
-      ),
-    );
+      "block": None,
+    });
+  };
+
   let textStyleVariableDoc = (layer: Types.layer) => {
     let id =
       Parameter.isSetInitially(layer, TextStyle) ?
