@@ -116,6 +116,7 @@ class CoreComponentInspectorView: NSStackView {
 
     var layoutInspector = LayoutInspector()
     var dimensionsInspector = DimensionsInspector()
+    var accessibilityInspector = AccessibilityInspector()
 
     var opacityView = NumberField(frame: NSRect.zero)
     var backgroundColorButton = ColorPickerButton(frame: NSRect.zero)
@@ -640,6 +641,7 @@ class CoreComponentInspectorView: NSStackView {
             shadowSection!,
             imageSection!,
             animationSection!,
+            accessibilityInspector,
             renderMetadataSection()
         ]
 
@@ -904,6 +906,14 @@ class CoreComponentInspectorView: NSStackView {
         dimensionsInspector.onChangeAspectRatioValue = { aspectRatio in
             change(property: Property.aspectRatio, to: aspectRatio.toData())
         }
+
+        accessibilityInspector.isExpanded = UserDefaults.standard.bool(forKey: "accessibilityInspectorExpanded")
+        accessibilityInspector.onClickHeader = { [unowned self] in
+            let newValue = !self.accessibilityInspector.isExpanded
+            self.accessibilityInspector.isExpanded = newValue
+            UserDefaults.standard.set(newValue, forKey: "accessibilityInspectorExpanded")
+        }
+
     }
 
     let controlledProperties: [Property] = [

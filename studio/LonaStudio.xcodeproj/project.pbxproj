@@ -233,6 +233,7 @@
 		6BABAFE72139C341002B8C8F /* WorkspaceToolbar.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6BABAFE62139C341002B8C8F /* WorkspaceToolbar.swift */; };
 		6BBE0F6A212B26C900CEE8C1 /* FileTree.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 6BBE0F69212B26C900CEE8C1 /* FileTree.framework */; };
 		6BBE0F6B212B26C900CEE8C1 /* FileTree.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 6BBE0F69212B26C900CEE8C1 /* FileTree.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
+		6BD4976121E42EC400BC3970 /* AccessibilityInspector.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6BD4976021E42EC400BC3970 /* AccessibilityInspector.swift */; };
 		6BD581D920824AF60068FBC3 /* NSTextAlignmentExtensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6BD581D820824AF60068FBC3 /* NSTextAlignmentExtensions.swift */; };
 		6BD9664B217E825C0012F173 /* FolderIcon.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6BD9664A217E825C0012F173 /* FolderIcon.swift */; };
 		6BD9664D217E8FCF0012F173 /* FileIcon.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6BD9664C217E8FCF0012F173 /* FileIcon.swift */; };
@@ -512,6 +513,7 @@
 		6BABAFE42139C0EE002B8C8F /* Toolbar.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Toolbar.xcassets; sourceTree = "<group>"; };
 		6BABAFE62139C341002B8C8F /* WorkspaceToolbar.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WorkspaceToolbar.swift; sourceTree = "<group>"; };
 		6BBE0F69212B26C900CEE8C1 /* FileTree.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = FileTree.framework; path = Carthage/Build/Mac/FileTree.framework; sourceTree = "<group>"; };
+		6BD4976021E42EC400BC3970 /* AccessibilityInspector.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AccessibilityInspector.swift; sourceTree = "<group>"; };
 		6BD581D820824AF60068FBC3 /* NSTextAlignmentExtensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NSTextAlignmentExtensions.swift; sourceTree = "<group>"; };
 		6BD9664A217E825C0012F173 /* FolderIcon.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = FolderIcon.swift; sourceTree = "<group>"; };
 		6BD9664C217E8FCF0012F173 /* FileIcon.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = FileIcon.swift; sourceTree = "<group>"; };
@@ -1012,6 +1014,7 @@
 		6B8D7D9C21BED32E0087A3F7 /* inspector */ = {
 			isa = PBXGroup;
 			children = (
+				6BD4976021E42EC400BC3970 /* AccessibilityInspector.swift */,
 				6BFC4E0521C9C5A10030938B /* CanvasInspector.swift */,
 				6B5886892134D9E800CCA69F /* ColorInspector.swift */,
 				6BA775C821C59E2A0033C03C /* DimensionsInspector.swift */,
@@ -1379,6 +1382,7 @@
 				30AEA12A20A0DA410021C981 /* LonaNode.swift in Sources */,
 				30F7C9501ED4ACD8009D27DF /* SegmentedControlField.swift in Sources */,
 				036A4EA421E21DA500948DBD /* AddTextStyleSheet.swift in Sources */,
+				6BD4976121E42EC400BC3970 /* AccessibilityInspector.swift in Sources */,
 				30ACB4E51F663D0A00EEFED6 /* Sketch.swift in Sources */,
 				6B39E6F3212DB3AD0012DA4C /* UtilitiesView.swift in Sources */,
 				300A0AFC1EDA0CBC00704DB7 /* SectionSplitter.swift in Sources */,

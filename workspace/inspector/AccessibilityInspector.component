@@ -1,0 +1,161 @@
+{
+  "devices" : [
+    {
+      "height" : 0,
+      "heightMode" : "At Least",
+      "name" : "Sidebar",
+      "width" : 280
+    }
+  ],
+  "examples" : [
+    {
+      "id" : "Collapsed",
+      "name" : "Collapsed",
+      "params" : {
+        "isExpanded" : false
+      }
+    },
+    {
+      "id" : "Expanded",
+      "name" : "Expanded",
+      "params" : {
+        "isExpanded" : true
+      }
+    }
+  ],
+  "logic" : [
+    {
+      "assignee" : [
+        "layers",
+        "ContentContainer",
+        "visible"
+      ],
+      "content" : [
+        "parameters",
+        "isExpanded"
+      ],
+      "type" : "AssignExpr"
+    },
+    {
+      "assignee" : [
+        "layers",
+        "InspectorSectionHeader",
+        "isExpanded"
+      ],
+      "content" : [
+        "parameters",
+        "isExpanded"
+      ],
+      "type" : "AssignExpr"
+    },
+    {
+      "assignee" : [
+        "layers",
+        "InspectorSectionHeader",
+        "onClick"
+      ],
+      "content" : [
+        "parameters",
+        "onClickHeader"
+      ],
+      "type" : "AssignExpr"
+    }
+  ],
+  "params" : [
+    {
+      "name" : "isExpanded",
+      "type" : "Boolean"
+    },
+    {
+      "name" : "onClickHeader",
+      "type" : {
+        "name" : "Function"
+      }
+    }
+  ],
+  "root" : {
+    "children" : [
+      {
+        "id" : "InspectorSectionHeader",
+        "params" : {
+          "titleText" : "Accessibility"
+        },
+        "type" : "InspectorSectionHeader"
+      },
+      {
+        "children" : [
+          {
+            "id" : "TypeLabel",
+            "params" : {
+              "alignSelf" : "stretch",
+              "font" : "regular",
+              "marginBottom" : 8,
+              "text" : "Type"
+            },
+            "type" : "Lona:Text"
+          },
+          {
+            "id" : "TypeDropdown",
+            "params" : {
+              "selectedIndex" : 0,
+              "values" : [
+                "Auto",
+                "None",
+                "Element",
+                "Container"
+              ]
+            },
+            "type" : "ControlledDropdown"
+          },
+          {
+            "children" : [
+              {
+                "id" : "LabelLabel",
+                "params" : {
+                  "marginBottom" : 8,
+                  "marginTop" : 16,
+                  "text" : "Label"
+                },
+                "type" : "Lona:Text"
+              },
+              {
+                "id" : "LabelTextInput",
+                "params" : {
+                  "placeholderString" : "Label",
+                  "textValue" : ""
+                },
+                "type" : "TextInput"
+              }
+            ],
+            "id" : "ElementContainer",
+            "params" : {
+              "alignSelf" : "stretch"
+            },
+            "type" : "Lona:View"
+          }
+        ],
+        "id" : "ContentContainer",
+        "params" : {
+          "alignSelf" : "stretch",
+          "paddingBottom" : 16,
+          "visible" : false
+        },
+        "type" : "Lona:View"
+      },
+      {
+        "id" : "HDivider",
+        "params" : {
+          "alignSelf" : "stretch",
+          "backgroundColor" : "dividerSubtle",
+          "height" : 1
+        },
+        "type" : "Lona:View"
+      }
+    ],
+    "id" : "Container",
+    "params" : {
+      "alignSelf" : "stretch"
+    },
+    "type" : "Lona:View"
+  }
+}
