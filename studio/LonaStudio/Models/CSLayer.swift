@@ -460,31 +460,8 @@ class CSLayer: CSDataDeserializable, CSDataSerializable, DataNode, NSCopying {
     }
 
     var accessibility: AccessibilityType {
-        get {
-            if let accessibilityType = parameters["accessibilityType"]?.string {
-                switch accessibilityType {
-                case "none":
-                    return AccessibilityType.none
-                case "element":
-                    let label = parameters["accessibilityLabel"]?.string
-                    let hint = parameters["accessibilityHint"]?.string
-                    let role = AccessibilityRole(rawValue: parameters["accessibilityRole"]?.stringValue ?? "")
-                    let states = AccessibilityStates((parameters["accessibilityStates"] ?? CSData.Array([])).arrayValue.compactMap { $0.string })
-                    let element = AccessibilityElement.init(label: label, hint: hint, role: role, options: states)
-                    return AccessibilityType.element(element)
-                default:
-                    return AccessibilityType.none
-                }
-            } else {
-                return AccessibilityType.auto
-            }
-        }
-        set {
-//            switch newValue {
-//            case .none:
-//                parameters["accessibilityType"]
-//            }
-        }
+        get { return AccessibilityType(CSData.Object(parameters)) }
+        set { parameters.merge(with: newValue.toData().objectValue) }
     }
 
     static func deserialize(_ json: CSData) -> CSLayer? {
