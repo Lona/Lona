@@ -272,6 +272,18 @@ class WorkspaceViewController: NSSplitViewController {
     private lazy var inspectorViewController: NSViewController = {
         return NSViewController(view: inspectorView)
     }()
+    private var inspectorViewVisible: Bool {
+        get {
+            return splitViewItems.contains(sidebarItem)
+        }
+        set {
+            if newValue && !inspectorViewVisible {
+                insertSplitViewItem(sidebarItem, at: 2)
+            } else if !newValue && inspectorViewVisible {
+                removeSplitViewItem(sidebarItem)
+            }
+        }
+    }
 
     private lazy var directoryViewController = DirectoryViewController()
 
@@ -557,10 +569,12 @@ class WorkspaceViewController: NSSplitViewController {
 
         guard let document = document else {
             editorViewController.contentView = nil
+            inspectorViewVisible = true
             return
         }
 
         if document is ComponentDocument {
+            inspectorViewVisible = true
             editorViewController.contentView = componentEditorViewController.view
 
             componentEditorViewController.component = component
@@ -600,6 +614,7 @@ class WorkspaceViewController: NSSplitViewController {
                 }
             }
         } else if let document = document as? JSONDocument {
+            inspectorViewVisible = true
             if let content = document.content, case .colors(let colors) = content {
                 editorViewController.contentView = colorEditorViewController.view
 
@@ -680,6 +695,7 @@ class WorkspaceViewController: NSSplitViewController {
                 }
             }
         } else if let document = document as? ImageDocument {
+            inspectorViewVisible = false
             if let content = document.content {
                 editorViewController.contentView = imageViewController.view
 
@@ -689,6 +705,7 @@ class WorkspaceViewController: NSSplitViewController {
                 return
             }
         } else if let document = document as? DirectoryDocument {
+            inspectorViewVisible = false
             if let content = document.content {
                 editorViewController.contentView = directoryViewController.view
 
