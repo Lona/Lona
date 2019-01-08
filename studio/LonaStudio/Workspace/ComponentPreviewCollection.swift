@@ -52,7 +52,7 @@ class ComponentPreviewCollectionView: NSView {
         flowLayout.minimumLineSpacing = 24
         flowLayout.minimumInteritemSpacing = 12
         flowLayout.itemSize = NSSize(width: 260, height: 240)
-        flowLayout.footerReferenceSize = NSSize(width: 260, height: 33)
+        flowLayout.footerReferenceSize = NSSize(width: self.bounds.width - 64 - 64, height: 33)
 
         collectionView.collectionViewLayout = flowLayout
         collectionView.delegate = self
@@ -135,7 +135,9 @@ extension ComponentPreviewCollectionView: NSCollectionViewDataSource {
     private func onReadmeHeightChanged(_ height: CGFloat) {
         if let flowLayout = collectionView.collectionViewLayout as? NSCollectionViewFlowLayout {
             if readme == "" {
-                flowLayout.footerReferenceSize = .zero
+                // we need to keep at least 33px otherwise the webview stop being rendered
+                // and we won't get any update anymore
+                flowLayout.footerReferenceSize = NSSize(width: self.bounds.width - 64 - 64, height: 33)
             } else {
                 flowLayout.footerReferenceSize = NSSize(
                     width: self.bounds.width - 64 - 64,
@@ -255,7 +257,6 @@ class ReadmePreview: NSBox {
     private func setUpConstraints() {
         translatesAutoresizingMaskIntoConstraints = false
         markdownEditorView.translatesAutoresizingMaskIntoConstraints = false
-        print(markdownEditorView.constraints)
 
         let textViewTopAnchorConstraint = markdownEditorView.topAnchor.constraint(equalTo: topAnchor, constant: 32)
         let textViewBottomAnchorConstraint = markdownEditorView.bottomAnchor.constraint(equalTo: bottomAnchor, constant: 32)
