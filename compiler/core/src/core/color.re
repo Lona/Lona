@@ -10,29 +10,6 @@ type colorValue =
   | Inline(string)
   | Reference(t);
 
-module Metadata = {
-  open Json.Decode;
-  let valueDecoder = (decoder, defaultValue, json) =>
-    switch (optional(decoder, json)) {
-    | Some(value) => value
-    | None => defaultValue
-    };
-  let fieldDecoder = (decoder, defaultValue, keyPath, json) =>
-    switch (optional(at(keyPath, x => x), json)) {
-    | Some(fieldJson) => valueDecoder(decoder, defaultValue, fieldJson)
-    | None => defaultValue
-    };
-  let platformSpecificValue =
-      (pathPrefix, fieldDecoder, json: Js.Json.t)
-      : Types.platformSpecificValue('a) => {
-    iOS: fieldDecoder(pathPrefix @ ["ios"], json),
-    macOS: fieldDecoder(pathPrefix @ ["macos"], json),
-    reactDom: fieldDecoder(pathPrefix @ ["reactdom"], json),
-    reactNative: fieldDecoder(pathPrefix @ ["reactnative"], json),
-    reactSketchapp: fieldDecoder(pathPrefix @ ["reactSketchapp"], json),
-  };
-};
-
 let parseFile = content => {
   let parsed = content |> Js.Json.parseExn;
   open Json.Decode;
@@ -43,9 +20,9 @@ let parseFile = content => {
     comment: json |> optional(field("comment", string)),
     shouldGenerateCode:
       json
-      |> Metadata.platformSpecificValue(
+      |> DecodeMetadata.platformSpecificValue(
            ["metadata", "shouldGenerateCode"],
-           Metadata.fieldDecoder(Json.Decode.bool, true),
+           DecodeMetadata.fieldDecoder(Json.Decode.bool, true),
          ),
   };
   field("colors", list(parseColor), parsed);

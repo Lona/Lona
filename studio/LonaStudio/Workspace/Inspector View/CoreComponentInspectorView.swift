@@ -1059,7 +1059,8 @@ class CoreComponentInspectorView: NSStackView {
             CoreComponentInspectorView.Property.animationSpeed: CSData.Number(layer.animationSpeed ?? 1),
 
             // Metadata
-            CoreComponentInspectorView.Property.accessLevel: layer.metadata["accessLevel"] ?? CSData.Object([:]),
+            CoreComponentInspectorView.Property.accessLevel: CSValue.expand(
+                type: CSType.platformSpecificAccessLevel, data: layer.metadata["accessLevel"] ?? CSData.Object([:])),
             CoreComponentInspectorView.Property.backingElementClass: layer.metadata["backingElementClass"] ?? CSData.Object([:])
         ]
     }
@@ -1124,7 +1125,8 @@ class CoreComponentInspectorView: NSStackView {
         case .animationSpeed: layer.animationSpeed = value.numberValue
 
         // Metadata
-        case .accessLevel: layer.metadata["accessLevel"] = CSData.Object(value.objectValue)
+        case .accessLevel: layer.metadata["accessLevel"] = CSValue.compact(
+            type: CSType.platformSpecificAccessLevel, data: CSData.Object(value.objectValue))
         case .backingElementClass: layer.metadata["backingElementClass"] = CSData.Object(value.objectValue)
         }
     }

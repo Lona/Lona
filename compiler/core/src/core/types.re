@@ -99,7 +99,13 @@ type platformSpecificValue('a) = {
   reactSketchapp: 'a,
 };
 
+type accessLevel =
+  | Private
+  | Internal
+  | Public;
+
 type layerMetadata = {
+  accessLevel: platformSpecificValue(accessLevel),
   backingElementClass: platformSpecificValue(option(string)),
 };
 

@@ -120,29 +120,6 @@ module Parameters = {
   };
 };
 
-module Metadata = {
-  let optionalFieldString = (key, decoder, json) =>
-    switch (optional(field(key, x => x), json)) {
-    | Some(data) => optional(decoder, data)
-    | None => None
-    };
-  let emptyPlatformSpecificValue = (): platformSpecificValue(option('a)) => {
-    iOS: None,
-    macOS: None,
-    reactDom: None,
-    reactNative: None,
-    reactSketchapp: None,
-  };
-  let platformSpecificValue =
-      (json: Js.Json.t): platformSpecificValue(option('a)) => {
-    iOS: optionalFieldString("ios", string, json),
-    macOS: optionalFieldString("macos", string, json),
-    reactDom: optionalFieldString("reactdom", string, json),
-    reactNative: optionalFieldString("reactnative", string, json),
-    reactSketchapp: optionalFieldString("reactSketchapp", string, json),
-  };
-};
-
 module Layer = {
   let layerType = json =>
     switch (string(json)) {
@@ -211,13 +188,21 @@ module Layer = {
           raise(e);
         },
       metadata: {
+        accessLevel:
+          json
+          |> DecodeMetadata.platformSpecificValue(
+               ["metadata", "accessLevel"],
+               DecodeMetadata.fieldDecoder(
+                 DecodeMetadata.accessLevel,
+                 Types.Private,
+               ),
+             ),
         backingElementClass:
-          switch (
-            optional(at(["metadata", "backingElementClass"], x => x), json)
-          ) {
-          | Some(data) => Metadata.platformSpecificValue(data)
-          | None => Metadata.emptyPlatformSpecificValue()
-          },
+          json
+          |> DecodeMetadata.platformSpecificValue(
+               ["metadata", "backingElementClass"],
+               DecodeMetadata.fieldDecoder(optional(string), None),
+             ),
       },
     };
   };
