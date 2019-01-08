@@ -12,19 +12,14 @@ function sendNotification(notification) {
   }
 }
 
-let initialValue = 'oiawhdoahw';
-let initialEditableValue = true;
+let initialValue = '';
 let onChangeValue = () => {};
-let onChangeEditableValue = () => {};
 
 window.update = ({ type, payload }) => {
   switch (type) {
     case 'setDescription':
       initialValue = payload;
       return onChangeValue(payload);
-    case 'setEditable':
-      initialEditableValue = payload;
-      return onChangeEditableValue(payload);
     default:
       break;
   }
@@ -37,17 +32,13 @@ class App extends React.Component {
     super(props);
 
     this.state = {
-      value: initialValue,
-      editable: initialEditableValue
+      value: initialValue
     };
 
     this.handleChange = this.handleChange.bind(this);
 
     onChangeValue = value => {
       this.setState({ value });
-    };
-    onChangeEditableValue = editable => {
-      this.setState({ editable });
     };
   }
 
@@ -58,7 +49,7 @@ class App extends React.Component {
 
   render() {
     const { styles, css } = this.props;
-    const { value, editable } = this.state;
+    const { value } = this.state;
 
     const markdownCss = { ...css(styles.column) };
     markdownCss.className += ' markdown-body';
@@ -66,14 +57,14 @@ class App extends React.Component {
     return (
       <div {...css(styles.row)}>
         <ReactMarkdown {...markdownCss} source={value} escapeHtml={false} />
-        {editable
-          ? <Editor
+        {typeof EDITABLE !== 'undefined' && !EDITABLE
+          ? null
+          : <Editor
               value={value}
               filename={'README.md'}
               onChange={this.handleChange}
               errorLineNumber={false}
-            />
-          : null}
+            />}
       </div>
     );
   }
