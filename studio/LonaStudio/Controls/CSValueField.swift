@@ -216,6 +216,38 @@ class CSValueField: CSControl {
                     // TODO: Don't call this if the new schema hasn't changed
                     defaultChangeHandler(CSType.dictionary(newSchema).toData())
                 }
+            case .function(let args, let returnType):
+                let recordFieldType = CSType.dictionary([
+                    "label": (CSType.string, .write),
+                    "type": (CSType.namedParameterType(), .write),
+                    "optional": (CSType.bool, .write)
+                    ])
+                let recordFieldsType = CSType.array(recordFieldType)
+                let fieldsData: [CSData] = args.enumerated().map({ arg in
+                    let (key, type) = arg.element
+                    return CSData.Object([
+                        "label": key.toData(),
+                        "type": (type.isOptional() ? type.unwrapOptional()! : type).toData(),
+                        "optional": type.isOptional().toData()
+                        ])
+                })
+                let fieldsValue = CSValue(type: recordFieldsType, data: CSData.Array(fieldsData))
+                let fieldsField = CSValueField(value: fieldsValue, options: options)
+
+                subfields.append(fieldsField)
+                stackView.addArrangedSubview(fieldsField.view)
+
+                fieldsField.onChangeData = { data in
+                    let newSchema: [(String, CSType)] = data.arrayValue.map({ field in
+                        let label = field.get(key: "label").stringValue
+                        let type = CSType(field.get(key: "type"))
+                        let optional = field.get(key: "optional").boolValue
+                        return (label, optional ? type.makeOptional() : type)
+                    })
+
+                    // TODO: Don't call this if the new schema hasn't changed
+                    defaultChangeHandler(CSType.function(newSchema, returnType).toData())
+                }
             default:
                 break
             }
