@@ -18,6 +18,10 @@ public class ComponentPreviewCollection: NSBox {
     update()
   }
 
+  public convenience init(readme: String, componentNames: [String]) {
+    self.init(Parameters(readme: readme, componentNames: componentNames))
+  }
+
   public convenience init() {
     self.init(Parameters())
   }
@@ -34,6 +38,29 @@ public class ComponentPreviewCollection: NSBox {
   }
 
   // MARK: Public
+
+  public var readme: String {
+    get { return parameters.readme }
+    set {
+      if parameters.readme != newValue {
+        parameters.readme = newValue
+      }
+    }
+  }
+
+  public var componentNames: [String] {
+    get { return parameters.componentNames }
+    set {
+      if parameters.componentNames != newValue {
+        parameters.componentNames = newValue
+      }
+    }
+  }
+
+  public var onSelectComponent: ((String) -> Void)? {
+    get { return parameters.onSelectComponent }
+    set { parameters.onSelectComponent = newValue }
+  }
 
   public var parameters: Parameters {
     didSet {
@@ -58,13 +85,33 @@ public class ComponentPreviewCollection: NSBox {
   }
 
   private func update() {}
+
+  private func handleOnSelectComponent(_ arg0: String) {
+    onSelectComponent?(arg0)
+  }
 }
 
 // MARK: - Parameters
 
 extension ComponentPreviewCollection {
   public struct Parameters: Equatable {
-    public init() {}
+    public var readme: String
+    public var componentNames: [String]
+    public var onSelectComponent: ((String) -> Void)?
+
+    public init(readme: String, componentNames: [String], onSelectComponent: ((String) -> Void)? = nil) {
+      self.readme = readme
+      self.componentNames = componentNames
+      self.onSelectComponent = onSelectComponent
+    }
+
+    public init() {
+      self.init(readme: "", componentNames: [])
+    }
+
+    public static func ==(lhs: Parameters, rhs: Parameters) -> Bool {
+      return lhs.readme == rhs.readme && lhs.componentNames == rhs.componentNames
+    }
   }
 }
 
@@ -87,8 +134,12 @@ extension ComponentPreviewCollection {
       self.parameters = parameters
     }
 
+    public init(readme: String, componentNames: [String], onSelectComponent: ((String) -> Void)? = nil) {
+      self.init(Parameters(readme: readme, componentNames: componentNames, onSelectComponent: onSelectComponent))
+    }
+
     public init() {
-      self.init(Parameters())
+      self.init(readme: "", componentNames: [])
     }
   }
 }

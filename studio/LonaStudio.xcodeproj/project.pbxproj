@@ -16,6 +16,9 @@
 		036A4EA021E1FCD200948DBD /* CSTextStyle.swift in Sources */ = {isa = PBXBuildFile; fileRef = 036A4E9F21E1FCD100948DBD /* CSTextStyle.swift */; };
 		036A4EA221E1FD3B00948DBD /* KeyHandlingCollectionView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 036A4EA121E1FD3B00948DBD /* KeyHandlingCollectionView.swift */; };
 		036A4EA421E21DA500948DBD /* AddTextStyleSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = 036A4EA321E21DA400948DBD /* AddTextStyleSheet.swift */; };
+		036A4EA721E23F9100948DBD /* DirectoryDocument.swift in Sources */ = {isa = PBXBuildFile; fileRef = 036A4EA621E23F9100948DBD /* DirectoryDocument.swift */; };
+		036A4EA921E2469D00948DBD /* DirectoryViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 036A4EA821E2469D00948DBD /* DirectoryViewController.swift */; };
+		039952C721E50D31008310DB /* MarkdownEditor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 039952C621E50D31008310DB /* MarkdownEditor.swift */; };
 		300302741EDC7FA90085E140 /* CSStatementView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 300302731EDC7FA90085E140 /* CSStatementView.swift */; };
 		300302761EDCDA030085E140 /* LogicListView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 300302751EDCDA030085E140 /* LogicListView.swift */; };
 		3003027A1EDCDBA00085E140 /* LogicNode.swift in Sources */ = {isa = PBXBuildFile; fileRef = 300302791EDCDBA00085E140 /* LogicNode.swift */; };
@@ -293,6 +296,9 @@
 		036A4E9F21E1FCD100948DBD /* CSTextStyle.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CSTextStyle.swift; sourceTree = "<group>"; };
 		036A4EA121E1FD3B00948DBD /* KeyHandlingCollectionView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = KeyHandlingCollectionView.swift; sourceTree = "<group>"; };
 		036A4EA321E21DA400948DBD /* AddTextStyleSheet.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AddTextStyleSheet.swift; sourceTree = "<group>"; };
+		036A4EA621E23F9100948DBD /* DirectoryDocument.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DirectoryDocument.swift; sourceTree = "<group>"; };
+		036A4EA821E2469D00948DBD /* DirectoryViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DirectoryViewController.swift; sourceTree = "<group>"; };
+		039952C621E50D31008310DB /* MarkdownEditor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MarkdownEditor.swift; sourceTree = "<group>"; };
 		300302731EDC7FA90085E140 /* CSStatementView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CSStatementView.swift; sourceTree = "<group>"; };
 		300302751EDCDA030085E140 /* LogicListView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = LogicListView.swift; sourceTree = "<group>"; };
 		300302791EDCDBA00085E140 /* LogicNode.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = LogicNode.swift; sourceTree = "<group>"; };
@@ -561,6 +567,17 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		036A4EA521E23F3A00948DBD /* Documents */ = {
+			isa = PBXGroup;
+			children = (
+				6B0AEFBB1EBF74D800F35BBF /* ComponentDocument.swift */,
+				036A4E8B21E0E6D200948DBD /* ImageDocument.swift */,
+				6BA6E89C2131CD09009CD33C /* JSONDocument.swift */,
+				036A4EA621E23F9100948DBD /* DirectoryDocument.swift */,
+			);
+			path = Documents;
+			sourceTree = "<group>";
+		};
 		301433791F5C7AD100525DB1 /* ListEditors */ = {
 			isa = PBXGroup;
 			children = (
@@ -607,6 +624,7 @@
 				6BA6E89A213080CE009CD33C /* ComponentEditorViewController.swift */,
 				303C3FF820A4F894008E1541 /* ComponentPreview.swift */,
 				303C3FF420A4E3C1008E1541 /* ComponentPreviewCollection.swift */,
+				036A4EA821E2469D00948DBD /* DirectoryViewController.swift */,
 				305A19551F463A2800EA033C /* DisclosureContentRow.swift */,
 				307D441D209B657B004B57F5 /* DocumentationView.swift */,
 				6B5D4D2A213E19B9004F8AC3 /* EditorViewController.swift */,
@@ -619,6 +637,7 @@
 				6B6017CF1EBF9EFA001E02C1 /* LayerListOutlineView.swift */,
 				306D2FED1F84735900907B4E /* LayerThumbnail.swift */,
 				307D4421209B75C0004B57F5 /* LonaWebView.swift */,
+				039952C621E50D31008310DB /* MarkdownEditor.swift */,
 				307B7B4E1F9A71C5001A62D9 /* MetadataEditorView.swift */,
 				303C3FEF20A3A05D008E1541 /* RecentProjectsList.swift */,
 				300A0AFB1EDA0CBC00704DB7 /* SectionSplitter.swift */,
@@ -778,7 +797,6 @@
 			children = (
 				30C8BC311EDB758C00B99F1B /* Canvas.swift */,
 				3003027D1EDCE3790085E140 /* ComponentConfiguration.swift */,
-				6B0AEFBB1EBF74D800F35BBF /* ComponentDocument.swift */,
 				30335A0F1F5B3023006E507B /* CSCase.swift */,
 				307718EB1F361925003A597B /* CSColor.swift */,
 				3003027B1EDCE0880085E140 /* CSComponent.swift */,
@@ -796,8 +814,6 @@
 				306DA4F51F34E42F002772DC /* DimensionSizingRule.swift */,
 				300302791EDCDBA00085E140 /* LogicNode.swift */,
 				305ED1BC20548CA7000D07C3 /* LonaLogic.swift */,
-				6BA6E89C2131CD09009CD33C /* JSONDocument.swift */,
-				036A4E8B21E0E6D200948DBD /* ImageDocument.swift */,
 				6B1086F6217955120024AE56 /* SVG.swift */,
 			);
 			path = Models;
@@ -971,6 +987,7 @@
 				306DA4ED1F33E19F002772DC /* Canvas */,
 				3030311C1F34E6980078086F /* CanvasList */,
 				306DA4F21F34E265002772DC /* Controls */,
+				036A4EA521E23F3A00948DBD /* Documents */,
 				30C8BC291EDB640500B99F1B /* Extensions */,
 				30F870BC20865858007ADA5B /* Generated */,
 				301433791F5C7AD100525DB1 /* ListEditors */,
@@ -1371,6 +1388,7 @@
 				6B4DFCEF20A795080048BB43 /* RecentProjectItem.swift in Sources */,
 				6B59893F21B86B27004DD3B1 /* RenderableElement.swift in Sources */,
 				6BD9664D217E8FCF0012F173 /* FileIcon.swift in Sources */,
+				036A4EA721E23F9100948DBD /* DirectoryDocument.swift in Sources */,
 				30F870D720865859007ADA5B /* Welcome.swift in Sources */,
 				30990AB01FA4043600BC0CCE /* CSUserTypes.swift in Sources */,
 				3043A0CC1F46653B00EF31EF /* Label.swift in Sources */,
@@ -1401,6 +1419,7 @@
 				BACCB4271FEFA05B00B58E32 /* TextStylePickerView.swift in Sources */,
 				300302741EDC7FA90085E140 /* CSStatementView.swift in Sources */,
 				6B5D4D2B213E19B9004F8AC3 /* EditorViewController.swift in Sources */,
+				039952C721E50D31008310DB /* MarkdownEditor.swift in Sources */,
 				BA153BCA202B2D1F002A83A5 /* UndoManager.swift in Sources */,
 				6B5D4DA1213F05AF004F8AC3 /* CodeEditor.swift in Sources */,
 				3005A5381FA00FE000ABC5C2 /* CustomPopupField.swift in Sources */,
@@ -1409,6 +1428,7 @@
 				30CE47811ED73FC800BBF716 /* TextField.swift in Sources */,
 				6BA6E89D2131CD09009CD33C /* JSONDocument.swift in Sources */,
 				6BA775CB21C59E330033C03C /* DimensionType.swift in Sources */,
+				036A4EA921E2469D00948DBD /* DirectoryViewController.swift in Sources */,
 				6B0F5B8821386CAE007DBBB2 /* AddColorSheet.swift in Sources */,
 				6B6D441D218B6BBE0016262C /* LNATextField.swift in Sources */,
 				30B5B19F1EC29D84002068CE /* NumberField.swift in Sources */,

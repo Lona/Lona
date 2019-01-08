@@ -9,6 +9,7 @@
   ],
   "examples" : [
     {
+      "id" : "Default",
       "name" : "Default",
       "params" : {
 
@@ -16,10 +17,92 @@
     }
   ],
   "logic" : [
-
+    {
+      "assignee" : [
+        "layers",
+        "ComponentPreviewCollection",
+        "readme"
+      ],
+      "content" : [
+        "parameters",
+        "readme"
+      ],
+      "type" : "AssignExpr"
+    },
+    {
+      "assignee" : [
+        "layers",
+        "ComponentPreviewCollection",
+        "componentNames"
+      ],
+      "content" : [
+        "parameters",
+        "componentNames"
+      ],
+      "type" : "AssignExpr"
+    },
+    {
+      "assignee" : [
+        "layers",
+        "ComponentPreviewCollection",
+        "onSelectComponent"
+      ],
+      "content" : [
+        "parameters",
+        "onSelectComponent"
+      ],
+      "type" : "AssignExpr"
+    },
+    {
+      "assignee" : [
+        "layers",
+        "Title",
+        "text"
+      ],
+      "content" : [
+        "parameters",
+        "folderName"
+      ],
+      "type" : "AssignExpr"
+    }
   ],
   "params" : [
+    {
+      "name" : "readme",
+      "type" : "String"
+    },
+    {
+      "defaultValue" : {
+        "data" : [
 
+        ],
+        "type" : {
+          "name" : "Array",
+          "of" : "String"
+        }
+      },
+      "name" : "componentNames",
+      "type" : {
+        "name" : "Array",
+        "of" : "String"
+      }
+    },
+    {
+      "name" : "folderName",
+      "type" : "String"
+    },
+    {
+      "name" : "onSelectComponent",
+      "type" : {
+        "name": "Function",
+        "parameters": [
+          {
+            "label": "_",
+            "type": "String"
+          }
+        ]
+      }
+    }
   ],
   "root" : {
     "children" : [
@@ -29,17 +112,10 @@
             "id" : "Title",
             "params" : {
               "font" : "title",
-              "text" : "Components"
+              "marginLeft" : 64,
+              "text" : "Folder"
             },
             "type" : "Lona:Text"
-          },
-          {
-            "id" : "Spacer",
-            "params" : {
-              "alignSelf" : "stretch",
-              "height" : 24
-            },
-            "type" : "Lona:View"
           },
           {
             "id" : "ComponentPreviewCollection",
@@ -61,10 +137,7 @@
     "params" : {
       "alignItems" : "center",
       "alignSelf" : "stretch",
-      "flex" : 1,
-      "paddingBottom" : 48,
-      "paddingLeft" : 64,
-      "paddingRight" : 64,
+      "backgroundColor" : "contentBackground",
       "paddingTop" : 48
     },
     "type" : "Lona:View"

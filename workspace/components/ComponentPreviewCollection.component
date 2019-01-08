@@ -31,7 +31,38 @@
 
   ],
   "params" : [
+    {
+      "name" : "readme",
+      "type" : "String"
+    },
+    {
+      "defaultValue" : {
+        "data" : [
 
+        ],
+        "type" : {
+          "name" : "Array",
+          "of" : "String"
+        }
+      },
+      "name" : "componentNames",
+      "type" : {
+        "name" : "Array",
+        "of" : "String"
+      }
+    },
+    {
+      "name" : "onSelectComponent",
+      "type" : {
+        "name": "Function",
+        "parameters": [
+          {
+            "label": "_",
+            "type": "String"
+          }
+        ]
+      }
+    }
   ],
   "root" : {
     "id" : "View",

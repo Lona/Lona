@@ -19,7 +19,7 @@ window.update = ({ type, payload }) => {
   switch (type) {
     case 'setDescription':
       initialValue = payload;
-      onChangeValue(payload);
+      return onChangeValue(payload);
     default:
       break;
   }
@@ -32,13 +32,13 @@ class App extends React.Component {
     super(props);
 
     this.state = {
-      value: initialValue,
+      value: initialValue
     };
 
     this.handleChange = this.handleChange.bind(this);
 
-    onChangeValue = code => {
-      this.setState({ value: code });
+    onChangeValue = value => {
+      this.setState({ value });
     };
   }
 
@@ -56,13 +56,15 @@ class App extends React.Component {
 
     return (
       <div {...css(styles.row)}>
-        <ReactMarkdown {...markdownCss} source={value} />
-        <Editor
-          value={value}
-          filename={'README.md'}
-          onChange={this.handleChange}
-          errorLineNumber={false}
-        />
+        <ReactMarkdown {...markdownCss} source={value} escapeHtml={false} />
+        {typeof EDITABLE !== 'undefined' && !EDITABLE
+          ? null
+          : <Editor
+              value={value}
+              filename={'README.md'}
+              onChange={this.handleChange}
+              errorLineNumber={false}
+            />}
       </div>
     );
   }
@@ -79,8 +81,9 @@ export default withStyles(() => ({
     alignItems: 'stretch',
     minWidth: 0,
     minHeight: 0,
-    overflow: 'hidden',
+    // overflow: 'hidden',
     position: 'relative',
+    color: typeof THEME !== 'undefined' ? THEME.text : undefined
   },
   row: {
     flex: '1',
@@ -89,7 +92,7 @@ export default withStyles(() => ({
     alignItems: 'stretch',
     minWidth: 0,
     minHeight: 0,
-    overflow: 'hidden',
+    // overflow: 'hidden',
     position: 'relative',
   },
 }))(App);
