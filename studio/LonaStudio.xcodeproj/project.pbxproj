@@ -233,6 +233,7 @@
 		6BBE0F6A212B26C900CEE8C1 /* FileTree.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 6BBE0F69212B26C900CEE8C1 /* FileTree.framework */; };
 		6BBE0F6B212B26C900CEE8C1 /* FileTree.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 6BBE0F69212B26C900CEE8C1 /* FileTree.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		6BD4976121E42EC400BC3970 /* AccessibilityInspector.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6BD4976021E42EC400BC3970 /* AccessibilityInspector.swift */; };
+		6BD4976321E53F2000BC3970 /* Accessibility.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6BD4976221E53F2000BC3970 /* Accessibility.swift */; };
 		6BD581D920824AF60068FBC3 /* NSTextAlignmentExtensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6BD581D820824AF60068FBC3 /* NSTextAlignmentExtensions.swift */; };
 		6BD9664B217E825C0012F173 /* FolderIcon.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6BD9664A217E825C0012F173 /* FolderIcon.swift */; };
 		6BD9664D217E8FCF0012F173 /* FileIcon.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6BD9664C217E8FCF0012F173 /* FileIcon.swift */; };
@@ -512,6 +513,7 @@
 		6BABAFE62139C341002B8C8F /* WorkspaceToolbar.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WorkspaceToolbar.swift; sourceTree = "<group>"; };
 		6BBE0F69212B26C900CEE8C1 /* FileTree.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = FileTree.framework; path = Carthage/Build/Mac/FileTree.framework; sourceTree = "<group>"; };
 		6BD4976021E42EC400BC3970 /* AccessibilityInspector.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AccessibilityInspector.swift; sourceTree = "<group>"; };
+		6BD4976221E53F2000BC3970 /* Accessibility.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Accessibility.swift; sourceTree = "<group>"; };
 		6BD581D820824AF60068FBC3 /* NSTextAlignmentExtensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NSTextAlignmentExtensions.swift; sourceTree = "<group>"; };
 		6BD9664A217E825C0012F173 /* FolderIcon.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = FolderIcon.swift; sourceTree = "<group>"; };
 		6BD9664C217E8FCF0012F173 /* FileIcon.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = FileIcon.swift; sourceTree = "<group>"; };
@@ -797,6 +799,7 @@
 		30C8BC301EDB757E00B99F1B /* Models */ = {
 			isa = PBXGroup;
 			children = (
+				6BD4976221E53F2000BC3970 /* Accessibility.swift */,
 				30C8BC311EDB758C00B99F1B /* Canvas.swift */,
 				3003027D1EDCE3790085E140 /* ComponentConfiguration.swift */,
 				30335A0F1F5B3023006E507B /* CSCase.swift */,
@@ -814,6 +817,8 @@
 				307718F11F365BCD003A597B /* CSValue.swift */,
 				306DA4F31F34E416002772DC /* DataNode.swift */,
 				306DA4F51F34E42F002772DC /* DimensionSizingRule.swift */,
+				036A4E8B21E0E6D200948DBD /* ImageDocument.swift */,
+				6BA6E89C2131CD09009CD33C /* JSONDocument.swift */,
 				300302791EDCDBA00085E140 /* LogicNode.swift */,
 				305ED1BC20548CA7000D07C3 /* LonaLogic.swift */,
 				6B1086F6217955120024AE56 /* SVG.swift */,
@@ -1437,6 +1442,7 @@
 				6B6D441D218B6BBE0016262C /* LNATextField.swift in Sources */,
 				30B5B19F1EC29D84002068CE /* NumberField.swift in Sources */,
 				6B8D7DA021BED32E0087A3F7 /* LayoutInspector.swift in Sources */,
+				6BD4976321E53F2000BC3970 /* Accessibility.swift in Sources */,
 				30B5B1A71EC3BF4F002068CE /* ColorPickerButton.swift in Sources */,
 				BACCB42B1FEFA26E00B58E32 /* ShadowStyleRowView.swift in Sources */,
 				306D2FF01F847DCB00907B4E /* NSImageExtensions.swift in Sources */,

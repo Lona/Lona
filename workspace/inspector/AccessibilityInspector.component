@@ -161,6 +161,21 @@
         "name" : "Array",
         "of" : "String"
       }
+    },
+    {
+      "name" : "onChangeAccessibilityElements",
+      "type" : {
+        "name" : "Function",
+        "parameters" : [
+          {
+            "label" : "_",
+            "type" : {
+              "name" : "Array",
+              "of" : "String"
+            }
+          }
+        ]
+      }
     }
   ],
   "root" : {

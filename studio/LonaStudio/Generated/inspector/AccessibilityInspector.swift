@@ -81,6 +81,11 @@ public class AccessibilityInspector: NSBox {
     }
   }
 
+  public var onChangeAccessibilityElements: (([String]) -> Void)? {
+    get { return parameters.onChangeAccessibilityElements }
+    set { parameters.onChangeAccessibilityElements = newValue }
+  }
+
   public var parameters: Parameters {
     didSet {
       if parameters != oldValue {
@@ -579,6 +584,10 @@ public class AccessibilityInspector: NSBox {
   private func handleOnChangeAccessibilityTypeIndex(_ arg0: Int) {
     onChangeAccessibilityTypeIndex?(arg0)
   }
+
+  private func handleOnChangeAccessibilityElements(_ arg0: [String]) {
+    onChangeAccessibilityElements?(arg0)
+  }
 }
 
 // MARK: - Parameters
@@ -590,19 +599,22 @@ extension AccessibilityInspector {
     public var accessibilityElements: [String]
     public var onClickHeader: (() -> Void)?
     public var onChangeAccessibilityTypeIndex: ((Int) -> Void)?
+    public var onChangeAccessibilityElements: (([String]) -> Void)?
 
     public init(
       isExpanded: Bool,
       accessibilityTypeIndex: Int,
       accessibilityElements: [String],
       onClickHeader: (() -> Void)? = nil,
-      onChangeAccessibilityTypeIndex: ((Int) -> Void)? = nil)
+      onChangeAccessibilityTypeIndex: ((Int) -> Void)? = nil,
+      onChangeAccessibilityElements: (([String]) -> Void)? = nil)
     {
       self.isExpanded = isExpanded
       self.accessibilityTypeIndex = accessibilityTypeIndex
       self.accessibilityElements = accessibilityElements
       self.onClickHeader = onClickHeader
       self.onChangeAccessibilityTypeIndex = onChangeAccessibilityTypeIndex
+      self.onChangeAccessibilityElements = onChangeAccessibilityElements
     }
 
     public init() {
@@ -641,7 +653,8 @@ extension AccessibilityInspector {
       accessibilityTypeIndex: Int,
       accessibilityElements: [String],
       onClickHeader: (() -> Void)? = nil,
-      onChangeAccessibilityTypeIndex: ((Int) -> Void)? = nil)
+      onChangeAccessibilityTypeIndex: ((Int) -> Void)? = nil,
+      onChangeAccessibilityElements: (([String]) -> Void)? = nil)
     {
       self
         .init(
@@ -650,7 +663,8 @@ extension AccessibilityInspector {
             accessibilityTypeIndex: accessibilityTypeIndex,
             accessibilityElements: accessibilityElements,
             onClickHeader: onClickHeader,
-            onChangeAccessibilityTypeIndex: onChangeAccessibilityTypeIndex))
+            onChangeAccessibilityTypeIndex: onChangeAccessibilityTypeIndex,
+            onChangeAccessibilityElements: onChangeAccessibilityElements))
     }
 
     public init() {
