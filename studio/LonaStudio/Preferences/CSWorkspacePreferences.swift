@@ -20,6 +20,7 @@ class CSWorkspacePreferences: CSPreferencesFile {
         case colorsPath
         case textStylesPath
         case workspaceIcon
+        case workspaceName
     }
 
     static var url: URL {
@@ -89,10 +90,26 @@ class CSWorkspacePreferences: CSPreferencesFile {
             }
         }
         set {
-            CSWorkspacePreferences.data[Keys.workspaceIcon.rawValue] = newValue == CSUnitValue
+            CSWorkspacePreferences.data[Keys.workspaceIcon.rawValue] = newValue.tag() == "None"
                 ? nil
                 : CSValue.compact(type: optionalURLType, data: newValue.data)
         }
+    }
+
+    static var workspaceNameValue: CSValue {
+        get {
+            return CSValue(type: CSType.string, data: CSWorkspacePreferences.data[Keys.workspaceName.rawValue] ?? "".toData())
+        }
+        set {
+            CSWorkspacePreferences.data[Keys.workspaceName.rawValue] = newValue.data.stringValue == ""
+                ? nil
+                : newValue.data
+        }
+    }
+
+    static var workspaceName: String {
+        let customName = workspaceNameValue.data.stringValue
+        return customName.isEmpty ? LonaModule.current.url.lastPathComponent : customName
     }
 
     static var data: CSData = load()

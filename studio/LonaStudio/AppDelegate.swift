@@ -64,6 +64,14 @@ class AppDelegate: NSObject, NSApplicationDelegate {
 
     var preferencesWindow: MASPreferencesWindowController?
 
+    private func reloadPreferencesWindow() {
+        preferencesWindow?.viewControllers.forEach { viewController in
+            if let workspacePreferences = viewController as? WorkspacePreferencesViewController {
+                workspacePreferences.render()
+            }
+        }
+    }
+
     @IBAction func showPreferences(_ sender: AnyObject) {
         if preferencesWindow == nil {
             let workspace = WorkspacePreferencesViewController()
@@ -71,6 +79,8 @@ class AppDelegate: NSObject, NSApplicationDelegate {
 
             preferencesWindow = MASPreferencesWindowController(viewControllers: [workspace], title: "Preferences")
         }
+
+        reloadPreferencesWindow()
 
         preferencesWindow?.showWindow(sender)
     }
@@ -225,6 +235,8 @@ class AppDelegate: NSObject, NSApplicationDelegate {
         NSDocumentController.shared.noteNewRecentDocumentURL(url)
 
         CSWorkspacePreferences.reloadAllConfigurationFiles(closeDocuments: true)
+
+        reloadPreferencesWindow()
 
         return true
     }
