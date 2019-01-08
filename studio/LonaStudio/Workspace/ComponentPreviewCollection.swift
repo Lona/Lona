@@ -31,7 +31,7 @@ class ComponentPreviewCollectionView: NSView {
 
     // MARK: - Public
 
-    public var prefix: String = "" { didSet { if oldValue != prefix { update(withoutReloading: true) } } }
+    public var readme: String = "" { didSet { if oldValue != readme { update(withoutReloading: true) } } }
     public var items: [LonaModule.ComponentFile] = [] { didSet { update(withoutPrefixChange: true) } }
     public var onSelectComponent: ((URL) -> Void)? { didSet { update(withoutReloading: true, withoutPrefixChange: true) } }
 
@@ -52,7 +52,7 @@ class ComponentPreviewCollectionView: NSView {
         flowLayout.minimumLineSpacing = 24
         flowLayout.minimumInteritemSpacing = 12
         flowLayout.itemSize = NSSize(width: 260, height: 240)
-        flowLayout.headerReferenceSize = NSSize(width: self.bounds.width - 64 - 64, height: 400)
+        flowLayout.footerReferenceSize = NSSize(width: 260, height: 33)
 
         collectionView.collectionViewLayout = flowLayout
         collectionView.delegate = self
@@ -63,7 +63,7 @@ class ComponentPreviewCollectionView: NSView {
             forItemWithIdentifier: ITEM_IDENTIFIER)
         collectionView.register(
             ReadmePreview.self,
-            forSupplementaryViewOfKind: .sectionHeader,
+            forSupplementaryViewOfKind: .sectionFooter,
             withIdentifier: README_ITEM_IDENTIFIER)
         collectionView.isSelectable = true
 
@@ -134,12 +134,10 @@ extension ComponentPreviewCollectionView: NSCollectionViewDataSource {
 
     private func onReadmeHeightChanged(_ height: CGFloat) {
         if let flowLayout = collectionView.collectionViewLayout as? NSCollectionViewFlowLayout {
-            if prefix == "" {
-                flowLayout.headerReferenceSize = NSSize(
-                    width: 0,
-                    height: 0)
+            if readme == "" {
+                flowLayout.footerReferenceSize = .zero
             } else {
-                flowLayout.headerReferenceSize = NSSize(
+                flowLayout.footerReferenceSize = NSSize(
                     width: self.bounds.width - 64 - 64,
                     height: height)
             }
@@ -147,11 +145,11 @@ extension ComponentPreviewCollectionView: NSCollectionViewDataSource {
     }
 
     func collectionView(_ collectionView: NSCollectionView, viewForSupplementaryElementOfKind kind: NSCollectionView.SupplementaryElementKind, at indexPath: IndexPath) -> NSView {
-        if kind == .sectionHeader && indexPath.item == 0 {
+        if kind == .sectionFooter && indexPath.item == 0 {
             let item = collectionView.makeSupplementaryView(ofKind: kind, withIdentifier: README_ITEM_IDENTIFIER, for: indexPath) as! ReadmePreview
 
             item.onReadmeHeightChanged = onReadmeHeightChanged
-            item.readme = prefix
+            item.readme = readme
 
             return item
         }
@@ -238,8 +236,7 @@ class ReadmePreview: NSBox {
 
     // MARK: Private
 
-    private var markdownEditorView = LonaWebView()
-    private var markdownEditorLoaded = false { didSet { update() } }
+    private var markdownEditorView = MarkdownEditor(editable: false)
 
     private func setUpViews() {
         boxType = .custom
@@ -247,22 +244,10 @@ class ReadmePreview: NSBox {
         contentViewMargins = .zero
 
         markdownEditorView.delegateScroll(onHeightChanged: {height in
-            self.onReadmeHeightChanged?(height)
+            self.onReadmeHeightChanged?(height + 64)
         })
 
-        let app = Bundle.main.resourceURL!.appendingPathComponent("Web")
-        let url = app.appendingPathComponent("markdown-editor.html")
-        markdownEditorView.loadLocalApp(main: url, directory: app)
-        markdownEditorView.onMessage = { data in
-            guard let messageType = data.get(key: "type").string else { return }
-
-            switch messageType {
-            case "ready":
-                self.markdownEditorLoaded = true
-            default:
-                break
-            }
-        }
+        markdownEditorView.load()
 
         addSubview(markdownEditorView)
     }
@@ -270,9 +255,10 @@ class ReadmePreview: NSBox {
     private func setUpConstraints() {
         translatesAutoresizingMaskIntoConstraints = false
         markdownEditorView.translatesAutoresizingMaskIntoConstraints = false
+        print(markdownEditorView.constraints)
 
         let textViewTopAnchorConstraint = markdownEditorView.topAnchor.constraint(equalTo: topAnchor, constant: 32)
-        let textViewBottomAnchorConstraint = markdownEditorView.bottomAnchor.constraint(equalTo: bottomAnchor)
+        let textViewBottomAnchorConstraint = markdownEditorView.bottomAnchor.constraint(equalTo: bottomAnchor, constant: 32)
         let textViewLeadingAnchorConstraint = markdownEditorView.leadingAnchor.constraint(equalTo: leadingAnchor, constant: 32)
         let textViewTrailingAnchorConstraint = markdownEditorView.trailingAnchor.constraint(equalTo: trailingAnchor, constant: -32)
 
@@ -285,20 +271,7 @@ class ReadmePreview: NSBox {
     }
 
     private func update() {
-        let payload1 = CSData.Object([
-            "type": "setEditable".toData(),
-            "payload": false.toData()
-            ])
-        if let json = payload1.jsonString() {
-            markdownEditorView.evaluateJavaScript("window.update(\(json))", completionHandler: nil)
-        }
-        let payload2 = CSData.Object([
-            "type": "setDescription".toData(),
-            "payload": readme.toData()
-            ])
-        if let json2 = payload2.jsonString() {
-            markdownEditorView.evaluateJavaScript("window.update(\(json2))", completionHandler: nil)
-        }
+        markdownEditorView.markdownString = readme
     }
 }
 
@@ -340,7 +313,7 @@ public class ComponentPreviewCollection: NSBox {
 
     // MARK: Public
 
-    public var prefix: String = "" { didSet { update() } }
+    public var readme: String = "" { didSet { update() } }
     public var componentNames: [String] = [] { didSet { update() } }
 
     // MARK: Private
@@ -396,6 +369,6 @@ public class ComponentPreviewCollection: NSBox {
             }
         }
         collectionView.items = components
-        collectionView.prefix = prefix
+        collectionView.readme = readme
     }
 }

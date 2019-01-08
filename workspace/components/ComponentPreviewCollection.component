@@ -32,7 +32,7 @@
   ],
   "params" : [
     {
-      "name" : "prefix",
+      "name" : "readme",
       "type" : "String"
     },
     {

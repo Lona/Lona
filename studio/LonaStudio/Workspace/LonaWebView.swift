@@ -55,7 +55,7 @@ class LonaWebView: WKWebView {
 
         // we need to hook into the webview to get its content's height and update the parent view
 
-        let source = "document.addEventListener('readystatechange', resizeHandler); function resizeHandler() {window.webkit.messageHandlers.sizeNotification.postMessage({height: document.body.scrollHeight, type: '__resizeEvent'});}"
+        let source = "document.addEventListener('readystatechange', resizeHandler); function resizeHandler() {window.webkit.messageHandlers.sizeNotification.postMessage({height: document.body.offsetHeight, type: '__resizeEvent'});}"
         let source2 = "window.addEventListener('resize', resizeHandler)"
 
         // UserScript object

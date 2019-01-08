@@ -148,7 +148,7 @@ public class ComponentBrowser: NSBox {
   }
 
   private func update() {
-    componentPreviewCollectionView.prefix = readme
+    componentPreviewCollectionView.readme = readme
     componentPreviewCollectionView.componentNames = componentNames
     titleView.attributedStringValue = titleViewTextStyle.apply(to: folderName)
   }

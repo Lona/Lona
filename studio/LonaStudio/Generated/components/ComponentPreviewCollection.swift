@@ -18,8 +18,8 @@ public class ComponentPreviewCollection: NSBox {
     update()
   }
 
-  public convenience init(prefix: String, componentNames: [String]) {
-    self.init(Parameters(prefix: prefix, componentNames: componentNames))
+  public convenience init(readme: String, componentNames: [String]) {
+    self.init(Parameters(readme: readme, componentNames: componentNames))
   }
 
   public convenience init() {
@@ -39,11 +39,11 @@ public class ComponentPreviewCollection: NSBox {
 
   // MARK: Public
 
-  public var prefix: String {
-    get { return parameters.prefix }
+  public var readme: String {
+    get { return parameters.readme }
     set {
-      if parameters.prefix != newValue {
-        parameters.prefix = newValue
+      if parameters.readme != newValue {
+        parameters.readme = newValue
       }
     }
   }
@@ -86,20 +86,20 @@ public class ComponentPreviewCollection: NSBox {
 
 extension ComponentPreviewCollection {
   public struct Parameters: Equatable {
-    public var prefix: String
+    public var readme: String
     public var componentNames: [String]
 
-    public init(prefix: String, componentNames: [String]) {
-      self.prefix = prefix
+    public init(readme: String, componentNames: [String]) {
+      self.readme = readme
       self.componentNames = componentNames
     }
 
     public init() {
-      self.init(prefix: "", componentNames: [])
+      self.init(readme: "", componentNames: [])
     }
 
     public static func ==(lhs: Parameters, rhs: Parameters) -> Bool {
-      return lhs.prefix == rhs.prefix && lhs.componentNames == rhs.componentNames
+      return lhs.readme == rhs.readme && lhs.componentNames == rhs.componentNames
     }
   }
 }
@@ -123,12 +123,12 @@ extension ComponentPreviewCollection {
       self.parameters = parameters
     }
 
-    public init(prefix: String, componentNames: [String]) {
-      self.init(Parameters(prefix: prefix, componentNames: componentNames))
+    public init(readme: String, componentNames: [String]) {
+      self.init(Parameters(readme: readme, componentNames: componentNames))
     }
 
     public init() {
-      self.init(prefix: "", componentNames: [])
+      self.init(readme: "", componentNames: [])
     }
   }
 }
