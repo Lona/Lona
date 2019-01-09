@@ -54,11 +54,7 @@ class DirectoryDocument: NSDocument {
             }
         }
 
-        var folderName = url.lastPathComponent
-
-        if CSUserPreferences.workspaceURL == url {
-            folderName = CSWorkspacePreferences.workspaceName
-        }
+        let folderName = CSUserPreferences.workspaceURL == url ? CSWorkspacePreferences.workspaceName : url.lastPathComponent
 
         content = DirectoryContent(componentNames: componentNames.sorted(), readme: readme, folderName: folderName)
     }
