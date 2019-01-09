@@ -88,8 +88,8 @@ class CoreComponentInspectorView: NSStackView {
         case animationSpeed
 
         // Accessibility
-//        case accessibilityType
-//        case accessibilityLabel
+        case accessibilityType
+        case accessibilityLabel
 
         // Metadata
         case accessLevel
@@ -917,6 +917,15 @@ class CoreComponentInspectorView: NSStackView {
             self.accessibilityInspector.isExpanded = newValue
             UserDefaults.standard.set(newValue, forKey: "accessibilityInspectorExpanded")
         }
+
+        accessibilityInspector.onChangeAccessibilityTypeIndex = { index in
+            let newValue = self.accessibilityTypeValue(for: index).toData()
+            change(property: Property.accessibilityType, to: newValue)
+        }
+
+        accessibilityInspector.onChangeAccessibilityLabel = { value in
+            change(property: Property.accessibilityLabel, to: value.toData())
+        }
     }
 
     let controlledProperties: [Property] = [
@@ -925,8 +934,25 @@ class CoreComponentInspectorView: NSStackView {
         Property.verticalAlignment,
         Property.width,
         Property.height,
-        Property.aspectRatio
+        Property.aspectRatio,
+        Property.accessibilityType,
+        Property.accessibilityLabel
     ]
+
+    private func accessibilityTypeValue(for index: Int) -> String {
+        switch index {
+        case 0:
+            return "auto"
+        case 1:
+            return "none"
+        case 2:
+            return "element"
+        case 3:
+            return "container"
+        default:
+            return "auto"
+        }
+    }
 
     private func dimensionTypeValue(for index: Int) -> String {
         switch index {
@@ -1010,6 +1036,21 @@ class CoreComponentInspectorView: NSStackView {
             }
         case .aspectRatio:
             dimensionsInspector.aspectRatioValue = CGFloat(value.numberValue)
+        case .accessibilityType:
+            switch value.stringValue {
+            case "auto":
+                accessibilityInspector.accessibilityTypeIndex = 0
+            case "none":
+                accessibilityInspector.accessibilityTypeIndex = 1
+            case "element":
+                accessibilityInspector.accessibilityTypeIndex = 2
+            case "container":
+                accessibilityInspector.accessibilityTypeIndex = 3
+            default:
+                Swift.print("WARNING: Invalid accessibilityTypeIndex")
+            }
+        case .accessibilityLabel:
+            accessibilityInspector.accessibilityLabelText = value.stringValue
         default:
             break
         }
@@ -1070,6 +1111,10 @@ class CoreComponentInspectorView: NSStackView {
             // Animation
             CoreComponentInspectorView.Property.animation: CSData.String(layer.animation ?? ""),
             CoreComponentInspectorView.Property.animationSpeed: CSData.Number(layer.animationSpeed ?? 1),
+
+            // Accessibility
+            CoreComponentInspectorView.Property.accessibilityType: layer.accessibility.typeName.toData(),
+            CoreComponentInspectorView.Property.accessibilityLabel: (layer.accessibility.label ?? "").toData(),
 
             // Metadata
             CoreComponentInspectorView.Property.accessLevel: CSValue.expand(
@@ -1136,6 +1181,10 @@ class CoreComponentInspectorView: NSStackView {
         // Animation
         case .animation: layer.animation = value.stringValue
         case .animationSpeed: layer.animationSpeed = value.numberValue
+
+        // Accessibility
+        case .accessibilityType: layer.accessibility = layer.accessibility.withType(value.stringValue)
+        case .accessibilityLabel: layer.accessibility = layer.accessibility.withLabel(value.stringValue.isEmpty ? nil : value.string)
 
         // Metadata
         case .accessLevel: layer.metadata["accessLevel"] = CSValue.compact(

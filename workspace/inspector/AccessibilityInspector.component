@@ -69,12 +69,21 @@
       "type" : "AssignExpr"
     },
     {
+      "content" : {
+        "type" : "LitExpr",
+        "value" : {
+          "data" : false,
+          "type" : "Boolean"
+        }
+      },
+      "id" : "elementViewsHidden",
+      "type" : "VarDeclExpr"
+    },
+    {
       "body" : [
         {
           "assignee" : [
-            "layers",
-            "ElementContainer",
-            "visible"
+            "elementViewsHidden"
           ],
           "content" : {
             "type" : "LitExpr",
@@ -106,6 +115,17 @@
     {
       "assignee" : [
         "layers",
+        "ElementContainer",
+        "visible"
+      ],
+      "content" : [
+        "elementViewsHidden"
+      ],
+      "type" : "AssignExpr"
+    },
+    {
+      "assignee" : [
+        "layers",
         "TypeDropdown",
         "selectedIndex"
       ],
@@ -124,6 +144,30 @@
       "content" : [
         "parameters",
         "onChangeAccessibilityTypeIndex"
+      ],
+      "type" : "AssignExpr"
+    },
+    {
+      "assignee" : [
+        "layers",
+        "LabelTextInput",
+        "textValue"
+      ],
+      "content" : [
+        "parameters",
+        "accessibilityLabelText"
+      ],
+      "type" : "AssignExpr"
+    },
+    {
+      "assignee" : [
+        "layers",
+        "LabelTextInput",
+        "onChangeTextValue"
+      ],
+      "content" : [
+        "parameters",
+        "onChangeAccessibilityLabel"
       ],
       "type" : "AssignExpr"
     }
@@ -154,6 +198,14 @@
           }
         ]
       }
+    },
+    {
+      "name" : "accessibilityLabelText",
+      "type" : "String"
+    },
+    {
+      "name" : "onChangeAccessibilityLabel",
+      "type" : "StringHandler"
     },
     {
       "name" : "accessibilityElements",

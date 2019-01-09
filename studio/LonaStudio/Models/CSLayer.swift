@@ -459,9 +459,21 @@ class CSLayer: CSDataDeserializable, CSDataSerializable, DataNode, NSCopying {
         }
     }
 
+    private let accessibilityKeys = [
+        "accessibilityType",
+        "accessibilityLabel",
+        "accessibilityHint",
+        "accessibilityRole",
+        "accessibilityStates",
+        "accessibilityElements"
+    ]
+
     var accessibility: AccessibilityType {
         get { return AccessibilityType(CSData.Object(parameters)) }
-        set { parameters.merge(with: newValue.toData().objectValue) }
+        set {
+            accessibilityKeys.forEach { parameters.removeValue(forKey: $0) }
+            parameters.merge(with: newValue.toData().objectValue)
+        }
     }
 
     static func deserialize(_ json: CSData) -> CSLayer? {
