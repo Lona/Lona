@@ -12,6 +12,7 @@ import MASPreferences
 
 @NSApplicationMain
 class AppDelegate: NSObject, NSApplicationDelegate {
+    let documentController = DocumentController()
 
     func applicationWillFinishLaunching(_ notification: Notification) {
 //        if #available(OSX 10.14, *) {
@@ -24,7 +25,9 @@ class AppDelegate: NSObject, NSApplicationDelegate {
     }
 
     func applicationDidFinishLaunching(_ notification: Notification) {
-        showWelcomeWindow(self)
+        if !documentController.didOpenADocument {
+            showWelcomeWindow(self)
+        }
     }
 
     func applicationShouldOpenUntitledFile(_ sender: NSApplication) -> Bool {
@@ -33,7 +36,7 @@ class AppDelegate: NSObject, NSApplicationDelegate {
 
     func applicationShouldHandleReopen(_ sender: NSApplication, hasVisibleWindows flag: Bool) -> Bool {
         if !flag {
-            showComponentBrowser(self)
+            showWelcomeWindow(self)
             return true
         }
         return false
@@ -44,9 +47,9 @@ class AppDelegate: NSObject, NSApplicationDelegate {
 
         switch FileUtils.fileExists(atPath: filename) {
         case .directory:
-            if openWorkspace(url: url) {
+            if let document = openWorkspace(url: url) {
                 welcomeWindow?.close()
-                showComponentBrowser(self)
+                showComponentBrowser(document)
                 return true
             } else {
                 return false
@@ -85,8 +88,8 @@ class AppDelegate: NSObject, NSApplicationDelegate {
         preferencesWindow?.showWindow(sender)
     }
 
-    @IBAction func showComponentBrowser(_ sender: AnyObject) {
-        let windowController = WorkspaceWindowController.create()
+    @IBAction func showComponentBrowser(_ document: DirectoryDocument?) {
+        let windowController = WorkspaceWindowController.create(andAttachTo: document)
 
         // Throws an exception related to _NSDetectedLayoutRecursion without async here.
         // With async, it becomes a warning.
@@ -143,18 +146,18 @@ class AppDelegate: NSObject, NSApplicationDelegate {
                     return
                 }
 
-                if self.openWorkspace(url: url) {
+                if let document = self.openWorkspace(url: url) {
                     window.close()
-                    self.showComponentBrowser(self)
+                    self.showComponentBrowser(document)
                 }
             }
 
             welcome.onOpenProject = {
                 guard let url = self.openWorkspaceDialog() else { return }
 
-                if self.openWorkspace(url: url) {
+                if let document = self.openWorkspace(url: url) {
                     window.close()
-                    self.showComponentBrowser(self)
+                    self.showComponentBrowser(document)
                 }
             }
 
@@ -225,9 +228,14 @@ class AppDelegate: NSObject, NSApplicationDelegate {
         return dialog.url
     }
 
-    private func openWorkspace(url: URL) -> Bool {
+    private func openWorkspace(url: URL) -> DirectoryDocument? {
         if !CSWorkspacePreferences.validateProposedWorkspace(url: url) {
-            return false
+            return nil
+        }
+
+        guard let newDocument = try? DirectoryDocument(contentsOf: url, ofType: "Directory Document") else {
+            Swift.print("Failed to open", url)
+            return nil
         }
 
         CSUserPreferences.workspaceURL = url
@@ -238,7 +246,7 @@ class AppDelegate: NSObject, NSApplicationDelegate {
 
         reloadPreferencesWindow()
 
-        return true
+        return newDocument
     }
 
     // MARK: - Creating Workspaces
