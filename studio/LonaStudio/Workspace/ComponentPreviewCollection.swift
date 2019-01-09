@@ -11,6 +11,7 @@ import Foundation
 
 private let ITEM_IDENTIFIER = NSUserInterfaceItemIdentifier(rawValue: "component")
 private let README_ITEM_IDENTIFIER = NSUserInterfaceItemIdentifier(rawValue: "readme")
+private let COLLECTION_VIEW_MARGIN = CGSize(width: 64, height: 32)
 
 private class DoubleClickableComponentPreviewCard: ComponentPreviewCard {
     var onDoubleClick: (() -> Void)?
@@ -52,19 +53,24 @@ class ComponentPreviewCollectionView: NSView {
     private let collectionView = NSCollectionView(frame: .zero)
     private let scrollView = NSScrollView()
     private var renderedPrefix: NSMutableAttributedString = NSMutableAttributedString(string: "")
+    private var flowLayout = NSCollectionViewFlowLayout()
 
     private func setUpViews() {
         wantsLayer = true
 
-        let flowLayout = NSCollectionViewFlowLayout()
-
         // Items have a built-in padding of 4
-        flowLayout.sectionInset = NSEdgeInsets(top: 36, left: 64 - 4, bottom: 36, right: 64 - 4)
+        flowLayout.sectionInset = NSEdgeInsets(
+            top: COLLECTION_VIEW_MARGIN.height,
+            left: COLLECTION_VIEW_MARGIN.width - 4,
+            bottom: 0,
+            right: COLLECTION_VIEW_MARGIN.width - 4)
 
         flowLayout.minimumLineSpacing = 24
         flowLayout.minimumInteritemSpacing = 12
         flowLayout.itemSize = NSSize(width: 260, height: 240)
-        flowLayout.footerReferenceSize = NSSize(width: self.bounds.width - 64 - 64, height: 33)
+
+        // Reference height must be greater than 0 to render a footer
+        flowLayout.footerReferenceSize = NSSize(width: self.bounds.width, height: 1)
 
         collectionView.collectionViewLayout = flowLayout
         collectionView.delegate = self
@@ -82,7 +88,6 @@ class ComponentPreviewCollectionView: NSView {
         scrollView.verticalScrollElasticity = .allowed
         scrollView.horizontalScrollElasticity = .allowed
         scrollView.allowsMagnification = true
-        scrollView.backgroundColor = NSColor.red
         scrollView.hasHorizontalScroller = true
         scrollView.hasVerticalScroller = true
         scrollView.autohidesScrollers = true
@@ -97,6 +102,8 @@ class ComponentPreviewCollectionView: NSView {
     }
 
     private func update(withoutReloading: Bool = false, withoutPrefixChange: Bool = false) {
+        flowLayout.sectionInset.bottom = (items.isEmpty || readme.isEmpty) ? 0 : COLLECTION_VIEW_MARGIN.height
+
         if !withoutReloading {
             collectionView.reloadData()
         }
@@ -142,15 +149,11 @@ extension ComponentPreviewCollectionView: NSCollectionViewDataSource {
 
     private func onReadmeHeightChanged(_ height: CGFloat) {
         if let flowLayout = collectionView.collectionViewLayout as? NSCollectionViewFlowLayout {
-            if readme == "" {
-                // we need to keep at least 33px otherwise the webview stop being rendered
-                // and we won't get any update anymore
-                flowLayout.footerReferenceSize = NSSize(width: self.bounds.width - 64 - 64, height: 33)
-            } else {
-                flowLayout.footerReferenceSize = NSSize(
-                    width: self.bounds.width - 64 - 64,
-                    height: height)
-            }
+            // Height must be greater than the reference height (which is hardcoded as 1),
+            // otherwise the webview stops being rendered and we won't get any more updates
+            let safeHeight = max(readme.isEmpty ? 2 : height, 2)
+
+            flowLayout.footerReferenceSize = NSSize(width: self.bounds.width, height: safeHeight)
         }
     }
 
@@ -254,7 +257,7 @@ class ReadmePreview: NSBox {
         contentViewMargins = .zero
 
         markdownEditorView.delegateScroll(onHeightChanged: {height in
-            self.onReadmeHeightChanged?(height + 64)
+            self.onReadmeHeightChanged?(height + COLLECTION_VIEW_MARGIN.height)
         })
 
         markdownEditorView.load()
@@ -266,10 +269,13 @@ class ReadmePreview: NSBox {
         translatesAutoresizingMaskIntoConstraints = false
         markdownEditorView.translatesAutoresizingMaskIntoConstraints = false
 
-        let textViewTopAnchorConstraint = markdownEditorView.topAnchor.constraint(equalTo: topAnchor, constant: 32)
-        let textViewBottomAnchorConstraint = markdownEditorView.bottomAnchor.constraint(equalTo: bottomAnchor, constant: 32)
-        let textViewLeadingAnchorConstraint = markdownEditorView.leadingAnchor.constraint(equalTo: leadingAnchor, constant: 32)
-        let textViewTrailingAnchorConstraint = markdownEditorView.trailingAnchor.constraint(equalTo: trailingAnchor, constant: -32)
+        let textViewTopAnchorConstraint = markdownEditorView.topAnchor.constraint(equalTo: topAnchor, constant: 0)
+        let textViewBottomAnchorConstraint = markdownEditorView.bottomAnchor
+            .constraint(equalTo: bottomAnchor, constant: COLLECTION_VIEW_MARGIN.height)
+        let textViewLeadingAnchorConstraint = markdownEditorView.leadingAnchor
+            .constraint(equalTo: leadingAnchor, constant: COLLECTION_VIEW_MARGIN.width)
+        let textViewTrailingAnchorConstraint = markdownEditorView.trailingAnchor
+            .constraint(equalTo: trailingAnchor, constant: -COLLECTION_VIEW_MARGIN.width)
 
         NSLayoutConstraint.activate([
             textViewTopAnchorConstraint,

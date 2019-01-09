@@ -233,11 +233,6 @@ class AppDelegate: NSObject, NSApplicationDelegate {
             return nil
         }
 
-        guard let newDocument = try? DirectoryDocument(contentsOf: url, ofType: "Directory Document") else {
-            Swift.print("Failed to open", url)
-            return nil
-        }
-
         CSUserPreferences.workspaceURL = url
 
         NSDocumentController.shared.noteNewRecentDocumentURL(url)
@@ -245,6 +240,13 @@ class AppDelegate: NSObject, NSApplicationDelegate {
         CSWorkspacePreferences.reloadAllConfigurationFiles(closeDocuments: true)
 
         reloadPreferencesWindow()
+
+        // Create the DirectoryDocument after updating the workspace configuration, since we may use
+        // the configuration when displaying the directory
+        guard let newDocument = try? DirectoryDocument(contentsOf: url, ofType: "Directory Document") else {
+            Swift.print("Failed to open", url)
+            return nil
+        }
 
         return newDocument
     }

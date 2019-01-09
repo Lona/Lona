@@ -54,59 +54,14 @@
         {
           "assignee" : [
             "layers",
-            "Preview",
-            "backgroundColor"
+            "Container",
+            "borderColor"
           ],
           "content" : {
             "type" : "LitExpr",
             "value" : {
               "data" : "lightblue600",
               "type" : "Color"
-            }
-          },
-          "type" : "AssignExpr"
-        },
-        {
-          "assignee" : [
-            "layers",
-            "Details",
-            "backgroundColor"
-          ],
-          "content" : {
-            "type" : "LitExpr",
-            "value" : {
-              "data" : "lightblue600",
-              "type" : "Color"
-            }
-          },
-          "type" : "AssignExpr"
-        },
-        {
-          "assignee" : [
-            "layers",
-            "Divider",
-            "backgroundColor"
-          ],
-          "content" : {
-            "type" : "LitExpr",
-            "value" : {
-              "data" : "lightblue700",
-              "type" : "Color"
-            }
-          },
-          "type" : "AssignExpr"
-        },
-        {
-          "assignee" : [
-            "layers",
-            "ComponentName",
-            "textStyle"
-          ],
-          "content" : {
-            "type" : "LitExpr",
-            "value" : {
-              "data" : "largeInverse",
-              "type" : "TextStyle"
             }
           },
           "type" : "AssignExpr"
@@ -155,21 +110,9 @@
         "id" : "Preview",
         "params" : {
           "alignSelf" : "stretch",
-          "backgroundColor" : "grey100",
-          "flex" : 1,
-          "paddingBottom" : 10,
-          "paddingLeft" : 10,
-          "paddingRight" : 10,
-          "paddingTop" : 10
-        },
-        "type" : "Lona:View"
-      },
-      {
-        "id" : "Divider",
-        "params" : {
-          "alignSelf" : "stretch",
-          "backgroundColor" : "grey300",
-          "height" : 1
+          "backgroundColor" : "dividerSubtle",
+          "borderRadius" : 3,
+          "flex" : 1
         },
         "type" : "Lona:View"
       },
@@ -180,8 +123,7 @@
             "params" : {
               "alignSelf" : "stretch",
               "font" : "regular",
-              "height" : 18,
-              "numberOfLines" : 1,
+              "numberOfLines" : 2,
               "text" : "Component"
             },
             "type" : "Lona:Text"
@@ -190,10 +132,7 @@
         "id" : "Details",
         "params" : {
           "alignSelf" : "stretch",
-          "paddingBottom" : 16,
-          "paddingLeft" : 20,
-          "paddingRight" : 20,
-          "paddingTop" : 16
+          "marginTop" : 5
         },
         "type" : "Lona:View"
       }
@@ -201,11 +140,13 @@
     "id" : "Container",
     "params" : {
       "alignSelf" : "stretch",
-      "backgroundColor" : "headerBackground",
-      "borderColor" : "grey300",
       "borderRadius" : 4,
       "borderWidth" : 1,
-      "flex" : 1
+      "flex" : 1,
+      "paddingBottom" : 4,
+      "paddingLeft" : 4,
+      "paddingRight" : 4,
+      "paddingTop" : 4
     },
     "type" : "Lona:View"
   }

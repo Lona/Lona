@@ -16,6 +16,8 @@ public class FileNavigatorHeader: NSBox {
     setUpConstraints()
 
     update()
+
+    addTrackingArea(trackingArea)
   }
 
   public convenience init(titleText: String, dividerColor: NSColor, fileIcon: NSImage) {
@@ -35,6 +37,12 @@ public class FileNavigatorHeader: NSBox {
     setUpConstraints()
 
     update()
+
+    addTrackingArea(trackingArea)
+  }
+
+  deinit {
+    removeTrackingArea(trackingArea)
   }
 
   // MARK: Public
@@ -66,6 +74,11 @@ public class FileNavigatorHeader: NSBox {
     }
   }
 
+  public var onClick: (() -> Void)? {
+    get { return parameters.onClick }
+    set { parameters.onClick = newValue }
+  }
+
   public var parameters: Parameters {
     didSet {
       if parameters != oldValue {
@@ -76,12 +89,21 @@ public class FileNavigatorHeader: NSBox {
 
   // MARK: Private
 
+  private lazy var trackingArea = NSTrackingArea(
+    rect: self.frame,
+    options: [.mouseEnteredAndExited, .activeAlways, .mouseMoved, .inVisibleRect],
+    owner: self)
+
   private var innerView = NSBox()
   private var imageView = LNAImageView()
   private var titleView = LNATextField(labelWithString: "")
   private var dividerView = NSBox()
 
   private var titleViewTextStyle = TextStyles.regular
+
+  private var hovered = false
+  private var pressed = false
+  private var onPress: (() -> Void)?
 
   private func setUpViews() {
     boxType = .custom
@@ -100,7 +122,6 @@ public class FileNavigatorHeader: NSBox {
     innerView.addSubview(imageView)
     innerView.addSubview(titleView)
 
-    fillColor = Colors.headerBackground
     titleViewTextStyle = TextStyles.regular
     titleView.attributedStringValue = titleViewTextStyle.apply(to: titleView.attributedStringValue)
   }
@@ -156,9 +177,66 @@ public class FileNavigatorHeader: NSBox {
   }
 
   private func update() {
+    fillColor = Colors.headerBackground
     dividerView.fillColor = dividerColor
     titleView.attributedStringValue = titleViewTextStyle.apply(to: titleText)
     imageView.image = fileIcon
+    if pressed {
+      fillColor = Colors.contentHeaderBackground
+    }
+    onPress = handleOnClick
+  }
+
+  private func handleOnClick() {
+    onClick?()
+  }
+
+  private func updateHoverState(with event: NSEvent) {
+    let hovered = bounds.contains(convert(event.locationInWindow, from: nil))
+    if hovered != self.hovered {
+      self.hovered = hovered
+
+      update()
+    }
+  }
+
+  public override func mouseEntered(with event: NSEvent) {
+    updateHoverState(with: event)
+  }
+
+  public override func mouseMoved(with event: NSEvent) {
+    updateHoverState(with: event)
+  }
+
+  public override func mouseDragged(with event: NSEvent) {
+    updateHoverState(with: event)
+  }
+
+  public override func mouseExited(with event: NSEvent) {
+    updateHoverState(with: event)
+  }
+
+  public override func mouseDown(with event: NSEvent) {
+    let pressed = bounds.contains(convert(event.locationInWindow, from: nil))
+    if pressed != self.pressed {
+      self.pressed = pressed
+
+      update()
+    }
+  }
+
+  public override func mouseUp(with event: NSEvent) {
+    let clicked = pressed && bounds.contains(convert(event.locationInWindow, from: nil))
+
+    if pressed {
+      pressed = false
+
+      update()
+    }
+
+    if clicked {
+      onPress?()
+    }
   }
 }
 
@@ -169,11 +247,13 @@ extension FileNavigatorHeader {
     public var titleText: String
     public var dividerColor: NSColor
     public var fileIcon: NSImage
+    public var onClick: (() -> Void)?
 
-    public init(titleText: String, dividerColor: NSColor, fileIcon: NSImage) {
+    public init(titleText: String, dividerColor: NSColor, fileIcon: NSImage, onClick: (() -> Void)? = nil) {
       self.titleText = titleText
       self.dividerColor = dividerColor
       self.fileIcon = fileIcon
+      self.onClick = onClick
     }
 
     public init() {
@@ -205,8 +285,8 @@ extension FileNavigatorHeader {
       self.parameters = parameters
     }
 
-    public init(titleText: String, dividerColor: NSColor, fileIcon: NSImage) {
-      self.init(Parameters(titleText: titleText, dividerColor: dividerColor, fileIcon: fileIcon))
+    public init(titleText: String, dividerColor: NSColor, fileIcon: NSImage, onClick: (() -> Void)? = nil) {
+      self.init(Parameters(titleText: titleText, dividerColor: dividerColor, fileIcon: fileIcon, onClick: onClick))
     }
 
     public init() {
