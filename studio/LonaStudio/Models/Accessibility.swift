@@ -37,7 +37,8 @@ extension AccessibilityStates {
     }
 
     var strings: [String] {
-        let states: [AccessibilityStates] = [.disabled, .selected]
+        let states: [AccessibilityStates] = [.disabled, .selected].filter { self.contains($0) }
+
         return states.map { state in
             switch state {
             case .disabled:
@@ -64,17 +65,84 @@ enum AccessibilityType {
     case none
     case element(AccessibilityElement)
     case container([String])
+
+    var typeName: String {
+        switch self {
+        case .auto:
+            return "auto"
+        case .none:
+            return "none"
+        case .element:
+            return "element"
+        case .container:
+            return "container"
+        }
+    }
+
+    var element: AccessibilityElement? {
+        if case .element(let element) = self {
+            return element
+        } else {
+            return nil
+        }
+    }
+
+    var label: String? { return element?.label }
+    var hint: String? { return element?.hint }
+    var role: AccessibilityRole? { return element?.role }
+    var states: AccessibilityStates { return element?.states ?? .none }
+
+    func withType(_ typeName: String) -> AccessibilityType {
+        switch typeName {
+        case "auto":
+            return .auto
+        case "none":
+            return .none
+        case "element":
+            if case .element = self {
+                return self
+            } else {
+                return .element(AccessibilityElement(label: nil, hint: nil, role: nil, states: .none))
+            }
+        case "container":
+            if case .container = self {
+                return self
+            } else {
+                return .container([])
+            }
+        default:
+            return .auto
+        }
+    }
+
+    func withLabel(_ label: String?) -> AccessibilityType {
+        if case .element(var element) = self {
+            element.label = label
+            return .element(element)
+        } else {
+            return self
+        }
+    }
+
+    func withHint(_ hint: String?) -> AccessibilityType {
+        if case .element(var element) = self {
+            element.hint = hint
+            return .element(element)
+        } else {
+            return self
+        }
+    }
 }
 
 extension AccessibilityType: CSDataDeserializable {
     init(_ data: CSData) {
-        let accessibilityType = data.get(key: "accessibilityType").stringValue
+        let accessibilityType = data.get(key: "accessibilityType").string ?? "auto"
 
         switch accessibilityType {
-        case "none":
-            self = AccessibilityType.none
         case "auto":
             self = AccessibilityType.auto
+        case "none":
+            self = AccessibilityType.none
         case "element":
             let label = data.get(key: "accessibilityLabel").string
             let hint = data.get(key: "accessibilityHint").string
@@ -86,7 +154,7 @@ extension AccessibilityType: CSDataDeserializable {
             let elements = data.get(key: "accessibilityElements").arrayValue.compactMap { $0.string }
             self = AccessibilityType.container(elements)
         default:
-            self = AccessibilityType.none
+            self = AccessibilityType.auto
         }
     }
 }
@@ -96,16 +164,21 @@ extension AccessibilityType: CSDataSerializable {
         var data: CSData = CSData.Object([:])
 
         switch self {
+        case .auto:
+            // This is the default, no need to write to file
+            break
         case .none:
             data["accessibilityType"] = "none".toData()
-        case .auto:
-            data["accessibilityType"] = "auto".toData()
         case .element(let element):
             data["accessibilityType"] = "element".toData()
             data["accessibilityLabel"] = element.label?.toData()
             data["accessibilityHint"] = element.hint?.toData()
             data["accessibilityRole"] = element.role?.rawValue.toData()
-            data["accessibilityStates"] = element.states.strings.toData()
+
+            let stateStrings = element.states.strings
+            if stateStrings.count > 0 {
+                data["accessibilityStates"] = stateStrings.toData()
+            }
         case .container(let elements):
             data["accessibilityType"] = "container".toData()
             data["accessibilityElements"] = elements.toData()

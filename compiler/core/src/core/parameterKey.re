@@ -39,6 +39,9 @@ type t =
   | MaxHeight
   | ResizeMode
   | Position
+  /* Accessibility */
+  | AccessibilityType
+  | AccessibilityLabel
   /* Interactivity */
   | Pressed
   | Hovered
@@ -84,6 +87,9 @@ let fromString = string =>
   | "maxHeight" => Height
   | "resizeMode" => ResizeMode
   | "position" => Position
+  /* Accessibility */
+  | "accessibilityType" => AccessibilityType
+  | "accessibilityLabel" => AccessibilityLabel
   /* Interactivity */
   | "pressed" => Pressed
   | "hovered" => Hovered
@@ -131,6 +137,9 @@ let toString = key =>
   | MaxHeight => "maxHeight"
   | ResizeMode => "resizeMode"
   | Position => "position"
+  /* Accessibility */
+  | AccessibilityType => "accessibilityType"
+  | AccessibilityLabel => "accessibilityLabel"
   /* Interactivity */
   | Pressed => "pressed"
   | Hovered => "hovered"
