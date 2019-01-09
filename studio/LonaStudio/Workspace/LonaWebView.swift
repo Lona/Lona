@@ -23,6 +23,8 @@ class LonaWebView: WKWebView {
 
         super.init(frame: .zero, configuration: config)
 
+        navigationDelegate = self
+
         userContentController.add(self, name: "notification")
 
         // pass down the theme
@@ -117,6 +119,20 @@ extension LonaWebView: WKScriptMessageHandler {
             }
         } else {
             onMessage?(data)
+        }
+    }
+}
+
+// MARK: NavigationDelegate
+
+extension LonaWebView: WKNavigationDelegate {
+    func webView(_ webView: WKWebView, decidePolicyFor navigationAction: WKNavigationAction, decisionHandler: @escaping (WKNavigationActionPolicy) -> Void) {
+        if let url = navigationAction.request.url,
+            url.absoluteString.starts(with: "http://") || url.absoluteString.starts(with: "https://") {
+            NSWorkspace.shared.open(url)
+            decisionHandler(WKNavigationActionPolicy.cancel)
+        } else {
+            decisionHandler(WKNavigationActionPolicy.allow)
         }
     }
 }
