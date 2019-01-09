@@ -60,6 +60,6 @@ class DirectoryDocument: NSDocument {
             folderName = CSWorkspacePreferences.workspaceName
         }
 
-        content = DirectoryContent(componentNames: componentNames, readme: readme, folderName: folderName)
+        content = DirectoryContent(componentNames: componentNames.sorted(), readme: readme, folderName: folderName)
     }
 }
