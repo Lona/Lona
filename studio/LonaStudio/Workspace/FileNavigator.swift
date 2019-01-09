@@ -107,6 +107,7 @@ class FileNavigator: NSBox {
 
         headerView.fileIcon = NSImage(byReferencing: CSWorkspacePreferences.workspaceIconURL)
         headerView.dividerColor = NSSplitView.defaultDividerColor
+        headerView.onClick = { [unowned self] in self.onAction?(self.rootPath) }
 
         addSubview(headerView)
         addSubview(fileTree)

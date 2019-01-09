@@ -54,6 +54,12 @@ class DirectoryDocument: NSDocument {
             }
         }
 
-        content = DirectoryContent(componentNames: componentNames, readme: readme, folderName: url.lastPathComponent)
+        var folderName = url.lastPathComponent
+
+        if CSUserPreferences.workspaceURL == url {
+            folderName = CSWorkspacePreferences.workspaceName
+        }
+
+        content = DirectoryContent(componentNames: componentNames, readme: readme, folderName: folderName)
     }
 }

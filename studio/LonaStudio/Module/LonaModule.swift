@@ -9,6 +9,16 @@
 import Foundation
 import AppKit
 
+private let defaultReadmeContents = """
+This is a Lona workspace.
+
+Here we define the components, tokens (colors, text styles, shadows, etc), and data types that make up our design system.
+
+We then use the Lona compiler to convert this design system to platform-specific code.
+
+> You can read more about Lona [here](https://github.com/airbnb/Lona).
+"""
+
 class LonaModule {
     struct ComponentFile {
         let url: URL
@@ -113,6 +123,7 @@ class LonaModule {
         let workspaceParent = url.deletingLastPathComponent()
 
         let root = VirtualDirectory(name: workspaceName, children: [
+            VirtualFile(name: "README.md", contents: defaultReadmeContents.data(using: .utf8)!),
             VirtualFile(name: "lona.json", data: CSData.Object([:])),
             VirtualFile(name: "colors.json", data: CSData.Object([
                 "colors": CSData.Array([])
