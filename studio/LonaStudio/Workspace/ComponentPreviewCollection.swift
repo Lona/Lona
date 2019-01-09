@@ -11,7 +11,7 @@ import Foundation
 
 private let ITEM_IDENTIFIER = NSUserInterfaceItemIdentifier(rawValue: "component")
 private let README_ITEM_IDENTIFIER = NSUserInterfaceItemIdentifier(rawValue: "readme")
-private let COLLECTION_VIEW_MARGIN: CGFloat = 64
+private let COLLECTION_VIEW_MARGIN = CGSize(width: 64, height: 32)
 
 private class DoubleClickableComponentPreviewCard: ComponentPreviewCard {
     var onDoubleClick: (() -> Void)?
@@ -60,16 +60,16 @@ class ComponentPreviewCollectionView: NSView {
 
         // Items have a built-in padding of 4
         flowLayout.sectionInset = NSEdgeInsets(
-            top: 36,
-            left: COLLECTION_VIEW_MARGIN - 4,
+            top: COLLECTION_VIEW_MARGIN.height,
+            left: COLLECTION_VIEW_MARGIN.width - 4,
             bottom: 0,
-            right: COLLECTION_VIEW_MARGIN - 4)
+            right: COLLECTION_VIEW_MARGIN.width - 4)
 
         flowLayout.minimumLineSpacing = 24
         flowLayout.minimumInteritemSpacing = 12
         flowLayout.itemSize = NSSize(width: 260, height: 240)
 
-        // Reference height must be greater than 0 or the webview never renders
+        // Reference height must be greater than 0 to render a footer
         flowLayout.footerReferenceSize = NSSize(width: self.bounds.width, height: 1)
 
         collectionView.collectionViewLayout = flowLayout
@@ -102,7 +102,7 @@ class ComponentPreviewCollectionView: NSView {
     }
 
     private func update(withoutReloading: Bool = false, withoutPrefixChange: Bool = false) {
-        flowLayout.sectionInset.bottom = items.isEmpty ? 0 : 32
+        flowLayout.sectionInset.bottom = (items.isEmpty || readme.isEmpty) ? 0 : COLLECTION_VIEW_MARGIN.height
 
         if !withoutReloading {
             collectionView.reloadData()
@@ -257,7 +257,7 @@ class ReadmePreview: NSBox {
         contentViewMargins = .zero
 
         markdownEditorView.delegateScroll(onHeightChanged: {height in
-            self.onReadmeHeightChanged?(height)
+            self.onReadmeHeightChanged?(height + COLLECTION_VIEW_MARGIN.height)
         })
 
         markdownEditorView.load()
@@ -270,11 +270,12 @@ class ReadmePreview: NSBox {
         markdownEditorView.translatesAutoresizingMaskIntoConstraints = false
 
         let textViewTopAnchorConstraint = markdownEditorView.topAnchor.constraint(equalTo: topAnchor, constant: 0)
-        let textViewBottomAnchorConstraint = markdownEditorView.bottomAnchor.constraint(equalTo: bottomAnchor, constant: 0)
+        let textViewBottomAnchorConstraint = markdownEditorView.bottomAnchor
+            .constraint(equalTo: bottomAnchor, constant: COLLECTION_VIEW_MARGIN.height)
         let textViewLeadingAnchorConstraint = markdownEditorView.leadingAnchor
-            .constraint(equalTo: leadingAnchor, constant: COLLECTION_VIEW_MARGIN)
+            .constraint(equalTo: leadingAnchor, constant: COLLECTION_VIEW_MARGIN.width)
         let textViewTrailingAnchorConstraint = markdownEditorView.trailingAnchor
-            .constraint(equalTo: trailingAnchor, constant: -COLLECTION_VIEW_MARGIN)
+            .constraint(equalTo: trailingAnchor, constant: -COLLECTION_VIEW_MARGIN.width)
 
         NSLayoutConstraint.activate([
             textViewTopAnchorConstraint,
