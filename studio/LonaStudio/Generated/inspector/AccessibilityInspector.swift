@@ -22,6 +22,7 @@ public class AccessibilityInspector: NSBox {
     isExpanded: Bool,
     accessibilityTypeIndex: Int,
     accessibilityLabelText: String,
+    accessibilityHintText: String,
     accessibilityElements: [String])
   {
     self
@@ -30,6 +31,7 @@ public class AccessibilityInspector: NSBox {
           isExpanded: isExpanded,
           accessibilityTypeIndex: accessibilityTypeIndex,
           accessibilityLabelText: accessibilityLabelText,
+          accessibilityHintText: accessibilityHintText,
           accessibilityElements: accessibilityElements))
   }
 
@@ -90,6 +92,20 @@ public class AccessibilityInspector: NSBox {
   public var onChangeAccessibilityLabel: StringHandler {
     get { return parameters.onChangeAccessibilityLabel }
     set { parameters.onChangeAccessibilityLabel = newValue }
+  }
+
+  public var accessibilityHintText: String {
+    get { return parameters.accessibilityHintText }
+    set {
+      if parameters.accessibilityHintText != newValue {
+        parameters.accessibilityHintText = newValue
+      }
+    }
+  }
+
+  public var onChangeAccessibilityHintText: StringHandler {
+    get { return parameters.onChangeAccessibilityHintText }
+    set { parameters.onChangeAccessibilityHintText = newValue }
   }
 
   public var accessibilityElements: [String] {
@@ -222,7 +238,6 @@ public class AccessibilityInspector: NSBox {
     labelTextInputView.placeholderString = "Label"
     hintLabelView.attributedStringValue = hintLabelViewTextStyle.apply(to: "Hint")
     hintTextInputView.placeholderString = "Hint"
-    hintTextInputView.textValue = ""
     roleLabelView.attributedStringValue = roleLabelViewTextStyle.apply(to: "Role")
     roleDropdownView.selectedIndex = 0
     roleDropdownView.values = [
@@ -583,6 +598,8 @@ public class AccessibilityInspector: NSBox {
     typeDropdownView.onChangeIndex = handleOnChangeAccessibilityTypeIndex
     labelTextInputView.textValue = accessibilityLabelText
     labelTextInputView.onChangeTextValue = handleOnChangeAccessibilityLabel
+    hintTextInputView.textValue = accessibilityHintText
+    hintTextInputView.onChangeTextValue = handleOnChangeAccessibilityHintText
 
     if
     contentContainerView.isHidden != contentContainerViewIsHidden ||
@@ -611,6 +628,10 @@ public class AccessibilityInspector: NSBox {
     onChangeAccessibilityLabel?(arg0)
   }
 
+  private func handleOnChangeAccessibilityHintText(_ arg0: String) {
+    onChangeAccessibilityHintText?(arg0)
+  }
+
   private func handleOnChangeAccessibilityElements(_ arg0: [String]) {
     onChangeAccessibilityElements?(arg0)
   }
@@ -623,41 +644,54 @@ extension AccessibilityInspector {
     public var isExpanded: Bool
     public var accessibilityTypeIndex: Int
     public var accessibilityLabelText: String
+    public var accessibilityHintText: String
     public var accessibilityElements: [String]
     public var onClickHeader: (() -> Void)?
     public var onChangeAccessibilityTypeIndex: ((Int) -> Void)?
     public var onChangeAccessibilityLabel: StringHandler
+    public var onChangeAccessibilityHintText: StringHandler
     public var onChangeAccessibilityElements: (([String]) -> Void)?
 
     public init(
       isExpanded: Bool,
       accessibilityTypeIndex: Int,
       accessibilityLabelText: String,
+      accessibilityHintText: String,
       accessibilityElements: [String],
       onClickHeader: (() -> Void)? = nil,
       onChangeAccessibilityTypeIndex: ((Int) -> Void)? = nil,
       onChangeAccessibilityLabel: StringHandler = nil,
+      onChangeAccessibilityHintText: StringHandler = nil,
       onChangeAccessibilityElements: (([String]) -> Void)? = nil)
     {
       self.isExpanded = isExpanded
       self.accessibilityTypeIndex = accessibilityTypeIndex
       self.accessibilityLabelText = accessibilityLabelText
+      self.accessibilityHintText = accessibilityHintText
       self.accessibilityElements = accessibilityElements
       self.onClickHeader = onClickHeader
       self.onChangeAccessibilityTypeIndex = onChangeAccessibilityTypeIndex
       self.onChangeAccessibilityLabel = onChangeAccessibilityLabel
+      self.onChangeAccessibilityHintText = onChangeAccessibilityHintText
       self.onChangeAccessibilityElements = onChangeAccessibilityElements
     }
 
     public init() {
-      self.init(isExpanded: false, accessibilityTypeIndex: 0, accessibilityLabelText: "", accessibilityElements: [])
+      self
+        .init(
+          isExpanded: false,
+          accessibilityTypeIndex: 0,
+          accessibilityLabelText: "",
+          accessibilityHintText: "",
+          accessibilityElements: [])
     }
 
     public static func ==(lhs: Parameters, rhs: Parameters) -> Bool {
       return lhs.isExpanded == rhs.isExpanded &&
         lhs.accessibilityTypeIndex == rhs.accessibilityTypeIndex &&
           lhs.accessibilityLabelText == rhs.accessibilityLabelText &&
-            lhs.accessibilityElements == rhs.accessibilityElements
+            lhs.accessibilityHintText == rhs.accessibilityHintText &&
+              lhs.accessibilityElements == rhs.accessibilityElements
     }
   }
 }
@@ -685,10 +719,12 @@ extension AccessibilityInspector {
       isExpanded: Bool,
       accessibilityTypeIndex: Int,
       accessibilityLabelText: String,
+      accessibilityHintText: String,
       accessibilityElements: [String],
       onClickHeader: (() -> Void)? = nil,
       onChangeAccessibilityTypeIndex: ((Int) -> Void)? = nil,
       onChangeAccessibilityLabel: StringHandler = nil,
+      onChangeAccessibilityHintText: StringHandler = nil,
       onChangeAccessibilityElements: (([String]) -> Void)? = nil)
     {
       self
@@ -697,15 +733,23 @@ extension AccessibilityInspector {
             isExpanded: isExpanded,
             accessibilityTypeIndex: accessibilityTypeIndex,
             accessibilityLabelText: accessibilityLabelText,
+            accessibilityHintText: accessibilityHintText,
             accessibilityElements: accessibilityElements,
             onClickHeader: onClickHeader,
             onChangeAccessibilityTypeIndex: onChangeAccessibilityTypeIndex,
             onChangeAccessibilityLabel: onChangeAccessibilityLabel,
+            onChangeAccessibilityHintText: onChangeAccessibilityHintText,
             onChangeAccessibilityElements: onChangeAccessibilityElements))
     }
 
     public init() {
-      self.init(isExpanded: false, accessibilityTypeIndex: 0, accessibilityLabelText: "", accessibilityElements: [])
+      self
+        .init(
+          isExpanded: false,
+          accessibilityTypeIndex: 0,
+          accessibilityLabelText: "",
+          accessibilityHintText: "",
+          accessibilityElements: [])
     }
   }
 }

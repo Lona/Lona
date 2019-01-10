@@ -170,6 +170,30 @@
         "onChangeAccessibilityLabel"
       ],
       "type" : "AssignExpr"
+    },
+    {
+      "assignee" : [
+        "layers",
+        "HintTextInput",
+        "textValue"
+      ],
+      "content" : [
+        "parameters",
+        "accessibilityHintText"
+      ],
+      "type" : "AssignExpr"
+    },
+    {
+      "assignee" : [
+        "layers",
+        "HintTextInput",
+        "onChangeTextValue"
+      ],
+      "content" : [
+        "parameters",
+        "onChangeAccessibilityHintText"
+      ],
+      "type" : "AssignExpr"
     }
   ],
   "params" : [
@@ -205,6 +229,14 @@
     },
     {
       "name" : "onChangeAccessibilityLabel",
+      "type" : "StringHandler"
+    },
+    {
+      "name" : "accessibilityHintText",
+      "type" : "String"
+    },
+    {
+      "name" : "onChangeAccessibilityHintText",
       "type" : "StringHandler"
     },
     {

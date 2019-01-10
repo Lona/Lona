@@ -90,6 +90,7 @@ class CoreComponentInspectorView: NSStackView {
         // Accessibility
         case accessibilityType
         case accessibilityLabel
+        case accessibilityHint
 
         // Metadata
         case accessLevel
@@ -926,6 +927,10 @@ class CoreComponentInspectorView: NSStackView {
         accessibilityInspector.onChangeAccessibilityLabel = { value in
             change(property: Property.accessibilityLabel, to: value.toData())
         }
+
+        accessibilityInspector.onChangeAccessibilityHintText = { value in
+            change(property: Property.accessibilityHint, to: value.toData())
+        }
     }
 
     let controlledProperties: [Property] = [
@@ -936,7 +941,8 @@ class CoreComponentInspectorView: NSStackView {
         Property.height,
         Property.aspectRatio,
         Property.accessibilityType,
-        Property.accessibilityLabel
+        Property.accessibilityLabel,
+        Property.accessibilityHint
     ]
 
     private func accessibilityTypeValue(for index: Int) -> String {
@@ -1051,6 +1057,8 @@ class CoreComponentInspectorView: NSStackView {
             }
         case .accessibilityLabel:
             accessibilityInspector.accessibilityLabelText = value.stringValue
+        case .accessibilityHint:
+            accessibilityInspector.accessibilityHintText = value.stringValue
         default:
             break
         }
@@ -1115,6 +1123,7 @@ class CoreComponentInspectorView: NSStackView {
             // Accessibility
             CoreComponentInspectorView.Property.accessibilityType: layer.accessibility.typeName.toData(),
             CoreComponentInspectorView.Property.accessibilityLabel: (layer.accessibility.label ?? "").toData(),
+            CoreComponentInspectorView.Property.accessibilityHint: (layer.accessibility.hint ?? "").toData(),
 
             // Metadata
             CoreComponentInspectorView.Property.accessLevel: CSValue.expand(
@@ -1185,6 +1194,7 @@ class CoreComponentInspectorView: NSStackView {
         // Accessibility
         case .accessibilityType: layer.accessibility = layer.accessibility.withType(value.stringValue)
         case .accessibilityLabel: layer.accessibility = layer.accessibility.withLabel(value.stringValue.isEmpty ? nil : value.string)
+        case .accessibilityHint: layer.accessibility = layer.accessibility.withHint(value.stringValue.isEmpty ? nil : value.string)
 
         // Metadata
         case .accessLevel: layer.metadata["accessLevel"] = CSValue.compact(
