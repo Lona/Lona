@@ -19,7 +19,7 @@ env:
 before_install:
   - brew update
   - brew outdated carthage || brew upgrade carthage
-  - BUNDLE_GEMFILE=ci/Gemfile bundle install
+  - brew install danger/tap/danger-swift
   - BUNDLE_GEMFILE=studio/Gemfile bundle install
   - BUNDLE_GEMFILE=studio/Gemfile bundle exec pod repo update
   - BUNDLE_GEMFILE=studio/Gemfile bundle exec pod install --project-directory=studio
@@ -31,7 +31,7 @@ before_script:
 
 script:
   - set -o pipefail
-  - BUNDLE_GEMFILE=ci/Gemfile bundle exec danger --dangerfile=ci/Dangerfile
+  - danger-swift ci --dangerfile=ci/Dangerfile.swift
   - cd studio
   - carthage build --platform macOS
   - xcodebuild -version
