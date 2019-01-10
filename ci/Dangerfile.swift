@@ -1,7 +1,7 @@
-import Danger 
+import Danger
 
 let danger = Danger()
-    
+
 // Make it more obvious that a PR is a work in progress and shouldn't be merged yet
 if danger.github.pullRequest.title.contains("[WIP]") {
     warn("PR is classed as Work in Progress")
@@ -35,4 +35,4 @@ if has_app_changes && !tests_updated {
 }
 
 // Run SwiftLint
-SwiftLint.lint(inline: true, directory: "studio", configFile: ".swiftlint.yml")
+SwiftLint.lint(inline: true, directory: "studio", configFile: ".swiftlint.yml", lintAllFiles: true, swiftlintPath: "./studio/Pods/SwiftLint/swiftlint")
