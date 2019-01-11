@@ -26,6 +26,10 @@ public class AccessibilityTest: UIView {
     update()
   }
 
+  public convenience init(customTextAccessibilityLabel: String) {
+    self.init(Parameters(customTextAccessibilityLabel: customTextAccessibilityLabel))
+  }
+
   public convenience init() {
     self.init(Parameters())
   }
@@ -42,6 +46,15 @@ public class AccessibilityTest: UIView {
   }
 
   // MARK: Public
+
+  public var customTextAccessibilityLabel: String {
+    get { return parameters.customTextAccessibilityLabel }
+    set {
+      if parameters.customTextAccessibilityLabel != newValue {
+        parameters.customTextAccessibilityLabel = newValue
+      }
+    }
+  }
 
   public var parameters: Parameters {
     didSet {
@@ -88,6 +101,8 @@ public class AccessibilityTest: UIView {
     imageView.accessibilityLabel = "My image"
     imageView.accessibilityHint = "A cool image"
     accessibleTextView.attributedText = accessibleTextViewTextStyle.apply(to: "Greetings")
+    accessibleTextView.isAccessibilityElement = true
+    accessibleTextView.accessibilityHint = "Some text"
   }
 
   private func setUpConstraints() {
@@ -198,14 +213,28 @@ public class AccessibilityTest: UIView {
     ])
   }
 
-  private func update() {}
+  private func update() {
+    accessibleTextView.accessibilityLabel = customTextAccessibilityLabel
+  }
 }
 
 // MARK: - Parameters
 
 extension AccessibilityTest {
   public struct Parameters: Equatable {
-    public init() {}
+    public var customTextAccessibilityLabel: String
+
+    public init(customTextAccessibilityLabel: String) {
+      self.customTextAccessibilityLabel = customTextAccessibilityLabel
+    }
+
+    public init() {
+      self.init(customTextAccessibilityLabel: "")
+    }
+
+    public static func ==(lhs: Parameters, rhs: Parameters) -> Bool {
+      return lhs.customTextAccessibilityLabel == rhs.customTextAccessibilityLabel
+    }
   }
 }
 
@@ -228,8 +257,12 @@ extension AccessibilityTest {
       self.parameters = parameters
     }
 
+    public init(customTextAccessibilityLabel: String) {
+      self.init(Parameters(customTextAccessibilityLabel: customTextAccessibilityLabel))
+    }
+
     public init() {
-      self.init(Parameters())
+      self.init(customTextAccessibilityLabel: "")
     }
   }
 }

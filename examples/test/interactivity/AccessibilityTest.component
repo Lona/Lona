@@ -15,10 +15,24 @@
     }
   ],
   "logic" : [
-
+    {
+      "assignee" : [
+        "layers",
+        "AccessibleText",
+        "accessibilityLabel"
+      ],
+      "content" : [
+        "parameters",
+        "customTextAccessibilityLabel"
+      ],
+      "type" : "AssignExpr"
+    }
   ],
   "params" : [
-
+    {
+      "name" : "customTextAccessibilityLabel",
+      "type" : "String"
+    }
   ],
   "root" : {
     "children" : [
@@ -70,6 +84,8 @@
               {
                 "id" : "AccessibleText",
                 "params" : {
+                  "accessibilityHint" : "Some text",
+                  "accessibilityType" : "element",
                   "text" : "Greetings"
                 },
                 "type" : "Lona:Text"

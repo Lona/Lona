@@ -86,7 +86,7 @@ enum Generated: String {
     var view: UIView {
         switch self {
         case .accessibilityTest:
-            return AccessibilityTest()
+            return AccessibilityTest(customTextAccessibilityLabel: "Custom label")
         case .collectionTest:
             let collectionView = LonaCollectionView(
                 items: [

@@ -230,7 +230,6 @@ let toSwiftAST =
         | "container" => createIsAccessibilityElementAssignment(false)
         | _ => Empty
         };
-
       | (
           Ast.SwiftIdentifier(key) as left,
           Ast.LiteralExpression(Array(elements)),
@@ -258,7 +257,7 @@ let toSwiftAST =
                    ),
               ),
             ),
-        });
+        })
       | (Ast.SwiftIdentifier(name), Ast.LiteralExpression(_) as right)
       | (Ast.SwiftIdentifier(name), Ast.MemberExpression(_) as right)
           when

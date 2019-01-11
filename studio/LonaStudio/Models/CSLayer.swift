@@ -658,6 +658,8 @@ class CSLayer: CSDataDeserializable, CSDataSerializable, DataNode, NSCopying {
     func value() -> CSValue {
         var valueType = CSLayerType
 
+        let accessibility = self.accessibility
+
         var data = CSData.Object([
             "name": CSData.String(name),
             "visible": CSData.Bool(visible),
@@ -686,8 +688,13 @@ class CSLayer: CSDataDeserializable, CSDataSerializable, DataNode, NSCopying {
             // Shadow
             "shadow": CSData.String(shadow ?? ""),
 
+            // Accessibility
+            "accessibilityLabel": (accessibility.label ?? "").toData(),
+            "accessibilityHint": (accessibility.hint ?? "").toData(),
+            "accessibilityElements": accessibility.elements.toData(),
+
             // Children
-            "children": CSData.Array([])
+            "children": CSData.Array([]),
         ])
 
         if type == .view {
