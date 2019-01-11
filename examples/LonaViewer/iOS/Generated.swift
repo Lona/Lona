@@ -86,7 +86,13 @@ enum Generated: String {
     var view: UIView {
         switch self {
         case .accessibilityTest:
-            return AccessibilityTest(customTextAccessibilityLabel: "Custom label", checkboxValue: true)
+            var checked = false
+            let view = AccessibilityTest(customTextAccessibilityLabel: "Custom label", checkboxValue: checked)
+            view.onToggleCheckbox = {
+                checked = !checked
+                view.checkboxValue = checked
+            }
+            return view
         case .collectionTest:
             let collectionView = LonaCollectionView(
                 items: [

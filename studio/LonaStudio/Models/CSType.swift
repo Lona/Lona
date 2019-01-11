@@ -548,6 +548,7 @@ let CSLayerType = CSType.dictionary([
     "accessibilityHint": (type: .string, access: .write),
     "accessibilityValue": (type: .string, access: .write),
     "accessibilityElements": (type: .array(.string), access: .write),
+    "onAccessibilityActivate": (type: CSHandlerType, access: .write),
 
     // Children
     "children": (type: .array(.any), access: .write)

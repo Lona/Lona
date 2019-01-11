@@ -78,6 +78,11 @@ public class AccessibilityTest: UIView {
     }
   }
 
+  public var onToggleCheckbox: (() -> Void)? {
+    get { return parameters.onToggleCheckbox }
+    set { parameters.onToggleCheckbox = newValue }
+  }
+
   public var parameters: Parameters {
     didSet {
       if parameters != oldValue {
@@ -89,7 +94,7 @@ public class AccessibilityTest: UIView {
   // MARK: Private
 
   private var checkboxRowView = LonaControlView(frame: .zero)
-  private var checkboxView = EventIgnoringView(frame: .zero)
+  private var checkboxView = LonaControlView(frame: .zero)
   private var checkboxCircleView = EventIgnoringView(frame: .zero)
   private var textView = UILabel()
   private var row1View = EventIgnoringView(frame: .zero)
@@ -103,6 +108,7 @@ public class AccessibilityTest: UIView {
   private var accessibleTextViewTextStyle = TextStyles.body1
 
   private var onTapCheckboxRowView: (() -> Void)?
+  private var onTapCheckboxView: (() -> Void)?
 
   private var checkboxCircleViewTopAnchorCheckboxViewTopAnchorConstraint: NSLayoutConstraint?
   private var checkboxCircleViewBottomAnchorCheckboxViewBottomAnchorConstraint: NSLayoutConstraint?
@@ -155,6 +161,8 @@ public class AccessibilityTest: UIView {
 
     checkboxRowView.addTarget(self, action: #selector(handleTapCheckboxRowView), for: .touchUpInside)
     checkboxRowView.onHighlight = update
+    checkboxView.addTarget(self, action: #selector(handleTapCheckboxView), for: .touchUpInside)
+    checkboxView.onHighlight = update
   }
 
   private func setUpConstraints() {
@@ -361,6 +369,8 @@ public class AccessibilityTest: UIView {
       checkboxCircleView.isHidden = !false
       checkboxRowView.accessibilityValue = "unchecked"
     }
+    checkboxRowView.onAccessibilityActivate = handleOnToggleCheckbox
+    onTapCheckboxView = handleOnToggleCheckbox
 
     if checkboxCircleView.isHidden != checkboxCircleViewIsHidden {
       NSLayoutConstraint.deactivate(conditionalConstraints(checkboxCircleViewIsHidden: checkboxCircleViewIsHidden))
@@ -368,8 +378,16 @@ public class AccessibilityTest: UIView {
     }
   }
 
+  private func handleOnToggleCheckbox() {
+    onToggleCheckbox?()
+  }
+
   @objc private func handleTapCheckboxRowView() {
     onTapCheckboxRowView?()
+  }
+
+  @objc private func handleTapCheckboxView() {
+    onTapCheckboxView?()
   }
 }
 
@@ -379,10 +397,12 @@ extension AccessibilityTest {
   public struct Parameters: Equatable {
     public var customTextAccessibilityLabel: String
     public var checkboxValue: Bool
+    public var onToggleCheckbox: (() -> Void)?
 
-    public init(customTextAccessibilityLabel: String, checkboxValue: Bool) {
+    public init(customTextAccessibilityLabel: String, checkboxValue: Bool, onToggleCheckbox: (() -> Void)? = nil) {
       self.customTextAccessibilityLabel = customTextAccessibilityLabel
       self.checkboxValue = checkboxValue
+      self.onToggleCheckbox = onToggleCheckbox
     }
 
     public init() {
@@ -415,8 +435,13 @@ extension AccessibilityTest {
       self.parameters = parameters
     }
 
-    public init(customTextAccessibilityLabel: String, checkboxValue: Bool) {
-      self.init(Parameters(customTextAccessibilityLabel: customTextAccessibilityLabel, checkboxValue: checkboxValue))
+    public init(customTextAccessibilityLabel: String, checkboxValue: Bool, onToggleCheckbox: (() -> Void)? = nil) {
+      self
+        .init(
+          Parameters(
+            customTextAccessibilityLabel: customTextAccessibilityLabel,
+            checkboxValue: checkboxValue,
+            onToggleCheckbox: onToggleCheckbox))
     }
 
     public init() {

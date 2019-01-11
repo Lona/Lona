@@ -717,6 +717,7 @@ class CSLayer: CSDataDeserializable, CSDataSerializable, DataNode, NSCopying {
             data["pressed"] = CSData.Bool(false)
             data["hovered"] = CSData.Bool(false)
             data["onPress"] = CSData.Null
+            data["onAccessibilityActivate"] = CSData.Null
         }
 
         // Text

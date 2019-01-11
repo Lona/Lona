@@ -10,6 +10,8 @@ public class LonaControlView: UIControl, LonaControl {
 
   var onHighlight: (() -> Void)?
 
+  var onAccessibilityActivate: (() -> Void)?
+
   var showsHighlight: Bool {
     return isControlPressed || isHighlighted
   }
@@ -24,5 +26,14 @@ public class LonaControlView: UIControl, LonaControl {
     didSet {
       onHighlight?()
     }
+  }
+
+  public override func accessibilityActivate() -> Bool {
+    if let onAccessibilityActivate = onAccessibilityActivate {
+      onAccessibilityActivate()
+      return true
+    }
+
+    return false
   }
 }

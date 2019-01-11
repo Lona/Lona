@@ -126,6 +126,30 @@
         "type" : "BinExpr"
       },
       "type" : "IfExpr"
+    },
+    {
+      "assignee" : [
+        "layers",
+        "CheckboxRow",
+        "onAccessibilityActivate"
+      ],
+      "content" : [
+        "parameters",
+        "onToggleCheckbox"
+      ],
+      "type" : "AssignExpr"
+    },
+    {
+      "assignee" : [
+        "layers",
+        "Checkbox",
+        "onPress"
+      ],
+      "content" : [
+        "parameters",
+        "onToggleCheckbox"
+      ],
+      "type" : "AssignExpr"
     }
   ],
   "params" : [
@@ -136,6 +160,12 @@
     {
       "name" : "checkboxValue",
       "type" : "Boolean"
+    },
+    {
+      "name" : "onToggleCheckbox",
+      "type" : {
+        "name" : "Function"
+      }
     }
   ],
   "root" : {
