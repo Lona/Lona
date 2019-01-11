@@ -1,0 +1,111 @@
+{
+  "devices" : [
+    {
+      "deviceId" : "iPhone SE",
+      "heightMode" : "At Least"
+    }
+  ],
+  "examples" : [
+    {
+      "id" : "Default",
+      "name" : "Default",
+      "params" : {
+
+      }
+    }
+  ],
+  "logic" : [
+
+  ],
+  "params" : [
+
+  ],
+  "root" : {
+    "children" : [
+      {
+        "children" : [
+          {
+            "children" : [
+              {
+                "id" : "Inner",
+                "params" : {
+                  "alignSelf" : "stretch",
+                  "backgroundColor" : "red800",
+                  "flex" : 1
+                },
+                "type" : "Lona:View"
+              }
+            ],
+            "id" : "Element",
+            "params" : {
+              "accessibilityHint" : "An accessibilty element",
+              "accessibilityLabel" : "Red box",
+              "accessibilityType" : "element",
+              "backgroundColor" : "red600",
+              "height" : 50,
+              "marginRight" : 10,
+              "paddingBottom" : 10,
+              "paddingLeft" : 10,
+              "paddingRight" : 10,
+              "paddingTop" : 10,
+              "width" : 50
+            },
+            "type" : "Lona:View"
+          },
+          {
+            "children" : [
+              {
+                "id" : "Image",
+                "params" : {
+                  "accessibilityHint" : "A cool image",
+                  "accessibilityLabel" : "My image",
+                  "accessibilityType" : "element",
+                  "height" : 50,
+                  "image" : "file:\/\/.\/assets\/icon_128x128.png",
+                  "marginRight" : 4,
+                  "width" : 50
+                },
+                "type" : "Lona:Image"
+              },
+              {
+                "id" : "AccessibleText",
+                "params" : {
+                  "text" : "Greetings"
+                },
+                "type" : "Lona:Text"
+              }
+            ],
+            "id" : "Container",
+            "params" : {
+              "accessibilityElements" : [
+                "AccessibleText",
+                "Image"
+              ],
+              "accessibilityType" : "container",
+              "alignItems" : "center",
+              "flex" : 1,
+              "flexDirection" : "row"
+            },
+            "type" : "Lona:View"
+          }
+        ],
+        "id" : "Row1",
+        "params" : {
+          "flex" : 1,
+          "flexDirection" : "row",
+          "paddingBottom" : 10,
+          "paddingLeft" : 10,
+          "paddingRight" : 10,
+          "paddingTop" : 10
+        },
+        "type" : "Lona:View"
+      }
+    ],
+    "id" : "View",
+    "params" : {
+      "alignSelf" : "stretch",
+      "flexDirection" : "row"
+    },
+    "type" : "Lona:View"
+  }
+}

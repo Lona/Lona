@@ -154,6 +154,7 @@ public class LonaCollectionView: UICollectionView,
     register(ImageCroppingCell.self, forCellWithReuseIdentifier: ImageCroppingCell.identifier)
     register(LocalAssetCell.self, forCellWithReuseIdentifier: LocalAssetCell.identifier)
     register(VectorAssetCell.self, forCellWithReuseIdentifier: VectorAssetCell.identifier)
+    register(AccessibilityTestCell.self, forCellWithReuseIdentifier: AccessibilityTestCell.identifier)
     register(ButtonCell.self, forCellWithReuseIdentifier: ButtonCell.identifier)
     register(PressableRootViewCell.self, forCellWithReuseIdentifier: PressableRootViewCell.identifier)
     register(FillWidthFitHeightCardCell.self, forCellWithReuseIdentifier: FillWidthFitHeightCardCell.identifier)
@@ -292,6 +293,11 @@ public class LonaCollectionView: UICollectionView,
       }
     case VectorAssetCell.identifier:
       if let cell = cell as? VectorAssetCell, let item = item as? VectorAsset.Model {
+        cell.parameters = item.parameters
+        cell.scrollDirection = scrollDirection
+      }
+    case AccessibilityTestCell.identifier:
+      if let cell = cell as? AccessibilityTestCell, let item = item as? AccessibilityTest.Model {
         cell.parameters = item.parameters
         cell.scrollDirection = scrollDirection
       }
@@ -691,6 +697,16 @@ public class VectorAssetCell: LonaCollectionViewCell<VectorAsset> {
   }
   public static var identifier: String {
     return "VectorAsset"
+  }
+}
+
+public class AccessibilityTestCell: LonaCollectionViewCell<AccessibilityTest> {
+  public var parameters: AccessibilityTest.Parameters {
+    get { return view.parameters }
+    set { view.parameters = newValue }
+  }
+  public static var identifier: String {
+    return "AccessibilityTest"
   }
 }
 

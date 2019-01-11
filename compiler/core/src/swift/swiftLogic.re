@@ -203,6 +203,62 @@ let toSwiftAST =
     switch (logicRootNode) {
     | Logic.Assign(a, b) =>
       switch (logicValueToSwiftAST(b), logicValueToSwiftAST(a)) {
+      | (Ast.SwiftIdentifier(key), Ast.LiteralExpression(String(value)))
+          when
+            (
+              key == "accessibilityType"
+              || key
+              |> Js.String.endsWith(".accessibilityType")
+            )
+            && options.framework == UIKit =>
+        let createIsAccessibilityElementAssignment = enabled => {
+          let newKey =
+            key
+            |> Js.String.replace(
+                 "accessibilityType",
+                 "isAccessibilityElement",
+               );
+          Ast.BinaryExpression({
+            "left": Ast.SwiftIdentifier(newKey),
+            "operator": "=",
+            "right": Ast.LiteralExpression(Boolean(enabled)),
+          });
+        };
+        switch (value) {
+        | "none" => createIsAccessibilityElementAssignment(false)
+        | "element" => createIsAccessibilityElementAssignment(true)
+        | "container" => createIsAccessibilityElementAssignment(false)
+        | _ => Empty
+        };
+
+      | (
+          Ast.SwiftIdentifier(key) as left,
+          Ast.LiteralExpression(Array(elements)),
+        )
+          when
+            (
+              key == "accessibilityElements"
+              || key
+              |> Js.String.endsWith(".accessibilityElements")
+            )
+            && options.framework == UIKit =>
+        Ast.BinaryExpression({
+          "left": left,
+          "operator": "=",
+          "right":
+            Ast.LiteralExpression(
+              Array(
+                elements
+                |> List.map((element: Ast.node) =>
+                     switch (element) {
+                     | LiteralExpression(String(layerName)) =>
+                       Ast.SwiftIdentifier(SwiftFormat.layerName(layerName))
+                     | _ => Empty
+                     }
+                   ),
+              ),
+            ),
+        });
       | (Ast.SwiftIdentifier(name), Ast.LiteralExpression(_) as right)
       | (Ast.SwiftIdentifier(name), Ast.MemberExpression(_) as right)
           when
