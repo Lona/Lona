@@ -104,8 +104,9 @@
             ],
             "id" : "Element",
             "params" : {
-              "accessibilityHint" : "An accessibilty element",
+              "accessibilityHint" : "An accessibility element",
               "accessibilityLabel" : "Red box",
+              "accessibilityRole" : "button",
               "accessibilityType" : "element",
               "backgroundColor" : "red600",
               "height" : 50,

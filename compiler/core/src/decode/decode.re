@@ -49,6 +49,7 @@ let parameterType = key =>
   | AccessibilityLabel => Types.stringType
   | AccessibilityHint => Types.stringType
   | AccessibilityValue => Types.stringType
+  | AccessibilityRole => Types.stringType
   | AccessibilityElements => Types.Array(Types.stringType)
   /* Custom */
   /* | Custom("font") => Types.textStyleType */

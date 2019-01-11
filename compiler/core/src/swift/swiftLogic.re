@@ -231,6 +231,38 @@ let toSwiftAST =
         | _ => Empty
         };
       | (
+          Ast.SwiftIdentifier(key),
+          Ast.LiteralExpression(String(role)),
+        )
+          when
+            (
+              key == "accessibilityRole"
+              || key
+              |> Js.String.endsWith(".accessibilityRole")
+            )
+            && options.framework == UIKit =>
+        Ast.BinaryExpression({
+          "left": Ast.SwiftIdentifier(key |> Js.String.replace("accessibilityRole", "accessibilityTraits")),
+          "operator": "=",
+          "right":
+            Ast.SwiftIdentifier(
+              switch (role) {
+              | "none" => "UIAccessibilityTraitNone"
+              | "button" => "UIAccessibilityTraitButton"
+              | "link" => "UIAccessibilityTraitLink"
+              | "search" => "UIAccessibilityTraitSearchField"
+              | "image" => "UIAccessibilityTraitImage"
+              | "keyboardkey" => "UIAccessibilityTraitKeyboardKey"
+              | "text" => "UIAccessibilityTraitStaticText"
+              | "adjustable" => "UIAccessibilityTraitAdjustable"
+              | "imagebutton" => "UIAccessibilityTraitButton | UIAccessibilityTraitImage"
+              | "header" => "UIAccessibilityTraitHeader"
+              | "summary" => "UIAccessibilityTraitSummaryElement"
+              | _ => "UIAccessibilityTraitNone"
+              },
+            ),
+        })
+      | (
           Ast.SwiftIdentifier(key) as left,
           Ast.LiteralExpression(Array(elements)),
         )

@@ -143,6 +143,15 @@ enum AccessibilityType {
         }
     }
 
+    func withRole(_ role: AccessibilityRole?) -> AccessibilityType {
+        if case .element(var element) = self {
+            element.role = role
+            return .element(element)
+        } else {
+            return self
+        }
+    }
+
     func withElements(_ elements: [String]) -> AccessibilityType {
         if case .container = self {
             return .container(elements)

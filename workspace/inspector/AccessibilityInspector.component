@@ -273,6 +273,30 @@
         "selectedElementIndices"
       ],
       "type" : "AssignExpr"
+    },
+    {
+      "assignee" : [
+        "layers",
+        "RoleDropdown",
+        "onChangeIndex"
+      ],
+      "content" : [
+        "parameters",
+        "onChangeAccessibilityRoleIndex"
+      ],
+      "type" : "AssignExpr"
+    },
+    {
+      "assignee" : [
+        "layers",
+        "RoleDropdown",
+        "selectedIndex"
+      ],
+      "content" : [
+        "parameters",
+        "accessibilityRoleIndex"
+      ],
+      "type" : "AssignExpr"
     }
   ],
   "params" : [
@@ -345,6 +369,22 @@
       "type" : {
         "name" : "Array",
         "of" : "WholeNumber"
+      }
+    },
+    {
+      "name" : "accessibilityRoleIndex",
+      "type" : "WholeNumber"
+    },
+    {
+      "name" : "onChangeAccessibilityRoleIndex",
+      "type" : {
+        "name" : "Function",
+        "parameters" : [
+          {
+            "label" : "_",
+            "type" : "WholeNumber"
+          }
+        ]
       }
     }
   ],
@@ -440,6 +480,7 @@
                     "Keyboard Key",
                     "Text",
                     "Adjustable",
+                    "Image Button",
                     "Header",
                     "Summary"
                   ]

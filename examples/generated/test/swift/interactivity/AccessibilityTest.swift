@@ -111,7 +111,8 @@ public class AccessibilityTest: UIView {
     elementView.backgroundColor = Colors.red600
     elementView.isAccessibilityElement = true
     elementView.accessibilityLabel = "Red box"
-    elementView.accessibilityHint = "An accessibilty element"
+    elementView.accessibilityHint = "An accessibility element"
+    elementView.accessibilityTraits = UIAccessibilityTraitButton
     innerView.backgroundColor = Colors.red800
     containerView.isAccessibilityElement = false
     containerView.accessibilityElements = [accessibleTextView, imageView]

@@ -564,6 +564,20 @@ class CSLayer: CSDataDeserializable, CSDataSerializable, DataNode, NSCopying {
         "visible": CSData.Bool(true)
     ]
 
+    static let accessibilityRoles = [
+        "none",
+        "button",
+        "link",
+        "search",
+        "image",
+        "keyboardkey",
+        "text",
+        "adjustable",
+        "imagebutton",
+        "header",
+        "summary"
+    ]
+
     func decode(parameters: [String: CSData]) -> [String: CSData] {
         return parameters
     }

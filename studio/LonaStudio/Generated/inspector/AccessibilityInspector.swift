@@ -24,7 +24,8 @@ public class AccessibilityInspector: NSBox {
     accessibilityLabelText: String,
     accessibilityHintText: String,
     accessibilityElements: [String],
-    selectedElementIndices: [Int])
+    selectedElementIndices: [Int],
+    accessibilityRoleIndex: Int)
   {
     self
       .init(
@@ -34,7 +35,8 @@ public class AccessibilityInspector: NSBox {
           accessibilityLabelText: accessibilityLabelText,
           accessibilityHintText: accessibilityHintText,
           accessibilityElements: accessibilityElements,
-          selectedElementIndices: selectedElementIndices))
+          selectedElementIndices: selectedElementIndices,
+          accessibilityRoleIndex: accessibilityRoleIndex))
   }
 
   public convenience init() {
@@ -131,6 +133,20 @@ public class AccessibilityInspector: NSBox {
         parameters.selectedElementIndices = newValue
       }
     }
+  }
+
+  public var accessibilityRoleIndex: Int {
+    get { return parameters.accessibilityRoleIndex }
+    set {
+      if parameters.accessibilityRoleIndex != newValue {
+        parameters.accessibilityRoleIndex = newValue
+      }
+    }
+  }
+
+  public var onChangeAccessibilityRoleIndex: ((Int) -> Void)? {
+    get { return parameters.onChangeAccessibilityRoleIndex }
+    set { parameters.onChangeAccessibilityRoleIndex = newValue }
   }
 
   public var parameters: Parameters {
@@ -273,7 +289,6 @@ public class AccessibilityInspector: NSBox {
     hintLabelView.attributedStringValue = hintLabelViewTextStyle.apply(to: "Hint")
     hintTextInputView.placeholderString = "Hint"
     roleLabelView.attributedStringValue = roleLabelViewTextStyle.apply(to: "Role")
-    roleDropdownView.selectedIndex = 0
     roleDropdownView.values = [
       "None",
       "Button",
@@ -788,6 +803,8 @@ public class AccessibilityInspector: NSBox {
     accessibilityElementsInputView.options = accessibilityElements
     accessibilityElementsInputView.onChangeSelectedIndices = handleOnChangeSelectedElementIndices
     accessibilityElementsInputView.selectedIndices = selectedElementIndices
+    roleDropdownView.onChangeIndex = handleOnChangeAccessibilityRoleIndex
+    roleDropdownView.selectedIndex = accessibilityRoleIndex
 
     if
     containerContainerView.isHidden != containerContainerViewIsHidden ||
@@ -826,6 +843,10 @@ public class AccessibilityInspector: NSBox {
   private func handleOnChangeSelectedElementIndices(_ arg0: [Int]) {
     onChangeSelectedElementIndices?(arg0)
   }
+
+  private func handleOnChangeAccessibilityRoleIndex(_ arg0: Int) {
+    onChangeAccessibilityRoleIndex?(arg0)
+  }
 }
 
 // MARK: - Parameters
@@ -838,11 +859,13 @@ extension AccessibilityInspector {
     public var accessibilityHintText: String
     public var accessibilityElements: [String]
     public var selectedElementIndices: [Int]
+    public var accessibilityRoleIndex: Int
     public var onClickHeader: (() -> Void)?
     public var onChangeAccessibilityTypeIndex: ((Int) -> Void)?
     public var onChangeAccessibilityLabel: StringHandler
     public var onChangeAccessibilityHintText: StringHandler
     public var onChangeSelectedElementIndices: (([Int]) -> Void)?
+    public var onChangeAccessibilityRoleIndex: ((Int) -> Void)?
 
     public init(
       isExpanded: Bool,
@@ -851,11 +874,13 @@ extension AccessibilityInspector {
       accessibilityHintText: String,
       accessibilityElements: [String],
       selectedElementIndices: [Int],
+      accessibilityRoleIndex: Int,
       onClickHeader: (() -> Void)? = nil,
       onChangeAccessibilityTypeIndex: ((Int) -> Void)? = nil,
       onChangeAccessibilityLabel: StringHandler = nil,
       onChangeAccessibilityHintText: StringHandler = nil,
-      onChangeSelectedElementIndices: (([Int]) -> Void)? = nil)
+      onChangeSelectedElementIndices: (([Int]) -> Void)? = nil,
+      onChangeAccessibilityRoleIndex: ((Int) -> Void)? = nil)
     {
       self.isExpanded = isExpanded
       self.accessibilityTypeIndex = accessibilityTypeIndex
@@ -863,11 +888,13 @@ extension AccessibilityInspector {
       self.accessibilityHintText = accessibilityHintText
       self.accessibilityElements = accessibilityElements
       self.selectedElementIndices = selectedElementIndices
+      self.accessibilityRoleIndex = accessibilityRoleIndex
       self.onClickHeader = onClickHeader
       self.onChangeAccessibilityTypeIndex = onChangeAccessibilityTypeIndex
       self.onChangeAccessibilityLabel = onChangeAccessibilityLabel
       self.onChangeAccessibilityHintText = onChangeAccessibilityHintText
       self.onChangeSelectedElementIndices = onChangeSelectedElementIndices
+      self.onChangeAccessibilityRoleIndex = onChangeAccessibilityRoleIndex
     }
 
     public init() {
@@ -878,7 +905,8 @@ extension AccessibilityInspector {
           accessibilityLabelText: "",
           accessibilityHintText: "",
           accessibilityElements: [],
-          selectedElementIndices: [])
+          selectedElementIndices: [],
+          accessibilityRoleIndex: 0)
     }
 
     public static func ==(lhs: Parameters, rhs: Parameters) -> Bool {
@@ -887,7 +915,8 @@ extension AccessibilityInspector {
           lhs.accessibilityLabelText == rhs.accessibilityLabelText &&
             lhs.accessibilityHintText == rhs.accessibilityHintText &&
               lhs.accessibilityElements == rhs.accessibilityElements &&
-                lhs.selectedElementIndices == rhs.selectedElementIndices
+                lhs.selectedElementIndices == rhs.selectedElementIndices &&
+                  lhs.accessibilityRoleIndex == rhs.accessibilityRoleIndex
     }
   }
 }
@@ -918,11 +947,13 @@ extension AccessibilityInspector {
       accessibilityHintText: String,
       accessibilityElements: [String],
       selectedElementIndices: [Int],
+      accessibilityRoleIndex: Int,
       onClickHeader: (() -> Void)? = nil,
       onChangeAccessibilityTypeIndex: ((Int) -> Void)? = nil,
       onChangeAccessibilityLabel: StringHandler = nil,
       onChangeAccessibilityHintText: StringHandler = nil,
-      onChangeSelectedElementIndices: (([Int]) -> Void)? = nil)
+      onChangeSelectedElementIndices: (([Int]) -> Void)? = nil,
+      onChangeAccessibilityRoleIndex: ((Int) -> Void)? = nil)
     {
       self
         .init(
@@ -933,11 +964,13 @@ extension AccessibilityInspector {
             accessibilityHintText: accessibilityHintText,
             accessibilityElements: accessibilityElements,
             selectedElementIndices: selectedElementIndices,
+            accessibilityRoleIndex: accessibilityRoleIndex,
             onClickHeader: onClickHeader,
             onChangeAccessibilityTypeIndex: onChangeAccessibilityTypeIndex,
             onChangeAccessibilityLabel: onChangeAccessibilityLabel,
             onChangeAccessibilityHintText: onChangeAccessibilityHintText,
-            onChangeSelectedElementIndices: onChangeSelectedElementIndices))
+            onChangeSelectedElementIndices: onChangeSelectedElementIndices,
+            onChangeAccessibilityRoleIndex: onChangeAccessibilityRoleIndex))
     }
 
     public init() {
@@ -948,7 +981,8 @@ extension AccessibilityInspector {
           accessibilityLabelText: "",
           accessibilityHintText: "",
           accessibilityElements: [],
-          selectedElementIndices: [])
+          selectedElementIndices: [],
+          accessibilityRoleIndex: 0)
     }
   }
 }

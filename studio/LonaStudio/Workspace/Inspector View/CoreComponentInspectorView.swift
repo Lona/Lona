@@ -92,6 +92,7 @@ class CoreComponentInspectorView: NSStackView {
         case accessibilityLabel
         case accessibilityHint
         case accessibilityElements
+        case accessibilityRole
 
         // Metadata
         case accessLevel
@@ -933,6 +934,10 @@ class CoreComponentInspectorView: NSStackView {
             change(property: Property.accessibilityHint, to: value.toData())
         }
 
+        accessibilityInspector.onChangeAccessibilityRoleIndex = { value in
+            change(property: Property.accessibilityRole, to: CSLayer.accessibilityRoles[value].toData())
+        }
+
         accessibilityInspector.accessibilityElements = csLayer.descendantLayerNames(includingSelf: false)
         accessibilityInspector.onChangeSelectedElementIndices = { value in
             change(property: Property.accessibilityElements, to: value.toData())
@@ -949,6 +954,7 @@ class CoreComponentInspectorView: NSStackView {
         Property.accessibilityType,
         Property.accessibilityLabel,
         Property.accessibilityHint,
+        Property.accessibilityRole,
         Property.accessibilityElements
     ]
 
@@ -1066,6 +1072,8 @@ class CoreComponentInspectorView: NSStackView {
             accessibilityInspector.accessibilityLabelText = value.stringValue
         case .accessibilityHint:
             accessibilityInspector.accessibilityHintText = value.stringValue
+        case .accessibilityRole:
+            accessibilityInspector.accessibilityRoleIndex = CSLayer.accessibilityRoles.firstIndex(of: value.stringValue) ?? 0
         case .accessibilityElements:
             accessibilityInspector.selectedElementIndices = value.arrayValue.map { $0.int }
         default:
@@ -1135,6 +1143,7 @@ class CoreComponentInspectorView: NSStackView {
             CoreComponentInspectorView.Property.accessibilityType: layer.accessibility.typeName.toData(),
             CoreComponentInspectorView.Property.accessibilityLabel: (layer.accessibility.label ?? "").toData(),
             CoreComponentInspectorView.Property.accessibilityHint: (layer.accessibility.hint ?? "").toData(),
+            CoreComponentInspectorView.Property.accessibilityRole: (layer.accessibility.role?.rawValue ?? "none").toData(),
             CoreComponentInspectorView.Property.accessibilityElements: accessibilityIndices.toData(),
 
             // Metadata
@@ -1211,7 +1220,7 @@ class CoreComponentInspectorView: NSStackView {
             let layerNames = layer.descendantLayerNames(includingSelf: false)
             let elements = value.arrayValue.map { $0.int }.map { layerNames[$0] }
             layer.accessibility = layer.accessibility.withElements(elements)
-
+        case .accessibilityRole: layer.accessibility = layer.accessibility.withRole(AccessibilityRole(rawValue: value.stringValue))
         // Metadata
         case .accessLevel: layer.metadata["accessLevel"] = CSValue.compact(
             type: CSType.platformSpecificAccessLevel, data: CSData.Object(value.objectValue))
