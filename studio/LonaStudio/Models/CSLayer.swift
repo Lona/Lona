@@ -481,6 +481,7 @@ class CSLayer: CSDataDeserializable, CSDataSerializable, DataNode, NSCopying {
         "accessibilityType",
         "accessibilityLabel",
         "accessibilityHint",
+        "accessibilityValue",
         "accessibilityRole",
         "accessibilityStates",
         "accessibilityElements"
@@ -691,10 +692,11 @@ class CSLayer: CSDataDeserializable, CSDataSerializable, DataNode, NSCopying {
             // Accessibility
             "accessibilityLabel": (accessibility.label ?? "").toData(),
             "accessibilityHint": (accessibility.hint ?? "").toData(),
+            "accessibilityValue": (accessibility.value ?? "").toData(),
             "accessibilityElements": accessibility.elements.toData(),
 
             // Children
-            "children": CSData.Array([]),
+            "children": CSData.Array([])
         ])
 
         if type == .view {

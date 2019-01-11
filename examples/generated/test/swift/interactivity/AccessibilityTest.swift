@@ -66,6 +66,10 @@ public class AccessibilityTest: UIView {
 
   // MARK: Private
 
+  private var checkboxRowView = UIView(frame: .zero)
+  private var checkboxView = UIView(frame: .zero)
+  private var checkboxCircleView = UIView(frame: .zero)
+  private var textView = UILabel()
   private var row1View = UIView(frame: .zero)
   private var elementView = UIView(frame: .zero)
   private var innerView = UIView(frame: .zero)
@@ -73,22 +77,37 @@ public class AccessibilityTest: UIView {
   private var imageView = BackgroundImageView(frame: .zero)
   private var accessibleTextView = UILabel()
 
+  private var textViewTextStyle = TextStyles.body1
   private var accessibleTextViewTextStyle = TextStyles.body1
 
   private func setUpViews() {
+    textView.isUserInteractionEnabled = false
+    textView.numberOfLines = 0
     imageView.isUserInteractionEnabled = false
     imageView.contentMode = .scaleAspectFill
     imageView.layer.masksToBounds = true
     accessibleTextView.isUserInteractionEnabled = false
     accessibleTextView.numberOfLines = 0
 
+    addSubview(checkboxRowView)
     addSubview(row1View)
+    checkboxRowView.addSubview(checkboxView)
+    checkboxRowView.addSubview(textView)
+    checkboxView.addSubview(checkboxCircleView)
     row1View.addSubview(elementView)
     row1View.addSubview(containerView)
     elementView.addSubview(innerView)
     containerView.addSubview(imageView)
     containerView.addSubview(accessibleTextView)
 
+    checkboxRowView.isAccessibilityElement = true
+    checkboxRowView.accessibilityLabel = "Checkbox row"
+    checkboxView.layer.cornerRadius = 20
+    checkboxView.layer.borderWidth = 1
+    checkboxView.layer.borderColor = Colors.grey400.cgColor
+    checkboxCircleView.backgroundColor = Colors.green200
+    checkboxCircleView.layer.cornerRadius = 15
+    textView.attributedText = textViewTextStyle.apply(to: "Checkbox description")
     elementView.backgroundColor = Colors.red600
     elementView.isAccessibilityElement = true
     elementView.accessibilityLabel = "Red box"
@@ -107,18 +126,44 @@ public class AccessibilityTest: UIView {
 
   private func setUpConstraints() {
     translatesAutoresizingMaskIntoConstraints = false
+    checkboxRowView.translatesAutoresizingMaskIntoConstraints = false
     row1View.translatesAutoresizingMaskIntoConstraints = false
+    checkboxView.translatesAutoresizingMaskIntoConstraints = false
+    textView.translatesAutoresizingMaskIntoConstraints = false
+    checkboxCircleView.translatesAutoresizingMaskIntoConstraints = false
     elementView.translatesAutoresizingMaskIntoConstraints = false
     containerView.translatesAutoresizingMaskIntoConstraints = false
     innerView.translatesAutoresizingMaskIntoConstraints = false
     imageView.translatesAutoresizingMaskIntoConstraints = false
     accessibleTextView.translatesAutoresizingMaskIntoConstraints = false
 
-    let row1ViewHeightAnchorParentConstraint = row1View.heightAnchor.constraint(lessThanOrEqualTo: heightAnchor)
+    let checkboxRowViewTopAnchorConstraint = checkboxRowView.topAnchor.constraint(equalTo: topAnchor)
+    let checkboxRowViewLeadingAnchorConstraint = checkboxRowView.leadingAnchor.constraint(equalTo: leadingAnchor)
+    let checkboxRowViewTrailingAnchorConstraint = checkboxRowView.trailingAnchor.constraint(equalTo: trailingAnchor)
+    let row1ViewBottomAnchorConstraint = row1View.bottomAnchor.constraint(equalTo: bottomAnchor)
+    let row1ViewTopAnchorConstraint = row1View.topAnchor.constraint(equalTo: checkboxRowView.bottomAnchor)
     let row1ViewLeadingAnchorConstraint = row1View.leadingAnchor.constraint(equalTo: leadingAnchor)
     let row1ViewTrailingAnchorConstraint = row1View.trailingAnchor.constraint(equalTo: trailingAnchor)
-    let row1ViewTopAnchorConstraint = row1View.topAnchor.constraint(equalTo: topAnchor)
-    let row1ViewBottomAnchorConstraint = row1View.bottomAnchor.constraint(equalTo: bottomAnchor)
+    let checkboxViewHeightAnchorParentConstraint = checkboxView
+      .heightAnchor
+      .constraint(lessThanOrEqualTo: checkboxRowView.heightAnchor, constant: -20)
+    let textViewHeightAnchorParentConstraint = textView
+      .heightAnchor
+      .constraint(lessThanOrEqualTo: checkboxRowView.heightAnchor, constant: -20)
+    let checkboxViewLeadingAnchorConstraint = checkboxView
+      .leadingAnchor
+      .constraint(equalTo: checkboxRowView.leadingAnchor, constant: 10)
+    let checkboxViewCenterYAnchorConstraint = checkboxView
+      .centerYAnchor
+      .constraint(equalTo: checkboxRowView.centerYAnchor)
+    let textViewLeadingAnchorConstraint = textView
+      .leadingAnchor
+      .constraint(equalTo: checkboxView.trailingAnchor, constant: 10)
+    let textViewTopAnchorConstraint = textView.topAnchor.constraint(equalTo: checkboxRowView.topAnchor, constant: 10)
+    let textViewCenterYAnchorConstraint = textView.centerYAnchor.constraint(equalTo: checkboxRowView.centerYAnchor)
+    let textViewBottomAnchorConstraint = textView
+      .bottomAnchor
+      .constraint(equalTo: checkboxRowView.bottomAnchor, constant: -10)
     let elementViewHeightAnchorParentConstraint = elementView
       .heightAnchor
       .constraint(lessThanOrEqualTo: row1View.heightAnchor, constant: -20)
@@ -139,6 +184,20 @@ public class AccessibilityTest: UIView {
     let containerViewBottomAnchorConstraint = containerView
       .bottomAnchor
       .constraint(equalTo: row1View.bottomAnchor, constant: -10)
+    let checkboxViewHeightAnchorConstraint = checkboxView.heightAnchor.constraint(equalToConstant: 30)
+    let checkboxViewWidthAnchorConstraint = checkboxView.widthAnchor.constraint(equalToConstant: 30)
+    let checkboxCircleViewTopAnchorConstraint = checkboxCircleView
+      .topAnchor
+      .constraint(equalTo: checkboxView.topAnchor, constant: 5)
+    let checkboxCircleViewBottomAnchorConstraint = checkboxCircleView
+      .bottomAnchor
+      .constraint(equalTo: checkboxView.bottomAnchor, constant: -5)
+    let checkboxCircleViewLeadingAnchorConstraint = checkboxCircleView
+      .leadingAnchor
+      .constraint(equalTo: checkboxView.leadingAnchor, constant: 5)
+    let checkboxCircleViewTrailingAnchorConstraint = checkboxCircleView
+      .trailingAnchor
+      .constraint(equalTo: checkboxView.trailingAnchor, constant: -5)
     let elementViewHeightAnchorConstraint = elementView.heightAnchor.constraint(equalToConstant: 50)
     let elementViewWidthAnchorConstraint = elementView.widthAnchor.constraint(equalToConstant: 50)
     let innerViewTopAnchorConstraint = innerView.topAnchor.constraint(equalTo: elementView.topAnchor, constant: 10)
@@ -174,18 +233,29 @@ public class AccessibilityTest: UIView {
     let imageViewHeightAnchorConstraint = imageView.heightAnchor.constraint(equalToConstant: 50)
     let imageViewWidthAnchorConstraint = imageView.widthAnchor.constraint(equalToConstant: 50)
 
-    row1ViewHeightAnchorParentConstraint.priority = UILayoutPriority.defaultLow
+    checkboxViewHeightAnchorParentConstraint.priority = UILayoutPriority.defaultLow
+    textViewHeightAnchorParentConstraint.priority = UILayoutPriority.defaultLow
     elementViewHeightAnchorParentConstraint.priority = UILayoutPriority.defaultLow
     containerViewHeightAnchorParentConstraint.priority = UILayoutPriority.defaultLow
     imageViewHeightAnchorParentConstraint.priority = UILayoutPriority.defaultLow
     accessibleTextViewHeightAnchorParentConstraint.priority = UILayoutPriority.defaultLow
 
     NSLayoutConstraint.activate([
-      row1ViewHeightAnchorParentConstraint,
+      checkboxRowViewTopAnchorConstraint,
+      checkboxRowViewLeadingAnchorConstraint,
+      checkboxRowViewTrailingAnchorConstraint,
+      row1ViewBottomAnchorConstraint,
+      row1ViewTopAnchorConstraint,
       row1ViewLeadingAnchorConstraint,
       row1ViewTrailingAnchorConstraint,
-      row1ViewTopAnchorConstraint,
-      row1ViewBottomAnchorConstraint,
+      checkboxViewHeightAnchorParentConstraint,
+      textViewHeightAnchorParentConstraint,
+      checkboxViewLeadingAnchorConstraint,
+      checkboxViewCenterYAnchorConstraint,
+      textViewLeadingAnchorConstraint,
+      textViewTopAnchorConstraint,
+      textViewCenterYAnchorConstraint,
+      textViewBottomAnchorConstraint,
       elementViewHeightAnchorParentConstraint,
       containerViewHeightAnchorParentConstraint,
       elementViewLeadingAnchorConstraint,
@@ -194,6 +264,12 @@ public class AccessibilityTest: UIView {
       containerViewLeadingAnchorConstraint,
       containerViewTopAnchorConstraint,
       containerViewBottomAnchorConstraint,
+      checkboxViewHeightAnchorConstraint,
+      checkboxViewWidthAnchorConstraint,
+      checkboxCircleViewTopAnchorConstraint,
+      checkboxCircleViewBottomAnchorConstraint,
+      checkboxCircleViewLeadingAnchorConstraint,
+      checkboxCircleViewTrailingAnchorConstraint,
       elementViewHeightAnchorConstraint,
       elementViewWidthAnchorConstraint,
       innerViewTopAnchorConstraint,

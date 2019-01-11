@@ -56,6 +56,7 @@ extension AccessibilityStates {
 struct AccessibilityElement {
     var label: String?
     var hint: String?
+    var value: String?
     var role: AccessibilityRole?
     var states: AccessibilityStates = .none
 }
@@ -89,6 +90,7 @@ enum AccessibilityType {
 
     var label: String? { return element?.label }
     var hint: String? { return element?.hint }
+    var value: String? { return element?.value }
     var role: AccessibilityRole? { return element?.role }
     var states: AccessibilityStates { return element?.states ?? .none }
     var elements: [String] {
@@ -110,7 +112,7 @@ enum AccessibilityType {
             if case .element = self {
                 return self
             } else {
-                return .element(AccessibilityElement(label: nil, hint: nil, role: nil, states: .none))
+                return .element(AccessibilityElement(label: nil, hint: nil, value: nil, role: nil, states: .none))
             }
         case "container":
             if case .container = self {
@@ -162,9 +164,10 @@ extension AccessibilityType: CSDataDeserializable {
         case "element":
             let label = data.get(key: "accessibilityLabel").string
             let hint = data.get(key: "accessibilityHint").string
+            let value = data.get(key: "accessibilityValue").string
             let role = AccessibilityRole(rawValue: data.get(key: "accessibilityRole").stringValue)
             let states = AccessibilityStates(data.get(key: "accessibilityStates").arrayValue.compactMap { $0.string })
-            let element = AccessibilityElement.init(label: label, hint: hint, role: role, states: states)
+            let element = AccessibilityElement.init(label: label, hint: hint, value: value, role: role, states: states)
             self = AccessibilityType.element(element)
         case "container":
             let elements = data.get(key: "accessibilityElements").arrayValue.compactMap { $0.string }
@@ -189,6 +192,7 @@ extension AccessibilityType: CSDataSerializable {
             data["accessibilityType"] = "element".toData()
             data["accessibilityLabel"] = element.label?.toData()
             data["accessibilityHint"] = element.hint?.toData()
+            data["accessibilityValue"] = element.value?.toData()
             data["accessibilityRole"] = element.role?.rawValue.toData()
 
             let stateStrings = element.states.strings

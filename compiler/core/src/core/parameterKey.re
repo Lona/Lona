@@ -43,6 +43,7 @@ type t =
   | AccessibilityType
   | AccessibilityLabel
   | AccessibilityHint
+  | AccessibilityValue
   | AccessibilityElements
   /* Interactivity */
   | Pressed
@@ -93,6 +94,7 @@ let fromString = string =>
   | "accessibilityType" => AccessibilityType
   | "accessibilityLabel" => AccessibilityLabel
   | "accessibilityHint" => AccessibilityHint
+  | "accessibilityValue" => AccessibilityValue
   | "accessibilityElements" => AccessibilityElements
   /* Interactivity */
   | "pressed" => Pressed
@@ -145,6 +147,7 @@ let toString = key =>
   | AccessibilityType => "accessibilityType"
   | AccessibilityLabel => "accessibilityLabel"
   | AccessibilityHint => "accessibilityHint"
+  | AccessibilityValue => "accessibilityValue"
   | AccessibilityElements => "accessibilityElements"
   /* Interactivity */
   | Pressed => "pressed"

@@ -41,6 +41,58 @@
           {
             "children" : [
               {
+                "id" : "CheckboxCircle",
+                "params" : {
+                  "alignSelf" : "stretch",
+                  "backgroundColor" : "green200",
+                  "borderRadius" : 15,
+                  "flex" : 1
+                },
+                "type" : "Lona:View"
+              }
+            ],
+            "id" : "Checkbox",
+            "params" : {
+              "borderColor" : "grey400",
+              "borderRadius" : 20,
+              "borderWidth" : 1,
+              "height" : 30,
+              "marginRight" : 10,
+              "paddingBottom" : 4,
+              "paddingLeft" : 4,
+              "paddingRight" : 4,
+              "paddingTop" : 4,
+              "width" : 30
+            },
+            "type" : "Lona:View"
+          },
+          {
+            "id" : "Text",
+            "params" : {
+              "text" : "Checkbox description"
+            },
+            "type" : "Lona:Text"
+          }
+        ],
+        "id" : "CheckboxRow",
+        "params" : {
+          "accessibilityLabel" : "Checkbox row",
+          "accessibilityType" : "element",
+          "alignItems" : "center",
+          "alignSelf" : "stretch",
+          "flexDirection" : "row",
+          "paddingBottom" : 10,
+          "paddingLeft" : 10,
+          "paddingRight" : 10,
+          "paddingTop" : 10
+        },
+        "type" : "Lona:View"
+      },
+      {
+        "children" : [
+          {
+            "children" : [
+              {
                 "id" : "Inner",
                 "params" : {
                   "alignSelf" : "stretch",
@@ -107,7 +159,7 @@
         ],
         "id" : "Row1",
         "params" : {
-          "flex" : 1,
+          "alignSelf" : "stretch",
           "flexDirection" : "row",
           "paddingBottom" : 10,
           "paddingLeft" : 10,
@@ -119,8 +171,7 @@
     ],
     "id" : "View",
     "params" : {
-      "alignSelf" : "stretch",
-      "flexDirection" : "row"
+      "alignSelf" : "stretch"
     },
     "type" : "Lona:View"
   }
