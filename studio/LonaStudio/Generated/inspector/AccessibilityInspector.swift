@@ -23,7 +23,8 @@ public class AccessibilityInspector: NSBox {
     accessibilityTypeIndex: Int,
     accessibilityLabelText: String,
     accessibilityHintText: String,
-    accessibilityElements: [String])
+    accessibilityElements: [String],
+    selectedElementIndices: [Int])
   {
     self
       .init(
@@ -32,7 +33,8 @@ public class AccessibilityInspector: NSBox {
           accessibilityTypeIndex: accessibilityTypeIndex,
           accessibilityLabelText: accessibilityLabelText,
           accessibilityHintText: accessibilityHintText,
-          accessibilityElements: accessibilityElements))
+          accessibilityElements: accessibilityElements,
+          selectedElementIndices: selectedElementIndices))
   }
 
   public convenience init() {
@@ -117,9 +119,18 @@ public class AccessibilityInspector: NSBox {
     }
   }
 
-  public var onChangeAccessibilityElements: (([String]) -> Void)? {
-    get { return parameters.onChangeAccessibilityElements }
-    set { parameters.onChangeAccessibilityElements = newValue }
+  public var onChangeSelectedElementIndices: (([Int]) -> Void)? {
+    get { return parameters.onChangeSelectedElementIndices }
+    set { parameters.onChangeSelectedElementIndices = newValue }
+  }
+
+  public var selectedElementIndices: [Int] {
+    get { return parameters.selectedElementIndices }
+    set {
+      if parameters.selectedElementIndices != newValue {
+        parameters.selectedElementIndices = newValue
+      }
+    }
   }
 
   public var parameters: Parameters {
@@ -145,6 +156,9 @@ public class AccessibilityInspector: NSBox {
   private var roleDropdownView = ControlledDropdown()
   private var statesLabelView = LNATextField(labelWithString: "")
   private var statesDropdownView = ControlledDropdown()
+  private var containerContainerView = NSBox()
+  private var elementsLabelView = LNATextField(labelWithString: "")
+  private var accessibilityElementsInputView = MultipleSelectionButton()
   private var hDividerView = NSBox()
 
   private var typeLabelViewTextStyle = TextStyles.regular
@@ -152,6 +166,7 @@ public class AccessibilityInspector: NSBox {
   private var hintLabelViewTextStyle = TextStyles.regular
   private var roleLabelViewTextStyle = TextStyles.regular
   private var statesLabelViewTextStyle = TextStyles.regular
+  private var elementsLabelViewTextStyle = TextStyles.regular
 
   private var hDividerViewTopAnchorInspectorSectionHeaderViewBottomAnchorConstraint: NSLayoutConstraint?
   private var contentContainerViewTopAnchorInspectorSectionHeaderViewBottomAnchorConstraint: NSLayoutConstraint?
@@ -194,6 +209,18 @@ public class AccessibilityInspector: NSBox {
   private var statesDropdownViewTopAnchorStatesLabelViewBottomAnchorConstraint: NSLayoutConstraint?
   private var statesDropdownViewLeadingAnchorElementContainerViewLeadingAnchorConstraint: NSLayoutConstraint?
   private var statesDropdownViewTrailingAnchorElementContainerViewTrailingAnchorConstraint: NSLayoutConstraint?
+  private var containerContainerViewBottomAnchorContentContainerViewBottomAnchorConstraint: NSLayoutConstraint?
+  private var containerContainerViewTopAnchorTypeDropdownViewBottomAnchorConstraint: NSLayoutConstraint?
+  private var containerContainerViewLeadingAnchorContentContainerViewLeadingAnchorConstraint: NSLayoutConstraint?
+  private var containerContainerViewTrailingAnchorContentContainerViewTrailingAnchorConstraint: NSLayoutConstraint?
+  private var elementsLabelViewTopAnchorContainerContainerViewTopAnchorConstraint: NSLayoutConstraint?
+  private var elementsLabelViewLeadingAnchorContainerContainerViewLeadingAnchorConstraint: NSLayoutConstraint?
+  private var elementsLabelViewTrailingAnchorContainerContainerViewTrailingAnchorConstraint: NSLayoutConstraint?
+  private var accessibilityElementsInputViewBottomAnchorContainerContainerViewBottomAnchorConstraint: NSLayoutConstraint?
+  private var accessibilityElementsInputViewTopAnchorElementsLabelViewBottomAnchorConstraint: NSLayoutConstraint?
+  private var accessibilityElementsInputViewLeadingAnchorContainerContainerViewLeadingAnchorConstraint: NSLayoutConstraint?
+  private var accessibilityElementsInputViewTrailingAnchorContainerContainerViewTrailingAnchorConstraint: NSLayoutConstraint?
+  private var containerContainerViewTopAnchorElementContainerViewBottomAnchorConstraint: NSLayoutConstraint?
 
   private func setUpViews() {
     boxType = .custom
@@ -209,10 +236,14 @@ public class AccessibilityInspector: NSBox {
     elementContainerView.boxType = .custom
     elementContainerView.borderType = .noBorder
     elementContainerView.contentViewMargins = .zero
+    containerContainerView.boxType = .custom
+    containerContainerView.borderType = .noBorder
+    containerContainerView.contentViewMargins = .zero
     labelLabelView.lineBreakMode = .byWordWrapping
     hintLabelView.lineBreakMode = .byWordWrapping
     roleLabelView.lineBreakMode = .byWordWrapping
     statesLabelView.lineBreakMode = .byWordWrapping
+    elementsLabelView.lineBreakMode = .byWordWrapping
 
     addSubview(inspectorSectionHeaderView)
     addSubview(contentContainerView)
@@ -220,6 +251,7 @@ public class AccessibilityInspector: NSBox {
     contentContainerView.addSubview(typeLabelView)
     contentContainerView.addSubview(typeDropdownView)
     contentContainerView.addSubview(elementContainerView)
+    contentContainerView.addSubview(containerContainerView)
     elementContainerView.addSubview(labelLabelView)
     elementContainerView.addSubview(labelTextInputView)
     elementContainerView.addSubview(hintLabelView)
@@ -228,6 +260,8 @@ public class AccessibilityInspector: NSBox {
     elementContainerView.addSubview(roleDropdownView)
     elementContainerView.addSubview(statesLabelView)
     elementContainerView.addSubview(statesDropdownView)
+    containerContainerView.addSubview(elementsLabelView)
+    containerContainerView.addSubview(accessibilityElementsInputView)
 
     inspectorSectionHeaderView.titleText = "Accessibility"
     typeLabelView.attributedStringValue = typeLabelViewTextStyle.apply(to: "Type")
@@ -255,6 +289,7 @@ public class AccessibilityInspector: NSBox {
     statesLabelView.attributedStringValue = statesLabelViewTextStyle.apply(to: "States")
     statesDropdownView.selectedIndex = 0
     statesDropdownView.values = ["None", "Selected", "Disabled", "Selected and Disabled"]
+    elementsLabelView.attributedStringValue = elementsLabelViewTextStyle.apply(to: "Label")
     hDividerView.fillColor = Colors.dividerSubtle
   }
 
@@ -266,6 +301,7 @@ public class AccessibilityInspector: NSBox {
     typeLabelView.translatesAutoresizingMaskIntoConstraints = false
     typeDropdownView.translatesAutoresizingMaskIntoConstraints = false
     elementContainerView.translatesAutoresizingMaskIntoConstraints = false
+    containerContainerView.translatesAutoresizingMaskIntoConstraints = false
     labelLabelView.translatesAutoresizingMaskIntoConstraints = false
     labelTextInputView.translatesAutoresizingMaskIntoConstraints = false
     hintLabelView.translatesAutoresizingMaskIntoConstraints = false
@@ -274,6 +310,8 @@ public class AccessibilityInspector: NSBox {
     roleDropdownView.translatesAutoresizingMaskIntoConstraints = false
     statesLabelView.translatesAutoresizingMaskIntoConstraints = false
     statesDropdownView.translatesAutoresizingMaskIntoConstraints = false
+    elementsLabelView.translatesAutoresizingMaskIntoConstraints = false
+    accessibilityElementsInputView.translatesAutoresizingMaskIntoConstraints = false
 
     let inspectorSectionHeaderViewTopAnchorConstraint = inspectorSectionHeaderView
       .topAnchor
@@ -411,6 +449,42 @@ public class AccessibilityInspector: NSBox {
     let statesDropdownViewTrailingAnchorElementContainerViewTrailingAnchorConstraint = statesDropdownView
       .trailingAnchor
       .constraint(equalTo: elementContainerView.trailingAnchor)
+    let containerContainerViewBottomAnchorContentContainerViewBottomAnchorConstraint = containerContainerView
+      .bottomAnchor
+      .constraint(equalTo: contentContainerView.bottomAnchor, constant: -16)
+    let containerContainerViewTopAnchorTypeDropdownViewBottomAnchorConstraint = containerContainerView
+      .topAnchor
+      .constraint(equalTo: typeDropdownView.bottomAnchor)
+    let containerContainerViewLeadingAnchorContentContainerViewLeadingAnchorConstraint = containerContainerView
+      .leadingAnchor
+      .constraint(equalTo: contentContainerView.leadingAnchor)
+    let containerContainerViewTrailingAnchorContentContainerViewTrailingAnchorConstraint = containerContainerView
+      .trailingAnchor
+      .constraint(equalTo: contentContainerView.trailingAnchor)
+    let elementsLabelViewTopAnchorContainerContainerViewTopAnchorConstraint = elementsLabelView
+      .topAnchor
+      .constraint(equalTo: containerContainerView.topAnchor, constant: 16)
+    let elementsLabelViewLeadingAnchorContainerContainerViewLeadingAnchorConstraint = elementsLabelView
+      .leadingAnchor
+      .constraint(equalTo: containerContainerView.leadingAnchor)
+    let elementsLabelViewTrailingAnchorContainerContainerViewTrailingAnchorConstraint = elementsLabelView
+      .trailingAnchor
+      .constraint(lessThanOrEqualTo: containerContainerView.trailingAnchor)
+    let accessibilityElementsInputViewBottomAnchorContainerContainerViewBottomAnchorConstraint = accessibilityElementsInputView
+      .bottomAnchor
+      .constraint(equalTo: containerContainerView.bottomAnchor)
+    let accessibilityElementsInputViewTopAnchorElementsLabelViewBottomAnchorConstraint = accessibilityElementsInputView
+      .topAnchor
+      .constraint(equalTo: elementsLabelView.bottomAnchor, constant: 8)
+    let accessibilityElementsInputViewLeadingAnchorContainerContainerViewLeadingAnchorConstraint = accessibilityElementsInputView
+      .leadingAnchor
+      .constraint(equalTo: containerContainerView.leadingAnchor)
+    let accessibilityElementsInputViewTrailingAnchorContainerContainerViewTrailingAnchorConstraint = accessibilityElementsInputView
+      .trailingAnchor
+      .constraint(equalTo: containerContainerView.trailingAnchor)
+    let containerContainerViewTopAnchorElementContainerViewBottomAnchorConstraint = containerContainerView
+      .topAnchor
+      .constraint(equalTo: elementContainerView.bottomAnchor)
 
     self.hDividerViewTopAnchorInspectorSectionHeaderViewBottomAnchorConstraint =
       hDividerViewTopAnchorInspectorSectionHeaderViewBottomAnchorConstraint
@@ -494,6 +568,30 @@ public class AccessibilityInspector: NSBox {
       statesDropdownViewLeadingAnchorElementContainerViewLeadingAnchorConstraint
     self.statesDropdownViewTrailingAnchorElementContainerViewTrailingAnchorConstraint =
       statesDropdownViewTrailingAnchorElementContainerViewTrailingAnchorConstraint
+    self.containerContainerViewBottomAnchorContentContainerViewBottomAnchorConstraint =
+      containerContainerViewBottomAnchorContentContainerViewBottomAnchorConstraint
+    self.containerContainerViewTopAnchorTypeDropdownViewBottomAnchorConstraint =
+      containerContainerViewTopAnchorTypeDropdownViewBottomAnchorConstraint
+    self.containerContainerViewLeadingAnchorContentContainerViewLeadingAnchorConstraint =
+      containerContainerViewLeadingAnchorContentContainerViewLeadingAnchorConstraint
+    self.containerContainerViewTrailingAnchorContentContainerViewTrailingAnchorConstraint =
+      containerContainerViewTrailingAnchorContentContainerViewTrailingAnchorConstraint
+    self.elementsLabelViewTopAnchorContainerContainerViewTopAnchorConstraint =
+      elementsLabelViewTopAnchorContainerContainerViewTopAnchorConstraint
+    self.elementsLabelViewLeadingAnchorContainerContainerViewLeadingAnchorConstraint =
+      elementsLabelViewLeadingAnchorContainerContainerViewLeadingAnchorConstraint
+    self.elementsLabelViewTrailingAnchorContainerContainerViewTrailingAnchorConstraint =
+      elementsLabelViewTrailingAnchorContainerContainerViewTrailingAnchorConstraint
+    self.accessibilityElementsInputViewBottomAnchorContainerContainerViewBottomAnchorConstraint =
+      accessibilityElementsInputViewBottomAnchorContainerContainerViewBottomAnchorConstraint
+    self.accessibilityElementsInputViewTopAnchorElementsLabelViewBottomAnchorConstraint =
+      accessibilityElementsInputViewTopAnchorElementsLabelViewBottomAnchorConstraint
+    self.accessibilityElementsInputViewLeadingAnchorContainerContainerViewLeadingAnchorConstraint =
+      accessibilityElementsInputViewLeadingAnchorContainerContainerViewLeadingAnchorConstraint
+    self.accessibilityElementsInputViewTrailingAnchorContainerContainerViewTrailingAnchorConstraint =
+      accessibilityElementsInputViewTrailingAnchorContainerContainerViewTrailingAnchorConstraint
+    self.containerContainerViewTopAnchorElementContainerViewBottomAnchorConstraint =
+      containerContainerViewTopAnchorElementContainerViewBottomAnchorConstraint
 
     NSLayoutConstraint.activate(
       [
@@ -506,20 +604,22 @@ public class AccessibilityInspector: NSBox {
         hDividerViewHeightAnchorConstraint
       ] +
         conditionalConstraints(
+          containerContainerViewIsHidden: containerContainerView.isHidden,
           contentContainerViewIsHidden: contentContainerView.isHidden,
           elementContainerViewIsHidden: elementContainerView.isHidden))
   }
 
   private func conditionalConstraints(
+    containerContainerViewIsHidden: Bool,
     contentContainerViewIsHidden: Bool,
     elementContainerViewIsHidden: Bool) -> [NSLayoutConstraint]
   {
     var constraints: [NSLayoutConstraint?]
 
-    switch (contentContainerViewIsHidden, elementContainerViewIsHidden) {
-      case (true, true):
+    switch (containerContainerViewIsHidden, contentContainerViewIsHidden, elementContainerViewIsHidden) {
+      case (true, true, true):
         constraints = [hDividerViewTopAnchorInspectorSectionHeaderViewBottomAnchorConstraint]
-      case (false, true):
+      case (true, false, true):
         constraints = [
           contentContainerViewTopAnchorInspectorSectionHeaderViewBottomAnchorConstraint,
           contentContainerViewLeadingAnchorLeadingAnchorConstraint,
@@ -533,9 +633,11 @@ public class AccessibilityInspector: NSBox {
           typeDropdownViewLeadingAnchorContentContainerViewLeadingAnchorConstraint,
           typeDropdownViewTrailingAnchorContentContainerViewTrailingAnchorConstraint
         ]
-      case (true, false):
+      case (false, true, true):
         constraints = [hDividerViewTopAnchorInspectorSectionHeaderViewBottomAnchorConstraint]
-      case (false, false):
+      case (true, true, false):
+        constraints = [hDividerViewTopAnchorInspectorSectionHeaderViewBottomAnchorConstraint]
+      case (true, false, false):
         constraints = [
           contentContainerViewTopAnchorInspectorSectionHeaderViewBottomAnchorConstraint,
           contentContainerViewLeadingAnchorLeadingAnchorConstraint,
@@ -577,21 +679,104 @@ public class AccessibilityInspector: NSBox {
           statesDropdownViewLeadingAnchorElementContainerViewLeadingAnchorConstraint,
           statesDropdownViewTrailingAnchorElementContainerViewTrailingAnchorConstraint
         ]
+      case (false, false, true):
+        constraints = [
+          contentContainerViewTopAnchorInspectorSectionHeaderViewBottomAnchorConstraint,
+          contentContainerViewLeadingAnchorLeadingAnchorConstraint,
+          contentContainerViewTrailingAnchorTrailingAnchorConstraint,
+          hDividerViewTopAnchorContentContainerViewBottomAnchorConstraint,
+          typeLabelViewTopAnchorContentContainerViewTopAnchorConstraint,
+          typeLabelViewLeadingAnchorContentContainerViewLeadingAnchorConstraint,
+          typeLabelViewTrailingAnchorContentContainerViewTrailingAnchorConstraint,
+          typeDropdownViewTopAnchorTypeLabelViewBottomAnchorConstraint,
+          typeDropdownViewLeadingAnchorContentContainerViewLeadingAnchorConstraint,
+          typeDropdownViewTrailingAnchorContentContainerViewTrailingAnchorConstraint,
+          containerContainerViewBottomAnchorContentContainerViewBottomAnchorConstraint,
+          containerContainerViewTopAnchorTypeDropdownViewBottomAnchorConstraint,
+          containerContainerViewLeadingAnchorContentContainerViewLeadingAnchorConstraint,
+          containerContainerViewTrailingAnchorContentContainerViewTrailingAnchorConstraint,
+          elementsLabelViewTopAnchorContainerContainerViewTopAnchorConstraint,
+          elementsLabelViewLeadingAnchorContainerContainerViewLeadingAnchorConstraint,
+          elementsLabelViewTrailingAnchorContainerContainerViewTrailingAnchorConstraint,
+          accessibilityElementsInputViewBottomAnchorContainerContainerViewBottomAnchorConstraint,
+          accessibilityElementsInputViewTopAnchorElementsLabelViewBottomAnchorConstraint,
+          accessibilityElementsInputViewLeadingAnchorContainerContainerViewLeadingAnchorConstraint,
+          accessibilityElementsInputViewTrailingAnchorContainerContainerViewTrailingAnchorConstraint
+        ]
+      case (false, true, false):
+        constraints = [hDividerViewTopAnchorInspectorSectionHeaderViewBottomAnchorConstraint]
+      case (false, false, false):
+        constraints = [
+          contentContainerViewTopAnchorInspectorSectionHeaderViewBottomAnchorConstraint,
+          contentContainerViewLeadingAnchorLeadingAnchorConstraint,
+          contentContainerViewTrailingAnchorTrailingAnchorConstraint,
+          hDividerViewTopAnchorContentContainerViewBottomAnchorConstraint,
+          typeLabelViewTopAnchorContentContainerViewTopAnchorConstraint,
+          typeLabelViewLeadingAnchorContentContainerViewLeadingAnchorConstraint,
+          typeLabelViewTrailingAnchorContentContainerViewTrailingAnchorConstraint,
+          typeDropdownViewTopAnchorTypeLabelViewBottomAnchorConstraint,
+          typeDropdownViewLeadingAnchorContentContainerViewLeadingAnchorConstraint,
+          typeDropdownViewTrailingAnchorContentContainerViewTrailingAnchorConstraint,
+          elementContainerViewTopAnchorTypeDropdownViewBottomAnchorConstraint,
+          elementContainerViewLeadingAnchorContentContainerViewLeadingAnchorConstraint,
+          elementContainerViewTrailingAnchorContentContainerViewTrailingAnchorConstraint,
+          containerContainerViewBottomAnchorContentContainerViewBottomAnchorConstraint,
+          containerContainerViewTopAnchorElementContainerViewBottomAnchorConstraint,
+          containerContainerViewLeadingAnchorContentContainerViewLeadingAnchorConstraint,
+          containerContainerViewTrailingAnchorContentContainerViewTrailingAnchorConstraint,
+          labelLabelViewTopAnchorElementContainerViewTopAnchorConstraint,
+          labelLabelViewLeadingAnchorElementContainerViewLeadingAnchorConstraint,
+          labelLabelViewTrailingAnchorElementContainerViewTrailingAnchorConstraint,
+          labelTextInputViewTopAnchorLabelLabelViewBottomAnchorConstraint,
+          labelTextInputViewLeadingAnchorElementContainerViewLeadingAnchorConstraint,
+          labelTextInputViewTrailingAnchorElementContainerViewTrailingAnchorConstraint,
+          hintLabelViewTopAnchorLabelTextInputViewBottomAnchorConstraint,
+          hintLabelViewLeadingAnchorElementContainerViewLeadingAnchorConstraint,
+          hintLabelViewTrailingAnchorElementContainerViewTrailingAnchorConstraint,
+          hintTextInputViewTopAnchorHintLabelViewBottomAnchorConstraint,
+          hintTextInputViewLeadingAnchorElementContainerViewLeadingAnchorConstraint,
+          hintTextInputViewTrailingAnchorElementContainerViewTrailingAnchorConstraint,
+          roleLabelViewTopAnchorHintTextInputViewBottomAnchorConstraint,
+          roleLabelViewLeadingAnchorElementContainerViewLeadingAnchorConstraint,
+          roleLabelViewTrailingAnchorElementContainerViewTrailingAnchorConstraint,
+          roleDropdownViewTopAnchorRoleLabelViewBottomAnchorConstraint,
+          roleDropdownViewLeadingAnchorElementContainerViewLeadingAnchorConstraint,
+          roleDropdownViewTrailingAnchorElementContainerViewTrailingAnchorConstraint,
+          statesLabelViewTopAnchorRoleDropdownViewBottomAnchorConstraint,
+          statesLabelViewLeadingAnchorElementContainerViewLeadingAnchorConstraint,
+          statesLabelViewTrailingAnchorElementContainerViewTrailingAnchorConstraint,
+          statesDropdownViewBottomAnchorElementContainerViewBottomAnchorConstraint,
+          statesDropdownViewTopAnchorStatesLabelViewBottomAnchorConstraint,
+          statesDropdownViewLeadingAnchorElementContainerViewLeadingAnchorConstraint,
+          statesDropdownViewTrailingAnchorElementContainerViewTrailingAnchorConstraint,
+          elementsLabelViewTopAnchorContainerContainerViewTopAnchorConstraint,
+          elementsLabelViewLeadingAnchorContainerContainerViewLeadingAnchorConstraint,
+          elementsLabelViewTrailingAnchorContainerContainerViewTrailingAnchorConstraint,
+          accessibilityElementsInputViewBottomAnchorContainerContainerViewBottomAnchorConstraint,
+          accessibilityElementsInputViewTopAnchorElementsLabelViewBottomAnchorConstraint,
+          accessibilityElementsInputViewLeadingAnchorContainerContainerViewLeadingAnchorConstraint,
+          accessibilityElementsInputViewTrailingAnchorContainerContainerViewTrailingAnchorConstraint
+        ]
     }
 
     return constraints.compactMap({ $0 })
   }
 
   private func update() {
+    let containerContainerViewIsHidden = containerContainerView.isHidden
     let contentContainerViewIsHidden = contentContainerView.isHidden
     let elementContainerViewIsHidden = elementContainerView.isHidden
 
+    containerContainerView.isHidden = !false
     contentContainerView.isHidden = !isExpanded
     inspectorSectionHeaderView.isExpanded = isExpanded
     inspectorSectionHeaderView.onClick = handleOnClickHeader
     var elementViewsHidden = false
     if accessibilityTypeIndex == 2 {
       elementViewsHidden = true
+    }
+    if accessibilityTypeIndex == 3 {
+      containerContainerView.isHidden = !true
     }
     elementContainerView.isHidden = !elementViewsHidden
     typeDropdownView.selectedIndex = accessibilityTypeIndex
@@ -600,17 +785,23 @@ public class AccessibilityInspector: NSBox {
     labelTextInputView.onChangeTextValue = handleOnChangeAccessibilityLabel
     hintTextInputView.textValue = accessibilityHintText
     hintTextInputView.onChangeTextValue = handleOnChangeAccessibilityHintText
+    accessibilityElementsInputView.options = accessibilityElements
+    accessibilityElementsInputView.onChangeSelectedIndices = handleOnChangeSelectedElementIndices
+    accessibilityElementsInputView.selectedIndices = selectedElementIndices
 
     if
-    contentContainerView.isHidden != contentContainerViewIsHidden ||
-      elementContainerView.isHidden != elementContainerViewIsHidden
+    containerContainerView.isHidden != containerContainerViewIsHidden ||
+      contentContainerView.isHidden != contentContainerViewIsHidden ||
+        elementContainerView.isHidden != elementContainerViewIsHidden
     {
       NSLayoutConstraint.deactivate(
         conditionalConstraints(
+          containerContainerViewIsHidden: containerContainerViewIsHidden,
           contentContainerViewIsHidden: contentContainerViewIsHidden,
           elementContainerViewIsHidden: elementContainerViewIsHidden))
       NSLayoutConstraint.activate(
         conditionalConstraints(
+          containerContainerViewIsHidden: containerContainerView.isHidden,
           contentContainerViewIsHidden: contentContainerView.isHidden,
           elementContainerViewIsHidden: elementContainerView.isHidden))
     }
@@ -632,8 +823,8 @@ public class AccessibilityInspector: NSBox {
     onChangeAccessibilityHintText?(arg0)
   }
 
-  private func handleOnChangeAccessibilityElements(_ arg0: [String]) {
-    onChangeAccessibilityElements?(arg0)
+  private func handleOnChangeSelectedElementIndices(_ arg0: [Int]) {
+    onChangeSelectedElementIndices?(arg0)
   }
 }
 
@@ -646,11 +837,12 @@ extension AccessibilityInspector {
     public var accessibilityLabelText: String
     public var accessibilityHintText: String
     public var accessibilityElements: [String]
+    public var selectedElementIndices: [Int]
     public var onClickHeader: (() -> Void)?
     public var onChangeAccessibilityTypeIndex: ((Int) -> Void)?
     public var onChangeAccessibilityLabel: StringHandler
     public var onChangeAccessibilityHintText: StringHandler
-    public var onChangeAccessibilityElements: (([String]) -> Void)?
+    public var onChangeSelectedElementIndices: (([Int]) -> Void)?
 
     public init(
       isExpanded: Bool,
@@ -658,22 +850,24 @@ extension AccessibilityInspector {
       accessibilityLabelText: String,
       accessibilityHintText: String,
       accessibilityElements: [String],
+      selectedElementIndices: [Int],
       onClickHeader: (() -> Void)? = nil,
       onChangeAccessibilityTypeIndex: ((Int) -> Void)? = nil,
       onChangeAccessibilityLabel: StringHandler = nil,
       onChangeAccessibilityHintText: StringHandler = nil,
-      onChangeAccessibilityElements: (([String]) -> Void)? = nil)
+      onChangeSelectedElementIndices: (([Int]) -> Void)? = nil)
     {
       self.isExpanded = isExpanded
       self.accessibilityTypeIndex = accessibilityTypeIndex
       self.accessibilityLabelText = accessibilityLabelText
       self.accessibilityHintText = accessibilityHintText
       self.accessibilityElements = accessibilityElements
+      self.selectedElementIndices = selectedElementIndices
       self.onClickHeader = onClickHeader
       self.onChangeAccessibilityTypeIndex = onChangeAccessibilityTypeIndex
       self.onChangeAccessibilityLabel = onChangeAccessibilityLabel
       self.onChangeAccessibilityHintText = onChangeAccessibilityHintText
-      self.onChangeAccessibilityElements = onChangeAccessibilityElements
+      self.onChangeSelectedElementIndices = onChangeSelectedElementIndices
     }
 
     public init() {
@@ -683,7 +877,8 @@ extension AccessibilityInspector {
           accessibilityTypeIndex: 0,
           accessibilityLabelText: "",
           accessibilityHintText: "",
-          accessibilityElements: [])
+          accessibilityElements: [],
+          selectedElementIndices: [])
     }
 
     public static func ==(lhs: Parameters, rhs: Parameters) -> Bool {
@@ -691,7 +886,8 @@ extension AccessibilityInspector {
         lhs.accessibilityTypeIndex == rhs.accessibilityTypeIndex &&
           lhs.accessibilityLabelText == rhs.accessibilityLabelText &&
             lhs.accessibilityHintText == rhs.accessibilityHintText &&
-              lhs.accessibilityElements == rhs.accessibilityElements
+              lhs.accessibilityElements == rhs.accessibilityElements &&
+                lhs.selectedElementIndices == rhs.selectedElementIndices
     }
   }
 }
@@ -721,11 +917,12 @@ extension AccessibilityInspector {
       accessibilityLabelText: String,
       accessibilityHintText: String,
       accessibilityElements: [String],
+      selectedElementIndices: [Int],
       onClickHeader: (() -> Void)? = nil,
       onChangeAccessibilityTypeIndex: ((Int) -> Void)? = nil,
       onChangeAccessibilityLabel: StringHandler = nil,
       onChangeAccessibilityHintText: StringHandler = nil,
-      onChangeAccessibilityElements: (([String]) -> Void)? = nil)
+      onChangeSelectedElementIndices: (([Int]) -> Void)? = nil)
     {
       self
         .init(
@@ -735,11 +932,12 @@ extension AccessibilityInspector {
             accessibilityLabelText: accessibilityLabelText,
             accessibilityHintText: accessibilityHintText,
             accessibilityElements: accessibilityElements,
+            selectedElementIndices: selectedElementIndices,
             onClickHeader: onClickHeader,
             onChangeAccessibilityTypeIndex: onChangeAccessibilityTypeIndex,
             onChangeAccessibilityLabel: onChangeAccessibilityLabel,
             onChangeAccessibilityHintText: onChangeAccessibilityHintText,
-            onChangeAccessibilityElements: onChangeAccessibilityElements))
+            onChangeSelectedElementIndices: onChangeSelectedElementIndices))
     }
 
     public init() {
@@ -749,7 +947,8 @@ extension AccessibilityInspector {
           accessibilityTypeIndex: 0,
           accessibilityLabelText: "",
           accessibilityHintText: "",
-          accessibilityElements: [])
+          accessibilityElements: [],
+          selectedElementIndices: [])
     }
   }
 }

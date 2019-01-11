@@ -24,6 +24,14 @@
       }
     },
     {
+      "id" : "Container",
+      "name" : "Container",
+      "params" : {
+        "accessibilityTypeIndex" : 3,
+        "isExpanded" : true
+      }
+    },
+    {
       "id" : "Expanded",
       "name" : "Expanded",
       "params" : {
@@ -113,6 +121,41 @@
       "type" : "IfExpr"
     },
     {
+      "body" : [
+        {
+          "assignee" : [
+            "layers",
+            "ContainerContainer",
+            "visible"
+          ],
+          "content" : {
+            "type" : "LitExpr",
+            "value" : {
+              "data" : true,
+              "type" : "Boolean"
+            }
+          },
+          "type" : "AssignExpr"
+        }
+      ],
+      "condition" : {
+        "left" : [
+          "parameters",
+          "accessibilityTypeIndex"
+        ],
+        "op" : "==",
+        "right" : {
+          "type" : "LitExpr",
+          "value" : {
+            "data" : 3,
+            "type" : "WholeNumber"
+          }
+        },
+        "type" : "BinExpr"
+      },
+      "type" : "IfExpr"
+    },
+    {
       "assignee" : [
         "layers",
         "ElementContainer",
@@ -194,6 +237,42 @@
         "onChangeAccessibilityHintText"
       ],
       "type" : "AssignExpr"
+    },
+    {
+      "assignee" : [
+        "layers",
+        "AccessibilityElementsInput",
+        "options"
+      ],
+      "content" : [
+        "parameters",
+        "accessibilityElements"
+      ],
+      "type" : "AssignExpr"
+    },
+    {
+      "assignee" : [
+        "layers",
+        "AccessibilityElementsInput",
+        "onChangeSelectedIndices"
+      ],
+      "content" : [
+        "parameters",
+        "onChangeSelectedElementIndices"
+      ],
+      "type" : "AssignExpr"
+    },
+    {
+      "assignee" : [
+        "layers",
+        "AccessibilityElementsInput",
+        "selectedIndices"
+      ],
+      "content" : [
+        "parameters",
+        "selectedElementIndices"
+      ],
+      "type" : "AssignExpr"
     }
   ],
   "params" : [
@@ -247,7 +326,7 @@
       }
     },
     {
-      "name" : "onChangeAccessibilityElements",
+      "name" : "onChangeSelectedElementIndices",
       "type" : {
         "name" : "Function",
         "parameters" : [
@@ -255,10 +334,17 @@
             "label" : "_",
             "type" : {
               "name" : "Array",
-              "of" : "String"
+              "of" : "WholeNumber"
             }
           }
         ]
+      }
+    },
+    {
+      "name" : "selectedElementIndices",
+      "type" : {
+        "name" : "Array",
+        "of" : "WholeNumber"
       }
     }
   ],
@@ -384,6 +470,37 @@
               }
             ],
             "id" : "ElementContainer",
+            "params" : {
+              "alignSelf" : "stretch",
+              "visible" : false
+            },
+            "type" : "Lona:View"
+          },
+          {
+            "children" : [
+              {
+                "id" : "ElementsLabel",
+                "params" : {
+                  "marginBottom" : 8,
+                  "marginTop" : 16,
+                  "text" : "Label"
+                },
+                "type" : "Lona:Text"
+              },
+              {
+                "id" : "AccessibilityElementsInput",
+                "params" : {
+                  "options" : [
+
+                  ],
+                  "selectedIndices" : [
+
+                  ]
+                },
+                "type" : "MultipleSelectionButton"
+              }
+            ],
+            "id" : "ContainerContainer",
             "params" : {
               "alignSelf" : "stretch",
               "visible" : false

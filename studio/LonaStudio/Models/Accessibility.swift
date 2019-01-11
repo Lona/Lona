@@ -91,6 +91,14 @@ enum AccessibilityType {
     var hint: String? { return element?.hint }
     var role: AccessibilityRole? { return element?.role }
     var states: AccessibilityStates { return element?.states ?? .none }
+    var elements: [String] {
+        switch self {
+        case .container(let elements):
+            return elements
+        default:
+            return []
+        }
+    }
 
     func withType(_ typeName: String) -> AccessibilityType {
         switch typeName {
@@ -128,6 +136,14 @@ enum AccessibilityType {
         if case .element(var element) = self {
             element.hint = hint
             return .element(element)
+        } else {
+            return self
+        }
+    }
+
+    func withElements(_ elements: [String]) -> AccessibilityType {
+        if case .container = self {
+            return .container(elements)
         } else {
             return self
         }

@@ -159,6 +159,7 @@
 		30F870E820865859007ADA5B /* LonaIcon_512x512.png in Resources */ = {isa = PBXBuildFile; fileRef = 30F870D320865858007ADA5B /* LonaIcon_512x512.png */; };
 		30F870E920865859007ADA5B /* LonaIcon_16x16@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 30F870D420865858007ADA5B /* LonaIcon_16x16@2x.png */; };
 		30F870EB20869644007ADA5B /* Fetch.swift in Sources */ = {isa = PBXBuildFile; fileRef = 30F870EA20869644007ADA5B /* Fetch.swift */; };
+		6B06ADB121E8138400136BC8 /* MultipleSelectionButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6B06ADB021E8138400136BC8 /* MultipleSelectionButton.swift */; };
 		6B0A29E6212736F900A96B0F /* Alert.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6B0A29E5212736F900A96B0F /* Alert.swift */; };
 		6B0AEFB81EBF74D800F35BBF /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6B0AEFB71EBF74D800F35BBF /* AppDelegate.swift */; };
 		6B0AEFBC1EBF74D800F35BBF /* ComponentDocument.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6B0AEFBB1EBF74D800F35BBF /* ComponentDocument.swift */; };
@@ -443,6 +444,7 @@
 		30F870D320865858007ADA5B /* LonaIcon_512x512.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = LonaIcon_512x512.png; sourceTree = "<group>"; };
 		30F870D420865858007ADA5B /* LonaIcon_16x16@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "LonaIcon_16x16@2x.png"; sourceTree = "<group>"; };
 		30F870EA20869644007ADA5B /* Fetch.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Fetch.swift; sourceTree = "<group>"; };
+		6B06ADB021E8138400136BC8 /* MultipleSelectionButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MultipleSelectionButton.swift; sourceTree = "<group>"; };
 		6B0A29E5212736F900A96B0F /* Alert.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Alert.swift; sourceTree = "<group>"; };
 		6B0AEFB41EBF74D800F35BBF /* LonaStudio.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = LonaStudio.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		6B0AEFB71EBF74D800F35BBF /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
@@ -737,6 +739,7 @@
 				30EFC9571EF369DC0087711D /* ImageField.swift */,
 				3043A0CB1F46653B00EF31EF /* Label.swift */,
 				307718FF1F3CD3F1003A597B /* MultilevelPopupField.swift */,
+				6B06ADB021E8138400136BC8 /* MultipleSelectionButton.swift */,
 				30B5B19E1EC29D84002068CE /* NumberField.swift */,
 				304ADD51209D2A66001B9A43 /* PluginMenu.swift */,
 				30B5B1A01EC36A70002068CE /* PopupField.swift */,
@@ -1553,6 +1556,7 @@
 				306672C21F7D4C6400941554 /* CSGradients.swift in Sources */,
 				307719001F3CD3F1003A597B /* MultilevelPopupField.swift in Sources */,
 				307718F01F365BA3003A597B /* CSType.swift in Sources */,
+				6B06ADB121E8138400136BC8 /* MultipleSelectionButton.swift in Sources */,
 				3003027A1EDCDBA00085E140 /* LogicNode.swift in Sources */,
 				304ADD55209D2CA0001B9A43 /* LonaPlugins.swift in Sources */,
 				6B51613021377E0E00714555 /* TextInput+Undo.swift in Sources */,

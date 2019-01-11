@@ -123,6 +123,16 @@ class CSLayer: CSDataDeserializable, CSDataSerializable, DataNode, NSCopying {
     var parameters: [String: CSData] = [:]
     var metadata: [String: CSData] = [:]
 
+    var rootAncestor: CSLayer {
+        var root = self
+
+        while let parent = root.parent {
+            root = parent
+        }
+
+        return root
+    }
+
     var descendantLayers: [CSLayer] {
         var result = [CSLayer]()
 
@@ -135,6 +145,14 @@ class CSLayer: CSDataDeserializable, CSDataSerializable, DataNode, NSCopying {
         apply(layer: self)
 
         return result
+    }
+
+    func descendantLayerNames(includingSelf: Bool) -> [String] {
+        let names = descendantLayers.map({ $0.name })
+
+        if includingSelf { return names }
+
+        return names.filter({ $0 != self.name })
     }
 
     func removeParameter(_ key: String) {

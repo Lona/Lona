@@ -1,0 +1,75 @@
+{
+  "devices" : [
+    {
+      "deviceId" : "iPhone SE",
+      "heightMode" : "At Least"
+    },
+    {
+      "deviceId" : "Pixel 2",
+      "heightMode" : "At Least"
+    }
+  ],
+  "examples" : [
+    {
+      "id" : "Default",
+      "name" : "Default",
+      "params" : {
+
+      }
+    }
+  ],
+  "logic" : [
+
+  ],
+  "params" : [
+    {
+      "name" : "selectedIndices",
+      "type" : {
+        "name" : "Array",
+        "of" : "WholeNumber"
+      }
+    },
+    {
+      "name" : "onChangeSelectedIndices",
+      "type" : {
+        "name" : "Function",
+        "parameters" : [
+          {
+            "label" : "_",
+            "type" : {
+              "name" : "Array",
+              "of" : "WholeNumber"
+            }
+          }
+        ]
+      }
+    },
+    {
+      "name" : "options",
+      "type" : {
+        "name" : "Array",
+        "of" : "String"
+      }
+    }
+  ],
+  "root" : {
+    "children" : [
+      {
+        "id" : "Text",
+        "params" : {
+          "text" : "Multiple selection button"
+        },
+        "type" : "Lona:Text"
+      }
+    ],
+    "id" : "View",
+    "params" : {
+      "alignItems" : "center",
+      "alignSelf" : "stretch",
+      "borderColor" : "dividerSubtle",
+      "borderWidth" : 1,
+      "justifyContent" : "center"
+    },
+    "type" : "Lona:View"
+  }
+}
