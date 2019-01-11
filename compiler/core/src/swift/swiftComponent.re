@@ -1232,9 +1232,7 @@ let generate =
   let logic = json |> Decode.Component.logic;
 
   let pressableLayers =
-    rootLayer
-    |> Layer.flatten
-    |> List.filter(Logic.isLayerParameterAssigned(logic, "onPress"));
+    rootLayer |> Layer.flatten |> List.filter(Layer.isInteractive(logic));
   let needsTracking =
     swiftOptions.framework == SwiftOptions.AppKit
     && List.length(pressableLayers) > 0;

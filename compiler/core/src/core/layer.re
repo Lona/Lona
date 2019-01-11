@@ -416,7 +416,12 @@ let logicAssignmentsFromLayerParameters = layer => {
 };
 
 let isInteractive = (logic: Logic.logicNode, layer: Types.layer) =>
-  [ParameterKey.OnPress, ParameterKey.Hovered, ParameterKey.Pressed]
+  [
+    ParameterKey.OnPress,
+    ParameterKey.Hovered,
+    ParameterKey.Pressed,
+    ParameterKey.AccessibilityValue,
+  ]
   |> List.map(ParameterKey.toString)
   |> List.exists(variableName =>
        Logic.isLayerParameterAssigned(logic, variableName, layer)

@@ -64,6 +64,11 @@ let parameterDefaultValue = key =>
   | ParameterKey.Width => number(0.)
   | ParameterKey.Height => number(0.)
   | ParameterKey.ResizeMode => string("cover")
+  /* Accessibility */
+  | ParameterKey.AccessibilityLabel => string("")
+  | ParameterKey.AccessibilityHint => string("")
+  | ParameterKey.AccessibilityRole => string("")
+  | ParameterKey.AccessibilityValue => string("")
   /* Interactivity */
   | ParameterKey.Pressed => boolean(false)
   | ParameterKey.Hovered => boolean(false)

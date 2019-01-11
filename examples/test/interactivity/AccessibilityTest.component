@@ -26,12 +26,116 @@
         "customTextAccessibilityLabel"
       ],
       "type" : "AssignExpr"
+    },
+    {
+      "body" : [
+        {
+          "assignee" : [
+            "layers",
+            "CheckboxCircle",
+            "visible"
+          ],
+          "content" : {
+            "type" : "LitExpr",
+            "value" : {
+              "data" : true,
+              "type" : "Boolean"
+            }
+          },
+          "type" : "AssignExpr"
+        },
+        {
+          "assignee" : [
+            "layers",
+            "CheckboxRow",
+            "accessibilityValue"
+          ],
+          "content" : {
+            "type" : "LitExpr",
+            "value" : {
+              "data" : "checked",
+              "type" : "String"
+            }
+          },
+          "type" : "AssignExpr"
+        }
+      ],
+      "condition" : {
+        "left" : [
+          "parameters",
+          "checkboxValue"
+        ],
+        "op" : "==",
+        "right" : {
+          "type" : "LitExpr",
+          "value" : {
+            "data" : true,
+            "type" : "Boolean"
+          }
+        },
+        "type" : "BinExpr"
+      },
+      "type" : "IfExpr"
+    },
+    {
+      "body" : [
+        {
+          "assignee" : [
+            "layers",
+            "CheckboxCircle",
+            "visible"
+          ],
+          "content" : {
+            "type" : "LitExpr",
+            "value" : {
+              "data" : false,
+              "type" : "Boolean"
+            }
+          },
+          "type" : "AssignExpr"
+        },
+        {
+          "assignee" : [
+            "layers",
+            "CheckboxRow",
+            "accessibilityValue"
+          ],
+          "content" : {
+            "type" : "LitExpr",
+            "value" : {
+              "data" : "unchecked",
+              "type" : "String"
+            }
+          },
+          "type" : "AssignExpr"
+        }
+      ],
+      "condition" : {
+        "left" : [
+          "parameters",
+          "checkboxValue"
+        ],
+        "op" : "==",
+        "right" : {
+          "type" : "LitExpr",
+          "value" : {
+            "data" : false,
+            "type" : "Boolean"
+          }
+        },
+        "type" : "BinExpr"
+      },
+      "type" : "IfExpr"
     }
   ],
   "params" : [
     {
       "name" : "customTextAccessibilityLabel",
       "type" : "String"
+    },
+    {
+      "name" : "checkboxValue",
+      "type" : "Boolean"
     }
   ],
   "root" : {

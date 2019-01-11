@@ -9,6 +9,19 @@ private class BackgroundImageView: UIImageView {
   }
 }
 
+// MARK: - EventIgnoringView
+
+private class EventIgnoringView: UIView {
+  override func point(inside point: CGPoint, with event: UIEvent?) -> Bool {
+    for view in subviews {
+      if view.isUserInteractionEnabled && view.point(inside: convert(point, to: view), with: event) {
+        return true
+      }
+    }
+    return false
+  }
+}
+
 // MARK: - AccessibilityTest
 
 public class AccessibilityTest: UIView {
@@ -26,8 +39,8 @@ public class AccessibilityTest: UIView {
     update()
   }
 
-  public convenience init(customTextAccessibilityLabel: String) {
-    self.init(Parameters(customTextAccessibilityLabel: customTextAccessibilityLabel))
+  public convenience init(customTextAccessibilityLabel: String, checkboxValue: Bool) {
+    self.init(Parameters(customTextAccessibilityLabel: customTextAccessibilityLabel, checkboxValue: checkboxValue))
   }
 
   public convenience init() {
@@ -56,6 +69,15 @@ public class AccessibilityTest: UIView {
     }
   }
 
+  public var checkboxValue: Bool {
+    get { return parameters.checkboxValue }
+    set {
+      if parameters.checkboxValue != newValue {
+        parameters.checkboxValue = newValue
+      }
+    }
+  }
+
   public var parameters: Parameters {
     didSet {
       if parameters != oldValue {
@@ -66,19 +88,26 @@ public class AccessibilityTest: UIView {
 
   // MARK: Private
 
-  private var checkboxRowView = UIView(frame: .zero)
-  private var checkboxView = UIView(frame: .zero)
-  private var checkboxCircleView = UIView(frame: .zero)
+  private var checkboxRowView = LonaControlView(frame: .zero)
+  private var checkboxView = EventIgnoringView(frame: .zero)
+  private var checkboxCircleView = EventIgnoringView(frame: .zero)
   private var textView = UILabel()
-  private var row1View = UIView(frame: .zero)
-  private var elementView = UIView(frame: .zero)
-  private var innerView = UIView(frame: .zero)
-  private var containerView = UIView(frame: .zero)
+  private var row1View = EventIgnoringView(frame: .zero)
+  private var elementView = EventIgnoringView(frame: .zero)
+  private var innerView = EventIgnoringView(frame: .zero)
+  private var containerView = EventIgnoringView(frame: .zero)
   private var imageView = BackgroundImageView(frame: .zero)
   private var accessibleTextView = UILabel()
 
   private var textViewTextStyle = TextStyles.body1
   private var accessibleTextViewTextStyle = TextStyles.body1
+
+  private var onTapCheckboxRowView: (() -> Void)?
+
+  private var checkboxCircleViewTopAnchorCheckboxViewTopAnchorConstraint: NSLayoutConstraint?
+  private var checkboxCircleViewBottomAnchorCheckboxViewBottomAnchorConstraint: NSLayoutConstraint?
+  private var checkboxCircleViewLeadingAnchorCheckboxViewLeadingAnchorConstraint: NSLayoutConstraint?
+  private var checkboxCircleViewTrailingAnchorCheckboxViewTrailingAnchorConstraint: NSLayoutConstraint?
 
   private func setUpViews() {
     textView.isUserInteractionEnabled = false
@@ -123,6 +152,9 @@ public class AccessibilityTest: UIView {
     accessibleTextView.attributedText = accessibleTextViewTextStyle.apply(to: "Greetings")
     accessibleTextView.isAccessibilityElement = true
     accessibleTextView.accessibilityHint = "Some text"
+
+    checkboxRowView.addTarget(self, action: #selector(handleTapCheckboxRowView), for: .touchUpInside)
+    checkboxRowView.onHighlight = update
   }
 
   private func setUpConstraints() {
@@ -187,18 +219,6 @@ public class AccessibilityTest: UIView {
       .constraint(equalTo: row1View.bottomAnchor, constant: -10)
     let checkboxViewHeightAnchorConstraint = checkboxView.heightAnchor.constraint(equalToConstant: 30)
     let checkboxViewWidthAnchorConstraint = checkboxView.widthAnchor.constraint(equalToConstant: 30)
-    let checkboxCircleViewTopAnchorConstraint = checkboxCircleView
-      .topAnchor
-      .constraint(equalTo: checkboxView.topAnchor, constant: 5)
-    let checkboxCircleViewBottomAnchorConstraint = checkboxCircleView
-      .bottomAnchor
-      .constraint(equalTo: checkboxView.bottomAnchor, constant: -5)
-    let checkboxCircleViewLeadingAnchorConstraint = checkboxCircleView
-      .leadingAnchor
-      .constraint(equalTo: checkboxView.leadingAnchor, constant: 5)
-    let checkboxCircleViewTrailingAnchorConstraint = checkboxCircleView
-      .trailingAnchor
-      .constraint(equalTo: checkboxView.trailingAnchor, constant: -5)
     let elementViewHeightAnchorConstraint = elementView.heightAnchor.constraint(equalToConstant: 50)
     let elementViewWidthAnchorConstraint = elementView.widthAnchor.constraint(equalToConstant: 50)
     let innerViewTopAnchorConstraint = innerView.topAnchor.constraint(equalTo: elementView.topAnchor, constant: 10)
@@ -233,6 +253,18 @@ public class AccessibilityTest: UIView {
       .constraint(equalTo: containerView.bottomAnchor)
     let imageViewHeightAnchorConstraint = imageView.heightAnchor.constraint(equalToConstant: 50)
     let imageViewWidthAnchorConstraint = imageView.widthAnchor.constraint(equalToConstant: 50)
+    let checkboxCircleViewTopAnchorCheckboxViewTopAnchorConstraint = checkboxCircleView
+      .topAnchor
+      .constraint(equalTo: checkboxView.topAnchor, constant: 5)
+    let checkboxCircleViewBottomAnchorCheckboxViewBottomAnchorConstraint = checkboxCircleView
+      .bottomAnchor
+      .constraint(equalTo: checkboxView.bottomAnchor, constant: -5)
+    let checkboxCircleViewLeadingAnchorCheckboxViewLeadingAnchorConstraint = checkboxCircleView
+      .leadingAnchor
+      .constraint(equalTo: checkboxView.leadingAnchor, constant: 5)
+    let checkboxCircleViewTrailingAnchorCheckboxViewTrailingAnchorConstraint = checkboxCircleView
+      .trailingAnchor
+      .constraint(equalTo: checkboxView.trailingAnchor, constant: -5)
 
     checkboxViewHeightAnchorParentConstraint.priority = UILayoutPriority.defaultLow
     textViewHeightAnchorParentConstraint.priority = UILayoutPriority.defaultLow
@@ -241,57 +273,103 @@ public class AccessibilityTest: UIView {
     imageViewHeightAnchorParentConstraint.priority = UILayoutPriority.defaultLow
     accessibleTextViewHeightAnchorParentConstraint.priority = UILayoutPriority.defaultLow
 
-    NSLayoutConstraint.activate([
-      checkboxRowViewTopAnchorConstraint,
-      checkboxRowViewLeadingAnchorConstraint,
-      checkboxRowViewTrailingAnchorConstraint,
-      row1ViewBottomAnchorConstraint,
-      row1ViewTopAnchorConstraint,
-      row1ViewLeadingAnchorConstraint,
-      row1ViewTrailingAnchorConstraint,
-      checkboxViewHeightAnchorParentConstraint,
-      textViewHeightAnchorParentConstraint,
-      checkboxViewLeadingAnchorConstraint,
-      checkboxViewCenterYAnchorConstraint,
-      textViewLeadingAnchorConstraint,
-      textViewTopAnchorConstraint,
-      textViewCenterYAnchorConstraint,
-      textViewBottomAnchorConstraint,
-      elementViewHeightAnchorParentConstraint,
-      containerViewHeightAnchorParentConstraint,
-      elementViewLeadingAnchorConstraint,
-      elementViewTopAnchorConstraint,
-      containerViewTrailingAnchorConstraint,
-      containerViewLeadingAnchorConstraint,
-      containerViewTopAnchorConstraint,
-      containerViewBottomAnchorConstraint,
-      checkboxViewHeightAnchorConstraint,
-      checkboxViewWidthAnchorConstraint,
-      checkboxCircleViewTopAnchorConstraint,
-      checkboxCircleViewBottomAnchorConstraint,
-      checkboxCircleViewLeadingAnchorConstraint,
-      checkboxCircleViewTrailingAnchorConstraint,
-      elementViewHeightAnchorConstraint,
-      elementViewWidthAnchorConstraint,
-      innerViewTopAnchorConstraint,
-      innerViewBottomAnchorConstraint,
-      innerViewLeadingAnchorConstraint,
-      innerViewTrailingAnchorConstraint,
-      imageViewHeightAnchorParentConstraint,
-      accessibleTextViewHeightAnchorParentConstraint,
-      imageViewLeadingAnchorConstraint,
-      imageViewCenterYAnchorConstraint,
-      accessibleTextViewLeadingAnchorConstraint,
-      accessibleTextViewTopAnchorConstraint,
-      accessibleTextViewCenterYAnchorConstraint,
-      accessibleTextViewBottomAnchorConstraint,
-      imageViewHeightAnchorConstraint,
-      imageViewWidthAnchorConstraint
-    ])
+    self.checkboxCircleViewTopAnchorCheckboxViewTopAnchorConstraint =
+      checkboxCircleViewTopAnchorCheckboxViewTopAnchorConstraint
+    self.checkboxCircleViewBottomAnchorCheckboxViewBottomAnchorConstraint =
+      checkboxCircleViewBottomAnchorCheckboxViewBottomAnchorConstraint
+    self.checkboxCircleViewLeadingAnchorCheckboxViewLeadingAnchorConstraint =
+      checkboxCircleViewLeadingAnchorCheckboxViewLeadingAnchorConstraint
+    self.checkboxCircleViewTrailingAnchorCheckboxViewTrailingAnchorConstraint =
+      checkboxCircleViewTrailingAnchorCheckboxViewTrailingAnchorConstraint
+
+    NSLayoutConstraint.activate(
+      [
+        checkboxRowViewTopAnchorConstraint,
+        checkboxRowViewLeadingAnchorConstraint,
+        checkboxRowViewTrailingAnchorConstraint,
+        row1ViewBottomAnchorConstraint,
+        row1ViewTopAnchorConstraint,
+        row1ViewLeadingAnchorConstraint,
+        row1ViewTrailingAnchorConstraint,
+        checkboxViewHeightAnchorParentConstraint,
+        textViewHeightAnchorParentConstraint,
+        checkboxViewLeadingAnchorConstraint,
+        checkboxViewCenterYAnchorConstraint,
+        textViewLeadingAnchorConstraint,
+        textViewTopAnchorConstraint,
+        textViewCenterYAnchorConstraint,
+        textViewBottomAnchorConstraint,
+        elementViewHeightAnchorParentConstraint,
+        containerViewHeightAnchorParentConstraint,
+        elementViewLeadingAnchorConstraint,
+        elementViewTopAnchorConstraint,
+        containerViewTrailingAnchorConstraint,
+        containerViewLeadingAnchorConstraint,
+        containerViewTopAnchorConstraint,
+        containerViewBottomAnchorConstraint,
+        checkboxViewHeightAnchorConstraint,
+        checkboxViewWidthAnchorConstraint,
+        elementViewHeightAnchorConstraint,
+        elementViewWidthAnchorConstraint,
+        innerViewTopAnchorConstraint,
+        innerViewBottomAnchorConstraint,
+        innerViewLeadingAnchorConstraint,
+        innerViewTrailingAnchorConstraint,
+        imageViewHeightAnchorParentConstraint,
+        accessibleTextViewHeightAnchorParentConstraint,
+        imageViewLeadingAnchorConstraint,
+        imageViewCenterYAnchorConstraint,
+        accessibleTextViewLeadingAnchorConstraint,
+        accessibleTextViewTopAnchorConstraint,
+        accessibleTextViewCenterYAnchorConstraint,
+        accessibleTextViewBottomAnchorConstraint,
+        imageViewHeightAnchorConstraint,
+        imageViewWidthAnchorConstraint
+      ] +
+        conditionalConstraints(checkboxCircleViewIsHidden: checkboxCircleView.isHidden))
+  }
+
+  private func conditionalConstraints(checkboxCircleViewIsHidden: Bool) -> [NSLayoutConstraint] {
+    var constraints: [NSLayoutConstraint?]
+
+    switch (checkboxCircleViewIsHidden) {
+      case (true):
+        constraints = []
+      case (false):
+        constraints = [
+          checkboxCircleViewTopAnchorCheckboxViewTopAnchorConstraint,
+          checkboxCircleViewBottomAnchorCheckboxViewBottomAnchorConstraint,
+          checkboxCircleViewLeadingAnchorCheckboxViewLeadingAnchorConstraint,
+          checkboxCircleViewTrailingAnchorCheckboxViewTrailingAnchorConstraint
+        ]
+    }
+
+    return constraints.compactMap({ $0 })
   }
 
   private func update() {
+    let checkboxCircleViewIsHidden = checkboxCircleView.isHidden
+
+    checkboxCircleView.isHidden = !true
+    checkboxRowView.accessibilityValue = ""
     accessibleTextView.accessibilityLabel = customTextAccessibilityLabel
+    if checkboxValue {
+      checkboxCircleView.isHidden = !true
+      checkboxRowView.accessibilityValue = "checked"
+    }
+    if checkboxValue == false {
+      checkboxCircleView.isHidden = !false
+      checkboxRowView.accessibilityValue = "unchecked"
+    }
+
+    if checkboxCircleView.isHidden != checkboxCircleViewIsHidden {
+      NSLayoutConstraint.deactivate(conditionalConstraints(checkboxCircleViewIsHidden: checkboxCircleViewIsHidden))
+      NSLayoutConstraint.activate(conditionalConstraints(checkboxCircleViewIsHidden: checkboxCircleView.isHidden))
+    }
+  }
+
+  @objc private func handleTapCheckboxRowView() {
+    onTapCheckboxRowView?()
   }
 }
 
@@ -300,17 +378,20 @@ public class AccessibilityTest: UIView {
 extension AccessibilityTest {
   public struct Parameters: Equatable {
     public var customTextAccessibilityLabel: String
+    public var checkboxValue: Bool
 
-    public init(customTextAccessibilityLabel: String) {
+    public init(customTextAccessibilityLabel: String, checkboxValue: Bool) {
       self.customTextAccessibilityLabel = customTextAccessibilityLabel
+      self.checkboxValue = checkboxValue
     }
 
     public init() {
-      self.init(customTextAccessibilityLabel: "")
+      self.init(customTextAccessibilityLabel: "", checkboxValue: false)
     }
 
     public static func ==(lhs: Parameters, rhs: Parameters) -> Bool {
-      return lhs.customTextAccessibilityLabel == rhs.customTextAccessibilityLabel
+      return lhs.customTextAccessibilityLabel == rhs.customTextAccessibilityLabel &&
+        lhs.checkboxValue == rhs.checkboxValue
     }
   }
 }
@@ -334,12 +415,12 @@ extension AccessibilityTest {
       self.parameters = parameters
     }
 
-    public init(customTextAccessibilityLabel: String) {
-      self.init(Parameters(customTextAccessibilityLabel: customTextAccessibilityLabel))
+    public init(customTextAccessibilityLabel: String, checkboxValue: Bool) {
+      self.init(Parameters(customTextAccessibilityLabel: customTextAccessibilityLabel, checkboxValue: checkboxValue))
     }
 
     public init() {
-      self.init(customTextAccessibilityLabel: "")
+      self.init(customTextAccessibilityLabel: "", checkboxValue: false)
     }
   }
 }
