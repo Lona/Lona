@@ -152,7 +152,7 @@ class CSLayer: CSDataDeserializable, CSDataSerializable, DataNode, NSCopying {
 
         if includingSelf { return names }
 
-        return names.filter({ $0 != self.name })
+        return names.filter({ $0 != self.name }).sorted()
     }
 
     func removeParameter(_ key: String) {
