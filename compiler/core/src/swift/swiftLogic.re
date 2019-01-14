@@ -2,6 +2,9 @@ module Ast = SwiftAst;
 
 module Document = SwiftDocument;
 
+let keyEndsWith = (suffix, key) =>
+  key == suffix || key |> Js.String.endsWith("." ++ suffix);
+
 let toSwiftAST =
     (
       options: SwiftOptions.options,
@@ -204,92 +207,102 @@ let toSwiftAST =
     | Logic.Assign(a, b) =>
       switch (logicValueToSwiftAST(b), logicValueToSwiftAST(a)) {
       | (Ast.SwiftIdentifier(key), Ast.LiteralExpression(String(value)))
-          when
-            (
-              key == "accessibilityType"
-              || key
-              |> Js.String.endsWith(".accessibilityType")
-            )
-            && options.framework == UIKit =>
-        let createIsAccessibilityElementAssignment = enabled => {
-          let newKey =
-            key
-            |> Js.String.replace(
-                 "accessibilityType",
-                 "isAccessibilityElement",
-               );
+          when key |> keyEndsWith("accessibilityType") =>
+        switch (options.framework) {
+        | UIKit =>
+          let createIsAccessibilityElementAssignment = enabled => {
+            let newKey =
+              key
+              |> Js.String.replace(
+                   "accessibilityType",
+                   "isAccessibilityElement",
+                 );
+            Ast.BinaryExpression({
+              "left": Ast.SwiftIdentifier(newKey),
+              "operator": "=",
+              "right": Ast.LiteralExpression(Boolean(enabled)),
+            });
+          };
+          switch (value) {
+          | "none" => createIsAccessibilityElementAssignment(false)
+          | "element" => createIsAccessibilityElementAssignment(true)
+          | "container" => createIsAccessibilityElementAssignment(false)
+          | _ => Empty
+          };
+        | AppKit => Empty
+        }
+      | (Ast.SwiftIdentifier(key), Ast.LiteralExpression(String(role)))
+          when key |> keyEndsWith("accessibilityRole") =>
+        switch (options.framework) {
+        | UIKit =>
           Ast.BinaryExpression({
-            "left": Ast.SwiftIdentifier(newKey),
+            "left":
+              Ast.SwiftIdentifier(
+                key
+                |> Js.String.replace(
+                     "accessibilityRole",
+                     "accessibilityTraits",
+                   ),
+              ),
             "operator": "=",
-            "right": Ast.LiteralExpression(Boolean(enabled)),
-          });
-        };
-        switch (value) {
-        | "none" => createIsAccessibilityElementAssignment(false)
-        | "element" => createIsAccessibilityElementAssignment(true)
-        | "container" => createIsAccessibilityElementAssignment(false)
-        | _ => Empty
-        };
-      | (
-          Ast.SwiftIdentifier(key),
-          Ast.LiteralExpression(String(role)),
-        )
-          when
-            (
-              key == "accessibilityRole"
-              || key
-              |> Js.String.endsWith(".accessibilityRole")
-            )
-            && options.framework == UIKit =>
-        Ast.BinaryExpression({
-          "left": Ast.SwiftIdentifier(key |> Js.String.replace("accessibilityRole", "accessibilityTraits")),
-          "operator": "=",
-          "right":
-            Ast.SwiftIdentifier(
-              switch (role) {
-              | "none" => "UIAccessibilityTraitNone"
-              | "button" => "UIAccessibilityTraitButton"
-              | "link" => "UIAccessibilityTraitLink"
-              | "search" => "UIAccessibilityTraitSearchField"
-              | "image" => "UIAccessibilityTraitImage"
-              | "keyboardkey" => "UIAccessibilityTraitKeyboardKey"
-              | "text" => "UIAccessibilityTraitStaticText"
-              | "adjustable" => "UIAccessibilityTraitAdjustable"
-              | "imagebutton" => "UIAccessibilityTraitButton | UIAccessibilityTraitImage"
-              | "header" => "UIAccessibilityTraitHeader"
-              | "summary" => "UIAccessibilityTraitSummaryElement"
-              | _ => "UIAccessibilityTraitNone"
-              },
-            ),
-        })
+            "right":
+              Ast.SwiftIdentifier(
+                switch (role) {
+                | "none" => "UIAccessibilityTraitNone"
+                | "button" => "UIAccessibilityTraitButton"
+                | "link" => "UIAccessibilityTraitLink"
+                | "search" => "UIAccessibilityTraitSearchField"
+                | "image" => "UIAccessibilityTraitImage"
+                | "keyboardkey" => "UIAccessibilityTraitKeyboardKey"
+                | "text" => "UIAccessibilityTraitStaticText"
+                | "adjustable" => "UIAccessibilityTraitAdjustable"
+                | "imagebutton" => "UIAccessibilityTraitButton | UIAccessibilityTraitImage"
+                | "header" => "UIAccessibilityTraitHeader"
+                | "summary" => "UIAccessibilityTraitSummaryElement"
+                | _ => "UIAccessibilityTraitNone"
+                },
+              ),
+          })
+        | AppKit => Empty
+        }
       | (
           Ast.SwiftIdentifier(key) as left,
           Ast.LiteralExpression(Array(elements)),
         )
+          when key |> keyEndsWith("accessibilityElements") =>
+        switch (options.framework) {
+        | UIKit =>
+          Ast.BinaryExpression({
+            "left": left,
+            "operator": "=",
+            "right":
+              Ast.LiteralExpression(
+                Array(
+                  elements
+                  |> List.map((element: Ast.node) =>
+                       switch (element) {
+                       | LiteralExpression(String(layerName)) =>
+                         Ast.SwiftIdentifier(
+                           SwiftFormat.layerName(layerName),
+                         )
+                       | _ => Empty
+                       }
+                     ),
+                ),
+              ),
+          })
+        | AppKit => Empty
+        }
+      | (Ast.SwiftIdentifier(key), _)
           when
             (
-              key == "accessibilityElements"
-              || key
-              |> Js.String.endsWith(".accessibilityElements")
+              keyEndsWith("accessibilityLabel", key)
+              || keyEndsWith("accessibilityHint", key)
+              || keyEndsWith("accessibilityValue", key)
+              || keyEndsWith("onAccessibilityActivate", key)
             )
-            && options.framework == UIKit =>
-        Ast.BinaryExpression({
-          "left": left,
-          "operator": "=",
-          "right":
-            Ast.LiteralExpression(
-              Array(
-                elements
-                |> List.map((element: Ast.node) =>
-                     switch (element) {
-                     | LiteralExpression(String(layerName)) =>
-                       Ast.SwiftIdentifier(SwiftFormat.layerName(layerName))
-                     | _ => Empty
-                     }
-                   ),
-              ),
-            ),
-        })
+            && options.framework == AppKit =>
+        Empty
       | (Ast.SwiftIdentifier(name), Ast.LiteralExpression(_) as right)
       | (Ast.SwiftIdentifier(name), Ast.MemberExpression(_) as right)
           when
