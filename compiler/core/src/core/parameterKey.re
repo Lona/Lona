@@ -46,6 +46,7 @@ type t =
   | AccessibilityValue
   | AccessibilityRole
   | AccessibilityElements
+  | OnAccessibilityActivate
   /* Interactivity */
   | Pressed
   | Hovered
@@ -98,6 +99,7 @@ let fromString = string =>
   | "accessibilityValue" => AccessibilityValue
   | "accessibilityRole" => AccessibilityRole
   | "accessibilityElements" => AccessibilityElements
+  | "onAccessibilityActivate" => OnAccessibilityActivate
   /* Interactivity */
   | "pressed" => Pressed
   | "hovered" => Hovered
@@ -152,6 +154,7 @@ let toString = key =>
   | AccessibilityValue => "accessibilityValue"
   | AccessibilityRole => "accessibilityRole"
   | AccessibilityElements => "accessibilityElements"
+  | OnAccessibilityActivate => "onAccessibilityActivate"
   /* Interactivity */
   | Pressed => "pressed"
   | Hovered => "hovered"

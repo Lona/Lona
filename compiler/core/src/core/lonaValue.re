@@ -33,6 +33,11 @@ let url = value: Types.lonaValue => {
   data: Js.Json.string(value),
 };
 
+let stringArray = (values: list(string)): Types.lonaValue => {
+  ltype: Types.Array(Types.stringType),
+  data: Js.Json.array(values |> List.map(Js.Json.string) |> Array.of_list),
+};
+
 let parameterDefaultValue = key =>
   switch (key) {
   | ParameterKey.Text => string("")
@@ -69,6 +74,9 @@ let parameterDefaultValue = key =>
   | ParameterKey.AccessibilityHint => string("")
   | ParameterKey.AccessibilityRole => string("")
   | ParameterKey.AccessibilityValue => string("")
+  | ParameterKey.AccessibilityType => string("auto")
+  | ParameterKey.AccessibilityElements => stringArray([])
+  | ParameterKey.OnAccessibilityActivate => null()
   /* Interactivity */
   | ParameterKey.Pressed => boolean(false)
   | ParameterKey.Hovered => boolean(false)

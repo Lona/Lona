@@ -69,7 +69,18 @@ let getPropVariables =
     ) =>
   switch (Layer.LayerMap.find_opt(layer, assignments)) {
   | Some(map) =>
-    map |> ParameterMap.filter((key, _) => !Layer.parameterIsStyle(key))
+    map
+    |> ParameterMap.filter((key, _) => !Layer.parameterIsStyle(key))
+    |> ParameterMap.filter((key, _) =>
+         !(
+           key == AccessibilityType
+           || key == AccessibilityLabel
+           || key == AccessibilityHint
+           || key == AccessibilityValue
+           || key == AccessibilityRole
+           || key == AccessibilityElements
+         )
+       )
   | None => ParameterMap.empty
   };
 
@@ -82,6 +93,13 @@ let removeSpecialProps =
   parameters
   |> ParameterMap.filter((key: ParameterKey.t, _) =>
        switch (key, options.framework) {
+       | (ParameterKey.OnAccessibilityActivate, _)
+       | (ParameterKey.AccessibilityHint, _)
+       | (ParameterKey.AccessibilityLabel, _)
+       | (ParameterKey.AccessibilityRole, _)
+       | (ParameterKey.AccessibilityValue, _)
+       | (ParameterKey.AccessibilityType, _)
+       | (ParameterKey.AccessibilityElements, _) => false
        | (ParameterKey.NumberOfLines, JavaScriptOptions.ReactDOM) => false
        | (ParameterKey.Text, _) => false
        | (ParameterKey.Visible, _) => false
@@ -837,7 +855,9 @@ let generateEnumType = (param: Types.parameter) =>
                   |> List.map((case: Types.lonaVariantCase) =>
                        JavaScriptAst.Property({
                          key:
-                           Identifier([JavaScriptFormat.enumCaseName(case.tag)]),
+                           Identifier([
+                             JavaScriptFormat.enumCaseName(case.tag),
+                           ]),
                          value: StringLiteral(case.tag),
                        })
                      ),
