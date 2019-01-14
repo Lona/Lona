@@ -69,18 +69,7 @@ let getPropVariables =
     ) =>
   switch (Layer.LayerMap.find_opt(layer, assignments)) {
   | Some(map) =>
-    map
-    |> ParameterMap.filter((key, _) => !Layer.parameterIsStyle(key))
-    |> ParameterMap.filter((key, _) =>
-         !(
-           key == AccessibilityType
-           || key == AccessibilityLabel
-           || key == AccessibilityHint
-           || key == AccessibilityValue
-           || key == AccessibilityRole
-           || key == AccessibilityElements
-         )
-       )
+    map |> ParameterMap.filter((key, _) => !Layer.parameterIsStyle(key))
   | None => ParameterMap.empty
   };
 
