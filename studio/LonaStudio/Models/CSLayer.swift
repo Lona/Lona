@@ -123,6 +123,16 @@ class CSLayer: CSDataDeserializable, CSDataSerializable, DataNode, NSCopying {
     var parameters: [String: CSData] = [:]
     var metadata: [String: CSData] = [:]
 
+    var rootAncestor: CSLayer {
+        var root = self
+
+        while let parent = root.parent {
+            root = parent
+        }
+
+        return root
+    }
+
     var descendantLayers: [CSLayer] {
         var result = [CSLayer]()
 
@@ -135,6 +145,14 @@ class CSLayer: CSDataDeserializable, CSDataSerializable, DataNode, NSCopying {
         apply(layer: self)
 
         return result
+    }
+
+    func descendantLayerNames(includingSelf: Bool) -> [String] {
+        let names = descendantLayers.map({ $0.name })
+
+        if includingSelf { return names }
+
+        return names.filter({ $0 != self.name }).sorted()
     }
 
     func removeParameter(_ key: String) {
@@ -459,6 +477,24 @@ class CSLayer: CSDataDeserializable, CSDataSerializable, DataNode, NSCopying {
         }
     }
 
+    private let accessibilityKeys = [
+        "accessibilityType",
+        "accessibilityLabel",
+        "accessibilityHint",
+        "accessibilityValue",
+        "accessibilityRole",
+        "accessibilityStates",
+        "accessibilityElements"
+    ]
+
+    var accessibility: AccessibilityType {
+        get { return AccessibilityType(CSData.Object(parameters)) }
+        set {
+            accessibilityKeys.forEach { parameters.removeValue(forKey: $0) }
+            parameters.merge(with: newValue.toData().objectValue)
+        }
+    }
+
     static func deserialize(_ json: CSData) -> CSLayer? {
         let type = LayerType(json.get(key: "type"))
 
@@ -526,6 +562,20 @@ class CSLayer: CSDataDeserializable, CSDataSerializable, DataNode, NSCopying {
         "resizeMode": CSData.String("cover"),
         "textAlign": CSData.String("left"),
         "visible": CSData.Bool(true)
+    ]
+
+    static let accessibilityRoles = [
+        "none",
+        "button",
+        "link",
+        "search",
+        "image",
+        "keyboardkey",
+        "text",
+        "adjustable",
+        "imagebutton",
+        "header",
+        "summary"
     ]
 
     func decode(parameters: [String: CSData]) -> [String: CSData] {
@@ -623,6 +673,8 @@ class CSLayer: CSDataDeserializable, CSDataSerializable, DataNode, NSCopying {
     func value() -> CSValue {
         var valueType = CSLayerType
 
+        let accessibility = self.accessibility
+
         var data = CSData.Object([
             "name": CSData.String(name),
             "visible": CSData.Bool(visible),
@@ -651,6 +703,12 @@ class CSLayer: CSDataDeserializable, CSDataSerializable, DataNode, NSCopying {
             // Shadow
             "shadow": CSData.String(shadow ?? ""),
 
+            // Accessibility
+            "accessibilityLabel": (accessibility.label ?? "").toData(),
+            "accessibilityHint": (accessibility.hint ?? "").toData(),
+            "accessibilityValue": (accessibility.value ?? "").toData(),
+            "accessibilityElements": accessibility.elements.toData(),
+
             // Children
             "children": CSData.Array([])
         ])
@@ -659,6 +717,7 @@ class CSLayer: CSDataDeserializable, CSDataSerializable, DataNode, NSCopying {
             data["pressed"] = CSData.Bool(false)
             data["hovered"] = CSData.Bool(false)
             data["onPress"] = CSData.Null
+            data["onAccessibilityActivate"] = CSData.Null
         }
 
         // Text

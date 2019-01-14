@@ -10,6 +10,7 @@ import UIKit
 
 enum Generated: String {
     case collectionTest = "Collection Test"
+    case accessibilityTest = "Accessibility Test"
     case localAsset = "Local Asset"
     case vectorAsset = "Vector Asset"
     case vectorLogicActive = "Vector Logic - Active"
@@ -45,6 +46,7 @@ enum Generated: String {
 
     static func allValues() -> [Generated] {
         return [
+            accessibilityTest,
             collectionTest,
             localAsset,
             vectorAsset,
@@ -83,6 +85,14 @@ enum Generated: String {
     
     var view: UIView {
         switch self {
+        case .accessibilityTest:
+            var checked = false
+            let view = AccessibilityTest(customTextAccessibilityLabel: "Custom label", checkboxValue: checked)
+            view.onToggleCheckbox = {
+                checked = !checked
+                view.checkboxValue = checked
+            }
+            return view
         case .collectionTest:
             let collectionView = LonaCollectionView(
                 items: [
@@ -191,7 +201,8 @@ enum Generated: String {
                 equal(\.topAnchor, \.safeAreaLayoutGuide.topAnchor),
                 equal(\.leftAnchor),
             ]
-        case .button,
+        case .accessibilityTest,
+             .button,
              .pressableRootView,
              .nestedComponent,
              .nestedButtons,

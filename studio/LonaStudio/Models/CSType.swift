@@ -543,6 +543,13 @@ let CSLayerType = CSType.dictionary([
     // Interactivity
     "onPress": (type: CSHandlerType, access: .write),
 
+    // Accessibility
+    "accessibilityLabel": (type: .string, access: .write),
+    "accessibilityHint": (type: .string, access: .write),
+    "accessibilityValue": (type: .string, access: .write),
+    "accessibilityElements": (type: .array(.string), access: .write),
+    "onAccessibilityActivate": (type: CSHandlerType, access: .write),
+
     // Children
     "children": (type: .array(.any), access: .write)
 ])

@@ -1,0 +1,576 @@
+{
+  "devices" : [
+    {
+      "height" : 0,
+      "heightMode" : "At Least",
+      "name" : "Sidebar",
+      "width" : 280
+    }
+  ],
+  "examples" : [
+    {
+      "id" : "Collapsed",
+      "name" : "Collapsed",
+      "params" : {
+        "isExpanded" : false
+      }
+    },
+    {
+      "id" : "Element",
+      "name" : "Element",
+      "params" : {
+        "accessibilityTypeIndex" : 2,
+        "isExpanded" : true
+      }
+    },
+    {
+      "id" : "Container",
+      "name" : "Container",
+      "params" : {
+        "accessibilityTypeIndex" : 3,
+        "isExpanded" : true
+      }
+    },
+    {
+      "id" : "Expanded",
+      "name" : "Expanded",
+      "params" : {
+        "isExpanded" : true
+      }
+    }
+  ],
+  "logic" : [
+    {
+      "assignee" : [
+        "layers",
+        "ContentContainer",
+        "visible"
+      ],
+      "content" : [
+        "parameters",
+        "isExpanded"
+      ],
+      "type" : "AssignExpr"
+    },
+    {
+      "assignee" : [
+        "layers",
+        "InspectorSectionHeader",
+        "isExpanded"
+      ],
+      "content" : [
+        "parameters",
+        "isExpanded"
+      ],
+      "type" : "AssignExpr"
+    },
+    {
+      "assignee" : [
+        "layers",
+        "InspectorSectionHeader",
+        "onClick"
+      ],
+      "content" : [
+        "parameters",
+        "onClickHeader"
+      ],
+      "type" : "AssignExpr"
+    },
+    {
+      "content" : {
+        "type" : "LitExpr",
+        "value" : {
+          "data" : false,
+          "type" : "Boolean"
+        }
+      },
+      "id" : "elementViewsHidden",
+      "type" : "VarDeclExpr"
+    },
+    {
+      "body" : [
+        {
+          "assignee" : [
+            "elementViewsHidden"
+          ],
+          "content" : {
+            "type" : "LitExpr",
+            "value" : {
+              "data" : true,
+              "type" : "Boolean"
+            }
+          },
+          "type" : "AssignExpr"
+        }
+      ],
+      "condition" : {
+        "left" : [
+          "parameters",
+          "accessibilityTypeIndex"
+        ],
+        "op" : "==",
+        "right" : {
+          "type" : "LitExpr",
+          "value" : {
+            "data" : 2,
+            "type" : "WholeNumber"
+          }
+        },
+        "type" : "BinExpr"
+      },
+      "type" : "IfExpr"
+    },
+    {
+      "body" : [
+        {
+          "assignee" : [
+            "layers",
+            "ContainerContainer",
+            "visible"
+          ],
+          "content" : {
+            "type" : "LitExpr",
+            "value" : {
+              "data" : true,
+              "type" : "Boolean"
+            }
+          },
+          "type" : "AssignExpr"
+        }
+      ],
+      "condition" : {
+        "left" : [
+          "parameters",
+          "accessibilityTypeIndex"
+        ],
+        "op" : "==",
+        "right" : {
+          "type" : "LitExpr",
+          "value" : {
+            "data" : 3,
+            "type" : "WholeNumber"
+          }
+        },
+        "type" : "BinExpr"
+      },
+      "type" : "IfExpr"
+    },
+    {
+      "assignee" : [
+        "layers",
+        "ElementContainer",
+        "visible"
+      ],
+      "content" : [
+        "elementViewsHidden"
+      ],
+      "type" : "AssignExpr"
+    },
+    {
+      "assignee" : [
+        "layers",
+        "TypeDropdown",
+        "selectedIndex"
+      ],
+      "content" : [
+        "parameters",
+        "accessibilityTypeIndex"
+      ],
+      "type" : "AssignExpr"
+    },
+    {
+      "assignee" : [
+        "layers",
+        "TypeDropdown",
+        "onChangeIndex"
+      ],
+      "content" : [
+        "parameters",
+        "onChangeAccessibilityTypeIndex"
+      ],
+      "type" : "AssignExpr"
+    },
+    {
+      "assignee" : [
+        "layers",
+        "LabelTextInput",
+        "textValue"
+      ],
+      "content" : [
+        "parameters",
+        "accessibilityLabelText"
+      ],
+      "type" : "AssignExpr"
+    },
+    {
+      "assignee" : [
+        "layers",
+        "LabelTextInput",
+        "onChangeTextValue"
+      ],
+      "content" : [
+        "parameters",
+        "onChangeAccessibilityLabel"
+      ],
+      "type" : "AssignExpr"
+    },
+    {
+      "assignee" : [
+        "layers",
+        "HintTextInput",
+        "textValue"
+      ],
+      "content" : [
+        "parameters",
+        "accessibilityHintText"
+      ],
+      "type" : "AssignExpr"
+    },
+    {
+      "assignee" : [
+        "layers",
+        "HintTextInput",
+        "onChangeTextValue"
+      ],
+      "content" : [
+        "parameters",
+        "onChangeAccessibilityHintText"
+      ],
+      "type" : "AssignExpr"
+    },
+    {
+      "assignee" : [
+        "layers",
+        "AccessibilityElementsInput",
+        "options"
+      ],
+      "content" : [
+        "parameters",
+        "accessibilityElements"
+      ],
+      "type" : "AssignExpr"
+    },
+    {
+      "assignee" : [
+        "layers",
+        "AccessibilityElementsInput",
+        "onChangeSelectedIndices"
+      ],
+      "content" : [
+        "parameters",
+        "onChangeSelectedElementIndices"
+      ],
+      "type" : "AssignExpr"
+    },
+    {
+      "assignee" : [
+        "layers",
+        "AccessibilityElementsInput",
+        "selectedIndices"
+      ],
+      "content" : [
+        "parameters",
+        "selectedElementIndices"
+      ],
+      "type" : "AssignExpr"
+    },
+    {
+      "assignee" : [
+        "layers",
+        "RoleDropdown",
+        "onChangeIndex"
+      ],
+      "content" : [
+        "parameters",
+        "onChangeAccessibilityRoleIndex"
+      ],
+      "type" : "AssignExpr"
+    },
+    {
+      "assignee" : [
+        "layers",
+        "RoleDropdown",
+        "selectedIndex"
+      ],
+      "content" : [
+        "parameters",
+        "accessibilityRoleIndex"
+      ],
+      "type" : "AssignExpr"
+    }
+  ],
+  "params" : [
+    {
+      "name" : "isExpanded",
+      "type" : "Boolean"
+    },
+    {
+      "name" : "onClickHeader",
+      "type" : {
+        "name" : "Function"
+      }
+    },
+    {
+      "name" : "accessibilityTypeIndex",
+      "type" : "WholeNumber"
+    },
+    {
+      "name" : "onChangeAccessibilityTypeIndex",
+      "type" : {
+        "name" : "Function",
+        "parameters" : [
+          {
+            "label" : "_",
+            "type" : "WholeNumber"
+          }
+        ]
+      }
+    },
+    {
+      "name" : "accessibilityLabelText",
+      "type" : "String"
+    },
+    {
+      "name" : "onChangeAccessibilityLabel",
+      "type" : "StringHandler"
+    },
+    {
+      "name" : "accessibilityHintText",
+      "type" : "String"
+    },
+    {
+      "name" : "onChangeAccessibilityHintText",
+      "type" : "StringHandler"
+    },
+    {
+      "name" : "accessibilityElements",
+      "type" : {
+        "name" : "Array",
+        "of" : "String"
+      }
+    },
+    {
+      "name" : "onChangeSelectedElementIndices",
+      "type" : {
+        "name" : "Function",
+        "parameters" : [
+          {
+            "label" : "_",
+            "type" : {
+              "name" : "Array",
+              "of" : "WholeNumber"
+            }
+          }
+        ]
+      }
+    },
+    {
+      "name" : "selectedElementIndices",
+      "type" : {
+        "name" : "Array",
+        "of" : "WholeNumber"
+      }
+    },
+    {
+      "name" : "accessibilityRoleIndex",
+      "type" : "WholeNumber"
+    },
+    {
+      "name" : "onChangeAccessibilityRoleIndex",
+      "type" : {
+        "name" : "Function",
+        "parameters" : [
+          {
+            "label" : "_",
+            "type" : "WholeNumber"
+          }
+        ]
+      }
+    }
+  ],
+  "root" : {
+    "children" : [
+      {
+        "id" : "InspectorSectionHeader",
+        "params" : {
+          "titleText" : "Accessibility"
+        },
+        "type" : "InspectorSectionHeader"
+      },
+      {
+        "children" : [
+          {
+            "id" : "TypeLabel",
+            "params" : {
+              "alignSelf" : "stretch",
+              "font" : "regular",
+              "marginBottom" : 8,
+              "text" : "Type"
+            },
+            "type" : "Lona:Text"
+          },
+          {
+            "id" : "TypeDropdown",
+            "params" : {
+              "selectedIndex" : 0,
+              "values" : [
+                "Auto",
+                "None",
+                "Element",
+                "Container"
+              ]
+            },
+            "type" : "ControlledDropdown"
+          },
+          {
+            "children" : [
+              {
+                "id" : "LabelLabel",
+                "params" : {
+                  "marginBottom" : 8,
+                  "marginTop" : 16,
+                  "text" : "Label"
+                },
+                "type" : "Lona:Text"
+              },
+              {
+                "id" : "LabelTextInput",
+                "params" : {
+                  "placeholderString" : "Label",
+                  "textValue" : ""
+                },
+                "type" : "TextInput"
+              },
+              {
+                "id" : "HintLabel",
+                "params" : {
+                  "marginBottom" : 8,
+                  "marginTop" : 16,
+                  "text" : "Hint"
+                },
+                "type" : "Lona:Text"
+              },
+              {
+                "id" : "HintTextInput",
+                "params" : {
+                  "placeholderString" : "Hint",
+                  "textValue" : ""
+                },
+                "type" : "TextInput"
+              },
+              {
+                "id" : "RoleLabel",
+                "params" : {
+                  "marginBottom" : 8,
+                  "marginTop" : 16,
+                  "text" : "Role"
+                },
+                "type" : "Lona:Text"
+              },
+              {
+                "id" : "RoleDropdown",
+                "params" : {
+                  "selectedIndex" : 0,
+                  "values" : [
+                    "None",
+                    "Button",
+                    "Link",
+                    "Search",
+                    "Image",
+                    "Keyboard Key",
+                    "Text",
+                    "Adjustable",
+                    "Image Button",
+                    "Header",
+                    "Summary"
+                  ]
+                },
+                "type" : "ControlledDropdown"
+              },
+              {
+                "id" : "StatesLabel",
+                "params" : {
+                  "marginBottom" : 8,
+                  "marginTop" : 16,
+                  "text" : "States"
+                },
+                "type" : "Lona:Text"
+              },
+              {
+                "id" : "StatesDropdown",
+                "params" : {
+                  "selectedIndex" : 0,
+                  "values" : [
+                    "None",
+                    "Selected",
+                    "Disabled",
+                    "Selected and Disabled"
+                  ]
+                },
+                "type" : "ControlledDropdown"
+              }
+            ],
+            "id" : "ElementContainer",
+            "params" : {
+              "alignSelf" : "stretch",
+              "visible" : false
+            },
+            "type" : "Lona:View"
+          },
+          {
+            "children" : [
+              {
+                "id" : "ElementsLabel",
+                "params" : {
+                  "marginBottom" : 8,
+                  "marginTop" : 16,
+                  "text" : "Label"
+                },
+                "type" : "Lona:Text"
+              },
+              {
+                "id" : "AccessibilityElementsInput",
+                "params" : {
+                  "options" : [
+
+                  ],
+                  "selectedIndices" : [
+
+                  ]
+                },
+                "type" : "MultipleSelectionButton"
+              }
+            ],
+            "id" : "ContainerContainer",
+            "params" : {
+              "alignSelf" : "stretch",
+              "visible" : false
+            },
+            "type" : "Lona:View"
+          }
+        ],
+        "id" : "ContentContainer",
+        "params" : {
+          "alignSelf" : "stretch",
+          "paddingBottom" : 16,
+          "visible" : false
+        },
+        "type" : "Lona:View"
+      },
+      {
+        "id" : "HDivider",
+        "params" : {
+          "alignSelf" : "stretch",
+          "backgroundColor" : "dividerSubtle",
+          "height" : 1
+        },
+        "type" : "Lona:View"
+      }
+    ],
+    "id" : "Container",
+    "params" : {
+      "alignSelf" : "stretch"
+    },
+    "type" : "Lona:View"
+  }
+}

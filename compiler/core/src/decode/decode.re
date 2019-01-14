@@ -44,6 +44,14 @@ let parameterType = key =>
   | Pressed => Types.booleanType
   | Hovered => Types.booleanType
   | OnPress => Types.handlerType
+  /* Accessibility */
+  | AccessibilityType => Types.stringType
+  | AccessibilityLabel => Types.stringType
+  | AccessibilityHint => Types.stringType
+  | AccessibilityValue => Types.stringType
+  | AccessibilityRole => Types.stringType
+  | AccessibilityElements => Types.Array(Types.stringType)
+  | OnAccessibilityActivate => Types.handlerType
   /* Custom */
   /* | Custom("font") => Types.textStyleType */
   | Custom(name) =>
@@ -155,7 +163,10 @@ module Layer = {
              | _ =>
                LonaValue.expandDecodedValue({ltype: param.ltype, data: value})
              | exception _ =>
-               Js.log2("Unknown built-in parameter when deserializing:", key);
+               Js.log2(
+                 "Unknown built-in parameter when deserializing component:",
+                 key,
+               );
                raise(UnknownParameter(ParameterKey.toString(key)));
              };
            | _ => {ltype: parameterType(key), data: value}

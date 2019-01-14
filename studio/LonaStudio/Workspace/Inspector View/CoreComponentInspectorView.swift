@@ -87,6 +87,13 @@ class CoreComponentInspectorView: NSStackView {
         case animation
         case animationSpeed
 
+        // Accessibility
+        case accessibilityType
+        case accessibilityLabel
+        case accessibilityHint
+        case accessibilityElements
+        case accessibilityRole
+
         // Metadata
         case accessLevel
         case backingElementClass
@@ -116,6 +123,7 @@ class CoreComponentInspectorView: NSStackView {
 
     var layoutInspector = LayoutInspector()
     var dimensionsInspector = DimensionsInspector()
+    var accessibilityInspector = AccessibilityInspector()
 
     var opacityView = NumberField(frame: NSRect.zero)
     var backgroundColorButton = ColorPickerButton(frame: NSRect.zero)
@@ -640,6 +648,7 @@ class CoreComponentInspectorView: NSStackView {
             shadowSection!,
             imageSection!,
             animationSection!,
+            accessibilityInspector,
             renderMetadataSection()
         ]
 
@@ -904,6 +913,35 @@ class CoreComponentInspectorView: NSStackView {
         dimensionsInspector.onChangeAspectRatioValue = { aspectRatio in
             change(property: Property.aspectRatio, to: aspectRatio.toData())
         }
+
+        accessibilityInspector.isExpanded = UserDefaults.standard.bool(forKey: "accessibilityInspectorExpanded")
+        accessibilityInspector.onClickHeader = { [unowned self] in
+            let newValue = !self.accessibilityInspector.isExpanded
+            self.accessibilityInspector.isExpanded = newValue
+            UserDefaults.standard.set(newValue, forKey: "accessibilityInspectorExpanded")
+        }
+
+        accessibilityInspector.onChangeAccessibilityTypeIndex = { index in
+            let newValue = self.accessibilityTypeValue(for: index).toData()
+            change(property: Property.accessibilityType, to: newValue)
+        }
+
+        accessibilityInspector.onChangeAccessibilityLabel = { value in
+            change(property: Property.accessibilityLabel, to: value.toData())
+        }
+
+        accessibilityInspector.onChangeAccessibilityHintText = { value in
+            change(property: Property.accessibilityHint, to: value.toData())
+        }
+
+        accessibilityInspector.onChangeAccessibilityRoleIndex = { value in
+            change(property: Property.accessibilityRole, to: CSLayer.accessibilityRoles[value].toData())
+        }
+
+        accessibilityInspector.accessibilityElements = csLayer.descendantLayerNames(includingSelf: false)
+        accessibilityInspector.onChangeSelectedElementIndices = { value in
+            change(property: Property.accessibilityElements, to: value.toData())
+        }
     }
 
     let controlledProperties: [Property] = [
@@ -912,8 +950,28 @@ class CoreComponentInspectorView: NSStackView {
         Property.verticalAlignment,
         Property.width,
         Property.height,
-        Property.aspectRatio
+        Property.aspectRatio,
+        Property.accessibilityType,
+        Property.accessibilityLabel,
+        Property.accessibilityHint,
+        Property.accessibilityRole,
+        Property.accessibilityElements
     ]
+
+    private func accessibilityTypeValue(for index: Int) -> String {
+        switch index {
+        case 0:
+            return "auto"
+        case 1:
+            return "none"
+        case 2:
+            return "element"
+        case 3:
+            return "container"
+        default:
+            return "auto"
+        }
+    }
 
     private func dimensionTypeValue(for index: Int) -> String {
         switch index {
@@ -997,12 +1055,35 @@ class CoreComponentInspectorView: NSStackView {
             }
         case .aspectRatio:
             dimensionsInspector.aspectRatioValue = CGFloat(value.numberValue)
+        case .accessibilityType:
+            switch value.stringValue {
+            case "auto":
+                accessibilityInspector.accessibilityTypeIndex = 0
+            case "none":
+                accessibilityInspector.accessibilityTypeIndex = 1
+            case "element":
+                accessibilityInspector.accessibilityTypeIndex = 2
+            case "container":
+                accessibilityInspector.accessibilityTypeIndex = 3
+            default:
+                Swift.print("WARNING: Invalid accessibilityTypeIndex")
+            }
+        case .accessibilityLabel:
+            accessibilityInspector.accessibilityLabelText = value.stringValue
+        case .accessibilityHint:
+            accessibilityInspector.accessibilityHintText = value.stringValue
+        case .accessibilityRole:
+            accessibilityInspector.accessibilityRoleIndex = CSLayer.accessibilityRoles.firstIndex(of: value.stringValue) ?? 0
+        case .accessibilityElements:
+            accessibilityInspector.selectedElementIndices = value.arrayValue.map { $0.int }
         default:
             break
         }
     }
 
     static func properties(from layer: CSLayer) -> [Property: CSData] {
+        let accessibilityIndices = layer.accessibility.elements.compactMap({ layer.descendantLayerNames(includingSelf: false).lastIndex(of: $0) })
+
         return [
             // Layout
             CoreComponentInspectorView.Property.direction: CSData.String(layer.flexDirection ?? "column"),
@@ -1057,6 +1138,13 @@ class CoreComponentInspectorView: NSStackView {
             // Animation
             CoreComponentInspectorView.Property.animation: CSData.String(layer.animation ?? ""),
             CoreComponentInspectorView.Property.animationSpeed: CSData.Number(layer.animationSpeed ?? 1),
+
+            // Accessibility
+            CoreComponentInspectorView.Property.accessibilityType: layer.accessibility.typeName.toData(),
+            CoreComponentInspectorView.Property.accessibilityLabel: (layer.accessibility.label ?? "").toData(),
+            CoreComponentInspectorView.Property.accessibilityHint: (layer.accessibility.hint ?? "").toData(),
+            CoreComponentInspectorView.Property.accessibilityRole: (layer.accessibility.role?.rawValue ?? "none").toData(),
+            CoreComponentInspectorView.Property.accessibilityElements: accessibilityIndices.toData(),
 
             // Metadata
             CoreComponentInspectorView.Property.accessLevel: CSValue.expand(
@@ -1124,6 +1212,15 @@ class CoreComponentInspectorView: NSStackView {
         case .animation: layer.animation = value.stringValue
         case .animationSpeed: layer.animationSpeed = value.numberValue
 
+        // Accessibility
+        case .accessibilityType: layer.accessibility = layer.accessibility.withType(value.stringValue)
+        case .accessibilityLabel: layer.accessibility = layer.accessibility.withLabel(value.stringValue.isEmpty ? nil : value.string)
+        case .accessibilityHint: layer.accessibility = layer.accessibility.withHint(value.stringValue.isEmpty ? nil : value.string)
+        case .accessibilityElements:
+            let layerNames = layer.descendantLayerNames(includingSelf: false)
+            let elements = value.arrayValue.map { $0.int }.map { layerNames[$0] }
+            layer.accessibility = layer.accessibility.withElements(elements)
+        case .accessibilityRole: layer.accessibility = layer.accessibility.withRole(AccessibilityRole(rawValue: value.stringValue))
         // Metadata
         case .accessLevel: layer.metadata["accessLevel"] = CSValue.compact(
             type: CSType.platformSpecificAccessLevel, data: CSData.Object(value.objectValue))

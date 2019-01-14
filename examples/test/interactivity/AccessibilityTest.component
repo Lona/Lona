@@ -1,0 +1,313 @@
+{
+  "devices" : [
+    {
+      "deviceId" : "iPhone SE",
+      "heightMode" : "At Least"
+    }
+  ],
+  "examples" : [
+    {
+      "id" : "Default",
+      "name" : "Default",
+      "params" : {
+
+      }
+    }
+  ],
+  "logic" : [
+    {
+      "assignee" : [
+        "layers",
+        "AccessibleText",
+        "accessibilityLabel"
+      ],
+      "content" : [
+        "parameters",
+        "customTextAccessibilityLabel"
+      ],
+      "type" : "AssignExpr"
+    },
+    {
+      "body" : [
+        {
+          "assignee" : [
+            "layers",
+            "CheckboxCircle",
+            "visible"
+          ],
+          "content" : {
+            "type" : "LitExpr",
+            "value" : {
+              "data" : true,
+              "type" : "Boolean"
+            }
+          },
+          "type" : "AssignExpr"
+        },
+        {
+          "assignee" : [
+            "layers",
+            "CheckboxRow",
+            "accessibilityValue"
+          ],
+          "content" : {
+            "type" : "LitExpr",
+            "value" : {
+              "data" : "checked",
+              "type" : "String"
+            }
+          },
+          "type" : "AssignExpr"
+        }
+      ],
+      "condition" : {
+        "left" : [
+          "parameters",
+          "checkboxValue"
+        ],
+        "op" : "==",
+        "right" : {
+          "type" : "LitExpr",
+          "value" : {
+            "data" : true,
+            "type" : "Boolean"
+          }
+        },
+        "type" : "BinExpr"
+      },
+      "type" : "IfExpr"
+    },
+    {
+      "body" : [
+        {
+          "assignee" : [
+            "layers",
+            "CheckboxCircle",
+            "visible"
+          ],
+          "content" : {
+            "type" : "LitExpr",
+            "value" : {
+              "data" : false,
+              "type" : "Boolean"
+            }
+          },
+          "type" : "AssignExpr"
+        },
+        {
+          "assignee" : [
+            "layers",
+            "CheckboxRow",
+            "accessibilityValue"
+          ],
+          "content" : {
+            "type" : "LitExpr",
+            "value" : {
+              "data" : "unchecked",
+              "type" : "String"
+            }
+          },
+          "type" : "AssignExpr"
+        }
+      ],
+      "condition" : {
+        "left" : [
+          "parameters",
+          "checkboxValue"
+        ],
+        "op" : "==",
+        "right" : {
+          "type" : "LitExpr",
+          "value" : {
+            "data" : false,
+            "type" : "Boolean"
+          }
+        },
+        "type" : "BinExpr"
+      },
+      "type" : "IfExpr"
+    },
+    {
+      "assignee" : [
+        "layers",
+        "CheckboxRow",
+        "onAccessibilityActivate"
+      ],
+      "content" : [
+        "parameters",
+        "onToggleCheckbox"
+      ],
+      "type" : "AssignExpr"
+    },
+    {
+      "assignee" : [
+        "layers",
+        "Checkbox",
+        "onPress"
+      ],
+      "content" : [
+        "parameters",
+        "onToggleCheckbox"
+      ],
+      "type" : "AssignExpr"
+    }
+  ],
+  "params" : [
+    {
+      "name" : "customTextAccessibilityLabel",
+      "type" : "String"
+    },
+    {
+      "name" : "checkboxValue",
+      "type" : "Boolean"
+    },
+    {
+      "name" : "onToggleCheckbox",
+      "type" : {
+        "name" : "Function"
+      }
+    }
+  ],
+  "root" : {
+    "children" : [
+      {
+        "children" : [
+          {
+            "children" : [
+              {
+                "id" : "CheckboxCircle",
+                "params" : {
+                  "alignSelf" : "stretch",
+                  "backgroundColor" : "green200",
+                  "borderRadius" : 15,
+                  "flex" : 1
+                },
+                "type" : "Lona:View"
+              }
+            ],
+            "id" : "Checkbox",
+            "params" : {
+              "borderColor" : "grey400",
+              "borderRadius" : 20,
+              "borderWidth" : 1,
+              "height" : 30,
+              "marginRight" : 10,
+              "paddingBottom" : 4,
+              "paddingLeft" : 4,
+              "paddingRight" : 4,
+              "paddingTop" : 4,
+              "width" : 30
+            },
+            "type" : "Lona:View"
+          },
+          {
+            "id" : "Text",
+            "params" : {
+              "text" : "Checkbox description"
+            },
+            "type" : "Lona:Text"
+          }
+        ],
+        "id" : "CheckboxRow",
+        "params" : {
+          "accessibilityLabel" : "Checkbox row",
+          "accessibilityType" : "element",
+          "alignItems" : "center",
+          "alignSelf" : "stretch",
+          "flexDirection" : "row",
+          "paddingBottom" : 10,
+          "paddingLeft" : 10,
+          "paddingRight" : 10,
+          "paddingTop" : 10
+        },
+        "type" : "Lona:View"
+      },
+      {
+        "children" : [
+          {
+            "children" : [
+              {
+                "id" : "Inner",
+                "params" : {
+                  "alignSelf" : "stretch",
+                  "backgroundColor" : "red800",
+                  "flex" : 1
+                },
+                "type" : "Lona:View"
+              }
+            ],
+            "id" : "Element",
+            "params" : {
+              "accessibilityHint" : "An accessibility element",
+              "accessibilityLabel" : "Red box",
+              "accessibilityRole" : "button",
+              "accessibilityType" : "element",
+              "backgroundColor" : "red600",
+              "height" : 50,
+              "marginRight" : 10,
+              "paddingBottom" : 10,
+              "paddingLeft" : 10,
+              "paddingRight" : 10,
+              "paddingTop" : 10,
+              "width" : 50
+            },
+            "type" : "Lona:View"
+          },
+          {
+            "children" : [
+              {
+                "id" : "Image",
+                "params" : {
+                  "accessibilityHint" : "A cool image",
+                  "accessibilityLabel" : "My image",
+                  "accessibilityType" : "element",
+                  "height" : 50,
+                  "image" : "file:\/\/.\/assets\/icon_128x128.png",
+                  "marginRight" : 4,
+                  "width" : 50
+                },
+                "type" : "Lona:Image"
+              },
+              {
+                "id" : "AccessibleText",
+                "params" : {
+                  "accessibilityHint" : "Some text",
+                  "accessibilityType" : "element",
+                  "text" : "Greetings"
+                },
+                "type" : "Lona:Text"
+              }
+            ],
+            "id" : "Container",
+            "params" : {
+              "accessibilityElements" : [
+                "AccessibleText",
+                "Image"
+              ],
+              "accessibilityType" : "container",
+              "alignItems" : "center",
+              "flex" : 1,
+              "flexDirection" : "row"
+            },
+            "type" : "Lona:View"
+          }
+        ],
+        "id" : "Row1",
+        "params" : {
+          "alignSelf" : "stretch",
+          "flexDirection" : "row",
+          "paddingBottom" : 10,
+          "paddingLeft" : 10,
+          "paddingRight" : 10,
+          "paddingTop" : 10
+        },
+        "type" : "Lona:View"
+      }
+    ],
+    "id" : "View",
+    "params" : {
+      "alignSelf" : "stretch"
+    },
+    "type" : "Lona:View"
+  }
+}
