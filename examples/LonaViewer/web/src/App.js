@@ -1,13 +1,13 @@
 import React, { Component } from "react";
 import "./App.css";
 
-import Button from "generated/interactivity/Button";
+import AccessibilityTest from "./generated/interactivity/AccessibilityTest";
 
 class App extends Component {
   render() {
     return (
       <div className="App">
-        <Button />
+        <AccessibilityTest />
       </div>
     );
   }
