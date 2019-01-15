@@ -9,6 +9,7 @@ export default class LocalAsset extends React.Component {
   render() {
 
 
+
     return <View> <Image src={require("../assets/icon_128x128.png")} /> </View>;
   }
 };

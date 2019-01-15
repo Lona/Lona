@@ -9,6 +9,7 @@ export default class MultipleFlexText extends React.Component {
   render() {
 
 
+
     return (
       <View>
         <View1>

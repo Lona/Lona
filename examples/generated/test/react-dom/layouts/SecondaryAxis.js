@@ -9,6 +9,7 @@ export default class SecondaryAxis extends React.Component {
   render() {
 
 
+
     return (
       <Container>
         <Fixed />

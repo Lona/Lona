@@ -8,6 +8,7 @@ import textStyles from "../textStyles"
 export default class Optionals extends React.Component {
   render() {
 
+
     let Label$text
     let StringParam$text
     let View$backgroundColor
@@ -17,17 +18,21 @@ export default class Optionals extends React.Component {
     View$backgroundColor = "transparent"
 
     if (this.props.boolParam == true) {
+
       Label$text = "boolParam is true"
       View$backgroundColor = colors.green200
     }
     if (this.props.boolParam == false) {
+
       Label$text = "boolParam is false"
       View$backgroundColor = colors.red200
     }
     if (this.props.boolParam == null) {
+
       Label$text = "boolParam is null"
     }
     if (this.props.stringParam != null) {
+
       let unwrapped = this.props.stringParam
 
       StringParam$text = unwrapped

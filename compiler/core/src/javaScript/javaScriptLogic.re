@@ -60,6 +60,7 @@ let rec toJavaScriptAST = (framework, config, node) => {
     IfStatement({
       test: logicValueToJavaScriptASTWithConfig(a),
       consequent: [toJavaScriptAST(framework, config, body)],
+      alternate: [],
     })
   | Block(body) =>
     Ast.Block(body |> List.map(toJavaScriptAST(framework, config)))
@@ -82,6 +83,7 @@ let rec toJavaScriptAST = (framework, config, node) => {
     IfStatement({
       test: condition,
       consequent: [toJavaScriptAST(framework, config, body)],
+      alternate: [],
     });
   | IfLet(a, b, body) =>
     let condition =
@@ -99,6 +101,7 @@ let rec toJavaScriptAST = (framework, config, node) => {
           toJavaScriptAST(framework, config, body),
         ]),
       ],
+      alternate: [],
     });
   | Add(lhs, rhs, value) =>
     let addition =

@@ -8,10 +8,12 @@ import textStyles from "../textStyles"
 export default class OpacityTest extends React.Component {
   render() {
 
+
     let View$opacity
     View$opacity = 1
 
     if (this.props.selected) {
+
       View$opacity = 0.7
     }
     return (

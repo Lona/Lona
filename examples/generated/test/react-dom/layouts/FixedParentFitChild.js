@@ -9,6 +9,7 @@ export default class FixedParentFitChild extends React.Component {
   render() {
 
 
+
     return <View> <View1> <View4 /> <View5 /> </View1> </View>;
   }
 };

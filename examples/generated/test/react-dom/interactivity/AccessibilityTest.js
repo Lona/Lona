@@ -6,7 +6,56 @@ import shadows from "../shadows"
 import textStyles from "../textStyles"
 
 export default class AccessibilityTest extends React.Component {
+  focus = () => {
+    let focusElements = this._getFocusElements()
+    if (focusElements[0] && focusElements[0].focus) {
+      focusElements[0].focus()
+    }
+  }
+
+  focusNext = () => {
+    let focusElements = this._getFocusElements()
+    let nextIndex = elements.indexOf(document.activeElement) + 1
+
+    if (nextIndex >= focusElements.length) {
+      this.props.onFocusNext && this.props.onFocusNext()
+      return ;
+    }
+
+    focusElements[nextIndex].focus && focusElements[nextIndex].focus()
+  }
+
+  focusPrevious = () => {
+    let focusElements = this._getFocusElements()
+    let previousIndex = elements.indexOf(document.activeElement) - 1
+
+    if (previousIndex < 0) {
+      this.props.onFocusPrevious && this.props.onFocusPrevious()
+      return ;
+    }
+
+    focusElements[previousIndex].focus && focusElements[previousIndex].focus()
+  }
+
+  _handleKeyDown = (event) => {
+    if (event.key === "Tab") {
+      if (event.shiftKey) {
+        this.focusPrevious()
+      } else {
+        this.focusNext()
+      }
+
+      event.stopPropagation()
+      event.preventDefault()
+    }
+  }
+
+  _getFocusElements = () => (
+    [this._CheckboxRow, this._Element, this._Image, this._AccessibleText]
+  )
+
   render() {
+
 
     let AccessibleText$accessibilityLabel
     let CheckboxCircle$visible
@@ -18,10 +67,12 @@ export default class AccessibilityTest extends React.Component {
 
     AccessibleText$accessibilityLabel = this.props.customTextAccessibilityLabel
     if (this.props.checkboxValue) {
+
       CheckboxCircle$visible = true
       CheckboxRow$accessibilityValue = "checked"
     }
     if (this.props.checkboxValue === false) {
+
       CheckboxCircle$visible = false
       CheckboxRow$accessibilityValue = "unchecked"
     }
@@ -29,7 +80,12 @@ export default class AccessibilityTest extends React.Component {
     Checkbox$onPress = this.props.onToggleCheckbox
     return (
       <View>
-        <CheckboxRow>
+        <CheckboxRow
+          aria-label={"Checkbox row"}
+          tabIndex={-1}
+          handleKeyDown={this._handleKeyDown}
+          ref={(ref) => { this._CheckboxRow = ref }}
+        >
           <Checkbox onClick={Checkbox$onPress}>
             {CheckboxCircle$visible && <CheckboxCircle />}
           </Checkbox>
@@ -38,12 +94,29 @@ export default class AccessibilityTest extends React.Component {
           </Text>
         </CheckboxRow>
         <Row1>
-          <Element>
+          <Element
+            aria-label={"Red box"}
+            tabIndex={-1}
+            handleKeyDown={this._handleKeyDown}
+            ref={(ref) => { this._Element = ref }}
+          >
             <Inner />
           </Element>
           <Container>
-            <Image src={require("../assets/icon_128x128.png")} />
-            <AccessibleText>
+            <Image
+              src={require("../assets/icon_128x128.png")}
+              aria-label={"My image"}
+              tabIndex={-1}
+              handleKeyDown={this._handleKeyDown}
+              ref={(ref) => { this._Image = ref }}
+
+            />
+            <AccessibleText
+              aria-label={AccessibleText$accessibilityLabel}
+              tabIndex={-1}
+              handleKeyDown={this._handleKeyDown}
+              ref={(ref) => { this._AccessibleText = ref }}
+            >
               {"Greetings"}
             </AccessibleText>
           </Container>

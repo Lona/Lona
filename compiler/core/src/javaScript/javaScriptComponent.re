@@ -84,7 +84,6 @@ let removeSpecialProps =
        switch (key, options.framework) {
        | (ParameterKey.OnAccessibilityActivate, _)
        | (ParameterKey.AccessibilityHint, _)
-       | (ParameterKey.AccessibilityLabel, _)
        | (ParameterKey.AccessibilityRole, _)
        | (ParameterKey.AccessibilityValue, _)
        | (ParameterKey.AccessibilityType, _)
@@ -509,6 +508,8 @@ let rec layerToJavaScriptAST =
   let initialProps = getInitialProps(options, layer);
   let styleVariables = getStyleVariables(assignments, layer);
   let propVariables = getPropVariables(assignments, layer);
+  let needsRef = JavaScriptLayer.needsRef(layer);
+  let canBeFocused = JavaScriptLayer.canBeFocused(layer);
 
   let main = ParameterMap.assign(initialProps, propVariables);
   let attributes =
@@ -550,6 +551,48 @@ let rec layerToJavaScriptAST =
            };
          JSXAttribute({name: key, value: attributeValue});
        });
+  let attributes =
+    attributes
+    @ (
+      canBeFocused ?
+        [
+          JSXAttribute({
+            name: "tabIndex",
+            value: Literal(LonaValue.number(-1.)),
+          }),
+          JSXAttribute({
+            name: "handleKeyDown",
+            value: Identifier(["this", "_handleKeyDown"]),
+          }),
+        ] :
+        []
+    );
+  let attributes =
+    attributes
+    @ (
+      needsRef ?
+        [
+          JSXAttribute({
+            name: "ref",
+            value:
+              ArrowFunctionExpression({
+                id: None,
+                params: ["ref"],
+                body: [
+                  AssignmentExpression({
+                    left:
+                      Identifier([
+                        "this",
+                        "_" ++ JavaScriptFormat.elementName(layer.name),
+                      ]),
+                    right: Identifier(["ref"]),
+                  }),
+                ],
+              }),
+          }),
+        ] :
+        []
+    );
   let vectorAssignments = Layer.vectorAssignments(layer, logic);
   let attributes =
     [
@@ -961,25 +1004,32 @@ let generate =
               ClassDeclaration({
                 id: componentName,
                 superClass: Some("React.Component"),
-                body: [
-                  MethodDefinition({
-                    key: "render",
-                    value:
-                      FunctionExpression({
-                        id: None,
-                        params: [],
-                        body:
-                          [logicAST]
-                          @ (
-                            switch (options.framework) {
-                            /* | JavaScriptOptions.ReactDOM => [themeAST] */
-                            | _ => []
-                            }
-                          )
-                          @ [Return(rootLayerAST)],
-                      }),
-                  }),
-                ],
+                body:
+                  (
+                    options.framework == ReactDOM
+                    && JavaScriptLayer.Hierarchy.needsFocusHandling(rootLayer) ?
+                      JavaScriptFocus.focusMethods(rootLayer) : []
+                  )
+                  @ [
+                    MethodDefinition({
+                      key: "render",
+                      value:
+                        FunctionExpression({
+                          id: None,
+                          params: [],
+                          body:
+                            [logicAST]
+                            @ (
+                              switch (options.framework) {
+                              /* | JavaScriptOptions.ReactDOM => [themeAST] */
+                              | _ => []
+                              }
+                            )
+                            @ [Return(rootLayerAST)],
+                        }),
+                    }),
+                  ]
+                  |> Sequence.join(Empty),
               }),
             ),
           ],

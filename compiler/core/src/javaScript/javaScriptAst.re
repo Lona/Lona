@@ -9,6 +9,7 @@ type binaryOperator =
   | Lt
   | Lte
   | Plus
+  | Minus
   | And
   | Or
   | Noop;
@@ -60,6 +61,7 @@ and binaryExpression = {
 and ifStatement = {
   test: node,
   consequent: list(node),
+  alternate: list(node),
 }
 and property = {
   key: node,
@@ -179,6 +181,7 @@ let rec map = (f: node => node, node) =>
       IfStatement({
         test: o.test |> map(f),
         consequent: o.consequent |> List.map(map(f)),
+        alternate: o.alternate |> List.map(map(f)),
       }),
     )
   | ArrayLiteral(body) => f(ArrayLiteral(body |> List.map(map(f))))

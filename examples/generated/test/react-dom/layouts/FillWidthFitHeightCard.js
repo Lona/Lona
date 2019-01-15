@@ -9,6 +9,7 @@ export default class FillWidthFitHeightCard extends React.Component {
   render() {
 
 
+
     return (
       <View>
         <Image>

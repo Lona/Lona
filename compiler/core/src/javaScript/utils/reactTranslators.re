@@ -13,7 +13,6 @@ let variableNames = (framework, variable) =>
   | JavaScriptOptions.ReactSketchapp
   | JavaScriptOptions.ReactNative =>
     ReactNativeTranslators.variableNames(variable)
-  | _ => variable |> ParameterKey.toString
   };
 
 let convertUnitlessAstNode =
@@ -21,7 +20,7 @@ let convertUnitlessAstNode =
   switch (framework) {
   | JavaScriptOptions.ReactDOM =>
     switch (value) {
-    | Ast.Identifier(path) =>
+    | Ast.Identifier(_) =>
       Ast.BinaryExpression({
         left: value,
         operator: Ast.Plus,

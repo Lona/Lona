@@ -14,6 +14,7 @@ let renderBinaryOperator = x => {
     | Lt => "<"
     | Lte => "<="
     | Plus => "+"
+    | Minus => "-"
     | And => "&&"
     | Or => "||"
     | Noop => ""
@@ -55,20 +56,22 @@ let rec render = ast: Prettier.Doc.t('a) =>
       <+> render(o.right),
     )
   | IfStatement(o) =>
-    group(
-      s("if")
-      <+> line
-      <+> s("(")
-      <+> softline
-      <+> render(o.test)
-      <+> softline
-      <+> s(")")
-      <+> line
-      <+> s("{"),
-    )
-    <+> indent(join(hardline, o.consequent |> List.map(render)))
-    <+> hardline
-    <+> s("}")
+    let ifPart =
+      group(
+        s("if")
+        <+> line
+        <+> s("(")
+        <+> softline
+        <+> render(o.test)
+        <+> softline
+        <+> s(") "),
+      )
+      <+> renderBlockBody(o.consequent, true);
+
+    switch (o.alternate) {
+    | [] => ifPart
+    | _ => ifPart <+> s(" else ") <+> renderBlockBody(o.alternate, true)
+    };
   | ImportDefaultSpecifier(o) => s(o)
   | ImportSpecifier(o) =>
     switch (o.local) {
@@ -128,10 +131,12 @@ let rec render = ast: Prettier.Doc.t('a) =>
   | FunctionExpression(o) =>
     /* TODO: o.id */
     let parameterList = o.params |> List.map(s) |> join(line);
-    group(s("(") <+> parameterList <+> s(")") <+> line <+> s("{"))
-    <+> indent(join(hardline, o.body |> List.map(render)))
-    <+> hardline
-    <+> s("}");
+    group(
+      s("(")
+      <+> parameterList
+      <+> s(") ")
+      <+> renderBlockBody(o.body, false),
+    );
   | ArrowFunctionExpression(o) =>
     let parameterList = o.params |> List.map(s) |> join(line);
 
@@ -140,13 +145,18 @@ let rec render = ast: Prettier.Doc.t('a) =>
       group(s("(") <+> parameterList <+> s(") => ("))
       <+> render(literal)
       <+> s(")")
+    | [Return(inner)] =>
+      group(s("(") <+> parameterList <+> s(") => ("))
+      <+> indent(line <+> render(inner))
+      <+> line
+      <+> s(")")
     | _ =>
-      group(s("(") <+> parameterList <+> s(") =>") <+> line <+> s("{"))
-      <+> (
-        o.body |> List.map(render) |> Render.prefixAll(hardline) |> indent
+      group(
+        s("(")
+        <+> parameterList
+        <+> s(") => ")
+        <+> renderBlockBody(o.body, false),
       )
-      <+> hardline
-      <+> s("}")
     };
   | CallExpression(o) =>
     let parameterList = o.arguments |> List.map(render) |> join(s(", "));
@@ -191,7 +201,7 @@ let rec render = ast: Prettier.Doc.t('a) =>
     )
   | SpreadElement(value) => s("...") <+> render(value)
   | ArrayLiteral(body) =>
-    let maybeLine = List.length(body) > 0 ? line : empty;
+    let maybeLine = List.length(body) > 0 ? softline : empty;
     let body = body |> List.map(render) |> join(s(",") <+> line);
     group(s("[") <+> indent(maybeLine <+> body) <+> maybeLine <+> s("]"));
   | ObjectLiteral(body) =>
@@ -218,7 +228,25 @@ let rec render = ast: Prettier.Doc.t('a) =>
     concat([render(o.line), lineSuffix(s(" // " ++ o.comment))])
   | Empty
   | Unknown => empty
+  }
+and renderBlockBody =
+    (nodes: list(Ast.node), preferMultiLine: bool): Prettier.Doc.t('a) => {
+  let renderSingleLineBlock = node =>
+    s("{") <+> indent(line <+> render(node)) <+> line <+> s("}");
+
+  let renderMultiLineBlock = nodes =>
+    s("{")
+    <+> indent(nodes |> List.map(render) |> Render.prefixAll(hardline))
+    <+> hardline
+    <+> s("}");
+
+  switch (nodes, preferMultiLine) {
+  | ([], _) => s("{}")
+  | ([IfStatement(_)], false) => renderMultiLineBlock(nodes)
+  | ([node], false) => renderSingleLineBlock(node)
+  | _ => renderMultiLineBlock(nodes)
   };
+};
 
 let toString = ast =>
   ast

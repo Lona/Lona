@@ -92,3 +92,19 @@ let dedupeMem = (list: list('a)): list('a) =>
 
 let occurrences = (f: 'a => bool, list: list('a)): int =>
   List.fold_right((item, acc) => f(item) ? acc + 1 : acc, list, 0);
+
+let join = (sep: 'a, list: list('a)): list('a) =>
+  switch (list) {
+  | [] => []
+  | [hd, ...tl] =>
+    tl |> List.fold_left((acc, node) => acc @ [sep, node], [hd])
+  };
+
+let joinGroups = (sep: 'a, groups: list(list('a))): list('a) => {
+  let nonEmpty = groups |> List.filter(x => List.length(x) > 0);
+  switch (nonEmpty) {
+  | [] => []
+  | [hd, ...tl] =>
+    tl |> List.fold_left((acc, nodes) => acc @ [sep] @ nodes, hd)
+  };
+};

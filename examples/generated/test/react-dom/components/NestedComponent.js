@@ -12,6 +12,7 @@ export default class NestedComponent extends React.Component {
   render() {
 
 
+
     return (
       <View>
         <Text>

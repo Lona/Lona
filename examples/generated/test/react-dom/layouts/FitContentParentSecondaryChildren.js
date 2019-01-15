@@ -9,6 +9,7 @@ export default class FitContentParentSecondaryChildren extends React.Component {
   render() {
 
 
+
     return <Container> <View1 /> <View3 /> <View2 /> </Container>;
   }
 };

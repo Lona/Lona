@@ -91,6 +91,9 @@ let decodeNumber = (value: Types.lonaValue): float =>
 let decodeUrl = (value: Types.lonaValue): string =>
   value.data |> Json.Decode.string;
 
+let decodeString = (value: Types.lonaValue): string =>
+  value.data |> Json.Decode.string;
+
 let isOptionalTypeName = (typeName: string): bool =>
   Js.String.endsWith("?", typeName);
 
