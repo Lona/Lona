@@ -561,7 +561,7 @@ let rec layerToJavaScriptAST =
             value: Literal(LonaValue.number(-1.)),
           }),
           JSXAttribute({
-            name: "handleKeyDown",
+            name: "onKeyDown",
             value: Identifier(["this", "_handleKeyDown"]),
           }),
         ] :

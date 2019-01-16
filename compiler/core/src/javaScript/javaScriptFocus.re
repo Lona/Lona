@@ -10,8 +10,7 @@ module Methods = {
             Return(
               ArrayLiteral(
                 rootLayer
-                |> Layer.flatten
-                |> List.filter(JavaScriptLayer.canBeFocused)
+                |> JavaScriptLayer.Hierarchy.accessibilityElements
                 |> List.map((layer: Types.layer) =>
                      JavaScriptAst.Identifier([
                        "this",
@@ -86,7 +85,7 @@ module Methods = {
                   BinaryExpression({
                     left:
                       CallExpression({
-                        callee: Identifier(["elements", "indexOf"]),
+                        callee: Identifier(["focusElements", "indexOf"]),
                         arguments: [
                           Identifier(["document", "activeElement"]),
                         ],
@@ -157,7 +156,7 @@ module Methods = {
                   BinaryExpression({
                     left:
                       CallExpression({
-                        callee: Identifier(["elements", "indexOf"]),
+                        callee: Identifier(["focusElements", "indexOf"]),
                         arguments: [
                           Identifier(["document", "activeElement"]),
                         ],

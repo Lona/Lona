@@ -434,6 +434,57 @@ let isInteractive = (logic: Logic.logicNode, layer: Types.layer) =>
        Logic.isLayerParameterAssigned(logic, variableName, layer)
      );
 
+let accessibilityLabel = (layer: Types.layer): option(string) =>
+  switch (
+    layer.parameters |> ParameterMap.find_opt(ParameterKey.AccessibilityLabel)
+  ) {
+  | Some(value) =>
+    switch (value.data |> Js.Json.classify) {
+    | Js.Json.JSONString(label) => Some(label)
+    | _ => None
+    }
+  | None => None
+  };
+
+let accessibilityElements = (layer: Types.layer): list(string) =>
+  switch (
+    layer.parameters
+    |> ParameterMap.find_opt(ParameterKey.AccessibilityElements)
+  ) {
+  | Some(value) =>
+    switch (value.data |> Js.Json.classify) {
+    | Js.Json.JSONArray(elements) =>
+      elements
+      |> Array.to_list
+      |> List.map(Js.Json.classify)
+      |> List.map(element =>
+           switch (element) {
+           | Js.Json.JSONString(value) => Some(value)
+           | _ => None
+           }
+         )
+      |> Sequence.compact
+    | _ => []
+    }
+  | None => []
+  };
+
+let accessibilityType = (layer: Types.layer): Accessibility.accessibilityType =>
+  switch (
+    layer.parameters |> ParameterMap.find_opt(ParameterKey.AccessibilityType)
+  ) {
+  | Some(value) =>
+    switch (value.data |> Js.Json.classify) {
+    | Js.Json.JSONString("none") => None
+    | Js.Json.JSONString("element") =>
+      Element({label: accessibilityLabel(layer)})
+    | Js.Json.JSONString("container") =>
+      Container(accessibilityElements(layer))
+    | _ => Auto
+    }
+  | None => Auto
+  };
+
 let containsNoninteractiveDescendants =
     (logic: Logic.logicNode, rootLayer: Types.layer) => {
   let layers = flatten(rootLayer);

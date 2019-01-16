@@ -15,7 +15,7 @@ export default class AccessibilityTest extends React.Component {
 
   focusNext = () => {
     let focusElements = this._getFocusElements()
-    let nextIndex = elements.indexOf(document.activeElement) + 1
+    let nextIndex = focusElements.indexOf(document.activeElement) + 1
 
     if (nextIndex >= focusElements.length) {
       this.props.onFocusNext && this.props.onFocusNext()
@@ -27,7 +27,7 @@ export default class AccessibilityTest extends React.Component {
 
   focusPrevious = () => {
     let focusElements = this._getFocusElements()
-    let previousIndex = elements.indexOf(document.activeElement) - 1
+    let previousIndex = focusElements.indexOf(document.activeElement) - 1
 
     if (previousIndex < 0) {
       this.props.onFocusPrevious && this.props.onFocusPrevious()
@@ -51,7 +51,7 @@ export default class AccessibilityTest extends React.Component {
   }
 
   _getFocusElements = () => (
-    [this._CheckboxRow, this._Element, this._Image, this._AccessibleText]
+    [this._CheckboxRow, this._Element, this._AccessibleText, this._Image]
   )
 
   render() {
@@ -83,7 +83,7 @@ export default class AccessibilityTest extends React.Component {
         <CheckboxRow
           aria-label={"Checkbox row"}
           tabIndex={-1}
-          handleKeyDown={this._handleKeyDown}
+          onKeyDown={this._handleKeyDown}
           ref={(ref) => { this._CheckboxRow = ref }}
         >
           <Checkbox onClick={Checkbox$onPress}>
@@ -97,7 +97,7 @@ export default class AccessibilityTest extends React.Component {
           <Element
             aria-label={"Red box"}
             tabIndex={-1}
-            handleKeyDown={this._handleKeyDown}
+            onKeyDown={this._handleKeyDown}
             ref={(ref) => { this._Element = ref }}
           >
             <Inner />
@@ -107,14 +107,14 @@ export default class AccessibilityTest extends React.Component {
               src={require("../assets/icon_128x128.png")}
               aria-label={"My image"}
               tabIndex={-1}
-              handleKeyDown={this._handleKeyDown}
+              onKeyDown={this._handleKeyDown}
               ref={(ref) => { this._Image = ref }}
 
             />
             <AccessibleText
               aria-label={AccessibleText$accessibilityLabel}
               tabIndex={-1}
-              handleKeyDown={this._handleKeyDown}
+              onKeyDown={this._handleKeyDown}
               ref={(ref) => { this._AccessibleText = ref }}
             >
               {"Greetings"}
