@@ -87,6 +87,9 @@ export default class AccessibilityTest extends React.Component {
             if (event.key === "Enter") {
               typeof CheckboxRow$onAccessibilityActivate === 'function' &&
               CheckboxRow$onAccessibilityActivate()
+
+              event.stopPropagation()
+              event.preventDefault()
             } else {
               this._handleKeyDown(event)
             }

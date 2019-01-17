@@ -596,6 +596,15 @@ let rec layerToJavaScriptAST =
                               arguments: [],
                             }),
                         }),
+                        Empty,
+                        CallExpression({
+                          callee: Identifier(["event", "stopPropagation"]),
+                          arguments: [],
+                        }),
+                        CallExpression({
+                          callee: Identifier(["event", "preventDefault"]),
+                          arguments: [],
+                        }),
                       ],
                       alternate: [
                         CallExpression({
