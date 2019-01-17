@@ -1,22 +1,12 @@
 let canBeFocused = (layer: Types.layer): bool =>
-  switch (
-    layer.parameters |> ParameterMap.find_opt(ParameterKey.AccessibilityType)
-  ) {
-  | Some(value) =>
-    switch (value.data |> Js.Json.classify) {
-    | Js.Json.JSONString("element") => true
-    | _ => false
-    }
-  | None => false
+  switch (Layer.accessibilityType(layer)) {
+  | Element(_) => true
+  | _ => false
   };
 
 let needsRef = (layer: Types.layer): bool => layer |> canBeFocused;
 
 module Hierarchy = {
-  /* TODO we need to traverse the layer hierarchy to determine the
-     correct layers/order. It's not enough to filter by canBeFocused,
-     since a `container` at the root could specify totally different
-     layers. */
   let needsFocusHandling = (layer: Types.layer): bool =>
     layer |> Layer.flatten |> List.exists(canBeFocused);
 
