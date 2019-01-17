@@ -4,6 +4,10 @@ import "./App.css";
 import AccessibilityTest from "./generated/interactivity/AccessibilityTest";
 
 class App extends Component {
+  state = {
+    checked: false
+  };
+
   handleKeyDown = event => {
     if (event.key === "Tab" && document.activeElement === document.body) {
       this.accessibilityTest.focus({ showFocusRing: true });
@@ -28,6 +32,10 @@ class App extends Component {
           ref={ref => {
             this.accessibilityTest = ref;
           }}
+          checkboxValue={this.state.checked}
+          onToggleCheckbox={() =>
+            this.setState({ checked: !this.state.checked })
+          }
         />
       </div>
     );

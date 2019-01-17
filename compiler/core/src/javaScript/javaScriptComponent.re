@@ -551,6 +551,8 @@ let rec layerToJavaScriptAST =
            };
          JSXAttribute({name: key, value: attributeValue});
        });
+  let hasAccessibilityActivate =
+    ParameterMap.mem(OnAccessibilityActivate, propVariables);
   let attributes =
     attributes
     @ (
@@ -560,10 +562,55 @@ let rec layerToJavaScriptAST =
             name: "tabIndex",
             value: Literal(LonaValue.number(-1.)),
           }),
-          JSXAttribute({
-            name: "onKeyDown",
-            value: Identifier(["this", "_handleKeyDown"]),
-          }),
+          hasAccessibilityActivate ?
+            JSXAttribute({
+              name: "onKeyDown",
+              value:
+                ArrowFunctionExpression({
+                  id: None,
+                  params: ["event"],
+                  body: [
+                    IfStatement({
+                      test:
+                        BinaryExpression({
+                          left: Identifier(["event", "key"]),
+                          operator: Eq,
+                          right: Literal(LonaValue.string("Enter")),
+                        }),
+                      consequent: [
+                        BinaryExpression({
+                          left:
+                            Identifier([
+                              "typeof "
+                              ++ JavaScriptFormat.elementName(layer.name)
+                              ++ "$onAccessibilityActivate === 'function'",
+                            ]),
+                          operator: And,
+                          right:
+                            CallExpression({
+                              callee:
+                                Identifier([
+                                  JavaScriptFormat.elementName(layer.name)
+                                  ++ "$onAccessibilityActivate",
+                                ]),
+                              arguments: [],
+                            }),
+                        }),
+                      ],
+                      alternate: [
+                        CallExpression({
+                          callee: Identifier(["this", "_handleKeyDown"]),
+                          arguments: [Identifier(["event"])],
+                        }),
+                      ],
+                    }),
+                  ],
+                }),
+            }) :
+            JSXAttribute({
+              name: "onKeyDown",
+              value: Identifier(["this", "_handleKeyDown"]),
+            }),
         ] :
         []
     );

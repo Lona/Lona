@@ -83,7 +83,14 @@ export default class AccessibilityTest extends React.Component {
         <CheckboxRow
           aria-label={"Checkbox row"}
           tabIndex={-1}
-          onKeyDown={this._handleKeyDown}
+          onKeyDown={(event) => {
+            if (event.key === "Enter") {
+              typeof CheckboxRow$onAccessibilityActivate === 'function' &&
+              CheckboxRow$onAccessibilityActivate()
+            } else {
+              this._handleKeyDown(event)
+            }
+          }}
           ref={(ref) => { this._CheckboxRow = ref }}
         >
           <Checkbox onClick={Checkbox$onPress}>
