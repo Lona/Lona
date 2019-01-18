@@ -130,7 +130,7 @@ let rec render = ast: Prettier.Doc.t('a) =>
   | MethodDefinition(o) => group(s(o.key) <+> render(o.value))
   | FunctionExpression(o) =>
     /* TODO: o.id */
-    let parameterList = o.params |> List.map(s) |> join(line);
+    let parameterList = o.params |> List.map(render) |> join(line);
     group(
       s("(")
       <+> parameterList
@@ -138,7 +138,7 @@ let rec render = ast: Prettier.Doc.t('a) =>
       <+> renderBlockBody(o.body, false),
     );
   | ArrowFunctionExpression(o) =>
-    let parameterList = o.params |> List.map(s) |> join(line);
+    let parameterList = o.params |> List.map(render) |> join(line);
 
     switch (o.body) {
     | [Return(ObjectLiteral(_) as literal)] =>

@@ -150,7 +150,7 @@ module StyledComponents = {
     JavaScriptAst.(
       ArrowFunctionExpression({
         id: None,
-        params: ["props"],
+        params: [Identifier(["props"])],
         body: [Return(contents)],
       })
     );
@@ -568,7 +568,7 @@ let rec layerToJavaScriptAST =
               value:
                 ArrowFunctionExpression({
                   id: None,
-                  params: ["event"],
+                  params: [Identifier(["event"])],
                   body: [
                     IfStatement({
                       test:
@@ -633,7 +633,7 @@ let rec layerToJavaScriptAST =
             value:
               ArrowFunctionExpression({
                 id: None,
-                params: ["ref"],
+                params: [Identifier(["ref"])],
                 body: [
                   AssignmentExpression({
                     left:

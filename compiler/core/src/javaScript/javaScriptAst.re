@@ -33,7 +33,7 @@ and methodDefinition = {
 }
 and functionExpression = {
   id: option(string),
-  params: list(string),
+  params: list(node),
   body: list(node),
 }
 and callExpression = {
@@ -131,7 +131,7 @@ let rec map = (f: node => node, node) =>
     f(
       FunctionExpression({
         id: o.id,
-        params: o.params,
+        params: o.params |> List.map(map(f)),
         body: o.body |> List.map(map(f)),
       }),
     )
@@ -139,7 +139,7 @@ let rec map = (f: node => node, node) =>
     f(
       ArrowFunctionExpression({
         id: o.id,
-        params: o.params,
+        params: o.params |> List.map(map(f)),
         body: o.body |> List.map(map(f)),
       }),
     )

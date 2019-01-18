@@ -210,7 +210,7 @@ module Methods = {
       right:
         ArrowFunctionExpression({
           id: None,
-          params: ["event"],
+          params: [Identifier(["event"])],
           body: [
             IfStatement({
               test:
