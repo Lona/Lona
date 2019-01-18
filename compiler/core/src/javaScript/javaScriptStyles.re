@@ -114,6 +114,30 @@ module Property = {
   };
 };
 
+let focusStyles =
+    (config: Config.t, layer: Types.layer): option(JavaScriptAst.node) => {
+  let canBeFocused = JavaScriptLayer.canBeFocused(layer);
+
+  if (canBeFocused && config.options.javaScript.framework == ReactDOM) {
+    Some(
+      Property({
+        key: StringLiteral(":focus"),
+        value:
+          Some(
+            ObjectLiteral([
+              Property({
+                key: Identifier(["outline"]),
+                value: Some(Literal(LonaValue.number(0.))),
+              }),
+            ]),
+          ),
+      }),
+    );
+  } else {
+    None;
+  };
+};
+
 let defaultStyles =
     (
       framework: JavaScriptOptions.framework,
@@ -504,23 +528,44 @@ module Object = {
 
     JavaScriptAst.(
       ObjectLiteral(
-        layer.parameters
-        |> handleNumberOfLines(framework, config)
-        |> ParameterMap.filter((key, _) => Layer.parameterIsStyle(key))
-        /* Remove layout parameters stored in the component file */
-        |> ParameterMap.filter((key, _) =>
-             !List.mem(key, replacedLayoutKeys)
-           )
-        /* Add layout parameters appropriate for the framework */
-        |> ParameterMap.assign(_, layoutParameters)
-        |> ParameterMap.assign(
-             defaultStyles(framework, config, layer.typeName),
-           )
-        |> handleResizeMode(framework, config, parent, layer)
-        |> ParameterMap.bindings
-        |> List.map(((key, value)) =>
-             getStylePropertyWithUnits(config, framework, key, value)
-           ),
+        (
+          layer.parameters
+          |> handleNumberOfLines(framework, config)
+          |> ParameterMap.filter((key, _) => Layer.parameterIsStyle(key))
+          /* Remove layout parameters stored in the component file */
+          |> ParameterMap.filter((key, _) =>
+               !List.mem(key, replacedLayoutKeys)
+             )
+          /* Add layout parameters appropriate for the framework */
+          |> ParameterMap.assign(_, layoutParameters)
+          |> ParameterMap.assign(
+               defaultStyles(framework, config, layer.typeName),
+             )
+          |> handleResizeMode(framework, config, parent, layer)
+          |> ParameterMap.bindings
+          |> List.map(((key, value)) =>
+               getStylePropertyWithUnits(config, framework, key, value)
+             )
+        )
+        @ (
+          switch (focusStyles(config, layer)) {
+          | Some(property) => [
+              SpreadElement(
+                UnaryExpression({
+                  prefix: true,
+                  operator: "!",
+                  argument:
+                    BinaryExpression({
+                      left: Identifier(["props", "focusRing"]),
+                      operator: And,
+                      right: ObjectLiteral([property]),
+                    }),
+                }),
+              ),
+            ]
+          | None => []
+          }
+        ),
       )
     );
   };

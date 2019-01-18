@@ -10,7 +10,7 @@ class App extends Component {
 
   handleKeyDown = event => {
     if (event.key === "Tab" && document.activeElement === document.body) {
-      this.accessibilityTest.focus({ showFocusRing: true });
+      this.accessibilityTest.focus();
 
       event.stopPropagation();
       event.preventDefault();

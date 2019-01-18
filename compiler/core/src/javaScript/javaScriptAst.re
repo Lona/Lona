@@ -58,6 +58,11 @@ and binaryExpression = {
   operator: binaryOperator,
   right: node,
 }
+and unaryExpression = {
+  prefix: bool,
+  operator: string,
+  argument: node,
+}
 and ifStatement = {
   test: node,
   consequent: list(node),
@@ -92,6 +97,7 @@ and node =
   | VariableDeclaration(node)
   | AssignmentExpression(assignmentExpression)
   | BinaryExpression(binaryExpression)
+  | UnaryExpression(unaryExpression)
   | IfStatement(ifStatement)
   | ArrayLiteral(list(node))
   | ObjectLiteral(list(node))
@@ -174,6 +180,14 @@ let rec map = (f: node => node, node) =>
         left: o.left |> map(f),
         operator: o.operator,
         right: o.right |> map(f),
+      }),
+    )
+  | UnaryExpression(o) =>
+    f(
+      UnaryExpression({
+        prefix: o.prefix,
+        operator: o.operator,
+        argument: o.argument |> map(f),
       }),
     )
   | IfStatement(o) =>

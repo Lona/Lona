@@ -162,7 +162,15 @@ module StyledComponents = {
         _assignments,
         rootLayer: Types.layer,
         layer: Types.layer,
-      ) =>
+      ) => {
+    let usesProps = JavaScriptLayer.canBeFocused(layer);
+    let styles =
+      JavaScriptStyles.Object.forLayer(
+        config,
+        options.framework,
+        Layer.findParent(rootLayer, layer),
+        layer,
+      );
     JavaScriptAst.(
       VariableDeclaration(
         AssignmentExpression({
@@ -203,18 +211,12 @@ module StyledComponents = {
                     };
                   },
                 ]),
-              arguments: [
-                JavaScriptStyles.Object.forLayer(
-                  config,
-                  options.framework,
-                  Layer.findParent(rootLayer, layer),
-                  layer,
-                ),
-              ],
+              arguments: [usesProps ? createPropsFunction(styles) : styles],
             }),
         }),
       )
     );
+  };
 
   let imageResizingStyledComponentAst =
       (
@@ -561,6 +563,10 @@ let rec layerToJavaScriptAST =
           JSXAttribute({
             name: "tabIndex",
             value: Literal(LonaValue.number(-1.)),
+          }),
+          JSXAttribute({
+            name: "focusRing",
+            value: Identifier(["this", "state", "focusRing"]),
           }),
           hasAccessibilityActivate ?
             JSXAttribute({

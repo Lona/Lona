@@ -55,6 +55,12 @@ let rec render = ast: Prettier.Doc.t('a) =>
       <+> line
       <+> render(o.right),
     )
+  | UnaryExpression(o) =>
+    if (o.prefix) {
+      s(o.operator) <+> render(o.argument);
+    } else {
+      render(o.argument) <+> s(o.operator);
+    }
   | IfStatement(o) =>
     let ifPart =
       group(

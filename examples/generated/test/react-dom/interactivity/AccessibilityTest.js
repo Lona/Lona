@@ -156,7 +156,7 @@ let View = styled.div({
   justifyContent: "flex-start"
 })
 
-let CheckboxRow = styled.div({
+let CheckboxRow = styled.div((props) => ({
   alignItems: "center",
   alignSelf: "stretch",
   display: "flex",
@@ -166,8 +166,9 @@ let CheckboxRow = styled.div({
   paddingTop: "10px",
   paddingRight: "10px",
   paddingBottom: "10px",
-  paddingLeft: "10px"
-})
+  paddingLeft: "10px",
+  ...!props.focusRing && { ":focus": { outline: 0 } }
+}))
 
 let Checkbox = styled.div({
   alignItems: "flex-start",
@@ -220,7 +221,7 @@ let Row1 = styled.div({
   paddingLeft: "10px"
 })
 
-let Element = styled.div({
+let Element = styled.div((props) => ({
   alignItems: "flex-start",
   backgroundColor: colors.red600,
   display: "flex",
@@ -232,8 +233,9 @@ let Element = styled.div({
   paddingBottom: "10px",
   paddingLeft: "10px",
   width: "50px",
-  height: "50px"
-})
+  height: "50px",
+  ...!props.focusRing && { ":focus": { outline: 0 } }
+}))
 
 let Inner = styled.div({
   alignItems: "flex-start",
@@ -253,7 +255,7 @@ let Container = styled.div({
   justifyContent: "flex-start"
 })
 
-let Image = styled.img({
+let Image = styled.img((props) => ({
   alignItems: "flex-start",
   display: "flex",
   flexDirection: "column",
@@ -263,15 +265,17 @@ let Image = styled.img({
   width: "50px",
   height: "50px",
   objectFit: "cover",
-  position: "relative"
-})
+  position: "relative",
+  ...!props.focusRing && { ":focus": { outline: 0 } }
+}))
 
-let AccessibleText = styled.span({
+let AccessibleText = styled.span((props) => ({
   textAlign: "left",
   ...textStyles.body1,
   alignItems: "flex-start",
   display: "block",
   flex: "0 0 auto",
   flexDirection: "column",
-  justifyContent: "flex-start"
-})
+  justifyContent: "flex-start",
+  ...!props.focusRing && { ":focus": { outline: 0 } }
+}))
