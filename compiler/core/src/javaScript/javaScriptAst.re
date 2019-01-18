@@ -65,7 +65,7 @@ and ifStatement = {
 }
 and property = {
   key: node,
-  value: node,
+  value: option(node),
 }
 and lineEndComment = {
   comment: string,
@@ -187,7 +187,16 @@ let rec map = (f: node => node, node) =>
   | ArrayLiteral(body) => f(ArrayLiteral(body |> List.map(map(f))))
   | ObjectLiteral(body) => f(ObjectLiteral(body |> List.map(map(f))))
   | Property(o) =>
-    f(Property({key: o.key |> map(f), value: o.value |> map(f)}))
+    f(
+      Property({
+        key: o.key |> map(f),
+        value:
+          switch (o.value) {
+          | Some(value) => Some(value |> map(f))
+          | None => None
+          },
+      }),
+    )
   | ExportDefaultDeclaration(value) =>
     f(ExportDefaultDeclaration(value |> map(f)))
   | ExportNamedDeclaration(value) =>

@@ -6,14 +6,22 @@ import shadows from "../shadows"
 import textStyles from "../textStyles"
 
 export default class AccessibilityTest extends React.Component {
-  focus = () => {
+  state = { focusRing: false }
+
+  setFocusRing = (focusRing) => { this.setState({ focusRing }) }
+
+  focus = ({ focusRing = true } = { focusRing: true }) => {
+    this.setFocusRing(focusRing)
+
     let focusElements = this._getFocusElements()
     if (focusElements[0] && focusElements[0].focus) {
       focusElements[0].focus()
     }
   }
 
-  focusNext = () => {
+  focusNext = ({ focusRing = true } = { focusRing: true }) => {
+    this.setFocusRing(focusRing)
+
     let focusElements = this._getFocusElements()
     let nextIndex = focusElements.indexOf(document.activeElement) + 1
 
@@ -25,7 +33,9 @@ export default class AccessibilityTest extends React.Component {
     focusElements[nextIndex].focus && focusElements[nextIndex].focus()
   }
 
-  focusPrevious = () => {
+  focusPrevious = ({ focusRing = true } = { focusRing: true }) => {
+    this.setFocusRing(focusRing)
+
     let focusElements = this._getFocusElements()
     let previousIndex = focusElements.indexOf(document.activeElement) - 1
 
@@ -39,6 +49,8 @@ export default class AccessibilityTest extends React.Component {
 
   _handleKeyDown = (event) => {
     if (event.key === "Tab") {
+      this.setFocusRing(true)
+
       if (event.shiftKey) {
         this.focusPrevious()
       } else {

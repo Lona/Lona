@@ -5,7 +5,7 @@ let render = colors => {
     let property =
       Property({
         key: Identifier([color.id]),
-        value: Literal(LonaValue.string(color.value)),
+        value: Some(Literal(LonaValue.string(color.value))),
       });
     switch (color.comment) {
     | None

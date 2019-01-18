@@ -946,7 +946,7 @@ let generateEnumType = (param: Types.parameter) =>
                            Identifier([
                              JavaScriptFormat.enumCaseName(case.tag),
                            ]),
-                         value: StringLiteral(case.tag),
+                         value: Some(StringLiteral(case.tag)),
                        })
                      ),
                 ),
@@ -1064,7 +1064,17 @@ let generate =
                   (
                     options.framework == ReactDOM
                     && JavaScriptLayer.Hierarchy.needsFocusHandling(rootLayer) ?
-                      JavaScriptFocus.focusMethods(rootLayer) : []
+                      [
+                        AssignmentExpression({
+                          left: Identifier(["state"]),
+                          right:
+                            ObjectLiteral(
+                              JavaScriptFocus.initialStateProperties(),
+                            ),
+                        }),
+                      ]
+                      @ JavaScriptFocus.focusMethods(rootLayer) :
+                      []
                   )
                   @ [
                     MethodDefinition({

@@ -31,12 +31,14 @@ let renderReactDom = (colors: list(Color.t), shadowsFile: Shadow.file) => {
     Property({
       key: Identifier([shadow.id |> JavaScriptFormat.styleVariableName]),
       value:
-        ObjectLiteral([
-          JavaScriptAst.Property({
-            key: Identifier(["filter"]),
-            value: filterValue,
-          }),
-        ]),
+        Some(
+          ObjectLiteral([
+            JavaScriptAst.Property({
+              key: Identifier(["filter"]),
+              value: Some(filterValue),
+            }),
+          ]),
+        ),
     });
   };
 

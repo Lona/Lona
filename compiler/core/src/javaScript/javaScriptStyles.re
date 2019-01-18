@@ -89,10 +89,13 @@ module Property = {
       | Some(color) =>
         JavaScriptAst.Property({
           key: keyIdentifier,
-          value: JavaScriptAst.Identifier(["colors", color.id]),
+          value: Some(JavaScriptAst.Identifier(["colors", color.id])),
         })
       | None =>
-        JavaScriptAst.Property({key: keyIdentifier, value: Literal(value)})
+        JavaScriptAst.Property({
+          key: keyIdentifier,
+          value: Some(Literal(value)),
+        })
       };
     | _ =>
       let value =
@@ -103,7 +106,10 @@ module Property = {
           )
         | _ => value
         };
-      JavaScriptAst.Property({key: keyIdentifier, value: Literal(value)});
+      JavaScriptAst.Property({
+        key: keyIdentifier,
+        value: Some(Literal(value)),
+      });
     };
   };
 };
@@ -379,9 +385,11 @@ let getStylePropertyWithUnits =
     JavaScriptAst.Property({
       key: JavaScriptAst.Identifier([key |> ParameterKey.toString]),
       value:
-        Literal(
-          LonaValue.string(
-            value.data |> ReactDomTranslators.convertUnitlessStyle,
+        Some(
+          Literal(
+            LonaValue.string(
+              value.data |> ReactDomTranslators.convertUnitlessStyle,
+            ),
           ),
         ),
     })
@@ -464,12 +472,13 @@ let createStyleAttributePropertyAST =
   | (_, true) =>
     JavaScriptAst.Property({
       key: Identifier([key |> Property.keyName(framework)]),
-      value: ReactTranslators.convertUnitlessAstNode(framework, astValue),
+      value:
+        Some(ReactTranslators.convertUnitlessAstNode(framework, astValue)),
     })
   | (_, false) =>
     JavaScriptAst.Property({
       key: Identifier([key |> Property.keyName(framework)]),
-      value: astValue,
+      value: Some(astValue),
     })
   };
 };
@@ -554,7 +563,7 @@ module NamedStyle = {
       ) =>
     Property({
       key: Identifier([JavaScriptFormat.styleVariableName(layer.name)]),
-      value: Object.forLayer(config, framework, parent, layer),
+      value: Some(Object.forLayer(config, framework, parent, layer)),
     });
 
   let imageResizing =
@@ -567,7 +576,7 @@ module NamedStyle = {
     Property({
       key:
         Identifier([JavaScriptFormat.imageResizeModeHelperName(resizeMode)]),
-      value: Object.imageResizing(config, framework, resizeMode),
+      value: Some(Object.imageResizing(config, framework, resizeMode)),
     });
 };
 
@@ -661,7 +670,7 @@ module StyleSet = {
     JavaScriptAst.(
       Property({
         key: StringLiteral(setName),
-        value: ObjectLiteral(contents),
+        value: Some(ObjectLiteral(contents)),
       })
     );
 
@@ -669,7 +678,7 @@ module StyleSet = {
     JavaScriptAst.(
       Property({
         key: StringLiteral(layerName |> JavaScriptFormat.styleVariableName),
-        value: ObjectLiteral(contents),
+        value: Some(ObjectLiteral(contents)),
       })
     );
 

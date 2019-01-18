@@ -209,15 +209,18 @@ let rec render = ast: Prettier.Doc.t('a) =>
     let body = body |> List.map(render) |> join(s(",") <+> line);
     group(s("{") <+> indent(maybeLine <+> body) <+> maybeLine <+> s("}"));
   | Property(o) =>
+    let maybeValue =
+      switch (o.value) {
+      | Some(value) => s(": ") <+> render(value)
+      | None => s("")
+      };
     switch (o.key) {
     | Ast.Identifier(path) =>
       Js.Re.test(List.hd(path), [%re "/\W/g"]) ?
-        group(
-          s("'" ++ List.hd(path) ++ "'") <+> s(": ") <+> render(o.value),
-        ) :
-        group(s(List.hd(path)) <+> s(": ") <+> render(o.value))
-    | _ => group(render(o.key) <+> s(": ") <+> render(o.value))
-    }
+        group(s("'" ++ List.hd(path) ++ "'") <+> maybeValue) :
+        group(s(List.hd(path)) <+> maybeValue)
+    | _ => group(render(o.key) <+> maybeValue)
+    };
   | ExportDefaultDeclaration(value) =>
     s("export default ") <+> render(value) <+> s(";")
   | ExportNamedDeclaration(value) =>

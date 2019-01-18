@@ -1,3 +1,21 @@
+let focusOptionsParam = (): JavaScriptAst.node =>
+  AssignmentExpression({
+    left:
+      ObjectLiteral([
+        AssignmentExpression({
+          left: Identifier(["focusRing"]),
+          right: Literal(LonaValue.boolean(true)),
+        }),
+      ]),
+    right:
+      ObjectLiteral([
+        Property({
+          key: Identifier(["focusRing"]),
+          value: Some(Literal(LonaValue.boolean(true))),
+        }),
+      ]),
+  });
+
 module Methods = {
   let getFocusElements = (rootLayer: Types.layer): JavaScriptAst.node =>
     AssignmentExpression({
@@ -23,14 +41,39 @@ module Methods = {
         }),
     });
 
+  let setFocusRing = (): JavaScriptAst.node =>
+    AssignmentExpression({
+      left: Identifier(["setFocusRing"]),
+      right:
+        ArrowFunctionExpression({
+          id: None,
+          params: [Identifier(["focusRing"])],
+          body: [
+            CallExpression({
+              callee: Identifier(["this", "setState"]),
+              arguments: [
+                ObjectLiteral([
+                  Property({key: Identifier(["focusRing"]), value: None}),
+                ]),
+              ],
+            }),
+          ],
+        }),
+    });
+
   let focus = (): JavaScriptAst.node =>
     AssignmentExpression({
       left: Identifier(["focus"]),
       right:
         ArrowFunctionExpression({
           id: None,
-          params: [],
+          params: [focusOptionsParam()],
           body: [
+            CallExpression({
+              callee: Identifier(["this", "setFocusRing"]),
+              arguments: [Identifier(["focusRing"])],
+            }),
+            Empty,
             VariableDeclaration(
               AssignmentExpression({
                 left: Identifier(["focusElements"]),
@@ -66,8 +109,13 @@ module Methods = {
       right:
         ArrowFunctionExpression({
           id: None,
-          params: [],
+          params: [focusOptionsParam()],
           body: [
+            CallExpression({
+              callee: Identifier(["this", "setFocusRing"]),
+              arguments: [Identifier(["focusRing"])],
+            }),
+            Empty,
             VariableDeclaration(
               AssignmentExpression({
                 left: Identifier(["focusElements"]),
@@ -137,8 +185,13 @@ module Methods = {
       right:
         ArrowFunctionExpression({
           id: None,
-          params: [],
+          params: [focusOptionsParam()],
           body: [
+            CallExpression({
+              callee: Identifier(["this", "setFocusRing"]),
+              arguments: [Identifier(["focusRing"])],
+            }),
+            Empty,
             VariableDeclaration(
               AssignmentExpression({
                 left: Identifier(["focusElements"]),
@@ -220,6 +273,11 @@ module Methods = {
                   right: Literal(LonaValue.string("Tab")),
                 }),
               consequent: [
+                CallExpression({
+                  callee: Identifier(["this", "setFocusRing"]),
+                  arguments: [Literal(LonaValue.boolean(true))],
+                }),
+                Empty,
                 IfStatement({
                   test: Identifier(["event", "shiftKey"]),
 
@@ -253,8 +311,16 @@ module Methods = {
     });
 };
 
+let initialStateProperties = (): list(JavaScriptAst.node) => [
+  Property({
+    key: Identifier(["focusRing"]),
+    value: Some(Literal(LonaValue.boolean(false))),
+  }),
+];
+
 let focusMethods = (rootLayer: Types.layer): list(JavaScriptAst.node) =>
   Methods.[
+    setFocusRing(),
     focus(),
     focusNext(),
     focusPrevious(),
