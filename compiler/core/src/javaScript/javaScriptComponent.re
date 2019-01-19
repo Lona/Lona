@@ -73,6 +73,13 @@ let removeSpecialProps =
        | (ParameterKey.AccessibilityValue, _)
        | (ParameterKey.AccessibilityType, _)
        | (ParameterKey.AccessibilityElements, _) => false
+       | (ParameterKey.AccessibilityLabel, JavaScriptOptions.ReactSketchapp) =>
+         false
+       | (
+           ParameterKey.OnAccessibilityActivate,
+           JavaScriptOptions.ReactSketchapp,
+         ) =>
+         false
        | (ParameterKey.NumberOfLines, JavaScriptOptions.ReactDOM) => false
        | (ParameterKey.Text, _) => false
        | (ParameterKey.Visible, _) => false
@@ -601,8 +608,6 @@ let rec layerToJavaScriptAST =
            };
          JSXAttribute({name: key, value: attributeValue});
        });
-  let hasAccessibilityActivate =
-    ParameterMap.mem(OnAccessibilityActivate, propVariables);
   let attributes =
     attributes
     @ (

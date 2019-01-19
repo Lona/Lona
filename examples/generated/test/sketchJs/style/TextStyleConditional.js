@@ -9,15 +9,17 @@ import textStyles from "../textStyles"
 export default class TextStyleConditional extends React.Component {
   render() {
 
+
     let Text$textStyle
     Text$textStyle = textStyles.headline
 
     if (this.props.large) {
+
       Text$textStyle = textStyles.display2
     }
     return (
       <View style={styles.view}>
-        <Text style={[ styles.text, { ...Text$textStyle } ]}>
+        <Text style={[styles.text, { ...Text$textStyle }]}>
           {"Text goes here"}
         </Text>
       </View>

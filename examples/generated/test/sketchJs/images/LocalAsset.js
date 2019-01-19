@@ -10,6 +10,7 @@ export default class LocalAsset extends React.Component {
   render() {
 
 
+
     return (
       <View style={styles.view}>
         <Image

@@ -8,6 +8,7 @@ import textStyles from "../textStyles"
 export default class BorderWidthColor extends React.Component {
   render() {
 
+
     let Inner$borderColor
     let Inner$borderRadius
     let Inner$borderWidth
@@ -16,6 +17,7 @@ export default class BorderWidthColor extends React.Component {
     Inner$borderColor = colors.blue300
 
     if (this.props.alternativeStyle) {
+
       Inner$borderColor = colors.reda400
       Inner$borderWidth = 4
       Inner$borderRadius = 20
