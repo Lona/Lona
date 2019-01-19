@@ -5,7 +5,7 @@ export default function createActivatableComponent(WrappedComponent) {
     _handleKeyDown = event => {
       const { onAccessibilityActivate, onKeyDown } = this.props;
 
-      if (event.key === "Enter") {
+      if (event.key === "Enter" || event.key === " ") {
         onAccessibilityActivate && onAccessibilityActivate();
 
         event.stopPropagation();

@@ -1,17 +1,20 @@
-import { React } from "react";
+import React from "react";
 
 export default function createActivatableComponent(WrappedComponent) {
   class Wrapper extends React.Component {
     _handleKeyDown = event => {
-      if (event.key === "Enter") {
-        this.props.onAccessibilityActivate &&
-          this.props.onAccessibilityActivate();
+      const { onAccessibilityActivate, onKeyDown } = this.props;
+
+      if (event.key === "Enter" || event.key === " ") {
+        onAccessibilityActivate && onAccessibilityActivate();
 
         event.stopPropagation();
         event.preventDefault();
-      } else {
-        this.props.onKeyDown && this.props.onKeyDown(event);
+
+        return;
       }
+
+      onKeyDown && onKeyDown(event);
     };
 
     render() {
