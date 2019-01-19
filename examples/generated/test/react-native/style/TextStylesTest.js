@@ -9,6 +9,7 @@ export default class TextStylesTest extends React.Component {
   render() {
 
 
+
     return (
       <View style={styles.view}>
         <Text style={styles.text1}>

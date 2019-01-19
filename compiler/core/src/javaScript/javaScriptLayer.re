@@ -4,7 +4,8 @@ let canBeFocused = (layer: Types.layer): bool =>
   | _ => false
   };
 
-let needsRef = (layer: Types.layer): bool => layer |> canBeFocused;
+let needsRef = (config: Config.t, layer: Types.layer): bool =>
+  config.options.javaScript.framework == ReactDOM && layer |> canBeFocused;
 
 let getStyleVariables =
     (

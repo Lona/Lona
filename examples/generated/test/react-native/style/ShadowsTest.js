@@ -8,15 +8,17 @@ import textStyles from "../textStyles"
 export default class ShadowsTest extends React.Component {
   render() {
 
+
     let Inner$shadow
     Inner$shadow = shadows.elevation2
 
     if (this.props.largeShadow) {
+
       Inner$shadow = shadows.elevation3
     }
     return (
       <View style={styles.container}>
-        <View style={[ styles.inner, { ...Inner$shadow } ]} />
+        <View style={[styles.inner, { ...Inner$shadow }]} />
       </View>
     );
   }

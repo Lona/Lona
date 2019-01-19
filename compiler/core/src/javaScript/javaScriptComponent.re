@@ -558,7 +558,7 @@ let rec layerToJavaScriptAST =
   let initialProps = getInitialProps(options, layer);
   let styleVariables = JavaScriptLayer.getStyleVariables(assignments, layer);
   let propVariables = JavaScriptLayer.getPropVariables(assignments, layer);
-  let needsRef = JavaScriptLayer.needsRef(layer);
+  let needsRef = JavaScriptLayer.needsRef(config, layer);
   let canBeFocused = JavaScriptLayer.canBeFocused(layer);
 
   let main = ParameterMap.assign(initialProps, propVariables);
@@ -607,20 +607,29 @@ let rec layerToJavaScriptAST =
     attributes
     @ (
       canBeFocused ?
-        [
-          JSXAttribute({
-            name: "tabIndex",
-            value: Literal(LonaValue.number(-1.)),
-          }),
-          JSXAttribute({
-            name: "focusRing",
-            value: Identifier(["this", "state", "focusRing"]),
-          }),
-          JSXAttribute({
-            name: "onKeyDown",
-            value: Identifier(["this", "_handleKeyDown"]),
-          }),
-        ] :
+        switch (config.options.javaScript.framework) {
+        | ReactNative => [
+            JSXAttribute({
+              name: "accessible",
+              value: Literal(LonaValue.boolean(true)),
+            }),
+          ]
+        | ReactDOM => [
+            JSXAttribute({
+              name: "tabIndex",
+              value: Literal(LonaValue.number(-1.)),
+            }),
+            JSXAttribute({
+              name: "focusRing",
+              value: Identifier(["this", "state", "focusRing"]),
+            }),
+            JSXAttribute({
+              name: "onKeyDown",
+              value: Identifier(["this", "_handleKeyDown"]),
+            }),
+          ]
+        | ReactSketchapp => []
+        } :
         []
     );
   let attributes =
@@ -856,7 +865,7 @@ let importComponents =
         custom
       )
       @ (
-        if (importsActivationUtil) {
+        if (framework == ReactDOM && importsActivationUtil) {
           [
             Ast.ImportDeclaration({
               source:
@@ -1160,8 +1169,12 @@ let generate =
             )
           | _ => [styleSheetAST]
           },
-          activatableLayers
-          |> List.map(createAccessibilityWrapperComponent(config)),
+          if (options.framework == ReactDOM) {
+            activatableLayers
+            |> List.map(createAccessibilityWrapperComponent(config));
+          } else {
+            [];
+          },
         ],
       ),
     )

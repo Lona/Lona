@@ -9,6 +9,7 @@ export default class FitContentParentSecondaryChildren extends React.Component {
   render() {
 
 
+
     return (
       <View style={styles.container}>
         <View style={styles.view1} />

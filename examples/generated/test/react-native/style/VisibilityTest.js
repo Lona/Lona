@@ -8,6 +8,7 @@ import textStyles from "../textStyles"
 export default class VisibilityTest extends React.Component {
   render() {
 
+
     let Title$visible
 
     Title$visible = this.props.enabled
