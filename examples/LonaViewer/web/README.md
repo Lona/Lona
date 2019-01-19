@@ -4,7 +4,7 @@ This is a react app for viewing the generated test components. This project was 
 
 ### `npm start`
 
-Before running, make sure to generate the Lona workspace by running `yarn snapshotWebViewer` within the `compiler/core` directory.
+Before running, make sure to generate the Lona workspace by running `yarn snapshotWebViewer` or `yarn snapshotWebViewer:watch` within the `compiler/core` directory.
 
 Runs the app in the development mode.<br>
 Open [http://localhost:3000](http://localhost:3000) to view it in the browser.
