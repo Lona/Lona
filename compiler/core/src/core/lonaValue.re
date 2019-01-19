@@ -74,7 +74,7 @@ let parameterDefaultValue = key =>
   | ParameterKey.AccessibilityHint => string("")
   | ParameterKey.AccessibilityRole => string("")
   | ParameterKey.AccessibilityValue => string("")
-  | ParameterKey.AccessibilityType => string("auto")
+  | ParameterKey.AccessibilityType => string("default")
   | ParameterKey.AccessibilityElements => stringArray([])
   | ParameterKey.OnAccessibilityActivate => null()
   /* Interactivity */

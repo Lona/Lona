@@ -1,4 +1,12 @@
-## Lona accessibility support
+# Lona accessibility support
+
+Lona provides a set of cross-platform parameters to build accessible components. In cases where these aren't enough, the native views can be manipulated directly via code.
+
+- [Accessibility parameters](#accessibility-parameters)
+- [Swift](#swift)
+- [JavaScript](#javascript)
+
+## Accessibility parameters
 
 Lona supports the following layer parameters to generate accessible UI components. These parameters are modeled after iOS and React Native accessibility support. Some parameters are **static**, some are **dynamic**, and some are both. Static parameters can be given a default value (at compile-time). Dynamic parameters can be assigned via Lona Logic (at runtime).
 
@@ -6,11 +14,11 @@ Lona supports the following layer parameters to generate accessible UI component
 
 _Supported on iOS & web_
 
-Type: one of `"auto"`, `"none"`, `"element"`, `"container"`. Default: `"auto"`.
+Type: one of `"default"`, `"none"`, `"element"`, `"container"`. Default: `"default"`.
 
 This configures overall the behavior of the layer. This parameter is unique to Lona and doesn't directly translate to any platform. Instead, Lona uses it to set other platform-specific parameters.
 
-- **`auto`** - Use the platform default values for the layer. For example, Text layers automatically have their `accessibilityLabel` set to the same value as the text. It's best to use `none`, `element`, or `container` instead to explicitly define the behavior, rather than letting the platform guess.
+- **`default`** - Use the platform default values for the layer. For example, Text layers automatically have their `accessibilityLabel` set to the same value as the text. It's best to use `none`, `element`, or `container` instead to explicitly define the behavior, rather than letting the platform guess.
 - **`none`** - The layer is hidden from assistive technologies.
 - **`element`** - This layer is focusable by assistive technologies. Lona Studio requires this to be set before it will reveal most of the other parameters (e.g. `AccessibilityLabel`).
 - **`container`** - This contains accessible descendant layers. These can be configured by id using the `accessibilityElements` parameter.

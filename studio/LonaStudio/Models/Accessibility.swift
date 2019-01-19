@@ -70,7 +70,7 @@ enum AccessibilityType {
     var typeName: String {
         switch self {
         case .auto:
-            return "auto"
+            return "default"
         case .none:
             return "none"
         case .element:
@@ -104,7 +104,7 @@ enum AccessibilityType {
 
     func withType(_ typeName: String) -> AccessibilityType {
         switch typeName {
-        case "auto":
+        case "default":
             return .auto
         case "none":
             return .none
@@ -163,10 +163,10 @@ enum AccessibilityType {
 
 extension AccessibilityType: CSDataDeserializable {
     init(_ data: CSData) {
-        let accessibilityType = data.get(key: "accessibilityType").string ?? "auto"
+        let accessibilityType = data.get(key: "accessibilityType").string ?? "default"
 
         switch accessibilityType {
-        case "auto":
+        case "default":
             self = AccessibilityType.auto
         case "none":
             self = AccessibilityType.none
