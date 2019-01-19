@@ -205,6 +205,7 @@ let rec render = ast: Prettier.Doc.t('a) =>
     group(
       s("{") <+> indent(softline <+> render(o)) <+> softline <+> s("}"),
     )
+  | JSXSpreadAttribute(value) => s("{...") <+> render(value) <+> s("}")
   | SpreadElement(value) => s("...") <+> render(value)
   | ArrayLiteral(body) =>
     let maybeLine = List.length(body) > 0 ? softline : empty;

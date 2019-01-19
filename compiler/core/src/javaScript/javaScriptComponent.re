@@ -28,7 +28,7 @@ let getElementTagStringForLayerType =
   };
 
 let getElementTagString =
-    (options: JavaScriptOptions.options, layer: Types.layer) => {
+    (options: JavaScriptOptions.options, assignments, layer: Types.layer) => {
   let override =
     frameworkSpecificValue(
       options.framework,
@@ -43,35 +43,21 @@ let getElementTagString =
     )
   | _ =>
     switch (options.styleFramework, override) {
-    | (StyledComponents, _) => JavaScriptFormat.elementName(layer.name)
+    | (StyledComponents, _) =>
+      let hasAccessibilityActivate =
+        JavaScriptLayer.hasAccessibilityActivate(assignments, layer);
+
+      if (hasAccessibilityActivate) {
+        JavaScriptFormat.accessibilityWrapperElementName(layer.name);
+      } else {
+        JavaScriptFormat.elementName(layer.name);
+      };
     | (None, Some(value)) => value
     | (None, None) =>
       getElementTagStringForLayerType(options, layer.typeName)
     }
   };
 };
-
-let getStyleVariables =
-    (
-      assignments: Layer.LayerMap.t(ParameterMap.t(Logic.logicValue)),
-      layer: Types.layer,
-    ) =>
-  switch (Layer.LayerMap.find_opt(layer, assignments)) {
-  | Some(map) =>
-    map |> ParameterMap.filter((key, _) => Layer.parameterIsStyle(key))
-  | None => ParameterMap.empty
-  };
-
-let getPropVariables =
-    (
-      assignments: Layer.LayerMap.t(ParameterMap.t(Logic.logicValue)),
-      layer: Types.layer,
-    ) =>
-  switch (Layer.LayerMap.find_opt(layer, assignments)) {
-  | Some(map) =>
-    map |> ParameterMap.filter((key, _) => !Layer.parameterIsStyle(key))
-  | None => ParameterMap.empty
-  };
 
 let removeSpecialProps =
     (
@@ -82,7 +68,6 @@ let removeSpecialProps =
   parameters
   |> ParameterMap.filter((key: ParameterKey.t, _) =>
        switch (key, options.framework) {
-       | (ParameterKey.OnAccessibilityActivate, _)
        | (ParameterKey.AccessibilityHint, _)
        | (ParameterKey.AccessibilityRole, _)
        | (ParameterKey.AccessibilityValue, _)
@@ -355,6 +340,7 @@ let createWrappedImageElement =
     (
       _config,
       options: JavaScriptOptions.options,
+      assignments,
       layer: Types.layer,
       styleAttribute,
       jsxAttributes,
@@ -392,7 +378,7 @@ let createWrappedImageElement =
     | StyledComponents =>
       JavaScriptFormat.imageResizeModeHelperName(resizeMode)
       |> Format.upperFirst
-    | None => getElementTagString(options, layer)
+    | None => getElementTagString(options, assignments, layer)
     };
 
   JavaScriptAst.(
@@ -410,12 +396,73 @@ let createWrappedImageElement =
   );
 };
 
+let createWrapperComponent =
+    (
+      _config: Config.t,
+      wrapperClassName: string,
+      originalClassName: string,
+      methods: list(JavaScriptAst.node),
+      attributes: list(JavaScriptAst.node),
+    )
+    : JavaScriptAst.node =>
+  ClassDeclaration({
+    id: wrapperClassName,
+    superClass: Some("React.Component"),
+    body:
+      methods
+      @ [
+        MethodDefinition({
+          key: "render",
+          value:
+            FunctionExpression({
+              id: None,
+              params: [],
+              body: [
+                Return(
+                  JSXElement({
+                    tag: originalClassName,
+                    attributes:
+                      [
+                        JavaScriptAst.JSXSpreadAttribute(
+                          Identifier(["this", "props"]),
+                        ),
+                      ]
+                      @ attributes,
+                    content: [],
+                  }),
+                ),
+              ],
+            }),
+        }),
+      ]
+      |> Sequence.join(JavaScriptAst.Empty),
+  });
+
+let createAccessibilityWrapperComponent =
+    (config: Config.t, layer: Types.layer): JavaScriptAst.node =>
+  VariableDeclaration(
+    AssignmentExpression({
+      left:
+        Identifier([
+          JavaScriptFormat.accessibilityWrapperElementName(layer.name),
+        ]),
+      right:
+        CallExpression({
+          callee: Identifier(["createActivatableComponent"]),
+          arguments: [
+            Identifier([JavaScriptFormat.elementName(layer.name)]),
+          ],
+        }),
+    }),
+  );
+
 /* Wrap custom components in a view that enforces the framework's
    default layout attributes. */
 let createJSXElement =
     (
       config: Config.t,
       options: JavaScriptOptions.options,
+      assignments,
       parent: option(Types.layer),
       layer: Types.layer,
       attributes: list(JavaScriptAst.node),
@@ -480,6 +527,7 @@ let createJSXElement =
       createWrappedImageElement(
         config,
         options,
+        assignments,
         layer,
         styleAttribute,
         attributes,
@@ -487,7 +535,7 @@ let createJSXElement =
       );
     } else {
       JSXElement({
-        tag: getElementTagString(options, layer),
+        tag: getElementTagString(options, assignments, layer),
         attributes: styleAttribute @ attributes,
         content,
       });
@@ -508,8 +556,8 @@ let rec layerToJavaScriptAST =
   open Ast;
 
   let initialProps = getInitialProps(options, layer);
-  let styleVariables = getStyleVariables(assignments, layer);
-  let propVariables = getPropVariables(assignments, layer);
+  let styleVariables = JavaScriptLayer.getStyleVariables(assignments, layer);
+  let propVariables = JavaScriptLayer.getPropVariables(assignments, layer);
   let needsRef = JavaScriptLayer.needsRef(layer);
   let canBeFocused = JavaScriptLayer.canBeFocused(layer);
 
@@ -568,64 +616,10 @@ let rec layerToJavaScriptAST =
             name: "focusRing",
             value: Identifier(["this", "state", "focusRing"]),
           }),
-          hasAccessibilityActivate ?
-            JSXAttribute({
-              name: "onKeyDown",
-              value:
-                ArrowFunctionExpression({
-                  id: None,
-                  params: [Identifier(["event"])],
-                  body: [
-                    IfStatement({
-                      test:
-                        BinaryExpression({
-                          left: Identifier(["event", "key"]),
-                          operator: Eq,
-                          right: Literal(LonaValue.string("Enter")),
-                        }),
-                      consequent: [
-                        BinaryExpression({
-                          left:
-                            Identifier([
-                              "typeof "
-                              ++ JavaScriptFormat.elementName(layer.name)
-                              ++ "$onAccessibilityActivate === 'function'",
-                            ]),
-                          operator: And,
-                          right:
-                            CallExpression({
-                              callee:
-                                Identifier([
-                                  JavaScriptFormat.elementName(layer.name)
-                                  ++ "$onAccessibilityActivate",
-                                ]),
-                              arguments: [],
-                            }),
-                        }),
-                        Empty,
-                        CallExpression({
-                          callee: Identifier(["event", "stopPropagation"]),
-                          arguments: [],
-                        }),
-                        CallExpression({
-                          callee: Identifier(["event", "preventDefault"]),
-                          arguments: [],
-                        }),
-                      ],
-                      alternate: [
-                        CallExpression({
-                          callee: Identifier(["this", "_handleKeyDown"]),
-                          arguments: [Identifier(["event"])],
-                        }),
-                      ],
-                    }),
-                  ],
-                }),
-            }) :
-            JSXAttribute({
-              name: "onKeyDown",
-              value: Identifier(["this", "_handleKeyDown"]),
-            }),
+          JSXAttribute({
+            name: "onKeyDown",
+            value: Identifier(["this", "_handleKeyDown"]),
+          }),
         ] :
         []
     );
@@ -727,6 +721,7 @@ let rec layerToJavaScriptAST =
     createJSXElement(
       config,
       options,
+      assignments,
       parent,
       layer,
       attributes,
@@ -752,13 +747,28 @@ type componentImports = {
 };
 
 let importComponents =
-    (options: JavaScriptOptions.options, getComponentFile, rootLayer) => {
+    (
+      config: Config.t,
+      options: JavaScriptOptions.options,
+      outputFile,
+      getComponentFile,
+      assignments,
+      componentName,
+      rootLayer,
+    ) => {
   let framework = options.framework;
   let {builtIn, custom}: Layer.availableTypeNames =
     rootLayer |> Layer.getTypeNames;
   let importsSvg = List.mem(Types.VectorGraphic, builtIn);
   let builtIn =
     builtIn |> List.filter(typeName => typeName != Types.VectorGraphic);
+  let activatableLayers =
+    rootLayer
+    |> Layer.flatten
+    |> List.filter(JavaScriptLayer.hasAccessibilityActivate(assignments));
+
+  Js.log2(outputFile, config.outputPath);
+  let importsActivationUtil = List.length(activatableLayers) > 0;
   {
     absolute:
       (
@@ -834,15 +844,36 @@ let importComponents =
         }
       ),
     relative:
-      List.map(componentName =>
-        Ast.ImportDeclaration({
-          source:
-            getComponentFile(componentName)
-            |> Js.String.replace(".component", ""),
-          specifiers: [Ast.ImportDefaultSpecifier(componentName)],
-        })
-      ) @@
-      custom,
+      (
+        List.map(componentName =>
+          Ast.ImportDeclaration({
+            source:
+              getComponentFile(componentName)
+              |> Js.String.replace(".component", ""),
+            specifiers: [Ast.ImportDefaultSpecifier(componentName)],
+          })
+        ) @@
+        custom
+      )
+      @ (
+        if (importsActivationUtil) {
+          [
+            Ast.ImportDeclaration({
+              source:
+                Config.Workspace.getRelativePathToOutputRoot(
+                  config,
+                  Node.Path.dirname(outputFile),
+                )
+                ++ "/utils/createActivatableComponent",
+              specifiers: [
+                Ast.ImportDefaultSpecifier("createActivatableComponent"),
+              ],
+            }),
+          ];
+        } else {
+          [];
+        }
+      ),
   };
 };
 
@@ -972,6 +1003,7 @@ let generate =
       shadowsFilePath,
       textStylesFilePath,
       config: Config.t,
+      outputFile,
       getComponent,
       getComponentFile,
       getAssetPath,
@@ -1015,7 +1047,20 @@ let generate =
     |> Ast.optimize;
 
   let {absolute, relative} =
-    rootLayer |> importComponents(options, getComponentFile);
+    rootLayer
+    |> importComponents(
+         config,
+         options,
+         outputFile,
+         getComponentFile,
+         assignments,
+         componentName,
+       );
+
+  let activatableLayers =
+    rootLayer
+    |> Layer.flatten
+    |> List.filter(JavaScriptLayer.hasAccessibilityActivate(assignments));
 
   Ast.(
     Program(
@@ -1115,6 +1160,8 @@ let generate =
             )
           | _ => [styleSheetAST]
           },
+          activatableLayers
+          |> List.map(createAccessibilityWrapperComponent(config)),
         ],
       ),
     )

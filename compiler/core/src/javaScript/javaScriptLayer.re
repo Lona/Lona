@@ -6,6 +6,34 @@ let canBeFocused = (layer: Types.layer): bool =>
 
 let needsRef = (layer: Types.layer): bool => layer |> canBeFocused;
 
+let getStyleVariables =
+    (
+      assignments: Layer.LayerMap.t(ParameterMap.t(Logic.logicValue)),
+      layer: Types.layer,
+    ) =>
+  switch (Layer.LayerMap.find_opt(layer, assignments)) {
+  | Some(map) =>
+    map |> ParameterMap.filter((key, _) => Layer.parameterIsStyle(key))
+  | None => ParameterMap.empty
+  };
+
+let getPropVariables =
+    (
+      assignments: Layer.LayerMap.t(ParameterMap.t(Logic.logicValue)),
+      layer: Types.layer,
+    ) =>
+  switch (Layer.LayerMap.find_opt(layer, assignments)) {
+  | Some(map) =>
+    map |> ParameterMap.filter((key, _) => !Layer.parameterIsStyle(key))
+  | None => ParameterMap.empty
+  };
+
+let hasAccessibilityActivate = (assignments, layer) =>
+  ParameterMap.mem(
+    OnAccessibilityActivate,
+    getPropVariables(assignments, layer),
+  );
+
 module Hierarchy = {
   let needsFocusHandling = (layer: Types.layer): bool =>
     layer |> Layer.flatten |> List.exists(canBeFocused);

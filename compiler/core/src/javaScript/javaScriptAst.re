@@ -93,6 +93,7 @@ and node =
   | JSXAttribute(jSXAttribute)
   | JSXElement(jSXElement)
   | JSXExpressionContainer(node)
+  | JSXSpreadAttribute(node)
   | SpreadElement(node)
   | VariableDeclaration(node)
   | AssignmentExpression(assignmentExpression)
@@ -122,6 +123,7 @@ let rec map = (f: node => node, node) =>
   | ImportDefaultSpecifier(_) => f(node)
   | JSXExpressionContainer(value) =>
     f(JSXExpressionContainer(value |> map(f)))
+  | JSXSpreadAttribute(value) => JSXSpreadAttribute(f(value))
   | SpreadElement(value) => SpreadElement(f(value))
   | ClassDeclaration(o) =>
     f(

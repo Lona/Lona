@@ -4,6 +4,7 @@ import styled from "styled-components"
 import colors from "../colors"
 import shadows from "../shadows"
 import textStyles from "../textStyles"
+import createActivatableComponent from "../utils/createActivatableComponent"
 
 export default class AccessibilityTest extends React.Component {
   state = { focusRing: false }
@@ -92,20 +93,12 @@ export default class AccessibilityTest extends React.Component {
     Checkbox$onPress = this.props.onToggleCheckbox
     return (
       <View>
-        <CheckboxRow
+        <CheckboxRowAccessibilityWrapper
           aria-label={"Checkbox row"}
+          onAccessibilityActivate={CheckboxRow$onAccessibilityActivate}
           tabIndex={-1}
-          onKeyDown={(event) => {
-            if (event.key === "Enter") {
-              typeof CheckboxRow$onAccessibilityActivate === 'function' &&
-              CheckboxRow$onAccessibilityActivate()
-
-              event.stopPropagation()
-              event.preventDefault()
-            } else {
-              this._handleKeyDown(event)
-            }
-          }}
+          focusRing={this.state.focusRing}
+          onKeyDown={this._handleKeyDown}
           ref={(ref) => { this._CheckboxRow = ref }}
         >
           <Checkbox onClick={Checkbox$onPress}>
@@ -114,11 +107,12 @@ export default class AccessibilityTest extends React.Component {
           <Text>
             {"Checkbox description"}
           </Text>
-        </CheckboxRow>
+        </CheckboxRowAccessibilityWrapper>
         <Row1>
           <Element
             aria-label={"Red box"}
             tabIndex={-1}
+            focusRing={this.state.focusRing}
             onKeyDown={this._handleKeyDown}
             ref={(ref) => { this._Element = ref }}
           >
@@ -129,6 +123,7 @@ export default class AccessibilityTest extends React.Component {
               src={require("../assets/icon_128x128.png")}
               aria-label={"My image"}
               tabIndex={-1}
+              focusRing={this.state.focusRing}
               onKeyDown={this._handleKeyDown}
               ref={(ref) => { this._Image = ref }}
 
@@ -136,6 +131,7 @@ export default class AccessibilityTest extends React.Component {
             <AccessibleText
               aria-label={AccessibleText$accessibilityLabel}
               tabIndex={-1}
+              focusRing={this.state.focusRing}
               onKeyDown={this._handleKeyDown}
               ref={(ref) => { this._AccessibleText = ref }}
             >
@@ -279,3 +275,5 @@ let AccessibleText = styled.span((props) => ({
   justifyContent: "flex-start",
   ...!props.focusRing && { ":focus": { outline: 0 } }
 }))
+
+let CheckboxRowAccessibilityWrapper = createActivatableComponent(CheckboxRow)

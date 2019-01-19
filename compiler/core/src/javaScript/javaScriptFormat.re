@@ -11,5 +11,8 @@ let wrapperElementName = (componentName, layerName) =>
      )
   ++ "Wrapper";
 
+let accessibilityWrapperElementName = layerName =>
+  elementName(layerName) ++ "AccessibilityWrapper";
+
 let imageResizeModeHelperName = resizeMode =>
   styleVariableName("imageResizeMode" ++ Format.upperFirst(resizeMode));
