@@ -44,6 +44,7 @@ let variableNames = variable =>
   switch (variable) {
   | ParameterKey.Image => "src"
   | ParameterKey.OnPress => "onClick"
+  | ParameterKey.AccessibilityLabel => "aria-label"
   | _ => variable |> ParameterKey.toString
   };
 

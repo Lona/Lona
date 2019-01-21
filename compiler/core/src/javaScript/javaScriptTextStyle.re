@@ -33,7 +33,7 @@ let render =
              };
              Property({
                key: Identifier(["fontFamily"]),
-               value: Literal(lonaValue),
+               value: Some(Literal(lonaValue)),
              });
            }),
         lookup(style => style.fontWeight)
@@ -44,7 +44,7 @@ let render =
              };
              Property({
                key: Identifier(["fontWeight"]),
-               value: Literal(lonaValue),
+               value: Some(Literal(lonaValue)),
              });
            }),
         lookup(style => style.fontSize)
@@ -55,7 +55,7 @@ let render =
              };
              Property({
                key: Identifier(["fontSize"]),
-               value: lonaValue |> buildStyleNodeForFramework,
+               value: Some(lonaValue |> buildStyleNodeForFramework),
              });
            }),
         lookup(style => style.lineHeight)
@@ -66,7 +66,7 @@ let render =
              };
              Property({
                key: Identifier(["lineHeight"]),
-               value: lonaValue |> buildStyleNodeForFramework,
+               value: Some(lonaValue |> buildStyleNodeForFramework),
              });
            }),
         lookup(style => style.letterSpacing)
@@ -77,7 +77,7 @@ let render =
              };
              Property({
                key: Identifier(["letterSpacing"]),
-               value: lonaValue |> buildStyleNodeForFramework,
+               value: Some(lonaValue |> buildStyleNodeForFramework),
              });
            }),
         lookup(style => style.color)
@@ -92,13 +92,13 @@ let render =
                  };
                  Literal(lonaValue);
                };
-             Property({key: Identifier(["color"]), value});
+             Property({key: Identifier(["color"]), value: Some(value)});
            }),
       ]
       |> List.concat;
     Property({
       key: Identifier([textStyle.id |> JavaScriptFormat.styleVariableName]),
-      value: ObjectLiteral(variables),
+      value: Some(ObjectLiteral(variables)),
     });
   };
   let doc =

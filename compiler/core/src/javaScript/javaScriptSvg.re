@@ -234,7 +234,7 @@ let generateVectorGraphic =
         right:
           ArrowFunctionExpression({
             id: None,
-            params: ["props"],
+            params: [Identifier(["props"])],
             body: [
               Return(
                 convertNode(

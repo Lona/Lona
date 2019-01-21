@@ -9,6 +9,7 @@ type binaryOperator =
   | Lt
   | Lte
   | Plus
+  | Minus
   | And
   | Or
   | Noop;
@@ -32,7 +33,7 @@ and methodDefinition = {
 }
 and functionExpression = {
   id: option(string),
-  params: list(string),
+  params: list(node),
   body: list(node),
 }
 and callExpression = {
@@ -57,13 +58,19 @@ and binaryExpression = {
   operator: binaryOperator,
   right: node,
 }
+and unaryExpression = {
+  prefix: bool,
+  operator: string,
+  argument: node,
+}
 and ifStatement = {
   test: node,
   consequent: list(node),
+  alternate: list(node),
 }
 and property = {
   key: node,
-  value: node,
+  value: option(node),
 }
 and lineEndComment = {
   comment: string,
@@ -86,10 +93,12 @@ and node =
   | JSXAttribute(jSXAttribute)
   | JSXElement(jSXElement)
   | JSXExpressionContainer(node)
+  | JSXSpreadAttribute(node)
   | SpreadElement(node)
   | VariableDeclaration(node)
   | AssignmentExpression(assignmentExpression)
   | BinaryExpression(binaryExpression)
+  | UnaryExpression(unaryExpression)
   | IfStatement(ifStatement)
   | ArrayLiteral(list(node))
   | ObjectLiteral(list(node))
@@ -114,6 +123,7 @@ let rec map = (f: node => node, node) =>
   | ImportDefaultSpecifier(_) => f(node)
   | JSXExpressionContainer(value) =>
     f(JSXExpressionContainer(value |> map(f)))
+  | JSXSpreadAttribute(value) => JSXSpreadAttribute(f(value))
   | SpreadElement(value) => SpreadElement(f(value))
   | ClassDeclaration(o) =>
     f(
@@ -129,7 +139,7 @@ let rec map = (f: node => node, node) =>
     f(
       FunctionExpression({
         id: o.id,
-        params: o.params,
+        params: o.params |> List.map(map(f)),
         body: o.body |> List.map(map(f)),
       }),
     )
@@ -137,7 +147,7 @@ let rec map = (f: node => node, node) =>
     f(
       ArrowFunctionExpression({
         id: o.id,
-        params: o.params,
+        params: o.params |> List.map(map(f)),
         body: o.body |> List.map(map(f)),
       }),
     )
@@ -174,17 +184,35 @@ let rec map = (f: node => node, node) =>
         right: o.right |> map(f),
       }),
     )
+  | UnaryExpression(o) =>
+    f(
+      UnaryExpression({
+        prefix: o.prefix,
+        operator: o.operator,
+        argument: o.argument |> map(f),
+      }),
+    )
   | IfStatement(o) =>
     f(
       IfStatement({
         test: o.test |> map(f),
         consequent: o.consequent |> List.map(map(f)),
+        alternate: o.alternate |> List.map(map(f)),
       }),
     )
   | ArrayLiteral(body) => f(ArrayLiteral(body |> List.map(map(f))))
   | ObjectLiteral(body) => f(ObjectLiteral(body |> List.map(map(f))))
   | Property(o) =>
-    f(Property({key: o.key |> map(f), value: o.value |> map(f)}))
+    f(
+      Property({
+        key: o.key |> map(f),
+        value:
+          switch (o.value) {
+          | Some(value) => Some(value |> map(f))
+          | None => None
+          },
+      }),
+    )
   | ExportDefaultDeclaration(value) =>
     f(ExportDefaultDeclaration(value |> map(f)))
   | ExportNamedDeclaration(value) =>

@@ -9,14 +9,16 @@ import textStyles from "../textStyles"
 export default class OpacityTest extends React.Component {
   render() {
 
+
     let View$opacity
     View$opacity = 1
 
     if (this.props.selected) {
+
       View$opacity = 0.7
     }
     return (
-      <View style={[ styles.view, { opacity: View$opacity } ]}>
+      <View style={[styles.view, { opacity: View$opacity }]}>
         <View style={styles.view1}>
           <Text style={styles.text}>
             {"Text goes here"}

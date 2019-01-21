@@ -14,6 +14,7 @@ type t = {
   workspacePath: string,
   options: Options.options,
   platformId: Types.platformId,
+  outputPath: string,
 };
 
 module Compiler = {
@@ -103,6 +104,9 @@ module Workspace = {
         Js.String.replace("file://", "", path) : path;
     Node.Path.join2(config.workspacePath, path);
   };
+
+  let getRelativePathToOutputRoot = (config: t, outputPath: string): string =>
+    Node.Path.relative(~from=outputPath, ~to_=config.outputPath, ());
 };
 
 module Find = {
@@ -115,15 +119,15 @@ module Find = {
   let referenceType = (config: t, typeName: string) =>
     UserTypes.resolveType(config.userTypesFile.contents.types, typeName);
 
-  let platformSpecificValue = (config: t, value: Types.platformSpecificValue('a)): 'a => {
+  let platformSpecificValue =
+      (config: t, value: Types.platformSpecificValue('a)): 'a =>
     switch (config.platformId) {
     | Types.ReactDOM => value.reactDom
     | Types.ReactNative => value.reactNative
     | Types.ReactSketchapp => value.reactSketchapp
     | Types.IOS => value.iOS
     | Types.MacOS => value.macOS
-    }
-  }
+    };
 };
 
 module Type = {
@@ -145,7 +149,7 @@ let exit = message => {
 };
 
 let load =
-    (platformId: Types.platformId, options: Options.options, path)
+    (platformId: Types.platformId, options: Options.options, path, outputPath)
     : Js.Promise.t(t) =>
   switch (Workspace.find(path)) {
   | None =>
@@ -169,6 +173,7 @@ let load =
              userTypesFile: Workspace.userTypesFile(workspacePath),
              svgFiles,
              workspacePath,
+             outputPath,
            })
          )
     )

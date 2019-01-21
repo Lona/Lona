@@ -9,6 +9,7 @@ export default class PrimaryAxis extends React.Component {
   render() {
 
 
+
     return (
       <View>
         <Fixed />

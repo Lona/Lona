@@ -9,6 +9,7 @@ import textStyles from "../textStyles"
 export default class AccessibilityTest extends React.Component {
   render() {
 
+
     let AccessibleText$accessibilityLabel
     let CheckboxCircle$visible
     let CheckboxRow$accessibilityValue
@@ -19,10 +20,12 @@ export default class AccessibilityTest extends React.Component {
 
     AccessibleText$accessibilityLabel = this.props.customTextAccessibilityLabel
     if (this.props.checkboxValue) {
+
       CheckboxCircle$visible = true
       CheckboxRow$accessibilityValue = "checked"
     }
     if (this.props.checkboxValue === false) {
+
       CheckboxCircle$visible = false
       CheckboxRow$accessibilityValue = "unchecked"
     }

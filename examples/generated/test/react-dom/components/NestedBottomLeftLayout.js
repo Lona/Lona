@@ -10,6 +10,7 @@ export default class NestedBottomLeftLayout extends React.Component {
   render() {
 
 
+
     return <View> <View1> <LocalAsset /> </View1> </View>;
   }
 };

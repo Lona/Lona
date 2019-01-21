@@ -89,10 +89,13 @@ module Property = {
       | Some(color) =>
         JavaScriptAst.Property({
           key: keyIdentifier,
-          value: JavaScriptAst.Identifier(["colors", color.id]),
+          value: Some(JavaScriptAst.Identifier(["colors", color.id])),
         })
       | None =>
-        JavaScriptAst.Property({key: keyIdentifier, value: Literal(value)})
+        JavaScriptAst.Property({
+          key: keyIdentifier,
+          value: Some(Literal(value)),
+        })
       };
     | _ =>
       let value =
@@ -103,8 +106,35 @@ module Property = {
           )
         | _ => value
         };
-      JavaScriptAst.Property({key: keyIdentifier, value: Literal(value)});
+      JavaScriptAst.Property({
+        key: keyIdentifier,
+        value: Some(Literal(value)),
+      });
     };
+  };
+};
+
+let focusStyles =
+    (config: Config.t, layer: Types.layer): option(JavaScriptAst.node) => {
+  let canBeFocused = JavaScriptLayer.canBeFocused(layer);
+
+  if (canBeFocused && config.options.javaScript.framework == ReactDOM) {
+    Some(
+      Property({
+        key: StringLiteral(":focus"),
+        value:
+          Some(
+            ObjectLiteral([
+              Property({
+                key: Identifier(["outline"]),
+                value: Some(Literal(LonaValue.number(0.))),
+              }),
+            ]),
+          ),
+      }),
+    );
+  } else {
+    None;
   };
 };
 
@@ -379,9 +409,11 @@ let getStylePropertyWithUnits =
     JavaScriptAst.Property({
       key: JavaScriptAst.Identifier([key |> ParameterKey.toString]),
       value:
-        Literal(
-          LonaValue.string(
-            value.data |> ReactDomTranslators.convertUnitlessStyle,
+        Some(
+          Literal(
+            LonaValue.string(
+              value.data |> ReactDomTranslators.convertUnitlessStyle,
+            ),
           ),
         ),
     })
@@ -464,12 +496,13 @@ let createStyleAttributePropertyAST =
   | (_, true) =>
     JavaScriptAst.Property({
       key: Identifier([key |> Property.keyName(framework)]),
-      value: ReactTranslators.convertUnitlessAstNode(framework, astValue),
+      value:
+        Some(ReactTranslators.convertUnitlessAstNode(framework, astValue)),
     })
   | (_, false) =>
     JavaScriptAst.Property({
       key: Identifier([key |> Property.keyName(framework)]),
-      value: astValue,
+      value: Some(astValue),
     })
   };
 };
@@ -495,23 +528,44 @@ module Object = {
 
     JavaScriptAst.(
       ObjectLiteral(
-        layer.parameters
-        |> handleNumberOfLines(framework, config)
-        |> ParameterMap.filter((key, _) => Layer.parameterIsStyle(key))
-        /* Remove layout parameters stored in the component file */
-        |> ParameterMap.filter((key, _) =>
-             !List.mem(key, replacedLayoutKeys)
-           )
-        /* Add layout parameters appropriate for the framework */
-        |> ParameterMap.assign(_, layoutParameters)
-        |> ParameterMap.assign(
-             defaultStyles(framework, config, layer.typeName),
-           )
-        |> handleResizeMode(framework, config, parent, layer)
-        |> ParameterMap.bindings
-        |> List.map(((key, value)) =>
-             getStylePropertyWithUnits(config, framework, key, value)
-           ),
+        (
+          layer.parameters
+          |> handleNumberOfLines(framework, config)
+          |> ParameterMap.filter((key, _) => Layer.parameterIsStyle(key))
+          /* Remove layout parameters stored in the component file */
+          |> ParameterMap.filter((key, _) =>
+               !List.mem(key, replacedLayoutKeys)
+             )
+          /* Add layout parameters appropriate for the framework */
+          |> ParameterMap.assign(_, layoutParameters)
+          |> ParameterMap.assign(
+               defaultStyles(framework, config, layer.typeName),
+             )
+          |> handleResizeMode(framework, config, parent, layer)
+          |> ParameterMap.bindings
+          |> List.map(((key, value)) =>
+               getStylePropertyWithUnits(config, framework, key, value)
+             )
+        )
+        @ (
+          switch (focusStyles(config, layer)) {
+          | Some(property) => [
+              SpreadElement(
+                UnaryExpression({
+                  prefix: true,
+                  operator: "!",
+                  argument:
+                    BinaryExpression({
+                      left: Identifier(["props", "focusRing"]),
+                      operator: And,
+                      right: ObjectLiteral([property]),
+                    }),
+                }),
+              ),
+            ]
+          | None => []
+          }
+        ),
       )
     );
   };
@@ -554,7 +608,7 @@ module NamedStyle = {
       ) =>
     Property({
       key: Identifier([JavaScriptFormat.styleVariableName(layer.name)]),
-      value: Object.forLayer(config, framework, parent, layer),
+      value: Some(Object.forLayer(config, framework, parent, layer)),
     });
 
   let imageResizing =
@@ -567,7 +621,7 @@ module NamedStyle = {
     Property({
       key:
         Identifier([JavaScriptFormat.imageResizeModeHelperName(resizeMode)]),
-      value: Object.imageResizing(config, framework, resizeMode),
+      value: Some(Object.imageResizing(config, framework, resizeMode)),
     });
 };
 
@@ -661,7 +715,7 @@ module StyleSet = {
     JavaScriptAst.(
       Property({
         key: StringLiteral(setName),
-        value: ObjectLiteral(contents),
+        value: Some(ObjectLiteral(contents)),
       })
     );
 
@@ -669,7 +723,7 @@ module StyleSet = {
     JavaScriptAst.(
       Property({
         key: StringLiteral(layerName |> JavaScriptFormat.styleVariableName),
-        value: ObjectLiteral(contents),
+        value: Some(ObjectLiteral(contents)),
       })
     );
 

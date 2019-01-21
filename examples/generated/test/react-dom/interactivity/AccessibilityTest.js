@@ -4,9 +4,71 @@ import styled from "styled-components"
 import colors from "../colors"
 import shadows from "../shadows"
 import textStyles from "../textStyles"
+import createActivatableComponent from "../utils/createActivatableComponent"
 
 export default class AccessibilityTest extends React.Component {
+  state = { focusRing: false }
+
+  setFocusRing = (focusRing) => { this.setState({ focusRing }) }
+
+  focus = ({ focusRing = true } = { focusRing: true }) => {
+    this.setFocusRing(focusRing)
+
+    let focusElements = this._getFocusElements()
+    if (focusElements[0] && focusElements[0].focus) {
+      focusElements[0].focus()
+    }
+  }
+
+  focusNext = ({ focusRing = true } = { focusRing: true }) => {
+    this.setFocusRing(focusRing)
+
+    let focusElements = this._getFocusElements()
+    let nextIndex = focusElements.indexOf(document.activeElement) + 1
+
+    if (nextIndex >= focusElements.length) {
+      this.props.onFocusNext && this.props.onFocusNext()
+      return ;
+    }
+
+    focusElements[nextIndex].focus && focusElements[nextIndex].focus()
+  }
+
+  focusPrevious = ({ focusRing = true } = { focusRing: true }) => {
+    this.setFocusRing(focusRing)
+
+    let focusElements = this._getFocusElements()
+    let previousIndex = focusElements.indexOf(document.activeElement) - 1
+
+    if (previousIndex < 0) {
+      this.props.onFocusPrevious && this.props.onFocusPrevious()
+      return ;
+    }
+
+    focusElements[previousIndex].focus && focusElements[previousIndex].focus()
+  }
+
+  _handleKeyDown = (event) => {
+    if (event.key === "Tab") {
+      this.setFocusRing(true)
+
+      if (event.shiftKey) {
+        this.focusPrevious()
+      } else {
+        this.focusNext()
+      }
+
+      event.stopPropagation()
+      event.preventDefault()
+    }
+  }
+
+  _getFocusElements = () => (
+    [this._CheckboxRow, this._Element, this._AccessibleText, this._Image]
+  )
+
   render() {
+
 
     let AccessibleText$accessibilityLabel
     let CheckboxCircle$visible
@@ -18,10 +80,12 @@ export default class AccessibilityTest extends React.Component {
 
     AccessibleText$accessibilityLabel = this.props.customTextAccessibilityLabel
     if (this.props.checkboxValue) {
+
       CheckboxCircle$visible = true
       CheckboxRow$accessibilityValue = "checked"
     }
     if (this.props.checkboxValue === false) {
+
       CheckboxCircle$visible = false
       CheckboxRow$accessibilityValue = "unchecked"
     }
@@ -29,21 +93,48 @@ export default class AccessibilityTest extends React.Component {
     Checkbox$onPress = this.props.onToggleCheckbox
     return (
       <View>
-        <CheckboxRow>
+        <CheckboxRowAccessibilityWrapper
+          aria-label={"Checkbox row"}
+          onAccessibilityActivate={CheckboxRow$onAccessibilityActivate}
+          tabIndex={-1}
+          focusRing={this.state.focusRing}
+          onKeyDown={this._handleKeyDown}
+          ref={(ref) => { this._CheckboxRow = ref }}
+        >
           <Checkbox onClick={Checkbox$onPress}>
             {CheckboxCircle$visible && <CheckboxCircle />}
           </Checkbox>
           <Text>
             {"Checkbox description"}
           </Text>
-        </CheckboxRow>
+        </CheckboxRowAccessibilityWrapper>
         <Row1>
-          <Element>
+          <Element
+            aria-label={"Red box"}
+            tabIndex={-1}
+            focusRing={this.state.focusRing}
+            onKeyDown={this._handleKeyDown}
+            ref={(ref) => { this._Element = ref }}
+          >
             <Inner />
           </Element>
           <Container>
-            <Image src={require("../assets/icon_128x128.png")} />
-            <AccessibleText>
+            <Image
+              src={require("../assets/icon_128x128.png")}
+              aria-label={"My image"}
+              tabIndex={-1}
+              focusRing={this.state.focusRing}
+              onKeyDown={this._handleKeyDown}
+              ref={(ref) => { this._Image = ref }}
+
+            />
+            <AccessibleText
+              aria-label={AccessibleText$accessibilityLabel}
+              tabIndex={-1}
+              focusRing={this.state.focusRing}
+              onKeyDown={this._handleKeyDown}
+              ref={(ref) => { this._AccessibleText = ref }}
+            >
               {"Greetings"}
             </AccessibleText>
           </Container>
@@ -61,7 +152,7 @@ let View = styled.div({
   justifyContent: "flex-start"
 })
 
-let CheckboxRow = styled.div({
+let CheckboxRow = styled.div((props) => ({
   alignItems: "center",
   alignSelf: "stretch",
   display: "flex",
@@ -71,8 +162,9 @@ let CheckboxRow = styled.div({
   paddingTop: "10px",
   paddingRight: "10px",
   paddingBottom: "10px",
-  paddingLeft: "10px"
-})
+  paddingLeft: "10px",
+  ...!props.focusRing && { ":focus": { outline: 0 } }
+}))
 
 let Checkbox = styled.div({
   alignItems: "flex-start",
@@ -125,7 +217,7 @@ let Row1 = styled.div({
   paddingLeft: "10px"
 })
 
-let Element = styled.div({
+let Element = styled.div((props) => ({
   alignItems: "flex-start",
   backgroundColor: colors.red600,
   display: "flex",
@@ -137,8 +229,9 @@ let Element = styled.div({
   paddingBottom: "10px",
   paddingLeft: "10px",
   width: "50px",
-  height: "50px"
-})
+  height: "50px",
+  ...!props.focusRing && { ":focus": { outline: 0 } }
+}))
 
 let Inner = styled.div({
   alignItems: "flex-start",
@@ -158,7 +251,7 @@ let Container = styled.div({
   justifyContent: "flex-start"
 })
 
-let Image = styled.img({
+let Image = styled.img((props) => ({
   alignItems: "flex-start",
   display: "flex",
   flexDirection: "column",
@@ -168,15 +261,19 @@ let Image = styled.img({
   width: "50px",
   height: "50px",
   objectFit: "cover",
-  position: "relative"
-})
+  position: "relative",
+  ...!props.focusRing && { ":focus": { outline: 0 } }
+}))
 
-let AccessibleText = styled.span({
+let AccessibleText = styled.span((props) => ({
   textAlign: "left",
   ...textStyles.body1,
   alignItems: "flex-start",
   display: "block",
   flex: "0 0 auto",
   flexDirection: "column",
-  justifyContent: "flex-start"
-})
+  justifyContent: "flex-start",
+  ...!props.focusRing && { ":focus": { outline: 0 } }
+}))
+
+let CheckboxRowAccessibilityWrapper = createActivatableComponent(CheckboxRow)

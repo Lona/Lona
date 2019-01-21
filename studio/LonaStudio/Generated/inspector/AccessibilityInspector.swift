@@ -283,7 +283,7 @@ public class AccessibilityInspector: NSBox {
     typeLabelView.attributedStringValue = typeLabelViewTextStyle.apply(to: "Type")
     typeLabelViewTextStyle = TextStyles.regular
     typeLabelView.attributedStringValue = typeLabelViewTextStyle.apply(to: typeLabelView.attributedStringValue)
-    typeDropdownView.values = ["Auto", "None", "Element", "Container"]
+    typeDropdownView.values = ["Default", "None", "Element", "Container"]
     labelLabelView.attributedStringValue = labelLabelViewTextStyle.apply(to: "Label")
     labelTextInputView.placeholderString = "Label"
     hintLabelView.attributedStringValue = hintLabelViewTextStyle.apply(to: "Hint")
@@ -298,6 +298,7 @@ public class AccessibilityInspector: NSBox {
       "Keyboard Key",
       "Text",
       "Adjustable",
+      "Image Button",
       "Header",
       "Summary"
     ]

@@ -961,7 +961,7 @@ class CoreComponentInspectorView: NSStackView {
     private func accessibilityTypeValue(for index: Int) -> String {
         switch index {
         case 0:
-            return "auto"
+            return "default"
         case 1:
             return "none"
         case 2:
@@ -969,7 +969,7 @@ class CoreComponentInspectorView: NSStackView {
         case 3:
             return "container"
         default:
-            return "auto"
+            return "default"
         }
     }
 
@@ -1057,7 +1057,7 @@ class CoreComponentInspectorView: NSStackView {
             dimensionsInspector.aspectRatioValue = CGFloat(value.numberValue)
         case .accessibilityType:
             switch value.stringValue {
-            case "auto":
+            case "default":
                 accessibilityInspector.accessibilityTypeIndex = 0
             case "none":
                 accessibilityInspector.accessibilityTypeIndex = 1

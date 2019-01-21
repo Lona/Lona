@@ -28,7 +28,7 @@ let getElementTagStringForLayerType =
   };
 
 let getElementTagString =
-    (options: JavaScriptOptions.options, layer: Types.layer) => {
+    (options: JavaScriptOptions.options, assignments, layer: Types.layer) => {
   let override =
     frameworkSpecificValue(
       options.framework,
@@ -43,35 +43,21 @@ let getElementTagString =
     )
   | _ =>
     switch (options.styleFramework, override) {
-    | (StyledComponents, _) => JavaScriptFormat.elementName(layer.name)
+    | (StyledComponents, _) =>
+      let hasAccessibilityActivate =
+        JavaScriptLayer.hasAccessibilityActivate(assignments, layer);
+
+      if (hasAccessibilityActivate) {
+        JavaScriptFormat.accessibilityWrapperElementName(layer.name);
+      } else {
+        JavaScriptFormat.elementName(layer.name);
+      };
     | (None, Some(value)) => value
     | (None, None) =>
       getElementTagStringForLayerType(options, layer.typeName)
     }
   };
 };
-
-let getStyleVariables =
-    (
-      assignments: Layer.LayerMap.t(ParameterMap.t(Logic.logicValue)),
-      layer: Types.layer,
-    ) =>
-  switch (Layer.LayerMap.find_opt(layer, assignments)) {
-  | Some(map) =>
-    map |> ParameterMap.filter((key, _) => Layer.parameterIsStyle(key))
-  | None => ParameterMap.empty
-  };
-
-let getPropVariables =
-    (
-      assignments: Layer.LayerMap.t(ParameterMap.t(Logic.logicValue)),
-      layer: Types.layer,
-    ) =>
-  switch (Layer.LayerMap.find_opt(layer, assignments)) {
-  | Some(map) =>
-    map |> ParameterMap.filter((key, _) => !Layer.parameterIsStyle(key))
-  | None => ParameterMap.empty
-  };
 
 let removeSpecialProps =
     (
@@ -82,13 +68,18 @@ let removeSpecialProps =
   parameters
   |> ParameterMap.filter((key: ParameterKey.t, _) =>
        switch (key, options.framework) {
-       | (ParameterKey.OnAccessibilityActivate, _)
        | (ParameterKey.AccessibilityHint, _)
-       | (ParameterKey.AccessibilityLabel, _)
        | (ParameterKey.AccessibilityRole, _)
        | (ParameterKey.AccessibilityValue, _)
        | (ParameterKey.AccessibilityType, _)
        | (ParameterKey.AccessibilityElements, _) => false
+       | (ParameterKey.AccessibilityLabel, JavaScriptOptions.ReactSketchapp) =>
+         false
+       | (
+           ParameterKey.OnAccessibilityActivate,
+           JavaScriptOptions.ReactSketchapp,
+         ) =>
+         false
        | (ParameterKey.NumberOfLines, JavaScriptOptions.ReactDOM) => false
        | (ParameterKey.Text, _) => false
        | (ParameterKey.Visible, _) => false
@@ -151,7 +142,7 @@ module StyledComponents = {
     JavaScriptAst.(
       ArrowFunctionExpression({
         id: None,
-        params: ["props"],
+        params: [Identifier(["props"])],
         body: [Return(contents)],
       })
     );
@@ -163,7 +154,15 @@ module StyledComponents = {
         _assignments,
         rootLayer: Types.layer,
         layer: Types.layer,
-      ) =>
+      ) => {
+    let usesProps = JavaScriptLayer.canBeFocused(layer);
+    let styles =
+      JavaScriptStyles.Object.forLayer(
+        config,
+        options.framework,
+        Layer.findParent(rootLayer, layer),
+        layer,
+      );
     JavaScriptAst.(
       VariableDeclaration(
         AssignmentExpression({
@@ -204,18 +203,12 @@ module StyledComponents = {
                     };
                   },
                 ]),
-              arguments: [
-                JavaScriptStyles.Object.forLayer(
-                  config,
-                  options.framework,
-                  Layer.findParent(rootLayer, layer),
-                  layer,
-                ),
-              ],
+              arguments: [usesProps ? createPropsFunction(styles) : styles],
             }),
         }),
       )
     );
+  };
 
   let imageResizingStyledComponentAst =
       (
@@ -354,6 +347,7 @@ let createWrappedImageElement =
     (
       _config,
       options: JavaScriptOptions.options,
+      assignments,
       layer: Types.layer,
       styleAttribute,
       jsxAttributes,
@@ -391,7 +385,7 @@ let createWrappedImageElement =
     | StyledComponents =>
       JavaScriptFormat.imageResizeModeHelperName(resizeMode)
       |> Format.upperFirst
-    | None => getElementTagString(options, layer)
+    | None => getElementTagString(options, assignments, layer)
     };
 
   JavaScriptAst.(
@@ -409,12 +403,73 @@ let createWrappedImageElement =
   );
 };
 
+let createWrapperComponent =
+    (
+      _config: Config.t,
+      wrapperClassName: string,
+      originalClassName: string,
+      methods: list(JavaScriptAst.node),
+      attributes: list(JavaScriptAst.node),
+    )
+    : JavaScriptAst.node =>
+  ClassDeclaration({
+    id: wrapperClassName,
+    superClass: Some("React.Component"),
+    body:
+      methods
+      @ [
+        MethodDefinition({
+          key: "render",
+          value:
+            FunctionExpression({
+              id: None,
+              params: [],
+              body: [
+                Return(
+                  JSXElement({
+                    tag: originalClassName,
+                    attributes:
+                      [
+                        JavaScriptAst.JSXSpreadAttribute(
+                          Identifier(["this", "props"]),
+                        ),
+                      ]
+                      @ attributes,
+                    content: [],
+                  }),
+                ),
+              ],
+            }),
+        }),
+      ]
+      |> Sequence.join(JavaScriptAst.Empty),
+  });
+
+let createAccessibilityWrapperComponent =
+    (config: Config.t, layer: Types.layer): JavaScriptAst.node =>
+  VariableDeclaration(
+    AssignmentExpression({
+      left:
+        Identifier([
+          JavaScriptFormat.accessibilityWrapperElementName(layer.name),
+        ]),
+      right:
+        CallExpression({
+          callee: Identifier(["createActivatableComponent"]),
+          arguments: [
+            Identifier([JavaScriptFormat.elementName(layer.name)]),
+          ],
+        }),
+    }),
+  );
+
 /* Wrap custom components in a view that enforces the framework's
    default layout attributes. */
 let createJSXElement =
     (
       config: Config.t,
       options: JavaScriptOptions.options,
+      assignments,
       parent: option(Types.layer),
       layer: Types.layer,
       attributes: list(JavaScriptAst.node),
@@ -479,6 +534,7 @@ let createJSXElement =
       createWrappedImageElement(
         config,
         options,
+        assignments,
         layer,
         styleAttribute,
         attributes,
@@ -486,7 +542,7 @@ let createJSXElement =
       );
     } else {
       JSXElement({
-        tag: getElementTagString(options, layer),
+        tag: getElementTagString(options, assignments, layer),
         attributes: styleAttribute @ attributes,
         content,
       });
@@ -507,8 +563,10 @@ let rec layerToJavaScriptAST =
   open Ast;
 
   let initialProps = getInitialProps(options, layer);
-  let styleVariables = getStyleVariables(assignments, layer);
-  let propVariables = getPropVariables(assignments, layer);
+  let styleVariables = JavaScriptLayer.getStyleVariables(assignments, layer);
+  let propVariables = JavaScriptLayer.getPropVariables(assignments, layer);
+  let needsRef = JavaScriptLayer.needsRef(config, layer);
+  let canBeFocused = JavaScriptLayer.canBeFocused(layer);
 
   let main = ParameterMap.assign(initialProps, propVariables);
   let attributes =
@@ -550,6 +608,61 @@ let rec layerToJavaScriptAST =
            };
          JSXAttribute({name: key, value: attributeValue});
        });
+  let attributes =
+    attributes
+    @ (
+      canBeFocused ?
+        switch (config.options.javaScript.framework) {
+        | ReactNative => [
+            JSXAttribute({
+              name: "accessible",
+              value: Literal(LonaValue.boolean(true)),
+            }),
+          ]
+        | ReactDOM => [
+            JSXAttribute({
+              name: "tabIndex",
+              value: Literal(LonaValue.number(-1.)),
+            }),
+            JSXAttribute({
+              name: "focusRing",
+              value: Identifier(["this", "state", "focusRing"]),
+            }),
+            JSXAttribute({
+              name: "onKeyDown",
+              value: Identifier(["this", "_handleKeyDown"]),
+            }),
+          ]
+        | ReactSketchapp => []
+        } :
+        []
+    );
+  let attributes =
+    attributes
+    @ (
+      needsRef ?
+        [
+          JSXAttribute({
+            name: "ref",
+            value:
+              ArrowFunctionExpression({
+                id: None,
+                params: [Identifier(["ref"])],
+                body: [
+                  AssignmentExpression({
+                    left:
+                      Identifier([
+                        "this",
+                        "_" ++ JavaScriptFormat.elementName(layer.name),
+                      ]),
+                    right: Identifier(["ref"]),
+                  }),
+                ],
+              }),
+          }),
+        ] :
+        []
+    );
   let vectorAssignments = Layer.vectorAssignments(layer, logic);
   let attributes =
     [
@@ -622,6 +735,7 @@ let rec layerToJavaScriptAST =
     createJSXElement(
       config,
       options,
+      assignments,
       parent,
       layer,
       attributes,
@@ -647,13 +761,28 @@ type componentImports = {
 };
 
 let importComponents =
-    (options: JavaScriptOptions.options, getComponentFile, rootLayer) => {
+    (
+      config: Config.t,
+      options: JavaScriptOptions.options,
+      outputFile,
+      getComponentFile,
+      assignments,
+      componentName,
+      rootLayer,
+    ) => {
   let framework = options.framework;
   let {builtIn, custom}: Layer.availableTypeNames =
     rootLayer |> Layer.getTypeNames;
   let importsSvg = List.mem(Types.VectorGraphic, builtIn);
   let builtIn =
     builtIn |> List.filter(typeName => typeName != Types.VectorGraphic);
+  let activatableLayers =
+    rootLayer
+    |> Layer.flatten
+    |> List.filter(JavaScriptLayer.hasAccessibilityActivate(assignments));
+
+  Js.log2(outputFile, config.outputPath);
+  let importsActivationUtil = List.length(activatableLayers) > 0;
   {
     absolute:
       (
@@ -729,15 +858,36 @@ let importComponents =
         }
       ),
     relative:
-      List.map(componentName =>
-        Ast.ImportDeclaration({
-          source:
-            getComponentFile(componentName)
-            |> Js.String.replace(".component", ""),
-          specifiers: [Ast.ImportDefaultSpecifier(componentName)],
-        })
-      ) @@
-      custom,
+      (
+        List.map(componentName =>
+          Ast.ImportDeclaration({
+            source:
+              getComponentFile(componentName)
+              |> Js.String.replace(".component", ""),
+            specifiers: [Ast.ImportDefaultSpecifier(componentName)],
+          })
+        ) @@
+        custom
+      )
+      @ (
+        if (framework == ReactDOM && importsActivationUtil) {
+          [
+            Ast.ImportDeclaration({
+              source:
+                Config.Workspace.getRelativePathToOutputRoot(
+                  config,
+                  Node.Path.dirname(outputFile),
+                )
+                ++ "/utils/createActivatableComponent",
+              specifiers: [
+                Ast.ImportDefaultSpecifier("createActivatableComponent"),
+              ],
+            }),
+          ];
+        } else {
+          [];
+        }
+      ),
   };
 };
 
@@ -847,7 +997,7 @@ let generateEnumType = (param: Types.parameter) =>
                            Identifier([
                              JavaScriptFormat.enumCaseName(case.tag),
                            ]),
-                         value: StringLiteral(case.tag),
+                         value: Some(StringLiteral(case.tag)),
                        })
                      ),
                 ),
@@ -867,6 +1017,7 @@ let generate =
       shadowsFilePath,
       textStylesFilePath,
       config: Config.t,
+      outputFile,
       getComponent,
       getComponentFile,
       getAssetPath,
@@ -910,7 +1061,20 @@ let generate =
     |> Ast.optimize;
 
   let {absolute, relative} =
-    rootLayer |> importComponents(options, getComponentFile);
+    rootLayer
+    |> importComponents(
+         config,
+         options,
+         outputFile,
+         getComponentFile,
+         assignments,
+         componentName,
+       );
+
+  let activatableLayers =
+    rootLayer
+    |> Layer.flatten
+    |> List.filter(JavaScriptLayer.hasAccessibilityActivate(assignments));
 
   Ast.(
     Program(
@@ -961,25 +1125,42 @@ let generate =
               ClassDeclaration({
                 id: componentName,
                 superClass: Some("React.Component"),
-                body: [
-                  MethodDefinition({
-                    key: "render",
-                    value:
-                      FunctionExpression({
-                        id: None,
-                        params: [],
-                        body:
-                          [logicAST]
-                          @ (
-                            switch (options.framework) {
-                            /* | JavaScriptOptions.ReactDOM => [themeAST] */
-                            | _ => []
-                            }
-                          )
-                          @ [Return(rootLayerAST)],
-                      }),
-                  }),
-                ],
+                body:
+                  (
+                    options.framework == ReactDOM
+                    && JavaScriptLayer.Hierarchy.needsFocusHandling(rootLayer) ?
+                      [
+                        AssignmentExpression({
+                          left: Identifier(["state"]),
+                          right:
+                            ObjectLiteral(
+                              JavaScriptFocus.initialStateProperties(),
+                            ),
+                        }),
+                      ]
+                      @ JavaScriptFocus.focusMethods(rootLayer) :
+                      []
+                  )
+                  @ [
+                    MethodDefinition({
+                      key: "render",
+                      value:
+                        FunctionExpression({
+                          id: None,
+                          params: [],
+                          body:
+                            [logicAST]
+                            @ (
+                              switch (options.framework) {
+                              /* | JavaScriptOptions.ReactDOM => [themeAST] */
+                              | _ => []
+                              }
+                            )
+                            @ [Return(rootLayerAST)],
+                        }),
+                    }),
+                  ]
+                  |> Sequence.join(Empty),
               }),
             ),
           ],
@@ -992,6 +1173,12 @@ let generate =
               rootLayer,
             )
           | _ => [styleSheetAST]
+          },
+          if (options.framework == ReactDOM) {
+            activatableLayers
+            |> List.map(createAccessibilityWrapperComponent(config));
+          } else {
+            [];
           },
         ],
       ),

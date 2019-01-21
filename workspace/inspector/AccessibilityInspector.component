@@ -414,7 +414,7 @@
             "params" : {
               "selectedIndex" : 0,
               "values" : [
-                "Auto",
+                "Default",
                 "None",
                 "Element",
                 "Container"

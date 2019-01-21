@@ -9,6 +9,7 @@ export default class ImageCropping extends React.Component {
   render() {
 
 
+
     return (
       <View style={styles.view}>
         <View style={styles.aspectFit}>

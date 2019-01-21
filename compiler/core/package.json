@@ -4,11 +4,7 @@
   "description": "Lona cross-platform code compiler",
   "main": "build/index.js",
   "bin": "./build/index.js",
-  "files": [
-    "build/index.js",
-    "static",
-    "README.md"
-  ],
+  "files": ["build/index.js", "static", "README.md"],
   "scripts": {
     "build": "bsb -make-world",
     "start": "bsb -make-world -w",
@@ -16,24 +12,29 @@
     "bundle": "npm run clean && npm run build && webpack",
     "format": "bsrefmt --parse=re --print=re --in-place src/**/*.re",
     "prepublishOnly": "yarn clean && yarn build && yarn bundle",
-    "snapshotJsDom": "node src/main.bs.js workspace js ../../examples/test ../../examples/generated/test/react-dom --framework=reactdom --styleFramework=styledcomponents",
+    "snapshotJsDom":
+      "node src/main.bs.js workspace js ../../examples/test ../../examples/generated/test/react-dom --framework=reactdom --styleFramework=styledcomponents",
     "snapshotJsDom:watch": "nodemon --exec \"yarn snapshotJsDom\"",
-    "snapshotJsNative": "node src/main.bs.js workspace js ../../examples/test ../../examples/generated/test/react-native --framework=reactnative",
+    "snapshotJsNative":
+      "node src/main.bs.js workspace js ../../examples/test ../../examples/generated/test/react-native --framework=reactnative",
     "snapshotJsNative:watch": "nodemon --exec \"yarn snapshotJsNative\"",
-    "snapshotSketch": "node src/main.bs.js workspace js ../../examples/test ../../examples/generated/test/sketchJs --framework=reactsketchapp",
+    "snapshotSketch":
+      "node src/main.bs.js workspace js ../../examples/test ../../examples/generated/test/sketchJs --framework=reactsketchapp",
     "snapshotSketch:watch": "nodemon --exec \"yarn snapshotSketch\"",
-    "snapshotSwift": "node src/main.bs.js workspace swift ../../examples/test ../../examples/generated/test/swift --generateCollectionView=1",
+    "snapshotSwift":
+      "node src/main.bs.js workspace swift ../../examples/test ../../examples/generated/test/swift --generateCollectionView=1",
     "snapshotSwift:watch": "nodemon --exec \"yarn snapshotSwift\"",
-    "snapshotAppkit": "node src/main.bs.js workspace swift ../../examples/test ../../examples/generated/test/appkit --framework=appkit",
+    "snapshotAppkit":
+      "node src/main.bs.js workspace swift ../../examples/test ../../examples/generated/test/appkit --framework=appkit",
     "snapshotAppkit:watch": "nodemon --exec \"yarn snapshotAppkit\"",
-    "snapshot": "yarn snapshotSwift && yarn snapshotAppkit && yarn snapshotJsDom && yarn snapshotJsNative && yarn snapshotSketch",
-    "snapshot:watch": "nodemon --exec \"yarn snapshot\""
+    "snapshot":
+      "yarn snapshotSwift && yarn snapshotAppkit && yarn snapshotJsDom && yarn snapshotJsNative && yarn snapshotSketch",
+    "snapshot:watch": "nodemon --exec \"yarn snapshot\"",
+    "snapshotWebViewer":
+      "yarn snapshotJsDom && cp -R ../../examples/generated/test/react-dom/ ../../examples/LonaViewer/web/src/generated",
+    "snapshotWebViewer:watch": "nodemon --exec \"yarn snapshotWebViewer\""
   },
-  "keywords": [
-    "lona",
-    "compiler",
-    "react"
-  ],
+  "keywords": ["lona", "compiler", "react"],
   "author": "Devin Abbott <devinabbott@gmail.com>",
   "license": "MIT",
   "repository": {

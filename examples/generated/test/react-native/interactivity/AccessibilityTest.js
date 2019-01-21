@@ -8,6 +8,7 @@ import textStyles from "../textStyles"
 export default class AccessibilityTest extends React.Component {
   render() {
 
+
     let AccessibleText$accessibilityLabel
     let CheckboxCircle$visible
     let CheckboxRow$accessibilityValue
@@ -18,10 +19,12 @@ export default class AccessibilityTest extends React.Component {
 
     AccessibleText$accessibilityLabel = this.props.customTextAccessibilityLabel
     if (this.props.checkboxValue) {
+
       CheckboxCircle$visible = true
       CheckboxRow$accessibilityValue = "checked"
     }
     if (this.props.checkboxValue === false) {
+
       CheckboxCircle$visible = false
       CheckboxRow$accessibilityValue = "unchecked"
     }
@@ -29,7 +32,12 @@ export default class AccessibilityTest extends React.Component {
     Checkbox$onPress = this.props.onToggleCheckbox
     return (
       <View style={styles.view}>
-        <View style={styles.checkboxRow}>
+        <View
+          style={styles.checkboxRow}
+          accessibilityLabel={"Checkbox row"}
+          onAccessibilityTap={CheckboxRow$onAccessibilityActivate}
+          accessible={true}
+        >
           <View style={styles.checkbox} onPress={Checkbox$onPress}>
             {CheckboxCircle$visible && <View style={styles.checkboxCircle} />}
           </View>
@@ -38,16 +46,26 @@ export default class AccessibilityTest extends React.Component {
           </Text>
         </View>
         <View style={styles.row1}>
-          <View style={styles.element}>
+          <View
+            style={styles.element}
+            accessibilityLabel={"Red box"}
+            accessible={true}
+          >
             <View style={styles.inner} />
           </View>
           <View style={styles.container}>
             <Image
               style={styles.image}
               source={require("../assets/icon_128x128.png")}
+              accessibilityLabel={"My image"}
+              accessible={true}
 
             />
-            <Text style={styles.accessibleText}>
+            <Text
+              style={styles.accessibleText}
+              accessibilityLabel={AccessibleText$accessibilityLabel}
+              accessible={true}
+            >
               {"Greetings"}
             </Text>
           </View>

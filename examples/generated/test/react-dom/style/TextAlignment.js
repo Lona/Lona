@@ -9,6 +9,7 @@ export default class TextAlignment extends React.Component {
   render() {
 
 
+
     return (
       <View>
         <View1>

@@ -10,10 +10,12 @@ export let ITEM_TYPE = { STANDARD: "standard", ERROR: "error" };
 export default class InlineVariantTest extends React.Component {
   render() {
 
+
     let View$backgroundColor
     View$backgroundColor = colors.blue100
 
     if (this.props.type === "error") {
+
       View$backgroundColor = colors.red100
     }
     return (
