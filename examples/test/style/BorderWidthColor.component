@@ -70,6 +70,21 @@
             }
           },
           "type" : "AssignExpr"
+        },
+        {
+          "assignee" : [
+            "layers",
+            "Inner",
+            "borderStyle"
+          ],
+          "content" : {
+            "type" : "LitExpr",
+            "value" : {
+              "data" : "solid",
+              "type" : "String"
+            }
+          },
+          "type" : "AssignExpr"
         }
       ],
       "condition" : {
@@ -103,6 +118,7 @@
         "params" : {
           "borderColor" : "blue300",
           "borderRadius" : 10,
+          "borderStyle" : "dashed",
           "borderWidth" : 20,
           "height" : 100,
           "width" : 100

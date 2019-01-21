@@ -78,8 +78,9 @@ public class OpacityTest: NSBox {
     view1View.addSubview(imageView)
 
     fillColor = Colors.blue500
-    borderWidth = 10
     borderColor = Colors.pink300
+    borderStyle = "solid"
+    borderWidth = 10
     view1View.fillColor = Colors.red900
     view1View.alphaValue = 0.8
     textView.attributedStringValue = textViewTextStyle.apply(to: "Text goes here")

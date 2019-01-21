@@ -28,9 +28,10 @@ let parameterType = key =>
   | PaddingRight => Types.numberType
   | PaddingBottom => Types.numberType
   | PaddingLeft => Types.numberType
-  | BorderRadius => Types.numberType
-  | BorderWidth => Types.numberType
   | BorderColor => Types.colorType
+  | BorderRadius => Types.numberType
+  | BorderStyle => Types.stringType
+  | BorderWidth => Types.numberType
   | Width => Types.numberType
   | MaxWidth => Types.stringType
   | Height => Types.numberType
@@ -66,9 +67,10 @@ module Styles = {
     | None => None
     };
   let border = json: Styles.border(option(lonaValue)) => {
-    borderRadius: json |> optionalLonaValue("borderRadius", numberType),
-    borderWidth: json |> optionalLonaValue("borderWidth", numberType),
     borderColor: json |> optionalLonaValue("borderColor", colorType),
+    borderRadius: json |> optionalLonaValue("borderRadius", numberType),
+    borderStyle: json |> optionalLonaValue("borderStyle", stringType),
+    borderWidth: json |> optionalLonaValue("borderWidth", numberType),
   };
   let edgeInsets = (prefix, json): Styles.edgeInsets(option(lonaValue)) => {
     top: json |> optionalLonaValue(prefix ++ "Top", numberType),

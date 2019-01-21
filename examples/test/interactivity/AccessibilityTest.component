@@ -189,6 +189,7 @@
             "params" : {
               "borderColor" : "grey400",
               "borderRadius" : 20,
+              "borderStyle" : "solid",
               "borderWidth" : 1,
               "height" : 30,
               "marginRight" : 10,

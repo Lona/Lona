@@ -40,8 +40,9 @@ let styles = StyleSheet.create({
     flex: 0,
     flexDirection: "column",
     justifyContent: "flex-start",
-    borderWidth: 10,
-    borderColor: colors.pink300
+    borderColor: colors.pink300,
+    borderStyle: "solid",
+    borderWidth: 10
   },
   view1: {
     alignItems: "flex-start",

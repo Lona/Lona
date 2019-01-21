@@ -612,8 +612,9 @@ module StyleSet = {
   let layerStyleBindings = (styles: Styles.viewLayerStyles('a)) => [
     ("backgroundColor", styles.backgroundColor),
     ("borderColor", styles.border.borderColor),
-    ("borderWidth", styles.border.borderWidth),
     ("borderRadius", styles.border.borderRadius),
+    ("borderStyle", styles.border.borderStyle),
+    ("borderWidth", styles.border.borderWidth),
     ("textAlign", styles.textStyles.textAlign),
     ("textStyles", styles.textStyles.textStyle),
     ("marginTop", styles.layout.margin.top),

@@ -84,13 +84,15 @@ public class BorderWidthColor: UIView {
   }
 
   private func update() {
-    innerView.layer.cornerRadius = 10
-    innerView.layer.borderWidth = 20
     innerView.layer.borderColor = Colors.blue300.cgColor
+    innerView.layer.cornerRadius = 10
+    innerView.borderStyle = "dashed"
+    innerView.layer.borderWidth = 20
     if alternativeStyle {
       innerView.layer.borderColor = Colors.reda400.cgColor
       innerView.layer.borderWidth = 4
       innerView.layer.cornerRadius = 20
+      innerView.borderStyle = "solid"
     }
   }
 }

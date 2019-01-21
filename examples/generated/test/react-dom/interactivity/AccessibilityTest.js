@@ -84,9 +84,10 @@ let Checkbox = styled.div({
   paddingRight: "4px",
   paddingBottom: "4px",
   paddingLeft: "4px",
-  borderRadius: "20px",
-  borderWidth: "1px",
   borderColor: colors.grey400,
+  borderRadius: "20px",
+  borderStyle: "solid",
+  borderWidth: "1px",
   width: "30px",
   height: "30px"
 })

@@ -60,6 +60,7 @@ let getParameterCategory = (x: ParameterKey.t) =>
   | Opacity => Style
   | BorderColor => Style
   | BorderRadius => Style
+  | BorderStyle => Style
   | BorderWidth => Style
   | TextAlign => Style
   | Shadow => Style

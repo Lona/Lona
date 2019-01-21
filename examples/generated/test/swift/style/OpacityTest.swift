@@ -84,8 +84,9 @@ public class OpacityTest: UIView {
     view1View.addSubview(imageView)
 
     backgroundColor = Colors.blue500
-    layer.borderWidth = 10
     layer.borderColor = Colors.pink300.cgColor
+    borderStyle = "solid"
+    layer.borderWidth = 10
     view1View.backgroundColor = Colors.red900
     view1View.alpha = 0.8
     textView.attributedText = textViewTextStyle.apply(to: "Text goes here")

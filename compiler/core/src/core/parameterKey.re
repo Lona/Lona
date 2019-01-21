@@ -29,9 +29,10 @@ type t =
   | PaddingRight
   | PaddingBottom
   | PaddingLeft
-  | BorderRadius
-  | BorderWidth
   | BorderColor
+  | BorderRadius
+  | BorderStyle
+  | BorderWidth
   | Shadow
   | Width
   | MaxWidth
@@ -82,9 +83,10 @@ let fromString = string =>
   | "paddingRight" => PaddingRight
   | "paddingBottom" => PaddingBottom
   | "paddingLeft" => PaddingLeft
-  | "borderRadius" => BorderRadius
-  | "borderWidth" => BorderWidth
   | "borderColor" => BorderColor
+  | "borderRadius" => BorderRadius
+  | "borderStyle" => BorderStyle
+  | "borderWidth" => BorderWidth
   | "shadow" => Shadow
   | "width" => Width
   | "maxWidth" => Width
@@ -137,9 +139,10 @@ let toString = key =>
   | PaddingRight => "paddingRight"
   | PaddingBottom => "paddingBottom"
   | PaddingLeft => "paddingLeft"
-  | BorderRadius => "borderRadius"
-  | BorderWidth => "borderWidth"
   | BorderColor => "borderColor"
+  | BorderRadius => "borderRadius"
+  | BorderStyle => "borderStyle"
+  | BorderWidth => "borderWidth"
   | Shadow => "shadow"
   | Width => "width"
   | MaxWidth => "maxWidth"
