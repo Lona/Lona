@@ -24,6 +24,7 @@ struct RenderableViewAttributes: Equatable {
         multipliedFillColor = .clear
         opacity = 1
         cornerRadius = 0
+        borderStyle = .solid
         borderWidth = 0
         multipliedBorderColor = .clear
         shadow = nil
@@ -35,6 +36,7 @@ struct RenderableViewAttributes: Equatable {
     var multipliedFillColor: NSColor
     var opacity: CGFloat
     var cornerRadius: CGFloat
+    var borderStyle: CSLayer.BorderStyle
     var borderWidth: CGFloat
     var multipliedBorderColor: NSColor
     var shadow: NSShadow?
@@ -54,6 +56,7 @@ struct RenderableViewAttributes: Equatable {
         view.multipliedFillColor = multipliedFillColor
         view.opacity = opacity
         view.cornerRadius = cornerRadius
+        view.borderStyle = borderStyle
         view.borderWidth = borderWidth
         view.multipliedBorderColor = multipliedBorderColor
         view.shadow = shadow
@@ -141,7 +144,8 @@ struct RenderableElement {
     var children: [RenderableElement]
 
     func needsFullRender(previous: RenderableElement) -> Bool {
-        if attributes.borderWidth != previous.attributes.borderWidth {
+        if attributes.borderWidth != previous.attributes.borderWidth ||
+            attributes.borderStyle != previous.attributes.borderStyle {
             return true
         }
 

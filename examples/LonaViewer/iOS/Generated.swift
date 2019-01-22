@@ -32,6 +32,7 @@ enum Generated: String {
     case ifEnabled = "If - Enabled"
     case ifDisabled = "If - Disabled"
     case borderWidthColor = "Border Width and Color"
+    case borderStyle = "Border Style Test"
     case textStyleConditionalTrue = "Text Style Conditional - True"
     case textStyleConditionalFalse = "Text Style Conditional - False"
     case textStylesTest = "Text Styles Test"
@@ -69,6 +70,7 @@ enum Generated: String {
             ifEnabled,
             ifDisabled,
             borderWidthColor,
+            borderStyle,
             textStyleConditionalTrue,
             textStyleConditionalFalse,
             textStylesTest,
@@ -155,6 +157,8 @@ enum Generated: String {
             return If(enabled: false)
         case .borderWidthColor:
             return BorderWidthColor(alternativeStyle: true)
+        case .borderStyle:
+            return BorderStyleTest()
         case .textStyleConditionalTrue:
             return TextStyleConditional(large: true)
         case .textStyleConditionalFalse:
@@ -213,6 +217,7 @@ enum Generated: String {
              .primaryAxisFillNestedSiblings,
              .secondaryAxis,
              .borderWidthColor,
+             .borderStyle,
              .textAlignment,
              .fitContentParentSecondaryChildren,
              .boxModelConditionalSmall,

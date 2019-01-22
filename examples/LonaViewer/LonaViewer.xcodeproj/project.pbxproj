@@ -97,6 +97,7 @@
 		6BA69406208439DB0090CA74 /* NestedComponent.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6BA69405208439DB0090CA74 /* NestedComponent.swift */; };
 		6BA6940820843CE70090CA74 /* Button.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6BA6940720843CE70090CA74 /* Button.swift */; };
 		6BA6940A208441120090CA74 /* NestedButtons.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6BA69409208441120090CA74 /* NestedButtons.swift */; };
+		6BCA816621F7C00D00FA1146 /* BorderStyleTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6BCA816521F7C00D00FA1146 /* BorderStyleTest.swift */; };
 		6BD581DB2082521A0068FBC3 /* TextAlignment.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6BD581DA2082521A0068FBC3 /* TextAlignment.swift */; };
 		6BD581DD208252260068FBC3 /* TextAlignment.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6BD581DC208252250068FBC3 /* TextAlignment.swift */; };
 		6BE89BBA21B6114600F35AC3 /* InlineVariantTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6BE89BB921B6114600F35AC3 /* InlineVariantTest.swift */; };
@@ -201,6 +202,7 @@
 		6BA69405208439DB0090CA74 /* NestedComponent.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NestedComponent.swift; sourceTree = "<group>"; };
 		6BA6940720843CE70090CA74 /* Button.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Button.swift; sourceTree = "<group>"; };
 		6BA69409208441120090CA74 /* NestedButtons.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NestedButtons.swift; sourceTree = "<group>"; };
+		6BCA816521F7C00D00FA1146 /* BorderStyleTest.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = BorderStyleTest.swift; sourceTree = "<group>"; };
 		6BD581DA2082521A0068FBC3 /* TextAlignment.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TextAlignment.swift; sourceTree = "<group>"; };
 		6BD581DC208252250068FBC3 /* TextAlignment.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TextAlignment.swift; sourceTree = "<group>"; };
 		6BE89BB921B6114600F35AC3 /* InlineVariantTest.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = InlineVariantTest.swift; sourceTree = "<group>"; };
@@ -420,6 +422,7 @@
 		12BBFDF2206B02AC0041620C /* style */ = {
 			isa = PBXGroup;
 			children = (
+				6BCA816521F7C00D00FA1146 /* BorderStyleTest.swift */,
 				12BBFDF4206B02AC0041620C /* BorderWidthColor.swift */,
 				6B3916FC21601C5900B20F9E /* BoxModelConditional.swift */,
 				6BE89BB921B6114600F35AC3 /* InlineVariantTest.swift */,
@@ -599,6 +602,7 @@
 				12BBFE02206B02AC0041620C /* TextStyles.swift in Sources */,
 				6BA5BBD1216D4B6700F086A7 /* VisibilityTest.swift in Sources */,
 				6B6D44392190C9C10016262C /* FillWidthFitHeightCard.swift in Sources */,
+				6BCA816621F7C00D00FA1146 /* BorderStyleTest.swift in Sources */,
 				12BBFE09206B02AC0041620C /* TextStylesTest.swift in Sources */,
 				12BBFE05206B02AC0041620C /* Assign.swift in Sources */,
 				6B291345219E188400A1DDB4 /* NestedOptionals.swift in Sources */,

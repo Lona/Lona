@@ -85,8 +85,8 @@ public class NumberInput: NSBox {
     addSubview(textView)
 
     fillColor = Colors.white
-    borderWidth = 1
     borderColor = Colors.grey400
+    borderWidth = 1
     textView.attributedStringValue = textViewTextStyle.apply(to: "Input text")
   }
 

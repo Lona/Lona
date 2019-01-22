@@ -177,6 +177,7 @@ public class LonaCollectionView: UICollectionView,
     register(OptionalsCell.self, forCellWithReuseIdentifier: OptionalsCell.identifier)
     register(RepeatedVectorCell.self, forCellWithReuseIdentifier: RepeatedVectorCell.identifier)
     register(VectorLogicCell.self, forCellWithReuseIdentifier: VectorLogicCell.identifier)
+    register(BorderStyleTestCell.self, forCellWithReuseIdentifier: BorderStyleTestCell.identifier)
     register(BorderWidthColorCell.self, forCellWithReuseIdentifier: BorderWidthColorCell.identifier)
     register(BoxModelConditionalCell.self, forCellWithReuseIdentifier: BoxModelConditionalCell.identifier)
     register(InlineVariantTestCell.self, forCellWithReuseIdentifier: InlineVariantTestCell.identifier)
@@ -382,6 +383,11 @@ public class LonaCollectionView: UICollectionView,
       }
     case VectorLogicCell.identifier:
       if let cell = cell as? VectorLogicCell, let item = item as? VectorLogic.Model {
+        cell.parameters = item.parameters
+        cell.scrollDirection = scrollDirection
+      }
+    case BorderStyleTestCell.identifier:
+      if let cell = cell as? BorderStyleTestCell, let item = item as? BorderStyleTest.Model {
         cell.parameters = item.parameters
         cell.scrollDirection = scrollDirection
       }
@@ -869,6 +875,16 @@ public class VectorLogicCell: LonaCollectionViewCell<VectorLogic> {
   }
   public static var identifier: String {
     return "VectorLogic"
+  }
+}
+
+public class BorderStyleTestCell: LonaCollectionViewCell<BorderStyleTest> {
+  public var parameters: BorderStyleTest.Parameters {
+    get { return view.parameters }
+    set { view.parameters = newValue }
+  }
+  public static var identifier: String {
+    return "BorderStyleTest"
   }
 }
 

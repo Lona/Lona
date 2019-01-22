@@ -113,9 +113,9 @@ public class ColorPreviewCard: NSBox {
 
     cornerRadius = 4
     borderWidth = 1
+    previewView.borderColor = Colors.darkTransparentOutline
     previewView.cornerRadius = 3
     previewView.borderWidth = 1
-    previewView.borderColor = Colors.darkTransparentOutline
     colorNameViewTextStyle = TextStyles.regular
     colorNameView.attributedStringValue = colorNameViewTextStyle.apply(to: colorNameView.attributedStringValue)
     colorNameView.maximumNumberOfLines = 2

@@ -84,8 +84,8 @@ public class MultipleSelectionButton: NSBox {
 
     addSubview(textView)
 
-    borderWidth = 1
     borderColor = Colors.dividerSubtle
+    borderWidth = 1
     textView.attributedStringValue = textViewTextStyle.apply(to: "Multiple selection button")
   }
 

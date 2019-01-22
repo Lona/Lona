@@ -54,6 +54,36 @@ extension CSData {
 }
 
 class CSLayer: CSDataDeserializable, CSDataSerializable, DataNode, NSCopying {
+    enum BorderStyle: String {
+        case solid, dotted, dashed
+
+        init(index: Int) {
+            switch index {
+            case 0:
+                self = .solid
+            case 1:
+                self = .dotted
+            case 2:
+                self = .dashed
+            default:
+                self = .solid
+            }
+        }
+
+        var index: Int {
+            switch self {
+            case .solid:
+                return 0
+            case .dotted:
+                return 1
+            case .dashed:
+                return 2
+            }
+        }
+
+        static let displayNames = ["solid", "dotted", "dashed"]
+    }
+
     enum BuiltInLayerType: String {
         case view = "View"
         case text = "Text"
@@ -381,6 +411,10 @@ class CSLayer: CSDataDeserializable, CSDataSerializable, DataNode, NSCopying {
         get { return parameters["borderWidth"]?.number }
         set { parameters["borderWidth"] = newValue?.toData() }
     }
+    var borderStyle: BorderStyle {
+        get { return BorderStyle(rawValue: parameters["borderStyle"]?.string ?? "solid") ?? .solid }
+        set { parameters["borderStyle"] = newValue.rawValue.toData() }
+    }
 
     // Shadow
     var shadow: String? {
@@ -547,6 +581,7 @@ class CSLayer: CSDataDeserializable, CSDataSerializable, DataNode, NSCopying {
         "aspectRatio": CSData.Number(-1),
         "borderRadius": CSData.Number(0),
         "borderWidth": CSData.Number(0),
+        "borderStyle": CSData.String("solid"),
         "flex": CSData.Number(0),
         "flexDirection": CSData.String("column"),
         "justifyContent": CSData.String("flex-start"),
@@ -699,6 +734,7 @@ class CSLayer: CSDataDeserializable, CSDataSerializable, DataNode, NSCopying {
             "borderWidth": CSData.Number(borderWidth ?? 0),
             "borderRadius": CSData.Number(borderRadius ?? 0),
             "borderColor": CSData.String(borderColor ?? "transparent"),
+            "borderStyle": CSValue.expand(type: CSBorderStyleType, data: borderStyle.rawValue.toData()),
 
             // Shadow
             "shadow": CSData.String(shadow ?? ""),

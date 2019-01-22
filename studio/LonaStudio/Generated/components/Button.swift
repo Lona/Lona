@@ -76,9 +76,9 @@ public class Button: NSBox {
     addSubview(textView)
 
     fillColor = Colors.white
+    borderColor = Colors.darkTransparentOutline
     cornerRadius = 3
     borderWidth = 1
-    borderColor = Colors.darkTransparentOutline
   }
 
   private func setUpConstraints() {

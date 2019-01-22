@@ -15,8 +15,8 @@ export default class BorderWidthColor extends React.Component {
     let Inner$borderWidth
     Inner$borderColor = colors.blue300
     Inner$borderRadius = 10
-    Inner$borderStyle = "dashed"
-    Inner$borderWidth = 20
+    Inner$borderStyle = "dotted"
+    Inner$borderWidth = 2
 
     if (this.props.alternativeStyle) {
 
@@ -58,8 +58,8 @@ let styles = StyleSheet.create({
     justifyContent: "flex-start",
     borderColor: colors.blue300,
     borderRadius: 10,
-    borderStyle: "dashed",
-    borderWidth: 20,
+    borderStyle: "dotted",
+    borderWidth: 2,
     width: 100,
     height: 100
   }
