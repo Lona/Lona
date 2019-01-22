@@ -114,9 +114,10 @@ let styles = StyleSheet.create({
     paddingRight: 4,
     paddingBottom: 4,
     paddingLeft: 4,
-    borderRadius: 20,
-    borderWidth: 1,
     borderColor: colors.grey400,
+    borderRadius: 20,
+    borderStyle: "solid",
+    borderWidth: 1,
     width: 30,
     height: 30
   },

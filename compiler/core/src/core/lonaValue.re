@@ -64,6 +64,7 @@ let parameterDefaultValue = key =>
   | ParameterKey.PaddingBottom => number(0.)
   | ParameterKey.PaddingLeft => number(0.)
   | ParameterKey.BorderRadius => number(0.)
+  | ParameterKey.BorderStyle => string("")
   | ParameterKey.BorderWidth => number(0.)
   | ParameterKey.BorderColor => color("transparent")
   | ParameterKey.Width => number(0.)

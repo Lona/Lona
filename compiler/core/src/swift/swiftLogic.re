@@ -320,6 +320,9 @@ let toSwiftAST =
           "right":
             Ast.MemberExpression([right, Ast.SwiftIdentifier("cgColor")]),
         });
+      | (Ast.SwiftIdentifier(key), Ast.LiteralExpression(_))
+          when key |> keyEndsWith("borderStyle") =>
+        Empty
       | (
           Ast.SwiftIdentifier(name) as left,
           Ast.LiteralExpression(String(value)),

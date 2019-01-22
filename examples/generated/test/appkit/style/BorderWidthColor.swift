@@ -91,13 +91,15 @@ public class BorderWidthColor: NSBox {
   }
 
   private func update() {
-    innerView.cornerRadius = 10
-    innerView.borderWidth = 20
     innerView.borderColor = Colors.blue300
+    innerView.cornerRadius = 10
+
+    innerView.borderWidth = 20
     if alternativeStyle {
       innerView.borderColor = Colors.reda400
       innerView.borderWidth = 4
       innerView.cornerRadius = 20
+
     }
   }
 }

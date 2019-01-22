@@ -36,8 +36,9 @@ let View = styled.div({
   flex: "1 1 0%",
   flexDirection: "column",
   justifyContent: "flex-start",
-  borderWidth: "10px",
-  borderColor: colors.pink300
+  borderColor: colors.pink300,
+  borderStyle: "solid",
+  borderWidth: "10px"
 })
 
 let View1 = styled.div({

@@ -104,7 +104,8 @@
       "alignSelf" : "stretch",
       "backgroundColor" : "blue500",
       "borderColor" : "pink300",
-      "borderWidth" : 10
+      "borderWidth" : 10,
+      "borderStyle" : "solid"
     },
     "type" : "Lona:View"
   }

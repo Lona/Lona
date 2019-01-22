@@ -23,9 +23,10 @@ type layout('a) = {
 };
 
 type border('a) = {
-  borderRadius: 'a,
-  borderWidth: 'a,
   borderColor: 'a,
+  borderRadius: 'a,
+  borderStyle: 'a,
+  borderWidth: 'a,
 };
 
 type textStyles('a) = {
@@ -80,9 +81,10 @@ let emptyNamedStyle = (name: string): namedStyles(option('a)) => {
       },
     },
     border: {
-      borderRadius: None,
-      borderWidth: None,
       borderColor: None,
+      borderRadius: None,
+      borderStyle: None,
+      borderWidth: None,
     },
     backgroundColor: None,
     textStyles: {

@@ -11,16 +11,19 @@ export default class BorderWidthColor extends React.Component {
 
     let Inner$borderColor
     let Inner$borderRadius
+    let Inner$borderStyle
     let Inner$borderWidth
-    Inner$borderRadius = 10
-    Inner$borderWidth = 20
     Inner$borderColor = colors.blue300
+    Inner$borderRadius = 10
+    Inner$borderStyle = "dashed"
+    Inner$borderWidth = 20
 
     if (this.props.alternativeStyle) {
 
       Inner$borderColor = colors.reda400
       Inner$borderWidth = 4
       Inner$borderRadius = 20
+      Inner$borderStyle = "solid"
     }
     return (
       <View style={styles.view}>
@@ -28,9 +31,10 @@ export default class BorderWidthColor extends React.Component {
           style={[
             styles.inner,
             {
+              borderColor: Inner$borderColor,
               borderRadius: Inner$borderRadius,
-              borderWidth: Inner$borderWidth,
-              borderColor: Inner$borderColor
+              borderStyle: Inner$borderStyle,
+              borderWidth: Inner$borderWidth
             }
           ]}
 
@@ -52,9 +56,10 @@ let styles = StyleSheet.create({
     alignItems: "flex-start",
     flexDirection: "column",
     justifyContent: "flex-start",
-    borderRadius: 10,
-    borderWidth: 20,
     borderColor: colors.blue300,
+    borderRadius: 10,
+    borderStyle: "dashed",
+    borderWidth: 20,
     width: 100,
     height: 100
   }
