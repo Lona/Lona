@@ -19,6 +19,12 @@ class MultilevelPopupField: NSPopUpButton, CSControl, NSMenuDelegate {
         super.init(frame: frameRect)
     }
 
+    // A workaround for hiding variant implementation details. A better solution would be to pass in the
+    // type of each variable.
+    private func isProbablyVariant(data: CSData) -> Bool {
+        return data["case"] != nil && data["data"] != nil
+    }
+
     func setupMenu(data: CSData, currentItem: NSMenuItem? = nil) {
         self.options = data
 
@@ -40,7 +46,7 @@ class MultilevelPopupField: NSPopUpButton, CSControl, NSMenuDelegate {
                 item.representedObject = keyPath
                 menu.addItem(item)
 
-                if value.object != nil, let mainItem = menu.item(withTitle: key) {
+                if value.object != nil && !isProbablyVariant(data: value), let mainItem = menu.item(withTitle: key) {
                     mainItem.submenu = addSubmenu(object: value, keyPath: keyPath, isTopLevel: false)
                 }
             }

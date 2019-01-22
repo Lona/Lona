@@ -81,7 +81,7 @@ class CSLayer: CSDataDeserializable, CSDataSerializable, DataNode, NSCopying {
             }
         }
 
-        static let displayNames = ["Regular", "Dotted", "Dashed"]
+        static let displayNames = ["solid", "dotted", "dashed"]
     }
 
     enum BuiltInLayerType: String {
@@ -581,6 +581,7 @@ class CSLayer: CSDataDeserializable, CSDataSerializable, DataNode, NSCopying {
         "aspectRatio": CSData.Number(-1),
         "borderRadius": CSData.Number(0),
         "borderWidth": CSData.Number(0),
+        "borderStyle": CSData.String("solid"),
         "flex": CSData.Number(0),
         "flexDirection": CSData.String("column"),
         "justifyContent": CSData.String("flex-start"),
@@ -733,6 +734,7 @@ class CSLayer: CSDataDeserializable, CSDataSerializable, DataNode, NSCopying {
             "borderWidth": CSData.Number(borderWidth ?? 0),
             "borderRadius": CSData.Number(borderRadius ?? 0),
             "borderColor": CSData.String(borderColor ?? "transparent"),
+            "borderStyle": CSValue.expand(type: CSBorderStyleType, data: borderStyle.rawValue.toData()),
 
             // Shadow
             "shadow": CSData.String(shadow ?? ""),

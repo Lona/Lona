@@ -101,8 +101,8 @@ struct ConfiguredLayer {
             renderableView.cornerRadius = min(CGFloat(borderRadius), layout.width / 2, layout.height / 2)
         }
 
-        renderableView.borderStyle = CSLayer.BorderStyle(
-            rawValue: config.get(attribute: "borderStyle", for: layer.name).stringValue) ?? layer.borderStyle
+        let borderStyleData = CSValue.compact(type: CSBorderStyleType, data: config.get(attribute: "borderStyle", for: layer.name))
+        renderableView.borderStyle = CSLayer.BorderStyle(rawValue: borderStyleData.stringValue) ?? layer.borderStyle
 
         let borderColorString = config.get(attribute: "borderColor", for: layer.name).string ?? layer.borderColor
         var borderColor = borderColorString != nil ? CSColors.parse(css: borderColorString!, withDefault: NSColor.clear).color : nil

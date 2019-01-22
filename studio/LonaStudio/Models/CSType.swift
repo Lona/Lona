@@ -380,6 +380,7 @@ indirect enum CSType: Equatable, CSDataSerializable, CSDataDeserializable {
             "Unit",
             "Color",
             "TextStyle",
+            "BorderStyle",
             "Shadow",
             "URL",
             "Function",
@@ -408,6 +409,7 @@ indirect enum CSType: Equatable, CSDataSerializable, CSDataDeserializable {
             "Color": CSColorType,
             "Shadow": CSShadowType,
             "TextStyle": CSTextStyleType,
+            "BorderStyle": CSBorderStyleType,
             "Comparator": CSComparatorType,
             "URL": CSURLType,
             "Component": CSComponentType
@@ -491,6 +493,7 @@ let CSComponentType = CSType.named("Component", .any)
 let CSHandlerType = CSType.function([], .undefined)
 let CSEmptyRecordType = CSType.dictionary([:])
 let CSEmptyVariantType = CSType.variant([])
+let CSBorderStyleType = CSType.named("BorderStyle", CSType.variant(tags: ["solid", "dotted", "dashed"]))
 
 let CSComparatorType = CSType.variant(tags: [
     "equal to",
@@ -521,6 +524,7 @@ let CSLayerType = CSType.dictionary([
     "borderWidth": (type: .number, access: .write),
     "borderColor": (type: CSColorType, access: .write),
     "borderRadius": (type: .number, access: .write),
+    "borderStyle": (type: CSBorderStyleType, access: .write),
 
     // Content
     "opacity": (type: .number, access: .write),
