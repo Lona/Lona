@@ -51,6 +51,12 @@ class CSView: NSBox, CSRendering {
 
     var onClick: (() -> Void)?
 
+    override var borderWidth: CGFloat {
+        didSet {
+            updateContentMargins()
+        }
+    }
+
     var borderStyle: CSLayer.BorderStyle = .solid {
         didSet {
             switch borderStyle {
@@ -59,6 +65,7 @@ class CSView: NSBox, CSRendering {
             default:
                 borderType = .noBorder
             }
+            updateContentMargins()
         }
     }
 
@@ -146,6 +153,15 @@ class CSView: NSBox, CSRendering {
         innerView.imageScaling = .scaleProportionallyUpOrDown
 
         super.addSubview(innerView)
+    }
+
+    private func updateContentMargins() {
+        switch borderStyle {
+        case .solid:
+            contentViewMargins = .zero
+        default:
+            contentViewMargins = CGSize(width: borderWidth, height: borderWidth)
+        }
     }
 
     private func updateBorderColor() {

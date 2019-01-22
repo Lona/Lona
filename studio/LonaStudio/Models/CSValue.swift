@@ -39,8 +39,8 @@ struct CSValue: Equatable, CSDataSerializable, CSDataDeserializable {
                 return data.get(key: "case")
             }
 
-            if type.isOptional(), data.get(key: "case").string != nil {
-                return data.get(key: "data")
+            if let requiredType = type.unwrapOptional(), data.get(key: "case").string != nil {
+                return CSValue.compact(type: requiredType, data: data.get(key: "data"))
             }
         case CSType.dictionary(let schema):
             var copy = data
@@ -71,10 +71,10 @@ struct CSValue: Equatable, CSDataSerializable, CSDataDeserializable {
                     ])
             }
 
-            if type.isOptional(), data.get(key: "case").string == nil {
+            if let requiredType = type.unwrapOptional(), data.get(key: "case").string == nil {
                 return CSData.Object([
                     "case": (data.isNull ? "None" : "Some").toData(),
-                    "data": data
+                    "data": CSValue.expand(type: requiredType, data: data)
                     ])
             }
         case CSType.dictionary(let schema):

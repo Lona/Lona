@@ -17,6 +17,7 @@
       "id" : "dotted",
       "name" : "dotted",
       "params" : {
+        "customBorderStyle" : "dotted",
         "showDottedBorder" : true
       }
     }
@@ -56,12 +57,40 @@
         "type" : "BinExpr"
       },
       "type" : "IfExpr"
+    },
+    {
+      "body" : [
+        {
+          "assignee" : [
+            "layers",
+            "View",
+            "borderStyle"
+          ],
+          "content" : [
+            "customBorderStyle"
+          ],
+          "type" : "AssignExpr"
+        }
+      ],
+      "condition" : {
+        "content" : [
+          "parameters",
+          "customBorderStyle"
+        ],
+        "id" : "customBorderStyle",
+        "type" : "VarDeclExpr"
+      },
+      "type" : "IfExpr"
     }
   ],
   "params" : [
     {
       "name" : "showDottedBorder",
       "type" : "Boolean"
+    },
+    {
+      "name" : "customBorderStyle",
+      "type" : "BorderStyle?"
     }
   ],
   "root" : {
@@ -80,7 +109,9 @@
     ],
     "id" : "View",
     "params" : {
-      "alignSelf" : "stretch"
+      "alignSelf" : "stretch",
+      "borderColor" : "greena700",
+      "borderWidth" : 2
     },
     "type" : "Lona:View"
   }

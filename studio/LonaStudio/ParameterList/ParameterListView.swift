@@ -102,7 +102,7 @@ class ParameterListView: NSOutlineView, NSOutlineViewDataSource, NSOutlineViewDe
             ]
 
             switch parameter.type {
-            case .named(let typeName, .variant(let cases)) where !parameter.type.isOptional():
+            case .named(let typeName, .variant(let cases)) where !parameter.type.isOptional() && typeName != "BorderStyle":
                 let variantCaseType = CSType.dictionary([
                     "case": (CSType.string, .write),
                     "type": (CSType.parameterType(), .write)
