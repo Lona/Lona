@@ -94,7 +94,7 @@ public class BorderWidthColor: NSBox {
     innerView.borderColor = Colors.blue300
     innerView.cornerRadius = 10
 
-    innerView.borderWidth = 20
+    innerView.borderWidth = 2
     if alternativeStyle {
       innerView.borderColor = Colors.reda400
       innerView.borderWidth = 4

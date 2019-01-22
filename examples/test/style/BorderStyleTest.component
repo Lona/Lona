@@ -10,6 +10,7 @@
       "id" : "solid",
       "name" : "solid",
       "params" : {
+        "requiredBorderStyle" : "solid",
         "showDottedBorder" : false
       }
     },
@@ -18,6 +19,7 @@
       "name" : "dotted",
       "params" : {
         "customBorderStyle" : "dotted",
+        "requiredBorderStyle" : "dashed",
         "showDottedBorder" : true
       }
     }
@@ -81,6 +83,18 @@
         "type" : "VarDeclExpr"
       },
       "type" : "IfExpr"
+    },
+    {
+      "assignee" : [
+        "layers",
+        "Other",
+        "borderStyle"
+      ],
+      "content" : [
+        "parameters",
+        "requiredBorderStyle"
+      ],
+      "type" : "AssignExpr"
     }
   ],
   "params" : [
@@ -91,6 +105,10 @@
     {
       "name" : "customBorderStyle",
       "type" : "BorderStyle?"
+    },
+    {
+      "name" : "requiredBorderStyle",
+      "type" : "BorderStyle"
     }
   ],
   "root" : {
@@ -105,6 +123,17 @@
           "width" : 100
         },
         "type" : "Lona:View"
+      },
+      {
+        "id" : "Other",
+        "params" : {
+          "borderColor" : "reda700",
+          "borderStyle" : "dotted",
+          "borderWidth" : 4,
+          "height" : 100,
+          "width" : 100
+        },
+        "type" : "Lona:View"
       }
     ],
     "id" : "View",
@@ -112,7 +141,8 @@
       "alignSelf" : "stretch",
       "borderColor" : "greena700",
       "borderStyle" : "dashed",
-      "borderWidth" : 2
+      "borderWidth" : 2,
+      "flexDirection" : "row"
     },
     "type" : "Lona:View"
   }

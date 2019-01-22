@@ -87,7 +87,7 @@ public class BorderWidthColor: UIView {
     innerView.layer.borderColor = Colors.blue300.cgColor
     innerView.layer.cornerRadius = 10
 
-    innerView.layer.borderWidth = 20
+    innerView.layer.borderWidth = 2
     if alternativeStyle {
       innerView.layer.borderColor = Colors.reda400.cgColor
       innerView.layer.borderWidth = 4

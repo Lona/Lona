@@ -126,8 +126,7 @@ let localImageName = (framework: SwiftOptions.framework, name) => {
   };
 };
 
-let rec typeAnnotationDoc = (config: Config.t, ltype: Types.lonaType) => {
-  let framework = config.options.swift.framework;
+let rec typeAnnotationDoc = (config: Config.t, ltype: Types.lonaType) =>
   switch (ltype) {
   | Types.Reference(typeName) when LonaValue.isOptionalTypeName(typeName) =>
     let unwrapped = LonaValue.unwrapOptionalType(ltype);
@@ -141,10 +140,14 @@ let rec typeAnnotationDoc = (config: Config.t, ltype: Types.lonaType) => {
       typeAnnotationDoc(config, Types.Named(typeName, Types.stringType))
     | "Color" =>
       typeAnnotationDoc(config, Types.Named(typeName, Types.stringType))
+    | "BorderStyle" =>
+      typeAnnotationDoc(config, Types.Named(typeName, Types.stringType))
     | _ => TypeName(typeName)
     }
   | Named("URL", _) => TypeName(imageTypeName(config))
   | Named("Color", _) => TypeName(colorTypeName(config))
+  /* TODO: Figure out type. Temporarily use String so that Swift compiles */
+  | Named("BorderStyle", _) => TypeName("String")
   | Named(name, _) => TypeName(name)
   | Function(arguments, _) =>
     OptionalType(
@@ -160,10 +163,8 @@ let rec typeAnnotationDoc = (config: Config.t, ltype: Types.lonaType) => {
   | Array(elementType) => ArrayType(typeAnnotationDoc(config, elementType))
   | Variant(_) => TypeName("VARIANT PLACEHOLDER")
   };
-};
 
-let rec lonaValue = (config: Config.t, value: Types.lonaValue) => {
-  let framework = config.options.swift.framework;
+let rec lonaValue = (config: Config.t, value: Types.lonaValue) =>
   switch (value.ltype) {
   | Reference(typeName) when LonaValue.isOptionalTypeName(typeName) =>
     switch (LonaValue.decodeOptional(value)) {
@@ -178,6 +179,7 @@ let rec lonaValue = (config: Config.t, value: Types.lonaValue) => {
     | "WholeNumber" =>
       LiteralExpression(Integer(value.data |> Json.Decode.int))
     | "String" => LiteralExpression(String(value.data |> Json.Decode.string))
+    | "BorderStyle"
     | "TextStyle"
     | "Color"
     | "Shadow" =>
@@ -254,6 +256,7 @@ let rec lonaValue = (config: Config.t, value: Types.lonaValue) => {
         Js.log2("WARNING: Image not handled", rawValue);
         Builders.functionCall([imageTypeName(config)], []);
       };
+    | "BorderStyle" => LiteralExpression(String(""))
     | "TextStyle" =>
       let rawValue = value.data |> Json.Decode.string;
       let textStyles = config.textStylesFile.contents;
@@ -287,10 +290,8 @@ let rec lonaValue = (config: Config.t, value: Types.lonaValue) => {
     | _ => lonaValue(config, {ltype: subtype, data: value.data})
     }
   };
-};
 
-let rec defaultValueForLonaType = (config: Config.t, ltype: Types.lonaType) => {
-  let framework = config.options.swift.framework;
+let rec defaultValueForLonaType = (config: Config.t, ltype: Types.lonaType) =>
   switch (ltype) {
   | Reference(typeName) when LonaValue.isOptionalTypeName(typeName) =>
     LiteralExpression(Nil)
@@ -301,9 +302,9 @@ let rec defaultValueForLonaType = (config: Config.t, ltype: Types.lonaType) => {
     | "WholeNumber" => LiteralExpression(Integer(0))
     | "String" => LiteralExpression(String(""))
     | "TextStyle"
-    | "Color" =>
-      defaultValueForLonaType(config, Named(typeName, Reference("String")))
-    | "URL" =>
+    | "Color"
+    | "URL"
+    | "BorderStyle" =>
       defaultValueForLonaType(config, Named(typeName, Reference("String")))
     | _ =>
       let match =
@@ -335,10 +336,10 @@ let rec defaultValueForLonaType = (config: Config.t, ltype: Types.lonaType) => {
         SwiftIdentifier("TextStyles"),
         SwiftIdentifier(config.textStylesFile.contents.defaultStyle.id),
       ])
+    | "BorderStyle" => LiteralExpression(String(""))
     | _ => defaultValueForLonaType(config, subtype)
     }
   };
-};
 
 let memberOrSelfExpression = (first, statements) =>
   switch (first) {
