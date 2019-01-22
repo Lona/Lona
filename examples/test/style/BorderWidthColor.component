@@ -118,8 +118,8 @@
         "params" : {
           "borderColor" : "blue300",
           "borderRadius" : 10,
-          "borderStyle" : "dashed",
-          "borderWidth" : 20,
+          "borderStyle" : "dotted",
+          "borderWidth" : 2,
           "height" : 100,
           "width" : 100
         },

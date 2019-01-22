@@ -54,6 +54,36 @@ extension CSData {
 }
 
 class CSLayer: CSDataDeserializable, CSDataSerializable, DataNode, NSCopying {
+    enum BorderStyle: String {
+        case solid, dotted, dashed
+
+        init(index: Int) {
+            switch index {
+            case 0:
+                self = .solid
+            case 1:
+                self = .dotted
+            case 2:
+                self = .dashed
+            default:
+                self = .solid
+            }
+        }
+
+        var index: Int {
+            switch self {
+            case .solid:
+                return 0
+            case .dotted:
+                return 1
+            case .dashed:
+                return 2
+            }
+        }
+
+        static let displayNames = ["Regular", "Dotted", "Dashed"]
+    }
+
     enum BuiltInLayerType: String {
         case view = "View"
         case text = "Text"
@@ -380,6 +410,10 @@ class CSLayer: CSDataDeserializable, CSDataSerializable, DataNode, NSCopying {
     var borderWidth: Double? {
         get { return parameters["borderWidth"]?.number }
         set { parameters["borderWidth"] = newValue?.toData() }
+    }
+    var borderStyle: BorderStyle {
+        get { return BorderStyle(rawValue: parameters["borderStyle"]?.string ?? "solid") ?? .solid }
+        set { parameters["borderStyle"] = newValue.rawValue.toData() }
     }
 
     // Shadow

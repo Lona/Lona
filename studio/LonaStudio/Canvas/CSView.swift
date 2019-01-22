@@ -51,6 +51,17 @@ class CSView: NSBox, CSRendering {
 
     var onClick: (() -> Void)?
 
+    var borderStyle: CSLayer.BorderStyle = .solid {
+        didSet {
+            switch borderStyle {
+            case .solid:
+                borderType = .lineBorder
+            default:
+                borderType = .noBorder
+            }
+        }
+    }
+
     var resizingMode: CGSize.ResizingMode {
         get { return innerView.resizingMode }
         set { innerView.resizingMode = newValue }
@@ -154,6 +165,29 @@ class CSView: NSBox, CSRendering {
             fillColor = multipliedAlpha <= 0
                 ? .clear
                 : multipliedFillColor.withAlphaComponent(multipliedFillColor.alphaComponent * multipliedAlpha)
+        }
+    }
+
+    override func draw(_ dirtyRect: NSRect) {
+        super.draw(dirtyRect)
+
+        if borderStyle != .solid {
+            let dashSize: CGFloat = borderWidth
+            let dashLength: CGFloat = borderStyle == .dotted ? dashSize : dashSize * 2
+            let dashColor: NSColor = borderColor
+
+            if let currentContext = NSGraphicsContext.current?.cgContext {
+                currentContext.setLineWidth(dashSize)
+                if dashLength > 0 {
+                    currentContext.setLineDash(phase: 0, lengths: [dashLength])
+                }
+                currentContext.setStrokeColor(dashColor.cgColor)
+
+                let borderRect = bounds.insetBy(dx: dashSize / 2, dy: dashSize / 2)
+                let borderPath = CGPath(roundedRect: borderRect, cornerWidth: cornerRadius, cornerHeight: cornerRadius, transform: nil)
+                currentContext.addPath(borderPath)
+                currentContext.strokePath()
+            }
         }
     }
 }

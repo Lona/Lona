@@ -1,0 +1,126 @@
+{
+  "devices" : [
+    {
+      "deviceId" : "iPhone SE",
+      "heightMode" : "At Least"
+    }
+  ],
+  "examples" : [
+    {
+      "id" : "Default",
+      "name" : "Default",
+      "params" : {
+
+      }
+    }
+  ],
+  "logic" : [
+    {
+      "assignee" : [
+        "layers",
+        "Label",
+        "text"
+      ],
+      "content" : [
+        "parameters",
+        "labelText"
+      ],
+      "type" : "AssignExpr"
+    },
+    {
+      "assignee" : [
+        "layers",
+        "Dropdown",
+        "selectedIndex"
+      ],
+      "content" : [
+        "parameters",
+        "selectedIndex"
+      ],
+      "type" : "AssignExpr"
+    },
+    {
+      "assignee" : [
+        "layers",
+        "Dropdown",
+        "onChangeIndex"
+      ],
+      "content" : [
+        "parameters",
+        "onChangeSelectedIndex"
+      ],
+      "type" : "AssignExpr"
+    },
+    {
+      "assignee" : [
+        "layers",
+        "Dropdown",
+        "values"
+      ],
+      "content" : [
+        "parameters",
+        "options"
+      ],
+      "type" : "AssignExpr"
+    }
+  ],
+  "params" : [
+    {
+      "name" : "selectedIndex",
+      "type" : "WholeNumber"
+    },
+    {
+      "name" : "onChangeSelectedIndex",
+      "type" : {
+        "name" : "Function",
+        "parameters" : [
+          {
+            "label" : "_",
+            "type" : "WholeNumber"
+          }
+        ]
+      }
+    },
+    {
+      "name" : "labelText",
+      "type" : "String"
+    },
+    {
+      "name" : "options",
+      "type" : {
+        "name" : "Array",
+        "of" : "String"
+      }
+    }
+  ],
+  "root" : {
+    "children" : [
+      {
+        "id" : "Label",
+        "params" : {
+          "alignSelf" : "stretch",
+          "marginBottom" : 8,
+          "text" : "Label"
+        },
+        "type" : "Lona:Text"
+      },
+      {
+        "id" : "Dropdown",
+        "params" : {
+          "selectedIndex" : 0,
+          "values" : [
+            "Solid",
+            "Dotted",
+            "Dashed"
+          ]
+        },
+        "type" : "ControlledDropdown"
+      }
+    ],
+    "id" : "Container",
+    "params" : {
+      "alignSelf" : "stretch"
+    },
+    "type" : "Lona:View"
+  }
+}

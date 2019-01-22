@@ -62,6 +62,7 @@ class CoreComponentInspectorView: NSStackView {
         case borderColor
         case borderColorEnabled
         case borderWidth
+        case borderStyle
 
         // Contents
         case opacity
@@ -131,6 +132,10 @@ class CoreComponentInspectorView: NSStackView {
     var borderColorButton = ColorPickerButton(frame: NSRect.zero)
     var borderColorEnabledView = CheckboxField(frame: NSRect.zero)
     var borderRadiusView = NumberField(frame: NSRect.zero)
+    var borderStyleView = LabeledDropdownRow(
+        selectedIndex: 0,
+        labelText: "Border Style",
+        options: CSLayer.BorderStyle.displayNames)
     var shadowEnabledView = CheckboxField(frame: NSRect.zero)
     var shadowButton = ShadowStylePickerButton(frame: NSRect.zero)
 
@@ -320,9 +325,11 @@ class CoreComponentInspectorView: NSStackView {
         let borderSection = renderSection(title: "Border", views: [
             NSTextField(labelWithString: "Color"),
             borderColorContainer,
-            borderContainer
+            borderContainer,
+            borderStyleView
             ])
         borderSection.addContentSpacing(of: 14, after: borderColorContainer)
+        borderSection.addContentSpacing(of: 14, after: borderContainer)
 
         return borderSection
     }
@@ -942,6 +949,10 @@ class CoreComponentInspectorView: NSStackView {
         accessibilityInspector.onChangeSelectedElementIndices = { value in
             change(property: Property.accessibilityElements, to: value.toData())
         }
+
+        borderStyleView.onChangeSelectedIndex = { value in
+            change(property: Property.borderStyle, to: value.toData())
+        }
     }
 
     let controlledProperties: [Property] = [
@@ -951,6 +962,7 @@ class CoreComponentInspectorView: NSStackView {
         Property.width,
         Property.height,
         Property.aspectRatio,
+        Property.borderStyle,
         Property.accessibilityType,
         Property.accessibilityLabel,
         Property.accessibilityHint,
@@ -1055,6 +1067,8 @@ class CoreComponentInspectorView: NSStackView {
             }
         case .aspectRatio:
             dimensionsInspector.aspectRatioValue = CGFloat(value.numberValue)
+        case .borderStyle:
+            borderStyleView.selectedIndex = value.int
         case .accessibilityType:
             switch value.stringValue {
             case "default":
@@ -1114,6 +1128,7 @@ class CoreComponentInspectorView: NSStackView {
             CoreComponentInspectorView.Property.borderColor: CSData.String(layer.borderColor ?? "transparent"),
             CoreComponentInspectorView.Property.borderColorEnabled: CSData.Bool(layer.borderColor != nil),
             CoreComponentInspectorView.Property.borderWidth: CSData.Number(layer.borderWidth ?? 0),
+            CoreComponentInspectorView.Property.borderStyle: layer.borderStyle.index.toData(),
 
             // Contents
             CoreComponentInspectorView.Property.opacity: CSData.Number(layer.opacity ?? 1),
@@ -1187,6 +1202,7 @@ class CoreComponentInspectorView: NSStackView {
         case .borderColor: layer.borderColor = value.stringValue
         case .borderColorEnabled: layer.borderColor = value.boolValue ? "transparent" : nil
         case .borderWidth: layer.borderWidth = value.numberValue
+        case .borderStyle: layer.borderStyle = CSLayer.BorderStyle(index: value.int)
 
         // Content
         case .opacity: layer.opacity = max(min(value.numberValue, 1), 0)
