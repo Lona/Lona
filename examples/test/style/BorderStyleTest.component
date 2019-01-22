@@ -111,6 +111,7 @@
     "params" : {
       "alignSelf" : "stretch",
       "borderColor" : "greena700",
+      "borderStyle" : "dashed",
       "borderWidth" : 2
     },
     "type" : "Lona:View"
