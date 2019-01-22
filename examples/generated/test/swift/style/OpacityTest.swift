@@ -85,7 +85,7 @@ public class OpacityTest: UIView {
 
     backgroundColor = Colors.blue500
     layer.borderColor = Colors.pink300.cgColor
-    borderStyle = "solid"
+
     layer.borderWidth = 10
     view1View.backgroundColor = Colors.red900
     view1View.alpha = 0.8

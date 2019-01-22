@@ -154,7 +154,7 @@ public class AccessibilityTest: NSBox {
 
     checkboxView.borderColor = Colors.grey400
     checkboxView.cornerRadius = 20
-    checkboxView.borderStyle = "solid"
+
     checkboxView.borderWidth = 1
     checkboxCircleView.fillColor = Colors.green200
     checkboxCircleView.cornerRadius = 15

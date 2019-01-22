@@ -139,7 +139,7 @@ public class AccessibilityTest: UIView {
     checkboxRowView.accessibilityLabel = "Checkbox row"
     checkboxView.layer.borderColor = Colors.grey400.cgColor
     checkboxView.layer.cornerRadius = 20
-    checkboxView.borderStyle = "solid"
+
     checkboxView.layer.borderWidth = 1
     checkboxCircleView.backgroundColor = Colors.green200
     checkboxCircleView.layer.cornerRadius = 15
