@@ -139,16 +139,12 @@ let focusStyles =
 };
 
 let defaultStyles =
-    (
-      framework: JavaScriptOptions.framework,
-      config: Config.t,
-      layerType: Types.layerType,
-    )
+    (config: Config.t, layerType: Types.layerType)
     : ParameterMap.t(Types.lonaValue) => {
   let defaults = ParameterMap.empty;
 
   let defaults =
-    switch (framework, layerType) {
+    switch (config.options.javaScript.framework, layerType) {
     | (JavaScriptOptions.ReactDOM, Types.Text) =>
       ParameterMap.(
         defaults
@@ -482,6 +478,24 @@ let handleResizeMode =
   };
 };
 
+/* If a DOM element has a border width (either as a param or via logic) then we
+   need to ensure it has a border style param. The default border style is "solid". */
+let handleBorderStyle =
+    (config: Config.t, assignments: Layer.assignments, layer: Types.layer) => {
+  let props = Layer.staticAndDynamicAssignments(assignments, layer);
+
+  switch (
+    config.options.javaScript.framework,
+    ParameterMap.find_opt(ParameterKey.BorderWidth, props),
+    ParameterMap.find_opt(ParameterKey.BorderStyle, layer.parameters),
+  ) {
+  | (ReactDOM, Some(_), None) =>
+    layer.parameters
+    |> ParameterMap.add(ParameterKey.BorderStyle, LonaValue.string("solid"))
+  | _ => layer.parameters
+  };
+};
+
 let createStyleAttributePropertyAST =
     (
       framework: JavaScriptOptions.framework,
@@ -521,6 +535,7 @@ module Object = {
       (
         config: Config.t,
         framework: JavaScriptOptions.framework,
+        assignments: Layer.assignments,
         parent: option(Types.layer),
         layer: Types.layer,
       ) => {
@@ -531,6 +546,9 @@ module Object = {
         (
           layer.parameters
           |> handleNumberOfLines(framework, config)
+          |> ParameterMap.assign(
+               handleBorderStyle(config, assignments, layer),
+             )
           |> ParameterMap.filter((key, _) => Layer.parameterIsStyle(key))
           /* Remove layout parameters stored in the component file */
           |> ParameterMap.filter((key, _) =>
@@ -538,9 +556,7 @@ module Object = {
              )
           /* Add layout parameters appropriate for the framework */
           |> ParameterMap.assign(_, layoutParameters)
-          |> ParameterMap.assign(
-               defaultStyles(framework, config, layer.typeName),
-             )
+          |> ParameterMap.assign(defaultStyles(config, layer.typeName))
           |> handleResizeMode(framework, config, parent, layer)
           |> ParameterMap.bindings
           |> List.map(((key, value)) =>
@@ -603,12 +619,14 @@ module NamedStyle = {
       (
         config: Config.t,
         framework: JavaScriptOptions.framework,
+        assignments: Layer.assignments,
         parent: option(Types.layer),
         layer: Types.layer,
       ) =>
     Property({
       key: Identifier([JavaScriptFormat.styleVariableName(layer.name)]),
-      value: Some(Object.forLayer(config, framework, parent, layer)),
+      value:
+        Some(Object.forLayer(config, framework, assignments, parent, layer)),
     });
 
   let imageResizing =
@@ -630,11 +648,14 @@ module StyleSheet = {
       (
         config: Config.t,
         framework: JavaScriptOptions.framework,
+        assignments: Layer.assignments,
         rootLayer: Types.layer,
       ) => {
     let styleObjects =
       rootLayer
-      |> Layer.flatmapParent(NamedStyle.forLayer(config, framework));
+      |> Layer.flatmapParent(
+           NamedStyle.forLayer(config, framework, assignments),
+         );
 
     let imageResizingStyles =
       rootLayer

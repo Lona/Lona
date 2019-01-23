@@ -358,6 +358,8 @@ let imageResizingModes = (rootLayer: Types.layer) =>
      )
   |> Sequence.dedupeMem;
 
+type assignments = LayerMap.t(ParameterMap.t(Logic.logicValue));
+
 let parameterAssignmentsFromLogic = (layer, node) => {
   let identifiers = Logic.assignedIdentifiers(node);
   let updateAssignments = (layerName, propertyName, logicValue, acc) =>
@@ -510,6 +512,19 @@ let splitParamsMap = params =>
 
 let parameterMapToLogicValueMap = params =>
   ParameterMap.map(item => Logic.Literal(item), params);
+
+let staticAndDynamicAssignments =
+    (assignments: assignments, layer: Types.layer)
+    : ParameterMap.t(Logic.logicValue) => {
+  let staticAssignments = parameterMapToLogicValueMap(layer.parameters);
+  let dynamicAssignments = LayerMap.find_opt(layer, assignments);
+
+  switch (dynamicAssignments) {
+  | Some(dynamicAssignments) =>
+    ParameterMap.assign(dynamicAssignments, staticAssignments)
+  | None => staticAssignments
+  };
+};
 
 let mapBindings = (f, map) => map |> ParameterMap.bindings |> List.map(f);
 

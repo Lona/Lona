@@ -151,7 +151,7 @@ module StyledComponents = {
       (
         config: Config.t,
         options: JavaScriptOptions.options,
-        _assignments,
+        assignments,
         rootLayer: Types.layer,
         layer: Types.layer,
       ) => {
@@ -160,6 +160,7 @@ module StyledComponents = {
       JavaScriptStyles.Object.forLayer(
         config,
         options.framework,
+        assignments,
         Layer.findParent(rootLayer, layer),
         layer,
       );
@@ -1052,7 +1053,12 @@ let generate =
     );
 
   let styleSheetAST =
-    JavaScriptStyles.StyleSheet.create(config, options.framework, rootLayer);
+    JavaScriptStyles.StyleSheet.create(
+      config,
+      options.framework,
+      assignments,
+      rootLayer,
+    );
 
   let logicAST =
     logic
