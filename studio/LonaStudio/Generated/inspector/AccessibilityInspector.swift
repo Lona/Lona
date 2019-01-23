@@ -305,7 +305,7 @@ public class AccessibilityInspector: NSBox {
     statesLabelView.attributedStringValue = statesLabelViewTextStyle.apply(to: "States")
     statesDropdownView.selectedIndex = 0
     statesDropdownView.values = ["None", "Selected", "Disabled", "Selected and Disabled"]
-    elementsLabelView.attributedStringValue = elementsLabelViewTextStyle.apply(to: "Label")
+    elementsLabelView.attributedStringValue = elementsLabelViewTextStyle.apply(to: "Elements")
     hDividerView.fillColor = Colors.dividerSubtle
   }
 

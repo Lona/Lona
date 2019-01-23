@@ -524,7 +524,7 @@
                 "params" : {
                   "marginBottom" : 8,
                   "marginTop" : 16,
-                  "text" : "Label"
+                  "text" : "Elements"
                 },
                 "type" : "Lona:Text"
               },
