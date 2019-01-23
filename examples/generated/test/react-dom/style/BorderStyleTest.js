@@ -54,6 +54,7 @@ let Inner = styled.div({
   flexDirection: "column",
   justifyContent: "flex-start",
   borderColor: colors.bluea700,
+  borderStyle: "solid",
   borderWidth: "10px",
   width: "100px",
   height: "100px"
