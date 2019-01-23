@@ -2,6 +2,7 @@
 
 Lona provides a set of cross-platform parameters to build accessible components. In cases where these aren't enough, the native views can be manipulated directly via code.
 
+- [Guide](#guide)
 - [Accessibility parameters](#accessibility-parameters)
 - [Swift](#swift)
   - [iOS](#ios)
@@ -9,6 +10,32 @@ Lona provides a set of cross-platform parameters to build accessible components.
 - [JavaScript](#javascript)
   - [Web](#web)
   - [React Native](#react-native)
+
+## Guide
+
+For most Lona components, you can follow these steps to create a great, consistent UX when using assistive technologies:
+
+1. Set the top-level layer in a component to be an accessibility _Container_ using the _Type_ dropdown:
+
+   ![Accessibility type dropdown](https://i.imgur.com/oSD87iJ.png)
+
+2. Define the names and order of accessible elements within this container using the _Elements_ editor. For example:
+
+   ![Accessibility elements field](https://i.imgur.com/6tExJHP.png)
+
+   ![Accessibility elements editor](https://i.imgur.com/eNWT2OQ.png)
+
+   This overrides the system's default element order, allowing for precise customization.
+
+   Now we're done with the top-level layer, so it's time to configure each of the layers we just chose.
+
+3. For each layer we chose, click the layer in the layer list (to inspect it), and set the _Type_ of the layer to _Element_. Then, add an accessibility label, role, and other parameters as needed.
+
+   ![Accessibility element inspector](https://i.imgur.com/XWrgxAz.png)
+
+   The _Label_ and _Hint_ should generally be set via logic so that the values may be localized -- this means you'll need to add a component parameter for each.
+
+The rest of this doc will go into more detail about each of the accessibility parameters, and how to access the underlying native UI components when you need more control.
 
 ## Accessibility parameters
 
