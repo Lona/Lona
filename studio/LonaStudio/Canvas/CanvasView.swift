@@ -41,7 +41,7 @@ enum RenderOption {
     case hideAnimationLayers(Bool)
     case renderCanvasShadow(Bool)
     case selectedLayerName(String?)
-    case showAccessibilityOverlay(Bool)
+    case showsAccessibilityOverlay(Bool)
 }
 
 struct RenderOptions {
@@ -50,7 +50,7 @@ struct RenderOptions {
     var hideAnimationLayers: Bool = false
     var renderCanvasShadow: Bool = false
     var selectedLayerName: String?
-    var showAccessibilityOverlay: Bool = false
+    var showsAccessibilityOverlay: Bool = false
 
     mutating func merge(options: [RenderOption]) {
         options.forEach({ option in
@@ -60,7 +60,7 @@ struct RenderOptions {
             case .hideAnimationLayers(let value): hideAnimationLayers = value
             case .renderCanvasShadow(let value): renderCanvasShadow = value
             case .selectedLayerName(let value): selectedLayerName = value
-            case .showAccessibilityOverlay(let value): showAccessibilityOverlay = value
+            case .showsAccessibilityOverlay(let value): showsAccessibilityOverlay = value
             }
         })
     }
@@ -122,10 +122,6 @@ class CanvasView: FlippedView {
         selectionView.borderColor = #colorLiteral(red: 0.2588235438, green: 0.7568627596, blue: 0.9686274529, alpha: 1)
         selectionView.cornerRadius = 2
         selectionView.contentViewMargins = .zero
-
-//        accessibilityOverlay.borderType = .noBorder
-//        accessibilityOverlay.boxType = .custom
-//        accessibilityOverlay.contentViewMargins = .zero
 
         // TODO: On High Sierra, if the canvas has a transparent fill,
         // shadows show up behind each subview's layer.
@@ -208,14 +204,12 @@ class CanvasView: FlippedView {
             }
         }
 
-        if options.showAccessibilityOverlay, let rootLayer = rootLayer {
+        if options.showsAccessibilityOverlay, let rootLayer = rootLayer {
             accessibilityOverlay.subviews.forEach { $0.removeFromSuperview() }
 
             accessibilityOverlay.frame = backgroundView.frame.insetBy(dx: -2, dy: -2)
 
-            let accessibilityLayers = rootLayer.accessibilityElementHierarchy()
-
-            let rects: [CGRect] = accessibilityLayers.map { layer in
+            let rects: [CGRect] = rootLayer.accessibilityElementHierarchy().map { layer in
                 guard let nsView = self.firstDescendant(where: { view in
                     guard let csView = view as? CSView else { return false }
                     return csView.layerName == layer.name

@@ -216,7 +216,7 @@ class CanvasTableView: NSTableView, NSTableViewDataSource, NSTableViewDelegate {
             rootLayer: rootLayer,
             config: config,
             options: RenderOptions([
-                .showAccessibilityOverlay(showsAccessibilityOverlay),
+                .showsAccessibilityOverlay(showsAccessibilityOverlay),
                 .renderCanvasShadow(true),
                 .selectedLayerName(selectedLayerName)
                 ]))
