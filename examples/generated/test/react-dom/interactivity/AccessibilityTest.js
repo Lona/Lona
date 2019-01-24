@@ -20,6 +20,19 @@ export default class AccessibilityTest extends React.Component {
     }
   }
 
+  focusLast = ({ focusRing = true } = { focusRing: true }) => {
+    this.setFocusRing(focusRing)
+
+    let focusElements = this._getFocusElements()
+    if
+    (
+    focusElements[focusElements.length - 1] &&
+    focusElements[focusElements.length - 1].focus
+    ) {
+      focusElements[focusElements.length - 1].focus()
+    }
+  }
+
   focusNext = ({ focusRing = true } = { focusRing: true }) => {
     this.setFocusRing(focusRing)
 
@@ -63,9 +76,15 @@ export default class AccessibilityTest extends React.Component {
     }
   }
 
-  _getFocusElements = () => (
-    [this._CheckboxRow, this._Element, this._AccessibleText, this._Image]
-  )
+  _getFocusElements = () => {
+    let elements = [
+      this._CheckboxRow,
+      this._Element,
+      this._AccessibleText,
+      this._Image
+    ]
+    return elements.filter(Boolean);
+  }
 
   render() {
 

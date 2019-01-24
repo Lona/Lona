@@ -1,0 +1,83 @@
+{
+  "devices" : [
+    {
+      "deviceId" : "iPhone SE",
+      "heightMode" : "At Least"
+    },
+    {
+      "deviceId" : "Pixel 2",
+      "heightMode" : "At Least"
+    }
+  ],
+  "examples" : [
+    {
+      "id" : "Default",
+      "name" : "Default",
+      "params" : {
+
+      }
+    },
+    {
+      "id" : "name",
+      "name" : "name",
+      "params" : {
+        "showText" : true
+      }
+    }
+  ],
+  "logic" : [
+    {
+      "assignee" : [
+        "layers",
+        "Text",
+        "visible"
+      ],
+      "content" : [
+        "parameters",
+        "showText"
+      ],
+      "type" : "AssignExpr"
+    }
+  ],
+  "params" : [
+    {
+      "name" : "showText",
+      "type" : "Boolean"
+    }
+  ],
+  "root" : {
+    "children" : [
+      {
+        "id" : "GreyBox",
+        "params" : {
+          "accessibilityLabel" : "Grey box",
+          "accessibilityType" : "element",
+          "backgroundColor" : "#D8D8D8",
+          "height" : 40,
+          "width" : 100
+        },
+        "type" : "Lona:View"
+      },
+      {
+        "id" : "Text",
+        "params" : {
+          "accessibilityLabel" : "Some text that is sometimes hidden",
+          "accessibilityType" : "element",
+          "text" : "Sometimes hidden",
+          "visible" : false
+        },
+        "type" : "Lona:Text"
+      }
+    ],
+    "id" : "View",
+    "params" : {
+      "accessibilityElements" : [
+        "GreyBox",
+        "Text"
+      ],
+      "accessibilityType" : "container",
+      "alignSelf" : "stretch"
+    },
+    "type" : "Lona:View"
+  }
+}

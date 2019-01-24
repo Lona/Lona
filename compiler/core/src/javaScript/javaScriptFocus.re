@@ -25,17 +25,27 @@ module Methods = {
           id: None,
           params: [],
           body: [
+            VariableDeclaration(
+              AssignmentExpression({
+                left: Identifier(["elements"]),
+                right:
+                  ArrayLiteral(
+                    rootLayer
+                    |> JavaScriptLayer.Hierarchy.accessibilityElements
+                    |> List.map((layer: Types.layer) =>
+                         JavaScriptAst.Identifier([
+                           "this",
+                           "_" ++ JavaScriptFormat.elementName(layer.name),
+                         ])
+                       ),
+                  ),
+              }),
+            ),
             Return(
-              ArrayLiteral(
-                rootLayer
-                |> JavaScriptLayer.Hierarchy.accessibilityElements
-                |> List.map((layer: Types.layer) =>
-                     JavaScriptAst.Identifier([
-                       "this",
-                       "_" ++ JavaScriptFormat.elementName(layer.name),
-                     ])
-                   ),
-              ),
+              CallExpression({
+                callee: Identifier(["elements.filter"]),
+                arguments: [Identifier(["Boolean"])],
+              }),
             ),
           ],
         }),
@@ -94,6 +104,57 @@ module Methods = {
               consequent: [
                 CallExpression({
                   callee: Identifier(["focusElements[0]", "focus"]),
+                  arguments: [],
+                }),
+              ],
+              alternate: [],
+            }),
+          ],
+        }),
+    });
+
+  let focusLast = (): JavaScriptAst.node =>
+    AssignmentExpression({
+      left: Identifier(["focusLast"]),
+      right:
+        ArrowFunctionExpression({
+          id: None,
+          params: [focusOptionsParam()],
+          body: [
+            CallExpression({
+              callee: Identifier(["this", "setFocusRing"]),
+              arguments: [Identifier(["focusRing"])],
+            }),
+            Empty,
+            VariableDeclaration(
+              AssignmentExpression({
+                left: Identifier(["focusElements"]),
+                right:
+                  CallExpression({
+                    callee: Identifier(["this", "_getFocusElements"]),
+                    arguments: [],
+                  }),
+              }),
+            ),
+            IfStatement({
+              test:
+                BinaryExpression({
+                  left:
+                    Identifier(["focusElements[focusElements.length - 1]"]),
+                  operator: And,
+                  right:
+                    Identifier([
+                      "focusElements[focusElements.length - 1]",
+                      "focus",
+                    ]),
+                }),
+              consequent: [
+                CallExpression({
+                  callee:
+                    Identifier([
+                      "focusElements[focusElements.length - 1]",
+                      "focus",
+                    ]),
                   arguments: [],
                 }),
               ],
@@ -322,6 +383,7 @@ let focusMethods = (rootLayer: Types.layer): list(JavaScriptAst.node) =>
   Methods.[
     setFocusRing(),
     focus(),
+    focusLast(),
     focusNext(),
     focusPrevious(),
     handleKeyDown(),

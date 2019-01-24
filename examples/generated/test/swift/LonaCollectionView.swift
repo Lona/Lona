@@ -155,6 +155,7 @@ public class LonaCollectionView: UICollectionView,
     register(LocalAssetCell.self, forCellWithReuseIdentifier: LocalAssetCell.identifier)
     register(VectorAssetCell.self, forCellWithReuseIdentifier: VectorAssetCell.identifier)
     register(AccessibilityTestCell.self, forCellWithReuseIdentifier: AccessibilityTestCell.identifier)
+    register(AccessibilityVisibilityCell.self, forCellWithReuseIdentifier: AccessibilityVisibilityCell.identifier)
     register(ButtonCell.self, forCellWithReuseIdentifier: ButtonCell.identifier)
     register(PressableRootViewCell.self, forCellWithReuseIdentifier: PressableRootViewCell.identifier)
     register(FillWidthFitHeightCardCell.self, forCellWithReuseIdentifier: FillWidthFitHeightCardCell.identifier)
@@ -299,6 +300,11 @@ public class LonaCollectionView: UICollectionView,
       }
     case AccessibilityTestCell.identifier:
       if let cell = cell as? AccessibilityTestCell, let item = item as? AccessibilityTest.Model {
+        cell.parameters = item.parameters
+        cell.scrollDirection = scrollDirection
+      }
+    case AccessibilityVisibilityCell.identifier:
+      if let cell = cell as? AccessibilityVisibilityCell, let item = item as? AccessibilityVisibility.Model {
         cell.parameters = item.parameters
         cell.scrollDirection = scrollDirection
       }
@@ -713,6 +719,16 @@ public class AccessibilityTestCell: LonaCollectionViewCell<AccessibilityTest> {
   }
   public static var identifier: String {
     return "AccessibilityTest"
+  }
+}
+
+public class AccessibilityVisibilityCell: LonaCollectionViewCell<AccessibilityVisibility> {
+  public var parameters: AccessibilityVisibility.Parameters {
+    get { return view.parameters }
+    set { view.parameters = newValue }
+  }
+  public static var identifier: String {
+    return "AccessibilityVisibility"
   }
 }
 
