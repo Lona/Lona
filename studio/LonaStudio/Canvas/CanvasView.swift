@@ -41,6 +41,7 @@ enum RenderOption {
     case hideAnimationLayers(Bool)
     case renderCanvasShadow(Bool)
     case selectedLayerName(String?)
+    case showAccessibilityOverlay(Bool)
 }
 
 struct RenderOptions {
@@ -49,6 +50,7 @@ struct RenderOptions {
     var hideAnimationLayers: Bool = false
     var renderCanvasShadow: Bool = false
     var selectedLayerName: String?
+    var showAccessibilityOverlay: Bool = false
 
     mutating func merge(options: [RenderOption]) {
         options.forEach({ option in
@@ -58,6 +60,7 @@ struct RenderOptions {
             case .hideAnimationLayers(let value): hideAnimationLayers = value
             case .renderCanvasShadow(let value): renderCanvasShadow = value
             case .selectedLayerName(let value): selectedLayerName = value
+            case .showAccessibilityOverlay(let value): showAccessibilityOverlay = value
             }
         })
     }
@@ -83,6 +86,8 @@ class CanvasView: FlippedView {
     private let selectionView = NSBox()
     private let canvasView = FlippedView(frame: .zero)
 
+    private let accessibilityOverlay = AccessibilityOverlay()
+
     init(_ parameters: Parameters) {
         self.parameters = parameters
 
@@ -103,6 +108,7 @@ class CanvasView: FlippedView {
 
     private func setUpViews() {
         addSubview(backgroundView)
+        addSubview(accessibilityOverlay)
         addSubview(selectionView)
         backgroundView.addSubview(canvasView)
 
@@ -116,6 +122,10 @@ class CanvasView: FlippedView {
         selectionView.borderColor = #colorLiteral(red: 0.2588235438, green: 0.7568627596, blue: 0.9686274529, alpha: 1)
         selectionView.cornerRadius = 2
         selectionView.contentViewMargins = .zero
+
+//        accessibilityOverlay.borderType = .noBorder
+//        accessibilityOverlay.boxType = .custom
+//        accessibilityOverlay.contentViewMargins = .zero
 
         // TODO: On High Sierra, if the canvas has a transparent fill,
         // shadows show up behind each subview's layer.
@@ -195,6 +205,33 @@ class CanvasView: FlippedView {
         } else {
             if !selectionView.isHidden {
                 selectionView.isHidden = true
+            }
+        }
+
+        if options.showAccessibilityOverlay, let rootLayer = rootLayer {
+            accessibilityOverlay.subviews.forEach { $0.removeFromSuperview() }
+
+            accessibilityOverlay.frame = backgroundView.frame.insetBy(dx: -2, dy: -2)
+
+            let accessibilityLayers = rootLayer.accessibilityElementHierarchy()
+
+            let rects: [CGRect] = accessibilityLayers.map { layer in
+                guard let nsView = self.firstDescendant(where: { view in
+                    guard let csView = view as? CSView else { return false }
+                    return csView.layerName == layer.name
+                }) else { return nil }
+
+                return accessibilityOverlay.convert(nsView.bounds, from: nsView)
+                }.compactMap { $0 }
+
+            accessibilityOverlay.accessibilityOrderRects = rects
+
+            if accessibilityOverlay.isHidden {
+                accessibilityOverlay.isHidden = false
+            }
+        } else {
+            if !accessibilityOverlay.isHidden {
+                accessibilityOverlay.isHidden = true
             }
         }
 

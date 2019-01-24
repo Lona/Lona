@@ -28,6 +28,7 @@ class ComponentEditorViewController: NSSplitViewController {
     // MARK: Public
 
     public var component: CSComponent? = nil { didSet { update(withoutModifyingSelection: false) } }
+    public var showsAccessibilityOverlay: Bool = false { didSet { update(withoutModifyingSelection: true) } }
     public var selectedLayerName: String? = nil { didSet { update(withoutModifyingSelection: true) } }
     public var selectedCanvasHeaderItem: Int? {
         get { return canvasAreaView.selectedHeaderItem }
@@ -247,6 +248,7 @@ class ComponentEditorViewController: NSSplitViewController {
 
         canvasAreaView.parameters = CanvasAreaView.Parameters(
             component: component,
+            showsAccessibilityOverlay: showsAccessibilityOverlay,
             onSelectLayer: { self.onInspectLayer?($0) },
             selectedLayerName: selectedLayerName)
     }

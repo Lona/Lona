@@ -212,6 +212,7 @@
 		6B5D4D2D213E1CB0004F8AC3 /* EditorHeader.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6B5D4D2C213E1CB0004F8AC3 /* EditorHeader.swift */; };
 		6B5D4DA1213F05AF004F8AC3 /* CodeEditor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6B5D4DA0213F05AF004F8AC3 /* CodeEditor.swift */; };
 		6B6017D01EBF9EFA001E02C1 /* LayerListOutlineView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6B6017CF1EBF9EFA001E02C1 /* LayerListOutlineView.swift */; };
+		6B64358221FA3BD700CB1CB1 /* AccessibilityOverlay.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6B64358121FA3BD700CB1CB1 /* AccessibilityOverlay.swift */; };
 		6B6D441D218B6BBE0016262C /* LNATextField.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6B6D441C218B6BBE0016262C /* LNATextField.swift */; };
 		6B6D4427218F55B50016262C /* CGSize+Resizing.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6B6D4426218F55B50016262C /* CGSize+Resizing.swift */; };
 		6B6D4434218F6B070016262C /* NSImage+Resizing.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6B6D4432218F6B070016262C /* NSImage+Resizing.swift */; };
@@ -497,6 +498,7 @@
 		6B5D4D2C213E1CB0004F8AC3 /* EditorHeader.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = EditorHeader.swift; sourceTree = "<group>"; };
 		6B5D4DA0213F05AF004F8AC3 /* CodeEditor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CodeEditor.swift; sourceTree = "<group>"; };
 		6B6017CF1EBF9EFA001E02C1 /* LayerListOutlineView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = LayerListOutlineView.swift; sourceTree = "<group>"; };
+		6B64358121FA3BD700CB1CB1 /* AccessibilityOverlay.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AccessibilityOverlay.swift; sourceTree = "<group>"; };
 		6B6D441C218B6BBE0016262C /* LNATextField.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LNATextField.swift; sourceTree = "<group>"; };
 		6B6D4426218F55B50016262C /* CGSize+Resizing.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "CGSize+Resizing.swift"; sourceTree = "<group>"; };
 		6B6D4432218F6B070016262C /* NSImage+Resizing.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "NSImage+Resizing.swift"; sourceTree = "<group>"; };
@@ -703,6 +705,7 @@
 		306DA4ED1F33E19F002772DC /* Canvas */ = {
 			isa = PBXGroup;
 			children = (
+				6B64358121FA3BD700CB1CB1 /* AccessibilityOverlay.swift */,
 				6B4203E821BC49C700D59317 /* CanvasAreaView.swift */,
 				6B4203E221BAD71800D59317 /* CanvasTableHeaderView.swift */,
 				6B4203E021BAD56500D59317 /* CanvasTableView.swift */,
@@ -1440,6 +1443,7 @@
 				6B5D4DA1213F05AF004F8AC3 /* CodeEditor.swift in Sources */,
 				3005A5381FA00FE000ABC5C2 /* CustomPopupField.swift in Sources */,
 				6BA5BBDF2176D93D00F086A7 /* TextStyleEditorViewController.swift in Sources */,
+				6B64358221FA3BD700CB1CB1 /* AccessibilityOverlay.swift in Sources */,
 				30EFC9581EF369DC0087711D /* ImageField.swift in Sources */,
 				30CE47811ED73FC800BBF716 /* TextField.swift in Sources */,
 				6BA775CB21C59E330033C03C /* DimensionType.swift in Sources */,

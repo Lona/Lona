@@ -970,6 +970,21 @@ extension WorkspaceViewController {
         }
     }
 
+    @IBAction func toggleAccessibilityOverlay(_ sender: AnyObject) {
+        guard let sender = sender as? NSMenuItem else { return }
+
+        switch sender.state {
+        case .on:
+            sender.state = .off
+            componentEditorViewController.showsAccessibilityOverlay = false
+        case .off:
+            sender.state = .on
+            componentEditorViewController.showsAccessibilityOverlay = true
+        default:
+            break
+        }
+    }
+
     func addChildren() {
         let newLayer = CSLayer(name: "Children", type: .children, parameters: [
             "width": 100.toData(),
