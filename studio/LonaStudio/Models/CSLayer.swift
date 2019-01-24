@@ -177,6 +177,21 @@ class CSLayer: CSDataDeserializable, CSDataSerializable, DataNode, NSCopying {
         return result
     }
 
+    func accessibilityElementHierarchy() -> [CSLayer] {
+        switch accessibility {
+        case .auto:
+            return Array(children.map { $0.accessibilityElementHierarchy() }.joined())
+        case .none:
+            return []
+        case .element:
+            return [self]
+        case .container(let elements):
+            let descendants = descendantLayers
+            let layers = elements.map { name in descendants.first(where: { layer in layer.name == name }) }.compactMap { $0 }
+            return Array(layers.map { $0.accessibilityElementHierarchy() }.joined())
+        }
+    }
+
     func descendantLayerNames(includingSelf: Bool) -> [String] {
         let names = descendantLayers.map({ $0.name })
 

@@ -41,6 +41,7 @@ enum RenderOption {
     case hideAnimationLayers(Bool)
     case renderCanvasShadow(Bool)
     case selectedLayerName(String?)
+    case showsAccessibilityOverlay(Bool)
 }
 
 struct RenderOptions {
@@ -49,6 +50,7 @@ struct RenderOptions {
     var hideAnimationLayers: Bool = false
     var renderCanvasShadow: Bool = false
     var selectedLayerName: String?
+    var showsAccessibilityOverlay: Bool = false
 
     mutating func merge(options: [RenderOption]) {
         options.forEach({ option in
@@ -58,6 +60,7 @@ struct RenderOptions {
             case .hideAnimationLayers(let value): hideAnimationLayers = value
             case .renderCanvasShadow(let value): renderCanvasShadow = value
             case .selectedLayerName(let value): selectedLayerName = value
+            case .showsAccessibilityOverlay(let value): showsAccessibilityOverlay = value
             }
         })
     }
@@ -83,6 +86,8 @@ class CanvasView: FlippedView {
     private let selectionView = NSBox()
     private let canvasView = FlippedView(frame: .zero)
 
+    private let accessibilityOverlay = AccessibilityOverlay()
+
     init(_ parameters: Parameters) {
         self.parameters = parameters
 
@@ -103,6 +108,7 @@ class CanvasView: FlippedView {
 
     private func setUpViews() {
         addSubview(backgroundView)
+        addSubview(accessibilityOverlay)
         addSubview(selectionView)
         backgroundView.addSubview(canvasView)
 
@@ -195,6 +201,31 @@ class CanvasView: FlippedView {
         } else {
             if !selectionView.isHidden {
                 selectionView.isHidden = true
+            }
+        }
+
+        if options.showsAccessibilityOverlay, let rootLayer = rootLayer {
+            accessibilityOverlay.subviews.forEach { $0.removeFromSuperview() }
+
+            accessibilityOverlay.frame = backgroundView.frame.insetBy(dx: -2, dy: -2)
+
+            let rects: [CGRect] = rootLayer.accessibilityElementHierarchy().map { layer in
+                guard let nsView = self.firstDescendant(where: { view in
+                    guard let csView = view as? CSView else { return false }
+                    return csView.layerName == layer.name
+                }) else { return nil }
+
+                return accessibilityOverlay.convert(nsView.bounds, from: nsView)
+                }.compactMap { $0 }
+
+            accessibilityOverlay.accessibilityOrderRects = rects
+
+            if accessibilityOverlay.isHidden {
+                accessibilityOverlay.isHidden = false
+            }
+        } else {
+            if !accessibilityOverlay.isHidden {
+                accessibilityOverlay.isHidden = true
             }
         }
 

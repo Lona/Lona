@@ -99,13 +99,15 @@ public class CanvasAreaView: NSBox {
             let componentSerialized = parameters?.component.toData()
 
             if componentSerialized != previousComponentSerialized ||
-                parameters?.selectedLayerName != oldValue?.selectedLayerName {
+                parameters?.selectedLayerName != oldValue?.selectedLayerName ||
+                parameters?.showsAccessibilityOverlay != oldValue?.showsAccessibilityOverlay {
 
                 previousComponentSerialized = componentSerialized
 
                 outlineView.canvases = parameters?.component.computedCanvases() ?? []
                 outlineView.cases = parameters?.component.computedCases(for: nil) ?? []
                 outlineView.component = parameters?.component
+                outlineView.showsAccessibilityOverlay = parameters?.showsAccessibilityOverlay ?? false
                 outlineView.selectedLayerName = parameters?.selectedLayerName
 
                 outlineView.updateHeader()
@@ -169,6 +171,7 @@ public class CanvasAreaView: NSBox {
 extension CanvasAreaView {
     struct Parameters {
         var component: CSComponent
+        var showsAccessibilityOverlay: Bool
         var onSelectLayer: (CSLayer) -> Void
         var selectedLayerName: String?
     }

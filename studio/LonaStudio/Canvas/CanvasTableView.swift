@@ -85,6 +85,8 @@ class CanvasTableView: NSTableView, NSTableViewDataSource, NSTableViewDelegate {
 
     var canvases: [Canvas] = []
 
+    var showsAccessibilityOverlay: Bool = false
+
     var selectedLayerName: String?
 
     var cases: [CSCaseEntry] = []
@@ -214,6 +216,7 @@ class CanvasTableView: NSTableView, NSTableViewDataSource, NSTableViewDelegate {
             rootLayer: rootLayer,
             config: config,
             options: RenderOptions([
+                .showsAccessibilityOverlay(showsAccessibilityOverlay),
                 .renderCanvasShadow(true),
                 .selectedLayerName(selectedLayerName)
                 ]))

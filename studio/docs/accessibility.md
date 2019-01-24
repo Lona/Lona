@@ -3,6 +3,7 @@
 Lona provides a set of cross-platform parameters to build accessible components. In cases where these aren't enough, the native views can be manipulated directly via code.
 
 - [Guide](#guide)
+- [Accessibility preview](#accessibility-preview)
 - [Accessibility parameters](#accessibility-parameters)
 - [Swift](#swift)
   - [iOS](#ios)
@@ -36,6 +37,16 @@ For most Lona components, you can follow these steps to create a great, consiste
    The _Label_ and _Hint_ should generally be set via logic so that the values may be localized -- this means you'll need to add a component parameter for each.
 
 The rest of this doc will go into more detail about each of the accessibility parameters, and how to access the underlying native UI components when you need more control.
+
+## Accessibility preview
+
+To preview the order of accessible layers in a component, turn on `View > Accessibility Overlay` from the main menu:
+
+![Accessibility layer order preview](https://i.imgur.com/wQLnHXp.png)
+
+This preview shows the order and location of the focus ring (web) or voiceover outline (iOS).
+
+Note that this preview is _approximate_. If the exact accessibility order has been specified (e.g. by following the guide above), then Lona Studio's preview should be exact. If some layers have an `accessibilityType` of `default`, then Lona Studio won't show them, even though the underlying platform may.
 
 ## Accessibility parameters
 
