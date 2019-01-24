@@ -78,6 +78,7 @@ let getParameterCategory = (x: ParameterKey.t) =>
   | AccessibilityRole => Prop
   | AccessibilityElements => Prop
   | OnAccessibilityActivate => Prop
+  | AccessibilityChecked => Prop
   | Custom(_) => Prop
   /* Meta: these are treated like props within Lona for simplicity, but they are
      not actually props. These must be translated into something platform-specific

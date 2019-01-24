@@ -82,9 +82,23 @@ Use this when working with interactive controls. For example, a number input fie
 
 _Currently supported on iOS_
 
-Type: one of `"none"`, `"button"`, `"link"`, `"search"`, `"image"`, `"keyboardkey"`, `"text"`, `"adjustable"`, `"imagebutton"`, `"header"`, `"summary"`
+Type: one of `"none"`, `"button"`, `"link"`, `"checkbox"`, `"search"`, `"image"`, `"keyboardkey"`, `"text"`, `"adjustable"`, `"imagebutton"`, `"header"`, `"summary"`
 
 These presets determine the high level behavior of the layer. Currently this list is taken from React Native and should handle mobile fairly well, but there may be more to add for web.
+
+##### Role mapping details
+
+- **`checkbox`**
+  - **web**: this maps to the `checkbox` role and allows the `accessibilityChecked` layer parameter to be assigned via logic.
+  - **iOS**: this maps to the `button` role. Use `accessibilityValue` to control how screenreaders read the value (e.g. by setting `accessibilityValue` to a localized translation of `"checked"` and `"unchecked"`)
+
+#### `accessibilityChecked` (static)
+
+_Supported on web_
+
+Type: `Boolean`
+
+This parameter can be assigned via logic when the `accessibilityRole` of a layer is set to `checkbox`. This indicates whether the checkbox is checked or not.
 
 #### `accessibilityElements` (static & dynamic†)
 

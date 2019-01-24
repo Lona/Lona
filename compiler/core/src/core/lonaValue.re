@@ -78,6 +78,7 @@ let parameterDefaultValue = key =>
   | ParameterKey.AccessibilityType => string("default")
   | ParameterKey.AccessibilityElements => stringArray([])
   | ParameterKey.OnAccessibilityActivate => null()
+  | ParameterKey.AccessibilityChecked => boolean(false)
   /* Interactivity */
   | ParameterKey.Pressed => boolean(false)
   | ParameterKey.Hovered => boolean(false)

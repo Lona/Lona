@@ -69,7 +69,6 @@ let removeSpecialProps =
   |> ParameterMap.filter((key: ParameterKey.t, _) =>
        switch (key, options.framework) {
        | (ParameterKey.AccessibilityHint, _)
-       | (ParameterKey.AccessibilityRole, _)
        | (ParameterKey.AccessibilityValue, _)
        | (ParameterKey.AccessibilityType, _)
        | (ParameterKey.AccessibilityElements, _) => false
@@ -79,6 +78,11 @@ let removeSpecialProps =
            ParameterKey.OnAccessibilityActivate,
            JavaScriptOptions.ReactSketchapp,
          ) =>
+         false
+       | (ParameterKey.AccessibilityRole, JavaScriptOptions.ReactNative)
+       | (ParameterKey.AccessibilityRole, JavaScriptOptions.ReactSketchapp)
+       | (ParameterKey.AccessibilityChecked, JavaScriptOptions.ReactNative)
+       | (ParameterKey.AccessibilityChecked, JavaScriptOptions.ReactSketchapp) =>
          false
        | (ParameterKey.NumberOfLines, JavaScriptOptions.ReactDOM) => false
        | (ParameterKey.Text, _) => false

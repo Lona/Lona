@@ -152,9 +152,9 @@ public class AccessibilityTest: NSBox {
 
 
 
+
     checkboxView.borderColor = Colors.grey400
     checkboxView.cornerRadius = 20
-
     checkboxView.borderWidth = 1
     checkboxCircleView.fillColor = Colors.green200
     checkboxCircleView.cornerRadius = 15
@@ -382,6 +382,7 @@ public class AccessibilityTest: NSBox {
     }
 
     checkboxViewOnPress = handleOnToggleCheckbox
+
 
     if checkboxCircleView.isHidden != checkboxCircleViewIsHidden {
       NSLayoutConstraint.deactivate(conditionalConstraints(checkboxCircleViewIsHidden: checkboxCircleViewIsHidden))

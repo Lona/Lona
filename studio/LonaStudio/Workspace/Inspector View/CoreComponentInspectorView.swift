@@ -945,6 +945,7 @@ class CoreComponentInspectorView: NSStackView {
             change(property: Property.accessibilityRole, to: CSLayer.accessibilityRoles[value].toData())
         }
 
+        accessibilityInspector.accessibilityRoles = CSLayer.accessibilityRoles
         accessibilityInspector.accessibilityElements = csLayer.descendantLayerNames(includingSelf: false)
         accessibilityInspector.onChangeSelectedElementIndices = { value in
             change(property: Property.accessibilityElements, to: value.toData())

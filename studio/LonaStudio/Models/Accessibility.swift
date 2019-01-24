@@ -9,7 +9,7 @@
 import Foundation
 
 enum AccessibilityRole: String {
-    case none, button, link, search, image, keyboardkey, adjustable, imagebutton, header, summary
+    case none, button, link, checkbox, search, image, keyboardkey, adjustable, imagebutton, header, summary
 }
 
 struct AccessibilityStates: OptionSet {

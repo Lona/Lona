@@ -297,6 +297,18 @@
         "accessibilityRoleIndex"
       ],
       "type" : "AssignExpr"
+    },
+    {
+      "assignee" : [
+        "layers",
+        "RoleDropdown",
+        "values"
+      ],
+      "content" : [
+        "parameters",
+        "accessibilityRoles"
+      ],
+      "type" : "AssignExpr"
     }
   ],
   "params" : [
@@ -369,6 +381,13 @@
       "type" : {
         "name" : "Array",
         "of" : "WholeNumber"
+      }
+    },
+    {
+      "name" : "accessibilityRoles",
+      "type" : {
+        "name" : "Array",
+        "of" : "String"
       }
     },
     {
@@ -472,17 +491,7 @@
                 "params" : {
                   "selectedIndex" : 0,
                   "values" : [
-                    "None",
-                    "Button",
-                    "Link",
-                    "Search",
-                    "Image",
-                    "Keyboard Key",
-                    "Text",
-                    "Adjustable",
-                    "Image Button",
-                    "Header",
-                    "Summary"
+
                   ]
                 },
                 "type" : "ControlledDropdown"

@@ -72,6 +72,7 @@ export default class AccessibilityTest extends React.Component {
 
     let AccessibleText$accessibilityLabel
     let CheckboxCircle$visible
+    let CheckboxRow$accessibilityChecked
     let CheckboxRow$accessibilityValue
     let CheckboxRow$onAccessibilityActivate
     let Checkbox$onPress
@@ -91,11 +92,14 @@ export default class AccessibilityTest extends React.Component {
     }
     CheckboxRow$onAccessibilityActivate = this.props.onToggleCheckbox
     Checkbox$onPress = this.props.onToggleCheckbox
+    CheckboxRow$accessibilityChecked = this.props.checkboxValue
     return (
       <View>
         <CheckboxRowAccessibilityWrapper
           aria-label={"Checkbox row"}
+          role={"checkbox"}
           onAccessibilityActivate={CheckboxRow$onAccessibilityActivate}
+          aria-checked={CheckboxRow$accessibilityChecked}
           tabIndex={-1}
           focusRing={this.state.focusRing}
           onKeyDown={this._handleKeyDown}
@@ -111,6 +115,7 @@ export default class AccessibilityTest extends React.Component {
         <Row1>
           <Element
             aria-label={"Red box"}
+            role={"button"}
             tabIndex={-1}
             focusRing={this.state.focusRing}
             onKeyDown={this._handleKeyDown}

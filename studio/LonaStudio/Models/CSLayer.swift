@@ -603,6 +603,7 @@ class CSLayer: CSDataDeserializable, CSDataSerializable, DataNode, NSCopying {
         "none",
         "button",
         "link",
+        "checkbox",
         "search",
         "image",
         "keyboardkey",
@@ -748,6 +749,13 @@ class CSLayer: CSDataDeserializable, CSDataSerializable, DataNode, NSCopying {
             // Children
             "children": CSData.Array([])
         ])
+
+        switch accessibility.role ?? AccessibilityRole.none {
+        case .checkbox:
+            data["accessibilityChecked"] = CSData.Bool(false)
+        default:
+            break
+        }
 
         if type == .view {
             data["pressed"] = CSData.Bool(false)

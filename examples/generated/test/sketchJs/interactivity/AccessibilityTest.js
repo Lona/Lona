@@ -12,6 +12,7 @@ export default class AccessibilityTest extends React.Component {
 
     let AccessibleText$accessibilityLabel
     let CheckboxCircle$visible
+    let CheckboxRow$accessibilityChecked
     let CheckboxRow$accessibilityValue
     let CheckboxRow$onAccessibilityActivate
     let Checkbox$onPress
@@ -31,6 +32,7 @@ export default class AccessibilityTest extends React.Component {
     }
     CheckboxRow$onAccessibilityActivate = this.props.onToggleCheckbox
     Checkbox$onPress = this.props.onToggleCheckbox
+    CheckboxRow$accessibilityChecked = this.props.checkboxValue
     return (
       <View style={styles.view}>
         <View style={styles.checkboxRow}>
@@ -102,7 +104,6 @@ let styles = StyleSheet.create({
     paddingLeft: 4,
     borderColor: colors.grey400,
     borderRadius: 20,
-    borderStyle: "solid",
     borderWidth: 1,
     width: 30,
     height: 30

@@ -45,6 +45,8 @@ let variableNames = variable =>
   | ParameterKey.Image => "src"
   | ParameterKey.OnPress => "onClick"
   | ParameterKey.AccessibilityLabel => "aria-label"
+  | ParameterKey.AccessibilityChecked => "aria-checked"
+  | ParameterKey.AccessibilityRole => "role"
   | _ => variable |> ParameterKey.toString
   };
 

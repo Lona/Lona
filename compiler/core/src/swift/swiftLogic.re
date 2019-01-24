@@ -251,6 +251,7 @@ let toSwiftAST =
                 | "none" => "UIAccessibilityTraitNone"
                 | "button" => "UIAccessibilityTraitButton"
                 | "link" => "UIAccessibilityTraitLink"
+                | "checkbox" => "UIAccessibilityTraitButton"
                 | "search" => "UIAccessibilityTraitSearchField"
                 | "image" => "UIAccessibilityTraitImage"
                 | "keyboardkey" => "UIAccessibilityTraitKeyboardKey"
@@ -265,6 +266,9 @@ let toSwiftAST =
           })
         | AppKit => Empty
         }
+      | (Ast.SwiftIdentifier(key), _)
+          when key |> keyEndsWith("accessibilityChecked") =>
+        Empty
       | (
           Ast.SwiftIdentifier(key) as left,
           Ast.LiteralExpression(Array(elements)),
