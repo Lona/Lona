@@ -48,7 +48,7 @@ class AccessibilityOverlay: NSView {
 
             labelText.draw(at:
                 NSPoint(
-                    x: labelRect.origin.x + (labelRect.width - labelText.size().width) / 2,
+                    x: labelRect.origin.x + (labelRect.width - labelSize.width) / 2,
                     y: labelRect.origin.y))
         }
     }
