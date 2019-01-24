@@ -64,11 +64,8 @@ let rec render = ast: Prettier.Doc.t('a) =>
   | IfStatement(o) =>
     let ifPart =
       group(
-        s("if")
-        <+> line
-        <+> s("(")
-        <+> softline
-        <+> render(o.test)
+        s("if (")
+        <+> indent(softline <+> render(o.test))
         <+> softline
         <+> s(") "),
       )
