@@ -137,9 +137,9 @@ public class AccessibilityTest: UIView {
 
     checkboxRowView.isAccessibilityElement = true
     checkboxRowView.accessibilityLabel = "Checkbox row"
+    checkboxRowView.accessibilityTraits = UIAccessibilityTraitButton
     checkboxView.layer.borderColor = Colors.grey400.cgColor
     checkboxView.layer.cornerRadius = 20
-
     checkboxView.layer.borderWidth = 1
     checkboxCircleView.backgroundColor = Colors.green200
     checkboxCircleView.layer.cornerRadius = 15
@@ -372,6 +372,7 @@ public class AccessibilityTest: UIView {
     }
     checkboxRowView.onAccessibilityActivate = handleOnToggleCheckbox
     onTapCheckboxView = handleOnToggleCheckbox
+
 
     if checkboxCircleView.isHidden != checkboxCircleViewIsHidden {
       NSLayoutConstraint.deactivate(conditionalConstraints(checkboxCircleViewIsHidden: checkboxCircleViewIsHidden))

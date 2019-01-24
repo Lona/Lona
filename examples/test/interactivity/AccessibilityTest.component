@@ -150,6 +150,18 @@
         "onToggleCheckbox"
       ],
       "type" : "AssignExpr"
+    },
+    {
+      "assignee" : [
+        "layers",
+        "CheckboxRow",
+        "accessibilityChecked"
+      ],
+      "content" : [
+        "parameters",
+        "checkboxValue"
+      ],
+      "type" : "AssignExpr"
     }
   ],
   "params" : [
@@ -189,7 +201,6 @@
             "params" : {
               "borderColor" : "grey400",
               "borderRadius" : 20,
-              "borderStyle" : "solid",
               "borderWidth" : 1,
               "height" : 30,
               "marginRight" : 10,
@@ -212,6 +223,7 @@
         "id" : "CheckboxRow",
         "params" : {
           "accessibilityLabel" : "Checkbox row",
+          "accessibilityRole" : "checkbox",
           "accessibilityType" : "element",
           "alignItems" : "center",
           "alignSelf" : "stretch",

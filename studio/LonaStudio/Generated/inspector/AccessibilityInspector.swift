@@ -25,6 +25,7 @@ public class AccessibilityInspector: NSBox {
     accessibilityHintText: String,
     accessibilityElements: [String],
     selectedElementIndices: [Int],
+    accessibilityRoles: [String],
     accessibilityRoleIndex: Int)
   {
     self
@@ -36,6 +37,7 @@ public class AccessibilityInspector: NSBox {
           accessibilityHintText: accessibilityHintText,
           accessibilityElements: accessibilityElements,
           selectedElementIndices: selectedElementIndices,
+          accessibilityRoles: accessibilityRoles,
           accessibilityRoleIndex: accessibilityRoleIndex))
   }
 
@@ -131,6 +133,15 @@ public class AccessibilityInspector: NSBox {
     set {
       if parameters.selectedElementIndices != newValue {
         parameters.selectedElementIndices = newValue
+      }
+    }
+  }
+
+  public var accessibilityRoles: [String] {
+    get { return parameters.accessibilityRoles }
+    set {
+      if parameters.accessibilityRoles != newValue {
+        parameters.accessibilityRoles = newValue
       }
     }
   }
@@ -289,19 +300,6 @@ public class AccessibilityInspector: NSBox {
     hintLabelView.attributedStringValue = hintLabelViewTextStyle.apply(to: "Hint")
     hintTextInputView.placeholderString = "Hint"
     roleLabelView.attributedStringValue = roleLabelViewTextStyle.apply(to: "Role")
-    roleDropdownView.values = [
-      "None",
-      "Button",
-      "Link",
-      "Search",
-      "Image",
-      "Keyboard Key",
-      "Text",
-      "Adjustable",
-      "Image Button",
-      "Header",
-      "Summary"
-    ]
     statesLabelView.attributedStringValue = statesLabelViewTextStyle.apply(to: "States")
     statesDropdownView.selectedIndex = 0
     statesDropdownView.values = ["None", "Selected", "Disabled", "Selected and Disabled"]
@@ -806,6 +804,7 @@ public class AccessibilityInspector: NSBox {
     accessibilityElementsInputView.selectedIndices = selectedElementIndices
     roleDropdownView.onChangeIndex = handleOnChangeAccessibilityRoleIndex
     roleDropdownView.selectedIndex = accessibilityRoleIndex
+    roleDropdownView.values = accessibilityRoles
 
     if
     containerContainerView.isHidden != containerContainerViewIsHidden ||
@@ -860,6 +859,7 @@ extension AccessibilityInspector {
     public var accessibilityHintText: String
     public var accessibilityElements: [String]
     public var selectedElementIndices: [Int]
+    public var accessibilityRoles: [String]
     public var accessibilityRoleIndex: Int
     public var onClickHeader: (() -> Void)?
     public var onChangeAccessibilityTypeIndex: ((Int) -> Void)?
@@ -875,6 +875,7 @@ extension AccessibilityInspector {
       accessibilityHintText: String,
       accessibilityElements: [String],
       selectedElementIndices: [Int],
+      accessibilityRoles: [String],
       accessibilityRoleIndex: Int,
       onClickHeader: (() -> Void)? = nil,
       onChangeAccessibilityTypeIndex: ((Int) -> Void)? = nil,
@@ -889,6 +890,7 @@ extension AccessibilityInspector {
       self.accessibilityHintText = accessibilityHintText
       self.accessibilityElements = accessibilityElements
       self.selectedElementIndices = selectedElementIndices
+      self.accessibilityRoles = accessibilityRoles
       self.accessibilityRoleIndex = accessibilityRoleIndex
       self.onClickHeader = onClickHeader
       self.onChangeAccessibilityTypeIndex = onChangeAccessibilityTypeIndex
@@ -907,6 +909,7 @@ extension AccessibilityInspector {
           accessibilityHintText: "",
           accessibilityElements: [],
           selectedElementIndices: [],
+          accessibilityRoles: [],
           accessibilityRoleIndex: 0)
     }
 
@@ -917,7 +920,8 @@ extension AccessibilityInspector {
             lhs.accessibilityHintText == rhs.accessibilityHintText &&
               lhs.accessibilityElements == rhs.accessibilityElements &&
                 lhs.selectedElementIndices == rhs.selectedElementIndices &&
-                  lhs.accessibilityRoleIndex == rhs.accessibilityRoleIndex
+                  lhs.accessibilityRoles == rhs.accessibilityRoles &&
+                    lhs.accessibilityRoleIndex == rhs.accessibilityRoleIndex
     }
   }
 }
@@ -948,6 +952,7 @@ extension AccessibilityInspector {
       accessibilityHintText: String,
       accessibilityElements: [String],
       selectedElementIndices: [Int],
+      accessibilityRoles: [String],
       accessibilityRoleIndex: Int,
       onClickHeader: (() -> Void)? = nil,
       onChangeAccessibilityTypeIndex: ((Int) -> Void)? = nil,
@@ -965,6 +970,7 @@ extension AccessibilityInspector {
             accessibilityHintText: accessibilityHintText,
             accessibilityElements: accessibilityElements,
             selectedElementIndices: selectedElementIndices,
+            accessibilityRoles: accessibilityRoles,
             accessibilityRoleIndex: accessibilityRoleIndex,
             onClickHeader: onClickHeader,
             onChangeAccessibilityTypeIndex: onChangeAccessibilityTypeIndex,
@@ -983,6 +989,7 @@ extension AccessibilityInspector {
           accessibilityHintText: "",
           accessibilityElements: [],
           selectedElementIndices: [],
+          accessibilityRoles: [],
           accessibilityRoleIndex: 0)
     }
   }
