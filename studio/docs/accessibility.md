@@ -177,6 +177,8 @@ To focus a component, you'll need to store a React `ref` to that component. Comp
 
 - **`focus(options)`** - Call this method to focus the first focusable DOM node in the component.
 
+- **`focusLast(options)`** - Call this method to focus the last focusable DOM node in the component.
+
 - **`focusNext(options)`** - Call this method to focus the next focusable DOM node in the component. If focus is not currently on a DOM node within this component, then the first focusable node is focused. If focus is on the last node within this component, focus is not changed, and instead the `onFocusNext` prop is called.
 
 - **`focusPrevious(options)`** - Call this method to focus the previous focusable DOM node in the component. If focus is on the first node within this component, focus is not changed, and instead the `onFocusPrevious` prop is called.

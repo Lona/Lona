@@ -2,6 +2,7 @@ import React, { Component } from "react";
 import "./App.css";
 
 import AccessibilityTest from "./generated/interactivity/AccessibilityTest";
+import AccessibilityVisibility from "./generated/interactivity/AccessibilityVisibility";
 
 class App extends Component {
   state = {
@@ -36,6 +37,18 @@ class App extends Component {
           onToggleCheckbox={() =>
             this.setState({ checked: !this.state.checked })
           }
+          onFocusNext={() => {
+            this.accessibilityVisibility.focus();
+          }}
+        />
+        <AccessibilityVisibility
+          ref={ref => {
+            this.accessibilityVisibility = ref;
+          }}
+          showText={this.state.checked}
+          onFocusPrevious={() => {
+            this.accessibilityTest.focusLast();
+          }}
         />
       </div>
     );

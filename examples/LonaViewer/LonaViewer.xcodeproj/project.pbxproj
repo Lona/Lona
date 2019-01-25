@@ -76,6 +76,7 @@
 		6B39170621643C7C00B20F9E /* Shadows.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6B39170521643C7C00B20F9E /* Shadows.swift */; };
 		6B39170821643EF300B20F9E /* ShadowsTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6B39170721643EF300B20F9E /* ShadowsTest.swift */; };
 		6B39170A2164492600B20F9E /* Shadow.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6B3917092164492600B20F9E /* Shadow.swift */; };
+		6B61E06F21FA7E8F0057E8DF /* AccessibilityVisibility.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6B61E06E21FA7E8F0057E8DF /* AccessibilityVisibility.swift */; };
 		6B6D4423218BCF150016262C /* LNATextField.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6B6D4422218BCF150016262C /* LNATextField.swift */; };
 		6B6D4425218E31EF0016262C /* ImageCropping.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6B6D4424218E31EF0016262C /* ImageCropping.swift */; };
 		6B6D4429218F565C0016262C /* CGSize+Resizing.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6B6D4428218F565C0016262C /* CGSize+Resizing.swift */; };
@@ -181,6 +182,7 @@
 		6B39170521643C7C00B20F9E /* Shadows.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Shadows.swift; sourceTree = "<group>"; };
 		6B39170721643EF300B20F9E /* ShadowsTest.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ShadowsTest.swift; sourceTree = "<group>"; };
 		6B3917092164492600B20F9E /* Shadow.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Shadow.swift; sourceTree = "<group>"; };
+		6B61E06E21FA7E8F0057E8DF /* AccessibilityVisibility.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AccessibilityVisibility.swift; sourceTree = "<group>"; };
 		6B6D4422218BCF150016262C /* LNATextField.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = LNATextField.swift; sourceTree = "<group>"; };
 		6B6D4424218E31EF0016262C /* ImageCropping.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ImageCropping.swift; sourceTree = "<group>"; };
 		6B6D4428218F565C0016262C /* CGSize+Resizing.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "CGSize+Resizing.swift"; sourceTree = "<group>"; };
@@ -440,6 +442,7 @@
 			isa = PBXGroup;
 			children = (
 				6B06ADB221E8FB0400136BC8 /* AccessibilityTest.swift */,
+				6B61E06E21FA7E8F0057E8DF /* AccessibilityVisibility.swift */,
 				30F870BA20864AEE007ADA5B /* Button.swift */,
 				12BBFDF8206B02AC0041620C /* PressableRootView.swift */,
 			);
@@ -623,6 +626,7 @@
 				6B29133B219CB84200A1DDB4 /* OpacityTest.swift in Sources */,
 				6B29134D219E504E00A1DDB4 /* LonaViewModel.swift in Sources */,
 				12BBFE11206B02AC0041620C /* Colors.swift in Sources */,
+				6B61E06F21FA7E8F0057E8DF /* AccessibilityVisibility.swift in Sources */,
 				30F870B920864A88007ADA5B /* NestedButtons.swift in Sources */,
 				6B291347219E189A00A1DDB4 /* NestedLayout.swift in Sources */,
 				12BBFE0D206B02AC0041620C /* FixedParentFitChild.swift in Sources */,
