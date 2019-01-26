@@ -142,7 +142,7 @@ module Layer = {
     | "Lona:Children" => Children
     | value => Component(value)
     };
-  let rec layer = (getComponent, json) => {
+  let rec layer = (config: Config.t, json) => {
     let typeName = field("type", layerType, json);
     let parameterDictionary = json =>
       json
@@ -159,7 +159,7 @@ module Layer = {
            switch (typeName) {
            | Component(name) =>
              let param =
-               getComponent(name)
+               Config.Find.component(config, name)
                |> field("params", list(Parameters.parameter))
                |> List.find((param: parameter) => param.name == key);
              switch (param) {
@@ -188,9 +188,7 @@ module Layer = {
         },
       parameters: field("params", parameterDictionary, json),
       children:
-        switch (
-          json |> optional(field("children", list(layer(getComponent))))
-        ) {
+        switch (json |> optional(field("children", list(layer(config))))) {
         | Some(result) => result
         | None => []
         | exception e =>
@@ -346,10 +344,9 @@ let rec logicNode = json => {
 };
 
 module Component = {
-  open Json.Decode;
   let parameters = json => field("params", list(Parameters.parameter), json);
-  let rootLayer = (getComponent, json) =>
-    field("root", Layer.layer(getComponent), json);
+  let rootLayer = (config: Config.t, json) =>
+    field("root", Layer.layer(config), json);
   let logic = json => Logic.Block(field("logic", list(logicNode), json));
 };
 

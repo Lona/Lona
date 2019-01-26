@@ -116,7 +116,7 @@ module Property = {
 
 let focusStyles =
     (config: Config.t, layer: Types.layer): option(JavaScriptAst.node) => {
-  let canBeFocused = JavaScriptLayer.canBeFocused(layer);
+  let canBeFocused = JavaScriptLayer.canBeFocused(config, layer);
 
   if (canBeFocused && config.options.javaScript.framework == ReactDOM) {
     Some(

@@ -1,11 +1,21 @@
-let canBeFocused = (layer: Types.layer): bool =>
-  switch (Layer.accessibilityType(layer)) {
-  | Element(_) => true
-  | _ => false
+let rec canBeFocused = (config: Config.t, layer: Types.layer): bool =>
+  switch (layer.typeName) {
+  | Component(componentName) =>
+    Config.Find.component(config, componentName)
+    |> Decode.Component.rootLayer(config)
+    |> Layer.flatten
+    |> List.exists(canBeFocused(config))
+  | _ =>
+    switch (Layer.accessibilityType(layer)) {
+    | Element(_) => true
+    | _ => false
+    }
   };
 
 let needsRef = (config: Config.t, layer: Types.layer): bool =>
-  config.options.javaScript.framework == ReactDOM && layer |> canBeFocused;
+  config.options.javaScript.framework == ReactDOM
+  && layer
+  |> canBeFocused(config);
 
 let getStyleVariables =
     (
@@ -36,8 +46,8 @@ let hasAccessibilityActivate = (assignments, layer) =>
   );
 
 module Hierarchy = {
-  let needsFocusHandling = (layer: Types.layer): bool =>
-    layer |> Layer.flatten |> List.exists(canBeFocused);
+  let needsFocusHandling = (config: Config.t, layer: Types.layer): bool =>
+    layer |> Layer.flatten |> List.exists(canBeFocused(config));
 
   let accessibilityElements = (rootLayer: Types.layer): list(Types.layer) => {
     let rec inner =
@@ -52,7 +62,12 @@ module Hierarchy = {
           elements
           |> List.map(name => Layer.findByName(name, layer))
           |> Sequence.compact
-          |> List.map(inner([]))
+          |> List.map((layer: Types.layer) =>
+               switch (layer.typeName) {
+               | Component(_) => [layer]
+               | _ => inner([], layer)
+               }
+             )
           |> List.concat
         }
       );

@@ -460,7 +460,6 @@ module Doc = {
       (
         swiftOptions: SwiftOptions.options,
         config: Config.t,
-        getComponent,
         componentParameters,
         assignmentsFromLayerParameters,
         rootLayer: Types.layer,
@@ -479,7 +478,7 @@ module Doc = {
         | (Some(assignment), _, _) => assignment
         | (None, Component(componentName), _) =>
           let param =
-            getComponent(componentName)
+            Config.Find.component(config, componentName)
             |> Decode.Component.parameters
             |> List.find((param: Types.parameter) => param.name == name);
           Logic.assignmentForLayerParameter(
@@ -508,7 +507,6 @@ module Doc = {
       (
         swiftOptions: SwiftOptions.options,
         config: Config.t,
-        getComponent,
         componentParameters,
         logic,
         assignmentsFromLayerParameters,
@@ -555,7 +553,6 @@ module Doc = {
              defineInitialLayerValue(
                swiftOptions,
                config,
-               getComponent,
                componentParameters,
                assignmentsFromLayerParameters,
                rootLayer,
@@ -826,7 +823,6 @@ module Doc = {
       (
         swiftOptions: SwiftOptions.options,
         config: Config.t,
-        getComponent,
         componentParameters,
         assignmentsFromLayerParameters,
         assignmentsFromLogic,
@@ -853,7 +849,6 @@ module Doc = {
            defineInitialLayerValue(
              swiftOptions,
              config,
-             getComponent,
              componentParameters,
              assignmentsFromLayerParameters,
              rootLayer,
@@ -1328,12 +1323,11 @@ let generate =
       options: Options.options,
       swiftOptions: SwiftOptions.options,
       name,
-      getComponent,
       json,
     ) => {
   open SwiftAst;
 
-  let rootLayer = json |> Decode.Component.rootLayer(getComponent);
+  let rootLayer = json |> Decode.Component.rootLayer(config);
   let nonRootLayers = rootLayer |> Layer.flatten |> List.tl;
   let logic = json |> Decode.Component.logic;
 
@@ -1353,7 +1347,7 @@ let generate =
 
   let visibilityCombinations =
     Constraint.visibilityCombinations(
-      getComponent,
+      config,
       assignmentsFromLogic,
       rootLayer,
     );
@@ -1585,7 +1579,6 @@ let generate =
                       Doc.setUpViews(
                         swiftOptions,
                         config,
-                        getComponent,
                         parameters,
                         logic,
                         assignmentsFromLayerParameters,
@@ -1597,7 +1590,6 @@ let generate =
                       SwiftConstraint.setUpFunction(
                         swiftOptions,
                         config,
-                        getComponent,
                         assignmentsFromLogic,
                         layerMemberExpression,
                         rootLayer,
@@ -1606,7 +1598,7 @@ let generate =
                     List.length(conditionalConstraints) > 0 ?
                       [
                         SwiftConstraint.conditionalConstraintsFunction(
-                          getComponent,
+                          config,
                           assignmentsFromLogic,
                           rootLayer,
                         ),
@@ -1616,7 +1608,6 @@ let generate =
                       Doc.update(
                         swiftOptions,
                         config,
-                        getComponent,
                         parameters,
                         assignmentsFromLayerParameters,
                         assignmentsFromLogic,

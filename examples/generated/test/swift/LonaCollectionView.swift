@@ -154,6 +154,7 @@ public class LonaCollectionView: UICollectionView,
     register(ImageCroppingCell.self, forCellWithReuseIdentifier: ImageCroppingCell.identifier)
     register(LocalAssetCell.self, forCellWithReuseIdentifier: LocalAssetCell.identifier)
     register(VectorAssetCell.self, forCellWithReuseIdentifier: VectorAssetCell.identifier)
+    register(AccessibilityNestedCell.self, forCellWithReuseIdentifier: AccessibilityNestedCell.identifier)
     register(AccessibilityTestCell.self, forCellWithReuseIdentifier: AccessibilityTestCell.identifier)
     register(AccessibilityVisibilityCell.self, forCellWithReuseIdentifier: AccessibilityVisibilityCell.identifier)
     register(ButtonCell.self, forCellWithReuseIdentifier: ButtonCell.identifier)
@@ -295,6 +296,11 @@ public class LonaCollectionView: UICollectionView,
       }
     case VectorAssetCell.identifier:
       if let cell = cell as? VectorAssetCell, let item = item as? VectorAsset.Model {
+        cell.parameters = item.parameters
+        cell.scrollDirection = scrollDirection
+      }
+    case AccessibilityNestedCell.identifier:
+      if let cell = cell as? AccessibilityNestedCell, let item = item as? AccessibilityNested.Model {
         cell.parameters = item.parameters
         cell.scrollDirection = scrollDirection
       }
@@ -709,6 +715,16 @@ public class VectorAssetCell: LonaCollectionViewCell<VectorAsset> {
   }
   public static var identifier: String {
     return "VectorAsset"
+  }
+}
+
+public class AccessibilityNestedCell: LonaCollectionViewCell<AccessibilityNested> {
+  public var parameters: AccessibilityNested.Parameters {
+    get { return view.parameters }
+    set { view.parameters = newValue }
+  }
+  public static var identifier: String {
+    return "AccessibilityNested"
   }
 }
 

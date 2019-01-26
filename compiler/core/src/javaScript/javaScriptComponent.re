@@ -159,7 +159,7 @@ module StyledComponents = {
         rootLayer: Types.layer,
         layer: Types.layer,
       ) => {
-    let usesProps = JavaScriptLayer.canBeFocused(layer);
+    let usesProps = JavaScriptLayer.canBeFocused(config, layer);
     let styles =
       JavaScriptStyles.Object.forLayer(
         config,
@@ -571,7 +571,7 @@ let rec layerToJavaScriptAST =
   let styleVariables = JavaScriptLayer.getStyleVariables(assignments, layer);
   let propVariables = JavaScriptLayer.getPropVariables(assignments, layer);
   let needsRef = JavaScriptLayer.needsRef(config, layer);
-  let canBeFocused = JavaScriptLayer.canBeFocused(layer);
+  let canBeFocused = JavaScriptLayer.canBeFocused(config, layer);
 
   let main = ParameterMap.assign(initialProps, propVariables);
   let attributes =
@@ -624,7 +624,8 @@ let rec layerToJavaScriptAST =
               value: Literal(LonaValue.boolean(true)),
             }),
           ]
-        | ReactDOM => [
+        | ReactDOM =>
+          [
             JSXAttribute({
               name: "tabIndex",
               value: Literal(LonaValue.number(-1.)),
@@ -638,6 +639,20 @@ let rec layerToJavaScriptAST =
               value: Identifier(["this", "_handleKeyDown"]),
             }),
           ]
+          @ (
+            Layer.isComponentLayer(layer) ?
+              [
+                JSXAttribute({
+                  name: "onFocusNext",
+                  value: Identifier(["this", "focusNext"]),
+                }),
+                JSXAttribute({
+                  name: "onFocusPrevious",
+                  value: Identifier(["this", "focusPrevious"]),
+                }),
+              ] :
+              []
+          )
         | ReactSketchapp => []
         } :
         []
@@ -786,8 +801,9 @@ let importComponents =
     |> Layer.flatten
     |> List.filter(JavaScriptLayer.hasAccessibilityActivate(assignments));
 
-  Js.log2(outputFile, config.outputPath);
   let importsActivationUtil = List.length(activatableLayers) > 0;
+  let importsFocusUtil =
+    JavaScriptLayer.Hierarchy.accessibilityElements(rootLayer) != [];
   {
     absolute:
       (
@@ -892,6 +908,25 @@ let importComponents =
         } else {
           [];
         }
+      )
+      @ (
+        if (framework == ReactDOM && importsFocusUtil) {
+          [
+            Ast.ImportDeclaration({
+              source:
+                Config.Workspace.getRelativePathToOutputRoot(
+                  config,
+                  Node.Path.dirname(outputFile),
+                )
+                ++ "/utils/focusUtils",
+              specifiers: [
+                Ast.ImportSpecifier({imported: "isFocused", local: None}),
+              ],
+            }),
+          ];
+        } else {
+          [];
+        }
       ),
   };
 };
@@ -932,7 +967,7 @@ let rootLayerToJavaScriptAST =
 };
 
 let defineInitialLogicValues =
-    (config: Config.t, getComponent, rootLayer, assignments, logic) => {
+    (config: Config.t, rootLayer, assignments, logic) => {
   let variableDeclarations = logic |> Logic.buildVariableDeclarations;
   let conditionalAssignments = Logic.conditionallyAssignedIdentifiers(logic);
   let isConditionallyAssigned = (layer: Types.layer, (name, _)) => {
@@ -956,7 +991,7 @@ let defineInitialLogicValues =
       | (Some(assignment), _, _) => assignment
       | (None, Component(componentName), _) =>
         let param =
-          getComponent(componentName)
+          Config.Find.component(config, componentName)
           |> Decode.Component.parameters
           |> List.find((param: Types.parameter) => param.name == name);
         Logic.assignmentForLayerParameter(
@@ -1023,12 +1058,11 @@ let generate =
       textStylesFilePath,
       config: Config.t,
       outputFile,
-      getComponent,
       getComponentFile,
       getAssetPath,
       json,
     ) => {
-  let rootLayer = json |> Decode.Component.rootLayer(getComponent);
+  let rootLayer = json |> Decode.Component.rootLayer(config);
   let logic = json |> Decode.Component.logic;
   let parameters = json |> Decode.Component.parameters;
   let assignments = Layer.parameterAssignmentsFromLogic(rootLayer, logic);
@@ -1066,7 +1100,7 @@ let generate =
 
   let logicAST =
     logic
-    |> defineInitialLogicValues(config, getComponent, rootLayer, assignments)
+    |> defineInitialLogicValues(config, rootLayer, assignments)
     |> JavaScriptLogic.toJavaScriptAST(options.framework, config)
     |> Ast.optimize;
 
@@ -1138,7 +1172,10 @@ let generate =
                 body:
                   (
                     options.framework == ReactDOM
-                    && JavaScriptLayer.Hierarchy.needsFocusHandling(rootLayer) ?
+                    && JavaScriptLayer.Hierarchy.needsFocusHandling(
+                         config,
+                         rootLayer,
+                       ) ?
                       [
                         AssignmentExpression({
                           left: Identifier(["state"]),

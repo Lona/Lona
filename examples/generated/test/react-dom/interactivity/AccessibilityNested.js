@@ -4,9 +4,11 @@ import styled from "styled-components"
 import colors from "../colors"
 import shadows from "../shadows"
 import textStyles from "../textStyles"
+import AccessibilityTest from "./AccessibilityTest"
+import AccessibilityVisibility from "./AccessibilityVisibility"
 import { isFocused } from "../utils/focusUtils"
 
-export default class AccessibilityVisibility extends React.Component {
+export default class AccessibilityNested extends React.Component {
   state = { focusRing: false }
 
   setFocusRing = (focusRing) => { this.setState({ focusRing }) }
@@ -86,44 +88,54 @@ export default class AccessibilityVisibility extends React.Component {
   }
 
   _getFocusElements = () => {
-    let elements = [this._GreyBox, this._Text]
+    let elements = [this._AccessibilityTest, this._AccessibilityVisibility]
     return elements.filter(Boolean);
   }
 
   render() {
 
 
-    let Text$visible
+    let AccessibilityTest$checkboxValue
+    let AccessibilityTest$onToggleCheckbox
+    let AccessibilityVisibility$showText
 
-    Text$visible = this.props.showText
+    AccessibilityTest$checkboxValue = this.props.isChecked
+    AccessibilityVisibility$showText = this.props.isChecked
+    AccessibilityTest$onToggleCheckbox = this.props.onChangeChecked
     return (
-      <View>
-        <GreyBox
-          aria-label={"Grey box"}
-          tabIndex={-1}
-          focusRing={this.state.focusRing}
-          onKeyDown={this._handleKeyDown}
-          ref={(ref) => { this._GreyBox = ref }}
-
-        />
-        {
-          Text$visible &&
-          <Text
-            aria-label={"Some text that is sometimes hidden"}
+      <Container>
+        <AccessibilityTestAccessibilityTestWrapper>
+          <AccessibilityTest
+            checkboxValue={AccessibilityTest$checkboxValue}
+            customTextAccessibilityLabel={"Text"}
+            onToggleCheckbox={AccessibilityTest$onToggleCheckbox}
             tabIndex={-1}
             focusRing={this.state.focusRing}
             onKeyDown={this._handleKeyDown}
-            ref={(ref) => { this._Text = ref }}
-          >
-            {"Sometimes hidden"}
-          </Text>
-        }
-      </View>
+            onFocusNext={this.focusNext}
+            onFocusPrevious={this.focusPrevious}
+            ref={(ref) => { this._AccessibilityTest = ref }}
+
+          />
+        </AccessibilityTestAccessibilityTestWrapper>
+        <AccessibilityVisibilityAccessibilityVisibilityWrapper>
+          <AccessibilityVisibility
+            showText={AccessibilityVisibility$showText}
+            tabIndex={-1}
+            focusRing={this.state.focusRing}
+            onKeyDown={this._handleKeyDown}
+            onFocusNext={this.focusNext}
+            onFocusPrevious={this.focusPrevious}
+            ref={(ref) => { this._AccessibilityVisibility = ref }}
+
+          />
+        </AccessibilityVisibilityAccessibilityVisibilityWrapper>
+      </Container>
     );
   }
 };
 
-let View = styled.div({
+let Container = styled.div({
   alignItems: "flex-start",
   display: "flex",
   flex: "1 1 0%",
@@ -131,24 +143,22 @@ let View = styled.div({
   justifyContent: "flex-start"
 })
 
-let GreyBox = styled.div((props) => ({
+let AccessibilityTestAccessibilityTestWrapper = styled.div((props) => ({
   alignItems: "flex-start",
-  backgroundColor: "#D8D8D8",
+  alignSelf: "stretch",
   display: "flex",
-  flexDirection: "column",
+  flex: "1 1 auto",
+  flexDirection: "row",
   justifyContent: "flex-start",
-  width: "100px",
-  height: "40px",
   ...!props.focusRing && { ":focus": { outline: 0 } }
 }))
 
-let Text = styled.span((props) => ({
-  textAlign: "left",
-  ...textStyles.body1,
+let AccessibilityVisibilityAccessibilityVisibilityWrapper = styled.div((props) => ({
   alignItems: "flex-start",
-  display: "block",
-  flex: "0 0 auto",
-  flexDirection: "column",
+  alignSelf: "stretch",
+  display: "flex",
+  flex: "1 1 auto",
+  flexDirection: "row",
   justifyContent: "flex-start",
   ...!props.focusRing && { ":focus": { outline: 0 } }
 }))

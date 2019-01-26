@@ -73,6 +73,7 @@ let rec render = ast: Prettier.Doc.t('a) =>
 
     switch (o.alternate) {
     | [] => ifPart
+    | [IfStatement(_) as node] => ifPart <+> s(" else ") <+> render(node)
     | _ => ifPart <+> s(" else ") <+> renderBlockBody(o.alternate, true)
     };
   | ImportDefaultSpecifier(o) => s(o)
