@@ -186,13 +186,13 @@ class CSLayer: CSDataDeserializable, CSDataSerializable, DataNode, NSCopying {
                 return innerResults
             }
 
-            switch accessibility {
+            switch layer.accessibility {
             case .auto:
                 return Array(layer.children.map { inner(prefix: prefix, layer: $0) }.joined())
             case .none:
                 return []
             case .element:
-                return [[layer.name]]
+                return [prefix + [layer.name]]
             case .container(let elements):
                 return elements.map { prefix + [$0] }
             }
