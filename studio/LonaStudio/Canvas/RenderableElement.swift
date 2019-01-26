@@ -20,6 +20,7 @@ enum RenderableType: Equatable {
 struct RenderableViewAttributes: Equatable {
     init() {
         layerName = ""
+        layerPath = []
         frame = .zero
         multipliedFillColor = .clear
         opacity = 1
@@ -32,6 +33,7 @@ struct RenderableViewAttributes: Equatable {
     }
 
     var layerName: String
+    var layerPath: [String]
     var frame: NSRect
     var multipliedFillColor: NSColor
     var opacity: CGFloat
@@ -53,6 +55,7 @@ struct RenderableViewAttributes: Equatable {
     func configureView(_ view: CSView) {
         view.frame = frame
         view.layerName = layerName
+        view.layerPath = layerPath
         view.multipliedFillColor = multipliedFillColor
         view.opacity = opacity
         view.cornerRadius = cornerRadius

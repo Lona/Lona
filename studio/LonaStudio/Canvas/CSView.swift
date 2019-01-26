@@ -48,6 +48,7 @@ class CSView: NSBox, CSRendering {
     }
 
     var layerName: String?
+    var layerPath: [String] = []
 
     var onClick: (() -> Void)?
 

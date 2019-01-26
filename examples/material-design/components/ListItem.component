@@ -116,6 +116,8 @@
     ],
     "id" : "View",
     "params" : {
+      "accessibilityRole" : "button",
+      "accessibilityType" : "element",
       "alignSelf" : "stretch",
       "flexDirection" : "row",
       "paddingBottom" : 16,

@@ -139,6 +139,9 @@
           {
             "id" : "Headline",
             "params" : {
+              "accessibilityRole" : "header",
+              "accessibilityType" : "element",
+              "alignSelf" : "stretch",
               "font" : "headline",
               "text" : "Headline"
             },
@@ -147,6 +150,8 @@
           {
             "id" : "Body",
             "params" : {
+              "accessibilityType" : "element",
+              "alignSelf" : "stretch",
               "font" : "body2",
               "numberOfLines" : 2,
               "text" : "Body",
@@ -168,6 +173,11 @@
     ],
     "id" : "View",
     "params" : {
+      "accessibilityElements" : [
+        "Headline",
+        "Body"
+      ],
+      "accessibilityType" : "container",
       "alignSelf" : "stretch"
     },
     "type" : "Lona:View"

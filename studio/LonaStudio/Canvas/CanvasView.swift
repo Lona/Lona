@@ -209,13 +209,15 @@ class CanvasView: FlippedView {
 
             accessibilityOverlay.frame = backgroundView.frame.insetBy(dx: -2, dy: -2)
 
-            let rects: [CGRect] = rootLayer.accessibilityElementHierarchy().map { layer in
-                guard let nsView = self.firstDescendant(where: { view in
-                    guard let csView = view as? CSView else { return false }
-                    return csView.layerName == layer.name
-                }) else { return nil }
+            let rects: [CGRect] = rootLayer
+                .accessibilityElementPaths(includingSubcomponentLayers: true)
+                .map { path in
+                    guard let nsView = self.firstDescendant(where: { view in
+                        guard let csView = view as? CSView else { return false }
+                        return csView.layerPath == path
+                    }) else { return nil }
 
-                return accessibilityOverlay.convert(nsView.bounds, from: nsView)
+                    return accessibilityOverlay.convert(nsView.bounds, from: nsView)
                 }.compactMap { $0 }
 
             accessibilityOverlay.accessibilityOrderRects = rects
@@ -240,12 +242,12 @@ class CanvasView: FlippedView {
 extension CanvasView {
 
     static func configureRoot(layer: CSLayer, with config: ComponentConfiguration) -> ConfiguredLayer {
-        return self.configure(layer: layer, with: config)[0]
+        return self.configure(layerPath: [], layer: layer, with: config)[0]
     }
 
-    static func configure(layer: CSLayer, with config: ComponentConfiguration) -> [ConfiguredLayer] {
+    static func configure(layerPath: [String], layer: CSLayer, with config: ComponentConfiguration) -> [ConfiguredLayer] {
         let children: [ConfiguredLayer] = layer.visibleChildren(for: config).map({ child in
-            self.configure(layer: child, with: config)
+            self.configure(layerPath: layerPath, layer: child, with: config)
         }).flatMap({ $0 })
 
         switch layer.type {
@@ -258,7 +260,10 @@ extension CanvasView {
                 canvas: config.canvas)
             componentConfig.configuredChildren = children
 
-            return self.configure(layer: componentLayer.component.rootLayer, with: componentConfig)
+            return self.configure(
+                layerPath: layerPath + [componentLayer.name],
+                layer: componentLayer.component.rootLayer,
+                with: componentConfig)
         case .builtIn(.children):
             guard let parameterLayer = layer as? CSParameterLayer else { return [] }
 
@@ -267,7 +272,8 @@ extension CanvasView {
                     return componentChildren
                     // Show children element directly when viewing parent element file
                 } else {
-                    return [ConfiguredLayer(layer: layer, config: config, children: children)]
+                    // TODO: What should layerPath be here?
+                    return [ConfiguredLayer(layerPath: layerPath + [layer.name], layer: layer, config: config, children: children)]
                 }
             } else {
                 let argument = config.scope.getValueAt(keyPath: ["parameters", parameterLayer.parameterName]).data
@@ -278,10 +284,11 @@ extension CanvasView {
 
                 config.scope.set(keyPath: ["layers", parameterLayer.parameterName], to: layer.value())
 
-                return [ConfiguredLayer(layer: layer, config: config, children: children)]
+                // TODO: What should layerPath be here?
+                return [ConfiguredLayer(layerPath: layerPath + [layer.name], layer: layer, config: config, children: children)]
             }
         case .builtIn:
-            return [ConfiguredLayer(layer: layer, config: config, children: children)]
+            return [ConfiguredLayer(layerPath: layerPath + [layer.name], layer: layer, config: config, children: children)]
         }
     }
 }

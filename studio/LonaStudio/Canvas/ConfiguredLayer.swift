@@ -15,6 +15,7 @@ let imageCache = ImageCache<NSImage>()
 let svgRenderCache = LRUCache<String, NSImage>()
 
 struct ConfiguredLayer {
+    let layerPath: [String]
     let layer: CSLayer
     let config: ComponentConfiguration
     let children: [ConfiguredLayer]
@@ -88,6 +89,7 @@ struct ConfiguredLayer {
         var renderableView = RenderableViewAttributes()
 
         renderableView.layerName = layer.name
+        renderableView.layerPath = layerPath
         renderableView.frame = NSRect(x: layout.left, y: layout.top, width: layout.width, height: layout.height)
 
         if layer.text == nil, let color = config.get(attribute: "backgroundColor", for: layer.name).string ?? layer.backgroundColor {

@@ -177,6 +177,30 @@ class CSLayer: CSDataDeserializable, CSDataSerializable, DataNode, NSCopying {
         return result
     }
 
+    func accessibilityElementPaths(includingSubcomponentLayers: Bool) -> [[String]] {
+        func inner(prefix: [String], layer: CSLayer) -> [[String]] {
+            if includingSubcomponentLayers, let componentLayer = layer as? CSComponentLayer {
+                let innerResults = componentLayer.component.rootLayer
+                    .accessibilityElementPaths(includingSubcomponentLayers: includingSubcomponentLayers)
+                    .map { prefix + [layer.name] + $0 }
+                return innerResults
+            }
+
+            switch accessibility {
+            case .auto:
+                return Array(layer.children.map { inner(prefix: prefix, layer: $0) }.joined())
+            case .none:
+                return []
+            case .element:
+                return [[layer.name]]
+            case .container(let elements):
+                return elements.map { prefix + [$0] }
+            }
+        }
+
+        return inner(prefix: [], layer: self)
+    }
+
     func accessibilityElementHierarchy() -> [CSLayer] {
         switch accessibility {
         case .auto:
