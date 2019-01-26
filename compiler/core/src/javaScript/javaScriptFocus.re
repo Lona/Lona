@@ -175,29 +175,43 @@ module Methods = {
                   }),
               }),
             ),
+            VariableDeclaration(
+              AssignmentExpression({
+                left: Identifier(["lastElement"]),
+                right:
+                  Identifier(["focusElements[focusElements.length - 1]"]),
+              }),
+            ),
             IfStatement({
               test:
                 BinaryExpression({
-                  left:
-                    Identifier(["focusElements[focusElements.length - 1]"]),
+                  left: Identifier(["lastElement"]),
                   operator: And,
-                  right:
-                    Identifier([
-                      "focusElements[focusElements.length - 1]",
-                      "focus",
-                    ]),
+                  right: Identifier(["lastElement", "focusLast"]),
                 }),
               consequent: [
                 CallExpression({
-                  callee:
-                    Identifier([
-                      "focusElements[focusElements.length - 1]",
-                      "focus",
-                    ]),
+                  callee: Identifier(["lastElement", "focusLast"]),
                   arguments: [],
                 }),
               ],
-              alternate: [],
+              alternate: [
+                IfStatement({
+                  test:
+                    BinaryExpression({
+                      left: Identifier(["lastElement"]),
+                      operator: And,
+                      right: Identifier(["lastElement", "focus"]),
+                    }),
+                  consequent: [
+                    CallExpression({
+                      callee: Identifier(["lastElement", "focus"]),
+                      arguments: [],
+                    }),
+                  ],
+                  alternate: [],
+                }),
+              ],
             }),
           ],
         }),

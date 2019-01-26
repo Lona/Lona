@@ -32,11 +32,11 @@ export default class AccessibilityNested extends React.Component {
     this.setFocusRing(focusRing)
 
     let focusElements = this._getFocusElements()
-    if (
-      focusElements[focusElements.length - 1] &&
-      focusElements[focusElements.length - 1].focus
-    ) {
-      focusElements[focusElements.length - 1].focus()
+    let lastElement = focusElements[focusElements.length - 1]
+    if (lastElement && lastElement.focusLast) {
+      lastElement.focusLast()
+    } else if (lastElement && lastElement.focus) {
+      lastElement.focus()
     }
   }
 
@@ -97,8 +97,10 @@ export default class AccessibilityNested extends React.Component {
 
     let AccessibilityTest$checkboxValue
     let AccessibilityTest$onToggleCheckbox
+    let AccessibilityVisibility$showText
 
     AccessibilityTest$checkboxValue = this.props.isChecked
+    AccessibilityVisibility$showText = this.props.isChecked
     AccessibilityTest$onToggleCheckbox = this.props.onChangeChecked
     return (
       <Container>
@@ -118,7 +120,7 @@ export default class AccessibilityNested extends React.Component {
         </AccessibilityTestAccessibilityTestWrapper>
         <AccessibilityVisibilityAccessibilityVisibilityWrapper>
           <AccessibilityVisibility
-            showText={true}
+            showText={AccessibilityVisibility$showText}
             tabIndex={-1}
             focusRing={this.state.focusRing}
             onKeyDown={this._handleKeyDown}

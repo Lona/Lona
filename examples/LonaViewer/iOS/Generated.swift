@@ -11,6 +11,7 @@ import UIKit
 enum Generated: String {
     case collectionTest = "Collection Test"
     case accessibilityTest = "Accessibility Test"
+    case accessibilityNested = "Accessibility Nested Components"
     case localAsset = "Local Asset"
     case vectorAsset = "Vector Asset"
     case vectorLogicActive = "Vector Logic - Active"
@@ -48,6 +49,7 @@ enum Generated: String {
     static func allValues() -> [Generated] {
         return [
             accessibilityTest,
+            accessibilityNested,
             collectionTest,
             localAsset,
             vectorAsset,
@@ -93,6 +95,14 @@ enum Generated: String {
             view.onToggleCheckbox = {
                 checked = !checked
                 view.checkboxValue = checked
+            }
+            return view
+        case .accessibilityNested:
+            var checked = false
+            let view = AccessibilityNested(isChecked: checked)
+            view.onChangeChecked = {
+                checked = !checked
+                view.isChecked = checked
             }
             return view
         case .collectionTest:
@@ -206,6 +216,7 @@ enum Generated: String {
                 equal(\.leftAnchor),
             ]
         case .accessibilityTest,
+             .accessibilityNested,
              .button,
              .pressableRootView,
              .nestedComponent,

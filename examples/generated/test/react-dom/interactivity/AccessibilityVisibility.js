@@ -30,11 +30,11 @@ export default class AccessibilityVisibility extends React.Component {
     this.setFocusRing(focusRing)
 
     let focusElements = this._getFocusElements()
-    if (
-      focusElements[focusElements.length - 1] &&
-      focusElements[focusElements.length - 1].focus
-    ) {
-      focusElements[focusElements.length - 1].focus()
+    let lastElement = focusElements[focusElements.length - 1]
+    if (lastElement && lastElement.focusLast) {
+      lastElement.focusLast()
+    } else if (lastElement && lastElement.focus) {
+      lastElement.focus()
     }
   }
 

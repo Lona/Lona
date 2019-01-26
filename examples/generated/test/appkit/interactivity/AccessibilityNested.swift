@@ -1,9 +1,9 @@
-import UIKit
+import AppKit
 import Foundation
 
 // MARK: - AccessibilityNested
 
-public class AccessibilityNested: UIView {
+public class AccessibilityNested: NSBox {
 
   // MARK: Lifecycle
 
@@ -67,11 +67,15 @@ public class AccessibilityNested: UIView {
   private var accessibilityVisibilityView = AccessibilityVisibility()
 
   private func setUpViews() {
+    boxType = .custom
+    borderType = .noBorder
+    contentViewMargins = .zero
+
     addSubview(accessibilityTestView)
     addSubview(accessibilityVisibilityView)
 
-    isAccessibilityElement = false
-    accessibilityElements = [accessibilityTestView, accessibilityVisibilityView]
+
+
     accessibilityTestView.customTextAccessibilityLabel = "Text"
   }
 
