@@ -400,4 +400,10 @@ module Builders = {
       "throws": false,
       "body": body,
     });
+
+  let memberOrSelfExpression = (firstIdentifier, statements) =>
+    switch (firstIdentifier) {
+    | "self" => MemberExpression(statements)
+    | _ => MemberExpression([SwiftIdentifier(firstIdentifier)] @ statements)
+    };
 };

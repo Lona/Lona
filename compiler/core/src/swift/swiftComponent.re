@@ -65,6 +65,17 @@ module Naming = {
 module Doc = {
   open SwiftAst;
 
+  let layerNameOrSelf = (rootLayer: Types.layer, layer: Types.layer) =>
+    Layer.equal(layer, rootLayer) ?
+      "self" : layer.name |> SwiftFormat.layerName;
+
+  let layerMemberExpression =
+      (rootLayer: Types.layer, layer: Types.layer, statements) =>
+    SwiftAst.Builders.memberOrSelfExpression(
+      layerNameOrSelf(rootLayer, layer),
+      statements,
+    );
+
   let fileLocalType =
       (
         swiftOptions: SwiftOptions.options,
@@ -502,7 +513,6 @@ module Doc = {
         logic,
         assignmentsFromLayerParameters,
         assignmentsFromLogic,
-        layerMemberExpression,
         rootLayer: Types.layer,
       ) => {
     let setUpDefaultsDoc = () => {
@@ -564,13 +574,21 @@ module Doc = {
       | (SwiftOptions.AppKit, VectorGraphic) => [
           BinaryExpression({
             "left":
-              layerMemberExpression(layer, [SwiftIdentifier("boxType")]),
+              layerMemberExpression(
+                rootLayer,
+                layer,
+                [SwiftIdentifier("boxType")],
+              ),
             "operator": "=",
             "right": SwiftIdentifier(".custom"),
           }),
           BinaryExpression({
             "left":
-              layerMemberExpression(layer, [SwiftIdentifier("borderType")]),
+              layerMemberExpression(
+                rootLayer,
+                layer,
+                [SwiftIdentifier("borderType")],
+              ),
             "operator": "=",
             "right":
               Parameter.isUsed(
@@ -583,6 +601,7 @@ module Doc = {
           BinaryExpression({
             "left":
               layerMemberExpression(
+                rootLayer,
                 layer,
                 [SwiftIdentifier("contentViewMargins")],
               ),
@@ -594,6 +613,7 @@ module Doc = {
           BinaryExpression({
             "left":
               layerMemberExpression(
+                rootLayer,
                 layer,
                 [SwiftIdentifier("lineBreakMode")],
               ),
@@ -607,6 +627,7 @@ module Doc = {
             BinaryExpression({
               "left":
                 layerMemberExpression(
+                  rootLayer,
                   layer,
                   [SwiftIdentifier("isUserInteractionEnabled")],
                 ),
@@ -620,6 +641,7 @@ module Doc = {
               BinaryExpression({
                 "left":
                   layerMemberExpression(
+                    rootLayer,
                     layer,
                     [SwiftIdentifier("numberOfLines")],
                   ),
@@ -635,6 +657,7 @@ module Doc = {
             BinaryExpression({
               "left":
                 layerMemberExpression(
+                  rootLayer,
                   layer,
                   [SwiftIdentifier("isUserInteractionEnabled")],
                 ),
@@ -648,6 +671,7 @@ module Doc = {
               BinaryExpression({
                 "left":
                   layerMemberExpression(
+                    rootLayer,
                     layer,
                     [SwiftIdentifier("contentMode")],
                   ),
@@ -662,6 +686,7 @@ module Doc = {
             BinaryExpression({
               "left":
                 layerMemberExpression(
+                  rootLayer,
                   layer,
                   [
                     SwiftIdentifier("layer"),
@@ -680,6 +705,7 @@ module Doc = {
             BinaryExpression({
               "left":
                 layerMemberExpression(
+                  rootLayer,
                   layer,
                   [SwiftIdentifier("isUserInteractionEnabled")],
                 ),
@@ -693,6 +719,7 @@ module Doc = {
               BinaryExpression({
                 "left":
                   layerMemberExpression(
+                    rootLayer,
                     layer,
                     [SwiftIdentifier("isOpaque")],
                   ),
@@ -711,6 +738,7 @@ module Doc = {
           FunctionCallExpression({
             "name":
               layerMemberExpression(
+                rootLayer,
                 parent,
                 [SwiftIdentifier("addSubview")],
               ),
@@ -723,7 +751,11 @@ module Doc = {
     let addInteractionHandlers = (layer: Types.layer) => [
       FunctionCallExpression({
         "name":
-          layerMemberExpression(layer, [SwiftIdentifier("addTarget")]),
+          layerMemberExpression(
+            rootLayer,
+            layer,
+            [SwiftIdentifier("addTarget")],
+          ),
         "arguments": [
           FunctionCallArgument({
             "name": None,
@@ -753,7 +785,11 @@ module Doc = {
       }),
       BinaryExpression({
         "left":
-          layerMemberExpression(layer, [SwiftIdentifier("onHighlight")]),
+          layerMemberExpression(
+            rootLayer,
+            layer,
+            [SwiftIdentifier("onHighlight")],
+          ),
         "operator": "=",
         "right": SwiftIdentifier("update"),
       }),
@@ -950,10 +986,80 @@ module Doc = {
             ],
           });
 
+        let updateAccessibilityContainers =
+          rootLayer
+          |> Layer.flatten
+          |> List.map((layer: Types.layer) =>
+               switch (Layer.accessibilityType(layer)) {
+               | Container(elements)
+                   when
+                     List.exists(
+                       element =>
+                         List.exists(
+                           (inner: Types.layer) => inner.name == element,
+                           visibilityLayers,
+                         ),
+                       elements,
+                     ) =>
+                 Some(
+                   BinaryExpression({
+                     "left":
+                       layerMemberExpression(
+                         rootLayer,
+                         layer,
+                         [SwiftIdentifier("accessibilityElements")],
+                       ),
+                     "operator": "=",
+                     "right":
+                       FunctionCallExpression({
+                         "name":
+                           MemberExpression([
+                             LiteralExpression(
+                               Array(
+                                 elements
+                                 |> List.map(name =>
+                                      SwiftIdentifier(
+                                        SwiftFormat.layerName(name),
+                                      )
+                                    ),
+                               ),
+                             ),
+                             SwiftIdentifier("filter"),
+                           ]),
+                         "arguments": [
+                           FunctionCallArgument({
+                             "name": None,
+                             "value":
+                               CodeBlock({
+                                 "statements": [
+                                   PrefixExpression({
+                                     "operator": "!",
+                                     "expression":
+                                       Builders.memberExpression([
+                                         "$0",
+                                         "isHidden",
+                                       ]),
+                                   }),
+                                 ],
+                               }),
+                           }),
+                         ],
+                       }),
+                   }),
+                 )
+               | _ => None
+               }
+             )
+          |> Sequence.compact;
+
         let updateVisibility =
           IfStatement({
             "condition": compareViewVisibility,
-            "block": [deactivateConstraints, activateConstraints],
+            "block": [
+              deactivateConstraints,
+              activateConstraints,
+              ...updateAccessibilityContainers,
+            ],
           });
 
         SwiftDocument.joinGroups(
@@ -1324,16 +1430,8 @@ let generate =
       None,
     );
 
-  let memberOrSelfExpression = (firstIdentifier, statements) =>
-    switch (firstIdentifier) {
-    | "self" => MemberExpression(statements)
-    | _ => MemberExpression([SwiftIdentifier(firstIdentifier)] @ statements)
-    };
-  let parentNameOrSelf = (parent: Types.layer) =>
-    Layer.equal(parent, rootLayer) ?
-      "self" : parent.name |> SwiftFormat.layerName;
   let layerMemberExpression = (layer: Types.layer, statements) =>
-    memberOrSelfExpression(parentNameOrSelf(layer), statements);
+    Doc.layerMemberExpression(rootLayer, layer, statements);
 
   let containsImageWithBackgroundColor = () => {
     let hasBackgroundColor = (layer: Types.layer) =>
@@ -1492,7 +1590,6 @@ let generate =
                         logic,
                         assignmentsFromLayerParameters,
                         assignmentsFromLogic,
-                        layerMemberExpression,
                         rootLayer,
                       ),
                     ],

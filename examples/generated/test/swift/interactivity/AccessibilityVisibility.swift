@@ -147,6 +147,9 @@ public class AccessibilityVisibility: UIView {
     if textView.isHidden != textViewIsHidden {
       NSLayoutConstraint.deactivate(conditionalConstraints(textViewIsHidden: textViewIsHidden))
       NSLayoutConstraint.activate(conditionalConstraints(textViewIsHidden: textView.isHidden))
+      accessibilityElements = [greyBoxView, textView].filter({
+            !$0.isHidden
+          })
     }
   }
 }
