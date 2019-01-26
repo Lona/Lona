@@ -1,11 +1,21 @@
-let canBeFocused = (layer: Types.layer): bool =>
-  switch (Layer.accessibilityType(layer)) {
-  | Element(_) => true
-  | _ => false
+let rec canBeFocused = (config: Config.t, layer: Types.layer): bool =>
+  switch (layer.typeName) {
+  | Component(componentName) =>
+    let getComponent = Config.Find.component(config);
+    let component = Config.Find.component(config, componentName);
+    let rootLayer = component |> Decode.Component.rootLayer(getComponent);
+    rootLayer |> Layer.flatten |> List.exists(canBeFocused(config));
+  | _ =>
+    switch (Layer.accessibilityType(layer)) {
+    | Element(_) => true
+    | _ => false
+    }
   };
 
 let needsRef = (config: Config.t, layer: Types.layer): bool =>
-  config.options.javaScript.framework == ReactDOM && layer |> canBeFocused;
+  config.options.javaScript.framework == ReactDOM
+  && layer
+  |> canBeFocused(config);
 
 let getStyleVariables =
     (
@@ -36,8 +46,8 @@ let hasAccessibilityActivate = (assignments, layer) =>
   );
 
 module Hierarchy = {
-  let needsFocusHandling = (layer: Types.layer): bool =>
-    layer |> Layer.flatten |> List.exists(canBeFocused);
+  let needsFocusHandling = (config: Config.t, layer: Types.layer): bool =>
+    layer |> Layer.flatten |> List.exists(canBeFocused(config));
 
   let accessibilityElements = (rootLayer: Types.layer): list(Types.layer) => {
     let rec inner =

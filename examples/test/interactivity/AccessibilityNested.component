@@ -1,0 +1,56 @@
+{
+  "devices" : [
+    {
+      "deviceId" : "iPhone SE",
+      "heightMode" : "At Least"
+    },
+    {
+      "deviceId" : "Pixel 2",
+      "heightMode" : "At Least"
+    }
+  ],
+  "examples" : [
+    {
+      "id" : "Default",
+      "name" : "Default",
+      "params" : {
+
+      }
+    }
+  ],
+  "logic" : [
+
+  ],
+  "params" : [
+
+  ],
+  "root" : {
+    "children" : [
+      {
+        "id" : "AccessibilityTest",
+        "params" : {
+          "checkboxValue" : false,
+          "customTextAccessibilityLabel" : "Text"
+        },
+        "type" : "AccessibilityTest"
+      },
+      {
+        "id" : "AccessibilityVisibility",
+        "params" : {
+          "showText" : true
+        },
+        "type" : "AccessibilityVisibility"
+      }
+    ],
+    "id" : "Container",
+    "params" : {
+      "accessibilityElements" : [
+        "AccessibilityTest",
+        "AccessibilityVisibility"
+      ],
+      "accessibilityType" : "container",
+      "alignSelf" : "stretch"
+    },
+    "type" : "Lona:View"
+  }
+}

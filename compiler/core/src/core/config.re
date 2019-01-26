@@ -109,7 +109,27 @@ module Workspace = {
     Node.Path.relative(~from=outputPath, ~to_=config.outputPath, ());
 };
 
+exception ComponentNotFound(string);
+
 module Find = {
+  let component = (config: t, componentName: string): Js.Json.t => {
+    let searchPath =
+      Node.Path.join([|
+        config.workspacePath,
+        "**/" ++ componentName ++ ".component",
+      |]);
+
+    let files = searchPath |> Glob.sync |> Array.to_list;
+
+    let filename =
+      switch (List.length(files)) {
+      | 0 => raise(ComponentNotFound(componentName))
+      | _ => List.hd(files)
+      };
+
+    Node.Fs.readFileSync(filename, `utf8) |> Js.Json.parseExn;
+  };
+
   let svg = (config: t, path: string): Svg.node => {
     let path = Workspace.relativePath(config, path);
     let file = config.svgFiles |> List.find(item => item.path == path);

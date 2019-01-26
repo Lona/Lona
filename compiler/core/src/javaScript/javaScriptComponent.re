@@ -159,7 +159,7 @@ module StyledComponents = {
         rootLayer: Types.layer,
         layer: Types.layer,
       ) => {
-    let usesProps = JavaScriptLayer.canBeFocused(layer);
+    let usesProps = JavaScriptLayer.canBeFocused(config, layer);
     let styles =
       JavaScriptStyles.Object.forLayer(
         config,
@@ -571,7 +571,7 @@ let rec layerToJavaScriptAST =
   let styleVariables = JavaScriptLayer.getStyleVariables(assignments, layer);
   let propVariables = JavaScriptLayer.getPropVariables(assignments, layer);
   let needsRef = JavaScriptLayer.needsRef(config, layer);
-  let canBeFocused = JavaScriptLayer.canBeFocused(layer);
+  let canBeFocused = JavaScriptLayer.canBeFocused(config, layer);
 
   let main = ParameterMap.assign(initialProps, propVariables);
   let attributes =
@@ -1138,7 +1138,10 @@ let generate =
                 body:
                   (
                     options.framework == ReactDOM
-                    && JavaScriptLayer.Hierarchy.needsFocusHandling(rootLayer) ?
+                    && JavaScriptLayer.Hierarchy.needsFocusHandling(
+                         config,
+                         rootLayer,
+                       ) ?
                       [
                         AssignmentExpression({
                           left: Identifier(["state"]),
