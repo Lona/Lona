@@ -19,10 +19,42 @@
     }
   ],
   "logic" : [
-
+    {
+      "assignee" : [
+        "layers",
+        "AccessibilityTest",
+        "checkboxValue"
+      ],
+      "content" : [
+        "parameters",
+        "isChecked"
+      ],
+      "type" : "AssignExpr"
+    },
+    {
+      "assignee" : [
+        "layers",
+        "AccessibilityTest",
+        "onToggleCheckbox"
+      ],
+      "content" : [
+        "parameters",
+        "onChangeChecked"
+      ],
+      "type" : "AssignExpr"
+    }
   ],
   "params" : [
-
+    {
+      "name" : "isChecked",
+      "type" : "Boolean"
+    },
+    {
+      "name" : "onChangeChecked",
+      "type" : {
+        "name" : "Function"
+      }
+    }
   ],
   "root" : {
     "children" : [

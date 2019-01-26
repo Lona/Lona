@@ -624,7 +624,8 @@ let rec layerToJavaScriptAST =
               value: Literal(LonaValue.boolean(true)),
             }),
           ]
-        | ReactDOM => [
+        | ReactDOM =>
+          [
             JSXAttribute({
               name: "tabIndex",
               value: Literal(LonaValue.number(-1.)),
@@ -638,6 +639,20 @@ let rec layerToJavaScriptAST =
               value: Identifier(["this", "_handleKeyDown"]),
             }),
           ]
+          @ (
+            Layer.isComponentLayer(layer) ?
+              [
+                JSXAttribute({
+                  name: "onFocusNext",
+                  value: Identifier(["this", "focusNext"]),
+                }),
+                JSXAttribute({
+                  name: "onFocusPrevious",
+                  value: Identifier(["this", "focusPrevious"]),
+                }),
+              ] :
+              []
+          )
         | ReactSketchapp => []
         } :
         []
@@ -786,8 +801,9 @@ let importComponents =
     |> Layer.flatten
     |> List.filter(JavaScriptLayer.hasAccessibilityActivate(assignments));
 
-  Js.log2(outputFile, config.outputPath);
   let importsActivationUtil = List.length(activatableLayers) > 0;
+  let importsFocusUtil =
+    JavaScriptLayer.Hierarchy.accessibilityElements(rootLayer) != [];
   {
     absolute:
       (
@@ -886,6 +902,25 @@ let importComponents =
                 ++ "/utils/createActivatableComponent",
               specifiers: [
                 Ast.ImportDefaultSpecifier("createActivatableComponent"),
+              ],
+            }),
+          ];
+        } else {
+          [];
+        }
+      )
+      @ (
+        if (framework == ReactDOM && importsFocusUtil) {
+          [
+            Ast.ImportDeclaration({
+              source:
+                Config.Workspace.getRelativePathToOutputRoot(
+                  config,
+                  Node.Path.dirname(outputFile),
+                )
+                ++ "/utils/focusUtils",
+              specifiers: [
+                Ast.ImportSpecifier({imported: "isFocused", local: None}),
               ],
             }),
           ];

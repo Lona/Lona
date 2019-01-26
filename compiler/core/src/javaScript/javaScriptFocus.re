@@ -71,6 +71,45 @@ module Methods = {
         }),
     });
 
+  let isFocused = (): JavaScriptAst.node =>
+    AssignmentExpression({
+      left: Identifier(["isFocused"]),
+      right:
+        ArrowFunctionExpression({
+          id: None,
+          params: [],
+          body: [
+            VariableDeclaration(
+              AssignmentExpression({
+                left: Identifier(["focusElements"]),
+                right:
+                  CallExpression({
+                    callee: Identifier(["this", "_getFocusElements"]),
+                    arguments: [],
+                  }),
+              }),
+            ),
+            Empty,
+            Return(
+              UnaryExpression({
+                prefix: true,
+                operator: "!",
+                argument:
+                  UnaryExpression({
+                    prefix: true,
+                    operator: "!",
+                    argument:
+                      CallExpression({
+                        callee: Identifier(["focusElements", "find"]),
+                        arguments: [Identifier(["isFocused"])],
+                      }),
+                  }),
+              }),
+            ),
+          ],
+        }),
+    });
+
   let focus = (): JavaScriptAst.node =>
     AssignmentExpression({
       left: Identifier(["focus"]),
@@ -194,10 +233,8 @@ module Methods = {
                   BinaryExpression({
                     left:
                       CallExpression({
-                        callee: Identifier(["focusElements", "indexOf"]),
-                        arguments: [
-                          Identifier(["document", "activeElement"]),
-                        ],
+                        callee: Identifier(["focusElements", "findIndex"]),
+                        arguments: [Identifier(["isFocused"])],
                       }),
                     operator: Plus,
                     right: Literal(LonaValue.number(1.)),
@@ -270,10 +307,8 @@ module Methods = {
                   BinaryExpression({
                     left:
                       CallExpression({
-                        callee: Identifier(["focusElements", "indexOf"]),
-                        arguments: [
-                          Identifier(["document", "activeElement"]),
-                        ],
+                        callee: Identifier(["focusElements", "findIndex"]),
+                        arguments: [Identifier(["isFocused"])],
                       }),
                     operator: Minus,
                     right: Literal(LonaValue.number(1.)),
@@ -304,15 +339,27 @@ module Methods = {
               alternate: [],
             }),
             Empty,
-            BinaryExpression({
-              left: Identifier(["focusElements[previousIndex]", "focus"]),
-              operator: And,
-              right:
+            IfStatement({
+              test: Identifier(["focusElements[previousIndex]", "focusLast"]),
+              consequent: [
                 CallExpression({
                   callee:
-                    Identifier(["focusElements[previousIndex]", "focus"]),
+                    Identifier(["focusElements[previousIndex]", "focusLast"]),
                   arguments: [],
                 }),
+              ],
+              alternate: [
+                BinaryExpression({
+                  left: Identifier(["focusElements[previousIndex]", "focus"]),
+                  operator: And,
+                  right:
+                    CallExpression({
+                      callee:
+                        Identifier(["focusElements[previousIndex]", "focus"]),
+                      arguments: [],
+                    }),
+                }),
+              ],
             }),
           ],
         }),
@@ -382,6 +429,7 @@ let initialStateProperties = (): list(JavaScriptAst.node) => [
 let focusMethods = (rootLayer: Types.layer): list(JavaScriptAst.node) =>
   Methods.[
     setFocusRing(),
+    isFocused(),
     focus(),
     focusLast(),
     focusNext(),

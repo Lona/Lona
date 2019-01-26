@@ -3,6 +3,7 @@ import "./App.css";
 
 import AccessibilityTest from "./generated/interactivity/AccessibilityTest";
 import AccessibilityVisibility from "./generated/interactivity/AccessibilityVisibility";
+import AccessibilityNested from "./generated/interactivity/AccessibilityNested";
 
 class App extends Component {
   state = {
@@ -11,7 +12,7 @@ class App extends Component {
 
   handleKeyDown = event => {
     if (event.key === "Tab" && document.activeElement === document.body) {
-      this.accessibilityTest.focus();
+      this.accessibilityNested.current.focus();
 
       event.stopPropagation();
       event.preventDefault();
@@ -26,29 +27,34 @@ class App extends Component {
     document.removeEventListener("keydown", this.handleKeyDown);
   }
 
+  accessibilityNested = React.createRef();
+  accessibilityTest = React.createRef();
+  accessibilityVisibility = React.createRef();
+
   render() {
     return (
       <div className="App">
+        <AccessibilityNested
+          ref={this.accessibilityNested}
+          onFocusNext={() => this.accessibilityTest.current.focus()}
+          isChecked={this.state.checked}
+          onChangeChecked={() =>
+            this.setState({ checked: !this.state.checked })
+          }
+        />
         <AccessibilityTest
-          ref={ref => {
-            this.accessibilityTest = ref;
-          }}
+          ref={this.accessibilityTest}
+          onFocusNext={() => this.accessibilityVisibility.current.focus()}
+          onFocusPrevious={() => this.accessibilityNested.current.focusLast()}
           checkboxValue={this.state.checked}
           onToggleCheckbox={() =>
             this.setState({ checked: !this.state.checked })
           }
-          onFocusNext={() => {
-            this.accessibilityVisibility.focus();
-          }}
         />
         <AccessibilityVisibility
-          ref={ref => {
-            this.accessibilityVisibility = ref;
-          }}
+          ref={this.accessibilityVisibility}
+          onFocusPrevious={() => this.accessibilityTest.current.focusLast()}
           showText={this.state.checked}
-          onFocusPrevious={() => {
-            this.accessibilityTest.focusLast();
-          }}
         />
       </div>
     );

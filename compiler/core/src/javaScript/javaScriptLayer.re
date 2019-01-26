@@ -62,7 +62,12 @@ module Hierarchy = {
           elements
           |> List.map(name => Layer.findByName(name, layer))
           |> Sequence.compact
-          |> List.map(inner([]))
+          |> List.map((layer: Types.layer) =>
+               switch (layer.typeName) {
+               | Component(_) => [layer]
+               | _ => inner([], layer)
+               }
+             )
           |> List.concat
         }
       );

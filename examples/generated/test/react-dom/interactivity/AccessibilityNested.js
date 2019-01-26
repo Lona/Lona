@@ -6,11 +6,18 @@ import shadows from "../shadows"
 import textStyles from "../textStyles"
 import AccessibilityTest from "./AccessibilityTest"
 import AccessibilityVisibility from "./AccessibilityVisibility"
+import { isFocused } from "../utils/focusUtils"
 
 export default class AccessibilityNested extends React.Component {
   state = { focusRing: false }
 
   setFocusRing = (focusRing) => { this.setState({ focusRing }) }
+
+  isFocused = () => {
+    let focusElements = this._getFocusElements()
+
+    return !!focusElements.find(isFocused);
+  }
 
   focus = ({ focusRing = true } = { focusRing: true }) => {
     this.setFocusRing(focusRing)
@@ -37,7 +44,7 @@ export default class AccessibilityNested extends React.Component {
     this.setFocusRing(focusRing)
 
     let focusElements = this._getFocusElements()
-    let nextIndex = focusElements.indexOf(document.activeElement) + 1
+    let nextIndex = focusElements.findIndex(isFocused) + 1
 
     if (nextIndex >= focusElements.length) {
       this.props.onFocusNext && this.props.onFocusNext()
@@ -51,14 +58,18 @@ export default class AccessibilityNested extends React.Component {
     this.setFocusRing(focusRing)
 
     let focusElements = this._getFocusElements()
-    let previousIndex = focusElements.indexOf(document.activeElement) - 1
+    let previousIndex = focusElements.findIndex(isFocused) - 1
 
     if (previousIndex < 0) {
       this.props.onFocusPrevious && this.props.onFocusPrevious()
       return ;
     }
 
-    focusElements[previousIndex].focus && focusElements[previousIndex].focus()
+    if (focusElements[previousIndex].focusLast) {
+      focusElements[previousIndex].focusLast()
+    } else {
+      focusElements[previousIndex].focus && focusElements[previousIndex].focus()
+    }
   }
 
   _handleKeyDown = (event) => {
@@ -77,23 +88,30 @@ export default class AccessibilityNested extends React.Component {
   }
 
   _getFocusElements = () => {
-    let elements = []
+    let elements = [this._AccessibilityTest, this._AccessibilityVisibility]
     return elements.filter(Boolean);
   }
 
   render() {
 
 
+    let AccessibilityTest$checkboxValue
+    let AccessibilityTest$onToggleCheckbox
 
+    AccessibilityTest$checkboxValue = this.props.isChecked
+    AccessibilityTest$onToggleCheckbox = this.props.onChangeChecked
     return (
       <Container>
         <AccessibilityTestAccessibilityTestWrapper>
           <AccessibilityTest
-            checkboxValue={false}
+            checkboxValue={AccessibilityTest$checkboxValue}
             customTextAccessibilityLabel={"Text"}
+            onToggleCheckbox={AccessibilityTest$onToggleCheckbox}
             tabIndex={-1}
             focusRing={this.state.focusRing}
             onKeyDown={this._handleKeyDown}
+            onFocusNext={this.focusNext}
+            onFocusPrevious={this.focusPrevious}
             ref={(ref) => { this._AccessibilityTest = ref }}
 
           />
@@ -104,6 +122,8 @@ export default class AccessibilityNested extends React.Component {
             tabIndex={-1}
             focusRing={this.state.focusRing}
             onKeyDown={this._handleKeyDown}
+            onFocusNext={this.focusNext}
+            onFocusPrevious={this.focusPrevious}
             ref={(ref) => { this._AccessibilityVisibility = ref }}
 
           />

@@ -4,11 +4,18 @@ import styled from "styled-components"
 import colors from "../colors"
 import shadows from "../shadows"
 import textStyles from "../textStyles"
+import { isFocused } from "../utils/focusUtils"
 
 export default class AccessibilityVisibility extends React.Component {
   state = { focusRing: false }
 
   setFocusRing = (focusRing) => { this.setState({ focusRing }) }
+
+  isFocused = () => {
+    let focusElements = this._getFocusElements()
+
+    return !!focusElements.find(isFocused);
+  }
 
   focus = ({ focusRing = true } = { focusRing: true }) => {
     this.setFocusRing(focusRing)
@@ -35,7 +42,7 @@ export default class AccessibilityVisibility extends React.Component {
     this.setFocusRing(focusRing)
 
     let focusElements = this._getFocusElements()
-    let nextIndex = focusElements.indexOf(document.activeElement) + 1
+    let nextIndex = focusElements.findIndex(isFocused) + 1
 
     if (nextIndex >= focusElements.length) {
       this.props.onFocusNext && this.props.onFocusNext()
@@ -49,14 +56,18 @@ export default class AccessibilityVisibility extends React.Component {
     this.setFocusRing(focusRing)
 
     let focusElements = this._getFocusElements()
-    let previousIndex = focusElements.indexOf(document.activeElement) - 1
+    let previousIndex = focusElements.findIndex(isFocused) - 1
 
     if (previousIndex < 0) {
       this.props.onFocusPrevious && this.props.onFocusPrevious()
       return ;
     }
 
-    focusElements[previousIndex].focus && focusElements[previousIndex].focus()
+    if (focusElements[previousIndex].focusLast) {
+      focusElements[previousIndex].focusLast()
+    } else {
+      focusElements[previousIndex].focus && focusElements[previousIndex].focus()
+    }
   }
 
   _handleKeyDown = (event) => {
