@@ -250,7 +250,6 @@ let convertComponent =
       ),
       config,
       outputFile,
-      findComponent(config.workspacePath),
       getComponentRelativePath(config.workspacePath, name),
       getAssetRelativePath(config.workspacePath, name),
       parsed,
@@ -258,14 +257,7 @@ let convertComponent =
     |> JavaScript.Render.toString
   | Swift =>
     let result =
-      Swift.Component.generate(
-        config,
-        options,
-        swiftOptions,
-        name,
-        findComponent(config.workspacePath),
-        parsed,
-      );
+      Swift.Component.generate(config, options, swiftOptions, name, parsed);
     result |> Swift.Render.toString;
   | _ => exit("Unrecognized target")
   };
@@ -501,7 +493,6 @@ let convertWorkspace = (workspace, output) => {
              config,
              options,
              swiftOptions,
-             findComponent(config.workspacePath),
              successfulComponentNames,
            ),
            `utf8,

@@ -932,7 +932,7 @@ let rootLayerToJavaScriptAST =
 };
 
 let defineInitialLogicValues =
-    (config: Config.t, getComponent, rootLayer, assignments, logic) => {
+    (config: Config.t, rootLayer, assignments, logic) => {
   let variableDeclarations = logic |> Logic.buildVariableDeclarations;
   let conditionalAssignments = Logic.conditionallyAssignedIdentifiers(logic);
   let isConditionallyAssigned = (layer: Types.layer, (name, _)) => {
@@ -956,7 +956,7 @@ let defineInitialLogicValues =
       | (Some(assignment), _, _) => assignment
       | (None, Component(componentName), _) =>
         let param =
-          getComponent(componentName)
+          Config.Find.component(config, componentName)
           |> Decode.Component.parameters
           |> List.find((param: Types.parameter) => param.name == name);
         Logic.assignmentForLayerParameter(
@@ -1023,12 +1023,11 @@ let generate =
       textStylesFilePath,
       config: Config.t,
       outputFile,
-      getComponent,
       getComponentFile,
       getAssetPath,
       json,
     ) => {
-  let rootLayer = json |> Decode.Component.rootLayer(getComponent);
+  let rootLayer = json |> Decode.Component.rootLayer(config);
   let logic = json |> Decode.Component.logic;
   let parameters = json |> Decode.Component.parameters;
   let assignments = Layer.parameterAssignmentsFromLogic(rootLayer, logic);
@@ -1066,7 +1065,7 @@ let generate =
 
   let logicAST =
     logic
-    |> defineInitialLogicValues(config, getComponent, rootLayer, assignments)
+    |> defineInitialLogicValues(config, rootLayer, assignments)
     |> JavaScriptLogic.toJavaScriptAST(options.framework, config)
     |> Ast.optimize;
 

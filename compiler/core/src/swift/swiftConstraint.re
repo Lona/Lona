@@ -294,7 +294,6 @@ let setUpFunction =
     (
       swiftOptions: SwiftOptions.options,
       config: Config.t,
-      getComponent,
       assignmentsFromLogic,
       layerMemberExpression,
       rootLayer: Types.layer,
@@ -303,7 +302,7 @@ let setUpFunction =
 
   let combinations =
     Constraint.visibilityCombinations(
-      getComponent,
+      config,
       assignmentsFromLogic,
       rootLayer,
     );

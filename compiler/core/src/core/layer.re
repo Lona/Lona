@@ -569,9 +569,9 @@ let getTypeNames = rootLayer => {
    determine layout. We should still use the type, name, and children of
    the custom component layer. */
 let getProxyLayerForComponentName =
-    (getComponent: string => Js.Json.t, layer: Types.layer, name): Types.layer => {
-  let component = getComponent(name);
-  let rootLayer = component |> Decode.Component.rootLayer(getComponent);
+    (config: Config.t, layer: Types.layer, name): Types.layer => {
+  let component = Config.Find.component(config, name);
+  let rootLayer = component |> Decode.Component.rootLayer(config);
   {
     typeName: layer.typeName,
     styles: layer.styles,
@@ -586,9 +586,9 @@ let getProxyLayerForComponentName =
    This is how we layout custom components.
    TODO: When we handle "Children" components, we'll need to find/use
    a different proxy */
-let getProxyLayer = (getComponent: string => Js.Json.t, layer: Types.layer) =>
+let getProxyLayer = (config: Config.t, layer: Types.layer) =>
   switch (layer.typeName) {
   | Types.Component(name) =>
-    getProxyLayerForComponentName(getComponent, layer, name)
+    getProxyLayerForComponentName(config, layer, name)
   | _ => layer
   };

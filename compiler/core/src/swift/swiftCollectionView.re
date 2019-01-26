@@ -640,19 +640,17 @@ module Ast = {
     TopLevelDeclaration({"statements": nodes}) |> SwiftRender.toString;
 };
 
-let isInteractive =
-    (getComponent: string => Js.Json.t, componentName: string): bool => {
-  let component = getComponent(componentName);
-  let rootLayer = Decode.Component.rootLayer(getComponent, component);
+let isInteractive = (config: Config.t, componentName: string): bool => {
+  let component = Config.Find.component(config, componentName);
+  let rootLayer = Decode.Component.rootLayer(config, component);
   let logic = Decode.Component.logic(component);
   Layer.isInteractive(logic, rootLayer);
 };
 
 let interactiveLayers =
-    (getComponent: string => Js.Json.t, componentName: string)
-    : list(Types.layer) => {
-  let component = getComponent(componentName);
-  let rootLayer = Decode.Component.rootLayer(getComponent, component);
+    (config: Config.t, componentName: string): list(Types.layer) => {
+  let component = Config.Find.component(config, componentName);
+  let rootLayer = Decode.Component.rootLayer(config, component);
   let logic = Decode.Component.logic(component);
   rootLayer |> Layer.flatten |> List.filter(Layer.isInteractive(logic));
 };
@@ -660,9 +658,8 @@ let interactiveLayers =
 let generate =
     (
       config: Config.t,
-      options: Options.options,
-      swiftOptions: SwiftOptions.options,
-      getComponent: string => Js.Json.t,
+      _options: Options.options,
+      _swiftOptions: SwiftOptions.options,
       componentNames: list(string),
     ) => {
   let cellRegistration =
@@ -685,8 +682,8 @@ let generate =
         componentNames
         |> List.map(name =>
              Ast.configureCell(
-               isInteractive(getComponent, name),
-               List.length(interactiveLayers(getComponent, name)) > 1,
+               isInteractive(config, name),
+               List.length(interactiveLayers(config, name)) > 1,
                name,
              )
            )
@@ -700,7 +697,7 @@ let generate =
     if (List.length(componentNames) > 0) {
       let code =
         componentNames
-        |> List.filter(isInteractive(getComponent))
+        |> List.filter(isInteractive(config))
         |> List.map(Ast.cellSelection)
         |> Ast.print;
       "\n" ++ (code |> Js.String.trim |> Format.indent(4));
@@ -710,9 +707,7 @@ let generate =
 
   let cellClasses =
     componentNames
-    |> List.map(name =>
-         Ast.cellClass(isInteractive(getComponent, name), name)
-       )
+    |> List.map(name => Ast.cellClass(isInteractive(config, name), name))
     |> SwiftDocument.join(SwiftAst.Empty)
     |> Ast.print
     |> Js.String.trim;

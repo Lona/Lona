@@ -1,10 +1,10 @@
 let rec canBeFocused = (config: Config.t, layer: Types.layer): bool =>
   switch (layer.typeName) {
   | Component(componentName) =>
-    let getComponent = Config.Find.component(config);
-    let component = Config.Find.component(config, componentName);
-    let rootLayer = component |> Decode.Component.rootLayer(getComponent);
-    rootLayer |> Layer.flatten |> List.exists(canBeFocused(config));
+    Config.Find.component(config, componentName)
+    |> Decode.Component.rootLayer(config)
+    |> Layer.flatten
+    |> List.exists(canBeFocused(config))
   | _ =>
     switch (Layer.accessibilityType(layer)) {
     | Element(_) => true

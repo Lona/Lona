@@ -169,13 +169,12 @@ let semanticEqual = (a: t, b: t): bool =>
   | _ => strictEqual(a, b)
   };
 
-let getConstraints =
-    (getComponent: string => Js.Json.t, rootLayer: Types.layer) => {
+let getConstraints = (config: Config.t, rootLayer: Types.layer) => {
   let constrainAxes = (originalLayer: Types.layer) => {
     let isComponentLayer = Layer.isComponentLayer(originalLayer);
-    let layer = Layer.getProxyLayer(getComponent, originalLayer);
+    let layer = Layer.getProxyLayer(config, originalLayer);
     let children =
-      originalLayer.children |> List.map(Layer.getProxyLayer(getComponent));
+      originalLayer.children |> List.map(Layer.getProxyLayer(config));
 
     let direction = Layer.getFlexDirection(layer.parameters);
     let isColumn = direction == "column";
@@ -201,7 +200,7 @@ let getConstraints =
     let fillChildren =
       children
       |> List.filter((child: Types.layer) => {
-           let proxyChild = Layer.getProxyLayer(getComponent, child);
+           let proxyChild = Layer.getProxyLayer(config, child);
            let childSizingRules =
              proxyChild.parameters
              |> Layer.getSizingRules(
@@ -462,7 +461,7 @@ let visibilityLayers =
      );
 
 let visibilityCombinations =
-    (getComponent, assignmentsFromLogic, rootLayer: Types.layer)
+    (config: Config.t, assignmentsFromLogic, rootLayer: Types.layer)
     : list(visibilityCombination) => {
   let layers = visibilityLayers(assignmentsFromLogic, rootLayer);
 
@@ -477,7 +476,7 @@ let visibilityCombinations =
        {
          rootLayer,
          visibleLayers,
-         constraints: getConstraints(getComponent, rootLayer),
+         constraints: getConstraints(config, rootLayer),
        };
      });
 };
