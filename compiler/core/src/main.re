@@ -294,7 +294,7 @@ let copyStaticFiles = outputDirectory =>
   | Types.JavaScript =>
     switch (javaScriptOptions.framework) {
     | ReactDOM =>
-      let staticFiles = ["createActivatableComponent"];
+      let staticFiles = ["createActivatableComponent", "focusUtils"];
       staticFiles
       |> List.iter(file =>
            copySync(
