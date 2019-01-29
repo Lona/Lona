@@ -6,7 +6,8 @@ import shadows from "../shadows"
 import textStyles from "../textStyles"
 import AccessibilityTest from "./AccessibilityTest"
 import AccessibilityVisibility from "./AccessibilityVisibility"
-import { isFocused } from "../utils/focusUtils"
+import { isFocused, focusFirst, focusLast, focusNext, focusPrevious } from
+  "../utils/focusUtils"
 
 export default class AccessibilityNested extends React.Component {
   state = { focusRing: false }
@@ -22,54 +23,45 @@ export default class AccessibilityNested extends React.Component {
   focus = ({ focusRing = true } = { focusRing: true }) => {
     this.setFocusRing(focusRing)
 
-    let focusElements = this._getFocusElements()
-    if (focusElements[0] && focusElements[0].focus) {
-      focusElements[0].focus()
-    }
+    focusFirst(this._getFocusElements())
   }
 
   focusLast = ({ focusRing = true } = { focusRing: true }) => {
     this.setFocusRing(focusRing)
 
-    let focusElements = this._getFocusElements()
-    let lastElement = focusElements[focusElements.length - 1]
-    if (lastElement && lastElement.focusLast) {
-      lastElement.focusLast()
-    } else if (lastElement && lastElement.focus) {
-      lastElement.focus()
-    }
+    focusLast(this._getFocusElements())
   }
 
   focusNext = ({ focusRing = true } = { focusRing: true }) => {
     this.setFocusRing(focusRing)
 
-    let focusElements = this._getFocusElements()
-    let nextIndex = focusElements.findIndex(isFocused) + 1
-
-    if (nextIndex >= focusElements.length) {
-      this.props.onFocusNext && this.props.onFocusNext()
-      return ;
+    if (focusNext(this._getFocusElements())) {
+      return true;
     }
 
-    focusElements[nextIndex].focus && focusElements[nextIndex].focus()
+    if (this.props.onFocusNext) {
+      this.props.onFocusNext()
+
+      return true;
+    }
+
+    return false;
   }
 
   focusPrevious = ({ focusRing = true } = { focusRing: true }) => {
     this.setFocusRing(focusRing)
 
-    let focusElements = this._getFocusElements()
-    let previousIndex = focusElements.findIndex(isFocused) - 1
-
-    if (previousIndex < 0) {
-      this.props.onFocusPrevious && this.props.onFocusPrevious()
-      return ;
+    if (focusPrevious(this._getFocusElements())) {
+      return true;
     }
 
-    if (focusElements[previousIndex].focusLast) {
-      focusElements[previousIndex].focusLast()
-    } else {
-      focusElements[previousIndex].focus && focusElements[previousIndex].focus()
+    if (this.props.onFocusPrevious) {
+      this.props.onFocusPrevious()
+
+      return true;
     }
+
+    return false;
   }
 
   _handleKeyDown = (event) => {
@@ -77,13 +69,20 @@ export default class AccessibilityNested extends React.Component {
       this.setFocusRing(true)
 
       if (event.shiftKey) {
-        this.focusPrevious()
-      } else {
-        this.focusNext()
+        if (this.focusPrevious()) {
+          event.stopPropagation()
+          event.preventDefault()
+          return ;
+        }
+      } else if (this.focusNext()) {
+        event.stopPropagation()
+        event.preventDefault()
+        return ;
       }
+    }
 
-      event.stopPropagation()
-      event.preventDefault()
+    if (this.props.onKeyDown) {
+      this.props.onKeyDown(event)
     }
   }
 
@@ -112,8 +111,8 @@ export default class AccessibilityNested extends React.Component {
             tabIndex={-1}
             focusRing={this.state.focusRing}
             onKeyDown={this._handleKeyDown}
-            onFocusNext={this.focusNext}
-            onFocusPrevious={this.focusPrevious}
+            onFocusNext={this.props.onFocusNext && this.focusNext}
+            onFocusPrevious={this.props.onFocusPrevious && this.focusPrevious}
             ref={(ref) => { this._AccessibilityTest = ref }}
 
           />
@@ -124,8 +123,8 @@ export default class AccessibilityNested extends React.Component {
             tabIndex={-1}
             focusRing={this.state.focusRing}
             onKeyDown={this._handleKeyDown}
-            onFocusNext={this.focusNext}
-            onFocusPrevious={this.focusPrevious}
+            onFocusNext={this.props.onFocusNext && this.focusNext}
+            onFocusPrevious={this.props.onFocusPrevious && this.focusPrevious}
             ref={(ref) => { this._AccessibilityVisibility = ref }}
 
           />

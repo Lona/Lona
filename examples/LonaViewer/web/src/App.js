@@ -10,23 +10,6 @@ class App extends Component {
     checked: false
   };
 
-  handleKeyDown = event => {
-    if (event.key === "Tab" && document.activeElement === document.body) {
-      this.accessibilityNested.current.focus();
-
-      event.stopPropagation();
-      event.preventDefault();
-    }
-  };
-
-  componentDidMount() {
-    document.addEventListener("keydown", this.handleKeyDown);
-  }
-
-  componentWillUnmount() {
-    document.removeEventListener("keydown", this.handleKeyDown);
-  }
-
   accessibilityNested = React.createRef();
   accessibilityTest = React.createRef();
   accessibilityVisibility = React.createRef();
@@ -34,6 +17,18 @@ class App extends Component {
   render() {
     return (
       <div className="App">
+        <div
+          tabIndex={0}
+          style={styles.focusTrap}
+          onKeyDown={e => {
+            if (e.key === "Tab" && !e.shiftKey) {
+              this.accessibilityNested.current.focus();
+
+              e.stopPropagation();
+              e.preventDefault();
+            }
+          }}
+        />
         <AccessibilityNested
           ref={this.accessibilityNested}
           onFocusNext={() => this.accessibilityTest.current.focus()}
@@ -56,9 +51,29 @@ class App extends Component {
           onFocusPrevious={() => this.accessibilityTest.current.focusLast()}
           showText={this.state.checked}
         />
+        <div
+          tabIndex={0}
+          style={styles.focusTrap}
+          onKeyDown={e => {
+            if (e.key === "Tab" && e.shiftKey) {
+              this.accessibilityVisibility.current.focusLast();
+
+              e.stopPropagation();
+              e.preventDefault();
+            }
+          }}
+        />
       </div>
     );
   }
 }
 
 export default App;
+
+const styles = {
+  focusTrap: {
+    width: 200,
+    height: 10,
+    background: "green"
+  }
+};

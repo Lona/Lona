@@ -644,11 +644,21 @@ let rec layerToJavaScriptAST =
               [
                 JSXAttribute({
                   name: "onFocusNext",
-                  value: Identifier(["this", "focusNext"]),
+                  value:
+                    BinaryExpression({
+                      left: Identifier(["this", "props", "onFocusNext"]),
+                      operator: And,
+                      right: Identifier(["this", "focusNext"]),
+                    }),
                 }),
                 JSXAttribute({
                   name: "onFocusPrevious",
-                  value: Identifier(["this", "focusPrevious"]),
+                  value:
+                    BinaryExpression({
+                      left: Identifier(["this", "props", "onFocusPrevious"]),
+                      operator: And,
+                      right: Identifier(["this", "focusPrevious"]),
+                    }),
                 }),
               ] :
               []
@@ -921,6 +931,10 @@ let importComponents =
                 ++ "/utils/focusUtils",
               specifiers: [
                 Ast.ImportSpecifier({imported: "isFocused", local: None}),
+                Ast.ImportSpecifier({imported: "focusFirst", local: None}),
+                Ast.ImportSpecifier({imported: "focusLast", local: None}),
+                Ast.ImportSpecifier({imported: "focusNext", local: None}),
+                Ast.ImportSpecifier({imported: "focusPrevious", local: None}),
               ],
             }),
           ];
