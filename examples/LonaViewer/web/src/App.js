@@ -10,23 +10,6 @@ class App extends Component {
     checked: false
   };
 
-  handleKeyDown = event => {
-    if (event.key === "Tab" && document.activeElement === document.body) {
-      this.accessibilityNested.current.focus();
-
-      event.stopPropagation();
-      event.preventDefault();
-    }
-  };
-
-  componentDidMount() {
-    document.addEventListener("keydown", this.handleKeyDown);
-  }
-
-  componentWillUnmount() {
-    document.removeEventListener("keydown", this.handleKeyDown);
-  }
-
   accessibilityNested = React.createRef();
   accessibilityTest = React.createRef();
   accessibilityVisibility = React.createRef();
@@ -34,9 +17,21 @@ class App extends Component {
   render() {
     return (
       <div className="App">
+        <div
+          tabIndex={0}
+          style={styles.focusTrap}
+          onKeyDown={e => {
+            if (e.key === "Tab" && !e.shiftKey) {
+              this.accessibilityNested.current.focus();
+
+              e.stopPropagation();
+              e.preventDefault();
+            }
+          }}
+        />
         <AccessibilityNested
           ref={this.accessibilityNested}
-          onFocusNext={() => this.accessibilityTest.current.focus()}
+          onFocusExitNext={() => this.accessibilityTest.current.focus()}
           isChecked={this.state.checked}
           onChangeChecked={() =>
             this.setState({ checked: !this.state.checked })
@@ -44,8 +39,10 @@ class App extends Component {
         />
         <AccessibilityTest
           ref={this.accessibilityTest}
-          onFocusNext={() => this.accessibilityVisibility.current.focus()}
-          onFocusPrevious={() => this.accessibilityNested.current.focusLast()}
+          onFocusExitNext={() => this.accessibilityVisibility.current.focus()}
+          onFocusExitPrevious={() =>
+            this.accessibilityNested.current.focusLast()
+          }
           checkboxValue={this.state.checked}
           onToggleCheckbox={() =>
             this.setState({ checked: !this.state.checked })
@@ -53,8 +50,20 @@ class App extends Component {
         />
         <AccessibilityVisibility
           ref={this.accessibilityVisibility}
-          onFocusPrevious={() => this.accessibilityTest.current.focusLast()}
+          onFocusExitPrevious={() => this.accessibilityTest.current.focusLast()}
           showText={this.state.checked}
+        />
+        <div
+          tabIndex={0}
+          style={styles.focusTrap}
+          onKeyDown={e => {
+            if (e.key === "Tab" && e.shiftKey) {
+              this.accessibilityVisibility.current.focusLast();
+
+              e.stopPropagation();
+              e.preventDefault();
+            }
+          }}
         />
       </div>
     );
@@ -62,3 +71,10 @@ class App extends Component {
 }
 
 export default App;
+
+const styles = {
+  focusTrap: {
+    height: 10,
+    background: "green"
+  }
+};

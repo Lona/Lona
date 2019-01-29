@@ -123,31 +123,17 @@ module Methods = {
               arguments: [Identifier(["focusRing"])],
             }),
             Empty,
-            VariableDeclaration(
-              AssignmentExpression({
-                left: Identifier(["focusElements"]),
-                right:
+            Return(
+              CallExpression({
+                callee: Identifier(["focusFirst"]),
+                arguments: [
                   CallExpression({
                     callee: Identifier(["this", "_getFocusElements"]),
                     arguments: [],
                   }),
+                ],
               }),
             ),
-            IfStatement({
-              test:
-                BinaryExpression({
-                  left: Identifier(["focusElements[0]"]),
-                  operator: And,
-                  right: Identifier(["focusElements[0]", "focus"]),
-                }),
-              consequent: [
-                CallExpression({
-                  callee: Identifier(["focusElements[0]", "focus"]),
-                  arguments: [],
-                }),
-              ],
-              alternate: [],
-            }),
           ],
         }),
     });
@@ -165,54 +151,17 @@ module Methods = {
               arguments: [Identifier(["focusRing"])],
             }),
             Empty,
-            VariableDeclaration(
-              AssignmentExpression({
-                left: Identifier(["focusElements"]),
-                right:
+            Return(
+              CallExpression({
+                callee: Identifier(["focusLast"]),
+                arguments: [
                   CallExpression({
                     callee: Identifier(["this", "_getFocusElements"]),
                     arguments: [],
                   }),
+                ],
               }),
             ),
-            VariableDeclaration(
-              AssignmentExpression({
-                left: Identifier(["lastElement"]),
-                right:
-                  Identifier(["focusElements[focusElements.length - 1]"]),
-              }),
-            ),
-            IfStatement({
-              test:
-                BinaryExpression({
-                  left: Identifier(["lastElement"]),
-                  operator: And,
-                  right: Identifier(["lastElement", "focusLast"]),
-                }),
-              consequent: [
-                CallExpression({
-                  callee: Identifier(["lastElement", "focusLast"]),
-                  arguments: [],
-                }),
-              ],
-              alternate: [
-                IfStatement({
-                  test:
-                    BinaryExpression({
-                      left: Identifier(["lastElement"]),
-                      operator: And,
-                      right: Identifier(["lastElement", "focus"]),
-                    }),
-                  consequent: [
-                    CallExpression({
-                      callee: Identifier(["lastElement", "focus"]),
-                      arguments: [],
-                    }),
-                  ],
-                  alternate: [],
-                }),
-              ],
-            }),
           ],
         }),
     });
@@ -230,63 +179,17 @@ module Methods = {
               arguments: [Identifier(["focusRing"])],
             }),
             Empty,
-            VariableDeclaration(
-              AssignmentExpression({
-                left: Identifier(["focusElements"]),
-                right:
+            Return(
+              CallExpression({
+                callee: Identifier(["focusNext"]),
+                arguments: [
                   CallExpression({
                     callee: Identifier(["this", "_getFocusElements"]),
                     arguments: [],
                   }),
+                ],
               }),
             ),
-            VariableDeclaration(
-              AssignmentExpression({
-                left: Identifier(["nextIndex"]),
-                right:
-                  BinaryExpression({
-                    left:
-                      CallExpression({
-                        callee: Identifier(["focusElements", "findIndex"]),
-                        arguments: [Identifier(["isFocused"])],
-                      }),
-                    operator: Plus,
-                    right: Literal(LonaValue.number(1.)),
-                  }),
-              }),
-            ),
-            Empty,
-            IfStatement({
-              test:
-                BinaryExpression({
-                  left: Identifier(["nextIndex"]),
-                  operator: Gte,
-                  right: Identifier(["focusElements", "length"]),
-                }),
-              consequent: [
-                BinaryExpression({
-                  left: Identifier(["this", "props", "onFocusNext"]),
-                  operator: And,
-                  right:
-                    CallExpression({
-                      callee: Identifier(["this", "props", "onFocusNext"]),
-                      arguments: [],
-                    }),
-                }),
-                Return(Empty),
-              ],
-              alternate: [],
-            }),
-            Empty,
-            BinaryExpression({
-              left: Identifier(["focusElements[nextIndex]", "focus"]),
-              operator: And,
-              right:
-                CallExpression({
-                  callee: Identifier(["focusElements[nextIndex]", "focus"]),
-                  arguments: [],
-                }),
-            }),
           ],
         }),
     });
@@ -304,77 +207,17 @@ module Methods = {
               arguments: [Identifier(["focusRing"])],
             }),
             Empty,
-            VariableDeclaration(
-              AssignmentExpression({
-                left: Identifier(["focusElements"]),
-                right:
+            Return(
+              CallExpression({
+                callee: Identifier(["focusPrevious"]),
+                arguments: [
                   CallExpression({
                     callee: Identifier(["this", "_getFocusElements"]),
                     arguments: [],
                   }),
+                ],
               }),
             ),
-            VariableDeclaration(
-              AssignmentExpression({
-                left: Identifier(["previousIndex"]),
-                right:
-                  BinaryExpression({
-                    left:
-                      CallExpression({
-                        callee: Identifier(["focusElements", "findIndex"]),
-                        arguments: [Identifier(["isFocused"])],
-                      }),
-                    operator: Minus,
-                    right: Literal(LonaValue.number(1.)),
-                  }),
-              }),
-            ),
-            Empty,
-            IfStatement({
-              test:
-                BinaryExpression({
-                  left: Identifier(["previousIndex"]),
-                  operator: Lt,
-                  right: Literal(LonaValue.number(0.)),
-                }),
-              consequent: [
-                BinaryExpression({
-                  left: Identifier(["this", "props", "onFocusPrevious"]),
-                  operator: And,
-                  right:
-                    CallExpression({
-                      callee:
-                        Identifier(["this", "props", "onFocusPrevious"]),
-                      arguments: [],
-                    }),
-                }),
-                Return(Empty),
-              ],
-              alternate: [],
-            }),
-            Empty,
-            IfStatement({
-              test: Identifier(["focusElements[previousIndex]", "focusLast"]),
-              consequent: [
-                CallExpression({
-                  callee:
-                    Identifier(["focusElements[previousIndex]", "focusLast"]),
-                  arguments: [],
-                }),
-              ],
-              alternate: [
-                BinaryExpression({
-                  left: Identifier(["focusElements[previousIndex]", "focus"]),
-                  operator: And,
-                  right:
-                    CallExpression({
-                      callee:
-                        Identifier(["focusElements[previousIndex]", "focus"]),
-                      arguments: [],
-                    }),
-                }),
-              ],
-            }),
           ],
         }),
     });
@@ -402,28 +245,119 @@ module Methods = {
                 Empty,
                 IfStatement({
                   test: Identifier(["event", "shiftKey"]),
-
                   consequent: [
-                    CallExpression({
-                      callee: Identifier(["this", "focusPrevious"]),
-                      arguments: [],
+                    IfStatement({
+                      test:
+                        CallExpression({
+                          callee: Identifier(["this", "focusPrevious"]),
+                          arguments: [],
+                        }),
+                      consequent: [
+                        CallExpression({
+                          callee: Identifier(["event", "stopPropagation"]),
+                          arguments: [],
+                        }),
+                        CallExpression({
+                          callee: Identifier(["event", "preventDefault"]),
+                          arguments: [],
+                        }),
+                        Return(Empty),
+                      ],
+                      alternate: [
+                        IfStatement({
+                          test:
+                            Identifier([
+                              "this",
+                              "props",
+                              "onFocusExitPrevious",
+                            ]),
+                          consequent: [
+                            CallExpression({
+                              callee:
+                                Identifier([
+                                  "this",
+                                  "props",
+                                  "onFocusExitPrevious",
+                                ]),
+                              arguments: [],
+                            }),
+                            Empty,
+                            CallExpression({
+                              callee:
+                                Identifier(["event", "stopPropagation"]),
+                              arguments: [],
+                            }),
+                            CallExpression({
+                              callee: Identifier(["event", "preventDefault"]),
+                              arguments: [],
+                            }),
+                            Return(Empty),
+                          ],
+                          alternate: [],
+                        }),
+                      ],
                     }),
                   ],
                   alternate: [
-                    CallExpression({
-                      callee: Identifier(["this", "focusNext"]),
-                      arguments: [],
+                    IfStatement({
+                      test:
+                        CallExpression({
+                          callee: Identifier(["this", "focusNext"]),
+                          arguments: [],
+                        }),
+                      consequent: [
+                        CallExpression({
+                          callee: Identifier(["event", "stopPropagation"]),
+                          arguments: [],
+                        }),
+                        CallExpression({
+                          callee: Identifier(["event", "preventDefault"]),
+                          arguments: [],
+                        }),
+                        Return(Empty),
+                      ],
+                      alternate: [
+                        IfStatement({
+                          test:
+                            Identifier(["this", "props", "onFocusExitNext"]),
+                          consequent: [
+                            CallExpression({
+                              callee:
+                                Identifier([
+                                  "this",
+                                  "props",
+                                  "onFocusExitNext",
+                                ]),
+                              arguments: [],
+                            }),
+                            Empty,
+                            CallExpression({
+                              callee:
+                                Identifier(["event", "stopPropagation"]),
+                              arguments: [],
+                            }),
+                            CallExpression({
+                              callee: Identifier(["event", "preventDefault"]),
+                              arguments: [],
+                            }),
+                            Return(Empty),
+                          ],
+                          alternate: [],
+                        }),
+                      ],
                     }),
                   ],
                 }),
-                Empty,
+              ],
+              alternate: [],
+            }),
+            Empty,
+            IfStatement({
+              test: Identifier(["this", "props", "onKeyDown"]),
+              consequent: [
                 CallExpression({
-                  callee: Identifier(["event", "stopPropagation"]),
-                  arguments: [],
-                }),
-                CallExpression({
-                  callee: Identifier(["event", "preventDefault"]),
-                  arguments: [],
+                  callee: Identifier(["this", "props", "onKeyDown"]),
+                  arguments: [Identifier(["event"])],
                 }),
               ],
               alternate: [],

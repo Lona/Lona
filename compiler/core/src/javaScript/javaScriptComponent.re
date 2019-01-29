@@ -624,8 +624,7 @@ let rec layerToJavaScriptAST =
               value: Literal(LonaValue.boolean(true)),
             }),
           ]
-        | ReactDOM =>
-          [
+        | ReactDOM => [
             JSXAttribute({
               name: "tabIndex",
               value: Literal(LonaValue.number(-1.)),
@@ -639,20 +638,6 @@ let rec layerToJavaScriptAST =
               value: Identifier(["this", "_handleKeyDown"]),
             }),
           ]
-          @ (
-            Layer.isComponentLayer(layer) ?
-              [
-                JSXAttribute({
-                  name: "onFocusNext",
-                  value: Identifier(["this", "focusNext"]),
-                }),
-                JSXAttribute({
-                  name: "onFocusPrevious",
-                  value: Identifier(["this", "focusPrevious"]),
-                }),
-              ] :
-              []
-          )
         | ReactSketchapp => []
         } :
         []
@@ -921,6 +906,10 @@ let importComponents =
                 ++ "/utils/focusUtils",
               specifiers: [
                 Ast.ImportSpecifier({imported: "isFocused", local: None}),
+                Ast.ImportSpecifier({imported: "focusFirst", local: None}),
+                Ast.ImportSpecifier({imported: "focusLast", local: None}),
+                Ast.ImportSpecifier({imported: "focusNext", local: None}),
+                Ast.ImportSpecifier({imported: "focusPrevious", local: None}),
               ],
             }),
           ];
