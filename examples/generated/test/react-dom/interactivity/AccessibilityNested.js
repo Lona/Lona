@@ -53,8 +53,8 @@ export default class AccessibilityNested extends React.Component {
           event.stopPropagation()
           event.preventDefault()
           return ;
-        } else if (this.props.onFocusPrevious) {
-          this.props.onFocusPrevious()
+        } else if (this.props.onFocusExitPrevious) {
+          this.props.onFocusExitPrevious()
 
           event.stopPropagation()
           event.preventDefault()
@@ -64,8 +64,8 @@ export default class AccessibilityNested extends React.Component {
         event.stopPropagation()
         event.preventDefault()
         return ;
-      } else if (this.props.onFocusNext) {
-        this.props.onFocusNext()
+      } else if (this.props.onFocusExitNext) {
+        this.props.onFocusExitNext()
 
         event.stopPropagation()
         event.preventDefault()

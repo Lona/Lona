@@ -266,14 +266,18 @@ module Methods = {
                       alternate: [
                         IfStatement({
                           test:
-                            Identifier(["this", "props", "onFocusPrevious"]),
+                            Identifier([
+                              "this",
+                              "props",
+                              "onFocusExitPrevious",
+                            ]),
                           consequent: [
                             CallExpression({
                               callee:
                                 Identifier([
                                   "this",
                                   "props",
-                                  "onFocusPrevious",
+                                  "onFocusExitPrevious",
                                 ]),
                               arguments: [],
                             }),
@@ -314,11 +318,16 @@ module Methods = {
                       ],
                       alternate: [
                         IfStatement({
-                          test: Identifier(["this", "props", "onFocusNext"]),
+                          test:
+                            Identifier(["this", "props", "onFocusExitNext"]),
                           consequent: [
                             CallExpression({
                               callee:
-                                Identifier(["this", "props", "onFocusNext"]),
+                                Identifier([
+                                  "this",
+                                  "props",
+                                  "onFocusExitNext",
+                                ]),
                               arguments: [],
                             }),
                             Empty,

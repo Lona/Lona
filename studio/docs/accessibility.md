@@ -175,13 +175,13 @@ To focus a component, you'll need to store a React `ref` to that component. Comp
 
 #### Component methods
 
-- **`focus(options)`** - Call this method to focus the first focusable DOM node in the component.
+- **`focus(options)`** - Call this method to focus the first focusable DOM node in the component. Returns true if a DOM node was focused and false otherwise.
 
-- **`focusLast(options)`** - Call this method to focus the last focusable DOM node in the component.
+- **`focusLast(options)`** - Call this method to focus the last focusable DOM node in the component. Returns true if a DOM node was focused and false otherwise.
 
-- **`focusNext(options)`** - Call this method to focus the next focusable DOM node in the component. If focus is not currently on a DOM node within this component, then the first focusable node is focused. If focus is on the last node within this component, focus is not changed, and instead the `onFocusNext` prop is called.
+- **`focusNext(options)`** - Call this method to focus the next focusable DOM node in the component. If focus is not currently on a DOM node within this component, then the first focusable node is focused. If focus is on the last node within this component, focus is not changed. Returns true if a DOM node was focused and false otherwise.
 
-- **`focusPrevious(options)`** - Call this method to focus the previous focusable DOM node in the component. If focus is on the first node within this component, focus is not changed, and instead the `onFocusPrevious` prop is called.
+- **`focusPrevious(options)`** - Call this method to focus the previous focusable DOM node in the component. If focus is on the first node within this component, focus is not changed. Returns true if a DOM node was focused and false otherwise.
 
 Each of these methods can be passed an `options` object, containing:
 
@@ -193,9 +193,9 @@ By default, clicking on a focusable DOM node will _not_ show the focus ring. Onl
 
 Components that contain accessible layers may be passed the following props:
 
-- **`onFocusNext`** _(function)_ - This function is called when the focus is on the last focusable DOM node within the component and the user presses `Tab`. Within this callback, you should programatically set focus on the next component in the UI.
+- **`onFocusExitNext`** _(function)_ - This function is called when the focus is on the last focusable DOM node within the component and the user presses `Tab`. Within this callback, you can programatically set focus on the next component in the UI. This prop is for convenience -- if you don't pass this prop, the tab key event will bubble as normal, and you can handle it in either the `onKeyDown` prop of this component or a parent component.
 
-- **`onFocusPrevious`** _(function)_ - This function is called when the focus is on the first focusable DOM node within the component and the user presses `Shift+Tab`. Within this callback, you should programatically set focus on the previous component in the UI.
+- **`onFocusExitPrevious`** _(function)_ - This function is called when the focus is on the first focusable DOM node within the component and the user presses `Shift+Tab`. Within this callback, you can programatically set focus on the previous component in the UI. This prop is for convenience -- if you don't pass this prop, the tab key event will bubble as normal, and you can handle it in either the `onKeyDown` prop of this component or a parent component.
 
 ### React Native
 

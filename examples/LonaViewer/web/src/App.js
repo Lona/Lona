@@ -31,7 +31,7 @@ class App extends Component {
         />
         <AccessibilityNested
           ref={this.accessibilityNested}
-          onFocusNext={() => this.accessibilityTest.current.focus()}
+          onFocusExitNext={() => this.accessibilityTest.current.focus()}
           isChecked={this.state.checked}
           onChangeChecked={() =>
             this.setState({ checked: !this.state.checked })
@@ -39,8 +39,10 @@ class App extends Component {
         />
         <AccessibilityTest
           ref={this.accessibilityTest}
-          onFocusNext={() => this.accessibilityVisibility.current.focus()}
-          onFocusPrevious={() => this.accessibilityNested.current.focusLast()}
+          onFocusExitNext={() => this.accessibilityVisibility.current.focus()}
+          onFocusExitPrevious={() =>
+            this.accessibilityNested.current.focusLast()
+          }
           checkboxValue={this.state.checked}
           onToggleCheckbox={() =>
             this.setState({ checked: !this.state.checked })
@@ -48,7 +50,7 @@ class App extends Component {
         />
         <AccessibilityVisibility
           ref={this.accessibilityVisibility}
-          onFocusPrevious={() => this.accessibilityTest.current.focusLast()}
+          onFocusExitPrevious={() => this.accessibilityTest.current.focusLast()}
           showText={this.state.checked}
         />
         <div
