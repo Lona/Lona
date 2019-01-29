@@ -1,8 +1,5 @@
-const JSZip = require("jszip");
 const program = require("commander");
-
-const fs = require("fs");
-const path = require("path");
+const { createNewSketchFile, writeSketchFile, generateId } = require('sketch-file');
 
 const { convertArtboard } = require("./convertToSketchFormat");
 
@@ -24,60 +21,23 @@ if (!outFile) {
 
 console.log("writing to", outFile);
 
-async function modifySketchTemplate(input, filename) {
-  const data = fs.readFileSync(filename);
-  const zip = await JSZip.loadAsync(data);
+async function modifySketchTemplate({ layers, references }) {
+  const sketchDoc = createNewSketchFile(generateId(outFile));
 
-  const promises = [];
-
-  zip.folder("pages").forEach(async (relativePath, file) => {
-    promises.push(
-      new Promise(async (resolve, reject) => {
-        const contents = await file.async("string");
-        const page = JSON.parse(contents);
-
-        const { layers, references } = input;
-
-        if (layers) {
-          layers
-            .map(canvas => {
-              const artboard = convertArtboard({ canvas });
-              // console.log(artboard);
-              return artboard;
-            })
-            .forEach(layer => {
-              // console.log("layer", JSON.stringify(layer, null, 2));
-              page.layers.push(layer);
-            });
-          console.log("added layers to", file.name);
-        }
-
-        if (references) {
-          references.forEach(image => {
-            const { id, data } = image;
-            console.log("adding image", id + ".png");
-
-            zip.folder("images").file(id + ".png", new Buffer(data, "base64"));
-          });
-        }
-
-        zip.file(file.name, JSON.stringify(page));
-        resolve();
-      })
-    );
-  });
-
-  await Promise.all(promises);
+  if (layers) {
+    sketchDoc.pages[0].layers = sketchDoc.pages[0].layers.concat(layers);
+  }
+  if (references) {
+    references.forEach(image => {
+      const { id, data } = image;
+      console.log("adding image", id + ".png");
+      sketchDoc.images[id] = new Buffer(data, "base64")
+    });
+  }
 
   if (outFile) {
-    zip
-      .generateNodeStream({ type: "nodebuffer", streamFiles: true })
-      .pipe(fs.createWriteStream(outFile))
-      .on("finish", function() {
-        // JSZip generates a readable stream with a "end" event,
-        // but is piped here in a writable stream which emits a "finish" event.
-        console.log(outFile + " written");
-      });
+    await writeSketchFile(sketchDoc, outFile);
+    console.log(outFile + " written");
   }
 }
 
@@ -94,8 +54,5 @@ function readFromStream(stream) {
 (async () => {
   const json = await readFromStream(process.stdin);
   const input = JSON.parse(json);
-  modifySketchTemplate(
-    input,
-    path.join(__dirname, "./templates/blank-46.2.sketch")
-  );
+  modifySketchTemplate(input);
 })();

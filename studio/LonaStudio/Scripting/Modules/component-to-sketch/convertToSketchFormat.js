@@ -1,4 +1,4 @@
-const reactSketch = require("react-sketchapp");
+const flexToSketchJSON = require("react-sketchapp/lib/flexToSketchJSON");
 
 function createArtboardNode({ canvas }) {
   const children = canvas.rootLayer ? [createViewNode(canvas.rootLayer)] : [];
@@ -89,7 +89,7 @@ function createNode(layer) {
 
 function convertArtboard(parameters) {
   const artboard = createArtboardNode(parameters);
-  return reactSketch.flexToSketchJSON(artboard);
+  return flexToSketchJSON(artboard);
 }
 
 function traverse(layer, f) {
