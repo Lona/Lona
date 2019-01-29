@@ -126,7 +126,6 @@
 		30D799821F2BE90E00EF12D7 /* SettingRow.swift in Sources */ = {isa = PBXBuildFile; fileRef = 30D799811F2BE90E00EF12D7 /* SettingRow.swift */; };
 		30D9B40E1F79BADC00C8A3D4 /* NSMenuExtensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 30D9B40D1F79BADC00C8A3D4 /* NSMenuExtensions.swift */; };
 		30DDEE8A1F479280001D41AB /* node in Resources */ = {isa = PBXBuildFile; fileRef = 30DDEE891F479280001D41AB /* node */; };
-		30DDEE8C1F4795A3001D41AB /* index.js in Resources */ = {isa = PBXBuildFile; fileRef = 30DDEE8B1F4795A3001D41AB /* index.js */; };
 		30DE88091FBA18A600D62A50 /* NSPopoverExtensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 30DE88081FBA18A600D62A50 /* NSPopoverExtensions.swift */; };
 		30DE880B1FBA194F00D62A50 /* NSViewControllerExtensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 30DE880A1FBA194F00D62A50 /* NSViewControllerExtensions.swift */; };
 		30DE880D1FBA22FB00D62A50 /* ComponentEditorButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = 30DE880C1FBA22FB00D62A50 /* ComponentEditorButton.swift */; };
@@ -412,7 +411,6 @@
 		30D799811F2BE90E00EF12D7 /* SettingRow.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingRow.swift; sourceTree = "<group>"; };
 		30D9B40D1F79BADC00C8A3D4 /* NSMenuExtensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NSMenuExtensions.swift; sourceTree = "<group>"; };
 		30DDEE891F479280001D41AB /* node */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.executable"; path = node; sourceTree = "<group>"; };
-		30DDEE8B1F4795A3001D41AB /* index.js */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.javascript; path = index.js; sourceTree = "<group>"; };
 		30DDEE8E1F4799F6001D41AB /* nodeversion */ = {isa = PBXFileReference; lastKnownFileType = text; path = nodeversion; sourceTree = "<group>"; };
 		30DE88081FBA18A600D62A50 /* NSPopoverExtensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NSPopoverExtensions.swift; sourceTree = "<group>"; };
 		30DE880A1FBA194F00D62A50 /* NSViewControllerExtensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NSViewControllerExtensions.swift; sourceTree = "<group>"; };
@@ -847,7 +845,6 @@
 			isa = PBXGroup;
 			children = (
 				301D7EDB1F47A29D0098AB0D /* Modules */,
-				30DDEE8B1F4795A3001D41AB /* index.js */,
 				30DDEE891F479280001D41AB /* node */,
 				30DDEE8E1F4799F6001D41AB /* nodeversion */,
 				30AEA12920A0DA410021C981 /* LonaNode.swift */,
@@ -1204,7 +1201,6 @@
 				30F870E320865859007ADA5B /* LonaIcon_16x16.png in Resources */,
 				30F870E820865859007ADA5B /* LonaIcon_512x512.png in Resources */,
 				30F870DA20865859007ADA5B /* LonaIcon_32x32@2x.png in Resources */,
-				30DDEE8C1F4795A3001D41AB /* index.js in Resources */,
 				307D44172097DDAB004B57F5 /* icon-tab-layers@2x.png in Resources */,
 				303C3FEC20A396BB008E1541 /* icon-plus@2x.png in Resources */,
 				6BD96652217FB0DB0012F173 /* default-workspace-thumbnail.png in Resources */,
