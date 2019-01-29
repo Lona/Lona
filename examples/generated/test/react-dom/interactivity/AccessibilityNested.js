@@ -23,45 +23,25 @@ export default class AccessibilityNested extends React.Component {
   focus = ({ focusRing = true } = { focusRing: true }) => {
     this.setFocusRing(focusRing)
 
-    focusFirst(this._getFocusElements())
+    return focusFirst(this._getFocusElements());
   }
 
   focusLast = ({ focusRing = true } = { focusRing: true }) => {
     this.setFocusRing(focusRing)
 
-    focusLast(this._getFocusElements())
+    return focusLast(this._getFocusElements());
   }
 
   focusNext = ({ focusRing = true } = { focusRing: true }) => {
     this.setFocusRing(focusRing)
 
-    if (focusNext(this._getFocusElements())) {
-      return true;
-    }
-
-    if (this.props.onFocusNext) {
-      this.props.onFocusNext()
-
-      return true;
-    }
-
-    return false;
+    return focusNext(this._getFocusElements());
   }
 
   focusPrevious = ({ focusRing = true } = { focusRing: true }) => {
     this.setFocusRing(focusRing)
 
-    if (focusPrevious(this._getFocusElements())) {
-      return true;
-    }
-
-    if (this.props.onFocusPrevious) {
-      this.props.onFocusPrevious()
-
-      return true;
-    }
-
-    return false;
+    return focusPrevious(this._getFocusElements());
   }
 
   _handleKeyDown = (event) => {
@@ -73,8 +53,20 @@ export default class AccessibilityNested extends React.Component {
           event.stopPropagation()
           event.preventDefault()
           return ;
+        } else if (this.props.onFocusPrevious) {
+          this.props.onFocusPrevious()
+
+          event.stopPropagation()
+          event.preventDefault()
+          return ;
         }
       } else if (this.focusNext()) {
+        event.stopPropagation()
+        event.preventDefault()
+        return ;
+      } else if (this.props.onFocusNext) {
+        this.props.onFocusNext()
+
         event.stopPropagation()
         event.preventDefault()
         return ;
@@ -111,8 +103,6 @@ export default class AccessibilityNested extends React.Component {
             tabIndex={-1}
             focusRing={this.state.focusRing}
             onKeyDown={this._handleKeyDown}
-            onFocusNext={this.props.onFocusNext && this.focusNext}
-            onFocusPrevious={this.props.onFocusPrevious && this.focusPrevious}
             ref={(ref) => { this._AccessibilityTest = ref }}
 
           />
@@ -123,8 +113,6 @@ export default class AccessibilityNested extends React.Component {
             tabIndex={-1}
             focusRing={this.state.focusRing}
             onKeyDown={this._handleKeyDown}
-            onFocusNext={this.props.onFocusNext && this.focusNext}
-            onFocusPrevious={this.props.onFocusPrevious && this.focusPrevious}
             ref={(ref) => { this._AccessibilityVisibility = ref }}
 
           />

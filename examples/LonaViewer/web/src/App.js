@@ -72,7 +72,6 @@ export default App;
 
 const styles = {
   focusTrap: {
-    width: 200,
     height: 10,
     background: "green"
   }

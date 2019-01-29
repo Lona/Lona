@@ -624,8 +624,7 @@ let rec layerToJavaScriptAST =
               value: Literal(LonaValue.boolean(true)),
             }),
           ]
-        | ReactDOM =>
-          [
+        | ReactDOM => [
             JSXAttribute({
               name: "tabIndex",
               value: Literal(LonaValue.number(-1.)),
@@ -639,30 +638,6 @@ let rec layerToJavaScriptAST =
               value: Identifier(["this", "_handleKeyDown"]),
             }),
           ]
-          @ (
-            Layer.isComponentLayer(layer) ?
-              [
-                JSXAttribute({
-                  name: "onFocusNext",
-                  value:
-                    BinaryExpression({
-                      left: Identifier(["this", "props", "onFocusNext"]),
-                      operator: And,
-                      right: Identifier(["this", "focusNext"]),
-                    }),
-                }),
-                JSXAttribute({
-                  name: "onFocusPrevious",
-                  value:
-                    BinaryExpression({
-                      left: Identifier(["this", "props", "onFocusPrevious"]),
-                      operator: And,
-                      right: Identifier(["this", "focusPrevious"]),
-                    }),
-                }),
-              ] :
-              []
-          )
         | ReactSketchapp => []
         } :
         []

@@ -123,15 +123,17 @@ module Methods = {
               arguments: [Identifier(["focusRing"])],
             }),
             Empty,
-            CallExpression({
-              callee: Identifier(["focusFirst"]),
-              arguments: [
-                CallExpression({
-                  callee: Identifier(["this", "_getFocusElements"]),
-                  arguments: [],
-                }),
-              ],
-            }),
+            Return(
+              CallExpression({
+                callee: Identifier(["focusFirst"]),
+                arguments: [
+                  CallExpression({
+                    callee: Identifier(["this", "_getFocusElements"]),
+                    arguments: [],
+                  }),
+                ],
+              }),
+            ),
           ],
         }),
     });
@@ -149,15 +151,17 @@ module Methods = {
               arguments: [Identifier(["focusRing"])],
             }),
             Empty,
-            CallExpression({
-              callee: Identifier(["focusLast"]),
-              arguments: [
-                CallExpression({
-                  callee: Identifier(["this", "_getFocusElements"]),
-                  arguments: [],
-                }),
-              ],
-            }),
+            Return(
+              CallExpression({
+                callee: Identifier(["focusLast"]),
+                arguments: [
+                  CallExpression({
+                    callee: Identifier(["this", "_getFocusElements"]),
+                    arguments: [],
+                  }),
+                ],
+              }),
+            ),
           ],
         }),
     });
@@ -175,36 +179,17 @@ module Methods = {
               arguments: [Identifier(["focusRing"])],
             }),
             Empty,
-            IfStatement({
-              test:
-                CallExpression({
-                  callee: Identifier(["focusNext"]),
-                  arguments: [
-                    CallExpression({
-                      callee: Identifier(["this", "_getFocusElements"]),
-                      arguments: [],
-                    }),
-                  ],
-                }),
-
-              consequent: [Return(Literal(LonaValue.boolean(true)))],
-              alternate: [],
-            }),
-            Empty,
-            IfStatement({
-              test: Identifier(["this", "props", "onFocusNext"]),
-              consequent: [
-                CallExpression({
-                  callee: Identifier(["this", "props", "onFocusNext"]),
-                  arguments: [],
-                }),
-                Empty,
-                Return(Literal(LonaValue.boolean(true))),
-              ],
-              alternate: [],
-            }),
-            Empty,
-            Return(Literal(LonaValue.boolean(false))),
+            Return(
+              CallExpression({
+                callee: Identifier(["focusNext"]),
+                arguments: [
+                  CallExpression({
+                    callee: Identifier(["this", "_getFocusElements"]),
+                    arguments: [],
+                  }),
+                ],
+              }),
+            ),
           ],
         }),
     });
@@ -222,36 +207,17 @@ module Methods = {
               arguments: [Identifier(["focusRing"])],
             }),
             Empty,
-            IfStatement({
-              test:
-                CallExpression({
-                  callee: Identifier(["focusPrevious"]),
-                  arguments: [
-                    CallExpression({
-                      callee: Identifier(["this", "_getFocusElements"]),
-                      arguments: [],
-                    }),
-                  ],
-                }),
-
-              consequent: [Return(Literal(LonaValue.boolean(true)))],
-              alternate: [],
-            }),
-            Empty,
-            IfStatement({
-              test: Identifier(["this", "props", "onFocusPrevious"]),
-              consequent: [
-                CallExpression({
-                  callee: Identifier(["this", "props", "onFocusPrevious"]),
-                  arguments: [],
-                }),
-                Empty,
-                Return(Literal(LonaValue.boolean(true))),
-              ],
-              alternate: [],
-            }),
-            Empty,
-            Return(Literal(LonaValue.boolean(false))),
+            Return(
+              CallExpression({
+                callee: Identifier(["focusPrevious"]),
+                arguments: [
+                  CallExpression({
+                    callee: Identifier(["this", "_getFocusElements"]),
+                    arguments: [],
+                  }),
+                ],
+              }),
+            ),
           ],
         }),
     });
@@ -297,7 +263,35 @@ module Methods = {
                         }),
                         Return(Empty),
                       ],
-                      alternate: [],
+                      alternate: [
+                        IfStatement({
+                          test:
+                            Identifier(["this", "props", "onFocusPrevious"]),
+                          consequent: [
+                            CallExpression({
+                              callee:
+                                Identifier([
+                                  "this",
+                                  "props",
+                                  "onFocusPrevious",
+                                ]),
+                              arguments: [],
+                            }),
+                            Empty,
+                            CallExpression({
+                              callee:
+                                Identifier(["event", "stopPropagation"]),
+                              arguments: [],
+                            }),
+                            CallExpression({
+                              callee: Identifier(["event", "preventDefault"]),
+                              arguments: [],
+                            }),
+                            Return(Empty),
+                          ],
+                          alternate: [],
+                        }),
+                      ],
                     }),
                   ],
                   alternate: [
@@ -318,7 +312,30 @@ module Methods = {
                         }),
                         Return(Empty),
                       ],
-                      alternate: [],
+                      alternate: [
+                        IfStatement({
+                          test: Identifier(["this", "props", "onFocusNext"]),
+                          consequent: [
+                            CallExpression({
+                              callee:
+                                Identifier(["this", "props", "onFocusNext"]),
+                              arguments: [],
+                            }),
+                            Empty,
+                            CallExpression({
+                              callee:
+                                Identifier(["event", "stopPropagation"]),
+                              arguments: [],
+                            }),
+                            CallExpression({
+                              callee: Identifier(["event", "preventDefault"]),
+                              arguments: [],
+                            }),
+                            Return(Empty),
+                          ],
+                          alternate: [],
+                        }),
+                      ],
                     }),
                   ],
                 }),
