@@ -194,7 +194,12 @@ class CSLayer: CSDataDeserializable, CSDataSerializable, DataNode, NSCopying {
             case .element:
                 return [prefix + [layer.name]]
             case .container(let elements):
-                return elements.map { prefix + [$0] }
+                let descendants = descendantLayers
+                return Array(elements
+                    .map { element in descendants.first(where: { element == $0.name }) }
+                    .compactMap { $0 }
+                    .map { inner(prefix: prefix, layer: $0) }
+                    .joined())
             }
         }
 
