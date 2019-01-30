@@ -1,9 +1,8 @@
 const path = require('path')
 const fs = require('fs')
+const qs = require('querystring')
 const { getOptions } = require('loader-utils')
 const { exec } = require('child_process')
-
-const lonac = path.join(__dirname, '../../core/src/main.bs.js')
 
 const IMPORT_REGEX = /import [a-zA-Z]+ from "([a-zA-Z./]+)"/g
 function parseImports(source) {
@@ -22,33 +21,28 @@ function parseImports(source) {
   return imports
 }
 
-module.exports = function loader(source) {
-  const callback = this.async()
-  const options = getOptions(this) || {}
+// TODO: update that when we have a proper release
+const lonacPath = path.join(__dirname, '../../core/src/main.bs.js')
 
-  const rawFilePath = path.normalize(this.resourcePath)
-  if (path.extname(rawFilePath) !== '.component') {
-    callback(null, source)
-    return
-  }
-
+function lonac(command, filePath, options, callback) {
   exec(
-    `node "${lonac}" component js --framework=${options.framework ||
+    `node "${lonacPath}" ${command} js --framework=${options.framework ||
       'reactdom'}${
       options.styleFramework
         ? ` --styleFramework=${options.styleFramework}`
         : ''
-    } "${rawFilePath}"`,
+    } "${filePath}"`,
     (err, stdout, stderr) => {
       if (err) {
         callback(stderr || err)
         return
       }
+
       const imports = parseImports(stdout)
 
       imports.forEach(relativeFilePath => {
         const absolutePath = path.resolve(
-          path.dirname(rawFilePath),
+          path.dirname(filePath),
           relativeFilePath
         )
         if (fs.existsSync(absolutePath)) {
@@ -63,25 +57,50 @@ module.exports = function loader(source) {
           return
         }
         if (fs.existsSync(`${absolutePath}.json`)) {
-          switch (path.basename(absolutePath)) {
-            // TODO:
-            case 'colors': {
-              break
-            }
-            case 'shadows': {
-              break
-            }
-            case 'textStyles': {
-              break
-            }
-            default:
-          }
+          // we are assuming that all imported .json files should be handled by Lona
+          stdout = stdout.replace(
+            relativeFilePath,
+            `${relativeFilePath}.js!=!${__filename}!${relativeFilePath}.json?__forceLona=1`
+          )
         }
       })
 
       callback(null, stdout)
     }
   )
+}
+
+module.exports = function loader(source) {
+  const callback = this.async()
+  const options = getOptions(this) || {}
+
+  const rawFilePath = path.normalize(this.resourcePath)
+
+  // we only want to handle .component or files that were marked as such (for the .json files)
+  if (
+    path.extname(rawFilePath) !== '.component' &&
+    (!this.resourceQuery || !qs.parse(this.resourceQuery)['?__forceLona'])
+  ) {
+    callback(null, source)
+    return
+  }
+
+  switch (path.basename(rawFilePath)) {
+    case 'colors.json':
+      lonac('colors', rawFilePath, options, callback)
+      break
+    case 'textStyles.json':
+      lonac('textStyles', rawFilePath, options, callback)
+      break
+    case 'shadows.json':
+      lonac('shadows', rawFilePath, options, callback)
+      break
+    case 'types.json':
+      lonac('types', rawFilePath, options, callback)
+      break
+    default:
+      lonac('component', rawFilePath, options, callback)
+  }
 }
 
 module.exports.raw = true
