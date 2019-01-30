@@ -1,0 +1,203 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`Should compile a component 1`] = `
+Array [
+  "function _typeof(obj) { if (typeof Symbol === \\"function\\" && typeof Symbol.iterator === \\"symbol\\") { _typeof = function _typeof(obj) { return typeof obj; }; } else { _typeof = function _typeof(obj) { return obj && typeof Symbol === \\"function\\" && obj.constructor === Symbol && obj !== Symbol.prototype ? \\"symbol\\" : typeof obj; }; } return _typeof(obj); }
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError(\\"Cannot call a class as a function\\"); } }
+
+function _defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if (\\"value\\" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
+
+function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties(Constructor.prototype, protoProps); if (staticProps) _defineProperties(Constructor, staticProps); return Constructor; }
+
+function _possibleConstructorReturn(self, call) { if (call && (_typeof(call) === \\"object\\" || typeof call === \\"function\\")) { return call; } return _assertThisInitialized(self); }
+
+function _assertThisInitialized(self) { if (self === void 0) { throw new ReferenceError(\\"this hasn't been initialised - super() hasn't been called\\"); } return self; }
+
+function _getPrototypeOf(o) { _getPrototypeOf = Object.setPrototypeOf ? Object.getPrototypeOf : function _getPrototypeOf(o) { return o.__proto__ || Object.getPrototypeOf(o); }; return _getPrototypeOf(o); }
+
+function _inherits(subClass, superClass) { if (typeof superClass !== \\"function\\" && superClass !== null) { throw new TypeError(\\"Super expression must either be null or a function\\"); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, writable: true, configurable: true } }); if (superClass) _setPrototypeOf(subClass, superClass); }
+
+function _setPrototypeOf(o, p) { _setPrototypeOf = Object.setPrototypeOf || function _setPrototypeOf(o, p) { o.__proto__ = p; return o; }; return _setPrototypeOf(o, p); }
+
+import React from \\"react\\";
+import colors from \\"../colors\\";
+import shadows from \\"../shadows\\";
+import textStyles from \\"../textStyles\\";
+import Button from \\"../interactivity/Button.component\\";
+
+var NestedButtons =
+/*#__PURE__*/
+function (_React$Component) {
+  _inherits(NestedButtons, _React$Component);
+
+  function NestedButtons() {
+    _classCallCheck(this, NestedButtons);
+
+    return _possibleConstructorReturn(this, _getPrototypeOf(NestedButtons).apply(this, arguments));
+  }
+
+  _createClass(NestedButtons, [{
+    key: \\"render\\",
+    value: function render() {
+      return React.createElement(\\"div\\", {
+        style: styles.view
+      }, React.createElement(\\"div\\", {
+        style: styles.button
+      }, React.createElement(Button, {
+        label: \\"Button 1\\"
+      })), React.createElement(\\"div\\", {
+        style: styles.view1
+      }), React.createElement(\\"div\\", {
+        style: styles.button2
+      }, React.createElement(Button, {
+        label: \\"Button 2\\"
+      })));
+    }
+  }]);
+
+  return NestedButtons;
+}(React.Component);
+
+export { NestedButtons as default };
+;
+var styles = {
+  view: {
+    alignItems: \\"flex-start\\",
+    display: \\"flex\\",
+    flex: \\"1 1 0%\\",
+    flexDirection: \\"column\\",
+    justifyContent: \\"flex-start\\",
+    paddingTop: \\"24px\\",
+    paddingRight: \\"24px\\",
+    paddingBottom: \\"24px\\",
+    paddingLeft: \\"24px\\"
+  },
+  button: {
+    alignItems: \\"flex-start\\",
+    alignSelf: \\"stretch\\",
+    display: \\"flex\\",
+    flex: \\"1 1 auto\\",
+    flexDirection: \\"row\\",
+    justifyContent: \\"flex-start\\"
+  },
+  view1: {
+    alignItems: \\"flex-start\\",
+    alignSelf: \\"stretch\\",
+    display: \\"flex\\",
+    flexDirection: \\"column\\",
+    justifyContent: \\"flex-start\\",
+    height: \\"8px\\"
+  },
+  button2: {
+    alignItems: \\"flex-start\\",
+    alignSelf: \\"stretch\\",
+    display: \\"flex\\",
+    flex: \\"1 1 auto\\",
+    flexDirection: \\"row\\",
+    justifyContent: \\"flex-start\\"
+  }
+};",
+  "function _objectSpread(target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i] != null ? arguments[i] : {}; var ownKeys = Object.keys(source); if (typeof Object.getOwnPropertySymbols === 'function') { ownKeys = ownKeys.concat(Object.getOwnPropertySymbols(source).filter(function (sym) { return Object.getOwnPropertyDescriptor(source, sym).enumerable; })); } ownKeys.forEach(function (key) { _defineProperty(target, key, source[key]); }); } return target; }
+
+function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
+
+function _typeof(obj) { if (typeof Symbol === \\"function\\" && typeof Symbol.iterator === \\"symbol\\") { _typeof = function _typeof(obj) { return typeof obj; }; } else { _typeof = function _typeof(obj) { return obj && typeof Symbol === \\"function\\" && obj.constructor === Symbol && obj !== Symbol.prototype ? \\"symbol\\" : typeof obj; }; } return _typeof(obj); }
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError(\\"Cannot call a class as a function\\"); } }
+
+function _defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if (\\"value\\" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
+
+function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties(Constructor.prototype, protoProps); if (staticProps) _defineProperties(Constructor, staticProps); return Constructor; }
+
+function _possibleConstructorReturn(self, call) { if (call && (_typeof(call) === \\"object\\" || typeof call === \\"function\\")) { return call; } return _assertThisInitialized(self); }
+
+function _assertThisInitialized(self) { if (self === void 0) { throw new ReferenceError(\\"this hasn't been initialised - super() hasn't been called\\"); } return self; }
+
+function _getPrototypeOf(o) { _getPrototypeOf = Object.setPrototypeOf ? Object.getPrototypeOf : function _getPrototypeOf(o) { return o.__proto__ || Object.getPrototypeOf(o); }; return _getPrototypeOf(o); }
+
+function _inherits(subClass, superClass) { if (typeof superClass !== \\"function\\" && superClass !== null) { throw new TypeError(\\"Super expression must either be null or a function\\"); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, writable: true, configurable: true } }); if (superClass) _setPrototypeOf(subClass, superClass); }
+
+function _setPrototypeOf(o, p) { _setPrototypeOf = Object.setPrototypeOf || function _setPrototypeOf(o, p) { o.__proto__ = p; return o; }; return _setPrototypeOf(o, p); }
+
+import React from \\"react\\";
+import colors from \\"../colors\\";
+import shadows from \\"../shadows\\";
+import textStyles from \\"../textStyles\\";
+
+var Button =
+/*#__PURE__*/
+function (_React$Component) {
+  _inherits(Button, _React$Component);
+
+  function Button() {
+    _classCallCheck(this, Button);
+
+    return _possibleConstructorReturn(this, _getPrototypeOf(Button).apply(this, arguments));
+  }
+
+  _createClass(Button, [{
+    key: \\"render\\",
+    value: function render() {
+      var Text$text;
+      var View$backgroundColor;
+      var View$hovered;
+      var View$onPress;
+      var View$pressed;
+      View$backgroundColor = colors.blue100;
+      Text$text = this.props.label;
+      View$onPress = this.props.onTap;
+
+      if (View$hovered) {
+        View$backgroundColor = colors.blue200;
+      }
+
+      if (View$pressed) {
+        View$backgroundColor = colors.blue50;
+      }
+
+      if (this.props.secondary) {
+        View$backgroundColor = colors.lightblue100;
+      }
+
+      return React.createElement(\\"button\\", {
+        style: Object.assign({}, styles.view, {
+          backgroundColor: View$backgroundColor
+        }),
+        onClick: View$onPress
+      }, React.createElement(\\"span\\", {
+        style: styles.text
+      }, Text$text));
+    }
+  }]);
+
+  return Button;
+}(React.Component);
+
+export { Button as default };
+;
+var styles = {
+  view: {
+    alignItems: \\"flex-start\\",
+    backgroundColor: colors.blue100,
+    display: \\"flex\\",
+    flex: \\"0 0 auto\\",
+    flexDirection: \\"column\\",
+    justifyContent: \\"flex-start\\",
+    paddingTop: \\"12px\\",
+    paddingRight: \\"16px\\",
+    paddingBottom: \\"12px\\",
+    paddingLeft: \\"16px\\"
+  },
+  text: _objectSpread({
+    textAlign: \\"left\\"
+  }, textStyles.button, {
+    alignItems: \\"flex-start\\",
+    display: \\"block\\",
+    flex: \\"0 0 auto\\",
+    flexDirection: \\"column\\",
+    justifyContent: \\"flex-start\\"
+  })
+};",
+]
+`;
