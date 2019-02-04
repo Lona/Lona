@@ -70,16 +70,16 @@ class LonaPlugins {
         }
     }
 
-    let url: URL
+    let urls: [URL]
 
     private static var handlers: [LonaPluginActivationEvent: [Handler]] = [:]
 
-    init(url: URL) {
-        self.url = url
+    init(urls: [URL]) {
+        self.urls = urls
     }
 
     func pluginFiles() -> [PluginFile] {
-        return LonaPlugins.pluginFiles(in: url)
+        return urls.flatMap { LonaPlugins.pluginFiles(in: $0) }
     }
 
     func pluginFile(named name: String) -> PluginFile? {
@@ -122,8 +122,27 @@ class LonaPlugins {
 
     // MARK: - STATIC
 
+    // this is the list of the plugins in:
+    // - the `/plugins` folder of the current workspace
+    // - the `~/Library/Application Support/${BUNDLE_IDENFIFIER}/plugins` folder
     static var current: LonaPlugins {
-        return LonaPlugins(url: CSUserPreferences.workspaceURL.appendingPathComponent("plugins", isDirectory: true))
+        do {
+            let applicationSupportFolderURL = try FileManager.default.url(for: .applicationSupportDirectory, in: .userDomainMask, appropriateFor: nil, create: true)
+            let appName = Bundle.main.object(forInfoDictionaryKey: "CFBundleIdentifier") as! String
+            let commonPluginsfolder = applicationSupportFolderURL.appendingPathComponent("\(appName)/plugins", isDirectory: true)
+            if !FileManager.default.fileExists(atPath: commonPluginsfolder.path) {
+                try FileManager.default.createDirectory(at: commonPluginsfolder, withIntermediateDirectories: true, attributes: nil)
+            }
+            return LonaPlugins(urls: [
+                commonPluginsfolder,
+                CSUserPreferences.workspaceURL.appendingPathComponent("plugins", isDirectory: true)
+            ])
+        } catch {
+            print(error)
+            return LonaPlugins(urls: [
+                CSUserPreferences.workspaceURL.appendingPathComponent("plugins", isDirectory: true)
+            ])
+        }
     }
 
     static func pluginFiles(in workspace: URL) -> [PluginFile] {
