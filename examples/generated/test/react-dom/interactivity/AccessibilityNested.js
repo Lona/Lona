@@ -101,7 +101,7 @@ export default class AccessibilityNested extends React.Component {
             customTextAccessibilityLabel={"Text"}
             onToggleCheckbox={AccessibilityTest$onToggleCheckbox}
             tabIndex={-1}
-            focusRing={this.state.focusRing}
+            className={this.state.focusRing ? 'lona--focus-ring' : 'lona--no-focus-ring'}
             onKeyDown={this._handleKeyDown}
             ref={(ref) => { this._AccessibilityTest = ref }}
 
@@ -111,7 +111,7 @@ export default class AccessibilityNested extends React.Component {
           <AccessibilityVisibility
             showText={AccessibilityVisibility$showText}
             tabIndex={-1}
-            focusRing={this.state.focusRing}
+            className={this.state.focusRing ? 'lona--focus-ring' : 'lona--no-focus-ring'}
             onKeyDown={this._handleKeyDown}
             ref={(ref) => { this._AccessibilityVisibility = ref }}
 
@@ -130,22 +130,20 @@ let Container = styled.div({
   justifyContent: "flex-start"
 })
 
-let AccessibilityTestAccessibilityTestWrapper = styled.div((props) => ({
+let AccessibilityTestAccessibilityTestWrapper = styled.div({
   alignItems: "flex-start",
   alignSelf: "stretch",
   display: "flex",
   flex: "1 1 auto",
   flexDirection: "row",
-  justifyContent: "flex-start",
-  ...!props.focusRing && { ":focus": { outline: 0 } }
-}))
+  justifyContent: "flex-start"
+})
 
-let AccessibilityVisibilityAccessibilityVisibilityWrapper = styled.div((props) => ({
+let AccessibilityVisibilityAccessibilityVisibilityWrapper = styled.div({
   alignItems: "flex-start",
   alignSelf: "stretch",
   display: "flex",
   flex: "1 1 auto",
   flexDirection: "row",
-  justifyContent: "flex-start",
-  ...!props.focusRing && { ":focus": { outline: 0 } }
-}))
+  justifyContent: "flex-start"
+})
