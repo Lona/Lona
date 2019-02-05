@@ -20,3 +20,7 @@ code {
   border-style: solid;
   border-width: 0;
 }
+
+.lona--no-focus-ring:focus {
+  outline: none;
+}

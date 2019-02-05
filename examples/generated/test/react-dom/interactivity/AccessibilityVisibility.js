@@ -92,7 +92,7 @@ export default class AccessibilityVisibility extends React.Component {
         <GreyBox
           aria-label={"Grey box"}
           tabIndex={-1}
-          focusRing={this.state.focusRing}
+          className={this.state.focusRing ? 'lona--focus-ring' : 'lona--no-focus-ring'}
           onKeyDown={this._handleKeyDown}
           ref={(ref) => { this._GreyBox = ref }}
 
@@ -102,7 +102,7 @@ export default class AccessibilityVisibility extends React.Component {
           <Text
             aria-label={"Some text that is sometimes hidden"}
             tabIndex={-1}
-            focusRing={this.state.focusRing}
+            className={this.state.focusRing ? 'lona--focus-ring' : 'lona--no-focus-ring'}
             onKeyDown={this._handleKeyDown}
             ref={(ref) => { this._Text = ref }}
           >
@@ -122,24 +122,22 @@ let View = styled.div({
   justifyContent: "flex-start"
 })
 
-let GreyBox = styled.div((props) => ({
+let GreyBox = styled.div({
   alignItems: "flex-start",
   backgroundColor: "#D8D8D8",
   display: "flex",
   flexDirection: "column",
   justifyContent: "flex-start",
   width: "100px",
-  height: "40px",
-  ...!props.focusRing && { ":focus": { outline: 0 } }
-}))
+  height: "40px"
+})
 
-let Text = styled.span((props) => ({
+let Text = styled.span({
   textAlign: "left",
   ...textStyles.body1,
   alignItems: "flex-start",
   display: "block",
   flex: "0 0 auto",
   flexDirection: "column",
-  justifyContent: "flex-start",
-  ...!props.focusRing && { ":focus": { outline: 0 } }
-}))
+  justifyContent: "flex-start"
+})

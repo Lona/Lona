@@ -563,25 +563,6 @@ module Object = {
                getStylePropertyWithUnits(config, framework, key, value)
              )
         )
-        @ (
-          switch (focusStyles(config, layer)) {
-          | Some(property) => [
-              SpreadElement(
-                UnaryExpression({
-                  prefix: true,
-                  operator: "!",
-                  argument:
-                    BinaryExpression({
-                      left: Identifier(["props", "focusRing"]),
-                      operator: And,
-                      right: ObjectLiteral([property]),
-                    }),
-                }),
-              ),
-            ]
-          | None => []
-          }
-        ),
       )
     );
   };

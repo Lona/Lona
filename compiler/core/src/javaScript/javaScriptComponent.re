@@ -159,7 +159,6 @@ module StyledComponents = {
         rootLayer: Types.layer,
         layer: Types.layer,
       ) => {
-    let usesProps = JavaScriptLayer.canBeFocused(config, layer);
     let styles =
       JavaScriptStyles.Object.forLayer(
         config,
@@ -208,7 +207,7 @@ module StyledComponents = {
                     };
                   },
                 ]),
-              arguments: [usesProps ? createPropsFunction(styles) : styles],
+              arguments: [styles],
             }),
         }),
       )
@@ -630,8 +629,11 @@ let rec layerToJavaScriptAST =
               value: Literal(LonaValue.number(-1.)),
             }),
             JSXAttribute({
-              name: "focusRing",
-              value: Identifier(["this", "state", "focusRing"]),
+              name: "className",
+              value:
+                Identifier([
+                  "this.state.focusRing ? 'lona--focus-ring' : 'lona--no-focus-ring'",
+                ]),
             }),
             JSXAttribute({
               name: "onKeyDown",
