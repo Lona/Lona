@@ -19,6 +19,7 @@ env:
 before_install:
   - brew update
   - brew outdated carthage || brew upgrade carthage
+  - brew tap danger/tap
   - brew install danger/tap/danger-swift
   - BUNDLE_GEMFILE=studio/Gemfile bundle install
   - BUNDLE_GEMFILE=studio/Gemfile bundle exec pod repo update
