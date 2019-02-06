@@ -17,12 +17,12 @@
 import Foundation
 
 // An error returned from core
-struct RemoteError {
+class RPCError {
     let code: Int
     let message: String
     let data: AnyObject?
 
-    init(code: Int, message: String, data: AnyObject?) {
+    init(code: Int, message: String, data: AnyObject? = nil) {
         self.code = code
         self.message = message
         self.data = data
@@ -34,6 +34,25 @@ struct RemoteError {
         self.code = code
         self.message = message
         self.data = json["data"]
+    }
+    
+    static func ParseError(_ data: AnyObject? = nil) -> RPCError {
+        return RPCError(code: -32700, message: "Parse error", data: data)
+    }
+    
+    static func InvalidRequest(_ data: AnyObject? = nil) -> RPCError {
+        return RPCError(code: -32600, message: "Invalid Request", data: data)
+    }
+    
+    static func MethodNotFound(_ data: AnyObject? = nil) -> RPCError {
+        return RPCError(code: -32601, message: "Method not found", data: data)
+    }
+    
+    static func InvalidParams(_ data: AnyObject? = nil) -> RPCError {
+        return RPCError(code: -32602, message: "Invalid params", data: data)
+    }
+    static func InternalError(_ data: AnyObject? = nil) -> RPCError {
+        return RPCError(code: -32603, message: "Internal error", data: data)
     }
 
     func toJSON() -> [String: AnyObject] {
@@ -50,7 +69,7 @@ struct RemoteError {
 
 // The return value of a synchronous RPC
 enum RpcResult {
-    case error(RemoteError)
+    case error(RPCError)
     case ok(AnyObject)
 }
 
@@ -79,7 +98,7 @@ class RPCService {
         sendJson(json)
     }
 
-    private func sendError(id: Int, error: RemoteError) {
+    private func sendError(id: Int, error: RPCError) {
         let json = ["id": id, "error": error.toJSON()] as [String: Any]
         sendJson(json)
     }
@@ -107,7 +126,7 @@ class RPCService {
                 if let result = obj["result"] {
                     callback?(.ok(result))
                 } else if let errJson = obj["error"] as? [String: AnyObject],
-                    let err = RemoteError(json: errJson) {
+                    let err = RPCError(json: errJson) {
                     callback?(.error(err))
                 } else {
                     print("failed to parse response \(obj)")
@@ -126,11 +145,7 @@ class RPCService {
                 return
         }
         guard let jsonMethod = json["method"] as? String else {
-                sendError(id: id, error: RemoteError(
-                    code: -32601,
-                    message: "Method not found",
-                    data: nil
-                ))
+                sendError(id: id, error: RPCError.MethodNotFound())
                 return
         }
 

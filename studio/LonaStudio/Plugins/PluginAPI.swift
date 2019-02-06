@@ -45,13 +45,9 @@ class PluginAPI {
         _ jsonMethod: String,
         _ jsonParams: AnyObject?,
         onSuccess: (Any) -> Void,
-        onFailure: (RemoteError) -> Void) {
+        onFailure: (RPCError) -> Void) {
         guard let method = RequestMethod(rawValue: jsonMethod) else {
-            onFailure(RemoteError(
-                code: -32601,
-                message: "Method not found",
-                data: nil
-            ))
+            onFailure(RPCError.MethodNotFound())
             return
         }
 
