@@ -46,11 +46,14 @@ class LonaPlugins {
         func run(onSuccess: (String) -> Void) {
             guard let config = config else { return }
 
-            LonaNode.run(
+            let rpcService = RPCService()
+
+            let stdinFileHandle = LonaNode.run(
                 arguments: [url.appendingPathComponent(config.main).path],
                 currentDirectoryPath: url.path,
+                onData: rpcService.handleRaw,
                 onSuccess: { output in
-                    Swift.print("Output", output.utf8String() ?? "")
+                    Swift.print("Output", String(data: output, encoding: String.Encoding.utf8) ?? "")
 
 //                    DispatchQueue.main.async {
 //                        let alert = NSAlert()
@@ -59,6 +62,8 @@ class LonaPlugins {
 //                        alert.runModal()
 //                    }
             })
+
+            rpcService.sendData = stdinFileHandle?.write
         }
 
         // MARK: Private

@@ -9,6 +9,10 @@
 import Foundation
 import AppKit
 
+struct RunController {
+    var sendData: (_ data: Data) -> Void
+}
+
 enum LonaNode {
 
     // MARK: Public
@@ -21,7 +25,7 @@ enum LonaNode {
         var output: Data?
         var failureMessage: String?
 
-        run(
+        _ = run(
             arguments: arguments,
             inputData: inputData,
             currentDirectoryPath: currentDirectoryPath,
@@ -45,34 +49,45 @@ enum LonaNode {
         inputData: Data? = nil,
         currentDirectoryPath: String? = nil,
         sync: Bool = false,
+        onData: ((Data) -> Void)? = nil,
         onSuccess: ((Data) -> Void)? = nil,
-        onFailure: ((Int, String?) -> Void)? = nil) {
-        guard let nodePath = LonaNode.binaryPath else { return }
+        onFailure: ((Int, String?) -> Void)? = nil) -> FileHandle? {
+        guard let nodePath = LonaNode.binaryPath else {
+            onFailure?(-1, "Couldn't find node")
+            return nil
+        }
+
+        let task = Process()
+        var env = ProcessInfo.processInfo.environment
+        if let path = env["PATH"], let binaryPath = binaryPath {
+            let nodeDirectory = URL(fileURLWithPath: binaryPath).deletingLastPathComponent()
+            env["PATH"] = "\(nodeDirectory):" + path
+        }
+        task.environment = env
+
+        // Set the task parameters
+        task.launchPath = nodePath
+        task.arguments = arguments
+
+        if let currentDirectoryPath = currentDirectoryPath {
+            task.currentDirectoryPath = currentDirectoryPath
+        }
+
+        let stdin = Pipe()
+        let stdout = Pipe()
+
+        task.standardInput = stdin
+        task.standardOutput = stdout
+
+        let inHandle = stdin.fileHandleForWriting
+        var recvBuf = Data()
+
+        stdout.fileHandleForReading.readabilityHandler = { handle in
+            let data = handle.availableData
+            LonaNode.recvHandler(data, &recvBuf, onData)
+        }
 
         func run() {
-            let task = Process()
-
-            var env = ProcessInfo.processInfo.environment
-            if let path = env["PATH"], let binaryPath = binaryPath {
-                let nodeDirectory = URL(fileURLWithPath: binaryPath).deletingLastPathComponent()
-                env["PATH"] = "\(nodeDirectory):" + path
-            }
-            task.environment = env
-
-            // Set the task parameters
-            task.launchPath = nodePath
-            task.arguments = arguments
-
-            if let currentDirectoryPath = currentDirectoryPath {
-                task.currentDirectoryPath = currentDirectoryPath
-            }
-
-            let stdin = Pipe()
-            let stdout = Pipe()
-
-            task.standardInput = stdin
-            task.standardOutput = stdout
-
             // Launch the task
             task.launch()
 
@@ -80,14 +95,9 @@ enum LonaNode {
                 stdin.fileHandleForWriting.write(inputData)
             }
 
-            stdin.fileHandleForWriting.closeFile()
-
             task.waitUntilExit()
 
-            let handle = stdout.fileHandleForReading
-            let data = handle.readDataToEndOfFile()
-
-            onSuccess?(data)
+            onSuccess?(recvBuf)
         }
 
         if sync {
@@ -97,9 +107,34 @@ enum LonaNode {
                 run()
             }
         }
+
+        return inHandle
     }
 
     static var binaryPath: String? {
         return Bundle.main.path(forResource: "node", ofType: "")
+    }
+
+    // most of the following is taken from https://github.com/xi-editor/xi-mac/blob/master/Sources/XiEditor/RPCSending.swift#L175-L201
+    private static func recvHandler(_ data: Data, _ recvBuf: inout Data, _ onData: ((Data) -> Void)? = nil) {
+        if data.count == 0 {
+            return
+        }
+        let scanStart = recvBuf.count
+        recvBuf.append(data)
+        let recvBufLen = recvBuf.count
+
+        recvBuf.withUnsafeMutableBytes { (recvBufBytes: UnsafeMutablePointer<UInt8>) -> Void in
+            var i = scanStart
+            for j in scanStart..<recvBufLen {
+                // TODO: using memchr would probably be faster
+                if recvBufBytes[j] == UInt8(ascii: "\n") {
+                    let bufferPointer = UnsafeBufferPointer(start: recvBufBytes.advanced(by: i), count: j + 1 - i)
+                    let dataPacket = Data(bufferPointer)
+                    onData?(dataPacket)
+                    i = j + 1
+                }
+            }
+        }
     }
 }

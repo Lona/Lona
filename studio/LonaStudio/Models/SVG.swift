@@ -431,7 +431,7 @@ extension SVG {
             return
         }
 
-        LonaNode.run(
+        _ = LonaNode.run(
             arguments: [compilerPath, "convertSvg"],
             inputData: contents,
             onSuccess: { data in

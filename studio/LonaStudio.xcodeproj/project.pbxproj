@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		0310D107220B13D5007B3546 /* RPCService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0310D106220B13D5007B3546 /* RPCService.swift */; };
 		036A4E8A21E0DFE700948DBD /* LonaFileIcon.swift in Sources */ = {isa = PBXBuildFile; fileRef = 036A4E8921E0DFE700948DBD /* LonaFileIcon.swift */; };
 		036A4E8E21E0EF0100948DBD /* ImageViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 036A4E8D21E0EF0100948DBD /* ImageViewController.swift */; };
 		036A4E9021E0F6AA00948DBD /* ImageViewer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 036A4E8F21E0F6AA00948DBD /* ImageViewer.swift */; };
@@ -292,6 +293,7 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
+		0310D106220B13D5007B3546 /* RPCService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RPCService.swift; sourceTree = "<group>"; };
 		036A4E8921E0DFE700948DBD /* LonaFileIcon.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = LonaFileIcon.swift; sourceTree = "<group>"; };
 		036A4E8D21E0EF0100948DBD /* ImageViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImageViewController.swift; sourceTree = "<group>"; };
 		036A4E8F21E0F6AA00948DBD /* ImageViewer.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ImageViewer.swift; sourceTree = "<group>"; };
@@ -667,6 +669,7 @@
 			isa = PBXGroup;
 			children = (
 				304ADD54209D2CA0001B9A43 /* LonaPlugins.swift */,
+				0310D106220B13D5007B3546 /* RPCService.swift */,
 			);
 			path = Plugins;
 			sourceTree = "<group>";
@@ -1507,6 +1510,7 @@
 				303BDE6D1F76E61300B4CE5A /* VideoUtils.swift in Sources */,
 				305A19521F4638F800EA033C /* NSStackViewExtensions.swift in Sources */,
 				6B0A29E6212736F900A96B0F /* Alert.swift in Sources */,
+				0310D107220B13D5007B3546 /* RPCService.swift in Sources */,
 				6B6D4435218F6B070016262C /* LNAImageView.swift in Sources */,
 				303C3FEE20A396C3008E1541 /* OpenProjectButton.swift in Sources */,
 				30DE880D1FBA22FB00D62A50 /* ComponentEditorButton.swift in Sources */,
