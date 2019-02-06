@@ -9,13 +9,18 @@
 // most of it is taken from https://github.com/xi-editor/xi-mac/blob/master/Sources/XiEditor/RPCSending.swift
 
 import Foundation
-import AppKit
 
 // An error returned from core
 struct RemoteError {
     let code: Int
     let message: String
     let data: AnyObject?
+
+    init(code: Int, message: String, data: AnyObject?) {
+        self.code = code
+        self.message = message
+        self.data = data
+    }
 
     init?(json: [String: AnyObject]) {
         guard let code = json["code"] as? Int,
@@ -24,20 +29,23 @@ struct RemoteError {
         self.message = message
         self.data = json["data"]
     }
+
+    func toJSON() -> [String: AnyObject] {
+        var json = [
+            "code": self.code as AnyObject,
+            "message": self.message as AnyObject
+        ]
+        if let data = self.data {
+            json["data"] = data
+        }
+        return json
+    }
 }
 
 // The return value of a synchronous RPC
 enum RpcResult {
     case error(RemoteError)
     case ok(AnyObject)
-}
-
-enum RPCRequestMethod: String {
-    case workspacePath = "workspace_path"
-}
-
-enum RPCNotificationMethod: String {
-    case alert
 }
 
 // A completion handler for a synchronous RPC
@@ -60,17 +68,17 @@ class RPCService {
         }
     }
 
-    private func sendResult(id: Any, result: Any) {
+    private func sendResult(id: Int, result: Any) {
         let json = ["id": id, "result": result]
         sendJson(json)
     }
 
-    private func sendError(id: Any, error: Any) {
-        let json = ["id": id, "error": error]
+    private func sendError(id: Int, error: RemoteError) {
+        let json = ["id": id, "error": error.toJSON()] as [String: Any]
         sendJson(json)
     }
 
-    func handleRaw(_ data: Data) {
+    func handleData(_ data: Data) {
         do {
             let json = try JSONSerialization.jsonObject(with: data, options: .allowFragments)
             handleRpc(json)
@@ -107,49 +115,33 @@ class RPCService {
     }
 
     private func handleRequest(json: [String: AnyObject]) {
-        guard let id = json["id"] else {
+        guard let id = json["id"] as? Int else {
                 assertionFailure("unknown json from core: \(json)")
                 return
         }
-        guard let jsonMethod = json["method"] as? String,
-              let method = RPCRequestMethod(rawValue: jsonMethod) else {
-                sendError(id: id, error: [
-                    "code": -32601,
-                    "message": "Method not found"
-                ])
+        guard let jsonMethod = json["method"] as? String else {
+                sendError(id: id, error: RemoteError(
+                    code: -32601,
+                    message: "Method not found",
+                    data: nil
+                ))
                 return
         }
 
-        switch method {
-        case .workspacePath:
-            let result = CSUserPreferences.workspaceURL.path
-
+        PluginAPI.handleRequest(jsonMethod, json["params"], onSuccess: { result in
             sendResult(id: id, result: result)
-        }
+        }, onFailure: { error in
+            sendError(id: id, error: error)
+        })
     }
 
     private func handleNotification(json: [String: AnyObject]) {
-        guard let jsonMethod = json["method"] as? String,
-            let method = RPCNotificationMethod(rawValue: jsonMethod) else {
+        guard let jsonMethod = json["method"] as? String else {
             print("unknown method")
             return
         }
 
-        switch method {
-        case .alert:
-            guard let message = json["params"]?["msg"] as? String else {
-                print("invalid params")
-                return
-            }
-            DispatchQueue.main.async {
-                let alert = NSAlert()
-                alert.messageText = message
-                alert.alertStyle = .warning
-                alert.addButton(withTitle: "OK")
-                alert.addButton(withTitle: "Cancel")
-                alert.runModal()
-            }
-        }
+        PluginAPI.handleNotification(jsonMethod, json["params"])
     }
 
     /// send an RPC request, returning immediately. The callback will be called when the

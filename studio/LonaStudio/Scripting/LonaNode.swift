@@ -9,9 +9,7 @@
 import Foundation
 import AppKit
 
-struct RunController {
-    var sendData: (_ data: Data) -> Void
-}
+typealias SendData = (_ data: Data) -> Void
 
 enum LonaNode {
 
@@ -51,7 +49,8 @@ enum LonaNode {
         sync: Bool = false,
         onData: ((Data) -> Void)? = nil,
         onSuccess: ((Data) -> Void)? = nil,
-        onFailure: ((Int, String?) -> Void)? = nil) -> FileHandle? {
+        onFailure: ((Int, String?) -> Void)? = nil) -> SendData? {
+
         guard let nodePath = LonaNode.binaryPath else {
             onFailure?(-1, "Couldn't find node")
             return nil
@@ -79,7 +78,6 @@ enum LonaNode {
         task.standardInput = stdin
         task.standardOutput = stdout
 
-        let inHandle = stdin.fileHandleForWriting
         var recvBuf = Data()
 
         stdout.fileHandleForReading.readabilityHandler = { handle in
@@ -108,7 +106,7 @@ enum LonaNode {
             }
         }
 
-        return inHandle
+        return stdin.fileHandleForWriting.write
     }
 
     static var binaryPath: String? {

@@ -8,6 +8,7 @@
 
 /* Begin PBXBuildFile section */
 		0310D107220B13D5007B3546 /* RPCService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0310D106220B13D5007B3546 /* RPCService.swift */; };
+		0310D109220B9DE8007B3546 /* PluginAPI.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0310D108220B9DE8007B3546 /* PluginAPI.swift */; };
 		036A4E8A21E0DFE700948DBD /* LonaFileIcon.swift in Sources */ = {isa = PBXBuildFile; fileRef = 036A4E8921E0DFE700948DBD /* LonaFileIcon.swift */; };
 		036A4E8E21E0EF0100948DBD /* ImageViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 036A4E8D21E0EF0100948DBD /* ImageViewController.swift */; };
 		036A4E9021E0F6AA00948DBD /* ImageViewer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 036A4E8F21E0F6AA00948DBD /* ImageViewer.swift */; };
@@ -294,6 +295,7 @@
 
 /* Begin PBXFileReference section */
 		0310D106220B13D5007B3546 /* RPCService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RPCService.swift; sourceTree = "<group>"; };
+		0310D108220B9DE8007B3546 /* PluginAPI.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PluginAPI.swift; sourceTree = "<group>"; };
 		036A4E8921E0DFE700948DBD /* LonaFileIcon.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = LonaFileIcon.swift; sourceTree = "<group>"; };
 		036A4E8D21E0EF0100948DBD /* ImageViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImageViewController.swift; sourceTree = "<group>"; };
 		036A4E8F21E0F6AA00948DBD /* ImageViewer.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ImageViewer.swift; sourceTree = "<group>"; };
@@ -670,6 +672,7 @@
 			children = (
 				304ADD54209D2CA0001B9A43 /* LonaPlugins.swift */,
 				0310D106220B13D5007B3546 /* RPCService.swift */,
+				0310D108220B9DE8007B3546 /* PluginAPI.swift */,
 			);
 			path = Plugins;
 			sourceTree = "<group>";
@@ -1538,6 +1541,7 @@
 				6B4203E521BB117B00D59317 /* CanvasTableHeaderItem.swift in Sources */,
 				30CE47CD1ED776FA00BBF716 /* TextStylePickerButton.swift in Sources */,
 				30C203DF20BF5955007C3FE0 /* TextStylePreviewCollection.swift in Sources */,
+				0310D109220B9DE8007B3546 /* PluginAPI.swift in Sources */,
 				6B1086FD217A38110024AE56 /* LRUCache.swift in Sources */,
 				30D9B40E1F79BADC00C8A3D4 /* NSMenuExtensions.swift in Sources */,
 				30C8BC2D1EDB653400B99F1B /* CanvasListView.swift in Sources */,

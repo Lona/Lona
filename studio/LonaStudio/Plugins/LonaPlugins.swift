@@ -48,10 +48,10 @@ class LonaPlugins {
 
             let rpcService = RPCService()
 
-            let stdinFileHandle = LonaNode.run(
+            let sendData = LonaNode.run(
                 arguments: [url.appendingPathComponent(config.main).path],
                 currentDirectoryPath: url.path,
-                onData: rpcService.handleRaw,
+                onData: rpcService.handleData,
                 onSuccess: { output in
                     Swift.print("Output", String(data: output, encoding: String.Encoding.utf8) ?? "")
 
@@ -63,7 +63,7 @@ class LonaPlugins {
 //                    }
             })
 
-            rpcService.sendData = stdinFileHandle?.write
+            rpcService.sendData = sendData
         }
 
         // MARK: Private
