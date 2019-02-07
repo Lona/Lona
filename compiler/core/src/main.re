@@ -56,6 +56,11 @@ let javaScriptOptions: JavaScriptOptions.options = {
     | Some("styledcomponents") => JavaScriptOptions.StyledComponents
     | _ => JavaScriptOptions.None
     },
+  styledComponentsVersion:
+    switch (getArgument("styledComponentsVersion")) {
+    | Some(value) when Js.String.startsWith("3", value) => V3
+    | _ => Latest
+    },
 };
 
 let options: LonaCompilerCore.Options.options = {
