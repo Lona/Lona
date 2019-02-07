@@ -35,22 +35,23 @@ class RPCError {
         self.message = message
         self.data = json["data"]
     }
-    
+
     static func ParseError(_ data: AnyObject? = nil) -> RPCError {
         return RPCError(code: -32700, message: "Parse error", data: data)
     }
-    
+
     static func InvalidRequest(_ data: AnyObject? = nil) -> RPCError {
         return RPCError(code: -32600, message: "Invalid Request", data: data)
     }
-    
+
     static func MethodNotFound(_ data: AnyObject? = nil) -> RPCError {
         return RPCError(code: -32601, message: "Method not found", data: data)
     }
-    
+
     static func InvalidParams(_ data: AnyObject? = nil) -> RPCError {
         return RPCError(code: -32602, message: "Invalid params", data: data)
     }
+
     static func InternalError(_ data: AnyObject? = nil) -> RPCError {
         return RPCError(code: -32603, message: "Internal error", data: data)
     }
