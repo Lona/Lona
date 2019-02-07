@@ -650,7 +650,10 @@ let rec layerToJavaScriptAST =
       needsRef ?
         [
           JSXAttribute({
-            name: "ref",
+            name:
+              config.options.javaScript.styledComponentsVersion == V3
+              && Layer.isPrimitiveTypeName(layer.typeName) ?
+                "innerRef" : "ref",
             value:
               ArrowFunctionExpression({
                 id: None,
