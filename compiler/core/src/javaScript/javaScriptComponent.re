@@ -961,8 +961,8 @@ let rootLayerToJavaScriptAST =
 };
 
 let defineInitialLogicValues =
-    (config: Config.t, rootLayer, assignments, logic) => {
-  let variableDeclarations = logic |> Logic.buildVariableDeclarations;
+    (config: Config.t, rootLayer, assignments, rootExpr, logic) => {
+  let variableDeclarations = rootExpr |> LonaLogic.buildVariableDeclarations;
   let conditionalAssignments = Logic.conditionallyAssignedIdentifiers(logic);
   let isConditionallyAssigned = (layer: Types.layer, (name, _)) => {
     let isAssigned = ((_, value)) =>
@@ -1057,6 +1057,7 @@ let generate =
       json,
     ) => {
   let rootLayer = json |> Decode.Component.rootLayer(config);
+  let rootExpr = json |> Decode.Component.logicExpr;
   let logic = json |> Decode.Component.logic;
   let parameters = json |> Decode.Component.parameters;
   let assignments = Layer.parameterAssignmentsFromLogic(rootLayer, logic);
@@ -1094,7 +1095,7 @@ let generate =
 
   let logicAST =
     logic
-    |> defineInitialLogicValues(config, rootLayer, assignments)
+    |> defineInitialLogicValues(config, rootLayer, assignments, rootExpr)
     |> JavaScriptLogic.toJavaScriptAST(options.framework, config)
     |> Ast.optimize;
 

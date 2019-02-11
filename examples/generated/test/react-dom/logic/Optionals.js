@@ -9,10 +9,10 @@ export default class Optionals extends React.Component {
   render() {
 
 
-    let Label$text
     let StringParam$text
-    let View$backgroundColor
     let unwrapped
+    let View$backgroundColor
+    let Label$text
     Label$text = ""
     StringParam$text = "No string param"
     View$backgroundColor = "transparent"

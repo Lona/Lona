@@ -9,10 +9,10 @@ export default class BorderStyleTest extends React.Component {
   render() {
 
 
-    let customBorderStyle
-    let Inner$borderStyle
     let Other$borderStyle
     let View$borderStyle
+    let customBorderStyle
+    let Inner$borderStyle
     Inner$borderStyle = ""
     View$borderStyle = "dashed"
 

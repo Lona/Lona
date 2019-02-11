@@ -9,11 +9,11 @@ export default class Button extends React.Component {
   render() {
 
 
-    let Text$text
+    let View$pressed
     let View$backgroundColor
     let View$hovered
     let View$onPress
-    let View$pressed
+    let Text$text
     View$backgroundColor = colors.blue100
 
     Text$text = this.props.label

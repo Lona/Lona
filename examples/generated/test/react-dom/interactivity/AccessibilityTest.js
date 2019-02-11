@@ -90,12 +90,12 @@ export default class AccessibilityTest extends React.Component {
   render() {
 
 
-    let AccessibleText$accessibilityLabel
-    let CheckboxCircle$visible
     let CheckboxRow$accessibilityChecked
-    let CheckboxRow$accessibilityValue
-    let CheckboxRow$onAccessibilityActivate
     let Checkbox$onPress
+    let CheckboxRow$onAccessibilityActivate
+    let CheckboxRow$accessibilityValue
+    let CheckboxCircle$visible
+    let AccessibleText$accessibilityLabel
     CheckboxCircle$visible = true
     CheckboxRow$accessibilityValue = ""
 

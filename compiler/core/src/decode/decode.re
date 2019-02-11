@@ -149,7 +149,7 @@ module Layer = {
       |> Js.Json.decodeObject
       |> Js.Option.getExn
       |> ParameterMap.fromJsDict
-      |> ParameterMap.filter((key, value) =>
+      |> ParameterMap.filter((key, _) =>
            switch (key) {
            | Custom("styles") => false
            | _ => true
@@ -222,7 +222,7 @@ module Layer = {
 
 exception UnknownExprType(string);
 
-let rec decodeExpr = json => {
+let rec decodeExpr = (json: Js.Json.t): LonaLogic.expr => {
   open LonaLogic;
   let decodePlaceholder = _ => PlaceholderExpression;
   let decodeIdentifier = json => IdentifierExpression(json |> string);
@@ -273,7 +273,7 @@ let rec decodeExpr = json => {
 
 exception UnknownLogicValue(string);
 
-let rec logicNode = json => {
+let logicNode = json => {
   let cmp = str =>
     switch (str) {
     | "==" => Eq
@@ -348,6 +348,8 @@ module Component = {
   let rootLayer = (config: Config.t, json) =>
     field("root", Layer.layer(config), json);
   let logic = json => Logic.Block(field("logic", list(logicNode), json));
+  let logicExpr = (json: Js.Json.t): LonaLogic.expr =>
+    LonaLogic.BlockExpression(field("logic", list(decodeExpr), json));
 };
 
 /* For JS API */

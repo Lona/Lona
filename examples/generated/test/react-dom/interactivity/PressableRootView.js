@@ -9,15 +9,15 @@ export default class PressableRootView extends React.Component {
   render() {
 
 
+    let Inner$pressed
     let InnerText$text
     let Inner$backgroundColor
     let Inner$hovered
-    let Inner$onPress
-    let Inner$pressed
+    let Outer$pressed
     let Outer$backgroundColor
     let Outer$hovered
+    let Inner$onPress
     let Outer$onPress
-    let Outer$pressed
     Inner$backgroundColor = colors.blue500
     InnerText$text = ""
     Outer$backgroundColor = colors.grey50
