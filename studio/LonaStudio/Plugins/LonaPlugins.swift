@@ -48,7 +48,7 @@ class LonaPlugins {
 
             let rpcService = RPCService()
 
-            let sendData = LonaNode.run(
+            let sendData = LonaNode.launch(
                 arguments: [url.appendingPathComponent(config.main).path],
                 currentDirectoryPath: url.path,
                 onData: rpcService.handleData,

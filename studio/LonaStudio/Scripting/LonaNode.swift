@@ -49,7 +49,49 @@ enum LonaNode {
         sync: Bool = false,
         onData: ((Data) -> Void)? = nil,
         onSuccess: ((Data) -> Void)? = nil,
+        onFailure: ((Int, String?) -> Void)? = nil) {
+
+        let stdin = launchAndReturnFileHandle(
+            arguments: arguments,
+            inputData: inputData,
+            currentDirectoryPath: currentDirectoryPath,
+            sync: sync,
+            onData: onData,
+            onSuccess: onSuccess,
+            onFailure: onFailure
+            )
+
+        stdin?.closeFile()
+    }
+
+    static func launch(
+        arguments: [String],
+        inputData: Data? = nil,
+        currentDirectoryPath: String? = nil,
+        sync: Bool = false,
+        onData: ((Data) -> Void)? = nil,
+        onSuccess: ((Data) -> Void)? = nil,
         onFailure: ((Int, String?) -> Void)? = nil) -> SendData? {
+
+        return launchAndReturnFileHandle(
+            arguments: arguments,
+            inputData: inputData,
+            currentDirectoryPath: currentDirectoryPath,
+            sync: sync,
+            onData: onData,
+            onSuccess: onSuccess,
+            onFailure: onFailure
+            )?.write
+    }
+
+    private static func launchAndReturnFileHandle(
+        arguments: [String],
+        inputData: Data? = nil,
+        currentDirectoryPath: String? = nil,
+        sync: Bool = false,
+        onData: ((Data) -> Void)? = nil,
+        onSuccess: ((Data) -> Void)? = nil,
+        onFailure: ((Int, String?) -> Void)? = nil) -> FileHandle? {
 
         guard let nodePath = LonaNode.binaryPath else {
             onFailure?(-1, "Couldn't find node")
@@ -106,7 +148,7 @@ enum LonaNode {
             }
         }
 
-        return stdin.fileHandleForWriting.write
+        return stdin.fileHandleForWriting
     }
 
     static var binaryPath: String? {

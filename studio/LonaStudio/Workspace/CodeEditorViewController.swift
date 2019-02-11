@@ -69,7 +69,7 @@ class CodeEditorViewController: NSViewController {
                 guard let compilerPath = CSUserPreferences.compilerURL?.path else { return }
                 guard let data = try? document.data(ofType: "JSONDocument") else { return }
 
-                _ = LonaNode.run(
+                LonaNode.run(
                     arguments: [compilerPath, "colors", fileExtension],
                     inputData: data,
                     currentDirectoryPath: CSUserPreferences.workspaceURL.path,
@@ -90,7 +90,7 @@ class CodeEditorViewController: NSViewController {
                 guard let compilerPath = CSUserPreferences.compilerURL?.path else { return }
                 guard let data = try? document.data(ofType: "JSONDocument") else { return }
 
-                _ = LonaNode.run(
+                LonaNode.run(
                     arguments: [compilerPath, "textStyles", fileExtension],
                     inputData: data,
                     currentDirectoryPath: CSUserPreferences.workspaceURL.path,
