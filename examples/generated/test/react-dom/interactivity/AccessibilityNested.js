@@ -85,10 +85,10 @@ export default class AccessibilityNested extends React.Component {
 
   render() {
 
-
     let AccessibilityTest$onToggleCheckbox
     let AccessibilityVisibility$showText
     let AccessibilityTest$checkboxValue
+
 
     AccessibilityTest$checkboxValue = this.props.isChecked
     AccessibilityVisibility$showText = this.props.isChecked

@@ -243,7 +243,7 @@ let rec decodeExpr = (json: Js.Json.t): LonaLogic.expr => {
       })
     | "VarDeclExpr" =>
       VariableDeclarationExpression({
-        "content": json |> field("content", decodeExpr),
+        "content": json |> optional(field("content", decodeExpr)),
         "identifier": json |> field("id", decodeExpr),
       })
     | "BinExpr" =>
@@ -307,19 +307,33 @@ let logicNode = json => {
         Logic.Assign(content, assignee);
       | VariableDeclarationExpression(o) =>
         let id = o##identifier |> identifierFromExpr;
-        let content = o##content |> logicValueFromExpr;
-        Logic.LetEqual(Logic.Identifier(undefinedType, [id]), content);
+        switch (o##content) {
+        | None => Logic.Let(Logic.Identifier(undefinedType, [id]))
+        | Some(content) =>
+          Logic.LetEqual(
+            Logic.Identifier(undefinedType, [id]),
+            content |> logicValueFromExpr,
+          )
+        };
       | IfExpression(o) =>
         let body = o##body |> List.map(fromExpr);
         switch (o##condition) {
         | VariableDeclarationExpression(decl) =>
           let id = decl##identifier |> identifierFromExpr;
-          let content = decl##content |> logicValueFromExpr;
-          Logic.IfLet(
-            Logic.Identifier(undefinedType, [id]),
-            content,
-            Logic.Block(body),
-          );
+          switch (decl##content) {
+          | None =>
+            raise(
+              UnknownExprType(
+                "Content needs value when used in IfExpression",
+              ),
+            )
+          | Some(content) =>
+            Logic.IfLet(
+              Logic.Identifier(undefinedType, [id]),
+              content |> logicValueFromExpr,
+              Logic.Block(body),
+            )
+          };
         | BinaryExpression(bin) =>
           let left = bin##left |> logicValueFromExpr;
           let right = bin##right |> logicValueFromExpr;

@@ -8,8 +8,8 @@ import textStyles from "../textStyles"
 export default class TextStyleConditional extends React.Component {
   render() {
 
-
     let Text$textStyle
+
     Text$textStyle = textStyles.headline
 
     if (this.props.large) {

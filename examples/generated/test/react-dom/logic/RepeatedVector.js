@@ -51,9 +51,9 @@ let AnotherCheckCheckCircleVector = (props) => (
 export default class RepeatedVector extends React.Component {
   render() {
 
-
     let AnotherCheck$vector$path$stroke
     let Check$vector$oval$fill
+
 
     Check$vector$oval$fill = colors.grey300
     if (this.props.active) {

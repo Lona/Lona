@@ -83,8 +83,8 @@ export default class AccessibilityVisibility extends React.Component {
 
   render() {
 
-
     let Text$visible
+
 
     Text$visible = this.props.showText
     return (

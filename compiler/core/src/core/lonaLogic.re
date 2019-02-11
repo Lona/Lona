@@ -26,13 +26,16 @@ type expr =
       {
         .
         "identifier": expr,
-        "content": expr,
+        "content": option(expr),
       },
     )
   | MemberExpression(list(expr))
   | IdentifierExpression(string)
   | LiteralExpression(Types.lonaValue)
   | PlaceholderExpression;
+
+let memberExpressionFromPath = (path: list(string)): expr =>
+  MemberExpression(path |> List.map(str => IdentifierExpression(str)));
 
 let identifier = (node: expr): option(string) =>
   switch (node) {
@@ -48,6 +51,48 @@ let identifierPath = (node: expr): option(list(string)) =>
   | IdentifierExpression(value) => Some([value])
   | _ => None
   };
+
+let rec toString = (node: expr): string =>
+  switch (node) {
+  | AssignmentExpression(o) =>
+    "Assign(" ++ toString(o##assignee) ++ "," ++ toString(o##content) ++ ")"
+  | BinaryExpression(o) =>
+    "BinaryExpression("
+    ++ toString(o##left)
+    ++ ","
+    ++ toString(o##op)
+    ++ ","
+    ++ toString(o##right)
+    ++ ")"
+  | BlockExpression(o) => o |> listToString
+  | IfExpression(o) =>
+    "IfExpression("
+    ++ toString(o##condition)
+    ++ ") {\n"
+    ++ listToString(o##body)
+    ++ "\n}"
+  | VariableDeclarationExpression(o) =>
+    "VariableDeclarationExpression("
+    ++ toString(o##identifier)
+    ++ ", "
+    ++ (
+      switch (o##content) {
+      | Some(content) => toString(content)
+      | None => "undefined"
+      }
+    )
+    ++ ")"
+  | MemberExpression(_)
+  | IdentifierExpression(_) =>
+    switch (identifierPath(node)) {
+    | Some(path) => path |> Format.joinWith(".")
+    | None => "(?)"
+    }
+  | LiteralExpression(literal) => Js.Json.stringify(literal.data)
+  | PlaceholderExpression => "@placeholder"
+  }
+and listToString = (nodes: list(expr)): string =>
+  nodes |> List.map(toString) |> Format.joinWith("\n");
 
 let allIdentifierPaths = node => {
   let addPath =
@@ -69,7 +114,11 @@ let allIdentifierPaths = node => {
     | IfExpression(o) =>
       identifiers |> extractPath(o##condition) |> foldList(o##body)
     | VariableDeclarationExpression(o) =>
-      identifiers |> extractPath(o##identifier) |> extractPath(o##content)
+      let identifiers = identifiers |> extractPath(o##identifier);
+      switch (o##content) {
+      | Some(content) => identifiers |> extractPath(content)
+      | None => identifiers
+      };
     | MemberExpression(_) => addPath(node, identifiers)
     | IdentifierExpression(_) => addPath(node, identifiers)
     | LiteralExpression(_)
@@ -93,7 +142,10 @@ let buildVariableDeclarations = node => {
          }
        )
     |> List.map(path =>
-         Logic.Let(Logic.Identifier(Types.undefinedType, path))
+         VariableDeclarationExpression({
+           "identifier": memberExpressionFromPath(path),
+           "content": None,
+         })
        );
-  Logic.Block(nodes);
+  BlockExpression(nodes);
 };

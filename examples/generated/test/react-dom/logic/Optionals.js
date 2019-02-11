@@ -8,11 +8,11 @@ import textStyles from "../textStyles"
 export default class Optionals extends React.Component {
   render() {
 
-
     let StringParam$text
     let unwrapped
     let View$backgroundColor
     let Label$text
+
     Label$text = ""
     StringParam$text = "No string param"
     View$backgroundColor = "transparent"

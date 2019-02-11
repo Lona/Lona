@@ -8,12 +8,12 @@ import textStyles from "../textStyles"
 export default class Button extends React.Component {
   render() {
 
-
     let View$pressed
     let View$backgroundColor
     let View$hovered
     let View$onPress
     let Text$text
+
     View$backgroundColor = colors.blue100
 
     Text$text = this.props.label

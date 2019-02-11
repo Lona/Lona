@@ -961,8 +961,14 @@ let rootLayerToJavaScriptAST =
 };
 
 let defineInitialLogicValues =
-    (config: Config.t, rootLayer, assignments, rootExpr, logic) => {
-  let variableDeclarations = rootExpr |> LonaLogic.buildVariableDeclarations;
+    (
+      config: Config.t,
+      rootLayer,
+      assignments,
+      rootExpr: LonaLogic.expr,
+      logic,
+    ) => {
+  /* let variableDeclarations = rootExpr |> LonaLogic.buildVariableDeclarations; */
   let conditionalAssignments = Logic.conditionallyAssignedIdentifiers(logic);
   let isConditionallyAssigned = (layer: Types.layer, (name, _)) => {
     let isAssigned = ((_, value)) =>
@@ -1010,7 +1016,7 @@ let defineInitialLogicValues =
     |> Layer.LayerMap.bindings
     |> List.map(defineInitialLayerValues)
     |> List.concat;
-  Logic.Block([variableDeclarations] @ newVars @ [logic]);
+  Logic.Block(newVars @ [logic]);
 };
 
 let generateEnumType = (param: Types.parameter) =>
@@ -1093,6 +1099,10 @@ let generate =
       rootLayer,
     );
 
+  let variableDeclarations =
+    rootExpr
+    |> LonaLogic.buildVariableDeclarations
+    |> JavaScriptLogic.exprToJavaScriptAST(config);
   let logicAST =
     logic
     |> defineInitialLogicValues(config, rootLayer, assignments, rootExpr)
@@ -1191,7 +1201,8 @@ let generate =
                           id: None,
                           params: [],
                           body:
-                            [logicAST]
+                            [variableDeclarations]
+                            @ [logicAST]
                             @ (
                               switch (options.framework) {
                               /* | JavaScriptOptions.ReactDOM => [themeAST] */

@@ -8,11 +8,11 @@ import textStyles from "../textStyles"
 export default class BorderStyleTest extends React.Component {
   render() {
 
-
     let Other$borderStyle
     let View$borderStyle
     let customBorderStyle
     let Inner$borderStyle
+
     Inner$borderStyle = ""
     View$borderStyle = "dashed"
 

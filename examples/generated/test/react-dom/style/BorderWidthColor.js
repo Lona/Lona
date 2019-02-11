@@ -8,11 +8,11 @@ import textStyles from "../textStyles"
 export default class BorderWidthColor extends React.Component {
   render() {
 
-
     let Inner$borderStyle
     let Inner$borderRadius
     let Inner$borderWidth
     let Inner$borderColor
+
     Inner$borderColor = colors.blue300
     Inner$borderRadius = 10
     Inner$borderStyle = "dotted"

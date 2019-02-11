@@ -30,9 +30,9 @@ let CheckCheckCircleVector = (props) => (
 export default class VectorLogic extends React.Component {
   render() {
 
-
     let Check$vector$path$stroke
     let Check$vector$oval$fill
+
 
     Check$vector$oval$fill = colors.grey300
     if (this.props.active) {

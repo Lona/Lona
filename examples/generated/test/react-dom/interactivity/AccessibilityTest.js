@@ -89,13 +89,13 @@ export default class AccessibilityTest extends React.Component {
 
   render() {
 
-
     let CheckboxRow$accessibilityChecked
     let Checkbox$onPress
     let CheckboxRow$onAccessibilityActivate
     let CheckboxRow$accessibilityValue
     let CheckboxCircle$visible
     let AccessibleText$accessibilityLabel
+
     CheckboxCircle$visible = true
     CheckboxRow$accessibilityValue = ""
 

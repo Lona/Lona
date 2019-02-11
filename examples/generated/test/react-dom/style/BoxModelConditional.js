@@ -8,13 +8,13 @@ import textStyles from "../textStyles"
 export default class BoxModelConditional extends React.Component {
   render() {
 
-
     let Inner$width
     let Inner$height
     let Inner$marginLeft
     let Inner$marginBottom
     let Inner$marginRight
     let Inner$marginTop
+
 
     Inner$marginTop = this.props.margin
     Inner$marginRight = this.props.margin

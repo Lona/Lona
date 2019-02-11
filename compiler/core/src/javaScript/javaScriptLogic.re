@@ -1,14 +1,13 @@
 module Ast = JavaScriptAst;
 
-let rec logicValueToJavaScriptAST = (config: Config.t, x: Logic.logicValue) =>
-  switch (x) {
-  | Logic.Identifier(_, path) => Ast.Identifier(path)
-  | Literal(lonaValue) when LonaValue.isOptionalType(lonaValue.ltype) =>
+let rec lonaValueToJavaScriptAST =
+        (config: Config.t, lonaValue: Types.lonaValue) =>
+  if (LonaValue.isOptionalType(lonaValue.ltype)) {
     switch (LonaValue.decodeOptional(lonaValue)) {
-    | Some(value) => logicValueToJavaScriptAST(config, Literal(value))
-    | None => Literal(LonaValue.null())
-    }
-  | Literal(lonaValue) =>
+    | Some(value) => lonaValueToJavaScriptAST(config, value)
+    | None => Ast.Literal(LonaValue.null())
+    };
+  } else {
     switch (lonaValue.ltype) {
     | Reference("Color")
     | Named("Color", _) =>
@@ -35,7 +34,13 @@ let rec logicValueToJavaScriptAST = (config: Config.t, x: Logic.logicValue) =>
       | None => Literal(lonaValue)
       };
     | _ => Literal(lonaValue)
-    }
+    };
+  };
+
+let logicValueToJavaScriptAST = (config: Config.t, x: Logic.logicValue) =>
+  switch (x) {
+  | Logic.Identifier(_, path) => Ast.Identifier(path)
+  | Literal(lonaValue) => lonaValueToJavaScriptAST(config, lonaValue)
   };
 
 let rec toJavaScriptAST = (framework, config, node) => {
@@ -130,5 +135,118 @@ let rec toJavaScriptAST = (framework, config, node) => {
       right: logicValueToJavaScriptASTWithConfig(content),
     })
   | None => Unknown
+  };
+};
+
+let flattenExpr = (nodes: list(LonaLogic.expr)): list(LonaLogic.expr) =>
+  nodes
+  |> List.map(node =>
+       switch (node) {
+       | LonaLogic.BlockExpression(list) => list
+       | _ => [node]
+       }
+     )
+  |> List.concat;
+
+let rec exprToJavaScriptAST =
+        (config: Config.t, node: LonaLogic.expr): JavaScriptAst.node => {
+  let logicValueToJavaScriptASTWithConfig = logicValueToJavaScriptAST(config);
+  Js.log(LonaLogic.toString(node));
+  switch (node) {
+  | LonaLogic.BinaryExpression(o) => Ast.Empty
+  | LonaLogic.MemberExpression(o) =>
+    Ast.Block(o |> flattenExpr |> List.map(exprToJavaScriptAST(config)))
+  | LonaLogic.PlaceholderExpression => Ast.Identifier(["/* Placeholder */"])
+  | LonaLogic.LiteralExpression(o) => lonaValueToJavaScriptAST(config, o)
+  | LonaLogic.IdentifierExpression(o) => Ast.Identifier([o])
+  | LonaLogic.AssignmentExpression(o) => Ast.Empty
+  /* Ast.AssignmentExpression({
+       left: logicValueToJavaScriptASTWithConfig(b),
+       right: logicValueToJavaScriptASTWithConfig(a),
+     }) */
+  | LonaLogic.IfExpression(o) => Ast.Empty
+  /* IfStatement({
+       test: logicValueToJavaScriptASTWithConfig(a),
+       consequent: [toJavaScriptAST(framework, config, body)],
+       alternate: [],
+     }) */
+  | LonaLogic.BlockExpression(body) =>
+    Ast.Block(body |> flattenExpr |> List.map(exprToJavaScriptAST(config)))
+  /* Ast.Block(body |> List.map(toJavaScriptAST(config))) */
+  /* | LonaLogic.IfExpression(a, cmp, b, body) =>
+     let aIsOptional = LonaValue.isOptionalType(Logic.getValueType(a));
+     let bIsOptional = LonaValue.isOptionalType(Logic.getValueType(b));
+
+     let operator =
+       switch (fromCmp(cmp)) {
+       | Eq => aIsOptional || bIsOptional ? Ast.LooseEq : Ast.Eq
+       | operator => operator
+       };
+
+     let condition =
+       Ast.BinaryExpression({
+         left: logicValueToJavaScriptASTWithConfig(a),
+         operator,
+         right: logicValueToJavaScriptASTWithConfig(b),
+       });
+     IfStatement({
+       test: condition,
+       consequent: [toJavaScriptAST(framework, config, body)],
+       alternate: [],
+     }); */
+  /* | IfLet(a, b, body) =>
+     let condition =
+       Ast.BinaryExpression({
+         left: logicValueToJavaScriptASTWithConfig(b),
+         operator: Ast.LooseNeq,
+         right:
+           logicValueToJavaScriptASTWithConfig(Literal(LonaValue.null())),
+       });
+     IfStatement({
+       test: condition,
+       consequent: [
+         Ast.Block([
+           toJavaScriptAST(framework, config, Logic.LetEqual(a, b)),
+           toJavaScriptAST(framework, config, body),
+         ]),
+       ],
+       alternate: [],
+     }); */
+  /* | Add(lhs, rhs, value) =>
+     let addition =
+       Ast.BinaryExpression({
+         left: logicValueToJavaScriptASTWithConfig(lhs),
+         operator: Ast.Plus,
+         right: logicValueToJavaScriptASTWithConfig(rhs),
+       });
+     AssignmentExpression({
+       left: logicValueToJavaScriptASTWithConfig(value),
+       right: addition,
+     }); */
+  | LonaLogic.VariableDeclarationExpression(o) =>
+    let path = LonaLogic.identifierPath(o##identifier);
+
+    switch (path, o##content) {
+    | (Some(path), Some(content)) =>
+      Ast.VariableDeclaration(
+        AssignmentExpression({
+          left: Ast.Identifier(path),
+          right: exprToJavaScriptAST(config, content),
+        }),
+      )
+    | (Some(path), None) => Ast.VariableDeclaration(Ast.Identifier(path))
+    | (None, _) => Ast.Unknown
+    };
+  /* | LetEqual(value, content) =>
+     Ast.AssignmentExpression({
+       left:
+         switch (value) {
+         | Identifier(_, path) =>
+           Ast.VariableDeclaration(Ast.Identifier(path))
+         | _ => Unknown
+         },
+       right: logicValueToJavaScriptASTWithConfig(content),
+     }) */
+  /* | None => Unknown */
   };
 };
