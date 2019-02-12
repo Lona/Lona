@@ -1101,7 +1101,7 @@ let generate =
 
   let variableDeclarations =
     rootExpr
-    |> LonaLogic.buildVariableDeclarations
+    |> LonaLogic.Build.variableDeclarations
     |> JavaScriptLogic.exprToJavaScriptAST(config);
   let logicAST =
     logic

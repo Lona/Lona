@@ -100,58 +100,62 @@ let rec toString = (node: expr): string =>
 and listToString = (nodes: list(expr)): string =>
   nodes |> List.map(toString) |> Format.joinWith("\n");
 
-let allIdentifierPaths = node => {
-  let addPath =
-      (expr: expr, identifiers: list(list(string))): list(list(string)) =>
-    switch (identifierPath(expr)) {
-    | Some(path) =>
-      List.mem(path, identifiers) ? identifiers : [path, ...identifiers]
-    | None => identifiers
-    };
-  let rec extractPath =
-          (node: expr, identifiers: list(list(string)))
-          : list(list(string)) =>
-    switch (node) {
-    | AssignmentExpression(o) =>
-      identifiers |> extractPath(o##assignee) |> extractPath(o##content)
-    | BinaryExpression(o) =>
-      identifiers |> extractPath(o##left) |> extractPath(o##right)
-    | BlockExpression(o) => identifiers |> foldList(o)
-    | IfExpression(o) =>
-      identifiers |> extractPath(o##condition) |> foldList(o##body)
-    | VariableDeclarationExpression(o) =>
-      let identifiers = identifiers |> extractPath(o##identifier);
-      switch (o##content) {
-      | Some(content) => identifiers |> extractPath(content)
+module Extract = {
+  let allIdentifierPaths = node => {
+    let addPath =
+        (expr: expr, identifiers: list(list(string))): list(list(string)) =>
+      switch (identifierPath(expr)) {
+      | Some(path) =>
+        List.mem(path, identifiers) ? identifiers : [path, ...identifiers]
       | None => identifiers
       };
-    | MemberExpression(_) => addPath(node, identifiers)
-    | IdentifierExpression(_) => addPath(node, identifiers)
-    | LiteralExpression(_)
-    | PlaceholderExpression => identifiers
-    }
-  and foldList = (list, identifiers) =>
-    list |> List.fold_left((acc, n) => extractPath(n, acc), identifiers);
-  extractPath(node, []);
+    let rec extractPath =
+            (node: expr, identifiers: list(list(string)))
+            : list(list(string)) =>
+      switch (node) {
+      | AssignmentExpression(o) =>
+        identifiers |> extractPath(o##assignee) |> extractPath(o##content)
+      | BinaryExpression(o) =>
+        identifiers |> extractPath(o##left) |> extractPath(o##right)
+      | BlockExpression(o) => identifiers |> foldList(o)
+      | IfExpression(o) =>
+        identifiers |> extractPath(o##condition) |> foldList(o##body)
+      | VariableDeclarationExpression(o) =>
+        let identifiers = identifiers |> extractPath(o##identifier);
+        switch (o##content) {
+        | Some(content) => identifiers |> extractPath(content)
+        | None => identifiers
+        };
+      | MemberExpression(_) => addPath(node, identifiers)
+      | IdentifierExpression(_) => addPath(node, identifiers)
+      | LiteralExpression(_)
+      | PlaceholderExpression => identifiers
+      }
+    and foldList = (list, identifiers) =>
+      list |> List.fold_left((acc, n) => extractPath(n, acc), identifiers);
+    extractPath(node, []);
+  };
 };
 
-let buildVariableDeclarations = node => {
-  let identifiers = allIdentifierPaths(node);
-  let nodes =
-    identifiers
-    /* Filter identifiers beginning with "parameters", since these are
-     * already declared within the React props or component class */
-    |> List.filter(path =>
-         switch (path) {
-         | [hd, _] => hd != "parameters"
-         | _ => true
-         }
-       )
-    |> List.map(path =>
-         VariableDeclarationExpression({
-           "identifier": memberExpressionFromPath(path),
-           "content": None,
-         })
-       );
-  BlockExpression(nodes);
+module Build = {
+  let variableDeclarations = node => {
+    let identifiers = Extract.allIdentifierPaths(node);
+    let nodes =
+      identifiers
+      /* Filter identifiers beginning with "parameters", since these are
+       * already declared within the React props or component class */
+      |> List.filter(path =>
+           switch (path) {
+           | [hd, _] => hd != "parameters"
+           | _ => true
+           }
+         )
+      |> List.map(path =>
+           VariableDeclarationExpression({
+             "identifier": memberExpressionFromPath(path),
+             "content": None,
+           })
+         );
+    BlockExpression(nodes);
+  };
 };

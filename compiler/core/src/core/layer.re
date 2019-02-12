@@ -361,7 +361,11 @@ let imageResizingModes = (rootLayer: Types.layer) =>
 
 type assignments = LayerMap.t(ParameterMap.t(Logic.logicValue));
 
-let parameterAssignmentsFromLogic = (layer, node) => {
+let parameterAssignmentsFromLogic =
+    (layer: Types.layer, node: Logic.logicNode)
+    : LayerMap.t(
+        LonaCompilerCore.ParameterMap.t(LonaCompilerCore.Logic.logicValue),
+      ) => {
   let identifiers = Logic.assignedIdentifiers(node);
   let updateAssignments = (layerName, propertyName, logicValue, acc) =>
     switch (findByName(layerName, layer)) {
