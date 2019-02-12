@@ -15,6 +15,13 @@ let isAssigned = (assignments, layer: Types.layer, parameter) => {
   };
 };
 
+let isConditionallyAssigned =
+    (logic: Logic.logicNode, layer: Types.layer, key: ParameterKey.t): bool =>
+  Logic.conditionallyAssignedIdentifiers(logic)
+  |> Logic.IdentifierSet.exists(((_, value)) =>
+       value == ["layers", layer.name, key |> ParameterKey.toString]
+     );
+
 let isUsed = (assignments, layer: Types.layer, parameter) =>
   isAssigned(assignments, layer, parameter)
   || isSetInitially(layer, parameter);

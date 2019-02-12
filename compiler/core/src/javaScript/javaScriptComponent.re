@@ -969,12 +969,7 @@ let defineInitialLogicValues =
       logic,
     ) => {
   /* let variableDeclarations = rootExpr |> LonaLogic.buildVariableDeclarations; */
-  let conditionalAssignments = Logic.conditionallyAssignedIdentifiers(logic);
-  let isConditionallyAssigned = (layer: Types.layer, (name, _)) => {
-    let isAssigned = ((_, value)) =>
-      value == ["layers", layer.name, name |> ParameterKey.toString];
-    Logic.IdentifierSet.exists(isAssigned, conditionalAssignments);
-  };
+
   let defineInitialLayerValue = (layer: Types.layer, (name, _)) => {
     let layerParameterAssignments =
       Layer.logicAssignmentsFromLayerParameters(rootLayer);
@@ -1009,7 +1004,9 @@ let defineInitialLogicValues =
   let defineInitialLayerValues = ((layer, propertyMap)) =>
     propertyMap
     |> ParameterMap.bindings
-    |> List.filter(isConditionallyAssigned(layer))
+    |> List.filter(((key, _)) =>
+         SwiftComponentParameter.isConditionallyAssigned(logic, layer, key)
+       )
     |> List.map(((k, v)) => defineInitialLayerValue(layer, (k, v)));
   let newVars =
     assignments

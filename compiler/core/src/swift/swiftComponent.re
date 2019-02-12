@@ -830,21 +830,15 @@ module Doc = {
         rootLayer: Types.layer,
         logic,
       ) => {
-    let conditionallyAssigned = Logic.conditionallyAssignedIdentifiers(logic);
-
-    let isConditionallyAssigned = (layer: Types.layer, (key, _)) =>
-      conditionallyAssigned
-      |> Logic.IdentifierSet.exists(((_, value)) =>
-           value == ["layers", layer.name, key |> ParameterKey.toString]
-         );
-
     let defineInitialLayerValues = ((layer, propertyMap)) =>
       propertyMap
       |> ParameterMap.bindings
       |> List.filter(((key, _)) =>
            !SwiftComponentParameter.isPaddingOrMargin(key)
          )
-      |> List.filter(isConditionallyAssigned(layer))
+      |> List.filter(((key, _)) =>
+           SwiftComponentParameter.isConditionallyAssigned(logic, layer, key)
+         )
       |> List.map(
            defineInitialLayerValue(
              swiftOptions,
