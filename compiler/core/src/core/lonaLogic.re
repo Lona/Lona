@@ -34,6 +34,12 @@ type expr =
   | LiteralExpression(Types.lonaValue)
   | PlaceholderExpression;
 
+let exprType = (expr: expr): Types.lonaType =>
+  switch (expr) {
+  | LiteralExpression(lonaValue) => lonaValue.ltype
+  | _ => Types.undefinedType
+  };
+
 let memberExpressionFromPath = (path: list(string)): expr =>
   MemberExpression(path |> List.map(str => IdentifierExpression(str)));
 

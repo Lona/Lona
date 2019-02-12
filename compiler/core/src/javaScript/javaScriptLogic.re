@@ -43,18 +43,20 @@ let logicValueToJavaScriptAST = (config: Config.t, x: Logic.logicValue) =>
   | Literal(lonaValue) => lonaValueToJavaScriptAST(config, lonaValue)
   };
 
+let fromCmp = x =>
+  switch (x) {
+  | Types.Eq => Ast.Eq
+  | Neq => Neq
+  | Gt => Gt
+  | Gte => Gte
+  | Lt => Lt
+  | Lte => Lte
+  | Unknown => Noop
+  };
+
 let rec toJavaScriptAST = (framework, config, node) => {
   let logicValueToJavaScriptASTWithConfig = logicValueToJavaScriptAST(config);
-  let fromCmp = x =>
-    switch (x) {
-    | Types.Eq => Ast.Eq
-    | Neq => Neq
-    | Gt => Gt
-    | Gte => Gte
-    | Lt => Lt
-    | Lte => Lte
-    | Unknown => Noop
-    };
+
   switch (node) {
   | Logic.Assign(a, b) =>
     Ast.AssignmentExpression({
@@ -150,50 +152,51 @@ let flattenExpr = (nodes: list(LonaLogic.expr)): list(LonaLogic.expr) =>
 
 let rec exprToJavaScriptAST =
         (config: Config.t, node: LonaLogic.expr): JavaScriptAst.node => {
-  let logicValueToJavaScriptASTWithConfig = logicValueToJavaScriptAST(config);
-  Js.log(LonaLogic.toString(node));
+  /* Js.log(LonaLogic.toString(node)); */
   switch (node) {
-  | LonaLogic.BinaryExpression(o) => Ast.Empty
+  | LonaLogic.BinaryExpression(o) =>
+    let a = o##left;
+    let b = o##right;
+
+    let aIsOptional = LonaValue.isOptionalType(LonaLogic.exprType(a));
+    let bIsOptional = LonaValue.isOptionalType(LonaLogic.exprType(b));
+
+    let opString =
+      switch (o##op |> LonaLogic.identifier) {
+      | Some(op) => op
+      | None => "<?>"
+      };
+
+    let operator =
+      switch (fromCmp(Decode.cmp(opString))) {
+      | Eq => aIsOptional || bIsOptional ? Ast.LooseEq : Ast.Eq
+      | operator => operator
+      };
+
+    Ast.BinaryExpression({
+      left: exprToJavaScriptAST(config, a),
+      operator,
+      right: exprToJavaScriptAST(config, b),
+    });
   | LonaLogic.MemberExpression(o) =>
     Ast.Block(o |> flattenExpr |> List.map(exprToJavaScriptAST(config)))
   | LonaLogic.PlaceholderExpression => Ast.Identifier(["/* Placeholder */"])
   | LonaLogic.LiteralExpression(o) => lonaValueToJavaScriptAST(config, o)
   | LonaLogic.IdentifierExpression(o) => Ast.Identifier([o])
-  | LonaLogic.AssignmentExpression(o) => Ast.Empty
-  /* Ast.AssignmentExpression({
-       left: logicValueToJavaScriptASTWithConfig(b),
-       right: logicValueToJavaScriptASTWithConfig(a),
-     }) */
-  | LonaLogic.IfExpression(o) => Ast.Empty
-  /* IfStatement({
-       test: logicValueToJavaScriptASTWithConfig(a),
-       consequent: [toJavaScriptAST(framework, config, body)],
-       alternate: [],
-     }) */
+  | LonaLogic.AssignmentExpression(o) =>
+    Ast.AssignmentExpression({
+      left: exprToJavaScriptAST(config, o##assignee),
+      right: exprToJavaScriptAST(config, o##content),
+    })
+  | LonaLogic.IfExpression(o) =>
+    IfStatement({
+      test: exprToJavaScriptAST(config, o##condition),
+      consequent:
+        o##body |> flattenExpr |> List.map(exprToJavaScriptAST(config)),
+      alternate: [],
+    })
   | LonaLogic.BlockExpression(body) =>
     Ast.Block(body |> flattenExpr |> List.map(exprToJavaScriptAST(config)))
-  /* Ast.Block(body |> List.map(toJavaScriptAST(config))) */
-  /* | LonaLogic.IfExpression(a, cmp, b, body) =>
-     let aIsOptional = LonaValue.isOptionalType(Logic.getValueType(a));
-     let bIsOptional = LonaValue.isOptionalType(Logic.getValueType(b));
-
-     let operator =
-       switch (fromCmp(cmp)) {
-       | Eq => aIsOptional || bIsOptional ? Ast.LooseEq : Ast.Eq
-       | operator => operator
-       };
-
-     let condition =
-       Ast.BinaryExpression({
-         left: logicValueToJavaScriptASTWithConfig(a),
-         operator,
-         right: logicValueToJavaScriptASTWithConfig(b),
-       });
-     IfStatement({
-       test: condition,
-       consequent: [toJavaScriptAST(framework, config, body)],
-       alternate: [],
-     }); */
   /* | IfLet(a, b, body) =>
      let condition =
        Ast.BinaryExpression({

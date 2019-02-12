@@ -273,17 +273,18 @@ let rec decodeExpr = (json: Js.Json.t): LonaLogic.expr => {
 
 exception UnknownLogicValue(string);
 
+let cmp = str =>
+  switch (str) {
+  | "==" => Eq
+  | "!=" => Neq
+  | ">" => Gt
+  | ">=" => Gte
+  | "<" => Lt
+  | "<=" => Lte
+  | _ => Unknown
+  };
+
 let logicNode = json => {
-  let cmp = str =>
-    switch (str) {
-    | "==" => Eq
-    | "!=" => Neq
-    | ">" => Gt
-    | ">=" => Gte
-    | "<" => Lt
-    | "<=" => Lte
-    | _ => Unknown
-    };
   let identifierFromExpr = expr =>
     switch (expr) {
     | LonaLogic.IdentifierExpression(str) => str
