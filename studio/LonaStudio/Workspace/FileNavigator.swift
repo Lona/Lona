@@ -69,21 +69,6 @@ class FileNavigator: NSBox {
         set { headerView.titleText = newValue }
     }
 
-    public var defaultFont: NSFont {
-        get { return fileTree.defaultFont }
-        set { fileTree.defaultFont = newValue }
-    }
-
-    public var displayNameForFile: ((FileTree.Path) -> FileTree.Name)? {
-        get { return fileTree.displayNameForFile }
-        set { fileTree.displayNameForFile = newValue }
-    }
-
-    public var imageForFile: ((FileTree.Path, NSSize) -> NSImage)? {
-        get { return fileTree.imageForFile }
-        set { fileTree.imageForFile = newValue }
-    }
-
     public var onAction: ((FileTree.Path) -> Void)? {
         get { return fileTree.onAction }
         set { fileTree.onAction = newValue }
@@ -103,7 +88,9 @@ class FileNavigator: NSBox {
         contentViewMargins = .zero
 
         fileTree.showRootFile = false
-        fileTree.rowViewForFile = { path in self.rowViewForFile(atPath: path) }
+        fileTree.rowViewForFile = { path, _ in self.rowViewForFile(atPath: path) }
+        fileTree.imageForFile = self.imageForFile
+        fileTree.displayNameForFile = self.displayNameForFile
 
         headerView.fileIcon = NSImage(byReferencing: CSWorkspacePreferences.workspaceIconURL)
         headerView.dividerColor = NSSplitView.defaultDividerColor
@@ -131,10 +118,51 @@ class FileNavigator: NSBox {
 
     private func update() {}
 
+    private func imageForFile(atPath path: String, size: NSSize) -> NSImage {
+        let url = URL(fileURLWithPath: path)
+
+        func defaultImage(for path: String) -> NSImage {
+            return NSWorkspace.shared.icon(forFile: path)
+        }
+
+        if url.pathExtension == "component" {
+            guard let component = LonaModule.current.component(named: url.deletingPathExtension().lastPathComponent),
+                let canvas = component.computedCanvases().first,
+                let caseItem = component.computedCases(for: canvas).first
+                else { return defaultImage(for: path) }
+
+            let config = ComponentConfiguration(
+                component: component,
+                arguments: caseItem.value.objectValue,
+                canvas: canvas
+            )
+
+            let canvasView = CanvasView(
+                canvas: canvas,
+                rootLayer: component.rootLayer,
+                config: config,
+                options: [RenderOption.assetScale(1)]
+            )
+
+            guard let data = canvasView.dataRepresentation(scaledBy: 0.25),
+                let image = NSImage(data: data)
+                else { return defaultImage(for: path) }
+            image.size = NSSize(width: size.width, height: (image.size.height / image.size.width) * size.height)
+            return image
+        } else {
+            return defaultImage(for: path)
+        }
+    }
+
+    private func displayNameForFile(atPath path: String) -> String {
+        let url = URL(fileURLWithPath: path)
+        return url.pathExtension == "component" ? url.deletingPathExtension().lastPathComponent : url.lastPathComponent
+    }
+
     private func rowViewForFile(atPath path: String) -> NSView {
         let thumbnailSize = fileTree.defaultThumbnailSize
         let thumbnailMargin = fileTree.defaultThumbnailMargin
-        let name = displayNameForFile?(path) ?? URL(fileURLWithPath: path).lastPathComponent
+        let name = displayNameForFile(atPath: path)
 
         let view = FileTreeCellView()
 
@@ -148,7 +176,7 @@ class FileNavigator: NSBox {
         } else if path.hasSuffix("colors.json") {
             iconView = ColorsFileIcon()
         } else if path.hasSuffix(".component") {
-            let imageView = NSImageView(image: imageForFile?(path, thumbnailSize) ?? NSImage())
+            let imageView = NSImageView(image: imageForFile(atPath: path, size: thumbnailSize) )
             imageView.imageScaling = .scaleProportionallyUpOrDown
             iconView = imageView
         } else {
@@ -168,7 +196,7 @@ class FileNavigator: NSBox {
         textView.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: thumbnailMargin * 2 + thumbnailSize.width).isActive = true
         textView.trailingAnchor.constraint(equalTo: view.trailingAnchor).isActive = true
         textView.centerYAnchor.constraint(equalTo: view.centerYAnchor).isActive = true
-        textView.font = defaultFont
+        textView.font = NSFont.systemFont(ofSize: NSFont.systemFontSize(for: .small))
         textView.maximumNumberOfLines = 1
         textView.lineBreakMode = .byTruncatingMiddle
 

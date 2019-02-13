@@ -247,6 +247,8 @@
 		6BD96653217FB0DB0012F173 /* default-workspace-thumbnail@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 6BD96651217FB0DB0012F173 /* default-workspace-thumbnail@2x.png */; };
 		6BDF4D2E20A67272006E99C4 /* BrowserToolbar.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6BDF4D2D20A67272006E99C4 /* BrowserToolbar.swift */; };
 		6BE89BBC21B7452800F35AC3 /* LonaViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6BE89BBB21B7452800F35AC3 /* LonaViewModel.swift */; };
+		6BF894D32214E3DD000CD863 /* Differ.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 6BF894D12214E3CD000CD863 /* Differ.framework */; };
+		6BF894D42214E3DD000CD863 /* Differ.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 6BF894D12214E3CD000CD863 /* Differ.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		6BFC4E0621C9C5A10030938B /* CanvasInspector.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6BFC4E0521C9C5A10030938B /* CanvasInspector.swift */; };
 		76AB58E053220594F098A3C5 /* Pods_LonaStudioTests.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = EDA2F7370DB15639E08B399A /* Pods_LonaStudioTests.framework */; };
 		783A74CD337C61784E60C467 /* Pods_LonaStudio.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 7949560983378CFD6EC6FFD5 /* Pods_LonaStudio.framework */; };
@@ -286,6 +288,7 @@
 				6BBE0F6B212B26C900CEE8C1 /* FileTree.framework in Embed Frameworks */,
 				6B2DC1AE21361C4700679668 /* Colors.framework in Embed Frameworks */,
 				6B2DC1AC21361C4700679668 /* ColorPicker.framework in Embed Frameworks */,
+				6BF894D42214E3DD000CD863 /* Differ.framework in Embed Frameworks */,
 				6B5886872134D6BB00CCA69F /* ControlledComponents.framework in Embed Frameworks */,
 			);
 			name = "Embed Frameworks";
@@ -532,6 +535,7 @@
 		6BD96651217FB0DB0012F173 /* default-workspace-thumbnail@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "default-workspace-thumbnail@2x.png"; sourceTree = "<group>"; };
 		6BDF4D2D20A67272006E99C4 /* BrowserToolbar.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BrowserToolbar.swift; sourceTree = "<group>"; };
 		6BE89BBB21B7452800F35AC3 /* LonaViewModel.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = LonaViewModel.swift; sourceTree = "<group>"; };
+		6BF894D12214E3CD000CD863 /* Differ.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Differ.framework; path = Carthage/Build/Mac/Differ.framework; sourceTree = "<group>"; };
 		6BFC4E0521C9C5A10030938B /* CanvasInspector.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CanvasInspector.swift; sourceTree = "<group>"; };
 		7949560983378CFD6EC6FFD5 /* Pods_LonaStudio.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_LonaStudio.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		834F922A5808C8E689B2FD19 /* Pods-LonaStudioTests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-LonaStudioTests.debug.xcconfig"; path = "Pods/Target Support Files/Pods-LonaStudioTests/Pods-LonaStudioTests.debug.xcconfig"; sourceTree = "<group>"; };
@@ -565,6 +569,7 @@
 				6BBE0F6A212B26C900CEE8C1 /* FileTree.framework in Frameworks */,
 				6B5886862134D6BB00CCA69F /* ControlledComponents.framework in Frameworks */,
 				6B2DC1AB21361C4700679668 /* ColorPicker.framework in Frameworks */,
+				6BF894D32214E3DD000CD863 /* Differ.framework in Frameworks */,
 				6B2DC1AD21361C4700679668 /* Colors.framework in Frameworks */,
 				783A74CD337C61784E60C467 /* Pods_LonaStudio.framework in Frameworks */,
 			);
@@ -950,6 +955,7 @@
 		391EE9FEA8350B93A55FBF6F /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				6BF894D12214E3CD000CD863 /* Differ.framework */,
 				6B2DC1A921361C4700679668 /* ColorPicker.framework */,
 				6B2DC1AA21361C4700679668 /* Colors.framework */,
 				6B5886852134D6BB00CCA69F /* ControlledComponents.framework */,
@@ -1357,7 +1363,7 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "\"${PODS_ROOT}/SwiftLint/swiftlint\"";
+			shellScript = "\"${PODS_ROOT}/SwiftLint/swiftlint\"\n";
 		};
 /* End PBXShellScriptBuildPhase section */
 

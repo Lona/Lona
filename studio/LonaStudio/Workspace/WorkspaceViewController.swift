@@ -329,48 +329,6 @@ class WorkspaceViewController: NSSplitViewController {
         splitView.autosaveName = NSSplitView.AutosaveName(rawValue: splitViewResorationIdentifier)
         splitView.identifier = NSUserInterfaceItemIdentifier(rawValue: splitViewResorationIdentifier)
 
-        fileNavigator.defaultFont = NSFont.systemFont(ofSize: NSFont.systemFontSize(for: .small))
-        fileNavigator.displayNameForFile = { path in
-            let url = URL(fileURLWithPath: path)
-            return url.pathExtension == "component" ? url.deletingPathExtension().lastPathComponent : url.lastPathComponent
-        }
-
-        fileNavigator.imageForFile = { path, size in
-            let url = URL(fileURLWithPath: path)
-
-            func defaultImage(for path: String) -> NSImage {
-                return NSWorkspace.shared.icon(forFile: path)
-            }
-
-            if url.pathExtension == "component" {
-                guard let component = LonaModule.current.component(named: url.deletingPathExtension().lastPathComponent),
-                    let canvas = component.computedCanvases().first,
-                    let caseItem = component.computedCases(for: canvas).first
-                    else { return defaultImage(for: path) }
-
-                let config = ComponentConfiguration(
-                    component: component,
-                    arguments: caseItem.value.objectValue,
-                    canvas: canvas
-                )
-
-                let canvasView = CanvasView(
-                    canvas: canvas,
-                    rootLayer: component.rootLayer,
-                    config: config,
-                    options: [RenderOption.assetScale(1)]
-                )
-
-                guard let data = canvasView.dataRepresentation(scaledBy: 0.25),
-                    let image = NSImage(data: data)
-                    else { return defaultImage(for: path) }
-                image.size = NSSize(width: size.width, height: (image.size.height / image.size.width) * size.height)
-                return image
-            } else {
-                return defaultImage(for: path)
-            }
-        }
-
         fileNavigator.onAction = self.openDocument
         directoryViewController.onSelectComponent = self.openDocument
     }
