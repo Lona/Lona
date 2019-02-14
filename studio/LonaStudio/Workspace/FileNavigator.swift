@@ -27,6 +27,14 @@ private func isDirectory(path: String) -> Bool {
     }
 }
 
+class FileNavigatorHeaderWithMenu: FileNavigatorHeader {
+    public var menuForHeader: (() -> NSMenu)?
+
+    override func menu(for event: NSEvent) -> NSMenu? {
+        return menuForHeader?()
+    }
+}
+
 class FileNavigator: NSBox {
 
     // MARK: - Lifecycle
@@ -76,7 +84,7 @@ class FileNavigator: NSBox {
 
     // MARK: - Private
 
-    private var headerView = FileNavigatorHeader()
+    private var headerView = FileNavigatorHeaderWithMenu()
 
     private lazy var fileTree: FileTree = {
         return FileTree(rootPath: rootPath)
@@ -91,13 +99,87 @@ class FileNavigator: NSBox {
         fileTree.rowViewForFile = { path, _ in self.rowViewForFile(atPath: path) }
         fileTree.imageForFile = self.imageForFile
         fileTree.displayNameForFile = self.displayNameForFile
+        fileTree.menuForFile = { [unowned self] path in self.menuForFile(atPath: path) }
+
+        fileTree.onDeleteFile = { path, options in
+            Swift.print("Deleted", path)
+        }
 
         headerView.fileIcon = NSImage(byReferencing: CSWorkspacePreferences.workspaceIconURL)
         headerView.dividerColor = NSSplitView.defaultDividerColor
         headerView.onClick = { [unowned self] in self.onAction?(self.rootPath) }
+        headerView.menuForHeader = { [unowned self] in self.menuForFile(atPath: self.rootPath) }
 
         addSubview(headerView)
         addSubview(fileTree)
+    }
+
+    private func menuForFile(atPath path: String) -> NSMenu {
+        let menu = NSMenu(title: "Menu")
+
+        menu.addItem(NSMenuItem(title: "Reveal in Finder", onClick: {
+            let parentPath = URL(fileURLWithPath: path).deletingLastPathComponent().path
+            NSWorkspace.shared.selectFile(path, inFileViewerRootedAtPath: parentPath)
+        }))
+
+        menu.addItem(NSMenuItem.separator())
+
+        if isDirectory(path: path) {
+            //                menu.addItem(withTitle: "New Component", action: #selector(self.handleNewFile), keyEquivalent: "")
+            menu.addItem(NSMenuItem(title: "New Folder", onClick: { [unowned self] in
+                guard let newFileName = self.promptForName(
+                    messageText: "Enter a new folder name",
+                    placeholderText: "Folder name") else { return }
+
+                let newFilePath = URL(fileURLWithPath: path).appendingPathComponent(newFileName).path
+
+                do {
+                    try FileManager.default.createDirectory(
+                        atPath: newFilePath,
+                        withIntermediateDirectories: true,
+                        attributes: nil)
+
+                    self.fileTree.reloadData()
+                } catch {
+                    Swift.print("Failed to create directory \(newFileName)")
+                }
+            }))
+
+            menu.addItem(NSMenuItem.separator())
+        }
+
+        if path != rootPath {
+//            menu.addItem(NSMenuItem(title: "Rename", onClick: { [unowned self] in
+//                let cellView = self.fileTree.beginRenamingFile(atPath: path) as? FileTree.DefaultCellView
+//
+//                Swift.print("Renaming cell", cellView)
+//
+//                self.fileTree.endRenamingFile()
+//            }))
+
+            menu.addItem(NSMenuItem(title: "Delete", onClick: {
+                let fileName = URL(fileURLWithPath: path).lastPathComponent
+
+                let alert = NSAlert()
+                alert.messageText = "Are you sure you want to delete \(fileName)?"
+                alert.addButton(withTitle: "Delete")
+                alert.addButton(withTitle: "Cancel")
+
+                let response = alert.runModal()
+
+                if response == NSApplication.ModalResponse.alertFirstButtonReturn {
+                    do {
+                        try FileManager.default.removeItem(atPath: path)
+                    } catch {
+                        Swift.print("Failed to delete \(path)")
+                    }
+                }
+
+                self.fileTree.reloadData()
+            }))
+        }
+
+        return menu
     }
 
     private func setUpConstraints() {
@@ -117,6 +199,28 @@ class FileNavigator: NSBox {
     }
 
     private func update() {}
+
+    private func promptForName(messageText: String, placeholderText: String) -> String? {
+        let alert = NSAlert()
+        alert.messageText = messageText
+        alert.addButton(withTitle: "OK")
+        alert.addButton(withTitle: "Cancel")
+        let textView = NSTextField(frame: NSRect(x: 0, y: 0, width: 300, height: 20))
+        textView.stringValue = ""
+        textView.placeholderString = placeholderText
+        alert.accessoryView = textView
+        alert.window.initialFirstResponder = textView
+
+        alert.layout()
+
+        let response = alert.runModal()
+
+        if response == NSApplication.ModalResponse.alertFirstButtonReturn {
+            return textView.stringValue
+        } else {
+            return nil
+        }
+    }
 
     private func imageForFile(atPath path: String, size: NSSize) -> NSImage {
         let url = URL(fileURLWithPath: path)
