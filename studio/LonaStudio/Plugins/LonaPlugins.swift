@@ -20,6 +20,7 @@ enum LonaPluginActivationEvent: String, Decodable {
 struct LonaPluginConfig: Decodable {
     var main: String
     var activationEvents: [LonaPluginActivationEvent]?
+    var command: String?
 }
 
 class LonaPlugins {
@@ -48,8 +49,13 @@ class LonaPlugins {
 
             let rpcService = RPCService()
 
+            var arguments = [url.appendingPathComponent(config.main).path]
+            if let command = config.command {
+                arguments.insert(url.appendingPathComponent(command).path, at: 0)
+            }
+
             let sendData = LonaNode.launch(
-                arguments: [url.appendingPathComponent(config.main).path],
+                arguments: arguments,
                 currentDirectoryPath: url.path,
                 onData: rpcService.handleData,
                 onSuccess: { output in

@@ -15,6 +15,7 @@ enum NotificationMethod: String {
 
 enum RequestMethod: String {
     case workspacePath
+    case compilerPath
 }
 
 class PluginAPI {
@@ -44,7 +45,7 @@ class PluginAPI {
     static func handleRequest(
         _ jsonMethod: String,
         _ jsonParams: AnyObject?,
-        onSuccess: (Any) -> Void,
+        onSuccess: (Any?) -> Void,
         onFailure: (RPCError) -> Void) {
         guard let method = RequestMethod(rawValue: jsonMethod) else {
             onFailure(RPCError.MethodNotFound())
@@ -54,6 +55,11 @@ class PluginAPI {
         switch method {
         case .workspacePath:
             let result = CSUserPreferences.workspaceURL.path
+
+            onSuccess(result)
+            return
+        case .compilerPath:
+            let result = CSUserPreferences.compilerURL?.path
 
             onSuccess(result)
             return

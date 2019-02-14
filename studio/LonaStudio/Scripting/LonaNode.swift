@@ -51,17 +51,16 @@ enum LonaNode {
         onSuccess: ((Data) -> Void)? = nil,
         onFailure: ((Int, String?) -> Void)? = nil) {
 
-        let stdin = launchAndReturnFileHandle(
+        _ = launchAndReturnFileHandle(
             arguments: arguments,
             inputData: inputData,
+            shouldCloseStdinAfterInput: true,
             currentDirectoryPath: currentDirectoryPath,
             sync: sync,
             onData: onData,
             onSuccess: onSuccess,
             onFailure: onFailure
             )
-
-        stdin?.closeFile()
     }
 
     static func launch(
@@ -87,6 +86,7 @@ enum LonaNode {
     private static func launchAndReturnFileHandle(
         arguments: [String],
         inputData: Data? = nil,
+        shouldCloseStdinAfterInput: Bool = false,
         currentDirectoryPath: String? = nil,
         sync: Bool = false,
         onData: ((Data) -> Void)? = nil,
@@ -99,20 +99,26 @@ enum LonaNode {
         }
 
         let task = Process()
+
         var env = ProcessInfo.processInfo.environment
         if let path = env["PATH"], let binaryPath = binaryPath {
             let nodeDirectory = URL(fileURLWithPath: binaryPath).deletingLastPathComponent()
             env["PATH"] = "\(nodeDirectory):" + path
         }
+        if let currentDirectoryPath = currentDirectoryPath {
+            task.currentDirectoryPath = currentDirectoryPath
+            // let's look add the path to node_modules to PATH
+            if let path = env["PATH"] {
+                let nodeModulesBinaries = URL(fileURLWithPath: currentDirectoryPath).appendingPathComponent("node_modules/.bin", isDirectory: true).path
+                env["PATH"] = "\(nodeModulesBinaries):" + path
+            }
+        }
+
         task.environment = env
 
         // Set the task parameters
         task.launchPath = nodePath
         task.arguments = arguments
-
-        if let currentDirectoryPath = currentDirectoryPath {
-            task.currentDirectoryPath = currentDirectoryPath
-        }
 
         let stdin = Pipe()
         let stdout = Pipe()
@@ -133,6 +139,10 @@ enum LonaNode {
 
             if let inputData = inputData {
                 stdin.fileHandleForWriting.write(inputData)
+            }
+
+            if shouldCloseStdinAfterInput {
+                stdin.fileHandleForWriting.closeFile()
             }
 
             task.waitUntilExit()
