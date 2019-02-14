@@ -88,13 +88,21 @@ class RPCService {
     private func sendJson(_ json: Any) {
         do {
             let data = try JSONSerialization.data(withJSONObject: json, options: [])
-            sendData?(data)
+
+            // add a new line character so that the client can receive
+            // multiple answers at the same time
+            let mutdata = NSMutableData()
+            mutdata.append(data)
+            let nl = [0x0a as UInt8]
+            mutdata.append(nl, length: 1)
+
+            sendData?(mutdata as Data)
         } catch _ {
             print("error serializing to json")
         }
     }
 
-    private func sendResult(id: Int, result: Any) {
+    private func sendResult(id: Int, result: Any?) {
         let json = ["id": id, "result": result]
         sendJson(json)
     }
