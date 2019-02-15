@@ -329,6 +329,33 @@ class WorkspaceViewController: NSSplitViewController {
         splitView.autosaveName = NSSplitView.AutosaveName(rawValue: splitViewResorationIdentifier)
         splitView.identifier = NSUserInterfaceItemIdentifier(rawValue: splitViewResorationIdentifier)
 
+        fileNavigator.onDeleteFile = { path, options in
+            NSDocumentController.shared.documents.forEach { document in
+                if document.fileURL == URL(fileURLWithPath: path) {
+                    self.close(document: document, discardingUnsavedChanges: true)
+                }
+            }
+        }
+
+        // Don't allow moving json files, since we currently
+        let unmovableFiles = ["colors.json", "textStyles.json", "shadows.json", "lona.json"]
+        fileNavigator.validateProposedMove = { prev, next in
+            let name = URL(fileURLWithPath: prev).lastPathComponent
+            let result = !unmovableFiles.contains(name)
+            Swift.print(result, prev, next)
+            return result
+        }
+
+        fileNavigator.performMoveFile = { prev, next in
+            do {
+                try FileManager.default.moveItem(atPath: prev, toPath: next)
+                return true
+            } catch {
+                Swift.print("Failed to move \(prev) to \(next)")
+                return false
+            }
+        }
+
         fileNavigator.onAction = self.openDocument
         directoryViewController.onSelectComponent = self.openDocument
     }
@@ -744,8 +771,8 @@ class WorkspaceViewController: NSSplitViewController {
         self.inspectedContent = nil
     }
 
-    private func close(document: NSDocument) -> Bool {
-        if document.isDocumentEdited {
+    @discardableResult private func close(document: NSDocument, discardingUnsavedChanges: Bool) -> Bool {
+        if !discardingUnsavedChanges && document.isDocumentEdited {
             let name = document.fileURL?.lastPathComponent ?? "Untitled"
             guard let result = Alert(
                 items: [
@@ -815,7 +842,7 @@ class WorkspaceViewController: NSSplitViewController {
 extension WorkspaceViewController {
     @IBAction func newDocument(_ sender: AnyObject) {
         if let document = self.document {
-            guard close(document: document) else { return }
+            guard close(document: document, discardingUnsavedChanges: false) else { return }
         }
 
         guard let windowController = self.view.window?.windowController else { return }

@@ -82,6 +82,21 @@ class FileNavigator: NSBox {
         set { fileTree.onAction = newValue }
     }
 
+    public var onDeleteFile: ((FileTree.Path, FileTree.FileEventOptions) -> Void)? {
+        get { return fileTree.onDeleteFile }
+        set { fileTree.onDeleteFile = newValue }
+    }
+
+    public var validateProposedMove: ((FileTree.Path, FileTree.Path) -> Bool)? {
+        get { return fileTree.validateProposedMove }
+        set { fileTree.validateProposedMove = newValue }
+    }
+
+    public var performMoveFile: ((FileTree.Path, FileTree.Path) -> Bool)? {
+        get { return fileTree.performMoveFile }
+        set { fileTree.performMoveFile = newValue }
+    }
+
     // MARK: - Private
 
     private var headerView = FileNavigatorHeaderWithMenu()
@@ -175,7 +190,7 @@ class FileNavigator: NSBox {
                     }
                 }
 
-                self.fileTree.reloadData()
+//                self.fileTree.reloadData()
             }))
         }
 
