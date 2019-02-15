@@ -61,6 +61,11 @@ let javaScriptOptions: JavaScriptOptions.options = {
     | Some(value) when Js.String.startsWith("3", value) => V3
     | _ => Latest
     },
+  minimumIeSupport:
+    switch (getArgument("minimumIeSupport")) {
+    | Some("11") => IE11
+    | _ => None
+    },
 };
 
 let options: LonaCompilerCore.Options.options = {

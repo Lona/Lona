@@ -554,6 +554,8 @@ let createJSXElement =
   };
 };
 
+let ieFixClassname = "'lona--ie-flex-1-1-auto'";
+
 let rec layerToJavaScriptAST =
         (
           options: JavaScriptOptions.options,
@@ -612,6 +614,9 @@ let rec layerToJavaScriptAST =
            };
          JSXAttribute({name: key, value: attributeValue});
        });
+  let needsIeFix =
+    config.options.javaScript.minimumIeSupport == IE11
+    && JavaScriptStyles.needsIeFix(config, parent, layer);
   let attributes =
     attributes
     @ (
@@ -632,7 +637,8 @@ let rec layerToJavaScriptAST =
               name: "className",
               value:
                 Identifier([
-                  "this.state.focusRing ? 'lona--focus-ring' : 'lona--no-focus-ring'",
+                  "this.state.focusRing ? 'lona--focus-ring' : 'lona--no-focus-ring'"
+                  ++ (needsIeFix ? " + " ++ ieFixClassname : ""),
                 ]),
             }),
             JSXAttribute({
@@ -642,7 +648,17 @@ let rec layerToJavaScriptAST =
           ]
         | ReactSketchapp => []
         } :
-        []
+        (
+          switch (needsIeFix, config.options.javaScript.framework) {
+          | (true, ReactDOM) => [
+              JSXAttribute({
+                name: "className",
+                value: Identifier([ieFixClassname]),
+              }),
+            ]
+          | _ => []
+          }
+        )
     );
   let attributes =
     attributes
