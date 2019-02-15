@@ -393,6 +393,20 @@ let getLayoutParameters =
   };
 };
 
+let needsIeFix =
+    (config: Config.t, parent: option(Types.layer), layer: Types.layer): bool => {
+  let layoutParameters =
+    getLayoutParameters(config.options.javaScript.framework, parent, layer);
+  switch (ParameterMap.find_opt(Flex, layoutParameters)) {
+  | Some(lonaValue)
+      when
+        lonaValue.ltype == Types.stringType
+        && LonaValue.decodeString(lonaValue) == "1 1 0%" =>
+    true
+  | _ => false
+  };
+};
+
 let getStylePropertyWithUnits =
     (
       config: Config.t,
@@ -543,26 +557,24 @@ module Object = {
 
     JavaScriptAst.(
       ObjectLiteral(
-        (
-          layer.parameters
-          |> handleNumberOfLines(framework, config)
-          |> ParameterMap.assign(
-               handleBorderStyle(config, assignments, layer),
-             )
-          |> ParameterMap.filter((key, _) => Layer.parameterIsStyle(key))
-          /* Remove layout parameters stored in the component file */
-          |> ParameterMap.filter((key, _) =>
-               !List.mem(key, replacedLayoutKeys)
-             )
-          /* Add layout parameters appropriate for the framework */
-          |> ParameterMap.assign(_, layoutParameters)
-          |> ParameterMap.assign(defaultStyles(config, layer.typeName))
-          |> handleResizeMode(framework, config, parent, layer)
-          |> ParameterMap.bindings
-          |> List.map(((key, value)) =>
-               getStylePropertyWithUnits(config, framework, key, value)
-             )
-        )
+        layer.parameters
+        |> handleNumberOfLines(framework, config)
+        |> ParameterMap.assign(
+             handleBorderStyle(config, assignments, layer),
+           )
+        |> ParameterMap.filter((key, _) => Layer.parameterIsStyle(key))
+        /* Remove layout parameters stored in the component file */
+        |> ParameterMap.filter((key, _) =>
+             !List.mem(key, replacedLayoutKeys)
+           )
+        /* Add layout parameters appropriate for the framework */
+        |> ParameterMap.assign(_, layoutParameters)
+        |> ParameterMap.assign(defaultStyles(config, layer.typeName))
+        |> handleResizeMode(framework, config, parent, layer)
+        |> ParameterMap.bindings
+        |> List.map(((key, value)) =>
+             getStylePropertyWithUnits(config, framework, key, value)
+           ),
       )
     );
   };
