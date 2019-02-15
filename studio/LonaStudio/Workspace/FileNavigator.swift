@@ -116,6 +116,8 @@ class FileNavigator: NSBox {
         fileTree.displayNameForFile = self.displayNameForFile
         fileTree.menuForFile = { [unowned self] path in self.menuForFile(atPath: path) }
 
+        fileTree.filterFiles = { path in !(path.hasPrefix(".") || path.hasPrefix("~")) }
+
         fileTree.onDeleteFile = { path, options in
             Swift.print("Deleted", path)
         }
