@@ -113,9 +113,9 @@ class FileNavigator: NSBox {
         contentViewMargins = .zero
 
         fileTree.showRootFile = false
-        fileTree.rowViewForFile = { path, _ in self.rowViewForFile(atPath: path) }
-        fileTree.imageForFile = self.imageForFile
-        fileTree.displayNameForFile = self.displayNameForFile
+        fileTree.rowViewForFile = { [unowned self] path, _ in self.rowViewForFile(atPath: path) }
+        fileTree.imageForFile = { [unowned self] path, size in self.imageForFile(atPath: path, size: size) }
+        fileTree.displayNameForFile = { [unowned self] path in self.displayNameForFile(atPath: path) }
         fileTree.menuForFile = { [unowned self] path in self.menuForFile(atPath: path) }
         fileTree.filterFiles = { path in !(path.hasPrefix(".") || path.hasPrefix("~")) }
 
