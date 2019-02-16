@@ -1,0 +1,4 @@
+{
+  "main": "./index.js",
+  "command": "./node_modules/@babel/node/bin/babel-node.js"
+}
