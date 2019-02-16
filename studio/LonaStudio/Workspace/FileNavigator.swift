@@ -27,6 +27,14 @@ private func isDirectory(path: String) -> Bool {
     }
 }
 
+class FileNavigatorHeaderWithMenu: FileNavigatorHeader {
+    public var menuForHeader: (() -> NSMenu)?
+
+    override func menu(for event: NSEvent) -> NSMenu? {
+        return menuForHeader?()
+    }
+}
+
 class FileNavigator: NSBox {
 
     // MARK: - Lifecycle
@@ -69,29 +77,31 @@ class FileNavigator: NSBox {
         set { headerView.titleText = newValue }
     }
 
-    public var defaultFont: NSFont {
-        get { return fileTree.defaultFont }
-        set { fileTree.defaultFont = newValue }
-    }
-
-    public var displayNameForFile: ((FileTree.Path) -> FileTree.Name)? {
-        get { return fileTree.displayNameForFile }
-        set { fileTree.displayNameForFile = newValue }
-    }
-
-    public var imageForFile: ((FileTree.Path, NSSize) -> NSImage)? {
-        get { return fileTree.imageForFile }
-        set { fileTree.imageForFile = newValue }
-    }
-
     public var onAction: ((FileTree.Path) -> Void)? {
         get { return fileTree.onAction }
         set { fileTree.onAction = newValue }
     }
 
+    public var onDeleteFile: ((FileTree.Path, FileTree.FileEventOptions) -> Void)? {
+        get { return fileTree.onDeleteFile }
+        set { fileTree.onDeleteFile = newValue }
+    }
+
+    public var validateProposedMove: ((FileTree.Path, FileTree.Path) -> Bool)? {
+        get { return fileTree.validateProposedMove }
+        set { fileTree.validateProposedMove = newValue }
+    }
+
+    public var performMoveFile: ((FileTree.Path, FileTree.Path) -> Bool)? {
+        get { return fileTree.performMoveFile }
+        set { fileTree.performMoveFile = newValue }
+    }
+
+    public var performCreateComponent: ((FileTree.Path) -> Bool)?
+
     // MARK: - Private
 
-    private var headerView = FileNavigatorHeader()
+    private var headerView = FileNavigatorHeaderWithMenu()
 
     private lazy var fileTree: FileTree = {
         return FileTree(rootPath: rootPath)
@@ -103,14 +113,92 @@ class FileNavigator: NSBox {
         contentViewMargins = .zero
 
         fileTree.showRootFile = false
-        fileTree.rowViewForFile = { path in self.rowViewForFile(atPath: path) }
+        fileTree.rowViewForFile = { [unowned self] path, _ in self.rowViewForFile(atPath: path) }
+        fileTree.imageForFile = { [unowned self] path, size in self.imageForFile(atPath: path, size: size) }
+        fileTree.displayNameForFile = { [unowned self] path in self.displayNameForFile(atPath: path) }
+        fileTree.menuForFile = { [unowned self] path in self.menuForFile(atPath: path) }
+        fileTree.filterFiles = { path in !(path.hasPrefix(".") || path.hasPrefix("~")) }
 
         headerView.fileIcon = NSImage(byReferencing: CSWorkspacePreferences.workspaceIconURL)
         headerView.dividerColor = NSSplitView.defaultDividerColor
         headerView.onClick = { [unowned self] in self.onAction?(self.rootPath) }
+        headerView.menuForHeader = { [unowned self] in self.menuForFile(atPath: self.rootPath) }
 
         addSubview(headerView)
         addSubview(fileTree)
+    }
+
+    private func menuForFile(atPath path: String) -> NSMenu {
+        let menu = NSMenu(title: "Menu")
+
+        menu.addItem(NSMenuItem(title: "Reveal in Finder", onClick: {
+            let parentPath = URL(fileURLWithPath: path).deletingLastPathComponent().path
+            NSWorkspace.shared.selectFile(path, inFileViewerRootedAtPath: parentPath)
+        }))
+
+        if isDirectory(path: path) {
+            if !menu.items.isEmpty {
+                menu.addItem(NSMenuItem.separator())
+            }
+
+            menu.addItem(NSMenuItem(title: "New Component", onClick: { [unowned self] in
+                guard let newFileName = self.promptForName(
+                    messageText: "Enter a new component name",
+                    placeholderText: "Component name") else { return }
+
+                let newFileURL = URL(fileURLWithPath: path).appendingPathComponent(newFileName)
+                let newFilePath = newFileURL.pathExtension == "component" ?
+                    newFileURL.path : newFileURL.appendingPathExtension("component").path
+
+                _ = self.performCreateComponent?(newFilePath)
+            }))
+
+            menu.addItem(NSMenuItem(title: "New Folder", onClick: { [unowned self] in
+                guard let newFileName = self.promptForName(
+                    messageText: "Enter a new folder name",
+                    placeholderText: "Folder name") else { return }
+
+                let newFilePath = URL(fileURLWithPath: path).appendingPathComponent(newFileName).path
+
+                do {
+                    try FileManager.default.createDirectory(
+                        atPath: newFilePath,
+                        withIntermediateDirectories: true,
+                        attributes: nil)
+
+                    self.fileTree.reloadData()
+                } catch {
+                    Swift.print("Failed to create directory \(newFileName)")
+                }
+            }))
+        }
+
+        if path != rootPath {
+            if !menu.items.isEmpty {
+                menu.addItem(NSMenuItem.separator())
+            }
+
+            menu.addItem(NSMenuItem(title: "Delete", onClick: {
+                let fileName = URL(fileURLWithPath: path).lastPathComponent
+
+                let alert = NSAlert()
+                alert.messageText = "Are you sure you want to delete \(fileName)?"
+                alert.addButton(withTitle: "Delete")
+                alert.addButton(withTitle: "Cancel")
+
+                let response = alert.runModal()
+
+                if response == NSApplication.ModalResponse.alertFirstButtonReturn {
+                    do {
+                        try FileManager.default.removeItem(atPath: path)
+                    } catch {
+                        Swift.print("Failed to delete \(path)")
+                    }
+                }
+            }))
+        }
+
+        return menu
     }
 
     private func setUpConstraints() {
@@ -131,10 +219,73 @@ class FileNavigator: NSBox {
 
     private func update() {}
 
+    private func promptForName(messageText: String, placeholderText: String) -> String? {
+        let alert = NSAlert()
+        alert.messageText = messageText
+        alert.addButton(withTitle: "OK")
+        alert.addButton(withTitle: "Cancel")
+        let textView = NSTextField(frame: NSRect(x: 0, y: 0, width: 300, height: 20))
+        textView.stringValue = ""
+        textView.placeholderString = placeholderText
+        alert.accessoryView = textView
+        alert.window.initialFirstResponder = textView
+
+        alert.layout()
+
+        let response = alert.runModal()
+
+        if response == NSApplication.ModalResponse.alertFirstButtonReturn {
+            return textView.stringValue
+        } else {
+            return nil
+        }
+    }
+
+    private func imageForFile(atPath path: String, size: NSSize) -> NSImage {
+        let url = URL(fileURLWithPath: path)
+
+        func defaultImage(for path: String) -> NSImage {
+            return NSWorkspace.shared.icon(forFile: path)
+        }
+
+        if url.pathExtension == "component" {
+            guard let component = LonaModule.current.component(named: url.deletingPathExtension().lastPathComponent),
+                let canvas = component.computedCanvases().first,
+                let caseItem = component.computedCases(for: canvas).first
+                else { return defaultImage(for: path) }
+
+            let config = ComponentConfiguration(
+                component: component,
+                arguments: caseItem.value.objectValue,
+                canvas: canvas
+            )
+
+            let canvasView = CanvasView(
+                canvas: canvas,
+                rootLayer: component.rootLayer,
+                config: config,
+                options: [RenderOption.assetScale(1)]
+            )
+
+            guard let data = canvasView.dataRepresentation(scaledBy: 0.25),
+                let image = NSImage(data: data)
+                else { return defaultImage(for: path) }
+            image.size = NSSize(width: size.width, height: (image.size.height / image.size.width) * size.height)
+            return image
+        } else {
+            return defaultImage(for: path)
+        }
+    }
+
+    private func displayNameForFile(atPath path: String) -> String {
+        let url = URL(fileURLWithPath: path)
+        return url.pathExtension == "component" ? url.deletingPathExtension().lastPathComponent : url.lastPathComponent
+    }
+
     private func rowViewForFile(atPath path: String) -> NSView {
         let thumbnailSize = fileTree.defaultThumbnailSize
         let thumbnailMargin = fileTree.defaultThumbnailMargin
-        let name = displayNameForFile?(path) ?? URL(fileURLWithPath: path).lastPathComponent
+        let name = displayNameForFile(atPath: path)
 
         let view = FileTreeCellView()
 
@@ -148,7 +299,7 @@ class FileNavigator: NSBox {
         } else if path.hasSuffix("colors.json") {
             iconView = ColorsFileIcon()
         } else if path.hasSuffix(".component") {
-            let imageView = NSImageView(image: imageForFile?(path, thumbnailSize) ?? NSImage())
+            let imageView = NSImageView(image: imageForFile(atPath: path, size: thumbnailSize) )
             imageView.imageScaling = .scaleProportionallyUpOrDown
             iconView = imageView
         } else {
@@ -168,7 +319,7 @@ class FileNavigator: NSBox {
         textView.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: thumbnailMargin * 2 + thumbnailSize.width).isActive = true
         textView.trailingAnchor.constraint(equalTo: view.trailingAnchor).isActive = true
         textView.centerYAnchor.constraint(equalTo: view.centerYAnchor).isActive = true
-        textView.font = defaultFont
+        textView.font = NSFont.systemFont(ofSize: NSFont.systemFontSize(for: .small))
         textView.maximumNumberOfLines = 1
         textView.lineBreakMode = .byTruncatingMiddle
 

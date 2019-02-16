@@ -329,46 +329,63 @@ class WorkspaceViewController: NSSplitViewController {
         splitView.autosaveName = NSSplitView.AutosaveName(rawValue: splitViewResorationIdentifier)
         splitView.identifier = NSUserInterfaceItemIdentifier(rawValue: splitViewResorationIdentifier)
 
-        fileNavigator.defaultFont = NSFont.systemFont(ofSize: NSFont.systemFontSize(for: .small))
-        fileNavigator.displayNameForFile = { path in
-            let url = URL(fileURLWithPath: path)
-            return url.pathExtension == "component" ? url.deletingPathExtension().lastPathComponent : url.lastPathComponent
+        fileNavigator.onDeleteFile = { path, options in
+            NSDocumentController.shared.documents.forEach { document in
+                if document.fileURL == URL(fileURLWithPath: path) {
+                    self.close(document: document, discardingUnsavedChanges: true)
+                }
+            }
         }
 
-        fileNavigator.imageForFile = { path, size in
+        // Don't allow moving json files, since we currently only read these from the workspace root directory
+        let unmovableFiles = ["colors.json", "textStyles.json", "shadows.json", "lona.json"]
+        fileNavigator.validateProposedMove = { prev, next in
+            let name = URL(fileURLWithPath: prev).lastPathComponent
+            let result = !unmovableFiles.contains(name)
+            return result
+        }
+
+        fileNavigator.performMoveFile = { prev, next in
+            do {
+                try FileManager.default.moveItem(atPath: prev, toPath: next)
+                return true
+            } catch {
+                Swift.print("Failed to move \(prev) to \(next)")
+                return false
+            }
+        }
+
+        fileNavigator.performCreateComponent = { path in
+            if let document = self.document {
+                guard self.close(document: document, discardingUnsavedChanges: false) else { return false }
+            }
+
+            guard let windowController = self.view.window?.windowController else { return false }
+
             let url = URL(fileURLWithPath: path)
+            let newDocument = ComponentDocument()
+            newDocument.component = CSComponent.makeDefaultComponent()
+            newDocument.fileURL = url
+            newDocument.save(
+                to: url,
+                ofType: "DocumentType",
+                for: NSDocument.SaveOperationType.saveOperation, completionHandler: { error in
+                    if let error = error {
+                        Swift.print("Failed to save \(url): \(error)")
+                    }
+            })
 
-            func defaultImage(for path: String) -> NSImage {
-                return NSWorkspace.shared.icon(forFile: path)
-            }
+            NSDocumentController.shared.addDocument(newDocument)
+            newDocument.addWindowController(windowController)
+            windowController.document = newDocument
 
-            if url.pathExtension == "component" {
-                guard let component = LonaModule.current.component(named: url.deletingPathExtension().lastPathComponent),
-                    let canvas = component.computedCanvases().first,
-                    let caseItem = component.computedCases(for: canvas).first
-                    else { return defaultImage(for: path) }
+            self.document = newDocument
 
-                let config = ComponentConfiguration(
-                    component: component,
-                    arguments: caseItem.value.objectValue,
-                    canvas: canvas
-                )
+            // Set this after updating the document (which calls update)
+            // TODO: There shouldn't need to be an implicit ordering. Maybe we call update() manually.
+            self.inspectedContent = nil
 
-                let canvasView = CanvasView(
-                    canvas: canvas,
-                    rootLayer: component.rootLayer,
-                    config: config,
-                    options: [RenderOption.assetScale(1)]
-                )
-
-                guard let data = canvasView.dataRepresentation(scaledBy: 0.25),
-                    let image = NSImage(data: data)
-                    else { return defaultImage(for: path) }
-                image.size = NSSize(width: size.width, height: (image.size.height / image.size.width) * size.height)
-                return image
-            } else {
-                return defaultImage(for: path)
-            }
+            return true
         }
 
         fileNavigator.onAction = self.openDocument
@@ -786,8 +803,8 @@ class WorkspaceViewController: NSSplitViewController {
         self.inspectedContent = nil
     }
 
-    private func close(document: NSDocument) -> Bool {
-        if document.isDocumentEdited {
+    @discardableResult private func close(document: NSDocument, discardingUnsavedChanges: Bool) -> Bool {
+        if !discardingUnsavedChanges && document.isDocumentEdited {
             let name = document.fileURL?.lastPathComponent ?? "Untitled"
             guard let result = Alert(
                 items: [
@@ -857,7 +874,7 @@ class WorkspaceViewController: NSSplitViewController {
 extension WorkspaceViewController {
     @IBAction func newDocument(_ sender: AnyObject) {
         if let document = self.document {
-            guard close(document: document) else { return }
+            guard close(document: document, discardingUnsavedChanges: false) else { return }
         }
 
         guard let windowController = self.view.window?.windowController else { return }
