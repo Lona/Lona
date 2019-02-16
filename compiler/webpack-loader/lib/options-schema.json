@@ -1,0 +1,9 @@
+{
+  "type": "object",
+  "properties": {
+    "compiler": {
+      "type": "string"
+    }
+  },
+  "additionalProperties": false
+}

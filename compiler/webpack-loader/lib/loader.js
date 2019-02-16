@@ -1,8 +1,11 @@
 const path = require('path')
 const fs = require('fs')
 const qs = require('querystring')
-const { getOptions } = require('loader-utils')
 const { exec } = require('child_process')
+const { getOptions } = require('loader-utils')
+const validateOptions = require('schema-utils')
+
+const optionsSchema = require('./options-schema.json')
 
 const IMPORT_REGEX = /import [a-zA-Z]+ from "([a-zA-Z./]+)"/g
 function parseImports(source) {
@@ -21,12 +24,12 @@ function parseImports(source) {
   return imports
 }
 
-// TODO: update that when we have a proper release
-const lonacPath = path.join(__dirname, '../../core/src/main.bs.js')
+const defaultLonacPath = require.resolve('lonac')
 
 function lonac(command, filePath, options, callback) {
   exec(
-    `node "${lonacPath}" ${command} js --framework=${options.framework ||
+    `node "${options.compiler ||
+      defaultLonacPath}" ${command} js --framework=${options.framework ||
       'reactdom'}${
       options.styleFramework
         ? ` --styleFramework=${options.styleFramework}`
@@ -73,6 +76,8 @@ function lonac(command, filePath, options, callback) {
 module.exports = function loader(source) {
   const callback = this.async()
   const options = getOptions(this) || {}
+
+  validateOptions(optionsSchema, options, 'Lona Loader')
 
   const rawFilePath = path.normalize(this.resourcePath)
 
