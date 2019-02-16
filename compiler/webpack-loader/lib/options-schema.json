@@ -1,0 +1,15 @@
+{
+  "type": "object",
+  "properties": {
+    "compiler": {
+      "type": "string"
+    },
+    "framework": {
+      "type": "string"
+    },
+    "styleFramework": {
+      "type": "string"
+    }
+  },
+  "additionalProperties": false
+}
