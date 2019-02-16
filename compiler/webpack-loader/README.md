@@ -33,8 +33,8 @@ Then your config should become like this:
 
 ```diff
 {
--   test: /\.(m?jsx?)$/,
-+   test: /\.(m?jsx?|component)$/,
+- test: /\.(m?jsx?)$/,
++ test: /\.(m?jsx?|component)$/,
   exclude: /(node_modules)/,
   use: [
     {
@@ -43,9 +43,9 @@ Then your config should become like this:
         presets: ['@babel/preset-env', '@babel/preset-react'],
       },
     },
-+     {
-+       loader: 'lona-loader',
-+     }
++   {
++     loader: 'lona-loader',
++   }
   ],
 }
 ```
