@@ -97,6 +97,8 @@ class FileNavigator: NSBox {
         set { fileTree.performMoveFile = newValue }
     }
 
+    public var performCreateComponent: ((FileTree.Path) -> Bool)?
+
     // MARK: - Private
 
     private var headerView = FileNavigatorHeaderWithMenu()
@@ -115,12 +117,7 @@ class FileNavigator: NSBox {
         fileTree.imageForFile = self.imageForFile
         fileTree.displayNameForFile = self.displayNameForFile
         fileTree.menuForFile = { [unowned self] path in self.menuForFile(atPath: path) }
-
         fileTree.filterFiles = { path in !(path.hasPrefix(".") || path.hasPrefix("~")) }
-
-        fileTree.onDeleteFile = { path, options in
-            Swift.print("Deleted", path)
-        }
 
         headerView.fileIcon = NSImage(byReferencing: CSWorkspacePreferences.workspaceIconURL)
         headerView.dividerColor = NSSplitView.defaultDividerColor
@@ -139,10 +136,23 @@ class FileNavigator: NSBox {
             NSWorkspace.shared.selectFile(path, inFileViewerRootedAtPath: parentPath)
         }))
 
-        menu.addItem(NSMenuItem.separator())
-
         if isDirectory(path: path) {
-            //                menu.addItem(withTitle: "New Component", action: #selector(self.handleNewFile), keyEquivalent: "")
+            if !menu.items.isEmpty {
+                menu.addItem(NSMenuItem.separator())
+            }
+
+            menu.addItem(NSMenuItem(title: "New Component", onClick: { [unowned self] in
+                guard let newFileName = self.promptForName(
+                    messageText: "Enter a new component name",
+                    placeholderText: "Component name") else { return }
+
+                let newFileURL = URL(fileURLWithPath: path).appendingPathComponent(newFileName)
+                let newFilePath = newFileURL.pathExtension == "component" ?
+                    newFileURL.path : newFileURL.appendingPathExtension("component").path
+
+                _ = self.performCreateComponent?(newFilePath)
+            }))
+
             menu.addItem(NSMenuItem(title: "New Folder", onClick: { [unowned self] in
                 guard let newFileName = self.promptForName(
                     messageText: "Enter a new folder name",
@@ -161,18 +171,12 @@ class FileNavigator: NSBox {
                     Swift.print("Failed to create directory \(newFileName)")
                 }
             }))
-
-            menu.addItem(NSMenuItem.separator())
         }
 
         if path != rootPath {
-//            menu.addItem(NSMenuItem(title: "Rename", onClick: { [unowned self] in
-//                let cellView = self.fileTree.beginRenamingFile(atPath: path) as? FileTree.DefaultCellView
-//
-//                Swift.print("Renaming cell", cellView)
-//
-//                self.fileTree.endRenamingFile()
-//            }))
+            if !menu.items.isEmpty {
+                menu.addItem(NSMenuItem.separator())
+            }
 
             menu.addItem(NSMenuItem(title: "Delete", onClick: {
                 let fileName = URL(fileURLWithPath: path).lastPathComponent
@@ -191,8 +195,6 @@ class FileNavigator: NSBox {
                         Swift.print("Failed to delete \(path)")
                     }
                 }
-
-//                self.fileTree.reloadData()
             }))
         }
 

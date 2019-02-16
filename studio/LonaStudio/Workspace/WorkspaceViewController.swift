@@ -337,12 +337,11 @@ class WorkspaceViewController: NSSplitViewController {
             }
         }
 
-        // Don't allow moving json files, since we currently
+        // Don't allow moving json files, since we currently only read these from the workspace root directory
         let unmovableFiles = ["colors.json", "textStyles.json", "shadows.json", "lona.json"]
         fileNavigator.validateProposedMove = { prev, next in
             let name = URL(fileURLWithPath: prev).lastPathComponent
             let result = !unmovableFiles.contains(name)
-            Swift.print(result, prev, next)
             return result
         }
 
@@ -354,6 +353,39 @@ class WorkspaceViewController: NSSplitViewController {
                 Swift.print("Failed to move \(prev) to \(next)")
                 return false
             }
+        }
+
+        fileNavigator.performCreateComponent = { path in
+            if let document = self.document {
+                guard self.close(document: document, discardingUnsavedChanges: false) else { return false }
+            }
+
+            guard let windowController = self.view.window?.windowController else { return false }
+
+            let url = URL(fileURLWithPath: path)
+            let newDocument = ComponentDocument()
+            newDocument.component = CSComponent.makeDefaultComponent()
+            newDocument.fileURL = url
+            newDocument.save(
+                to: url,
+                ofType: "DocumentType",
+                for: NSDocument.SaveOperationType.saveOperation, completionHandler: { error in
+                    if let error = error {
+                        Swift.print("Failed to save \(url): \(error)")
+                    }
+            })
+
+            NSDocumentController.shared.addDocument(newDocument)
+            newDocument.addWindowController(windowController)
+            windowController.document = newDocument
+
+            self.document = newDocument
+
+            // Set this after updating the document (which calls update)
+            // TODO: There shouldn't need to be an implicit ordering. Maybe we call update() manually.
+            self.inspectedContent = nil
+
+            return true
         }
 
         fileNavigator.onAction = self.openDocument
