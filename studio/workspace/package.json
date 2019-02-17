@@ -5,6 +5,6 @@
   "main": "index.js",
   "license": "MIT",
   "scripts": {
-    "generate": "node ../compiler/core/src/main.bs.js workspace swift . ../studio/LonaStudio/Generated --framework=appkit"
+    "generate": "node ../../compiler/core/src/main.bs.js workspace swift . ../LonaStudio/Generated --framework=appkit"
   }
 }
