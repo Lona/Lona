@@ -5,8 +5,7 @@
   "main": "build/index.js",
   "scripts": {
     "predeploy": "npm run build",
-    "deploy":
-      "cp build/markdown-editor.html ../../studio/LonaStudio/Web/markdown-editor.html",
+    "deploy": "cp build/markdown-editor.html ../../LonaStudio/Web/markdown-editor.html",
     "dev": "webpack-dev-server",
     "build": "webpack -p",
     "prebuild": "npm run clean",
