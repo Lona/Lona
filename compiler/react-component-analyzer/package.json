@@ -1,11 +1,10 @@
 {
-  "name": "lona-analyzer",
+  "name": "react-component-analyzer",
   "version": "1.0.0",
   "main": "index.js",
   "license": "MIT",
   "scripts": {
-    "snapshot":
-      "node example.js && node ../compiler/core/src/main.bs.js workspace swift workspace out"
+    "start": "node example.js"
   },
   "dependencies": {
     "@babel/traverse": "^7.0.0-beta.44",
