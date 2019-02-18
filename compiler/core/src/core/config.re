@@ -104,9 +104,6 @@ module Workspace = {
         Js.String.replace("file://", "", path) : path;
     Node.Path.join2(config.workspacePath, path);
   };
-
-  let getRelativePathToOutputRoot = (config: t, outputPath: string): string =>
-    Node.Path.relative(~from=outputPath, ~to_=config.outputPath, ());
 };
 
 exception ComponentNotFound(string);

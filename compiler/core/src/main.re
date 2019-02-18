@@ -178,9 +178,20 @@ let convertTypes = (target, contents) => {
   let json = contents |> Js.Json.parseExn;
   switch (target) {
   | Types.Swift =>
-    json
-    |> TypeSystem.Decode.typesFile
-    |> SwiftTypeSystem.render(swiftOptions)
+    let importStatement =
+      switch (swiftOptions.framework) {
+      | AppKit => "import AppKit\n\n"
+      | UIKit => "import UIKit\n\n"
+      };
+    let types =
+      json
+      |> TypeSystem.Decode.typesFile
+      |> SwiftTypeSystem.render(swiftOptions)
+      |> List.map((convertedType: SwiftTypeSystem.convertedType) =>
+           convertedType.contents
+         )
+      |> Format.joinWith("\n\n");
+    importStatement ++ types;
   | _ => exit("Can't generate types for target")
   };
 };
@@ -232,8 +243,7 @@ let getAssetRelativePath = (fromDirectory, sourceComponent, importedPath) => {
     relativePath : "./" ++ relativePath;
 };
 
-let convertComponent =
-    (config: Config.t, filename: string, outputFile: string) => {
+let convertComponent = (config: Config.t, filename: string) => {
   let contents = Fs.readFileSync(filename, `utf8);
   let parsed = contents |> Js.Json.parseExn;
   let name = Node.Path.basename_ext(filename, ".component");
@@ -259,7 +269,11 @@ let convertComponent =
         (),
       ),
       config,
-      outputFile,
+      Node.Path.relative(
+        ~from=Node.Path.dirname(filename),
+        ~to_=config.workspacePath,
+        (),
+      ),
       getComponentRelativePath(config.workspacePath, name),
       getAssetRelativePath(config.workspacePath, name),
       parsed,
@@ -456,7 +470,7 @@ let convertWorkspace = (workspace, output) => {
                 ++ "=>"
                 ++ Path.join([|output, toRelativePath|]),
               );
-              switch (convertComponent(config, file, outputPath)) {
+              switch (convertComponent(config, file)) {
               | exception (Json_decode.DecodeError(reason)) =>
                 Js.log("Failed to decode " ++ file);
                 Js.log(reason);

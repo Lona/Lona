@@ -790,7 +790,7 @@ let importComponents =
     (
       config: Config.t,
       options: JavaScriptOptions.options,
-      outputFile,
+      relativePathToWorkspaceRoot,
       getComponentFile,
       assignments,
       componentName,
@@ -901,10 +901,7 @@ let importComponents =
           [
             Ast.ImportDeclaration({
               source:
-                Config.Workspace.getRelativePathToOutputRoot(
-                  config,
-                  Node.Path.dirname(outputFile),
-                )
+                relativePathToWorkspaceRoot
                 ++ "/utils/createActivatableComponent",
               specifiers: [
                 Ast.ImportDefaultSpecifier("createActivatableComponent"),
@@ -919,12 +916,7 @@ let importComponents =
         if (framework == ReactDOM && importsFocusUtil) {
           [
             Ast.ImportDeclaration({
-              source:
-                Config.Workspace.getRelativePathToOutputRoot(
-                  config,
-                  Node.Path.dirname(outputFile),
-                )
-                ++ "/utils/focusUtils",
+              source: relativePathToWorkspaceRoot ++ "/utils/focusUtils",
               specifiers: [
                 Ast.ImportSpecifier({imported: "isFocused", local: None}),
                 Ast.ImportSpecifier({imported: "focusFirst", local: None}),
@@ -1067,7 +1059,7 @@ let generate =
       shadowsFilePath,
       textStylesFilePath,
       config: Config.t,
-      outputFile,
+      relativePathToWorkspaceRoot,
       getComponentFile,
       getAssetPath,
       json,
@@ -1119,7 +1111,7 @@ let generate =
     |> importComponents(
          config,
          options,
-         outputFile,
+         relativePathToWorkspaceRoot,
          getComponentFile,
          assignments,
          componentName,
