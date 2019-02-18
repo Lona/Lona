@@ -101,7 +101,11 @@ export default class AccessibilityNested extends React.Component {
             customTextAccessibilityLabel={"Text"}
             onToggleCheckbox={AccessibilityTest$onToggleCheckbox}
             tabIndex={-1}
-            className={this.state.focusRing ? 'lona--focus-ring' : 'lona--no-focus-ring'}
+            className={(
+              this.state.focusRing
+                ? "lona--focus-ring"
+                : "lona--no-focus-ring"
+            )}
             onKeyDown={this._handleKeyDown}
             ref={(ref) => { this._AccessibilityTest = ref }}
 
@@ -111,7 +115,11 @@ export default class AccessibilityNested extends React.Component {
           <AccessibilityVisibility
             showText={AccessibilityVisibility$showText}
             tabIndex={-1}
-            className={this.state.focusRing ? 'lona--focus-ring' : 'lona--no-focus-ring'}
+            className={(
+              this.state.focusRing
+                ? "lona--focus-ring"
+                : "lona--no-focus-ring"
+            )}
             onKeyDown={this._handleKeyDown}
             ref={(ref) => { this._AccessibilityVisibility = ref }}
 
