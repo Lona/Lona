@@ -10,7 +10,8 @@
     "test": "echo \"Error: no test specified\" && exit 1",
     "prettier:base": "prettier --write",
     "lint-staged": "lint-staged",
-    "clear": "rm -rf ./public || true && rm -rf ./.cache || true"
+    "clear": "rm -rf ./public || true && rm -rf ./.cache || true",
+    "dev": "./cli/index.js build --workspace=../../examples/material-design --watch"
   },
   "author": "Mathieu Dutour",
   "license": "MIT",
