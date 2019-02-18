@@ -9,6 +9,10 @@
     },
     "styleFramework": {
       "type": "string"
+    },
+    "utils": {
+      "type": "object",
+      "additionalProperties": { "type": "string" }
     }
   },
   "additionalProperties": false
