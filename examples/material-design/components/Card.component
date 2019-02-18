@@ -128,7 +128,6 @@
         "id" : "Image",
         "params" : {
           "alignSelf" : "stretch",
-          "aspectRatio" : 2,
           "flex" : 1,
           "image" : ""
         },

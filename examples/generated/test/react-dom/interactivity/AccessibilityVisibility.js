@@ -92,7 +92,11 @@ export default class AccessibilityVisibility extends React.Component {
         <GreyBox
           aria-label={"Grey box"}
           tabIndex={-1}
-          className={this.state.focusRing ? 'lona--focus-ring' : 'lona--no-focus-ring'}
+          className={(
+            this.state.focusRing
+              ? "lona--focus-ring"
+              : "lona--no-focus-ring"
+          )}
           onKeyDown={this._handleKeyDown}
           ref={(ref) => { this._GreyBox = ref }}
 
@@ -102,7 +106,11 @@ export default class AccessibilityVisibility extends React.Component {
           <Text
             aria-label={"Some text that is sometimes hidden"}
             tabIndex={-1}
-            className={this.state.focusRing ? 'lona--focus-ring' : 'lona--no-focus-ring'}
+            className={(
+              this.state.focusRing
+                ? "lona--focus-ring"
+                : "lona--no-focus-ring"
+            )}
             onKeyDown={this._handleKeyDown}
             ref={(ref) => { this._Text = ref }}
           >

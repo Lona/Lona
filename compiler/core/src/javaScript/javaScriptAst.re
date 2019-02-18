@@ -68,6 +68,11 @@ and ifStatement = {
   consequent: list(node),
   alternate: list(node),
 }
+and conditionalExpression = {
+  test: node,
+  consequent: node,
+  alternate: node,
+}
 and property = {
   key: node,
   value: option(node),
@@ -100,6 +105,7 @@ and node =
   | BinaryExpression(binaryExpression)
   | UnaryExpression(unaryExpression)
   | IfStatement(ifStatement)
+  | ConditionalExpression(conditionalExpression)
   | ArrayLiteral(list(node))
   | ObjectLiteral(list(node))
   | Property(property)
@@ -200,6 +206,14 @@ let rec map = (f: node => node, node) =>
         alternate: o.alternate |> List.map(map(f)),
       }),
     )
+  | ConditionalExpression(o) =>
+    f(
+      ConditionalExpression({
+        test: o.test |> map(f),
+        consequent: o.consequent |> map(f),
+        alternate: o.alternate |> map(f),
+      }),
+    )
   | ArrayLiteral(body) => f(ArrayLiteral(body |> List.map(map(f))))
   | ObjectLiteral(body) => f(ObjectLiteral(body |> List.map(map(f))))
   | Property(o) =>
@@ -246,19 +260,18 @@ let optimizeTruthyBinaryExpression = node => {
 /* Renamed "layer.View.backgroundColor" to something JS-safe and nice looking */
 let renameIdentifiers = node =>
   switch (node) {
-  | Identifier([head, ...tail]) =>
-    switch (head) {
-    | "parameters" => Identifier(["this", "props", ...tail])
-    | "layers" =>
-      switch (tail) {
-      | [second, ...tail] =>
-        Identifier([
-          tail |> List.fold_left((a, b) => a ++ "$" ++ b, second),
-        ])
-      | _ => node
-      }
-    | _ => node
-    }
+  | Identifier(["parameters", ...tail]) =>
+    Identifier([
+      "this",
+      "props",
+      ...tail |> List.map(Format.safeVariableName),
+    ])
+  | Identifier(["layers", ...tail]) =>
+    Identifier([
+      tail |> List.map(Format.safeVariableName) |> Format.joinWith("$"),
+    ])
+  | Identifier(parts) =>
+    Identifier(parts |> List.map(Format.safeVariableName))
   | _ => node
   };
 

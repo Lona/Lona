@@ -121,7 +121,11 @@ export default class AccessibilityTest extends React.Component {
           onAccessibilityActivate={CheckboxRow$onAccessibilityActivate}
           aria-checked={CheckboxRow$accessibilityChecked}
           tabIndex={-1}
-          className={this.state.focusRing ? 'lona--focus-ring' : 'lona--no-focus-ring'}
+          className={(
+            this.state.focusRing
+              ? "lona--focus-ring"
+              : "lona--no-focus-ring"
+          )}
           onKeyDown={this._handleKeyDown}
           ref={(ref) => { this._CheckboxRow = ref }}
         >
@@ -137,7 +141,11 @@ export default class AccessibilityTest extends React.Component {
             aria-label={"Red box"}
             role={"button"}
             tabIndex={-1}
-            className={this.state.focusRing ? 'lona--focus-ring' : 'lona--no-focus-ring'}
+            className={(
+              this.state.focusRing
+                ? "lona--focus-ring"
+                : "lona--no-focus-ring"
+            )}
             onKeyDown={this._handleKeyDown}
             ref={(ref) => { this._Element = ref }}
           >
@@ -148,7 +156,11 @@ export default class AccessibilityTest extends React.Component {
               src={require("../assets/icon_128x128.png")}
               aria-label={"My image"}
               tabIndex={-1}
-              className={this.state.focusRing ? 'lona--focus-ring' : 'lona--no-focus-ring'}
+              className={(
+                this.state.focusRing
+                  ? "lona--focus-ring"
+                  : "lona--no-focus-ring"
+              )}
               onKeyDown={this._handleKeyDown}
               ref={(ref) => { this._Image = ref }}
 
@@ -156,7 +168,11 @@ export default class AccessibilityTest extends React.Component {
             <AccessibleText
               aria-label={AccessibleText$accessibilityLabel}
               tabIndex={-1}
-              className={this.state.focusRing ? 'lona--focus-ring' : 'lona--no-focus-ring'}
+              className={(
+                this.state.focusRing
+                  ? "lona--focus-ring"
+                  : "lona--no-focus-ring"
+              )}
               onKeyDown={this._handleKeyDown}
               ref={(ref) => { this._AccessibleText = ref }}
             >

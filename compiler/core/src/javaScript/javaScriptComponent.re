@@ -635,11 +635,23 @@ let rec layerToJavaScriptAST =
             }),
             JSXAttribute({
               name: "className",
-              value:
-                Identifier([
-                  "this.state.focusRing ? 'lona--focus-ring' : 'lona--no-focus-ring'"
-                  ++ (needsIeFix ? " + " ++ ieFixClassname : ""),
-                ]),
+              value: {
+                let focusRingExpression =
+                  ConditionalExpression({
+                    test: Identifier(["this.state.focusRing"]),
+                    consequent: StringLiteral("lona--focus-ring"),
+                    alternate: StringLiteral("lona--no-focus-ring"),
+                  });
+                if (needsIeFix) {
+                  BinaryExpression({
+                    left: focusRingExpression,
+                    operator: Plus,
+                    right: StringLiteral(ieFixClassname),
+                  });
+                } else {
+                  focusRingExpression;
+                };
+              },
             }),
             JSXAttribute({
               name: "onKeyDown",
