@@ -68,13 +68,10 @@ function lonac(command, filePath, options, callback) {
 
         // check if it's one of the utils
         const matchingUtil = Object.keys(options.utils).find(k =>
-          relativeFilePath.match(options.utils[k].regex)
+          relativeFilePath.endsWith(k)
         )
         if (matchingUtil) {
-          stdout = stdout.replace(
-            relativeFilePath,
-            options.utils[matchingUtil].path
-          )
+          stdout = stdout.replace(relativeFilePath, options.utils[matchingUtil])
         }
       })
 
@@ -111,17 +108,6 @@ module.exports = function loader(source) {
       options.utils = {}
     }
   }
-
-  // generate the regex only once
-  Object.keys(options.utils).forEach(k => {
-    options.utils[k] = {
-      regex: new RegExp(
-        `${k.replace(/[-[\]{}()*+?.,\\^$|#\s]/g, '\\$&')}$`,
-        'g'
-      ),
-      path: options.utils[k],
-    }
-  })
 
   const rawFilePath = path.normalize(this.resourcePath)
 
