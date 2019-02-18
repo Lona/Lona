@@ -7,7 +7,7 @@ const validateOptions = require('schema-utils')
 
 const optionsSchema = require('./options-schema.json')
 
-const IMPORT_REGEX = /import [a-zA-Z]+ from "([a-zA-Z./]+)"/g
+const IMPORT_REGEX = /import [a-zA-Z{} ,]+\s+from\s+"([a-zA-Z./]+)"/g
 function parseImports(source) {
   const imports = []
 
@@ -67,7 +67,7 @@ function lonac(command, filePath, options, callback) {
         }
 
         // check if it's one of the utils
-        const matchingUtil = Object.keys(options.utils).some(k =>
+        const matchingUtil = Object.keys(options.utils).find(k =>
           relativeFilePath.match(options.utils[k].regex)
         )
         if (matchingUtil) {

@@ -1,6 +1,6 @@
 {
   "name": "lona-loader",
-  "version": "0.1.1",
+  "version": "0.1.2",
   "description": "Webpack loader for Lona components",
   "main": "lib/loader.js",
   "scripts": {
