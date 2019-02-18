@@ -1,0 +1,76 @@
+{
+  "name": "lona-docs",
+  "version": "0.1.0",
+  "description": "",
+  "main": "index.js",
+  "bin": {
+    "lona-docs": "cli/index.js"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "prettier:base": "prettier --write",
+    "lint-staged": "lint-staged",
+    "clear": "rm -rf ./public || true && rm -rf ./.cache || true"
+  },
+  "author": "Mathieu Dutour",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/airbnb/Lona.git",
+    "directory": "compiler/docs"
+  },
+  "dependencies": {
+    "babel-plugin-styled-components": "^1.10.0",
+    "chokidar": "^2.1.1",
+    "execa": "^1.0.0",
+    "fs-extra": "^7.0.1",
+    "gatsby": "^2.1.4",
+    "gatsby-plugin-react-helmet": "^3.0.6",
+    "gatsby-plugin-styled-components": "^3.0.5",
+    "gatsby-source-filesystem": "^2.0.20",
+    "gatsby-transformer-remark": "^2.2.5",
+    "graphql": "^14.1.1",
+    "lona-loader": "^0.1.2",
+    "lonac": "^0.5.2",
+    "mime": "^2.4.0",
+    "prop-types": "^15.7.2",
+    "react": "^16.8.2",
+    "react-dom": "^16.8.2",
+    "react-helmet": "^5.2.0",
+    "react-live": "^1.12.0",
+    "styled-components": "^4.1.3",
+    "yargs": "^13.2.0"
+  },
+  "devDependencies": {
+    "eslint": "^5.14.0",
+    "eslint-config-airbnb": "^17.1.0",
+    "eslint-config-prettier": "^4.0.0",
+    "eslint-plugin-import": "^2.16.0",
+    "eslint-plugin-jsx-a11y": "^6.2.1",
+    "eslint-plugin-prettier": "^3.0.1",
+    "eslint-plugin-react": "^7.12.4",
+    "lint-staged": "^8.1.4",
+    "pre-commit": "^1.2.2",
+    "prettier": "^1.16.4"
+  },
+  "pre-commit": [
+    "lint-staged"
+  ],
+  "lint-staged": {
+    "*.js": [
+      "npm run prettier:base",
+      "eslint",
+      "git add"
+    ],
+    "*.{md}": [
+      "npm run prettier:base",
+      "git add"
+    ]
+  },
+  "prettier": {
+    "proseWrap": "never",
+    "singleQuote": true,
+    "trailingComma": "es5",
+    "semi": false
+  }
+}

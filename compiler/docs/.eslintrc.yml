@@ -1,0 +1,30 @@
+root: true
+extends:
+  - airbnb
+  - prettier
+plugins:
+  - prettier
+
+rules:
+  ###########
+  # PLUGINS #
+  ###########
+  import/no-dynamic-require: off
+  react/jsx-filename-extension: off
+  react/jsx-indent: off
+
+  ###########
+  # BUILTIN #
+  ###########
+  no-param-reassign: off
+  no-underscore-dangle: off
+  global-require: off
+
+  ###########
+  # SPECIAL #
+  ###########
+  prettier/prettier:
+    - error
+    - singleQuote: true
+      trailingComma: es5
+      semi: false
