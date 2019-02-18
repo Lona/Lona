@@ -1,6 +1,6 @@
 const path = require('path')
-const webpack = require('webpack')
-const Memoryfs = require('memory-fs')
+const webpack = require('webpack') // eslint-disable-line
+const Memoryfs = require('memory-fs') // eslint-disable-line
 
 module.exports = (fixture, options = {}) => {
   const compiler = webpack({
