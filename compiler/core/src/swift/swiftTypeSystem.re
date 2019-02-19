@@ -26,6 +26,9 @@ module Naming = {
   let prefixedName = (swiftOptions: SwiftOptions.options, name: string) =>
     swiftOptions.typePrefix ++ name;
 
+  let recordName = (swiftOptions: SwiftOptions.options, name: string) =>
+    name |> Format.upperFirst |> prefixedName(swiftOptions);
+
   let prefixedType =
       (
         swiftOptions: SwiftOptions.options,
@@ -293,8 +296,30 @@ module Ast = {
             "right": SwiftIdentifier("." ++ name),
           }),
         ]
-      | RecordCase(_, _) => [
-          containerDecode(SwiftIdentifier("value"), Some("data")),
+      | RecordCase(name, _) => [
+          BinaryExpression({
+            "left": SwiftIdentifier("self"),
+            "operator": "=",
+            "right":
+              FunctionCallExpression({
+                "name": SwiftIdentifier("." ++ name),
+                "arguments": [
+                  FunctionCallArgument({
+                    "name": None,
+                    "value":
+                      containerDecode(
+                        MemberExpression([
+                          SwiftIdentifier(
+                            name |> Naming.recordName(swiftOptions),
+                          ),
+                          SwiftIdentifier("self"),
+                        ]),
+                        Some("data"),
+                      ),
+                  }),
+                ],
+              }),
+          }),
         ]
       };
 
@@ -894,7 +919,12 @@ module Build = {
       : SwiftAst.node =>
     StructDeclaration({
       "name": name |> Format.upperFirst |> Naming.prefixedName(swiftOptions),
-      "inherits": [TypeName("Codable"), TypeName("Equatable")],
+      "inherits": [
+        ProtocolCompositionType([
+          TypeName("Codable"),
+          TypeName("Equatable"),
+        ]),
+      ],
       "modifier": Some(PublicModifier),
       "body":
         parameters
@@ -926,7 +956,9 @@ module Build = {
       };
     let parameters =
       switch (typeCase) {
-      | RecordCase(name, _) => [TypeName(swiftOptions.typePrefix ++ name)]
+      | RecordCase(name, _) => [
+          TypeName(name |> Naming.recordName(swiftOptions)),
+        ]
       | NormalCase(_, parameters) =>
         parameters
         |> List.map((parameter: TypeSystem.normalTypeCaseParameter) =>
@@ -1036,7 +1068,10 @@ module Build = {
           let name =
             switch (genericParameters) {
             | [_, ..._] =>
-              genericType.name ++ "<" ++ genericClause ++ ": Codable>"
+              genericType.name
+              ++ "<"
+              ++ genericClause
+              ++ ": Equatable & Codable>"
             | [] => genericType.name
             };
           let enumCases =
@@ -1057,7 +1092,12 @@ module Build = {
                 EnumDeclaration({
                   "name": swiftOptions.typePrefix ++ name,
                   "isIndirect": true,
-                  "inherits": [TypeName("Codable"), TypeName("Equatable")],
+                  "inherits": [
+                    ProtocolCompositionType([
+                      TypeName("Codable"),
+                      TypeName("Equatable"),
+                    ]),
+                  ],
                   "modifier": Some(PublicModifier),
                   "body":
                     enumCases
@@ -1083,7 +1123,12 @@ module Build = {
                 EnumDeclaration({
                   "name": swiftOptions.typePrefix ++ name,
                   "isIndirect": false,
-                  "inherits": [TypeName("Codable"), TypeName("Equatable")],
+                  "inherits": [
+                    ProtocolCompositionType([
+                      TypeName("Codable"),
+                      TypeName("Equatable"),
+                    ]),
+                  ],
                   "modifier": Some(PublicModifier),
                   "body":
                     enumCases
@@ -1104,7 +1149,12 @@ module Build = {
                 EnumDeclaration({
                   "name": swiftOptions.typePrefix ++ name,
                   "isIndirect": false,
-                  "inherits": [TypeName("Codable"), TypeName("Equatable")],
+                  "inherits": [
+                    ProtocolCompositionType([
+                      TypeName("Codable"),
+                      TypeName("Equatable"),
+                    ]),
+                  ],
                   "modifier": Some(PublicModifier),
                   "body":
                     enumCases
@@ -1123,7 +1173,13 @@ module Build = {
                 EnumDeclaration({
                   "name": swiftOptions.typePrefix ++ name,
                   "isIndirect": false,
-                  "inherits": [TypeName("String"), TypeName("Codable"), TypeName("Equatable")],
+                  "inherits": [
+                    TypeName("String"),
+                    ProtocolCompositionType([
+                      TypeName("Codable"),
+                      TypeName("Equatable"),
+                    ]),
+                  ],
                   "modifier": Some(PublicModifier),
                   "body": enumCases,
                 }),
@@ -1135,7 +1191,12 @@ module Build = {
                 EnumDeclaration({
                   "name": swiftOptions.typePrefix ++ name,
                   "isIndirect": false,
-                  "inherits": [TypeName("Codable"), TypeName("Equatable")],
+                  "inherits": [
+                    ProtocolCompositionType([
+                      TypeName("Codable"),
+                      TypeName("Equatable"),
+                    ]),
+                  ],
                   "modifier": Some(PublicModifier),
                   "body":
                     enumCases
@@ -1148,7 +1209,7 @@ module Build = {
       | [] => {name: None, node: LineComment(genericType.name)}
       }
     | NativeType(nativeType) => {
-        name: Some(Naming.prefixedName(swiftOptions, nativeType.name)),
+        name: None,
         node:
           TypealiasDeclaration({
             "name": Naming.prefixedName(swiftOptions, nativeType.name),
