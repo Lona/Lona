@@ -321,9 +321,6 @@ module Ast = {
               }),
           }),
         ]
-      /* [
-           containerDecode(SwiftIdentifier("value"), Some("data")),
-         ] */
       };
 
     let enumCaseDecoding =
@@ -1212,7 +1209,7 @@ module Build = {
       | [] => {name: None, node: LineComment(genericType.name)}
       }
     | NativeType(nativeType) => {
-        name: Some(Naming.prefixedName(swiftOptions, nativeType.name)),
+        name: None,
         node:
           TypealiasDeclaration({
             "name": Naming.prefixedName(swiftOptions, nativeType.name),
