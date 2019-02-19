@@ -70,6 +70,7 @@ and typeAnnotation =
       },
     )
   | TypeInheritanceList({. "list": list(typeAnnotation)})
+  | ProtocolCompositionType(list(typeAnnotation))
 and pattern =
   | WildcardPattern
   | IdentifierPattern(

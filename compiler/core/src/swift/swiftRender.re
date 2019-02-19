@@ -632,6 +632,8 @@ and renderTypeAnnotation = (node: SwiftAst.typeAnnotation) =>
     );
   | TypeInheritanceList(o) =>
     group(o##list |> List.map(renderTypeAnnotation) |> join(s(", ")))
+  | ProtocolCompositionType(list) =>
+    group(list |> List.map(renderTypeAnnotation) |> join(s(" & ")))
   }
 and renderPattern = node =>
   switch (node) {
