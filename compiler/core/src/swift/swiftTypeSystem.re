@@ -1122,7 +1122,7 @@ module Build = {
               node:
                 EnumDeclaration({
                   "name": swiftOptions.typePrefix ++ name,
-                  "isIndirect": false,
+                  "isIndirect": true,
                   "inherits": [
                     ProtocolCompositionType([
                       TypeName("Codable"),
@@ -1148,7 +1148,7 @@ module Build = {
               node:
                 EnumDeclaration({
                   "name": swiftOptions.typePrefix ++ name,
-                  "isIndirect": false,
+                  "isIndirect": true,
                   "inherits": [
                     ProtocolCompositionType([
                       TypeName("Codable"),
@@ -1172,7 +1172,7 @@ module Build = {
               node:
                 EnumDeclaration({
                   "name": swiftOptions.typePrefix ++ name,
-                  "isIndirect": false,
+                  "isIndirect": true,
                   "inherits": [
                     TypeName("String"),
                     ProtocolCompositionType([
@@ -1190,7 +1190,7 @@ module Build = {
               node:
                 EnumDeclaration({
                   "name": swiftOptions.typePrefix ++ name,
-                  "isIndirect": false,
+                  "isIndirect": true,
                   "inherits": [
                     ProtocolCompositionType([
                       TypeName("Codable"),
