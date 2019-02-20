@@ -37,6 +37,14 @@ const SOURCES = [
     pattern: 'textStyles.json',
     type: `TextStyles`,
   },
+  {
+    pattern: 'shadows.json',
+    type: `Shadows`,
+  },
+  {
+    pattern: 'gradients.json',
+    type: `Gradients`,
+  },
 ]
 
 const plugins = SOURCES.map(({ pattern, type }) => ({

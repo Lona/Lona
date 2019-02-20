@@ -181,7 +181,7 @@ Examples.propTypes = {
       name: PropTypes.string,
     })
   ).isRequired,
-  scope: PropTypes.object.isRequired,
+  scope: PropTypes.object.isRequired, // eslint-disable-line react/forbid-prop-types
 }
 
 export default Examples

@@ -32,7 +32,9 @@ exports.setFieldsOnGraphQLNodeType = ({ type }) => {
           node.type !== 'Component' &&
           node.type !== 'LonaDocument' &&
           node.type !== 'Colors' &&
-          node.type !== 'TextStyles'
+          node.type !== 'TextStyles' &&
+          node.type !== 'Gradients' &&
+          node.type !== 'Shadows'
         ) {
           return undefined
         }
@@ -50,7 +52,12 @@ exports.setFieldsOnGraphQLNodeType = ({ type }) => {
           }
         }
 
-        if (node.type === 'Colors' || node.type === 'TextStyles') {
+        if (
+          node.type === 'Colors' ||
+          node.type === 'TextStyles' ||
+          node.type === 'Gradients' ||
+          node.type === 'Shadows'
+        ) {
           sections.unshift('tokens')
           filePath = `/tokens${filePath}`
         }

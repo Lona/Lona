@@ -8,6 +8,8 @@ module.exports = ({ actions, graphql }) => {
   const componentTemplate = path.resolve('src/templates/component.js')
   const colorsTemplate = path.resolve('src/templates/colors.js')
   const textStylesTemplate = path.resolve('src/templates/textStyles.js')
+  const gradientsTemplate = path.resolve('src/templates/gradients.js')
+  const shadowsTemplate = path.resolve('src/templates/shadows.js')
   const defaultHomeTemplate = path.resolve('src/templates/defaultHome.js')
 
   let didCreateHome = false
@@ -94,6 +96,26 @@ module.exports = ({ actions, graphql }) => {
             component: textStylesTemplate,
             context: {
               textStyles: node.lona.content,
+            },
+          })
+        }
+
+        if (node.type === 'Gradients') {
+          createPage({
+            path: node.lona.path,
+            component: gradientsTemplate,
+            context: {
+              gradients: node.lona.content,
+            },
+          })
+        }
+
+        if (node.type === 'Shadows') {
+          createPage({
+            path: node.lona.path,
+            component: shadowsTemplate,
+            context: {
+              shadows: node.lona.content,
             },
           })
         }
