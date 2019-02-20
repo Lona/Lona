@@ -32,7 +32,14 @@ before_script:
 
 script:
   - set -o pipefail
-  - danger-swift ci --dangerfile=ci/Dangerfile.swift
+
+    # Run Danger
+  - if ! [ -z $DANGER_GITHUB_API_TOKEN ]; then
+      danger-swift ci --dangerfile=ci/Dangerfile.swift;
+    else
+      echo "Skipping Danger for External Contributor";
+    fi
+
   - cd studio
   - carthage build --platform macOS
   - xcodebuild -version
