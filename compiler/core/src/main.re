@@ -7,6 +7,17 @@ external copySync: (string, string) => unit = "";
 
 [@bs.module] external getStdin: unit => Js_promise.t(string) = "get-stdin";
 
+let version =
+  Fs.readFileSync(
+    Path.join([|Filename.current_dir_name, "package.json"|]),
+    `utf8,
+  )
+  |> Js.Json.parseExn
+  |> Json.Decode.at(["version"], Json.Decode.string);
+
+let annotate = contents =>
+  "// Compiled by Lona Version " ++ version ++ "\n\n" ++ contents;
+
 let arguments = Array.to_list(Process.argv);
 
 let positionalArguments =
@@ -392,7 +403,7 @@ let convertWorkspace = (workspace, output) => {
          );
        Fs.writeFileSync(
          colorsOutputPath,
-         renderColors(target, config),
+         annotate(renderColors(target, config)),
          `utf8,
        );
 
@@ -403,7 +414,7 @@ let convertWorkspace = (workspace, output) => {
          );
        Fs.writeFileSync(
          textStylesOutputPath,
-         renderTextStyles(target, config),
+         annotate(renderTextStyles(target, config)),
          `utf8,
        );
 
@@ -415,7 +426,7 @@ let convertWorkspace = (workspace, output) => {
            );
          Fs.writeFileSync(
            shadowsOutputPath,
-           renderShadows(target, config),
+           annotate(renderShadows(target, config)),
            `utf8,
          );
        };
@@ -438,7 +449,7 @@ let convertWorkspace = (workspace, output) => {
                 );
               Fs.writeFileSync(
                 outputPath,
-                importStatement ++ convertedType.contents,
+                annotate(importStatement ++ convertedType.contents),
                 `utf8,
               );
             });
@@ -505,7 +516,7 @@ let convertWorkspace = (workspace, output) => {
                   | Some(contentsBelow) => contents ++ contentsBelow
                   | None => contents
                   };
-                Fs.writeFileSync(outputPath, contents, `utf8);
+                Fs.writeFileSync(outputPath, annotate(contents), `utf8);
 
                 Some(Path.basename_ext(fromRelativePath, ".component"));
               };
@@ -517,11 +528,13 @@ let convertWorkspace = (workspace, output) => {
            && swiftOptions.generateCollectionView) {
          Fs.writeFileSync(
            concat(toDirectory, "LonaCollectionView.swift"),
-           SwiftCollectionView.generate(
-             config,
-             options,
-             swiftOptions,
-             successfulComponentNames,
+           annotate(
+             SwiftCollectionView.generate(
+               config,
+               options,
+               swiftOptions,
+               successfulComponentNames,
+             ),
            ),
            `utf8,
          );

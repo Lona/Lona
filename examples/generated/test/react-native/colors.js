@@ -1,3 +1,5 @@
+// Compiled by Lona Version 0.5.2
+
 export default {
   red50: "#ffebee", // Test comment
   red100: "#ffcdd2",

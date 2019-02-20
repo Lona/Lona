@@ -1,3 +1,5 @@
+// Compiled by Lona Version 0.5.2
+
 import AppKit
 
 public enum Colors {

@@ -1,3 +1,5 @@
+// Compiled by Lona Version 0.5.2
+
 import React from "react"
 import { View, StyleSheet, TextStyles, Svg } from "react-sketchapp"
 
