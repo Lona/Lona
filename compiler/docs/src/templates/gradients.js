@@ -5,7 +5,9 @@ export default function Template({ pageContext: { gradients }, location }) {
   return (
     <Layout location={location}>
       <div
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(colors, null, '  ') }}
+        dangerouslySetInnerHTML={{
+          __html: JSON.stringify(gradients, null, '  '),
+        }}
       />
     </Layout>
   )

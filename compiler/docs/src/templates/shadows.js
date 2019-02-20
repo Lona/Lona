@@ -5,7 +5,9 @@ export default function Template({ pageContext: { shadows }, location }) {
   return (
     <Layout location={location}>
       <div
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(colors, null, '  ') }}
+        dangerouslySetInnerHTML={{
+          __html: JSON.stringify(shadows, null, '  '),
+        }}
       />
     </Layout>
   )
