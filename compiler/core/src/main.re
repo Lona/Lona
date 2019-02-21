@@ -7,11 +7,10 @@ external copySync: (string, string) => unit = "";
 
 [@bs.module] external getStdin: unit => Js_promise.t(string) = "get-stdin";
 
+let concat = (base, addition) => Path.join([|base, addition|]);
+
 let version =
-  Fs.readFileSync(
-    Path.join([|Filename.current_dir_name, "package.json"|]),
-    `utf8,
-  )
+  Fs.readFileSync(concat([%bs.raw {| __dirname |}], "../package.json"), `utf8)
   |> Js.Json.parseExn
   |> Json.Decode.at(["version"], Json.Decode.string);
 
@@ -135,8 +134,6 @@ let platformId =
     /* TODO: Replace when we add android */
     Types.IOS
   };
-
-let concat = (base, addition) => Path.join([|base, addition|]);
 
 let getTargetExtension =
   fun
