@@ -10,13 +10,24 @@ module.exports = function onCreateNode({
 
   // We only care about lona component node.
   if (node.type !== 'Component') {
-    return {}
+    return
   }
 
   const { content } = node.internal
 
   try {
     const data = JSON.parse(content)
+
+    const lonaDescriptionNode = {
+      id: createNodeId(`${node.id} >>> LonaComponentDescription`),
+      children: [],
+      parent: node.id,
+      internal: {
+        content: (data.metadata || {}).description || '',
+        type: `LonaComponentDescription`,
+        mediaType: 'text/x-markdown',
+      },
+    }
 
     const lonaNode = {
       id: createNodeId(`${node.id} >>> LonaComponent`),
@@ -42,10 +53,15 @@ module.exports = function onCreateNode({
       .update(JSON.stringify(lonaNode))
       .digest(`hex`)
 
+    lonaDescriptionNode.internal.contentDigest = crypto
+      .createHash(`md5`)
+      .update(JSON.stringify(lonaDescriptionNode))
+      .digest(`hex`)
+
     createNode(lonaNode)
     createParentChildLink({ parent: node, child: lonaNode })
-
-    return lonaNode
+    createNode(lonaDescriptionNode)
+    createParentChildLink({ parent: node, child: lonaDescriptionNode })
   } catch (err) {
     reporter.panicOnBuild(
       `Error processing Lona Component ${
@@ -53,7 +69,5 @@ module.exports = function onCreateNode({
       }:\n
       ${err.message}`
     )
-
-    return {} // eslint
   }
 }

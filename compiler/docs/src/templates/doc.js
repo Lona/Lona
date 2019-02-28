@@ -4,7 +4,6 @@ import { MDXRenderer } from 'gatsby-mdx'
 import Layout from '../components/Layout'
 
 export default function Template({ data, location }) {
-  console.log(data)
   return (
     <Layout location={location}>
       <MDXRenderer>{data.mdx.code.body}</MDXRenderer>

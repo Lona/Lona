@@ -29,10 +29,16 @@ module.exports = ({ actions, graphql }) => {
             childLonaComponent {
               id
             }
+            childLonaComponentDescription {
+              childMdx {
+                id
+              }
+            }
             lona {
               hidden
               path
               content
+              title
             }
           }
         }
@@ -54,7 +60,9 @@ module.exports = ({ actions, graphql }) => {
             path: node.lona.path,
             component: componentTemplate,
             context: {
+              title: node.lona.title,
               id: node.childLonaComponent.id,
+              descriptionId: node.childLonaComponentDescription.childMdx.id,
             },
           })
           return

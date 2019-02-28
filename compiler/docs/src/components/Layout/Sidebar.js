@@ -2,7 +2,7 @@ import React from 'react'
 import { Link } from 'gatsby'
 import styled from 'styled-components'
 
-import { findFirstLink, cleanupLink } from '../../utils'
+import { findFirstLink, cleanupLink, capitalise } from '../../utils'
 
 const Wrapper = styled.nav`
   flex: 0 0 34rem;
@@ -114,10 +114,6 @@ const SelectedMarker = styled.div`
     opacity 0.24s cubic-bezier(0.36, 0, 1, 1);
   background: #202e78;
 `
-
-function capitalise(string) {
-  return string.charAt(0).toUpperCase() + string.slice(1)
-}
 
 function pathToTitle(path) {
   const parts = path.split('/')

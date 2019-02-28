@@ -1,3 +1,7 @@
+export function capitalise(string) {
+  return string.charAt(0).toUpperCase() + string.slice(1)
+}
+
 export function cleanupFiles(files) {
   const cleanedUpFiles = files.map(f => {
     if (!f.node.lona) {
