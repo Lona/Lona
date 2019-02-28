@@ -31,8 +31,6 @@
     "gatsby-mdx": "^0.4.0",
     "gatsby-plugin-react-helmet": "^3.0.6",
     "gatsby-plugin-styled-components": "^3.0.5",
-    "gatsby-source-filesystem": "^2.0.20",
-    "gatsby-transformer-remark": "^2.2.5",
     "graphql": "^14.1.1",
     "lona-loader": "^0.1.2",
     "lonac": "^0.5.2",
