@@ -6,7 +6,7 @@ const {
   GraphQLInt,
 } = require(`graphql`)
 
-exports.setFieldsOnGraphQLNodeType = ({ type }) => {
+module.exports = function setFieldsOnGraphQLNodeType({ type }) {
   if (type.name !== 'LonaFile') {
     return {}
   }
@@ -40,16 +40,20 @@ exports.setFieldsOnGraphQLNodeType = ({ type }) => {
         }
 
         let filePath =
-          node.name === 'README'
+          node.type === 'LonaDocument' && node.name === 'README'
             ? `/${node.dir}`
             : `/${node.dir ? `${node.dir}/` : ''}${node.name}`
         const sections = filePath.split('/').filter(x => x)
         const { content } = node.internal
 
+        if (node.type === 'LonaDocument' && sections.length) {
+          sections.unshift('components')
+          filePath = `/components${filePath}`
+        }
+
         if (node.type === 'Component') {
-          if (content.doc) {
-            // component = getFilePath(node, content.doc)
-          }
+          sections.unshift('components')
+          filePath = `/components${filePath}`
         }
 
         if (
@@ -58,8 +62,8 @@ exports.setFieldsOnGraphQLNodeType = ({ type }) => {
           node.type === 'Gradients' ||
           node.type === 'Shadows'
         ) {
-          sections.unshift('tokens')
-          filePath = `/tokens${filePath}`
+          sections.unshift('foundation')
+          filePath = `/foundation${filePath}`
         }
 
         return {
@@ -78,5 +82,3 @@ exports.setFieldsOnGraphQLNodeType = ({ type }) => {
     },
   }
 }
-
-exports.onCreateNode = require('./on-create-lona-node')

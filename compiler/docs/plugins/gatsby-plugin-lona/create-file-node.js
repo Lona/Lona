@@ -1,7 +1,7 @@
 const path = require('path')
-const mime = require('mime') // eslint-disable-line
-const fs = require('fs-extra') // eslint-disable-line
-const crypto = require(`crypto`)
+const crypto = require('crypto')
+const mime = require('mime')
+const fs = require('fs-extra')
 
 const createId = _path => `${_path} >>> Lona`
 
@@ -14,6 +14,15 @@ exports.createFileNode = (pathToFile, { type, cwd }) => {
     absolutePath: path.join(cwd, pathToFile),
   }
 
+  let mediaType
+  if (slashedFile.ext === '.component') {
+    mediaType = 'application/json'
+  } else if (slashedFile.ext === '.mdx') {
+    mediaType = 'text/x-markdown'
+  } else {
+    mediaType = mime.getType(slashedFile.ext)
+  }
+
   return Promise.all([
     fs.stat(slashedFile.absolutePath),
     fs.readFile(slashedFile.absolutePath, 'utf8'),
@@ -24,10 +33,7 @@ exports.createFileNode = (pathToFile, { type, cwd }) => {
           .createHash(`md5`)
           .update(slashedFile.absolutePath)
           .digest(`hex`),
-        mediaType:
-          slashedFile.ext === '.component'
-            ? 'application/json'
-            : mime.getType(slashedFile.ext),
+        mediaType,
         type: 'LonaFile',
         content,
       }))

@@ -1,6 +1,6 @@
 const crypto = require(`crypto`)
 
-module.exports = async function onCreateNode({
+module.exports = function onCreateNode({
   node,
   actions,
   createNodeId,

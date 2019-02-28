@@ -1,8 +1,11 @@
-const chokidar = require('chokidar') // eslint-disable-line
+const chokidar = require('chokidar')
 
 const { createId, createFileNode } = require(`./create-file-node`)
 
-exports.sourceNodes = ({ actions, getNode, reporter }, pluginOptions) => {
+module.exports = function sourceNodes(
+  { actions, getNode, reporter },
+  pluginOptions
+) {
   const { createNode, deleteNode } = actions
 
   let ready = false

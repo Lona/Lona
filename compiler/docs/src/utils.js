@@ -3,14 +3,12 @@ export function cleanupFiles(files) {
     if (!f.node.lona) {
       return undefined
     }
-    if (f.node.childMarkdownRemark) {
-      const { frontmatter } = f.node.childMarkdownRemark
+    if (f.node.childMdx) {
+      const { frontmatter } = f.node.childMdx
       frontmatter.title = f.node.lona.title
       frontmatter.sections = f.node.lona.sections || []
       frontmatter.path = f.node.lona.path || ''
-      frontmatter.subtitles = f.node.childMarkdownRemark.headings.map(
-        h => h.value
-      )
+      frontmatter.subtitles = f.node.childMdx.headings.map(h => h.value)
       frontmatter.component = true
       return frontmatter
     }
@@ -30,7 +28,7 @@ export function cleanupFiles(files) {
       if (!currentPrev[s]) {
         currentPrev[s] = {
           path: currentPath,
-          order: s === 'tokens' ? 0 : 999,
+          order: s === 'foundation' ? 0 : 999,
           children: {},
         }
       }
@@ -51,13 +49,18 @@ export function findFirstFile(files = {}) {
 
   if (
     !firstFile ||
-    firstFile.component ||
+    firstFile.sections ||
     !Object.keys(firstFile.children).length
   ) {
     return firstFile
   }
 
   return findFirstFile(firstFile.children)
+}
+
+export function findFirstLink(file) {
+  // if there are sections, it means that it's a real file
+  return file.sections ? file.path : (findFirstFile(file.children) || {}).path
 }
 
 export function cleanupLink(link = '#') {

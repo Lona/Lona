@@ -1,0 +1,9 @@
+{
+  "name": "gatsby-source-lona",
+  "version": "0.0.0",
+  "dependencies": {
+    "mime": "*",
+    "fs-extra": "*",
+    "chokidar": "*"
+  }
+}

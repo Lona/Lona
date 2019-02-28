@@ -68,7 +68,7 @@ const Layout = ({ children, location }) => (
         allLonaFile {
           edges {
             node {
-              childMarkdownRemark {
+              childMdx {
                 frontmatter {
                   title
                   showSubtitlesInSidebar

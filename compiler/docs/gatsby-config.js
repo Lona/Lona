@@ -48,7 +48,7 @@ const SOURCES = [
 ]
 
 const plugins = SOURCES.map(({ pattern, type }) => ({
-  resolve: 'gatsby-source-lona',
+  resolve: 'gatsby-plugin-lona',
   options: {
     cwd: config.cwd,
     pattern,
@@ -58,7 +58,7 @@ const plugins = SOURCES.map(({ pattern, type }) => ({
 }))
   .concat([
     {
-      resolve: 'gatsby-source-lona',
+      resolve: 'gatsby-plugin-lona',
       options: {
         cwd: path.join(__dirname, 'utils'),
         pattern: 'declare_all_frontmatter.md',
@@ -67,9 +67,13 @@ const plugins = SOURCES.map(({ pattern, type }) => ({
       },
     },
     'gatsby-plugin-react-helmet',
-    'gatsby-transformer-remark',
+    {
+      resolve: `gatsby-mdx`,
+      options: {
+        extensions: [`.mdx`, `.md`],
+      },
+    },
     'gatsby-plugin-styled-components',
-    'gatsby-transformer-lona',
   ])
   .concat(userConfig.plugins || [])
 

@@ -20,7 +20,7 @@ module.exports = ({ actions, graphql }) => {
         edges {
           node {
             type
-            childMarkdownRemark {
+            childMdx {
               id
               frontmatter {
                 hidden
@@ -69,7 +69,7 @@ module.exports = ({ actions, graphql }) => {
             path: node.lona.path,
             component: docTemplate,
             context: {
-              id: node.childMarkdownRemark.id,
+              id: node.childMdx.id,
             },
           })
 

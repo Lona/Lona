@@ -2,7 +2,7 @@ import React from 'react'
 import { Link } from 'gatsby'
 import styled from 'styled-components'
 
-import { findFirstFile, cleanupLink } from '../../utils'
+import { findFirstLink, cleanupLink } from '../../utils'
 
 const Wrapper = styled.nav`
   flex: 0 0 34rem;
@@ -115,6 +115,15 @@ const SelectedMarker = styled.div`
   background: #202e78;
 `
 
+function capitalise(string) {
+  return string.charAt(0).toUpperCase() + string.slice(1)
+}
+
+function pathToTitle(path) {
+  const parts = path.split('/')
+  return capitalise(parts[parts.length - 1])
+}
+
 function shouldPrintTitle(element) {
   return !element.hidden || Object.keys(element.children).length
 }
@@ -123,9 +132,7 @@ const SubNavigation = ({ subtitle, location }) => {
   if (!shouldPrintTitle(subtitle)) {
     return null
   }
-  const subTitleLink = subtitle.component
-    ? subtitle.path
-    : (findFirstFile(subtitle.children) || {}).path
+  const subTitleLink = findFirstLink(subtitle)
   const selectedSubtitle = location.pathname.indexOf(subtitle.path) === 0
   return (
     <li>
@@ -142,8 +149,7 @@ const Siderbar = ({ data, location, files }) => {
 
   const filesInSection = (files[selectedSection] || {}).children || {}
 
-  const subsections = Object.keys(filesInSection)
-    .map(k => filesInSection[k])
+  const subsections = Object.values(filesInSection)
     .sort((a, b) => a.order - b.order)
     .filter(shouldPrintTitle)
 
@@ -156,14 +162,14 @@ const Siderbar = ({ data, location, files }) => {
               if (!shouldPrintTitle(subsection)) {
                 return null
               }
-              const link = subsection.path
+              const link = findFirstLink(subsection)
               const selected = location.pathname.indexOf(link) === 0
               return (
                 <ItemWrapper key={link}>
                   <NavigationItem to={cleanupLink(link)} selected={selected}>
                     <Icon selected={selected} />
                     <Label selected={selected}>
-                      {subsection.title || subsection.path}
+                      {subsection.title || pathToTitle(subsection.path)}
                     </Label>
                   </NavigationItem>
                   {selected && (
