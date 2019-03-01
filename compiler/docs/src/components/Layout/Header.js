@@ -74,6 +74,12 @@ const Header = ({ data, location, files }) => (
   <Wrapper>
     <InnerWrapper>
       <Logo aria-label="Back to Home" to="/">
+        {data.siteMetadata.icon ? (
+          <img
+            src={data.siteMetadata.icon}
+            alt={`${data.siteMetadata.title} logo`}
+          />
+        ) : null}
         {data.siteMetadata.title}
       </Logo>
       <NavigationWrapper>

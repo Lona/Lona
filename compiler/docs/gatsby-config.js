@@ -80,7 +80,8 @@ const plugins = SOURCES.map(({ pattern, type }) => ({
 module.exports = Object.assign(userConfig, {
   siteMetadata: Object.assign(
     {
-      title: config.title || path.basename(config.cwd),
+      title: config.workspaceName || path.basename(config.cwd),
+      icon: config.workspaceIcon || null,
     },
     userConfig.siteMetadata || {}
   ),

@@ -60,6 +60,7 @@ const Layout = ({ children, location }) => (
         site {
           siteMetadata {
             title
+            icon
           }
         }
         allLonaFile {
