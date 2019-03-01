@@ -21,8 +21,6 @@ module.exports = function setFieldsOnGraphQLNodeType({ type }) {
           path: { type: GraphQLString },
           content: { type: GraphQLString },
           sections: { type: new GraphQLList(GraphQLString) },
-          subtitles: { type: new GraphQLList(GraphQLString) },
-          showSubtitlesInSidebar: { type: GraphQLBoolean },
           order: { type: GraphQLInt },
           icon: { type: GraphQLString },
         },
@@ -39,32 +37,12 @@ module.exports = function setFieldsOnGraphQLNodeType({ type }) {
           return undefined
         }
 
-        let filePath =
+        const filePath =
           node.type === 'LonaDocument' && node.name === 'README'
             ? `/${node.dir}`
             : `/${node.dir ? `${node.dir}/` : ''}${node.name}`
         const sections = filePath.split('/').filter(x => x)
         const { content } = node.internal
-
-        if (node.type === 'LonaDocument' && sections.length) {
-          sections.unshift('components')
-          filePath = `/components${filePath}`
-        }
-
-        if (node.type === 'Component') {
-          sections.unshift('components')
-          filePath = `/components${filePath}`
-        }
-
-        if (
-          node.type === 'Colors' ||
-          node.type === 'TextStyles' ||
-          node.type === 'Gradients' ||
-          node.type === 'Shadows'
-        ) {
-          sections.unshift('foundation')
-          filePath = `/foundation${filePath}`
-        }
 
         return {
           hidden: content.hidden,
@@ -73,8 +51,6 @@ module.exports = function setFieldsOnGraphQLNodeType({ type }) {
           path: filePath,
           content,
           sections,
-          subtitles: content.subtitles || [],
-          showSubtitlesInSidebar: content.showSubtitlesInSidebar || false,
           order: content.order,
           icon: content.icon,
         }

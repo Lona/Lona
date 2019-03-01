@@ -12,7 +12,6 @@ export function cleanupFiles(files) {
       frontmatter.title = f.node.lona.title
       frontmatter.sections = f.node.lona.sections || []
       frontmatter.path = f.node.lona.path || ''
-      frontmatter.subtitles = f.node.childMdx.headings.map(h => h.value)
       frontmatter.component = true
       return frontmatter
     }

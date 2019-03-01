@@ -47,10 +47,10 @@ module.exports = function sourceNodes(
   watcher.on(`unlink`, path => {
     reporter.info(`file deleted at ${path}`)
     const node = getNode(createId(path))
-    deleteNode(node.id, node)
+    deleteNode(node)
 
     // Also delete nodes for the file's transformed children nodes.
-    node.children.forEach(childId => deleteNode(childId, getNode(childId)))
+    node.children.forEach(childId => deleteNode(getNode(childId)))
   })
 
   watcher.on(`addDir`, path => {
@@ -65,7 +65,7 @@ module.exports = function sourceNodes(
   watcher.on(`unlinkDir`, path => {
     reporter.info(`directory deleted at ${path}`)
     const node = getNode(createId(path))
-    deleteNode(node.id, node)
+    deleteNode(node)
   })
 
   return new Promise((resolve, reject) => {

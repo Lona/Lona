@@ -34,7 +34,6 @@ const SkipLink = styled.a`
 
 const Content = styled.main`
   padding-right: 3.2rem;
-  padding-left: 3.2rem;
   max-width: 140rem;
   margin-right: auto;
   margin-left: auto;
@@ -47,11 +46,9 @@ const Section = styled.section`
   z-index: 800;
   flex: 1 1 auto;
   border-radius: 0.6rem;
-  box-shadow: 0 1.2rem 3.6rem rgba(0, 0, 0, 0.2);
   min-width: 0;
   max-width: calc(100vw - 404px);
   width: 1040px;
-  background-color: #fff;
   padding: 4rem;
   ${sectionCSS};
 `
@@ -71,7 +68,6 @@ const Layout = ({ children, location }) => (
               childMdx {
                 frontmatter {
                   title
-                  showSubtitlesInSidebar
                   icon
                   order
                   hidden
@@ -82,8 +78,6 @@ const Layout = ({ children, location }) => (
               }
               lona {
                 title
-                subtitles
-                showSubtitlesInSidebar
                 icon
                 order
                 hidden

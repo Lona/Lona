@@ -1,11 +1,11 @@
 import React from 'react'
 import { Link } from 'gatsby'
 import styled from 'styled-components'
-
+import { HeaderHeight } from './ui-constants'
 import { findFirstFile, cleanupLink } from '../../utils'
 
 const Wrapper = styled.header`
-  height: 12rem;
+  height: ${HeaderHeight};
   padding-right: 3.2rem;
   padding-left: 3.2rem;
 `
@@ -39,17 +39,15 @@ const Navigation = styled.ul`
 
 const NavigationItem = styled(Link)`
   max-width: 60rem;
-  margin-bottom: 0.8em;
-  font-size: 1.4rem;
+  font-size: 1.2rem;
   font-weight: 500;
-  line-height: 1.6;
-  text-transform: uppercase;
+  text-transform: capitalize;
   letter-spacing: 0.1rem;
-  margin-bottom: 0;
+  margin-top: 0;
   line-height: 1;
   display: block;
   position: relative;
-  padding: 5.6rem 1.6rem 1.6rem;
+  padding: 2.6rem 1.6rem 2.6rem;
   color: #1a222b;
   transition: color 0.24s cubic-bezier(0.64, 0, 0.35, 1);
   text-decoration: none;
@@ -59,14 +57,14 @@ const NavigationItem = styled(Link)`
   &::before {
     content: '';
     position: absolute;
-    top: 0;
+    bottom: 0;
     right: auto;
     left: auto;
     display: block;
     width: calc(100% - 3.2rem);
-    border-top: 0.6rem solid #202e78;
-    transform: translateY(${p => (p.selected ? 0 : '-.6rem')});
-    transition-property: background-color, transform;
+    border-bottom: 0.2rem solid #000000;
+    transform: scaleX(${p => (p.selected ? 1 : 0)});
+    transition-property: transform;
     transition-duration: 0.24s;
     transition-timing-function: cubic-bezier(0.64, 0, 0.35, 1);
   }
@@ -79,7 +77,7 @@ const Header = ({ data, location, files }) => (
         {data.siteMetadata.title}
       </Logo>
       <NavigationWrapper>
-        <Navigation aria-hidden="false" aria-label="Primary navigation">
+        <Navigation aria-hidden="false" aria-label="Secondary navigation">
           {Object.keys(files).map(section => {
             if (!files[section]) {
               return null

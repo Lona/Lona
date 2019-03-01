@@ -30,19 +30,19 @@ const SOURCES = [
     type: `Component`,
   },
   {
-    pattern: 'colors.json',
+    pattern: '**/colors.json',
     type: `Colors`,
   },
   {
-    pattern: 'textStyles.json',
+    pattern: '**/textStyles.json',
     type: `TextStyles`,
   },
   {
-    pattern: 'shadows.json',
+    pattern: '**/shadows.json',
     type: `Shadows`,
   },
   {
-    pattern: 'gradients.json',
+    pattern: '**/gradients.json',
     type: `Gradients`,
   },
 ]

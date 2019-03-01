@@ -1,17 +1,22 @@
 import React from 'react'
 import { Link } from 'gatsby'
 import styled from 'styled-components'
-
-import { findFirstLink, cleanupLink, capitalise } from '../../utils'
+import { HeaderHeight } from './ui-constants'
+import {
+  findFirstFile,
+  findFirstLink,
+  cleanupLink,
+  capitalise,
+} from '../../utils'
 
 const Wrapper = styled.nav`
-  flex: 0 0 34rem;
+  flex: 0 0 30rem;
   margin-top: 0;
-  width: 340px;
+  width: 300px;
 `
 
 const InnerWrapper = styled.div`
-  height: calc(100vh - 3.2rem);
+  height: calc(100vh - ${HeaderHeight});
   overflow-y: auto;
 `
 
@@ -19,11 +24,7 @@ const NavigationWrapper = styled.nav`
   flex: 0 0 auto;
 `
 
-const ItemWrapper = styled.li`
-  & + li {
-    padding-top: 2.4rem;
-  }
-`
+const ItemWrapper = styled.li``
 
 const NavigationItem = styled(Link)`
   display: flex;
@@ -32,87 +33,49 @@ const NavigationItem = styled(Link)`
   text-decoration: none;
 `
 
-const Icon = styled.div`
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  width: 4.8rem;
-  height: 4.8rem;
-  border-radius: 50%;
-  color: #fff;
-  background-color: ${p => (p.selected ? '#202e78' : '#5c6ac4')};
-  min-width: 0;
+const Section = styled(NavigationItem)`
+  font-weight: 500;
+  text-transform: uppercase;
+  text-overflow: ellipsis;
+  white-space: nowrap;
   max-width: 100%;
-  flex: 0 0 4.8rem;
-  margin-right: 1.6rem;
-  transition: background-color 0.24s cubic-bezier(0.64, 0, 0.35, 1);
-  ${NavigationItem}:hover & {
-    background-color: '#202e78';
-  }
+  color: #637381;
+  padding-top: 4rem;
 `
 
-const Label = styled.span`
-  font-weight: 500;
-  letter-spacing: 0.1rem;
-  text-transform: uppercase;
-  display: block;
+const SubSection = styled(NavigationItem)`
+  padding-top: 2rem;
+  text-transform: capitalize;
   overflow: hidden;
   max-width: 100%;
   text-overflow: ellipsis;
   white-space: nowrap;
   font-size: 1.4rem;
-  color: ${p => (p.selected ? '#212b35' : '#637381')};
-  transform: translateX(0);
-  backface-visibility: hidden;
-  ${NavigationItem}:hover & {
-    color: ${p => (p.selected ? '#202e78' : '#5c6ac4')};
-  }
+  color: #000000;
 `
 
 const SubTitles = styled.ul`
-  overflow: hidden;
-  height: auto;
-  padding-top: 0;
-  padding-bottom: 0;
-  backface-visibility: hidden;
-  will-change: opacity, height;
-  opacity: 1;
-  padding-left: 4.8rem;
+  padding-left: 3.5rem;
+  list-style: disc;
 `
 
 const SubTitle = styled(Link)`
   position: relative;
   display: block;
-  padding: 0.8rem 1.6rem;
-  text-decoration: none;
+  padding: 0.8rem 0 0;
+  text-decoration: ${p => (p.selected ? 'underline' : 'none')};
   display: inline-block;
-  color: ${p => (p.selected ? '#202e78' : '#637381')};
-  transform: translateX(${p => (p.selected ? '1.6rem' : 0)});
-  backface-visibility: hidden;
+  font-weight: ${p => (p.selected ? 800 : 400)};
+  color: #000000;
   will-change: color, font-weight, transform;
   transition: color 0.24s cubic-bezier(0.64, 0, 0.35, 1),
     font-weight 0.24s cubic-bezier(0.64, 0, 0.35, 1),
     transform 0.24s cubic-bezier(0.64, 0, 0.35, 1);
   line-height: 1.4;
-  font-size: 1.6rem;
+  font-size: 1.2rem;
   &:hover {
-    color: ${p => (p.selected ? '#202e78' : '#5c6ac4')};
+    text-decoration: underline;
   }
-`
-
-const SelectedMarker = styled.div`
-  position: absolute;
-  top: 50%;
-  left: 0;
-  display: block;
-  width: 0.4rem;
-  height: calc(100% - 1.2rem);
-  transform: translate(0, -50%) scaleX(${p => (p.selected ? 1 : 0)});
-  opacity: ${p => (p.selected ? 1 : 0)};
-  transform-origin: 0 0;
-  transition: transform 0.24s cubic-bezier(0.36, 0, 1, 1),
-    opacity 0.24s cubic-bezier(0.36, 0, 1, 1);
-  background: #202e78;
 `
 
 function pathToTitle(path) {
@@ -133,7 +96,6 @@ const SubNavigation = ({ subtitle, location }) => {
   return (
     <li>
       <SubTitle to={cleanupLink(subTitleLink)} selected={selectedSubtitle}>
-        <SelectedMarker selected={selectedSubtitle} />
         {subtitle.title}
       </SubTitle>
     </li>
@@ -143,53 +105,70 @@ const SubNavigation = ({ subtitle, location }) => {
 const Siderbar = ({ data, location, files }) => {
   const [, selectedSection] = location.pathname.split('/')
 
-  const filesInSection = (files[selectedSection] || {}).children || {}
-
-  const subsections = Object.values(filesInSection)
-    .sort((a, b) => a.order - b.order)
-    .filter(shouldPrintTitle)
+  const sections = Object.keys(files).filter(section => files[section])
 
   return (
     <Wrapper>
       <InnerWrapper>
-        <NavigationWrapper ariaLabel="Secondary navigation">
+        <NavigationWrapper ariaLabel="Primary navigation">
           <ul>
-            {subsections.map(subsection => {
-              if (!shouldPrintTitle(subsection)) {
-                return null
+            {sections.map(section => {
+              const filesInSection = files[section].children || {}
+
+              let firstInSection
+              if (files[section].title) {
+                firstInSection = files[section]
+              } else {
+                firstInSection = findFirstFile(filesInSection) || {}
               }
-              const link = findFirstLink(subsection)
-              const selected = location.pathname.indexOf(link) === 0
+
+              const subsections = Object.values(filesInSection)
+                .sort((a, b) => a.order - b.order)
+                .filter(shouldPrintTitle)
+
               return (
-                <ItemWrapper key={link}>
-                  <NavigationItem to={cleanupLink(link)} selected={selected}>
-                    <Icon selected={selected} />
-                    <Label selected={selected}>
-                      {subsection.title || pathToTitle(subsection.path)}
-                    </Label>
-                  </NavigationItem>
-                  {selected && (
-                    <SubTitles>
-                      {subsection.showSubtitlesInSidebar
-                        ? subsection.subtitles.map(subtitle => (
-                            <li key={subtitle}>
-                              <SubTitle to={`#${subtitle}`}>
-                                {subtitle}
-                              </SubTitle>
-                            </li>
-                          ))
-                        : Object.keys(subsection.children)
-                            .map(k => subsection.children[k])
-                            .sort((a, b) => a.order - b.order)
-                            .map(subtitle => (
-                              <SubNavigation
-                                subtitle={subtitle}
-                                location={location}
-                                key={subtitle.path}
-                              />
-                            ))}
-                    </SubTitles>
-                  )}
+                <ItemWrapper key={section}>
+                  <Section
+                    to={cleanupLink(firstInSection.path)}
+                    selected={selectedSection === section}
+                  >
+                    {section}
+                  </Section>
+                  {subsections.length ? (
+                    <ul>
+                      {subsections.map(subsection => {
+                        if (!shouldPrintTitle(subsection)) {
+                          return null
+                        }
+                        const link = findFirstLink(subsection)
+                        const selected = location.pathname.indexOf(link) === 0
+                        return (
+                          <ItemWrapper key={link}>
+                            <SubSection
+                              to={cleanupLink(link)}
+                              selected={selected}
+                            >
+                              {subsection.title || pathToTitle(subsection.path)}
+                            </SubSection>
+                            {selected && (
+                              <SubTitles>
+                                {Object.keys(subsection.children)
+                                  .map(k => subsection.children[k])
+                                  .sort((a, b) => a.order - b.order)
+                                  .map(subtitle => (
+                                    <SubNavigation
+                                      subtitle={subtitle}
+                                      location={location}
+                                      key={subtitle.path}
+                                    />
+                                  ))}
+                              </SubTitles>
+                            )}
+                          </ItemWrapper>
+                        )
+                      })}
+                    </ul>
+                  ) : null}
                 </ItemWrapper>
               )
             })}
