@@ -40,29 +40,56 @@ module Workspace = {
       );
   };
 
+  let findPath = (workspacePath: string, fileSuffix: string) => {
+    let searchPath = Path.join([|workspacePath, "**/*?(.)" ++ fileSuffix|]);
+    let searchResults =
+      FileSearch.sync(
+        searchPath,
+        ~options={ignore: ["**/node_modules"]},
+        (),
+      );
+    /* Find exactly one path */
+    let path =
+      switch (List.length(searchResults)) {
+      | 0 =>
+        Js.log("Failed to find colors file in " ++ searchPath);
+        raise(Not_found);
+      | 1 => List.hd(searchResults)
+      | _ =>
+        Js.log(
+          "ERROR: Found multiple '*"
+          ++ fileSuffix
+          ++ "' files in "
+          ++ searchPath,
+        );
+        raise(Not_found);
+      };
+    path;
+  };
+
   let colorsFile = (workspacePath: string): file(list(Color.t)) => {
-    let path = Path.join([|workspacePath, "colors.json"|]);
+    let path = findPath(workspacePath, "colors.json");
     let data = Node.Fs.readFileSync(path, `utf8);
     let contents = Color.parseFile(data);
     {path, contents};
   };
 
   let textStylesFile = (workspacePath: string): file(TextStyle.file) => {
-    let path = Path.join([|workspacePath, "textStyles.json"|]);
+    let path = findPath(workspacePath, "textStyles.json");
     let data = Node.Fs.readFileSync(path, `utf8);
     let contents = TextStyle.parseFile(data);
     {path, contents};
   };
 
   let shadowsFile = (workspacePath: string): file(Shadow.file) => {
-    let path = Path.join([|workspacePath, "shadows.json"|]);
+    let path = findPath(workspacePath, "shadows.json");
     let data = Node.Fs.readFileSync(path, `utf8);
     let contents = Shadow.parseFile(data);
     {path, contents};
   };
 
   let userTypesFile = (workspacePath: string): file(UserTypes.file) => {
-    let path = Path.join([|workspacePath, "types.json"|]);
+    let path = findPath(workspacePath, "types.json");
     let contents =
       switch (Node.Fs.readFileSync(path, `utf8)) {
       | data => UserTypes.parseFile(data)
