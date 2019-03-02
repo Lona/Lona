@@ -117,12 +117,16 @@ if (List.length(positionalArguments) < 3) {
 
 let command = List.nth(positionalArguments, 2);
 
-if (command != "convertSvg" && List.length(positionalArguments) < 4) {
+/* These commands don't use the standard set of parameters */
+let specialCommands = ["convertSvg", "config"];
+let isSpecialCommand = command => List.mem(command, specialCommands);
+
+if (!isSpecialCommand(command) && List.length(positionalArguments) < 4) {
   exit("No target given");
 };
 
 let target =
-  if (command != "convertSvg") {
+  if (!isSpecialCommand(command)) {
     switch (List.nth(positionalArguments, 3)) {
     | "js" => Types.JavaScript
     | "swift" => Types.Swift
@@ -746,7 +750,7 @@ switch (command) {
     |> ignore
   );
 | "config" =>
-  let workspacePath = List.nth(positionalArguments, 4);
+  let workspacePath = List.nth(positionalArguments, 3);
 
   Config.load(platformId, options, workspacePath, "")
   |> Js.Promise.then_((config: Config.t) => {
