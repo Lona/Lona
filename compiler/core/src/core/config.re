@@ -89,7 +89,7 @@ module Workspace = {
   };
 
   let userTypesFile = (workspacePath: string): file(UserTypes.file) => {
-    let path = findPath(workspacePath, "types.json");
+    let path = Path.join([|workspacePath, "types.json"|]);
     let contents =
       switch (Node.Fs.readFileSync(path, `utf8)) {
       | data => UserTypes.parseFile(data)
