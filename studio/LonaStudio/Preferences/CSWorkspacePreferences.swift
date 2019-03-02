@@ -153,7 +153,7 @@ class CSWorkspacePreferences: CSPreferencesFile {
             case .cancel:
                 return false
             case .create:
-                let file = VirtualFile(name: "lona.json", data: CSData.Object([:]))
+                let file = VirtualFile(name: "lona.json") { CSData.Object([:]) }
 
                 do {
                     try VirtualFileSystem.write(node: file, relativeTo: url)
