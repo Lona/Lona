@@ -8,11 +8,11 @@ let sync = (glob: string, ~options: option(options)=?, ()): list(string) => {
     switch (options) {
     | None => Js.Json.null
     | Some(unwrapped) =>
-      let dict =
-        Js.Dict.fromList([
-          ("ignore", Js.Json.stringArray(unwrapped.ignore |> Array.of_list)),
-        ]);
-      Js.Json.object_(dict);
+      Json.(
+        Encode.object_([
+          ("ignore", Encode.stringArray(unwrapped.ignore |> Array.of_list)),
+        ])
+      )
     };
 
   syncRaw(glob, jsonOptions) |> Array.to_list;
