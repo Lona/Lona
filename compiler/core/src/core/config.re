@@ -52,15 +52,12 @@ module Workspace = {
     let path =
       switch (List.length(searchResults)) {
       | 0 =>
-        Js.log("ERROR: Failed to find colors file in " ++ searchPath);
+        Js.log("ERROR: Failed to '*" ++ fileSuffix ++ "' in " ++ searchPath);
         raise(Not_found);
       | 1 => List.hd(searchResults)
       | _ =>
         Js.log(
-          "ERROR: Found multiple '*"
-          ++ fileSuffix
-          ++ "' files in "
-          ++ searchPath,
+          "ERROR: Multiple '*" ++ fileSuffix ++ "' files in " ++ searchPath,
         );
         raise(Not_found);
       };

@@ -33,7 +33,7 @@ class CSWorkspacePreferences: CSPreferencesFile {
     }
 
     static var textStylesFileURL: URL {
-        return LonaModule.current.textStyleFileUrls.first ??
+        return LonaModule.current.textStylesFileUrls.first ??
             CSUserPreferences.workspaceURL.appendingPathComponent("textStyles.json")
     }
 

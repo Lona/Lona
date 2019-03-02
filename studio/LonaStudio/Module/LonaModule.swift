@@ -39,7 +39,7 @@ class LonaModule {
         return FileSearch.search(in: url, forFilesWithSuffix: "colors.json", ignoring: ["node_modules"])
     }
 
-    var textStyleFileUrls: [URL] {
+    var textStylesFileUrls: [URL] {
         return FileSearch.search(in: url, forFilesWithSuffix: "textStyles.json", ignoring: ["node_modules"])
     }
 
