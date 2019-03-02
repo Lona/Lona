@@ -111,12 +111,14 @@ module Workspace = {
       |> then_(array => resolve(Array.to_list(array)))
     );
 
-  let componentNames = (workspacePath: string): list(string) => {
+  let componentPaths = (workspacePath: string): list(string) => {
     let searchPath = "**/*.component";
-    Glob.sync(Path.join([|workspacePath, searchPath|]))
-    |> Array.to_list
-    |> List.map(file => Node.Path.basename_ext(file, ".component"));
+    Glob.sync(Path.join([|workspacePath, searchPath|])) |> Array.to_list;
   };
+
+  let componentNames = (workspacePath: string): list(string) =>
+    componentPaths(workspacePath)
+    |> List.map(file => Node.Path.basename_ext(file, ".component"));
 
   let compilerFile = (workspacePath: string): list(Plugin.t) => {
     let path = Path.join([|workspacePath, "compiler.js"|]);
@@ -229,3 +231,25 @@ let load =
          )
     )
   };
+
+let toJson = (compilerVersion: string, config: t): Js.Json.t =>
+  Json.(
+    Encode.object_([
+      ("version", Encode.string(compilerVersion)),
+      (
+        "paths",
+        Encode.object_([
+          ("workspace", Encode.string(config.workspacePath)),
+          ("colors", Encode.string(config.colorsFile.path)),
+          ("textStyles", Encode.string(config.textStylesFile.path)),
+          ("shadows", Encode.string(config.shadowsFile.path)),
+          (
+            "components",
+            Encode.stringArray(
+              Workspace.componentPaths(config.workspacePath) |> Array.of_list,
+            ),
+          ),
+        ]),
+      ),
+    ])
+  );

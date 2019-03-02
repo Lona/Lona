@@ -745,5 +745,14 @@ switch (command) {
     |> then_(parsed => parsed |> Js.Json.stringify |> Js.log |> resolve)
     |> ignore
   );
+| "config" =>
+  let workspacePath = List.nth(positionalArguments, 4);
+
+  Config.load(platformId, options, workspacePath, "")
+  |> Js.Promise.then_((config: Config.t) => {
+       Js.log(config |> Config.toJson(version) |> Json.stringify);
+       Js.Promise.resolve();
+     })
+  |> ignore;
 | _ => Js.log2("Invalid command", command)
 };
