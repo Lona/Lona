@@ -52,7 +52,7 @@ module Workspace = {
     let path =
       switch (List.length(searchResults)) {
       | 0 =>
-        Js.log("Failed to find colors file in " ++ searchPath);
+        Js.log("ERROR: Failed to find colors file in " ++ searchPath);
         raise(Not_found);
       | 1 => List.hd(searchResults)
       | _ =>
