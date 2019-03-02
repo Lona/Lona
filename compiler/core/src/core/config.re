@@ -131,6 +131,13 @@ module Workspace = {
         Js.String.replace("file://", "", path) : path;
     Node.Path.join2(config.workspacePath, path);
   };
+
+  let outputPathForWorkspaceFile = (config: t, ~workspaceFile: string): string => {
+    let relativePath =
+      Path.relative(~from=config.workspacePath, ~to_=workspaceFile, ());
+    let outputPath = Path.join2(config.outputPath, relativePath);
+    outputPath;
+  };
 };
 
 exception ComponentNotFound(string);

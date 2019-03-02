@@ -3,9 +3,9 @@
 import React from "react"
 import styled from "styled-components"
 
-import colors from "../colors"
-import shadows from "../shadows"
-import textStyles from "../textStyles"
+import colors from "../foundation/colors"
+import shadows from "../foundation/shadows"
+import textStyles from "../foundation/textStyles"
 
 export default class FixedParentFitChild extends React.Component {
   render() {
