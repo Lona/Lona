@@ -235,36 +235,21 @@ let convertShadows = (target, config: Config.t) =>
 
 exception ComponentNotFound(string);
 
-let findComponentFile = (fromDirectory, componentName) => {
-  let searchPath = "**/" ++ componentName ++ ".component";
-  let files = Glob.sync(concat(fromDirectory, searchPath)) |> Array.to_list;
-  switch (List.length(files)) {
-  | 0 => raise(ComponentNotFound(componentName))
-  | _ => List.hd(files)
-  };
-};
-
-let findComponent = (fromDirectory, componentName) => {
-  let filename = findComponentFile(fromDirectory, componentName);
-  let contents = Fs.readFileSync(filename, `utf8);
-  contents |> Js.Json.parseExn;
-};
-
 let getComponentRelativePath =
-    (fromDirectory, sourceComponent, importedComponent) => {
+    (config: Config.t, sourceComponent, importedComponent) => {
   let sourcePath =
-    Node.Path.dirname(findComponentFile(fromDirectory, sourceComponent));
-  let importedPath = findComponentFile(fromDirectory, importedComponent);
+    Node.Path.dirname(Config.Find.componentPath(config, sourceComponent));
+  let importedPath = Config.Find.componentPath(config, importedComponent);
   let relativePath =
     Node.Path.relative(~from=sourcePath, ~to_=importedPath, ());
   Js.String.startsWith(".", relativePath) ?
     relativePath : "./" ++ relativePath;
 };
 
-let getAssetRelativePath = (fromDirectory, sourceComponent, importedPath) => {
+let getAssetRelativePath = (config: Config.t, sourceComponent, importedPath) => {
   let sourcePath =
-    Node.Path.dirname(findComponentFile(fromDirectory, sourceComponent));
-  let importedPath = Node.Path.join([|fromDirectory, importedPath|]);
+    Node.Path.dirname(Config.Find.componentPath(config, sourceComponent));
+  let importedPath = Node.Path.join2(config.workspacePath, importedPath);
   let relativePath =
     Node.Path.relative(~from=sourcePath, ~to_=importedPath, ());
   Js.String.startsWith(".", relativePath) ?
@@ -302,8 +287,8 @@ let convertComponent = (config: Config.t, filename: string) => {
         ~to_=config.workspacePath,
         (),
       ),
-      getComponentRelativePath(config.workspacePath, name),
-      getAssetRelativePath(config.workspacePath, name),
+      getComponentRelativePath(config, name),
+      getAssetRelativePath(config, name),
       parsed,
     )
     |> JavaScript.Render.toString
@@ -512,8 +497,7 @@ let convertWorkspace = (workspace, output) => {
        copyStaticFiles(toDirectory);
 
        let successfulComponentNames =
-         Glob.sync(concat(fromDirectory, "**/*.component"))
-         |> Array.to_list
+         config.componentPaths
          |> List.filter(file =>
               switch (options.filterComponents) {
               | Some(value) => Js.Re.test(file, Js.Re.fromString(value))
@@ -594,25 +578,19 @@ let convertWorkspace = (workspace, output) => {
          );
        };
 
-       Glob.glob(
-         concat(fromDirectory, "**/*.png"),
-         (_, files) => {
-           let files = Array.to_list(files);
-           let processFile = file => {
-             let fromRelativePath =
-               Path.relative(~from=fromDirectory, ~to_=file, ());
-             let outputPath = Path.join([|toDirectory, fromRelativePath|]);
-             Js.log(
-               Path.join([|workspace, fromRelativePath|])
-               ++ "=>"
-               ++ Path.join([|output, fromRelativePath|]),
-             );
-             copySync(file, outputPath);
-           };
-           files |> List.iter(processFile);
-         },
-       );
-       Js.Promise.resolve();
+       Config.Find.files(config, "**/*.png")
+       |> List.map(file => {
+            let fromRelativePath =
+              Path.relative(~from=fromDirectory, ~to_=file, ());
+            let outputPath = Path.join([|toDirectory, fromRelativePath|]);
+            Js.log(
+              Path.join([|workspace, fromRelativePath|])
+              ++ "=>"
+              ++ Path.join([|output, fromRelativePath|]),
+            );
+            copySync(file, outputPath);
+          })
+       |> Js.Promise.resolve;
      });
 };
 switch (command) {

@@ -36,19 +36,19 @@ class LonaModule {
     }
 
     var colorsFileUrls: [URL] {
-        return FileSearch.search(in: url, forFilesWithSuffix: "colors.json", ignoring: ["node_modules"])
+        return FileSearch.search(in: url, forFilesWithSuffix: "colors.json", ignoring: [".git", "node_modules"])
     }
 
     var textStylesFileUrls: [URL] {
-        return FileSearch.search(in: url, forFilesWithSuffix: "textStyles.json", ignoring: ["node_modules"])
+        return FileSearch.search(in: url, forFilesWithSuffix: "textStyles.json", ignoring: [".git", "node_modules"])
     }
 
     var shadowsFileUrls: [URL] {
-        return FileSearch.search(in: url, forFilesWithSuffix: "shadows.json", ignoring: ["node_modules"])
+        return FileSearch.search(in: url, forFilesWithSuffix: "shadows.json", ignoring: [".git", "node_modules"])
     }
 
     var gradientsFileUrls: [URL] {
-        return FileSearch.search(in: url, forFilesWithSuffix: "gradients.json", ignoring: ["node_modules"])
+        return FileSearch.search(in: url, forFilesWithSuffix: "gradients.json", ignoring: [".git", "node_modules"])
     }
 
     func componentFiles() -> [ComponentFile] {
