@@ -337,8 +337,10 @@ class WorkspaceViewController: NSSplitViewController {
             }
         }
 
-        // Don't allow moving json files, since we currently only read these from the workspace root directory
-        let unmovableFiles = ["colors.json", "textStyles.json", "shadows.json", "lona.json"]
+        // Don't allow moving these json files within Lona Studio.
+        // The lona.json file needs to be in the workspace root directory.
+        // The other config files can be moved, but we'll need to handle updating the preference file paths before we allow it.
+        let unmovableFiles = ["colors.json", "textStyles.json", "gradients.json", "shadows.json", "lona.json", "types.json"]
         fileNavigator.validateProposedMove = { prev, next in
             let name = URL(fileURLWithPath: prev).lastPathComponent
             let result = !unmovableFiles.contains(name)

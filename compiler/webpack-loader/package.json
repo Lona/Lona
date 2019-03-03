@@ -1,6 +1,6 @@
 {
   "name": "lona-loader",
-  "version": "0.1.0",
+  "version": "0.1.2",
   "description": "Webpack loader for Lona components",
   "main": "lib/loader.js",
   "scripts": {
@@ -38,7 +38,7 @@
     "eslint-plugin-import": "^2.16.0",
     "eslint-plugin-prettier": "^3.0.1",
     "jest": "^24.0.0",
-    "lonac": "^0.5.0",
+    "lonac": "^0.5.2",
     "memory-fs": "^0.4.1",
     "prettier": "^1.16.1",
     "react": "^16.7.0",

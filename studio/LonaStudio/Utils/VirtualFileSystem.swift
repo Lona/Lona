@@ -16,13 +16,14 @@ struct VirtualFile: VirtualNode {
     let name: String
     let contents: Data
 
-    init(name: String, contents: Data) {
+    init(name: String, contents: () -> Data) {
         self.name = name
-        self.contents = contents
+        self.contents = contents()
     }
 
-    init(name: String, data: CSData) {
-        self.init(name: name, contents: data.toData() ?? Data())
+    init(name: String, data: () -> CSData) {
+        self.name = name
+        self.contents = data().toData() ?? Data()
     }
 }
 
@@ -30,13 +31,14 @@ struct VirtualDirectory: VirtualNode {
     let name: String
     let children: [VirtualNode]
 
-    init(name: String, children: [VirtualNode]) {
+    init(name: String, children: () -> [VirtualNode]) {
         self.name = name
-        self.children = children
+        self.children = children()
     }
 
     init(name: String) {
-        self.init(name: name, children: [])
+        self.name = name
+        self.children = []
     }
 }
 

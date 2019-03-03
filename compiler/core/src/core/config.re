@@ -5,7 +5,9 @@ type file('a) = {
 
 type t = {
   componentNames: list(string),
+  componentPaths: list(string),
   plugins: list(Plugin.t),
+  lonaFile: file(LonaFile.t),
   colorsFile: file(list(Color.t)),
   textStylesFile: file(TextStyle.file),
   shadowsFile: file(Shadow.file),
@@ -27,7 +29,7 @@ module Compiler = {
 module Workspace = {
   open Node;
 
-  /* Rudimentary workspace detection */
+  /* Detect workspace by finding nearest lona.json in the file hierarchy */
   let rec find = path => {
     let exists = Fs.existsSync(Path.join([|path, "lona.json"|]));
     exists ?
@@ -40,22 +42,54 @@ module Workspace = {
       );
   };
 
-  let colorsFile = (workspacePath: string): file(list(Color.t)) => {
-    let path = Path.join([|workspacePath, "colors.json"|]);
+  let findPathWithSuffix =
+      (workspacePath: string, fileSuffix: string, ~ignore: list(string)) => {
+    let searchPath = Path.join([|workspacePath, "**/*?(.)" ++ fileSuffix|]);
+    let searchResults =
+      FileSearch.sync(searchPath, ~options={ignore: ignore}, ());
+
+    /* Find exactly one path */
+    let path =
+      switch (List.length(searchResults)) {
+      | 0 =>
+        Js.log("ERROR: Failed to '*" ++ fileSuffix ++ "' in " ++ searchPath);
+        raise(Not_found);
+      | 1 => List.hd(searchResults)
+      | _ =>
+        Js.log(
+          "ERROR: Multiple '*" ++ fileSuffix ++ "' files in " ++ searchPath,
+        );
+        raise(Not_found);
+      };
+    path;
+  };
+
+  let lonaFile = (workspacePath: string): file(LonaFile.t) => {
+    let path = Path.join2(workspacePath, "lona.json");
+    let data = Node.Fs.readFileSync(path, `utf8);
+    let contents = LonaFile.parseFile(data);
+    {path, contents};
+  };
+
+  let colorsFile =
+      (workspacePath: string, ~ignore: list(string)): file(list(Color.t)) => {
+    let path = findPathWithSuffix(workspacePath, "colors.json", ~ignore);
     let data = Node.Fs.readFileSync(path, `utf8);
     let contents = Color.parseFile(data);
     {path, contents};
   };
 
-  let textStylesFile = (workspacePath: string): file(TextStyle.file) => {
-    let path = Path.join([|workspacePath, "textStyles.json"|]);
+  let textStylesFile =
+      (workspacePath: string, ~ignore: list(string)): file(TextStyle.file) => {
+    let path = findPathWithSuffix(workspacePath, "textStyles.json", ~ignore);
     let data = Node.Fs.readFileSync(path, `utf8);
     let contents = TextStyle.parseFile(data);
     {path, contents};
   };
 
-  let shadowsFile = (workspacePath: string): file(Shadow.file) => {
-    let path = Path.join([|workspacePath, "shadows.json"|]);
+  let shadowsFile =
+      (workspacePath: string, ~ignore: list(string)): file(Shadow.file) => {
+    let path = findPathWithSuffix(workspacePath, "shadows.json", ~ignore);
     let data = Node.Fs.readFileSync(path, `utf8);
     let contents = Shadow.parseFile(data);
     {path, contents};
@@ -72,24 +106,33 @@ module Workspace = {
   };
 
   let svgFiles =
-      (workspacePath: string): Js.Promise.t(list(file(Svg.node))) =>
+      (workspacePath: string, ~ignore: list(string))
+      : Js.Promise.t(list(file(Svg.node))) => {
+    let searchPath = Path.join2(workspacePath, "**/*.svg");
+
     Js.Promise.(
-      Glob.sync(Path.join([|workspacePath, "**/*.svg"|]))
-      |> Array.map(file => {
+      FileSearch.sync(searchPath, ~options={ignore: ignore}, ())
+      |> List.map(file => {
            let data = Node.Fs.readFileSync(file, `utf8);
            Svg.decode(data)
            |> then_(node => resolve({path: file, contents: node}));
          })
+      |> Array.of_list
       |> all
       |> then_(array => resolve(Array.to_list(array)))
     );
-
-  let componentNames = (workspacePath: string): list(string) => {
-    let searchPath = "**/*.component";
-    Glob.sync(Path.join([|workspacePath, searchPath|]))
-    |> Array.to_list
-    |> List.map(file => Node.Path.basename_ext(file, ".component"));
   };
+
+  let componentPaths =
+      (workspacePath: string, ~ignore: list(string)): list(string) => {
+    let searchPath = Path.join2(workspacePath, "**/*.component");
+    FileSearch.sync(searchPath, ~options={ignore: ignore}, ());
+  };
+
+  let componentNames =
+      (workspacePath: string, ~ignore: list(string)): list(string) =>
+    componentPaths(workspacePath, ~ignore)
+    |> List.map(file => Node.Path.basename_ext(file, ".component"));
 
   let compilerFile = (workspacePath: string): list(Plugin.t) => {
     let path = Path.join([|workspacePath, "compiler.js"|]);
@@ -104,27 +147,43 @@ module Workspace = {
         Js.String.replace("file://", "", path) : path;
     Node.Path.join2(config.workspacePath, path);
   };
+
+  let outputPathForWorkspaceFile = (config: t, ~workspaceFile: string): string => {
+    let relativePath =
+      Path.relative(~from=config.workspacePath, ~to_=workspaceFile, ());
+    let outputPath = Path.join2(config.outputPath, relativePath);
+    outputPath;
+  };
 };
 
 exception ComponentNotFound(string);
 
 module Find = {
+  let files = (config: t, pattern): list(string) => {
+    let searchPath = Node.Path.join2(config.workspacePath, pattern);
+    FileSearch.sync(
+      searchPath,
+      ~options={ignore: config.lonaFile.contents.ignore},
+      (),
+    );
+  };
+
+  let componentPath = (config: t, componentName: string): string => {
+    let files =
+      config.componentPaths
+      |> List.filter(path =>
+           Node.Path.basename_ext(path, ".component") == componentName
+         );
+
+    switch (List.length(files)) {
+    | 0 => raise(ComponentNotFound(componentName))
+    | _ => List.hd(files)
+    };
+  };
+
   let component = (config: t, componentName: string): Js.Json.t => {
-    let searchPath =
-      Node.Path.join([|
-        config.workspacePath,
-        "**/" ++ componentName ++ ".component",
-      |]);
-
-    let files = searchPath |> Glob.sync |> Array.to_list;
-
-    let filename =
-      switch (List.length(files)) {
-      | 0 => raise(ComponentNotFound(componentName))
-      | _ => List.hd(files)
-      };
-
-    Node.Fs.readFileSync(filename, `utf8) |> Js.Json.parseExn;
+    let path = componentPath(config, componentName);
+    Node.Fs.readFileSync(path, `utf8) |> Js.Json.parseExn;
   };
 
   let svg = (config: t, path: string): Svg.node => {
@@ -176,22 +235,65 @@ let load =
       ++ "'. A workspace must contain a `lona.json` file.",
     )
   | Some(workspacePath) =>
+    let lonaFile = Workspace.lonaFile(workspacePath);
     Js.Promise.(
-      Workspace.svgFiles(workspacePath)
+      Workspace.svgFiles(workspacePath, ~ignore=lonaFile.contents.ignore)
       |> then_(svgFiles =>
            resolve({
              options,
              platformId,
-             componentNames: Workspace.componentNames(workspacePath),
+             componentPaths:
+               Workspace.componentPaths(
+                 workspacePath,
+                 ~ignore=lonaFile.contents.ignore,
+               ),
+             componentNames:
+               Workspace.componentNames(
+                 workspacePath,
+                 ~ignore=lonaFile.contents.ignore,
+               ),
              plugins: Workspace.compilerFile(workspacePath),
-             colorsFile: Workspace.colorsFile(workspacePath),
-             textStylesFile: Workspace.textStylesFile(workspacePath),
-             shadowsFile: Workspace.shadowsFile(workspacePath),
+             lonaFile,
+             colorsFile:
+               Workspace.colorsFile(
+                 workspacePath,
+                 ~ignore=lonaFile.contents.ignore,
+               ),
+             textStylesFile:
+               Workspace.textStylesFile(
+                 workspacePath,
+                 ~ignore=lonaFile.contents.ignore,
+               ),
+             shadowsFile:
+               Workspace.shadowsFile(
+                 workspacePath,
+                 ~ignore=lonaFile.contents.ignore,
+               ),
              userTypesFile: Workspace.userTypesFile(workspacePath),
              svgFiles,
              workspacePath,
              outputPath,
            })
          )
-    )
+    );
   };
+
+let toJson = (compilerVersion: string, config: t): Js.Json.t =>
+  Json.(
+    Encode.object_([
+      ("version", Encode.string(compilerVersion)),
+      (
+        "paths",
+        Encode.object_([
+          ("workspace", Encode.string(config.workspacePath)),
+          ("colors", Encode.string(config.colorsFile.path)),
+          ("textStyles", Encode.string(config.textStylesFile.path)),
+          ("shadows", Encode.string(config.shadowsFile.path)),
+          (
+            "components",
+            Encode.stringArray(config.componentPaths |> Array.of_list),
+          ),
+        ]),
+      ),
+    ])
+  );

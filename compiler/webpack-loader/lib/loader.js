@@ -7,7 +7,7 @@ const validateOptions = require('schema-utils')
 
 const optionsSchema = require('./options-schema.json')
 
-const IMPORT_REGEX = /import [a-zA-Z]+ from "([a-zA-Z./]+)"/g
+const IMPORT_REGEX = /import [a-zA-Z{} ,]+\s+from\s+"([a-zA-Z./]+)"/g
 function parseImports(source) {
   const imports = []
 
@@ -28,8 +28,7 @@ const defaultLonacPath = require.resolve('lonac')
 
 function lonac(command, filePath, options, callback) {
   exec(
-    `node "${options.compiler ||
-      defaultLonacPath}" ${command} js --framework=${options.framework ||
+    `node "${options.compiler}" ${command} js --framework=${options.framework ||
       'reactdom'}${
       options.styleFramework
         ? ` --styleFramework=${options.styleFramework}`
@@ -66,6 +65,14 @@ function lonac(command, filePath, options, callback) {
             `${relativeFilePath}.js!=!${__filename}!${relativeFilePath}.json?__forceLona=1`
           )
         }
+
+        // check if it's one of the utils
+        const matchingUtil = Object.keys(options.utils).find(k =>
+          relativeFilePath.endsWith(k)
+        )
+        if (matchingUtil) {
+          stdout = stdout.replace(relativeFilePath, options.utils[matchingUtil])
+        }
       })
 
       callback(null, stdout)
@@ -75,9 +82,32 @@ function lonac(command, filePath, options, callback) {
 
 module.exports = function loader(source) {
   const callback = this.async()
-  const options = getOptions(this) || {}
+  const options = {
+    compiler: defaultLonacPath,
+    ...(getOptions(this) || {}),
+  }
 
   validateOptions(optionsSchema, options, 'Lona Loader')
+
+  if (!options.utils) {
+    const lonaUtilsPath = path.join(
+      path.dirname(options.compiler),
+      './static/javaScript'
+    )
+    if (
+      fs.existsSync(lonaUtilsPath) &&
+      fs.statSync(lonaUtilsPath).isDirectory()
+    ) {
+      options.utils = fs.readdirSync(lonaUtilsPath).reduce((prev, filePath) => {
+        const absolutePath = path.join(lonaUtilsPath, filePath)
+        const parsed = path.parse(absolutePath)
+        prev[`./utils/${parsed.name}`] = absolutePath
+        return prev
+      }, {})
+    } else {
+      options.utils = {}
+    }
+  }
 
   const rawFilePath = path.normalize(this.resourcePath)
 

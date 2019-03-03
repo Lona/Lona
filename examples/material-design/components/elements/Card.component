@@ -128,7 +128,7 @@
         "id" : "Image",
         "params" : {
           "alignSelf" : "stretch",
-          "flex" : 1,
+          "height" : 200,
           "image" : ""
         },
         "type" : "Lona:Image"
