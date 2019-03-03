@@ -1,4 +1,5 @@
 const path = require('path')
+const { execSync } = require('child_process')
 
 module.exports = () => {
   const configFilePath = path.join(
@@ -6,16 +7,23 @@ module.exports = () => {
     'lona.json'
   )
 
-  let config
+  const config = JSON.parse(
+    execSync(
+      `${path.join(
+        __dirname,
+        '../node_modules/.bin/lonac'
+      )} config ${configFilePath}}`,
+      { encoding: 'utf8' }
+    )
+  )
 
   try {
-    config = require(configFilePath)
+    Object.assign(config, require(configFilePath))
   } catch (err) {
-    throw new Error('Cannot find the workspace config (lona.json)')
+    // ignore
   }
 
   config.cwd = path.dirname(configFilePath)
-  config.filepath = configFilePath
 
   return config
 }

@@ -33,7 +33,7 @@
     "gatsby-plugin-styled-components": "^3.0.5",
     "graphql": "^14.1.1",
     "lona-loader": "^0.1.2",
-    "lonac": "^0.5.2",
+    "lonac": "^0.5.3",
     "mime": "^2.4.0",
     "prop-types": "^15.7.2",
     "react": "^16.8.2",
