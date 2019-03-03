@@ -1,7 +1,7 @@
 import { graphql } from 'gatsby'
 import React from 'react'
 import { MDXRenderer } from 'gatsby-mdx'
-import Layout from '../components/Layout'
+import Layout from '../src/components/Layout'
 
 export default function Template({ data, location }) {
   return (

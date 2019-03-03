@@ -4,13 +4,13 @@ const path = require('path')
 module.exports = ({ actions, graphql }) => {
   const { createPage } = actions
 
-  const docTemplate = path.resolve('src/templates/doc.js')
-  const componentTemplate = path.resolve('src/templates/component.js')
-  const colorsTemplate = path.resolve('src/templates/colors.js')
-  const textStylesTemplate = path.resolve('src/templates/textStyles.js')
-  const gradientsTemplate = path.resolve('src/templates/gradients.js')
-  const shadowsTemplate = path.resolve('src/templates/shadows.js')
-  const defaultHomeTemplate = path.resolve('src/templates/defaultHome.js')
+  const docTemplate = path.resolve('templates/doc.js')
+  const componentTemplate = path.resolve('templates/component.js')
+  const colorsTemplate = path.resolve('templates/colors.js')
+  const textStylesTemplate = path.resolve('templates/textStyles.js')
+  const gradientsTemplate = path.resolve('templates/gradients.js')
+  const shadowsTemplate = path.resolve('templates/shadows.js')
+  const defaultHomeTemplate = path.resolve('templates/defaultHome.js')
 
   let didCreateHome = false
 

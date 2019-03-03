@@ -24,6 +24,11 @@
       "id" : "selectedUnderline",
       "name" : "Selected Underline",
       "value" : "#525252"
+    },
+    {
+      "id" : "line",
+      "name" : "Line",
+      "value" : "#EDEDED"
     }
   ]
 }

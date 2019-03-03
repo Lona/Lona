@@ -1,9 +1,10 @@
 import { graphql } from 'gatsby'
 import React from 'react'
 import { MDXRenderer } from 'gatsby-mdx'
-import Layout from '../components/Layout'
-import Examples from '../components/Examples'
-import { capitalise } from '../utils'
+import Layout from '../src/components/Layout'
+import Examples from '../src/components/Examples'
+import { capitalise } from '../src/utils'
+import ComponentTitle from '../lona-workspace/components/ComponentTitle.component'
 
 export default function Template({ data, pageContext, location }) {
   // this will get replaced by the webpack context plugin
@@ -34,18 +35,10 @@ export default function Template({ data, pageContext, location }) {
 
   return (
     <Layout location={location}>
-      <h1>{pageContext.title}</h1>
-      {data.mdx.frontmatter.intro ? (
-        <div>{data.mdx.frontmatter.intro}</div>
-      ) : null}
-      <MDXRenderer
-        scope={{
-          Component,
-          Examples,
-        }}
-      >
-        {data.mdx.code.body}
-      </MDXRenderer>
+      <ComponentTitle
+        name={pageContext.title}
+        intro={data.mdx.frontmatter.intro}
+      />
       <Examples
         scope={{ [componentName]: Component }}
         examples={data.lonaComponent.examples.map(example => {
@@ -61,6 +54,14 @@ export default function Template({ data, pageContext, location }) {
           }
         })}
       />
+      <MDXRenderer
+        scope={{
+          Component,
+          Examples,
+        }}
+      >
+        {data.mdx.code.body}
+      </MDXRenderer>
     </Layout>
   )
 }
@@ -76,6 +77,8 @@ export const query = graphql`
       params {
         name
         type
+        defaultValue
+        description
       }
       componentPath
     }

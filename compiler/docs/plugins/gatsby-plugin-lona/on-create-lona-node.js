@@ -43,7 +43,13 @@ module.exports = function onCreateNode({
       example.params = JSON.stringify(example.params)
       return example
     })
-    lonaNode.params = data.params || []
+    lonaNode.params = (data.params || []).map(param => {
+      param.defaultValue = param.defaultValue
+        ? JSON.stringify(param.defaultValue)
+        : null
+      param.description = param.description || ''
+      return param
+    })
 
     // Add path to the component file path
     lonaNode.componentPath = node.relativePath
