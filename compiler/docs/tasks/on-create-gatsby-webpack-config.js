@@ -20,6 +20,9 @@ module.exports = ({ actions, getConfig }) => {
       r.test = /\.(jsx?|component)$/
       r.use.push({
         loader: 'lona-loader',
+        options: {
+          // styleFramework: 'styledcomponents',
+        },
       })
     }
 

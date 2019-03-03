@@ -1,1 +1,1 @@
-export const HeaderHeight = '12rem'
+export const HeaderHeight = '117px'

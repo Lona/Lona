@@ -33,12 +33,7 @@ const SkipLink = styled.a`
 `
 
 const Content = styled.main`
-  padding-right: 3.2rem;
-  max-width: 140rem;
-  margin-right: auto;
-  margin-left: auto;
   display: flex;
-  margin-bottom: 50px;
 `
 
 const Section = styled.section`
@@ -47,9 +42,9 @@ const Section = styled.section`
   flex: 1 1 auto;
   border-radius: 0.6rem;
   min-width: 0;
-  max-width: calc(100vw - 404px);
+  max-width: calc(100vw - 350px);
   width: 1040px;
-  padding: 4rem;
+  padding: 4rem 30px;
   ${sectionCSS};
 `
 

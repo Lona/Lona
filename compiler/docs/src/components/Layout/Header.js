@@ -3,11 +3,13 @@ import { Link } from 'gatsby'
 import styled from 'styled-components'
 import { HeaderHeight } from './ui-constants'
 import { findFirstFile, cleanupLink } from '../../utils'
+import HeaderNavigationLink from '../../../lona-workspace/components/HeaderNavigationLink.component'
+import WorspaceLogo from '../../../lona-workspace/components/WorkspaceLogo.component'
 
 const Wrapper = styled.header`
   height: ${HeaderHeight};
-  padding-right: 3.2rem;
-  padding-left: 3.2rem;
+  padding-right: 26px;
+  padding-left: 65px;
 `
 
 const InnerWrapper = styled.div`
@@ -21,10 +23,7 @@ const InnerWrapper = styled.div`
 `
 
 const Logo = styled(Link)`
-  margin-top: 4rem;
-  width: 13rem;
-  height: 3.8rem;
-  color: #161d25;
+  text-decoration: none;
 `
 
 const NavigationWrapper = styled.nav`
@@ -38,49 +37,18 @@ const Navigation = styled.ul`
 `
 
 const NavigationItem = styled(Link)`
-  max-width: 60rem;
-  font-size: 1.2rem;
-  font-weight: 500;
   text-transform: capitalize;
-  letter-spacing: 0.1rem;
-  margin-top: 0;
-  line-height: 1;
-  display: block;
-  position: relative;
-  padding: 2.6rem 1.6rem 2.6rem;
-  color: #1a222b;
-  transition: color 0.24s cubic-bezier(0.64, 0, 0.35, 1);
   text-decoration: none;
-  &:hover {
-    color: #202e78;
-  }
-  &::before {
-    content: '';
-    position: absolute;
-    bottom: 0;
-    right: auto;
-    left: auto;
-    display: block;
-    width: calc(100% - 3.2rem);
-    border-bottom: 0.2rem solid #000000;
-    transform: scaleX(${p => (p.selected ? 1 : 0)});
-    transition-property: transform;
-    transition-duration: 0.24s;
-    transition-timing-function: cubic-bezier(0.64, 0, 0.35, 1);
-  }
 `
 
 const Header = ({ data, location, files }) => (
   <Wrapper>
     <InnerWrapper>
       <Logo aria-label="Back to Home" to="/">
-        {data.siteMetadata.icon ? (
-          <img
-            src={data.siteMetadata.icon}
-            alt={`${data.siteMetadata.title} logo`}
-          />
-        ) : null}
-        {data.siteMetadata.title}
+        <WorspaceLogo
+          text={data.siteMetadata.title}
+          image={data.siteMetadata.icon}
+        />
       </Logo>
       <NavigationWrapper>
         <Navigation aria-hidden="false" aria-label="Secondary navigation">
@@ -99,11 +67,11 @@ const Header = ({ data, location, files }) => (
 
             return (
               <li key={section}>
-                <NavigationItem
-                  to={cleanupLink(firstInSection.path)}
-                  selected={location.pathname.indexOf(section) === 1}
-                >
-                  {section}
+                <NavigationItem to={cleanupLink(firstInSection.path)}>
+                  <HeaderNavigationLink
+                    text={section}
+                    selected={location.pathname.indexOf(section) === 1}
+                  />
                 </NavigationItem>
               </li>
             )

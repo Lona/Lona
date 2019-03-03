@@ -8,14 +8,18 @@ import {
   cleanupLink,
   capitalise,
 } from '../../utils'
+import SectionHeader from '../../../lona-workspace/components/SectionHeader.component'
+import SubsectionHeader from '../../../lona-workspace/components/SubsectionHeader.component'
+import SubSubsectionHeader from '../../../lona-workspace/components/SubSubsectionHeader.component'
 
 const Wrapper = styled.nav`
-  flex: 0 0 30rem;
+  flex: 0 0 320px;
   margin-top: 0;
-  width: 300px;
+  width: 320px;
 `
 
 const InnerWrapper = styled.div`
+  padding-left: 66px;
   height: calc(100vh - ${HeaderHeight});
   overflow-y: auto;
 `
@@ -27,55 +31,15 @@ const NavigationWrapper = styled.nav`
 const ItemWrapper = styled.li``
 
 const NavigationItem = styled(Link)`
-  display: flex;
-  align-items: center;
-  position: relative;
   text-decoration: none;
 `
 
-const Section = styled(NavigationItem)`
-  font-weight: 500;
-  text-transform: uppercase;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-  max-width: 100%;
-  color: #637381;
-  padding-top: 4rem;
-`
-
-const SubSection = styled(NavigationItem)`
-  padding-top: 2rem;
-  text-transform: capitalize;
-  overflow: hidden;
-  max-width: 100%;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-  font-size: 1.4rem;
-  color: #000000;
+const Section = styled(ItemWrapper)`
+  padding: 28px 0;
 `
 
 const SubTitles = styled.ul`
-  padding-left: 3.5rem;
-  list-style: disc;
-`
-
-const SubTitle = styled(Link)`
-  position: relative;
-  display: block;
-  padding: 0.8rem 0 0;
-  text-decoration: ${p => (p.selected ? 'underline' : 'none')};
-  display: inline-block;
-  font-weight: ${p => (p.selected ? 800 : 400)};
-  color: #000000;
-  will-change: color, font-weight, transform;
-  transition: color 0.24s cubic-bezier(0.64, 0, 0.35, 1),
-    font-weight 0.24s cubic-bezier(0.64, 0, 0.35, 1),
-    transform 0.24s cubic-bezier(0.64, 0, 0.35, 1);
-  line-height: 1.4;
-  font-size: 1.2rem;
-  &:hover {
-    text-decoration: underline;
-  }
+  padding-left: 10px;
 `
 
 function pathToTitle(path) {
@@ -95,9 +59,12 @@ const SubNavigation = ({ subtitle, location }) => {
   const selectedSubtitle = location.pathname.indexOf(subtitle.path) === 0
   return (
     <li>
-      <SubTitle to={cleanupLink(subTitleLink)} selected={selectedSubtitle}>
-        {subtitle.title}
-      </SubTitle>
+      <NavigationItem to={cleanupLink(subTitleLink)}>
+        <SubSubsectionHeader
+          text={subtitle.title}
+          selected={selectedSubtitle}
+        />
+      </NavigationItem>
     </li>
   )
 }
@@ -127,13 +94,13 @@ const Siderbar = ({ data, location, files }) => {
                 .filter(shouldPrintTitle)
 
               return (
-                <ItemWrapper key={section}>
-                  <Section
-                    to={cleanupLink(firstInSection.path)}
-                    selected={selectedSection === section}
-                  >
-                    {section}
-                  </Section>
+                <Section key={section}>
+                  <NavigationItem to={cleanupLink(firstInSection.path)}>
+                    <SectionHeader
+                      text={section.toUpperCase()}
+                      selected={selectedSection === section}
+                    />
+                  </NavigationItem>
                   {subsections.length ? (
                     <ul>
                       {subsections.map(subsection => {
@@ -141,15 +108,19 @@ const Siderbar = ({ data, location, files }) => {
                           return null
                         }
                         const link = findFirstLink(subsection)
-                        const selected = location.pathname.indexOf(link) === 0
+                        const selected =
+                          location.pathname.indexOf(subsection.path) === 0
                         return (
                           <ItemWrapper key={link}>
-                            <SubSection
-                              to={cleanupLink(link)}
-                              selected={selected}
-                            >
-                              {subsection.title || pathToTitle(subsection.path)}
-                            </SubSection>
+                            <NavigationItem to={cleanupLink(link)}>
+                              <SubsectionHeader
+                                text={
+                                  subsection.title ||
+                                  pathToTitle(subsection.path)
+                                }
+                                selected={selected}
+                              />
+                            </NavigationItem>
                             {selected && (
                               <SubTitles>
                                 {Object.keys(subsection.children)
@@ -169,7 +140,7 @@ const Siderbar = ({ data, location, files }) => {
                       })}
                     </ul>
                   ) : null}
-                </ItemWrapper>
+                </Section>
               )
             })}
           </ul>

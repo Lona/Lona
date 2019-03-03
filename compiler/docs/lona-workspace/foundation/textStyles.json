@@ -1,0 +1,76 @@
+{
+  "styles" : [
+    {
+      "color" : "text",
+      "fontSize" : 18,
+      "fontWeight" : "600",
+      "id" : "regularBold",
+      "lineHeight" : 32,
+      "name" : "Regular Bold"
+    },
+    {
+      "color" : "text",
+      "fontSize" : 18,
+      "id" : "regular",
+      "lineHeight" : 32,
+      "name" : "Regular"
+    },
+    {
+      "color" : "mutedText",
+      "fontSize" : 18,
+      "id" : "regularMuted",
+      "lineHeight" : 32,
+      "name" : "Regular Muted"
+    },
+    {
+      "color" : "mutedText",
+      "fontSize" : 12,
+      "fontWeight" : "700",
+      "id" : "sectionHeader",
+      "name" : "Section Header"
+    },
+    {
+      "color" : "text",
+      "fontSize" : 18,
+      "fontWeight" : "700",
+      "id" : "regularActive",
+      "lineHeight" : 32,
+      "name" : "Regular Active"
+    },
+    {
+      "color" : "text",
+      "fontSize" : 48,
+      "fontWeight" : "600",
+      "id" : "h1",
+      "name" : "H1"
+    },
+    {
+      "color" : "text",
+      "fontSize" : 22,
+      "fontWeight" : "300",
+      "id" : "large",
+      "lineHeight" : 36,
+      "name" : "Large"
+    },
+    {
+      "color" : "text",
+      "fontSize" : 24,
+      "fontWeight" : "600",
+      "id" : "h3",
+      "name" : "H3"
+    },
+    {
+      "color" : "text",
+      "fontFamily" : "Menlo",
+      "fontSize" : 18,
+      "id" : "regularMono",
+      "name" : "Regular Mono"
+    },
+    {
+      "color" : "mutedText",
+      "fontSize" : 18,
+      "id" : "regularGhost",
+      "name" : "Regular Ghost"
+    }
+  ]
+}
