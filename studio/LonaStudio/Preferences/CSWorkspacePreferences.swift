@@ -28,19 +28,13 @@ class CSWorkspacePreferences: CSPreferencesFile {
     }
 
     static var colorsFileURL: URL {
-        if let string = colorsFilePathValue.data.get(key: "data").string,
-            let url = URL(string: string)?.absoluteURLForWorkspaceURL() {
-            return url
-        }
-        return CSUserPreferences.workspaceURL.appendingPathComponent("colors.json")
+        return LonaModule.current.colorsFileUrls.first ??
+            CSUserPreferences.workspaceURL.appendingPathComponent("colors.json")
     }
 
     static var textStylesFileURL: URL {
-        if let string = textStylesFilePathValue.data.get(key: "data").string,
-            let url = URL(string: string)?.absoluteURLForWorkspaceURL() {
-            return url
-        }
-        return CSUserPreferences.workspaceURL.appendingPathComponent("textStyles.json")
+        return LonaModule.current.textStylesFileUrls.first ??
+            CSUserPreferences.workspaceURL.appendingPathComponent("textStyles.json")
     }
 
     static var workspaceIconURL: URL {
@@ -153,7 +147,7 @@ class CSWorkspacePreferences: CSPreferencesFile {
             case .cancel:
                 return false
             case .create:
-                let file = VirtualFile(name: "lona.json", data: CSData.Object([:]))
+                let file = VirtualFile(name: "lona.json") { CSData.Object([:]) }
 
                 do {
                     try VirtualFileSystem.write(node: file, relativeTo: url)

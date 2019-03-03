@@ -3,9 +3,9 @@
 import React from "react"
 import { View, StyleSheet, TextStyles, Svg } from "react-sketchapp"
 
-import colors from "../colors"
-import shadows from "../shadows"
-import textStyles from "../textStyles"
+import colors from "../foundation/colors"
+import shadows from "../foundation/shadows"
+import textStyles from "../foundation/textStyles"
 
 let CheckCheckCircleVector = (props) => (
   <Svg

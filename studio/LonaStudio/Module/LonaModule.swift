@@ -35,6 +35,22 @@ class LonaModule {
         self.url = url
     }
 
+    var colorsFileUrls: [URL] {
+        return FileSearch.search(in: url, forFilesWithSuffix: "colors.json", ignoring: [".git", "node_modules"])
+    }
+
+    var textStylesFileUrls: [URL] {
+        return FileSearch.search(in: url, forFilesWithSuffix: "textStyles.json", ignoring: [".git", "node_modules"])
+    }
+
+    var shadowsFileUrls: [URL] {
+        return FileSearch.search(in: url, forFilesWithSuffix: "shadows.json", ignoring: [".git", "node_modules"])
+    }
+
+    var gradientsFileUrls: [URL] {
+        return FileSearch.search(in: url, forFilesWithSuffix: "gradients.json", ignoring: [".git", "node_modules"])
+    }
+
     func componentFiles() -> [ComponentFile] {
         return LonaModule.componentFiles(in: url)
     }
@@ -124,21 +140,31 @@ class LonaModule {
         let workspaceName = url.lastPathComponent
         let workspaceParent = url.deletingLastPathComponent()
 
-        let root = VirtualDirectory(name: workspaceName, children: [
-            VirtualFile(name: "README.md", contents: defaultReadmeContents.data(using: .utf8)!),
-            VirtualFile(name: "lona.json", data: CSData.Object([:])),
-            VirtualFile(name: "colors.json", data: CSData.Object([
-                "colors": CSData.Array([])
-                ])),
-            VirtualFile(name: "shadows.json", data: CSData.Object([
-                "shadows": CSData.Array([])
-                ])),
-            VirtualFile(name: "textStyles.json", data: CSData.Object([
-                "styles": CSData.Array([])
-                ])),
-            VirtualDirectory(name: "assets"),
-            VirtualDirectory(name: "components")
-            ])
+        let root = VirtualDirectory(name: workspaceName) {
+            [
+                VirtualFile(name: "README.md") {
+                    defaultReadmeContents.data(using: .utf8)!
+                },
+                VirtualFile(name: "lona.json") {
+                    CSData.Object([:])
+                },
+                VirtualDirectory(name: "assets"),
+                VirtualDirectory(name: "components"),
+                VirtualDirectory(name: "foundation") {
+                    [
+                        VirtualFile(name: "colors.json") {
+                            CSData.Object(["colors": CSData.Array([])])
+                        },
+                        VirtualFile(name: "textStyles.json") {
+                            CSData.Object(["textStyles": CSData.Array([])])
+                        },
+                        VirtualFile(name: "shadows.json") {
+                            CSData.Object(["shadows": CSData.Array([])])
+                        }
+                    ]
+                }
+            ]
+        }
 
         try VirtualFileSystem.write(node: root, relativeTo: workspaceParent)
     }

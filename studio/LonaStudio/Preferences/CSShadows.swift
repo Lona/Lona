@@ -30,7 +30,8 @@ extension CSShadow: Identify, Searchable {}
 
 class CSShadows: CSPreferencesFile {
     static var url: URL {
-        return CSUserPreferences.workspaceURL.appendingPathComponent("shadows.json")
+        return LonaModule.current.shadowsFileUrls.first ??
+            CSUserPreferences.workspaceURL.appendingPathComponent("shadows.json")
     }
 
     static private var parsedShadows: [CSShadow] = parse(data)
