@@ -63,7 +63,7 @@ function Parameters({ parameters }) {
         <tbody>
           {parameters.map(param => {
             return (
-              <tr>
+              <tr key={param.name}>
                 <td>
                   <Code text={param.name} />
                 </td>

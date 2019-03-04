@@ -50,9 +50,11 @@ export default function Template({ data, pageContext, location }) {
             description: '',
             text: `<${componentName} ${Object.keys(params)
               .map(
-                propName => `${propName}={${JSON.stringify(params[propName])}}`
+                propName => `
+  ${propName}={${JSON.stringify(params[propName])}}`
               )
-              .join(' ')}/>`,
+              .join('')}
+/>`,
           }
         })}
       />
