@@ -18,6 +18,7 @@ const Wrapper = styled.div`
 
 const CodeWrapper = styled.div`
   height: 100%;
+  position: relative;
 `
 
 const SelectionWrapper = styled.div`
@@ -202,8 +203,19 @@ class Examples extends React.Component {
                     </ChevronWrapper>
                   </SelectionInputWrapper>
                 </SelectionWrapper>
+                <LiveError
+                  style={{
+                    position: 'absolute',
+                    bottom: 0,
+                    background: 'red',
+                    color: 'white',
+                    fontSize: '12px',
+                    whiteSpace: 'pre',
+                    padding: '8px',
+                    width: '100%',
+                  }}
+                />
                 <LiveEditor />
-                <LiveError />
               </CodeWrapper>
               <div>
                 <PreviewHeader>Live preview</PreviewHeader>
