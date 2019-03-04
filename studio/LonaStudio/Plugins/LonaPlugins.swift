@@ -144,6 +144,7 @@ class LonaPlugins {
             if !FileManager.default.fileExists(atPath: commonPluginsfolder.path) {
                 try FileManager.default.createDirectory(at: commonPluginsfolder, withIntermediateDirectories: true, attributes: nil)
             }
+
             return LonaPlugins(urls: [
                 commonPluginsfolder,
                 CSUserPreferences.workspaceURL.appendingPathComponent("plugins", isDirectory: true)
@@ -160,18 +161,31 @@ class LonaPlugins {
         var files: [PluginFile] = []
 
         let fileManager = FileManager.default
-        let keys = [URLResourceKey.isDirectoryKey, URLResourceKey.localizedNameKey]
+        let keys = [URLResourceKey.isSymbolicLinkKey]
         let options: FileManager.DirectoryEnumerationOptions = [.skipsPackageDescendants, .skipsHiddenFiles]
 
-        guard let enumerator = fileManager.enumerator(
-            at: workspace,
-            includingPropertiesForKeys: keys,
-            options: options,
-            errorHandler: {(_, _) -> Bool in true }) else { return files }
+        var stack: [URL] = [workspace]
+        var visited: [URL] = []
 
-        while let file = enumerator.nextObject() as? URL {
-            if file.lastPathComponent == "lonaplugin.json" {
-                files.append(PluginFile(url: file.deletingLastPathComponent()))
+        while let url = stack.popLast() {
+            visited.append(url)
+
+            guard let enumerator = fileManager.enumerator(
+                at: url,
+                includingPropertiesForKeys: keys,
+                options: options,
+                errorHandler: {(_, _) -> Bool in true }) else { continue }
+
+            while let file = enumerator.nextObject() as? URL {
+                let isSymlink = try? file.resourceValues(forKeys: [URLResourceKey.isSymbolicLinkKey]).isSymbolicLink
+
+                if isSymlink == true, !visited.contains(file) {
+                    stack.append(file.resolvingSymlinksInPath())
+                }
+
+                if file.lastPathComponent == "lonaplugin.json" {
+                    files.append(PluginFile(url: file.deletingLastPathComponent()))
+                }
             }
         }
 
