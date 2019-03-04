@@ -71,6 +71,13 @@
       "fontSize" : 18,
       "id" : "regularGhost",
       "name" : "Regular Ghost"
+    },
+    {
+      "color" : "primary",
+      "fontFamily" : "Menlo",
+      "fontSize" : 18,
+      "id" : "regularMonoHighlight",
+      "name" : "regularMonoHighlight"
     }
   ]
 }

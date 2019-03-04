@@ -3,23 +3,11 @@ import PropTypes from 'prop-types'
 import styled, { createGlobalStyle } from 'styled-components'
 import { LiveProvider, LiveEditor, LiveError, LivePreview } from 'react-live'
 
+import H3 from '../../../lona-workspace/components/markdown/H3.component'
+
 const SelectionWrapper = styled.div`
   display: flex;
   margin-bottom: 1.6rem;
-`
-
-const Title = styled.h2`
-  max-width: 60rem;
-  margin-bottom: 0.8em;
-  font-size: 2.2rem;
-  font-weight: 500;
-  line-height: 1.2;
-  @media (min-width: 67.5em) {
-    margin-bottom: 1em;
-  }
-  @media (min-width: 60em) {
-    margin-bottom: 0;
-  }
 `
 
 const SelectionInputWrapper = styled.div`
@@ -130,7 +118,7 @@ class Examples extends React.Component {
       <div>
         <GlobalStyle />
         <SelectionWrapper>
-          <Title id="ExamplesLabel">Examples</Title>
+          <H3 text="Examples" />
           <SelectionInputWrapper>
             <SelectionInput
               ariaLabelledby="ExamplesLabel"

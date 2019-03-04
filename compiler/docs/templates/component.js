@@ -3,6 +3,7 @@ import React from 'react'
 import { MDXRenderer } from 'gatsby-mdx'
 import Layout from '../src/components/Layout'
 import Examples from '../src/components/Examples'
+import Parameters from '../src/components/Parameters'
 import { capitalise } from '../src/utils'
 import ComponentTitle from '../lona-workspace/components/ComponentTitle.component'
 
@@ -26,6 +27,7 @@ export default function Template({ data, pageContext, location }) {
           Component,
           Examples,
           Layout,
+          Parameters,
         }}
       >
         {data.mdx.code.body}
@@ -54,10 +56,12 @@ export default function Template({ data, pageContext, location }) {
           }
         })}
       />
+      <Parameters parameters={data.lonaComponent.params} />
       <MDXRenderer
         scope={{
           Component,
           Examples,
+          Parameters,
         }}
       >
         {data.mdx.code.body}
