@@ -2,57 +2,58 @@ import React from 'react'
 import PropTypes from 'prop-types'
 import styled, { createGlobalStyle } from 'styled-components'
 import { LiveProvider, LiveEditor, LiveError, LivePreview } from 'react-live'
+import SplitPane from 'react-split-pane'
 
 import H3 from '../../../lona-workspace/components/markdown/H3.component'
 
+const Wrapper = styled.div`
+  flex: 1;
+  display: flex;
+  height: 350px;
+  width: 100%;
+  border: 1px solid #d8d8d8;
+  position: relative;
+`
+
+const CodeWrapper = styled.div`
+  height: 100%;
+`
+
 const SelectionWrapper = styled.div`
   display: flex;
-  margin-bottom: 1.6rem;
+  border-bottom: 1px solid #d8d8d8;
+`
+
+const PreviewHeader = styled.div`
+  height: 50px;
+  border-bottom: 1px solid #d8d8d8;
+  line-height: 50px;
+  font-size: 16px;
+  color: #a4a4a4;
+  padding-right: 16px;
+  padding-left: 16px;
 `
 
 const SelectionInputWrapper = styled.div`
   margin-bottom: 0;
   position: relative;
-  top: -0.4rem;
   flex: 1 1 0%;
-  max-width: 38rem;
-  margin-left: 3.2rem;
-  &::after {
-    content: '';
-    position: absolute;
-    top: 0.2rem;
-    right: 0.4rem;
-    bottom: 0.7rem;
-    width: 7.2rem;
-    background: linear-gradient(270deg, #fff 60%, hsla(0, 0%, 100%, 0));
-    pointer-events: none;
-  }
 `
 
 const SelectionInput = styled.select`
   width: 100%;
-  height: 4.8rem;
-  padding-right: 2.4rem;
-  padding-left: 2.4rem;
-  border: 0.1rem solid #c4cdd5;
-  border-radius: 0.6rem;
-  line-height: 4.8rem;
-  font-size: 1.6rem;
+  height: 49px;
+  border: 0 solid transparent;
+  line-height: 49px;
+  font-size: 16px;
   color: #161d25;
   background-color: #fff;
-  box-shadow: inset 0 0 0 0.2rem rgba(92, 106, 196, 0),
-    inset 0 0.1rem 0.2rem 0 rgba(99, 115, 129, 0.2);
-  transition-property: border-color, box-shadow;
-  transition-duration: 0.24s;
-  transition-timing-function: cubic-bezier(0.64, 0, 0.35, 1);
-  height: 3.8rem;
-  padding-right: 1.6rem;
-  padding-left: 1.6rem;
-  line-height: 3.8rem;
+  padding-right: 16px;
+  padding-left: 16px;
 `
 
 const Option = styled.option`
-  font-size: 1.6rem;
+  font-size: 16px;
 `
 
 const ChevronWrapper = styled.div`
@@ -62,7 +63,7 @@ const ChevronWrapper = styled.div`
   right: 1.6rem;
   pointer-events: none;
   transform: translateY(-50%);
-  color: #5c6ac4;
+  color: #d8d8d8;
   margin-bottom: 0;
 `
 
@@ -81,20 +82,66 @@ const StyledLivePreview = styled(LivePreview)`
   display: flex;
   width: 100%;
   padding: 0.8rem;
-  border-radius: 0.6rem;
-  background-color: #f4f6f8;
 `
 
 const GlobalStyle = createGlobalStyle`
+  .Resizer {
+    background: #000;
+    opacity: .2;
+    z-index: 1;
+    -moz-box-sizing: border-box;
+    -webkit-box-sizing: border-box;
+    box-sizing: border-box;
+    -moz-background-clip: padding;
+    -webkit-background-clip: padding;
+    background-clip: padding-box;
+  }
+
+  .Resizer:hover {
+    -webkit-transition: all 2s ease;
+    transition: all 2s ease;
+  }
+
+  .Resizer.horizontal {
+    height: 11px;
+    margin: -5px 0;
+    border-top: 5px solid rgba(255, 255, 255, 0);
+    border-bottom: 5px solid rgba(255, 255, 255, 0);
+    cursor: row-resize;
+    width: 100%;
+  }
+
+  .Resizer.horizontal:hover {
+    border-top: 5px solid rgba(0, 0, 0, 0.5);
+    border-bottom: 5px solid rgba(0, 0, 0, 0.5);
+  }
+
+  .Resizer.vertical {
+    width: 11px;
+    margin: 0 -5px;
+    border-left: 5px solid rgba(255, 255, 255, 0);
+    border-right: 5px solid rgba(255, 255, 255, 0);
+    cursor: col-resize;
+  }
+
+  .Resizer.vertical:hover {
+    border-left: 5px solid rgba(0, 0, 0, 0.5);
+    border-right: 5px solid rgba(0, 0, 0, 0.5);
+  }
+  .Resizer.disabled {
+    cursor: not-allowed;
+  }
+  .Resizer.disabled:hover {
+    border-color: transparent;
+  }
+
   .prism-code.prism-code {
     display: flex;
     flex-direction: column;
-    margin-top: 2.4rem;
-    margin-bottom: 2.4rem;
-    padding: 1.6rem;
-    border-radius: 0.6rem;
-    background-color: #000639;
-    font-size: 1.6rem;
+    padding: 8px;
+    background-color: transparent;
+    font-size: 16px;
+    height: calc(100% - 50px);
   }
 `
 
@@ -117,45 +164,52 @@ class Examples extends React.Component {
     return (
       <div>
         <GlobalStyle />
-        <SelectionWrapper>
-          <H3 text="Examples" />
-          <SelectionInputWrapper>
-            <SelectionInput
-              ariaLabelledby="ExamplesLabel"
-              value={this.state.selectedExample}
-              onChange={this.onChangeExample}
-            >
-              {this.props.examples.map(({ name }, i) => (
-                <Option key={name} value={i}>
-                  {name}
-                </Option>
-              ))}
-            </SelectionInput>
-            <ChevronWrapper>
-              <ChevronSVG
-                viewBox="0 0 20 20"
-                preserveAspectRatio="xMidYMid"
-                focusable="false"
-                ariaHidden="true"
-              >
-                <path d="M.326 15.23c.434.434 1.137.434 1.57 0L10 7.127l8.103 8.103c.434.434 1.137.434 1.57 0 .435-.434.435-1.137 0-1.57l-8.887-8.89c-.217-.217-.502-.326-.786-.326s-.57.11-.786.326l-8.89 8.89c-.433.433-.433 1.136.002 1.57z" />
-              </ChevronSVG>
-            </ChevronWrapper>
-          </SelectionInputWrapper>
-        </SelectionWrapper>
+        <H3 text="Examples" />
         <div>
           <p>{this.props.examples[this.state.selectedExample].description}</p>
         </div>
-        <div>
+        <Wrapper>
           <LiveProvider
             code={this.props.examples[this.state.selectedExample].text}
             scope={{ React, styled, ...this.props.scope }}
           >
-            <StyledLivePreview />
-            <LiveEditor />
-            <LiveError />
+            <SplitPane defaultSize="50%" split="vertical">
+              <CodeWrapper>
+                <SelectionWrapper>
+                  <SelectionInputWrapper>
+                    <SelectionInput
+                      ariaLabelledby="ExamplesLabel"
+                      value={this.state.selectedExample}
+                      onChange={this.onChangeExample}
+                    >
+                      {this.props.examples.map(({ name }, i) => (
+                        <Option key={name} value={i}>
+                          {name}
+                        </Option>
+                      ))}
+                    </SelectionInput>
+                    <ChevronWrapper>
+                      <ChevronSVG
+                        viewBox="0 0 20 20"
+                        preserveAspectRatio="xMidYMid"
+                        focusable="false"
+                        ariaHidden="true"
+                      >
+                        <path d="M.326 15.23c.434.434 1.137.434 1.57 0L10 7.127l8.103 8.103c.434.434 1.137.434 1.57 0 .435-.434.435-1.137 0-1.57l-8.887-8.89c-.217-.217-.502-.326-.786-.326s-.57.11-.786.326l-8.89 8.89c-.433.433-.433 1.136.002 1.57z" />
+                      </ChevronSVG>
+                    </ChevronWrapper>
+                  </SelectionInputWrapper>
+                </SelectionWrapper>
+                <LiveEditor />
+                <LiveError />
+              </CodeWrapper>
+              <div>
+                <PreviewHeader>Live preview</PreviewHeader>
+                <StyledLivePreview />
+              </div>
+            </SplitPane>
           </LiveProvider>
-        </div>
+        </Wrapper>
       </div>
     )
   }
