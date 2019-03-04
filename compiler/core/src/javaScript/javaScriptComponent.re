@@ -554,7 +554,7 @@ let createJSXElement =
   };
 };
 
-let ieFixClassname = "'lona--ie-flex-1-1-auto'";
+let flexFixClassname = "lona--flex-1-1-0percent";
 
 let rec layerToJavaScriptAST =
         (
@@ -646,7 +646,7 @@ let rec layerToJavaScriptAST =
                   BinaryExpression({
                     left: focusRingExpression,
                     operator: Plus,
-                    right: StringLiteral(ieFixClassname),
+                    right: StringLiteral(flexFixClassname),
                   });
                 } else {
                   focusRingExpression;
@@ -665,7 +665,7 @@ let rec layerToJavaScriptAST =
           | (true, ReactDOM) => [
               JSXAttribute({
                 name: "className",
-                value: Identifier([ieFixClassname]),
+                value: StringLiteral(flexFixClassname),
               }),
             ]
           | _ => []
