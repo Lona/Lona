@@ -76,7 +76,7 @@ function createComponentArtboard(component, measured) {
   const componentDirectoryPath = path.dirname(name);
 
   const totalWidth =
-    marginHorizontal * 2 +
+    marginHorizontal +
     prefixSum(columnWidths, columnWidths.length, symbolHorizontalSpacing);
 
   const totalHeight =
