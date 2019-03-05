@@ -5,55 +5,6 @@ const generateId = require("sketch-file/generateId");
 const { TextStyles } = require("react-sketchapp");
 const createSymbol = require("./symbol");
 
-function findComponentsInWorkspace(startingPath, dir, done) {
-  let results = [];
-
-  fs.readdir(dir, (err, list) => {
-    if (err) {
-      return done(err);
-    }
-
-    let pending = list.length;
-
-    if (!pending) {
-      return done(null, results);
-    }
-
-    list.forEach(file => {
-      const fullPath = path.resolve(dir, file);
-
-      fs.stat(fullPath, (err, stat) => {
-        if (stat && stat.isDirectory()) {
-          findComponentsInWorkspace(
-            `${startingPath}/${file}`,
-            fullPath,
-            (err, res) => {
-              if (err) {
-                done(err);
-                return;
-              }
-
-              results = results.concat(res);
-
-              if (!--pending) {
-                done(null, results);
-              }
-            }
-          );
-          return;
-        }
-        if (path.extname(fullPath) === ".component") {
-          results.push(`${startingPath}/${file.replace(/\.component$/gi, "")}`);
-        }
-
-        if (!--pending) {
-          done(null, results);
-        }
-      });
-    });
-  });
-}
-
 function loadComponent(config, componentPath) {
   const relativeComponentPath = path
     .relative(config.paths.workspace, componentPath)
