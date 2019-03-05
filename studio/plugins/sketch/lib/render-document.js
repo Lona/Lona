@@ -3,8 +3,8 @@ const path = require("path");
 
 const parseColor = require("color-parse");
 const generateId = require("sketch-file/generateId");
-const { TextStyles } = require("react-sketchapp");
-const createSymbol = require("./symbol");
+const { TextStyles, renderToJSON } = require("react-sketchapp");
+const createComponentLayerCollection = require("./component-layer-collection");
 
 function loadComponent(config, componentPath) {
   const relativeComponentPath = path
@@ -23,57 +23,27 @@ function loadComponent(config, componentPath) {
   }
 }
 
-function generateSymbols(components) {
-  return components.reduce((prev, component) => {
-    if (!component) {
-      return prev;
-    }
+function arrangeComponentLayerCollections(collections) {
+  return collections.reduce(
+    (acc, collection) => {
+      const { layers, offset } = acc;
+      const { artboard, symbols } = collection;
 
-    prev = prev.concat(
-      [].concat(
-        ...component.meta.examples.map(example => {
-          return component.meta.devices
-            .map(device => {
-              try {
-                return createSymbol(
-                  component.compiled,
-                  example.params,
-                  `${example.name}/${device.name}`,
-                  { width: device.width }
-                );
-              } catch (err) {
-                console.error("skipping " + component.name);
-                console.error(err);
-                return undefined;
-              }
-            })
-            .filter(x => x);
-        })
-      )
-    );
-
-    return prev;
-  }, []);
-}
-
-function arrangeSymbols(symbols) {
-  return symbols.reduce(
-    (acc, symbol) => {
-      const { result, offset } = acc;
-
-      symbol.frame.y = offset;
-      result.push(symbol);
+      const arranged = [artboard, ...symbols].map(layer => {
+        layer.frame.y += offset;
+        return layer;
+      });
 
       return {
-        result,
-        offset: offset + symbol.frame.height + 48
+        layers: layers.concat(arranged),
+        offset: offset + artboard.frame.height + 96
       };
     },
     {
-      result: [],
+      layers: [],
       offset: 0
     }
-  );
+  ).layers;
 }
 
 module.exports = config => {
@@ -116,8 +86,20 @@ module.exports = config => {
     loadComponent(config, componentPath)
   );
 
+  const collections = components
+    .map(component => {
+      try {
+        return createComponentLayerCollection(component);
+      } catch (err) {
+        console.error(`Skipping ${component.name} due to an error`);
+        console.error(err);
+        return undefined;
+      }
+    })
+    .filter(x => x);
+
   return {
-    layers: arrangeSymbols(generateSymbols(components)).result,
+    layers: arrangeComponentLayerCollections(collections),
     textStyles: TextStyles.toJSON(),
     colors
   };
