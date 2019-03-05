@@ -1,85 +1,97 @@
-const fs = require('fs');
-const path = require('path')
+const fs = require("fs");
+const path = require("path");
 
-const generateId = require('sketch-file/generateId');
-const { TextStyles } = require('react-sketchapp');
-const createSymbol = require('./symbol');
+const generateId = require("sketch-file/generateId");
+const { TextStyles } = require("react-sketchapp");
+const createSymbol = require("./symbol");
 
 function findComponentsInWorkspace(startingPath, dir, done) {
-  let results = []
+  let results = [];
 
   fs.readdir(dir, (err, list) => {
     if (err) {
-      return done(err)
+      return done(err);
     }
 
-    let pending = list.length
+    let pending = list.length;
 
     if (!pending) {
-      return done(null, results)
+      return done(null, results);
     }
 
     list.forEach(file => {
-      const fullPath = path.resolve(dir, file)
+      const fullPath = path.resolve(dir, file);
 
       fs.stat(fullPath, (err, stat) => {
         if (stat && stat.isDirectory()) {
-          findComponentsInWorkspace(`${startingPath}/${file}`, fullPath, (err, res) => {
-            if (err) {
-              done(err)
-              return
-            }
+          findComponentsInWorkspace(
+            `${startingPath}/${file}`,
+            fullPath,
+            (err, res) => {
+              if (err) {
+                done(err);
+                return;
+              }
 
-            results = results.concat(res)
+              results = results.concat(res);
 
-            if (!--pending) {
-              done(null, results)
+              if (!--pending) {
+                done(null, results);
+              }
             }
-          })
-          return
+          );
+          return;
         }
-        if (path.extname(fullPath) === '.component') {
-          results.push(`${startingPath}/${file.replace(/\.component$/gi, '')}`)
+        if (path.extname(fullPath) === ".component") {
+          results.push(`${startingPath}/${file.replace(/\.component$/gi, "")}`);
         }
 
         if (!--pending) {
-          done(null, results)
+          done(null, results);
         }
       });
     });
-  })
+  });
 }
 
-function loadComponent(workspace, output, componentPath) {
+function loadComponent(config, componentPath) {
+  const relativeComponentPath = path
+    .relative(config.paths.workspace, componentPath)
+    .replace(/\.component$/gi, "");
   try {
     return {
-      name: componentPath,
-      compiled: require(path.join(output, componentPath)).default,
-      meta: JSON.parse(
-        fs.readFileSync(path.join(workspace, `${componentPath}.component`)),
-      ),
-    }
-  } catch(err) {
-    console.error('skipping ' + componentPath)
-    console.error(err)
+      name: relativeComponentPath,
+      compiled: require(path.join(config.paths.output, relativeComponentPath))
+        .default,
+      meta: JSON.parse(fs.readFileSync(componentPath))
+    };
+  } catch (err) {
+    console.error("skipping " + componentPath);
+    console.error(err);
   }
 }
 
 function generateSymbols(components) {
   return components.reduce((prev, component) => {
     if (!component) {
-      return prev
+      return prev;
     }
     prev = prev.concat(
-      component.meta.examples.map(example => {
-        try {
-          return createSymbol(component.compiled, example.params, example.name)
-        } catch (err) {
-          console.error('skipping ' + component.name)
-          console.error(err)
-          return undefined
-        }
-      }).filter(x => x),
+      component.meta.examples
+        .map(example => {
+          try {
+            return createSymbol(
+              component.compiled,
+              example.params,
+              example.name
+            );
+          } catch (err) {
+            console.error("skipping " + component.name);
+            console.error(err);
+            return undefined;
+          }
+        })
+        .filter(x => x)
     );
     return prev;
   }, []);
@@ -95,47 +107,44 @@ function arrangeSymbols(symbols) {
 
       return {
         result,
-        offset: offset + symbol.frame.height + 48,
+        offset: offset + symbol.frame.height + 48
       };
     },
     {
       result: [],
-      offset: 0,
-    },
-  )
+      offset: 0
+    }
+  );
 }
 
-module.exports = (workspace, output) => {
-  const _TextStyles = require(path.join(output, './textStyles')).default;
+module.exports = config => {
+  const _TextStyles = require(config.paths.textStyles
+    .replace(config.paths.workspace, config.paths.output)
+    .replace(/\.json$/gi, "")).default;
+
+  const _Colors = require(config.paths.colors
+    .replace(config.paths.workspace, config.paths.output)
+    .replace(/\.json$/gi, "")).default;
 
   TextStyles.create(
     {
       idMap: Object.keys(_TextStyles).reduce((prev, k) => {
         prev[k] = generateId(k);
         return prev;
-      }, {}),
+      }, {})
     },
     Object.keys(_TextStyles).reduce((prev, k) => {
       prev[k] = _TextStyles[k];
       return prev;
-    }, {}),
+    }, {})
   );
 
-  return new Promise((resolve, reject) => {
-    findComponentsInWorkspace('.', workspace, (err, componentPaths) => {
-      if (err) {
-        reject(err)
-        return
-      }
+  const components = config.paths.components.map(componentPath =>
+    loadComponent(config, componentPath)
+  );
 
-      const components = componentPaths.map(
-        componentPath => loadComponent(workspace, output, componentPath)
-      )
-
-      resolve({
-        layers: arrangeSymbols(generateSymbols(components)).result,
-        textStyles: TextStyles.toJSON(),
-      })
-    })
-  })
+  return {
+    layers: arrangeSymbols(generateSymbols(components)).result,
+    textStyles: TextStyles.toJSON()
+  };
 };

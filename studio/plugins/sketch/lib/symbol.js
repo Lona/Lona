@@ -13,6 +13,7 @@ module.exports = function createSymbol(Component, props, name) {
   const componentName = displayName(Component);
   const masterName = name ? `${componentName}/${name}` : componentName;
   const symbolID = generateId(masterName);
+  props.key = symbolID;
   const symbolMaster = renderToJSON(
     React.createElement(
       "symbolmaster",

@@ -1,6 +1,6 @@
 const fs = require("fs");
 const path = require("path");
-const { exec } = require("child_process");
+const { exec, execSync } = require("child_process");
 const {
   setup,
   sendRequest,
@@ -44,6 +44,11 @@ Promise.all([sendRequest("workspacePath"), sendRequest("compilerPath")])
       }
     }
 
+    const config = JSON.parse(
+      execSync(`node "${compiler}" config "${workspace}"`)
+    );
+    config.paths.output = output;
+
     return new Promise((resolve, reject) => {
       exec(
         `node "${compiler}" workspace js "${workspace}" "${output}" --framework=reactsketchapp`,
@@ -55,16 +60,15 @@ Promise.all([sendRequest("workspacePath"), sendRequest("compilerPath")])
           }
           console.error(stdout);
           console.error(stderr);
-          return resolve([workspace, output]);
+          return resolve(config);
         }
       );
     });
   })
-  .then(([workspace, output]) => {
-    return renderDocument(workspace, output).then(({ layers, textStyles }) => {
-      const outputFile = path.join(output, "./library.sketch");
-      return modifySketchTemplate(layers, textStyles, outputFile);
-    });
+  .then(config => {
+    const { layers, textStyles } = renderDocument(config);
+    const outputFile = path.join(config.paths.output, "./library.sketch");
+    return modifySketchTemplate(layers, textStyles, outputFile);
   })
   .catch(x => console.error(x))
   .then(() => process.exit(0));
