@@ -42,12 +42,30 @@ function findImages(layers) {
   return images;
 }
 
-function modifySketchTemplate(layers, textStyles, output) {
+function modifySketchTemplate({ layers, textStyles, colors }, output) {
   const sketchDoc = createNewSketchFile(generateId(output));
 
   const images = findImages(layers);
 
   sketchDoc.document.layerTextStyles.objects = textStyles;
+  sketchDoc.document.assets.colors = colors.map(c => ({
+    _class: "color",
+    alpha: c.alpha,
+    blue: c.blue,
+    green: c.green,
+    red: c.red
+  }));
+  sketchDoc.document.assets.colorAssets = colors.map(c => ({
+    _class: "MSImmutableColorAsset",
+    name: c.name,
+    color: {
+      _class: "color",
+      alpha: c.alpha,
+      blue: c.blue,
+      green: c.green,
+      red: c.red
+    }
+  }));
   sketchDoc.pages[0].layers = sketchDoc.pages[0].layers.concat(layers);
   sketchDoc.images = images;
 
@@ -97,9 +115,9 @@ Promise.all([sendRequest("workspacePath"), sendRequest("compilerPath")])
     });
   })
   .then(config => {
-    const { layers, textStyles } = renderDocument(config);
+    const values = renderDocument(config);
     const outputFile = path.join(config.paths.output, "./library.sketch");
-    return modifySketchTemplate(layers, textStyles, outputFile);
+    return modifySketchTemplate(values, outputFile);
   })
   .catch(x => console.error(x))
   .then(() => process.exit(0));

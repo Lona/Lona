@@ -1,6 +1,7 @@
 const fs = require("fs");
 const path = require("path");
 
+const parseColor = require("color-parse");
 const generateId = require("sketch-file/generateId");
 const { TextStyles } = require("react-sketchapp");
 const createSymbol = require("./symbol");
@@ -73,9 +74,23 @@ module.exports = config => {
     .replace(config.paths.workspace, config.paths.output)
     .replace(/\.json$/gi, "")).default;
 
-  const _Colors = require(config.paths.colors
-    .replace(config.paths.workspace, config.paths.output)
-    .replace(/\.json$/gi, "")).default;
+  const _Colors = require(config.paths.colors);
+
+  const colors = _Colors.colors
+    .map(color => {
+      const parsed = parseColor(color.value);
+      if (!parsed) {
+        return;
+      }
+      return {
+        name: color.name,
+        red: parsed.values[0] / 255,
+        green: parsed.values[1] / 255,
+        blue: parsed.values[2] / 255,
+        alpha: parsed.alpha
+      };
+    })
+    .filter(x => x);
 
   TextStyles.create(
     {
@@ -96,6 +111,7 @@ module.exports = config => {
 
   return {
     layers: arrangeSymbols(generateSymbols(components)).result,
-    textStyles: TextStyles.toJSON()
+    textStyles: TextStyles.toJSON(),
+    colors
   };
 };
