@@ -59,7 +59,7 @@ class PluginMenu: NSMenu {
         if !additionalMenuItems.isEmpty {
             additionalMenuItems.append(NSMenuItem.separator())
 
-            let nodeDebuggerMenuItem = NSMenuItem(title: "Debug mode enabled", action: #selector(toggleNodeDebugger), keyEquivalent: "")
+            let nodeDebuggerMenuItem = NSMenuItem(title: "Debug mode", action: #selector(toggleNodeDebugger), keyEquivalent: "")
             nodeDebuggerMenuItem.state = LonaPlugins.nodeDebuggerIsEnabled ? .on : .off
             nodeDebuggerMenuItem.target = self
             nodeDebuggerMenuItem.isEnabled = true
