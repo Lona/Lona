@@ -10,7 +10,8 @@ const displayName = Component =>
   Component.displayName || Component.name || `UnknownSymbol${nextId()}`;
 
 module.exports = function createSymbol(Component, props, name) {
-  const masterName = name || displayName(Component);
+  const componentName = displayName(Component);
+  const masterName = name ? `${componentName}/${name}` : componentName;
   const symbolID = generateId(masterName);
   const symbolMaster = renderToJSON(
     React.createElement(
