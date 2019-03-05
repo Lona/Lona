@@ -4,6 +4,7 @@ const qs = require('querystring')
 const { exec } = require('child_process')
 const { getOptions } = require('loader-utils')
 const validateOptions = require('schema-utils')
+const LonaCompilerError = require('./LonaCompilerError')
 
 const optionsSchema = require('./options-schema.json')
 
@@ -35,8 +36,8 @@ function lonac(command, filePath, options, callback) {
         : ''
     } "${filePath}"`,
     (err, stdout, stderr) => {
-      if (err) {
-        callback(stderr || err)
+      if (err || (!stdout && stderr)) {
+        callback(stderr ? new LonaCompilerError(stderr) : err)
         return
       }
 
