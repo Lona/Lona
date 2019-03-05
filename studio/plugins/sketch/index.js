@@ -1,5 +1,6 @@
 const fs = require("fs");
 const path = require("path");
+const { Buffer } = require("buffer");
 const { exec, execSync } = require("child_process");
 const {
   setup,
@@ -14,11 +15,41 @@ const {
 } = require("sketch-file");
 const renderDocument = require("./lib/render-document");
 
+function findImages(layers) {
+  let images = {};
+  layers.forEach(layer => {
+    if (layer && layer.style && layer.style.fills) {
+      layer.style.fills.forEach(fill => {
+        if (!fill.image) {
+          return;
+        }
+        if (fill.image.data && fill.image.sha1) {
+          images[fill.image.sha1._data] = Buffer.from(
+            fill.image.data._data,
+            "base64"
+          );
+          fill.image._ref = "images/" + fill.image.sha1._data;
+          delete fill.image.data;
+          delete fill.image.sha1;
+          fill.image._class = "MSJSONFileReference";
+        }
+      });
+    }
+    if (layer.layers) {
+      Object.assign(images, findImages(layer.layers));
+    }
+  });
+  return images;
+}
+
 function modifySketchTemplate(layers, textStyles, output) {
   const sketchDoc = createNewSketchFile(generateId(output));
 
+  const images = findImages(layers);
+
   sketchDoc.document.layerTextStyles.objects = textStyles;
   sketchDoc.pages[0].layers = sketchDoc.pages[0].layers.concat(layers);
+  sketchDoc.images = images;
 
   return writeSketchFile(sketchDoc, output);
 }
