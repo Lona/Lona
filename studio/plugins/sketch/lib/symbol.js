@@ -1,7 +1,7 @@
-const React = require('react');
-const generateId = require('sketch-file/generateId');
+const React = require("react");
+const generateId = require("sketch-file/generateId");
 
-const { renderToJSON } = require('react-sketchapp');
+const { renderToJSON } = require("react-sketchapp");
 
 let id = 0;
 const nextId = () => ++id; // eslint-disable-line
@@ -15,15 +15,13 @@ module.exports = function createSymbol(Component, props, name) {
   const symbolID = generateId(masterName);
   const symbolMaster = renderToJSON(
     React.createElement(
-      'symbolmaster',
+      "symbolmaster",
       {
         symbolID,
         name: masterName
       },
-      [
-        React.createElement(Component, props)
-      ]
+      [React.createElement(Component, props)]
     )
   );
   return symbolMaster;
-}
+};
