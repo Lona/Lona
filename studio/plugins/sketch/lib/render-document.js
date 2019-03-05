@@ -28,23 +28,30 @@ function generateSymbols(components) {
     if (!component) {
       return prev;
     }
+
     prev = prev.concat(
-      component.meta.examples
-        .map(example => {
-          try {
-            return createSymbol(
-              component.compiled,
-              example.params,
-              example.name
-            );
-          } catch (err) {
-            console.error("skipping " + component.name);
-            console.error(err);
-            return undefined;
-          }
+      [].concat(
+        ...component.meta.examples.map(example => {
+          return component.meta.devices
+            .map(device => {
+              try {
+                return createSymbol(
+                  component.compiled,
+                  example.params,
+                  `${example.name}/${device.name}`,
+                  { width: device.width }
+                );
+              } catch (err) {
+                console.error("skipping " + component.name);
+                console.error(err);
+                return undefined;
+              }
+            })
+            .filter(x => x);
         })
-        .filter(x => x)
+      )
     );
+
     return prev;
   }, []);
 }
