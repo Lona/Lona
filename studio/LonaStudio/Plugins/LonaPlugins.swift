@@ -49,10 +49,17 @@ class LonaPlugins {
 
             let rpcService = RPCService()
 
-            var arguments = [url.appendingPathComponent(config.main).path]
+            var arguments: [String] = []
+
             if let command = config.command {
-                arguments.insert(url.appendingPathComponent(command).path, at: 0)
+                arguments.append(url.appendingPathComponent(command).path)
             }
+
+            if LonaPlugins.nodeDebuggerIsEnabled {
+                arguments.append("--inspect-brk")
+            }
+
+            arguments.append(url.appendingPathComponent(config.main).path)
 
             let sendData = LonaNode.launch(
                 arguments: arguments,
@@ -190,5 +197,16 @@ class LonaPlugins {
         }
 
         return files
+    }
+
+    private static var nodeDebuggerIsEnabledKey = "Node debugger enabled"
+
+    static var nodeDebuggerIsEnabled: Bool {
+        get {
+            return UserDefaults.standard.bool(forKey: nodeDebuggerIsEnabledKey)
+        }
+        set {
+            UserDefaults.standard.set(newValue, forKey: nodeDebuggerIsEnabledKey)
+        }
     }
 }

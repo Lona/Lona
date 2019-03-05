@@ -11,6 +11,7 @@ import Foundation
 
 class PluginMenu: NSMenu {
     var additionalMenuItems: [NSMenuItem] = []
+    var nodeDebuggerMenuItem: NSMenuItem?
 
     required init(coder decoder: NSCoder) {
         super.init(coder: decoder)
@@ -48,12 +49,25 @@ class PluginMenu: NSMenu {
             return results
         })
 
-        let additionalMenuItems: [NSMenuItem] = menuItemLists.reduce([], { acc, items in
+        var additionalMenuItems: [NSMenuItem] = menuItemLists.reduce([], { acc, items in
             var acc = acc
             acc.append(NSMenuItem.separator())
             acc.append(contentsOf: items)
             return acc
         })
+
+        if !additionalMenuItems.isEmpty {
+            additionalMenuItems.append(NSMenuItem.separator())
+
+            let nodeDebuggerMenuItem = NSMenuItem(title: "Debug mode enabled", action: #selector(toggleNodeDebugger), keyEquivalent: "")
+            nodeDebuggerMenuItem.state = LonaPlugins.nodeDebuggerIsEnabled ? .on : .off
+            nodeDebuggerMenuItem.target = self
+            nodeDebuggerMenuItem.isEnabled = true
+
+            additionalMenuItems.append(nodeDebuggerMenuItem)
+
+            self.nodeDebuggerMenuItem = nodeDebuggerMenuItem
+        }
 
         self.additionalMenuItems = additionalMenuItems
 
@@ -63,4 +77,12 @@ class PluginMenu: NSMenu {
     }
 
     static var shared: PluginMenu?
+
+    @objc func toggleNodeDebugger(_ sender: AnyObject) {
+        LonaPlugins.nodeDebuggerIsEnabled = !LonaPlugins.nodeDebuggerIsEnabled
+
+        if let nodeDebuggerMenuItem = nodeDebuggerMenuItem {
+            nodeDebuggerMenuItem.state = LonaPlugins.nodeDebuggerIsEnabled ? .on : .off
+        }
+    }
 }
