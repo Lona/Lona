@@ -17,6 +17,7 @@ enum RequestMethod: String {
     case workspacePath
     case compilerPath
     case customParameters
+    case devicePresetList
 }
 
 private enum PluginPersistenceScope: String {
@@ -69,6 +70,14 @@ class PluginAPI {
             let result = CSUserPreferences.compilerURL?.path
 
             onSuccess(result)
+            return
+        case .devicePresetList:
+            if let data = try? JSONEncoder().encode(Canvas.devicePresets),
+                let json = try? JSONSerialization.jsonObject(with: data, options: [.allowFragments]) {
+                onSuccess(json)
+            } else {
+                onFailure(RPCError.InternalError())
+            }
             return
         case .customParameters:
             var title = "Parameters"

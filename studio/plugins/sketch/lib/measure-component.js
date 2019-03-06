@@ -1,12 +1,14 @@
 const { View, renderToJSON } = require("react-sketchapp");
 const React = require("react");
 
+const deviceInfo = require("./device-info");
+
 function measureElement(element) {
   return renderToJSON(element).frame;
 }
 
 /* Measure each combination of example/device */
-function measureComponentElements(component) {
+function measureComponentElements(component, devicePresetList) {
   const {
     compiled,
     meta: { examples, devices }
@@ -17,7 +19,7 @@ function measureComponentElements(component) {
       return measureElement(
         React.createElement(
           View,
-          { style: { width: device.width } },
+          { style: { width: deviceInfo(device, devicePresetList).width } },
           React.createElement(compiled, example.params)
         )
       );
@@ -44,8 +46,8 @@ function measureColumnWidths(elements) {
   return columnWidths;
 }
 
-module.exports = function measureComponent(component) {
-  const elements = measureComponentElements(component);
+module.exports = function measureComponent(component, devicePresetList) {
+  const elements = measureComponentElements(component, devicePresetList);
   const rowHeights = measureRowHeights(elements);
   const columnWidths = measureColumnWidths(elements);
 

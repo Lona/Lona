@@ -95,7 +95,10 @@ module.exports = config => {
   const collections = components
     .map(component => {
       try {
-        return createComponentLayerCollection(component);
+        return createComponentLayerCollection(
+          component,
+          config.devicePresetList
+        );
       } catch (err) {
         console.error(`Skipping ${component.name} due to an error`);
         console.error(err);

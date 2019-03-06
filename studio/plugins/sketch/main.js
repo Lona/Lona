@@ -72,9 +72,10 @@ function modifySketchTemplate({ layers, textStyles, colors }, output) {
 module.exports = function(output) {
   return Promise.all([
     sendRequest("workspacePath"),
-    sendRequest("compilerPath")
+    sendRequest("compilerPath"),
+    sendRequest("devicePresetList")
   ])
-    .then(async ([workspace, compiler]) => {
+    .then(async ([workspace, compiler, devicePresetList]) => {
       const {
         sketchFilePath,
         componentPathFilter
@@ -113,6 +114,7 @@ module.exports = function(output) {
           textStyles: compilerConfig.paths.textStyles,
           components: compilerConfig.paths.components
         },
+        devicePresetList,
         componentPathFilter
       };
 

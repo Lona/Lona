@@ -9,6 +9,7 @@ const {
 } = require("react-sketchapp");
 
 const measureComponent = require("./measure-component");
+const deviceInfo = require("./device-info");
 const createSymbol = require("./symbol");
 
 function flatten(arrays) {
@@ -31,7 +32,7 @@ const headerHeight = 133; /* Determined by measuring from within Sketch */
 const symbolVerticalSpacing = 40;
 const symbolHorizontalSpacing = 48;
 
-function createComponentSymbols(component, measured) {
+function createComponentSymbols(component, measured, devicePresetList) {
   const {
     compiled,
     meta: { examples, devices }
@@ -41,11 +42,16 @@ function createComponentSymbols(component, measured) {
   return flatten(
     examples.map((example, exampleIndex) =>
       devices.map((device, deviceIndex) => {
+        const { name: deviceName, width: deviceWidth } = deviceInfo(
+          device,
+          devicePresetList
+        );
+
         const symbolElement = createSymbol(
           compiled,
           example.params,
-          `${example.name}/${device.name}`,
-          { width: device.width }
+          `${example.name}/${deviceName}`,
+          { width: deviceWidth }
         );
 
         const symbol = renderToJSON(symbolElement);
@@ -65,11 +71,7 @@ function createComponentSymbols(component, measured) {
 }
 
 function createComponentArtboard(component, measured) {
-  const {
-    name,
-    compiled,
-    meta: { examples, devices }
-  } = component;
+  const { name, compiled } = component;
   const { rowHeights, columnWidths } = measured;
 
   const componentName = path.basename(name);
@@ -91,7 +93,7 @@ function createComponentArtboard(component, measured) {
       <View name={"Header"} style={styles.header}>
         {componentDirectoryPath && (
           <Text name={"Label"} style={styles.componentLabel}>
-            {componentDirectoryPath.toUpperCase()}
+            {componentDirectoryPath.replace("/", " / ").toUpperCase()}
           </Text>
         )}
         <Text name={"Title"} style={styles.componentTitle}>
@@ -102,16 +104,19 @@ function createComponentArtboard(component, measured) {
   );
 }
 
-module.exports = function createComponentLayerCollection(component) {
+module.exports = function createComponentLayerCollection(
+  component,
+  devicePresetList
+) {
   const {
     name,
     compiled,
     meta: { examples, devices }
   } = component;
 
-  const measured = measureComponent(component);
+  const measured = measureComponent(component, devicePresetList);
   const artboard = createComponentArtboard(component, measured);
-  const symbols = createComponentSymbols(component, measured);
+  const symbols = createComponentSymbols(component, measured, devicePresetList);
 
   return { artboard, symbols };
 };
