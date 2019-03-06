@@ -93,7 +93,7 @@ module.exports = ({ actions, graphql }) => {
             path: node.lona.path,
             component: colorsTemplate,
             context: {
-              colors: node.lona.content,
+              colors: JSON.parse(node.lona.content),
             },
           })
         }
@@ -103,7 +103,7 @@ module.exports = ({ actions, graphql }) => {
             path: node.lona.path,
             component: textStylesTemplate,
             context: {
-              textStyles: node.lona.content,
+              textStyles: JSON.parse(node.lona.content),
             },
           })
         }
@@ -113,7 +113,7 @@ module.exports = ({ actions, graphql }) => {
             path: node.lona.path,
             component: gradientsTemplate,
             context: {
-              gradients: node.lona.content,
+              gradients: JSON.parse(node.lona.content),
             },
           })
         }
@@ -123,7 +123,7 @@ module.exports = ({ actions, graphql }) => {
             path: node.lona.path,
             component: shadowsTemplate,
             context: {
-              shadows: node.lona.content,
+              shadows: JSON.parse(node.lona.content),
             },
           })
         }
