@@ -75,7 +75,10 @@ module.exports = function(output) {
     sendRequest("compilerPath")
   ])
     .then(async ([workspace, compiler]) => {
-      const { sketchFilePath } = await requestUserParameters();
+      const {
+        sketchFilePath,
+        componentPathFilter
+      } = await requestUserParameters();
 
       console.error(`Generating sketch file at ${sketchFilePath}`);
 
@@ -97,11 +100,21 @@ module.exports = function(output) {
         }
       }
 
-      const config = JSON.parse(
+      const compilerConfig = JSON.parse(
         execSync(`node "${compiler}" config "${workspace}"`)
       );
-      config.paths.output = output;
-      config.paths.sketchFilePath = sketchFilePath;
+
+      const config = {
+        paths: {
+          output,
+          sketchFile: sketchFilePath,
+          workspace: compilerConfig.paths.workspace,
+          colors: compilerConfig.paths.colors,
+          textStyles: compilerConfig.paths.textStyles,
+          components: compilerConfig.paths.components
+        },
+        componentPathFilter
+      };
 
       return new Promise((resolve, reject) => {
         exec(
@@ -120,10 +133,8 @@ module.exports = function(output) {
       });
     })
     .then(config => {
-      const sketchFilePath = config.paths.sketchFilePath;
-      console.error(`Generating sketch file at ${sketchFilePath}.`);
       const values = renderDocument(config);
-      return modifySketchTemplate(values, sketchFilePath);
+      return modifySketchTemplate(values, config.paths.sketchFile);
     })
     .catch(x => console.error(x))
     .then(() => process.exit(0));

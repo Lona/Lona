@@ -12,7 +12,10 @@ function formatSketchFileUrl(url) {
 
 module.exports = async function requestUserParameters() {
   const outputUrlKey = "Save sketch file as";
-  const componentsToIncludeKey = "Which components?";
+  const componentsFilterKey = "Which components?";
+  const componentsFilterAll = "All";
+  const componentsFilterInclude = "Include components matching";
+  const componentsFilterExclude = "Exclude components matching";
   const oneDay = 1000 * 60 * 60 * 24;
 
   const response = await sendRequest(
@@ -23,12 +26,12 @@ module.exports = async function requestUserParameters() {
       params: [
         { name: outputUrlKey, type: "URL" },
         {
-          name: componentsToIncludeKey,
+          name: componentsFilterKey,
           type: {
             cases: [
-              "All",
-              { case: "Include components matching", type: "String" },
-              { case: "Exclude components matching", type: "String" }
+              componentsFilterAll,
+              { case: componentsFilterInclude, type: "String" },
+              { case: componentsFilterExclude, type: "String" }
             ],
             name: "Enum"
           }
@@ -54,6 +57,27 @@ module.exports = async function requestUserParameters() {
   }
 
   return {
-    sketchFilePath: formatSketchFileUrl(response[outputUrlKey])
+    sketchFilePath: formatSketchFileUrl(response[outputUrlKey]),
+    componentPathFilter: componentPath => {
+      const filterValue = response[componentsFilterKey];
+
+      if (!filterValue) {
+        return true;
+      }
+
+      switch (filterValue.case) {
+        case componentsFilterAll: {
+          return true;
+        }
+        case componentsFilterInclude: {
+          const regex = new RegExp(filterValue.data);
+          return regex.test(componentPath);
+        }
+        case componentsFilterExclude: {
+          const regex = new RegExp(filterValue.data);
+          return !regex.test(componentPath);
+        }
+      }
+    }
   };
 };

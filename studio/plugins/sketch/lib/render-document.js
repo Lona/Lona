@@ -83,6 +83,12 @@ module.exports = config => {
   );
 
   const components = config.paths.components
+    .filter(componentPath => {
+      const relativeComponentPath = path
+        .relative(config.paths.workspace, componentPath)
+        .replace(/\.component$/gi, "");
+      return config.componentPathFilter(relativeComponentPath);
+    })
     .map(componentPath => loadComponent(config, componentPath))
     .filter(x => x);
 
