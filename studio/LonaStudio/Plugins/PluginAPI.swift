@@ -16,6 +16,7 @@ enum NotificationMethod: String {
 enum RequestMethod: String {
     case workspacePath
     case compilerPath
+    case customParameters
 }
 
 class PluginAPI {
@@ -45,7 +46,7 @@ class PluginAPI {
     static func handleRequest(
         _ jsonMethod: String,
         _ jsonParams: AnyObject?,
-        onSuccess: (Any?) -> Void,
+        onSuccess: @escaping (Any?) -> Void,
         onFailure: (RPCError) -> Void) {
         guard let method = RequestMethod(rawValue: jsonMethod) else {
             onFailure(RPCError.MethodNotFound())
@@ -63,6 +64,36 @@ class PluginAPI {
 
             onSuccess(result)
             return
+        case .customParameters:
+            var title = "Parameters"
+            var parameters: [CSParameter] = []
+
+            if let jsonParams = jsonParams {
+                let params = CSData.from(json: jsonParams)
+
+                if let value = params.get(key: "title").string {
+                    title = value
+                }
+
+                if let value = params.get(key: "params").array {
+                    parameters = value.map { CSParameter($0) }
+                }
+            }
+
+            DispatchQueue.main.async {
+                CustomParametersEditorView.presentSheet(
+                    titleText: title,
+                    parameters: parameters,
+                    onCompletion: { data in
+                        if let data = data {
+                            let json = CSData.Object(data).toAny()
+                            onSuccess(json)
+                        } else {
+                            onSuccess(nil)
+                        }
+                    }
+                )
+            }
         }
     }
 }

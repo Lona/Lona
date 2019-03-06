@@ -18,7 +18,7 @@ function loadComponent(config, componentPath) {
       meta: JSON.parse(fs.readFileSync(componentPath))
     };
   } catch (err) {
-    console.error("skipping " + componentPath);
+    console.error(`Failed to load ${componentPath}`);
     console.error(err);
   }
 }
@@ -82,9 +82,9 @@ module.exports = config => {
     }, {})
   );
 
-  const components = config.paths.components.map(componentPath =>
-    loadComponent(config, componentPath)
-  );
+  const components = config.paths.components
+    .map(componentPath => loadComponent(config, componentPath))
+    .filter(x => x);
 
   const collections = components
     .map(component => {

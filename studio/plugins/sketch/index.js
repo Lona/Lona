@@ -1,123 +1,19 @@
-const fs = require("fs");
+const os = require("os");
 const path = require("path");
-const { Buffer } = require("buffer");
-const { exec, execSync } = require("child_process");
-const {
-  setup,
-  sendRequest,
-  sendNotification,
-  RPCError
-} = require("stdio-jsonrpc");
-const {
-  createNewSketchFile,
-  writeSketchFile,
-  generateId
-} = require("sketch-file");
-const renderDocument = require("./lib/render-document");
 
-function findImages(layers) {
-  let images = {};
-  layers.forEach(layer => {
-    if (layer && layer.style && layer.style.fills) {
-      layer.style.fills.forEach(fill => {
-        if (!fill.image) {
-          return;
-        }
-        if (fill.image.data && fill.image.sha1) {
-          images[fill.image.sha1._data] = Buffer.from(
-            fill.image.data._data,
-            "base64"
-          );
-          fill.image._ref = "images/" + fill.image.sha1._data;
-          delete fill.image.data;
-          delete fill.image.sha1;
-          fill.image._class = "MSJSONFileReference";
-        }
-      });
-    }
-    if (layer.layers) {
-      Object.assign(images, findImages(layer.layers));
-    }
-  });
-  return images;
-}
+// Choose a directory for the compiler to write generated JS files
+const compilerOutput = path.join(os.tmpdir(), "lona-sketch-plugin-generated");
 
-function modifySketchTemplate({ layers, textStyles, colors }, output) {
-  const sketchDoc = createNewSketchFile(generateId(output));
+// https://gist.github.com/branneman/8048520#gistcomment-1249909
+// Add node_modules to the path, so they're resolved even when loading modules
+// from our compilerOutput directory (which is outside the root of this project)
+process.env["NODE_PATH"] = path.join(__dirname, "node_modules");
+require("module").Module._initPaths();
 
-  const images = findImages(layers);
+// Load generated JS files using babel. Use a custom ignore pattern to use babel
+// even when loading outside this directory.
+require("@babel/register")({
+  ignore: [/node_modules/]
+});
 
-  sketchDoc.document.layerTextStyles.objects = textStyles;
-  sketchDoc.document.assets.colors = colors.map(c => ({
-    _class: "color",
-    alpha: c.alpha,
-    blue: c.blue,
-    green: c.green,
-    red: c.red
-  }));
-  sketchDoc.document.assets.colorAssets = colors.map(c => ({
-    _class: "MSImmutableColorAsset",
-    name: c.name,
-    color: {
-      _class: "color",
-      alpha: c.alpha,
-      blue: c.blue,
-      green: c.green,
-      red: c.red
-    }
-  }));
-  sketchDoc.pages[0].layers = sketchDoc.pages[0].layers.concat(layers);
-  sketchDoc.images = images;
-
-  return writeSketchFile(sketchDoc, output);
-}
-
-Promise.all([sendRequest("workspacePath"), sendRequest("compilerPath")])
-  .then(([workspace, compiler]) => {
-    if (!workspace) {
-      throw new Error("missing workspace path");
-    }
-
-    if (!compiler) {
-      compiler = require.resolve("lonac");
-    }
-
-    // TODO: change that
-    const output = path.join(__dirname, "./generated");
-
-    try {
-      fs.mkdirSync(output, { recursive: true });
-    } catch (err) {
-      if (err.code !== "EEXIST") {
-        throw err;
-      }
-    }
-
-    const config = JSON.parse(
-      execSync(`node "${compiler}" config "${workspace}"`)
-    );
-    config.paths.output = output;
-
-    return new Promise((resolve, reject) => {
-      exec(
-        `node "${compiler}" workspace js "${workspace}" "${output}" --framework=reactsketchapp`,
-        (err, stdout, stderr) => {
-          if (err) {
-            err.stdout = stdout;
-            err.stderr = stderr;
-            return reject(err);
-          }
-          console.error(stdout);
-          console.error(stderr);
-          return resolve(config);
-        }
-      );
-    });
-  })
-  .then(config => {
-    const values = renderDocument(config);
-    const outputFile = path.join(config.paths.output, "./library.sketch");
-    return modifySketchTemplate(values, outputFile);
-  })
-  .catch(x => console.error(x))
-  .then(() => process.exit(0));
+require("./main")(compilerOutput);
