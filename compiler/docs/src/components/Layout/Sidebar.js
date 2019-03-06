@@ -61,7 +61,7 @@ const SubNavigation = ({ subtitle, location }) => {
     <li>
       <NavigationItem to={cleanupLink(subTitleLink)}>
         <SubSubsectionHeader
-          text={subtitle.title}
+          text={capitalise(subtitle.title)}
           selected={selectedSubtitle}
         />
       </NavigationItem>
@@ -115,7 +115,7 @@ const Siderbar = ({ data, location, files }) => {
                             <NavigationItem to={cleanupLink(link)}>
                               <SubsectionHeader
                                 text={
-                                  subsection.title ||
+                                  capitalise(subsection.title) ||
                                   pathToTitle(subsection.path)
                                 }
                                 selected={selected}
