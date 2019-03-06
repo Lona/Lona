@@ -114,7 +114,8 @@ module.exports = function loader(source) {
   // we only want to handle .component or files that were marked as such (for the .json files)
   if (
     path.extname(rawFilePath) !== '.component' &&
-    (!this.resourceQuery || !qs.parse(this.resourceQuery)['?__forceLona'])
+    (!this.resourceQuery || !qs.parse(this.resourceQuery)['?__forceLona']) &&
+    path.extname(rawFilePath) !== '.json'
   ) {
     callback(null, source)
     return
@@ -133,8 +134,13 @@ module.exports = function loader(source) {
     case 'types.json':
       lonac('types', rawFilePath, options, callback)
       break
-    default:
-      lonac('component', rawFilePath, options, callback)
+    default: {
+      if (path.extname(rawFilePath) === '.component') {
+        lonac('component', rawFilePath, options, callback)
+      } else {
+        callback(null, source)
+      }
+    }
   }
 }
 
