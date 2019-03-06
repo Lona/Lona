@@ -53,8 +53,7 @@ export default function Template({ data, pageContext, location }) {
                 propName => `
   ${propName}={${JSON.stringify(params[propName])}}`
               )
-              .join('')}
-/>`,
+              .join('')}${Object.keys(params).length ? '\n' : ''}/>`,
           }
         })}
       />
