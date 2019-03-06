@@ -12,12 +12,12 @@ class CustomParametersEditorView: NSBox {
 
     // MARK: Lifecycle
 
-    init(parameters: [CSParameter]) {
+    init(parameters: [CSParameter], initialValues: [String: CSData]) {
         self.parameters = parameters
 
         super.init(frame: .zero)
 
-        self.currentValues = CustomParametersEditorView.defaultData(for: parameters)
+        self.currentValues = initialValues
 
         setUpViews()
     }
@@ -32,8 +32,8 @@ class CustomParametersEditorView: NSBox {
 
     public var onSubmit: (([String: CSData]) -> Void)?
 
-    static func presentSheet(titleText: String, parameters: [CSParameter], onCompletion: @escaping ([String: CSData]?) -> Void) {
-        let sheetView = CustomParametersEditorView(parameters: parameters)
+    static func presentSheet(titleText: String, parameters: [CSParameter], initialValues: [String: CSData], onCompletion: @escaping ([String: CSData]?) -> Void) {
+        let sheetView = CustomParametersEditorView(parameters: parameters, initialValues: initialValues)
 
         guard let rootViewController = NSApp.mainWindow?.contentViewController else {
             onCompletion(nil)
@@ -115,18 +115,6 @@ class CustomParametersEditorView: NSBox {
     private var valueFields: [CSValueField] = []
 
     private var currentValues: [String: CSData] = [:]
-
-    private static func defaultData(for parameters: [CSParameter]) -> [String: CSData] {
-        var data: [String: CSData] = [:]
-
-        parameters.forEach({ parameter in
-            data[parameter.name] = parameter.hasDefaultValue
-                ? parameter.defaultValue.data
-                : CSValue.defaultValue(for: parameter.type).data
-        })
-
-        return data
-    }
 
     private static var valueFieldOptions: [CSValueField.Options: Bool] = [
         CSValueField.Options.isBordered: true,

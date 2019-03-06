@@ -19,6 +19,12 @@ enum RequestMethod: String {
     case customParameters
 }
 
+private enum PluginPersistenceScope: String {
+    case workspace
+    case global
+    case none
+}
+
 class PluginAPI {
     static func handleNotification(_ jsonMethod: String, _ jsonParams: AnyObject?) {
         guard let method = NotificationMethod(rawValue: jsonMethod) else {
@@ -67,6 +73,8 @@ class PluginAPI {
         case .customParameters:
             var title = "Parameters"
             var parameters: [CSParameter] = []
+            var initialValues: [String: CSData] = [:]
+            var persistenceKeyPath: [String]?
 
             if let jsonParams = jsonParams {
                 let params = CSData.from(json: jsonParams)
@@ -77,6 +85,28 @@ class PluginAPI {
 
                 if let value = params.get(key: "params").array {
                     parameters = value.map { CSParameter($0) }
+                    initialValues = CSParameter.defaultDataObject(for: parameters)
+                }
+
+                if let id = params.get(key: "id").string,
+                    let persistenceScope = PluginPersistenceScope(rawValue:
+                        params.get(key: "persistenceScope").string ?? "workspace") {
+
+                    switch persistenceScope {
+                    case .none:
+                        break
+                    case .workspace:
+                        persistenceKeyPath = [LonaModule.current.url.path, id]
+                    case .global:
+                        persistenceKeyPath = [id]
+                    }
+                }
+
+                if let persistenceKeyPath = persistenceKeyPath {
+                    if let pluginParamsStore = UserDefaults.standard.csData(forKey: PluginAPI.pluginParamsStoreKey),
+                        let stored = pluginParamsStore.get(keyPath: persistenceKeyPath).object {
+                        initialValues = initialValues.merging(stored, uniquingKeysWith: { a, b in b })
+                    }
                 }
             }
 
@@ -84,8 +114,15 @@ class PluginAPI {
                 CustomParametersEditorView.presentSheet(
                     titleText: title,
                     parameters: parameters,
+                    initialValues: initialValues,
                     onCompletion: { data in
                         if let data = data {
+                            if let persistenceKeyPath = persistenceKeyPath {
+                                var pluginParamsStore = UserDefaults.standard.csData(forKey: PluginAPI.pluginParamsStoreKey) ?? CSData.Object([:])
+                                pluginParamsStore.set(keyPath: persistenceKeyPath, to: CSData.Object(data))
+                                UserDefaults.standard.set(pluginParamsStore, forKey: PluginAPI.pluginParamsStoreKey)
+                            }
+
                             let json = CSData.Object(data).toAny()
                             onSuccess(json)
                         } else {
@@ -96,4 +133,6 @@ class PluginAPI {
             }
         }
     }
+
+    private static let pluginParamsStoreKey = "pluginParamsStore"
 }

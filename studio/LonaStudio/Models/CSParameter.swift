@@ -69,3 +69,17 @@ extension CSParameter: Equatable {
         return lhs.name == rhs.name && lhs.type == rhs.type && lhs.defaultValue == rhs.defaultValue
     }
 }
+
+extension CSParameter {
+    static func defaultDataObject(for parameters: [CSParameter]) -> [String: CSData] {
+        var data: [String: CSData] = [:]
+
+        parameters.forEach({ parameter in
+            data[parameter.name] = parameter.hasDefaultValue
+                ? parameter.defaultValue.data
+                : CSValue.defaultValue(for: parameter.type).data
+        })
+
+        return data
+    }
+}
