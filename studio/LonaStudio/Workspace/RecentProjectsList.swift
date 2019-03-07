@@ -175,7 +175,7 @@ extension RecentProjectsTableView: NSTableViewDelegate {
 
 	override func keyDown(with event: NSEvent) {
 		let carriageReturnKeyCode = 36
-		if event.keyCode == carriageReturnKeyCode {
+		if event.keyCode == carriageReturnKeyCode, tableView.selectedRow >= 0 {
 			onOpenProject?(projects[tableView.selectedRow])
 		}
 	}
