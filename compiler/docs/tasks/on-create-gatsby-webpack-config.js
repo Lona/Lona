@@ -7,6 +7,8 @@ const { cwd } = loadConfig()
 module.exports = ({ actions, getConfig }) => {
   const webpackConfig = getConfig()
 
+  let jsRule
+
   webpackConfig.module.rules = webpackConfig.module.rules.map(r => {
     /* eslint-disable no-param-reassign */
     if (r.test && r.test.toString() === /\.jsx?$/.toString()) {
@@ -24,15 +26,23 @@ module.exports = ({ actions, getConfig }) => {
           // styleFramework: 'styledcomponents',
         },
       })
+      jsRule = r
     }
 
     return r
   })
 
+  // use the normal js loader for lona files
+  webpackConfig.module.rules.push({
+    type: 'javascript/auto',
+    test: /(colors|textStyles|shadows)\.json$/,
+    use: jsRule.use,
+  })
+
   webpackConfig.plugins.push(
     new webpack.ContextReplacementPlugin(/.*lona-workspace/, context => {
       Object.assign(context, {
-        regExp: /^\.\/.*\.component$/,
+        regExp: /^\.\/.*\.(component|json)$/,
         request: cwd,
       })
     })

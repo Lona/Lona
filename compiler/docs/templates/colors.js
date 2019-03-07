@@ -10,7 +10,14 @@ const Wrapper = styled.div`
   justify-content: space-between;
 `
 
-export default function Template({ pageContext: { colors }, location }) {
+export default function Template({
+  pageContext: { colors, pathInWorkspace },
+  location,
+}) {
+  pathInWorkspace = pathInWorkspace.slice(1)
+  // eslint-disable-next-line
+  const Colors = require(`lona-workspace/${pathInWorkspace}.json`).default
+
   return (
     <Layout location={location}>
       <ComponentTitle name="Colors" intro={colors.description} />
@@ -18,7 +25,7 @@ export default function Template({ pageContext: { colors }, location }) {
         {colors.colors.map(color => (
           <ColorCard
             key={color.id}
-            color={color.value}
+            color={Colors[color.id]}
             colorName={color.name}
             colorCode={color.value}
           />
