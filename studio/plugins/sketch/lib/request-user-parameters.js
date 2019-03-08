@@ -56,11 +56,12 @@ module.exports = async function requestUserParameters() {
     process.exit(0);
   }
 
+  const filterValue = response[componentsFilterKey];
+  const regex = filterValue ? new RegExp(filterValue.data) : undefined;
+
   return {
     sketchFilePath: formatSketchFileUrl(response[outputUrlKey]),
     componentPathFilter: componentPath => {
-      const filterValue = response[componentsFilterKey];
-
       if (!filterValue) {
         return true;
       }
@@ -70,11 +71,9 @@ module.exports = async function requestUserParameters() {
           return true;
         }
         case componentsFilterInclude: {
-          const regex = new RegExp(filterValue.data);
           return regex.test(componentPath);
         }
         case componentsFilterExclude: {
-          const regex = new RegExp(filterValue.data);
           return !regex.test(componentPath);
         }
       }
