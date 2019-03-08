@@ -86,21 +86,27 @@ function createComponentArtboard(component, measured) {
     prefixSum(rowHeights, rowHeights.length, symbolVerticalSpacing)
 
   return renderToJSON(
-    <Artboard
-      name={name}
-      style={[styles.artboard, { width: totalWidth, height: totalHeight }]}
-    >
-      <View name={'Header'} style={styles.header}>
-        {componentDirectoryPath && (
-          <Text name={'Label'} style={styles.componentLabel}>
-            {componentDirectoryPath.replace('/', ' / ').toUpperCase()}
-          </Text>
-        )}
-        <Text name={'Title'} style={styles.componentTitle}>
-          {componentName}
-        </Text>
-      </View>
-    </Artboard>
+    React.createElement(
+      Artboard,
+      {
+        name,
+        style: [styles.artboard, { width: totalWidth, height: totalHeight }],
+      },
+      React.createElement(View, { name: 'Header', style: styles.header }, [
+        componentDirectoryPath
+          ? React.createElement(
+              Text,
+              { name: 'Label', style: styles.componentLabel, key: 'Label' },
+              componentDirectoryPath.replace('/', ' / ').toUpperCase()
+            )
+          : null,
+        React.createElement(
+          Text,
+          { name: 'Title', style: styles.componentTitle, key: 'title' },
+          componentName
+        ),
+      ])
+    )
   )
 }
 
