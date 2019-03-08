@@ -13,15 +13,10 @@ module.exports = function createSymbol(
   const componentName = displayName(Component)
   const masterName = name ? `${componentName}/${name}` : componentName
   const symbolID = generateId(masterName)
-  const symbolMaster = React.createElement(
-    'symbolmaster',
-    {
-      symbolID,
-      name: masterName,
-      style: symbolStyle,
-    },
-    React.createElement(Component, props)
-  )
 
-  return symbolMaster
+  return (
+    <symbolmaster symbolID={symbolID} name={masterName} style={symbolStyle}>
+      <Component {...props} />
+    </symbolmaster>
+  )
 }

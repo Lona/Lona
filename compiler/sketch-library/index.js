@@ -10,6 +10,7 @@ require('module').Module._initPaths()
 // even when loading outside this directory.
 require('@babel/register')({
   ignore: [/node_modules/],
+  configFile: path.join(__dirname, 'babel.config.js'),
 })
 
 module.exports = require('./lib')

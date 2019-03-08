@@ -5034,10 +5034,10 @@ react-is@^16.8.1, react-is@^16.8.4:
   resolved "https://registry.yarnpkg.com/react-is/-/react-is-16.8.4.tgz#90f336a68c3a29a096a3d648ab80e87ec61482a2"
   integrity sha512-PVadd+WaUDOAciICm/J1waJaSvgq+4rHE/K70j0PFqKhkTBsPv/82UGQJNXAngz1fOQLLxI6z1sEDmJDQhCTAA==
 
-react-sketchapp@^3.0.0-beta.5:
-  version "3.0.0-beta.5"
-  resolved "https://registry.yarnpkg.com/react-sketchapp/-/react-sketchapp-3.0.0-beta.5.tgz#b2bca7b1d2c6e75d51d0a179518e8d7e3d0f4819"
-  integrity sha512-ahAJIUQwfHHW2bGEEzncfgf3SO4sLRT7wnS5o7sKSY9L9h/TWI4Ag8vEvjhKliUwZv9rdEbFwWNUss6v5lJlmQ==
+react-sketchapp@^3.0.0-beta.6:
+  version "3.0.0-beta.6"
+  resolved "https://registry.yarnpkg.com/react-sketchapp/-/react-sketchapp-3.0.0-beta.6.tgz#2fa6a1ea4742e4b286205fa3a97ebb71dfc9c5ad"
+  integrity sha512-1GJyDRKOd6B4rSDty7AwMVrYtLOUys7iChyaPlzu1EmypVlaM1DHG3KYkLFDqbiNtlAXlEPgQDntE5yFAsZ5qQ==
   dependencies:
     "@skpm/sketchapp-json-plugin" "^0.2.0"
     airbnb-prop-types "^2.10.0"
@@ -5545,10 +5545,10 @@ sketch-constants@^1.0.2:
   resolved "https://registry.yarnpkg.com/sketch-constants/-/sketch-constants-1.1.0.tgz#5c2fec53b59b32e7f6f107176e3e54985ad6647d"
   integrity sha1-XC/sU7WbMuf28QcXbj5UmFrWZH0=
 
-sketch-file@^0.1.4:
-  version "0.1.4"
-  resolved "https://registry.yarnpkg.com/sketch-file/-/sketch-file-0.1.4.tgz#9aa2d2c6494de9ee29ebb6ed3bb2039c2875d674"
-  integrity sha512-fKX/YqjGlKgnqGaPMGg0MvoQlnagEwSdRr5FF+2PPjPF+3ksFEcnpDke+4EFRsJsGSeyYM/pXJQNmS7IaOhw7g==
+sketch-file@^0.1.5:
+  version "0.1.5"
+  resolved "https://registry.yarnpkg.com/sketch-file/-/sketch-file-0.1.5.tgz#61bc47b05654664d08951db390bf87af593ff145"
+  integrity sha512-JJkkfPnEEu7DZGPx9zOihbZz4thMIOtZ+RBL1P2SXCubGrQd5Z8WdLR2ArYEbMC+8fGWTfMEKJGDKHttNX5R+w==
   dependencies:
     jszip "^3.1.5"
     seedrandom "^2.4.4"
