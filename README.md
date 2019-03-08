@@ -20,7 +20,7 @@ Lona consists primarily of 3 parts:
 
 - [Lona Components](#lona-components) - A data format, `.component`, for cross-platform components
 - [Lona Studio](#lona-studio) - A GUI tool for designing `.component` files
-- [Lona Compiler](#lona-compiler) - A CLI tool & API for for generating UI code from `.component` files
+- [Lona Compiler](#lona-compiler) - A CLI tool & API for generating UI code from `.component` files
 
 Why Lona? Read more about challenges with cross-platform design systems at scale, and how Lona solves them [here](./docs/overview/background.md).
 
