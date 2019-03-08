@@ -5,8 +5,16 @@ const { exec } = require('child_process')
 const renderDocument = require('./render-document')
 const modifySketchTemplate = require('./modify-sketch-template')
 
+// https://gist.github.com/branneman/8048520#gistcomment-1249909
+// Add node_modules to the path, so they're resolved even when loading modules
+// from our compilerOutput directory (which is outside the root of this project)
+process.env.NODE_PATH = path.join(__dirname, 'node_modules')
+process.env.NODE_PATH = path.join(process.cwd(), 'node_modules')
+require('module').Module._initPaths()
+
 // Temporary directory for the compiler to write generated JS files
 const compilerOutput = path.join(os.tmpdir(), 'lona-sketch-library-generated')
+const babelOutput = path.join(os.tmpdir(), 'lona-sketch-library-compiled')
 
 module.exports = function(workspace, sketchFilePath, options) {
   let { devicePresetList, compiler, componentPathFilter, logFunction } =
@@ -85,7 +93,7 @@ module.exports = function(workspace, sketchFilePath, options) {
 
       return {
         paths: {
-          output: compilerOutput,
+          output: babelOutput,
           sketchFile: sketchFilePath,
           workspace: compilerConfig.paths.workspace,
           colors: compilerConfig.paths.colors,
@@ -102,6 +110,27 @@ module.exports = function(workspace, sketchFilePath, options) {
           log(`Generating react-sketchapp project at ${compilerOutput}`)
           exec(
             `node "${compiler}" workspace js "${workspace}" "${compilerOutput}" --framework=reactsketchapp`,
+            (err, stdout, stderr) => {
+              if (err) {
+                err.stdout = stdout
+                err.stderr = stderr
+                return reject(err)
+              }
+              console.error(stdout)
+              console.error(stderr)
+              return resolve(config)
+            }
+          )
+        })
+    )
+    .then(
+      config =>
+        new Promise((resolve, reject) => {
+          log(`Compiling react-sketchapp project at ${babelOutput}`)
+          exec(
+            `node "${require.resolve(
+              '@babel/cli/bin/babel'
+            )}" "${compilerOutput}" --out-dir "${babelOutput}"  --presets=@babel/env,@babel/react`,
             (err, stdout, stderr) => {
               if (err) {
                 err.stdout = stdout
