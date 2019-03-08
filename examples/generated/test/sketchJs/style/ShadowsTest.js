@@ -41,7 +41,7 @@ let styles = StyleSheet.create({
     backgroundColor: colors.blue300,
     flexDirection: "column",
     justifyContent: "flex-start",
-    ...Shadows.get("elevation2"),
+    ...shadows.elevation2,
     width: 60,
     height: 60
   }

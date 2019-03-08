@@ -159,7 +159,7 @@ class RPCService {
         }
 
         PluginAPI.handleRequest(jsonMethod, json["params"], onSuccess: { result in
-            sendResult(id: id, result: result)
+            self.sendResult(id: id, result: result)
         }, onFailure: { error in
             sendError(id: id, error: error)
         })

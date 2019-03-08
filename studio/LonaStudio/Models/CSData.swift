@@ -409,5 +409,20 @@ extension Dictionary where Key: ExpressibleByStringLiteral, Value: CSDataSeriali
     }
 }
 
+extension UserDefaults {
+    func csData(forKey defaultName: String) -> CSData? {
+        guard let data = self.data(forKey: defaultName) else { return nil }
+        return CSData.from(data: data)
+    }
+
+    func set(_ value: CSData?, forKey defaultName: String) {
+        if let data = value?.toData() {
+            self.set(data, forKey: defaultName)
+        } else {
+            self.removeObject(forKey: defaultName)
+        }
+    }
+}
+
 typealias CSDataChangeHandler = (CSData) -> Void
 let CSDataDefaultChangeHandler: CSDataChangeHandler = {_ in}

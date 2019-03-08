@@ -28,26 +28,6 @@ module Property = {
       )
     );
 
-  let shadow = (framework: JavaScriptOptions.framework, shadowId) =>
-    JavaScriptAst.(
-      SpreadElement(
-        switch (framework) {
-        | JavaScriptOptions.ReactSketchapp =>
-          CallExpression({
-            callee: Identifier(["Shadows", "get"]),
-            arguments: [
-              StringLiteral(shadowId |> JavaScriptFormat.styleVariableName),
-            ],
-          })
-        | _ =>
-          Identifier([
-            "shadows",
-            shadowId |> JavaScriptFormat.styleVariableName,
-          ])
-        },
-      )
-    );
-
   let forValue =
       (
         config: Config.t,
@@ -77,7 +57,13 @@ module Property = {
     | Reference("Shadow") =>
       let data = value.data |> Js.Json.decodeString;
       switch (data) {
-      | Some(shadowId) => shadow(framework, shadowId)
+      | Some(shadowId) =>
+        SpreadElement(
+          Identifier([
+            "shadows",
+            shadowId |> JavaScriptFormat.styleVariableName,
+          ]),
+        )
       | None =>
         Js.log("Shadow id must be a string");
         raise(Not_found);

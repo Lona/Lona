@@ -49,10 +49,17 @@ class LonaPlugins {
 
             let rpcService = RPCService()
 
-            var arguments = [url.appendingPathComponent(config.main).path]
+            var arguments: [String] = []
+
             if let command = config.command {
-                arguments.insert(url.appendingPathComponent(command).path, at: 0)
+                arguments.append(url.appendingPathComponent(command).path)
             }
+
+            if LonaPlugins.nodeDebuggerIsEnabled {
+                arguments.append("--inspect-brk")
+            }
+
+            arguments.append(url.appendingPathComponent(config.main).path)
 
             let sendData = LonaNode.launch(
                 arguments: arguments,
@@ -144,6 +151,7 @@ class LonaPlugins {
             if !FileManager.default.fileExists(atPath: commonPluginsfolder.path) {
                 try FileManager.default.createDirectory(at: commonPluginsfolder, withIntermediateDirectories: true, attributes: nil)
             }
+
             return LonaPlugins(urls: [
                 commonPluginsfolder,
                 CSUserPreferences.workspaceURL.appendingPathComponent("plugins", isDirectory: true)
@@ -160,21 +168,45 @@ class LonaPlugins {
         var files: [PluginFile] = []
 
         let fileManager = FileManager.default
-        let keys = [URLResourceKey.isDirectoryKey, URLResourceKey.localizedNameKey]
+        let keys = [URLResourceKey.isSymbolicLinkKey]
         let options: FileManager.DirectoryEnumerationOptions = [.skipsPackageDescendants, .skipsHiddenFiles]
 
-        guard let enumerator = fileManager.enumerator(
-            at: workspace,
-            includingPropertiesForKeys: keys,
-            options: options,
-            errorHandler: {(_, _) -> Bool in true }) else { return files }
+        var stack: [URL] = [workspace]
+        var visited: [URL] = []
 
-        while let file = enumerator.nextObject() as? URL {
-            if file.lastPathComponent == "lonaplugin.json" {
-                files.append(PluginFile(url: file.deletingLastPathComponent()))
+        while let url = stack.popLast() {
+            visited.append(url)
+
+            guard let enumerator = fileManager.enumerator(
+                at: url,
+                includingPropertiesForKeys: keys,
+                options: options,
+                errorHandler: {(_, _) -> Bool in true }) else { continue }
+
+            while let file = enumerator.nextObject() as? URL {
+                let isSymlink = try? file.resourceValues(forKeys: [URLResourceKey.isSymbolicLinkKey]).isSymbolicLink
+
+                if isSymlink == true, !visited.contains(file) {
+                    stack.append(file.resolvingSymlinksInPath())
+                }
+
+                if file.lastPathComponent == "lonaplugin.json" {
+                    files.append(PluginFile(url: file.deletingLastPathComponent()))
+                }
             }
         }
 
         return files
+    }
+
+    private static var nodeDebuggerIsEnabledKey = "Node debugger enabled"
+
+    static var nodeDebuggerIsEnabled: Bool {
+        get {
+            return UserDefaults.standard.bool(forKey: nodeDebuggerIsEnabledKey)
+        }
+        set {
+            UserDefaults.standard.set(newValue, forKey: nodeDebuggerIsEnabledKey)
+        }
     }
 }
