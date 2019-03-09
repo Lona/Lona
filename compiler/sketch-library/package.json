@@ -1,6 +1,6 @@
 {
   "name": "@lona/workspace-to-sketch-library",
-  "version": "0.1.8",
+  "version": "0.1.9",
   "description": "Generate a Sketch library from a Lona workspace",
   "main": "lib/index.js",
   "scripts": {
@@ -28,7 +28,7 @@
     "color-parse": "^1.3.7",
     "nodobjc": "^2.1.0",
     "react": "^16.8.1",
-    "react-sketchapp": "^3.0.0-beta.6",
+    "react-sketchapp": "^3.0.0-beta.7",
     "react-test-renderer": "^16.8.1",
     "sketch-file": "^0.1.5"
   },
