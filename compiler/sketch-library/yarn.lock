@@ -5066,10 +5066,10 @@ react-is@^16.8.1, react-is@^16.8.4:
   resolved "https://registry.yarnpkg.com/react-is/-/react-is-16.8.4.tgz#90f336a68c3a29a096a3d648ab80e87ec61482a2"
   integrity sha512-PVadd+WaUDOAciICm/J1waJaSvgq+4rHE/K70j0PFqKhkTBsPv/82UGQJNXAngz1fOQLLxI6z1sEDmJDQhCTAA==
 
-react-sketchapp@^3.0.0-beta.7:
-  version "3.0.0-beta.7"
-  resolved "https://registry.yarnpkg.com/react-sketchapp/-/react-sketchapp-3.0.0-beta.7.tgz#716dfdb23cdfc9422df92d9ee2e8aa74f08b2a07"
-  integrity sha512-3Fc1Se0KGZojE1u4Oo4w81bvMPrLb8D0VCOtscmGokjQoT4h531z9A+a39eRVFkD0PlywVKFjZeuQnhkWd99Xg==
+react-sketchapp@^3.0.0-beta.8:
+  version "3.0.0-beta.8"
+  resolved "https://registry.yarnpkg.com/react-sketchapp/-/react-sketchapp-3.0.0-beta.8.tgz#079ba0feeebe42a9f30f1c5460bce384c5f7bbc7"
+  integrity sha512-Er8b78p8zuRl1qRaPvX6KmK5GF/JiuH5qTMcGiwhyMRHRJ+i7YjKjNF7u1hBnvh81ZUzK/2VIOGa7Dkhlnu8hA==
   dependencies:
     "@skpm/sketchapp-json-plugin" "^0.2.0"
     airbnb-prop-types "^2.10.0"
@@ -5902,7 +5902,7 @@ svgson-next@^4.1.6:
     omit-deep "0.3.0"
     xml-reader "2.4.3"
 
-svgson@dabbott/svgson#svgsonSyncDist:
+"svgson@github:dabbott/svgson#svgsonSyncDist":
   version "3.0.0"
   resolved "https://codeload.github.com/dabbott/svgson/tar.gz/70935d1ca3c1882d848c3979b87fce9606e8d904"
   dependencies:
