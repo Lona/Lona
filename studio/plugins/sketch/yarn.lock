@@ -605,9 +605,9 @@
     svgpath "^2.2.1"
     svgson dabbott/svgson#svgsonSyncDist
 
-"@lona/workspace-to-sketch-library@0.1.9":
-  version "0.1.9"
-  resolved "https://registry.yarnpkg.com/@lona/workspace-to-sketch-library/-/workspace-to-sketch-library-0.1.9.tgz#08629dbaf4183adb227b886d8c3748861e345f86"
+"@lona/workspace-to-sketch-library@0.1.10":
+  version "0.1.10"
+  resolved "https://registry.yarnpkg.com/@lona/workspace-to-sketch-library/-/workspace-to-sketch-library-0.1.10.tgz#66fd25e42fc866a8d04ffd089e28a0b84ced49db"
   dependencies:
     "@babel/cli" "^7.2.3"
     "@babel/core" "^7.2.2"
@@ -616,9 +616,9 @@
     color-parse "^1.3.7"
     nodobjc "^2.1.0"
     react "^16.8.1"
-    react-sketchapp "^3.0.0-beta.7"
+    react-sketchapp "^3.0.0-beta.8"
     react-test-renderer "^16.8.1"
-    sketch-file "^0.1.5"
+    sketch-file "^0.2.0"
 
 "@skpm/sketchapp-json-plugin@^0.2.0":
   version "0.2.0"
@@ -2096,9 +2096,9 @@ react-is@^16.8.1, react-is@^16.8.4:
   version "16.8.4"
   resolved "https://registry.yarnpkg.com/react-is/-/react-is-16.8.4.tgz#90f336a68c3a29a096a3d648ab80e87ec61482a2"
 
-react-sketchapp@^3.0.0-beta.7:
-  version "3.0.0-beta.7"
-  resolved "https://registry.yarnpkg.com/react-sketchapp/-/react-sketchapp-3.0.0-beta.7.tgz#716dfdb23cdfc9422df92d9ee2e8aa74f08b2a07"
+react-sketchapp@^3.0.0-beta.8:
+  version "3.0.0-beta.8"
+  resolved "https://registry.yarnpkg.com/react-sketchapp/-/react-sketchapp-3.0.0-beta.8.tgz#079ba0feeebe42a9f30f1c5460bce384c5f7bbc7"
   dependencies:
     "@skpm/sketchapp-json-plugin" "^0.2.0"
     airbnb-prop-types "^2.10.0"
@@ -2371,9 +2371,9 @@ sketch-constants@^1.0.2:
   version "1.1.0"
   resolved "https://registry.yarnpkg.com/sketch-constants/-/sketch-constants-1.1.0.tgz#5c2fec53b59b32e7f6f107176e3e54985ad6647d"
 
-sketch-file@^0.1.5:
-  version "0.1.5"
-  resolved "https://registry.yarnpkg.com/sketch-file/-/sketch-file-0.1.5.tgz#61bc47b05654664d08951db390bf87af593ff145"
+sketch-file@^0.2.0:
+  version "0.2.0"
+  resolved "https://registry.yarnpkg.com/sketch-file/-/sketch-file-0.2.0.tgz#3e56112fee3f3606cfd6653da5b2656c3ee5e9b8"
   dependencies:
     jszip "^3.1.5"
     seedrandom "^2.4.4"
@@ -2522,7 +2522,7 @@ svgson-next@^4.1.6:
     omit-deep "0.3.0"
     xml-reader "2.4.3"
 
-"svgson@github:dabbott/svgson#svgsonSyncDist":
+svgson@dabbott/svgson#svgsonSyncDist:
   version "3.0.0"
   resolved "https://codeload.github.com/dabbott/svgson/tar.gz/70935d1ca3c1882d848c3979b87fce9606e8d904"
   dependencies:
