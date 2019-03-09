@@ -5578,10 +5578,10 @@ sketch-constants@^1.0.2:
   resolved "https://registry.yarnpkg.com/sketch-constants/-/sketch-constants-1.1.0.tgz#5c2fec53b59b32e7f6f107176e3e54985ad6647d"
   integrity sha1-XC/sU7WbMuf28QcXbj5UmFrWZH0=
 
-sketch-file@^0.1.5:
-  version "0.1.5"
-  resolved "https://registry.yarnpkg.com/sketch-file/-/sketch-file-0.1.5.tgz#61bc47b05654664d08951db390bf87af593ff145"
-  integrity sha512-JJkkfPnEEu7DZGPx9zOihbZz4thMIOtZ+RBL1P2SXCubGrQd5Z8WdLR2ArYEbMC+8fGWTfMEKJGDKHttNX5R+w==
+sketch-file@^0.2.0:
+  version "0.2.0"
+  resolved "https://registry.yarnpkg.com/sketch-file/-/sketch-file-0.2.0.tgz#3e56112fee3f3606cfd6653da5b2656c3ee5e9b8"
+  integrity sha512-5aTX8crR828A4TfZe1dznZZmmrKIcwCwlD/Hc350v4Blj1QUdPIE0LJ47kW4C1Xzyqez2vaI1vi0v2vlyeQ4hw==
   dependencies:
     jszip "^3.1.5"
     seedrandom "^2.4.4"
@@ -5902,7 +5902,7 @@ svgson-next@^4.1.6:
     omit-deep "0.3.0"
     xml-reader "2.4.3"
 
-"svgson@github:dabbott/svgson#svgsonSyncDist":
+svgson@dabbott/svgson#svgsonSyncDist:
   version "3.0.0"
   resolved "https://codeload.github.com/dabbott/svgson/tar.gz/70935d1ca3c1882d848c3979b87fce9606e8d904"
   dependencies:
