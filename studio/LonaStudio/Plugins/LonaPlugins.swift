@@ -170,6 +170,7 @@ class LonaPlugins {
         let fileManager = FileManager.default
         let keys = [URLResourceKey.isSymbolicLinkKey]
         let options: FileManager.DirectoryEnumerationOptions = [.skipsPackageDescendants, .skipsHiddenFiles]
+        let ignoreList = [".git", "node_modules"]
 
         var stack: [URL] = [workspace]
         var visited: [URL] = []
@@ -183,7 +184,12 @@ class LonaPlugins {
                 options: options,
                 errorHandler: {(_, _) -> Bool in true }) else { continue }
 
-            while let file = enumerator.nextObject() as? URL {
+            outer: while let file = enumerator.nextObject() as? URL {
+                for ignore in ignoreList where file.path.contains(ignore) {
+                    enumerator.skipDescendants()
+                    continue outer
+                }
+
                 let isSymlink = try? file.resourceValues(forKeys: [URLResourceKey.isSymbolicLinkKey]).isSymbolicLink
 
                 if isSymlink == true, !visited.contains(file) {
