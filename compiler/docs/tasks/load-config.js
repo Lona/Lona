@@ -7,14 +7,10 @@ module.exports = () => {
     'lona.json'
   )
 
+  const compilerPath = require.resolve('lonac/build/index.js')
+
   const config = JSON.parse(
-    execSync(
-      `${path.join(
-        __dirname,
-        '../node_modules/.bin/lonac'
-      )} config ${configFilePath}}`,
-      { encoding: 'utf8' }
-    )
+    execSync(`${compilerPath} config ${configFilePath}}`, { encoding: 'utf8' })
   )
 
   try {
