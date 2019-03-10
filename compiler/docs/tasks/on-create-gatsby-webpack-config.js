@@ -14,7 +14,7 @@ module.exports = ({ actions, getConfig }) => {
     if (r.test && r.test.toString() === /\.jsx?$/.toString()) {
       // fix for running gatsby inside node_modules
       r.exclude = [
-        /(node_modules|bower_components)\/(?!lona-docs)/,
+        /(node_modules|bower_components)\/(?!@lona\/docs)/,
         /node_modules\/lona-docs\/node_modules/,
       ]
 
@@ -51,12 +51,22 @@ module.exports = ({ actions, getConfig }) => {
   if (!webpackConfig.resolve.modules) {
     webpackConfig.resolve.modules = []
   }
-  // look for the node_modules next the config (useful when using lona-docs as a global)
+  // look for the node_modules next the config (useful when using @lona/docs as a global)
   webpackConfig.resolve.modules.push(path.join(cwd, 'node_modules'))
   // look for our node_modules
   webpackConfig.resolve.modules.push(
     path.join(path.dirname(__dirname), 'node_modules')
   )
+  // @lona/docs has probably been installed so we need to look for sibling dependencies
+  // as our own dependencies might be siblings now
+  if (path.dirname(__dirname).indexOf('/node_modules/')) {
+    webpackConfig.resolve.modules.push(
+      path.join(
+        path.dirname(__dirname).split('/node_modules/')[0],
+        'node_modules'
+      )
+    )
+  }
 
   // see https://github.com/webpack/webpack/issues/5600
   if (!webpackConfig.optimization) {
