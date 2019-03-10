@@ -24,10 +24,10 @@ enum FileSearch {
 
         let dotSuffix = "." + suffix
 
-        while let file = enumerator.nextObject() as? URL {
+        outer: while let file = enumerator.nextObject() as? URL {
             for ignore in ignoreList where file.path.contains(ignore) {
                 enumerator.skipDescendants()
-                continue
+                continue outer
             }
 
             if file.lastPathComponent == suffix || file.path.hasSuffix(dotSuffix) {
