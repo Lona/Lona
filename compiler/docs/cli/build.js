@@ -28,7 +28,9 @@ module.exports = {
 
     if (argv.workspace) {
       // eslint-disable-next-line no-param-reassign
-      argv.workspace = path.join(process.cwd(), argv.workspace)
+      if (!path.isAbsolute(argv.workspace)) {
+        argv.workspace = path.join(process.cwd(), argv.workspace)
+      }
       process.env.WORKSPACE = argv.workspace
     }
 
