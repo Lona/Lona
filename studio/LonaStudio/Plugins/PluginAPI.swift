@@ -80,6 +80,11 @@ class PluginAPI {
             }
             return
         case .customParameters:
+            guard let workspaceViewController = WorkspaceWindowController.first?.contentViewController else {
+                onSuccess(nil)
+                return
+            }
+
             var title = "Parameters"
             var parameters: [CSParameter] = []
             var initialValues: [String: CSData] = [:]
@@ -121,6 +126,7 @@ class PluginAPI {
 
             DispatchQueue.main.async {
                 CustomParametersEditorView.presentSheet(
+                    parentViewController: workspaceViewController,
                     titleText: title,
                     parameters: parameters,
                     initialValues: initialValues,
