@@ -1,0 +1,62 @@
+{
+  "name": "@lona/workspace-to-sketch-library",
+  "version": "0.1.10",
+  "description": "Generate a Sketch library from a Lona workspace",
+  "main": "lib/index.js",
+  "scripts": {
+    "lint": "find . -name \"*.js\" | grep -v -f .gitignore | xargs eslint",
+    "prettier:base": "prettier --write",
+    "prettify": "find . -name \"*.js\" | grep -v -f .gitignore | xargs npm run prettier:base",
+    "test": "jest"
+  },
+  "author": "Mathieu Dutour <mathieu@dutour.me>",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/airbnb/Lona.git",
+    "directory": "compiler/sketch-library"
+  },
+  "bugs": {
+    "url": "https://github.com/airbnb/Lona/issues"
+  },
+  "homepage": "https://github.com/airbnb/Lona",
+  "dependencies": {
+    "@babel/cli": "^7.2.3",
+    "@babel/core": "^7.2.2",
+    "@babel/preset-env": "^7.3.1",
+    "@babel/preset-react": "^7.0.0",
+    "color-parse": "^1.3.7",
+    "nodobjc": "^2.1.0",
+    "react": "^16.8.1",
+    "react-sketchapp": "^3.0.0-beta.8",
+    "react-test-renderer": "^16.8.1",
+    "sketch-file": "^0.2.0"
+  },
+  "peerDependencies": {
+    "lonac": "*"
+  },
+  "devDependencies": {
+    "@babel/core": "^7.2.2",
+    "@babel/preset-env": "^7.3.1",
+    "@babel/preset-react": "^7.0.0",
+    "babel-loader": "^8.0.5",
+    "eslint": "^5.12.1",
+    "eslint-config-airbnb-base": "^13.1.0",
+    "eslint-config-prettier": "^4.0.0",
+    "eslint-plugin-import": "^2.16.0",
+    "eslint-plugin-prettier": "^3.0.1",
+    "jest": "^24.0.0",
+    "lonac": "^0.5.2",
+    "prettier": "^1.16.1",
+    "webpack": "^4.29.0"
+  },
+  "prettier": {
+    "proseWrap": "never",
+    "singleQuote": true,
+    "trailingComma": "es5",
+    "semi": false
+  },
+  "jest": {
+    "testEnvironment": "node"
+  }
+}

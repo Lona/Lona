@@ -188,6 +188,8 @@
 		6B39E6F5212DEF120012DA4C /* WorkspaceViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6B39E6F4212DEF120012DA4C /* WorkspaceViewController.swift */; };
 		6B3A563D21DEA7040012C44F /* Colors+Appearance.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6B3A563C21DEA7040012C44F /* Colors+Appearance.swift */; };
 		6B3CFB1C213B236500599E5B /* CodeEditorViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6B3CFB1B213B236500599E5B /* CodeEditorViewController.swift */; };
+		6B3D7C2C222F4688008AA3D2 /* CustomParametersEditorView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6B3D7C2B222F4688008AA3D2 /* CustomParametersEditorView.swift */; };
+		6B3D7C2E222F569A008AA3D2 /* CustomParametersEditorSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6B3D7C2D222F5699008AA3D2 /* CustomParametersEditorSheet.swift */; };
 		6B4203E121BAD56500D59317 /* CanvasTableView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6B4203E021BAD56500D59317 /* CanvasTableView.swift */; };
 		6B4203E321BAD71800D59317 /* CanvasTableHeaderView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6B4203E221BAD71800D59317 /* CanvasTableHeaderView.swift */; };
 		6B4203E521BB117B00D59317 /* CanvasTableHeaderItem.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6B4203E421BB117B00D59317 /* CanvasTableHeaderItem.swift */; };
@@ -480,6 +482,8 @@
 		6B39E6F4212DEF120012DA4C /* WorkspaceViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WorkspaceViewController.swift; sourceTree = "<group>"; };
 		6B3A563C21DEA7040012C44F /* Colors+Appearance.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Colors+Appearance.swift"; sourceTree = "<group>"; };
 		6B3CFB1B213B236500599E5B /* CodeEditorViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CodeEditorViewController.swift; sourceTree = "<group>"; };
+		6B3D7C2B222F4688008AA3D2 /* CustomParametersEditorView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CustomParametersEditorView.swift; sourceTree = "<group>"; };
+		6B3D7C2D222F5699008AA3D2 /* CustomParametersEditorSheet.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CustomParametersEditorSheet.swift; sourceTree = "<group>"; };
 		6B4203E021BAD56500D59317 /* CanvasTableView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CanvasTableView.swift; sourceTree = "<group>"; };
 		6B4203E221BAD71800D59317 /* CanvasTableHeaderView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CanvasTableHeaderView.swift; sourceTree = "<group>"; };
 		6B4203E421BB117B00D59317 /* CanvasTableHeaderItem.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CanvasTableHeaderItem.swift; sourceTree = "<group>"; };
@@ -646,13 +650,14 @@
 				6BA6E89A213080CE009CD33C /* ComponentEditorViewController.swift */,
 				303C3FF820A4F894008E1541 /* ComponentPreview.swift */,
 				303C3FF420A4E3C1008E1541 /* ComponentPreviewCollection.swift */,
+				6B3D7C2B222F4688008AA3D2 /* CustomParametersEditorView.swift */,
 				036A4EA821E2469D00948DBD /* DirectoryViewController.swift */,
 				305A19551F463A2800EA033C /* DisclosureContentRow.swift */,
 				307D441D209B657B004B57F5 /* DocumentationView.swift */,
 				6B5D4D2A213E19B9004F8AC3 /* EditorViewController.swift */,
 				6BA5BBD82174F2A500F086A7 /* FileNavigator.swift */,
-				036A4E8D21E0EF0100948DBD /* ImageViewController.swift */,
 				036A4E9921E1F5FB00948DBD /* ImagePreview.swift */,
+				036A4E8D21E0EF0100948DBD /* ImageViewController.swift */,
 				036A4EA121E1FD3B00948DBD /* KeyHandlingCollectionView.swift */,
 				6B0F5B8D2138970C007DBBB2 /* LayerList.swift */,
 				6B0F5B8B21389620007DBBB2 /* LayerListHeader.swift */,
@@ -896,6 +901,7 @@
 				036A4EA321E21DA400948DBD /* AddTextStyleSheet.swift */,
 				6B4DFCE620A7581E0048BB43 /* ColorBrowser.swift */,
 				303C3FF220A4E396008E1541 /* ComponentBrowser.swift */,
+				6B3D7C2D222F5699008AA3D2 /* CustomParametersEditorSheet.swift */,
 				036A4E8F21E0F6AA00948DBD /* ImageViewer.swift */,
 				30C203DC20BF5910007C3FE0 /* TextStyleBrowser.swift */,
 				30F870C020865858007ADA5B /* Welcome.swift */,
@@ -1543,6 +1549,7 @@
 				307718FE1F3CBDEA003A597B /* CSFunction.swift in Sources */,
 				BA4854981FEF6CC800AB7923 /* PickerView.swift in Sources */,
 				036A4E9021E0F6AA00948DBD /* ImageViewer.swift in Sources */,
+				6B3D7C2C222F4688008AA3D2 /* CustomParametersEditorView.swift in Sources */,
 				6B558A40222B1FD1000C22FE /* FileSearch.swift in Sources */,
 				307718F81F37AAFE003A597B /* CSScope.swift in Sources */,
 				307718F21F365BCD003A597B /* CSValue.swift in Sources */,
@@ -1562,6 +1569,7 @@
 				306D2FEE1F84735900907B4E /* LayerThumbnail.swift in Sources */,
 				6B4DFCE720A7581E0048BB43 /* ColorBrowser.swift in Sources */,
 				301433761F5B499900525DB1 /* DictionaryEditorButton.swift in Sources */,
+				6B3D7C2E222F569A008AA3D2 /* CustomParametersEditorSheet.swift in Sources */,
 				6B0F5B8E2138970C007DBBB2 /* LayerList.swift in Sources */,
 				30CE47CF1ED77C0200BBF716 /* TextStyleRowView.swift in Sources */,
 				30A3F13E1F300294004C7631 /* NSColorExtensions.swift in Sources */,

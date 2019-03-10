@@ -223,7 +223,7 @@ extension Canvas {
         case preset(DevicePreset)
     }
 
-    struct DevicePreset: Equatable {
+    struct DevicePreset: Equatable & Codable {
         let name: String
         let width: CGFloat
         let height: CGFloat

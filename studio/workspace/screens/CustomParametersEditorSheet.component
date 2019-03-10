@@ -1,0 +1,183 @@
+{
+  "devices" : [
+    {
+      "height" : 100,
+      "heightMode" : "At Least",
+      "name" : "iPhone SE",
+      "width" : 480
+    }
+  ],
+  "examples" : [
+    {
+      "id" : "Default",
+      "name" : "Default",
+      "params" : {
+        "cancelText" : "Cancel text",
+        "submitText" : "Submit text",
+        "titleText" : "Title text"
+      }
+    }
+  ],
+  "logic" : [
+    {
+      "assignee" : [
+        "layers",
+        "DoneButton",
+        "onClick"
+      ],
+      "content" : [
+        "parameters",
+        "onSubmit"
+      ],
+      "type" : "AssignExpr"
+    },
+    {
+      "assignee" : [
+        "layers",
+        "CancelButton",
+        "onClick"
+      ],
+      "content" : [
+        "parameters",
+        "onCancel"
+      ],
+      "type" : "AssignExpr"
+    },
+    {
+      "assignee" : [
+        "layers",
+        "Title",
+        "text"
+      ],
+      "content" : [
+        "parameters",
+        "titleText"
+      ],
+      "type" : "AssignExpr"
+    },
+    {
+      "assignee" : [
+        "layers",
+        "DoneButton",
+        "titleText"
+      ],
+      "content" : [
+        "parameters",
+        "submitText"
+      ],
+      "type" : "AssignExpr"
+    },
+    {
+      "assignee" : [
+        "layers",
+        "CancelButton",
+        "titleText"
+      ],
+      "content" : [
+        "parameters",
+        "cancelText"
+      ],
+      "type" : "AssignExpr"
+    }
+  ],
+  "params" : [
+    {
+      "name" : "onSubmit",
+      "type" : {
+        "name" : "Function"
+      }
+    },
+    {
+      "name" : "onCancel",
+      "type" : {
+        "name" : "Function"
+      }
+    },
+    {
+      "name" : "titleText",
+      "type" : "String"
+    },
+    {
+      "name" : "cancelText",
+      "type" : "String"
+    },
+    {
+      "name" : "submitText",
+      "type" : "String"
+    }
+  ],
+  "root" : {
+    "children" : [
+      {
+        "id" : "Title",
+        "params" : {
+          "font" : "large",
+          "text" : "Custom parameters"
+        },
+        "type" : "Lona:Text"
+      },
+      {
+        "id" : "CustomContent",
+        "metadata" : {
+          "accessLevel" : {
+            "macos" : "internal"
+          }
+        },
+        "params" : {
+          "alignSelf" : "stretch",
+          "backgroundColor" : "dividerSubtle",
+          "borderColor" : "darkTransparentOutline",
+          "borderRadius" : 1,
+          "borderWidth" : 1,
+          "height" : 200,
+          "marginTop" : 20
+        },
+        "type" : "Lona:View"
+      },
+      {
+        "children" : [
+          {
+            "id" : "CancelButton",
+            "params" : {
+              "titleText" : "Cancel"
+            },
+            "type" : "Button"
+          },
+          {
+            "id" : "FooterSpacer",
+            "params" : {
+              "backgroundColor" : "#D8D8D8",
+              "flex" : 1,
+              "height" : 0
+            },
+            "type" : "Lona:View"
+          },
+          {
+            "id" : "DoneButton",
+            "params" : {
+              "titleText" : "Add Color"
+            },
+            "type" : "Button"
+          }
+        ],
+        "id" : "Footer",
+        "params" : {
+          "alignItems" : "flex-end",
+          "alignSelf" : "stretch",
+          "flexDirection" : "row",
+          "marginBottom" : 20,
+          "marginTop" : 20
+        },
+        "type" : "Lona:View"
+      }
+    ],
+    "id" : "View",
+    "params" : {
+      "paddingLeft" : 20,
+      "paddingRight" : 20,
+      "paddingTop" : 20,
+      "width" : 480
+    },
+    "type" : "Lona:View"
+  }
+}

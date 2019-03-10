@@ -14,6 +14,7 @@ class CSValueField: CSControl {
         case isBordered
         case drawsBackground
         case usesLinkStyle
+        case usesUrlSavePanel
 
         // For instant feedback when typing
         case submitOnChange
@@ -51,6 +52,7 @@ class CSValueField: CSControl {
         let drawsBackground = options[Options.drawsBackground] ?? false
         let submitOnChange = options[Options.submitOnChange] ?? false
         let usesLinkStyle = options[Options.usesLinkStyle] ?? true
+        let usesUrlSavePanel = options[Options.usesUrlSavePanel] ?? false
 
         let defaultChangeHandler: (CSData) -> Void = { [weak self] data in
             guard let field = self else {
@@ -99,13 +101,15 @@ class CSValueField: CSControl {
 
             field.attributedStringValue = text
 
-            field.frame.size = text.measure(width: 1000)
-            field.frame.size.width = max(field.frame.size.width, 30)
-            field.frame.size.width += 4
+            if usesLinkStyle {
+                field.frame.size = text.measure(width: 1000)
+                field.frame.size.width = max(field.frame.size.width, 30)
+                field.frame.size.width += 4
 
-            let widthConstraint = field.widthAnchor.constraint(equalToConstant: field.frame.size.width)
-            widthConstraint.priority = .defaultHigh
-            widthConstraint.isActive = true
+                let widthConstraint = field.widthAnchor.constraint(equalToConstant: field.frame.size.width)
+                widthConstraint.priority = .defaultHigh
+                widthConstraint.isActive = true
+            }
 
             if submitOnChange {
                 field.onChangeData = defaultChangeHandler
@@ -283,20 +287,36 @@ class CSValueField: CSControl {
             button.imagePosition = .noImage
             button.alignment = .left
             button.bezelStyle = .rounded
-            button.title = "Browse..."
-            button.onPress = {
-                let dialog = NSOpenPanel()
+            button.titleText = "Browse..."
 
-                dialog.title = "Choose a file or directory"
-                dialog.showsResizeIndicator = true
-                dialog.showsHiddenFiles = false
-                dialog.canCreateDirectories = true
-                dialog.canChooseDirectories = true
-                dialog.canChooseFiles = true
-                dialog.allowsMultipleSelection = false
+            if usesUrlSavePanel {
+                button.onPress = {
+                    let dialog = NSSavePanel()
 
-                if dialog.runModal() == NSApplication.ModalResponse.OK {
-                    defaultChangeHandler(CSData.String(dialog.url!.absoluteString))
+                    dialog.title = "Choose a file"
+                    dialog.showsResizeIndicator = true
+                    dialog.showsHiddenFiles = false
+                    dialog.canCreateDirectories = true
+
+                    if dialog.runModal() == NSApplication.ModalResponse.OK {
+                        defaultChangeHandler(CSData.String(dialog.url!.absoluteString))
+                    }
+                }
+            } else {
+                button.onPress = {
+                    let dialog = NSOpenPanel()
+
+                    dialog.title = "Choose a file or directory"
+                    dialog.showsResizeIndicator = true
+                    dialog.showsHiddenFiles = false
+                    dialog.canCreateDirectories = true
+                    dialog.canChooseDirectories = true
+                    dialog.canChooseFiles = true
+                    dialog.allowsMultipleSelection = false
+
+                    if dialog.runModal() == NSApplication.ModalResponse.OK {
+                        defaultChangeHandler(CSData.String(dialog.url!.absoluteString))
+                    }
                 }
             }
 
@@ -305,10 +325,9 @@ class CSValueField: CSControl {
 
             subfields.append(stringField)
 
-            let field = NSStackView(views: [
-                stringField.view,
-                button
-                ], orientation: .horizontal)
+            let field = NSStackView(
+                views: [stringField.view, button],
+                orientation: .horizontal)
 
 //            field.heightAnchor.constraint(equalToConstant: 30).isActive = true
 

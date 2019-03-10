@@ -16,6 +16,14 @@ enum NotificationMethod: String {
 enum RequestMethod: String {
     case workspacePath
     case compilerPath
+    case customParameters
+    case devicePresetList
+}
+
+private enum PluginPersistenceScope: String {
+    case workspace
+    case global
+    case none
 }
 
 class PluginAPI {
@@ -45,7 +53,7 @@ class PluginAPI {
     static func handleRequest(
         _ jsonMethod: String,
         _ jsonParams: AnyObject?,
-        onSuccess: (Any?) -> Void,
+        onSuccess: @escaping (Any?) -> Void,
         onFailure: (RPCError) -> Void) {
         guard let method = RequestMethod(rawValue: jsonMethod) else {
             onFailure(RPCError.MethodNotFound())
@@ -63,6 +71,77 @@ class PluginAPI {
 
             onSuccess(result)
             return
+        case .devicePresetList:
+            if let data = try? JSONEncoder().encode(Canvas.devicePresets),
+                let json = try? JSONSerialization.jsonObject(with: data, options: [.allowFragments]) {
+                onSuccess(json)
+            } else {
+                onFailure(RPCError.InternalError())
+            }
+            return
+        case .customParameters:
+            var title = "Parameters"
+            var parameters: [CSParameter] = []
+            var initialValues: [String: CSData] = [:]
+            var persistenceKeyPath: [String]?
+
+            if let jsonParams = jsonParams {
+                let params = CSData.from(json: jsonParams)
+
+                if let value = params.get(key: "title").string {
+                    title = value
+                }
+
+                if let value = params.get(key: "params").array {
+                    parameters = value.map { CSParameter($0) }
+                    initialValues = CSParameter.defaultDataObject(for: parameters)
+                }
+
+                if let id = params.get(key: "id").string,
+                    let persistenceScope = PluginPersistenceScope(rawValue:
+                        params.get(key: "persistenceScope").string ?? "workspace") {
+
+                    switch persistenceScope {
+                    case .none:
+                        break
+                    case .workspace:
+                        persistenceKeyPath = [LonaModule.current.url.path, id]
+                    case .global:
+                        persistenceKeyPath = [id]
+                    }
+                }
+
+                if let persistenceKeyPath = persistenceKeyPath {
+                    if let pluginParamsStore = UserDefaults.standard.csData(forKey: PluginAPI.pluginParamsStoreKey),
+                        let stored = pluginParamsStore.get(keyPath: persistenceKeyPath).object {
+                        initialValues = initialValues.merging(stored, uniquingKeysWith: { a, b in b })
+                    }
+                }
+            }
+
+            DispatchQueue.main.async {
+                CustomParametersEditorView.presentSheet(
+                    titleText: title,
+                    parameters: parameters,
+                    initialValues: initialValues,
+                    onCompletion: { data in
+                        if let data = data {
+                            if let persistenceKeyPath = persistenceKeyPath {
+                                var pluginParamsStore = UserDefaults.standard.csData(forKey: PluginAPI.pluginParamsStoreKey) ?? CSData.Object([:])
+                                pluginParamsStore.set(keyPath: persistenceKeyPath, to: CSData.Object(data))
+                                UserDefaults.standard.set(pluginParamsStore, forKey: PluginAPI.pluginParamsStoreKey)
+                            }
+
+                            let json = CSData.Object(data).toAny()
+                            onSuccess(json)
+                        } else {
+                            onSuccess(nil)
+                        }
+                    }
+                )
+            }
         }
     }
+
+    private static let pluginParamsStoreKey = "pluginParamsStore"
 }

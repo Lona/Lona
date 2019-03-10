@@ -156,7 +156,7 @@ class LonaModule {
                             CSData.Object(["colors": CSData.Array([])])
                         },
                         VirtualFile(name: "textStyles.json") {
-                            CSData.Object(["textStyles": CSData.Array([])])
+                            CSData.Object(["styles": CSData.Array([])])
                         },
                         VirtualFile(name: "shadows.json") {
                             CSData.Object(["shadows": CSData.Array([])])
