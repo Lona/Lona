@@ -11,7 +11,13 @@ import Foundation
 
 class DocumentController: NSDocumentController {
     public var didOpenADocument = false
-    override public func reopenDocument(for urlOrNil: URL?, withContentsOf contentsURL: URL, display displayDocument: Bool, completionHandler: @escaping (NSDocument?, Bool, Error?) -> Void) {
+
+    override public func reopenDocument(
+        for urlOrNil: URL?,
+        withContentsOf contentsURL: URL,
+        display displayDocument: Bool,
+        completionHandler: @escaping (NSDocument?, Bool, Error?) -> Void) {
+
         if FileUtils.fileExists(atPath: contentsURL.path) == .directory {
             guard let newDocument = try? DirectoryDocument(contentsOf: contentsURL, ofType: "Directory Document") else {
                 completionHandler(nil, false, NSError(domain: NSCocoaErrorDomain, code: 256, userInfo: [
@@ -19,6 +25,8 @@ class DocumentController: NSDocumentController {
                     NSLocalizedFailureReasonErrorKey: "LonaStudio cannot open files of this type."]))
                 return
             }
+
+            addDocument(newDocument)
 
             didOpenADocument = true
             completionHandler(newDocument, false, nil)

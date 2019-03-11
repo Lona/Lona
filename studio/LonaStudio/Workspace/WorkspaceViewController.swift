@@ -591,6 +591,8 @@ class WorkspaceViewController: NSSplitViewController {
                     return
                 }
 
+                NSDocumentController.shared.addDocument(newDocument)
+
                 guard let windowController = self.view.window?.windowController else { return }
 
                 newDocument.addWindowController(windowController)
@@ -696,6 +698,8 @@ class WorkspaceViewController: NSSplitViewController {
                 self.inspectedContent = nil
                 return
             }
+
+            NSDocumentController.shared.addDocument(newDocument)
 
             guard let windowController = self.view.window?.windowController else { return }
 
