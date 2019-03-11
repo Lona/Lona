@@ -122,40 +122,27 @@ class CSWorkspacePreferences: CSPreferencesFile {
     }
 
     private enum CreateWorkspace: String {
-        case cancel = "Cancel"
-        case create = "Create"
+        case ok = "OK"
     }
 
     /// Returns true if the url passed is a valid workspace
     ///
     /// A valid workspace is identified by a "lona.json" file in the root of the workspace.
-    /// This function will warn the user if they attempt to open a non-workspace, but offer
-    /// the choice of creating a "lona.json" file automatically.
     static func validateProposedWorkspace(url: URL) -> Bool {
         do {
             _ = try Data(contentsOf: url.appendingPathComponent("lona.json"))
             return true
         } catch {
             let alert = Alert(
-                items: [CreateWorkspace.create, CreateWorkspace.cancel],
+                items: [CreateWorkspace.ok],
                 messageText: "This doesn't appear to be a Lona workspace!",
-                informativeText: "There's no 'lona.json' file in \(url.path). If you're sure this is a workspace, we can create a 'lona.json' automatically now. Otherwise, press Cancel and open a different directory.")
+                informativeText: "There's no 'lona.json' file in '\(url.path)'. A Lona workspace must have a 'lona.json' file in the top-level folder.")
 
             guard let response = alert.run() else { return false }
 
             switch response {
-            case .cancel:
+            case .ok:
                 return false
-            case .create:
-                let file = VirtualFile(name: "lona.json") { CSData.Object([:]) }
-
-                do {
-                    try VirtualFileSystem.write(node: file, relativeTo: url)
-                } catch {
-                    return false
-                }
-
-                return true
             }
         }
     }
