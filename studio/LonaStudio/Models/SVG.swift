@@ -389,8 +389,6 @@ extension SVG {
     }
 
     public static func decodeSync(contentsOf url: URL) -> SVG.Node? {
-        guard let compilerPath = CSUserPreferences.compilerURL?.path else { return nil }
-
         guard let contents = try? Data(contentsOf: url) else {
             Swift.print("Failed to read svg file at", url)
             return nil
@@ -400,10 +398,7 @@ extension SVG {
             return svg
         }
 
-        guard let data = try? LonaNode.runSync(
-            arguments: [compilerPath, "convertSvg"],
-            inputData: contents)
-        else {
+        guard let data = LonaJS.convertSvg(contents: contents.utf8String()!) else {
             Swift.print("Failed to convert svg", url)
             return nil
         }
@@ -418,59 +413,7 @@ extension SVG {
         return svgCache.item(for: url.absoluteString)
     }
 
-    public static func decode(contentsOf url: URL, successHandler: @escaping (SVG.Node) -> Void) {
-        guard let compilerPath = CSUserPreferences.compilerURL?.path else { return }
-
-        guard let contents = try? Data(contentsOf: url) else {
-            Swift.print("Failed to read svg file at", url)
-            return
-        }
-
-        if let svg = svgCache.item(for: url.absoluteString) {
-            successHandler(svg)
-            return
-        }
-
-        LonaNode.run(
-            arguments: [compilerPath, "convertSvg"],
-            inputData: contents,
-            onSuccess: { data in
-                do {
-                    let svg = try JSONDecoder().decode(SVG.Node.self, from: data)
-
-                    DispatchQueue.main.async {
-                        svgCache.add(item: svg, for: url.absoluteString)
-                        successHandler(svg)
-                    }
-                } catch let e {
-                    Swift.print("Failed to load svg", e)
-                }
-        }, onFailure: { code, message in
-            Swift.print("Failed", code, message as Any)
-        })
-    }
-
     static func render(
-        contentsOf url: URL,
-        dynamicValues: CSData = CSData.Null,
-        size: CGSize,
-        resizingMode: CGSize.ResizingMode,
-        successHandler: @escaping (NSImage) -> Void) {
-
-        guard size != .zero else { return }
-
-        decode(contentsOf: url, successHandler: { svg in
-            DispatchQueue.main.async {
-                guard let image = svg.image(
-                    size: size,
-                    resizingMode: resizingMode,
-                    dynamicValues: dynamicValues) else { return }
-                successHandler(image)
-            }
-        })
-    }
-
-    static func renderSync(
         contentsOf url: URL,
         dynamicValues: CSData = CSData.Null,
         size: CGSize,
