@@ -16,6 +16,15 @@ private let storyboardName = NSStoryboard.Name(rawValue: "Main")
 private let codeViewVisibleKey = "LonaStudio code view visible"
 
 class WorkspaceWindowController: NSWindowController {
+    static var first: WorkspaceWindowController? {
+        return NSApp.windows
+            .map { $0.windowController }
+            .compactMap { $0 }
+            .map { $0 as? WorkspaceWindowController }
+            .compactMap { $0 }
+            .first
+    }
+
     @discardableResult static func create(andAttachTo document: NSDocument? = nil) -> WorkspaceWindowController {
         let storyboard = NSStoryboard(name: storyboardName, bundle: nil)
 

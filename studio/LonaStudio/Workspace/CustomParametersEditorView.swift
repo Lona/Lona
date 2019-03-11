@@ -32,13 +32,14 @@ class CustomParametersEditorView: NSBox {
 
     public var onSubmit: (([String: CSData]) -> Void)?
 
-    static func presentSheet(titleText: String, parameters: [CSParameter], initialValues: [String: CSData], onCompletion: @escaping ([String: CSData]?) -> Void) {
-        let sheetView = CustomParametersEditorView(parameters: parameters, initialValues: initialValues)
+    static func presentSheet(
+        parentViewController: NSViewController,
+        titleText: String,
+        parameters: [CSParameter],
+        initialValues: [String: CSData],
+        onCompletion: @escaping ([String: CSData]?) -> Void) {
 
-        guard let rootViewController = NSApp.mainWindow?.contentViewController else {
-            onCompletion(nil)
-            return
-        }
+        let sheetView = CustomParametersEditorView(parameters: parameters, initialValues: initialValues)
 
         let container = CustomParametersEditorSheet(titleText: titleText, cancelText: "Cancel", submitText: "Continue")
 
@@ -51,15 +52,15 @@ class CustomParametersEditorView: NSBox {
 
         let viewController = NSViewController(view: container)
 
-        rootViewController.presentViewControllerAsSheet(viewController)
+        parentViewController.presentViewControllerAsSheet(viewController)
 
         container.onSubmit = {
-            rootViewController.dismissViewController(viewController)
+            parentViewController.dismissViewController(viewController)
             onCompletion(sheetView.currentValues)
         }
 
         container.onCancel = {
-            rootViewController.dismissViewController(viewController)
+            parentViewController.dismissViewController(viewController)
             onCompletion(nil)
         }
     }
