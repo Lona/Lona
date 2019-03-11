@@ -248,6 +248,8 @@ class AppDelegate: NSObject, NSApplicationDelegate {
             return nil
         }
 
+        NSDocumentController.shared.addDocument(newDocument)
+
         return newDocument
     }
 
