@@ -168,4 +168,20 @@ class LonaModule {
 
         try VirtualFileSystem.write(node: root, relativeTo: workspaceParent)
     }
+
+    static func findNearestWorkspace(containing url: URL) -> URL? {
+        let isDirectory = (try? url.resourceValues(forKeys: [.isDirectoryKey]).isDirectory ?? false) ?? false
+
+        var url = isDirectory ? url : url.deletingLastPathComponent()
+
+        while url.path != "/" {
+            if FileManager.default.fileExists(atPath: url.appendingPathComponent("lona.json").path) {
+                return url
+            }
+
+            url = url.deletingLastPathComponent()
+        }
+
+        return nil
+    }
 }

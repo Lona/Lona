@@ -124,3 +124,13 @@ extension String {
         return components(separatedBy: characterSet as CharacterSet).joined(separator: "_")
     }
 }
+
+extension String: RawRepresentable {
+    public typealias RawValue = String
+
+    public init?(rawValue: String.RawValue) {
+        self = rawValue
+    }
+
+    public var rawValue: String { return self }
+}
