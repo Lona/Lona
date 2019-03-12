@@ -224,6 +224,8 @@
 		6B80645A21D8322B006560C7 /* CanvasTableHeaderExtra.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6B80645921D8322A006560C7 /* CanvasTableHeaderExtra.swift */; };
 		6B8D7DA021BED32E0087A3F7 /* LayoutInspector.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6B8D7D9D21BED32E0087A3F7 /* LayoutInspector.swift */; };
 		6B8D7DA321BF04B60087A3F7 /* InspectorSectionHeader.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6B8D7DA221BF04B60087A3F7 /* InspectorSectionHeader.swift */; };
+		6B9733CE2236E602005967E8 /* LonaJS.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6B9733CD2236E602005967E8 /* LonaJS.swift */; };
+		6B9733D22236F2BF005967E8 /* svg-model.umd.js in Resources */ = {isa = PBXBuildFile; fileRef = 6B9733D12236F2BE005967E8 /* svg-model.umd.js */; };
 		6BA5BBD72173A7F600F086A7 /* Shadows.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6BA5BBD62173A7F600F086A7 /* Shadows.swift */; };
 		6BA5BBD92174F2A500F086A7 /* FileNavigator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6BA5BBD82174F2A500F086A7 /* FileNavigator.swift */; };
 		6BA5BBDB2174FA2100F086A7 /* FileNavigatorHeader.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6BA5BBDA2174FA2100F086A7 /* FileNavigatorHeader.swift */; };
@@ -517,6 +519,8 @@
 		6B80645921D8322A006560C7 /* CanvasTableHeaderExtra.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CanvasTableHeaderExtra.swift; sourceTree = "<group>"; };
 		6B8D7D9D21BED32E0087A3F7 /* LayoutInspector.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = LayoutInspector.swift; sourceTree = "<group>"; };
 		6B8D7DA221BF04B60087A3F7 /* InspectorSectionHeader.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = InspectorSectionHeader.swift; sourceTree = "<group>"; };
+		6B9733CD2236E602005967E8 /* LonaJS.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LonaJS.swift; sourceTree = "<group>"; };
+		6B9733D12236F2BE005967E8 /* svg-model.umd.js */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.javascript; path = "svg-model.umd.js"; sourceTree = "<group>"; };
 		6BA5BBD62173A7F600F086A7 /* Shadows.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Shadows.swift; sourceTree = "<group>"; };
 		6BA5BBD82174F2A500F086A7 /* FileNavigator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FileNavigator.swift; sourceTree = "<group>"; };
 		6BA5BBDA2174FA2100F086A7 /* FileNavigatorHeader.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = FileNavigatorHeader.swift; sourceTree = "<group>"; };
@@ -863,10 +867,12 @@
 		30DDEE881F47925C001D41AB /* Scripting */ = {
 			isa = PBXGroup;
 			children = (
+				6B9733D12236F2BE005967E8 /* svg-model.umd.js */,
 				301D7EDB1F47A29D0098AB0D /* Modules */,
 				30DDEE891F479280001D41AB /* node */,
 				30DDEE8E1F4799F6001D41AB /* nodeversion */,
 				30AEA12920A0DA410021C981 /* LonaNode.swift */,
+				6B9733CD2236E602005967E8 /* LonaJS.swift */,
 			);
 			path = Scripting;
 			sourceTree = "<group>";
@@ -1224,6 +1230,7 @@
 				30F870DA20865859007ADA5B /* LonaIcon_32x32@2x.png in Resources */,
 				307D44172097DDAB004B57F5 /* icon-tab-layers@2x.png in Resources */,
 				303C3FEC20A396BB008E1541 /* icon-plus@2x.png in Resources */,
+				6B9733D22236F2BF005967E8 /* svg-model.umd.js in Resources */,
 				6BD96652217FB0DB0012F173 /* default-workspace-thumbnail.png in Resources */,
 				6BABAFE52139C0EE002B8C8F /* Toolbar.xcassets in Resources */,
 			);
@@ -1491,6 +1498,7 @@
 				6B56ECB321BC5B6D005F43C5 /* FlippedView.swift in Sources */,
 				307D4422209B75C0004B57F5 /* LonaWebView.swift in Sources */,
 				6B56ECB521BC6645005F43C5 /* ConfiguredLayer.swift in Sources */,
+				6B9733CE2236E602005967E8 /* LonaJS.swift in Sources */,
 				6B5D4D2D213E1CB0004F8AC3 /* EditorHeader.swift in Sources */,
 				300302761EDCDA030085E140 /* LogicListView.swift in Sources */,
 				304478BC1F32923700FD06E0 /* NSPointExtensions.swift in Sources */,

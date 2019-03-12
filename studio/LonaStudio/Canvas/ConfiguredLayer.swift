@@ -195,7 +195,7 @@ struct ConfiguredLayer {
 
             if let cached = svgRenderCache.item(for: cacheKey) {
                 return RenderableImageAttributes(image: cached, resizingMode: containerResizingMode)
-            } else if let image = SVG.renderSync(
+            } else if let image = SVG.render(
                 contentsOf: url,
                 dynamicValues: dynamicValues,
                 size: CGSize(width: layout.width, height: layout.height),
