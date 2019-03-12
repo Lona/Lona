@@ -69,16 +69,30 @@
                                 <modifierMask key="keyEquivalentModifierMask"/>
                                 <menu key="submenu" title="File" id="bib-Uj-vzu">
                                     <items>
-                                        <menuItem title="New" keyEquivalent="n" id="Was-JA-tGl">
-                                            <connections>
-                                                <action selector="newDocument:" target="Ady-hI-5gd" id="4Si-XN-c54"/>
-                                            </connections>
-                                        </menuItem>
-                                        <menuItem title="New from Template..." id="Prr-jR-R36">
+                                        <menuItem title="New" id="z09-c6-DRB">
                                             <modifierMask key="keyEquivalentModifierMask"/>
-                                            <connections>
-                                                <action selector="newFromTemplate:" target="Ady-hI-5gd" id="fUq-1g-EVZ"/>
-                                            </connections>
+                                            <menu key="submenu" title="New" id="XkY-y9-h9b">
+                                                <items>
+                                                    <menuItem title="Component" keyEquivalent="n" id="Was-JA-tGl">
+                                                        <connections>
+                                                            <action selector="newDocument:" target="Ady-hI-5gd" id="4Si-XN-c54"/>
+                                                        </connections>
+                                                    </menuItem>
+                                                    <menuItem title="Component from Template..." id="Prr-jR-R36">
+                                                        <modifierMask key="keyEquivalentModifierMask"/>
+                                                        <connections>
+                                                            <action selector="newFromTemplate:" target="Ady-hI-5gd" id="fUq-1g-EVZ"/>
+                                                        </connections>
+                                                    </menuItem>
+                                                    <menuItem isSeparatorItem="YES" id="bDQ-7W-4lK"/>
+                                                    <menuItem title="Workspace" id="J73-fs-AT6">
+                                                        <modifierMask key="keyEquivalentModifierMask"/>
+                                                        <connections>
+                                                            <action selector="newWorkspace:" target="Ady-hI-5gd" id="vhM-gu-28e"/>
+                                                        </connections>
+                                                    </menuItem>
+                                                </items>
+                                            </menu>
                                         </menuItem>
                                         <menuItem title="Open…" keyEquivalent="o" id="IAo-SY-fd9">
                                             <connections>
@@ -734,7 +748,7 @@
                                         <menuItem title="Workspace Browser" id="Pej-oB-iZ5" userLabel="Component Browser">
                                             <modifierMask key="keyEquivalentModifierMask"/>
                                             <connections>
-                                                <action selector="showComponentBrowser:" target="Ady-hI-5gd" id="1qd-ja-TML"/>
+                                                <action selector="showWorkspaceWindow:" target="Ady-hI-5gd" id="Brz-6y-nP7"/>
                                             </connections>
                                         </menuItem>
                                         <menuItem isSeparatorItem="YES" id="eu3-7i-yIM"/>

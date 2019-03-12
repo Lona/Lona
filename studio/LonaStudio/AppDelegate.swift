@@ -12,6 +12,8 @@ import MASPreferences
 
 @NSApplicationMain
 class AppDelegate: NSObject, NSApplicationDelegate {
+    var applicationDidLaunch = false
+
     let documentController = DocumentController()
 
     func applicationWillFinishLaunching(_ notification: Notification) {
@@ -28,6 +30,8 @@ class AppDelegate: NSObject, NSApplicationDelegate {
         if !documentController.didOpenADocument {
             showWelcomeWindow(self)
         }
+
+        applicationDidLaunch = true
     }
 
     func applicationShouldOpenUntitledFile(_ sender: NSApplication) -> Bool {
@@ -45,15 +49,50 @@ class AppDelegate: NSObject, NSApplicationDelegate {
     func application(_ sender: NSApplication, openFile filename: String) -> Bool {
         let url = URL(fileURLWithPath: filename)
 
-        switch FileUtils.fileExists(atPath: filename) {
-        case .directory:
-            if let document = openWorkspace(url: url) {
-                welcomeWindow?.close()
-                showComponentBrowser(document)
-                return true
-            } else {
+        // Only allow opening files if we can find a workspace
+        guard let workspaceUrl = LonaModule.findNearestWorkspace(containing: url) else {
+            let alert = Alert(
+                items: ["OK"],
+                messageText: "Could not find workspace",
+                informativeText: "The file '\(url.path)' is not a descendant of a workspace directory. A workspace directory contains a 'lona.json' file.")
+
+            _ = alert.run()
+
+            return false
+        }
+
+        if LonaModule.current.url != workspaceUrl {
+            // If the application has already launched, prompt the user before switching workspaces.
+            // Otherwise, switch workspaces automatically (e.g. double clicking a .component file in Finder)
+            if applicationDidLaunch && url != workspaceUrl {
+                let alert = Alert(
+                    items: ["Cancel", "Yes"],
+                    messageText: "Switch workspaces?",
+                    informativeText: "The file '\(url.path)' is in a different workspace and can only be opened if we first switch workspaces. Do you want to switch workspaces and open the file?")
+
+                let result = alert.run()
+
+                if result != "Yes" {
+                    return false
+                }
+            }
+
+            if !setWorkspace(url: workspaceUrl) {
                 return false
             }
+        }
+
+        switch FileUtils.fileExists(atPath: filename) {
+        case .directory:
+            guard let document = try? DirectoryDocument(contentsOf: url, ofType: "Directory Document") else {
+                Swift.print("Failed to open", url)
+                return false
+            }
+            NSDocumentController.shared.addDocument(document)
+
+            showComponentBrowser(document)
+
+            return true
         case .file:
             NSDocumentController.shared.openDocument(
                 withContentsOf: url,
@@ -88,7 +127,13 @@ class AppDelegate: NSObject, NSApplicationDelegate {
         preferencesWindow?.showWindow(sender)
     }
 
-    @IBAction func showComponentBrowser(_ document: DirectoryDocument?) {
+    @IBAction func showWorkspaceWindow(_ sender: AnyObject) {
+        if let document = openWorkspaceDocument() {
+            showComponentBrowser(document)
+        }
+    }
+
+    func showComponentBrowser(_ document: DirectoryDocument?) {
         let windowController = WorkspaceWindowController.create(andAttachTo: document)
 
         // Throws an exception related to _NSDetectedLayoutRecursion without async here.
@@ -146,7 +191,7 @@ class AppDelegate: NSObject, NSApplicationDelegate {
                     return
                 }
 
-                if let document = self.openWorkspace(url: url) {
+                if self.setWorkspace(url: url), let document = self.openWorkspaceDocument() {
                     window.close()
                     self.showComponentBrowser(document)
                 }
@@ -155,7 +200,7 @@ class AppDelegate: NSObject, NSApplicationDelegate {
             welcome.onOpenProject = {
                 guard let url = self.openWorkspaceDialog() else { return }
 
-                if let document = self.openWorkspace(url: url) {
+                if self.setWorkspace(url: url), let document = self.openWorkspaceDocument() {
                     window.close()
                     self.showComponentBrowser(document)
                 }
@@ -228,21 +273,9 @@ class AppDelegate: NSObject, NSApplicationDelegate {
         return dialog.url
     }
 
-    private func openWorkspace(url: URL) -> DirectoryDocument? {
-        if !CSWorkspacePreferences.validateProposedWorkspace(url: url) {
-            return nil
-        }
+    private func openWorkspaceDocument() -> DirectoryDocument? {
+        let url = LonaModule.current.url
 
-        CSUserPreferences.workspaceURL = url
-
-        NSDocumentController.shared.noteNewRecentDocumentURL(url)
-
-        CSWorkspacePreferences.reloadAllConfigurationFiles(closeDocuments: true)
-
-        reloadPreferencesWindow()
-
-        // Create the DirectoryDocument after updating the workspace configuration, since we may use
-        // the configuration when displaying the directory
         guard let newDocument = try? DirectoryDocument(contentsOf: url, ofType: "Directory Document") else {
             Swift.print("Failed to open", url)
             return nil
@@ -253,7 +286,37 @@ class AppDelegate: NSObject, NSApplicationDelegate {
         return newDocument
     }
 
+    private func setWorkspace(url: URL) -> Bool {
+        if !CSWorkspacePreferences.validateProposedWorkspace(url: url) {
+            return false
+        }
+
+        CSUserPreferences.workspaceURL = url
+
+        NSDocumentController.shared.noteNewRecentDocumentURL(url)
+
+        CSWorkspacePreferences.reloadAllConfigurationFiles(closeDocuments: true)
+
+        reloadPreferencesWindow()
+
+        return true
+    }
+
     // MARK: - Creating Workspaces
+
+    @IBAction func newWorkspace(_ sender: AnyObject) {
+        guard let url = self.createWorkspaceDialog() else { return }
+
+        let ok = self.createWorkspace(url: url)
+        if !ok {
+            Swift.print("Failed to create workspace")
+            return
+        }
+
+        if setWorkspace(url: url), let document = openWorkspaceDocument() {
+            self.showComponentBrowser(document)
+        }
+    }
 
     private func createWorkspaceDialog() -> URL? {
         let dialog = NSSavePanel()
