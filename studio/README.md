@@ -2,7 +2,7 @@
 
 Lona Studio provides a graphical interface for working with `.component` files.
 
-> Lona Studio is still _very unstable_, so save frequently and make sure your workspace is backed up via git!
+> Lona Studio is still _fairly unstable_, so save frequently and make sure your workspace is backed up via git!
 
 ## Installation
 
@@ -56,20 +56,6 @@ After clicking this button, type the name of a new directory. This will create a
 
 ### Opening a Workspace
 
-To open an existing workspace:
+To open an existing workspace, either use `File > Open` or click the "Open workspace..." button:
 
 ![Open Workspace](../docs/images/open-workspace.png)
-
-### Changing Workspaces
-
-To change your workspace directory, first open Lona Studio preferences:
-
-![Open Preferences](../docs/images/open-preferences.png)
-
-Then choose a directory path:
-
-![Set Workspace Path](../docs/images/set-workspace-path.png)
-
-Don't modify the colors or text styles paths unless you really know what you're doing. They're kind of buggy.
-
-If something doesn't work... try quitting and launching Lona Studio again 😢
