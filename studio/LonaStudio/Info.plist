@@ -15,12 +15,12 @@
 			</array>
 			<key>CFBundleTypeIconFile</key>
 			<string></string>
-			<key>LSHandlerRank</key>
-			<string>Owner</string>
 			<key>CFBundleTypeName</key>
 			<string>DocumentType</string>
 			<key>CFBundleTypeRole</key>
 			<string>Editor</string>
+			<key>LSHandlerRank</key>
+			<string>Owner</string>
 			<key>NSDocumentClass</key>
 			<string>$(PRODUCT_MODULE_NAME).ComponentDocument</string>
 		</dict>
@@ -47,6 +47,7 @@
 				<string>eps</string>
 				<string>bmp</string>
 				<string>gif</string>
+				<string>svg</string>
 			</array>
 			<key>CFBundleTypeName</key>
 			<string>Image</string>
