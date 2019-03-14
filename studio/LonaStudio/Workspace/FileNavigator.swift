@@ -117,7 +117,9 @@ class FileNavigator: NSBox {
         fileTree.imageForFile = { [unowned self] path, size in self.imageForFile(atPath: path, size: size) }
         fileTree.displayNameForFile = { [unowned self] path in self.displayNameForFile(atPath: path) }
         fileTree.menuForFile = { [unowned self] path in self.menuForFile(atPath: path) }
-        fileTree.filterFiles = { path in !(path.hasPrefix(".") || path.hasPrefix("~")) }
+        fileTree.filterFiles = { path in
+            return !(path.hasPrefix(".") || URL(fileURLWithPath: path).deletingPathExtension().path.hasSuffix("~"))
+        }
 
         headerView.fileIcon = NSImage(byReferencing: CSWorkspacePreferences.workspaceIconURL)
         headerView.dividerColor = NSSplitView.defaultDividerColor
