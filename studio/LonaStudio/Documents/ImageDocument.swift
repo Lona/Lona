@@ -42,11 +42,11 @@ class ImageDocument: NSDocument {
 
     override func read(from url: URL, ofType typeName: String) throws {
         let data = try Data(contentsOf: url, options: NSData.ReadingOptions())
-		if url.pathExtension == "svg" {
-			let sz = CGSize(width: 450, height: 450)
-			content = SVG.render(contentsOf: url, size: sz, resizingMode: .scaleAspectFit)
-		} else {
-			content = NSImage(data: data)
-		}
+        if url.pathExtension == "svg" {
+            let size = CGSize(width: 450, height: 450)
+            content = SVG.render(contentsOf: url, size: size, resizingMode: .scaleAspectFit)
+        } else {
+            content = NSImage(data: data)
+        }
     }
 }
