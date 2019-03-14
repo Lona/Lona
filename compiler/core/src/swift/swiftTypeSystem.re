@@ -398,12 +398,16 @@ module Ast = {
         : list(SwiftAst.node) => [
       decodingContainer("unkeyedContainer", Unkeyed),
       Empty,
-      BinaryExpression({
-        "left": SwiftIdentifier("self"),
-        "operator": "=",
-        "right": SwiftIdentifier("." ++ constantCaseName),
+      VariableDeclaration({
+        "modifiers": [],
+        "pattern":
+          IdentifierPattern({
+            "identifier": SwiftIdentifier("items"),
+            "annotation": Some(ArrayType(TypeName("T"))),
+          }),
+        "init": Some(LiteralExpression(Array([]))),
+        "block": None,
       }),
-      Empty,
       WhileStatement({
         "condition":
           MemberExpression([
@@ -411,23 +415,53 @@ module Ast = {
             SwiftIdentifier("isAtEnd"),
           ]),
         "block": [
-          ConstantDeclaration({
-            "modifiers": [],
+          FunctionCallExpression({
+            "name":
+              MemberExpression([
+                SwiftIdentifier("items"),
+                SwiftIdentifier("append"),
+              ]),
+            "arguments": [
+              FunctionCallArgument({
+                "name": None,
+                "value":
+                  unkeyedContainerDecode(
+                    MemberExpression([
+                      SwiftIdentifier(recursiveTypeName),
+                      SwiftIdentifier("self"),
+                    ]),
+                  ),
+              }),
+            ],
+          }),
+        ],
+      }),
+      Empty,
+      BinaryExpression({
+        "left": SwiftIdentifier("self"),
+        "operator": "=",
+        "right": SwiftIdentifier("." ++ constantCaseName),
+      }),
+      WhileStatement({
+        "condition":
+          OptionalBindingCondition({
+            "const": true,
             "pattern":
               IdentifierPattern({
                 "identifier": SwiftIdentifier("item"),
                 "annotation": None,
               }),
             "init":
-              Some(
-                unkeyedContainerDecode(
+              FunctionCallExpression({
+                "name":
                   MemberExpression([
-                    SwiftIdentifier(recursiveTypeName),
-                    SwiftIdentifier("self"),
+                    SwiftIdentifier("items"),
+                    SwiftIdentifier("popLast"),
                   ]),
-                ),
-              ),
+                "arguments": [],
+              }),
           }),
+        "block": [
           BinaryExpression({
             "left": SwiftIdentifier("self"),
             "operator": "=",
