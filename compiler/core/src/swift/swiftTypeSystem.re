@@ -22,22 +22,28 @@ type convertedEntity = {
   node: SwiftAst.node,
 };
 
-module Naming = {
-  let prefixedName = (swiftOptions: SwiftOptions.options, name: string) =>
-    swiftOptions.typePrefix ++ name;
+type conversionOptions = {
+  nativeTypeNames: list(string),
+  swiftOptions: SwiftOptions.options,
+};
 
-  let recordName = (swiftOptions: SwiftOptions.options, name: string) =>
-    name |> Format.upperFirst |> prefixedName(swiftOptions);
+module Naming = {
+  let prefixedName = (conversionOptions: conversionOptions, name: string) =>
+    List.mem(name, conversionOptions.nativeTypeNames) ?
+      name : conversionOptions.swiftOptions.typePrefix ++ name;
+
+  let recordName = (conversionOptions: conversionOptions, name: string) =>
+    name |> Format.upperFirst |> prefixedName(conversionOptions);
 
   let prefixedType =
       (
-        swiftOptions: SwiftOptions.options,
+        conversionOptions: conversionOptions,
         useTypePrefix: bool,
         typeCaseParameterEntity: TypeSystem.typeCaseParameterEntity,
       )
       : string => {
     let formattedName = name =>
-      useTypePrefix ? prefixedName(swiftOptions, name) : name;
+      useTypePrefix ? prefixedName(conversionOptions, name) : name;
     switch (typeCaseParameterEntity) {
     | TypeSystem.TypeReference(name, []) => formattedName(name)
     | TypeSystem.TypeReference(name, parameters) =>
@@ -54,13 +60,13 @@ module Naming = {
 
   let typeName =
       (
-        swiftOptions: SwiftOptions.options,
+        conversionOptions: conversionOptions,
         useTypePrefix: bool,
         typeCaseParameterEntity: TypeSystem.typeCaseParameterEntity,
       )
       : SwiftAst.typeAnnotation =>
     TypeName(
-      prefixedType(swiftOptions, useTypePrefix, typeCaseParameterEntity),
+      prefixedType(conversionOptions, useTypePrefix, typeCaseParameterEntity),
     );
 
   let codingContainer = (container: codingContainer): string =>
@@ -228,7 +234,7 @@ module Ast = {
       });
 
     let enumCaseDataDecoding =
-        (swiftOptions: SwiftOptions.options, typeCase: TypeSystem.typeCase)
+        (conversionOptions: conversionOptions, typeCase: TypeSystem.typeCase)
         : list(SwiftAst.node) =>
       switch (typeCase) {
       /* Multiple parameters are encoded as an array */
@@ -243,7 +249,7 @@ module Ast = {
                      MemberExpression([
                        SwiftIdentifier(
                          parameter.value
-                         |> Naming.prefixedType(swiftOptions, true),
+                         |> Naming.prefixedType(conversionOptions, true),
                        ),
                        SwiftIdentifier("self"),
                      ]),
@@ -278,7 +284,7 @@ module Ast = {
                         MemberExpression([
                           SwiftIdentifier(
                             parameter.value
-                            |> Naming.prefixedType(swiftOptions, true),
+                            |> Naming.prefixedType(conversionOptions, true),
                           ),
                           SwiftIdentifier("self"),
                         ]),
@@ -310,7 +316,7 @@ module Ast = {
                       containerDecode(
                         MemberExpression([
                           SwiftIdentifier(
-                            name |> Naming.recordName(swiftOptions),
+                            name |> Naming.recordName(conversionOptions),
                           ),
                           SwiftIdentifier("self"),
                         ]),
@@ -324,7 +330,7 @@ module Ast = {
       };
 
     let enumCaseDecoding =
-        (swiftOptions: SwiftOptions.options, typeCase: TypeSystem.typeCase)
+        (conversionOptions: conversionOptions, typeCase: TypeSystem.typeCase)
         : SwiftAst.node => {
       let caseName = typeCase |> TypeSystem.Access.typeCaseName;
 
@@ -332,13 +338,13 @@ module Ast = {
         "patterns": [
           ExpressionPattern({"value": LiteralExpression(String(caseName))}),
         ],
-        "statements": enumCaseDataDecoding(swiftOptions, typeCase),
+        "statements": enumCaseDataDecoding(conversionOptions, typeCase),
       });
     };
 
     let enumDecoding =
         (
-          swiftOptions: SwiftOptions.options,
+          conversionOptions: conversionOptions,
           typeCases: list(TypeSystem.typeCase),
         )
         : list(SwiftAst.node) => [
@@ -365,7 +371,7 @@ module Ast = {
       SwitchStatement({
         "expression": SwiftIdentifier("type"),
         "cases":
-          (typeCases |> List.map(enumCaseDecoding(swiftOptions)))
+          (typeCases |> List.map(enumCaseDecoding(conversionOptions)))
           @ [
             DefaultCaseLabel({
               "statements": [
@@ -389,7 +395,7 @@ module Ast = {
 
     let linkedListDecoding =
         (
-          swiftOptions: SwiftOptions.options,
+          conversionOptions: conversionOptions,
           typeCases: list(TypeSystem.typeCase),
           recursiveCaseName: string,
           recursiveTypeName: string,
@@ -485,7 +491,7 @@ module Ast = {
     ];
 
     let nullaryDecoding =
-        (swiftOptions: SwiftOptions.options, constantCaseName: string)
+        (conversionOptions: conversionOptions, constantCaseName: string)
         : list(SwiftAst.node) => [
       BinaryExpression({
         "left": SwiftIdentifier("self"),
@@ -496,7 +502,7 @@ module Ast = {
 
     let constantCaseDecoding =
         (
-          swiftOptions: SwiftOptions.options,
+          conversionOptions: conversionOptions,
           encoding: typeNameEncoding,
           index: int,
           typeCase: TypeSystem.typeCase,
@@ -511,13 +517,13 @@ module Ast = {
               LiteralExpression(encodedType(encoding, caseName, index)),
           }),
         ],
-        "statements": enumCaseDataDecoding(swiftOptions, typeCase),
+        "statements": enumCaseDataDecoding(conversionOptions, typeCase),
       });
     };
 
     let constantDecoding =
         (
-          swiftOptions: SwiftOptions.options,
+          conversionOptions: conversionOptions,
           encoding: typeNameEncoding,
           typeCases: list(TypeSystem.typeCase),
         )
@@ -554,7 +560,12 @@ module Ast = {
           (
             typeCases
             |> List.mapi((index, case) =>
-                 constantCaseDecoding(swiftOptions, encoding, index, case)
+                 constantCaseDecoding(
+                   conversionOptions,
+                   encoding,
+                   index,
+                   case,
+                 )
                )
           )
           @ (
@@ -946,13 +957,14 @@ module Build = {
 
   let record =
       (
-        swiftOptions: SwiftOptions.options,
+        conversionOptions: conversionOptions,
         name: string,
         parameters: list(TypeSystem.recordTypeCaseParameter),
       )
       : SwiftAst.node =>
     StructDeclaration({
-      "name": name |> Format.upperFirst |> Naming.prefixedName(swiftOptions),
+      "name":
+        name |> Format.upperFirst |> Naming.prefixedName(conversionOptions),
       "inherits": [
         ProtocolCompositionType([
           TypeName("Codable"),
@@ -975,7 +987,7 @@ module Build = {
                          "localName": parameter.key,
                          "annotation":
                            parameter.value
-                           |> Naming.typeName(swiftOptions, true),
+                           |> Naming.typeName(conversionOptions, true),
                          "defaultValue": None,
                        })
                      ),
@@ -1006,7 +1018,7 @@ module Build = {
                        "annotation":
                          Some(
                            parameter.value
-                           |> Naming.typeName(swiftOptions, true),
+                           |> Naming.typeName(conversionOptions, true),
                          ),
                      }),
                    "init": None,
@@ -1018,7 +1030,7 @@ module Build = {
     });
 
   let enumCase =
-      (swiftOptions: SwiftOptions.options, typeCase: TypeSystem.typeCase)
+      (conversionOptions: conversionOptions, typeCase: TypeSystem.typeCase)
       : SwiftAst.node => {
     let name = typeCase |> TypeSystem.Access.typeCaseName;
     let parameterCount =
@@ -1029,12 +1041,12 @@ module Build = {
     let parameters =
       switch (typeCase) {
       | RecordCase(name, _) => [
-          TypeName(name |> Naming.recordName(swiftOptions)),
+          TypeName(name |> Naming.recordName(conversionOptions)),
         ]
       | NormalCase(_, parameters) =>
         parameters
         |> List.map((parameter: TypeSystem.normalTypeCaseParameter) =>
-             parameter.value |> Naming.typeName(swiftOptions, true)
+             parameter.value |> Naming.typeName(conversionOptions, true)
            )
       };
     EnumCase({
@@ -1045,7 +1057,10 @@ module Build = {
   };
 
   let enumCodable =
-      (swiftOptions: SwiftOptions.options, cases: list(TypeSystem.typeCase))
+      (
+        conversionOptions: conversionOptions,
+        cases: list(TypeSystem.typeCase),
+      )
       : list(SwiftAst.node) =>
     SwiftDocument.join(
       Empty,
@@ -1053,7 +1068,7 @@ module Build = {
         LineComment("MARK: Codable"),
         Ast.codingKeys(["type", "data"]),
         Ast.Decoding.decodableInitializer(
-          Ast.Decoding.enumDecoding(swiftOptions, cases),
+          Ast.Decoding.enumDecoding(conversionOptions, cases),
         ),
         Ast.Encoding.encodableFunction(Ast.Encoding.enumEncoding(cases)),
       ],
@@ -1061,7 +1076,7 @@ module Build = {
 
   let linkedListCodable =
       (
-        swiftOptions: SwiftOptions.options,
+        conversionOptions: conversionOptions,
         cases: list(TypeSystem.typeCase),
         recursiveCaseName: string,
         recursiveTypeName: string,
@@ -1074,7 +1089,7 @@ module Build = {
         LineComment("MARK: Codable"),
         Ast.Decoding.decodableInitializer(
           Ast.Decoding.linkedListDecoding(
-            swiftOptions,
+            conversionOptions,
             cases,
             recursiveCaseName,
             recursiveTypeName,
@@ -1088,14 +1103,14 @@ module Build = {
     );
 
   let nullaryCodable =
-      (swiftOptions: SwiftOptions.options, constantCaseName: string)
+      (conversionOptions: conversionOptions, constantCaseName: string)
       : list(SwiftAst.node) =>
     SwiftDocument.join(
       Empty,
       [
         LineComment("MARK: Codable"),
         Ast.Decoding.decodableInitializer(
-          Ast.Decoding.nullaryDecoding(swiftOptions, constantCaseName),
+          Ast.Decoding.nullaryDecoding(conversionOptions, constantCaseName),
         ),
         Ast.Encoding.encodableFunction([]),
       ],
@@ -1103,7 +1118,7 @@ module Build = {
 
   let constantCodable =
       (
-        swiftOptions: SwiftOptions.options,
+        conversionOptions: conversionOptions,
         encoding: typeNameEncoding,
         cases: list(TypeSystem.typeCase),
       )
@@ -1113,7 +1128,7 @@ module Build = {
       [
         LineComment("MARK: Codable"),
         Ast.Decoding.decodableInitializer(
-          Ast.Decoding.constantDecoding(swiftOptions, encoding, cases),
+          Ast.Decoding.constantDecoding(conversionOptions, encoding, cases),
         ),
         Ast.Encoding.encodableFunction(
           Ast.Encoding.constantEncoding(encoding, cases),
@@ -1122,7 +1137,7 @@ module Build = {
     );
 
   let entity =
-      (swiftOptions: SwiftOptions.options, entity: TypeSystem.entity)
+      (conversionOptions: conversionOptions, entity: TypeSystem.entity)
       : convertedEntity =>
     switch (entity) {
     | GenericType(genericType) =>
@@ -1147,7 +1162,7 @@ module Build = {
             | [] => genericType.name
             };
           let enumCases =
-            genericType.cases |> List.map(enumCase(swiftOptions));
+            genericType.cases |> List.map(enumCase(conversionOptions));
           /* Generate array encoding/decoding for linked lists */
           if (TypeSystem.Match.linkedList(entity)) {
             let constantCase =
@@ -1159,10 +1174,10 @@ module Build = {
                 TypeSystem.Access.typeCaseParameterEntities(recursiveCase),
               );
             {
-              name: Some(swiftOptions.typePrefix ++ name),
+              name: Some(conversionOptions.swiftOptions.typePrefix ++ name),
               node:
                 EnumDeclaration({
-                  "name": swiftOptions.typePrefix ++ name,
+                  "name": conversionOptions.swiftOptions.typePrefix ++ name,
                   "isIndirect": true,
                   "inherits": [
                     ProtocolCompositionType([
@@ -1175,7 +1190,7 @@ module Build = {
                     enumCases
                     @ [Empty]
                     @ linkedListCodable(
-                        swiftOptions,
+                        conversionOptions,
                         genericType.cases,
                         TypeSystem.Access.typeCaseName(recursiveCase),
                         TypeSystem.Access.typeCaseParameterEntityName(
@@ -1190,10 +1205,10 @@ module Build = {
             let constantCase =
               List.hd(TypeSystem.Access.constantCases(entity));
             {
-              name: Some(swiftOptions.typePrefix ++ name),
+              name: Some(conversionOptions.swiftOptions.typePrefix ++ name),
               node:
                 EnumDeclaration({
-                  "name": swiftOptions.typePrefix ++ name,
+                  "name": conversionOptions.swiftOptions.typePrefix ++ name,
                   "isIndirect": true,
                   "inherits": [
                     ProtocolCompositionType([
@@ -1206,7 +1221,7 @@ module Build = {
                     enumCases
                     @ [Empty]
                     @ nullaryCodable(
-                        swiftOptions,
+                        conversionOptions,
                         TypeSystem.Access.typeCaseName(constantCase),
                       ),
                 }),
@@ -1216,10 +1231,10 @@ module Build = {
              */
           } else if (TypeSystem.Match.boolean(entity)) {
             {
-              name: Some(swiftOptions.typePrefix ++ name),
+              name: Some(conversionOptions.swiftOptions.typePrefix ++ name),
               node:
                 EnumDeclaration({
-                  "name": swiftOptions.typePrefix ++ name,
+                  "name": conversionOptions.swiftOptions.typePrefix ++ name,
                   "isIndirect": true,
                   "inherits": [
                     ProtocolCompositionType([
@@ -1232,7 +1247,7 @@ module Build = {
                     enumCases
                     @ [Empty]
                     @ constantCodable(
-                        swiftOptions,
+                        conversionOptions,
                         BooleanEncoding,
                         genericType.cases,
                       ),
@@ -1240,10 +1255,10 @@ module Build = {
             };
           } else if (TypeSystem.Match.constant(entity)) {
             {
-              name: Some(swiftOptions.typePrefix ++ name),
+              name: Some(conversionOptions.swiftOptions.typePrefix ++ name),
               node:
                 EnumDeclaration({
-                  "name": swiftOptions.typePrefix ++ name,
+                  "name": conversionOptions.swiftOptions.typePrefix ++ name,
                   "isIndirect": true,
                   "inherits": [
                     TypeName("String"),
@@ -1258,10 +1273,10 @@ module Build = {
             };
           } else {
             {
-              name: Some(swiftOptions.typePrefix ++ name),
+              name: Some(conversionOptions.swiftOptions.typePrefix ++ name),
               node:
                 EnumDeclaration({
-                  "name": swiftOptions.typePrefix ++ name,
+                  "name": conversionOptions.swiftOptions.typePrefix ++ name,
                   "isIndirect": true,
                   "inherits": [
                     ProtocolCompositionType([
@@ -1273,7 +1288,7 @@ module Build = {
                   "body":
                     enumCases
                     @ [Empty]
-                    @ enumCodable(swiftOptions, genericType.cases),
+                    @ enumCodable(conversionOptions, genericType.cases),
                 }),
             };
           };
@@ -1284,7 +1299,7 @@ module Build = {
         name: None,
         node:
           TypealiasDeclaration({
-            "name": Naming.prefixedName(swiftOptions, nativeType.name),
+            "name": Naming.prefixedName(conversionOptions, nativeType.name),
             "modifier": Some(PublicModifier),
             "annotation": TypeName(nativeType.name),
           }),
@@ -1300,6 +1315,13 @@ type convertedType = {
 let render =
     (swiftOptions: SwiftOptions.options, file: TypeSystem.typesFile)
     : list(convertedType) => {
+  let nativeTypeNames =
+    file.types
+    |> List.map(TypeSystem.Access.nativeTypeName)
+    |> Sequence.compact;
+
+  let conversionOptions = {nativeTypeNames, swiftOptions};
+
   let records =
     file.types |> List.map(TypeSystem.Access.entityRecords) |> List.concat;
   let structs =
@@ -1308,13 +1330,13 @@ let render =
          {
            name,
            contents:
-             Build.record(swiftOptions, name, parameters)
+             Build.record(conversionOptions, name, parameters)
              |> SwiftRender.toString,
          }
        );
   let entities =
     file.types
-    |> List.map(Build.entity(swiftOptions))
+    |> List.map(Build.entity(conversionOptions))
     |> List.map((convertedEntity: convertedEntity) =>
          switch (convertedEntity.name) {
          | Some(name) =>

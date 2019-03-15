@@ -32,6 +32,12 @@ type entity =
 type typesFile = {types: list(entity)};
 
 module Access = {
+  let nativeTypeName = (entity: entity): option(string) =>
+    switch (entity) {
+    | GenericType(_) => None
+    | NativeType(nativeType) => Some(nativeType.name)
+    };
+
   let typeCaseName = (typeCase: typeCase): string =>
     switch (typeCase) {
     | NormalCase(name, _)
@@ -136,10 +142,10 @@ module Access = {
 };
 
 module Match = {
-  let nativeTypeName = (name: string, entity: entity): bool =>
+  let nativeType = (entity: entity): bool =>
     switch (entity) {
     | GenericType(_) => false
-    | NativeType(nativeType) => nativeType.name == name
+    | NativeType(_) => true
     };
 
   let genericTypeCaseNames = (names: list(string), entity: entity): bool =>
