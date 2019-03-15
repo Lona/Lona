@@ -961,22 +961,60 @@ module Build = {
       ],
       "modifier": Some(PublicModifier),
       "body":
-        parameters
-        |> List.map((parameter: TypeSystem.recordTypeCaseParameter) =>
-             VariableDeclaration({
-               "modifiers": [AccessLevelModifier(PublicModifier)],
-               "pattern":
-                 IdentifierPattern({
-                   "identifier": SwiftIdentifier(parameter.key),
-                   "annotation":
-                     Some(
-                       parameter.value |> Naming.typeName(swiftOptions, true),
+        SwiftDocument.joinGroups(
+          Empty,
+          [
+            [
+              InitializerDeclaration({
+                "modifiers": [AccessLevelModifier(PublicModifier)],
+                "parameters":
+                  parameters
+                  |> List.map((parameter: TypeSystem.recordTypeCaseParameter) =>
+                       Parameter({
+                         "externalName": None,
+                         "localName": parameter.key,
+                         "annotation":
+                           parameter.value
+                           |> Naming.typeName(swiftOptions, true),
+                         "defaultValue": None,
+                       })
                      ),
-                 }),
-               "init": None,
-               "block": None,
-             })
-           ),
+                "failable": None,
+                "throws": false,
+                "body":
+                  parameters
+                  |> List.map((parameter: TypeSystem.recordTypeCaseParameter) =>
+                       BinaryExpression({
+                         "left":
+                           SwiftAst.Builders.memberExpression([
+                             "self",
+                             parameter.key,
+                           ]),
+                         "operator": "=",
+                         "right": SwiftIdentifier(parameter.key),
+                       })
+                     ),
+              }),
+            ],
+            parameters
+            |> List.map((parameter: TypeSystem.recordTypeCaseParameter) =>
+                 VariableDeclaration({
+                   "modifiers": [AccessLevelModifier(PublicModifier)],
+                   "pattern":
+                     IdentifierPattern({
+                       "identifier": SwiftIdentifier(parameter.key),
+                       "annotation":
+                         Some(
+                           parameter.value
+                           |> Naming.typeName(swiftOptions, true),
+                         ),
+                     }),
+                   "init": None,
+                   "block": None,
+                 })
+               ),
+          ],
+        ),
     });
 
   let enumCase =
