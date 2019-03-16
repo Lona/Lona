@@ -9,14 +9,19 @@ const modifySketchTemplate = require('./modify-sketch-template')
 // Add node_modules to the path, so they're resolved even when loading modules
 // from our compilerOutput directory (which is outside the root of this project)
 process.env.NODE_PATH = path.join(__dirname, '../node_modules')
-process.env.NODE_PATH = path.join(process.cwd(), 'node_modules')
+process.env.NODE_PATH += ':'
+process.env.NODE_PATH += path.join(process.cwd(), 'node_modules')
 require('module').Module._initPaths()
 
 // Temporary directory for the compiler to write generated JS files
 const compilerOutput = path.join(os.tmpdir(), 'lona-sketch-library-generated')
 const babelOutput = path.join(os.tmpdir(), 'lona-sketch-library-compiled')
 
-module.exports = function(workspace, sketchFilePath, options) {
+module.exports = function generateSketchLibrary(
+  workspace,
+  sketchFilePath,
+  options
+) {
   let { devicePresetList, compiler, componentPathFilter, logFunction } =
     options || {}
 
