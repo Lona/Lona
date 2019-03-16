@@ -1,5 +1,6 @@
 const execa = require('execa')
 const path = require('path')
+const loadConfig = require('../tasks/load-config')
 
 module.exports = {
   command: 'build',
@@ -18,6 +19,16 @@ module.exports = {
       type: 'string',
       alias: 'c',
     },
+    'build-dir': {
+      description:
+        'The path to the output directory. Default to the `docs` folder in the workspace',
+      type: 'string',
+      alias: 'o',
+    },
+    'cache-dir': {
+      description: 'The path to the cache directory.',
+      type: 'string',
+    },
   },
 
   handler(argv) {
@@ -27,22 +38,41 @@ module.exports = {
     }
 
     if (argv.workspace) {
-      // eslint-disable-next-line no-param-reassign
       if (!path.isAbsolute(argv.workspace)) {
         argv.workspace = path.join(process.cwd(), argv.workspace)
       }
       process.env.WORKSPACE = argv.workspace
     }
 
+    const config = loadConfig()
+
+    if (argv.buildDir) {
+      if (!path.isAbsolute(argv.buildDir)) {
+        argv.buildDir = path.join(process.cwd(), argv.buildDir)
+      }
+    } else {
+      argv.buildDir = path.join(config.cwd, config.docsFolder || './docs')
+    }
+
     let childProcesses = []
 
     const buildSteps = require('../tasks/build')
-    const copyPublicFolder = require('../tasks/copy-public-folder')
+    const gatsbyPath = require.resolve('gatsby/dist/bin/gatsby.js')
+
+    const gatsbyOptions = [`--build-dir=${argv.buildDir}`]
+    if (argv.cacheDir) {
+      if (!path.isAbsolute(argv.cacheDir)) {
+        argv.cacheDir = path.join(process.cwd(), argv.cacheDir)
+      }
+      gatsbyOptions.push(`--cache-dir=${argv.cacheDir}`)
+    }
 
     buildSteps({})
       .then(() => {
         if (argv.watch || process.env.WATCH) {
-          childProcesses = [execa('gatsby', ['develop'], shellOptions)].concat(
+          childProcesses = [
+            execa(gatsbyPath, ['develop', ...gatsbyOptions], shellOptions),
+          ].concat(
             buildSteps({
               watching: true,
             })
@@ -50,7 +80,7 @@ module.exports = {
 
           return childProcesses
         }
-        return execa('gatsby', ['build'], shellOptions).then(copyPublicFolder)
+        return execa(gatsbyPath, ['build', ...gatsbyOptions], shellOptions)
       })
       .catch(() => {})
 
