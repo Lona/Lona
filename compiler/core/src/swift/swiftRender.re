@@ -609,9 +609,15 @@ and renderTypeAnnotation = (node: SwiftAst.typeAnnotation) =>
     )
   | OptionalType(v) => group(concat([renderTypeAnnotation(v), s("?")]))
   | TupleType(o) =>
+    let renderTupleTypeElement = (element: SwiftAst.tupleTypeElement) =>
+      switch (element.elementName) {
+      | Some(name) =>
+        s(name ++ ": ") <+> renderTypeAnnotation(element.annotation)
+      | None => renderTypeAnnotation(element.annotation)
+      };
     s("(")
-    <+> group(o |> List.map(renderTypeAnnotation) |> join(s(", ")))
-    <+> s(")")
+    <+> group(o |> List.map(renderTupleTypeElement) |> join(s(", ")))
+    <+> s(")");
   | FunctionType(o) =>
     let arguments =
       group(

@@ -43,6 +43,10 @@ type literal =
   | Color(string)
   | Image(string)
   | Array(list(node))
+and tupleTypeElement = {
+  elementName: option(string),
+  annotation: typeAnnotation,
+}
 and typeAnnotation =
   | TypeName(string)
   | TypeIdentifier(
@@ -61,7 +65,7 @@ and typeAnnotation =
       },
     )
   | OptionalType(typeAnnotation)
-  | TupleType(list(typeAnnotation))
+  | TupleType(list(tupleTypeElement))
   | FunctionType(
       {
         .

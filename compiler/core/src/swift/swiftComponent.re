@@ -89,7 +89,10 @@ module Doc = {
       >>= (
         entity => {
           let convertedEntity =
-            SwiftTypeSystem.Build.entity(swiftOptions, entity);
+            SwiftTypeSystem.Build.entity(
+              {nativeTypeNames: [], swiftOptions},
+              entity,
+            );
           switch (convertedEntity.name) {
           | Some(name) =>
             Some([

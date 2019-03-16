@@ -139,6 +139,20 @@ module Access = {
       |> List.concat
     | NativeType(_) => []
     };
+
+  let recordCaseLabels = (typeCase: typeCase): list(string) =>
+    switch (typeCase) {
+    | NormalCase(_) => []
+    | RecordCase(_, parameters) =>
+      parameters
+      |> List.map((parameter: recordTypeCaseParameter) => parameter.key)
+    };
+
+  let allRecordCaseLabels = (typeCases: list(typeCase)): list(string) =>
+    typeCases
+    |> List.map(recordCaseLabels)
+    |> List.concat
+    |> Sequence.dedupeMem;
 };
 
 module Match = {

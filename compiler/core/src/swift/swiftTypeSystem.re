@@ -2,7 +2,7 @@ type codingContainer =
   | Keyed
   | Unkeyed
   | SingleValue
-  | NestedKeyed
+  | NestedKeyed(string)
   | NestedUnkeyed;
 
 type typeNameEncoding =
@@ -74,7 +74,7 @@ module Naming = {
     | Keyed => "container"
     | Unkeyed => "unkeyedContainer"
     | SingleValue => "singleValueContainer"
-    | NestedKeyed => "nestedContainer"
+    | NestedKeyed(_) => "nestedContainer"
     | NestedUnkeyed => "nestedUnkeyedContainer"
     };
 };
@@ -102,7 +102,13 @@ module Ast = {
         "body": body,
       });
 
-    let decodingContainer = (variableName: string, container: codingContainer) => {
+    let decodingContainer =
+        (
+          decoderName: string,
+          variableName: string,
+          container: codingContainer,
+          codingKeysName: string,
+        ) => {
       let pattern =
         IdentifierPattern({
           "identifier": SwiftIdentifier(variableName),
@@ -115,19 +121,36 @@ module Ast = {
               FunctionCallExpression({
                 "name":
                   MemberExpression([
-                    SwiftIdentifier("decoder"),
+                    SwiftIdentifier(decoderName),
                     SwiftIdentifier(container |> Naming.codingContainer),
                   ]),
                 "arguments":
                   switch (container) {
-                  | Keyed
-                  | NestedKeyed => [
+                  | Keyed => [
                       FunctionCallArgument({
                         "name": Some(SwiftIdentifier("keyedBy")),
                         "value":
                           MemberExpression([
-                            SwiftIdentifier("CodingKeys"),
+                            SwiftIdentifier(codingKeysName),
                             SwiftIdentifier("self"),
+                          ]),
+                      }),
+                    ]
+                  | NestedKeyed(nestedKey) => [
+                      FunctionCallArgument({
+                        "name": Some(SwiftIdentifier("keyedBy")),
+                        "value":
+                          MemberExpression([
+                            SwiftIdentifier(codingKeysName),
+                            SwiftIdentifier("self"),
+                          ]),
+                      }),
+                      FunctionCallArgument({
+                        "name": Some(SwiftIdentifier("forKey")),
+                        "value":
+                          MemberExpression([
+                            SwiftIdentifier("CodingKeys"),
+                            SwiftIdentifier(nestedKey),
                           ]),
                       }),
                     ]
@@ -189,13 +212,14 @@ module Ast = {
         "block": None,
       });
 
-    let containerDecode = (value: node, codingKey: option(string)) =>
+    let containerDecode =
+        (containerName: string, value: node, codingKey: option(string)) =>
       TryExpression({
         "expression":
           FunctionCallExpression({
             "name":
               MemberExpression([
-                SwiftIdentifier("container"),
+                SwiftIdentifier(containerName),
                 SwiftIdentifier("decode"),
               ]),
             "arguments":
@@ -281,6 +305,7 @@ module Ast = {
                     "name": None,
                     "value":
                       containerDecode(
+                        "container",
                         MemberExpression([
                           SwiftIdentifier(
                             parameter.value
@@ -295,35 +320,41 @@ module Ast = {
               }),
           }),
         ]
-      | NormalCase(name, []) => [
+      | NormalCase(name, [])
+      | RecordCase(name, []) => [
           BinaryExpression({
             "left": SwiftIdentifier("self"),
             "operator": "=",
             "right": SwiftIdentifier("." ++ name),
           }),
         ]
-      | RecordCase(name, _) => [
+      | RecordCase(name, parameters) => [
           BinaryExpression({
             "left": SwiftIdentifier("self"),
             "operator": "=",
             "right":
               FunctionCallExpression({
                 "name": SwiftIdentifier("." ++ name),
-                "arguments": [
-                  FunctionCallArgument({
-                    "name": None,
-                    "value":
-                      containerDecode(
-                        MemberExpression([
-                          SwiftIdentifier(
-                            name |> Naming.recordName(conversionOptions),
-                          ),
-                          SwiftIdentifier("self"),
-                        ]),
-                        Some("data"),
-                      ),
-                  }),
-                ],
+                "arguments":
+                  parameters
+                  |> List.map((parameter: TypeSystem.recordTypeCaseParameter) =>
+                       FunctionCallArgument({
+                         "name": Some(SwiftIdentifier(parameter.key)),
+                         "value":
+                           containerDecode(
+                             "data",
+                             MemberExpression([
+                               SwiftIdentifier(
+                                 parameter.value
+                                 |> TypeSystem.Access.typeCaseParameterEntityName
+                                 |> Naming.recordName(conversionOptions),
+                               ),
+                               SwiftIdentifier("self"),
+                             ]),
+                             Some(parameter.key),
+                           ),
+                       })
+                     ),
               }),
           }),
         ]
@@ -347,51 +378,68 @@ module Ast = {
           conversionOptions: conversionOptions,
           typeCases: list(TypeSystem.typeCase),
         )
-        : list(SwiftAst.node) => [
-      decodingContainer("container", Keyed),
-      ConstantDeclaration({
-        "modifiers": [],
-        "pattern":
-          IdentifierPattern({
-            "identifier": SwiftIdentifier("type"),
-            "annotation": None,
-          }),
-        "init":
-          Some(
-            containerDecode(
-              MemberExpression([
-                SwiftIdentifier("String"),
-                SwiftIdentifier("self"),
-              ]),
-              Some("type"),
+        : list(SwiftAst.node) => {
+      let recordCaseLabels = TypeSystem.Access.allRecordCaseLabels(typeCases);
+
+      [decodingContainer("decoder", "container", Keyed, "CodingKeys")]
+      @ (
+        recordCaseLabels != [] ?
+          [
+            decodingContainer(
+              "container",
+              "data",
+              NestedKeyed("data"),
+              "DataCodingKeys",
             ),
-          ),
-      }),
-      Empty,
-      SwitchStatement({
-        "expression": SwiftIdentifier("type"),
-        "cases":
-          (typeCases |> List.map(enumCaseDecoding(conversionOptions)))
-          @ [
-            DefaultCaseLabel({
-              "statements": [
-                FunctionCallExpression({
-                  "name": SwiftIdentifier("fatalError"),
-                  "arguments": [
-                    FunctionCallArgument({
-                      "name": None,
-                      "value":
-                        SwiftIdentifier(
-                          "\"Failed to decode enum due to invalid case type.\"",
-                        ),
-                    }),
-                  ],
-                }),
-              ],
+          ] :
+          []
+      )
+      @ [
+        ConstantDeclaration({
+          "modifiers": [],
+          "pattern":
+            IdentifierPattern({
+              "identifier": SwiftIdentifier("type"),
+              "annotation": None,
             }),
-          ],
-      }),
-    ];
+          "init":
+            Some(
+              containerDecode(
+                "container",
+                MemberExpression([
+                  SwiftIdentifier("String"),
+                  SwiftIdentifier("self"),
+                ]),
+                Some("type"),
+              ),
+            ),
+        }),
+        Empty,
+        SwitchStatement({
+          "expression": SwiftIdentifier("type"),
+          "cases":
+            (typeCases |> List.map(enumCaseDecoding(conversionOptions)))
+            @ [
+              DefaultCaseLabel({
+                "statements": [
+                  FunctionCallExpression({
+                    "name": SwiftIdentifier("fatalError"),
+                    "arguments": [
+                      FunctionCallArgument({
+                        "name": None,
+                        "value":
+                          SwiftIdentifier(
+                            "\"Failed to decode enum due to invalid case type.\"",
+                          ),
+                      }),
+                    ],
+                  }),
+                ],
+              }),
+            ],
+        }),
+      ];
+    };
 
     let linkedListDecoding =
         (
@@ -402,7 +450,7 @@ module Ast = {
           constantCaseName: string,
         )
         : list(SwiftAst.node) => [
-      decodingContainer("unkeyedContainer", Unkeyed),
+      decodingContainer("decoder", "unkeyedContainer", Unkeyed, "CodingKeys"),
       Empty,
       VariableDeclaration({
         "modifiers": [],
@@ -528,7 +576,7 @@ module Ast = {
           typeCases: list(TypeSystem.typeCase),
         )
         : list(SwiftAst.node) => [
-      decodingContainer("container", SingleValue),
+      decodingContainer("decoder", "container", SingleValue, "CodingKeys"),
       ConstantDeclaration({
         "modifiers": [],
         "pattern":
@@ -539,6 +587,7 @@ module Ast = {
         "init":
           Some(
             containerDecode(
+              "container",
               MemberExpression([
                 SwiftIdentifier(
                   switch (encoding) {
@@ -618,7 +667,13 @@ module Ast = {
         "body": body,
       });
 
-    let encodingContainer = (variableName: string, container: codingContainer) =>
+    let encodingContainer =
+        (
+          encoderName: string,
+          variableName: string,
+          container: codingContainer,
+          codingKeysName: string,
+        ) =>
       VariableDeclaration({
         "modifiers": [],
         "pattern":
@@ -631,19 +686,36 @@ module Ast = {
             FunctionCallExpression({
               "name":
                 MemberExpression([
-                  SwiftIdentifier("encoder"),
+                  SwiftIdentifier(encoderName),
                   SwiftIdentifier(container |> Naming.codingContainer),
                 ]),
               "arguments":
                 switch (container) {
-                | Keyed
-                | NestedKeyed => [
+                | Keyed => [
                     FunctionCallArgument({
                       "name": Some(SwiftIdentifier("keyedBy")),
                       "value":
                         MemberExpression([
-                          SwiftIdentifier("CodingKeys"),
+                          SwiftIdentifier(codingKeysName),
                           SwiftIdentifier("self"),
+                        ]),
+                    }),
+                  ]
+                | NestedKeyed(nestedKey) => [
+                    FunctionCallArgument({
+                      "name": Some(SwiftIdentifier("keyedBy")),
+                      "value":
+                        MemberExpression([
+                          SwiftIdentifier(codingKeysName),
+                          SwiftIdentifier("self"),
+                        ]),
+                    }),
+                    FunctionCallArgument({
+                      "name": Some(SwiftIdentifier("forKey")),
+                      "value":
+                        MemberExpression([
+                          SwiftIdentifier("CodingKeys"),
+                          SwiftIdentifier(nestedKey),
                         ]),
                     }),
                   ]
@@ -682,13 +754,14 @@ module Ast = {
         "block": None,
       });
 
-    let containerEncode = (value: node, codingKey: option(string)) =>
+    let containerEncode =
+        (containerName: string, value: node, codingKey: option(string)) =>
       TryExpression({
         "expression":
           FunctionCallExpression({
             "name":
               MemberExpression([
-                SwiftIdentifier("container"),
+                SwiftIdentifier(containerName),
                 SwiftIdentifier("encode"),
               ]),
             "arguments":
@@ -745,12 +818,33 @@ module Ast = {
         @ encodeParameters;
       /* A single parameter is encoded automatically */
       | NormalCase(_, [_]) => [
-          containerEncode(SwiftIdentifier("value"), Some("data")),
+          containerEncode(
+            "container",
+            SwiftIdentifier("value"),
+            Some("data"),
+          ),
         ]
-      | NormalCase(_, []) => []
-      | RecordCase(_, _) => [
-          containerEncode(SwiftIdentifier("value"), Some("data")),
+      | NormalCase(_, [])
+      | RecordCase(_, []) => []
+      | RecordCase(_, [parameter]) => [
+          containerEncode(
+            "data",
+            MemberExpression([SwiftIdentifier("value")]),
+            Some(parameter.key),
+          ),
         ]
+      | RecordCase(_, parameters) =>
+        parameters
+        |> List.map((parameter: TypeSystem.recordTypeCaseParameter) =>
+             containerEncode(
+               "data",
+               MemberExpression([
+                 SwiftIdentifier("value"),
+                 SwiftIdentifier(parameter.key),
+               ]),
+               Some(parameter.key),
+             )
+           )
       };
 
     /* case .undefined:
@@ -786,6 +880,7 @@ module Ast = {
         "statements":
           [
             containerEncode(
+              "container",
               LiteralExpression(String(caseName)),
               Some("type"),
             ),
@@ -800,15 +895,30 @@ module Ast = {
        }
        */
     let enumEncoding =
-        (typeCases: list(TypeSystem.typeCase)): list(SwiftAst.node) => [
-      encodingContainer("container", Keyed),
-      Empty,
-      SwitchStatement({
-        "expression": SwiftIdentifier("self"),
-        "cases": typeCases |> List.map(enumCaseEncoding),
-      }),
-    ];
+        (typeCases: list(TypeSystem.typeCase)): list(SwiftAst.node) => {
+      let recordCaseLabels = TypeSystem.Access.allRecordCaseLabels(typeCases);
 
+      [encodingContainer("encoder", "container", Keyed, "CodingKeys")]
+      @ (
+        recordCaseLabels != [] ?
+          [
+            encodingContainer(
+              "container",
+              "data",
+              NestedKeyed("data"),
+              "DataCodingKeys",
+            ),
+          ] :
+          []
+      )
+      @ [
+        Empty,
+        SwitchStatement({
+          "expression": SwiftIdentifier("self"),
+          "cases": typeCases |> List.map(enumCaseEncoding),
+        }),
+      ];
+    };
     /* public func encode(to encoder: Encoder) throws {
          var unkeyedContainer = encoder.unkeyedContainer()
 
@@ -823,7 +933,7 @@ module Ast = {
     let linkedListEncoding =
         (typeCases: list(TypeSystem.typeCase), recursiveCaseName: string)
         : list(SwiftAst.node) => [
-      encodingContainer("unkeyedContainer", Unkeyed),
+      encodingContainer("encoder", "unkeyedContainer", Unkeyed, "CodingKeys"),
       Empty,
       VariableDeclaration({
         "modifiers": [],
@@ -910,6 +1020,7 @@ module Ast = {
         "statements":
           [
             containerEncode(
+              "container",
               LiteralExpression(encodedType(encoding, caseName, index)),
               None,
             ),
@@ -921,7 +1032,7 @@ module Ast = {
     let constantEncoding =
         (encoding: typeNameEncoding, typeCases: list(TypeSystem.typeCase))
         : list(SwiftAst.node) => [
-      encodingContainer("container", SingleValue),
+      encodingContainer("encoder", "container", SingleValue, "CodingKeys"),
       Empty,
       SwitchStatement({
         "expression": SwiftIdentifier("self"),
@@ -934,9 +1045,9 @@ module Ast = {
     ];
   };
 
-  let codingKeys = (names: list(string)) =>
+  let codingKeys = (enumName: string, names: list(string)) =>
     EnumDeclaration({
-      "name": "CodingKeys",
+      "name": enumName,
       "isIndirect": false,
       "inherits": [TypeName("CodingKey")],
       "modifier": Some(PublicModifier),
@@ -1038,20 +1149,32 @@ module Build = {
       | RecordCase(_, _) => 1
       | NormalCase(_, parameters) => List.length(parameters)
       };
-    let parameters =
+
+    let tupleElements: list(tupleTypeElement) =
       switch (typeCase) {
-      | RecordCase(name, _) => [
-          TypeName(name |> Naming.recordName(conversionOptions)),
-        ]
+      | RecordCase(_, parameters) =>
+        parameters
+        |> List.map((parameter: TypeSystem.recordTypeCaseParameter) =>
+             {
+               elementName: Some(parameter.key),
+               annotation:
+                 parameter.value |> Naming.typeName(conversionOptions, true),
+             }
+           )
       | NormalCase(_, parameters) =>
         parameters
         |> List.map((parameter: TypeSystem.normalTypeCaseParameter) =>
-             parameter.value |> Naming.typeName(conversionOptions, true)
+             {
+               elementName: None,
+               annotation:
+                 parameter.value |> Naming.typeName(conversionOptions, true),
+             }
            )
       };
     EnumCase({
       "name": SwiftIdentifier(name),
-      "parameters": parameterCount > 0 ? Some(TupleType(parameters)) : None,
+      "parameters":
+        parameterCount > 0 ? Some(TupleType(tupleElements)) : None,
       "value": None,
     });
   };
@@ -1061,18 +1184,27 @@ module Build = {
         conversionOptions: conversionOptions,
         cases: list(TypeSystem.typeCase),
       )
-      : list(SwiftAst.node) =>
+      : list(SwiftAst.node) => {
+    let recordCaseLabels = TypeSystem.Access.allRecordCaseLabels(cases);
+
     SwiftDocument.join(
       Empty,
       [
         LineComment("MARK: Codable"),
-        Ast.codingKeys(["type", "data"]),
+        Ast.codingKeys("CodingKeys", ["type", "data"]),
+      ]
+      @ (
+        recordCaseLabels != [] ?
+          [Ast.codingKeys("DataCodingKeys", recordCaseLabels)] : []
+      )
+      @ [
         Ast.Decoding.decodableInitializer(
           Ast.Decoding.enumDecoding(conversionOptions, cases),
         ),
         Ast.Encoding.encodableFunction(Ast.Encoding.enumEncoding(cases)),
       ],
     );
+  };
 
   let linkedListCodable =
       (
@@ -1144,9 +1276,9 @@ module Build = {
       switch (genericType.cases) {
       | [head, ...tail] =>
         switch (head, tail) {
-        | (RecordCase(_), []) => {
-            name: None,
-            node: LineComment("Single-case record"),
+        | (RecordCase(name, parameters), []) => {
+            name: Some(conversionOptions.swiftOptions.typePrefix ++ name),
+            node: record(conversionOptions, name, parameters),
           }
         | _ =>
           let genericParameters =
@@ -1322,18 +1454,6 @@ let render =
 
   let conversionOptions = {nativeTypeNames, swiftOptions};
 
-  let records =
-    file.types |> List.map(TypeSystem.Access.entityRecords) |> List.concat;
-  let structs =
-    records
-    |> List.map(((name: string, parameters)) =>
-         {
-           name,
-           contents:
-             Build.record(conversionOptions, name, parameters)
-             |> SwiftRender.toString,
-         }
-       );
   let entities =
     file.types
     |> List.map(Build.entity(conversionOptions))
@@ -1349,5 +1469,5 @@ let render =
        )
     |> Sequence.compact;
 
-  structs @ entities;
+  entities;
 };
