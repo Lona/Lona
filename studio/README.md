@@ -22,16 +22,6 @@ Open LonaStudio.xcworkspace and build in Xcode 10+ on High Sierra+. If there are
 
 > If you have multiple versions of Xcode installed, you may need to select which one to use when building from the command line: https://stackoverflow.com/a/41536029
 
-### Sketch export (optional)
-
-To enable Sketch export (beta), you'll also need to install [nvm](https://github.com/creationix/nvm/#installation), and run the following (assuming you're in the `studio` directory):
-
-```bash
-cd LonaStudio/Scripting/Modules/component-to-sketch
-nvm install 8.4
-npm install
-```
-
 ## Workspace
 
 To work in Lona Studio, you'll need a properly configured _workspace_. A workspace is a directory containing, optionally, the following files:
