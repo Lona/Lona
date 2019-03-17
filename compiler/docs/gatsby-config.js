@@ -4,46 +4,46 @@ const loadConfig = require('./tasks/load-config')
 const config = loadConfig()
 
 const defaultIgnoredPatterns = [
-  `**/*.un~`,
-  `**/.gitignore`,
-  `**/.npmignore`,
-  `**/.babelrc`,
-  `**/yarn.lock`,
-  `**/package-lock.json`,
-  `**/node_modules`,
-  `../**/dist/**`,
+  '**/*.un~',
+  '**/.gitignore',
+  '**/.npmignore',
+  '**/.babelrc',
+  '**/yarn.lock',
+  '**/package-lock.json',
+  '**/node_modules',
+  '../**/dist/**',
 ]
 
-const userConfig = config.gatsby || {}
+const userConfig = config.docs || {}
 
 const SOURCES = [
   {
     pattern: '**/*.md',
-    type: `LonaDocument`,
+    type: 'LonaDocument',
   },
   {
     pattern: '**/*.mdx',
-    type: `LonaDocument`,
+    type: 'LonaDocument',
   },
   {
     pattern: '**/*.component',
-    type: `Component`,
+    type: 'Component',
   },
   {
     pattern: '**/colors.json',
-    type: `Colors`,
+    type: 'Colors',
   },
   {
     pattern: '**/textStyles.json',
-    type: `TextStyles`,
+    type: 'TextStyles',
   },
   {
     pattern: '**/shadows.json',
-    type: `Shadows`,
+    type: 'Shadows',
   },
   {
     pattern: '**/gradients.json',
-    type: `Gradients`,
+    type: 'Gradients',
   },
 ]
 
@@ -63,14 +63,14 @@ const plugins = SOURCES.map(({ pattern, type }) => ({
         cwd: path.join(__dirname, 'utils'),
         pattern: 'declare_all_frontmatter.md',
         ignored: config.ignored || defaultIgnoredPatterns,
-        type: `LonaDocumentOnlyThereToProvideAllTheFrontMatterFields`,
+        type: 'LonaDocumentOnlyThereToProvideAllTheFrontMatterFields',
       },
     },
     'gatsby-plugin-react-helmet',
     {
-      resolve: `gatsby-mdx`,
+      resolve: '@mathieudutour/gatsby-mdx',
       options: {
-        extensions: [`.mdx`, `.md`],
+        extensions: ['.mdx', '.md'],
       },
     },
     'gatsby-plugin-styled-components',
