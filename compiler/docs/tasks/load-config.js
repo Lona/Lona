@@ -21,5 +21,18 @@ module.exports = () => {
 
   config.cwd = path.dirname(configFilePath)
 
+  config.nodeModules = []
+  // look for the node_modules in the workspace
+  config.nodeModules.push(path.join(config.cwd, 'node_modules'))
+  // look for our node_modules
+  config.nodeModules.push(path.join(path.dirname(__dirname), 'node_modules'))
+  // @lona/docs has probably been installed so we need to look for sibling dependencies
+  // as our own dependencies might be siblings now
+  if (__dirname.indexOf('/node_modules/') !== -1) {
+    config.nodeModules.push(
+      path.join(__dirname.split('/node_modules/')[0], 'node_modules')
+    )
+  }
+
   return config
 }

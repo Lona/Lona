@@ -14,6 +14,11 @@ module.exports = {
       default: 'false',
       alias: 'w',
     },
+    'prefix-paths': {
+      type: `boolean`,
+      default: false,
+      describe: `Build site with link paths prefixed (set docs.pathPrefix in your lona.json).`,
+    },
     workspace: {
       description: 'The path to the Lona workspace',
       type: 'string',
@@ -34,7 +39,18 @@ module.exports = {
   handler(argv) {
     const shellOptions = {
       cwd: path.dirname(__dirname),
-      stdio: ['pipe', 'inherit', 'inherit'],
+      stdio: argv.stdio || ['pipe', 'inherit', 'inherit'],
+    }
+
+    if (argv.env) {
+      if (!argv.env.NODE_PATH) {
+        argv.env.NODE_PATH = ''
+      }
+      shellOptions.env = argv.env
+    } else {
+      shellOptions.env = {
+        NODE_PATH: '',
+      }
     }
 
     if (argv.workspace) {
@@ -46,6 +62,8 @@ module.exports = {
 
     const config = loadConfig()
 
+    shellOptions.env.NODE_PATH += `:${config.nodeModules.join(':')}`
+
     if (argv.buildDir) {
       if (!path.isAbsolute(argv.buildDir)) {
         argv.buildDir = path.join(process.cwd(), argv.buildDir)
@@ -56,8 +74,22 @@ module.exports = {
 
     let childProcesses = []
 
+    function abort() {
+      childProcesses.forEach(p => {
+        if (p && !p.killed && p.kill) {
+          p.kill()
+        }
+      })
+
+      process.exit()
+    }
+
+    process.on('SIGINT', abort)
+
     const buildSteps = require('../tasks/build')
-    const gatsbyPath = require.resolve('gatsby/dist/bin/gatsby.js')
+    const gatsbyPath = require.resolve(
+      '@mathieudutour/gatsby/dist/bin/gatsby.js'
+    )
 
     const gatsbyOptions = [`--build-dir=${argv.buildDir}`]
     if (argv.cacheDir) {
@@ -66,8 +98,17 @@ module.exports = {
       }
       gatsbyOptions.push(`--cache-dir=${argv.cacheDir}`)
     }
+    if (argv.noColor) {
+      gatsbyOptions.push('--no-color')
+    }
+    if (argv.verbose) {
+      gatsbyOptions.push('--verbose')
+    }
+    if (argv.prefixPaths) {
+      gatsbyOptions.push('--prefix-paths')
+    }
 
-    buildSteps({})
+    return buildSteps({})
       .then(() => {
         if (argv.watch || process.env.WATCH) {
           childProcesses = [
@@ -83,17 +124,5 @@ module.exports = {
         return execa(gatsbyPath, ['build', ...gatsbyOptions], shellOptions)
       })
       .catch(() => {})
-
-    function abort() {
-      childProcesses.forEach(p => {
-        if (p && !p.killed && p.kill) {
-          p.kill()
-        }
-      })
-
-      process.exit()
-    }
-
-    process.on('SIGINT', abort)
   },
 }

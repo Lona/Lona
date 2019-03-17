@@ -1,8 +1,7 @@
-const path = require('path')
 const webpack = require('webpack') // eslint-disable-line
 const loadConfig = require('./load-config')
 
-const { cwd } = loadConfig()
+const { cwd, nodeModules } = loadConfig()
 
 module.exports = ({ actions, getConfig }) => {
   const webpackConfig = getConfig()
@@ -51,28 +50,10 @@ module.exports = ({ actions, getConfig }) => {
   if (!webpackConfig.resolve.modules) {
     webpackConfig.resolve.modules = []
   }
-  if (!process.env.NODE_PATH) {
-    process.env.NODE_PATH = ''
-  }
-  // look for the node_modules in the workspace
-  const workspaceNodeModules = path.join(cwd, 'node_modules')
-  webpackConfig.resolve.modules.push(workspaceNodeModules)
-  process.env.NODE_PATH += `:${workspaceNodeModules}`
-  // look for our node_modules
-  const ourNodeModules = path.join(path.dirname(__dirname), 'node_modules')
-  webpackConfig.resolve.modules.push(ourNodeModules)
-  process.env.NODE_PATH += `:${ourNodeModules}`
-  // @lona/docs has probably been installed so we need to look for sibling dependencies
-  // as our own dependencies might be siblings now
-  if (__dirname.indexOf('/node_modules/') !== -1) {
-    const siblingNodeModules = path.join(
-      __dirname.split('/node_modules/')[0],
-      'node_modules'
-    )
-    webpackConfig.resolve.modules.push(siblingNodeModules)
-    process.env.NODE_PATH += `:${siblingNodeModules}`
-  }
-  require('module').Module._initPaths()
+
+  webpackConfig.resolve.modules = webpackConfig.resolve.modules.concat(
+    nodeModules
+  )
 
   actions.replaceWebpackConfig(webpackConfig)
 }
