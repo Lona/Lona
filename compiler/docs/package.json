@@ -21,6 +21,7 @@
     "directory": "compiler/docs"
   },
   "dependencies": {
+    "@lona/workspace-to-sketch-library": "^0.1.11",
     "@mdx-js/mdx": "^0.18.2",
     "@mdx-js/tag": "^0.18.0",
     "babel-plugin-styled-components": "^1.10.0",

@@ -108,7 +108,7 @@ module.exports = {
       gatsbyOptions.push('--prefix-paths')
     }
 
-    return buildSteps({})
+    return buildSteps({ buildDir: argv.buildDir })
       .then(() => {
         if (argv.watch || process.env.WATCH) {
           childProcesses = [
