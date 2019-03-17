@@ -2,13 +2,19 @@ const fs = require('fs')
 const os = require('os')
 const path = require('path')
 const { exec } = require('child_process')
+const mkdirp = require('mkdirp')
 const renderDocument = require('./render-document')
 const modifySketchTemplate = require('./modify-sketch-template')
 
 // https://gist.github.com/branneman/8048520#gistcomment-1249909
 // Add node_modules to the path, so they're resolved even when loading modules
 // from our compilerOutput directory (which is outside the root of this project)
-process.env.NODE_PATH = path.join(__dirname, '../node_modules')
+if (!process.env.NODE_PATH) {
+  process.env.NODE_PATH = ''
+} else {
+  process.env.NODE_PATH += ':'
+}
+process.env.NODE_PATH += path.join(__dirname, '../node_modules')
 process.env.NODE_PATH += ':'
 process.env.NODE_PATH += path.join(process.cwd(), 'node_modules')
 require('module').Module._initPaths()
@@ -152,6 +158,7 @@ module.exports = function generateSketchLibrary(
     .then(config => {
       log(`Generating sketch file at ${sketchFilePath}`)
       const values = renderDocument(config)
+      mkdirp.sync(path.dirname(config.paths.sketchFile))
       return modifySketchTemplate(values, config.paths.sketchFile)
     })
 }
