@@ -38,10 +38,9 @@ function Parameters({ parameters }) {
       <H3 text="Parameters" />
       <Table>
         <colgroup>
-          <col span="1" style={{ width: '12.5%' }} />
-          <col span="1" style={{ width: '12.5%' }} />
-          <col span="1" style={{ width: '62.5%' }} />
-          <col span="1" style={{ width: '12.5%' }} />
+          <col span="1" style={{ width: '18%' }} />
+          <col span="1" style={{ width: '18%' }} />
+          <col span="1" style={{ width: '64%' }} />
         </colgroup>
 
         <thead>
@@ -54,9 +53,6 @@ function Parameters({ parameters }) {
             </th>
             <th>
               <SectionHeader text="Decription" />
-            </th>
-            <th>
-              <SectionHeader text="Default" />
             </th>
           </tr>
         </thead>
@@ -75,13 +71,6 @@ function Parameters({ parameters }) {
                     <P text={param.description} />
                   ) : (
                     <Ghost text="No description" />
-                  )}
-                </td>
-                <td>
-                  {param.defaultValue ? (
-                    <P text={param.defaultValue} />
-                  ) : (
-                    <Ghost text="No default" />
                   )}
                 </td>
               </tr>
