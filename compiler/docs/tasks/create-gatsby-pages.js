@@ -1,7 +1,10 @@
 const path = require('path')
+const loadConfig = require('./load-config')
 
 // create components pages
 module.exports = ({ actions, graphql }) => {
+  const config = loadConfig()
+
   const { createPage } = actions
 
   const docTemplate = path.resolve('templates/doc.js')
@@ -10,7 +13,18 @@ module.exports = ({ actions, graphql }) => {
   const textStylesTemplate = path.resolve('templates/textStyles.js')
   const gradientsTemplate = path.resolve('templates/gradients.js')
   const shadowsTemplate = path.resolve('templates/shadows.js')
+  const assetsTemplate = path.resolve('templates/assets.js')
   const defaultHomeTemplate = path.resolve('templates/defaultHome.js')
+
+  if (config.artefacts && config.artefacts.length) {
+    createPage({
+      path: '/assets',
+      component: assetsTemplate,
+      context: {
+        artefacts: config.artefacts,
+      },
+    })
+  }
 
   let didCreateHome = false
 
@@ -37,6 +51,7 @@ module.exports = ({ actions, graphql }) => {
             lona {
               hidden
               path
+              pathInWorkspace
               content
               title
             }
@@ -74,14 +89,14 @@ module.exports = ({ actions, graphql }) => {
           }
 
           createPage({
-            path: node.lona.path,
+            path: node.lona.path === '/u/' ? '/' : node.lona.path,
             component: docTemplate,
             context: {
               id: node.childMdx.id,
             },
           })
 
-          if (node.lona.path === '/') {
+          if (node.lona.path === '/u/') {
             didCreateHome = true
           }
 
@@ -93,7 +108,7 @@ module.exports = ({ actions, graphql }) => {
             path: node.lona.path,
             component: colorsTemplate,
             context: {
-              pathInWorkspace: node.lona.path,
+              pathInWorkspace: node.lona.pathInWorkspace,
               colors: JSON.parse(node.lona.content),
             },
           })
@@ -104,7 +119,7 @@ module.exports = ({ actions, graphql }) => {
             path: node.lona.path,
             component: textStylesTemplate,
             context: {
-              pathInWorkspace: node.lona.path,
+              pathInWorkspace: node.lona.pathInWorkspace,
               textStyles: JSON.parse(node.lona.content),
             },
           })
@@ -115,7 +130,7 @@ module.exports = ({ actions, graphql }) => {
             path: node.lona.path,
             component: gradientsTemplate,
             context: {
-              pathInWorkspace: node.lona.path,
+              pathInWorkspace: node.lona.pathInWorkspace,
               gradients: JSON.parse(node.lona.content),
             },
           })
@@ -126,7 +141,7 @@ module.exports = ({ actions, graphql }) => {
             path: node.lona.path,
             component: shadowsTemplate,
             context: {
-              pathInWorkspace: node.lona.path,
+              pathInWorkspace: node.lona.pathInWorkspace,
               shadows: JSON.parse(node.lona.content),
             },
           })
