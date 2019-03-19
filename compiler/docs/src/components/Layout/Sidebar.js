@@ -1,6 +1,7 @@
 import React from 'react'
 import { Link } from 'gatsby'
 import styled from 'styled-components'
+import PropTypes from 'prop-types'
 import { HeaderHeight } from './ui-constants'
 import {
   findFirstFile,
@@ -52,25 +53,31 @@ function shouldPrintTitle(element) {
   return !element.hidden || Object.keys(element.children).length
 }
 
+function isSelected(location, section) {
+  return (
+    location.pathname.indexOf(section.path) === 0 ||
+    location.pathname.indexOf(section.path) === 2 // if it /u
+  )
+}
+
 const SubNavigation = ({ subtitle, location }) => {
   if (!shouldPrintTitle(subtitle)) {
     return null
   }
   const subTitleLink = findFirstLink(subtitle)
-  const selectedSubtitle = location.pathname.indexOf(subtitle.path) === 0
   return (
     <li>
       <NavigationItem to={cleanupLink(subTitleLink)}>
         <SubSubsectionHeader
           text={capitalise(subtitle.title)}
-          selected={selectedSubtitle}
+          selected={isSelected(location, subtitle)}
         />
       </NavigationItem>
     </li>
   )
 }
 
-const Siderbar = ({ data, location, files }) => {
+const Siderbar = ({ location, files }) => {
   const [, selectedSectionOrU, selectedSection] = location.pathname.split('/')
 
   const sections = Object.keys(files)
@@ -114,9 +121,7 @@ const Siderbar = ({ data, location, files }) => {
                           return null
                         }
                         const link = findFirstLink(subsection)
-                        const selected =
-                          location.pathname.indexOf(subsection.path) === 0 ||
-                          location.pathname.indexOf(subsection.path) === 2 // if it /u
+                        const selected = isSelected(location, subsection)
                         return (
                           <ItemWrapper key={link}>
                             <NavigationItem to={cleanupLink(link)}>
@@ -155,6 +160,34 @@ const Siderbar = ({ data, location, files }) => {
       </InnerWrapper>
     </Wrapper>
   )
+}
+
+const FilesPropTypes = PropTypes.objectOf(
+  PropTypes.shape({
+    path: PropTypes.string.isRequired,
+    title: PropTypes.string,
+    order: PropTypes.number,
+    children: FilesPropTypes, // eslint-disable-line no-use-before-define
+  })
+)
+
+Siderbar.propTypes = {
+  location: PropTypes.shape({
+    pathname: PropTypes.string.isRequired,
+  }).isRequired,
+  files: FilesPropTypes.isRequired,
+}
+
+SubNavigation.propTypes = {
+  location: PropTypes.shape({
+    pathname: PropTypes.string.isRequired,
+  }).isRequired,
+  subtitle: PropTypes.shape({
+    path: PropTypes.string.isRequired,
+    title: PropTypes.string,
+    order: PropTypes.number,
+    children: FilesPropTypes, // eslint-disable-line no-use-before-define
+  }).isRequired,
 }
 
 export default Siderbar

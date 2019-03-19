@@ -88,7 +88,6 @@ Parameters.propTypes = {
       name: PropTypes.string,
       description: PropTypes.string,
       type: PropTypes.string,
-      defaultValue: PropTypes.any, // eslint-disable-line react/forbid-prop-types
     })
   ).isRequired,
 }

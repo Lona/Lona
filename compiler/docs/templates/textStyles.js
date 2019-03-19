@@ -1,5 +1,6 @@
 import React from 'react'
 import styled from 'styled-components'
+import PropTypes from 'prop-types'
 import Layout from '../src/components/Layout'
 import ComponentTitle from '../lona-workspace/components/ComponentTitle.component'
 import TextStyleCard from '../lona-workspace/components/TextStyleCard.component'
@@ -54,4 +55,22 @@ export default function Template({
       </Wrapper>
     </Layout>
   )
+}
+
+Template.propTypes = {
+  location: PropTypes.shape({
+    pathname: PropTypes.string.isRequired,
+  }).isRequired,
+  pageContext: PropTypes.shape({
+    pathInWorkspace: PropTypes.string.isRequired,
+    textStyles: PropTypes.shape({
+      description: PropTypes.string,
+      styles: PropTypes.arrayOf(
+        PropTypes.shape({
+          id: PropTypes.string.isRequired,
+          name: PropTypes.string.isRequired,
+        }).isRequired
+      ),
+    }).isRequired,
+  }).isRequired,
 }

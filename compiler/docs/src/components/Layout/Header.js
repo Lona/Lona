@@ -1,6 +1,7 @@
 import React from 'react'
 import { Link } from 'gatsby'
 import styled from 'styled-components'
+import PropTypes from 'prop-types'
 import { HeaderHeight } from './ui-constants'
 import { findFirstFile, cleanupLink, sortFiles } from '../../utils'
 import HeaderNavigationLink from '../../../lona-workspace/components/HeaderNavigationLink.component'
@@ -83,5 +84,27 @@ const Header = ({ data, location, files }) => (
     </InnerWrapper>
   </Wrapper>
 )
+
+const FilesPropTypes = PropTypes.objectOf(
+  PropTypes.shape({
+    path: PropTypes.string.isRequired,
+    title: PropTypes.string,
+    order: PropTypes.number,
+    children: FilesPropTypes, // eslint-disable-line no-use-before-define
+  })
+)
+
+Header.propTypes = {
+  location: PropTypes.shape({
+    pathname: PropTypes.string.isRequired,
+  }).isRequired,
+  data: PropTypes.shape({
+    siteMetadata: PropTypes.shape({
+      title: PropTypes.string.isRequired,
+      icon: PropTypes.string,
+    }).isRequired,
+  }).isRequired,
+  files: FilesPropTypes.isRequired,
+}
 
 export default Header

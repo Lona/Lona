@@ -1,5 +1,6 @@
 import { graphql } from 'gatsby'
 import React from 'react'
+import PropTypes from 'prop-types'
 import { MDXRenderer } from '@mathieudutour/gatsby-mdx'
 import Layout from '../src/components/Layout'
 import Examples from '../src/components/Examples'
@@ -69,6 +70,45 @@ export default function Template({ data, pageContext, location }) {
       </MDXRenderer>
     </Layout>
   )
+}
+
+Template.propTypes = {
+  location: PropTypes.shape({
+    pathname: PropTypes.string.isRequired,
+  }).isRequired,
+  pageContext: PropTypes.shape({
+    title: PropTypes.string.isRequired,
+    id: PropTypes.string.isRequired,
+    descriptionId: PropTypes.string.isRequired,
+  }).isRequired,
+  data: PropTypes.shape({
+    lonaComponent: PropTypes.shape({
+      examples: PropTypes.arrayOf(
+        PropTypes.shape({
+          id: PropTypes.string.isRequired,
+          name: PropTypes.string.isRequired,
+          params: PropTypes.string.isRequired,
+        })
+      ),
+      params: PropTypes.arrayOf(
+        PropTypes.shape({
+          type: PropTypes.string.isRequired,
+          name: PropTypes.string.isRequired,
+          description: PropTypes.string,
+        })
+      ),
+      componentPath: PropTypes.string.isRequired,
+    }).isRequired,
+    mdx: PropTypes.shape({
+      frontmatter: PropTypes.shape({
+        intro: PropTypes.string,
+        overrideLayout: PropTypes.bool,
+      }),
+      code: PropTypes.shape({
+        body: PropTypes.string.isRequired,
+      }).isRequired,
+    }).isRequired,
+  }).isRequired,
 }
 
 export const query = graphql`

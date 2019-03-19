@@ -1,6 +1,7 @@
 /* eslint-disable import/no-unresolved */
 import React from 'react'
-import { Link, graphql } from 'gatsby'
+import PropTypes from 'prop-types'
+import { graphql } from 'gatsby'
 import Layout from '../src/components/Layout'
 import ComponentTitle from '../lona-workspace/components/ComponentTitle.component'
 import H3 from '../lona-workspace/components/markdown/H3.component'
@@ -44,6 +45,23 @@ export default function Template({
       })}
     </Layout>
   )
+}
+
+Template.propTypes = {
+  location: PropTypes.shape({
+    pathname: PropTypes.string.isRequired,
+  }).isRequired,
+  pageContext: PropTypes.shape({
+    artefacts: PropTypes.arrayOf(PropTypes.string).isRequired,
+  }).isRequired,
+  data: PropTypes.shape({
+    site: PropTypes.shape({
+      siteMetadata: PropTypes.shape({
+        title: PropTypes.string.isRequired,
+        icon: PropTypes.string,
+      }).isRequired,
+    }).isRequired,
+  }).isRequired,
 }
 
 export const query = graphql`
