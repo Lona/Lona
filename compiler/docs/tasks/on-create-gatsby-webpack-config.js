@@ -1,9 +1,9 @@
 const webpack = require('webpack') // eslint-disable-line
 const loadConfig = require('./load-config')
 
-const { cwd, nodeModules } = loadConfig()
-
 module.exports = ({ actions, getConfig }) => {
+  const { cwd, nodeModules } = loadConfig()
+
   const webpackConfig = getConfig()
 
   let jsRule
