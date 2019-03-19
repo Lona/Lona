@@ -115,6 +115,7 @@ module.exports = {
             execa(gatsbyPath, ['develop', ...gatsbyOptions], shellOptions),
           ].concat(
             buildSteps({
+              buildDir: argv.buildDir,
               watching: true,
             })
           )

@@ -2,9 +2,14 @@ const path = require('path')
 const generateSketchLibrary = require('@lona/workspace-to-sketch-library')
 const loadConfig = require('./load-config')
 
-const config = loadConfig()
+module.exports = ({ buildDir, watching }) => {
+  if (watching) {
+    // let's not build the artefact when watching
+    return Promise.resolve()
+  }
 
-module.exports = ({ buildDir }) => {
+  const config = loadConfig()
+
   let p = Promise.resolve()
 
   if (config.artefacts) {
