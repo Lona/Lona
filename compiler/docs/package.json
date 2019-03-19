@@ -1,6 +1,6 @@
 {
   "name": "@lona/docs",
-  "version": "0.1.0",
+  "version": "0.0.26",
   "description": "",
   "main": "index.js",
   "bin": {
@@ -22,14 +22,15 @@
   },
   "dependencies": {
     "@lona/workspace-to-sketch-library": "^0.1.11",
+    "@mathieudutour/gatsby": "^2.1.51",
+    "@mathieudutour/gatsby-mdx": "^0.4.7",
     "@mdx-js/mdx": "^0.18.2",
     "@mdx-js/tag": "^0.18.0",
     "babel-plugin-styled-components": "^1.10.0",
     "chokidar": "^2.1.1",
     "execa": "^1.0.0",
     "fs-extra": "^7.0.1",
-    "gatsby": "^2.1.4",
-    "gatsby-mdx": "^0.4.0",
+    "gatsby": "^2.1.30",
     "gatsby-plugin-react-helmet": "^3.0.6",
     "gatsby-plugin-styled-components": "^3.0.5",
     "graphql": "^14.1.1",
