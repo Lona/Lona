@@ -49,9 +49,29 @@ export function cleanupFiles(files) {
   }, {})
 }
 
+export function sortFiles(files) {
+  return (a, b) => {
+    if (!files[a] || !files[b]) {
+      return 0
+    }
+    if (typeof files[a].order !== 'undefined' && files[a].order !== null) {
+      if (typeof files[b].order !== 'undefined' && files[b].order !== null) {
+        if (files[a].order === files[b].order) {
+          return a < b ? -1 : 1
+        }
+        return files[a].order - files[b].order
+      }
+      return 1
+    }
+    if (typeof files[b].order !== 'undefined' && files[b].order !== null) {
+      return -1
+    }
+    return a < b ? -1 : 1
+  }
+}
+
 export function findFirstFile(files = {}) {
-  const firstFile =
-    files[Object.keys(files).sort((a, b) => files[a].order - files[b].order)[0]]
+  const firstFile = files[Object.keys(files).sort(sortFiles(files))[0]]
 
   if (
     !firstFile ||

@@ -16,14 +16,14 @@ export default function Template({
       {artefacts.map(artefact => {
         if (artefact === 'sketch') {
           return (
-            <div>
+            <div key={artefact}>
               <H3 text="Sketch Library" />
               <p>
-                <Link
-                  to={require('gatsby-cache-dir/caches/gatsby-plugin-lona/library.sketch')}
+                <a
+                  href={require('gatsby-cache-dir/caches/gatsby-plugin-lona/library.sketch')}
                 >
                   Download the Sketch Library
-                </Link>{' '}
+                </a>{' '}
                 to start designing with {data.site.siteMetadata.title}
               </p>
               <p>

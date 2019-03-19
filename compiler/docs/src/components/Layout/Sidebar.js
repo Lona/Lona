@@ -7,6 +7,7 @@ import {
   findFirstLink,
   cleanupLink,
   capitalise,
+  sortFiles,
 } from '../../utils'
 import SectionHeader from '../../../lona-workspace/components/SectionHeader.component'
 import SubsectionHeader from '../../../lona-workspace/components/SubsectionHeader.component'
@@ -72,7 +73,9 @@ const SubNavigation = ({ subtitle, location }) => {
 const Siderbar = ({ data, location, files }) => {
   const [, selectedSectionOrU, selectedSection] = location.pathname.split('/')
 
-  const sections = Object.keys(files).filter(section => files[section])
+  const sections = Object.keys(files)
+    .filter(section => files[section])
+    .sort(sortFiles(files))
   return (
     <Wrapper>
       <InnerWrapper>
@@ -88,8 +91,9 @@ const Siderbar = ({ data, location, files }) => {
                 firstInSection = findFirstFile(filesInSection) || {}
               }
 
-              const subsections = Object.values(filesInSection)
-                .sort((a, b) => a.order - b.order)
+              const subsections = Object.keys(filesInSection)
+                .sort(sortFiles(filesInSection))
+                .map(x => filesInSection[x])
                 .filter(shouldPrintTitle)
 
               return (

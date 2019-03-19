@@ -33,7 +33,7 @@ module.exports = function setFieldsOnGraphQLNodeType({ type }) {
             title: 'Assets',
             content: node.internal.content,
             sections: ['assets'],
-            order: 999,
+            order: 99999999, // we want the assets at the end
           }
         }
 
