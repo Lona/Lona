@@ -19,6 +19,7 @@ module.exports = function setFieldsOnGraphQLNodeType({ type }) {
           hidden: { type: GraphQLBoolean },
           title: { type: GraphQLString },
           path: { type: GraphQLString },
+          pathInWorkspace: { type: GraphQLString },
           content: { type: GraphQLString },
           sections: { type: new GraphQLList(GraphQLString) },
           order: { type: GraphQLInt },
@@ -48,7 +49,8 @@ module.exports = function setFieldsOnGraphQLNodeType({ type }) {
           hidden: content.hidden,
           title:
             node.name === 'README' ? sections[sections.length - 1] : node.name,
-          path: filePath,
+          path: `/u${filePath}`,
+          pathInWorkspace: filePath,
           content,
           sections,
           order: content.order,
