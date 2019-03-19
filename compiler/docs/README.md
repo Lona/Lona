@@ -5,11 +5,11 @@ Generate documentation website for your Lona workspace
 ## Installation
 
 ```bash
-npm i lona-docs
+npm i @lona/docs
 ```
 
 ## Usage
 
 ```bash
-lona-docs build --workspace=PATH/TO/WORKSPACE/
+@lona/docs build --workspace=PATH/TO/WORKSPACE/
 ```
