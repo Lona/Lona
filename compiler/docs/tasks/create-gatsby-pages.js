@@ -1,10 +1,7 @@
 const path = require('path')
-const loadConfig = require('./load-config')
 
 // create components pages
 module.exports = ({ actions, graphql }) => {
-  const config = loadConfig()
-
   const { createPage } = actions
 
   const docTemplate = path.resolve('templates/doc.js')
@@ -15,16 +12,6 @@ module.exports = ({ actions, graphql }) => {
   const shadowsTemplate = path.resolve('templates/shadows.js')
   const assetsTemplate = path.resolve('templates/assets.js')
   const defaultHomeTemplate = path.resolve('templates/defaultHome.js')
-
-  if (config.artefacts && config.artefacts.length) {
-    createPage({
-      path: '/assets',
-      component: assetsTemplate,
-      context: {
-        artefacts: config.artefacts,
-      },
-    })
-  }
 
   let didCreateHome = false
 
@@ -143,6 +130,16 @@ module.exports = ({ actions, graphql }) => {
             context: {
               pathInWorkspace: node.lona.pathInWorkspace,
               shadows: JSON.parse(node.lona.content),
+            },
+          })
+        }
+
+        if (node.type === 'LonaArtefacts') {
+          createPage({
+            path: node.lona.path,
+            component: assetsTemplate,
+            context: {
+              artefacts: JSON.parse(node.lona.content),
             },
           })
         }

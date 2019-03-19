@@ -1,4 +1,4 @@
-const crypto = require(`crypto`)
+const { digest } = require('./create-file-node')
 
 module.exports = function onCreateNode({
   node,
@@ -54,15 +54,11 @@ module.exports = function onCreateNode({
     // Add path to the component file path
     lonaNode.componentPath = node.relativePath
 
-    lonaNode.internal.contentDigest = crypto
-      .createHash(`md5`)
-      .update(JSON.stringify(lonaNode))
-      .digest(`hex`)
+    lonaNode.internal.contentDigest = digest(JSON.stringify(lonaNode))
 
-    lonaDescriptionNode.internal.contentDigest = crypto
-      .createHash(`md5`)
-      .update(JSON.stringify(lonaDescriptionNode))
-      .digest(`hex`)
+    lonaDescriptionNode.internal.contentDigest = digest(
+      JSON.stringify(lonaDescriptionNode)
+    )
 
     createNode(lonaNode)
     createParentChildLink({ parent: node, child: lonaNode })

@@ -70,10 +70,9 @@ const SubNavigation = ({ subtitle, location }) => {
 }
 
 const Siderbar = ({ data, location, files }) => {
-  const [, selectedSection] = location.pathname.split('/')
+  const [, selectedSectionOrU, selectedSection] = location.pathname.split('/')
 
   const sections = Object.keys(files).filter(section => files[section])
-
   return (
     <Wrapper>
       <InnerWrapper>
@@ -98,7 +97,10 @@ const Siderbar = ({ data, location, files }) => {
                   <NavigationItem to={cleanupLink(firstInSection.path)}>
                     <SectionHeader
                       text={section.toUpperCase()}
-                      selected={selectedSection === section}
+                      selected={
+                        selectedSection === section ||
+                        selectedSectionOrU === section
+                      }
                     />
                   </NavigationItem>
                   {subsections.length ? (
@@ -109,7 +111,8 @@ const Siderbar = ({ data, location, files }) => {
                         }
                         const link = findFirstLink(subsection)
                         const selected =
-                          location.pathname.indexOf(subsection.path) === 0
+                          location.pathname.indexOf(subsection.path) === 0 ||
+                          location.pathname.indexOf(subsection.path) === 2 // if it /u
                         return (
                           <ItemWrapper key={link}>
                             <NavigationItem to={cleanupLink(link)}>

@@ -3,15 +3,44 @@ const crypto = require('crypto')
 const mime = require('mime')
 const fs = require('fs-extra')
 
-const createId = _path => `${_path} >>> Lona`
+function digest(x) {
+  return crypto
+    .createHash(`md5`)
+    .update(x)
+    .digest(`hex`)
+}
+exports.digest = digest
 
+const createId = _path => `${_path} >>> Lona`
 exports.createId = createId
+
+exports.createArtefactsNode = (artefacts, { type, cwd }) => {
+  const content = JSON.stringify(artefacts)
+  return JSON.parse(
+    JSON.stringify({
+      id: 'artefacts >>> Lona',
+      children: [],
+      parent: `___SOURCE___`,
+      type,
+      internal: {
+        contentDigest: digest(content),
+        mediaType: 'text/html',
+        type: 'LonaFile',
+        content,
+      },
+      absolutePath: path.join(cwd, 'assets'),
+      relativePath: './assets',
+      extension: 'html',
+    })
+  )
+}
 
 exports.createFileNode = (pathToFile, { type, cwd }) => {
   const parsedSlashed = path.parse(pathToFile)
   const slashedFile = {
     ...parsedSlashed,
     absolutePath: path.join(cwd, pathToFile),
+    relativePath: path.relative(cwd, path.join(cwd, pathToFile)),
   }
 
   let mediaType
@@ -29,10 +58,7 @@ exports.createFileNode = (pathToFile, { type, cwd }) => {
   ]).then(([stats, content]) =>
     Promise.resolve()
       .then(() => ({
-        contentDigest: crypto
-          .createHash(`md5`)
-          .update(slashedFile.absolutePath)
-          .digest(`hex`),
+        contentDigest: digest(slashedFile.absolutePath),
         mediaType,
         type: 'LonaFile',
         content,
@@ -48,8 +74,6 @@ exports.createFileNode = (pathToFile, { type, cwd }) => {
             parent: `___SOURCE___`,
             type,
             internal,
-            absolutePath: slashedFile.absolutePath,
-            relativePath: path.relative(cwd, slashedFile.absolutePath),
             extension: slashedFile.ext.slice(1).toLowerCase(),
             size: stats.size,
             modifiedTime: stats.mtime,

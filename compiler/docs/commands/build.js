@@ -71,33 +71,23 @@ module.exports = {
     } else {
       argv.buildDir = path.join(config.cwd, config.docsFolder || './docs')
     }
-
-    let childProcesses = []
-
-    function abort() {
-      childProcesses.forEach(p => {
-        if (p && !p.killed && p.kill) {
-          p.kill()
-        }
-      })
-
-      process.exit()
-    }
-
-    process.on('SIGINT', abort)
-
-    const buildSteps = require('../tasks/build')
-    const gatsbyPath = require.resolve(
-      '@mathieudutour/gatsby/dist/bin/gatsby.js'
-    )
-
-    const gatsbyOptions = [`--build-dir=${argv.buildDir}`]
     if (argv.cacheDir) {
       if (!path.isAbsolute(argv.cacheDir)) {
         argv.cacheDir = path.join(process.cwd(), argv.cacheDir)
       }
-      gatsbyOptions.push(`--cache-dir=${argv.cacheDir}`)
+    } else {
+      argv.cacheDir = path.join(process.cwd(), '.cache')
     }
+
+    const gatsbyPath = require.resolve(
+      '@mathieudutour/gatsby/dist/bin/gatsby.js'
+    )
+
+    const gatsbyOptions = [
+      `--build-dir=${argv.buildDir}`,
+      `--cache-dir=${argv.cacheDir}`,
+    ]
+
     if (argv.noColor) {
       gatsbyOptions.push('--no-color')
     }
@@ -108,22 +98,10 @@ module.exports = {
       gatsbyOptions.push('--prefix-paths')
     }
 
-    return buildSteps({ buildDir: argv.buildDir })
-      .then(() => {
-        if (argv.watch || process.env.WATCH) {
-          childProcesses = [
-            execa(gatsbyPath, ['develop', ...gatsbyOptions], shellOptions),
-          ].concat(
-            buildSteps({
-              buildDir: argv.buildDir,
-              watching: true,
-            })
-          )
-
-          return childProcesses
-        }
-        return execa(gatsbyPath, ['build', ...gatsbyOptions], shellOptions)
-      })
-      .catch(() => {})
+    return execa(
+      gatsbyPath,
+      [argv.watch || process.env.WATCH ? 'develop' : 'build', ...gatsbyOptions],
+      shellOptions
+    ).catch(() => {})
   },
 }

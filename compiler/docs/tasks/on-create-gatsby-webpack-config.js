@@ -28,6 +28,11 @@ module.exports = ({ actions, getConfig }) => {
       jsRule = r
     }
 
+    if (r.test && r.test.toString() === /\.pdf$/.toString()) {
+      // load .sketch as well
+      r.test = /\.(pdf|sketch)$/
+    }
+
     return r
   })
 

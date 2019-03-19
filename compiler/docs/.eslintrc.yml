@@ -13,6 +13,7 @@ rules:
   react/jsx-filename-extension: off
   react/jsx-indent: off
   react/destructuring-assignment: off
+  react/jsx-one-expression-per-line: off
 
   ###########
   # BUILTIN #
