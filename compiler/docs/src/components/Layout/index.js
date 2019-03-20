@@ -9,7 +9,7 @@ import { cleanupFiles } from '../../utils'
 import Header from './Header'
 import Sidebar from './Sidebar'
 import './index.css'
-import sectionCSS from './section-css'
+import Section from './Section'
 
 const Page = styled.div`
   position: relative;
@@ -34,18 +34,6 @@ const SkipLink = styled.a`
 
 const Content = styled.main`
   display: flex;
-`
-
-const Section = styled.section`
-  position: relative;
-  z-index: 800;
-  flex: 1 1 auto;
-  border-radius: 0.6rem;
-  min-width: 0;
-  max-width: calc(100vw - 350px);
-  width: 1040px;
-  padding: 4rem 30px;
-  ${sectionCSS};
 `
 
 const Layout = ({ children, location }) => (
