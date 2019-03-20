@@ -27,7 +27,7 @@ module.exports = function setFieldsOnGraphQLNodeType({ type }) {
         },
       }),
       resolve(node) {
-        if (node.type === 'LonaArtefacts') {
+        if (node.type === 'LonaArtifacts') {
           return {
             path: '/assets',
             title: 'Assets',

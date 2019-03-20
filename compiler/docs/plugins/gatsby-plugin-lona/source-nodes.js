@@ -4,9 +4,9 @@ const Path = require('path')
 const {
   createId,
   createFileNode,
-  createArtefactsNode,
+  createArtifactsNode,
 } = require(`./create-file-node`)
-const generateArtefacts = require('./generate-artefacts')
+const generateArtifacts = require('./generate-artifacts')
 
 const defaultIgnoredPatterns = [
   '**/*.un~',
@@ -97,10 +97,10 @@ module.exports = function sourceNodes(
       .catch(err => reporter.error(err))
   }
 
-  if (pluginOptions.artefacts && pluginOptions.artefacts.length) {
+  if (pluginOptions.artifacts && pluginOptions.artifacts.length) {
     createNode(
-      createArtefactsNode(pluginOptions.artefacts, {
-        type: 'LonaArtefacts',
+      createArtifactsNode(pluginOptions.artifacts, {
+        type: 'LonaArtifacts',
         cwd: pluginOptions.cwd,
       })
     )
@@ -161,15 +161,15 @@ module.exports = function sourceNodes(
   })
 
   return Promise.all([
-    pluginOptions.artefacts && pluginOptions.artefacts.length
-      ? generateArtefacts({
+    pluginOptions.artifacts && pluginOptions.artifacts.length
+      ? generateArtifacts({
           cache,
           cwd: pluginOptions.cwd,
-          artefacts: pluginOptions.artefacts,
+          artifacts: pluginOptions.artifacts,
         }).then(() =>
           createNode(
-            createArtefactsNode(pluginOptions.artefacts, {
-              type: 'LonaArtefacts',
+            createArtifactsNode(pluginOptions.artifacts, {
+              type: 'LonaArtifacts',
               cwd: pluginOptions.cwd,
             })
           )

@@ -11,7 +11,7 @@ const plugins = [
     options: {
       cwd: config.cwd,
       ignored: config.ignored,
-      artefacts: config.artefacts,
+      artifacts: config.artifacts,
     },
   },
   'gatsby-plugin-react-helmet',

@@ -8,16 +8,16 @@ import H3 from '../lona-workspace/components/markdown/H3.component'
 
 export default function Template({
   data,
-  pageContext: { artefacts },
+  pageContext: { artifacts },
   location,
 }) {
   return (
     <Layout location={location}>
       <ComponentTitle name="Assets" intro="" />
-      {artefacts.map(artefact => {
-        if (artefact === 'sketch') {
+      {artifacts.map(artifact => {
+        if (artifact === 'sketch') {
           return (
-            <div key={artefact}>
+            <div key={artifact}>
               <H3 text="Sketch Library" />
               <p>
                 <a
@@ -52,7 +52,7 @@ Template.propTypes = {
     pathname: PropTypes.string.isRequired,
   }).isRequired,
   pageContext: PropTypes.shape({
-    artefacts: PropTypes.arrayOf(PropTypes.string).isRequired,
+    artifacts: PropTypes.arrayOf(PropTypes.string).isRequired,
   }).isRequired,
   data: PropTypes.shape({
     site: PropTypes.shape({

@@ -14,11 +14,11 @@ exports.digest = digest
 const createId = _path => `${_path} >>> Lona`
 exports.createId = createId
 
-exports.createArtefactsNode = (artefacts, { type, cwd }) => {
-  const content = JSON.stringify(artefacts)
+exports.createArtifactsNode = (artifacts, { type, cwd }) => {
+  const content = JSON.stringify(artifacts)
   return JSON.parse(
     JSON.stringify({
-      id: 'artefacts >>> Lona',
+      id: 'artifacts >>> Lona',
       children: [],
       parent: `___SOURCE___`,
       type,

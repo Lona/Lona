@@ -134,12 +134,12 @@ module.exports = ({ actions, graphql }) => {
           })
         }
 
-        if (node.type === 'LonaArtefacts') {
+        if (node.type === 'LonaArtifacts') {
           createPage({
             path: node.lona.path,
             component: assetsTemplate,
             context: {
-              artefacts: JSON.parse(node.lona.content),
+              artifacts: JSON.parse(node.lona.content),
             },
           })
         }
