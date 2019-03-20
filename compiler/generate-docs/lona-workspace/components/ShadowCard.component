@@ -1,0 +1,131 @@
+{
+  "devices" : [
+    {
+      "height" : 200,
+      "heightMode" : "Exactly",
+      "name" : "iPhone SE",
+      "width" : 300
+    }
+  ],
+  "examples" : [
+    {
+      "id" : "Default",
+      "name" : "Default",
+      "params" : {
+        "color" : "background",
+        "colorCode" : "rgba(255,255,255,0.123)",
+        "colorName" : "Red 600"
+      }
+    }
+  ],
+  "logic" : [
+    {
+      "assignee" : [
+        "layers",
+        "ShadowName",
+        "text"
+      ],
+      "content" : [
+        "parameters",
+        "shadowName"
+      ],
+      "type" : "AssignExpr"
+    },
+    {
+      "assignee" : [
+        "layers",
+        "ShadowCode",
+        "text"
+      ],
+      "content" : [
+        "parameters",
+        "shadowCode"
+      ],
+      "type" : "AssignExpr"
+    },
+    {
+      "assignee" : [
+        "layers",
+        "Preview",
+        "shadow"
+      ],
+      "content" : [
+        "parameters",
+        "shadow"
+      ],
+      "type" : "AssignExpr"
+    }
+  ],
+  "params" : [
+    {
+      "name" : "shadowName",
+      "type" : "String"
+    },
+    {
+      "name" : "shadowCode",
+      "type" : "String"
+    },
+    {
+      "name" : "shadow",
+      "type" : "Shadow"
+    }
+  ],
+  "root" : {
+    "children" : [
+      {
+        "id" : "Preview",
+        "params" : {
+          "alignSelf" : "stretch",
+          "backgroundColor" : "background",
+          "borderRadius" : 6,
+          "height" : 80,
+          "shadow" : "none"
+        },
+        "type" : "Lona:View"
+      },
+      {
+        "children" : [
+          {
+            "id" : "ShadowName",
+            "params" : {
+              "alignSelf" : "stretch",
+              "font" : "regular",
+              "numberOfLines" : 2,
+              "text" : "Component"
+            },
+            "type" : "Lona:Text"
+          },
+          {
+            "id" : "ShadowCode",
+            "params" : {
+              "font" : "monospacedMicro",
+              "numberOfLines" : 2,
+              "text" : "Text goes here"
+            },
+            "type" : "Lona:Text"
+          }
+        ],
+        "id" : "Details",
+        "params" : {
+          "alignSelf" : "stretch",
+          "marginTop" : 15
+        },
+        "type" : "Lona:View"
+      }
+    ],
+    "id" : "Container",
+    "params" : {
+      "flex" : 1,
+      "marginBottom" : 25,
+      "marginLeft" : 25,
+      "marginRight" : 25,
+      "marginTop" : 25,
+      "paddingBottom" : 4,
+      "paddingLeft" : 4,
+      "paddingRight" : 4,
+      "paddingTop" : 4,
+      "width" : 150
+    },
+    "type" : "Lona:View"
+  }
+}

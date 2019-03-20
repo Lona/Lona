@@ -1,0 +1,10 @@
+{
+  "name": "gatsby-plugin-lona",
+  "version": "0.0.0",
+  "dependencies": {
+    "@lona/workspace-to-sketch-library": "*",
+    "mime": "*",
+    "fs-extra": "*",
+    "chokidar": "*"
+  }
+}

@@ -1,0 +1,168 @@
+{
+  "devices" : [
+    {
+      "height" : 200,
+      "heightMode" : "Exactly",
+      "name" : "iPhone SE",
+      "width" : 300
+    }
+  ],
+  "examples" : [
+    {
+      "id" : "Default",
+      "name" : "Default",
+      "params" : {
+        "color" : "background",
+        "colorCode" : "rgba(255,255,255,0.123)",
+        "colorName" : "Red 600"
+      }
+    }
+  ],
+  "logic" : [
+    {
+      "assignee" : [
+        "layers",
+        "textStyleName",
+        "text"
+      ],
+      "content" : [
+        "parameters",
+        "textStyleName"
+      ],
+      "type" : "AssignExpr"
+    },
+    {
+      "assignee" : [
+        "layers",
+        "textStyleCode",
+        "text"
+      ],
+      "content" : [
+        "parameters",
+        "textStyleCode"
+      ],
+      "type" : "AssignExpr"
+    },
+    {
+      "assignee" : [
+        "layers",
+        "Text",
+        "textStyle"
+      ],
+      "content" : [
+        "parameters",
+        "textStyle"
+      ],
+      "type" : "AssignExpr"
+    },
+    {
+      "assignee" : [
+        "layers",
+        "Text",
+        "text"
+      ],
+      "content" : [
+        "parameters",
+        "text"
+      ],
+      "type" : "AssignExpr"
+    }
+  ],
+  "params" : [
+    {
+      "name" : "textStyleName",
+      "type" : "String"
+    },
+    {
+      "name" : "textStyleCode",
+      "type" : "String"
+    },
+    {
+      "name" : "textStyle",
+      "type" : "TextStyle"
+    },
+    {
+      "defaultValue" : {
+        "data" : {
+          "case" : "Some",
+          "data" : ""
+        },
+        "type" : "String?"
+      },
+      "name" : "text",
+      "type" : "String?"
+    }
+  ],
+  "root" : {
+    "children" : [
+      {
+        "children" : [
+          {
+            "id" : "Text",
+            "params" : {
+              "text" : "Text goes here"
+            },
+            "type" : "Lona:Text"
+          }
+        ],
+        "id" : "Preview",
+        "params" : {
+          "alignSelf" : "stretch",
+          "backgroundColor" : "background",
+          "borderColor" : "line",
+          "borderRadius" : 6,
+          "borderWidth" : 1,
+          "height" : 150,
+          "paddingBottom" : 5,
+          "paddingLeft" : 5,
+          "paddingRight" : 5,
+          "paddingTop" : 5
+        },
+        "type" : "Lona:View"
+      },
+      {
+        "children" : [
+          {
+            "id" : "textStyleName",
+            "params" : {
+              "alignSelf" : "stretch",
+              "font" : "regular",
+              "numberOfLines" : 2,
+              "text" : "Component"
+            },
+            "type" : "Lona:Text"
+          },
+          {
+            "id" : "textStyleCode",
+            "params" : {
+              "font" : "monospacedMicro",
+              "numberOfLines" : 2,
+              "text" : "Text goes here"
+            },
+            "type" : "Lona:Text"
+          }
+        ],
+        "id" : "Details",
+        "params" : {
+          "alignSelf" : "stretch",
+          "marginTop" : 5
+        },
+        "type" : "Lona:View"
+      }
+    ],
+    "id" : "Container",
+    "params" : {
+      "flex" : 1,
+      "marginBottom" : 25,
+      "marginLeft" : 25,
+      "marginRight" : 25,
+      "marginTop" : 25,
+      "paddingBottom" : 4,
+      "paddingLeft" : 4,
+      "paddingRight" : 4,
+      "paddingTop" : 4,
+      "width" : 250
+    },
+    "type" : "Lona:View"
+  }
+}

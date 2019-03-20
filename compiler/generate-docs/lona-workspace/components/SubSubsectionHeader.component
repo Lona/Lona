@@ -1,0 +1,153 @@
+{
+  "devices" : [
+    {
+      "deviceId" : "iPhone SE",
+      "heightMode" : "At Least"
+    },
+    {
+      "deviceId" : "Pixel 2",
+      "heightMode" : "At Least"
+    }
+  ],
+  "examples" : [
+    {
+      "id" : "Default",
+      "name" : "Default",
+      "params" : {
+
+      }
+    }
+  ],
+  "logic" : [
+    {
+      "assignee" : [
+        "layers",
+        "Text",
+        "text"
+      ],
+      "content" : [
+        "parameters",
+        "text"
+      ],
+      "type" : "AssignExpr"
+    },
+    {
+      "body" : [
+        {
+          "assignee" : [
+            "layers",
+            "Text",
+            "textStyle"
+          ],
+          "content" : {
+            "type" : "LitExpr",
+            "value" : {
+              "data" : "regularActive",
+              "type" : "TextStyle"
+            }
+          },
+          "type" : "AssignExpr"
+        },
+        {
+          "assignee" : [
+            "layers",
+            "Underline",
+            "opacity"
+          ],
+          "content" : {
+            "type" : "LitExpr",
+            "value" : {
+              "data" : 1,
+              "type" : "Number"
+            }
+          },
+          "type" : "AssignExpr"
+        }
+      ],
+      "condition" : {
+        "left" : [
+          "parameters",
+          "selected"
+        ],
+        "op" : "==",
+        "right" : {
+          "type" : "LitExpr",
+          "value" : {
+            "data" : true,
+            "type" : "Boolean?"
+          }
+        },
+        "type" : "BinExpr"
+      },
+      "type" : "IfExpr"
+    }
+  ],
+  "params" : [
+    {
+      "name" : "text",
+      "type" : "String"
+    },
+    {
+      "defaultValue" : {
+        "data" : {
+          "case" : "None",
+          "data" : null
+        },
+        "type" : "Boolean?"
+      },
+      "name" : "selected",
+      "type" : "Boolean?"
+    }
+  ],
+  "root" : {
+    "children" : [
+      {
+        "id" : "Dot",
+        "params" : {
+          "backgroundColor" : "#D8D8D8",
+          "borderColor" : "selectedUnderline",
+          "borderRadius" : 3,
+          "height" : 6,
+          "marginRight" : 10,
+          "width" : 6
+        },
+        "type" : "Lona:View"
+      },
+      {
+        "children" : [
+          {
+            "id" : "Text",
+            "params" : {
+              "font" : "regular",
+              "text" : "Text goes here"
+            },
+            "type" : "Lona:Text"
+          },
+          {
+            "id" : "Underline",
+            "params" : {
+              "alignSelf" : "stretch",
+              "backgroundColor" : "#D8D8D8",
+              "borderColor" : "text",
+              "opacity" : 0
+            },
+            "type" : "Lona:View"
+          }
+        ],
+        "id" : "Wrapper",
+        "params" : {
+          "flex" : 1
+        },
+        "type" : "Lona:View"
+      }
+    ],
+    "id" : "View",
+    "params" : {
+      "alignItems" : "center",
+      "alignSelf" : "stretch",
+      "flexDirection" : "row",
+      "paddingTop" : 8
+    },
+    "type" : "Lona:View"
+  }
+}

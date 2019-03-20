@@ -1,0 +1,105 @@
+{
+  "devices": [
+    {
+      "deviceId": "iPhone SE",
+      "heightMode": "At Least"
+    },
+    {
+      "deviceId": "Pixel 2",
+      "heightMode": "At Least"
+    }
+  ],
+  "examples": [
+    {
+      "id": "Default",
+      "name": "Default",
+      "params": {}
+    }
+  ],
+  "logic": [
+    {
+      "body": [
+        {
+          "assignee": ["layers", "underline", "opacity"],
+          "content": {
+            "type": "LitExpr",
+            "value": {
+              "data": 1,
+              "type": "Number"
+            }
+          },
+          "type": "AssignExpr"
+        }
+      ],
+      "condition": {
+        "left": ["parameters", "selected"],
+        "op": "==",
+        "right": {
+          "type": "LitExpr",
+          "value": {
+            "data": true,
+            "type": "Boolean?"
+          }
+        },
+        "type": "BinExpr"
+      },
+      "type": "IfExpr"
+    },
+    {
+      "assignee": ["layers", "Text", "text"],
+      "content": ["parameters", "text"],
+      "type": "AssignExpr"
+    }
+  ],
+  "params": [
+    {
+      "name": "text",
+      "type": "String"
+    },
+    {
+      "defaultValue": {
+        "data": {
+          "case": "None",
+          "data": null
+        },
+        "type": "Boolean?"
+      },
+      "name": "selected",
+      "type": "Boolean?"
+    }
+  ],
+  "root": {
+    "children": [
+      {
+        "id": "Text",
+        "params": {
+          "font": "regular",
+          "marginBottom": 11,
+          "marginLeft": 30,
+          "marginRight": 30,
+          "marginTop": 41,
+          "text": "Text goes here"
+        },
+        "type": "Lona:Text"
+      },
+      {
+        "id": "Underline",
+        "params": {
+          "alignSelf": "stretch",
+          "backgroundColor": "selectedUnderline",
+          "height": 2,
+          "marginLeft": 15,
+          "marginRight": 15,
+          "marginTop": 5,
+          "opacity": 0
+        },
+        "type": "Lona:View"
+      }
+    ],
+    "id": "View",
+    "params": {
+      "alignSelf": "stretch"
+    },
+    "type": "Lona:View"
+  }
+}
