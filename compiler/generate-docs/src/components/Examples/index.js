@@ -5,7 +5,7 @@ import { LiveProvider, LiveEditor, LiveError, LivePreview } from 'react-live'
 import SplitPane from 'react-split-pane'
 
 import H3 from '../../../lona-workspace/components/markdown/H3.component'
-import highlightCSS from './highlight-theme'
+import highlightTheme from './highlight-theme'
 
 const Wrapper = styled.div`
   flex: 1;
@@ -143,8 +143,6 @@ const GlobalStyle = createGlobalStyle`
     font-size: 16px;
     height: calc(100% - 50px);
   }
-
-  ${highlightCSS}
 `
 
 class Examples extends React.Component {
@@ -174,7 +172,7 @@ class Examples extends React.Component {
           <LiveProvider
             code={this.props.examples[this.state.selectedExample].text}
             scope={{ React, styled, ...this.props.scope }}
-            mountStylesheet={false}
+            theme={highlightTheme}
           >
             <SplitPane defaultSize="50%" split="vertical">
               <CodeWrapper>
@@ -215,7 +213,12 @@ class Examples extends React.Component {
                     width: '100%',
                   }}
                 />
-                <LiveEditor />
+                <LiveEditor
+                  style={{
+                    fontSize: 16,
+                    fontFamily: '"Fira code", "Fira Mono", monospace',
+                  }}
+                />
               </CodeWrapper>
               <div>
                 <PreviewHeader>Live preview</PreviewHeader>
