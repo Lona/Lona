@@ -2,7 +2,75 @@ const execa = require('execa')
 const path = require('path')
 const loadConfig = require('../tasks/load-config')
 
-module.exports = {
+function handler(argv) {
+  const shellOptions = {
+    cwd: path.dirname(__dirname),
+    stdio: argv.stdio || ['pipe', 'inherit', 'inherit'],
+  }
+
+  if (argv.env) {
+    if (!argv.env.NODE_PATH) {
+      argv.env.NODE_PATH = ''
+    }
+    shellOptions.env = argv.env
+  } else {
+    shellOptions.env = {
+      NODE_PATH: '',
+    }
+  }
+
+  if (argv.workspace) {
+    if (!path.isAbsolute(argv.workspace)) {
+      argv.workspace = path.join(process.cwd(), argv.workspace)
+    }
+    process.env.WORKSPACE = argv.workspace
+  }
+
+  const config = loadConfig()
+
+  shellOptions.env.NODE_PATH += `:${config.nodeModules.join(':')}`
+
+  if (argv.buildDir) {
+    if (!path.isAbsolute(argv.buildDir)) {
+      argv.buildDir = path.join(process.cwd(), argv.buildDir)
+    }
+  } else {
+    argv.buildDir = path.join(config.cwd, config.docsFolder || './docs')
+  }
+  if (argv.cacheDir) {
+    if (!path.isAbsolute(argv.cacheDir)) {
+      argv.cacheDir = path.join(process.cwd(), argv.cacheDir)
+    }
+  } else {
+    argv.cacheDir = path.join(process.cwd(), '.cache')
+  }
+
+  const gatsbyPath = require.resolve('@mathieudutour/gatsby/dist/bin/gatsby.js')
+
+  const gatsbyOptions = [
+    `--build-dir=${argv.buildDir}`,
+    `--cache-dir=${argv.cacheDir}`,
+  ]
+
+  if (argv.noColor) {
+    gatsbyOptions.push('--no-color')
+  }
+  if (argv.verbose) {
+    gatsbyOptions.push('--verbose')
+  }
+  if (argv.prefixPaths) {
+    gatsbyOptions.push('--prefix-paths')
+  }
+
+  return execa(
+    gatsbyPath,
+    [argv.watch || process.env.WATCH ? 'develop' : 'build', ...gatsbyOptions],
+    shellOptions
+  ).catch(() => {})
+}
+
+module.exports = handler
+module.exports.command = {
   command: 'build',
 
   desc: 'Build the Lona workspace docs.',
@@ -37,71 +105,6 @@ module.exports = {
   },
 
   handler(argv) {
-    const shellOptions = {
-      cwd: path.dirname(__dirname),
-      stdio: argv.stdio || ['pipe', 'inherit', 'inherit'],
-    }
-
-    if (argv.env) {
-      if (!argv.env.NODE_PATH) {
-        argv.env.NODE_PATH = ''
-      }
-      shellOptions.env = argv.env
-    } else {
-      shellOptions.env = {
-        NODE_PATH: '',
-      }
-    }
-
-    if (argv.workspace) {
-      if (!path.isAbsolute(argv.workspace)) {
-        argv.workspace = path.join(process.cwd(), argv.workspace)
-      }
-      process.env.WORKSPACE = argv.workspace
-    }
-
-    const config = loadConfig()
-
-    shellOptions.env.NODE_PATH += `:${config.nodeModules.join(':')}`
-
-    if (argv.buildDir) {
-      if (!path.isAbsolute(argv.buildDir)) {
-        argv.buildDir = path.join(process.cwd(), argv.buildDir)
-      }
-    } else {
-      argv.buildDir = path.join(config.cwd, config.docsFolder || './docs')
-    }
-    if (argv.cacheDir) {
-      if (!path.isAbsolute(argv.cacheDir)) {
-        argv.cacheDir = path.join(process.cwd(), argv.cacheDir)
-      }
-    } else {
-      argv.cacheDir = path.join(process.cwd(), '.cache')
-    }
-
-    const gatsbyPath = require.resolve(
-      '@mathieudutour/gatsby/dist/bin/gatsby.js'
-    )
-
-    const gatsbyOptions = [
-      `--build-dir=${argv.buildDir}`,
-      `--cache-dir=${argv.cacheDir}`,
-    ]
-
-    if (argv.noColor) {
-      gatsbyOptions.push('--no-color')
-    }
-    if (argv.verbose) {
-      gatsbyOptions.push('--verbose')
-    }
-    if (argv.prefixPaths) {
-      gatsbyOptions.push('--prefix-paths')
-    }
-
-    return execa(
-      gatsbyPath,
-      [argv.watch || process.env.WATCH ? 'develop' : 'build', ...gatsbyOptions],
-      shellOptions
-    ).catch(() => {})
+    return handler(argv).catch(() => {})
   },
 }
