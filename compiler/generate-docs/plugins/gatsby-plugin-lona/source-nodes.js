@@ -97,15 +97,6 @@ module.exports = function sourceNodes(
       .catch(err => reporter.error(err))
   }
 
-  if (pluginOptions.artifacts && pluginOptions.artifacts.length) {
-    createNode(
-      createArtifactsNode(pluginOptions.artifacts, {
-        type: 'LonaArtifacts',
-        cwd: pluginOptions.cwd,
-      })
-    )
-  }
-
   // For every path that is reported before the 'ready' event, we throw them
   // into a queue and then flush the queue when 'ready' event arrives.
   // After 'ready', we handle the 'add' event without putting it into a queue.
@@ -166,9 +157,10 @@ module.exports = function sourceNodes(
           cache,
           cwd: pluginOptions.cwd,
           artifacts: pluginOptions.artifacts,
-        }).then(() =>
+          reporter,
+        }).then(artifacts =>
           createNode(
-            createArtifactsNode(pluginOptions.artifacts, {
+            createArtifactsNode(artifacts, {
               type: 'LonaArtifacts',
               cwd: pluginOptions.cwd,
             })

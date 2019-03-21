@@ -21,7 +21,7 @@
     "directory": "compiler/docs"
   },
   "dependencies": {
-    "@lona/workspace-to-sketch-library": "^0.1.11",
+    "@lona/workspace-to-sketch-library": "^0.1.12",
     "@mathieudutour/gatsby": "^2.1.51",
     "@mathieudutour/gatsby-mdx": "^0.4.7",
     "@mdx-js/mdx": "^0.18.2",
