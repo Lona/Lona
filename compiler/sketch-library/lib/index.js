@@ -127,8 +127,8 @@ module.exports = function generateSketchLibrary(
                 err.stderr = stderr
                 return reject(err)
               }
-              console.error(stdout)
-              console.error(stderr)
+              log(stdout)
+              log(stderr)
               return resolve(config)
             }
           )
@@ -148,8 +148,8 @@ module.exports = function generateSketchLibrary(
                 err.stderr = stderr
                 return reject(err)
               }
-              console.error(stdout)
-              console.error(stderr)
+              log(stdout)
+              log(stderr)
               return resolve(config)
             }
           )
