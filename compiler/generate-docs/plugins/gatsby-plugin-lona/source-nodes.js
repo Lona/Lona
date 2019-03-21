@@ -158,14 +158,17 @@ module.exports = function sourceNodes(
           cwd: pluginOptions.cwd,
           artifacts: pluginOptions.artifacts,
           reporter,
-        }).then(artifacts =>
-          createNode(
+        }).then(artifacts => {
+          if (!artifacts.length) {
+            return undefined
+          }
+          return createNode(
             createArtifactsNode(artifacts, {
               type: 'LonaArtifacts',
               cwd: pluginOptions.cwd,
             })
           )
-        )
+        })
       : Promise.resolve(),
     new Promise((resolve, reject) => {
       watcher.on(`ready`, () => {
