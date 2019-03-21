@@ -85,6 +85,15 @@ const Header = ({ data, location, files }) => (
   </Wrapper>
 )
 
+const FilesPropTypes = PropTypes.objectOf(
+  PropTypes.shape({
+    path: PropTypes.string.isRequired,
+    title: PropTypes.string,
+    order: PropTypes.number,
+    children: () => FilesPropTypes,
+  })
+)
+
 Header.propTypes = {
   location: PropTypes.shape({
     pathname: PropTypes.string.isRequired,
@@ -95,14 +104,7 @@ Header.propTypes = {
       icon: PropTypes.string,
     }).isRequired,
   }).isRequired,
-  files: PropTypes.objectOf(
-    PropTypes.shape({
-      path: PropTypes.string.isRequired,
-      title: PropTypes.string,
-      order: PropTypes.number,
-      children: PropTypes.any, // should be recursive but it doesn't work
-    })
-  ).isRequired,
+  files: FilesPropTypes.isRequired,
 }
 
 export default Header

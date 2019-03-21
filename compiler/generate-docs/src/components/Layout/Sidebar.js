@@ -167,7 +167,7 @@ const FilesPropTypes = PropTypes.objectOf(
     path: PropTypes.string.isRequired,
     title: PropTypes.string,
     order: PropTypes.number,
-    children: PropTypes.any, // should be recursive but it doesn't work
+    children: () => FilesPropTypes,
   })
 )
 
