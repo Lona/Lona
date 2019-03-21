@@ -6,7 +6,7 @@ const didYouMean = require('./did-you-mean')
 // eslint-disable-next-line no-unused-expressions
 cli
   .scriptName('@lona/docs')
-  .command(require('../commands/build'))
+  .command(require('../commands/build').command)
   .usage('Usage: @lona/docs <command> [options]')
   .parserConfiguration({
     'boolean-negation': false,

@@ -1,3 +1,3 @@
 module.exports = {
-  build: require('./commands/build').handler,
+  build: require('./commands/build'),
 }
