@@ -167,7 +167,7 @@ const FilesPropTypes = PropTypes.objectOf(
     path: PropTypes.string.isRequired,
     title: PropTypes.string,
     order: PropTypes.number,
-    children: () => FilesPropTypes,
+    children: (...args) => FilesPropTypes(...args),
   })
 )
 
