@@ -22,8 +22,8 @@ public class LayerListHeader: NSBox {
 
         update()
 
-        subscriptions.append(LonaPlugins.current.register(eventType: .onChangeFileSystemComponents) {
-            self.setUpViews()
+        subscriptions.append(LonaPlugins.current.register(eventType: .onChangeFileSystemComponents) { [unowned self] in
+            self.updateMenuItems()
         })
     }
 
@@ -71,6 +71,10 @@ public class LayerListHeader: NSBox {
     }
 
     private func update() {}
+
+    private func updateMenuItems() {
+        button.menu(forSegment: 0)?.items = ComponentMenu.menuItems()
+    }
 
     deinit {
         subscriptions.forEach({ sub in sub() })
