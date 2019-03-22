@@ -330,11 +330,6 @@ class WorkspaceViewController: NSSplitViewController {
         splitView.identifier = NSUserInterfaceItemIdentifier(rawValue: splitViewResorationIdentifier)
 
         fileNavigator.onCreateFile = { path, options in
-            NSDocumentController.shared.documents.forEach { document in
-                if document.fileURL == URL(fileURLWithPath: path) {
-                    self.close(document: document, discardingUnsavedChanges: true)
-                }
-            }
             LonaPlugins.current.trigger(eventType: .onChangeFileSystemComponents)
         }
 
