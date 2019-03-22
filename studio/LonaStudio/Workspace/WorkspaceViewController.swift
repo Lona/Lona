@@ -329,6 +329,15 @@ class WorkspaceViewController: NSSplitViewController {
         splitView.autosaveName = NSSplitView.AutosaveName(rawValue: splitViewResorationIdentifier)
         splitView.identifier = NSUserInterfaceItemIdentifier(rawValue: splitViewResorationIdentifier)
 
+        fileNavigator.onCreateFile = { path, options in
+            NSDocumentController.shared.documents.forEach { document in
+                if document.fileURL == URL(fileURLWithPath: path) {
+                    self.close(document: document, discardingUnsavedChanges: true)
+                }
+            }
+            LonaPlugins.current.trigger(eventType: .onChangeFileSystemComponents)
+        }
+
         fileNavigator.onDeleteFile = { path, options in
             NSDocumentController.shared.documents.forEach { document in
                 if document.fileURL == URL(fileURLWithPath: path) {
@@ -374,7 +383,6 @@ class WorkspaceViewController: NSSplitViewController {
                 to: url,
                 ofType: "DocumentType",
                 for: NSDocument.SaveOperationType.saveOperation, completionHandler: { error in
-                    LonaPlugins.current.trigger(eventType: .onChangeFileSystemComponents)
                     if let error = error {
                         Swift.print("Failed to save \(url): \(error)")
                     }
