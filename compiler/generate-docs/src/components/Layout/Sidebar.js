@@ -15,9 +15,16 @@ import SubsectionHeader from '../../../lona-workspace/components/SubsectionHeade
 import SubSubsectionHeader from '../../../lona-workspace/components/SubSubsectionHeader.component'
 
 const Wrapper = styled.nav`
-  flex: 0 0 320px;
+  flex: 0 0 350px;
   margin-top: 0;
-  width: 320px;
+
+  @media (max-width: 1600px) {
+    flex: 0 0 300px;
+  }
+
+  @media (max-width: 1280px) {
+    flex: 0 0 240px;
+  }
 `
 
 const InnerWrapper = styled.div`
@@ -77,7 +84,7 @@ const SubNavigation = ({ subtitle, location }) => {
   )
 }
 
-const Siderbar = ({ location, files }) => {
+const Sidebar = ({ location, files }) => {
   const [, selectedSectionOrU, selectedSection] = location.pathname.split('/')
 
   const sections = Object.keys(files)
@@ -171,7 +178,7 @@ const FilesPropTypes = PropTypes.objectOf(
   })
 )
 
-Siderbar.propTypes = {
+Sidebar.propTypes = {
   location: PropTypes.shape({
     pathname: PropTypes.string.isRequired,
   }).isRequired,
@@ -190,4 +197,4 @@ SubNavigation.propTypes = {
   }).isRequired,
 }
 
-export default Siderbar
+export default Sidebar

@@ -9,7 +9,7 @@ import WorspaceLogo from '../../../lona-workspace/components/WorkspaceLogo.compo
 
 const Wrapper = styled.header`
   height: ${HeaderHeight};
-  padding-right: 26px;
+  padding-right: 65px;
   padding-left: 65px;
 `
 
@@ -17,9 +17,6 @@ const InnerWrapper = styled.div`
   display: flex;
   height: 100%;
   position: relative;
-  max-width: 140rem;
-  margin-right: auto;
-  margin-left: auto;
   justify-content: space-between;
 `
 
@@ -28,12 +25,10 @@ const Logo = styled(Link)`
 `
 
 const NavigationWrapper = styled.nav`
-  flex: 0 0 auto;
+  display: flex;
 `
 
 const Navigation = styled.ul`
-  float: left;
-  margin-right: 1.6rem;
   display: flex;
 `
 
@@ -41,6 +36,12 @@ const NavigationItem = styled(Link)`
   text-transform: capitalize;
   text-decoration: none;
 `
+
+const NavigationItemWrapper = styled.li(props => ({
+  display: 'flex',
+  alignItems: 'center',
+  marginLeft: props.first ? '0' : `${65 - 24}px`,
+}))
 
 const Header = ({ data, location, files }) => (
   <Wrapper>
@@ -55,7 +56,7 @@ const Header = ({ data, location, files }) => (
         <Navigation aria-hidden="false" aria-label="Secondary navigation">
           {Object.keys(files)
             .sort(sortFiles(files))
-            .map(section => {
+            .map((section, i) => {
               if (!files[section]) {
                 return null
               }
@@ -69,14 +70,16 @@ const Header = ({ data, location, files }) => (
               }
 
               return (
-                <li key={section}>
+                <NavigationItemWrapper key={section} first={i === 0}>
                   <NavigationItem to={cleanupLink(firstInSection.path)}>
                     <HeaderNavigationLink
                       text={section}
-                      selected={location.pathname.indexOf(section) === 1}
+                      selected={
+                        location.pathname.indexOf(`/u/${section}`) === 0
+                      }
                     />
                   </NavigationItem>
-                </li>
+                </NavigationItemWrapper>
               )
             })}
         </Navigation>

@@ -6,9 +6,16 @@ const Section = styled.section`
   flex: 1 1 auto;
   border-radius: 0.6rem;
   min-width: 0;
-  max-width: calc(100vw - 350px);
-  width: 1040px;
-  padding: 4rem 30px;
+  max-width: calc(100vw - 700px);
+  padding: 12rem 0px;
+
+  @media (max-width: 1600px) {
+    max-width: calc(100vw - 600px);
+  }
+
+  @media (max-width: 1280px) {
+    max-width: calc(100vw - 240px - 65px);
+  }
 
   h1 {
     margin-bottom: 0.3em;

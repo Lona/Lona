@@ -2,47 +2,53 @@
   "styles" : [
     {
       "color" : "text",
-      "fontSize" : 18,
-      "fontWeight" : "600",
+      "fontSize" : 17,
+      "letterSpacing" : 0.2,
+      "fontWeight" : "500",
       "id" : "regularBold",
-      "lineHeight" : 32,
+      "lineHeight" : 31,
       "name" : "Regular Bold"
     },
     {
       "color" : "text",
-      "fontSize" : 18,
+      "fontSize" : 17,
+      "letterSpacing" : 0.2,
       "id" : "regular",
-      "lineHeight" : 32,
+      "lineHeight" : 31,
       "name" : "Regular"
     },
     {
       "color" : "mutedText",
-      "fontSize" : 18,
+      "fontSize" : 17,
+      "letterSpacing" : 0.2,
       "id" : "regularMuted",
-      "lineHeight" : 32,
+      "lineHeight" : 31,
       "name" : "Regular Muted"
     },
     {
       "color" : "mutedText",
-      "fontSize" : 12,
+      "fontSize" : 11,
       "fontWeight" : "700",
       "id" : "sectionHeader",
-      "name" : "Section Header"
+      "name" : "Section Header",
+      "letterSpacing" : -0.2
     },
     {
       "color" : "text",
-      "fontSize" : 18,
+      "fontSize" : 17,
+      "letterSpacing" : 0.2,
       "fontWeight" : "700",
       "id" : "regularActive",
-      "lineHeight" : 32,
+      "lineHeight" : 31,
       "name" : "Regular Active"
     },
     {
       "color" : "text",
-      "fontSize" : 48,
-      "fontWeight" : "600",
+      "fontSize" : 46,
+      "fontWeight" : "500",
       "id" : "h1",
-      "name" : "H1"
+      "name" : "H1",
+      "letterSpacing" : 0.8
     },
     {
       "color" : "text",
@@ -54,28 +60,31 @@
     },
     {
       "color" : "text",
-      "fontSize" : 24,
-      "fontWeight" : "600",
+      "fontSize" : 23,
+      "fontWeight" : "500",
       "id" : "h3",
-      "name" : "H3"
+      "name" : "H3",
+      "letterSpacing" : 0.2
     },
     {
       "color" : "text",
       "fontFamily" : "Menlo",
-      "fontSize" : 18,
+      "fontSize" : 17,
+      "letterSpacing" : 0.2,
       "id" : "regularMono",
       "name" : "Regular Mono"
     },
     {
       "color" : "mutedText",
-      "fontSize" : 18,
+      "fontSize" : 17,
+      "letterSpacing" : 0.2,
       "id" : "regularGhost",
       "name" : "Regular Ghost"
     },
     {
       "color" : "primary",
       "fontFamily" : "Menlo",
-      "fontSize" : 18,
+      "fontSize" : 17,
       "id" : "regularMonoHighlight",
       "name" : "regularMonoHighlight"
     }
