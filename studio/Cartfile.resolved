@@ -1,3 +1,4 @@
+git "file:///Users/devinabbott/Projects/Logic" "d308527508de22cfce7dbbb585aec2bec21ffb42"
 github "dabbott/ColorPicker" "c1e637d2af9813ddba6a9b8e5e51f164780981ba"
 github "dabbott/ControlledComponents" "264729ba7769e8fd2a66eb4fad63fd6348eae767"
 github "dabbott/FileTree" "9c31b1ddca54c9f1b8894bbd70de6d21132a8e67"

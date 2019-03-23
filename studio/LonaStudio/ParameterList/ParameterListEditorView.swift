@@ -8,19 +8,23 @@
 
 import Foundation
 import Cocoa
+import Logic
 
 class ParameterListEditorView: NSView {
 
     var editorView: ParameterListView
 
     func renderScrollView() -> NSView {
-        let scrollView = NSScrollView(frame: frame)
-        scrollView.translatesAutoresizingMaskIntoConstraints = false
-        scrollView.addSubview(editorView)
-        scrollView.documentView = editorView
-        scrollView.hasVerticalRuler = true
+        let canvasView = LogicEditor(rootNode: defaultRootNode)
+        canvasView.fillColor = Colors.contentBackground
+        return canvasView
 
-        return scrollView
+//        let scrollView = NSScrollView(frame: frame)
+//        scrollView.translatesAutoresizingMaskIntoConstraints = false
+//        scrollView.documentView = canvasView
+//        scrollView.hasVerticalRuler = true
+//
+//        return scrollView
     }
 
     func renderToolbar() -> NSView {

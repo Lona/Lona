@@ -242,6 +242,10 @@
 		6BBE0F6A212B26C900CEE8C1 /* FileTree.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 6BBE0F69212B26C900CEE8C1 /* FileTree.framework */; };
 		6BBE0F6B212B26C900CEE8C1 /* FileTree.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 6BBE0F69212B26C900CEE8C1 /* FileTree.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		6BC605CD21F78F240087311A /* LabeledDropdownRow.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6BC605CC21F78F240087311A /* LabeledDropdownRow.swift */; };
+		6BC6062B223F191A003E616B /* Logic.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 6BC60626223F1878003E616B /* Logic.framework */; };
+		6BC6062C223F191A003E616B /* Logic.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 6BC60626223F1878003E616B /* Logic.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
+		6BC60631223F1947003E616B /* Logic.framework.dSYM in Resources */ = {isa = PBXBuildFile; fileRef = 6BC60630223F1947003E616B /* Logic.framework.dSYM */; };
+		6BC60632223F194E003E616B /* Logic.framework.dSYM in CopyFiles */ = {isa = PBXBuildFile; fileRef = 6BC60630223F1947003E616B /* Logic.framework.dSYM */; };
 		6BD4976121E42EC400BC3970 /* AccessibilityInspector.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6BD4976021E42EC400BC3970 /* AccessibilityInspector.swift */; };
 		6BD4976321E53F2000BC3970 /* Accessibility.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6BD4976221E53F2000BC3970 /* Accessibility.swift */; };
 		6BD581D920824AF60068FBC3 /* NSTextAlignmentExtensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6BD581D820824AF60068FBC3 /* NSTextAlignmentExtensions.swift */; };
@@ -292,11 +296,22 @@
 				6BA6E896212F92B0009CD33C /* Witness.framework in Embed Frameworks */,
 				6BBE0F6B212B26C900CEE8C1 /* FileTree.framework in Embed Frameworks */,
 				6B2DC1AE21361C4700679668 /* Colors.framework in Embed Frameworks */,
+				6BC6062C223F191A003E616B /* Logic.framework in Embed Frameworks */,
 				6B2DC1AC21361C4700679668 /* ColorPicker.framework in Embed Frameworks */,
 				6BF894D42214E3DD000CD863 /* Differ.framework in Embed Frameworks */,
 				6B5886872134D6BB00CCA69F /* ControlledComponents.framework in Embed Frameworks */,
 			);
 			name = "Embed Frameworks";
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		6BC6062D223F192B003E616B /* CopyFiles */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = "";
+			dstSubfolderSpec = 16;
+			files = (
+				6BC60632223F194E003E616B /* Logic.framework.dSYM in CopyFiles */,
+			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXCopyFilesBuildPhase section */
@@ -535,6 +550,8 @@
 		6BABAFE62139C341002B8C8F /* WorkspaceToolbar.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WorkspaceToolbar.swift; sourceTree = "<group>"; };
 		6BBE0F69212B26C900CEE8C1 /* FileTree.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = FileTree.framework; path = Carthage/Build/Mac/FileTree.framework; sourceTree = "<group>"; };
 		6BC605CC21F78F240087311A /* LabeledDropdownRow.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = LabeledDropdownRow.swift; sourceTree = "<group>"; };
+		6BC60626223F1878003E616B /* Logic.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Logic.framework; path = Carthage/Build/Mac/Logic.framework; sourceTree = "<group>"; };
+		6BC60630223F1947003E616B /* Logic.framework.dSYM */ = {isa = PBXFileReference; lastKnownFileType = wrapper.dsym; name = Logic.framework.dSYM; path = Carthage/Build/Mac/Logic.framework.dSYM; sourceTree = "<group>"; };
 		6BD4976021E42EC400BC3970 /* AccessibilityInspector.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AccessibilityInspector.swift; sourceTree = "<group>"; };
 		6BD4976221E53F2000BC3970 /* Accessibility.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Accessibility.swift; sourceTree = "<group>"; };
 		6BD581D820824AF60068FBC3 /* NSTextAlignmentExtensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NSTextAlignmentExtensions.swift; sourceTree = "<group>"; };
@@ -576,6 +593,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				6BA6E895212F92B0009CD33C /* Witness.framework in Frameworks */,
+				6BC6062B223F191A003E616B /* Logic.framework in Frameworks */,
 				6BBE0F6A212B26C900CEE8C1 /* FileTree.framework in Frameworks */,
 				6B5886862134D6BB00CCA69F /* ControlledComponents.framework in Frameworks */,
 				6B2DC1AB21361C4700679668 /* ColorPicker.framework in Frameworks */,
@@ -970,6 +988,8 @@
 		391EE9FEA8350B93A55FBF6F /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				6BC60630223F1947003E616B /* Logic.framework.dSYM */,
+				6BC60626223F1878003E616B /* Logic.framework */,
 				6BF894D12214E3CD000CD863 /* Differ.framework */,
 				6B2DC1A921361C4700679668 /* ColorPicker.framework */,
 				6B2DC1AA21361C4700679668 /* Colors.framework */,
@@ -1124,6 +1144,7 @@
 				D6D720124C85F4014A8A455D /* [CP] Embed Pods Frameworks */,
 				BD7A127D0A69517D19686FB2 /* [CP] Copy Pods Resources */,
 				6BBE0F6C212B26C900CEE8C1 /* Embed Frameworks */,
+				6BC6062D223F192B003E616B /* CopyFiles */,
 			);
 			buildRules = (
 			);
@@ -1208,6 +1229,7 @@
 				30F870E920865859007ADA5B /* LonaIcon_16x16@2x.png in Resources */,
 				30F870E620865859007ADA5B /* LonaIcon_128x128.png in Resources */,
 				30F870E020865859007ADA5B /* LonaIcon_512x512@2x.png in Resources */,
+				6BC60631223F1947003E616B /* Logic.framework.dSYM in Resources */,
 				307D44182097DDAB004B57F5 /* icon-tab-docs@2x.png in Resources */,
 				307D44152097DDAB004B57F5 /* icon-tab-docs.png in Resources */,
 				301D7EDC1F47A29D0098AB0D /* Modules in Resources */,
