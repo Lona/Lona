@@ -329,12 +329,17 @@ class WorkspaceViewController: NSSplitViewController {
         splitView.autosaveName = NSSplitView.AutosaveName(rawValue: splitViewResorationIdentifier)
         splitView.identifier = NSUserInterfaceItemIdentifier(rawValue: splitViewResorationIdentifier)
 
+        fileNavigator.onCreateFile = { path, options in
+            LonaPlugins.current.trigger(eventType: .onChangeFileSystemComponents)
+        }
+
         fileNavigator.onDeleteFile = { path, options in
             NSDocumentController.shared.documents.forEach { document in
                 if document.fileURL == URL(fileURLWithPath: path) {
                     self.close(document: document, discardingUnsavedChanges: true)
                 }
             }
+            LonaPlugins.current.trigger(eventType: .onChangeFileSystemComponents)
         }
 
         // Don't allow moving these json files within Lona Studio.
@@ -350,6 +355,7 @@ class WorkspaceViewController: NSSplitViewController {
         fileNavigator.performMoveFile = { prev, next in
             do {
                 try FileManager.default.moveItem(atPath: prev, toPath: next)
+                LonaPlugins.current.trigger(eventType: .onChangeFileSystemComponents)
                 return true
             } catch {
                 Swift.print("Failed to move \(prev) to \(next)")

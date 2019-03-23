@@ -10,6 +10,7 @@ import AppKit
 import Foundation
 
 public class LayerListHeader: NSBox {
+    private var subscriptions: [() -> Void] = []
 
     // MARK: Lifecycle
 
@@ -20,6 +21,10 @@ public class LayerListHeader: NSBox {
         setUpConstraints()
 
         update()
+
+        subscriptions.append(LonaPlugins.current.register(eventType: .onChangeFileSystemComponents) { [unowned self] in
+            self.updateMenuItems()
+        })
     }
 
     public required init?(coder decoder: NSCoder) {
@@ -66,4 +71,12 @@ public class LayerListHeader: NSBox {
     }
 
     private func update() {}
+
+    private func updateMenuItems() {
+        button.menu(forSegment: 0)?.items = ComponentMenu.menuItems()
+    }
+
+    deinit {
+        subscriptions.forEach({ sub in sub() })
+    }
 }

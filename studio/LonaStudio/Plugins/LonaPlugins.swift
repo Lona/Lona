@@ -15,6 +15,7 @@ enum LonaPluginActivationEvent: String, Decodable {
     case onSaveTextStyles = "onSave:textStyles"
     case onReloadWorkspace = "onReload:workspace"
     case onChangeTheme = "onChange:theme"
+    case onChangeFileSystemComponents = "onChange:fileSystem:components"
 }
 
 struct LonaPluginConfig: Decodable {

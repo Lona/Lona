@@ -82,6 +82,11 @@ class FileNavigator: NSBox {
         set { fileTree.onAction = newValue }
     }
 
+    public var onCreateFile: ((FileTree.Path, FileTree.FileEventOptions) -> Void)? {
+        get { return fileTree.onCreateFile }
+        set { fileTree.onCreateFile = newValue}
+    }
+
     public var onDeleteFile: ((FileTree.Path, FileTree.FileEventOptions) -> Void)? {
         get { return fileTree.onDeleteFile }
         set { fileTree.onDeleteFile = newValue }
