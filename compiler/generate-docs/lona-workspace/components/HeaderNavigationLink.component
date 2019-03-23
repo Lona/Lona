@@ -1,105 +1,124 @@
 {
-  "devices": [
+  "devices" : [
     {
-      "deviceId": "iPhone SE",
-      "heightMode": "At Least"
+      "deviceId" : "iPhone SE",
+      "heightMode" : "At Least"
     },
     {
-      "deviceId": "Pixel 2",
-      "heightMode": "At Least"
+      "deviceId" : "Pixel 2",
+      "heightMode" : "At Least"
     }
   ],
-  "examples": [
+  "examples" : [
     {
-      "id": "Default",
-      "name": "Default",
-      "params": {}
+      "id" : "Default",
+      "name" : "Default",
+      "params" : {
+
+      }
+    },
+    {
+      "id" : "Selected",
+      "name" : "Selected",
+      "params" : {
+        "selected" : true
+      }
     }
   ],
-  "logic": [
+  "logic" : [
     {
-      "body": [
+      "body" : [
         {
-          "assignee": ["layers", "underline", "opacity"],
-          "content": {
-            "type": "LitExpr",
-            "value": {
-              "data": 1,
-              "type": "Number"
+          "assignee" : [
+            "layers",
+            "Underline",
+            "backgroundColor"
+          ],
+          "content" : {
+            "type" : "LitExpr",
+            "value" : {
+              "data" : "selectedUnderline",
+              "type" : "Color"
             }
           },
-          "type": "AssignExpr"
+          "type" : "AssignExpr"
         }
       ],
-      "condition": {
-        "left": ["parameters", "selected"],
-        "op": "==",
-        "right": {
-          "type": "LitExpr",
-          "value": {
-            "data": true,
-            "type": "Boolean?"
+      "condition" : {
+        "left" : [
+          "parameters",
+          "selected"
+        ],
+        "op" : "==",
+        "right" : {
+          "type" : "LitExpr",
+          "value" : {
+            "data" : true,
+            "type" : "Boolean?"
           }
         },
-        "type": "BinExpr"
+        "type" : "BinExpr"
       },
-      "type": "IfExpr"
+      "type" : "IfExpr"
     },
     {
-      "assignee": ["layers", "Text", "text"],
-      "content": ["parameters", "text"],
-      "type": "AssignExpr"
+      "assignee" : [
+        "layers",
+        "Text",
+        "text"
+      ],
+      "content" : [
+        "parameters",
+        "text"
+      ],
+      "type" : "AssignExpr"
     }
   ],
-  "params": [
+  "params" : [
     {
-      "name": "text",
-      "type": "String"
+      "name" : "text",
+      "type" : "String"
     },
     {
-      "defaultValue": {
-        "data": {
-          "case": "None",
-          "data": null
+      "defaultValue" : {
+        "data" : {
+          "case" : "None",
+          "data" : null
         },
-        "type": "Boolean?"
+        "type" : "Boolean?"
       },
-      "name": "selected",
-      "type": "Boolean?"
+      "name" : "selected",
+      "type" : "Boolean?"
     }
   ],
-  "root": {
-    "children": [
+  "root" : {
+    "children" : [
       {
-        "id": "Text",
-        "params": {
-          "font": "regular",
-          "marginBottom": 11,
-          "marginLeft": 30,
-          "marginRight": 30,
-          "marginTop": 41,
-          "text": "Text goes here"
+        "id" : "Text",
+        "params" : {
+          "font" : "regular",
+          "marginLeft" : 12,
+          "marginRight" : 12,
+          "text" : "Text goes here"
         },
-        "type": "Lona:Text"
+        "type" : "Lona:Text"
       },
       {
-        "id": "Underline",
-        "params": {
-          "alignSelf": "stretch",
-          "backgroundColor": "selectedUnderline",
-          "height": 2,
-          "marginLeft": 15,
-          "marginRight": 15,
-          "marginTop": 5,
-          "opacity": 0
+        "id" : "Underline",
+        "params" : {
+          "alignSelf" : "stretch",
+          "height" : 3,
+          "marginTop" : 5
         },
-        "type": "Lona:View"
+        "type" : "Lona:View"
       }
     ],
-    "id": "View",
-    "params": {
-      "alignSelf": "stretch"
+    "id" : "View",
+    "params" : {
+      "alignItems" : "center",
+      "alignSelf" : "stretch",
+      "paddingTop" : 15
     },
-    "type": "Lona:View"
+    "type" : "Lona:View"
   }
 }

@@ -5,6 +5,7 @@ import { LiveProvider, LiveEditor, LiveError, LivePreview } from 'react-live'
 import SplitPane from 'react-split-pane'
 
 import H3 from '../../../lona-workspace/components/markdown/H3.component'
+import textStyles from '../../../lona-workspace/foundation/textStyles.json'
 import highlightTheme from './highlight-theme'
 
 const Wrapper = styled.div`
@@ -12,7 +13,7 @@ const Wrapper = styled.div`
   display: flex;
   height: 350px;
   width: 100%;
-  border: 1px solid #d8d8d8;
+  border: 1px solid #eeeeee;
   position: relative;
 `
 
@@ -23,12 +24,12 @@ const CodeWrapper = styled.div`
 
 const SelectionWrapper = styled.div`
   display: flex;
-  border-bottom: 1px solid #d8d8d8;
+  border-bottom: 1px solid #eeeeee;
 `
 
 const PreviewHeader = styled.div`
   height: 50px;
-  border-bottom: 1px solid #d8d8d8;
+  border-bottom: 1px solid #eeeeee;
   line-height: 50px;
   font-size: 16px;
   color: #a4a4a4;
@@ -39,20 +40,20 @@ const PreviewHeader = styled.div`
 const SelectionInputWrapper = styled.div`
   margin-bottom: 0;
   position: relative;
-  flex: 1 1 0%;
+  flex: 0 0 auto;
+  display: flex;
 `
 
-const SelectionInput = styled.select`
-  width: 100%;
-  height: 49px;
-  border: 0 solid transparent;
-  line-height: 49px;
-  font-size: 16px;
-  color: #161d25;
-  background-color: #fff;
-  padding-right: 16px;
-  padding-left: 16px;
-`
+const SelectionInput = styled.select({
+  ...textStyles.regular,
+  width: '100%',
+  height: '49px',
+  lineHeight: '49px',
+  border: '0 solid transparent',
+  backgroundColor: '#fff',
+  paddingRight: '16px',
+  paddingLeft: '16px',
+})
 
 const Option = styled.option`
   font-size: 16px;
@@ -62,22 +63,20 @@ const ChevronWrapper = styled.div`
   position: absolute;
   z-index: 1;
   top: 50%;
-  right: 1.6rem;
+  right: 0.1rem;
   pointer-events: none;
   transform: translateY(-50%);
-  color: #d8d8d8;
   margin-bottom: 0;
 `
 
 const ChevronSVG = styled.svg`
-  width: 1.2rem;
-  height: 1.2rem;
+  width: 9px;
+  height: 5px;
   fill: currentColor;
   stroke: currentColor;
   stroke-width: 1;
   stroke-linecap: round;
   margin-bottom: 0;
-  transform: rotate(180deg);
 `
 
 const StyledLivePreview = styled(LivePreview)`
@@ -86,10 +85,19 @@ const StyledLivePreview = styled(LivePreview)`
   padding: 0.8rem;
 `
 
+const dragHandleSvg = `
+<svg width='5px' height='6px' version='1.1' xmlns='http://www.w3.org/2000/svg'>
+  <g id='Components-Page' stroke='lightgray' stroke-width='1' fill='none' fill-rule='evenodd' stroke-linecap='square'>
+    <path d='M0.5,0.5 L0.5,5.5' id='Line-4'></path>
+    <path d='M2.5,0.5 L2.5,5.5' id='Line-4'></path>
+    <path d='M4.5,0.5 L4.5,5.5' id='Line-4'></path>
+  </g>
+</svg>
+`
+
 const GlobalStyle = createGlobalStyle`
   .Resizer {
-    background: #000;
-    opacity: .2;
+    background: #EEEEEE;
     z-index: 1;
     -moz-box-sizing: border-box;
     -webkit-box-sizing: border-box;
@@ -97,42 +105,35 @@ const GlobalStyle = createGlobalStyle`
     -moz-background-clip: padding;
     -webkit-background-clip: padding;
     background-clip: padding-box;
-  }
+    position: relative;
 
-  .Resizer:hover {
-    -webkit-transition: all 2s ease;
-    transition: all 2s ease;
+    &::after {
+      content: ' ';
+      position: absolute;
+      top: 50%;
+      left: 1px;
+      color: teal;
+      width: 5px;
+      height: 6px;
+      background-image: url("data:image/svg+xml;utf8,${dragHandleSvg}");
+    }
   }
 
   .Resizer.horizontal {
-    height: 11px;
-    margin: -5px 0;
-    border-top: 5px solid rgba(255, 255, 255, 0);
-    border-bottom: 5px solid rgba(255, 255, 255, 0);
+    height: 7px;
     cursor: row-resize;
     width: 100%;
   }
 
-  .Resizer.horizontal:hover {
-    border-top: 5px solid rgba(0, 0, 0, 0.5);
-    border-bottom: 5px solid rgba(0, 0, 0, 0.5);
-  }
-
   .Resizer.vertical {
-    width: 11px;
-    margin: 0 -5px;
-    border-left: 5px solid rgba(255, 255, 255, 0);
-    border-right: 5px solid rgba(255, 255, 255, 0);
+    width: 7px;
     cursor: col-resize;
   }
 
-  .Resizer.vertical:hover {
-    border-left: 5px solid rgba(0, 0, 0, 0.5);
-    border-right: 5px solid rgba(0, 0, 0, 0.5);
-  }
   .Resizer.disabled {
     cursor: not-allowed;
   }
+
   .Resizer.disabled:hover {
     border-color: transparent;
   }
@@ -191,12 +192,21 @@ class Examples extends React.Component {
                     </SelectionInput>
                     <ChevronWrapper>
                       <ChevronSVG
-                        viewBox="0 0 20 20"
+                        viewBox="0 0 9 5"
                         preserveAspectRatio="xMidYMid"
                         focusable="false"
                         ariaHidden="true"
                       >
-                        <path d="M.326 15.23c.434.434 1.137.434 1.57 0L10 7.127l8.103 8.103c.434.434 1.137.434 1.57 0 .435-.434.435-1.137 0-1.57l-8.887-8.89c-.217-.217-.502-.326-.786-.326s-.57.11-.786.326l-8.89 8.89c-.433.433-.433 1.136.002 1.57z" />
+                        <g
+                          fill="none"
+                          fillRule="evenodd"
+                          stroke="#000000"
+                          strokeWidth="1.5"
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                        >
+                          <path d="M1,1 L4.5,4 L8,1" />
+                        </g>
                       </ChevronSVG>
                     </ChevronWrapper>
                   </SelectionInputWrapper>
@@ -214,9 +224,11 @@ class Examples extends React.Component {
                   }}
                 />
                 <LiveEditor
+                  padding={16}
                   style={{
-                    fontSize: 16,
-                    fontFamily: '"Fira code", "Fira Mono", monospace',
+                    fontSize: '14px',
+                    fontFamily: 'Menlo, "Fira code", "Fira Mono", monospace',
+                    lineHeight: '21px',
                   }}
                 />
               </CodeWrapper>

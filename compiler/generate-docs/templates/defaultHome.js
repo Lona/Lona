@@ -9,7 +9,7 @@ export default function Template({ data, location }) {
     <Layout location={location}>
       <ComponentTitle
         name={data.site.siteMetadata.title}
-        intro="To personnalize this page, create a REAME.md file at the root of your Lona workspace."
+        intro="To personalize this page, create a README.md file at the root of your Lona workspace."
       />
     </Layout>
   )
