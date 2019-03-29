@@ -208,7 +208,7 @@ class FileNavigator: NSBox {
                         self.onAction?(saveURL)
                     } catch {
                         let alert = NSAlert()
-                        alert.messageText = "Couldn't copy componento to \(saveURL)"
+                        alert.messageText = "Couldn't copy component to \(saveURL)"
                         alert.addButton(withTitle: "OK")
                         alert.runModal()
                     }
