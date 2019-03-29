@@ -185,6 +185,36 @@ class FileNavigator: NSBox {
                 menu.addItem(NSMenuItem.separator())
             }
 
+            if NSURL(fileURLWithPath: path).pathExtension == "component"{
+                menu.addItem(NSMenuItem(title: "Duplicate As...", onClick: {
+                    var saveURL: String
+                    let dialog = NSSavePanel()
+
+                    dialog.title                   = "Save .component file"
+                    dialog.showsResizeIndicator    = true
+                    dialog.showsHiddenFiles        = false
+                    dialog.canCreateDirectories    = true
+                    dialog.allowedFileTypes        = ["component"]
+
+                    // User canceled the save. Don't swap out the document.
+                    if dialog.runModal() != NSApplication.ModalResponse.OK {
+                        return
+                    }
+
+                    guard let url = dialog.url else { return }
+                    saveURL = url.path
+                    do {
+                        try FileManager.default.copyItem(atPath: path, toPath: saveURL)
+                        self.onAction?(saveURL)
+                    } catch {
+                        let alert = NSAlert()
+                        alert.messageText = "Couldn't copy componento to \(saveURL)"
+                        alert.addButton(withTitle: "OK")
+                        alert.runModal()
+                    }
+                }))
+            }
+
             menu.addItem(NSMenuItem(title: "Delete", onClick: {
                 let fileName = URL(fileURLWithPath: path).lastPathComponent
 
