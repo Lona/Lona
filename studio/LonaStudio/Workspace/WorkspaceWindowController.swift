@@ -9,9 +9,9 @@
 import AppKit
 import Foundation
 
-private let viewControllerId = NSStoryboard.SceneIdentifier(rawValue: "MainWorkspace")
-private let windowControllerId = NSStoryboard.SceneIdentifier(rawValue: "Document Window Controller")
-private let storyboardName = NSStoryboard.Name(rawValue: "Main")
+private let viewControllerId = "MainWorkspace"
+private let windowControllerId = "Document Window Controller"
+private let storyboardName = "Main"
 
 private let codeViewVisibleKey = "LonaStudio code view visible"
 

@@ -106,7 +106,7 @@ class ColorEditorViewController: NSViewController {
             }
 
             self.addColorSheet.onSubmit = {
-                self.dismissViewController(self.addColorViewController)
+                self.dismiss(self.addColorViewController)
 
                 var updated = self.colors
                 updated.append(color)
@@ -115,10 +115,10 @@ class ColorEditorViewController: NSViewController {
             }
 
             self.addColorSheet.onCancel = {
-                self.dismissViewController(self.addColorViewController)
+                self.dismiss(self.addColorViewController)
             }
 
-            self.presentViewControllerAsSheet(self.addColorViewController)
+            self.presentAsSheet(self.addColorViewController)
         }
 
         colorBrowser.onDeleteColor = { color in

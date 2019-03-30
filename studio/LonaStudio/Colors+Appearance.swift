@@ -11,7 +11,7 @@ import AppKit
 extension Colors {
     public static let textColor: NSColor = {
         if #available(OSX 10.13, *) {
-            return NSColor(named: NSColor.Name("textColor"))!
+            return NSColor(named: "textColor")!
         } else {
             return NSColor.black
         }
@@ -19,7 +19,7 @@ extension Colors {
 
     public static let labelText: NSColor = {
         if #available(OSX 10.13, *) {
-            return NSColor(named: NSColor.Name("labelTextColor"))!
+            return NSColor(named: "labelTextColor")!
         } else {
             return NSColor.parse(css: "#545454")!
         }
@@ -27,7 +27,7 @@ extension Colors {
 
     public static let headerBackground: NSColor = {
         if #available(OSX 10.13, *) {
-            return NSColor(named: NSColor.Name("headerBackgroundColor"))!
+            return NSColor(named: "headerBackgroundColor")!
         } else {
             return NSColor.white
         }
@@ -61,7 +61,7 @@ extension Colors {
 
     public static let dividerSubtle: NSColor = {
         if #available(OSX 10.13, *) {
-            return NSColor(named: NSColor.Name("dividerSubtleColor"))!
+            return NSColor(named: "dividerSubtleColor")!
         } else {
             return NSColor.white
         }

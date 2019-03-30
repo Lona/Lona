@@ -29,6 +29,9 @@ class ColorPreviewCollectionView: NSView {
     // MARK: - Lifecycle
 
     override init(frame frameRect: NSRect) {
+        self.onSelectColor = nil
+        self.onDeleteColor = nil
+
         super.init(frame: frameRect)
 
         setUpViews()
@@ -172,7 +175,7 @@ extension ColorPreviewCollectionView: NSCollectionViewDelegate {
         acceptDrop draggingInfo: NSDraggingInfo,
         indexPath: IndexPath,
         dropOperation: NSCollectionView.DropOperation) -> Bool {
-        guard let data = draggingInfo.draggingPasteboard().data(forType: COLOR_PASTEBOARD_TYPE),
+        guard let data = draggingInfo.draggingPasteboard.data(forType: COLOR_PASTEBOARD_TYPE),
             let sourceIndexPath = CSData.from(data: data)?.array?.first?.number else {
             Swift.print("Can't move color item - bad pasteboard data")
             return false
@@ -240,6 +243,10 @@ public class ColorPreviewCollection: NSBox {
     // MARK: Lifecycle
 
     public init() {
+        self.onSelectColor = nil
+        self.onDeleteColor = nil
+        self.onMoveColor = nil
+
         super.init(frame: .zero)
 
         setUpViews()
@@ -305,7 +312,7 @@ public class ColorPreviewCollection: NSBox {
     private func update() {
         collectionView.items = colors ?? []
 
-        if let index = colors?.index(where: { $0.id == selectedColorId }) {
+        if let index = colors?.firstIndex(where: { $0.id == selectedColorId }) {
             collectionView.collectionView.selectionIndexPaths = [IndexPath(item: index, section: 0)]
         }
     }

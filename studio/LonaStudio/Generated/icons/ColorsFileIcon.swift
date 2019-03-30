@@ -70,14 +70,14 @@ private class IconColorsFileVector: NSBox {
     outlineStroke.setStroke()
     outline.fill()
     outline.lineWidth = 1 * scale
-    outline.lineCapStyle = .buttLineCapStyle
+    outline.lineCapStyle = .butt
     outline.stroke()
     let highlight = NSBezierPath()
     highlight.move(to: transform(point: CGPoint(x: 5.5, y: 20.5)))
     highlight.line(to: transform(point: CGPoint(x: 17.5, y: 20.5)))
     #colorLiteral(red: 1, green: 1, blue: 1, alpha: 0.2).setStroke()
     highlight.lineWidth = 1 * scale
-    highlight.lineCapStyle = .squareLineCapStyle
+    highlight.lineCapStyle = .square
     highlight.stroke()
     let fold = NSBezierPath()
     fold.move(to: transform(point: CGPoint(x: 17.0857864, y: 8.5)))
@@ -109,7 +109,7 @@ private class IconColorsFileVector: NSBox {
     foldStroke.setStroke()
     fold.fill()
     fold.lineWidth = 1 * scale
-    fold.lineCapStyle = .buttLineCapStyle
+    fold.lineCapStyle = .butt
     fold.stroke()
     let box1 = NSBezierPath()
     box1.move(to: transform(point: CGPoint(x: 8.5, y: 10.5)))
@@ -138,7 +138,7 @@ private class IconColorsFileVector: NSBox {
     box1Stroke.setStroke()
     box1.fill()
     box1.lineWidth = 1 * scale
-    box1.lineCapStyle = .buttLineCapStyle
+    box1.lineCapStyle = .butt
     box1.stroke()
     let box2 = NSBezierPath()
     box2.move(to: transform(point: CGPoint(x: 13.5, y: 10.5)))
@@ -167,7 +167,7 @@ private class IconColorsFileVector: NSBox {
     box2Stroke.setStroke()
     box2.fill()
     box2.lineWidth = 1 * scale
-    box2.lineCapStyle = .buttLineCapStyle
+    box2.lineCapStyle = .butt
     box2.stroke()
     let box3 = NSBezierPath()
     box3.move(to: transform(point: CGPoint(x: 8.5, y: 15.5)))
@@ -196,7 +196,7 @@ private class IconColorsFileVector: NSBox {
     box3Stroke.setStroke()
     box3.fill()
     box3.lineWidth = 1 * scale
-    box3.lineCapStyle = .buttLineCapStyle
+    box3.lineCapStyle = .butt
     box3.stroke()
     let box4 = NSBezierPath()
     box4.move(to: transform(point: CGPoint(x: 13.5, y: 15.5)))
@@ -225,7 +225,7 @@ private class IconColorsFileVector: NSBox {
     box4Stroke.setStroke()
     box4.fill()
     box4.lineWidth = 1 * scale
-    box4.lineCapStyle = .buttLineCapStyle
+    box4.lineCapStyle = .butt
     box4.stroke()
   }
 }

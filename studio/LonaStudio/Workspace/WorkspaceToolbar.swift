@@ -20,7 +20,7 @@ enum WorkspacePane: String {
     case left, bottom, right
 
     var image: NSImage {
-        guard let icon = NSImage(named: NSImage.Name(rawValue: "icon-pane-\(rawValue)")) else {
+        guard let icon = NSImage(named: "icon-pane-\(rawValue)") else {
             return NSImage()
         }
         icon.isTemplate = true
@@ -79,7 +79,7 @@ class WorkspaceToolbar: NSToolbar {
     public var activePanes: [WorkspacePane] = WorkspacePane.all { didSet { update() } }
     public var onChangeActivePanes: (([WorkspacePane]) -> Void)?
 
-    public static let identifier = NSToolbar.Identifier(rawValue: "Workspace Toolbar")
+    public static let identifier = "Workspace Toolbar"
 
     // MARK: Private
 
@@ -95,7 +95,7 @@ class WorkspaceToolbar: NSToolbar {
         segmented.target = self
         segmented.action = #selector(handleSplitterPane(_:))
 
-        let icon = NSImage(named: NSImage.Name(rawValue: "icon-pane-splitter")) ?? NSImage()
+        let icon = NSImage(named: "icon-pane-splitter") ?? NSImage()
         icon.isTemplate = true
 
         segmented.setImage(icon, forSegment: 0)

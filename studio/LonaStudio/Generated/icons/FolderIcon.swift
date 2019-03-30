@@ -68,7 +68,7 @@ private class IconFolderVector: NSBox {
     outlineStroke.setStroke()
     outline.fill()
     outline.lineWidth = 1 * scale
-    outline.lineCapStyle = .buttLineCapStyle
+    outline.lineCapStyle = .butt
     outline.stroke()
     let contents = NSBezierPath()
     contents.move(to: transform(point: CGPoint(x: 2, y: 9)))
@@ -100,14 +100,14 @@ private class IconFolderVector: NSBox {
     highlight.line(to: transform(point: CGPoint(x: 20.5, y: 19.5)))
     highlightStroke.setStroke()
     highlight.lineWidth = 1 * scale
-    highlight.lineCapStyle = .squareLineCapStyle
+    highlight.lineCapStyle = .square
     highlight.stroke()
     let divider = NSBezierPath()
     divider.move(to: transform(point: CGPoint(x: 2.5, y: 8.5)))
     divider.line(to: transform(point: CGPoint(x: 20.5, y: 8.5)))
     dividerStroke.setStroke()
     divider.lineWidth = 1 * scale
-    divider.lineCapStyle = .squareLineCapStyle
+    divider.lineCapStyle = .square
     divider.stroke()
   }
 }

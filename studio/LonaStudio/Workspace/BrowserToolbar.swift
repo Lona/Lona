@@ -27,7 +27,7 @@ class BrowserToolbar: NSToolbar {
     // MARK: - Lifecycle
 
     init() {
-        super.init(identifier: NSToolbar.Identifier("com.devinabbott.lona.BrowserToolbar"))
+        super.init(identifier: "com.devinabbott.lona.BrowserToolbar")
 
         delegate = self
     }

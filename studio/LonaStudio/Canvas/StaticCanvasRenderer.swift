@@ -136,7 +136,7 @@ enum StaticCanvasRenderer {
                     ?? [descriptor.canvasName, descriptor.caseName, descriptor.dimensions].joined(separator: "_")
                 let url = directory.appendingPathComponent(filename).appendingPathExtension("png")
 
-                try? view.dataRepresentation(scaledBy: CGFloat(canvas.exportScale))?.write(to: url)
+                ((try? view.dataRepresentation(scaledBy: CGFloat(canvas.exportScale))?.write(to: url)) as ()??)
             }
         })
     }
@@ -161,7 +161,7 @@ enum StaticCanvasRenderer {
                 if AnimationUtils.add(overlay: overlay, to: &animationData) {
                     let jsonString = try? JSONSerialization.data(withJSONObject: animationData, options: JSONSerialization.WritingOptions.prettyPrinted)
 
-                    try? jsonString?.write(to: url)
+                    ((try? jsonString?.write(to: url)) as ()??)
                 }
             }
         })

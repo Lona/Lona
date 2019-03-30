@@ -93,7 +93,7 @@ class ComponentEditorViewController: NSSplitViewController {
 
         vc.splitView.isVertical = true
         vc.splitView.dividerStyle = .thin
-        vc.splitView.autosaveName = NSSplitView.AutosaveName(rawValue: layerEditorViewResorationIdentifier)
+        vc.splitView.autosaveName = layerEditorViewResorationIdentifier
         vc.splitView.identifier = NSUserInterfaceItemIdentifier(rawValue: layerEditorViewResorationIdentifier)
 
         vc.minimumThicknessForInlineSidebars = 120
@@ -153,7 +153,7 @@ class ComponentEditorViewController: NSSplitViewController {
 
         splitView.isVertical = false
         splitView.dividerStyle = .thin
-        splitView.autosaveName = NSSplitView.AutosaveName(rawValue: splitViewResorationIdentifier)
+        splitView.autosaveName = splitViewResorationIdentifier
         splitView.identifier = NSUserInterfaceItemIdentifier(rawValue: splitViewResorationIdentifier)
 
         self.splitView = splitView

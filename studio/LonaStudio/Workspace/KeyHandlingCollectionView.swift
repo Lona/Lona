@@ -23,7 +23,7 @@ class KeyHandlingCollectionView: NSCollectionView {
         guard let characters = event.charactersIgnoringModifiers,
             let item = selectionIndexPaths.first?.item else { return }
 
-        if characters == String(Character(UnicodeScalar(NSDeleteCharacter)!)) {
+        if characters == String(Character(UnicodeScalar(NSEvent.SpecialKey.delete.rawValue)!)) {
             onDeleteItem?(item)
         }
     }

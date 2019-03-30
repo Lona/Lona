@@ -277,7 +277,7 @@ class ParameterListView: NSOutlineView, NSOutlineViewDataSource, NSOutlineViewDe
     override func keyDown(with event: NSEvent) {
         let characters = event.charactersIgnoringModifiers!
 
-        if characters == String(Character(UnicodeScalar(NSDeleteCharacter)!)) {
+        if characters == String(Character(UnicodeScalar(NSEvent.SpecialKey.delete.rawValue)!)) {
             if selectedItem == nil { return }
 
             if let parameter = selectedItem as? CSParameter {
@@ -318,7 +318,7 @@ class ParameterListView: NSOutlineView, NSOutlineViewDataSource, NSOutlineViewDe
 
     func outlineView(_ outlineView: NSOutlineView, acceptDrop info: NSDraggingInfo, item: Any?, childIndex index: Int) -> Bool {
 
-        let sourceIndexString = info.draggingPasteboard().string(forType: NSPasteboard.PasteboardType(rawValue: "component.parameter"))
+        let sourceIndexString = info.draggingPasteboard.string(forType: NSPasteboard.PasteboardType(rawValue: "component.parameter"))
 
         if sourceIndexString != nil, let sourceIndex = Int(sourceIndexString!) {
 

@@ -712,7 +712,7 @@ class CSLayer: CSDataDeserializable, CSDataSerializable, DataNode, NSCopying {
     @discardableResult func removeFromParent() -> Int {
         if parent == nil { return -1 }
 
-        if let index = parent!.children.index(where: { $0 === self }) {
+        if let index = parent!.children.firstIndex(where: { $0 === self }) {
             parent!.children.remove(at: index)
 
             return index

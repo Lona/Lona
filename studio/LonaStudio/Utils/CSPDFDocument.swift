@@ -450,8 +450,8 @@ class CSPDFDocument {
         var fillColor: CGColor = CGColor.clear
         var strokeColor: CGColor = CGColor.clear
         var lineWidth: CGFloat = 1
-        var lineCap: NSBezierPath.LineCapStyle = NSBezierPath.LineCapStyle.buttLineCapStyle
-        var lineJoin: NSBezierPath.LineJoinStyle = NSBezierPath.LineJoinStyle.miterLineJoinStyle
+        var lineCap: NSBezierPath.LineCapStyle = NSBezierPath.LineCapStyle.butt
+        var lineJoin: NSBezierPath.LineJoinStyle = NSBezierPath.LineJoinStyle.miter
         var clippingPath: NSBezierPath?
         var transformation: AffineTransform = AffineTransform.identity
 

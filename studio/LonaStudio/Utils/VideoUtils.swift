@@ -31,7 +31,7 @@ class VideoUtils {
         let adaptor = self.pixelBufferAdaptor(for: input, size: size)
 
         writer.startWriting()
-        writer.startSession(atSourceTime: kCMTimeZero)
+        writer.startSession(atSourceTime: CMTime.zero)
 
         if adaptor.pixelBufferPool == nil {
             Swift.print("Failed to start asset writing session", url)

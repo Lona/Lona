@@ -45,7 +45,7 @@ class CSSearchField: NSSearchField, NSSearchFieldDelegate {
 
     var onKeyPress: (KeyCode) -> Void
 
-    override func controlTextDidChange(_ obj: Notification) {
+    func controlTextDidChange(_ obj: Notification) {
         onChange(stringValue)
     }
 
@@ -88,8 +88,8 @@ class CSSearchField: NSSearchField, NSSearchFieldDelegate {
         textColor = NSColor.black
         focusRingType = .none
 
-        let placeholderAttributes: [NSAttributedStringKey: Any] = [
-            NSAttributedStringKey.foregroundColor: NSColor.parse(css: "rgba(0,0,0,0.5)")!
+        let placeholderAttributes: [NSAttributedString.Key: Any] = [
+            NSAttributedString.Key.foregroundColor: NSColor.parse(css: "rgba(0,0,0,0.5)")!
         ]
         let placeholderAttributedString = NSMutableAttributedString(string: options.placeholderText, attributes: placeholderAttributes)
 

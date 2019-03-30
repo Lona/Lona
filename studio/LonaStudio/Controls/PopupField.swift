@@ -79,14 +79,14 @@ class PopupField: NSPopUpButton, CSControl {
     }
 
     func valueFor(title: String) -> String? {
-        guard let index = titles?.index(of: title),
+        guard let index = titles?.firstIndex(of: title),
             let values = values,
             values.count > index else { return nil }
         return values[index]
     }
 
     func titleFor(value: String) -> String? {
-        guard let index = values?.index(of: value),
+        guard let index = values?.firstIndex(of: value),
             let titles = titles,
             titles.count > index else { return nil }
         return titles[index]

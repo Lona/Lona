@@ -11,12 +11,12 @@ import Cocoa
 final class TextStyleRowView: NSStackView, Hoverable {
 
     // MARK: - Variable
-    fileprivate let tickView = NSImageView(image: NSImage(named: NSImage.Name(rawValue: "icon-layer-list-tick"))!)
+    fileprivate let tickView = NSImageView(image: NSImage(named: "icon-layer-list-tick")!)
     fileprivate let titleView: NSTextField
     fileprivate let attributeText: NSAttributedString
     fileprivate lazy var contractAttributeText: NSAttributedString = {
         var highlight = NSMutableAttributedString(attributedString: self.attributeText)
-        highlight.addAttributes([NSAttributedStringKey.foregroundColor: NSColor.white],
+        highlight.addAttributes([NSAttributedString.Key.foregroundColor: NSColor.white],
                                 range: NSRange(location: 0, length: self.attributeText.length))
         return highlight
     }()

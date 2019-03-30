@@ -222,8 +222,8 @@ class SketchGroup: SketchLayer {
 }
 
 struct SketchBorderOptions {
-    var lineCapStyle: NSBezierPath.LineCapStyle = NSBezierPath.LineCapStyle.buttLineCapStyle
-    var lineJoinStyle: NSBezierPath.LineJoinStyle = NSBezierPath.LineJoinStyle.miterLineJoinStyle
+    var lineCapStyle: NSBezierPath.LineCapStyle = NSBezierPath.LineCapStyle.butt
+    var lineJoinStyle: NSBezierPath.LineJoinStyle = NSBezierPath.LineJoinStyle.miter
 
     init() {}
 
@@ -305,7 +305,7 @@ extension NSBezierPath {
             let type = path.element(at: i, associatedPoints: &points)
 
             switch type {
-            case .moveToBezierPathElement:
+            case .moveTo:
                 let point = CurvePoint(
                     point: points[0],
                     curveFrom: nil,
@@ -315,7 +315,7 @@ extension NSBezierPath {
                 )
 
                 curvePoints.append(point)
-            case .lineToBezierPathElement:
+            case .lineTo:
                 let point = CurvePoint(
                     point: points[0],
                     curveFrom: nil,
@@ -325,7 +325,7 @@ extension NSBezierPath {
                 )
 
                 curvePoints.append(point)
-            case .curveToBezierPathElement:
+            case .curveTo:
                 if var last = curvePoints.last {
                     last.curveFrom = points[0]
                     last.curveMode = 2
@@ -341,7 +341,7 @@ extension NSBezierPath {
                 )
 
                 curvePoints.append(point)
-            case .closePathBezierPathElement:
+            case .closePath:
                 isClosed = true
 
                 // Attempt to consolidate
@@ -356,6 +356,8 @@ extension NSBezierPath {
                 }
 
                 break loop
+            @unknown default:
+                print("Unknown type")
             }
 
             i += 1

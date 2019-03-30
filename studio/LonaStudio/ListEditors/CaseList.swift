@@ -46,7 +46,7 @@ class CaseList {
             ListEditor.Option.onRemoveElement({ item in
                 guard let editor = self.editor else { return }
 
-                if let index = editor.list.index(where: { $0 === item }) {
+                if let index = editor.list.firstIndex(where: { $0 === item }) {
                     editor.list.remove(at: index)
                 }
 

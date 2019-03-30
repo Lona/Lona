@@ -165,26 +165,16 @@ enum LonaNode {
         return Bundle.main.path(forResource: "node", ofType: "")
     }
 
-    // most of the following is taken from https://github.com/xi-editor/xi-mac/blob/master/Sources/XiEditor/RPCSending.swift#L175-L201
     private static func recvHandler(_ data: Data, _ recvBuf: inout Data, _ onData: ((Data) -> Void)? = nil) {
         if data.count == 0 {
             return
         }
-        let scanStart = recvBuf.count
-        recvBuf.append(data)
-        let recvBufLen = recvBuf.count
 
-        recvBuf.withUnsafeMutableBytes { (recvBufBytes: UnsafeMutablePointer<UInt8>) -> Void in
-            var i = scanStart
-            for j in scanStart..<recvBufLen {
-                // TODO: using memchr would probably be faster
-                if recvBufBytes[j] == UInt8(ascii: "\n") {
-                    let bufferPointer = UnsafeBufferPointer(start: recvBufBytes.advanced(by: i), count: j + 1 - i)
-                    let dataPacket = Data(bufferPointer)
-                    onData?(dataPacket)
-                    i = j + 1
-                }
-            }
+        recvBuf.append(data)
+
+        let packets = data.split(separator: UInt8(ascii: "\n"))
+        packets.forEach { packet in
+            onData?(packet)
         }
     }
 }

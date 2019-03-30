@@ -20,6 +20,7 @@ extension CALayer {
         case NSRectEdge.maxY: border.frame = CGRect(x: 0, y: frame.height - thickness, width: frame.width, height: thickness)
         case NSRectEdge.minX: border.frame = CGRect(x: 0, y: 0, width: thickness, height: frame.height)
         case NSRectEdge.maxX: border.frame = CGRect(x: frame.width - thickness, y: 0, width: thickness, height: frame.height)
+        @unknown default: print("Unknown edge")
         }
 
         border.backgroundColor = color
