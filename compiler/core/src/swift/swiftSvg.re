@@ -14,7 +14,7 @@ let lineCapValue = (config: Config.t, value) => {
   let value = Svg.ToString.strokeLineCap(value);
   switch (config.options.swift.framework) {
   | SwiftOptions.UIKit => value
-  | SwiftOptions.AppKit => value ++ "LineCapStyle"
+  | SwiftOptions.AppKit => value
   };
 };
 
