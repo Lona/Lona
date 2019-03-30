@@ -12,7 +12,7 @@ import AppKit
 enum DropAcceptanceCategory<Element> {
     case into(parent: Element, at: Int?)
     case intoContainer(at: Int?)
-    case intoDescendant()
+    case intoDescendant
 }
 
 extension NSOutlineView {
@@ -38,7 +38,7 @@ extension NSOutlineView {
         }
 
         if isDescendant(relativeTo, of: item) {
-            return DropAcceptanceCategory.intoDescendant()
+            return DropAcceptanceCategory.intoDescendant
         }
 
         return DropAcceptanceCategory.into(parent: relativeTo, at: targetIndex)

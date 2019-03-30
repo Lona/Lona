@@ -72,7 +72,7 @@ struct CSFunction {
     enum ParameterType {
         case variable(type: CSType, access: CSAccess)
         case keyword(type: CSType) // Such as a comparator
-        case declaration()
+        case declaration
     }
 
     struct Parameter {
@@ -307,7 +307,7 @@ let CSIfExistsFunction = CSFunction(
     name: "If let",
     description: "Assign an optional value to a new variable",
     parameters: [
-        CSFunction.Parameter(label: nil, name: "variable", type: .declaration()),
+        CSFunction.Parameter(label: nil, name: "variable", type: .declaration),
         CSFunction.Parameter(label: "equal", name: "value", type: .variable(type: CSGenericTypeA, access: .read))
         ],
     hasBody: true,
@@ -350,7 +350,7 @@ let CSDefineFunction = CSFunction(
     name: "Let",
     description: "Declare a variable",
     parameters: [
-        CSFunction.Parameter(label: nil, name: "variable", type: .declaration()),
+        CSFunction.Parameter(label: nil, name: "variable", type: .declaration),
         CSFunction.Parameter(label: "equal", name: "value", type: .variable(type: CSGenericTypeA, access: .read))
         ],
     hasBody: false,
