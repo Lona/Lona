@@ -11,16 +11,16 @@ import Cocoa
 
 let EDITABLE_TEXT_FIELD_TAG: Int = 10
 
-let editableFontAttributes: [NSAttributedStringKey: Any] = [
-    NSAttributedStringKey.font: NSFont.systemFont(ofSize: 12),
-    NSAttributedStringKey.underlineStyle: NSUnderlineStyle.styleSingle.rawValue | NSUnderlineStyle.patternDot.rawValue,
-    NSAttributedStringKey.foregroundColor: NSColor.parse(css: "#4A90E2")!
+let editableFontAttributes: [NSAttributedString.Key: Any] = [
+    NSAttributedString.Key.font: NSFont.systemFont(ofSize: 12),
+    NSAttributedString.Key.underlineStyle: NSUnderlineStyle.single.rawValue | NSUnderlineStyle.patternDot.rawValue,
+    NSAttributedString.Key.foregroundColor: NSColor.parse(css: "#4A90E2")!
 ]
 
-let disabledFontAttributes: [NSAttributedStringKey: Any] = [
-    NSAttributedStringKey.font: NSFont.systemFont(ofSize: 12),
-    NSAttributedStringKey.underlineStyle: NSUnderlineStyle.styleSingle.rawValue | NSUnderlineStyle.patternDot.rawValue,
-    NSAttributedStringKey.foregroundColor: NSColor.gray
+let disabledFontAttributes: [NSAttributedString.Key: Any] = [
+    NSAttributedString.Key.font: NSFont.systemFont(ofSize: 12),
+    NSAttributedString.Key.underlineStyle: NSUnderlineStyle.single.rawValue | NSUnderlineStyle.patternDot.rawValue,
+    NSAttributedString.Key.foregroundColor: NSColor.gray
 ]
 
 class CSStatementView: NSTableCellView {
@@ -53,7 +53,7 @@ class CSStatementView: NSTableCellView {
             let rightButton = Button(frame: NSRect(x: 0, y: 0, width: 17, height: 17))
             rightButton.translatesAutoresizingMaskIntoConstraints = false
             rightButton.bezelStyle = .inline
-            rightButton.image = NSImage.init(named: NSImage.Name.addTemplate)!
+            rightButton.image = NSImage.init(named: NSImage.addTemplateName)!
             rightButton.imageScaling = .scaleProportionallyDown
             rightButton.onPress = { [unowned self] in self.onAddChild() }
 
@@ -82,7 +82,7 @@ class CSStatementView: NSTableCellView {
             field.usesSingleLineMode = true
 
             let font = NSFont.systemFont(ofSize: NSFont.systemFontSize)
-            let attributedString = NSAttributedString(string: string, attributes: [NSAttributedStringKey.font: font])
+            let attributedString = NSAttributedString(string: string, attributes: [NSAttributedString.Key.font: font])
             field.frame.size = attributedString.measure(width: 1000)
             //                name.frame.size.width += 10
 

@@ -29,6 +29,10 @@ class TextStylePreviewCollectionView: NSView {
     // MARK: - Lifecycle
 
     override init(frame frameRect: NSRect) {
+        self.onSelectTextStyle = nil
+        self.onMoveTextStyle = nil
+        self.onDeleteTextStyle = nil
+
         super.init(frame: frameRect)
 
         setUpViews()
@@ -182,7 +186,7 @@ extension TextStylePreviewCollectionView: NSCollectionViewDelegate {
         acceptDrop draggingInfo: NSDraggingInfo,
         indexPath: IndexPath,
         dropOperation: NSCollectionView.DropOperation) -> Bool {
-        guard let data = draggingInfo.draggingPasteboard().data(forType: TEXT_STYLE_PASTEBOARD_TYPE),
+        guard let data = draggingInfo.draggingPasteboard.data(forType: TEXT_STYLE_PASTEBOARD_TYPE),
             let sourceIndexPath = CSData.from(data: data)?.array?.first?.number else {
                 Swift.print("Can't move text style item - bad pasteboard data")
                 return false
@@ -251,6 +255,10 @@ public class TextStylePreviewCollection: NSBox {
     // MARK: Lifecycle
 
     public init() {
+        self.onSelectTextStyle = nil
+        self.onMoveTextStyle = nil
+        self.onDeleteTextStyle = nil
+
         super.init(frame: .zero)
 
         setUpViews()
@@ -313,7 +321,7 @@ public class TextStylePreviewCollection: NSBox {
     private func update(withoutReloading: Bool = false) {
         collectionView.items = textStyles ?? []
 
-        if let index = textStyles?.index(where: { $0.id == selectedTextStyleId }) {
+        if let index = textStyles?.firstIndex(where: { $0.id == selectedTextStyleId }) {
             collectionView.collectionView.selectionIndexPaths = [IndexPath(item: index, section: 0)]
         }
     }

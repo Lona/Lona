@@ -63,7 +63,7 @@ private class IconLonaFileVector: NSBox {
     outlineStroke.setStroke()
     outline.fill()
     outline.lineWidth = 1 * scale
-    outline.lineCapStyle = .buttLineCapStyle
+    outline.lineCapStyle = .butt
     outline.stroke()
     let highlight = NSBezierPath()
     highlight.move(to: transform(point: CGPoint(x: 5.5, y: 20.5)))
@@ -72,7 +72,7 @@ private class IconLonaFileVector: NSBox {
     #colorLiteral(red: 1, green: 1, blue: 1, alpha: 0.2).setStroke()
     highlight.fill()
     highlight.lineWidth = 1 * scale
-    highlight.lineCapStyle = .squareLineCapStyle
+    highlight.lineCapStyle = .square
     highlight.stroke()
     let lonaLogo = NSBezierPath()
     lonaLogo.move(to: transform(point: CGPoint(x: 14.5065009, y: 14.1242399)))
@@ -335,7 +335,7 @@ private class IconLonaFileVector: NSBox {
     foldStroke.setStroke()
     fold.fill()
     fold.lineWidth = 1 * scale
-    fold.lineCapStyle = .buttLineCapStyle
+    fold.lineCapStyle = .butt
     fold.stroke()
   }
 }

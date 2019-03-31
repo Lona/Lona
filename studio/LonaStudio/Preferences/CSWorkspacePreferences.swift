@@ -42,7 +42,7 @@ class CSWorkspacePreferences: CSPreferencesFile {
             let url = URL(string: string)?.absoluteURLForWorkspaceURL() {
             return url
         }
-        return Bundle.main.urlForImageResource(NSImage.Name(rawValue: "default-workspace-thumbnail"))!
+        return Bundle.main.urlForImageResource("default-workspace-thumbnail")!
     }
 
     static var colorsFilePathValue: CSValue {

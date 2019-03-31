@@ -81,7 +81,7 @@ class ComponentPreviewCollectionView: NSView {
             forItemWithIdentifier: ITEM_IDENTIFIER)
         collectionView.register(
             ReadmePreview.self,
-            forSupplementaryViewOfKind: .sectionFooter,
+            forSupplementaryViewOfKind: NSCollectionView.elementKindSectionFooter,
             withIdentifier: README_ITEM_IDENTIFIER)
         collectionView.isSelectable = true
 
@@ -158,7 +158,7 @@ extension ComponentPreviewCollectionView: NSCollectionViewDataSource {
     }
 
     func collectionView(_ collectionView: NSCollectionView, viewForSupplementaryElementOfKind kind: NSCollectionView.SupplementaryElementKind, at indexPath: IndexPath) -> NSView {
-        if kind == .sectionFooter && indexPath.item == 0 {
+        if kind == NSCollectionView.elementKindSectionFooter && indexPath.item == 0 {
             let item = collectionView.makeSupplementaryView(ofKind: kind, withIdentifier: README_ITEM_IDENTIFIER, for: indexPath) as! ReadmePreview
 
             item.onReadmeHeightChanged = onReadmeHeightChanged

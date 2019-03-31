@@ -44,12 +44,12 @@ class TextField: NSTextField, NSTextFieldDelegate, NSControlTextEditingDelegate,
         cell?.isScrollable = true
     }
 
-    override func controlTextDidChange(_ obj: Notification) {
+    func controlTextDidChange(_ obj: Notification) {
         onChange(value)
         onChangeData(data)
     }
 
-    override func controlTextDidEndEditing(_ obj: Notification) {
+    func controlTextDidEndEditing(_ obj: Notification) {
         onSubmit(value)
         onSubmitData(data)
     }

@@ -191,7 +191,7 @@ class LonaPlugins {
                     continue outer
                 }
 
-                let isSymlink = try? file.resourceValues(forKeys: [URLResourceKey.isSymbolicLinkKey]).isSymbolicLink
+                let isSymlink = ((try? file.resourceValues(forKeys: [URLResourceKey.isSymbolicLinkKey]).isSymbolicLink) as Bool??)
 
                 if isSymlink == true, !visited.contains(file) {
                     stack.append(file.resolvingSymlinksInPath())

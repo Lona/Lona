@@ -75,6 +75,8 @@ extension NSStackView {
                 view.heightAnchor.constraint(equalTo: self.heightAnchor).isActive = true
             case .vertical:
                 view.widthAnchor.constraint(equalTo: self.widthAnchor).isActive = true
+            @unknown default:
+                print("unknown orientation")
             }
         }
     }

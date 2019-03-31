@@ -99,7 +99,7 @@ class ImageField: NSImageView, CSControl {
     }
 
     override func performDragOperation(_ sender: NSDraggingInfo) -> Bool {
-        if let board = sender.draggingPasteboard().propertyList(forType: NSPasteboard.PasteboardType(rawValue: "NSFilenamesPboardType")) as? NSArray,
+        if let board = sender.draggingPasteboard.propertyList(forType: NSPasteboard.PasteboardType(rawValue: "NSFilenamesPboardType")) as? NSArray,
             let imagePath = board[0] as? String {
 
             droppedFilePath = "file://" + imagePath
@@ -113,7 +113,7 @@ class ImageField: NSImageView, CSControl {
     }
 
     func checkExtension(drag: NSDraggingInfo) -> Bool {
-        if let board = drag.draggingPasteboard().propertyList(forType: NSPasteboard.PasteboardType(rawValue: "NSFilenamesPboardType")) as? NSArray,
+        if let board = drag.draggingPasteboard.propertyList(forType: NSPasteboard.PasteboardType(rawValue: "NSFilenamesPboardType")) as? NSArray,
             let path = board[0] as? String {
             let url = NSURL(fileURLWithPath: path)
             if let fileExtension = url.pathExtension?.lowercased() {

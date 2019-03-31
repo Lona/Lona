@@ -130,7 +130,7 @@ class TextStyleEditorViewController: NSViewController {
             }
 
             self.addTextStyleSheet.onSubmit = {
-                self.dismissViewController(self.addTextStyleViewController)
+                self.dismiss(self.addTextStyleViewController)
 
                 var updated = self.textStyles
                 updated.append(textStyle)
@@ -139,10 +139,10 @@ class TextStyleEditorViewController: NSViewController {
             }
 
             self.addTextStyleSheet.onCancel = {
-                self.dismissViewController(self.addTextStyleViewController)
+                self.dismiss(self.addTextStyleViewController)
             }
 
-            self.presentViewControllerAsSheet(self.addTextStyleViewController)
+            self.presentAsSheet(self.addTextStyleViewController)
         }
 
         textStyleBrowser.onDeleteTextStyle = { textStyle in

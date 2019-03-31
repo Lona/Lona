@@ -22,7 +22,7 @@ enum LonaJS {
                 Swift.print("Unknown JS exception")
                 return
             }
-            Swift.print("JS exception", exception.toString())
+            Swift.print("JS exception", exception.toString() ?? "")
         }
 
         // The library assigns its export, `svgModel`, to `this`

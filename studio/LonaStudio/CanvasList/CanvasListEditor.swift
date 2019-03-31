@@ -116,7 +116,7 @@ class CanvasListEditor: NSOutlineView, NSOutlineViewDataSource, NSOutlineViewDel
 
         // Old value
         let oldCanvas = canvas.copy() as! Canvas
-        let index = self.canvasList.index(where: { $0 === canvas })!
+        let index = self.canvasList.firstIndex(where: { $0 === canvas })!
         let hashKey = tableColumn!.identifier.rawValue + index.description
         let undoFunc = {
             self.canvasList[index] = oldCanvas
@@ -242,7 +242,7 @@ class CanvasListEditor: NSOutlineView, NSOutlineViewDataSource, NSOutlineViewDel
     override func keyDown(with event: NSEvent) {
         let characters = event.charactersIgnoringModifiers!
 
-        if characters == String(Character(UnicodeScalar(NSDeleteCharacter)!)) {
+        if characters == String(Character(UnicodeScalar(NSEvent.SpecialKey.delete.rawValue)!)) {
             if selectedItem == nil { return }
 
             canvasList.remove(at: selectedRow)
@@ -275,7 +275,7 @@ class CanvasListEditor: NSOutlineView, NSOutlineViewDataSource, NSOutlineViewDel
 
     func outlineView(_ outlineView: NSOutlineView, acceptDrop info: NSDraggingInfo, item: Any?, childIndex index: Int) -> Bool {
 
-        let sourceIndexString = info.draggingPasteboard().string(forType: NSPasteboard.PasteboardType(rawValue: "component.canvas"))
+        let sourceIndexString = info.draggingPasteboard.string(forType: NSPasteboard.PasteboardType(rawValue: "component.canvas"))
 
         if sourceIndexString != nil, let sourceIndex = Int(sourceIndexString!) {
 

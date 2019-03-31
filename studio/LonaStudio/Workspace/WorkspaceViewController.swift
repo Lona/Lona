@@ -326,7 +326,7 @@ class WorkspaceViewController: NSSplitViewController {
 
     private func setUpViews() {
         splitView.dividerStyle = .thin
-        splitView.autosaveName = NSSplitView.AutosaveName(rawValue: splitViewResorationIdentifier)
+        splitView.autosaveName = splitViewResorationIdentifier
         splitView.identifier = NSUserInterfaceItemIdentifier(rawValue: splitViewResorationIdentifier)
 
         fileNavigator.onCreateFile = { path, options in
@@ -504,7 +504,7 @@ class WorkspaceViewController: NSSplitViewController {
                 case (.color(let oldColor), .color(let newColor), .colors(let colors)):
 
                     // Perform update using indexes in case the id was changed
-                    guard let index = colors.index(where: { $0.id == oldColor.id }) else { return }
+                    guard let index = colors.firstIndex(where: { $0.id == oldColor.id }) else { return }
 
                     let updated = colors.enumerated().map { offset, element in
                         return index == offset ? newColor : element
@@ -529,7 +529,7 @@ class WorkspaceViewController: NSSplitViewController {
                 case (.textStyle(let oldTextStyle), .textStyle(let newTextStyle), .textStyles(let textStyles)):
 
                     // Perform update using indexes in case the id was changed
-                    guard let index = textStyles.styles.index(where: { $0.id == oldTextStyle.id }) else { return }
+                    guard let index = textStyles.styles.firstIndex(where: { $0.id == oldTextStyle.id }) else { return }
 
                     let updated = JSONDocument.TextStylesFile(
                         styles: textStyles.styles.enumerated().map { offset, element in

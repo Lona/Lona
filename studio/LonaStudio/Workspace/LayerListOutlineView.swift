@@ -119,7 +119,7 @@ final class LayerListOutlineView: NSOutlineView, NSTextFieldDelegate {
         }
     }
 
-    override func controlTextDidEndEditing(_ obj: Notification) {
+    func controlTextDidEndEditing(_ obj: Notification) {
         selectedLayer?.name = (obj.object as! NSTextField).stringValue
         render()
     }
@@ -361,7 +361,7 @@ extension LayerListOutlineView {
     override func keyDown(with event: NSEvent) {
         let characters = event.charactersIgnoringModifiers!
 
-        if characters == String(Character(UnicodeScalar(NSDeleteCharacter)!)) {
+        if characters == String(Character(UnicodeScalar(NSEvent.SpecialKey.delete.rawValue)!)) {
             guard let targetLayer = selectedLayer else { return }
             if targetLayer === dataRoot { return }
 
@@ -488,7 +488,7 @@ extension LayerListOutlineView: NSOutlineViewDelegate, NSOutlineViewDataSource {
     }
 
     func outlineView(_ outlineView: NSOutlineView, validateDrop info: NSDraggingInfo, proposedItem item: Any?, proposedChildIndex index: Int) -> NSDragOperation {
-        let sourceIndexString = info.draggingPasteboard().string(forType: NSPasteboard.PasteboardType(rawValue: "component.layer"))
+        let sourceIndexString = info.draggingPasteboard.string(forType: NSPasteboard.PasteboardType(rawValue: "component.layer"))
 
         if sourceIndexString != nil, let sourceIndex = Int(sourceIndexString!), let targetLayer = item as? CSLayer? {
 
@@ -516,7 +516,7 @@ extension LayerListOutlineView: NSOutlineViewDelegate, NSOutlineViewDataSource {
     }
 
     func outlineView(_ outlineView: NSOutlineView, acceptDrop info: NSDraggingInfo, item: Any?, childIndex index: Int) -> Bool {
-        let sourceIndexString = info.draggingPasteboard().string(forType: NSPasteboard.PasteboardType(rawValue: "component.layer"))
+        let sourceIndexString = info.draggingPasteboard.string(forType: NSPasteboard.PasteboardType(rawValue: "component.layer"))
 
         if sourceIndexString != nil, let sourceIndex = Int(sourceIndexString!) {
             //            print( "accept drop", item, "index", index, "drag index", sourceIndex)
@@ -527,7 +527,7 @@ extension LayerListOutlineView: NSOutlineViewDelegate, NSOutlineViewDataSource {
                 self.onChange?()
             }
             let oldParent = sourceLayer.parent!
-            let oldIndex = oldParent.children.index(where: { (layer) -> Bool in
+            let oldIndex = oldParent.children.firstIndex(where: { (layer) -> Bool in
                 return layer === sourceLayer
             })!
 

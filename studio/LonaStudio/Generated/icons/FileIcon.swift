@@ -66,14 +66,14 @@ private class IconTextFileVector: NSBox {
     outlineStroke.setStroke()
     outline.fill()
     outline.lineWidth = 1 * scale
-    outline.lineCapStyle = .buttLineCapStyle
+    outline.lineCapStyle = .butt
     outline.stroke()
     let highlight = NSBezierPath()
     highlight.move(to: transform(point: CGPoint(x: 5.5, y: 20.5)))
     highlight.line(to: transform(point: CGPoint(x: 17.5, y: 20.5)))
     #colorLiteral(red: 1, green: 1, blue: 1, alpha: 0.2).setStroke()
     highlight.lineWidth = 1 * scale
-    highlight.lineCapStyle = .squareLineCapStyle
+    highlight.lineCapStyle = .square
     highlight.stroke()
     let fold = NSBezierPath()
     fold.move(to: transform(point: CGPoint(x: 17.0857864, y: 8.5)))
@@ -105,35 +105,35 @@ private class IconTextFileVector: NSBox {
     foldStroke.setStroke()
     fold.fill()
     fold.lineWidth = 1 * scale
-    fold.lineCapStyle = .buttLineCapStyle
+    fold.lineCapStyle = .butt
     fold.stroke()
     let line1 = NSBezierPath()
     line1.move(to: transform(point: CGPoint(x: 7.5, y: 11.5)))
     line1.line(to: transform(point: CGPoint(x: 15.5, y: 11.5)))
     line1Stroke.setStroke()
     line1.lineWidth = 1 * scale
-    line1.lineCapStyle = .squareLineCapStyle
+    line1.lineCapStyle = .square
     line1.stroke()
     let line2 = NSBezierPath()
     line2.move(to: transform(point: CGPoint(x: 7.5, y: 13.5)))
     line2.line(to: transform(point: CGPoint(x: 15.5, y: 13.5)))
     line2Stroke.setStroke()
     line2.lineWidth = 1 * scale
-    line2.lineCapStyle = .squareLineCapStyle
+    line2.lineCapStyle = .square
     line2.stroke()
     let line3 = NSBezierPath()
     line3.move(to: transform(point: CGPoint(x: 7.5, y: 15.5)))
     line3.line(to: transform(point: CGPoint(x: 15.5, y: 15.5)))
     line3Stroke.setStroke()
     line3.lineWidth = 1 * scale
-    line3.lineCapStyle = .squareLineCapStyle
+    line3.lineCapStyle = .square
     line3.stroke()
     let line4 = NSBezierPath()
     line4.move(to: transform(point: CGPoint(x: 7.5, y: 17.5)))
     line4.line(to: transform(point: CGPoint(x: 15.5, y: 17.5)))
     line4Stroke.setStroke()
     line4.lineWidth = 1 * scale
-    line4.lineCapStyle = .squareLineCapStyle
+    line4.lineCapStyle = .square
     line4.stroke()
   }
 }

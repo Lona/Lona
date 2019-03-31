@@ -74,13 +74,13 @@ class NumberField: NSTextField, NSTextFieldDelegate, NSControlTextEditingDelegat
         return false
     }
 
-    override func controlTextDidChange(_ obj: Notification) {
+    func controlTextDidChange(_ obj: Notification) {
         // TODO: https://stackoverflow.com/questions/6337464/nsnumberformatter-doesnt-allow-typing-decimal-numbers
         onChange(value)
         onChangeData(CSData.Number(value))
     }
 
-    override func controlTextDidEndEditing(_ obj: Notification) {
+    func controlTextDidEndEditing(_ obj: Notification) {
         onSubmit(value)
         onSubmitData(data)
     }

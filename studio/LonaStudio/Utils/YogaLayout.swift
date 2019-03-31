@@ -49,6 +49,8 @@ extension YGJustify {
             return "space-around"
         case .spaceBetween:
             return "space-between"
+        @unknown default:
+            return "flex-start"
         }
     }
 }

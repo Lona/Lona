@@ -52,15 +52,15 @@ class CustomParametersEditorView: NSBox {
 
         let viewController = NSViewController(view: container)
 
-        parentViewController.presentViewControllerAsSheet(viewController)
+        parentViewController.presentAsSheet(viewController)
 
         container.onSubmit = {
-            parentViewController.dismissViewController(viewController)
+            parentViewController.dismiss(viewController)
             onCompletion(sheetView.currentValues)
         }
 
         container.onCancel = {
-            parentViewController.dismissViewController(viewController)
+            parentViewController.dismiss(viewController)
             onCompletion(nil)
         }
     }

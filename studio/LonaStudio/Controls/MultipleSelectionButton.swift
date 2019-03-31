@@ -97,7 +97,7 @@ class MultipleSelectionButton: NSButton, NSPopoverDelegate {
         }
 
         func onRemoveElement(_ item: ArrayItem) {
-            guard let editor = self.editor, let index = editor.list.index(where: { $0 === item }) else { return }
+            guard let editor = self.editor, let index = editor.list.firstIndex(where: { $0 === item }) else { return }
 
             editor.list.remove(at: index)
             editor.reloadData()

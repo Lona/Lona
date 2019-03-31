@@ -16,25 +16,27 @@ extension NSBezierPath.LineCapStyle: Codable {
 
         switch value {
         case "butt":
-            self = .buttLineCapStyle
+            self = .butt
         case "round":
-            self = .roundLineCapStyle
+            self = .round
         case "square":
-            self = .squareLineCapStyle
+            self = .square
         default:
-            self = .buttLineCapStyle
+            self = .butt
         }
     }
 
     public func encode(to encoder: Encoder) throws {
         var container = encoder.singleValueContainer()
         switch self {
-        case .buttLineCapStyle:
+        case .butt:
             try container.encode("butt")
-        case .roundLineCapStyle:
+        case .round:
             try container.encode("round")
-        case .squareLineCapStyle:
+        case .square:
             try container.encode("square")
+        @unknown default:
+            print("Unknown line cap style")
         }
     }
 }

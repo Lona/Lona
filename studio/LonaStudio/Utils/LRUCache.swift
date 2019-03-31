@@ -47,7 +47,7 @@ public class LRUCache<Key: Hashable, Item> {
     }
 
     private func refresh(entry: Key) {
-        guard let index = lru.index(of: entry) else { return }
+        guard let index = lru.firstIndex(of: entry) else { return }
         lru.remove(at: index)
         lru.insert(entry, at: 0)
     }

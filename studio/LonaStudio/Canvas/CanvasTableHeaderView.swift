@@ -107,7 +107,7 @@ class CanvasTableHeaderView: NSTableHeaderView {
 
         let characters = event.charactersIgnoringModifiers!
 
-        if characters == String(Character(UnicodeScalar(NSDeleteCharacter)!)) {
+        if characters == String(Character(UnicodeScalar(NSEvent.SpecialKey.delete.rawValue)!)) {
             onDeleteItem?(selectedItem)
         }
     }
@@ -178,7 +178,7 @@ class CanvasTableHeaderView: NSTableHeaderView {
     private func determineProposedDropIndex(_ sender: NSDraggingInfo) -> Int? {
         guard let tableView = tableView else { return nil }
 
-        let point = convert(sender.draggingLocation(), from: nil)
+        let point = convert(sender.draggingLocation, from: nil)
 
         for i in 0..<tableView.numberOfColumns - 1 {
             let rect = headerRect(ofColumn: i)
@@ -216,7 +216,7 @@ class CanvasTableHeaderView: NSTableHeaderView {
     }
 
     override func performDragOperation(_ sender: NSDraggingInfo) -> Bool {
-        let pasteboard = sender.draggingPasteboard()
+        let pasteboard = sender.draggingPasteboard
 
         guard
             let value = pasteboard.string(forType: NSPasteboard.PasteboardType.string),
