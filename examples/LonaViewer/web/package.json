@@ -12,7 +12,9 @@
     "start": "react-scripts start",
     "build": "react-scripts build",
     "test": "react-scripts test",
-    "eject": "react-scripts eject"
+    "eject": "react-scripts eject",
+    "cypress:run": "cypress run",
+    "cypress:visual": "server-test start http-get://localhost:3000/ cypress:run"
   },
   "eslintConfig": {
     "extends": "react-app"
@@ -22,5 +24,10 @@
     "not dead",
     "not ie <= 11",
     "not op_mini all"
-  ]
+  ],
+  "devDependencies": {
+    "@applitools/eyes-cypress": "^3.6.1",
+    "cypress": "^3.2.0",
+    "start-server-and-test": "^1.7.12"
+  }
 }
