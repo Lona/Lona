@@ -20,7 +20,7 @@ function flatten(arrays) {
 function prefixSum(array, n, spacing = 0) {
   let sum = 0
 
-  for (let i = 0; i < n; i++) {
+  for (let i = 0; i < n; i += 1) {
     sum += array[i] + spacing
   }
 
@@ -70,8 +70,28 @@ function createComponentSymbols(component, measured, devicePresetList) {
   )
 }
 
+const styles = StyleSheet.create({
+  artboard: {
+    backgroundColor: '#FAFAFA',
+  },
+  header: {
+    padding: 24,
+    backgroundColor: 'white',
+    marginBottom: 16,
+  },
+  componentLabel: {
+    fontSize: 10,
+    fontWeight: 'bold',
+    color: '#A4A4A4',
+    marginBottom: 4,
+  },
+  componentTitle: {
+    fontSize: 18,
+  },
+})
+
 function createComponentArtboard(component, measured) {
-  const { name, compiled } = component
+  const { name } = component
   const { rowHeights, columnWidths } = measured
 
   const componentName = path.basename(name)
@@ -114,35 +134,9 @@ module.exports = function createComponentLayerCollection(
   component,
   devicePresetList
 ) {
-  const {
-    name,
-    compiled,
-    meta: { examples, devices },
-  } = component
-
   const measured = measureComponent(component, devicePresetList)
   const artboard = createComponentArtboard(component, measured)
   const symbols = createComponentSymbols(component, measured, devicePresetList)
 
   return { artboard, symbols }
 }
-
-const styles = StyleSheet.create({
-  artboard: {
-    backgroundColor: '#FAFAFA',
-  },
-  header: {
-    padding: 24,
-    backgroundColor: 'white',
-    marginBottom: 16,
-  },
-  componentLabel: {
-    fontSize: 10,
-    fontWeight: 'bold',
-    color: '#A4A4A4',
-    marginBottom: 4,
-  },
-  componentTitle: {
-    fontSize: 18,
-  },
-})

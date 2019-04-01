@@ -12,7 +12,7 @@ Not without a lot of effort. It would be hard to use without being a contributor
 
 ### Is Lona ready for hobby use?
 
-Absolutely! While lacking features, Lona Studio is totally usable, and the generated Swift and JS are working and correct for most Lona Studio features (albiet a little ugly in some cases). If you try it and find the lack of features or documentation frustrating, better wait a little longer though!
+Absolutely! While lacking features, Lona Studio is totally usable, and the generated Swift and JS are working and correct for most Lona Studio features (albeit a little ugly in some cases). If you try it and find the lack of features or documentation frustrating, better wait a little longer though!
 
 ### Why a native Mac app rather than Electron?
 

@@ -14,8 +14,8 @@ function measureComponentElements(component, devicePresetList) {
     meta: { examples, devices },
   } = component
 
-  return examples.map((example, exampleIndex) => {
-    return devices.map((device, deviceIndex) => {
+  return examples.map(example => {
+    return devices.map(device => {
       return measureElement(
         React.createElement(
           View,
@@ -37,8 +37,8 @@ function measureColumnWidths(elements) {
   const columnWidths = []
   const columnCount = Math.max(...elements.map(frames => frames.length))
 
-  for (let j = 0; j < elements.length; j++) {
-    for (let i = 0; i < columnCount; i++) {
+  for (let j = 0; j < elements.length; j += 1) {
+    for (let i = 0; i < columnCount; i += 1) {
       columnWidths[i] = Math.max(columnWidths[i] || 0, elements[j][i].width)
     }
   }

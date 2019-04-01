@@ -1,17 +1,17 @@
-const { resolve, join } = require('path');
-const CopyWebpackPlugin = require('copy-webpack-plugin');
-const HtmlWebpackPlugin = require('html-webpack-plugin');
-const HtmlWebpackInlineSourcePlugin = require('html-webpack-inline-source-plugin');
+const { resolve, join } = require('path')
+const CopyWebpackPlugin = require('copy-webpack-plugin')
+const HtmlWebpackPlugin = require('html-webpack-plugin')
+const HtmlWebpackInlineSourcePlugin = require('html-webpack-inline-source-plugin')
 
 const paths = {
   build: resolve(__dirname, 'build'),
   src: resolve(__dirname, 'src'),
   static: resolve(__dirname, 'static'),
-};
+}
 
 const copyPlugin = new CopyWebpackPlugin([
   { from: paths.static, to: paths.build },
-]);
+])
 
 module.exports = {
   entry: './src/index.jsx',
@@ -67,4 +67,4 @@ module.exports = {
     }),
     new HtmlWebpackInlineSourcePlugin(),
   ],
-};
+}

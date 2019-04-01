@@ -58,12 +58,11 @@ The Lona Compiler converts .component files to UI code for various targets.
 Currently, these targets are supported:
 
 - iOS / macOS (Swift)
-- React DOM / React Native (JavaScript)
+- React DOM / React Native / React Sketchapp (JavaScript)
 
 Support is planned for:
 
 - Android (Kotlin)
-- React Sketchapp (JavaScript)
 
 The target with the most features currently is Swift. However, it's still fairly rough. If you want to try it out, check out the [installation instructions](./compiler/core/README.md).
 

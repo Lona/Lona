@@ -1,0 +1,9 @@
+/compiler/core
+/examples
+/**/node_modules
+/compiler/react-component-analyzer/examples
+/studio/Carthage
+/studio/LonaStudio
+/studio/Pods
+/studio/workspace
+/studio/embedded-sites/markdown-editor/build

@@ -8,10 +8,10 @@ The component format is defined here: [Component File Format](./component.md)
 
 Lona additionally consumes a variety of other file formats for building design systems. Each of these is currently stored in a canonical location relative to the workspace.
 
-|Type|Name|
-|---|---|
-|[Colors](./colors.md)|`colors.json`|
-|[Text Styles](./text-styles.md)|`textStyles.json`|
-|[Gradients](./gradients.md)|`gradients.json`|
-|[Shadows](./shadows.md)|`shadows.json`|
-|Types|`types.json`|
+| Type                            | Name              |
+| ------------------------------- | ----------------- |
+| [Colors](./colors.md)           | `colors.json`     |
+| [Text Styles](./text-styles.md) | `textStyles.json` |
+| [Gradients](./gradients.md)     | `gradients.json`  |
+| [Shadows](./shadows.md)         | `shadows.json`    |
+| Types                           | `types.json`      |

@@ -1,0 +1,60 @@
+{
+  "name": "lona",
+  "private": true,
+  "version": "0.0.0",
+  "description": "A tool for defining design systems and using them to generate cross-platform UI code, Sketch files, and other artifacts.",
+  "directories": {
+    "doc": "docs",
+    "example": "examples"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "lint": "eslint --quiet . && (cd studio && ./Pods/SwiftLint/swiftlint)",
+    "prettier:base": "prettier --write",
+    "lint-staged": "lint-staged"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/airbnb/Lona.git"
+  },
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/airbnb/Lona/issues"
+  },
+  "homepage": "https://github.com/airbnb/Lona#readme",
+  "devDependencies": {
+    "eslint": "^5.16.0",
+    "eslint-config-airbnb": "^17.1.0",
+    "eslint-config-prettier": "^4.1.0",
+    "eslint-plugin-import": "^2.16.0",
+    "eslint-plugin-jsx-a11y": "^6.2.1",
+    "eslint-plugin-prettier": "^3.0.1",
+    "eslint-plugin-react": "^7.12.4",
+    "lint-staged": "^8.1.5",
+    "pre-commit": "^1.2.2",
+    "prettier": "^1.16.4"
+  },
+  "pre-commit": [
+    "lint-staged"
+  ],
+  "lint-staged": {
+    "*.swift": [
+      "cd studio && ./Pods/SwiftLint/swiftlint"
+    ],
+    "*.jsx?": [
+      "npm run prettier:base",
+      "eslint",
+      "git add"
+    ],
+    "*.md": [
+      "npm run prettier:base",
+      "git add"
+    ]
+  },
+  "prettier": {
+    "proseWrap": "never",
+    "singleQuote": true,
+    "trailingComma": "es5",
+    "semi": false
+  }
+}
