@@ -1120,7 +1120,7 @@
 				6B0AEFB01EBF74D700F35BBF /* Sources */,
 				6B0AEFB11EBF74D700F35BBF /* Frameworks */,
 				6B0AEFB21EBF74D700F35BBF /* Resources */,
-				E55D09A4201468E2000B193E /* ShellScript */,
+				E55D09A4201468E2000B193E /* Run SwiftLint */,
 				D6D720124C85F4014A8A455D /* [CP] Embed Pods Frameworks */,
 				BD7A127D0A69517D19686FB2 /* [CP] Copy Pods Resources */,
 				6BBE0F6C212B26C900CEE8C1 /* Embed Frameworks */,
@@ -1370,13 +1370,14 @@
 			shellScript = "\"${SRCROOT}/Pods/Target Support Files/Pods-LonaStudioTests/Pods-LonaStudioTests-resources.sh\"\n";
 			showEnvVarsInLog = 0;
 		};
-		E55D09A4201468E2000B193E /* ShellScript */ = {
+		E55D09A4201468E2000B193E /* Run SwiftLint */ = {
 			isa = PBXShellScriptBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
 			);
 			inputPaths = (
 			);
+			name = "Run SwiftLint";
 			outputPaths = (
 			);
 			runOnlyForDeploymentPostprocessing = 0;

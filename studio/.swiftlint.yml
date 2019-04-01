@@ -1,21 +1,56 @@
 disabled_rules:
-  - identifier_name
+  - closure_spacing
+  - colon
   - cyclomatic_complexity
-  - function_body_length
+  - empty_enum_arguments
+  - fatal_error_message
   - file_length
-  - type_body_length
   - force_cast
   - force_try
+  - force_unwrapping
+  - function_body_length
   - function_parameter_count
-  - line_length
+  - identifier_name
+  - implicitly_unwrapped_optional
   - large_tuple
-  - shorthand_operator
-  - todo
+  - legacy_cggeometry_functions
+  - legacy_constant
+  - legacy_constructor
+  - legacy_nsgeometry_functions
+  - line_length
   - nesting
+  - operator_usage_whitespace
+  - redundant_string_enum_value
+  - redundant_void_return
+  - return_arrow_whitespace
+  - shorthand_operator
   - syntactic_sugar
+  - todo
+  - trailing_newline
+  - type_body_length
+  - type_name
+  - unused_closure_parameter
+  - unused_optional_binding
+  - vertical_whitespace
+  - void_return
+  - custom_rules
 
 included:
   - LonaStudio
 
 excluded:
   - LonaStudio/Generated
+  - LonaStudio/Carthage
+  - LonaStudio/Pods
+
+colon:
+  apply_to_dictionaries: false
+
+indentation: 2
+
+custom_rules:
+  no_objcMembers:
+    name: "@objcMembers"
+    regex: "@objcMembers"
+    message: "Explicitly use @objc on each member you want to expose to Objective-C"
+    severity: error
