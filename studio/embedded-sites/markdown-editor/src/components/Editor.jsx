@@ -29,13 +29,15 @@
 
 // Adapted from react-native-web-player
 
-import React from 'react';
+/* eslint-disable react/prop-types */
 
-import { options, requireAddons } from '../utils/CodeMirror';
+import React from 'react'
 
-require('codemirror/lib/codemirror.css');
-require('codemirror/addon/hint/show-hint.css');
-require('../styles/codemirror-theme.css');
+import { options, requireAddons } from '../utils/CodeMirror'
+
+require('codemirror/lib/codemirror.css')
+require('codemirror/addon/hint/show-hint.css')
+require('../styles/codemirror-theme.css')
 
 // Work around a codemirror + flexbox + chrome issue by creating an absolute
 // positioned parent and flex grandparent of the codemirror element.
@@ -53,39 +55,39 @@ const styles = {
     height: 'auto',
     width: '100%',
   },
-};
+}
 
-const docCache = {};
+const docCache = {}
 
 const defaultProps = {
   initialValue: null,
   value: null,
   onChange: () => {},
   readOnly: false,
-};
+}
 
 // From https://github.com/decosoftware/deco-ide/blob/5cede568614a1a70b3118870d48b371af54a3cf9/web/src/scripts/utils/editor/ChangeUtils.js
 // Return true if these changes are from user input
 export const containsUserInputChange = changes => {
-  const origin = changes[changes.length - 1].origin;
+  const { origin } = changes[changes.length - 1]
 
   // http://stackoverflow.com/questions/26174164/auto-complete-with-codemirrror
-  return origin === '+input' || origin === '+delete';
-};
+  return origin === '+input' || origin === '+delete'
+}
 
 class Editor extends React.Component {
   componentDidMount() {
     if (typeof navigator !== 'undefined') {
-      const { filename, initialValue, value, readOnly, onChange } = this.props;
+      const { filename, initialValue, value, readOnly, onChange } = this.props
 
-      requireAddons();
-      const CodeMirror = require('codemirror');
+      requireAddons()
+      const CodeMirror = require('codemirror')
 
       if (!docCache[filename]) {
         docCache[filename] = new CodeMirror.Doc(
           initialValue || value || '',
-          options.mode,
-        );
+          options.mode
+        )
       }
 
       this.cm = CodeMirror(this.editor, {
@@ -93,92 +95,99 @@ class Editor extends React.Component {
         readOnly,
 
         value: docCache[filename].linkedDoc({ sharedHist: true }),
-      });
+      })
 
       // TODO: Probably we can remove this and setTimeout by fixing the css/styles
-      this.cm.setSize('100%', '100%');
+      this.cm.setSize('100%', '100%')
       setTimeout(() => {
-        this.cm.refresh();
-      }, 0);
+        this.cm.refresh()
+      }, 0)
 
       this.cm.on('changes', (cm, changes) => {
-        onChange(cm.getValue());
+        onChange(cm.getValue())
 
-        const { completions } = this.props;
+        const { completions } = this.props
 
-        if (!completions || completions.length === 0) return;
+        if (!completions || completions.length === 0) return
 
-        if (!containsUserInputChange(changes)) return;
+        if (!containsUserInputChange(changes)) return
 
-        const range = cm.listSelections()[0];
-        const from = range.from();
+        const range = cm.listSelections()[0]
+        const from = range.from()
 
-        if (!range.empty()) return;
+        if (!range.empty()) return
 
-        const textBefore = cm.getRange(new CodeMirror.Pos(from.line, 0), from);
+        const textBefore = cm.getRange(new CodeMirror.Pos(from.line, 0), from)
 
-        for (const completion of completions) {
-          const { trigger, getList } = completion;
+        const firstValidCompletion = completions.find(completion => {
+          const { trigger } = completion
 
           // Show popup if the user has typed at least 1 characters
-          const match = textBefore.match(trigger);
+          const match = textBefore.match(trigger)
 
-          if (!match) continue;
+          return match
+        })
 
-          const prefix = match[0];
-
-          this.cm.showHint({
-            hint: () => ({
-              list: getList(match),
-              from: new CodeMirror.Pos(from.line, from.ch - prefix.length),
-              to: from,
-            }),
-            alignWithWord: false,
-            completeSingle: false,
-          });
-
-          break;
+        if (!firstValidCompletion) {
+          return
         }
-      });
+
+        const { trigger, getList } = firstValidCompletion
+
+        // Show popup if the user has typed at least 1 characters
+        const match = textBefore.match(trigger)
+
+        const prefix = match[0]
+
+        this.cm.showHint({
+          hint: () => ({
+            list: getList(match),
+            from: new CodeMirror.Pos(from.line, from.ch - prefix.length),
+            to: from,
+          }),
+          alignWithWord: false,
+          completeSingle: false,
+        })
+      })
     }
   }
 
   componentWillUpdate(nextProps) {
-    const { errorLineNumber: nextLineNumber, value } = nextProps;
-    const { errorLineNumber: prevLineNumber } = this.props;
+    const { errorLineNumber: nextLineNumber, value } = nextProps
+    const { errorLineNumber: prevLineNumber } = this.props
 
     if (this.cm) {
       if (typeof prevLineNumber === 'number') {
-        this.cm.removeLineClass(prevLineNumber, 'background', 'cm-line-error');
+        this.cm.removeLineClass(prevLineNumber, 'background', 'cm-line-error')
       }
 
       if (typeof nextLineNumber === 'number') {
-        this.cm.addLineClass(nextLineNumber, 'background', 'cm-line-error');
+        this.cm.addLineClass(nextLineNumber, 'background', 'cm-line-error')
       }
 
       if (typeof value === 'string' && value !== this.cm.getValue()) {
-        this.cm.setValue(value);
+        this.cm.setValue(value)
       }
     }
   }
 
   componentWillUnmount() {
     if (typeof navigator !== 'undefined') {
-      const { filename } = this.props;
-      const CodeMirror = require('codemirror');
+      const { filename } = this.props
+      const CodeMirror = require('codemirror')
 
       // Store a reference to the current linked doc
-      const linkedDoc = this.cm.doc;
+      const linkedDoc = this.cm.doc
 
-      this.cm.swapDoc(new CodeMirror.Doc('', options.mode));
+      this.cm.swapDoc(new CodeMirror.Doc('', options.mode))
 
       // Unlink the doc
-      docCache[filename].unlinkDoc(linkedDoc);
+      docCache[filename].unlinkDoc(linkedDoc)
     }
   }
 
   render() {
-    const { readOnly } = this.props;
+    const { readOnly } = this.props
 
     return (
       <div
@@ -188,14 +197,14 @@ class Editor extends React.Component {
         <div
           style={styles.editor}
           ref={ref => {
-            this.editor = ref;
+            this.editor = ref
           }}
         />
       </div>
-    );
+    )
   }
 }
 
-Editor.defaultProps = defaultProps;
+Editor.defaultProps = defaultProps
 
-export default Editor;
+export default Editor

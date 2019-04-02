@@ -1,18 +1,19 @@
-import 'babel-polyfill';
-import 'regenerator-runtime';
+/* globals document */
+import 'babel-polyfill'
+import 'regenerator-runtime'
 
-import './styles/reset.css';
-import 'github-markdown-css/github-markdown.css';
+import './styles/reset.css'
+import 'github-markdown-css/github-markdown.css'
 
-import ThemedStyleSheet from 'react-with-styles/lib/ThemedStyleSheet';
-import aphroditeInterface from 'react-with-styles-interface-amp-aphrodite';
+import ThemedStyleSheet from 'react-with-styles/lib/ThemedStyleSheet'
+import aphroditeInterface from 'react-with-styles-interface-amp-aphrodite'
 
-ThemedStyleSheet.registerTheme({});
-ThemedStyleSheet.registerInterface(aphroditeInterface);
+import React from 'react'
+import ReactDOM from 'react-dom'
 
-import React from 'react';
-import ReactDOM from 'react-dom';
+import App from './App'
 
-import App from './App';
+ThemedStyleSheet.registerTheme({})
+ThemedStyleSheet.registerInterface(aphroditeInterface)
 
-ReactDOM.render(<App />, document.getElementById('root'));
+ReactDOM.render(<App />, document.getElementById('root'))

@@ -1,6 +1,5 @@
 const React = require('react')
 const generateId = require('sketch-file/generateId')
-const { renderToJSON } = require('react-sketchapp')
 
 const displayName = require('./display-name')
 

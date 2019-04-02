@@ -1,9 +1,10 @@
+/* eslint-disable global-require, import/no-dynamic-require */
 const fs = require('fs')
 const path = require('path')
 
 const parseColor = require('color-parse')
 const generateId = require('sketch-file/generateId')
-const { TextStyles, renderToJSON } = require('react-sketchapp')
+const { TextStyles } = require('react-sketchapp')
 const createComponentLayerCollection = require('./component-layer-collection')
 
 function loadComponent(config, componentPath) {
@@ -20,6 +21,7 @@ function loadComponent(config, componentPath) {
   } catch (err) {
     console.error(`Failed to load ${componentPath}`)
     console.error(err)
+    return undefined
   }
 }
 
@@ -57,7 +59,7 @@ module.exports = config => {
     .map(color => {
       const parsed = parseColor(color.value)
       if (!parsed) {
-        return
+        return undefined
       }
       return {
         name: color.name,

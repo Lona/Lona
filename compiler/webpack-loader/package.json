@@ -4,9 +4,6 @@
   "description": "Webpack loader for Lona components",
   "main": "lib/loader.js",
   "scripts": {
-    "lint": "find . -name \"*.js\" | grep -v -f .gitignore | xargs eslint",
-    "prettier:base": "prettier --write",
-    "prettify": "find . -name \"*.js\" | grep -v -f .gitignore | xargs npm run prettier:base",
     "test": "jest"
   },
   "author": "Mathieu Dutour <mathieu@dutour.me>",
@@ -32,23 +29,11 @@
     "@babel/preset-env": "^7.3.1",
     "@babel/preset-react": "^7.0.0",
     "babel-loader": "^8.0.5",
-    "eslint": "^5.12.1",
-    "eslint-config-airbnb-base": "^13.1.0",
-    "eslint-config-prettier": "^4.0.0",
-    "eslint-plugin-import": "^2.16.0",
-    "eslint-plugin-prettier": "^3.0.1",
     "jest": "^24.0.0",
     "lonac": "^0.5.2",
     "memory-fs": "^0.4.1",
-    "prettier": "^1.16.1",
     "react": "^16.7.0",
     "webpack": "^4.29.0"
-  },
-  "prettier": {
-    "proseWrap": "never",
-    "singleQuote": true,
-    "trailingComma": "es5",
-    "semi": false
   },
   "jest": {
     "testEnvironment": "node"

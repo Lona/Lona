@@ -1,72 +1,74 @@
-import React from 'react';
-import { withStyles } from 'react-with-styles';
-import ReactMarkdown from 'react-markdown';
+/* globals window, EDITABLE, THEME */
+import React from 'react'
+import { withStyles } from 'react-with-styles'
+import ReactMarkdown from 'react-markdown'
 
-import Editor from './components/Editor';
+import Editor from './components/Editor'
 
 function sendNotification(notification) {
   try {
-    window.webkit.messageHandlers.notification.postMessage(notification);
+    window.webkit.messageHandlers.notification.postMessage(notification)
   } catch (e) {
-    console.log('No webkit messageHandlers', e);
+    console.log('No webkit messageHandlers', e)
   }
 }
 
-let initialValue = '';
-let onChangeValue = () => {};
+let initialValue = ''
+let onChangeValue = () => {}
 
 window.update = ({ type, payload }) => {
   switch (type) {
     case 'setDescription':
-      initialValue = payload;
-      return onChangeValue(payload);
+      initialValue = payload
+      return onChangeValue(payload)
     default:
-      break;
+      return undefined
   }
-};
+}
 
-sendNotification({ type: 'ready' });
+sendNotification({ type: 'ready' })
 
 class App extends React.Component {
   constructor(props) {
-    super(props);
+    super(props)
 
     this.state = {
-      value: initialValue
-    };
+      value: initialValue,
+    }
 
-    this.handleChange = this.handleChange.bind(this);
+    this.handleChange = this.handleChange.bind(this)
 
     onChangeValue = value => {
-      this.setState({ value });
-    };
+      this.setState({ value })
+    }
   }
 
   handleChange(code) {
-    this.setState({ value: code });
-    sendNotification({ type: 'description', payload: code });
+    this.setState({ value: code })
+    sendNotification({ type: 'description', payload: code })
   }
 
   render() {
-    const { styles, css } = this.props;
-    const { value } = this.state;
+    // eslint-disable-next-line react/prop-types
+    const { styles, css } = this.props
+    const { value } = this.state
 
-    const markdownCss = { ...css(styles.column) };
-    markdownCss.className += ' markdown-body';
+    const markdownCss = { ...css(styles.column) }
+    markdownCss.className += ' markdown-body'
 
     return (
       <div {...css(styles.row)}>
         <ReactMarkdown {...markdownCss} source={value} escapeHtml={false} />
-        {typeof EDITABLE !== 'undefined' && !EDITABLE
-          ? null
-          : <Editor
-              value={value}
-              filename={'README.md'}
-              onChange={this.handleChange}
-              errorLineNumber={false}
-            />}
+        {typeof EDITABLE !== 'undefined' && !EDITABLE ? null : (
+          <Editor
+            value={value}
+            filename="README.md"
+            onChange={this.handleChange}
+            errorLineNumber={false}
+          />
+        )}
       </div>
-    );
+    )
   }
 }
 
@@ -83,7 +85,7 @@ export default withStyles(() => ({
     minHeight: 0,
     // overflow: 'hidden',
     position: 'relative',
-    color: typeof THEME !== 'undefined' ? THEME.text : undefined
+    color: typeof THEME !== 'undefined' ? THEME.text : undefined,
   },
   row: {
     flex: '1',
@@ -95,4 +97,4 @@ export default withStyles(() => ({
     // overflow: 'hidden',
     position: 'relative',
   },
-}))(App);
+}))(App)

@@ -28,6 +28,7 @@ module.exports = function generateSketchLibrary(
   sketchFilePath,
   options
 ) {
+  // eslint-disable-next-line prefer-const
   let { devicePresetList, compiler, componentPathFilter, logFunction } =
     options || {}
 
@@ -73,9 +74,7 @@ module.exports = function generateSketchLibrary(
   }
 
   if (!componentPathFilter) {
-    componentPathFilter = function() {
-      return true
-    }
+    componentPathFilter = () => true
   }
 
   try {

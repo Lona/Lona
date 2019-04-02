@@ -46,14 +46,14 @@ export const options = {
   extraKeys: {
     Tab: 'indentMore',
   },
-  viewportMargin: Infinity
-};
+  viewportMargin: Infinity,
+}
 
 export const requireAddons = () => {
-  require('codemirror/mode/markdown/markdown');
-  require('codemirror/keymap/sublime');
-  require('codemirror/addon/edit/closebrackets');
-  require('codemirror/addon/comment/comment');
-  require('codemirror/addon/selection/active-line');
-  require('codemirror/addon/hint/show-hint');
-};
+  require('codemirror/mode/markdown/markdown')
+  require('codemirror/keymap/sublime')
+  require('codemirror/addon/edit/closebrackets')
+  require('codemirror/addon/comment/comment')
+  require('codemirror/addon/selection/active-line')
+  require('codemirror/addon/hint/show-hint')
+}

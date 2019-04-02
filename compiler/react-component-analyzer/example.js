@@ -1,14 +1,11 @@
-const fs = require("fs");
+const fs = require('fs')
 
-const analyze = require("./index");
+const analyze = require('./index')
 
-const source = fs.readFileSync("./examples/View1.js", "utf8");
+const source = fs.readFileSync('./examples/View1.js', 'utf8')
 
-const output = analyze(source);
+const output = analyze(source)
 
-console.log(output);
+console.log(output)
 
-fs.writeFileSync(
-  "./workspace/View1.component",
-  JSON.stringify(output, null, 2)
-);
+fs.writeFileSync('./workspace/View1.component', JSON.stringify(output, null, 2))

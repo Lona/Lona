@@ -8,13 +8,12 @@ At the top level, the file is an object containing a `"colors"` array.
 
 Each color has the following attributes:
 
-|Attribute|Type|Required|Description|
-|---|---|---|---|
-|`id`|`string`|Yes|The unique `id` of the color, which will be used internally by Lona Studio and in the generated code. This should be _code-friendly_: it must not contain spaces or unusual characters, since it will be used as a variable name.|
-|`name`|`string`|Yes|The human-readable name of the color. This will be displayed in the Lona Studio UI. This will not appear in the generated code.|
-|`value`|`string`|Yes|The color value, in CSS format. Any valid CSS value is valid here: e.g. `blue`, `fce`, `#ffccee`, `rgb(0,0,100)`, `rgba(255,255,255,0.3)`|
-|`comment`|`string`|No|An optional description of the color, explaining contextual information, such as how it should be used. This may be displayed in the Lona Studio UI. This will not appear in the generated code. |
-
+| Attribute | Type     | Required | Description                                                                                                                                                                                                                       |
+| --------- | -------- | -------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `id`      | `string` | Yes      | The unique `id` of the color, which will be used internally by Lona Studio and in the generated code. This should be _code-friendly_: it must not contain spaces or unusual characters, since it will be used as a variable name. |
+| `name`    | `string` | Yes      | The human-readable name of the color. This will be displayed in the Lona Studio UI. This will not appear in the generated code.                                                                                                   |
+| `value`   | `string` | Yes      | The color value, in CSS format. Any valid CSS value is valid here: e.g. `blue`, `fce`, `#ffccee`, `rgb(0,0,100)`, `rgba(255,255,255,0.3)`                                                                                         |
+| `comment` | `string` | No       | An optional description of the color, explaining contextual information, such as how it should be used. This may be displayed in the Lona Studio UI. This will not appear in the generated code.                                  |
 
 ### Color Type
 
