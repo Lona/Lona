@@ -1,6 +1,5 @@
 const fs = require('fs')
-const xml = require('xml')
-const xml2js = require('xml2js')
+const xml = require('./xml')
 
 const ENCODING_FORMAT = {
   JSON: 'json',
@@ -32,11 +31,6 @@ function convertTypesFile(filename, targetEncodingFormat) {
 
   const jsonContents = JSON.parse(contents)
 
-  // const xmlString = xml({ root: jsonContents }, { index: '  ' })
-  // return xmlString
-
-  // const obj = { name: 'Super', Surname: 'Man', age: 23 }
-
   const types = jsonContents.types
     .map(type => {
       const {
@@ -47,27 +41,81 @@ function convertTypesFile(filename, targetEncodingFormat) {
       switch (caseType) {
         case 'native':
           return {
-            NativeType: {
-              $: { name },
-              NativeTypeParam: rest.parameters.map(param => ({
-                $: { name: param.name },
-              })),
-            },
+            name: 'NativeType',
+            attributes: { name },
+            children: rest.parameters.map(param => ({
+              name: 'NativeType:Param',
+              attributes: { name: param.name }
+            })),
           }
         case 'type':
           return {
-            Type: {
-              $: { name },
-              TypeCase: rest.cases.map(x => {
-                const { name, params } = x
-                switch (x.case) {
-                  case 'normal':
-                    return { normal: { params } }
-                  case 'record':
-                    return { record: { params } }
-                }
-              }),
-            },
+            name: 'Type',
+            attributes: { name },
+            children: rest.cases.map(x => {
+              const { name, params } = x
+
+              switch (x.case) {
+                case 'normal':
+                console.warn(name, params)
+                  return {
+                    name: 'Type.Case',
+                    attributes: { name },
+                    children: params.map(param => {
+                      const { value: { case: caseType, name, substitutions = [] } } = param;
+                      console.warn(caseType, name)
+                      switch (caseType) {
+                        case 'generic':
+                          return {
+                            name: 'Type:GenericParam',
+                            attributes: { name }
+                          }
+                        case 'type':
+                          return {
+                            name: 'Type:Param',
+                            attributes: { name },
+                            children: substitutions.map(s => {
+                              return {
+                                name: "TODO"
+                              }
+                            })
+                          }
+                        default:
+                          throw new Error(`Invalid type ${caseType}`)
+                      }
+                    })
+                  }
+                case 'record':
+                  return {
+                    name: 'Type.RecordCase',
+                    attributes: { name },
+                    children: params.map(param => {
+                      const { key, value: { case: caseType, name, substitutions = [] } } = param;
+                      console.warn(key, caseType, name)
+                      switch (caseType) {
+                        case 'generic':
+                          return {
+                            name: 'Type:GenericParam',
+                            attributes: { name }
+                          }
+                        case 'type':
+                          return {
+                            name: 'Type:Param',
+                            attributes: { name },
+                            children: substitutions.map(s => {
+                              return {
+                                name: "TODO"
+                              }
+                            })
+                          }
+                        default:
+                          throw new Error(`Invalid type ${caseType}`)
+                      }
+                      }
+                    })
+                  }
+              }
+            }),
           }
         default:
           throw new Error(`Invalid type ${caseType}`)
@@ -75,10 +123,13 @@ function convertTypesFile(filename, targetEncodingFormat) {
     })
     .filter(x => !!x)
 
-  const builder = new xml2js.Builder({ explicitArray: true })
-  const xml = builder.buildObject({ root: types })
 
-  return xml
+
+
+
+  // const rootElement = builder.create('root')
+
+  return xml.build(types)
 }
 
 module.exports = {
