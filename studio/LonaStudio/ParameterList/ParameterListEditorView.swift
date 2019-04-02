@@ -10,18 +10,167 @@ import Foundation
 import Cocoa
 import Logic
 
+private let startsWithNumberRegex = try? NSRegularExpression(pattern: #"^\d"#)
+
 class ParameterListEditorView: NSView {
 
     var editorView: ParameterListView
 
     func renderScrollView() -> NSView {
-        let canvasView = LogicEditor(rootNode: defaultRootNode)
+        let canvasView = LogicEditor(
+            rootNode: .topLevelParameters(
+                LGCTopLevelParameters(id: UUID(), parameters: .next(.placeholder(id: UUID()), .empty))
+            )
+        )
+        canvasView.documentationForNode = { syntaxNode, query in
+            switch syntaxNode {
+//            case .typeAnnotation:
+//
+            case .functionParameter:
+                func getTip() -> RichText.BlockElement? {
+                    let startsWithNumberMatch = startsWithNumberRegex?.firstMatch(in: query, range: NSRange(location: 0, length: query.count))
+
+                    switch query {
+                    case "":
+                        return .paragraph(
+                            [
+                                .text(.link, "Type any parameter name above!")
+                            ]
+                        )
+                    case _ where query.contains(" "):
+                        return .paragraph(
+                            [
+                                .text(.link, "Parameter names can't contain spaces!")
+                            ]
+                        )
+                    case _ where startsWithNumberMatch != nil:
+                        return .paragraph(
+                            [
+                                .text(.link, "Parameter names can't start with numbers!")
+                            ]
+                        )
+                    default:
+                        return nil
+                    }
+                }
+
+                return RichText(
+                    blocks: [
+                        .heading(.title, "Component parameter"),
+                        getTip(),
+                        .paragraph(
+                            [
+                                .text(.none, "Parameters are the "),
+                                .text(.bold, "inputs"),
+                                .text(.none, " used to configure components. Each parameter has a "),
+                                .text(.bold, "name"),
+                                .text(.none, ", a "),
+                                .text(.bold, "type"),
+                                .text(.none, ", and optionally a "),
+                                .text(.bold, "default value"),
+                                .text(.none, ".")
+                            ]
+                        ),
+                        .heading(.section, "Example"),
+                        .paragraph(
+                            [
+                                .text(.none, "Suppose we want a component with a configurable title. We might define the following parameter:")
+                            ]
+                        ),
+                        .custom(
+                            LGCSyntaxNode.functionParameter(
+                                .parameter(
+                                    id: UUID(),
+                                    externalName: nil,
+                                    localName: LGCPattern(id: UUID(), name: "titleText"),
+                                    annotation: .typeIdentifier(
+                                        id: UUID(),
+                                        identifier: LGCIdentifier(id: UUID(), string: "String"),
+                                        genericArguments: .empty
+                                    ),
+                                    defaultValue: .none(id: UUID()))
+                            ).makeCodeView()
+                        ),
+                        .heading(.section, "Recommendations"),
+                        .paragraph(
+                            [
+                                .text(.none, "It's best to use "),
+                                .text(.link, "camelCase"),
+                                .text(.none, " capitalization when choosing parameter names. This is because most JavaScript, Swift, and Kotlin style guides recommend camelCased parameter names. Names can be transformed automatically if needed (for example, when generating a Sketch library).")
+                            ]
+                        )
+                        ].compactMap { $0 }
+                )
+            default:
+                return RichText(blocks: [])
+            }
+        }
+        canvasView.suggestionsForNode = { syntaxNode, query in
+            switch syntaxNode {
+            case .typeAnnotation:
+                let primitiveTypes = CSType.primitiveTypeNames().map { name in
+                    LogicSuggestionItem(
+                        title: name,
+                        category: "Primitive Types".uppercased(),
+                        node: LGCSyntaxNode.typeAnnotation(
+                            LGCTypeAnnotation.typeIdentifier(
+                                id: UUID(),
+                                identifier: LGCIdentifier(id: UUID(), string: name),
+                                genericArguments: .empty
+                            )
+                        )
+                    )
+                }
+
+                let tokenTypes = CSType.tokenTypeNames().map { name in
+                    LogicSuggestionItem(
+                        title: name,
+                        category: "Token Types".uppercased(),
+                        node: LGCSyntaxNode.typeAnnotation(
+                            LGCTypeAnnotation.typeIdentifier(
+                                id: UUID(),
+                                identifier: LGCIdentifier(id: UUID(), string: name),
+                                genericArguments: .empty
+                            )
+                        )
+                    )
+                }
+
+                return (primitiveTypes + tokenTypes).titleContains(prefix: query)
+            case .functionParameter:
+                let items = [
+                    LogicSuggestionItem(
+                        title: "Parameter: \(query)",
+                        category: "Component Parameter".uppercased(),
+                        node: LGCSyntaxNode.functionParameter(
+                            LGCFunctionParameter.parameter(
+                                id: UUID(),
+                                externalName: nil,
+                                localName: LGCPattern(id: UUID(), name: query),
+                                annotation: LGCTypeAnnotation.typeIdentifier(
+                                    id: UUID(),
+                                    identifier: LGCIdentifier(id: UUID(), string: "type"),
+                                    genericArguments: .empty
+                                ),
+                                defaultValue: .none(id: UUID())
+                            )
+                        ),
+                        disabled: query.isEmpty
+                    )
+                ]
+
+                return items
+            default:
+                return []
+            }
+        }
+
         canvasView.fillColor = Colors.contentBackground
         return canvasView
 
 //        let scrollView = NSScrollView(frame: frame)
 //        scrollView.translatesAutoresizingMaskIntoConstraints = false
-//        scrollView.documentView = canvasView
+//        scrollView.documentView = editorView
 //        scrollView.hasVerticalRuler = true
 //
 //        return scrollView
