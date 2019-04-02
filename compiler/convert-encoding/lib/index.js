@@ -9,7 +9,8 @@ const ENCODING_FORMAT = {
 function detectEncodingFormat(contents) {
   if (contents.startsWith('{')) {
     return ENCODING_FORMAT.JSON
-  } else if (contents.startsWith('<')) {
+  }
+  if (contents.startsWith('<')) {
     return ENCODING_FORMAT.XML
   }
 
@@ -34,100 +35,107 @@ function convertTypesFile(filename, targetEncodingFormat) {
   const types = jsonContents.types
     .map(type => {
       const {
-        case: caseType,
-        data: { name, ...rest },
+        case: kind,
+        data: { name: typeName, ...rest },
       } = type
 
-      switch (caseType) {
+      switch (kind) {
         case 'native':
           return {
             name: 'NativeType',
-            attributes: { name },
+            attributes: { name: typeName },
             children: rest.parameters.map(param => ({
-              name: 'NativeType:Param',
-              attributes: { name: param.name }
+              name: 'NativeType.GenericParam',
+              attributes: { name: param.name },
             })),
           }
         case 'type':
           return {
             name: 'Type',
-            attributes: { name },
-            children: rest.cases.map(x => {
-              const { name, params } = x
+            attributes: { name: typeName },
+            children: rest.cases.map(caseObj => {
+              const { name: caseName, params } = caseObj
 
-              switch (x.case) {
+              switch (caseObj.case) {
                 case 'normal':
-                console.warn(name, params)
                   return {
-                    name: 'Type.Case',
-                    attributes: { name },
+                    name: 'Case',
+                    attributes: { name: caseName },
                     children: params.map(param => {
-                      const { value: { case: caseType, name, substitutions = [] } } = param;
-                      console.warn(caseType, name)
+                      const {
+                        value: { case: caseType, name, substitutions = [] },
+                      } = param
                       switch (caseType) {
                         case 'generic':
                           return {
-                            name: 'Type:GenericParam',
-                            attributes: { name }
+                            name: 'Case.GenericParam',
+                            attributes: { name },
                           }
                         case 'type':
                           return {
-                            name: 'Type:Param',
+                            name: 'Case.Param',
                             attributes: { name },
                             children: substitutions.map(s => {
                               return {
-                                name: "TODO"
+                                name: 'Case.Substitution',
+                                attributes: {
+                                  generic: s.generic,
+                                  instance: s.instance,
+                                },
                               }
-                            })
+                            }),
                           }
                         default:
-                          throw new Error(`Invalid type ${caseType}`)
+                          throw new Error(`Invalid case param type ${caseType}`)
                       }
-                    })
+                    }),
                   }
                 case 'record':
                   return {
-                    name: 'Type.RecordCase',
-                    attributes: { name },
+                    name: 'Record',
+                    attributes: { name: caseName },
                     children: params.map(param => {
-                      const { key, value: { case: caseType, name, substitutions = [] } } = param;
-                      console.warn(key, caseType, name)
+                      const {
+                        key,
+                        value: { case: caseType, name, substitutions = [] },
+                      } = param
                       switch (caseType) {
                         case 'generic':
                           return {
-                            name: 'Type:GenericParam',
-                            attributes: { name }
+                            name: 'Record.GenericParam',
+                            attributes: { key, name },
                           }
                         case 'type':
                           return {
-                            name: 'Type:Param',
-                            attributes: { name },
+                            name: 'Record.Param',
+                            attributes: { key, name },
                             children: substitutions.map(s => {
                               return {
-                                name: "TODO"
+                                name: 'Record.Substitution',
+                                attributes: {
+                                  generic: s.generic,
+                                  instance: s.instance,
+                                },
                               }
-                            })
+                            }),
                           }
                         default:
-                          throw new Error(`Invalid type ${caseType}`)
+                          throw new Error(
+                            `Invalid record param type ${caseType}`
+                          )
                       }
-                      }
-                    })
+                    }),
                   }
+                default:
+                  throw new Error(`Invalid type ${caseObj.case}`)
               }
             }),
           }
         default:
-          throw new Error(`Invalid type ${caseType}`)
+          throw new Error(`Invalid type ${kind}`)
       }
     })
     .filter(x => !!x)
-
-
-
-
-
-  // const rootElement = builder.create('root')
 
   return xml.build(types)
 }
