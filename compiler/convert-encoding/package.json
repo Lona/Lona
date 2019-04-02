@@ -1,0 +1,52 @@
+{
+  "name": "@lona/convert-encoding",
+  "version": "0.0.1",
+  "description": "Convert Lona files between encoding formats",
+  "main": "lib/index.js",
+  "scripts": {
+    "lint": "find . -name \"*.js\" | grep -v -f .gitignore | xargs eslint",
+    "prettier:base": "prettier --write",
+    "prettify": "find . -name \"*.js\" | grep -v -f .gitignore | xargs npm run prettier:base",
+    "test": "jest",
+    "test:watch": "jest:watch",
+    "build": "npm run build:node && npm run build:web",
+    "build:web": "webpack",
+    "build:node": "babel index.js > dist/index.js",
+    "prepublishOnly": "npm run build"
+  },
+  "author": "Devin Abbott",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/airbnb/Lona.git",
+    "directory": "compiler/convert-encoding"
+  },
+  "bugs": {
+    "url": "https://github.com/airbnb/Lona/issues"
+  },
+  "homepage": "https://github.com/airbnb/Lona",
+  "dependencies": {
+    "@babel/node": "^7.2.2",
+    "xml": "^1.0.1",
+    "xml2js": "^0.4.19"
+  },
+  "devDependencies": {
+    "@babel/cli": "^7.2.3",
+    "@babel/core": "^7.2.2",
+    "@babel/preset-env": "^7.3.1",
+    "babel-loader": "^8.0.5",
+    "esm": "^3.2.22",
+    "jest": "^24.1.0",
+    "webpack": "^4.29.6",
+    "webpack-cli": "^3.2.3"
+  },
+  "prettier": {
+    "proseWrap": "never",
+    "singleQuote": true,
+    "trailingComma": "es5",
+    "semi": false
+  },
+  "jest": {
+    "testEnvironment": "node"
+  }
+}
