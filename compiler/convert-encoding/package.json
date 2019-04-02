@@ -9,9 +9,7 @@
     "prettify": "find . -name \"*.js\" | grep -v -f .gitignore | xargs npm run prettier:base",
     "test": "jest",
     "test:watch": "jest:watch",
-    "build": "npm run build:node && npm run build:web",
-    "build:web": "webpack",
-    "build:node": "babel index.js > dist/index.js",
+    "build": "webpack",
     "prepublishOnly": "npm run build"
   },
   "author": "Devin Abbott",
