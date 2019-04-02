@@ -39,9 +39,9 @@
   ],
   "lint-staged": {
     "*.swift": [
-      "cd studio && ./Pods/SwiftLint/swiftlint"
+      "./scripts/pre-commit-swiftlint.sh"
     ],
-    "*.jsx?": [
+    "*.{js,jsx}": [
       "npm run prettier:base",
       "eslint",
       "git add"
@@ -56,5 +56,44 @@
     "singleQuote": true,
     "trailingComma": "es5",
     "semi": false
-  }
+  },
+  "eslintConfig": {
+    "root": true,
+    "extends": [
+      "airbnb",
+      "prettier"
+    ],
+    "plugins": [
+      "prettier"
+    ],
+    "rules": {
+      "import/no-dynamic-require": "off",
+      "react/jsx-filename-extension": "off",
+      "react/jsx-indent": "off",
+      "react/destructuring-assignment": "off",
+      "react/jsx-one-expression-per-line": "off",
+      "no-param-reassign": "off",
+      "no-underscore-dangle": "off",
+      "global-require": "off",
+      "prettier/prettier": [
+        "error",
+        {
+          "singleQuote": true,
+          "trailingComma": "es5",
+          "semi": false
+        }
+      ]
+    }
+  },
+  "eslintIgnore": [
+    "/compiler/core",
+    "/examples",
+    "/**/node_modules",
+    "/compiler/react-component-analyzer/examples",
+    "/studio/Carthage",
+    "/studio/LonaStudio",
+    "/studio/Pods",
+    "/studio/workspace",
+    "/studio/embedded-sites/markdown-editor/build"
+  ]
 }
