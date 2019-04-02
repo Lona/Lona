@@ -1,6 +1,9 @@
 const fs = require('fs')
 const xml = require('./xml')
-const { convertTypesJsonToXml } = require('./convert/types')
+const {
+  convertTypesJsonToXml,
+  convertTypesXmlToJson,
+} = require('./convert/types')
 
 const ENCODING_FORMAT = {
   JSON: 'json',
@@ -31,17 +34,36 @@ function convertTypesFile(filename, targetEncodingFormat) {
     throw new Error(`Unknown encoding format for ${filename}`)
   }
 
-  let jsonContents
+  switch (`${sourceEncodingFormat}:${targetEncodingFormat}`) {
+    case 'json:xml': {
+      let jsonContents
 
-  try {
-    jsonContents = JSON.parse(contents)
-  } catch (e) {
-    throw new Error(`Failed to decode types file as JSON: ${filename}`)
+      try {
+        jsonContents = JSON.parse(contents)
+      } catch (e) {
+        throw new Error(`Failed to decode types file as JSON: ${filename}`)
+      }
+
+      const types = convertTypesJsonToXml(jsonContents)
+
+      return xml.build(types)
+    }
+    case 'xml:json': {
+      let jsonContents
+
+      try {
+        jsonContents = xml.parse(contents)
+      } catch (e) {
+        throw new Error(`Failed to decode types file as XML: ${filename}`)
+      }
+
+      const types = convertTypesXmlToJson(jsonContents)
+
+      return JSON.stringify(types, null, 2)
+    }
+    default:
+      throw new Error(`Unknown encoding conversion`)
   }
-
-  const types = convertTypesJsonToXml(jsonContents)
-
-  return xml.build(types)
 }
 
 module.exports = {

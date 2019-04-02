@@ -105,4 +105,115 @@ function convertTypesJsonToXml(typesJson) {
     .filter(x => !!x)
 }
 
-module.exports = { convertTypesJsonToXml }
+function convertTypesXmlToJson(typesDefinition) {
+  const { children: definitions } = typesDefinition
+
+  return {
+    types: definitions.map(definition => {
+      const { name, attributes, children = [] } = definition
+
+      switch (name) {
+        case 'NativeType':
+          return {
+            case: 'native',
+            data: {
+              name: attributes.name,
+              parameters: children.map(child => {
+                return {
+                  name: child.attributes.type,
+                }
+              }),
+            },
+          }
+        case 'Type':
+          return {
+            case: 'type',
+            data: {
+              name: attributes.name,
+              cases: children.map(typeCase => {
+                switch (typeCase.name) {
+                  case 'Case':
+                    return {
+                      case: 'normal',
+                      name: 'empty',
+                      params: typeCase.children.map(param => {
+                        switch (param.name) {
+                          case 'Case.GenericParam':
+                            return {
+                              value: {
+                                case: 'generic',
+                                name: param.attributes.type,
+                              },
+                            }
+                          case 'Case.Param':
+                            return {
+                              value: {
+                                case: 'type',
+                                name: param.attributes.type,
+                                substitutions: param.children.map(
+                                  substitution => {
+                                    const {
+                                      attributes: { generic, instance },
+                                    } = substitution
+
+                                    return { generic, instance }
+                                  }
+                                ),
+                              },
+                            }
+                          default:
+                            throw new Error(`Bad typeCase param ${param.name}`)
+                        }
+                      }),
+                    }
+                  case 'Record':
+                    return {
+                      case: 'record',
+                      name: 'identifier',
+                      params: typeCase.children.map(param => {
+                        switch (param.name) {
+                          case 'Record.GenericParam':
+                            return {
+                              key: param.attributes.name,
+                              value: {
+                                case: 'generic',
+                                name: param.attributes.type,
+                              },
+                            }
+                          case 'Record.Param':
+                            return {
+                              key: param.attributes.name,
+                              value: {
+                                case: 'type',
+                                name: param.attributes.type,
+                                substitutions: param.children.map(
+                                  substitution => {
+                                    const {
+                                      attributes: { generic, instance },
+                                    } = substitution
+
+                                    return { generic, instance }
+                                  }
+                                ),
+                              },
+                            }
+                          default:
+                            throw new Error(`Bad typeCase param ${param.name}`)
+                        }
+                      }),
+                    }
+
+                  default:
+                    throw new Error(`Unknown type case: ${typeCase.name}`)
+                }
+              }),
+            },
+          }
+        default:
+          throw new Error(`Unknown type kind: ${name}`)
+      }
+    }),
+  }
+}
+
+module.exports = { convertTypesJsonToXml, convertTypesXmlToJson }
