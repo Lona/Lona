@@ -5,230 +5,230 @@
   <NativeType name="CGFloat"/>
   <NativeType name="String"/>
   <NativeType name="Optional">
-    <NativeType.GenericParam name="Value"/>
+    <NativeType.GenericParam type="Value"/>
   </NativeType>
   <Type name="List">
     <Case name="next">
-      <Case.GenericParam name="T"/>
-      <Case.Param name="List"/>
+      <Case.GenericParam type="T"/>
+      <Case.Param type="List"/>
     </Case>
     <Case name="empty"/>
   </Type>
   <Type name="Identifier">
     <Record name="identifier">
-      <Record.Param key="id" name="UUID"/>
-      <Record.Param key="string" name="String"/>
+      <Record.Param name="id" type="UUID"/>
+      <Record.Param name="string" type="String"/>
     </Record>
   </Type>
   <Type name="Declaration">
     <Record name="variable">
-      <Record.Param key="id" name="UUID"/>
+      <Record.Param name="id" type="UUID"/>
     </Record>
     <Record name="function">
-      <Record.Param key="id" name="UUID"/>
-      <Record.Param key="name" name="Pattern"/>
-      <Record.Param key="returnType" name="TypeAnnotation"/>
-      <Record.Param key="parameters" name="List">
+      <Record.Param name="id" type="UUID"/>
+      <Record.Param name="name" type="Pattern"/>
+      <Record.Param name="returnType" type="TypeAnnotation"/>
+      <Record.Param name="parameters" type="List">
         <Record.Substitution generic="T" instance="FunctionParameter"/>
       </Record.Param>
-      <Record.Param key="block" name="List">
+      <Record.Param name="block" type="List">
         <Record.Substitution generic="T" instance="Statement"/>
       </Record.Param>
     </Record>
   </Type>
   <Type name="Pattern">
     <Record name="pattern">
-      <Record.Param key="id" name="UUID"/>
-      <Record.Param key="name" name="String"/>
+      <Record.Param name="id" type="UUID"/>
+      <Record.Param name="name" type="String"/>
     </Record>
   </Type>
   <Type name="BinaryOperator">
     <Record name="isEqualTo">
-      <Record.Param key="id" name="UUID"/>
+      <Record.Param name="id" type="UUID"/>
     </Record>
     <Record name="isNotEqualTo">
-      <Record.Param key="id" name="UUID"/>
+      <Record.Param name="id" type="UUID"/>
     </Record>
     <Record name="isLessThan">
-      <Record.Param key="id" name="UUID"/>
+      <Record.Param name="id" type="UUID"/>
     </Record>
     <Record name="isGreaterThan">
-      <Record.Param key="id" name="UUID"/>
+      <Record.Param name="id" type="UUID"/>
     </Record>
     <Record name="isLessThanOrEqualTo">
-      <Record.Param key="id" name="UUID"/>
+      <Record.Param name="id" type="UUID"/>
     </Record>
     <Record name="isGreaterThanOrEqualTo">
-      <Record.Param key="id" name="UUID"/>
+      <Record.Param name="id" type="UUID"/>
     </Record>
     <Record name="setEqualTo">
-      <Record.Param key="id" name="UUID"/>
+      <Record.Param name="id" type="UUID"/>
     </Record>
   </Type>
   <Type name="FunctionCallArgument">
     <Record name="functionCallArgument">
-      <Record.Param key="id" name="UUID"/>
-      <Record.Param key="label" name="String"/>
-      <Record.Param key="expression" name="Expression"/>
+      <Record.Param name="id" type="UUID"/>
+      <Record.Param name="label" type="String"/>
+      <Record.Param name="expression" type="Expression"/>
     </Record>
   </Type>
   <Type name="Expression">
     <Record name="binaryExpression">
-      <Record.Param key="left" name="Expression"/>
-      <Record.Param key="right" name="Expression"/>
-      <Record.Param key="op" name="BinaryOperator"/>
-      <Record.Param key="id" name="UUID"/>
+      <Record.Param name="left" type="Expression"/>
+      <Record.Param name="right" type="Expression"/>
+      <Record.Param name="op" type="BinaryOperator"/>
+      <Record.Param name="id" type="UUID"/>
     </Record>
     <Record name="identifierExpression">
-      <Record.Param key="id" name="UUID"/>
-      <Record.Param key="identifier" name="Identifier"/>
+      <Record.Param name="id" type="UUID"/>
+      <Record.Param name="identifier" type="Identifier"/>
     </Record>
     <Record name="functionCallExpression">
-      <Record.Param key="id" name="UUID"/>
-      <Record.Param key="expression" name="Expression"/>
-      <Record.Param key="arguments" name="List">
+      <Record.Param name="id" type="UUID"/>
+      <Record.Param name="expression" type="Expression"/>
+      <Record.Param name="arguments" type="List">
         <Record.Substitution generic="T" instance="FunctionCallArgument"/>
       </Record.Param>
     </Record>
     <Record name="literalExpression">
-      <Record.Param key="id" name="UUID"/>
-      <Record.Param key="literal" name="Literal"/>
+      <Record.Param name="id" type="UUID"/>
+      <Record.Param name="literal" type="Literal"/>
     </Record>
   </Type>
   <Type name="Statement">
     <Record name="loop">
-      <Record.Param key="pattern" name="Pattern"/>
-      <Record.Param key="expression" name="Expression"/>
-      <Record.Param key="block" name="List">
+      <Record.Param name="pattern" type="Pattern"/>
+      <Record.Param name="expression" type="Expression"/>
+      <Record.Param name="block" type="List">
         <Record.Substitution generic="T" instance="Statement"/>
       </Record.Param>
-      <Record.Param key="id" name="UUID"/>
+      <Record.Param name="id" type="UUID"/>
     </Record>
     <Record name="branch">
-      <Record.Param key="id" name="UUID"/>
-      <Record.Param key="condition" name="Expression"/>
-      <Record.Param key="block" name="List">
+      <Record.Param name="id" type="UUID"/>
+      <Record.Param name="condition" type="Expression"/>
+      <Record.Param name="block" type="List">
         <Record.Substitution generic="T" instance="Statement"/>
       </Record.Param>
     </Record>
     <Record name="declaration">
-      <Record.Param key="id" name="UUID"/>
-      <Record.Param key="content" name="Declaration"/>
+      <Record.Param name="id" type="UUID"/>
+      <Record.Param name="content" type="Declaration"/>
     </Record>
     <Record name="expressionStatement">
-      <Record.Param key="id" name="UUID"/>
-      <Record.Param key="expression" name="Expression"/>
+      <Record.Param name="id" type="UUID"/>
+      <Record.Param name="expression" type="Expression"/>
     </Record>
     <Record name="placeholderStatement">
-      <Record.Param key="id" name="UUID"/>
+      <Record.Param name="id" type="UUID"/>
     </Record>
   </Type>
   <Type name="Program">
     <Record name="program">
-      <Record.Param key="id" name="UUID"/>
-      <Record.Param key="block" name="List">
+      <Record.Param name="id" type="UUID"/>
+      <Record.Param name="block" type="List">
         <Record.Substitution generic="T" instance="Statement"/>
       </Record.Param>
     </Record>
   </Type>
   <Type name="SyntaxNode">
     <Case name="statement">
-      <Case.Param name="Statement"/>
+      <Case.Param type="Statement"/>
     </Case>
     <Case name="declaration">
-      <Case.Param name="Declaration"/>
+      <Case.Param type="Declaration"/>
     </Case>
     <Case name="identifier">
-      <Case.Param name="Identifier"/>
+      <Case.Param type="Identifier"/>
     </Case>
     <Case name="expression">
-      <Case.Param name="Expression"/>
+      <Case.Param type="Expression"/>
     </Case>
     <Case name="pattern">
-      <Case.Param name="Pattern"/>
+      <Case.Param type="Pattern"/>
     </Case>
     <Case name="binaryOperator">
-      <Case.Param name="BinaryOperator"/>
+      <Case.Param type="BinaryOperator"/>
     </Case>
     <Case name="program">
-      <Case.Param name="Program"/>
+      <Case.Param type="Program"/>
     </Case>
     <Case name="functionParameter">
-      <Case.Param name="FunctionParameter"/>
+      <Case.Param type="FunctionParameter"/>
     </Case>
     <Case name="functionParameterDefaultValue">
-      <Case.Param name="FunctionParameterDefaultValue"/>
+      <Case.Param type="FunctionParameterDefaultValue"/>
     </Case>
     <Case name="typeAnnotation">
-      <Case.Param name="TypeAnnotation"/>
+      <Case.Param type="TypeAnnotation"/>
     </Case>
     <Case name="literal">
-      <Case.Param name="Literal"/>
+      <Case.Param type="Literal"/>
     </Case>
     <Case name="topLevelParameters">
-      <Case.Param name="TopLevelParameters"/>
+      <Case.Param type="TopLevelParameters"/>
     </Case>
   </Type>
   <Type name="FunctionParameter">
     <Record name="parameter">
-      <Record.Param key="id" name="UUID"/>
-      <Record.Param key="externalName" name="Optional">
+      <Record.Param name="id" type="UUID"/>
+      <Record.Param name="externalName" type="Optional">
         <Record.Substitution generic="Value" instance="String"/>
       </Record.Param>
-      <Record.Param key="localName" name="Pattern"/>
-      <Record.Param key="annotation" name="TypeAnnotation"/>
-      <Record.Param key="defaultValue" name="FunctionParameterDefaultValue"/>
+      <Record.Param name="localName" type="Pattern"/>
+      <Record.Param name="annotation" type="TypeAnnotation"/>
+      <Record.Param name="defaultValue" type="FunctionParameterDefaultValue"/>
     </Record>
     <Record name="placeholder">
-      <Record.Param key="id" name="UUID"/>
+      <Record.Param name="id" type="UUID"/>
     </Record>
   </Type>
   <Type name="FunctionParameterDefaultValue">
     <Record name="none">
-      <Record.Param key="id" name="UUID"/>
+      <Record.Param name="id" type="UUID"/>
     </Record>
     <Record name="value">
-      <Record.Param key="id" name="UUID"/>
-      <Record.Param key="expression" name="Expression"/>
+      <Record.Param name="id" type="UUID"/>
+      <Record.Param name="expression" type="Expression"/>
     </Record>
   </Type>
   <Type name="TypeAnnotation">
     <Record name="typeIdentifier">
-      <Record.Param key="id" name="UUID"/>
-      <Record.Param key="identifier" name="Identifier"/>
-      <Record.Param key="genericArguments" name="List">
+      <Record.Param name="id" type="UUID"/>
+      <Record.Param name="identifier" type="Identifier"/>
+      <Record.Param name="genericArguments" type="List">
         <Record.Substitution generic="T" instance="TypeAnnotation"/>
       </Record.Param>
     </Record>
     <Record name="functionType">
-      <Record.Param key="id" name="UUID"/>
-      <Record.Param key="returnType" name="TypeAnnotation"/>
-      <Record.Param key="argumentTypes" name="List">
+      <Record.Param name="id" type="UUID"/>
+      <Record.Param name="returnType" type="TypeAnnotation"/>
+      <Record.Param name="argumentTypes" type="List">
         <Record.Substitution generic="T" instance="TypeAnnotation"/>
       </Record.Param>
     </Record>
   </Type>
   <Type name="Literal">
     <Record name="string">
-      <Record.Param key="id" name="UUID"/>
-      <Record.Param key="value" name="String"/>
+      <Record.Param name="id" type="UUID"/>
+      <Record.Param name="value" type="String"/>
     </Record>
     <Record name="number">
-      <Record.Param key="id" name="UUID"/>
-      <Record.Param key="value" name="CGFloat"/>
+      <Record.Param name="id" type="UUID"/>
+      <Record.Param name="value" type="CGFloat"/>
     </Record>
     <Record name="boolean">
-      <Record.Param key="id" name="UUID"/>
-      <Record.Param key="value" name="Bool"/>
+      <Record.Param name="id" type="UUID"/>
+      <Record.Param name="value" type="Bool"/>
     </Record>
     <Record name="none">
-      <Record.Param key="id" name="UUID"/>
+      <Record.Param name="id" type="UUID"/>
     </Record>
   </Type>
   <Type name="TopLevelParameters">
     <Record name="topLevelParameters">
-      <Record.Param key="id" name="UUID"/>
-      <Record.Param key="parameters" name="List">
+      <Record.Param name="id" type="UUID"/>
+      <Record.Param name="parameters" type="List">
         <Record.Substitution generic="T" instance="FunctionParameter"/>
       </Record.Param>
     </Record>

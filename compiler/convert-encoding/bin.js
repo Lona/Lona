@@ -14,6 +14,10 @@ if (!format) {
   process.exit(1)
 }
 
-const convertedString = convertTypesFile(filename, format)
-
-console.log(convertedString)
+try {
+  const convertedString = convertTypesFile(filename, format)
+  console.log(convertedString)
+} catch (e) {
+  console.error(e)
+  process.exit(1)
+}
