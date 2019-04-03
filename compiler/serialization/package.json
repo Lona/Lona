@@ -1,15 +1,24 @@
 {
   "name": "@lona/serialization",
   "version": "0.0.1",
-  "description": "Convert Lona files between encoding formats",
-  "main": "lib/index.js",
+  "description": "Convert Lona files between serialization formats",
+  "main": "build/index.js",
+  "bin": "./bin.js",
+  "browser": "dist/lona-serialization.umd.js",
+  "files": [
+    "bin.js",
+    "dist",
+    "build"
+  ],
   "scripts": {
     "lint": "find . -name \"*.js\" | grep -v -f .gitignore | xargs eslint",
     "prettier:base": "prettier --write",
     "prettify": "find . -name \"*.js\" | grep -v -f .gitignore | xargs npm run prettier:base",
     "test": "jest",
     "test:watch": "jest:watch",
-    "build": "webpack",
+    "build": "npm run build:node && npm run build:web",
+    "build:web": "webpack",
+    "build:node": "babel lib --out-dir build",
     "prepublishOnly": "npm run build"
   },
   "author": "Devin Abbott",

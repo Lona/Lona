@@ -4,45 +4,44 @@ const {
   convertTypesXmlToJson,
 } = require('./convert/types')
 
-const ENCODING_FORMAT = {
+const SERIALIZATION_FORMAT = {
   JSON: 'json',
   XML: 'xml',
 }
 
-function detectEncodingFormat(contents) {
+function detectFormat(contents) {
   if (contents.startsWith('{') || contents.startsWith('[')) {
-    return ENCODING_FORMAT.JSON
+    return SERIALIZATION_FORMAT.JSON
   }
   if (contents.startsWith('<')) {
-    return ENCODING_FORMAT.XML
+    return SERIALIZATION_FORMAT.XML
   }
 
   return null
 }
 
-function convertTypes(contents, targetEncodingFormat, options = {}) {
-  const sourceEncodingFormat =
-    options.sourceEncodingFormat || detectEncodingFormat(contents)
+function convertTypes(contents, targetFormat, options = {}) {
+  const sourceFormat = options.sourceFormat || detectFormat(contents)
 
-  if (!sourceEncodingFormat) {
+  if (!sourceFormat) {
     throw new Error(
-      `Unable to detect source encoding format, and none was specified`
+      `Unable to detect source Serialization format, and none was specified`
     )
   }
 
-  if (!Object.values(ENCODING_FORMAT).includes(sourceEncodingFormat)) {
+  if (!Object.values(SERIALIZATION_FORMAT).includes(sourceFormat)) {
     throw new Error(
-      `Invalid source encoding format specified: ${sourceEncodingFormat}`
+      `Invalid source Serialization format specified: ${sourceFormat}`
     )
   }
 
-  if (!Object.values(ENCODING_FORMAT).includes(targetEncodingFormat)) {
+  if (!Object.values(SERIALIZATION_FORMAT).includes(targetFormat)) {
     throw new Error(
-      `Invalid target encoding format specified: ${targetEncodingFormat}`
+      `Invalid target Serialization format specified: ${targetFormat}`
     )
   }
 
-  switch (`${sourceEncodingFormat}:${targetEncodingFormat}`) {
+  switch (`${sourceFormat}:${targetFormat}`) {
     case 'json:json':
     case 'xml:xml':
       return contents
@@ -73,12 +72,12 @@ function convertTypes(contents, targetEncodingFormat, options = {}) {
       return JSON.stringify(types, null, 2)
     }
     default:
-      throw new Error(`Unknown encoding conversion`)
+      throw new Error(`Unknown Serialization conversion`)
   }
 }
 
 module.exports = {
-  ENCODING_FORMAT,
+  SERIALIZATION_FORMAT,
   convertTypes,
-  detectEncodingFormat,
+  detectFormat,
 }
