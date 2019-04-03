@@ -135,7 +135,7 @@ function convertTypesXmlToJson(typesDefinition) {
                   case 'Case':
                     return {
                       case: 'normal',
-                      name: 'empty',
+                      name: typeCase.attributes.name,
                       params: typeCase.children.map(param => {
                         switch (param.name) {
                           case 'Case.GenericParam':
@@ -169,7 +169,7 @@ function convertTypesXmlToJson(typesDefinition) {
                   case 'Record':
                     return {
                       case: 'record',
-                      name: 'identifier',
+                      name: typeCase.attributes.name,
                       params: typeCase.children.map(param => {
                         switch (param.name) {
                           case 'Record.GenericParam':

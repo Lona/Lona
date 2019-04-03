@@ -1,6 +1,7 @@
 #!/usr/bin/env node
 
-const { convertTypesFile } = require('./lib/index')
+const fs = require('fs')
+const { convertTypes } = require('./lib/index')
 
 const [, , filename, format] = process.argv
 
@@ -12,6 +13,12 @@ if (!filename) {
 if (!format) {
   console.log('No encoding format')
   process.exit(1)
+}
+
+function convertTypesFile(file, targetEncodingFormat) {
+  const contents = fs.readFileSync(filename, 'utf8')
+
+  return convertTypes(contents, targetEncodingFormat)
 }
 
 try {

@@ -10,12 +10,12 @@ module.exports = [
   {
     mode: 'production',
     entry: join(paths.src, 'index.js'),
-    target: 'node',
+    target: 'web',
     output: {
       path: paths.dist,
       filename: 'convert-encoding.umd.js',
       library: {
-        root: 'svgModel',
+        root: 'convertEncoding',
         amd: 'convert-encoding',
         commonjs: 'convert-encoding',
       },

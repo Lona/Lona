@@ -1,4 +1,3 @@
-const fs = require('fs')
 const xml = require('./xml')
 const {
   convertTypesJsonToXml,
@@ -11,7 +10,7 @@ const ENCODING_FORMAT = {
 }
 
 function detectEncodingFormat(contents) {
-  if (contents.startsWith('{')) {
+  if (contents.startsWith('{') || contents.startsWith('[')) {
     return ENCODING_FORMAT.JSON
   }
   if (contents.startsWith('<')) {
@@ -21,27 +20,39 @@ function detectEncodingFormat(contents) {
   return null
 }
 
-function convertTypesFile(filename, targetEncodingFormat) {
-  if (!Object.values(ENCODING_FORMAT).includes(targetEncodingFormat)) {
-    throw new Error(`Invalid encoding format passed: ${targetEncodingFormat}`)
-  }
-
-  const contents = fs.readFileSync(filename, 'utf8')
-
-  const sourceEncodingFormat = detectEncodingFormat(contents)
+function convertTypes(contents, targetEncodingFormat, options = {}) {
+  const sourceEncodingFormat =
+    options.sourceEncodingFormat || detectEncodingFormat(contents)
 
   if (!sourceEncodingFormat) {
-    throw new Error(`Unknown encoding format for ${filename}`)
+    throw new Error(
+      `Unable to detect source encoding format, and none was specified`
+    )
+  }
+
+  if (!Object.values(ENCODING_FORMAT).includes(sourceEncodingFormat)) {
+    throw new Error(
+      `Invalid source encoding format specified: ${sourceEncodingFormat}`
+    )
+  }
+
+  if (!Object.values(ENCODING_FORMAT).includes(targetEncodingFormat)) {
+    throw new Error(
+      `Invalid target encoding format specified: ${targetEncodingFormat}`
+    )
   }
 
   switch (`${sourceEncodingFormat}:${targetEncodingFormat}`) {
+    case 'json:json':
+    case 'xml:xml':
+      return contents
     case 'json:xml': {
       let jsonContents
 
       try {
         jsonContents = JSON.parse(contents)
       } catch (e) {
-        throw new Error(`Failed to decode types file as JSON: ${filename}`)
+        throw new Error(`Failed to decode types as JSON.`)
       }
 
       const types = convertTypesJsonToXml(jsonContents)
@@ -54,7 +65,7 @@ function convertTypesFile(filename, targetEncodingFormat) {
       try {
         jsonContents = xml.parse(contents)
       } catch (e) {
-        throw new Error(`Failed to decode types file as XML: ${filename}`)
+        throw new Error(`Failed to decode types as XML.`)
       }
 
       const types = convertTypesXmlToJson(jsonContents)
@@ -67,5 +78,7 @@ function convertTypesFile(filename, targetEncodingFormat) {
 }
 
 module.exports = {
-  convertTypesFile,
+  ENCODING_FORMAT,
+  convertTypes,
+  detectEncodingFormat,
 }
