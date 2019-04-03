@@ -1,5 +1,5 @@
 {
-  "name": "@lona/convert-encoding",
+  "name": "@lona/serialization",
   "version": "0.0.1",
   "description": "Convert Lona files between encoding formats",
   "main": "lib/index.js",
@@ -17,7 +17,7 @@
   "repository": {
     "type": "git",
     "url": "https://github.com/airbnb/Lona.git",
-    "directory": "compiler/convert-encoding"
+    "directory": "compiler/serialization"
   },
   "bugs": {
     "url": "https://github.com/airbnb/Lona/issues"

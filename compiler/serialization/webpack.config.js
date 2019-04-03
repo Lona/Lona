@@ -13,11 +13,11 @@ module.exports = [
     target: 'web',
     output: {
       path: paths.dist,
-      filename: 'convert-encoding.umd.js',
+      filename: 'lona-serialization.umd.js',
       library: {
-        root: 'convertEncoding',
-        amd: 'convert-encoding',
-        commonjs: 'convert-encoding',
+        root: 'lonaSerialization',
+        amd: 'lona-serialization',
+        commonjs: 'lona-serialization',
       },
       libraryTarget: 'umd',
     },
