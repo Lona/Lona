@@ -22,42 +22,58 @@ class ParameterListEditorView: NSView {
                 LGCTopLevelParameters(id: UUID(), parameters: .next(.placeholder(id: UUID()), .empty))
             )
         )
+
+        LogicCanvasView.minimumLineHeight = 26
+        LogicCanvasView.textMargin = CGSize(width: 7, height: 6)
+        RichText.AlertStyle.paragraphMargin.bottom = -3
+        RichText.AlertStyle.iconMargin.top += 1
+
         canvasView.documentationForNode = { syntaxNode, query in
             switch syntaxNode {
 //            case .typeAnnotation:
 //
             case .functionParameter:
-                func getTip() -> RichText.BlockElement? {
-                    let startsWithNumberMatch = startsWithNumberRegex?.firstMatch(in: query, range: NSRange(location: 0, length: query.count))
+                func getAlert() -> RichText.BlockElement? {
+                    if query.isEmpty { return nil }
 
-                    switch query {
-                    case "":
-                        return .paragraph(
-                            [
-                                .text(.link, "Type any parameter name above!")
-                            ]
+                    if query.contains(" ") {
+                        return .alert(
+                            .error,
+                            .paragraph(
+                                [.text(.none, "Parameter names can't contain spaces!")]
+                            )
                         )
-                    case _ where query.contains(" "):
-                        return .paragraph(
-                            [
-                                .text(.link, "Parameter names can't contain spaces!")
-                            ]
-                        )
-                    case _ where startsWithNumberMatch != nil:
-                        return .paragraph(
-                            [
-                                .text(.link, "Parameter names can't start with numbers!")
-                            ]
-                        )
-                    default:
-                        return nil
                     }
+
+                    let startsWithNumberMatch = startsWithNumberRegex?.firstMatch(
+                        in: query,
+                        range: NSRange(location: 0, length: query.count))
+
+                    if startsWithNumberMatch != nil {
+                        return .alert(
+                            .error,
+                            .paragraph(
+                                [.text(.none, "Parameter names can't start with numbers!")]
+                            )
+                        )
+                    }
+
+                    if query.first?.isUppercase == true {
+                        return .alert(
+                            .warning,
+                            .paragraph(
+                                [.text(.none, "We recommend parameter names to be camelCased (the first letter should be lowercase).")]
+                            )
+                        )
+                    }
+
+                    return nil
                 }
 
                 return RichText(
                     blocks: [
+                        getAlert(),
                         .heading(.title, "Component parameter"),
-                        getTip(),
                         .paragraph(
                             [
                                 .text(.none, "Parameters are the "),
@@ -136,30 +152,98 @@ class ParameterListEditorView: NSView {
                     )
                 }
 
-                return (primitiveTypes + tokenTypes).titleContains(prefix: query)
-            case .functionParameter:
-                let items = [
-                    LogicSuggestionItem(
-                        title: "Parameter: \(query)",
-                        category: "Component Parameter".uppercased(),
-                        node: LGCSyntaxNode.functionParameter(
-                            LGCFunctionParameter.parameter(
+                let functionType = LogicSuggestionItem(
+                    title: "Function",
+                    category: "Function Types".uppercased(),
+                    node: LGCSyntaxNode.typeAnnotation(
+                        LGCTypeAnnotation.functionType(
+                            id: UUID(),
+                            returnType: LGCTypeAnnotation.typeIdentifier(
                                 id: UUID(),
-                                externalName: nil,
-                                localName: LGCPattern(id: UUID(), name: query),
-                                annotation: LGCTypeAnnotation.typeIdentifier(
+                                identifier: LGCIdentifier(id: UUID(), string: "Unit"),
+                                genericArguments: .empty
+                            ),
+                            argumentTypes: .next(
+                                LGCTypeAnnotation.typeIdentifier(
                                     id: UUID(),
-                                    identifier: LGCIdentifier(id: UUID(), string: "type"),
+                                    identifier: LGCIdentifier(id: UUID(), string: "Unit"),
                                     genericArguments: .empty
                                 ),
-                                defaultValue: .none(id: UUID())
+                                .empty
                             )
-                        ),
-                        disabled: query.isEmpty
+                        )
+                    )
+                )
+
+            return (primitiveTypes.sortedByPrefix() + tokenTypes.sortedByPrefix() + [functionType]).titleContains(prefix: query)
+            case .functionParameter:
+                let defaultItems = syntaxNode.suggestions(within: canvasView.rootNode, for: query)
+
+                return defaultItems.map { item in
+                    var copy = item
+                    copy.category = "Component Parameter".uppercased()
+                    return copy
+                }
+            case .functionParameterDefaultValue(let value):
+                let items = [
+                    LogicSuggestionItem(
+                        title: "No default",
+                        category: "Default Value".uppercased(),
+                        node: LGCSyntaxNode.functionParameterDefaultValue(.none(id: UUID()))
                     )
                 ]
 
-                return items
+                var typedItems: [LogicSuggestionItem] = []
+
+                if let inferredType = value.inferType(within: canvasView.rootNode, context: [
+                    TypeEntity.nativeType(NativeType(name: "Boolean", parameters: [])),
+                    TypeEntity.nativeType(NativeType(name: "Number", parameters: []))
+                    ]) {
+                    Swift.print("Inferred", inferredType)
+
+                    switch inferredType.entity {
+                    case .nativeType(let value):
+                        switch value.name {
+                        case "Boolean":
+                            typedItems = [
+                                LogicSuggestionItem(
+                                    title: "true",
+                                    category: "Literals".uppercased(),
+                                    node: LGCSyntaxNode.literal(.boolean(id: UUID(), value: true))
+                                ),
+                                LogicSuggestionItem(
+                                    title: "false",
+                                    category: "Literals".uppercased(),
+                                    node: LGCSyntaxNode.literal(.boolean(id: UUID(), value: false))
+                                )
+                                ].compactMap({ item in
+                                    switch item.node {
+                                    case .literal(let literal):
+                                        return LogicSuggestionItem(
+                                            title: item.title,
+                                            category: item.category,
+                                            node: .functionParameterDefaultValue(
+                                                LGCFunctionParameterDefaultValue.value(
+                                                    id: UUID(),
+                                                    expression: LGCExpression.literalExpression(id: UUID(), literal: literal)
+                                                )
+                                            )
+                                        )
+                                    default:
+                                        return nil
+                                    }
+                                })
+                        default:
+                            break
+                        }
+                    case .genericType:
+                        break
+                    case .functionType:
+                        break
+                    }
+                }
+
+                return items.titleContains(prefix: query) + typedItems.titleContains(prefix: query).sortedByPrefix()
             default:
                 return []
             }
