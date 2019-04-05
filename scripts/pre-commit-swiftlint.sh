@@ -29,7 +29,7 @@ if [[ -e "${SWIFT_LINT}" ]]; then
     RESULT=$?
 
     if [ $RESULT -eq 0 ]; then
-
+        :
     else
         echo ""
         echo "Violation found of the type ERROR! Must fix before commit!"
