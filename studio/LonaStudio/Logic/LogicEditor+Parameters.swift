@@ -150,6 +150,44 @@ extension LogicEditor {
                     )
                 }
 
+                let optionalType = LogicSuggestionItem(
+                    title: "Optional",
+                    category: "Generic Types".uppercased(),
+                    node: LGCSyntaxNode.typeAnnotation(
+                        LGCTypeAnnotation.typeIdentifier(
+                            id: UUID(),
+                            identifier: LGCIdentifier(id: UUID(), string: "Optional"),
+                            genericArguments: .next(
+                                LGCTypeAnnotation.typeIdentifier(
+                                    id: UUID(),
+                                    identifier: LGCIdentifier(id: UUID(), string: "Void"),
+                                    genericArguments: .empty
+                                ),
+                                .empty
+                            )
+                        )
+                    )
+                )
+
+                let arrayType = LogicSuggestionItem(
+                    title: "Array",
+                    category: "Generic Types".uppercased(),
+                    node: LGCSyntaxNode.typeAnnotation(
+                        LGCTypeAnnotation.typeIdentifier(
+                            id: UUID(),
+                            identifier: LGCIdentifier(id: UUID(), string: "Array"),
+                            genericArguments: .next(
+                                LGCTypeAnnotation.typeIdentifier(
+                                    id: UUID(),
+                                    identifier: LGCIdentifier(id: UUID(), string: "Void"),
+                                    genericArguments: .empty
+                                ),
+                                .empty
+                            )
+                        )
+                    )
+                )
+
                 let functionType = LogicSuggestionItem(
                     title: "Function",
                     category: "Function Types".uppercased(),
@@ -173,7 +211,12 @@ extension LogicEditor {
                     )
                 )
 
-                return (primitiveTypes.sortedByPrefix() + tokenTypes.sortedByPrefix() + [functionType]).titleContains(prefix: query)
+                return (
+                    primitiveTypes.sortedByPrefix() +
+                        tokenTypes.sortedByPrefix() +
+                        [optionalType, arrayType] +
+                        [functionType]
+                    ).titleContains(prefix: query)
             case .functionParameter:
                 let defaultItems = syntaxNode.suggestions(within: canvasView.rootNode, for: query)
 
