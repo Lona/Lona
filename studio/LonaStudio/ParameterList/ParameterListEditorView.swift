@@ -48,8 +48,31 @@ class ParameterListEditorView: NSView {
     }
 
     var parameterList: [CSParameter] {
-        get { return editorView.list }
-        set { editorView.list = newValue }
+        get {
+            return editorView.list
+        }
+        set {
+            editorView.list = newValue
+
+            let rootNode = LGCSyntaxNode.topLevelParameters(
+                LGCTopLevelParameters(
+                    id: UUID(),
+                    parameters: LGCList(
+                        parameterList.map { param in
+                            return LGCFunctionParameter.parameter(
+                                id: UUID(),
+                                externalName: nil,
+                                localName: LGCPattern(id: UUID(), name: param.name),
+                                annotation: .makePlaceholder(),
+                                defaultValue: .none(id: UUID())
+                            )
+                        } + [LGCFunctionParameter.makePlaceholder()]
+                    )
+                )
+            )
+
+            logicEditor.rootNode = rootNode
+        }
     }
 
     var onChange: ([CSParameter]) -> Void = {_ in }

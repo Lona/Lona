@@ -13,7 +13,7 @@ import Logic
 private let startsWithNumberRegex = try? NSRegularExpression(pattern: #"^\d"#)
 
 extension LogicEditor {
-    public static func makeParameterEditorView() -> NSView {
+    public static func makeParameterEditorView() -> LogicEditor {
         let canvasView = LogicEditor(
             rootNode: .topLevelParameters(
                 LGCTopLevelParameters(id: UUID(), parameters: .next(.placeholder(id: UUID()), .empty))
@@ -200,11 +200,7 @@ extension LogicEditor {
                                 genericArguments: .empty
                             ),
                             argumentTypes: .next(
-                                LGCTypeAnnotation.typeIdentifier(
-                                    id: UUID(),
-                                    identifier: LGCIdentifier(id: UUID(), string: "Unit"),
-                                    genericArguments: .empty
-                                ),
+                                .placeholder(id: UUID()),
                                 .empty
                             )
                         )
