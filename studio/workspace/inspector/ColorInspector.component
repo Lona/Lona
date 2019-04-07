@@ -21,18 +21,6 @@
     {
       "assignee" : [
         "layers",
-        "Title",
-        "text"
-      ],
-      "content" : [
-        "parameters",
-        "titleText"
-      ],
-      "type" : "AssignExpr"
-    },
-    {
-      "assignee" : [
-        "layers",
         "IdInput",
         "textValue"
       ],
@@ -153,10 +141,6 @@
   ],
   "params" : [
     {
-      "name" : "titleText",
-      "type" : "String"
-    },
-    {
       "name" : "idText",
       "type" : "String"
     },
@@ -199,15 +183,6 @@
   ],
   "root" : {
     "children" : [
-      {
-        "id" : "Title",
-        "params" : {
-          "font" : "large",
-          "marginBottom" : 20,
-          "text" : "Title"
-        },
-        "type" : "Lona:Text"
-      },
       {
         "id" : "NameLabel",
         "params" : {

@@ -224,16 +224,20 @@ public class AddTextStyleSheet: NSBox {
 
   // MARK: Private
 
+  private var titleView = LNATextField(labelWithString: "")
   private var textStyleInspectorView = TextStyleInspector()
   private var footerView = NSBox()
   private var cancelButtonView = Button()
   private var footerSpacerView = NSBox()
   private var doneButtonView = Button()
 
+  private var titleViewTextStyle = TextStyles.large
+
   private func setUpViews() {
     boxType = .custom
     borderType = .noBorder
     contentViewMargins = .zero
+    titleView.lineBreakMode = .byWordWrapping
     footerView.boxType = .custom
     footerView.borderType = .noBorder
     footerView.contentViewMargins = .zero
@@ -241,13 +245,16 @@ public class AddTextStyleSheet: NSBox {
     footerSpacerView.borderType = .noBorder
     footerSpacerView.contentViewMargins = .zero
 
+    addSubview(titleView)
     addSubview(textStyleInspectorView)
     addSubview(footerView)
     footerView.addSubview(cancelButtonView)
     footerView.addSubview(footerSpacerView)
     footerView.addSubview(doneButtonView)
 
-    textStyleInspectorView.titleText = "New Text Style"
+    titleView.attributedStringValue = titleViewTextStyle.apply(to: "New Text Style")
+    titleViewTextStyle = TextStyles.large
+    titleView.attributedStringValue = titleViewTextStyle.apply(to: titleView.attributedStringValue)
     cancelButtonView.titleText = "Cancel"
     footerSpacerView.fillColor = #colorLiteral(red: 0.847058823529, green: 0.847058823529, blue: 0.847058823529, alpha: 1)
     doneButtonView.titleText = "Add Text Style"
@@ -255,6 +262,7 @@ public class AddTextStyleSheet: NSBox {
 
   private func setUpConstraints() {
     translatesAutoresizingMaskIntoConstraints = false
+    titleView.translatesAutoresizingMaskIntoConstraints = false
     textStyleInspectorView.translatesAutoresizingMaskIntoConstraints = false
     footerView.translatesAutoresizingMaskIntoConstraints = false
     cancelButtonView.translatesAutoresizingMaskIntoConstraints = false
@@ -262,7 +270,12 @@ public class AddTextStyleSheet: NSBox {
     doneButtonView.translatesAutoresizingMaskIntoConstraints = false
 
     let widthAnchorConstraint = widthAnchor.constraint(equalToConstant: 480)
-    let textStyleInspectorViewTopAnchorConstraint = textStyleInspectorView.topAnchor.constraint(equalTo: topAnchor)
+    let titleViewTopAnchorConstraint = titleView.topAnchor.constraint(equalTo: topAnchor, constant: 20)
+    let titleViewLeadingAnchorConstraint = titleView.leadingAnchor.constraint(equalTo: leadingAnchor, constant: 20)
+    let titleViewTrailingAnchorConstraint = titleView.trailingAnchor.constraint(equalTo: trailingAnchor, constant: -20)
+    let textStyleInspectorViewTopAnchorConstraint = textStyleInspectorView
+      .topAnchor
+      .constraint(equalTo: titleView.bottomAnchor)
     let textStyleInspectorViewLeadingAnchorConstraint = textStyleInspectorView
       .leadingAnchor
       .constraint(equalTo: leadingAnchor, constant: 20)
@@ -315,6 +328,9 @@ public class AddTextStyleSheet: NSBox {
 
     NSLayoutConstraint.activate([
       widthAnchorConstraint,
+      titleViewTopAnchorConstraint,
+      titleViewLeadingAnchorConstraint,
+      titleViewTrailingAnchorConstraint,
       textStyleInspectorViewTopAnchorConstraint,
       textStyleInspectorViewLeadingAnchorConstraint,
       textStyleInspectorViewTrailingAnchorConstraint,

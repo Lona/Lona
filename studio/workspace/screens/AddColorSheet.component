@@ -219,12 +219,19 @@
   "root" : {
     "children" : [
       {
+        "id" : "Title",
+        "params" : {
+          "font" : "large",
+          "text" : "New Color"
+        },
+        "type" : "Lona:Text"
+      },
+      {
         "id" : "ColorInspector",
         "params" : {
           "descriptionText" : "Text",
           "idText" : "Text",
           "nameText" : "Text",
-          "titleText" : "New Color",
           "valueText" : "Text"
         },
         "type" : "ColorInspector"
@@ -270,6 +277,7 @@
     "params" : {
       "paddingLeft" : 20,
       "paddingRight" : 20,
+      "paddingTop" : 20,
       "width" : 480
     },
     "type" : "Lona:View"
