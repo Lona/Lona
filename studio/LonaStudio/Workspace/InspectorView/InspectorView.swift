@@ -65,7 +65,7 @@ final class InspectorView: NSBox {
         titleText: "Parameters",
         subtitleText: "",
         dividerColor: NSSplitView.defaultDividerColor,
-        fileIcon: NSImage())
+        fileIcon: nil)
 
     private let scrollView = NSScrollView(frame: .zero)
 
@@ -120,6 +120,9 @@ final class InspectorView: NSBox {
 
     func update() {
         guard let content = content else {
+            headerView.titleText = ""
+            headerView.subtitleText = ""
+
             inspectorView.removeFromSuperview()
             inspectorView = NSView()
             return
@@ -127,6 +130,9 @@ final class InspectorView: NSBox {
 
         switch content {
         case .layer(let content):
+            headerView.titleText = content.name
+            headerView.subtitleText = " — \(content.type.displayName)"
+
             if case CSLayer.LayerType.custom = content.type, let componentLayer = content as? CSComponentLayer {
                 inspectorView.removeFromSuperview()
 
@@ -169,11 +175,13 @@ final class InspectorView: NSBox {
                 inspectorView.removeFromSuperview()
             }
 
+            headerView.titleText = color.name
+            headerView.subtitleText = " — Color"
+
             let editor = (inspectorView as? ColorInspector) ?? ColorInspector()
 
             editor.idText = color.id
             editor.nameText = color.name
-            editor.titleText = color.name
             editor.valueText = color.value
             editor.descriptionText = color.comment ?? ""
 
@@ -235,11 +243,13 @@ final class InspectorView: NSBox {
                 inspectorView.removeFromSuperview()
             }
 
+            headerView.titleText = textStyle.name
+            headerView.subtitleText = " — Text Style"
+
             let editor = (inspectorView as? TextStyleInspector) ?? TextStyleInspector()
 
             editor.idText = textStyle.id
             editor.nameText = textStyle.name
-            editor.titleText = textStyle.name
             editor.descriptionText = textStyle.comment ?? ""
             editor.fontFamilyText = textStyle.fontFamily ?? ""
             editor.fontNameText = textStyle.fontName ?? ""

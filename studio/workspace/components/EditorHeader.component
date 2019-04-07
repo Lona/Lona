@@ -9,10 +9,26 @@
   ],
   "examples" : [
     {
-      "id" : "Default",
-      "name" : "Default",
+      "id" : "Standard",
+      "name" : "Standard",
       "params" : {
-
+        "fileIcon" : null
+      }
+    },
+    {
+      "id" : "Subtitle",
+      "name" : "Subtitle",
+      "params" : {
+        "fileIcon" : null,
+        "subtitleText" : " — Subtitle"
+      }
+    },
+    {
+      "id" : "Image",
+      "name" : "Image",
+      "params" : {
+        "fileIcon" : "file:\/\/\/Users\/devinabbott\/Projects\/Lona\/studio\/workspace\/assets\/default-workspace-thumbnail.png",
+        "subtitleText" : " — Subtitle"
       }
     }
   ],
@@ -54,16 +70,43 @@
       "type" : "AssignExpr"
     },
     {
-      "assignee" : [
-        "layers",
-        "Image",
-        "image"
+      "body" : [
+        {
+          "assignee" : [
+            "layers",
+            "Image",
+            "image"
+          ],
+          "content" : [
+            "iconImage"
+          ],
+          "type" : "AssignExpr"
+        },
+        {
+          "assignee" : [
+            "layers",
+            "Image",
+            "visible"
+          ],
+          "content" : {
+            "type" : "LitExpr",
+            "value" : {
+              "data" : true,
+              "type" : "Boolean"
+            }
+          },
+          "type" : "AssignExpr"
+        }
       ],
-      "content" : [
-        "parameters",
-        "fileIcon"
-      ],
-      "type" : "AssignExpr"
+      "condition" : {
+        "content" : [
+          "parameters",
+          "fileIcon"
+        ],
+        "id" : "iconImage",
+        "type" : "VarDeclExpr"
+      },
+      "type" : "IfExpr"
     }
   ],
   "params" : [
@@ -81,7 +124,7 @@
     },
     {
       "name" : "fileIcon",
-      "type" : "URL"
+      "type" : "URL?"
     }
   ],
   "root" : {
@@ -93,6 +136,7 @@
             "params" : {
               "height" : 16,
               "marginRight" : 4,
+              "visible" : false,
               "width" : 16
             },
             "type" : "Lona:Image"
@@ -109,7 +153,7 @@
             "id" : "Subtitle",
             "params" : {
               "font" : "regularDisabled",
-              "text" : " — Subtitle"
+              "text" : ""
             },
             "type" : "Lona:Text"
           }
@@ -118,8 +162,7 @@
         "params" : {
           "alignItems" : "center",
           "flex" : 1,
-          "flexDirection" : "row",
-          "justifyContent" : "flex-start"
+          "flexDirection" : "row"
         },
         "type" : "Lona:View"
       },

@@ -20,7 +20,7 @@ public class EditorHeader: NSBox {
     update()
   }
 
-  public convenience init(titleText: String, subtitleText: String, dividerColor: NSColor, fileIcon: NSImage) {
+  public convenience init(titleText: String, subtitleText: String, dividerColor: NSColor, fileIcon: NSImage?) {
     self
       .init(
         Parameters(titleText: titleText, subtitleText: subtitleText, dividerColor: dividerColor, fileIcon: fileIcon))
@@ -70,7 +70,7 @@ public class EditorHeader: NSBox {
     }
   }
 
-  public var fileIcon: NSImage {
+  public var fileIcon: NSImage? {
     get { return parameters.fileIcon }
     set {
       if parameters.fileIcon != newValue {
@@ -97,6 +97,13 @@ public class EditorHeader: NSBox {
 
   private var titleViewTextStyle = TextStyles.regular
   private var subtitleViewTextStyle = TextStyles.regularDisabled
+
+  private var titleViewLeadingAnchorInnerViewLeadingAnchorConstraint: NSLayoutConstraint?
+  private var imageViewLeadingAnchorInnerViewLeadingAnchorConstraint: NSLayoutConstraint?
+  private var imageViewCenterYAnchorInnerViewCenterYAnchorConstraint: NSLayoutConstraint?
+  private var titleViewLeadingAnchorImageViewTrailingAnchorConstraint: NSLayoutConstraint?
+  private var imageViewHeightAnchorConstraint: NSLayoutConstraint?
+  private var imageViewWidthAnchorConstraint: NSLayoutConstraint?
 
   private func setUpViews() {
     boxType = .custom
@@ -142,11 +149,6 @@ public class EditorHeader: NSBox {
     let dividerViewLeadingAnchorConstraint = dividerView.leadingAnchor.constraint(equalTo: leadingAnchor)
     let dividerViewCenterXAnchorConstraint = dividerView.centerXAnchor.constraint(equalTo: centerXAnchor)
     let dividerViewTrailingAnchorConstraint = dividerView.trailingAnchor.constraint(equalTo: trailingAnchor)
-    let imageViewLeadingAnchorConstraint = imageView.leadingAnchor.constraint(equalTo: innerView.leadingAnchor)
-    let imageViewCenterYAnchorConstraint = imageView.centerYAnchor.constraint(equalTo: innerView.centerYAnchor)
-    let titleViewLeadingAnchorConstraint = titleView
-      .leadingAnchor
-      .constraint(equalTo: imageView.trailingAnchor, constant: 4)
     let titleViewTopAnchorConstraint = titleView.topAnchor.constraint(greaterThanOrEqualTo: innerView.topAnchor)
     let titleViewCenterYAnchorConstraint = titleView.centerYAnchor.constraint(equalTo: innerView.centerYAnchor)
     let titleViewBottomAnchorConstraint = titleView.bottomAnchor.constraint(lessThanOrEqualTo: innerView.bottomAnchor)
@@ -158,42 +160,90 @@ public class EditorHeader: NSBox {
       .bottomAnchor
       .constraint(lessThanOrEqualTo: innerView.bottomAnchor)
     let dividerViewHeightAnchorConstraint = dividerView.heightAnchor.constraint(equalToConstant: 1)
+    let titleViewLeadingAnchorInnerViewLeadingAnchorConstraint = titleView
+      .leadingAnchor
+      .constraint(equalTo: innerView.leadingAnchor)
+    let imageViewLeadingAnchorInnerViewLeadingAnchorConstraint = imageView
+      .leadingAnchor
+      .constraint(equalTo: innerView.leadingAnchor)
+    let imageViewCenterYAnchorInnerViewCenterYAnchorConstraint = imageView
+      .centerYAnchor
+      .constraint(equalTo: innerView.centerYAnchor)
+    let titleViewLeadingAnchorImageViewTrailingAnchorConstraint = titleView
+      .leadingAnchor
+      .constraint(equalTo: imageView.trailingAnchor, constant: 4)
     let imageViewHeightAnchorConstraint = imageView.heightAnchor.constraint(equalToConstant: 16)
     let imageViewWidthAnchorConstraint = imageView.widthAnchor.constraint(equalToConstant: 16)
 
-    NSLayoutConstraint.activate([
-      heightAnchorConstraint,
-      innerViewTopAnchorConstraint,
-      innerViewLeadingAnchorConstraint,
-      innerViewCenterXAnchorConstraint,
-      innerViewTrailingAnchorConstraint,
-      dividerViewBottomAnchorConstraint,
-      dividerViewTopAnchorConstraint,
-      dividerViewLeadingAnchorConstraint,
-      dividerViewCenterXAnchorConstraint,
-      dividerViewTrailingAnchorConstraint,
-      imageViewLeadingAnchorConstraint,
-      imageViewCenterYAnchorConstraint,
-      titleViewLeadingAnchorConstraint,
-      titleViewTopAnchorConstraint,
-      titleViewCenterYAnchorConstraint,
-      titleViewBottomAnchorConstraint,
-      subtitleViewTrailingAnchorConstraint,
-      subtitleViewLeadingAnchorConstraint,
-      subtitleViewTopAnchorConstraint,
-      subtitleViewCenterYAnchorConstraint,
-      subtitleViewBottomAnchorConstraint,
-      dividerViewHeightAnchorConstraint,
-      imageViewHeightAnchorConstraint,
-      imageViewWidthAnchorConstraint
-    ])
+    self.titleViewLeadingAnchorInnerViewLeadingAnchorConstraint = titleViewLeadingAnchorInnerViewLeadingAnchorConstraint
+    self.imageViewLeadingAnchorInnerViewLeadingAnchorConstraint = imageViewLeadingAnchorInnerViewLeadingAnchorConstraint
+    self.imageViewCenterYAnchorInnerViewCenterYAnchorConstraint = imageViewCenterYAnchorInnerViewCenterYAnchorConstraint
+    self.titleViewLeadingAnchorImageViewTrailingAnchorConstraint =
+      titleViewLeadingAnchorImageViewTrailingAnchorConstraint
+    self.imageViewHeightAnchorConstraint = imageViewHeightAnchorConstraint
+    self.imageViewWidthAnchorConstraint = imageViewWidthAnchorConstraint
+
+    NSLayoutConstraint.activate(
+      [
+        heightAnchorConstraint,
+        innerViewTopAnchorConstraint,
+        innerViewLeadingAnchorConstraint,
+        innerViewCenterXAnchorConstraint,
+        innerViewTrailingAnchorConstraint,
+        dividerViewBottomAnchorConstraint,
+        dividerViewTopAnchorConstraint,
+        dividerViewLeadingAnchorConstraint,
+        dividerViewCenterXAnchorConstraint,
+        dividerViewTrailingAnchorConstraint,
+        titleViewTopAnchorConstraint,
+        titleViewCenterYAnchorConstraint,
+        titleViewBottomAnchorConstraint,
+        subtitleViewTrailingAnchorConstraint,
+        subtitleViewLeadingAnchorConstraint,
+        subtitleViewTopAnchorConstraint,
+        subtitleViewCenterYAnchorConstraint,
+        subtitleViewBottomAnchorConstraint,
+        dividerViewHeightAnchorConstraint
+      ] +
+        conditionalConstraints(imageViewIsHidden: imageView.isHidden))
+  }
+
+  private func conditionalConstraints(imageViewIsHidden: Bool) -> [NSLayoutConstraint] {
+    var constraints: [NSLayoutConstraint?]
+
+    switch (imageViewIsHidden) {
+      case (true):
+        constraints = [titleViewLeadingAnchorInnerViewLeadingAnchorConstraint]
+      case (false):
+        constraints = [
+          imageViewLeadingAnchorInnerViewLeadingAnchorConstraint,
+          imageViewCenterYAnchorInnerViewCenterYAnchorConstraint,
+          titleViewLeadingAnchorImageViewTrailingAnchorConstraint,
+          imageViewHeightAnchorConstraint,
+          imageViewWidthAnchorConstraint
+        ]
+    }
+
+    return constraints.compactMap({ $0 })
   }
 
   private func update() {
+    let imageViewIsHidden = imageView.isHidden
+
+    imageView.isHidden = !false
+    imageView.image = NSImage()
     dividerView.fillColor = dividerColor
     titleView.attributedStringValue = titleViewTextStyle.apply(to: titleText)
     subtitleView.attributedStringValue = subtitleViewTextStyle.apply(to: subtitleText)
-    imageView.image = fileIcon
+    if let iconImage = fileIcon {
+      imageView.image = iconImage
+      imageView.isHidden = !true
+    }
+
+    if imageView.isHidden != imageViewIsHidden {
+      NSLayoutConstraint.deactivate(conditionalConstraints(imageViewIsHidden: imageViewIsHidden))
+      NSLayoutConstraint.activate(conditionalConstraints(imageViewIsHidden: imageView.isHidden))
+    }
   }
 }
 
@@ -204,9 +254,9 @@ extension EditorHeader {
     public var titleText: String
     public var subtitleText: String
     public var dividerColor: NSColor
-    public var fileIcon: NSImage
+    public var fileIcon: NSImage?
 
-    public init(titleText: String, subtitleText: String, dividerColor: NSColor, fileIcon: NSImage) {
+    public init(titleText: String, subtitleText: String, dividerColor: NSColor, fileIcon: NSImage? = nil) {
       self.titleText = titleText
       self.subtitleText = subtitleText
       self.dividerColor = dividerColor
@@ -214,7 +264,7 @@ extension EditorHeader {
     }
 
     public init() {
-      self.init(titleText: "", subtitleText: "", dividerColor: NSColor.clear, fileIcon: NSImage())
+      self.init(titleText: "", subtitleText: "", dividerColor: NSColor.clear, fileIcon: nil)
     }
 
     public static func ==(lhs: Parameters, rhs: Parameters) -> Bool {
@@ -243,14 +293,14 @@ extension EditorHeader {
       self.parameters = parameters
     }
 
-    public init(titleText: String, subtitleText: String, dividerColor: NSColor, fileIcon: NSImage) {
+    public init(titleText: String, subtitleText: String, dividerColor: NSColor, fileIcon: NSImage? = nil) {
       self
         .init(
           Parameters(titleText: titleText, subtitleText: subtitleText, dividerColor: dividerColor, fileIcon: fileIcon))
     }
 
     public init() {
-      self.init(titleText: "", subtitleText: "", dividerColor: NSColor.clear, fileIcon: NSImage())
+      self.init(titleText: "", subtitleText: "", dividerColor: NSColor.clear, fileIcon: nil)
     }
   }
 }

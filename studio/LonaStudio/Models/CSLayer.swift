@@ -123,6 +123,15 @@ class CSLayer: CSDataDeserializable, CSDataSerializable, DataNode, NSCopying {
             }
         }
 
+        var displayName: String {
+            switch self {
+            case .builtIn(let builtInLayerType):
+                return builtInLayerType.rawValue
+            case .custom(let layerType):
+                return layerType
+            }
+        }
+
         func toData() -> CSData {
             return string.toData()
         }

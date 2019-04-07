@@ -379,19 +379,26 @@
   "root" : {
     "children" : [
       {
+        "id" : "Title",
+        "params" : {
+          "font" : "large",
+          "text" : "New Text Style"
+        },
+        "type" : "Lona:Text"
+      },
+      {
         "id" : "TextStyleInspector",
         "params" : {
+          "colorValue" : "",
           "descriptionText" : "",
-          "idText" : "textStyle",
-          "nameText" : "Text Style",
-          "titleText" : "New Text Style",
+          "fontFamilyText" : "",
           "fontNameText" : "",
-          "fontFamilyText": "",
-          "fontWeightText": "",
-          "fontSizeNumber": -1,
-          "lineHeightNumber": -1,
-          "letterSpacingNumber": -1,
-          "colorValue": ""
+          "fontSizeNumber" : -1,
+          "fontWeightText" : "",
+          "idText" : "textStyle",
+          "letterSpacingNumber" : -1,
+          "lineHeightNumber" : -1,
+          "nameText" : "Text Style"
         },
         "type" : "TextStyleInspector"
       },
@@ -436,6 +443,7 @@
     "params" : {
       "paddingLeft" : 20,
       "paddingRight" : 20,
+      "paddingTop" : 20,
       "width" : 480
     },
     "type" : "Lona:View"

@@ -21,7 +21,6 @@ public class TextStyleInspector: NSBox {
   }
 
   public convenience init(
-    titleText: String,
     idText: String,
     nameText: String,
     fontNameText: String,
@@ -36,7 +35,6 @@ public class TextStyleInspector: NSBox {
     self
       .init(
         Parameters(
-          titleText: titleText,
           idText: idText,
           nameText: nameText,
           fontNameText: fontNameText,
@@ -65,15 +63,6 @@ public class TextStyleInspector: NSBox {
   }
 
   // MARK: Public
-
-  public var titleText: String {
-    get { return parameters.titleText }
-    set {
-      if parameters.titleText != newValue {
-        parameters.titleText = newValue
-      }
-    }
-  }
 
   public var idText: String {
     get { return parameters.idText }
@@ -225,7 +214,6 @@ public class TextStyleInspector: NSBox {
 
   // MARK: Private
 
-  private var titleView = LNATextField(labelWithString: "")
   private var nameLabelView = LNATextField(labelWithString: "")
   private var nameInputView = TextInput()
   private var spacer1View = NSBox()
@@ -256,7 +244,6 @@ public class TextStyleInspector: NSBox {
   private var descriptionLabelView = LNATextField(labelWithString: "")
   private var descriptionInputView = TextInput()
 
-  private var titleViewTextStyle = TextStyles.large
   private var nameLabelViewTextStyle = TextStyles.small
   private var idLabelViewTextStyle = TextStyles.small
   private var fontNameLabelViewTextStyle = TextStyles.small
@@ -272,7 +259,6 @@ public class TextStyleInspector: NSBox {
     boxType = .custom
     borderType = .noBorder
     contentViewMargins = .zero
-    titleView.lineBreakMode = .byWordWrapping
     nameLabelView.lineBreakMode = .byWordWrapping
     spacer1View.boxType = .custom
     spacer1View.borderType = .noBorder
@@ -311,7 +297,6 @@ public class TextStyleInspector: NSBox {
     spacer9View.contentViewMargins = .zero
     descriptionLabelView.lineBreakMode = .byWordWrapping
 
-    addSubview(titleView)
     addSubview(nameLabelView)
     addSubview(nameInputView)
     addSubview(spacer1View)
@@ -342,8 +327,6 @@ public class TextStyleInspector: NSBox {
     addSubview(descriptionLabelView)
     addSubview(descriptionInputView)
 
-    titleViewTextStyle = TextStyles.large
-    titleView.attributedStringValue = titleViewTextStyle.apply(to: titleView.attributedStringValue)
     nameLabelView.attributedStringValue = nameLabelViewTextStyle.apply(to: "NAME")
     nameLabelViewTextStyle = TextStyles.small
     nameLabelView.attributedStringValue = nameLabelViewTextStyle.apply(to: nameLabelView.attributedStringValue)
@@ -394,7 +377,6 @@ public class TextStyleInspector: NSBox {
 
   private func setUpConstraints() {
     translatesAutoresizingMaskIntoConstraints = false
-    titleView.translatesAutoresizingMaskIntoConstraints = false
     nameLabelView.translatesAutoresizingMaskIntoConstraints = false
     nameInputView.translatesAutoresizingMaskIntoConstraints = false
     spacer1View.translatesAutoresizingMaskIntoConstraints = false
@@ -431,12 +413,7 @@ public class TextStyleInspector: NSBox {
     let fontSizeInputViewLetterSpacingInputViewHeightAnchorSiblingConstraint = fontSizeInputView
       .heightAnchor
       .constraint(equalTo: letterSpacingInputView.heightAnchor)
-    let titleViewTopAnchorConstraint = titleView.topAnchor.constraint(equalTo: topAnchor, constant: 20)
-    let titleViewLeadingAnchorConstraint = titleView.leadingAnchor.constraint(equalTo: leadingAnchor)
-    let titleViewTrailingAnchorConstraint = titleView.trailingAnchor.constraint(lessThanOrEqualTo: trailingAnchor)
-    let nameLabelViewTopAnchorConstraint = nameLabelView
-      .topAnchor
-      .constraint(equalTo: titleView.bottomAnchor, constant: 20)
+    let nameLabelViewTopAnchorConstraint = nameLabelView.topAnchor.constraint(equalTo: topAnchor, constant: 20)
     let nameLabelViewLeadingAnchorConstraint = nameLabelView.leadingAnchor.constraint(equalTo: leadingAnchor)
     let nameLabelViewTrailingAnchorConstraint = nameLabelView.trailingAnchor.constraint(equalTo: trailingAnchor)
     let nameInputViewTopAnchorConstraint = nameInputView
@@ -607,9 +584,6 @@ public class TextStyleInspector: NSBox {
     NSLayoutConstraint.activate([
       fontSizeInputViewLineHeightInputViewHeightAnchorSiblingConstraint,
       fontSizeInputViewLetterSpacingInputViewHeightAnchorSiblingConstraint,
-      titleViewTopAnchorConstraint,
-      titleViewLeadingAnchorConstraint,
-      titleViewTrailingAnchorConstraint,
       nameLabelViewTopAnchorConstraint,
       nameLabelViewLeadingAnchorConstraint,
       nameLabelViewTrailingAnchorConstraint,
@@ -711,7 +685,6 @@ public class TextStyleInspector: NSBox {
   }
 
   private func update() {
-    titleView.attributedStringValue = titleViewTextStyle.apply(to: titleText)
     idInputView.textValue = idText
     nameInputView.textValue = nameText
     fontNameInputView.textValue = fontNameText
@@ -779,7 +752,6 @@ public class TextStyleInspector: NSBox {
 
 extension TextStyleInspector {
   public struct Parameters: Equatable {
-    public var titleText: String
     public var idText: String
     public var nameText: String
     public var fontNameText: String
@@ -802,7 +774,6 @@ extension TextStyleInspector {
     public var onChangeDescriptionText: StringHandler
 
     public init(
-      titleText: String,
       idText: String,
       nameText: String,
       fontNameText: String,
@@ -824,7 +795,6 @@ extension TextStyleInspector {
       onChangeColorValue: StringHandler = nil,
       onChangeDescriptionText: StringHandler = nil)
     {
-      self.titleText = titleText
       self.idText = idText
       self.nameText = nameText
       self.fontNameText = fontNameText
@@ -850,7 +820,6 @@ extension TextStyleInspector {
     public init() {
       self
         .init(
-          titleText: "",
           idText: "",
           nameText: "",
           fontNameText: "",
@@ -864,16 +833,15 @@ extension TextStyleInspector {
     }
 
     public static func ==(lhs: Parameters, rhs: Parameters) -> Bool {
-      return lhs.titleText == rhs.titleText &&
-        lhs.idText == rhs.idText &&
-          lhs.nameText == rhs.nameText &&
-            lhs.fontNameText == rhs.fontNameText &&
-              lhs.fontFamilyText == rhs.fontFamilyText &&
-                lhs.fontWeightText == rhs.fontWeightText &&
-                  lhs.fontSizeNumber == rhs.fontSizeNumber &&
-                    lhs.lineHeightNumber == rhs.lineHeightNumber &&
-                      lhs.letterSpacingNumber == rhs.letterSpacingNumber &&
-                        lhs.colorValue == rhs.colorValue && lhs.descriptionText == rhs.descriptionText
+      return lhs.idText == rhs.idText &&
+        lhs.nameText == rhs.nameText &&
+          lhs.fontNameText == rhs.fontNameText &&
+            lhs.fontFamilyText == rhs.fontFamilyText &&
+              lhs.fontWeightText == rhs.fontWeightText &&
+                lhs.fontSizeNumber == rhs.fontSizeNumber &&
+                  lhs.lineHeightNumber == rhs.lineHeightNumber &&
+                    lhs.letterSpacingNumber == rhs.letterSpacingNumber &&
+                      lhs.colorValue == rhs.colorValue && lhs.descriptionText == rhs.descriptionText
     }
   }
 }
@@ -898,7 +866,6 @@ extension TextStyleInspector {
     }
 
     public init(
-      titleText: String,
       idText: String,
       nameText: String,
       fontNameText: String,
@@ -923,7 +890,6 @@ extension TextStyleInspector {
       self
         .init(
           Parameters(
-            titleText: titleText,
             idText: idText,
             nameText: nameText,
             fontNameText: fontNameText,
@@ -949,7 +915,6 @@ extension TextStyleInspector {
     public init() {
       self
         .init(
-          titleText: "",
           idText: "",
           nameText: "",
           fontNameText: "",

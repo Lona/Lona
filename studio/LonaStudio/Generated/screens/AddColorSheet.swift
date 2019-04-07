@@ -144,16 +144,20 @@ public class AddColorSheet: NSBox {
 
   // MARK: Private
 
+  private var titleView = LNATextField(labelWithString: "")
   private var colorInspectorView = ColorInspector()
   private var footerView = NSBox()
   private var cancelButtonView = Button()
   private var footerSpacerView = NSBox()
   private var doneButtonView = Button()
 
+  private var titleViewTextStyle = TextStyles.large
+
   private func setUpViews() {
     boxType = .custom
     borderType = .noBorder
     contentViewMargins = .zero
+    titleView.lineBreakMode = .byWordWrapping
     footerView.boxType = .custom
     footerView.borderType = .noBorder
     footerView.contentViewMargins = .zero
@@ -161,13 +165,16 @@ public class AddColorSheet: NSBox {
     footerSpacerView.borderType = .noBorder
     footerSpacerView.contentViewMargins = .zero
 
+    addSubview(titleView)
     addSubview(colorInspectorView)
     addSubview(footerView)
     footerView.addSubview(cancelButtonView)
     footerView.addSubview(footerSpacerView)
     footerView.addSubview(doneButtonView)
 
-    colorInspectorView.titleText = "New Color"
+    titleView.attributedStringValue = titleViewTextStyle.apply(to: "New Color")
+    titleViewTextStyle = TextStyles.large
+    titleView.attributedStringValue = titleViewTextStyle.apply(to: titleView.attributedStringValue)
     cancelButtonView.titleText = "Cancel"
     footerSpacerView.fillColor = #colorLiteral(red: 0.847058823529, green: 0.847058823529, blue: 0.847058823529, alpha: 1)
     doneButtonView.titleText = "Add Color"
@@ -175,6 +182,7 @@ public class AddColorSheet: NSBox {
 
   private func setUpConstraints() {
     translatesAutoresizingMaskIntoConstraints = false
+    titleView.translatesAutoresizingMaskIntoConstraints = false
     colorInspectorView.translatesAutoresizingMaskIntoConstraints = false
     footerView.translatesAutoresizingMaskIntoConstraints = false
     cancelButtonView.translatesAutoresizingMaskIntoConstraints = false
@@ -182,7 +190,10 @@ public class AddColorSheet: NSBox {
     doneButtonView.translatesAutoresizingMaskIntoConstraints = false
 
     let widthAnchorConstraint = widthAnchor.constraint(equalToConstant: 480)
-    let colorInspectorViewTopAnchorConstraint = colorInspectorView.topAnchor.constraint(equalTo: topAnchor)
+    let titleViewTopAnchorConstraint = titleView.topAnchor.constraint(equalTo: topAnchor, constant: 20)
+    let titleViewLeadingAnchorConstraint = titleView.leadingAnchor.constraint(equalTo: leadingAnchor, constant: 20)
+    let titleViewTrailingAnchorConstraint = titleView.trailingAnchor.constraint(equalTo: trailingAnchor, constant: -20)
+    let colorInspectorViewTopAnchorConstraint = colorInspectorView.topAnchor.constraint(equalTo: titleView.bottomAnchor)
     let colorInspectorViewLeadingAnchorConstraint = colorInspectorView
       .leadingAnchor
       .constraint(equalTo: leadingAnchor, constant: 20)
@@ -235,6 +246,9 @@ public class AddColorSheet: NSBox {
 
     NSLayoutConstraint.activate([
       widthAnchorConstraint,
+      titleViewTopAnchorConstraint,
+      titleViewLeadingAnchorConstraint,
+      titleViewTrailingAnchorConstraint,
       colorInspectorViewTopAnchorConstraint,
       colorInspectorViewLeadingAnchorConstraint,
       colorInspectorViewTrailingAnchorConstraint,
