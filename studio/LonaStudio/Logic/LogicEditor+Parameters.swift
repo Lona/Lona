@@ -221,66 +221,6 @@ extension LogicEditor {
                     copy.category = "Component Parameter".uppercased()
                     return copy
                 }
-            case .functionParameterDefaultValue(let value):
-                let items = [
-                    LogicSuggestionItem(
-                        title: "No default",
-                        category: "Default Value".uppercased(),
-                        node: LGCSyntaxNode.functionParameterDefaultValue(.none(id: UUID()))
-                    )
-                ]
-
-                var typedItems: [LogicSuggestionItem] = []
-
-                if let inferredType = value.inferType(within: canvasView.rootNode, context: [
-                    TypeEntity.nativeType(NativeType(name: "Boolean", parameters: [])),
-                    TypeEntity.nativeType(NativeType(name: "Number", parameters: []))
-                    ]) {
-                    Swift.print("Inferred", inferredType)
-
-                    switch inferredType.entity {
-                    case .nativeType(let value):
-                        switch value.name {
-                        case "Boolean":
-                            typedItems = [
-                                LogicSuggestionItem(
-                                    title: "true",
-                                    category: "Literals".uppercased(),
-                                    node: LGCSyntaxNode.literal(.boolean(id: UUID(), value: true))
-                                ),
-                                LogicSuggestionItem(
-                                    title: "false",
-                                    category: "Literals".uppercased(),
-                                    node: LGCSyntaxNode.literal(.boolean(id: UUID(), value: false))
-                                )
-                                ].compactMap({ item in
-                                    switch item.node {
-                                    case .literal(let literal):
-                                        return LogicSuggestionItem(
-                                            title: item.title,
-                                            category: item.category,
-                                            node: .functionParameterDefaultValue(
-                                                LGCFunctionParameterDefaultValue.value(
-                                                    id: UUID(),
-                                                    expression: LGCExpression.literalExpression(id: UUID(), literal: literal)
-                                                )
-                                            )
-                                        )
-                                    default:
-                                        return nil
-                                    }
-                                })
-                        default:
-                            break
-                        }
-                    case .genericType:
-                        break
-                    case .functionType:
-                        break
-                    }
-                }
-
-                return items.titleContains(prefix: query) + typedItems.titleContains(prefix: query).sortedByPrefix()
             default:
                 return []
             }

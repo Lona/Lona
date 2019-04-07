@@ -14,39 +14,61 @@ private let startsWithNumberRegex = try? NSRegularExpression(pattern: #"^\d"#)
 
 class ParameterListEditorView: NSView {
 
-    var editorView: ParameterListView
-    var logicEditor = LogicEditor.makeParameterEditorView()
+    // MARK: Lifecycle
 
-    func renderScrollView() -> NSView {
-        //        let scrollView = NSScrollView(frame: frame)
-        //        scrollView.translatesAutoresizingMaskIntoConstraints = false
-        //        scrollView.documentView = editorView
-        //        scrollView.hasVerticalRuler = true
-        //
-        //        return scrollView
+    override init(frame frameRect: NSRect) {
+        super.init(frame: frameRect)
 
-        return logicEditor
+        setUpViews()
+        setUpConstraints()
     }
 
-    func renderToolbar() -> NSView {
-        let toolbar = NSView()
-        toolbar.translatesAutoresizingMaskIntoConstraints = false
-        toolbar.backgroundFill = NSColor.controlBackgroundColor.cgColor
-        toolbar.addBorderView(to: .top, color: NSSplitView.defaultDividerColor.cgColor)
-
-        return toolbar
+    required init?(coder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
     }
 
-    func renderPlusButton() -> Button {
-        let button = Button(frame: NSRect(x: 0, y: 0, width: 24, height: 23))
-        button.image = NSImage.init(named: NSImage.addTemplateName)!
-        button.bezelStyle = .smallSquare
-        button.setButtonType(.momentaryPushIn)
-        button.isBordered = false
+    // MARK: Public
 
-        return button
+    var parameterList: [CSParameter] {
+        get { return ParameterListEditorView.makeParameterList(from: logicEditor.rootNode) }
+        set {
+            let newRootNode = ParameterListEditorView.makeRootNode(from: newValue)
+            if logicEditor.rootNode != newRootNode {
+                logicEditor.rootNode = newRootNode
+            }
+        }
     }
 
+    var onChange: ([CSParameter]) -> Void = {_ in }
+
+    // MARK: Private
+
+    private var logicEditor = LogicEditor.makeParameterEditorView()
+
+    private func setUpViews() {
+        addSubview(logicEditor)
+
+        logicEditor.onChangeRootNode = { [unowned self] rootNode in
+            self.onChange(ParameterListEditorView.makeParameterList(from: rootNode))
+
+            return true
+        }
+    }
+
+    private func setUpConstraints() {
+        translatesAutoresizingMaskIntoConstraints = false
+        logicEditor.translatesAutoresizingMaskIntoConstraints = false
+
+        logicEditor.topAnchor.constraint(equalTo: topAnchor, constant: 1).isActive = true
+        logicEditor.bottomAnchor.constraint(equalTo: bottomAnchor).isActive = true
+        logicEditor.leadingAnchor.constraint(equalTo: leadingAnchor).isActive = true
+        logicEditor.trailingAnchor.constraint(equalTo: trailingAnchor).isActive = true
+    }
+}
+
+// MARK: Logic <==> Parameter Conversion
+
+extension ParameterListEditorView {
     private static func makeParameterList(from rootNode: LGCSyntaxNode) -> [CSParameter] {
         switch rootNode {
         case .topLevelParameters(let topLevel):
@@ -82,62 +104,5 @@ class ParameterListEditorView: NSView {
                 )
             )
         )
-    }
-
-    var parameterList: [CSParameter] {
-        get { return ParameterListEditorView.makeParameterList(from: logicEditor.rootNode) }
-        set {
-            logicEditor.rootNode = ParameterListEditorView.makeRootNode(from: newValue)
-        }
-    }
-
-    var onChange: ([CSParameter]) -> Void = {_ in }
-
-    override init(frame frameRect: NSRect) {
-        editorView = ParameterListView(frame: frameRect)
-
-        super.init(frame: frameRect)
-
-        logicEditor.onChangeRootNode = { [unowned self] rootNode in
-            self.onChange(ParameterListEditorView.makeParameterList(from: rootNode))
-
-            return true
-        }
-
-        // Create views
-
-        let toolbar = renderToolbar()
-        let scrollView = renderScrollView()
-        let plusButton = renderPlusButton()
-
-        toolbar.addSubview(plusButton)
-        addSubview(toolbar)
-        addSubview(scrollView)
-        addBorderView(to: .top, color: NSSplitView.defaultDividerColor.cgColor)
-
-        // Constraints
-
-        constrain(to: scrollView, [.left, .width])
-        scrollView.topAnchor.constraint(equalTo: topAnchor, constant: 1).isActive = true
-        scrollView.bottomAnchor.constraint(equalTo: toolbar.topAnchor).isActive = true
-
-        constrain(to: toolbar, [.bottom, .left, .width])
-        toolbar.constrain(.height, as: 24)
-
-        // Event handlers
-
-        plusButton.onPress = {
-            let newItem = CSParameter()
-            self.editorView.list.append(newItem)
-            self.editorView.select(item: newItem, ensureVisible: true)
-        }
-
-        editorView.onChange = { value in
-            self.onChange(value)
-        }
-    }
-
-    required init?(coder: NSCoder) {
-        fatalError("init(coder:) has not been implemented")
     }
 }
