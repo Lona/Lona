@@ -70,6 +70,7 @@ class UtilitiesView: NSBox {
     // between tabs. But we'll need to test thoroughly after we remove it.
     public func reloadData() {
         logicListView?.editor?.reloadData()
+        parameterListEditorView?.parameterList = component?.parameters ?? []
 
         // We need to update this when any parameters change at least. For now,
         // update all editors at once for simplicity... optimize if necessary later.

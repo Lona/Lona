@@ -47,31 +47,47 @@ class ParameterListEditorView: NSView {
         return button
     }
 
-    var parameterList: [CSParameter] {
-        get {
-            return editorView.list
-        }
-        set {
-            editorView.list = newValue
+    private static func makeParameterList(from rootNode: LGCSyntaxNode) -> [CSParameter] {
+        switch rootNode {
+        case .topLevelParameters(let topLevel):
+            return topLevel.parameters.map { param in
+                switch param {
+                case .placeholder:
+                    return nil
+                case .parameter(let value):
+                    guard let csType = value.annotation.csType else { return nil }
 
-            let rootNode = LGCSyntaxNode.topLevelParameters(
-                LGCTopLevelParameters(
-                    id: UUID(),
-                    parameters: LGCList(
-                        parameterList.map { param in
-                            return LGCFunctionParameter.parameter(
-                                id: UUID(),
-                                externalName: nil,
-                                localName: LGCPattern(id: UUID(), name: param.name),
-                                annotation: .makePlaceholder(),
-                                defaultValue: .none(id: UUID())
-                            )
+                    return CSParameter(name: value.localName.name, type: csType)
+                }
+                }.compactMap { $0 }
+        default:
+            return []
+        }
+    }
+
+    private static func makeRootNode(from parameterList: [CSParameter]) -> LGCSyntaxNode {
+        return LGCSyntaxNode.topLevelParameters(
+            LGCTopLevelParameters(
+                id: UUID(),
+                parameters: LGCList(
+                    parameterList.map { param in
+                        return LGCFunctionParameter.parameter(
+                            id: UUID(),
+                            externalName: nil,
+                            localName: LGCPattern(id: UUID(), name: param.name),
+                            annotation: LGCTypeAnnotation(csType: param.type),
+                            defaultValue: .none(id: UUID())
+                        )
                         } + [LGCFunctionParameter.makePlaceholder()]
-                    )
                 )
             )
+        )
+    }
 
-            logicEditor.rootNode = rootNode
+    var parameterList: [CSParameter] {
+        get { return ParameterListEditorView.makeParameterList(from: logicEditor.rootNode) }
+        set {
+            logicEditor.rootNode = ParameterListEditorView.makeRootNode(from: newValue)
         }
     }
 
@@ -81,6 +97,12 @@ class ParameterListEditorView: NSView {
         editorView = ParameterListView(frame: frameRect)
 
         super.init(frame: frameRect)
+
+        logicEditor.onChangeRootNode = { [unowned self] rootNode in
+            self.onChange(ParameterListEditorView.makeParameterList(from: rootNode))
+
+            return true
+        }
 
         // Create views
 

@@ -185,6 +185,7 @@
 		6B2DC1AE21361C4700679668 /* Colors.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 6B2DC1AA21361C4700679668 /* Colors.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		6B2DC1B221362E8400679668 /* CoreColorPicker.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6B2DC1B121362E8400679668 /* CoreColorPicker.swift */; };
 		6B34149E2258041900CC65D1 /* LogicEditor+Parameters.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6B34149D2258041900CC65D1 /* LogicEditor+Parameters.swift */; };
+		6B3414A822596AA300CC65D1 /* LGCTypeAnnotation+CSType.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6B3414A722596AA300CC65D1 /* LGCTypeAnnotation+CSType.swift */; };
 		6B39E6F3212DB3AD0012DA4C /* UtilitiesView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6B39E6F2212DB3AD0012DA4C /* UtilitiesView.swift */; };
 		6B39E6F5212DEF120012DA4C /* WorkspaceViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6B39E6F4212DEF120012DA4C /* WorkspaceViewController.swift */; };
 		6B3A563D21DEA7040012C44F /* Colors+Appearance.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6B3A563C21DEA7040012C44F /* Colors+Appearance.swift */; };
@@ -497,6 +498,7 @@
 		6B2DC1AA21361C4700679668 /* Colors.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Colors.framework; path = Carthage/Build/Mac/Colors.framework; sourceTree = "<group>"; };
 		6B2DC1B121362E8400679668 /* CoreColorPicker.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CoreColorPicker.swift; sourceTree = "<group>"; };
 		6B34149D2258041900CC65D1 /* LogicEditor+Parameters.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "LogicEditor+Parameters.swift"; sourceTree = "<group>"; };
+		6B3414A722596AA300CC65D1 /* LGCTypeAnnotation+CSType.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "LGCTypeAnnotation+CSType.swift"; sourceTree = "<group>"; };
 		6B39E6F2212DB3AD0012DA4C /* UtilitiesView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UtilitiesView.swift; sourceTree = "<group>"; };
 		6B39E6F4212DEF120012DA4C /* WorkspaceViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WorkspaceViewController.swift; sourceTree = "<group>"; };
 		6B3A563C21DEA7040012C44F /* Colors+Appearance.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Colors+Appearance.swift"; sourceTree = "<group>"; };
@@ -1074,6 +1076,7 @@
 			isa = PBXGroup;
 			children = (
 				6B34149D2258041900CC65D1 /* LogicEditor+Parameters.swift */,
+				6B3414A722596AA300CC65D1 /* LGCTypeAnnotation+CSType.swift */,
 			);
 			path = Logic;
 			sourceTree = "<group>";
@@ -1516,6 +1519,7 @@
 				6B25041821E5510900AE7F97 /* ImageDocument.swift in Sources */,
 				6BD4976321E53F2000BC3970 /* Accessibility.swift in Sources */,
 				30B5B1A71EC3BF4F002068CE /* ColorPickerButton.swift in Sources */,
+				6B3414A822596AA300CC65D1 /* LGCTypeAnnotation+CSType.swift in Sources */,
 				BACCB42B1FEFA26E00B58E32 /* ShadowStyleRowView.swift in Sources */,
 				306D2FF01F847DCB00907B4E /* NSImageExtensions.swift in Sources */,
 				6B4DFCEB20A75B900048BB43 /* ColorPreviewCard.swift in Sources */,

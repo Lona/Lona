@@ -246,7 +246,7 @@ indirect enum CSType: Equatable, CSDataSerializable, CSDataDeserializable {
                 }))
             }
 
-            if returnType != .undefined {
+            if returnType != .undefined && returnType != .unit {
                 data["returnType"] = returnType.toData()
             }
 
