@@ -681,7 +681,8 @@ switch (command) {
   } else {
     let contents =
       Node.Fs.readFileSync(List.nth(positionalArguments, 4), `utf8);
-    convertTypes(target, contents) |> Js.log;
+    let jsonContents = Serialization.convertTypes(contents, "json");
+    convertTypes(target, jsonContents) |> Js.log;
   }
 | "textStyles" =>
   let initialWorkspaceSearchPath =

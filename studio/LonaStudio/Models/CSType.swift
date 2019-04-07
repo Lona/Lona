@@ -246,7 +246,7 @@ indirect enum CSType: Equatable, CSDataSerializable, CSDataDeserializable {
                 }))
             }
 
-            if returnType != .undefined {
+            if returnType != .undefined && returnType != .unit {
                 data["returnType"] = returnType.toData()
             }
 
@@ -367,24 +367,37 @@ indirect enum CSType: Equatable, CSDataSerializable, CSDataDeserializable {
         return merge(additional)
     }
 
-    static func parameterType() -> CSType {
-        // TODO caching?
-        let values: [String] = [
+    static func primitiveTypeNames() -> [String] {
+        return [
             "Boolean",
             "Number",
             "WholeNumber",
             "String",
-            "Array",
-            "Record",
-            "Variant",
             "Unit",
+            "URL",
+            "BorderStyle"
+        ]
+    }
+
+    static func tokenTypeNames() -> [String] {
+        return [
             "Color",
             "TextStyle",
-            "BorderStyle",
-            "Shadow",
-            "URL",
-            "Function",
-            "Component"
+            "Shadow"
+        ]
+    }
+
+    static func parameterType() -> CSType {
+        // TODO caching?
+        let values: [String] =
+            primitiveTypeNames() +
+            tokenTypeNames() +
+            [
+                "Array",
+                "Record",
+                "Variant",
+                "Function",
+                "Component"
             ] +
             LonaModule.current.types.map({ $0.toString() }) +
             CSUserTypes.types.map({ $0.toString() })

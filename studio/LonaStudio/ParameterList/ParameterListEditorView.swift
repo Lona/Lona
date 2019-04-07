@@ -8,86 +8,100 @@
 
 import Foundation
 import Cocoa
+import Logic
 
 class ParameterListEditorView: NSView {
 
-    var editorView: ParameterListView
-
-    func renderScrollView() -> NSView {
-        let scrollView = NSScrollView(frame: frame)
-        scrollView.translatesAutoresizingMaskIntoConstraints = false
-        scrollView.addSubview(editorView)
-        scrollView.documentView = editorView
-        scrollView.hasVerticalRuler = true
-
-        return scrollView
-    }
-
-    func renderToolbar() -> NSView {
-        let toolbar = NSView()
-        toolbar.translatesAutoresizingMaskIntoConstraints = false
-        toolbar.backgroundFill = NSColor.controlBackgroundColor.cgColor
-        toolbar.addBorderView(to: .top, color: NSSplitView.defaultDividerColor.cgColor)
-
-        return toolbar
-    }
-
-    func renderPlusButton() -> Button {
-        let button = Button(frame: NSRect(x: 0, y: 0, width: 24, height: 23))
-        button.image = NSImage.init(named: NSImage.addTemplateName)!
-        button.bezelStyle = .smallSquare
-        button.setButtonType(.momentaryPushIn)
-        button.isBordered = false
-
-        return button
-    }
-
-    var parameterList: [CSParameter] {
-        get { return editorView.list }
-        set { editorView.list = newValue }
-    }
-
-    var onChange: ([CSParameter]) -> Void = {_ in }
+    // MARK: Lifecycle
 
     override init(frame frameRect: NSRect) {
-        editorView = ParameterListView(frame: frameRect)
-
         super.init(frame: frameRect)
 
-        // Create views
-
-        let toolbar = renderToolbar()
-        let scrollView = renderScrollView()
-        let plusButton = renderPlusButton()
-
-        toolbar.addSubview(plusButton)
-        addSubview(toolbar)
-        addSubview(scrollView)
-        addBorderView(to: .top, color: NSSplitView.defaultDividerColor.cgColor)
-
-        // Constraints
-
-        constrain(to: scrollView, [.left, .width])
-        scrollView.topAnchor.constraint(equalTo: topAnchor, constant: 1).isActive = true
-        scrollView.bottomAnchor.constraint(equalTo: toolbar.topAnchor).isActive = true
-
-        constrain(to: toolbar, [.bottom, .left, .width])
-        toolbar.constrain(.height, as: 24)
-
-        // Event handlers
-
-        plusButton.onPress = {
-            let newItem = CSParameter()
-            self.editorView.list.append(newItem)
-            self.editorView.select(item: newItem, ensureVisible: true)
-        }
-
-        editorView.onChange = { value in
-            self.onChange(value)
-        }
+        setUpViews()
+        setUpConstraints()
     }
 
     required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
+    }
+
+    // MARK: Public
+
+    var parameterList: [CSParameter] {
+        get { return ParameterListEditorView.makeParameterList(from: logicEditor.rootNode) }
+        set {
+            let newRootNode = ParameterListEditorView.makeRootNode(from: newValue)
+            if logicEditor.rootNode != newRootNode {
+                logicEditor.rootNode = newRootNode
+            }
+        }
+    }
+
+    var onChange: ([CSParameter]) -> Void = {_ in }
+
+    // MARK: Private
+
+    private var logicEditor = LogicEditor.makeParameterEditorView()
+
+    private func setUpViews() {
+        addSubview(logicEditor)
+        addBorderView(to: .top, color: NSSplitView.defaultDividerColor.cgColor)
+
+        logicEditor.onChangeRootNode = { [unowned self] rootNode in
+            self.onChange(ParameterListEditorView.makeParameterList(from: rootNode))
+
+            return true
+        }
+    }
+
+    private func setUpConstraints() {
+        translatesAutoresizingMaskIntoConstraints = false
+        logicEditor.translatesAutoresizingMaskIntoConstraints = false
+
+        logicEditor.topAnchor.constraint(equalTo: topAnchor, constant: 1).isActive = true
+        logicEditor.bottomAnchor.constraint(equalTo: bottomAnchor).isActive = true
+        logicEditor.leadingAnchor.constraint(equalTo: leadingAnchor).isActive = true
+        logicEditor.trailingAnchor.constraint(equalTo: trailingAnchor).isActive = true
+    }
+}
+
+// MARK: Logic <==> Parameter Conversion
+
+extension ParameterListEditorView {
+    private static func makeParameterList(from rootNode: LGCSyntaxNode) -> [CSParameter] {
+        switch rootNode {
+        case .topLevelParameters(let topLevel):
+            return topLevel.parameters.map { param in
+                switch param {
+                case .placeholder:
+                    return nil
+                case .parameter(let value):
+                    guard let csType = value.annotation.csType else { return nil }
+
+                    return CSParameter(name: value.localName.name, type: csType)
+                }
+                }.compactMap { $0 }
+        default:
+            return []
+        }
+    }
+
+    private static func makeRootNode(from parameterList: [CSParameter]) -> LGCSyntaxNode {
+        return LGCSyntaxNode.topLevelParameters(
+            LGCTopLevelParameters(
+                id: UUID(),
+                parameters: LGCList(
+                    parameterList.map { param in
+                        return LGCFunctionParameter.parameter(
+                            id: UUID(),
+                            externalName: nil,
+                            localName: LGCPattern(id: UUID(), name: param.name),
+                            annotation: LGCTypeAnnotation(csType: param.type),
+                            defaultValue: .none(id: UUID())
+                        )
+                        } + [LGCFunctionParameter.makePlaceholder()]
+                )
+            )
+        )
     }
 }
