@@ -1,24 +1,24 @@
 import Foundation
-import AppKit
+import UIKit
 
 public class TextStyle {
   public let family: String?
   public let name: String?
-  public let weight: NSFont.Weight
+  public let weight: UIFont.Weight
   public let size: CGFloat
   public let lineHeight: CGFloat?
   public let kerning: Double
-  public let color: NSColor?
+  public let color: UIColor?
   public let alignment: NSTextAlignment
 
   public init(
     family: String? = nil,
     name: String? = nil,
-    weight: NSFont.Weight = NSFont.Weight.regular,
-    size: CGFloat = NSFont.systemFontSize,
+    weight: UIFont.Weight = UIFont.Weight.regular,
+    size: CGFloat = UIFont.systemFontSize,
     lineHeight: CGFloat? = nil,
     kerning: Double = 0,
-    color: NSColor? = nil,
+    color: UIColor? = nil,
     alignment: NSTextAlignment = .left) {
     self.family = family
     self.name = name
@@ -33,11 +33,11 @@ public class TextStyle {
   public func with(
     family: String? = nil,
     name: String? = nil,
-    weight: NSFont.Weight? = nil,
+    weight: UIFont.Weight? = nil,
     size: CGFloat? = nil,
     lineHeight: CGFloat? = nil,
     kerning: Double? = nil,
-    color: NSColor? = nil,
+    color: UIColor? = nil,
     alignment: NSTextAlignment? = nil
     ) -> TextStyle {
     return TextStyle(
@@ -61,43 +61,42 @@ public class TextStyle {
     return paragraphStyle
   }()
 
-  public lazy var nsFontDescriptor: NSFontDescriptor = {
-    var attributes: [NSFontDescriptor.AttributeName: Any] = [:]
+  public lazy var uiFontDescriptor: UIFontDescriptor = {
+    var attributes: [UIFontDescriptor.AttributeName: Any] = [:]
     var family = self.family
 
     if family == nil && name == nil {
-      family = NSFont.systemFont(ofSize: NSFont.systemFontSize).familyName
+      family = UIFont.systemFont(ofSize: UIFont.systemFontSize).familyName
     }
 
     if let family = family {
-      attributes[NSFontDescriptor.AttributeName.family] = family
+      attributes[UIFontDescriptor.AttributeName.family] = family
     }
 
     if let name = name {
-      attributes[NSFontDescriptor.AttributeName.name] = name
+      attributes[UIFontDescriptor.AttributeName.name] = name
     }
 
-    attributes[NSFontDescriptor.AttributeName.traits] = [
-      NSFontDescriptor.TraitKey.weight: weight
+    attributes[UIFontDescriptor.AttributeName.traits] = [
+      UIFontDescriptor.TraitKey.weight: weight
     ]
 
-    return NSFontDescriptor(fontAttributes: attributes)
+    return UIFontDescriptor(fontAttributes: attributes)
   }()
 
-  public lazy var nsFont: NSFont = {
-    return NSFont(descriptor: nsFontDescriptor, size: size) ??
-        NSFont.systemFont(ofSize: size, weight: weight)
+  public lazy var uiFont: UIFont = {
+    return UIFont(descriptor: uiFontDescriptor, size: size)
   }()
 
-  public lazy var attributeDictionary: [NSAttributedString.Key: Any] = {
-    var attributes: [NSAttributedString.Key: Any] = [
-      .font: nsFont,
+  public lazy var attributeDictionary: [NSAttributedStringKey: Any] = {
+    var attributes: [NSAttributedStringKey: Any] = [
+      .font: uiFont,
       .kern: kerning,
       .paragraphStyle: paragraphStyle
     ]
 
     if let lineHeight = lineHeight {
-      attributes[.baselineOffset] = (lineHeight - nsFont.ascender + nsFont.descender) / 2
+      attributes[.baselineOffset] = (lineHeight - uiFont.ascender + uiFont.descender) / 4
     }
 
     if let color = color {

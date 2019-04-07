@@ -59,7 +59,7 @@ private class CheckCircleVector: NSBox {
     path.line(to: transform(point: CGPoint(x: 17.25, y: 8.35)))
     pathStroke.setStroke()
     path.lineWidth = 2 * scale
-    path.lineCapStyle = .roundLineCapStyle
+    path.lineCapStyle = .round
     path.stroke()
   }
 }

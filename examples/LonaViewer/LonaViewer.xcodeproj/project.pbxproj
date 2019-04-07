@@ -550,6 +550,7 @@
 					};
 					12869391204A1B4E00E5E26F = {
 						CreatedOnToolsVersion = 9.2;
+						LastSwiftMigration = 1020;
 						ProvisioningStyle = Automatic;
 					};
 				};
@@ -881,7 +882,7 @@
 				PRODUCT_BUNDLE_IDENTIFIER = com.Lona.app.MacOS;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SDKROOT = macosx;
-				SWIFT_VERSION = 4.0;
+				SWIFT_VERSION = 5.0;
 			};
 			name = Debug;
 		};
@@ -899,7 +900,7 @@
 				PRODUCT_BUNDLE_IDENTIFIER = com.Lona.app.MacOS;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SDKROOT = macosx;
-				SWIFT_VERSION = 4.0;
+				SWIFT_VERSION = 5.0;
 			};
 			name = Release;
 		};
