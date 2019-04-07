@@ -10,8 +10,6 @@ import Foundation
 import Cocoa
 import Logic
 
-private let startsWithNumberRegex = try? NSRegularExpression(pattern: #"^\d"#)
-
 class ParameterListEditorView: NSView {
 
     // MARK: Lifecycle
@@ -47,6 +45,7 @@ class ParameterListEditorView: NSView {
 
     private func setUpViews() {
         addSubview(logicEditor)
+        addBorderView(to: .top, color: NSSplitView.defaultDividerColor.cgColor)
 
         logicEditor.onChangeRootNode = { [unowned self] rootNode in
             self.onChange(ParameterListEditorView.makeParameterList(from: rootNode))
