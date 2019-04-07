@@ -69,6 +69,24 @@ let shadowTypeName = (config: Config.t) =>
   | SwiftOptions.AppKit => "NSShadow"
   };
 
+let layoutFittingCompressedSizeConstantName = (config: Config.t) =>
+  switch (config.options.swift.swiftVersion) {
+  | V4 => "UILayoutFittingCompressedSize"
+  | V5 => "UIView.layoutFittingCompressedSize"
+  };
+
+let collectionViewFlowLayoutAutomaticSizeConstantName = (config: Config.t) =>
+  switch (config.options.swift.swiftVersion) {
+  | V4 => "UICollectionViewFlowLayoutAutomaticSize"
+  | V5 => "UICollectionViewFlowLayout.automaticSize"
+  };
+
+let noIntrinsicMetricConstantName = (config: Config.t) =>
+  switch (config.options.swift.swiftVersion) {
+  | V4 => "UIViewNoIntrinsicMetric"
+  | V5 => "UIView.noIntrinsicMetric"
+  };
+
 let layoutPriorityTypeDoc = framework =>
   switch (framework) {
   | SwiftOptions.UIKit => SwiftIdentifier("UILayoutPriority")

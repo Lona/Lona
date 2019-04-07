@@ -36,12 +36,12 @@ public class LonaCollectionViewCell<T: UIView>: UICollectionViewCell {
     switch scrollDirection {
     case .vertical:
       preferredLayoutAttributes.bounds.size.height = systemLayoutSizeFitting(
-        UILayoutFittingCompressedSize,
+        UIView.layoutFittingCompressedSize,
         withHorizontalFittingPriority: .required,
         verticalFittingPriority: .defaultLow).height
     case .horizontal:
       preferredLayoutAttributes.bounds.size.width = systemLayoutSizeFitting(
-        UILayoutFittingCompressedSize,
+        UIView.layoutFittingCompressedSize,
         withHorizontalFittingPriority: .defaultLow,
         verticalFittingPriority: .required).width
     }
@@ -86,7 +86,7 @@ public class LonaCollectionViewListLayout: UICollectionViewFlowLayout {
     self.minimumInteritemSpacing = 0
     self.minimumLineSpacing = 0
     self.sectionInset = .zero
-    self.estimatedItemSize = UICollectionViewFlowLayoutAutomaticSize
+    self.estimatedItemSize = UICollectionViewFlowLayout.automaticSize
   }
 
   public required init?(coder aDecoder: NSCoder) {

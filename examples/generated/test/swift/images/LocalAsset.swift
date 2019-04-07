@@ -7,7 +7,7 @@ import Foundation
 
 private class BackgroundImageView: UIImageView {
   override var intrinsicContentSize: CGSize {
-    return CGSize(width: UIViewNoIntrinsicMetric, height: UIViewNoIntrinsicMetric)
+    return CGSize(width: UIView.noIntrinsicMetric, height: UIView.noIntrinsicMetric)
   }
 }
 
