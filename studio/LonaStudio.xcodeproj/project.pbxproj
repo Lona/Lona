@@ -700,7 +700,7 @@
 				6BABAFE62139C341002B8C8F /* WorkspaceToolbar.swift */,
 				6B39E6F4212DEF120012DA4C /* WorkspaceViewController.swift */,
 				6BA6E89821307D65009CD33C /* WorkspaceWindowController.swift */,
-				BAC24A8E203576730005B16F /* Inspector View */,
+				BAC24A8E203576730005B16F /* InspectorView */,
 			);
 			path = Workspace;
 			sourceTree = "<group>";
@@ -1133,14 +1133,14 @@
 			path = LonaStudioTests;
 			sourceTree = "<group>";
 		};
-		BAC24A8E203576730005B16F /* Inspector View */ = {
+		BAC24A8E203576730005B16F /* InspectorView */ = {
 			isa = PBXGroup;
 			children = (
 				BAC24A8F203578190005B16F /* CustomComponentInspectorView.swift */,
 				30F7C9511ED4AE23009D27DF /* CoreComponentInspectorView.swift */,
 				BA547E5D203A9B1700136FC0 /* InspectorView.swift */,
 			);
-			path = "Inspector View";
+			path = InspectorView;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */

@@ -61,6 +61,12 @@ final class InspectorView: NSBox {
 
     // MARK: Private
 
+    private let headerView = EditorHeader(
+        titleText: "Parameters",
+        subtitleText: "",
+        dividerColor: NSSplitView.defaultDividerColor,
+        fileIcon: NSImage())
+
     private let scrollView = NSScrollView(frame: .zero)
 
     // Flip the content within the scrollview so it starts at the top
@@ -70,6 +76,8 @@ final class InspectorView: NSBox {
         boxType = .custom
         borderType = .noBorder
         contentViewMargins = .zero
+
+        addSubview(headerView)
 
         scrollView.hasVerticalScroller = true
         scrollView.drawsBackground = false
@@ -83,16 +91,22 @@ final class InspectorView: NSBox {
 
     private func setUpConstraints() {
         translatesAutoresizingMaskIntoConstraints = false
+        headerView.translatesAutoresizingMaskIntoConstraints = false
         scrollView.translatesAutoresizingMaskIntoConstraints = false
         flippedView.translatesAutoresizingMaskIntoConstraints = false
 
         // The layout gets completely messed up without this
         flippedView.wantsLayer = true
 
-        topAnchor.constraint(equalTo: scrollView.topAnchor).isActive = true
-        bottomAnchor.constraint(equalTo: scrollView.bottomAnchor).isActive = true
-        leadingAnchor.constraint(equalTo: scrollView.leadingAnchor).isActive = true
-        trailingAnchor.constraint(equalTo: scrollView.trailingAnchor).isActive = true
+        headerView.topAnchor.constraint(equalTo: topAnchor).isActive = true
+        headerView.leadingAnchor.constraint(equalTo: leadingAnchor).isActive = true
+        headerView.trailingAnchor.constraint(equalTo: trailingAnchor).isActive = true
+
+        scrollView.topAnchor.constraint(equalTo: headerView.bottomAnchor).isActive = true
+
+        scrollView.bottomAnchor.constraint(equalTo: bottomAnchor).isActive = true
+        scrollView.leadingAnchor.constraint(equalTo: leadingAnchor).isActive = true
+        scrollView.trailingAnchor.constraint(equalTo: trailingAnchor).isActive = true
 
         flippedView.topAnchor.constraint(equalTo: scrollView.topAnchor).isActive = true
         flippedView.leftAnchor.constraint(equalTo: scrollView.leftAnchor, constant: 20).isActive = true
