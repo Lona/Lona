@@ -12,6 +12,17 @@ import Foundation
 class DocumentController: NSDocumentController {
     public var didOpenADocument = false
 
+    override func noteNewRecentDocumentURL(_ url: URL) {
+        if FileUtils.fileExists(atPath: url.path) == FileUtils.FileExistsType.directory {
+            do {
+                _ = try Data(contentsOf: url.appendingPathComponent("lona.json"))
+                super.noteNewRecentDocumentURL(url)
+            } catch {
+                return
+            }
+        }
+    }
+
     override public func reopenDocument(
         for urlOrNil: URL?,
         withContentsOf contentsURL: URL,
