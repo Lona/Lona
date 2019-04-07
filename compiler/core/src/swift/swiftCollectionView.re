@@ -3,6 +3,8 @@ let template =
       cellRegistration: string,
       cellConfiguration: string,
       cellSelection: string,
+      layoutFittingCompressedSizeConstantName: string,
+      collectionViewFlowLayoutAutomaticSize: string,
     ) => {j|
 import UIKit
 
@@ -39,12 +41,12 @@ public class LonaCollectionViewCell<T: UIView>: UICollectionViewCell {
     switch scrollDirection {
     case .vertical:
       preferredLayoutAttributes.bounds.size.height = systemLayoutSizeFitting(
-        UILayoutFittingCompressedSize,
+        $layoutFittingCompressedSizeConstantName,
         withHorizontalFittingPriority: .required,
         verticalFittingPriority: .defaultLow).height
     case .horizontal:
       preferredLayoutAttributes.bounds.size.width = systemLayoutSizeFitting(
-        UILayoutFittingCompressedSize,
+        $layoutFittingCompressedSizeConstantName,
         withHorizontalFittingPriority: .defaultLow,
         verticalFittingPriority: .required).width
     }
@@ -89,7 +91,7 @@ public class LonaCollectionViewListLayout: UICollectionViewFlowLayout {
     self.minimumInteritemSpacing = 0
     self.minimumLineSpacing = 0
     self.sectionInset = .zero
-    self.estimatedItemSize = UICollectionViewFlowLayoutAutomaticSize
+    self.estimatedItemSize = $collectionViewFlowLayoutAutomaticSize
   }
 
   public required init?(coder aDecoder: NSCoder) {
@@ -715,7 +717,15 @@ let generate =
   Format.joinWith(
     "\n\n",
     [
-      template(cellRegistration, cellConfiguration, cellSelection),
+      template(
+        cellRegistration,
+        cellConfiguration,
+        cellSelection,
+        SwiftDocument.layoutFittingCompressedSizeConstantName(config),
+        SwiftDocument.collectionViewFlowLayoutAutomaticSizeConstantName(
+          config,
+        ),
+      ),
       cellClasses,
     ],
   );

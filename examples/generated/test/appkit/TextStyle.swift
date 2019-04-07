@@ -89,8 +89,8 @@ public class TextStyle {
         NSFont.systemFont(ofSize: size, weight: weight)
   }()
 
-  public lazy var attributeDictionary: [NSAttributedStringKey: Any] = {
-    var attributes: [NSAttributedStringKey: Any] = [
+  public lazy var attributeDictionary: [NSAttributedString.Key: Any] = {
+    var attributes: [NSAttributedString.Key: Any] = [
       .font: nsFont,
       .kern: kerning,
       .paragraphStyle: paragraphStyle

@@ -88,8 +88,8 @@ public class TextStyle {
     return UIFont(descriptor: uiFontDescriptor, size: size)
   }()
 
-  public lazy var attributeDictionary: [NSAttributedStringKey: Any] = {
-    var attributes: [NSAttributedStringKey: Any] = [
+  public lazy var attributeDictionary: [NSAttributedString.Key: Any] = {
+    var attributes: [NSAttributedString.Key: Any] = [
       .font: uiFont,
       .kern: kerning,
       .paragraphStyle: paragraphStyle

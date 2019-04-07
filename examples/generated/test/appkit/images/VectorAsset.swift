@@ -52,7 +52,7 @@ private class ToggleVector: NSBox {
     #colorLiteral(red: 0, green: 0.556862745098, blue: 0.0941176470588, alpha: 1).setStroke()
     rectangle.fill()
     rectangle.lineWidth = 1 * scale
-    rectangle.lineCapStyle = .buttLineCapStyle
+    rectangle.lineCapStyle = .butt
     rectangle.stroke()
     let oval = NSBezierPath()
     oval.move(to: transform(point: CGPoint(x: 12, y: 2)))
@@ -131,7 +131,7 @@ private class ToggleVerticalVector: NSBox {
     #colorLiteral(red: 0.309803921569, green: 0.670588235294, blue: 1, alpha: 1).setStroke()
     rectangle.fill()
     rectangle.lineWidth = 1 * scale
-    rectangle.lineCapStyle = .buttLineCapStyle
+    rectangle.lineCapStyle = .butt
     rectangle.stroke()
     let oval = NSBezierPath()
     oval.move(to: transform(point: CGPoint(x: 12, y: 2)))
@@ -214,7 +214,7 @@ private class CheckCircleVector: NSBox {
     path.line(to: transform(point: CGPoint(x: 17.25, y: 8.35)))
     #colorLiteral(red: 1, green: 1, blue: 1, alpha: 1).setStroke()
     path.lineWidth = 2 * scale
-    path.lineCapStyle = .roundLineCapStyle
+    path.lineCapStyle = .round
     path.stroke()
   }
 }

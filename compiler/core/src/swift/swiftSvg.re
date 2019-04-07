@@ -10,13 +10,8 @@ let curveToFunctionName = (config: Config.t) =>
   | SwiftOptions.AppKit => "curve"
   };
 
-let lineCapValue = (config: Config.t, value) => {
-  let value = Svg.ToString.strokeLineCap(value);
-  switch (config.options.swift.framework) {
-  | SwiftOptions.UIKit => value
-  | SwiftOptions.AppKit => value ++ "LineCapStyle"
-  };
-};
+let lineCapValue = (_config: Config.t, value) =>
+  Svg.ToString.strokeLineCap(value);
 
 let formatElementPath = (items: list(string)): string =>
   switch (items) {

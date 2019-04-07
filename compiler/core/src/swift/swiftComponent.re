@@ -1457,7 +1457,7 @@ let generate =
         rootLayer |> Layer.flatten |> List.exists(Layer.isImageLayer) ?
           [
             [LineComment("MARK: - " ++ "BackgroundImageView"), Empty],
-            SwiftHelperClass.generateBackgroundImage(options, swiftOptions),
+            SwiftHelperClass.generateBackgroundImage(config),
           ]
           |> List.concat :
           []

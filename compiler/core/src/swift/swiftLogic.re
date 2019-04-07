@@ -247,20 +247,33 @@ let toSwiftAST =
             "operator": "=",
             "right":
               Ast.SwiftIdentifier(
-                switch (role) {
-                | "none" => "UIAccessibilityTraitNone"
-                | "button" => "UIAccessibilityTraitButton"
-                | "link" => "UIAccessibilityTraitLink"
-                | "checkbox" => "UIAccessibilityTraitButton"
-                | "search" => "UIAccessibilityTraitSearchField"
-                | "image" => "UIAccessibilityTraitImage"
-                | "keyboardkey" => "UIAccessibilityTraitKeyboardKey"
-                | "text" => "UIAccessibilityTraitStaticText"
-                | "adjustable" => "UIAccessibilityTraitAdjustable"
-                | "imagebutton" => "UIAccessibilityTraitButton | UIAccessibilityTraitImage"
-                | "header" => "UIAccessibilityTraitHeader"
-                | "summary" => "UIAccessibilityTraitSummaryElement"
-                | _ => "UIAccessibilityTraitNone"
+                switch (role, config.options.swift.swiftVersion) {
+                | ("none", V4) => "UIAccessibilityTraitNone"
+                | ("none", V5) => "UIAccessibilityTraits.none"
+                | ("button", V4) => "UIAccessibilityTraitButton"
+                | ("button", V5) => "UIAccessibilityTraits.button"
+                | ("link", V4) => "UIAccessibilityTraitLink"
+                | ("link", V5) => "UIAccessibilityTraits.link"
+                | ("checkbox", V4) => "UIAccessibilityTraitButton"
+                | ("checkbox", V5) => "UIAccessibilityTraits.button"
+                | ("search", V4) => "UIAccessibilityTraitSearchField"
+                | ("search", V5) => "UIAccessibilityTraits.searchField"
+                | ("image", V4) => "UIAccessibilityTraitImage"
+                | ("image", V5) => "UIAccessibilityTraits.image"
+                | ("keyboardkey", V4) => "UIAccessibilityTraitKeyboardKey"
+                | ("keyboardkey", V5) => "UIAccessibilityTraits.keyboardKey"
+                | ("text", V4) => "UIAccessibilityTraitStaticText"
+                | ("text", V5) => "UIAccessibilityTraits.staticText"
+                | ("adjustable", V4) => "UIAccessibilityTraitAdjustable"
+                | ("adjustable", V5) => "UIAccessibilityTraits.adjustable"
+                | ("imagebutton", V4) => "UIAccessibilityTraitButton | UIAccessibilityTraitImage"
+                | ("imagebutton", V5) => "UIAccessibilityTraits.button | UIAccessibilityTraits.image"
+                | ("header", V4) => "UIAccessibilityTraitHeader"
+                | ("header", V5) => "UIAccessibilityTraits.header"
+                | ("summary", V4) => "UIAccessibilityTraitSummaryElement"
+                | ("summary", V5) => "UIAccessibilityTraits.summaryElement"
+                | (_, V4) => "UIAccessibilityTraitNone"
+                | (_, V5) => "UIAccessibilityTraits.none"
                 },
               ),
           })

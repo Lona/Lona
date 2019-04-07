@@ -88,8 +88,7 @@ let generateImageWithBackgroundColor = (config: Config.t) =>
            return .zero
        }
    } */
-let generateBackgroundImage =
-    (options: Options.options, swiftOptions: SwiftOptions.options) =>
+let generateBackgroundImage = config =>
   SwiftAst.[
     ClassDeclaration({
       "name": "BackgroundImageView",
@@ -113,8 +112,22 @@ let generateBackgroundImage =
                     SwiftAst.Builders.functionCall(
                       ["CGSize"],
                       [
-                        (Some("width"), ["UIViewNoIntrinsicMetric"]),
-                        (Some("height"), ["UIViewNoIntrinsicMetric"]),
+                        (
+                          Some("width"),
+                          [
+                            SwiftDocument.noIntrinsicMetricConstantName(
+                              config,
+                            ),
+                          ],
+                        ),
+                        (
+                          Some("height"),
+                          [
+                            SwiftDocument.noIntrinsicMetricConstantName(
+                              config,
+                            ),
+                          ],
+                        ),
                       ],
                     ),
                   ),
