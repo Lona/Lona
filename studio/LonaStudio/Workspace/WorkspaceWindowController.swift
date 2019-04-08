@@ -53,6 +53,7 @@ class WorkspaceWindowController: NSWindowController {
             toolbar.activePanes = activePanes
         }
 
+        windowController.window?.backgroundColor = Colors.headerBackground
         windowController.window?.tabbingMode = .preferred
         windowController.window?.titleVisibility = .hidden
         windowController.window?.toolbar = toolbar
