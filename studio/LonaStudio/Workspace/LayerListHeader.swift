@@ -31,19 +31,57 @@ public class LayerListHeader: NSBox {
         fatalError("init(coder:) has not been implemented")
     }
 
+    // MARK: Public
+
+    var onClickLayerTemplateType: ((CSLayer.LayerType) -> Void)?
+
     // MARK: Private
 
-    let titleView = NSTextField(labelWithString: "Layers")
-    let button = NSSegmentedControl(labels: ["Add"], trackingMode: .momentary, target: nil, action: nil)
+    private let viewComponentIcon = DraggableIconButton()
+    private let textComponentIcon = DraggableIconButton()
+    private let imageComponentIcon = DraggableIconButton()
+    private let vectorComponentIcon = DraggableIconButton()
+
+    private let button = NSSegmentedControl(images: [#imageLiteral(resourceName: "icon-component-plus")], trackingMode: .momentary, target: nil, action: nil)
 
     private func setUpViews() {
         boxType = .custom
         borderType = .noBorder
         contentViewMargins = .zero
 
-        titleView.attributedStringValue = TextStyles.sectionTitle.apply(to: "Layers")
+        func getPasteboardItem(forLayerType type: CSLayer.LayerType) -> NSPasteboardItem {
+            let item = NSPasteboardItem()
+            item.setString(type.string, forType: .lonaLayerTemplateType)
+            return item
+        }
+
+        viewComponentIcon.image = #imageLiteral(resourceName: "icon-component-view")
+        textComponentIcon.image = #imageLiteral(resourceName: "icon-component-text")
+        imageComponentIcon.image = #imageLiteral(resourceName: "icon-component-image")
+        vectorComponentIcon.image = #imageLiteral(resourceName: "icon-component-vector")
+
+        viewComponentIcon.getPasteboardItem = { getPasteboardItem(forLayerType: .builtIn(.view)) }
+        textComponentIcon.getPasteboardItem = { getPasteboardItem(forLayerType: .builtIn(.text)) }
+        imageComponentIcon.getPasteboardItem = { getPasteboardItem(forLayerType: .builtIn(.image)) }
+        vectorComponentIcon.getPasteboardItem = { getPasteboardItem(forLayerType: .builtIn(.vectorGraphic)) }
+
+        viewComponentIcon.onClick = { [unowned self] in self.onClickLayerTemplateType?(.builtIn(.view)) }
+        textComponentIcon.onClick = { [unowned self] in self.onClickLayerTemplateType?(.builtIn(.text)) }
+        imageComponentIcon.onClick = { [unowned self] in self.onClickLayerTemplateType?(.builtIn(.image)) }
+        vectorComponentIcon.onClick = { [unowned self] in self.onClickLayerTemplateType?(.builtIn(.vectorGraphic)) }
+
+        viewComponentIcon.toolTip = "View"
+        textComponentIcon.toolTip = "Text"
+        imageComponentIcon.toolTip = "Image"
+        vectorComponentIcon.toolTip = "Vector Graphic"
+
+        addSubview(viewComponentIcon)
+        addSubview(textComponentIcon)
+        addSubview(imageComponentIcon)
+        addSubview(vectorComponentIcon)
 
         button.isEnabled = true
+        button.cell?.isBordered = false
 
         let menu = NSMenu(items: ComponentMenu.menuItems())
         button.setMenu(menu, forSegment: 0)
@@ -53,21 +91,40 @@ public class LayerListHeader: NSBox {
         }
 
         addSubview(button)
-        addSubview(titleView)
     }
 
     private func setUpConstraints() {
         translatesAutoresizingMaskIntoConstraints = false
         button.translatesAutoresizingMaskIntoConstraints = false
-        titleView.translatesAutoresizingMaskIntoConstraints = false
+        viewComponentIcon.translatesAutoresizingMaskIntoConstraints = false
+        textComponentIcon.translatesAutoresizingMaskIntoConstraints = false
+        imageComponentIcon.translatesAutoresizingMaskIntoConstraints = false
+        vectorComponentIcon.translatesAutoresizingMaskIntoConstraints = false
 
         heightAnchor.constraint(equalToConstant: 37).isActive = true
 
-        titleView.centerYAnchor.constraint(equalTo: centerYAnchor).isActive = true
-        titleView.leadingAnchor.constraint(equalTo: leadingAnchor, constant: 8).isActive = true
-
         button.centerYAnchor.constraint(equalTo: centerYAnchor).isActive = true
-        button.trailingAnchor.constraint(equalTo: trailingAnchor, constant: -8).isActive = true
+        button.trailingAnchor.constraint(equalTo: trailingAnchor, constant: -4).isActive = true
+
+        viewComponentIcon.leadingAnchor.constraint(equalTo: leadingAnchor, constant: 13).isActive = true
+        viewComponentIcon.centerYAnchor.constraint(equalTo: centerYAnchor, constant: 1).isActive = true
+        viewComponentIcon.widthAnchor.constraint(equalToConstant: 12).isActive = true
+        viewComponentIcon.heightAnchor.constraint(equalToConstant: 12).isActive = true
+
+        textComponentIcon.leadingAnchor.constraint(equalTo: viewComponentIcon.trailingAnchor, constant: 19).isActive = true
+        textComponentIcon.centerYAnchor.constraint(equalTo: centerYAnchor, constant: 1).isActive = true
+        textComponentIcon.widthAnchor.constraint(equalToConstant: 11).isActive = true
+        textComponentIcon.heightAnchor.constraint(equalToConstant: 12).isActive = true
+
+        imageComponentIcon.leadingAnchor.constraint(equalTo: textComponentIcon.trailingAnchor, constant: 20).isActive = true
+        imageComponentIcon.centerYAnchor.constraint(equalTo: centerYAnchor, constant: 1).isActive = true
+        imageComponentIcon.widthAnchor.constraint(equalToConstant: 12).isActive = true
+        imageComponentIcon.heightAnchor.constraint(equalToConstant: 12).isActive = true
+
+        vectorComponentIcon.leadingAnchor.constraint(equalTo: imageComponentIcon.trailingAnchor, constant: 20).isActive = true
+        vectorComponentIcon.centerYAnchor.constraint(equalTo: centerYAnchor, constant: 1).isActive = true
+        vectorComponentIcon.widthAnchor.constraint(equalToConstant: 12).isActive = true
+        vectorComponentIcon.heightAnchor.constraint(equalToConstant: 12).isActive = true
     }
 
     private func update() {}

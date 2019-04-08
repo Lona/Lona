@@ -115,6 +115,12 @@ class ComponentEditorViewController: NSSplitViewController {
 
         layerList.fillColor = layerList.isDarkMode ? NSColor.controlBackgroundColor : .white
 
+        layerList.onClickLayerTemplateType = { [unowned self] type in
+            guard let component = self.component, let newLayer = component.makeLayer(forType: type) else { return }
+
+            self.layerList.addLayer(layer: newLayer)
+        }
+
         canvasAreaView.onSelectCanvasHeaderItem = { [unowned self] index in
             self.onChangeInspectedCanvas?(index)
         }

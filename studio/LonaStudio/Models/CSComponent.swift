@@ -242,6 +242,64 @@ class CSComponent: DataNode, NSCopying {
         )
     }
 
+    func makeLayer(forType type: CSLayer.LayerType) -> CSLayer? {
+        let defaultViewParameters: [String: CSData] = [
+            "width": 100.toData(),
+            "height": 100.toData(),
+            "backgroundColor": "#D8D8D8".toData()
+        ]
+
+        switch type {
+        case .builtIn(.view):
+            return CSLayer(
+                name: getNewLayerName(basedOn: "View"),
+                type: .view,
+                parameters: defaultViewParameters
+            )
+        case .builtIn(.text):
+            return CSLayer(
+                name: getNewLayerName(basedOn: "Text"),
+                type: .text,
+                parameters: [
+                    "text": "Text goes here".toData(),
+                    "widthSizingRule": "Shrink".toData(),
+                    "heightSizingRule": "Shrink".toData()
+                ]
+            )
+        case .builtIn(.image):
+            return CSLayer(
+                name: getNewLayerName(basedOn: "Image"),
+                type: .image,
+                parameters: defaultViewParameters
+            )
+        case .builtIn(.vectorGraphic):
+            return CSLayer(
+                name: getNewLayerName(basedOn: "VectorGraphic"),
+                type: .vectorGraphic,
+                parameters: [
+                    "width": 100.toData(),
+                    "height": 100.toData(),
+                    "backgroundColor": "#D8D8D8".toData(),
+                    "resizeMode": "contain".toData()
+                ]
+            )
+        case .builtIn(.animation):
+            return CSLayer(
+                name: getNewLayerName(basedOn: "Animation"),
+                type: .animation,
+                parameters: defaultViewParameters
+            )
+        case .builtIn(.children):
+            return CSLayer(
+                name: getNewLayerName(basedOn: "Children"),
+                type: .children,
+                parameters: defaultViewParameters
+            )
+        default:
+            return nil
+        }
+    }
+
     static func componentName(from url: URL) -> String {
         return url.deletingPathExtension().lastPathComponent
     }

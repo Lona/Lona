@@ -1014,85 +1014,10 @@ extension WorkspaceViewController {
         }
     }
 
-    func addChildren() {
-        let newLayer = CSLayer(name: "Children", type: .children, parameters: [
-            "width": 100.toData(),
-            "height": 100.toData(),
-            "backgroundColor": "#D8D8D8".toData()
-        ])
+    func addLayer(forType type: CSLayer.LayerType) {
+        guard let component = component,
+            let newLayer = component.makeLayer(forType: type) else { return }
 
         componentEditorViewController.addLayer(newLayer)
     }
-
-    func addImage() {
-        guard let component = component else { return }
-
-        let name = component.getNewLayerName(basedOn: "Image")
-
-        let newLayer = CSLayer(name: name, type: .image, parameters: [
-            "width": 100.toData(),
-            "height": 100.toData(),
-            "backgroundColor": "#D8D8D8".toData()
-        ])
-
-        componentEditorViewController.addLayer(newLayer)
-    }
-
-    func addVectorGraphic() {
-        guard let component = component else { return }
-
-        let name = component.getNewLayerName(basedOn: "VectorGraphic")
-
-        let newLayer = CSLayer(name: name, type: .vectorGraphic, parameters: [
-            "width": 100.toData(),
-            "height": 100.toData(),
-            "backgroundColor": "#D8D8D8".toData(),
-            "resizeMode": "contain".toData()
-            ])
-
-        componentEditorViewController.addLayer(newLayer)
-    }
-
-    func addAnimation() {
-        guard let component = component else { return }
-
-        let name = component.getNewLayerName(basedOn: "Animation")
-
-        let newLayer = CSLayer(name: name, type: .animation, parameters: [
-            "width": 100.toData(),
-            "height": 100.toData(),
-            "backgroundColor": "#D8D8D8".toData()
-        ])
-
-        componentEditorViewController.addLayer(newLayer)
-    }
-
-    func addView() {
-        guard let component = component else { return }
-
-        let name = component.getNewLayerName(basedOn: "View")
-
-        let newLayer = CSLayer(name: name, type: .view, parameters: [
-            "width": 100.toData(),
-            "height": 100.toData(),
-            "backgroundColor": "#D8D8D8".toData()
-        ])
-
-        componentEditorViewController.addLayer(newLayer)
-    }
-
-    func addText() {
-        guard let component = component else { return }
-
-        let name = component.getNewLayerName(basedOn: "Text")
-
-        let newLayer = CSLayer(name: name, type: .text, parameters: [
-            "text": "Text goes here".toData(),
-            "widthSizingRule": "Shrink".toData(),
-            "heightSizingRule": "Shrink".toData()
-        ])
-
-        componentEditorViewController.addLayer(newLayer)
-    }
-
 }
