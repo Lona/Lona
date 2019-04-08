@@ -35,20 +35,7 @@ enum ComponentMenu {
             return NSMenuItem(title: uppercased, onClick: {
                 guard let viewController = NSApplication.shared.mainWindow?.contentViewController as? WorkspaceViewController else { return }
 
-                switch layerType {
-                case .view:
-                    viewController.addView()
-                case .text:
-                    viewController.addText()
-                case .image:
-                    viewController.addImage()
-                case .vectorGraphic:
-                    viewController.addVectorGraphic()
-                case .animation:
-                    viewController.addAnimation()
-                case .children:
-                    viewController.addChildren()
-                }
+                viewController.addLayer(forType: .builtIn(layerType))
             })
         }
     }

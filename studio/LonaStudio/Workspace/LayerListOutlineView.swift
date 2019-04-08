@@ -9,6 +9,15 @@
 import AppKit
 import Foundation
 
+// MARK: - NSPasteboard.PasteboardType
+
+public extension NSPasteboard.PasteboardType {
+    static let lonaLayerTemplateType = NSPasteboard.PasteboardType(rawValue: "lona.layerTemplateType")
+    static let lonaLayerIndex = NSPasteboard.PasteboardType(rawValue: "lona.layerIndex")
+}
+
+// MARK: - LayerListOutlineView
+
 final class LayerListOutlineView: NSOutlineView, NSTextFieldDelegate {
 
     fileprivate struct Constants {
@@ -154,7 +163,7 @@ extension LayerListOutlineView {
         focusRingType = .none
         intercellSpacing = NSSize(width: 10, height: 10)
 
-        registerForDraggedTypes([NSPasteboard.PasteboardType(rawValue: "component.layer")])
+        registerForDraggedTypes([.lonaLayerIndex, .lonaLayerTemplateType])
 
         headerView = nil
         doubleAction = #selector(doubleClick(sender:))
@@ -481,19 +490,17 @@ extension LayerListOutlineView: NSOutlineViewDelegate, NSOutlineViewDataSource {
         // working as expected here
         if let item = item as? DataNode {
             let index = outlineView.row(forItem: item)
-            pp.setString(String(index), forType: NSPasteboard.PasteboardType(rawValue: "component.layer"))
+            pp.setString(String(index), forType: .lonaLayerIndex)
         }
 
         return pp
     }
 
     func outlineView(_ outlineView: NSOutlineView, validateDrop info: NSDraggingInfo, proposedItem item: Any?, proposedChildIndex index: Int) -> NSDragOperation {
-        let sourceIndexString = info.draggingPasteboard.string(forType: NSPasteboard.PasteboardType(rawValue: "component.layer"))
 
-        if sourceIndexString != nil, let sourceIndex = Int(sourceIndexString!), let targetLayer = item as? CSLayer? {
-
-            // Can't drop before or after the root view
-            if targetLayer == nil { return NSDragOperation() }
+        if let sourceIndexString = info.draggingPasteboard.string(forType: .lonaLayerIndex),
+            let sourceIndex = Int(sourceIndexString),
+            let targetLayer = item as? CSLayer {
 
             // Can't move the root
             if sourceIndex == 0 { return NSDragOperation() }
@@ -510,15 +517,23 @@ extension LayerListOutlineView: NSOutlineViewDelegate, NSOutlineViewDataSource {
 
                 parent = outlineView.parent(forItem: parent) as! CSLayer?
             }
+
+            return NSDragOperation.move
         }
 
-        return NSDragOperation.move
+        if let _ = info.draggingPasteboard.string(forType: .lonaLayerTemplateType),
+            let _ = item as? CSLayer {
+
+            return NSDragOperation.copy
+        }
+
+        return NSDragOperation()
     }
 
     func outlineView(_ outlineView: NSOutlineView, acceptDrop info: NSDraggingInfo, item: Any?, childIndex index: Int) -> Bool {
-        let sourceIndexString = info.draggingPasteboard.string(forType: NSPasteboard.PasteboardType(rawValue: "component.layer"))
 
-        if sourceIndexString != nil, let sourceIndex = Int(sourceIndexString!) {
+        if let sourceIndexString = info.draggingPasteboard.string(forType: .lonaLayerIndex),
+            let sourceIndex = Int(sourceIndexString) {
             //            print( "accept drop", item, "index", index, "drag index", sourceIndex)
             let sourceLayer = outlineView.item(atRow: sourceIndex) as! CSLayer
             let targetLayer = item as! CSLayer
@@ -549,6 +564,32 @@ extension LayerListOutlineView: NSOutlineViewDelegate, NSOutlineViewDataSource {
             })
 
             return true
+        }
+
+        if let templateTypeString = info.draggingPasteboard.string(forType: .lonaLayerTemplateType),
+            let targetLayer = item as? CSLayer,
+            let component = component {
+            let templateType = CSLayer.LayerType.init(from: templateTypeString)
+
+            if let newLayer = component.makeLayer(forType: templateType) {
+                UndoManager.shared.run(name: "Append", execute: {
+                    if index == -1 {
+                        targetLayer.appendChild(newLayer)
+                    } else {
+                        targetLayer.insertChild(newLayer, at: index)
+                    }
+
+                    self.render()
+                    self.onChange?()
+                }, undo: {
+                    newLayer.removeFromParent()
+
+                    self.render()
+                    self.onChange?()
+                })
+
+                return true
+            }
         }
 
         return false

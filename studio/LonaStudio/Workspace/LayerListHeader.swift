@@ -33,7 +33,8 @@ public class LayerListHeader: NSBox {
 
     // MARK: Private
 
-    let titleView = NSTextField(labelWithString: "Layers")
+    let viewComponentIcon = DraggableIconButton()
+
     let button = NSSegmentedControl(labels: ["Add"], trackingMode: .momentary, target: nil, action: nil)
 
     private func setUpViews() {
@@ -41,7 +42,12 @@ public class LayerListHeader: NSBox {
         borderType = .noBorder
         contentViewMargins = .zero
 
-        titleView.attributedStringValue = TextStyles.sectionTitle.apply(to: "Layers")
+        viewComponentIcon.image = #imageLiteral(resourceName: "icon-component-view")
+        viewComponentIcon.getPasteboardItem = {
+            let item = NSPasteboardItem()
+            item.setString(CSLayer.LayerType.builtIn(.view).string, forType: .lonaLayerTemplateType)
+            return item
+        }
 
         button.isEnabled = true
 
@@ -53,21 +59,23 @@ public class LayerListHeader: NSBox {
         }
 
         addSubview(button)
-        addSubview(titleView)
+        addSubview(viewComponentIcon)
     }
 
     private func setUpConstraints() {
         translatesAutoresizingMaskIntoConstraints = false
         button.translatesAutoresizingMaskIntoConstraints = false
-        titleView.translatesAutoresizingMaskIntoConstraints = false
+        viewComponentIcon.translatesAutoresizingMaskIntoConstraints = false
 
         heightAnchor.constraint(equalToConstant: 37).isActive = true
 
-        titleView.centerYAnchor.constraint(equalTo: centerYAnchor).isActive = true
-        titleView.leadingAnchor.constraint(equalTo: leadingAnchor, constant: 8).isActive = true
-
         button.centerYAnchor.constraint(equalTo: centerYAnchor).isActive = true
         button.trailingAnchor.constraint(equalTo: trailingAnchor, constant: -8).isActive = true
+
+        viewComponentIcon.leadingAnchor.constraint(equalTo: leadingAnchor, constant: 12).isActive = true
+        viewComponentIcon.centerYAnchor.constraint(equalTo: centerYAnchor, constant: 1).isActive = true
+        viewComponentIcon.widthAnchor.constraint(equalToConstant: 12).isActive = true
+        viewComponentIcon.heightAnchor.constraint(equalToConstant: 12).isActive = true
     }
 
     private func update() {}
