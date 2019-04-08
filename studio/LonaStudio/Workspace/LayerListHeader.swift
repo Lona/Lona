@@ -55,10 +55,12 @@ public class LayerListHeader: NSBox {
             return item
         }
 
-        viewComponentIcon.image = #imageLiteral(resourceName: "icon-component-view")
-        textComponentIcon.image = #imageLiteral(resourceName: "icon-component-text")
-        imageComponentIcon.image = #imageLiteral(resourceName: "icon-component-image")
-        vectorComponentIcon.image = #imageLiteral(resourceName: "icon-component-vector")
+        let iconColor = isDarkMode ? #colorLiteral(red: 0.9450980392, green: 0.9450980392, blue: 0.9450980392, alpha: 1) : #colorLiteral(red: 0.3803921569, green: 0.3803921569, blue: 0.3803921569, alpha: 1)
+
+        viewComponentIcon.image = #imageLiteral(resourceName: "icon-component-view").tinted(color: iconColor)
+        textComponentIcon.image = #imageLiteral(resourceName: "icon-component-text").tinted(color: iconColor)
+        imageComponentIcon.image = #imageLiteral(resourceName: "icon-component-image").tinted(color: iconColor)
+        vectorComponentIcon.image = #imageLiteral(resourceName: "icon-component-vector").tinted(color: iconColor)
 
         viewComponentIcon.getPasteboardItem = { getPasteboardItem(forLayerType: .builtIn(.view)) }
         textComponentIcon.getPasteboardItem = { getPasteboardItem(forLayerType: .builtIn(.text)) }
@@ -82,6 +84,7 @@ public class LayerListHeader: NSBox {
 
         button.isEnabled = true
         button.cell?.isBordered = false
+        button.setImage(#imageLiteral(resourceName: "icon-component-plus").tinted(color: iconColor), forSegment: 0)
 
         let menu = NSMenu(items: ComponentMenu.menuItems())
         button.setMenu(menu, forSegment: 0)
