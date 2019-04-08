@@ -29,7 +29,11 @@ public class DraggableIconButton: LNAImageView {
 
     // MARK: Public
 
+    public var onClick: (() -> Void)?
+
     public var getPasteboardItem: (() -> NSPasteboardItem)?
+
+    public var draggingThreshold: CGFloat = 2.0
 
     // MARK: Private
 
@@ -39,10 +43,45 @@ public class DraggableIconButton: LNAImageView {
         translatesAutoresizingMaskIntoConstraints = false
     }
 
-    private func update() {}
+    private func update() {
+        alphaValue = pressed ? 0.5 : 1
+    }
+
+    // MARK: Interactions
+
+    var pressed = false
+    var pressedPoint = CGPoint.zero
+
+    public override func mouseDown(with event: NSEvent) {
+        let point = convert(event.locationInWindow, from: nil)
+
+        if bounds.contains(point) {
+            pressed = true
+            pressedPoint = point
+            update()
+        }
+    }
+
+    public override func mouseUp(with event: NSEvent) {
+        if pressed && bounds.contains(convert(event.locationInWindow, from: nil)) {
+            onClick?()
+        }
+
+        pressed = false
+        update()
+    }
 
     public override func mouseDragged(with event: NSEvent) {
         guard let getPasteboardItem = getPasteboardItem else { return }
+
+        let point = convert(event.locationInWindow, from: nil)
+
+        if abs(point.x - pressedPoint.x) < draggingThreshold && abs(point.y - pressedPoint.y) < draggingThreshold {
+            return
+        }
+
+        pressed = false
+        update()
 
         let pasteboardItem = getPasteboardItem()
 

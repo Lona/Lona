@@ -40,6 +40,11 @@ public class LayerList: NSBox {
         set { outlineView.onSelectLayer = newValue }
     }
 
+    var onClickLayerTemplateType: ((CSLayer.LayerType) -> Void)? {
+        get { return headerView.onClickLayerTemplateType }
+        set { headerView.onClickLayerTemplateType = newValue }
+    }
+
     func addLayer(layer newLayer: CSLayer) {
         outlineView.addLayer(layer: newLayer)
     }
