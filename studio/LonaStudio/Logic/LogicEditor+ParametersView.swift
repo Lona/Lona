@@ -12,7 +12,7 @@ import Logic
 private let startsWithNumberRegex = try? NSRegularExpression(pattern: #"^\d"#)
 
 extension LogicEditor {
-    static func makeParameterDocumentationHandler() -> ((LGCSyntaxNode, String) -> RichText) {
+    static func makeParameterDocumentationHandler() -> (LGCSyntaxNode, String) -> RichText {
         return { syntaxNode, query in
             switch syntaxNode {
             case .functionParameter:
@@ -106,7 +106,7 @@ extension LogicEditor {
         }
     }
 
-    static func makeParameterSuggestionsHandler(rootNode: LGCSyntaxNode, types: [CSType]) -> ((LGCSyntaxNode, String) -> [LogicSuggestionItem]) {
+    static func makeParameterSuggestionsHandler(rootNode: LGCSyntaxNode, types: [CSType]) -> (LGCSyntaxNode, String) -> [LogicSuggestionItem] {
         return { syntaxNode, query in
             switch syntaxNode {
             case .typeAnnotation:
