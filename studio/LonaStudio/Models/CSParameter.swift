@@ -8,7 +8,7 @@
 
 import Foundation
 
-final class CSParameter: CSDataDeserializable, CSDataSerializable, DataNode {
+struct CSParameter: CSDataDeserializable, CSDataSerializable {
     var name: String = "parameter"
     var type: CSType = CSType.string
     var defaultValue: CSValue = CSUndefinedValue
@@ -49,9 +49,6 @@ final class CSParameter: CSDataDeserializable, CSDataSerializable, DataNode {
 
         return data
     }
-
-    func childCount() -> Int { return 0 }
-    func child(at index: Int) -> Any { return 0 }
 }
 
 extension CSParameter {
