@@ -77,8 +77,8 @@ class LonaModule {
         let components = files.map { component(url: $0.url) }.compactMap { $0 }
 
         let types: [[CSType]] = components.map { component in
-            let types: [CSType?] = component.parameters.map { param in
-                switch param.type {
+            let types: [CSType?] = component.types.map { csType in
+                switch csType {
                 case .named(let name, .variant(let contents)):
                     return .named((component.name ?? "") + "." + name, .variant(contents))
                 default:

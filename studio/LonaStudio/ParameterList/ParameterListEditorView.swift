@@ -19,6 +19,8 @@ class ParameterListEditorView: NSView {
 
         setUpViews()
         setUpConstraints()
+
+        update()
     }
 
     required init?(coder: NSCoder) {
@@ -27,12 +29,21 @@ class ParameterListEditorView: NSView {
 
     // MARK: Public
 
+    var types: [CSType] = [] {
+        didSet {
+            if types != oldValue {
+                update()
+            }
+        }
+    }
+
     var parameterList: [CSParameter] {
-        get { return ParameterListEditorView.makeParameterList(from: logicEditor.rootNode) }
+        get { return ParameterListEditorView.makeParameterList(from: logicEditor.rootNode, types: types) }
         set {
             let newRootNode = ParameterListEditorView.makeRootNode(from: newValue)
             if logicEditor.rootNode != newRootNode {
                 logicEditor.rootNode = newRootNode
+                update()
             }
         }
     }
@@ -48,7 +59,7 @@ class ParameterListEditorView: NSView {
         addBorderView(to: .top, color: NSSplitView.defaultDividerColor.cgColor)
 
         logicEditor.onChangeRootNode = { [unowned self] rootNode in
-            self.onChange(ParameterListEditorView.makeParameterList(from: rootNode))
+            self.onChange(ParameterListEditorView.makeParameterList(from: rootNode, types: self.types))
 
             return true
         }
@@ -63,12 +74,16 @@ class ParameterListEditorView: NSView {
         logicEditor.leadingAnchor.constraint(equalTo: leadingAnchor).isActive = true
         logicEditor.trailingAnchor.constraint(equalTo: trailingAnchor).isActive = true
     }
+
+    private func update() {
+        logicEditor.suggestionsForNode = LogicEditor.makeParameterSuggestionsHandler(rootNode: logicEditor.rootNode, types: types)
+    }
 }
 
 // MARK: Logic <==> Parameter Conversion
 
 extension ParameterListEditorView {
-    private static func makeParameterList(from rootNode: LGCSyntaxNode) -> [CSParameter] {
+    private static func makeParameterList(from rootNode: LGCSyntaxNode, types: [CSType]) -> [CSParameter] {
         switch rootNode {
         case .topLevelParameters(let topLevel):
             return topLevel.parameters.map { param in
@@ -76,7 +91,7 @@ extension ParameterListEditorView {
                 case .placeholder:
                     return nil
                 case .parameter(let value):
-                    guard let csType = value.annotation.csType else { return nil }
+                    guard let csType = value.annotation.csType(environmentTypes: types) else { return nil }
 
                     return CSParameter(name: value.localName.name, type: csType)
                 }

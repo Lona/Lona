@@ -6,8 +6,8 @@
 //  Copyright © 2018 Devin Abbott. All rights reserved.
 //
 
-import Foundation
 import AppKit
+import Logic
 
 class UtilitiesView: NSBox {
 
@@ -15,6 +15,7 @@ class UtilitiesView: NSBox {
         case parameters = "Parameters"
         case logic = "Logic"
         case examples = "Examples"
+        case types = "Types"
         case details = "Details"
     }
 
@@ -53,12 +54,18 @@ class UtilitiesView: NSBox {
 
     public var onChangeMetadata: ((CSData) -> Void)?
 
-    public var onChangeCanvasList: (([Canvas]) -> Void)?
+    public var onChangeTypes: (([CSType]) -> Void)?
 
-    public var onChangeCanvasLayout: ((StaticCanvasRenderer.Layout) -> Void) {
-        get { return canvasListView?.onChangeLayout ?? { _ in } }
-        set { canvasListView?.onChangeLayout = newValue }
+    public var types: [CSType] = [] {
+        didSet {
+            if types != oldValue {
+                typesRootNode = UtilitiesView.makeRootNode(from: types)
+                update()
+            }
+        }
     }
+
+    private var typesRootNode: LGCSyntaxNode = makeRootNode(from: [])
 
     public var component: CSComponent? {
         didSet {
@@ -71,6 +78,7 @@ class UtilitiesView: NSBox {
     public func reloadData() {
         logicListView?.editor?.reloadData()
         parameterListEditorView?.parameterList = component?.parameters ?? []
+        parameterListEditorView?.types = component?.types ?? []
 
         // We need to update this when any parameters change at least. For now,
         // update all editors at once for simplicity... optimize if necessary later.
@@ -79,11 +87,11 @@ class UtilitiesView: NSBox {
 
     // MARK: Private
 
-    private var canvasListView: CanvasListView?
     private var logicListView: LogicListView?
     private var parameterListEditorView: ParameterListEditorView?
     private var caseListView: CaseList?
     private var metadataEditorView: MetadataEditorView?
+    private var typesListEditorView: LogicEditor?
 
     private func setUpViews() {
         boxType = .custom
@@ -122,6 +130,7 @@ class UtilitiesView: NSBox {
             }
 
             parameterListEditorView?.parameterList = component?.parameters ?? []
+            parameterListEditorView?.types = component?.types ?? []
         case .details:
             if metadataEditorView == nil {
                 metadataEditorView = MetadataEditorView()
@@ -129,13 +138,27 @@ class UtilitiesView: NSBox {
             }
 
             metadataEditorView?.data = component?.metadata ?? .Null
+        case .types:
+            if typesListEditorView == nil {
+                typesListEditorView = LogicEditor.makeTypeEditorView()
+                typesListEditorView?.addBorderView(to: .top, color: NSSplitView.defaultDividerColor.cgColor)
+                typesListEditorView?.fillColor = Colors.contentBackground
+
+                typesListEditorView?.onChangeRootNode = { [unowned self] rootNode in
+                    self.onChangeTypes?(UtilitiesView.makeTypes(from: rootNode))
+                    return true
+                }
+            }
+
+            typesListEditorView?.rootNode = typesRootNode
         }
 
         let tabMap: [Tab: NSView?] = [
             .details: metadataEditorView,
             .parameters: parameterListEditorView,
             .examples: caseListView?.editor,
-            .logic: logicListView?.editor
+            .logic: logicListView?.editor,
+            .types: typesListEditorView
         ]
 
         for (tab, view) in tabMap {
@@ -147,5 +170,41 @@ class UtilitiesView: NSBox {
                 view.removeFromSuperview()
             }
         }
+    }
+}
+
+// MARK: Logic <==> Types Conversion
+
+extension UtilitiesView {
+    private static func makeTypes(from rootNode: LGCSyntaxNode) -> [CSType] {
+        switch rootNode {
+        case .program(let value):
+            return value.block.map { statement in
+                switch statement {
+                case .placeholderStatement:
+                    return nil
+                case .declaration(let declaration):
+                    return declaration.content.csType!
+                default:
+                    fatalError("Not supported")
+                }
+                }.compactMap { $0 }
+        default:
+            fatalError("Not supported")
+        }
+    }
+
+    private static func makeRootNode(from types: [CSType]) -> LGCSyntaxNode {
+        return LGCSyntaxNode.program(
+            LGCProgram(
+                id: UUID(),
+                block: LGCList(types.map {
+                    LGCStatement.declaration(
+                        id: UUID(),
+                        content: LGCDeclaration(csType: $0)
+                    )
+                    } + [LGCStatement.makePlaceholder()])
+            )
+        )
     }
 }

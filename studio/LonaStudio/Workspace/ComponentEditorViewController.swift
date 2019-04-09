@@ -10,7 +10,7 @@ import AppKit
 import Foundation
 
 class ComponentEditorViewController: NSSplitViewController {
-    private let splitViewResorationIdentifier = "tech.lona.restorationId:componentEditorController"
+    private let splitViewRestorationIdentifier = "tech.lona.restorationId:componentEditorController"
     private let layerEditorViewResorationIdentifier = "tech.lona.restorationId:layerEditorController"
 
     // MARK: Lifecycle
@@ -138,11 +138,12 @@ class ComponentEditorViewController: NSSplitViewController {
         }
 
         let tabs = SegmentedControlField(
-            frame: NSRect(x: 0, y: 0, width: 400, height: 24),
+            frame: NSRect(x: 0, y: 0, width: 500, height: 24),
             values: [
                 UtilitiesView.Tab.parameters.rawValue,
                 UtilitiesView.Tab.logic.rawValue,
                 UtilitiesView.Tab.examples.rawValue,
+                UtilitiesView.Tab.types.rawValue,
                 UtilitiesView.Tab.details.rawValue
             ])
         tabs.segmentWidth = 97
@@ -159,8 +160,8 @@ class ComponentEditorViewController: NSSplitViewController {
 
         splitView.isVertical = false
         splitView.dividerStyle = .thin
-        splitView.autosaveName = splitViewResorationIdentifier
-        splitView.identifier = NSUserInterfaceItemIdentifier(rawValue: splitViewResorationIdentifier)
+        splitView.autosaveName = splitViewRestorationIdentifier
+        splitView.identifier = NSUserInterfaceItemIdentifier(rawValue: splitViewRestorationIdentifier)
 
         self.splitView = splitView
     }
@@ -168,18 +169,6 @@ class ComponentEditorViewController: NSSplitViewController {
     func setUpUtilities() {
         utilitiesView.onChangeMetadata = { value in
             self.component?.metadata = value
-            self.updateLayerList(withoutModifyingSelection: true)
-            self.updateCanvasCollectionView()
-        }
-
-        utilitiesView.onChangeCanvasList = { value in
-            self.component?.canvas = value
-            self.updateLayerList(withoutModifyingSelection: true)
-            self.updateCanvasCollectionView()
-        }
-
-        utilitiesView.onChangeCanvasLayout = { value in
-            self.component?.canvasLayoutAxis = value
             self.updateLayerList(withoutModifyingSelection: true)
             self.updateCanvasCollectionView()
         }
@@ -207,6 +196,11 @@ class ComponentEditorViewController: NSSplitViewController {
             self.updateLayerList(withoutModifyingSelection: true)
             self.updateCanvasCollectionView()
         }
+
+        utilitiesView.onChangeTypes = { value in
+            self.component?.types = value
+            self.utilitiesView.types = value
+        }
     }
 
     private func setUpLayout() {
@@ -230,6 +224,7 @@ class ComponentEditorViewController: NSSplitViewController {
 
     private func updateUtilitiesView() {
         utilitiesView.component = component
+        utilitiesView.types = component?.types ?? []
     }
 
     private func updateLayerList(withoutModifyingSelection: Bool) {
