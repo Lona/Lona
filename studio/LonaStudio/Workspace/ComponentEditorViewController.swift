@@ -10,7 +10,7 @@ import AppKit
 import Foundation
 
 class ComponentEditorViewController: NSSplitViewController {
-    private let splitViewResorationIdentifier = "tech.lona.restorationId:componentEditorController"
+    private let splitViewRestorationIdentifier = "tech.lona.restorationId:componentEditorController"
     private let layerEditorViewResorationIdentifier = "tech.lona.restorationId:layerEditorController"
 
     // MARK: Lifecycle
@@ -138,11 +138,12 @@ class ComponentEditorViewController: NSSplitViewController {
         }
 
         let tabs = SegmentedControlField(
-            frame: NSRect(x: 0, y: 0, width: 400, height: 24),
+            frame: NSRect(x: 0, y: 0, width: 500, height: 24),
             values: [
                 UtilitiesView.Tab.parameters.rawValue,
                 UtilitiesView.Tab.logic.rawValue,
                 UtilitiesView.Tab.examples.rawValue,
+                UtilitiesView.Tab.types.rawValue,
                 UtilitiesView.Tab.details.rawValue
             ])
         tabs.segmentWidth = 97
@@ -159,8 +160,8 @@ class ComponentEditorViewController: NSSplitViewController {
 
         splitView.isVertical = false
         splitView.dividerStyle = .thin
-        splitView.autosaveName = splitViewResorationIdentifier
-        splitView.identifier = NSUserInterfaceItemIdentifier(rawValue: splitViewResorationIdentifier)
+        splitView.autosaveName = splitViewRestorationIdentifier
+        splitView.identifier = NSUserInterfaceItemIdentifier(rawValue: splitViewRestorationIdentifier)
 
         self.splitView = splitView
     }

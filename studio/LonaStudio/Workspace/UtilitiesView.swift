@@ -6,8 +6,8 @@
 //  Copyright © 2018 Devin Abbott. All rights reserved.
 //
 
-import Foundation
 import AppKit
+import Logic
 
 class UtilitiesView: NSBox {
 
@@ -54,7 +54,9 @@ class UtilitiesView: NSBox {
 
     public var onChangeMetadata: ((CSData) -> Void)?
 
-    public var onChangeTypesList: (([CSType]) -> Void)?
+    public var onChangeTypes: (([CSType]) -> Void)?
+
+    public var types: [CSType] = []
 
     public var component: CSComponent? {
         didSet {
@@ -75,11 +77,11 @@ class UtilitiesView: NSBox {
 
     // MARK: Private
 
-//    private var typesListView: typesListView?
     private var logicListView: LogicListView?
     private var parameterListEditorView: ParameterListEditorView?
     private var caseListView: CaseList?
     private var metadataEditorView: MetadataEditorView?
+    private var typesListEditorView: LogicEditor?
 
     private func setUpViews() {
         boxType = .custom
@@ -126,14 +128,27 @@ class UtilitiesView: NSBox {
 
             metadataEditorView?.data = component?.metadata ?? .Null
         case .types:
-            break
+            if typesListEditorView == nil {
+                typesListEditorView = LogicEditor()
+                typesListEditorView?.addBorderView(to: .top, color: NSSplitView.defaultDividerColor.cgColor)
+                typesListEditorView?.fillColor = Colors.contentBackground
+
+                typesListEditorView?.onChangeRootNode = { [unowned self] rootNode in
+                    self.types = UtilitiesView.makeTypes(from: rootNode)
+                    self.update()
+                    return true
+                }
+            }
+
+            typesListEditorView?.rootNode = UtilitiesView.makeRootNode(from: types)
         }
 
         let tabMap: [Tab: NSView?] = [
             .details: metadataEditorView,
             .parameters: parameterListEditorView,
             .examples: caseListView?.editor,
-            .logic: logicListView?.editor
+            .logic: logicListView?.editor,
+            .types: typesListEditorView
         ]
 
         for (tab, view) in tabMap {
@@ -145,5 +160,41 @@ class UtilitiesView: NSBox {
                 view.removeFromSuperview()
             }
         }
+    }
+}
+
+// MARK: Logic <==> Types Conversion
+
+extension UtilitiesView {
+    private static func makeTypes(from rootNode: LGCSyntaxNode) -> [CSType] {
+        switch rootNode {
+        case .program(let value):
+            return value.block.map { statement in
+                switch statement {
+                case .placeholderStatement:
+                    return nil
+                case .declaration(let declaration):
+                    return declaration.content.csType!
+                default:
+                    fatalError("Not supported")
+                }
+                }.compactMap { $0 }
+        default:
+            fatalError("Not supported")
+        }
+    }
+
+    private static func makeRootNode(from types: [CSType]) -> LGCSyntaxNode {
+        return LGCSyntaxNode.program(
+            LGCProgram(
+                id: UUID(),
+                block: LGCList(types.map {
+                    LGCStatement.declaration(
+                        id: UUID(),
+                        content: LGCDeclaration(csType: $0)
+                    )
+                    } + [LGCStatement.makePlaceholder()])
+            )
+        )
     }
 }
