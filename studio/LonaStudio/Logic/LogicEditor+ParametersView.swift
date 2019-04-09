@@ -12,7 +12,7 @@ import Logic
 private let startsWithNumberRegex = try? NSRegularExpression(pattern: #"^\d"#)
 
 extension LogicEditor {
-    static func makeDocumentationHandler() -> ((LGCSyntaxNode, String) -> RichText) {
+    static func makeParameterDocumentationHandler() -> ((LGCSyntaxNode, String) -> RichText) {
         return { syntaxNode, query in
             switch syntaxNode {
             case .functionParameter:
@@ -106,116 +106,11 @@ extension LogicEditor {
         }
     }
 
-    static func makeSuggestionsHandler(rootNode: LGCSyntaxNode, types: [CSType]) -> ((LGCSyntaxNode, String) -> [LogicSuggestionItem]) {
+    static func makeParameterSuggestionsHandler(rootNode: LGCSyntaxNode, types: [CSType]) -> ((LGCSyntaxNode, String) -> [LogicSuggestionItem]) {
         return { syntaxNode, query in
             switch syntaxNode {
             case .typeAnnotation:
-                let primitiveTypes = CSType.primitiveTypeNames().map { name in
-                    LogicSuggestionItem(
-                        title: name,
-                        category: "Primitive Types".uppercased(),
-                        node: LGCSyntaxNode.typeAnnotation(
-                            LGCTypeAnnotation.typeIdentifier(
-                                id: UUID(),
-                                identifier: LGCIdentifier(id: UUID(), string: name),
-                                genericArguments: .empty
-                            )
-                        )
-                    )
-                }
-
-                let tokenTypes = CSType.tokenTypeNames().map { name in
-                    LogicSuggestionItem(
-                        title: name,
-                        category: "Token Types".uppercased(),
-                        node: LGCSyntaxNode.typeAnnotation(
-                            LGCTypeAnnotation.typeIdentifier(
-                                id: UUID(),
-                                identifier: LGCIdentifier(id: UUID(), string: name),
-                                genericArguments: .empty
-                            )
-                        )
-                    )
-                }
-
-                let optionalType = LogicSuggestionItem(
-                    title: "Optional",
-                    category: "Generic Types".uppercased(),
-                    node: LGCSyntaxNode.typeAnnotation(
-                        LGCTypeAnnotation.typeIdentifier(
-                            id: UUID(),
-                            identifier: LGCIdentifier(id: UUID(), string: "Optional"),
-                            genericArguments: .next(
-                                LGCTypeAnnotation.typeIdentifier(
-                                    id: UUID(),
-                                    identifier: LGCIdentifier(id: UUID(), string: "Void"),
-                                    genericArguments: .empty
-                                ),
-                                .empty
-                            )
-                        )
-                    )
-                )
-
-                let arrayType = LogicSuggestionItem(
-                    title: "Array",
-                    category: "Generic Types".uppercased(),
-                    node: LGCSyntaxNode.typeAnnotation(
-                        LGCTypeAnnotation.typeIdentifier(
-                            id: UUID(),
-                            identifier: LGCIdentifier(id: UUID(), string: "Array"),
-                            genericArguments: .next(
-                                LGCTypeAnnotation.typeIdentifier(
-                                    id: UUID(),
-                                    identifier: LGCIdentifier(id: UUID(), string: "Void"),
-                                    genericArguments: .empty
-                                ),
-                                .empty
-                            )
-                        )
-                    )
-                )
-
-                let functionType = LogicSuggestionItem(
-                    title: "Function",
-                    category: "Function Types".uppercased(),
-                    node: LGCSyntaxNode.typeAnnotation(
-                        LGCTypeAnnotation.functionType(
-                            id: UUID(),
-                            returnType: LGCTypeAnnotation.typeIdentifier(
-                                id: UUID(),
-                                identifier: LGCIdentifier(id: UUID(), string: "Unit"),
-                                genericArguments: .empty
-                            ),
-                            argumentTypes: .next(
-                                .placeholder(id: UUID()),
-                                .empty
-                            )
-                        )
-                    )
-                )
-
-                let customTypes: [LogicSuggestionItem] = types.map { csType in
-                    switch csType {
-                    case .named(let name, _):
-                        Swift.print(name, csType, LGCTypeAnnotation(csType: csType))
-                        return LogicSuggestionItem(
-                            title: name,
-                            category: "Custom Types".uppercased(),
-                            node: .typeAnnotation(LGCTypeAnnotation(csType: csType))
-                        )
-                    default:
-                        return nil
-                    }
-                    }.compactMap { $0 }
-
-                return (
-                    primitiveTypes.sortedByPrefix() +
-                        tokenTypes.sortedByPrefix() +
-                        [optionalType, arrayType] +
-                        [functionType] +
-                        customTypes.sortedByPrefix()
-                    ).titleContains(prefix: query)
+                return typeAnnotationSuggestions(query: query, rootNode: rootNode, types: types)
             case .functionParameter:
                 let defaultItems = syntaxNode.suggestions(within: rootNode, for: query)
 
@@ -231,7 +126,7 @@ extension LogicEditor {
     }
 
     static func makeParameterEditorView() -> LogicEditor {
-        let logicEditor = LogicEditor(rootNode: defaultRootNode)
+        let logicEditor = LogicEditor(rootNode: topLevelParametersRootNode)
 
         logicEditor.showsDropdown = true
         logicEditor.fillColor = Colors.contentBackground
@@ -242,13 +137,13 @@ extension LogicEditor {
         RichText.AlertStyle.paragraphMargin.right += 4
         RichText.AlertStyle.iconMargin.top += 1
 
-        logicEditor.documentationForNode = makeDocumentationHandler()
-        logicEditor.suggestionsForNode = makeSuggestionsHandler(rootNode: defaultRootNode, types: [])
+        logicEditor.documentationForNode = makeParameterDocumentationHandler()
+        logicEditor.suggestionsForNode = makeParameterSuggestionsHandler(rootNode: topLevelParametersRootNode, types: [])
 
         return logicEditor
     }
 
-    static let defaultRootNode = LGCSyntaxNode.topLevelParameters(
+    static let topLevelParametersRootNode = LGCSyntaxNode.topLevelParameters(
         LGCTopLevelParameters(id: UUID(), parameters: .next(.placeholder(id: UUID()), .empty))
     )
 }

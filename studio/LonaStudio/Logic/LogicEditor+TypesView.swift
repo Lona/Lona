@@ -12,19 +12,9 @@ import Logic
 private let startsWithNumberRegex = try? NSRegularExpression(pattern: #"^\d"#)
 
 extension LogicEditor {
-    public static func makeTypesEditorView() -> LogicEditor {
-        let canvasView = LogicEditor()
-        canvasView.showsDropdown = true
-
-        LogicCanvasView.minimumLineHeight = 26
-        LogicCanvasView.textMargin = CGSize(width: 7, height: 6)
-        RichText.AlertStyle.paragraphMargin.bottom = -3
-        RichText.AlertStyle.paragraphMargin.right += 4
-        RichText.AlertStyle.iconMargin.top += 1
-
-        canvasView.documentationForNode = { syntaxNode, query in
+    static func makeTypeDocumentationHandler() -> ((LGCSyntaxNode, String) -> RichText) {
+        return { syntaxNode, query in
             switch syntaxNode {
-            //            case .typeAnnotation:
             case .functionParameter:
                 func getAlert() -> RichText.BlockElement? {
                     if query.isEmpty { return nil }
@@ -114,114 +104,65 @@ extension LogicEditor {
                 return RichText(blocks: [])
             }
         }
-        canvasView.suggestionsForNode = { syntaxNode, query in
+    }
+
+    static func makeTypeSuggestionsHandler(rootNode: LGCSyntaxNode, types: [CSType]) -> ((LGCSyntaxNode, String) -> [LogicSuggestionItem]) {
+        return { syntaxNode, query in
             switch syntaxNode {
+            case .statement:
+                return [
+                    LogicSuggestionItem(
+                        title: "Enumeration",
+                        category: "Type Declarations".uppercased(),
+                        node: .statement(
+                            .declaration(
+                                id: UUID(),
+                                content: .enumeration(
+                                    id: UUID(),
+                                    name: LGCPattern(id: UUID(), name: "name"),
+                                    cases: .next(
+                                        LGCEnumerationCase.placeholder(id: UUID()),
+                                        .empty
+                                    )
+                                )
+                            )
+                        )
+                    )
+                ]
+            case .pattern:
+                return [
+                    LogicSuggestionItem(
+                        title: "Type name: \(query)",
+                        category: "Pattern".uppercased(),
+                        node: LGCSyntaxNode.pattern(LGCPattern(id: UUID(), name: query)),
+                        disabled: query.isEmpty
+                    )
+                ]
+            case .enumerationCase:
+                return syntaxNode.suggestions(within: rootNode, for: query)
             case .typeAnnotation:
-                let primitiveTypes = CSType.primitiveTypeNames().map { name in
-                    LogicSuggestionItem(
-                        title: name,
-                        category: "Primitive Types".uppercased(),
-                        node: LGCSyntaxNode.typeAnnotation(
-                            LGCTypeAnnotation.typeIdentifier(
-                                id: UUID(),
-                                identifier: LGCIdentifier(id: UUID(), string: name),
-                                genericArguments: .empty
-                            )
-                        )
-                    )
-                }
-
-                let tokenTypes = CSType.tokenTypeNames().map { name in
-                    LogicSuggestionItem(
-                        title: name,
-                        category: "Token Types".uppercased(),
-                        node: LGCSyntaxNode.typeAnnotation(
-                            LGCTypeAnnotation.typeIdentifier(
-                                id: UUID(),
-                                identifier: LGCIdentifier(id: UUID(), string: name),
-                                genericArguments: .empty
-                            )
-                        )
-                    )
-                }
-
-                let optionalType = LogicSuggestionItem(
-                    title: "Optional",
-                    category: "Generic Types".uppercased(),
-                    node: LGCSyntaxNode.typeAnnotation(
-                        LGCTypeAnnotation.typeIdentifier(
-                            id: UUID(),
-                            identifier: LGCIdentifier(id: UUID(), string: "Optional"),
-                            genericArguments: .next(
-                                LGCTypeAnnotation.typeIdentifier(
-                                    id: UUID(),
-                                    identifier: LGCIdentifier(id: UUID(), string: "Void"),
-                                    genericArguments: .empty
-                                ),
-                                .empty
-                            )
-                        )
-                    )
-                )
-
-                let arrayType = LogicSuggestionItem(
-                    title: "Array",
-                    category: "Generic Types".uppercased(),
-                    node: LGCSyntaxNode.typeAnnotation(
-                        LGCTypeAnnotation.typeIdentifier(
-                            id: UUID(),
-                            identifier: LGCIdentifier(id: UUID(), string: "Array"),
-                            genericArguments: .next(
-                                LGCTypeAnnotation.typeIdentifier(
-                                    id: UUID(),
-                                    identifier: LGCIdentifier(id: UUID(), string: "Void"),
-                                    genericArguments: .empty
-                                ),
-                                .empty
-                            )
-                        )
-                    )
-                )
-
-                let functionType = LogicSuggestionItem(
-                    title: "Function",
-                    category: "Function Types".uppercased(),
-                    node: LGCSyntaxNode.typeAnnotation(
-                        LGCTypeAnnotation.functionType(
-                            id: UUID(),
-                            returnType: LGCTypeAnnotation.typeIdentifier(
-                                id: UUID(),
-                                identifier: LGCIdentifier(id: UUID(), string: "Unit"),
-                                genericArguments: .empty
-                            ),
-                            argumentTypes: .next(
-                                .placeholder(id: UUID()),
-                                .empty
-                            )
-                        )
-                    )
-                )
-
-                return (
-                    primitiveTypes.sortedByPrefix() +
-                        tokenTypes.sortedByPrefix() +
-                        [optionalType, arrayType] +
-                        [functionType]
-                    ).titleContains(prefix: query)
-            case .functionParameter:
-                let defaultItems = syntaxNode.suggestions(within: canvasView.rootNode, for: query)
-
-                return defaultItems.map { item in
-                    var copy = item
-                    copy.category = "Component Parameter".uppercased()
-                    return copy
-                }
+                return typeAnnotationSuggestions(query: query, rootNode: rootNode, types: types)
             default:
                 return []
             }
         }
+    }
 
-        canvasView.fillColor = Colors.contentBackground
-        return canvasView
+    static func makeTypeEditorView() -> LogicEditor {
+        let logicEditor = LogicEditor()
+
+        logicEditor.showsDropdown = true
+        logicEditor.fillColor = Colors.contentBackground
+
+        LogicCanvasView.minimumLineHeight = 26
+        LogicCanvasView.textMargin = CGSize(width: 7, height: 6)
+        RichText.AlertStyle.paragraphMargin.bottom = -3
+        RichText.AlertStyle.paragraphMargin.right += 4
+        RichText.AlertStyle.iconMargin.top += 1
+
+        logicEditor.documentationForNode = makeParameterDocumentationHandler()
+        logicEditor.suggestionsForNode = makeTypeSuggestionsHandler(rootNode: logicEditor.rootNode, types: [])
+
+        return logicEditor
     }
 }

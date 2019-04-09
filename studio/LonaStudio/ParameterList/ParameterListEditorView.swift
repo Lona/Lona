@@ -76,7 +76,7 @@ class ParameterListEditorView: NSView {
     }
 
     private func update() {
-        logicEditor.suggestionsForNode = LogicEditor.makeSuggestionsHandler(rootNode: logicEditor.rootNode, types: types)
+        logicEditor.suggestionsForNode = LogicEditor.makeParameterSuggestionsHandler(rootNode: logicEditor.rootNode, types: types)
     }
 }
 

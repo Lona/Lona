@@ -140,7 +140,7 @@ class UtilitiesView: NSBox {
             metadataEditorView?.data = component?.metadata ?? .Null
         case .types:
             if typesListEditorView == nil {
-                typesListEditorView = LogicEditor()
+                typesListEditorView = LogicEditor.makeTypeEditorView()
                 typesListEditorView?.addBorderView(to: .top, color: NSSplitView.defaultDividerColor.cgColor)
                 typesListEditorView?.fillColor = Colors.contentBackground
 
