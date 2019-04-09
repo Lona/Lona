@@ -8,7 +8,7 @@ SWIFT_LINT=./Pods/SwiftLint/swiftlint
 if [[ -e "${SWIFT_LINT}" ]]; then
     count=0
     for file_path in $@; do
-        export SCRIPT_INPUT_FILE_$count=$file_path
+        export SCRIPT_INPUT_FILE_$count="$file_path"
         count=$((count + 1))
     done
 
