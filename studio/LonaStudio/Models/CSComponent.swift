@@ -15,6 +15,7 @@ class CSComponent: DataNode, NSCopying {
     var parameters: [CSParameter]
     var cases: [CSCase]
     var logic = [LogicNode]()
+    var types: [CSType]
     var config: CSData
     var metadata: CSData
 
@@ -41,13 +42,14 @@ class CSComponent: DataNode, NSCopying {
         }
     }
 
-    required init(name: String?, canvas: [Canvas], rootLayer: CSLayer, parameters: [CSParameter], cases: [CSCase], logic: [LogicNode], config: CSData, metadata: CSData) {
+    required init(name: String?, canvas: [Canvas], rootLayer: CSLayer, parameters: [CSParameter], cases: [CSCase], logic: [LogicNode], types: [CSType], config: CSData, metadata: CSData) {
         self.name = name
         self.canvas = canvas
         self.rootLayer = rootLayer
         self.parameters = parameters
         self.cases = cases
         self.logic = logic
+        self.types = types
         self.config = config
         self.metadata = metadata
     }
@@ -190,6 +192,10 @@ class CSComponent: DataNode, NSCopying {
             "examples": CSData.Array(cases.map({ $0.toData(parametersType: parametersType) }))
         ])
 
+        if !types.isEmpty {
+            data["types"] = types.toData()
+        }
+
         var config = self.config
         if config["deviceLayout"]?.stringValue == "xy" {
             config["deviceLayout"] = nil
@@ -211,6 +217,7 @@ class CSComponent: DataNode, NSCopying {
         rootLayer = CSLayer.deserialize(json["root"] ?? json.get(key: "rootLayer"))!
         logic = json.get(key: "logic").arrayValue.map({ LogicNode($0) })
         canvas = (json["devices"] ?? json.get(key: "canvases")).arrayValue.map({ Canvas($0) })
+        types = json.get(key: "types").arrayValue.map { CSType($0) }
         config = json["config"] ?? CSData.Object([:])
         metadata = json["metadata"] ?? CSData.Object([:])
 
@@ -237,6 +244,7 @@ class CSComponent: DataNode, NSCopying {
             parameters: [],
             cases: [CSCase.defaultCase],
             logic: [],
+            types: [],
             config: CSData.Object([:]),
             metadata: CSData.Object([:])
         )

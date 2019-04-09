@@ -34,7 +34,7 @@ class CSComponentLayer: CSLayer {
 
     private static var defaultComponent: CSComponent {
         let rootLayer = CSLayer(name: "Failed to Load Component", type: .view)
-        return CSComponent(name: nil, canvas: [], rootLayer: rootLayer, parameters: [], cases: [], logic: [], config: CSData.Object([:]), metadata: CSData.Object([:]))
+        return CSComponent(name: nil, canvas: [], rootLayer: rootLayer, parameters: [], cases: [], logic: [], types: [], config: CSData.Object([:]), metadata: CSData.Object([:]))
     }
 
     private static func loadComponent(at path: String) -> CSComponent? {

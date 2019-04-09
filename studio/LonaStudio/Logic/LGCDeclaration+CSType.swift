@@ -43,7 +43,7 @@ extension LGCDeclaration {
                     enumeration.cases.map {
                         switch $0 {
                         case .enumerationCase(let enumerationCase):
-                            return (enumerationCase.name.name, enumerationCase.associatedValueTypes.first?.csType ?? .unit)
+                            return (enumerationCase.name.name, enumerationCase.associatedValueTypes.first?.csType() ?? .unit)
                         case .placeholder:
                             return nil
                         }

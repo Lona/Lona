@@ -196,6 +196,11 @@ class ComponentEditorViewController: NSSplitViewController {
             self.updateLayerList(withoutModifyingSelection: true)
             self.updateCanvasCollectionView()
         }
+
+        utilitiesView.onChangeTypes = { value in
+            self.component?.types = value
+            self.utilitiesView.types = value
+        }
     }
 
     private func setUpLayout() {
@@ -219,6 +224,7 @@ class ComponentEditorViewController: NSSplitViewController {
 
     private func updateUtilitiesView() {
         utilitiesView.component = component
+        utilitiesView.types = component?.types ?? []
     }
 
     private func updateLayerList(withoutModifyingSelection: Bool) {

@@ -12,23 +12,9 @@ import Logic
 private let startsWithNumberRegex = try? NSRegularExpression(pattern: #"^\d"#)
 
 extension LogicEditor {
-    public static func makeParameterEditorView() -> LogicEditor {
-        let canvasView = LogicEditor(
-            rootNode: .topLevelParameters(
-                LGCTopLevelParameters(id: UUID(), parameters: .next(.placeholder(id: UUID()), .empty))
-            )
-        )
-        canvasView.showsDropdown = true
-
-        LogicCanvasView.minimumLineHeight = 26
-        LogicCanvasView.textMargin = CGSize(width: 7, height: 6)
-        RichText.AlertStyle.paragraphMargin.bottom = -3
-        RichText.AlertStyle.paragraphMargin.right += 4
-        RichText.AlertStyle.iconMargin.top += 1
-
-        canvasView.documentationForNode = { syntaxNode, query in
+    static func makeDocumentationHandler() -> ((LGCSyntaxNode, String) -> RichText) {
+        return { syntaxNode, query in
             switch syntaxNode {
-//            case .typeAnnotation:
             case .functionParameter:
                 func getAlert() -> RichText.BlockElement? {
                     if query.isEmpty { return nil }
@@ -118,7 +104,10 @@ extension LogicEditor {
                 return RichText(blocks: [])
             }
         }
-        canvasView.suggestionsForNode = { syntaxNode, query in
+    }
+
+    static func makeSuggestionsHandler(rootNode: LGCSyntaxNode, types: [CSType]) -> ((LGCSyntaxNode, String) -> [LogicSuggestionItem]) {
+        return { syntaxNode, query in
             switch syntaxNode {
             case .typeAnnotation:
                 let primitiveTypes = CSType.primitiveTypeNames().map { name in
@@ -206,14 +195,29 @@ extension LogicEditor {
                     )
                 )
 
+                let customTypes: [LogicSuggestionItem] = types.map { csType in
+                    switch csType {
+                    case .named(let name, _):
+                        Swift.print(name, csType, LGCTypeAnnotation(csType: csType))
+                        return LogicSuggestionItem(
+                            title: name,
+                            category: "Custom Types".uppercased(),
+                            node: .typeAnnotation(LGCTypeAnnotation(csType: csType))
+                        )
+                    default:
+                        return nil
+                    }
+                    }.compactMap { $0 }
+
                 return (
                     primitiveTypes.sortedByPrefix() +
                         tokenTypes.sortedByPrefix() +
                         [optionalType, arrayType] +
-                        [functionType]
+                        [functionType] +
+                        customTypes.sortedByPrefix()
                     ).titleContains(prefix: query)
             case .functionParameter:
-                let defaultItems = syntaxNode.suggestions(within: canvasView.rootNode, for: query)
+                let defaultItems = syntaxNode.suggestions(within: rootNode, for: query)
 
                 return defaultItems.map { item in
                     var copy = item
@@ -224,8 +228,27 @@ extension LogicEditor {
                 return []
             }
         }
-
-        canvasView.fillColor = Colors.contentBackground
-        return canvasView
     }
+
+    static func makeParameterEditorView() -> LogicEditor {
+        let logicEditor = LogicEditor(rootNode: defaultRootNode)
+
+        logicEditor.showsDropdown = true
+        logicEditor.fillColor = Colors.contentBackground
+
+        LogicCanvasView.minimumLineHeight = 26
+        LogicCanvasView.textMargin = CGSize(width: 7, height: 6)
+        RichText.AlertStyle.paragraphMargin.bottom = -3
+        RichText.AlertStyle.paragraphMargin.right += 4
+        RichText.AlertStyle.iconMargin.top += 1
+
+        logicEditor.documentationForNode = makeDocumentationHandler()
+        logicEditor.suggestionsForNode = makeSuggestionsHandler(rootNode: defaultRootNode, types: [])
+
+        return logicEditor
+    }
+
+    static let defaultRootNode = LGCSyntaxNode.topLevelParameters(
+        LGCTopLevelParameters(id: UUID(), parameters: .next(.placeholder(id: UUID()), .empty))
+    )
 }

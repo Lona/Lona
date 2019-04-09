@@ -56,7 +56,16 @@ class UtilitiesView: NSBox {
 
     public var onChangeTypes: (([CSType]) -> Void)?
 
-    public var types: [CSType] = []
+    public var types: [CSType] = [] {
+        didSet {
+            if types != oldValue {
+                typesRootNode = UtilitiesView.makeRootNode(from: types)
+                update()
+            }
+        }
+    }
+
+    private var typesRootNode: LGCSyntaxNode = makeRootNode(from: [])
 
     public var component: CSComponent? {
         didSet {
@@ -69,6 +78,7 @@ class UtilitiesView: NSBox {
     public func reloadData() {
         logicListView?.editor?.reloadData()
         parameterListEditorView?.parameterList = component?.parameters ?? []
+        parameterListEditorView?.types = component?.types ?? []
 
         // We need to update this when any parameters change at least. For now,
         // update all editors at once for simplicity... optimize if necessary later.
@@ -120,6 +130,7 @@ class UtilitiesView: NSBox {
             }
 
             parameterListEditorView?.parameterList = component?.parameters ?? []
+            parameterListEditorView?.types = component?.types ?? []
         case .details:
             if metadataEditorView == nil {
                 metadataEditorView = MetadataEditorView()
@@ -134,13 +145,12 @@ class UtilitiesView: NSBox {
                 typesListEditorView?.fillColor = Colors.contentBackground
 
                 typesListEditorView?.onChangeRootNode = { [unowned self] rootNode in
-                    self.types = UtilitiesView.makeTypes(from: rootNode)
-                    self.update()
+                    self.onChangeTypes?(UtilitiesView.makeTypes(from: rootNode))
                     return true
                 }
             }
 
-            typesListEditorView?.rootNode = UtilitiesView.makeRootNode(from: types)
+            typesListEditorView?.rootNode = typesRootNode
         }
 
         let tabMap: [Tab: NSView?] = [

@@ -60,12 +60,12 @@ extension LGCTypeAnnotation {
         }
     }
 
-    var csType: CSType? {
+    func csType(environmentTypes: [CSType] = []) -> CSType? {
         switch self {
         case .placeholder:
             return nil
         case .typeIdentifier(let value):
-            if let firstArgument = value.genericArguments.first, let firstType = firstArgument.csType {
+            if let firstArgument = value.genericArguments.first, let firstType = firstArgument.csType() {
                 switch value.identifier.string {
                 case "Array":
                     return CSType.array(firstType)
@@ -75,11 +75,20 @@ extension LGCTypeAnnotation {
                     return nil
                 }
             } else {
+                for csType in environmentTypes {
+                    switch csType {
+                    case .named(let name, _) where name == value.identifier.string:
+                        return csType
+                    default:
+                        break
+                    }
+                }
+
                 return CSType.from(string: value.identifier.string)
             }
         case .functionType(let value):
-            if let returnType = value.returnType.csType {
-                let argumentTypes = value.argumentTypes.map { $0.csType }.compactMap { $0 }.map { ("_", $0) }
+            if let returnType = value.returnType.csType() {
+                let argumentTypes = value.argumentTypes.map { $0.csType() }.compactMap { $0 }.map { ("_", $0) }
 
                 // For backwards compatibility, functions
                 if argumentTypes.count == 0, let firstArgument = argumentTypes.first, firstArgument.1 == .unit {
