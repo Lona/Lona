@@ -172,18 +172,6 @@ class ComponentEditorViewController: NSSplitViewController {
             self.updateCanvasCollectionView()
         }
 
-        utilitiesView.onChangeCanvasList = { value in
-            self.component?.canvas = value
-            self.updateLayerList(withoutModifyingSelection: true)
-            self.updateCanvasCollectionView()
-        }
-
-        utilitiesView.onChangeCanvasLayout = { value in
-            self.component?.canvasLayoutAxis = value
-            self.updateLayerList(withoutModifyingSelection: true)
-            self.updateCanvasCollectionView()
-        }
-
         utilitiesView.onChangeParameterList = { value in
             self.component?.parameters = value
             self.utilitiesView.reloadData()

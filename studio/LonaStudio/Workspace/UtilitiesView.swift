@@ -15,6 +15,7 @@ class UtilitiesView: NSBox {
         case parameters = "Parameters"
         case logic = "Logic"
         case examples = "Examples"
+        case types = "Types"
         case details = "Details"
     }
 
@@ -53,12 +54,7 @@ class UtilitiesView: NSBox {
 
     public var onChangeMetadata: ((CSData) -> Void)?
 
-    public var onChangeCanvasList: (([Canvas]) -> Void)?
-
-    public var onChangeCanvasLayout: ((StaticCanvasRenderer.Layout) -> Void) {
-        get { return canvasListView?.onChangeLayout ?? { _ in } }
-        set { canvasListView?.onChangeLayout = newValue }
-    }
+    public var onChangeTypesList: (([CSType]) -> Void)?
 
     public var component: CSComponent? {
         didSet {
@@ -79,7 +75,7 @@ class UtilitiesView: NSBox {
 
     // MARK: Private
 
-    private var canvasListView: CanvasListView?
+//    private var typesListView: typesListView?
     private var logicListView: LogicListView?
     private var parameterListEditorView: ParameterListEditorView?
     private var caseListView: CaseList?
@@ -129,6 +125,8 @@ class UtilitiesView: NSBox {
             }
 
             metadataEditorView?.data = component?.metadata ?? .Null
+        case .types:
+            break
         }
 
         let tabMap: [Tab: NSView?] = [

@@ -1,13 +1,12 @@
 //
-//  LogicEditor+Parameters.swift
+//  LogicEditor+ParametersView.swift
 //  LonaStudio
 //
 //  Created by Devin Abbott on 4/5/19.
 //  Copyright © 2019 Devin Abbott. All rights reserved.
 //
 
-import Foundation
-import Cocoa
+import AppKit
 import Logic
 
 private let startsWithNumberRegex = try? NSRegularExpression(pattern: #"^\d"#)
