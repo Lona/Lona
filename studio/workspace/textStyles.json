@@ -114,6 +114,13 @@
       "fontWeight" : "600",
       "id" : "sectionTitleInverse",
       "name" : "Section Title Inverse"
+    },
+    {
+      "color" : "labelText",
+      "fontSize" : 11,
+      "fontWeight" : "600",
+      "id" : "labelTitle",
+      "name" : "Label Title"
     }
   ]
 }

@@ -425,16 +425,17 @@ class CoreComponentInspectorView: NSStackView {
             stretched: true
         )
 
+        let backgroundColorInput = LabeledLogicInput(titleText: "Background Color")
+
         let backgroundSection = renderSection(title: "Opacity & Background", views: [
             NSTextField(labelWithString: "Opacity"),
             opacityView,
-            NSTextField(labelWithString: "Background Color"),
-            backgroundColorContainer,
+            backgroundColorInput,
             NSTextField(labelWithString: "Gradient"),
             backgroundGradientView
         ])
 
-        [opacityView, backgroundColorContainer, backgroundGradientView].forEach {
+        [opacityView, backgroundColorInput, backgroundGradientView].forEach {
             backgroundSection.addContentSpacing(of: 14, after: $0)
         }
 

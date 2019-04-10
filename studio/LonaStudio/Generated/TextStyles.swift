@@ -25,4 +25,5 @@ class TextStyles {
     color: Colors.labelText)
   public static let sectionTitle = TextStyle(weight: NSFont.Weight.medium, size: 12, color: Colors.labelText)
   public static let sectionTitleInverse = TextStyle(weight: NSFont.Weight.semibold, size: 12, color: Colors.white)
+  public static let labelTitle = TextStyle(weight: NSFont.Weight.semibold, size: 11, color: Colors.labelText)
 }
