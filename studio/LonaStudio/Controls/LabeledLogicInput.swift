@@ -15,10 +15,10 @@ public class LabeledLogicInput: NSBox {
 
     // MARK: Lifecycle
 
-    public init(titleText: String) {
-        super.init(frame: .zero)
-
+    public init(titleText: String = "") {
         self.titleText = titleText
+
+        super.init(frame: .zero)
 
         setUpViews()
         setUpConstraints()
@@ -33,15 +33,19 @@ public class LabeledLogicInput: NSBox {
     // MARK: Public
 
     public var titleText: String {
-        get { return titleView.stringValue }
-        set { titleView.attributedStringValue = TextStyles.labelTitle.apply(to: newValue) }
+        didSet {
+            if titleText != oldValue {
+                update()
+            }
+        }
     }
+
+    public var logicEditor = LogicEditor()
 
     // MARK: Private
 
     private var titleView = LNATextField(labelWithString: "")
     private var dividerView = NSBox()
-    private var logicEditor = LogicEditor()
 
     private func setUpViews() {
         boxType = .custom
@@ -61,23 +65,10 @@ public class LabeledLogicInput: NSBox {
         logicEditor.scrollsVertically = false
         logicEditor.canvasStyle.textMargin.height = 4
         logicEditor.canvasStyle.textMargin.width -= 1
-//        logicEditor.canvasStyle.textPadding.height = 2
 
         addSubview(titleView)
         addSubview(dividerView)
         addSubview(logicEditor)
-
-        // TODO
-        logicEditor.rootNode = .literal(.color(id: UUID(), value: "red"))
-        logicEditor.getDecorationForNodeID = { [unowned self] id in
-            guard let node = self.logicEditor.rootNode.find(id: id) else { return nil }
-            switch node {
-            case .literal(.color(id: _, value: let code)):
-                return .color(CSColors.parse(css: code).color)
-            default:
-                return nil
-            }
-        }
     }
 
     private func setUpConstraints() {
@@ -100,5 +91,7 @@ public class LabeledLogicInput: NSBox {
         logicEditor.trailingAnchor.constraint(equalTo: trailingAnchor).isActive = true
     }
 
-    private func update() {}
+    private func update() {
+        titleView.attributedStringValue = TextStyles.labelTitle.apply(to: titleText)
+    }
 }
