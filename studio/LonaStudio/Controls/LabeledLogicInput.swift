@@ -40,6 +40,10 @@ public class LabeledLogicInput: NSBox {
         }
     }
 
+    public var getPasteboardItem: (() -> NSPasteboardItem)?
+
+    public var draggingThreshold: CGFloat = 2.0
+
     public var logicEditor = LogicEditor()
 
     // MARK: Private
@@ -53,6 +57,7 @@ public class LabeledLogicInput: NSBox {
         contentViewMargins = .zero
         cornerRadius = 2
         borderColor = Colors.divider
+        fillColor = Colors.headerBackground
 
         dividerView.boxType = .custom
         dividerView.borderType = .noBorder
@@ -93,5 +98,56 @@ public class LabeledLogicInput: NSBox {
 
     private func update() {
         titleView.attributedStringValue = TextStyles.labelTitle.apply(to: titleText)
+    }
+
+    // MARK: Interactions
+
+    var pressed = false
+    var pressedPoint = CGPoint.zero
+
+    public override func mouseDown(with event: NSEvent) {
+        let point = convert(event.locationInWindow, from: nil)
+
+        if bounds.contains(point) {
+            pressed = true
+            pressedPoint = point
+            update()
+        }
+    }
+
+    public override func mouseUp(with event: NSEvent) {
+        pressed = false
+    }
+
+    public override func mouseDragged(with event: NSEvent) {
+        guard let getPasteboardItem = getPasteboardItem else { return }
+
+        let point = convert(event.locationInWindow, from: nil)
+
+        if abs(point.x - pressedPoint.x) < draggingThreshold && abs(point.y - pressedPoint.y) < draggingThreshold {
+            return
+        }
+
+        pressed = false
+        update()
+
+        let pasteboardItem = getPasteboardItem()
+
+        let draggingItem = NSDraggingItem(pasteboardWriter: pasteboardItem)
+
+        let pdf = dataWithPDF(inside: bounds)
+        guard let snapshot = NSImage(data: pdf) else { return }
+
+        draggingItem.setDraggingFrame(bounds, contents: snapshot)
+
+        beginDraggingSession(with: [draggingItem], event: event, source: self)
+    }
+}
+
+// MARK: - NSDraggingSource
+
+extension LabeledLogicInput: NSDraggingSource {
+    public func draggingSession(_ session: NSDraggingSession, sourceOperationMaskFor context: NSDraggingContext) -> NSDragOperation {
+        return .copy
     }
 }
