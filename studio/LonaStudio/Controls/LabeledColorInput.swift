@@ -51,6 +51,11 @@ public class LabeledColorInput: NSBox {
 
     public var onChangeColorString: ((String?) -> Void)?
 
+    public var getPasteboardItem: (() -> NSPasteboardItem)? {
+        get { return labeledInputView.getPasteboardItem }
+        set { labeledInputView.getPasteboardItem = newValue }
+    }
+
     // MARK: Private
 
     private let labeledInputView = LabeledLogicInput(titleText: "")

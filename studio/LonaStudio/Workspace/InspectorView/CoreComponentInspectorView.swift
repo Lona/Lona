@@ -1061,6 +1061,15 @@ class CoreComponentInspectorView: NSStackView {
             borderStyleView.selectedIndex = value.int
         case .backgroundColor:
             backgroundColorInput.colorString = value.string
+            backgroundColorInput.getPasteboardItem = {
+                let item = NSPasteboardItem()
+
+                if let data = CSParameter(name: "backgroundColor", type: CSColorType).toData().toData() {
+                    item.setData(data, forType: .lonaParameter)
+                }
+
+                return item
+            }
         case .accessibilityType:
             switch value.stringValue {
             case "default":

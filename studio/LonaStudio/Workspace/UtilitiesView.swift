@@ -30,6 +30,8 @@ class UtilitiesView: NSBox {
         setUpConstraints()
 
         update()
+
+        registerForDraggedTypes([.lonaParameter])
     }
 
     public required init?(coder aDecoder: NSCoder) {
@@ -206,5 +208,44 @@ extension UtilitiesView {
                     } + [LGCStatement.makePlaceholder()])
             )
         )
+    }
+}
+
+// MARK: - Drop target
+
+extension UtilitiesView {
+    public override func draggingEntered(_ sender: NSDraggingInfo) -> NSDragOperation {
+        if currentTab == .parameters, let _ = sender.draggingPasteboard.data(forType: .lonaParameter) {
+            parameterListEditorView?.fillColor = Logic.Colors.highlightedLine
+
+            return .copy
+        }
+
+        return NSDragOperation()
+    }
+
+    override func draggingEnded(_ sender: NSDraggingInfo) {
+        parameterListEditorView?.fillColor = Colors.contentBackground
+    }
+
+    override func draggingExited(_ sender: NSDraggingInfo?) {
+        parameterListEditorView?.fillColor = Colors.contentBackground
+    }
+
+    public override func prepareForDragOperation(_ sender: NSDraggingInfo) -> Bool {
+        return true
+    }
+
+    public override func performDragOperation(_ sender: NSDraggingInfo) -> Bool {
+        guard let component = component else { return false }
+
+        guard let parameterData = sender.draggingPasteboard.data(forType: .lonaParameter),
+            let json = CSData.from(data: parameterData) else { return false }
+
+        let parameter = CSParameter(json)
+
+        onChangeParameterList?(component.parameters + [parameter])
+
+        return true
     }
 }
