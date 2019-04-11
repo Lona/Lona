@@ -66,4 +66,12 @@ extension Colors {
             return NSColor.white
         }
     }()
+
+    public static let divider: NSColor = {
+        if #available(OSX 10.13, *) {
+            return NSColor(named: "dividerColor")!
+        } else {
+            return NSColor.parse(css: "rgba(0,0,0,0.16)")!
+        }
+    }()
 }

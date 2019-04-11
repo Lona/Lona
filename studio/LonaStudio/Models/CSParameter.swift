@@ -6,7 +6,11 @@
 //  Copyright © 2017 Devin Abbott. All rights reserved.
 //
 
-import Foundation
+import AppKit
+
+public extension NSPasteboard.PasteboardType {
+    static let lonaParameter = NSPasteboard.PasteboardType(rawValue: "lona.parameter")
+}
 
 struct CSParameter: CSDataDeserializable, CSDataSerializable {
     var name: String = "parameter"

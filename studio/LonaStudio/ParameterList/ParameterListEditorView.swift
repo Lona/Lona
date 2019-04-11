@@ -37,6 +37,11 @@ class ParameterListEditorView: NSView {
         }
     }
 
+    var fillColor: NSColor {
+        get { return logicEditor.fillColor }
+        set { logicEditor.fillColor = newValue }
+    }
+
     var parameterList: [CSParameter] {
         get { return ParameterListEditorView.makeParameterList(from: logicEditor.rootNode, types: types) }
         set {
@@ -80,7 +85,7 @@ class ParameterListEditorView: NSView {
     }
 }
 
-// MARK: Logic <==> Parameter Conversion
+// MARK: - Logic <==> Parameter Conversion
 
 extension ParameterListEditorView {
     private static func makeParameterList(from rootNode: LGCSyntaxNode, types: [CSType]) -> [CSParameter] {

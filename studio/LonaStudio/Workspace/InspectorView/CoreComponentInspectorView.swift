@@ -67,7 +67,6 @@ class CoreComponentInspectorView: NSStackView {
         // Contents
         case opacity
         case backgroundColor
-        case backgroundColorEnabled
         case backgroundGradient
 
         // Shadow
@@ -127,8 +126,7 @@ class CoreComponentInspectorView: NSStackView {
     var accessibilityInspector = AccessibilityInspector()
 
     var opacityView = NumberField(frame: NSRect.zero)
-    var backgroundColorButton = ColorPickerButton(frame: NSRect.zero)
-    var backgroundColorEnabledView = CheckboxField(frame: NSRect.zero)
+    let backgroundColorInput = LabeledColorInput(titleText: "Background Color", colorString: nil)
     var borderColorButton = ColorPickerButton(frame: NSRect.zero)
     var borderColorEnabledView = CheckboxField(frame: NSRect.zero)
     var borderRadiusView = NumberField(frame: NSRect.zero)
@@ -414,27 +412,15 @@ class CoreComponentInspectorView: NSStackView {
     }
 
     func renderBackgroundSection() -> DisclosureContentRow {
-        backgroundColorEnabledView.imagePosition = .imageOnly
-
-        let backgroundColorContainer = NSStackView(
-            views: [
-                backgroundColorEnabledView,
-                backgroundColorButton
-            ],
-            orientation: .horizontal,
-            stretched: true
-        )
-
         let backgroundSection = renderSection(title: "Opacity & Background", views: [
             NSTextField(labelWithString: "Opacity"),
             opacityView,
-            NSTextField(labelWithString: "Background Color"),
-            backgroundColorContainer,
+            backgroundColorInput,
             NSTextField(labelWithString: "Gradient"),
             backgroundGradientView
         ])
 
-        [opacityView, backgroundColorContainer, backgroundGradientView].forEach {
+        [opacityView, backgroundColorInput, backgroundGradientView].forEach {
             backgroundSection.addContentSpacing(of: 14, after: $0)
         }
 
@@ -729,8 +715,6 @@ class CoreComponentInspectorView: NSStackView {
 
             // Contents
             (opacityView, .opacity),
-            (backgroundColorButton, .backgroundColor),
-            (backgroundColorEnabledView, .backgroundColorEnabled),
             (backgroundGradientView, .backgroundGradient),
 
             // Shadow
@@ -954,6 +938,10 @@ class CoreComponentInspectorView: NSStackView {
         borderStyleView.onChangeSelectedIndex = { value in
             change(property: Property.borderStyle, to: value.toData())
         }
+
+        backgroundColorInput.onChangeColorString = { value in
+            change(property: Property.backgroundColor, to: value?.toData() ?? CSData.Null)
+        }
     }
 
     let controlledProperties: [Property] = [
@@ -964,6 +952,7 @@ class CoreComponentInspectorView: NSStackView {
         Property.height,
         Property.aspectRatio,
         Property.borderStyle,
+        Property.backgroundColor,
         Property.accessibilityType,
         Property.accessibilityLabel,
         Property.accessibilityHint,
@@ -1070,6 +1059,17 @@ class CoreComponentInspectorView: NSStackView {
             dimensionsInspector.aspectRatioValue = CGFloat(value.numberValue)
         case .borderStyle:
             borderStyleView.selectedIndex = value.int
+        case .backgroundColor:
+            backgroundColorInput.colorString = value.string
+            backgroundColorInput.getPasteboardItem = {
+                let item = NSPasteboardItem()
+
+                if let data = CSParameter(name: "backgroundColor", type: CSColorType).toData().toData() {
+                    item.setData(data, forType: .lonaParameter)
+                }
+
+                return item
+            }
         case .accessibilityType:
             switch value.stringValue {
             case "default":
@@ -1133,8 +1133,8 @@ class CoreComponentInspectorView: NSStackView {
 
             // Contents
             CoreComponentInspectorView.Property.opacity: CSData.Number(layer.opacity ?? 1),
-            CoreComponentInspectorView.Property.backgroundColor: CSData.String(layer.backgroundColor ?? "transparent"),
-            CoreComponentInspectorView.Property.backgroundColorEnabled: CSData.Bool(layer.backgroundColor != nil),
+            CoreComponentInspectorView.Property.backgroundColor: layer.backgroundColor != nil
+                ? CSData.String(layer.backgroundColor!) : CSData.Null,
             CoreComponentInspectorView.Property.backgroundGradient: CSData.String(layer.backgroundGradient ?? ""),
 
             // Shadow
@@ -1207,8 +1207,7 @@ class CoreComponentInspectorView: NSStackView {
 
         // Content
         case .opacity: layer.opacity = max(min(value.numberValue, 1), 0)
-        case .backgroundColor: layer.backgroundColor = value.stringValue
-        case .backgroundColorEnabled: layer.backgroundColor = value.boolValue ? "transparent" : nil
+        case .backgroundColor: layer.backgroundColor = value.string
         case .backgroundGradient: layer.backgroundGradient = value.string
 
         // Shadow
