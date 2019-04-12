@@ -85,7 +85,7 @@ class WorkspaceViewController: NSSplitViewController {
         get {
             return WorkspacePane.all.filter {
                 if $0 == .bottom {
-                    return false
+                    return !(componentEditorViewController.utilitiesViewVisible)
                 } else {
                     return !(splitViewItem(for: $0)?.isCollapsed ?? true)
                 }
