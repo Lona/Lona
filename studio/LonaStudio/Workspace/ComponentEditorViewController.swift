@@ -45,6 +45,8 @@ class ComponentEditorViewController: NSSplitViewController {
         set { setBottomItemVisibility(to: newValue) }
     }
 
+    public var onChangeUtilitiesViewVisible: ((Bool) -> Void)?
+
     public var onInspectLayer: ((CSLayer?) -> Void)?
     public var onChangeInspectedLayer: (() -> Void)?
     public var onChangeInspectedCanvas: ((Int) -> Void)?
@@ -217,8 +219,8 @@ class ComponentEditorViewController: NSSplitViewController {
         mainItem.minimumThickness = 300
         addSplitViewItem(mainItem)
 
-        bottomItem.canCollapse = false
-        bottomItem.minimumThickness = 200
+        bottomItem.canCollapse = true
+        bottomItem.minimumThickness = 100
         addSplitViewItem(bottomItem)
     }
 
@@ -260,9 +262,19 @@ class ComponentEditorViewController: NSSplitViewController {
             selectedLayerName: selectedLayerName)
     }
 
+    // Collapsing with an animation doesn't work here currently, since we need to call
+    // drawDivider to update the position of views within the divider, and this isn't
+    // called during animation. If we draw a custom UI in drawDivider, rather than
+    // using subviews within, we can add the animation back.
     private func setBottomItemVisibility(to visible: Bool) {
         if (visible && bottomItem.isCollapsed) || (!visible && !bottomItem.isCollapsed) {
-            bottomItem.animator().isCollapsed = !visible
+            bottomItem.isCollapsed = !visible
+            splitView.needsDisplay = true
         }
+    }
+
+    override func splitViewDidResizeSubviews(_ notification: Notification) {
+        self.onChangeUtilitiesViewVisible?(self.bottomItem.isCollapsed)
+        splitView.needsDisplay = true
     }
 }

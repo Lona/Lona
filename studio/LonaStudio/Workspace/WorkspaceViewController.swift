@@ -449,6 +449,12 @@ class WorkspaceViewController: NSSplitViewController {
             inspectorViewVisible = true
             editorViewController.contentView = componentEditorViewController.view
 
+            componentEditorViewController.onChangeUtilitiesViewVisible = { [unowned self] _ in
+                // We don't use the visible param, which complicated the logic.
+                // We'll need to keep an eye on performance here.
+                self.onChangeActivePanes?(self.activePanes)
+            }
+
             componentEditorViewController.component = component
 
             componentEditorViewController.onInspectLayer = { layer in
