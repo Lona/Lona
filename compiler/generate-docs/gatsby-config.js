@@ -16,7 +16,7 @@ const plugins = [
   },
   'gatsby-plugin-react-helmet',
   {
-    resolve: '@mathieudutour/gatsby-mdx',
+    resolve: 'gatsby-mdx',
     options: {
       extensions: ['.mdx', '.md'],
     },
