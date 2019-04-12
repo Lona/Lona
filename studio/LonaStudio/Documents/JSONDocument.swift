@@ -122,9 +122,9 @@ class JSONDocument: NSDocument {
 
         switch content {
         case .colors:
-            LonaPlugins.current.trigger(eventType: .onSaveColors)
+            LonaEvents.triggerSaveColors()
         case .textStyles:
-            LonaPlugins.current.trigger(eventType: .onSaveTextStyles)
+            LonaEvents.triggerSaveTextStyles()
         }
     }
 }

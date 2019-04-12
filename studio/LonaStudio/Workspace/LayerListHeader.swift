@@ -22,7 +22,7 @@ public class LayerListHeader: NSBox {
 
         update()
 
-        subscriptions.append(LonaPlugins.current.register(eventType: .onChangeFileSystemComponents) { [unowned self] in
+        subscriptions.append(LonaEvents.onChangeFileSystemComponents {[unowned self] _ in
             self.updateMenuItems()
         })
     }

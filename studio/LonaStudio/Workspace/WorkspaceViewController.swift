@@ -338,7 +338,7 @@ class WorkspaceViewController: NSSplitViewController {
         splitView.identifier = NSUserInterfaceItemIdentifier(rawValue: splitViewResorationIdentifier)
 
         fileNavigator.onCreateFile = { path, options in
-            LonaPlugins.current.trigger(eventType: .onChangeFileSystemComponents)
+            LonaEvents.triggerChangeFileSystemComponents([path])
         }
 
         fileNavigator.onDeleteFile = { path, options in
@@ -347,7 +347,7 @@ class WorkspaceViewController: NSSplitViewController {
                     self.close(document: document, discardingUnsavedChanges: true)
                 }
             }
-            LonaPlugins.current.trigger(eventType: .onChangeFileSystemComponents)
+            LonaEvents.triggerChangeFileSystemComponents([path])
         }
 
         // Don't allow moving these json files within Lona Studio.
@@ -363,7 +363,7 @@ class WorkspaceViewController: NSSplitViewController {
         fileNavigator.performMoveFile = { prev, next in
             do {
                 try FileManager.default.moveItem(atPath: prev, toPath: next)
-                LonaPlugins.current.trigger(eventType: .onChangeFileSystemComponents)
+                LonaEvents.triggerChangeFileSystemComponents([prev, next])
                 return true
             } catch {
                 Swift.print("Failed to move \(prev) to \(next)")
@@ -693,7 +693,7 @@ class WorkspaceViewController: NSSplitViewController {
                     Swift.print("Failed to save", saveURL, error as Any)
                 })
 
-                LonaPlugins.current.trigger(eventType: .onSaveComponent)
+                LonaEvents.triggerSaveComponent(saveURL)
             case .cancel:
                 return
             case .discardChanges:
@@ -770,7 +770,7 @@ class WorkspaceViewController: NSSplitViewController {
     var subscriptions: [LonaPlugins.SubscriptionHandle] = []
 
     override func viewWillAppear() {
-        subscriptions.append(LonaPlugins.current.register(eventType: .onReloadWorkspace) {
+        subscriptions.append(LonaEvents.onReloadWorkspace {
             self.component?.layers
                 .filter({ $0 is CSComponentLayer })
                 .forEach({ layer in
@@ -781,7 +781,7 @@ class WorkspaceViewController: NSSplitViewController {
             self.update()
         })
 
-        subscriptions.append(LonaPlugins.current.register(eventType: .onReloadWorkspace) { [unowned self] in
+        subscriptions.append(LonaEvents.onReloadWorkspace { [unowned self] in
             self.fileNavigator.titleText = CSWorkspacePreferences.workspaceName
         })
     }
@@ -870,7 +870,7 @@ class WorkspaceViewController: NSSplitViewController {
                     Swift.print("Failed to save", saveURL, error as Any)
                 })
 
-                LonaPlugins.current.trigger(eventType: .onSaveComponent)
+                LonaEvents.triggerSaveComponent(saveURL)
             case .cancel:
                 return false
             case .discardChanges:

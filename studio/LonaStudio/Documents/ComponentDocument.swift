@@ -100,6 +100,6 @@ class ComponentDocument: NSDocument {
 
         super.save(to: url, ofType: typeName, for: saveOperation, completionHandler: completionHandler)
 
-        LonaPlugins.current.trigger(eventType: .onSaveComponent)
+        LonaEvents.triggerSaveComponent(url)
     }
 }

@@ -9,15 +9,6 @@
 import Foundation
 import AppKit
 
-enum LonaPluginActivationEvent: String, Decodable {
-    case onSaveComponent = "onSave:component"
-    case onSaveColors = "onSave:colors"
-    case onSaveTextStyles = "onSave:textStyles"
-    case onReloadWorkspace = "onReload:workspace"
-    case onChangeTheme = "onChange:theme"
-    case onChangeFileSystemComponents = "onChange:fileSystem:components"
-}
-
 struct LonaPluginConfig: Decodable {
     var main: String
     var activationEvents: [LonaPluginActivationEvent]?
@@ -109,34 +100,6 @@ class LonaPlugins {
         return pluginFiles().filter({ file in
             file.config?.activationEvents?.contains(eventType) ?? false
         })
-    }
-
-    func register(eventType: LonaPluginActivationEvent, handler callback: @escaping () -> Void) -> SubscriptionHandle {
-        let handler = Handler(callback: callback)
-
-        var handlerList = LonaPlugins.handlers[eventType] ?? []
-        handlerList.append(handler)
-        LonaPlugins.handlers[eventType] = handlerList
-
-        return {
-            let handlerList = LonaPlugins.handlers[eventType] ?? []
-            LonaPlugins.handlers[eventType] = handlerList.filter({ $0 !== handler })
-        }
-    }
-
-    func register(eventTypes: [LonaPluginActivationEvent], handler callback: @escaping () -> Void) -> SubscriptionHandle {
-        let subscriptions = eventTypes.map({ register(eventType: $0, handler: callback) })
-        return {
-            subscriptions.forEach({ sub in sub() })
-        }
-    }
-
-    func trigger(eventType: LonaPluginActivationEvent) {
-        LonaPlugins.current.pluginFilesActivatingOn(eventType: eventType).forEach({
-            $0.run(onSuccess: {_ in })
-        })
-
-        LonaPlugins.handlers[eventType]?.forEach({ $0.callback() })
     }
 
     // MARK: - STATIC

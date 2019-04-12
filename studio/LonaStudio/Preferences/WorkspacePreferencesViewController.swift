@@ -46,7 +46,7 @@ class WorkspacePreferencesViewController: NSViewController, MASPreferencesViewCo
                 CSWorkspacePreferences.workspaceNameValue = CSValue(type: CSType.string, data: value)
                 CSWorkspacePreferences.save()
 
-                LonaPlugins.current.trigger(eventType: .onReloadWorkspace)
+                LonaEvents.triggerReloadWorkspace()
 
                 self.render()
         })
@@ -59,7 +59,7 @@ class WorkspacePreferencesViewController: NSViewController, MASPreferencesViewCo
                 CSWorkspacePreferences.workspaceIconPathValue = CSValue(type: CSWorkspacePreferences.optionalURLType, data: value)
                 CSWorkspacePreferences.save()
 
-                LonaPlugins.current.trigger(eventType: .onReloadWorkspace)
+                LonaEvents.triggerReloadWorkspace()
 
                 self.render()
         })
@@ -109,7 +109,7 @@ class WorkspacePreferencesViewController: NSViewController, MASPreferencesViewCo
                 CSUserPreferences.canvasAreaBackgroundColorValue = CSValue(type: .string, data: value)
                 CSUserPreferences.save()
 
-                LonaPlugins.current.trigger(eventType: .onChangeTheme)
+                LonaEvents.triggerChangeTheme(CSUserPreferences.canvasAreaBackgroundColorValue)
 
                 self.render()
         })

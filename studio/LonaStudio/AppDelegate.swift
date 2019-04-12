@@ -356,6 +356,6 @@ class AppDelegate: NSObject, NSApplicationDelegate {
         CSGradients.reload()
         CSShadows.reload()
 
-        LonaPlugins.current.trigger(eventType: .onReloadWorkspace)
+        LonaEvents.triggerReloadWorkspace()
     }
 }

@@ -36,7 +36,6 @@ class FileNavigatorHeaderWithMenu: FileNavigatorHeader {
 }
 
 class FileNavigator: NSBox {
-
     // MARK: - Lifecycle
 
     init(rootPath: String) {
@@ -49,8 +48,24 @@ class FileNavigator: NSBox {
 
         update()
 
-        subscriptions.append(LonaPlugins.current.register(eventType: .onReloadWorkspace) {
-            self.headerView.fileIcon = NSImage(byReferencing: CSWorkspacePreferences.workspaceIconURL)
+        subscriptions.append(LonaEvents.onReloadWorkspace {[unowned self] in
+          self.headerView.fileIcon = NSImage(byReferencing: CSWorkspacePreferences.workspaceIconURL)
+          self._fileImageCache = [:]
+        })
+
+        subscriptions.append(LonaEvents.onSaveComponent { [unowned self] url in
+          if self._fileImageCache[url] != nil {
+            self._fileImageCache.removeValue(forKey: url)
+          }
+        })
+
+        subscriptions.append(LonaEvents.onChangeFileSystemComponents { [unowned self] filePaths in
+          filePaths.forEach({ path in
+            let url = URL(fileURLWithPath: path)
+            if self._fileImageCache[url] != nil {
+              self._fileImageCache.removeValue(forKey: url)
+            }
+          })
         })
     }
 
@@ -59,6 +74,8 @@ class FileNavigator: NSBox {
     }
 
     private var subscriptions: [() -> Void] = []
+
+    private var _fileImageCache : [URL: NSImage] = [:]
 
     deinit {
         subscriptions.forEach({ sub in sub() })
@@ -287,6 +304,10 @@ class FileNavigator: NSBox {
         }
 
         if url.pathExtension == "component" {
+            if let image = _fileImageCache[url] {
+              return image
+            }
+
             guard let component = LonaModule.current.component(named: url.deletingPathExtension().lastPathComponent),
                 let canvas = component.computedCanvases().first,
                 let caseItem = component.computedCases(for: canvas).first
@@ -309,6 +330,7 @@ class FileNavigator: NSBox {
                 let image = NSImage(data: data)
                 else { return defaultImage(for: path) }
             image.size = NSSize(width: size.width, height: (image.size.height / image.size.width) * size.height)
+            _fileImageCache[url] = image
             return image
         } else {
             return defaultImage(for: path)

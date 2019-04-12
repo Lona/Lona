@@ -26,9 +26,9 @@ class CanvasTableView: NSTableView, NSTableViewDataSource, NSTableViewDelegate {
         columnAutoresizingStyle = .noColumnAutoresizing
         backgroundColor = canvasAreaBackgroundColor
 
-        self.subscriptionHandle = LonaPlugins.current.register(eventTypes: [.onChangeTheme], handler: { [unowned self] in
+        self.subscriptionHandle = LonaEvents.onChangeTheme { [unowned self] _ in
             self.backgroundColor = self.canvasAreaBackgroundColor
-        })
+        }
 
         gridColor = isDarkMode ? NSColor.black.withAlphaComponent(0.4) : NSColor.black.withAlphaComponent(0.08)
         gridStyleMask = [.solidHorizontalGridLineMask, .solidVerticalGridLineMask]
