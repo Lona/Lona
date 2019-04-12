@@ -480,6 +480,10 @@ extension CanvasView {
             }
         }
 
+        if rootLayer.widthSizingRule == .Shrink || rootLayer.widthSizingRule == .Fixed {
+            wrapper.alignItems = .flexStart
+        }
+
         wrapper.insert(child: child, at: 0)
         rootNode.insert(child: wrapper, at: 0)
 
