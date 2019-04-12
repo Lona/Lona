@@ -218,7 +218,7 @@ class ComponentEditorViewController: NSSplitViewController {
         addSplitViewItem(mainItem)
 
         bottomItem.canCollapse = false
-        bottomItem.minimumThickness = 0
+        bottomItem.minimumThickness = 200
         addSplitViewItem(bottomItem)
     }
 
