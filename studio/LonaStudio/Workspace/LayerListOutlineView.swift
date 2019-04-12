@@ -8,6 +8,7 @@
 
 import AppKit
 import Foundation
+import FileTree
 
 // MARK: - NSPasteboard.PasteboardType
 
@@ -163,7 +164,7 @@ extension LayerListOutlineView {
         focusRingType = .none
         intercellSpacing = NSSize(width: 10, height: 10)
 
-        registerForDraggedTypes([.lonaLayerIndex, .lonaLayerTemplateType])
+        registerForDraggedTypes([.lonaLayerIndex, .lonaLayerTemplateType, .fileTreeURL])
 
         headerView = nil
         doubleAction = #selector(doubleClick(sender:))
@@ -527,6 +528,14 @@ extension LayerListOutlineView: NSOutlineViewDelegate, NSOutlineViewDataSource {
             return NSDragOperation.copy
         }
 
+        if let urlString = info.draggingPasteboard.string(forType: .fileTreeURL),
+            let url = URL(string: urlString),
+            url.pathExtension == "component",
+            let _ = item as? CSLayer {
+
+            return NSDragOperation.copy
+        }
+
         return NSDragOperation()
     }
 
@@ -566,30 +575,46 @@ extension LayerListOutlineView: NSOutlineViewDelegate, NSOutlineViewDataSource {
             return true
         }
 
+        func appendOrInsert(targetLayer: CSLayer, newLayer: CSLayer, at index: Int) {
+            UndoManager.shared.run(name: "Append", execute: {
+                if index == -1 {
+                    targetLayer.appendChild(newLayer)
+                } else {
+                    targetLayer.insertChild(newLayer, at: index)
+                }
+
+                self.render()
+                self.onChange?()
+            }, undo: {
+                newLayer.removeFromParent()
+
+                self.render()
+                self.onChange?()
+            })
+
+        }
+
         if let templateTypeString = info.draggingPasteboard.string(forType: .lonaLayerTemplateType),
             let targetLayer = item as? CSLayer,
             let component = component {
             let templateType = CSLayer.LayerType.init(from: templateTypeString)
 
             if let newLayer = component.makeLayer(forType: templateType) {
-                UndoManager.shared.run(name: "Append", execute: {
-                    if index == -1 {
-                        targetLayer.appendChild(newLayer)
-                    } else {
-                        targetLayer.insertChild(newLayer, at: index)
-                    }
-
-                    self.render()
-                    self.onChange?()
-                }, undo: {
-                    newLayer.removeFromParent()
-
-                    self.render()
-                    self.onChange?()
-                })
+                appendOrInsert(targetLayer: targetLayer, newLayer: newLayer, at: index)
 
                 return true
             }
+        }
+
+        if let urlString = info.draggingPasteboard.string(forType: .fileTreeURL),
+            let url = URL(string: urlString),
+            url.pathExtension == "component",
+            let targetLayer = item as? CSLayer {
+
+            let newLayer = CSComponentLayer.make(from: url)
+            appendOrInsert(targetLayer: targetLayer, newLayer: newLayer, at: index)
+
+            return true
         }
 
         return false
