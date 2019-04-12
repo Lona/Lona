@@ -40,6 +40,11 @@ class ComponentEditorViewController: NSSplitViewController {
         set { canvasAreaView.panningEnabled = newValue }
     }
 
+    public var utilitiesViewVisible: Bool {
+        get { return bottomItem.isCollapsed }
+        set { setBottomItemVisibility(to: newValue) }
+    }
+
     public var onInspectLayer: ((CSLayer?) -> Void)?
     public var onChangeInspectedLayer: (() -> Void)?
     public var onChangeInspectedCanvas: ((Int) -> Void)?
@@ -109,6 +114,8 @@ class ComponentEditorViewController: NSSplitViewController {
 
         return vc
     }()
+
+    private lazy var bottomItem = NSSplitViewItem(viewController: utilitiesViewController)
 
     private func setUpViews() {
         setUpUtilities()
@@ -210,9 +217,8 @@ class ComponentEditorViewController: NSSplitViewController {
         mainItem.minimumThickness = 300
         addSplitViewItem(mainItem)
 
-        let bottomItem = NSSplitViewItem(viewController: utilitiesViewController)
         bottomItem.canCollapse = false
-        bottomItem.minimumThickness = 0
+        bottomItem.minimumThickness = 200
         addSplitViewItem(bottomItem)
     }
 
@@ -252,5 +258,11 @@ class ComponentEditorViewController: NSSplitViewController {
             showsAccessibilityOverlay: showsAccessibilityOverlay,
             onSelectLayer: { self.onInspectLayer?($0) },
             selectedLayerName: selectedLayerName)
+    }
+
+    private func setBottomItemVisibility(to visible: Bool) {
+        if (visible && bottomItem.isCollapsed) || (!visible && !bottomItem.isCollapsed) {
+            bottomItem.animator().isCollapsed = !visible
+        }
     }
 }

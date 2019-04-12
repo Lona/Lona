@@ -84,7 +84,11 @@ class WorkspaceViewController: NSSplitViewController {
     public var activePanes: [WorkspacePane] {
         get {
             return WorkspacePane.all.filter {
-                return !(splitViewItem(for: $0)?.isCollapsed ?? true)
+                if $0 == .bottom {
+                    return !(componentEditorViewController.utilitiesViewVisible)
+                } else {
+                    return !(splitViewItem(for: $0)?.isCollapsed ?? true)
+                }
             }
         }
         set {
@@ -303,13 +307,17 @@ class WorkspaceViewController: NSSplitViewController {
     }
 
     private func setVisibility(to visible: Bool, for pane: WorkspacePane, animate: Bool) {
-        guard let item = splitViewItem(for: pane) else { return }
+        if pane == .bottom {
+            componentEditorViewController.utilitiesViewVisible = visible
+        } else {
+            guard let item = splitViewItem(for: pane) else { return }
 
-        if (visible && item.isCollapsed) || (!visible && !item.isCollapsed) {
-            if animate {
-                item.animator().isCollapsed = !visible
-            } else {
-                item.isCollapsed = !visible
+            if (visible && item.isCollapsed) || (!visible && !item.isCollapsed) {
+                if animate {
+                    item.animator().isCollapsed = !visible
+                } else {
+                    item.isCollapsed = !visible
+                }
             }
         }
     }
