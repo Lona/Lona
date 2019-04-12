@@ -40,10 +40,9 @@ class ComponentEditorViewController: NSSplitViewController {
         set { canvasAreaView.panningEnabled = newValue }
     }
 
-    public var utilitiesViewVisible: Bool = false {
-        didSet {
-            setBottomItemVisibility(to: utilitiesViewVisible)
-        }
+    public var utilitiesViewVisible: Bool {
+        get { return bottomItem.isCollapsed }
+        set { setBottomItemVisibility(to: newValue) }
     }
 
     public var onInspectLayer: ((CSLayer?) -> Void)?
