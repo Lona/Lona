@@ -155,11 +155,12 @@ public class LabeledColorInput: NSBox {
                 style: queryColor != nil ? .colorPreview(code: query, queryColor!) : .normal
             )
 
+            let lowercasedQuery = query.lowercased()
+
             let systemColorSuggestions = CSColors.colors
                 .filter { color in
                     if query.isEmpty { return true }
 
-                    let lowercasedQuery = query.lowercased()
                     return color.name.lowercased().contains(lowercasedQuery) || color.id.lowercased().contains(lowercasedQuery)
                 }
                 .map { color in
@@ -176,7 +177,8 @@ public class LabeledColorInput: NSBox {
                     )
             }
 
-            return (query.isEmpty ? [noneSuggestion] : []) + systemColorSuggestions + [customSuggestion]
+            return (query.isEmpty || "none".contains(lowercasedQuery) ? [noneSuggestion] : []) +
+                systemColorSuggestions + [customSuggestion]
         }
     }
 }
