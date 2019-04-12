@@ -58,6 +58,12 @@ class CSView: NSBox, CSRendering {
         }
     }
 
+    override var cornerRadius: CGFloat {
+        didSet {
+            innerView.cornerRadius = cornerRadius
+        }
+    }
+
     var borderStyle: CSLayer.BorderStyle = .solid {
         didSet {
             switch borderStyle {

@@ -22,6 +22,21 @@ public class LNAImageView: NSImageView {
     }
   }
 
+  public var cornerRadius: CGFloat = 0 {
+      didSet {
+          if oldValue != cornerRadius {
+              needsDisplay = true
+          }
+      }
+  }
+
+  public override func draw(_ dirtyRect: NSRect) {
+      let clipPath = NSBezierPath(roundedRect: bounds, xRadius: cornerRadius, yRadius: cornerRadius)
+      clipPath.setClip()
+
+      super.draw(dirtyRect)
+  }
+
   override public func viewWillDraw() {
     if let image = image,
       let originalImage = originalImage,
