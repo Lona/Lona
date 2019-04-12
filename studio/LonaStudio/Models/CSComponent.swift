@@ -250,7 +250,7 @@ class CSComponent: DataNode, NSCopying {
         )
     }
 
-    func makeLayer(forType type: CSLayer.LayerType) -> CSLayer? {
+    func makeLayer(forType type: CSLayer.LayerType) -> CSLayer {
         let defaultViewParameters: [String: CSData] = [
             "width": 100.toData(),
             "height": 100.toData(),
@@ -303,8 +303,10 @@ class CSComponent: DataNode, NSCopying {
                 type: .children,
                 parameters: defaultViewParameters
             )
-        default:
-            return nil
+        case .custom(let typeName):
+            let layer = CSComponentLayer.make(forTypeName: typeName)
+            layer.name = getNewLayerName(basedOn: typeName)
+            return layer
         }
     }
 

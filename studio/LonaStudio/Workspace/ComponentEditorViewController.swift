@@ -125,8 +125,9 @@ class ComponentEditorViewController: NSSplitViewController {
         layerList.fillColor = layerList.isDarkMode ? NSColor.controlBackgroundColor : .white
 
         layerList.onClickLayerTemplateType = { [unowned self] type in
-            guard let component = self.component, let newLayer = component.makeLayer(forType: type) else { return }
+            guard let component = self.component else { return }
 
+            let newLayer = component.makeLayer(forType: type)
             self.layerList.addLayer(layer: newLayer)
         }
 

@@ -597,21 +597,24 @@ extension LayerListOutlineView: NSOutlineViewDelegate, NSOutlineViewDataSource {
         if let templateTypeString = info.draggingPasteboard.string(forType: .lonaLayerTemplateType),
             let targetLayer = item as? CSLayer,
             let component = component {
+
             let templateType = CSLayer.LayerType.init(from: templateTypeString)
+            let newLayer = component.makeLayer(forType: templateType)
 
-            if let newLayer = component.makeLayer(forType: templateType) {
-                appendOrInsert(targetLayer: targetLayer, newLayer: newLayer, at: index)
+            appendOrInsert(targetLayer: targetLayer, newLayer: newLayer, at: index)
 
-                return true
-            }
+            return true
         }
 
         if let urlString = info.draggingPasteboard.string(forType: .fileTreeURL),
             let url = URL(string: urlString),
             url.pathExtension == "component",
-            let targetLayer = item as? CSLayer {
+            let targetLayer = item as? CSLayer,
+            let component = component {
 
-            let newLayer = CSComponentLayer.make(from: url)
+            let templateType = CSLayer.LayerType.custom(CSComponent.componentName(from: url))
+            let newLayer = component.makeLayer(forType: templateType)
+
             appendOrInsert(targetLayer: targetLayer, newLayer: newLayer, at: index)
 
             return true

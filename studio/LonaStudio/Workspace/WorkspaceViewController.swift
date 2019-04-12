@@ -1029,9 +1029,9 @@ extension WorkspaceViewController {
     }
 
     func addLayer(forType type: CSLayer.LayerType) {
-        guard let component = component,
-            let newLayer = component.makeLayer(forType: type) else { return }
+        guard let component = component else { return }
 
+        let newLayer = component.makeLayer(forType: type)
         componentEditorViewController.addLayer(newLayer)
     }
 }
