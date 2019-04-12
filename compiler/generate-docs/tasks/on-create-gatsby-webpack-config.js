@@ -1,7 +1,8 @@
+const path = require('path')
 const webpack = require('webpack') // eslint-disable-line
 const loadConfig = require('./load-config')
 
-module.exports = ({ actions, getConfig }) => {
+module.exports = ({ actions, getConfig, reporter }) => {
   const { cwd, nodeModules } = loadConfig()
 
   const webpackConfig = getConfig()
@@ -17,24 +18,38 @@ module.exports = ({ actions, getConfig }) => {
         /node_modules\/lona-docs\/node_modules/,
       ]
 
-      // load .component as well
-      r.test = /\.(jsx?|component)$/
       r.use.push({
         loader: 'lona-loader',
         options: {
           // styleFramework: 'styledcomponents',
         },
       })
+
+      if (r.enforce) {
+        // that's the eslint rule. We don't want to lint components
+        r.exclude.push(cwd)
+        r.exclude.push(path.resolve(__dirname, '../lona-workspace'))
+        return r
+      }
+
+      // load .component as well
+      r.test = /\.(jsx?|component)$/
       jsRule = r
     }
 
     if (r.test && r.test.toString() === /\.pdf$/.toString()) {
-      // load .sketch as well
+      // load .sketch as an asset as well
       r.test = /\.(pdf|sketch)$/
     }
 
     return r
   })
+
+  if (!jsRule) {
+    reporter.panicOnBuild(
+      `Error modifying the webpack configuration, could not find the js rule`
+    )
+  }
 
   // use the normal js loader for lona files
   webpackConfig.module.rules.push({

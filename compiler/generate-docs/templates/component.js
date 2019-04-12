@@ -1,7 +1,7 @@
 import { graphql } from 'gatsby'
 import React from 'react'
 import PropTypes from 'prop-types'
-import { MDXRenderer } from '@mathieudutour/gatsby-mdx'
+import { MDXRenderer } from 'gatsby-mdx'
 import Layout from '../src/components/Layout'
 import Examples from '../src/components/Examples'
 import Parameters from '../src/components/Parameters'
