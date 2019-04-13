@@ -7,13 +7,14 @@
 //
 
 import AppKit
+import Logic
 
-class LabeledValueInput: NSView {
+class LabeledValueInput: LabeledInput {
 
     // MARK: Lifecycle
 
-    public init() {
-        super.init(frame: .zero)
+    public override init(titleText: String) {
+        super.init(titleText: titleText)
 
         setUpViews()
         setUpConstraints()
@@ -27,28 +28,9 @@ class LabeledValueInput: NSView {
 
     // MARK: Public
 
-    var inputView = NSView()
-
     public var value: CSValue = CSValue(type: .unit, data: .Null) {
         didSet {
             if oldValue != value {
-                if oldValue.type != value.type {
-                    inputView.removeFromSuperview()
-
-                    inputView = LabeledValueInput.makeInput(forType: value.type)
-
-                    addSubview(inputView)
-
-                    inputView.translatesAutoresizingMaskIntoConstraints = false
-
-                    inputView.leadingAnchor.constraint(equalTo: leadingAnchor).isActive = true
-                    inputView.topAnchor.constraint(equalTo: topAnchor).isActive = true
-                    inputView.bottomAnchor.constraint(equalTo: bottomAnchor).isActive = true
-                    inputView.trailingAnchor.constraint(equalTo: trailingAnchor).isActive = true
-                }
-
-                updateInput(csValue: value)
-
                 update()
             }
         }
@@ -58,38 +40,49 @@ class LabeledValueInput: NSView {
 
     // MARK: Private
 
-    private func setUpViews() {}
+    private var logicEditor = LogicValueInput()
 
-    private func setUpConstraints() {
-        translatesAutoresizingMaskIntoConstraints = false
-    }
+    private func setUpViews() {
+        inputView = logicEditor
 
-    private func update() {}
+        getPasteboardItem = { [unowned self] in
+            let item = NSPasteboardItem()
 
-    // MARK: Helpers
-
-    func updateInput(csValue: CSValue) {
-        switch csValue.type {
-        case CSColorType:
-            guard let inputView = inputView as? LabeledColorInput else { return }
-
-            inputView.onChangeColorString = { [unowned self] colorString in
-                let newValue = CSValue(type: CSColorType, data: colorString != nil ? .String(colorString!) : .Null)
-
-                self.onChangeValue?(newValue)
+            if let data = CSParameter(name: self.titleText, type: self.value.type).toData().toData() {
+                item.setData(data, forType: .lonaParameter)
             }
-        default:
-            break
+
+            return item
         }
     }
 
-    static func makeInput(forType csType: CSType) -> NSView {
-        switch csType {
+    private func setUpConstraints() {}
+
+    private func update() {
+        switch value.type {
         case CSColorType:
-            return LabeledColorInput(titleText: "Test", colorString: nil)
+            let swiftValue = value.data.string
+            logicEditor.rootNode = LogicValueInput.rootNode(forColorString: swiftValue)
+
+            logicEditor.onChangeRootNode = { [unowned self] node in
+                let csData = LogicValueInput.makeColorString(node: node).toData()
+                self.onChangeValue?(CSValue(type: self.value.type, data: csData))
+                return true
+            }
+
+            logicEditor.suggestionsForNode = { node, query in
+                return LogicValueInput.suggestionsForColor(node: node, query: query)
+            }
         default:
-            Swift.print("Failed to create value input. Unknown input type \(csType)")
-            return NSView()
+            logicEditor.rootNode = LogicValueInput.rootNode(forValue: value)
+            logicEditor.onChangeRootNode = { [unowned self] node in
+                let newValue = LogicValueInput.makeValue(forType: self.value.type, node: node)
+                self.onChangeValue?(newValue)
+                return true
+            }
+            logicEditor.suggestionsForNode = { [unowned self] _, query in
+                return LogicValueInput.suggestions(forType: self.value.type, query: query)
+            }
         }
     }
 }

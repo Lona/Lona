@@ -47,6 +47,10 @@ class DisclosureContentRow: NSStackView {
         set { disclosureContent.edgeInsets = newValue }
     }
 
+    public var contentViews: [NSView] {
+        return disclosureContent.arrangedSubviews
+    }
+
     func addContent(view: NSView, stretched: Bool = false) {
         disclosureContent.addArrangedSubview(view, stretched: stretched)
     }

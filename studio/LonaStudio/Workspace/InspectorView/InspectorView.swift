@@ -136,12 +136,17 @@ final class InspectorView: NSBox {
             if case CSLayer.LayerType.custom = content.type, let componentLayer = content as? CSComponentLayer {
                 inspectorView.removeFromSuperview()
 
-                let componentInspectorView = CustomComponentInspectorView(componentLayer: componentLayer)
-                componentInspectorView.onChangeData = {[unowned self] (data, parameter) in
-                    componentLayer.parameters[parameter.name] = data
+                let componentInspectorView = CustomComponentInspectorView()
+                componentInspectorView.parameters = componentLayer.component.parameters
+                componentInspectorView.parameterValues = componentLayer.parameters
+                componentInspectorView.onChangeData = {[unowned self] parameterValues in
+                    componentLayer.parameters = parameterValues
 
                     self.onChangeContent?(.layer(componentLayer), InspectorView.ChangeType.full)
-                    componentInspectorView.reload()
+
+                    // We don't currently call update here, so we need to update manually
+                    componentInspectorView.parameters = componentLayer.component.parameters
+                    componentInspectorView.parameterValues = componentLayer.parameters
                 }
                 inspectorView = componentInspectorView
             } else {
