@@ -246,6 +246,7 @@
 		6BABAFE72139C341002B8C8F /* WorkspaceToolbar.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6BABAFE62139C341002B8C8F /* WorkspaceToolbar.swift */; };
 		6BBE0F6A212B26C900CEE8C1 /* FileTree.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 6BBE0F69212B26C900CEE8C1 /* FileTree.framework */; };
 		6BBE0F6B212B26C900CEE8C1 /* FileTree.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 6BBE0F69212B26C900CEE8C1 /* FileTree.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
+		6BC2D43D226162C4003A9F63 /* LabeledValueInput.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6BC2D43C226162C4003A9F63 /* LabeledValueInput.swift */; };
 		6BC605CD21F78F240087311A /* LabeledDropdownRow.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6BC605CC21F78F240087311A /* LabeledDropdownRow.swift */; };
 		6BC6062B223F191A003E616B /* Logic.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 6BC60626223F1878003E616B /* Logic.framework */; };
 		6BC6062C223F191A003E616B /* Logic.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 6BC60626223F1878003E616B /* Logic.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
@@ -559,6 +560,7 @@
 		6BABAFE42139C0EE002B8C8F /* Toolbar.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Toolbar.xcassets; sourceTree = "<group>"; };
 		6BABAFE62139C341002B8C8F /* WorkspaceToolbar.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WorkspaceToolbar.swift; sourceTree = "<group>"; };
 		6BBE0F69212B26C900CEE8C1 /* FileTree.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = FileTree.framework; path = Carthage/Build/Mac/FileTree.framework; sourceTree = "<group>"; };
+		6BC2D43C226162C4003A9F63 /* LabeledValueInput.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LabeledValueInput.swift; sourceTree = "<group>"; };
 		6BC605CC21F78F240087311A /* LabeledDropdownRow.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = LabeledDropdownRow.swift; sourceTree = "<group>"; };
 		6BC60626223F1878003E616B /* Logic.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Logic.framework; path = Carthage/Build/Mac/Logic.framework; sourceTree = "<group>"; };
 		6BC60630223F1947003E616B /* Logic.framework.dSYM */ = {isa = PBXFileReference; lastKnownFileType = wrapper.dsym; name = Logic.framework.dSYM; path = Carthage/Build/Mac/Logic.framework.dSYM; sourceTree = "<group>"; };
@@ -783,8 +785,6 @@
 				6B3414AB225BBD0600CC65D1 /* DraggableIconButton.swift */,
 				30EFC9571EF369DC0087711D /* ImageField.swift */,
 				3043A0CB1F46653B00EF31EF /* Label.swift */,
-				6B3414BB225E959100CC65D1 /* LabeledColorInput.swift */,
-				6B3414B9225E738D00CC65D1 /* LabeledLogicInput.swift */,
 				307718FF1F3CD3F1003A597B /* MultilevelPopupField.swift */,
 				6B06ADB021E8138400136BC8 /* MultipleSelectionButton.swift */,
 				30B5B19E1EC29D84002068CE /* NumberField.swift */,
@@ -1073,11 +1073,14 @@
 		6B34149C225803F500CC65D1 /* Logic */ = {
 			isa = PBXGroup;
 			children = (
+				6B3414BB225E959100CC65D1 /* LabeledColorInput.swift */,
+				6B3414B9225E738D00CC65D1 /* LabeledLogicInput.swift */,
+				6BC2D43C226162C4003A9F63 /* LabeledValueInput.swift */,
 				6B3414B1225D08E500CC65D1 /* LGCDeclaration+CSType.swift */,
 				6B3414A722596AA300CC65D1 /* LGCTypeAnnotation+CSType.swift */,
 				6B34149D2258041900CC65D1 /* LogicEditor+ParametersView.swift */,
-				6B3414AF225CF83B00CC65D1 /* LogicEditor+TypesView.swift */,
 				6B3414B3225D29AC00CC65D1 /* LogicEditor+Suggestions.swift */,
+				6B3414AF225CF83B00CC65D1 /* LogicEditor+TypesView.swift */,
 			);
 			path = Logic;
 			sourceTree = "<group>";
@@ -1644,6 +1647,7 @@
 				6B51613021377E0E00714555 /* TextInput+Undo.swift in Sources */,
 				307718F41F366AEA003A597B /* CSValueField.swift in Sources */,
 				BA48549A1FEF6EC800AB7923 /* PickerListView.swift in Sources */,
+				6BC2D43D226162C4003A9F63 /* LabeledValueInput.swift in Sources */,
 				303C3FF720A4EFC6008E1541 /* ComponentPreviewCard.swift in Sources */,
 				6B3414B0225CF83B00CC65D1 /* LogicEditor+TypesView.swift in Sources */,
 				6B6017D01EBF9EFA001E02C1 /* LayerListOutlineView.swift in Sources */,
