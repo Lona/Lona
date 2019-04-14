@@ -68,5 +68,6 @@ class LabeledValueInput: LabeledInput {
         logicEditor.suggestionsForNode = { [unowned self] node, query in
             return LogicValueInput.suggestions(forType: self.value.type, node: node, query: query)
         }
+//        logicEditor.isTextStyleEditor = value.type == CSTextStyleType
     }
 }

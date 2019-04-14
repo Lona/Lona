@@ -45,6 +45,14 @@ public class LogicValueInput: NSView {
         set { logicEditor.suggestionsForNode = newValue }
     }
 
+    public var isTextStyleEditor = false {
+        didSet {
+            if oldValue != isTextStyleEditor {
+                logicEditor.forceUpdate()
+            }
+        }
+    }
+
     // MARK: Private
 
     private var logicEditor = LogicEditor()
@@ -62,6 +70,9 @@ public class LogicValueInput: NSView {
             switch node {
             case .literal(.color(id: _, value: let code)):
                 return .color(CSColors.parse(css: code).color)
+            case .identifier(let identifier) where self.isTextStyleEditor:
+                let textStyle = CSTypography.getFontBy(id: identifier.string)
+                return .text(textStyle.font.apply(to: "T"), textStyle.getCSColor().color)
             default:
                 return nil
             }
