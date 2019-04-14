@@ -44,7 +44,7 @@ public class LabeledColorInput: LabeledInput {
 
     // MARK: Private
 
-    private let logicValueInput = LogicValueInput()
+    private let logicValueInput = LogicInput()
 
     private func setUpViews() {
         inputView = logicValueInput
@@ -53,15 +53,15 @@ public class LabeledColorInput: LabeledInput {
     private func setUpConstraints() {}
 
     private func update() {
-        logicValueInput.rootNode = LogicValueInput.rootNode(forColorString: colorString)
+        logicValueInput.rootNode = LogicInput.rootNode(forColorString: colorString)
 
         logicValueInput.onChangeRootNode = { [unowned self] node in
-            self.onChangeColorString?(LogicValueInput.makeColorString(node: node))
+            self.onChangeColorString?(LogicInput.makeColorString(node: node))
             return true
         }
 
         logicValueInput.suggestionsForNode = { node, query in
-            return LogicValueInput.suggestionsForColor(isOptional: true, node: node, query: query)
+            return LogicInput.suggestionsForColor(isOptional: true, node: node, query: query)
         }
     }
 }

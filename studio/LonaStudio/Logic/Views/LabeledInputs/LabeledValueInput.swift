@@ -40,10 +40,10 @@ class LabeledValueInput: LabeledInput {
 
     // MARK: Private
 
-    private var logicEditor = LogicValueInput()
+    private var logicInput = LogicInput()
 
     private func setUpViews() {
-        inputView = logicEditor
+        inputView = logicInput
 
         getPasteboardItem = { [unowned self] in
             let item = NSPasteboardItem()
@@ -59,15 +59,15 @@ class LabeledValueInput: LabeledInput {
     private func setUpConstraints() {}
 
     private func update() {
-        logicEditor.rootNode = LogicValueInput.rootNode(forValue: value)
-        logicEditor.onChangeRootNode = { [unowned self] node in
-            let newValue = LogicValueInput.makeValue(forType: self.value.type, node: node)
+        logicInput.rootNode = LogicInput.rootNode(forValue: value)
+        logicInput.onChangeRootNode = { [unowned self] node in
+            let newValue = LogicInput.makeValue(forType: self.value.type, node: node)
             self.onChangeValue?(newValue)
             return true
         }
-        logicEditor.suggestionsForNode = { [unowned self] node, query in
-            return LogicValueInput.suggestions(forType: self.value.type, node: node, query: query)
+        logicInput.suggestionsForNode = { [unowned self] node, query in
+            return LogicInput.suggestions(forType: self.value.type, node: node, query: query)
         }
-//        logicEditor.isTextStyleEditor = value.type == CSTextStyleType
+//        logicInput.isTextStyleEditor = value.type == CSTextStyleType
     }
 }

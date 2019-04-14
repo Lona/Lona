@@ -1,5 +1,5 @@
 //
-//  LogicValueInput+TextStyle.swift
+//  LogicInput+TextStyle.swift
 //  LonaStudio
 //
 //  Created by Devin Abbott on 4/14/19.
@@ -9,7 +9,7 @@
 import Foundation
 import Logic
 
-extension LogicValueInput {
+extension LogicInput {
     static func rootNode(forTextStyleString string: String?) -> LGCSyntaxNode {
         switch string {
         case .none:

@@ -1,5 +1,5 @@
 //
-//  LogicValueInput+Variant.swift
+//  LogicInput+Variant.swift
 //  LonaStudio
 //
 //  Created by Devin Abbott on 4/13/19.
@@ -9,7 +9,7 @@
 import Foundation
 import Logic
 
-extension LogicValueInput {
+extension LogicInput {
     static func rootNode(forValue csValue: CSValue) -> LGCSyntaxNode {
         switch csValue.type {
         case .bool:

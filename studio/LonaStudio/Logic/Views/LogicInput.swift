@@ -9,9 +9,9 @@
 import AppKit
 import Logic
 
-// MARK: - LogicValueInput
+// MARK: - LogicInput
 
-public class LogicValueInput: NSView {
+public class LogicInput: NSView {
 
     // MARK: Lifecycle
 
