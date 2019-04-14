@@ -156,7 +156,7 @@ class CoreComponentInspectorView: NSStackView {
     var borderWidthView = NumberField(frame: NSRect.zero)
 
     var backgroundGradientView = TextField(frame: NSRect.zero)
-    var textView = TextField(frame: NSRect.zero)
+    var textView = LabeledValueInput(titleText: "Value")
     var imageView = ImageField(frame: NSRect.zero)
     var imageURLView = TextField(frame: NSRect.zero)
     var animationViewContainer = NSView(frame: NSRect.zero)
@@ -452,10 +452,7 @@ class CoreComponentInspectorView: NSStackView {
     }
 
     func renderTextSection() -> DisclosureContentRow {
-        textView.usesSingleLineMode = false
-
         let textSection = renderSection(title: "Text", views: [
-            NSTextField(labelWithString: "Value"),
             textView,
             NSTextField(labelWithString: "Style"),
             textStyleView,
@@ -722,7 +719,6 @@ class CoreComponentInspectorView: NSStackView {
             (shadowEnabledView, .shadowEnabled),
 
             // Text
-            (textView, .text),
             (textAlignView, .textAlign),
             (textStyleView, .textStyle),
             (numberOfLinesView, .numberOfLines),
@@ -942,9 +938,14 @@ class CoreComponentInspectorView: NSStackView {
         backgroundColorInput.onChangeColorString = { value in
             change(property: Property.backgroundColor, to: value?.toData() ?? CSData.Null)
         }
+
+        textView.onChangeValue = { value in
+            change(property: Property.text, to: value.data)
+        }
     }
 
     let controlledProperties: [Property] = [
+        Property.text,
         Property.direction,
         Property.horizontalAlignment,
         Property.verticalAlignment,
@@ -1065,6 +1066,17 @@ class CoreComponentInspectorView: NSStackView {
                 let item = NSPasteboardItem()
 
                 if let data = CSParameter(name: "backgroundColor", type: CSColorType).toData().toData() {
+                    item.setData(data, forType: .lonaParameter)
+                }
+
+                return item
+            }
+        case .text:
+            textView.value = CSValue(type: .string, data: value)
+            textView.getPasteboardItem = {
+                let item = NSPasteboardItem()
+
+                if let data = CSParameter(name: "text", type: .string).toData().toData() {
                     item.setData(data, forType: .lonaParameter)
                 }
 

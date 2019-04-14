@@ -67,11 +67,10 @@ final class CustomComponentInspectorView: NSStackView {
         parameters.enumerated().forEach { [unowned self] index, parameter in
             if index > parametersSection.contentViews.count - 1 {
                 let inputView = LabeledValueInput(titleText: parameter.name)
+                inputView.titleWidth = 75
                 inputView.translatesAutoresizingMaskIntoConstraints = false
 
                 parametersSection.addContent(view: inputView, stretched: true)
-
-                Swift.print("Adding input view", inputView, index, parameter)
             }
 
             guard let inputView = parametersSection.contentViews[index] as? LabeledValueInput else { return }
@@ -105,5 +104,11 @@ final class CustomComponentInspectorView: NSStackView {
                 self.onChangeData?(updated)
             }
         }
+
+//        parametersSection.contentViews.enumerated().forEach { [unowned self] index, view in
+//            if index < parametersSection.contentViews.count - 1 {
+//                view.nextKeyView = self.parametersSection.contentViews[index + 1]
+//            }
+//        }
     }
 }

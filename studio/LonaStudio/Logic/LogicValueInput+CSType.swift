@@ -14,6 +14,10 @@ extension LogicValueInput {
         switch csValue.type {
 //        case CSColorType:
 //            return rootNode(forColorString: csValue.data.string)
+        case .bool:
+            return rootNode(for: csValue.data.boolValue)
+        case .string:
+            return rootNode(for: csValue.data.stringValue)
         case .named:
             return rootNode(forValue: csValue.unwrappedNamedType())
         case .variant:
@@ -33,6 +37,10 @@ extension LogicValueInput {
         switch csType {
 //        case CSColorType:
 //            return CSValue(type: csType, data: makeColorString(node: node).toData())
+        case .bool:
+            return CSValue(type: csType, data: makeBool(node: node).toData())
+        case .string:
+            return CSValue(type: csType, data: makeString(node: node).toData())
         case .named:
             return makeValue(forType: csType.unwrappedNamedType(), node: node)
         case .variant:
@@ -49,6 +57,10 @@ extension LogicValueInput {
 
     static func suggestions(forType csType: CSType, query: String) -> [LogicSuggestionItem] {
         switch csType {
+        case .bool:
+            return suggestionsForBool(query: query)
+        case .string:
+            return suggestionsForString(query: query)
         case .named:
             return suggestions(forType: csType.unwrappedNamedType(), query: query)
         case .variant(let cases):

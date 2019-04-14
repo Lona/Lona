@@ -61,10 +61,30 @@ public class LabeledInput: NSBox {
 
     public var draggingThreshold: CGFloat = 2.0
 
+    public var titleWidth: CGFloat? {
+        didSet {
+            if oldValue != titleWidth {
+                switch (titleWidth, titleWidthConstraint) {
+                case (.some(let width), .some(let constraint)):
+                    constraint.constant = width
+                case (.none, .some(let constraint)):
+                    constraint.isActive = false
+                case (.some(let width), .none):
+                    let constraint = titleView.widthAnchor.constraint(equalToConstant: width)
+                    constraint.isActive = true
+                    titleWidthConstraint = constraint
+                case (.none, .none):
+                    break
+                }
+            }
+        }
+    }
+
     // MARK: Private
 
     private var titleView = LNATextField(labelWithString: "")
     private var dividerView = NSBox()
+    private var titleWidthConstraint: NSLayoutConstraint?
 
     private func setUpViews() {
         boxType = .custom
@@ -73,6 +93,11 @@ public class LabeledInput: NSBox {
         cornerRadius = 2
         borderColor = Colors.divider
         fillColor = Colors.headerBackground
+
+        titleView.maximumNumberOfLines = 1
+        titleView.lineBreakMode = .byWordWrapping
+        titleView.allowsDefaultTighteningForTruncation = false
+        titleView.cell?.truncatesLastVisibleLine = true
 
         dividerView.boxType = .custom
         dividerView.borderType = .noBorder
@@ -99,6 +124,7 @@ public class LabeledInput: NSBox {
 
     private func update() {
         titleView.attributedStringValue = TextStyles.labelTitle.apply(to: titleText)
+        titleView.toolTip = titleText
     }
 
     // MARK: Interactions
