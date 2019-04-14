@@ -71,7 +71,7 @@ class LabeledValueInput: LabeledInput {
             }
 
             logicEditor.suggestionsForNode = { node, query in
-                return LogicValueInput.suggestionsForColor(node: node, query: query)
+                return LogicValueInput.suggestionsForColor(isOptional: false, node: node, query: query)
             }
         default:
             logicEditor.rootNode = LogicValueInput.rootNode(forValue: value)

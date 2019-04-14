@@ -61,7 +61,7 @@ public class LabeledColorInput: LabeledInput {
         }
 
         logicValueInput.suggestionsForNode = { node, query in
-            return LogicValueInput.suggestionsForColor(node: node, query: query)
+            return LogicValueInput.suggestionsForColor(isOptional: true, node: node, query: query)
         }
     }
 }

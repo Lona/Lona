@@ -30,7 +30,7 @@ extension Bool {
 extension Int {
     static func expressionSuggestions(node: LGCSyntaxNode, query: String) -> [LogicSuggestionItem] {
         let customSuggestion = LogicSuggestionItem(
-            title: "Number: \(query)",
+            title: "Whole Number: \(query)",
             category: "Numbers".uppercased(),
             node: .expression((Int(query) ?? 0).expressionNode),
             disabled: Int(query) == nil

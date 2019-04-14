@@ -12,8 +12,6 @@ import Logic
 extension LogicValueInput {
     static func rootNode(forValue csValue: CSValue) -> LGCSyntaxNode {
         switch csValue.type {
-//        case CSColorType:
-//            return rootNode(forColorString: csValue.data.string)
         case .bool:
             return .expression(csValue.data.boolValue.expressionNode)
         case .wholeNumber:
@@ -22,6 +20,8 @@ extension LogicValueInput {
             return .expression(CGFloat(csValue.data.numberValue).expressionNode)
         case .string:
             return .expression(csValue.data.stringValue.expressionNode)
+        case CSColorType:
+            return rootNode(forColorString: csValue.data.string ?? "black")
         case .named:
             return rootNode(forValue: csValue.unwrappedNamedType())
         case .variant:
@@ -39,8 +39,6 @@ extension LogicValueInput {
 
     static func makeValue(forType csType: CSType, node: LGCSyntaxNode) -> CSValue {
         switch (csType, node) {
-//        case CSColorType:
-//            return CSValue(type: csType, data: makeColorString(node: node).toData())
         case (.bool, .expression(let expression)):
             return CSValue(type: csType, data: Bool(expression).toData())
         case (.number, .expression(let expression)):
@@ -49,6 +47,8 @@ extension LogicValueInput {
             return CSValue(type: csType, data: Int(expression).toData())
         case (.string, .expression(let expression)):
             return CSValue(type: csType, data: String(expression).toData())
+        case (CSColorType, _):
+            return CSValue(type: csType, data: (makeColorString(node: node) ?? "black").toData())
         case (.named, _):
             return makeValue(forType: csType.unwrappedNamedType(), node: node)
         case (.variant, _):
@@ -73,6 +73,8 @@ extension LogicValueInput {
             return CGFloat.expressionSuggestions(node: node, query: query)
         case .string:
             return String.expressionSuggestions(node: node, query: query)
+        case CSColorType:
+            return suggestionsForColor(isOptional: false, node: node, query: query)
         case .named:
             return suggestions(forType: csType.unwrappedNamedType(), node: node, query: query)
         case .variant(let cases):
