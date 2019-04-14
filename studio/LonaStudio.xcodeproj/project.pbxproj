@@ -1083,19 +1083,9 @@
 		6B34149C225803F500CC65D1 /* Logic */ = {
 			isa = PBXGroup;
 			children = (
-				6B3414BB225E959100CC65D1 /* LabeledColorInput.swift */,
-				6B3414B9225E738D00CC65D1 /* LabeledInput.swift */,
-				6BC2D43C226162C4003A9F63 /* LabeledValueInput.swift */,
-				6B3414B1225D08E500CC65D1 /* LGCDeclaration+CSType.swift */,
-				6B3414A722596AA300CC65D1 /* LGCTypeAnnotation+CSType.swift */,
-				6BC2D446226394F0003A9F63 /* LogicConvertible.swift */,
-				6B34149D2258041900CC65D1 /* LogicEditor+ParametersView.swift */,
-				6B3414B3225D29AC00CC65D1 /* LogicEditor+Suggestions.swift */,
-				6B3414AF225CF83B00CC65D1 /* LogicEditor+TypesView.swift */,
-				6BC2D44822639B83003A9F63 /* LogicSuggestions.swift */,
-				6BC2D43E226245F9003A9F63 /* LogicValueInput.swift */,
-				6BC2D44022624BBB003A9F63 /* LogicValueInput+Color.swift */,
-				6BC2D442226259DF003A9F63 /* LogicValueInput+CSType.swift */,
+				6BC2D44C22639E24003A9F63 /* Suggestions */,
+				6BC2D44B22639E12003A9F63 /* Types */,
+				6BC2D44A22639DFC003A9F63 /* Views */,
 			);
 			path = Logic;
 			sourceTree = "<group>";
@@ -1112,6 +1102,40 @@
 				036A4E9B21E1FC6500948DBD /* TextStyleInspector.swift */,
 			);
 			path = inspector;
+			sourceTree = "<group>";
+		};
+		6BC2D44A22639DFC003A9F63 /* Views */ = {
+			isa = PBXGroup;
+			children = (
+				6B3414BB225E959100CC65D1 /* LabeledColorInput.swift */,
+				6B3414B9225E738D00CC65D1 /* LabeledInput.swift */,
+				6BC2D43C226162C4003A9F63 /* LabeledValueInput.swift */,
+				6B34149D2258041900CC65D1 /* LogicEditor+ParametersView.swift */,
+				6B3414AF225CF83B00CC65D1 /* LogicEditor+TypesView.swift */,
+				6BC2D43E226245F9003A9F63 /* LogicValueInput.swift */,
+			);
+			path = Views;
+			sourceTree = "<group>";
+		};
+		6BC2D44B22639E12003A9F63 /* Types */ = {
+			isa = PBXGroup;
+			children = (
+				6B3414B1225D08E500CC65D1 /* LGCDeclaration+CSType.swift */,
+				6B3414A722596AA300CC65D1 /* LGCTypeAnnotation+CSType.swift */,
+				6BC2D446226394F0003A9F63 /* LogicConvertible.swift */,
+				6BC2D44022624BBB003A9F63 /* LogicValueInput+Color.swift */,
+				6BC2D442226259DF003A9F63 /* LogicValueInput+CSType.swift */,
+			);
+			path = Types;
+			sourceTree = "<group>";
+		};
+		6BC2D44C22639E24003A9F63 /* Suggestions */ = {
+			isa = PBXGroup;
+			children = (
+				6B3414B3225D29AC00CC65D1 /* LogicEditor+Suggestions.swift */,
+				6BC2D44822639B83003A9F63 /* LogicSuggestions.swift */,
+			);
+			path = Suggestions;
 			sourceTree = "<group>";
 		};
 		6BD96649217E825C0012F173 /* icons */ = {
