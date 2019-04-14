@@ -15,9 +15,13 @@ extension LogicValueInput {
 //        case CSColorType:
 //            return rootNode(forColorString: csValue.data.string)
         case .bool:
-            return rootNode(for: csValue.data.boolValue)
+            return .expression(csValue.data.boolValue.expressionNode)
+        case .wholeNumber:
+            return .expression(Int(csValue.data.numberValue).expressionNode)
+        case .number:
+            return .expression(CGFloat(csValue.data.numberValue).expressionNode)
         case .string:
-            return rootNode(for: csValue.data.stringValue)
+            return .expression(csValue.data.stringValue.expressionNode)
         case .named:
             return rootNode(forValue: csValue.unwrappedNamedType())
         case .variant:
@@ -34,16 +38,20 @@ extension LogicValueInput {
     }
 
     static func makeValue(forType csType: CSType, node: LGCSyntaxNode) -> CSValue {
-        switch csType {
+        switch (csType, node) {
 //        case CSColorType:
 //            return CSValue(type: csType, data: makeColorString(node: node).toData())
-        case .bool:
-            return CSValue(type: csType, data: makeBool(node: node).toData())
-        case .string:
-            return CSValue(type: csType, data: makeString(node: node).toData())
-        case .named:
+        case (.bool, .expression(let expression)):
+            return CSValue(type: csType, data: Bool(expression).toData())
+        case (.number, .expression(let expression)):
+            return CSValue(type: csType, data: CGFloat(expression).toData())
+        case (.wholeNumber, .expression(let expression)):
+            return CSValue(type: csType, data: Int(expression).toData())
+        case (.string, .expression(let expression)):
+            return CSValue(type: csType, data: String(expression).toData())
+        case (.named, _):
             return makeValue(forType: csType.unwrappedNamedType(), node: node)
-        case .variant:
+        case (.variant, _):
             switch node {
             case .expression(.identifierExpression(id: _, identifier: let identifier)):
                 return CSValue(type: .unit, data: .Null).wrap(in: csType, tagged: identifier.string)
@@ -55,14 +63,14 @@ extension LogicValueInput {
         }
     }
 
-    static func suggestions(forType csType: CSType, query: String) -> [LogicSuggestionItem] {
+    static func suggestions(forType csType: CSType, node: LGCSyntaxNode, query: String) -> [LogicSuggestionItem] {
         switch csType {
         case .bool:
-            return suggestionsForBool(query: query)
+            return Bool.expressionSuggestions(node: node, query: query)
         case .string:
-            return suggestionsForString(query: query)
+            return String.expressionSuggestions(node: node, query: query)
         case .named:
-            return suggestions(forType: csType.unwrappedNamedType(), query: query)
+            return suggestions(forType: csType.unwrappedNamedType(), node: node, query: query)
         case .variant(let cases):
             return cases.map { caseItem in
                 LogicSuggestionItem(

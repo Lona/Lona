@@ -80,8 +80,8 @@ class LabeledValueInput: LabeledInput {
                 self.onChangeValue?(newValue)
                 return true
             }
-            logicEditor.suggestionsForNode = { [unowned self] _, query in
-                return LogicValueInput.suggestions(forType: self.value.type, query: query)
+            logicEditor.suggestionsForNode = { [unowned self] node, query in
+                return LogicValueInput.suggestions(forType: self.value.type, node: node, query: query)
             }
         }
     }
