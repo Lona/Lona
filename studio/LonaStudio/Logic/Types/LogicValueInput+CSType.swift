@@ -67,6 +67,10 @@ extension LogicValueInput {
         switch csType {
         case .bool:
             return Bool.expressionSuggestions(node: node, query: query)
+        case .wholeNumber:
+            return Int.expressionSuggestions(node: node, query: query)
+        case .number:
+            return CGFloat.expressionSuggestions(node: node, query: query)
         case .string:
             return String.expressionSuggestions(node: node, query: query)
         case .named:

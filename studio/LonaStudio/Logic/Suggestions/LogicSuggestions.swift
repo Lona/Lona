@@ -27,6 +27,32 @@ extension Bool {
     }
 }
 
+extension Int {
+    static func expressionSuggestions(node: LGCSyntaxNode, query: String) -> [LogicSuggestionItem] {
+        let customSuggestion = LogicSuggestionItem(
+            title: "Number: \(query)",
+            category: "Numbers".uppercased(),
+            node: .expression((Int(query) ?? 0).expressionNode),
+            disabled: Int(query) == nil
+        )
+
+        return [customSuggestion]
+    }
+}
+
+extension CGFloat {
+    static func expressionSuggestions(node: LGCSyntaxNode, query: String) -> [LogicSuggestionItem] {
+        let customSuggestion = LogicSuggestionItem(
+            title: "Number: \(query)",
+            category: "Numbers".uppercased(),
+            node: .expression(CGFloat(Double(query) ?? 0).expressionNode),
+            disabled: Double(query) == nil
+        )
+
+        return [customSuggestion]
+    }
+}
+
 extension String {
     static func expressionSuggestions(node: LGCSyntaxNode, query: String) -> [LogicSuggestionItem] {
         let customSuggestion = LogicSuggestionItem(
