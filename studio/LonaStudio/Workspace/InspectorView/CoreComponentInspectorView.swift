@@ -142,7 +142,7 @@ class CoreComponentInspectorView: NSStackView {
         values: ["left", "center", "right"],
         valueToTitle: ["left": "Left", "center": "Center", "right": "Right"]
     )
-    var textStyleView = TextStylePickerButton(frame: NSRect.zero)
+    var textStyleView = LabeledLogicInput(titleText: "Text Style", titleWidth: 60)
     var numberOfLinesView = NumberField(frame: NSRect.zero)
 
     var paddingTopView = NumberField(frame: NSRect.zero)
@@ -156,7 +156,7 @@ class CoreComponentInspectorView: NSStackView {
     var borderWidthView = NumberField(frame: NSRect.zero)
 
     var backgroundGradientView = TextField(frame: NSRect.zero)
-    var textView = LabeledValueInput(titleText: "Value")
+    var textView = LabeledLogicInput(titleText: "Text", titleWidth: 60)
     var imageView = ImageField(frame: NSRect.zero)
     var imageURLView = TextField(frame: NSRect.zero)
     var animationViewContainer = NSView(frame: NSRect.zero)
@@ -454,7 +454,6 @@ class CoreComponentInspectorView: NSStackView {
     func renderTextSection() -> DisclosureContentRow {
         let textSection = renderSection(title: "Text", views: [
             textView,
-            NSTextField(labelWithString: "Style"),
             textStyleView,
             NSTextField(labelWithString: "Alignment"),
             textAlignView,
@@ -720,7 +719,6 @@ class CoreComponentInspectorView: NSStackView {
 
             // Text
             (textAlignView, .textAlign),
-            (textStyleView, .textStyle),
             (numberOfLinesView, .numberOfLines),
 
             // Image
@@ -939,13 +937,18 @@ class CoreComponentInspectorView: NSStackView {
             change(property: Property.backgroundColor, to: value?.toData() ?? CSData.Null)
         }
 
-        textView.onChangeValue = { value in
-            change(property: Property.text, to: value.data)
+        textView.onChangeValue = { csValue in
+            change(property: Property.text, to: csValue.data)
+        }
+
+        textStyleView.onChangeValue = { csValue in
+            change(property: Property.textStyle, to: csValue.data)
         }
     }
 
     let controlledProperties: [Property] = [
         Property.text,
+        Property.textStyle,
         Property.direction,
         Property.horizontalAlignment,
         Property.verticalAlignment,
@@ -1061,22 +1064,36 @@ class CoreComponentInspectorView: NSStackView {
         case .borderStyle:
             borderStyleView.selectedIndex = value.int
         case .backgroundColor:
+            let csValue = CSValue(type: CSColorType, data: value)
             backgroundColorInput.colorString = value.string
             backgroundColorInput.getPasteboardItem = {
                 let item = NSPasteboardItem()
 
-                if let data = CSParameter(name: "backgroundColor", type: CSColorType).toData().toData() {
+                if let data = CSParameter(name: "backgroundColor", type: CSColorType, defaultValue: csValue).toData().toData() {
                     item.setData(data, forType: .lonaParameter)
                 }
 
                 return item
             }
         case .text:
-            textView.value = CSValue(type: .string, data: value)
+            let csValue = CSValue(type: .string, data: value)
+            textView.value = csValue
             textView.getPasteboardItem = {
                 let item = NSPasteboardItem()
 
-                if let data = CSParameter(name: "text", type: .string).toData().toData() {
+                if let data = CSParameter(name: "text", type: csValue.type, defaultValue: csValue).toData().toData() {
+                    item.setData(data, forType: .lonaParameter)
+                }
+
+                return item
+            }
+        case .textStyle:
+            let csValue = CSValue(type: CSTextStyleType, data: value)
+            textStyleView.value = csValue
+            textStyleView.getPasteboardItem = {
+                let item = NSPasteboardItem()
+
+                if let data = CSParameter(name: "textStyle", type: csValue.type, defaultValue: csValue).toData().toData() {
                     item.setData(data, forType: .lonaParameter)
                 }
 

@@ -115,7 +115,14 @@ extension LogicEditor {
                 switch parent {
                 case .functionParameter(.parameter(id: _, externalName: _, localName: _, annotation: let annotation, defaultValue: _)):
                     guard let csType = annotation.csType(environmentTypes: types) else { return [] }
-                    return LogicInput.suggestions(forType: csType, node: syntaxNode, query: query).map {
+                    return [
+                        LogicSuggestionItem(
+                            title: "No default",
+                            category: "NONE",
+                            node: .functionParameterDefaultValue(.none(id: UUID()))
+                        )
+                    ].titleContains(prefix: query) +
+                        LogicInput.suggestions(forType: csType, node: syntaxNode, query: query).map {
                         var suggestion = $0
                         switch suggestion.node {
                         case .expression(let expression):

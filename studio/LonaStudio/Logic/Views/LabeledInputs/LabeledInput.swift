@@ -15,8 +15,9 @@ public class LabeledInput: NSBox {
 
     // MARK: Lifecycle
 
-    public init(titleText: String = "") {
+    public init(titleText: String = "", titleWidth: CGFloat? = nil) {
         self.titleText = titleText
+        self.titleWidth = titleWidth
 
         super.init(frame: .zero)
 
@@ -64,23 +65,29 @@ public class LabeledInput: NSBox {
     public var titleWidth: CGFloat? {
         didSet {
             if oldValue != titleWidth {
-                switch (titleWidth, titleWidthConstraint) {
-                case (.some(let width), .some(let constraint)):
-                    constraint.constant = width
-                case (.none, .some(let constraint)):
-                    constraint.isActive = false
-                case (.some(let width), .none):
-                    let constraint = titleView.widthAnchor.constraint(equalToConstant: width)
-                    constraint.isActive = true
-                    titleWidthConstraint = constraint
-                case (.none, .none):
-                    break
-                }
+                updateTitleWidth(oldValue: oldValue, newValue: titleWidth)
             }
         }
     }
 
     // MARK: Private
+
+    private func updateTitleWidth(oldValue: CGFloat?, newValue titleWidth: CGFloat?) {
+        if oldValue != titleWidth {
+            switch (titleWidth, titleWidthConstraint) {
+            case (.some(let width), .some(let constraint)):
+                constraint.constant = width
+            case (.none, .some(let constraint)):
+                constraint.isActive = false
+            case (.some(let width), .none):
+                let constraint = titleView.widthAnchor.constraint(equalToConstant: width)
+                constraint.isActive = true
+                titleWidthConstraint = constraint
+            case (.none, .none):
+                break
+            }
+        }
+    }
 
     private var titleView = LNATextField(labelWithString: "")
     private var dividerView = NSBox()
@@ -93,6 +100,8 @@ public class LabeledInput: NSBox {
         cornerRadius = 2
         borderColor = Colors.divider
         fillColor = Colors.headerBackground
+
+        updateTitleWidth(oldValue: nil, newValue: titleWidth)
 
         titleView.maximumNumberOfLines = 1
         titleView.lineBreakMode = .byWordWrapping

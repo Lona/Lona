@@ -1,5 +1,5 @@
 //
-//  LabeledValueInput.swift
+//  LabeledLogicInput.swift
 //  LonaStudio
 //
 //  Created by Devin Abbott on 4/12/19.
@@ -9,12 +9,12 @@
 import AppKit
 import Logic
 
-class LabeledValueInput: LabeledInput {
+class LabeledLogicInput: LabeledInput {
 
     // MARK: Lifecycle
 
-    public override init(titleText: String) {
-        super.init(titleText: titleText)
+    public override init(titleText: String, titleWidth: CGFloat? = nil) {
+        super.init(titleText: titleText, titleWidth: titleWidth)
 
         setUpViews()
         setUpConstraints()

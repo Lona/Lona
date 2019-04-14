@@ -66,14 +66,14 @@ final class CustomComponentInspectorView: NSStackView {
 
         parameters.enumerated().forEach { [unowned self] index, parameter in
             if index > parametersSection.contentViews.count - 1 {
-                let inputView = LabeledValueInput(titleText: parameter.name)
+                let inputView = LabeledLogicInput(titleText: parameter.name)
                 inputView.titleWidth = 75
                 inputView.translatesAutoresizingMaskIntoConstraints = false
 
                 parametersSection.addContent(view: inputView, stretched: true)
             }
 
-            guard let inputView = parametersSection.contentViews[index] as? LabeledValueInput else { return }
+            guard let inputView = parametersSection.contentViews[index] as? LabeledLogicInput else { return }
 
             let defaultData: CSData
             if parameter.type.unwrappedNamedType().isOptional() {

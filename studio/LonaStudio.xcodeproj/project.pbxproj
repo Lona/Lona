@@ -245,7 +245,7 @@
 		6BABAFE72139C341002B8C8F /* WorkspaceToolbar.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6BABAFE62139C341002B8C8F /* WorkspaceToolbar.swift */; };
 		6BBE0F6A212B26C900CEE8C1 /* FileTree.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 6BBE0F69212B26C900CEE8C1 /* FileTree.framework */; };
 		6BBE0F6B212B26C900CEE8C1 /* FileTree.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 6BBE0F69212B26C900CEE8C1 /* FileTree.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
-		6BC2D43D226162C4003A9F63 /* LabeledValueInput.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6BC2D43C226162C4003A9F63 /* LabeledValueInput.swift */; };
+		6BC2D43D226162C4003A9F63 /* LabeledLogicInput.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6BC2D43C226162C4003A9F63 /* LabeledLogicInput.swift */; };
 		6BC2D43F226245F9003A9F63 /* LogicInput.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6BC2D43E226245F9003A9F63 /* LogicInput.swift */; };
 		6BC2D44122624BBB003A9F63 /* LogicInput+Color.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6BC2D44022624BBB003A9F63 /* LogicInput+Color.swift */; };
 		6BC2D443226259DF003A9F63 /* LogicInput+CSType.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6BC2D442226259DF003A9F63 /* LogicInput+CSType.swift */; };
@@ -565,7 +565,7 @@
 		6BABAFE42139C0EE002B8C8F /* Toolbar.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Toolbar.xcassets; sourceTree = "<group>"; };
 		6BABAFE62139C341002B8C8F /* WorkspaceToolbar.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WorkspaceToolbar.swift; sourceTree = "<group>"; };
 		6BBE0F69212B26C900CEE8C1 /* FileTree.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = FileTree.framework; path = Carthage/Build/Mac/FileTree.framework; sourceTree = "<group>"; };
-		6BC2D43C226162C4003A9F63 /* LabeledValueInput.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LabeledValueInput.swift; sourceTree = "<group>"; };
+		6BC2D43C226162C4003A9F63 /* LabeledLogicInput.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LabeledLogicInput.swift; sourceTree = "<group>"; };
 		6BC2D43E226245F9003A9F63 /* LogicInput.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LogicInput.swift; sourceTree = "<group>"; };
 		6BC2D44022624BBB003A9F63 /* LogicInput+Color.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "LogicInput+Color.swift"; sourceTree = "<group>"; };
 		6BC2D442226259DF003A9F63 /* LogicInput+CSType.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "LogicInput+CSType.swift"; sourceTree = "<group>"; };
@@ -1152,7 +1152,7 @@
 			children = (
 				6BC2D4532263D8F2003A9F63 /* LabeledColorInput.swift */,
 				6B3414B9225E738D00CC65D1 /* LabeledInput.swift */,
-				6BC2D43C226162C4003A9F63 /* LabeledValueInput.swift */,
+				6BC2D43C226162C4003A9F63 /* LabeledLogicInput.swift */,
 			);
 			path = LabeledInputs;
 			sourceTree = "<group>";
@@ -1711,7 +1711,7 @@
 				6B51613021377E0E00714555 /* TextInput+Undo.swift in Sources */,
 				307718F41F366AEA003A597B /* CSValueField.swift in Sources */,
 				BA48549A1FEF6EC800AB7923 /* PickerListView.swift in Sources */,
-				6BC2D43D226162C4003A9F63 /* LabeledValueInput.swift in Sources */,
+				6BC2D43D226162C4003A9F63 /* LabeledLogicInput.swift in Sources */,
 				303C3FF720A4EFC6008E1541 /* ComponentPreviewCard.swift in Sources */,
 				6B3414B0225CF83B00CC65D1 /* LogicEditor+TypesView.swift in Sources */,
 				6B6017D01EBF9EFA001E02C1 /* LayerListOutlineView.swift in Sources */,
