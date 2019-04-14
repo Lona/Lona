@@ -24,6 +24,14 @@ final class CustomComponentInspectorView: NSStackView {
 
     // MARK: - Public
 
+    var layerName: String = "" {
+        didSet {
+            if oldValue != layerName {
+                update()
+            }
+        }
+    }
+
     var parameterValues: [String: CSData] = [:] {
         didSet {
             if oldValue != parameterValues {
@@ -58,6 +66,8 @@ final class CustomComponentInspectorView: NSStackView {
     }
 
     private func update() {
+        let layerName = self.layerName
+
         parametersSection.contentViews.enumerated().forEach { index, subview in
             if index > parameters.count - 1 {
                 subview.removeFromSuperview()
@@ -85,6 +95,11 @@ final class CustomComponentInspectorView: NSStackView {
             }
 
             let value = CSValue(type: parameter.type, data: parameterValues[parameter.name] ?? defaultData)
+
+            inputView.getPasteboardItem = {
+                return CSParameter(name: parameter.name, type: parameter.type, defaultValue: value)
+                    .makePasteboardItem(withAssignmentTo: layerName)
+            }
 
             inputView.value = value
             inputView.onChangeValue = {[unowned self] value in

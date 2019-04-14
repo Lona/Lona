@@ -186,6 +186,7 @@ class ComponentEditorViewController: NSSplitViewController {
         utilitiesView.onChangeParameterList = { value in
             self.component?.parameters = value
             self.utilitiesView.reloadData()
+            self.updateCanvasCollectionView()
 
             // TODO: Revisit parameters of type "Component" at some point
 //            let componentParameters = value.filter({ $0.type == CSComponentType })

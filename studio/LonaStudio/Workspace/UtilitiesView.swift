@@ -221,6 +221,12 @@ extension UtilitiesView {
             return .copy
         }
 
+        if currentTab == .parameters, let _ = sender.draggingPasteboard.data(forType: .lonaExpression) {
+            parameterListEditorView?.fillColor = Logic.Colors.highlightedLine
+
+            return .copy
+        }
+
         return NSDragOperation()
     }
 
@@ -239,13 +245,28 @@ extension UtilitiesView {
     public override func performDragOperation(_ sender: NSDraggingInfo) -> Bool {
         guard let component = component else { return false }
 
-        guard let parameterData = sender.draggingPasteboard.data(forType: .lonaParameter),
-            let json = CSData.from(data: parameterData) else { return false }
+        var accepted = false
 
-        let parameter = CSParameter(json)
+        if let parameterData = sender.draggingPasteboard.data(forType: .lonaParameter),
+            let json = CSData.from(data: parameterData) {
 
-        onChangeParameterList?(component.parameters + [parameter])
+            let parameter = CSParameter(json)
 
-        return true
+            onChangeParameterList?(component.parameters + [parameter])
+
+            accepted = true
+        }
+
+        if let expressionData = sender.draggingPasteboard.data(forType: .lonaExpression),
+            let json = CSData.from(data: expressionData) {
+
+            let expression = LonaExpression(json)
+
+            onChangeLogicList?(component.logic + [LogicNode.create(from: expression)])
+
+            accepted = true
+        }
+
+        return accepted
     }
 }

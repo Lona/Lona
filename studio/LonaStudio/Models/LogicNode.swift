@@ -6,7 +6,11 @@
 //  Copyright © 2017 Devin Abbott. All rights reserved.
 //
 
-import Foundation
+import AppKit
+
+public extension NSPasteboard.PasteboardType {
+    static let lonaExpression = NSPasteboard.PasteboardType(rawValue: "lona.expression")
+}
 
 class LogicNode: DataNodeParent, DataNodeCopying {
     var nodes: [LogicNode] = []

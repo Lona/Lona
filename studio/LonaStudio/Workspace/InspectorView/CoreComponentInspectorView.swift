@@ -1008,6 +1008,8 @@ class CoreComponentInspectorView: NSStackView {
     private func update(property: Property, value: CSData?) {
         guard let value = value else { return }
 
+        let layerName = csLayer.name
+
         switch property {
         case .width:
             switch value.get(key: "case").stringValue {
@@ -1067,37 +1069,22 @@ class CoreComponentInspectorView: NSStackView {
             let csValue = CSValue(type: CSColorType, data: value)
             backgroundColorInput.colorString = value.string
             backgroundColorInput.getPasteboardItem = {
-                let item = NSPasteboardItem()
-
-                if let data = CSParameter(name: "backgroundColor", type: CSColorType, defaultValue: csValue).toData().toData() {
-                    item.setData(data, forType: .lonaParameter)
-                }
-
-                return item
+                return CSParameter(name: "backgroundColor", type: csValue.type, defaultValue: csValue)
+                    .makePasteboardItem(withAssignmentTo: layerName)
             }
         case .text:
             let csValue = CSValue(type: .string, data: value)
             textView.value = csValue
             textView.getPasteboardItem = {
-                let item = NSPasteboardItem()
-
-                if let data = CSParameter(name: "text", type: csValue.type, defaultValue: csValue).toData().toData() {
-                    item.setData(data, forType: .lonaParameter)
-                }
-
-                return item
+                return CSParameter(name: "text", type: csValue.type, defaultValue: csValue)
+                    .makePasteboardItem(withAssignmentTo: layerName)
             }
         case .textStyle:
             let csValue = CSValue(type: CSTextStyleType, data: value)
             textStyleView.value = csValue
             textStyleView.getPasteboardItem = {
-                let item = NSPasteboardItem()
-
-                if let data = CSParameter(name: "textStyle", type: csValue.type, defaultValue: csValue).toData().toData() {
-                    item.setData(data, forType: .lonaParameter)
-                }
-
-                return item
+                return CSParameter(name: "textStyle", type: csValue.type, defaultValue: csValue)
+                    .makePasteboardItem(withAssignmentTo: layerName)
             }
         case .accessibilityType:
             switch value.stringValue {

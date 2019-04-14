@@ -137,6 +137,7 @@ final class InspectorView: NSBox {
                 inspectorView.removeFromSuperview()
 
                 let componentInspectorView = CustomComponentInspectorView()
+                componentInspectorView.layerName = componentLayer.name
                 componentInspectorView.parameters = componentLayer.component.parameters
                 componentInspectorView.parameterValues = componentLayer.parameters
                 componentInspectorView.onChangeData = {[unowned self] parameterValues in

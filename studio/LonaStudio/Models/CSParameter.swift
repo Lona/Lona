@@ -85,3 +85,44 @@ extension CSParameter {
         return data
     }
 }
+
+extension CSParameter {
+    func makeAssignmentExpression(layerName: String) -> LonaExpression {
+        let expr: LonaExpression = .assignmentExpression(
+            AssignmentExpressionNode(
+                assignee: .memberExpression(
+                    [
+                        .identifierExpression("layers"),
+                        .identifierExpression(layerName),
+                        .identifierExpression(name)
+                    ]
+                ),
+                content: .memberExpression(
+                    [
+                        .identifierExpression("parameters"),
+                        .identifierExpression(name)
+                    ]
+                )
+            )
+        )
+
+        return expr
+    }
+}
+
+extension CSParameter {
+    func makePasteboardItem(withAssignmentTo layerName: String?) -> NSPasteboardItem {
+        let item = NSPasteboardItem()
+
+        if let data = self.toData().toData() {
+            item.setData(data, forType: .lonaParameter)
+        }
+
+        if let layerName = layerName,
+            let data = self.makeAssignmentExpression(layerName: layerName).toData().toData() {
+            item.setData(data, forType: .lonaExpression)
+        }
+
+        return item
+    }
+}
