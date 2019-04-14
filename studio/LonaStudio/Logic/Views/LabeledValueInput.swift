@@ -59,30 +59,14 @@ class LabeledValueInput: LabeledInput {
     private func setUpConstraints() {}
 
     private func update() {
-        switch value.type {
-        case CSColorType:
-            let swiftValue = value.data.string
-            logicEditor.rootNode = LogicValueInput.rootNode(forColorString: swiftValue)
-
-            logicEditor.onChangeRootNode = { [unowned self] node in
-                let csData = LogicValueInput.makeColorString(node: node).toData()
-                self.onChangeValue?(CSValue(type: self.value.type, data: csData))
-                return true
-            }
-
-            logicEditor.suggestionsForNode = { node, query in
-                return LogicValueInput.suggestionsForColor(isOptional: false, node: node, query: query)
-            }
-        default:
-            logicEditor.rootNode = LogicValueInput.rootNode(forValue: value)
-            logicEditor.onChangeRootNode = { [unowned self] node in
-                let newValue = LogicValueInput.makeValue(forType: self.value.type, node: node)
-                self.onChangeValue?(newValue)
-                return true
-            }
-            logicEditor.suggestionsForNode = { [unowned self] node, query in
-                return LogicValueInput.suggestions(forType: self.value.type, node: node, query: query)
-            }
+        logicEditor.rootNode = LogicValueInput.rootNode(forValue: value)
+        logicEditor.onChangeRootNode = { [unowned self] node in
+            let newValue = LogicValueInput.makeValue(forType: self.value.type, node: node)
+            self.onChangeValue?(newValue)
+            return true
+        }
+        logicEditor.suggestionsForNode = { [unowned self] node, query in
+            return LogicValueInput.suggestions(forType: self.value.type, node: node, query: query)
         }
     }
 }

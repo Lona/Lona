@@ -163,7 +163,8 @@ struct CSValue: Equatable, CSDataSerializable, CSDataDeserializable {
         case .number: return CSValue(type: type, data: .Number(0))
         case .wholeNumber: return CSValue(type: type, data: .Number(0))
         case .string: return CSValue(type: type, data: .String("Text"))
-        case .named("Color", .string): return CSValue(type: type, data: .String("black"))
+        case CSTextStyleType: return CSValue(type: type, data: .String("default"))
+        case CSColorType: return CSValue(type: type, data: .String("black"))
         case .named(_, let type): return exampleValue(for: type)
         case .array: return CSValue(type: type, data: .Array([]))
         case .dictionary(let schema):

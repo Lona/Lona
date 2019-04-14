@@ -22,6 +22,8 @@ extension LogicValueInput {
             return .expression(csValue.data.stringValue.expressionNode)
         case CSColorType:
             return rootNode(forColorString: csValue.data.string ?? "black")
+        case CSTextStyleType:
+            return rootNode(forTextStyleString: csValue.data.string ?? "default")
         case .named:
             return rootNode(forValue: csValue.unwrappedNamedType())
         case .variant:
@@ -49,6 +51,8 @@ extension LogicValueInput {
             return CSValue(type: csType, data: String(expression).toData())
         case (CSColorType, _):
             return CSValue(type: csType, data: (makeColorString(node: node) ?? "black").toData())
+        case (CSTextStyleType, _):
+            return CSValue(type: csType, data: (makeTextStyleString(node: node) ?? "default").toData())
         case (.named, _):
             return makeValue(forType: csType.unwrappedNamedType(), node: node)
         case (.variant, _):
@@ -75,6 +79,8 @@ extension LogicValueInput {
             return String.expressionSuggestions(node: node, query: query)
         case CSColorType:
             return suggestionsForColor(isOptional: false, node: node, query: query)
+        case CSTextStyleType:
+            return suggestionsForTextStyle(isOptional: false, node: node, query: query)
         case .named:
             return suggestions(forType: csType.unwrappedNamedType(), node: node, query: query)
         case .variant(let cases):
