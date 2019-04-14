@@ -53,7 +53,7 @@ public class LabeledColorInput: LabeledInput {
     private func setUpConstraints() {}
 
     private func update() {
-        logicValueInput.rootNode = LogicInput.rootNode(forColorString: colorString)
+        logicValueInput.rootNode = .expression(LogicInput.expression(forColorString: colorString))
 
         logicValueInput.onChangeRootNode = { [unowned self] node in
             self.onChangeColorString?(LogicInput.makeColorString(node: node))

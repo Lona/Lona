@@ -10,21 +10,17 @@ import Foundation
 import Logic
 
 extension LogicInput {
-    static func rootNode(forColorString colorString: String?) -> LGCSyntaxNode {
+    static func expression(forColorString colorString: String?) -> LGCExpression {
         switch colorString {
         case .none:
-            return .expression(
-                .identifierExpression(
-                    id: UUID(),
-                    identifier: LGCIdentifier(id: UUID(), string: "none")
-                )
+            return .identifierExpression(
+                id: UUID(),
+                identifier: LGCIdentifier(id: UUID(), string: "none")
             )
         case .some(let value):
-            return .expression(
-                .literalExpression(
-                    id: UUID(),
-                    literal: .color(id: UUID(), value: value)
-                )
+            return .literalExpression(
+                id: UUID(),
+                literal: .color(id: UUID(), value: value)
             )
         }
     }

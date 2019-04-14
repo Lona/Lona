@@ -109,6 +109,25 @@ extension LogicEditor {
     static func makeParameterSuggestionsHandler(rootNode: LGCSyntaxNode, types: [CSType]) -> (LGCSyntaxNode, String) -> [LogicSuggestionItem] {
         return { syntaxNode, query in
             switch syntaxNode {
+            case .functionParameterDefaultValue:
+                guard let parent = rootNode.pathTo(id: syntaxNode.uuid)?.dropLast().last else { return [] }
+
+                switch parent {
+                case .functionParameter(.parameter(id: _, externalName: _, localName: _, annotation: let annotation, defaultValue: _)):
+                    guard let csType = annotation.csType(environmentTypes: types) else { return [] }
+                    return LogicInput.suggestions(forType: csType, node: syntaxNode, query: query).map {
+                        var suggestion = $0
+                        switch suggestion.node {
+                        case .expression(let expression):
+                            suggestion.node = .functionParameterDefaultValue(.value(id: UUID(), expression: expression))
+                            return suggestion
+                        default:
+                            fatalError("Only expressions allowed")
+                        }
+                    }
+                default:
+                    return []
+                }
             case .typeAnnotation:
                 return typeAnnotationSuggestions(query: query, rootNode: rootNode, types: types)
             case .functionParameter:

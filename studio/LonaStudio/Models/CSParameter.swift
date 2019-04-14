@@ -36,9 +36,10 @@ struct CSParameter: CSDataDeserializable, CSDataSerializable {
         }
     }
 
-    init(name: String, type: CSType) {
+    init(name: String, type: CSType, defaultValue: CSValue = CSUndefinedValue) {
         self.name = name
         self.type = type
+        self.defaultValue = defaultValue
     }
 
     func toData() -> CSData {

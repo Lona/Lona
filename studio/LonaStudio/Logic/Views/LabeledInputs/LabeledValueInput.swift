@@ -59,7 +59,7 @@ class LabeledValueInput: LabeledInput {
     private func setUpConstraints() {}
 
     private func update() {
-        logicInput.rootNode = LogicInput.rootNode(forValue: value)
+        logicInput.rootNode = .expression(LogicInput.expression(forValue: value))
         logicInput.onChangeRootNode = { [unowned self] node in
             let newValue = LogicInput.makeValue(forType: self.value.type, node: node)
             self.onChangeValue?(newValue)

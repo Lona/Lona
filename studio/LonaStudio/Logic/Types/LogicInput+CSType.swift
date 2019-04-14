@@ -10,32 +10,27 @@ import Foundation
 import Logic
 
 extension LogicInput {
-    static func rootNode(forValue csValue: CSValue) -> LGCSyntaxNode {
+    static func expression(forValue csValue: CSValue) -> LGCExpression {
         switch csValue.type {
         case .bool:
-            return .expression(csValue.data.boolValue.expressionNode)
+            return csValue.data.boolValue.expressionNode
         case .wholeNumber:
-            return .expression(Int(csValue.data.numberValue).expressionNode)
+            return Int(csValue.data.numberValue).expressionNode
         case .number:
-            return .expression(CGFloat(csValue.data.numberValue).expressionNode)
+            return CGFloat(csValue.data.numberValue).expressionNode
         case .string:
-            return .expression(csValue.data.stringValue.expressionNode)
+            return csValue.data.stringValue.expressionNode
         case CSColorType:
-            return rootNode(forColorString: csValue.data.string ?? "black")
+            return expression(forColorString: csValue.data.string ?? "black")
         case CSTextStyleType:
-            return rootNode(forTextStyleString: csValue.data.string ?? "default")
+            return expression(forTextStyleString: csValue.data.string ?? "default")
         case .named:
-            return rootNode(forValue: csValue.unwrappedNamedType())
+            return expression(forValue: csValue.unwrappedNamedType())
         case .variant:
-            return .expression(
-                .identifierExpression(
-                    id: UUID(),
-                    identifier: LGCIdentifier(id: UUID(), string: csValue.tag())
-                )
-            )
+            return .identifierExpression(id: UUID(), identifier: LGCIdentifier(id: UUID(), string: csValue.tag()))
         default:
 //            fatalError("Not supported")
-            return .expression(.identifierExpression(id: UUID(), identifier: LGCIdentifier(id: UUID(), string: "")))
+            return .identifierExpression(id: UUID(), identifier: LGCIdentifier(id: UUID(), string: ""))
         }
     }
 

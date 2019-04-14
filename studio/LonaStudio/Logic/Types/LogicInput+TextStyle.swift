@@ -10,21 +10,18 @@ import Foundation
 import Logic
 
 extension LogicInput {
-    static func rootNode(forTextStyleString string: String?) -> LGCSyntaxNode {
+    static func expression(forTextStyleString string: String?) -> LGCExpression {
         switch string {
         case .none:
-            return .expression(
-                .identifierExpression(
-                    id: UUID(),
-                    identifier: LGCIdentifier(id: UUID(), string: "none")
-                )
+            return .identifierExpression(
+                id: UUID(),
+                identifier: LGCIdentifier(id: UUID(), string: "none")
             )
+
         case .some(let value):
-            return .expression(
-                .identifierExpression(
-                    id: UUID(),
-                    identifier: LGCIdentifier(id: UUID(), string: value)
-                )
+            return .identifierExpression(
+                id: UUID(),
+                identifier: LGCIdentifier(id: UUID(), string: value)
             )
         }
     }
