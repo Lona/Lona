@@ -522,16 +522,13 @@ extension LayerListOutlineView: NSOutlineViewDelegate, NSOutlineViewDataSource {
             return NSDragOperation.move
         }
 
-        if let _ = info.draggingPasteboard.string(forType: .lonaLayerTemplateType),
-            let _ = item as? CSLayer {
-
+        if let _ = info.draggingPasteboard.string(forType: .lonaLayerTemplateType) {
             return NSDragOperation.copy
         }
 
         if let urlString = info.draggingPasteboard.string(forType: .fileTreeURL),
             let url = URL(string: urlString),
-            url.pathExtension == "component",
-            let _ = item as? CSLayer {
+            url.pathExtension == "component" {
 
             return NSDragOperation.copy
         }
@@ -595,8 +592,9 @@ extension LayerListOutlineView: NSOutlineViewDelegate, NSOutlineViewDataSource {
         }
 
         if let templateTypeString = info.draggingPasteboard.string(forType: .lonaLayerTemplateType),
-            let targetLayer = item as? CSLayer,
             let component = component {
+
+            let targetLayer = (item as? CSLayer) ?? component.rootLayer
 
             let templateType = CSLayer.LayerType.init(from: templateTypeString)
             let newLayer = component.makeLayer(forType: templateType)
@@ -609,8 +607,9 @@ extension LayerListOutlineView: NSOutlineViewDelegate, NSOutlineViewDataSource {
         if let urlString = info.draggingPasteboard.string(forType: .fileTreeURL),
             let url = URL(string: urlString),
             url.pathExtension == "component",
-            let targetLayer = item as? CSLayer,
             let component = component {
+
+            let targetLayer = (item as? CSLayer) ?? component.rootLayer
 
             let templateType = CSLayer.LayerType.custom(CSComponent.componentName(from: url))
             let newLayer = component.makeLayer(forType: templateType)
