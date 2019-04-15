@@ -1,5 +1,5 @@
 //
-//  LogicInput+Variant.swift
+//  LogicInput+CSValue.swift
 //  LonaStudio
 //
 //  Created by Devin Abbott on 4/13/19.
@@ -20,6 +20,8 @@ extension LogicInput {
             return CGFloat(csValue.data.numberValue).expressionNode
         case .string:
             return csValue.data.stringValue.expressionNode
+        case CSURLType:
+            return expression(forURLString: csValue.data.string ?? "")
         case CSColorType:
             return expression(forColorString: csValue.data.string ?? "black")
         case CSTextStyleType:
@@ -44,6 +46,8 @@ extension LogicInput {
             return CSValue(type: csType, data: Int(expression).toData())
         case (.string, .expression(let expression)):
             return CSValue(type: csType, data: String(expression).toData())
+        case (CSURLType, _):
+            return CSValue(type: csType, data: (makeURLString(node: node) ?? "").toData())
         case (CSColorType, _):
             return CSValue(type: csType, data: (makeColorString(node: node) ?? "black").toData())
         case (CSTextStyleType, _):
@@ -72,6 +76,8 @@ extension LogicInput {
             return CGFloat.expressionSuggestions(node: node, query: query)
         case .string:
             return String.expressionSuggestions(node: node, query: query)
+        case CSURLType:
+            return suggestionsForURL(isOptional: false, node: node, query: query)
         case CSColorType:
             return suggestionsForColor(isOptional: false, node: node, query: query)
         case CSTextStyleType:

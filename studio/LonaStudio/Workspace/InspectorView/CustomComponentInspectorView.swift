@@ -106,7 +106,8 @@ final class CustomComponentInspectorView: NSStackView {
                 var data = value.data
 
                 if case .named("URL", .string) = value.type, let url = URL(string: data.stringValue) {
-                    if let relativePath = url.path.pathRelativeTo(basePath: CSUserPreferences.workspaceURL.path) {
+                    if url.scheme == nil || url.scheme == "file",
+                        let relativePath = url.path.pathRelativeTo(basePath: CSUserPreferences.workspaceURL.path) {
                         data = ("file://" + relativePath).toData()
                     } else {
                         data = url.absoluteString.toData()
