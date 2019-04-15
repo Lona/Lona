@@ -81,6 +81,6 @@ extension LogicInput {
                 )
         }
 
-        return (isOptional && query.isEmpty || "none".contains(lowercasedQuery) ? [noneSuggestion] : []) + systemSuggestions
+        return (isOptional && (query.isEmpty || "none".contains(lowercasedQuery)) ? [noneSuggestion] : []) + systemSuggestions
     }
 }

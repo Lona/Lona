@@ -102,6 +102,6 @@ extension LogicInput {
             )
         ]
 
-        return (isOptional && query.isEmpty || "none".contains(lowercasedQuery) ? [noneSuggestion] : []) + [customSuggestion] + dataSourceSuggestions
+        return (isOptional && (query.isEmpty || "none".contains(lowercasedQuery)) ? [noneSuggestion] : []) + [customSuggestion] + dataSourceSuggestions
     }
 }
