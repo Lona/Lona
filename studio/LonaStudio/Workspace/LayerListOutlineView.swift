@@ -180,6 +180,8 @@ extension LayerListOutlineView {
         // Visible
         let visibleColumn = NSTableColumn(identifier: NSUserInterfaceItemIdentifier(rawValue: "visible"))
         visibleColumn.maxWidth = 20
+        visibleColumn.width = 20
+        visibleColumn.resizingMask = .init()
 
         addTableColumn(column)
         addTableColumn(visibleColumn)
@@ -473,7 +475,19 @@ extension LayerListOutlineView: NSOutlineViewDelegate, NSOutlineViewDataSource {
                         self.onChange?()
                     })
                 }
+
                 cellView.addSubview(checkbox)
+
+                cellView.translatesAutoresizingMaskIntoConstraints = false
+                checkbox.translatesAutoresizingMaskIntoConstraints = false
+
+                checkbox.title = ""
+
+                cellView.leadingAnchor.constraint(equalTo: checkbox.leadingAnchor).isActive = true
+                cellView.trailingAnchor.constraint(equalTo: checkbox.trailingAnchor).isActive = true
+                cellView.topAnchor.constraint(equalTo: checkbox.topAnchor).isActive = true
+                cellView.bottomAnchor.constraint(equalTo: checkbox.bottomAnchor).isActive = true
+
                 checkbox.tag = Constants.CheckBoxTag
                 checkbox.isHidden = true
             }
