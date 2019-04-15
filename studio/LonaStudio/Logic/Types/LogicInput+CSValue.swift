@@ -77,7 +77,7 @@ extension LogicInput {
         case .string:
             return String.expressionSuggestions(node: node, query: query)
         case CSURLType:
-            return suggestionsForURL(isOptional: false, node: node, query: query)
+            return suggestionsForURL(isOptional: false, isVector: false, node: node, query: query)
         case CSColorType:
             return suggestionsForColor(isOptional: false, node: node, query: query)
         case CSTextStyleType:

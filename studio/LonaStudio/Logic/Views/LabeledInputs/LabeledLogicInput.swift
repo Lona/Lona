@@ -38,6 +38,8 @@ class LabeledLogicInput: LabeledInput {
 
     public var onChangeValue: ((CSValue) -> Void)?
 
+    public var isVectorInput: Bool = false
+
     // MARK: Private
 
     private var logicInput = LogicInput()
@@ -66,8 +68,14 @@ class LabeledLogicInput: LabeledInput {
             return true
         }
         logicInput.suggestionsForNode = { [unowned self] node, query in
-            return LogicInput.suggestions(forType: self.value.type, node: node, query: query)
+            switch self.value.type {
+            case CSURLType:
+                return LogicInput.suggestionsForURL(isOptional: false, isVector: self.isVectorInput, node: node, query: query)
+            default:
+                return LogicInput.suggestions(forType: self.value.type, node: node, query: query)
+            }
         }
+
 //        logicInput.isTextStyleEditor = value.type == CSTextStyleType
     }
 }

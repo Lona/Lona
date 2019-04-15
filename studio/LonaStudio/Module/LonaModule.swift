@@ -55,6 +55,10 @@ class LonaModule {
         return FileSearch.search(filesIn: url, matching: LonaModule.assetRE)
     }
 
+    var vectorFileUrls: [URL] {
+        return FileSearch.search(filesIn: url, matching: LonaModule.vectorRE)
+    }
+
     func componentFiles() -> [ComponentFile] {
         return LonaModule.componentFiles(in: url)
     }
@@ -113,6 +117,8 @@ class LonaModule {
     // MARK: - STATIC
 
     private static let assetRE = try! NSRegularExpression(pattern: #"\.(png|jpg)$"#)
+
+    private static let vectorRE = try! NSRegularExpression(pattern: #"\.(svg)$"#)
 
     private static var cachedTypes: [URL: [CSType]] = [:]
 

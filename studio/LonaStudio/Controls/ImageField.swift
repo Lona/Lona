@@ -42,7 +42,7 @@ class ImageField: NSImageView, CSControl {
 
         wantsLayer = true
         layer?.borderWidth = 1.0
-        layer?.borderColor = #colorLiteral(red: 0.6000000238, green: 0.6000000238, blue: 0.6000000238, alpha: 1).cgColor
+        layer?.borderColor = Colors.divider.cgColor
 
         registerForDragged()
     }
