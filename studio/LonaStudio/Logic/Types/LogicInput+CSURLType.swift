@@ -36,6 +36,7 @@ extension LogicInput {
     }
 
     private static let sizeRE = try! NSRegularExpression(pattern: #"(\d+)\s*[ x]?\s*(\d+)?"#)
+    private static let assetRE = try! NSRegularExpression(pattern: #"\.(png|jpg)$"#)
 
     static func suggestionsForURL(isOptional: Bool, node: LGCSyntaxNode, query: String) -> [LogicSuggestionItem] {
         let noneSuggestion = LogicSuggestionItem(
@@ -77,6 +78,33 @@ extension LogicInput {
 
         let sizes = [width, height].compactMap { $0 }.map { $0.description }
 
+        let workspacePath = CSUserPreferences.workspaceURL.path
+
+        let assetSuggestions: [LogicSuggestionItem] = LonaModule.current.assetsFileUrls
+            .map { url in
+                let urlString: String
+                let displayString: String
+                if url.scheme == nil || url.scheme == "file",
+                    let relativePath = url.path.pathRelativeTo(basePath: workspacePath) {
+                    urlString = "file://" + relativePath
+                    displayString = relativePath
+                } else {
+                    urlString = url.absoluteString
+                    displayString = url.path
+                }
+
+                return LogicSuggestionItem(
+                    title: displayString,
+                    category: "Assets".uppercased(),
+                    node: .expression(
+                        .identifierExpression(
+                            id: UUID(),
+                            identifier: LGCIdentifier(id: UUID(), string: urlString)
+                        )
+                    )
+                )
+        }
+
         let dataSourceSuggestions = [
             LogicSuggestionItem(
                 title: !sizes.isEmpty ? "placehold.it/\(sizes.joined(separator: "x"))" : "placehold.it",
@@ -102,6 +130,6 @@ extension LogicInput {
             )
         ]
 
-        return (isOptional && (query.isEmpty || "none".contains(lowercasedQuery)) ? [noneSuggestion] : []) + [customSuggestion] + dataSourceSuggestions
+        return (isOptional && (query.isEmpty || "none".contains(lowercasedQuery)) ? [noneSuggestion] : []) + assetSuggestions.titleContains(prefix: query) + [customSuggestion] + dataSourceSuggestions
     }
 }

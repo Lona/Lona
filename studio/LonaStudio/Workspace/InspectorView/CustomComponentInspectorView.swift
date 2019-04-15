@@ -103,19 +103,8 @@ final class CustomComponentInspectorView: NSStackView {
 
             inputView.value = value
             inputView.onChangeValue = {[unowned self] value in
-                var data = value.data
-
-                if case .named("URL", .string) = value.type, let url = URL(string: data.stringValue) {
-                    if url.scheme == nil || url.scheme == "file",
-                        let relativePath = url.path.pathRelativeTo(basePath: CSUserPreferences.workspaceURL.path) {
-                        data = ("file://" + relativePath).toData()
-                    } else {
-                        data = url.absoluteString.toData()
-                    }
-                }
-
                 var updated = self.parameterValues
-                updated[parameter.name] = data
+                updated[parameter.name] = value.data
 
                 self.onChangeData?(updated)
             }
