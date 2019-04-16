@@ -276,18 +276,11 @@ extension CSValue {
     }
 
     func unwrapVariant() -> CSValue? {
-        guard case CSType.variant(let cases) = self.type else {
-            Swift.print("Attempted to unwrap non-variant type of value", self)
-            return nil
-        }
-
         let tag = self.data.get(key: "case").stringValue
-        guard let match = cases.first(where: { item in item.0 == tag }) else {
-            Swift.print("unwrapVariant(): Could not find tag", tag, "in variant type of value", self)
-            return nil
-        }
 
-        return CSValue(type: match.1, data: self.data.get(key: "data"))
+        guard let unwrappedType = self.type.unwrapVariant(tagged: tag) else { return nil }
+
+        return CSValue(type: unwrappedType, data: self.data.get(key: "data"))
     }
 
     func with(data newData: CSData) -> CSValue {
