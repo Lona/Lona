@@ -208,12 +208,9 @@ let platformPrimaryAxis = (framework, layer: option(Types.layer)) =>
 
 /* Use framework to determine correct layout parameters */
 let getLayoutParameters =
-    (
-      framework: JavaScriptOptions.framework,
-      parent: option(Types.layer),
-      layer: Types.layer,
-    )
+    (config: Config.t, parent: option(Types.layer), layer: Types.layer)
     : Types.layerParameters => {
+  let framework = config.options.javaScript.framework;
   let layout = Layer.getLayout(parent, layer.parameters);
 
   /* The primary axis is determined by the parent's direction, or the platform
@@ -230,6 +227,10 @@ let getLayoutParameters =
         Js.log("Nested custom components cannot currently be top level.");
         raise(Not_found);
       };
+
+    let proxyLayer = Layer.getProxyLayer(config, layer);
+    let proxyLayout = Layer.getLayout(None, proxyLayer.parameters);
+
     let parentLayout = Layer.getLayout(None, parentUnwrapped.parameters);
 
     /* Top-level views should work equally well when rendered by the user and when
@@ -268,10 +269,28 @@ let getLayoutParameters =
                )
           | JavaScriptOptions.ReactNative
           | JavaScriptOptions.ReactSketchapp =>
+            /* Primary axis */
+            let parameters =
+              switch (parentLayout.direction) {
+              | Column =>
+                switch (proxyLayout.height) {
+                | Fill => parameters |> add(Flex, flex1Value(framework))
+                | FitContent =>
+                  parameters |> add(Flex, flex0Value(framework))
+                | Fixed(value) => parameters |> add(Height, number(value))
+                }
+              | Row =>
+                switch (proxyLayout.width) {
+                | Fill => parameters |> add(Flex, flex1Value(framework))
+                | FitContent =>
+                  parameters |> add(Flex, flex0Value(framework))
+                | Fixed(value) => parameters |> add(Width, number(value))
+                }
+              };
+
             parameters
-            |> add(FlexDirection, string("row"))
-            |> add(Flex, number(1.0))
-            |> add(AlignSelf, string("stretch"))
+            |> add(FlexDirection, string("column"))
+            /* |> add(AlignSelf, string("stretch")) */
             |> add(
                  JustifyContent,
                  string(
@@ -285,7 +304,7 @@ let getLayoutParameters =
                    parentLayout.verticalAlignment
                    |> Layout.ToString.childrenAlignment,
                  ),
-               )
+               );
           }
         )
       );
@@ -381,8 +400,7 @@ let getLayoutParameters =
 
 let needsIeFix =
     (config: Config.t, parent: option(Types.layer), layer: Types.layer): bool => {
-  let layoutParameters =
-    getLayoutParameters(config.options.javaScript.framework, parent, layer);
+  let layoutParameters = getLayoutParameters(config, parent, layer);
   switch (ParameterMap.find_opt(Flex, layoutParameters)) {
   | Some(lonaValue)
       when
@@ -539,7 +557,7 @@ module Object = {
         parent: option(Types.layer),
         layer: Types.layer,
       ) => {
-    let layoutParameters = getLayoutParameters(framework, parent, layer);
+    let layoutParameters = getLayoutParameters(config, parent, layer);
 
     JavaScriptAst.(
       ObjectLiteral(
