@@ -104,7 +104,7 @@ extension LogicInput {
             )
         }
 
-        let dataSourceSuggestions = [
+        var dataSourceSuggestions = [
             LogicSuggestionItem(
                 title: !sizes.isEmpty ? "placehold.it/\(sizes.joined(separator: "x"))" : "placehold.it",
                 category: "Data Sources".uppercased(),
@@ -129,7 +129,23 @@ extension LogicInput {
             )
         ]
 
+        let randomProfileSuggestion = LogicSuggestionItem(
+            title: "Random profile photo",
+            category: "Data Sources".uppercased(),
+            node: .expression(
+                .identifierExpression(
+                    id: UUID(),
+                    identifier: LGCIdentifier(
+                        id: UUID(),
+                        string: "https://randomuser.me/api/portraits/\(Bool.random() ? "men" : "women")/\(Int.random(in: 0..<100)).jpg"
+                    )
+                )
+            )
+        )
+
         return (isOptional && (query.isEmpty || "none".contains(lowercasedQuery)) ? [noneSuggestion] : []) + assetSuggestions.titleContains(prefix: query) +
-            (isVector ? [] : [customSuggestion] + dataSourceSuggestions)
+            (isVector
+                ? []
+                : [customSuggestion] + dataSourceSuggestions + [randomProfileSuggestion].titleContains(prefix: query))
     }
 }
