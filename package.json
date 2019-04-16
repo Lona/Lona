@@ -49,6 +49,9 @@
     "*.md": [
       "npm run prettier:base",
       "git add"
+    ],
+    "ignore": [
+      "/examples"
     ]
   },
   "prettier": {
@@ -57,9 +60,6 @@
     "trailingComma": "es5",
     "semi": false
   },
-  "prettierIgnore": [
-    "/examples"
-  ],
   "eslintConfig": {
     "root": true,
     "extends": [
