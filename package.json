@@ -57,6 +57,9 @@
     "trailingComma": "es5",
     "semi": false
   },
+  "prettierIgnore": [
+    "/examples"
+  ],
   "eslintConfig": {
     "root": true,
     "extends": [
