@@ -201,8 +201,9 @@ let getSizingRules =
     (parent: option(Types.layer), parameters: Types.layerParameters) => {
   let parentDirection =
     switch (parent) {
-    | Some(parent) => getFlexDirection(parent.parameters)
-    | None => "column"
+    | Some(parent) =>
+      getFlexDirection(parent.parameters) |> Layout.FromString.direction
+    | None => Layout.Column
     };
   let flex = getNumberParameterOpt(Flex, parameters);
   let width = getNumberParameterOpt(Width, parameters);
@@ -210,21 +211,21 @@ let getSizingRules =
   let alignSelf = getStringParameterOpt(AlignSelf, parameters);
   let widthSizingRule =
     switch (parentDirection, flex, width, alignSelf) {
-    | ("row", Some(1.0), _, _) => Layout.Fill
-    | ("row", _, Some(value), _) => Layout.Fixed(value)
-    | ("row", _, _, _) => Layout.FitContent
-    | (_, _, _, Some("stretch")) => Layout.Fill
-    | (_, _, Some(value), _) => Layout.Fixed(value)
-    | (_, _, _, _) => Layout.FitContent
+    | (Row, Some(1.0), _, _) => Layout.Fill
+    | (Row, _, Some(value), _) => Layout.Fixed(value)
+    | (Row, _, _, _) => Layout.FitContent
+    | (Column, _, _, Some("stretch")) => Layout.Fill
+    | (Column, _, Some(value), _) => Layout.Fixed(value)
+    | (Column, _, _, _) => Layout.FitContent
     };
   let heightSizingRule =
     switch (parentDirection, flex, height, alignSelf) {
-    | ("row", _, _, Some("stretch")) => Layout.Fill
-    | ("row", _, Some(value), _) => Layout.Fixed(value)
-    | ("row", _, _, _) => Layout.FitContent
-    | (_, Some(1.0), _, _) => Layout.Fill
-    | (_, _, Some(value), _) => Layout.Fixed(value)
-    | (_, _, _, _) => Layout.FitContent
+    | (Row, _, _, Some("stretch")) => Layout.Fill
+    | (Row, _, Some(value), _) => Layout.Fixed(value)
+    | (Row, _, _, _) => Layout.FitContent
+    | (Column, Some(1.0), _, _) => Layout.Fill
+    | (Column, _, Some(value), _) => Layout.Fixed(value)
+    | (Column, _, _, _) => Layout.FitContent
     };
   {width: widthSizingRule, height: heightSizingRule};
 };

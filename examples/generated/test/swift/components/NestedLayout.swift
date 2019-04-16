@@ -219,14 +219,20 @@ public class NestedLayout: UIView {
       .constraint(lessThanOrEqualTo: topRowView.heightAnchor)
     let column1ViewLeadingAnchorConstraint = column1View.leadingAnchor.constraint(equalTo: topRowView.leadingAnchor)
     let column1ViewTopAnchorConstraint = column1View.topAnchor.constraint(equalTo: topRowView.topAnchor)
-    let column1ViewBottomAnchorConstraint = column1View.bottomAnchor.constraint(equalTo: topRowView.bottomAnchor)
+    let column1ViewBottomAnchorConstraint = column1View
+      .bottomAnchor
+      .constraint(lessThanOrEqualTo: topRowView.bottomAnchor)
     let column2ViewLeadingAnchorConstraint = column2View.leadingAnchor.constraint(equalTo: column1View.trailingAnchor)
     let column2ViewTopAnchorConstraint = column2View.topAnchor.constraint(equalTo: topRowView.topAnchor)
-    let column2ViewBottomAnchorConstraint = column2View.bottomAnchor.constraint(equalTo: topRowView.bottomAnchor)
+    let column2ViewBottomAnchorConstraint = column2View
+      .bottomAnchor
+      .constraint(lessThanOrEqualTo: topRowView.bottomAnchor)
     let column3ViewTrailingAnchorConstraint = column3View.trailingAnchor.constraint(equalTo: topRowView.trailingAnchor)
     let column3ViewLeadingAnchorConstraint = column3View.leadingAnchor.constraint(equalTo: column2View.trailingAnchor)
     let column3ViewTopAnchorConstraint = column3View.topAnchor.constraint(equalTo: topRowView.topAnchor)
-    let column3ViewBottomAnchorConstraint = column3View.bottomAnchor.constraint(equalTo: topRowView.bottomAnchor)
+    let column3ViewBottomAnchorConstraint = column3View
+      .bottomAnchor
+      .constraint(lessThanOrEqualTo: topRowView.bottomAnchor)
     let column4ViewHeightAnchorParentConstraint = column4View
       .heightAnchor
       .constraint(lessThanOrEqualTo: bottomRowView.heightAnchor)
@@ -238,16 +244,22 @@ public class NestedLayout: UIView {
       .constraint(lessThanOrEqualTo: bottomRowView.heightAnchor)
     let column4ViewLeadingAnchorConstraint = column4View.leadingAnchor.constraint(equalTo: bottomRowView.leadingAnchor)
     let column4ViewTopAnchorConstraint = column4View.topAnchor.constraint(equalTo: bottomRowView.topAnchor)
-    let column4ViewBottomAnchorConstraint = column4View.bottomAnchor.constraint(equalTo: bottomRowView.bottomAnchor)
+    let column4ViewBottomAnchorConstraint = column4View
+      .bottomAnchor
+      .constraint(lessThanOrEqualTo: bottomRowView.bottomAnchor)
     let column5ViewLeadingAnchorConstraint = column5View.leadingAnchor.constraint(equalTo: column4View.trailingAnchor)
     let column5ViewTopAnchorConstraint = column5View.topAnchor.constraint(equalTo: bottomRowView.topAnchor)
-    let column5ViewBottomAnchorConstraint = column5View.bottomAnchor.constraint(equalTo: bottomRowView.bottomAnchor)
+    let column5ViewBottomAnchorConstraint = column5View
+      .bottomAnchor
+      .constraint(lessThanOrEqualTo: bottomRowView.bottomAnchor)
     let column6ViewTrailingAnchorConstraint = column6View
       .trailingAnchor
       .constraint(equalTo: bottomRowView.trailingAnchor)
     let column6ViewLeadingAnchorConstraint = column6View.leadingAnchor.constraint(equalTo: column5View.trailingAnchor)
     let column6ViewTopAnchorConstraint = column6View.topAnchor.constraint(equalTo: bottomRowView.topAnchor)
-    let column6ViewBottomAnchorConstraint = column6View.bottomAnchor.constraint(equalTo: bottomRowView.bottomAnchor)
+    let column6ViewBottomAnchorConstraint = column6View
+      .bottomAnchor
+      .constraint(lessThanOrEqualTo: bottomRowView.bottomAnchor)
     let column1ViewWidthAnchorConstraint = column1View.widthAnchor.constraint(equalToConstant: 150)
     let view1ViewTopAnchorConstraint = view1View.topAnchor.constraint(equalTo: column1View.topAnchor)
     let view1ViewLeadingAnchorConstraint = view1View.leadingAnchor.constraint(equalTo: column1View.leadingAnchor)

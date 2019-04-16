@@ -213,7 +213,9 @@ public class AccessibilityTest: NSBox {
     let textViewLeadingAnchorConstraint = textView
       .leadingAnchor
       .constraint(equalTo: checkboxView.trailingAnchor, constant: 10)
-    let textViewTopAnchorConstraint = textView.topAnchor.constraint(equalTo: checkboxRowView.topAnchor, constant: 10)
+    let textViewTopAnchorConstraint = textView
+      .topAnchor
+      .constraint(greaterThanOrEqualTo: checkboxRowView.topAnchor, constant: 10)
     let textViewCenterYAnchorConstraint = textView.centerYAnchor.constraint(equalTo: checkboxRowView.centerYAnchor)
     let textViewBottomAnchorConstraint = textView
       .bottomAnchor
@@ -265,7 +267,7 @@ public class AccessibilityTest: NSBox {
       .constraint(equalTo: imageView.trailingAnchor, constant: 4)
     let accessibleTextViewTopAnchorConstraint = accessibleTextView
       .topAnchor
-      .constraint(equalTo: containerView.topAnchor)
+      .constraint(greaterThanOrEqualTo: containerView.topAnchor)
     let accessibleTextViewCenterYAnchorConstraint = accessibleTextView
       .centerYAnchor
       .constraint(equalTo: containerView.centerYAnchor)

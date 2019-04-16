@@ -159,7 +159,9 @@ public class PrimaryAxisFillSiblings: UIView {
       .leadingAnchor
       .constraint(equalTo: horizontalView.leadingAnchor)
     let leftCardViewTopAnchorConstraint = leftCardView.topAnchor.constraint(equalTo: horizontalView.topAnchor)
-    let leftCardViewBottomAnchorConstraint = leftCardView.bottomAnchor.constraint(equalTo: horizontalView.bottomAnchor)
+    let leftCardViewBottomAnchorConstraint = leftCardView
+      .bottomAnchor
+      .constraint(lessThanOrEqualTo: horizontalView.bottomAnchor)
     let spacerViewLeadingAnchorConstraint = spacerView.leadingAnchor.constraint(equalTo: leftCardView.trailingAnchor)
     let spacerViewTopAnchorConstraint = spacerView.topAnchor.constraint(equalTo: horizontalView.topAnchor)
     let rightCardViewTrailingAnchorConstraint = rightCardView
@@ -171,7 +173,7 @@ public class PrimaryAxisFillSiblings: UIView {
     let rightCardViewTopAnchorConstraint = rightCardView.topAnchor.constraint(equalTo: horizontalView.topAnchor)
     let rightCardViewBottomAnchorConstraint = rightCardView
       .bottomAnchor
-      .constraint(equalTo: horizontalView.bottomAnchor)
+      .constraint(lessThanOrEqualTo: horizontalView.bottomAnchor)
     let imageViewTopAnchorConstraint = imageView.topAnchor.constraint(equalTo: leftCardView.topAnchor)
     let imageViewLeadingAnchorConstraint = imageView.leadingAnchor.constraint(equalTo: leftCardView.leadingAnchor)
     let imageViewTrailingAnchorConstraint = imageView.trailingAnchor.constraint(equalTo: leftCardView.trailingAnchor)

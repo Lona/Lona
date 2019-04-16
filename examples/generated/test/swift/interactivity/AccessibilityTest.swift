@@ -203,11 +203,13 @@ public class AccessibilityTest: UIView {
     let textViewLeadingAnchorConstraint = textView
       .leadingAnchor
       .constraint(equalTo: checkboxView.trailingAnchor, constant: 10)
-    let textViewTopAnchorConstraint = textView.topAnchor.constraint(equalTo: checkboxRowView.topAnchor, constant: 10)
+    let textViewTopAnchorConstraint = textView
+      .topAnchor
+      .constraint(greaterThanOrEqualTo: checkboxRowView.topAnchor, constant: 10)
     let textViewCenterYAnchorConstraint = textView.centerYAnchor.constraint(equalTo: checkboxRowView.centerYAnchor)
     let textViewBottomAnchorConstraint = textView
       .bottomAnchor
-      .constraint(equalTo: checkboxRowView.bottomAnchor, constant: -10)
+      .constraint(lessThanOrEqualTo: checkboxRowView.bottomAnchor, constant: -10)
     let elementViewHeightAnchorParentConstraint = elementView
       .heightAnchor
       .constraint(lessThanOrEqualTo: row1View.heightAnchor, constant: -20)
@@ -227,7 +229,7 @@ public class AccessibilityTest: UIView {
     let containerViewTopAnchorConstraint = containerView.topAnchor.constraint(equalTo: row1View.topAnchor, constant: 10)
     let containerViewBottomAnchorConstraint = containerView
       .bottomAnchor
-      .constraint(equalTo: row1View.bottomAnchor, constant: -10)
+      .constraint(lessThanOrEqualTo: row1View.bottomAnchor, constant: -10)
     let checkboxViewHeightAnchorConstraint = checkboxView.heightAnchor.constraint(equalToConstant: 30)
     let checkboxViewWidthAnchorConstraint = checkboxView.widthAnchor.constraint(equalToConstant: 30)
     let elementViewHeightAnchorConstraint = elementView.heightAnchor.constraint(equalToConstant: 50)
@@ -255,7 +257,7 @@ public class AccessibilityTest: UIView {
       .constraint(equalTo: imageView.trailingAnchor, constant: 4)
     let accessibleTextViewTopAnchorConstraint = accessibleTextView
       .topAnchor
-      .constraint(equalTo: containerView.topAnchor)
+      .constraint(greaterThanOrEqualTo: containerView.topAnchor)
     let accessibleTextViewCenterYAnchorConstraint = accessibleTextView
       .centerYAnchor
       .constraint(equalTo: containerView.centerYAnchor)

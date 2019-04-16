@@ -257,7 +257,7 @@ public class TextAlignment: UIView {
     let text5ViewBottomAnchorConstraint = text5View.bottomAnchor.constraint(equalTo: view3View.bottomAnchor)
     let text5ViewLeadingAnchorConstraint = text5View
       .leadingAnchor
-      .constraint(equalTo: view3View.leadingAnchor, constant: 12)
+      .constraint(greaterThanOrEqualTo: view3View.leadingAnchor, constant: 12)
     let text5ViewCenterXAnchorConstraint = text5View.centerXAnchor.constraint(equalTo: view3View.centerXAnchor)
     let text5ViewTrailingAnchorConstraint = text5View
       .trailingAnchor

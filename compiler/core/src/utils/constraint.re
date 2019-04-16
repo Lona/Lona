@@ -170,7 +170,8 @@ let semanticEqual = (a: t, b: t): bool =>
   };
 
 let getConstraints = (config: Config.t, rootLayer: Types.layer) => {
-  let constrainAxes = (originalLayer: Types.layer) => {
+  let constrainAxes =
+      (parent: option(Types.layer), originalLayer: Types.layer) => {
     let isComponentLayer = Layer.isComponentLayer(originalLayer);
     let layer = Layer.getProxyLayer(config, originalLayer);
     let children =
@@ -324,19 +325,43 @@ let getConstraints = (config: Config.t, rootLayer: Types.layer) => {
           Required,
           SecondaryBefore,
         );
+      let secondaryAlignment =
+        Layer.getStringParameterOpt(AlignItems, layer.parameters);
+
+      let parentDirection =
+        parent
+        |> Option.map((p: Types.layer) => {
+             let layout = Layer.getLayout(None, p.parameters);
+             layout.direction;
+           })
+        |> Option.default(Layout.Column);
+
       let secondaryAfterFlexibleConstraint =
-        switch (secondarySizingRule, childSecondarySizingRule) {
-        | (Fill, FitContent) => [secondaryAfterLeqConstraint]
-        | (_, Fixed(_)) => [] /* Width/height constraints are added outside the child loop */
-        | (_, Fill)
-        | (_, FitContent) => [secondaryAfterEqConstraint]
+        switch (
+          parentDirection != Layout.FromString.direction(direction),
+          secondarySizingRule,
+          childSecondarySizingRule,
+        ) {
+        | (true, FitContent, FitContent) => [secondaryAfterLeqConstraint]
+        | (_, Fill, FitContent) => [secondaryAfterLeqConstraint]
+        | (_, _, Fixed(_)) => [] /* Width/height constraints are added outside the child loop */
+        | (_, _, Fill)
+        | (_, _, FitContent) => [secondaryAfterEqConstraint]
         };
       let secondaryBeforeFlexibleConstraint =
-        switch (secondarySizingRule, childSecondarySizingRule) {
-        | (Fill, FitContent) => [secondaryBeforeGeqConstraint]
-        | (_, Fixed(_)) => [] /* Width/height constraints are added outside the child loop */
-        | (_, Fill)
-        | (_, FitContent) => [secondaryBeforeEqConstraint]
+        switch (
+          secondarySizingRule,
+          childSecondarySizingRule,
+          secondaryAlignment,
+        ) {
+        | (Fill, FitContent, _)
+        | (FitContent, FitContent, Some("center"))
+        | (FitContent, FitContent, Some("flex-end")) => [
+            secondaryBeforeGeqConstraint,
+          ]
+        | (_, Fixed(_), _) => [] /* Width/height constraints are added outside the child loop */
+        | (_, Fill, _)
+        | (_, FitContent, _) => [secondaryBeforeEqConstraint]
         };
       let secondaryConstraints =
         switch (
@@ -435,7 +460,7 @@ let getConstraints = (config: Config.t, rootLayer: Types.layer) => {
       @ (children |> List.mapi(addConstraints));
     constraints |> List.concat;
   };
-  rootLayer |> Layer.flatmap(constrainAxes) |> List.concat;
+  rootLayer |> Layer.flatmapParent(constrainAxes) |> List.concat;
 };
 
 let dedupe =
