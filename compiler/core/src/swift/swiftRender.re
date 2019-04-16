@@ -2,15 +2,16 @@ open Prettier.Doc.Builders;
 
 let renderFloat = value => s(Format.floatToString(value));
 
-let reservedWords = ["true", "false"];
+let reservedWords = ["true", "false", "default", "case"];
 
 let stringWithBackticksIfNeeded = (id: string) =>
-  List.mem(id, reservedWords) ? s("`") <+> s(id) <+> s("`") : s(id);
+  List.mem(id, reservedWords) ? "`" ++ id ++ "`" : id;
 
-let nodeWithBackticksIfNeeded = (id: SwiftAst.node) =>
+let nodeWithBackticksIfNeeded = (id: SwiftAst.node): SwiftAst.node =>
   switch (id) {
-  | SwiftAst.SwiftIdentifier(string) => stringWithBackticksIfNeeded(string)
-  | _ => s("$ Bad call to nodeWithBackticksIfNeeded")
+  | SwiftIdentifier(string) =>
+    SwiftIdentifier(stringWithBackticksIfNeeded(string))
+  | _ => SwiftIdentifier("$ Bad call to nodeWithBackticksIfNeeded")
   };
 
 let renderAccessLevelModifier = node =>
@@ -474,9 +475,9 @@ let rec render = ast: Prettier.Doc.t('a) =>
         | Some(annotation) => annotation |> renderTypeAnnotation
         | None => s("")
         };
-      group(s("case ") <+> name <+> parameters);
+      group(s("case ") <+> render(name) <+> parameters);
     | Some(value) =>
-      group(s("case ") <+> name <+> s(" = ") <+> render(value))
+      group(s("case ") <+> render(name) <+> s(" = ") <+> render(value))
     };
   | ConditionList(v) =>
     v
@@ -645,13 +646,12 @@ and renderPattern = node =>
   switch (node) {
   | WildcardPattern => s("_")
   | IdentifierPattern(o) =>
+    let name = nodeWithBackticksIfNeeded(o##identifier);
     switch (o##annotation) {
-    | None => render(o##identifier)
+    | None => render(name)
     | Some(typeAnnotation) =>
-      render(o##identifier)
-      <+> s(": ")
-      <+> renderTypeAnnotation(typeAnnotation)
-    }
+      render(name) <+> s(": ") <+> renderTypeAnnotation(typeAnnotation)
+    };
   | ValueBindingPattern(o) =>
     group(concat([s(o##kind), line, renderPattern(o##pattern)]))
   | TuplePattern(v) =>
