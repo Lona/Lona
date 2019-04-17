@@ -1,10 +1,29 @@
 let negateNumber = expression =>
   SwiftAst.PrefixExpression({"operator": "-", "expression": expression});
 
-let priorityName =
-  fun
-  | Constraint.Required => "required"
-  | Low => "defaultLow";
+let priorityValue = (config: Config.t, priority): SwiftAst.node =>
+  switch (priority) {
+  | Constraint.Required =>
+    SwiftAst.memberExpression([
+      SwiftDocument.layoutPriorityTypeDoc(config.options.swift.framework),
+      SwiftIdentifier("required"),
+    ])
+  | LowPlus1 =>
+    BinaryExpression({
+      "left":
+        SwiftAst.memberExpression([
+          SwiftDocument.layoutPriorityTypeDoc(config.options.swift.framework),
+          SwiftIdentifier("defaultLow"),
+        ]),
+      "operator": "+",
+      "right": SwiftAst.LiteralExpression(Integer(1)),
+    })
+  | Low =>
+    SwiftAst.memberExpression([
+      SwiftDocument.layoutPriorityTypeDoc(config.options.swift.framework),
+      SwiftIdentifier("defaultLow"),
+    ])
+  };
 
 let generateWithInitialValue =
     (
@@ -319,58 +338,79 @@ let setUpFunction =
     Constraint.visibilityLayers(assignmentsFromLogic, rootLayer)
     |> List.sort(Layer.compare);
 
+  let setContentCompressionResistance = (layer, value, axis) =>
+    FunctionCallExpression({
+      "name":
+        layerMemberExpression(
+          layer,
+          [SwiftIdentifier("setContentCompressionResistancePriority")],
+        ),
+      "arguments": [
+        FunctionCallArgument({name: None, value}),
+        FunctionCallArgument({
+          name: Some(SwiftIdentifier("for")),
+          value: axis,
+        }),
+      ],
+    });
+
+  let setContentHuggingPriority = (layer, value, axis) =>
+    FunctionCallExpression({
+      "name":
+        layerMemberExpression(
+          layer,
+          [SwiftIdentifier("setContentHuggingPriority")],
+        ),
+      "arguments": [
+        FunctionCallArgument({name: None, value}),
+        FunctionCallArgument({
+          name: Some(SwiftIdentifier("for")),
+          value: axis,
+        }),
+      ],
+    });
+
   let intrinsicSizeConstraints =
     rootLayer
     |> Layer.flatmapParent((parent: option(Types.layer), layer: Types.layer) =>
-         if (isFillTextLayer(parent, layer)) {
+         switch (layer.typeName) {
+         | Text =>
+           let layout = Layer.getLayout(parent, layer.parameters);
+           let widthPriority =
+             switch (layout.width) {
+             | Fill => ".defaultLow"
+             | FitContent => ".defaultHigh"
+             | Fixed(_) => ".defaultHigh"
+             };
+           let heightPriority =
+             switch (layout.height) {
+             | Fill => ".defaultLow"
+             | FitContent => ".defaultHigh"
+             | Fixed(_) => ".defaultHigh"
+             };
            [
-             /* subtitleView.setContentCompressionResistancePriority(.init(0), for: .horizontal)
-                subtitleView.setContentHuggingPriority(.init(0), for: .horizontal) */
-             FunctionCallExpression({
-               "name":
-                 layerMemberExpression(
-                   layer,
-                   [
-                     SwiftIdentifier(
-                       "setContentCompressionResistancePriority",
-                     ),
-                   ],
-                 ),
-               "arguments": [
-                 FunctionCallArgument({
-                   name: None,
-                   value: SwiftIdentifier(".defaultHigh"),
-                 }),
-                 FunctionCallArgument({
-                   name: Some(SwiftIdentifier("for")),
-                   value: SwiftIdentifier(".horizontal"),
-                 }),
-               ],
-             }),
-             FunctionCallExpression({
-               "name":
-                 layerMemberExpression(
-                   layer,
-                   [SwiftIdentifier("setContentHuggingPriority")],
-                 ),
-               "arguments": [
-                 FunctionCallArgument({
-                   name: None,
-                   value:
-                     FunctionCallExpression({
-                       "name": SwiftIdentifier(".init"),
-                       "arguments": [LiteralExpression(Integer(0))],
-                     }),
-                 }),
-                 FunctionCallArgument({
-                   name: Some(SwiftIdentifier("for")),
-                   value: SwiftIdentifier(".horizontal"),
-                 }),
-               ],
-             }),
+             setContentCompressionResistance(
+               layer,
+               SwiftIdentifier(widthPriority),
+               SwiftIdentifier(".horizontal"),
+             ),
+             setContentHuggingPriority(
+               layer,
+               SwiftIdentifier(widthPriority),
+               SwiftIdentifier(".horizontal"),
+             ),
+             setContentCompressionResistance(
+               layer,
+               SwiftIdentifier(heightPriority),
+               SwiftIdentifier(".vertical"),
+             ),
+             setContentHuggingPriority(
+               layer,
+               SwiftIdentifier(heightPriority),
+               SwiftIdentifier(".vertical"),
+             ),
            ];
-         } else {
-           [];
+         | _ => []
          }
        )
     |> List.concat;
@@ -413,11 +453,7 @@ let setUpFunction =
           SwiftIdentifier("priority"),
         ]),
       "operator": "=",
-      "right":
-        MemberExpression([
-          SwiftDocument.layoutPriorityTypeDoc(swiftOptions.framework),
-          SwiftIdentifier(priorityName(Constraint.getPriority(const))),
-        ]),
+      "right": priorityValue(config, Constraint.getPriority(const)),
     });
   let initialConditionalConstraints =
     FunctionCallExpression({
@@ -525,11 +561,11 @@ let setUpFunction =
         Empty,
         [
           rootLayer |> Layer.flatmap(translatesAutoresizingMask),
-          /* intrinsicSizeConstraints, */
+          intrinsicSizeConstraints,
           allConstraints |> List.map(defineConstraint),
           /* Priority */
           allConstraints
-          |> List.filter(const => Constraint.getPriority(const) == Low)
+          |> List.filter(const => Constraint.getPriority(const) != Required)
           |> List.map(setConstraintPriority),
           /* Assign to member variables */
           conditionalConstraints |> List.map(assignConstraint),

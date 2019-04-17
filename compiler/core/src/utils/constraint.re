@@ -1,5 +1,6 @@
 type layoutPriority =
   | Required
+  | LowPlus1
   | Low;
 
 type anchor =
@@ -87,6 +88,7 @@ let cmpToString =
 let priorityToString =
   fun
   | Low => "low"
+  | LowPlus1 => "low + 1"
   | Required => "required";
 
 let toString = const =>
@@ -239,8 +241,8 @@ let getConstraints = (config: Config.t, rootLayer: Types.layer) => {
              unless any child has a Fill dimension, in which case we do still need the constraint. */
           let needsPrimaryAfterConstraint =
             switch (primarySizingRule, List.length(fillChildren)) {
-            | (Fill, count) when count == 0 => false
-            | (Fixed(_), count) when count == 0 => false
+            | (Fill, 0) => false
+            | (Fixed(_), 0) => false
             | (_, _) => true
             };
           needsPrimaryAfterConstraint ?
@@ -421,7 +423,7 @@ let getConstraints = (config: Config.t, rootLayer: Types.layer) => {
             Leq,
             layer,
             secondaryDimensionAnchor,
-            Low,
+            LowPlus1,
             FitContentSecondary,
           ),
         ]
