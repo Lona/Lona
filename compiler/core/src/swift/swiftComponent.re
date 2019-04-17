@@ -1645,6 +1645,20 @@ let generate =
                     |> List.filter(Layer.isInteractive(logic))
                     |> List.length > 1 ?
                       Doc.nestedInteractiveHitTest(rootLayer) : [],
+                    /* rootLayer
+                       |> Layer.flatmapParent((parent, layer) =>
+                            SwiftConstraint.isFillTextLayer(parent, layer)
+                          )
+                       |> List.filter(x => x)
+                       |> List.length > 0 ?
+                         [
+                           SwiftConstraint.layoutSubviewsFunction(
+                             config,
+                             layerMemberExpression,
+                             rootLayer,
+                           ),
+                         ] :
+                         [], */
                   ],
                 ),
             }),

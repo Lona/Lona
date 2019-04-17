@@ -290,6 +290,14 @@ let formatConstraintVariableName =
   };
 };
 
+let isFillTextLayer = (parent: option(Types.layer), layer: Types.layer): bool => {
+  let layout = Layer.getLayout(parent, layer.parameters);
+  switch (layer.typeName, layout.width) {
+  | (Text, Fill) => true
+  | _ => false
+  };
+};
+
 let setUpFunction =
     (
       swiftOptions: SwiftOptions.options,
@@ -310,6 +318,62 @@ let setUpFunction =
   let visibilityLayers =
     Constraint.visibilityLayers(assignmentsFromLogic, rootLayer)
     |> List.sort(Layer.compare);
+
+  let intrinsicSizeConstraints =
+    rootLayer
+    |> Layer.flatmapParent((parent: option(Types.layer), layer: Types.layer) =>
+         if (isFillTextLayer(parent, layer)) {
+           [
+             /* subtitleView.setContentCompressionResistancePriority(.init(0), for: .horizontal)
+                subtitleView.setContentHuggingPriority(.init(0), for: .horizontal) */
+             FunctionCallExpression({
+               "name":
+                 layerMemberExpression(
+                   layer,
+                   [
+                     SwiftIdentifier(
+                       "setContentCompressionResistancePriority",
+                     ),
+                   ],
+                 ),
+               "arguments": [
+                 FunctionCallArgument({
+                   name: None,
+                   value: SwiftIdentifier(".defaultHigh"),
+                 }),
+                 FunctionCallArgument({
+                   name: Some(SwiftIdentifier("for")),
+                   value: SwiftIdentifier(".horizontal"),
+                 }),
+               ],
+             }),
+             FunctionCallExpression({
+               "name":
+                 layerMemberExpression(
+                   layer,
+                   [SwiftIdentifier("setContentHuggingPriority")],
+                 ),
+               "arguments": [
+                 FunctionCallArgument({
+                   name: None,
+                   value:
+                     FunctionCallExpression({
+                       "name": SwiftIdentifier(".init"),
+                       "arguments": [LiteralExpression(Integer(0))],
+                     }),
+                 }),
+                 FunctionCallArgument({
+                   name: Some(SwiftIdentifier("for")),
+                   value: SwiftIdentifier(".horizontal"),
+                 }),
+               ],
+             }),
+           ];
+         } else {
+           [];
+         }
+       )
+    |> List.concat;
 
   let translatesAutoresizingMask = (layer: Types.layer) =>
     BinaryExpression({
@@ -461,6 +525,7 @@ let setUpFunction =
         Empty,
         [
           rootLayer |> Layer.flatmap(translatesAutoresizingMask),
+          /* intrinsicSizeConstraints, */
           allConstraints |> List.map(defineConstraint),
           /* Priority */
           allConstraints
@@ -636,3 +701,74 @@ let conditionalConstraintsFunction =
     ],
   });
 };
+
+let layoutSubviewsFunction =
+    (_config: Config.t, layerMemberExpression, rootLayer: Types.layer)
+    : SwiftAst.node =>
+  SwiftAst.(
+    FunctionDeclaration({
+      "name": "layoutSubviews",
+      "attributes": [],
+      "modifiers": [OverrideModifier, AccessLevelModifier(PublicModifier)],
+      "parameters": [],
+      "result": None,
+      "throws": false,
+      "body":
+        SwiftDocument.joinGroups(
+          Empty,
+          [
+            [Builders.functionCall(["super", "layoutSubviews"], [])],
+            rootLayer
+            |> Layer.flatmapParent((parent, layer) =>
+                 if (isFillTextLayer(parent, layer)) {
+                   [
+                     /* if subtitleView.preferredMaxLayoutWidth != subtitleView.bounds.width {
+                            subtitleView.preferredMaxLayoutWidth = subtitleView.bounds.width
+                        } */
+                     IfStatement({
+                       "condition":
+                         BinaryExpression({
+                           "left":
+                             layerMemberExpression(
+                               layer,
+                               [SwiftIdentifier("preferredMaxLayoutWidth")],
+                             ),
+                           "operator": "!=",
+                           "right":
+                             layerMemberExpression(
+                               layer,
+                               [
+                                 SwiftIdentifier("bounds"),
+                                 SwiftIdentifier("width"),
+                               ],
+                             ),
+                         }),
+                       "block": [
+                         BinaryExpression({
+                           "left":
+                             layerMemberExpression(
+                               layer,
+                               [SwiftIdentifier("preferredMaxLayoutWidth")],
+                             ),
+                           "operator": "=",
+                           "right":
+                             layerMemberExpression(
+                               layer,
+                               [
+                                 SwiftIdentifier("bounds"),
+                                 SwiftIdentifier("width"),
+                               ],
+                             ),
+                         }),
+                       ],
+                     }),
+                   ];
+                 } else {
+                   [];
+                 }
+               )
+            |> List.concat,
+          ],
+        ),
+    })
+  );
