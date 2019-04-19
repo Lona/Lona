@@ -15,6 +15,16 @@ func cropImage(imageToCrop: UIImage, toRect rect:CGRect) -> UIImage {
     return cropped
 }
 
+func env(contents: String, property: String) -> String? {
+    guard let re = try? NSRegularExpression(pattern: #"^\#(property)=(.*)$"#) else { return nil }
+
+    let contentsRange = NSRange(location: 0, length: contents.count)
+
+    guard let range = re.firstMatch(in: contents, range: contentsRange)?.range(at: 1) else { return nil }
+
+    return (contents as NSString).substring(with: range) as String
+}
+
 class iOSUITests: XCTestCase {
 
     // Put setup code here. This method is called before the invocation of each test method in the class.
@@ -31,10 +41,26 @@ class iOSUITests: XCTestCase {
     override func tearDown() {}
 
     func testExample() {
+        let bundle = Bundle(for: iOSUITests.self)
+
+        guard let url = bundle.url(forResource: "test", withExtension: ".env") else {
+            XCTAssert(false, "No test.env file")
+            return
+        }
+
+        guard let contents = try? String(contentsOf: url) else {
+            XCTAssert(false, "Couldn't read test.env file")
+            return
+        }
+
+        guard let applitoolsAPIKey = env(contents: contents, property: "APPLITOOLS_API_KEY") else {
+            XCTAssert(false, "No API key")
+            return
+        }
+
         let eyes = Eyes()
 
-        // Initialize the eyes SDK and set your private API key.
-        eyes.apiKey = ProcessInfo.processInfo.environment["APPLITOOLS_API_KEY"] ?? ""
+        eyes.apiKey = applitoolsAPIKey
 
         // Start the test
         eyes.open(withApplicationName: "LonaViewer", testName: "iOS screenshots")
@@ -71,7 +97,7 @@ class iOSUITests: XCTestCase {
 
         do {
             try eyes.close()
-        } catch let error {
+        } catch {
             XCTAssert(false, "Failed to close eyes")
         }
     }

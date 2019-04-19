@@ -91,6 +91,7 @@
 		6B6D443E2190EDC50016262C /* PrimaryAxisFillNestedSiblings.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6B6D443C2190EDC50016262C /* PrimaryAxisFillNestedSiblings.swift */; };
 		6B6D443F2190EDC50016262C /* PrimaryAxisFillSiblings.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6B6D443D2190EDC50016262C /* PrimaryAxisFillSiblings.swift */; };
 		6B6D44412190EE090016262C /* FillWidthFitHeightCard.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6B6D44402190EE090016262C /* FillWidthFitHeightCard.swift */; };
+		6B6F31C0226A7288002572C3 /* test.env in Resources */ = {isa = PBXBuildFile; fileRef = 6B6F31BE226A7200002572C3 /* test.env */; };
 		6BA5BBCF216D4A7D00F086A7 /* VisibilityTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6BA5BBCE216D4A7D00F086A7 /* VisibilityTest.swift */; };
 		6BA5BBD1216D4B6700F086A7 /* VisibilityTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6BA5BBD0216D4B6700F086A7 /* VisibilityTest.swift */; };
 		6BA5BBD3217017AC00F086A7 /* Optionals.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6BA5BBD2217017AC00F086A7 /* Optionals.swift */; };
@@ -215,6 +216,7 @@
 		6B6D443C2190EDC50016262C /* PrimaryAxisFillNestedSiblings.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PrimaryAxisFillNestedSiblings.swift; sourceTree = "<group>"; };
 		6B6D443D2190EDC50016262C /* PrimaryAxisFillSiblings.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PrimaryAxisFillSiblings.swift; sourceTree = "<group>"; };
 		6B6D44402190EE090016262C /* FillWidthFitHeightCard.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = FillWidthFitHeightCard.swift; sourceTree = "<group>"; };
+		6B6F31BE226A7200002572C3 /* test.env */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = test.env; sourceTree = "<group>"; };
 		6BA5BBCE216D4A7D00F086A7 /* VisibilityTest.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = VisibilityTest.swift; sourceTree = "<group>"; };
 		6BA5BBD0216D4B6700F086A7 /* VisibilityTest.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = VisibilityTest.swift; sourceTree = "<group>"; };
 		6BA5BBD2217017AC00F086A7 /* Optionals.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Optionals.swift; sourceTree = "<group>"; };
@@ -540,6 +542,7 @@
 		6BC2D49D226A364B003A9F63 /* iOSUITests */ = {
 			isa = PBXGroup;
 			children = (
+				6B6F31BE226A7200002572C3 /* test.env */,
 				6BC2D49E226A364B003A9F63 /* iOSUITests.swift */,
 				6BC2D4A0226A364B003A9F63 /* Info.plist */,
 			);
@@ -705,6 +708,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				6B6F31C0226A7288002572C3 /* test.env in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
