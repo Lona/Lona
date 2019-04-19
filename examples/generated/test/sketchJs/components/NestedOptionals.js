@@ -31,9 +31,8 @@ let styles = StyleSheet.create({
   },
   optionals: {
     alignItems: "flex-start",
-    alignSelf: "stretch",
-    flex: 1,
-    flexDirection: "row",
+    flex: 0,
+    flexDirection: "column",
     justifyContent: "flex-start"
   }
 })

@@ -142,7 +142,7 @@ class CoreComponentInspectorView: NSStackView {
         values: ["left", "center", "right"],
         valueToTitle: ["left": "Left", "center": "Center", "right": "Right"]
     )
-    var textStyleView = TextStylePickerButton(frame: NSRect.zero)
+    var textStyleView = LabeledLogicInput(titleText: "Text Style", titleWidth: 60)
     var numberOfLinesView = NumberField(frame: NSRect.zero)
 
     var paddingTopView = NumberField(frame: NSRect.zero)
@@ -156,9 +156,9 @@ class CoreComponentInspectorView: NSStackView {
     var borderWidthView = NumberField(frame: NSRect.zero)
 
     var backgroundGradientView = TextField(frame: NSRect.zero)
-    var textView = TextField(frame: NSRect.zero)
+    var textView = LabeledLogicInput(titleText: "Text", titleWidth: 60)
     var imageView = ImageField(frame: NSRect.zero)
-    var imageURLView = TextField(frame: NSRect.zero)
+    var imageURLView = LabeledLogicInput(titleText: "Image", titleWidth: 60)
     var animationViewContainer = NSView(frame: NSRect.zero)
     var animationURLView = TextField(frame: NSRect.zero)
     var animationSpeedView = NumberField(frame: NSRect.zero)
@@ -452,12 +452,8 @@ class CoreComponentInspectorView: NSStackView {
     }
 
     func renderTextSection() -> DisclosureContentRow {
-        textView.usesSingleLineMode = false
-
         let textSection = renderSection(title: "Text", views: [
-            NSTextField(labelWithString: "Value"),
             textView,
-            NSTextField(labelWithString: "Style"),
             textStyleView,
             NSTextField(labelWithString: "Alignment"),
             textAlignView,
@@ -475,43 +471,9 @@ class CoreComponentInspectorView: NSStackView {
         imageView.constrain(aspectRatio: 1)
         imageView.widthAnchor.constraint(equalToConstant: 240).isActive = true
 
-        let button = Button(titleText: "Browse...")
-        button.onPress = {
-            let dialog = NSOpenPanel()
-
-            dialog.title = "Choose an image"
-            dialog.showsResizeIndicator = true
-            dialog.showsHiddenFiles = false
-            dialog.canCreateDirectories = false
-            dialog.canChooseDirectories = false
-            dialog.canChooseFiles = true
-            dialog.allowsMultipleSelection = false
-
-            if dialog.runModal() == NSApplication.ModalResponse.OK {
-                guard let url = dialog.url else { return }
-
-                let path: String
-                if let relativePath = url.path.pathRelativeTo(basePath: CSUserPreferences.workspaceURL.path) {
-                    path = "file://" + relativePath
-                } else {
-                    path = url.absoluteString
-                }
-
-                self.handlePropertyChange(for: .image, value: CSData.String(path))
-            }
-        }
-
-        let urlContainer = NSStackView(views: [
-            imageURLView,
-            button
-        ], orientation: .horizontal)
-
         let imageSection = renderSection(title: "Image", views: [
-            NSTextField(labelWithString: "URL"),
-            urlContainer,
-            NSTextField(labelWithString: "Scaling"),
+            imageURLView,
             imageResizeModeView,
-            NSTextField(labelWithString: "Asset"),
             imageView
         ])
 
@@ -688,10 +650,12 @@ class CoreComponentInspectorView: NSStackView {
             let values = RESIZE_MODE_VALUES
             let valueToTitle = RESIZE_MODE_VALUE_TO_TITLE
             imageResizeModeView.set(values: values, valueToTitle: valueToTitle)
+            imageURLView.isVectorInput = false
         case .builtIn(.vectorGraphic):
             let values = RESIZE_MODE_VECTOR_VALUES
             let valueToTitle = RESIZE_MODE_VECTOR_VALUE_TO_TITLE
             imageResizeModeView.set(values: values, valueToTitle: valueToTitle)
+            imageURLView.isVectorInput = true
         default:
             break
         }
@@ -722,14 +686,11 @@ class CoreComponentInspectorView: NSStackView {
             (shadowEnabledView, .shadowEnabled),
 
             // Text
-            (textView, .text),
             (textAlignView, .textAlign),
-            (textStyleView, .textStyle),
             (numberOfLinesView, .numberOfLines),
 
             // Image
             (imageView, .image),
-            (imageURLView, .image),
             (imageResizeModeView, .resizeMode),
 
             // Animation
@@ -942,15 +903,30 @@ class CoreComponentInspectorView: NSStackView {
         backgroundColorInput.onChangeColorString = { value in
             change(property: Property.backgroundColor, to: value?.toData() ?? CSData.Null)
         }
+
+        textView.onChangeValue = { csValue in
+            change(property: Property.text, to: csValue.data)
+        }
+
+        textStyleView.onChangeValue = { csValue in
+            change(property: Property.textStyle, to: csValue.data)
+        }
+
+        imageURLView.onChangeValue = { csValue in
+            change(property: Property.image, to: csValue.data)
+        }
     }
 
     let controlledProperties: [Property] = [
+        Property.text,
+        Property.textStyle,
         Property.direction,
         Property.horizontalAlignment,
         Property.verticalAlignment,
         Property.width,
         Property.height,
         Property.aspectRatio,
+        Property.image,
         Property.borderStyle,
         Property.backgroundColor,
         Property.accessibilityType,
@@ -1003,6 +979,8 @@ class CoreComponentInspectorView: NSStackView {
 
     private func update(property: Property, value: CSData?) {
         guard let value = value else { return }
+
+        let layerName = csLayer.name
 
         switch property {
         case .width:
@@ -1060,15 +1038,32 @@ class CoreComponentInspectorView: NSStackView {
         case .borderStyle:
             borderStyleView.selectedIndex = value.int
         case .backgroundColor:
+            let csValue = CSValue(type: CSColorType, data: value)
             backgroundColorInput.colorString = value.string
             backgroundColorInput.getPasteboardItem = {
-                let item = NSPasteboardItem()
-
-                if let data = CSParameter(name: "backgroundColor", type: CSColorType).toData().toData() {
-                    item.setData(data, forType: .lonaParameter)
-                }
-
-                return item
+                return CSParameter(name: "backgroundColor", type: csValue.type, defaultValue: csValue)
+                    .makePasteboardItem(withAssignmentTo: layerName)
+            }
+        case .text:
+            let csValue = CSValue(type: .string, data: value)
+            textView.value = csValue
+            textView.getPasteboardItem = {
+                return CSParameter(name: "text", type: csValue.type, defaultValue: csValue)
+                    .makePasteboardItem(withAssignmentTo: layerName)
+            }
+        case .textStyle:
+            let csValue = CSValue(type: CSTextStyleType, data: value)
+            textStyleView.value = csValue
+            textStyleView.getPasteboardItem = {
+                return CSParameter(name: "textStyle", type: csValue.type, defaultValue: csValue)
+                    .makePasteboardItem(withAssignmentTo: layerName)
+            }
+        case .image:
+            let csValue = CSValue(type: CSURLType, data: value)
+            imageURLView.value = csValue
+            imageURLView.getPasteboardItem = {
+                return CSParameter(name: "image", type: csValue.type, defaultValue: csValue)
+                    .makePasteboardItem(withAssignmentTo: layerName)
             }
         case .accessibilityType:
             switch value.stringValue {

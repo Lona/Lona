@@ -38,17 +38,22 @@
     "lint-staged"
   ],
   "lint-staged": {
-    "*.swift": [
-      "./scripts/pre-commit-swiftlint.sh"
-    ],
-    "*.{js,jsx}": [
-      "npm run prettier:base",
-      "eslint",
-      "git add"
-    ],
-    "*.md": [
-      "npm run prettier:base",
-      "git add"
+    "linters": {
+      "*.swift": [
+        "./scripts/pre-commit-swiftlint.sh"
+      ],
+      "*.{js,jsx}": [
+        "npm run prettier:base",
+        "eslint",
+        "git add"
+      ],
+      "*.md": [
+        "npm run prettier:base",
+        "git add"
+      ]
+    },
+    "ignore": [
+      "/examples"
     ]
   },
   "prettier": {

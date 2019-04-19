@@ -1,5 +1,5 @@
 //
-//  LabeledLogicInput.swift
+//  LabeledInput.swift
 //  LonaStudio
 //
 //  Created by Devin Abbott on 4/10/19.
@@ -9,14 +9,15 @@
 import AppKit
 import Logic
 
-// MARK: - LabeledLogicInput
+// MARK: - LabeledInput
 
-public class LabeledLogicInput: NSBox {
+public class LabeledInput: NSBox {
 
     // MARK: Lifecycle
 
-    public init(titleText: String = "") {
+    public init(titleText: String = "", titleWidth: CGFloat? = nil) {
         self.titleText = titleText
+        self.titleWidth = titleWidth
 
         super.init(frame: .zero)
 
@@ -32,6 +33,23 @@ public class LabeledLogicInput: NSBox {
 
     // MARK: Public
 
+    public var inputView = NSView() {
+        didSet {
+            if oldValue != inputView {
+                inputView.removeFromSuperview()
+
+                addSubview(inputView)
+
+                inputView.translatesAutoresizingMaskIntoConstraints = false
+
+                inputView.leadingAnchor.constraint(equalTo: dividerView.trailingAnchor).isActive = true
+                inputView.topAnchor.constraint(equalTo: topAnchor).isActive = true
+                inputView.bottomAnchor.constraint(equalTo: bottomAnchor).isActive = true
+                inputView.trailingAnchor.constraint(equalTo: trailingAnchor).isActive = true
+            }
+        }
+    }
+
     public var titleText: String {
         didSet {
             if titleText != oldValue {
@@ -44,12 +62,36 @@ public class LabeledLogicInput: NSBox {
 
     public var draggingThreshold: CGFloat = 2.0
 
-    public var logicEditor = LogicEditor()
+    public var titleWidth: CGFloat? {
+        didSet {
+            if oldValue != titleWidth {
+                updateTitleWidth(oldValue: oldValue, newValue: titleWidth)
+            }
+        }
+    }
 
     // MARK: Private
 
+    private func updateTitleWidth(oldValue: CGFloat?, newValue titleWidth: CGFloat?) {
+        if oldValue != titleWidth {
+            switch (titleWidth, titleWidthConstraint) {
+            case (.some(let width), .some(let constraint)):
+                constraint.constant = width
+            case (.none, .some(let constraint)):
+                constraint.isActive = false
+            case (.some(let width), .none):
+                let constraint = titleView.widthAnchor.constraint(equalToConstant: width)
+                constraint.isActive = true
+                titleWidthConstraint = constraint
+            case (.none, .none):
+                break
+            }
+        }
+    }
+
     private var titleView = LNATextField(labelWithString: "")
     private var dividerView = NSBox()
+    private var titleWidthConstraint: NSLayoutConstraint?
 
     private func setUpViews() {
         boxType = .custom
@@ -59,28 +101,26 @@ public class LabeledLogicInput: NSBox {
         borderColor = Colors.divider
         fillColor = Colors.headerBackground
 
+        updateTitleWidth(oldValue: nil, newValue: titleWidth)
+
+        titleView.maximumNumberOfLines = 1
+        titleView.lineBreakMode = .byWordWrapping
+        titleView.allowsDefaultTighteningForTruncation = false
+        titleView.cell?.truncatesLastVisibleLine = true
+
         dividerView.boxType = .custom
         dividerView.borderType = .noBorder
         dividerView.contentViewMargins = .zero
         dividerView.fillColor = Colors.divider
 
-        logicEditor.fillColor = Colors.contentBackground
-        logicEditor.showsDropdown = false
-        logicEditor.supportsLineSelection = false
-        logicEditor.scrollsVertically = false
-        logicEditor.canvasStyle.textMargin.height = 4
-        logicEditor.canvasStyle.textMargin.width -= 1
-
         addSubview(titleView)
         addSubview(dividerView)
-        addSubview(logicEditor)
     }
 
     private func setUpConstraints() {
         translatesAutoresizingMaskIntoConstraints = false
         titleView.translatesAutoresizingMaskIntoConstraints = false
         dividerView.translatesAutoresizingMaskIntoConstraints = false
-        logicEditor.translatesAutoresizingMaskIntoConstraints = false
 
         titleView.leadingAnchor.constraint(equalTo: leadingAnchor, constant: 8).isActive = true
         titleView.centerYAnchor.constraint(equalTo: centerYAnchor, constant: 1).isActive = true
@@ -89,15 +129,11 @@ public class LabeledLogicInput: NSBox {
         dividerView.leadingAnchor.constraint(equalTo: titleView.trailingAnchor, constant: 8).isActive = true
         dividerView.topAnchor.constraint(equalTo: topAnchor).isActive = true
         dividerView.bottomAnchor.constraint(equalTo: bottomAnchor).isActive = true
-
-        logicEditor.leadingAnchor.constraint(equalTo: dividerView.trailingAnchor).isActive = true
-        logicEditor.topAnchor.constraint(equalTo: topAnchor, constant: 1).isActive = true
-        logicEditor.bottomAnchor.constraint(equalTo: bottomAnchor, constant: 2).isActive = true
-        logicEditor.trailingAnchor.constraint(equalTo: trailingAnchor).isActive = true
     }
 
     private func update() {
         titleView.attributedStringValue = TextStyles.labelTitle.apply(to: titleText)
+        titleView.toolTip = titleText
     }
 
     // MARK: Interactions
@@ -146,7 +182,7 @@ public class LabeledLogicInput: NSBox {
 
 // MARK: - NSDraggingSource
 
-extension LabeledLogicInput: NSDraggingSource {
+extension LabeledInput: NSDraggingSource {
     public func draggingSession(_ session: NSDraggingSession, sourceOperationMaskFor context: NSDraggingContext) -> NSDragOperation {
         return .copy
     }

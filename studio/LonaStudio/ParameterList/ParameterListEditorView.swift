@@ -98,7 +98,15 @@ extension ParameterListEditorView {
                 case .parameter(let value):
                     guard let csType = value.annotation.csType(environmentTypes: types) else { return nil }
 
-                    return CSParameter(name: value.localName.name, type: csType)
+                    switch value.defaultValue {
+                    case .none:
+                        return CSParameter(name: value.localName.name, type: csType)
+                    case .value(id: _, expression: let expression):
+                        return CSParameter(
+                            name: value.localName.name,
+                            type: csType,
+                            defaultValue: LogicInput.makeValue(forType: csType, node: .expression(expression)))
+                    }
                 }
                 }.compactMap { $0 }
         default:
@@ -117,7 +125,9 @@ extension ParameterListEditorView {
                             externalName: nil,
                             localName: LGCPattern(id: UUID(), name: param.name),
                             annotation: LGCTypeAnnotation(csType: param.type),
-                            defaultValue: .none(id: UUID())
+                            defaultValue: param.hasDefaultValue
+                                ? .value(id: UUID(), expression: LogicInput.expression(forValue: param.defaultValue))
+                                : .none(id: UUID())
                         )
                         } + [LGCFunctionParameter.makePlaceholder()]
                 )

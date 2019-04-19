@@ -43,9 +43,8 @@ let styles = StyleSheet.create({
   },
   localAsset: {
     alignItems: "flex-end",
-    alignSelf: "stretch",
-    flex: 1,
-    flexDirection: "row",
+    flex: 0,
+    flexDirection: "column",
     justifyContent: "flex-start"
   }
 })

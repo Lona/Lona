@@ -44,16 +44,14 @@ let styles = StyleSheet.create({
   },
   accessibilityTest: {
     alignItems: "flex-start",
-    alignSelf: "stretch",
-    flex: 1,
-    flexDirection: "row",
+    flex: 0,
+    flexDirection: "column",
     justifyContent: "flex-start"
   },
   accessibilityVisibility: {
     alignItems: "flex-start",
-    alignSelf: "stretch",
-    flex: 1,
-    flexDirection: "row",
+    flex: 0,
+    flexDirection: "column",
     justifyContent: "flex-start"
   }
 })

@@ -163,7 +163,9 @@ struct CSValue: Equatable, CSDataSerializable, CSDataDeserializable {
         case .number: return CSValue(type: type, data: .Number(0))
         case .wholeNumber: return CSValue(type: type, data: .Number(0))
         case .string: return CSValue(type: type, data: .String("Text"))
-        case .named("Color", .string): return CSValue(type: type, data: .String("black"))
+        case CSURLType: return CSValue(type: type, data: .Null)
+        case CSTextStyleType: return CSValue(type: type, data: .String("default"))
+        case CSColorType: return CSValue(type: type, data: .String("black"))
         case .named(_, let type): return exampleValue(for: type)
         case .array: return CSValue(type: type, data: .Array([]))
         case .dictionary(let schema):
@@ -274,18 +276,11 @@ extension CSValue {
     }
 
     func unwrapVariant() -> CSValue? {
-        guard case CSType.variant(let cases) = self.type else {
-            Swift.print("Attempted to unwrap non-variant type of value", self)
-            return nil
-        }
-
         let tag = self.data.get(key: "case").stringValue
-        guard let match = cases.first(where: { item in item.0 == tag }) else {
-            Swift.print("unwrapVariant(): Could not find tag", tag, "in variant type of value", self)
-            return nil
-        }
 
-        return CSValue(type: match.1, data: self.data.get(key: "data"))
+        guard let unwrappedType = self.type.unwrapVariant(tagged: tag) else { return nil }
+
+        return CSValue(type: unwrappedType, data: self.data.get(key: "data"))
     }
 
     func with(data newData: CSData) -> CSValue {

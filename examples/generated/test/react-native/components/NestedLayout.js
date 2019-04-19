@@ -172,23 +172,20 @@ let styles = StyleSheet.create({
   },
   localAsset: {
     alignItems: "flex-start",
-    alignSelf: "stretch",
-    flex: 1,
-    flexDirection: "row",
+    flex: 0,
+    flexDirection: "column",
     justifyContent: "flex-start"
   },
   localAsset2: {
     alignItems: "center",
-    alignSelf: "stretch",
-    flex: 1,
-    flexDirection: "row",
+    flex: 0,
+    flexDirection: "column",
     justifyContent: "flex-start"
   },
   localAsset3: {
     alignItems: "flex-end",
-    alignSelf: "stretch",
-    flex: 1,
-    flexDirection: "row",
+    flex: 0,
+    flexDirection: "column",
     justifyContent: "flex-start"
   },
   view4: {
@@ -215,23 +212,20 @@ let styles = StyleSheet.create({
   },
   localAsset4: {
     alignItems: "flex-start",
-    alignSelf: "stretch",
-    flex: 1,
-    flexDirection: "row",
+    flex: 0,
+    flexDirection: "column",
     justifyContent: "center"
   },
   localAsset5: {
     alignItems: "center",
-    alignSelf: "stretch",
-    flex: 1,
-    flexDirection: "row",
+    flex: 0,
+    flexDirection: "column",
     justifyContent: "center"
   },
   localAsset6: {
     alignItems: "flex-end",
-    alignSelf: "stretch",
-    flex: 1,
-    flexDirection: "row",
+    flex: 0,
+    flexDirection: "column",
     justifyContent: "center"
   },
   view7: {
@@ -259,23 +253,20 @@ let styles = StyleSheet.create({
   },
   localAsset7: {
     alignItems: "flex-start",
-    alignSelf: "stretch",
-    flex: 1,
-    flexDirection: "row",
+    flex: 0,
+    flexDirection: "column",
     justifyContent: "flex-end"
   },
   localAsset8: {
     alignItems: "center",
-    alignSelf: "stretch",
-    flex: 1,
-    flexDirection: "row",
+    flex: 0,
+    flexDirection: "column",
     justifyContent: "flex-end"
   },
   localAsset9: {
     alignItems: "flex-end",
-    alignSelf: "stretch",
-    flex: 1,
-    flexDirection: "row",
+    flex: 0,
+    flexDirection: "column",
     justifyContent: "flex-end"
   },
   column4: {
@@ -322,23 +313,20 @@ let styles = StyleSheet.create({
   },
   localAsset10: {
     alignItems: "flex-start",
-    alignSelf: "stretch",
-    flex: 1,
-    flexDirection: "row",
+    flex: 0,
+    flexDirection: "column",
     justifyContent: "flex-start"
   },
   localAsset11: {
     alignItems: "center",
-    alignSelf: "stretch",
-    flex: 1,
-    flexDirection: "row",
+    flex: 0,
+    flexDirection: "column",
     justifyContent: "flex-start"
   },
   localAsset12: {
     alignItems: "flex-end",
-    alignSelf: "stretch",
-    flex: 1,
-    flexDirection: "row",
+    flex: 0,
+    flexDirection: "column",
     justifyContent: "flex-start"
   },
   view13: {
@@ -365,23 +353,20 @@ let styles = StyleSheet.create({
   },
   localAsset13: {
     alignItems: "flex-start",
-    alignSelf: "stretch",
-    flex: 1,
-    flexDirection: "row",
+    flex: 0,
+    flexDirection: "column",
     justifyContent: "center"
   },
   localAsset14: {
     alignItems: "center",
-    alignSelf: "stretch",
-    flex: 1,
-    flexDirection: "row",
+    flex: 0,
+    flexDirection: "column",
     justifyContent: "center"
   },
   localAsset15: {
     alignItems: "flex-end",
-    alignSelf: "stretch",
-    flex: 1,
-    flexDirection: "row",
+    flex: 0,
+    flexDirection: "column",
     justifyContent: "center"
   },
   view16: {
@@ -409,23 +394,20 @@ let styles = StyleSheet.create({
   },
   localAsset16: {
     alignItems: "flex-start",
-    alignSelf: "stretch",
-    flex: 1,
-    flexDirection: "row",
+    flex: 0,
+    flexDirection: "column",
     justifyContent: "flex-end"
   },
   localAsset17: {
     alignItems: "center",
-    alignSelf: "stretch",
-    flex: 1,
-    flexDirection: "row",
+    flex: 0,
+    flexDirection: "column",
     justifyContent: "flex-end"
   },
   localAsset18: {
     alignItems: "flex-end",
-    alignSelf: "stretch",
-    flex: 1,
-    flexDirection: "row",
+    flex: 0,
+    flexDirection: "column",
     justifyContent: "flex-end"
   }
 })

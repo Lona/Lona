@@ -390,6 +390,23 @@ extension String: CSDataDeserializable {
     }
 }
 
+extension Optional: CSDataSerializable where Wrapped: CSDataSerializable {
+    func toData() -> CSData {
+        switch self {
+        case .none:
+            return .Null
+        case .some(let wrapped):
+            return wrapped.toData()
+        }
+    }
+}
+
+extension Optional: CSDataDeserializable where Wrapped: CSDataDeserializable {
+    init(_ data: CSData) {
+        self = data.isNull ? nil : Wrapped(data)
+    }
+}
+
 extension Sequence where Iterator.Element: CSDataSerializable {
     func toData() -> CSData {
         let list = map({ $0.toData() })

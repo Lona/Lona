@@ -495,7 +495,7 @@ let createJSXElement =
         ]
       | None => []
       };
-    | _ => [
+    | None => [
         JavaScriptAst.JSXAttribute({
           name: "style",
           value:

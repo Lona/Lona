@@ -49,10 +49,8 @@ extension String {
 
         guard let match = matches.first else { return results }
 
-        let lastRangeIndex = match.numberOfRanges - 1
-        guard lastRangeIndex >= 1 else { return results }
-
-        for i in 1...lastRangeIndex {
+        // Range 0 is the full match, so we start at range 1
+        for i in 1..<match.numberOfRanges {
             let capturedGroupIndex = match.range(at: i)
             let matchedString = (self as NSString).substring(with: capturedGroupIndex)
             results.append((matchedString, capturedGroupIndex))

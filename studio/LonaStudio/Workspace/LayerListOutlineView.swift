@@ -180,6 +180,8 @@ extension LayerListOutlineView {
         // Visible
         let visibleColumn = NSTableColumn(identifier: NSUserInterfaceItemIdentifier(rawValue: "visible"))
         visibleColumn.maxWidth = 20
+        visibleColumn.width = 20
+        visibleColumn.resizingMask = .init()
 
         addTableColumn(column)
         addTableColumn(visibleColumn)
@@ -473,7 +475,19 @@ extension LayerListOutlineView: NSOutlineViewDelegate, NSOutlineViewDataSource {
                         self.onChange?()
                     })
                 }
+
                 cellView.addSubview(checkbox)
+
+                cellView.translatesAutoresizingMaskIntoConstraints = false
+                checkbox.translatesAutoresizingMaskIntoConstraints = false
+
+                checkbox.title = ""
+
+                cellView.leadingAnchor.constraint(equalTo: checkbox.leadingAnchor).isActive = true
+                cellView.trailingAnchor.constraint(equalTo: checkbox.trailingAnchor).isActive = true
+                cellView.topAnchor.constraint(equalTo: checkbox.topAnchor).isActive = true
+                cellView.bottomAnchor.constraint(equalTo: checkbox.bottomAnchor).isActive = true
+
                 checkbox.tag = Constants.CheckBoxTag
                 checkbox.isHidden = true
             }
@@ -522,16 +536,13 @@ extension LayerListOutlineView: NSOutlineViewDelegate, NSOutlineViewDataSource {
             return NSDragOperation.move
         }
 
-        if let _ = info.draggingPasteboard.string(forType: .lonaLayerTemplateType),
-            let _ = item as? CSLayer {
-
+        if let _ = info.draggingPasteboard.string(forType: .lonaLayerTemplateType) {
             return NSDragOperation.copy
         }
 
         if let urlString = info.draggingPasteboard.string(forType: .fileTreeURL),
             let url = URL(string: urlString),
-            url.pathExtension == "component",
-            let _ = item as? CSLayer {
+            url.pathExtension == "component" {
 
             return NSDragOperation.copy
         }
@@ -575,16 +586,20 @@ extension LayerListOutlineView: NSOutlineViewDelegate, NSOutlineViewDataSource {
             return true
         }
 
-        func appendOrInsert(targetLayer: CSLayer, newLayer: CSLayer, at index: Int) {
-            UndoManager.shared.run(name: "Append", execute: {
-                if index == -1 {
-                    targetLayer.appendChild(newLayer)
+        func appendOrInsert(targetLayer: CSLayer?, newLayer: CSLayer, at index: Int) {
+            UndoManager.shared.run(name: "Append", execute: { [weak self] in
+                if let targetLayer = targetLayer {
+                    if index == -1 {
+                        targetLayer.appendChild(newLayer)
+                    } else {
+                        targetLayer.insertChild(newLayer, at: index)
+                    }
                 } else {
-                    targetLayer.insertChild(newLayer, at: index)
+                    self?.component?.rootLayer.appendChild(newLayer)
                 }
 
-                self.render()
-                self.onChange?()
+                self?.render()
+                self?.onChange?()
             }, undo: {
                 newLayer.removeFromParent()
 
@@ -595,8 +610,8 @@ extension LayerListOutlineView: NSOutlineViewDelegate, NSOutlineViewDataSource {
         }
 
         if let templateTypeString = info.draggingPasteboard.string(forType: .lonaLayerTemplateType),
-            let targetLayer = item as? CSLayer,
-            let component = component {
+            let component = component,
+            let targetLayer = item as? CSLayer? {
 
             let templateType = CSLayer.LayerType.init(from: templateTypeString)
             let newLayer = component.makeLayer(forType: templateType)
@@ -609,8 +624,8 @@ extension LayerListOutlineView: NSOutlineViewDelegate, NSOutlineViewDataSource {
         if let urlString = info.draggingPasteboard.string(forType: .fileTreeURL),
             let url = URL(string: urlString),
             url.pathExtension == "component",
-            let targetLayer = item as? CSLayer,
-            let component = component {
+            let component = component,
+            let targetLayer = item as? CSLayer? {
 
             let templateType = CSLayer.LayerType.custom(CSComponent.componentName(from: url))
             let newLayer = component.makeLayer(forType: templateType)

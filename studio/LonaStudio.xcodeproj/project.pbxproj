@@ -187,8 +187,7 @@
 		6B3414B0225CF83B00CC65D1 /* LogicEditor+TypesView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6B3414AF225CF83B00CC65D1 /* LogicEditor+TypesView.swift */; };
 		6B3414B2225D08E500CC65D1 /* LGCDeclaration+CSType.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6B3414B1225D08E500CC65D1 /* LGCDeclaration+CSType.swift */; };
 		6B3414B4225D29AC00CC65D1 /* LogicEditor+Suggestions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6B3414B3225D29AC00CC65D1 /* LogicEditor+Suggestions.swift */; };
-		6B3414BA225E738D00CC65D1 /* LabeledLogicInput.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6B3414B9225E738D00CC65D1 /* LabeledLogicInput.swift */; };
-		6B3414BC225E959100CC65D1 /* LabeledColorInput.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6B3414BB225E959100CC65D1 /* LabeledColorInput.swift */; };
+		6B3414BA225E738D00CC65D1 /* LabeledInput.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6B3414B9225E738D00CC65D1 /* LabeledInput.swift */; };
 		6B39E6F3212DB3AD0012DA4C /* UtilitiesView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6B39E6F2212DB3AD0012DA4C /* UtilitiesView.swift */; };
 		6B39E6F5212DEF120012DA4C /* WorkspaceViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6B39E6F4212DEF120012DA4C /* WorkspaceViewController.swift */; };
 		6B3A563D21DEA7040012C44F /* Colors+Appearance.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6B3A563C21DEA7040012C44F /* Colors+Appearance.swift */; };
@@ -246,6 +245,15 @@
 		6BABAFE72139C341002B8C8F /* WorkspaceToolbar.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6BABAFE62139C341002B8C8F /* WorkspaceToolbar.swift */; };
 		6BBE0F6A212B26C900CEE8C1 /* FileTree.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 6BBE0F69212B26C900CEE8C1 /* FileTree.framework */; };
 		6BBE0F6B212B26C900CEE8C1 /* FileTree.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 6BBE0F69212B26C900CEE8C1 /* FileTree.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
+		6BC2D43D226162C4003A9F63 /* LabeledLogicInput.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6BC2D43C226162C4003A9F63 /* LabeledLogicInput.swift */; };
+		6BC2D43F226245F9003A9F63 /* LogicInput.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6BC2D43E226245F9003A9F63 /* LogicInput.swift */; };
+		6BC2D44122624BBB003A9F63 /* LogicInput+CSColor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6BC2D44022624BBB003A9F63 /* LogicInput+CSColor.swift */; };
+		6BC2D443226259DF003A9F63 /* LogicInput+CSValue.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6BC2D442226259DF003A9F63 /* LogicInput+CSValue.swift */; };
+		6BC2D447226394F0003A9F63 /* LogicConvertible.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6BC2D446226394F0003A9F63 /* LogicConvertible.swift */; };
+		6BC2D44922639B83003A9F63 /* LogicSuggestions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6BC2D44822639B83003A9F63 /* LogicSuggestions.swift */; };
+		6BC2D4502263CD36003A9F63 /* LogicInput+CSTextStyle.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6BC2D44F2263CD36003A9F63 /* LogicInput+CSTextStyle.swift */; };
+		6BC2D4542263D8F2003A9F63 /* LabeledColorInput.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6BC2D4532263D8F2003A9F63 /* LabeledColorInput.swift */; };
+		6BC2D45622640BA9003A9F63 /* LogicInput+CSURLType.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6BC2D45522640BA9003A9F63 /* LogicInput+CSURLType.swift */; };
 		6BC605CD21F78F240087311A /* LabeledDropdownRow.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6BC605CC21F78F240087311A /* LabeledDropdownRow.swift */; };
 		6BC6062B223F191A003E616B /* Logic.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 6BC60626223F1878003E616B /* Logic.framework */; };
 		6BC6062C223F191A003E616B /* Logic.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 6BC60626223F1878003E616B /* Logic.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
@@ -503,8 +511,7 @@
 		6B3414AF225CF83B00CC65D1 /* LogicEditor+TypesView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "LogicEditor+TypesView.swift"; sourceTree = "<group>"; };
 		6B3414B1225D08E500CC65D1 /* LGCDeclaration+CSType.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "LGCDeclaration+CSType.swift"; sourceTree = "<group>"; };
 		6B3414B3225D29AC00CC65D1 /* LogicEditor+Suggestions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "LogicEditor+Suggestions.swift"; sourceTree = "<group>"; };
-		6B3414B9225E738D00CC65D1 /* LabeledLogicInput.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LabeledLogicInput.swift; sourceTree = "<group>"; };
-		6B3414BB225E959100CC65D1 /* LabeledColorInput.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LabeledColorInput.swift; sourceTree = "<group>"; };
+		6B3414B9225E738D00CC65D1 /* LabeledInput.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LabeledInput.swift; sourceTree = "<group>"; };
 		6B39E6F2212DB3AD0012DA4C /* UtilitiesView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UtilitiesView.swift; sourceTree = "<group>"; };
 		6B39E6F4212DEF120012DA4C /* WorkspaceViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WorkspaceViewController.swift; sourceTree = "<group>"; };
 		6B3A563C21DEA7040012C44F /* Colors+Appearance.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Colors+Appearance.swift"; sourceTree = "<group>"; };
@@ -559,6 +566,15 @@
 		6BABAFE42139C0EE002B8C8F /* Toolbar.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Toolbar.xcassets; sourceTree = "<group>"; };
 		6BABAFE62139C341002B8C8F /* WorkspaceToolbar.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WorkspaceToolbar.swift; sourceTree = "<group>"; };
 		6BBE0F69212B26C900CEE8C1 /* FileTree.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = FileTree.framework; path = Carthage/Build/Mac/FileTree.framework; sourceTree = "<group>"; };
+		6BC2D43C226162C4003A9F63 /* LabeledLogicInput.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LabeledLogicInput.swift; sourceTree = "<group>"; };
+		6BC2D43E226245F9003A9F63 /* LogicInput.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LogicInput.swift; sourceTree = "<group>"; };
+		6BC2D44022624BBB003A9F63 /* LogicInput+CSColor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "LogicInput+CSColor.swift"; sourceTree = "<group>"; };
+		6BC2D442226259DF003A9F63 /* LogicInput+CSValue.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "LogicInput+CSValue.swift"; sourceTree = "<group>"; };
+		6BC2D446226394F0003A9F63 /* LogicConvertible.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LogicConvertible.swift; sourceTree = "<group>"; };
+		6BC2D44822639B83003A9F63 /* LogicSuggestions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LogicSuggestions.swift; sourceTree = "<group>"; };
+		6BC2D44F2263CD36003A9F63 /* LogicInput+CSTextStyle.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "LogicInput+CSTextStyle.swift"; sourceTree = "<group>"; };
+		6BC2D4532263D8F2003A9F63 /* LabeledColorInput.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = LabeledColorInput.swift; sourceTree = "<group>"; };
+		6BC2D45522640BA9003A9F63 /* LogicInput+CSURLType.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "LogicInput+CSURLType.swift"; sourceTree = "<group>"; };
 		6BC605CC21F78F240087311A /* LabeledDropdownRow.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = LabeledDropdownRow.swift; sourceTree = "<group>"; };
 		6BC60626223F1878003E616B /* Logic.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Logic.framework; path = Carthage/Build/Mac/Logic.framework; sourceTree = "<group>"; };
 		6BC60630223F1947003E616B /* Logic.framework.dSYM */ = {isa = PBXFileReference; lastKnownFileType = wrapper.dsym; name = Logic.framework.dSYM; path = Carthage/Build/Mac/Logic.framework.dSYM; sourceTree = "<group>"; };
@@ -783,8 +799,6 @@
 				6B3414AB225BBD0600CC65D1 /* DraggableIconButton.swift */,
 				30EFC9571EF369DC0087711D /* ImageField.swift */,
 				3043A0CB1F46653B00EF31EF /* Label.swift */,
-				6B3414BB225E959100CC65D1 /* LabeledColorInput.swift */,
-				6B3414B9225E738D00CC65D1 /* LabeledLogicInput.swift */,
 				307718FF1F3CD3F1003A597B /* MultilevelPopupField.swift */,
 				6B06ADB021E8138400136BC8 /* MultipleSelectionButton.swift */,
 				30B5B19E1EC29D84002068CE /* NumberField.swift */,
@@ -1073,11 +1087,10 @@
 		6B34149C225803F500CC65D1 /* Logic */ = {
 			isa = PBXGroup;
 			children = (
-				6B3414B1225D08E500CC65D1 /* LGCDeclaration+CSType.swift */,
-				6B3414A722596AA300CC65D1 /* LGCTypeAnnotation+CSType.swift */,
-				6B34149D2258041900CC65D1 /* LogicEditor+ParametersView.swift */,
-				6B3414AF225CF83B00CC65D1 /* LogicEditor+TypesView.swift */,
-				6B3414B3225D29AC00CC65D1 /* LogicEditor+Suggestions.swift */,
+				6BC2D4512263D80C003A9F63 /* Editors */,
+				6BC2D44C22639E24003A9F63 /* Suggestions */,
+				6BC2D44B22639E12003A9F63 /* Types */,
+				6BC2D44A22639DFC003A9F63 /* Views */,
 			);
 			path = Logic;
 			sourceTree = "<group>";
@@ -1094,6 +1107,57 @@
 				036A4E9B21E1FC6500948DBD /* TextStyleInspector.swift */,
 			);
 			path = inspector;
+			sourceTree = "<group>";
+		};
+		6BC2D44A22639DFC003A9F63 /* Views */ = {
+			isa = PBXGroup;
+			children = (
+				6BC2D4522263D8B3003A9F63 /* LabeledInputs */,
+				6BC2D43E226245F9003A9F63 /* LogicInput.swift */,
+			);
+			path = Views;
+			sourceTree = "<group>";
+		};
+		6BC2D44B22639E12003A9F63 /* Types */ = {
+			isa = PBXGroup;
+			children = (
+				6B3414B1225D08E500CC65D1 /* LGCDeclaration+CSType.swift */,
+				6B3414A722596AA300CC65D1 /* LGCTypeAnnotation+CSType.swift */,
+				6BC2D446226394F0003A9F63 /* LogicConvertible.swift */,
+				6BC2D44022624BBB003A9F63 /* LogicInput+CSColor.swift */,
+				6BC2D44F2263CD36003A9F63 /* LogicInput+CSTextStyle.swift */,
+				6BC2D45522640BA9003A9F63 /* LogicInput+CSURLType.swift */,
+				6BC2D442226259DF003A9F63 /* LogicInput+CSValue.swift */,
+			);
+			path = Types;
+			sourceTree = "<group>";
+		};
+		6BC2D44C22639E24003A9F63 /* Suggestions */ = {
+			isa = PBXGroup;
+			children = (
+				6B3414B3225D29AC00CC65D1 /* LogicEditor+Suggestions.swift */,
+				6BC2D44822639B83003A9F63 /* LogicSuggestions.swift */,
+			);
+			path = Suggestions;
+			sourceTree = "<group>";
+		};
+		6BC2D4512263D80C003A9F63 /* Editors */ = {
+			isa = PBXGroup;
+			children = (
+				6B34149D2258041900CC65D1 /* LogicEditor+ParametersView.swift */,
+				6B3414AF225CF83B00CC65D1 /* LogicEditor+TypesView.swift */,
+			);
+			path = Editors;
+			sourceTree = "<group>";
+		};
+		6BC2D4522263D8B3003A9F63 /* LabeledInputs */ = {
+			isa = PBXGroup;
+			children = (
+				6BC2D4532263D8F2003A9F63 /* LabeledColorInput.swift */,
+				6B3414B9225E738D00CC65D1 /* LabeledInput.swift */,
+				6BC2D43C226162C4003A9F63 /* LabeledLogicInput.swift */,
+			);
+			path = LabeledInputs;
 			sourceTree = "<group>";
 		};
 		6BD96649217E825C0012F173 /* icons */ = {
@@ -1447,6 +1511,7 @@
 				3003027C1EDCE0880085E140 /* CSComponent.swift in Sources */,
 				3056275E1FBA0C0700026796 /* CSConstraint.swift in Sources */,
 				6B4203E121BAD56500D59317 /* CanvasTableView.swift in Sources */,
+				6BC2D4542263D8F2003A9F63 /* LabeledColorInput.swift in Sources */,
 				30C203DD20BF5910007C3FE0 /* TextStyleBrowser.swift in Sources */,
 				6BA5BBD92174F2A500F086A7 /* FileNavigator.swift in Sources */,
 				6B1086F7217955120024AE56 /* SVG.swift in Sources */,
@@ -1465,11 +1530,13 @@
 				300A0AFC1EDA0CBC00704DB7 /* SectionSplitter.swift in Sources */,
 				30F870D820865859007ADA5B /* IconRow.swift in Sources */,
 				305589431EC4E4D600420BBD /* StaticCanvasRenderer.swift in Sources */,
+				6BC2D443226259DF003A9F63 /* LogicInput+CSValue.swift in Sources */,
 				304ADD52209D2A66001B9A43 /* PluginMenu.swift in Sources */,
 				6BD9664F217E9D980012F173 /* ColorsFileIcon.swift in Sources */,
 				30F870D520865859007ADA5B /* TextStyles.swift in Sources */,
 				6B4DFCEF20A795080048BB43 /* RecentProjectItem.swift in Sources */,
 				6B59893F21B86B27004DD3B1 /* RenderableElement.swift in Sources */,
+				6BC2D43F226245F9003A9F63 /* LogicInput.swift in Sources */,
 				6BD9664D217E8FCF0012F173 /* FileIcon.swift in Sources */,
 				036A4EA721E23F9100948DBD /* DirectoryDocument.swift in Sources */,
 				30F870D720865859007ADA5B /* Welcome.swift in Sources */,
@@ -1499,6 +1566,7 @@
 				307D441E209B657B004B57F5 /* DocumentationView.swift in Sources */,
 				30B5B1A11EC36A70002068CE /* PopupField.swift in Sources */,
 				306DA4F11F33EA74002772DC /* CSTextView.swift in Sources */,
+				6BC2D44122624BBB003A9F63 /* LogicInput+CSColor.swift in Sources */,
 				BACCB4271FEFA05B00B58E32 /* TextStylePickerView.swift in Sources */,
 				300302741EDC7FA90085E140 /* CSStatementView.swift in Sources */,
 				6B5D4D2B213E19B9004F8AC3 /* EditorViewController.swift in Sources */,
@@ -1514,6 +1582,7 @@
 				036A4EA921E2469D00948DBD /* DirectoryViewController.swift in Sources */,
 				6B0F5B8821386CAE007DBBB2 /* AddColorSheet.swift in Sources */,
 				6B6D441D218B6BBE0016262C /* LNATextField.swift in Sources */,
+				6BC2D447226394F0003A9F63 /* LogicConvertible.swift in Sources */,
 				30B5B19F1EC29D84002068CE /* NumberField.swift in Sources */,
 				6B8D7DA021BED32E0087A3F7 /* LayoutInspector.swift in Sources */,
 				6B25041821E5510900AE7F97 /* ImageDocument.swift in Sources */,
@@ -1532,6 +1601,7 @@
 				301433781F5B525100525DB1 /* ListEditor.swift in Sources */,
 				BA3001761FDB97260003E7D2 /* ShadowStylePickerButton.swift in Sources */,
 				6B4203E321BAD71800D59317 /* CanvasTableHeaderView.swift in Sources */,
+				6BC2D45622640BA9003A9F63 /* LogicInput+CSURLType.swift in Sources */,
 				3069E09C1F324C550005E9A8 /* CSWorkspacePreferences.swift in Sources */,
 				6B4203E721BC495B00D59317 /* NSTableColumn+Init.swift in Sources */,
 				303C3FF020A3A05D008E1541 /* RecentProjectsList.swift in Sources */,
@@ -1557,6 +1627,7 @@
 				3003027E1EDCE3790085E140 /* ComponentConfiguration.swift in Sources */,
 				30EFC95A1EF43C900087711D /* CheckboxField.swift in Sources */,
 				BA3001781FDB97430003E7D2 /* ShadowStylePickerView.swift in Sources */,
+				6BC2D44922639B83003A9F63 /* LogicSuggestions.swift in Sources */,
 				3084164D1EDB2A5B00A1CA6D /* Button+Init.swift in Sources */,
 				6BA6E89B213080CE009CD33C /* ComponentEditorViewController.swift in Sources */,
 				036A4EA221E1FD3B00948DBD /* KeyHandlingCollectionView.swift in Sources */,
@@ -1585,6 +1656,7 @@
 				30DE880D1FBA22FB00D62A50 /* ComponentEditorButton.swift in Sources */,
 				6BA6E89921307D65009CD33C /* WorkspaceWindowController.swift in Sources */,
 				6B80645A21D8322B006560C7 /* CanvasTableHeaderExtra.swift in Sources */,
+				6BC2D4502263CD36003A9F63 /* LogicInput+CSTextStyle.swift in Sources */,
 				303C3FE820A375E8008E1541 /* VirtualFileSystem.swift in Sources */,
 				30F4FD531F76ADC70048691C /* AnimationUtils.swift in Sources */,
 				036A4E9A21E1F5FB00948DBD /* ImagePreview.swift in Sources */,
@@ -1601,7 +1673,7 @@
 				BA4854981FEF6CC800AB7923 /* PickerView.swift in Sources */,
 				036A4E9021E0F6AA00948DBD /* ImageViewer.swift in Sources */,
 				6B3D7C2C222F4688008AA3D2 /* CustomParametersEditorView.swift in Sources */,
-				6B3414BA225E738D00CC65D1 /* LabeledLogicInput.swift in Sources */,
+				6B3414BA225E738D00CC65D1 /* LabeledInput.swift in Sources */,
 				6B558A40222B1FD1000C22FE /* FileSearch.swift in Sources */,
 				307718F81F37AAFE003A597B /* CSScope.swift in Sources */,
 				307718F21F365BCD003A597B /* CSValue.swift in Sources */,
@@ -1615,7 +1687,6 @@
 				30D9B40E1F79BADC00C8A3D4 /* NSMenuExtensions.swift in Sources */,
 				3090D78D1F01B050009277E7 /* CSParameter.swift in Sources */,
 				305ED04620530257000D07C3 /* LonaModule.swift in Sources */,
-				6B3414BC225E959100CC65D1 /* LabeledColorInput.swift in Sources */,
 				6B0AEFBC1EBF74D800F35BBF /* ComponentDocument.swift in Sources */,
 				303C3FF920A4F894008E1541 /* ComponentPreview.swift in Sources */,
 				306D2FEE1F84735900907B4E /* LayerThumbnail.swift in Sources */,
@@ -1644,6 +1715,7 @@
 				6B51613021377E0E00714555 /* TextInput+Undo.swift in Sources */,
 				307718F41F366AEA003A597B /* CSValueField.swift in Sources */,
 				BA48549A1FEF6EC800AB7923 /* PickerListView.swift in Sources */,
+				6BC2D43D226162C4003A9F63 /* LabeledLogicInput.swift in Sources */,
 				303C3FF720A4EFC6008E1541 /* ComponentPreviewCard.swift in Sources */,
 				6B3414B0225CF83B00CC65D1 /* LogicEditor+TypesView.swift in Sources */,
 				6B6017D01EBF9EFA001E02C1 /* LayerListOutlineView.swift in Sources */,

@@ -10,17 +10,12 @@ import Cocoa
 
 final class CustomComponentInspectorView: NSStackView {
 
-    // MARK: - Variable
+    // MARK: - Lifecycle
 
-    private let componentLayer: CSComponentLayer
-    var onChangeData: (CSData, CSParameter) -> Void = {_, _ in}
-
-    // MARK: - Init
-
-    init(componentLayer: CSComponentLayer) {
-        self.componentLayer = componentLayer
+    init() {
         super.init(frame: NSRect.zero)
-        setupViews()
+
+        setUpViews()
     }
 
     required init?(coder decoder: NSCoder) {
@@ -29,22 +24,37 @@ final class CustomComponentInspectorView: NSStackView {
 
     // MARK: - Public
 
-    func reload() {
-        valueFields = []
-        subviews.forEach({ subview in subview.removeFromSuperview() })
-
-        setupViews()
+    var layerName: String = "" {
+        didSet {
+            if oldValue != layerName {
+                update()
+            }
+        }
     }
+
+    var parameterValues: [String: CSData] = [:] {
+        didSet {
+            if oldValue != parameterValues {
+                update()
+            }
+        }
+    }
+
+    var parameters: [CSParameter] = [] {
+        didSet {
+            if oldValue != parameters {
+                update()
+            }
+        }
+    }
+
+    var onChangeData: (([String: CSData]) -> Void)?
 
     // MARK: - Private
 
-    // We need to retain the value fields. Without this, only the view of the value field is retained.
-    private var valueFields: [CSValueField] = []
+    private let parametersSection = DisclosureContentRow(title: "Parameters", views: [], stretched: true)
 
-    private func setupViews() {
-        let views = setupValueFields()
-        valueFields = views.map { $0.field }
-        let parametersSection = DisclosureContentRow(title: "Parameters", views: views.map { $0.view }, stretched: true)
+    private func setUpViews() {
         parametersSection.contentSpacing = 8
         parametersSection.contentEdgeInsets = NSEdgeInsets(top: 0, left: 0, bottom: 15, right: 0)
 
@@ -55,8 +65,26 @@ final class CustomComponentInspectorView: NSStackView {
         translatesAutoresizingMaskIntoConstraints = false
     }
 
-    private func setupValueFields() -> [(view: NSView, field: CSValueField)] {
-        let views: [(view: NSView, field: CSValueField)] = componentLayer.component.parameters.map({ parameter in
+    private func update() {
+        let layerName = self.layerName
+
+        parametersSection.contentViews.enumerated().forEach { index, subview in
+            if index > parameters.count - 1 {
+                subview.removeFromSuperview()
+            }
+        }
+
+        parameters.enumerated().forEach { [unowned self] index, parameter in
+            if index > parametersSection.contentViews.count - 1 {
+                let inputView = LabeledLogicInput(titleText: parameter.name)
+                inputView.titleWidth = 75
+                inputView.translatesAutoresizingMaskIntoConstraints = false
+
+                parametersSection.addContent(view: inputView, stretched: true)
+            }
+
+            guard let inputView = parametersSection.contentViews[index] as? LabeledLogicInput else { return }
+
             let defaultData: CSData
             if parameter.type.unwrappedNamedType().isOptional() {
                 defaultData = CSUnitValue.wrap(in: parameter.type, tagged: "None").data
@@ -66,42 +94,26 @@ final class CustomComponentInspectorView: NSStackView {
                 defaultData = CSData.Null
             }
 
-            let value = CSValue(type: parameter.type, data: componentLayer.parameters[parameter.name] ?? defaultData)
+            let value = CSValue(type: parameter.type, data: parameterValues[parameter.name] ?? defaultData)
 
-            let valueField = CSValueField(value: value, options: [
-                CSValueField.Options.isBordered: true,
-                CSValueField.Options.drawsBackground: true,
-                CSValueField.Options.submitOnChange: false,
-                CSValueField.Options.usesLinkStyle: false
-                ])
-            valueField.onChangeData = {[unowned self] data in
-                var data = data
-
-                if case .named("URL", .string) = value.type, let url = URL(string: data.stringValue) {
-                    if let relativePath = url.path.pathRelativeTo(basePath: CSUserPreferences.workspaceURL.path) {
-                        data = ("file://" + relativePath).toData()
-                    } else {
-                        data = url.absoluteString.toData()
-                    }
-                }
-
-                self.onChangeData(data, parameter)
+            inputView.getPasteboardItem = {
+                return CSParameter(name: parameter.name, type: parameter.type, defaultValue: value)
+                    .makePasteboardItem(withAssignmentTo: layerName)
             }
-            valueField.view.translatesAutoresizingMaskIntoConstraints = false
-            valueFields.append(valueField)
 
-            let stackView = NSStackView(views: [
-                NSTextField(labelWithString: parameter.name)
-                ], orientation: .vertical)
-            stackView.alignment = .left
-            stackView.addArrangedSubview(valueField.view, stretched: !(valueField.view is CheckboxField))
-            return (view: stackView, field: valueField)
-        })
+            inputView.value = value
+            inputView.onChangeValue = {[unowned self] value in
+                var updated = self.parameterValues
+                updated[parameter.name] = value.data
 
-        for (index, view) in views.enumerated() {
-            if index == views.count - 1 { continue }
-            view.field.view.nextKeyView = views[index + 1].field.view
+                self.onChangeData?(updated)
+            }
         }
-        return views
+
+//        parametersSection.contentViews.enumerated().forEach { [unowned self] index, view in
+//            if index < parametersSection.contentViews.count - 1 {
+//                view.nextKeyView = self.parametersSection.contentViews[index + 1]
+//            }
+//        }
     }
 }

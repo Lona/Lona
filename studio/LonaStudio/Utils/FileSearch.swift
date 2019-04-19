@@ -9,7 +9,55 @@
 import AppKit
 
 enum FileSearch {
-    static func search(in root: URL, forFilesWithSuffix suffix: String, ignoring ignoreList: [String] = []) -> [URL] {
+    static let defaultIgnoreList = [".git", "node_modules"]
+
+    static func search(
+        filesIn root: URL,
+        matching regularExpression: NSRegularExpression,
+        ignoring ignoreList: [String] = defaultIgnoreList) -> [URL] {
+
+        let matchPredicate: (URL) -> Bool = { file in
+            let string = file.absoluteString
+            let range = NSRange(location: 0, length: string.count)
+            return regularExpression.firstMatch(in: string, range: range) != nil
+        }
+
+        return search(filesIn: root, matching: matchPredicate, ignoring: ignoreList)
+    }
+
+    static func search(
+        filesIn root: URL,
+        withSuffix suffix: String,
+        ignoring ignoreList: [String] = defaultIgnoreList) -> [URL] {
+        let dotSuffix = "." + suffix
+
+        let matchPredicate: (URL) -> Bool = { file in
+            file.lastPathComponent == suffix || file.path.hasSuffix(dotSuffix)
+        }
+
+        return search(filesIn: root, matching: matchPredicate, ignoring: ignoreList)
+    }
+
+    static func search(
+        filesIn root: URL,
+        matching matchPredicate: (URL) -> Bool,
+        ignoring ignoreList: [String] = defaultIgnoreList) -> [URL] {
+
+        let ignorePredicate: (URL) -> Bool = { file in
+            for ignore in ignoreList where file.path.contains(ignore) {
+                return true
+            }
+
+            return false
+        }
+
+        return search(filesIn: root, matching: matchPredicate, ignoring: ignorePredicate)
+    }
+
+    static func search(
+        filesIn root: URL,
+        matching matchPredicate: (URL) -> Bool,
+        ignoring ignorePredicate: (URL) -> Bool) -> [URL] {
         var results: [URL] = []
 
         let fileManager = FileManager.default
@@ -22,15 +70,13 @@ enum FileSearch {
             options: options,
             errorHandler: {(_, _) -> Bool in true }) else { return results }
 
-        let dotSuffix = "." + suffix
-
-        outer: while let file = enumerator.nextObject() as? URL {
-            for ignore in ignoreList where file.path.contains(ignore) {
+        while let file = enumerator.nextObject() as? URL {
+            if ignorePredicate(file) {
                 enumerator.skipDescendants()
-                continue outer
+                continue
             }
 
-            if file.lastPathComponent == suffix || file.path.hasSuffix(dotSuffix) {
+            if matchPredicate(file) {
                 results.append(file)
             }
         }

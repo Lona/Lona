@@ -37,9 +37,8 @@ let styles = StyleSheet.create({
   },
   button: {
     alignItems: "flex-start",
-    alignSelf: "stretch",
-    flex: 1,
-    flexDirection: "row",
+    flex: 0,
+    flexDirection: "column",
     justifyContent: "flex-start"
   },
   view1: {
@@ -51,9 +50,8 @@ let styles = StyleSheet.create({
   },
   button2: {
     alignItems: "flex-start",
-    alignSelf: "stretch",
-    flex: 1,
-    flexDirection: "row",
+    flex: 0,
+    flexDirection: "column",
     justifyContent: "flex-start"
   }
 })

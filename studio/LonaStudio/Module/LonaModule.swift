@@ -36,19 +36,27 @@ class LonaModule {
     }
 
     var colorsFileUrls: [URL] {
-        return FileSearch.search(in: url, forFilesWithSuffix: "colors.json", ignoring: [".git", "node_modules"])
+        return FileSearch.search(filesIn: url, withSuffix: "colors.json")
     }
 
     var textStylesFileUrls: [URL] {
-        return FileSearch.search(in: url, forFilesWithSuffix: "textStyles.json", ignoring: [".git", "node_modules"])
+        return FileSearch.search(filesIn: url, withSuffix: "textStyles.json")
     }
 
     var shadowsFileUrls: [URL] {
-        return FileSearch.search(in: url, forFilesWithSuffix: "shadows.json", ignoring: [".git", "node_modules"])
+        return FileSearch.search(filesIn: url, withSuffix: "shadows.json")
     }
 
     var gradientsFileUrls: [URL] {
-        return FileSearch.search(in: url, forFilesWithSuffix: "gradients.json", ignoring: [".git", "node_modules"])
+        return FileSearch.search(filesIn: url, withSuffix: "gradients.json")
+    }
+
+    var assetsFileUrls: [URL] {
+        return FileSearch.search(filesIn: url, matching: LonaModule.assetRE)
+    }
+
+    var vectorFileUrls: [URL] {
+        return FileSearch.search(filesIn: url, matching: LonaModule.vectorRE)
     }
 
     func componentFiles() -> [ComponentFile] {
@@ -107,6 +115,10 @@ class LonaModule {
     }
 
     // MARK: - STATIC
+
+    private static let assetRE = try! NSRegularExpression(pattern: #"\.(png|jpg)$"#)
+
+    private static let vectorRE = try! NSRegularExpression(pattern: #"\.(svg)$"#)
 
     private static var cachedTypes: [URL: [CSType]] = [:]
 

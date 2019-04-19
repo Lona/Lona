@@ -52,9 +52,8 @@ let styles = StyleSheet.create({
   },
   leftCard: {
     alignItems: "flex-start",
-    alignSelf: "stretch",
     flex: 1,
-    flexDirection: "row",
+    flexDirection: "column",
     justifyContent: "flex-start"
   },
   spacer: {
@@ -66,9 +65,8 @@ let styles = StyleSheet.create({
   },
   rightCard: {
     alignItems: "flex-start",
-    alignSelf: "stretch",
     flex: 1,
-    flexDirection: "row",
+    flexDirection: "column",
     justifyContent: "flex-start"
   }
 })

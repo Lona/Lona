@@ -475,6 +475,24 @@ extension CSType {
     }
 }
 
+// MARK: - Variant handling
+
+extension CSType {
+    func unwrapVariant(tagged tag: String) -> CSType? {
+        guard case CSType.variant(let cases) = self else {
+            Swift.print("Attempted to unwrap non-variant type", self)
+            return nil
+        }
+
+        guard let match = cases.first(where: { item in item.0 == tag }) else {
+            Swift.print("unwrapVariant(): Could not find tag", tag, "in variant type", self)
+            return nil
+        }
+
+        return match.1
+    }
+}
+
 // MARK: - Platform-specific types
 
 extension CSType {

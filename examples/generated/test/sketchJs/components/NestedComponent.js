@@ -55,9 +55,8 @@ let styles = StyleSheet.create({
   },
   fitContentParentSecondaryChildren: {
     alignItems: "flex-start",
-    alignSelf: "stretch",
-    flex: 1,
-    flexDirection: "row",
+    flex: 0,
+    flexDirection: "column",
     justifyContent: "flex-start"
   },
   text1: {
@@ -70,9 +69,8 @@ let styles = StyleSheet.create({
   },
   localAsset: {
     alignItems: "flex-start",
-    alignSelf: "stretch",
-    flex: 1,
-    flexDirection: "row",
+    flex: 0,
+    flexDirection: "column",
     justifyContent: "flex-start"
   },
   text2: {
