@@ -104,7 +104,7 @@ extension LogicInput {
             )
         }
 
-        var dataSourceSuggestions = [
+        let dataSourceSuggestions = [
             LogicSuggestionItem(
                 title: !sizes.isEmpty ? "placehold.it/\(sizes.joined(separator: "x"))" : "placehold.it",
                 category: "Data Sources".uppercased(),
