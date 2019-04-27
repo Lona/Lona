@@ -6,13 +6,18 @@ This file defines the design system's colors.
 
 At the top level, the file is an object containing:
 
-- a `theme` array
+- a `$version` number
+- a `themes` array
 - a `color-profiles` array
 - a `colors` array
 
-### `theme`
+### `$version`
 
-The `theme` array is optional. The default theme is the first item of the array, if any.
+A number specifying the version of the specs of the colors. This is currently `2`.
+
+### `themes`
+
+The `themes` array is optional. The default theme is the first item of the array, if any.
 
 Each theme has the following attributes:
 
@@ -78,7 +83,7 @@ See the [CSS specification](https://www.w3.org/TR/css-color-4/) for more informa
 
 An array of `Color`.
 
-#### `"theme"`
+#### `"themed"`
 
 The value of a color can also depend on the theme. To specify the value of the color for a specific theme, use the `id` of the theme as the property name. The property value is a raw CSS 4 string.
 
@@ -132,7 +137,7 @@ For example, saturating a color:
 "value": {
   "type": "call",
   "id": "saturate",
-  "saturation": ["baseColor", "+", 0.2]
+  "arguments": ["baseColor", "+", 0.2]
 }
 ```
 
