@@ -45,11 +45,13 @@ function handler(argv) {
     argv.cacheDir = path.join(process.cwd(), '.cache')
   }
 
-  const gatsbyPath = require.resolve('@mathieudutour/gatsby/dist/bin/gatsby.js')
+  const gatsbyPath = require.resolve(
+    '../tasks/run-gatsby.js' /* 'gatsby/dist/bin/gatsby.js' */
+  )
 
   const gatsbyOptions = [
-    `--build-dir=${argv.buildDir}`,
-    `--cache-dir=${argv.cacheDir}`,
+    `--build-dir="${argv.buildDir}"`,
+    `--cache-dir="${argv.cacheDir}"`,
   ]
 
   if (argv.noColor) {
