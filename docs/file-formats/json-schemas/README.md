@@ -12,7 +12,25 @@ Update your configuration to add the following:
         "fileMatch": [
             "colors.json"
         ],
-        "url": "https://raw.githubusercontent.com/airbnb/Lona/master/docs/file-formats/json-schemas/colors.json"
+        "url": "https://raw.githubusercontent.com/airbnb/Lona/master/docs/file-formats/json-schemas/.generated/colors.json"
     }
 ]
+```
+
+## Authoring
+
+The source of truth for the documentation (markdown files) and the JSON schemas is the YAML files in this directory. YAML is a lot easier to edit, especially for multilines strings.
+
+To generate the JSON schema and the Markdown documentation, run the following:
+
+```bash
+cd docs/files-formats/json-schemas
+./generate.sh colors.yml
+```
+
+You can also watch the file and rebuild the schema and documentation when there is a change:
+
+```bash
+cd docs/files-formats/json-schemas
+./watch.sh colors.yml
 ```
