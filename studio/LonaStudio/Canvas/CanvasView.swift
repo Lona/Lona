@@ -296,22 +296,16 @@ extension CanvasView {
 // MARK: - Layout
 
 extension CanvasView {
-
-    static func setFlex(_ node: YGNodeRef, dimensionSizingRule: DimensionSizingRule) {
+    static func setFlexExpand(for layer: CSLayer, node: YGNodeRef) {
         var node = node
 
-        switch dimensionSizingRule {
-        case .Expand:
-            node.flexShrink = 1
-            node.flexGrow = 1
-            node.flexBasis = .percent(0)
-        case .Shrink:
-            node.flexShrink = 0
-            node.flexGrow = 0
+        node.flexShrink = 1
+        node.flexGrow = 1
+
+        if layer.type == .text {
+            node.flexBasis = .value(0)
+        } else {
             node.flexBasis = .auto
-        case .Fixed:
-            node.flexShrink = 0
-            node.flexGrow = 0
         }
     }
 
@@ -337,13 +331,13 @@ extension CanvasView {
             }
         case .Expand:
             if parentLayoutDirection == .column {
-                setFlex(node, dimensionSizingRule: layer.heightSizingRule)
+                setFlexExpand(for: layer, node: node)
             } else {
                 YGNodeStyleSetAlignSelf(node, .stretch)
             }
         case .Shrink:
             if parentLayoutDirection == .column {
-                setFlex(node, dimensionSizingRule: layer.heightSizingRule)
+                node.flex = 0
             }
         }
 
@@ -356,13 +350,13 @@ extension CanvasView {
             }
         case .Expand:
             if parentLayoutDirection == .row {
-                setFlex(node, dimensionSizingRule: layer.widthSizingRule)
+                setFlexExpand(for: layer, node: node)
             } else {
                 YGNodeStyleSetAlignSelf(node, .stretch)
             }
         case .Shrink:
             if parentLayoutDirection == .row {
-                setFlex(node, dimensionSizingRule: layer.widthSizingRule)
+                node.flex = 0
             }
         }
 

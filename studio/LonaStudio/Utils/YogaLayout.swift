@@ -318,13 +318,6 @@ extension YGNodeRef {
     func print() {
         YGNodePrint(self, .style)
     }
-
-    func printLayoutHierarchy(indentationLevel: Int = 0) {
-        let indentation = String(repeating: "  ", count: indentationLevel)
-        Swift.print(indentation, layout)
-
-        children.forEach { $0.printLayoutHierarchy(indentationLevel: indentationLevel + 1) }
-    }
 }
 
 var LAYOUT_FOR_VIEW = [NSView: YGNodeRef]()
@@ -415,20 +408,5 @@ extension NSView {
         }
 
         applyYogaLayout(view: self, node: rootNode)
-    }
-}
-
-extension YGMeasureMode: CustomStringConvertible {
-    public var description: String {
-        switch self {
-        case .atMost:
-            return "atMost"
-        case .exactly:
-            return "exactly"
-        case .undefined:
-            return "undefined"
-        @unknown default:
-            fatalError("unknown measure mode")
-        }
     }
 }
