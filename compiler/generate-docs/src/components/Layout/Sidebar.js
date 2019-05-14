@@ -1,5 +1,5 @@
 import React from 'react'
-import { Link } from 'gatsby'
+import { Link, withPrefix } from 'gatsby'
 import styled from 'styled-components'
 import PropTypes from 'prop-types'
 import { HeaderHeight } from './ui-constants'
@@ -61,9 +61,10 @@ function shouldPrintTitle(element) {
 }
 
 function isSelected(location, section) {
+  const prefixedPath = withPrefix(section.path)
   return (
-    location.pathname.indexOf(section.path) === 0 ||
-    location.pathname.indexOf(section.path) === 2 // if it /u
+    location.pathname.indexOf(prefixedPath) === 0 ||
+    location.pathname.indexOf(prefixedPath) === 2 // if it /u
   )
 }
 
@@ -85,7 +86,9 @@ const SubNavigation = ({ subtitle, location }) => {
 }
 
 const Sidebar = ({ location, files }) => {
-  const [, selectedSectionOrU, selectedSection] = location.pathname.split('/')
+  const [, selectedSectionOrU, selectedSection] = location.pathname
+    .split(withPrefix('/'))[1]
+    .split('/')
 
   const sections = Object.keys(files)
     .filter(section => files[section])

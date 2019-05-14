@@ -22,6 +22,11 @@ const CodeWrapper = styled.div`
   position: relative;
 `
 
+const PreviewWrapper = styled.div`
+  height: 100%;
+  position: relative;
+`
+
 const SelectionWrapper = styled.div`
   display: flex;
   border-bottom: 1px solid #eeeeee;
@@ -83,6 +88,7 @@ const StyledLivePreview = styled(LivePreview)`
   display: flex;
   width: 100%;
   padding: 0.8rem;
+  height: calc(100% - 50px);
 `
 
 const dragHandleSvg = `
@@ -143,6 +149,11 @@ const GlobalStyle = createGlobalStyle`
     flex-direction: column;
     font-size: 16px;
     height: calc(100% - 50px);
+  }
+
+  .Examples__live-editor > textarea, .Examples__live-editor > pre {
+    /* we need that otherwise some weird spaces appears when the line is longer than the container */
+    word-break: normal !important;
   }
 `
 
@@ -230,12 +241,13 @@ class Examples extends React.Component {
                     fontFamily: 'Menlo, "Fira code", "Fira Mono", monospace',
                     lineHeight: '21px',
                   }}
+                  className="Examples__live-editor"
                 />
               </CodeWrapper>
-              <div>
+              <PreviewWrapper>
                 <PreviewHeader>Live preview</PreviewHeader>
                 <StyledLivePreview />
-              </div>
+              </PreviewWrapper>
             </SplitPane>
           </LiveProvider>
         </Wrapper>
