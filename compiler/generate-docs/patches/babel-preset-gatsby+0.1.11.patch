@@ -1,5 +1,5 @@
 diff --git a/node_modules/babel-preset-gatsby/index.js b/node_modules/babel-preset-gatsby/index.js
-index 7da0918..aeb9ec8 100644
+index 7da0918..1414370 100644
 --- a/node_modules/babel-preset-gatsby/index.js
 +++ b/node_modules/babel-preset-gatsby/index.js
 @@ -9,7 +9,7 @@ const loadCachedConfig = () => {

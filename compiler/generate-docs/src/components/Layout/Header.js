@@ -1,5 +1,5 @@
 import React from 'react'
-import { Link } from 'gatsby'
+import { Link, withPrefix } from 'gatsby'
 import styled from 'styled-components'
 import PropTypes from 'prop-types'
 import { HeaderHeight } from './ui-constants'
@@ -75,7 +75,9 @@ const Header = ({ data, location, files }) => (
                     <HeaderNavigationLink
                       text={section}
                       selected={
-                        location.pathname.indexOf(`/u/${section}`) === 0
+                        location.pathname.indexOf(
+                          withPrefix(`/u/${section}`)
+                        ) === 0
                       }
                     />
                   </NavigationItem>
