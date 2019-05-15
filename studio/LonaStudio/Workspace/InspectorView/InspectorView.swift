@@ -80,6 +80,7 @@ final class InspectorView: NSBox {
         addSubview(headerView)
 
         scrollView.hasVerticalScroller = true
+        scrollView.autohidesScrollers = true
         scrollView.drawsBackground = false
         scrollView.automaticallyAdjustsContentInsets = false
         scrollView.contentInsets = NSEdgeInsets(top: 0, left: 20, bottom: 0, right: 0)

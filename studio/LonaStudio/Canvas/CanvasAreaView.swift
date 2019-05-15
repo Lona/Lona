@@ -75,6 +75,7 @@ public class CanvasAreaView: NSBox {
 
         scrollView.hasVerticalScroller = true
         scrollView.hasHorizontalScroller = true
+        scrollView.autohidesScrollers = true
         scrollView.drawsBackground = false
         scrollView.addSubview(outlineView)
         scrollView.documentView = outlineView

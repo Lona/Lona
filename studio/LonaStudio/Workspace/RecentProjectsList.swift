@@ -115,6 +115,7 @@ class RecentProjectsTableView: NSView {
     private func setUpViews() {
         scrollView.drawsBackground = false
         scrollView.hasVerticalScroller = true
+        scrollView.autohidesScrollers = true
 
         tableView.backgroundColor = NSColor.clear
         tableView.columnAutoresizingStyle = .uniformColumnAutoresizingStyle

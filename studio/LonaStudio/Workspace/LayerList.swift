@@ -74,7 +74,8 @@ public class LayerList: NSBox {
         addSubview(dividerView)
         addSubview(headerView)
 
-//        scrollView.hasVerticalScroller = true
+        scrollView.hasVerticalScroller = true
+        scrollView.autohidesScrollers = true
         scrollView.drawsBackground = false
         scrollView.addSubview(outlineView)
         scrollView.documentView = outlineView

@@ -348,6 +348,7 @@ class ListEditor<Element>: NSView where Element: DataNode {
         scrollView.documentView = listView
         scrollView.hasVerticalRuler = true
         scrollView.hasVerticalScroller = true
+        scrollView.autohidesScrollers = true
         scrollView.drawsBackground = false
 
         return scrollView
