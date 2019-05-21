@@ -247,7 +247,11 @@ Type `lonac [command]` to see which options are required for that command. The f
     };
 
     if (List.length(positionalArgs^) == 0) {
-      raise(Command.Unknown(Arg.usage_string(spec, usageMessage)));
+      raise(
+        Command.Unknown(
+          "No command given.\n" ++ Arg.usage_string(spec, usageMessage),
+        ),
+      );
     };
 
     let command =
