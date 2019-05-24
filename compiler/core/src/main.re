@@ -1,5 +1,18 @@
 open Node;
 
+let exit = message => {
+  Js.log(message);
+  %bs.raw
+  {|process.exit(1)|};
+};
+
+let scanResult =
+  switch (CommandLine.Arguments.scan(Process.argv |> Array.to_list)) {
+  | scanResult => scanResult
+  | exception (CommandLine.Command.Unknown(message)) => exit(message)
+  };
+let options = scanResult.options;
+
 [@bs.val] [@bs.module "fs-extra"] external ensureDirSync: string => unit = "";
 
 [@bs.val] [@bs.module "fs-extra"]
@@ -37,126 +50,16 @@ let ensureDirAndWriteFile = (path, contents) => {
 let writeAnnotatedFile = (path, contents) =>
   ensureDirAndWriteFile(path, annotate(contents));
 
-let arguments = Array.to_list(Process.argv);
-
-let positionalArguments =
-  arguments |> List.filter(arg => !Js.String.startsWith("--", arg));
-
-let getArgument = name => {
-  let prefix = "--" ++ name ++ "=";
-  switch (arguments |> List.find(Js.String.startsWith(prefix))) {
-  | value =>
-    Some(value |> Js.String.sliceToEnd(~from=Js.String.length(prefix)))
-  | exception Not_found => None
-  };
-};
-
-let swiftOptions: Swift.Options.options = {
-  framework:
-    switch (getArgument("framework")) {
-    | Some("appkit") => Swift.Options.AppKit
-    | _ => Swift.Options.UIKit
-    },
-  debugConstraints:
-    switch (getArgument("debugConstraints")) {
-    | Some(_) => true
-    | _ => false
-    },
-  generateCollectionView:
-    switch (getArgument("generateCollectionView")) {
-    | Some(_) => true
-    | _ => false
-    },
-  typePrefix:
-    switch (getArgument("typePrefix")) {
-    | Some(value) => value
-    | _ => ""
-    },
-  swiftVersion:
-    switch (getArgument("swiftVersion")) {
-    | Some("V4") => V4
-    | Some("V5") => V5
-    | _ => V5
-    },
-};
-
-let javaScriptOptions: JavaScriptOptions.options = {
-  framework:
-    switch (getArgument("framework")) {
-    | Some("reactsketchapp") => JavaScriptOptions.ReactSketchapp
-    | Some("reactdom") => JavaScriptOptions.ReactDOM
-    | _ => JavaScriptOptions.ReactNative
-    },
-  styleFramework:
-    switch (getArgument("styleFramework")) {
-    | Some("styledcomponents") => JavaScriptOptions.StyledComponents
-    | _ => JavaScriptOptions.None
-    },
-  styledComponentsVersion:
-    switch (getArgument("styledComponentsVersion")) {
-    | Some(value) when Js.String.startsWith("3", value) => V3
-    | _ => Latest
-    },
-  minimumIeSupport:
-    switch (getArgument("minimumIeSupport")) {
-    | Some("11") => IE11
-    | _ => None
-    },
-};
-
-let options: LonaCompilerCore.Options.options = {
-  preset:
-    switch (getArgument("preset")) {
-    | Some("airbnb") => Airbnb
-    | _ => Standard
-    },
-  filterComponents: getArgument("filterComponents"),
-  swift: swiftOptions,
-  javaScript: javaScriptOptions,
-};
-
-let exit = message => {
-  Js.log(message);
-  %bs.raw
-  {|process.exit(1)|};
-};
-
-if (List.length(positionalArguments) < 3) {
-  exit("No command given");
-};
-
-let command = List.nth(positionalArguments, 2);
-
-/* These commands don't use the standard set of parameters */
-let specialCommands = ["convertSvg", "config"];
-let isSpecialCommand = command => List.mem(command, specialCommands);
-
-if (!isSpecialCommand(command) && List.length(positionalArguments) < 4) {
-  exit("No target given");
-};
-
-let target =
-  if (!isSpecialCommand(command)) {
-    switch (List.nth(positionalArguments, 3)) {
-    | "js" => Types.JavaScript
-    | "swift" => Types.Swift
-    | "xml" => Types.Xml
-    | _ => exit("Unrecognized target")
-    };
-  } else {
-    Types.JavaScript;
-  };
-
-let platformId =
+let platformId = target =>
   switch (target) {
   | Types.JavaScript =>
-    switch (javaScriptOptions.framework) {
+    switch (options.javaScript.framework) {
     | JavaScriptOptions.ReactDOM => Types.ReactDOM
     | JavaScriptOptions.ReactNative => Types.ReactNative
     | JavaScriptOptions.ReactSketchapp => Types.ReactSketchapp
     }
   | Types.Swift =>
-    switch (swiftOptions.framework) {
+    switch (options.swift.framework) {
     | SwiftOptions.UIKit => Types.IOS
     | SwiftOptions.AppKit => Types.MacOS
     }
@@ -178,7 +81,7 @@ let formatFilename = (target, filename) =>
   | Types.Swift => Format.upperFirst(Format.camelCase(filename))
   };
 
-let targetExtension = getTargetExtension(target);
+let targetExtension = target => getTargetExtension(target);
 
 let renderColors = (target, config: Config.t) =>
   switch (target) {
@@ -217,14 +120,14 @@ let convertTypes = (target, contents) => {
   switch (target) {
   | Types.Swift =>
     let importStatement =
-      switch (swiftOptions.framework) {
+      switch (options.swift.framework) {
       | AppKit => "import AppKit\n\n"
       | UIKit => "import UIKit\n\n"
       };
     let types =
       json
       |> TypeSystem.Decode.typesFile
-      |> SwiftTypeSystem.render(swiftOptions)
+      |> SwiftTypeSystem.render(options.swift)
       |> List.map((convertedType: SwiftTypeSystem.convertedType) =>
            convertedType.contents
          )
@@ -266,7 +169,7 @@ let getAssetRelativePath = (config: Config.t, sourceComponent, importedPath) => 
     relativePath : "./" ++ relativePath;
 };
 
-let convertComponent = (config: Config.t, filename: string) => {
+let convertComponent = (config: Config.t, target, filename: string) => {
   let contents = Fs.readFileSync(filename, `utf8);
   let parsed = contents |> Js.Json.parseExn;
   let name = Node.Path.basename_ext(filename, ".component");
@@ -274,7 +177,7 @@ let convertComponent = (config: Config.t, filename: string) => {
   switch (target) {
   | Types.JavaScript =>
     JavaScriptComponent.generate(
-      javaScriptOptions,
+      options.javaScript,
       name,
       Node.Path.relative(
         ~from=Node.Path.dirname(filename),
@@ -304,33 +207,33 @@ let convertComponent = (config: Config.t, filename: string) => {
     |> JavaScript.Render.toString
   | Swift =>
     let result =
-      Swift.Component.generate(config, options, swiftOptions, name, parsed);
+      Swift.Component.generate(config, options, options.swift, name, parsed);
     result |> Swift.Render.toString;
   | _ => exit("Unrecognized target")
   };
 };
 
-let copyStaticFiles = outputDirectory =>
+let copyStaticFiles = (target, outputDirectory) =>
   switch (target) {
   | Types.Swift =>
     let staticFiles =
       ["TextStyle", "CGSize+Resizing", "LonaViewModel"]
       @ (
-        switch (swiftOptions.framework) {
+        switch (options.swift.framework) {
         | UIKit => ["LonaControlView", "Shadow"]
         | AppKit => ["LNATextField", "LNAImageView", "NSImage+Resizing"]
         }
       );
 
     let frameworkExtension =
-      switch (swiftOptions.framework) {
+      switch (options.swift.framework) {
       | AppKit => "appkit"
       | UIKit => "uikit"
       };
 
     /* Some static files are generated differently depending on version */
     let versionString = filename =>
-      switch (filename, swiftOptions.framework, swiftOptions.swiftVersion) {
+      switch (filename, options.swift.framework, options.swift.swiftVersion) {
       | ("TextStyle", UIKit, V4) => ".4"
       | ("TextStyle", UIKit, V5) => ".5"
       | _ => ""
@@ -352,7 +255,7 @@ let copyStaticFiles = outputDirectory =>
          )
        );
   | Types.JavaScript =>
-    switch (javaScriptOptions.framework) {
+    switch (options.javaScript.framework) {
     | ReactDOM =>
       let staticFiles = [
         "createActivatableComponent",
@@ -411,11 +314,11 @@ let findContentsBelow = contents => {
   };
 };
 
-let convertWorkspace = (workspace, output) => {
+let convertWorkspace = (target, workspace, output) => {
   let fromDirectory = Path.resolve(workspace, "");
   let toDirectory = Path.resolve(output, "");
 
-  Config.load(platformId, options, workspace, toDirectory)
+  Config.load(platformId(target), options, workspace, toDirectory)
   |> Js.Promise.then_((config: Config.t) => {
        ensureDirSync(toDirectory);
 
@@ -437,7 +340,7 @@ let convertWorkspace = (workspace, output) => {
          | _ =>
            concat(
              toDirectory,
-             formatFilename(target, "Colors") ++ targetExtension,
+             formatFilename(target, "Colors") ++ targetExtension(target),
            )
          };
 
@@ -457,7 +360,7 @@ let convertWorkspace = (workspace, output) => {
          | _ =>
            concat(
              toDirectory,
-             formatFilename(target, "TextStyles") ++ targetExtension,
+             formatFilename(target, "TextStyles") ++ targetExtension(target),
            )
          };
 
@@ -477,7 +380,7 @@ let convertWorkspace = (workspace, output) => {
          | _ =>
            concat(
              toDirectory,
-             formatFilename(target, "Shadows") ++ targetExtension,
+             formatFilename(target, "Shadows") ++ targetExtension(target),
            )
          };
 
@@ -497,10 +400,10 @@ let convertWorkspace = (workspace, output) => {
        if (target == Types.Swift) {
          userTypes
          |> UserTypes.TypeSystem.toTypeSystemFile
-         |> SwiftTypeSystem.render(swiftOptions)
+         |> SwiftTypeSystem.render(options.swift)
          |> List.iter((convertedType: SwiftTypeSystem.convertedType) => {
               let importStatement =
-                switch (swiftOptions.framework) {
+                switch (options.swift.framework) {
                 | AppKit => "import AppKit\n\n"
                 | UIKit => "import UIKit\n\n"
                 };
@@ -508,7 +411,7 @@ let convertWorkspace = (workspace, output) => {
                 concat(
                   toDirectory,
                   formatFilename(target, convertedType.name)
-                  ++ targetExtension,
+                  ++ targetExtension(target),
                 );
               writeAnnotatedFile(
                 outputPath,
@@ -517,7 +420,7 @@ let convertWorkspace = (workspace, output) => {
             });
        };
 
-       copyStaticFiles(toDirectory);
+       copyStaticFiles(target, toDirectory);
 
        let successfulComponentNames =
          config.componentPaths
@@ -535,14 +438,14 @@ let convertWorkspace = (workspace, output) => {
                   Path.dirname(fromRelativePath),
                   Path.basename_ext(fromRelativePath, ".component"),
                 )
-                ++ targetExtension;
+                ++ targetExtension(target);
               let outputPath = Path.join([|toDirectory, toRelativePath|]);
               Js.log(
                 Path.join([|workspace, fromRelativePath|])
                 ++ "=>"
                 ++ Path.join([|output, toRelativePath|]),
               );
-              switch (convertComponent(config, file)) {
+              switch (convertComponent(config, target, file)) {
               | exception (Json_decode.DecodeError(reason)) =>
                 Js.log("Failed to decode " ++ file);
                 Js.log(reason);
@@ -585,15 +488,15 @@ let convertWorkspace = (workspace, output) => {
          |> Sequence.compact;
 
        if (target == Types.Swift
-           && swiftOptions.framework == UIKit
-           && swiftOptions.generateCollectionView) {
+           && options.swift.framework == UIKit
+           && options.swift.generateCollectionView) {
          Fs.writeFileSync(
            concat(toDirectory, "LonaCollectionView.swift"),
            annotate(
              SwiftCollectionView.generate(
                config,
                options,
-               swiftOptions,
+               options.swift,
                successfulComponentNames,
              ),
            ),
@@ -616,38 +519,27 @@ let convertWorkspace = (workspace, output) => {
        |> Js.Promise.resolve;
      });
 };
-switch (command) {
-| "workspace" =>
-  if (List.length(positionalArguments) < 5) {
-    exit("No workspace path given");
-  };
-  if (List.length(positionalArguments) < 6) {
-    exit("No output path given");
-  };
-  convertWorkspace(
-    List.nth(positionalArguments, 4),
-    List.nth(positionalArguments, 5),
-  )
-  |> ignore;
-| "component" =>
-  if (List.length(positionalArguments) < 5) {
-    exit("No filename given");
-  };
-  let filename = List.nth(positionalArguments, 4);
-  Config.load(platformId, options, filename, "")
+switch (scanResult.command) {
+| Workspace(target, workspacePath, outputPath) =>
+  convertWorkspace(target, workspacePath, outputPath) |> ignore
+| Component(target, input) =>
+  Config.load(platformId(target), options, input, "")
   |> Js.Promise.then_(config => {
-       convertComponent(config, filename) |> Js.log;
+       convertComponent(config, target, input) |> Js.log;
        Js.Promise.resolve();
      })
-  |> ignore;
-| "colors" =>
+  |> ignore
+| Colors(target, input) =>
   let initialWorkspaceSearchPath =
-    List.length(positionalArguments) < 5 ?
-      Process.cwd() : List.nth(positionalArguments, 4);
+    switch (input) {
+    | File(path) => path
+    | Stdin => Process.cwd()
+    };
 
-  Config.load(platformId, options, initialWorkspaceSearchPath, "")
+  Config.load(platformId(target), options, initialWorkspaceSearchPath, "")
   |> Js.Promise.then_((config: Config.t) =>
-       if (List.length(positionalArguments) < 5) {
+       switch (input) {
+       | Stdin =>
          getStdin()
          |> Js.Promise.then_(contents => {
               let config = {
@@ -661,22 +553,29 @@ switch (command) {
               convertColors(target, config) |> Js.log;
 
               Js.Promise.resolve();
-            });
-       } else {
+            })
+       | File(_) =>
          convertColors(target, config) |> Js.log;
 
          Js.Promise.resolve();
        }
      )
   |> ignore;
-| "shadows" =>
+| Shadows(target, input) =>
   let initialWorkspaceSearchPath =
-    List.length(positionalArguments) < 5 ?
-      Process.cwd() : List.nth(positionalArguments, 4);
+    switch (input) {
+    | File(path) => path
+    | Stdin => Process.cwd()
+    };
 
-  Config.load(platformId, options, initialWorkspaceSearchPath, "")
+  Config.load(platformId(target), options, initialWorkspaceSearchPath, "")
   |> Js.Promise.then_((config: Config.t) =>
-       if (List.length(positionalArguments) < 5) {
+       switch (input) {
+       | File(_) =>
+         convertShadows(target, config) |> Js.log;
+
+         Js.Promise.resolve();
+       | Stdin =>
          getStdin()
          |> Js.Promise.then_(contents => {
               let config = {
@@ -690,31 +589,30 @@ switch (command) {
               convertShadows(target, config) |> Js.log;
 
               Js.Promise.resolve();
-            });
-       } else {
-         convertShadows(target, config) |> Js.log;
-
-         Js.Promise.resolve();
+            })
        }
      )
   |> ignore;
-| "types" =>
-  if (List.length(positionalArguments) < 5) {
-    exit("No filename given");
-  } else {
-    let contents =
-      Node.Fs.readFileSync(List.nth(positionalArguments, 4), `utf8);
-    let jsonContents = Serialization.convertTypes(contents, "json");
-    convertTypes(target, jsonContents) |> Js.log;
-  }
-| "textStyles" =>
-  let initialWorkspaceSearchPath =
-    List.length(positionalArguments) < 5 ?
-      Process.cwd() : List.nth(positionalArguments, 4);
+| Types(target, inputPath) =>
+  let contents = Node.Fs.readFileSync(inputPath, `utf8);
+  let jsonContents = Serialization.convertTypes(contents, "json");
+  convertTypes(target, jsonContents) |> Js.log;
 
-  Config.load(platformId, options, initialWorkspaceSearchPath, "")
+| TextStyles(target, input) =>
+  let initialWorkspaceSearchPath =
+    switch (input) {
+    | File(path) => path
+    | Stdin => Process.cwd()
+    };
+
+  Config.load(platformId(target), options, initialWorkspaceSearchPath, "")
   |> Js.Promise.then_((config: Config.t) =>
-       if (List.length(positionalArguments) < 5) {
+       switch (input) {
+       | File(_) =>
+         convertTextStyles(target, config) |> Js.log;
+
+         Js.Promise.resolve();
+       | Stdin =>
          getStdin()
          |> Js.Promise.then_(contents => {
               let config = {
@@ -728,37 +626,16 @@ switch (command) {
               convertTextStyles(target, config) |> Js.log;
 
               Js.Promise.resolve();
-            });
-       } else {
-         convertTextStyles(target, config) |> Js.log;
-
-         Js.Promise.resolve();
+            })
        }
      )
   |> ignore;
-| "convertSvg" =>
-  let contents =
-    if (List.length(positionalArguments) < 4) {
-      getStdin();
-    } else {
-      Js.Promise.resolve(
-        Node.Fs.readFileSync(List.nth(positionalArguments, 3), `utf8),
-      );
-    };
-  Js.Promise.(
-    contents
-    |> then_(Svg.parse)
-    |> then_(parsed => parsed |> Js.Json.stringify |> Js.log |> resolve)
-    |> ignore
-  );
-| "config" =>
-  let workspacePath = List.nth(positionalArguments, 3);
-
-  Config.load(platformId, options, workspacePath, "")
+| Config(workspacePath) =>
+  Config.load(Types.ReactDOM, options, workspacePath, "")
   |> Js.Promise.then_((config: Config.t) => {
        Js.log(config |> Config.toJson(version) |> Json.stringify);
        Js.Promise.resolve();
      })
-  |> ignore;
-| _ => Js.log2("Invalid command", command)
+  |> ignore
+| Version => Js.log(version)
 };
