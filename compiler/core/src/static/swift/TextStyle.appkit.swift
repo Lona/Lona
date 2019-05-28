@@ -2,12 +2,17 @@ import Foundation
 import AppKit
 
 public class TextStyle {
+  public enum TextTransform {
+    case none, uppercase, lowercase, capizalize
+  }
+
   public let family: String?
   public let name: String?
   public let weight: NSFont.Weight
   public let size: CGFloat
   public let lineHeight: CGFloat?
   public let kerning: Double
+  public let textTransform: TextTransform?
   public let color: NSColor?
   public let alignment: NSTextAlignment
 
@@ -18,6 +23,7 @@ public class TextStyle {
     size: CGFloat = NSFont.systemFontSize,
     lineHeight: CGFloat? = nil,
     kerning: Double = 0,
+    textTransform: TextTransform? = nil,
     color: NSColor? = nil,
     alignment: NSTextAlignment = .left) {
     self.family = family
@@ -26,6 +32,7 @@ public class TextStyle {
     self.size = size
     self.lineHeight = lineHeight
     self.kerning = kerning
+    self.textTransform = textTransform
     self.color = color
     self.alignment = alignment
   }
@@ -37,6 +44,7 @@ public class TextStyle {
     size: CGFloat? = nil,
     lineHeight: CGFloat? = nil,
     kerning: Double? = nil,
+    textTransform: TextTransform? = nil,
     color: NSColor? = nil,
     alignment: NSTextAlignment? = nil
     ) -> TextStyle {
@@ -47,6 +55,7 @@ public class TextStyle {
       size: size ?? self.size,
       lineHeight: lineHeight ?? self.lineHeight,
       kerning: kerning ?? self.kerning,
+      textTransform: textTransform ?? self.textTransform,
       color: color ?? self.color,
       alignment: alignment ?? self.alignment)
   }
@@ -139,6 +148,7 @@ extension TextStyle: Equatable {
       lhs.size == rhs.size &&
       lhs.lineHeight == rhs.lineHeight &&
       lhs.kerning == rhs.kerning &&
+      lhs.textTransform == rhs.textTransform &&
       lhs.color == rhs.color &&
       lhs.alignment == rhs.alignment)
   }

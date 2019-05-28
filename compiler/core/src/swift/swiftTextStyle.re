@@ -79,6 +79,13 @@ let render = (config: Config.t) => {
                "value": LiteralExpression(FloatingPoint(value)),
              })
            ),
+        lookup(style => style.textTransform)
+        |> unwrapOptional(value =>
+             FunctionCallArgument({
+               "name": Some(SwiftIdentifier("textTransform")),
+               "value": LiteralExpression(String(value)),
+             })
+           ),
         lookup(style => style.color)
         |> unwrapOptional(value => {
              let value =

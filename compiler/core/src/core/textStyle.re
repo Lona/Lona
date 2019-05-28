@@ -7,6 +7,7 @@ type t = {
   fontSize: option(float),
   lineHeight: option(float),
   letterSpacing: option(float),
+  textTransfrom: option(string),
   color: option(string),
   extends: option(string),
 };

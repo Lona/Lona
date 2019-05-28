@@ -2,12 +2,17 @@ import Foundation
 import UIKit
 
 public class TextStyle {
+  public enum TextTransform {
+    case none, uppercase, lowercase, capizalize
+  }
+
   public let family: String?
   public let name: String?
   public let weight: UIFont.Weight
   public let size: CGFloat
   public let lineHeight: CGFloat?
   public let kerning: Double
+  public let textTransform: TextTransform?
   public let color: UIColor?
   public let alignment: NSTextAlignment
 
@@ -18,6 +23,7 @@ public class TextStyle {
     size: CGFloat = UIFont.systemFontSize,
     lineHeight: CGFloat? = nil,
     kerning: Double = 0,
+    textTransform: TextTransform? = nil
     color: UIColor? = nil,
     alignment: NSTextAlignment = .left) {
     self.family = family
@@ -26,6 +32,7 @@ public class TextStyle {
     self.size = size
     self.lineHeight = lineHeight
     self.kerning = kerning
+    self.textTransform = textTransform
     self.color = color
     self.alignment = alignment
   }
@@ -37,6 +44,7 @@ public class TextStyle {
     size: CGFloat? = nil,
     lineHeight: CGFloat? = nil,
     kerning: Double? = nil,
+    textTransform: TextTransform? = nil,
     color: UIColor? = nil,
     alignment: NSTextAlignment? = nil
     ) -> TextStyle {
@@ -47,6 +55,7 @@ public class TextStyle {
       size: size ?? self.size,
       lineHeight: lineHeight ?? self.lineHeight,
       kerning: kerning ?? self.kerning,
+      textTransform: textTransform ?? self.textTransform,
       color: color ?? self.color,
       alignment: alignment ?? self.alignment)
   }
@@ -107,6 +116,10 @@ public class TextStyle {
   }()
 
   public func apply(to string: String) -> NSAttributedString {
+    if let textTransform = textTransform {
+      string = apply(textTransform: textTransform, to: string)
+    }
+
     return NSAttributedString(
       string: string,
       attributes: attributeDictionary)
@@ -114,6 +127,12 @@ public class TextStyle {
 
   public func apply(to attributedString: NSAttributedString) -> NSAttributedString {
     let styledString = NSMutableAttributedString(attributedString: attributedString)
+
+    if let textTransform = textTransform {
+      let transformedString = apply(textTransform: textTransform, to: tyledString.mutableString)
+      styledString.mutableString.setString(transformedString)
+    }
+
     styledString.addAttributes(
       attributeDictionary,
       range: NSRange(location: 0, length: styledString.length))
@@ -124,6 +143,19 @@ public class TextStyle {
     attributedString.addAttributes(
       attributeDictionary,
       range: range)
+  }
+
+  private func apply(textTransform: TextTransform, to string: String) -> String {
+    switch textTransform {
+      case .uppercase:
+        return string.uppercased
+      case .lowercase: 
+        return string.lowercased
+      case .capizalize:
+        return String(NSString(string).capitalized)
+      default:
+        return string
+      }
   }
 }
 
@@ -138,6 +170,7 @@ extension TextStyle: Equatable {
       lhs.size == rhs.size &&
       lhs.lineHeight == rhs.lineHeight &&
       lhs.kerning == rhs.kerning &&
+      lhs.textTransform == rhs.textTransform &&
       lhs.color == rhs.color &&
       lhs.alignment == rhs.alignment)
   }
