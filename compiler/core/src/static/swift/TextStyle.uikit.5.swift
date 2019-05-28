@@ -141,10 +141,9 @@ public class TextStyle {
 
   public func apply(to attributedString: NSMutableAttributedString, at range: NSRange) {
     if let textTransform = textTransform {
-      let rangeToTransfrom = Range(range, in: transformedString)
-      let transformedString = apply(textTransform: textTransform, to: attributedString.mutableString)
-      let transformedRange = transformedString.subscript(rangeToTransfrom)
-      attributedString.replaceCharactersInRange(range, withString: transformedString)
+      let substring = attributedString.mutableString.substring(with: range)
+      let transformedSubstring = apply(textTransform: textTransform, to: substring)
+      attributedString.mutableString.replaceCharacters(in: range, with: transformedSubstring)
     }
 
     attributedString.addAttributes(
