@@ -140,6 +140,13 @@ public class TextStyle {
   }
 
   public func apply(to attributedString: NSMutableAttributedString, at range: NSRange) {
+    if let textTransform = textTransform {
+      let rangeToTransfrom = Range(range, in: transformedString)
+      let transformedString = apply(textTransform: textTransform, to: attributedString.mutableString)
+      let transformedRange = transformedString.subscript(rangeToTransfrom)
+      attributedString.replaceCharactersInRange(range, withString: transformedString)
+    }
+
     attributedString.addAttributes(
       attributeDictionary,
       range: range)
@@ -152,7 +159,7 @@ public class TextStyle {
       case .lowercase: 
         return string.lowercased
       case .capizalize:
-        return String(NSString(string).capitalized)
+        return String(NSString(string: string).capitalized)
       default:
         return string
       }
