@@ -12,7 +12,7 @@ public class TextStyle {
   public let size: CGFloat
   public let lineHeight: CGFloat?
   public let kerning: Double
-  public let textTransform: TextTransform?
+  public let textTransform: TextTransform
   public let color: UIColor?
   public let alignment: NSTextAlignment
 
@@ -23,7 +23,7 @@ public class TextStyle {
     size: CGFloat = UIFont.systemFontSize,
     lineHeight: CGFloat? = nil,
     kerning: Double = 0,
-    textTransform: TextTransform? = nil
+    textTransform: TextTransform = TextTransform.none,
     color: UIColor? = nil,
     alignment: NSTextAlignment = .left) {
     self.family = family
@@ -154,14 +154,14 @@ public class TextStyle {
 
   private func apply(textTransform: TextTransform, to string: String) -> String {
     switch textTransform {
+      case .none:
+        return string
       case .uppercase:
         return string.uppercased
       case .lowercase: 
         return string.lowercased
       case .capizalize:
-        return String(NSString(string: string).capitalized)
-      default:
-        return string
+        return string.capitalized
       }
   }
 }
