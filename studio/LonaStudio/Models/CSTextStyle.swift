@@ -48,6 +48,7 @@ public struct CSTextStyle: Equatable, CSDataSerializable {
     var fontSize: Double?
     var lineHeight: Double?
     var letterSpacing: Double?
+    var textTransform: String?
     var color: String?
     var extends: String?
     var comment: String?
@@ -60,6 +61,7 @@ public struct CSTextStyle: Equatable, CSDataSerializable {
          fontSize: Double? = nil,
          lineHeight: Double? = nil,
          letterSpacing: Double? = nil,
+         textTransform: String? = nil,
          color: String? = nil,
          extends: String? = nil,
          comment: String? = nil) {
@@ -71,6 +73,7 @@ public struct CSTextStyle: Equatable, CSDataSerializable {
         self.fontSize = fontSize
         self.lineHeight = lineHeight
         self.letterSpacing = letterSpacing
+        self.textTransform = textTransform
         self.color = color
         self.extends = extends
         self.comment = comment
@@ -123,6 +126,7 @@ public struct CSTextStyle: Equatable, CSDataSerializable {
             size: fontSize ?? defaultFontSize,
             lineHeight: lineHeight,
             kerning: letterSpacing ?? 0,
+            textTransform: lookup({ style in style.textTransform }) ?? "none",
             color: color)
     }
 
@@ -161,6 +165,10 @@ public struct CSTextStyle: Equatable, CSDataSerializable {
         if let letterSpacing = letterSpacing, letterSpacing != -1 {
             data["letterSpacing"] = letterSpacing.toData()
         }
+        
+        if let textTransform = textTransform, textTransform != "" {
+            data["textTransform"] = textTransform.toData()
+        }
 
         if let color = color, color != "" {
             data["color"] = color.toData()
@@ -192,6 +200,7 @@ public struct CSTextStyle: Equatable, CSDataSerializable {
             "fontSize": (CSType.number.makeOptional(), CSAccess.write),
             "lineHeight": (CSType.number.makeOptional(), CSAccess.write),
             "letterSpacing": (CSType.number.makeOptional(), CSAccess.write),
+            "textTransform": (CSType.string.makeOptional(), CSAccess.write),
             "color": (CSType.string.makeOptional(), CSAccess.write),
             "extends": (CSType.string.makeOptional(), CSAccess.write),
             "comment": (CSType.string.makeOptional(), CSAccess.write)
@@ -208,6 +217,7 @@ public struct CSTextStyle: Equatable, CSDataSerializable {
             fontSize: data["fontSize"]?.number,
             lineHeight: data["lineHeight"]?.number,
             letterSpacing: data["letterSpacing"]?.number,
+            textTransform: data["textTransform"]?.string,
             color: data["color"]?.string,
             extends: data["extends"]?.string,
             comment: data["comment"]?.string)
