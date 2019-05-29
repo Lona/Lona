@@ -129,7 +129,7 @@ public class TextStyle {
     let styledString = NSMutableAttributedString(attributedString: attributedString)
 
     if let textTransform = textTransform {
-      let transformedString = apply(textTransform: textTransform, to: tyledString.mutableString)
+      let transformedString = apply(textTransform: textTransform, to: styledString.mutableString)
       styledString.mutableString.setString(transformedString)
     }
 

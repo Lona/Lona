@@ -80,7 +80,7 @@ let render =
                value: Some(lonaValue |> buildStyleNodeForFramework),
              });
            }),
-        lookup(style => style.textTransfrom)
+        lookup(style => style.textTransform)
         |> unwrapOptional(value => {
              let lonaValue: Types.lonaValue = {
                ltype: Types.stringType,

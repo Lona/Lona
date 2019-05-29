@@ -12,7 +12,7 @@ public class TextStyle {
   public let size: CGFloat
   public let lineHeight: CGFloat?
   public let kerning: Double
-  public let textTransform: TextTransform?
+  public let textTransform: TextTransform
   public let color: NSColor?
   public let alignment: NSTextAlignment
 
@@ -23,7 +23,7 @@ public class TextStyle {
     size: CGFloat = NSFont.systemFontSize,
     lineHeight: CGFloat? = nil,
     kerning: Double = 0,
-    textTransform: TextTransform? = nil,
+    textTransform: TextTransform = TextTransform.none,
     color: NSColor? = nil,
     alignment: NSTextAlignment = .left) {
     self.family = family
@@ -44,7 +44,7 @@ public class TextStyle {
     size: CGFloat? = nil,
     lineHeight: CGFloat? = nil,
     kerning: Double? = nil,
-    textTransform: TextTransform? = nil,
+    textTransform: TextTransform = TextTransform.none,
     color: NSColor? = nil,
     alignment: NSTextAlignment? = nil
     ) -> TextStyle {
@@ -117,6 +117,10 @@ public class TextStyle {
   }()
 
   public func apply(to string: String) -> NSAttributedString {
+    if let textTransform = textTransform {
+      string = apply(textTransform: textTransform, to: string)
+    }
+
     return NSAttributedString(
       string: string,
       attributes: attributeDictionary)
@@ -124,6 +128,12 @@ public class TextStyle {
 
   public func apply(to attributedString: NSAttributedString) -> NSAttributedString {
     let styledString = NSMutableAttributedString(attributedString: attributedString)
+
+    if let textTransform = textTransform {
+      let transformedString = apply(textTransform: textTransform, to: styledString.mutableString)
+      styledString.mutableString.setString(transformedString)
+    }
+
     styledString.addAttributes(
       attributeDictionary,
       range: NSRange(location: 0, length: styledString.length))
@@ -131,9 +141,28 @@ public class TextStyle {
   }
 
   public func apply(to attributedString: NSMutableAttributedString, at range: NSRange) {
+    if let textTransform = textTransform {
+      let substring = attributedString.mutableString.substring(with: range)
+      let transformedSubstring = apply(textTransform: textTransform, to: substring)
+      attributedString.mutableString.replaceCharacters(in: range, with: transformedSubstring)
+    }
+    
     attributedString.addAttributes(
       attributeDictionary,
       range: range)
+  }
+
+  private func apply(textTransform: TextTransform, to string: String) -> String {
+    switch textTransform {
+      case .none:
+        return string
+      case .uppercase:
+        return string.uppercased
+      case .lowercase: 
+        return string.lowercased
+      case .capizalize:
+        return string.capitalized
+      }
   }
 }
 
