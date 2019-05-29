@@ -29,6 +29,7 @@ public class TextStyleInspector: NSBox {
     fontSizeNumber: CGFloat,
     lineHeightNumber: CGFloat,
     letterSpacingNumber: CGFloat,
+    textTransformText: String,
     colorValue: String,
     descriptionText: String)
   {
@@ -43,6 +44,7 @@ public class TextStyleInspector: NSBox {
           fontSizeNumber: fontSizeNumber,
           lineHeightNumber: lineHeightNumber,
           letterSpacingNumber: letterSpacingNumber,
+          textTransformText: textTransformText,
           colorValue: colorValue,
           descriptionText: descriptionText))
   }
@@ -136,6 +138,15 @@ public class TextStyleInspector: NSBox {
     }
   }
 
+  public var textTransformText: String {
+    get { return parameters.textTransformText }
+    set {
+      if parameters.textTransformText != newValue {
+        parameters.textTransformText = newValue
+      }
+    }
+  }
+
   public var colorValue: String {
     get { return parameters.colorValue }
     set {
@@ -194,6 +205,11 @@ public class TextStyleInspector: NSBox {
     set { parameters.onChangeLetterSpacingNumber = newValue }
   }
 
+  public var onChangeTextTransformText: StringHandler {
+    get { return parameters.onChangeTextTransformText }
+    set { parameters.onChangeTextTransformText = newValue }
+  }
+
   public var onChangeColorValue: StringHandler {
     get { return parameters.onChangeColorValue }
     set { parameters.onChangeColorValue = newValue }
@@ -237,6 +253,9 @@ public class TextStyleInspector: NSBox {
   private var spacer7View = NSBox()
   private var letterSpacingLabelView = LNATextField(labelWithString: "")
   private var letterSpacingInputView = NumberInput()
+  private var spacerView = NSBox()
+  private var textTransformLabelView = LNATextField(labelWithString: "")
+  private var textTransformInputView = TextInput()
   private var spacer8View = NSBox()
   private var colorLabelView = LNATextField(labelWithString: "")
   private var colorInputView = ColorPickerButton()
@@ -252,6 +271,7 @@ public class TextStyleInspector: NSBox {
   private var fontSizeLabelViewTextStyle = TextStyles.small
   private var lineHeightLabelViewTextStyle = TextStyles.small
   private var letterSpacingLabelViewTextStyle = TextStyles.small
+  private var textTransformLabelViewTextStyle = TextStyles.small
   private var colorLabelViewTextStyle = TextStyles.small
   private var descriptionLabelViewTextStyle = TextStyles.small
 
@@ -288,6 +308,10 @@ public class TextStyleInspector: NSBox {
     spacer7View.borderType = .noBorder
     spacer7View.contentViewMargins = .zero
     letterSpacingLabelView.lineBreakMode = .byWordWrapping
+    spacerView.boxType = .custom
+    spacerView.borderType = .noBorder
+    spacerView.contentViewMargins = .zero
+    textTransformLabelView.lineBreakMode = .byWordWrapping
     spacer8View.boxType = .custom
     spacer8View.borderType = .noBorder
     spacer8View.contentViewMargins = .zero
@@ -320,6 +344,9 @@ public class TextStyleInspector: NSBox {
     addSubview(spacer7View)
     addSubview(letterSpacingLabelView)
     addSubview(letterSpacingInputView)
+    addSubview(spacerView)
+    addSubview(textTransformLabelView)
+    addSubview(textTransformInputView)
     addSubview(spacer8View)
     addSubview(colorLabelView)
     addSubview(colorInputView)
@@ -364,6 +391,11 @@ public class TextStyleInspector: NSBox {
     letterSpacingLabelViewTextStyle = TextStyles.small
     letterSpacingLabelView.attributedStringValue =
       letterSpacingLabelViewTextStyle.apply(to: letterSpacingLabelView.attributedStringValue)
+    spacerView.fillColor = #colorLiteral(red: 0.847058823529, green: 0.847058823529, blue: 0.847058823529, alpha: 1)
+    textTransformLabelView.attributedStringValue = textTransformLabelViewTextStyle.apply(to: "TEXT TRANSFORM")
+    textTransformLabelViewTextStyle = TextStyles.small
+    textTransformLabelView.attributedStringValue =
+      textTransformLabelViewTextStyle.apply(to: textTransformLabelView.attributedStringValue)
     spacer8View.fillColor = #colorLiteral(red: 0.847058823529, green: 0.847058823529, blue: 0.847058823529, alpha: 1)
     colorLabelView.attributedStringValue = colorLabelViewTextStyle.apply(to: "COLOR")
     colorLabelViewTextStyle = TextStyles.small
@@ -400,6 +432,9 @@ public class TextStyleInspector: NSBox {
     spacer7View.translatesAutoresizingMaskIntoConstraints = false
     letterSpacingLabelView.translatesAutoresizingMaskIntoConstraints = false
     letterSpacingInputView.translatesAutoresizingMaskIntoConstraints = false
+    spacerView.translatesAutoresizingMaskIntoConstraints = false
+    textTransformLabelView.translatesAutoresizingMaskIntoConstraints = false
+    textTransformInputView.translatesAutoresizingMaskIntoConstraints = false
     spacer8View.translatesAutoresizingMaskIntoConstraints = false
     colorLabelView.translatesAutoresizingMaskIntoConstraints = false
     colorInputView.translatesAutoresizingMaskIntoConstraints = false
@@ -531,7 +566,27 @@ public class TextStyleInspector: NSBox {
     let letterSpacingInputViewTrailingAnchorConstraint = letterSpacingInputView
       .trailingAnchor
       .constraint(equalTo: trailingAnchor)
-    let spacer8ViewTopAnchorConstraint = spacer8View.topAnchor.constraint(equalTo: letterSpacingInputView.bottomAnchor)
+    let spacerViewTopAnchorConstraint = spacerView.topAnchor.constraint(equalTo: letterSpacingInputView.bottomAnchor)
+    let spacerViewLeadingAnchorConstraint = spacerView.leadingAnchor.constraint(equalTo: leadingAnchor)
+    let textTransformLabelViewTopAnchorConstraint = textTransformLabelView
+      .topAnchor
+      .constraint(equalTo: spacerView.bottomAnchor)
+    let textTransformLabelViewLeadingAnchorConstraint = textTransformLabelView
+      .leadingAnchor
+      .constraint(equalTo: leadingAnchor)
+    let textTransformLabelViewTrailingAnchorConstraint = textTransformLabelView
+      .trailingAnchor
+      .constraint(equalTo: trailingAnchor)
+    let textTransformInputViewTopAnchorConstraint = textTransformInputView
+      .topAnchor
+      .constraint(equalTo: textTransformLabelView.bottomAnchor, constant: 4)
+    let textTransformInputViewLeadingAnchorConstraint = textTransformInputView
+      .leadingAnchor
+      .constraint(equalTo: leadingAnchor)
+    let textTransformInputViewTrailingAnchorConstraint = textTransformInputView
+      .trailingAnchor
+      .constraint(equalTo: trailingAnchor)
+    let spacer8ViewTopAnchorConstraint = spacer8View.topAnchor.constraint(equalTo: textTransformInputView.bottomAnchor)
     let spacer8ViewLeadingAnchorConstraint = spacer8View.leadingAnchor.constraint(equalTo: leadingAnchor)
     let colorLabelViewTopAnchorConstraint = colorLabelView.topAnchor.constraint(equalTo: spacer8View.bottomAnchor)
     let colorLabelViewLeadingAnchorConstraint = colorLabelView.leadingAnchor.constraint(equalTo: leadingAnchor)
@@ -576,6 +631,8 @@ public class TextStyleInspector: NSBox {
     let spacer6ViewWidthAnchorConstraint = spacer6View.widthAnchor.constraint(equalToConstant: 0)
     let spacer7ViewHeightAnchorConstraint = spacer7View.heightAnchor.constraint(equalToConstant: 20)
     let spacer7ViewWidthAnchorConstraint = spacer7View.widthAnchor.constraint(equalToConstant: 0)
+    let spacerViewHeightAnchorConstraint = spacerView.heightAnchor.constraint(equalToConstant: 20)
+    let spacerViewWidthAnchorConstraint = spacerView.widthAnchor.constraint(equalToConstant: 0)
     let spacer8ViewHeightAnchorConstraint = spacer8View.heightAnchor.constraint(equalToConstant: 20)
     let spacer8ViewWidthAnchorConstraint = spacer8View.widthAnchor.constraint(equalToConstant: 0)
     let spacer9ViewHeightAnchorConstraint = spacer9View.heightAnchor.constraint(equalToConstant: 20)
@@ -646,6 +703,14 @@ public class TextStyleInspector: NSBox {
       letterSpacingInputViewTopAnchorConstraint,
       letterSpacingInputViewLeadingAnchorConstraint,
       letterSpacingInputViewTrailingAnchorConstraint,
+      spacerViewTopAnchorConstraint,
+      spacerViewLeadingAnchorConstraint,
+      textTransformLabelViewTopAnchorConstraint,
+      textTransformLabelViewLeadingAnchorConstraint,
+      textTransformLabelViewTrailingAnchorConstraint,
+      textTransformInputViewTopAnchorConstraint,
+      textTransformInputViewLeadingAnchorConstraint,
+      textTransformInputViewTrailingAnchorConstraint,
       spacer8ViewTopAnchorConstraint,
       spacer8ViewLeadingAnchorConstraint,
       colorLabelViewTopAnchorConstraint,
@@ -677,6 +742,8 @@ public class TextStyleInspector: NSBox {
       spacer6ViewWidthAnchorConstraint,
       spacer7ViewHeightAnchorConstraint,
       spacer7ViewWidthAnchorConstraint,
+      spacerViewHeightAnchorConstraint,
+      spacerViewWidthAnchorConstraint,
       spacer8ViewHeightAnchorConstraint,
       spacer8ViewWidthAnchorConstraint,
       spacer9ViewHeightAnchorConstraint,
@@ -693,6 +760,7 @@ public class TextStyleInspector: NSBox {
     fontSizeInputView.numberValue = fontSizeNumber
     lineHeightInputView.numberValue = lineHeightNumber
     letterSpacingInputView.numberValue = letterSpacingNumber
+    textTransformInputView.textValue = textTransformText
     colorInputView.textValue = colorValue
     descriptionInputView.textValue = descriptionText
     idInputView.onChangeTextValue = handleOnChangeIdText
@@ -705,6 +773,7 @@ public class TextStyleInspector: NSBox {
     letterSpacingInputView.onChangeNumberValue = handleOnChangeLetterSpacingNumber
     colorInputView.onChangeTextValue = handleOnChangeColorValue
     descriptionInputView.onChangeTextValue = handleOnChangeDescriptionText
+    textTransformInputView.onChangeTextValue = handleOnChangeTextTransformText
   }
 
   private func handleOnChangeIdText(_ arg0: String) {
@@ -739,6 +808,10 @@ public class TextStyleInspector: NSBox {
     onChangeLetterSpacingNumber?(arg0)
   }
 
+  private func handleOnChangeTextTransformText(_ arg0: String) {
+    onChangeTextTransformText?(arg0)
+  }
+
   private func handleOnChangeColorValue(_ arg0: String) {
     onChangeColorValue?(arg0)
   }
@@ -760,6 +833,7 @@ extension TextStyleInspector {
     public var fontSizeNumber: CGFloat
     public var lineHeightNumber: CGFloat
     public var letterSpacingNumber: CGFloat
+    public var textTransformText: String
     public var colorValue: String
     public var descriptionText: String
     public var onChangeIdText: StringHandler
@@ -770,6 +844,7 @@ extension TextStyleInspector {
     public var onChangeFontSizeNumber: NumberHandler
     public var onChangeLineHeightNumber: NumberHandler
     public var onChangeLetterSpacingNumber: NumberHandler
+    public var onChangeTextTransformText: StringHandler
     public var onChangeColorValue: StringHandler
     public var onChangeDescriptionText: StringHandler
 
@@ -782,6 +857,7 @@ extension TextStyleInspector {
       fontSizeNumber: CGFloat,
       lineHeightNumber: CGFloat,
       letterSpacingNumber: CGFloat,
+      textTransformText: String,
       colorValue: String,
       descriptionText: String,
       onChangeIdText: StringHandler = nil,
@@ -792,6 +868,7 @@ extension TextStyleInspector {
       onChangeFontSizeNumber: NumberHandler = nil,
       onChangeLineHeightNumber: NumberHandler = nil,
       onChangeLetterSpacingNumber: NumberHandler = nil,
+      onChangeTextTransformText: StringHandler = nil,
       onChangeColorValue: StringHandler = nil,
       onChangeDescriptionText: StringHandler = nil)
     {
@@ -803,6 +880,7 @@ extension TextStyleInspector {
       self.fontSizeNumber = fontSizeNumber
       self.lineHeightNumber = lineHeightNumber
       self.letterSpacingNumber = letterSpacingNumber
+      self.textTransformText = textTransformText
       self.colorValue = colorValue
       self.descriptionText = descriptionText
       self.onChangeIdText = onChangeIdText
@@ -813,6 +891,7 @@ extension TextStyleInspector {
       self.onChangeFontSizeNumber = onChangeFontSizeNumber
       self.onChangeLineHeightNumber = onChangeLineHeightNumber
       self.onChangeLetterSpacingNumber = onChangeLetterSpacingNumber
+      self.onChangeTextTransformText = onChangeTextTransformText
       self.onChangeColorValue = onChangeColorValue
       self.onChangeDescriptionText = onChangeDescriptionText
     }
@@ -828,6 +907,7 @@ extension TextStyleInspector {
           fontSizeNumber: 0,
           lineHeightNumber: 0,
           letterSpacingNumber: 0,
+          textTransformText: "",
           colorValue: "",
           descriptionText: "")
     }
@@ -841,7 +921,8 @@ extension TextStyleInspector {
                 lhs.fontSizeNumber == rhs.fontSizeNumber &&
                   lhs.lineHeightNumber == rhs.lineHeightNumber &&
                     lhs.letterSpacingNumber == rhs.letterSpacingNumber &&
-                      lhs.colorValue == rhs.colorValue && lhs.descriptionText == rhs.descriptionText
+                      lhs.textTransformText == rhs.textTransformText &&
+                        lhs.colorValue == rhs.colorValue && lhs.descriptionText == rhs.descriptionText
     }
   }
 }
@@ -874,6 +955,7 @@ extension TextStyleInspector {
       fontSizeNumber: CGFloat,
       lineHeightNumber: CGFloat,
       letterSpacingNumber: CGFloat,
+      textTransformText: String,
       colorValue: String,
       descriptionText: String,
       onChangeIdText: StringHandler = nil,
@@ -884,6 +966,7 @@ extension TextStyleInspector {
       onChangeFontSizeNumber: NumberHandler = nil,
       onChangeLineHeightNumber: NumberHandler = nil,
       onChangeLetterSpacingNumber: NumberHandler = nil,
+      onChangeTextTransformText: StringHandler = nil,
       onChangeColorValue: StringHandler = nil,
       onChangeDescriptionText: StringHandler = nil)
     {
@@ -898,6 +981,7 @@ extension TextStyleInspector {
             fontSizeNumber: fontSizeNumber,
             lineHeightNumber: lineHeightNumber,
             letterSpacingNumber: letterSpacingNumber,
+            textTransformText: textTransformText,
             colorValue: colorValue,
             descriptionText: descriptionText,
             onChangeIdText: onChangeIdText,
@@ -908,6 +992,7 @@ extension TextStyleInspector {
             onChangeFontSizeNumber: onChangeFontSizeNumber,
             onChangeLineHeightNumber: onChangeLineHeightNumber,
             onChangeLetterSpacingNumber: onChangeLetterSpacingNumber,
+            onChangeTextTransformText: onChangeTextTransformText,
             onChangeColorValue: onChangeColorValue,
             onChangeDescriptionText: onChangeDescriptionText))
     }
@@ -923,6 +1008,7 @@ extension TextStyleInspector {
           fontSizeNumber: 0,
           lineHeightNumber: 0,
           letterSpacingNumber: 0,
+          textTransformText: "",
           colorValue: "",
           descriptionText: "")
     }

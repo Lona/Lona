@@ -165,7 +165,7 @@ public struct CSTextStyle: Equatable, CSDataSerializable {
         if let letterSpacing = letterSpacing, letterSpacing != -1 {
             data["letterSpacing"] = letterSpacing.toData()
         }
-        
+
         if let textTransform = textTransform, textTransform != "" {
             data["textTransform"] = textTransform.toData()
         }

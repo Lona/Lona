@@ -117,6 +117,18 @@
     {
       "assignee" : [
         "layers",
+        "TextTransformInput",
+        "textValue"
+      ],
+      "content" : [
+        "parameters",
+        "textTransformText"
+      ],
+      "type" : "AssignExpr"
+    },
+    {
+      "assignee" : [
+        "layers",
         "ColorInput",
         "textValue"
       ],
@@ -257,6 +269,18 @@
         "onChangeDescriptionText"
       ],
       "type" : "AssignExpr"
+    },
+    {
+      "assignee" : [
+        "layers",
+        "TextTransformInput",
+        "onChangeTextValue"
+      ],
+      "content" : [
+        "parameters",
+        "onChangeTextTransformText"
+      ],
+      "type" : "AssignExpr"
     }
   ],
   "params" : [
@@ -291,6 +315,10 @@
     {
       "name" : "letterSpacingNumber",
       "type" : "Number"
+    },
+    {
+      "name" : "textTransformText",
+      "type" : "String"
     },
     {
       "name" : "colorValue",
@@ -331,6 +359,10 @@
     {
       "name" : "onChangeLetterSpacingNumber",
       "type" : "NumberHandler"
+    },
+    {
+      "name" : "onChangeTextTransformText",
+      "type" : "StringHandler"
     },
     {
       "name" : "onChangeColorValue",
@@ -541,6 +573,32 @@
 
         },
         "type" : "NumberInput"
+      },
+      {
+        "id" : "Spacer",
+        "params" : {
+          "backgroundColor" : "#D8D8D8",
+          "height" : 20,
+          "width" : 0
+        },
+        "type" : "Lona:View"
+      },
+      {
+        "id" : "TextTransformLabel",
+        "params" : {
+          "alignSelf" : "stretch",
+          "font" : "small",
+          "marginBottom" : 4,
+          "text" : "TEXT TRANSFORM"
+        },
+        "type" : "Lona:Text"
+      },
+      {
+        "id" : "TextTransformInput",
+        "params" : {
+          "textValue" : "Text"
+        },
+        "type" : "TextInput"
       },
       {
         "id" : "Spacer8",
