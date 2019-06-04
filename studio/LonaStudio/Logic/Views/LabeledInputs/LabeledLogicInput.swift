@@ -67,7 +67,7 @@ class LabeledLogicInput: LabeledInput {
             self.onChangeValue?(newValue)
             return true
         }
-        logicInput.suggestionsForNode = { [unowned self] node, query in
+        logicInput.suggestionsForNode = { [unowned self] rootNode, node, query in
             switch self.value.type {
             case CSURLType:
                 return LogicInput.suggestionsForURL(isOptional: false, isVector: self.isVectorInput, node: node, query: query)
