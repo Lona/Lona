@@ -35,6 +35,7 @@ extension LogicEditor {
                                 content: .enumeration(
                                     id: UUID(),
                                     name: LGCPattern(id: UUID(), name: "name"),
+                                    genericParameters: .empty,
                                     cases: .next(
                                         LGCEnumerationCase.placeholder(id: UUID()),
                                         .empty
