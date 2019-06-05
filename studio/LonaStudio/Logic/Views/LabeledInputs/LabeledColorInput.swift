@@ -103,6 +103,7 @@ public class LabeledColorInput: LabeledInput {
                         id: UUID(),
                         content: .importDeclaration(id: UUID(), name: .init(id: UUID(), name: "Prelude"))
                     ),
+                    .declaration(id: UUID(), content: CSColors.logicSyntax),
                     .declaration(
                         id: UUID(),
                         content: .variable(
@@ -128,12 +129,9 @@ public class LabeledColorInput: LabeledInput {
         logicValueInput.onChangeRootNode = { [unowned self] node in
             Swift.print("Change root", node)
 
-//            self.onChangeColorString?(LogicInput.makeColorString(node: node))
-
             guard case .expression(let expression) = node else { return true }
 
             let program: LGCSyntaxNode = .program(LabeledColorInput.makeExpressionProgram(from: expression).expandImports(importLoader: Library.load))
-
             let scopeContext = Compiler.scopeContext(program)
             let unificationContext = Compiler.makeUnificationContext(program, scopeContext: scopeContext)
 
