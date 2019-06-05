@@ -58,6 +58,18 @@
 			<key>NSDocumentClass</key>
 			<string>$(PRODUCT_MODULE_NAME).ImageDocument</string>
 		</dict>
+		<dict>
+			<key>CFBundleTypeExtensions</key>
+			<array>
+				<string>logic</string>
+			</array>
+			<key>CFBundleTypeName</key>
+			<string>Logic</string>
+			<key>CFBundleTypeRole</key>
+			<string>Editor</string>
+			<key>NSDocumentClass</key>
+			<string>$(PRODUCT_MODULE_NAME).LogicDocument</string>
+		</dict>
 	</array>
 	<key>CFBundleExecutable</key>
 	<string>$(EXECUTABLE_NAME)</string>

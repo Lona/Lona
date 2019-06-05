@@ -104,6 +104,8 @@ class FileNavigator: NSBox {
 
     public var performCreateComponent: ((FileTree.Path) -> Bool)?
 
+    public var performCreateLogicFile: ((FileTree.Path) -> Bool)?
+
     // MARK: - Private
 
     private var headerView = FileNavigatorHeaderWithMenu()
@@ -158,6 +160,18 @@ class FileNavigator: NSBox {
                     newFileURL.path : newFileURL.appendingPathExtension("component").path
 
                 _ = self.performCreateComponent?(newFilePath)
+            }))
+
+            menu.addItem(NSMenuItem(title: "New Logic File", onClick: { [unowned self] in
+                guard let newFileName = self.promptForName(
+                    messageText: "Enter a new logic file name",
+                    placeholderText: "File name") else { return }
+
+                let newFileURL = URL(fileURLWithPath: path).appendingPathComponent(newFileName)
+                let newFilePath = newFileURL.pathExtension == "logic" ?
+                    newFileURL.path : newFileURL.appendingPathExtension("logic").path
+
+                _ = self.performCreateLogicFile?(newFilePath)
             }))
 
             menu.addItem(NSMenuItem(title: "New Folder", onClick: { [unowned self] in
