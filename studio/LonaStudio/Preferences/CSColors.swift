@@ -34,6 +34,10 @@ class CSColors: CSPreferencesFile {
         return match ?? CSColor(id: "custom", name: "Custom color", value: value, comment: "", metadata: CSData.Object([:]))
     }
 
+    static func lookup(css string: String) -> CSColor? {
+        return CSColors.colors.first { $0.value == string }
+    }
+
     static var logicSyntax: LGCDeclaration {
         return .namespace(
             id: UUID(),
@@ -53,7 +57,7 @@ class CSColors: CSPreferencesFile {
                         initializer: .some(
                             .literalExpression(
                                 id: UUID(),
-                                literal: .color(id: UUID(), value: color.resolvedValue)
+                                literal: .color(id: UUID(), value: color.value)
                             )
                         )
                     )
