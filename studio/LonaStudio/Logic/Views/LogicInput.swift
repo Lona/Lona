@@ -62,8 +62,7 @@ public class LogicInput: NSView {
         logicEditor.showsDropdown = false
         logicEditor.supportsLineSelection = false
         logicEditor.scrollsVertically = false
-        logicEditor.canvasStyle.textMargin.height = 3
-        logicEditor.canvasStyle.textMargin.width = 2
+        logicEditor.canvasStyle.textMargin = .init(width: 2, height: 3)
 
         logicEditor.decorationForNodeID = { [unowned self] id in
             guard let node = self.logicEditor.rootNode.find(id: id) else { return nil }

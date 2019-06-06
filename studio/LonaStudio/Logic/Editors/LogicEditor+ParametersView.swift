@@ -156,8 +156,6 @@ extension LogicEditor {
 
         logicEditor.showsDropdown = true
         logicEditor.fillColor = Colors.contentBackground
-        logicEditor.canvasStyle.minimumLineHeight = 26
-        logicEditor.canvasStyle.textMargin = CGSize(width: 6, height: 6)
 
         RichText.AlertStyle.paragraphMargin.bottom = -3
         RichText.AlertStyle.paragraphMargin.right += 4
