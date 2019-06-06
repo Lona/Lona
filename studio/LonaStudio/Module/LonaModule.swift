@@ -6,8 +6,8 @@
 //  Copyright © 2018 Devin Abbott. All rights reserved.
 //
 
-import Foundation
 import AppKit
+import Logic
 
 private let defaultReadmeContents = """
 ## Overview
@@ -49,6 +49,21 @@ class LonaModule {
 
     var gradientsFileUrls: [URL] {
         return FileSearch.search(filesIn: url, withSuffix: "gradients.json")
+    }
+
+    var logicFileUrls: [URL] {
+        return FileSearch.search(filesIn: url, matching: LonaModule.logicRE)
+    }
+
+    var logicFileContents: LGCProgram {
+        let programs: [LGCProgram] = logicFileUrls.compactMap {
+            guard let data = try? Data(contentsOf: $0) else { return nil }
+            guard let syntaxNode = try? JSONDecoder().decode(LGCSyntaxNode.self, from: data) else { return nil }
+            guard case .program(let program) = syntaxNode else { return nil }
+            return program
+        }
+
+        return .join(programs: programs)
     }
 
     var assetsFileUrls: [URL] {
@@ -118,7 +133,9 @@ class LonaModule {
 
     private static let assetRE = try! NSRegularExpression(pattern: #"\.(png|jpg)$"#)
 
-    private static let vectorRE = try! NSRegularExpression(pattern: #"\.(svg)$"#)
+    private static let vectorRE = try! NSRegularExpression(pattern: #"\.svg$"#)
+
+    private static let logicRE = try! NSRegularExpression(pattern: #"\.logic$"#)
 
     private static var cachedTypes: [URL: [CSType]] = [:]
 

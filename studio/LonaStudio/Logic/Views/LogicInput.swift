@@ -1,5 +1,5 @@
 //
-//  LogicValueInput.swift
+//  LogicInput.swift
 //  LonaStudio
 //
 //  Created by Devin Abbott on 4/13/19.
@@ -58,12 +58,12 @@ public class LogicInput: NSView {
     private var logicEditor = LogicEditor()
 
     private func setUpViews() {
-        logicEditor.fillColor = Colors.contentBackground
+        logicEditor.fillColor = Colors.amber400
         logicEditor.showsDropdown = false
         logicEditor.supportsLineSelection = false
         logicEditor.scrollsVertically = false
-        logicEditor.canvasStyle.textMargin.height = 4
-        logicEditor.canvasStyle.textMargin.width -= 1
+        logicEditor.canvasStyle.textMargin.height = 3
+        logicEditor.canvasStyle.textMargin.width = 2
 
         logicEditor.decorationForNodeID = { [unowned self] id in
             guard let node = self.logicEditor.rootNode.find(id: id) else { return nil }
@@ -86,8 +86,8 @@ public class LogicInput: NSView {
         logicEditor.translatesAutoresizingMaskIntoConstraints = false
 
         logicEditor.leadingAnchor.constraint(equalTo: leadingAnchor).isActive = true
-        logicEditor.topAnchor.constraint(equalTo: topAnchor, constant: 1).isActive = true
-        logicEditor.bottomAnchor.constraint(equalTo: bottomAnchor, constant: 2).isActive = true
+        logicEditor.topAnchor.constraint(equalTo: topAnchor).isActive = true
+        logicEditor.bottomAnchor.constraint(equalTo: bottomAnchor).isActive = true
         logicEditor.trailingAnchor.constraint(equalTo: trailingAnchor).isActive = true
     }
 
