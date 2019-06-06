@@ -16,6 +16,7 @@ extension LGCDeclaration {
             self = .enumeration(
                 id: UUID(),
                 name: LGCPattern(id: UUID(), name: name),
+                genericParameters: .empty,
                 cases: LGCList(
                     cases.map {
                         LGCEnumerationCase.enumerationCase(

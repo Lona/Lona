@@ -1,5 +1,5 @@
 //
-//  LogicValueInput.swift
+//  LogicInput.swift
 //  LonaStudio
 //
 //  Created by Devin Abbott on 4/13/19.
@@ -40,7 +40,7 @@ public class LogicInput: NSView {
         set { logicEditor.onChangeRootNode = newValue }
     }
 
-    public var suggestionsForNode: ((LGCSyntaxNode, String) -> [LogicSuggestionItem]) {
+    public var suggestionsForNode: ((LGCSyntaxNode, LGCSyntaxNode, String) -> [LogicSuggestionItem]) {
         get { return logicEditor.suggestionsForNode }
         set { logicEditor.suggestionsForNode = newValue }
     }
@@ -62,17 +62,16 @@ public class LogicInput: NSView {
         logicEditor.showsDropdown = false
         logicEditor.supportsLineSelection = false
         logicEditor.scrollsVertically = false
-        logicEditor.canvasStyle.textMargin.height = 4
-        logicEditor.canvasStyle.textMargin.width -= 1
+        logicEditor.canvasStyle.textMargin = .init(width: 2, height: 3)
 
         logicEditor.decorationForNodeID = { [unowned self] id in
             guard let node = self.logicEditor.rootNode.find(id: id) else { return nil }
             switch node {
             case .literal(.color(id: _, value: let code)):
                 return .color(CSColors.parse(css: code).color)
-            case .identifier(let identifier) where self.isTextStyleEditor:
-                let textStyle = CSTypography.getFontBy(id: identifier.string)
-                return .text(textStyle.font.apply(to: "T"), textStyle.getCSColor().color)
+//            case .identifier(let identifier) where self.isTextStyleEditor:
+//                let textStyle = CSTypography.getFontBy(id: identifier.string)
+//                return .label(textStyle.font.apply(to: "T"), textStyle.getCSColor().color)
             default:
                 return nil
             }
@@ -86,8 +85,8 @@ public class LogicInput: NSView {
         logicEditor.translatesAutoresizingMaskIntoConstraints = false
 
         logicEditor.leadingAnchor.constraint(equalTo: leadingAnchor).isActive = true
-        logicEditor.topAnchor.constraint(equalTo: topAnchor, constant: 1).isActive = true
-        logicEditor.bottomAnchor.constraint(equalTo: bottomAnchor, constant: 2).isActive = true
+        logicEditor.topAnchor.constraint(equalTo: topAnchor).isActive = true
+        logicEditor.bottomAnchor.constraint(equalTo: bottomAnchor).isActive = true
         logicEditor.trailingAnchor.constraint(equalTo: trailingAnchor).isActive = true
     }
 

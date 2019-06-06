@@ -145,14 +145,14 @@ class CoreComponentInspectorView: NSStackView {
     var textStyleView = LabeledLogicInput(titleText: "Text Style", titleWidth: 60)
     var numberOfLinesView = NumberField(frame: NSRect.zero)
 
-    var paddingTopView = NumberField(frame: NSRect.zero)
-    var paddingLeftView = NumberField(frame: NSRect.zero)
-    var paddingRightView = NumberField(frame: NSRect.zero)
-    var paddingBottomView = NumberField(frame: NSRect.zero)
-    var marginTopView = NumberField(frame: NSRect.zero)
-    var marginLeftView = NumberField(frame: NSRect.zero)
-    var marginRightView = NumberField(frame: NSRect.zero)
-    var marginBottomView = NumberField(frame: NSRect.zero)
+    var paddingTopView = LogicNumberInput()
+    var paddingLeftView = LogicNumberInput()
+    var paddingRightView = LogicNumberInput()
+    var paddingBottomView = LogicNumberInput()
+    var marginTopView = LogicNumberInput()
+    var marginLeftView = LogicNumberInput()
+    var marginRightView = LogicNumberInput()
+    var marginBottomView = LogicNumberInput()
     var borderWidthView = NumberField(frame: NSRect.zero)
 
     var backgroundGradientView = TextField(frame: NSRect.zero)
@@ -344,16 +344,13 @@ class CoreComponentInspectorView: NSStackView {
             label.leftAnchor.constraint(equalTo: view.leftAnchor, constant: 16).isActive = true
         }
 
-        let labels = [
+        let inputs = [
             marginTopView, marginRightView, marginBottomView, marginLeftView,
             paddingTopView, paddingRightView, paddingBottomView, paddingLeftView
         ]
 
-        for label in labels {
-            label.widthAnchor.constraint(equalToConstant: 40).isActive = true
-            label.alignment = .center
-            label.isBordered = false
-            label.backgroundColor = NSColor.clear
+        for input in inputs {
+            input.widthAnchor.constraint(equalToConstant: 40).isActive = true
         }
 
         let inner = NSView()
@@ -371,20 +368,20 @@ class CoreComponentInspectorView: NSStackView {
         ], orientation: .horizontal)
         paddingRow.distribution = .fill
         paddingRow.spacing = 0
-        paddingRow.edgeInsets = NSEdgeInsets(top: 10, left: 0, bottom: 10, right: 0)
+        paddingRow.edgeInsets = NSEdgeInsets(top: 5, left: 0, bottom: 5, right: 0)
 
         let padding = NSStackView(views: [
             paddingTopView,
             paddingRow,
             paddingBottomView
         ], orientation: .vertical)
-        padding.spacing = 6
+        padding.spacing = 2
         padding.wantsLayer = true
         padding.layer?.backgroundColor = NSColor.windowBackgroundColor.cgColor
         padding.layer?.borderWidth = 1
         padding.layer?.borderColor = NSColor.controlBackgroundColor.cgColor
         padding.layer?.cornerRadius = 3
-        padding.edgeInsets = NSEdgeInsets(top: 10, left: 0, bottom: 10, right: 0)
+        padding.edgeInsets = NSEdgeInsets(top: 5, left: 0, bottom: 7, right: 0)
 
         add(label: "PADDING", to: padding)
 
@@ -395,13 +392,14 @@ class CoreComponentInspectorView: NSStackView {
         ], orientation: .horizontal)
         marginRow.distribution = .fill
         marginRow.spacing = 0
-        marginRow.edgeInsets = NSEdgeInsets(top: 10, left: 0, bottom: 10, right: 0)
+        marginRow.edgeInsets = NSEdgeInsets(top: 5, left: 0, bottom: 5, right: 0)
 
         let margin = BorderedStackView(views: [], orientation: .vertical)
+        margin.spacing = 2
         margin.addArrangedSubview(marginTopView)
         margin.addArrangedSubview(marginRow, stretched: true)
         margin.addArrangedSubview(marginBottomView)
-        margin.edgeInsets = NSEdgeInsets(top: 10, left: 0, bottom: 10, right: 0)
+        margin.edgeInsets = NSEdgeInsets(top: 5, left: 0, bottom: 5, right: 0)
 
         add(label: "MARGIN", to: margin)
 
@@ -661,16 +659,6 @@ class CoreComponentInspectorView: NSStackView {
         }
 
         let fields: [(control: CSControl, property: Property)] = [
-            // Box Model
-            (marginTopView, .marginTop),
-            (marginRightView, .marginRight),
-            (marginBottomView, .marginBottom),
-            (marginLeftView, .marginLeft),
-            (paddingTopView, .paddingTop),
-            (paddingRightView, .paddingRight),
-            (paddingBottomView, .paddingBottom),
-            (paddingLeftView, .paddingLeft),
-
             // Border
             (borderRadiusView, .borderRadius),
             (borderColorButton, .borderColor),
@@ -866,6 +854,38 @@ class CoreComponentInspectorView: NSStackView {
             change(property: Property.aspectRatio, to: aspectRatio.toData())
         }
 
+        paddingTopView.onChangeNumberValue = { value in
+            change(property: Property.paddingTop, to: value.toData())
+        }
+
+        paddingRightView.onChangeNumberValue = { value in
+            change(property: Property.paddingRight, to: value.toData())
+        }
+
+        paddingBottomView.onChangeNumberValue = { value in
+            change(property: Property.paddingBottom, to: value.toData())
+        }
+
+        paddingLeftView.onChangeNumberValue = { value in
+            change(property: Property.paddingLeft, to: value.toData())
+        }
+
+        marginTopView.onChangeNumberValue = { value in
+            change(property: Property.marginTop, to: value.toData())
+        }
+
+        marginRightView.onChangeNumberValue = { value in
+            change(property: Property.marginRight, to: value.toData())
+        }
+
+        marginBottomView.onChangeNumberValue = { value in
+            change(property: Property.marginBottom, to: value.toData())
+        }
+
+        marginLeftView.onChangeNumberValue = { value in
+            change(property: Property.marginLeft, to: value.toData())
+        }
+
         accessibilityInspector.isExpanded = UserDefaults.standard.bool(forKey: "accessibilityInspectorExpanded")
         accessibilityInspector.onClickHeader = { [unowned self] in
             let newValue = !self.accessibilityInspector.isExpanded
@@ -926,6 +946,14 @@ class CoreComponentInspectorView: NSStackView {
         Property.width,
         Property.height,
         Property.aspectRatio,
+        Property.paddingTop,
+        Property.paddingRight,
+        Property.paddingBottom,
+        Property.paddingLeft,
+        Property.marginTop,
+        Property.marginRight,
+        Property.marginBottom,
+        Property.marginLeft,
         Property.image,
         Property.borderStyle,
         Property.backgroundColor,
@@ -1009,6 +1037,22 @@ class CoreComponentInspectorView: NSStackView {
             default:
                 fatalError("WARNING: Invalid height")
             }
+        case .paddingTop:
+            paddingTopView.numberValue = CGFloat(value.numberValue)
+        case .paddingRight:
+            paddingRightView.numberValue = CGFloat(value.numberValue)
+        case .paddingBottom:
+            paddingBottomView.numberValue = CGFloat(value.numberValue)
+        case .paddingLeft:
+            paddingLeftView.numberValue = CGFloat(value.numberValue)
+        case .marginTop:
+            marginTopView.numberValue = CGFloat(value.numberValue)
+        case .marginRight:
+            marginRightView.numberValue = CGFloat(value.numberValue)
+        case .marginBottom:
+            marginBottomView.numberValue = CGFloat(value.numberValue)
+        case .marginLeft:
+            marginLeftView.numberValue = CGFloat(value.numberValue)
         case .direction:
             layoutInspector.direction = value.stringValue == "column" ? .vertical : .horizontal
         case .horizontalAlignment:

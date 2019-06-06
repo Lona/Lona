@@ -6,8 +6,8 @@
 //  Copyright © 2017 Devin Abbott. All rights reserved.
 //
 
-import Foundation
 import AppKit
+import Logic
 
 class CSColors: CSPreferencesFile {
     static var url: URL {
@@ -32,5 +32,37 @@ class CSColors: CSPreferencesFile {
         let value = NSColor.parse(css: string) == nil ? defaultColor.rgbaString : string
 
         return match ?? CSColor(id: "custom", name: "Custom color", value: value, comment: "", metadata: CSData.Object([:]))
+    }
+
+    static func lookup(css string: String) -> CSColor? {
+        return CSColors.colors.first { $0.value == string }
+    }
+
+    static var logicSyntax: LGCDeclaration {
+        return .namespace(
+            id: UUID(),
+            name: .init(id: UUID(), name: "Colors"),
+            declarations: .init(
+                colors.map { color in
+                    return .variable(
+                        id: UUID(),
+                        name: .init(id: UUID(), name: color.id),
+                        annotation: .some(
+                            .typeIdentifier(
+                                id: UUID(),
+                                identifier: .init(id: UUID(), string: "CSSColor"),
+                                genericArguments: .empty
+                            )
+                        ),
+                        initializer: .some(
+                            .literalExpression(
+                                id: UUID(),
+                                literal: .color(id: UUID(), value: color.value)
+                            )
+                        )
+                    )
+                }
+            )
+        )
     }
 }

@@ -13,14 +13,42 @@ extension LogicInput {
     static func expression(forColorString colorString: String?) -> LGCExpression {
         switch colorString {
         case .none:
-            return .identifierExpression(
+            return .functionCallExpression(
                 id: UUID(),
-                identifier: LGCIdentifier(id: UUID(), string: "none")
+                expression: .memberExpression(
+                    id: UUID(),
+                    expression: .identifierExpression(
+                        id: UUID(),
+                        identifier: .init(id: UUID(), string: "Optional")
+                    ),
+                    memberName: .init(id: UUID(), string: "none")
+                ),
+                arguments: .empty
             )
+
         case .some(let value):
-            return .literalExpression(
+            return .functionCallExpression(
                 id: UUID(),
-                literal: .color(id: UUID(), value: value)
+                expression: .memberExpression(
+                    id: UUID(),
+                    expression: .identifierExpression(
+                        id: UUID(),
+                        identifier: .init(id: UUID(), string: "Optional")
+                    ),
+                    memberName: .init(id: UUID(), string: "value")
+                ),
+                arguments: .init(
+                    [
+                        LGCFunctionCallArgument(
+                            id: UUID(),
+                            label: nil,
+                            expression: .literalExpression(
+                                id: UUID(),
+                                literal: .color(id: UUID(), value: value)
+                            )
+                        )
+                    ]
+                )
             )
         }
     }
@@ -39,29 +67,26 @@ extension LogicInput {
             title: "None",
             category: "No Color".uppercased(),
             node: .expression(
-                .identifierExpression(
+                .memberExpression(
                     id: UUID(),
-                    identifier: LGCIdentifier(id: UUID(), string: "none")
+                    expression: .identifierExpression(
+                        id: UUID(),
+                        identifier: .init(id: UUID(), string: "Optional")
+                    ),
+                    memberName: .init(id: UUID(), string: "none")
                 )
             )
         )
 
-        let queryColor = NSColor.parse(css: query)
-
-        let customSuggestion = LogicSuggestionItem(
-            title: "Custom: \(query)",
-            category: "Custom Color".uppercased(),
-            node: .expression(
-                .literalExpression(
-                    id: UUID(),
-                    literal: .color(id: UUID(), value: query)
-                )
-            ),
-            disabled: queryColor == nil,
-            style: queryColor != nil ? .colorPreview(code: query, queryColor!) : .normal
-        )
-
+//        let queryColor = NSColor.parse(css: query)
+//
+//        let customSuggestion = [
+//            LGCExpression.Suggestion.from(literalSuggestion: LGCLiteral.Suggestion.color(for: query))
+//            ].compactMap { $0 }
+//
         let lowercasedQuery = query.lowercased()
+//
+//        let systemColorSuggestions: [LogicSuggestionItem] = []
 
         let systemColorSuggestions = CSColors.colors
             .filter { color in
@@ -74,9 +99,28 @@ extension LogicInput {
                     title: color.name,
                     category: "Colors".uppercased(),
                     node: .expression(
-                        .literalExpression(
+                        .functionCallExpression(
                             id: UUID(),
-                            literal: .color(id: UUID(), value: color.resolvedValue)
+                            expression: .memberExpression(
+                                id: UUID(),
+                                expression: .identifierExpression(
+                                    id: UUID(),
+                                    identifier: .init(id: UUID(), string: "Optional")
+                                ),
+                                memberName: .init(id: UUID(), string: "value")
+                            ),
+                            arguments: .init(
+                                [
+                                    LGCFunctionCallArgument(
+                                        id: UUID(),
+                                        label: nil,
+                                        expression: .literalExpression(
+                                            id: UUID(),
+                                            literal: .color(id: UUID(), value: color.resolvedValue)
+                                        )
+                                    )
+                                ]
+                            )
                         )
                     ),
                     style: .colorPreview(code: color.value, color.color)
@@ -84,6 +128,6 @@ extension LogicInput {
         }
 
         return (isOptional && (query.isEmpty || "none".contains(lowercasedQuery)) ? [noneSuggestion] : []) +
-            systemColorSuggestions + [customSuggestion]
+            systemColorSuggestions //+ customSuggestion
     }
 }

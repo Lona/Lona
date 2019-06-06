@@ -12,8 +12,8 @@ import Logic
 private let startsWithNumberRegex = try? NSRegularExpression(pattern: #"^\d"#)
 
 extension LogicEditor {
-    static func makeParameterDocumentationHandler() -> (LGCSyntaxNode, String) -> RichText {
-        return { syntaxNode, query in
+    static func makeParameterDocumentationHandler() -> (LGCSyntaxNode, LGCSyntaxNode, String) -> RichText {
+        return { rootNode, syntaxNode, query in
             switch syntaxNode {
             case .functionParameter:
                 func getAlert() -> RichText.BlockElement? {
@@ -106,8 +106,8 @@ extension LogicEditor {
         }
     }
 
-    static func makeParameterSuggestionsHandler(rootNode: LGCSyntaxNode, types: [CSType]) -> (LGCSyntaxNode, String) -> [LogicSuggestionItem] {
-        return { syntaxNode, query in
+    static func makeParameterSuggestionsHandler(types: [CSType]) -> (LGCSyntaxNode, LGCSyntaxNode, String) -> [LogicSuggestionItem] {
+        return { rootNode, syntaxNode, query in
             switch syntaxNode {
             case .functionParameterDefaultValue:
                 guard let parent = rootNode.pathTo(id: syntaxNode.uuid)?.dropLast().last else { return [] }
@@ -156,15 +156,13 @@ extension LogicEditor {
 
         logicEditor.showsDropdown = true
         logicEditor.fillColor = Colors.contentBackground
-        logicEditor.canvasStyle.minimumLineHeight = 26
-        logicEditor.canvasStyle.textMargin = CGSize(width: 7, height: 6)
 
         RichText.AlertStyle.paragraphMargin.bottom = -3
         RichText.AlertStyle.paragraphMargin.right += 4
         RichText.AlertStyle.iconMargin.top += 1
 
         logicEditor.documentationForNode = makeParameterDocumentationHandler()
-        logicEditor.suggestionsForNode = makeParameterSuggestionsHandler(rootNode: topLevelParametersRootNode, types: [])
+        logicEditor.suggestionsForNode = makeParameterSuggestionsHandler(types: [])
 
         return logicEditor
     }

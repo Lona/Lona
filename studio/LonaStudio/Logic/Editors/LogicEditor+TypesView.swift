@@ -21,8 +21,8 @@ extension LogicEditor {
         }
     }
 
-    static func makeTypeSuggestionsHandler(rootNode: LGCSyntaxNode, types: [CSType]) -> (LGCSyntaxNode, String) -> [LogicSuggestionItem] {
-        return { syntaxNode, query in
+    static func makeTypeSuggestionsHandler(types: [CSType]) -> (LGCSyntaxNode, LGCSyntaxNode, String) -> [LogicSuggestionItem] {
+        return { rootNode, syntaxNode, query in
             switch syntaxNode {
             case .statement:
                 return [
@@ -35,6 +35,7 @@ extension LogicEditor {
                                 content: .enumeration(
                                     id: UUID(),
                                     name: LGCPattern(id: UUID(), name: "name"),
+                                    genericParameters: .empty,
                                     cases: .next(
                                         LGCEnumerationCase.placeholder(id: UUID()),
                                         .empty
@@ -68,15 +69,13 @@ extension LogicEditor {
 
         logicEditor.showsDropdown = true
         logicEditor.fillColor = Colors.contentBackground
-        logicEditor.canvasStyle.minimumLineHeight = 26
-        logicEditor.canvasStyle.textMargin = CGSize(width: 7, height: 6)
 
         RichText.AlertStyle.paragraphMargin.bottom = -3
         RichText.AlertStyle.paragraphMargin.right += 4
         RichText.AlertStyle.iconMargin.top += 1
 
         logicEditor.documentationForNode = makeParameterDocumentationHandler()
-        logicEditor.suggestionsForNode = makeTypeSuggestionsHandler(rootNode: logicEditor.rootNode, types: [])
+        logicEditor.suggestionsForNode = makeTypeSuggestionsHandler(types: [])
 
         return logicEditor
     }

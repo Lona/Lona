@@ -272,6 +272,8 @@ class WorkspaceViewController: NSSplitViewController {
 
     private lazy var imageViewController = ImageViewController()
 
+    private lazy var logicViewController = LogicViewController()
+
     private lazy var inspectorView = InspectorView()
     private lazy var inspectorViewController: NSViewController = {
         return NSViewController(view: inspectorView)
@@ -369,6 +371,38 @@ class WorkspaceViewController: NSSplitViewController {
                 Swift.print("Failed to move \(prev) to \(next)")
                 return false
             }
+        }
+
+        fileNavigator.performCreateLogicFile = { path in
+            if let document = self.document {
+                guard self.close(document: document, discardingUnsavedChanges: false) else { return false }
+            }
+
+            guard let windowController = self.view.window?.windowController else { return false }
+
+            let url = URL(fileURLWithPath: path)
+            let newDocument = LogicDocument()
+            newDocument.fileURL = url
+            newDocument.save(
+                to: url,
+                ofType: "Logic",
+                for: NSDocument.SaveOperationType.saveOperation, completionHandler: { error in
+                    if let error = error {
+                        Swift.print("Failed to save \(url): \(error)")
+                    }
+            })
+
+            NSDocumentController.shared.addDocument(newDocument)
+            newDocument.addWindowController(windowController)
+            windowController.document = newDocument
+
+            self.document = newDocument
+
+            // Set this after updating the document (which calls update)
+            // TODO: There shouldn't need to be an implicit ordering. Maybe we call update() manually.
+            self.inspectedContent = nil
+
+            return true
         }
 
         fileNavigator.performCreateComponent = { path in
@@ -490,6 +524,16 @@ class WorkspaceViewController: NSSplitViewController {
                 case .full:
                     self.componentEditorViewController.reloadLayerListWithoutModifyingSelection()
                 }
+            }
+        } else if let document = document as? LogicDocument {
+            inspectorViewVisible = false
+
+            editorViewController.contentView = logicViewController.view
+
+            logicViewController.rootNode = document.content
+            logicViewController.onChangeRootNode = { rootNode in
+                document.content = rootNode
+                self.update()
             }
         } else if let document = document as? JSONDocument {
             inspectorViewVisible = true

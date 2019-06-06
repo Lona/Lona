@@ -14,7 +14,7 @@ if danger.github.pullRequest.additions ?? 0 > 500 {
 
 // Mainly to encourage writing up some reasoning about the PR, rather than
 // just leaving a title
-if danger.github.pullRequest.body.count < 5 {
+if let body = danger.github.pullRequest.body, body.count < 5 {
     fail("Please provide a summary in the Pull Request description")
 }
 
