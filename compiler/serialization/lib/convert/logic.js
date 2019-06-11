@@ -4,6 +4,20 @@ function createUUID() {
   return uuid().toUpperCase()
 }
 
+const literalToTypeMapping = {
+  boolean: 'Boolean',
+  number: 'Number',
+  string: 'String',
+  color: 'CSSColor',
+}
+const typeToLiteralMapping = Object.entries(literalToTypeMapping).reduce(
+  (result, [key, value]) => {
+    result[value] = key
+    return result
+  },
+  {}
+)
+
 const singleChildMapping = {
   declaration: 'content',
   variable: 'initializer',
@@ -109,6 +123,25 @@ function convertLogicJsonToXml(logicJson) {
     }
 
     switch (type) {
+      case 'variable': {
+        const compactLiteralTypes = ['boolean', 'number', 'string', 'color']
+
+        if (
+          data.initializer.type === 'literalExpression' &&
+          compactLiteralTypes.includes(data.initializer.data.literal.type)
+        ) {
+          return {
+            name: nodeName,
+            attributes: {
+              ...attributes,
+              value: data.initializer.data.literal.data.value,
+            },
+            children: [],
+          }
+        }
+
+        break
+      }
       case 'declaration': {
         const child = processStandardNode(data.content)
 
@@ -154,6 +187,8 @@ function convertLogicJsonToXml(logicJson) {
 function convertLogicXmlToJson(program) {
   const { children: programStatements } = program
 
+  const compactLiteralTypes = ['Boolean', 'Number', 'String', 'CSSColor']
+
   function deserializeAnnotation(string) {
     return {
       type: 'typeIdentifier',
@@ -195,7 +230,65 @@ function convertLogicXmlToJson(program) {
             }),
           },
         }
-      case 'Declaration.Variable':
+      case 'Variable':
+        if (compactLiteralTypes.includes(attributes.type) && attributes.value) {
+          return processStandardNode({
+            name: 'Variable',
+            attributes: {
+              name: attributes.name,
+              type: attributes.type,
+            },
+            children: [
+              {
+                name: 'LiteralExpression',
+                attributes: {},
+                children: [
+                  {
+                    name: typeToLiteralMapping[attributes.type],
+                    attributes: {
+                      value: attributes.value,
+                    },
+                    children: [],
+                  },
+                ],
+              },
+            ],
+          })
+        }
+
+        break
+      case 'Declaration.Variable': {
+        if (compactLiteralTypes.includes(attributes.type) && attributes.value) {
+          return {
+            type: 'declaration',
+            data: {
+              id: createUUID(),
+              content: processStandardNode({
+                name: 'Variable',
+                attributes: {
+                  name: attributes.name,
+                  type: attributes.type,
+                },
+                children: [
+                  {
+                    name: 'LiteralExpression',
+                    attributes: {},
+                    children: [
+                      {
+                        name: typeToLiteralMapping[attributes.type],
+                        attributes: {
+                          value: attributes.value,
+                        },
+                        children: [],
+                      },
+                    ],
+                  },
+                ],
+              }),
+            },
+          }
+        }
+
         return {
           type: 'declaration',
           data: {
@@ -206,6 +299,7 @@ function convertLogicXmlToJson(program) {
             }),
           },
         }
+      }
       default:
         break
     }
