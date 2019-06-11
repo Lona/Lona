@@ -1,12 +1,10 @@
 const xml = `<?xml version="1.0"?>
 <root>
-  <Declaration>
-    <Variable name="x" type="Number">
-      <LiteralExpression>
-        <Number value="123"/>
-      </LiteralExpression>
-    </Variable>
-  </Declaration>
+  <Declaration.Variable name="x" type="Number">
+    <LiteralExpression>
+      <Number value="123"/>
+    </LiteralExpression>
+  </Declaration.Variable>
 </root>`
 
 const declaration = {

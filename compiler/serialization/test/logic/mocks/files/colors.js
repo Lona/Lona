@@ -1,26 +1,22 @@
 const xml = `<?xml version="1.0"?>
 <root>
-  <Declaration>
-    <ImportDeclaration name="Prelude"/>
-  </Declaration>
-  <Declaration>
-    <Namespace name="Colors">
-      <Variable name="a" type="CSSColor">
+  <Declaration.ImportDeclaration name="Prelude"/>
+  <Declaration.Namespace name="Colors">
+    <Variable name="a" type="CSSColor">
+      <LiteralExpression>
+        <Color value="#FF3409"/>
+      </LiteralExpression>
+    </Variable>
+    <Namespace name="Nested">
+      <Variable name="b" type="CSSColor">
         <LiteralExpression>
-          <Color value="#FF3409"/>
+          <Color value="#3449FF"/>
         </LiteralExpression>
       </Variable>
-      <Namespace name="Nested">
-        <Variable name="b" type="CSSColor">
-          <LiteralExpression>
-            <Color value="#3449FF"/>
-          </LiteralExpression>
-        </Variable>
-        <Placeholder/>
-      </Namespace>
       <Placeholder/>
     </Namespace>
-  </Declaration>
+    <Placeholder/>
+  </Declaration.Namespace>
   <PlaceholderStatement/>
 </root>`
 

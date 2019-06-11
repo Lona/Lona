@@ -1,10 +1,8 @@
 const xml = `<?xml version="1.0"?>
 <root>
-  <Declaration>
-    <Namespace name="Colors">
-      <Placeholder/>
-    </Namespace>
-  </Declaration>
+  <Declaration.Namespace name="Colors">
+    <Placeholder/>
+  </Declaration.Namespace>
 </root>`
 
 const json = {

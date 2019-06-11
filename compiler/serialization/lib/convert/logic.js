@@ -94,6 +94,14 @@ function convertLogicJsonToXml(logicJson) {
     }
 
     switch (type) {
+      case 'declaration': {
+        const child = processStandardNode(data.content)
+
+        return {
+          ...child,
+          name: ['Declaration', child.name].join('.'),
+        }
+      }
       case 'color':
       case 'number':
       case 'string':
@@ -148,6 +156,44 @@ function convertLogicXmlToJson(program) {
 
   function processStandardNode(node) {
     const { name, attributes = {}, children } = node
+
+    switch (name) {
+      case 'Declaration.ImportDeclaration':
+        return {
+          type: 'declaration',
+          data: {
+            id: createUUID(),
+            content: processStandardNode({
+              ...node,
+              name: 'ImportDeclaration',
+            }),
+          },
+        }
+      case 'Declaration.Namespace':
+        return {
+          type: 'declaration',
+          data: {
+            id: createUUID(),
+            content: processStandardNode({
+              ...node,
+              name: 'Namespace',
+            }),
+          },
+        }
+      case 'Declaration.Variable':
+        return {
+          type: 'declaration',
+          data: {
+            id: createUUID(),
+            content: processStandardNode({
+              ...node,
+              name: 'Variable',
+            }),
+          },
+        }
+      default:
+        break
+    }
 
     const nodeName = lowerFirst(name)
 
