@@ -15,7 +15,7 @@
     "prettier:base": "prettier --write",
     "prettify": "find . -name \"*.js\" | grep -v -f .gitignore | xargs npm run prettier:base",
     "test": "jest",
-    "test:watch": "jest:watch",
+    "test:watch": "jest --watch",
     "build": "npm run build:node && npm run build:web",
     "build:web": "webpack",
     "build:node": "babel lib --out-dir build",
@@ -45,7 +45,7 @@
     "@babel/preset-env": "^7.3.1",
     "babel-loader": "^8.0.5",
     "esm": "^3.2.22",
-    "jest": "^24.1.0",
+    "jest": "^24.8.0",
     "webpack": "^4.29.6",
     "webpack-cli": "^3.2.3"
   },

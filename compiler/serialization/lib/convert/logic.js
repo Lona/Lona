@@ -18,7 +18,7 @@ const lowerFirst = string => string.slice(0, 1).toLowerCase() + string.slice(1)
 
 function convertLogicJsonToXml(logicJson) {
   function getChildren(node) {
-    console.log(node)
+    // console.log(node)
     const { type, data } = node
 
     switch (type) {
@@ -152,7 +152,7 @@ function convertLogicXmlToJson(program) {
     }
 
     if (singleChildMapping[nodeName]) {
-      data[singleChildMapping[nodeName]] = children.map(processStandardNode)
+      data[singleChildMapping[nodeName]] = processStandardNode(children[0])
     } else if (multipleChildMapping[nodeName]) {
       data[multipleChildMapping[nodeName]] = children.map(processStandardNode)
     }
