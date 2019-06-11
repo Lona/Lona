@@ -1,12 +1,24 @@
+const stringify = require('json-stable-stringify')
+
 const xml = require('./xml')
 const {
   convertTypesJsonToXml,
   convertTypesXmlToJson,
 } = require('./convert/types')
+const {
+  convertLogicJsonToXml,
+  convertLogicXmlToJson,
+} = require('./convert/logic')
 
 const SERIALIZATION_FORMAT = {
   JSON: 'json',
   XML: 'xml',
+}
+
+const CONVERSION_TYPE = {
+  XML_TO_JSON: 'xmlToJSON',
+  JSON_TO_XML: 'jsonToXML',
+  NONE: 'none',
 }
 
 function detectFormat(contents) {
@@ -20,7 +32,7 @@ function detectFormat(contents) {
   return null
 }
 
-function convertTypes(contents, targetFormat, options = {}) {
+function detectConversionType(contents, targetFormat, options = {}) {
   const sourceFormat = options.sourceFormat || detectFormat(contents)
 
   if (!sourceFormat) {
@@ -44,8 +56,25 @@ function convertTypes(contents, targetFormat, options = {}) {
   switch (`${sourceFormat}:${targetFormat}`) {
     case 'json:json':
     case 'xml:xml':
-      return contents
+      return CONVERSION_TYPE.NONE
     case 'json:xml': {
+      return CONVERSION_TYPE.JSON_TO_XML
+    }
+    case 'xml:json': {
+      return CONVERSION_TYPE.XML_TO_JSON
+    }
+    default:
+      throw new Error(`Unknown Serialization conversion`)
+  }
+}
+
+function convertTypes(contents, targetFormat, options = {}) {
+  const conversionType = detectConversionType(contents, targetFormat, options)
+
+  switch (conversionType) {
+    case CONVERSION_TYPE.NONE:
+      return contents
+    case CONVERSION_TYPE.JSON_TO_XML: {
       let jsonContents
 
       try {
@@ -58,7 +87,7 @@ function convertTypes(contents, targetFormat, options = {}) {
 
       return xml.build(types)
     }
-    case 'xml:json': {
+    case CONVERSION_TYPE.XML_TO_JSON: {
       let jsonContents
 
       try {
@@ -76,8 +105,46 @@ function convertTypes(contents, targetFormat, options = {}) {
   }
 }
 
+function convertLogic(contents, targetFormat, options = {}) {
+  const conversionType = detectConversionType(contents, targetFormat, options)
+
+  switch (conversionType) {
+    case CONVERSION_TYPE.NONE:
+      return contents
+    case CONVERSION_TYPE.JSON_TO_XML: {
+      let jsonContents
+
+      try {
+        jsonContents = JSON.parse(contents)
+      } catch (e) {
+        throw new Error(`Failed to decode types as JSON.`)
+      }
+
+      const xmlRepresentation = convertLogicJsonToXml(jsonContents)
+
+      return xml.build(xmlRepresentation)
+    }
+    case CONVERSION_TYPE.XML_TO_JSON: {
+      let jsonContents
+
+      try {
+        jsonContents = xml.parse(contents)
+      } catch (e) {
+        throw new Error(`Failed to decode types as XML.`)
+      }
+
+      const jsonRepresentation = convertLogicXmlToJson(jsonContents)
+
+      return stringify(jsonRepresentation, { space: '  ' })
+    }
+    default:
+      throw new Error(`Unknown Serialization conversion`)
+  }
+}
+
 module.exports = {
   SERIALIZATION_FORMAT,
   convertTypes,
+  convertLogic,
   detectFormat,
 }

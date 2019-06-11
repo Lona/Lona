@@ -33,6 +33,8 @@
   },
   "homepage": "https://github.com/airbnb/Lona",
   "dependencies": {
+    "json-stable-stringify": "^1.0.1",
+    "uuid": "^3.3.2",
     "xml2js": "^0.4.19",
     "xmlbuilder": "^12.0.0"
   },
