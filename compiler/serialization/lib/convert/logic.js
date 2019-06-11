@@ -123,32 +123,51 @@ function convertLogicJsonToXml(logicJson) {
 
 const singleChildMapping = {
   declaration: 'content',
-}
-
-const multipleChildMapping = {
-  program: 'block',
-  namespace: 'declarations',
   variable: 'initializer',
   literalExpression: 'literal',
   functionCallArgument: 'expression',
   memberExpression: 'expression',
 }
 
+const multipleChildMapping = {
+  program: 'block',
+  namespace: 'declarations',
+}
+
 const identifierNodeMapping = {
   importDeclaration: 'name',
+  variable: 'name',
+  namespace: 'name',
 }
 
 function convertLogicXmlToJson(program) {
   const { children: programStatements } = program
 
+  function deserializeAnnotation(string) {
+    return {
+      type: 'typeIdentifier',
+      data: {
+        id: createUUID(),
+        genericArguments: [],
+        identifier: {
+          id: createUUID(),
+          isPlaceholder: false,
+          string,
+        },
+      },
+    }
+  }
+
   function processStandardNode(node) {
-    const { name, attributes, children } = node
+    const { name, attributes = {}, children } = node
 
     const nodeName = lowerFirst(name)
 
+    const { type, ...rest } = attributes
+
     const data = {
       id: createUUID(),
-      ...attributes,
+      ...rest,
     }
 
     if (singleChildMapping[nodeName]) {
@@ -160,15 +179,22 @@ function convertLogicXmlToJson(program) {
     if (identifierNodeMapping[nodeName]) {
       data[identifierNodeMapping[nodeName]] = {
         id: createUUID(),
-        name: attributes.name,
+        name: rest.name,
       }
     }
 
-    // switch (nodeName) {
-    //   case 'declaration': {
-    //     data.content =
-    //   }
-    // }
+    if (type) {
+      data.annotation = deserializeAnnotation(type)
+    }
+
+    switch (nodeName) {
+      case 'number': {
+        data.value = parseFloat(data.value)
+        break
+      }
+      default:
+        break
+    }
 
     return {
       type: nodeName,
