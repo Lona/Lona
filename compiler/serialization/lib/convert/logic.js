@@ -4,14 +4,28 @@ function createUUID() {
   return uuid().toUpperCase()
 }
 
-const commonChildrenKeys = [
-  'block',
-  'content',
-  'declarations',
-  'initializer',
-  'literal',
-  'expression',
-]
+const singleChildMapping = {
+  declaration: 'content',
+  variable: 'initializer',
+  literalExpression: 'literal',
+  functionCallArgument: 'expression',
+  memberExpression: 'expression',
+}
+
+const multipleChildMapping = {
+  program: 'block',
+  namespace: 'declarations',
+}
+
+const identifierNodeMapping = {
+  importDeclaration: 'name',
+  variable: 'name',
+  namespace: 'name',
+}
+
+const annotationNodeMapping = {
+  variable: 'annotation',
+}
 
 const upperFirst = string => string.slice(0, 1).toUpperCase() + string.slice(1)
 const lowerFirst = string => string.slice(0, 1).toLowerCase() + string.slice(1)
@@ -34,15 +48,11 @@ function convertLogicJsonToXml(logicJson) {
         break
     }
 
-    // eslint-disable-next-line
-    for (let key of commonChildrenKeys) {
-      const value = data[key]
-      if (Array.isArray(value)) {
-        return value
-      }
-      if (value) {
-        return [value]
-      }
+    if (singleChildMapping[type]) {
+      return [data[singleChildMapping[type]]]
+    }
+    if (multipleChildMapping[type]) {
+      return data[multipleChildMapping[type]]
     }
 
     return []
@@ -68,21 +78,20 @@ function convertLogicJsonToXml(logicJson) {
 
   function processStandardNode(node) {
     const { type, data } = node
-    const { name, annotation } = data
-
-    const attributes = {}
-
-    if (name) {
-      attributes.name = name.name
-    }
-
-    if (annotation) {
-      attributes.type = serializeAnnotationNode(annotation)
-    }
 
     const nodeName = upperFirst(type)
 
-    // console.log(type)
+    const attributes = {}
+
+    if (identifierNodeMapping[type]) {
+      attributes.name = data[identifierNodeMapping[type]].name
+    }
+
+    if (annotationNodeMapping[type]) {
+      attributes.type = serializeAnnotationNode(
+        data[annotationNodeMapping[type]]
+      )
+    }
 
     switch (type) {
       case 'color':
@@ -116,28 +125,7 @@ function convertLogicJsonToXml(logicJson) {
     }
   }
 
-  // console.log(logicJson)
-
   return logicJson.data.block.map(processStandardNode)
-}
-
-const singleChildMapping = {
-  declaration: 'content',
-  variable: 'initializer',
-  literalExpression: 'literal',
-  functionCallArgument: 'expression',
-  memberExpression: 'expression',
-}
-
-const multipleChildMapping = {
-  program: 'block',
-  namespace: 'declarations',
-}
-
-const identifierNodeMapping = {
-  importDeclaration: 'name',
-  variable: 'name',
-  namespace: 'name',
 }
 
 function convertLogicXmlToJson(program) {
@@ -163,11 +151,9 @@ function convertLogicXmlToJson(program) {
 
     const nodeName = lowerFirst(name)
 
-    const { type, ...rest } = attributes
-
     const data = {
       id: createUUID(),
-      ...rest,
+      ...attributes,
     }
 
     if (singleChildMapping[nodeName]) {
@@ -179,12 +165,15 @@ function convertLogicXmlToJson(program) {
     if (identifierNodeMapping[nodeName]) {
       data[identifierNodeMapping[nodeName]] = {
         id: createUUID(),
-        name: rest.name,
+        name: attributes.name,
       }
     }
 
-    if (type) {
-      data.annotation = deserializeAnnotation(type)
+    if (annotationNodeMapping[nodeName]) {
+      data[annotationNodeMapping[nodeName]] = deserializeAnnotation(
+        attributes.type
+      )
+      delete data.type
     }
 
     switch (nodeName) {
