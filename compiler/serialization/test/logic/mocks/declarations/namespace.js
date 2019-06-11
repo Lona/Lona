@@ -1,8 +1,6 @@
 const xml = `<?xml version="1.0"?>
 <root>
-  <Declaration.Namespace name="Colors">
-    <Placeholder/>
-  </Declaration.Namespace>
+  <Declaration.Namespace name="Colors"/>
 </root>`
 
 const json = {
@@ -31,6 +29,12 @@ const json = {
           id: '0',
         },
         type: 'declaration',
+      },
+      {
+        data: {
+          id: '0',
+        },
+        type: 'placeholder',
       },
     ],
     id: '0',

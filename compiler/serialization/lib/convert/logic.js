@@ -17,6 +17,11 @@ const multipleChildMapping = {
   namespace: 'declarations',
 }
 
+const implicitPlaceholderMapping = {
+  program: 'block',
+  namespace: 'declarations',
+}
+
 const identifierNodeMapping = {
   importDeclaration: 'name',
   variable: 'name',
@@ -31,6 +36,13 @@ const upperFirst = string => string.slice(0, 1).toUpperCase() + string.slice(1)
 const lowerFirst = string => string.slice(0, 1).toLowerCase() + string.slice(1)
 
 function convertLogicJsonToXml(logicJson) {
+  function isPlaceholder(item, index, list) {
+    if (index === list.length - 1 && item.type === 'placeholder') {
+      return false
+    }
+    return true
+  }
+
   function getChildren(node) {
     // console.log(node)
     const { type, data } = node
@@ -52,7 +64,10 @@ function convertLogicJsonToXml(logicJson) {
       return [data[singleChildMapping[type]]]
     }
     if (multipleChildMapping[type]) {
-      return data[multipleChildMapping[type]]
+      const children = implicitPlaceholderMapping[type]
+        ? data[multipleChildMapping[type]].filter(isPlaceholder)
+        : data[multipleChildMapping[type]]
+      return children
     }
 
     return []
@@ -133,7 +148,7 @@ function convertLogicJsonToXml(logicJson) {
     }
   }
 
-  return logicJson.data.block.map(processStandardNode)
+  return logicJson.data.block.filter(isPlaceholder).map(processStandardNode)
 }
 
 function convertLogicXmlToJson(program) {
@@ -206,6 +221,13 @@ function convertLogicXmlToJson(program) {
       data[singleChildMapping[nodeName]] = processStandardNode(children[0])
     } else if (multipleChildMapping[nodeName]) {
       data[multipleChildMapping[nodeName]] = children.map(processStandardNode)
+
+      if (implicitPlaceholderMapping[nodeName]) {
+        data[multipleChildMapping[nodeName]].push({
+          data: { id: createUUID() },
+          type: 'placeholder',
+        })
+      }
     }
 
     if (identifierNodeMapping[nodeName]) {
@@ -241,7 +263,13 @@ function convertLogicXmlToJson(program) {
     type: 'program',
     data: {
       id: createUUID(),
-      block: programStatements.map(processStandardNode),
+      block: [
+        ...programStatements.map(processStandardNode),
+        {
+          data: { id: createUUID() },
+          type: 'placeholder',
+        },
+      ],
     },
   }
 }

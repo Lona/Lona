@@ -51,7 +51,15 @@ const declaration = {
 
 const json = {
   data: {
-    block: [declaration],
+    block: [
+      declaration,
+      {
+        data: {
+          id: '0',
+        },
+        type: 'placeholder',
+      },
+    ],
     id: '0',
   },
   type: 'program',

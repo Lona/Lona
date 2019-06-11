@@ -22,6 +22,12 @@ const json = {
         },
         type: 'declaration',
       },
+      {
+        data: {
+          id: '0',
+        },
+        type: 'placeholder',
+      },
     ],
     id: '0',
   },

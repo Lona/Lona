@@ -13,11 +13,8 @@ const xml = `<?xml version="1.0"?>
           <Color value="#3449FF"/>
         </LiteralExpression>
       </Variable>
-      <Placeholder/>
     </Namespace>
-    <Placeholder/>
   </Declaration.Namespace>
-  <PlaceholderStatement/>
 </root>`
 
 const json = {
@@ -155,7 +152,7 @@ const json = {
         data: {
           id: '0',
         },
-        type: 'placeholderStatement',
+        type: 'placeholder',
       },
     ],
     id: '0',
