@@ -54,6 +54,11 @@ and variableDeclaration = {
   annotation: option(typeAnnotation),
   initializer_: expression,
 }
+and moduleDeclaration = {
+  name: identifier,
+  declarations: list(declaration),
+}
 and declaration =
   | TypeDeclaration(list(typeDeclaration))
-  | VariableDeclaration(list(variableDeclaration));
+  | VariableDeclaration(list(variableDeclaration))
+  | Module(moduleDeclaration);

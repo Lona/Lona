@@ -164,6 +164,20 @@ and renderDeclaration = (node: declaration): doc('a) =>
       |> join(hardline <+> hardline <+> s("and "))
     )
     <+> s(";")
+  | Module(node) =>
+    s("Module ")
+    <+> renderIdentifier(node.name)
+    <+> s(" = {")
+    <+> indent(
+          hardline
+          <+> (
+            node.declarations
+            |> List.map(renderDeclaration)
+            |> join(hardline <+> hardline)
+          ),
+        )
+    <+> hardline
+    <+> s("}")
   };
 
 let toString = (doc: doc('a)) =>
