@@ -66,6 +66,7 @@
   },
   "dependencies": {
     "@lona/serialization": "^0.0.1",
+    "lodash.lowerfirst": "^4.3.1",
     "lodash.snakecase": "^4.1.1",
     "memfs": "^2.8.0",
     "svg-transform-parser": "^0.0.1",

@@ -23,6 +23,7 @@ module Parse = {
       | "js" => Some(Types.JavaScript)
       | "swift" => Some(Types.Swift)
       | "xml" => Some(Types.Xml)
+      | "reason" => Some(Types.Reason)
       | _ => None
       };
 };
@@ -41,7 +42,10 @@ module Arguments = {
 
     let target = container => (
       "--target",
-      Arg.Symbol(["js", "swift", "xml"], Parse.target |> setRef(container)),
+      Arg.Symbol(
+        ["js", "swift", "xml", "reason"],
+        Parse.target |> setRef(container),
+      ),
       " Output language",
     );
 

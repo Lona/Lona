@@ -1,7 +1,8 @@
 type compilerTarget =
   | JavaScript
   | Swift
-  | Xml;
+  | Xml
+  | Reason;
 
 type lonaFunctionParameter = {
   label: string,
@@ -89,7 +90,8 @@ type platformId =
   | MacOS
   | ReactDOM
   | ReactNative
-  | ReactSketchapp;
+  | ReactSketchapp
+  | ReasonCompiler;
 
 type platformSpecificValue('a) = {
   iOS: 'a,

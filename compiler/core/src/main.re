@@ -66,18 +66,21 @@ let platformId = target =>
   | Types.Xml =>
     /* TODO: Replace when we add android */
     Types.IOS
+  | Types.Reason => Types.ReasonCompiler
   };
 
 let getTargetExtension =
   fun
   | Types.JavaScript => ".js"
   | Swift => ".swift"
-  | Xml => ".xml";
+  | Xml => ".xml"
+  | Reason => ".re";
 
 let formatFilename = (target, filename) =>
   switch (target) {
   | Types.Xml
-  | Types.JavaScript => Format.camelCase(filename)
+  | Types.JavaScript
+  | Types.Reason => Format.camelCase(filename)
   | Types.Swift => Format.upperFirst(Format.camelCase(filename))
   };
 
@@ -88,6 +91,7 @@ let renderColors = (target, config: Config.t) =>
   | Types.Swift => Swift.Color.render(config)
   | JavaScript => JavaScript.Color.render(config.colorsFile.contents)
   | Xml => Xml.Color.render(config.colorsFile.contents)
+  | Reason => exit("Reason not supported")
   };
 
 let renderTextStyles = (target, config: Config.t) =>
@@ -133,6 +137,9 @@ let convertTypes = (target, contents) => {
          )
       |> Format.joinWith("\n\n");
     importStatement ++ types;
+  | Types.Reason =>
+    let types = json |> TypeSystem.Decode.typesFile;
+    ReasonTypeSystem.renderToString(types);
   | _ => exit("Can't generate types for target")
   };
 };

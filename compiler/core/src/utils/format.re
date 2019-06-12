@@ -2,6 +2,8 @@
 
 [@bs.module] external upperFirst: string => string = "lodash.upperfirst";
 
+[@bs.module] external lowerFirst: string => string = "lodash.lowerfirst";
+
 [@bs.module] external snakeCase: string => string = "lodash.snakecase";
 
 let safeVariableName = (name: string): string =>
