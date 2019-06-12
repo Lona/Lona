@@ -145,7 +145,7 @@ let renderEntity =
   };
 };
 
-let renderTypes = (file: TypeSystem.typesFile): ReasonAst.declaration => {
+let renderTypes = (file: TypeSystem.typesFile): list(ReasonAst.declaration) => {
   let nativeTypeNames =
     file.types
     |> List.map(TypeSystem.Access.nativeTypeName)
@@ -153,10 +153,16 @@ let renderTypes = (file: TypeSystem.typesFile): ReasonAst.declaration => {
 
   let conversionOptions = {nativeTypeNames: nativeTypeNames};
 
-  TypeDeclaration(
-    file.types |> List.map(renderEntity(conversionOptions)) |> List.concat,
-  );
+  [
+    Type(
+      file.types |> List.map(renderEntity(conversionOptions)) |> List.concat,
+    ),
+    Module({name: "Decode", declarations: []}),
+  ];
 };
 
 let renderToString = (file: TypeSystem.typesFile): string =>
-  renderTypes(file) |> ReasonRender.renderDeclaration |> ReasonRender.toString;
+  renderTypes(file)
+  |> List.map(ReasonRender.renderDeclaration)
+  |> List.map(ReasonRender.toString)
+  |> Format.joinWith("\n\n");

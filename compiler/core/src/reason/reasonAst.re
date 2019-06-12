@@ -59,6 +59,6 @@ and moduleDeclaration = {
   declarations: list(declaration),
 }
 and declaration =
-  | TypeDeclaration(list(typeDeclaration))
-  | VariableDeclaration(list(variableDeclaration))
+  | Type(list(typeDeclaration))
+  | Variable(list(variableDeclaration))
   | Module(moduleDeclaration);

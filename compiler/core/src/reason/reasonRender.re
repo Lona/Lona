@@ -148,7 +148,7 @@ and renderVariableDeclaration = (node: variableDeclaration): doc('a) => {
 }
 and renderDeclaration = (node: declaration): doc('a) =>
   switch (node) {
-  | TypeDeclaration(nodes) =>
+  | Type(nodes) =>
     s("type ")
     <+> (
       nodes
@@ -156,7 +156,7 @@ and renderDeclaration = (node: declaration): doc('a) =>
       |> join(hardline <+> hardline <+> s("and "))
     )
     <+> s(";")
-  | VariableDeclaration(nodes) =>
+  | Variable(nodes) =>
     s("let ")
     <+> (
       nodes
@@ -165,7 +165,7 @@ and renderDeclaration = (node: declaration): doc('a) =>
     )
     <+> s(";")
   | Module(node) =>
-    s("Module ")
+    s("module ")
     <+> renderIdentifier(node.name)
     <+> s(" = {")
     <+> indent(
