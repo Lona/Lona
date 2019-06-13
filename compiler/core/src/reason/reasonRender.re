@@ -14,6 +14,7 @@ let renderDelimitedBlock =
     (
       ~startDelimiter: string,
       ~endDelimiter: string,
+      ~joinDelimiter: doc('a),
       ~contents: list(doc('a)),
     )
     : doc('a) =>
@@ -22,7 +23,8 @@ let renderDelimitedBlock =
   } else {
     s(startDelimiter)
     <+> group(
-          indent(line <+> (contents |> join(s(",") <+> line))) <+> line,
+          indent(line <+> (contents |> join(joinDelimiter <+> line)))
+          <+> line,
         )
     <+> s(endDelimiter);
   };
@@ -43,12 +45,14 @@ and renderLiteral = (node: literal): doc('a) =>
     renderDelimitedBlock(
       ~startDelimiter="[",
       ~endDelimiter="]",
+      ~joinDelimiter=s(","),
       ~contents=nodes |> List.map(renderExpression),
     )
   | Record(entries) =>
     renderDelimitedBlock(
       ~startDelimiter="{",
       ~endDelimiter="}",
+      ~joinDelimiter=s(","),
       ~contents=entries |> List.map(renderRecordEntry),
     )
   }
@@ -57,6 +61,14 @@ and renderIdentifier = (node: string): doc('a) =>
     s(node ++ "_");
   } else {
     s(node);
+  }
+and renderFunctionParameter = (node: functionParameter): doc('a) =>
+  switch (node.annotation) {
+  | Some(annotation) =>
+    renderIdentifier(node.name)
+    <+> s(": ")
+    <+> renderTypeAnnotation(annotation)
+  | None => renderIdentifier(node.name)
   }
 and renderExpression = (node: expression): doc('a) =>
   switch (node) {
@@ -71,8 +83,38 @@ and renderExpression = (node: expression): doc('a) =>
     <+> renderDelimitedBlock(
           ~startDelimiter="(",
           ~endDelimiter=")",
+          ~joinDelimiter=s(","),
           ~contents=value.arguments |> List.map(renderExpression),
         )
+  | FunctionExpression(value) =>
+    renderDelimitedBlock(
+      ~startDelimiter="(",
+      ~endDelimiter=")",
+      ~joinDelimiter=s(","),
+      ~contents=value.parameters |> List.map(renderFunctionParameter),
+    )
+    <+> (
+      value.returnType
+      |> Monad.map(returnType =>
+           s(": ") <+> renderTypeAnnotation(returnType)
+         )
+    )
+    %? s("")
+    <+> s(" => ")
+    <+> renderDelimitedBlock(
+          ~startDelimiter="{",
+          ~endDelimiter="}",
+          ~joinDelimiter=s(""),
+          ~contents=value.body |> List.map(renderDeclaration),
+        )
+  | SwitchExpression(value) =>
+    s("switch (")
+    <+> renderExpression(value.pattern)
+    <+> s(") {")
+    <+> hardline
+    <+> (value.cases |> List.map(renderSwitchCase) |> join(hardline))
+    <+> hardline
+    <+> s("}")
   }
 and renderTypeAnnotation = (node: typeAnnotation): doc('a) =>
   renderIdentifier(node.name) <+> renderTypeAnnotationList(node.parameters)
@@ -99,6 +141,13 @@ and renderVariantCase = (node: variantCase): doc('a) =>
   <+> indent(
         renderIdentifier(node.name)
         <+> renderTypeAnnotationList(node.associatedData),
+      )
+and renderSwitchCase = (node: switchCase): doc('a) =>
+  s("| ")
+  <+> renderExpression(node.pattern)
+  <+> s(" =>")
+  <+> indent(
+        line <+> (node.body |> List.map(renderDeclaration) |> join(hardline)),
       )
 and renderVariantType = (node: variantType): doc('a) =>
   group(node.cases |> List.map(renderVariantCase) |> join(line))
@@ -147,38 +196,43 @@ and renderVariableDeclaration = (node: variableDeclaration): doc('a) => {
   <+> renderExpression(node.initializer_);
 }
 and renderDeclaration = (node: declaration): doc('a) =>
-  switch (node) {
-  | Type(nodes) =>
-    s("type ")
-    <+> (
-      nodes
-      |> List.map(renderTypeDeclaration)
-      |> join(hardline <+> hardline <+> s("and "))
-    )
-    <+> s(";")
-  | Variable(nodes) =>
-    s("let ")
-    <+> (
-      nodes
-      |> List.map(renderVariableDeclaration)
-      |> join(hardline <+> hardline <+> s("and "))
-    )
-    <+> s(";")
-  | Module(node) =>
-    s("module ")
-    <+> renderIdentifier(node.name)
-    <+> s(" = {")
-    <+> indent(
-          hardline
-          <+> (
-            node.declarations
-            |> List.map(renderDeclaration)
-            |> join(hardline <+> hardline)
-          ),
-        )
-    <+> hardline
-    <+> s("}")
-  };
+  (
+    switch (node) {
+    | Type(nodes) =>
+      s("type ")
+      <+> (
+        nodes
+        |> List.map(renderTypeDeclaration)
+        |> join(hardline <+> hardline <+> s("and "))
+      )
+
+    | Variable(nodes) =>
+      s("let rec ")
+      <+> (
+        nodes
+        |> List.map(renderVariableDeclaration)
+        |> join(hardline <+> hardline <+> s("and "))
+      )
+    | Module(node) =>
+      s("module ")
+      <+> renderIdentifier(node.name)
+      <+> s(" = {")
+      <+> indent(
+            hardline
+            <+> (
+              node.declarations
+              |> List.map(renderDeclaration)
+              |> join(hardline <+> hardline)
+            ),
+          )
+      <+> hardline
+      <+> s("}")
+    | Open(names) =>
+      s("open ") <+> (names |> List.map(renderIdentifier) |> join(s(".")))
+    | Expression(node) => renderExpression(node)
+    }
+  )
+  <+> s(";");
 
 let toString = (doc: doc('a)) =>
   doc

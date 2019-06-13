@@ -36,11 +36,30 @@ and functionCallExpression = {
   expression,
   arguments: list(expression),
 }
+and functionParameter = {
+  name: identifier,
+  annotation: option(typeAnnotation),
+}
+and functionExpression = {
+  parameters: list(functionParameter),
+  returnType: option(typeAnnotation),
+  body: list(declaration),
+}
+and switchCase = {
+  pattern: expression,
+  body: list(declaration),
+}
+and switchExpression = {
+  pattern: expression,
+  cases: list(switchCase),
+}
 and expression =
   | LiteralExpression(literalExpression)
   | IdentifierExpression(identifierExpression)
   | MemberExpression(memberExpression)
   | FunctionCallExpression(functionCallExpression)
+  | FunctionExpression(functionExpression)
+  | SwitchExpression(switchExpression)
 /* Declarations */
 and typeDeclarationValue =
   | VariantType(variantType)
@@ -61,4 +80,6 @@ and moduleDeclaration = {
 and declaration =
   | Type(list(typeDeclaration))
   | Variable(list(variableDeclaration))
-  | Module(moduleDeclaration);
+  | Module(moduleDeclaration)
+  | Open(list(identifier))
+  | Expression(expression);
