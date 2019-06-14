@@ -198,6 +198,7 @@ let renderRecordTypeCaseParameter =
     (
       options: conversionOptions,
       entityTypeAnnotation: TypeSystem.entity,
+      fieldName: string,
       entity: TypeSystem.recordTypeCaseParameter,
     )
     : renderedRecordTypeCaseParameter => {
@@ -235,7 +236,7 @@ let renderRecordTypeCaseParameter =
                 |> List.map(name => IdentifierExpression({name: name})),
             });
           },
-          IdentifierExpression({name: "data"}),
+          IdentifierExpression({name: fieldName}),
         ],
       }),
   };
@@ -359,7 +360,8 @@ let renderTypeCase =
     };
   | RecordCase(name, parameters) =>
     let renderedParameters =
-      parameters |> List.map(renderRecordTypeCaseParameter(options, entity));
+      parameters
+      |> List.map(renderRecordTypeCaseParameter(options, entity, "data"));
     let recordTypeName =
       formatRecordTypeName(name, entityTypeAnnotation.name);
     {
@@ -478,7 +480,59 @@ let renderEntity =
         },
       ];
 
-    if (TypeSystem.Match.linkedList(entity)) {
+    if (TypeSystem.Match.singleRecord(entity)) {
+      switch (entity) {
+      | GenericType({name: _, cases: [RecordCase(name, parameters)]}) =>
+        let renderedParameters =
+          parameters
+          |> List.map(renderRecordTypeCaseParameter(options, entity, "json"));
+        let recordTypeName =
+          formatRecordTypeName(name, entityTypeAnnotation.name);
+
+        {
+          types,
+          decoders: [
+            {
+              name: typeName,
+              quantifiedAnnotation: Some(decoderAnnotation),
+              initializer_:
+                FunctionExpression({
+                  parameters: decoderParameters,
+                  returnType: None,
+                  body: [
+                    Expression(
+                      FunctionCallExpression({
+                        expression:
+                          IdentifierExpression({name: formatCaseName(name)}),
+                        arguments: [
+                          LiteralExpression({
+                            literal:
+                              Record(
+                                renderedParameters
+                                |> List.map(
+                                     (
+                                       parameter: renderedRecordTypeCaseParameter,
+                                     ) =>
+                                     (
+                                       {
+                                         key: parameter.entry.key,
+                                         value: parameter.decoder,
+                                       }: recordEntry
+                                     )
+                                   ),
+                              ),
+                          }),
+                        ],
+                      }),
+                    ),
+                  ],
+                }),
+            },
+          ],
+        };
+      | _ => raise(Not_found)
+      };
+    } else if (TypeSystem.Match.linkedList(entity)) {
       let constantCase = List.hd(TypeSystem.Access.constantCases(entity));
       let recursiveCase =
         List.hd(TypeSystem.Access.entityRecursiveCases(entity));

@@ -180,6 +180,13 @@ module Match = {
     | NativeType(_) => false
     };
 
+  let singleRecord = (entity: entity): bool =>
+    switch (entity) {
+    | GenericType({name: _, cases: [RecordCase(_)]}) => true
+    | GenericType(_) => false
+    | NativeType(_) => false
+    };
+
   let linkedList = (entity: entity): bool =>
     switch (entity) {
     | GenericType(genericType) =>
