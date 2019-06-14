@@ -427,6 +427,37 @@ let convertWorkspace = (target, workspace, output) => {
             });
        };
 
+       if (target == Types.Swift) {
+         config.logicFiles
+         |> List.iter((file: Config.file(LogicAst.syntaxNode)) => {
+              let filename =
+                formatFilename(
+                  target,
+                  Path.basename_ext(file.path, ".logic"),
+                )
+                ++ getTargetExtension(target);
+              let dirname = Path.dirname(file.path);
+              let outputPath =
+                Config.Workspace.outputPathForWorkspaceFile(
+                  config,
+                  ~workspaceFile=Path.join2(dirname, filename),
+                );
+
+              let converted =
+                file.contents
+                |> LogicSwift.convert(config)
+                |> SwiftRender.toString;
+
+              let importStatement =
+                switch (options.swift.framework) {
+                | AppKit => "import AppKit\n\n"
+                | UIKit => "import UIKit\n\n"
+                };
+
+              writeAnnotatedFile(outputPath, importStatement ++ converted);
+            });
+       };
+
        copyStaticFiles(target, toDirectory);
 
        let successfulComponentNames =
@@ -604,11 +635,21 @@ switch (scanResult.command) {
   let contents = Node.Fs.readFileSync(inputPath, `utf8);
   let jsonContents = Serialization.convertTypes(contents, "json");
   convertTypes(target, jsonContents) |> Js.log;
-| Logic(_target, inputPath) =>
-  let contents = Node.Fs.readFileSync(inputPath, `utf8);
-  let json = contents |> Js.Json.parseExn;
-  let program = LogicAst.Decode.syntaxNode(json);
-  Js.log2("Parsed ok!", program);
+| Logic(target, inputPath) =>
+  let convert = config => {
+    let contents = Node.Fs.readFileSync(inputPath, `utf8);
+    let json = contents |> Js.Json.parseExn;
+    let program = LogicAst.Decode.syntaxNode(json);
+    let converted = LogicSwift.convert(config, program);
+    SwiftRender.toString(converted);
+  };
+
+  Config.load(platformId(target), options, inputPath, "")
+  |> Js.Promise.then_((config: Config.t) => {
+       convert(config) |> Js.log;
+       Js.Promise.resolve();
+     })
+  |> ignore;
 | TextStyles(target, input) =>
   let initialWorkspaceSearchPath =
     switch (input) {

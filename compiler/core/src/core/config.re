@@ -8,6 +8,7 @@ type t = {
   componentPaths: list(string),
   plugins: list(Plugin.t),
   lonaFile: file(LonaFile.t),
+  logicFiles: list(file(LogicAst.syntaxNode)),
   colorsFile: file(list(Color.t)),
   textStylesFile: file(TextStyle.file),
   shadowsFile: file(Shadow.file),
@@ -69,6 +70,20 @@ module Workspace = {
     let data = Node.Fs.readFileSync(path, `utf8);
     let contents = LonaFile.parseFile(data);
     {path, contents};
+  };
+
+  let logicFiles =
+      (workspacePath: string, ~ignore: list(string))
+      : list(file(LogicAst.syntaxNode)) => {
+    let searchPath = Path.join([|workspacePath, "**/*.logic"|]);
+    let paths = FileSearch.sync(searchPath, ~options={ignore: ignore}, ());
+    paths
+    |> List.map(path => {
+         let data = Node.Fs.readFileSync(path, `utf8);
+         let json = data |> Js.Json.parseExn;
+         let contents = LogicAst.Decode.syntaxNode(json);
+         {path, contents};
+       });
   };
 
   let colorsFile =
@@ -254,6 +269,11 @@ let load =
                ),
              plugins: Workspace.compilerFile(workspacePath),
              lonaFile,
+             logicFiles:
+               Workspace.logicFiles(
+                 workspacePath,
+                 ~ignore=lonaFile.contents.ignore,
+               ),
              colorsFile:
                Workspace.colorsFile(
                  workspacePath,

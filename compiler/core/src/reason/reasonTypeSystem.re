@@ -650,6 +650,18 @@ let renderEntity =
                               Expression(
                                 FunctionCallExpression({
                                   expression:
+                                    IdentifierExpression({name: "Js.log"}),
+                                  arguments: [
+                                    LiteralExpression({
+                                      literal:
+                                        String("Error decoding " ++ typeName),
+                                    }),
+                                  ],
+                                }),
+                              ),
+                              Expression(
+                                FunctionCallExpression({
+                                  expression:
                                     IdentifierExpression({name: "raise"}),
                                   arguments: [
                                     IdentifierExpression({name: "Not_found"}),

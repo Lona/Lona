@@ -341,7 +341,9 @@ module Decode = {
           id: Json.Decode.field("id", Json.Decode.string, data),
           name: Json.Decode.field("name", pattern, data),
         })
-      | _ => raise(Not_found)
+      | _ =>
+        Js.log("Error decoding declaration");
+        raise(Not_found);
       };
     }
   and enumerationCase: Js.Json.t => enumerationCase =
@@ -362,7 +364,9 @@ module Decode = {
               data,
             ),
         })
-      | _ => raise(Not_found)
+      | _ =>
+        Js.log("Error decoding enumerationCase");
+        raise(Not_found);
       };
     }
   and pattern: Js.Json.t => pattern =
@@ -396,7 +400,9 @@ module Decode = {
         })
       | "setEqualTo" =>
         SetEqualTo({id: Json.Decode.field("id", Json.Decode.string, data)})
-      | _ => raise(Not_found)
+      | _ =>
+        Js.log("Error decoding binaryOperator");
+        raise(Not_found);
       };
     }
   and functionCallArgument: Js.Json.t => functionCallArgument =
@@ -448,7 +454,9 @@ module Decode = {
         })
       | "placeholder" =>
         Placeholder({id: Json.Decode.field("id", Json.Decode.string, data)})
-      | _ => raise(Not_found)
+      | _ =>
+        Js.log("Error decoding expression");
+        raise(Not_found);
       };
     }
   and statement: Js.Json.t => statement =
@@ -481,7 +489,9 @@ module Decode = {
         })
       | "placeholder" =>
         Placeholder({id: Json.Decode.field("id", Json.Decode.string, data)})
-      | _ => raise(Not_found)
+      | _ =>
+        Js.log("Error decoding statement");
+        raise(Not_found);
       };
     }
   and program: Js.Json.t => program =
@@ -537,7 +547,9 @@ module Decode = {
       | "genericParameter" =>
         let rec decoded = genericParameter(data);
         GenericParameter(decoded);
-      | _ => raise(Not_found)
+      | _ =>
+        Js.log("Error decoding syntaxNode");
+        raise(Not_found);
       };
     }
   and functionParameter: Js.Json.t => functionParameter =
@@ -565,7 +577,9 @@ module Decode = {
         })
       | "placeholder" =>
         Placeholder({id: Json.Decode.field("id", Json.Decode.string, data)})
-      | _ => raise(Not_found)
+      | _ =>
+        Js.log("Error decoding functionParameter");
+        raise(Not_found);
       };
     }
   and functionParameterDefaultValue: Js.Json.t => functionParameterDefaultValue =
@@ -580,7 +594,9 @@ module Decode = {
           id: Json.Decode.field("id", Json.Decode.string, data),
           expression: Json.Decode.field("expression", expression, data),
         })
-      | _ => raise(Not_found)
+      | _ =>
+        Js.log("Error decoding functionParameterDefaultValue");
+        raise(Not_found);
       };
     }
   and typeAnnotation: Js.Json.t => typeAnnotation =
@@ -608,7 +624,9 @@ module Decode = {
         })
       | "placeholder" =>
         Placeholder({id: Json.Decode.field("id", Json.Decode.string, data)})
-      | _ => raise(Not_found)
+      | _ =>
+        Js.log("Error decoding typeAnnotation");
+        raise(Not_found);
       };
     }
   and literal: Js.Json.t => literal =
@@ -643,7 +661,9 @@ module Decode = {
           id: Json.Decode.field("id", Json.Decode.string, data),
           value: Json.Decode.field("value", list(expression), data),
         })
-      | _ => raise(Not_found)
+      | _ =>
+        Js.log("Error decoding literal");
+        raise(Not_found);
       };
     }
   and topLevelParameters: Js.Json.t => topLevelParameters =
@@ -665,7 +685,9 @@ module Decode = {
         })
       | "placeholder" =>
         Placeholder({id: Json.Decode.field("id", Json.Decode.string, data)})
-      | _ => raise(Not_found)
+      | _ =>
+        Js.log("Error decoding genericParameter");
+        raise(Not_found);
       };
     };
 };
