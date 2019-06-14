@@ -32,6 +32,12 @@ type entity =
 type typesFile = {types: list(entity)};
 
 module Access = {
+  let entityName = (entity: entity): string =>
+    switch (entity) {
+    | GenericType(genericType) => genericType.name
+    | NativeType(nativeType) => nativeType.name
+    };
+
   let nativeTypeName = (entity: entity): option(string) =>
     switch (entity) {
     | GenericType(_) => None
