@@ -15,10 +15,10 @@ let formatNativeType = string =>
 
 let formatDecoderIdentifier = string =>
   switch (string) {
-  | "bool" => "Decode.bool"
-  | "float" => "Decode.float"
-  | "string" => "Decode.string"
-  | "option" => "Decode.optional"
+  | "bool" => "Json.Decode.bool"
+  | "float" => "Json.Decode.float"
+  | "string" => "Json.Decode.string"
+  | "option" => "Json.Decode.optional"
   | _ => string
   };
 
@@ -42,14 +42,35 @@ let identityFunction =
     body: [Expression(IdentifierExpression({name: "x"}))],
   });
 
+let typeAnnotationForEntity =
+    (_options: conversionOptions, entity: TypeSystem.entity): typeAnnotation => {
+  let genericTypeNames = TypeSystem.Access.entityGenericParameters(entity);
+  let genericTypeAnnotations: list(typeAnnotation) =
+    genericTypeNames
+    |> List.map(name => {name: formatGenericName(name), parameters: []});
+
+  switch (entity) {
+  | GenericType(genericType) =>
+    /* TODO: pass down entity instead of type annotation
+       refactor, make function to get type annotation easily */
+    let typeName = formatTypeName(genericType.name);
+    {name: typeName, parameters: genericTypeAnnotations};
+  | NativeType(nativeType) =>
+    let typeName = formatTypeName(nativeType.name);
+    {name: typeName, parameters: genericTypeAnnotations};
+  };
+};
+
 let renderTypeCaseParameterEntity =
     (
-      _options: conversionOptions,
-      entityTypeAnnotation: typeAnnotation,
-      entity: TypeSystem.typeCaseParameterEntity,
+      options: conversionOptions,
+      entity: TypeSystem.entity,
+      typeCaseParameterEntity: TypeSystem.typeCaseParameterEntity,
     )
-    : renderedTypeCaseParameter =>
-  switch (entity) {
+    : renderedTypeCaseParameter => {
+  let genericTypeNames = TypeSystem.Access.entityGenericParameters(entity);
+  let entityTypeAnnotation = typeAnnotationForEntity(options, entity);
+  switch (typeCaseParameterEntity) {
   | TypeReference(name, substitutions) =>
     let typeName = formatTypeName(name);
 
@@ -63,10 +84,8 @@ let renderTypeCaseParameterEntity =
                 name: formatDecoderIdentifier(entityTypeAnnotation.name),
               }),
             arguments:
-              entityTypeAnnotation.parameters
-              |> List.map((parameter: typeAnnotation) =>
-                   formatDecoderIdentifier(parameter.name)
-                 )
+              genericTypeNames
+              |> List.map(name => formatDecoderIdentifier(name))
               |> List.map(name =>
                    IdentifierExpression({name: "decoder" ++ name})
                  ),
@@ -96,6 +115,7 @@ let renderTypeCaseParameterEntity =
       decoder: IdentifierExpression({name: "decoder" ++ name}),
     }
   };
+};
 
 type renderedRecordTypeCaseParameter = {
   entry: recordTypeEntry,
@@ -105,7 +125,7 @@ type renderedRecordTypeCaseParameter = {
 let renderRecordTypeCaseParameter =
     (
       options: conversionOptions,
-      entityTypeAnnotation: typeAnnotation,
+      entityTypeAnnotation: TypeSystem.entity,
       entity: TypeSystem.recordTypeCaseParameter,
     )
     : renderedRecordTypeCaseParameter => {
@@ -125,7 +145,7 @@ let renderRecordTypeCaseParameter =
       annotation: None,
       initializer_:
         FunctionCallExpression({
-          expression: IdentifierExpression({name: "Decode.field"}),
+          expression: IdentifierExpression({name: "Json.Decode.field"}),
           arguments: [
             LiteralExpression({literal: String(entity.key)}),
             if (rendered.annotation.parameters == []) {
@@ -162,20 +182,17 @@ type renderedTypeCase = {
 let renderTypeCase =
     (
       options: conversionOptions,
-      entityTypeAnnotation: typeAnnotation,
+      entity: TypeSystem.entity,
       typeCase: TypeSystem.typeCase,
     )
-    : renderedTypeCase =>
+    : renderedTypeCase => {
+  let entityTypeAnnotation = typeAnnotationForEntity(options, entity);
   switch (typeCase) {
   | NormalCase(name, parameters) =>
     let renderedParameters =
       parameters
       |> List.map((parameter: TypeSystem.normalTypeCaseParameter) =>
-           renderTypeCaseParameterEntity(
-             options,
-             entityTypeAnnotation,
-             parameter.value,
-           )
+           renderTypeCaseParameterEntity(options, entity, parameter.value)
          );
     /* renderedParameters
        |> List.map((parameter: renderedTypeCaseParameter) =>
@@ -193,64 +210,88 @@ let renderTypeCase =
       types: [],
       decoder: {
         pattern: LiteralExpression({literal: String(name)}),
-        body: [
+        body:
           switch (renderedParameters) {
-          /* | [] => IdentifierExpression({name: "Unhandled"}) */
-          | [a] =>
-            Variable([
-              {
-                name: "decoded",
-                annotation: None,
-                initializer_:
-                  FunctionCallExpression({
-                    expression: IdentifierExpression({name: "Decode.array"}),
-                    arguments: [a.decoder],
-                  }),
-              },
-            ])
+          | [] => [
+              Expression(
+                IdentifierExpression({name: formatCaseName(name)}),
+              ),
+            ]
+          | [a] => [
+              Variable([
+                {
+                  name: "decoded",
+                  annotation: None,
+                  initializer_:
+                    FunctionCallExpression({
+                      expression: a.decoder,
+                      arguments: [IdentifierExpression({name: "data"})],
+                    }),
+                },
+              ]),
+              Expression(
+                FunctionCallExpression({
+                  expression:
+                    IdentifierExpression({name: formatCaseName(name)}),
+                  arguments: [IdentifierExpression({name: "decoded"})],
+                }),
+              ),
+            ]
           | _ =>
             let decoderName =
               "tuple" ++ string_of_int(List.length(renderedParameters));
 
-            Variable([
-              {
-                name:
-                  "("
-                  ++ (
-                    renderedParameters
-                    |> List.mapi((i, _) => "var" ++ string_of_int(i))
-                    |> Format.joinWith(", ")
-                  )
-                  ++ ")",
-                annotation: None,
-                initializer_:
-                  FunctionCallExpression({
-                    expression:
-                      IdentifierExpression({name: "Decode." ++ decoderName}),
-                    arguments:
+            [
+              Variable([
+                {
+                  name:
+                    "("
+                    ++ (
                       renderedParameters
-                      |> List.map((parameter: renderedTypeCaseParameter) =>
-                           parameter.decoder
-                         ),
-                  }),
-              },
-            ]);
+                      |> List.mapi((i, _) => "var" ++ string_of_int(i))
+                      |> Format.joinWith(", ")
+                    )
+                    ++ ")",
+                  annotation: None,
+                  initializer_:
+                    FunctionCallExpression({
+                      expression:
+                        FunctionCallExpression({
+                          expression:
+                            IdentifierExpression({
+                              name: "Json.Decode." ++ decoderName,
+                            }),
+                          arguments:
+                            renderedParameters
+                            |> List.map(
+                                 (parameter: renderedTypeCaseParameter) =>
+                                 parameter.decoder
+                               ),
+                        }),
+                      arguments: [IdentifierExpression({name: "data"})],
+                    }),
+                },
+              ]),
+              Expression(
+                FunctionCallExpression({
+                  expression:
+                    IdentifierExpression({name: formatCaseName(name)}),
+                  arguments:
+                    renderedParameters
+                    |> List.mapi((i, _) =>
+                         IdentifierExpression({
+                           name: "var" ++ string_of_int(i),
+                         })
+                       ),
+                }),
+              ),
+            ];
           },
-          Expression(
-            FunctionCallExpression({
-              expression: IdentifierExpression({name: formatCaseName(name)}),
-              arguments: [],
-            }),
-          ),
-        ],
       },
     };
   | RecordCase(name, parameters) =>
     let renderedParameters =
-      parameters
-      |> List.map(
-           renderRecordTypeCaseParameter(options, entityTypeAnnotation),
-         );
+      parameters |> List.map(renderRecordTypeCaseParameter(options, entity));
     let recordTypeName =
       formatRecordTypeName(name, entityTypeAnnotation.name);
     {
@@ -314,6 +355,7 @@ let renderTypeCase =
       },
     };
   };
+};
 
 type renderedDeclarations = {
   types: list(typeDeclaration),
@@ -324,22 +366,15 @@ let renderEntity =
     (options: conversionOptions, entity: TypeSystem.entity)
     : renderedDeclarations => {
   let genericTypeNames = TypeSystem.Access.entityGenericParameters(entity);
-  let genericTypeAnnotations: list(typeAnnotation) =
-    genericTypeNames
-    |> List.map(name => {name: formatGenericName(name), parameters: []});
+  let entityTypeAnnotation = typeAnnotationForEntity(options, entity);
 
   switch (entity) {
   | GenericType(genericType) =>
     /* TODO: pass down entity instead of type annotation
        refactor, make function to get type annotation easily */
     let typeName = formatTypeName(genericType.name);
-    let entityTypeAnnotation: typeAnnotation = {
-      name: typeName,
-      parameters: genericTypeAnnotations,
-    };
     let renderedCases: list(renderedTypeCase) =
-      genericType.cases
-      |> List.map(renderTypeCase(options, entityTypeAnnotation));
+      genericType.cases |> List.map(renderTypeCase(options, entity));
     let cases =
       renderedCases
       |> List.map((result: renderedTypeCase) => result.variantCase);
@@ -380,10 +415,10 @@ let renderEntity =
                     initializer_:
                       FunctionCallExpression({
                         expression:
-                          IdentifierExpression({name: "Decode.field"}),
+                          IdentifierExpression({name: "Json.Decode.field"}),
                         arguments: [
                           LiteralExpression({literal: String("type")}),
-                          IdentifierExpression({name: "Decode.string"}),
+                          IdentifierExpression({name: "Json.Decode.string"}),
                           IdentifierExpression({name: "json"}),
                         ],
                       }),
@@ -396,7 +431,7 @@ let renderEntity =
                     initializer_:
                       FunctionCallExpression({
                         expression:
-                          IdentifierExpression({name: "Decode.field"}),
+                          IdentifierExpression({name: "Json.Decode.field"}),
                         arguments: [
                           LiteralExpression({literal: String("data")}),
                           identityFunction,
@@ -455,7 +490,6 @@ let renderTypes = (file: TypeSystem.typesFile): list(ReasonAst.declaration) => {
     Module({
       name: "Decode",
       declarations: [
-        Open(["Json"]),
         Variable(
           file.types
           |> List.map(renderEntity(conversionOptions))
