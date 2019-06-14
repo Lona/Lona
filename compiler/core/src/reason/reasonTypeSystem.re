@@ -119,7 +119,7 @@ let renderTypeCaseParameterEntity =
 
 type renderedRecordTypeCaseParameter = {
   entry: recordTypeEntry,
-  decoder: variableDeclaration,
+  decoder: expression,
 };
 
 let renderRecordTypeCaseParameter =
@@ -140,36 +140,32 @@ let renderRecordTypeCaseParameter =
       key: entity.key,
       value: rendered.annotation,
     },
-    decoder: {
-      name: entity.key,
-      quantifiedAnnotation: None,
-      initializer_:
-        FunctionCallExpression({
-          expression: IdentifierExpression({name: "Json.Decode.field"}),
-          arguments: [
-            LiteralExpression({literal: String(entity.key)}),
-            if (rendered.annotation.parameters == []) {
-              IdentifierExpression({
-                name: formatDecoderIdentifier(rendered.annotation.name),
-              });
-            } else {
-              FunctionCallExpression({
-                expression:
-                  IdentifierExpression({
-                    name: formatDecoderIdentifier(rendered.annotation.name),
-                  }),
-                arguments:
-                  rendered.annotation.parameters
-                  |> List.map((parameter: typeAnnotation) =>
-                       formatDecoderIdentifier(parameter.name)
-                     )
-                  |> List.map(name => IdentifierExpression({name: name})),
-              });
-            },
-            IdentifierExpression({name: "data"}),
-          ],
-        }),
-    },
+    decoder:
+      FunctionCallExpression({
+        expression: IdentifierExpression({name: "Json.Decode.field"}),
+        arguments: [
+          LiteralExpression({literal: String(entity.key)}),
+          if (rendered.annotation.parameters == []) {
+            IdentifierExpression({
+              name: formatDecoderIdentifier(rendered.annotation.name),
+            });
+          } else {
+            FunctionCallExpression({
+              expression:
+                IdentifierExpression({
+                  name: formatDecoderIdentifier(rendered.annotation.name),
+                }),
+              arguments:
+                rendered.annotation.parameters
+                |> List.map((parameter: typeAnnotation) =>
+                     formatDecoderIdentifier(parameter.name)
+                   )
+                |> List.map(name => IdentifierExpression({name: name})),
+            });
+          },
+          IdentifierExpression({name: "data"}),
+        ],
+      }),
   };
 };
 
@@ -317,41 +313,30 @@ let renderTypeCase =
       ],
       decoder: {
         pattern: LiteralExpression({literal: String(name)}),
-        body:
-          (
-            renderedParameters
-            |> List.map((parameter: renderedRecordTypeCaseParameter) =>
-                 Variable([parameter.decoder])
-               )
-          )
-          @ [
-            Expression(
-              FunctionCallExpression({
-                expression:
-                  IdentifierExpression({name: formatCaseName(name)}),
-                arguments: [
-                  LiteralExpression({
-                    literal:
-                      Record(
-                        renderedParameters
-                        |> List.map(
-                             (parameter: renderedRecordTypeCaseParameter) =>
-                             (
-                               {
-                                 key: parameter.decoder.name,
-                                 value:
-                                   IdentifierExpression({
-                                     name: parameter.decoder.name,
-                                   }),
-                               }: recordEntry
-                             )
-                           ),
-                      ),
-                  }),
-                ],
-              }),
-            ),
-          ],
+        body: [
+          Expression(
+            FunctionCallExpression({
+              expression: IdentifierExpression({name: formatCaseName(name)}),
+              arguments: [
+                LiteralExpression({
+                  literal:
+                    Record(
+                      renderedParameters
+                      |> List.map(
+                           (parameter: renderedRecordTypeCaseParameter) =>
+                           (
+                             {
+                               key: parameter.entry.key,
+                               value: parameter.decoder,
+                             }: recordEntry
+                           )
+                         ),
+                    ),
+                }),
+              ],
+            }),
+          ),
+        ],
       },
     };
   };
