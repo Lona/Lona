@@ -68,9 +68,13 @@ and typeDeclaration = {
   name: typeAnnotation,
   value: typeDeclarationValue,
 }
+and quantifiedTypeAnnotation = {
+  forall: list(string),
+  annotation: typeAnnotation,
+}
 and variableDeclaration = {
   name: identifier,
-  annotation: option(typeAnnotation),
+  quantifiedAnnotation: option(quantifiedTypeAnnotation),
   initializer_: expression,
 }
 and moduleDeclaration = {
@@ -83,3 +87,23 @@ and declaration =
   | Module(moduleDeclaration)
   | Open(list(identifier))
   | Expression(expression);
+
+let functionTypeAnnotation = (args, ret): typeAnnotation => {
+  name: "=>",
+  parameters: [args, ret],
+};
+
+let tuple2TypeAnnotation = (p0, p1): typeAnnotation => {
+  name: "(,)",
+  parameters: [p0, p1],
+};
+
+let tuple3TypeAnnotation = (p0, p1, p2): typeAnnotation => {
+  name: "(,,)",
+  parameters: [p0, p1, p2],
+};
+
+let tupleNTypeAnnotation = parameters: typeAnnotation => {
+  name: "(" ++ Js.String.repeat(List.length(parameters), ",") ++ ")",
+  parameters,
+};

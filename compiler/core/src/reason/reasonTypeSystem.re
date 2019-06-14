@@ -142,7 +142,7 @@ let renderRecordTypeCaseParameter =
     },
     decoder: {
       name: entity.key,
-      annotation: None,
+      quantifiedAnnotation: None,
       initializer_:
         FunctionCallExpression({
           expression: IdentifierExpression({name: "Json.Decode.field"}),
@@ -221,7 +221,7 @@ let renderTypeCase =
               Variable([
                 {
                   name: "decoded",
-                  annotation: None,
+                  quantifiedAnnotation: None,
                   initializer_:
                     FunctionCallExpression({
                       expression: a.decoder,
@@ -252,7 +252,7 @@ let renderTypeCase =
                       |> Format.joinWith(", ")
                     )
                     ++ ")",
-                  annotation: None,
+                  quantifiedAnnotation: None,
                   initializer_:
                     FunctionCallExpression({
                       expression:
@@ -390,7 +390,31 @@ let renderEntity =
       decoders: [
         {
           name: typeName,
-          annotation: None,
+          quantifiedAnnotation:
+            Some({
+              forall: genericTypeNames |> List.map(formatGenericName),
+              annotation:
+                functionTypeAnnotation(
+                  tupleNTypeAnnotation(
+                    (
+                      genericTypeNames
+                      |> List.map(name =>
+                           {
+                             name: "Json.Decode.decoder",
+                             parameters: [
+                               {
+                                 name: formatGenericName(name),
+                                 parameters: [],
+                               },
+                             ],
+                           }
+                         )
+                    )
+                    @ [{name: "Js.Json.t", parameters: []}],
+                  ),
+                  entityTypeAnnotation,
+                ),
+            }),
           initializer_:
             FunctionExpression({
               parameters:
@@ -406,12 +430,12 @@ let renderEntity =
                     annotation: Some({name: "Js.Json.t", parameters: []}),
                   },
                 ],
-              returnType: Some(entityTypeAnnotation),
+              returnType: None,
               body: [
                 Variable([
                   {
                     name: "case",
-                    annotation: None,
+                    quantifiedAnnotation: None,
                     initializer_:
                       FunctionCallExpression({
                         expression:
@@ -427,7 +451,7 @@ let renderEntity =
                 Variable([
                   {
                     name: "data",
-                    annotation: None,
+                    quantifiedAnnotation: None,
                     initializer_:
                       FunctionCallExpression({
                         expression:

@@ -117,7 +117,14 @@ and renderExpression = (node: expression): doc('a) =>
     <+> s("}")
   }
 and renderTypeAnnotation = (node: typeAnnotation): doc('a) =>
-  renderIdentifier(node.name) <+> renderTypeAnnotationList(node.parameters)
+  switch (node) {
+  | {name: "=>", parameters: [args, ret]} =>
+    renderTypeAnnotation(args) <+> s(" => ") <+> renderTypeAnnotation(ret)
+  | {name, parameters} when Js.String.startsWith("(", name) =>
+    renderTypeAnnotationList(parameters)
+  | {name, parameters} =>
+    renderIdentifier(name) <+> renderTypeAnnotationList(parameters)
+  }
 and renderTypeAnnotationList = (nodes: list(typeAnnotation)): doc('a) =>
   if (nodes == []) {
     s("");
@@ -182,13 +189,18 @@ and renderTypeDeclaration = (node: typeDeclaration): doc('a) =>
   renderTypeAnnotation(node.name)
   <+> s(" =")
   <+> indent(line <+> renderTypeDeclarationValue(node.value))
+and renderQuantifiedTypeAnnotation =
+    (node: quantifiedTypeAnnotation): doc('a) => {
+  let forall =
+    node.forall |> List.map(renderIdentifier) |> join(s(" ")) <+> s(".");
+  s(": ")
+  <+> (node.forall == [] ? s("") : forall)
+  <+> renderTypeAnnotation(node.annotation);
+}
 and renderVariableDeclaration = (node: variableDeclaration): doc('a) => {
   let name = renderIdentifier(node.name);
   let annotation =
-    node.annotation
-    |> Monad.map((annotation: typeAnnotation) =>
-         s(": ") <+> renderTypeAnnotation(annotation)
-       );
+    node.quantifiedAnnotation |> Monad.map(renderQuantifiedTypeAnnotation);
   name
   <+> annotation
   %? s("")
