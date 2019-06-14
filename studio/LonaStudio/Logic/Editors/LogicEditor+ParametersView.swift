@@ -88,7 +88,7 @@ extension LogicEditor {
                                         genericArguments: .empty
                                     ),
                                     defaultValue: .none(id: UUID()))
-                                ).makeCodeView()
+                                ).makeCodeView(using: .visual)
                         ),
                         .heading(.section, "Recommendations"),
                         .paragraph(

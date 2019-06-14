@@ -183,7 +183,7 @@ extension UtilitiesView {
         case .program(let value):
             return value.block.map { statement in
                 switch statement {
-                case .placeholderStatement:
+                case .placeholder:
                     return nil
                 case .declaration(let declaration):
                     return declaration.content.csType!
