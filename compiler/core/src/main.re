@@ -633,12 +633,13 @@ switch (scanResult.command) {
   |> ignore;
 | Types(target, inputPath) =>
   let contents = Node.Fs.readFileSync(inputPath, `utf8);
-  let jsonContents = Serialization.convertTypes(contents, "json");
+  let jsonContents = Serialization.convert(contents, "types", "json");
   convertTypes(target, jsonContents) |> Js.log;
 | Logic(target, inputPath) =>
   let convert = config => {
     let contents = Node.Fs.readFileSync(inputPath, `utf8);
-    let json = contents |> Js.Json.parseExn;
+    let jsonContents = Serialization.convert(contents, "logic", "json");
+    let json = jsonContents |> Js.Json.parseExn;
     let program = LogicAst.Decode.syntaxNode(json);
     let converted = LogicSwift.convert(config, program);
     SwiftRender.toString(converted);

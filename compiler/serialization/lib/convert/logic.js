@@ -8,7 +8,7 @@ const literalToTypeMapping = {
   boolean: 'Boolean',
   number: 'Number',
   string: 'String',
-  color: 'CSSColor',
+  color: 'Color',
 }
 const typeToLiteralMapping = Object.entries(literalToTypeMapping).reduce(
   (result, [key, value]) => {
@@ -187,7 +187,7 @@ function convertLogicJsonToXml(logicJson) {
 function convertLogicXmlToJson(program) {
   const { children: programStatements } = program
 
-  const compactLiteralTypes = ['Boolean', 'Number', 'String', 'CSSColor']
+  const compactLiteralTypes = ['Boolean', 'Number', 'String', 'Color']
 
   function deserializeAnnotation(string) {
     return {

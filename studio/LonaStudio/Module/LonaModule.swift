@@ -58,7 +58,7 @@ class LonaModule {
     var logicFileContents: LGCProgram {
         let programs: [LGCProgram] = logicFileUrls.compactMap {
             guard let data = try? Data(contentsOf: $0) else { return nil }
-            guard let syntaxNode = try? JSONDecoder().decode(LGCSyntaxNode.self, from: data) else { return nil }
+            guard let syntaxNode = try? LogicDocument.read(from: data) else { return nil }
             guard case .program(let program) = syntaxNode else { return nil }
             return program
         }

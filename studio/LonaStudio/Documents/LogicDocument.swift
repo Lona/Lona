@@ -39,10 +39,30 @@ class LogicDocument: NSDocument {
             encoder.outputFormatting = [.prettyPrinted]
         }
 
-        return try encoder.encode(content)
+        let jsonData = try encoder.encode(content)
+
+        // Save in XML if possible, falling back to JSON if that fails
+        if let xmlData = LogicFile.convert(jsonData, kind: .logic, to: .xml) {
+            return xmlData
+        } else {
+            Swift.print("Failed to save .logic file as XML")
+            return jsonData
+        }
     }
 
     override func read(from data: Data, ofType typeName: String) throws {
-        content = try JSONDecoder().decode(LGCSyntaxNode.self, from: data)
+        content = try LogicDocument.read(from: data)
+    }
+
+    public static func read(from data: Data) throws -> LGCSyntaxNode {
+        guard let jsonData = LogicFile.convert(data, kind: .logic, to: .json) else {
+            throw NSError(domain: NSURLErrorDomain, code: NSURLErrorCannotOpenFile, userInfo: nil)
+        }
+
+        let decoded = try JSONDecoder().decode(LGCSyntaxNode.self, from: jsonData)
+
+        // Normalize the imported data
+        // TODO: Figure out why multiple placeholders are loaded
+        return decoded.replace(id: UUID(), with: .literal(.boolean(id: UUID(), value: true)))
     }
 }

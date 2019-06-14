@@ -80,7 +80,8 @@ module Workspace = {
     paths
     |> List.map(path => {
          let data = Node.Fs.readFileSync(path, `utf8);
-         let json = data |> Js.Json.parseExn;
+         let jsonContents = Serialization.convert(data, "logic", "json");
+         let json = jsonContents |> Js.Json.parseExn;
          let contents = LogicAst.Decode.syntaxNode(json);
          {path, contents};
        });

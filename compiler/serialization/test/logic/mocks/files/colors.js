@@ -2,9 +2,9 @@ const xml = `<?xml version="1.0"?>
 <root>
   <Declaration.ImportDeclaration name="Prelude"/>
   <Declaration.Namespace name="Colors">
-    <Variable name="a" type="CSSColor" value="#FF3409"/>
+    <Variable name="a" type="Color" value="#FF3409"/>
     <Namespace name="Nested">
-      <Variable name="b" type="CSSColor" value="#3449FF"/>
+      <Variable name="b" type="Color" value="#3449FF"/>
     </Namespace>
   </Declaration.Namespace>
 </root>`
@@ -42,7 +42,7 @@ const json = {
                         identifier: {
                           id: '0',
                           isPlaceholder: false,
-                          string: 'CSSColor',
+                          string: 'Color',
                         },
                       },
                       type: 'typeIdentifier',
@@ -80,7 +80,7 @@ const json = {
                               identifier: {
                                 id: '0',
                                 isPlaceholder: false,
-                                string: 'CSSColor',
+                                string: 'Color',
                               },
                             },
                             type: 'typeIdentifier',
