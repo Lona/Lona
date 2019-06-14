@@ -42,6 +42,78 @@ let identityFunction =
     body: [Expression(IdentifierExpression({name: "x"}))],
   });
 
+let linkedListReducerFunction =
+    (functionName: string, tupleCase: expression, emptyCase: expression)
+    : declaration =>
+  Variable([
+    {
+      name: functionName,
+      quantifiedAnnotation: None,
+      initializer_:
+        FunctionExpression({
+          parameters: [{name: "items", annotation: None}],
+          returnType: None,
+          body: [
+            Expression(
+              SwitchExpression({
+                pattern: IdentifierExpression({name: "items"}),
+                cases: [
+                  {
+                    pattern: LiteralExpression({literal: Array([])}),
+                    body: [Expression(emptyCase)],
+                  },
+                  {
+                    pattern:
+                      LiteralExpression({
+                        literal: Array([IdentifierExpression({name: "a"})]),
+                      }),
+                    body: [
+                      Expression(
+                        FunctionCallExpression({
+                          expression: tupleCase,
+                          arguments: [
+                            IdentifierExpression({name: "a"}),
+                            emptyCase,
+                          ],
+                        }),
+                      ),
+                    ],
+                  },
+                  {
+                    pattern:
+                      LiteralExpression({
+                        literal:
+                          Array([
+                            IdentifierExpression({name: "a"}),
+                            IdentifierExpression({name: "...rest"}),
+                          ]),
+                      }),
+                    body: [
+                      Expression(
+                        FunctionCallExpression({
+                          expression: tupleCase,
+                          arguments: [
+                            IdentifierExpression({name: "a"}),
+                            FunctionCallExpression({
+                              expression:
+                                IdentifierExpression({name: functionName}),
+                              arguments: [
+                                IdentifierExpression({name: "rest"}),
+                              ],
+                            }),
+                          ],
+                        }),
+                      ),
+                    ],
+                  },
+                ],
+              }),
+            ),
+          ],
+        }),
+    },
+  ]);
+
 let typeAnnotationForEntity =
     (_options: conversionOptions, entity: TypeSystem.entity): typeAnnotation => {
   let genericTypeNames = TypeSystem.Access.entityGenericParameters(entity);
@@ -368,114 +440,178 @@ let renderEntity =
     let decoderCases =
       renderedCases |> List.map((result: renderedTypeCase) => result.decoder);
 
-    {
-      types:
-        (recordTypes |> List.concat)
-        @ [{name: entityTypeAnnotation, value: VariantType({cases: cases})}],
-      decoders: [
+    let types =
+      (recordTypes |> List.concat)
+      @ [{name: entityTypeAnnotation, value: VariantType({cases: cases})}];
+
+    let decoderAnnotation: quantifiedTypeAnnotation = {
+      forall: genericTypeNames |> List.map(formatGenericName),
+      annotation:
+        functionTypeAnnotation(
+          tupleNTypeAnnotation(
+            (
+              genericTypeNames
+              |> List.map(name =>
+                   {
+                     name: "Json.Decode.decoder",
+                     parameters: [
+                       {name: formatGenericName(name), parameters: []},
+                     ],
+                   }
+                 )
+            )
+            @ [{name: "Js.Json.t", parameters: []}],
+          ),
+          entityTypeAnnotation,
+        ),
+    };
+
+    let decoderParameters: list(functionParameter) =
+      (
+        genericTypeNames
+        |> List.map(name => {name: "decoder" ++ name, annotation: None})
+      )
+      @ [
         {
-          name: typeName,
-          quantifiedAnnotation:
-            Some({
-              forall: genericTypeNames |> List.map(formatGenericName),
-              annotation:
-                functionTypeAnnotation(
-                  tupleNTypeAnnotation(
-                    (
-                      genericTypeNames
-                      |> List.map(name =>
-                           {
-                             name: "Json.Decode.decoder",
-                             parameters: [
-                               {
-                                 name: formatGenericName(name),
-                                 parameters: [],
-                               },
-                             ],
-                           }
-                         )
-                    )
-                    @ [{name: "Js.Json.t", parameters: []}],
-                  ),
-                  entityTypeAnnotation,
-                ),
-            }),
-          initializer_:
-            FunctionExpression({
-              parameters:
-                (
-                  genericTypeNames
-                  |> List.map(name =>
-                       {name: "decoder" ++ name, annotation: None}
-                     )
-                )
-                @ [
-                  {
-                    name: "json",
-                    annotation: Some({name: "Js.Json.t", parameters: []}),
-                  },
-                ],
-              returnType: None,
-              body: [
-                Variable([
-                  {
-                    name: "case",
-                    quantifiedAnnotation: None,
-                    initializer_:
-                      FunctionCallExpression({
-                        expression:
-                          IdentifierExpression({name: "Json.Decode.field"}),
-                        arguments: [
-                          LiteralExpression({literal: String("type")}),
-                          IdentifierExpression({name: "Json.Decode.string"}),
-                          IdentifierExpression({name: "json"}),
-                        ],
-                      }),
-                  },
-                ]),
-                Variable([
-                  {
-                    name: "data",
-                    quantifiedAnnotation: None,
-                    initializer_:
-                      FunctionCallExpression({
-                        expression:
-                          IdentifierExpression({name: "Json.Decode.field"}),
-                        arguments: [
-                          LiteralExpression({literal: String("data")}),
-                          identityFunction,
-                          IdentifierExpression({name: "json"}),
-                        ],
-                      }),
-                  },
-                ]),
-                Expression(
-                  SwitchExpression({
-                    pattern: IdentifierExpression({name: "case"}),
-                    cases:
-                      decoderCases
-                      @ [
-                        {
-                          pattern: IdentifierExpression({name: "_"}),
-                          body: [
-                            Expression(
-                              FunctionCallExpression({
-                                expression:
-                                  IdentifierExpression({name: "raise"}),
-                                arguments: [
-                                  IdentifierExpression({name: "Not_found"}),
-                                ],
-                              }),
-                            ),
-                          ],
-                        },
-                      ],
-                  }),
-                ),
-              ],
-            }),
+          name: "json",
+          annotation: Some({name: "Js.Json.t", parameters: []}),
         },
-      ],
+      ];
+
+    if (TypeSystem.Match.linkedList(entity)) {
+      let constantCase = List.hd(TypeSystem.Access.constantCases(entity));
+      let recursiveCase =
+        List.hd(TypeSystem.Access.entityRecursiveCases(entity));
+      let constantCaseName = TypeSystem.Access.typeCaseName(constantCase);
+      let recursiveCaseName = TypeSystem.Access.typeCaseName(recursiveCase);
+      let recursiveType =
+        List.hd(TypeSystem.Access.typeCaseParameterEntities(recursiveCase));
+      {
+        types,
+        decoders: [
+          {
+            name: typeName,
+            quantifiedAnnotation: Some(decoderAnnotation),
+            initializer_:
+              FunctionExpression({
+                parameters: decoderParameters,
+                returnType: None,
+                body: [
+                  Variable([
+                    {
+                      name: "decoded",
+                      quantifiedAnnotation: None,
+                      initializer_:
+                        FunctionCallExpression({
+                          expression:
+                            IdentifierExpression({name: "Json.Decode.list"}),
+                          arguments:
+                            (
+                              genericTypeNames
+                              |> List.map(name =>
+                                   IdentifierExpression({
+                                     name: "decoder" ++ name,
+                                   })
+                                 )
+                            )
+                            @ [IdentifierExpression({name: "json"})],
+                        }),
+                    },
+                  ]),
+                  linkedListReducerFunction(
+                    "createPairs",
+                    IdentifierExpression({
+                      name: formatCaseName(recursiveCaseName),
+                    }),
+                    IdentifierExpression({
+                      name: formatCaseName(constantCaseName),
+                    }),
+                  ),
+                  Expression(
+                    FunctionCallExpression({
+                      expression: IdentifierExpression({name: "createPairs"}),
+                      arguments: [IdentifierExpression({name: "decoded"})],
+                    }),
+                  ),
+                ],
+              }),
+          },
+        ],
+      };
+    } else {
+      {
+        types,
+        decoders: [
+          {
+            name: typeName,
+            quantifiedAnnotation: Some(decoderAnnotation),
+            initializer_:
+              FunctionExpression({
+                parameters: decoderParameters,
+                returnType: None,
+                body: [
+                  Variable([
+                    {
+                      name: "case",
+                      quantifiedAnnotation: None,
+                      initializer_:
+                        FunctionCallExpression({
+                          expression:
+                            IdentifierExpression({name: "Json.Decode.field"}),
+                          arguments: [
+                            LiteralExpression({literal: String("type")}),
+                            IdentifierExpression({
+                              name: "Json.Decode.string",
+                            }),
+                            IdentifierExpression({name: "json"}),
+                          ],
+                        }),
+                    },
+                  ]),
+                  Variable([
+                    {
+                      name: "data",
+                      quantifiedAnnotation: None,
+                      initializer_:
+                        FunctionCallExpression({
+                          expression:
+                            IdentifierExpression({name: "Json.Decode.field"}),
+                          arguments: [
+                            LiteralExpression({literal: String("data")}),
+                            identityFunction,
+                            IdentifierExpression({name: "json"}),
+                          ],
+                        }),
+                    },
+                  ]),
+                  Expression(
+                    SwitchExpression({
+                      pattern: IdentifierExpression({name: "case"}),
+                      cases:
+                        decoderCases
+                        @ [
+                          {
+                            pattern: IdentifierExpression({name: "_"}),
+                            body: [
+                              Expression(
+                                FunctionCallExpression({
+                                  expression:
+                                    IdentifierExpression({name: "raise"}),
+                                  arguments: [
+                                    IdentifierExpression({name: "Not_found"}),
+                                  ],
+                                }),
+                              ),
+                            ],
+                          },
+                        ],
+                    }),
+                  ),
+                ],
+              }),
+          },
+        ],
+      };
     };
   | NativeType(value) => {types: [], decoders: []}
   };
