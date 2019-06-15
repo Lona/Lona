@@ -10,6 +10,7 @@ module Command = {
     | TextStyles(Types.compilerTarget, inputReference)
     | Shadows(Types.compilerTarget, inputReference)
     | Types(Types.compilerTarget, string)
+    | Logic(Types.compilerTarget, string)
     | Component(Types.compilerTarget, string)
     | Workspace(Types.compilerTarget, string, string);
 
@@ -23,6 +24,7 @@ module Parse = {
       | "js" => Some(Types.JavaScript)
       | "swift" => Some(Types.Swift)
       | "xml" => Some(Types.Xml)
+      | "reason" => Some(Types.Reason)
       | _ => None
       };
 };
@@ -41,7 +43,10 @@ module Arguments = {
 
     let target = container => (
       "--target",
-      Arg.Symbol(["js", "swift", "xml"], Parse.target |> setRef(container)),
+      Arg.Symbol(
+        ["js", "swift", "xml", "reason"],
+        Parse.target |> setRef(container),
+      ),
       " Output language",
     );
 
@@ -140,6 +145,7 @@ The following commands are available:
   colors
   textStyles
   shadows
+  logic
   types
   config
   version
@@ -295,6 +301,14 @@ Type `lonac [command]` to see which options are required for that command. The f
         | (_, None) =>
           raise(Command.Unknown("Missing input path (--input)"))
         | (Some(target), Some(path)) => Command.Types(target, path)
+        }
+      | "logic" =>
+        switch (targetRef^, inputRef^) {
+        | (None, _) =>
+          raise(Command.Unknown("Missing output target (--target)"))
+        | (_, None) =>
+          raise(Command.Unknown("Missing input path (--input)"))
+        | (Some(target), Some(path)) => Command.Logic(target, path)
         }
       | "component" =>
         switch (targetRef^, inputRef^) {

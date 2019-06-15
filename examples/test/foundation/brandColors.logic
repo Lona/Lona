@@ -1,0 +1,13 @@
+<?xml version="1.0"?>
+<root>
+  <Declaration.Namespace name="BrandColors">
+    <Variable name="primary" type="Color" value="#FAB"/>
+    <Namespace name="Nested">
+      <Variable name="accent" type="Color" value="skyblue"/>
+    </Namespace>
+    <Namespace name="Accessible">
+      <Variable name="text" type="Color" value="#222"/>
+      <Variable name="background" type="Color" value="#FEFEFE"/>
+    </Namespace>
+  </Declaration.Namespace>
+</root>

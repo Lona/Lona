@@ -76,6 +76,8 @@
 		6B39170621643C7C00B20F9E /* Shadows.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6B39170521643C7C00B20F9E /* Shadows.swift */; };
 		6B39170821643EF300B20F9E /* ShadowsTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6B39170721643EF300B20F9E /* ShadowsTest.swift */; };
 		6B39170A2164492600B20F9E /* Shadow.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6B3917092164492600B20F9E /* Shadow.swift */; };
+		6B4475A222B4224F009AE087 /* Sizes.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6B4475A122B4224F009AE087 /* Sizes.swift */; };
+		6B4475A522B422A2009AE087 /* Sizes.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6B4475A422B422A2009AE087 /* Sizes.swift */; };
 		6B61E06F21FA7E8F0057E8DF /* AccessibilityVisibility.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6B61E06E21FA7E8F0057E8DF /* AccessibilityVisibility.swift */; };
 		6B61E07321FCE4830057E8DF /* AccessibilityNested.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6B61E07221FCE4830057E8DF /* AccessibilityNested.swift */; };
 		6B6D4423218BCF150016262C /* LNATextField.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6B6D4422218BCF150016262C /* LNATextField.swift */; };
@@ -201,6 +203,8 @@
 		6B39170521643C7C00B20F9E /* Shadows.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Shadows.swift; sourceTree = "<group>"; };
 		6B39170721643EF300B20F9E /* ShadowsTest.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ShadowsTest.swift; sourceTree = "<group>"; };
 		6B3917092164492600B20F9E /* Shadow.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Shadow.swift; sourceTree = "<group>"; };
+		6B4475A122B4224F009AE087 /* Sizes.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Sizes.swift; sourceTree = "<group>"; };
+		6B4475A422B422A2009AE087 /* Sizes.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Sizes.swift; sourceTree = "<group>"; };
 		6B61E06E21FA7E8F0057E8DF /* AccessibilityVisibility.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AccessibilityVisibility.swift; sourceTree = "<group>"; };
 		6B61E07221FCE4830057E8DF /* AccessibilityNested.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AccessibilityNested.swift; sourceTree = "<group>"; };
 		6B6D4422218BCF150016262C /* LNATextField.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = LNATextField.swift; sourceTree = "<group>"; };
@@ -339,6 +343,7 @@
 				12BBFDC4206B02720041620C /* TextStyles.swift */,
 				12BBFDD8206B02720041620C /* assets */,
 				6BA694012082E4420090CA74 /* components */,
+				6B4475A322B422A2009AE087 /* foundation */,
 				12BBFDC6206B02720041620C /* images */,
 				12BBFDCF206B02720041620C /* interactivity */,
 				12BBFDD1206B02720041620C /* layouts */,
@@ -433,6 +438,7 @@
 				12BBFDEB206B02AC0041620C /* TextStyles.swift */,
 				12BBFE00206B02AC0041620C /* assets */,
 				6BA69404208439DB0090CA74 /* components */,
+				6B4475A022B4224F009AE087 /* foundation */,
 				12BBFDED206B02AC0041620C /* images */,
 				12BBFDF7206B02AC0041620C /* interactivity */,
 				12BBFDF9206B02AC0041620C /* layouts */,
@@ -516,6 +522,22 @@
 				12BBFE01206B02AC0041620C /* icon_128x128.png */,
 			);
 			path = assets;
+			sourceTree = "<group>";
+		};
+		6B4475A022B4224F009AE087 /* foundation */ = {
+			isa = PBXGroup;
+			children = (
+				6B4475A122B4224F009AE087 /* Sizes.swift */,
+			);
+			path = foundation;
+			sourceTree = "<group>";
+		};
+		6B4475A322B422A2009AE087 /* foundation */ = {
+			isa = PBXGroup;
+			children = (
+				6B4475A422B422A2009AE087 /* Sizes.swift */,
+			);
+			path = foundation;
 			sourceTree = "<group>";
 		};
 		6BA694012082E4420090CA74 /* components */ = {
@@ -913,6 +935,7 @@
 				6B291344219E188400A1DDB4 /* NestedBottomLeftLayout.swift in Sources */,
 				6B291349219E18A300A1DDB4 /* MultipleFlexText.swift in Sources */,
 				1286937B204A1AAA00E5E26F /* AppDelegate.swift in Sources */,
+				6B4475A222B4224F009AE087 /* Sizes.swift in Sources */,
 				6B39170621643C7C00B20F9E /* Shadows.swift in Sources */,
 				6B06ADB321E8FB0400136BC8 /* AccessibilityTest.swift in Sources */,
 				12BBFE0C206B02AC0041620C /* FixedParentFillAndFitChildren.swift in Sources */,
@@ -963,6 +986,7 @@
 				6B6D44412190EE090016262C /* FillWidthFitHeightCard.swift in Sources */,
 				12BBFDE1206B02720041620C /* TextStyleConditional.swift in Sources */,
 				12BBFCF0206A8BCD0041620C /* Generated.swift in Sources */,
+				6B4475A522B422A2009AE087 /* Sizes.swift in Sources */,
 				6BA694032082E4420090CA74 /* NestedComponent.swift in Sources */,
 				12BBFDE7206B02720041620C /* PrimaryAxis.swift in Sources */,
 				6BD581DD208252260068FBC3 /* TextAlignment.swift in Sources */,

@@ -50,7 +50,7 @@ class CSColors: CSPreferencesFile {
                         annotation: .some(
                             .typeIdentifier(
                                 id: UUID(),
-                                identifier: .init(id: UUID(), string: "CSSColor"),
+                                identifier: .init(id: UUID(), string: "Color"),
                                 genericArguments: .empty
                             )
                         ),

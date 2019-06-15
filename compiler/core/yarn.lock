@@ -176,11 +176,13 @@
   dependencies:
     "@glimmer/util" "^0.30.5"
 
-"@lona/serialization@^0.0.1":
-  version "0.0.1"
-  resolved "https://registry.yarnpkg.com/@lona/serialization/-/serialization-0.0.1.tgz#180062db0720d553b9577789991cc8e9cdbf232d"
-  integrity sha512-Zr7bwxHYQ7yqcYnsZP6S+MliBurBLuStypeVUwTTydfoMFoJefdujqLDeR80DDbAzlDMxxV01NTtnOXsCkQp5w==
+"@lona/serialization@0.0.3":
+  version "0.0.3"
+  resolved "https://registry.yarnpkg.com/@lona/serialization/-/serialization-0.0.3.tgz#202620be7fda3751e85a4e2af6f471284c7e258c"
+  integrity sha512-4JioCZrOC70sJb/9On6okNFCCitVK7rt2xkxGbkjmqYHRTO8OtoedS1nxELl4n3fcfi9ueOkfxjXNSqKLyOFGQ==
   dependencies:
+    json-stable-stringify "^1.0.1"
+    uuid "^3.3.2"
     xml2js "^0.4.19"
     xmlbuilder "^12.0.0"
 
@@ -2301,7 +2303,7 @@ json-schema-traverse@^0.4.1:
   resolved "https://registry.yarnpkg.com/json-schema-traverse/-/json-schema-traverse-0.4.1.tgz#69f6a87d9513ab8bb8fe63bdb0979c448e684660"
   integrity sha512-xbbCH5dCYU5T8LcEhhuh7HJ88HXuW3qsI3Y0zOZFKfZEHcpWiHU/Jxzk629Brsab/mMiHQti9wMP+845RPe3Vg==
 
-json-stable-stringify@1.0.1:
+json-stable-stringify@1.0.1, json-stable-stringify@^1.0.1:
   version "1.0.1"
   resolved "https://registry.yarnpkg.com/json-stable-stringify/-/json-stable-stringify-1.0.1.tgz#9a759d39c5f2ff503fd5300646ed445f88c4f9af"
   dependencies:
@@ -2427,6 +2429,11 @@ lodash.isempty@^4.4.0:
 lodash.isplainobject@^4.0.6:
   version "4.0.6"
   resolved "https://registry.yarnpkg.com/lodash.isplainobject/-/lodash.isplainobject-4.0.6.tgz#7c526a52d89b45c45cc690b88163be0497f550cb"
+
+lodash.lowerfirst@^4.3.1:
+  version "4.3.1"
+  resolved "https://registry.yarnpkg.com/lodash.lowerfirst/-/lodash.lowerfirst-4.3.1.tgz#de3c7b12e02c6524a0059c2f6cb7c5c52655a13d"
+  integrity sha1-3jx7EuAsZSSgBZwvbLfFxSZVoT0=
 
 lodash.snakecase@^4.1.1:
   version "4.1.1"
@@ -4313,6 +4320,11 @@ util@^0.11.0:
   integrity sha512-HShAsny+zS2TZfaXxD9tYj4HQGlBezXZMZuM/S5PKLLoZkShZiGk9o5CzukI1LVHZvjdvZ2Sj1aW/Ndn2NB/HQ==
   dependencies:
     inherits "2.0.3"
+
+uuid@^3.3.2:
+  version "3.3.2"
+  resolved "https://registry.yarnpkg.com/uuid/-/uuid-3.3.2.tgz#1b4af4955eb3077c501c23872fc6513811587131"
+  integrity sha512-yXJmeNaw3DnnKAOKJE51sL/ZaYfWJRl1pK9dr19YFCu0ObS231AB1/LbqTKRAQ5kw8A90rA6fr4riOUpTZvQZA==
 
 v8-compile-cache@^2.0.2:
   version "2.0.2"

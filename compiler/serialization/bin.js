@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 
 const fs = require('fs')
-const { convertTypes } = require('./lib/index')
+const { convertTypes, convertLogic } = require('./lib/index')
 
 const [, , filename, kind, format] = process.argv
 
@@ -10,8 +10,8 @@ if (!filename) {
   process.exit(1)
 }
 
-if (kind !== 'types') {
-  console.log('Only converting types files is supported currently')
+if (kind !== 'types' && kind !== 'logic') {
+  console.log('Only type and logic files support conversion currently')
   process.exit(1)
 }
 
@@ -26,9 +26,27 @@ function convertTypesFile(file, targetFormat) {
   return convertTypes(contents, targetFormat)
 }
 
+function convertLogicFile(file, targetFormat) {
+  const contents = fs.readFileSync(filename, 'utf8')
+
+  return convertLogic(contents, targetFormat)
+}
+
 try {
-  const convertedString = convertTypesFile(filename, format)
-  console.log(convertedString)
+  switch (kind) {
+    case 'types': {
+      const convertedString = convertTypesFile(filename, format)
+      console.log(convertedString)
+      break
+    }
+    case 'logic': {
+      const convertedString = convertLogicFile(filename, format)
+      console.log(convertedString)
+      break
+    }
+    default:
+      console.log('Unknown kind of file')
+  }
 } catch (e) {
   console.error(e)
   process.exit(1)

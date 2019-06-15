@@ -32,6 +32,12 @@ type entity =
 type typesFile = {types: list(entity)};
 
 module Access = {
+  let entityName = (entity: entity): string =>
+    switch (entity) {
+    | GenericType(genericType) => genericType.name
+    | NativeType(nativeType) => nativeType.name
+    };
+
   let nativeTypeName = (entity: entity): option(string) =>
     switch (entity) {
     | GenericType(_) => None
@@ -171,6 +177,13 @@ module Match = {
            let caseNames = genericType.cases |> List.map(Access.typeCaseName);
            List.mem(name, caseNames);
          })
+    | NativeType(_) => false
+    };
+
+  let singleRecord = (entity: entity): bool =>
+    switch (entity) {
+    | GenericType({name: _, cases: [RecordCase(_)]}) => true
+    | GenericType(_) => false
     | NativeType(_) => false
     };
 

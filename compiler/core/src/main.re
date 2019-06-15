@@ -66,18 +66,21 @@ let platformId = target =>
   | Types.Xml =>
     /* TODO: Replace when we add android */
     Types.IOS
+  | Types.Reason => Types.ReasonCompiler
   };
 
 let getTargetExtension =
   fun
   | Types.JavaScript => ".js"
   | Swift => ".swift"
-  | Xml => ".xml";
+  | Xml => ".xml"
+  | Reason => ".re";
 
 let formatFilename = (target, filename) =>
   switch (target) {
   | Types.Xml
-  | Types.JavaScript => Format.camelCase(filename)
+  | Types.JavaScript
+  | Types.Reason => Format.camelCase(filename)
   | Types.Swift => Format.upperFirst(Format.camelCase(filename))
   };
 
@@ -88,6 +91,7 @@ let renderColors = (target, config: Config.t) =>
   | Types.Swift => Swift.Color.render(config)
   | JavaScript => JavaScript.Color.render(config.colorsFile.contents)
   | Xml => Xml.Color.render(config.colorsFile.contents)
+  | Reason => exit("Reason not supported")
   };
 
 let renderTextStyles = (target, config: Config.t) =>
@@ -133,6 +137,9 @@ let convertTypes = (target, contents) => {
          )
       |> Format.joinWith("\n\n");
     importStatement ++ types;
+  | Types.Reason =>
+    let types = json |> TypeSystem.Decode.typesFile;
+    ReasonTypeSystem.renderToString(types);
   | _ => exit("Can't generate types for target")
   };
 };
@@ -420,6 +427,37 @@ let convertWorkspace = (target, workspace, output) => {
             });
        };
 
+       if (target == Types.Swift) {
+         config.logicFiles
+         |> List.iter((file: Config.file(LogicAst.syntaxNode)) => {
+              let filename =
+                formatFilename(
+                  target,
+                  Path.basename_ext(file.path, ".logic"),
+                )
+                ++ getTargetExtension(target);
+              let dirname = Path.dirname(file.path);
+              let outputPath =
+                Config.Workspace.outputPathForWorkspaceFile(
+                  config,
+                  ~workspaceFile=Path.join2(dirname, filename),
+                );
+
+              let converted =
+                file.contents
+                |> LogicSwift.convert(config)
+                |> SwiftRender.toString;
+
+              let importStatement =
+                switch (options.swift.framework) {
+                | AppKit => "import AppKit\n\n"
+                | UIKit => "import UIKit\n\n"
+                };
+
+              writeAnnotatedFile(outputPath, importStatement ++ converted);
+            });
+       };
+
        copyStaticFiles(target, toDirectory);
 
        let successfulComponentNames =
@@ -595,9 +633,24 @@ switch (scanResult.command) {
   |> ignore;
 | Types(target, inputPath) =>
   let contents = Node.Fs.readFileSync(inputPath, `utf8);
-  let jsonContents = Serialization.convertTypes(contents, "json");
+  let jsonContents = Serialization.convert(contents, "types", "json");
   convertTypes(target, jsonContents) |> Js.log;
+| Logic(target, inputPath) =>
+  let convert = config => {
+    let contents = Node.Fs.readFileSync(inputPath, `utf8);
+    let jsonContents = Serialization.convert(contents, "logic", "json");
+    let json = jsonContents |> Js.Json.parseExn;
+    let program = LogicAst.Decode.syntaxNode(json);
+    let converted = LogicSwift.convert(config, program);
+    SwiftRender.toString(converted);
+  };
 
+  Config.load(platformId(target), options, inputPath, "")
+  |> Js.Promise.then_((config: Config.t) => {
+       convert(config) |> Js.log;
+       Js.Promise.resolve();
+     })
+  |> ignore;
 | TextStyles(target, input) =>
   let initialWorkspaceSearchPath =
     switch (input) {

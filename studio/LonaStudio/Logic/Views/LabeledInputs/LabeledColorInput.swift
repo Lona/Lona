@@ -108,7 +108,7 @@ public class LabeledColorInput: LabeledInput {
                         content: .variable(
                             id: UUID(),
                             name: .init(id: UUID(), name: "color"),
-                            annotation: makeTypeAnnotation(type: Unification.T.cons(name: "Optional", parameters: [.cssColor])),
+                            annotation: makeTypeAnnotation(type: Unification.T.cons(name: "Optional", parameters: [.color])),
                             initializer: .some(expression)
                         )
                     )

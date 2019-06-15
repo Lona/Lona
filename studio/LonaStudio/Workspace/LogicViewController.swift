@@ -43,10 +43,22 @@ class LogicViewController: NSViewController {
 
     private let logicView = LogicEditor()
 
+    private var colorValues: [UUID: String] = [:]
+
     private func setUpViews() {
         self.view = logicView
 
         logicView.fillColor = Colors.contentBackground
+        logicView.canvasStyle.textMargin = .init(width: 10, height: 6)
+
+        logicView.formattingOptions = LogicFormattingOptions(
+            style: .visual,
+            getColor: { [unowned self] id in
+                guard let colorString = self.colorValues[id],
+                    let color = NSColor.parse(css: colorString) else { return nil }
+                return (colorString, color)
+            }
+        )
     }
 
     private func setUpConstraints() {}
@@ -65,8 +77,31 @@ class LogicViewController: NSViewController {
         )
     }
 
+    private func evaluate() {
+        let (scopeContext, unificationContext, substitutionResult) = StandardConfiguration.compile(rootNode)
+
+        guard let substitution = try? substitutionResult.get() else { return }
+
+        guard let evaluationContext = try? Compiler.evaluate(
+            rootNode,
+            rootNode: rootNode,
+            scopeContext: scopeContext,
+            unificationContext: unificationContext,
+            substitution: substitution,
+            context: .init()
+            ).get() else { return }
+
+        evaluationContext.values.forEach { id, value in
+            if let colorString = value.colorString {
+                colorValues[id] = colorString
+            }
+        }
+    }
+
     private func update() {
         logicView.rootNode = rootNode
+
+        evaluate()
 
         logicView.onChangeRootNode = { [unowned self] newRootNode in
             self.onChangeRootNode?(newRootNode)
