@@ -33,7 +33,7 @@ In the case of `swift`, the options are:
 - `uikit`: iOS
 - `appkit`: macOS
 
-#### Examples
+### Examples
 
 Here are a handful of examples. You can check out the scripts section of the `package.json` to see more targets/frameworks -- there is a `snapshot` command for each compiler target.
 
