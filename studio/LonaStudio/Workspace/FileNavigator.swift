@@ -106,6 +106,8 @@ class FileNavigator: NSBox {
 
     public var performCreateLogicFile: ((FileTree.Path) -> Bool)?
 
+    public var performCreateMarkdownFile: ((FileTree.Path) -> Bool)?
+
     // MARK: - Private
 
     private var headerView = FileNavigatorHeaderWithMenu()
@@ -150,28 +152,36 @@ class FileNavigator: NSBox {
                 menu.addItem(NSMenuItem.separator())
             }
 
+            func makePath(filename: String, withExtension pathExtension: String) -> String {
+                let newFileURL = URL(fileURLWithPath: path).appendingPathComponent(filename)
+                let newFilePath = newFileURL.pathExtension == pathExtension ?
+                    newFileURL.path : newFileURL.appendingPathExtension(pathExtension).path
+                return newFilePath
+            }
+
             menu.addItem(NSMenuItem(title: "New Component", onClick: { [unowned self] in
                 guard let newFileName = self.promptForName(
                     messageText: "Enter a new component name",
                     placeholderText: "Component name") else { return }
 
-                let newFileURL = URL(fileURLWithPath: path).appendingPathComponent(newFileName)
-                let newFilePath = newFileURL.pathExtension == "component" ?
-                    newFileURL.path : newFileURL.appendingPathExtension("component").path
-
-                _ = self.performCreateComponent?(newFilePath)
+                _ = self.performCreateComponent?(makePath(filename: newFileName, withExtension: "component"))
             }))
+
+            menu.addItem(NSMenuItem(title: "New Markdown File", onClick: { [unowned self] in
+                guard let newFileName = self.promptForName(
+                    messageText: "Enter a new markdown file name",
+                    placeholderText: "File name") else { return }
+
+                _ = self.performCreateMarkdownFile?(makePath(filename: newFileName, withExtension: "md"))
+            }))
+
 
             menu.addItem(NSMenuItem(title: "New Logic File", onClick: { [unowned self] in
                 guard let newFileName = self.promptForName(
                     messageText: "Enter a new logic file name",
                     placeholderText: "File name") else { return }
 
-                let newFileURL = URL(fileURLWithPath: path).appendingPathComponent(newFileName)
-                let newFilePath = newFileURL.pathExtension == "logic" ?
-                    newFileURL.path : newFileURL.appendingPathExtension("logic").path
-
-                _ = self.performCreateLogicFile?(newFilePath)
+                _ = self.performCreateLogicFile?(makePath(filename: newFileName, withExtension: "logic"))
             }))
 
             menu.addItem(NSMenuItem(title: "New Folder", onClick: { [unowned self] in

@@ -11,9 +11,23 @@ import aphroditeInterface from 'react-with-styles-interface-amp-aphrodite'
 import React from 'react'
 import ReactDOM from 'react-dom'
 
+import { appendCSS } from './utils/styles'
+import queryParams from './utils/queryParams'
 import App from './App'
 
-ThemedStyleSheet.registerTheme({})
+if (queryParams.fullscreen) {
+  appendCSS(
+    `html, body, #root {
+      height: 100%;
+      overflow: hidden;
+    }`
+  )
+}
+
+ThemedStyleSheet.registerTheme(queryParams.theme)
 ThemedStyleSheet.registerInterface(aphroditeInterface)
 
-ReactDOM.render(<App />, document.getElementById('root'))
+ReactDOM.render(
+  <App editable={queryParams.editable} />,
+  document.getElementById('root')
+)

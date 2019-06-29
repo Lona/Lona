@@ -34,6 +34,7 @@
 import React from 'react'
 
 import { options, requireAddons } from '../utils/CodeMirror'
+import queryParams from '../utils/queryParams'
 
 require('codemirror/lib/codemirror.css')
 require('codemirror/addon/hint/show-hint.css')
@@ -46,13 +47,13 @@ const styles = {
   editorContainer: {
     display: 'flex',
     position: 'relative',
-    flex: '1',
+    flex: '1 1 0%',
     minWidth: 0,
     minHeight: 0,
   },
   editor: {
     position: 'absolute',
-    height: 'auto',
+    height: queryParams.fullscreen ? '100%' : 'auto',
     width: '100%',
   },
 }

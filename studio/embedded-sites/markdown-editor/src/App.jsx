@@ -1,4 +1,4 @@
-/* globals window, EDITABLE, THEME */
+/* globals window */
 import React from 'react'
 import { withStyles } from 'react-with-styles'
 import ReactMarkdown from 'react-markdown'
@@ -9,7 +9,10 @@ function sendNotification(notification) {
   try {
     window.webkit.messageHandlers.notification.postMessage(notification)
   } catch (e) {
-    console.log('No webkit messageHandlers', e)
+    // eslint-disable-next-line no-console
+    console.log(
+      'No webkit messageHandlers -- if this is running within Lona Studio, something bad happened'
+    )
   }
 }
 
@@ -50,16 +53,17 @@ class App extends React.Component {
 
   render() {
     // eslint-disable-next-line react/prop-types
-    const { styles, css } = this.props
+    const { styles, css, editable } = this.props
     const { value } = this.state
 
-    const markdownCss = { ...css(styles.column) }
+    const markdownCss = {
+      ...css(styles.column, editable && styles.paddedContent),
+    }
     markdownCss.className += ' markdown-body'
 
     return (
       <div {...css(styles.row)}>
-        <ReactMarkdown {...markdownCss} source={value} escapeHtml={false} />
-        {typeof EDITABLE !== 'undefined' && !EDITABLE ? null : (
+        {editable && (
           <Editor
             value={value}
             filename="README.md"
@@ -67,12 +71,16 @@ class App extends React.Component {
             errorLineNumber={false}
           />
         )}
+        {editable && <div {...css(styles.divider)} />}
+        <div {...css(styles.column)}>
+          <ReactMarkdown {...markdownCss} source={value} escapeHtml={false} />
+        </div>
       </div>
     )
   }
 }
 
-export default withStyles(() => ({
+export default withStyles(theme => ({
   container: {
     backgroundColor: 'red',
   },
@@ -85,7 +93,15 @@ export default withStyles(() => ({
     minHeight: 0,
     // overflow: 'hidden',
     position: 'relative',
-    color: typeof THEME !== 'undefined' ? THEME.text : undefined,
+    color: theme.text,
+  },
+  divider: {
+    width: '1px',
+    backgroundColor: theme.divider,
+  },
+  paddedContent: {
+    padding: '30px',
+    margin: 0,
   },
   row: {
     flex: '1',

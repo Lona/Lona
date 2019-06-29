@@ -270,6 +270,8 @@ class WorkspaceViewController: NSSplitViewController {
         return controller
     }()
 
+    private lazy var markdownViewController = MarkdownViewController()
+
     private lazy var imageViewController = ImageViewController()
 
     private lazy var logicViewController = LogicViewController()
@@ -373,7 +375,7 @@ class WorkspaceViewController: NSSplitViewController {
             }
         }
 
-        fileNavigator.performCreateLogicFile = { path in
+        func performCreateFile(path: String, document: NSDocument, ofType documentType: String) -> Bool {
             if let document = self.document {
                 guard self.close(document: document, discardingUnsavedChanges: false) else { return false }
             }
@@ -381,11 +383,11 @@ class WorkspaceViewController: NSSplitViewController {
             guard let windowController = self.view.window?.windowController else { return false }
 
             let url = URL(fileURLWithPath: path)
-            let newDocument = LogicDocument()
+            let newDocument = document
             newDocument.fileURL = url
             newDocument.save(
                 to: url,
-                ofType: "Logic",
+                ofType: documentType,
                 for: NSDocument.SaveOperationType.saveOperation, completionHandler: { error in
                     if let error = error {
                         Swift.print("Failed to save \(url): \(error)")
@@ -405,37 +407,18 @@ class WorkspaceViewController: NSSplitViewController {
             return true
         }
 
+        fileNavigator.performCreateLogicFile = { path in
+            return performCreateFile(path: path, document: LogicDocument(), ofType: "Logic")
+        }
+
         fileNavigator.performCreateComponent = { path in
-            if let document = self.document {
-                guard self.close(document: document, discardingUnsavedChanges: false) else { return false }
-            }
+            let document = ComponentDocument()
+            document.component = CSComponent.makeDefaultComponent()
+            return performCreateFile(path: path, document: document, ofType: "DocumentType")
+        }
 
-            guard let windowController = self.view.window?.windowController else { return false }
-
-            let url = URL(fileURLWithPath: path)
-            let newDocument = ComponentDocument()
-            newDocument.component = CSComponent.makeDefaultComponent()
-            newDocument.fileURL = url
-            newDocument.save(
-                to: url,
-                ofType: "DocumentType",
-                for: NSDocument.SaveOperationType.saveOperation, completionHandler: { error in
-                    if let error = error {
-                        Swift.print("Failed to save \(url): \(error)")
-                    }
-            })
-
-            NSDocumentController.shared.addDocument(newDocument)
-            newDocument.addWindowController(windowController)
-            windowController.document = newDocument
-
-            self.document = newDocument
-
-            // Set this after updating the document (which calls update)
-            // TODO: There shouldn't need to be an implicit ordering. Maybe we call update() manually.
-            self.inspectedContent = nil
-
-            return true
+        fileNavigator.performCreateMarkdownFile = { path in
+            return performCreateFile(path: path, document: MarkdownDocument(), ofType: "Markdown")
         }
 
         fileNavigator.onAction = self.openDocument
@@ -625,6 +608,16 @@ class WorkspaceViewController: NSSplitViewController {
             } else {
                 editorViewController.contentView = nil
                 return
+            }
+        } else if let document = document as? MarkdownDocument {
+            inspectorViewVisible = false
+
+            editorViewController.contentView = markdownViewController.view
+
+            markdownViewController.content = document.content
+            markdownViewController.onChange = { [unowned self] value in
+                self.markdownViewController.content = value
+                document.content = value
             }
         } else if let document = document as? DirectoryDocument {
             inspectorViewVisible = false

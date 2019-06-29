@@ -12,16 +12,18 @@ import WebKit
 
 class MarkdownEditor: LonaWebView {
 
+    private struct Theme: Codable {
+        var text: String
+        var divider: String
+    }
+
     // MARK: Lifecycle
 
-    init(editable: Bool) {
+    init(editable: Bool, fullscreen: Bool) {
+        self.editable = editable
+        self.fullscreen = fullscreen
 
         super.init()
-
-        // pass down the editable state
-        let source = "window.EDITABLE = \(editable ? "true" : "false");"
-        let script = WKUserScript(source: source, injectionTime: .atDocumentStart, forMainFrameOnly: true)
-        self.configuration.userContentController.addUserScript(script)
     }
 
     required init?(coder: NSCoder) {
@@ -35,14 +37,28 @@ class MarkdownEditor: LonaWebView {
 
     func load() {
         let app = Bundle.main.resourceURL!.appendingPathComponent("Web")
-        let url = app.appendingPathComponent("markdown-editor.html")
-        self.loadLocalApp(main: url, directory: app)
+        let html = app.appendingPathComponent("markdown-editor.html")
+        var urlComponents = URLComponents(url: html, resolvingAgainstBaseURL: true)!
+
+        let theme = Theme(
+            text: Colors.textColor.hexString,
+            divider: NSSplitView.defaultDividerColor.rgbaString
+        )
+
+        urlComponents.queryItems = [
+            URLQueryItem(name: "fullscreen", value: fullscreen.description),
+            URLQueryItem(name: "editable", value: editable.description),
+            URLQueryItem(name: "theme", value: try? JSONEncoder().encode(theme).utf8String() ?? "")
+        ]
+
+        self.loadLocalApp(main: urlComponents.url!, directory: app)
         self.onMessage = { data in
             guard let messageType = data.get(key: "type").string else { return }
 
             switch messageType {
             case "ready":
                 self.markdownEditorLoaded = true
+                self.update()
             case "description":
                 guard let stringValue = data.get(key: "payload").string else { return }
                 self.onMarkdownStringChanged?(stringValue)
@@ -54,9 +70,15 @@ class MarkdownEditor: LonaWebView {
 
     // MARK: Private
 
+    private var editable: Bool
+
+    private var fullscreen: Bool
+
     private var markdownEditorLoaded = false { didSet { update() } }
 
     private func update() {
+        if !markdownEditorLoaded { return }
+
         let payload = CSData.Object([
             "type": "setDescription".toData(),
             "payload": markdownString.toData()

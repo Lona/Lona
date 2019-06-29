@@ -47,7 +47,6 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 .cm-s-react .CodeMirror-gutters {
   background: white;
-  border-left: 4px solid rgba(238, 238, 238, 1);
   border-right: 0px;
 }
 
