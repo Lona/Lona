@@ -225,6 +225,13 @@
 		6B6D4427218F55B50016262C /* CGSize+Resizing.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6B6D4426218F55B50016262C /* CGSize+Resizing.swift */; };
 		6B6D4434218F6B070016262C /* NSImage+Resizing.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6B6D4432218F6B070016262C /* NSImage+Resizing.swift */; };
 		6B6D4435218F6B070016262C /* LNAImageView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6B6D4433218F6B070016262C /* LNAImageView.swift */; };
+		6B73809422C66E59007534A0 /* TemplateBrowser.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6B73809322C66E59007534A0 /* TemplateBrowser.swift */; };
+		6B73809622C67563007534A0 /* WorkspaceTemplateCard.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6B73809522C67563007534A0 /* WorkspaceTemplateCard.swift */; };
+		6B73809822C6ED89007534A0 /* WorkspaceTemplate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6B73809722C6ED89007534A0 /* WorkspaceTemplate.swift */; };
+		6B73809D22C7B3BF007534A0 /* tokens-list@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 6B73809922C7B3BE007534A0 /* tokens-list@2x.png */; };
+		6B73809E22C7B3BF007534A0 /* tokens-list.png in Resources */ = {isa = PBXBuildFile; fileRef = 6B73809A22C7B3BF007534A0 /* tokens-list.png */; };
+		6B73809F22C7B3BF007534A0 /* themed-tokens-list.png in Resources */ = {isa = PBXBuildFile; fileRef = 6B73809B22C7B3BF007534A0 /* themed-tokens-list.png */; };
+		6B7380A022C7B3BF007534A0 /* themed-tokens-list@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 6B73809C22C7B3BF007534A0 /* themed-tokens-list@2x.png */; };
 		6B7DBF5E22A877F50062031E /* LogicDocument.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6B7DBF5D22A877F50062031E /* LogicDocument.swift */; };
 		6B7DBF6022A87B050062031E /* LogicViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6B7DBF5F22A87B050062031E /* LogicViewController.swift */; };
 		6B7DBF6422A885350062031E /* LogicNumberInput.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6B7DBF6322A885350062031E /* LogicNumberInput.swift */; };
@@ -551,6 +558,13 @@
 		6B6D4426218F55B50016262C /* CGSize+Resizing.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "CGSize+Resizing.swift"; sourceTree = "<group>"; };
 		6B6D4432218F6B070016262C /* NSImage+Resizing.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "NSImage+Resizing.swift"; sourceTree = "<group>"; };
 		6B6D4433218F6B070016262C /* LNAImageView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = LNAImageView.swift; sourceTree = "<group>"; };
+		6B73809322C66E59007534A0 /* TemplateBrowser.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TemplateBrowser.swift; sourceTree = "<group>"; };
+		6B73809522C67563007534A0 /* WorkspaceTemplateCard.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = WorkspaceTemplateCard.swift; sourceTree = "<group>"; };
+		6B73809722C6ED89007534A0 /* WorkspaceTemplate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WorkspaceTemplate.swift; sourceTree = "<group>"; };
+		6B73809922C7B3BE007534A0 /* tokens-list@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "tokens-list@2x.png"; sourceTree = "<group>"; };
+		6B73809A22C7B3BF007534A0 /* tokens-list.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "tokens-list.png"; sourceTree = "<group>"; };
+		6B73809B22C7B3BF007534A0 /* themed-tokens-list.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "themed-tokens-list.png"; sourceTree = "<group>"; };
+		6B73809C22C7B3BF007534A0 /* themed-tokens-list@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "themed-tokens-list@2x.png"; sourceTree = "<group>"; };
 		6B7DBF5D22A877F50062031E /* LogicDocument.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LogicDocument.swift; sourceTree = "<group>"; };
 		6B7DBF5F22A87B050062031E /* LogicViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LogicViewController.swift; sourceTree = "<group>"; };
 		6B7DBF6322A885350062031E /* LogicNumberInput.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LogicNumberInput.swift; sourceTree = "<group>"; };
@@ -739,6 +753,7 @@
 			isa = PBXGroup;
 			children = (
 				305ED04520530257000D07C3 /* LonaModule.swift */,
+				6B73809722C6ED89007534A0 /* WorkspaceTemplate.swift */,
 			);
 			path = Module;
 			sourceTree = "<group>";
@@ -952,6 +967,7 @@
 				303C3FF220A4E396008E1541 /* ComponentBrowser.swift */,
 				6B3D7C2D222F5699008AA3D2 /* CustomParametersEditorSheet.swift */,
 				036A4E8F21E0F6AA00948DBD /* ImageViewer.swift */,
+				6B73809322C66E59007534A0 /* TemplateBrowser.swift */,
 				30C203DC20BF5910007C3FE0 /* TextStyleBrowser.swift */,
 				30F870C020865858007ADA5B /* Welcome.swift */,
 			);
@@ -974,6 +990,7 @@
 				6B4DFCEE20A795070048BB43 /* RecentProjectItem.swift */,
 				307D440E2097DC17004B57F5 /* TabIcon.swift */,
 				30C203D920BF5907007C3FE0 /* TextStylePreviewCard.swift */,
+				6B73809522C67563007534A0 /* WorkspaceTemplateCard.swift */,
 				307D440D2097DC16004B57F5 /* WorkspaceVerticalTabs.swift */,
 			);
 			path = components;
@@ -984,18 +1001,18 @@
 			children = (
 				6BD96650217FB0DA0012F173 /* default-workspace-thumbnail.png */,
 				6BD96651217FB0DB0012F173 /* default-workspace-thumbnail@2x.png */,
-				303C3FE920A396BA008E1541 /* icon-plus.png */,
-				303C3FEA20A396BB008E1541 /* icon-plus@2x.png */,
-				307D44112097DDAB004B57F5 /* icon-tab-docs.png */,
-				307D44142097DDAB004B57F5 /* icon-tab-docs@2x.png */,
-				307D44122097DDAB004B57F5 /* icon-tab-layers.png */,
-				307D44132097DDAB004B57F5 /* icon-tab-layers@2x.png */,
 				30F870C620865858007ADA5B /* icon-blank-document.png */,
 				30F870C720865858007ADA5B /* icon-blank-document@2x.png */,
 				30F870CF20865858007ADA5B /* icon-documentation.png */,
 				30F870CD20865858007ADA5B /* icon-documentation@2x.png */,
 				30F870C820865858007ADA5B /* icon-material-design-example.png */,
 				30F870D220865858007ADA5B /* icon-material-design-example@2x.png */,
+				303C3FE920A396BA008E1541 /* icon-plus.png */,
+				303C3FEA20A396BB008E1541 /* icon-plus@2x.png */,
+				307D44112097DDAB004B57F5 /* icon-tab-docs.png */,
+				307D44142097DDAB004B57F5 /* icon-tab-docs@2x.png */,
+				307D44122097DDAB004B57F5 /* icon-tab-layers.png */,
+				307D44132097DDAB004B57F5 /* icon-tab-layers@2x.png */,
 				30F870CE20865858007ADA5B /* LonaIcon_16x16.png */,
 				30F870D420865858007ADA5B /* LonaIcon_16x16@2x.png */,
 				30F870C920865858007ADA5B /* LonaIcon_32x32.png */,
@@ -1006,6 +1023,10 @@
 				30F870D020865858007ADA5B /* LonaIcon_256x256@2x.png */,
 				30F870D320865858007ADA5B /* LonaIcon_512x512.png */,
 				30F870CB20865858007ADA5B /* LonaIcon_512x512@2x.png */,
+				6B73809B22C7B3BF007534A0 /* themed-tokens-list.png */,
+				6B73809C22C7B3BF007534A0 /* themed-tokens-list@2x.png */,
+				6B73809A22C7B3BF007534A0 /* tokens-list.png */,
+				6B73809922C7B3BE007534A0 /* tokens-list@2x.png */,
 			);
 			path = assets;
 			sourceTree = "<group>";
@@ -1314,19 +1335,23 @@
 			files = (
 				307D4420209B6CEA004B57F5 /* Web in Resources */,
 				307D44162097DDAB004B57F5 /* icon-tab-layers.png in Resources */,
+				6B73809F22C7B3BF007534A0 /* themed-tokens-list.png in Resources */,
 				30F870E920865859007ADA5B /* LonaIcon_16x16@2x.png in Resources */,
 				30F870E620865859007ADA5B /* LonaIcon_128x128.png in Resources */,
 				30F870E020865859007ADA5B /* LonaIcon_512x512@2x.png in Resources */,
 				6BC60631223F1947003E616B /* Logic.framework.dSYM in Resources */,
 				307D44182097DDAB004B57F5 /* icon-tab-docs@2x.png in Resources */,
 				307D44152097DDAB004B57F5 /* icon-tab-docs.png in Resources */,
+				6B73809D22C7B3BF007534A0 /* tokens-list@2x.png in Resources */,
 				301D7EDC1F47A29D0098AB0D /* Modules in Resources */,
 				30C0C92E1F5F77040079D077 /* dsa_pub.pem in Resources */,
+				6B73809E22C7B3BF007534A0 /* tokens-list.png in Resources */,
 				30F870DD20865859007ADA5B /* icon-material-design-example.png in Resources */,
 				30F870DF20865859007ADA5B /* LonaIcon_256x256.png in Resources */,
 				6B0AEFBE1EBF74D800F35BBF /* Assets.xcassets in Resources */,
 				30F870E420865859007ADA5B /* icon-documentation.png in Resources */,
 				30F870DE20865859007ADA5B /* LonaIcon_32x32.png in Resources */,
+				6B7380A022C7B3BF007534A0 /* themed-tokens-list@2x.png in Resources */,
 				303C3FEB20A396BB008E1541 /* icon-plus.png in Resources */,
 				30F870E720865859007ADA5B /* icon-material-design-example@2x.png in Resources */,
 				30DDEE8A1F479280001D41AB /* node in Resources */,
@@ -1557,10 +1582,12 @@
 				30F870EB20869644007ADA5B /* Fetch.swift in Sources */,
 				303C3FF520A4E3C1008E1541 /* ComponentPreviewCollection.swift in Sources */,
 				3090D7D31F032305009277E7 /* CSComponentLayer.swift in Sources */,
+				6B73809422C66E59007534A0 /* TemplateBrowser.swift in Sources */,
 				6B8D7DA321BF04B60087A3F7 /* InspectorSectionHeader.swift in Sources */,
 				6B1086FB217A34340024AE56 /* Data+String.swift in Sources */,
 				6B4203E921BC49C700D59317 /* CanvasAreaView.swift in Sources */,
 				30F7C9521ED4AE23009D27DF /* CoreComponentInspectorView.swift in Sources */,
+				6B73809622C67563007534A0 /* WorkspaceTemplateCard.swift in Sources */,
 				30335A0C1F5B2F8B006E507B /* CaseList.swift in Sources */,
 				3056275C1FBA07C800026796 /* DictionaryEditor.swift in Sources */,
 				30F7C9561ED4E02F009D27DF /* YogaLayout.swift in Sources */,
@@ -1593,6 +1620,7 @@
 				6B0F5B8821386CAE007DBBB2 /* AddColorSheet.swift in Sources */,
 				6B6D441D218B6BBE0016262C /* LNATextField.swift in Sources */,
 				6BC2D447226394F0003A9F63 /* LogicConvertible.swift in Sources */,
+				6B73809822C6ED89007534A0 /* WorkspaceTemplate.swift in Sources */,
 				30B5B19F1EC29D84002068CE /* NumberField.swift in Sources */,
 				6B8D7DA021BED32E0087A3F7 /* LayoutInspector.swift in Sources */,
 				6B25041821E5510900AE7F97 /* ImageDocument.swift in Sources */,

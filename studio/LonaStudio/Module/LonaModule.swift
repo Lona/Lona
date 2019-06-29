@@ -9,18 +9,6 @@
 import AppKit
 import Logic
 
-private let defaultReadmeContents = """
-## Overview
-
-This is a Lona workspace.
-
-Here we define the components, tokens (colors, text styles, shadows, etc), and data types that make up our design system.
-
-We then use the Lona compiler to convert this design system to platform-specific code.
-
-> You can learn more about Lona [here](https://github.com/airbnb/Lona).
-"""
-
 class LonaModule {
     struct ComponentFile {
         let url: URL
@@ -165,35 +153,11 @@ class LonaModule {
         return files
     }
 
-    static func createWorkspace(at url: URL) throws {
+    static func createWorkspace(at url: URL, using template: WorkspaceTemplate) throws {
         let workspaceName = url.lastPathComponent
         let workspaceParent = url.deletingLastPathComponent()
 
-        let root = VirtualDirectory(name: workspaceName) {
-            [
-                VirtualFile(name: "README.md") {
-                    defaultReadmeContents.data(using: .utf8)!
-                },
-                VirtualFile(name: "lona.json") {
-                    CSData.Object([:])
-                },
-                VirtualDirectory(name: "assets"),
-                VirtualDirectory(name: "components"),
-                VirtualDirectory(name: "foundation") {
-                    [
-                        VirtualFile(name: "colors.json") {
-                            CSData.Object(["colors": CSData.Array([])])
-                        },
-                        VirtualFile(name: "textStyles.json") {
-                            CSData.Object(["styles": CSData.Array([])])
-                        },
-                        VirtualFile(name: "shadows.json") {
-                            CSData.Object(["shadows": CSData.Array([])])
-                        }
-                    ]
-                }
-            ]
-        }
+        let root = template.make(workspaceName: workspaceName)
 
         try VirtualFileSystem.write(node: root, relativeTo: workspaceParent)
     }

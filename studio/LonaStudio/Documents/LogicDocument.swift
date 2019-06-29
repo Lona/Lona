@@ -30,7 +30,7 @@ class LogicDocument: NSDocument {
         WorkspaceWindowController.create(andAttachTo: self)
     }
 
-    override func data(ofType typeName: String) throws -> Data {
+    public static func encode(_ content: LGCSyntaxNode) throws -> Data {
         let encoder = JSONEncoder()
 
         if #available(OSX 10.13, *) {
@@ -48,6 +48,10 @@ class LogicDocument: NSDocument {
             Swift.print("Failed to save .logic file as XML")
             return jsonData
         }
+    }
+
+    override func data(ofType typeName: String) throws -> Data {
+        return try LogicDocument.encode(content)
     }
 
     override func read(from data: Data, ofType typeName: String) throws {

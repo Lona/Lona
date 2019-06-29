@@ -21,6 +21,7 @@ class CSUserPreferences: CSPreferencesFile {
     enum Keys: String {
         case compilerPath
         case canvasAreaBackgroundColor
+        case useExperimentalFeatures
     }
 
     static var url: URL {
@@ -83,5 +84,24 @@ class CSUserPreferences: CSPreferencesFile {
 
     static var canvasAreaBackgroundColor: NSColor? {
         return NSColor.parse(css: canvasAreaBackgroundColorValue.data.stringValue)
+    }
+
+    static var useExperimentalFeaturesValue: CSValue {
+        get {
+            if let value = data[Keys.useExperimentalFeatures.rawValue] {
+                return CSValue(type: .bool, data: CSValue.expand(type: .bool, data: value))
+            } else {
+                return CSValue(type: .bool, data: .Bool(false))
+            }
+        }
+        set {
+            data[Keys.useExperimentalFeatures.rawValue] = newValue == CSValue(type: .bool, data: .Bool(false))
+                ? nil
+                : CSValue.compact(type: .bool, data: newValue.data)
+        }
+    }
+
+    static var useExperimentalFeatures: Bool {
+        return useExperimentalFeaturesValue.data.boolValue
     }
 }

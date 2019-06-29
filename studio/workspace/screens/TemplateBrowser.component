@@ -1,0 +1,212 @@
+{
+  "devices" : [
+    {
+      "height" : 1,
+      "heightMode" : "At Least",
+      "name" : "",
+      "width" : 600
+    }
+  ],
+  "examples" : [
+    {
+      "id" : "Default",
+      "name" : "Default",
+      "params" : {
+
+      }
+    }
+  ],
+  "logic" : [
+    {
+      "assignee" : [
+        "layers",
+        "TokensListTemplate",
+        "onPressCard"
+      ],
+      "content" : [
+        "parameters",
+        "onSelectTokens"
+      ],
+      "type" : "AssignExpr"
+    },
+    {
+      "assignee" : [
+        "layers",
+        "ThemedTokensListTemplate",
+        "onPressCard"
+      ],
+      "content" : [
+        "parameters",
+        "onSelectThemedTokens"
+      ],
+      "type" : "AssignExpr"
+    },
+    {
+      "assignee" : [
+        "layers",
+        "DoneButton",
+        "onClick"
+      ],
+      "content" : [
+        "parameters",
+        "onClickDone"
+      ],
+      "type" : "AssignExpr"
+    },
+    {
+      "assignee" : [
+        "layers",
+        "CancelButton",
+        "onClick"
+      ],
+      "content" : [
+        "parameters",
+        "onClickCancel"
+      ],
+      "type" : "AssignExpr"
+    }
+  ],
+  "params" : [
+    {
+      "name" : "onSelectTokens",
+      "type" : {
+        "name" : "Function"
+      }
+    },
+    {
+      "name" : "onSelectThemedTokens",
+      "type" : {
+        "name" : "Function"
+      }
+    },
+    {
+      "name" : "onClickDone",
+      "type" : {
+        "name" : "Function"
+      }
+    },
+    {
+      "name" : "onClickCancel",
+      "type" : {
+        "name" : "Function"
+      }
+    }
+  ],
+  "root" : {
+    "children" : [
+      {
+        "id" : "Text",
+        "params" : {
+          "alignSelf" : "stretch",
+          "font" : "large",
+          "marginBottom" : 18,
+          "marginLeft" : 24,
+          "marginRight" : 24,
+          "marginTop" : 18,
+          "text" : "Choose a workspace template"
+        },
+        "type" : "Lona:Text"
+      },
+      {
+        "id" : "Divider",
+        "params" : {
+          "alignSelf" : "stretch",
+          "backgroundColor" : "grey300",
+          "height" : 1
+        },
+        "type" : "Lona:View"
+      },
+      {
+        "children" : [
+          {
+            "id" : "TokensListTemplate",
+            "params" : {
+              "descriptionText" : "Simple lists of tokens (colors, text styles, etc). Great for new design systems.",
+              "image" : "file:\/\/.\/assets\/tokens-list@2x.png",
+              "isSelected" : true,
+              "titleText" : "Design Tokens"
+            },
+            "type" : "WorkspaceTemplateCard"
+          },
+          {
+            "id" : "View 2",
+            "params" : {
+              "width" : 8
+            },
+            "type" : "Lona:View"
+          },
+          {
+            "id" : "ThemedTokensListTemplate",
+            "params" : {
+              "descriptionText" : "For design systems with multiple themes, e.g. a \"light\" and \"dark\" mode.",
+              "image" : "file:\/\/.\/assets\/themed-tokens-list@2x.png",
+              "titleText" : "Themed Design Tokens"
+            },
+            "type" : "WorkspaceTemplateCard"
+          }
+        ],
+        "id" : "View 1",
+        "params" : {
+          "alignSelf" : "stretch",
+          "backgroundColor" : "grey50",
+          "flexDirection" : "row",
+          "paddingBottom" : 16,
+          "paddingLeft" : 16,
+          "paddingRight" : 16,
+          "paddingTop" : 16
+        },
+        "type" : "Lona:View"
+      },
+      {
+        "id" : "Divider 5",
+        "params" : {
+          "alignSelf" : "stretch",
+          "backgroundColor" : "grey300",
+          "height" : 1
+        },
+        "type" : "Lona:View"
+      },
+      {
+        "children" : [
+          {
+            "id" : "CancelButton",
+            "params" : {
+              "titleText" : "Cancel"
+            },
+            "type" : "Button"
+          },
+          {
+            "id" : "View 5",
+            "params" : {
+              "flex" : 1
+            },
+            "type" : "Lona:View"
+          },
+          {
+            "id" : "DoneButton",
+            "params" : {
+              "titleText" : "OK"
+            },
+            "type" : "Button"
+          }
+        ],
+        "id" : "View 4",
+        "params" : {
+          "alignSelf" : "stretch",
+          "flexDirection" : "row",
+          "paddingBottom" : 12,
+          "paddingLeft" : 24,
+          "paddingRight" : 24,
+          "paddingTop" : 12
+        },
+        "type" : "Lona:View"
+      }
+    ],
+    "id" : "View",
+    "params" : {
+      "alignSelf" : "stretch",
+      "backgroundColor" : "white"
+    },
+    "type" : "Lona:View"
+  }
+}

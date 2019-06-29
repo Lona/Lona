@@ -1,0 +1,222 @@
+{
+  "devices" : [
+    {
+      "height" : 1,
+      "heightMode" : "At Least",
+      "name" : "",
+      "width" : 600
+    }
+  ],
+  "examples" : [
+    {
+      "id" : "Default",
+      "name" : "Default",
+      "params" : {
+        "descriptionText" : "Description",
+        "titleText" : "Title"
+      }
+    },
+    {
+      "id" : "name",
+      "name" : "name",
+      "params" : {
+        "isSelected" : true
+      }
+    }
+  ],
+  "logic" : [
+    {
+      "assignee" : [
+        "layers",
+        "Title",
+        "text"
+      ],
+      "content" : [
+        "parameters",
+        "titleText"
+      ],
+      "type" : "AssignExpr"
+    },
+    {
+      "assignee" : [
+        "layers",
+        "Description",
+        "text"
+      ],
+      "content" : [
+        "parameters",
+        "descriptionText"
+      ],
+      "type" : "AssignExpr"
+    },
+    {
+      "assignee" : [
+        "layers",
+        "Image",
+        "image"
+      ],
+      "content" : [
+        "parameters",
+        "image"
+      ],
+      "type" : "AssignExpr"
+    },
+    {
+      "assignee" : [
+        "layers",
+        "Container",
+        "onPress"
+      ],
+      "content" : [
+        "parameters",
+        "onPressCard"
+      ],
+      "type" : "AssignExpr"
+    },
+    {
+      "body" : [
+        {
+          "assignee" : [
+            "layers",
+            "Container",
+            "backgroundColor"
+          ],
+          "content" : {
+            "type" : "LitExpr",
+            "value" : {
+              "data" : "blue50",
+              "type" : "Color"
+            }
+          },
+          "type" : "AssignExpr"
+        },
+        {
+          "assignee" : [
+            "layers",
+            "ImageContainer",
+            "borderColor"
+          ],
+          "content" : {
+            "type" : "LitExpr",
+            "value" : {
+              "data" : "blue100",
+              "type" : "Color"
+            }
+          },
+          "type" : "AssignExpr"
+        },
+        {
+          "assignee" : [
+            "layers",
+            "Description",
+            "textStyle"
+          ],
+          "content" : {
+            "type" : "LitExpr",
+            "value" : {
+              "data" : "small",
+              "type" : "TextStyle"
+            }
+          },
+          "type" : "AssignExpr"
+        }
+      ],
+      "condition" : {
+        "left" : [
+          "parameters",
+          "isSelected"
+        ],
+        "op" : "==",
+        "right" : {
+          "type" : "LitExpr",
+          "value" : {
+            "data" : true,
+            "type" : "Boolean"
+          }
+        },
+        "type" : "BinExpr"
+      },
+      "type" : "IfExpr"
+    }
+  ],
+  "params" : [
+    {
+      "name" : "titleText",
+      "type" : "String"
+    },
+    {
+      "name" : "descriptionText",
+      "type" : "String"
+    },
+    {
+      "name" : "isSelected",
+      "type" : "Boolean"
+    },
+    {
+      "name" : "image",
+      "type" : "URL"
+    },
+    {
+      "name" : "onPressCard",
+      "type" : {
+        "name" : "Function"
+      }
+    }
+  ],
+  "root" : {
+    "children" : [
+      {
+        "id" : "Title",
+        "params" : {
+          "font" : "labelTitle",
+          "marginBottom" : 8,
+          "text" : "Tokens list"
+        },
+        "type" : "Lona:Text"
+      },
+      {
+        "children" : [
+          {
+            "id" : "Image",
+            "params" : {
+              "height" : 75,
+              "width" : 70
+            },
+            "type" : "Lona:Image"
+          }
+        ],
+        "id" : "ImageContainer",
+        "params" : {
+          "alignItems" : "center",
+          "alignSelf" : "stretch",
+          "backgroundColor" : "rgba(255,255,255,0.9)",
+          "borderColor" : "grey200",
+          "borderRadius" : 8,
+          "borderWidth" : 1,
+          "paddingBottom" : 18,
+          "paddingTop" : 18
+        },
+        "type" : "Lona:View"
+      },
+      {
+        "id" : "Description",
+        "params" : {
+          "font" : "smallMuted",
+          "marginTop" : 8,
+          "text" : "Flat lists of tokens (colors, text styles, etc). Great for simple design systems."
+        },
+        "type" : "Lona:Text"
+      }
+    ],
+    "id" : "Container",
+    "params" : {
+      "borderRadius" : 8,
+      "paddingBottom" : 8,
+      "paddingLeft" : 8,
+      "paddingRight" : 8,
+      "paddingTop" : 8,
+      "width" : 220
+    },
+    "type" : "Lona:View"
+  }
+}
