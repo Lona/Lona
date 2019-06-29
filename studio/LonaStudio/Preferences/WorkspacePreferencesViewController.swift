@@ -114,13 +114,27 @@ class WorkspacePreferencesViewController: NSViewController, MASPreferencesViewCo
                 self.render()
         })
 
+        let useExperimentalFeaturesRow = ValueSettingRow(
+            title: "Use experimental features",
+            value: CSUserPreferences.useExperimentalFeaturesValue, onChange: { [unowned self] value in
+                if !self.loaded { return }
+
+                CSUserPreferences.useExperimentalFeaturesValue = CSValue(type: CSType.bool, data: value)
+                CSUserPreferences.save()
+
+                LonaPlugins.current.trigger(eventType: .onReloadWorkspace)
+
+                self.render()
+        })
+
         let views = [
             workspaceNameRow,
             workspaceIconRow,
             compilerPathRow,
             colorsPathRow,
             textStylesPathRow,
-            canvasAreaBackgroundColorRow
+            canvasAreaBackgroundColorRow,
+            useExperimentalFeaturesRow
         ]
 
         views.forEach({ stackView.addArrangedSubview($0) })

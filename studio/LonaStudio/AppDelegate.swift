@@ -143,6 +143,24 @@ class AppDelegate: NSObject, NSApplicationDelegate {
         }
     }
 
+    private static func createSheetWindow() -> NSWindow {
+        let sheetWindow = NSWindow(
+            contentRect: NSRect(x: 0, y: 0, width: 500, height: 300),
+            styleMask: [.titled],
+            backing: NSWindow.BackingStoreType.retained,
+            defer: false,
+            screen: nil)
+
+        let visualEffectView = NSVisualEffectView()
+//        visualEffectView.translatesAutoresizingMaskIntoConstraints = true
+        visualEffectView.material = .ultraDark
+        visualEffectView.appearance = NSAppearance(named: NSAppearance.Name.vibrantDark)
+
+        sheetWindow.contentView = visualEffectView
+
+        return sheetWindow
+    }
+
     var welcomeWindow: NSWindow?
 
     @IBAction func showWelcomeWindow(_ sender: AnyObject) {
@@ -183,17 +201,37 @@ class AppDelegate: NSObject, NSApplicationDelegate {
             welcome.trailingAnchor.constraint(equalTo: view.trailingAnchor).isActive = true
 
             welcome.onCreateProject = {
-                guard let url = self.createWorkspaceDialog() else { return }
+                func finished(template: WorkspaceTemplate) {
+                    guard let url = self.createWorkspaceDialog() else { return }
 
-                let ok = self.createWorkspace(url: url)
-                if !ok {
-                    Swift.print("Failed to create workspace")
-                    return
+                    let ok = self.createWorkspace(url: url, workspaceTemplate: template)
+                    if !ok {
+                        Swift.print("Failed to create workspace")
+                        return
+                    }
+
+                    if self.setWorkspace(url: url), let document = self.openWorkspaceDocument() {
+                        window.close()
+                        self.showComponentBrowser(document)
+                    }
                 }
 
-                if self.setWorkspace(url: url), let document = self.openWorkspaceDocument() {
-                    window.close()
-                    self.showComponentBrowser(document)
+                if CSUserPreferences.useExperimentalFeatures {
+                    let sheetWindow = AppDelegate.createSheetWindow()
+                    let templateBrowser = TemplateBrowser()
+                    sheetWindow.contentView = templateBrowser
+
+                    templateBrowser.onClickDone = {
+                        finished(template: .designTokens)
+                    }
+
+                    templateBrowser.onClickCancel = {
+                        self.welcomeWindow?.endSheet(sheetWindow)
+                    }
+
+                    self.welcomeWindow?.beginSheet(sheetWindow)
+                } else {
+                    finished(template: .componentLibrary)
                 }
             }
 
@@ -307,7 +345,7 @@ class AppDelegate: NSObject, NSApplicationDelegate {
     @IBAction func newWorkspace(_ sender: AnyObject) {
         guard let url = self.createWorkspaceDialog() else { return }
 
-        let ok = self.createWorkspace(url: url)
+        let ok = self.createWorkspace(url: url, workspaceTemplate: .componentLibrary)
         if !ok {
             Swift.print("Failed to create workspace")
             return
@@ -334,9 +372,9 @@ class AppDelegate: NSObject, NSApplicationDelegate {
         }
     }
 
-    private func createWorkspace(url: URL) -> Bool {
+    private func createWorkspace(url: URL, workspaceTemplate: WorkspaceTemplate) -> Bool {
         do {
-            try LonaModule.createWorkspace(at: url)
+            try LonaModule.createWorkspace(at: url, using: workspaceTemplate)
         } catch {
             let alert = NSAlert()
             alert.messageText = "Failed to create workspace \(url.lastPathComponent) in \(url.deletingLastPathComponent().lastPathComponent)"
