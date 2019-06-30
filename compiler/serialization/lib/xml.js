@@ -1,7 +1,7 @@
 const xmlbuilder = require('xmlbuilder')
 const { parseString } = require('xml2js')
 
-function build(rootChildren) {
+function build(root) {
   function processChildren(builder, children) {
     // eslint-disable-next-line no-use-before-define
     return children.reduce(process, builder).up()
@@ -13,8 +13,8 @@ function build(rootChildren) {
     return processChildren(builder.ele(name, attributes), children)
   }
 
-  const builder = xmlbuilder.create('root')
-  const result = rootChildren.reduce(process, builder)
+  const builder = xmlbuilder.create(root.name)
+  const result = root.children.reduce(process, builder)
   const xmlString = result.end({ pretty: true })
 
   return xmlString
@@ -47,7 +47,9 @@ function parse(xmlString) {
     }
   }
 
-  return unwrap(parsed.root)
+  const root = Object.values(parsed)[0]
+
+  return unwrap(root)
 }
 
 module.exports = {

@@ -1,5 +1,5 @@
 const xml = `<?xml version="1.0"?>
-<root>
+<Program>
   <Declaration.ImportDeclaration name="Prelude"/>
   <Declaration.Namespace name="Colors">
     <Variable name="a" type="Color" value="#FF3409"/>
@@ -7,7 +7,7 @@ const xml = `<?xml version="1.0"?>
       <Variable name="b" type="Color" value="#3449FF"/>
     </Namespace>
   </Declaration.Namespace>
-</root>`
+</Program>`
 
 const json = {
   data: {

@@ -181,7 +181,7 @@ function convertLogicJsonToXml(logicJson) {
     }
   }
 
-  return logicJson.data.block.filter(isPlaceholder).map(processStandardNode)
+  return processStandardNode(logicJson)
 }
 
 function convertLogicXmlToJson(program) {

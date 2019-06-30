@@ -1,7 +1,7 @@
 const xml = `<?xml version="1.0"?>
-<root>
+<Program>
   <Declaration.Variable name="x" type="Number" value="123"/>
-</root>`
+</Program>`
 
 const declaration = {
   data: {
