@@ -249,7 +249,7 @@ class ReadmePreview: NSBox {
 
     // MARK: Private
 
-    private var markdownEditorView = MarkdownEditor(editable: false)
+    private var markdownEditorView = MarkdownEditor(editable: false, fullscreen: false)
 
     private func setUpViews() {
         boxType = .custom

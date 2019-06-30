@@ -73,6 +73,7 @@
     ],
     "rules": {
       "import/no-dynamic-require": "off",
+      "import/prefer-default-export": "off",
       "react/jsx-filename-extension": "off",
       "react/jsx-indent": "off",
       "react/destructuring-assignment": "off",

@@ -27,11 +27,6 @@ class LonaWebView: WKWebView {
 
         userContentController.add(self, name: "notification")
 
-        // pass down the theme
-        let source = "window.THEME = {dark: \(isDarkMode ? "true" : "false"), text: '\(Colors.textColor.hexString)', background: '\(Colors.contentBackground.hexString)'}"
-        let script = WKUserScript(source: source, injectionTime: .atDocumentStart, forMainFrameOnly: true)
-        userContentController.addUserScript(script)
-
         setUpViews()
         setUpConstraints()
     }
