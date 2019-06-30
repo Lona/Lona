@@ -29,11 +29,21 @@ const singleChildMapping = {
 const multipleChildMapping = {
   program: 'block',
   namespace: 'declarations',
+  topLevelDeclarations: 'declarations',
 }
 
 const implicitPlaceholderMapping = {
   program: 'block',
   namespace: 'declarations',
+  topLevelDeclarations: 'declarations',
+}
+
+const nodeRenaming = {
+  topLevelDeclarations: 'Declarations',
+}
+
+const reverseNodeRenaming = {
+  Declarations: 'topLevelDeclarations',
 }
 
 const identifierNodeMapping = {
@@ -108,7 +118,7 @@ function convertLogicJsonToXml(logicJson) {
   function processStandardNode(node) {
     const { type, data } = node
 
-    const nodeName = upperFirst(type)
+    const nodeName = nodeRenaming[type] || upperFirst(type)
 
     const attributes = {}
 
@@ -184,9 +194,7 @@ function convertLogicJsonToXml(logicJson) {
   return processStandardNode(logicJson)
 }
 
-function convertLogicXmlToJson(program) {
-  const { children: programStatements } = program
-
+function convertLogicXmlToJson(root) {
   const compactLiteralTypes = ['Boolean', 'Number', 'String', 'Color']
 
   function deserializeAnnotation(string) {
@@ -304,7 +312,7 @@ function convertLogicXmlToJson(program) {
         break
     }
 
-    const nodeName = lowerFirst(name)
+    const nodeName = reverseNodeRenaming[name] || lowerFirst(name)
 
     const data = {
       id: createUUID(),
@@ -353,19 +361,7 @@ function convertLogicXmlToJson(program) {
     }
   }
 
-  return {
-    type: 'program',
-    data: {
-      id: createUUID(),
-      block: [
-        ...programStatements.map(processStandardNode),
-        {
-          data: { id: createUUID() },
-          type: 'placeholder',
-        },
-      ],
-    },
-  }
+  return processStandardNode(root)
 }
 
 module.exports = { convertLogicJsonToXml, convertLogicXmlToJson }

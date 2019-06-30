@@ -4,6 +4,26 @@ jest.mock('uuid/v4', () => () => `0`)
 
 //
 
+test('top level declarations -> xml', () => {
+  const { xml, json } = require('./mocks/declarations/topLevelDeclarations')
+
+  const source = JSON.stringify(json)
+  const converted = convertLogic(source, 'xml')
+
+  expect(converted).toBe(xml)
+})
+
+test('import declaration -> json', () => {
+  const { xml, json } = require('./mocks/declarations/topLevelDeclarations')
+
+  const converted = convertLogic(xml, 'json')
+  const parsed = JSON.parse(converted)
+
+  expect(parsed).toStrictEqual(json)
+})
+
+//
+
 test('import declaration -> xml', () => {
   const { xml, json } = require('./mocks/declarations/importDeclaration')
 
