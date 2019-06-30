@@ -635,21 +635,47 @@ switch (scanResult.command) {
   let contents = Node.Fs.readFileSync(inputPath, `utf8);
   let jsonContents = Serialization.convert(contents, "types", "json");
   convertTypes(target, jsonContents) |> Js.log;
-| Logic(target, inputPath) =>
-  let convert = config => {
-    let contents = Node.Fs.readFileSync(inputPath, `utf8);
+| Logic(target, input) =>
+  let initialWorkspaceSearchPath =
+    switch (input) {
+    | File(path) => path
+    | Stdin => Process.cwd()
+    };
+
+  let decode = contents: LogicAst.syntaxNode => {
     let jsonContents = Serialization.convert(contents, "logic", "json");
     let json = jsonContents |> Js.Json.parseExn;
-    let program = LogicAst.Decode.syntaxNode(json);
+    LogicAst.Decode.syntaxNode(json);
+  };
+  let convert = (config, program) => {
     let converted = LogicSwift.convert(config, program);
     SwiftRender.toString(converted);
   };
 
-  Config.load(platformId(target), options, inputPath, "")
-  |> Js.Promise.then_((config: Config.t) => {
-       convert(config) |> Js.log;
-       Js.Promise.resolve();
-     })
+  Config.load(platformId(target), options, initialWorkspaceSearchPath, "")
+  |> Js.Promise.then_((config: Config.t) =>
+       switch (input) {
+       | File(inputPath) =>
+         let contents = Node.Fs.readFileSync(inputPath, `utf8);
+         decode(contents) |> convert(config) |> Js.log;
+         Js.Promise.resolve();
+       | Stdin =>
+         getStdin()
+         |> Js.Promise.then_(contents => {
+              let program = decode(contents);
+              let config = {
+                ...config,
+                logicFiles: [
+                  {path: "__stdin__", contents: program},
+                  ...config.logicFiles,
+                ],
+              };
+              program |> convert(config) |> Js.log;
+
+              Js.Promise.resolve();
+            })
+       }
+     )
   |> ignore;
 | TextStyles(target, input) =>
   let initialWorkspaceSearchPath =

@@ -10,7 +10,7 @@ module Command = {
     | TextStyles(Types.compilerTarget, inputReference)
     | Shadows(Types.compilerTarget, inputReference)
     | Types(Types.compilerTarget, string)
-    | Logic(Types.compilerTarget, string)
+    | Logic(Types.compilerTarget, inputReference)
     | Component(Types.compilerTarget, string)
     | Workspace(Types.compilerTarget, string, string);
 
@@ -306,9 +306,8 @@ Type `lonac [command]` to see which options are required for that command. The f
         switch (targetRef^, inputRef^) {
         | (None, _) =>
           raise(Command.Unknown("Missing output target (--target)"))
-        | (_, None) =>
-          raise(Command.Unknown("Missing input path (--input)"))
-        | (Some(target), Some(path)) => Command.Logic(target, path)
+        | (Some(target), None) => Command.Logic(target, Stdin)
+        | (Some(target), Some(path)) => Command.Logic(target, File(path))
         }
       | "component" =>
         switch (targetRef^, inputRef^) {
