@@ -109,7 +109,7 @@ class LogicViewController: NSViewController {
         }
 
         logicView.suggestionsForNode = { rootNode, node, query in
-            guard case .program(let root) = rootNode else { return [] }
+            guard let root = LGCProgram.make(from: rootNode) else { return [] }
 
             let program: LGCSyntaxNode = .program(
                 LGCProgram.join(programs: [LogicViewController.makePreludeProgram(), root])

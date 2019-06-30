@@ -168,6 +168,7 @@ and syntaxNode =
   | TopLevelParameters(topLevelParameters)
   | EnumerationCase(enumerationCase)
   | GenericParameter(genericParameter)
+  | TopLevelDeclarations(topLevelDeclarations)
 and parameterFunctionParameter = {
   id: string,
   externalName: option(string),
@@ -243,7 +244,13 @@ and parameterGenericParameter = {
 and placeholderGenericParameter = {id: string}
 and genericParameter =
   | Parameter(parameterGenericParameter)
-  | Placeholder(placeholderGenericParameter);
+  | Placeholder(placeholderGenericParameter)
+and topLevelDeclarationsTopLevelDeclarations = {
+  id: string,
+  declarations: list(declaration),
+}
+and topLevelDeclarations =
+  | TopLevelDeclarations(topLevelDeclarationsTopLevelDeclarations);
 
 module Decode = {
   let rec list: 't. (Json.Decode.decoder('t), Js.Json.t) => list('t) =
@@ -547,6 +554,9 @@ module Decode = {
       | "genericParameter" =>
         let rec decoded = genericParameter(data);
         GenericParameter(decoded);
+      | "topLevelDeclarations" =>
+        let rec decoded = topLevelDeclarations(data);
+        TopLevelDeclarations(decoded);
       | _ =>
         Js.log("Error decoding syntaxNode");
         raise(Not_found);
@@ -689,5 +699,12 @@ module Decode = {
         Js.log("Error decoding genericParameter");
         raise(Not_found);
       };
-    };
+    }
+  and topLevelDeclarations: Js.Json.t => topLevelDeclarations =
+    (json: Js.Json.t) =>
+      TopLevelDeclarations({
+        id: Json.Decode.field("id", Json.Decode.string, json),
+        declarations:
+          Json.Decode.field("declarations", list(declaration), json),
+      });
 };
