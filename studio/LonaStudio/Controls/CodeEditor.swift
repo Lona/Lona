@@ -37,8 +37,10 @@ public class CodeEditor: NSBox {
 
     // MARK: Private
 
-    private let textView = NSTextField(frame: .zero)
+//    private let textView = NSTextField(frame: .zero)
     private let editorHeaderView = EditorHeader()
+
+    private let outputPreview = GeneratedOutputPreview()
 
     private func setUpViews() {
         boxType = .custom
@@ -47,39 +49,51 @@ public class CodeEditor: NSBox {
 
         editorHeaderView.dividerColor = NSSplitView.defaultDividerColor
 
-        textView.focusRingType = .none
-        textView.isBezeled = false
-        textView.isEditable = false
-        textView.isSelectable = true
-        textView.font = TextStyles.monospacedMicro.nsFont
+//        textView.focusRingType = .none
+//        textView.isBezeled = false
+//        textView.isEditable = false
+//        textView.isSelectable = true
+//        textView.font = TextStyles.monospacedMicro.nsFont
 
         addSubview(editorHeaderView)
-        addSubview(textView)
+//        addSubview(textView)
+        addSubview(outputPreview)
     }
 
     private func setUpConstraints() {
         translatesAutoresizingMaskIntoConstraints = false
         editorHeaderView.translatesAutoresizingMaskIntoConstraints = false
-        textView.translatesAutoresizingMaskIntoConstraints = false
+        outputPreview.translatesAutoresizingMaskIntoConstraints = false
+//        textView.translatesAutoresizingMaskIntoConstraints = false
 
         editorHeaderView.topAnchor.constraint(equalTo: topAnchor).isActive = true
         editorHeaderView.leadingAnchor.constraint(equalTo: leadingAnchor).isActive = true
         editorHeaderView.trailingAnchor.constraint(equalTo: trailingAnchor).isActive = true
         editorHeaderView.heightAnchor.constraint(equalToConstant: 38).isActive = true
 
-        textView.setContentHuggingPriority(.defaultLow, for: .vertical)
-        textView.setContentHuggingPriority(.defaultLow, for: .horizontal)
-        textView.setContentCompressionResistancePriority(.defaultLow, for: .vertical)
-        textView.setContentCompressionResistancePriority(.defaultLow, for: .horizontal)
+        outputPreview.topAnchor.constraint(equalTo: editorHeaderView.bottomAnchor).isActive = true
+        outputPreview.leadingAnchor.constraint(equalTo: leadingAnchor).isActive = true
+        outputPreview.trailingAnchor.constraint(equalTo: trailingAnchor).isActive = true
+        outputPreview.bottomAnchor.constraint(equalTo: bottomAnchor).isActive = true
 
-        textView.topAnchor.constraint(equalTo: editorHeaderView.bottomAnchor).isActive = true
-        textView.bottomAnchor.constraint(equalTo: bottomAnchor).isActive = true
-        textView.leadingAnchor.constraint(equalTo: leadingAnchor).isActive = true
-        textView.trailingAnchor.constraint(equalTo: trailingAnchor).isActive = true
+//        outputPreview.setContentHuggingPriority(.defaultLow, for: .vertical)
+//        outputPreview.setContentHuggingPriority(.defaultLow, for: .horizontal)
+//        outputPreview.setContentCompressionResistancePriority(.defaultLow, for: .vertical)
+//        outputPreview.setContentCompressionResistancePriority(.defaultLow, for: .horizontal)
+
+//        textView.setContentHuggingPriority(.defaultLow, for: .vertical)
+//        textView.setContentHuggingPriority(.defaultLow, for: .horizontal)
+//        textView.setContentCompressionResistancePriority(.defaultLow, for: .vertical)
+//        textView.setContentCompressionResistancePriority(.defaultLow, for: .horizontal)
+//
+//        textView.topAnchor.constraint(equalTo: editorHeaderView.bottomAnchor).isActive = true
+//        textView.bottomAnchor.constraint(equalTo: bottomAnchor).isActive = true
+//        textView.leadingAnchor.constraint(equalTo: leadingAnchor).isActive = true
+//        textView.trailingAnchor.constraint(equalTo: trailingAnchor).isActive = true
     }
 
     private func update() {
-        textView.stringValue = textValue
+//        textView.stringValue = textValue
 
         editorHeaderView.titleText = titleText
         editorHeaderView.subtitleText = subtitleText
