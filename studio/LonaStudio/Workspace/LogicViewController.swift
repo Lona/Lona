@@ -35,7 +35,12 @@ class LogicViewController: NSViewController {
 
     // MARK: Public
 
-    public var rootNode: LGCSyntaxNode = LogicEditor.defaultRootNode { didSet { update() } }
+    public var rootNode: LGCSyntaxNode = .topLevelDeclarations(
+        .init(
+            id: UUID(),
+            declarations: .init([.makePlaceholder()])
+        )
+    ) { didSet { update() } }
 
     public var onChangeRootNode: ((LGCSyntaxNode) -> Void)?
 

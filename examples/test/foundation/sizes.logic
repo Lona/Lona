@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
-<root>
-  <Declaration.Namespace name="Sizes">
+<Declarations>
+  <Namespace name="Sizes">
     <Namespace name="Padding">
       <Variable name="small" type="Number" value="4"/>
       <Variable name="medium" type="Number" value="8"/>
@@ -10,5 +10,5 @@
       <Variable name="small" type="Number" value="4"/>
       <Variable name="large" type="Number" value="10"/>
     </Namespace>
-  </Declaration.Namespace>
-</root>
+  </Namespace>
+</Declarations>
