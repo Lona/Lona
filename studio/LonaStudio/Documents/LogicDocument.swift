@@ -24,7 +24,12 @@ class LogicDocument: NSDocument {
         return windowControllers[0].contentViewController as? WorkspaceViewController
     }
 
-    var content: LGCSyntaxNode = LogicEditor.defaultRootNode
+    var content: LGCSyntaxNode = .topLevelDeclarations(
+        .init(
+            id: UUID(),
+            declarations: .init([.makePlaceholder()])
+        )
+    )
 
     override func makeWindowControllers() {
         WorkspaceWindowController.create(andAttachTo: self)

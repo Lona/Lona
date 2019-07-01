@@ -130,6 +130,7 @@ function convertLogic(contents, targetFormat, options = {}) {
       try {
         jsonContents = xml.parse(contents)
       } catch (e) {
+        console.log(e)
         throw new Error(`Failed to decode types as XML.`)
       }
 

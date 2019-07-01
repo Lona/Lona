@@ -1,7 +1,7 @@
 const xml = `<?xml version="1.0"?>
-<root>
+<Program>
   <Declaration.Namespace name="Colors"/>
-</root>`
+</Program>`
 
 const json = {
   data: {

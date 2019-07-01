@@ -40,6 +40,8 @@ let rec convert = (config: Config.t, node: LogicAst.syntaxNode): SwiftAst.node =
   let context = {config, isStatic: false};
   switch (node) {
   | LogicAst.Program(Program(contents)) => program(context, contents)
+  | LogicAst.TopLevelDeclarations(TopLevelDeclarations(contents)) =>
+    topLevelDeclarations(context, contents)
   | _ =>
     Js.log("Unhandled syntaxNode type");
     Empty;
@@ -52,6 +54,19 @@ and program = (context: context, node: LogicAst.programProgram): SwiftAst.node =
       |> unfoldPairs
       |> reject(isPlaceholderStatement)
       |> List.map(statement(context)),
+  })
+and topLevelDeclarations =
+    (
+      context: context,
+      node: LogicAst.topLevelDeclarationsTopLevelDeclarations,
+    )
+    : SwiftAst.node =>
+  SwiftAst.topLevelDeclaration({
+    "statements":
+      node.declarations
+      |> unfoldPairs
+      |> reject(isPlaceholderDeclaration)
+      |> List.map(declaration(context)),
   })
 and statement = (context: context, node: LogicAst.statement): SwiftAst.node =>
   switch (node) {

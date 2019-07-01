@@ -1,7 +1,7 @@
 const xml = `<?xml version="1.0"?>
-<root>
+<Program>
   <Declaration.ImportDeclaration name="Prelude"/>
-</root>`
+</Program>`
 
 const json = {
   data: {
