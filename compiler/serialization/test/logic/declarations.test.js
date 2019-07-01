@@ -13,7 +13,7 @@ test('top level declarations -> xml', () => {
   expect(converted).toBe(xml)
 })
 
-test('import declaration -> json', () => {
+test('top level declarations -> json', () => {
   const { xml, json } = require('./mocks/declarations/topLevelDeclarations')
 
   const converted = convertLogic(xml, 'json')
