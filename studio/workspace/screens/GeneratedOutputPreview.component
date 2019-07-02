@@ -1,8 +1,10 @@
 {
   "devices" : [
     {
-      "deviceId" : "iPhone SE",
-      "heightMode" : "At Least"
+      "height" : 1,
+      "heightMode" : "At Least",
+      "name" : "",
+      "width" : 600
     }
   ],
   "examples" : [
@@ -177,8 +179,8 @@
               {
                 "id" : "TargetLabel",
                 "params" : {
-                  "flex" : 1,
-                  "text" : "Compiler target"
+                  "text" : "Compiler target",
+                  "width" : 120
                 },
                 "type" : "Lona:Text"
               },
@@ -223,8 +225,8 @@
               {
                 "id" : "FrameworkLabel",
                 "params" : {
-                  "flex" : 1,
-                  "text" : "Framework"
+                  "text" : "Framework",
+                  "width" : 120
                 },
                 "type" : "Lona:Text"
               },

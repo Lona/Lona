@@ -334,9 +334,6 @@ public class GeneratedOutputPreview: NSBox {
     let targetLabelViewBottomAnchorConstraint = targetLabelView
       .bottomAnchor
       .constraint(equalTo: targetContainerView.bottomAnchor)
-    let targetDropdownContainerViewTrailingAnchorConstraint = targetDropdownContainerView
-      .trailingAnchor
-      .constraint(equalTo: targetContainerView.trailingAnchor)
     let targetDropdownContainerViewLeadingAnchorConstraint = targetDropdownContainerView
       .leadingAnchor
       .constraint(equalTo: targetLabelView.trailingAnchor)
@@ -368,9 +365,6 @@ public class GeneratedOutputPreview: NSBox {
     let frameworkLabelViewBottomAnchorConstraint = frameworkLabelView
       .bottomAnchor
       .constraint(equalTo: frameworkContainerView.bottomAnchor)
-    let frameworkDropdownContainerViewTrailingAnchorConstraint = frameworkDropdownContainerView
-      .trailingAnchor
-      .constraint(equalTo: frameworkContainerView.trailingAnchor)
     let frameworkDropdownContainerViewLeadingAnchorConstraint = frameworkDropdownContainerView
       .leadingAnchor
       .constraint(equalTo: frameworkLabelView.trailingAnchor)
@@ -383,6 +377,7 @@ public class GeneratedOutputPreview: NSBox {
     let frameworkDropdownContainerViewBottomAnchorConstraint = frameworkDropdownContainerView
       .bottomAnchor
       .constraint(equalTo: frameworkContainerView.bottomAnchor)
+    let targetLabelViewWidthAnchorConstraint = targetLabelView.widthAnchor.constraint(equalToConstant: 120)
     let targetDropdownContainerViewWidthAnchorConstraint = targetDropdownContainerView
       .widthAnchor
       .constraint(equalToConstant: 120)
@@ -398,6 +393,7 @@ public class GeneratedOutputPreview: NSBox {
     let targetDropdownViewTrailingAnchorConstraint = targetDropdownView
       .trailingAnchor
       .constraint(equalTo: targetDropdownContainerView.trailingAnchor)
+    let frameworkLabelViewWidthAnchorConstraint = frameworkLabelView.widthAnchor.constraint(equalToConstant: 120)
     let frameworkDropdownContainerViewWidthAnchorConstraint = frameworkDropdownContainerView
       .widthAnchor
       .constraint(equalToConstant: 120)
@@ -461,7 +457,6 @@ public class GeneratedOutputPreview: NSBox {
       targetLabelViewTopAnchorConstraint,
       targetLabelViewCenterYAnchorConstraint,
       targetLabelViewBottomAnchorConstraint,
-      targetDropdownContainerViewTrailingAnchorConstraint,
       targetDropdownContainerViewLeadingAnchorConstraint,
       targetDropdownContainerViewTopAnchorConstraint,
       targetDropdownContainerViewCenterYAnchorConstraint,
@@ -473,16 +468,17 @@ public class GeneratedOutputPreview: NSBox {
       frameworkLabelViewTopAnchorConstraint,
       frameworkLabelViewCenterYAnchorConstraint,
       frameworkLabelViewBottomAnchorConstraint,
-      frameworkDropdownContainerViewTrailingAnchorConstraint,
       frameworkDropdownContainerViewLeadingAnchorConstraint,
       frameworkDropdownContainerViewTopAnchorConstraint,
       frameworkDropdownContainerViewCenterYAnchorConstraint,
       frameworkDropdownContainerViewBottomAnchorConstraint,
+      targetLabelViewWidthAnchorConstraint,
       targetDropdownContainerViewWidthAnchorConstraint,
       targetDropdownViewTopAnchorConstraint,
       targetDropdownViewBottomAnchorConstraint,
       targetDropdownViewLeadingAnchorConstraint,
       targetDropdownViewTrailingAnchorConstraint,
+      frameworkLabelViewWidthAnchorConstraint,
       frameworkDropdownContainerViewWidthAnchorConstraint,
       frameworkDropdownViewTopAnchorConstraint,
       frameworkDropdownViewBottomAnchorConstraint,
