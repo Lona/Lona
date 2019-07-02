@@ -208,7 +208,7 @@ public class GeneratedOutputPreview: NSBox {
     commandContainerView.addSubview(commandPreviewView)
     codeContainerView.addSubview(codePreviewView)
 
-    inputsView.fillColor = Colors.white
+    inputsView.fillColor = Colors.contentBackground
     targetLabelView.attributedStringValue = targetLabelViewTextStyle.apply(to: "Compiler target")
     frameworkLabelView.attributedStringValue = frameworkLabelViewTextStyle.apply(to: "Framework")
     divider1View.fillColor = Colors.darkTransparentOutline

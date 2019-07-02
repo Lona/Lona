@@ -262,7 +262,7 @@
         "id" : "Inputs",
         "params" : {
           "alignSelf" : "stretch",
-          "backgroundColor" : "white",
+          "backgroundColor" : "contentBackground",
           "paddingBottom" : 16,
           "paddingLeft" : 20,
           "paddingRight" : 20,
