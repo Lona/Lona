@@ -443,6 +443,7 @@ class WorkspaceViewController: NSSplitViewController {
         // The codeItem is added to the splitview dynamically, based on saved preference
         codeItem.minimumThickness = 180
         codeItem.preferredThicknessFraction = 0.5
+        codeItem.holdingPriority = .dragThatCannotResizeWindow - 1
 
         sidebarItem.collapseBehavior = .preferResizingSiblingsWithFixedSplitView
         sidebarItem.canCollapse = false

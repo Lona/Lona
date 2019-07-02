@@ -238,6 +238,7 @@
 		6B7DBF6022A87B050062031E /* LogicViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6B7DBF5F22A87B050062031E /* LogicViewController.swift */; };
 		6B7DBF6422A885350062031E /* LogicNumberInput.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6B7DBF6322A885350062031E /* LogicNumberInput.swift */; };
 		6B80645A21D8322B006560C7 /* CanvasTableHeaderExtra.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6B80645921D8322A006560C7 /* CanvasTableHeaderExtra.swift */; };
+		6B892C6022CAB81600D0AEDA /* GeneratedOutputPreview.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6B892C5F22CAB81500D0AEDA /* GeneratedOutputPreview.swift */; };
 		6B8D7DA021BED32E0087A3F7 /* LayoutInspector.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6B8D7D9D21BED32E0087A3F7 /* LayoutInspector.swift */; };
 		6B8D7DA321BF04B60087A3F7 /* InspectorSectionHeader.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6B8D7DA221BF04B60087A3F7 /* InspectorSectionHeader.swift */; };
 		6B9733CE2236E602005967E8 /* LonaJS.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6B9733CD2236E602005967E8 /* LonaJS.swift */; };
@@ -573,6 +574,7 @@
 		6B7DBF5F22A87B050062031E /* LogicViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LogicViewController.swift; sourceTree = "<group>"; };
 		6B7DBF6322A885350062031E /* LogicNumberInput.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LogicNumberInput.swift; sourceTree = "<group>"; };
 		6B80645921D8322A006560C7 /* CanvasTableHeaderExtra.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CanvasTableHeaderExtra.swift; sourceTree = "<group>"; };
+		6B892C5F22CAB81500D0AEDA /* GeneratedOutputPreview.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = GeneratedOutputPreview.swift; sourceTree = "<group>"; };
 		6B8D7D9D21BED32E0087A3F7 /* LayoutInspector.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = LayoutInspector.swift; sourceTree = "<group>"; };
 		6B8D7DA221BF04B60087A3F7 /* InspectorSectionHeader.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = InspectorSectionHeader.swift; sourceTree = "<group>"; };
 		6B9733CD2236E602005967E8 /* LonaJS.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LonaJS.swift; sourceTree = "<group>"; };
@@ -972,6 +974,7 @@
 				6B4DFCE620A7581E0048BB43 /* ColorBrowser.swift */,
 				303C3FF220A4E396008E1541 /* ComponentBrowser.swift */,
 				6B3D7C2D222F5699008AA3D2 /* CustomParametersEditorSheet.swift */,
+				6B892C5F22CAB81500D0AEDA /* GeneratedOutputPreview.swift */,
 				036A4E8F21E0F6AA00948DBD /* ImageViewer.swift */,
 				6B73809322C66E59007534A0 /* TemplateBrowser.swift */,
 				30C203DC20BF5910007C3FE0 /* TextStyleBrowser.swift */,
@@ -1539,6 +1542,7 @@
 				303C3FF320A4E396008E1541 /* ComponentBrowser.swift in Sources */,
 				6B3414B4225D29AC00CC65D1 /* LogicEditor+Suggestions.swift in Sources */,
 				30D799821F2BE90E00EF12D7 /* SettingRow.swift in Sources */,
+				6B892C6022CAB81600D0AEDA /* GeneratedOutputPreview.swift in Sources */,
 				6B0F5B9021389A8B007DBBB2 /* NSSplitView+DividerColor.swift in Sources */,
 				6B4DFCE920A75B320048BB43 /* ColorPreviewCollection.swift in Sources */,
 				036A4E9C21E1FC6500948DBD /* TextStyleInspector.swift in Sources */,

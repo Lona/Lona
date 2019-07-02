@@ -1,0 +1,357 @@
+{
+  "devices" : [
+    {
+      "height" : 1,
+      "heightMode" : "At Least",
+      "name" : "",
+      "width" : 600
+    }
+  ],
+  "examples" : [
+    {
+      "id" : "Default",
+      "name" : "Default",
+      "params" : {
+
+      }
+    }
+  ],
+  "logic" : [
+    {
+      "assignee" : [
+        "layers",
+        "CommandPreview",
+        "text"
+      ],
+      "content" : [
+        "parameters",
+        "commandText"
+      ],
+      "type" : "AssignExpr"
+    },
+    {
+      "assignee" : [
+        "layers",
+        "CodePreview",
+        "text"
+      ],
+      "content" : [
+        "parameters",
+        "generatedCode"
+      ],
+      "type" : "AssignExpr"
+    },
+    {
+      "assignee" : [
+        "layers",
+        "TargetDropdown",
+        "selectedIndex"
+      ],
+      "content" : [
+        "parameters",
+        "compilerTargetIndex"
+      ],
+      "type" : "AssignExpr"
+    },
+    {
+      "assignee" : [
+        "layers",
+        "TargetDropdown",
+        "values"
+      ],
+      "content" : [
+        "parameters",
+        "compilerTargetValues"
+      ],
+      "type" : "AssignExpr"
+    },
+    {
+      "assignee" : [
+        "layers",
+        "TargetDropdown",
+        "onChangeIndex"
+      ],
+      "content" : [
+        "parameters",
+        "onChangeCompilerTargetIndex"
+      ],
+      "type" : "AssignExpr"
+    },
+    {
+      "assignee" : [
+        "layers",
+        "FrameworkDropdown",
+        "selectedIndex"
+      ],
+      "content" : [
+        "parameters",
+        "frameworkIndex"
+      ],
+      "type" : "AssignExpr"
+    },
+    {
+      "assignee" : [
+        "layers",
+        "FrameworkDropdown",
+        "values"
+      ],
+      "content" : [
+        "parameters",
+        "frameworkValues"
+      ],
+      "type" : "AssignExpr"
+    },
+    {
+      "assignee" : [
+        "layers",
+        "FrameworkDropdown",
+        "onChangeIndex"
+      ],
+      "content" : [
+        "parameters",
+        "onChangeFrameworkIndex"
+      ],
+      "type" : "AssignExpr"
+    }
+  ],
+  "params" : [
+    {
+      "name" : "commandText",
+      "type" : "String"
+    },
+    {
+      "name" : "generatedCode",
+      "type" : "String"
+    },
+    {
+      "name" : "compilerTargetIndex",
+      "type" : "WholeNumber"
+    },
+    {
+      "name" : "compilerTargetValues",
+      "type" : {
+        "name" : "Array",
+        "of" : "String"
+      }
+    },
+    {
+      "name" : "onChangeFrameworkIndex",
+      "type" : {
+        "name" : "Function",
+        "parameters" : [
+          {
+            "label" : "_",
+            "type" : "WholeNumber"
+          }
+        ]
+      }
+    },
+    {
+      "name" : "frameworkIndex",
+      "type" : "WholeNumber"
+    },
+    {
+      "name" : "frameworkValues",
+      "type" : {
+        "name" : "Array",
+        "of" : "String"
+      }
+    },
+    {
+      "name" : "onChangeCompilerTargetIndex",
+      "type" : {
+        "name" : "Function",
+        "parameters" : [
+          {
+            "label" : "_",
+            "type" : "WholeNumber"
+          }
+        ]
+      }
+    }
+  ],
+  "root" : {
+    "children" : [
+      {
+        "children" : [
+          {
+            "children" : [
+              {
+                "id" : "TargetLabel",
+                "params" : {
+                  "text" : "Compiler target",
+                  "width" : 120
+                },
+                "type" : "Lona:Text"
+              },
+              {
+                "children" : [
+                  {
+                    "id" : "TargetDropdown",
+                    "params" : {
+                      "selectedIndex" : 0,
+                      "values" : [
+
+                      ]
+                    },
+                    "type" : "ControlledDropdown"
+                  }
+                ],
+                "id" : "TargetDropdownContainer",
+                "params" : {
+                  "marginRight" : 20,
+                  "width" : 100
+                },
+                "type" : "Lona:View"
+              }
+            ],
+            "id" : "TargetContainer",
+            "params" : {
+              "alignItems" : "center",
+              "alignSelf" : "stretch",
+              "flexDirection" : "row"
+            },
+            "type" : "Lona:View"
+          },
+          {
+            "id" : "Spacer",
+            "params" : {
+              "alignSelf" : "stretch",
+              "height" : 6
+            },
+            "type" : "Lona:View"
+          },
+          {
+            "children" : [
+              {
+                "id" : "FrameworkLabel",
+                "params" : {
+                  "text" : "Framework",
+                  "width" : 120
+                },
+                "type" : "Lona:Text"
+              },
+              {
+                "children" : [
+                  {
+                    "id" : "FrameworkDropdown",
+                    "params" : {
+                      "selectedIndex" : 0,
+                      "values" : [
+
+                      ]
+                    },
+                    "type" : "ControlledDropdown"
+                  }
+                ],
+                "id" : "FrameworkDropdownContainer",
+                "params" : {
+                  "marginRight" : 20,
+                  "width" : 100
+                },
+                "type" : "Lona:View"
+              }
+            ],
+            "id" : "FrameworkContainer",
+            "params" : {
+              "alignItems" : "center",
+              "alignSelf" : "stretch",
+              "flexDirection" : "row"
+            },
+            "type" : "Lona:View"
+          }
+        ],
+        "id" : "Inputs",
+        "params" : {
+          "alignSelf" : "stretch",
+          "backgroundColor" : "contentBackground",
+          "paddingBottom" : 16,
+          "paddingLeft" : 20,
+          "paddingRight" : 20,
+          "paddingTop" : 16
+        },
+        "type" : "Lona:View"
+      },
+      {
+        "id" : "Divider1",
+        "params" : {
+          "alignSelf" : "stretch",
+          "backgroundColor" : "darkTransparentOutline",
+          "height" : 1
+        },
+        "type" : "Lona:View"
+      },
+      {
+        "children" : [
+          {
+            "id" : "CommandPreview",
+            "metadata" : {
+              "accessLevel" : {
+                "macos" : "internal"
+              }
+            },
+            "params" : {
+              "alignSelf" : "stretch",
+              "font" : "monospacedMicro",
+              "text" : "lonac logic --target js --framework reactnative"
+            },
+            "type" : "Lona:Text"
+          }
+        ],
+        "id" : "CommandContainer",
+        "params" : {
+          "alignSelf" : "stretch",
+          "backgroundColor" : "headerBackground",
+          "paddingBottom" : 20,
+          "paddingLeft" : 20,
+          "paddingRight" : 20,
+          "paddingTop" : 20
+        },
+        "type" : "Lona:View"
+      },
+      {
+        "id" : "Divider2",
+        "params" : {
+          "alignSelf" : "stretch",
+          "backgroundColor" : "darkTransparentOutline",
+          "height" : 1
+        },
+        "type" : "Lona:View"
+      },
+      {
+        "children" : [
+          {
+            "id" : "CodePreview",
+            "metadata" : {
+              "accessLevel" : {
+                "macos" : "internal"
+              }
+            },
+            "params" : {
+              "alignSelf" : "stretch",
+              "font" : "monospacedMicro",
+              "text" : "export default {}"
+            },
+            "type" : "Lona:Text"
+          }
+        ],
+        "id" : "CodeContainer",
+        "params" : {
+          "alignSelf" : "stretch",
+          "backgroundColor" : "headerBackground",
+          "flex" : 1,
+          "paddingBottom" : 20,
+          "paddingLeft" : 20,
+          "paddingRight" : 20,
+          "paddingTop" : 20
+        },
+        "type" : "Lona:View"
+      }
+    ],
+    "id" : "View",
+    "params" : {
+      "alignSelf" : "stretch"
+    },
+    "type" : "Lona:View"
+  }
+}
