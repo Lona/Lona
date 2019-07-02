@@ -380,7 +380,7 @@ public class GeneratedOutputPreview: NSBox {
     let targetLabelViewWidthAnchorConstraint = targetLabelView.widthAnchor.constraint(equalToConstant: 120)
     let targetDropdownContainerViewWidthAnchorConstraint = targetDropdownContainerView
       .widthAnchor
-      .constraint(equalToConstant: 120)
+      .constraint(equalToConstant: 100)
     let targetDropdownViewTopAnchorConstraint = targetDropdownView
       .topAnchor
       .constraint(equalTo: targetDropdownContainerView.topAnchor)
@@ -396,7 +396,7 @@ public class GeneratedOutputPreview: NSBox {
     let frameworkLabelViewWidthAnchorConstraint = frameworkLabelView.widthAnchor.constraint(equalToConstant: 120)
     let frameworkDropdownContainerViewWidthAnchorConstraint = frameworkDropdownContainerView
       .widthAnchor
-      .constraint(equalToConstant: 120)
+      .constraint(equalToConstant: 100)
     let frameworkDropdownViewTopAnchorConstraint = frameworkDropdownView
       .topAnchor
       .constraint(equalTo: frameworkDropdownContainerView.topAnchor)

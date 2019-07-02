@@ -69,6 +69,14 @@ class CodeEditorViewController: NSViewController {
         return CodeEditorViewController.compilerFramework(for: target)
     }
 
+    private var sourceFilename: String {
+        if let fileURL = document?.fileURL {
+            return fileURL.lastPathComponent
+        } else {
+            return "Untitled"
+        }
+    }
+
     private var generatedFilename: String {
         if let fileURL = document?.fileURL {
             return fileURL.deletingPathExtension().lastPathComponent + "." + fileExtension
@@ -90,10 +98,15 @@ class CodeEditorViewController: NSViewController {
     private func update() {
         guard let command = compilerCommand() else {
             contentView.commandPreview = ""
+            contentView.isHidden = true
             return
         }
 
-        contentView.commandPreview = "lonac " + command.joined(separator: " ")
+        if contentView.isHidden {
+            contentView.isHidden = false
+        }
+
+        contentView.commandPreview = "lonac \(command.joined(separator: " ")) --input \(sourceFilename)"
 
         if let document = document as? JSONDocument {
             contentView.titleText = generatedFilename

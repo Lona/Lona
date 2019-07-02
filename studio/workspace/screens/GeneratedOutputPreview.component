@@ -199,7 +199,8 @@
                 ],
                 "id" : "TargetDropdownContainer",
                 "params" : {
-                  "width" : 120
+                  "marginRight" : 20,
+                  "width" : 100
                 },
                 "type" : "Lona:View"
               }
@@ -245,7 +246,8 @@
                 ],
                 "id" : "FrameworkDropdownContainer",
                 "params" : {
-                  "width" : 120
+                  "marginRight" : 20,
+                  "width" : 100
                 },
                 "type" : "Lona:View"
               }
