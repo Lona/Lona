@@ -412,3 +412,10 @@ module Builders = {
     | _ => MemberExpression([SwiftIdentifier(firstIdentifier)] @ statements)
     };
 };
+
+/* Fixes reason complication where field names weren't importing from this module */
+let makeTupleElement =
+    (elementName: option(string), annotation: typeAnnotation) => {
+  elementName,
+  annotation,
+};

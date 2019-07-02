@@ -635,13 +635,7 @@ switch (scanResult.command) {
   let contents = Node.Fs.readFileSync(inputPath, `utf8);
   let jsonContents = Serialization.convert(contents, "types", "json");
   convertTypes(target, jsonContents) |> Js.log;
-| Logic(target, input) =>
-  let initialWorkspaceSearchPath =
-    switch (input) {
-    | File(path) => path
-    | Stdin => Process.cwd()
-    };
-
+| Logic(target, input, initialWorkspaceSearchPath) =>
   let decode = contents: LogicAst.syntaxNode => {
     let jsonContents = Serialization.convert(contents, "logic", "json");
     let json = jsonContents |> Js.Json.parseExn;
