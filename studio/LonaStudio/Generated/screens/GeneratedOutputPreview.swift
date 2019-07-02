@@ -20,6 +20,25 @@ public class GeneratedOutputPreview: NSBox {
     update()
   }
 
+  public convenience init(
+    commandText: String,
+    generatedCode: String,
+    compilerTargetIndex: Int,
+    compilerTargetValues: [String],
+    frameworkIndex: Int,
+    frameworkValues: [String])
+  {
+    self
+      .init(
+        Parameters(
+          commandText: commandText,
+          generatedCode: generatedCode,
+          compilerTargetIndex: compilerTargetIndex,
+          compilerTargetValues: compilerTargetValues,
+          frameworkIndex: frameworkIndex,
+          frameworkValues: frameworkValues))
+  }
+
   public convenience init() {
     self.init(Parameters())
   }
@@ -36,6 +55,70 @@ public class GeneratedOutputPreview: NSBox {
   }
 
   // MARK: Public
+
+  public var commandText: String {
+    get { return parameters.commandText }
+    set {
+      if parameters.commandText != newValue {
+        parameters.commandText = newValue
+      }
+    }
+  }
+
+  public var generatedCode: String {
+    get { return parameters.generatedCode }
+    set {
+      if parameters.generatedCode != newValue {
+        parameters.generatedCode = newValue
+      }
+    }
+  }
+
+  public var compilerTargetIndex: Int {
+    get { return parameters.compilerTargetIndex }
+    set {
+      if parameters.compilerTargetIndex != newValue {
+        parameters.compilerTargetIndex = newValue
+      }
+    }
+  }
+
+  public var compilerTargetValues: [String] {
+    get { return parameters.compilerTargetValues }
+    set {
+      if parameters.compilerTargetValues != newValue {
+        parameters.compilerTargetValues = newValue
+      }
+    }
+  }
+
+  public var onChangeFrameworkIndex: ((Int) -> Void)? {
+    get { return parameters.onChangeFrameworkIndex }
+    set { parameters.onChangeFrameworkIndex = newValue }
+  }
+
+  public var frameworkIndex: Int {
+    get { return parameters.frameworkIndex }
+    set {
+      if parameters.frameworkIndex != newValue {
+        parameters.frameworkIndex = newValue
+      }
+    }
+  }
+
+  public var frameworkValues: [String] {
+    get { return parameters.frameworkValues }
+    set {
+      if parameters.frameworkValues != newValue {
+        parameters.frameworkValues = newValue
+      }
+    }
+  }
+
+  public var onChangeCompilerTargetIndex: ((Int) -> Void)? {
+    get { return parameters.onChangeCompilerTargetIndex }
+    set { parameters.onChangeCompilerTargetIndex = newValue }
+  }
 
   public var parameters: Parameters {
     didSet {
@@ -59,10 +142,10 @@ public class GeneratedOutputPreview: NSBox {
   private var frameworkDropdownView = ControlledDropdown()
   private var divider1View = NSBox()
   private var commandContainerView = NSBox()
-  private var commandPreviewView = LNATextField(labelWithString: "")
+  var commandPreviewView = LNATextField(labelWithString: "")
   private var divider2View = NSBox()
   private var codeContainerView = NSBox()
-  private var codePreviewView = LNATextField(labelWithString: "")
+  var codePreviewView = LNATextField(labelWithString: "")
 
   private var targetLabelViewTextStyle = TextStyles.regular
   private var frameworkLabelViewTextStyle = TextStyles.regular
@@ -127,21 +210,14 @@ public class GeneratedOutputPreview: NSBox {
 
     inputsView.fillColor = Colors.white
     targetLabelView.attributedStringValue = targetLabelViewTextStyle.apply(to: "Compiler target")
-    targetDropdownView.selectedIndex = 0
-    targetDropdownView.values = []
     frameworkLabelView.attributedStringValue = frameworkLabelViewTextStyle.apply(to: "Framework")
-    frameworkDropdownView.selectedIndex = 0
-    frameworkDropdownView.values = []
     divider1View.fillColor = Colors.darkTransparentOutline
     commandContainerView.fillColor = Colors.headerBackground
-    commandPreviewView.attributedStringValue =
-      commandPreviewViewTextStyle.apply(to: "lonac logic --target js --framework reactnative")
     commandPreviewViewTextStyle = TextStyles.monospacedMicro
     commandPreviewView.attributedStringValue =
       commandPreviewViewTextStyle.apply(to: commandPreviewView.attributedStringValue)
     divider2View.fillColor = Colors.darkTransparentOutline
     codeContainerView.fillColor = Colors.headerBackground
-    codePreviewView.attributedStringValue = codePreviewViewTextStyle.apply(to: "export default {}")
     codePreviewViewTextStyle = TextStyles.monospacedMicro
     codePreviewView.attributedStringValue = codePreviewViewTextStyle.apply(to: codePreviewView.attributedStringValue)
   }
@@ -191,7 +267,7 @@ public class GeneratedOutputPreview: NSBox {
     let codeContainerViewTrailingAnchorConstraint = codeContainerView.trailingAnchor.constraint(equalTo: trailingAnchor)
     let targetContainerViewTopAnchorConstraint = targetContainerView
       .topAnchor
-      .constraint(equalTo: inputsView.topAnchor, constant: 20)
+      .constraint(equalTo: inputsView.topAnchor, constant: 16)
     let targetContainerViewLeadingAnchorConstraint = targetContainerView
       .leadingAnchor
       .constraint(equalTo: inputsView.leadingAnchor, constant: 20)
@@ -207,7 +283,7 @@ public class GeneratedOutputPreview: NSBox {
       .constraint(equalTo: inputsView.trailingAnchor, constant: -20)
     let frameworkContainerViewBottomAnchorConstraint = frameworkContainerView
       .bottomAnchor
-      .constraint(equalTo: inputsView.bottomAnchor, constant: -20)
+      .constraint(equalTo: inputsView.bottomAnchor, constant: -16)
     let frameworkContainerViewTopAnchorConstraint = frameworkContainerView
       .topAnchor
       .constraint(equalTo: spacerView.bottomAnchor)
@@ -415,14 +491,77 @@ public class GeneratedOutputPreview: NSBox {
     ])
   }
 
-  private func update() {}
+  private func update() {
+    commandPreviewView.attributedStringValue = commandPreviewViewTextStyle.apply(to: commandText)
+    codePreviewView.attributedStringValue = codePreviewViewTextStyle.apply(to: generatedCode)
+    targetDropdownView.selectedIndex = compilerTargetIndex
+    targetDropdownView.values = compilerTargetValues
+    targetDropdownView.onChangeIndex = handleOnChangeCompilerTargetIndex
+    frameworkDropdownView.selectedIndex = frameworkIndex
+    frameworkDropdownView.values = frameworkValues
+    frameworkDropdownView.onChangeIndex = handleOnChangeFrameworkIndex
+  }
+
+  private func handleOnChangeFrameworkIndex(_ arg0: Int) {
+    onChangeFrameworkIndex?(arg0)
+  }
+
+  private func handleOnChangeCompilerTargetIndex(_ arg0: Int) {
+    onChangeCompilerTargetIndex?(arg0)
+  }
 }
 
 // MARK: - Parameters
 
 extension GeneratedOutputPreview {
   public struct Parameters: Equatable {
-    public init() {}
+    public var commandText: String
+    public var generatedCode: String
+    public var compilerTargetIndex: Int
+    public var compilerTargetValues: [String]
+    public var frameworkIndex: Int
+    public var frameworkValues: [String]
+    public var onChangeFrameworkIndex: ((Int) -> Void)?
+    public var onChangeCompilerTargetIndex: ((Int) -> Void)?
+
+    public init(
+      commandText: String,
+      generatedCode: String,
+      compilerTargetIndex: Int,
+      compilerTargetValues: [String],
+      frameworkIndex: Int,
+      frameworkValues: [String],
+      onChangeFrameworkIndex: ((Int) -> Void)? = nil,
+      onChangeCompilerTargetIndex: ((Int) -> Void)? = nil)
+    {
+      self.commandText = commandText
+      self.generatedCode = generatedCode
+      self.compilerTargetIndex = compilerTargetIndex
+      self.compilerTargetValues = compilerTargetValues
+      self.frameworkIndex = frameworkIndex
+      self.frameworkValues = frameworkValues
+      self.onChangeFrameworkIndex = onChangeFrameworkIndex
+      self.onChangeCompilerTargetIndex = onChangeCompilerTargetIndex
+    }
+
+    public init() {
+      self
+        .init(
+          commandText: "",
+          generatedCode: "",
+          compilerTargetIndex: 0,
+          compilerTargetValues: [],
+          frameworkIndex: 0,
+          frameworkValues: [])
+    }
+
+    public static func ==(lhs: Parameters, rhs: Parameters) -> Bool {
+      return lhs.commandText == rhs.commandText &&
+        lhs.generatedCode == rhs.generatedCode &&
+          lhs.compilerTargetIndex == rhs.compilerTargetIndex &&
+            lhs.compilerTargetValues == rhs.compilerTargetValues &&
+              lhs.frameworkIndex == rhs.frameworkIndex && lhs.frameworkValues == rhs.frameworkValues
+    }
   }
 }
 
@@ -445,8 +584,38 @@ extension GeneratedOutputPreview {
       self.parameters = parameters
     }
 
+    public init(
+      commandText: String,
+      generatedCode: String,
+      compilerTargetIndex: Int,
+      compilerTargetValues: [String],
+      frameworkIndex: Int,
+      frameworkValues: [String],
+      onChangeFrameworkIndex: ((Int) -> Void)? = nil,
+      onChangeCompilerTargetIndex: ((Int) -> Void)? = nil)
+    {
+      self
+        .init(
+          Parameters(
+            commandText: commandText,
+            generatedCode: generatedCode,
+            compilerTargetIndex: compilerTargetIndex,
+            compilerTargetValues: compilerTargetValues,
+            frameworkIndex: frameworkIndex,
+            frameworkValues: frameworkValues,
+            onChangeFrameworkIndex: onChangeFrameworkIndex,
+            onChangeCompilerTargetIndex: onChangeCompilerTargetIndex))
+    }
+
     public init() {
-      self.init(Parameters())
+      self
+        .init(
+          commandText: "",
+          generatedCode: "",
+          compilerTargetIndex: 0,
+          compilerTargetValues: [],
+          frameworkIndex: 0,
+          frameworkValues: [])
     }
   }
 }

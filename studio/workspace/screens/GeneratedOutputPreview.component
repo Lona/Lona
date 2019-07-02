@@ -15,10 +15,158 @@
     }
   ],
   "logic" : [
-
+    {
+      "assignee" : [
+        "layers",
+        "CommandPreview",
+        "text"
+      ],
+      "content" : [
+        "parameters",
+        "commandText"
+      ],
+      "type" : "AssignExpr"
+    },
+    {
+      "assignee" : [
+        "layers",
+        "CodePreview",
+        "text"
+      ],
+      "content" : [
+        "parameters",
+        "generatedCode"
+      ],
+      "type" : "AssignExpr"
+    },
+    {
+      "assignee" : [
+        "layers",
+        "TargetDropdown",
+        "selectedIndex"
+      ],
+      "content" : [
+        "parameters",
+        "compilerTargetIndex"
+      ],
+      "type" : "AssignExpr"
+    },
+    {
+      "assignee" : [
+        "layers",
+        "TargetDropdown",
+        "values"
+      ],
+      "content" : [
+        "parameters",
+        "compilerTargetValues"
+      ],
+      "type" : "AssignExpr"
+    },
+    {
+      "assignee" : [
+        "layers",
+        "TargetDropdown",
+        "onChangeIndex"
+      ],
+      "content" : [
+        "parameters",
+        "onChangeCompilerTargetIndex"
+      ],
+      "type" : "AssignExpr"
+    },
+    {
+      "assignee" : [
+        "layers",
+        "FrameworkDropdown",
+        "selectedIndex"
+      ],
+      "content" : [
+        "parameters",
+        "frameworkIndex"
+      ],
+      "type" : "AssignExpr"
+    },
+    {
+      "assignee" : [
+        "layers",
+        "FrameworkDropdown",
+        "values"
+      ],
+      "content" : [
+        "parameters",
+        "frameworkValues"
+      ],
+      "type" : "AssignExpr"
+    },
+    {
+      "assignee" : [
+        "layers",
+        "FrameworkDropdown",
+        "onChangeIndex"
+      ],
+      "content" : [
+        "parameters",
+        "onChangeFrameworkIndex"
+      ],
+      "type" : "AssignExpr"
+    }
   ],
   "params" : [
-
+    {
+      "name" : "commandText",
+      "type" : "String"
+    },
+    {
+      "name" : "generatedCode",
+      "type" : "String"
+    },
+    {
+      "name" : "compilerTargetIndex",
+      "type" : "WholeNumber"
+    },
+    {
+      "name" : "compilerTargetValues",
+      "type" : {
+        "name" : "Array",
+        "of" : "String"
+      }
+    },
+    {
+      "name" : "onChangeFrameworkIndex",
+      "type" : {
+        "name" : "Function",
+        "parameters" : [
+          {
+            "label" : "_",
+            "type" : "WholeNumber"
+          }
+        ]
+      }
+    },
+    {
+      "name" : "frameworkIndex",
+      "type" : "WholeNumber"
+    },
+    {
+      "name" : "frameworkValues",
+      "type" : {
+        "name" : "Array",
+        "of" : "String"
+      }
+    },
+    {
+      "name" : "onChangeCompilerTargetIndex",
+      "type" : {
+        "name" : "Function",
+        "parameters" : [
+          {
+            "label" : "_",
+            "type" : "WholeNumber"
+          }
+        ]
+      }
+    }
   ],
   "root" : {
     "children" : [
@@ -113,10 +261,10 @@
         "params" : {
           "alignSelf" : "stretch",
           "backgroundColor" : "white",
-          "paddingBottom" : 20,
+          "paddingBottom" : 16,
           "paddingLeft" : 20,
           "paddingRight" : 20,
-          "paddingTop" : 20
+          "paddingTop" : 16
         },
         "type" : "Lona:View"
       },
@@ -133,6 +281,11 @@
         "children" : [
           {
             "id" : "CommandPreview",
+            "metadata" : {
+              "accessLevel" : {
+                "macos" : "internal"
+              }
+            },
             "params" : {
               "alignSelf" : "stretch",
               "font" : "monospacedMicro",
@@ -165,6 +318,11 @@
         "children" : [
           {
             "id" : "CodePreview",
+            "metadata" : {
+              "accessLevel" : {
+                "macos" : "internal"
+              }
+            },
             "params" : {
               "alignSelf" : "stretch",
               "font" : "monospacedMicro",

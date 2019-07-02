@@ -30,14 +30,20 @@ public class CodeEditor: NSBox {
 
     // MARK: Public
 
-    public var textValue: String = "" { didSet { update() } }
+    public var generatedCode: String = "" { didSet { update() } }
     public var titleText: String = "" { didSet { update() } }
     public var subtitleText: String = "" { didSet { update() } }
     public var fileIcon: NSImage = NSImage() { didSet { update() } }
+    public var commandPreview: String = "" { didSet { update() } }
+    public var compilerTargetValues: [String] = [] { didSet { update() } }
+    public var compilerTargetIndex: Int = 0 { didSet { update() } }
+    public var onChangeCompilerTargetIndex: ((Int) -> Void)? { didSet { update() } }
+    public var compilerFrameworkValues: [String] = [] { didSet { update() } }
+    public var compilerFrameworkIndex: Int = 0 { didSet { update() } }
+    public var onChangeCompilerFrameworkIndex: ((Int) -> Void)? { didSet { update() } }
 
     // MARK: Private
 
-//    private let textView = NSTextField(frame: .zero)
     private let editorHeaderView = EditorHeader()
 
     private let outputPreview = GeneratedOutputPreview()
@@ -49,14 +55,9 @@ public class CodeEditor: NSBox {
 
         editorHeaderView.dividerColor = NSSplitView.defaultDividerColor
 
-//        textView.focusRingType = .none
-//        textView.isBezeled = false
 //        textView.isEditable = false
-//        textView.isSelectable = true
-//        textView.font = TextStyles.monospacedMicro.nsFont
 
         addSubview(editorHeaderView)
-//        addSubview(textView)
         addSubview(outputPreview)
     }
 
@@ -64,7 +65,6 @@ public class CodeEditor: NSBox {
         translatesAutoresizingMaskIntoConstraints = false
         editorHeaderView.translatesAutoresizingMaskIntoConstraints = false
         outputPreview.translatesAutoresizingMaskIntoConstraints = false
-//        textView.translatesAutoresizingMaskIntoConstraints = false
 
         editorHeaderView.topAnchor.constraint(equalTo: topAnchor).isActive = true
         editorHeaderView.leadingAnchor.constraint(equalTo: leadingAnchor).isActive = true
@@ -76,24 +76,31 @@ public class CodeEditor: NSBox {
         outputPreview.trailingAnchor.constraint(equalTo: trailingAnchor).isActive = true
         outputPreview.bottomAnchor.constraint(equalTo: bottomAnchor).isActive = true
 
-//        outputPreview.setContentHuggingPriority(.defaultLow, for: .vertical)
-//        outputPreview.setContentHuggingPriority(.defaultLow, for: .horizontal)
-//        outputPreview.setContentCompressionResistancePriority(.defaultLow, for: .vertical)
-//        outputPreview.setContentCompressionResistancePriority(.defaultLow, for: .horizontal)
+        outputPreview.commandPreviewView.isSelectable = true
+        outputPreview.commandPreviewView.allowsEditingTextAttributes = true
+        outputPreview.commandPreviewView.setContentHuggingPriority(.defaultLow, for: .vertical)
+        outputPreview.commandPreviewView.setContentHuggingPriority(.defaultLow, for: .horizontal)
+        outputPreview.commandPreviewView.setContentCompressionResistancePriority(.defaultLow, for: .vertical)
+        outputPreview.commandPreviewView.setContentCompressionResistancePriority(.defaultLow, for: .horizontal)
 
-//        textView.setContentHuggingPriority(.defaultLow, for: .vertical)
-//        textView.setContentHuggingPriority(.defaultLow, for: .horizontal)
-//        textView.setContentCompressionResistancePriority(.defaultLow, for: .vertical)
-//        textView.setContentCompressionResistancePriority(.defaultLow, for: .horizontal)
-//
-//        textView.topAnchor.constraint(equalTo: editorHeaderView.bottomAnchor).isActive = true
-//        textView.bottomAnchor.constraint(equalTo: bottomAnchor).isActive = true
-//        textView.leadingAnchor.constraint(equalTo: leadingAnchor).isActive = true
-//        textView.trailingAnchor.constraint(equalTo: trailingAnchor).isActive = true
+        outputPreview.codePreviewView.isSelectable = true
+        outputPreview.codePreviewView.allowsEditingTextAttributes = true
+        outputPreview.codePreviewView.setContentHuggingPriority(.defaultLow, for: .vertical)
+        outputPreview.codePreviewView.setContentHuggingPriority(.defaultLow, for: .horizontal)
+        outputPreview.codePreviewView.setContentCompressionResistancePriority(.defaultLow, for: .vertical)
+        outputPreview.codePreviewView.setContentCompressionResistancePriority(.defaultLow, for: .horizontal)
     }
 
     private func update() {
-//        textView.stringValue = textValue
+        outputPreview.commandText = commandPreview
+        outputPreview.generatedCode = generatedCode
+
+        outputPreview.onChangeFrameworkIndex = onChangeCompilerFrameworkIndex
+        outputPreview.onChangeCompilerTargetIndex = onChangeCompilerTargetIndex
+        outputPreview.compilerTargetValues = compilerTargetValues
+        outputPreview.frameworkValues = compilerFrameworkValues
+        outputPreview.compilerTargetIndex = compilerTargetIndex
+        outputPreview.frameworkIndex = compilerFrameworkIndex
 
         editorHeaderView.titleText = titleText
         editorHeaderView.subtitleText = subtitleText
