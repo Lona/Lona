@@ -55,8 +55,6 @@ public class CodeEditor: NSBox {
 
         editorHeaderView.dividerColor = NSSplitView.defaultDividerColor
 
-//        textView.isEditable = false
-
         addSubview(editorHeaderView)
         addSubview(outputPreview)
     }
