@@ -11,3 +11,9 @@ let map = (f: 'a => 'b, value: option('a)): option('b) =>
   };
 
 let (>>=) = (x, y) => bindOption(y, x);
+
+let getExn = (value: option('a)): 'a =>
+  switch (value) {
+  | None => raise(Not_found)
+  | Some(a) => a
+  };
