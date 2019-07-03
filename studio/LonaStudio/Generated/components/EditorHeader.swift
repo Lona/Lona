@@ -152,7 +152,9 @@ public class EditorHeader: NSBox {
     let titleViewTopAnchorConstraint = titleView.topAnchor.constraint(greaterThanOrEqualTo: innerView.topAnchor)
     let titleViewCenterYAnchorConstraint = titleView.centerYAnchor.constraint(equalTo: innerView.centerYAnchor)
     let titleViewBottomAnchorConstraint = titleView.bottomAnchor.constraint(lessThanOrEqualTo: innerView.bottomAnchor)
-    let subtitleViewTrailingAnchorConstraint = subtitleView.trailingAnchor.constraint(equalTo: innerView.trailingAnchor)
+    let subtitleViewTrailingAnchorConstraint = subtitleView
+      .trailingAnchor
+      .constraint(equalTo: innerView.trailingAnchor, constant: -10)
     let subtitleViewLeadingAnchorConstraint = subtitleView.leadingAnchor.constraint(equalTo: titleView.trailingAnchor)
     let subtitleViewTopAnchorConstraint = subtitleView.topAnchor.constraint(greaterThanOrEqualTo: innerView.topAnchor)
     let subtitleViewCenterYAnchorConstraint = subtitleView.centerYAnchor.constraint(equalTo: innerView.centerYAnchor)
@@ -162,10 +164,10 @@ public class EditorHeader: NSBox {
     let dividerViewHeightAnchorConstraint = dividerView.heightAnchor.constraint(equalToConstant: 1)
     let titleViewLeadingAnchorInnerViewLeadingAnchorConstraint = titleView
       .leadingAnchor
-      .constraint(equalTo: innerView.leadingAnchor)
+      .constraint(equalTo: innerView.leadingAnchor, constant: 10)
     let imageViewLeadingAnchorInnerViewLeadingAnchorConstraint = imageView
       .leadingAnchor
-      .constraint(equalTo: innerView.leadingAnchor)
+      .constraint(equalTo: innerView.leadingAnchor, constant: 10)
     let imageViewCenterYAnchorInnerViewCenterYAnchorConstraint = imageView
       .centerYAnchor
       .constraint(equalTo: innerView.centerYAnchor)
