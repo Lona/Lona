@@ -741,7 +741,7 @@ class CoreComponentInspectorView: NSStackView {
                 }
 
                 // Register Undo
-                UndoManager.shared.run(name: property.rawValue, execute: {[unowned self] in
+                UndoManager.shared.run(name: property.rawValue, execute: {[unowned self] _ in
                     control.data = data
                     self.handlePropertyChange(for: property, value: data)
                 }, undo: { [unowned self] in
@@ -767,7 +767,7 @@ class CoreComponentInspectorView: NSStackView {
 
             UndoManager.shared.run(
                 name: property.rawValue,
-                execute: { [unowned self] in
+                execute: { [unowned self] _ in
                     self.handlePropertyChange(for: property, value: newValue)
                 },
                 undo: { [unowned self] in

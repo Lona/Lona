@@ -86,7 +86,7 @@ final class LayerListOutlineView: NSOutlineView, NSTextFieldDelegate {
         let oldChildren = parent.children
         UndoManager.shared.run(
             name: "Add",
-            execute: {[unowned self] in
+            execute: {[unowned self] _ in
                 parent.insertChild(newLayer, at: index)
                 self.relayoutLayerList(newLayer)
                 self.onChange?()
@@ -382,7 +382,7 @@ extension LayerListOutlineView {
             // Undo
             let oldChildren = parent.children
             let children = parent.children.filter({ $0 !== targetLayer })
-            UndoManager.shared.run(name: "Delete", execute: {[unowned self] in
+            UndoManager.shared.run(name: "Delete", execute: {[unowned self] _ in
                 parent.children = children
                 self.relayoutLayerList()
                 self.onChange?()
@@ -465,7 +465,7 @@ extension LayerListOutlineView: NSOutlineViewDelegate, NSOutlineViewDataSource {
                 checkbox.onChange = {[unowned self] value in
 
                     let oldValue = layer.visible
-                    UndoManager.shared.run(name: "Visible", execute: {[unowned self] in
+                    UndoManager.shared.run(name: "Visible", execute: {[unowned self] _ in
                         layer.visible = value
                         checkbox.state = value ? .on : .off
                         self.onChange?()
@@ -566,7 +566,7 @@ extension LayerListOutlineView: NSOutlineViewDelegate, NSOutlineViewDataSource {
                 return layer === sourceLayer
             })!
 
-            UndoManager.shared.run(name: "Append", execute: {
+            UndoManager.shared.run(name: "Append", execute: { _ in
                 sourceLayer.removeFromParent()
 
                 // Index is -1 when item is dropped directly on another item, rather than above or below
@@ -587,7 +587,7 @@ extension LayerListOutlineView: NSOutlineViewDelegate, NSOutlineViewDataSource {
         }
 
         func appendOrInsert(targetLayer: CSLayer?, newLayer: CSLayer, at index: Int) {
-            UndoManager.shared.run(name: "Append", execute: { [weak self] in
+            UndoManager.shared.run(name: "Append", execute: { [weak self] _ in
                 if let targetLayer = targetLayer {
                     if index == -1 {
                         targetLayer.appendChild(newLayer)

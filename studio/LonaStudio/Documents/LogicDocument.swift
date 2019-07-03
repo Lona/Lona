@@ -13,7 +13,7 @@ class LogicDocument: NSDocument {
     override init() {
         super.init()
 
-        self.hasUndoManager = false
+        self.hasUndoManager = true
     }
 
     override var autosavingFileType: String? {

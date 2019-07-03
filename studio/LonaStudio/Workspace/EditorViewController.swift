@@ -87,7 +87,7 @@ class EditorViewController: NSViewController {
     private func update() {
         if let document = document {
             editorHeaderView.titleText = document.fileURL?.lastPathComponent ?? "Untitled"
-//            editorHeaderView.subtitleText = document.isDocumentEdited ? " — Edited" : ""
+            editorHeaderView.subtitleText = document.isDocumentEdited == true ? " — Edited" : ""
             if let fileURL = document.fileURL {
                 editorHeaderView.fileIcon = NSWorkspace.shared.icon(forFile: fileURL.path)
             } else {
