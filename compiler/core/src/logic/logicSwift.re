@@ -15,6 +15,12 @@ let isPlaceholderStatement = (statement: LogicAst.statement) =>
   | _ => false
   };
 
+let isPlaceholderTypeAnnotation = (value: LogicAst.typeAnnotation) =>
+  switch (value) {
+  | Placeholder(_) => true
+  | _ => false
+  };
+
 let reject = (f: 'a => bool, items: list('a)) =>
   items |> List.filter(item => !f(item));
 
@@ -35,6 +41,20 @@ let rec unfoldPairs = (items: LogicAst.list('t)) =>
   | Empty => []
   | Next(head, rest) => [head, ...unfoldPairs(rest)]
   };
+
+let variableBuilder =
+    (
+      id: string,
+      name: LogicAst.pattern,
+      annotation: option(LogicAst.typeAnnotation),
+      initializer_: option(LogicAst.expression),
+    )
+    : LogicAst.variableDeclaration => {
+  LogicAst.id,
+  name,
+  annotation,
+  initializer_,
+};
 
 let rec convert = (config: Config.t, node: LogicAst.syntaxNode): SwiftAst.node => {
   let context = {config, isStatic: false};
@@ -105,6 +125,136 @@ and declaration =
         }),
       "init": initializer_ |> Monad.map(expression(context)),
     })
+  | Record({
+      name: LogicAst.Pattern({name}),
+      genericParameters: _,
+      declarations,
+    }) =>
+    let context = {...context, isStatic: false};
+
+    let memberVariables =
+      declarations
+      |> unfoldPairs
+      |> List.map(declaration =>
+           switch (declaration) {
+           | LogicAst.Variable(decl) => Some(decl)
+           | _ => None
+           }
+         )
+      |> Sequence.compact;
+
+    let initFunction =
+      SwiftAst.InitializerDeclaration({
+        "modifiers": [SwiftAst.AccessLevelModifier(PublicModifier)],
+        "parameters":
+          memberVariables
+          |> List.map((variable: LogicAst.variableDeclaration) => {
+               let {
+                 LogicAst.name: LogicAst.Pattern({name: labelName}),
+                 annotation,
+                 initializer_,
+               } = variable;
+
+               SwiftAst.Parameter({
+                 "externalName": None,
+                 "localName": labelName,
+                 "annotation":
+                   typeAnnotation(context, Monad.getExn(annotation)),
+                 "defaultValue":
+                   initializer_ |> Monad.map(expression(context)),
+               });
+             }),
+        "failable": None,
+        "throws": false,
+        "body":
+          memberVariables
+          |> List.map((variable: LogicAst.variableDeclaration) => {
+               let {
+                 LogicAst.name: LogicAst.Pattern({name: labelName}),
+                 initializer_,
+               } = variable;
+
+               SwiftAst.(
+                 BinaryExpression({
+                   "left":
+                     SwiftAst.Builders.memberExpression(["self", labelName]),
+                   "operator": "=",
+                   "right": SwiftIdentifier(labelName),
+                 })
+               );
+             }),
+      });
+
+    SwiftAst.(
+      StructDeclaration({
+        "name": name,
+        "inherits": [TypeName("Equatable")],
+        "modifier": Some(PublicModifier),
+        "body":
+          List.concat([
+            memberVariables != [] ? [initFunction] : [],
+            memberVariables
+            |> List.map((variable: LogicAst.variableDeclaration) => {
+                 let {LogicAst.id, name, annotation} = variable;
+
+                 LogicAst.Variable(
+                   variableBuilder(id, name, annotation, None),
+                 );
+               })
+            |> List.map(declaration(context)),
+            /* TODO: Other declarations */
+          ]),
+      })
+    );
+  | Enumeration({name: LogicAst.Pattern({name}), genericParameters, cases}) =>
+    EnumDeclaration({
+      "name": name,
+      "isIndirect": true,
+      "inherits":
+        genericParameters
+        |> unfoldPairs
+        |> List.map(genericParameter(context)),
+      "modifier": Some(SwiftAst.PublicModifier),
+      "body":
+        cases
+        |> unfoldPairs
+        |> List.map((enumCase: LogicAst.enumerationCase) =>
+             switch (enumCase) {
+             | Placeholder(_) => None
+             | EnumerationCase(value) => Some(value)
+             }
+           )
+        |> Sequence.compact
+        |> List.map((enumCase: LogicAst.enumerationCaseEnumerationCase) => {
+             let {LogicAst.name: Pattern({name}), associatedValueTypes} = enumCase;
+
+             let associatedValueTypes =
+               associatedValueTypes
+               |> unfoldPairs
+               |> reject(isPlaceholderTypeAnnotation);
+
+             let associatedType =
+               switch (associatedValueTypes) {
+               | [] => None
+               | valueTypes =>
+                 let elements: list(SwiftAst.tupleTypeElement) =
+                   valueTypes
+                   |> List.map((associatedType: LogicAst.typeAnnotation) =>
+                        SwiftAst.makeTupleElement(
+                          None,
+                          typeAnnotation(context, associatedType),
+                        )
+                      );
+                 Some(SwiftAst.TupleType(elements));
+               };
+
+             SwiftAst.EnumCase({
+               "name": SwiftAst.SwiftIdentifier(name),
+               "parameters": associatedType,
+               "value": None,
+             });
+           }),
+    })
   | Placeholder(_) => Empty
   | _ =>
     Js.log("Unhandled declaration type");
@@ -117,6 +267,32 @@ and expression = (context: context, node: LogicAst.expression): SwiftAst.node =>
     }) =>
     SwiftIdentifier(name)
   | LiteralExpression({literal: value}) => literal(context, value)
+  | MemberExpression({
+      memberName: Identifier({string}),
+      expression: innerExpression,
+    }) =>
+    SwiftAst.memberExpression([
+      expression(context, innerExpression),
+      SwiftAst.SwiftIdentifier(string),
+    ])
+  | FunctionCallExpression({arguments, expression: innerExpression}) =>
+    SwiftAst.FunctionCallExpression({
+      "name": expression(context, innerExpression),
+      "arguments":
+        arguments
+        |> unfoldPairs
+        |> List.map((arg: LogicAst.functionCallArgument) => {
+             let LogicAst.FunctionCallArgument({
+                   label,
+                   expression: innerExpression,
+                 }) = arg;
+             SwiftAst.FunctionCallArgument({
+               "name":
+                 label |> Monad.map(str => SwiftAst.SwiftIdentifier(str)),
+               "value": expression(context, innerExpression),
+             });
+           }),
+    })
   | Placeholder(_) =>
     Js.log("Placeholder expression remaining");
     Empty;
@@ -149,5 +325,15 @@ and typeAnnotation =
     TypeName("_");
   | _ =>
     Js.log("Unhandled type annotation");
+    TypeName("_");
+  }
+and genericParameter =
+    (context: context, node: LogicAst.genericParameter)
+    : SwiftAst.typeAnnotation =>
+  switch (node) {
+  | Parameter({name: LogicAst.Pattern({name})}) =>
+    TypeName(convertNativeType(context, name))
+  | Placeholder(_) =>
+    Js.log("Generic type placeholder remaining in file");
     TypeName("_");
   };

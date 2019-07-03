@@ -30,12 +30,14 @@ const multipleChildMapping = {
   program: 'block',
   namespace: 'declarations',
   topLevelDeclarations: 'declarations',
+  record: 'declarations',
 }
 
 const implicitPlaceholderMapping = {
   program: 'block',
   namespace: 'declarations',
   topLevelDeclarations: 'declarations',
+  record: 'declarations',
 }
 
 const nodeRenaming = {
@@ -74,9 +76,11 @@ function convertLogicJsonToXml(logicJson) {
     switch (type) {
       case 'functionCallExpression': {
         const { expression, arguments: args } = data
-        console.log('ARGS', args)
 
-        const mappedArgs = args.map(arg => arg.expression)
+        const mappedArgs = args.map(arg => ({
+          type: 'functionCallArgument',
+          data: arg,
+        }))
 
         return [expression, ...mappedArgs]
       }
@@ -133,6 +137,11 @@ function convertLogicJsonToXml(logicJson) {
     }
 
     switch (type) {
+      case 'functionCallArgument': {
+        const { label } = data
+        attributes.label = label
+        break
+      }
       case 'variable': {
         const compactLiteralTypes = ['boolean', 'number', 'string', 'color']
 
@@ -150,6 +159,14 @@ function convertLogicJsonToXml(logicJson) {
           }
         }
 
+        break
+      }
+      case 'record': {
+        const {
+          name: { name },
+        } = data
+
+        attributes.name = name
         break
       }
       case 'declaration': {
@@ -216,6 +233,37 @@ function convertLogicXmlToJson(root) {
     const { name, attributes = {}, children } = node
 
     switch (name) {
+      case 'IdentifierExpression':
+        return {
+          data: {
+            id: createUUID(),
+            identifier: {
+              id: createUUID(),
+              isPlaceholder: false,
+              string: attributes.name,
+            },
+          },
+          type: 'identifierExpression',
+        }
+      case 'Record':
+        return {
+          data: {
+            declarations: [
+              ...children.map(processStandardNode),
+              {
+                data: { id: createUUID() },
+                type: 'placeholder',
+              },
+            ],
+            genericParameters: [],
+            id: createUUID(),
+            name: {
+              id: createUUID(),
+              name: attributes.name,
+            },
+          },
+          type: 'record',
+        }
       case 'Declaration.ImportDeclaration':
         return {
           type: 'declaration',
@@ -319,7 +367,11 @@ function convertLogicXmlToJson(root) {
       ...attributes,
     }
 
-    if (singleChildMapping[nodeName]) {
+    if (nodeName === 'functionCallExpression') {
+      const [expression, ...args] = children
+      data.expression = processStandardNode(expression)
+      data.arguments = args.map(processStandardNode).map(arg => arg.data)
+    } else if (singleChildMapping[nodeName]) {
       data[singleChildMapping[nodeName]] = processStandardNode(children[0])
     } else if (multipleChildMapping[nodeName]) {
       data[multipleChildMapping[nodeName]] = children.map(processStandardNode)

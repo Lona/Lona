@@ -1,6 +1,6 @@
 {
   "name": "@lona/serialization",
-  "version": "0.0.4",
+  "version": "0.0.6",
   "description": "Convert Lona files between serialization formats",
   "main": "build/index.js",
   "bin": "./bin.js",

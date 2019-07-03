@@ -1,3 +1,5 @@
+open Operators;
+
 type inputReference =
   | File(string)
   | Stdin;
@@ -10,7 +12,7 @@ module Command = {
     | TextStyles(Types.compilerTarget, inputReference)
     | Shadows(Types.compilerTarget, inputReference)
     | Types(Types.compilerTarget, string)
-    | Logic(Types.compilerTarget, inputReference)
+    | Logic(Types.compilerTarget, inputReference, string)
     | Component(Types.compilerTarget, string)
     | Workspace(Types.compilerTarget, string, string);
 
@@ -306,8 +308,10 @@ Type `lonac [command]` to see which options are required for that command. The f
         switch (targetRef^, inputRef^) {
         | (None, _) =>
           raise(Command.Unknown("Missing output target (--target)"))
-        | (Some(target), None) => Command.Logic(target, Stdin)
-        | (Some(target), Some(path)) => Command.Logic(target, File(path))
+        | (Some(target), None) =>
+          Command.Logic(target, Stdin, workspaceRef^ %? Node.Process.cwd())
+        | (Some(target), Some(path)) =>
+          Command.Logic(target, File(path), workspaceRef^ %? path)
         }
       | "component" =>
         switch (targetRef^, inputRef^) {
