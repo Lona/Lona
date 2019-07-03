@@ -213,7 +213,7 @@ class WorkspaceViewController: NSSplitViewController {
 
             UndoManager.shared.run(
                 name: actionName,
-                execute: {[unowned self] in
+                execute: {[unowned self] _ in
                     document.content = .colors(newColors)
                     self.inspectedContent = newInspectedContent
                     self.inspectorView.content = newInspectedContent
@@ -250,7 +250,7 @@ class WorkspaceViewController: NSSplitViewController {
 
             UndoManager.shared.run(
                 name: actionName,
-                execute: {[unowned self] in
+                execute: {[unowned self] _ in
                     var newFile = oldFile
                     newFile.styles = newTextStyles
                     document.content = .textStyles(newFile)
@@ -516,8 +516,21 @@ class WorkspaceViewController: NSSplitViewController {
 
             logicViewController.rootNode = document.content
             logicViewController.onChangeRootNode = { rootNode in
-                document.content = rootNode
-                self.update()
+                let originalContent = document.content
+
+                document.undoManager?.run(
+                    name: "Edit Logic",
+                    execute: {[unowned self] isRedo in
+                        document.updateChangeCount(isRedo ? .changeRedone : .changeDone)
+                        document.content = rootNode
+                        self.update()
+                    },
+                    undo: {[unowned self] in
+                        document.updateChangeCount(.changeUndone)
+                        document.content = originalContent
+                        self.update()
+                    }
+                )
             }
         } else if let document = document as? JSONDocument {
             inspectorViewVisible = true
@@ -555,7 +568,7 @@ class WorkspaceViewController: NSSplitViewController {
                     // TODO: Improve this. It may be conflicting with the textfield's built-in undo
                     UndoManager.shared.run(
                         name: "Edit Color",
-                        execute: {[unowned self] in
+                        execute: {[unowned self] _ in
                             document.content = .colors(updated)
                             self.inspectedContent = .color(newColor)
                             self.inspectorView.content = .color(newColor)
@@ -583,7 +596,7 @@ class WorkspaceViewController: NSSplitViewController {
                     // TODO: Improve this. It may be conflicting with the textfield's built-in undo
                     UndoManager.shared.run(
                         name: "Edit Text Style",
-                        execute: {[unowned self] in
+                        execute: {[unowned self] _ in
                             document.content = .textStyles(updated)
                             self.inspectedContent = .textStyle(newTextStyle)
                             self.inspectorView.content = .textStyle(newTextStyle)

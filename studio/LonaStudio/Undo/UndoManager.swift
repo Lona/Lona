@@ -11,7 +11,7 @@ import Cocoa
 
 struct Command {
     let name: String
-    let execute: () -> Void
+    let execute: (Bool) -> Void
     let undo: () -> Void
 }
 
@@ -24,17 +24,17 @@ extension UndoManager {
     func run(_ command: Command) {
         func undo() {
             command.undo()
-            self.registerUndo(withTarget: self) { _ in execute() }
+            self.registerUndo(withTarget: self) { _ in execute(isRedo: true) }
         }
-        func execute() {
-            command.execute()
+        func execute(isRedo: Bool) {
+            command.execute(isRedo)
             self.registerUndo(withTarget: self) { _ in undo() }
             self.setActionName(command.name)
         }
-        execute()
+        execute(isRedo: false)
     }
 
-    func run(name: String, execute: @escaping () -> Void, undo: @escaping () -> Void) {
+    func run(name: String, execute: @escaping (Bool) -> Void, undo: @escaping () -> Void) {
         run(Command(name: name, execute: execute, undo: undo))
     }
 }
