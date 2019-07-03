@@ -53,7 +53,36 @@ enum WorkspaceTemplate {
                     CSData.Object([:])
                 },
                 VirtualFile(name: "Colors.logic", contents: {
-                    let program = LGCSyntaxNode.program(.init(id: UUID(), block: LGCList<LGCStatement>.init([])))
+                    let program = LGCSyntaxNode.topLevelDeclarations(
+                        .init(
+                            id: UUID(),
+                            declarations: LGCList<LGCDeclaration>(
+                                [
+                                    .namespace(
+                                        id: UUID(),
+                                        name: .init(id: UUID(), name: "Colors"),
+                                        declarations: LGCList<LGCDeclaration>(
+                                            [
+                                                .variable(
+                                                    id: UUID(),
+                                                    name: .init(id: UUID(), name: "red50"),
+                                                    annotation: .typeIdentifier(
+                                                        id: UUID(),
+                                                        identifier: .init(id: UUID(), string: "Color"),
+                                                        genericArguments: .empty
+                                                    ),
+                                                    initializer: .literalExpression(
+                                                        id: UUID(),
+                                                        literal: .color(id: UUID(), value: "#F0A0B0")
+                                                    )
+                                                )
+                                            ]
+                                        )
+                                    )
+                                ]
+                            )
+                        )
+                    )
                     let data: Data = try! LogicDocument.encode(program)
                     return data
                 })
