@@ -35,7 +35,7 @@ script:
 
     # Run Danger
   - if ! [ -z $DANGER_GITHUB_API_TOKEN ]; then
-      danger-swift ci --dangerfile=ci/Dangerfile.swift;
+      danger-swift ci --dangerfile=config/Dangerfile.swift;
     else
       echo "Skipping Danger for External Contributor";
     fi
