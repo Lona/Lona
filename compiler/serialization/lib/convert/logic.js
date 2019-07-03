@@ -30,12 +30,14 @@ const multipleChildMapping = {
   program: 'block',
   namespace: 'declarations',
   topLevelDeclarations: 'declarations',
+  record: 'declarations',
 }
 
 const implicitPlaceholderMapping = {
   program: 'block',
   namespace: 'declarations',
   topLevelDeclarations: 'declarations',
+  record: 'declarations',
 }
 
 const nodeRenaming = {
@@ -159,6 +161,14 @@ function convertLogicJsonToXml(logicJson) {
 
         break
       }
+      case 'record': {
+        const {
+          name: { name },
+        } = data
+
+        attributes.name = name
+        break
+      }
       case 'declaration': {
         const child = processStandardNode(data.content)
 
@@ -234,6 +244,25 @@ function convertLogicXmlToJson(root) {
             },
           },
           type: 'identifierExpression',
+        }
+      case 'Record':
+        return {
+          data: {
+            declarations: [
+              ...children.map(processStandardNode),
+              {
+                data: { id: createUUID() },
+                type: 'placeholder',
+              },
+            ],
+            genericParameters: [],
+            id: createUUID(),
+            name: {
+              id: '0',
+              name: attributes.name,
+            },
+          },
+          type: 'record',
         }
       case 'Declaration.ImportDeclaration':
         return {
