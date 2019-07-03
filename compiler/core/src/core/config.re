@@ -52,15 +52,9 @@ module Workspace = {
     /* Find exactly one path */
     let path =
       switch (List.length(searchResults)) {
-      | 0 =>
-        Js.log("ERROR: Failed to '*" ++ fileSuffix ++ "' in " ++ searchPath);
-        raise(Not_found);
-      | 1 => List.hd(searchResults)
-      | _ =>
-        Js.log(
-          "ERROR: Multiple '*" ++ fileSuffix ++ "' files in " ++ searchPath,
-        );
-        raise(Not_found);
+      | 0 => None
+      | 1 => Some(List.hd(searchResults))
+      | _ => None
       };
     path;
   };
@@ -90,25 +84,43 @@ module Workspace = {
   let colorsFile =
       (workspacePath: string, ~ignore: list(string)): file(list(Color.t)) => {
     let path = findPathWithSuffix(workspacePath, "colors.json", ~ignore);
-    let data = Node.Fs.readFileSync(path, `utf8);
-    let contents = Color.parseFile(data);
-    {path, contents};
+    switch (path) {
+    | Some(path) =>
+      let data = Node.Fs.readFileSync(path, `utf8);
+      let contents = Color.parseFile(data);
+      {path, contents};
+    | None => {path: Path.join2(workspacePath, "colors.json"), contents: []}
+    };
   };
 
   let textStylesFile =
       (workspacePath: string, ~ignore: list(string)): file(TextStyle.file) => {
     let path = findPathWithSuffix(workspacePath, "textStyles.json", ~ignore);
-    let data = Node.Fs.readFileSync(path, `utf8);
-    let contents = TextStyle.parseFile(data);
-    {path, contents};
+    switch (path) {
+    | Some(path) =>
+      let data = Node.Fs.readFileSync(path, `utf8);
+      let contents = TextStyle.parseFile(data);
+      {path, contents};
+    | None => {
+        path: Path.join2(workspacePath, "textStyles.json"),
+        contents: TextStyle.defaultFile,
+      }
+    };
   };
 
   let shadowsFile =
       (workspacePath: string, ~ignore: list(string)): file(Shadow.file) => {
     let path = findPathWithSuffix(workspacePath, "shadows.json", ~ignore);
-    let data = Node.Fs.readFileSync(path, `utf8);
-    let contents = Shadow.parseFile(data);
-    {path, contents};
+    switch (path) {
+    | Some(path) =>
+      let data = Node.Fs.readFileSync(path, `utf8);
+      let contents = Shadow.parseFile(data);
+      {path, contents};
+    | None => {
+        path: Path.join2(workspacePath, "shadows.json"),
+        contents: Shadow.defaultFile,
+      }
+    };
   };
 
   let userTypesFile = (workspacePath: string): file(UserTypes.file) => {

@@ -29,6 +29,8 @@ let emptyStyle = {
   extends: None,
 };
 
+let defaultFile = {styles: [emptyStyle], defaultStyle: emptyStyle};
+
 let normalizeFontWeight =
   fun
   | Some("normal") => Some("400")

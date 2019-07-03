@@ -25,6 +25,8 @@ let emptyStyle = {
   blur: 0.,
 };
 
+let defaultFile = {styles: [emptyStyle], defaultStyle: emptyStyle};
+
 let find = (shadows: list(t), id: string) =>
   switch (shadows |> List.find(shadow => shadow.id == id)) {
   | shadow => Some(shadow)
