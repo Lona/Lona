@@ -162,7 +162,9 @@
         "params" : {
           "alignItems" : "center",
           "flex" : 1,
-          "flexDirection" : "row"
+          "flexDirection" : "row",
+          "paddingLeft" : 10,
+          "paddingRight" : 10
         },
         "type" : "Lona:View"
       },
