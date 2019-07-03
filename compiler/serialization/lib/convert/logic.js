@@ -258,7 +258,7 @@ function convertLogicXmlToJson(root) {
             genericParameters: [],
             id: createUUID(),
             name: {
-              id: '0',
+              id: createUUID(),
               name: attributes.name,
             },
           },
