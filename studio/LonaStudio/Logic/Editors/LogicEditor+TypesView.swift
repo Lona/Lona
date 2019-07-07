@@ -74,7 +74,7 @@ extension LogicEditor {
         RichText.AlertStyle.paragraphMargin.right += 4
         RichText.AlertStyle.iconMargin.top += 1
 
-        logicEditor.documentationForNode = makeParameterDocumentationHandler()
+        logicEditor.documentationForSuggestion = makeParameterDocumentationHandler()
         logicEditor.suggestionsForNode = makeTypeSuggestionsHandler(types: [])
 
         return logicEditor

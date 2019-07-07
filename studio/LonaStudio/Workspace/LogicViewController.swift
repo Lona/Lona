@@ -189,9 +189,21 @@ class LogicViewController: NSViewController {
         switch selectedNode {
         case .declaration:
             let variableId = UUID()
+            let colorExample = LGCSyntaxNode.declaration(
+                LGCDeclaration.variable(
+                    id: UUID(),
+                    name: LGCPattern(id: UUID(), name: "ocean"),
+                    annotation: LGCTypeAnnotation.typeIdentifier(
+                        id: UUID(),
+                        identifier: LGCIdentifier(id: UUID(), string: "Color", isPlaceholder: false),
+                        genericArguments: .empty
+                    ),
+                    initializer: .literalExpression(id: UUID(), literal: .color(id: UUID(), value: "#69D2E7"))
+                )
+            )
             let colorVariable = LogicSuggestionItem(
-                title: "Color Token",
-                category: "Variables".uppercased(),
+                title: "Color Variable",
+                category: "Declarations".uppercased(),
                 node: LGCSyntaxNode.declaration(
                     LGCDeclaration.variable(
                         id: UUID(),
@@ -205,10 +217,77 @@ class LogicViewController: NSViewController {
                     )
                 ),
                 suggestionFilters: [.recommended],
-                nextFocusId: variableId
+                nextFocusId: variableId,
+                documentation: RichText(
+                    blocks: [
+                        .heading(.title, "Color Variable"),
+                        .paragraph(
+                            [
+                                .text(.none, """
+Define a color variable that can be used throughout your design system and UI components.
+
+For example, we might define a variable,
+"""),
+                                .text(.bold, " ocean"),
+                                .text(.none, ", to represent the hex code "),
+                                .text(.bold, "#69D2E7"),
+                                .text(.none, ":")
+                            ]
+                        ),
+                        .custom(
+                            colorExample.makeCodeView(using: .init(style: formattingStyle, locale: .en_US, getColor: { id in
+                                guard let node = colorExample.find(id: id) else { return nil }
+                                switch node {
+                                case .expression(.literalExpression(_, literal: .color(_, value: let value))):
+                                    return (value, NSColor.parse(css: value) ?? .clear)
+                                default:
+                                    return nil
+                                }
+                            }))
+                        ),
+                        .heading(.section, "Naming Conventions"),
+                        .paragraph(
+                            [
+                                .text(.none, """
+There are a variety of naming conventions for colors, each with their own strengths and weaknesses. For more details and recommendations on naming conventions, see
+"""), .text(.link, " this documentation page.")
+                            ]
+                        )
+                    ]
+                )
             )
 
-            return [colorVariable] + all
+            let patternId = UUID()
+
+            let namespace = LogicSuggestionItem(
+                title: "Variable Group",
+                category: "Declarations".uppercased(),
+                node: LGCSyntaxNode.declaration(
+                    LGCDeclaration.namespace(
+                        id: UUID(),
+                        name: LGCPattern(id: patternId, name: "name"),
+                        declarations: .next(LGCDeclaration.makePlaceholder(), .empty)
+                    )
+                ),
+                suggestionFilters: [.recommended],
+                nextFocusId: patternId,
+                documentation: RichText(blocks:
+                    [
+                        .heading(.title, "Variable Group"),
+                        .paragraph(
+                            [
+                                .text(.none, """
+A group of variables and other declarations, sometimes called a namespace.
+
+This will generate fairly different code for each platform, so if you're curious to see what it turns into, open the split preview pane.
+""")
+                            ]
+                        )
+                    ]
+                )
+            )
+
+            return [colorVariable, namespace] + all
         default:
             return all.map {
                 var node = $0
