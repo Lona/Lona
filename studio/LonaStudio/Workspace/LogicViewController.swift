@@ -70,6 +70,13 @@ class LogicViewController: NSViewController {
 
         logicEditor.fillColor = Colors.contentBackground
         logicEditor.canvasStyle.textMargin = .init(width: 10, height: 6)
+        logicEditor.showsFilterBar = true
+        logicEditor.suggestionFilter = LogicViewController.suggestionFilter
+
+        logicEditor.onChangeSuggestionFilter = { [unowned self] value in
+            self.logicEditor.suggestionFilter = value
+            LogicViewController.suggestionFilter = value
+        }
 
         logicEditor.formattingOptions = LogicFormattingOptions(
             style: LogicViewController.formattingStyle,
@@ -169,8 +176,45 @@ class LogicViewController: NSViewController {
                     .expandImports(importLoader: Library.load)
             )
 
-            return StandardConfiguration.suggestions(rootNode: program, node: node, query: query)
-                ?? LogicEditor.defaultSuggestionsForNode(rootNode, node, query)
+            let recommended = LogicViewController.recommendedSuggestions(rootNode: program, selectedNode: node, query: query)
+
+            return recommended
+        }
+    }
+
+    public static func recommendedSuggestions(rootNode: LGCSyntaxNode, selectedNode: LGCSyntaxNode, query: String) -> [LogicSuggestionItem] {
+        let all = StandardConfiguration.suggestions(rootNode: rootNode, node: selectedNode, query: query)
+            ?? LogicEditor.defaultSuggestionsForNode(rootNode, selectedNode, query)
+
+        switch selectedNode {
+        case .declaration:
+            let variableId = UUID()
+            let colorVariable = LogicSuggestionItem(
+                title: "Color Token",
+                category: "Variables".uppercased(),
+                node: LGCSyntaxNode.declaration(
+                    LGCDeclaration.variable(
+                        id: UUID(),
+                        name: LGCPattern(id: variableId, name: "name"),
+                        annotation: LGCTypeAnnotation.typeIdentifier(
+                            id: UUID(),
+                            identifier: LGCIdentifier(id: UUID(), string: "Color", isPlaceholder: false),
+                            genericArguments: .empty
+                        ),
+                        initializer: .literalExpression(id: UUID(), literal: .color(id: UUID(), value: "white"))
+                    )
+                ),
+                suggestionFilters: [.recommended],
+                nextFocusId: variableId
+            )
+
+            return [colorVariable] + all
+        default:
+            return all.map {
+                var node = $0
+                node.suggestionFilters = [.recommended, .all]
+                return node
+            }
         }
     }
 
@@ -186,6 +230,32 @@ class LogicViewController: NSViewController {
         }
         set {
             UserDefaults.standard.set(newValue.rawValue, forKey: formattingStyleKey)
+        }
+    }
+
+    private static var suggestionFilterKey = "Logic editor suggestion filter"
+
+    static var suggestionFilter: SuggestionView.SuggestionFilter {
+        get {
+            guard let rawValue = UserDefaults.standard.string(forKey: suggestionFilterKey) else {
+                return .recommended
+            }
+            switch rawValue {
+            case "all":
+                return .all
+            default:
+                return .recommended
+            }
+        }
+        set {
+            var rawValue: String
+            switch newValue {
+            case .all:
+                rawValue = "all"
+            case .recommended:
+                rawValue = "recommended"
+            }
+            UserDefaults.standard.set(rawValue, forKey: suggestionFilterKey)
         }
     }
 }
