@@ -180,6 +180,44 @@ class LogicViewController: NSViewController {
 
             return recommended
         }
+
+        logicEditor.decorationForNodeID = { [unowned self] id in
+            guard let node = self.logicEditor.rootNode.find(id: id) else { return nil }
+
+            if let colorValue = self.colorValues[node.uuid] {
+                if self.logicEditor.formattingOptions.style == .visual,
+                    let path = self.logicEditor.rootNode.pathTo(id: id),
+                    let parent = path.dropLast().last {
+
+                    // Don't show color decoration on the variable name
+                    switch parent {
+                    case .declaration(.variable):
+                        return nil
+                    default:
+                        break
+                    }
+
+                    // Don't show color decoration of literal value if we're already showing a swatch preview
+                    if let grandParent = path.dropLast().dropLast().last {
+                        switch (grandParent, parent, node) {
+                        case (.declaration(.variable), .expression(.literalExpression), .literal(.color)):
+                            return nil
+                        default:
+                            break
+                        }
+                    }
+                }
+
+                return .color(NSColor.parse(css: colorValue) ?? NSColor.black)
+            }
+
+            switch node {
+            case .literal(.color(id: _, value: let code)):
+                return .color(NSColor.parse(css: code) ?? .clear)
+            default:
+                return nil
+            }
+        }
     }
 
     public static func recommendedSuggestions(rootNode: LGCSyntaxNode, selectedNode: LGCSyntaxNode, query: String) -> [LogicSuggestionItem] {
