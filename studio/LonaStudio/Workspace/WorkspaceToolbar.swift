@@ -12,6 +12,7 @@ import Foundation
 extension NSToolbarItem.Identifier {
     static let paneToggle = NSToolbarItem.Identifier("Navigation")
     static let splitterToggle = NSToolbarItem.Identifier("Splitter")
+    static let playButton = NSToolbarItem.Identifier("Play")
 }
 
 // MARK: - WorkspacePane
@@ -83,9 +84,21 @@ class WorkspaceToolbar: NSToolbar {
 
     // MARK: Private
 
+    private var playButton = NSToolbarItem(itemIdentifier: .playButton)
+
     private var splitterToggleItem = NSToolbarItem(itemIdentifier: .splitterToggle)
 
     private var paneToggleToolbarItem = NSToolbarItemGroup(itemIdentifier: .paneToggle)
+
+    private func setUpPlayButton() {
+        let button = NSButton(frame: .init(x: 0, y: 0, width: 0, height: 40))
+        let icon = NSImage(named: "icon-play") ?? NSImage()
+        icon.isTemplate = true
+        button.image = icon
+        button.bezelStyle = .texturedRounded
+
+        playButton.view = button
+    }
 
     private func setUpSplitterToggle() {
         let segmented = NSSegmentedControl(frame: NSRect(x: 0, y: 0, width: 31 + 4, height: 40))
@@ -132,6 +145,7 @@ class WorkspaceToolbar: NSToolbar {
     }
 
     private func setUpItems() {
+        setUpPlayButton()
         setUpSplitterToggle()
         setUpPaneToggle()
     }
@@ -165,11 +179,11 @@ class WorkspaceToolbar: NSToolbar {
 
 extension WorkspaceToolbar: NSToolbarDelegate {
     func toolbarDefaultItemIdentifiers(_ toolbar: NSToolbar) -> [NSToolbarItem.Identifier] {
-        return [.flexibleSpace, .splitterToggle, .paneToggle]
+        return [.playButton, .flexibleSpace, .splitterToggle, .paneToggle]
     }
 
     func toolbarAllowedItemIdentifiers(_ toolbar: NSToolbar) -> [NSToolbarItem.Identifier] {
-        return [.splitterToggle, .paneToggle, .flexibleSpace, .separator]
+        return [.playButton, .splitterToggle, .paneToggle, .flexibleSpace, .separator]
     }
 
     func toolbar(_ toolbar: NSToolbar, itemForItemIdentifier itemIdentifier: NSToolbarItem.Identifier, willBeInsertedIntoToolbar flag: Bool) -> NSToolbarItem? {
@@ -178,6 +192,8 @@ extension WorkspaceToolbar: NSToolbarDelegate {
             return paneToggleToolbarItem
         } else if itemIdentifier == NSToolbarItem.Identifier.splitterToggle {
             return splitterToggleItem
+        } else if itemIdentifier == .playButton {
+            return playButton
         }
 
         return nil
