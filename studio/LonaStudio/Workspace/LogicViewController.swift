@@ -70,6 +70,13 @@ class LogicViewController: NSViewController {
 
         logicEditor.fillColor = Colors.contentBackground
         logicEditor.canvasStyle.textMargin = .init(width: 10, height: 6)
+        logicEditor.showsFilterBar = true
+        logicEditor.suggestionFilter = LogicViewController.suggestionFilter
+
+        logicEditor.onChangeSuggestionFilter = { [unowned self] value in
+            self.logicEditor.suggestionFilter = value
+            LogicViewController.suggestionFilter = value
+        }
 
         logicEditor.formattingOptions = LogicFormattingOptions(
             style: LogicViewController.formattingStyle,
@@ -169,8 +176,162 @@ class LogicViewController: NSViewController {
                     .expandImports(importLoader: Library.load)
             )
 
-            return StandardConfiguration.suggestions(rootNode: program, node: node, query: query)
-                ?? LogicEditor.defaultSuggestionsForNode(rootNode, node, query)
+            let recommended = LogicViewController.recommendedSuggestions(rootNode: program, selectedNode: node, query: query)
+
+            return recommended
+        }
+
+        logicEditor.decorationForNodeID = { [unowned self] id in
+            guard let node = self.logicEditor.rootNode.find(id: id) else { return nil }
+
+            if let colorValue = self.colorValues[node.uuid] {
+                if self.logicEditor.formattingOptions.style == .visual,
+                    let path = self.logicEditor.rootNode.pathTo(id: id),
+                    let parent = path.dropLast().last {
+
+                    // Don't show color decoration on the variable name
+                    switch parent {
+                    case .declaration(.variable):
+                        return nil
+                    default:
+                        break
+                    }
+
+                    // Don't show color decoration of literal value if we're already showing a swatch preview
+                    if let grandParent = path.dropLast().dropLast().last {
+                        switch (grandParent, parent, node) {
+                        case (.declaration(.variable), .expression(.literalExpression), .literal(.color)):
+                            return nil
+                        default:
+                            break
+                        }
+                    }
+                }
+
+                return .color(NSColor.parse(css: colorValue) ?? NSColor.black)
+            }
+
+            switch node {
+            case .literal(.color(id: _, value: let code)):
+                return .color(NSColor.parse(css: code) ?? .clear)
+            default:
+                return nil
+            }
+        }
+    }
+
+    public static func recommendedSuggestions(rootNode: LGCSyntaxNode, selectedNode: LGCSyntaxNode, query: String) -> [LogicSuggestionItem] {
+        let all = StandardConfiguration.suggestions(rootNode: rootNode, node: selectedNode, query: query)
+            ?? LogicEditor.defaultSuggestionsForNode(rootNode, selectedNode, query)
+
+        switch selectedNode {
+        case .declaration:
+            let variableId = UUID()
+            let colorExample = LGCSyntaxNode.declaration(
+                LGCDeclaration.variable(
+                    id: UUID(),
+                    name: LGCPattern(id: UUID(), name: "ocean"),
+                    annotation: LGCTypeAnnotation.typeIdentifier(
+                        id: UUID(),
+                        identifier: LGCIdentifier(id: UUID(), string: "Color", isPlaceholder: false),
+                        genericArguments: .empty
+                    ),
+                    initializer: .literalExpression(id: UUID(), literal: .color(id: UUID(), value: "#69D2E7"))
+                )
+            )
+            let colorVariable = LogicSuggestionItem(
+                title: "Color Variable",
+                category: "Declarations".uppercased(),
+                node: LGCSyntaxNode.declaration(
+                    LGCDeclaration.variable(
+                        id: UUID(),
+                        name: LGCPattern(id: variableId, name: "name"),
+                        annotation: LGCTypeAnnotation.typeIdentifier(
+                            id: UUID(),
+                            identifier: LGCIdentifier(id: UUID(), string: "Color", isPlaceholder: false),
+                            genericArguments: .empty
+                        ),
+                        initializer: .literalExpression(id: UUID(), literal: .color(id: UUID(), value: "white"))
+                    )
+                ),
+                suggestionFilters: [.recommended],
+                nextFocusId: variableId,
+                documentation: RichText(
+                    blocks: [
+                        .heading(.title, "Color Variable"),
+                        .paragraph(
+                            [
+                                .text(.none, """
+Define a color variable that can be used throughout your design system and UI components.
+
+For example, we might define a variable,
+"""),
+                                .text(.bold, " ocean"),
+                                .text(.none, ", to represent the hex code "),
+                                .text(.bold, "#69D2E7"),
+                                .text(.none, ":")
+                            ]
+                        ),
+                        .custom(
+                            colorExample.makeCodeView(using: .init(style: formattingStyle, locale: .en_US, getColor: { id in
+                                guard let node = colorExample.find(id: id) else { return nil }
+                                switch node {
+                                case .expression(.literalExpression(_, literal: .color(_, value: let value))):
+                                    return (value, NSColor.parse(css: value) ?? .clear)
+                                default:
+                                    return nil
+                                }
+                            }))
+                        ),
+                        .heading(.section, "Naming Conventions"),
+                        .paragraph(
+                            [
+                                .text(.none, """
+There are a variety of naming conventions for colors, each with their own strengths and weaknesses. For more details and recommendations on naming conventions, see
+"""), .text(.link, " this documentation page.")
+                            ]
+                        )
+                    ]
+                )
+            )
+
+            let patternId = UUID()
+
+            let namespace = LogicSuggestionItem(
+                title: "Variable Group",
+                category: "Declarations".uppercased(),
+                node: LGCSyntaxNode.declaration(
+                    LGCDeclaration.namespace(
+                        id: UUID(),
+                        name: LGCPattern(id: patternId, name: "name"),
+                        declarations: .next(LGCDeclaration.makePlaceholder(), .empty)
+                    )
+                ),
+                suggestionFilters: [.recommended],
+                nextFocusId: patternId,
+                documentation: RichText(blocks:
+                    [
+                        .heading(.title, "Variable Group"),
+                        .paragraph(
+                            [
+                                .text(.none, """
+A group of variables and other declarations, sometimes called a namespace.
+
+This will generate fairly different code for each platform, so if you're curious to see what it turns into, open the split preview pane.
+""")
+                            ]
+                        )
+                    ]
+                )
+            )
+
+            return [colorVariable, namespace] + all
+        default:
+            return all.map {
+                var node = $0
+                node.suggestionFilters = [.recommended, .all]
+                return node
+            }
         }
     }
 
@@ -186,6 +347,32 @@ class LogicViewController: NSViewController {
         }
         set {
             UserDefaults.standard.set(newValue.rawValue, forKey: formattingStyleKey)
+        }
+    }
+
+    private static var suggestionFilterKey = "Logic editor suggestion filter"
+
+    static var suggestionFilter: SuggestionView.SuggestionFilter {
+        get {
+            guard let rawValue = UserDefaults.standard.string(forKey: suggestionFilterKey) else {
+                return .recommended
+            }
+            switch rawValue {
+            case "all":
+                return .all
+            default:
+                return .recommended
+            }
+        }
+        set {
+            var rawValue: String
+            switch newValue {
+            case .all:
+                rawValue = "all"
+            case .recommended:
+                rawValue = "recommended"
+            }
+            UserDefaults.standard.set(rawValue, forKey: suggestionFilterKey)
         }
     }
 }

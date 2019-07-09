@@ -12,9 +12,13 @@ import Logic
 private let startsWithNumberRegex = try? NSRegularExpression(pattern: #"^\d"#)
 
 extension LogicEditor {
-    static func makeParameterDocumentationHandler() -> (LGCSyntaxNode, LGCSyntaxNode, String) -> RichText {
-        return { rootNode, syntaxNode, query in
-            switch syntaxNode {
+    static func makeParameterDocumentationHandler() -> (LGCSyntaxNode, LogicSuggestionItem, String) -> RichText {
+        return { rootNode, suggestion, query in
+            if let documentation = suggestion.documentation() {
+                return documentation
+            }
+
+            switch suggestion.node {
             case .functionParameter:
                 func getAlert() -> RichText.BlockElement? {
                     if query.isEmpty { return nil }
@@ -161,7 +165,7 @@ extension LogicEditor {
         RichText.AlertStyle.paragraphMargin.right += 4
         RichText.AlertStyle.iconMargin.top += 1
 
-        logicEditor.documentationForNode = makeParameterDocumentationHandler()
+        logicEditor.documentationForSuggestion = makeParameterDocumentationHandler()
         logicEditor.suggestionsForNode = makeParameterSuggestionsHandler(types: [])
 
         return logicEditor
