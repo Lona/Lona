@@ -177,4 +177,39 @@ class LonaModule {
 
         return nil
     }
+
+    static func build() {
+        guard let compilerPath = CSUserPreferences.compilerURL?.path else { return }
+
+        let workspacePath = CSUserPreferences.workspaceURL.path
+
+        let dialog = NSSavePanel()
+
+        dialog.title = "Generated workspace directory"
+        dialog.showsResizeIndicator = true
+        dialog.showsHiddenFiles = false
+        dialog.canCreateDirectories = true
+
+        if dialog.runModal() != NSApplication.ModalResponse.OK { return }
+        guard let generatedOutputUrl = dialog.url else { return }
+
+        let arguments = [
+            compilerPath,
+            "workspace",
+            "--workspace", workspacePath,
+            "--target", "swift",
+            "--framework", "uikit",
+            "--output", generatedOutputUrl.path
+        ]
+
+        LonaNode.run(
+            arguments: arguments,
+            currentDirectoryPath: workspacePath,
+            onSuccess: { output in
+                guard let result = output.utf8String() else { return }
+                Swift.print("Result", result)
+        }, onFailure: { code, message in
+            Swift.print("Failed", code, message as Any)
+        })
+    }
 }
