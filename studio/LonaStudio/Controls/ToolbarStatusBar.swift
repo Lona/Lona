@@ -18,10 +18,7 @@ public class ToolbarStatusBar: NSTextField {
         isEnabled = true
         isEditable = false
 
-        alignment = .center
-
-        // Pad value with thin spaces
-        stringValue = "  Lona Workspace : Building with custom configuration"
+//        alignment = .center
     }
 
     required init?(coder: NSCoder) {
@@ -29,6 +26,13 @@ public class ToolbarStatusBar: NSTextField {
     }
 
     // MARK: Public
+
+    public var titleText: String = "" {
+        willSet {
+            // Pad value with thin spaces
+            stringValue = "  " + newValue
+        }
+    }
 
     public var inProgress: Bool = false {
         didSet {

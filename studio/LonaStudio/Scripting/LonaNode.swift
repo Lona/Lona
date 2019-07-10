@@ -11,6 +11,8 @@ import AppKit
 
 enum LonaNode {
 
+    typealias ProcessResult = Result<Data, String>
+
     // MARK: Public
 
     static func runSync(
@@ -42,7 +44,7 @@ enum LonaNode {
         arguments: [String],
         inputData: Data = Data(),
         currentDirectoryPath: String? = nil,
-        onComplete: ((Result<Data, String>) -> Void)? = nil) {
+        onComplete: ((ProcessResult) -> Void)? = nil) {
 
         let process = makeProcess(
             arguments: arguments,

@@ -178,8 +178,8 @@ class LonaModule {
         return nil
     }
 
-    static func build() {
-        guard let compilerPath = CSUserPreferences.compilerURL?.path else { return }
+    static func build(onComplete: ((LonaNode.ProcessResult) -> Void)?) -> Bool {
+        guard let compilerPath = CSUserPreferences.compilerURL?.path else { return false }
 
         let workspacePath = CSUserPreferences.workspaceURL.path
 
@@ -190,8 +190,8 @@ class LonaModule {
         dialog.showsHiddenFiles = false
         dialog.canCreateDirectories = true
 
-        if dialog.runModal() != NSApplication.ModalResponse.OK { return }
-        guard let generatedOutputUrl = dialog.url else { return }
+        if dialog.runModal() != NSApplication.ModalResponse.OK { return false }
+        guard let generatedOutputUrl = dialog.url else { return false }
 
         let arguments = [
             compilerPath,
@@ -207,13 +207,10 @@ class LonaModule {
             arguments: arguments,
             currentDirectoryPath: workspacePath,
             onComplete: ({ result in
-                switch result {
-                case .failure(let message):
-                    Swift.print(message)
-                case .success(let output):
-                    Swift.print("Completed", output)
-                }
+                DispatchQueue.main.sync { onComplete?(result) }
             })
         )
+
+        return true
     }
 }

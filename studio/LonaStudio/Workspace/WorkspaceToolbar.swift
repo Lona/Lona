@@ -13,7 +13,6 @@ extension NSToolbarItem.Identifier {
     static let paneToggle = NSToolbarItem.Identifier("Navigation")
     static let splitterToggle = NSToolbarItem.Identifier("Splitter")
     static let playButton = NSToolbarItem.Identifier("Play")
-    static let stopButton = NSToolbarItem.Identifier("Stop")
     static let compilerConfigButton = NSToolbarItem.Identifier("CompilerConfig")
     static let statusBar = NSToolbarItem.Identifier("StatusBar")
 }
@@ -87,42 +86,73 @@ class WorkspaceToolbar: NSToolbar {
 
     // MARK: Private
 
-    private var playButton = NSToolbarItem(itemIdentifier: .playButton)
-
-    private var stopButton = NSToolbarItem(itemIdentifier: .stopButton)
-
-    private var compilerConfigButton = NSToolbarItem(itemIdentifier: .compilerConfigButton)
-
-    private var statusBar = NSToolbarItem(itemIdentifier: .statusBar)
-
-    private var splitterToggleItem = NSToolbarItem(itemIdentifier: .splitterToggle)
-
-    private var paneToggleToolbarItem = NSToolbarItemGroup(itemIdentifier: .paneToggle)
-
-    private func setUpPlayButton() {
-        let button = Button(titleText: "")
-        button.onPress = {
-            LonaModule.build()
+    private var isRunningProcess: Bool = false {
+        didSet {
+            if isRunningProcess {
+                playButton.image = stopIcon
+            } else {
+                playButton.image = playIcon
+            }
         }
-//        let button = NSButton(frame: .zero)
-        let icon = NSImage(named: "icon-play") ?? NSImage()
-        icon.isTemplate = true
-        button.image = icon
-        button.bezelStyle = .texturedRounded
-
-        playButton.maxSize.width = 31
-        playButton.view = button
     }
 
-    private func setUpStopButton() {
-        let button = NSButton(frame: .zero)
-        let icon = NSImage(named: "icon-stop") ?? NSImage()
-        icon.isTemplate = true
-        button.image = icon
-        button.bezelStyle = .texturedRounded
+    private var taskTitle: String? {
+        didSet {
+            if let taskTitle = taskTitle {
+                statusBar.titleText = "\(CSWorkspacePreferences.workspaceName) – \(taskTitle)"
+            } else {
+                statusBar.titleText = CSWorkspacePreferences.workspaceName
+            }
+        }
+    }
 
-        stopButton.maxSize.width = 32
-        stopButton.view = button
+    private var playButtonItem = NSToolbarItem(itemIdentifier: .playButton)
+    private var compilerConfigButtonItem = NSToolbarItem(itemIdentifier: .compilerConfigButton)
+    private var statusBarItem = NSToolbarItem(itemIdentifier: .statusBar)
+    private var splitterToggleItem = NSToolbarItem(itemIdentifier: .splitterToggle)
+    private var paneToggleToolbarItem = NSToolbarItemGroup(itemIdentifier: .paneToggle)
+
+    private let playButton = Button(titleText: "")
+    private let statusBar = ToolbarStatusBar(frame: .zero)
+
+    private var playIcon: NSImage = {
+        let icon = NSImage(named: "icon-play")!
+        icon.isTemplate = true
+        return icon
+    }()
+
+    private var stopIcon: NSImage = {
+        let icon = NSImage(named: "icon-stop")!
+        icon.isTemplate = true
+        return icon
+    }()
+
+    private func setUpPlayButton() {
+        // TODO: Terminate task on stop
+        playButton.onPress = { [unowned self] in
+            let running = LonaModule.build { [unowned self] result in
+                self.isRunningProcess = false
+
+                switch result {
+                case .failure(let message):
+                    Swift.print(message)
+                    self.taskTitle = "Failed to generate code"
+                case .success(let output):
+                    Swift.print("Completed", output)
+                    self.taskTitle = "Code generation complete"
+                }
+            }
+
+            if running {
+                self.isRunningProcess = true
+                self.taskTitle = "Generating code using custom configuration..."
+            }
+        }
+        playButton.image = playIcon
+        playButton.bezelStyle = .texturedRounded
+
+        playButtonItem.maxSize.width = 31
+        playButtonItem.view = playButton
     }
 
     private func setUpCompilerConfigButton() {
@@ -161,18 +191,18 @@ class WorkspaceToolbar: NSToolbar {
         segmented.isEnabled = true
         segmented.isEnabled(forSegment: 1)
 
-        compilerConfigButton.view = segmented
+        compilerConfigButtonItem.view = segmented
     }
 
     private func setUpStatusBar() {
-        let view = ToolbarStatusBar(frame: .zero)
+
 //        view.inProgress = true
 //        view.progress = 0.5
 
-        statusBar.minSize.width = 400
-        statusBar.maxSize.width = 650
+        statusBarItem.minSize.width = 400
+        statusBarItem.maxSize.width = 650
 
-        statusBar.view = view
+        statusBarItem.view = statusBar
     }
 
     private func setUpSplitterToggle() {
@@ -183,7 +213,7 @@ class WorkspaceToolbar: NSToolbar {
         segmented.target = self
         segmented.action = #selector(handleSplitterPane(_:))
 
-        let icon = NSImage(named: "icon-pane-splitter") ?? NSImage()
+        let icon = NSImage(named: "icon-pane-splitter")!
         icon.isTemplate = true
 
         segmented.setImage(icon, forSegment: 0)
@@ -220,8 +250,9 @@ class WorkspaceToolbar: NSToolbar {
     }
 
     private func setUpItems() {
+        taskTitle = nil
+
         setUpPlayButton()
-        setUpStopButton()
         setUpCompilerConfigButton()
         setUpStatusBar()
         setUpSplitterToggle()
@@ -259,7 +290,6 @@ extension WorkspaceToolbar: NSToolbarDelegate {
     func toolbarDefaultItemIdentifiers(_ toolbar: NSToolbar) -> [NSToolbarItem.Identifier] {
         return [
             .playButton,
-//            .stopButton,
             .compilerConfigButton,
             .flexibleSpace,
             .statusBar,
@@ -272,7 +302,6 @@ extension WorkspaceToolbar: NSToolbarDelegate {
     func toolbarAllowedItemIdentifiers(_ toolbar: NSToolbar) -> [NSToolbarItem.Identifier] {
         return [
             .playButton,
-            .stopButton,
             .compilerConfigButton,
             .statusBar,
             .splitterToggle,
@@ -289,13 +318,11 @@ extension WorkspaceToolbar: NSToolbarDelegate {
         } else if itemIdentifier == NSToolbarItem.Identifier.splitterToggle {
             return splitterToggleItem
         } else if itemIdentifier == .playButton {
-            return playButton
+            return playButtonItem
         } else if itemIdentifier == .compilerConfigButton {
-            return compilerConfigButton
-        } else if itemIdentifier == .stopButton {
-            return stopButton
+            return compilerConfigButtonItem
         } else if itemIdentifier == .statusBar {
-            return statusBar
+            return statusBarItem
         }
 
         return nil
