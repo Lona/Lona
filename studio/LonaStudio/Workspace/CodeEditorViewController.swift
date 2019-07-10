@@ -118,6 +118,7 @@ class CodeEditorViewController: NSViewController {
                 guard let data = try? document.data(ofType: "JSONDocument") else { return }
 
                 LonaNode.run(
+                    sync: false,
                     arguments: [compilerPath] + command,
                     inputData: data,
                     currentDirectoryPath: CSUserPreferences.workspaceURL.path,
@@ -139,6 +140,7 @@ class CodeEditorViewController: NSViewController {
                 guard let data = try? document.data(ofType: "JSONDocument") else { return }
 
                 LonaNode.run(
+                    sync: false,
                     arguments: [compilerPath] + command,
                     inputData: data,
                     currentDirectoryPath: CSUserPreferences.workspaceURL.path,
@@ -169,6 +171,7 @@ class CodeEditorViewController: NSViewController {
             guard let data = try? document.data(ofType: "Logic") else { return }
 
             LonaNode.run(
+                sync: false,
                 arguments: [compilerPath] + command,
                 inputData: data,
                 currentDirectoryPath: CSUserPreferences.workspaceURL.path,

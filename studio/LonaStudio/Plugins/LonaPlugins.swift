@@ -45,10 +45,8 @@ class LonaPlugins {
             return url.lastPathComponent
         }
 
-        func run(onSuccess: (String) -> Void) {
+        func run() {
             guard let config = config else { return }
-
-            let rpcService = RPCService()
 
             var arguments: [String] = []
 
@@ -62,22 +60,26 @@ class LonaPlugins {
 
             arguments.append(url.appendingPathComponent(config.main).path)
 
-            let sendData = LonaNode.launch(
+            let process = LonaNode.makeProcess(
                 arguments: arguments,
-                currentDirectoryPath: url.path,
-                onData: rpcService.handleData,
-                onSuccess: { output in
-                    Swift.print("Output", String(data: output, encoding: String.Encoding.utf8) ?? "")
+                currentDirectoryPath: url.path
+            )
 
-//                    DispatchQueue.main.async {
-//                        let alert = NSAlert()
-//                        alert.messageText = "Finished running \(self.name)"
-//                        alert.informativeText = output ?? ""
-//                        alert.runModal()
-//                    }
-            })
+            let rpcService = RPCService()
 
-            rpcService.sendData = sendData
+            process.execute(
+                sync: false,
+                onLaunch: ({ _ in
+                    if let inputPipe = process.standardInput as? Pipe {
+                        rpcService.sendData = inputPipe.fileHandleForWriting.write
+                    }
+                    process.pipeFromStandardOutput(onData: { data in
+                        Process.handleStreamingData(data, onPacket: { packet in
+                            rpcService.handleData(packet)
+                        })
+                    })
+                })
+            )
         }
 
         // MARK: Private
@@ -132,9 +134,7 @@ class LonaPlugins {
     }
 
     func trigger(eventType: LonaPluginActivationEvent) {
-        LonaPlugins.current.pluginFilesActivatingOn(eventType: eventType).forEach({
-            $0.run(onSuccess: {_ in })
-        })
+        LonaPlugins.current.pluginFilesActivatingOn(eventType: eventType).forEach({ $0.run() })
 
         LonaPlugins.handlers[eventType]?.forEach({ $0.callback() })
     }

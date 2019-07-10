@@ -9,172 +9,175 @@
 import Foundation
 import AppKit
 
-typealias SendData = (_ data: Data) -> Void
-
 enum LonaNode {
 
     // MARK: Public
 
     static func runSync(
         arguments: [String],
-        inputData: Data? = nil,
-        currentDirectoryPath: String? = nil) throws -> Data {
+        inputData: Data = Data(),
+        currentDirectoryPath: String? = nil) -> Result<Data, String> {
 
         var output: Data?
         var failureMessage: String?
 
-        _ = run(
+        run(
+            sync: true,
             arguments: arguments,
             inputData: inputData,
             currentDirectoryPath: currentDirectoryPath,
-            sync: true,
-            onSuccess: { data in
+            onSuccess: ({ data in
                 output = data
-            }, onFailure: { code, error in
+            }),
+            onFailure: ({ code, error in
                 failureMessage = "Error \(code): \(error ?? "")"
-            }
+            })
         )
 
         if let output = output {
-            return output
+            return .success(output)
         } else {
-            throw failureMessage ?? "Node error"
+            return .failure(failureMessage ?? "Unknown node error")
         }
     }
 
     static func run(
+        sync: Bool,
         arguments: [String],
-        inputData: Data? = nil,
+        inputData: Data = Data(),
         currentDirectoryPath: String? = nil,
-        sync: Bool = false,
-        onData: ((Data) -> Void)? = nil,
         onSuccess: ((Data) -> Void)? = nil,
         onFailure: ((Int, String?) -> Void)? = nil) {
 
-        _ = launchAndReturnFileHandle(
+        let process = makeProcess(
             arguments: arguments,
-            inputData: inputData,
-            shouldCloseStdinAfterInput: true,
             currentDirectoryPath: currentDirectoryPath,
-            sync: sync,
-            onData: onData,
-            onSuccess: onSuccess,
             onFailure: onFailure
-            )
+        )
+
+        var buffer = Data()
+
+        process.execute(
+            sync: sync,
+            onLaunch: ({ process in
+                process.pipeToStandardInput(data: inputData, closeAfterWriting: true)
+                process.pipeFromStandardOutput(onData: { data in
+                    buffer += data
+                })
+            }),
+            onComplete: ({ _ in
+                onSuccess?(buffer)
+            })
+        )
     }
 
-    static func launch(
+    static func makeProcess(
         arguments: [String],
-        inputData: Data? = nil,
         currentDirectoryPath: String? = nil,
-        sync: Bool = false,
-        onData: ((Data) -> Void)? = nil,
-        onSuccess: ((Data) -> Void)? = nil,
-        onFailure: ((Int, String?) -> Void)? = nil) -> SendData? {
+        onFailure: ((Int, String?) -> Void)? = nil) -> Process {
 
-        return launchAndReturnFileHandle(
-            arguments: arguments,
-            inputData: inputData,
-            currentDirectoryPath: currentDirectoryPath,
-            sync: sync,
-            onData: onData,
-            onSuccess: onSuccess,
-            onFailure: onFailure
-            )?.write
-    }
-
-    private static func launchAndReturnFileHandle(
-        arguments: [String],
-        inputData: Data? = nil,
-        shouldCloseStdinAfterInput: Bool = false,
-        currentDirectoryPath: String? = nil,
-        sync: Bool = false,
-        onData: ((Data) -> Void)? = nil,
-        onSuccess: ((Data) -> Void)? = nil,
-        onFailure: ((Int, String?) -> Void)? = nil) -> FileHandle? {
+        let process = Process()
 
         guard let nodePath = LonaNode.binaryPath else {
             onFailure?(-1, "Couldn't find node")
-            return nil
+            return process
         }
-
-        let task = Process()
 
         var env = ProcessInfo.processInfo.environment
+
         if let path = env["PATH"], let binaryPath = binaryPath {
             let nodeDirectory = URL(fileURLWithPath: binaryPath).deletingLastPathComponent()
-            env["PATH"] = "\(nodeDirectory):" + path
+            env["PATH"] = "\(nodeDirectory):\(path)"
         }
+
         if let currentDirectoryPath = currentDirectoryPath {
-            task.currentDirectoryPath = currentDirectoryPath
-            // let's look add the path to node_modules to PATH
+            process.currentDirectoryPath = currentDirectoryPath
+
+            // Add node_modules to PATH
             if let path = env["PATH"] {
-                let nodeModulesBinaries = URL(fileURLWithPath: currentDirectoryPath).appendingPathComponent("node_modules/.bin", isDirectory: true).path
-                env["PATH"] = "\(nodeModulesBinaries):" + path
+                let nodeModulesBinaries = URL(fileURLWithPath: currentDirectoryPath)
+                    .appendingPathComponent("node_modules/.bin", isDirectory: true).path
+                env["PATH"] = "\(nodeModulesBinaries):\(path)"
             }
         }
 
-        task.environment = env
+        process.environment = env
 
-        // Set the task parameters
-        task.launchPath = nodePath
-        task.arguments = arguments
+        process.launchPath = nodePath
+        process.arguments = arguments
 
         let stdin = Pipe()
         let stdout = Pipe()
 
-        task.standardInput = stdin
-        task.standardOutput = stdout
+        process.standardInput = stdin
+        process.standardOutput = stdout
 
-        var recvBuf = Data()
-
-        stdout.fileHandleForReading.readabilityHandler = { handle in
-            let data = handle.availableData
-            LonaNode.recvHandler(data, &recvBuf, onData)
-        }
-
-        func run() {
-            // Launch the task
-            task.launch()
-
-            if let inputData = inputData {
-                stdin.fileHandleForWriting.write(inputData)
-            }
-
-            if shouldCloseStdinAfterInput {
-                stdin.fileHandleForWriting.closeFile()
-            }
-
-            task.waitUntilExit()
-
-            onSuccess?(recvBuf)
-        }
-
-        if sync {
-            run()
-        } else {
-            DispatchQueue.global().async {
-                run()
-            }
-        }
-
-        return stdin.fileHandleForWriting
+        return process
     }
 
     static var binaryPath: String? {
         return Bundle.main.path(forResource: "node", ofType: "")
     }
+}
 
-    private static func recvHandler(_ data: Data, _ recvBuf: inout Data, _ onData: ((Data) -> Void)? = nil) {
-        if data.count == 0 {
-            return
-        }
+public extension Process {
 
-        recvBuf.append(data)
+    // Supports streaming chunks of data, separated by "\n"
+
+    static func handleStreamingData(_ data: Data, onPacket: (Data) -> Void) {
+        if data.count == 0 { return }
 
         let packets = data.split(separator: UInt8(ascii: "\n"))
-        packets.forEach { packet in
-            onData?(packet)
+
+        packets.forEach(onPacket)
+    }
+
+    // IO
+
+    func pipeFromStandardOutput() -> Data {
+        guard let outputPipe = standardOutput as? Pipe else { fatalError("Invalid stdout") }
+
+        return outputPipe.fileHandleForReading.readDataToEndOfFile()
+    }
+
+    func pipeFromStandardOutput(onData: @escaping (Data) -> Void) {
+        guard let outputPipe = standardOutput as? Pipe else { fatalError("Invalid stdout") }
+
+        outputPipe.fileHandleForReading.readabilityHandler = { handle in onData(handle.availableData) }
+    }
+
+    func pipeToStandardInput(data inputData: Data, closeAfterWriting: Bool = false) {
+        guard let inputPipe = standardInput as? Pipe else { fatalError("Invalid stdin") }
+
+        inputPipe.fileHandleForWriting.write(inputData)
+
+        if closeAfterWriting {
+            inputPipe.fileHandleForWriting.closeFile()
+        }
+    }
+
+    // Execute
+
+    func execute(
+        sync: Bool,
+        dispatchQueue: DispatchQueue = DispatchQueue.global(qos: DispatchQoS.QoSClass.userInitiated),
+        onLaunch: ((Process) -> Void)? = nil,
+        onComplete: ((Process) -> Void)? = nil) {
+
+        let run: () -> Void = {
+            self.launch()
+
+            onLaunch?(self)
+
+            self.waitUntilExit()
+
+            onComplete?(self)
+        }
+
+        if sync {
+            dispatchQueue.sync(execute: run)
+        } else {
+            dispatchQueue.async(execute: run)
         }
     }
 }

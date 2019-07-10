@@ -203,6 +203,7 @@ class LonaModule {
         ]
 
         LonaNode.run(
+            sync: false,
             arguments: arguments,
             currentDirectoryPath: workspacePath,
             onSuccess: { output in

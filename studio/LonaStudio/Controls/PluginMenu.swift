@@ -39,11 +39,7 @@ class PluginMenu: NSMenu {
             var results = [header]
 
             results.append(contentsOf: files.map({ file in
-                NSMenuItem(title: file.name, onClick: {
-                    file.run(onSuccess: { result in
-                        Swift.print("Result:", result)
-                    })
-                })
+                NSMenuItem(title: file.name, onClick: { file.run() })
             }))
 
             return results
