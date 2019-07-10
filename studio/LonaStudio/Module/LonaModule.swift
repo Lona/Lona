@@ -206,11 +206,14 @@ class LonaModule {
             sync: false,
             arguments: arguments,
             currentDirectoryPath: workspacePath,
-            onSuccess: { output in
-                guard let result = output.utf8String() else { return }
-                Swift.print("Result", result)
-        }, onFailure: { code, message in
-            Swift.print("Failed", code, message as Any)
-        })
+            onComplete: ({ result in
+                switch result {
+                case .failure(let message):
+                    Swift.print(message)
+                case .success(let output):
+                    Swift.print("Completed", output)
+                }
+            })
+        )
     }
 }

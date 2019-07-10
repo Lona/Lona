@@ -122,18 +122,22 @@ class CodeEditorViewController: NSViewController {
                     arguments: [compilerPath] + command,
                     inputData: data,
                     currentDirectoryPath: CSUserPreferences.workspaceURL.path,
-                    onSuccess: { output in
-                        guard let result = output.utf8String() else { return }
-                        DispatchQueue.main.async {
-                            // There's a race condition here where the document may have changed
-                            // by the time this completes, and the text will be set for the wrong document.
-                            // Make sure we're looking at the same document before setting the text
-                            guard document == self.document else { return }
-                            self.contentView.generatedCode = result
+                    onComplete: ({ result in
+                        switch result {
+                        case .failure(let message):
+                            Swift.print(message)
+                        case .success(let output):
+                            guard let code = output.utf8String() else { return }
+                            DispatchQueue.main.async {
+                                // There's a race condition here where the document may have changed
+                                // by the time this completes, and the text will be set for the wrong document.
+                                // Make sure we're looking at the same document before setting the text
+                                guard document == self.document else { return }
+                                self.contentView.generatedCode = code
+                            }
                         }
-                }, onFailure: { code, message in
-                    Swift.print("Failed", code, message as Any)
-                })
+                    })
+                )
 
             } else if let content = document.content, case .textStyles = content {
                 guard let compilerPath = CSUserPreferences.compilerURL?.path else { return }
@@ -144,18 +148,22 @@ class CodeEditorViewController: NSViewController {
                     arguments: [compilerPath] + command,
                     inputData: data,
                     currentDirectoryPath: CSUserPreferences.workspaceURL.path,
-                    onSuccess: { output in
-                        guard let result = output.utf8String() else { return }
-                        DispatchQueue.main.async {
-                            // There's a race condition here where the document may have changed
-                            // by the time this completes, and the text will be set for the wrong document.
-                            // Make sure we're looking at the same document before setting the text
-                            guard document == self.document else { return }
-                            self.contentView.generatedCode = result
+                    onComplete: ({ result in
+                        switch result {
+                        case .failure(let message):
+                            Swift.print(message)
+                        case .success(let output):
+                            guard let code = output.utf8String() else { return }
+                            DispatchQueue.main.async {
+                                // There's a race condition here where the document may have changed
+                                // by the time this completes, and the text will be set for the wrong document.
+                                // Make sure we're looking at the same document before setting the text
+                                guard document == self.document else { return }
+                                self.contentView.generatedCode = code
+                            }
                         }
-                }, onFailure: { code, message in
-                    Swift.print("Failed", code, message as Any)
-                })
+                    })
+                )
             } else {
                 contentView.titleText = ""
                 contentView.subtitleText = ""
@@ -175,18 +183,22 @@ class CodeEditorViewController: NSViewController {
                 arguments: [compilerPath] + command,
                 inputData: data,
                 currentDirectoryPath: CSUserPreferences.workspaceURL.path,
-                onSuccess: { output in
-                    guard let result = output.utf8String() else { return }
-                    DispatchQueue.main.async {
-                        // There's a race condition here where the document may have changed
-                        // by the time this completes, and the text will be set for the wrong document.
-                        // Make sure we're looking at the same document before setting the text
-                        guard document == self.document else { return }
-                        self.contentView.generatedCode = result
+                onComplete: ({ result in
+                    switch result {
+                    case .failure(let message):
+                        Swift.print(message)
+                    case .success(let output):
+                        guard let code = output.utf8String() else { return }
+                        DispatchQueue.main.async {
+                            // There's a race condition here where the document may have changed
+                            // by the time this completes, and the text will be set for the wrong document.
+                            // Make sure we're looking at the same document before setting the text
+                            guard document == self.document else { return }
+                            self.contentView.generatedCode = code
+                        }
                     }
-            }, onFailure: { code, message in
-                Swift.print("Failed", code, message as Any)
-            })
+                })
+            )
         } else {
             contentView.titleText = ""
             contentView.subtitleText = "No output"

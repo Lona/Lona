@@ -74,9 +74,8 @@ class LonaPlugins {
                         rpcService.sendData = inputPipe.fileHandleForWriting.write
                     }
                     process.pipeFromStandardOutput(onData: { data in
-                        Process.handleStreamingData(data, onPacket: { packet in
-                            rpcService.handleData(packet)
-                        })
+                        let packets = data.split(separator: UInt8(ascii: "\n"), omittingEmptySubsequences: true)
+                        packets.forEach(rpcService.handleData)
                     })
                 })
             )

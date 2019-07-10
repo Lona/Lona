@@ -18,26 +18,22 @@ enum LonaNode {
         inputData: Data = Data(),
         currentDirectoryPath: String? = nil) -> Result<Data, String> {
 
-        var output: Data?
-        var failureMessage: String?
+        var result: Result<Data, String>?
 
         run(
             sync: true,
             arguments: arguments,
             inputData: inputData,
             currentDirectoryPath: currentDirectoryPath,
-            onSuccess: ({ data in
-                output = data
-            }),
-            onFailure: ({ code, error in
-                failureMessage = "Error \(code): \(error ?? "")"
+            onComplete: ({
+                result = $0
             })
         )
 
-        if let output = output {
-            return .success(output)
+        if let result = result {
+            return result
         } else {
-            return .failure(failureMessage ?? "Unknown node error")
+            return .failure("Unknown process error")
         }
     }
 
@@ -46,46 +42,39 @@ enum LonaNode {
         arguments: [String],
         inputData: Data = Data(),
         currentDirectoryPath: String? = nil,
-        onSuccess: ((Data) -> Void)? = nil,
-        onFailure: ((Int, String?) -> Void)? = nil) {
+        onComplete: ((Result<Data, String>) -> Void)? = nil) {
 
         let process = makeProcess(
             arguments: arguments,
-            currentDirectoryPath: currentDirectoryPath,
-            onFailure: onFailure
+            currentDirectoryPath: currentDirectoryPath
         )
 
         var buffer = Data()
 
         process.execute(
             sync: sync,
-            onLaunch: ({ process in
+            onLaunch: ({ _ in
                 process.pipeToStandardInput(data: inputData, closeAfterWriting: true)
                 process.pipeFromStandardOutput(onData: { data in
                     buffer += data
                 })
             }),
             onComplete: ({ _ in
-                onSuccess?(buffer)
+                if process.terminationStatus == 0 {
+                    onComplete?(.success(buffer))
+                } else {
+                    onComplete?(.failure("Node process terminated with code: \(process.terminationStatus)"))
+                }
             })
         )
     }
 
-    static func makeProcess(
-        arguments: [String],
-        currentDirectoryPath: String? = nil,
-        onFailure: ((Int, String?) -> Void)? = nil) -> Process {
-
+    static func makeProcess(arguments: [String], currentDirectoryPath: String? = nil) -> Process {
         let process = Process()
-
-        guard let nodePath = LonaNode.binaryPath else {
-            onFailure?(-1, "Couldn't find node")
-            return process
-        }
 
         var env = ProcessInfo.processInfo.environment
 
-        if let path = env["PATH"], let binaryPath = binaryPath {
+        if let path = env["PATH"] {
             let nodeDirectory = URL(fileURLWithPath: binaryPath).deletingLastPathComponent()
             env["PATH"] = "\(nodeDirectory):\(path)"
         }
@@ -103,7 +92,7 @@ enum LonaNode {
 
         process.environment = env
 
-        process.launchPath = nodePath
+        process.launchPath = binaryPath
         process.arguments = arguments
 
         let stdin = Pipe()
@@ -115,22 +104,12 @@ enum LonaNode {
         return process
     }
 
-    static var binaryPath: String? {
-        return Bundle.main.path(forResource: "node", ofType: "")
+    static var binaryPath: String {
+        return Bundle.main.path(forResource: "node", ofType: "")!
     }
 }
 
 public extension Process {
-
-    // Supports streaming chunks of data, separated by "\n"
-
-    static func handleStreamingData(_ data: Data, onPacket: (Data) -> Void) {
-        if data.count == 0 { return }
-
-        let packets = data.split(separator: UInt8(ascii: "\n"))
-
-        packets.forEach(onPacket)
-    }
 
     // IO
 
@@ -160,7 +139,6 @@ public extension Process {
 
     func execute(
         sync: Bool,
-        dispatchQueue: DispatchQueue = DispatchQueue.global(qos: DispatchQoS.QoSClass.userInitiated),
         onLaunch: ((Process) -> Void)? = nil,
         onComplete: ((Process) -> Void)? = nil) {
 
@@ -173,6 +151,8 @@ public extension Process {
 
             onComplete?(self)
         }
+
+        let dispatchQueue = DispatchQueue.global(qos: DispatchQoS.QoSClass.userInitiated)
 
         if sync {
             dispatchQueue.sync(execute: run)
