@@ -1,0 +1,365 @@
+{
+  "data" : {
+    "block" : [
+      {
+        "data" : {
+          "content" : {
+            "data" : {
+              "id" : "312F6941-C95C-44FB-83D4-37B198960FAF",
+              "name" : {
+                "id" : "73405063-8EB7-4636-91E8-EDA2A755F915",
+                "name" : "Prelude"
+              }
+            },
+            "type" : "importDeclaration"
+          },
+          "id" : "2EA073B7-7861-4711-A78A-075CC18BB8B4"
+        },
+        "type" : "declaration"
+      },
+      {
+        "data" : {
+          "content" : {
+            "data" : {
+              "cases" : [
+                {
+                  "data" : {
+                    "associatedValueTypes" : [
+                      {
+                        "data" : {
+                          "id" : "13AB7E0B-F8F4-42A1-88FB-16EA16C8C96C"
+                        },
+                        "type" : "placeholder"
+                      }
+                    ],
+                    "id" : "F63D63BE-930C-4E24-85EA-A7423439F5AF",
+                    "name" : {
+                      "id" : "A25CB20E-959D-4493-9D1F-35CFFFA38DFA",
+                      "name" : "js"
+                    }
+                  },
+                  "type" : "enumerationCase"
+                },
+                {
+                  "data" : {
+                    "associatedValueTypes" : [
+                      {
+                        "data" : {
+                          "id" : "164FD9C2-35AC-49A1-BB61-C6AA1ABB31C9"
+                        },
+                        "type" : "placeholder"
+                      }
+                    ],
+                    "id" : "E9E78E46-A384-4BC3-BA9C-FDB30E47BC2E",
+                    "name" : {
+                      "id" : "4681BE35-12F0-40C1-AD1B-60E10E2B63E1",
+                      "name" : "swift"
+                    }
+                  },
+                  "type" : "enumerationCase"
+                },
+                {
+                  "data" : {
+                    "associatedValueTypes" : [
+                      {
+                        "data" : {
+                          "id" : "C099968C-D479-41CA-B244-F772CCE60863"
+                        },
+                        "type" : "placeholder"
+                      }
+                    ],
+                    "id" : "C1DB5AFE-B7FA-4651-89E3-1BF1555E57F4",
+                    "name" : {
+                      "id" : "06DF1610-4757-4066-98E9-B42B9F4727E7",
+                      "name" : "xml"
+                    }
+                  },
+                  "type" : "enumerationCase"
+                },
+                {
+                  "data" : {
+                    "id" : "F86F2409-1054-4404-B244-3854791ECBA1"
+                  },
+                  "type" : "placeholder"
+                }
+              ],
+              "genericParameters" : [
+
+              ],
+              "id" : "244C900C-C692-4DF3-A091-55BF50D929F6",
+              "name" : {
+                "id" : "A2D3A104-96C2-497D-B501-ADD9194DB62E",
+                "name" : "CompilerTarget"
+              }
+            },
+            "type" : "enumeration"
+          },
+          "id" : "A0BD9AB7-E101-47FA-A053-6973FD6C3230"
+        },
+        "type" : "declaration"
+      },
+      {
+        "data" : {
+          "content" : {
+            "data" : {
+              "cases" : [
+                {
+                  "data" : {
+                    "associatedValueTypes" : [
+                      {
+                        "data" : {
+                          "id" : "F0DED33C-78AE-4674-9AF3-29FEE447E784"
+                        },
+                        "type" : "placeholder"
+                      }
+                    ],
+                    "id" : "BC0A2C16-229B-4BDE-8D21-4C0817576E45",
+                    "name" : {
+                      "id" : "631FC308-10CC-4E8D-A64D-9D278B0D1C3F",
+                      "name" : "reactdom"
+                    }
+                  },
+                  "type" : "enumerationCase"
+                },
+                {
+                  "data" : {
+                    "associatedValueTypes" : [
+                      {
+                        "data" : {
+                          "id" : "DCB5D58B-A75C-4BC5-943B-0AD7129CF419"
+                        },
+                        "type" : "placeholder"
+                      }
+                    ],
+                    "id" : "CEB2A5CA-4770-49DE-852F-E6A83870F4E7",
+                    "name" : {
+                      "id" : "71E7EAED-87F4-4BC5-9405-E7E0EF7CD68F",
+                      "name" : "reactnative"
+                    }
+                  },
+                  "type" : "enumerationCase"
+                },
+                {
+                  "data" : {
+                    "associatedValueTypes" : [
+                      {
+                        "data" : {
+                          "id" : "51C920C6-1041-4FD2-B4A7-54B169B05207"
+                        },
+                        "type" : "placeholder"
+                      }
+                    ],
+                    "id" : "3CCD6C53-75CC-4EDD-9A8E-34873E157302",
+                    "name" : {
+                      "id" : "4DC7C4FB-A74B-4278-8576-8998E648898D",
+                      "name" : "reactsketchapp"
+                    }
+                  },
+                  "type" : "enumerationCase"
+                },
+                {
+                  "data" : {
+                    "associatedValueTypes" : [
+                      {
+                        "data" : {
+                          "id" : "437B80BF-3B29-402E-A7E1-D0E78CA424CA"
+                        },
+                        "type" : "placeholder"
+                      }
+                    ],
+                    "id" : "D617FA5E-8709-4B7C-98F7-124C4CFB4AC9",
+                    "name" : {
+                      "id" : "3D35C725-3477-45C3-985A-E23A3ED8A396",
+                      "name" : "uikit"
+                    }
+                  },
+                  "type" : "enumerationCase"
+                },
+                {
+                  "data" : {
+                    "associatedValueTypes" : [
+                      {
+                        "data" : {
+                          "id" : "C56D08DD-4814-42EC-85DD-437A7EC9E625"
+                        },
+                        "type" : "placeholder"
+                      }
+                    ],
+                    "id" : "CE63C718-1F02-4598-96B3-5EBC86DE0A80",
+                    "name" : {
+                      "id" : "7F6715E7-D144-4C22-9073-0C9F69C76641",
+                      "name" : "appkit"
+                    }
+                  },
+                  "type" : "enumerationCase"
+                },
+                {
+                  "data" : {
+                    "id" : "AFCC85FD-6E49-487D-B2BC-7EBE17308D26"
+                  },
+                  "type" : "placeholder"
+                }
+              ],
+              "genericParameters" : [
+
+              ],
+              "id" : "95006469-D256-42E8-9650-7DCBF93DBBB5",
+              "name" : {
+                "id" : "AA7FEE70-4EC3-49E5-A781-3D6D4E969FF3",
+                "name" : "CompilerFramework"
+              }
+            },
+            "type" : "enumeration"
+          },
+          "id" : "CF62BE00-52EB-4E37-9D26-D2A6D0383DC7"
+        },
+        "type" : "declaration"
+      },
+      {
+        "data" : {
+          "content" : {
+            "data" : {
+              "declarations" : [
+                {
+                  "data" : {
+                    "annotation" : {
+                      "data" : {
+                        "genericArguments" : [
+
+                        ],
+                        "id" : "35B36426-7D0E-404D-9082-FBF7B26E2A1B",
+                        "identifier" : {
+                          "id" : "BCA82327-64AB-44B4-90DE-291C1A1973D0",
+                          "isPlaceholder" : false,
+                          "string" : "CompilerTarget"
+                        }
+                      },
+                      "type" : "typeIdentifier"
+                    },
+                    "id" : "0A7CE1F8-1601-4F9E-911E-63DF2CF93531",
+                    "initializer" : {
+                      "data" : {
+                        "arguments" : [
+
+                        ],
+                        "expression" : {
+                          "data" : {
+                            "expression" : {
+                              "data" : {
+                                "id" : "01D6C6A4-7A49-4326-ABC1-9FE4CFDC4EDE",
+                                "identifier" : {
+                                  "id" : "9A5B47E8-F05E-4FFF-8667-08024CC18F90",
+                                  "isPlaceholder" : false,
+                                  "string" : "CompilerTarget"
+                                }
+                              },
+                              "type" : "identifierExpression"
+                            },
+                            "id" : "AF47BE2D-1346-4CFA-9C46-3405C8A4DBCB",
+                            "memberName" : {
+                              "id" : "6B9B63C9-F860-4012-ABC2-51A62F357004",
+                              "isPlaceholder" : false,
+                              "string" : "js"
+                            }
+                          },
+                          "type" : "memberExpression"
+                        },
+                        "id" : "E1FEDFB1-7404-49D5-BED0-3015D7BAFD8D"
+                      },
+                      "type" : "functionCallExpression"
+                    },
+                    "name" : {
+                      "id" : "4818669F-BE50-468D-B4CE-89A9FE257983",
+                      "name" : "target"
+                    }
+                  },
+                  "type" : "variable"
+                },
+                {
+                  "data" : {
+                    "annotation" : {
+                      "data" : {
+                        "genericArguments" : [
+
+                        ],
+                        "id" : "B5888449-57E5-4350-8F27-6C22EE265AE6",
+                        "identifier" : {
+                          "id" : "3F8D7381-2D1E-4CBE-92A2-E3A58B18DF09",
+                          "isPlaceholder" : false,
+                          "string" : "CompilerFramework"
+                        }
+                      },
+                      "type" : "typeIdentifier"
+                    },
+                    "id" : "113C9904-BF21-494D-8055-3620AEE2FED4",
+                    "initializer" : {
+                      "data" : {
+                        "arguments" : [
+
+                        ],
+                        "expression" : {
+                          "data" : {
+                            "expression" : {
+                              "data" : {
+                                "id" : "E0A38C03-D437-4F0E-8B39-21BE4B61BFDD",
+                                "identifier" : {
+                                  "id" : "3C9B10D6-70EB-4F36-BFAB-DB19E8ED9455",
+                                  "isPlaceholder" : false,
+                                  "string" : "CompilerFramework"
+                                }
+                              },
+                              "type" : "identifierExpression"
+                            },
+                            "id" : "1363D89C-6F7C-4DF0-B814-B78E8E4533B3",
+                            "memberName" : {
+                              "id" : "D6848EBA-D233-4F93-B335-43B5C95E32BF",
+                              "isPlaceholder" : false,
+                              "string" : "reactdom"
+                            }
+                          },
+                          "type" : "memberExpression"
+                        },
+                        "id" : "303A9DBC-BDD5-4255-9DEA-0FF8B1529A1C"
+                      },
+                      "type" : "functionCallExpression"
+                    },
+                    "name" : {
+                      "id" : "836ADCED-8B1B-403A-86F8-38D141DFCA21",
+                      "name" : "framework"
+                    }
+                  },
+                  "type" : "variable"
+                },
+                {
+                  "data" : {
+                    "id" : "87B2102C-1569-4AFE-ABA0-30094A2E292B"
+                  },
+                  "type" : "placeholder"
+                }
+              ],
+              "genericParameters" : [
+
+              ],
+              "id" : "22453871-FF49-47A5-8685-95C962E323C6",
+              "name" : {
+                "id" : "A3FE93FA-6940-4087-BA65-D8BC46DBE3DF",
+                "name" : "CompilerConfiguration"
+              }
+            },
+            "type" : "record"
+          },
+          "id" : "4736229C-5EE1-4096-B6D8-338D390C9C99"
+        },
+        "type" : "declaration"
+      },
+      {
+        "data" : {
+          "id" : "05B743AC-72BC-47D3-A250-C54EBD6CA93B"
+        },
+        "type" : "placeholder"
+      }
+    ],
+    "id" : "D9F38EA5-75B1-4AA9-A6A5-F89CBAE1D4CD"
+  },
+  "type" : "program"
+}

@@ -8,6 +8,7 @@
 
 import AppKit
 import Foundation
+import Logic
 
 extension NSToolbarItem.Identifier {
     static let paneToggle = NSToolbarItem.Identifier("Navigation")
@@ -130,23 +131,35 @@ class WorkspaceToolbar: NSToolbar {
     private func setUpPlayButton() {
         // TODO: Terminate task on stop
         playButton.onPress = { [unowned self] in
-            let running = LonaModule.build { [unowned self] result in
-                self.isRunningProcess = false
+            guard let workspaceViewController = WorkspaceWindowController.first?.contentViewController else { return }
 
-                switch result {
-                case .failure(let message):
-                    Swift.print(message)
-                    self.taskTitle = "Failed to generate code"
-                case .success(let output):
-                    Swift.print("Completed", output)
-                    self.taskTitle = "Code generation complete"
-                }
-            }
+            let sheet = CustomParametersEditorSheet(
+                titleText: "Configure code generation",
+                cancelText: "Cancel",
+                submitText: "Continue"
+            )
 
-            if running {
-                self.isRunningProcess = true
-                self.taskTitle = "Generating code using custom configuration..."
-            }
+            let logicEditor = LogicCompilerConfigurationInput(configuration: .init(target: "js", framework: "reactdom"))
+
+            sheet.present(contentView: logicEditor, in: workspaceViewController, onSubmit: {}, onCancel: {})
+
+//            let running = LonaModule.build { [unowned self] result in
+//                self.isRunningProcess = false
+//
+//                switch result {
+//                case .failure(let message):
+//                    Swift.print(message)
+//                    self.taskTitle = "Failed to generate code"
+//                case .success(let output):
+//                    Swift.print("Completed", output)
+//                    self.taskTitle = "Code generation complete"
+//                }
+//            }
+//
+//            if running {
+//                self.isRunningProcess = true
+//                self.taskTitle = "Generating code using custom configuration..."
+//            }
         }
         playButton.image = playIcon
         playButton.bezelStyle = .texturedRounded
@@ -290,7 +303,8 @@ extension WorkspaceToolbar: NSToolbarDelegate {
     func toolbarDefaultItemIdentifiers(_ toolbar: NSToolbar) -> [NSToolbarItem.Identifier] {
         return [
             .playButton,
-            .compilerConfigButton,
+//            .compilerConfigButton,
+            .flexibleSpace,
             .flexibleSpace,
             .statusBar,
             .flexibleSpace,
