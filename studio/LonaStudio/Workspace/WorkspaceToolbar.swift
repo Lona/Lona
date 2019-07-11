@@ -128,6 +128,22 @@ class WorkspaceToolbar: NSToolbar {
         return icon
     }()
 
+    private static var compilerConfigurationKey = "Workspace compiler configuration"
+
+    static var compilerConfigurationLogic: LGCSyntaxNode? {
+        get {
+            guard let rawValue = UserDefaults.standard.data(forKey: compilerConfigurationKey),
+                let value = try? JSONDecoder().decode(LGCSyntaxNode.self, from: rawValue) else {
+                    return nil
+            }
+            return value
+        }
+        set {
+            guard let value = try? JSONEncoder().encode(newValue) else { return }
+            UserDefaults.standard.set(value, forKey: compilerConfigurationKey)
+        }
+    }
+
     private func setUpPlayButton() {
         // TODO: Terminate task on stop
         playButton.onPress = { [unowned self] in
@@ -139,27 +155,47 @@ class WorkspaceToolbar: NSToolbar {
                 submitText: "Continue"
             )
 
-            let logicEditor = LogicCompilerConfigurationInput(configuration: .init(target: "js", framework: "reactdom"))
+            let logicEditor = LogicCompilerConfigurationInput()
+            if let rootNode = WorkspaceToolbar.compilerConfigurationLogic {
+                logicEditor.rootNode = rootNode
+            }
 
-            sheet.present(contentView: logicEditor, in: workspaceViewController, onSubmit: {}, onCancel: {})
+            var config = LogicCompilerConfigurationInput.evaluateConfiguration(rootNode: logicEditor.rootNode)
+                ?? .init(target: "js", framework: "reactdom")
 
-//            let running = LonaModule.build { [unowned self] result in
-//                self.isRunningProcess = false
-//
-//                switch result {
-//                case .failure(let message):
-//                    Swift.print(message)
-//                    self.taskTitle = "Failed to generate code"
-//                case .success(let output):
-//                    Swift.print("Completed", output)
-//                    self.taskTitle = "Code generation complete"
-//                }
-//            }
-//
-//            if running {
-//                self.isRunningProcess = true
-//                self.taskTitle = "Generating code using custom configuration..."
-//            }
+            logicEditor.onChangeRootNode = { rootNode in
+                logicEditor.rootNode = rootNode
+                WorkspaceToolbar.compilerConfigurationLogic = rootNode
+                if let value = LogicCompilerConfigurationInput.evaluateConfiguration(rootNode: rootNode) {
+                    config = value
+                }
+                return true
+            }
+
+            sheet.present(
+                contentView: logicEditor,
+                in: workspaceViewController,
+                onSubmit: ({
+                    let running = LonaModule.build(target: config.target, framework: config.framework) { [unowned self] result in
+                        self.isRunningProcess = false
+
+                        switch result {
+                        case .failure(let message):
+                            Swift.print(message)
+                            self.taskTitle = "Failed to generate code"
+                        case .success(let output):
+                            Swift.print("Completed", output)
+                            self.taskTitle = "Code generation complete"
+                        }
+                    }
+
+                    if running {
+                        self.isRunningProcess = true
+                        self.taskTitle = "Generating code using custom configuration..."
+                    }
+                }),
+                onCancel: {}
+            )
         }
         playButton.image = playIcon
         playButton.bezelStyle = .texturedRounded

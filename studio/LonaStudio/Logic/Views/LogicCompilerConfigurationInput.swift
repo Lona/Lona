@@ -13,16 +13,14 @@ import Logic
 
 public class LogicCompilerConfigurationInput: NSView {
 
-    public struct CompilerConfiguration {
+    public struct CompilerConfiguration: Codable {
         public var target: String
         public var framework: String
     }
 
     // MARK: Lifecycle
 
-    public init(configuration: CompilerConfiguration) {
-        self.configuration = configuration
-
+    public init() {
         super.init(frame: .zero)
 
         setUpViews()
@@ -37,11 +35,17 @@ public class LogicCompilerConfigurationInput: NSView {
 
     // MARK: Public
 
-    public var onChangeConfiguration: ((CompilerConfiguration) -> Void)?
+    public var onChangeRootNode: ((Logic.LGCSyntaxNode) -> Bool)? {
+        get { return logicEditor.onChangeRootNode }
+        set { logicEditor.onChangeRootNode = newValue }
+    }
+
+    public var rootNode: LGCSyntaxNode {
+        get { return logicEditor.rootNode }
+        set { logicEditor.rootNode = newValue }
+    }
 
     // MARK: Private
-
-    private var configuration: CompilerConfiguration
 
     private var logicEditor = LogicEditor()
 
@@ -63,7 +67,7 @@ public class LogicCompilerConfigurationInput: NSView {
                                 expression: .memberExpression(
                                     id: UUID(),
                                     expression: .identifierExpression(id: UUID(), identifier: .init(id: UUID(), string: "CompilerTarget")),
-                                    memberName: .init(id: UUID(), string: configuration.target)
+                                    memberName: .init(id: UUID(), string: "js")
                                 ),
                                 arguments: .empty
                             )
@@ -76,7 +80,7 @@ public class LogicCompilerConfigurationInput: NSView {
                                 expression: .memberExpression(
                                     id: UUID(),
                                     expression: .identifierExpression(id: UUID(), identifier: .init(id: UUID(), string: "CompilerFramework")),
-                                    memberName: .init(id: UUID(), string: configuration.framework)
+                                    memberName: .init(id: UUID(), string: "reactdom")
                                 ),
                                 arguments: .empty
                             )
@@ -100,46 +104,17 @@ public class LogicCompilerConfigurationInput: NSView {
     }
 
     private func update() {
-        logicEditor.onChangeRootNode = { [unowned self] node in
-            self.logicEditor.rootNode = node
-
-            if let value = self.evaluateExpression(node: node) {
-                switch value.memory {
-                case .record(values: let pairs):
-                    let target = pairs.value(for: "target")
-                    let framework = pairs.value(for: "framework")
-                    switch (target, framework) {
-                    case (.some(.some(let targetValue)), .some(.some(let frameworkValue))):
-                        let targetMemory = targetValue.memory
-                        let frameworkMemory = frameworkValue.memory
-                        switch (targetMemory, frameworkMemory) {
-                        case (.enum(caseName: let targetName, _), .enum(caseName: let frameworkName, _)):
-                            self.onChangeConfiguration?(.init(target: targetName, framework: frameworkName))
-                        default:
-                            break
-                        }
-                    default:
-                        break
-                    }
-                default:
-                    break
-                }
-            }
-
-            return true
-        }
-
         logicEditor.suggestionsForNode = { rootNode, node, query in
             guard case .expression(let expression) = rootNode else { return [] }
 
             let program = LGCSyntaxNode.program(LogicCompilerConfigurationInput.makeProgram(from: expression))
 
-            return StandardConfiguration.suggestions(rootNode: program, node: node, query: query, logLevel: .verbose) ?? []
+            return StandardConfiguration.suggestions(rootNode: program, node: node, query: query) ?? []
         }
     }
 
-    private func evaluateExpression(node: LGCSyntaxNode) -> LogicValue? {
-        guard case .expression(let expression) = node else { return nil }
+    private static func logicValue(rootNode: LGCSyntaxNode) -> LogicValue? {
+        guard case .expression(let expression) = rootNode else { return nil }
 
         let program: LGCSyntaxNode = .program(LogicCompilerConfigurationInput.makeProgram(from: expression))
         let scopeContext = Compiler.scopeContext(program)
@@ -156,6 +131,33 @@ public class LogicCompilerConfigurationInput: NSView {
             Swift.print("Eval failure", error)
             return nil
         }
+    }
+
+    public static func evaluateConfiguration(rootNode: LGCSyntaxNode) -> CompilerConfiguration? {
+        if let value = self.logicValue(rootNode: rootNode) {
+            switch value.memory {
+            case .record(values: let pairs):
+                let target = pairs.value(for: "target")
+                let framework = pairs.value(for: "framework")
+                switch (target, framework) {
+                case (.some(.some(let targetValue)), .some(.some(let frameworkValue))):
+                    let targetMemory = targetValue.memory
+                    let frameworkMemory = frameworkValue.memory
+                    switch (targetMemory, frameworkMemory) {
+                    case (.enum(caseName: let targetName, _), .enum(caseName: let frameworkName, _)):
+                        return .init(target: targetName, framework: frameworkName)
+                    default:
+                        break
+                    }
+                default:
+                    break
+                }
+            default:
+                break
+            }
+        }
+
+        return nil
     }
 
     private static func makeProgram(from expression: LGCExpression) -> LGCProgram {

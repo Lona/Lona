@@ -178,7 +178,7 @@ class LonaModule {
         return nil
     }
 
-    static func build(onComplete: ((LonaNode.ProcessResult) -> Void)?) -> Bool {
+    static func build(target: String, framework: String, onComplete: ((LonaNode.ProcessResult) -> Void)?) -> Bool {
         guard let compilerPath = CSUserPreferences.compilerURL?.path else { return false }
 
         let workspacePath = CSUserPreferences.workspaceURL.path
@@ -197,8 +197,8 @@ class LonaModule {
             compilerPath,
             "workspace",
             "--workspace", workspacePath,
-            "--target", "swift",
-            "--framework", "uikit",
+            "--target", target,
+            "--framework", framework,
             "--output", generatedOutputUrl.path
         ]
 
