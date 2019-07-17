@@ -25,10 +25,12 @@ extension LGCDeclaration {
                             associatedValueTypes: .next(
                                 LGCTypeAnnotation(csType: $0.1),
                                 .empty
-                            )
+                            ),
+                            comment: nil
                         )
                     } + [LGCEnumerationCase.makePlaceholder()]
-                )
+                ),
+                comment: nil
             )
         default:
             fatalError("Not supported")

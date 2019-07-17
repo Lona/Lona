@@ -220,25 +220,29 @@ class LogicViewController: NSViewController {
         }
     }
 
+    public static func makeGetColor(rootNode: LGCSyntaxNode) -> (UUID) -> (String, NSColor)? {
+        return { id in
+            guard let node = rootNode.find(id: id) else { return nil }
+            switch node {
+            case .expression(.literalExpression(_, literal: .color(_, value: let value))):
+                return (value, NSColor.parse(css: value) ?? .clear)
+            default:
+                return nil
+            }
+        }
+    }
+
+    public static func makeFormattingOptions(rootNode: LGCSyntaxNode) -> LogicFormattingOptions {
+        return .init(style: formattingStyle, locale: .en_US, getColor: makeGetColor(rootNode: rootNode))
+    }
+
     public static func recommendedSuggestions(rootNode: LGCSyntaxNode, selectedNode: LGCSyntaxNode, query: String) -> [LogicSuggestionItem] {
-        let all = StandardConfiguration.suggestions(rootNode: rootNode, node: selectedNode, query: query)
+        let all = StandardConfiguration.suggestions(rootNode: rootNode, node: selectedNode, query: query, formattingOptions: makeFormattingOptions(rootNode: rootNode))
             ?? LogicEditor.defaultSuggestionsForNode(rootNode, selectedNode, query)
 
         switch selectedNode {
         case .declaration:
             let variableId = UUID()
-            let colorExample = LGCSyntaxNode.declaration(
-                LGCDeclaration.variable(
-                    id: UUID(),
-                    name: LGCPattern(id: UUID(), name: "ocean"),
-                    annotation: LGCTypeAnnotation.typeIdentifier(
-                        id: UUID(),
-                        identifier: LGCIdentifier(id: UUID(), string: "Color", isPlaceholder: false),
-                        genericArguments: .empty
-                    ),
-                    initializer: .literalExpression(id: UUID(), literal: .color(id: UUID(), value: "#69D2E7"))
-                )
-            )
             let colorVariable = LogicSuggestionItem(
                 title: "Color Variable",
                 category: "Declarations".uppercased(),
@@ -251,48 +255,34 @@ class LogicViewController: NSViewController {
                             identifier: LGCIdentifier(id: UUID(), string: "Color", isPlaceholder: false),
                             genericArguments: .empty
                         ),
-                        initializer: .literalExpression(id: UUID(), literal: .color(id: UUID(), value: "white"))
+                        initializer: .literalExpression(id: UUID(), literal: .color(id: UUID(), value: "white")),
+                        comment: nil
                     )
                 ),
                 suggestionFilters: [.recommended],
                 nextFocusId: variableId,
-                documentation: RichText(
-                    blocks: [
-                        .heading(.title, "Color Variable"),
-                        .paragraph(
-                            [
-                                .text(.none, """
+                documentation: ({ builder in
+                    return LightMark.makeScrollView(markdown: """
+# Color Variable
+
 Define a color variable that can be used throughout your design system and UI components.
 
-For example, we might define a variable,
-"""),
-                                .text(.bold, " ocean"),
-                                .text(.none, ", to represent the hex code "),
-                                .text(.bold, "#69D2E7"),
-                                .text(.none, ":")
-                            ]
-                        ),
-                        .custom(
-                            colorExample.makeCodeView(using: .init(style: formattingStyle, locale: .en_US, getColor: { id in
-                                guard let node = colorExample.find(id: id) else { return nil }
-                                switch node {
-                                case .expression(.literalExpression(_, literal: .color(_, value: let value))):
-                                    return (value, NSColor.parse(css: value) ?? .clear)
-                                default:
-                                    return nil
-                                }
-                            }))
-                        ),
-                        .heading(.section, "Naming Conventions"),
-                        .paragraph(
-                            [
-                                .text(.none, """
-There are a variety of naming conventions for colors, each with their own strengths and weaknesses. For more details and recommendations on naming conventions, see
-"""), .text(.link, " this documentation page.")
-                            ]
-                        )
-                    ]
-                )
+## Example
+
+We might define a variable, `ocean`, to represent the hex code `#69D2E7`:
+
+```logic
+<Declarations>
+  <Variable name="ocean" type="Color" value="#69D2E7"/>
+</Declarations>
+```
+
+## Naming Conventions
+
+There are a variety of naming conventions for colors, each with their own strengths and weaknesses. For more details and recommendations on naming conventions, see [this documentation page](http://google.com).
+
+""", renderingOptions: .init(formattingOptions: builder.formattingOptions))
+                })
             )
 
             let patternId = UUID()
@@ -309,23 +299,18 @@ There are a variety of naming conventions for colors, each with their own streng
                 ),
                 suggestionFilters: [.recommended],
                 nextFocusId: patternId,
-                documentation: RichText(blocks:
-                    [
-                        .heading(.title, "Variable Group"),
-                        .paragraph(
-                            [
-                                .text(.none, """
+                documentation: ({ builder in
+                    LightMark.makeScrollView(markdown: """
+# Variable Group
+
 A group of variables and other declarations, sometimes called a namespace.
 
 This will generate fairly different code for each platform, so if you're curious to see what it turns into, open the split preview pane.
-""")
-                            ]
-                        )
-                    ]
-                )
+""", renderingOptions: .init(formattingOptions: builder.formattingOptions))
+                })
             )
 
-            return [colorVariable, namespace] + all
+            return [colorVariable, namespace].titleContains(prefix: query) + all
         default:
             return all.map {
                 var node = $0

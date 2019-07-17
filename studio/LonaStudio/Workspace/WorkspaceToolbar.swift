@@ -8,10 +8,14 @@
 
 import AppKit
 import Foundation
+import Logic
 
 extension NSToolbarItem.Identifier {
     static let paneToggle = NSToolbarItem.Identifier("Navigation")
     static let splitterToggle = NSToolbarItem.Identifier("Splitter")
+    static let playButton = NSToolbarItem.Identifier("Play")
+    static let compilerConfigButton = NSToolbarItem.Identifier("CompilerConfig")
+    static let statusBar = NSToolbarItem.Identifier("StatusBar")
 }
 
 // MARK: - WorkspacePane
@@ -83,9 +87,183 @@ class WorkspaceToolbar: NSToolbar {
 
     // MARK: Private
 
-    private var splitterToggleItem = NSToolbarItem(itemIdentifier: .splitterToggle)
+    private var isRunningProcess: Bool = false {
+        didSet {
+            if isRunningProcess {
+                playButton.image = stopIcon
+            } else {
+                playButton.image = playIcon
+            }
+        }
+    }
 
+    private var taskTitle: String? {
+        didSet {
+            if let taskTitle = taskTitle {
+                statusBar.titleText = "\(CSWorkspacePreferences.workspaceName) – \(taskTitle)"
+            } else {
+                statusBar.titleText = CSWorkspacePreferences.workspaceName
+            }
+        }
+    }
+
+    private var playButtonItem = NSToolbarItem(itemIdentifier: .playButton)
+    private var compilerConfigButtonItem = NSToolbarItem(itemIdentifier: .compilerConfigButton)
+    private var statusBarItem = NSToolbarItem(itemIdentifier: .statusBar)
+    private var splitterToggleItem = NSToolbarItem(itemIdentifier: .splitterToggle)
     private var paneToggleToolbarItem = NSToolbarItemGroup(itemIdentifier: .paneToggle)
+
+    private let playButton = Button(titleText: "")
+    private let statusBar = ToolbarStatusBar(frame: .zero)
+
+    private var playIcon: NSImage = {
+        let icon = NSImage(named: "icon-play")!
+        icon.isTemplate = true
+        return icon
+    }()
+
+    private var stopIcon: NSImage = {
+        let icon = NSImage(named: "icon-stop")!
+        icon.isTemplate = true
+        return icon
+    }()
+
+    private static var compilerConfigurationKey = "Workspace compiler configuration"
+
+    static var compilerConfigurationLogic: LGCSyntaxNode? {
+        get {
+            guard let rawValue = UserDefaults.standard.data(forKey: compilerConfigurationKey),
+                let value = try? JSONDecoder().decode(LGCSyntaxNode.self, from: rawValue) else {
+                    return nil
+            }
+            return value
+        }
+        set {
+            guard let value = try? JSONEncoder().encode(newValue) else { return }
+            UserDefaults.standard.set(value, forKey: compilerConfigurationKey)
+        }
+    }
+
+    private func setUpPlayButton() {
+        // TODO: Terminate task on stop
+        playButton.onPress = { [unowned self] in
+            guard let workspaceViewController = WorkspaceWindowController.first?.contentViewController else { return }
+
+            let sheet = CustomParametersEditorSheet(
+                titleText: "Configure code generation",
+                cancelText: "Cancel",
+                submitText: "Continue"
+            )
+
+            let logicEditor = LogicCompilerConfigurationInput()
+            if let rootNode = WorkspaceToolbar.compilerConfigurationLogic {
+                logicEditor.rootNode = rootNode
+            }
+
+            var config = LogicCompilerConfigurationInput.evaluateConfiguration(rootNode: logicEditor.rootNode)
+
+            logicEditor.onChangeRootNode = { rootNode in
+                logicEditor.rootNode = rootNode
+                WorkspaceToolbar.compilerConfigurationLogic = rootNode
+                config = LogicCompilerConfigurationInput.evaluateConfiguration(rootNode: rootNode)
+                return true
+            }
+
+            var presentSheet: (() -> Void)?
+
+            presentSheet = { [unowned self] in
+                sheet.present(
+                    contentView: logicEditor,
+                    in: workspaceViewController,
+                    onSubmit: ({
+                        guard let config = config else {
+                            let alert = Alert(
+                                items: ["OK"],
+                                messageText: "Invalid configuration",
+                                informativeText: "The configuration object cannot contain any placeholder values.")
+
+                            _ = alert.run()
+
+                            presentSheet?()
+
+                            return
+                        }
+
+                        let running = LonaModule.build(target: config.target, framework: config.framework) { [unowned self] result in
+                            self.isRunningProcess = false
+
+                            switch result {
+                            case .failure(let message):
+                                Swift.print(message)
+                                self.taskTitle = "Failed to generate code"
+                            case .success(let output):
+                                Swift.print("Completed", output)
+                                self.taskTitle = "Code generation complete"
+                            }
+                        }
+
+                        if running {
+                            self.isRunningProcess = true
+                            self.taskTitle = "Generating code using custom configuration..."
+                        }
+                    }),
+                    onCancel: {}
+                )
+            }
+
+            presentSheet?()
+        }
+        playButton.image = playIcon
+        playButton.bezelStyle = .texturedRounded
+
+        playButtonItem.maxSize.width = 31
+        playButtonItem.view = playButton
+    }
+
+    private func setUpCompilerConfigButton() {
+        let menu = NSMenu(
+            items: [
+                .init(title: "Custom Configuration", action: nil, keyEquivalent: ""),
+                .init(title: "New Configuration...", action: nil, keyEquivalent: "")
+            ]
+        )
+
+        let segmented = NSSegmentedControl(frame: .zero)
+        segmented.segmentStyle = .texturedRounded
+        segmented.trackingMode = .momentary
+        segmented.segmentCount = 2
+        segmented.target = self
+
+        let label = "Custom"
+        let labelWidth = NSAttributedString(
+            string: label,
+            attributes: [NSAttributedString.Key.font: segmented.font!]
+            ).measure(width: .greatestFiniteMagnitude).width + 12
+
+        segmented.setLabel(label, forSegment: 0)
+        segmented.setWidth(labelWidth, forSegment: 0)
+        segmented.setMenu(menu, forSegment: 1)
+        segmented.setWidth(16, forSegment: 1)
+        segmented.sizeToFit()
+
+        if #available(OSX 10.13, *) {
+            segmented.setShowsMenuIndicator(true, forSegment: 1)
+        } else {
+            // Fallback on earlier versions
+        }
+
+        segmented.isEnabled = true
+        segmented.isEnabled(forSegment: 1)
+
+        compilerConfigButtonItem.view = segmented
+    }
+
+    private func setUpStatusBar() {
+        statusBarItem.minSize.width = 400
+        statusBarItem.maxSize.width = 650
+
+        statusBarItem.view = statusBar
+    }
 
     private func setUpSplitterToggle() {
         let segmented = NSSegmentedControl(frame: NSRect(x: 0, y: 0, width: 31 + 4, height: 40))
@@ -95,7 +273,7 @@ class WorkspaceToolbar: NSToolbar {
         segmented.target = self
         segmented.action = #selector(handleSplitterPane(_:))
 
-        let icon = NSImage(named: "icon-pane-splitter") ?? NSImage()
+        let icon = NSImage(named: "icon-pane-splitter")!
         icon.isTemplate = true
 
         segmented.setImage(icon, forSegment: 0)
@@ -132,6 +310,11 @@ class WorkspaceToolbar: NSToolbar {
     }
 
     private func setUpItems() {
+        taskTitle = nil
+
+        setUpPlayButton()
+        setUpCompilerConfigButton()
+        setUpStatusBar()
         setUpSplitterToggle()
         setUpPaneToggle()
     }
@@ -165,11 +348,28 @@ class WorkspaceToolbar: NSToolbar {
 
 extension WorkspaceToolbar: NSToolbarDelegate {
     func toolbarDefaultItemIdentifiers(_ toolbar: NSToolbar) -> [NSToolbarItem.Identifier] {
-        return [.flexibleSpace, .splitterToggle, .paneToggle]
+        return [
+            .playButton,
+//            .compilerConfigButton,
+            .flexibleSpace,
+            .flexibleSpace,
+            .statusBar,
+            .flexibleSpace,
+            .splitterToggle,
+            .paneToggle
+        ]
     }
 
     func toolbarAllowedItemIdentifiers(_ toolbar: NSToolbar) -> [NSToolbarItem.Identifier] {
-        return [.splitterToggle, .paneToggle, .flexibleSpace, .separator]
+        return [
+            .playButton,
+            .compilerConfigButton,
+            .statusBar,
+            .splitterToggle,
+            .paneToggle,
+            .flexibleSpace,
+            .separator
+        ]
     }
 
     func toolbar(_ toolbar: NSToolbar, itemForItemIdentifier itemIdentifier: NSToolbarItem.Identifier, willBeInsertedIntoToolbar flag: Bool) -> NSToolbarItem? {
@@ -178,6 +378,12 @@ extension WorkspaceToolbar: NSToolbarDelegate {
             return paneToggleToolbarItem
         } else if itemIdentifier == NSToolbarItem.Identifier.splitterToggle {
             return splitterToggleItem
+        } else if itemIdentifier == .playButton {
+            return playButtonItem
+        } else if itemIdentifier == .compilerConfigButton {
+            return compilerConfigButtonItem
+        } else if itemIdentifier == .statusBar {
+            return statusBarItem
         }
 
         return nil

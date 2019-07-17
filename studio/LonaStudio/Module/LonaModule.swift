@@ -177,4 +177,44 @@ class LonaModule {
 
         return nil
     }
+
+    static func build(target: String, framework: String, onComplete: ((LonaNode.ProcessResult) -> Void)?) -> Bool {
+        guard let compilerPath = CSUserPreferences.compilerURL?.path else { return false }
+
+        let workspacePath = CSUserPreferences.workspaceURL.path
+
+        let dialog = NSOpenPanel()
+
+        dialog.title = "Generated workspace directory"
+        dialog.message = "Choose a directory to generate code into. Existing files with the same names will be overwritten."
+        dialog.showsResizeIndicator = true
+        dialog.showsHiddenFiles = false
+        dialog.canChooseFiles = false
+        dialog.canChooseDirectories = true
+        dialog.canCreateDirectories = true
+        dialog.allowsMultipleSelection = false
+
+        if dialog.runModal() != NSApplication.ModalResponse.OK { return false }
+        guard let generatedOutputUrl = dialog.url else { return false }
+
+        let arguments = [
+            compilerPath,
+            "workspace",
+            "--workspace", workspacePath,
+            "--target", target,
+            "--framework", framework,
+            "--output", generatedOutputUrl.path
+        ]
+
+        LonaNode.run(
+            sync: false,
+            arguments: arguments,
+            currentDirectoryPath: workspacePath,
+            onComplete: ({ result in
+                DispatchQueue.main.sync { onComplete?(result) }
+            })
+        )
+
+        return true
+    }
 }

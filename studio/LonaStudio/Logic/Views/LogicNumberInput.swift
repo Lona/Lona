@@ -74,12 +74,12 @@ public class LogicNumberInput: NSView {
             return true
         }
 
-        logicEditor.suggestionsForNode = { rootNode, node, query in
+        logicEditor.suggestionsForNode = { [unowned self] rootNode, node, query in
             guard case .expression(let expression) = node else { return [] }
 
             let program: LGCSyntaxNode = .program(LogicNumberInput.makeProgram(from: expression).expandImports(importLoader: Library.load))
 
-            return StandardConfiguration.suggestions(rootNode: program, node: node, query: query) ?? []
+            return StandardConfiguration.suggestions(rootNode: program, node: node, query: query, formattingOptions: self.logicEditor.formattingOptions) ?? []
         }
     }
 
@@ -125,7 +125,8 @@ public class LogicNumberInput: NSView {
                                 identifier: .init(id: UUID(), string: "Number"),
                                 genericArguments: .empty
                             ),
-                            initializer: .some(expression)
+                            initializer: .some(expression),
+                            comment: nil
                         )
                     )
                 ]

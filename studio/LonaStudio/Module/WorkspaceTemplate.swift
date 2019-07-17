@@ -74,7 +74,8 @@ enum WorkspaceTemplate {
                                                     initializer: .literalExpression(
                                                         id: UUID(),
                                                         literal: .color(id: UUID(), value: "#F0A0B0")
-                                                    )
+                                                    ),
+                                                    comment: nil
                                                 )
                                             ]
                                         )

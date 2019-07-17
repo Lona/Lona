@@ -117,43 +117,12 @@ class CodeEditorViewController: NSViewController {
                 guard let compilerPath = CSUserPreferences.compilerURL?.path else { return }
                 guard let data = try? document.data(ofType: "JSONDocument") else { return }
 
-                LonaNode.run(
-                    arguments: [compilerPath] + command,
-                    inputData: data,
-                    currentDirectoryPath: CSUserPreferences.workspaceURL.path,
-                    onSuccess: { output in
-                        guard let result = output.utf8String() else { return }
-                        DispatchQueue.main.async {
-                            // There's a race condition here where the document may have changed
-                            // by the time this completes, and the text will be set for the wrong document.
-                            // Make sure we're looking at the same document before setting the text
-                            guard document == self.document else { return }
-                            self.contentView.generatedCode = result
-                        }
-                }, onFailure: { code, message in
-                    Swift.print("Failed", code, message as Any)
-                })
-
+                run(command: [compilerPath] + command, data: data, document: document)
             } else if let content = document.content, case .textStyles = content {
                 guard let compilerPath = CSUserPreferences.compilerURL?.path else { return }
                 guard let data = try? document.data(ofType: "JSONDocument") else { return }
 
-                LonaNode.run(
-                    arguments: [compilerPath] + command,
-                    inputData: data,
-                    currentDirectoryPath: CSUserPreferences.workspaceURL.path,
-                    onSuccess: { output in
-                        guard let result = output.utf8String() else { return }
-                        DispatchQueue.main.async {
-                            // There's a race condition here where the document may have changed
-                            // by the time this completes, and the text will be set for the wrong document.
-                            // Make sure we're looking at the same document before setting the text
-                            guard document == self.document else { return }
-                            self.contentView.generatedCode = result
-                        }
-                }, onFailure: { code, message in
-                    Swift.print("Failed", code, message as Any)
-                })
+                run(command: [compilerPath] + command, data: data, document: document)
             } else {
                 contentView.titleText = ""
                 contentView.subtitleText = ""
@@ -168,22 +137,7 @@ class CodeEditorViewController: NSViewController {
             guard let compilerPath = CSUserPreferences.compilerURL?.path else { return }
             guard let data = try? document.data(ofType: "Logic") else { return }
 
-            LonaNode.run(
-                arguments: [compilerPath] + command,
-                inputData: data,
-                currentDirectoryPath: CSUserPreferences.workspaceURL.path,
-                onSuccess: { output in
-                    guard let result = output.utf8String() else { return }
-                    DispatchQueue.main.async {
-                        // There's a race condition here where the document may have changed
-                        // by the time this completes, and the text will be set for the wrong document.
-                        // Make sure we're looking at the same document before setting the text
-                        guard document == self.document else { return }
-                        self.contentView.generatedCode = result
-                    }
-            }, onFailure: { code, message in
-                Swift.print("Failed", code, message as Any)
-            })
+            run(command: [compilerPath] + command, data: data, document: document)
         } else {
             contentView.titleText = ""
             contentView.subtitleText = "No output"
@@ -208,6 +162,30 @@ class CodeEditorViewController: NSViewController {
             CodeEditorViewController.setCompilerFramework(for: target, value: target.frameworkValues[index])
             self.update()
         }
+    }
+
+    private func run(command: [String], data: Data, document: NSDocument) {
+        LonaNode.run(
+            sync: false,
+            arguments: command,
+            inputData: data,
+            currentDirectoryPath: CSUserPreferences.workspaceURL.path,
+            onComplete: ({ result in
+                switch result {
+                case .failure(let message):
+                    Swift.print(message)
+                case .success(let output):
+                    guard let code = output.utf8String() else { return }
+                    DispatchQueue.main.async {
+                        // There's a race condition here where the document may have changed
+                        // by the time this completes, and the text will be set for the wrong document.
+                        // Make sure we're looking at the same document before setting the text
+                        guard document == self.document else { return }
+                        self.contentView.generatedCode = code
+                    }
+                }
+            })
+        )
     }
 
     private func compilerCommand() -> [String]? {

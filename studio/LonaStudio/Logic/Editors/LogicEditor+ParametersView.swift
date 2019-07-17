@@ -12,100 +12,36 @@ import Logic
 private let startsWithNumberRegex = try? NSRegularExpression(pattern: #"^\d"#)
 
 extension LogicEditor {
-    static func makeParameterDocumentationHandler() -> (LGCSyntaxNode, LogicSuggestionItem, String) -> RichText {
-        return { rootNode, suggestion, query in
-            if let documentation = suggestion.documentation() {
-                return documentation
+    static func makeParameterDocumentationHandler() ->
+        (LGCSyntaxNode, LogicSuggestionItem, String, LogicFormattingOptions, LogicSuggestionItem.DynamicSuggestionBuilder) -> NSView {
+        return { rootNode, suggestion, query, formattingOptions, builder in
+            if let view = suggestion.documentation?(builder) {
+                return view
             }
 
             switch suggestion.node {
             case .functionParameter:
-                func getAlert() -> RichText.BlockElement? {
-                    if query.isEmpty { return nil }
+                let alert = query.isEmpty
+                    ? "I> Type a parameter name!"
+                    : query.contains(" ")
+                    ? "E> Parameter names can't contain spaces!"
+                    : query.first?.isNumber == true
+                    ? "E> Parameter names can't start with numbers!"
+                    : query.first?.isUppercase == true
+                    ? "W> We recommend using **camelCased** parameter names (the first letter should be lowercase)."
+                    : ""
 
-                    if query.contains(" ") {
-                        return .alert(
-                            .error,
-                            .paragraph(
-                                [.text(.none, "Parameter names can't contain spaces!")]
-                            )
-                        )
-                    }
+                return LightMark.makeScrollView(markdown: """
+\(alert.isEmpty ? "" : alert + "\n\n")# Component parameter
 
-                    let startsWithNumberMatch = startsWithNumberRegex?.firstMatch(
-                        in: query,
-                        range: NSRange(location: 0, length: query.count))
+Parameters are the inputs used to configure components. Each parameter has a name, a type, and optionally a default value.
 
-                    if startsWithNumberMatch != nil {
-                        return .alert(
-                            .error,
-                            .paragraph(
-                                [.text(.none, "Parameter names can't start with numbers!")]
-                            )
-                        )
-                    }
+## Naming Conventions
 
-                    if query.first?.isUppercase == true {
-                        return .alert(
-                            .warning,
-                            .paragraph(
-                                [.text(.none, "We recommend using camelCased parameter names (the first letter should be lowercase).")]
-                            )
-                        )
-                    }
-
-                    return nil
-                }
-
-                return RichText(
-                    blocks: [
-                        getAlert(),
-                        .heading(.title, "Component parameter"),
-                        .paragraph(
-                            [
-                                .text(.none, "Parameters are the "),
-                                .text(.bold, "inputs"),
-                                .text(.none, " used to configure components. Each parameter has a "),
-                                .text(.bold, "name"),
-                                .text(.none, ", a "),
-                                .text(.bold, "type"),
-                                .text(.none, ", and optionally a "),
-                                .text(.bold, "default value"),
-                                .text(.none, ".")
-                            ]
-                        ),
-                        .heading(.section, "Example"),
-                        .paragraph(
-                            [
-                                .text(.none, "Suppose we want a component with a configurable title. We might define the following parameter:")
-                            ]
-                        ),
-                        .custom(
-                            LGCSyntaxNode.functionParameter(
-                                .parameter(
-                                    id: UUID(),
-                                    externalName: nil,
-                                    localName: LGCPattern(id: UUID(), name: "titleText"),
-                                    annotation: .typeIdentifier(
-                                        id: UUID(),
-                                        identifier: LGCIdentifier(id: UUID(), string: "String"),
-                                        genericArguments: .empty
-                                    ),
-                                    defaultValue: .none(id: UUID()))
-                                ).makeCodeView(using: .visual)
-                        ),
-                        .heading(.section, "Recommendations"),
-                        .paragraph(
-                            [
-                                .text(.none, "It's best to use "),
-                                .text(.link, "camelCase"),
-                                .text(.none, " capitalization when choosing parameter names. This is because most JavaScript, Swift, and Kotlin style guides recommend camelCased parameter names. Names can be transformed automatically if needed (for example, when generating a Sketch library).")
-                            ]
-                        )
-                        ].compactMap { $0 }
-                )
+It's best to use **camelCase** capitalization when choosing parameter names. This is because most JavaScript, Swift, and Kotlin style guides recommend camelCased parameter names. Names can be transformed automatically if needed (for example, when generating a Sketch library).
+""", renderingOptions: .init(formattingOptions: formattingOptions))
             default:
-                return RichText(blocks: [])
+                return NSView()
             }
         }
     }
@@ -161,9 +97,9 @@ extension LogicEditor {
         logicEditor.showsDropdown = true
         logicEditor.fillColor = Colors.contentBackground
 
-        RichText.AlertStyle.paragraphMargin.bottom = -3
-        RichText.AlertStyle.paragraphMargin.right += 4
-        RichText.AlertStyle.iconMargin.top += 1
+        LightMark.QuoteKind.paragraphMargin.bottom += 2
+        LightMark.QuoteKind.paragraphMargin.right += 4
+        LightMark.QuoteKind.iconMargin.top += 1
 
         logicEditor.documentationForSuggestion = makeParameterDocumentationHandler()
         logicEditor.suggestionsForNode = makeParameterSuggestionsHandler(types: [])
