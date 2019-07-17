@@ -233,7 +233,6 @@ class WorkspaceToolbar: NSToolbar {
         segmented.trackingMode = .momentary
         segmented.segmentCount = 2
         segmented.target = self
-//        segmented.action = #selector(handleTogglePane(_:))
 
         let label = "Custom"
         let labelWidth = NSAttributedString(
@@ -260,10 +259,6 @@ class WorkspaceToolbar: NSToolbar {
     }
 
     private func setUpStatusBar() {
-
-//        view.inProgress = true
-//        view.progress = 0.5
-
         statusBarItem.minSize.width = 400
         statusBarItem.maxSize.width = 650
 

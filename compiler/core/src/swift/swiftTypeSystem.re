@@ -243,7 +243,6 @@ module Ast = {
           codingKey: option(string),
           isOptional: bool,
         ) =>
-      /* Js.log2(containerName, value); */
       TryExpression({
         "expression":
           FunctionCallExpression({
