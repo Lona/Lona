@@ -12,11 +12,11 @@ import Logic
 private let startsWithNumberRegex = try? NSRegularExpression(pattern: #"^\d"#)
 
 extension LogicEditor {
-    static func makeTypeDocumentationHandler() -> (LGCSyntaxNode, String) -> RichText {
+    static func makeTypeDocumentationHandler() -> (LGCSyntaxNode, String) -> NSView {
         return { syntaxNode, query in
             switch syntaxNode {
             default:
-                return RichText(blocks: [])
+                return NSView()
             }
         }
     }
@@ -39,7 +39,8 @@ extension LogicEditor {
                                     cases: .next(
                                         LGCEnumerationCase.placeholder(id: UUID()),
                                         .empty
-                                    )
+                                    ),
+                                    comment: nil
                                 )
                             )
                         )
@@ -70,9 +71,9 @@ extension LogicEditor {
         logicEditor.showsDropdown = true
         logicEditor.fillColor = Colors.contentBackground
 
-        RichText.AlertStyle.paragraphMargin.bottom = -3
-        RichText.AlertStyle.paragraphMargin.right += 4
-        RichText.AlertStyle.iconMargin.top += 1
+        LightMark.QuoteKind.paragraphMargin.bottom += 2
+        LightMark.QuoteKind.paragraphMargin.right += 4
+        LightMark.QuoteKind.iconMargin.top += 1
 
         logicEditor.documentationForSuggestion = makeParameterDocumentationHandler()
         logicEditor.suggestionsForNode = makeTypeSuggestionsHandler(types: [])

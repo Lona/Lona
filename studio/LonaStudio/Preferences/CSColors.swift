@@ -59,7 +59,8 @@ class CSColors: CSPreferencesFile {
                                 id: UUID(),
                                 literal: .color(id: UUID(), value: color.value)
                             )
-                        )
+                        ),
+                        comment: nil
                     )
                 }
             )

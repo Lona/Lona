@@ -109,7 +109,8 @@ public class LabeledColorInput: LabeledInput {
                             id: UUID(),
                             name: .init(id: UUID(), name: "color"),
                             annotation: makeTypeAnnotation(type: Unification.T.cons(name: "Optional", parameters: [.color])),
-                            initializer: .some(expression)
+                            initializer: .some(expression),
+                            comment: nil
                         )
                     )
                 ]
@@ -141,7 +142,7 @@ public class LabeledColorInput: LabeledInput {
 
             let program: LGCSyntaxNode = .program(LabeledColorInput.makeExpressionProgram(from: expression).expandImports(importLoader: Library.load))
 
-            return StandardConfiguration.suggestions(rootNode: program, node: node, query: query) ?? []
+            return StandardConfiguration.suggestions(rootNode: program, node: node, query: query, formattingOptions: .init(style: .natural, locale: .en_US, getColor: {_ in nil})) ?? []
         }
     }
 }

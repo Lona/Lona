@@ -27,6 +27,13 @@ type conversionOptions = {
   swiftOptions: SwiftOptions.options,
 };
 
+let isOptional =
+    (typeCaseParameterEntity: TypeSystem.typeCaseParameterEntity): bool =>
+  switch (typeCaseParameterEntity) {
+  | TypeSystem.TypeReference(name, _) => name == "Optional"
+  | GenericReference(_) => false
+  };
+
 module Naming = {
   let prefixedName = (conversionOptions: conversionOptions, name: string) =>
     List.mem(name, conversionOptions.nativeTypeNames) ?
@@ -55,6 +62,23 @@ module Naming = {
         |> Format.joinWith(", ");
       formattedName(name) ++ "<" ++ generics ++ ">";
     | GenericReference(name) => name
+    };
+  };
+
+  let innerType =
+      (
+        conversionOptions: conversionOptions,
+        useTypePrefix: bool,
+        typeCaseParameterEntity: TypeSystem.typeCaseParameterEntity,
+      )
+      : option(string) => {
+    let formattedName = name =>
+      useTypePrefix ? prefixedName(conversionOptions, name) : name;
+    switch (typeCaseParameterEntity) {
+    | TypeSystem.TypeReference(_, [parameter]) =>
+      Some(formattedName(parameter.instance))
+    | TypeSystem.TypeReference(_) => None
+    | GenericReference(_) => None
     };
   };
 
@@ -213,14 +237,20 @@ module Ast = {
       });
 
     let containerDecode =
-        (containerName: string, value: node, codingKey: option(string)) =>
+        (
+          containerName: string,
+          value: node,
+          codingKey: option(string),
+          isOptional: bool,
+        ) =>
+      /* Js.log2(containerName, value); */
       TryExpression({
         "expression":
           FunctionCallExpression({
             "name":
               MemberExpression([
                 SwiftIdentifier(containerName),
-                SwiftIdentifier("decode"),
+                SwiftIdentifier(isOptional ? "decodeIfPresent" : "decode"),
               ]),
             "arguments":
               [FunctionCallArgument({"name": None, "value": value})]
@@ -293,7 +323,14 @@ module Ast = {
           }),
         ];
       /* self = .value(try container.decode(Value.self, forKey: .data)) */
-      | NormalCase(name, [parameter]) => [
+      | NormalCase(name, [parameter]) =>
+        let optionalType: option(string) =
+          if (isOptional(parameter.value)) {
+            Naming.innerType(conversionOptions, true, parameter.value);
+          } else {
+            None;
+          };
+        [
           BinaryExpression({
             "left": SwiftIdentifier("self"),
             "operator": "=",
@@ -308,18 +345,23 @@ module Ast = {
                         "container",
                         MemberExpression([
                           SwiftIdentifier(
-                            parameter.value
-                            |> Naming.prefixedType(conversionOptions, true),
+                            switch (optionalType) {
+                            | Some(typeName) => typeName
+                            | None =>
+                              parameter.value
+                              |> Naming.prefixedType(conversionOptions, true)
+                            },
                           ),
                           SwiftIdentifier("self"),
                         ]),
                         Some("data"),
+                        optionalType != None,
                       ),
                   }),
                 ],
               }),
           }),
-        ]
+        ];
       | NormalCase(name, [])
       | RecordCase(name, []) => [
           BinaryExpression({
@@ -337,7 +379,17 @@ module Ast = {
                 "name": SwiftIdentifier("." ++ name),
                 "arguments":
                   parameters
-                  |> List.map((parameter: TypeSystem.recordTypeCaseParameter) =>
+                  |> List.map((parameter: TypeSystem.recordTypeCaseParameter) => {
+                       let optionalType =
+                         if (isOptional(parameter.value)) {
+                           Naming.innerType(
+                             conversionOptions,
+                             true,
+                             parameter.value,
+                           );
+                         } else {
+                           None;
+                         };
                        FunctionCallArgument({
                          "name": Some(SwiftIdentifier(parameter.key)),
                          "value":
@@ -345,16 +397,21 @@ module Ast = {
                              "data",
                              MemberExpression([
                                SwiftIdentifier(
-                                 parameter.value
-                                 |> TypeSystem.Access.typeCaseParameterEntityName
-                                 |> Naming.recordName(conversionOptions),
+                                 switch (optionalType) {
+                                 | Some(typeName) => typeName
+                                 | None =>
+                                   parameter.value
+                                   |> TypeSystem.Access.typeCaseParameterEntityName
+                                   |> Naming.recordName(conversionOptions)
+                                 },
                                ),
                                SwiftIdentifier("self"),
                              ]),
                              Some(parameter.key),
+                             optionalType != None,
                            ),
-                       })
-                     ),
+                       });
+                     }),
               }),
           }),
         ]
@@ -411,6 +468,7 @@ module Ast = {
                   SwiftIdentifier("self"),
                 ]),
                 Some("type"),
+                false,
               ),
             ),
         }),
@@ -599,6 +657,7 @@ module Ast = {
                 SwiftIdentifier("self"),
               ]),
               None,
+              false,
             ),
           ),
       }),
@@ -755,14 +814,19 @@ module Ast = {
       });
 
     let containerEncode =
-        (containerName: string, value: node, codingKey: option(string)) =>
+        (
+          containerName: string,
+          value: node,
+          codingKey: option(string),
+          isOptional: bool,
+        ) =>
       TryExpression({
         "expression":
           FunctionCallExpression({
             "name":
               MemberExpression([
                 SwiftIdentifier(containerName),
-                SwiftIdentifier("encode"),
+                SwiftIdentifier(isOptional ? "encodeIfPresent" : "encode"),
               ]),
             "arguments":
               [FunctionCallArgument({"name": None, "value": value})]
@@ -817,11 +881,12 @@ module Ast = {
         [nestedUnkeyedEncodingContainer("container", "data")]
         @ encodeParameters;
       /* A single parameter is encoded automatically */
-      | NormalCase(_, [_]) => [
+      | NormalCase(_, [parameter]) => [
           containerEncode(
             "container",
             SwiftIdentifier("value"),
             Some("data"),
+            isOptional(parameter.value),
           ),
         ]
       | NormalCase(_, [])
@@ -831,6 +896,7 @@ module Ast = {
             "data",
             MemberExpression([SwiftIdentifier("value")]),
             Some(parameter.key),
+            isOptional(parameter.value),
           ),
         ]
       | RecordCase(_, parameters) =>
@@ -843,6 +909,7 @@ module Ast = {
                  SwiftIdentifier(parameter.key),
                ]),
                Some(parameter.key),
+               isOptional(parameter.value),
              )
            )
       };
@@ -883,6 +950,7 @@ module Ast = {
               "container",
               LiteralExpression(String(caseName)),
               Some("type"),
+              false,
             ),
           ]
           @ enumCaseDataEncoding(typeCase),
@@ -1023,6 +1091,7 @@ module Ast = {
               "container",
               LiteralExpression(encodedType(encoding, caseName, index)),
               None,
+              false,
             ),
           ]
           @ enumCaseDataEncoding(typeCase),

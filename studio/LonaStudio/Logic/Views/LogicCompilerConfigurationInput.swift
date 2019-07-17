@@ -109,7 +109,8 @@ public class LogicCompilerConfigurationInput: NSView {
 
             let program = LGCSyntaxNode.program(LogicCompilerConfigurationInput.makeProgram(from: expression))
 
-            return StandardConfiguration.suggestions(rootNode: program, node: node, query: query) ?? []
+            return StandardConfiguration.suggestions(rootNode: program, node: node, query: query, formattingOptions:
+                .init(style: LogicViewController.formattingStyle, locale: .en_US, getColor: { _ in nil })) ?? []
         }
     }
 
@@ -179,7 +180,8 @@ public class LogicCompilerConfigurationInput: NSView {
                                 identifier: .init(id: UUID(), string: "CompilerConfiguration"),
                                 genericArguments: .empty
                             ),
-                            initializer: expression
+                            initializer: expression,
+                            comment: nil
                         )
                     )
                 ]
