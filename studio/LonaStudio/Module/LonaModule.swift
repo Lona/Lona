@@ -183,12 +183,16 @@ class LonaModule {
 
         let workspacePath = CSUserPreferences.workspaceURL.path
 
-        let dialog = NSSavePanel()
+        let dialog = NSOpenPanel()
 
         dialog.title = "Generated workspace directory"
+        dialog.message = "Choose a directory to generate code into. Existing files with the same names will be overwritten."
         dialog.showsResizeIndicator = true
         dialog.showsHiddenFiles = false
+        dialog.canChooseFiles = false
+        dialog.canChooseDirectories = true
         dialog.canCreateDirectories = true
+        dialog.allowsMultipleSelection = false
 
         if dialog.runModal() != NSApplication.ModalResponse.OK { return false }
         guard let generatedOutputUrl = dialog.url else { return false }
