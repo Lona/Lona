@@ -161,41 +161,57 @@ class WorkspaceToolbar: NSToolbar {
             }
 
             var config = LogicCompilerConfigurationInput.evaluateConfiguration(rootNode: logicEditor.rootNode)
-                ?? .init(target: "js", framework: "reactdom")
 
             logicEditor.onChangeRootNode = { rootNode in
                 logicEditor.rootNode = rootNode
                 WorkspaceToolbar.compilerConfigurationLogic = rootNode
-                if let value = LogicCompilerConfigurationInput.evaluateConfiguration(rootNode: rootNode) {
-                    config = value
-                }
+                config = LogicCompilerConfigurationInput.evaluateConfiguration(rootNode: rootNode)
                 return true
             }
 
-            sheet.present(
-                contentView: logicEditor,
-                in: workspaceViewController,
-                onSubmit: ({
-                    let running = LonaModule.build(target: config.target, framework: config.framework) { [unowned self] result in
-                        self.isRunningProcess = false
+            var presentSheet: (() -> Void)?
 
-                        switch result {
-                        case .failure(let message):
-                            Swift.print(message)
-                            self.taskTitle = "Failed to generate code"
-                        case .success(let output):
-                            Swift.print("Completed", output)
-                            self.taskTitle = "Code generation complete"
+            presentSheet = { [unowned self] in
+                sheet.present(
+                    contentView: logicEditor,
+                    in: workspaceViewController,
+                    onSubmit: ({
+                        guard let config = config else {
+                            let alert = Alert(
+                                items: ["OK"],
+                                messageText: "Invalid configuration",
+                                informativeText: "The configuration object cannot contain any placeholder values.")
+
+                            _ = alert.run()
+
+                            presentSheet?()
+
+                            return
                         }
-                    }
 
-                    if running {
-                        self.isRunningProcess = true
-                        self.taskTitle = "Generating code using custom configuration..."
-                    }
-                }),
-                onCancel: {}
-            )
+                        let running = LonaModule.build(target: config.target, framework: config.framework) { [unowned self] result in
+                            self.isRunningProcess = false
+
+                            switch result {
+                            case .failure(let message):
+                                Swift.print(message)
+                                self.taskTitle = "Failed to generate code"
+                            case .success(let output):
+                                Swift.print("Completed", output)
+                                self.taskTitle = "Code generation complete"
+                            }
+                        }
+
+                        if running {
+                            self.isRunningProcess = true
+                            self.taskTitle = "Generating code using custom configuration..."
+                        }
+                    }),
+                    onCancel: {}
+                )
+            }
+
+            presentSheet?()
         }
         playButton.image = playIcon
         playButton.bezelStyle = .texturedRounded
