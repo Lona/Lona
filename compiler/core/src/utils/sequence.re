@@ -10,6 +10,9 @@ let firstWhere = (f: 'a => bool, items: list('a)): option('a) =>
   | [a, ..._] => Some(a)
   };
 
+let rejectWhere = (f: 'a => bool, items: list('a)) =>
+  items |> List.filter(item => !f(item));
+
 let rec compact = (items: list(option('a))): list('a) =>
   switch (items) {
   | [Some(x), ...xs] => [x] @ compact(xs)
