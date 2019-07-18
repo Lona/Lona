@@ -1,28 +1,4 @@
-type context = {
-  config: Config.t,
-  isStatic: bool,
-};
-
-let isPlaceholderDeclaration = (declaration: LogicAst.declaration) =>
-  switch (declaration) {
-  | Placeholder(_) => true
-  | _ => false
-  };
-
-let isPlaceholderStatement = (statement: LogicAst.statement) =>
-  switch (statement) {
-  | Placeholder(_) => true
-  | _ => false
-  };
-
-let isPlaceholderTypeAnnotation = (value: LogicAst.typeAnnotation) =>
-  switch (value) {
-  | Placeholder(_) => true
-  | _ => false
-  };
-
-let reject = (f: 'a => bool, items: list('a)) =>
-  items |> List.filter(item => !f(item));
+open LogicUtils;
 
 let convertNativeType = (context: context, typeName: string): string =>
   switch (typeName) {
@@ -35,26 +11,6 @@ let convertNativeType = (context: context, typeName: string): string =>
   | "Color" => SwiftDocument.colorTypeName(context.config)
   | _ => typeName
   };
-
-let rec unfoldPairs = (items: LogicAst.list('t)) =>
-  switch (items) {
-  | Empty => []
-  | Next(head, rest) => [head, ...unfoldPairs(rest)]
-  };
-
-let variableBuilder =
-    (
-      id: string,
-      name: LogicAst.pattern,
-      annotation: option(LogicAst.typeAnnotation),
-      initializer_: option(LogicAst.expression),
-    )
-    : LogicAst.variableDeclaration => {
-  LogicAst.id,
-  name,
-  annotation,
-  initializer_,
-};
 
 let rec convert = (config: Config.t, node: LogicAst.syntaxNode): SwiftAst.node => {
   let context = {config, isStatic: false};
@@ -72,7 +28,7 @@ and program = (context: context, node: LogicAst.programProgram): SwiftAst.node =
     "statements":
       node.block
       |> unfoldPairs
-      |> reject(isPlaceholderStatement)
+      |> Sequence.rejectWhere(isPlaceholderStatement)
       |> List.map(statement(context)),
   })
 and topLevelDeclarations =
@@ -85,7 +41,7 @@ and topLevelDeclarations =
     "statements":
       node.declarations
       |> unfoldPairs
-      |> reject(isPlaceholderDeclaration)
+      |> Sequence.rejectWhere(isPlaceholderDeclaration)
       |> List.map(declaration(context)),
   })
 and statement = (context: context, node: LogicAst.statement): SwiftAst.node =>
@@ -110,7 +66,7 @@ and declaration =
       "body":
         declarations
         |> unfoldPairs
-        |> reject(isPlaceholderDeclaration)
+        |> Sequence.rejectWhere(isPlaceholderDeclaration)
         |> List.map(declaration(context)),
     });
   | Variable({name: LogicAst.Pattern({name}), annotation, initializer_}) =>
@@ -231,7 +187,7 @@ and declaration =
              let associatedValueTypes =
                associatedValueTypes
                |> unfoldPairs
-               |> reject(isPlaceholderTypeAnnotation);
+               |> Sequence.rejectWhere(isPlaceholderTypeAnnotation);
 
              let associatedType =
                switch (associatedValueTypes) {

@@ -144,6 +144,23 @@ let convertTypes = (target, contents) => {
   };
 };
 
+let convertLogic = (target, config, contents) =>
+  switch (target) {
+  | Types.Xml => "Can't convert Logic to XML"
+  | Types.Reason => "Converting Logic to Reason isn't supported yet"
+  | Types.JavaScript =>
+    contents |> LogicJavaScript.convert(config) |> JavaScriptRender.toString
+  | Types.Swift =>
+    let importStatement =
+      switch (options.swift.framework) {
+      | AppKit => "import AppKit\n\n"
+      | UIKit => "import UIKit\n\n"
+      };
+    let code = contents |> LogicSwift.convert(config) |> SwiftRender.toString;
+
+    importStatement ++ code;
+  };
+
 let convertColors = (target, config: Config.t) =>
   renderColors(target, config);
 
@@ -443,18 +460,9 @@ let convertWorkspace = (target, workspace, output) => {
                   ~workspaceFile=Path.join2(dirname, filename),
                 );
 
-              let converted =
-                file.contents
-                |> LogicSwift.convert(config)
-                |> SwiftRender.toString;
+              let converted = convertLogic(target, config, file.contents);
 
-              let importStatement =
-                switch (options.swift.framework) {
-                | AppKit => "import AppKit\n\n"
-                | UIKit => "import UIKit\n\n"
-                };
-
-              writeAnnotatedFile(outputPath, importStatement ++ converted);
+              writeAnnotatedFile(outputPath, converted);
             });
        };
 
@@ -641,17 +649,13 @@ switch (scanResult.command) {
     let json = jsonContents |> Js.Json.parseExn;
     LogicAst.Decode.syntaxNode(json);
   };
-  let convert = (config, program) => {
-    let converted = LogicSwift.convert(config, program);
-    SwiftRender.toString(converted);
-  };
 
   Config.load(platformId(target), options, initialWorkspaceSearchPath, "")
   |> Js.Promise.then_((config: Config.t) =>
        switch (input) {
        | File(inputPath) =>
          let contents = Node.Fs.readFileSync(inputPath, `utf8);
-         decode(contents) |> convert(config) |> Js.log;
+         decode(contents) |> convertLogic(target, config) |> Js.log;
          Js.Promise.resolve();
        | Stdin =>
          getStdin()
@@ -664,7 +668,7 @@ switch (scanResult.command) {
                   ...config.logicFiles,
                 ],
               };
-              program |> convert(config) |> Js.log;
+              program |> convertLogic(target, config) |> Js.log;
 
               Js.Promise.resolve();
             })
