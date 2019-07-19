@@ -18,6 +18,10 @@ extension Color {
         return "rgba(\(r),\(g),\(b),\(a))"
     }
 
+    var cssString: String {
+        return alpha < 1 ? rgbaString : hexString.uppercased()
+    }
+
     init(cssString: String) {
         let cssColor = parseCSSColor(cssString) ?? CSSColor(0, 0, 0, 0)
         var colorValue = Color(redInt: cssColor.r, greenInt: cssColor.g, blueInt: cssColor.b)

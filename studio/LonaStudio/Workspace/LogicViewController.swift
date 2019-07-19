@@ -181,6 +181,66 @@ class LogicViewController: NSViewController {
             return recommended
         }
 
+        logicEditor.documentationForSuggestion = { rootNode, suggestionItem, query, formattingOptions, builder in
+            switch suggestionItem.node {
+            case .expression(.literalExpression(id: _, literal: .color(id: _, value: let css))),
+                 .literal(.color(id: _, value: let css)):
+
+                let decodeValue: (Data?) -> SwiftColor = { data in
+                    if let data = data, let cssString = String(data: data, encoding: .utf8) {
+                        return SwiftColor(cssString: cssString)
+                    } else {
+                        return SwiftColor(cssString: css)
+                    }
+                }
+
+                var colorValue = decodeValue(builder.initialValue)
+                let view = ColorSuggestionEditor(colorValue: colorValue)
+
+                view.onChangeColorValue = { color in
+                    colorValue = color
+                    view.colorValue = colorValue
+
+                    builder.setListItem(.colorRow(name: "Color", code: color.cssString, color.NSColor, false))
+
+                    if let data = colorValue.cssString.data(using: .utf8) {
+                        builder.onChangeValue(data)
+                    }
+                }
+
+                view.onReset = {
+                    let color = SwiftColor(cssString: css)
+
+                    colorValue = color
+                    view.colorValue = colorValue
+
+                    builder.onChangeValue(nil)
+                    builder.setListItem(nil)
+                }
+
+                view.onSubmit = {
+                    builder.onSubmit()
+                }
+
+                builder.setNodeBuilder({ data in
+                    let cssValue = data != nil ? decodeValue(data).cssString : css
+                    let literal = LGCLiteral.color(id: UUID(), value: cssValue)
+                    switch suggestionItem.node {
+                    case .literal:
+                        return .literal(literal)
+                    case .expression:
+                        return .expression(.literalExpression(id: UUID(), literal: literal))
+                    default:
+                        fatalError("Unsupported node")
+                    }
+                })
+
+                return view
+            default:
+                return LogicEditor.defaultDocumentationForSuggestion(rootNode, suggestionItem, query, formattingOptions, builder)
+            }
+        }
+
         logicEditor.decorationForNodeID = { [unowned self] id in
             guard let node = self.logicEditor.rootNode.find(id: id) else { return nil }
 
