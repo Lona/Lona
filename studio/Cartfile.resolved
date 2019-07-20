@@ -1,7 +1,7 @@
 github "dabbott/ColorPicker" "c1e637d2af9813ddba6a9b8e5e51f164780981ba"
 github "dabbott/ControlledComponents" "264729ba7769e8fd2a66eb4fad63fd6348eae767"
 github "dabbott/FileTree" "d92c10dcdbd805736373da2908e839ffd3eb7239"
-github "dabbott/Logic" "e0c1cd8bf1093ade9073725f84712685c70ac5a2"
+github "dabbott/Logic" "b63ffa871b3c2b7e1a3151efbc2386ccdde880a0"
 github "dylan/colors" "0.9.10"
 github "njdehoog/Witness" "0.1.3"
 github "tonyarnold/Differ" "1.4.2"

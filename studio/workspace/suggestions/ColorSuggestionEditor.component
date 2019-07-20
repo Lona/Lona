@@ -1,0 +1,159 @@
+{
+  "devices" : [
+    {
+      "deviceId" : "iPhone SE",
+      "heightMode" : "At Least"
+    },
+    {
+      "deviceId" : "Pixel 2",
+      "heightMode" : "At Least"
+    }
+  ],
+  "examples" : [
+    {
+      "id" : "Default",
+      "name" : "Default",
+      "params" : {
+
+      }
+    }
+  ],
+  "logic" : [
+    {
+      "assignee" : [
+        "layers",
+        "ColorPicker",
+        "colorValue"
+      ],
+      "content" : [
+        "parameters",
+        "colorValue"
+      ],
+      "type" : "AssignExpr"
+    },
+    {
+      "assignee" : [
+        "layers",
+        "ColorPicker",
+        "onChangeColorValue"
+      ],
+      "content" : [
+        "parameters",
+        "onChangeColorValue"
+      ],
+      "type" : "AssignExpr"
+    },
+    {
+      "assignee" : [
+        "layers",
+        "ResetButton",
+        "onClick"
+      ],
+      "content" : [
+        "parameters",
+        "onReset"
+      ],
+      "type" : "AssignExpr"
+    },
+    {
+      "assignee" : [
+        "layers",
+        "SubmitButton",
+        "onClick"
+      ],
+      "content" : [
+        "parameters",
+        "onSubmit"
+      ],
+      "type" : "AssignExpr"
+    }
+  ],
+  "params" : [
+    {
+      "name" : "onReset",
+      "type" : {
+        "name" : "Function"
+      }
+    },
+    {
+      "name" : "onSubmit",
+      "type" : {
+        "name" : "Function"
+      }
+    },
+    {
+      "name" : "colorValue",
+      "type" : "ColorPickerColor"
+    },
+    {
+      "name" : "onChangeColorValue",
+      "type" : "ColorPickerHandler"
+    }
+  ],
+  "root" : {
+    "children" : [
+      {
+        "children" : [
+          {
+            "id" : "ColorPicker",
+            "params" : {
+
+            },
+            "type" : "CoreColorPicker"
+          }
+        ],
+        "id" : "PickerContainer",
+        "params" : {
+          "alignSelf" : "stretch",
+          "flex" : 1,
+          "paddingLeft" : 12,
+          "paddingRight" : 12,
+          "paddingTop" : 12
+        },
+        "type" : "Lona:View"
+      },
+      {
+        "children" : [
+          {
+            "id" : "ResetButton",
+            "params" : {
+              "titleText" : "Reset"
+            },
+            "type" : "Button"
+          },
+          {
+            "id" : "Spacer",
+            "params" : {
+              "alignSelf" : "stretch",
+              "flex" : 1
+            },
+            "type" : "Lona:View"
+          },
+          {
+            "id" : "SubmitButton",
+            "params" : {
+              "titleText" : "OK"
+            },
+            "type" : "Button"
+          }
+        ],
+        "id" : "Footer",
+        "params" : {
+          "alignItems" : "center",
+          "alignSelf" : "stretch",
+          "flexDirection" : "row",
+          "paddingBottom" : 12,
+          "paddingLeft" : 12,
+          "paddingRight" : 12,
+          "paddingTop" : 12
+        },
+        "type" : "Lona:View"
+      }
+    ],
+    "id" : "View",
+    "params" : {
+      "alignSelf" : "stretch"
+    },
+    "type" : "Lona:View"
+  }
+}
