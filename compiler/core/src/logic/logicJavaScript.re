@@ -42,7 +42,7 @@ let sharedPrefix =
 
 let rec convert =
         (config: Config.t, node: LogicAst.syntaxNode): JavaScriptAst.node => {
-  let context = {config, isStatic: false, rootNode: node};
+  let context = {config, isStatic: false, isTopLevel: true, rootNode: node};
   /* Js.log(LogicProtocol.nodeHierarchyDescription(node, ())); */
   switch (node) {
   | LogicAst.Program(Program(contents)) => program(context, contents)
@@ -87,7 +87,7 @@ and declaration =
   switch (node) {
   | ImportDeclaration(_) => Empty
   | Namespace({name: LogicAst.Pattern({name}), declarations}) =>
-    let newContext = {...context, isStatic: true};
+    let newContext = {...context, isTopLevel: false, isStatic: true};
 
     let variable =
       createVariableOrProperty(
@@ -102,14 +102,16 @@ and declaration =
         ),
       );
 
-    if (context.isStatic) {
-      variable;
-    } else {
+    if (context.isTopLevel) {
       ExportNamedDeclaration(variable);
+    } else {
+      variable;
     };
   | Variable({id, name: LogicAst.Pattern({name}), initializer_}) =>
+    let newContext = {...context, isTopLevel: false};
+
     let initialValue =
-      (initializer_ |> Monad.map(expression(context)))
+      (initializer_ |> Monad.map(expression(newContext)))
       %? Identifier(["undefined"]);
 
     let isDynamic =
@@ -133,12 +135,19 @@ and declaration =
            }
          );
 
-    createVariableOrProperty(
-      context.isStatic,
-      isDynamic,
-      String.lowercase(name),
-      initialValue,
-    );
+    let variable =
+      createVariableOrProperty(
+        context.isStatic,
+        isDynamic,
+        String.lowercase(name),
+        initialValue,
+      );
+
+    if (context.isTopLevel) {
+      ExportNamedDeclaration(variable);
+    } else {
+      variable;
+    };
   | Record({
       name: LogicAst.Pattern({name}),
       genericParameters: _,
@@ -184,7 +193,7 @@ and expression =
   | IdentifierExpression({
       identifier: Identifier({id, string: name, isPlaceholder: _}),
     }) =>
-    let standard: JavaScriptAst.node = Identifier([name]);
+    let standard: JavaScriptAst.node = Identifier([Format.lowerFirst(name)]);
     let scope = LogicScope.build(context.rootNode, ());
     let patternId = (scope.identifierToPattern)#get(id);
     switch (patternId) {
@@ -204,13 +213,12 @@ and expression =
   | LiteralExpression({literal: value}) => literal(context, value)
   | MemberExpression({
       memberName: Identifier({string}),
-      /* expression: innerExpression, */
+      expression: innerExpression,
     }) =>
-    Identifier([string])
-  /* SwiftAst.memberExpression([
-       expression(context, innerExpression),
-       SwiftAst.SwiftIdentifier(string),
-     ]) */
+    MemberExpression({
+      memberName: Format.lowerFirst(string),
+      expression: expression(context, innerExpression),
+    })
   | FunctionCallExpression({arguments, expression: innerExpression}) =>
     CallExpression({
       callee: expression(context, innerExpression),

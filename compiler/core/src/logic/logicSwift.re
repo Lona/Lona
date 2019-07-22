@@ -13,7 +13,7 @@ let convertNativeType = (context: context, typeName: string): string =>
   };
 
 let rec convert = (config: Config.t, node: LogicAst.syntaxNode): SwiftAst.node => {
-  let context = {config, isStatic: false, rootNode: node};
+  let context = {config, isStatic: false, isTopLevel: true, rootNode: node};
   switch (node) {
   | LogicAst.Program(Program(contents)) => program(context, contents)
   | LogicAst.TopLevelDeclarations(TopLevelDeclarations(contents)) =>

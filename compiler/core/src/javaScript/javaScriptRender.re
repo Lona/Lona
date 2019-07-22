@@ -183,6 +183,8 @@ let rec render = ast: Prettier.Doc.t('a) =>
   | CallExpression(o) =>
     let parameterList = o.arguments |> List.map(render) |> join(s(", "));
     fill([render(o.callee), s("("), parameterList, s(")")]);
+  | MemberExpression(o) =>
+    render(o.expression) <+> softline <+> s(".") <+> s(o.memberName)
   | Return(value) =>
     group(
       group(s("return "))

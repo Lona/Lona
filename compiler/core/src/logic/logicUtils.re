@@ -1,6 +1,7 @@
 type context = {
   config: Config.t,
   isStatic: bool,
+  isTopLevel: bool,
   rootNode: LogicAst.syntaxNode,
 };
 
