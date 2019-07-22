@@ -1,45 +1,29 @@
 const xml = `<?xml version="1.0"?>
-<Program>
-  <Declaration.Namespace name="Colors"/>
-</Program>`
+<Declaration.Namespace name="Colors"/>`
 
 const json = {
   data: {
-    block: [
-      {
-        data: {
-          content: {
+    content: {
+      data: {
+        declarations: [
+          {
             data: {
-              declarations: [
-                {
-                  data: {
-                    id: '0',
-                  },
-                  type: 'placeholder',
-                },
-              ],
               id: '0',
-              name: {
-                id: '0',
-                name: 'Colors',
-              },
             },
-            type: 'namespace',
+            type: 'placeholder',
           },
+        ],
+        id: '0',
+        name: {
           id: '0',
+          name: 'Colors',
         },
-        type: 'declaration',
       },
-      {
-        data: {
-          id: '0',
-        },
-        type: 'placeholder',
-      },
-    ],
+      type: 'namespace',
+    },
     id: '0',
   },
-  type: 'program',
+  type: 'declaration',
 }
 
 module.exports = { json, xml }

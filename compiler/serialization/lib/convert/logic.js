@@ -48,10 +48,14 @@ const reverseNodeRenaming = {
   Declarations: 'topLevelDeclarations',
 }
 
-const identifierNodeMapping = {
+const patternNodeMapping = {
   importDeclaration: 'name',
   variable: 'name',
   namespace: 'name',
+}
+
+const identifierNodeMapping = {
+  memberExpression: 'memberName',
 }
 
 const annotationNodeMapping = {
@@ -126,8 +130,12 @@ function convertLogicJsonToXml(logicJson) {
 
     const attributes = {}
 
+    if (patternNodeMapping[type]) {
+      attributes.name = data[patternNodeMapping[type]].name
+    }
+
     if (identifierNodeMapping[type]) {
-      attributes.name = data[identifierNodeMapping[type]].name
+      attributes.name = data[identifierNodeMapping[type]].string
     }
 
     if (annotationNodeMapping[type]) {
@@ -183,11 +191,6 @@ function convertLogicJsonToXml(logicJson) {
       case 'boolean': {
         const { value } = data
         attributes.value = value
-        break
-      }
-      case 'memberExpression': {
-        const { memberName } = data
-        attributes.name = memberName.string
         break
       }
       case 'identifierExpression': {
@@ -362,6 +365,7 @@ function convertLogicXmlToJson(root) {
 
     const nodeName = reverseNodeRenaming[name] || lowerFirst(name)
 
+    // We implicitly transfer any single-value nodes to the data object
     const data = {
       id: createUUID(),
       ...attributes,
@@ -384,10 +388,19 @@ function convertLogicXmlToJson(root) {
       }
     }
 
-    if (identifierNodeMapping[nodeName]) {
-      data[identifierNodeMapping[nodeName]] = {
+    if (patternNodeMapping[nodeName]) {
+      data[patternNodeMapping[nodeName]] = {
         id: createUUID(),
         name: attributes.name,
+      }
+    }
+
+    if (identifierNodeMapping[nodeName]) {
+      delete data.name
+      data[identifierNodeMapping[nodeName]] = {
+        id: createUUID(),
+        isPlaceholder: false,
+        string: attributes.name,
       }
     }
 
