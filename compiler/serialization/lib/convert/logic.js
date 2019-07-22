@@ -217,6 +217,21 @@ function convertLogicJsonToXml(logicJson) {
 function convertLogicXmlToJson(root) {
   const compactLiteralTypes = ['Boolean', 'Number', 'String', 'Color']
 
+  function decodeLiteralValue(type, value) {
+    switch (type) {
+      case 'Boolean':
+        return value === 'true'
+      case 'Number':
+        return value
+      case 'String':
+        return value
+      case 'Color':
+        return value
+      default:
+        throw new Error('Invalid literal value type')
+    }
+  }
+
   function deserializeAnnotation(string) {
     return {
       type: 'typeIdentifier',
@@ -305,7 +320,10 @@ function convertLogicXmlToJson(root) {
                   {
                     name: typeToLiteralMapping[attributes.type],
                     attributes: {
-                      value: attributes.value,
+                      value: decodeLiteralValue(
+                        attributes.type,
+                        attributes.value
+                      ),
                     },
                     children: [],
                   },
@@ -336,7 +354,10 @@ function convertLogicXmlToJson(root) {
                       {
                         name: typeToLiteralMapping[attributes.type],
                         attributes: {
-                          value: attributes.value,
+                          value: decodeLiteralValue(
+                            attributes.type,
+                            attributes.value
+                          ),
                         },
                         children: [],
                       },
