@@ -1,6 +1,7 @@
 type context = {
   config: Config.t,
   isStatic: bool,
+  rootNode: LogicAst.syntaxNode,
 };
 
 let isPlaceholderDeclaration = (declaration: LogicAst.declaration) =>

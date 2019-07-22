@@ -2,19 +2,48 @@ open LogicUtils;
 open Operators;
 
 let createVariableOrProperty =
-    (isStatic: bool, name: string, value: JavaScriptAst.node)
+    (
+      isStaticContext: bool,
+      isDynamic,
+      name: string,
+      value: JavaScriptAst.node,
+    )
     : JavaScriptAst.node =>
-  if (isStatic) {
-    Property({key: Identifier([name]), value: Some(value)});
+  if (isStaticContext) {
+    if (isDynamic) {
+      MethodDefinition({
+        key: "get " ++ name,
+        value:
+          FunctionExpression({id: None, params: [], body: [Return(value)]}),
+      });
+    } else {
+      Property({key: Identifier([name]), value: Some(value)});
+    };
   } else {
     VariableDeclaration(
       AssignmentExpression({left: Identifier([name]), right: value}),
     );
   };
 
+let sharedPrefix =
+    (~rootNode: LogicAst.syntaxNode, ~a: string, ~b: string): list(string) => {
+  let rec inner = (aPath, bPath) =>
+    switch (aPath, bPath) {
+    | ([a, ...aRest], [b, ...bRest]) when a == b => [
+        a,
+        ...inner(aRest, bRest),
+      ]
+    | _ => []
+    };
+  let aPath = LogicProtocol.declarationPathTo(rootNode, a);
+  let bPath = LogicProtocol.declarationPathTo(rootNode, b);
+  inner(aPath, bPath);
+};
+
 let rec convert =
         (config: Config.t, node: LogicAst.syntaxNode): JavaScriptAst.node => {
-  let context = {config, isStatic: false};
+  let context = {config, isStatic: false, rootNode: node};
+  /* Js.log(LogicProtocol.nodeHierarchyDescription(node, ())); */
   switch (node) {
   | LogicAst.Program(Program(contents)) => program(context, contents)
   | LogicAst.TopLevelDeclarations(TopLevelDeclarations(contents)) =>
@@ -63,6 +92,7 @@ and declaration =
     let variable =
       createVariableOrProperty(
         context.isStatic,
+        false,
         String.lowercase(name),
         ObjectLiteral(
           declarations
@@ -77,13 +107,35 @@ and declaration =
     } else {
       ExportNamedDeclaration(variable);
     };
-  | Variable({name: LogicAst.Pattern({name}), initializer_}) =>
+  | Variable({id, name: LogicAst.Pattern({name}), initializer_}) =>
     let initialValue =
       (initializer_ |> Monad.map(expression(context)))
       %? Identifier(["undefined"]);
 
+    let isDynamic =
+      LogicAst.Declaration(node)
+      |> LogicTraversal.reduce(
+           LogicTraversal.emptyConfig(), false, (result, child, _) =>
+           switch (child) {
+           | Expression(IdentifierExpression({id: identifierId})) =>
+             let prefix =
+               sharedPrefix(
+                 ~rootNode=context.rootNode,
+                 ~a=id,
+                 ~b=identifierId,
+               );
+             if (prefix == []) {
+               result;
+             } else {
+               true;
+             };
+           | _ => result
+           }
+         );
+
     createVariableOrProperty(
       context.isStatic,
+      isDynamic,
       String.lowercase(name),
       initialValue,
     );
@@ -130,9 +182,25 @@ and expression =
     (context: context, node: LogicAst.expression): JavaScriptAst.node =>
   switch (node) {
   | IdentifierExpression({
-      identifier: Identifier({string: name, isPlaceholder: _}),
+      identifier: Identifier({id, string: name, isPlaceholder: _}),
     }) =>
-    Identifier([name])
+    let standard: JavaScriptAst.node = Identifier([name]);
+    let scope = LogicScope.build(context.rootNode, ());
+    let patternId = (scope.identifierToPattern)#get(id);
+    switch (patternId) {
+    | Some(patternId) =>
+      let pattern = LogicProtocol.find(context.rootNode, patternId);
+      switch (pattern) {
+      | Some(Pattern(Pattern({id: patternId}))) =>
+        let identifierPath =
+          LogicProtocol.declarationPathTo(context.rootNode, patternId)
+          |> List.map(Format.lowerFirst);
+        Identifier(identifierPath);
+      | _ => standard
+      };
+    | None => standard
+    };
+
   | LiteralExpression({literal: value}) => literal(context, value)
   | MemberExpression({
       memberName: Identifier({string}),
