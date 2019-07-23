@@ -1,5 +1,6 @@
 <?xml version="1.0"?>
 <Declarations>
+  <ImportDeclaration name="Color"/>
   <Namespace name="BrandColors">
     <Variable name="primary" type="Color" value="#FAB"/>
     <Namespace name="Nested">

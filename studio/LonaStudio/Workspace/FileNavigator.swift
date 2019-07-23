@@ -341,7 +341,12 @@ class FileNavigator: NSBox {
 
     private func displayNameForFile(atPath path: String) -> String {
         let url = URL(fileURLWithPath: path)
-        return url.pathExtension == "component" ? url.deletingPathExtension().lastPathComponent : url.lastPathComponent
+        switch url.pathExtension {
+        case "component", "logic":
+            return url.deletingPathExtension().lastPathComponent
+        default:
+            return url.lastPathComponent
+        }
     }
 
     private func rowViewForFile(atPath path: String) -> NSView {

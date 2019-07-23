@@ -138,7 +138,14 @@ class LogicViewController: NSViewController {
     }
 
     private func evaluate() {
-        let (scopeContext, unificationContext, substitutionResult) = StandardConfiguration.compile(rootNode)
+        guard let root = LGCProgram.make(from: rootNode) else { return }
+
+        let program: LGCSyntaxNode = .program(
+            LGCProgram.join(programs: [LogicViewController.makePreludeProgram(), root])
+                .expandImports(importLoader: Library.load)
+        )
+
+        let (scopeContext, unificationContext, substitutionResult) = StandardConfiguration.compile(program)
 
         guard let substitution = try? substitutionResult.get() else { return }
 
