@@ -9,6 +9,7 @@
 import AppKit
 import FileTree
 import Foundation
+import Logic
 
 private class FileTreeCellView: NSTableCellView {
     public var onChangeBackgroundStyle: ((NSView.BackgroundStyle) -> Void)?
@@ -334,6 +335,8 @@ class FileNavigator: NSBox {
                 else { return defaultImage(for: path) }
             image.size = NSSize(width: size.width, height: (image.size.height / image.size.width) * size.height)
             return image
+        } else if url.pathExtension == "logic" {
+            return LogicViewController.thumbnail(for: url, within: size)
         } else {
             return defaultImage(for: path)
         }
@@ -365,7 +368,7 @@ class FileNavigator: NSBox {
             iconView = LonaFileIcon()
         } else if path.hasSuffix("colors.json") {
             iconView = ColorsFileIcon()
-        } else if path.hasSuffix(".component") {
+        } else if path.hasSuffix(".component") || path.hasSuffix(".logic") {
             let imageView = NSImageView(image: imageForFile(atPath: path, size: thumbnailSize) )
             imageView.imageScaling = .scaleProportionallyUpOrDown
             iconView = imageView

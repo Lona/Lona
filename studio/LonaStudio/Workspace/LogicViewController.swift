@@ -137,7 +137,7 @@ class LogicViewController: NSViewController {
         )
     }
 
-    private func evaluate() {
+    public static func evaluate(rootNode: LGCSyntaxNode, colorValues: inout [UUID: String]) {
         guard let root = LGCProgram.make(from: rootNode) else { return }
 
         let program: LGCSyntaxNode = .program(
@@ -168,7 +168,7 @@ class LogicViewController: NSViewController {
     private func update() {
         logicEditor.rootNode = rootNode
 
-        evaluate()
+        LogicViewController.evaluate(rootNode: rootNode, colorValues: &colorValues)
 
         logicEditor.onChangeRootNode = { [unowned self] newRootNode in
             self.onChangeRootNode?(newRootNode)
@@ -425,6 +425,131 @@ This will generate fairly different code for each platform, so if you're curious
                 rawValue = "recommended"
             }
             UserDefaults.standard.set(rawValue, forKey: suggestionFilterKey)
+        }
+    }
+}
+
+extension LogicViewController {
+
+    // MARK: Public
+
+    public static func thumbnail(for url: URL, within size: NSSize) -> NSImage {
+        if let image = thumbnailImageCache[url] {
+            return image
+        } else {
+            let image = makeThumbnail(for: url, within: size)
+
+            thumbnailImageCache[url] = image
+
+            return image
+        }
+    }
+
+    // MARK: Private
+
+    private static var thumbnailImageCache: [URL: NSImage] = [:]
+
+    private static func makeThumbnail(for url: URL, within size: NSSize) -> NSImage {
+        guard let data = try? Data(contentsOf: url) else { return NSImage() }
+
+        guard let node = try? LogicDocument.read(from: data) else { return NSImage() }
+
+        var colorValues: [UUID: String] = [:]
+
+        evaluate(rootNode: node, colorValues: &colorValues)
+
+        let formattingOptions = LogicFormattingOptions(
+            style: LogicViewController.formattingStyle,
+            getColor: ({ id in
+                guard let colorString = colorValues[id],
+                    let color = NSColor.parse(css: colorString) else { return nil }
+                return (colorString, color)
+            })
+        )
+
+        let getElementDecoration: (UUID) -> LogicElement.Decoration? = { uuid in
+            return decorationForNodeID(
+                rootNode: node,
+                formattingOptions: formattingOptions,
+                colorValues: colorValues,
+                id: uuid
+            )
+        }
+
+        guard let pdfData = LogicCanvasView.pdf(
+            size: .init(width: 800, height: 200),
+            mediaBox: .init(x: 0, y: 0, width: 200, height: 200),
+            formattedContent: node.formatted(using: formattingOptions),
+            getElementDecoration: getElementDecoration) else { return NSImage() }
+
+        let image = NSImage(size: size, flipped: false, drawingHandler: { rect in
+            NSGraphicsContext.saveGraphicsState()
+
+            let inset = NSSize(width: 1, height: 1)
+            let insetRect = rect.insetBy(dx: inset.width, dy: inset.height)
+
+            let outline = NSBezierPath(roundedRect: insetRect, xRadius: 2, yRadius: 2)
+            outline.lineWidth = 2
+
+            NSColor.parse(css: "rgb(210,210,212)")!.setStroke()
+            NSColor.white.withAlphaComponent(0.9).setFill()
+
+            outline.fill()
+            outline.setClip()
+
+            if let pdfImage = NSImage(data: pdfData) {
+                pdfImage.draw(in: NSRect(x: inset.width, y: inset.height, width: rect.width, height: rect.height))
+            }
+
+            outline.stroke()
+
+            NSGraphicsContext.restoreGraphicsState()
+            return true
+        })
+
+        return image
+    }
+
+    private static func decorationForNodeID(
+        rootNode: LGCSyntaxNode,
+        formattingOptions: LogicFormattingOptions,
+        colorValues: [UUID: String],
+        id: UUID
+        ) -> LogicElement.Decoration? {
+        guard let node = rootNode.find(id: id) else { return nil }
+
+        if let colorValue = colorValues[node.uuid] {
+            if formattingOptions.style == .visual,
+                let path = rootNode.pathTo(id: id),
+                let parent = path.dropLast().last {
+
+                // Don't show color decoration on the variable name
+                switch parent {
+                case .declaration(.variable):
+                    return nil
+                default:
+                    break
+                }
+
+                // Don't show color decoration of literal value if we're already showing a swatch preview
+                if let grandParent = path.dropLast().dropLast().last {
+                    switch (grandParent, parent, node) {
+                    case (.declaration(.variable), .expression(.literalExpression), .literal(.color)):
+                        return nil
+                    default:
+                        break
+                    }
+                }
+            }
+
+            return .color(NSColor.parse(css: colorValue) ?? NSColor.black)
+        }
+
+        switch node {
+        case .literal(.color(id: _, value: let code)):
+            return .color(NSColor.parse(css: code) ?? .clear)
+        default:
+            return nil
         }
     }
 }
