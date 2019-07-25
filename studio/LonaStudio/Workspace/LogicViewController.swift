@@ -52,6 +52,7 @@ class LogicViewController: NSViewController {
     private let containerView = NSBox()
 
     private var colorValues: [UUID: String] = [:]
+    private var shadowValues: [UUID: NSShadow] = [:]
 
     private let editorDisplayStyles: [LogicFormattingOptions.Style] = [.visual, .natural]
 
@@ -80,11 +81,14 @@ class LogicViewController: NSViewController {
 
         logicEditor.formattingOptions = LogicFormattingOptions(
             style: LogicViewController.formattingStyle,
-            getColor: { [unowned self] id in
+            getColor: ({ [unowned self] id in
                 guard let colorString = self.colorValues[id],
                     let color = NSColor.parse(css: colorString) else { return nil }
                 return (colorString, color)
-            }
+            }),
+            getShadow: ({ [unowned self] id in
+                return self.shadowValues[id]
+            })
         )
 
         infoBar.dropdownIndex = editorDisplayStyles.firstIndex(of: LogicViewController.formattingStyle) ?? 0
@@ -137,7 +141,7 @@ class LogicViewController: NSViewController {
         )
     }
 
-    public static func evaluate(rootNode: LGCSyntaxNode, colorValues: inout [UUID: String]) {
+    public static func evaluate(rootNode: LGCSyntaxNode, colorValues: inout [UUID: String], shadowValues: inout [UUID: NSShadow]) {
         guard let root = LGCProgram.make(from: rootNode) else { return }
 
         let program: LGCSyntaxNode = .program(
@@ -150,7 +154,7 @@ class LogicViewController: NSViewController {
         guard let substitution = try? substitutionResult.get() else { return }
 
         guard let evaluationContext = try? Compiler.evaluate(
-            rootNode,
+            program,
             rootNode: rootNode,
             scopeContext: scopeContext,
             unificationContext: unificationContext,
@@ -159,8 +163,17 @@ class LogicViewController: NSViewController {
             ).get() else { return }
 
         evaluationContext.values.forEach { id, value in
+            switch value.type {
+            case .cons(name: let name, _):
+                Swift.print(name)
+            default:
+                break
+            }
+
             if let colorString = value.colorString {
                 colorValues[id] = colorString
+            } else if let shadow = value.nsShadow {
+                shadowValues[id] = shadow
             }
         }
     }
@@ -168,7 +181,7 @@ class LogicViewController: NSViewController {
     private func update() {
         logicEditor.rootNode = rootNode
 
-        LogicViewController.evaluate(rootNode: rootNode, colorValues: &colorValues)
+        LogicViewController.evaluate(rootNode: rootNode, colorValues: &colorValues, shadowValues: &shadowValues)
 
         logicEditor.onChangeRootNode = { [unowned self] newRootNode in
             self.onChangeRootNode?(newRootNode)
@@ -455,8 +468,9 @@ extension LogicViewController {
         guard let node = try? LogicDocument.read(from: data) else { return NSImage() }
 
         var colorValues: [UUID: String] = [:]
+        var shadowValues: [UUID: NSShadow] = [:]
 
-        evaluate(rootNode: node, colorValues: &colorValues)
+        evaluate(rootNode: node, colorValues: &colorValues, shadowValues: &shadowValues)
 
         let formattingOptions = LogicFormattingOptions(
             style: LogicViewController.formattingStyle,
