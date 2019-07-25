@@ -85,7 +85,7 @@ function convertTypes(contents, targetFormat, options = {}) {
 
       const types = convertTypesJsonToXml(jsonContents)
 
-      return xml.build(types)
+      return xml.build({ name: 'root', children: types })
     }
     case CONVERSION_TYPE.XML_TO_JSON: {
       let jsonContents
