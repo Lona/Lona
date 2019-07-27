@@ -142,7 +142,7 @@ public class LabeledColorInput: LabeledInput {
 
             let program: LGCSyntaxNode = .program(LabeledColorInput.makeExpressionProgram(from: expression).expandImports(importLoader: Library.load))
 
-            return StandardConfiguration.suggestions(rootNode: program, node: node, query: query, formattingOptions: .init(style: .natural, locale: .en_US, getColor: {_ in nil})) ?? []
+            return StandardConfiguration.suggestions(rootNode: program, node: node, formattingOptions: .normal)?(query) ?? []
         }
     }
 }

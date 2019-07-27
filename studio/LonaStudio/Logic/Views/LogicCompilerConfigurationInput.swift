@@ -109,8 +109,8 @@ public class LogicCompilerConfigurationInput: NSView {
 
             let program = LGCSyntaxNode.program(LogicCompilerConfigurationInput.makeProgram(from: expression))
 
-            return StandardConfiguration.suggestions(rootNode: program, node: node, query: query, formattingOptions:
-                .init(style: LogicViewController.formattingStyle, locale: .en_US, getColor: { _ in nil })) ?? []
+            let formattingOptions = LogicFormattingOptions.init(style: LogicViewController.formattingStyle, locale: .en_US, getColor: { _ in nil })
+            return StandardConfiguration.suggestions(rootNode: program, node: node, formattingOptions: formattingOptions)?(query) ?? []
         }
     }
 

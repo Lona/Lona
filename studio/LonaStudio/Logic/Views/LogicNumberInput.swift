@@ -79,7 +79,11 @@ public class LogicNumberInput: NSView {
 
             let program: LGCSyntaxNode = .program(LogicNumberInput.makeProgram(from: expression).expandImports(importLoader: Library.load))
 
-            return StandardConfiguration.suggestions(rootNode: program, node: node, query: query, formattingOptions: self.logicEditor.formattingOptions) ?? []
+            return StandardConfiguration.suggestions(
+                rootNode: program,
+                node: node,
+                formattingOptions: self.logicEditor.formattingOptions
+                )?(query) ?? []
         }
     }
 

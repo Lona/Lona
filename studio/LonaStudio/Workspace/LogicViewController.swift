@@ -163,12 +163,6 @@ class LogicViewController: NSViewController {
             ).get() else { return }
 
         evaluationContext.values.forEach { id, value in
-            switch value.type {
-            case .cons(name: let name, _):
-                Swift.print(name)
-            default:
-                break
-            }
 
             if let colorString = value.colorString {
                 colorValues[id] = colorString
@@ -317,8 +311,17 @@ class LogicViewController: NSViewController {
     }
 
     public static func recommendedSuggestions(rootNode: LGCSyntaxNode, selectedNode: LGCSyntaxNode, query: String) -> [LogicSuggestionItem] {
-        let all = StandardConfiguration.suggestions(rootNode: rootNode, node: selectedNode, query: query, formattingOptions: makeFormattingOptions(rootNode: rootNode))
-            ?? LogicEditor.defaultSuggestionsForNode(rootNode, selectedNode, query)
+        var all: [LogicSuggestionItem]
+        if let suggestionBuilder = StandardConfiguration.suggestions(
+            rootNode: rootNode,
+            node: selectedNode,
+            formattingOptions: makeFormattingOptions(rootNode: rootNode)
+            ),
+            let suggestions = suggestionBuilder(query) {
+            all = suggestions
+        } else {
+            all = LogicEditor.defaultSuggestionsForNode(rootNode, selectedNode, query)
+        }
 
         switch selectedNode {
         case .declaration:

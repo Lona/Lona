@@ -176,10 +176,10 @@
   dependencies:
     "@glimmer/util" "^0.30.5"
 
-"@lona/serialization@^0.0.9":
-  version "0.0.9"
-  resolved "https://registry.yarnpkg.com/@lona/serialization/-/serialization-0.0.9.tgz#789b414139cc4c6ea091dc1fce9d0dc5586be754"
-  integrity sha512-+QIIXTO7I8pB4EKE+1CkA9kwEkzP0ZIwB3ayk7VcXS7Boz55rop9ZntzVKgPZTT1DcfyHU4KFH/U/niBqOrKpw==
+"@lona/serialization@^0.0.10":
+  version "0.0.10"
+  resolved "https://registry.yarnpkg.com/@lona/serialization/-/serialization-0.0.10.tgz#cc90df0a0207eeeca20001b85a7900b63e592535"
+  integrity sha512-E8S4F2H4K15/5mIZFtJMLfBeikWXO0PdWQNa7/Fn3MxAyjICOH6Njimfl4x3gBVyWA4S+TkYs45x+1dMsC0f1w==
   dependencies:
     json-stable-stringify "^1.0.1"
     uuid "^3.3.2"
