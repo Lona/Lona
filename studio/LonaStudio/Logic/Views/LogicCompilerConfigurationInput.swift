@@ -59,7 +59,7 @@ public class LogicCompilerConfigurationInput: NSView {
                 ),
                 arguments: .init(
                     [
-                        .init(
+                        .argument(
                             id: UUID(),
                             label: "target",
                             expression: .functionCallExpression(
@@ -72,7 +72,7 @@ public class LogicCompilerConfigurationInput: NSView {
                                 arguments: .empty
                             )
                         ),
-                        .init(
+                        .argument(
                             id: UUID(),
                             label: "framework",
                             expression: .functionCallExpression(

@@ -22,7 +22,7 @@ const singleChildMapping = {
   declaration: 'content',
   variable: 'initializer',
   literalExpression: 'literal',
-  functionCallArgument: 'expression',
+  argument: 'expression',
   memberExpression: 'expression',
 }
 
@@ -31,6 +31,7 @@ const multipleChildMapping = {
   namespace: 'declarations',
   topLevelDeclarations: 'declarations',
   record: 'declarations',
+  functionCallExpression: 'arguments',
 }
 
 const implicitPlaceholderMapping = {
@@ -38,6 +39,7 @@ const implicitPlaceholderMapping = {
   namespace: 'declarations',
   topLevelDeclarations: 'declarations',
   record: 'declarations',
+  functionCallExpression: 'arguments',
 }
 
 const nodeRenaming = {
@@ -81,12 +83,7 @@ function convertLogicJsonToXml(logicJson) {
       case 'functionCallExpression': {
         const { expression, arguments: args } = data
 
-        const mappedArgs = args.map(arg => ({
-          type: 'functionCallArgument',
-          data: arg,
-        }))
-
-        return [expression, ...mappedArgs]
+        return [expression, ...args.filter(isPlaceholder)]
       }
       default:
         break
@@ -113,7 +110,10 @@ function convertLogicJsonToXml(logicJson) {
         const { genericArguments, identifier } = data
 
         if (genericArguments && genericArguments.length > 0) {
-          return `${identifier.string}[${genericArguments.join(',')}]`
+          const serializedArguments = genericArguments.map(
+            serializeAnnotationNode
+          )
+          return `${identifier.string}(${serializedArguments.join(',')})`
         }
 
         return identifier.string
@@ -145,7 +145,7 @@ function convertLogicJsonToXml(logicJson) {
     }
 
     switch (type) {
-      case 'functionCallArgument': {
+      case 'argument': {
         const { label } = data
         attributes.label = label
         break
@@ -153,17 +153,29 @@ function convertLogicJsonToXml(logicJson) {
       case 'variable': {
         const compactLiteralTypes = ['boolean', 'number', 'string', 'color']
 
-        if (
-          data.initializer.type === 'literalExpression' &&
-          compactLiteralTypes.includes(data.initializer.data.literal.type)
-        ) {
-          return {
-            name: nodeName,
-            attributes: {
-              ...attributes,
-              value: data.initializer.data.literal.data.value,
-            },
-            children: [],
+        if (data.initializer.type === 'literalExpression') {
+          const literalType = data.initializer.data.literal.type
+          const literalData = data.initializer.data.literal.data
+          if (compactLiteralTypes.includes(literalType)) {
+            return {
+              name: nodeName,
+              attributes: {
+                ...attributes,
+                value: literalData.value,
+              },
+              children: [],
+            }
+          }
+          if (literalType === 'array') {
+            return {
+              name: nodeName,
+              attributes: {
+                ...attributes,
+              },
+              children: literalData.value
+                .filter(isPlaceholder)
+                .map(processStandardNode),
+            }
           }
         }
 
@@ -193,6 +205,17 @@ function convertLogicJsonToXml(logicJson) {
         attributes.value = value
         break
       }
+      case 'literalExpression': {
+        const literalNode = processStandardNode(data.literal)
+
+        return {
+          name: 'Literal',
+          attributes: {
+            type: literalNode.name,
+            value: literalNode.attributes.value,
+          },
+        }
+      }
       case 'identifierExpression': {
         const { identifier } = data
         attributes.name = identifier.string
@@ -215,6 +238,13 @@ function convertLogicJsonToXml(logicJson) {
 }
 
 function convertLogicXmlToJson(root) {
+  function makePlaceholder() {
+    return {
+      data: { id: createUUID() },
+      type: 'placeholder',
+    }
+  }
+
   const compactLiteralTypes = ['Boolean', 'Number', 'String', 'Color']
 
   function decodeLiteralValue(type, value) {
@@ -232,16 +262,29 @@ function convertLogicXmlToJson(root) {
     }
   }
 
+  // TODO: Handle nested generics
   function deserializeAnnotation(string) {
+    const startParens = string.indexOf('(')
+    const endParens = string.lastIndexOf(')')
+
+    let genericArguments = []
+
+    const name = startParens >= 0 ? string.slice(0, startParens) : string
+    if (startParens !== -1 && endParens !== -1) {
+      const argumentsString = string.slice(startParens + 1, endParens)
+      const args = argumentsString.split(',').map(s => s.trim())
+      genericArguments = args.map(deserializeAnnotation)
+    }
+
     return {
       type: 'typeIdentifier',
       data: {
         id: createUUID(),
-        genericArguments: [],
+        genericArguments,
         identifier: {
           id: createUUID(),
           isPlaceholder: false,
-          string,
+          string: name,
         },
       },
     }
@@ -304,7 +347,21 @@ function convertLogicXmlToJson(root) {
             }),
           },
         }
-      case 'Variable':
+      case 'Literal':
+        return processStandardNode({
+          name: 'LiteralExpression',
+          attributes: {},
+          children: [
+            {
+              name: attributes.type,
+              attributes: {
+                value: attributes.value,
+              },
+              children: [],
+            },
+          ],
+        })
+      case 'Variable': {
         if (compactLiteralTypes.includes(attributes.type) && attributes.value) {
           return processStandardNode({
             name: 'Variable',
@@ -333,7 +390,40 @@ function convertLogicXmlToJson(root) {
           })
         }
 
+        const deserializedType = deserializeAnnotation(attributes.type)
+
+        if (deserializedType.data.identifier.string === 'Array') {
+          return {
+            type: 'variable',
+            data: {
+              id: createUUID(),
+              name: {
+                id: createUUID(),
+                name: attributes.name,
+              },
+              annotation: deserializedType,
+              initializer: {
+                type: 'literalExpression',
+                data: {
+                  id: createUUID(),
+                  literal: {
+                    type: 'array',
+                    data: {
+                      id: createUUID(),
+                      value: [
+                        ...children.map(processStandardNode),
+                        makePlaceholder(),
+                      ],
+                    },
+                  },
+                },
+              },
+            },
+          }
+        }
+
         break
+      }
       case 'Declaration.Variable': {
         if (compactLiteralTypes.includes(attributes.type) && attributes.value) {
           return {
@@ -395,17 +485,18 @@ function convertLogicXmlToJson(root) {
     if (nodeName === 'functionCallExpression') {
       const [expression, ...args] = children
       data.expression = processStandardNode(expression)
-      data.arguments = args.map(processStandardNode).map(arg => arg.data)
+      const processedArguments = args.map(processStandardNode)
+      data.arguments =
+        processedArguments.length === 0
+          ? processedArguments
+          : [...processedArguments, makePlaceholder()]
     } else if (singleChildMapping[nodeName]) {
       data[singleChildMapping[nodeName]] = processStandardNode(children[0])
     } else if (multipleChildMapping[nodeName]) {
       data[multipleChildMapping[nodeName]] = children.map(processStandardNode)
 
       if (implicitPlaceholderMapping[nodeName]) {
-        data[multipleChildMapping[nodeName]].push({
-          data: { id: createUUID() },
-          type: 'placeholder',
-        })
+        data[multipleChildMapping[nodeName]].push(makePlaceholder())
       }
     }
 

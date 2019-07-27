@@ -65,7 +65,7 @@
     "webpack-cli": "^3.2.3"
   },
   "dependencies": {
-    "@lona/serialization": "^0.0.7",
+    "@lona/serialization": "^0.0.9",
     "lodash.lowerfirst": "^4.3.1",
     "lodash.snakecase": "^4.1.1",
     "memfs": "^2.8.0",

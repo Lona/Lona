@@ -39,7 +39,7 @@ extension LogicInput {
                 ),
                 arguments: .init(
                     [
-                        LGCFunctionCallArgument(
+                        LGCFunctionCallArgument.argument(
                             id: UUID(),
                             label: nil,
                             expression: .literalExpression(
@@ -111,7 +111,7 @@ extension LogicInput {
                             ),
                             arguments: .init(
                                 [
-                                    LGCFunctionCallArgument(
+                                    LGCFunctionCallArgument.argument(
                                         id: UUID(),
                                         label: nil,
                                         expression: .literalExpression(
