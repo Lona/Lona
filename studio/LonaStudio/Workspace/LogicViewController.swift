@@ -72,6 +72,7 @@ class LogicViewController: NSViewController {
         logicEditor.fillColor = Colors.contentBackground
         logicEditor.canvasStyle.textMargin = .init(width: 10, height: 6)
         logicEditor.showsFilterBar = true
+        logicEditor.showsMinimap = true
         logicEditor.suggestionFilter = LogicViewController.suggestionFilter
 
         logicEditor.onChangeSuggestionFilter = { [unowned self] value in
