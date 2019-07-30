@@ -202,6 +202,8 @@ class LogicViewController: NSViewController {
 
         guard let substitution = try? substitutionResult.get() else { return }
 
+        successfulUnification = (unificationContext, substitution)
+
         LogicViewController.evaluate(
             program: program,
             rootNode: rootNode,

@@ -144,5 +144,14 @@ public class LabeledColorInput: LabeledInput {
 
             return StandardConfiguration.suggestions(rootNode: program, node: node, formattingOptions: .normal)?(query) ?? []
         }
+
+        logicValueInput.logicEditor.formattingOptions.getArguments = { [unowned self] id in
+            return StandardConfiguration.formatArguments(
+                rootNode: self.logicValueInput.rootNode,
+                id: id,
+                unificationContext: nil,
+                substitution: nil
+            )
+        }
     }
 }

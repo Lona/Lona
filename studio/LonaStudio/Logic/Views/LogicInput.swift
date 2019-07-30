@@ -55,7 +55,7 @@ public class LogicInput: NSView {
 
     // MARK: Private
 
-    private var logicEditor = LogicEditor()
+    public let logicEditor = LogicEditor()
 
     private func setUpViews() {
         logicEditor.fillColor = Colors.contentBackground
