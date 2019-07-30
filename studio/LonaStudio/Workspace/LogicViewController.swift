@@ -168,7 +168,7 @@ class LogicViewController: NSViewController {
         substitution: Unification.Substitution) {
         guard let evaluationContext = try? Compiler.evaluate(
             program,
-            rootNode: rootNode,
+            rootNode: program,
             scopeContext: scopeContext,
             unificationContext: unificationContext,
             substitution: substitution,
