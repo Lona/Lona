@@ -53,6 +53,8 @@ class LogicViewController: NSViewController {
 
     private var colorValues: [UUID: String] = [:]
     private var shadowValues: [UUID: NSShadow] = [:]
+    private var textStyleValues: [UUID: Logic.TextStyle] = [:]
+    private var successfulUnification: (Compiler.UnificationContext, Unification.Substitution)?
 
     private let editorDisplayStyles: [LogicFormattingOptions.Style] = [.visual, .natural]
 
@@ -82,10 +84,23 @@ class LogicViewController: NSViewController {
 
         logicEditor.formattingOptions = LogicFormattingOptions(
             style: LogicViewController.formattingStyle,
+            getArguments: ({ [unowned self] id in
+                let rootNode = self.logicEditor.rootNode
+
+                return StandardConfiguration.formatArguments(
+                    rootNode: rootNode,
+                    id: id,
+                    unificationContext: self.successfulUnification?.0,
+                    substitution: self.successfulUnification?.1
+                )
+            }),
             getColor: ({ [unowned self] id in
                 guard let colorString = self.colorValues[id],
                     let color = NSColor.parse(css: colorString) else { return nil }
                 return (colorString, color)
+            }),
+            getTextStyle: ({ [unowned self] id in
+                return self.textStyleValues[id]
             }),
             getShadow: ({ [unowned self] id in
                 return self.shadowValues[id]
@@ -142,18 +157,15 @@ class LogicViewController: NSViewController {
         )
     }
 
-    public static func evaluate(rootNode: LGCSyntaxNode, colorValues: inout [UUID: String], shadowValues: inout [UUID: NSShadow]) {
-        guard let root = LGCProgram.make(from: rootNode) else { return }
-
-        let program: LGCSyntaxNode = .program(
-            LGCProgram.join(programs: [LogicViewController.makePreludeProgram(), root])
-                .expandImports(importLoader: Library.load)
-        )
-
-        let (scopeContext, unificationContext, substitutionResult) = StandardConfiguration.compile(program)
-
-        guard let substitution = try? substitutionResult.get() else { return }
-
+    public static func evaluate(
+        program: LGCSyntaxNode,
+        rootNode: LGCSyntaxNode,
+        colorValues: inout [UUID: String],
+        shadowValues: inout [UUID: NSShadow],
+        textStyleValues: inout [UUID: Logic.TextStyle],
+        scopeContext: Compiler.ScopeContext,
+        unificationContext: Compiler.UnificationContext,
+        substitution: Unification.Substitution) {
         guard let evaluationContext = try? Compiler.evaluate(
             program,
             rootNode: rootNode,
@@ -164,11 +176,12 @@ class LogicViewController: NSViewController {
             ).get() else { return }
 
         evaluationContext.values.forEach { id, value in
-
             if let colorString = value.colorString {
                 colorValues[id] = colorString
             } else if let shadow = value.nsShadow {
                 shadowValues[id] = shadow
+            } else if let textStyle = value.textStyle {
+                textStyleValues[id] = textStyle
             }
         }
     }
@@ -176,7 +189,29 @@ class LogicViewController: NSViewController {
     private func update() {
         logicEditor.rootNode = rootNode
 
-        LogicViewController.evaluate(rootNode: rootNode, colorValues: &colorValues, shadowValues: &shadowValues)
+        guard let root = LGCProgram.make(from: rootNode) else { return }
+
+        let program: LGCSyntaxNode = .program(
+            LGCProgram.join(programs: [LogicViewController.makePreludeProgram(), root])
+                .expandImports(importLoader: Library.load)
+        )
+
+        let scopeContext = Compiler.scopeContext(program)
+        let unificationContext = Compiler.makeUnificationContext(program, scopeContext: scopeContext)
+        let substitutionResult = Unification.unify(constraints: unificationContext.constraints)
+
+        guard let substitution = try? substitutionResult.get() else { return }
+
+        LogicViewController.evaluate(
+            program: program,
+            rootNode: rootNode,
+            colorValues: &colorValues,
+            shadowValues: &shadowValues,
+            textStyleValues: &textStyleValues,
+            scopeContext: scopeContext,
+            unificationContext: unificationContext,
+            substitution: substitution
+        )
 
         logicEditor.onChangeRootNode = { [unowned self] newRootNode in
             self.onChangeRootNode?(newRootNode)
@@ -470,11 +505,33 @@ extension LogicViewController {
         guard let data = try? Data(contentsOf: url) else { return NSImage() }
 
         guard let node = try? LogicDocument.read(from: data) else { return NSImage() }
+        guard let root = LGCProgram.make(from: node) else { return NSImage() }
 
         var colorValues: [UUID: String] = [:]
         var shadowValues: [UUID: NSShadow] = [:]
+        var textStyleValues: [UUID: Logic.TextStyle] = [:]
 
-        evaluate(rootNode: node, colorValues: &colorValues, shadowValues: &shadowValues)
+        let program: LGCSyntaxNode = .program(
+            LGCProgram.join(programs: [LogicViewController.makePreludeProgram(), root])
+                .expandImports(importLoader: Library.load)
+        )
+
+        let scopeContext = Compiler.scopeContext(program)
+        let unificationContext = Compiler.makeUnificationContext(program, scopeContext: scopeContext)
+        let substitutionResult = Unification.unify(constraints: unificationContext.constraints)
+
+        guard let substitution = try? substitutionResult.get() else { return NSImage() }
+
+        evaluate(
+            program: program,
+            rootNode: node,
+            colorValues: &colorValues,
+            shadowValues: &shadowValues,
+            textStyleValues: &textStyleValues,
+            scopeContext: scopeContext,
+            unificationContext: unificationContext,
+            substitution: substitution
+        )
 
         let formattingOptions = LogicFormattingOptions(
             style: LogicViewController.formattingStyle,
