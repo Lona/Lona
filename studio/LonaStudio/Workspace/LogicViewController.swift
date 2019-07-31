@@ -51,6 +51,7 @@ class LogicViewController: NSViewController {
     private let divider = Divider()
     private let containerView = NSBox()
 
+    private var imports: Set<String> = Set()
     private var colorValues: [UUID: String] = [:]
     private var shadowValues: [UUID: NSShadow] = [:]
     private var textStyleValues: [UUID: Logic.TextStyle] = [:]
@@ -191,9 +192,14 @@ class LogicViewController: NSViewController {
 
         guard let root = LGCProgram.make(from: rootNode) else { return }
 
+        imports.removeAll(keepingCapacity: true)
+
         let program: LGCSyntaxNode = .program(
             LGCProgram.join(programs: [LogicViewController.makePreludeProgram(), root])
-                .expandImports(importLoader: Library.load)
+                .expandImports(importLoader: ({ name in
+                    imports.insert(name)
+                    return Library.load(name: name)
+                }))
         )
 
         let scopeContext = Compiler.scopeContext(program)
@@ -220,7 +226,7 @@ class LogicViewController: NSViewController {
             return true
         }
 
-        logicEditor.suggestionsForNode = { rootNode, node, query in
+        logicEditor.suggestionsForNode = { [unowned self] rootNode, node, query in
             guard let root = LGCProgram.make(from: rootNode) else { return [] }
 
             let program: LGCSyntaxNode = .program(
@@ -228,7 +234,7 @@ class LogicViewController: NSViewController {
                     .expandImports(importLoader: Library.load)
             )
 
-            let recommended = LogicViewController.recommendedSuggestions(rootNode: program, selectedNode: node, query: query)
+            let recommended = LogicViewController.recommendedSuggestions(rootNode: program, selectedNode: node, query: query, imports: self.imports)
 
             return recommended
         }
@@ -348,7 +354,7 @@ class LogicViewController: NSViewController {
         return .init(style: formattingStyle, locale: .en_US, getColor: makeGetColor(rootNode: rootNode))
     }
 
-    public static func recommendedSuggestions(rootNode: LGCSyntaxNode, selectedNode: LGCSyntaxNode, query: String) -> [LogicSuggestionItem] {
+    public static func recommendedSuggestions(rootNode: LGCSyntaxNode, selectedNode: LGCSyntaxNode, query: String, imports: Set<String>) -> [LogicSuggestionItem] {
         var all: [LogicSuggestionItem]
         if let suggestionBuilder = StandardConfiguration.suggestions(
             rootNode: rootNode,
@@ -406,6 +412,66 @@ There are a variety of naming conventions for colors, each with their own streng
                 })
             )
 
+            let shadowVariable = LogicSuggestionItem(
+                title: "Shadow Variable",
+                category: "Declarations".uppercased(),
+                node: LGCSyntaxNode.declaration(
+                    LGCDeclaration.variable(
+                        id: UUID(),
+                        name: LGCPattern(id: variableId, name: "name"),
+                        annotation: LGCTypeAnnotation.typeIdentifier(
+                            id: UUID(),
+                            identifier: LGCIdentifier(id: UUID(), string: "Shadow", isPlaceholder: false),
+                            genericArguments: .empty
+                        ),
+                        initializer: .identifierExpression(
+                            id: UUID(),
+                            identifier: LGCIdentifier(id: UUID(), string: "value", isPlaceholder: true)
+                        ),
+                        comment: nil
+                    )
+                ),
+                suggestionFilters: [.recommended],
+                nextFocusId: variableId,
+                documentation: ({ builder in
+                    return LightMark.makeScrollView(markdown: """
+# Shadow Variable
+
+Define a shadow variable that can be used throughout your design system and UI components.
+""", renderingOptions: .init(formattingOptions: builder.formattingOptions))
+                })
+            )
+
+            let textStyleVariable = LogicSuggestionItem(
+                title: "Text Style Variable",
+                category: "Declarations".uppercased(),
+                node: LGCSyntaxNode.declaration(
+                    LGCDeclaration.variable(
+                        id: UUID(),
+                        name: LGCPattern(id: variableId, name: "name"),
+                        annotation: LGCTypeAnnotation.typeIdentifier(
+                            id: UUID(),
+                            identifier: LGCIdentifier(id: UUID(), string: "TextStyle", isPlaceholder: false),
+                            genericArguments: .empty
+                        ),
+                        initializer: .identifierExpression(
+                            id: UUID(),
+                            identifier: LGCIdentifier(id: UUID(), string: "value", isPlaceholder: true)
+                        ),
+                        comment: nil
+                    )
+                ),
+                suggestionFilters: [.recommended],
+                nextFocusId: variableId,
+                documentation: ({ builder in
+                    return LightMark.makeScrollView(markdown: """
+# Text Style Variable
+
+Define a text style variable that can be used throughout your design system and UI components.
+""", renderingOptions: .init(formattingOptions: builder.formattingOptions))
+                })
+            )
+
             let patternId = UUID()
 
             let namespace = LogicSuggestionItem(
@@ -431,7 +497,19 @@ This will generate fairly different code for each platform, so if you're curious
                 })
             )
 
-            return [colorVariable, namespace].titleContains(prefix: query) + all
+            var suggestedVariables: [LogicSuggestionItem] = []
+
+            if imports.contains("Color") || imports.contains("TextStyle") || imports.contains("Shadow") {
+                suggestedVariables.append(colorVariable)
+            }
+            if imports.contains("Shadow") {
+                suggestedVariables.append(shadowVariable)
+            }
+            if imports.contains("TextStyle") {
+                suggestedVariables.append(textStyleVariable)
+            }
+
+            return (suggestedVariables + [namespace]).titleContains(prefix: query) + all
         default:
             return all.map {
                 var node = $0

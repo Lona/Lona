@@ -43,86 +43,94 @@ enum WorkspaceTemplate {
         }
     }
 
-    static func makeDesignTokensWorkspace(workspaceName: String) -> VirtualNode {
-        func makeColor(name: String, colorString: String) -> LGCDeclaration {
-            return .variable(
-                name: name,
-                annotation: .typeIdentifier(name: "Color"),
-                initializer: .colorLiteral(colorString)
-            )
+    static func makeColor(name: String, colorString: String) -> LGCDeclaration {
+        return .variable(
+            name: name,
+            annotation: .typeIdentifier(name: "Color"),
+            initializer: .colorLiteral(colorString)
+        )
+    }
+
+    static func makeShadow(name: String, y: CGFloat? = nil, blur: CGFloat? = nil, colorIdentifier: String? = nil) -> LGCDeclaration {
+        var arguments: [LGCFunctionCallArgument] = []
+
+        if let y = y {
+            arguments.append(.argument(id: UUID(), label: "y", expression: .numberLiteral(y)))
         }
 
-        func makeShadow(name: String, y: CGFloat, blur: CGFloat, colorIdentifier: String) -> LGCDeclaration {
-            return .variable(
-                name: name,
-                annotation: .typeIdentifier(name: "Shadow"),
-                initializer: .functionCallExpression(
-                    id: UUID(),
-                    expression: .identifierExpression(id: UUID(), identifier: .init("Shadow")),
-                    arguments: .init(
-                        [
-                            .argument(id: UUID(), label: "y", expression: .numberLiteral(y)),
-                            .argument(id: UUID(), label: "blur", expression: .numberLiteral(blur)),
-                            .argument(id: UUID(), label: "color", expression: .identifierExpression(id: UUID(), identifier: .init(colorIdentifier)))
-                        ]
-                    )
-                )
-            )
+        if let blur = blur {
+            arguments.append(.argument(id: UUID(), label: "blur", expression: .numberLiteral(blur)))
         }
 
-        func makeOptional(expression: LGCExpression) -> LGCExpression {
-            return .functionCallExpression(
+        if let colorIdentifier = colorIdentifier {
+            arguments.append(.argument(id: UUID(), label: "color", expression: .identifierExpression(id: UUID(), identifier: .init(colorIdentifier))))
+        }
+
+        return .variable(
+            name: name,
+            annotation: .typeIdentifier(name: "Shadow"),
+            initializer: .functionCallExpression(
                 id: UUID(),
-                expression: .memberExpression(
-                    id: UUID(),
-                    expression: LGCExpression.identifierExpression(id: UUID(), identifier: .init("Optional")),
-                    memberName: .init("value")
-                ),
+                expression: .identifierExpression(id: UUID(), identifier: .init("Shadow")),
+                arguments: .init(arguments)
+            )
+        )
+    }
+
+    static func makeOptional(expression: LGCExpression) -> LGCExpression {
+        return .functionCallExpression(
+            id: UUID(),
+            expression: .memberExpression(
+                id: UUID(),
+                expression: LGCExpression.identifierExpression(id: UUID(), identifier: .init("Optional")),
+                memberName: .init("value")
+            ),
+            arguments: .init(
+                [
+                    .argument(id: UUID(), label: nil, expression: expression)
+                ]
+            )
+        )
+    }
+
+    static func makeTextStyle(name: String, fontSize: CGFloat, colorIdentifier: String) -> LGCDeclaration {
+        return .variable(
+            name: name,
+            annotation: .typeIdentifier(name: "TextStyle"),
+            initializer: .functionCallExpression(
+                id: UUID(),
+                expression: .identifierExpression(id: UUID(), identifier: .init("TextStyle")),
                 arguments: .init(
                     [
-                        .argument(id: UUID(), label: nil, expression: expression)
+                        .argument(
+                            id: UUID(),
+                            label: "fontSize",
+                            expression: makeOptional(expression: .numberLiteral(fontSize))
+                        ),
+                        .argument(
+                            id: UUID(),
+                            label: "color",
+                            expression: makeOptional(expression: .identifierExpression(id: UUID(), identifier: .init(colorIdentifier)))
+                        )
                     ]
                 )
             )
-        }
+        )
+    }
 
-        func makeTextStyle(name: String, fontSize: CGFloat, colorIdentifier: String) -> LGCDeclaration {
-            return .variable(
-                name: name,
-                annotation: .typeIdentifier(name: "TextStyle"),
-                initializer: .functionCallExpression(
-                    id: UUID(),
-                    expression: .identifierExpression(id: UUID(), identifier: .init("TextStyle")),
-                    arguments: .init(
-                        [
-                            .argument(
-                                id: UUID(),
-                                label: "fontSize",
-                                expression: makeOptional(expression: .numberLiteral(fontSize))
-                            ),
-                            .argument(
-                                id: UUID(),
-                                label: "color",
-                                expression: makeOptional(expression: .identifierExpression(id: UUID(), identifier: .init(colorIdentifier)))
-                            )
-                        ]
-                    )
-                )
-            )
-        }
+    static func makeImport(name: String) -> LGCDeclaration {
+        return .importDeclaration(id: UUID(), name: LGCPattern(id: UUID(), name: name))
+    }
 
-        func makeImport(name: String) -> LGCDeclaration {
-            return .importDeclaration(id: UUID(), name: LGCPattern(id: UUID(), name: name))
-        }
+    static func makeNamespace(name: String, declarations: [LGCDeclaration]) -> LGCDeclaration {
+        return .namespace(
+            id: UUID(),
+            name: .init(id: UUID(), name: name),
+            declarations: LGCList<LGCDeclaration>(declarations)
+        )
+    }
 
-        func makeNamespace(name: String, declarations: [LGCDeclaration]) -> LGCDeclaration {
-            return .namespace(
-                id: UUID(),
-                name: .init(id: UUID(), name: name),
-                declarations: LGCList<LGCDeclaration>(declarations)
-            )
-        }
-
+    static func makeDesignTokensWorkspace(workspaceName: String) -> VirtualNode {
         return VirtualDirectory(name: workspaceName) {
             [
                 VirtualFile(name: "README.md") {
