@@ -127,7 +127,8 @@ extension ParameterListEditorView {
                             annotation: LGCTypeAnnotation(csType: param.type),
                             defaultValue: param.hasDefaultValue
                                 ? .value(id: UUID(), expression: LogicInput.expression(forValue: param.defaultValue))
-                                : .none(id: UUID())
+                                : .none(id: UUID()),
+                            comment: nil
                         )
                         } + [LGCFunctionParameter.makePlaceholder()]
                 )
