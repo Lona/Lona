@@ -29,6 +29,12 @@ let isPlaceholderEnumCase = (value: LogicAst.enumerationCase) =>
   | _ => false
   };
 
+let isPlaceholderArgument = (value: LogicAst.functionCallArgument) =>
+  switch (value) {
+  | Placeholder(_) => true
+  | _ => false
+  };
+
 let rec unfoldPairs = (items: LogicAst.list('t)) =>
   switch (items) {
   | Empty => []
@@ -47,4 +53,5 @@ let variableBuilder =
   name,
   annotation,
   initializer_,
+  comment: None,
 };

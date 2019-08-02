@@ -237,11 +237,9 @@ and expression = (context: context, node: LogicAst.expression): SwiftAst.node =>
       "arguments":
         arguments
         |> unfoldPairs
+        |> Sequence.rejectWhere(isPlaceholderArgument)
         |> List.map((arg: LogicAst.functionCallArgument) => {
-             let LogicAst.FunctionCallArgument({
-                   label,
-                   expression: innerExpression,
-                 }) = arg;
+             let LogicAst.Argument({label, expression: innerExpression}) = arg;
              SwiftAst.FunctionCallArgument({
                "name":
                  label |> Monad.map(str => SwiftAst.SwiftIdentifier(str)),

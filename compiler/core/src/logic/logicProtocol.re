@@ -47,6 +47,9 @@ let uuid = (node: LogicAst.syntaxNode): string =>
   | GenericParameter(Parameter({id})) => id
   | GenericParameter(Placeholder({id})) => id
   | TopLevelDeclarations(TopLevelDeclarations({id})) => id
+  | FunctionCallArgument(Argument({id})) => id
+  | FunctionCallArgument(Placeholder({id})) => id
+  | Comment(Comment({id})) => id
   };
 
 let unfoldStatements = block =>
@@ -79,10 +82,7 @@ let unfoldEnumerationCases = block =>
 let unfoldFunctionCallArguments = block =>
   block
   |> LogicUtils.unfoldPairs
-  |> List.map((x: LogicAst.functionCallArgument) => {
-       let LogicAst.FunctionCallArgument({expression}) = x;
-       LogicAst.Expression(expression);
-     });
+  |> List.map(x => LogicAst.FunctionCallArgument(x));
 
 let subnodes = (node: LogicAst.syntaxNode): list(LogicAst.syntaxNode) =>
   switch (node) {
@@ -188,6 +188,11 @@ let subnodes = (node: LogicAst.syntaxNode): list(LogicAst.syntaxNode) =>
   | GenericParameter(Placeholder(_)) => []
   | TopLevelDeclarations(TopLevelDeclarations({declarations})) =>
     unfoldDeclarations(declarations)
+  | FunctionCallArgument(Argument({expression})) => [
+      LogicAst.Expression(expression),
+    ]
+  | FunctionCallArgument(Placeholder(_)) => []
+  | Comment(_) => []
   };
 
 let rec pathTo =
@@ -346,6 +351,11 @@ let nodeTypeDescription = (node: LogicAst.syntaxNode): string =>
     "GenericParameter(Placeholder({id: " ++ id ++ "}))"
   | TopLevelDeclarations(TopLevelDeclarations({id})) =>
     "TopLevelDeclarations(TopLevelDeclarations({id: " ++ id ++ "}))"
+  | Comment(Comment({id})) => "Comment(Comment({id: " ++ id ++ "}))"
+  | FunctionCallArgument(Argument({id})) =>
+    "FunctionCallArgument(Argument({id: " ++ id ++ "}))"
+  | FunctionCallArgument(Placeholder({id})) =>
+    "FunctionCallArgument(Placeholder({id: " ++ id ++ "}))"
   };
 
 let rec nodeHierarchyDescription =
