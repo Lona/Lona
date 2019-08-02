@@ -408,7 +408,7 @@ We might define a variable, `ocean`, to represent the hex code `#69D2E7`:
 
 There are a variety of naming conventions for colors, each with their own strengths and weaknesses. For more details and recommendations on naming conventions, see [this documentation page](http://google.com).
 
-""", renderingOptions: .init(formattingOptions: builder.formattingOptions))
+""", renderingOptions: .init(formattingOptions: .normal))
                 })
             )
 
