@@ -224,6 +224,18 @@ let find =
   | None => None
   };
 
+let parentOf =
+    (node: LogicAst.syntaxNode, id: string): option(LogicAst.syntaxNode) =>
+  switch (pathTo(node, id)) {
+  | Some(path) =>
+    switch (List.rev(path)) {
+    | [_, parent, ..._] => Some(parent)
+    | [_]
+    | [] => None
+    }
+  | None => None
+  };
+
 let declarationPathTo = (node: LogicAst.syntaxNode, id: string) =>
   switch (pathTo(node, id)) {
   | None => []

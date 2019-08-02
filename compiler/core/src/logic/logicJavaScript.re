@@ -1,6 +1,11 @@
 open LogicUtils;
 open Operators;
 
+type recordParameter = {
+  name: string,
+  defaultValue: LogicAst.expression,
+};
+
 let createVariableOrProperty =
     (
       isStaticContext: bool,
@@ -220,17 +225,84 @@ and expression =
       expression: expression(context, innerExpression),
     })
   | FunctionCallExpression({arguments, expression: innerExpression}) =>
-    CallExpression({
-      callee: expression(context, innerExpression),
-      arguments:
-        arguments
-        |> unfoldPairs
-        |> Sequence.rejectWhere(isPlaceholderArgument)
-        |> List.map((arg: LogicAst.functionCallArgument) => {
-             let LogicAst.Argument({expression: innerExpression}) = arg;
-             expression(context, innerExpression);
+    let recordDefinition: option(list(recordParameter)) =
+      switch (innerExpression) {
+      | IdentifierExpression({identifier: Identifier({id})}) =>
+        let scope = LogicScope.build(context.rootNode, ());
+        let patternId = (scope.identifierToPattern)#get(id);
+
+        switch (patternId) {
+        | Some(patternId) =>
+          let pattern = LogicProtocol.parentOf(context.rootNode, patternId);
+          switch (pattern) {
+          | Some(Declaration(Record({declarations}))) =>
+            let parameters =
+              declarations
+              |> unfoldPairs
+              |> List.map((declaration: LogicAst.declaration) =>
+                   switch (declaration) {
+                   | Variable({
+                       name: Pattern({name}),
+                       initializer_: Some(defaultValue),
+                     }) =>
+                     Some({name, defaultValue})
+                   | _ => None
+                   }
+                 )
+              |> Sequence.compact;
+            Some(parameters);
+          | _ => None
+          };
+        | None => None
+        };
+      | _ => None
+      };
+
+    let validArguments =
+      arguments |> unfoldPairs |> Sequence.rejectWhere(isPlaceholderArgument);
+
+    switch (recordDefinition) {
+    | Some(parameters) =>
+      ObjectLiteral(
+        parameters
+        |> List.map((parameter: recordParameter) => {
+             let found =
+               validArguments
+               |> Sequence.firstWhere((arg: LogicAst.functionCallArgument) =>
+                    switch (arg) {
+                    | Argument({label: Some(label)})
+                        when label == parameter.name =>
+                      true
+                    | Argument(_) => false
+                    | Placeholder(_) => false
+                    }
+                  );
+             switch (found) {
+             | Some(Argument({expression: value})) =>
+               JavaScriptAst.Property({
+                 key: Identifier([parameter.name]),
+                 value: Some(expression(context, value)),
+               })
+             | Some(Placeholder(_))
+             | None =>
+               JavaScriptAst.Property({
+                 key: Identifier([parameter.name]),
+                 value: Some(expression(context, parameter.defaultValue)),
+               })
+             };
            }),
-    })
+      )
+    | None =>
+      CallExpression({
+        callee: expression(context, innerExpression),
+        arguments:
+          validArguments
+          |> List.map((arg: LogicAst.functionCallArgument) => {
+               let LogicAst.Argument({expression: innerExpression}) = arg;
+               expression(context, innerExpression);
+             }),
+      })
+    };
   | Placeholder(_) =>
     Js.log("Placeholder expression remaining");
     Empty;
