@@ -144,7 +144,7 @@ let convertTypes = (target, contents) => {
   };
 };
 
-let convertLogic = (target, config, contents) =>
+let convertLogic = (target, config: Config.t, contents) =>
   switch (target) {
   | Types.Xml => "Can't convert Logic to XML"
   | Types.Reason => "Converting Logic to Reason isn't supported yet"

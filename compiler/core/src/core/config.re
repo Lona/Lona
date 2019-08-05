@@ -9,6 +9,7 @@ type t = {
   plugins: list(Plugin.t),
   lonaFile: file(LonaFile.t),
   logicFiles: list(file(LogicAst.syntaxNode)),
+  logicLibraries: list(file(LogicAst.syntaxNode)),
   colorsFile: file(list(Color.t)),
   textStylesFile: file(TextStyle.file),
   shadowsFile: file(Shadow.file),
@@ -263,6 +264,8 @@ let load =
       ++ "'. A workspace must contain a `lona.json` file.",
     )
   | Some(workspacePath) =>
+    let logicLibrariesPath =
+      Node.Path.join2([%bs.raw {| __dirname |}], "../static/logic");
     let lonaFile = Workspace.lonaFile(workspacePath);
     Js.Promise.(
       Workspace.svgFiles(workspacePath, ~ignore=lonaFile.contents.ignore)
@@ -285,6 +288,11 @@ let load =
              logicFiles:
                Workspace.logicFiles(
                  workspacePath,
+                 ~ignore=lonaFile.contents.ignore,
+               ),
+             logicLibraries:
+               Workspace.logicFiles(
+                 logicLibrariesPath,
                  ~ignore=lonaFile.contents.ignore,
                ),
              colorsFile:

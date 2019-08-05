@@ -45,19 +45,82 @@ let sharedPrefix =
   inner(aPath, bPath);
 };
 
+let rec resolveImports =
+        (
+          config: Config.t,
+          program: LogicAst.programProgram,
+          ~existingImports: ref(list(string))=ref([]),
+          (),
+        )
+        : LogicAst.programProgram => {
+  let out =
+    program.block
+    |> unfoldPairs
+    |> Sequence.rejectWhere(isPlaceholderStatement)
+    |> List.map(statement =>
+         switch (statement) {
+         | LogicAst.Loop(_) => [statement]
+         | Declaration({
+             content:
+               ImportDeclaration({name: Pattern({name: libraryName})}),
+           }) =>
+           let alreadyFound = List.mem(libraryName, existingImports^);
+           let library =
+             config.logicLibraries
+             |> Sequence.firstWhere((file: Config.file(LogicAst.syntaxNode)) =>
+                  Node.Path.basename_ext(file.path, ".logic") == libraryName
+                );
+           switch (alreadyFound, library) {
+           | (false, Some(file)) =>
+             existingImports := [libraryName, ...existingImports^];
+             let libraryProgram = LogicUtils.makeProgram(file.contents);
+             switch (libraryProgram) {
+             | Some(program) =>
+               let resolvedProgram =
+                 resolveImports(config, program, ~existingImports, ());
+               let statements = resolvedProgram.block |> unfoldPairs;
+               [statement, ...statements];
+             | None => [statement]
+             };
+           | (true, Some(_)) => [statement]
+           | (_, None) =>
+             Js.log2("Failed to find and import library", libraryName);
+             [statement];
+           };
+         | _ => [statement]
+         }
+       )
+    |> List.concat;
+
+  {id: Uuid.next(), block: out |> foldPairs};
+};
+
 let rec convert =
-        (config: Config.t, node: LogicAst.syntaxNode): JavaScriptAst.node => {
-  let context = {config, isStatic: false, isTopLevel: true, rootNode: node};
-  /* Js.log(LogicProtocol.nodeHierarchyDescription(node, ())); */
-  switch (node) {
-  | LogicAst.Program(Program(contents)) => program(context, contents)
-  | LogicAst.TopLevelDeclarations(TopLevelDeclarations(contents)) =>
-    topLevelDeclarations(context, contents)
-  | _ =>
-    Js.log("Unhandled syntaxNode type");
+        (config: Config.t, node: LogicAst.syntaxNode): JavaScriptAst.node =>
+  switch (LogicUtils.makeProgram(node)) {
+  | Some(programNode) =>
+    let resolvedProgramNode =
+      LogicAst.Program(Program(resolveImports(config, programNode, ())));
+    let context = {
+      config,
+      isStatic: false,
+      isTopLevel: true,
+      rootNode: node,
+      resolvedRootNode: resolvedProgramNode,
+    };
+    /* Js.log(LogicProtocol.nodeHierarchyDescription(node, ())); */
+    switch (node) {
+    | LogicAst.Program(Program(contents)) => program(context, contents)
+    | LogicAst.TopLevelDeclarations(TopLevelDeclarations(contents)) =>
+      topLevelDeclarations(context, contents)
+    | _ =>
+      Js.log("Unhandled syntaxNode type");
+      Empty;
+    };
+  | None =>
+    Js.log("Failed to make program node from logic file");
     Empty;
-  };
-}
+  }
 and program =
     (context: context, node: LogicAst.programProgram): JavaScriptAst.node =>
   JavaScriptAst.Program(
@@ -199,7 +262,7 @@ and expression =
       identifier: Identifier({id, string: name, isPlaceholder: _}),
     }) =>
     let standard: JavaScriptAst.node = Identifier([Format.lowerFirst(name)]);
-    let scope = LogicScope.build(context.rootNode, ());
+    let scope = LogicScope.build(context.resolvedRootNode, ());
     let patternId = (scope.identifierToPattern)#get(id);
     switch (patternId) {
     | Some(patternId) =>
@@ -228,12 +291,13 @@ and expression =
     let recordDefinition: option(list(recordParameter)) =
       switch (innerExpression) {
       | IdentifierExpression({identifier: Identifier({id})}) =>
-        let scope = LogicScope.build(context.rootNode, ());
+        let scope = LogicScope.build(context.resolvedRootNode, ());
         let patternId = (scope.identifierToPattern)#get(id);
 
         switch (patternId) {
         | Some(patternId) =>
-          let pattern = LogicProtocol.parentOf(context.rootNode, patternId);
+          let pattern =
+            LogicProtocol.parentOf(context.resolvedRootNode, patternId);
           switch (pattern) {
           | Some(Declaration(Record({declarations}))) =>
             let parameters =
