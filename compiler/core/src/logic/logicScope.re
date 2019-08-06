@@ -60,186 +60,194 @@ let build =
     : scopeContext => {
   let config = LogicTraversal.emptyConfig();
 
-  rootNode
-  |> LogicTraversal.reduce(
-       config,
-       initialContext,
-       (context, node, config) => {
-         0 |> ignore; /* To keep line, for debugging */
-         if (Some(LogicProtocol.uuid(node)) == targetId) {
-           config.stopTraversal := true;
-           context;
-         } else {
-           config.needsRevisitAfterTraversingChildren := true;
+  let rec walk = (context, node, config: LogicTraversal.traversalConfig) => {
+    0 |> ignore; /* To keep line, for debugging */
+    if (Some(LogicProtocol.uuid(node)) == targetId) {
+      config.stopTraversal := true;
+      context;
+    } else {
+      config.needsRevisitAfterTraversingChildren := true;
 
-           switch (config._isRevisit^, node) {
-           | (false, TypeAnnotation(_)) =>
-             config.ignoreChildren := true;
-             config.needsRevisitAfterTraversingChildren := false;
-             context;
-           | (true, Identifier(Identifier({id, string, isPlaceholder}))) =>
-             if (isPlaceholder) {
-               context;
-             } else {
-               let lookup = (context.patternNames)#get(string);
-               switch (lookup) {
-               | Some(value) => (context.identifierToPattern)#set(id, value)
-               | None =>
-                 Js.log2("Failed to find pattern", string);
-                 ();
-               };
-               context;
+      switch (config._isRevisit^, node) {
+      | (false, TypeAnnotation(_)) =>
+        config.ignoreChildren := true;
+        config.needsRevisitAfterTraversingChildren := false;
+        context;
+      | (true, Identifier(Identifier({id, string, isPlaceholder}))) =>
+        if (isPlaceholder) {
+          context;
+        } else {
+          let lookup = (context.patternNames)#get(string);
+          switch (lookup) {
+          | Some(value) => (context.identifierToPattern)#set(id, value)
+          | None =>
+            Js.log2("Failed to find pattern", string);
+            ();
+          };
+          context;
+        }
+      | (false, Expression(MemberExpression({id}) as expression)) =>
+        config.ignoreChildren := true;
+
+        switch (LogicProtocol.flattenedMemberExpression(expression)) {
+        | Some(identifiers) =>
+          let keyPath =
+            identifiers
+            |> List.map((identifier: LogicAst.identifier) =>
+                 switch (identifier) {
+                 | Identifier({string}) => string
+                 }
+               );
+          switch ((context.namespace)#get(keyPath)) {
+          | Some(patternId) =>
+            (context.identifierToPattern)#set(id, patternId);
+            context;
+          | None => context
+          };
+
+        | None => context
+        };
+      | (true, Declaration(Variable({name: Pattern({id, name})}))) =>
+        (context.patternToName)#set(id, name);
+        (context.patternNames)#set(name, id);
+
+        setInCurrentNamespace(name, id, context);
+
+        context;
+      | (
+          false,
+          Declaration(
+            Function({
+              name: Pattern({id: functionId, name: functionName}),
+              parameters,
+              genericParameters,
+            }),
+          ),
+        ) =>
+        (context.patternToName)#set(functionId, functionName);
+        (context.patternNames)#set(functionName, functionId);
+        (context.patternNames)#push();
+        setInCurrentNamespace(functionName, functionId, context);
+
+        parameters
+        |> LogicUtils.unfoldPairs
+        |> List.iter((parameter: LogicAst.functionParameter) =>
+             switch (parameter) {
+             | Placeholder(_) => ()
+             | Parameter({
+                 localName: Pattern({id: parameterId, name: parameterName}),
+               }) =>
+               (context.patternToName)#set(parameterId, parameterName);
+               (context.patternNames)#set(parameterName, parameterId);
              }
-           | (false, Expression(MemberExpression({id}) as expression)) =>
-             config.ignoreChildren := true;
+           );
 
-             switch (LogicProtocol.flattenedMemberExpression(expression)) {
-             | Some(identifiers) =>
-               let keyPath =
-                 identifiers
-                 |> List.map((identifier: LogicAst.identifier) =>
-                      switch (identifier) {
-                      | Identifier({string}) => string
-                      }
-                    );
-               switch ((context.namespace)#get(keyPath)) {
-               | Some(patternId) =>
-                 (context.identifierToPattern)#set(id, patternId);
-                 context;
-               | None => context
-               };
+        setGenericParameters(genericParameters, context);
 
-             | None => context
-             };
-           | (true, Declaration(Variable({name: Pattern({id, name})}))) =>
-             (context.patternToName)#set(id, name);
-             (context.patternNames)#set(name, id);
+        context;
+      | (true, Declaration(Function(_))) =>
+        let _ = (context.patternNames)#pop();
 
-             setInCurrentNamespace(name, id, context);
+        context;
+      | (
+          false,
+          Declaration(
+            Record({
+              name: Pattern({id: functionId, name: functionName}),
+              genericParameters,
+              declarations,
+            }),
+          ),
+        ) =>
+        (context.patternToTypeName)#set(functionId, functionName);
 
-             context;
-           | (
-               false,
-               Declaration(
-                 Function({
-                   name: Pattern({id: functionId, name: functionName}),
-                   parameters,
-                   genericParameters,
-                 }),
-               ),
-             ) =>
-             (context.patternToName)#set(functionId, functionName);
-             (context.patternNames)#set(functionName, functionId);
-             (context.patternNames)#push();
-             setInCurrentNamespace(functionName, functionId, context);
+        setGenericParameters(genericParameters, context);
 
-             parameters
-             |> LogicUtils.unfoldPairs
-             |> List.iter((parameter: LogicAst.functionParameter) =>
-                  switch (parameter) {
-                  | Placeholder(_) => ()
-                  | Parameter({
-                      localName:
-                        Pattern({id: parameterId, name: parameterName}),
-                    }) =>
-                    (context.patternToName)#set(parameterId, parameterName);
-                    (context.patternNames)#set(parameterName, parameterId);
-                  }
-                );
+        declarations
+        |> LogicUtils.unfoldPairs
+        |> List.iter((declaration: LogicAst.declaration) =>
+             switch (declaration) {
+             | Variable({initializer_: Some(expression)}) =>
+               let _ =
+                 LogicAst.Expression(expression)
+                 |> LogicTraversal.reduce(config, context, walk);
+               ();
+             | _ => ()
+             }
+           );
 
-             setGenericParameters(genericParameters, context);
+        config.ignoreChildren := true;
 
-             context;
-           | (true, Declaration(Function(_))) =>
-             let _ = (context.patternNames)#pop();
+        context;
+      | (true, Declaration(Record({name: Pattern({id, name})}))) =>
+        let builtins = ["Boolean", "Number", "String", "Array", "Color"];
 
-             context;
-           | (
-               false,
-               Declaration(
-                 Record({
-                   name: Pattern({id: functionId, name: functionName}),
-                   genericParameters,
-                 }),
-               ),
-             ) =>
-             (context.patternToTypeName)#set(functionId, functionName);
+        if (List.mem(name, builtins)) {
+          context;
+        } else {
+          (context.patternToName)#set(id, name);
+          (context.patternNames)#set(name, id);
 
-             setGenericParameters(genericParameters, context);
+          setInCurrentNamespace(name, id, context);
 
-             config.ignoreChildren := true;
+          context;
+        };
+      | (
+          false,
+          Declaration(
+            Enumeration({
+              name: Pattern({id: functionId, name: functionName}),
+              genericParameters,
+            }),
+          ),
+        ) =>
+        (context.patternToTypeName)#set(functionId, functionName);
 
-             context;
-           | (true, Declaration(Record({name: Pattern({id, name})}))) =>
-             let builtins = ["Boolean", "Number", "String", "Array", "Color"];
+        setGenericParameters(genericParameters, context);
 
-             if (List.mem(name, builtins)) {
-               context;
-             } else {
-               (context.patternToName)#set(id, name);
-               (context.patternNames)#set(name, id);
+        context;
+      | (
+          true,
+          Declaration(
+            Enumeration({
+              name: Pattern({name: functionName}),
+              genericParameters,
+              cases,
+            }),
+          ),
+        ) =>
+        pushNamespace(functionName, context);
 
-               setInCurrentNamespace(name, id, context);
+        /* Add initializers for each case into the namespace */
+        cases
+        |> LogicUtils.unfoldPairs
+        |> List.iter((case: LogicAst.enumerationCase) =>
+             switch (case) {
+             | Placeholder(_) => ()
+             | EnumerationCase({name: Pattern({id: caseId, name: caseName})}) =>
+               setInCurrentNamespace(caseName, caseId, context)
+             }
+           );
 
-               context;
-             };
-           | (
-               false,
-               Declaration(
-                 Enumeration({
-                   name: Pattern({id: functionId, name: functionName}),
-                   genericParameters,
-                 }),
-               ),
-             ) =>
-             (context.patternToTypeName)#set(functionId, functionName);
+        setGenericParameters(genericParameters, context);
 
-             setGenericParameters(genericParameters, context);
+        popNamespace(context);
 
-             context;
-           | (
-               true,
-               Declaration(
-                 Enumeration({
-                   name: Pattern({name: functionName}),
-                   genericParameters,
-                   cases,
-                 }),
-               ),
-             ) =>
-             pushNamespace(functionName, context);
+        context;
+      | (false, Declaration(Namespace({name: Pattern({name})}))) =>
+        (context.patternNames)#push();
+        pushNamespace(name, context);
 
-             /* Add initializers for each case into the namespace */
-             cases
-             |> LogicUtils.unfoldPairs
-             |> List.iter((case: LogicAst.enumerationCase) =>
-                  switch (case) {
-                  | Placeholder(_) => ()
-                  | EnumerationCase({
-                      name: Pattern({id: caseId, name: caseName}),
-                    }) =>
-                    setInCurrentNamespace(caseName, caseId, context)
-                  }
-                );
+        context;
+      | (true, Declaration(Namespace(_))) =>
+        let _ = (context.patternNames)#pop();
+        popNamespace(context);
 
-             setGenericParameters(genericParameters, context);
+        context;
+      | _ => context
+      };
+    };
+  };
 
-             popNamespace(context);
-
-             context;
-           | (false, Declaration(Namespace({name: Pattern({name})}))) =>
-             (context.patternNames)#push();
-             pushNamespace(name, context);
-
-             context;
-           | (true, Declaration(Namespace(_))) =>
-             let _ = (context.patternNames)#pop();
-             popNamespace(context);
-
-             context;
-           | _ => context
-           };
-         };
-       },
-     );
+  rootNode |> LogicTraversal.reduce(config, initialContext, walk);
 };

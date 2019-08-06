@@ -90,3 +90,10 @@ let rec makeProgram =
     });
   | _ => None
   };
+
+let lastIdentifier = (expression: LogicAst.expression) =>
+  switch (expression) {
+  | IdentifierExpression({identifier}) => Some(identifier)
+  | MemberExpression({memberName}) => Some(memberName)
+  | _ => None
+  };
