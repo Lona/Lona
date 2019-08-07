@@ -442,5 +442,10 @@ and literal = (context: context, node: LogicAst.literal): JavaScriptAst.node =>
   | String({value}) => StringLiteral(value)
   | Color({value}) => StringLiteral(value)
   | Array({value}) =>
-    ArrayLiteral(value |> unfoldPairs |> List.map(expression(context)))
+    ArrayLiteral(
+      value
+      |> unfoldPairs
+      |> Sequence.rejectWhere(isPlaceholderExpression)
+      |> List.map(expression(context)),
+    )
   };

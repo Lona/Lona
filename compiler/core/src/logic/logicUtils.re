@@ -18,6 +18,12 @@ let isPlaceholderStatement = (statement: LogicAst.statement) =>
   | _ => false
   };
 
+let isPlaceholderExpression = (expression: LogicAst.expression) =>
+  switch (expression) {
+  | Placeholder(_) => true
+  | _ => false
+  };
+
 let isPlaceholderTypeAnnotation = (value: LogicAst.typeAnnotation) =>
   switch (value) {
   | Placeholder(_) => true
