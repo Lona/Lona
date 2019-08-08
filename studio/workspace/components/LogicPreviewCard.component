@@ -1,0 +1,158 @@
+{
+  "devices" : [
+    {
+      "height" : 240,
+      "heightMode" : "Exactly",
+      "name" : "iPhone SE",
+      "width" : 260
+    }
+  ],
+  "examples" : [
+    {
+      "id" : "Default",
+      "name" : "Default",
+      "params" : {
+        "componentName" : "Lona Component"
+      }
+    },
+    {
+      "id" : "Default",
+      "name" : "Default",
+      "params" : {
+        "componentName" : "Lona Component",
+        "selected" : true
+      }
+    }
+  ],
+  "logic" : [
+    {
+      "assignee" : [
+        "layers",
+        "PreviewName",
+        "text"
+      ],
+      "content" : [
+        "parameters",
+        "titleText"
+      ],
+      "type" : "AssignExpr"
+    },
+    {
+      "assignee" : [
+        "layers",
+        "Image",
+        "image"
+      ],
+      "content" : [
+        "parameters",
+        "image"
+      ],
+      "type" : "AssignExpr"
+    },
+    {
+      "body" : [
+        {
+          "assignee" : [
+            "layers",
+            "Container",
+            "borderColor"
+          ],
+          "content" : {
+            "type" : "LitExpr",
+            "value" : {
+              "data" : "lightblue600",
+              "type" : "Color"
+            }
+          },
+          "type" : "AssignExpr"
+        }
+      ],
+      "condition" : {
+        "left" : [
+          "parameters",
+          "selected"
+        ],
+        "op" : "==",
+        "right" : {
+          "type" : "LitExpr",
+          "value" : {
+            "data" : true,
+            "type" : "Boolean"
+          }
+        },
+        "type" : "BinExpr"
+      },
+      "type" : "IfExpr"
+    }
+  ],
+  "params" : [
+    {
+      "name" : "titleText",
+      "type" : "String"
+    },
+    {
+      "name" : "image",
+      "type" : "URL"
+    },
+    {
+      "name" : "selected",
+      "type" : "Boolean"
+    }
+  ],
+  "root" : {
+    "children" : [
+      {
+        "children" : [
+          {
+            "id" : "Image",
+            "params" : {
+              "alignSelf" : "stretch",
+              "flex" : 1
+            },
+            "type" : "Lona:Image"
+          }
+        ],
+        "id" : "Preview",
+        "params" : {
+          "alignSelf" : "stretch",
+          "backgroundColor" : "dividerSubtle",
+          "borderRadius" : 3,
+          "flex" : 1
+        },
+        "type" : "Lona:View"
+      },
+      {
+        "children" : [
+          {
+            "id" : "PreviewName",
+            "params" : {
+              "alignSelf" : "stretch",
+              "font" : "regular",
+              "numberOfLines" : 2,
+              "text" : "Component"
+            },
+            "type" : "Lona:Text"
+          }
+        ],
+        "id" : "Details",
+        "params" : {
+          "alignSelf" : "stretch",
+          "marginTop" : 5
+        },
+        "type" : "Lona:View"
+      }
+    ],
+    "id" : "Container",
+    "params" : {
+      "alignSelf" : "stretch",
+      "borderRadius" : 4,
+      "borderWidth" : 1,
+      "flex" : 1,
+      "paddingBottom" : 4,
+      "paddingLeft" : 4,
+      "paddingRight" : 4,
+      "paddingTop" : 4
+    },
+    "type" : "Lona:View"
+  }
+}

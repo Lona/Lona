@@ -11,9 +11,22 @@ import Foundation
 
 private let ITEM_IDENTIFIER = NSUserInterfaceItemIdentifier(rawValue: "component")
 private let README_ITEM_IDENTIFIER = NSUserInterfaceItemIdentifier(rawValue: "readme")
+private let LOGIC_ITEM_IDENTIFIER = NSUserInterfaceItemIdentifier(rawValue: "logic")
 private let COLLECTION_VIEW_MARGIN = CGSize(width: 64, height: 32)
 
 private class DoubleClickableComponentPreviewCard: ComponentPreviewCard {
+    var onDoubleClick: (() -> Void)?
+
+    override func mouseDown(with event: NSEvent) {
+        if event.clickCount == 2 {
+            onDoubleClick?()
+        } else {
+            super.mouseDown(with: event)
+        }
+    }
+}
+
+private class DoubleClickableLogicPreviewCard: LogicPreviewCard {
     var onDoubleClick: (() -> Void)?
 
     override func mouseDown(with event: NSEvent) {
@@ -46,6 +59,7 @@ class ComponentPreviewCollectionView: NSView {
 
     public var readme: String = "" { didSet { if oldValue != readme { update(withoutReloading: true) } } }
     public var items: [LonaModule.ComponentFile] = [] { didSet { update(withoutPrefixChange: true) } }
+    public var logicItems: [URL] = [] { didSet { update(withoutPrefixChange: true) } }
     public var onSelectItem: ((String) -> Void)? { didSet { update(withoutReloading: true, withoutPrefixChange: true) } }
 
     // MARK: - Private
@@ -54,6 +68,10 @@ class ComponentPreviewCollectionView: NSView {
     private let scrollView = NSScrollView()
     private var renderedPrefix: NSMutableAttributedString = NSMutableAttributedString(string: "")
     private var flowLayout = NSCollectionViewFlowLayout()
+
+    private var isEmpty: Bool {
+        return items.isEmpty && logicItems.isEmpty
+    }
 
     private func setUpViews() {
         wantsLayer = true
@@ -80,6 +98,9 @@ class ComponentPreviewCollectionView: NSView {
             ComponentPreviewItemViewController.self,
             forItemWithIdentifier: ITEM_IDENTIFIER)
         collectionView.register(
+            LogicPreviewItemViewController.self,
+            forItemWithIdentifier: LOGIC_ITEM_IDENTIFIER)
+        collectionView.register(
             ReadmePreview.self,
             forSupplementaryViewOfKind: NSCollectionView.elementKindSectionFooter,
             withIdentifier: README_ITEM_IDENTIFIER)
@@ -102,7 +123,7 @@ class ComponentPreviewCollectionView: NSView {
     }
 
     private func update(withoutReloading: Bool = false, withoutPrefixChange: Bool = false) {
-        flowLayout.sectionInset.bottom = (items.isEmpty || readme.isEmpty) ? 0 : COLLECTION_VIEW_MARGIN.height
+        flowLayout.sectionInset.bottom = (isEmpty || readme.isEmpty) ? 0 : COLLECTION_VIEW_MARGIN.height
 
         if !withoutReloading {
             collectionView.reloadData()
@@ -124,7 +145,7 @@ extension ComponentPreviewCollectionView: NSCollectionViewDelegate {
     }
 
     func collectionView(_ collectionView: NSCollectionView, numberOfItemsInSection section: Int) -> Int {
-        return items.count
+        return items.count + logicItems.count
     }
 }
 
@@ -132,19 +153,44 @@ extension ComponentPreviewCollectionView: NSCollectionViewDelegate {
 
 extension ComponentPreviewCollectionView: NSCollectionViewDataSource {
     func collectionView(_ collectionView: NSCollectionView, itemForRepresentedObjectAt indexPath: IndexPath) -> NSCollectionViewItem {
-        let item = collectionView.makeItem(
-            withIdentifier: ITEM_IDENTIFIER,
-            for: indexPath) as! ComponentPreviewItemViewController
+        if indexPath.item < items.count {
+            let item = collectionView.makeItem(
+                withIdentifier: ITEM_IDENTIFIER,
+                for: indexPath) as! ComponentPreviewItemViewController
 
-        if let componentPreviewCard = item.view as? DoubleClickableComponentPreviewCard {
-            let componentFile = items[indexPath.item]
-            componentPreviewCard.componentName = componentFile.name
-            componentPreviewCard.onDoubleClick = {
-                self.onSelectItem?(componentFile.url.path)
+            if let componentPreviewCard = item.view as? DoubleClickableComponentPreviewCard {
+                let componentFile = items[indexPath.item]
+                componentPreviewCard.componentName = componentFile.name
+                componentPreviewCard.onDoubleClick = {
+                    self.onSelectItem?(componentFile.url.path)
+                }
             }
-        }
 
-        return item
+            return item
+        } else {
+            let item = collectionView.makeItem(
+                withIdentifier: LOGIC_ITEM_IDENTIFIER,
+                for: indexPath) as! LogicPreviewItemViewController
+
+            if let logicPreviewCard = item.view as? DoubleClickableLogicPreviewCard {
+                let componentFile = logicItems[indexPath.item - items.count]
+                let imageSize = NSSize(width: 252, height: 210)
+                let image = LogicViewController.thumbnail(
+                    for: componentFile,
+                    within: imageSize,
+                    canvasSize: .init(width: 800, height: 800),
+                    viewportRect: .init(x: 0, y: 0, width: 400, height: 400 * imageSize.height / imageSize.width),
+                    style: .standard
+                )
+                logicPreviewCard.titleText = componentFile.deletingPathExtension().lastPathComponent
+                logicPreviewCard.image = image
+                logicPreviewCard.onDoubleClick = {
+                    self.onSelectItem?(componentFile.path)
+                }
+            }
+
+            return item
+        }
     }
 
     private func onReadmeHeightChanged(_ height: CGFloat) {
@@ -307,6 +353,24 @@ class ComponentPreviewItemViewController: NSCollectionViewItem {
     }
 }
 
+
+// MARK: - LogicPreviewItemViewController
+
+class LogicPreviewItemViewController: NSCollectionViewItem {
+    override func loadView() {
+        view = DoubleClickableLogicPreviewCard()
+    }
+
+    override var isSelected: Bool {
+        get {
+            return (view as? DoubleClickableLogicPreviewCard)?.selected ?? false
+        }
+        set {
+            (view as? DoubleClickableLogicPreviewCard)?.selected = newValue
+        }
+    }
+}
+
 // MARK: - ComponentPreviewCollection
 
 public class ComponentPreviewCollection: NSBox {
@@ -342,6 +406,8 @@ public class ComponentPreviewCollection: NSBox {
         contentViewMargins = .zero
 
         addSubview(collectionView)
+
+        collectionView.logicItems = LonaModule.current.logicFileUrls
 
         update()
     }

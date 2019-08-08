@@ -565,13 +565,24 @@ extension LogicViewController {
 
     // MARK: Public
 
-    public static func thumbnail(for url: URL, within size: NSSize) -> NSImage {
-        if let image = thumbnailImageCache[url] {
+    public enum ThumbnailStyle: Int {
+        case standard, bordered
+    }
+
+    public static func thumbnail(
+        for url: URL,
+        within size: NSSize,
+        canvasSize: NSSize = .init(width: 800, height: 200),
+        viewportRect: NSRect = .init(x: 0, y: 0, width: 200, height: 200),
+        style: ThumbnailStyle) -> NSImage {
+        let key = cacheKey(url: url, size: size)
+
+        if let image = thumbnailImageCache[key] {
             return image
         } else {
-            let image = makeThumbnail(for: url, within: size)
+            let image = makeThumbnail(for: url, within: size, canvasSize: canvasSize, viewportRect: viewportRect, style: style)
 
-            thumbnailImageCache[url] = image
+            thumbnailImageCache[key] = image
 
             return image
         }
@@ -579,9 +590,23 @@ extension LogicViewController {
 
     // MARK: Private
 
-    private static var thumbnailImageCache: [URL: NSImage] = [:]
+    private static var thumbnailImageCache: [Int: NSImage] = [:]
 
-    private static func makeThumbnail(for url: URL, within size: NSSize) -> NSImage {
+    private static func cacheKey(url: URL, size: NSSize) -> Int {
+        var hasher = Hasher()
+        hasher.combine(url)
+        hasher.combine(size.width)
+        hasher.combine(size.height)
+        return hasher.finalize()
+    }
+
+    private static func makeThumbnail(
+        for url: URL,
+        within size: NSSize,
+        canvasSize: NSSize,
+        viewportRect: NSRect,
+        style: ThumbnailStyle
+        ) -> NSImage {
         guard let data = try? Data(contentsOf: url) else { return NSImage() }
 
         guard let node = try? LogicDocument.read(from: data) else { return NSImage() }
@@ -632,31 +657,38 @@ extension LogicViewController {
         }
 
         guard let pdfData = LogicCanvasView.pdf(
-            size: .init(width: 800, height: 200),
-            mediaBox: .init(x: 0, y: 0, width: 200, height: 200),
+            size: canvasSize,
+            mediaBox: viewportRect,
             formattedContent: node.formatted(using: formattingOptions),
             getElementDecoration: getElementDecoration) else { return NSImage() }
 
         let image = NSImage(size: size, flipped: false, drawingHandler: { rect in
             NSGraphicsContext.saveGraphicsState()
 
-            let inset = NSSize(width: 1, height: 1)
-            let insetRect = rect.insetBy(dx: inset.width, dy: inset.height)
+            switch style {
+            case .bordered:
+                let inset = NSSize(width: 1, height: 1)
+                let insetRect = rect.insetBy(dx: inset.width, dy: inset.height)
 
-            let outline = NSBezierPath(roundedRect: insetRect, xRadius: 2, yRadius: 2)
-            outline.lineWidth = 2
+                let outline = NSBezierPath(roundedRect: insetRect, xRadius: 2, yRadius: 2)
+                outline.lineWidth = 2
 
-            NSColor.parse(css: "rgb(210,210,212)")!.setStroke()
-            NSColor.white.withAlphaComponent(0.9).setFill()
+                NSColor.parse(css: "rgb(210,210,212)")!.setStroke()
+                NSColor.white.withAlphaComponent(0.9).setFill()
 
-            outline.fill()
-            outline.setClip()
+                outline.fill()
+                outline.setClip()
 
-            if let pdfImage = NSImage(data: pdfData) {
-                pdfImage.draw(in: NSRect(x: inset.width, y: inset.height, width: rect.width, height: rect.height))
+                if let pdfImage = NSImage(data: pdfData) {
+                    pdfImage.draw(in: NSRect(x: inset.width, y: inset.height, width: rect.width, height: rect.height))
+                }
+
+                outline.stroke()
+            case .standard:
+                if let pdfImage = NSImage(data: pdfData) {
+                    pdfImage.draw(in: rect)
+                }
             }
-
-            outline.stroke()
 
             NSGraphicsContext.restoreGraphicsState()
             return true

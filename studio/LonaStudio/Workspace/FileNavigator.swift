@@ -336,7 +336,7 @@ class FileNavigator: NSBox {
             image.size = NSSize(width: size.width, height: (image.size.height / image.size.width) * size.height)
             return image
         } else if url.pathExtension == "logic" {
-            return LogicViewController.thumbnail(for: url, within: size)
+            return LogicViewController.thumbnail(for: url, within: size, style: .bordered)
         } else {
             return defaultImage(for: path)
         }
