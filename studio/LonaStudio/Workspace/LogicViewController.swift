@@ -203,6 +203,15 @@ class LogicViewController: NSViewController {
         )
 
         let scopeContext = Compiler.scopeContext(program)
+
+        if let errorId = scopeContext.undefinedIdentifiers.first, case .identifier(let identifierNode)? = logicEditor.rootNode.find(id: errorId) {
+            logicEditor.elementErrors = [
+                LogicEditor.ElementError(uuid: errorId, message: "The name \"\(identifierNode.string)\" hasn't been declared yet")
+            ]
+        } else {
+            logicEditor.elementErrors = []
+        }
+
         let unificationContext = Compiler.makeUnificationContext(program, scopeContext: scopeContext)
         let substitutionResult = Unification.unify(constraints: unificationContext.constraints)
 
