@@ -42,6 +42,8 @@ class LogicViewController: NSViewController {
         )
     ) { didSet { update() } }
 
+    override var undoManager: UndoManager? { return nil }
+
     public var onChangeRootNode: ((LGCSyntaxNode) -> Void)?
 
     // MARK: Private
