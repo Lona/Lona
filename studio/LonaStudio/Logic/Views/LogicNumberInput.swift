@@ -77,7 +77,7 @@ public class LogicNumberInput: NSView {
         logicEditor.suggestionsForNode = { [unowned self] rootNode, node, query in
             guard case .expression(let expression) = node else { return [] }
 
-            let program: LGCSyntaxNode = .program(LogicNumberInput.makeProgram(from: expression).expandImports(importLoader: Library.load))
+            let program: LGCSyntaxNode = .program(LogicNumberInput.makeProgram(from: expression).expandImports(importLoader: LogicLoader.load))
 
             return StandardConfiguration.suggestions(
                 rootNode: program,
@@ -90,7 +90,7 @@ public class LogicNumberInput: NSView {
     private func evaluateExpression(node: LGCSyntaxNode) -> LogicValue? {
         guard case .expression(let expression) = node else { return nil }
 
-        let program: LGCSyntaxNode = .program(LogicNumberInput.makeProgram(from: expression).expandImports(importLoader: Library.load))
+        let program: LGCSyntaxNode = .program(LogicNumberInput.makeProgram(from: expression).expandImports(importLoader: LogicLoader.load))
         let scopeContext = Compiler.scopeContext(program)
         let unificationContext = Compiler.makeUnificationContext(program, scopeContext: scopeContext)
 

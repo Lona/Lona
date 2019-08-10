@@ -87,6 +87,13 @@ class LogicViewController: NSViewController {
 
         logicEditor.formattingOptions = LogicFormattingOptions(
             style: LogicViewController.formattingStyle,
+            getError: ({ [unowned self ] id in
+                if let error = self.logicEditor.elementErrors.first(where: { $0.uuid == id }) {
+                    return error.message
+                } else {
+                    return nil
+                }
+            }),
             getArguments: ({ [unowned self] id in
                 let rootNode = self.logicEditor.rootNode
 
@@ -200,19 +207,34 @@ class LogicViewController: NSViewController {
             LGCProgram.join(programs: [LogicViewController.makePreludeProgram(), root])
                 .expandImports(importLoader: ({ name in
                     imports.insert(name)
-                    return Library.load(name: name)
+                    return LogicLoader.load(name: name)
                 }))
         )
 
         let scopeContext = Compiler.scopeContext(program)
 
-        if let errorId = scopeContext.undefinedIdentifiers.first, case .identifier(let identifierNode)? = logicEditor.rootNode.find(id: errorId) {
-            logicEditor.elementErrors = [
-                LogicEditor.ElementError(uuid: errorId, message: "The name \"\(identifierNode.string)\" hasn't been declared yet")
-            ]
-        } else {
-            logicEditor.elementErrors = []
+        var errors: [LogicEditor.ElementError] = []
+
+        scopeContext.undefinedIdentifiers.forEach { errorId in
+            if case .identifier(let identifierNode)? = logicEditor.rootNode.find(id: errorId) {
+                errors.append(
+                    LogicEditor.ElementError(uuid: errorId, message: "The name \"\(identifierNode.string)\" hasn't been declared yet")
+                )
+            }
         }
+
+        scopeContext.undefinedMemberExpressions.forEach { errorId in
+            if case .expression(let expression)? = logicEditor.rootNode.find(id: errorId), let identifiers = expression.flattenedMemberExpression {
+                let keyPath = identifiers.map { $0.string }
+                let last = keyPath.last ?? ""
+                let rest = keyPath.dropLast().joined(separator: ".")
+                errors.append(
+                    LogicEditor.ElementError(uuid: errorId, message: "The name \"\(last)\" hasn't been declared in \"\(rest)\" yet")
+                )
+            }
+        }
+
+        logicEditor.elementErrors = errors
 
         let unificationContext = Compiler.makeUnificationContext(program, scopeContext: scopeContext)
         let substitutionResult = Unification.unify(constraints: unificationContext.constraints)
@@ -242,7 +264,7 @@ class LogicViewController: NSViewController {
 
             let program: LGCSyntaxNode = .program(
                 LGCProgram.join(programs: [LogicViewController.makePreludeProgram(), root])
-                    .expandImports(importLoader: Library.load)
+                    .expandImports(importLoader: LogicLoader.load)
             )
 
             let recommended = LogicViewController.recommendedSuggestions(rootNode: program, selectedNode: node, query: query, imports: self.imports)
@@ -379,6 +401,31 @@ class LogicViewController: NSViewController {
         }
 
         switch selectedNode {
+        case .pattern:
+            let parent = rootNode.contents.parentOf(target: selectedNode.uuid, includeTopLevel: false)
+            switch parent {
+            case .some(.declaration(.importDeclaration)):
+                let localFileSuggestions: [LogicSuggestionItem] = LonaModule.current.logicFileUrls.map { url in
+                    let name = url.deletingPathExtension().lastPathComponent
+
+                    return LogicSuggestionItem(
+                        title: name,
+                        category: "PROJECT FILES",
+                        node: LGCSyntaxNode.pattern(LGCPattern(id: UUID(), name: name)),
+                        suggestionFilters: [.recommended, .all]
+                    )
+                }
+
+                let all: [LogicSuggestionItem] = all.map {
+                    var node = $0
+                    node.suggestionFilters = [.recommended, .all]
+                    return node
+                }
+
+                return localFileSuggestions + all
+            default:
+                break
+            }
         case .declaration:
             let variableId = UUID()
             let colorVariable = LogicSuggestionItem(
@@ -522,11 +569,13 @@ This will generate fairly different code for each platform, so if you're curious
 
             return (suggestedVariables + [namespace]).titleContains(prefix: query) + all
         default:
-            return all.map {
-                var node = $0
-                node.suggestionFilters = [.recommended, .all]
-                return node
-            }
+            break
+        }
+
+        return all.map {
+            var node = $0
+            node.suggestionFilters = [.recommended, .all]
+            return node
         }
     }
 
@@ -629,7 +678,7 @@ extension LogicViewController {
 
         let program: LGCSyntaxNode = .program(
             LGCProgram.join(programs: [LogicViewController.makePreludeProgram(), root])
-                .expandImports(importLoader: Library.load)
+                .expandImports(importLoader: LogicLoader.load)
         )
 
         let scopeContext = Compiler.scopeContext(program)

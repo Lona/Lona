@@ -55,7 +55,7 @@ public class LabeledColorInput: LabeledInput {
     private func evaluateExpression(node: LGCSyntaxNode) -> LogicValue? {
         guard case .expression(let expression) = node else { return nil }
 
-        let program: LGCSyntaxNode = .program(LabeledColorInput.makeExpressionProgram(from: expression).expandImports(importLoader: Library.load))
+        let program: LGCSyntaxNode = .program(LabeledColorInput.makeExpressionProgram(from: expression).expandImports(importLoader: LogicLoader.load))
         let scopeContext = Compiler.scopeContext(program)
         let unificationContext = Compiler.makeUnificationContext(program, scopeContext: scopeContext)
 
@@ -140,7 +140,7 @@ public class LabeledColorInput: LabeledInput {
         logicValueInput.suggestionsForNode = { rootNode, node, query in
             guard case .expression(let expression) = node else { return [] }
 
-            let program: LGCSyntaxNode = .program(LabeledColorInput.makeExpressionProgram(from: expression).expandImports(importLoader: Library.load))
+            let program: LGCSyntaxNode = .program(LabeledColorInput.makeExpressionProgram(from: expression).expandImports(importLoader: LogicLoader.load))
 
             return StandardConfiguration.suggestions(rootNode: program, node: node, formattingOptions: .normal)?(query) ?? []
         }
