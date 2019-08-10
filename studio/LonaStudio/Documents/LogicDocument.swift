@@ -74,4 +74,11 @@ class LogicDocument: NSDocument {
         // TODO: Figure out why multiple placeholders are loaded
         return decoded.replace(id: UUID(), with: .literal(.boolean(id: UUID(), value: true)))
     }
+
+    override func save(to url: URL, ofType typeName: String, for saveOperation: NSDocument.SaveOperationType, completionHandler: @escaping (Error?) -> Void) {
+        super.save(to: url, ofType: typeName, for: saveOperation, completionHandler: completionHandler)
+
+        let name = url.deletingPathExtension().lastPathComponent
+        LogicLoader.cache[name] = content
+    }
 }

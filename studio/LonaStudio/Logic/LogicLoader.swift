@@ -10,8 +10,9 @@ import Foundation
 import Logic
 
 public enum LogicLoader {
-    // TODO: Evict local file from cache on change
-    private static var cache: [String: LGCSyntaxNode] = [:]
+    // Files in the cache are updated directly by LogicDocument to avoid a round-trip to the filesystem
+    // TODO: Improved file system watching, so that if a file changes on disk outside of Lona we still pick it up
+    public static var cache: [String: LGCSyntaxNode] = [:]
 
     public static func load(name: String) -> LGCSyntaxNode? {
         if let cached = cache[name] { return cached }
