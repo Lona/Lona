@@ -32,7 +32,7 @@ class LogicDocument: NSDocument {
     ) {
         didSet {
             if let url = fileURL {
-                LogicModule.updateFile(url: url, value: content)
+                invalidateCaches(url: url)
             }
         }
     }
@@ -69,7 +69,7 @@ class LogicDocument: NSDocument {
         content = try LogicDocument.read(from: data)
 
         if let url = fileURL {
-            LogicModule.updateFile(url: url, value: content)
+            invalidateCaches(url: url)
         }
     }
 
@@ -88,6 +88,11 @@ class LogicDocument: NSDocument {
     override func save(to url: URL, ofType typeName: String, for saveOperation: NSDocument.SaveOperationType, completionHandler: @escaping (Error?) -> Void) {
         super.save(to: url, ofType: typeName, for: saveOperation, completionHandler: completionHandler)
 
+        invalidateCaches(url: url)
+    }
+
+    public func invalidateCaches(url: URL) {
+        LogicViewController.invalidateThumbnail(url: url)
         LogicModule.updateFile(url: url, value: content)
     }
 }

@@ -531,14 +531,18 @@ extension LogicViewController {
         canvasSize: NSSize = .init(width: 800, height: 200),
         viewportRect: NSRect = .init(x: 0, y: 0, width: 200, height: 200),
         style: ThumbnailStyle) -> NSImage {
-        let key = cacheKey(url: url, size: size)
+        let key = cacheKey(size: size)
 
-        if let image = thumbnailImageCache[key] {
+        if let image = thumbnailImageCache[url]?[key] {
             return image
         } else {
             let image = makeThumbnail(for: url, within: size, canvasSize: canvasSize, viewportRect: viewportRect, style: style)
 
-            thumbnailImageCache[key] = image
+            if thumbnailImageCache[url] == nil {
+                thumbnailImageCache[url] = [:]
+            }
+
+            thumbnailImageCache[url]?[key] = image
 
             return image
         }
@@ -546,11 +550,14 @@ extension LogicViewController {
 
     // MARK: Private
 
-    private static var thumbnailImageCache: [Int: NSImage] = [:]
+    public static func invalidateThumbnail(url: URL) {
+        thumbnailImageCache.removeValue(forKey: url)
+    }
 
-    private static func cacheKey(url: URL, size: NSSize) -> Int {
+    private static var thumbnailImageCache: [URL: [Int: NSImage]] = [:]
+
+    private static func cacheKey(size: NSSize) -> Int {
         var hasher = Hasher()
-        hasher.combine(url)
         hasher.combine(size.width)
         hasher.combine(size.height)
         return hasher.finalize()
