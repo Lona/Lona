@@ -137,6 +137,6 @@ public class LogicNumberInput: NSView {
             )
         )
 
-        return LGCProgram.join(programs: [LonaModule.current.logicFileContents, program])
+        return LGCProgram.join(programs: [LonaModule.current.logic.program, program])
     }
 }

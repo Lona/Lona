@@ -407,7 +407,7 @@ public class ComponentPreviewCollection: NSBox {
 
         addSubview(collectionView)
 
-        collectionView.logicItems = LonaModule.current.logicFileUrls
+        collectionView.logicItems = LonaModule.current.logic.fileUrls
 
         update()
     }

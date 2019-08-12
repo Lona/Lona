@@ -57,7 +57,6 @@ class LogicViewController: NSViewController {
     private var colorValues: [UUID: String] = [:]
     private var shadowValues: [UUID: NSShadow] = [:]
     private var textStyleValues: [UUID: Logic.TextStyle] = [:]
-    private var successfulUnification: (Compiler.UnificationContext, Unification.Substitution)?
 
     private let editorDisplayStyles: [LogicFormattingOptions.Style] = [.visual, .natural]
 
@@ -95,25 +94,32 @@ class LogicViewController: NSViewController {
                 }
             }),
             getArguments: ({ [unowned self] id in
+                let unification = LonaModule.current.logic.compiled.unification
+
                 let rootNode = self.logicEditor.rootNode
 
                 return StandardConfiguration.formatArguments(
                     rootNode: rootNode,
                     id: id,
-                    unificationContext: self.successfulUnification?.0,
-                    substitution: self.successfulUnification?.1
+                    unificationContext: unification?.0,
+                    substitution: unification?.1
                 )
             }),
-            getColor: ({ [unowned self] id in
-                guard let colorString = self.colorValues[id],
-                    let color = NSColor.parse(css: colorString) else { return nil }
+            getColor: ({ id in
+                guard let evaluation = LonaModule.current.logic.compiled.evaluation else { return nil }
+                guard let value = evaluation.evaluate(uuid: id) else { return nil }
+                guard let colorString = value.colorString, let color = NSColor.parse(css: colorString) else { return nil }
                 return (colorString, color)
             }),
-            getTextStyle: ({ [unowned self] id in
-                return self.textStyleValues[id]
+            getTextStyle: ({ id in
+                guard let evaluation = LonaModule.current.logic.compiled.evaluation else { return nil }
+                guard let value = evaluation.evaluate(uuid: id) else { return nil }
+                return value.textStyle
             }),
-            getShadow: ({ [unowned self] id in
-                return self.shadowValues[id]
+            getShadow: ({ id in
+                guard let evaluation = LonaModule.current.logic.compiled.evaluation else { return nil }
+                guard let value = evaluation.evaluate(uuid: id) else { return nil }
+                return value.nsShadow
             })
         )
 
@@ -153,121 +159,36 @@ class LogicViewController: NSViewController {
         infoBar.trailingAnchor.constraint(equalTo: containerView.trailingAnchor).isActive = true
     }
 
-    private static func makePreludeProgram() -> LGCProgram {
-        return .init(
-            id: UUID(),
-            block: .init(
-                [
-                    .declaration(
-                        id: UUID(),
-                        content: .importDeclaration(id: UUID(), name: .init(id: UUID(), name: "Prelude"))
-                    )
-                ]
-            )
-        )
-    }
-
-    public static func evaluate(
-        program: LGCSyntaxNode,
-        rootNode: LGCSyntaxNode,
-        colorValues: inout [UUID: String],
-        shadowValues: inout [UUID: NSShadow],
-        textStyleValues: inout [UUID: Logic.TextStyle],
-        scopeContext: Compiler.ScopeContext,
-        unificationContext: Compiler.UnificationContext,
-        substitution: Unification.Substitution) {
-        guard let evaluationContext = try? Compiler.evaluate(
-            program,
-            rootNode: program,
-            scopeContext: scopeContext,
-            unificationContext: unificationContext,
-            substitution: substitution,
-            context: .init()
-            ).get() else { return }
-
-        evaluationContext.values.forEach { id, value in
-            if let colorString = value.colorString {
-                colorValues[id] = colorString
-            } else if let shadow = value.nsShadow {
-                shadowValues[id] = shadow
-            } else if let textStyle = value.textStyle {
-                textStyleValues[id] = textStyle
-            }
-        }
-    }
-
     private func update() {
+        let compiled = LonaModule.current.logic.compiled
+
         logicEditor.rootNode = rootNode
 
-        guard let root = LGCProgram.make(from: rootNode) else { return }
-
-        imports.removeAll(keepingCapacity: true)
-
-        let program: LGCSyntaxNode = .program(
-            LGCProgram.join(programs: [LogicViewController.makePreludeProgram(), root])
-                .expandImports(importLoader: ({ name in
-                    imports.insert(name)
-                    return LogicLoader.load(name: name)
-                }))
-        )
-
-        let scopeContext = Compiler.scopeContext(program)
-
-        var errors: [LogicEditor.ElementError] = []
-
-        scopeContext.undefinedIdentifiers.forEach { errorId in
-            if case .identifier(let identifierNode)? = logicEditor.rootNode.find(id: errorId) {
-                errors.append(
-                    LogicEditor.ElementError(uuid: errorId, message: "The name \"\(identifierNode.string)\" hasn't been declared yet")
-                )
+        let imports = rootNode.reduce(initialResult: Set<String>()) { (result, node, config) -> Set<String> in
+            switch node {
+            case .declaration(.importDeclaration(_, name: let name)):
+                return result.union([name.name])
+            default:
+                return result
             }
         }
 
-        scopeContext.undefinedMemberExpressions.forEach { errorId in
-            if case .expression(let expression)? = logicEditor.rootNode.find(id: errorId), let identifiers = expression.flattenedMemberExpression {
-                let keyPath = identifiers.map { $0.string }
-                let last = keyPath.last ?? ""
-                let rest = keyPath.dropLast().joined(separator: ".")
-                errors.append(
-                    LogicEditor.ElementError(uuid: errorId, message: "The name \"\(last)\" hasn't been declared in \"\(rest)\" yet")
-                )
-            }
-        }
-
-        logicEditor.elementErrors = errors
-
-        let unificationContext = Compiler.makeUnificationContext(program, scopeContext: scopeContext)
-        let substitutionResult = Unification.unify(constraints: unificationContext.constraints)
-
-        guard let substitution = try? substitutionResult.get() else { return }
-
-        successfulUnification = (unificationContext, substitution)
-
-        LogicViewController.evaluate(
-            program: program,
-            rootNode: rootNode,
-            colorValues: &colorValues,
-            shadowValues: &shadowValues,
-            textStyleValues: &textStyleValues,
-            scopeContext: scopeContext,
-            unificationContext: unificationContext,
-            substitution: substitution
-        )
+        logicEditor.elementErrors = compiled.errors.filter { rootNode.find(id: $0.uuid) != nil }
 
         logicEditor.onChangeRootNode = { [unowned self] newRootNode in
             self.onChangeRootNode?(newRootNode)
             return true
         }
 
-        logicEditor.suggestionsForNode = { [unowned self] rootNode, node, query in
-            guard let root = LGCProgram.make(from: rootNode) else { return [] }
+        logicEditor.suggestionsForNode = { rootNode, node, query in
+            let compiled = LonaModule.current.logic.compiled
 
-            let program: LGCSyntaxNode = .program(
-                LGCProgram.join(programs: [LogicViewController.makePreludeProgram(), root])
-                    .expandImports(importLoader: LogicLoader.load)
+            let recommended = LogicViewController.recommendedSuggestions(
+                rootNode: compiled.programNode,
+                selectedNode: node,
+                query: query,
+                imports: imports
             )
-
-            let recommended = LogicViewController.recommendedSuggestions(rootNode: program, selectedNode: node, query: query, imports: self.imports)
 
             return recommended
         }
@@ -335,7 +256,7 @@ class LogicViewController: NSViewController {
         logicEditor.decorationForNodeID = { [unowned self] id in
             guard let node = self.logicEditor.rootNode.find(id: id) else { return nil }
 
-            if let colorValue = self.colorValues[node.uuid] {
+            if let colorValue = LonaModule.current.logic.compiled.evaluation?.evaluate(uuid: id)?.colorString {
                 if self.logicEditor.formattingOptions.style == .visual,
                     let path = self.logicEditor.rootNode.pathTo(id: id),
                     let parent = path.dropLast().last {
@@ -401,31 +322,6 @@ class LogicViewController: NSViewController {
         }
 
         switch selectedNode {
-        case .pattern:
-            let parent = rootNode.contents.parentOf(target: selectedNode.uuid, includeTopLevel: false)
-            switch parent {
-            case .some(.declaration(.importDeclaration)):
-                let localFileSuggestions: [LogicSuggestionItem] = LonaModule.current.logicFileUrls.map { url in
-                    let name = url.deletingPathExtension().lastPathComponent
-
-                    return LogicSuggestionItem(
-                        title: name,
-                        category: "PROJECT FILES",
-                        node: LGCSyntaxNode.pattern(LGCPattern(id: UUID(), name: name)),
-                        suggestionFilters: [.recommended, .all]
-                    )
-                }
-
-                let all: [LogicSuggestionItem] = all.map {
-                    var node = $0
-                    node.suggestionFilters = [.recommended, .all]
-                    return node
-                }
-
-                return localFileSuggestions + all
-            default:
-                break
-            }
         case .declaration:
             let variableId = UUID()
             let colorVariable = LogicSuggestionItem(
@@ -667,41 +563,14 @@ extension LogicViewController {
         viewportRect: NSRect,
         style: ThumbnailStyle
         ) -> NSImage {
-        guard let data = try? Data(contentsOf: url) else { return NSImage() }
+        guard let rootNode = LogicModule.load(url: url) else { return NSImage() }
 
-        guard let node = try? LogicDocument.read(from: data) else { return NSImage() }
-        guard let root = LGCProgram.make(from: node) else { return NSImage() }
-
-        var colorValues: [UUID: String] = [:]
-        var shadowValues: [UUID: NSShadow] = [:]
-        var textStyleValues: [UUID: Logic.TextStyle] = [:]
-
-        let program: LGCSyntaxNode = .program(
-            LGCProgram.join(programs: [LogicViewController.makePreludeProgram(), root])
-                .expandImports(importLoader: LogicLoader.load)
-        )
-
-        let scopeContext = Compiler.scopeContext(program)
-        let unificationContext = Compiler.makeUnificationContext(program, scopeContext: scopeContext)
-        let substitutionResult = Unification.unify(constraints: unificationContext.constraints)
-
-        guard let substitution = try? substitutionResult.get() else { return NSImage() }
-
-        evaluate(
-            program: program,
-            rootNode: node,
-            colorValues: &colorValues,
-            shadowValues: &shadowValues,
-            textStyleValues: &textStyleValues,
-            scopeContext: scopeContext,
-            unificationContext: unificationContext,
-            substitution: substitution
-        )
+        let compiled = LonaModule.current.logic.compiled
 
         let formattingOptions = LogicFormattingOptions(
             style: LogicViewController.formattingStyle,
             getColor: ({ id in
-                guard let colorString = colorValues[id],
+                guard let colorString = compiled.evaluation?.evaluate(uuid: id)?.colorString,
                     let color = NSColor.parse(css: colorString) else { return nil }
                 return (colorString, color)
             })
@@ -709,9 +578,9 @@ extension LogicViewController {
 
         let getElementDecoration: (UUID) -> LogicElement.Decoration? = { uuid in
             return decorationForNodeID(
-                rootNode: node,
+                rootNode: compiled.programNode,
                 formattingOptions: formattingOptions,
-                colorValues: colorValues,
+                evaluationContext: compiled.evaluation,
                 id: uuid
             )
         }
@@ -719,7 +588,7 @@ extension LogicViewController {
         guard let pdfData = LogicCanvasView.pdf(
             size: canvasSize,
             mediaBox: viewportRect,
-            formattedContent: node.formatted(using: formattingOptions),
+            formattedContent: LGCSyntaxNode.program(rootNode).formatted(using: formattingOptions),
             getElementDecoration: getElementDecoration) else { return NSImage() }
 
         let image = NSImage(size: size, flipped: false, drawingHandler: { rect in
@@ -760,12 +629,12 @@ extension LogicViewController {
     private static func decorationForNodeID(
         rootNode: LGCSyntaxNode,
         formattingOptions: LogicFormattingOptions,
-        colorValues: [UUID: String],
+        evaluationContext: Compiler.EvaluationContext?,
         id: UUID
         ) -> LogicElement.Decoration? {
         guard let node = rootNode.find(id: id) else { return nil }
 
-        if let colorValue = colorValues[node.uuid] {
+        if let colorValue = evaluationContext?.evaluate(uuid: node.uuid)?.colorString {
             if formattingOptions.style == .visual,
                 let path = rootNode.pathTo(id: id),
                 let parent = path.dropLast().last {
