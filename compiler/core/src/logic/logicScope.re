@@ -50,6 +50,14 @@ let empty = (): scopeContext => {
   patternNames: new scopeStack,
 };
 
+let builtInTypeConstructorNames = [
+  "Boolean",
+  "Number",
+  "String",
+  "Array",
+  "Color",
+];
+
 let build =
     (
       rootNode: LogicAst.syntaxNode,
@@ -59,6 +67,74 @@ let build =
     )
     : scopeContext => {
   let config = LogicTraversal.emptyConfig();
+
+  let namespaceDeclarations =
+      (context, node, config: LogicTraversal.traversalConfig) => {
+    config.needsRevisitAfterTraversingChildren := true;
+
+    switch (config._isRevisit^, node) {
+    | (
+        true,
+        LogicAst.Declaration(
+          Variable({name: Pattern({id: patternId, name: patternName})}),
+        ),
+      ) =>
+      setInCurrentNamespace(patternName, patternId, context)
+
+    | (
+        true,
+        Declaration(
+          Function({name: Pattern({id: patternId, name: patternName})}),
+        ),
+      ) =>
+      setInCurrentNamespace(patternName, patternId, context)
+
+    | (false, Declaration(Record(_))) =>
+      /* Avoid introducing member variables into the namespace */
+      config.ignoreChildren := true
+    | (
+        true,
+        Declaration(
+          Record({name: Pattern({id: patternId, name: patternName})}),
+        ),
+      ) =>
+      /* Built-ins should be constructed using literals */
+      if (!List.mem(patternName, builtInTypeConstructorNames)) {
+        /* Create constructor function */
+        setInCurrentNamespace(
+          patternName,
+          patternId,
+          context,
+        );
+      }
+    | (
+        true,
+        Declaration(
+          Enumeration({name: Pattern({name: patternName}), cases}),
+        ),
+      ) =>
+      pushNamespace(patternName, context);
+
+      /* Add initializers for each case into the namespace */
+      cases
+      |> LogicUtils.unfoldPairs
+      |> List.iter((enumCase: LogicAst.enumerationCase) =>
+           switch (enumCase) {
+           | EnumerationCase({name: Pattern({id: caseId, name: caseName})}) =>
+             setInCurrentNamespace(caseName, caseId, context)
+           | Placeholder(_) => ()
+           }
+         );
+
+      popNamespace(context);
+    | (false, Declaration(Namespace({name: Pattern({name: patternName})}))) =>
+      pushNamespace(patternName, context)
+    | (true, Declaration(Namespace(_))) => popNamespace(context)
+    | _ => ()
+    };
+
+    context;
+  };
 
   let rec walk = (context, node, config: LogicTraversal.traversalConfig) => {
     0 |> ignore; /* To keep line, for debugging */
@@ -81,8 +157,22 @@ let build =
           switch (lookup) {
           | Some(value) => (context.identifierToPattern)#set(id, value)
           | None =>
-            Js.log2("Failed to find pattern", string);
-            ();
+            switch ((context.namespace)#get([string])) {
+            | Some(patternId) =>
+              (context.identifierToPattern)#set(id, patternId)
+            | None =>
+              switch (
+                (context.namespace)#get(
+                  context.currentNamespacePath^ @ [string],
+                )
+              ) {
+              | Some(patternId) =>
+                (context.identifierToPattern)#set(id, patternId)
+              | None =>
+                Js.log2("Failed to find pattern for identifier:", string);
+                ();
+              }
+            }
           };
           context;
         }
@@ -111,7 +201,7 @@ let build =
         (context.patternToName)#set(id, name);
         (context.patternNames)#set(name, id);
 
-        setInCurrentNamespace(name, id, context);
+        /* setInCurrentNamespace(name, id, context); */
 
         context;
       | (
@@ -127,7 +217,7 @@ let build =
         (context.patternToName)#set(functionId, functionName);
         (context.patternNames)#set(functionName, functionId);
         (context.patternNames)#push();
-        setInCurrentNamespace(functionName, functionId, context);
+        /* setInCurrentNamespace(functionName, functionId, context); */
 
         parameters
         |> LogicUtils.unfoldPairs
@@ -180,18 +270,16 @@ let build =
 
         context;
       | (true, Declaration(Record({name: Pattern({id, name})}))) =>
-        let builtins = ["Boolean", "Number", "String", "Array", "Color"];
-
-        if (List.mem(name, builtins)) {
+        if (List.mem(name, builtInTypeConstructorNames)) {
           context;
         } else {
           (context.patternToName)#set(id, name);
           (context.patternNames)#set(name, id);
 
-          setInCurrentNamespace(name, id, context);
+          /* setInCurrentNamespace(name, id, context); */
 
           context;
-        };
+        }
       | (
           false,
           Declaration(
@@ -212,22 +300,21 @@ let build =
             Enumeration({
               name: Pattern({name: functionName}),
               genericParameters,
-              cases,
             }),
           ),
         ) =>
         pushNamespace(functionName, context);
 
         /* Add initializers for each case into the namespace */
-        cases
-        |> LogicUtils.unfoldPairs
-        |> List.iter((case: LogicAst.enumerationCase) =>
-             switch (case) {
-             | Placeholder(_) => ()
-             | EnumerationCase({name: Pattern({id: caseId, name: caseName})}) =>
-               setInCurrentNamespace(caseName, caseId, context)
-             }
-           );
+        /* cases
+           |> LogicUtils.unfoldPairs
+           |> List.iter((case: LogicAst.enumerationCase) =>
+                switch (case) {
+                | Placeholder(_) => ()
+                | EnumerationCase({name: Pattern({id: caseId, name: caseName})}) =>
+                  setInCurrentNamespace(caseName, caseId, context)
+                }
+              ); */
 
         setGenericParameters(genericParameters, context);
 
@@ -249,5 +336,10 @@ let build =
     };
   };
 
-  rootNode |> LogicTraversal.reduce(config, initialContext, walk);
+  let contextWithNamespaceDeclarations =
+    rootNode
+    |> LogicTraversal.reduce(config, initialContext, namespaceDeclarations);
+
+  rootNode
+  |> LogicTraversal.reduce(config, contextWithNamespaceDeclarations, walk);
 };
