@@ -37,6 +37,7 @@ class DirectoryViewController: NSViewController {
 
     public var folderName: String? { didSet { update() } }
     public var componentNames: [String] = [] { didSet { update() } }
+    public var logicFileNames: [String] = [] { didSet { update() } }
     public var readme: String? { didSet { update() } }
     public var onSelectComponent: ((String) -> Void)? { didSet { update() } }
 
@@ -55,6 +56,7 @@ class DirectoryViewController: NSViewController {
     private func update() {
         contentView.readme = readme ?? ""
         contentView.folderName = folderName ?? "Folder"
+        contentView.logicFileNames = logicFileNames
         contentView.componentNames = componentNames
         contentView.onSelectComponent = onSelectComponent
     }

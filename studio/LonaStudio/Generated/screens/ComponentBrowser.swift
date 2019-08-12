@@ -20,8 +20,14 @@ public class ComponentBrowser: NSBox {
     update()
   }
 
-  public convenience init(readme: String, componentNames: [String], folderName: String) {
-    self.init(Parameters(readme: readme, componentNames: componentNames, folderName: folderName))
+  public convenience init(readme: String, componentNames: [String], logicFileNames: [String], folderName: String) {
+    self
+      .init(
+        Parameters(
+          readme: readme,
+          componentNames: componentNames,
+          logicFileNames: logicFileNames,
+          folderName: folderName))
   }
 
   public convenience init() {
@@ -55,6 +61,15 @@ public class ComponentBrowser: NSBox {
     set {
       if parameters.componentNames != newValue {
         parameters.componentNames = newValue
+      }
+    }
+  }
+
+  public var logicFileNames: [String] {
+    get { return parameters.logicFileNames }
+    set {
+      if parameters.logicFileNames != newValue {
+        parameters.logicFileNames = newValue
       }
     }
   }
@@ -157,6 +172,7 @@ public class ComponentBrowser: NSBox {
   private func update() {
     componentPreviewCollectionView.readme = readme
     componentPreviewCollectionView.componentNames = componentNames
+    componentPreviewCollectionView.logicFileNames = logicFileNames
     componentPreviewCollectionView.onSelectComponent = handleOnSelectComponent
     titleView.attributedStringValue = titleViewTextStyle.apply(to: folderName)
   }
@@ -172,27 +188,32 @@ extension ComponentBrowser {
   public struct Parameters: Equatable {
     public var readme: String
     public var componentNames: [String]
+    public var logicFileNames: [String]
     public var folderName: String
     public var onSelectComponent: ((String) -> Void)?
 
     public init(
       readme: String,
       componentNames: [String],
+      logicFileNames: [String],
       folderName: String,
       onSelectComponent: ((String) -> Void)? = nil)
     {
       self.readme = readme
       self.componentNames = componentNames
+      self.logicFileNames = logicFileNames
       self.folderName = folderName
       self.onSelectComponent = onSelectComponent
     }
 
     public init() {
-      self.init(readme: "", componentNames: [], folderName: "")
+      self.init(readme: "", componentNames: [], logicFileNames: [], folderName: "")
     }
 
     public static func ==(lhs: Parameters, rhs: Parameters) -> Bool {
-      return lhs.readme == rhs.readme && lhs.componentNames == rhs.componentNames && lhs.folderName == rhs.folderName
+      return lhs.readme == rhs.readme &&
+        lhs.componentNames == rhs.componentNames &&
+          lhs.logicFileNames == rhs.logicFileNames && lhs.folderName == rhs.folderName
     }
   }
 }
@@ -219,6 +240,7 @@ extension ComponentBrowser {
     public init(
       readme: String,
       componentNames: [String],
+      logicFileNames: [String],
       folderName: String,
       onSelectComponent: ((String) -> Void)? = nil)
     {
@@ -227,12 +249,13 @@ extension ComponentBrowser {
           Parameters(
             readme: readme,
             componentNames: componentNames,
+            logicFileNames: logicFileNames,
             folderName: folderName,
             onSelectComponent: onSelectComponent))
     }
 
     public init() {
-      self.init(readme: "", componentNames: [], folderName: "")
+      self.init(readme: "", componentNames: [], logicFileNames: [], folderName: "")
     }
   }
 }

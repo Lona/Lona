@@ -394,6 +394,7 @@ public class ComponentPreviewCollection: NSBox {
 
     public var readme: String = "" { didSet { update() } }
     public var componentNames: [String] = [] { didSet { update() } }
+    public var logicFileNames: [String] = [] { didSet { update() } }
     public var onSelectComponent: ((String) -> Void)? { didSet { update() } }
 
     // MARK: Private
@@ -406,8 +407,6 @@ public class ComponentPreviewCollection: NSBox {
         contentViewMargins = .zero
 
         addSubview(collectionView)
-
-        collectionView.logicItems = LonaModule.current.logic.fileUrls
 
         update()
     }
@@ -425,6 +424,8 @@ public class ComponentPreviewCollection: NSBox {
     private func update() {
         var components: [LonaModule.ComponentFile] = []
 
+        collectionView.logicItems = logicFileNames.map { URL(fileURLWithPath: $0) }
+
         componentNames.enumerated().forEach {offset, name in
             let component = LonaModule.current.componentFile(named: name)
 
@@ -432,6 +433,7 @@ public class ComponentPreviewCollection: NSBox {
                 components.append(component)
             }
         }
+
         collectionView.items = components
         collectionView.readme = readme
         collectionView.onSelectItem = onSelectComponent

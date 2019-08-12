@@ -52,6 +52,14 @@ extension LogicInput {
             return CSValue(type: csType, data: (makeColorString(node: node) ?? "black").toData())
         case (CSTextStyleType, _):
             return CSValue(type: csType, data: (makeTextStyleString(node: node) ?? "default").toData())
+        case (.array(let inner), let expression):
+            switch expression {
+            case .literal(.array(_, value: let expressions)):
+                let elements = expressions.map { makeValue(forType: inner, node: .expression($0)) }
+                return CSValue(type: csType, data: CSData.Array(elements.map { $0.data }))
+            default:
+                return CSValue(type: .unit, data: .Null)
+            }
         case (.named, _):
             return makeValue(forType: csType.unwrappedNamedType(), node: node)
         case (.variant, _):

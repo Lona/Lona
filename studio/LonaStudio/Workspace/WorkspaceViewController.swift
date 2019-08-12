@@ -639,6 +639,7 @@ class WorkspaceViewController: NSSplitViewController {
                 editorViewController.contentView = directoryViewController.view
 
                 directoryViewController.componentNames = content.componentNames
+                directoryViewController.logicFileNames = content.logicFileNames
                 directoryViewController.readme = content.readme
                 directoryViewController.folderName = content.folderName
             } else {
