@@ -422,9 +422,9 @@ public class ComponentPreviewCollection: NSBox {
     }
 
     private func update() {
-        var components: [LonaModule.ComponentFile] = []
-
         collectionView.logicItems = logicFileNames.map { URL(fileURLWithPath: $0) }
+
+        var components: [LonaModule.ComponentFile] = []
 
         componentNames.enumerated().forEach {offset, name in
             let component = LonaModule.current.componentFile(named: name)

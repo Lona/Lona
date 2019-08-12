@@ -408,7 +408,28 @@ class WorkspaceViewController: NSSplitViewController {
         }
 
         fileNavigator.performCreateLogicFile = { path in
-            return performCreateFile(path: path, document: LogicDocument(), ofType: "Logic")
+            let document = LogicDocument()
+
+            let name = URL(fileURLWithPath: path).deletingPathExtension().lastPathComponent
+
+            document.content = .topLevelDeclarations(
+                .init(
+                    id: UUID(),
+                    declarations: .init(
+                        [
+                            WorkspaceTemplate.makeImport(name: "Color"),
+                            WorkspaceTemplate.makeNamespace(name: name, declarations:
+                                [
+                                    .placeholder(id: UUID())
+                                ]
+                            ),
+                            .placeholder(id: UUID())
+                        ]
+                    )
+                )
+            )
+
+            return performCreateFile(path: path, document: document, ofType: "Logic")
         }
 
         fileNavigator.performCreateComponent = { path in
