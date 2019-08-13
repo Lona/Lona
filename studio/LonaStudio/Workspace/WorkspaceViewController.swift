@@ -286,7 +286,7 @@ class WorkspaceViewController: NSSplitViewController {
         }
         set {
             if newValue && !inspectorViewVisible {
-                insertSplitViewItem(sidebarItem, at: 2)
+                insertSplitViewItem(sidebarItem, at: codeViewVisible ? 3 : 2)
             } else if !newValue && inspectorViewVisible {
                 removeSplitViewItem(sidebarItem)
             }
