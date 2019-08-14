@@ -230,6 +230,8 @@
 		6B6D4427218F55B50016262C /* CGSize+Resizing.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6B6D4426218F55B50016262C /* CGSize+Resizing.swift */; };
 		6B6D4434218F6B070016262C /* NSImage+Resizing.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6B6D4432218F6B070016262C /* NSImage+Resizing.swift */; };
 		6B6D4435218F6B070016262C /* LNAImageView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6B6D4433218F6B070016262C /* LNAImageView.swift */; };
+		6B6F19CE2304B49A00E5AC60 /* SwiftGraph.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 6B6F19CC2304B47A00E5AC60 /* SwiftGraph.framework */; };
+		6B6F19CF2304B49A00E5AC60 /* SwiftGraph.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 6B6F19CC2304B47A00E5AC60 /* SwiftGraph.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		6B73809422C66E59007534A0 /* TemplateBrowser.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6B73809322C66E59007534A0 /* TemplateBrowser.swift */; };
 		6B73809622C67563007534A0 /* WorkspaceTemplateCard.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6B73809522C67563007534A0 /* WorkspaceTemplateCard.swift */; };
 		6B73809822C6ED89007534A0 /* WorkspaceTemplate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6B73809722C6ED89007534A0 /* WorkspaceTemplate.swift */; };
@@ -335,6 +337,7 @@
 				6B2DC1AC21361C4700679668 /* ColorPicker.framework in Embed Frameworks */,
 				6BF894D42214E3DD000CD863 /* Differ.framework in Embed Frameworks */,
 				6B5886872134D6BB00CCA69F /* ControlledComponents.framework in Embed Frameworks */,
+				6B6F19CF2304B49A00E5AC60 /* SwiftGraph.framework in Embed Frameworks */,
 			);
 			name = "Embed Frameworks";
 			runOnlyForDeploymentPostprocessing = 0;
@@ -575,6 +578,7 @@
 		6B6D4426218F55B50016262C /* CGSize+Resizing.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "CGSize+Resizing.swift"; sourceTree = "<group>"; };
 		6B6D4432218F6B070016262C /* NSImage+Resizing.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "NSImage+Resizing.swift"; sourceTree = "<group>"; };
 		6B6D4433218F6B070016262C /* LNAImageView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = LNAImageView.swift; sourceTree = "<group>"; };
+		6B6F19CC2304B47A00E5AC60 /* SwiftGraph.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SwiftGraph.framework; path = Carthage/Build/Mac/SwiftGraph.framework; sourceTree = "<group>"; };
 		6B73809322C66E59007534A0 /* TemplateBrowser.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TemplateBrowser.swift; sourceTree = "<group>"; };
 		6B73809522C67563007534A0 /* WorkspaceTemplateCard.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = WorkspaceTemplateCard.swift; sourceTree = "<group>"; };
 		6B73809722C6ED89007534A0 /* WorkspaceTemplate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WorkspaceTemplate.swift; sourceTree = "<group>"; };
@@ -669,6 +673,7 @@
 				6B2DC1AB21361C4700679668 /* ColorPicker.framework in Frameworks */,
 				6BF894D32214E3DD000CD863 /* Differ.framework in Frameworks */,
 				6B2DC1AD21361C4700679668 /* Colors.framework in Frameworks */,
+				6B6F19CE2304B49A00E5AC60 /* SwiftGraph.framework in Frameworks */,
 				783A74CD337C61784E60C467 /* Pods_LonaStudio.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -1075,6 +1080,7 @@
 				6BBE0F69212B26C900CEE8C1 /* FileTree.framework */,
 				7949560983378CFD6EC6FFD5 /* Pods_LonaStudio.framework */,
 				EDA2F7370DB15639E08B399A /* Pods_LonaStudioTests.framework */,
+				6B6F19CC2304B47A00E5AC60 /* SwiftGraph.framework */,
 				6BA6E894212F92B0009CD33C /* Witness.framework */,
 			);
 			name = Frameworks;

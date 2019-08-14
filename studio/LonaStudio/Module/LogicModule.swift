@@ -107,6 +107,18 @@ public class LogicModule {
         switch evaluationContext {
         case .success(let evaluation):
             compiled.evaluation = evaluation
+
+            if evaluation.hasCycle {
+                Swift.print("Logic cycle(s) found", evaluation.cycles)
+            }
+
+            let cycleErrors = evaluation.cycles.map { cycle in
+                return cycle.map { id -> LogicEditor.ElementError in
+                    return LogicEditor.ElementError(uuid: id, message: "A variable's definition can't include its name (there's a cycle somewhere)")
+                }
+            }
+
+            compiled.errors.append(contentsOf: Array(cycleErrors.joined()))
         default:
             Swift.print("Evaluation failed")
         }
