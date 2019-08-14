@@ -56,6 +56,8 @@ class CodeEditorViewController: NSViewController {
 
     // MARK: Public
 
+    override var undoManager: UndoManager? { return nil }
+
     public var document: NSDocument? { didSet { update() } }
 
     // MARK: Private

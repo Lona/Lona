@@ -35,6 +35,8 @@ class DirectoryViewController: NSViewController {
 
     // MARK: Public
 
+    override var undoManager: UndoManager? { return nil }
+    
     public var folderName: String? { didSet { update() } }
     public var componentNames: [String] = [] { didSet { update() } }
     public var logicFileNames: [String] = [] { didSet { update() } }
