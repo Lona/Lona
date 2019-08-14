@@ -53,11 +53,11 @@ class App extends React.Component {
 
   render() {
     // eslint-disable-next-line react/prop-types
-    const { styles, css, editable } = this.props
+    const { styles, css, editable, preview, fullscreen } = this.props
     const { value } = this.state
 
     const markdownCss = {
-      ...css(styles.column, editable && styles.paddedContent),
+      ...css(styles.column, fullscreen && styles.paddedContent),
     }
     markdownCss.className += ' markdown-body'
 
@@ -71,10 +71,12 @@ class App extends React.Component {
             errorLineNumber={false}
           />
         )}
-        {editable && <div {...css(styles.divider)} />}
-        <div {...css(styles.column)}>
-          <ReactMarkdown {...markdownCss} source={value} escapeHtml={false} />
-        </div>
+        {editable && preview && <div {...css(styles.divider)} />}
+        {preview && (
+          <div {...css(styles.column)}>
+            <ReactMarkdown {...markdownCss} source={value} escapeHtml={false} />
+          </div>
+        )}
       </div>
     )
   }

@@ -19,8 +19,9 @@ class MarkdownEditor: LonaWebView {
 
     // MARK: Lifecycle
 
-    init(editable: Bool, fullscreen: Bool) {
+    init(editable: Bool, preview: Bool, fullscreen: Bool) {
         self.editable = editable
+        self.preview = preview
         self.fullscreen = fullscreen
 
         super.init()
@@ -48,6 +49,7 @@ class MarkdownEditor: LonaWebView {
         urlComponents.queryItems = [
             URLQueryItem(name: "fullscreen", value: fullscreen.description),
             URLQueryItem(name: "editable", value: editable.description),
+            URLQueryItem(name: "preview", value: preview.description),
             URLQueryItem(name: "theme", value: try? JSONEncoder().encode(theme).utf8String() ?? "")
         ]
 
@@ -70,7 +72,11 @@ class MarkdownEditor: LonaWebView {
 
     // MARK: Private
 
+    /// Show the markdown text editor
     private var editable: Bool
+
+    /// Show a rendered preview of the markdown
+    private var preview: Bool
 
     private var fullscreen: Bool
 

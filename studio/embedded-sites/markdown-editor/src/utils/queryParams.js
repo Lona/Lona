@@ -21,5 +21,6 @@ try {
 export default {
   fullscreen: rawParams.fullscreen !== 'false',
   editable: rawParams.editable !== 'false',
+  preview: rawParams.preview !== 'false',
   theme,
 }

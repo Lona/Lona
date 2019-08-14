@@ -60,6 +60,8 @@ class CodeEditorViewController: NSViewController {
 
     public var document: NSDocument? { didSet { update() } }
 
+    public var updateEditorHeader: ((EditorHeader.Parameters) -> Void)?
+
     // MARK: Private
 
     private var fileExtension: String {
@@ -87,10 +89,28 @@ class CodeEditorViewController: NSViewController {
         }
     }
 
-    private let contentView = CodeEditor()
+    public let contentView = CodeEditor()
+
+    public var headerParameters: EditorHeader.Parameters {
+        if let document = document, document is LogicDocument || document is JSONDocument {
+            return EditorHeader.Parameters(
+                titleText: generatedFilename,
+                subtitleText: " — Generated code preview",
+                dividerColor: .clear,
+                fileIcon: NSWorkspace.shared.icon(forFileType: fileExtension)
+            )
+        } else {
+            return EditorHeader.Parameters(
+                titleText: "",
+                subtitleText: "No output",
+                dividerColor: .clear,
+                fileIcon: NSWorkspace.shared.icon(forFileType: fileExtension)
+            )
+        }
+    }
 
     private func setUpViews() {
-        self.view = contentView
+//        self.view = contentView
     }
 
     private func setUpConstraints() {
@@ -111,10 +131,6 @@ class CodeEditorViewController: NSViewController {
         contentView.commandPreview = "lonac \(command.joined(separator: " ")) --input \(sourceFilename)"
 
         if let document = document as? JSONDocument {
-            contentView.titleText = generatedFilename
-            contentView.subtitleText = " — Generated code preview"
-            contentView.fileIcon = NSWorkspace.shared.icon(forFileType: fileExtension)
-
             if let content = document.content, case .colors = content {
                 guard let compilerPath = CSUserPreferences.compilerURL?.path else { return }
                 guard let data = try? document.data(ofType: "JSONDocument") else { return }
@@ -126,26 +142,18 @@ class CodeEditorViewController: NSViewController {
 
                 run(command: [compilerPath] + command, data: data, document: document)
             } else {
-                contentView.titleText = ""
-                contentView.subtitleText = ""
-                contentView.fileIcon = NSImage()
                 contentView.generatedCode = ""
             }
         } else if let document = document as? LogicDocument {
-            contentView.titleText = generatedFilename
-            contentView.subtitleText = " — Generated code preview"
-            contentView.fileIcon = NSWorkspace.shared.icon(forFileType: fileExtension)
-
             guard let compilerPath = CSUserPreferences.compilerURL?.path else { return }
             guard let data = try? document.data(ofType: "Logic") else { return }
 
             run(command: [compilerPath] + command, data: data, document: document)
         } else {
-            contentView.titleText = ""
-            contentView.subtitleText = "No output"
-            contentView.fileIcon = NSImage()
             contentView.generatedCode = ""
         }
+
+        updateEditorHeader?(headerParameters)
 
         let target = CompilerTarget.init(rawValue: CodeEditorViewController.compilerTarget) ?? CompilerTarget.js
 

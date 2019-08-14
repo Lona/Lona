@@ -28,6 +28,10 @@ ThemedStyleSheet.registerTheme(queryParams.theme)
 ThemedStyleSheet.registerInterface(aphroditeInterface)
 
 ReactDOM.render(
-  <App editable={queryParams.editable} />,
+  <App
+    editable={queryParams.editable}
+    preview={queryParams.preview}
+    fullscreen={queryParams.fullscreen}
+  />,
   document.getElementById('root')
 )
