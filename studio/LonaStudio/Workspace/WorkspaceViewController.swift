@@ -480,7 +480,7 @@ class WorkspaceViewController: NSSplitViewController {
 
         guard let document = document else {
             editorViewController.contentView = nil
-            inspectorViewVisible = true
+            inspectorViewVisible = false
             return
         }
 
