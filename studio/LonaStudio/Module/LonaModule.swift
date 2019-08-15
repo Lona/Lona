@@ -165,8 +165,6 @@ class LonaModule {
     }
 
     static func build(target: String, framework: String, onComplete: ((LonaNode.ProcessResult) -> Void)?) -> Bool {
-        guard let compilerPath = CSUserPreferences.compilerURL?.path else { return false }
-
         let workspacePath = CSUserPreferences.workspaceURL.path
 
         let dialog = NSOpenPanel()
@@ -184,7 +182,7 @@ class LonaModule {
         guard let generatedOutputUrl = dialog.url else { return false }
 
         let arguments = [
-            compilerPath,
+            LonaNode.compilerPath,
             "workspace",
             "--workspace", workspacePath,
             "--target", target,

@@ -254,7 +254,13 @@ let exit = message => {
 };
 
 let load =
-    (platformId: Types.platformId, options: Options.options, path, outputPath)
+    (
+      platformId: Types.platformId,
+      options: Options.options,
+      path,
+      outputPath,
+      dirname: string,
+    )
     : Js.Promise.t(t) =>
   switch (Workspace.find(path)) {
   | None =>
@@ -264,8 +270,7 @@ let load =
       ++ "'. A workspace must contain a `lona.json` file.",
     )
   | Some(workspacePath) =>
-    let logicLibrariesPath =
-      Node.Path.join2([%bs.raw {| __dirname |}], "../static/logic");
+    let logicLibrariesPath = Node.Path.join2(dirname, "static/logic");
     let lonaFile = Workspace.lonaFile(workspacePath);
     Js.Promise.(
       Workspace.svgFiles(workspacePath, ~ignore=lonaFile.contents.ignore)

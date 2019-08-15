@@ -132,23 +132,20 @@ class CodeEditorViewController: NSViewController {
 
         if let document = document as? JSONDocument {
             if let content = document.content, case .colors = content {
-                guard let compilerPath = CSUserPreferences.compilerURL?.path else { return }
                 guard let data = try? document.data(ofType: "JSONDocument") else { return }
 
-                run(command: [compilerPath] + command, data: data, document: document)
+                run(command: [LonaNode.compilerPath] + command, data: data, document: document)
             } else if let content = document.content, case .textStyles = content {
-                guard let compilerPath = CSUserPreferences.compilerURL?.path else { return }
                 guard let data = try? document.data(ofType: "JSONDocument") else { return }
 
-                run(command: [compilerPath] + command, data: data, document: document)
+                run(command: [LonaNode.compilerPath] + command, data: data, document: document)
             } else {
                 contentView.generatedCode = ""
             }
         } else if let document = document as? LogicDocument {
-            guard let compilerPath = CSUserPreferences.compilerURL?.path else { return }
             guard let data = try? document.data(ofType: "Logic") else { return }
 
-            run(command: [compilerPath] + command, data: data, document: document)
+            run(command: [LonaNode.compilerPath] + command, data: data, document: document)
         } else {
             contentView.generatedCode = ""
         }

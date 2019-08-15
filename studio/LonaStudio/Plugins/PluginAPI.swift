@@ -67,7 +67,7 @@ class PluginAPI {
             onSuccess(result)
             return
         case .compilerPath:
-            let result = CSUserPreferences.compilerURL?.path
+            let result = LonaNode.compilerPath
 
             onSuccess(result)
             return
