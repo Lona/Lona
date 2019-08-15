@@ -707,6 +707,9 @@ class WorkspaceViewController: NSSplitViewController {
                 self.markdownViewController.content = value
                 self.markdownPreviewViewController.content = value
                 document.content = value
+
+                document.updateChangeCount(.changeDone)
+                self.editorViewController.subtitleText = " — Edited"
             }
 
             markdownPreviewViewController.content = document.content

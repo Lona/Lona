@@ -54,7 +54,8 @@ class MarkdownEditor: LonaWebView {
         ]
 
         self.loadLocalApp(main: urlComponents.url!, directory: app)
-        self.onMessage = { data in
+        self.onMessage = { [weak self] data in
+            guard let self = self else { return }
             guard let messageType = data.get(key: "type").string else { return }
 
             switch messageType {
@@ -63,7 +64,10 @@ class MarkdownEditor: LonaWebView {
                 self.update()
             case "description":
                 guard let stringValue = data.get(key: "payload").string else { return }
-                self.onMarkdownStringChanged?(stringValue)
+
+                if self.markdownString != stringValue {
+                    self.onMarkdownStringChanged?(stringValue)
+                }
             default:
                 break
             }
